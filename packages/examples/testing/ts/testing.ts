@@ -18,7 +18,7 @@ describe('some component', () => {
      });
 });
 
-/* tslint:disable-next-line:no-jasmine-focus */
+// tslint:disable-next-line:ban
 fdescribe('some component', () => {
   it('has a test',
      () => {
@@ -44,7 +44,7 @@ describe('another component', () => {
 });
 
 describe('some component', () => {
-  /* tslint:disable-next-line:no-jasmine-focus */
+  // tslint:disable-next-line:ban
   fit('has a test',
       () => {
           // This test will run.

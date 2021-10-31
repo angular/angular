@@ -7,7 +7,7 @@
  */
 import {WrappedNodeExpr} from '@angular/compiler';
 import {TypeScriptAstFactory} from '@angular/compiler-cli/src/ngtsc/translator';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {AstHost} from '../../src/ast/ast_host';
 import {AstObject, AstValue} from '../../src/ast/ast_value';

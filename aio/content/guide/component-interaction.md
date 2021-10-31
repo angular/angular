@@ -123,7 +123,7 @@ Detect and act upon changes to input property values with the `ngOnChanges()` me
 
 
 
-You may prefer this approach to the property setter when watching multiple, interacting input properties.
+You might prefer this approach to the property setter when watching multiple, interacting input properties.
 
 Learn about `ngOnChanges()` in the [Lifecycle Hooks](guide/lifecycle-hooks) chapter.
 
@@ -227,18 +227,18 @@ Test that clicking the *Agree* and *Disagree* buttons update the appropriate cou
 
 
 
-## Parent interacts with child via *local variable*
+## Parent interacts with child using *local variable*
 
 A parent component cannot use data binding to read child properties
-or invoke child methods. You can do both
+or invoke child methods. Do both
 by creating a template reference variable for the child element
 and then reference that variable *within the parent template*
 as seen in the following example.
 
 {@a countdown-timer-example}
 The following is a child `CountdownTimerComponent` that repeatedly counts down to zero and launches a rocket.
-It has `start` and `stop` methods that control the clock and it displays a
-countdown status message in its own template.
+The `start` and `stop` methods control the clock and a 
+countdown status message displays in its own template.
 
 <code-example path="component-interaction/src/app/countdown-timer.component.ts" header="component-interaction/src/app/countdown-timer.component.ts">
 
@@ -258,14 +258,14 @@ The `CountdownLocalVarParentComponent` that hosts the timer component is as foll
 The parent component cannot data bind to the child's
 `start` and `stop` methods nor to its `seconds` property.
 
-You can place a local variable, `#timer`, on the tag `<countdown-timer>` representing the child component.
+Place a local variable, `#timer`, on the tag `<countdown-timer>` representing the child component.
 That gives you a reference to the child component and the ability to access
 *any of its properties or methods* from within the parent template.
 
 This example wires parent buttons to the child's `start` and `stop` and
 uses interpolation to display the child's `seconds` property.
 
-Here we see the parent and child working together.
+Here, the parent and child are working together.
 
 
 <div class="lightbox">
@@ -296,19 +296,22 @@ Test also that clicking the *Stop* button pauses the countdown timer:
 
 ## Parent calls an _@ViewChild()_
 
-The *local variable* approach is simple and easy. But it is limited because
+The *local variable* approach is straightforward. But it is limited because
 the parent-child wiring must be done entirely within the parent template.
 The parent component *itself* has no access to the child.
 
-You can't use the *local variable* technique if an instance of the parent component *class*
-must read or write child component values or must call child component methods.
+You can't use the *local variable* technique if the parent component's *class* relies on the
+child component's *class*. The parent-child relationship of the components is not established
+within each components respective *class* with the *local variable* technique. Because the *class*
+instances are not connected to one another, the parent *class* cannot access the child *class*
+properties and methods.
 
 When the parent component *class* requires that kind of access,
 ***inject*** the child component into the parent as a *ViewChild*.
 
 The following example illustrates this technique with the same
 [Countdown Timer](guide/component-interaction#countdown-timer-example) example.
-Neither its appearance nor its behavior will change.
+Neither its appearance nor its behavior changes.
 The child [CountdownTimerComponent](guide/component-interaction#countdown-timer-example) is the same as well.
 
 <div class="alert is-helpful">
@@ -335,7 +338,7 @@ It takes a bit more work to get the child view into the parent component *class*
 First, you have to import references to the `ViewChild` decorator and the `AfterViewInit` lifecycle hook.
 
 Next, inject the child `CountdownTimerComponent` into the private `timerComponent` property
-via the `@ViewChild` property decoration.
+using the `@ViewChild` property decoration.
 
 The `#timer` local variable is gone from the component metadata.
 Instead, bind the buttons to the parent component's own `start` and `stop` methods and
@@ -350,7 +353,7 @@ So it displays `0` seconds initially.
 Then Angular calls the `ngAfterViewInit` lifecycle hook at which time it is *too late*
 to update the parent view's display of the countdown seconds.
 Angular's unidirectional data flow rule prevents updating the parent view's
-in the same cycle. The app has to *wait one turn* before it can display the seconds.
+in the same cycle. The application must *wait one turn* before it can display the seconds.
 
 Use `setTimeout()` to wait one tick and then revise the `seconds()` method so
 that it takes future values from the timer component.
@@ -363,7 +366,7 @@ Use [the same countdown timer tests](guide/component-interaction#countdown-tests
 
 {@a bidirectional-service}
 
-## Parent and children communicate via a service
+## Parent and children communicate using a service
 
 A parent component and its children share a service whose interface enables bi-directional communication
 *within the family*.
@@ -405,8 +408,8 @@ Each `AstronautComponent` is a child of the `MissionControlComponent` and theref
 
 
 Notice that this example captures the `subscription` and `unsubscribe()` when the `AstronautComponent` is destroyed.
-This is a memory-leak guard step. There is no actual risk in this app because the
-lifetime of a `AstronautComponent` is the same as the lifetime of the app itself.
+This is a memory-leak guard step. There is no actual risk in this application because the
+lifetime of a `AstronautComponent` is the same as the lifetime of the application itself.
 That *would not* always be true in a more complex application.
 
 You don't add this guard to the `MissionControlComponent` because, as the parent,
@@ -440,3 +443,5 @@ and verify that the history meets expectations:
 
 
 [Back to top](guide/component-interaction#top)
+
+@reviewed 2021-09-17

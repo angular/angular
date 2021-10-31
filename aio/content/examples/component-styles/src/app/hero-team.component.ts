@@ -16,5 +16,5 @@ import { Hero } from './hero';
 })
 // #enddocregion stylelink
 export class HeroTeamComponent {
-  @Input() hero: Hero;
+  @Input() hero!: Hero;
 }

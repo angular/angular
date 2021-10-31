@@ -14,7 +14,6 @@ import {isLView} from '@angular/core/src/render3/interfaces/type_checks';
 import {CONTEXT} from '@angular/core/src/render3/interfaces/view';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {getElementStyles} from '@angular/core/testing/src/styling';
-import {expect} from '@angular/core/testing/src/testing_internal';
 import {onlyInIvy} from '@angular/private/testing';
 
 import {getLContext} from '../../src/render3/context_discovery';

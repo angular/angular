@@ -8,7 +8,7 @@
 
 import {PLATFORM_ID} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {NgswCommChannel} from '@angular/service-worker/src/low_level';
+import {NgswCommChannel, VersionDetectedEvent} from '@angular/service-worker/src/low_level';
 import {ngswCommChannelFactory, SwRegistrationOptions} from '@angular/service-worker/src/module';
 import {SwPush} from '@angular/service-worker/src/push';
 import {SwUpdate} from '@angular/service-worker/src/update';
@@ -426,11 +426,11 @@ import {MockPushManager, MockPushSubscription, MockServiceWorkerContainer, MockS
           done();
         });
         mock.sendMessage({
-          type: 'UPDATE_AVAILABLE',
-          current: {
+          type: 'VERSION_READY',
+          currentVersion: {
             hash: 'A',
           },
-          available: {
+          latestVersion: {
             hash: 'B',
           },
         });
@@ -460,33 +460,40 @@ import {MockPushManager, MockPushSubscription, MockServiceWorkerContainer, MockS
           },
         });
       });
-      it('activates updates when requested', done => {
-        mock.messages.subscribe((msg: {action: string, statusNonce: number}) => {
+      it('process any version update event when sent', done => {
+        update.versionUpdates.subscribe(event => {
+          expect(event.type).toEqual('VERSION_DETECTED');
+          expect((event as VersionDetectedEvent).version).toEqual({hash: 'A'});
+          done();
+        });
+        mock.sendMessage({
+          type: 'VERSION_DETECTED',
+          version: {
+            hash: 'A',
+          },
+        });
+      });
+      it('activates updates when requested', async () => {
+        mock.messages.subscribe((msg: {action: string, nonce: number}) => {
           expect(msg.action).toEqual('ACTIVATE_UPDATE');
           mock.sendMessage({
-            type: 'STATUS',
-            nonce: msg.statusNonce,
-            status: true,
+            type: 'OPERATION_COMPLETED',
+            nonce: msg.nonce,
+            result: true,
           });
         });
-        return update.activateUpdate().then(() => done()).catch(err => done.fail(err));
+        expect(await update.activateUpdate()).toBeTruthy();
       });
-      it('reports activation failure when requested', done => {
-        mock.messages.subscribe((msg: {action: string, statusNonce: number}) => {
+      it('reports activation failure when requested', async () => {
+        mock.messages.subscribe((msg: {action: string, nonce: number}) => {
           expect(msg.action).toEqual('ACTIVATE_UPDATE');
           mock.sendMessage({
-            type: 'STATUS',
-            nonce: msg.statusNonce,
-            status: false,
+            type: 'OPERATION_COMPLETED',
+            nonce: msg.nonce,
             error: 'Failed to activate',
           });
         });
-        return update.activateUpdate()
-            .catch(err => {
-              expect(err.message).toEqual('Failed to activate');
-            })
-            .then(() => done())
-            .catch(err => done.fail(err));
+        await expectAsync(update.activateUpdate()).toBeRejectedWithError('Failed to activate');
       });
       it('is injectable', () => {
         TestBed.configureTestingModule({
@@ -509,6 +516,7 @@ import {MockPushManager, MockPushSubscription, MockServiceWorkerContainer, MockS
           update.available.toPromise().catch(err => fail(err));
           update.activated.toPromise().catch(err => fail(err));
           update.unrecoverable.toPromise().catch(err => fail(err));
+          update.versionUpdates.toPromise().catch(err => fail(err));
         });
         it('gives an error when checking for updates', done => {
           update = new SwUpdate(comm);

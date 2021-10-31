@@ -1,6 +1,6 @@
 // #docplaster
 // #docregion without-toBlob-macrotask
-import { fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
+import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 
 import { CanvasComponent } from './canvas.component';
 
@@ -17,13 +17,13 @@ describe('CanvasComponent', () => {
   });
   // #enddocregion enable-toBlob-macrotask
   // #docregion without-toBlob-macrotask
-  beforeEach(waitForAsync(() => {
-    TestBed
+  beforeEach(async () => {
+    await TestBed
         .configureTestingModule({
           declarations: [CanvasComponent],
         })
         .compileComponents();
-  }));
+  });
 
   it('should be able to generate blob data from canvas', fakeAsync(() => {
        const fixture = TestBed.createComponent(CanvasComponent);

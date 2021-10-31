@@ -6,8 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AsyncTestCompleter, describe, expect, inject, it} from '@angular/core/testing/src/testing_internal';
-
 import {Injector, Metric, Options, Runner, SampleDescription, Sampler, SampleState, Validator, WebDriverAdapter} from '../index';
 
 {
@@ -35,91 +33,83 @@ import {Injector, Metric, Options, Runner, SampleDescription, Sampler, SampleSta
       return runner;
     }
 
-    it('should set SampleDescription.id',
-       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         createRunner()
-             .sample({id: 'someId'})
-             .then((_) => injector.get(SampleDescription))
-             .then((desc) => {
-               expect(desc.id).toBe('someId');
-               async.done();
-             });
-       }));
+    it('should set SampleDescription.id', done => {
+      createRunner()
+          .sample({id: 'someId'})
+          .then((_) => injector.get(SampleDescription))
+          .then((desc) => {
+            expect(desc.id).toBe('someId');
+            done();
+          });
+    });
 
-    it('should merge SampleDescription.description',
-       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         createRunner([{provide: Options.DEFAULT_DESCRIPTION, useValue: {'a': 1}}])
-             .sample({
-               id: 'someId',
-               providers: [{provide: Options.SAMPLE_DESCRIPTION, useValue: {'b': 2}}]
-             })
-             .then((_) => injector.get(SampleDescription))
-             .then((desc) => {
-               expect(desc.description)
-                   .toEqual(
-                       {'forceGc': false, 'userAgent': 'someUserAgent', 'a': 1, 'b': 2, 'v': 11});
-               async.done();
-             });
-       }));
+    it('should merge SampleDescription.description', done => {
+      createRunner([{provide: Options.DEFAULT_DESCRIPTION, useValue: {'a': 1}}])
+          .sample({
+            id: 'someId',
+            providers: [{provide: Options.SAMPLE_DESCRIPTION, useValue: {'b': 2}}]
+          })
+          .then((_) => injector.get(SampleDescription))
+          .then((desc) => {
+            expect(desc.description)
+                .toEqual({'forceGc': false, 'userAgent': 'someUserAgent', 'a': 1, 'b': 2, 'v': 11});
+            done();
+          });
+    });
 
-    it('should fill SampleDescription.metrics from the Metric',
-       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         createRunner()
-             .sample({id: 'someId'})
-             .then((_) => injector.get(SampleDescription))
-             .then((desc) => {
-               expect(desc.metrics).toEqual({'m1': 'some metric'});
-               async.done();
-             });
-       }));
+    it('should fill SampleDescription.metrics from the Metric', done => {
+      createRunner()
+          .sample({id: 'someId'})
+          .then((_) => injector.get(SampleDescription))
+          .then((desc) => {
+            expect(desc.metrics).toEqual({'m1': 'some metric'});
+            done();
+          });
+    });
 
-    it('should provide Options.EXECUTE',
-       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         const execute = () => {};
-         createRunner().sample({id: 'someId', execute: execute}).then((_) => {
-           expect(injector.get(Options.EXECUTE)).toEqual(execute);
-           async.done();
-         });
-       }));
+    it('should provide Options.EXECUTE', done => {
+      const execute = () => {};
+      createRunner().sample({id: 'someId', execute: execute}).then((_) => {
+        expect(injector.get(Options.EXECUTE)).toEqual(execute);
+        done();
+      });
+    });
 
-    it('should provide Options.PREPARE',
-       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         const prepare = () => {};
-         createRunner().sample({id: 'someId', prepare: prepare}).then((_) => {
-           expect(injector.get(Options.PREPARE)).toEqual(prepare);
-           async.done();
-         });
-       }));
+    it('should provide Options.PREPARE', done => {
+      const prepare = () => {};
+      createRunner().sample({id: 'someId', prepare: prepare}).then((_) => {
+        expect(injector.get(Options.PREPARE)).toEqual(prepare);
+        done();
+      });
+    });
 
-    it('should provide Options.MICRO_METRICS',
-       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         createRunner().sample({id: 'someId', microMetrics: {'a': 'b'}}).then((_) => {
-           expect(injector.get(Options.MICRO_METRICS)).toEqual({'a': 'b'});
-           async.done();
-         });
-       }));
+    it('should provide Options.MICRO_METRICS', done => {
+      createRunner().sample({id: 'someId', microMetrics: {'a': 'b'}}).then((_) => {
+        expect(injector.get(Options.MICRO_METRICS)).toEqual({'a': 'b'});
+        done();
+      });
+    });
 
-    it('should overwrite providers per sample call',
-       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         createRunner([{provide: Options.DEFAULT_DESCRIPTION, useValue: {'a': 1}}])
-             .sample({
-               id: 'someId',
-               providers: [{provide: Options.DEFAULT_DESCRIPTION, useValue: {'a': 2}}]
-             })
-             .then((_) => injector.get(SampleDescription))
-             .then((desc) => {
-               expect(desc.description['a']).toBe(2);
-               async.done();
-             });
-       }));
+    it('should overwrite providers per sample call', done => {
+      createRunner([{provide: Options.DEFAULT_DESCRIPTION, useValue: {'a': 1}}])
+          .sample({
+            id: 'someId',
+            providers: [{provide: Options.DEFAULT_DESCRIPTION, useValue: {'a': 2}}]
+          })
+          .then((_) => injector.get(SampleDescription))
+          .then((desc) => {
+            expect(desc.description['a']).toBe(2);
+            done();
+          });
+    });
   });
 }
 
 class MockWebDriverAdapter extends WebDriverAdapter {
-  executeScript(script: string): Promise<string> {
+  override executeScript(script: string): Promise<string> {
     return Promise.resolve('someUserAgent');
   }
-  capabilities(): Promise<Map<string, any>> {
+  override capabilities(): Promise<Map<string, any>> {
     return null!;
   }
 }
@@ -128,7 +118,7 @@ class MockValidator extends Validator {
   constructor() {
     super();
   }
-  describe() {
+  override describe() {
     return {'v': 11};
   }
 }
@@ -137,7 +127,7 @@ class MockMetric extends Metric {
   constructor() {
     super();
   }
-  describe() {
+  override describe() {
     return {'m1': 'some metric'};
   }
 }
@@ -146,7 +136,7 @@ class MockSampler extends Sampler {
   constructor() {
     super(null!, null!, null!, null!, null!, null!, null!);
   }
-  sample(): Promise<SampleState> {
+  override sample(): Promise<SampleState> {
     return Promise.resolve(new SampleState([], []));
   }
 }

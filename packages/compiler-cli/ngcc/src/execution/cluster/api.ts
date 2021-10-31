@@ -11,6 +11,10 @@ import {JsonObject} from '../../packages/entry_point';
 import {PackageJsonChange} from '../../writing/package_json_updater';
 import {Task, TaskProcessingOutcome} from '../tasks/api';
 
+/** A message reporting that the worker is ready for retrieving tasks. */
+export interface ReadyMessage extends JsonObject {
+  type: 'ready';
+}
 
 /** A message reporting that an unrecoverable error occurred. */
 export interface ErrorMessage extends JsonObject {
@@ -51,7 +55,7 @@ export interface UpdatePackageJsonMessage extends JsonObject {
 
 /** The type of messages sent from cluster workers to the cluster master. */
 export type MessageFromWorker =
-    ErrorMessage|TaskCompletedMessage|TransformedFilesMessage|UpdatePackageJsonMessage;
+    ReadyMessage|ErrorMessage|TaskCompletedMessage|TransformedFilesMessage|UpdatePackageJsonMessage;
 
 /** The type of messages sent from the cluster master to cluster workers. */
 export type MessageToWorker = ProcessTaskMessage;

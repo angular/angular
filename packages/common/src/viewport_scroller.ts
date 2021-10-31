@@ -120,9 +120,7 @@ export class BrowserViewportScroller implements ViewportScroller {
     if (!this.supportsScrolling()) {
       return;
     }
-    // TODO(atscott): The correct behavior for `getElementsByName` would be to also verify that the
-    // element is an anchor. However, this could be considered a breaking change and should be
-    // done in a major version.
+
     const elSelected = findAnchorFromDocument(this.document, target);
 
     if (elSelected) {

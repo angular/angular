@@ -3,7 +3,7 @@
 export function docRegionPromise(console: Console, inputValue: number) {
   // #docregion promise
   // initiate execution
-  let promise = new Promise<number>((resolve, reject) => {
+  let promise = new Promise<number>(resolve => {
     // Executer fn...
     // #enddocregion promise
     // The below is used in the unit tests.

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 /**
  * A host backed by a build system which has a unified view of the module namespace.
@@ -45,7 +45,7 @@ export interface ResourceHost {
    * Load a referenced resource either statically or asynchronously. If the host returns a
    * `Promise<string>` it is assumed the user of the corresponding `Program` will call
    * `loadNgStructureAsync()`. Returning  `Promise<string>` outside `loadNgStructureAsync()` will
-   * cause a diagnostics diagnostic error or an exception to be thrown.
+   * cause a diagnostics error or an exception to be thrown.
    */
   readResource(fileName: string): Promise<string>|string;
 
@@ -108,9 +108,3 @@ export interface TransformResourceResult {
  */
 export interface ExtendedTsCompilerHost extends ts.CompilerHost, Partial<ResourceHost>,
                                                 Partial<UnifiedModulesHost> {}
-
-export interface LazyRoute {
-  route: string;
-  module: {name: string, filePath: string};
-  referencedModule: {name: string, filePath: string};
-}

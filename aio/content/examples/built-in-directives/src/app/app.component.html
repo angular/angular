@@ -8,7 +8,7 @@
   <p>Current item name: {{currentItem.name}}</p>
   <p>
     <label for="without">without NgModel:</label>
-    <input [value]="currentItem.name" (input)="currentItem.name=getValue($event.target)" id="without">
+    <input [value]="currentItem.name" (input)="currentItem.name=getValue($event)" id="without">
   </p>
 
   <p>
@@ -16,11 +16,6 @@
     <label for="example-ngModel">[(ngModel)]:</label>
     <input [(ngModel)]="currentItem.name" id="example-ngModel">
     <!-- #enddocregion NgModel-1 -->
-  </p>
-
-  <p>
-    <label for="example-bindon">bindon-ngModel: </label>
-    <input bindon-ngModel="currentItem.name" id="example-bindon">
   </p>
 
   <p>

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {beforeEach, describe, expect, inject, it} from '../../../core/testing/src/testing_internal';
+import {inject} from '../../../core/testing';
 import {Element} from '../../src/ml_parser/ast';
 import {HtmlParser} from '../../src/ml_parser/html_parser';
 import {PreparsedElement, PreparsedElementType, preparseElement} from '../../src/template_parser/template_preparser';

@@ -451,16 +451,16 @@ export class FakeComponentFactory<T extends Type<any>> extends ComponentFactory<
         instance: new this.ComponentClass(),
       });
 
-  get selector(): string {
+  override get selector(): string {
     return 'fake-component';
   }
-  get componentType(): Type<any> {
+  override get componentType(): Type<any> {
     return this.ComponentClass;
   }
-  get ngContentSelectors(): string[] {
+  override get ngContentSelectors(): string[] {
     return ['content-1', 'content-2'];
   }
-  get inputs(): {propName: string; templateName: string}[] {
+  override get inputs(): {propName: string; templateName: string}[] {
     return [
       {propName: 'fooFoo', templateName: 'fooFoo'},
       {propName: 'barBar', templateName: 'my-bar-bar'},
@@ -471,7 +471,7 @@ export class FakeComponentFactory<T extends Type<any>> extends ComponentFactory<
       {propName: 'falsyZero', templateName: 'falsyZero'},
     ];
   }
-  get outputs(): {propName: string; templateName: string}[] {
+  override get outputs(): {propName: string; templateName: string}[] {
     return [
       {propName: 'output1', templateName: 'templateOutput1'},
       {propName: 'output2', templateName: 'templateOutput2'},
@@ -482,7 +482,7 @@ export class FakeComponentFactory<T extends Type<any>> extends ComponentFactory<
     super();
   }
 
-  create(
+  override create(
       injector: Injector, projectableNodes?: any[][], rootSelectorOrNode?: string|any,
       ngModule?: NgModuleRef<any>): ComponentRef<any> {
     return this.componentRef;

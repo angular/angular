@@ -1,7 +1,7 @@
 # Template syntax
 
 In Angular, a *template* is a chunk of HTML.
-Within a template, you can use special syntax to leverage many of Angular's features.
+Use special syntax within a template to build on many of Angular's features.
 
 
 ## Prerequisites
@@ -20,29 +20,28 @@ In Angular, the component plays the part of the controller/viewmodel, and the te
 
 <hr />
 
-Each Angular template in your app is a section of HTML that you can include as a part of the page that the browser displays.
+Each Angular template in your application is a section of HTML to include as a part of the page that the browser displays.
 An Angular HTML template renders a view, or user interface, in the browser, just like regular HTML, but with a lot more functionality.
 
-When you generate an Angular app with the Angular CLI, the `app.component.html` file is the default template containing placeholder HTML.
+When you generate an Angular application with the Angular CLI, the `app.component.html` file is the default template containing placeholder HTML.
 
-The template syntax guides show you how you can control the UX/UI by coordinating data between the class and the template.
+The template syntax guides show you how to control the UX/UI by coordinating data between the class and the template.
 
 <div class="is-helpful alert">
 
-Most of the Template Syntax guides have dedicated working example apps that demonstrate the individual topic of each guide.
-To see all of them working together in one app, see the comprehensive <live-example title="Template Syntax Live Code"></live-example>.
+Most of the Template Syntax guides have dedicated working example applications that demonstrate the individual topic of each guide.
+To see all of them working together in one application, see the comprehensive <live-example title="Template Syntax Live Code"></live-example>.
 
 </div>
 
 
 ## Empower your HTML
 
-With special Angular syntax in your templates, you can extend the HTML vocabulary of your apps.
+Extend the HTML vocabulary of your applications With special Angular syntax in your templates.
 For example, Angular helps you get and set DOM (Document Object Model) values dynamically with features such as built-in template functions, variables, event listening, and data binding.
 
 Almost all HTML syntax is valid template syntax.
-However, because an Angular template is part of an overall webpage, and not the entire page, you don't need to include elements such as `<html>`, `<body>`, or `<base>`.
-You can focus exclusively on the part of the page you are developing.
+However, because an Angular template is part of an overall webpage, and not the entire page, you don't need to include elements such as `<html>`, `<body>`, or `<base>`, and can focus exclusively on the part of the page you are developing.
 
 
 <div class="alert is-important">
@@ -56,11 +55,11 @@ For more information, see the [Security](guide/security) page.
 
 ## More on template syntax
 
-You may also be interested in the following:
+You might also be interested in the following:
 
 * [Interpolation](guide/interpolation)&mdash;learn how to use interpolation and expressions in HTML.
 * [Template statements](guide/template-statements)&mdash;respond to events in your templates.
-* [Binding syntax](guide/binding-syntax)&mdash;use binding to coordinate values in your app.
+* [Binding syntax](guide/binding-syntax)&mdash;use binding to coordinate values in your application.
 * [Property binding](guide/property-binding)&mdash;set properties of target elements or directive `@Input()` decorators.
 * [Attribute, class, and style bindings](guide/attribute-binding)&mdash;set the value of attributes, classes, and styles.
 * [Event binding](guide/event-binding)&mdash;listen for events and your HTML.

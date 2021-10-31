@@ -26,11 +26,11 @@ export class SizeValidator extends Validator {
     super();
   }
 
-  describe(): {[key: string]: any} {
+  override describe(): {[key: string]: any} {
     return {'sampleSize': this._sampleSize};
   }
 
-  validate(completeSample: MeasureValues[]): MeasureValues[]|null {
+  override validate(completeSample: MeasureValues[]): MeasureValues[]|null {
     if (completeSample.length >= this._sampleSize) {
       return completeSample.slice(completeSample.length - this._sampleSize, completeSample.length);
     } else {

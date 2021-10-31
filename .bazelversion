@@ -1,3 +1,1 @@
 4.0.0
-# [NB: this comment has to be after the first line, see https://github.com/bazelbuild/bazelisk/issues/117]
-# When updating the Bazel version you also need to update the RBE toolchains version in package.bzl

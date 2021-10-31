@@ -321,7 +321,7 @@ describe('inheritance', () => {
       }
 
       abstract class UndecoratedBase extends Base {
-        abstract input: any;
+        abstract override input: any;
         ngOnChanges() {
           changes++;
         }
@@ -329,7 +329,7 @@ describe('inheritance', () => {
 
       @Component({selector: 'my-comp', template: ''})
       class MyComp extends UndecoratedBase {
-        @Input() input: any;
+        @Input() override input: any;
       }
 
       @Component({template: '<my-comp [input]="value"></my-comp>'})
@@ -383,7 +383,7 @@ describe('inheritance', () => {
           selector: '[subDir]',
         })
         class SubDirective extends SuperDirective {
-          ngOnInit() {
+          override ngOnInit() {
             fired.push('sub init');
           }
         }
@@ -424,7 +424,7 @@ describe('inheritance', () => {
           selector: '[subDir]',
         })
         class SubDirective extends SuperDirective {
-          ngDoCheck() {
+          override ngDoCheck() {
             fired.push('sub do check');
           }
         }
@@ -465,7 +465,7 @@ describe('inheritance', () => {
           selector: '[subDir]',
         })
         class SubDirective extends SuperDirective {
-          ngAfterContentInit() {
+          override ngAfterContentInit() {
             fired.push('sub after content init');
           }
         }
@@ -506,7 +506,7 @@ describe('inheritance', () => {
           selector: '[subDir]',
         })
         class SubDirective extends SuperDirective {
-          ngAfterContentChecked() {
+          override ngAfterContentChecked() {
             fired.push('sub after content checked');
           }
         }
@@ -547,7 +547,7 @@ describe('inheritance', () => {
           selector: '[subDir]',
         })
         class SubDirective extends SuperDirective {
-          ngAfterViewInit() {
+          override ngAfterViewInit() {
             fired.push('sub after view init');
           }
         }
@@ -588,7 +588,7 @@ describe('inheritance', () => {
           selector: '[subDir]',
         })
         class SubDirective extends SuperDirective {
-          ngAfterViewChecked() {
+          override ngAfterViewChecked() {
             fired.push('sub after view checked');
           }
         }
@@ -629,7 +629,7 @@ describe('inheritance', () => {
           selector: '[subDir]',
         })
         class SubDirective extends SuperDirective {
-          ngOnDestroy() {
+          override ngOnDestroy() {
             fired.push('sub destroy');
           }
         }
@@ -684,7 +684,7 @@ describe('inheritance', () => {
           selector: '[sub-dir]',
         })
         class SubDirective extends SuperDirective {
-          @Input() baz = '';
+          @Input() override baz = '';
 
           @Input() qux = '';
         }
@@ -943,7 +943,7 @@ describe('inheritance', () => {
           selector: '[subDir]',
         })
         class SubDirective extends SuperDirective {
-          ngOnInit() {
+          override ngOnInit() {
             fired.push('sub init');
           }
         }
@@ -984,7 +984,7 @@ describe('inheritance', () => {
           selector: '[subDir]',
         })
         class SubDirective extends SuperDirective {
-          ngDoCheck() {
+          override ngDoCheck() {
             fired.push('sub do check');
           }
         }
@@ -1025,7 +1025,7 @@ describe('inheritance', () => {
           selector: '[subDir]',
         })
         class SubDirective extends SuperDirective {
-          ngAfterContentInit() {
+          override ngAfterContentInit() {
             fired.push('sub after content init');
           }
         }
@@ -1066,7 +1066,7 @@ describe('inheritance', () => {
           selector: '[subDir]',
         })
         class SubDirective extends SuperDirective {
-          ngAfterContentChecked() {
+          override ngAfterContentChecked() {
             fired.push('sub after content checked');
           }
         }
@@ -1107,7 +1107,7 @@ describe('inheritance', () => {
           selector: '[subDir]',
         })
         class SubDirective extends SuperDirective {
-          ngAfterViewInit() {
+          override ngAfterViewInit() {
             fired.push('sub after view init');
           }
         }
@@ -1148,7 +1148,7 @@ describe('inheritance', () => {
           selector: '[subDir]',
         })
         class SubDirective extends SuperDirective {
-          ngAfterViewChecked() {
+          override ngAfterViewChecked() {
             fired.push('sub after view checked');
           }
         }
@@ -1189,7 +1189,7 @@ describe('inheritance', () => {
           selector: '[subDir]',
         })
         class SubDirective extends SuperDirective {
-          ngOnDestroy() {
+          override ngOnDestroy() {
             fired.push('sub destroy');
           }
         }
@@ -1245,7 +1245,7 @@ describe('inheritance', () => {
           selector: '[sub-dir]',
         })
         class SubDirective extends SuperDirective {
-          @Input() baz = '';
+          @Input() override baz = '';
 
           @Input() qux = '';
         }
@@ -1513,7 +1513,7 @@ describe('inheritance', () => {
           selector: '[subDir]',
         })
         class SubDirective extends SuperDirective {
-          ngOnInit() {
+          override ngOnInit() {
             fired.push('sub init');
           }
         }
@@ -1554,7 +1554,7 @@ describe('inheritance', () => {
           selector: '[subDir]',
         })
         class SubDirective extends SuperDirective {
-          ngDoCheck() {
+          override ngDoCheck() {
             fired.push('sub do check');
           }
         }
@@ -1595,7 +1595,7 @@ describe('inheritance', () => {
           selector: '[subDir]',
         })
         class SubDirective extends SuperDirective {
-          ngAfterContentInit() {
+          override ngAfterContentInit() {
             fired.push('sub after content init');
           }
         }
@@ -1636,7 +1636,7 @@ describe('inheritance', () => {
           selector: '[subDir]',
         })
         class SubDirective extends SuperDirective {
-          ngAfterContentChecked() {
+          override ngAfterContentChecked() {
             fired.push('sub after content checked');
           }
         }
@@ -1677,7 +1677,7 @@ describe('inheritance', () => {
           selector: '[subDir]',
         })
         class SubDirective extends SuperDirective {
-          ngAfterViewInit() {
+          override ngAfterViewInit() {
             fired.push('sub after view init');
           }
         }
@@ -1718,7 +1718,7 @@ describe('inheritance', () => {
           selector: '[subDir]',
         })
         class SubDirective extends SuperDirective {
-          ngAfterViewChecked() {
+          override ngAfterViewChecked() {
             fired.push('sub after view checked');
           }
         }
@@ -1759,7 +1759,7 @@ describe('inheritance', () => {
           selector: '[subDir]',
         })
         class SubDirective extends SuperDirective {
-          ngOnDestroy() {
+          override ngOnDestroy() {
             fired.push('sub destroy');
           }
         }
@@ -1817,7 +1817,7 @@ describe('inheritance', () => {
           selector: '[sub-dir]',
         })
         class SubDirective extends SuperDirective {
-          @Input() baz = '';
+          @Input() override baz = '';
 
           @Input() qux = '';
         }
@@ -2118,7 +2118,7 @@ describe('inheritance', () => {
       it('ngOnInit', () => {
         @Component({selector: 'my-comp', template: `<p>test</p>`})
         class MyComponent extends SuperComponent {
-          ngOnInit() {
+          override ngOnInit() {
             fired.push('sub init');
           }
         }
@@ -2159,7 +2159,7 @@ describe('inheritance', () => {
           selector: 'my-comp',
         })
         class MyComponent extends SuperComponent {
-          ngDoCheck() {
+          override ngDoCheck() {
             fired.push('sub do check');
           }
         }
@@ -2201,7 +2201,7 @@ describe('inheritance', () => {
           template: `<p>test</p>`,
         })
         class MyComponent extends SuperComponent {
-          ngAfterContentInit() {
+          override ngAfterContentInit() {
             fired.push('sub after content init');
           }
         }
@@ -2243,7 +2243,7 @@ describe('inheritance', () => {
           template: `<p>test</p>`,
         })
         class MyComponent extends SuperComponent {
-          ngAfterContentChecked() {
+          override ngAfterContentChecked() {
             fired.push('sub after content checked');
           }
         }
@@ -2285,7 +2285,7 @@ describe('inheritance', () => {
           template: `<p>test</p>`,
         })
         class MyComponent extends SuperComponent {
-          ngAfterViewInit() {
+          override ngAfterViewInit() {
             fired.push('sub after view init');
           }
         }
@@ -2327,7 +2327,7 @@ describe('inheritance', () => {
           template: `<p>test</p>`,
         })
         class MyComponent extends SuperComponent {
-          ngAfterViewChecked() {
+          override ngAfterViewChecked() {
             fired.push('sub after view checked');
           }
         }
@@ -2369,7 +2369,7 @@ describe('inheritance', () => {
           template: `<p>test</p>`,
         })
         class MyComponent extends SuperComponent {
-          ngOnDestroy() {
+          override ngOnDestroy() {
             fired.push('sub destroy');
           }
         }
@@ -2422,7 +2422,7 @@ describe('inheritance', () => {
 
         @Component({selector: 'my-comp', template: `<p>test</p>`})
         class MyComponent extends SuperComponent {
-          @Input() baz = '';
+          @Input() override baz = '';
 
           @Input() qux = '';
         }
@@ -2675,7 +2675,7 @@ describe('inheritance', () => {
       it('ngOnInit', () => {
         @Component({selector: 'my-comp', template: `<p>test</p>`})
         class MyComponent extends SuperDirective {
-          ngOnInit() {
+          override ngOnInit() {
             fired.push('sub init');
           }
         }
@@ -2717,7 +2717,7 @@ describe('inheritance', () => {
           template: `<p>test</p>`,
         })
         class MyComponent extends SuperDirective {
-          ngDoCheck() {
+          override ngDoCheck() {
             fired.push('sub do check');
           }
         }
@@ -2759,7 +2759,7 @@ describe('inheritance', () => {
           template: `<p>test</p>`,
         })
         class MyComponent extends SuperDirective {
-          ngAfterContentInit() {
+          override ngAfterContentInit() {
             fired.push('sub after content init');
           }
         }
@@ -2801,7 +2801,7 @@ describe('inheritance', () => {
           template: `<p>test</p>`,
         })
         class MyComponent extends SuperDirective {
-          ngAfterContentChecked() {
+          override ngAfterContentChecked() {
             fired.push('sub after content checked');
           }
         }
@@ -2843,7 +2843,7 @@ describe('inheritance', () => {
           template: `<p>test</p>`,
         })
         class MyComponent extends SuperDirective {
-          ngAfterViewInit() {
+          override ngAfterViewInit() {
             fired.push('sub after view init');
           }
         }
@@ -2885,7 +2885,7 @@ describe('inheritance', () => {
           template: `<p>test</p>`,
         })
         class MyComponent extends SuperDirective {
-          ngAfterViewChecked() {
+          override ngAfterViewChecked() {
             fired.push('sub after view checked');
           }
         }
@@ -2927,7 +2927,7 @@ describe('inheritance', () => {
           template: `<p>test</p>`,
         })
         class MyComponent extends SuperDirective {
-          ngOnDestroy() {
+          override ngOnDestroy() {
             fired.push('sub destroy');
           }
         }
@@ -2983,7 +2983,7 @@ describe('inheritance', () => {
 
         @Component({selector: 'my-comp', template: `<p>test</p>`})
         class MyComponent extends SuperDirective {
-          @Input() baz = '';
+          @Input() override baz = '';
 
           @Input() qux = '';
         }
@@ -3296,7 +3296,7 @@ describe('inheritance', () => {
       it('ngOnInit', () => {
         @Component({selector: 'my-comp', template: `<p>test</p>`})
         class MyComponent extends BareClass {
-          ngOnInit() {
+          override ngOnInit() {
             fired.push('sub init');
           }
         }
@@ -3337,7 +3337,7 @@ describe('inheritance', () => {
           selector: 'my-comp',
         })
         class MyComponent extends BareClass {
-          ngDoCheck() {
+          override ngDoCheck() {
             fired.push('sub do check');
           }
         }
@@ -3379,7 +3379,7 @@ describe('inheritance', () => {
           template: `<p>test</p>`,
         })
         class MyComponent extends BareClass {
-          ngAfterContentInit() {
+          override ngAfterContentInit() {
             fired.push('sub after content init');
           }
         }
@@ -3421,7 +3421,7 @@ describe('inheritance', () => {
           template: `<p>test</p>`,
         })
         class MyComponent extends BareClass {
-          ngAfterContentChecked() {
+          override ngAfterContentChecked() {
             fired.push('sub after content checked');
           }
         }
@@ -3463,7 +3463,7 @@ describe('inheritance', () => {
           template: `<p>test</p>`,
         })
         class MyComponent extends BareClass {
-          ngAfterViewInit() {
+          override ngAfterViewInit() {
             fired.push('sub after view init');
           }
         }
@@ -3505,7 +3505,7 @@ describe('inheritance', () => {
           template: `<p>test</p>`,
         })
         class MyComponent extends BareClass {
-          ngAfterViewChecked() {
+          override ngAfterViewChecked() {
             fired.push('sub after view checked');
           }
         }
@@ -3547,7 +3547,7 @@ describe('inheritance', () => {
           template: `<p>test</p>`,
         })
         class MyComponent extends BareClass {
-          ngOnDestroy() {
+          override ngOnDestroy() {
             fired.push('sub destroy');
           }
         }
@@ -3605,7 +3605,7 @@ describe('inheritance', () => {
 
         @Component({selector: 'my-comp', template: `<p>test</p>`})
         class MyComponent extends BareClass {
-          @Input() baz = '';
+          @Input() override baz = '';
 
           @Input() qux = '';
         }
@@ -3941,7 +3941,7 @@ describe('inheritance', () => {
           template: `<p>test</p>`,
         })
         class MyComponent extends SuperComponent {
-          ngOnInit() {
+          override ngOnInit() {
             fired.push('sub init');
           }
         }
@@ -3983,7 +3983,7 @@ describe('inheritance', () => {
           template: `<p>test</p>`,
         })
         class MyComponent extends SuperComponent {
-          ngDoCheck() {
+          override ngDoCheck() {
             fired.push('sub do check');
           }
         }
@@ -4025,7 +4025,7 @@ describe('inheritance', () => {
           template: `<p>test</p>`,
         })
         class MyComponent extends SuperComponent {
-          ngAfterContentInit() {
+          override ngAfterContentInit() {
             fired.push('sub after content init');
           }
         }
@@ -4067,7 +4067,7 @@ describe('inheritance', () => {
           template: `<p>test</p>`,
         })
         class MyComponent extends SuperComponent {
-          ngAfterContentChecked() {
+          override ngAfterContentChecked() {
             fired.push('sub after content checked');
           }
         }
@@ -4109,7 +4109,7 @@ describe('inheritance', () => {
           template: `<p>test</p>`,
         })
         class MyComponent extends SuperComponent {
-          ngAfterViewInit() {
+          override ngAfterViewInit() {
             fired.push('sub after view init');
           }
         }
@@ -4151,7 +4151,7 @@ describe('inheritance', () => {
           template: `<p>test</p>`,
         })
         class MyComponent extends SuperComponent {
-          ngAfterViewChecked() {
+          override ngAfterViewChecked() {
             fired.push('sub after view checked');
           }
         }
@@ -4193,7 +4193,7 @@ describe('inheritance', () => {
           template: `<p>test</p>`,
         })
         class MyComponent extends SuperComponent {
-          ngOnDestroy() {
+          override ngOnDestroy() {
             fired.push('sub destroy');
           }
         }
@@ -4250,7 +4250,7 @@ describe('inheritance', () => {
 
         @Component({selector: 'my-comp', template: `<p>test</p>`})
         class MyComponent extends SuperComponent {
-          @Input() baz = '';
+          @Input() override baz = '';
 
           @Input() qux = '';
         }
@@ -4623,7 +4623,7 @@ describe('inheritance', () => {
         focused() {
         }
 
-        clicked() {
+        override clicked() {
           events.push('ChildComponent.clicked');
         }
       }
@@ -4640,7 +4640,7 @@ describe('inheritance', () => {
         blurred() {
         }
 
-        clicked() {
+        override clicked() {
           events.push('GrandChildComponent.clicked');
         }
       }
@@ -4741,7 +4741,7 @@ describe('inheritance', () => {
           template: `<p>test</p>`,
         })
         class MyComponent extends SuperComponent {
-          ngOnInit() {
+          override ngOnInit() {
             fired.push('sub init');
           }
         }
@@ -4783,7 +4783,7 @@ describe('inheritance', () => {
           template: `<p>test</p>`,
         })
         class MyComponent extends SuperComponent {
-          ngDoCheck() {
+          override ngDoCheck() {
             fired.push('sub do check');
           }
         }
@@ -4825,7 +4825,7 @@ describe('inheritance', () => {
           template: `<p>test</p>`,
         })
         class MyComponent extends SuperComponent {
-          ngAfterContentInit() {
+          override ngAfterContentInit() {
             fired.push('sub after content init');
           }
         }
@@ -4867,7 +4867,7 @@ describe('inheritance', () => {
           template: `<p>test</p>`,
         })
         class MyComponent extends SuperComponent {
-          ngAfterContentChecked() {
+          override ngAfterContentChecked() {
             fired.push('sub after content checked');
           }
         }
@@ -4909,7 +4909,7 @@ describe('inheritance', () => {
           template: `<p>test</p>`,
         })
         class MyComponent extends SuperComponent {
-          ngAfterViewInit() {
+          override ngAfterViewInit() {
             fired.push('sub after view init');
           }
         }
@@ -4951,7 +4951,7 @@ describe('inheritance', () => {
           template: `<p>test</p>`,
         })
         class MyComponent extends SuperComponent {
-          ngAfterViewChecked() {
+          override ngAfterViewChecked() {
             fired.push('sub after view checked');
           }
         }
@@ -4993,7 +4993,7 @@ describe('inheritance', () => {
           template: `<p>test</p>`,
         })
         class MyComponent extends SuperComponent {
-          ngOnDestroy() {
+          override ngOnDestroy() {
             fired.push('sub destroy');
           }
         }
@@ -5052,7 +5052,7 @@ describe('inheritance', () => {
 
         @Component({selector: 'my-comp', template: `<p>test</p>`})
         class MyComponent extends BareClass {
-          @Input() baz = '';
+          @Input() override baz = '';
 
           @Input() qux = '';
         }
@@ -5182,8 +5182,8 @@ describe('inheritance', () => {
               ],
             })
             class MyComponent extends IntermediateComponent {
-              colorExp = 'color';
-              opacityExp = 'opacity';
+              override colorExp = 'color';
+              override opacityExp = 'opacity';
               bgExp = 'bg';
             }
 

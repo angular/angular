@@ -8,19 +8,19 @@
 
 import {CustomTransformers, defaultGatherDiagnostics, Program} from '@angular/compiler-cli';
 import * as api from '@angular/compiler-cli/src/transformers/api';
-import * as ts from 'typescript';
+import * as tsickle from 'tsickle';
+import ts from 'typescript';
 
 import {createCompilerHost, createProgram} from '../../index';
+import {mainXi18n} from '../../src/extract_i18n';
 import {main, mainDiagnosticsForTest, readNgcCommandLineAndConfiguration} from '../../src/main';
 import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem, relativeFrom} from '../../src/ngtsc/file_system';
 import {Folder, MockFileSystem} from '../../src/ngtsc/file_system/testing';
 import {IndexedComponent} from '../../src/ngtsc/indexer';
 import {NgtscProgram} from '../../src/ngtsc/program';
 import {DeclarationNode} from '../../src/ngtsc/reflection';
-import {LazyRoute} from '../../src/ngtsc/routing';
 import {NgtscTestCompilerHost} from '../../src/ngtsc/testing';
 import {setWrapHostForTest} from '../../src/transformers/compiler_host';
-
 
 /**
  * Manages a temporary testing directory structure and environment for testing ngtsc by feeding it
@@ -220,7 +220,7 @@ export class NgtscTestEnvironment {
     }
     const exitCode = main(
         this.commandLineArgs, errorSpy, undefined, customTransformers, reuseProgram,
-        this.changedResources);
+        this.changedResources, tsickle);
     expect(errorSpy).not.toHaveBeenCalled();
     expect(exitCode).toBe(0);
     if (this.multiCompileHostExt !== null) {
@@ -231,7 +231,7 @@ export class NgtscTestEnvironment {
   /**
    * Run the compiler to completion, and return any `ts.Diagnostic` errors that may have occurred.
    */
-  driveDiagnostics(): ReadonlyArray<ts.Diagnostic> {
+  driveDiagnostics(expectedExitCode?: number): ReadonlyArray<ts.Diagnostic> {
     // ngtsc only produces ts.Diagnostic messages.
     let reuseProgram: {program: Program|undefined}|undefined = undefined;
     if (this.multiCompileHostExt !== null) {
@@ -240,16 +240,21 @@ export class NgtscTestEnvironment {
       };
     }
 
-    const diags = mainDiagnosticsForTest(
-        this.commandLineArgs, undefined, reuseProgram, this.changedResources);
-
+    const {exitCode, diagnostics} = mainDiagnosticsForTest(
+        this.commandLineArgs, undefined, reuseProgram, this.changedResources, tsickle);
+    if (expectedExitCode !== undefined) {
+      expect(exitCode)
+          .withContext(`Expected program to exit with code ${
+              expectedExitCode}, but it actually exited with code ${exitCode}.`)
+          .toBe(expectedExitCode);
+    }
 
     if (this.multiCompileHostExt !== null) {
       this.oldProgram = reuseProgram!.program!;
     }
 
     // In ngtsc, only `ts.Diagnostic`s are produced.
-    return diags as ReadonlyArray<ts.Diagnostic>;
+    return diagnostics as ReadonlyArray<ts.Diagnostic>;
   }
 
   async driveDiagnosticsAsync(): Promise<ReadonlyArray<ts.Diagnostic>> {
@@ -262,18 +267,26 @@ export class NgtscTestEnvironment {
     return defaultGatherDiagnostics(program as api.Program) as ts.Diagnostic[];
   }
 
-  driveRoutes(entryPoint?: string): LazyRoute[] {
-    const {rootNames, options} = readNgcCommandLineAndConfiguration(this.commandLineArgs);
-    const host = createCompilerHost({options});
-    const program = createProgram({rootNames, host, options});
-    return program.listLazyRoutes(entryPoint);
-  }
-
   driveIndexer(): Map<DeclarationNode, IndexedComponent> {
     const {rootNames, options} = readNgcCommandLineAndConfiguration(this.commandLineArgs);
     const host = createCompilerHost({options});
     const program = createProgram({rootNames, host, options});
     return (program as NgtscProgram).getIndexedComponents();
+  }
+
+  driveXi18n(format: string, outputFileName: string, locale: string|null = null): void {
+    const errorSpy = jasmine.createSpy('consoleError').and.callFake(console.error);
+    const args = [
+      ...this.commandLineArgs,
+      `--i18nFormat=${format}`,
+      `--outFile=${outputFileName}`,
+    ];
+    if (locale !== null) {
+      args.push(`--locale=${locale}`);
+    }
+    const exitCode = mainXi18n(args, errorSpy);
+    expect(errorSpy).not.toHaveBeenCalled();
+    expect(exitCode).toEqual(0);
   }
 }
 
@@ -313,7 +326,7 @@ class MultiCompileHostExt extends AugmentedCompilerHost implements Partial<ts.Co
   private cache = new Map<string, ts.SourceFile>();
   private writtenFiles = new Set<string>();
 
-  getSourceFile(
+  override getSourceFile(
       fileName: string, languageVersion: ts.ScriptTarget, onError?: (message: string) => void,
       shouldCreateNewSourceFile?: boolean): ts.SourceFile|undefined {
     if (this.cache.has(fileName)) {
@@ -330,7 +343,7 @@ class MultiCompileHostExt extends AugmentedCompilerHost implements Partial<ts.Co
     this.writtenFiles.clear();
   }
 
-  writeFile(
+  override writeFile(
       fileName: string, data: string, writeByteOrderMark: boolean,
       onError: ((message: string) => void)|undefined,
       sourceFiles?: ReadonlyArray<ts.SourceFile>): void {

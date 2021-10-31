@@ -26,9 +26,6 @@ jasmine_node_test(
         "//packages/forms",
         "//packages/language-service/test:project",
     ],
-    tags = [
-        "ivy-only",
-    ],
     deps = [
         ":legacy_lib",
     ],

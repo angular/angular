@@ -98,7 +98,7 @@ yarn bazel test //integration:bazel-schematics_test
 
 When adding a new integration test, follow the steps below to add a bazel test target for the new test.
 
-1. Add new test to `INTEGRATION_TESTS` object in `/integration/BUILD.bazel` (and tag as `"no-ivy-aot"` if not meant to be run against ivy bundles).
+1. Add new test to `INTEGRATION_TESTS` object in `/integration/BUILD.bazel` (and tag as `"view-engine-only"` if not meant to be run against ivy bundles).
 2. If test requires ports and does not support ethereal ports then make sure the port is unique and add it to the "manually configured ports" comment to document which port it is using
 3. Add at least the following two entries `.bazelignore` (as they may contain BUILD files)
    1. `integration/new_test/node_modules`

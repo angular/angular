@@ -3,6 +3,8 @@ import { Inject, Injectable } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { ReplaySubject } from 'rxjs';
 import { ScrollSpyInfo, ScrollSpyService } from 'app/shared/scroll-spy.service';
+import { unwrapHtmlForSink } from 'safevalues';
+import { fromInnerHTML } from './security';
 
 
 export interface TocItem {
@@ -62,7 +64,7 @@ export class TocService {
   //   - Mark the HTML as trusted to be used with `[innerHTML]`.
   private extractHeadingSafeHtml(heading: HTMLHeadingElement) {
     const div: HTMLDivElement = this.document.createElement('div');
-    div.innerHTML = heading.innerHTML;
+    div.innerHTML = unwrapHtmlForSink(fromInnerHTML(heading));
 
     // Remove any `.github-links` or `.header-link` elements (along with their content).
     querySelectorAll(div, '.github-links, .header-link').forEach(removeNode);
@@ -128,8 +130,14 @@ export class TocService {
 }
 
 // Helpers
-function querySelectorAll<K extends keyof HTMLElementTagNameMap>(parent: Element, selector: K): HTMLElementTagNameMap[K][];
-function querySelectorAll<K extends keyof SVGElementTagNameMap>(parent: Element, selector: K): SVGElementTagNameMap[K][];
+function querySelectorAll<K extends keyof HTMLElementTagNameMap>(
+  parent: Element,
+  selector: K
+): HTMLElementTagNameMap[K][];
+function querySelectorAll<K extends keyof SVGElementTagNameMap>(
+  parent: Element,
+  selector: K
+): SVGElementTagNameMap[K][];
 function querySelectorAll<E extends Element = Element>(parent: Element, selector: string): E[];
 function querySelectorAll(parent: Element, selector: string) {
   // Wrap the `NodeList` as a regular `Array` to have access to array methods.

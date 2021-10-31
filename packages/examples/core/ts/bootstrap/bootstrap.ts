@@ -10,7 +10,7 @@ import {Component, NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
-@Component({selector: 'my-app', template: 'Hello {{ name }}!'})
+@Component({selector: 'app-root', template: 'Hello {{ name }}!'})
 class MyApp {
   name: string = 'World';
 }

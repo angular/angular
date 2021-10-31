@@ -9,7 +9,6 @@
 import {HttpRequest} from '@angular/common/http/src/request';
 import {HttpDownloadProgressEvent, HttpErrorResponse, HttpEvent, HttpEventType, HttpHeaderResponse, HttpResponse, HttpResponseBase, HttpStatusCode, HttpUploadProgressEvent} from '@angular/common/http/src/response';
 import {HttpXhrBackend} from '@angular/common/http/src/xhr';
-import {describe, expect, it} from '@angular/core/testing/src/testing_internal';
 import {Observable} from 'rxjs';
 import {toArray} from 'rxjs/operators';
 

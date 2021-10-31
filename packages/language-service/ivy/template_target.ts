@@ -10,7 +10,7 @@ import {ParseSpan, TmplAstBoundEvent} from '@angular/compiler';
 import * as e from '@angular/compiler/src/expression_parser/ast';  // e for expression AST
 import * as t from '@angular/compiler/src/render3/r3_ast';         // t for template AST
 
-import {isTemplateNodeWithKeyAndValue, isWithin, isWithinKeyValue} from './utils';
+import {isBoundEventWithSyntheticHandler, isTemplateNodeWithKeyAndValue, isWithin, isWithinKeyValue} from './utils';
 
 /**
  * Contextual information for a target position within the template.
@@ -49,7 +49,7 @@ export interface TemplateTarget {
 export type TargetContext = SingleNodeTarget|MultiNodeTarget;
 
 /** Contexts which logically target only a single node in the template AST. */
-export type SingleNodeTarget = RawExpression|MethodCallExpressionInArgContext|RawTemplateNode|
+export type SingleNodeTarget = RawExpression|CallExpressionInArgContext|RawTemplateNode|
     ElementInBodyContext|ElementInTagContext|AttributeInKeyContext|AttributeInValueContext;
 
 /**
@@ -65,7 +65,7 @@ export type MultiNodeTarget = TwoWayBindingContext;
  */
 export enum TargetNodeKind {
   RawExpression,
-  MethodCallExpressionInArgContext,
+  CallExpressionInArgContext,
   RawTemplateNode,
   ElementInTagContext,
   ElementInBodyContext,
@@ -84,17 +84,16 @@ export interface RawExpression {
 }
 
 /**
- * An `e.MethodCall` or `e.SafeMethodCall` expression with the cursor in a position where an
- * argument could appear.
+ * An `e.Call` expression with the cursor in a position where an argument could appear.
  *
  * This is returned when the only matching node is the method call expression, but the cursor is
  * within the method call parentheses. For example, in the expression `foo(|)` there is no argument
  * expression that the cursor could be targeting, but the cursor is in a position where one could
  * appear.
  */
-export interface MethodCallExpressionInArgContext {
-  kind: TargetNodeKind.MethodCallExpressionInArgContext;
-  node: e.MethodCall|e.SafeMethodCall;
+export interface CallExpressionInArgContext {
+  kind: TargetNodeKind.CallExpressionInArgContext;
+  node: e.Call;
 }
 
 /**
@@ -143,10 +142,21 @@ export interface TwoWayBindingContext {
 }
 
 /**
+ * Special marker AST that can be used when the cursor is within the `sourceSpan` but not
+ * the key or value span of a node with key/value spans.
+ */
+class OutsideKeyValueMarkerAst extends e.AST {
+  override visit(): null {
+    return null;
+  }
+}
+
+/**
  * This special marker is added to the path when the cursor is within the sourceSpan but not the key
  * or value span of a node with key/value spans.
  */
-const OUTSIDE_K_V_MARKER = new e.AST(new ParseSpan(-1, -1), new e.AbsoluteSourceSpan(-1, -1));
+const OUTSIDE_K_V_MARKER =
+    new OutsideKeyValueMarkerAst(new ParseSpan(-1, -1), new e.AbsoluteSourceSpan(-1, -1));
 
 /**
  * Return the template AST node or expression AST node that most accurately
@@ -174,10 +184,9 @@ export function getTargetAtPosition(template: t.Node[], position: number): Templ
 
   // Given the candidate node, determine the full targeted context.
   let nodeInContext: TargetContext;
-  if ((candidate instanceof e.MethodCall || candidate instanceof e.SafeMethodCall) &&
-      isWithin(position, candidate.argumentSpan)) {
+  if (candidate instanceof e.Call && isWithin(position, candidate.argumentSpan)) {
     nodeInContext = {
-      kind: TargetNodeKind.MethodCallExpressionInArgContext,
+      kind: TargetNodeKind.CallExpressionInArgContext,
       node: candidate,
     };
   } else if (candidate instanceof e.AST) {
@@ -286,7 +295,7 @@ class TemplateTargetVisitor implements t.Visitor {
 
   visit(node: t.Node) {
     const {start, end} = getSpanIncludingEndTag(node);
-    if (!isWithin(this.position, {start, end})) {
+    if (end !== null && !isWithin(this.position, {start, end})) {
       return;
     }
 
@@ -366,22 +375,10 @@ class TemplateTargetVisitor implements t.Visitor {
   }
 
   visitBoundEvent(event: t.BoundEvent) {
-    // An event binding with no value (e.g. `(event|)`) parses to a `BoundEvent` with a
-    // `LiteralPrimitive` handler with value `'ERROR'`, as opposed to a property binding with no
-    // value which has an `EmptyExpr` as its value. This is a synthetic node created by the binding
-    // parser, and is not suitable to use for Language Service analysis. Skip it.
-    //
-    // TODO(alxhub): modify the parser to generate an `EmptyExpr` instead.
-    let handler: e.AST = event.handler;
-    if (handler instanceof e.ASTWithSource) {
-      handler = handler.ast;
+    if (!isBoundEventWithSyntheticHandler(event)) {
+      const visitor = new ExpressionVisitor(this.position);
+      visitor.visit(event.handler, this.path);
     }
-    if (handler instanceof e.LiteralPrimitive && handler.value === 'ERROR') {
-      return;
-    }
-
-    const visitor = new ExpressionVisitor(this.position);
-    visitor.visit(event.handler, this.path);
   }
 
   visitText(text: t.Text) {
@@ -415,7 +412,7 @@ class ExpressionVisitor extends e.RecursiveAstVisitor {
     super();
   }
 
-  visit(node: e.AST, path: Array<t.Node|e.AST>) {
+  override visit(node: e.AST, path: Array<t.Node|e.AST>) {
     if (node instanceof e.ASTWithSource) {
       // In order to reduce noise, do not include `ASTWithSource` in the path.
       // For the purpose of source spans, there is no difference between
@@ -441,8 +438,16 @@ function getSpanIncludingEndTag(ast: t.Node) {
   // the end of the closing tag. Otherwise, for situation like
   // <my-component></my-comp¦onent> where the cursor is in the closing tag
   // we will not be able to return any information.
-  if ((ast instanceof t.Element || ast instanceof t.Template) && ast.endSourceSpan) {
-    result.end = ast.endSourceSpan.end.offset;
+  if (ast instanceof t.Element || ast instanceof t.Template) {
+    if (ast.endSourceSpan) {
+      result.end = ast.endSourceSpan.end.offset;
+    } else if (ast.children.length > 0) {
+      // If the AST has children but no end source span, then it is an unclosed element with an end
+      // that should be the end of the last child.
+      result.end = getSpanIncludingEndTag(ast.children[ast.children.length - 1]).end;
+    } else {
+      // This is likely a self-closing tag with no children so the `sourceSpan.end` is correct.
+    }
   }
   return result;
 }

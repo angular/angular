@@ -7,12 +7,11 @@
  */
 
 import {platform} from 'os';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {ErrorCode, ngErrorCode} from '../../src/ngtsc/diagnostics';
 import {absoluteFrom} from '../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
-import {LazyRoute} from '../../src/ngtsc/routing';
 import {loadStandardTestFiles} from '../../src/ngtsc/testing';
 import {restoreTypeScriptVersionForTesting, setTypeScriptVersionForTesting} from '../../src/typescript_support';
 
@@ -201,6 +200,40 @@ function allTests(os: string) {
       expect(dtsContents).toContain('static ɵprov: i0.ɵɵInjectableDeclaration<Service>;');
       expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDeclaration<Service, never>;');
     });
+
+    it('should compile Injectables with providedIn and factory with deps with array literal tokens',
+       () => {
+         env.write('test.ts', `
+        import {Injectable, Optional, Self} from '@angular/core';
+
+        @Injectable()
+        export class Dep {}
+
+        @Injectable({
+          providedIn: 'root',
+          useFactory: (dep: Dep) => new Service(dep),
+          deps: [[new Optional(), new Self(), Dep]],
+        })
+        export class Service {
+          constructor(dep: Dep) {}
+        }
+    `);
+
+         env.driveMain();
+
+         const jsContents = env.getContents('test.js');
+         expect(jsContents).toContain('Service.ɵprov =');
+         expect(jsContents)
+             .toContain('factory: function Service_Factory(t) { var r = null; if (t) {');
+         expect(jsContents).toContain('return new (t || Service)(i0.ɵɵinject(Dep));');
+         expect(jsContents)
+             .toContain('r = (function (dep) { return new Service(dep); })(i0.ɵɵinject(Dep, 10));');
+         expect(jsContents).toContain(`return r; }, providedIn: 'root' });`);
+         expect(jsContents).not.toContain('__decorate');
+         const dtsContents = env.getContents('test.d.ts');
+         expect(dtsContents).toContain('static ɵprov: i0.ɵɵInjectableDeclaration<Service>;');
+         expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDeclaration<Service, never>;');
+       });
 
     it('should compile Injectables with providedIn using forwardRef without errors', () => {
       env.write('test.ts', `
@@ -757,7 +790,9 @@ function allTests(os: string) {
         // ModuleA classes
 
         @Pipe({name: 'number'})
-        class PipeA {}
+        class PipeA {
+          transform() {}
+        }
 
         @NgModule({
           declarations: [PipeA],
@@ -768,7 +803,9 @@ function allTests(os: string) {
         // ModuleB classes
 
         @Pipe({name: 'number'})
-        class PipeB {}
+        class PipeB {
+          transform() {}
+        }
 
         @Component({
           selector: 'app',
@@ -800,7 +837,9 @@ function allTests(os: string) {
             // ModuleA classes
 
             @Pipe({name: 'number'})
-            class PipeA {}
+            class PipeA {
+              transform() {}
+            }
 
             @NgModule({
               declarations: [PipeA],
@@ -811,7 +850,9 @@ function allTests(os: string) {
             // ModuleB classes
 
             @Pipe({name: 'number'})
-            class PipeB {}
+            class PipeB {
+              transform() {}
+            }
 
             @NgModule({
               declarations: [PipeB],
@@ -1550,6 +1591,60 @@ function allTests(os: string) {
       expect(jsContents).toContain('exports: function () { return [BarModule]; }');
     });
 
+    it('should use relative import for forward references that were resolved from a relative file',
+       () => {
+         env.write('dir.ts', `
+          import {Directive, forwardRef} from '@angular/core';
+
+          export const useFoo = forwardRef(() => Foo);
+
+          @Directive({selector: 'foo'})
+          export class Foo {}
+          `);
+         env.write('test.ts', `
+          import {NgModule} from '@angular/core';
+          import {useFoo} from './dir';
+
+          @NgModule({
+            declarations: [useFoo],
+          })
+          export class FooModule {}
+        `);
+
+         env.driveMain();
+
+         const jsContents = env.getContents('test.js');
+         expect(jsContents).toContain('import * as i1 from "./dir";');
+         expect(jsContents).toContain('declarations: [i1.Foo]');
+       });
+
+    it('should use absolute import for forward references that were resolved from an absolute file',
+       () => {
+         env.write('dir.ts', `
+          import {Directive, forwardRef} from '@angular/core';
+
+          export const useFoo = forwardRef(() => Foo);
+
+          @Directive({selector: 'foo'})
+          export class Foo {}
+          `);
+         env.write('test.ts', `
+          import {forwardRef, NgModule} from '@angular/core';
+          import {useFoo} from 'dir';
+
+          @NgModule({
+            declarations: [useFoo],
+          })
+          export class FooModule {}
+        `);
+
+         env.driveMain();
+
+         const jsContents = env.getContents('test.js');
+         expect(jsContents).toContain('import * as i1 from "dir";');
+         expect(jsContents).toContain('declarations: [i1.Foo]');
+       });
+
     it('should compile Pipes without errors', () => {
       env.write('test.ts', `
         import {Pipe} from '@angular/core';
@@ -1647,7 +1742,9 @@ function allTests(os: string) {
         import {Component, NgModule, Pipe} from '@angular/core';
 
         @Pipe({name: 'test'})
-        export class TestPipe {}
+        export class TestPipe {
+          transform() {}
+        }
 
         @Component({selector: 'test-cmp', template: '{{value | test}}'})
         export class TestCmp {
@@ -3460,6 +3557,23 @@ function allTests(os: string) {
       expect(trim(jsContents)).toContain(trim(hostBindingsFn));
     });
 
+    it('should handle $any used inside a listener', () => {
+      env.write('test.ts', `
+        import {Component} from '@angular/core';
+
+        @Component({
+          selector: 'test-cmp',
+          template: '<div (click)="$any(123)"></div>',
+        })
+        export class TestCmp {}
+    `);
+
+      env.driveMain();
+      expect(env.getContents('test.js'))
+          .toContain(
+              `ɵɵlistener("click", function TestCmp_Template_div_click_0_listener() { return 123; });`);
+    });
+
     it('should accept dynamic host attribute bindings', () => {
       env.write('other.d.ts', `
       export declare const foo: any;
@@ -4836,6 +4950,41 @@ function allTests(os: string) {
         expect(jsContents).not.toContain('setComponentScope');
       });
 
+      it('should not consider type-only imports during cycle detection', () => {
+        env.write('test.ts', `
+        import {NgModule} from '@angular/core';
+        import {ACmp} from './a';
+        import {BCmp} from './b';
+
+        @NgModule({declarations: [ACmp, BCmp]})
+        export class Module {}
+      `);
+        env.write('a.ts', `
+        import {Component} from '@angular/core';
+
+        @Component({
+          selector: 'a-cmp',
+          template: '<b-cmp></b-cmp>',
+        })
+        export class ACmp {}
+      `);
+        env.write('b.ts', `
+        import {Component} from '@angular/core';
+        import type {ACmp} from './a';
+
+        @Component({
+          selector: 'b-cmp',
+          template: 'does not use a-cmp',
+        })
+        export class BCmp {
+          a: ACmp;
+        }
+      `);
+        env.driveMain();
+        const jsContents = env.getContents('test.js');
+        expect(jsContents).not.toContain('setComponentScope');
+      });
+
       it('should only pass components actually used to setComponentScope', () => {
         env.write('test.ts', `
           import {Component, NgModule} from '@angular/core';
@@ -6105,626 +6254,6 @@ function allTests(os: string) {
          });
     });
 
-    describe('listLazyRoutes()', () => {
-      // clang-format off
-    const lazyRouteMatching = (
-      route: string, fromModulePath: RegExp, fromModuleName: string, toModulePath: RegExp,
-      toModuleName: string) => {
-      return {
-        route,
-        module: jasmine.objectContaining({
-          name: fromModuleName,
-          filePath: jasmine.stringMatching(fromModulePath),
-        }),
-        referencedModule: jasmine.objectContaining({
-          name: toModuleName,
-          filePath: jasmine.stringMatching(toModulePath),
-        }),
-      } as unknown as LazyRoute;
-    };
-      // clang-format on
-
-      beforeEach(() => {
-        env.write('node_modules/@angular/router/index.d.ts', `
-        import {ModuleWithProviders, ɵɵNgModuleDeclaration as ɵɵNgModuleDeclaration} from '@angular/core';
-
-        export declare var ROUTES;
-        export declare class RouterModule {
-          static forRoot(arg1: any, arg2: any): ModuleWithProviders<RouterModule>;
-          static forChild(arg1: any): ModuleWithProviders<RouterModule>;
-          static ɵmod: ɵɵNgModuleDeclaration<RouterModule, never, never, never>;
-        }
-      `);
-      });
-
-      describe('when called without arguments', () => {
-        it('should list all routes', () => {
-          env.write('test.ts', `
-          import {NgModule} from '@angular/core';
-          import {RouterModule} from '@angular/router';
-
-          @NgModule({
-            imports: [
-              RouterModule.forRoot([
-                {path: '1', loadChildren: './lazy/lazy-1#Lazy1Module'},
-                {path: '2', loadChildren: './lazy/lazy-2#Lazy2Module'},
-              ]),
-            ],
-          })
-          export class TestModule {}
-        `);
-          env.write('lazy/lazy-1.ts', `
-          import {NgModule} from '@angular/core';
-
-          @NgModule({})
-          export class Lazy1Module {}
-        `);
-          env.write('lazy/lazy-2.ts', `
-          import {NgModule} from '@angular/core';
-          import {RouterModule} from '@angular/router';
-
-          @NgModule({
-            imports: [
-              RouterModule.forChild([
-                {path: '3', loadChildren: './lazy-3#Lazy3Module'},
-              ]),
-            ],
-          })
-          export class Lazy2Module {}
-        `);
-          env.write('lazy/lazy-3.ts', `
-          import {NgModule} from '@angular/core';
-
-          @NgModule({})
-          export class Lazy3Module {}
-        `);
-
-          const routes = env.driveRoutes();
-          expect(routes).toEqual([
-            lazyRouteMatching(
-                './lazy-3#Lazy3Module', /\/lazy\/lazy-2\.ts$/, 'Lazy2Module', /\/lazy\/lazy-3\.ts$/,
-                'Lazy3Module'),
-            lazyRouteMatching(
-                './lazy/lazy-1#Lazy1Module', /\/test\.ts$/, 'TestModule', /\/lazy\/lazy-1\.ts$/,
-                'Lazy1Module'),
-            lazyRouteMatching(
-                './lazy/lazy-2#Lazy2Module', /\/test\.ts$/, 'TestModule', /\/lazy\/lazy-2\.ts$/,
-                'Lazy2Module'),
-          ]);
-        });
-
-        it('should detect lazy routes in simple children routes', () => {
-          env.write('test.ts', `
-          import {NgModule} from '@angular/core';
-          import {RouterModule} from '@angular/router';
-
-          @Component({
-            selector: 'foo',
-            template: '<div>Foo</div>'
-          })
-          class FooCmp {}
-
-          @NgModule({
-            imports: [
-              RouterModule.forRoot([
-                {path: '', children: [
-                  {path: 'foo', component: FooCmp},
-                  {path: 'lazy', loadChildren: './lazy#LazyModule'}
-                ]},
-              ]),
-            ],
-          })
-          export class TestModule {}
-        `);
-          env.write('lazy.ts', `
-          import {NgModule} from '@angular/core';
-          import {RouterModule} from '@angular/router';
-
-          @NgModule({})
-          export class LazyModule {}
-        `);
-
-          const routes = env.driveRoutes();
-          expect(routes).toEqual([
-            lazyRouteMatching(
-                './lazy#LazyModule', /\/test\.ts$/, 'TestModule', /\/lazy\.ts$/, 'LazyModule'),
-          ]);
-        });
-
-        it('should detect lazy routes in all root directories', () => {
-          env.tsconfig({}, ['./foo/other-root-dir', './bar/other-root-dir']);
-          env.write('src/test.ts', `
-          import {NgModule} from '@angular/core';
-          import {RouterModule} from '@angular/router';
-
-          @NgModule({
-            imports: [
-              RouterModule.forRoot([
-                {path: '', loadChildren: './lazy-foo#LazyFooModule'},
-              ]),
-            ],
-          })
-          export class TestModule {}
-        `);
-          env.write('foo/other-root-dir/src/lazy-foo.ts', `
-          import {NgModule} from '@angular/core';
-          import {RouterModule} from '@angular/router';
-
-          @NgModule({
-            imports: [
-              RouterModule.forChild([
-                {path: '', loadChildren: './lazy-bar#LazyBarModule'},
-              ]),
-            ],
-          })
-          export class LazyFooModule {}
-        `);
-          env.write('bar/other-root-dir/src/lazy-bar.ts', `
-          import {NgModule} from '@angular/core';
-          import {RouterModule} from '@angular/router';
-
-          @NgModule({
-            imports: [
-              RouterModule.forChild([
-                {path: '', loadChildren: './lazier-bar#LazierBarModule'},
-              ]),
-            ],
-          })
-          export class LazyBarModule {}
-        `);
-          env.write('bar/other-root-dir/src/lazier-bar.ts', `
-          import {NgModule} from '@angular/core';
-
-          @NgModule({})
-          export class LazierBarModule {}
-        `);
-
-          const routes = env.driveRoutes();
-
-          expect(routes).toEqual([
-            lazyRouteMatching(
-                './lazy-foo#LazyFooModule', /\/test\.ts$/, 'TestModule',
-                /\/foo\/other-root-dir\/src\/lazy-foo\.ts$/, 'LazyFooModule'),
-            lazyRouteMatching(
-                './lazy-bar#LazyBarModule', /\/foo\/other-root-dir\/src\/lazy-foo\.ts$/,
-                'LazyFooModule', /\/bar\/other-root-dir\/src\/lazy-bar\.ts$/, 'LazyBarModule'),
-            lazyRouteMatching(
-                './lazier-bar#LazierBarModule', /\/bar\/other-root-dir\/src\/lazy-bar\.ts$/,
-                'LazyBarModule', /\/bar\/other-root-dir\/src\/lazier-bar\.ts$/, 'LazierBarModule'),
-          ]);
-        });
-      });
-
-      describe('when called with entry module', () => {
-        it('should throw if the entry module hasn\'t been analyzed', () => {
-          env.write('test.ts', `
-          import {NgModule} from '@angular/core';
-          import {RouterModule} from '@angular/router';
-
-          @NgModule({
-            imports: [
-              RouterModule.forChild([
-                {path: '', loadChildren: './lazy#LazyModule'},
-              ]),
-            ],
-          })
-          export class TestModule {}
-        `);
-
-          const entryModule1 = absoluteFrom('/test#TestModule');
-          const entryModule2 = absoluteFrom('/not-test#TestModule');
-          const entryModule3 = absoluteFrom('/test#NotTestModule');
-
-          expect(() => env.driveRoutes(entryModule1)).not.toThrow();
-          expect(() => env.driveRoutes(entryModule2))
-              .toThrowError(`Failed to list lazy routes: Unknown module '${entryModule2}'.`);
-          expect(() => env.driveRoutes(entryModule3))
-              .toThrowError(`Failed to list lazy routes: Unknown module '${entryModule3}'.`);
-        });
-
-        it('should list all transitive lazy routes', () => {
-          env.write('test.ts', `
-          import {NgModule} from '@angular/core';
-          import {RouterModule} from '@angular/router';
-          import {Test1Module as Test1ModuleRenamed} from './test-1';
-          import {Test2Module} from './test-2';
-
-          @NgModule({
-            exports: [
-              Test1ModuleRenamed,
-            ],
-            imports: [
-              Test2Module,
-              RouterModule.forRoot([
-                {path: '', loadChildren: './lazy/lazy#LazyModule'},
-              ]),
-            ],
-          })
-          export class TestModule {}
-        `);
-          env.write('test-1.ts', `
-          import {NgModule} from '@angular/core';
-          import {RouterModule} from '@angular/router';
-
-          @NgModule({
-            imports: [
-              RouterModule.forChild([
-                {path: 'one', loadChildren: './lazy-1/lazy-1#Lazy1Module'},
-              ]),
-            ],
-          })
-          export class Test1Module {}
-        `);
-          env.write('test-2.ts', `
-          import {NgModule} from '@angular/core';
-          import {RouterModule} from '@angular/router';
-
-          @NgModule({
-            exports: [
-              RouterModule.forChild([
-                {path: 'two', loadChildren: './lazy-2/lazy-2#Lazy2Module'},
-              ]),
-            ],
-          })
-          export class Test2Module {}
-        `);
-          env.write('lazy/lazy.ts', `
-          import {NgModule} from '@angular/core';
-
-          @NgModule({})
-          export class LazyModule {}
-        `);
-          env.write('lazy-1/lazy-1.ts', `
-          import {NgModule} from '@angular/core';
-
-          @NgModule({})
-          export class Lazy1Module {}
-        `);
-          env.write('lazy-2/lazy-2.ts', `
-          import {NgModule} from '@angular/core';
-
-          @NgModule({})
-          export class Lazy2Module {}
-        `);
-
-          const routes = env.driveRoutes(absoluteFrom('/test#TestModule'));
-
-          expect(routes).toEqual([
-            lazyRouteMatching(
-                './lazy/lazy#LazyModule', /\/test\.ts$/, 'TestModule', /\/lazy\/lazy\.ts$/,
-                'LazyModule'),
-            lazyRouteMatching(
-                './lazy-1/lazy-1#Lazy1Module', /\/test-1\.ts$/, 'Test1Module',
-                /\/lazy-1\/lazy-1\.ts$/, 'Lazy1Module'),
-            lazyRouteMatching(
-                './lazy-2/lazy-2#Lazy2Module', /\/test-2\.ts$/, 'Test2Module',
-                /\/lazy-2\/lazy-2\.ts$/, 'Lazy2Module'),
-          ]);
-        });
-
-        it('should ignore exports that do not refer to an `NgModule`', () => {
-          env.write('test-1.ts', `
-          import {NgModule} from '@angular/core';
-          import {RouterModule} from '@angular/router';
-          import {Test2Component, Test2Module} from './test-2';
-
-          @NgModule({
-            exports: [
-              Test2Component,
-              Test2Module,
-            ],
-            imports: [
-              Test2Module,
-              RouterModule.forRoot([
-                {path: '', loadChildren: './lazy-1/lazy-1#Lazy1Module'},
-              ]),
-            ],
-          })
-          export class Test1Module {}
-        `);
-          env.write('test-2.ts', `
-          import {Component, NgModule} from '@angular/core';
-          import {RouterModule} from '@angular/router';
-
-          @Component({
-            selector: 'test-2',
-            template: '',
-          })
-          export class Test2Component {}
-
-          @NgModule({
-            declarations: [
-              Test2Component,
-            ],
-            exports: [
-              Test2Component,
-              RouterModule.forChild([
-                {path: 'two', loadChildren: './lazy-2/lazy-2#Lazy2Module'},
-              ]),
-            ],
-          })
-          export class Test2Module {}
-        `);
-          env.write('lazy-1/lazy-1.ts', `
-          import {NgModule} from '@angular/core';
-
-          @NgModule({})
-          export class Lazy1Module {}
-        `);
-          env.write('lazy-2/lazy-2.ts', `
-          import {NgModule} from '@angular/core';
-
-          @NgModule({})
-          export class Lazy2Module {}
-        `);
-
-          const routes = env.driveRoutes(absoluteFrom('/test-1#Test1Module'));
-
-          expect(routes).toEqual([
-            lazyRouteMatching(
-                './lazy-1/lazy-1#Lazy1Module', /\/test-1\.ts$/, 'Test1Module',
-                /\/lazy-1\/lazy-1\.ts$/, 'Lazy1Module'),
-            lazyRouteMatching(
-                './lazy-2/lazy-2#Lazy2Module', /\/test-2\.ts$/, 'Test2Module',
-                /\/lazy-2\/lazy-2\.ts$/, 'Lazy2Module'),
-          ]);
-        });
-
-        it('should support `ModuleWithProviders`', () => {
-          env.write('test.ts', `
-          import {ModuleWithProviders, NgModule} from '@angular/core';
-          import {RouterModule} from '@angular/router';
-
-          @NgModule({
-            imports: [
-              RouterModule.forChild([
-                {path: '', loadChildren: './lazy-2/lazy-2#Lazy2Module'},
-              ]),
-            ],
-          })
-          export class TestRoutingModule {
-            static forRoot(): ModuleWithProviders<TestRoutingModule> {
-              return {
-                ngModule: TestRoutingModule,
-                providers: [],
-              };
-            }
-          }
-
-          @NgModule({
-            imports: [
-              TestRoutingModule.forRoot(),
-              RouterModule.forRoot([
-                {path: '', loadChildren: './lazy-1/lazy-1#Lazy1Module'},
-              ]),
-            ],
-          })
-          export class TestModule {}
-        `);
-          env.write('lazy-1/lazy-1.ts', `
-          import {NgModule} from '@angular/core';
-
-          @NgModule({})
-          export class Lazy1Module {}
-        `);
-          env.write('lazy-2/lazy-2.ts', `
-          import {NgModule} from '@angular/core';
-
-          @NgModule({})
-          export class Lazy2Module {}
-        `);
-
-          const routes = env.driveRoutes(absoluteFrom('/test#TestModule'));
-
-          expect(routes).toEqual([
-            lazyRouteMatching(
-                './lazy-1/lazy-1#Lazy1Module', /\/test\.ts$/, 'TestModule', /\/lazy-1\/lazy-1\.ts$/,
-                'Lazy1Module'),
-            lazyRouteMatching(
-                './lazy-2/lazy-2#Lazy2Module', /\/test\.ts$/, 'TestRoutingModule',
-                /\/lazy-2\/lazy-2\.ts$/, 'Lazy2Module'),
-          ]);
-        });
-
-        it('should only process each module once', () => {
-          env.write('test.ts', `
-          import {NgModule} from '@angular/core';
-          import {RouterModule} from '@angular/router';
-
-          @NgModule({
-            imports: [
-              RouterModule.forChild([
-                {path: '', loadChildren: './lazy/lazy#LazyModule'},
-              ]),
-            ],
-          })
-          export class SharedModule {}
-
-          @NgModule({
-            imports: [
-              SharedModule,
-              RouterModule.forRoot([
-                {path: '', loadChildren: './lazy/lazy#LazyModule'},
-              ]),
-            ],
-          })
-          export class TestModule {}
-        `);
-          env.write('lazy/lazy.ts', `
-          import {NgModule} from '@angular/core';
-          import {RouterModule} from '@angular/router';
-
-          @NgModule({
-            imports: [
-              RouterModule.forChild([
-                {path: '', loadChildren: '../lazier/lazier#LazierModule'},
-              ]),
-            ],
-          })
-          export class LazyModule {}
-        `);
-          env.write('lazier/lazier.ts', `
-          import {NgModule} from '@angular/core';
-
-          @NgModule({})
-          export class LazierModule {}
-        `);
-
-          const routes = env.driveRoutes(absoluteFrom('/test#TestModule'));
-
-          // `LazyModule` is referenced in both `SharedModule` and `TestModule`,
-          // but it is only processed once (hence one `LazierModule` entry).
-          expect(routes).toEqual([
-            lazyRouteMatching(
-                './lazy/lazy#LazyModule', /\/test\.ts$/, 'TestModule', /\/lazy\/lazy\.ts$/,
-                'LazyModule'),
-            lazyRouteMatching(
-                './lazy/lazy#LazyModule', /\/test\.ts$/, 'SharedModule', /\/lazy\/lazy\.ts$/,
-                'LazyModule'),
-            lazyRouteMatching(
-                '../lazier/lazier#LazierModule', /\/lazy\/lazy\.ts$/, 'LazyModule',
-                /\/lazier\/lazier\.ts$/, 'LazierModule'),
-          ]);
-        });
-
-        it('should detect lazy routes in all root directories', () => {
-          env.tsconfig({}, ['./foo/other-root-dir', './bar/other-root-dir']);
-          env.write('src/test.ts', `
-          import {NgModule} from '@angular/core';
-          import {RouterModule} from '@angular/router';
-
-          @NgModule({
-            imports: [
-              RouterModule.forRoot([
-                {path: '', loadChildren: './lazy-foo#LazyFooModule'},
-              ]),
-            ],
-          })
-          export class TestModule {}
-        `);
-          env.write('foo/other-root-dir/src/lazy-foo.ts', `
-          import {NgModule} from '@angular/core';
-          import {RouterModule} from '@angular/router';
-
-          @NgModule({
-            imports: [
-              RouterModule.forChild([
-                {path: '', loadChildren: './lazy-bar#LazyBarModule'},
-              ]),
-            ],
-          })
-          export class LazyFooModule {}
-        `);
-          env.write('bar/other-root-dir/src/lazy-bar.ts', `
-          import {NgModule} from '@angular/core';
-          import {RouterModule} from '@angular/router';
-
-          @NgModule({
-            imports: [
-              RouterModule.forChild([
-                {path: '', loadChildren: './lazier-bar#LazierBarModule'},
-              ]),
-            ],
-          })
-          export class LazyBarModule {}
-        `);
-          env.write('bar/other-root-dir/src/lazier-bar.ts', `
-          import {NgModule} from '@angular/core';
-
-          @NgModule({})
-          export class LazierBarModule {}
-        `);
-
-          const routes = env.driveRoutes(absoluteFrom('/src/test#TestModule'));
-
-          expect(routes).toEqual([
-            lazyRouteMatching(
-                './lazy-foo#LazyFooModule', /\/test\.ts$/, 'TestModule',
-                /\/foo\/other-root-dir\/src\/lazy-foo\.ts$/, 'LazyFooModule'),
-            lazyRouteMatching(
-                './lazy-bar#LazyBarModule', /\/foo\/other-root-dir\/src\/lazy-foo\.ts$/,
-                'LazyFooModule', /\/bar\/other-root-dir\/src\/lazy-bar\.ts$/, 'LazyBarModule'),
-            lazyRouteMatching(
-                './lazier-bar#LazierBarModule', /\/bar\/other-root-dir\/src\/lazy-bar\.ts$/,
-                'LazyBarModule', /\/bar\/other-root-dir\/src\/lazier-bar\.ts$/, 'LazierBarModule'),
-          ]);
-        });
-
-        it('should ignore modules not (transitively) referenced by the entry module', () => {
-          env.write('test.ts', `
-          import {NgModule} from '@angular/core';
-          import {RouterModule} from '@angular/router';
-
-          @NgModule({
-            imports: [
-              RouterModule.forRoot([
-                {path: '', loadChildren: './lazy/lazy#Lazy1Module'},
-              ]),
-            ],
-          })
-          export class Test1Module {}
-
-          @NgModule({
-            imports: [
-              RouterModule.forRoot([
-                {path: '', loadChildren: './lazy/lazy#Lazy2Module'},
-              ]),
-            ],
-          })
-          export class Test2Module {}
-        `);
-          env.write('lazy/lazy.ts', `
-          import {NgModule} from '@angular/core';
-
-          @NgModule({})
-          export class Lazy1Module {}
-
-          @NgModule({})
-          export class Lazy2Module {}
-        `);
-
-          const routes = env.driveRoutes(absoluteFrom('/test#Test1Module'));
-
-          expect(routes).toEqual([
-            lazyRouteMatching(
-                './lazy/lazy#Lazy1Module', /\/test\.ts$/, 'Test1Module', /\/lazy\/lazy\.ts$/,
-                'Lazy1Module'),
-          ]);
-        });
-
-        it('should ignore routes to unknown modules', () => {
-          env.write('test.ts', `
-          import {NgModule} from '@angular/core';
-          import {RouterModule} from '@angular/router';
-
-          @NgModule({
-            imports: [
-              RouterModule.forRoot([
-                {path: '', loadChildren: './unknown/unknown#UnknownModule'},
-                {path: '', loadChildren: './lazy/lazy#LazyModule'},
-              ]),
-            ],
-          })
-          export class TestModule {}
-        `);
-          env.write('lazy/lazy.ts', `
-          import {NgModule} from '@angular/core';
-
-          @NgModule({})
-          export class LazyModule {}
-        `);
-
-          const routes = env.driveRoutes(absoluteFrom('/test#TestModule'));
-
-          expect(routes).toEqual([
-            lazyRouteMatching(
-                './lazy/lazy#LazyModule', /\/test\.ts$/, 'TestModule', /\/lazy\/lazy\.ts$/,
-                'LazyModule'),
-          ]);
-        });
-      });
-    });
-
     describe('ivy switch mode', () => {
       it('should allow for symbols to be renamed when they use a SWITCH_IVY naming mechanism',
          () => {
@@ -7395,6 +6924,24 @@ export const Foo = Foo__PRE_R3__;
         expect(jsContents).not.toContain('defineNgModule(');
         expect(jsContents).toContain('NgModule({');
       });
+
+      it('should still compile a class that is indirectly exported', () => {
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'test-cmp',
+            template: 'Test Cmp',
+          })
+          class TestCmp {}
+
+          export {TestCmp};
+        `);
+        env.driveMain();
+        const jsContents = env.getContents('test.js');
+
+        expect(jsContents).toContain('defineComponent');
+      });
     });
 
     describe('undecorated providers', () => {
@@ -7801,6 +7348,111 @@ export const Foo = Foo__PRE_R3__;
         });
       });
 
+      describe('shadow DOM selector diagnostics', () => {
+        it('should emit a diagnostic when a selector does not include a hyphen', () => {
+          env.write('test.ts', `
+            import {Component, ViewEncapsulation} from '@angular/core';
+            @Component({
+              template: '',
+              selector: 'cmp',
+              encapsulation: ViewEncapsulation.ShadowDom
+            })
+            export class TestCmp {}
+          `);
+          const diags = env.driveDiagnostics();
+
+          expect(diags.length).toBe(1);
+          expect(diags[0].messageText)
+              .toBe(
+                  'Selector of a component that uses ViewEncapsulation.ShadowDom must contain a hyphen.');
+          expect(getDiagnosticSourceCode(diags[0])).toBe(`'cmp'`);
+        });
+
+        it('should emit a diagnostic when a selector includes uppercase letters', () => {
+          env.write('test.ts', `
+            import {Component, ViewEncapsulation} from '@angular/core';
+            @Component({
+              template: '',
+              selector: 'my-Comp',
+              encapsulation: ViewEncapsulation.ShadowDom
+            })
+            export class TestCmp {}
+          `);
+          const diags = env.driveDiagnostics();
+
+          expect(diags.length).toBe(1);
+          expect(diags[0].messageText)
+              .toBe('Selector of a ShadowDom-encapsulated component must all be in lower case.');
+          expect(getDiagnosticSourceCode(diags[0])).toBe(`'my-Comp'`);
+        });
+
+        it('should emit a diagnostic when a selector starts with a digit', () => {
+          env.write('test.ts', `
+            import {Component, ViewEncapsulation} from '@angular/core';
+            @Component({
+              template: '',
+              selector: '123-comp',
+              encapsulation: ViewEncapsulation.ShadowDom
+            })
+            export class TestCmp {}
+          `);
+          const diags = env.driveDiagnostics();
+
+          expect(diags.length).toBe(1);
+          expect(diags[0].messageText)
+              .toBe(
+                  'Selector of a ShadowDom-encapsulated component must start with a lower case letter.');
+          expect(getDiagnosticSourceCode(diags[0])).toBe(`'123-comp'`);
+        });
+
+        it('should emit a diagnostic when a selector starts with a hyphen', () => {
+          env.write('test.ts', `
+            import {Component, ViewEncapsulation} from '@angular/core';
+            @Component({
+              template: '',
+              selector: '-comp',
+              encapsulation: ViewEncapsulation.ShadowDom
+            })
+            export class TestCmp {}
+          `);
+          const diags = env.driveDiagnostics();
+
+          expect(diags.length).toBe(1);
+          expect(diags[0].messageText)
+              .toBe(
+                  'Selector of a ShadowDom-encapsulated component must start with a lower case letter.');
+          expect(getDiagnosticSourceCode(diags[0])).toBe(`'-comp'`);
+        });
+
+        it('should not emit a diagnostic for a component using an attribute selector', () => {
+          env.write('test.ts', `
+            import {Component, ViewEncapsulation} from '@angular/core';
+            @Component({
+              template: '',
+              selector: '[button]',
+              encapsulation: ViewEncapsulation.ShadowDom
+            })
+            export class TestCmp {}
+          `);
+          const diags = env.driveDiagnostics();
+          expect(diags.length).toBe(0);
+        });
+
+        it('should not emit a diagnostic for a component using a class selector', () => {
+          env.write('test.ts', `
+            import {Component, ViewEncapsulation} from '@angular/core';
+            @Component({
+              template: '',
+              selector: '.button',
+              encapsulation: ViewEncapsulation.ShadowDom
+            })
+            export class TestCmp {}
+          `);
+          const diags = env.driveDiagnostics();
+          expect(diags.length).toBe(0);
+        });
+      });
+
       describe('i18n errors', () => {
         it('reports a diagnostics on nested i18n sections', () => {
           env.write('test.ts', `
@@ -7934,6 +7586,30 @@ export const Foo = Foo__PRE_R3__;
          expect(diags[0].messageText)
              .toEqual(`Could not find stylesheet file './non-existent-file.css'.`);
        });
+
+    it('passes the build when only warnings are emitted', () => {
+      env.tsconfig({
+        strictTemplates: true,
+        _extendedTemplateDiagnostics: true,
+      });
+
+      env.write('test.ts', `
+        import {Component} from '@angular/core';
+
+        @Component({
+          selector: 'test-component',
+          // Invalid banana in box (should be \`[(foo)]="bar"\`).
+          template: '<div ([foo])="bar"></div>',
+        })
+        class TestComponent {
+          bar = 'test';
+        }
+      `);
+
+      const diagnostics = env.driveDiagnostics(0 /* expectedExitCode */);
+      const codes = diagnostics.map((diag) => diag.code);
+      expect(codes).toEqual([ngErrorCode(ErrorCode.INVALID_BANANA_IN_BOX)]);
+    });
   });
 
   function expectTokenAtPosition<T extends ts.Node>(
@@ -7942,9 +7618,5 @@ export const Foo = Foo__PRE_R3__;
     const node = (ts as any).getTokenAtPosition(sf, pos) as ts.Node;
     expect(guard(node)).toBe(true);
     return node as T;
-  }
-
-  function normalize(input: string): string {
-    return input.replace(/\s+/g, ' ').trim();
   }
 }

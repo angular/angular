@@ -37,7 +37,6 @@
 # See reviewer list under `required-minimum-review` group.  Team member names and
 # usernames are managed there.
 
-
 ####################################################################################
 #  Approval Groups
 ####################################################################################
@@ -46,10 +45,10 @@
 # =========================================================
 #  Used for approving minor changes, large-scale refactorings, and in emergency situations.
 #
+# alxhub
 # IgorMinar
 # jelbourn
 # josephperrott
-# mhevery
 #
 # =========================================================
 # @angular/framework-global-approvers-for-docs-only-changes
@@ -58,9 +57,8 @@
 #
 # aikidave
 # gkalpak
-# kapunahelewong
 # petebacondarwin
-
+# TeriGlover
 
 version: 3
 
@@ -79,15 +77,11 @@ meta:
   #
   # Also note that the ordering of groups matters in this file. The only groups visible to the current
   # one are those that appear above it.
-  no-groups-above-this-pending: &no-groups-above-this-pending
-    len(groups.active.pending.exclude("required-minimum-review").exclude("global-approvers").exclude("global-docs-approvers")) == 0
-  no-groups-above-this-rejected: &no-groups-above-this-rejected
-    len(groups.active.rejected.exclude("required-minimum-review").exclude("global-approvers").exclude("global-docs-approvers")) == 0
-  no-groups-above-this-active: &no-groups-above-this-active
-    len(groups.active.exclude("required-minimum-review").exclude("global-approvers").exclude("global-docs-approvers")) == 0
+  no-groups-above-this-pending: &no-groups-above-this-pending len(groups.active.pending.exclude("required-minimum-review").exclude("global-approvers").exclude("global-docs-approvers")) == 0
+  no-groups-above-this-rejected: &no-groups-above-this-rejected len(groups.active.rejected.exclude("required-minimum-review").exclude("global-approvers").exclude("global-docs-approvers")) == 0
 
-  can-be-global-approved: &can-be-global-approved "\"global-approvers\" not in groups.approved"
-  can-be-global-docs-approved: &can-be-global-docs-approved "\"global-docs-approvers\" not in groups.approved"
+  can-be-global-approved: &can-be-global-approved '"global-approvers" not in groups.approved'
+  can-be-global-docs-approved: &can-be-global-docs-approved '"global-docs-approvers" not in groups.approved'
   defaults: &defaults
     reviews:
       # Authors provide their approval implicitly, this approval allows for a reviewer
@@ -100,25 +94,25 @@ meta:
 # turn on 'draft' support
 # https://docs.pullapprove.com/config/github-api-version/
 # https://developer.github.com/v3/previews/#draft-pull-requests
-github_api_version: "shadow-cat-preview"
+github_api_version: 'shadow-cat-preview'
 
-pullapprove_conditions:
+# https://docs.pullapprove.com/config/overrides/
+# Note that overrides are processed in order.
+overrides:
   # For PRs which are still being worked on, either still in draft mode or indicated through WIP in
   # title or label, PullApprove stays in a pending state until its ready for review.
-  - condition: "'WIP' not in title"
-    unmet_status: pending
-    explanation: "Waiting to send reviews as PR is WIP"
-  - condition: "'PR state: WIP' not in labels"
-    unmet_status: pending
-    explanation: "Waiting to send reviews as PR is WIP"
-  - condition: "not draft"
-    unmet_status: pending
-    explanation: "Waiting to send reviews as PR is in draft"
+  - if: "draft or 'WIP' in title or 'PR state: WIP' in labels"
+    status: pending
+    explanation: 'Waiting to send reviews as PR is WIP'
   # Disable PullApprove on specific PRs by adding the `PullApprove: disable` label
-  - condition: "'PullApprove: disable' not in labels"
-    unmet_status: success
+  - if: "'PullApprove: disable' in labels"
+    status: success
     explanation: "PullApprove skipped because of 'PullApprove: disable' label"
-
+  # If no file matching based groups are active, report this pull request as failing. Most likely,
+  # the PR author would need to update the PullApprove config, or create new group.
+  - if: len(groups.active.exclude("required-minimum-review").exclude("global-*")) == 0 and len(groups.approved.include("global-*")) == 0
+    status: failure
+    explanation: 'At least one group must match this PR. Please update an existing review group, or create a new group.'
 
 groups:
   # =========================================================
@@ -175,41 +169,35 @@ groups:
       reviewed_for: ignored # All reviews apply to this group whether noted via Reviewed-for or not
     reviewers:
       users:
-         - aikidave                # Dave Shevitz
-         - alan-agius4             # Alan Agius
-         - alxhub                  # Alex Rickabaugh
-         - AndrewKushnir           # Andrew Kushnir
-         - andrewseguin            # Andrew Seguin
-         - atscott                 # Andrew Scott
-         - ayazhafiz               # Ayaz Hafiz
-         - clydin                  # Charles Lyding
-         - crisbeto                # Kristiyan Kostadinov
-         - dennispbrown            # Denny Brown
-         - devversion              # Paul Gschwendtner
-         - dgp1130                 # Doug Parker
-         - filipesilva             # Filipe Silva
-         - gkalpak                 # Georgios Kalpakas
-         - gregmagolan             # Greg Magolan
-         - IgorMinar               # Igor Minar
-         - jbogarthyde             # Judy Bogart
-         - jelbourn                # Jeremy Elbourn
-         - jessicajaniuk           # Jessica Janiuk
-         - JiaLiPassion            # Jia Li
-         - JoostK                  # Joost Koehoorn
-         - josephperrott           # Joey Perrott
-         - juleskremer             # Jules Kremer
-         - kapunahelewong          # Kapunahele Wong
-         - kara                    # Kara Erickson
-         - kyliau                  # Keen Yee Liau
-         - manughub                # Manu Murthy
-         - mgechev                 # Minko Gechev
-         - mhevery                 # Miško Hevery
-         - mmalerba                # Miles Malerba
-         - petebacondarwin         # Pete Bacon Darwin
-         - pkozlowski-opensource   # Pawel Kozlowski
-         - Splaktar                # Michael Prentice
-         - twerske                 # Emma Twersky
-         - zarend                  # Zach Arend
+        - aikidave # Dave Shevitz
+        - alan-agius4 # Alan Agius
+        - alxhub # Alex Rickabaugh
+        - AndrewKushnir # Andrew Kushnir
+        - andrewseguin # Andrew Seguin
+        - atscott # Andrew Scott
+        - ayazhafiz # Ayaz Hafiz
+        - clydin # Charles Lyding
+        - crisbeto # Kristiyan Kostadinov
+        - devversion # Paul Gschwendtner
+        - dgp1130 # Doug Parker
+        - filipesilva # Filipe Silva
+        - gkalpak # Georgios Kalpakas
+        - gregmagolan # Greg Magolan
+        - IgorMinar # Igor Minar
+        - jbogarthyde # Judy Bogart
+        - jelbourn # Jeremy Elbourn
+        - jessicajaniuk # Jessica Janiuk
+        - JiaLiPassion # Jia Li
+        - JoostK # Joost Koehoorn
+        - josephperrott # Joey Perrott
+        - manughub # Manu Murthy
+        - mgechev # Minko Gechev
+        - mmalerba # Miles Malerba
+        - petebacondarwin # Pete Bacon Darwin
+        - pkozlowski-opensource # Pawel Kozlowski
+        - Splaktar # Michael Prentice
+        - twerske # Emma Twersky
+        - zarend # Zach Arend
 
   # =========================================================
   #  Framework: Animations
@@ -237,7 +225,6 @@ groups:
         - IgorMinar
         - jelbourn
 
-
   # =========================================================
   #  Framework: Compiler
   # =========================================================
@@ -250,6 +237,7 @@ groups:
         contains_any_globs(files.exclude('packages/compiler-cli/ngcc/**'), [
           'packages/compiler/**',
           'packages/examples/compiler/**',
+          'aio/content/examples/angular-compiler-options/**',
           'packages/compiler-cli/**',
           'aio/content/guide/angular-compiler-options.md',
           'aio/content/guide/aot-compiler.md',
@@ -258,10 +246,10 @@ groups:
           ])
     reviewers:
       users:
-        - alxhub
         - AndrewKushnir
+        - alxhub
+        - atscott
         - JoostK
-
 
   # =========================================================
   #  Framework: Compiler / ngcc
@@ -279,7 +267,6 @@ groups:
         - JoostK
         - petebacondarwin
 
-
   # =========================================================
   #  Framework: Migrations
   # =========================================================
@@ -294,7 +281,6 @@ groups:
         - alxhub
         - crisbeto
         - devversion
-
 
   # =========================================================
   #  Framework: Core
@@ -335,6 +321,8 @@ groups:
           'aio/content/guide/component-styles.md',
           'aio/content/guide/view-encapsulation.md',
           'aio/content/examples/component-styles/**',
+          'aio/content/examples/content-projection/**',
+          'aio/content/guide/content-projection.md',
           'aio/content/guide/dependency-injection.md',
           'aio/content/examples/dependency-injection/**',
           'aio/content/images/guide/dependency-injection/**',
@@ -422,18 +410,19 @@ groups:
           'aio/content/guide/template-statements.md',
           'aio/content/guide/user-input.md',
           'aio/content/examples/user-input/**',
-          'aio/content/images/guide/user-input/**'
+          'aio/content/images/guide/user-input/**',
+          'aio/content/guide/view-encapsulation.md',
+          'aio/content/examples/view-encapsulation/**',
+          'aio/content/images/guide/view-encapsulation/**',
+          'aio/content/special-elements/**'
           ])
     reviewers:
       users:
         - alxhub
         - AndrewKushnir
         - atscott
-        - ~kara  # do not request reviews from Kara, but allow her to approve PRs
-        - mhevery
         - jessicajaniuk
         # OOO as of 2020-09-28 - pkozlowski-opensource
-
 
   # =========================================================
   #  Framework: Common
@@ -453,11 +442,8 @@ groups:
         - alxhub
         - AndrewKushnir
         - atscott
-        - ~kara # do not request reviews from Kara, but allow her to approve PRs
-        - mhevery
         - jessicajaniuk
         # OOO as of 2020-09-28 - pkozlowski-opensource
-
 
   # =========================================================
   #  Framework: Http
@@ -481,7 +467,6 @@ groups:
         - IgorMinar
         - petebacondarwin
 
-
   # =========================================================
   #  Framework: Elements
   # =========================================================
@@ -501,7 +486,6 @@ groups:
       users:
         - andrewseguin
         - gkalpak
-
 
   # =========================================================
   #  Framework: Forms
@@ -535,7 +519,6 @@ groups:
       users:
         - AndrewKushnir
 
-
   # =========================================================
   #  Framework: i18n
   # =========================================================
@@ -560,15 +543,26 @@ groups:
           'packages/compiler/src/render3/view/i18n/**',
           'packages/compiler-cli/src/extract_i18n.ts',
           'packages/localize/**',
-          'aio/content/guide/i18n.md',
+          'aio/content/guide/i18n-overview.md',
+          'aio/content/guide/i18n-common-overview.md',
+          'aio/content/guide/i18n-common-add-package.md',
+          'aio/content/guide/i18n-common-locale-id.md',
+          'aio/content/guide/i18n-common-format-data-locale.md',
+          'aio/content/guide/i18n-common-prepare.md',
+          'aio/content/guide/i18n-common-translation-files.md',
+          'aio/content/guide/i18n-common-merge.md',
+          'aio/content/guide/i18n-common-deploy.md',
+          'aio/content/guide/i18n-example.md',
+          'aio/content/guide/i18n-optional-overview.md',
+          'aio/content/guide/i18n-optional-manual-runtime-locale.md',
+          'aio/content/guide/i18n-optional-import-global-variants.md',
+          'aio/content/guide/i18n-optional-manage-marked-text.md',
           'aio/content/examples/i18n/**'
           ])
     reviewers:
       users:
         - AndrewKushnir
-        - mhevery
         - petebacondarwin
-
 
   # =========================================================
   #  Framework: Platform Server
@@ -581,14 +575,14 @@ groups:
       - >
         contains_any_globs(files, [
           'packages/platform-server/**',
+          'aio/content/guide/prerendering.md',
           'aio/content/guide/universal.md',
           'aio/content/examples/universal/**'
           ])
     reviewers:
       users:
+        - alan-agius4
         - alxhub
-        - kyliau
-
 
   # =========================================================
   #  Framework: Router
@@ -605,14 +599,17 @@ groups:
           'aio/content/guide/router.md',
           'aio/content/guide/router-tutorial.md',
           'aio/content/guide/router-tutorial-toh.md',
+          'aio/content/guide/routing-overview.md',
+          'aio/content/guide/router-reference.md',
           'aio/content/examples/router-tutorial/**',
           'aio/content/examples/router/**',
-          'aio/content/images/guide/router/**'
+          'aio/content/images/guide/router/**',
+          'aio/content/guide/routing-with-urlmatcher.md',
+          'aio/content/examples/routing-with-urlmatcher/**'
           ])
     reviewers:
       users:
         - atscott
-
 
   # =========================================================
   #  Framework: Service Worker
@@ -633,6 +630,7 @@ groups:
           'aio/content/guide/service-worker-config.md',
           'aio/content/guide/service-worker-devops.md',
           'aio/content/guide/service-worker-intro.md',
+          'aio/content/guide/service-worker-notifications.md',
           'aio/content/images/guide/service-worker/**'
           ])
     reviewers:
@@ -640,7 +638,6 @@ groups:
         - alxhub
         - gkalpak
         - IgorMinar
-
 
   # =========================================================
   #  Framework: Upgrade
@@ -672,7 +669,6 @@ groups:
         - gkalpak
         - petebacondarwin
 
-
   # =========================================================
   #  Framework: Testing
   # =========================================================
@@ -682,7 +678,7 @@ groups:
       - *can-be-global-approved
       - *can-be-global-docs-approved
       - >
-        contains_any_globs(files.exclude('packages/compiler-cli/**').exclude('packages/language-service/**'), [
+        contains_any_globs(files.exclude('packages/compiler-cli/**').exclude('packages/language-service/**').exclude('packages/service-worker/**'), [
           'packages/**/testing/**',
           'aio/content/guide/testing.md',
           'aio/content/guide/test-debugging.md',
@@ -702,7 +698,6 @@ groups:
         - IgorMinar
         # OOO as of 2020-09-28 - pkozlowski-opensource
 
-
   # =========================================================
   #  Framework: Benchmarks
   # =========================================================
@@ -718,7 +713,6 @@ groups:
       users:
         - IgorMinar
         # OOO as of 2020-09-28 - pkozlowski-opensource
-
 
   # =========================================================
   #  Framework: Playground
@@ -737,7 +731,6 @@ groups:
         - jelbourn
         # OOO as of 2020-09-28 - pkozlowski-opensource
 
-
   # =========================================================
   #  Framework: Security
   # =========================================================
@@ -752,21 +745,22 @@ groups:
           'packages/core/test/linker/security_integration_spec.ts',
           'packages/compiler/src/schema/**',
           'packages/platform-browser/src/security/**',
+          'packages/tsconfig-tsec-base.json',
+          'packages/tsec-exemption.json',
+          'tools/tsec.bzl',
           'aio/content/guide/security.md',
           'aio/content/examples/security/**',
-          'aio/content/images/guide/security/**'
+          'aio/content/images/guide/security/**',
           ])
     reviewers:
       users:
         - IgorMinar
-        - mhevery
         - jelbourn
         # OOO as of 2020-09-28 - pkozlowski-opensource
     reviews:
-      request: -1   # request reviews from everyone
-      required: 2   # require at least 2 approvals
+      request: -1 # request reviews from everyone
+      required: 2 # require at least 2 approvals
       reviewed_for: required
-
 
   # =========================================================
   #  Bazel
@@ -782,10 +776,9 @@ groups:
           ])
     reviewers:
       users:
+        - devversion
         - IgorMinar
         - josephperrott
-        - kyliau
-
 
   # =========================================================
   #  Language Service
@@ -803,10 +796,8 @@ groups:
           ])
     reviewers:
       users:
-        - kyliau
         - atscott
         - zarend
-
 
   # =========================================================
   #  zone.js
@@ -824,7 +815,6 @@ groups:
     reviewers:
       users:
         - JiaLiPassion
-        - mhevery
 
   # =========================================================
   #  in-memory-web-api
@@ -859,7 +849,6 @@ groups:
         - alxhub
         - josephperrott
 
-
   # =========================================================
   #  Integration Tests
   # =========================================================
@@ -875,8 +864,6 @@ groups:
       users:
         - IgorMinar
         - josephperrott
-        - mhevery
-
 
   # =========================================================
   #  Docs: Contributors
@@ -895,7 +882,6 @@ groups:
       users:
         - mgechev
         - twerske
-
 
   # =========================================================
   #  Docs: Gettings Started & Tutorial
@@ -930,7 +916,6 @@ groups:
         - aikidave
         - IgorMinar
         - jelbourn
-
 
   # =========================================================
   #  Docs: Marketing
@@ -980,7 +965,6 @@ groups:
       users:
         - alxhub
 
-
   # =========================================================
   #  Docs: Packaging, Tooling, Releasing
   # =========================================================
@@ -998,6 +982,8 @@ groups:
           'aio/content/guide/releases.md',
           'aio/content/guide/updating.md',
           'aio/content/guide/deprecations.md',
+          'aio/content/guide/migration-legacy-message-id.md',
+          'aio/content/examples/deprecation-guide/**',
           'aio/content/guide/migration-renderer.md',
           'aio/content/guide/migration-undecorated-classes.md',
           'aio/content/guide/migration-dynamic-flag.md',
@@ -1005,7 +991,7 @@ groups:
           'aio/content/guide/migration-localize.md',
           'aio/content/guide/migration-module-with-providers.md',
           'aio/content/guide/static-query-migration.md',
-          'aio/content/guide/updating-to-version-11.md',
+          'aio/content/guide/update-to-latest-version.md',
           'aio/content/guide/ivy-compatibility.md',
           'aio/content/guide/ivy-compatibility-examples.md'
           ])
@@ -1014,6 +1000,23 @@ groups:
         - IgorMinar
         - jelbourn
 
+  # =========================================================
+  #  Docs: Angular DevTools
+  # =========================================================
+  docs-devtools:
+    <<: *defaults
+    conditions:
+      - *can-be-global-approved
+      - *can-be-global-docs-approved
+      - >
+        contains_any_globs(files, [
+          'aio/content/guide/devtools.md',
+          'aio/content/images/guide/devtools/**'
+          ])
+    reviewers:
+      users:
+        - mgechev
+        - twerske
 
   # =========================================================
   #  Tooling: Compiler API shared with Angular CLI
@@ -1027,19 +1030,19 @@ groups:
       - *can-be-global-docs-approved
       - >
         contains_any_globs(files, [
-          'packages/compiler-cli/src/tooling.ts'
+          'packages/compiler-cli/private/tooling.ts',
+          'packages/localize/tools/index.ts'
         ])
     reviewers:
       users:
         - alan-agius4
         - clydin
-        - kyliau
+        - dgp1130
         - IgorMinar
     reviews:
-      request: -1   # request reviews from everyone
-      required: 2   # require at least 2 approvals
+      request: -1 # request reviews from everyone
+      required: 2 # require at least 2 approvals
       reviewed_for: required
-
 
   # =========================================================
   #  Docs: CLI
@@ -1076,7 +1079,6 @@ groups:
         - IgorMinar
         - mgechev
 
-
   # =========================================================
   #  Docs: CLI Libraries
   # =========================================================
@@ -1096,7 +1098,6 @@ groups:
         - alan-agius4
         - IgorMinar
         - mgechev
-
 
   # =========================================================
   #  Docs: Schematics
@@ -1119,7 +1120,6 @@ groups:
         - alan-agius4
         - IgorMinar
         - mgechev
-
 
   # =========================================================
   #  Docs-infra
@@ -1144,17 +1144,17 @@ groups:
           'aio/content/guide/docs-style-guide.md',
           'aio/content/examples/docs-style-guide/**',
           'aio/content/images/guide/docs-style-guide/**',
+          'aio/content/guide/localized-documentation.md',
+          'aio/content/guide/localizing-angular.md',
           'aio/content/guide/reviewing-content.md',
           'aio/content/guide/updating-content-github-ui.md',
           'aio/content/guide/updating-search-keywords.md',
-          'aio/content/guide/visual-studio-2015.md'
           ])
     reviewers:
       users:
         - gkalpak
         - IgorMinar
         - petebacondarwin
-
 
   # =========================================================
   #  Dev-infra
@@ -1173,10 +1173,10 @@ groups:
           '.ng-dev/**',
           '.vscode/**',
           '.yarn/**',
-          'dev-infra/**',
           'docs/*.md',
           'docs/images/**',
           'goldens/*',
+          'goldens/public-api/manage.js',
           'modules/*',
           'packages/*',
           'packages/examples/test-utils/**',
@@ -1196,7 +1196,6 @@ groups:
           'tools/source-map-test/**',
           'tools/symbol-extractor/**',
           'tools/testing/**',
-          'tools/ts-api-guardian/**',
           'tools/tslint/**',
           'tools/utils/**',
           'tools/yarn/**',
@@ -1211,7 +1210,6 @@ groups:
         - IgorMinar
         - josephperrott
 
-
   # =========================================================
   #  Public API
   # =========================================================
@@ -1222,7 +1220,7 @@ groups:
       - *no-groups-above-this-rejected
       - *can-be-global-approved
       - >
-        contains_any_globs(files, [
+        contains_any_globs(files.exclude("goldens/public-api/manage.js"), [
           'goldens/public-api/**',
           'docs/NAMING.md',
           'aio/content/errors/*.md',
@@ -1247,7 +1245,6 @@ groups:
       request: 4 # Request reviews from four people
       required: 3 # Require that three people approve
       reviewed_for: required
-
 
   # ================================================
   #  Size tracking
@@ -1278,7 +1275,6 @@ groups:
       required: 2 # Require that two people approve
       reviewed_for: required
 
-
   # ================================================
   #  Circular dependencies
   # ================================================
@@ -1304,10 +1300,9 @@ groups:
         - zarend
         # OOO as of 2020-09-28 - pkozlowski-opensource
 
-
-####################################################################################
-#  Special Cases
-####################################################################################
+  ####################################################################################
+  #  Special Cases
+  ####################################################################################
 
   # =========================================================
   #  Code Ownership
@@ -1328,37 +1323,3 @@ groups:
         - atscott
         - jelbourn
         - josephperrott
-        - mhevery
-
-
-  # ====================================================
-  #  Catch all for if no groups match the code change
-  # ====================================================
-  fallback:
-    <<: *defaults
-    # A group is considered to be `active` for a PR if at least one of group's
-    # conditions matches the PR.
-    #
-    # The PullApprove CI check should fail if a PR has no `active` groups, as
-    # this indicates the PR is modifying a file that has no owner.
-    #
-    # This is enforced through the pullapprove verification check done
-    # as part of the CircleCI lint job.  Failures in this lint job should be
-    # fixed as part of the PR.  This can be done by updating the
-    # `.pullapprove.yml` file cover the unmatched path.
-    # The pullapprove verification script is part of the ng-dev tool and can be
-    # run locally with the command: `yarn -s ng-dev pullapprove verify`
-    #
-    # For cases in which the verification check fails to ensure coverage, this
-    # group will be active.  The expectation is that this should be remedied
-    # before merging the PR as described above.  In an emergency situation
-    # `global-approvers` can still approve PRs that match this `fallback` rule,
-    # but that should be an exception and not an expectation.
-    conditions:
-      - *no-groups-above-this-active
-      # When any of the `global-*` groups is approved, they cause other groups to deactivate.
-      # In those cases, the condition above would evaluate to `true` while in reality, only a global
-      # approval has been provided. To ensure we don't activate the fallback group in such cases,
-      # ensure that no explicit global approval has been provided.
-      - *can-be-global-approved
-      - *can-be-global-docs-approved

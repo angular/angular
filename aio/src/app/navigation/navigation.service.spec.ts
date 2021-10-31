@@ -50,7 +50,7 @@ describe('NavigationService', () => {
       navService.navigationViews.subscribe({complete: () => completed = true});
 
       httpMock.expectOne({method: 'get', url: navigationPath}).flush({});
-      expect(completed).toBe(true, 'observable completed');
+      expect(completed).withContext('observable completed').toBe(true);
     });
 
     it('should return the same object to all subscribers', () => {
@@ -209,16 +209,16 @@ describe('NavigationService', () => {
       };
 
       locationService.go('c');
-      expect(currentNodes).toEqual(cnode, 'location: c');
+      expect(currentNodes).withContext('location: c').toEqual(cnode);
 
       locationService.go('c#foo');
-      expect(currentNodes).toEqual(cnode, 'location: c#foo');
+      expect(currentNodes).withContext('location: c#foo').toEqual(cnode);
 
       locationService.go('c?foo=1');
-      expect(currentNodes).toEqual(cnode, 'location: c?foo=1');
+      expect(currentNodes).withContext('location: c?foo=1').toEqual(cnode);
 
       locationService.go('c#foo?bar=1&baz=2');
-      expect(currentNodes).toEqual(cnode, 'location: c#foo?bar=1&baz=2');
+      expect(currentNodes).withContext('location: c#foo?bar=1&baz=2').toEqual(cnode);
     });
   });
 

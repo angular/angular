@@ -5,12 +5,12 @@
   "author": "angular",
   "license": "MIT",
   "peerDependencies": {
-    "@angular/core": "^12.0.0-next.6",
-    "@angular/common": "^12.0.0-next.6",
-    "rxjs": "^6.5.3"
+    "@angular/core": "^12.0.0",
+    "@angular/common": "^12.0.0",
+    "rxjs": "^6.5.3 || ^7.4.0"
   },
   "dependencies": {
-    "tslib": "^2.1.0"
+    "tslib": "^2.3.0"
   },
   "repository": {
     "type": "git",
@@ -19,6 +19,6 @@
   },
   "sideEffects": false,
   "publishConfig": {
-    "registry":"https://wombat-dressing-room.appspot.com"
+    "registry": "https://wombat-dressing-room.appspot.com"
   }
 }

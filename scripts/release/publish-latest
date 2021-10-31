@@ -20,5 +20,5 @@ $BAZEL build --config=release $NPM_PACKAGE_LABELS
 # publish all packages in sequence to make it easier to spot any errors or warnings
 for packageLabel in $NPM_PACKAGE_LABELS; do
   echo "publishing $packageLabel"
-  $BAZEL run --config=release -- ${packageLabel}.publish --access public --tag latest
+  $BAZEL run --config=release -- ${packageLabel}.publish --access public --tag latest --registry https://wombat-dressing-room.appspot.com
 done

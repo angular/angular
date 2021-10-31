@@ -1,4 +1,4 @@
-import {CaretakerConfig} from '../dev-infra/caretaker/config';
+import {CaretakerConfig} from '@angular/dev-infra-private/ng-dev/caretaker/config';
 
 /** The configuration for `ng-dev caretaker` commands. */
 export const caretaker: CaretakerConfig = {
@@ -15,5 +15,6 @@ export const caretaker: CaretakerConfig = {
       name: 'Initial Triage Queue',
       query: `is:open no:milestone`,
     }
-  ]
+  ],
+  caretakerGroup: 'angular-caretaker',
 };

@@ -41,7 +41,7 @@ describe('render3 matchers', () => {
     it('should produce human readable errors', () => {
       const matcher = matchMyShape({propA: 'different'});
       expect(matcher.asymmetricMatch(myShape, [])).toEqual(false);
-      expect(matcher.jasmineToString!())
+      expect(matcher.jasmineToString!(jasmine.pp))
           .toEqual('\n  property obj.propA to equal different but got value');
     });
   });
@@ -76,7 +76,8 @@ describe('render3 matchers', () => {
     it('should produce human readable error', () => {
       const matcher = matchDomElement('div', {name: 'other'});
       expect(matcher.asymmetricMatch(div, [])).toEqual(false);
-      expect(matcher.jasmineToString!()).toEqual(`[<DIV name="Name"> != <div name="other">]`);
+      expect(matcher.jasmineToString!(jasmine.pp))
+          .toEqual(`[<DIV name="Name"> != <div name="other">]`);
     });
   });
 
@@ -90,7 +91,8 @@ describe('render3 matchers', () => {
     it('should produce human readable error', () => {
       const matcher = matchDomText('other text');
       expect(matcher.asymmetricMatch(text, [])).toEqual(false);
-      expect(matcher.jasmineToString!()).toEqual(`[#TEXT: "myText" != #TEXT: "other text"]`);
+      expect(matcher.jasmineToString!(jasmine.pp))
+          .toEqual(`[#TEXT: "myText" != #TEXT: "other text"]`);
     });
   });
 });

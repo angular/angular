@@ -1,0 +1,14 @@
+{
+  "description": "Deprecation Guide",
+  "files": [
+    "!**/*.d.ts",
+    "!**/*.js",
+    "!**/*.[1,2].*"
+  ],
+  "tags": [
+    [
+      "deprecation",
+      "guide"
+    ]
+  ]
+}

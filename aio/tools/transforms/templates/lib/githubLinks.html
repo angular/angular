@@ -2,17 +2,23 @@
 {$ fileInfo.realProjectRelativePath if fileInfo.realProjectRelativePath else fileInfo.projectRelativePath $}
 {%- endmacro %}
 
-{% macro githubViewHref(doc, versionInfo) -%}
-{% set githubUrl = 'https://github.com/' + versionInfo.gitRepoInfo.owner + '/' + versionInfo.gitRepoInfo.repo -%}
+{% macro githubBaseUrl(versionInfo) -%}
+https://github.com/{$ versionInfo.gitRepoInfo.owner $}/{$ versionInfo.gitRepoInfo.repo $}
+{%- endmacro %}
+
+{% macro githubVersionedUrl(versionInfo) -%}
 {% set version = versionInfo.currentVersion.isSnapshot and versionInfo.currentVersion.SHA or versionInfo.currentVersion.raw -%}
+{$ githubBaseUrl(versionInfo) $}/tree/{$ version $}
+{%- endmacro %}
+
+{% macro githubViewHref(doc, versionInfo) -%}
 {% set lineInfo = doc.startingLine and ('#L' + (doc.startingLine + 1) + '-L' + (doc.endingLine + 1)) or '' -%}
-{$ githubUrl $}/tree/{$ version $}/{$ projectRelativePath(doc.fileInfo) $}{$ lineInfo $}
+{$ githubVersionedUrl(versionInfo) $}/{$ projectRelativePath(doc.fileInfo) $}{$ lineInfo $}
 {%- endmacro %}
 
 {% macro githubEditHref(doc, versionInfo, pathPrefix) -%}
-{% set githubUrl = 'https://github.com/' + versionInfo.gitRepoInfo.owner + '/' + versionInfo.gitRepoInfo.repo -%}
 {% set lineInfo = doc.startingLine and ('#L' + (doc.startingLine + 1) + '-L' + (doc.endingLine + 1)) or '' -%}
-{$ githubUrl $}/edit/master/{$ projectRelativePath(doc.fileInfo) $}?message=docs
+{$ githubBaseUrl(versionInfo) $}/edit/master/{$ projectRelativePath(doc.fileInfo) $}?message=docs
   {%- if doc.moduleDoc %}({$ doc.moduleDoc.id.split('/')[0] $})
   {%- elseif doc.docType === 'module' %}({$ doc.id.split('/')[0] $})
   {%- elseif doc.docType === 'content' %}

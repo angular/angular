@@ -162,19 +162,24 @@ export declare class MyService {
 /****************************************************************************************************
  * PARTIAL FILE: usefactory_with_deps.js
  ****************************************************************************************************/
-import { Injectable } from '@angular/core';
+import { Injectable, Optional } from '@angular/core';
 import * as i0 from "@angular/core";
 class SomeDep {
 }
 class MyAlternateService {
+    constructor(dep, optional) { }
 }
 export class MyService {
 }
 MyService.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyService, deps: [], target: i0.ɵɵFactoryTarget.Injectable });
-MyService.ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyService, providedIn: 'root', useFactory: () => new MyAlternateService(), deps: [{ token: SomeDep }] });
+MyService.ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyService, providedIn: 'root', useFactory: (dep, optional) => new MyAlternateService(dep, optional), deps: [{ token: SomeDep }, { token: SomeDep, optional: true }] });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyService, decorators: [{
             type: Injectable,
-            args: [{ providedIn: 'root', useFactory: () => new MyAlternateService(), deps: [SomeDep] }]
+            args: [{
+                    providedIn: 'root',
+                    useFactory: (dep, optional) => new MyAlternateService(dep, optional),
+                    deps: [SomeDep, [new Optional(), SomeDep]]
+                }]
         }] });
 
 /****************************************************************************************************

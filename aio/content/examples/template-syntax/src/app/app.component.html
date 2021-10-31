@@ -190,7 +190,6 @@ button</button>
 <br><br>
 
 <img [src]="iconUrl"/>
-<img bind-src="heroImageUrl"/>
 <img [attr.src]="villainImageUrl"/>
 
 <a class="to-toc" href="#toc">top</a>
@@ -205,7 +204,6 @@ button</button>
 <button disabled>disabled by attribute</button>
 <button [disabled]="isUnchanged">disabled by property binding</button>
 <br><br>
-<button bind-disabled="isUnchanged" on-click="onSave($event)">Disabled Cancel</button>
 <button [disabled]="!canSave" (click)="onSave($event)">Enabled Save</button>
 
 <a class="to-toc" href="#toc">top</a>
@@ -217,7 +215,6 @@ button</button>
 <button [disabled]="isUnchanged">Cancel is disabled</button>
 <div [ngClass]="classes">[ngClass] binding to the classes property</div>
 <app-hero-detail [hero]="currentHero"></app-hero-detail>
-<img bind-src="heroImageUrl">
 
 <!-- ERROR: HeroDetailComponent.hero expects a Hero object, not the string "currentHero" -->
 <!-- <app-hero-detail hero="currentHero"></app-hero-detail> -->
@@ -289,8 +286,6 @@ button</button>
 <div class="special"
      [class.special]="!isSpecial">This one is not so special</div>
 
-<div bind-class.special="isSpecial">This class binding is special too</div>
-
 <a class="to-toc" href="#toc">top</a>
 
 <!--style binding -->
@@ -308,8 +303,6 @@ button</button>
 <hr><h2 id="event-binding">Event Binding</h2>
 
 <button (click)="onSave()">Save</button>
-
-<button on-click="onSave()">On Save</button>
 
 <div>
 <!-- `myClick` is an event on the custom `ClickDirective` -->
@@ -369,9 +362,6 @@ without NgModel
 <br>
 <input [(ngModel)]="currentHero.name">
 [(ngModel)]
-<br>
-<input bindon-ngModel="currentHero.name">
-bindon-ngModel
 <br>
 <input
   [ngModel]="currentHero.name"
@@ -575,9 +565,6 @@ bindon-ngModel
 
 <!-- phone refers to the input element; pass its `value` to an event handler -->
 <button (click)="callPhone(phone.value)">Call</button>
-
-<input ref-fax placeholder="fax number">
-<button (click)="callFax(fax.value)">Fax</button>
 
 <!-- btn refers to the button element; show its disabled state -->
 <button #btn disabled [innerHTML]="'disabled by attribute: '+btn.disabled"></button>

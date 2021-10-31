@@ -2,7 +2,7 @@
 
 You learned the basics of Angular animations in the [introduction](guide/animations) page.
 
-This guide goes into greater depth on special transition states such as `*` (wildcard) and `void`, and show how these special states are used for elements entering and leaving a view.
+This guide goes into greater depth on special transition states such as `*` (wildcard) and `void`, and shows how these special states are used for elements entering and leaving a view.
 This chapter also explores multiple animation triggers, animation callbacks, and sequence-based animation using keyframes.
 
 ## Predefined states and wildcard matching
@@ -22,7 +22,7 @@ For example, a transition of `open => *` applies when the element's state change
 The following is another code sample using the wildcard state together with the previous example using the `open` and `closed` states.
 Instead of defining each state-to-state transition pair, any transition to `closed` takes 1 second, and any transition to `open` takes 0.5 seconds.
 
-This allows us to add new states without having to include separate transitions for each one.
+This lets us add new states without having to include separate transitions for each one.
 
 <code-example header="src/app/open-close.component.ts" path="animations/src/app/open-close.component.ts" region="trigger-wildcard1" language="typescript"></code-example>
 
@@ -33,7 +33,7 @@ Use a double arrow syntax to specify state-to-state transitions in both directio
 ### Using wildcard state with multiple transition states
 
 In the two-state button example, the wildcard isn't that useful because there are only two possible states, `open` and `closed`.
-Wildcard states are better when an element in one particular state has multiple potential states that it can change to.
+In general, use wildcard states when an element in one particular state has multiple potential states that it can change to.
 If the button can change from `open` to either `closed` or something like `inProgress`, using a wildcard state could reduce the amount of coding needed.
 
 <div class="lightbox">
@@ -58,12 +58,12 @@ Use the wildcard `*` with a style to tell the animation to use whatever the curr
 
 ### Void state
 
-You can use the `void` state to configure transitions for an element that is entering or leaving a page. See [Animating entering and leaving a view](#enter-leave-view).
+Use the `void` state to configure transitions for an element that is entering or leaving a page. See [Animating entering and leaving a view](#enter-leave-view).
 
 
 ### Combining wildcard and void states
 
-You can combine wildcard and void states in a transition to trigger animations that enter and leave the page:
+Combine wildcard and void states in a transition to trigger animations that enter and leave the page:
 
 * A transition of `* => void` applies when the element leaves a view, regardless of what state it was in before it left.
 
@@ -81,14 +81,14 @@ This section shows how to animate elements entering or leaving a page.
 
 </div>
 
-Now add a new behavior:
+Add a new behavior:
 
 * When you add a hero to the list of heroes, it appears to fly onto the page from the left.
 * When you remove a hero from the list, it appears to fly out to the right.
 
 <code-example path="animations/src/app/hero-list-enter-leave.component.ts" header="src/app/hero-list-enter-leave.component.ts" region="animationdef" language="typescript"></code-example>
 
-In the above code, you applied the `void` state when the HTML element isn't attached to a view.
+In the preceding code, you applied the `void` state when the HTML element isn't attached to a view.
 
 
 {@a enter-leave-view}
@@ -127,7 +127,7 @@ The `transition()` function takes additional selector values, `:increment` and `
 
 <div class="alert is-helpful">
 
-**Note:** The following example uses `query()` and `stagger()` methods, which is discussed in the [complex sequences](guide/complex-animation-sequences#complex-sequence) page.
+**Note:** The following example uses `query()` and `stagger()` methods. For more information on these methods, see the [complex sequences](guide/complex-animation-sequences#complex-sequence) page.
 
 </div>
 
@@ -140,26 +140,26 @@ If a trigger contains a boolean value as a binding value, then this value can be
 <code-example path="animations/src/app/open-close.component.2.html" header="src/app/open-close.component.html" region="trigger-boolean">
 </code-example>
 
-In the code snippet above, the HTML template binds a `<div>` element to a trigger named `openClose` with a status expression of `isOpen`, and with possible values of `true` and `false`. This is an alternative to the practice of creating two named states of `open` and `close`.
+In the code snippet above, the HTML template binds a `<div>` element to a trigger named `openClose` with a status expression of `isOpen`, and with possible values of `true` and `false`. This pattern is an alternative to the practice of creating two named states like `open` and `close`.
 
-In the component code, in the `@Component` metadata under the `animations:` property, when the state evaluates to `true` (meaning "open" here), the associated HTML element's height is a wildcard style or default. In this case, use whatever height the element already had before the animation started. When the element is "closed," the element animates to a height of 0, which makes it invisible.
+In the component code, inside the `@Component` metadata under the `animations:` property, when the state evaluates to `true` (meaning "open" here), the associated HTML element's height is a wildcard style or default. In this case, the animation uses whatever height the element already had before the animation started. When the element is "closed", the element gets animated to a height of 0, which makes it invisible.
 
 <code-example path="animations/src/app/open-close.component.2.ts" header="src/app/open-close.component.ts" region="trigger-boolean" language="typescript">
 </code-example>
 
 ## Multiple animation triggers
 
-You can define more than one animation trigger for a component. You can attach animation triggers to different elements, and the parent-child relationships among the elements affect how and when the animations run.
+You can define more than one animation trigger for a component. Attach animation triggers to different elements, and the parent-child relationships among the elements affect how and when the animations run.
 
 ### Parent-child animations
 
-Each time an animation is triggered in Angular, the parent animation always get priority and child animations are blocked. In order for a child animation to run, the parent animation must query each of the elements containing child animations and then allow the animations to run using the [`animateChild()`](api/animations/animateChild) function.
+Each time an animation is triggered in Angular, the parent animation always gets priority and child animations are blocked. For a child animation to run, the parent animation must query each of the elements containing child animations and then let the animations run using the [`animateChild()`](api/animations/animateChild) function.
 
 #### Disabling an animation on an HTML element
 
 A special animation control binding called `@.disabled` can be placed on an HTML element to disable animations on that element, as well as any nested elements. When true, the `@.disabled` binding prevents all animations from rendering.
 
-The code sample below shows how to use this feature.
+The following code sample shows how to use this feature.
 
 <code-tabs>
 
@@ -181,7 +181,7 @@ However, selective child animations can still be run on a disabled parent in one
 * A parent animation can use the [`query()`](api/animations/query) function to collect inner elements located in disabled areas of the HTML template.
 Those elements can still animate.
 
-* A subanimation can be queried by a parent and then later animated with the `animateChild()` function.
+* A child animation can be queried by a parent and then later animated with the `animateChild()` function.
 
 #### Disabling all animations
 
@@ -196,11 +196,11 @@ To disable all animations for an Angular app, place the `@.disabled` host bindin
 
 ## Animation callbacks
 
-The animation `trigger()` function emits *callbacks* when it starts and when it finishes. The example below features a component that contains an `openClose` trigger.
+The animation `trigger()` function emits *callbacks* when it starts and when it finishes. The following example features a component that contains an `openClose` trigger.
 
 <code-example path="animations/src/app/open-close.component.ts" header="src/app/open-close.component.ts" region="events1" language="typescript"></code-example>
 
-In the HTML template, the animation event is passed back via `$event`, as `@trigger.start` and `@trigger.done`, where `trigger` is the name of the trigger being used.
+In the HTML template, the animation event is passed back via `$event`, as `@triggerName.start` and `@triggerName.done`, where `triggerName` is the name of the trigger being used.
 In this example, the trigger `openClose` appears as follows.
 
 <code-example path="animations/src/app/open-close.component.3.html" header="src/app/open-close.component.html" region="callbacks">
@@ -224,7 +224,7 @@ The following code snippet creates console log output for the original example, 
 
 ## Keyframes
 
-The previous section features a simple two-state transition. Now create an animation with multiple steps run in sequence using *keyframes*.
+The previous section features a simple two-state transition. Let's now create an animation with multiple steps run in sequence using *keyframes*.
 
 Angular's `keyframe()` function is similar to keyframes in CSS. Keyframes allow several style changes within a single timing segment.
 For example, the button, instead of fading, could change color several times over a single 2-second timespan.
@@ -239,13 +239,13 @@ The code for this color change might look like this.
 
 ### Offset
 
-Keyframes include an *offset* that defines the point in the animation where each style change occurs.
+Keyframes include an `offset` that defines the point in the animation where each style change occurs.
 Offsets are relative measures from zero to one, marking the beginning and end of the animation, respectively and should be applied to each of the keyframe's steps if used at least once.
 
 Defining offsets for keyframes is optional.
 If you omit them, evenly spaced offsets are automatically assigned.
 For example, three keyframes without predefined offsets receive offsets of 0, 0.5, and 1.
-Specifying an offset of 0.8 for the middle transition in the above example might look like this.
+Specifying an offset of 0.8 for the middle transition in the preceding example might look like this.
 
 <div class="lightbox">
   <img src="generated/images/guide/animations/keyframes-offset-500.png" alt="keyframes with offset">
@@ -266,7 +266,7 @@ Here's an example of using keyframes to create a pulse effect:
 
 * The original `open` and `closed` states, with the original changes in height, color, and opacity, occurring over a timeframe of 1 second.
 
-* A keyframes sequence inserted in the middle that causes the button to appear to pulsate irregularly over the course of that same 1-second timeframe.
+* A keyframes sequence inserted in the middle that causes the button to appear to pulsate irregularly over the course of that same 1 second timeframe.
 
 <div class="lightbox">
   <img src="generated/images/guide/animations/keyframes-pulsation.png" alt="keyframes with irregular pulsation">
@@ -278,22 +278,22 @@ The code snippet for this animation might look like this.
 
 ### Animatable properties and units
 
-Angular's animation support builds on top of web animations, so you can animate any property that the browser considers animatable.
+Angular animations support builds on top of web animations, so you can animate any property that the browser considers animatable.
 This includes positions, sizes, transforms, colors, borders, and more. The W3C maintains a list of animatable properties on its [CSS Transitions](https://www.w3.org/TR/css-transitions-1/) page.
 
-For positional properties with a numeric value, define a unit by providing the value as a string, in quotes, with the appropriate suffix:
+For properties with a numeric value, define a unit by providing the value as a string, in quotes, with the appropriate suffix:
 
 * 50 pixels: `'50px'`
 * Relative font size: `'3em'`
 * Percentage: `'100%'`
 
-If you don't provide a unit when specifying dimension, Angular assumes a default unit of pixels, or px.
-Expressing 50 pixels as `50` is the same as saying `'50px'`.
+You can also provide the value as a number (thus not providing a unit), in such cases Angular assumes a default unit of pixels, or `px`.
+Expressing 50 pixels as `50` is the same as saying `'50px'` (note that the string `"50"` would instead be considered invalid).
 
 ### Automatic property calculation with wildcards
 
 Sometimes you don't know the value of a dimensional style property until runtime.
-For example, elements often have widths and heights that depend on their content and the screen size.
+For example, elements often have widths and heights that depend on their content or the screen size.
 These properties are often challenging to animate using CSS.
 
 In these cases, you can use a special wildcard `*` property value under `style()`, so that the value of that particular style property is computed at runtime and then plugged into the animation.
@@ -305,11 +305,11 @@ The animation takes whatever height the element has before it leaves, and animat
 
 ### Keyframes summary
 
-The `keyframes()` function in Angular allows you to specify multiple interim styles within a single transition, with an optional offset to define the point in the animation where each style change occurs.
+The `keyframes()` function in Angular allows you to specify multiple interim styles within a single transition, with an optional `offset` to define the point in the animation where each style change should occur.
 
 ## More on Angular animations
 
-You may also be interested in the following:
+You might also be interested in the following:
 
 * [Introduction to Angular animations](guide/animations)
 * [Complex animation sequences](guide/complex-animation-sequences)

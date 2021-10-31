@@ -423,7 +423,7 @@ class TestObj {
 
         class Child extends Parent {
           // TODO(issue/24571): remove '!'.
-          @PropDecorator('b2') b!: B;
+          @PropDecorator('b2') override b!: B;
           // TODO(issue/24571): remove '!'.
           @PropDecorator('c') c!: C;
         }
@@ -455,7 +455,7 @@ class TestObj {
         }
 
         class Child extends Parent {
-          hook2() {}
+          override hook2() {}
           hook3() {}
         }
 
@@ -477,7 +477,7 @@ class TestObj {
         }
 
         class Child extends Parent {
-          static decorators = [{type: ClassDecorator, args: [{value: 'child'}]}];
+          static override decorators = [{type: ClassDecorator, args: [{value: 'child'}]}];
         }
 
         class ChildNoDecorators extends Parent {}
@@ -508,7 +508,7 @@ class TestObj {
         class Child extends Parent {}
 
         class ChildWithCtor extends Parent {
-          static ctorParameters = () =>
+          static override ctorParameters = () =>
               [{type: C, decorators: [{type: ParamDecorator, args: ['c']}]},
           ]
           constructor() {
@@ -541,7 +541,7 @@ class TestObj {
         }
 
         class Child extends Parent {
-          static propDecorators: any = {
+          static override propDecorators: any = {
             'b': [{type: PropDecorator, args: ['b2']}],
             'c': [{type: PropDecorator, args: ['c']}],
           };
@@ -568,7 +568,7 @@ class TestObj {
         }
 
         class Child extends Parent {
-          static annotations = [new ClassDecorator({value: 'child'})];
+          static override annotations = [new ClassDecorator({value: 'child'})];
         }
 
         class ChildNoDecorators extends Parent {}
@@ -599,7 +599,7 @@ class TestObj {
         class Child extends Parent {}
 
         class ChildWithCtor extends Parent {
-          static parameters = [
+          static override parameters = [
             [C, new ParamDecorator('c')],
           ];
           constructor() {
@@ -632,7 +632,7 @@ class TestObj {
         }
 
         class Child extends Parent {
-          static propMetadata: any = {
+          static override propMetadata: any = {
             'b': [new PropDecorator('b2')],
             'c': [new PropDecorator('c')],
           };

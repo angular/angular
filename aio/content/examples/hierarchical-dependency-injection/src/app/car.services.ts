@@ -56,6 +56,7 @@ export class TiresService {
 })
 export class CarService {
   id = 'C1';
+
   constructor(
     protected engineService: EngineService,
     protected tiresService: TiresService) { }
@@ -75,13 +76,15 @@ export class CarService {
   providedIn: 'root'
 })
 export class CarService2 extends CarService {
-  id = 'C2';
+  override id = 'C2';
+
   constructor(
-    protected engineService: EngineService,
-    protected tiresService: TiresService) {
+    protected override engineService: EngineService,
+    protected override tiresService: TiresService) {
     super(engineService, tiresService);
   }
-  getCar() {
+
+  override getCar() {
     const car = super.getCar();
     car.name = 'BamBam Motors, BroVan 2000';
     return car;
@@ -92,13 +95,15 @@ export class CarService2 extends CarService {
   providedIn: 'root'
 })
 export class CarService3 extends CarService2 {
-  id = 'C3';
+  override id = 'C3';
+
   constructor(
-    protected engineService: EngineService,
-    protected tiresService: TiresService) {
+    protected override engineService: EngineService,
+    protected override tiresService: TiresService) {
     super(engineService, tiresService);
   }
-  getCar() {
+
+  override getCar() {
     const car = super.getCar();
     car.name = 'Chizzamm Motors, Calico UltraMax Supreme';
     return car;

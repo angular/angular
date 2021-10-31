@@ -23,8 +23,6 @@ export class HeroFormComponent {
   // #enddocregion submitted
 
   // #enddocregion final
-  // TODO: Remove this when we're done
-  get diagnostic() { return JSON.stringify(this.model); }
   // #enddocregion v1
 
   // #docregion final, new-hero

@@ -282,14 +282,14 @@ describe('TocService', () => {
     it('should ignore HTML in heading when calculating id', () => {
       const id = headings[3].getAttribute('id');
       const tocItem = lastTocList[3];
-      expect(id).toEqual('h2-three', 'heading id');
-      expect(tocItem.href).toEqual(`${docId}#h2-three`, 'tocItem href');
+      expect(id).withContext('heading id').toEqual('h2-three');
+      expect(tocItem.href).withContext('tocItem href').toEqual(`${docId}#h2-three`);
     });
 
     it('should avoid repeating an id when calculating', () => {
       const tocItems = lastTocList.filter(item => item.title === 'H2 4 repeat');
-      expect(tocItems[0].href).toEqual(`${docId}#h2-4-repeat`, 'first');
-      expect(tocItems[1].href).toEqual(`${docId}#h2-4-repeat-2`, 'second');
+      expect(tocItems[0].href).withContext('first').toEqual(`${docId}#h2-4-repeat`);
+      expect(tocItems[1].href).withContext('second').toEqual(`${docId}#h2-4-repeat-2`);
     });
   });
 
@@ -345,18 +345,16 @@ interface TestSafeHtml extends SafeHtml {
 
 class TestDomSanitizer {
   bypassSecurityTrustHtml = jasmine.createSpy('bypassSecurityTrustHtml')
-    .and.callFake((html: string) => {
-      return {
-        changingThisBreaksApplicationSecurity: html,
-        getTypeName: () => 'HTML',
-      } as TestSafeHtml;
-    });
+    .and.callFake((html: string) => ({
+      changingThisBreaksApplicationSecurity: html,
+      getTypeName: () => 'HTML',
+    } as TestSafeHtml));
 }
 
 class MockScrollSpyService {
   private $$lastInfo: {
-    active: Subject<ScrollItem | null>,
-    unspy: jasmine.Spy,
+    active: Subject<ScrollItem | null>;
+    unspy: jasmine.Spy;
   } | undefined;
 
   get $lastInfo() {

@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {flatten, sanitizeIdentifier} from '../../compile_metadata';
+import {flatten} from '../../compile_metadata';
 import {BindingForm, BuiltinFunctionCall, convertActionBinding, convertPropertyBinding, convertUpdateArguments, LocalResolver} from '../../compiler_util/expression_converter';
 import {ConstantPool} from '../../constant_pool';
 import * as core from '../../core';
-import {AST, AstMemoryEfficientTransformer, BindingPipe, BindingType, FunctionCall, ImplicitReceiver, Interpolation, LiteralArray, LiteralMap, LiteralPrimitive, ParsedEventType, PropertyRead, ThisReceiver} from '../../expression_parser/ast';
+import {AST, AstMemoryEfficientTransformer, BindingPipe, BindingType, Call, ImplicitReceiver, Interpolation, LiteralArray, LiteralMap, LiteralPrimitive, ParsedEventType, PropertyRead} from '../../expression_parser/ast';
 import {Lexer} from '../../expression_parser/lexer';
 import {IvyParser} from '../../expression_parser/parser';
 import * as i18n from '../../i18n/i18n_ast';
@@ -22,7 +22,7 @@ import {LexerRange} from '../../ml_parser/lexer';
 import {isNgContainer as checkIsNgContainer, splitNsName} from '../../ml_parser/tags';
 import {mapLiteral} from '../../output/map_util';
 import * as o from '../../output/output_ast';
-import {ParseError, ParseSourceFile, ParseSourceSpan} from '../../parse_util';
+import {ParseError, ParseSourceSpan, sanitizeIdentifier} from '../../parse_util';
 import {DomElementSchemaRegistry} from '../../schema/dom_element_schema_registry';
 import {isTrustedTypesSink} from '../../schema/trusted_types_sinks';
 import {CssSelector, SelectorMatcher} from '../../selector';
@@ -337,6 +337,11 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   // LocalResolver
   notifyImplicitReceiverUse(): void {
     this._bindingScope.notifyImplicitReceiverUse();
+  }
+
+  // LocalResolver
+  maybeRestoreView(): void {
+    this._bindingScope.maybeRestoreView();
   }
 
   private i18nTranslate(
@@ -1479,7 +1484,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 }
 
 export class ValueConverter extends AstMemoryEfficientTransformer {
-  private _pipeBindExprs: FunctionCall[] = [];
+  private _pipeBindExprs: Call[] = [];
 
   constructor(
       private constantPool: ConstantPool, private allocateSlot: () => number,
@@ -1490,7 +1495,7 @@ export class ValueConverter extends AstMemoryEfficientTransformer {
   }
 
   // AstMemoryEfficientTransformer
-  visitPipe(pipe: BindingPipe, context: any): AST {
+  override visitPipe(pipe: BindingPipe, context: any): AST {
     // Allocate a slot to create the pipe
     const slot = this.allocateSlot();
     const slotPseudoLocal = `PIPE:${slot}`;
@@ -1506,24 +1511,27 @@ export class ValueConverter extends AstMemoryEfficientTransformer {
         this.visitAll([new LiteralArray(pipe.span, pipe.sourceSpan, args)]) :
         this.visitAll(args);
 
-    const pipeBindExpr = new FunctionCall(pipe.span, pipe.sourceSpan, target, [
-      new LiteralPrimitive(pipe.span, pipe.sourceSpan, slot),
-      new LiteralPrimitive(pipe.span, pipe.sourceSpan, pureFunctionSlot),
-      ...convertedArgs,
-    ]);
+    const pipeBindExpr = new Call(
+        pipe.span, pipe.sourceSpan, target,
+        [
+          new LiteralPrimitive(pipe.span, pipe.sourceSpan, slot),
+          new LiteralPrimitive(pipe.span, pipe.sourceSpan, pureFunctionSlot),
+          ...convertedArgs,
+        ],
+        null!);
     this._pipeBindExprs.push(pipeBindExpr);
     return pipeBindExpr;
   }
 
   updatePipeSlotOffsets(bindingSlots: number) {
-    this._pipeBindExprs.forEach((pipe: FunctionCall) => {
+    this._pipeBindExprs.forEach((pipe: Call) => {
       // update the slot offset arg (index 1) to account for binding slots
       const slotOffset = pipe.args[1] as LiteralPrimitive;
       (slotOffset.value as number) += bindingSlots;
     });
   }
 
-  visitLiteralArray(array: LiteralArray, context: any): AST {
+  override visitLiteralArray(array: LiteralArray, context: any): AST {
     return new BuiltinFunctionCall(
         array.span, array.sourceSpan, this.visitAll(array.expressions), values => {
           // If the literal has calculated (non-literal) elements transform it into
@@ -1534,7 +1542,7 @@ export class ValueConverter extends AstMemoryEfficientTransformer {
         });
   }
 
-  visitLiteralMap(map: LiteralMap, context: any): AST {
+  override visitLiteralMap(map: LiteralMap, context: any): AST {
     return new BuiltinFunctionCall(map.span, map.sourceSpan, this.visitAll(map.values), values => {
       // If the literal has calculated (non-literal) elements  transform it into
       // calls to literal factories that compose the literal and will cache intermediate
@@ -1651,7 +1659,6 @@ const SHARED_CONTEXT_KEY = '$$shared_ctx$$';
 type BindingData = {
   retrievalLevel: number; lhs: o.Expression;
   declareLocalCallback?: DeclareLocalVarCallback; declare: boolean; priority: number;
-  localRef: boolean;
 };
 
 /**
@@ -1696,15 +1703,14 @@ export class BindingScope implements LocalResolver {
             lhs: value.lhs,
             declareLocalCallback: value.declareLocalCallback,
             declare: false,
-            priority: value.priority,
-            localRef: value.localRef
+            priority: value.priority
           };
 
           // Cache the value locally.
           this.map.set(name, value);
           // Possibly generate a shared context var
           this.maybeGenerateSharedContextVar(value);
-          this.maybeRestoreView(value.retrievalLevel, value.localRef);
+          this.maybeRestoreView();
         }
 
         if (value.declareLocalCallback && !value.declare) {
@@ -1749,7 +1755,6 @@ export class BindingScope implements LocalResolver {
       declare: false,
       declareLocalCallback: declareLocalCallback,
       priority: priority,
-      localRef: localRef || false
     });
     return this;
   }
@@ -1818,24 +1823,22 @@ export class BindingScope implements LocalResolver {
       },
       declare: false,
       priority: DeclarationPriority.SHARED_CONTEXT,
-      localRef: false
     });
   }
 
   getComponentProperty(name: string): o.Expression {
     const componentValue = this.map.get(SHARED_CONTEXT_KEY + 0)!;
     componentValue.declare = true;
-    this.maybeRestoreView(0, false);
+    this.maybeRestoreView();
     return componentValue.lhs.prop(name);
   }
 
-  maybeRestoreView(retrievalLevel: number, localRefLookup: boolean) {
-    // We want to restore the current view in listener fns if:
-    // 1 - we are accessing a value in a parent view, which requires walking the view tree rather
-    // than using the ctx arg. In this case, the retrieval and binding level will be different.
-    // 2 - we are looking up a local ref, which requires restoring the view where the local
-    // ref is stored
-    if (this.isListenerScope() && (retrievalLevel < this.bindingLevel || localRefLookup)) {
+  maybeRestoreView() {
+    // View restoration is required for listener instructions inside embedded views, because
+    // they only run in creation mode and they can have references to the context object.
+    // If the context object changes in update mode, the reference will be incorrect, because
+    // it was established during creation.
+    if (this.isListenerScope()) {
       if (!this.parent!.restoreViewVariable) {
         // parent saves variable to generate a shared `const $s$ = getCurrentView();` instruction
         this.parent!.restoreViewVariable = o.variable(this.parent!.freshReferenceName());

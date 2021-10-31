@@ -7,8 +7,8 @@
  */
 
 import {SourceMap} from '@angular/compiler';
-const b64 = require('base64-js');
-const SourceMapConsumer = require('source-map').SourceMapConsumer;
+import b64 from 'base64-js';
+import {SourceMapConsumer} from 'source-map';
 
 export interface SourceLocation {
   line: number;
@@ -17,8 +17,10 @@ export interface SourceLocation {
 }
 
 export function originalPositionFor(
-    sourceMap: SourceMap, genPosition: {line: number|null, column: number|null}): SourceLocation {
-  const smc = new SourceMapConsumer(sourceMap);
+    sourceMap: SourceMap, genPosition: {line: number, column: number}): SourceLocation {
+  // Note: The `SourceMap` type from the compiler is different to `RawSourceMap`
+  // from the `source-map` package, but the method we rely on works as expected.
+  const smc = new SourceMapConsumer(sourceMap as any);
   // Note: We don't return the original object as it also contains a `name` property
   // which is always null and we don't want to include that in our assertions...
   const {line, column, source} = smc.originalPositionFor(genPosition);

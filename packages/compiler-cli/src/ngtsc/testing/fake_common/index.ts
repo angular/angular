@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgIterable, TemplateRef, ɵɵDirectiveDeclaration, ɵɵNgModuleDeclaration, ɵɵPipeDeclaration} from '@angular/core';
+import {NgIterable, TemplateRef, TrackByFunction, ɵɵDirectiveDeclaration, ɵɵNgModuleDeclaration, ɵɵPipeDeclaration} from '@angular/core';
 
 export interface NgForOfContext<T, U extends NgIterable<T>> {
   $implicit: T;
@@ -17,10 +17,6 @@ export interface NgForOfContext<T, U extends NgIterable<T>> {
   last: boolean;
   count: number;
   index: number;
-}
-
-export interface TrackByFunction<T> {
-  (index: number, item: T): any;
 }
 
 export interface NgIfContext<T = unknown> {
@@ -56,6 +52,7 @@ export declare class NgIf<T = unknown> {
     'ngIfElse': 'ngIfElse';
   }
   , {}, never > ;
+  static ngTemplateGuard_ngIf: 'binding';
   static ngTemplateContextGuard<T>(dir: NgIf<T>, ctx: any):
       ctx is NgIfContext<Exclude<T, false|0|''|null|undefined>>;
 }
@@ -83,8 +80,16 @@ export declare class DatePipe {
   static ɵpipe: ɵɵPipeDeclaration<DatePipe, 'date'>;
 }
 
+export declare class IndexPipe {
+  transform<T>(value: T[], index: number): T;
+
+  static ɵpipe: ɵɵPipeDeclaration<IndexPipe, 'index'>;
+}
+
 export declare class CommonModule {
   static ɵmod: ɵɵNgModuleDeclaration<
-      CommonModule, [typeof NgForOf, typeof NgIf, typeof DatePipe, typeof NgTemplateOutlet], never,
-      [typeof NgForOf, typeof NgIf, typeof DatePipe, typeof NgTemplateOutlet]>;
+      CommonModule,
+      [typeof NgForOf, typeof NgIf, typeof DatePipe, typeof IndexPipe, typeof NgTemplateOutlet],
+      never,
+      [typeof NgForOf, typeof NgIf, typeof DatePipe, typeof IndexPipe, typeof NgTemplateOutlet]>;
 }

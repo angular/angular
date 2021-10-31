@@ -24,23 +24,22 @@ version: 2.1
 # **NOTE 2 **: If you change the cache key prefix, also sync the cache_key_fallback to match.
 # **NOTE 3 **: Keep the static part of the cache key as prefix to enable correct fallbacks.
 # See https://circleci.com/docs/2.0/caching/#restoring-cache for how prefixes work in CircleCI.
-var_3: &cache_key v4-angular-node-14-{{ checksum "month.txt" }}-{{ checksum ".bazelversion" }}-{{ checksum "yarn.lock" }}-{{ checksum "WORKSPACE" }}-{{ checksum "packages/bazel/package.bzl" }}-{{ checksum "aio/yarn.lock" }}
+var_3: &cache_key v6-angular-node-14-{{ checksum "month.txt" }}-{{ checksum ".bazelversion" }}-{{ checksum "yarn.lock" }}-{{ checksum "WORKSPACE" }}-{{ checksum "aio/yarn.lock" }}
 # We invalidate the cache if the Bazel version changes because otherwise the `bazelisk` cache
 # folder will contain all previously used versions and ultimately cause the cache restoring to
 # be slower due to its growing size.
-var_4: &cache_key_fallback v4-angular-node-14-{{ checksum "month.txt" }}-{{ checksum ".bazelversion" }}
+var_4: &cache_key_fallback v6-angular-node-14-{{ checksum "month.txt" }}-{{ checksum ".bazelversion" }}
 
 # Windows needs its own cache key because binaries in node_modules are different.
-var_3_win: &cache_key_win v4-angular-win-node-14-{{ checksum "month.txt" }}-{{ checksum ".bazelversion" }}-{{ checksum "yarn.lock" }}-{{ checksum "WORKSPACE" }}-{{ checksum "packages/bazel/package.bzl" }}-{{ checksum "aio/yarn.lock" }}
-var_4_win: &cache_key_win_fallback v4-angular-win-node-14-{{ checksum "month.txt" }}-{{ checksum ".bazelversion" }}
+var_3_win: &cache_key_win v6-angular-win-node-14-{{ checksum "month.txt" }}-{{ checksum ".bazelversion" }}-{{ checksum "yarn.lock" }}-{{ checksum "WORKSPACE" }}-{{ checksum "aio/yarn.lock" }}
+var_4_win: &cache_key_win_fallback v6-angular-win-node-14-{{ checksum "month.txt" }}-{{ checksum ".bazelversion" }}
 
 # Cache key for the `components-repo-unit-tests` job. **Note** when updating the SHA in the
 # cache keys also update the SHA for the "COMPONENTS_REPO_COMMIT" environment variable.
-var_5: &components_repo_unit_tests_cache_key v1-angular-components-{{ checksum "month.txt" }}-7cc42f5d835b7971e9ff73e220b801cf7834d515
+var_5: &components_repo_unit_tests_cache_key v1-angular-components-{{ checksum "month.txt" }}-a931de54a786597b34259e461c2cf3ab6edc590a
 var_6: &components_repo_unit_tests_cache_key_fallback v1-angular-components-{{ checksum "month.txt" }}
 
-# Workspace initially persisted by the `setup` job, and then enhanced by `build-npm-packages` and
-# `build-ivy-npm-packages`.
+# Workspace initially persisted by the `setup` job, and then enhanced by `build-npm-packages`.
 # https://circleci.com/docs/2.0/workflows/#using-workspaces-to-share-data-among-jobs
 # https://circleci.com/blog/deep-diving-into-circleci-workspaces/
 var_7: &workspace_location ~/
@@ -87,7 +86,17 @@ executors:
         type: string
         default: medium
     docker:
-      - image: circleci/node:14.16.1@sha256:951e12268fe692615bfd155c327bd910e10c99db98404badd03879f984c32b31
+      - image: cimg/node:14.17.6@sha256:589b5e494173bfb48923fa8d29b010b4d17079ac98d08de95dd4a78e57f5aa0b
+    resource_class: << parameters.resource_class >>
+    working_directory: ~/ng
+
+  test-browser-executor:
+    parameters:
+      resource_class:
+        type: string
+        default: medium
+    docker:
+      - image: cimg/node:14.17.6-browsers@sha256:aa6d08a04d13dd8aa18ae94be70a703c14dde0e99ea572e885e548f47f95eaa9
     resource_class: << parameters.resource_class >>
     working_directory: ~/ng
 
@@ -118,22 +127,6 @@ commands:
     steps:
       - attach_workspace:
           at: *workspace_location
-
-  # Install shared libs used by Chrome that is either provisioned by
-  # rules_webtesting or by puppeteer.
-  install_chrome_libs:
-    description: Install shared Chrome libs
-    steps:
-      - run:
-          name: Install shared Chrome libs
-          command: |
-            sudo apt-get update
-            # Install GTK+ graphical user interface (libgtk-3-0), advanced linux sound architecture (libasound2)
-            # and network security service libraries (libnss3) & X11 Screen Saver extension library (libssx1)
-            # which are dependencies of chrome & needed for karma & protractor headless chrome tests.
-            # This is a very small install which takes around 7s in comparing to using the full
-            # circleci/node:x.x.x-browsers image.
-            sudo apt-get -y install libgtk-3-0 libasound2 libnss3 libxss1
 
   # Install java runtime which is required by some integration tests such as
   # //integration:hello_world__closure_test, //integration:i18n_test and
@@ -213,6 +206,10 @@ commands:
           keys:
             - *cache_key_win
             - *cache_key_win_fallback
+      # Install @bazel/bazelisk globally and use that for the first run.
+      # Workaround for https://github.com/bazelbuild/rules_nodejs/issues/894
+      # NB: the issue was for @bazel/bazel but the same problem applies to @bazel/bazelisk
+      - run: yarn global add @bazel/bazelisk@$env:BAZELISK_VERSION
       # On Windows `~/` is not resolved when using as a CLI value. `../` results in the same path.
       - run: yarn install --frozen-lockfile --non-interactive --cache-folder ../.cache/yarn
 
@@ -291,10 +288,11 @@ jobs:
       - run: yarn -s ng-dev pullapprove verify
       - run: yarn -s ng-dev ngbot verify
       - run: yarn -s ng-dev commit-message validate-range $CI_GIT_BASE_REVISION $CI_GIT_REVISION
+      - run: yarn -s check-tooling-setup
 
   test:
     executor:
-      name: default-executor
+      name: test-browser-executor
       # Now that large integration tests are running locally in parallel (they can't run on RBE yet
       # as they require network access for yarn install), this test is running out of memory
       # consistently with the xlarge machine.
@@ -303,28 +301,13 @@ jobs:
     steps:
       - custom_attach_workspace
       - init_environment
-      - install_chrome_libs
       - install_java
       - run:
-          command: yarn bazel test //... --build_tag_filters=-ivy-only --test_tag_filters=-ivy-only
+          # We need to explicitly specify the --symlink_prefix option because otherwise we would
+          # not be able to easily find the output bin directory when uploading artifacts for size
+          # measurements.
+          command: yarn test  --symlink_prefix=dist/ //...
           no_output_timeout: 20m
-
-  # Temporary job to test what will happen when we flip the Ivy flag to true
-  test_ivy_aot:
-    executor:
-      name: default-executor
-      resource_class: xlarge
-    steps:
-      - custom_attach_workspace
-      - init_environment
-      - install_chrome_libs
-      # We need to explicitly specify the --symlink_prefix option because otherwise we would
-      # not be able to easily find the output bin directory when uploading artifacts for size
-      # measurements.
-      - run:
-          command: yarn test-ivy-aot //... --symlink_prefix=dist/
-          no_output_timeout: 20m
-
         # Publish bundle artifacts which will be used to calculate the size change. **Note**: Make
         # sure that the size plugin from the Angular robot fetches the artifacts from this CircleCI
         # job (see .github/angular-robot.yml). Additionally any artifacts need to be stored with the
@@ -345,7 +328,7 @@ jobs:
           destination: core/todo/bundle.br
 
   # NOTE: This is currently limited to master builds only. See the `monitoring` configuration.
-  saucelabs_view_engine:
+  saucelabs:
     executor:
       name: default-executor
       # In order to avoid the bottleneck of having a slow host machine, we acquire a better
@@ -357,47 +340,22 @@ jobs:
       - init_environment
       - init_saucelabs_environment
       - run:
-          name: Run Bazel tests on Saucelabs with ViewEngine
+          name: Run Bazel tests on Saucelabs
           # See /tools/saucelabs/README.md for more info
           command: |
             yarn bazel run //tools/saucelabs:sauce_service_setup
-            TESTS=$(./node_modules/.bin/bazelisk query --output label '(kind(karma_web_test, ...) intersect attr("tags", "saucelabs", ...)) except attr("tags", "ivy-only", ...) except attr("tags", "fixme-saucelabs-ve", ...)')
+            TESTS=$(./node_modules/.bin/bazelisk query --output label '(kind(karma_web_test, ...) intersect attr("tags", "saucelabs", ...)) except attr("tags", "view-engine-only", ...) except attr("tags", "fixme-saucelabs", ...)')
             yarn bazel test --config=saucelabs ${TESTS}
             yarn bazel run //tools/saucelabs:sauce_service_stop
           no_output_timeout: 40m
       - notify_webhook_on_fail:
           webhook_url_env_var: SLACK_DEV_INFRA_CI_FAILURES_WEBHOOK_URL
 
-  # NOTE: This is currently limited to master builds only. See the `monitoring` configuration.
-  saucelabs_ivy:
-    executor:
-      name: default-executor
-      # In order to avoid the bottleneck of having a slow host machine, we acquire a better
-      # container for this job. This is necessary because we launch a lot of browsers concurrently
-      # and therefore the tunnel and Karma need to process a lot of file requests and tests.
-      resource_class: xlarge
-    steps:
-      - custom_attach_workspace
-      - init_environment
-      - init_saucelabs_environment
-      - run:
-          name: Run Bazel tests on Saucelabs with Ivy
-          # See /tools/saucelabs/README.md for more info
-          command: |
-            yarn bazel run //tools/saucelabs:sauce_service_setup
-            TESTS=$(./node_modules/.bin/bazelisk query --output label '(kind(karma_web_test, ...) intersect attr("tags", "saucelabs", ...)) except attr("tags", "no-ivy-aot", ...) except attr("tags", "fixme-saucelabs-ivy", ...)')
-            yarn bazel test --config=saucelabs --config=ivy ${TESTS}
-            yarn bazel run //tools/saucelabs:sauce_service_stop
-          no_output_timeout: 40m
-      - notify_webhook_on_fail:
-          webhook_url_env_var: SLACK_DEV_INFRA_CI_FAILURES_WEBHOOK_URL
-
   test_aio:
-    executor: default-executor
+    executor: test-browser-executor
     steps:
       - custom_attach_workspace
       - init_environment
-      - install_chrome_libs
         # Build aio
       - run: yarn --cwd aio build --progress=false
         # Lint the code
@@ -416,21 +374,19 @@ jobs:
       - run: yarn --cwd aio redirects-test
 
   deploy_aio:
-    executor: default-executor
+    executor: test-browser-executor
     steps:
       - custom_attach_workspace
       - init_environment
-      - install_chrome_libs
         # Deploy angular.io to production (if necessary)
       - run: setPublicVar_CI_STABLE_BRANCH
       - run: yarn --cwd aio deploy-production
 
   test_aio_local:
-    executor: default-executor
+    executor: test-browser-executor
     steps:
       - custom_attach_workspace
       - init_environment
-      - install_chrome_libs
         # Build aio (with local Angular packages)
       - run: yarn --cwd aio build-local-ci
         # Run unit tests
@@ -456,13 +412,12 @@ jobs:
 
   test_docs_examples:
     executor:
-      name: default-executor
+      name: test-browser-executor
       resource_class: xlarge
     parallelism: 5
     steps:
       - custom_attach_workspace
       - init_environment
-      - install_chrome_libs
         # Install aio
       - run: yarn --cwd aio install --frozen-lockfile --non-interactive --cache-folder ~/.cache/yarn
         # Run examples tests. The "CIRCLE_NODE_INDEX" will be set if "parallelism" is enabled.
@@ -474,25 +429,24 @@ jobs:
   aio_preview:
     executor: default-executor
     environment:
-      AIO_SNAPSHOT_ARTIFACT_PATH: &aio_preview_artifact_path "aio/tmp/snapshot.tgz"
+      AIO_SNAPSHOT_ARTIFACT_PATH: &aio_preview_artifact_path 'aio/tmp/snapshot.tgz'
     steps:
       - custom_attach_workspace
       - init_environment
       - run: ./aio/scripts/build-artifacts.sh $AIO_SNAPSHOT_ARTIFACT_PATH $CI_PULL_REQUEST $CI_COMMIT
       - store_artifacts:
           path: *aio_preview_artifact_path
-          # The `destination` needs to be kept in synch with the value of
+          # The `destination` needs to be kept in sync with the value of
           # `AIO_ARTIFACT_PATH` in `aio/aio-builds-setup/Dockerfile`
           destination: aio/dist/aio-snapshot.tgz
       - run: node ./aio/scripts/create-preview $CIRCLE_BUILD_NUM
 
   # This job should only be run on PR builds, where `CI_PULL_REQUEST` is not `false`.
   test_aio_preview:
-    executor: default-executor
+    executor: test-browser-executor
     steps:
       - custom_attach_workspace
       - init_environment
-      - install_chrome_libs
       - run: yarn --cwd aio install --frozen-lockfile --non-interactive --cache-folder ~/.cache/yarn
       - run:
           name: Wait for preview and run tests
@@ -504,8 +458,6 @@ jobs:
   # the bazel packages more than once. Even though we have a remote cache, these jobs will
   # typically run in parallel so up-to-date outputs will not be available at the time the build
   # starts.
-
-  # Build the view engine npm packages. No new jobs should depend on this.
   build-npm-packages:
     executor:
       name: default-executor
@@ -531,24 +483,6 @@ jobs:
             - ~/bazel_repository_cache
             - ~/.cache/bazelisk
 
-  # Build the ivy npm packages.
-  build-ivy-npm-packages:
-    executor:
-      name: default-executor
-      resource_class: xlarge
-    steps:
-      - custom_attach_workspace
-      - init_environment
-      - run: node scripts/build/build-ivy-npm-packages.js
-
-      # Save the npm packages from //packages/... for other workflow jobs to read
-      - persist_to_workspace:
-          root: *workspace_location
-          paths:
-            - ng/dist/packages-dist-ivy-aot
-            - ng/dist/angular-in-memory-web-api-dist-ivy-aot
-            - ng/dist/zone.js-dist-ivy-aot
-
   # This job creates compressed tarballs (`.tgz` files) for all Angular packages and stores them as
   # build artifacts. This makes it easy to try out changes from a PR build for testing purposes.
   # More info CircleCI build artifacts: https://circleci.com/docs/2.0/artifacts
@@ -557,12 +491,12 @@ jobs:
   publish_packages_as_artifacts:
     executor: default-executor
     environment:
-      AIMWA_PACKAGES_DIR: &aimwa_packages_dir "dist/angular-in-memory-web-api-dist"
-      AIMWA_PACKAGES_ARCHIVES_DIR: &aimwa_packages_archives_dir "dist/angular-in-memory-web-api-dist-archives"
-      NG_PACKAGES_DIR: &ng_packages_dir "dist/packages-dist"
-      NG_PACKAGES_ARCHIVES_DIR: &ng_packages_archives_dir "dist/packages-dist-archives"
-      ZONEJS_PACKAGES_DIR: &zonejs_packages_dir "dist/zone.js-dist"
-      ZONEJS_PACKAGES_ARCHIVES_DIR: &zonejs_packages_archives_dir "dist/zone.js-dist-archives"
+      AIMWA_PACKAGES_DIR: &aimwa_packages_dir 'dist/angular-in-memory-web-api-dist'
+      AIMWA_PACKAGES_ARCHIVES_DIR: &aimwa_packages_archives_dir 'dist/angular-in-memory-web-api-dist-archives'
+      NG_PACKAGES_DIR: &ng_packages_dir 'dist/packages-dist'
+      NG_PACKAGES_ARCHIVES_DIR: &ng_packages_archives_dir 'dist/packages-dist-archives'
+      ZONEJS_PACKAGES_DIR: &zonejs_packages_dir 'dist/zone.js-dist'
+      ZONEJS_PACKAGES_ARCHIVES_DIR: &zonejs_packages_archives_dir 'dist/zone.js-dist-archives'
     steps:
       - custom_attach_workspace
       - init_environment
@@ -609,12 +543,19 @@ jobs:
           command: 'openssl aes-256-cbc -d -in .circleci/github_token -md md5 -k "${KEY}" -out ~/.git_credentials'
       - run: ./scripts/ci/publish-build-artifacts.sh
 
-  aio_monitoring_stable:
+  aio_misc:
     executor: default-executor
     steps:
       - custom_attach_workspace
+      - run:
+          name: Check website provided in contributors.json file
+          command: yarn node aio/scripts/test-external-urls.js
+
+  aio_monitoring_stable:
+    executor: test-browser-executor
+    steps:
+      - custom_attach_workspace
       - init_environment
-      - install_chrome_libs
       - run: setPublicVar_CI_STABLE_BRANCH
       - run:
           name: Check out `aio/` and yarn from the stable branch
@@ -633,11 +574,10 @@ jobs:
           webhook_url_env_var: SLACK_DEV_INFRA_CI_FAILURES_WEBHOOK_URL
 
   aio_monitoring_next:
-    executor: default-executor
+    executor: test-browser-executor
     steps:
       - custom_attach_workspace
       - init_environment
-      - install_chrome_libs
       - run:
           name: Run tests against https://next.angular.io/
           command: ./aio/scripts/test-production.sh https://next.angular.io/ $CI_AIO_MIN_PWA_SCORE
@@ -661,11 +601,6 @@ jobs:
           name: Starting Saucelabs tunnel service
           command: ./tools/saucelabs/sauce-service.sh run
           background: true
-      # add module umd tsc compile option so the test can work
-      # properly in the legacy browsers
-      - run: yarn tsc -p packages --module UMD
-      - run: yarn tsc -p modules --module UMD
-      - run: yarn bazel build //packages/zone.js:npm_package
       # Build test fixtures for a test that rely on Bazel-generated fixtures. Note that disabling
       # specific tests which are reliant on such generated fixtures is not an option as SystemJS
       # in the Saucelabs legacy job always fetches referenced files, even if the imports would be
@@ -674,10 +609,26 @@ jobs:
       - run:
           name: Preparing Bazel-generated fixtures required in legacy tests
           command: |
-            yarn bazel build //packages/core/test:downleveled_es5_fixture
+            yarn bazel build \
+                //packages/core/test:downleveled_es5_fixture \
+                //packages/common/locales
+
             # Needed for the ES5 downlevel reflector test in `packages/core/test/reflection`.
+            mkdir -p dist/all/@angular/core/test/reflection/
             cp dist/bin/packages/core/test/reflection/es5_downleveled_inheritance_fixture.js \
               dist/all/@angular/core/test/reflection/es5_downleveled_inheritance_fixture.js
+            # Locale files are needed for i18n tests running within Saucelabs. These are added
+            # directly as sources so that the TypeScript compilation of `/packages/tsconfig.json`
+            # can succeed. Note that the base locale and currencies files are checked-in, so
+            # we do not need to re-generate those through Bazel.
+            mkdir -p packages/common/locales/extra
+            cp dist/bin/packages/common/locales/*.ts packages/common/locales
+            cp dist/bin/packages/common/locales/extra/*.ts packages/common/locales/extra
+      # add module umd tsc compile option so the test can work
+      # properly in the legacy browsers
+      - run: yarn tsc -p packages/tsconfig-legacy-saucelabs.json --module UMD
+      - run: yarn tsc -p modules --module UMD
+      - run: yarn bazel build //packages/zone.js:npm_package
       - run:
           # Waiting on ready ensures that we don't run tests too early without Saucelabs not being ready.
           name: Waiting for Saucelabs tunnel to connect
@@ -713,7 +664,7 @@ jobs:
             # repository to be able to support arbitrary SHAs.
             - *components_repo_unit_tests_cache_key_fallback
       - run:
-          name: "Fetching angular/components repository"
+          name: 'Fetching angular/components repository'
           command: ./scripts/ci/clone_angular_components_repo.sh
       - run:
           # Run yarn install to fetch the Bazel binaries as used in the components repo.
@@ -725,19 +676,19 @@ jobs:
             # Temporary directory must be kept in sync with the `$COMPONENTS_REPO_TMP_DIR` env
             # variable. It needs to be hardcoded here, because env variables interpolation is
             # not supported.
-            - "/tmp/angular-components-repo"
+            - '/tmp/angular-components-repo'
       - run:
           # Updates the `angular/components` `package.json` file to refer to the release output
           # inside the `packages-dist` directory.
-          name: Setting up release packages.
-          command: node scripts/ci/update-deps-to-dist-packages.js ${COMPONENTS_REPO_TMP_DIR}/package.json dist/packages-dist/
+          name: Setting up framework release packages.
+          command: node scripts/ci/update-framework-deps-to-dist-packages.js ${COMPONENTS_REPO_TMP_DIR}/package.json dist/packages-dist/
       - run:
           # Run `yarn install` again to install the Angular packages from `packages-dist/` and update the lockfile.
           # NOTE: We cannot rely on Bazel to run `yarn install`, because it uses the `--frozen-lockfile` flag and fails.
           name: Installing local Angular packages.
           command: yarn --cwd ${COMPONENTS_REPO_TMP_DIR} install --non-interactive --cache-folder ~/.cache/yarn
       - run:
-          name: "Running `angular/components` unit tests"
+          name: 'Running `angular/components` unit tests'
           command: ./scripts/ci/run_angular_components_unit_tests.sh
 
   test_zonejs:
@@ -772,30 +723,12 @@ jobs:
       - setup_win
       - run:
           name: Build all windows CI targets
-          command: yarn bazel build --build_tag_filters=-ivy-only //packages/compiler-cli/... //tools/ts-api-guardian/...
+          command: bazel build --build_tag_filters=-view-engine-only //packages/compiler-cli/...
           no_output_timeout: 15m
       - run:
           name: Test all windows CI targets
-          command: yarn bazel test --test_tag_filters="-ivy-only,-browser:chromium-local" //packages/compiler-cli/... //tools/ts-api-guardian/...
+          command: bazel test --test_tag_filters="-view-engine-only,-browser:chromium-local" //packages/compiler-cli/...
           no_output_timeout: 15m
-
-  test_ivy_aot_win:
-    executor: windows-executor
-    steps:
-      - setup_win
-      - run:
-          name: Build all windows CI targets
-          command: yarn bazel build --config=ivy --build_tag_filters=-no-ivy-aot,-fixme-ivy-aot //packages/compiler-cli/... //tools/ts-api-guardian/...
-          no_output_timeout: 15m
-      - run:
-          name: Test all windows CI targets
-          command: yarn bazel test --config=ivy --test_tag_filters="-no-ivy-aot,-fixme-ivy-aot,-browser:chromium-local" //packages/compiler-cli/... //tools/ts-api-guardian/... //packages/localize/...
-          no_output_timeout: 15m
-      # Save dependencies to use on subsequent runs.
-      - save_cache:
-          key: *cache_key_win
-          paths:
-            - ~/.cache/yarn
 
 workflows:
   version: 2
@@ -811,13 +744,7 @@ workflows:
       - test:
           requires:
             - setup
-      - test_ivy_aot:
-          requires:
-            - setup
       - build-npm-packages:
-          requires:
-            - setup
-      - build-ivy-npm-packages:
           requires:
             - setup
       - legacy-unit-tests-saucelabs:
@@ -854,14 +781,12 @@ workflows:
           requires:
             # Only publish if tests and integration tests pass
             - test
-            - test_ivy_aot
             # Only publish if `aio`/`docs` tests using the locally built Angular packages pass
             - test_aio_local
             - test_docs_examples
             # Get the artifacts to publish from the build-packages-dist job
             # since the publishing script expects the legacy outputs layout.
             - build-npm-packages
-            - build-ivy-npm-packages
             - legacy-unit-tests-saucelabs
       - components-repo-unit-tests:
           requires:
@@ -872,29 +797,20 @@ workflows:
       - test_win:
           requires:
             - setup
-      - test_ivy_aot_win:
-          requires:
-            - setup
 
   monitoring:
     jobs:
       - setup
+      - aio_misc:
+          requires:
+            - setup
       - aio_monitoring_stable:
           requires:
             - setup
       - aio_monitoring_next:
           requires:
             - setup
-      - saucelabs_ivy:
-          # Testing saucelabs via Bazel currently taking longer than the legacy saucelabs job as it
-          # each karma_web_test target is provisioning and tearing down browsers which is adding
-          # a lot of overhead. Running once daily on master only to avoid wasting resources and
-          # slowing down CI for PRs.
-          # TODO: Run this job on all branches (including PRs) once karma_web_test targets can
-          # share provisioned browsers and we can remove the legacy saucelabs job.
-          requires:
-            - setup
-      - saucelabs_view_engine:
+      - saucelabs:
           # Testing saucelabs via Bazel currently taking longer than the legacy saucelabs job as it
           # each karma_web_test target is provisioning and tearing down browsers which is adding
           # a lot of overhead. Running once daily on master only to avoid wasting resources and
@@ -907,4 +823,4 @@ workflows:
       - schedule:
           <<: *only_on_master
           # Runs monitoring jobs at 10:00AM every day.
-          cron: "0 10 * * *"
+          cron: '0 10 * * *'

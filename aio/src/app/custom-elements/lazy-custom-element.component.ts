@@ -21,7 +21,8 @@ export class LazyCustomElementComponent implements OnInit {
       return;
     }
 
-    this.elementRef.nativeElement.innerHTML = `<${this.selector}></${this.selector}>`;
+    this.elementRef.nativeElement.textContent = '';
+    this.elementRef.nativeElement.appendChild(document.createElement(this.selector));
     this.elementsLoader.loadCustomElement(this.selector);
   }
 }

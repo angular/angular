@@ -1,4 +1,5 @@
-load("//tools:defaults.bzl", "ng_module", "ng_package", "ts_api_guardian_test_npm_package")
+load("//tools:defaults.bzl", "api_golden_test_npm_package", "ng_module", "ng_package")
+load("//tools:tsec.bzl", "tsec_test")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -26,6 +27,12 @@ ng_module(
     ],
 )
 
+tsec_test(
+    name = "tsec_test",
+    target = "platform-server",
+    tsconfig = "//packages:tsec_config",
+)
+
 ng_package(
     name = "npm_package",
     srcs = [
@@ -33,7 +40,10 @@ ng_package(
         "//packages/platform-server/init:package.json",
         "//packages/platform-server/testing:package.json",
     ],
-    entry_point = ":index.ts",
+    externals = [
+        "domino",
+        "xhr2",
+    ],
     tags = [
         "release-with-framework",
     ],
@@ -50,12 +60,12 @@ ng_package(
     ],
 )
 
-ts_api_guardian_test_npm_package(
+api_golden_test_npm_package(
     name = "platform-server_api",
-    actualDir = "angular/packages/platform-server/npm_package",
     data = [
         ":npm_package",
         "//goldens:public-api",
     ],
-    goldenDir = "angular/goldens/public-api/platform-server",
+    golden_dir = "angular/goldens/public-api/platform-server",
+    npm_package = "angular/packages/platform-server/npm_package",
 )

@@ -27,9 +27,9 @@ export class AnimationEngine {
 
   constructor(
       private bodyNode: any, private _driver: AnimationDriver,
-      normalizer: AnimationStyleNormalizer) {
-    this._transitionEngine = new TransitionAnimationEngine(bodyNode, _driver, normalizer);
-    this._timelineEngine = new TimelineAnimationEngine(bodyNode, _driver, normalizer);
+      private _normalizer: AnimationStyleNormalizer) {
+    this._transitionEngine = new TransitionAnimationEngine(bodyNode, _driver, _normalizer);
+    this._timelineEngine = new TimelineAnimationEngine(bodyNode, _driver, _normalizer);
 
     this._transitionEngine.onRemovalComplete = (element: any, context: any) =>
         this.onRemovalComplete(element, context);
@@ -48,7 +48,7 @@ export class AnimationEngine {
         throw new Error(`The animation trigger "${
             name}" has failed to build due to the following errors:\n - ${errors.join('\n - ')}`);
       }
-      trigger = buildTrigger(name, ast);
+      trigger = buildTrigger(name, ast, this._normalizer);
       this._triggerCache[cacheKey] = trigger;
     }
     this._transitionEngine.registerTrigger(namespaceId, name, trigger);

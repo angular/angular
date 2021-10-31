@@ -19,11 +19,11 @@ export class DomEventsPlugin extends EventManagerPlugin {
 
   // This plugin should come last in the list of plugins, because it accepts all
   // events.
-  supports(eventName: string): boolean {
+  override supports(eventName: string): boolean {
     return true;
   }
 
-  addEventListener(element: HTMLElement, eventName: string, handler: Function): Function {
+  override addEventListener(element: HTMLElement, eventName: string, handler: Function): Function {
     element.addEventListener(eventName, handler as EventListener, false);
     return () => this.removeEventListener(element, eventName, handler as EventListener);
   }

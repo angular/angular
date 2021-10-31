@@ -1,0 +1,27 @@
+@use 'sass:map';
+@use '../../constants';
+@use '~@angular/material' as mat;
+
+@mixin theme($theme) {
+  $background: map.get($theme, background);
+
+  aio-contributor {
+    background: mat.get-color-from-palette($background, background);
+
+    .contributor-info {
+      background: rgba(constants.$darkgray, 0.5);
+
+      .info-item {
+        color: constants.$white;
+
+        &:hover {
+          color: constants.$lightgray;
+        }
+      }
+    }
+
+    .contributor-image {
+      border: 2px solid constants.$lightgray;
+    }
+  }
+}

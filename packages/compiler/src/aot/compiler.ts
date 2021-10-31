@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileInjectableMetadata, CompileNgModuleMetadata, CompilePipeMetadata, CompilePipeSummary, CompileProviderMetadata, CompileShallowModuleMetadata, CompileStylesheetMetadata, CompileTypeMetadata, CompileTypeSummary, componentFactoryName, flatten, identifierName, templateSourceUrl} from '../compile_metadata';
+import {CompileDirectiveMetadata, CompileInjectableMetadata, CompileNgModuleMetadata, CompilePipeMetadata, CompilePipeSummary, CompileProviderMetadata, CompileShallowModuleMetadata, CompileStylesheetMetadata, CompileTypeMetadata, CompileTypeSummary, componentFactoryName, flatten, templateSourceUrl} from '../compile_metadata';
 import {CompilerConfig} from '../config';
-import {ConstantPool} from '../constant_pool';
+import {ConstantPool, OutputContext} from '../constant_pool';
 import {ViewEncapsulation} from '../core';
 import {MessageBundle} from '../i18n/message_bundle';
 import {createTokenForExternalReference, Identifiers} from '../identifiers';
@@ -19,19 +19,18 @@ import {InterpolationConfig} from '../ml_parser/interpolation_config';
 import {NgModuleCompiler} from '../ng_module_compiler';
 import {OutputEmitter} from '../output/abstract_emitter';
 import * as o from '../output/output_ast';
-import {ParseError} from '../parse_util';
+import {CompileIdentifierMetadata, identifierName, ParseError, syntaxError} from '../parse_util';
 import {CompiledStylesheet, StyleCompiler} from '../style_compiler';
 import {SummaryResolver} from '../summary_resolver';
 import {TemplateAst} from '../template_parser/template_ast';
 import {TemplateParser} from '../template_parser/template_parser';
-import {newArray, OutputContext, syntaxError, ValueVisitor, visitValue} from '../util';
+import {newArray, ValueVisitor, visitValue} from '../util';
 import {TypeCheckCompiler} from '../view_compiler/type_check_compiler';
 import {ViewCompiler, ViewCompileResult} from '../view_compiler/view_compiler';
 
 import {AotCompilerHost} from './compiler_host';
 import {AotCompilerOptions} from './compiler_options';
 import {GeneratedFile} from './generated_file';
-import {LazyRoute, listLazyRoutes, parseLazyRoute} from './lazy_routes';
 import {PartialModule} from './partial_module';
 import {StaticReflector} from './static_reflector';
 import {StaticSymbol} from './static_symbol';
@@ -620,43 +619,6 @@ export class AotCompiler {
 
   private _codegenSourceModule(srcFileUrl: string, ctx: OutputContext): GeneratedFile {
     return new GeneratedFile(srcFileUrl, ctx.genFilePath, ctx.statements);
-  }
-
-  listLazyRoutes(entryRoute?: string, analyzedModules?: NgAnalyzedModules): LazyRoute[] {
-    const self = this;
-    if (entryRoute) {
-      const symbol = parseLazyRoute(entryRoute, this.reflector).referencedModule;
-      return visitLazyRoute(symbol);
-    } else if (analyzedModules) {
-      const allLazyRoutes: LazyRoute[] = [];
-      for (const ngModule of analyzedModules.ngModules) {
-        const lazyRoutes = listLazyRoutes(ngModule, this.reflector);
-        for (const lazyRoute of lazyRoutes) {
-          allLazyRoutes.push(lazyRoute);
-        }
-      }
-      return allLazyRoutes;
-    } else {
-      throw new Error(`Either route or analyzedModules has to be specified!`);
-    }
-
-    function visitLazyRoute(
-        symbol: StaticSymbol, seenRoutes = new Set<StaticSymbol>(),
-        allLazyRoutes: LazyRoute[] = []): LazyRoute[] {
-      // Support pointing to default exports, but stop recursing there,
-      // as the StaticReflector does not yet support default exports.
-      if (seenRoutes.has(symbol) || !symbol.name) {
-        return allLazyRoutes;
-      }
-      seenRoutes.add(symbol);
-      const lazyRoutes =
-          listLazyRoutes(self._metadataResolver.getNgModuleMetadata(symbol, true)!, self.reflector);
-      for (const lazyRoute of lazyRoutes) {
-        allLazyRoutes.push(lazyRoute);
-        visitLazyRoute(lazyRoute.referencedModule, seenRoutes, allLazyRoutes);
-      }
-      return allLazyRoutes;
-    }
   }
 }
 

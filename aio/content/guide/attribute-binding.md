@@ -13,7 +13,7 @@ See the <live-example></live-example> for a working example containing the code 
 
 It is recommended that you set an element property with a [property binding](guide/property-binding) whenever possible.
 However, sometimes you don't have an element property to bind.
-In those situations, you can use attribute binding.
+In those situations, use attribute binding.
 
 For example, [ARIA](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA) and
 [SVG](https://developer.mozilla.org/en-US/docs/Web/SVG) are purely attributes.
@@ -58,7 +58,7 @@ To use attribute binding with the `<td>` attribute `colspan`:
 1. Specify the `colspan` attribute by using the following syntax: `[attr.colspan]`.
 1. Set `[attr.colspan]` equal to an expression.
 
-In the following example, we bind the `colspan` attribute to the expression `1 + 1`.
+In the following example, you bind the `colspan` attribute to the expression `1 + 1`.
 
 <code-example path="attribute-binding/src/app/app.component.html" region="colspan" header="src/app/app.component.html"></code-example>
 
@@ -78,7 +78,7 @@ For more information on how to bind to the `colSpan` property, see the [`colspan
 {@a class-binding}
 ## Binding to the `class` attribute
 
-You can use class binding to add and remove CSS class names from an element's `class` attribute.
+Use class binding to add and remove CSS class names from an element's `class` attribute.
 
 ### Binding to a single CSS `class`
 
@@ -161,7 +161,7 @@ The following table summarizes class binding syntax.
 {@a style-binding}
 ## Binding to the style attribute
 
-You can use style binding to set styles dynamically.
+Use style binding to set styles dynamically.
 
 ### Binding to a single style
 
@@ -263,7 +263,7 @@ The following table summarizes style binding syntax.
 <div class="alert is-helpful">
 
 The [NgStyle](guide/built-in-directives/#ngstyle) directive can be used as an alternative to direct `[style]` bindings.
-However, using the above style binding syntax without `NgStyle` is preferred because due to improvements in style binding in Angular, `NgStyle` no longer provides significant value, and might eventually be removed in the future.
+However, using the preceding style binding syntax without `NgStyle` is preferred because due to improvements in style binding in Angular, `NgStyle` no longer provides significant value, and might eventually be removed in the future.
 
 </div>
 
@@ -294,7 +294,7 @@ When there are multiple bindings to the same class name or style property, Angul
 
 The more specific a class or style binding is, the higher its precedence.
 
-A binding to a specific class (for example, `[class.foo]`) will take precedence over a generic `[class]` binding, and a binding to a specific style (for example, `[style.bar]`) will take precedence over a generic `[style]` binding.
+A binding to a specific class (for example, `[class.foo]`) takes precedence over a generic `[class]` binding, and a binding to a specific style (for example, `[style.bar]`) takes precedence over a generic `[style]` binding.
 
 <code-example path="attribute-binding/src/app/app.component.html" region="basic-specificity" header="src/app/app.component.html"></code-example>
 
@@ -311,7 +311,7 @@ Directives often augment component behavior, so host bindings from components ha
 
 In addition, bindings take precedence over static attributes.
 
-In the following case, `class` and `[class]` have similar specificity, but the `[class]` binding will take precedence because it is dynamic.
+In the following case, `class` and `[class]` have similar specificity, but the `[class]` binding takes precedence because it is dynamic.
 
 <code-example path="attribute-binding/src/app/app.component.html" region="dynamic-priority" header="src/app/app.component.html"></code-example>
 
@@ -319,14 +319,14 @@ In the following case, `class` and `[class]` have similar specificity, but the `
 ### Delegating to styles with lower precedence
 
 It is possible for higher precedence styles to "delegate" to lower precedence styles using `undefined` values.
-Whereas setting a style property to `null` ensures the style is removed, setting it to `undefined` will cause Angular to fall back to the next-highest precedence binding to that style.
+Whereas setting a style property to `null` ensures the style is removed, setting it to `undefined` causes Angular to fall back to the next-highest precedence binding to that style.
 
 For example, consider the following template:
 
 <code-example path="attribute-binding/src/app/app.component.html" region="style-delegation" header="src/app/app.component.html"></code-example>
 
 Imagine that the `dirWithHostBinding` directive and the `comp-with-host-binding` component both have a `[style.width]` host binding.
-In that case, if `dirWithHostBinding` sets its binding to `undefined`, the `width` property will fall back to the value of the `comp-with-host-binding` host binding.
+In that case, if `dirWithHostBinding` sets its binding to `undefined`, the `width` property falls back to the value of the `comp-with-host-binding` host binding.
 However, if `dirWithHostBinding` sets its binding to `null`, the `width` property will be removed entirely.
 
 
@@ -334,7 +334,7 @@ However, if `dirWithHostBinding` sets its binding to `null`, the `width` propert
 
 There are cases where you need to differentiate the behavior of a [Component](api/core/Component) or [Directive](api/core/Directive) based on a static value set on the host element as an HTML attribute. For example, you might have a directive that needs to know the `type` of a `<button>` or `<input>` element.
 
-The [Attribute](api/core/Attribute) parameter decorator is great for passing the value of an HTML attribute to a component/directive constructor via [dependency injection](guide/dependency-injection).
+The [Attribute](api/core/Attribute) parameter decorator is great for passing the value of an HTML attribute to a component/directive constructor using [dependency injection](guide/dependency-injection).
 
 <div class="alert is-helpful">
 

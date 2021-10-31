@@ -8,10 +8,9 @@
 
 import {ProfilerEvent, setProfiler} from '@angular/core/src/render3/profiler';
 import {TestBed} from '@angular/core/testing';
-import {expect} from '@angular/core/testing/src/testing_internal';
 import {onlyInIvy} from '@angular/private/testing';
 
-import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, Component, DoCheck, ErrorHandler, EventEmitter, Input, OnChanges, OnInit, Output, ViewChild} from '../../src/core';
+import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, Component, DoCheck, ErrorHandler, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, ViewChild} from '../../src/core';
 
 
 onlyInIvy('Ivy-specific functionality').describe('profiler', () => {
@@ -187,13 +186,19 @@ onlyInIvy('Ivy-specific functionality').describe('profiler', () => {
 
   describe('lifecycle hooks', () => {
     it('should call the profiler on lifecycle execution', () => {
-      @Component({selector: 'my-comp', template: '{{prop}}'})
+      class Service implements OnDestroy {
+        ngOnDestroy() {}
+      }
+      @Component({selector: 'my-comp', template: '{{prop}}', providers: [Service]})
       class MyComponent implements OnInit, AfterViewInit, AfterViewChecked, AfterContentInit,
-                                   AfterContentChecked, OnChanges, DoCheck {
+                                   AfterContentChecked, OnChanges, DoCheck, OnDestroy {
         @Input() prop = 1;
+
+        constructor(private service: Service) {}
 
         ngOnInit() {}
         ngDoCheck() {}
+        ngOnDestroy() {}
         ngOnChanges() {}
         ngAfterViewInit() {}
         ngAfterViewChecked() {}
@@ -293,6 +298,27 @@ onlyInIvy('Ivy-specific functionality').describe('profiler', () => {
       expect(onChangesSpy).toHaveBeenCalled();
       expect(ngOnChangesStart).toBeTruthy();
       expect(ngOnChangesEnd).toBeTruthy();
+
+      fixture.destroy();
+      const ngOnDestroyStart = findProfilerCall(
+          (args: any[]) =>
+              args[0] === ProfilerEvent.LifecycleHookStart && args[2] === myComp.ngOnDestroy);
+      const ngOnDestroyEnd = findProfilerCall(
+          (args: any[]) =>
+              args[0] === ProfilerEvent.LifecycleHookEnd && args[2] === myComp.ngOnDestroy);
+
+      expect(ngOnDestroyStart).toBeTruthy();
+      expect(ngOnDestroyEnd).toBeTruthy();
+
+      const serviceNgOnDestroyStart = findProfilerCall(
+          (args: any[]) => args[0] === ProfilerEvent.LifecycleHookStart &&
+              args[2] === Service.prototype.ngOnDestroy);
+      const serviceNgOnDestroyEnd = findProfilerCall(
+          (args: any[]) => args[0] === ProfilerEvent.LifecycleHookEnd &&
+              args[2] === Service.prototype.ngOnDestroy);
+
+      expect(serviceNgOnDestroyStart).toBeTruthy();
+      expect(serviceNgOnDestroyEnd).toBeTruthy();
     });
   });
 

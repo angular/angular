@@ -8,7 +8,7 @@ Angular is a development platform, built on [TypeScript](https://www.typescriptl
 * A collection of well-integrated libraries that cover a wide variety of features, including routing, forms management, client-server communication, and more
 * A suite of developer tools to help you develop, build, test, and update your code
 
-With Angular, you're taking advantage of a platform that can scale from single-developer projects to enterprise-level applications. Angular is designed to make updating as easy as possible, so you can take advantage of the latest developments with a minimum of effort. Best of all, the Angular ecosystem consists of a diverse group of over 1.7 million developers, library authors, and content creators.
+With Angular, you're taking advantage of a platform that can scale from single-developer projects to enterprise-level applications. Angular is designed to make updating as straightforward as possible, so take advantage of the latest developments with a minimum of effort. Best of all, the Angular ecosystem consists of a diverse group of over 1.7 million developers, library authors, and content creators.
 
 <div class="alert is-helpful">
 
@@ -43,9 +43,9 @@ When Angular renders this component, the resulting DOM looks like this:
 
 <code-example path="what-is-angular/src/app/hello-world-example.html" language="html"></code-example>
 
-Angular's component model offers strong encapsulation and an intuitive application structure. Components also make your application easier to unit test and can improve the overall readability of your code.
+Angular's component model offers strong encapsulation and an intuitive application structure. Components also make your application painless to unit test and can improve the overall readability of your code.
 
-For more information on what you can do with components, see the [Components](guide/component-overview) section.
+For more information on what to do with components, see the [Components](guide/component-overview) section.
 
 {@a templates}
 ### Templates
@@ -74,7 +74,7 @@ Angular also supports property bindings, to help you set values for properties a
 
 Notice the use of the square brackets--that syntax indicates that you're binding the property or attribute to a value in the component class.
 
-You can also declare event listeners to listen for and respond to user actions such as keystrokes, mouse movements, clicks, and touches. You declare an event listener by specifying the event name in parentheses:
+Declare event listeners to listen for and respond to user actions such as keystrokes, mouse movements, clicks, and touches. You declare an event listener by specifying the event name in parentheses:
 
 <code-example path="what-is-angular/src/app/hello-world-bindings/hello-world-bindings.component.html" region="event-binding"></code-example>
 
@@ -82,7 +82,7 @@ The preceding example calls a method, which is defined in the component class:
 
 <code-example path="what-is-angular/src/app/hello-world-bindings/hello-world-bindings.component.ts" region="method"></code-example>
 
-The following is an example of interpolation and bindings within an Angular template:
+The following is a combined example of Interpolation, Property Binding and Event Binding within an Angular template:
 
 <code-tabs linenums="true">
   <code-pane
@@ -96,7 +96,7 @@ The following is an example of interpolation and bindings within an Angular temp
   </code-pane>
 </code-tabs>
 
-You can add additional functionality to your templates through the use of [directives](guide/built-in-directives). The most popular directives in Angular are `*ngIf` and `*ngFor`. You can use directives to perform a variety of tasks, such as dynamically modifying the DOM structure. And you can also create your own custom directives to create great user experiences.
+Add additional functionality to your templates through the use of [directives](guide/built-in-directives). The most popular directives in Angular are `*ngIf` and `*ngFor`. Use directives to perform a variety of tasks, such as dynamically modifying the DOM structure. And create your own custom directives to create great user experiences.
 
 The following code is an example of the `*ngIf` directive.
 
@@ -112,14 +112,14 @@ The following code is an example of the `*ngIf` directive.
   </code-pane>
 </code-tabs>
 
-Angular's declarative templates allow you to cleanly separate your application's logic from its presentation. Templates are based on standard HTML, so they're easy to build, maintain, and update.
+Angular's declarative templates let you cleanly separate your application's logic from its presentation. Templates are based on standard HTML, for ease in building, maintaining, and updating.
 
-For more information on what you can do with templates, see the [Templates](guide/template-syntax) section.
+For more information on templates, see the [Templates](guide/template-syntax) section.
 
 {@a di}
 ### Dependency injection
 
-Dependency injection allows you to declare the dependencies of your TypeScript classes without taking care of their instantiation. Instead, Angular handles the instantiation for you. This design pattern allows you to write more testable and flexible code. Even though understanding dependency injection is not critical to start using Angular, we strongly recommend it as a best practice and many aspects of Angular take advantage of it to some degree.
+Dependency injection lets you declare the dependencies of your TypeScript classes without taking care of their instantiation. Instead, Angular handles the instantiation for you. This design pattern lets you write more testable and flexible code. Even though understanding dependency injection is not critical to start using Angular, we strongly recommend it as a best practice and many aspects of Angular take advantage of it to some degree.
 
 To illustrate how dependency injection works, consider the following example. The first file, `logger.service.ts`, defines a `Logger` class. This class contains a `writeCount` function that logs a number to the console.
 
@@ -135,7 +135,7 @@ For more information about dependency injection and Angular, see the [Dependency
 
 ## Angular CLI
 
-The Angular CLI is the fastest, easiest, and recommended way to develop Angular applications. The Angular CLI makes a number of tasks easy. Here are some examples:
+The Angular CLI is the fastest, straightforward, and recommended way to develop Angular applications. The Angular CLI makes a number of tasks trouble-free. Here are some examples:
 
 <table>
 <tr>
@@ -167,7 +167,7 @@ For more information about the Angular CLI, see the [CLI Reference](/cli) sectio
 {@a 1p-libraries}
 ## First-party libraries
 
-The section, [Angular applications: The essentials](#essentials), provides a brief overview of a couple of the key architectural elements you'll use when building Angular applications. But the many benefits of Angular really become apparent when your application grows and you want to add additional functions such as site navigation or user input. That's when you can leverage the Angular platform to incorporate one of the many first-party libraries that Angular provides.
+The section, [Angular applications: The essentials](#essentials), provides a brief overview of a couple of the key architectural elements you'll use when building Angular applications. But the many benefits of Angular really become apparent when your application grows and you want to add additional functions such as site navigation or user input. Use the Angular platform to incorporate one of the many first-party libraries that Angular provides.
 
 Some of the libraries available to you include:
 <table>
@@ -196,16 +196,16 @@ Some of the libraries available to you include:
 </tr>
 </table>
 
-These libraries expand your application's functionality while also allowing you to focus more on the features that make your application unique. And you can add these libraries knowing that they're designed to integrate seamlessly into and update simultaneously with the Angular framework.
+These libraries expand your application's functionality while also letting you focus more on the features that make your application unique. Add these libraries knowing that they're designed to integrate seamlessly into and update simultaneously with the Angular framework.
 
 These libraries are only required if and when they can help you add functionality to your applications or solve a particular problem.
 
 ## Next steps
 
-This topic is intended to give you a brief overview of what Angular is, the advantages it provides, and what you can expect as you start to build your applications.
+This topic is intended to give you a brief overview of what Angular is, the advantages it provides, and what to expect as you start to build your applications.
 
-To see Angular in action, see our [Getting Started](https://angular.io/start) tutorial. This tutorial uses [stackblitz.com](https://stackblitz.com/), so you can explore a working example of Angular without any installation requirements.
+To see Angular in action, see our [Getting Started](start) tutorial. This tutorial uses [stackblitz.com](https://stackblitz.com/), for you to explore a working example of Angular without any installation requirements.
 
 To explore Angular's capabilities further, we recommend reading through the sections, Understanding Angular and Developer Guides.
 
-@reviewed 2021-03-08
+@reviewed 2021-09-14

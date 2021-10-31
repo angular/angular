@@ -8,10 +8,9 @@
 
 import 'zone.js/bundles/zone.umd';
 
-import {enableProdMode} from '@angular/core';
 import {platformBrowser} from '@angular/platform-browser';
-import {TransferStateModuleNgFactory} from './app.ngfactory';
+import {TransferStateModule} from './app';
 
 window['doBootstrap'] = function() {
-  platformBrowser().bootstrapModuleFactory(TransferStateModuleNgFactory);
+  platformBrowser().bootstrapModule(TransferStateModule);
 };

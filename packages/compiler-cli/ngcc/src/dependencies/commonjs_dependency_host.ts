@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {AbsoluteFsPath} from '../../../src/ngtsc/file_system';
 import {isRequireCall, isWildcardReexportStatement, RequireCall} from '../host/commonjs_umd_utils';
@@ -16,11 +16,11 @@ import {DependencyHostBase} from './dependency_host';
  * Helper functions for computing dependencies.
  */
 export class CommonJsDependencyHost extends DependencyHostBase {
-  protected canSkipFile(fileContents: string): boolean {
+  protected override canSkipFile(fileContents: string): boolean {
     return !hasRequireCalls(fileContents);
   }
 
-  protected extractImports(file: AbsoluteFsPath, fileContents: string): Set<string> {
+  protected override extractImports(file: AbsoluteFsPath, fileContents: string): Set<string> {
     // Parse the source into a TypeScript AST and then walk it looking for imports and re-exports.
     const sf =
         ts.createSourceFile(file, fileContents, ts.ScriptTarget.ES2015, false, ts.ScriptKind.JS);

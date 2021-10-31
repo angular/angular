@@ -261,9 +261,6 @@
     "name": "LOCALE_ID"
   },
   {
-    "name": "LOCALE_ID"
-  },
-  {
     "name": "LifecycleHooksFeature"
   },
   {
@@ -319,9 +316,6 @@
   },
   {
     "name": "NG_INJ_DEF"
-  },
-  {
-    "name": "NG_LOC_ID_DEF"
   },
   {
     "name": "NG_MOD_DEF"
@@ -627,7 +621,13 @@
     "name": "_global"
   },
   {
+    "name": "_injectImplementation"
+  },
+  {
     "name": "_keyMap"
+  },
+  {
+    "name": "_platform"
   },
   {
     "name": "_randomChar"
@@ -652,6 +652,9 @@
   },
   {
     "name": "addToViewTree"
+  },
+  {
+    "name": "addValidators"
   },
   {
     "name": "allocExpando"
@@ -712,6 +715,9 @@
   },
   {
     "name": "coerceToValidator"
+  },
+  {
+    "name": "collectNativeNodes"
   },
   {
     "name": "collectStylingFromDirectives"
@@ -894,6 +900,9 @@
     "name": "generatePropertyAliases"
   },
   {
+    "name": "getBeforeNodeForView"
+  },
+  {
     "name": "getClosureSafeProperty"
   },
   {
@@ -915,9 +924,6 @@
     "name": "getDOM"
   },
   {
-    "name": "getDebugContext"
-  },
-  {
     "name": "getDeclarationTNode"
   },
   {
@@ -928,6 +934,9 @@
   },
   {
     "name": "getFirstLContainer"
+  },
+  {
+    "name": "getFirstNativeNode"
   },
   {
     "name": "getInjectableDef"
@@ -1048,6 +1057,9 @@
   },
   {
     "name": "hasTagAndTypeMatch"
+  },
+  {
+    "name": "hasValidator"
   },
   {
     "name": "hostReportError"
@@ -1236,6 +1248,9 @@
     "name": "makeRecord"
   },
   {
+    "name": "makeValidatorsArray"
+  },
+  {
     "name": "map"
   },
   {
@@ -1267,6 +1282,9 @@
   },
   {
     "name": "mergeHostAttrs"
+  },
+  {
+    "name": "mergeMap"
   },
   {
     "name": "mergeValidators"
@@ -1365,6 +1383,9 @@
     "name": "refreshComponent"
   },
   {
+    "name": "refreshContainsDirtyView"
+  },
+  {
     "name": "refreshContentQueries"
   },
   {
@@ -1393,6 +1414,12 @@
   },
   {
     "name": "removeListItem"
+  },
+  {
+    "name": "removeStyle"
+  },
+  {
+    "name": "removeValidators"
   },
   {
     "name": "renderComponent"
@@ -1479,9 +1506,6 @@
     "name": "setIsInCheckNoChangesMode"
   },
   {
-    "name": "setLocaleId"
-  },
-  {
     "name": "setSelectedIndex"
   },
   {
@@ -1552,6 +1576,9 @@
   },
   {
     "name": "updateTransplantedViewCount"
+  },
+  {
+    "name": "urlParsingNode"
   },
   {
     "name": "viewAttachedToChangeDetector"

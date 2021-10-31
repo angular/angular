@@ -242,8 +242,8 @@ import {obsoleteInIvy} from '@angular/private/testing';
                component,
              };
 
-             TestBed.resetTestingModule();
-
+             expect(() => TestBed.resetTestingModule())
+                 .toThrowError('1 component threw errors during cleanup');
              expect(console.error)
                  .toHaveBeenCalledWith('Error during cleanup of component', expectedObject);
            });

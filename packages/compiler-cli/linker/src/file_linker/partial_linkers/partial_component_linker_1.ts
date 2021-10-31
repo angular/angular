@@ -5,9 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {compileComponentFromMetadata, ConstantPool, DeclarationListEmitMode, DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig, makeBindingParser, parseTemplate, R3ComponentMetadata, R3DeclareComponentMetadata, R3DeclareUsedDirectiveMetadata, R3PartialDeclaration, R3UsedDirectiveMetadata} from '@angular/compiler';
-import {ChangeDetectionStrategy, ViewEncapsulation} from '@angular/compiler/src/core';
-import * as o from '@angular/compiler/src/output/output_ast';
+import {ChangeDetectionStrategy, compileComponentFromMetadata, ConstantPool, DeclarationListEmitMode, DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig, makeBindingParser, outputAst as o, parseTemplate, R3ComponentMetadata, R3DeclareComponentMetadata, R3DeclareUsedDirectiveMetadata, R3PartialDeclaration, R3UsedDirectiveMetadata, ViewEncapsulation} from '@angular/compiler';
 
 import {AbsoluteFsPath} from '../../../../src/ngtsc/file_system';
 import {Range} from '../../ast/ast_host';

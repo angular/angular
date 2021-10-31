@@ -11,5 +11,5 @@ import { Hero } from './hero';
   styleUrls: ['./hero-details.component.css']
 })
 export class HeroDetailsComponent {
-  @Input() hero: Hero;
+  @Input() hero!: Hero;
 }

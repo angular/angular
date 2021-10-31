@@ -9,7 +9,7 @@
 import {runOneBuild} from '@angular/bazel';
 import * as fs from 'fs';
 import * as path from 'path';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {createTsConfig} from './tsconfig_template';
 
@@ -32,7 +32,7 @@ export interface TestSupport {
   writeFiles(...mockDirs: {[fileName: string]: string}[]): void;
   shouldExist(fileName: string): void;
   shouldNotExist(fileName: string): void;
-  runOneBuild(): boolean;
+  runOneBuild(): Promise<boolean>;
 }
 
 export function setup({
@@ -161,7 +161,7 @@ export function setup({
     }
   }
 
-  function runOneBuildImpl(): boolean {
+  async function runOneBuildImpl(): Promise<boolean> {
     return runOneBuild(['@' + tsConfigJsonPath]);
   }
 }

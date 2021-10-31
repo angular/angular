@@ -113,15 +113,61 @@ export interface IterableChangeRecord<V> {
 }
 
 /**
- * An optional function passed into the `NgForOf` directive that defines how to track
- * changes for items in an iterable.
- * The function takes the iteration index and item ID.
- * When supplied, Angular tracks changes by the return value of the function.
+ * A function optionally passed into the `NgForOf` directive to customize how `NgForOf` uniquely
+ * identifies items in an iterable.
  *
+ * `NgForOf` needs to uniquely identify items in the iterable to correctly perform DOM updates
+ * when items in the iterable are reordered, new items are added, or existing items are removed.
+ *
+ *
+ * In all of these scenarios it is usually desirable to only update the DOM elements associated
+ * with the items affected by the change. This behavior is important to:
+ *
+ * - preserve any DOM-specific UI state (like cursor position, focus, text selection) when the
+ *   iterable is modified
+ * - enable animation of item addition, removal, and iterable reordering
+ * - preserve the value of the `<select>` element when nested `<option>` elements are dynamically
+ *   populated using `NgForOf` and the bound iterable is updated
+ *
+ * A common use for custom `trackBy` functions is when the model that `NgForOf` iterates over
+ * contains a property with a unique identifier. For example, given a model:
+ *
+ * ```ts
+ * class User {
+ *   id: number;
+ *   name: string;
+ *   ...
+ * }
+ * ```
+ * a custom `trackBy` function could look like the following:
+ * ```ts
+ * function userTrackBy(index, user) {
+ *   return user.id;
+ * }
+ * ```
+ *
+ * A custom `trackBy` function must have several properties:
+ *
+ * - be [idempotent](https://en.wikipedia.org/wiki/Idempotence) (be without side effects, and always
+ * return the same value for a given input)
+ * - return unique value for all unique inputs
+ * - be fast
+ *
+ * @see [`NgForOf#ngForTrackBy`](api/common/NgForOf#ngForTrackBy)
  * @publicApi
  */
 export interface TrackByFunction<T> {
-  (index: number, item: T): any;
+  // Note: the type parameter `U` enables more accurate template type checking in case a trackBy
+  // function is declared using a base type of the iterated type. The `U` type gives TypeScript
+  // additional freedom to infer a narrower type for the `item` parameter type, instead of imposing
+  // the trackBy's declared item type as the inferred type for `T`.
+  // See https://github.com/angular/angular/issues/40125
+
+  /**
+   * @param index The index of the item within the iterable.
+   * @param item The item in the iterable.
+   */
+  <U extends T>(index: number, item: T&U): any;
 }
 
 /**

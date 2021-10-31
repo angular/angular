@@ -2,6 +2,7 @@ import {DOCUMENT, Location, PlatformLocation, PopStateEvent, ViewportScroller} f
 import {Inject, Injectable, OnDestroy} from '@angular/core';
 import {fromEvent, Subject} from 'rxjs';
 import {debounceTime, takeUntil} from 'rxjs/operators';
+import {SessionStorage} from './storage.service';
 
 type ScrollPosition = [number, number];
 interface ScrollPositionPopStateEvent extends PopStateEvent {
@@ -16,9 +17,8 @@ export const topMargin = 16;
 @Injectable()
 export class ScrollService implements OnDestroy {
   private _topOffset: number|null;
-  private _topOfPageElement: Element;
+  private _topOfPageElement: HTMLElement;
   private onDestroy = new Subject<void>();
-  private storage: Storage;
 
   // The scroll position which has to be restored, after a `popstate` event.
   poppedStateScrollPosition: ScrollPosition|null = null;
@@ -44,23 +44,9 @@ export class ScrollService implements OnDestroy {
   }
 
   constructor(
-      @Inject(DOCUMENT) private document: any, private platformLocation: PlatformLocation,
-      private viewportScroller: ViewportScroller, private location: Location) {
-    try {
-      this.storage = window.sessionStorage;
-    } catch {
-      // When cookies are disabled in the browser, even trying to access
-      // `window.sessionStorage` throws an error. Use a no-op storage.
-      this.storage = {
-        length: 0,
-        clear: () => undefined,
-        getItem: () => null,
-        key: () => null,
-        removeItem: () => undefined,
-        setItem: () => undefined
-      };
-    }
-
+      @Inject(DOCUMENT) private document: Document, private platformLocation: PlatformLocation,
+      private viewportScroller: ViewportScroller, private location: Location,
+      @Inject(SessionStorage) private storage: Storage) {
     // On resize, the toolbar might change height, so "invalidate" the top offset.
     fromEvent(window, 'resize')
         .pipe(takeUntil(this.onDestroy))
@@ -114,7 +100,7 @@ export class ScrollService implements OnDestroy {
    */
   scroll() {
     const hash = this.getCurrentHash();
-    const element: HTMLElement = hash ? this.document.getElementById(hash) : this.topOfPageElement;
+    const element = hash ? this.document.getElementById(hash) ?? null : this.topOfPageElement;
     this.scrollToElement(element);
   }
 
@@ -127,7 +113,8 @@ export class ScrollService implements OnDestroy {
 
   /**
    * When we load a document, we have to scroll to the correct position depending on whether this is
-   * a new location, a back/forward in the history, or a refresh
+   * a new location, a back/forward in the history, or a refresh.
+   *
    * @param delay before we scroll to the good position
    */
   scrollAfterRender(delay: number) {
@@ -160,9 +147,10 @@ export class ScrollService implements OnDestroy {
    * Scroll to the element.
    * Don't scroll if no element.
    */
-  scrollToElement(element: Element|null) {
+  scrollToElement(element: HTMLElement|null) {
     if (element) {
       element.scrollIntoView();
+      element.focus?.();
 
       if (window && window.scrollBy) {
         // Scroll as much as necessary to align the top of `element` at `topOffset`.

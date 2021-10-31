@@ -9,6 +9,7 @@ export class SitePage {
   docsMenuLink = element(by.cssContainingText('aio-top-menu a', 'Docs'));
   sidenav = element(by.css('mat-sidenav'));
   docViewer = element(by.css('aio-doc-viewer'));
+  cookiesPopup = element(by.css('.cookies-popup'));
   codeExample = element.all(by.css('aio-doc-viewer pre > code'));
   ghLinks = this.docViewer
     .all(by.css('a'))
@@ -39,10 +40,15 @@ export class SitePage {
   ga() { return browser.executeScript<any[][]>('return window["ga"].q'); }
   locationPath() { return browser.executeScript<string>('return document.location.pathname'); }
 
-  async navigateTo(pageUrl: string) {
-    // Navigate to the page, disable animations, and wait for Angular.
+  async navigateTo(pageUrl: string, keepCookiesPopup = false) {
+    // Navigate to the page, disable animations, potentially hide the cookies popup, and wait for
+    // Angular.
     await browser.get(`/${pageUrl.replace(/^\//, '')}`);
     await browser.executeScript('document.body.classList.add(\'no-animations\')');
+    if (!keepCookiesPopup) {
+      // Hide the cookies popup to prevent it from obscuring other elements.
+      await browser.executeScript('arguments[0].remove()', this.cookiesPopup);
+    }
     await browser.waitForAngular();
   }
 

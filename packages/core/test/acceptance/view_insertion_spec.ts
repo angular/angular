@@ -7,7 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {ChangeDetectorRef, Component, ComponentFactoryResolver, Directive, EmbeddedViewRef, Injector, Input, NgModule, TemplateRef, ViewChild, ViewContainerRef, ViewRef} from '@angular/core';
+import {ChangeDetectorRef, Component, ComponentFactoryResolver, Directive, EmbeddedViewRef, Injectable, Injector, Input, NgModule, TemplateRef, ViewChild, ViewContainerRef, ViewRef} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {onlyInIvy} from '@angular/private/testing';
@@ -885,6 +885,47 @@ describe('view insertion', () => {
       fixture.componentInstance.value = 2;
       fixture.detectChanges();
       expect(fixture.nativeElement.textContent).toContain('2');
+    });
+
+    it('should consistently report errors raised by createEmbeddedView', () => {
+      // Intentionally hasn't been added to `providers` so that it throws a DI error.
+      @Injectable()
+      class DoesNotExist {
+      }
+
+      @Directive({selector: 'dir'})
+      class Dir {
+        constructor(willCauseError: DoesNotExist) {}
+      }
+
+      @Component({
+        template: `
+          <ng-template #broken>
+            <dir></dir>
+          </ng-template>
+        `,
+      })
+      class App {
+        @ViewChild('broken') template !: TemplateRef<unknown>;
+
+        constructor(private _viewContainerRef: ViewContainerRef) {}
+
+        insertTemplate() {
+          this._viewContainerRef.createEmbeddedView(this.template);
+        }
+      }
+
+      TestBed.configureTestingModule({declarations: [App, Dir]});
+      const fixture = TestBed.createComponent(App);
+      const tryRender = () => {
+        fixture.componentInstance.insertTemplate();
+        fixture.detectChanges();
+      };
+      fixture.detectChanges();
+
+      // We try to render the same template twice to ensure that we get consistent error messages.
+      expect(tryRender).toThrowError(/No provider for DoesNotExist/);
+      expect(tryRender).toThrowError(/No provider for DoesNotExist/);
     });
   });
 });

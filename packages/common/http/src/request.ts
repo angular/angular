@@ -69,6 +69,15 @@ function isFormData(value: any): value is FormData {
 }
 
 /**
+ * Safely assert whether the given value is a URLSearchParams instance.
+ *
+ * In some execution environments URLSearchParams is not defined.
+ */
+function isUrlSearchParams(value: any): value is URLSearchParams {
+  return typeof URLSearchParams !== 'undefined' && value instanceof URLSearchParams;
+}
+
+/**
  * An outgoing HTTP request with an optional typed body.
  *
  * `HttpRequest` represents an outgoing request, including URL, method,
@@ -273,7 +282,7 @@ export class HttpRequest<T> {
     // Check whether the body is already in a serialized form. If so,
     // it can just be returned directly.
     if (isArrayBuffer(this.body) || isBlob(this.body) || isFormData(this.body) ||
-        typeof this.body === 'string') {
+        isUrlSearchParams(this.body) || typeof this.body === 'string') {
       return this.body;
     }
     // Check whether the body is an instance of HttpUrlEncodedParams.
@@ -322,9 +331,9 @@ export class HttpRequest<T> {
     if (this.body instanceof HttpParams) {
       return 'application/x-www-form-urlencoded;charset=UTF-8';
     }
-    // Arrays, objects, and numbers will be encoded as JSON.
+    // Arrays, objects, boolean and numbers will be encoded as JSON.
     if (typeof this.body === 'object' || typeof this.body === 'number' ||
-        Array.isArray(this.body)) {
+        typeof this.body === 'boolean') {
       return 'application/json';
     }
     // No type could be inferred.

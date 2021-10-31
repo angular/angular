@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {AliasingHost, Reference} from '../../imports';
 import {DirectiveMeta, MetadataReader, PipeMeta} from '../../metadata';
@@ -150,9 +150,12 @@ export class MetadataDtsModuleScopeResolver implements DtsModuleScopeResolver {
       return dirOrPipe;
     }
 
+    // TypeScript incorrectly narrows the type here:
+    // https://github.com/microsoft/TypeScript/issues/43966.
+    // TODO: Remove/Update once https://github.com/microsoft/TypeScript/issues/43966 is resolved.
     return {
       ...dirOrPipe,
       ref: ref.cloneWithAlias(alias),
-    };
+    } as T;
   }
 }

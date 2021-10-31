@@ -13,14 +13,14 @@ the `angular/angular` repo.
 command in the `angular/angular` repo:
 
 ```bash
-node ./scripts/ci/update-deps-to-dist-packages.js {COMPONENTS_REPO}/package.json ./dist/packages-dist
+node ./scripts/ci/update-framework-deps-to-dist-packages.js {COMPONENTS_REPO}/package.json ./dist/packages-dist
 ```
 
 4\) Switch into the `angular/components` repository and run the tests by using the
 following command:
 
 ```bash
-yarn test --deleted_packages=//src/dev-app --config=ivy
+yarn test --deleted_packages=//src/dev-app
 ```
 
 ### Running tests for individual entry-points

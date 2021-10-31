@@ -199,7 +199,10 @@ export interface NgModule {
    * using one of the imperative techniques, such as `ViewContainerRef.createComponent()`.
    *
    * @see [Entry Components](guide/entry-components)
-   * @deprecated Since 9.0.0. With Ivy, this property is no longer necessary.
+   * @deprecated
+   * Since 9.0.0. With Ivy, this property is no longer necessary.
+   * (You may need to keep these if building a library that will be consumed by a View Engine
+   * application.)
    */
   entryComponents?: Array<Type<any>|any[]>;
 
@@ -223,9 +226,8 @@ export interface NgModule {
   schemas?: Array<SchemaMetadata|any[]>;
 
   /**
-   * A name or path that uniquely identifies this NgModule in `getModuleFactory`.
-   * If left `undefined`, the NgModule is not registered with
-   * `getModuleFactory`.
+   * A name or path that uniquely identifies this NgModule in `getNgModuleById`.
+   * If left `undefined`, the NgModule is not registered with `getNgModuleById`.
    */
   id?: string;
 

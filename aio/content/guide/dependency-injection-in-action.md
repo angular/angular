@@ -66,7 +66,7 @@ and confirm that the three `HeroBioComponent` instances have their own cached he
 When a class requires a dependency, that dependency is added to the constructor as a parameter.
 When Angular needs to instantiate the class, it calls upon the DI framework to supply the dependency.
 By default, the DI framework searches for a provider in the injector hierarchy,
-starting at the component's local injector of the component, and if necessary bubbling up
+starting at the component's local injector, and if necessary bubbling up
 through the injector tree until it reaches the root injector.
 
 * The first injector configured with a provider supplies the dependency (a service instance or value) to the constructor.
@@ -136,7 +136,7 @@ Angular throws an error if the parent lacks that service, even if a component hi
 in the component tree includes it.
 
 A second `@Host()` function decorates the `loggerService` constructor property.
-The only `LoggerService` instance in the app is provided at the `AppComponent` level.
+The only `LoggerService` instance in the application is provided at the `AppComponent` level.
 The host `HeroBioComponent` doesn't have its own `LoggerService` provider.
 
 Angular throws an error if you haven't also decorated the property with `@Optional()`.
@@ -162,7 +162,7 @@ with the "!!!" marker to indicate that the logger was found.
 
 
 If you restore the `@Host()` decorator and comment out `@Optional`,
-the app throws an exception when it cannot find the required logger at the host component level.
+the application throws an exception when it cannot find the required logger at the host component level.
 
 `EXCEPTION: No provider for LoggerService! (HeroContactComponent -> LoggerService)`
 

@@ -7,13 +7,13 @@
  */
 
 /// <reference types="node" />
-import {readFileSync} from 'fs';
-import * as os from 'os';
+import realFs from 'fs';
+import os from 'os';
 
 import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem} from '../../../src/ngtsc/file_system';
 import {Folder, MockFileSystem, runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
 import {MockLogger} from '../../../src/ngtsc/logging/testing';
-import {loadStandardTestFiles, loadTestFiles} from '../../../src/ngtsc/testing';
+import {loadTestFiles} from '../../../src/ngtsc/testing';
 import {getLockFilePath} from '../../src/locking/lock_file';
 import {mainNgcc} from '../../src/main';
 import {clearTsConfigCache} from '../../src/ngcc_options';
@@ -23,10 +23,10 @@ import {EntryPointManifestFile} from '../../src/packages/entry_point_manifest';
 import {Transformer} from '../../src/packages/transformer';
 import {DirectPackageJsonUpdater, PackageJsonUpdater} from '../../src/writing/package_json_updater';
 
-import {compileIntoApf, compileIntoFlatEs2015Package, compileIntoFlatEs5Package} from './util';
+import {compileIntoApf, compileIntoFlatEs2015Package, compileIntoFlatEs5Package, loadNgccIntegrationTestFiles} from './util';
 
 const ANGULAR_CORE_IMPORT_REGEX = /import \* as ɵngcc\d+ from '@angular\/core';/;
-const testFiles = loadStandardTestFiles({fakeCore: false, rxjs: true});
+const testFiles = loadNgccIntegrationTestFiles();
 
 runInEachFileSystem(() => {
   describe('ngcc main()', () => {
@@ -69,7 +69,7 @@ runInEachFileSystem(() => {
       fs.ensureDir(fs.join(pkgPath, 'fesm5'));
       fs.writeFile(
           fs.join(pkgPath, 'fesm5/core.js'),
-          readFileSync(require.resolve('../fesm5_angular_core.js'), 'utf8'));
+          realFs.readFileSync(require.resolve('../fesm5_angular_core.js'), 'utf8'));
 
       pkgJson.esm5 = './fesm5/core.js';
       pkgJson.fesm5 = './fesm5/core.js';
@@ -381,7 +381,7 @@ runInEachFileSystem(() => {
 
          const jsContents = fs.readFile(_(`/node_modules/test-package/esm5/src/index.js`));
          // Verify that the ES5 bundle does contain the expected downleveling syntax.
-         expect(jsContents).toContain('__spreadArray([], __read(arguments))');
+         expect(jsContents).toContain('__spreadArray([], __read(arguments), false)');
          expect(jsContents)
              .toContain(
                  'var ɵSubClass_BaseFactory; return function SubClass_Factory(t) { return (ɵSubClass_BaseFactory || (ɵSubClass_BaseFactory = ɵngcc0.ɵɵgetInheritedFactory(SubClass)))(t || SubClass); };');
@@ -420,7 +420,7 @@ runInEachFileSystem(() => {
 
          const jsContents = fs.readFile(_(`/node_modules/test-package/esm5/src/index.js`));
          // Verify that the ES5 bundle does contain the expected downleveling syntax.
-         expect(jsContents).toContain('__spreadArray([], __read(arguments))');
+         expect(jsContents).toContain('__spreadArray([], __read(arguments), false)');
          expect(jsContents)
              .toContain(
                  'var ɵSubClass_BaseFactory; return function SubClass_Factory(t) { return (ɵSubClass_BaseFactory || (ɵSubClass_BaseFactory = ɵngcc0.ɵɵgetInheritedFactory(SubClass)))(t || SubClass); };');

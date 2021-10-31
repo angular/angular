@@ -9,9 +9,6 @@ ts_library(
         "index.ts",
         "usage.ts",
     ],
-    tags = [
-        "ivy-only",
-    ],
     deps = [
         "//packages/core",
     ],
@@ -20,9 +17,6 @@ ts_library(
 ng_rollup_bundle(
     name = "bundle",
     entry_point = ":index.ts",
-    tags = [
-        "ivy-only",
-    ],
     deps = [
         ":injection",
         "//packages/core",
@@ -34,9 +28,6 @@ ts_library(
     name = "test_lib",
     testonly = True,
     srcs = glob(["*_spec.ts"]),
-    tags = [
-        "ivy-only",
-    ],
     deps = [
         ":injection",
         "//packages:types",
@@ -48,9 +39,6 @@ ts_library(
 
 jasmine_node_test(
     name = "test",
-    tags = [
-        "ivy-only",
-    ],
     deps = [":test_lib"],
 )
 
@@ -58,7 +46,4 @@ js_expected_symbol_test(
     name = "symbol_test",
     src = ":bundle.min_debug.js",
     golden = ":bundle.golden_symbols.json",
-    tags = [
-        "ivy-only",
-    ],
 )

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import * as o from '@angular/compiler/src/output/output_ast';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {TypeScriptAstFactory} from '../../../../src/ngtsc/translator';
 import {EmitScope} from '../../../src/file_linker/emit_scopes/emit_scope';
@@ -32,7 +32,7 @@ describe('EmitScope', () => {
       const emitScope = new EmitScope<ts.Statement, ts.Expression>(ngImport, translator);
 
       const coreImportRef = new o.ExternalReference('@angular/core', 'foo');
-      const def = emitScope.translateDefinition(o.importExpr(coreImportRef).callMethod('bar', []));
+      const def = emitScope.translateDefinition(o.importExpr(coreImportRef).prop('bar').callFn([]));
       expect(generate(def)).toEqual('core.foo.bar()');
     });
 

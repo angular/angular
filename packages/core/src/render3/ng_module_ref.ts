@@ -19,17 +19,37 @@ import {assertDefined} from '../util/assert';
 import {stringify} from '../util/stringify';
 
 import {ComponentFactoryResolver} from './component_ref';
-import {getNgLocaleIdDef, getNgModuleDef} from './definition';
-import {setLocaleId} from './i18n/i18n_locale_id';
+import {getNgModuleDef} from './definition';
 import {maybeUnwrapFn} from './util/misc_utils';
+
+
+export function createNgModuleRef__PRE_R3__<T>(
+    ngModule: Type<T>, parentInjector?: Injector): NgModuleRef<T> {
+  throw new Error(`This API is Ivy-only and is not supported in ViewEngine`);
+}
+
+export function createNgModuleRef__POST_R3__<T>(
+    ngModule: Type<T>, parentInjector?: Injector): NgModuleRef<T> {
+  return new NgModuleRef<T>(ngModule, parentInjector ?? null);
+}
+
+/**
+ * Returns a new NgModuleRef instance based on the NgModule class and parent injector provided.
+ * @param ngModule NgModule class.
+ * @param parentInjector Optional injector instance to use as a parent for the module injector. If
+ *     not provided, `NullInjector` will be used instead.
+ * @publicApi
+ */
+export const createNgModuleRef: <T>(ngModule: Type<T>, parentInjector?: Injector) =>
+    viewEngine_NgModuleRef<T> = createNgModuleRef__PRE_R3__;
 
 export class NgModuleRef<T> extends viewEngine_NgModuleRef<T> implements InternalNgModuleRef<T> {
   // tslint:disable-next-line:require-internal-with-underscore
   _bootstrapComponents: Type<any>[] = [];
   // tslint:disable-next-line:require-internal-with-underscore
   _r3Injector: R3Injector;
-  injector: Injector = this;
-  instance: T;
+  override injector: Injector = this;
+  override instance: T;
   destroyCbs: (() => void)[]|null = [];
 
   // When bootstrapping a module we have a dependency graph that looks like this:
@@ -38,7 +58,8 @@ export class NgModuleRef<T> extends viewEngine_NgModuleRef<T> implements Interna
   // circular dependency which will result in a runtime error, because the injector doesn't
   // exist yet. We work around the issue by creating the ComponentFactoryResolver ourselves
   // and providing it, rather than letting the injector resolve it.
-  readonly componentFactoryResolver: ComponentFactoryResolver = new ComponentFactoryResolver(this);
+  override readonly componentFactoryResolver: ComponentFactoryResolver =
+      new ComponentFactoryResolver(this);
 
   constructor(ngModuleType: Type<T>, public _parent: Injector|null) {
     super();
@@ -48,8 +69,6 @@ export class NgModuleRef<T> extends viewEngine_NgModuleRef<T> implements Interna
             ngModuleDef,
             `NgModule '${stringify(ngModuleType)}' is not a subtype of 'NgModuleType'.`);
 
-    const ngLocaleIdDef = getNgLocaleIdDef(ngModuleType);
-    ngLocaleIdDef && setLocaleId(ngLocaleIdDef);
     this._bootstrapComponents = maybeUnwrapFn(ngModuleDef!.bootstrap);
     this._r3Injector = createInjectorWithoutInjectorInstances(
                            ngModuleType, _parent,
@@ -76,14 +95,14 @@ export class NgModuleRef<T> extends viewEngine_NgModuleRef<T> implements Interna
     return this._r3Injector.get(token, notFoundValue, injectFlags);
   }
 
-  destroy(): void {
+  override destroy(): void {
     ngDevMode && assertDefined(this.destroyCbs, 'NgModule already destroyed');
     const injector = this._r3Injector;
     !injector.destroyed && injector.destroy();
     this.destroyCbs!.forEach(fn => fn());
     this.destroyCbs = null;
   }
-  onDestroy(callback: () => void): void {
+  override onDestroy(callback: () => void): void {
     ngDevMode && assertDefined(this.destroyCbs, 'NgModule already destroyed');
     this.destroyCbs!.push(callback);
   }
@@ -122,7 +141,7 @@ export class NgModuleFactory<T> extends viewEngine_NgModuleFactory<T> {
     }
   }
 
-  create(parentInjector: Injector|null): viewEngine_NgModuleRef<T> {
+  override create(parentInjector: Injector|null): viewEngine_NgModuleRef<T> {
     return new NgModuleRef(this.moduleType, parentInjector);
   }
 }

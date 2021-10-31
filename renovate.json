@@ -4,23 +4,13 @@
   "semanticPrefix": "build",
   "separateMajorMinor": false,
   "prHourlyLimit": 2,
-  "labels": [
-    "target: minor",
-    "comp: build & ci",
-    "action: review"
-  ],
+  "labels": ["target: minor", "comp: build & ci", "action: review"],
   "timezone": "America/Tijuana",
   "lockFileMaintenance": {
     "enabled": true
   },
-  "schedule": [
-    "after 10pm every weekday",
-    "before 4am every weekday",
-    "every weekend"
-  ],
-  "baseBranches": [
-    "master"
-  ],
+  "schedule": ["after 10pm every weekday", "before 4am every weekday", "every weekend"],
+  "baseBranches": ["master"],
   "ignoreDeps": [
     "@babel/core",
     "@babel/generator",
@@ -35,78 +25,51 @@
     "@types/babel__traverse",
     "@types/node",
     "@types/selenium-webdriver",
-    "@microsoft/api-extractor",
-    "angular",
     "angular-1.5",
     "angular-1.6",
     "angular-1.7",
-    "angular-mocks",
+    "angular-1.8",
     "angular-mocks-1.5",
     "angular-mocks-1.6",
     "angular-mocks-1.7",
+    "angular-mocks-1.8",
     "puppeteer",
-    "rollup",
-    "selenium-webdriver"
+    "remark",
+    "remark-html",
+    "selenium-webdriver",
+    "watchr"
   ],
   "packageFiles": [
     "WORKSPACE",
     "integration/bazel/WORKSPACE",
     "package.json",
     "packages/**/package.json",
-    "tools/ts-api-guardian/package.json",
-    "aio/package.json"
+    "aio/package.json",
+    ".github/workflows/**/*.yml"
   ],
   "packageRules": [
     {
-      "packagePatterns": [
-        "^@angular/.*",
-        "^@angular-devkit/.*",
-        "^@schematics/.*"
-      ],
+      "packagePatterns": ["^@angular/.*", "^@angular-devkit/.*", "^@schematics/.*", "angular/dev-infra"],
       "groupName": "angular",
       "pinVersions": false
     },
     {
-      "packagePatterns": [
-        "^@babel/.*"
-      ],
+      "packagePatterns": ["^@babel/.*"],
       "groupName": "babel",
       "pinVersions": false
     },
     {
-      "packagePatterns": [
-        "^@bazel/.*",
-        "^build_bazel.*"
-      ],
+      "packagePatterns": ["^@bazel/.*", "^build_bazel.*"],
       "groupName": "bazel",
       "pinVersions": false
     },
     {
-      "packagePatterns": [
-        "^remark-.*",
-        "remark"
-      ],
-      "groupName": "remark",
-      "pinVersions": false
-    },
-    {
-      "packageNames": [
-        "typescript",
-        "rxjs",
-        "tslib"
-      ],
+      "packageNames": ["typescript", "rxjs", "tslib"],
       "separateMinorPatch": true
     },
     {
-      "packageNames": [
-        "typescript",
-        "rxjs",
-        "tslib"
-      ],
-      "updateTypes": [
-        "minor",
-        "major"
-      ],
+      "packageNames": ["typescript", "rxjs", "tslib"],
+      "updateTypes": ["minor", "major"],
       "enabled": false
     },
     {
@@ -114,24 +77,13 @@
       "enabled": false
     },
     {
-      "excludePackagePatterns": [
-        "^@angular/.*",
-        "^@angular-devkit/.*",
-        "^@schematics/.*"
-      ],
-      "matchPackagePatterns": [
-        "*"
-      ],
-      "matchUpdateTypes": [
-        "minor",
-        "patch"
-      ],
+      "excludePackagePatterns": ["^@angular/.*", "^@angular-devkit/.*", "^@schematics/.*", "angular/dev-infra"],
+      "matchPackagePatterns": ["*"],
+      "matchUpdateTypes": ["minor", "patch"],
       "matchCurrentVersion": ">=1",
       "groupName": "all non-major dependencies",
       "groupSlug": "all-minor-patch",
-      "schedule": [
-        "after 1am on Thursday"
-      ]
+      "schedule": ["after 1am on Thursday"]
     }
   ]
 }

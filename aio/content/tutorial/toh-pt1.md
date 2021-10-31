@@ -6,7 +6,7 @@ and place that component in the application shell.
 
 <div class="alert is-helpful">
 
-  For the sample app that this page describes, see the <live-example></live-example>.
+  For the sample application that this page describes, see the <live-example></live-example>.
 
 </div>
 
@@ -14,7 +14,7 @@ and place that component in the application shell.
 
 Using the Angular CLI, generate a new component named `heroes`.
 
-<code-example language="sh" class="code-shell">
+<code-example language="sh">
   ng generate component heroes
 </code-example>
 
@@ -141,12 +141,12 @@ Here it binds the `hero.name` property to the HTML textbox so that data can flow
 
 ### The missing _FormsModule_
 
-Notice that the app stopped working when you added `[(ngModel)]`.
+Notice that the application stopped working when you added `[(ngModel)]`.
 
 To see the error, open the browser development tools and look in the console
 for a message like
 
-<code-example language="sh" class="code-shell">
+<code-example language="sh">
 Template parse errors:
 Can't bind to 'ngModel' since it isn't a known property of 'input'.
 </code-example>
@@ -158,7 +158,7 @@ It belongs to the optional `FormsModule` and you must _opt-in_ to using it.
 ## _AppModule_
 
 Angular needs to know how the pieces of your application fit together
-and what other files and libraries the app requires.
+and what other files and libraries the application requires.
 This information is called _metadata_.
 
 Some of the metadata is in the `@Component` decorators that you added to your component classes.
@@ -177,13 +177,13 @@ Open `AppModule` (`app.module.ts`) and import the `FormsModule` symbol from the 
  region="formsmodule-js-import">
 </code-example>
 
-Then add `FormsModule` to the `@NgModule` metadata's `imports` array, which contains a list of external modules that the app needs.
+Then add `FormsModule` to the `@NgModule` metadata's `imports` array, which contains a list of external modules that the application needs.
 
 <code-example path="toh-pt1/src/app/app.module.ts" header="app.module.ts (@NgModule imports)"
 region="ng-imports">
 </code-example>
 
-When the browser refreshes, the app should work again. You can edit the hero's name and see the changes reflected immediately in the `<h2>` above the textbox.
+When the browser refreshes, the application should work again. You can edit the hero's name and see the changes reflected immediately in the `<h2>` above the textbox.
 
 ### Declare `HeroesComponent`
 

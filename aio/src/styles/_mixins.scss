@@ -1,17 +1,22 @@
+@use 'sass:list';
+@use 'sass:math';
+@use 'sass:selector';
+@use './constants';
+
 // REM Font Adjustments
 @mixin font-size($sizeValue) {
   font-size: ($sizeValue) + px;
-  font-size: ($sizeValue / 10) + rem;
+  font-size: math.div($sizeValue, 10) + rem;
 }
 
 @mixin letter-spacing($spacingValue) {
   letter-spacing: ($spacingValue) + px;
-  letter-spacing: ($spacingValue / 10) + rem;
+  letter-spacing: math.div($spacingValue, 10) + rem;
 }
 
 @mixin line-height($heightValue) {
   line-height: ($heightValue) + px;
-  line-height: ($heightValue / 10) + rem;
+  line-height: math.div($heightValue, 10) + rem;
 }
 
 // PLACEHOLDER
@@ -39,39 +44,37 @@
     border-radius: 5px;
     padding: 20px;
     margin: 0 auto; // was 24
-    border: 0.5px solid $lightgray;
+    border: 0.5px solid constants.$lightgray;
 }
 
 // INFO CARD SKELETON
-@mixin card($height, $width) {
-  height: $height;
+@mixin card($width) {
   width: $width;
-  background-color: $white;
   border-radius: 4px;
-  box-shadow: 0 2px 2px rgba($black, 0.24), 0 0 2px rgba($black, 0.12);
+  box-shadow: 0 2px 2px rgba(constants.$black, 0.24), 0 0 2px rgba(constants.$black, 0.12);
   box-sizing: border-box;
   transition: box-shadow .5s;
 
   &:hover {
-    box-shadow: 0 8px 8px rgba($black, 0.24), 0 0 8px rgba($black, 0.12);
+    box-shadow: 0 8px 8px rgba(constants.$black, 0.24), 0 0 8px rgba(constants.$black, 0.12);
     text-decoration: none;
   }
 }
 
-@mixin deploy-theme($mainColor, $gradientTargetColor) {
+@mixin deploy-theme($mainColor, $gradientTargetColor, $textColor) {
   .mat-toolbar.mat-primary, footer {
     background: linear-gradient(145deg, $mainColor, $gradientTargetColor);
   }
 
   .vertical-menu-item {
     &.selected, &:hover {
-      color: $mainColor;
+      color: $textColor;
     }
   }
 
   .toc-inner ul.toc-list li {
     &.active a {
-      color: $mainColor;
+      color: $textColor;
 
       &:before {
         background-color: $mainColor;
@@ -79,7 +82,7 @@
     }
 
     &:hover a {
-      color: $mainColor;
+      color: $textColor;
     }
   }
 }
@@ -126,7 +129,7 @@
   );
 
   @if $nestParentSelector and & {
-    @at-root #{selector-nest(#{$selectors}, &)} {
+    @at-root #{selector.nest(#{$selectors}, &)} {
       @content;
     }
   } @else {
@@ -178,10 +181,10 @@
     '.page-presskit',
     '.page-resources',
   );
-  $selectors: join($marketingPagesSelectors, $extraSelectors, $separator: comma);
+  $selectors: list.join($marketingPagesSelectors, $extraSelectors, $separator: comma);
 
   @if $nestParentSelector and & {
-    @at-root #{selector-nest(#{$selectors}, &)} {
+    @at-root #{selector.nest(#{$selectors}, &)} {
       @content;
     }
   } @else {

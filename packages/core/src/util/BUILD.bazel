@@ -1,4 +1,5 @@
 load("//tools:defaults.bzl", "ts_library")
+load("//tools:tsec.bzl", "tsec_test")
 
 package(default_visibility = [
     "//packages/core:__subpackages__",
@@ -15,6 +16,13 @@ ts_library(
     deps = [
         "//packages:types",
         "//packages/core/src/interface",
+        "//packages/zone.js/lib:zone_d_ts",
         "@npm//rxjs",
     ],
+)
+
+tsec_test(
+    name = "tsec_test",
+    target = "util",
+    tsconfig = "//packages:tsec_config",
 )

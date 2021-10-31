@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {makeRelatedInformation} from '../../diagnostics';
 import {Reference} from '../../imports';
@@ -125,6 +125,10 @@ class TraceDynamicValueVisitor implements DynamicValueVisitor<ts.DiagnosticRelat
 
   visitUnknownIdentifier(value: DynamicValue): ts.DiagnosticRelatedInformation[] {
     return [makeRelatedInformation(value.node, 'Unknown reference.')];
+  }
+
+  visitDynamicType(value: DynamicValue): ts.DiagnosticRelatedInformation[] {
+    return [makeRelatedInformation(value.node, 'Dynamic type.')];
   }
 
   visitUnsupportedSyntax(value: DynamicValue): ts.DiagnosticRelatedInformation[] {

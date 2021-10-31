@@ -13,16 +13,16 @@ export class AppComponent implements OnInit {
   isUnchanged = true;
 
   isActive = true;
-  nullCustomer = null;
+  nullCustomer: string | null = null;
   currentCustomer = {
     name: 'Laura'
   };
 
-  item: Item; // defined to demonstrate template context precedence
-  items: Item[];
+  item!: Item; // defined to demonstrate template context precedence
+  items: Item[] = [];
 
   // #docregion item
-  currentItem: Item;
+  currentItem!: Item;
   // #enddocregion item
 
 
@@ -34,11 +34,11 @@ export class AppComponent implements OnInit {
   itemIdIncrement = 1;
 
   // #docregion setClasses
-  currentClasses: {};
+  currentClasses: Record<string, boolean> = {};
   // #enddocregion setClasses
 
   // #docregion setStyles
-  currentStyles: {};
+  currentStyles: Record<string, string> = {};
   // #enddocregion setStyles
 
   ngOnInit() {
@@ -114,8 +114,8 @@ export class AppComponent implements OnInit {
 
   trackById(index: number, item: any): number { return item.id; }
 
-  getValue(target: EventTarget): string {
-    return (target as HTMLInputElement).value;
+  getValue(event: Event): string {
+    return (event.target as HTMLInputElement).value;
   }
 }
 

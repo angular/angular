@@ -24,7 +24,7 @@ import {ɵresetJitOptions as resetJitOptions} from '@angular/core';
  *
  * ```
  * describe('something', () => {
- *   it('should do something', withBody('<my-app></my-app>', async () => {
+ *   it('should do something', withBody('<app-root></app-root>', async () => {
  *     const myApp = renderComponent(MyApp);
  *     await whenRendered(myApp);
  *     expect(getRenderedText(myApp)).toEqual('Hello World!');

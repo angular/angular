@@ -10,8 +10,8 @@ import {CompileSummaryKind} from '../compile_metadata';
 import {CompileReflector} from '../compile_reflector';
 import {createAttribute, createComponent, createContentChild, createContentChildren, createDirective, createHost, createHostBinding, createHostListener, createInject, createInjectable, createInput, createNgModule, createOptional, createOutput, createPipe, createSelf, createSkipSelf, createViewChild, createViewChildren, MetadataFactory} from '../core';
 import * as o from '../output/output_ast';
+import {syntaxError} from '../parse_util';
 import {SummaryResolver} from '../summary_resolver';
-import {syntaxError} from '../util';
 
 import {formattedError, FormattedMessageChain} from './formatted_error';
 import {StaticSymbol} from './static_symbol';
@@ -1056,7 +1056,7 @@ class PopulatedScope extends BindingScope {
     super();
   }
 
-  resolve(name: string): any {
+  override resolve(name: string): any {
     return this.bindings.has(name) ? this.bindings.get(name) : BindingScope.missing;
   }
 }

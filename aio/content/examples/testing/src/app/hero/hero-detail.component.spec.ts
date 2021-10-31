@@ -50,10 +50,10 @@ function overrideSetup() {
   beforeEach(() => activatedRoute.setParamMap({id: 99999}));
 
   // #docregion setup-override
-  beforeEach(waitForAsync(() => {
+  beforeEach(async () => {
     const routerSpy = createRouterSpy();
 
-    TestBed
+    await TestBed
         .configureTestingModule({
           imports: [HeroModule],
           providers: [
@@ -74,17 +74,17 @@ function overrideSetup() {
         // #enddocregion override-component-method
 
         .compileComponents();
-  }));
+  });
   // #enddocregion setup-override
 
   // #docregion override-tests
   let hdsSpy: HeroDetailServiceSpy;
 
-  beforeEach(waitForAsync(() => {
-    createComponent();
+  beforeEach(async () => {
+    await createComponent();
     // get the component's injected HeroDetailServiceSpy
     hdsSpy = fixture.debugElement.injector.get(HeroDetailService) as any;
-  }));
+  });
 
   it('should have called `getHero`', () => {
     expect(hdsSpy.getHero.calls.count()).toBe(1, 'getHero called once');
@@ -133,10 +133,10 @@ const firstHero = getTestHeroes()[0];
 
 function heroModuleSetup() {
   // #docregion setup-hero-module
-  beforeEach(waitForAsync(() => {
+  beforeEach(async () => {
     const routerSpy = createRouterSpy();
 
-    TestBed
+    await TestBed
         .configureTestingModule({
           imports: [HeroModule],
           // #enddocregion setup-hero-module
@@ -149,18 +149,18 @@ function heroModuleSetup() {
           ]
         })
         .compileComponents();
-  }));
+  });
   // #enddocregion setup-hero-module
 
   // #docregion route-good-id
   describe('when navigate to existing hero', () => {
     let expectedHero: Hero;
 
-    beforeEach(waitForAsync(() => {
+    beforeEach(async () => {
       expectedHero = firstHero;
       activatedRoute.setParamMap({id: expectedHero.id});
-      createComponent();
-    }));
+      await createComponent();
+    });
 
     // #docregion selected-tests
     it('should display that hero\'s name', () => {
@@ -193,9 +193,9 @@ function heroModuleSetup() {
     // #docregion title-case-pipe
     it('should convert hero name to Title Case', () => {
       // get the name's input and display elements from the DOM
-      const hostElement = fixture.nativeElement;
-      const nameInput: HTMLInputElement = hostElement.querySelector('input');
-      const nameDisplay: HTMLElement = hostElement.querySelector('span');
+      const hostElement: HTMLElement = fixture.nativeElement;
+      const nameInput: HTMLInputElement = hostElement.querySelector('input')!;
+      const nameDisplay: HTMLElement = hostElement.querySelector('span')!;
 
       // simulate user entering a new name into the input box
       nameInput.value = 'quick BROWN  fOx';
@@ -218,7 +218,9 @@ function heroModuleSetup() {
 
   // #docregion route-no-id
   describe('when navigate with no hero id', () => {
-    beforeEach(waitForAsync(createComponent));
+    beforeEach(async () => {
+      await createComponent();
+    });
 
     it('should have hero.id === 0', () => {
       expect(component.hero.id).toBe(0);
@@ -232,10 +234,10 @@ function heroModuleSetup() {
 
   // #docregion route-bad-id
   describe('when navigate to non-existent hero id', () => {
-    beforeEach(waitForAsync(() => {
+    beforeEach(async () => {
       activatedRoute.setParamMap({id: 99999});
-      createComponent();
-    }));
+      await createComponent();
+    });
 
     it('should try to navigate back to hero list', () => {
       expect(page.gotoListSpy.calls.any()).toBe(true, 'comp.gotoList called');
@@ -266,10 +268,10 @@ import { TitleCasePipe } from '../shared/title-case.pipe';
 
 function formsModuleSetup() {
   // #docregion setup-forms-module
-  beforeEach(waitForAsync(() => {
+  beforeEach(async () => {
     const routerSpy = createRouterSpy();
 
-    TestBed
+    await TestBed
         .configureTestingModule({
           imports: [FormsModule],
           declarations: [HeroDetailComponent, TitleCasePipe],
@@ -280,7 +282,7 @@ function formsModuleSetup() {
           ]
         })
         .compileComponents();
-  }));
+  });
   // #enddocregion setup-forms-module
 
   it('should display 1st hero\'s name', waitForAsync(() => {
@@ -297,10 +299,10 @@ import { SharedModule } from '../shared/shared.module';
 
 function sharedModuleSetup() {
   // #docregion setup-shared-module
-  beforeEach(waitForAsync(() => {
+  beforeEach(async () => {
     const routerSpy = createRouterSpy();
 
-    TestBed
+    await TestBed
         .configureTestingModule({
           imports: [SharedModule],
           declarations: [HeroDetailComponent],
@@ -311,7 +313,7 @@ function sharedModuleSetup() {
           ]
         })
         .compileComponents();
-  }));
+  });
   // #enddocregion setup-shared-module
 
   it('should display 1st hero\'s name', waitForAsync(() => {

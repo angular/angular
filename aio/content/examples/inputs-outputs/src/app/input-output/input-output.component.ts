@@ -6,13 +6,14 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
   styleUrls: ['./input-output.component.css']
 })
 export class InputOutputComponent {
-  @Input() item: string;
+
+  @Input() item = '';
   @Output() deleteRequest = new EventEmitter<string>();
 
   lineThrough = '';
 
   delete() {
-    console.warn('Child says: emiting item deleteRequest with', this.item);
+    console.warn('Child says: emitting item deleteRequest with', this.item);
     this.deleteRequest.emit(this.item);
     this.lineThrough = this.lineThrough ? '' : 'line-through';
   }

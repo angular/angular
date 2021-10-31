@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {absoluteFrom} from '../../../src/ngtsc/file_system';
 import {Logger} from '../../../src/ngtsc/logging';
@@ -36,7 +36,7 @@ export class UmdReflectionHost extends Esm5ReflectionHost {
     this.compilerHost = src.host;
   }
 
-  getImportOfIdentifier(id: ts.Identifier): Import|null {
+  override getImportOfIdentifier(id: ts.Identifier): Import|null {
     // Is `id` a namespaced property access, e.g. `Directive` in `core.Directive`?
     // If so capture the symbol of the namespace, e.g. `core`.
     const nsIdentifier = findNamespaceOfIdentifier(id);
@@ -45,7 +45,7 @@ export class UmdReflectionHost extends Esm5ReflectionHost {
     return from !== null ? {from, name: id.text} : null;
   }
 
-  getDeclarationOfIdentifier(id: ts.Identifier): Declaration|null {
+  override getDeclarationOfIdentifier(id: ts.Identifier): Declaration|null {
     // First we try one of the following:
     // 1. The `exports` identifier - referring to the current file/module.
     // 2. An identifier (e.g. `foo`) that refers to an imported UMD module.
@@ -83,7 +83,7 @@ export class UmdReflectionHost extends Esm5ReflectionHost {
     };
   }
 
-  getExportsOfModule(module: ts.Node): Map<string, Declaration>|null {
+  override getExportsOfModule(module: ts.Node): Map<string, Declaration>|null {
     return super.getExportsOfModule(module) || this.umdExports.get(module.getSourceFile());
   }
 
@@ -107,12 +107,13 @@ export class UmdReflectionHost extends Esm5ReflectionHost {
    * @param sourceFile The module whose statements we want.
    * @returns An array of top level statements for the given module.
    */
-  protected getModuleStatements(sourceFile: ts.SourceFile): ts.Statement[] {
+  protected override getModuleStatements(sourceFile: ts.SourceFile): ts.Statement[] {
     const umdModule = this.getUmdModule(sourceFile);
     return umdModule !== null ? Array.from(umdModule.factoryFn.body.statements) : [];
   }
 
-  protected getClassSymbolFromOuterDeclaration(declaration: ts.Node): NgccClassSymbol|undefined {
+  protected override getClassSymbolFromOuterDeclaration(declaration: ts.Node): NgccClassSymbol
+      |undefined {
     const superSymbol = super.getClassSymbolFromOuterDeclaration(declaration);
     if (superSymbol) {
       return superSymbol;
@@ -143,7 +144,8 @@ export class UmdReflectionHost extends Esm5ReflectionHost {
   }
 
 
-  protected getClassSymbolFromInnerDeclaration(declaration: ts.Node): NgccClassSymbol|undefined {
+  protected override getClassSymbolFromInnerDeclaration(declaration: ts.Node): NgccClassSymbol
+      |undefined {
     const superClassSymbol = super.getClassSymbolFromInnerDeclaration(declaration);
     if (superClassSymbol !== undefined) {
       return superClassSymbol;
@@ -164,7 +166,7 @@ export class UmdReflectionHost extends Esm5ReflectionHost {
   /**
    * Extract all "classes" from the `statement` and add them to the `classes` map.
    */
-  protected addClassSymbolsFromStatement(
+  protected override addClassSymbolsFromStatement(
       classes: Map<ts.Symbol, NgccClassSymbol>, statement: ts.Statement): void {
     super.addClassSymbolsFromStatement(classes, statement);
 
@@ -184,7 +186,7 @@ export class UmdReflectionHost extends Esm5ReflectionHost {
    *
    * @param statement The statement that needs to be preprocessed.
    */
-  protected preprocessStatement(statement: ts.Statement): void {
+  protected override preprocessStatement(statement: ts.Statement): void {
     super.preprocessStatement(statement);
 
     if (!isExportsStatement(statement)) {
@@ -421,7 +423,7 @@ export class UmdReflectionHost extends Esm5ReflectionHost {
     const exportsSymbol = this.checker.getSymbolsInScope(id, ts.SymbolFlags.Variable)
                               .find(symbol => symbol.name === 'exports');
 
-    const node = exportsSymbol !== undefined &&
+    const node = exportsSymbol?.valueDeclaration !== undefined &&
             !ts.isFunctionExpression(exportsSymbol.valueDeclaration.parent) ?
         // There is a locally defined `exports` variable that is not a function parameter.
         // So this `exports` identifier must be a local variable and does not represent the module.
@@ -474,7 +476,7 @@ export class UmdReflectionHost extends Esm5ReflectionHost {
    * If this is an IIFE then try to grab the outer and inner classes otherwise fallback on the super
    * class.
    */
-  protected getDeclarationOfExpression(expression: ts.Expression): Declaration|null {
+  protected override getDeclarationOfExpression(expression: ts.Expression): Declaration|null {
     const inner = getInnerClassDeclaration(expression);
     if (inner !== null) {
       const outer = getOuterNodeFromInnerDeclaration(inner);
@@ -509,30 +511,40 @@ export class UmdReflectionHost extends Esm5ReflectionHost {
 }
 
 export function parseStatementForUmdModule(statement: ts.Statement): UmdModule|null {
-  const wrapperCall = getUmdWrapperCall(statement);
-  if (!wrapperCall) return null;
+  const wrapper = getUmdWrapper(statement);
+  if (wrapper === null) return null;
 
-  const wrapperFn = wrapperCall.expression;
-  if (!ts.isFunctionExpression(wrapperFn)) return null;
-
-  const factoryFnParamIndex = wrapperFn.parameters.findIndex(
+  const factoryFnParamIndex = wrapper.fn.parameters.findIndex(
       parameter => ts.isIdentifier(parameter.name) && parameter.name.text === 'factory');
   if (factoryFnParamIndex === -1) return null;
 
-  const factoryFn = stripParentheses(wrapperCall.arguments[factoryFnParamIndex]);
+  const factoryFn = stripParentheses(wrapper.call.arguments[factoryFnParamIndex]);
   if (!factoryFn || !ts.isFunctionExpression(factoryFn)) return null;
 
-  return {wrapperFn, factoryFn};
+  return {wrapperFn: wrapper.fn, factoryFn};
 }
 
-function getUmdWrapperCall(statement: ts.Statement): ts.CallExpression&
-    {expression: ts.FunctionExpression}|null {
-  if (!ts.isExpressionStatement(statement) || !ts.isParenthesizedExpression(statement.expression) ||
-      !ts.isCallExpression(statement.expression.expression) ||
-      !ts.isFunctionExpression(statement.expression.expression.expression)) {
-    return null;
+function getUmdWrapper(statement: ts.Statement):
+    {call: ts.CallExpression, fn: ts.FunctionExpression}|null {
+  if (!ts.isExpressionStatement(statement)) return null;
+
+  if (ts.isParenthesizedExpression(statement.expression) &&
+      ts.isCallExpression(statement.expression.expression) &&
+      ts.isFunctionExpression(statement.expression.expression.expression)) {
+    // (function () { ... } (...) );
+    const call = statement.expression.expression;
+    const fn = statement.expression.expression.expression;
+    return {call, fn};
   }
-  return statement.expression.expression as ts.CallExpression & {expression: ts.FunctionExpression};
+  if (ts.isCallExpression(statement.expression) &&
+      ts.isParenthesizedExpression(statement.expression.expression) &&
+      ts.isFunctionExpression(statement.expression.expression.expression)) {
+    // (function () { ... }) (...);
+    const call = statement.expression;
+    const fn = statement.expression.expression.expression;
+    return {call, fn};
+  }
+  return null;
 }
 
 

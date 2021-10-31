@@ -16,8 +16,8 @@ import { Hero } from './hero';
   `
 })
 export class DoCheckComponent implements DoCheck {
-  @Input() hero: Hero;
-  @Input() power: string;
+  @Input() hero!: Hero;
+  @Input() power = '';
 
   changeDetected = false;
   changeLog: string[] = [];

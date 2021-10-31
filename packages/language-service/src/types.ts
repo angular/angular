@@ -7,7 +7,7 @@
  */
 
 import {CompileDirectiveMetadata, CompileDirectiveSummary, CompilePipeSummary, CssSelector, NgAnalyzedModules, Node as HtmlAst, ParseError, Parser, StaticSymbol, TemplateAst} from '@angular/compiler';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {Span, Symbol, SymbolQuery, SymbolTable} from './symbols';
 

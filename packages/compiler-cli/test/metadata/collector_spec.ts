@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {MetadataCollector} from '../../src/metadata/collector';
 import {ClassMetadata, ConstructorMetadata, isClassMetadata, isMetadataGlobalReferenceExpression, METADATA_VERSION, MetadataEntry, MetadataMap, MetadataSymbolicExpression, ModuleMetadata} from '../../src/metadata/schema';

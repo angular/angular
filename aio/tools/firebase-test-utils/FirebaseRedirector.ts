@@ -6,8 +6,15 @@ export type FirebaseRedirectConfig =
 
 export class FirebaseRedirector {
   private redirects: FirebaseRedirect[];
+  private unusedRedirects: Set<FirebaseRedirect>;
+
+  get unusedRedirectConfigs(): FirebaseRedirectConfig[] {
+    return [...this.unusedRedirects].map(({rawConfig}) => rawConfig);
+  }
+
   constructor(redirects: FirebaseRedirectConfig[]) {
     this.redirects = redirects.map(redirect => new FirebaseRedirect(redirect));
+    this.unusedRedirects = new Set(this.redirects);
   }
 
   redirect(url: string): string {
@@ -28,6 +35,7 @@ export class FirebaseRedirector {
     for (const redirect of this.redirects) {
       const newUrl = redirect.replace(url);
       if (newUrl !== undefined) {
+        this.unusedRedirects.delete(redirect);
         return newUrl;
       }
     }

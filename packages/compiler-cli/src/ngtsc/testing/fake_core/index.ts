@@ -114,3 +114,7 @@ export interface PipeTransform {
 export interface OnDestroy {
   ngOnDestroy(): void;
 }
+
+export interface TrackByFunction<T> {
+  <U extends T>(index: number, item: T&U): any;
+}

@@ -71,14 +71,14 @@ describe('authors-package (integration tests)', () => {
   it('should generate API doc if the "fileChanged" is an API doc', () => {
     return generateDocs('packages/forms/src/form_builder.ts', { silent: true }).then(() => {
       expect(fs.writeFile).toHaveBeenCalled();
-      expect(files).toContain(resolve(DOCS_OUTPUT_PATH, 'api/forms/FormBuilder.json'));
+      expect(files).toContain(resolve(DOCS_OUTPUT_PATH, 'api/forms/f_ormb_uilder.json'));
     });
   }, 16000);
 
   it('should generate API doc if the "fileChanged" is an API example', () => {
     return generateDocs('packages/examples/forms/ts/formBuilder/form_builder_example.ts', { silent: true }).then(() => {
       expect(fs.writeFile).toHaveBeenCalled();
-      expect(files).toContain(resolve(DOCS_OUTPUT_PATH, 'api/forms/FormBuilder.json'));
+      expect(files).toContain(resolve(DOCS_OUTPUT_PATH, 'api/forms/f_ormb_uilder.json'));
     });
   }, 16000);
 });

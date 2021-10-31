@@ -1,6 +1,6 @@
 # Angular documentation style guide
 
-This style guide covers the standards for writing [Angular documentation on angular.io](https://angular.io/docs).
+This style guide covers the standards for writing [Angular documentation on angular.io](docs).
 These standards ensure consistency in writing style, Markdown conventions, and code snippets.
 
 ## Prerequisites
@@ -207,11 +207,11 @@ Do not create a node that is both a header and an item node by specifying the `u
 
 ## Code snippets
 
-[Angular.io](https://angular.io/docs) has a custom framework that enables authors to include code snippets directly from working example apps that are automatically tested as part of documentation builds.
+[Angular.io](docs) has a custom framework that enables authors to include code snippets directly from working example applications that are automatically tested as part of documentation builds.
 
 In addition to working code snippets, example code can include terminal commands, a fragment of TypeScript or HTML, or an entire code file.
 
-Whatever the source, the doc viewer renders them as code snippets, either individually with the [code-example](#code-example "code-example") component or as a tabbed collection with the [code-tabs](#code-tabs "code-tabs") component.
+Whatever the source, the document viewer renders them as code snippets, either individually with the [code-example](#code-example "code-example") component or as a tabbed collection with the [code-tabs](#code-tabs "code-tabs") component.
 
 {@a code-example}
 
@@ -249,16 +249,16 @@ The <code class="no-auto-link">item</code> property is `true`.
 
 Ideally, you should source code snippets [from working sample code](#from-code-samples), though there are times when an inline snippet is necessary.
 
-For terminal input and output, place the content between `<code-example>` tags, set the CSS class to `code-shell`, and set the language attribute to `sh` as in this example:
+For terminal input and output, place the content between `<code-example>` tags and set the language attribute to `sh` as in this example:
 
-<code-example language="sh" class="code-shell">
+<code-example language="sh">
 
   npm start
 
 </code-example>
 
 ```html
-<code-example language="sh" class="code-shell">
+<code-example language="sh">
 
   npm start
 
@@ -278,9 +278,9 @@ For hypothetical examples such as illustrations of configuration options in a JS
 
 One of the Angular documentation design goals is that guide page code snippets be examples of working code.
 
-Authors meet this goal by displaying code snippets directly from working sample apps, written specifically for these guide pages.
+Authors meet this goal by displaying code snippets directly from working sample applications, written specifically for these guide pages.
 
-Find sample apps in sub-folders of the `content/examples` directory of the `angular/angular` repository.
+Find sample applications in sub-folders of the `content/examples` directory of the `angular/angular` repository.
 An example folder name is often the same as the guide page it supports.
 
 <div class="alert is-helpful">
@@ -312,11 +312,11 @@ The following markup produces that snippet:
 </code-example>
 ```
 
-The `path` attribute identifies the snippet's source file at the example app folder's location within `content/examples`.
+The `path` attribute identifies the snippet's source file at the example application folder's location within `content/examples`.
 In this example, that path is  `docs-style-guide/src/app/app.module.ts`.
 
 The header tells the reader where to find the file.
-Following convention, set the `header` attribute to the file's location within the example app's root folder.
+Following convention, set the `header` attribute to the file's location within the example application's root folder.
 
 Unless otherwise noted, all code snippets in this page are from sample source code located in the `content/examples/docs-style-guide` directory.
 
@@ -385,7 +385,7 @@ export class AppModule { }
 The opening and ending `#docregion` lines designate any lines of code between them as being included in the code snippet.
 This is why the import statements outside of the `class` `#docregion` are not in the code snippet.
 
-For more information on how to prepare example app files for use in guides, see
+For more information on how to prepare example application files for use in guides, see
  [Source code markup](#source-code-markup).
 
 ### Code snippet options
@@ -405,7 +405,7 @@ Specify the `<code-example>` output with the following attributes:
   The `number` option starts line numbering at the given value.
   For example, `linenums=4` sets the starting line number to 4.
 
-* `class`: code snippets can be styled with the CSS classes `no-box`, `code-shell`, and `avoid`.
+* `class`: code snippets can be styled with the CSS classes `no-box` and `avoid`.
 
 * `hideCopy`: hides the copy button.
 
@@ -727,6 +727,13 @@ Remember to exclude these files from StackBlitz by listing them in the `stackbli
 
 <code-example path="docs-style-guide/stackblitz.json" header="stackblitz.json"></code-example>
 
+### Source code styling
+
+Source code should follow [Angular's style guide](guide/styleguide) where possible.
+
+#### Hexadecimals
+
+Hexadecimal should use the shorthand where possible, and use only lowercase letters.
 
 {@a live-examples}
 
@@ -896,7 +903,7 @@ The browser renders the following:
 This is a [link to that custom anchor name](#section-anchors).
 
 When editing a file, don't remove any anchors.
-If you change the document structure, you can move an existing anchor within that same doc without breaking a link.
+If you change the document structure, you can move an existing anchor within that same document without breaking a link.
 You can also add more anchors with more appropriate text.
 
 <div class="alert is-helpful">
@@ -1150,80 +1157,6 @@ Here is the markup for this file tree.
         </div>
     </div>
 </div>
-```
-
-## Tables
-
-Use HTML tables to present tabular data.
-
-<table>
-  <tr>
-    <th>Header Type</th>
-    <th>Markdown</th>
-    <th>Use</th>
-  </tr>
-  <tr>
-    <td><code>&lt;h1&gt;</code></td>
-    <td>#</td>
-    <td>Title of page</td>
-  </tr>
-  <tr>
-    <td><code>&lt;h2&gt;</code></td>
-    <td>##</td>
-    <!-- can use Markdown too; remember blank lines -->
-    <td>
-
-      **Second level headers**
-
-    </td>
-  </tr>
-  <tr>
-    <td><code>&lt;h3&gt;</code></td>
-    <td>###</td>
-    <td>
-
-      **Third level headers**
-
-    </td>
-  </tr>
-</table>
-
-The following is the markup for this table:
-
-```html
-
-<table>
-  <tr>
-    <th>Header Type</th>
-    <th>Markdown</th>
-    <th>Use</th>
-  </tr>
-  <tr>
-    <td><code>&lt;h1&gt;</code></td>
-    <td>#</td>
-    <td>Title of page</td>
-  </tr>
-  <tr>
-    <td><code>&lt;h2&gt;</code></td>
-    <td>##</td>
-    <!-- can use Markdown too; remember blank lines -->
-    <td>
-
-      **Second level headers**
-
-    </td>
-  </tr>
-  <tr>
-    <td><code>&lt;h3&gt;</code></td>
-    <td>###</td>
-    <td>
-
-      **Third level headers**
-
-    </td>
-  </tr>
-</table>
-
 ```
 
 ## Images

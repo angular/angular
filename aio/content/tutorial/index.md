@@ -3,22 +3,22 @@
 <div class="callout is-helpful">
 <header>Getting Started</header>
 
-In this tutorial, you build your own app from the ground up, providing experience with the typical development process, as well as an introduction to basic app-design concepts, tools, and terminology.
+In this tutorial, you build your own application from the ground up, providing experience with the typical development process, as well as an introduction to basic app-design concepts, tools, and terminology.
 
-If you're completely new to Angular, you might want to try the [**Try it now**](start) quick-start app first.
+If you're completely new to Angular, you might want to try the [**Try it now**](start) quick-start application first.
 It is based on a ready-made  partially-completed project, which you can examine and modify in the StackBlitz interactive development environment, where you can see the results in real time.
 
-The "Try it" tutorial covers the same major topics&mdash;components, template syntax, routing, services, and accessing data via HTTP&mdash;in a condensed format, following the most current best practices.
+The "Try it" tutorial covers the same major topics&mdash;components, template syntax, routing, services, and accessing data using HTTP&mdash;in a condensed format, following the most current best practices.
 
 </div>
 
-This _Tour of Heroes_ tutorial shows you how to set up your local development environment and develop an app using the [Angular CLI tool](cli "CLI command reference"), and provides an introduction to the fundamentals of Angular.
+This _Tour of Heroes_ tutorial shows you how to set up your local development environment and develop an application using the [Angular CLI tool](cli "CLI command reference"), and provides an introduction to the fundamentals of Angular.
 
-The _Tour of Heroes_ app that you build helps a staffing agency manage its stable of heroes.
-The app has many of the features you'd expect to find in any data-driven application.
-The finished app acquires and displays a list of heroes, edits a selected hero's detail, and navigates among different views of heroic data.
+The _Tour of Heroes_ application that you build helps a staffing agency manage its stable of heroes.
+The application has many of the features you'd expect to find in any data-driven application.
+The finished application acquires and displays a list of heroes, edits a selected hero's detail, and navigates among different views of heroic data.
 
-You will find references to and expansions of this app domain in many of the examples used throughout the Angular documentation, but you don't necessarily need to work through this tutorial to understand those examples.
+You will find references to and expansions of this application domain in many of the examples used throughout the Angular documentation, but you don't necessarily need to work through this tutorial to understand those examples.
 
 By the end of this tutorial you will be able to do the following:
 
@@ -38,7 +38,7 @@ Angular can do whatever you need it to do.
 <div class="callout is-helpful">
 <header>Solution</header>
 
-After completing all tutorial steps, the final app will look like this: <live-example name="toh-pt6"></live-example>.
+After completing all tutorial steps, the final application will look like this: <live-example name="toh-pt6"></live-example>.
 
 </div>
 
@@ -63,7 +63,7 @@ where you can change the hero's name.
 
 Clicking the "Back" button returns you to the Dashboard.
 Links at the top take you to either of the main views.
-If you click "Heroes," the app displays the "Heroes" master list view.
+If you click "Heroes," the application displays the "Heroes" master list view.
 
 
 <div class="lightbox">
@@ -81,7 +81,7 @@ The following diagram captures all of the navigation options.
   <img src='generated/images/guide/toh/nav-diagram.png' alt="View navigations">
 </div>
 
-Here's the app in action:
+Here's the application in action:
 
 <div class="lightbox">
   <img src='generated/images/guide/toh/toh-anim.gif' alt="Tour of Heroes in Action">

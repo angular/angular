@@ -6,14 +6,75 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, createPlatformFactory} from '@angular/core';
-import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+import {ApplicationRef, Component, DoBootstrap, NgModule, Type} from '@angular/core';
+import {BrowserModule} from '@angular/platform-browser';
 
-// #docregion longform
-@Component({selector: 'my-app', template: 'Hello World'})
-class MyApp {
+@Component({
+  selector: 'app-root',
+  template: ` <h1>Component One</h1> `,
+})
+export class ComponentOne {
 }
 
-const myPlatformFactory = createPlatformFactory(platformBrowserDynamic, 'myPlatform');
-myPlatformFactory().bootstrapModule(MyApp);
-// #enddocregion
+@Component({
+  selector: 'app-root',
+  template: ` <h1>Component Two</h1> `,
+})
+export class ComponentTwo {
+}
+
+@Component({
+  selector: 'app-root',
+  template: ` <h1>Component Three</h1> `,
+})
+export class ComponentThree {
+}
+
+@Component({
+  selector: 'app-root',
+  template: ` <h1>Component Four</h1> `,
+})
+export class ComponentFour {
+}
+
+@NgModule({imports: [BrowserModule], declarations: [ComponentOne, ComponentTwo]})
+export class AppModule implements DoBootstrap {
+  // #docregion componentSelector
+  ngDoBootstrap(appRef: ApplicationRef) {
+    this.fetchDataFromApi().then((componentName: string) => {
+      if (componentName === 'ComponentOne') {
+        appRef.bootstrap(ComponentOne);
+      } else {
+        appRef.bootstrap(ComponentTwo);
+      }
+    });
+  }
+  // #enddocregion
+
+  fetchDataFromApi(): Promise<string> {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve('ComponentTwo');
+      }, 2000);
+    });
+  }
+}
+
+@NgModule({imports: [BrowserModule], declarations: [ComponentThree]})
+export class AppModuleTwo implements DoBootstrap {
+  // #docregion cssSelector
+  ngDoBootstrap(appRef: ApplicationRef) {
+    appRef.bootstrap(ComponentThree, '#root-element');
+  }
+  // #enddocregion cssSelector
+}
+
+@NgModule({imports: [BrowserModule], declarations: [ComponentFour]})
+export class AppModuleThree implements DoBootstrap {
+  // #docregion domNode
+  ngDoBootstrap(appRef: ApplicationRef) {
+    const element = document.querySelector('#root-element');
+    appRef.bootstrap(ComponentFour, element);
+  }
+  // #enddocregion domNode
+}

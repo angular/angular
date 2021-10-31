@@ -104,5 +104,43 @@ import {el} from '../../testing/src/browser_util';
          expect(finished).toBeTruthy();
          expect(destroyed).toBeTruthy();
        }));
+
+    it('should update `hasStarted()` on `play()` and `reset()`', fakeAsync(() => {
+         @Component({
+           selector: 'ani-another-cmp',
+           template: '...',
+         })
+         class CmpAnother {
+           @ViewChild('target') public target: any;
+
+           constructor(public builder: AnimationBuilder) {}
+
+           build() {
+             const definition =
+                 this.builder.build([style({opacity: 0}), animate(1000, style({opacity: 1}))]);
+
+             return definition.create(this.target);
+           }
+         }
+
+         TestBed.configureTestingModule({declarations: [CmpAnother]});
+
+         const fixture = TestBed.createComponent(CmpAnother);
+         const cmp = fixture.componentInstance;
+         fixture.detectChanges();
+
+         const player = cmp.build();
+
+         expect(player.hasStarted()).toBeFalsy();
+         flushMicrotasks();
+
+         player.play();
+         flushMicrotasks();
+         expect(player.hasStarted()).toBeTruthy();
+
+         player.reset();
+         flushMicrotasks();
+         expect(player.hasStarted()).toBeFalsy();
+       }));
   });
 }

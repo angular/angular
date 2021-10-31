@@ -5,17 +5,18 @@ Path values given in the configuration are relative to the root workspace folder
 
 ## Overall JSON structure
 
-At the top level of `angular.json`, a few properties configure the workspace, and a `projects` section contains the remaining per-project configuration options. CLI defaults set at the workspace level can be overridden by defaults set at the project level, and defaults set at the project level can be overridden on the command line.
+At the top-level of `angular.json`, a few properties configure the workspace and a `projects` section contains the remaining per-project configuration options. You can override CLI defaults set at the workspace level through defaults set at the project level. You can also override defaults set at the project level using the command line.
 
-The following properties, at the top level of the file, configure the workspace.
+The following properties, at the top-level of the file, configure the workspace.
 
-* `version`: The configuration-file version.
-* `newProjectRoot`: Path where new projects are created. Absolute or relative to the workspace folder.
-* `defaultProject`: Default project name to use in commands, where not provided as an argument. When you use `ng new` to create a new app in a new workspace, that app is the default project for the workspace until you change it here.
-* `schematics` : A set of [schematics](guide/glossary#schematic) that customize the `ng generate` sub-command option defaults for this workspace. See [Generation schematics](#schematics) below.
-* `projects` : Contains a subsection for each project (library or application) in the workspace, with the per-project configuration options.
+*   `version`: The configuration-file version.
+*   `newProjectRoot`: Path where new projects are created. Absolute or relative to the workspace folder.
+*   `defaultProject`: Default project name to use in commands, where not provided as an argument. When you use `ng new` to create a new application in a new workspace, that application is the default project for the workspace until you change it here.
+*   `cli` : A set of options that customize the [Angular CLI](cli). See the [CLI configuration options](#cli-configuration-options) section.
+*   `schematics` : A set of [schematics](guide/glossary#schematic) that customize the `ng generate` sub-command option defaults for this workspace. See the [Generation schematics](#schematics) section.
+*   `projects` : Contains a subsection for each project (library or application) in the workspace, with the per-project configuration options.
 
-The initial app that you create with `ng new app_name` is listed under "projects":
+The initial application that you create with `ng new app_name` is listed under "projects":
 
 <code-example language="json">
 
@@ -32,18 +33,50 @@ When you create a library project with `ng generate library`, the library projec
 
 <div class="alert is-helpful">
 
-  Note that the `projects` section of the configuration file does not correspond exactly to the workspace file structure.
-  * The initial app created by `ng new` is at the top level of the workspace file structure.
-  * Additional applications and libraries go into a `projects` folder in the workspace.
+**NOTE**: The `projects` section of the configuration file does not correspond exactly to the workspace file structure.
 
-  For more information, see [Workspace and project file structure](guide/file-structure).
+*   The initial application created by `ng new` is at the top level of the workspace file structure.
+*   Additional applications and libraries go into a `projects` folder in the workspace.
+
+For more information, see [Workspace and project file structure](guide/file-structure).
 
 </div>
 
-## Strict mode
+{@a cli-configuration-options}
 
-When you create new workspaces and projects, you have the option to use Angular's strict mode, which can help you write better, more maintainable code.
-For more information, see [Strict mode](/guide/strict-mode).
+## CLI configuration options
+
+The following configuration properties are a set of options that customize the Angular CLI.
+
+| Property            | Description                                                                                      | Value Type                                               |
+| :------------------ | :----------------------------------------------------------------------------------------------- | :------------------------------------------------------- |
+| `analytics`         | Share anonymous [usage data](cli/usage-analytics-gathering) with the Angular Team.               | `boolean` \| `ci`                                        |
+| `analyticsSharing`  | A set of analytics sharing options.                                                              | [Analytics sharing options](#analytics-sharing-options)  |
+| `cache`             | Control [persistent disk cache](cli/cache) used by [Angular CLI Builders](guide/cli-builder).    | [Cache options](#cache-options)                          |
+| `defaultCollection` | The default schematics collection to use.                                                        | `string`                                                 |
+| `packageManager`    | The preferred package manager tool to use.                                                        | `npm` \| `cnpm` \| `pnpm` \| `yarn`                      |
+| `warnings`          | Control CLI specific console warnings.                                                           | [Warnings options](#warnings-options)                    |
+
+### Analytics sharing options
+
+| Property   | Description                                                  | Value Type |
+| :--------- | :----------------------------------------------------------- | :--------- |
+| `tracking` | Analytics sharing info tracking ID.                          | `string`   |
+| `uuid`     | Analytics sharing info UUID (Universally Unique Identifier). | `string`   |
+
+### Cache options
+
+| Property      | Description                                           | Value Type               | Default Value    |
+| :------------ | :---------------------------------------------------- | :----------------------- | :--------------- |
+| `enabled`     | Configure whether disk caching is enabled.            | `boolean`                | `true`           |
+| `environment` | Configure in which environment disk cache is enabled. | `local` \| `ci` \| `all` | `local`          |
+| `path`        | The directory used to stored cache results.           | `string`                 | `.angular/cache` |
+
+### Warnings options
+
+| Property          | Description                                                                     | Value Type | Default Value |
+| :---------------- | :------------------------------------------------------------------------------ | :--------- | :------------ |
+| `versionMismatch` | Show a warning when the global Angular CLI version is newer than the local one. | `boolean`  | `true`        |
 
 ## Project configuration options
 
@@ -51,25 +84,25 @@ The following top-level configuration properties are available for each project,
 
 <code-example language="json">
 
-    "my-app": {
-      "root": "",
-      "sourceRoot": "src",
-      "projectType": "application",
-      "prefix": "app",
-      "schematics": {},
-      "architect": {}
-    }
+"my-app": {
+  "root": "",
+  "sourceRoot": "src",
+  "projectType": "application",
+  "prefix": "app",
+  "schematics": {},
+  "architect": {}
+}
 
 </code-example>
 
-| PROPERTY | DESCRIPTION |
-| :-------------- | :---------------------------- |
+| PROPERTY        | DESCRIPTION                                                                                                                                             |
+|:---             |:---                                                                                                                                                     |
 | `root`          | The root folder for this project's files, relative to the workspace folder. Empty for the initial app, which resides at the top level of the workspace. |
-| `sourceRoot`    | The root folder for this project's source files. |
-| `projectType`   | One of "application" or "library". An application can run independently in a browser, while a library cannot.|
-| `prefix`        | A string that Angular prepends to generated selectors. Can be customized to identify an app or feature area. |
-| `schematics`    | A set of schematics that customize the `ng generate` sub-command option defaults for this project. See [Generation schematics](#schematics) below.  |
-| `architect`     | Configuration defaults for Architect builder targets for this project. |
+| `sourceRoot`    | The root folder for this project's source files.                                                                                                        |
+| `projectType`   | One of "application" or "library". An application can run independently in a browser, while a library cannot.                                           |
+| `prefix`        | A string that Angular prepends to generated selectors. Can be customized to identify an application or feature area.                                    |
+| `schematics`    | A set of schematics that customize the `ng generate` sub-command option defaults for this project. See the [Generation schematics](#schematics) section.|
+| `architect`     | Configuration defaults for Architect builder targets for this project.                                                                                  |
 
 {@a schematics}
 
@@ -100,17 +133,15 @@ See [Angular CLI Builders](guide/cli-builder).
 ### Default Architect builders and targets
 
 Angular defines default builders for use with specific CLI commands, or with the general `ng run` command.
-The JSON schemas that define the options and defaults for each of these default builders are collected in the [`@angular-devkit/build-angular`](https://github.com/angular/angular-cli/blob/master/packages/angular/cli/lib/config/schema.json) package.
+The JSON schemas that define the options and defaults for each of these default builders are collected in the [`@angular-devkit/build-angular`](https://github.com/angular/angular-cli/blob/master/packages/angular_devkit/build_angular/builders.json) package.
 The schemas configure options for the following builders.
 
-* app-shell
-* browser
-* dev-server
-* extract-i18n
-* karma
-* protractor
-* server
-* tslint
+* [app-shell](https://github.com/angular/angular-cli/blob/master/packages/angular_devkit/build_angular/src/builders/app-shell/schema.json)
+* [browser](https://github.com/angular/angular-cli/blob/master/packages/angular_devkit/build_angular/src/builders/browser/schema.json)
+* [dev-server](https://github.com/angular/angular-cli/blob/master/packages/angular_devkit/build_angular/src/builders/dev-server/schema.json)
+* [extract-i18n](https://github.com/angular/angular-cli/blob/master/packages/angular_devkit/build_angular/src/builders/extract-i18n/schema.json)
+* [karma](https://github.com/angular/angular-cli/blob/master/packages/angular_devkit/build_angular/src/builders/karma/schema.json)
+* [server](https://github.com/angular/angular-cli/blob/master/packages/angular_devkit/build_angular/src/builders/server/schema.json)
 
 ### Configuring builder targets
 
@@ -124,38 +155,31 @@ See the example in [Build target](#build-target) below.
 
 <code-example language="json">
 
-      "architect": {
-        "build": { },
-        "serve": { },
-        "e2e" : { },
-        "test": { },
-        "lint": { },
-        "extract-i18n": { },
-        "server": { },
-        "app-shell": { }
-      }
+"architect": {
+  "build": {},
+  "serve": {},
+  "e2e" : {},
+  "test": {},
+  "lint": {},
+  "extract-i18n": {},
+  "server": {},
+  "app-shell": {}
+}
 
 </code-example>
 
-* The `architect/build` section configures defaults for options of the `ng build` command.
-See [Build target](#build-target) below for more information.
-
-* The `architect/serve` section overrides build defaults and supplies additional serve defaults for the `ng serve` command. In addition to the options available for the `ng build` command, it adds options related to serving the app.
-
-* The `architect/e2e` section overrides build-option defaults for building end-to-end testing apps using the `ng e2e` command.
-
-* The `architect/test` section overrides build-option defaults for test builds and supplies additional test-running defaults for the `ng test` command.
-
-* The `architect/lint` section configures defaults for options of the `ng lint` command, which performs code analysis on project source files. The default linting tool for Angular is [TSLint](https://palantir.github.io/tslint/).
-
-* The `architect/extract-i18n` section configures defaults for options of the `ng extract-i18n` command, which extracts marked message strings from source code and outputs translation files.
-
-* The `architect/server` section configures defaults for creating a Universal app with server-side rendering, using the `ng run <project>:server` command.
-
-* The `architect/app-shell` section configures defaults for creating an app shell for a progressive web app (PWA), using the `ng run <project>:app-shell` command.
+*   The `architect/build` section configures defaults for options of the `ng build` command.
+    See the [Build target](#build-target) section for more information.
+*   The `architect/serve` section overrides build defaults and supplies additional serve defaults for the `ng serve` command. In addition to the options available for the `ng build` command, it adds options related to serving the application.
+*   The `architect/e2e` section overrides build-option defaults for building end-to-end testing applications using the `ng e2e` command.
+*   The `architect/test` section overrides build-option defaults for test builds and supplies additional test-running defaults for the `ng test` command.
+*   The `architect/lint` section configures defaults for options of the `ng lint` command, which performs code analysis on project source files.
+*   The `architect/extract-i18n` section configures defaults for options of the `ng extract-i18n` command, which extracts marked message strings from source code and outputs translation files.
+*   The `architect/server` section configures defaults for creating a Universal application with server-side rendering, using the `ng run <project>:server` command.
+*   The `architect/app-shell` section configures defaults for creating an application shell for a progressive web application (PWA), using the `ng run <project>:app-shell` command.
 
 In general, the options for which you can configure defaults correspond to the command options listed in the [CLI reference page](cli) for each command.
-Note that all options in the configuration file must use [camelCase](guide/glossary#case-conventions), rather than dash-case.
+**NOTE**: All options in the configuration file must use [camelCase](guide/glossary#case-conventions), rather than dash-case.
 
 {@a build-target}
 
@@ -163,28 +187,28 @@ Note that all options in the configuration file must use [camelCase](guide/gloss
 
 The `architect/build` section configures defaults for options of the `ng build` command. It has the following top-level properties.
 
-| PROPERTY | DESCRIPTION |
-| :-------------- | :---------------------------- |
-| `builder`       | The npm package for the build tool used to create this target. The default builder for an application (`ng build myApp`) is `@angular-devkit/build-angular:browser`, which uses the [webpack](https://webpack.js.org/) package bundler. Note that a different builder is used for building a library (`ng build myLib`). |
-| `options`       | This section contains default build target options, used when no named alternative configuration is specified. See [Default build targets](#default-build-targets) below. |
-| `configurations`| This section defines and names alternative configurations for different intended destinations. It contains a section for each named configuration, which sets the default options for that intended environment. See [Alternate build configurations](#build-configs) below. |
-
+| PROPERTY        | DESCRIPTION                                                                                                                                                                                                                                                                                                              |
+|:---             |:---                                                                                                                                                                                                                                                                                                                      |
+| `builder`       | The npm package for the build tool used to create this target. The default builder for an application (`ng build myApp`) is <code class="no-auto-link">@angular-devkit/build-angular:browser</code>, which uses the [webpack](https://webpack.js.org) package bundler. **NOTE**: A different builder is used for building a library (`ng build myLib`). |
+| `options`       | This section contains default build target options, used when no named alternative configuration is specified. See the [Default build targets](#default-build-targets) section.                                                                                                                                                |
+| `configurations`| This section defines and names alternative configurations for different intended destinations. It contains a section for each named configuration, which sets the default options for that intended environment. See the [Alternate build configurations](#build-configs) section.                                             |
 
 {@a build-configs}
 
 ### Alternate build configurations
 
 Angular CLI comes with two build configurations: `production` and `development`. By default, the `ng build` command uses the `production` configuration, which applies a number of build optimizations, including:
-* Bundling files
-* Minimizing excess whitespace
-* Removing comments and dead code
-* Rewriting code to use short, mangled names (minification)
 
-You can define and name additional alternate configurations (such as `stage`, for instance) appropriate to your development process. Some examples of different build configurations are `stable`, `archive` and `next` used by AIO itself, and the individual locale-specific configurations required for building localized versions of an app. For details, see [Internationalization (i18n)](guide/i18n#merge-aot).
+*   Bundling files
+*   Minimizing excess whitespace
+*   Removing comments and dead code
+*   Rewriting code to use short, mangled names (minification)
+
+You can define and name additional alternate configurations (such as `stage`, for instance) appropriate to your development process. Some examples of different build configurations are `stable`, `archive`, and `next` used by AIO itself, and the individual locale-specific configurations required for building localized versions of an application. For details, see [Internationalization (i18n)][AioGuideI18nCommonMerge].
 
 You can select an alternate configuration by passing its name to the `--configuration` command line flag.
 
-You can also pass in more than one configuration name as a comma-separated list. For example, to apply both `stage` and `fr` build configurations, use the command `ng build --configuration stage,fr`. In this case,  the command parses the named configurations from left to right. If multiple configurations change the same setting, the last-set value is the final one.
+You can also pass in more than one configuration name as a comma-separated list. For example, to apply both `stage` and `fr` build configurations, use the command `ng build --configuration stage,fr`. In this case, the command parses the named configurations from left to right. If multiple configurations change the same setting, the last-set value is the final one. So in this example, if both `stage` and `fr` configurations set the output path the value in `fr` would get used.
 
 {@a build-props}
 
@@ -194,14 +218,14 @@ The configurable options for a default or targeted build generally correspond to
 
 Some additional options can only be set through the configuration file, either by direct editing or with the [`ng config`](cli/config) command.
 
-| OPTIONS PROPERTIES | DESCRIPTION |
-| :------------------------- | :---------------------------- |
-| `assets`                   | An object containing paths to static assets to add to the global context of the project. The default paths point to the project's icon file and its `assets` folder. See more in [Assets configuration](#asset-config) below. |
-| `styles`                   | An array of style files to add to the global context of the project. Angular CLI supports CSS imports and all major CSS preprocessors: [sass/scss](https://sass-lang.com/), [less](http://lesscss.org/), and [stylus](https://stylus-lang.com/). See more in [Styles and scripts configuration](#style-script-config) below. |
-| `stylePreprocessorOptions` | An object containing option-value pairs to pass to style preprocessors. See more in [Styles and scripts configuration](#style-script-config) below. |
-| `scripts`                  | An object containing JavaScript script files to add to the global context of the project. The scripts are loaded exactly as if you had added them in a `<script>` tag inside `index.html`. See more in [Styles and scripts configuration](#style-script-config) below. |
-| `budgets`                  | Default size-budget type and threshholds for all or parts of your app. You can configure the builder to report a warning or an error when the output reaches or exceeds a threshold size. See [Configure size budgets](guide/build#configure-size-budgets). (Not available in `test` section.) |
-| `fileReplacements`         | An object containing files and their compile-time replacements. See more in [Configure target-specific file replacements](guide/build#configure-target-specific-file-replacements).|
+| OPTIONS PROPERTIES         | DESCRIPTION                                                                                                                                                                                                                                                                                           |
+|:---                        |:---                                                                                                                                                                                                                                                                                                   |
+| `assets`                   | An object containing paths to static assets to add to the global context of the project. The default paths point to the project's icon file and its `assets` folder. See more in the [Assets configuration](#asset-config) section.                                                                         |
+| `styles`                   | An array of style files to add to the global context of the project. Angular CLI supports CSS imports and all major CSS preprocessors: [sass/scss](https://sass-lang.com) and [less](http://lesscss.org). See more in the [Styles and scripts configuration](#style-script-config) section.               |
+| `stylePreprocessorOptions` | An object containing option-value pairs to pass to style preprocessors. See more in the [Styles and scripts configuration](#style-script-config) section.                                                                                                                                                   |
+| `scripts`                  | An object containing JavaScript script files to add to the global context of the project. The scripts are loaded exactly as if you had added them in a `<script>` tag inside `index.html`. See more in the [Styles and scripts configuration](#style-script-config) section.                                |
+| `budgets`                  | Default size-budget type and thresholds for all or parts of your application. You can configure the builder to report a warning or an error when the output reaches or exceeds a threshold size. See [Configure size budgets](guide/build#configure-size-budgets). (Not available in `test` section.) |
+| `fileReplacements`         | An object containing files and their compile-time replacements. See more in [Configure target-specific file replacements](guide/build#configure-target-specific-file-replacements).                                                                                                                   |
 
 {@a complex-config}
 
@@ -232,11 +256,11 @@ To exclude an asset, you can remove it from the assets configuration.
 You can further configure assets to be copied by specifying assets as objects, rather than as simple paths relative to the workspace root.
 A asset specification object can have the following fields.
 
-* `glob`:  A [node-glob](https://github.com/isaacs/node-glob/blob/master/README.md) using `input` as base directory.
-* `input`: A path relative to the workspace root.
-* `output`: A path relative to `outDir` (default is `dist/`*project-name*). Because of the security implications, the CLI never writes files outside of the project output path.
-* `ignore`: A list of globs to exclude.
-* `followSymlinks`: Allow glob patterns to follow symlink directories. This allows subdirectories of the symlink to be searched. Defaults to `false`.
+*   `glob`: A [node-glob](https://github.com/isaacs/node-glob/blob/master/README.md) using `input` as base directory.
+*   `input`: A path relative to the workspace root.
+*   `output`: A path relative to `outDir` (default is `dist/`*project-name*). Because of the security implications, the CLI never writes files outside of the project output path.
+*   `ignore`: A list of globs to exclude.
+*   `followSymlinks`: Allow glob patterns to follow symlink directories. This allows subdirectories of the symlink to be searched. Defaults to `false`.
 
 For example, the default asset paths can be represented in more detail using the following objects.
 
@@ -263,11 +287,11 @@ For example, the following configuration copies assets from a node package:
 <code-example language="json">
 
 "assets": [
- {
-   "glob": "**/*",
-   "input": "./node_modules/some-package/images",
-   "output": "/some-package/"
- }
+  {
+    "glob": "**/*",
+    "input": "./node_modules/some-package/images",
+    "output": "/some-package/"
+  }
 ]
 
 </code-example>
@@ -279,12 +303,12 @@ The following example uses the `ignore` field to exclude certain files in the as
 <code-example language="json">
 
 "assets": [
- { 
-   "glob": "**/*",
-   "input": "src/assets/",
-   "ignore": ["**/*.svg"],
-   "output": "/assets/" 
- }
+  {
+    "glob": "**/*",
+    "input": "src/assets/",
+    "ignore": ["**/*.svg"],
+    "output": "/assets/"
+  }
 ]
 
 </code-example>
@@ -302,20 +326,20 @@ For example, the following object values create and name a bundle that contains 
 
 <code-example language="json">
 
-   "styles": [
-     {
-       "input": "src/external-module/styles.scss",
-       "inject": false,
-       "bundleName": "external-module"
-     }
-   ],
-   "scripts": [
-     { 
-       "input": "src/external-module/main.js",
-       "inject": false,
-       "bundleName": "external-module"
-     }
-   ]
+"styles": [
+  {
+    "input": "src/external-module/styles.scss",
+    "inject": false,
+    "bundleName": "external-module"
+  }
+],
+"scripts": [
+  {
+    "input": "src/external-module/main.js",
+    "inject": false,
+    "bundleName": "external-module"
+  }
+]
 
 </code-example>
 
@@ -336,7 +360,7 @@ You can mix simple and complex file references for styles and scripts.
 
 #### Style preprocessor options
 
-In Sass and Stylus you can make use of the `includePaths` functionality for both component and global styles, which allows you to add extra base paths that will be checked for imports.
+In Sass you can make use of the `includePaths` functionality for both component and global styles, which allows you to add extra base paths that will be checked for imports.
 
 To add paths, use the `stylePreprocessorOptions` option:
 
@@ -352,126 +376,68 @@ To add paths, use the `stylePreprocessorOptions` option:
 
 Files in that folder, such as `src/style-paths/_variables.scss`, can be imported from anywhere in your project without the need for a relative path:
 
-```ts
+<code-example language="typescript">
+
 // src/app/app.component.scss
 // A relative path works
 @import '../style-paths/variables';
 // But now this works as well
 @import 'variables';
-```
 
-Note that you will also need to add any styles or scripts to the `test` builder if you need them for unit tests.
+</code-example>
+
+**NOTE**: You will also need to add any styles or scripts to the `test` builder if you need them for unit tests.
 See also [Using runtime-global libraries inside your app](guide/using-libraries#using-runtime-global-libraries-inside-your-app).
 
 ### Optimization configuration
 
 The `optimization` browser builder option can be either a Boolean or an Object for more fine-tune configuration. This option enables various optimizations of the build output, including:
 
-- Minification of scripts and styles
-- Tree-shaking
-- Dead-code elimination
-- Inlining of critical CSS
-- Fonts inlining
+*   Minification of scripts and styles
+*   Tree-shaking
+*   Dead-code elimination
+*   Inlining of critical CSS
+*   Fonts inlining
 
 There are several options that can be used to fine-tune the optimization of an application.
 
-<table class="is-full-width is-fixed-layout">
-<thead>
-<tr>
-<th>Option</th>
-<th width="40%">Description</th>
-<th>Value Type</th>
-<th>Default Value</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>scripts</code></td>
-<td>Enables optimization of the scripts output.</td>
-<td><code class="no-auto-link">boolean</code></td>
-<td><code>true</code></td>
-</tr>
-<tr>
-<td><code>styles</code></td>
-<td>Enables optimization of the styles output.</td>
-<td><code>boolean|<a href="#styles-optimization-options">Styles optimization options</a></code></td>
-<td><code>true</code></td>
-</tr>
-<tr>
-<td><code>fonts</code></td>
-<td>Enables optimization for fonts.<br><strong>Note:</strong> This requires internet access.</td>
-<td><code class="no-auto-link">boolean|<a href="#fonts-optimization-options">Fonts optimization options</a></code></td>
-<td><code>true</code></td>
-</tr>
-</tbody>
-</table>
+| Option    | Description                                                                     | Value Type                                                               | Default Value |
+|:---       |:---                                                                             |:---                                                                      |:---           |
+| `scripts` | Enables optimization of the scripts output.                                     | `boolean`                                                                | `true`        |
+| `styles`  | Enables optimization of the styles output.                                      | `boolean` \| [Styles optimization options](#styles-optimization-options) | `true`        |
+| `fonts`   | Enables optimization for fonts. <br /> **NOTE**: This requires internet access. | `boolean` \| [Fonts optimization options](#fonts-optimization-options)   | `true`        |
 
 #### Styles optimization options
-<table class="is-full-width is-fixed-layout">
-<thead>
-<tr>
-<th>Option</th>
-<th width="40%">Description</th>
-<th>Value Type</th>
-<th>Default Value</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>minify</code></td>
-<td>Minify CSS definitions by removing extraneous whitespace and comments, merging identifiers and minimizing values.</td>
-<td><code class="no-auto-link">boolean</code></td>
-<td><code>true</code></td>
-</tr>
-<tr>
-<td><code>inlineCritical</code></td>
-<td>Extract and inline critical CSS definitions to improve <a href="https://web.dev/first-contentful-paint/">First Contentful Paint.</td>
-<td><code class="no-auto-link">boolean</code></td>
-<td><code>true</code></td>
-</tr>
-</tbody>
-</table>
+
+| Option           | Description                                                                                                              | Value Type | Default Value |
+|:---              |:---                                                                                                                      |:---        |:---           |
+| `minify`         | Minify CSS definitions by removing extraneous whitespace and comments, merging identifiers and minimizing values.        | `boolean`  | `true`        |
+| `inlineCritical` | Extract and inline critical CSS definitions to improve [First Contentful Paint](https://web.dev/first-contentful-paint). | `boolean`  | `true`        |
 
 #### Fonts optimization options
-<table class="is-full-width is-fixed-layout">
-<thead>
-<tr>
-<th>Option</th>
-<th width="40%">Description</th>
-<th>Value Type</th>
-<th>Default Value</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>inline</code></td>
-<td>Reduce <a href="https://web.dev/render-blocking-resources/">render blocking requests</a> by inlining external Google fonts and icons CSS definitions in the application's HTML index file.<br><strong>Note:</strong>This requires internet access.</td>
-<td><code class="no-auto-link">boolean</code></td>
-<td><code>true</code></td>
-</tr>
-</tbody>
-</table>
 
+| Option   | Description                                                                                                                                                                                                                          | Value Type | Default Value |
+|:---      |:---                                                                                                                                                                                                                                  |:---        |:---           |
+| `inline` | Reduce [render blocking requests](https://web.dev/render-blocking-resources) by inlining external Google Fonts and Adobe Fonts CSS definitions in the application's HTML index file. <br /> **NOTE**: This requires internet access. | `boolean`  | `true`        |
 
 You can supply a value such as the following to apply optimization to one or the other:
 
 <code-example language="json">
 
-  "optimization": { 
-    "scripts": true,
-    "styles": {
-      "minify": true,
-      "inlineCritical": true
-    },
-    "fonts": true
-  }
+"optimization": {
+  "scripts": true,
+  "styles": {
+    "minify": true,
+    "inlineCritical": true
+  },
+  "fonts": true
+}
 
 </code-example>
 
 <div class="alert is-helpful">
 
-   For [Universal](guide/glossary#universal), you can reduce the code rendered in the HTML page by
-   setting styles optimization to `true`.
+For [Universal](guide/glossary#universal), you can reduce the code rendered in the HTML page by setting styles optimization to `true`.
 
 </div>
 
@@ -479,61 +445,37 @@ You can supply a value such as the following to apply optimization to one or the
 
 The `sourceMap` browser builder option can be either a Boolean or an Object for more fine-tune configuration to control the source maps of an application.
 
-<table class="is-full-width is-fixed-layout">
-<thead>
-<tr>
-<th>Option</th>
-<th width="40%">Description</th>
-<th>Value Type</th>
-<th>Default Value</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>scripts</code></td>
-<td>Output source maps for all scripts.</td>
-<td><code class="no-auto-link">boolean</code></td>
-<td><code>true</code></td>
-</tr>
-<tr>
-<td><code>styles</code></td>
-<td>Output source maps for all styles.</td>
-<td><code class="no-auto-link">boolean</code></td>
-<td><code>true</code></td>
-</tr>
-<tr>
-<td><code>vendor</code></td>
-<td>Resolve vendor packages source maps.</td>
-<td><code class="no-auto-link">boolean</code></td>
-<td><code>false</code></td>
-</tr>
-<tr>
-<td><code>hidden</code></td>
-<td>Output source maps used for error reporting tools.</td>
-<td><code class="no-auto-link">boolean</code></td>
-<td><code>false</code></td>
-</tr>
-</tbody>
-</table>
-
+| Option    | Description                                        | Value Type | Default Value |
+|:---       |:---                                                |:---        |:---           |
+| `scripts` | Output source maps for all scripts.                | `boolean`  | `true`        |
+| `styles`  | Output source maps for all styles.                 | `boolean`  | `true`        |
+| `vendor`  | Resolve vendor packages source maps.               | `boolean`  | `false`       |
+| `hidden`  | Output source maps used for error reporting tools. | `boolean`  | `false`       |
 
 The example below shows how to toggle one or more values to configure the source map outputs:
 
 <code-example language="json">
 
-  "sourceMap": {
-    "scripts": true,
-    "styles": false,
-    "hidden": true,
-    "vendor": true
-  }
+"sourceMap": {
+  "scripts": true,
+  "styles": false,
+  "hidden": true,
+  "vendor": true
+}
 
 </code-example>
 
 <div class="alert is-helpful">
 
-   When using hidden source maps, source maps will not be referenced in the bundle.
-   These are useful if you only want source maps to map error stack traces in error reporting tools,
-   but don't want to expose your source maps in the browser developer tools.
+When using hidden source maps, source maps will not be referenced in the bundle.
+These are useful if you only want source maps to map error stack traces in error reporting tools, but don't want to expose your source maps in the browser developer tools.
 
 </div>
+
+<!-- links -->
+
+[AioGuideI18nCommonMerge]: guide/i18n-common-merge "Common Internationalization task #6: Merge translations into the application | Angular"
+
+<!-- end links -->
+
+@reviewed 2021-10-14

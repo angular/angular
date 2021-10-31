@@ -3,79 +3,53 @@
   margin: 0 0 2em 0;
   list-style-type: none;
   padding: 0;
-  width: 15em;
+  width: 100%;
 }
 .heroes li {
   position: relative;
   cursor: pointer;
-  background-color: #EEE;
-  margin: .5em;
-  padding: .3em 0;
-  height: 1.6em;
-  border-radius: 4px;
 }
 
 .heroes li:hover {
-  color: #607D8B;
-  background-color: #DDD;
   left: .1em;
 }
 
 .heroes a {
-  color: #888;
+  color: black;
   text-decoration: none;
-  position: relative;
   display: block;
+  font-size: 1.2rem;
+  background-color: #eee;
+  margin: .5rem .5rem .5rem 0;
+  padding: .5rem 0;
+  border-radius: 4px;
 }
 
 .heroes a:hover {
-  color:#607D8B;
+  color: #2c3a41;
+  background-color: #e6e6e6;
 }
 
-.heroes .badge {
-  display: inline-block;
-  font-size: small;
-  color: white;
-  padding: 0.8em 0.7em 0 0.7em;
-  background-color: #607D8B;
-  line-height: 1em;
-  position: relative;
-  left: -1px;
-  top: -4px;
-  height: 1.8em;
-  min-width: 16px;
-  text-align: right;
-  margin-right: .8em;
-  border-radius: 4px 0 0 4px;
-}
-
-button {
-  background-color: #eee;
-  border: none;
-  padding: 5px 10px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-family: Arial, sans-serif;
-}
-
-button:hover {
-  background-color: #cfd8dc;
-}
-
-button.delete {
-  position: relative;
-  left: 194px;
-  top: -32px;
-  background-color: gray !important;
-  color: white;
+.heroes a:active {
+  background-color: #525252;
+  color: #fafafa;
 }
 
 /* #docregion selected */
-.heroes li.selected {
-  background-color: #CFD8DC;
-  color: white;
+.heroes .selected a {
+  background-color: #d6e6f7;
 }
-.heroes li.selected:hover {
-  background-color: #BBD8DC;
+
+.heroes .selected a:hover {
+  background-color: #bdd7f5;
 }
 /* #enddocregion selected */
+
+.heroes .badge {
+  padding: .5em .6em;
+  color: white;
+  background-color: #435b60;
+  min-width: 16px;
+  margin-right: .8em;
+  border-radius: 4px 0 0 4px;
+}

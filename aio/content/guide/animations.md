@@ -1,6 +1,6 @@
 # Introduction to Angular animations
 
-Animation provides the illusion of motion: HTML elements change styling over time. Well-designed animations can make your application more fun and easier to use, but they aren't just cosmetic. Animations can improve your app and user experience in a number of ways:
+Animation provides the illusion of motion: HTML elements change styling over time. Well-designed animations can make your application more fun and straightforward to use, but they aren't just cosmetic. Animations can improve your application and user experience in a number of ways:
 
 * Without animations, web page transitions can seem abrupt and jarring.
 
@@ -17,7 +17,7 @@ Angular's animation system is built on CSS functionality, which means you can an
 
 This guide covers the basic Angular animation features to get you started on adding Angular animations to your project.
 
-The features described in this guide &mdash; and the more advanced features described in the related Angular animations guides &mdash; are demonstrated in an example app available as a <live-example></live-example>.
+The features described in this guide &mdash; and the more advanced features described in the related Angular animations guides &mdash; are demonstrated in an example application available as a <live-example></live-example>.
 
 #### Prerequisites
 
@@ -63,28 +63,35 @@ In the component file, add a metadata property called `animations:` within the `
 <code-example path="animations/src/app/app.component.ts" header="src/app/app.component.ts" region="decorator" language="typescript">
 </code-example>
 
-## Animating a simple transition
+## Animating a transition
 
-Let's animate a simple transition that changes a single HTML element from one state to another. For example, you can specify that a button displays either **Open** or **Closed** based on the user's last action. When the button is in the `open` state, it's visible and yellow. When it's in the `closed` state, it's transparent and green.
+Let's animate a transition that changes a single HTML element from one state to another. For example, you can specify that a button displays either **Open** or **Closed** based on the user's last action. When the button is in the `open` state, it's visible and yellow. When it's the `closed` state, it's translucent and blue.
 
-In HTML, these attributes are set using ordinary CSS styles such as color and opacity. In Angular, use the `style()` function to specify a set of CSS styles for use with animations. You can collect a set of styles in an animation state, and give the state a name, such as `open` or `closed`.
+In HTML, these attributes are set using ordinary CSS styles such as color and opacity. In Angular, use the `style()` function to specify a set of CSS styles for use with animations. Collect a set of styles in an animation state, and give the state a name, such as `open` or `closed`.
 
-<div class="lightbox">
-  <img src="generated/images/guide/animations/open-closed.png" alt="open and closed states">
+<div class="alert is-helpful">
+
+  Let's create a new `open-close` component to animate with simple transitions.
+
+  Run the following command in terminal to generate the component:
+
+  `ng g component open-close`
+
+  This will create the component at `src/app/open-close.component.ts`.
 </div>
 
 ### Animation state and styles
 
 Use Angular's `state()` function to define different states to call at the end of each transition. This function takes two arguments: a unique name like `open` or `closed` and a `style()` function.
 
-Use the `style()` function to define a set of styles to associate with a given state name. Note that the style attributes must be in [*camelCase*](guide/glossary#case-conventions).
+Use the `style()` function to define a set of styles to associate with a given state name. You must use [*camelCase*](guide/glossary#case-conventions) for style attributes that contain dashes, such as `backgroundColor` or wrap them in quotes, such as `'background-color'`.
 
-Let's see how Angular's `state()` function works with the `style⁣­(⁠)` function to set CSS style attributes. In this code snippet, multiple style attributes are set at the same time for the state. In the `open` state, the button has a height of 200 pixels, an opacity of 1, and a background color of yellow.
+Let's see how Angular's `state()` function works with the `style⁣­(⁠)` function to set CSS style attributes. In this code snippet, multiple style attributes are set at the same time for the state. In the `open` state, the button has a height of 200 pixels, an opacity of 1, and a yellow background color.
 
 <code-example path="animations/src/app/open-close.component.ts" header="src/app/open-close.component.ts" region="state1" language="typescript">
 </code-example>
 
-In the `closed` state, shown below, the button has a height of 100 pixels, an opacity of 0.5, and a background color of green.
+In the following `closed` state, the button has a height of 100 pixels, an opacity of 0.8, and a background color of blue.
 
 <code-example path="animations/src/app/open-close.component.ts" header="src/app/open-close.component.ts" region="state2" language="typescript">
 </code-example>
@@ -93,20 +100,20 @@ In the `closed` state, shown below, the button has a height of 100 pixels, an op
 
 In Angular, you can set multiple styles without any animation. However, without further refinement, the button instantly transforms with no fade, no shrinkage, or other visible indicator that a change is occurring.
 
-To make the change less abrupt, we need to define an animation *transition* to specify the changes that occur between one state and another over a period of time. The `transition()` function accepts two arguments: the first argument accepts an expression that defines the direction between two transition states, and the second argument accepts one or a series of `animate()` steps.
+To make the change less abrupt, you need to define an animation *transition* to specify the changes that occur between one state and another over a period of time. The `transition()` function accepts two arguments: the first argument accepts an expression that defines the direction between two transition states, and the second argument accepts one or a series of `animate()` steps.
 
 
-Use the `animate()` function to define the length, delay, and easing of a transition, and to designate the style function for defining styles while transitions are taking place. You can also use the `animate()` function to define the `keyframes()` function for multi-step animations. These definitions are placed in the second argument of the `animate()` function.
+Use the `animate()` function to define the length, delay, and easing of a transition, and to designate the style function for defining styles while transitions are taking place. Use the `animate()` function to define the `keyframes()` function for multi-step animations. These definitions are placed in the second argument of the `animate()` function.
 
 #### Animation metadata: duration, delay, and easing
 
 The `animate()` function (second argument of the transition function) accepts the `timings` and `styles` input parameters.
 
-The `timings` parameter takes a string defined in three parts.
+The `timings` parameter takes either a number or a string defined in three parts.
 
->`animate ('duration delay easing')`
+>`animate (duration)` or `animate ('duration delay easing')`
 
-The first part, `duration`, is required. The duration can be expressed in milliseconds as a simple number without quotes, or in seconds with quotes and a time specifier. For example, a duration of a tenth of a second can be expressed as follows:
+The first part, `duration`, is required. The duration can be expressed in milliseconds as a number without quotes, or in seconds with quotes and a time specifier. For example, a duration of a tenth of a second can be expressed as follows:
 
 * As a plain number, in milliseconds: `100`
 
@@ -137,7 +144,7 @@ This example provides a state transition from `open` to `closed` with a one seco
 region="transition1">
 </code-example>
 
-In the code snippet above, the `=>` operator indicates unidirectional transitions, and `<=>` is bidirectional. Within the transition, `animate()` specifies how long the transition takes. In this case, the state change from `open` to `closed` takes one second, expressed here as `1s`.
+In the preceding code snippet, the `=>` operator indicates unidirectional transitions, and `<=>` is bidirectional. Within the transition, `animate()` specifies how long the transition takes. In this case, the state change from `open` to `closed` takes one second, expressed here as `1s`.
 
 This example adds a state transition from the `closed` state to the `open` state with a 0.5 second transition animation arc.
 
@@ -149,13 +156,13 @@ region="transition2">
 
 **Note:** Some additional notes on using styles within `state` and `transition` functions.
 
-* Use `state()` to define styles that are applied at the end of each transition, they persist after the animation has completed.
+* Use `state()` to define styles that are applied at the end of each transition, they persist after the animation completes.
 
 * Use `transition()` to define intermediate styles, which create the illusion of motion during the animation.
 
 * When animations are disabled, `transition()` styles can be skipped, but `state()` styles can't.
 
-* You can include multiple state pairs within the same `transition()` argument:<br/> `transition( 'on => off, off => void' )`.
+* Include multiple state pairs within the same `transition()` argument:<br/> `transition( 'on => off, off => void' )`.
 </div>
 
 ### Triggering the animation
@@ -165,10 +172,6 @@ An animation requires a *trigger*, so that it knows when to start. The `trigger(
 The `trigger()` function describes the property name to watch for changes. When a change occurs, the trigger initiates the actions included in its definition. These actions can be transitions or other functions, as we'll see later on.
 
 In this example, we'll name the trigger `openClose`, and attach it to the `button` element. The trigger describes the open and closed states, and the timings for the two transitions.
-
-<div class="lightbox">
-  <img src="generated/images/guide/animations/triggering-the-animation.png" alt="triggering the animation">
-</div>
 
 <div class="alert is-helpful">
 
@@ -181,7 +184,7 @@ Animations are defined in the metadata of the component that controls the HTML e
 
 <code-example path="animations/src/app/open-close.component.ts" header="src/app/open-close.component.ts" language="typescript" region="component"></code-example>
 
-When you've defined an animation trigger for a component, you can attach it to an element in that component's template by wrapping the trigger name in brackets and preceding it with an `@` symbol. Then, you can bind the trigger to a template expression using standard Angular property binding syntax as shown below, where `triggerName` is the name of the trigger, and `expression` evaluates to a defined animation state.
+When you've defined an animation trigger for a component, attach it to an element in that component's template by wrapping the trigger name in brackets and preceding it with an `@` symbol. Then, you can bind the trigger to a template expression using standard Angular property binding syntax as shown below, where `triggerName` is the name of the trigger, and `expression` evaluates to a defined animation state.
 
 ```
 <div [@triggerName]="expression">...</div>;
@@ -192,7 +195,7 @@ The animation is executed or triggered when the expression value changes to a ne
 The following code snippet binds the trigger to the value of the `isOpen` property.
 
 <code-example path="animations/src/app/open-close.component.1.html" header="src/app/open-close.component.html"
-region="compare">
+region="trigger">
 </code-example>
 
 In this example, when the `isOpen` expression evaluates to a defined state of `open` or `closed`, it notifies the trigger `openClose` of a state change. Then it's up to the `openClose` code to handle the state change and kick off a state change animation.
@@ -228,9 +231,9 @@ region="trigger">
 
 ### Summary
 
-You learned to add animation to a simple transition between two states, using `style()` and `state()` along with `animate()` for the timing.
+You learned to add animation to a transition between two states, using `style()` and `state()` along with `animate()` for the timing.
 
-You can learn about more advanced features in Angular animations under the Animation section, beginning with advanced techniques in [transition and triggers](guide/transition-and-triggers).
+Learn about more advanced features in Angular animations under the Animation section, beginning with advanced techniques in [transition and triggers](guide/transition-and-triggers).
 
 {@a animation-api-summary}
 ## Animations API summary
@@ -260,7 +263,7 @@ What it does
 </tr>
 
 <tr>
-<td><code><a href="api/animations/state" class="code-anchor">state()</a></code></td>
+<td><code><a href="api/animations/state" class="code-anchor">state</a>()</code></td>
 <td>Creates a named set of CSS styles that should be applied on successful transition to a given state. The state can then be referenced by name within other animation functions.</td>
 </tr>
 
@@ -280,8 +283,8 @@ What it does
 </tr>
 
 <tr>
-<td><code><a href="api/animations/group" class="code-anchor">group()</a></code></td>
-<td>Specifies a group of animation steps (<em>inner animations</em>) to be run in parallel. Animation continues only after all inner animation steps have completed. Used within <code>sequence()</code> or <code>transition().</code></td>
+<td><code><a href="api/animations/group" class="code-anchor">group</a>()</code></td>
+<td>Specifies a group of animation steps (<em>inner animations</em>) to be run in parallel. Animation continues only after all inner animation steps have completed. Used within <code>sequence()</code> or <code>transition()</code>.</td>
 </tr>
 
 <tr>
@@ -318,7 +321,7 @@ What it does
 
 ## More on Angular animations
 
-You may also be interested in the following:
+You might also be interested in the following:
 
 * [Transition and triggers](guide/transition-and-triggers)
 * [Complex animation sequences](guide/complex-animation-sequences)

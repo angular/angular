@@ -1,4 +1,7 @@
-// #docregion
+// #docregion global-locale
+import '@angular/common/locales/global/fr';
+// #enddocregion global-locale
+// #docregion locale-id
 import { LOCALE_ID, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
@@ -11,3 +14,4 @@ import { AppComponent } from '../src/app/app.component';
   bootstrap: [ AppComponent ]
 })
 export class AppModule { }
+// #enddocregion locale-id

@@ -34,7 +34,7 @@ The top level of the workspace contains workspace-wide configuration files, conf
 | :--------------------- | :------------------------------------------|
 | `.editorconfig`        | Configuration for code editors. See [EditorConfig](https://editorconfig.org/). |
 | `.gitignore`           | Specifies intentionally untracked files that [Git](https://git-scm.com/) should ignore. |
-| `README.md`            | Introductory documentation for the root app. |
+| `README.md`            | Introductory documentation for the root application. |
 | `angular.json`         | CLI configuration defaults for all projects in the workspace, including configuration options for build, serve, and test tools that the CLI uses, such as [TSLint](https://palantir.github.io/tslint/), [Karma](https://karma-runner.github.io/), and [Protractor](https://www.protractortest.org/). For details, see [Angular Workspace Configuration](guide/workspace-config). |
 | `package.json`          | Configures [npm package dependencies](guide/npm-packages) that are available to all projects in the workspace. See [npm documentation](https://docs.npmjs.com/files/package.json) for the specific format and contents of this file. |
 | `package-lock.json`     | Provides version information for all packages installed into `node_modules` by the npm client. See [npm documentation](https://docs.npmjs.com/files/package-lock.json) for details. If you use the yarn client, this file will be [yarn.lock](https://yarnpkg.com/lang/en/docs/yarn-lock/) instead. |
@@ -54,7 +54,7 @@ This initial root-level application is the *default app* for CLI commands (unles
 
 <div class="alert is-helpful">
 
-   Besides using the CLI on the command line, you can also manipulate files directly in the app's source folder and configuration files.
+   Besides using the CLI on the command line, you can also manipulate files directly in the application's source folder and configuration files.
 
 </div>
 
@@ -79,7 +79,7 @@ Files at the top level of `src/` support testing and running your application. S
 
 <div class="alert is-helpful">
 
-If you create an application using Angular's strict mode, you will also have an additional `package.json` file in the `src/app` directory. For more information, see [Strict mode](/guide/strict-mode).
+New Angular projects use strict mode by default. If this is not desired you can opt-out when creating the project. For more information, see [Strict mode](/guide/strict-mode).
 
 </div>
 
@@ -90,7 +90,7 @@ Angular components, templates, and styles go here.
 
 | `src/app/` FILES | PURPOSE |
 | :-------------------------- | :------------------------------------------|
-| `app/app.component.ts`      | Defines the logic for the app's root component, named `AppComponent`. The view associated with this root component becomes the root of the [view hierarchy](guide/glossary#view-hierarchy) as you add components and services to your application. |
+| `app/app.component.ts`      | Defines the logic for the application's root component, named `AppComponent`. The view associated with this root component becomes the root of the [view hierarchy](guide/glossary#view-hierarchy) as you add components and services to your application. |
 | `app/app.component.html`    | Defines the HTML template associated with the root `AppComponent`. |
 | `app/app.component.css`     | Defines the base CSS stylesheet for the root `AppComponent`. |
 | `app/app.component.spec.ts` | Defines a unit test for the root `AppComponent`. |
@@ -111,20 +111,6 @@ Project-specific [TypeScript](https://www.typescriptlang.org/) configuration fil
 | `tsconfig.spec.json`   | [TypeScript](https://www.typescriptlang.org/) configuration for the application tests. See [TypeScript Configuration](guide/typescript-configuration). |
 | `tslint.json`          | Application-specific [TSLint](https://palantir.github.io/tslint/) configuration. |
 
-### End-to-end test files
-
-An `e2e/` folder at the top level contains source files for a set of end-to-end tests that correspond to the root-level application, along with test-specific configuration files.
-
-For a multi-project workspace, application-specific end-to-end tests are in the project root, under `projects/project-name/e2e/`.
-
-<code-example language="none">
-  e2e/
-     src/                 (end-to-end tests for my-app)
-        app.e2e-spec.ts
-        app.po.ts
-      protractor.conf.js  (test-tool config)
-      tsconfig.json       (TypeScript config inherits from workspace)
-</code-example>
 
 {@a multiple-projects}
 
@@ -141,7 +127,7 @@ The following command creates a workspace with all of the workspace-wide configu
 ng new my-workspace --create-application false
 </code-example>
 
-You can then generate apps and libraries with names that are unique within the workspace.
+You can then generate applications and libraries with names that are unique within the workspace.
 
 <code-example language="bash">
 cd my-workspace
@@ -160,9 +146,6 @@ my-workspace/
   projects/       (generated applications and libraries)
     my-first-app/ --(an explicitly generated application)
       ...         --(application-specific config)
-      e2e/        ----(corresponding e2e tests)
-         src/     ----(e2e tests source)
-         ...      ----(e2e-specific config)
       src/        --(source and support files for application)
     my-lib/       --(a generated library)
       ...         --(library-specific config)
@@ -173,7 +156,7 @@ my-workspace/
 
 When you generate a library using the CLI (with a command such as `ng generate library my-lib`), the generated files go into the `projects/` folder of the workspace. For more information about creating your own libraries, see  [Creating Libraries](guide/creating-libraries).
 
-Libraries (unlike applications and their associated e2e projects) have their own `package.json` configuration file.
+Libraries unlike applications have their own `package.json` configuration file.
 
 Under the `projects/` folder, the `my-lib` folder contains your library code.
 

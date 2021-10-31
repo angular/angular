@@ -25,19 +25,19 @@ export class SeleniumWebDriverAdapter extends WebDriverAdapter {
     super();
   }
 
-  waitFor(callback: () => any): Promise<any> {
+  override waitFor(callback: () => any): Promise<any> {
     return this._driver.call(callback);
   }
 
-  executeScript(script: string): Promise<any> {
+  override executeScript(script: string): Promise<any> {
     return this._driver.executeScript(script);
   }
 
-  executeAsyncScript(script: string): Promise<any> {
+  override executeAsyncScript(script: string): Promise<any> {
     return this._driver.executeAsyncScript(script);
   }
 
-  capabilities(): Promise<{[key: string]: any}> {
+  override capabilities(): Promise<{[key: string]: any}> {
     return this._driver.getCapabilities().then((capsObject: any) => {
       const localData: {[key: string]: any} = {};
       for (const key of Array.from((<Map<string, any>>capsObject).keys())) {
@@ -47,7 +47,7 @@ export class SeleniumWebDriverAdapter extends WebDriverAdapter {
     });
   }
 
-  logs(type: string): Promise<any> {
+  override logs(type: string): Promise<any> {
     // Needed as selenium-webdriver does not forward
     // performance logs in the correct way via manage().logs
     return this._driver.schedule(

@@ -13,7 +13,7 @@ export class AppComponent {
 // #enddocregion class-skeleton
   title = 'Authors Style Guide Sample';
   heroes = HEROES;
-  selectedHero: Hero;
+  selectedHero!: Hero;
 
   onSelect(hero: Hero): void {
     this.selectedHero = hero;

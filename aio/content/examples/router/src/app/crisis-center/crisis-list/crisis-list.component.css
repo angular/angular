@@ -3,76 +3,54 @@
   margin: 0 0 2em 0;
   list-style-type: none;
   padding: 0;
-  width: 24em;
 }
+
 .crises li {
   position: relative;
   cursor: pointer;
-  background-color: #EEE;
-  margin: .5em;
-  padding: .3em 0;
-  height: 1.6em;
-  border-radius: 4px;
 }
 
 .crises li:hover {
-  color: #607D8B;
-  background-color: #DDD;
   left: .1em;
 }
 
 .crises a {
-  color: #888;
+  color: black;
   text-decoration: none;
   display: block;
+  background-color: #EEE;
+  margin: .5em 0;
+  border-radius: 4px;
+  line-height: 2rem;
+}
+
+@media (min-width: 600px) {
+  .crises a {
+    font-size: 1.2rem;
+    padding: .5em 0;
+    line-height: 1.4rem;
+  }
 }
 
 .crises a:hover {
-  color:#607D8B;
+  color: #2c3a41;
+  background-color: #e6e6e6;
+  left: .1em;
+}
+
+.heroes .selected a {
+  background-color: #d6e6f7;
+}
+
+.heroes .selected a:hover {
+  background-color: #bdd7f5;
 }
 
 .crises .badge {
-  display: inline-block;
-  font-size: small;
+  padding: .5em .6em;
   color: white;
-  padding: 0.8em 0.7em 0 0.7em;
-  background-color: #607D8B;
-  line-height: 1em;
-  position: relative;
-  left: -1px;
-  top: -4px;
-  height: 1.8em;
+  background-color: #435B60;
   min-width: 16px;
-  text-align: right;
   margin-right: .8em;
   border-radius: 4px 0 0 4px;
-}
-
-button {
-  background-color: #eee;
-  border: none;
-  padding: 5px 10px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-family: Arial, sans-serif;
-}
-
-button:hover {
-  background-color: #cfd8dc;
-}
-
-button.delete {
-  position: relative;
-  left: 194px;
-  top: -32px;
-  background-color: gray !important;
-  color: white;
-}
-
-.crises li.selected {
-  background-color: #CFD8DC;
-  color: white;
-}
-.crises li.selected:hover {
-  background-color: #BBD8DC;
 }

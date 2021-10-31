@@ -2,7 +2,7 @@ decls: 2,
 vars: 2,
 consts: function() {
   __i18nIcuMsg__('{VAR_SELECT_1, select, male {male of age: {VAR_SELECT, select, 10 {ten} 20 {twenty} 30 {thirty} other {other}}} female {female} other {other}}', [['VAR_SELECT', String.raw`\uFFFD0\uFFFD`], ['VAR_SELECT_1', String.raw`\uFFFD1\uFFFD`]])
-  __i18nMsg__(' {$icu} ', [['icu', '$i18n_0$']], {})
+  __i18nMsg__(' {$icu} ', [['icu', '$i18n_0$', '2960440207608193372']], {})
   return [
     $i18n_1$
   ];

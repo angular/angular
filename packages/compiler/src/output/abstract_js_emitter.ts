@@ -29,7 +29,7 @@ export abstract class AbstractJsEmitterVisitor extends AbstractEmitterVisitor {
   constructor() {
     super(false);
   }
-  visitDeclareClassStmt(stmt: o.ClassStmt, ctx: EmitterVisitorContext): any {
+  override visitDeclareClassStmt(stmt: o.ClassStmt, ctx: EmitterVisitorContext): any {
     ctx.pushClass(stmt);
     this._visitClassConstructor(stmt, ctx);
 
@@ -87,11 +87,11 @@ export abstract class AbstractJsEmitterVisitor extends AbstractEmitterVisitor {
     ctx.println(stmt, `};`);
   }
 
-  visitWrappedNodeExpr(ast: o.WrappedNodeExpr<any>, ctx: EmitterVisitorContext): any {
+  override visitWrappedNodeExpr(ast: o.WrappedNodeExpr<any>, ctx: EmitterVisitorContext): any {
     throw new Error('Cannot emit a WrappedNodeExpr in Javascript.');
   }
 
-  visitReadVarExpr(ast: o.ReadVarExpr, ctx: EmitterVisitorContext): string|null {
+  override visitReadVarExpr(ast: o.ReadVarExpr, ctx: EmitterVisitorContext): string|null {
     if (ast.builtin === o.BuiltinVar.This) {
       ctx.print(ast, 'self');
     } else if (ast.builtin === o.BuiltinVar.Super) {
@@ -102,7 +102,7 @@ export abstract class AbstractJsEmitterVisitor extends AbstractEmitterVisitor {
     }
     return null;
   }
-  visitDeclareVarStmt(stmt: o.DeclareVarStmt, ctx: EmitterVisitorContext): any {
+  override visitDeclareVarStmt(stmt: o.DeclareVarStmt, ctx: EmitterVisitorContext): any {
     ctx.print(stmt, `var ${stmt.name}`);
     if (stmt.value) {
       ctx.print(stmt, ' = ');
@@ -111,11 +111,12 @@ export abstract class AbstractJsEmitterVisitor extends AbstractEmitterVisitor {
     ctx.println(stmt, `;`);
     return null;
   }
-  visitCastExpr(ast: o.CastExpr, ctx: EmitterVisitorContext): any {
+  override visitCastExpr(ast: o.CastExpr, ctx: EmitterVisitorContext): any {
     ast.value.visitExpression(this, ctx);
     return null;
   }
-  visitInvokeFunctionExpr(expr: o.InvokeFunctionExpr, ctx: EmitterVisitorContext): string|null {
+  override visitInvokeFunctionExpr(expr: o.InvokeFunctionExpr, ctx: EmitterVisitorContext): string
+      |null {
     const fnExpr = expr.fn;
     if (fnExpr instanceof o.ReadVarExpr && fnExpr.builtin === o.BuiltinVar.Super) {
       ctx.currentClass!.parent!.visitExpression(this, ctx);
@@ -130,7 +131,7 @@ export abstract class AbstractJsEmitterVisitor extends AbstractEmitterVisitor {
     }
     return null;
   }
-  visitTaggedTemplateExpr(ast: o.TaggedTemplateExpr, ctx: EmitterVisitorContext): any {
+  override visitTaggedTemplateExpr(ast: o.TaggedTemplateExpr, ctx: EmitterVisitorContext): any {
     // The following convoluted piece of code is effectively the downlevelled equivalent of
     // ```
     // tag`...`
@@ -151,7 +152,7 @@ export abstract class AbstractJsEmitterVisitor extends AbstractEmitterVisitor {
     ctx.print(ast, ')');
     return null;
   }
-  visitFunctionExpr(ast: o.FunctionExpr, ctx: EmitterVisitorContext): any {
+  override visitFunctionExpr(ast: o.FunctionExpr, ctx: EmitterVisitorContext): any {
     ctx.print(ast, `function${ast.name ? ' ' + ast.name : ''}(`);
     this._visitParams(ast.params, ctx);
     ctx.println(ast, `) {`);
@@ -161,7 +162,7 @@ export abstract class AbstractJsEmitterVisitor extends AbstractEmitterVisitor {
     ctx.print(ast, `}`);
     return null;
   }
-  visitDeclareFunctionStmt(stmt: o.DeclareFunctionStmt, ctx: EmitterVisitorContext): any {
+  override visitDeclareFunctionStmt(stmt: o.DeclareFunctionStmt, ctx: EmitterVisitorContext): any {
     ctx.print(stmt, `function ${stmt.name}(`);
     this._visitParams(stmt.params, ctx);
     ctx.println(stmt, `) {`);
@@ -171,7 +172,7 @@ export abstract class AbstractJsEmitterVisitor extends AbstractEmitterVisitor {
     ctx.println(stmt, `}`);
     return null;
   }
-  visitTryCatchStmt(stmt: o.TryCatchStmt, ctx: EmitterVisitorContext): any {
+  override visitTryCatchStmt(stmt: o.TryCatchStmt, ctx: EmitterVisitorContext): any {
     ctx.println(stmt, `try {`);
     ctx.incIndent();
     this.visitAllStatements(stmt.bodyStmts, ctx);
@@ -188,7 +189,7 @@ export abstract class AbstractJsEmitterVisitor extends AbstractEmitterVisitor {
     return null;
   }
 
-  visitLocalizedString(ast: o.LocalizedString, ctx: EmitterVisitorContext): any {
+  override visitLocalizedString(ast: o.LocalizedString, ctx: EmitterVisitorContext): any {
     // The following convoluted piece of code is effectively the downlevelled equivalent of
     // ```
     // $localize `...`
@@ -216,7 +217,7 @@ export abstract class AbstractJsEmitterVisitor extends AbstractEmitterVisitor {
     this.visitAllObjects(param => ctx.print(null, param.name), params, ctx, ',');
   }
 
-  getBuiltinMethodName(method: o.BuiltinMethod): string {
+  override getBuiltinMethodName(method: o.BuiltinMethod): string {
     let name: string;
     switch (method) {
       case o.BuiltinMethod.ConcatArray:

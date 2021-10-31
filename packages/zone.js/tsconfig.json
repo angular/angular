@@ -9,6 +9,8 @@
     "noEmitOnError": false,
     "stripInternal": false,
     "strict": true,
+    "noImplicitOverride": true,
+    "useUnknownInCatchVariables": false,
     "lib": [
       "es5",
       "dom",

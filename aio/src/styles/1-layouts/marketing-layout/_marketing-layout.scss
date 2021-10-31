@@ -1,0 +1,370 @@
+@use '../../constants';
+@use '../../mixins';
+
+.hero {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  width: 100%;
+  min-height: 480px;
+  height: 80vh;
+  max-height: 560px;
+  box-sizing: border-box;
+  padding: 48px 48px 32px 48px;
+  overflow: hidden;
+  transform: skewY(8deg);
+  transform-origin: 100%;
+
+  @media (max-width: 480px) {
+    max-height: 486px;
+    padding-top: 40px;
+    transform: none;
+  }
+
+  .hero-title {
+    display: inline-block;
+    @include mixins.font-size(28);
+    font-weight: 400;
+    @include mixins.line-height(48);
+    margin: 0 8px 0 0;
+    text-transform: uppercase;
+
+    &.is-standard-case {
+      text-transform: none;
+    }
+  }
+}
+
+section#intro {
+  display: flex;
+  align-items: center;
+  position: relative;
+  width: 900px;
+  height: 480px;
+  margin: 0 auto -32px;
+  padding: 48px 0 0;
+
+  .hero-logo {
+    background-image: url(/assets/images/logos/angular/angular.svg);
+  }
+
+  @media (max-width: 780px) {
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
+    max-width: 100vw;
+    padding: 40px 0 32px;
+
+    button {
+      margin: 0;
+      height: 60px;
+    }
+  }
+
+  .homepage-container {
+    width: 50%;
+    max-width: 1040px;
+    margin: 0 auto;
+    margin-top: -7%;
+    padding-top: 0;
+    padding-bottom: 0;
+
+    @media  (max-width: 780px) {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      max-width: 100%;
+      padding: 0;
+    }
+  }
+
+  .hero-headline {
+    @include mixins.font-size(40);
+    @include mixins.line-height(64);
+    font-weight: 500;
+    margin: 32px 0;
+
+    &:after {
+      display: none;
+    }
+
+    @media (max-width: 780px) {
+      text-align: center;
+    }
+
+    @media (max-width: 575px) {
+      @include mixins.font-size(32);
+      @include mixins.line-height(50);
+    }
+  }
+
+  .hero-logo {
+    display: flex;
+    width: 50%;
+    min-width: 250px;
+    height: 400px;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    margin-bottom: 8px;
+  }
+}
+
+.announcement-bar {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  align-items: center;
+  max-width: 50vw;
+  margin: 0 auto;
+  padding: 16px;
+  border-radius: 4px;
+  box-shadow: 0 2px 2px rgba(constants.$black, 0.24), 0 0 2px rgba(constants.$black, 0.12);
+  box-sizing: border-box;
+  transition: all 0.3s ease-in;
+
+  @media (max-width: 991px) {
+    flex-direction: column;
+    text-align: center;
+    padding: 32px 16px;
+  }
+
+  @media (max-width: 768px) {
+    width: 100%;
+    max-width: none;
+  }
+
+  & > * {
+    margin: 8px;
+  }
+
+  .button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 40px;
+    min-width: 160px;
+    @include mixins.font-size(16);
+    border-radius: 48px;
+    box-shadow: 0 2px 5px 0 rgba(0,0,0,.26);
+    box-sizing: border-box;
+    cursor: pointer;
+  }
+
+  .material-icons {
+    display: none;
+    right: 0;
+    position: static;
+    transition: all 0.3s ease-in;
+    @include mixins.font-size(16);
+  }
+
+  p {
+    @include mixins.font-size(16);
+    margin: 8px;
+    text-align: center;
+  }
+}
+
+// ANGULAR LINE
+
+.home-row .card {
+  @include mixins.card(70%);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  position: relative;
+  min-width: 350px;
+  height: auto;
+  margin: auto;
+  padding: 24px;
+  box-shadow: 0 6px 6px rgba(10, 16, 20, 0.15), 0 0 52px rgba(10, 16, 20, 0.12);
+
+  @media (max-width: 600px) {
+    margin: 16px auto 0;
+
+    h2 {
+      margin: 0;
+    }
+
+    img {
+      max-width: none;
+      height: 70px;
+    }
+  }
+
+  @media (max-width: 1300px) {
+    img {
+      height: 70px;
+      max-width: none;
+    }
+  }
+
+  img {
+    margin: 16px ;
+  }
+
+  .card-text-container {
+    margin: 0 16px;
+
+    p {
+      text-align: left;
+      margin: 0;
+      padding: 8px 0;
+    }
+  }
+}
+
+.button.hero-cta {
+  padding: 2px 34px 0;
+  @include mixins.font-size(18);
+  font-weight: 600;
+  @include mixins.line-height(40);
+  border-radius: 48px;
+  box-shadow: 0 2px 5px 0 rgba(0,0,0,.26);
+  box-sizing: border-box;
+  cursor: pointer;
+
+  &:hover {
+    opacity: 0.9;
+  }
+}
+
+@include mixins.marketing-pages {
+  .sidenav-content {
+    padding: 0 0 3rem;
+  }
+
+  article {
+    padding: 3rem;
+
+    @media (max-width: 800px) {
+      padding: 2.2rem;
+    }
+  }
+}
+
+.page-home {
+  .sidenav-content {
+    padding-bottom: 0;
+  }
+}
+
+.cta-bar {
+  &.announcement-bar {
+    background: none;
+    box-shadow: none;
+  }
+}
+
+.text-headline {
+  @include mixins.font-size(20);
+  font-weight: 500;
+  margin-top: 10px;
+  text-transform: uppercase;
+}
+
+aio-shell:not(.view-SideNav) {
+  mat-sidenav-container.sidenav-container {
+    max-width: none;
+  }
+}
+
+div[layout=row]{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+
+    @media (max-width: 480px) {
+      display: block;
+  }
+}
+
+.layout-row {
+    flex-direction: row;
+}
+
+.home-rows {
+    overflow: hidden;
+    @media (max-width: 600px) {
+      margin: 0;
+    }
+}
+
+.background-superhero-paper {
+    background-size: 100%;
+    background-blend-mode: multiply;
+}
+
+.home-row {
+  max-width: 920px;
+  margin: 32px auto;
+
+  .promo-img-container, .text-container {
+    max-width: 50%;
+
+    @media(max-width: 480px) {
+      max-width: 100%;
+      text-align: center;
+
+      &:nth-child(even) {
+        flex-direction: column-reverse;
+      }
+    }
+  }
+
+  .text-block {
+    padding-right: 15%;
+
+    @media(max-width: 600px) {
+      padding: 0;
+    }
+  }
+
+  .promo-img-container {
+    p {
+      margin: 0 20px;
+    }
+
+    img {
+      max-width: 90% !important;
+    }
+  }
+}
+
+.marketing-banner {
+  margin-top: 64px;
+  padding: 32px;
+
+  @media (max-width: 600px) {
+    margin-top: 56px;
+    padding: 18px;
+  }
+
+  .banner-headline {
+    text-transform: uppercase;
+    @include mixins.font-size(24);
+    font-weight: 300;
+    margin: 0;
+    -webkit-margin-before: 0;
+    -webkit-margin-after: 0;
+
+    @media (max-width: 600px) {
+      @include mixins.font-size(18);
+      font-weight: 400;
+    }
+
+    &:after {
+      display: none;
+    }
+  }
+
+  .page-features & {
+    margin-bottom: 20px;
+  }
+}

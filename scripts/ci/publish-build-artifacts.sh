@@ -130,11 +130,6 @@ function publishAllBuilds() {
   local latestTag=`getLatestTag`
 
   publishPackages $GIT_SCHEME dist/packages-dist $CUR_BRANCH "${latestTag}+${shortSha}"
-
-  # don't publish ivy builds on non-master branch
-  if [[ "${CI_BRANCH-}" == "master" ]]; then
-    publishPackages $GIT_SCHEME dist/packages-dist-ivy-aot "${CUR_BRANCH}-ivy-aot" "${latestTag}-ivy-aot+${shortSha}"
-  fi
 }
 
 # See docs/DEVELOPER.md for help

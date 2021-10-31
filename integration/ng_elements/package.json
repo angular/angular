@@ -15,6 +15,9 @@
     "zone.js": "file:../../dist/zone.js-dist/archive/zone.js.tgz"
   },
   "devDependencies": {
+    "@babel/core": "file:../../node_modules/@babel/core",
+    "@rollup/plugin-babel": "file:../../node_modules/@rollup/plugin-babel",
+    "@rollup/plugin-node-resolve": "file:../../node_modules/@rollup/plugin-node-resolve",
     "@types/jasmine": "file:../../node_modules/@types/jasmine",
     "@types/jasminewd2": "file:../../node_modules/@types/jasminewd2",
     "concurrently": "3.4.0",
@@ -22,6 +25,7 @@
     "lite-server": "2.2.2",
     "protractor": "file:../../node_modules/protractor",
     "puppeteer": "file:../../node_modules/puppeteer",
+    "rollup": "file:../../node_modules/rollup",
     "tsickle": "file:../../node_modules/tsickle"
   },
   "//resolutions-comment": "Ensure a single version of webdriver-manager which comes from root node_modules that has already run webdriver-manager update",
@@ -30,7 +34,8 @@
   },
   "scripts": {
     "closure": "google-closure-compiler --flagfile closure.conf",
-    "test": "ngc && yarn run closure && concurrently \"yarn run serve\" \"yarn run protractor\" --kill-others --success first",
+    "build": "yarn ngc && yarn rollup -c rollup.config.mjs && yarn closure",
+    "test": "yarn build && concurrently \"yarn run serve\" \"yarn run protractor\" --kill-others --success first",
     "serve": "lite-server -c e2e/browser.config.json",
     "preprotractor": "tsc -p e2e",
     "protractor": "protractor e2e/protractor.config.js"

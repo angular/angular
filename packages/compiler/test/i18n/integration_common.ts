@@ -11,13 +11,12 @@ import {Serializer} from '@angular/compiler/src/i18n';
 import {MessageBundle} from '@angular/compiler/src/i18n/message_bundle';
 import {HtmlParser} from '@angular/compiler/src/ml_parser/html_parser';
 import {DEFAULT_INTERPOLATION_CONFIG} from '@angular/compiler/src/ml_parser/interpolation_config';
+import {ResourceLoader} from '@angular/compiler/src/resource_loader';
 import {Component, DebugElement, TRANSLATIONS, TRANSLATIONS_FORMAT} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {stringifyElement} from '@angular/platform-browser/testing/src/browser_util';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-
-import {SpyResourceLoader} from '../spies';
 
 @Component({
   selector: 'i18n-cmp',
@@ -180,7 +179,7 @@ export const HTML = `
 export async function configureCompiler(translationsToMerge: string, format: string) {
   TestBed.configureCompiler({
     providers: [
-      SpyResourceLoader.PROVIDE,
+      {provide: ResourceLoader, useValue: jasmine.createSpyObj('ResourceLoader', ['get'])},
       FrLocalization.PROVIDE,
       {provide: TRANSLATIONS, useValue: translationsToMerge},
       {provide: TRANSLATIONS_FORMAT, useValue: format},

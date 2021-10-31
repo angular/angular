@@ -4,11 +4,11 @@ This topic demonstrates how to create a structural directive and provides concep
 
 <div class="alert is-helpful">
 
-For the example app that this page describes, see the <live-example></live-example>.
+For the example application that this page describes, see the <live-example></live-example>.
 
 </div>
 
-For more information on Angular's built-in structural directives, such as `NgIf`, `NgFor`, and `NgSwitch`, see [Built-in directives](guide/built-in-directives).
+For more information on Angular's built-in structural directives, such as `NgIf`, `NgForOf`, and `NgSwitch`, see [Built-in directives](guide/built-in-directives).
 
 {@a unless}
 
@@ -319,7 +319,7 @@ In this example, the `LoadingState<T>` type permits either of two states, `Loade
 
 The `IfLoadedDirective` definition declares the static field `ngTemplateGuard_state`, which expresses the narrowing behavior.
 Within the `AppComponent` template, the `*ifLoaded` structural directive should render this template only when `state` is actually `Loaded<Person>`.
-The type guard allows the type checker to infer that the acceptable type of `state` within the template is a `Loaded<T>`, and further infer that `T` must be an instance of `Person`.
+The type guard lets the type checker infer that the acceptable type of `state` within the template is a `Loaded<T>`, and further infer that `T` must be an instance of `Person`.
 
 {@a narrowing-context-type}
 

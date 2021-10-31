@@ -4,7 +4,7 @@ Dependencies are services or objects that a class needs to perform its function.
 Dependency injection, or DI, is a design pattern in which a class requests dependencies from external sources rather than creating them.
 
 Angular's DI framework provides dependencies to a class upon instantiation.
-You can use Angular DI to increase flexibility and modularity in your applications.
+Use Angular DI to increase flexibility and modularity in your applications.
 
 <div class="alert is-helpful">
 
@@ -16,7 +16,7 @@ See the <live-example></live-example> for a working example containing the code 
 
 To generate a new `HeroService` class in the `src/app/heroes` folder use the following [Angular CLI](cli) command.
 
-<code-example language="sh" class="code-shell">
+<code-example language="sh">
 ng generate service heroes/hero
 </code-example>
 

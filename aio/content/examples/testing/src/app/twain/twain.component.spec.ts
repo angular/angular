@@ -120,8 +120,8 @@ describe('TwainComponent', () => {
        }));
     // #enddocregion fake-async-test
 
-    // #docregion async-test
-    it('should show quote after getQuote (async)', waitForAsync(() => {
+    // #docregion waitForAsync-test
+    it('should show quote after getQuote (waitForAsync)', waitForAsync(() => {
          fixture.detectChanges();  // ngOnInit()
          expect(quoteEl.textContent).toBe('...', 'should show placeholder');
 
@@ -131,7 +131,7 @@ describe('TwainComponent', () => {
            expect(errorMessage()).toBeNull('should not show error');
          });
        }));
-    // #enddocregion async-test
+    // #enddocregion waitForAsync-test
 
 
     // #docregion quote-done-test

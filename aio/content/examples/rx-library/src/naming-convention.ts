@@ -9,8 +9,8 @@ import { Observable } from 'rxjs';
 })
 export class StopwatchComponent {
 
-  stopwatchValue: number;
-  stopwatchValue$: Observable<number>;
+  stopwatchValue = 0;
+  stopwatchValue$!: Observable<number>;
 
   start() {
     this.stopwatchValue$.subscribe(num =>

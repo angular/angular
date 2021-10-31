@@ -1,4 +1,3 @@
-/* tslint:disable:no-unused-variable */
 // #docplaster
 import { Component } from '@angular/core';
 import { IMovie } from './movie';
@@ -16,7 +15,7 @@ import { MovieService } from './movie.service';
 // #docregion class
 export class MovieListComponent {
 // #enddocregion class
-  favoriteHero: string;
+  favoriteHero: string | undefined;
   showImage = false;
   movies: IMovie[];
 

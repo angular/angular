@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {TypeScriptReflectionHost} from '../../src/ngtsc/reflection';
-import {getDownlevelDecoratorsTransform} from '../../src/transformers/downlevel_decorators_transform';
+import {getDownlevelDecoratorsTransform} from '../../src/transformers/downlevel_decorators_transform/index';
 import {MockAotContext, MockCompilerHost} from '../mocks';
 
 const TEST_FILE_INPUT = '/test.ts';
@@ -182,7 +182,7 @@ describe('downlevel decorator transform', () => {
 
     expect(diagnostics.length).toBe(0);
     expect(output).toContain(dedent`
-      MyClass = tslib_1.__decorate([
+      MyClass = (0, tslib_1.__decorate)([
         SomeUnknownDecorator()
       ], MyClass);
     `);
@@ -197,7 +197,7 @@ describe('downlevel decorator transform', () => {
 
     expect(diagnostics.length).toBe(0);
     expect(output).toContain(dedent`
-      MyClass = tslib_1.__decorate([
+      MyClass = (0, tslib_1.__decorate)([
         DecoratorBuilder().customClassDecorator
       ], MyClass);
     `);
@@ -231,7 +231,7 @@ describe('downlevel decorator transform', () => {
 
     expect(diagnostics.length).toBe(0);
     expect(output).toContain(dedent`
-      tslib_1.__decorate([
+      (0, tslib_1.__decorate)([
         SomeDecorator()
       ], MyDir.prototype, "disabled", void 0);
     `);
@@ -424,11 +424,20 @@ describe('downlevel decorator transform', () => {
 
     expect(diagnostics.length).toBe(0);
     expect(output).toContain(dedent`
+      /** @type {!Array<{type: !Function, args: (undefined|!Array<?>)}>} */
       MyDir.decorators = [
         { type: core_1.Directive }
       ];
-      /** @nocollapse */
-      MyDir.ctorParameters = () => [
+    `);
+    expect(output).toContain(dedent`
+      /**
+       * @type {function(): !Array<(null|{
+       *   type: ?,
+       *   decorators: (undefined|!Array<{type: !Function, args: (undefined|!Array<?>)}>),
+       * })>}
+       * @nocollapse
+       */
+       MyDir.ctorParameters = () => [
         { type: ClassInject }
       ];
     `);
@@ -664,8 +673,8 @@ describe('downlevel decorator transform', () => {
       expect(diagnostics.length).toBe(0);
       expect(output).not.toContain('MyService.decorators');
       expect(output).toContain(dedent`
-        MyService = tslib_1.__decorate([
-          core_1.Injectable()
+        MyService = (0, tslib_1.__decorate)([
+          (0, core_1.Injectable)()
         ], MyService);
       `);
     });
@@ -690,8 +699,8 @@ describe('downlevel decorator transform', () => {
         MyService.ctorParameters = () => [
           { type: InjectClass }
         ];
-        MyService = tslib_1.__decorate([
-          core_1.Injectable()
+        MyService = (0, tslib_1.__decorate)([
+          (0, core_1.Injectable)()
         ], MyService);
       `);
     });
@@ -716,8 +725,8 @@ describe('downlevel decorator transform', () => {
         MyService.ctorParameters = () => [
           { type: InjectClass, decorators: [{ type: core_1.Inject, args: ['test',] }] }
         ];
-        MyService = tslib_1.__decorate([
-          core_1.Injectable()
+        MyService = (0, tslib_1.__decorate)([
+          (0, core_1.Injectable)()
         ], MyService);
       `);
     });

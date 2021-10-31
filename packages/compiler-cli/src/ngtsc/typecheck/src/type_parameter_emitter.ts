@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {OwningModule, Reference} from '../../imports';
 import {DeclarationNode, ReflectionHost} from '../../reflection';
@@ -32,12 +32,16 @@ export class TypeParameterEmitter {
     }
 
     return this.typeParameters.every(typeParam => {
-      if (typeParam.constraint === undefined) {
-        return true;
-      }
-
-      return canEmitType(typeParam.constraint, type => this.resolveTypeReference(type));
+      return this.canEmitType(typeParam.constraint) && this.canEmitType(typeParam.default);
     });
+  }
+
+  private canEmitType(type: ts.TypeNode|undefined): boolean {
+    if (type === undefined) {
+      return true;
+    }
+
+    return canEmitType(type, typeReference => this.resolveTypeReference(typeReference));
   }
 
   /**
@@ -53,12 +57,14 @@ export class TypeParameterEmitter {
     return this.typeParameters.map(typeParam => {
       const constraint =
           typeParam.constraint !== undefined ? emitter.emitType(typeParam.constraint) : undefined;
+      const defaultType =
+          typeParam.default !== undefined ? emitter.emitType(typeParam.default) : undefined;
 
       return ts.updateTypeParameterDeclaration(
           /* node */ typeParam,
           /* name */ typeParam.name,
           /* constraint */ constraint,
-          /* defaultType */ typeParam.default);
+          /* defaultType */ defaultType);
     });
   }
 
@@ -86,7 +92,23 @@ export class TypeParameterEmitter {
       };
     }
 
+    // The declaration needs to be exported as a top-level export to be able to emit an import
+    // statement for it. If the declaration is not exported, null is returned to prevent emit.
+    if (!this.isTopLevelExport(declaration.node)) {
+      return null;
+    }
+
     return new Reference(declaration.node, owningModule);
+  }
+
+  private isTopLevelExport(decl: DeclarationNode): boolean {
+    if (decl.parent === undefined || !ts.isSourceFile(decl.parent)) {
+      // The declaration has to exist at the top-level, as the reference emitters are not capable of
+      // generating imports to classes declared in a namespace.
+      return false;
+    }
+
+    return this.reflector.isStaticallyExported(decl);
   }
 
   private isLocalTypeParameter(decl: DeclarationNode): boolean {

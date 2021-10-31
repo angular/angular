@@ -12,7 +12,6 @@ import {i18nStartFirstCreatePass} from '@angular/core/src/render3/i18n/i18n_pars
 import {getTIcu} from '@angular/core/src/render3/i18n/i18n_util';
 import {I18nUpdateOpCodes, IcuType, TI18n} from '@angular/core/src/render3/interfaces/i18n';
 import {HEADER_OFFSET, HOST} from '@angular/core/src/render3/interfaces/view';
-import {expect} from '@angular/core/testing/src/testing_internal';
 import {matchTI18n, matchTIcu} from '../matchers';
 import {matchDebug} from '../utils';
 import {ViewFixture} from '../view_fixture';

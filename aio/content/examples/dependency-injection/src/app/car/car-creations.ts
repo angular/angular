@@ -25,8 +25,8 @@ export function superCar() {
 }
 
 /////////// example 3 //////////
-class MockEngine extends Engine { cylinders = 8; }
-class MockTires  extends Tires  { make = 'YokoGoodStone'; }
+class MockEngine extends Engine { override cylinders = 8; }
+class MockTires  extends Tires  { override make = 'YokoGoodStone'; }
 
 export function testCar() {
   // Test car with 8 cylinders and YokoGoodStone tires.

@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "ng_package", "ts_api_guardian_test_npm_package", "ts_library")
+load("//tools:defaults.bzl", "api_golden_test_npm_package", "ng_package", "ts_library")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -23,10 +23,9 @@ ng_package(
         "package.json",
         "//packages/localize/init:package.json",
     ],
-    entry_point = ":index.ts",
     nested_packages = [
         "//packages/localize/schematics:npm_package",
-        "//packages/localize/src/tools:npm_package",
+        "//packages/localize/tools:npm_package",
     ],
     tags = [
         "release-with-framework",
@@ -37,12 +36,12 @@ ng_package(
     ],
 )
 
-ts_api_guardian_test_npm_package(
+api_golden_test_npm_package(
     name = "localize_api",
-    actualDir = "angular/packages/localize/npm_package",
     data = [
         ":npm_package",
         "//goldens:public-api",
     ],
-    goldenDir = "angular/goldens/public-api/localize",
+    golden_dir = "angular/goldens/public-api/localize",
+    npm_package = "angular/packages/localize/npm_package",
 )

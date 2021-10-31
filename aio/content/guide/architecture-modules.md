@@ -1,11 +1,11 @@
 # Introduction to modules
 
-Angular apps are modular and Angular has its own modularity system called *NgModules*.
+Angular applications are modular and Angular has its own modularity system called *NgModules*.
 NgModules are containers for a cohesive block of code dedicated to an application domain, a workflow, or a closely related set of capabilities. They can contain components, service providers, and other code files whose scope is defined by the containing NgModule. They can import functionality that is exported from other NgModules, and export selected functionality for use by other NgModules.
 
-Every Angular app has at least one NgModule class, [the *root module*](guide/bootstrapping), which is conventionally named `AppModule` and resides in a file named `app.module.ts`. You launch your app by *bootstrapping* the root NgModule.
+Every Angular application has at least one NgModule class, [the *root module*](guide/bootstrapping), which is conventionally named `AppModule` and resides in a file named `app.module.ts`. You launch your application by *bootstrapping* the root NgModule.
 
-While a small application might have only one NgModule, most apps have many more *feature modules*. The *root* NgModule for an app is so named because it can include child NgModules in a hierarchy of any depth.
+While a small application might have only one NgModule, most applications have many more *feature modules*. The *root* NgModule for an application is so named because it can include child NgModules in a hierarchy of any depth.
 
 ## NgModule metadata
 
@@ -17,9 +17,9 @@ An NgModule is defined by a class decorated with `@NgModule()`. The `@NgModule()
 
 * `imports`: Other modules whose exported classes are needed by component templates declared in *this* NgModule.
 
-* `providers`: Creators of [services](guide/architecture-services) that this NgModule contributes to the global collection of services; they become accessible in all parts of the app. (You can also specify providers at the component level.)
+* `providers`: Creators of [services](guide/architecture-services) that this NgModule contributes to the global collection of services; they become accessible in all parts of the application. (You can also specify providers at the component level.)
 
-* `bootstrap`: The main application view, called the *root component*, which hosts all other app views. Only the *root NgModule* should set the `bootstrap` property.
+* `bootstrap`: The main application view, called the *root component*, which hosts all other application views. Only the *root NgModule* should set the `bootstrap` property.
 
 Here's a simple root NgModule definition.
 
@@ -53,13 +53,13 @@ When you create a component, it's associated directly with a single view, called
 
 <div class="alert is-helpful">
 
-**Note:** The hierarchical structure of views is a key factor in the way Angular detects and responds to changes in the DOM and app data.
+**Note:** The hierarchical structure of views is a key factor in the way Angular detects and responds to changes in the DOM and application data.
 
 </div>
 
 ## NgModules and JavaScript modules
 
-The NgModule system is different from and unrelated to the JavaScript (ES2015) module system for managing collections of JavaScript objects. These are *complementary* module systems that you can use together to write your apps.
+The NgModule system is different from and unrelated to the JavaScript (ES2015) module system for managing collections of JavaScript objects. These are *complementary* module systems that you can use together to write your applications.
 
 In JavaScript each *file* is a module and all objects defined in the file belong to that module.
 The module declares some objects to be public by marking them with the `export` key word.

@@ -7,10 +7,15 @@
  */
 import {leadingComment} from '@angular/compiler';
 import generate from '@babel/generator';
-import {expression, statement} from '@babel/template';
-import * as t from '@babel/types';
+import template from '@babel/template';
+import {types as t} from '../../src/babel_core';
 
 import {BabelAstFactory} from '../../src/ast/babel_ast_factory';
+
+// Exposes shothands for the `expression` and `statement`
+// methods exposed by `@babel/template`.
+const expression = template.expression;
+const statement = template.statement;
 
 describe('BabelAstFactory', () => {
   let factory: BabelAstFactory;

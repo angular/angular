@@ -5,10 +5,22 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
+import module from 'module';
+
 import {AbsoluteFsPath, PathManipulation} from '../../../src/ngtsc/file_system';
 
 export function getLockFilePath(fs: PathManipulation) {
-  return fs.resolve(require.resolve('@angular/compiler-cli/ngcc'), '../__ngcc_lock_file__');
+  // This is an interop allowing for the unlocking script to be determined in both
+  // a CommonJS module, or an ES module which does not come with `require` by default.
+  const requireFn =
+      typeof require !== 'undefined' ? require : module.createRequire(__ESM_IMPORT_META_URL__);
+  // The lock file location is resolved based on the location of the `ngcc` entry-point as this
+  // allows us to have a consistent position for the lock file to reside. We are unable to rely
+  // on `__dirname` (or equivalent) as this code is being bundled and different entry-points
+  // will have dedicated bundles where the lock file location would differ then.
+  const ngccEntryPointFile = requireFn.resolve('@angular/compiler-cli/ngcc');
+  return fs.resolve(ngccEntryPointFile, '../__ngcc_lock_file__');
 }
 
 export interface LockFile {

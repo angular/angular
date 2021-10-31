@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {DynamicValue} from './dynamic';
 import {KnownFn, ResolvedValue, ResolvedValueArray} from './result';
@@ -16,7 +16,7 @@ export class ArraySliceBuiltinFn extends KnownFn {
     super();
   }
 
-  evaluate(node: ts.CallExpression, args: ResolvedValueArray): ResolvedValue {
+  override evaluate(node: ts.CallExpression, args: ResolvedValueArray): ResolvedValue {
     if (args.length === 0) {
       return this.lhs;
     } else {
@@ -30,7 +30,7 @@ export class ArrayConcatBuiltinFn extends KnownFn {
     super();
   }
 
-  evaluate(node: ts.CallExpression, args: ResolvedValueArray): ResolvedValue {
+  override evaluate(node: ts.CallExpression, args: ResolvedValueArray): ResolvedValue {
     const result: ResolvedValueArray = [...this.lhs];
     for (const arg of args) {
       if (arg instanceof DynamicValue) {
@@ -46,7 +46,7 @@ export class ArrayConcatBuiltinFn extends KnownFn {
 }
 
 export class ObjectAssignBuiltinFn extends KnownFn {
-  evaluate(node: ts.CallExpression, args: ResolvedValueArray): ResolvedValue {
+  override evaluate(node: ts.CallExpression, args: ResolvedValueArray): ResolvedValue {
     if (args.length === 0) {
       return DynamicValue.fromUnsupportedSyntax(node);
     }

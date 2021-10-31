@@ -9,12 +9,14 @@ describe('disambiguateDocPaths processor', () => {
     injector = dgeni.configureInjector();
     processor = injector.get('disambiguateDocPathsProcessor');
     docs = [
-      {docType: 'test-doc', id: 'test-doc', path: 'test/doc', outputPath: 'test/doc.json'},
-      {docType: 'test-doc', id: 'TEST-DOC', path: 'TEST/DOC', outputPath: 'TEST/DOC.json'},
-      {docType: 'test-doc', id: 'test-Doc', path: 'test/Doc', outputPath: 'test/Doc.xml'},
-      {docType: 'test-doc', id: 'unique-doc', path: 'unique/doc', outputPath: 'unique/doc.json'},
-      {docType: 'test-doc', id: 'other-doc', path: 'other/doc', outputPath: 'other/doc.json'},
-      {docType: 'test-doc', id: 'other-DOC', path: 'other/DOC', outputPath: 'other/DOC.json'},
+      { docType: 'test-doc', id: 'test-doc', path: 'test/doc', outputPath: 'test/doc.json' },
+      { docType: 'test-doc', id: 'TEST-DOC', path: 'TEST/DOC', outputPath: 'TEST/DOC.json' },
+      { docType: 'test-doc', id: 'test-Doc', path: 'test/Doc', outputPath: 'test/Doc.xml' },
+      { docType: 'test-doc', id: 'unique-doc', path: 'unique/doc', outputPath: 'unique/doc.json' },
+      { docType: 'test-doc', id: 'other-doc', path: 'other/doc', outputPath: 'other/doc.json' },
+      { docType: 'test-doc', id: 'other-DOC', path: 'other/DOC', outputPath: 'other/DOC.json' },
+      { docType: 'test-doc', id: 'has_underscore', path: 'has_underscore', outputPath: 'has_underscore.json' },
+      { docType: 'test-doc', id: 'HAS_UNDERSCORE', path: 'HAS_UNDERSCORE', outputPath: 'HAS_UNDERSCORE.json' },
     ];
   });
 
@@ -26,44 +28,23 @@ describe('disambiguateDocPaths processor', () => {
     expect(processor.$runBefore).toContain('createSitemap');
   });
 
-  it('should create `disambiguator` documents for docs that have ambiguous outputPaths', () => {
-    const numDocs = docs.length;
+  it('should update the path and outputPath properties of each doc to be unambiguous on case-insensitive file-systems', () => {
     processor.$process(docs);
-    expect(docs.length).toEqual(numDocs + 2);
-    expect(docs[docs.length - 2]).toEqual({
-      docType: 'disambiguator',
-      id: 'test-doc-disambiguator',
-      title: 'test-doc (disambiguation)',
-      aliases: ['test-doc-disambiguator'],
-      path: 'test/doc',
-      outputPath: 'test/doc.json',
-      docs: [docs[0], docs[1]],
-    });
-    expect(docs[docs.length - 1]).toEqual({
-      docType: 'disambiguator',
-      id: 'other-doc-disambiguator',
-      title: 'other-doc (disambiguation)',
-      aliases: ['other-doc-disambiguator'],
-      path: 'other/doc',
-      outputPath: 'other/doc.json',
-      docs: [docs[4], docs[5]],
-    });
-  });
-
-  it('should update the path and outputPath properties of each ambiguous doc', () => {
-    processor.$process(docs);
-    expect(docs[0].path).toEqual('test/doc-0');
-    expect(docs[0].outputPath).toEqual('test/doc-0.json');
-    expect(docs[1].path).toEqual('TEST/DOC-1');
-    expect(docs[1].outputPath).toEqual('TEST/DOC-1.json');
-
-    // The non-ambiguous docs are left alone
-    expect(docs[2].outputPath).toEqual('test/Doc.xml');
+    expect(docs[0].path).toEqual('test/doc');
+    expect(docs[0].outputPath).toEqual('test/doc.json');
+    expect(docs[1].path).toEqual('TEST/DOC');
+    expect(docs[1].outputPath).toEqual('t_e_s_t_/d_o_c_.json');
+    expect(docs[2].path).toEqual('test/Doc');
+    expect(docs[2].outputPath).toEqual('test/d_oc.xml');
+    expect(docs[3].path).toEqual('unique/doc');
     expect(docs[3].outputPath).toEqual('unique/doc.json');
-
-    expect(docs[4].path).toEqual('other/doc-0');
-    expect(docs[4].outputPath).toEqual('other/doc-0.json');
-    expect(docs[5].path).toEqual('other/DOC-1');
-    expect(docs[5].outputPath).toEqual('other/DOC-1.json');
+    expect(docs[4].path).toEqual('other/doc');
+    expect(docs[4].outputPath).toEqual('other/doc.json');
+    expect(docs[5].path).toEqual('other/DOC');
+    expect(docs[5].outputPath).toEqual('other/d_o_c_.json');
+    expect(docs[6].path).toEqual('has_underscore');
+    expect(docs[6].outputPath).toEqual('has__underscore.json');
+    expect(docs[7].path).toEqual('HAS_UNDERSCORE');
+    expect(docs[7].outputPath).toEqual('h_a_s___u_n_d_e_r_s_c_o_r_e_.json');
   });
 });

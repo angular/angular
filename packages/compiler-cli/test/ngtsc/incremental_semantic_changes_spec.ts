@@ -1361,7 +1361,9 @@ runInEachFileSystem(() => {
           @Pipe({
             name: 'dep',
           })
-          export class DepB {}
+          export class DepB {
+            transform() {}
+          }
         `);
         env.write('module.ts', `
           import {NgModule} from '@angular/core';
@@ -1385,7 +1387,9 @@ runInEachFileSystem(() => {
           @Pipe({
             name: 'dep',
           })
-          export class DepA {}
+          export class DepA {
+            transform() {}
+          }
 
           @Directive({
             selector: 'dep',

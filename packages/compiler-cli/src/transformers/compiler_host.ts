@@ -7,8 +7,9 @@
  */
 
 import {AotCompilerHost, collectExternalReferences, EmitterVisitorContext, GeneratedFile, ParseSourceSpan, syntaxError, TypeScriptEmitter} from '@angular/compiler';
+import fs from 'fs';
 import * as path from 'path';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {TypeCheckHost} from '../diagnostics/translate_diagnostics';
 import {ModuleMetadata} from '../metadata/index';
@@ -253,7 +254,8 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
         try {
           const modulePath = importedFile.substring(0, importedFile.length - moduleName.length) +
               importedFilePackageName;
-          const packageJson = require(modulePath + '/package.json');
+          const packageJson =
+              JSON.parse(fs.readFileSync(modulePath + '/package.json', 'utf8')) as any;
           const packageTypings = join(modulePath, packageJson.typings);
           if (packageTypings === originalImportedFile) {
             moduleName = importedFilePackageName;

@@ -264,6 +264,40 @@
           "failureMessage": "Incorrect event listener"
         }
       ]
+    },
+    {
+      "description": "should generate the view restoration statements if a keyed write is used in an event listener from within an ng-template",
+      "inputFiles": [
+        "implicit_receiver_keyed_write_inside_template.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "implicit_receiver_keyed_write_inside_template_template.js",
+              "generated": "implicit_receiver_keyed_write_inside_template.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should reference correct context in listener inside embedded view",
+      "inputFiles": [
+        "embedded_view_listener_context.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "embedded_view_listener_context_template.js",
+              "generated": "embedded_view_listener_context.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
     }
   ]
 }

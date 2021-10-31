@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {discardPeriodicTasks, fakeAsync, flush, flushMicrotasks, tick} from '@angular/core/testing';
-import {beforeEach, describe, inject, it, Log} from '@angular/core/testing/src/testing_internal';
+import {discardPeriodicTasks, fakeAsync, flush, flushMicrotasks, inject, tick} from '@angular/core/testing';
+import {Log} from '@angular/core/testing/src/testing_internal';
 import {EventManager} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 

@@ -200,7 +200,9 @@ runInEachFileSystem(() => {
         import {Pipe} from '@angular/core';
 
         @Pipe({name: 'myPipe'})
-        export class MyPipe {}
+        export class MyPipe {
+          transform() {}
+        }
       `);
       env.write('module.ts', `
         import {NgModule, NO_ERRORS_SCHEMA} from '@angular/core';
@@ -238,7 +240,9 @@ runInEachFileSystem(() => {
         import {Pipe} from '@angular/core';
 
         @Pipe({name: 'foo_changed'})
-        export class FooPipe {}
+        export class FooPipe {
+          transform() {}
+        }
       `);
       env.driveMain();
       const written = env.getFilesWrittenSinceLastFlush();
@@ -891,6 +895,53 @@ runInEachFileSystem(() => {
           expect(diags[0].messageText)
               .toContain(`Type '"gamma"' is not assignable to type 'keyof Keys'.`);
         });
+
+        it('should not re-emit files that need inline type constructors', () => {
+          // Setup a directive that requires an inline type constructor, as it has a generic type
+          // parameter that refer an interface that has not been exported. The inline operation
+          // causes an updated dir.ts to be used in the type-check program, which should not
+          // confuse the incremental engine in undesirably considering dir.ts as affected in
+          // incremental rebuilds.
+          env.write('dir.ts', `
+            import {Directive, Input} from '@angular/core';
+            interface Keys {
+              alpha: string;
+              beta: string;
+            }
+            @Directive({
+              selector: '[dir]'
+            })
+            export class Dir<T extends keyof Keys> {
+              @Input() dir: T;
+            }
+          `);
+
+          env.write('cmp.ts', `
+            import {Component, NgModule} from '@angular/core';
+            import {Dir} from './dir';
+            @Component({
+              selector: 'test-cmp',
+              template: '<div dir="alpha"></div>',
+            })
+            export class Cmp {}
+            @NgModule({
+              declarations: [Cmp, Dir],
+            })
+            export class Module {}
+          `);
+          env.driveMain();
+
+          // Trigger a recompile by changing cmp.ts.
+          env.invalidateCachedFile('cmp.ts');
+
+          env.flushWrittenFileTracking();
+          env.driveMain();
+
+          // Verify that only cmp.ts was emitted, but not dir.ts as it was not affected.
+          const written = env.getFilesWrittenSinceLastFlush();
+          expect(written).toContain('/cmp.js');
+          expect(written).not.toContain('/dir.js');
+        });
       });
     });
   });
@@ -910,7 +961,9 @@ runInEachFileSystem(() => {
     import {Pipe} from '@angular/core';
 
     @Pipe({name: 'foo'})
-    export class FooPipe {}
+    export class FooPipe {
+      transform() {}
+    }
   `);
     env.write('foo_module.ts', `
     import {NgModule} from '@angular/core';
@@ -940,7 +993,9 @@ runInEachFileSystem(() => {
     import {Pipe} from '@angular/core';
 
     @Pipe({name: 'foo'})
-    export class BarPipe {}
+    export class BarPipe {
+      transform() {}
+    }
   `);
     env.write('bar_module.ts', `
     import {NgModule} from '@angular/core';

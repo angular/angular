@@ -28,8 +28,11 @@ if (typeof window !== 'undefined') {
         passiveSupported = true;
       }
     });
-    window.addEventListener('test', options, options);
-    window.removeEventListener('test', options, options);
+    // Note: We pass the `options` object as the event handler too. This is not compatible with the
+    // signature of `addEventListener` or `removeEventListener` but enables us to remove the handler
+    // without an actual handler.
+    window.addEventListener('test', options as any, options);
+    window.removeEventListener('test', options as any, options);
   } catch (err) {
     passiveSupported = false;
   }
@@ -101,7 +104,7 @@ export function patchEventTarget(
   const PREPEND_EVENT_LISTENER = 'prependListener';
   const PREPEND_EVENT_LISTENER_SOURCE = '.' + PREPEND_EVENT_LISTENER + ':';
 
-  const invokeTask = function(task: any, target: any, event: Event) {
+  const invokeTask = function(task: any, target: any, event: Event): Error|undefined {
     // for better performance, check isRemoved which is set
     // by removeEventListener
     if (task.isRemoved) {
@@ -146,16 +149,17 @@ export function patchEventTarget(
     const target: any = context || event.target || _global;
     const tasks = target[zoneSymbolEventNames[event.type][isCapture ? TRUE_STR : FALSE_STR]];
     if (tasks) {
+      const errors = [];
       // invoke all tasks which attached to current target with given event.type and capture = false
       // for performance concern, if task.length === 1, just invoke
       if (tasks.length === 1) {
-        invokeTask(tasks[0], target, event);
+        const err = invokeTask(tasks[0], target, event);
+        err && errors.push(err);
       } else {
         // https://github.com/angular/zone.js/issues/836
         // copy the tasks array before invoke, to avoid
         // the callback will remove itself or other listener
         const copyTasks = tasks.slice();
-        const errors = [];
         for (let i = 0; i < copyTasks.length; i++) {
           if (event && (event as any)[IMMEDIATE_PROPAGATION_SYMBOL] === true) {
             break;
@@ -163,6 +167,12 @@ export function patchEventTarget(
           const err = invokeTask(copyTasks[i], target, event);
           err && errors.push(err);
         }
+      }
+      // Since there is only one error, we don't need to schedule microTask
+      // to throw the error.
+      if (errors.length === 1) {
+        throw errors[0];
+      } else {
         for (let i = 0; i < errors.length; i++) {
           const err = errors[i];
           api.nativeScheduleMicroTask(() => {

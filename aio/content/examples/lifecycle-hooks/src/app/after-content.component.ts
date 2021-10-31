@@ -11,7 +11,8 @@ import { LoggerService } from './logger.service';
   template: `
     <div>projected content begins</div>
       <ng-content></ng-content>
-    <div>projected content ends</div>`
+    <div>projected content ends</div>
+  `
 // #enddocregion template
    + `
     <p *ngIf="comment" class="comment">
@@ -25,7 +26,7 @@ export class AfterContentComponent implements AfterContentChecked, AfterContentI
   comment = '';
 
   // Query for a CONTENT child of type `ChildComponent`
-  @ContentChild(ChildComponent) contentChild: ChildComponent;
+  @ContentChild(ChildComponent) contentChild!: ChildComponent;
 
 // #enddocregion hooks
   constructor(private logger: LoggerService) {

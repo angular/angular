@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import * as ts from 'typescript';
+import ts from 'typescript';
 import {ImportRewriter, NoopImportRewriter} from '../../imports';
 import {ImportGenerator, NamedImport} from './api/import_generator';
 

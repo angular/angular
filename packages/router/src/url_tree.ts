@@ -497,12 +497,15 @@ function serializeMatrixParams(params: {[key: string]: string}): string {
 }
 
 function serializeQueryParams(params: {[key: string]: any}): string {
-  const strParams: string[] = Object.keys(params).map((name) => {
-    const value = params[name];
-    return Array.isArray(value) ?
-        value.map(v => `${encodeUriQuery(name)}=${encodeUriQuery(v)}`).join('&') :
-        `${encodeUriQuery(name)}=${encodeUriQuery(value)}`;
-  });
+  const strParams: string[] =
+      Object.keys(params)
+          .map((name) => {
+            const value = params[name];
+            return Array.isArray(value) ?
+                value.map(v => `${encodeUriQuery(name)}=${encodeUriQuery(v)}`).join('&') :
+                `${encodeUriQuery(name)}=${encodeUriQuery(value)}`;
+          })
+          .filter(s => !!s);
 
   return strParams.length ? `?${strParams.join('&')}` : '';
 }
@@ -520,7 +523,7 @@ function matchQueryParams(str: string): string {
   return match ? match[0] : '';
 }
 
-const QUERY_PARAM_VALUE_RE = /^[^?&#]+/;
+const QUERY_PARAM_VALUE_RE = /^[^&#]+/;
 // Return the value of the query param at the start of the string or an empty string
 function matchUrlQueryParamValue(str: string): string {
   const match = str.match(QUERY_PARAM_VALUE_RE);

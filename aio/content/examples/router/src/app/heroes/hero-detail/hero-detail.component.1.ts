@@ -16,7 +16,7 @@ import { Hero } from '../hero';
   styleUrls: ['./hero-detail.component.css']
 })
 export class HeroDetailComponent implements OnInit  {
-  hero$: Observable<Hero>;
+  hero$!: Observable<Hero>;
 
   constructor(
     private route: ActivatedRoute,
@@ -27,7 +27,7 @@ export class HeroDetailComponent implements OnInit  {
   ngOnInit() {
     this.hero$ = this.route.paramMap.pipe(
       switchMap((params: ParamMap) =>
-        this.service.getHero(params.get('id')))
+        this.service.getHero(params.get('id')!))
     );
   }
 

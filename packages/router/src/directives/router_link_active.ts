@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AfterContentInit, ChangeDetectorRef, ContentChildren, Directive, ElementRef, Input, OnChanges, OnDestroy, Optional, QueryList, Renderer2, SimpleChanges} from '@angular/core';
+import {AfterContentInit, ChangeDetectorRef, ContentChildren, Directive, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, Optional, Output, QueryList, Renderer2, SimpleChanges} from '@angular/core';
 import {from, of, Subscription} from 'rxjs';
 import {mergeAll} from 'rxjs/operators';
 
@@ -99,6 +99,23 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
    */
   @Input() routerLinkActiveOptions: {exact: boolean}|IsActiveMatchOptions = {exact: false};
 
+  /**
+   *
+   * You can use the output `isActiveChange` to get notified each time the link becomes
+   * active or inactive.
+   *
+   * Emits:
+   * true  -> Route is active
+   * false -> Route is inactive
+   *
+   * ```
+   * <a
+   *  routerLink="/user/bob"
+   *  routerLinkActive="active-link"
+   *  (isActiveChange)="this.onRouterLinkActive($event)">Bob</a>
+   * ```
+   */
+  @Output() readonly isActiveChange: EventEmitter<boolean> = new EventEmitter();
 
   constructor(
       private router: Router, private element: ElementRef, private renderer: Renderer2,
@@ -163,16 +180,21 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
             this.renderer.removeClass(this.element.nativeElement, c);
           }
         });
+
+        // Emit on isActiveChange after classes are updated
+        this.isActiveChange.emit(hasActiveLinks);
       }
     });
   }
 
   private isLinkActive(router: Router): (link: (RouterLink|RouterLinkWithHref)) => boolean {
-    const options = 'paths' in this.routerLinkActiveOptions ?
+    const options: boolean|IsActiveMatchOptions =
+        isActiveMatchOptions(this.routerLinkActiveOptions) ?
         this.routerLinkActiveOptions :
         // While the types should disallow `undefined` here, it's possible without strict inputs
         (this.routerLinkActiveOptions.exact || false);
-    return (link: RouterLink|RouterLinkWithHref) => router.isActive(link.urlTree, options);
+    return (link: RouterLink|RouterLinkWithHref) =>
+               link.urlTree ? router.isActive(link.urlTree, options) : false;
   }
 
   private hasActiveLinks(): boolean {
@@ -181,4 +203,12 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
         this.linkWithHref && isActiveCheckFn(this.linkWithHref) ||
         this.links.some(isActiveCheckFn) || this.linksWithHrefs.some(isActiveCheckFn);
   }
+}
+
+/**
+ * Use instead of `'paths' in options` to be compatible with property renaming
+ */
+function isActiveMatchOptions(options: {exact: boolean}|
+                              IsActiveMatchOptions): options is IsActiveMatchOptions {
+  return !!(options as IsActiveMatchOptions).paths;
 }

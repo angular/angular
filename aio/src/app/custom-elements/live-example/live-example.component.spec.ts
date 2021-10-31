@@ -17,7 +17,7 @@ describe('LiveExampleComponent', () => {
 
   @Component({
     selector: 'aio-host-comp',
-    template: `<live-example></live-example>`
+    template: '<live-example></live-example>'
   })
   class HostComponent { }
 
@@ -65,7 +65,7 @@ describe('LiveExampleComponent', () => {
 
     it('should create LiveExampleComponent', () => {
       testComponent(() => {
-        expect(liveExampleComponent).toBeTruthy('LiveExampleComponent');
+        expect(liveExampleComponent).withContext('LiveExampleComponent').toBeTruthy();
       });
     });
 
@@ -138,7 +138,7 @@ describe('LiveExampleComponent', () => {
       setHostTemplate('<live-example noDownload></live-example>');
       testComponent(() => {
         const hrefs = getHrefs();
-        expect(hrefs.length).toBe(1, 'only the stackblitz live-example anchor');
+        expect(hrefs.length).withContext('only the stackblitz live-example anchor').toBe(1);
         expect(hrefs[0]).toContain('stackblitz.html');
       });
     });
@@ -147,7 +147,7 @@ describe('LiveExampleComponent', () => {
       setHostTemplate('<live-example downloadOnly>download this</live-example>');
       testComponent(() => {
         const hrefs = getHrefs();
-        expect(hrefs.length).toBe(1, 'only the zip anchor');
+        expect(hrefs.length).withContext('only the zip anchor').toBe(1);
         expect(hrefs[0]).toContain('.zip');      });
     });
 
@@ -156,8 +156,8 @@ describe('LiveExampleComponent', () => {
       testComponent(() => {
         const expectedTitle = 'live example';
         const anchor = getLiveExampleAnchor();
-        expect(anchor.textContent).toBe(expectedTitle, 'anchor content');
-        expect(anchor.getAttribute('title')).toBe(expectedTitle, 'title');
+        expect(anchor.textContent).withContext('anchor content').toBe(expectedTitle);
+        expect(anchor.getAttribute('title')).withContext('title').toBe(expectedTitle);
       });
     });
 
@@ -166,8 +166,8 @@ describe('LiveExampleComponent', () => {
       setHostTemplate(`<live-example title="${expectedTitle}"></live-example>`);
       testComponent(() => {
         const anchor = getLiveExampleAnchor();
-        expect(anchor.textContent).toBe(expectedTitle, 'anchor content');
-        expect(anchor.getAttribute('title')).toBe(expectedTitle, 'title');
+        expect(anchor.textContent).withContext('anchor content').toBe(expectedTitle);
+        expect(anchor.getAttribute('title')).withContext('title').toBe(expectedTitle);
       });
     });
 
@@ -176,8 +176,8 @@ describe('LiveExampleComponent', () => {
       setHostTemplate(`<live-example title="ignore this title">${expectedTitle}</live-example>`);
       testComponent(() => {
         const anchor = getLiveExampleAnchor();
-        expect(anchor.textContent).toBe(expectedTitle, 'anchor content');
-        expect(anchor.getAttribute('title')).toBe(expectedTitle, 'title');
+        expect(anchor.textContent).withContext('anchor content').toBe(expectedTitle);
+        expect(anchor.getAttribute('title')).withContext('title').toBe(expectedTitle);
       });
     });
 
@@ -206,8 +206,8 @@ describe('LiveExampleComponent', () => {
     it('should have hidden, embedded stackblitz', () => {
       setHostTemplate('<live-example embedded></live-example>');
       testComponent(() => {
-        expect(liveExampleComponent.mode).toBe('embedded', 'component is embedded');
-        expect(getEmbeddedStackblitzComponent()).toBeTruthy('EmbeddedStackblitzComponent');
+        expect(liveExampleComponent.mode).withContext('component is embedded').toBe('embedded');
+        expect(getEmbeddedStackblitzComponent()).withContext('EmbeddedStackblitzComponent').toBeTruthy();
       });
     });
 

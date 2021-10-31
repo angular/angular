@@ -49,14 +49,11 @@ def partial_compliance_golden(filePath):
         stdout = "%s/this_file_should_not_be_committed" % path,
         link_workspace_root = True,
         visibility = [":__pkg__"],
-        data = data,
+        data = [],
     )
 
     generated_file_test(
         visibility = ["//visibility:public"],
-        tags = [
-            "ivy-only",
-        ],
         name = "%s.golden" % path,
         src = "//packages/compiler-cli/test/compliance/test_cases:%s/GOLDEN_PARTIAL.js" % path,
         generated = "_generated_%s" % path,

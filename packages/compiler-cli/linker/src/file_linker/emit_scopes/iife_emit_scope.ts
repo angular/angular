@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import * as o from '@angular/compiler/src/output/output_ast';
+import {outputAst as o} from '@angular/compiler';
 
 import {AstFactory} from '../../../../src/ngtsc/translator';
 import {Translator} from '../translator';
@@ -30,7 +30,7 @@ export class IifeEmitScope<TStatement, TExpression> extends EmitScope<TStatement
    * Wraps the output from `EmitScope.translateDefinition()` and `EmitScope.getConstantStatements()`
    * in an IIFE.
    */
-  translateDefinition(definition: o.Expression): TExpression {
+  override translateDefinition(definition: o.Expression): TExpression {
     const constantStatements = super.getConstantStatements();
 
     const returnStatement =
@@ -44,7 +44,7 @@ export class IifeEmitScope<TStatement, TExpression> extends EmitScope<TStatement
    * It is not valid to call this method, since there will be no shared constant statements - they
    * are already emitted in the IIFE alongside the translated definition.
    */
-  getConstantStatements(): TStatement[] {
+  override getConstantStatements(): TStatement[] {
     throw new Error('BUG - IifeEmitScope should not expose any constant statements');
   }
 }

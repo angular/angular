@@ -8,8 +8,9 @@
 
 import {Injectable} from '@angular/core';
 import {NEVER, Observable} from 'rxjs';
+import {filter, map} from 'rxjs/operators';
 
-import {ERR_SW_NOT_SUPPORTED, NgswCommChannel, UnrecoverableStateEvent, UpdateActivatedEvent, UpdateAvailableEvent} from './low_level';
+import {ERR_SW_NOT_SUPPORTED, NgswCommChannel, UnrecoverableStateEvent, UpdateActivatedEvent, UpdateAvailableEvent, VersionEvent, VersionReadyEvent} from './low_level';
 
 
 
@@ -24,12 +25,41 @@ import {ERR_SW_NOT_SUPPORTED, NgswCommChannel, UnrecoverableStateEvent, UpdateAc
 @Injectable()
 export class SwUpdate {
   /**
+   * Emits a `VersionDetectedEvent` event whenever a new version is detected on the server.
+   *
+   * Emits a `VersionInstallationFailedEvent` event whenever checking for or downloading a new
+   * version fails.
+   *
+   * Emits a `VersionReadyEvent` event whenever a new version has been downloaded and is ready for
+   * activation.
+   */
+  readonly versionUpdates: Observable<VersionEvent>;
+
+  /**
    * Emits an `UpdateAvailableEvent` event whenever a new app version is available.
+   *
+   * @deprecated Use {@link versionUpdates} instead.
+   *
+   * The of behavior `available` can be rebuild by filtering for the `VersionReadyEvent`:
+   * ```
+   * import {filter, map} from 'rxjs/operators';
+   * // ...
+   * const updatesAvailable = swUpdate.versionUpdates.pipe(
+   *   filter((evt): evt is VersionReadyEvent => evt.type === 'VERSION_READY'),
+   *   map(evt => ({
+   *     type: 'UPDATE_AVAILABLE',
+   *     current: evt.currentVersion,
+   *     available: evt.latestVersion,
+   *   })));
+   * ```
    */
   readonly available: Observable<UpdateAvailableEvent>;
 
   /**
    * Emits an `UpdateActivatedEvent` event whenever the app has been updated to a new version.
+   *
+   * @deprecated Use the return value of {@link SwUpdate#activateUpdate} instead.
+   *
    */
   readonly activated: Observable<UpdateActivatedEvent>;
 
@@ -50,29 +80,57 @@ export class SwUpdate {
 
   constructor(private sw: NgswCommChannel) {
     if (!sw.isEnabled) {
+      this.versionUpdates = NEVER;
       this.available = NEVER;
       this.activated = NEVER;
       this.unrecoverable = NEVER;
       return;
     }
-    this.available = this.sw.eventsOfType<UpdateAvailableEvent>('UPDATE_AVAILABLE');
+    this.versionUpdates = this.sw.eventsOfType<VersionEvent>(
+        ['VERSION_DETECTED', 'VERSION_INSTALLATION_FAILED', 'VERSION_READY']);
+    this.available = this.versionUpdates.pipe(
+        filter((evt: VersionEvent): evt is VersionReadyEvent => evt.type === 'VERSION_READY'),
+        map(evt => ({
+              type: 'UPDATE_AVAILABLE',
+              current: evt.currentVersion,
+              available: evt.latestVersion,
+            })));
     this.activated = this.sw.eventsOfType<UpdateActivatedEvent>('UPDATE_ACTIVATED');
     this.unrecoverable = this.sw.eventsOfType<UnrecoverableStateEvent>('UNRECOVERABLE_STATE');
   }
 
-  checkForUpdate(): Promise<void> {
+  /**
+   * Checks for an update and waits until the new version is downloaded from the server and ready
+   * for activation.
+   *
+   * @returns a promise that
+   * - resolves to `true` if a new version was found and is ready to be activated.
+   * - resolves to `false` if no new version was found
+   * - rejects if any error occurs
+   */
+  checkForUpdate(): Promise<boolean> {
     if (!this.sw.isEnabled) {
       return Promise.reject(new Error(ERR_SW_NOT_SUPPORTED));
     }
-    const statusNonce = this.sw.generateNonce();
-    return this.sw.postMessageWithStatus('CHECK_FOR_UPDATES', {statusNonce}, statusNonce);
+    const nonce = this.sw.generateNonce();
+    return this.sw.postMessageWithOperation('CHECK_FOR_UPDATES', {nonce}, nonce);
   }
 
-  activateUpdate(): Promise<void> {
+  /**
+   * Updates the current client (i.e. browser tab) to the latest version that is ready for
+   * activation.
+   *
+   * @returns a promise that
+   *  - resolves to `true` if an update was activated successfully
+   *  - resolves to `false` if no update was available (for example, the client was already on the
+   *    latest version).
+   *  - rejects if any error occurs
+   */
+  activateUpdate(): Promise<boolean> {
     if (!this.sw.isEnabled) {
       return Promise.reject(new Error(ERR_SW_NOT_SUPPORTED));
     }
-    const statusNonce = this.sw.generateNonce();
-    return this.sw.postMessageWithStatus('ACTIVATE_UPDATE', {statusNonce}, statusNonce);
+    const nonce = this.sw.generateNonce();
+    return this.sw.postMessageWithOperation('ACTIVATE_UPDATE', {nonce}, nonce);
   }
 }

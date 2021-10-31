@@ -8,7 +8,7 @@
     <table class="is-full-width list-table">
       {% for item in filteredItems %}
       <tr>
-        <td><code class="code-anchor{% if item.deprecated %} deprecated-api-item{% endif %}"><a href="{$ overridePath or item.path $}"{%- if item.deprecated != undefined %} class="deprecated-api-item"{% endif %}>{$ item.name $}</a></code></td>
+        <td><code class="code-anchor{% if item.deprecated %} deprecated-api-item{% endif %}"><a href="{$ overridePath or item.path $}"{%- if item.deprecated != undefined %} class="deprecated-api-item"{% endif %}>{$ item.name | escape $}</a></code></td>
         <td>
           {% if item.deprecated !== undefined %}{$ ('**Deprecated:** ' + item.deprecated) | marked $}{% endif %}
           {% if item.shortDescription %}{$ item.shortDescription | marked $}{% endif %}
@@ -53,6 +53,7 @@
   {$ listItems(doc.functions, 'Functions') $}
   {$ listItems(doc.structures, 'Structures') $}
   {$ listItems(doc.directives, 'Directives') $}
+  {$ listItems(doc.elements, 'Elements') $}
   {$ listItems(doc.pipes, 'Pipes') $}
   {$ listItems(doc.types, 'Types') $}
 {%- endblock %}

@@ -5,10 +5,10 @@
   "author": "angular",
   "license": "MIT",
   "engines": {
-    "node": "^12.14.1 || ^14.0.0"
+    "node": "^12.20.0 || ^14.15.0 || >=16.10.0"
   },
   "dependencies": {
-    "tslib": "^2.1.0"
+    "tslib": "^2.3.0"
   },
   "repository": {
     "type": "git",
@@ -18,8 +18,5 @@
   "ng-update": {
     "packageGroup": "NG_UPDATE_PACKAGE_GROUP"
   },
-  "sideEffects": true,
-  "publishConfig":{
-    "registry":"https://wombat-dressing-room.appspot.com"
-  }
+  "sideEffects": true
 }

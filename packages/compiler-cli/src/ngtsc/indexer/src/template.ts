@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AST, ASTWithSource, BoundTarget, ImplicitReceiver, MethodCall, ParseSourceSpan, PropertyRead, PropertyWrite, RecursiveAstVisitor, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstBoundText, TmplAstElement, TmplAstNode, TmplAstRecursiveVisitor, TmplAstReference, TmplAstTemplate, TmplAstVariable} from '@angular/compiler';
+import {AST, ASTWithSource, BoundTarget, ImplicitReceiver, ParseSourceSpan, PropertyRead, PropertyWrite, RecursiveAstVisitor, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstBoundText, TmplAstElement, TmplAstNode, TmplAstRecursiveVisitor, TmplAstReference, TmplAstTemplate, TmplAstVariable} from '@angular/compiler';
 import {AbsoluteSourceSpan, AttributeIdentifier, ElementIdentifier, IdentifierKind, MethodIdentifier, PropertyIdentifier, ReferenceIdentifier, TemplateNodeIdentifier, TopLevelIdentifier, VariableIdentifier} from './api';
 import {ComponentMeta} from './context';
 
@@ -62,21 +62,16 @@ class ExpressionVisitor extends RecursiveAstVisitor {
     return visitor.identifiers;
   }
 
-  visit(ast: AST) {
+  override visit(ast: AST) {
     ast.visit(this);
   }
 
-  visitMethodCall(ast: MethodCall, context: {}) {
-    this.visitIdentifier(ast, IdentifierKind.Method);
-    super.visitMethodCall(ast, context);
-  }
-
-  visitPropertyRead(ast: PropertyRead, context: {}) {
+  override visitPropertyRead(ast: PropertyRead, context: {}) {
     this.visitIdentifier(ast, IdentifierKind.Property);
     super.visitPropertyRead(ast, context);
   }
 
-  visitPropertyWrite(ast: PropertyWrite, context: {}) {
+  override visitPropertyWrite(ast: PropertyWrite, context: {}) {
     this.visitIdentifier(ast, IdentifierKind.Property);
     super.visitPropertyWrite(ast, context);
   }
@@ -165,7 +160,7 @@ class TemplateVisitor extends TmplAstRecursiveVisitor {
    *
    * @param element
    */
-  visitElement(element: TmplAstElement) {
+  override visitElement(element: TmplAstElement) {
     const elementIdentifier = this.elementOrTemplateToIdentifier(element);
 
     this.identifiers.add(elementIdentifier);
@@ -176,7 +171,7 @@ class TemplateVisitor extends TmplAstRecursiveVisitor {
     this.visitAll(element.children);
     this.visitAll(element.outputs);
   }
-  visitTemplate(template: TmplAstTemplate) {
+  override visitTemplate(template: TmplAstTemplate) {
     const templateIdentifier = this.elementOrTemplateToIdentifier(template);
 
     this.identifiers.add(templateIdentifier);
@@ -187,7 +182,7 @@ class TemplateVisitor extends TmplAstRecursiveVisitor {
     this.visitAll(template.children);
     this.visitAll(template.references);
   }
-  visitBoundAttribute(attribute: TmplAstBoundAttribute) {
+  override visitBoundAttribute(attribute: TmplAstBoundAttribute) {
     // If the bound attribute has no value, it cannot have any identifiers in the value expression.
     if (attribute.valueSpan === undefined) {
       return;
@@ -198,18 +193,18 @@ class TemplateVisitor extends TmplAstRecursiveVisitor {
         this.boundTemplate, this.targetToIdentifier.bind(this));
     identifiers.forEach(id => this.identifiers.add(id));
   }
-  visitBoundEvent(attribute: TmplAstBoundEvent) {
+  override visitBoundEvent(attribute: TmplAstBoundEvent) {
     this.visitExpression(attribute.handler);
   }
-  visitBoundText(text: TmplAstBoundText) {
+  override visitBoundText(text: TmplAstBoundText) {
     this.visitExpression(text.value);
   }
-  visitReference(reference: TmplAstReference) {
+  override visitReference(reference: TmplAstReference) {
     const referenceIdentifer = this.targetToIdentifier(reference);
 
     this.identifiers.add(referenceIdentifer);
   }
-  visitVariable(variable: TmplAstVariable) {
+  override visitVariable(variable: TmplAstVariable) {
     const variableIdentifier = this.targetToIdentifier(variable);
 
     this.identifiers.add(variableIdentifier);

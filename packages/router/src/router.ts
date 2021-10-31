@@ -7,7 +7,7 @@
  */
 
 import {Location, PopStateEvent} from '@angular/common';
-import {Compiler, Injectable, Injector, NgModuleFactoryLoader, NgModuleRef, NgZone, Type, ɵConsole as Console} from '@angular/core';
+import {Compiler, Injectable, Injector, NgModuleRef, NgZone, Type, ɵConsole as Console} from '@angular/core';
 import {BehaviorSubject, EMPTY, Observable, of, Subject, SubscriptionLike} from 'rxjs';
 import {catchError, filter, finalize, map, switchMap, tap} from 'rxjs/operators';
 
@@ -31,7 +31,6 @@ import {containsTree, createEmptyUrlTree, IsActiveMatchOptions, UrlSerializer, U
 import {standardizeConfig, validateConfig} from './utils/config';
 import {Checks, getAllRouteGuards} from './utils/preactivation';
 import {isUrlTree} from './utils/type_guards';
-
 
 
 /**
@@ -233,7 +232,12 @@ function defaultMalformedUriErrorHandler(
 }
 
 export type RestoredState = {
-  [k: string]: any; navigationId: number;
+  [k: string]: any,
+  // TODO(#27607): Remove `navigationId` and `ɵrouterPageId` and move to `ng` or `ɵ` namespace.
+  navigationId: number,
+  // The `ɵ` prefix is there to reduce the chance of colliding with any existing user properties on
+  // the history state.
+  ɵrouterPageId?: number,
 };
 
 /**
@@ -260,7 +264,7 @@ export type RestoredState = {
  *
  * @publicApi
  */
-export type Navigation = {
+export interface Navigation {
   /**
    * The unique identifier of the current navigation.
    */
@@ -269,7 +273,7 @@ export type Navigation = {
    * The target URL passed into the `Router#navigateByUrl()` call before navigation. This is
    * the value before the router has parsed or applied redirects to it.
    */
-  initialUrl: string | UrlTree;
+  initialUrl: string|UrlTree;
   /**
    * The initial target URL after being parsed with `UrlSerializer.extract()`.
    */
@@ -287,7 +291,7 @@ export type Navigation = {
    * * 'popstate'--Triggered by a popstate event.
    * * 'hashchange'--Triggered by a hashchange event.
    */
-  trigger: 'imperative' | 'popstate' | 'hashchange';
+  trigger: 'imperative'|'popstate'|'hashchange';
   /**
    * Options that controlled the strategy used for this navigation.
    * See `NavigationExtras`.
@@ -298,29 +302,30 @@ export type Navigation = {
    * is available, therefore this previous `Navigation` object has a `null` value
    * for its own `previousNavigation`.
    */
-  previousNavigation: Navigation | null;
-};
+  previousNavigation: Navigation|null;
+}
 
-export type NavigationTransition = {
-  id: number,
-  currentUrlTree: UrlTree,
-  currentRawUrl: UrlTree,
-  extractedUrl: UrlTree,
-  urlAfterRedirects: UrlTree,
-  rawUrl: UrlTree,
-  extras: NavigationExtras,
-  resolve: any,
-  reject: any,
-  promise: Promise<boolean>,
-  source: NavigationTrigger,
-  restoredState: RestoredState|null,
-  currentSnapshot: RouterStateSnapshot,
-  targetSnapshot: RouterStateSnapshot|null,
-  currentRouterState: RouterState,
-  targetRouterState: RouterState|null,
-  guards: Checks,
-  guardsResult: boolean|UrlTree|null,
-};
+export interface NavigationTransition {
+  id: number;
+  targetPageId: number;
+  currentUrlTree: UrlTree;
+  currentRawUrl: UrlTree;
+  extractedUrl: UrlTree;
+  urlAfterRedirects?: UrlTree;
+  rawUrl: UrlTree;
+  extras: NavigationExtras;
+  resolve: any;
+  reject: any;
+  promise: Promise<boolean>;
+  source: NavigationTrigger;
+  restoredState: RestoredState|null;
+  currentSnapshot: RouterStateSnapshot;
+  targetSnapshot: RouterStateSnapshot|null;
+  currentRouterState: RouterState;
+  targetRouterState: RouterState|null;
+  guards: Checks;
+  guardsResult: boolean|UrlTree|null;
+}
 
 /**
  * @internal
@@ -347,17 +352,7 @@ function defaultRouterHook(snapshot: RouterStateSnapshot, runExtras: {
 }
 
 /**
- * Information related to a location change, necessary for scheduling follow-up Router navigations.
- */
-type LocationChangeInfo = {
-  source: 'popstate'|'hashchange',
-  urlTree: UrlTree,
-  state: RestoredState|null,
-  transitionId: number
-};
-
-/**
- * The equivalent `IsActiveUrlTreeOptions` options for `Router.isActive` is called with `true`
+ * The equivalent `IsActiveMatchOptions` options for `Router.isActive` is called with `true`
  * (exact = true).
  */
 export const exactMatchOptions: IsActiveMatchOptions = {
@@ -368,7 +363,7 @@ export const exactMatchOptions: IsActiveMatchOptions = {
 };
 
 /**
- * The equivalent `IsActiveUrlTreeOptions` options for `Router.isActive` is called with `false`
+ * The equivalent `IsActiveMatchOptions` options for `Router.isActive` is called with `false`
  * (exact = false).
  */
 export const subsetMatchOptions: IsActiveMatchOptions = {
@@ -377,7 +372,6 @@ export const subsetMatchOptions: IsActiveMatchOptions = {
   matrixParams: 'ignored',
   queryParams: 'subset'
 };
-
 
 /**
  * @description
@@ -393,8 +387,42 @@ export const subsetMatchOptions: IsActiveMatchOptions = {
  */
 @Injectable()
 export class Router {
+  /**
+   * Represents the activated `UrlTree` that the `Router` is configured to handle (through
+   * `UrlHandlingStrategy`). That is, after we find the route config tree that we're going to
+   * activate, run guards, and are just about to activate the route, we set the currentUrlTree.
+   *
+   * This should match the `browserUrlTree` when a navigation succeeds. If the
+   * `UrlHandlingStrategy.shouldProcessUrl` is `false`, only the `browserUrlTree` is updated.
+   */
   private currentUrlTree: UrlTree;
+  /**
+   * Meant to represent the entire browser url after a successful navigation. In the life of a
+   * navigation transition:
+   * 1. The rawUrl represents the full URL that's being navigated to
+   * 2. We apply redirects, which might only apply to _part_ of the URL (due to
+   * `UrlHandlingStrategy`).
+   * 3. Right before activation (because we assume activation will succeed), we update the
+   * rawUrlTree to be a combination of the urlAfterRedirects (again, this might only apply to part
+   * of the initial url) and the rawUrl of the transition (which was the original navigation url in
+   * its full form).
+   */
   private rawUrlTree: UrlTree;
+  /**
+   * Meant to represent the part of the browser url that the `Router` is set up to handle (via the
+   * `UrlHandlingStrategy`). This value is updated immediately after the browser url is updated (or
+   * the browser url update is skipped via `skipLocationChange`). With that, note that
+   * `browserUrlTree` _may not_ reflect the actual browser URL for two reasons:
+   *
+   * 1. `UrlHandlingStrategy` only handles part of the URL
+   * 2. `skipLocationChange` does not update the browser url.
+   *
+   * So to reiterate, `browserUrlTree` only represents the Router's internal understanding of the
+   * current route, either before guards with `urlUpdateStrategy === 'eager'` or right before
+   * activation with `'deferred'`.
+   *
+   * This should match the `currentUrlTree` when the navigation succeeds.
+   */
   private browserUrlTree: UrlTree;
   private readonly transitions: BehaviorSubject<NavigationTransition>;
   private navigations: Observable<NavigationTransition>;
@@ -403,12 +431,25 @@ export class Router {
   private disposed = false;
 
   private locationSubscription?: SubscriptionLike;
-  /**
-   * Tracks the previously seen location change from the location subscription so we can compare
-   * the two latest to see if they are duplicates. See setUpLocationChangeListener.
-   */
-  private lastLocationChangeInfo: LocationChangeInfo|null = null;
   private navigationId: number = 0;
+
+  /**
+   * The id of the currently active page in the router.
+   * Updated to the transition's target id on a successful navigation.
+   *
+   * This is used to track what page the router last activated. When an attempted navigation fails,
+   * the router can then use this to compute how to restore the state back to the previously active
+   * page.
+   */
+  private currentPageId: number = 0;
+  /**
+   * The ɵrouterPageId of whatever page is currently active in the browser history. This is
+   * important for computing the target page id for new navigations because we need to ensure each
+   * page id in the browser history is 1 more than the previous entry.
+   */
+  private get browserPageId(): number|undefined {
+    return (this.location.getState() as RestoredState | null)?.ɵrouterPageId;
+  }
   private configLoader: RouterConfigLoader;
   private ngModule: NgModuleRef<any>;
   private console: Console;
@@ -470,8 +511,16 @@ export class Router {
 
   /**
    * How to handle a navigation request to the current URL. One of:
+   *
    * - `'ignore'` :  The router ignores the request.
    * - `'reload'` : The router reloads the URL. Use to implement a "refresh" feature.
+   *
+   * Note that this only configures whether the Route reprocesses the URL and triggers related
+   * action and events like redirects, guards, and resolvers. By default, the router re-uses a
+   * component instance when it re-navigates to the same component type without visiting a different
+   * component first. This behavior is configured by the `RouteReuseStrategy`. In order to reload
+   * routed components on same url navigation, you need to set `onSameUrlNavigation` to `'reload'`
+   * _and_ provide a `RouteReuseStrategy` which returns `false` for `shouldReuseRoute`.
    */
   onSameUrlNavigation: 'reload'|'ignore' = 'ignore';
 
@@ -502,13 +551,37 @@ export class Router {
   relativeLinkResolution: 'legacy'|'corrected' = 'corrected';
 
   /**
+   * Configures how the Router attempts to restore state when a navigation is cancelled.
+   *
+   * 'replace' - Always uses `location.replaceState` to set the browser state to the state of the
+   * router before the navigation started. This means that if the URL of the browser is updated
+   * _before_ the navigation is canceled, the Router will simply replace the item in history rather
+   * than trying to restore to the previous location in the session history. This happens most
+   * frequently with `urlUpdateStrategy: 'eager'` and navigations with the browser back/forward
+   * buttons.
+   *
+   * 'computed' - Will attempt to return to the same index in the session history that corresponds
+   * to the Angular route when the navigation gets cancelled. For example, if the browser back
+   * button is clicked and the navigation is cancelled, the Router will trigger a forward navigation
+   * and vice versa.
+   *
+   * Note: the 'computed' option is incompatible with any `UrlHandlingStrategy` which only
+   * handles a portion of the URL because the history restoration navigates to the previous place in
+   * the browser history rather than simply resetting a portion of the URL.
+   *
+   * The default value is `replace`.
+   *
+   */
+  canceledNavigationResolution: 'replace'|'computed' = 'replace';
+
+  /**
    * Creates the router service.
    */
   // TODO: vsavkin make internal after the final is out.
   constructor(
       private rootComponentType: Type<any>|null, private urlSerializer: UrlSerializer,
       private rootContexts: ChildrenOutletContexts, private location: Location, injector: Injector,
-      loader: NgModuleFactoryLoader, compiler: Compiler, public config: Routes) {
+      compiler: Compiler, public config: Routes) {
     const onLoadStart = (r: Route) => this.triggerEvent(new RouteConfigLoadStart(r));
     const onLoadEnd = (r: Route) => this.triggerEvent(new RouteConfigLoadEnd(r));
 
@@ -522,11 +595,12 @@ export class Router {
     this.rawUrlTree = this.currentUrlTree;
     this.browserUrlTree = this.currentUrlTree;
 
-    this.configLoader = new RouterConfigLoader(loader, compiler, onLoadStart, onLoadEnd);
+    this.configLoader = new RouterConfigLoader(injector, compiler, onLoadStart, onLoadEnd);
     this.routerState = createEmptyState(this.currentUrlTree, this.rootComponentType);
 
     this.transitions = new BehaviorSubject<NavigationTransition>({
       id: 0,
+      targetPageId: 0,
       currentUrlTree: this.currentUrlTree,
       currentRawUrl: this.currentUrlTree,
       extractedUrl: this.urlHandlingStrategy.extract(this.currentUrlTree),
@@ -580,13 +654,25 @@ export class Router {
                        };
                      }),
                      switchMap(t => {
+                       const browserUrlTree = this.browserUrlTree.toString();
                        const urlTransition = !this.navigated ||
-                           t.extractedUrl.toString() !== this.browserUrlTree.toString();
+                           t.extractedUrl.toString() !== browserUrlTree ||
+                           // Navigations which succeed or ones which fail and are cleaned up
+                           // correctly should result in `browserUrlTree` and `currentUrlTree`
+                           // matching. If this is not the case, assume something went wrong and try
+                           // processing the URL again.
+                           browserUrlTree !== this.currentUrlTree.toString();
                        const processCurrentUrl =
                            (this.onSameUrlNavigation === 'reload' ? true : urlTransition) &&
                            this.urlHandlingStrategy.shouldProcessUrl(t.rawUrl);
 
+
                        if (processCurrentUrl) {
+                         // If the source of the navigation is from a browser event, the URL is
+                         // already updated. We already need to sync the internal state.
+                         if (isBrowserTriggeredNavigation(t.source)) {
+                           this.browserUrlTree = t.extractedUrl;
+                         }
                          return of(t).pipe(
                              // Fire NavigationStart event
                              switchMap(t => {
@@ -609,6 +695,7 @@ export class Router {
                                  this.config),
 
                              // Update the currentNavigation
+                             // `urlAfterRedirects` is guaranteed to be set after this point
                              tap(t => {
                                this.currentNavigation = {
                                  ...this.currentNavigation!,
@@ -626,17 +713,17 @@ export class Router {
                              tap(t => {
                                if (this.urlUpdateStrategy === 'eager') {
                                  if (!t.extras.skipLocationChange) {
-                                   this.setBrowserUrl(
-                                       t.urlAfterRedirects, !!t.extras.replaceUrl, t.id,
-                                       t.extras.state);
+                                   const rawUrl = this.urlHandlingStrategy.merge(
+                                       t.urlAfterRedirects!, t.rawUrl);
+                                   this.setBrowserUrl(rawUrl, t);
                                  }
-                                 this.browserUrlTree = t.urlAfterRedirects;
+                                 this.browserUrlTree = t.urlAfterRedirects!;
                                }
 
                                // Fire RoutesRecognized
                                const routesRecognized = new RoutesRecognized(
                                    t.id, this.serializeUrl(t.extractedUrl),
-                                   this.serializeUrl(t.urlAfterRedirects), t.targetSnapshot!);
+                                   this.serializeUrl(t.urlAfterRedirects!), t.targetSnapshot!);
                                eventsSubject.next(routesRecognized);
                              }));
                        } else {
@@ -666,7 +753,6 @@ export class Router {
                             * in the browser.
                             */
                            this.rawUrlTree = t.rawUrl;
-                           this.browserUrlTree = t.urlAfterRedirects;
                            t.resolve(null);
                            return EMPTY;
                          }
@@ -695,7 +781,7 @@ export class Router {
                      tap(t => {
                        const guardsStart = new GuardsCheckStart(
                            t.id, this.serializeUrl(t.extractedUrl),
-                           this.serializeUrl(t.urlAfterRedirects), t.targetSnapshot!);
+                           this.serializeUrl(t.urlAfterRedirects!), t.targetSnapshot!);
                        this.triggerEvent(guardsStart);
                      }),
 
@@ -716,18 +802,15 @@ export class Router {
 
                        const guardsEnd = new GuardsCheckEnd(
                            t.id, this.serializeUrl(t.extractedUrl),
-                           this.serializeUrl(t.urlAfterRedirects), t.targetSnapshot!,
+                           this.serializeUrl(t.urlAfterRedirects!), t.targetSnapshot!,
                            !!t.guardsResult);
                        this.triggerEvent(guardsEnd);
                      }),
 
                      filter(t => {
                        if (!t.guardsResult) {
-                         this.resetUrlToCurrentUrlTree();
-                         const navCancel =
-                             new NavigationCancel(t.id, this.serializeUrl(t.extractedUrl), '');
-                         eventsSubject.next(navCancel);
-                         t.resolve(false);
+                         this.restoreHistory(t);
+                         this.cancelNavigationTransition(t, '');
                          return false;
                        }
                        return true;
@@ -740,7 +823,7 @@ export class Router {
                              tap(t => {
                                const resolveStart = new ResolveStart(
                                    t.id, this.serializeUrl(t.extractedUrl),
-                                   this.serializeUrl(t.urlAfterRedirects), t.targetSnapshot!);
+                                   this.serializeUrl(t.urlAfterRedirects!), t.targetSnapshot!);
                                this.triggerEvent(resolveStart);
                              }),
                              switchMap(t => {
@@ -752,11 +835,10 @@ export class Router {
                                      next: () => dataResolved = true,
                                      complete: () => {
                                        if (!dataResolved) {
-                                         const navCancel = new NavigationCancel(
-                                             t.id, this.serializeUrl(t.extractedUrl),
+                                         this.restoreHistory(t);
+                                         this.cancelNavigationTransition(
+                                             t,
                                              `At least one route resolver didn't emit any value.`);
-                                         eventsSubject.next(navCancel);
-                                         t.resolve(false);
                                        }
                                      }
                                    }),
@@ -765,7 +847,7 @@ export class Router {
                              tap(t => {
                                const resolveEnd = new ResolveEnd(
                                    t.id, this.serializeUrl(t.extractedUrl),
-                                   this.serializeUrl(t.urlAfterRedirects), t.targetSnapshot!);
+                                   this.serializeUrl(t.urlAfterRedirects!), t.targetSnapshot!);
                                this.triggerEvent(resolveEnd);
                              }));
                        }
@@ -802,18 +884,17 @@ export class Router {
                         URL and the RouterState, as well as updated the browser URL. All this should
                         happen *before* activating. */
                      tap((t: NavigationTransition) => {
-                       this.currentUrlTree = t.urlAfterRedirects;
+                       this.currentUrlTree = t.urlAfterRedirects!;
                        this.rawUrlTree =
-                           this.urlHandlingStrategy.merge(this.currentUrlTree, t.rawUrl);
+                           this.urlHandlingStrategy.merge(t.urlAfterRedirects!, t.rawUrl);
 
                        (this as {routerState: RouterState}).routerState = t.targetRouterState!;
 
                        if (this.urlUpdateStrategy === 'deferred') {
                          if (!t.extras.skipLocationChange) {
-                           this.setBrowserUrl(
-                               this.rawUrlTree, !!t.extras.replaceUrl, t.id, t.extras.state);
+                           this.setBrowserUrl(this.rawUrlTree, t);
                          }
-                         this.browserUrlTree = t.urlAfterRedirects;
+                         this.browserUrlTree = t.urlAfterRedirects!;
                        }
                      }),
 
@@ -838,27 +919,28 @@ export class Router {
                         * event is fired when a navigation gets cancelled but not caught by other
                         * means. */
                        if (!completed && !errored) {
-                         // Must reset to current URL tree here to ensure history.state is set. On a
-                         // fresh page load, if a new navigation comes in before a successful
-                         // navigation completes, there will be nothing in
-                         // history.state.navigationId. This can cause sync problems with AngularJS
-                         // sync code which looks for a value here in order to determine whether or
-                         // not to handle a given popstate event or to leave it to the Angular
-                         // router.
-                         this.resetUrlToCurrentUrlTree();
-                         const navCancel = new NavigationCancel(
-                             t.id, this.serializeUrl(t.extractedUrl),
-                             `Navigation ID ${t.id} is not equal to the current navigation id ${
-                                 this.navigationId}`);
-                         eventsSubject.next(navCancel);
-                         t.resolve(false);
+                         const cancelationReason = `Navigation ID ${
+                             t.id} is not equal to the current navigation id ${this.navigationId}`;
+                         this.cancelNavigationTransition(t, cancelationReason);
                        }
-                       // currentNavigation should always be reset to null here. If navigation was
-                       // successful, lastSuccessfulTransition will have already been set. Therefore
-                       // we can safely set currentNavigation to null here.
-                       this.currentNavigation = null;
+                       // Only clear current navigation if it is still set to the one that
+                       // finalized.
+                       if (this.currentNavigation?.id === t.id) {
+                         this.currentNavigation = null;
+                       }
                      }),
                      catchError((e) => {
+                       // TODO(atscott): The NavigationTransition `t` used here does not accurately
+                       // reflect the current state of the whole transition because some operations
+                       // return a new object rather than modifying the one in the outermost
+                       // `switchMap`.
+                       //  The fix can likely be to:
+                       //  1. Rename the outer `t` variable so it's not shadowed all the time and
+                       //  confusing
+                       //  2. Keep reassigning to the outer variable after each stage to ensure it
+                       //  gets updated. Or change the implementations to not return a copy.
+                       // Not changed yet because it affects existing code and would need to be
+                       // tested more thoroughly.
                        errored = true;
                        /* This error type is issued during Redirect, and is handled as a
                         * cancellation rather than an error. */
@@ -871,7 +953,7 @@ export class Router {
                            // This is only applicable with initial navigation, so setting
                            // `navigated` only when not redirecting resolves this scenario.
                            this.navigated = true;
-                           this.resetStateAndUrl(t.currentRouterState, t.currentUrlTree, t.rawUrl);
+                           this.restoreHistory(t);
                          }
                          const navCancel = new NavigationCancel(
                              t.id, this.serializeUrl(t.extractedUrl), e.message);
@@ -891,7 +973,12 @@ export class Router {
                                  this.urlHandlingStrategy.merge(e.url, this.rawUrlTree);
                              const extras = {
                                skipLocationChange: t.extras.skipLocationChange,
-                               replaceUrl: this.urlUpdateStrategy === 'eager'
+                               // The URL is already updated at this point if we have 'eager' URL
+                               // updates or if the navigation was triggered by the browser (back
+                               // button, URL bar, etc). We want to replace that item in history if
+                               // the navigation is rejected.
+                               replaceUrl: this.urlUpdateStrategy === 'eager' ||
+                                   isBrowserTriggeredNavigation(t.source)
                              };
 
                              this.scheduleNavigation(
@@ -903,7 +990,7 @@ export class Router {
                          /* All other errors should reset to the router's internal URL reference to
                           * the pre-error state. */
                        } else {
-                         this.resetStateAndUrl(t.currentRouterState, t.currentUrlTree, t.rawUrl);
+                         this.restoreHistory(t);
                          const navError =
                              new NavigationError(t.id, this.serializeUrl(t.extractedUrl), e);
                          eventsSubject.next(navError);
@@ -930,17 +1017,8 @@ export class Router {
     this.routerState.root.component = this.rootComponentType;
   }
 
-  private getTransition(): NavigationTransition {
-    const transition = this.transitions.value;
-    // This value needs to be set. Other values such as extractedUrl are set on initial navigation
-    // but the urlAfterRedirects may not get set if we aren't processing the new URL *and* not
-    // processing the previous URL.
-    transition.urlAfterRedirects = this.browserUrlTree;
-    return transition;
-  }
-
   private setTransition(t: Partial<NavigationTransition>): void {
-    this.transitions.next({...this.getTransition(), ...t});
+    this.transitions.next({...this.transitions.value, ...t});
   }
 
   /**
@@ -964,62 +1042,29 @@ export class Router {
     // run into ngZone
     if (!this.locationSubscription) {
       this.locationSubscription = this.location.subscribe(event => {
-        const currentChange = this.extractLocationChangeInfoFromEvent(event);
-        if (this.shouldScheduleNavigation(this.lastLocationChangeInfo, currentChange)) {
+        const source = event['type'] === 'popstate' ? 'popstate' : 'hashchange';
+        if (source === 'popstate') {
           // The `setTimeout` was added in #12160 and is likely to support Angular/AngularJS
           // hybrid apps.
           setTimeout(() => {
-            const {source, state, urlTree} = currentChange;
             const extras: NavigationExtras = {replaceUrl: true};
+            // Navigations coming from Angular router have a navigationId state
+            // property. When this exists, restore the state.
+            const state = event.state?.navigationId ? event.state : null;
             if (state) {
               const stateCopy = {...state} as Partial<RestoredState>;
               delete stateCopy.navigationId;
+              delete stateCopy.ɵrouterPageId;
               if (Object.keys(stateCopy).length !== 0) {
                 extras.state = stateCopy;
               }
             }
+            const urlTree = this.parseUrl(event['url']!);
             this.scheduleNavigation(urlTree, source, state, extras);
           }, 0);
         }
-        this.lastLocationChangeInfo = currentChange;
       });
     }
-  }
-
-  /** Extracts router-related information from a `PopStateEvent`. */
-  private extractLocationChangeInfoFromEvent(change: PopStateEvent): LocationChangeInfo {
-    return {
-      source: change['type'] === 'popstate' ? 'popstate' : 'hashchange',
-      urlTree: this.parseUrl(change['url']!),
-      // Navigations coming from Angular router have a navigationId state
-      // property. When this exists, restore the state.
-      state: change.state?.navigationId ? change.state : null,
-      transitionId: this.getTransition().id
-    } as const;
-  }
-
-  /**
-   * Determines whether two events triggered by the Location subscription are due to the same
-   * navigation. The location subscription can fire two events (popstate and hashchange) for a
-   * single navigation. The second one should be ignored, that is, we should not schedule another
-   * navigation in the Router.
-   */
-  private shouldScheduleNavigation(previous: LocationChangeInfo|null, current: LocationChangeInfo):
-      boolean {
-    if (!previous) return true;
-
-    const sameDestination = current.urlTree.toString() === previous.urlTree.toString();
-    const eventsOccurredAtSameTime = current.transitionId === previous.transitionId;
-    if (!eventsOccurredAtSameTime || !sameDestination) {
-      return true;
-    }
-
-    if ((current.source === 'hashchange' && previous.source === 'popstate') ||
-        (current.source === 'popstate' && previous.source === 'hashchange')) {
-      return false;
-    }
-
-    return true;
   }
 
   /** The current URL. */
@@ -1243,9 +1288,9 @@ export class Router {
    * Returns whether the url is activated.
    *
    * @deprecated
-   * Use `IsActiveUrlTreeOptions` instead.
+   * Use `IsActiveMatchOptions` instead.
    *
-   * - The equivalent `IsActiveUrlTreeOptions` for `true` is
+   * - The equivalent `IsActiveMatchOptions` for `true` is
    * `{paths: 'exact', queryParams: 'exact', fragment: 'ignored', matrixParams: 'ignored'}`.
    * - The equivalent for `false` is
    * `{paths: 'subset', queryParams: 'subset', fragment: 'ignored', matrixParams: 'ignored'}`.
@@ -1289,6 +1334,7 @@ export class Router {
         t => {
           this.navigated = true;
           this.lastSuccessfulId = t.id;
+          this.currentPageId = t.targetPageId;
           (this.events as Subject<Event>)
               .next(new NavigationEnd(
                   t.id, this.serializeUrl(t.extractedUrl), this.serializeUrl(this.currentUrlTree)));
@@ -1296,7 +1342,7 @@ export class Router {
           t.resolve(true);
         },
         e => {
-          this.console.warn(`Unhandled Navigation Error: `);
+          this.console.warn(`Unhandled Navigation Error: ${e}`);
         });
   }
 
@@ -1307,28 +1353,19 @@ export class Router {
     if (this.disposed) {
       return Promise.resolve(false);
     }
-    // * Imperative navigations (router.navigate) might trigger additional navigations to the same
-    //   URL via a popstate event and the locationChangeListener. We should skip these duplicate
-    //   navs. Duplicates may also be triggered by attempts to sync AngularJS and Angular router
-    //   states.
-    // * Imperative navigations can be cancelled by router guards, meaning the URL won't change. If
-    //   the user follows that with a navigation using the back/forward button or manual URL change,
-    //   the destination may be the same as the previous imperative attempt. We should not skip
-    //   these navigations because it's a separate case from the one above -- it's not a duplicate
-    //   navigation.
-    const lastNavigation = this.getTransition();
-    // We don't want to skip duplicate successful navs if they're imperative because
-    // onSameUrlNavigation could be 'reload' (so the duplicate is intended).
-    const browserNavPrecededByRouterNav =
-        source !== 'imperative' && lastNavigation?.source === 'imperative';
-    const lastNavigationSucceeded = this.lastSuccessfulId === lastNavigation.id;
-    // If the last navigation succeeded or is in flight, we can use the rawUrl as the comparison.
-    // However, if it failed, we should compare to the final result (urlAfterRedirects).
-    const lastNavigationUrl = (lastNavigationSucceeded || this.currentNavigation) ?
-        lastNavigation.rawUrl :
-        lastNavigation.urlAfterRedirects;
-    const duplicateNav = lastNavigationUrl.toString() === rawUrl.toString();
-    if (browserNavPrecededByRouterNav && duplicateNav) {
+
+    // Duplicate navigations may be triggered by attempts to sync AngularJS and
+    // Angular router states. We have the setTimeout in the location listener to
+    // ensure the imperative nav is scheduled before the browser nav.
+    const lastNavigation = this.transitions.value;
+    const browserNavPrecededByRouterNav = isBrowserTriggeredNavigation(source) && lastNavigation &&
+        !isBrowserTriggeredNavigation(lastNavigation.source);
+    const navToSameUrl = lastNavigation.rawUrl.toString() === rawUrl.toString();
+    const lastNavigationInProgress = lastNavigation.id === this.currentNavigation?.id;
+    // We consider duplicates as ones that goes to the same URL while the first
+    // is still processing.
+    const isDuplicateNav = navToSameUrl && lastNavigationInProgress;
+    if (browserNavPrecededByRouterNav && isDuplicateNav) {
       return Promise.resolve(true);  // return value is not used
     }
 
@@ -1348,8 +1385,34 @@ export class Router {
     }
 
     const id = ++this.navigationId;
+    let targetPageId: number;
+    if (this.canceledNavigationResolution === 'computed') {
+      const isInitialPage = this.currentPageId === 0;
+      if (isInitialPage) {
+        restoredState = this.location.getState() as RestoredState | null;
+      }
+      // If the `ɵrouterPageId` exist in the state then `targetpageId` should have the value of
+      // `ɵrouterPageId`. This is the case for something like a page refresh where we assign the
+      // target id to the previously set value for that page.
+      if (restoredState && restoredState.ɵrouterPageId) {
+        targetPageId = restoredState.ɵrouterPageId;
+      } else {
+        // If we're replacing the URL or doing a silent navigation, we do not want to increment the
+        // page id because we aren't pushing a new entry to history.
+        if (extras.replaceUrl || extras.skipLocationChange) {
+          targetPageId = this.browserPageId ?? 0;
+        } else {
+          targetPageId = (this.browserPageId ?? 0) + 1;
+        }
+      }
+    } else {
+      // This is unused when `canceledNavigationResolution` is not computed.
+      targetPageId = 0;
+    }
+
     this.setTransition({
       id,
+      targetPageId,
       source,
       restoredState,
       currentUrlTree: this.currentUrlTree,
@@ -1370,28 +1433,80 @@ export class Router {
     });
   }
 
-  private setBrowserUrl(
-      url: UrlTree, replaceUrl: boolean, id: number, state?: {[key: string]: any}) {
+  private setBrowserUrl(url: UrlTree, t: NavigationTransition) {
     const path = this.urlSerializer.serialize(url);
-    state = state || {};
-    if (this.location.isCurrentPathEqualTo(path) || replaceUrl) {
-      // TODO(jasonaden): Remove first `navigationId` and rely on `ng` namespace.
-      this.location.replaceState(path, '', {...state, navigationId: id});
+    const state = {...t.extras.state, ...this.generateNgRouterState(t.id, t.targetPageId)};
+    if (this.location.isCurrentPathEqualTo(path) || !!t.extras.replaceUrl) {
+      this.location.replaceState(path, '', state);
     } else {
-      this.location.go(path, '', {...state, navigationId: id});
+      this.location.go(path, '', state);
     }
   }
 
-  private resetStateAndUrl(storedState: RouterState, storedUrl: UrlTree, rawUrl: UrlTree): void {
-    (this as {routerState: RouterState}).routerState = storedState;
-    this.currentUrlTree = storedUrl;
-    this.rawUrlTree = this.urlHandlingStrategy.merge(this.currentUrlTree, rawUrl);
+  /**
+   * Performs the necessary rollback action to restore the browser URL to the
+   * state before the transition.
+   */
+  private restoreHistory(t: NavigationTransition) {
+    if (this.canceledNavigationResolution === 'computed') {
+      const targetPagePosition = this.currentPageId - t.targetPageId;
+      // The navigator change the location before triggered the browser event,
+      // so we need to go back to the current url if the navigation is canceled.
+      // Also, when navigation gets cancelled while using url update strategy eager, then we need to
+      // go back. Because, when `urlUpdateSrategy` is `eager`; `setBrowserUrl` method is called
+      // before any verification.
+      const browserUrlUpdateOccurred =
+          (t.source === 'popstate' || this.urlUpdateStrategy === 'eager' ||
+           this.currentUrlTree === this.currentNavigation?.finalUrl);
+      if (browserUrlUpdateOccurred && targetPagePosition !== 0) {
+        this.location.historyGo(targetPagePosition);
+      } else if (
+          this.currentUrlTree === this.currentNavigation?.finalUrl && targetPagePosition === 0) {
+        // We got to the activation stage (where currentUrlTree is set to the navigation's
+        // finalUrl), but we weren't moving anywhere in history (skipLocationChange or replaceUrl).
+        // We still need to reset the router state back to what it was when the navigation started.
+        this.resetState(t);
+        // TODO(atscott): resetting the `browserUrlTree` should really be done in `resetState`.
+        // Investigate if this can be done by running TGP.
+        this.browserUrlTree = t.currentUrlTree;
+      } else {
+        // The browser URL and router state was not updated before the navigation cancelled so
+        // there's no restoration needed.
+      }
+    } else if (this.canceledNavigationResolution === 'replace') {
+      this.resetState(t);
+    }
+  }
+
+  private resetState(t: NavigationTransition): void {
+    (this as {routerState: RouterState}).routerState = t.currentRouterState;
+    this.currentUrlTree = t.currentUrlTree;
+    // Note here that we use the urlHandlingStrategy to get the reset `rawUrlTree` because it may be
+    // configured to handle only part of the navigation URL. This means we would only want to reset
+    // the part of the navigation handled by the Angular router rather than the whole URL. In
+    // addition, the URLHandlingStrategy may be configured to specifically preserve parts of the URL
+    // when merging, such as the query params so they are not lost on a refresh.
+    this.rawUrlTree = this.urlHandlingStrategy.merge(this.currentUrlTree, t.rawUrl);
     this.resetUrlToCurrentUrlTree();
   }
 
   private resetUrlToCurrentUrlTree(): void {
     this.location.replaceState(
-        this.urlSerializer.serialize(this.rawUrlTree), '', {navigationId: this.lastSuccessfulId});
+        this.urlSerializer.serialize(this.rawUrlTree), '',
+        this.generateNgRouterState(this.lastSuccessfulId, this.currentPageId));
+  }
+
+  private cancelNavigationTransition(t: NavigationTransition, reason: string) {
+    const navCancel = new NavigationCancel(t.id, this.serializeUrl(t.extractedUrl), reason);
+    this.triggerEvent(navCancel);
+    t.resolve(false);
+  }
+
+  private generateNgRouterState(navigationId: number, routerPageId?: number) {
+    if (this.canceledNavigationResolution === 'computed') {
+      return {navigationId, ɵrouterPageId: routerPageId};
+    }
+    return {navigationId};
   }
 }
 
@@ -1402,4 +1517,8 @@ function validateCommands(commands: string[]): void {
       throw new Error(`The requested path contains ${cmd} segment at index ${i}`);
     }
   }
+}
+
+function isBrowserTriggeredNavigation(source: 'imperative'|'popstate'|'hashchange') {
+  return source !== 'imperative';
 }

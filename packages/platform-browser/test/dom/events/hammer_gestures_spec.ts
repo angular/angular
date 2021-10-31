@@ -7,7 +7,6 @@
  */
 import {NgZone} from '@angular/core';
 import {fakeAsync, inject, tick} from '@angular/core/testing';
-import {afterEach, beforeEach, describe, expect, it,} from '@angular/core/testing/src/testing_internal';
 import {EventManager} from '@angular/platform-browser';
 import {HammerGestureConfig, HammerGesturesPlugin,} from '@angular/platform-browser/src/dom/events/hammer_gestures';
 
@@ -58,7 +57,7 @@ import {HammerGestureConfig, HammerGesturesPlugin,} from '@angular/platform-brow
       let originalHammerGlobal: any;
 
       // Fake Hammer instance ("mc") used to test the underlying event registration.
-      let fakeHammerInstance: {on: () => void, off: () => void};
+      let fakeHammerInstance: {on: jasmine.Spy, off: jasmine.Spy};
 
       // Inject the NgZone so that we can make it available to the plugin through a fake
       // EventManager.

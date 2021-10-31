@@ -8,7 +8,7 @@ import { UserService } from '../model/user.service';
 })
 // #docregion class
 export class WelcomeComponent implements OnInit {
-  welcome: string;
+  welcome = '';
   constructor(private userService: UserService) { }
 
   ngOnInit(): void {

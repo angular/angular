@@ -6,25 +6,26 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, BindingPipe, EmptyExpr, ImplicitReceiver, LiteralPrimitive, MethodCall, ParseSourceSpan, PropertyRead, PropertyWrite, SafeMethodCall, SafePropertyRead, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstElement, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstText, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
+import {AST, ASTWithSource, BindingPipe, Call, EmptyExpr, ImplicitReceiver, LiteralPrimitive, ParseSourceSpan, PropertyRead, PropertyWrite, SafePropertyRead, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstElement, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstText, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
-import {CompletionKind, DirectiveInScope, TemplateDeclarationSymbol} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
-import {BoundEvent} from '@angular/compiler/src/render3/r3_ast';
-import * as ts from 'typescript';
+import {CompletionKind, DirectiveInScope, SymbolKind, TemplateDeclarationSymbol} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
+import {BoundEvent, TextAttribute} from '@angular/compiler/src/render3/r3_ast';
+import ts from 'typescript';
 
 import {addAttributeCompletionEntries, AttributeCompletionKind, buildAttributeCompletionTable, getAttributeCompletionSymbol} from './attribute_completions';
 import {DisplayInfo, DisplayInfoKind, getDirectiveDisplayInfo, getSymbolDisplayInfo, getTsSymbolDisplayInfo, unsafeCastDisplayInfoKindToScriptElementKind} from './display_parts';
 import {TargetContext, TargetNodeKind, TemplateTarget} from './template_target';
-import {filterAliasImports} from './utils';
+import {filterAliasImports, isBoundEventWithSyntheticHandler} from './utils';
 
 type PropertyExpressionCompletionBuilder =
-    CompletionBuilder<PropertyRead|PropertyWrite|MethodCall|EmptyExpr|SafePropertyRead|
-                      SafeMethodCall|TmplAstBoundEvent>;
+    CompletionBuilder<PropertyRead|PropertyWrite|EmptyExpr|SafePropertyRead|TmplAstBoundEvent>;
 
 type ElementAttributeCompletionBuilder =
     CompletionBuilder<TmplAstElement|TmplAstBoundAttribute|TmplAstTextAttribute|TmplAstBoundEvent>;
 
 type PipeCompletionBuilder = CompletionBuilder<BindingPipe>;
+
+type LiteralCompletionBuilder = CompletionBuilder<LiteralPrimitive|TextAttribute>;
 
 export enum CompletionNodeContext {
   None,
@@ -69,12 +70,72 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
     } else if (this.isElementTagCompletion()) {
       return this.getElementTagCompletion();
     } else if (this.isElementAttributeCompletion()) {
-      return this.getElementAttributeCompletions();
+      return this.getElementAttributeCompletions(options);
     } else if (this.isPipeCompletion()) {
       return this.getPipeCompletions();
+    } else if (this.isLiteralCompletion()) {
+      return this.getLiteralCompletions(options);
     } else {
       return undefined;
     }
+  }
+
+  private isLiteralCompletion(): this is LiteralCompletionBuilder {
+    return this.node instanceof LiteralPrimitive ||
+        (this.node instanceof TextAttribute &&
+         this.nodeContext === CompletionNodeContext.ElementAttributeValue);
+  }
+
+  private getLiteralCompletions(
+      this: LiteralCompletionBuilder, options: ts.GetCompletionsAtPositionOptions|undefined):
+      ts.WithMetadata<ts.CompletionInfo>|undefined {
+    const location = this.compiler.getTemplateTypeChecker().getLiteralCompletionLocation(
+        this.node, this.component);
+    if (location === null) {
+      return undefined;
+    }
+    const tsResults =
+        this.tsLS.getCompletionsAtPosition(location.shimPath, location.positionInShimFile, options);
+    if (tsResults === undefined) {
+      return undefined;
+    }
+
+    let replacementSpan: ts.TextSpan|undefined;
+    if (this.node instanceof TextAttribute && this.node.value.length > 0 && this.node.valueSpan) {
+      replacementSpan = {
+        start: this.node.valueSpan.start.offset,
+        length: this.node.value.length,
+      };
+    }
+    if (this.node instanceof LiteralPrimitive) {
+      if (typeof this.node.value === 'string' && this.node.value.length > 0) {
+        replacementSpan = {
+          // The sourceSpan of `LiteralPrimitive` includes the open quote and the completion entries
+          // don't, so skip the open quote here.
+          start: this.node.sourceSpan.start + 1,
+          length: this.node.value.length,
+        };
+      } else if (typeof this.node.value === 'number') {
+        replacementSpan = {
+          start: this.node.sourceSpan.start,
+          length: this.node.value.toString().length,
+        };
+      }
+    }
+
+    let ngResults: ts.CompletionEntry[] = [];
+    for (const result of tsResults.entries) {
+      if (this.isValidNodeContextCompletion(result)) {
+        ngResults.push({
+          ...result,
+          replacementSpan,
+        });
+      }
+    }
+    return {
+      ...tsResults,
+      entries: ngResults,
+    };
   }
 
   /**
@@ -82,9 +143,11 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
    */
   getCompletionEntryDetails(
       entryName: string, formatOptions: ts.FormatCodeOptions|ts.FormatCodeSettings|undefined,
-      preferences: ts.UserPreferences|undefined): ts.CompletionEntryDetails|undefined {
+      preferences: ts.UserPreferences|undefined,
+      data: ts.CompletionEntryData|undefined): ts.CompletionEntryDetails|undefined {
     if (this.isPropertyExpressionCompletion()) {
-      return this.getPropertyExpressionCompletionDetails(entryName, formatOptions, preferences);
+      return this.getPropertyExpressionCompletionDetails(
+          entryName, formatOptions, preferences, data);
     } else if (this.isElementTagCompletion()) {
       return this.getElementTagCompletionDetails(entryName);
     } else if (this.isElementAttributeCompletion()) {
@@ -116,8 +179,7 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
    */
   private isPropertyExpressionCompletion(this: CompletionBuilder<TmplAstNode|AST>):
       this is PropertyExpressionCompletionBuilder {
-    return this.node instanceof PropertyRead || this.node instanceof MethodCall ||
-        this.node instanceof SafePropertyRead || this.node instanceof SafeMethodCall ||
+    return this.node instanceof PropertyRead || this.node instanceof SafePropertyRead ||
         this.node instanceof PropertyWrite || this.node instanceof EmptyExpr ||
         // BoundEvent nodes only count as property completions if in an EventValue context.
         (this.node instanceof BoundEvent && this.nodeContext === CompletionNodeContext.EventValue);
@@ -134,8 +196,8 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
         this.node.receiver instanceof ImplicitReceiver) {
       return this.getGlobalPropertyExpressionCompletion(options);
     } else {
-      const location = this.compiler.getTemplateTypeChecker().getExpressionCompletionLocation(
-          this.node, this.component);
+      const location =
+          this.templateTypeChecker.getExpressionCompletionLocation(this.node, this.component);
       if (location === null) {
         return undefined;
       }
@@ -146,6 +208,23 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
       }
 
       const replacementSpan = makeReplacementSpanFromAst(this.node);
+
+      if (!(this.node.receiver instanceof ImplicitReceiver) &&
+          !(this.node instanceof SafePropertyRead) && options?.includeCompletionsWithInsertText &&
+          options.includeAutomaticOptionalChainCompletions !== false) {
+        const symbol = this.templateTypeChecker.getSymbolOfNode(this.node.receiver, this.component);
+        if (symbol?.kind === SymbolKind.Expression) {
+          const type = symbol.tsType;
+          const nonNullableType = this.typeChecker.getNonNullableType(type);
+          if (type !== nonNullableType && replacementSpan !== undefined) {
+            // Shift the start location back one so it includes the `.` of the property access.
+            // In combination with the options above, this will indicate to the TS LS to include
+            // optional chaining completions `?.` for nullable types.
+            replacementSpan.start--;
+            replacementSpan.length++;
+          }
+        }
+      }
 
       let ngResults: ts.CompletionEntry[] = [];
       for (const result of tsResults.entries) {
@@ -167,12 +246,13 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
   private getPropertyExpressionCompletionDetails(
       this: PropertyExpressionCompletionBuilder, entryName: string,
       formatOptions: ts.FormatCodeOptions|ts.FormatCodeSettings|undefined,
-      preferences: ts.UserPreferences|undefined): ts.CompletionEntryDetails|undefined {
+      preferences: ts.UserPreferences|undefined,
+      data: ts.CompletionEntryData|undefined): ts.CompletionEntryDetails|undefined {
     let details: ts.CompletionEntryDetails|undefined = undefined;
     if (this.node instanceof EmptyExpr || this.node instanceof BoundEvent ||
         this.node.receiver instanceof ImplicitReceiver) {
-      details =
-          this.getGlobalPropertyExpressionCompletionDetails(entryName, formatOptions, preferences);
+      details = this.getGlobalPropertyExpressionCompletionDetails(
+          entryName, formatOptions, preferences, data);
     } else {
       const location = this.compiler.getTemplateTypeChecker().getExpressionCompletionLocation(
           this.node, this.component);
@@ -181,7 +261,7 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
       }
       details = this.tsLS.getCompletionEntryDetails(
           location.shimPath, location.positionInShimFile, entryName, formatOptions,
-          /* source */ undefined, preferences);
+          /* source */ undefined, preferences, data);
     }
     if (details !== undefined) {
       details.displayParts = filterAliasImports(details.displayParts);
@@ -292,7 +372,8 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
   private getGlobalPropertyExpressionCompletionDetails(
       this: PropertyExpressionCompletionBuilder, entryName: string,
       formatOptions: ts.FormatCodeOptions|ts.FormatCodeSettings|undefined,
-      preferences: ts.UserPreferences|undefined): ts.CompletionEntryDetails|undefined {
+      preferences: ts.UserPreferences|undefined,
+      data: ts.CompletionEntryData|undefined): ts.CompletionEntryDetails|undefined {
     const completions =
         this.templateTypeChecker.getGlobalCompletions(this.template, this.component, this.node);
     if (completions === null) {
@@ -323,7 +404,7 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
     } else {
       return this.tsLS.getCompletionEntryDetails(
           componentContext.shimPath, componentContext.positionInShimFile, entryName, formatOptions,
-          /* source */ undefined, preferences);
+          /* source */ undefined, preferences, data);
     }
   }
 
@@ -457,8 +538,10 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
          this.node instanceof TmplAstTextAttribute || this.node instanceof TmplAstBoundEvent);
   }
 
-  private getElementAttributeCompletions(this: ElementAttributeCompletionBuilder):
-      ts.WithMetadata<ts.CompletionInfo>|undefined {
+  private getElementAttributeCompletions(
+      this: ElementAttributeCompletionBuilder,
+      options: ts.GetCompletionsAtPositionOptions|
+      undefined): ts.WithMetadata<ts.CompletionInfo>|undefined {
     let element: TmplAstElement|TmplAstTemplate;
     if (this.node instanceof TmplAstElement) {
       element = this.node;
@@ -477,6 +560,45 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
       replacementSpan = makeReplacementSpanFromParseSourceSpan(this.node.keySpan);
     }
 
+    let insertSnippet: true|undefined;
+    if (options?.includeCompletionsWithSnippetText && options.includeCompletionsWithInsertText) {
+      if (this.node instanceof TmplAstBoundEvent && isBoundEventWithSyntheticHandler(this.node)) {
+        replacementSpan = makeReplacementSpanFromParseSourceSpan(this.node.sourceSpan);
+        insertSnippet = true;
+      }
+
+      const isBoundAttributeValueEmpty = this.node instanceof TmplAstBoundAttribute &&
+          (this.node.valueSpan === undefined ||
+           (this.node.value instanceof ASTWithSource && this.node.value.ast instanceof EmptyExpr));
+      if (isBoundAttributeValueEmpty) {
+        replacementSpan = makeReplacementSpanFromParseSourceSpan(this.node.sourceSpan);
+        insertSnippet = true;
+      }
+
+      if (this.node instanceof TmplAstTextAttribute && this.node.keySpan !== undefined) {
+        // The `sourceSpan` only includes `ngFor` and the `valueSpan` is always empty even if there
+        // is something there because we split this up into the desugared AST, `ngFor ngForOf=""`.
+        const nodeStart = this.node.keySpan.start.getContext(1, 1);
+        if (nodeStart?.before[0] === '*') {
+          const nodeEnd = this.node.keySpan.end.getContext(1, 1);
+          if (nodeEnd?.after[0] !== '=') {
+            // *ngFor -> *ngFor="¦"
+            insertSnippet = true;
+          }
+        } else {
+          if (this.node.value === '') {
+            replacementSpan = makeReplacementSpanFromParseSourceSpan(this.node.sourceSpan);
+            insertSnippet = true;
+          }
+        }
+      }
+
+      if (this.node instanceof TmplAstElement) {
+        // <div ¦ />
+        insertSnippet = true;
+      }
+    }
+
     const attrTable = buildAttributeCompletionTable(
         this.component, element, this.compiler.getTemplateTypeChecker());
 
@@ -487,6 +609,11 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
       // the user is completing on a property binding `[foo|]`, don't offer output event
       // completions.
       switch (completion.kind) {
+        case AttributeCompletionKind.DomEvent:
+          if (this.node instanceof TmplAstBoundAttribute) {
+            continue;
+          }
+          break;
         case AttributeCompletionKind.DomAttribute:
         case AttributeCompletionKind.DomProperty:
           if (this.node instanceof TmplAstBoundEvent) {
@@ -521,8 +648,10 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
       // Is the completion for an element (not an <ng-template>)?
       const isElementContext =
           this.node instanceof TmplAstElement || this.nodeParent instanceof TmplAstElement;
+
       addAttributeCompletionEntries(
-          entries, completion, isAttributeContext, isElementContext, replacementSpan);
+          entries, completion, isAttributeContext, isElementContext, replacementSpan,
+          insertSnippet);
     }
 
     return {
@@ -563,6 +692,7 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
     let documentation: ts.SymbolDisplayPart[]|undefined = undefined;
     let info: DisplayInfo|null;
     switch (completion.kind) {
+      case AttributeCompletionKind.DomEvent:
       case AttributeCompletionKind.DomAttribute:
       case AttributeCompletionKind.DomProperty:
         // TODO(alxhub): ideally we would show the same documentation as quick info here. However,
@@ -575,6 +705,7 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
         displayParts = info.displayParts;
         documentation = info.documentation;
         break;
+      case AttributeCompletionKind.StructuralDirectiveAttribute:
       case AttributeCompletionKind.DirectiveInput:
       case AttributeCompletionKind.DirectiveOutput:
         const propertySymbol = getAttributeCompletionSymbol(completion, this.typeChecker);
@@ -582,11 +713,17 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
           return undefined;
         }
 
+        let kind: DisplayInfoKind;
+        if (completion.kind === AttributeCompletionKind.DirectiveInput) {
+          kind = DisplayInfoKind.PROPERTY;
+        } else if (completion.kind === AttributeCompletionKind.DirectiveOutput) {
+          kind = DisplayInfoKind.EVENT;
+        } else {
+          kind = DisplayInfoKind.DIRECTIVE;
+        }
+
         info = getTsSymbolDisplayInfo(
-            this.tsLS, this.typeChecker, propertySymbol,
-            completion.kind === AttributeCompletionKind.DirectiveInput ? DisplayInfoKind.PROPERTY :
-                                                                         DisplayInfoKind.EVENT,
-            completion.directive.tsSymbol.name);
+            this.tsLS, this.typeChecker, propertySymbol, kind, completion.directive.tsSymbol.name);
         if (info === null) {
           return undefined;
         }
@@ -598,7 +735,7 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
       name: entryName,
       kind: unsafeCastDisplayInfoKindToScriptElementKind(kind),
       kindModifiers: ts.ScriptElementKindModifier.none,
-      displayParts: [],
+      displayParts,
       documentation,
     };
   }
@@ -684,9 +821,8 @@ function makeReplacementSpanFromParseSourceSpan(span: ParseSourceSpan): ts.TextS
   };
 }
 
-function makeReplacementSpanFromAst(node: PropertyRead|PropertyWrite|MethodCall|SafePropertyRead|
-                                    SafeMethodCall|BindingPipe|EmptyExpr|LiteralPrimitive|
-                                    BoundEvent): ts.TextSpan|undefined {
+function makeReplacementSpanFromAst(node: PropertyRead|PropertyWrite|SafePropertyRead|BindingPipe|
+                                    EmptyExpr|LiteralPrimitive|BoundEvent): ts.TextSpan|undefined {
   if ((node instanceof EmptyExpr || node instanceof LiteralPrimitive ||
        node instanceof BoundEvent)) {
     // empty nodes do not replace any existing text
@@ -738,6 +874,8 @@ function nodeContextFromTarget(target: TargetContext): CompletionNodeContext {
     case TargetNodeKind.AttributeInValueContext:
       if (target.node instanceof TmplAstBoundEvent) {
         return CompletionNodeContext.EventValue;
+      } else if (target.node instanceof TextAttribute) {
+        return CompletionNodeContext.ElementAttributeValue;
       } else {
         return CompletionNodeContext.None;
       }

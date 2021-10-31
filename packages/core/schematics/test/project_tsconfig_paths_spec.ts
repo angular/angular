@@ -17,18 +17,20 @@ describe('project tsconfig paths', () => {
     testTree = new UnitTestTree(new HostTree());
   });
 
-  it('should detect build tsconfig path inside of angular.json file', () => {
+  it('should detect build tsconfig path inside of angular.json file', async () => {
     testTree.create('/my-custom-config.json', '');
     testTree.create('/angular.json', JSON.stringify({
+      version: 1,
       projects: {my_name: {architect: {build: {options: {tsConfig: './my-custom-config.json'}}}}}
     }));
 
-    expect(getProjectTsConfigPaths(testTree).buildPaths).toEqual(['my-custom-config.json']);
+    expect((await getProjectTsConfigPaths(testTree)).buildPaths).toEqual(['my-custom-config.json']);
   });
 
-  it('should be able to read workspace configuration which is using JSON5 features', () => {
+  it('should be able to read workspace configuration which is using JSON5 features', async () => {
     testTree.create('/my-build-config.json', '');
     testTree.create('/angular.json', `{
+      version: 1,
       // Comments, unquoted properties or trailing commas are only supported in JSON5.
       projects: {
         with_tests: {
@@ -43,41 +45,36 @@ describe('project tsconfig paths', () => {
       },
     }`);
 
-    expect(getProjectTsConfigPaths(testTree).buildPaths).toEqual(['my-build-config.json']);
+    expect((await getProjectTsConfigPaths(testTree)).buildPaths).toEqual(['my-build-config.json']);
   });
 
-  it('should detect test tsconfig path inside of angular.json file', () => {
+  it('should detect test tsconfig path inside of angular.json file', async () => {
     testTree.create('/my-test-config.json', '');
     testTree.create('/angular.json', JSON.stringify({
+      version: 1,
       projects: {my_name: {architect: {test: {options: {tsConfig: './my-test-config.json'}}}}}
     }));
 
-    expect(getProjectTsConfigPaths(testTree).testPaths).toEqual(['my-test-config.json']);
+    expect((await getProjectTsConfigPaths(testTree)).testPaths).toEqual(['my-test-config.json']);
   });
 
-  it('should detect test tsconfig path inside of .angular.json file', () => {
+  it('should detect test tsconfig path inside of .angular.json file', async () => {
     testTree.create('/my-test-config.json', '');
     testTree.create('/.angular.json', JSON.stringify({
+      version: 1,
       projects: {with_tests: {architect: {test: {options: {tsConfig: './my-test-config.json'}}}}}
     }));
 
-    expect(getProjectTsConfigPaths(testTree).testPaths).toEqual(['my-test-config.json']);
+    expect((await getProjectTsConfigPaths(testTree)).testPaths).toEqual(['my-test-config.json']);
   });
 
-  it('should detect common tsconfigs if no workspace config could be found', () => {
-    testTree.create('/src/tsconfig.app.json', '');
-    testTree.create('/src/tsconfig.spec.json', '');
-
-    expect(getProjectTsConfigPaths(testTree).buildPaths).toEqual(['src/tsconfig.app.json']);
-    expect(getProjectTsConfigPaths(testTree).testPaths).toEqual(['src/tsconfig.spec.json']);
-  });
-
-  it('should not return duplicate tsconfig files', () => {
+  it('should not return duplicate tsconfig files', async () => {
     testTree.create('/tsconfig.json', '');
     testTree.create('/.angular.json', JSON.stringify({
+      version: 1,
       projects: {app: {architect: {build: {options: {tsConfig: 'tsconfig.json'}}}}}
     }));
 
-    expect(getProjectTsConfigPaths(testTree).buildPaths).toEqual(['tsconfig.json']);
+    expect((await getProjectTsConfigPaths(testTree)).buildPaths).toEqual(['tsconfig.json']);
   });
 });

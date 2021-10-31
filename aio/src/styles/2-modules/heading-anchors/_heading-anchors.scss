@@ -1,0 +1,17 @@
+.sidenav-content {
+  h1, h2, h3, h4, h5, h6 {
+
+    .header-link {
+      margin: 0 6px;
+      text-decoration: none;
+      user-select: none;
+      visibility: hidden;
+      display: inline-flex;
+      vertical-align: middle;
+    }
+
+    &:hover .header-link {
+      visibility: visible;
+    }
+  }
+}

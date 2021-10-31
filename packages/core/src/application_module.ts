@@ -20,7 +20,6 @@ import {ComponentFactoryResolver} from './linker';
 import {Compiler} from './linker/compiler';
 import {NgModule} from './metadata';
 import {SCHEDULER} from './render3/component_ref';
-import {setLocaleId} from './render3/i18n/i18n_locale_id';
 import {NgZone} from './zone';
 
 declare const $localize: {locale?: string};
@@ -34,26 +33,21 @@ export function _keyValueDiffersFactory() {
 }
 
 export function _localeFactory(locale?: string): string {
-  locale = locale || getGlobalLocale();
-  if (ivyEnabled) {
-    setLocaleId(locale);
-  }
-  return locale;
+  return locale || getGlobalLocale();
 }
-
 /**
  * Work out the locale from the potential global properties.
  *
- * * Closure Compiler: use `goog.LOCALE`.
+ * * Closure Compiler: use `goog.getLocale()`.
  * * Ivy enabled: use `$localize.locale`
  */
 export function getGlobalLocale(): string {
   if (typeof ngI18nClosureMode !== 'undefined' && ngI18nClosureMode &&
-      typeof goog !== 'undefined' && goog.LOCALE !== 'en') {
-    // * The default `goog.LOCALE` value is `en`, while Angular used `en-US`.
+      typeof goog !== 'undefined' && goog.getLocale() !== 'en') {
+    // * The default `goog.getLocale()` value is `en`, while Angular used `en-US`.
     // * In order to preserve backwards compatibility, we use Angular default value over
     //   Closure Compiler's one.
-    return goog.LOCALE;
+    return goog.getLocale();
   } else {
     // KEEP `typeof $localize !== 'undefined' && $localize.locale` IN SYNC WITH THE LOCALIZE
     // COMPILE-TIME INLINER.

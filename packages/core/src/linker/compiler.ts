@@ -26,6 +26,11 @@ import {NgModuleFactory} from './ng_module_factory';
  * Combination of NgModuleFactory and ComponentFactories.
  *
  * @publicApi
+ *
+ * @deprecated
+ * Ivy JIT mode doesn't require accessing this symbol.
+ * See [JIT API changes due to ViewEngine deprecation](guide/deprecations#jit-api-changes) for
+ * additional context.
  */
 export class ModuleWithComponentFactories<T> {
   constructor(
@@ -93,6 +98,11 @@ const Compiler_compileModuleAndAllComponentsAsync =
  * of components.
  *
  * @publicApi
+ *
+ * @deprecated
+ * Ivy JIT mode doesn't require accessing this symbol.
+ * See [JIT API changes due to ViewEngine deprecation](guide/deprecations#jit-api-changes) for
+ * additional context.
  */
 @Injectable()
 export class Compiler {
@@ -162,6 +172,11 @@ export const COMPILER_OPTIONS = new InjectionToken<CompilerOptions[]>('compilerO
  * A factory for creating a Compiler
  *
  * @publicApi
+ *
+ * @deprecated
+ * Ivy JIT mode doesn't require accessing this symbol.
+ * See [JIT API changes due to ViewEngine deprecation](guide/deprecations#jit-api-changes) for
+ * additional context.
  */
 export abstract class CompilerFactory {
   abstract createCompiler(options?: CompilerOptions[]): Compiler;

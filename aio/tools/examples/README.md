@@ -68,6 +68,9 @@ The file is expected to contain a JSON object with zero or more of the following
   Default: `"cli"`
 - `useCommonBoilerplate: boolean`: Whether to include common boilerplate from the [common/](./shared/boilerplate/common) folder.
   Default: `true`
+- `"overrideBoilerplate": string[]`: A list of paths to boilerplate files that are overridden by custom files in this example.
+  Commonly this is used when a boilerplate file is referenced in a guide and so needs to have doc-regions added.
+  When adding such overrides, ensure that the file is "unignored" by adding an appropriate negation pattern to the `content/examples/.gitignore` file.
 
 **SystemJS-only properties:**
 - `build: string`: The npm script to run in order to build the example app.
@@ -86,7 +89,7 @@ The file is expected to contain a JSON object with zero or more of the following
       "cmd": "yarn",
       "args": [
         "e2e",
-        "--prod",
+        "--configuration=production",
         "--protractor-config=e2e/protractor-puppeteer.conf.js",
         "--no-webdriver-update",
         "--port={PORT}"
@@ -127,17 +130,19 @@ yarn protractor [--params.outputFile=path/to/logfile.txt]
 
 ### `example-boilerplate.js`
 
-The [example-boilerplate.js](./example-boilerplate.js) script installs the dependencies for all examples, creates the `node_modules/` symlinks and copies the necessary boilerplate files into example folders.
+The [example-boilerplate.js](./example-boilerplate.js) script manages the dependencies for all examples.
 
-It also contains a function to remove all the boilerplate.
-It uses `git clean -xdf` to do the job.
-It will remove all files that are not tracked by git, **including any new files that you are working on that haven't been staged yet.**
-So, be sure to commit your work before removing the boilerplate.
+- `example-boilerplate.js add`: create the `node_modules/` symlinks and copy the necessary boilerplate files into example folders.
+- `example-boilerplate.js remove`: remove all the boilerplate files from examples.
+  It uses `git clean -xdf` to do the job.
+  It will remove all files that are not tracked by git, **including any new files that you are working on that haven't been staged yet.**
+  So, be sure to commit your work before removing the boilerplate.
+- `example-boilerplate.js list-overrides`: print out a list of all example files that override boilerplate files.
+  This is useful when updating the boilerplate files to a new version of Angular.
 
+### `run-example-e2e.mjs`
 
-### `run-example-e2e.js`
-
-The [run-example-e2e.js](./run-example-e2e.js) script will find and run the e2e tests for all examples.
+The [run-example-e2e.mjs](./run-example-e2e.mjs) script will find and run the e2e tests for all examples.
 Although it only runs e2e tests by default, it can be configured to run any test command (for CLI-based examples) by using the `tests` property of the [example-config.json](#example-config) file.
 It is named `*-e2e` for historical reasons, but it is not limited to running e2e tests.
 

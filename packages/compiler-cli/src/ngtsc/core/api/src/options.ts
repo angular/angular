@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {BazelAndG3Options, I18nOptions, LegacyNgcOptions, MiscOptions, NgcCompatibilityOptions, StrictTemplateOptions, TargetOptions} from './public_options';
 
@@ -37,6 +37,16 @@ export interface TestOnlyOptions {
 }
 
 /**
+ * Internal only options for compiler.
+ */
+export interface InternalOptions {
+  /**
+   * Whether to run all template checks and generate extended template diagnostics.
+   */
+  _extendedTemplateDiagnostics?: boolean;
+}
+
+/**
  * A merged interface of all of the various Angular compiler options, as well as the standard
  * `ts.CompilerOptions`.
  *
@@ -45,4 +55,4 @@ export interface TestOnlyOptions {
 export interface NgCompilerOptions extends ts.CompilerOptions, LegacyNgcOptions, BazelAndG3Options,
                                            NgcCompatibilityOptions, StrictTemplateOptions,
                                            TestOnlyOptions, I18nOptions, TargetOptions,
-                                           MiscOptions {}
+                                           InternalOptions, MiscOptions {}

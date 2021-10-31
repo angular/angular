@@ -7,15 +7,15 @@ The changes to each option vary based on the builder or command that uses the Ty
 Unless otherwise noted, changes are only made if the existing value was not changed since the project was created.
 This process helps ensure that intentional changes to the options are kept in place.
 
-| TypeScript Configuration File(s)                                 | Changed Property | Existing Value | New Value  |
-| ---------------------------------------------------------------- | ---------------- | -------------- | ---------- |
-| `<workspace base>/tsconfig.json`                                 | `"module"`       | `"esnext"`     | `"es2020"` |
-| Used in `browser` builder options (`ng build` for applications)  | `"module"`       | `"esnext"`     | `"es2020"` |
-| Used in `ng-packagr` builder options (`ng build` for libraries)  | `"module"`       | `"esnext"`     | `"es2020"` |
-| Used in `karma` builder options (`ng test` for applications)     | `"module"`       | `"esnext"`     | `"es2020"` |
-| Used in `server` builder options (universal)                     | `"module"`       | `"commonjs"`   | _removed_  |
-| Used in `server` builder options (universal)                     | `"target"`       | _any_          | `"es2016"` |
-| Used in `protractor` builder options (`ng e2e` for applications) | `"target"`       | `"es5"`        | `"es2018"` |
+| TypeScript Configuration File(s)                                                                  | Changed Property | Existing Value | New Value  |
+| ------------------------------------------------------------------------------------------------- | ---------------- | -------------- | ---------- |
+| `<workspace base>/tsconfig.json`                                                                  | `"module"`       | `"esnext"`     | `"es2020"` |
+| Used in <code class="no-auto-link">browser</code>  builder options (`ng build` for applications)  | `"module"`       | `"esnext"`     | `"es2020"` |
+| Used in `ng-packagr` builder options (`ng build` for libraries)                                   | `"module"`       | `"esnext"`     | `"es2020"` |
+| Used in `karma` builder options (`ng test` for applications)                                      | `"module"`       | `"esnext"`     | `"es2020"` |
+| Used in `server` builder options (universal)                                                      | `"module"`       | `"commonjs"`   | _removed_  |
+| Used in `server` builder options (universal)                                                      | `"target"`       | _any_          | `"es2016"` |
+| Used in `protractor` builder options (`ng e2e` for applications)                                  | `"target"`       | `"es5"`        | `"es2018"` |
 
 ## Why is this migration necessary?
 
@@ -24,7 +24,7 @@ This migration provides improvements to the long-term supportability of projects
 For the functionality that executes on Node.js, such as Universal and Protractor, the new settings provide performance and troubleshooting benefits as well.
 The minimum Node.js version for the Angular CLI (v10.13) supports features in ES2018 and earlier.
 By targeting later ES versions, the compiler transforms less code and can use newer features directly.
-Since zone.js does not support native `async` and `await`, the universal builds still target ES2016.
+Since zone.js does not support native <code class="no-auto-link">async</code> and `await`, the universal builds still target ES2016.
 
 ## Why `"es2020"` instead of `"esnext"`?
 

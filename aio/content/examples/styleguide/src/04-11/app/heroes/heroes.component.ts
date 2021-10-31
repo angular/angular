@@ -8,7 +8,7 @@ import { SpinnerService } from '../core/spinner/spinner.service';
   templateUrl: './heroes.component.html'
 })
 export class HeroesComponent {
-  heroes: any[];
+  heroes: any[] = [];
 
   constructor(
     private loggerService: LoggerService,

@@ -12,12 +12,12 @@ describe('updateGlobalApiPath processor', () => {
 
   it('should run before the correct processor', () => {
     const processor = processorFactory();
-    expect(processor.$runBefore).toEqual(['processNgModuleDocs']);
+    expect(processor.$runBefore).toEqual(['disambiguateDocPathsProcessor', 'processNgModuleDocs']);
   });
 
   it('should run after the correct processor', () => {
     const processor = processorFactory();
-    expect(processor.$runAfter).toEqual(['computePathsProcessor']);
+    expect(processor.$runAfter).toEqual(['paths-computed']);
   });
 
   it('should update the paths of namespaced global APIs', () => {

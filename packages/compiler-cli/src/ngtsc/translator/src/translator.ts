@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import * as o from '@angular/compiler';
-import {createTaggedTemplate} from 'typescript';
 
 import {AstFactory, BinaryOperator, ObjectLiteralProperty, SourceMapRange, TemplateElement, TemplateLiteral, UnaryOperator} from './api/ast_factory';
 import {ImportGenerator} from './api/import_generator';
@@ -151,16 +150,6 @@ export class ExpressionTranslatorVisitor<TStatement, TExpression> implements o.E
     const target =
         this.factory.createPropertyAccess(expr.receiver.visitExpression(this, context), expr.name);
     return this.factory.createAssignment(target, expr.value.visitExpression(this, context));
-  }
-
-  visitInvokeMethodExpr(ast: o.InvokeMethodExpr, context: Context): TExpression {
-    const target = ast.receiver.visitExpression(this, context);
-    return this.setSourceMapRange(
-        this.factory.createCallExpression(
-            ast.name !== null ? this.factory.createPropertyAccess(target, ast.name) : target,
-            ast.args.map(arg => arg.visitExpression(this, context)),
-            /* pure */ false),
-        ast.sourceSpan);
   }
 
   visitInvokeFunctionExpr(ast: o.InvokeFunctionExpr, context: Context): TExpression {

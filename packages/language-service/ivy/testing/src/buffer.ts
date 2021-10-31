@@ -70,13 +70,18 @@ export class OpenBuffer {
 
   getCompletionEntryDetails(
       entryName: string, formatOptions?: ts.FormatCodeOptions|ts.FormatCodeSettings,
-      preferences?: ts.UserPreferences): ts.CompletionEntryDetails|undefined {
+      preferences?: ts.UserPreferences, data?: ts.CompletionEntryData): ts.CompletionEntryDetails
+      |undefined {
     return this.ngLS.getCompletionEntryDetails(
-        this.scriptInfo.fileName, this._cursor, entryName, formatOptions, preferences);
+        this.scriptInfo.fileName, this._cursor, entryName, formatOptions, preferences, data);
   }
 
   getTcb() {
     return this.ngLS.getTcb(this.scriptInfo.fileName, this._cursor);
+  }
+
+  getTemplateLocationForComponent() {
+    return this.ngLS.getTemplateLocationForComponent(this.scriptInfo.fileName, this._cursor);
   }
 
   getQuickInfoAtPosition() {
@@ -91,7 +96,7 @@ export class OpenBuffer {
     return this.ngLS.getReferencesAtPosition(this.scriptInfo.fileName, this._cursor);
   }
 
-  fineRenameLocations() {
+  findRenameLocations() {
     return this.ngLS.findRenameLocations(this.scriptInfo.fileName, this._cursor);
   }
 

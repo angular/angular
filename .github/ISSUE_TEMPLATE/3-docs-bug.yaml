@@ -1,0 +1,42 @@
+name: 'Docs or angular.io Bug Report'
+description: Report an issue in Angular's documentation or angular.io application
+
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+    validations:
+      required: true
+
+  - type: input
+    id: affected-url
+    attributes:
+      label: What is the affected URL?
+
+  - type: textarea
+    id: reproduction-steps
+    attributes:
+      label: Please provide the steps to reproduce the issue
+
+  - type: textarea
+    id: expected-vs-actual-behavior
+    attributes:
+      label: Please provide the expected behavior vs the actual behavior you encountered
+
+  - type: textarea
+    id: screenshot
+    attributes:
+      label: Please provide a screenshot if possible
+
+  - type: textarea
+    id: exception-or-error
+    attributes:
+      label: Please provide the exception or error you saw
+      render: true
+
+  - type: textarea
+    id: browser-info
+    attributes:
+      label: Is this a browser-specific issue? If so, please specify the device, browser, and version.
+      render: true

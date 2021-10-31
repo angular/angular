@@ -8,10 +8,10 @@ import { Hero } from './hero';
   templateUrl: './do-check-parent.component.html'
 })
 export class DoCheckParentComponent {
-  hero: Hero;
-  power: string;
+  hero!: Hero;
+  power = '';
   title = 'DoCheck';
-  @ViewChild(DoCheckComponent) childView: DoCheckComponent;
+  @ViewChild(DoCheckComponent) childView!: DoCheckComponent;
 
   constructor() {
     this.reset();

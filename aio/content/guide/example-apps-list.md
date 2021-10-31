@@ -154,6 +154,12 @@ For more information, see [Built-in directives](guide/built-in-directives).
 Demonstrates Angular built-in template functions.
 For more information, see the [`$any()` type cast function section](guide/template-expression-operators#the-any-type-cast-function) of [Template expression operators](guide/template-expression-operators).
 
+### Content projection
+
+<live-example name="content-projection"></live-example>
+
+Demonstrates how to use Angular's content projection feature when creating reusable components.
+
 ### Interpolation
 
 <live-example name="interpolation"></live-example>
@@ -246,7 +252,7 @@ For more information, see [Component interaction](guide/component-interaction).
 
 <live-example name="component-styles"></live-example>
 
-Demonstrates styling in Angular apps.
+Demonstrates styling in Angular applications.
 For more information, see [Component styles](guide/component-styles).
 
 ### Dynamic component loader
@@ -455,7 +461,7 @@ For more information, see [Security](guide/security).
 
 ### Testing
 
-For the sample app that the testing guides describe, see the <live-example noDownload name="testing">sample app</live-example>.
+For the sample application that the testing guides describe, see the <live-example noDownload name="testing">sample app</live-example>.
 
 For the tests featured in the testing guides, see <live-example name="testing" stackblitz="specs" noDownload>tests</live-example>.
 

@@ -32,7 +32,7 @@ describe('processPseudoClasses processor', () => {
       jasmine.objectContaining({docType: 'interface', id: 'd'}),
 
       // This is the only one that changes
-      jasmine.objectContaining({docType: 'class', id: 'e'}),
+      jasmine.objectContaining({docType: 'class', id: 'e', isPseudoClass: true}),
 
       jasmine.objectContaining({docType: 'const', id: 'f'}),
       jasmine.objectContaining({docType: 'const', id: 'g'}),

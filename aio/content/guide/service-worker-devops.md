@@ -9,21 +9,21 @@ A basic understanding of the following:
 
 ## Service worker and caching of app resources
 
-Conceptually, you can imagine the Angular service worker as a forward cache or a CDN edge that is installed in the end user's web browser. The service worker's job is to satisfy requests made by the Angular application for resources or data from a local cache, without needing to wait for the network. Like any cache, it has rules for how content is expired and updated.
+Conceptually, imagine the Angular service worker as a forward cache or a CDN edge that is installed in the end user's web browser. The service worker's job is to satisfy requests made by the Angular application for resources or data from a local cache, without needing to wait for the network. Like any cache, it has rules for how content is expired and updated.
 
 {@a versions}
 
 ### App versions
 
-In the context of an Angular service worker, a "version" is a collection of resources that represent a specific build of the Angular application. Whenever a new build of the application is deployed, the service worker treats that build as a new version of the application. This is true even if only a single file is updated. At any given time, the service worker may have multiple versions of the application in its cache and it may be serving them simultaneously. For more information, see the [App tabs](guide/service-worker-devops#tabs) section below.
+In the context of an Angular service worker, a "version" is a collection of resources that represent a specific build of the Angular application. Whenever a new build of the application is deployed, the service worker treats that build as a new version of the application. This is true even if only a single file is updated. At any given time, the service worker might have multiple versions of the application in its cache and it might be serving them simultaneously. For more information, see the [App tabs](guide/service-worker-devops#tabs) section below.
 
 To preserve application integrity, the Angular service worker groups all files into a version together. The files grouped into a version usually include HTML, JS, and CSS files. Grouping of these files is essential for integrity because HTML, JS, and CSS files frequently refer to each other and depend on specific content. For example, an `index.html` file might have a `<script>` tag that references `bundle.js` and it might attempt to call a function `startApp()` from within that script. Any time this version of `index.html` is served, the corresponding `bundle.js` must be served with it. For example, assume that the `startApp()` function is renamed to `runApp()` in both files. In this scenario, it is not valid to serve the old `index.html`, which calls `startApp()`, along with the new bundle, which defines `runApp()`.
 
 This file integrity is especially important when lazy loading modules.
-A JS bundle may reference many lazy chunks, and the filenames of the
+A JS bundle might reference many lazy chunks, and the filenames of the
 lazy chunks are unique to the particular build of the application. If a running
 application at version `X` attempts to load a lazy chunk, but the server has
-updated to version `X + 1` already, the lazy loading operation will fail.
+already updated to version `X + 1`, the lazy loading operation will fail.
 
 The version identifier of the application is determined by the contents of all
 resources, and it changes if any of them change. In practice, the version
@@ -96,7 +96,7 @@ configured lifetimes.
 
 It can be problematic for an application if the version of resources
 it's receiving changes suddenly or without warning. See the
-[Versions](guide/service-worker-devops#versions) section above
+[App versions](guide/service-worker-devops#versions) section above
 for a description of such issues.
 
 The Angular service worker provides a guarantee: a running application
@@ -147,16 +147,16 @@ the application will be refreshed transparently from the network.
 
 ### Bypassing the service worker
 
-In some cases, you may want to bypass the service worker entirely and let the browser handle the
+In some cases, you might want to bypass the service worker entirely and let the browser handle the
 request instead. An example is when you rely on a feature that is currently not supported in service
 workers (for example, [reporting progress on uploaded files](https://github.com/w3c/ServiceWorker/issues/1141)).
 
-To bypass the service worker you can set `ngsw-bypass` as a request header, or as a query parameter.
+To bypass the service worker, set `ngsw-bypass` as a request header, or as a query parameter.
 (The value of the header or query parameter is ignored and can be empty or omitted.)
 
 ## Debugging the Angular service worker
 
-Occasionally, it may be necessary to examine the Angular service
+Occasionally, it might be necessary to examine the Angular service
 worker in a running state to investigate issues or to ensure that
 it is operating as designed. Browsers provide built-in tools for
 debugging service workers and the Angular service worker itself
@@ -171,6 +171,7 @@ is `ngsw/state`. Here is an example of this debug page's contents:
 ```
 NGSW Debug Info:
 
+Driver version: 13.3.7
 Driver state: NORMAL ((nominal))
 Latest manifest hash: eea7f5f464f90789b621170af5a569d6be077e5c
 Last update check: never
@@ -302,7 +303,7 @@ Tools open to differ from behavior a user might experience.
 * If you look in the Cache Storage viewer, the cache is frequently
 out of date. Right click the Cache Storage title and refresh the caches.
 
-Stopping and starting the service worker in the Service Worker
+* Stopping and starting the service worker in the Service Worker
 pane triggers a check for updates.
 
 ## Service Worker Safety
@@ -325,11 +326,12 @@ essentially self-destructing.
 
 Also included in the `@angular/service-worker` NPM package is a small
 script `safety-worker.js`, which when loaded will unregister itself
-from the browser. This script can be used as a last resort to get rid
-of unwanted service workers already installed on client pages.
+from the browser and remove the service worker caches. This script can
+be used as a last resort to get rid of unwanted service workers already 
+installed on client pages.
 
 It's important to note that you cannot register this worker directly,
-as old clients with cached state may not see a new `index.html` which
+as old clients with cached state might not see a new `index.html` which
 installs the different worker script. Instead, you must serve the
 contents of `safety-worker.js` at the URL of the Service Worker script
 you are trying to unregister, and must continue to do so until you are
@@ -338,13 +340,13 @@ most sites, this means that you should serve the safety worker at the
 old Service Worker URL forever.
 
 This script can be used both to deactivate `@angular/service-worker`
-as well as any other Service Workers which might have been served in
-the past on your site.
+(and remove the corresponding caches) as well as any other Service
+Workers which might have been served in the past on your site.
 
 ### Changing your app's location
 
 It is important to note that service workers don't work behind redirect. You
-may have already encountered the error `The script resource is behind a redirect, which is disallowed`.
+might have already encountered the error `The script resource is behind a redirect, which is disallowed`.
 
 This can be a problem if you have to change your application's location. If you setup
 a redirect from the old location (for example `example.com`) to the new
@@ -355,12 +357,12 @@ entirely from Service Worker. The old worker (registered at `example.com`)
  get redirected to the new location `www.example.com` and create the error
 `The script resource is behind a redirect, which is disallowed`.
 
-To remedy this, you may need to kill the old worker using one of the above
+To remedy this, you might need to deactivate the old worker using one of the above
 techniques ([Fail-safe](#fail-safe) or [Safety Worker](#safety-worker)).
 
 
 ## More on Angular service workers
 
-You may also be interested in the following:
+You might also be interested in the following:
 * [Service Worker Configuration](guide/service-worker-config).
 

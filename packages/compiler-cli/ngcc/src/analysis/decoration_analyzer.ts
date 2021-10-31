@@ -7,7 +7,7 @@
  */
 import {ConstantPool} from '@angular/compiler';
 import {NOOP_PERF_RECORDER} from '@angular/compiler-cli/src/ngtsc/perf';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {ParsedConfiguration} from '../../..';
 import {ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecoratorHandler, NgModuleDecoratorHandler, PipeDecoratorHandler, ReferencesRegistry, ResourceLoader} from '../../../src/ngtsc/annotations';
@@ -138,8 +138,7 @@ export class DecorationAnalyzer {
         /* errorOnDuplicateProv */ false),
     new NgModuleDecoratorHandler(
         this.reflectionHost, this.evaluator, this.fullMetaReader, this.fullRegistry,
-        this.scopeRegistry, this.referencesRegistry, this.isCore, /* routeAnalyzer */ null,
-        this.refEmitter,
+        this.scopeRegistry, this.referencesRegistry, this.isCore, this.refEmitter,
         /* factoryTracker */ null, !!this.compilerOptions.annotateForClosureCompiler,
         this.injectableRegistry, NOOP_PERF_RECORDER),
   ];

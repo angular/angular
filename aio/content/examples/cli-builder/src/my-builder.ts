@@ -3,44 +3,42 @@
 import { BuilderContext, BuilderOutput, createBuilder } from '@angular-devkit/architect';
 import { JsonObject } from '@angular-devkit/core';
 // #enddocregion builder-skeleton
-import * as childProcess from 'child_process';
+import { promises as fs } from 'fs';
 // #docregion builder-skeleton
 
 interface Options extends JsonObject {
-  command: string;
-  args: string[];
+  source: string;
+  destination: string;
 }
 
-export default createBuilder(commandBuilder);
+export default createBuilder(copyFileBuilder);
 
-function commandBuilder(
+async function copyFileBuilder(
   options: Options,
   context: BuilderContext,
-  ): Promise<BuilderOutput> {
-    // #enddocregion builder, builder-skeleton, handling-output
-    // #docregion report-status
-    context.reportStatus(`Executing "${options.command}"...`);
-    // #docregion builder, handling-output
-    const child = childProcess.spawn(options.command, options.args);
-    // #enddocregion builder, report-status
-
-    child.stdout.on('data', data => {
-      context.logger.info(data.toString());
-    });
-    child.stderr.on('data', data => {
-      context.logger.error(data.toString());
-    });
-
+): Promise<BuilderOutput> {
+  // #enddocregion builder, builder-skeleton, handling-output
+  // #docregion report-status
+  context.reportStatus(`Copying ${options.source} to ${options.destination}.`);
+  // #docregion builder, handling-output
+  try {
+    await fs.copyFile(options.source, options.destination);
+  } catch (err) {
+    // #enddocregion builder
+    context.logger.error('Failed to copy file.');
     // #docregion builder
-    return new Promise(resolve => {
-      // #enddocregion builder, handling-output
-      context.reportStatus(`Done.`);
-      // #docregion builder, handling-output
-      child.on('close', code => {
-        resolve({ success: code === 0 });
-      });
-    });
-    // #docregion builder-skeleton
+    return {
+      success: false,
+      error: err.message,
+    };
+  }
+
+  // #enddocregion builder, handling-output
+  context.reportStatus('Done.');
+  // #docregion builder, handling-output
+  return { success: true };
+  // #enddocregion report-status
+  // #docregion builder-skeleton
 }
 
 // #enddocregion builder, builder-skeleton, handling-output, progress-reporting

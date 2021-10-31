@@ -8,7 +8,7 @@
 
 /// <reference types="node" />
 import * as os from 'os';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {absoluteFrom} from './helpers';
 import {FileSystem} from './types';

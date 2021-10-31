@@ -167,10 +167,6 @@ Additionally, the [MessageBroker](#messagebroker) sits on top of the [MessageBus
 MessageBus is a low level abstraction that provides a language agnostic API for communicating with angular components across any runtime boundary such as `WebWorker <--> UI` communication, `UI <--> Server` communication,
 or `Window <--> Window` communication.
 
-See the diagram below for a high level overview of how this code is structured:
-
-![WebWorker Diagram](http://stanford.edu/~jteplitz/ng_2_worker.png)
-
 ## Running Code on the UI
 If your application needs to run code on the UI, there are a few options. The easiest way is to use a
 CustomElement in your view. You can then register this custom element from your html file and run code in response

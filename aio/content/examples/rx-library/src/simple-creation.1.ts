@@ -5,11 +5,11 @@
 */
 /* tslint:disable:align */
 // #docregion promise
-  import { from } from 'rxjs';
+  import { from, Observable } from 'rxjs';
 
 // #enddocregion promise
 
-export function docRegionPromise(console, fetch) {
+export function docRegionPromise<T>(console: Console, fetch: (url: string) => Observable<T>) {
   // #docregion promise
   // Create an Observable out of a promise
   const data = from(fetch('/api/endpoint'));

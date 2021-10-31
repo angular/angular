@@ -1,7 +1,7 @@
 import { browser } from 'protractor';
 import { SitePage } from './app.po';
 
-/* tslint:disable:max-line-length */
+/* eslint-disable max-len */
 
 describe('onerror handler', () => {
   let page: SitePage;

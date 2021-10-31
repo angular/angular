@@ -6,10 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-// Base URL for the error details page.
-// Keep this value in sync with a similar const in
-// `packages/compiler-cli/src/ngtsc/diagnostics/src/error_code.ts`.
-const ERROR_DETAILS_PAGE_BASE_URL = 'https://angular.io/errors';
+import {ERROR_DETAILS_PAGE_BASE_URL} from './error_details_base_url';
 
 export const enum RuntimeErrorCode {
   // Internal Errors
@@ -27,6 +24,7 @@ export const enum RuntimeErrorCode {
   PIPE_NOT_FOUND = '302',
   UNKNOWN_BINDING = '303',
   UNKNOWN_ELEMENT = '304',
+  TEMPLATE_STRUCTURE_ERROR = '305'
 
   // Styling Errors
 

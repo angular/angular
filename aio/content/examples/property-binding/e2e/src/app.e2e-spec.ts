@@ -11,7 +11,7 @@ describe('Property binding e2e tests', () => {
 
   it('should display four phone pictures', async () => {
     expect(await element.all(by.css('img')).isPresent()).toBe(true);
-    expect(await element.all(by.css('img')).count()).toBe(4);
+    expect(await element.all(by.css('img')).count()).toBe(3);
   });
 
   it('should display Disabled button', async () => {
@@ -19,7 +19,7 @@ describe('Property binding e2e tests', () => {
   });
 
   it('should display Binding to a property of a directive', async () => {
-    expect(await element.all(by.css('h2')).get(4).getText()).toBe(`Binding to a property of a directive`);
+    expect(await element.all(by.css('h2')).get(3).getText()).toBe(`Binding to a property of a directive`);
   });
 
   it('should display blue', async () => {
@@ -42,11 +42,7 @@ describe('Property binding e2e tests', () => {
     expect(await element.all(by.css('ul')).get(1).getText()).toBe(`21 phone`);
   });
 
-  it('should display one-time initialized string', async () => {
-    expect(await element.all(by.css('p')).get(3).getText()).toContain(`one-time initialized`);
-  });
-
   it('should display Malicious content', async () => {
-    expect(await element.all(by.css('h2')).get(8).getText()).toBe(`Malicious content`);
+    expect(await element.all(by.css('h2')).get(6).getText()).toBe(`Malicious content`);
   });
 });

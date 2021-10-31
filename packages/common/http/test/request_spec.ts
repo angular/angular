@@ -10,7 +10,6 @@ import {HttpContext} from '@angular/common/http/src/context';
 import {HttpHeaders} from '@angular/common/http/src/headers';
 import {HttpParams} from '@angular/common/http/src/params';
 import {HttpRequest} from '@angular/common/http/src/request';
-import {ddescribe, describe, it} from '@angular/core/testing/src/testing_internal';
 
 const TEST_URL = 'https://angular.io/';
 const TEST_STRING = `I'm a body!`;
@@ -129,6 +128,10 @@ const TEST_STRING = `I'm a body!`;
         const req = baseReq.clone({body: {data: 'test data'}});
         expect(req.detectContentTypeHeader()).toBe('application/json');
       });
+      it('handles boolean as json', () => {
+        const req = baseReq.clone({body: true});
+        expect(req.detectContentTypeHeader()).toBe('application/json');
+      });
     });
     describe('body serialization', () => {
       const baseReq = new HttpRequest('POST', '/test', null);
@@ -137,6 +140,10 @@ const TEST_STRING = `I'm a body!`;
       });
       it('passes ArrayBuffers through', () => {
         const body = new ArrayBuffer(4);
+        expect(baseReq.clone({body}).serializeBody()).toBe(body);
+      });
+      it('passes URLSearchParams through', () => {
+        const body = new URLSearchParams('foo=1&bar=2');
         expect(baseReq.clone({body}).serializeBody()).toBe(body);
       });
       it('passes strings through', () => {

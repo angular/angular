@@ -13,7 +13,7 @@ import {DeclarationNode} from '@angular/compiler-cli/src/ngtsc/reflection';
 import {DirectiveSymbol, TemplateTypeChecker} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import * as e from '@angular/compiler/src/expression_parser/ast';  // e for expression AST
 import * as t from '@angular/compiler/src/render3/r3_ast';         // t for template AST
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {ALIAS_NAME, SYMBOL_PUNC} from './display_parts';
 import {findTightestNode, getParentClassDeclaration} from './ts_utils';
@@ -22,11 +22,10 @@ export function getTextSpanOfNode(node: t.Node|e.AST): ts.TextSpan {
   if (isTemplateNodeWithKeyAndValue(node)) {
     return toTextSpan(node.keySpan);
   } else if (
-      node instanceof e.PropertyWrite || node instanceof e.MethodCall ||
-      node instanceof e.BindingPipe || node instanceof e.PropertyRead) {
-    // The `name` part of a `PropertyWrite`, `MethodCall`, and `BindingPipe` does not
-    // have its own AST so there is no way to retrieve a `Symbol` for just the `name` via a specific
-    // node.
+      node instanceof e.PropertyWrite || node instanceof e.BindingPipe ||
+      node instanceof e.PropertyRead) {
+    // The `name` part of a `PropertyWrite` and `BindingPipe` does not have its own AST
+    // so there is no way to retrieve a `Symbol` for just the `name` via a specific node.
     return toTextSpan(node.nameSpan);
   } else {
     return toTextSpan(node.sourceSpan);
@@ -374,4 +373,21 @@ export function getTemplateLocationFromShimLocation(
     return null;
   }
   return {templateUrl, span};
+}
+
+export function isBoundEventWithSyntheticHandler(event: t.BoundEvent): boolean {
+  // An event binding with no value (e.g. `(event|)`) parses to a `BoundEvent` with a
+  // `LiteralPrimitive` handler with value `'ERROR'`, as opposed to a property binding with no
+  // value which has an `EmptyExpr` as its value. This is a synthetic node created by the binding
+  // parser, and is not suitable to use for Language Service analysis. Skip it.
+  //
+  // TODO(alxhub): modify the parser to generate an `EmptyExpr` instead.
+  let handler: e.AST = event.handler;
+  if (handler instanceof e.ASTWithSource) {
+    handler = handler.ast;
+  }
+  if (handler instanceof e.LiteralPrimitive && handler.value === 'ERROR') {
+    return true;
+  }
+  return false;
 }

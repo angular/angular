@@ -8,11 +8,10 @@
 
 import {ApplicationInitStatus, CompilerOptions, Component, Directive, InjectFlags, InjectionToken, Injector, NgModule, NgModuleFactory, NgModuleRef, NgZone, Optional, Pipe, PlatformRef, Provider, ProviderToken, SchemaMetadata, SkipSelf, StaticProvider, Type, ɵclearOverrides as clearOverrides, ɵDepFlags as DepFlags, ɵgetInjectableDef as getInjectableDef, ɵINJECTOR_SCOPE as INJECTOR_SCOPE, ɵivyEnabled as ivyEnabled, ɵNodeFlags as NodeFlags, ɵoverrideComponentView as overrideComponentView, ɵoverrideProvider as overrideProvider, ɵstringify as stringify, ɵɵInjectableDeclaration} from '@angular/core';
 
-import {AsyncTestCompleter} from './async_test_completer';
 import {ComponentFixture} from './component_fixture';
 import {MetadataOverride} from './metadata_override';
 import {_getTestBedRender3, TestBedRender3} from './r3_test_bed';
-import {ComponentFixtureAutoDetect, ComponentFixtureNoNgZone, TestBedStatic, TestComponentRenderer, TestModuleMetadata} from './test_bed_common';
+import {ComponentFixtureAutoDetect, ComponentFixtureNoNgZone, ModuleTeardownOptions, TEARDOWN_TESTING_MODULE_ON_DESTROY_DEFAULT, TestBedStatic, TestComponentRenderer, TestEnvironmentOptions, TestModuleMetadata} from './test_bed_common';
 import {TestingCompiler, TestingCompilerFactory} from './test_compiler';
 
 
@@ -36,6 +35,23 @@ export interface TestBed {
    *
    * Test modules and platforms for individual platforms are available from
    * '@angular/<platform_name>/testing'.
+   */
+  initTestEnvironment(
+      ngModule: Type<any>|Type<any>[], platform: PlatformRef,
+      options?: TestEnvironmentOptions): void;
+  /**
+   * Initialize the environment for testing with a compiler factory, a PlatformRef, and an
+   * angular module. These are common to every test in the suite.
+   *
+   * This may only be called once, to set up the common providers for the current test
+   * suite on the current platform. If you absolutely need to change the providers,
+   * first use `resetTestEnvironment`.
+   *
+   * Test modules and platforms for individual platforms are available from
+   * '@angular/<platform_name>/testing'.
+   *
+   * @deprecated This API that allows providing AOT summaries is deprecated, since summary files are
+   *     unused in Ivy.
    */
   initTestEnvironment(
       ngModule: Type<any>|Type<any>[], platform: PlatformRef, aotSummaries?: () => any[]): void;
@@ -99,6 +115,18 @@ export interface TestBed {
  */
 export class TestBedViewEngine implements TestBed {
   /**
+   * Teardown options that have been configured at the environment level.
+   * Used as a fallback if no instance-level options have been provided.
+   */
+  private static _environmentTeardownOptions: ModuleTeardownOptions|undefined;
+
+  /**
+   * Teardown options that have been configured at the `TestBed` instance level.
+   * These options take precedence over the environemnt-level ones.
+   */
+  private _instanceTeardownOptions: ModuleTeardownOptions|undefined;
+
+  /**
    * Initialize the environment for testing with a compiler factory, a PlatformRef, and an
    * angular module. These are common to every test in the suite.
    *
@@ -111,9 +139,9 @@ export class TestBedViewEngine implements TestBed {
    */
   static initTestEnvironment(
       ngModule: Type<any>|Type<any>[], platform: PlatformRef,
-      aotSummaries?: () => any[]): TestBedViewEngine {
+      summariesOrOptions?: TestEnvironmentOptions|(() => any[])): TestBedViewEngine {
     const testBed = _getTestBedViewEngine();
-    testBed.initTestEnvironment(ngModule, platform, aotSummaries);
+    testBed.initTestEnvironment(ngModule, platform, summariesOrOptions);
     return testBed;
   }
 
@@ -237,11 +265,20 @@ export class TestBedViewEngine implements TestBed {
     return _getTestBedViewEngine().createComponent(component);
   }
 
+  static shouldTearDownTestingModule(): boolean {
+    return _getTestBedViewEngine().shouldTearDownTestingModule();
+  }
+
+  static tearDownTestingModule(): void {
+    _getTestBedViewEngine().tearDownTestingModule();
+  }
+
   private _instantiated: boolean = false;
 
   private _compiler: TestingCompiler = null!;
-  private _moduleRef: NgModuleRef<any> = null!;
-  private _moduleFactory: NgModuleFactory<any> = null!;
+  private _moduleRef: NgModuleRef<any>|null = null;
+  private _moduleFactory: NgModuleFactory<any>|null = null;
+  private _pendingModuleFactory: Type<unknown>|null = null;
 
   private _compilerOptions: CompilerOptions[] = [];
 
@@ -279,14 +316,19 @@ export class TestBedViewEngine implements TestBed {
    * '@angular/<platform_name>/testing'.
    */
   initTestEnvironment(
-      ngModule: Type<any>|Type<any>[], platform: PlatformRef, aotSummaries?: () => any[]): void {
+      ngModule: Type<any>|Type<any>[], platform: PlatformRef,
+      summariesOrOptions?: TestEnvironmentOptions|(() => any[])): void {
     if (this.platform || this.ngModule) {
       throw new Error('Cannot set base providers because it has already been called');
     }
     this.platform = platform;
     this.ngModule = ngModule;
-    if (aotSummaries) {
-      this._testEnvAotSummaries = aotSummaries;
+    if (typeof summariesOrOptions === 'function') {
+      this._testEnvAotSummaries = summariesOrOptions;
+      TestBedViewEngine._environmentTeardownOptions = undefined;
+    } else {
+      this._testEnvAotSummaries = (summariesOrOptions?.aotSummaries) || (() => []);
+      TestBedViewEngine._environmentTeardownOptions = summariesOrOptions?.teardown;
     }
   }
 
@@ -298,6 +340,7 @@ export class TestBedViewEngine implements TestBed {
     this.platform = null!;
     this.ngModule = null!;
     this._testEnvAotSummaries = () => [];
+    TestBedViewEngine._environmentTeardownOptions = undefined;
   }
 
   resetTestingModule(): void {
@@ -313,25 +356,30 @@ export class TestBedViewEngine implements TestBed {
     this._isRoot = true;
     this._rootProviderOverrides = [];
 
-    this._moduleRef = null!;
-    this._moduleFactory = null!;
+    this._moduleFactory = null;
+    this._pendingModuleFactory = null;
     this._compilerOptions = [];
     this._providers = [];
     this._declarations = [];
     this._imports = [];
     this._schemas = [];
-    this._instantiated = false;
-    this._activeFixtures.forEach((fixture) => {
+
+    // We have to chain a couple of try/finally blocks, because each step can
+    // throw errors and we don't want it to interrupt the next step and we also
+    // want an error to be thrown at the end.
+    try {
+      this.destroyActiveFixtures();
+    } finally {
       try {
-        fixture.destroy();
-      } catch (e) {
-        console.error('Error during cleanup of component', {
-          component: fixture.componentInstance,
-          stacktrace: e,
-        });
+        if (this.shouldTearDownTestingModule()) {
+          this.tearDownTestingModule();
+        }
+      } finally {
+        this._moduleRef = null;
+        this._instanceTeardownOptions = undefined;
+        this._instantiated = false;
       }
-    });
-    this._activeFixtures = [];
+    }
   }
 
   configureCompiler(config: {providers?: any[], useJit?: boolean}): void {
@@ -356,6 +404,9 @@ export class TestBedViewEngine implements TestBed {
     if (moduleDef.aotSummaries) {
       this._aotSummaries.push(moduleDef.aotSummaries);
     }
+    // Always re-assign the teardown options, even if they're undefined.
+    // This ensures that we don't carry the options between tests.
+    this._instanceTeardownOptions = moduleDef.teardown;
   }
 
   compileComponents(): Promise<any> {
@@ -364,10 +415,16 @@ export class TestBedViewEngine implements TestBed {
     }
 
     const moduleType = this._createCompilerAndModule();
-    return this._compiler.compileModuleAndAllComponentsAsync(moduleType)
-        .then((moduleAndComponentFactories) => {
-          this._moduleFactory = moduleAndComponentFactories.ngModuleFactory;
-        });
+    this._pendingModuleFactory = moduleType;
+    return this._compiler.compileModuleAndAllComponentsAsync(moduleType).then(result => {
+      // If the module mismatches by the time the promise resolves, it means that the module has
+      // already been destroyed and a new compilation has started. If that's the case, avoid
+      // overwriting the module factory, because it can cause downstream errors.
+      if (this._pendingModuleFactory === moduleType) {
+        this._moduleFactory = result.ngModuleFactory;
+        this._pendingModuleFactory = null;
+      }
+    });
   }
 
   private _initIfNeeded(): void {
@@ -408,8 +465,11 @@ export class TestBedViewEngine implements TestBed {
     this._moduleRef = this._moduleFactory.create(ngZoneInjector);
     // ApplicationInitStatus.runInitializers() is marked @internal to core. So casting to any
     // before accessing it.
-    (this._moduleRef.injector.get(ApplicationInitStatus) as any).runInitializers();
-    this._instantiated = true;
+    try {
+      (this._moduleRef.injector.get(ApplicationInitStatus) as any).runInitializers();
+    } finally {
+      this._instantiated = true;
+    }
   }
 
   private _createCompilerAndModule(): Type<any> {
@@ -471,7 +531,7 @@ export class TestBedViewEngine implements TestBed {
     // Tests can inject things from the ng module and from the compiler,
     // but the ng module can't inject things from the compiler and vice versa.
     const UNDEFINED = {};
-    const result = this._moduleRef.injector.get(token, UNDEFINED, flags);
+    const result = this._moduleRef!.injector.get(token, UNDEFINED, flags);
     return result === UNDEFINED ? this._compiler.injector.get(token, notFoundValue, flags) as any :
                                   result;
   }
@@ -603,13 +663,81 @@ export class TestBedViewEngine implements TestBed {
 
     const initComponent = () => {
       const componentRef =
-          componentFactory.create(Injector.NULL, [], `#${rootElId}`, this._moduleRef);
+          componentFactory.create(Injector.NULL, [], `#${rootElId}`, this._moduleRef!);
       return new ComponentFixture<T>(componentRef, ngZone, autoDetect);
     };
 
     const fixture = !ngZone ? initComponent() : ngZone.run(initComponent);
     this._activeFixtures.push(fixture);
     return fixture;
+  }
+
+  private destroyActiveFixtures(): void {
+    let errorCount = 0;
+    this._activeFixtures.forEach((fixture) => {
+      try {
+        fixture.destroy();
+      } catch (e) {
+        errorCount++;
+        console.error('Error during cleanup of component', {
+          component: fixture.componentInstance,
+          stacktrace: e,
+        });
+      }
+    });
+    this._activeFixtures = [];
+
+    if (errorCount > 0 && this.shouldRethrowTeardownErrors()) {
+      throw Error(
+          `${errorCount} ${(errorCount === 1 ? 'component' : 'components')} ` +
+          `threw errors during cleanup`);
+    }
+  }
+
+  shouldRethrowTeardownErrors() {
+    const instanceOptions = this._instanceTeardownOptions;
+    const environmentOptions = TestBedViewEngine._environmentTeardownOptions;
+
+    // If the new teardown behavior hasn't been configured, preserve the old behavior.
+    if (!instanceOptions && !environmentOptions) {
+      return TEARDOWN_TESTING_MODULE_ON_DESTROY_DEFAULT;
+    }
+
+    // Otherwise use the configured behavior or default to rethrowing.
+    return instanceOptions?.rethrowErrors ?? environmentOptions?.rethrowErrors ??
+        this.shouldTearDownTestingModule();
+  }
+
+  shouldTearDownTestingModule(): boolean {
+    return this._instanceTeardownOptions?.destroyAfterEach ??
+        TestBedViewEngine._environmentTeardownOptions?.destroyAfterEach ??
+        TEARDOWN_TESTING_MODULE_ON_DESTROY_DEFAULT;
+  }
+
+  tearDownTestingModule() {
+    // If the module ref has already been destroyed, we won't be able to get a test renderer.
+    if (this._moduleRef === null) {
+      return;
+    }
+
+    // Resolve the renderer ahead of time, because we want to remove the root elements as the very
+    // last step, but the injector will be destroyed as a part of the module ref destruction.
+    const testRenderer = this.inject(TestComponentRenderer);
+    try {
+      this._moduleRef.destroy();
+    } catch (e) {
+      if (this._instanceTeardownOptions?.rethrowErrors ??
+          TestBedViewEngine._environmentTeardownOptions?.rethrowErrors ?? true) {
+        throw e;
+      } else {
+        console.error('Error during cleanup of a testing module', {
+          component: this._moduleRef.instance,
+          stacktrace: e,
+        });
+      }
+    } finally {
+      testRenderer?.removeAllRootElements?.();
+    }
   }
 }
 
@@ -660,32 +788,14 @@ function _getTestBedViewEngine(): TestBedViewEngine {
  * })
  * ```
  *
- * Notes:
- * - inject is currently a function because of some Traceur limitation the syntax should
- * eventually
- *   becomes `it('...', @Inject (object: AClass, async: AsyncTestCompleter) => { ... });`
- *
  * @publicApi
  */
 export function inject(tokens: any[], fn: Function): () => any {
   const testBed = getTestBed();
-  if (tokens.indexOf(AsyncTestCompleter) >= 0) {
-    // Not using an arrow function to preserve context passed from call site
-    return function(this: unknown) {
-      // Return an async test method that returns a Promise if AsyncTestCompleter is one of
-      // the injected tokens.
-      return testBed.compileComponents().then(() => {
-        const completer = testBed.inject(AsyncTestCompleter);
-        testBed.execute(tokens, fn, this);
-        return completer.promise;
-      });
-    };
-  } else {
-    // Not using an arrow function to preserve context passed from call site
-    return function(this: unknown) {
-      return testBed.execute(tokens, fn, this);
-    };
-  }
+  // Not using an arrow function to preserve context passed from call site
+  return function(this: unknown) {
+    return testBed.execute(tokens, fn, this);
+  };
 }
 
 /**

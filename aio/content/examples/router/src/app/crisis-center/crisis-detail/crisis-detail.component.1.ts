@@ -13,8 +13,8 @@ import { DialogService } from '../../dialog.service';
   styleUrls: ['./crisis-detail.component.css']
 })
 export class CrisisDetailComponent implements OnInit {
-  crisis: Crisis;
-  editName: string;
+  crisis!: Crisis;
+  editName = '';
 
   constructor(
     private service: CrisisService,
@@ -27,7 +27,7 @@ export class CrisisDetailComponent implements OnInit {
     this.route.paramMap
       .pipe(
         switchMap((params: ParamMap) =>
-          this.service.getCrisis(params.get('id'))))
+          this.service.getCrisis(params.get('id')!)))
       .subscribe((crisis: Crisis) => {
         if (crisis) {
           this.editName = crisis.name;

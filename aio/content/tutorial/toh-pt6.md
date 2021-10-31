@@ -43,14 +43,14 @@ By using the In-memory Web API, you won't have to set up a server to learn about
 
 **Important:** the In-memory Web API module has nothing to do with HTTP in Angular.
 
-If you're just reading this tutorial to learn about `HttpClient`, you can [skip over](#import-heroes) this step.
+If you're reading this tutorial to learn about `HttpClient`, you can [skip over](#import-heroes) this step.
 If you're coding along with this tutorial, stay here and add the In-memory Web API now.
 
 </div>
 
 Install the In-memory Web API package from npm with the following command:
 
-<code-example language="sh" class="code-shell">
+<code-example language="sh">
   npm install angular-in-memory-web-api --save
 </code-example>
 
@@ -71,7 +71,7 @@ that primes the in-memory database.
 
 Generate the class `src/app/in-memory-data.service.ts` with the following command:
 
-<code-example language="sh" class="code-shell">
+<code-example language="sh">
   ng generate service InMemoryData
 </code-example>
 
@@ -82,7 +82,7 @@ Replace the default contents of `in-memory-data.service.ts` with the following:
 The `in-memory-data.service.ts` file will take over the function of `mock-heroes.ts`.
 However, don't delete `mock-heroes.ts` yet, as you still need it for a few more steps of this tutorial.
 
-When the server is ready, you'll detach the In-memory Web API, and the app's requests will go through to the server.
+When the server is ready, you'll detach the In-memory Web API, and the application's requests will go through to the server.
 
 
 {@a import-heroes}
@@ -205,7 +205,7 @@ Because each service method returns a different kind of `Observable` result,
 ### Tap into the Observable
 
 The `HeroService` methods will **tap** into the flow of observable values
-and send a message, via the `log()` method, to the message area at the bottom of the page.
+and send a message, using the `log()` method, to the message area at the bottom of the page.
 
 They'll do that with the RxJS `tap()` operator,
 which looks at the observable values, does something with those values,
@@ -286,7 +286,7 @@ The hero now appears in the list with the changed name.
 To add a hero, this application only needs the hero's name. You can use an `<input>`
 element paired with an add button.
 
-Insert the following into the `HeroesComponent` template, just after
+Insert the following into the `HeroesComponent` template, after
 the heading:
 
 <code-example path="toh-pt6/src/app/heroes/heroes.component.html" region="add" header="src/app/heroes/heroes.component.html (add)"></code-example>
@@ -406,7 +406,7 @@ For this to work, the next step is to add a component with a selector that match
 
 Create a `HeroSearchComponent` with the CLI.
 
-<code-example language="sh" class="code-shell">
+<code-example language="sh">
   ng generate component hero-search
 </code-example>
 

@@ -1189,7 +1189,7 @@ describe('change detection', () => {
       // Custom error handler that just rethrows all the errors from the
       // view, rather than logging them out. Used to keep our logs clean.
       class RethrowErrorHandler extends ErrorHandler {
-        handleError(error: any) {
+        override handleError(error: any) {
           throw error;
         }
       }

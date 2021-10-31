@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as ts from 'typescript';
+import ts from 'typescript';
 import {NgtscCompilerHost} from '../../file_system';
 import {getCachedSourceFile} from './cached_source_files';
 
@@ -15,7 +15,8 @@ import {getCachedSourceFile} from './cached_source_files';
  * reuse across tests.
  */
 export class NgtscTestCompilerHost extends NgtscCompilerHost {
-  getSourceFile(fileName: string, languageVersion: ts.ScriptTarget): ts.SourceFile|undefined {
+  override getSourceFile(fileName: string, languageVersion: ts.ScriptTarget): ts.SourceFile
+      |undefined {
     const cachedSf = getCachedSourceFile(fileName, () => this.readFile(fileName));
     if (cachedSf !== null) {
       return cachedSf;

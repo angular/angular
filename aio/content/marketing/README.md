@@ -1,6 +1,6 @@
 # Contributors page
 
-We have an official accounting of who is on the Angular Team, who are "trusted collaborators" (see https://team.angular.io/collaborators), and so on.
+We have an official accounting of who is on the Angular Team (see https://angular.io/about?group=Angular), who are "trusted collaborators" (see https://angular.io/about?group=Collaborators), and so on.
 
 The `contributors.json` should be maintained to keep our "org chart" in a single consistent place.
 

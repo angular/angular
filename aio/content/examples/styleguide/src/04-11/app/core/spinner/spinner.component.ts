@@ -13,7 +13,7 @@ import { SpinnerState, SpinnerService } from './spinner.service';
 export class SpinnerComponent implements OnDestroy, OnInit {
   visible = false;
 
-  private spinnerStateChanged: Subscription;
+  private spinnerStateChanged!: Subscription;
 
   constructor(
     private loggerService: LoggerService,

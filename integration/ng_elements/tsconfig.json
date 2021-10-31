@@ -2,10 +2,7 @@
   "angularCompilerOptions": {
     "annotationsAs": "static fields",
     "annotateForClosureCompiler": true,
-    "alwaysCompileGeneratedCode": true,
-    "enableIvy": false,
   },
-
   "compilerOptions": {
     "module": "es2015",
     "moduleResolution": "node",
@@ -18,7 +15,6 @@
     "declaration": true,
     "types": []
   },
-
   "exclude": [
     "vendor",
     "node_modules",

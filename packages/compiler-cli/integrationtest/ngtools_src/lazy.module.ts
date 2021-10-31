@@ -15,9 +15,14 @@ export class LazyComponent {
 
 @NgModule({
   imports: [[RouterModule.forChild([
-    {path: '', component: LazyComponent, pathMatch: 'full'},
-    {path: 'feature', loadChildren: './feature/feature.module#FeatureModule'},
-    {path: 'lazy-feature', loadChildren: './feature/lazy-feature.module#LazyFeatureModule'}
+    {path: '', component: LazyComponent, pathMatch: 'full'}, {
+      path: 'feature',
+      loadChildren: () => import('./feature/feature.module').then(mod => mod.FeatureModule)
+    },
+    {
+      path: 'lazy-feature',
+      loadChildren: () => import('./feature/lazy-feature.module').then(mod => mod.LazyFeatureModule)
+    }
   ])]],
   declarations: [LazyComponent]
 })

@@ -70,7 +70,7 @@ class FancyService {
 }
 
 class MockFancyService extends FancyService {
-  value: string = 'mocked out value';
+  override value: string = 'mocked out value';
 }
 
 @Component({
@@ -335,9 +335,9 @@ const bTok = new InjectionToken<string>('b');
       });
 
       describe('components with template url', () => {
-        beforeEach(waitForAsync(() => {
+        beforeEach(waitForAsync(async () => {
           TestBed.configureTestingModule({declarations: [CompWithUrlTemplate]});
-          TestBed.compileComponents();
+          await TestBed.compileComponents();
         }));
 
         isBrowser &&
@@ -836,7 +836,6 @@ const bTok = new InjectionToken<string>('b');
 
     describe('errors', () => {
       let originalJasmineIt: (description: string, func: () => void) => jasmine.Spec;
-      let originalJasmineBeforeEach: (beforeEachFunction: (done: DoneFn) => void) => void;
 
       const patchJasmineIt = () => {
         let resolve: (result: any) => void;
@@ -845,8 +844,9 @@ const bTok = new InjectionToken<string>('b');
           resolve = res;
           reject = rej;
         });
-        originalJasmineIt = jasmine.getEnv().it;
-        jasmine.getEnv().it = (description: string, fn: (done: DoneFn) => void): any => {
+        const jasmineEnv = jasmine.getEnv() as any;
+        originalJasmineIt = jasmineEnv.it;
+        jasmineEnv.it = (description: string, fn: (done: DoneFn) => void): any => {
           const done = <DoneFn>(() => resolve(null));
           done.fail = (err) => reject(err);
           fn(done);
@@ -855,26 +855,7 @@ const bTok = new InjectionToken<string>('b');
         return promise;
       };
 
-      const restoreJasmineIt = () => jasmine.getEnv().it = originalJasmineIt;
-
-      const patchJasmineBeforeEach = () => {
-        let resolve: (result: any) => void;
-        let reject: (error: any) => void;
-        const promise = new Promise((res, rej) => {
-          resolve = res;
-          reject = rej;
-        });
-        originalJasmineBeforeEach = jasmine.getEnv().beforeEach;
-        jasmine.getEnv().beforeEach = (fn: (done: DoneFn) => void) => {
-          const done = <DoneFn>(() => resolve(null));
-          done.fail = (err) => reject(err);
-          fn(done);
-        };
-        return promise;
-      };
-
-      const restoreJasmineBeforeEach = () => jasmine.getEnv().beforeEach =
-          originalJasmineBeforeEach;
+      const restoreJasmineIt = () => ((jasmine.getEnv() as any).it = originalJasmineIt);
 
       it('should fail when an asynchronous error is thrown', (done) => {
         const itPromise = patchJasmineIt();
@@ -921,21 +902,16 @@ const bTok = new InjectionToken<string>('b');
 
         it('should report an error for declared components with templateUrl which never call TestBed.compileComponents',
            () => {
-             const itPromise = patchJasmineIt();
-
              @Component({
                selector: 'comp',
-               templateUrl: '/base/angular/packages/platform-browser/test/static_assets/test.html'
+               templateUrl: '/base/angular/packages/platform-browser/test/static_assets/test.html',
              })
              class InlineCompWithUrlTemplate {
              }
 
-             expect(
-                 () =>
-                     it('should fail',
-                        withModule(
-                            {declarations: [InlineCompWithUrlTemplate]},
-                            () => TestBed.createComponent(InlineCompWithUrlTemplate))))
+             expect(withModule(
+                        {declarations: [InlineCompWithUrlTemplate]},
+                        () => TestBed.createComponent(InlineCompWithUrlTemplate)))
                  .toThrowError(
                      ivyEnabled ?
                          `Component 'InlineCompWithUrlTemplate' is not resolved:
@@ -945,11 +921,8 @@ Did you run and wait for 'resolveComponentResources()'?` :
                              stringify(
                                  InlineCompWithUrlTemplate)} which is using a "templateUrl" or "styleUrls", but they were never compiled. ` +
                              `Please call "TestBed.compileComponents" before your test.`);
-
-             restoreJasmineIt();
            });
       });
-
 
       modifiedInIvy(`Unknown property error thrown instead of logging a message`)
           .it('should error on unknown bound properties on custom elements by default', () => {
@@ -957,17 +930,11 @@ Did you run and wait for 'resolveComponentResources()'?` :
             class ComponentUsingInvalidProperty {
             }
 
-            const itPromise = patchJasmineIt();
-
             expect(
-                () =>
-                    it('should fail',
-                       withModule(
-                           {declarations: [ComponentUsingInvalidProperty]},
-                           () => TestBed.createComponent(ComponentUsingInvalidProperty))))
+                () => withModule(
+                    {declarations: [ComponentUsingInvalidProperty]},
+                    () => TestBed.createComponent(ComponentUsingInvalidProperty))())
                 .toThrowError(/Can't bind to 'someUnknownProp'/);
-
-            restoreJasmineIt();
           });
 
       onlyInIvy(`Unknown property error logged instead of throwing`)

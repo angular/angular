@@ -11,7 +11,7 @@
 </tr>
 <tr>
 <td><code><b>platformBrowserDynamic().bootstrapModule</b>(AppModule);</code></td>
-<td><p>Bootstraps the app, using the root component from the specified <code>NgModule</code>. </p>
+<td><p>Bootstraps the application, using the root component from the specified <code>NgModule</code>. </p>
 </td>
 </tr>
 </tbody></table>
@@ -110,7 +110,7 @@ is available to <code>declarations</code> of this module.</p>
 </td>
 </tr><tr>
 <td><code>&lt;p&gt;Card No.: <b>{{cardNumber | myCardNumberFormatter}}</b>&lt;/p&gt;</code></td>
-<td><p>Transforms the current value of expression <code>cardNumber</code> via the pipe called <code>myCardNumberFormatter</code>.</p>
+<td><p>Transforms the current value of expression <code>cardNumber</code> using the pipe called <code>myCardNumberFormatter</code>.</p>
 </td>
 </tr><tr>
 <td><code>&lt;p&gt;Employer: <b>{{employer?.companyName}}</b>&lt;/p&gt;</code></td>
@@ -276,7 +276,7 @@ so the <code>@Directive</code> configuration applies to components as well</p>
 </tr>
 <tr>
 <td><code><b>@Input()</b> myProperty;</code></td>
-<td><p>Declares an input property that you can update via property binding (example:
+<td><p>Declares an input property that you can update using property binding (example:
 <code>&lt;my-cmp [myProperty]="someExpression"&gt;</code>).</p>
 </td>
 </tr><tr>

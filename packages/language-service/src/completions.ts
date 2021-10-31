@@ -408,23 +408,23 @@ class ExpressionVisitor extends NullTemplateVisitor {
     return Array.from(this.completions.values());
   }
 
-  visitDirectiveProperty(ast: BoundDirectivePropertyAst): void {
+  override visitDirectiveProperty(ast: BoundDirectivePropertyAst): void {
     this.processExpressionCompletions(ast.value);
   }
 
-  visitElementProperty(ast: BoundElementPropertyAst): void {
+  override visitElementProperty(ast: BoundElementPropertyAst): void {
     this.processExpressionCompletions(ast.value);
   }
 
-  visitEvent(ast: BoundEventAst): void {
+  override visitEvent(ast: BoundEventAst): void {
     this.processExpressionCompletions(ast.handler);
   }
 
-  visitElement(): void {
+  override visitElement(): void {
     // no-op for now
   }
 
-  visitAttr(ast: AttrAst) {
+  override visitAttr(ast: AttrAst) {
     const binding = getBindingDescriptor(ast.name);
     if (binding && binding.kind === ATTR.KW_MICROSYNTAX) {
       // This a template binding given by micro syntax expression.
@@ -459,7 +459,7 @@ class ExpressionVisitor extends NullTemplateVisitor {
     }
   }
 
-  visitReference(_ast: ReferenceAst, context: ElementAst) {
+  override visitReference(_ast: ReferenceAst, context: ElementAst) {
     context.directives.forEach(dir => {
       const {exportAs} = dir.directive;
       if (exportAs) {
@@ -469,7 +469,7 @@ class ExpressionVisitor extends NullTemplateVisitor {
     });
   }
 
-  visitBoundText(ast: BoundTextAst) {
+  override visitBoundText(ast: BoundTextAst) {
     if (inSpan(this.position, ast.value.sourceSpan)) {
       const completions = getExpressionCompletions(
           this.getExpressionScope(), ast.value, this.position, this.info.template);

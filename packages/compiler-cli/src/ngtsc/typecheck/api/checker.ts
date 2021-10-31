@@ -6,11 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, MethodCall, ParseError, PropertyRead, SafeMethodCall, SafePropertyRead, TmplAstElement, TmplAstNode, TmplAstTemplate} from '@angular/compiler';
+import {AST, Call, LiteralPrimitive, ParseSourceSpan, PropertyRead, SafePropertyRead, TmplAstElement, TmplAstNode, TmplAstTemplate, TmplAstTextAttribute} from '@angular/compiler';
 import {AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
-import {FullTemplateMapping, TypeCheckableDirectiveMeta} from './api';
+import {ErrorCode} from '../../diagnostics';
+
+import {FullTemplateMapping, NgTemplateDiagnostic, TypeCheckableDirectiveMeta} from './api';
 import {GlobalCompletion} from './completion';
 import {DirectiveInScope, PipeInScope} from './scope';
 import {DirectiveSymbol, ElementSymbol, ShimLocation, Symbol, TemplateSymbol} from './symbols';
@@ -115,8 +117,16 @@ export interface TemplateTypeChecker {
    * autocompletion at that point in the expression, if such a location exists.
    */
   getExpressionCompletionLocation(
-      expr: PropertyRead|SafePropertyRead|MethodCall|SafeMethodCall,
-      component: ts.ClassDeclaration): ShimLocation|null;
+      expr: PropertyRead|SafePropertyRead, component: ts.ClassDeclaration): ShimLocation|null;
+
+  /**
+   * For the given node represents a `LiteralPrimitive`(the `TextAttribute` represents a string
+   * literal), retrieve a `ShimLocation` that can be used to perform autocompletion at that point in
+   * the node, if such a location exists.
+   */
+  getLiteralCompletionLocation(
+      strNode: LiteralPrimitive|TmplAstTextAttribute, component: ts.ClassDeclaration): ShimLocation
+      |null;
 
   /**
    * Get basic metadata on the directives which are in scope for the given component.
@@ -145,6 +155,11 @@ export interface TemplateTypeChecker {
   getPotentialDomBindings(tagName: string): {attribute: string, property: string}[];
 
   /**
+   * Retrieve any potential DOM events.
+   */
+  getPotentialDomEvents(tagName: string): string[];
+
+  /**
    * Retrieve the type checking engine's metadata for the given directive class, if available.
    */
   getDirectiveMetadata(dir: ts.ClassDeclaration): TypeCheckableDirectiveMeta|null;
@@ -154,6 +169,18 @@ export interface TemplateTypeChecker {
    * the next request.
    */
   invalidateClass(clazz: ts.ClassDeclaration): void;
+
+  /**
+   * Constructs a `ts.Diagnostic` for a given `ParseSourceSpan` within a template.
+   */
+  makeTemplateDiagnostic<T extends ErrorCode>(
+      clazz: ts.ClassDeclaration, sourceSpan: ParseSourceSpan, category: ts.DiagnosticCategory,
+      errorCode: T, message: string, relatedInformation?: {
+        text: string,
+        start: number,
+        end: number,
+        sourceFile: ts.SourceFile,
+      }[]): NgTemplateDiagnostic<T>;
 }
 
 /**

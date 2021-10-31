@@ -19,5 +19,6 @@
     "src/**/*.spec.ts"
   ],
   "main": "src/index-specs.html",
-  "tags": ["testing"]
+  "tags": ["testing"],
+  "devDependencies": ["jasmine-core", "jasmine-marbles"]
 }

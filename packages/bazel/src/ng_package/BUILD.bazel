@@ -16,11 +16,11 @@ nodejs_binary(
         # BEGIN-DEV-ONLY
         "@npm" +
         # END-DEV-ONLY
-        "//rollup-plugin-commonjs",
+        "//@rollup/plugin-commonjs",
         # BEGIN-DEV-ONLY
         "@npm" +
         # END-DEV-ONLY
-        "//rollup-plugin-node-resolve",
+        "//@rollup/plugin-node-resolve",
         # BEGIN-DEV-ONLY
         "@npm" +
         # END-DEV-ONLY

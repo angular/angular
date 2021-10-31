@@ -7,7 +7,7 @@
  */
 
 import {compileClassMetadata, compileDeclareClassMetadata, compileDeclareInjectorFromMetadata, compileDeclareNgModuleFromMetadata, compileInjector, compileNgModule, CUSTOM_ELEMENTS_SCHEMA, Expression, ExternalExpr, FactoryTarget, Identifiers as R3, InvokeFunctionExpr, LiteralArrayExpr, LiteralExpr, NO_ERRORS_SCHEMA, R3ClassMetadata, R3CompiledExpression, R3FactoryMetadata, R3Identifiers, R3InjectorMetadata, R3NgModuleMetadata, R3Reference, SchemaMetadata, Statement, STRING_TYPE, WrappedNodeExpr} from '@angular/compiler';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError, makeDiagnostic, makeRelatedInformation} from '../../diagnostics';
 import {Reference, ReferenceEmitter} from '../../imports';
@@ -16,7 +16,6 @@ import {InjectableClassRegistry, MetadataReader, MetadataRegistry} from '../../m
 import {PartialEvaluator, ResolvedValue} from '../../partial_evaluator';
 import {PerfEvent, PerfRecorder} from '../../perf';
 import {ClassDeclaration, Decorator, isNamedClassDeclaration, ReflectionHost, reflectObjectLiteral, typeNodeToValueExpr} from '../../reflection';
-import {NgModuleRouteAnalyzer} from '../../routing';
 import {LocalModuleScopeRegistry, ScopeData} from '../../scope';
 import {FactoryTracker} from '../../shims/api';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence, ResolveResult} from '../../transform';
@@ -58,7 +57,7 @@ export class NgModuleSymbol extends SemanticSymbol {
     usedPipes: SemanticReference[]
   }[] = [];
 
-  isPublicApiAffected(previousSymbol: SemanticSymbol): boolean {
+  override isPublicApiAffected(previousSymbol: SemanticSymbol): boolean {
     if (!(previousSymbol instanceof NgModuleSymbol)) {
       return true;
     }
@@ -67,7 +66,7 @@ export class NgModuleSymbol extends SemanticSymbol {
     return false;
   }
 
-  isEmitAffected(previousSymbol: SemanticSymbol): boolean {
+  override isEmitAffected(previousSymbol: SemanticSymbol): boolean {
     if (!(previousSymbol instanceof NgModuleSymbol)) {
       return true;
     }
@@ -104,7 +103,7 @@ export class NgModuleSymbol extends SemanticSymbol {
     return false;
   }
 
-  isTypeCheckApiAffected(previousSymbol: SemanticSymbol): boolean {
+  override isTypeCheckApiAffected(previousSymbol: SemanticSymbol): boolean {
     if (!(previousSymbol instanceof NgModuleSymbol)) {
       return true;
     }
@@ -129,10 +128,9 @@ export class NgModuleDecoratorHandler implements
       private metaReader: MetadataReader, private metaRegistry: MetadataRegistry,
       private scopeRegistry: LocalModuleScopeRegistry,
       private referencesRegistry: ReferencesRegistry, private isCore: boolean,
-      private routeAnalyzer: NgModuleRouteAnalyzer|null, private refEmitter: ReferenceEmitter,
-      private factoryTracker: FactoryTracker|null, private annotateForClosureCompiler: boolean,
-      private injectableRegistry: InjectableClassRegistry, private perf: PerfRecorder,
-      private localeId?: string) {}
+      private refEmitter: ReferenceEmitter, private factoryTracker: FactoryTracker|null,
+      private annotateForClosureCompiler: boolean,
+      private injectableRegistry: InjectableClassRegistry, private perf: PerfRecorder) {}
 
   readonly precedence = HandlerPrecedence.PRIMARY;
   readonly name = NgModuleDecoratorHandler.name;
@@ -218,16 +216,14 @@ export class NgModuleDecoratorHandler implements
     }
 
     let importRefs: Reference<ClassDeclaration>[] = [];
-    let rawImports: ts.Expression|null = null;
     if (ngModule.has('imports')) {
-      rawImports = ngModule.get('imports')!;
+      const rawImports = ngModule.get('imports')!;
       const importsMeta = this.evaluator.evaluate(rawImports, moduleResolvers);
       importRefs = this.resolveTypeList(rawImports, importsMeta, name, 'imports');
     }
     let exportRefs: Reference<ClassDeclaration>[] = [];
-    let rawExports: ts.Expression|null = null;
     if (ngModule.has('exports')) {
-      rawExports = ngModule.get('exports')!;
+      const rawExports = ngModule.get('exports')!;
       const exportsMeta = this.evaluator.evaluate(rawExports, moduleResolvers);
       exportRefs = this.resolveTypeList(rawExports, exportsMeta, name, 'exports');
       this.referencesRegistry.add(node, ...exportRefs);
@@ -329,10 +325,6 @@ export class NgModuleDecoratorHandler implements
     const injectorImports: WrappedNodeExpr<ts.Expression>[] = [];
     if (ngModule.has('imports')) {
       injectorImports.push(new WrappedNodeExpr(ngModule.get('imports')!));
-    }
-
-    if (this.routeAnalyzer !== null) {
-      this.routeAnalyzer.add(node.getSourceFile(), name, rawImports, rawExports, rawProviders);
     }
 
     const injectorMetadata: R3InjectorMetadata = {
@@ -547,17 +539,6 @@ export class NgModuleDecoratorHandler implements
         type: injectorDef.type,
       },
     ];
-
-    if (this.localeId) {
-      // QUESTION: can this stuff be removed?
-      res.push({
-        name: 'ɵloc',
-        initializer: new LiteralExpr(this.localeId),
-        statements: [],
-        type: STRING_TYPE
-      });
-    }
-
     return res;
   }
 

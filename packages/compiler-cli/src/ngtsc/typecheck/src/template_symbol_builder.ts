@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, ASTWithSource, BindingPipe, MethodCall, PropertyWrite, SafeMethodCall, SafePropertyRead, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstElement, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
-import * as ts from 'typescript';
+import {AST, ASTWithSource, BindingPipe, Call, ParseSourceSpan, PropertyRead, PropertyWrite, SafePropertyRead, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstElement, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
+import ts from 'typescript';
 
 import {AbsoluteFsPath} from '../../file_system';
 import {ClassDeclaration} from '../../reflection';
 import {ComponentScopeReader} from '../../scope';
-import {isAssignment} from '../../util/src/typescript';
+import {isAssignment, isSymbolWithValueDeclaration} from '../../util/src/typescript';
 import {BindingSymbol, DirectiveSymbol, DomBindingSymbol, ElementSymbol, ExpressionSymbol, InputBindingSymbol, OutputBindingSymbol, PipeSymbol, ReferenceSymbol, ShimLocation, Symbol, SymbolKind, TemplateSymbol, TsNodeSymbolInfo, TypeCheckableDirectiveMeta, VariableSymbol} from '../api';
 
 import {ExpressionIdentifier, findAllMatchingNodes, findFirstMatchingNode, hasExpressionIdentifier} from './comments';
@@ -119,8 +119,7 @@ export class SymbolBuilder {
     return nodes
         .map(node => {
           const symbol = this.getSymbolOfTsNode(node.parent);
-          if (symbol === null || symbol.tsSymbol === null ||
-              symbol.tsSymbol.valueDeclaration === undefined ||
+          if (symbol === null || !isSymbolWithValueDeclaration(symbol.tsSymbol) ||
               !ts.isClassDeclaration(symbol.tsSymbol.valueDeclaration)) {
             return null;
           }
@@ -151,7 +150,24 @@ export class SymbolBuilder {
   private getDirectiveMeta(
       host: TmplAstTemplate|TmplAstElement,
       directiveDeclaration: ts.Declaration): TypeCheckableDirectiveMeta|null {
-    const directives = this.templateData.boundTarget.getDirectivesOfNode(host);
+    let directives = this.templateData.boundTarget.getDirectivesOfNode(host);
+
+    // `getDirectivesOfNode` will not return the directives intended for an element
+    // on a microsyntax template, for example `<div *ngFor="let user of users;" dir>`,
+    // the `dir` will be skipped, but it's needed in language service.
+    const firstChild = host.children[0];
+    if (firstChild instanceof TmplAstElement) {
+      const isMicrosyntaxTemplate = host instanceof TmplAstTemplate &&
+          sourceSpanEqual(firstChild.sourceSpan, host.sourceSpan);
+      if (isMicrosyntaxTemplate) {
+        const firstChildDirectives = this.templateData.boundTarget.getDirectivesOfNode(firstChild);
+        if (firstChildDirectives !== null && directives !== null) {
+          directives = directives.concat(firstChildDirectives);
+        } else {
+          directives = directives ?? firstChildDirectives;
+        }
+      }
+    }
     if (directives === null) {
       return null;
     }
@@ -314,7 +330,8 @@ export class SymbolBuilder {
     // In either case, `_t1["index"]` or `_t1.index`, `node.expression` is _t1.
     // The retrieved symbol for _t1 will be the variable declaration.
     const tsSymbol = this.getTypeChecker().getSymbolAtLocation(node.expression);
-    if (tsSymbol === undefined || tsSymbol.declarations.length === 0 || selector === null) {
+    if (tsSymbol?.declarations === undefined || tsSymbol.declarations.length === 0 ||
+        selector === null) {
       return null;
     }
 
@@ -329,8 +346,7 @@ export class SymbolBuilder {
     }
 
     const symbol = this.getSymbolOfTsNode(declaration);
-    if (symbol === null || symbol.tsSymbol === null ||
-        symbol.tsSymbol.valueDeclaration === undefined ||
+    if (symbol === null || !isSymbolWithValueDeclaration(symbol.tsSymbol) ||
         !ts.isClassDeclaration(symbol.tsSymbol.valueDeclaration)) {
       return null;
     }
@@ -430,26 +446,24 @@ export class SymbolBuilder {
   }
 
   private getSymbolOfPipe(expression: BindingPipe): PipeSymbol|null {
-    const node = findFirstMatchingNode(
-        this.typeCheckBlock, {withSpan: expression.sourceSpan, filter: ts.isCallExpression});
-    if (node === null || !ts.isPropertyAccessExpression(node.expression)) {
+    const methodAccess = findFirstMatchingNode(
+        this.typeCheckBlock,
+        {withSpan: expression.nameSpan, filter: ts.isPropertyAccessExpression});
+    if (methodAccess === null) {
       return null;
     }
 
-    const methodAccess = node.expression;
-    // Find the node for the pipe variable from the transform property access. This will be one of
-    // two forms: `_pipe1.transform` or `(_pipe1 as any).transform`.
-    const pipeVariableNode = ts.isParenthesizedExpression(methodAccess.expression) &&
-            ts.isAsExpression(methodAccess.expression.expression) ?
-        methodAccess.expression.expression.expression :
-        methodAccess.expression;
+    const pipeVariableNode = methodAccess.expression;
     const pipeDeclaration = this.getTypeChecker().getSymbolAtLocation(pipeVariableNode);
     if (pipeDeclaration === undefined || pipeDeclaration.valueDeclaration === undefined) {
       return null;
     }
 
     const pipeInstance = this.getSymbolOfTsNode(pipeDeclaration.valueDeclaration);
-    if (pipeInstance === null || pipeInstance.tsSymbol === null) {
+    // The instance should never be null, nor should the symbol lack a value declaration. This
+    // is because the node used to look for the `pipeInstance` symbol info is a value
+    // declaration of another symbol (i.e. the `pipeDeclaration` symbol).
+    if (pipeInstance === null || !isSymbolWithValueDeclaration(pipeInstance.tsSymbol)) {
       return null;
     }
 
@@ -479,14 +493,28 @@ export class SymbolBuilder {
       return this.getSymbol(expressionTarget);
     }
 
-    // The `name` part of a `PropertyWrite` and `MethodCall` does not have its own
-    // AST so there is no way to retrieve a `Symbol` for just the `name` via a specific node.
-    const withSpan = (expression instanceof PropertyWrite || expression instanceof MethodCall) ?
-        expression.nameSpan :
-        expression.sourceSpan;
+    let withSpan = expression.sourceSpan;
 
-    let node = findFirstMatchingNode(
-        this.typeCheckBlock, {withSpan, filter: (n: ts.Node): n is ts.Node => true});
+    // The `name` part of a `PropertyWrite` and a non-safe `Call` does not have its own
+    // AST so there is no way to retrieve a `Symbol` for just the `name` via a specific node.
+    if (expression instanceof PropertyWrite) {
+      withSpan = expression.nameSpan;
+    }
+
+    let node: ts.Node|null = null;
+
+    // Property reads in templates usually map to a `PropertyAccessExpression`
+    // (e.g. `ctx.foo`) so try looking for one first.
+    if (expression instanceof PropertyRead) {
+      node = findFirstMatchingNode(
+          this.typeCheckBlock, {withSpan, filter: ts.isPropertyAccessExpression});
+    }
+
+    // Otherwise fall back to searching for any AST node.
+    if (node === null) {
+      node = findFirstMatchingNode(this.typeCheckBlock, {withSpan, filter: anyNodeFilter});
+    }
+
     if (node === null) {
       return null;
     }
@@ -500,12 +528,8 @@ export class SymbolBuilder {
     // - If our expression is a pipe binding ("a | test:b:c"), we want the Symbol for the
     // `transform` on the pipe.
     // - Otherwise, we retrieve the symbol for the node itself with no special considerations
-    if ((expression instanceof SafePropertyRead || expression instanceof SafeMethodCall) &&
-        ts.isConditionalExpression(node)) {
-      const whenTrueSymbol =
-          (expression instanceof SafeMethodCall && ts.isCallExpression(node.whenTrue)) ?
-          this.getSymbolOfTsNode(node.whenTrue.expression) :
-          this.getSymbolOfTsNode(node.whenTrue);
+    if (expression instanceof SafePropertyRead && ts.isConditionalExpression(node)) {
+      const whenTrueSymbol = this.getSymbolOfTsNode(node.whenTrue);
       if (whenTrueSymbol === null) {
         return null;
       }
@@ -562,4 +586,13 @@ export class SymbolBuilder {
       return node.getStart();
     }
   }
+}
+
+/** Filter predicate function that matches any AST node. */
+function anyNodeFilter(n: ts.Node): n is ts.Node {
+  return true;
+}
+
+function sourceSpanEqual(a: ParseSourceSpan, b: ParseSourceSpan) {
+  return a.start.offset === b.start.offset && a.end.offset === b.end.offset;
 }

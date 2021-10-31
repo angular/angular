@@ -7,7 +7,7 @@
  */
 
 import {GeneratedFile, ParseSourceSpan, Position} from '@angular/compiler';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {ExtendedTsCompilerHost, NgCompilerOptions} from '../ngtsc/core/api';
 
@@ -90,13 +90,6 @@ export interface CompilerOptions extends NgCompilerOptions, ts.CompilerOptions {
   // Whether to enable lowering expressions lambdas and expressions in a reference value
   // position.
   disableExpressionLowering?: boolean;
-
-  // Locale of the application
-  i18nOutLocale?: string;
-  // Export format (xlf, xlf2 or xmb)
-  i18nOutFormat?: string;
-  // Path to the extracted message file
-  i18nOutFile?: string;
 
   // Import format if different from `i18nFormat`
   i18nInFormat?: string;
@@ -275,10 +268,7 @@ export interface Program {
   loadNgStructureAsync(): Promise<void>;
 
   /**
-   * Returns the lazy routes in the program.
-   * @param entryRoute A reference to an NgModule like `someModule#name`. If given,
-   *              will recursively analyze routes starting from this symbol only.
-   *              Otherwise will list all routes for all NgModules in the program/
+   * This method is obsolete and always returns an empty array.
    */
   listLazyRoutes(entryRoute?: string): LazyRoute[];
 

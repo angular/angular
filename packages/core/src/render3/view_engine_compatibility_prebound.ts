@@ -7,10 +7,7 @@
  */
 
 
-import {ChangeDetectorRef, injectChangeDetectorRef} from '../change_detection/change_detector_ref';
-import {InjectFlags} from '../di/interface/injector';
 import {createTemplateRef, TemplateRef} from '../linker/template_ref';
-import {throwProviderNotFoundError} from './errors_di';
 import {TNode} from './interfaces/node';
 import {LView} from './interfaces/view';
 

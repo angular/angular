@@ -7,25 +7,9 @@
  */
 
 import {ParseSourceSpan} from '@angular/compiler';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
-import {ExternalTemplateSourceMapping, TemplateId, TemplateSourceMapping} from '../../api';
-
-/**
- * A `ts.Diagnostic` with additional information about the diagnostic related to template
- * type-checking.
- */
-export interface TemplateDiagnostic extends ts.Diagnostic {
-  /**
-   * The component with the template that resulted in this diagnostic.
-   */
-  componentFile: ts.SourceFile;
-
-  /**
-   * The template id of the component that resulted in this diagnostic.
-   */
-  templateId: TemplateId;
-}
+import {ExternalTemplateSourceMapping, TemplateDiagnostic, TemplateId, TemplateSourceMapping} from '../../api';
 
 /**
  * Constructs a `ts.Diagnostic` for a given `ParseSourceSpan` within a template.
@@ -33,21 +17,26 @@ export interface TemplateDiagnostic extends ts.Diagnostic {
 export function makeTemplateDiagnostic(
     templateId: TemplateId, mapping: TemplateSourceMapping, span: ParseSourceSpan,
     category: ts.DiagnosticCategory, code: number, messageText: string|ts.DiagnosticMessageChain,
-    relatedMessage?: {
+    relatedMessages?: {
       text: string,
-      span: ParseSourceSpan,
-    }): TemplateDiagnostic {
+      start: number,
+      end: number,
+      sourceFile: ts.SourceFile,
+    }[]): TemplateDiagnostic {
   if (mapping.type === 'direct') {
     let relatedInformation: ts.DiagnosticRelatedInformation[]|undefined = undefined;
-    if (relatedMessage !== undefined) {
-      relatedInformation = [{
-        category: ts.DiagnosticCategory.Message,
-        code: 0,
-        file: mapping.node.getSourceFile(),
-        start: relatedMessage.span.start.offset,
-        length: relatedMessage.span.end.offset - relatedMessage.span.start.offset,
-        messageText: relatedMessage.text,
-      }];
+    if (relatedMessages !== undefined) {
+      relatedInformation = [];
+      for (const relatedMessage of relatedMessages) {
+        relatedInformation.push({
+          category: ts.DiagnosticCategory.Message,
+          code: 0,
+          file: relatedMessage.sourceFile,
+          start: relatedMessage.start,
+          length: relatedMessage.end - relatedMessage.start,
+          messageText: relatedMessage.text,
+        });
+      }
     }
     // For direct mappings, the error is shown inline as ngtsc was able to pinpoint a string
     // constant within the `@Component` decorator for the template. This allows us to map the error
@@ -82,15 +71,17 @@ export function makeTemplateDiagnostic(
         fileName, mapping.template, ts.ScriptTarget.Latest, false, ts.ScriptKind.JSX);
 
     let relatedInformation: ts.DiagnosticRelatedInformation[] = [];
-    if (relatedMessage !== undefined) {
-      relatedInformation.push({
-        category: ts.DiagnosticCategory.Message,
-        code: 0,
-        file: sf,
-        start: relatedMessage.span.start.offset,
-        length: relatedMessage.span.end.offset - relatedMessage.span.start.offset,
-        messageText: relatedMessage.text,
-      });
+    if (relatedMessages !== undefined) {
+      for (const relatedMessage of relatedMessages) {
+        relatedInformation.push({
+          category: ts.DiagnosticCategory.Message,
+          code: 0,
+          file: relatedMessage.sourceFile,
+          start: relatedMessage.start,
+          length: relatedMessage.end - relatedMessage.start,
+          messageText: relatedMessage.text,
+        });
+      }
     }
 
     relatedInformation.push({

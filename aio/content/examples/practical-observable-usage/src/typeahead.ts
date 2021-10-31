@@ -4,19 +4,18 @@
 */
 // #docplaster
 // #docregion
-  import { fromEvent } from 'rxjs';
-  import { ajax } from 'rxjs/ajax';
+  import { fromEvent, Observable } from 'rxjs';
   import { debounceTime, distinctUntilChanged, filter, map, switchMap } from 'rxjs/operators';
 
 // #enddocregion
 /* tslint:disable:no-shadowed-variable */
 /* tslint:disable:align */
-export function docRegionTypeahead(document, ajax) {
+export function docRegionTypeahead(document: Document, ajax: (url: string) => Observable<string>) {
   // #docregion
-  const searchBox = document.getElementById('search-box');
+  const searchBox = document.getElementById('search-box') as HTMLInputElement;
 
   const typeahead = fromEvent(searchBox, 'input').pipe(
-    map((e: KeyboardEvent) => (e.target as HTMLInputElement).value),
+    map(e => (e.target as HTMLInputElement).value),
     filter(text => text.length > 2),
     debounceTime(10),
     distinctUntilChanged(),

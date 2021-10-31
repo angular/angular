@@ -77,7 +77,7 @@ describe('Animation Tests', () => {
   });
 
   describe('Status Slider Component', () => {
-    const activeColor = 'rgba(255, 165, 0, 1)';
+    const activeColor = 'rgba(117, 70, 0, 1)';
     const inactiveColor = 'rgba(0, 0, 255, 1)';
 
     beforeAll(async () => {
@@ -205,8 +205,8 @@ describe('Animation Tests', () => {
       const heroesList = filterStagger.getHeroesList();
       const total = await heroesList.count();
 
-      const formInput = filterStagger.getFormInput();
-      await formInput.sendKeys('Mag');
+      const input = filterStagger.getInput();
+      await input.sendKeys('Mag');
 
       await browser.wait(async () => await heroesList.count() === 2, 2000);
 

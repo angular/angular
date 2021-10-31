@@ -18,10 +18,10 @@ export class MockDirectiveResolver extends DirectiveResolver {
     super(reflector);
   }
 
-  resolve(type: core.Type): core.Directive;
-  resolve(type: core.Type, throwIfNotFound: true): core.Directive;
-  resolve(type: core.Type, throwIfNotFound: boolean): core.Directive|null;
-  resolve(type: core.Type, throwIfNotFound = true): core.Directive|null {
+  override resolve(type: core.Type): core.Directive;
+  override resolve(type: core.Type, throwIfNotFound: true): core.Directive;
+  override resolve(type: core.Type, throwIfNotFound: boolean): core.Directive|null;
+  override resolve(type: core.Type, throwIfNotFound = true): core.Directive|null {
     return this._directives.get(type) || super.resolve(type, throwIfNotFound);
   }
 

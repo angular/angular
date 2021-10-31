@@ -4,7 +4,7 @@ import { of, pipe, range, throwError, timer, zip } from 'rxjs';
 import { ajax } from 'rxjs/ajax';
 import { map, mergeMap, retryWhen } from 'rxjs/operators';
 
-export function backoff(maxTries, delay) {
+export function backoff(maxTries: number, delay: number) {
   return pipe(
     retryWhen(attempts =>
       zip(range(1, maxTries + 1), attempts).pipe(

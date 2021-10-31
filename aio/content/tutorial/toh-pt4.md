@@ -34,7 +34,7 @@ when the user clicks a hero.
 
 Using the Angular CLI, create a service called `hero`.
 
-<code-example language="sh" class="code-shell">
+<code-example language="sh">
   ng generate service hero
 </code-example>
 
@@ -175,7 +175,7 @@ as if heroes could be fetched synchronously.
 <code-example path="toh-pt4/src/app/heroes/heroes.component.1.ts" header="src/app/heroes/heroes.component.ts" region="get-heroes">
 </code-example>
 
-This will not work in a real app.
+This will not work in a real application.
 You're getting away with it now because the service currently returns _mock heroes_.
 But soon the application will fetch heroes from a remote server,
 which is an inherently _asynchronous_ operation.
@@ -265,7 +265,7 @@ This section guides you through the following:
 
 Use the CLI to create the `MessagesComponent`.
 
-<code-example language="sh" class="code-shell">
+<code-example language="sh">
   ng generate component messages
 </code-example>
 
@@ -284,7 +284,7 @@ You should see the default paragraph from `MessagesComponent` at the bottom of t
 
 Use the CLI to create the `MessageService` in `src/app`.
 
-<code-example language="sh" class="code-shell">
+<code-example language="sh">
   ng generate service message
 </code-example>
 
@@ -434,7 +434,7 @@ Here are the code files discussed on this page.
 ## Summary
 
 * You refactored data access to the `HeroService` class.
-* You registered the `HeroService` as the _provider_ of its service at the root level so that it can be injected anywhere in the app.
+* You registered the `HeroService` as the _provider_ of its service at the root level so that it can be injected anywhere in the application.
 * You used [Angular Dependency Injection](guide/dependency-injection) to inject it into a component.
 * You gave the `HeroService` _get data_ method an asynchronous signature.
 * You discovered `Observable` and the RxJS _Observable_ library.

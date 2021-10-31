@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {fakeAsync, tick} from '@angular/core/testing';
-import {beforeEach, describe, expect, it} from '@angular/core/testing/src/testing_internal';
 import {FormBuilder, Validators} from '@angular/forms';
 import {of} from 'rxjs';
 
@@ -68,6 +67,17 @@ describe('Form Builder', () => {
     expect(g.controls['login'].value).toBeNull();
     expect(g.controls['login'].validator).toBe(syncValidator);
     expect(g.controls['login'].asyncValidator).toBe(asyncValidator);
+  });
+
+  it('should support controls with validators that are later modified', () => {
+    const g = b.group({'login': b.control(null, syncValidator, asyncValidator)});
+    expect(g.controls['login'].value).toBeNull();
+    expect(g.controls['login'].validator).toBe(syncValidator);
+    expect(g.controls['login'].asyncValidator).toBe(asyncValidator);
+    g.controls['login'].addValidators(Validators.required);
+    expect(g.controls['login'].hasValidator(Validators.required)).toBe(true);
+    g.controls['login'].removeValidators(Validators.required);
+    expect(g.controls['login'].hasValidator(Validators.required)).toBe(false);
   });
 
   it('should support controls with no validators and whose form state is undefined', () => {

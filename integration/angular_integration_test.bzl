@@ -6,10 +6,23 @@
 """
 
 load("//tools/npm_integration_test:npm_integration_test.bzl", "npm_integration_test")
+load("@build_bazel_rules_nodejs//:index.bzl", "copy_to_bin")
 
 # The @npm packages at the root node_modules are used by integration tests
 # with `file:../../node_modules/foobar` references
 NPM_PACKAGE_ARCHIVES = [
+    "@angular/animations-12",
+    "@angular/common-12",
+    "@angular/core-12",
+    "@angular/forms-12",
+    "@angular/platform-browser-12",
+    "@angular/platform-browser-dynamic-12",
+    "@angular/platform-server-12",
+    "@angular/router-12",
+    "@babel/core",
+    "@rollup/plugin-babel",
+    "@rollup/plugin-node-resolve",
+    "@rollup/plugin-commonjs",
     "check-side-effects",
     "core-js",
     "google-closure-compiler",
@@ -20,10 +33,10 @@ NPM_PACKAGE_ARCHIVES = [
     "tsickle",
     "tslib",
     "protractor",
+    "terser",
     "puppeteer",
     "rollup",
-    "rollup-plugin-commonjs",
-    "rollup-plugin-node-resolve",
+    "rollup-plugin-sourcemaps",
     "webdriver-manager",
     "@angular/cli",
     "@angular-devkit/build-angular",
@@ -35,7 +48,7 @@ NPM_PACKAGE_ARCHIVES = [
 
 # The generated npm packages should ALWAYS be replaced in integration tests
 # so we pass them to the `check_npm_packages` attribute of npm_integration_test
-GENERATED_NPM_PACKAGES = [
+FRAMEWORK_PACKAGES = [
     "@angular/animations",
     "@angular/bazel",
     "@angular/benchpress",
@@ -59,16 +72,16 @@ GENERATED_NPM_PACKAGES = [
 def npm_package_archives():
     """Function to generate pkg_tar definitions for WORKSPACE yarn_install manual_build_file_contents"""
     npm_packages_to_archive = NPM_PACKAGE_ARCHIVES
-    result = """load("@bazel_tools//tools/build_defs/pkg:pkg.bzl", "pkg_tar")
+    result = """load("@rules_pkg//:pkg.bzl", "pkg_tar")
 """
     for name in npm_packages_to_archive:
         label_name = _npm_package_archive_label(name)
-        last_segment_name = name if name.find("/") == -1 else name.split("/")[-1]
+        last_segment_name = name.split("/")[-1]
         result += """pkg_tar(
     name = "{label_name}",
     srcs = ["//{name}:{last_segment_name}__all_files"],
     extension = "tar.gz",
-    strip_prefix = "./node_modules/{name}",
+    strip_prefix = "/external/npm/node_modules/{name}",
     # should not be built unless it is a dependency of another rule
     tags = ["manual"],
 )
@@ -82,6 +95,7 @@ def _angular_integration_test(name, **kwargs):
     "Set defaults for the npm_integration_test common to the angular repo"
     payload_size_tracking = kwargs.pop("payload_size_tracking", [])
     pinned_npm_packages = kwargs.pop("pinned_npm_packages", [])
+    use_view_engine_packages = kwargs.pop("use_view_engine_packages", [])
     data = [
         # We need the yarn_bin & yarn_files available at runtime
         "@nodejs//:yarn_bin",
@@ -122,13 +136,19 @@ def _angular_integration_test(name, **kwargs):
     for pkg in NPM_PACKAGE_ARCHIVES:
         if pkg not in pinned_npm_packages:
             npm_packages["@npm//:" + _npm_package_archive_label(pkg)] = pkg
-    for pkg in GENERATED_NPM_PACKAGES:
-        last_segment_name = pkg if pkg.find("/") == -1 else pkg.split("/")[-1]
-        npm_packages["//packages/%s:npm_package_archive" % last_segment_name] = pkg
+    for pkg in FRAMEWORK_PACKAGES:
+        # If the generated Angular framework package is listed in the `use_view_engine_packages`
+        # list, we will not use the local-built NPM package, but instead map to the
+        # corresponding View Engine v12.x package from the `@npm//` workspace.
+        if pkg in use_view_engine_packages:
+            npm_packages["@npm//:" + _npm_package_archive_label("%s-12" % pkg)] = pkg
+        else:
+            last_segment_name = pkg.split("/")[-1]
+            npm_packages["//packages/%s:npm_package_archive" % last_segment_name] = pkg
 
     npm_integration_test(
         name = name + "_test",
-        check_npm_packages = GENERATED_NPM_PACKAGES,
+        check_npm_packages = FRAMEWORK_PACKAGES,
         commands = commands,
         npm_packages = npm_packages,
         tags = kwargs.pop("tags", []) + [
@@ -152,11 +172,20 @@ def _angular_integration_test(name, **kwargs):
 
 def angular_integration_test(name, **kwargs):
     "Sets up the integration test target based on the test folder name"
+
+    # Note: We copy the `package.json` file to the `bazel-bin` as otherwise
+    # the actual source file `package.json` file would be modified on Windows.
+    copy_to_bin(
+        name = "%s_package_json" % name,
+        srcs = ["%s/package.json" % name],
+    )
+
     native.filegroup(
         name = "_%s_sources" % name,
-        srcs = native.glob(
+        srcs = ["%s_package_json" % name] + native.glob(
             include = ["%s/**" % name],
             exclude = [
+                "%s/package.json",
                 "%s/node_modules/**" % name,
                 "%s/.yarn_local_cache/**" % name,
             ],

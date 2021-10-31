@@ -19,15 +19,18 @@ export class DOMTestComponentRenderer extends TestComponentRenderer {
     super();
   }
 
-  insertRootElement(rootElId: string) {
+  override insertRootElement(rootElId: string) {
+    this.removeAllRootElements();
     const rootElement = getDOM().getDefaultDocument().createElement('div');
     rootElement.setAttribute('id', rootElId);
+    this._doc.body.appendChild(rootElement);
+  }
 
+  override removeAllRootElements() {
     // TODO(juliemr): can/should this be optional?
     const oldRoots = this._doc.querySelectorAll('[id^=root]');
     for (let i = 0; i < oldRoots.length; i++) {
       getDOM().remove(oldRoots[i]);
     }
-    this._doc.body.appendChild(rootElement);
   }
 }

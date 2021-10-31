@@ -22,6 +22,7 @@ export {APP_INITIALIZER, ApplicationInitStatus} from './application_init';
 export * from './zone';
 export * from './render';
 export * from './linker';
+export * from './linker/ng_module_factory_loader_impl';
 export {DebugElement, DebugEventListener, DebugNode, asNativeElements, getDebugNode, Predicate} from './debug/debug_node';
 export {GetTestability, Testability, TestabilityRegistry, setTestabilityGetter} from './testability/testability';
 export * from './change_detection';
@@ -36,6 +37,7 @@ export * from './core_render3_private_export';
 export {SecurityContext} from './sanitization/security';
 export {Sanitizer} from './sanitization/sanitizer';
 export * from './codegen_private_exports';
+export {createNgModuleRef} from './render3/ng_module_ref';
 
 import {global} from './util/global';
 if (typeof ngDevMode !== 'undefined' && ngDevMode) {

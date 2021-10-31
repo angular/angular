@@ -7,7 +7,7 @@
  */
 
 import {initMockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
-import * as ts from 'typescript';
+import ts from 'typescript';
 import {DisplayInfoKind, unsafeCastDisplayInfoKindToScriptElementKind} from '../display_parts';
 
 import {LanguageServiceTestEnv, OpenBuffer} from '../testing';
@@ -44,6 +44,18 @@ const DIR_WITH_OUTPUT = {
     })
     export class Dir {
       myInput!: any;
+    }
+  `
+};
+
+const CUSTOM_BUTTON = {
+  'Button': `
+    @Directive({
+      selector: 'button[mat-button]',
+      inputs: ['color']
+    })
+    export class Button {
+      color!: any;
     }
   `
 };
@@ -110,6 +122,19 @@ const SOME_PIPE = {
     })
     export class SomePipe {
       transform(value: string): string {
+        return value;
+      }
+    }
+   `
+};
+
+const UNION_TYPE_PIPE = {
+  'UnionTypePipe': `
+    @Pipe({
+      name: 'unionTypePipe',
+    })
+    export class UnionTypePipe {
+      transform(value: string, config: 'foo' | 'bar'): string {
         return value;
       }
     }
@@ -220,6 +245,18 @@ describe('completions', () => {
        () => {
          const {templateFile} = setup(`<input dir [myInput]="">`, '', DIR_WITH_UNION_TYPE_INPUT);
          templateFile.moveCursorToText('dir [myInput]="¦">');
+
+         const completions = templateFile.getCompletionsAtPosition();
+         expectContain(completions, ts.ScriptElementKind.string, [`'foo'`, '42']);
+         expectContain(completions, ts.ScriptElementKind.keyword, ['null']);
+         expectContain(completions, ts.ScriptElementKind.variableElement, ['undefined']);
+         expectDoesNotContain(completions, ts.ScriptElementKind.parameterElement, ['ctx']);
+       });
+
+    it('should return completions of string literals, number literals, `true`, `false`, `null` and `undefined` when the user tries to modify the symbol',
+       () => {
+         const {templateFile} = setup(`<input dir [myInput]="a">`, '', DIR_WITH_UNION_TYPE_INPUT);
+         templateFile.moveCursorToText('dir [myInput]="a¦">');
 
          const completions = templateFile.getCompletionsAtPosition();
          expectContain(completions, ts.ScriptElementKind.string, [`'foo'`, '42']);
@@ -481,6 +518,21 @@ describe('completions', () => {
               ['[value]']);
         });
 
+        it('should return event completion', () => {
+          const {templateFile} = setup(`<button ></button>`, ``);
+          templateFile.moveCursorToText(`<button ¦>`);
+          const completions = templateFile.getCompletionsAtPosition();
+          expectContain(completions, DisplayInfoKind.EVENT, ['(click)']);
+        });
+
+        it('should return event completion with empty parens', () => {
+          const {templateFile} = setup(`<button ()></button>`, ``);
+          templateFile.moveCursorToText(`<button (¦)>`);
+          const completions = templateFile.getCompletionsAtPosition();
+          expectContain(completions, DisplayInfoKind.EVENT, ['(click)']);
+        });
+
+
         it('should return completions for a partial attribute', () => {
           const {appFile} = setupInlineTemplate(`<input val>`, '');
           appFile.moveCursorToText('<input val¦>');
@@ -510,6 +562,13 @@ describe('completions', () => {
               completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.PROPERTY),
               ['value']);
           expectReplacementText(completions, appFile.contents, 'val');
+        });
+
+        it('should return completions inside an event binding', () => {
+          const {templateFile} = setup(`<button (cl)=''></button>`, ``);
+          templateFile.moveCursorToText(`(cl¦)=''`);
+          const completions = templateFile.getCompletionsAtPosition();
+          expectContain(completions, DisplayInfoKind.EVENT, ['(click)']);
         });
       });
 
@@ -586,6 +645,10 @@ describe('completions', () => {
                  unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.DIRECTIVE),
                  ['ngFor']);
              expectReplacementText(completions, templateFile.contents, 'ng');
+             const details = templateFile.getCompletionEntryDetails(
+                 'ngFor', /* formatOptions */ undefined,
+                 /* preferences */ undefined)!;
+             expect(toText(details.displayParts)).toEqual('(directive) NgFor.NgFor: NgFor');
            });
 
         it('should return structural directive completions for just the structural marker', () => {
@@ -745,7 +808,328 @@ describe('completions', () => {
       expect(completions?.entries.length).toBe(0);
     });
   });
+
+  describe('literal primitive scope', () => {
+    it('should complete a string union types in square brackets binding', () => {
+      const {templateFile} = setup(`<input dir [myInput]="'foo'">`, '', DIR_WITH_UNION_TYPE_INPUT);
+      templateFile.moveCursorToText(`[myInput]="'foo¦'"`);
+      const completions = templateFile.getCompletionsAtPosition();
+      expectContain(completions, ts.ScriptElementKind.string, ['foo']);
+      expectReplacementText(completions, templateFile.contents, 'foo');
+    });
+
+    it('should complete a string union types in binding without brackets', () => {
+      const {templateFile} = setup(`<input dir myInput="foo">`, '', DIR_WITH_UNION_TYPE_INPUT);
+      templateFile.moveCursorToText('myInput="foo¦"');
+      const completions = templateFile.getCompletionsAtPosition();
+      expectContain(completions, ts.ScriptElementKind.string, ['foo']);
+      expectReplacementText(completions, templateFile.contents, 'foo');
+    });
+
+    it('should complete a string union types in binding without brackets when the cursor at the start of the string',
+       () => {
+         const {templateFile} = setup(`<input dir myInput="foo">`, '', DIR_WITH_UNION_TYPE_INPUT);
+         templateFile.moveCursorToText('myInput="¦foo"');
+         const completions = templateFile.getCompletionsAtPosition();
+         expectContain(completions, ts.ScriptElementKind.string, ['foo']);
+         expectReplacementText(completions, templateFile.contents, 'foo');
+       });
+
+    it('should complete a string union types in pipe', () => {
+      const {templateFile} =
+          setup(`<input dir [myInput]="'foo'|unionTypePipe:'bar'">`, '', UNION_TYPE_PIPE);
+      templateFile.moveCursorToText(`[myInput]="'foo'|unionTypePipe:'bar¦'"`);
+      const completions = templateFile.getCompletionsAtPosition();
+      expectContain(completions, ts.ScriptElementKind.string, ['bar']);
+      expectReplacementText(completions, templateFile.contents, 'bar');
+    });
+
+    it('should complete a number union types', () => {
+      const {templateFile} = setup(`<input dir [myInput]="42">`, '', DIR_WITH_UNION_TYPE_INPUT);
+      templateFile.moveCursorToText(`[myInput]="42¦"`);
+      const completions = templateFile.getCompletionsAtPosition();
+      expectContain(completions, ts.ScriptElementKind.string, ['42']);
+      expectReplacementText(completions, templateFile.contents, '42');
+    });
+  });
+
+  describe('auto-apply optional chaining', () => {
+    it('should be able to complete on nullable symbol', () => {
+      const {templateFile} = setup('{{article.title}}', `article?: { title: string };`);
+      templateFile.moveCursorToText('{{article.title¦}}');
+      const completions = templateFile.getCompletionsAtPosition({
+        includeCompletionsWithInsertText: true,
+        includeAutomaticOptionalChainCompletions: true,
+      });
+      expectContainInsertText(completions, ts.ScriptElementKind.memberVariableElement, ['?.title']);
+      expectReplacementText(completions, templateFile.contents, '.title');
+    });
+
+    it('should be able to complete on NonNullable symbol', () => {
+      const {templateFile} = setup('{{article.title}}', `article: { title: string };`);
+      templateFile.moveCursorToText('{{article.title¦}}');
+      const completions = templateFile.getCompletionsAtPosition({
+        includeCompletionsWithInsertText: true,
+        includeAutomaticOptionalChainCompletions: true,
+      });
+      expectContain(completions, ts.ScriptElementKind.memberVariableElement, ['title']);
+      expectReplacementText(completions, templateFile.contents, 'title');
+    });
+
+    it('should not shift the start location when the user has input the optional chaining', () => {
+      const {templateFile} = setup('{{article?.title}}', `article?: { title: string };`);
+      templateFile.moveCursorToText('{{article?.title¦}}');
+      const completions = templateFile.getCompletionsAtPosition({
+        includeCompletionsWithInsertText: true,
+        includeAutomaticOptionalChainCompletions: true,
+      });
+      expectContain(completions, ts.ScriptElementKind.memberVariableElement, ['title']);
+      expectReplacementText(completions, templateFile.contents, 'title');
+    });
+  });
+
+  describe('insert snippet text', () => {
+    it('should be able to complete for an empty attribute', () => {
+      const {templateFile} = setup(`<input dir >`, '', DIR_WITH_OUTPUT);
+      templateFile.moveCursorToText('¦>');
+
+      const completions = templateFile.getCompletionsAtPosition({
+        includeCompletionsWithSnippetText: true,
+        includeCompletionsWithInsertText: true,
+      });
+      expectContainInsertTextWithSnippet(
+          completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.EVENT),
+          ['(myOutput)="$1"']);
+    });
+
+    it('should be able to complete for a partial attribute', () => {
+      const {templateFile} = setup(`<input dir my>`, '', DIR_WITH_OUTPUT);
+      templateFile.moveCursorToText('¦>');
+
+      const completions = templateFile.getCompletionsAtPosition({
+        includeCompletionsWithSnippetText: true,
+        includeCompletionsWithInsertText: true,
+      });
+      expectContainInsertTextWithSnippet(
+          completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.EVENT),
+          ['(myOutput)="$1"']);
+      expectReplacementText(completions, templateFile.contents, 'my');
+    });
+
+    it('should be able to complete for the event binding with the value is empty', () => {
+      const {templateFile} = setup(`<input dir ()="">`, '', DIR_WITH_OUTPUT);
+      templateFile.moveCursorToText('(¦)="">');
+
+      const completions = templateFile.getCompletionsAtPosition({
+        includeCompletionsWithSnippetText: true,
+        includeCompletionsWithInsertText: true,
+      });
+      expectContainInsertTextWithSnippet(
+          completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.EVENT),
+          ['(myOutput)="$1"']);
+      expectReplacementText(completions, templateFile.contents, '()=""');
+    });
+
+    it('should be able to complete for the event binding', () => {
+      const {templateFile} = setup(`<input dir ()>`, '', DIR_WITH_OUTPUT);
+      templateFile.moveCursorToText('(¦)>');
+
+      const completions = templateFile.getCompletionsAtPosition({
+        includeCompletionsWithSnippetText: true,
+        includeCompletionsWithInsertText: true,
+      });
+      expectContainInsertTextWithSnippet(
+          completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.EVENT),
+          ['(myOutput)="$1"']);
+      expectReplacementText(completions, templateFile.contents, '()');
+    });
+
+    it('should be able to complete for the dom event binding', () => {
+      const {templateFile} = setup(`<input dir (cli)>`, '', DIR_WITH_OUTPUT);
+      templateFile.moveCursorToText('(cli¦)>');
+
+      const completions = templateFile.getCompletionsAtPosition({
+        includeCompletionsWithSnippetText: true,
+        includeCompletionsWithInsertText: true,
+      });
+      expectContainInsertTextWithSnippet(
+          completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.EVENT),
+          ['(click)="$1"']);
+      expectReplacementText(completions, templateFile.contents, '(cli)');
+    });
+
+    it('should be able to complete for the property binding with the value is empty', () => {
+      const {templateFile} = setup(`<input [my]="">`, '', DIR_WITH_SELECTED_INPUT);
+      templateFile.moveCursorToText('[my¦]=""');
+
+      const completions = templateFile.getCompletionsAtPosition({
+        includeCompletionsWithSnippetText: true,
+        includeCompletionsWithInsertText: true,
+      });
+      expectContainInsertTextWithSnippet(
+          completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.PROPERTY),
+          ['[myInput]="$1"']);
+      expectReplacementText(completions, templateFile.contents, '[my]=""');
+    });
+
+    it('should be able to complete for the property binding', () => {
+      const {templateFile} = setup(`<input [my]>`, '', DIR_WITH_SELECTED_INPUT);
+      templateFile.moveCursorToText('[my¦]');
+
+      const completions = templateFile.getCompletionsAtPosition({
+        includeCompletionsWithSnippetText: true,
+        includeCompletionsWithInsertText: true,
+      });
+      expectContainInsertTextWithSnippet(
+          completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.PROPERTY),
+          ['[myInput]="$1"']);
+      expectReplacementText(completions, templateFile.contents, '[my]');
+    });
+
+    it('should be able to complete for the dom property binding', () => {
+      const {templateFile} = setup(`<input [val]>`, '', DIR_WITH_SELECTED_INPUT);
+      templateFile.moveCursorToText('[val¦]');
+
+      const completions = templateFile.getCompletionsAtPosition({
+        includeCompletionsWithSnippetText: true,
+        includeCompletionsWithInsertText: true,
+      });
+      expectContainInsertTextWithSnippet(
+          completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.PROPERTY),
+          ['[value]="$1"']);
+      expectReplacementText(completions, templateFile.contents, '[val]');
+    });
+
+    it('should be able to complete for the two way binding with the value is empty', () => {
+      const {templateFile} = setup(`<h1 dir [(mod)]=""></h1>`, ``, DIR_WITH_TWO_WAY_BINDING);
+      templateFile.moveCursorToText('[(mod¦)]=""');
+
+      const completions = templateFile.getCompletionsAtPosition({
+        includeCompletionsWithSnippetText: true,
+        includeCompletionsWithInsertText: true,
+      });
+      expectContainInsertTextWithSnippet(
+          completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.PROPERTY),
+          ['[(model)]="$1"']);
+      expectReplacementText(completions, templateFile.contents, '[(mod)]=""');
+    });
+
+    it('should be able to complete for the two way binding via', () => {
+      const {templateFile} = setup(`<h1 dir [(mod)]></h1>`, ``, DIR_WITH_TWO_WAY_BINDING);
+      templateFile.moveCursorToText('[(mod¦)]');
+
+      const completions = templateFile.getCompletionsAtPosition({
+        includeCompletionsWithSnippetText: true,
+        includeCompletionsWithInsertText: true,
+      });
+      expectContainInsertTextWithSnippet(
+          completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.PROPERTY),
+          ['[(model)]="$1"']);
+      expectReplacementText(completions, templateFile.contents, '[(mod)]');
+    });
+
+    it('should be able to complete for the structural directive with the value is empty', () => {
+      const {templateFile} = setup(`<input dir *ngFor="">`, '', NG_FOR_DIR);
+      templateFile.moveCursorToText('ngFor¦="">');
+
+      const completions = templateFile.getCompletionsAtPosition({
+        includeCompletionsWithSnippetText: true,
+        includeCompletionsWithInsertText: true,
+      });
+      // Now here is using the `=` to check the value of the structural directive. If the
+      // sourceSpan/valueSpan made more sense, it should behave like this `ngFor¦="" -> ngFor="¦"`,
+      // and enable comments below.
+      //
+      // expectContainInsertTextWithSnippet(
+      //     completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.DIRECTIVE),
+      //     ['ngFor="$1"']);
+      // expectReplacementText(completions, templateFile.contents, 'ngFor=""');
+      expectContain(
+          completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.DIRECTIVE),
+          ['ngFor']);
+      expect(completions?.entries[0]).toBeDefined();
+      expect(completions?.entries[0].isSnippet).toBeUndefined();
+      expectReplacementText(completions, templateFile.contents, 'ngFor');
+    });
+
+    it('should be able to complete for the structural directive', () => {
+      const {templateFile} = setup(`<input dir *ngFor>`, '', NG_FOR_DIR);
+      templateFile.moveCursorToText('ngFor¦>');
+
+      const completions = templateFile.getCompletionsAtPosition({
+        includeCompletionsWithSnippetText: true,
+        includeCompletionsWithInsertText: true,
+      });
+      expectContainInsertTextWithSnippet(
+          completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.DIRECTIVE),
+          ['ngFor="$1"']);
+      expectReplacementText(completions, templateFile.contents, 'ngFor');
+    });
+
+    it('should not be included in the completion for an attribute with a value', () => {
+      const {templateFile} = setup(`<input dir myInput="1">`, '', DIR_WITH_SELECTED_INPUT);
+      templateFile.moveCursorToText('myInput¦="1">');
+
+      const completions = templateFile.getCompletionsAtPosition({
+        includeCompletionsWithSnippetText: true,
+        includeCompletionsWithInsertText: true,
+      });
+      expectContain(
+          completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.ATTRIBUTE),
+          ['myInput']);
+      expectDoesNotContainInsertTextWithSnippet(
+          completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.ATTRIBUTE),
+          ['myInput="$1"']);
+      expectReplacementText(completions, templateFile.contents, 'myInput');
+    });
+
+    it('should not be included in the completion for a directive attribute without input', () => {
+      const {templateFile} = setup(`<button mat-></button>`, '', CUSTOM_BUTTON);
+      templateFile.moveCursorToText('mat-¦>');
+
+      const completions = templateFile.getCompletionsAtPosition({
+        includeCompletionsWithSnippetText: true,
+        includeCompletionsWithInsertText: true,
+      });
+      expectContain(
+          completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.DIRECTIVE),
+          ['mat-button']);
+      expectDoesNotContainInsertTextWithSnippet(
+          completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.DIRECTIVE),
+          ['mat-button="$1"']);
+      expectReplacementText(completions, templateFile.contents, 'mat-');
+    });
+  });
 });
+
+function expectContainInsertText(
+    completions: ts.CompletionInfo|undefined, kind: ts.ScriptElementKind|DisplayInfoKind,
+    insertTexts: string[]) {
+  expect(completions).toBeDefined();
+  for (const insertText of insertTexts) {
+    expect(completions!.entries).toContain(jasmine.objectContaining({insertText, kind} as any));
+  }
+}
+
+function expectContainInsertTextWithSnippet(
+    completions: ts.CompletionInfo|undefined, kind: ts.ScriptElementKind|DisplayInfoKind,
+    insertTexts: string[]) {
+  expect(completions).toBeDefined();
+  for (const insertText of insertTexts) {
+    expect(completions!.entries)
+        .toContain(jasmine.objectContaining({insertText, kind, isSnippet: true} as any));
+  }
+}
+
+function expectDoesNotContainInsertTextWithSnippet(
+    completions: ts.CompletionInfo|undefined, kind: ts.ScriptElementKind|DisplayInfoKind,
+    insertTexts: string[]) {
+  expect(completions).toBeDefined();
+  for (const insertText of insertTexts) {
+    expect(completions!.entries)
+        .not.toContain(jasmine.objectContaining({insertText, kind, isSnippet: true} as any));
+  }
+}
 
 function expectContain(
     completions: ts.CompletionInfo|undefined, kind: ts.ScriptElementKind|DisplayInfoKind,

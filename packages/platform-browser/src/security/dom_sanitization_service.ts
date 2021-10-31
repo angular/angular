@@ -153,7 +153,7 @@ export class DomSanitizerImpl extends DomSanitizer {
     super();
   }
 
-  sanitize(ctx: SecurityContext, value: SafeValue|string|null): string|null {
+  override sanitize(ctx: SecurityContext, value: SafeValue|string|null): string|null {
     if (value == null) return null;
     switch (ctx) {
       case SecurityContext.NONE:
@@ -190,19 +190,19 @@ export class DomSanitizerImpl extends DomSanitizer {
     }
   }
 
-  bypassSecurityTrustHtml(value: string): SafeHtml {
+  override bypassSecurityTrustHtml(value: string): SafeHtml {
     return bypassSanitizationTrustHtml(value);
   }
-  bypassSecurityTrustStyle(value: string): SafeStyle {
+  override bypassSecurityTrustStyle(value: string): SafeStyle {
     return bypassSanitizationTrustStyle(value);
   }
-  bypassSecurityTrustScript(value: string): SafeScript {
+  override bypassSecurityTrustScript(value: string): SafeScript {
     return bypassSanitizationTrustScript(value);
   }
-  bypassSecurityTrustUrl(value: string): SafeUrl {
+  override bypassSecurityTrustUrl(value: string): SafeUrl {
     return bypassSanitizationTrustUrl(value);
   }
-  bypassSecurityTrustResourceUrl(value: string): SafeResourceUrl {
+  override bypassSecurityTrustResourceUrl(value: string): SafeResourceUrl {
     return bypassSanitizationTrustResourceUrl(value);
   }
 }

@@ -199,7 +199,8 @@ describe('applyRedirects', () => {
           return of(loadedConfig);
         }
       };
-      const config: Routes = [{path: 'a', component: ComponentA, loadChildren: 'children'}];
+      const config: Routes =
+          [{path: 'a', component: ComponentA, loadChildren: jasmine.createSpy('children')}];
 
       applyRedirects(testModule.injector, <any>loader, serializer, tree('a/b'), config)
           .forEach(r => {
@@ -212,7 +213,8 @@ describe('applyRedirects', () => {
       const loader = {
         load: (p: any) => new Observable<any>((obs: any) => obs.error(new Error('Loading Error')))
       };
-      const config = [{path: 'a', component: ComponentA, loadChildren: 'children'}];
+      const config =
+          [{path: 'a', component: ComponentA, loadChildren: jasmine.createSpy('children')}];
 
       applyRedirects(testModule.injector, <any>loader, serializer, tree('a/b'), config)
           .subscribe(() => {}, (e) => {
@@ -229,9 +231,12 @@ describe('applyRedirects', () => {
         get: (token: any) => token === 'guard1' || token === 'guard2' ? guard : {injector}
       };
 
-      const config = [
-        {path: 'a', component: ComponentA, canLoad: ['guard1', 'guard2'], loadChildren: 'children'}
-      ];
+      const config = [{
+        path: 'a',
+        component: ComponentA,
+        canLoad: ['guard1', 'guard2'],
+        loadChildren: jasmine.createSpy('children')
+      }];
 
       applyRedirects(<any>injector, <any>loader, serializer, tree('a/b'), config).forEach(r => {
         expectTreeToBe(r, '/a/b');
@@ -257,9 +262,12 @@ describe('applyRedirects', () => {
         }
       };
 
-      const config = [
-        {path: 'a', component: ComponentA, canLoad: ['guard1', 'guard2'], loadChildren: 'children'}
-      ];
+      const config = [{
+        path: 'a',
+        component: ComponentA,
+        canLoad: ['guard1', 'guard2'],
+        loadChildren: jasmine.createSpy('children')
+      }];
 
       applyRedirects(<any>injector, <any>loader, serializer, tree('a/b'), config)
           .subscribe(
@@ -291,9 +299,12 @@ describe('applyRedirects', () => {
         }
       };
 
-      const config = [
-        {path: 'a', component: ComponentA, canLoad: ['guard1', 'guard2'], loadChildren: 'children'}
-      ];
+      const config = [{
+        path: 'a',
+        component: ComponentA,
+        canLoad: ['guard1', 'guard2'],
+        loadChildren: jasmine.createSpy('children')
+      }];
 
       applyRedirects(<any>injector, <any>loader, serializer, tree('a/b'), config)
           .subscribe(
@@ -312,8 +323,12 @@ describe('applyRedirects', () => {
       const guard = {canLoad: () => Promise.resolve(true)};
       const injector = {get: (token: any) => token === 'guard' ? guard : {injector}};
 
-      const config =
-          [{path: 'a', component: ComponentA, canLoad: ['guard'], loadChildren: 'children'}];
+      const config = [{
+        path: 'a',
+        component: ComponentA,
+        canLoad: ['guard'],
+        loadChildren: jasmine.createSpy('children')
+      }];
 
       applyRedirects(<any>injector, <any>loader, serializer, tree('a/b'), config)
           .subscribe(
@@ -337,8 +352,12 @@ describe('applyRedirects', () => {
       };
       const injector = {get: (token: any) => token === 'guard' ? guard : {injector}};
 
-      const config =
-          [{path: 'a', component: ComponentA, canLoad: ['guard'], loadChildren: 'children'}];
+      const config = [{
+        path: 'a',
+        component: ComponentA,
+        canLoad: ['guard'],
+        loadChildren: jasmine.createSpy('children')
+      }];
 
       applyRedirects(<any>injector, <any>loader, serializer, tree('a/b'), config)
           .subscribe(
@@ -367,8 +386,12 @@ describe('applyRedirects', () => {
       };
       const injector = {get: (token: any) => token === 'guard' ? guard : {injector}};
 
-      const config =
-          [{path: 'a', component: ComponentA, canLoad: ['guard'], loadChildren: 'children'}];
+      const config = [{
+        path: 'a',
+        component: ComponentA,
+        canLoad: ['guard'],
+        loadChildren: jasmine.createSpy('children')
+      }];
 
       applyRedirects(<any>injector, <any>loader, serializer, tree('a/b'), config)
           .subscribe(
@@ -388,8 +411,10 @@ describe('applyRedirects', () => {
 
       const loader = {load: (injector: any, p: any) => of(loadedConfig)};
 
-      const config: Routes =
-          [{path: '', pathMatch: 'full', redirectTo: '/a'}, {path: 'a', loadChildren: 'children'}];
+      const config: Routes = [
+        {path: '', pathMatch: 'full', redirectTo: '/a'},
+        {path: 'a', loadChildren: jasmine.createSpy('children')}
+      ];
 
       applyRedirects(testModule.injector, <any>loader, serializer, tree(''), config).forEach(r => {
         expectTreeToBe(r, 'a');
@@ -409,7 +434,7 @@ describe('applyRedirects', () => {
         }
       };
 
-      const config: Routes = [{path: 'a', loadChildren: 'children'}];
+      const config: Routes = [{path: 'a', loadChildren: jasmine.createSpy('children')}];
 
       applyRedirects(testModule.injector, <any>loader, serializer, tree('a?k1'), config)
           .subscribe(r => {});
@@ -430,7 +455,7 @@ describe('applyRedirects', () => {
 
       const loader = {load: (injector: any, p: any) => of(loadedConfig)};
 
-      const config: Routes = [{path: '**', loadChildren: 'children'}];
+      const config: Routes = [{path: '**', loadChildren: jasmine.createSpy('children')}];
 
       applyRedirects(testModule.injector, <any>loader, serializer, tree('xyz'), config)
           .forEach(r => {
@@ -445,14 +470,14 @@ describe('applyRedirects', () => {
       loader.load.and.returnValue(of(loadedConfig).pipe(delay(0)));
 
       const config: Routes = [
-        {path: '', loadChildren: 'matchChildren'},
-        {path: '**', loadChildren: 'children'},
+        {path: '', loadChildren: jasmine.createSpy('matchChildren')},
+        {path: '**', loadChildren: jasmine.createSpy('children')},
       ];
 
       applyRedirects(testModule.injector, <any>loader, serializer, tree(''), config).forEach(r => {
         expect(loader.load.calls.count()).toEqual(1);
         expect(loader.load.calls.first().args).not.toContain(jasmine.objectContaining({
-          loadChildren: 'children'
+          loadChildren: jasmine.createSpy('children')
         }));
       });
     });
@@ -462,8 +487,10 @@ describe('applyRedirects', () => {
 
       const loader = {load: (injector: any, p: any) => of(loadedConfig)};
 
-      const config: Routes =
-          [{path: 'not-found', loadChildren: 'children'}, {path: '**', redirectTo: 'not-found'}];
+      const config: Routes = [
+        {path: 'not-found', loadChildren: jasmine.createSpy('children')},
+        {path: '**', redirectTo: 'not-found'}
+      ];
 
       applyRedirects(testModule.injector, <any>loader, serializer, tree('xyz'), config)
           .forEach(r => {
@@ -476,8 +503,10 @@ describe('applyRedirects', () => {
 
       const loader = {load: (injector: any, p: any) => of(loadedConfig)};
 
-      const config: Routes =
-          [{path: 'not-found', loadChildren: 'children'}, {path: '**', redirectTo: '/not-found'}];
+      const config: Routes = [
+        {path: 'not-found', loadChildren: jasmine.createSpy('children')},
+        {path: '**', redirectTo: '/not-found'}
+      ];
 
       applyRedirects(testModule.injector, <any>loader, serializer, tree('xyz'), config)
           .forEach(r => {
@@ -497,13 +526,15 @@ describe('applyRedirects', () => {
              return of(loadedConfig)
                  .pipe(
                      delay(100 * loadCalls),
-                     tap(() => loaded.push(p.loadChildren! as string)),
+                     tap(() => loaded.push((p.loadChildren as jasmine.Spy).and.identity)),
                  );
            }
          };
 
-         const config: Routes =
-             [{path: '', loadChildren: 'root'}, {path: '', loadChildren: 'aux', outlet: 'popup'}];
+         const config: Routes = [
+           {path: '', loadChildren: jasmine.createSpy('root')},
+           {path: '', loadChildren: jasmine.createSpy('aux'), outlet: 'popup'}
+         ];
 
          applyRedirects(testModule.injector, <any>loader, serializer, tree(''), config).subscribe();
          expect(loadCalls).toBe(1);
@@ -526,13 +557,13 @@ describe('applyRedirects', () => {
              return of(loadedConfig)
                  .pipe(
                      delay(100 * loadCalls),
-                     tap(() => loaded.push(p.loadChildren! as string)),
+                     tap(() => loaded.push((p.loadChildren as jasmine.Spy).and.identity)),
                  );
            }
          };
 
          const config: Routes = [
-           {path: '**', loadChildren: 'children'},
+           {path: '**', loadChildren: jasmine.createSpy('children')},
          ];
 
          applyRedirects(testModule.injector, <any>loader, serializer, tree('xyz/a'), config)
@@ -562,13 +593,15 @@ describe('applyRedirects', () => {
           loadCalls++;
           return of(loadedConfig)
               .pipe(
-                  tap(() => loaded.push(p.loadChildren! as string)),
+                  tap(() => loaded.push((p.loadChildren as jasmine.Spy).and.identity)),
               );
         }
       };
 
-      const config: Routes =
-          [{path: 'a', loadChildren: 'first'}, {path: 'a', loadChildren: 'second'}];
+      const config: Routes = [
+        {path: 'a', loadChildren: jasmine.createSpy('first')},
+        {path: 'a', loadChildren: jasmine.createSpy('second')}
+      ];
 
       applyRedirects(testModule.injector, <any>loader, serializer, tree('a'), config).subscribe();
       expect(loadCalls).toBe(1);
@@ -584,19 +617,20 @@ describe('applyRedirects', () => {
          const auxDelay = 1;
          const loader = {
            load: (injector: any, p: Route) => {
-             const delayMs = p.loadChildren! as string === 'aux' ? auxDelay : rootDelay;
+             const delayMs =
+                 (p.loadChildren! as jasmine.Spy).and.identity === 'aux' ? auxDelay : rootDelay;
              return of(loadedConfig)
                  .pipe(
                      delay(delayMs),
-                     tap(() => loaded.push(p.loadChildren! as string)),
+                     tap(() => loaded.push((p.loadChildren as jasmine.Spy).and.identity)),
                  );
            }
          };
 
          const config: Routes = [
            // Define aux route first so it matches before the primary outlet
-           {path: 'modal', loadChildren: 'aux', outlet: 'popup'},
-           {path: '', loadChildren: 'root'},
+           {path: 'modal', loadChildren: jasmine.createSpy('aux'), outlet: 'popup'},
+           {path: '', loadChildren: jasmine.createSpy('root')},
          ];
 
          applyRedirects(testModule.injector, <any>loader, serializer, tree('(popup:modal)'), config)

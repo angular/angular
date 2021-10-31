@@ -1,0 +1,27 @@
+load("//tools:defaults.bzl", "ts_library")
+
+ts_library(
+    name = "testing",
+    testonly = True,
+    srcs = glob([
+        "**/*.ts",
+    ]),
+    visibility = ["//packages/compiler-cli/src/ngtsc:__subpackages__"],
+    deps = [
+        "//packages/compiler",
+        "//packages/compiler-cli/src/ngtsc/file_system",
+        "//packages/compiler-cli/src/ngtsc/file_system/testing",
+        "//packages/compiler-cli/src/ngtsc/imports",
+        "//packages/compiler-cli/src/ngtsc/incremental",
+        "//packages/compiler-cli/src/ngtsc/metadata",
+        "//packages/compiler-cli/src/ngtsc/perf",
+        "//packages/compiler-cli/src/ngtsc/program_driver",
+        "//packages/compiler-cli/src/ngtsc/reflection",
+        "//packages/compiler-cli/src/ngtsc/scope",
+        "//packages/compiler-cli/src/ngtsc/testing",
+        "//packages/compiler-cli/src/ngtsc/typecheck",
+        "//packages/compiler-cli/src/ngtsc/typecheck/api",
+        "//packages/compiler-cli/src/ngtsc/util",
+        "@npm//typescript",
+    ],
+)

@@ -5,8 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {compileNgModule, ConstantPool, R3DeclareNgModuleMetadata, R3NgModuleMetadata, R3PartialDeclaration, R3Reference} from '@angular/compiler';
-import * as o from '@angular/compiler/src/output/output_ast';
+import {compileNgModule, ConstantPool, outputAst as o, R3DeclareNgModuleMetadata, R3NgModuleMetadata, R3PartialDeclaration, R3Reference} from '@angular/compiler';
 
 import {AstObject, AstValue} from '../../ast/ast_value';
 

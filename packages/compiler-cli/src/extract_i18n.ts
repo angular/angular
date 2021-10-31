@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 /**
  * @license
  * Copyright Google LLC All Rights Reserved.
@@ -10,12 +9,12 @@
 /**
  * Extract i18n messages from source code
  */
-// Must be imported first, because Angular decorators throw on load.
-import 'reflect-metadata';
-import * as api from './transformers/api';
-import {ParsedConfiguration} from './perform_compile';
+
+import yargs from 'yargs';
+
 import {main, readCommandLineAndConfiguration} from './main';
-import {setFileSystem, NodeJSFileSystem} from './ngtsc/file_system';
+import {ParsedConfiguration} from './perform_compile';
+import * as api from './transformers/api';
 
 export function mainXi18n(
     args: string[], consoleError: (msg: string) => void = console.error): number {
@@ -25,7 +24,12 @@ export function mainXi18n(
 
 function readXi18nCommandLineAndConfiguration(args: string[]): ParsedConfiguration {
   const options: api.CompilerOptions = {};
-  const parsedArgs = require('minimist')(args);
+  const parsedArgs = yargs(args)
+                         .option('i18nFormat', {type: 'string'})
+                         .option('locale', {type: 'string'})
+                         .option('outFile', {type: 'string'})
+                         .parseSync();
+
   if (parsedArgs.outFile) options.i18nOutFile = parsedArgs.outFile;
   if (parsedArgs.i18nFormat) options.i18nOutFormat = parsedArgs.i18nFormat;
   if (parsedArgs.locale) options.i18nOutLocale = parsedArgs.locale;
@@ -37,13 +41,4 @@ function readXi18nCommandLineAndConfiguration(args: string[]): ParsedConfigurati
   ]);
   // only emit the i18nBundle but nothing else.
   return {...config, emitFlags: api.EmitFlags.I18nBundle};
-}
-
-// Entry point
-if (require.main === module) {
-  process.title = 'Angular i18n Message Extractor (ng-xi18n)';
-  const args = process.argv.slice(2);
-  // We are running the real compiler so run against the real file-system
-  setFileSystem(new NodeJSFileSystem());
-  process.exitCode = mainXi18n(args);
 }

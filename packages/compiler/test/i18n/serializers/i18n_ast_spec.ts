@@ -58,15 +58,15 @@ class RecurseVisitor extends i18n.RecurseVisitor {
   phCount = 0;
   icuPhCount = 0;
 
-  visitText(text: i18n.Text, context?: any): any {
+  override visitText(text: i18n.Text, context?: any): any {
     this.textCount++;
   }
 
-  visitPlaceholder(ph: i18n.Placeholder, context?: any): any {
+  override visitPlaceholder(ph: i18n.Placeholder, context?: any): any {
     this.phCount++;
   }
 
-  visitIcuPlaceholder(ph: i18n.IcuPlaceholder, context?: any): any {
+  override visitIcuPlaceholder(ph: i18n.IcuPlaceholder, context?: any): any {
     this.icuPhCount++;
   }
 }

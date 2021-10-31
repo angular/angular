@@ -7,7 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {Attribute, ChangeDetectorRef, Component, ComponentFactoryResolver, ComponentRef, ContentChild, Directive, ElementRef, EventEmitter, forwardRef, Host, HostBinding, Inject, Injectable, InjectionToken, INJECTOR, Injector, Input, LOCALE_ID, NgModule, NgZone, Optional, Output, Pipe, PipeTransform, Self, SkipSelf, TemplateRef, ViewChild, ViewContainerRef, ViewRef, ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID} from '@angular/core';
+import {Attribute, ChangeDetectorRef, Component, ComponentFactoryResolver, ComponentRef, Directive, ElementRef, EventEmitter, forwardRef, Host, HostBinding, Inject, Injectable, InjectFlags, InjectionToken, INJECTOR, Injector, Input, LOCALE_ID, NgModule, NgZone, Optional, Output, Pipe, PipeTransform, Self, SkipSelf, TemplateRef, ViewChild, ViewContainerRef, ViewRef, ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID} from '@angular/core';
 import {ɵINJECTOR_SCOPE} from '@angular/core/src/core';
 import {ViewRef as ViewRefInternal} from '@angular/core/src/render3/view_ref';
 import {TestBed} from '@angular/core/testing';
@@ -598,6 +598,93 @@ describe('di', () => {
       TestBed.configureTestingModule({declarations: [DirectiveA, DirectiveB, MyComp]});
       expect(() => TestBed.createComponent(MyComp)).toThrowError(/No provider for DirectiveB/);
     });
+
+    it('should not have access to the directive injector in a standalone injector from within a directive-level provider factory',
+       () => {
+         // https://github.com/angular/angular/issues/42651
+         class TestA {
+           constructor(public injector: string) {}
+         }
+         class TestB {
+           constructor(public a: TestA) {}
+         }
+
+         function createTestB() {
+           // Setup a standalone injector that provides `TestA`, which is resolved from a
+           // standalone child injector that requests `TestA` as a dependency for `TestB`.
+           // Although we're inside a directive factory and therefore have access to the
+           // directive-level injector, `TestA` has to be resolved from the standalone injector.
+           const parent = Injector.create({
+             providers: [{provide: TestA, useFactory: () => new TestA('standalone'), deps: []}],
+             name: 'TestA',
+           });
+           const child = Injector.create({
+             providers: [{provide: TestB, useClass: TestB, deps: [TestA]}],
+             parent,
+             name: 'TestB',
+           });
+           return child.get(TestB);
+         }
+
+         @Component({
+           template: '',
+           providers: [
+             {provide: TestA, useFactory: () => new TestA('component'), deps: []},
+             {provide: TestB, useFactory: createTestB},
+           ],
+         })
+         class MyComp {
+           constructor(public readonly testB: TestB) {}
+         }
+
+         TestBed.configureTestingModule({declarations: [MyComp]});
+
+         const cmp = TestBed.createComponent(MyComp);
+         expect(cmp.componentInstance.testB).toBeInstanceOf(TestB);
+         expect(cmp.componentInstance.testB.a.injector).toBe('standalone');
+       });
+
+    it('should not have access to the directive injector in a standalone injector from within a directive-level provider factory',
+       () => {
+         class TestA {
+           constructor(public injector: string) {}
+         }
+         class TestB {
+           constructor(public a: TestA|null) {}
+         }
+
+         function createTestB() {
+           // Setup a standalone injector that provides `TestB` with an optional dependency of
+           // `TestA`. Since `TestA` is not provided by the standalone injector it should resolve
+           // to null; both the NgModule providers and the component-level providers should not
+           // be considered.
+           const injector = Injector.create({
+             providers: [{provide: TestB, useClass: TestB, deps: [[TestA, new Optional()]]}],
+             name: 'TestB',
+           });
+           return injector.get(TestB);
+         }
+
+         @Component({
+           template: '',
+           providers: [
+             {provide: TestA, useFactory: () => new TestA('component'), deps: []},
+             {provide: TestB, useFactory: createTestB},
+           ],
+         })
+         class MyComp {
+           constructor(public readonly testB: TestB) {}
+         }
+
+         TestBed.configureTestingModule({
+           declarations: [MyComp],
+           providers: [{provide: TestA, useFactory: () => new TestA('module'), deps: []}]
+         });
+
+         const cmp = TestBed.createComponent(MyComp);
+         expect(cmp.componentInstance.testB).toBeInstanceOf(TestB);
+         expect(cmp.componentInstance.testB.a).toBeNull();
+       });
 
     onlyInIvy('Ivy has different error message for circular dependency')
         .it('should throw if directives try to inject each other', () => {
@@ -1919,6 +2006,126 @@ describe('di', () => {
              });
         });
       });
+
+      onlyInIvy('Ivy supports `InjectFlags` in NodeInjector')
+          .describe('`InjectFlags` support in NodeInjector', () => {
+            it('should support Optional flag in NodeInjector', () => {
+              const NON_EXISTING_PROVIDER = new InjectionToken<string>('non-existing');
+              @Component({template: '...'})
+              class MyComp {
+                tokenViaInjector =
+                    this.injector.get(NON_EXISTING_PROVIDER, null, InjectFlags.Optional);
+                constructor(
+                    public injector: Injector,
+                    @Inject(NON_EXISTING_PROVIDER) @Optional() public tokenViaConstructor: string) {
+                }
+              }
+              TestBed.configureTestingModule({declarations: [MyComp]});
+              const fixture = TestBed.createComponent(MyComp);
+              fixture.detectChanges();
+              expect(fixture.componentInstance.tokenViaInjector).toBe(null);
+              expect(fixture.componentInstance.tokenViaInjector)
+                  .toBe(fixture.componentInstance.tokenViaConstructor);
+            });
+            it('should support SkipSelf flag in NodeInjector', () => {
+              const TOKEN = new InjectionToken<string>('token');
+              @Component({
+                selector: 'parent',
+                template: '<child></child>',
+                providers: [{
+                  provide: TOKEN,
+                  useValue: 'PARENT',
+                }]
+              })
+              class ParentComponent {
+              }
+
+              @Component({
+                selector: 'child',
+                template: '...',
+                providers: [{
+                  provide: TOKEN,
+                  useValue: 'CHILD',
+                }]
+              })
+              class ChildComponent {
+                tokenViaInjector = this.injector.get(TOKEN, null, InjectFlags.SkipSelf);
+                constructor(
+                    public injector: Injector,
+                    @Inject(TOKEN) @SkipSelf() public tokenViaConstructor: string) {}
+              }
+
+              TestBed.configureTestingModule({
+                declarations: [ParentComponent, ChildComponent],
+              });
+              const fixture = TestBed.createComponent(ParentComponent);
+              fixture.detectChanges();
+
+              const childComponent =
+                  fixture.debugElement.query(By.directive(ChildComponent)).componentInstance;
+              expect(childComponent.tokenViaInjector).toBe('PARENT');
+              expect(childComponent.tokenViaConstructor).toBe(childComponent.tokenViaInjector);
+            });
+            it('should support Host flag in NodeInjector', () => {
+              const TOKEN = new InjectionToken<string>('token');
+              @Directive({selector: '[dirString]'})
+              class DirectiveString {
+                tokenViaInjector = this.injector.get(TOKEN, null, InjectFlags.Host);
+                constructor(
+                    public injector: Injector,
+                    @Inject(TOKEN) @Host() public tokenViaConstructor: string) {}
+              }
+
+              @Component({
+                template: '<div dirString></div>',
+                viewProviders: [{provide: TOKEN, useValue: 'Foo'}]
+              })
+              class MyComp {
+                @ViewChild(DirectiveString) dirString!: DirectiveString;
+              }
+
+              TestBed.configureTestingModule({declarations: [DirectiveString, MyComp]});
+              const fixture = TestBed.createComponent(MyComp);
+              fixture.detectChanges();
+
+              const dirString = fixture.componentInstance.dirString;
+              expect(dirString.tokenViaConstructor).toBe('Foo');
+              expect(dirString.tokenViaConstructor).toBe(dirString.tokenViaInjector!);
+            });
+            it('should support multiple flags in NodeInjector', () => {
+              @Directive({selector: '[dirA]'})
+              class DirectiveA {
+              }
+              @Directive({selector: '[dirB]'})
+              class DirectiveB {
+                public tokenSelfViaInjector =
+                    this.injector.get(DirectiveA, null, InjectFlags.Self|InjectFlags.Optional);
+                public tokenHostViaInjector =
+                    this.injector.get(DirectiveA, null, InjectFlags.Host|InjectFlags.Optional);
+                constructor(
+                    public injector: Injector,
+                    @Inject(DirectiveA) @Self() @Optional() public tokenSelfViaConstructor:
+                        DirectiveA,
+                    @Inject(DirectiveA) @Host() @Optional() public tokenHostViaConstructor:
+                        DirectiveA) {}
+              }
+
+              @Component({template: '<div dirB></div>'})
+              class MyComp {
+                @ViewChild(DirectiveB) dirB!: DirectiveB;
+              }
+
+              TestBed.configureTestingModule({declarations: [DirectiveB, MyComp]});
+              const fixture = TestBed.createComponent(MyComp);
+              fixture.detectChanges();
+
+              const dirB = fixture.componentInstance.dirB;
+              expect(dirB.tokenSelfViaInjector).toBeNull();
+              expect(dirB.tokenSelfViaInjector).toBe(dirB.tokenSelfViaConstructor);
+              expect(dirB.tokenHostViaInjector).toBeNull();
+              expect(dirB.tokenHostViaInjector).toBe(dirB.tokenHostViaConstructor);
+            });
+          });
     });
   });
 
@@ -2040,7 +2247,7 @@ describe('di', () => {
       }
 
       class MyRootService extends MyService {
-        id = 2;
+        override id = 2;
       }
 
       @Component({template: ''})

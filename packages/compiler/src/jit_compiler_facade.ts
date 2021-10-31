@@ -241,7 +241,8 @@ export class CompilerFacadeImpl implements CompilerFacade {
       type: wrapReference(meta.type),
       internalType: new WrappedNodeExpr(meta.type),
       typeArgumentCount: 0,
-      deps: meta.deps && meta.deps.map(convertR3DeclareDependencyMetadata),
+      deps: Array.isArray(meta.deps) ? meta.deps.map(convertR3DeclareDependencyMetadata) :
+                                       meta.deps,
       target: meta.target,
     });
     return this.jitExpression(

@@ -65,7 +65,7 @@ For full details of these and other tools, see the [Angular CDK accessibility ov
 Native HTML elements capture a number of standard interaction patterns that are important to accessibility.
 When authoring Angular components, you should re-use these native elements directly when possible, rather than re-implementing well-supported behaviors.
 
-For example, instead of creating a custom element for a new variety of button, you can create a component that uses an attribute selector with a native `<button>` element.
+For example, instead of creating a custom element for a new variety of button, create a component that uses an attribute selector with a native `<button>` element.
 This most commonly applies to `<button>` and `<a>`, but can be used with many other types of element.
 
 You can see examples of this pattern in Angular Material: [`MatButton`](https://github.com/angular/components/blob/50d3f29b6dc717b512dbd0234ce76f4ab7e9762a/src/material/button/button.ts#L67-L69), [`MatTabNav`](https://github.com/angular/components/blob/50d3f29b6dc717b512dbd0234ce76f4ab7e9762a/src/material/tabs/tab-nav-bar/tab-nav-bar.ts#L139), [`MatTable`](https://github.com/angular/components/blob/50d3f29b6dc717b512dbd0234ce76f4ab7e9762a/src/material/table/table.ts#L22).
@@ -77,7 +77,7 @@ For example, the native `<input>` element cannot have children, so any custom te
 to wrap an `<input>` with additional elements.
 While you might just include the `<input>` in your custom component's template,
 this makes it impossible for users of the component to set arbitrary properties and attributes to the input element.
-Instead, you can create a container component that uses content projection to include the native control in the
+Instead, create a container component that uses content projection to include the native control in the
 component's API.
 
 You can see [`MatFormField`](https://material.angular.io/components/form-field/overview) as an example of this pattern.

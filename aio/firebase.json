@@ -1,15 +1,56 @@
 {
+  // Docs on Firebase hosting configuration: https://firebase.google.com/docs/hosting/full-config
   "hosting": {
     "target": "aio",
     "public": "dist",
     "cleanUrls": true,
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    // ADDING REDIRECTS
+    //
+    // In order to permanently redirect a URL to a new address, add an new entry in the `redirects`
+    // list:
+    // ```json
+    // {"type": 301, "source": "/old/url", "destination": "/new/url"}
+    // ```
+    //
+    // This will cause the server to redirect any clients that visit `/old/url` to `/new/url`. At
+    // the same time, the ServiceWorker will be automatically configured to let requests for
+    // `/old/url` pass through to the server (instead of serving them locally with the cached
+    // `index.html`).
+    //
+    // In addition, you should also add a corresponding testcase in `URLS_TO_REDIRECT.txt` (inside
+    // `tests/deployment/shared/`) to ensure that the new redirect behaves as expected.
+    //
+    // NOTE 1:
+    // On clients that still have an old ServiceWorker version installed the next time they visit a
+    // recently redirected URL, the ServiceWorker will not yet know to let the request pass through
+    // to the server (and get redirected). In such cases, those clients will get a "Page not found"
+    // error, as the app tries to load `generated/docs/old/url.json` (which no longer exists). Such
+    // errors would typically go away after reloading the page (since the ServiceWorker will have
+    // updated to the latest version in the background).
+    //
+    // This temporary error is usually not a concern, because it only affects clients with an old
+    // ServiceWorker version at the time of the first visit and it goes away on reload. If, however,
+    // it is important to avoid this error for a specific redirect, you can add an additional
+    // redirect entry for the requested JSON file:
+    // ```json
+    // {"type": 302, "source": "/generated/docs/old/url.json", "destination": "/generated/docs/new/url.json"}
+    // ```
+    //
+    // In order to avoid bloating the redirects config, it is recommended to remove this additional
+    // entry after some time has passed, at which point the large majority of existing clients will
+    // have switched to an updated ServiceWorker version.
+    //
+    // NOTE 2:
+    // If you decide to add the additional entry described above, keep in mind that the JSON file
+    // URL is derived from the page URL by prepending `/generated/docs`, replacing any upper-case
+    // letters with the corresponding lower-case ones followed by an underscore (`_`) and appending
+    // `.json`.
+    //
+    // For example, the page URL `/api/forms/FormBuilder` would result in requesting the JSON file
+    // `/generated/docs/api/forms/f_ormb_uilder.json`.
+    //////////////////////////////////////////////////////////////////////////////////////////////
     "redirects": [
-      //////////////////////////////////////////////////////////////////////////////////////////////
-      // README:
-      //   Redirects must also be handled by the ServiceWorker. If you add a redirect rule here,
-      //   make sure it is compatible with the configuration in `ngsw-config.json`.
-      //////////////////////////////////////////////////////////////////////////////////////////////
-
       // A random bad indexed page that used `api/api`
       {"type": 301, "source": "/api/api/:rest*", "destination": "/api/:rest*"},
 
@@ -19,8 +60,10 @@
       {"type": 301, "source": "/docs/*/latest/quickstart.html", "destination": "/start"},
       {"type": 301, "source": "/docs/*/latest/guide/server-communication.html", "destination": "/guide/http"},
       {"type": 301, "source": "/docs/*/latest/guide/style-guide.html", "destination": "/guide/styleguide"},
-      {"type": 301, "source": "/guide/bazel", "destination": "https://github.com/angular/angular/blob/master/packages/bazel/src/schematics/README.md"},
+      {"type": 301, "source": "/guide/bazel", "destination": "https://github.com/angular/angular/blob/master/packages/bazel/docs/BAZEL_SCHEMATICS.md"},
+      {"type": 301, "source": "/guide", "destination": "/docs"},
       {"type": 301, "source": "/guide/cli-quickstart", "destination": "/start"},
+      {"type": 301, "source": "/guide/i18n", "destination": "/guide/i18n-overview"},
       {"type": 301, "source": "/guide/service-worker-getstart", "destination": "/guide/service-worker-getting-started"},
       {"type": 301, "source": "/guide/service-worker-comm", "destination": "/guide/service-worker-communications"},
       {"type": 301, "source": "/guide/service-worker-configref", "destination": "/guide/service-worker-config"},
@@ -32,7 +75,10 @@
       {"type": 301, "source": "/getting-started", "destination": "/start"},
       {"type": 301, "source": "/getting-started/:rest*", "destination": "/start/:rest*"},
       {"type": 301, "source": "/guide/displaying-data", "destination": "/start#template-syntax"},
-      {"type": 301, "source": "/guide/updating-to-version-10", "destination": "/guide/updating-to-version-11"},
+      {"type": 301, "source": "/guide/updating-to-version-10", "destination": "https://v10.angular.io/guide/updating-to-version-10"},
+      {"type": 301, "source": "/guide/updating-to-version-11", "destination": "https://v11.angular.io/guide/updating-to-version-11"},
+      {"type": 301, "source": "/guide/updating-to-version-12", "destination": "/guide/update-to-latest-version"},
+
 
       // Renaming of Getting Started topics
       {"type": 301, "source": "/start/data", "destination": "/start/start-data"},
@@ -66,6 +112,7 @@
       {"type": 301, "source": "/**/api/common/NgModel", "destination": "/api/forms/NgModel"},
 
       // `@angular/http` package was removed, and new `HttpClient` APIs are available under `@angular/common/http` package
+      {"type": 301, "source": "/api/http", "destination": "/guide/deprecations#http"},
       {"type": 301, "source": "/api/http/**", "destination": "/guide/deprecations#http"},
 
       // Animations moves, renames and removals
@@ -93,11 +140,11 @@
 
       // URLs that use the old scheme of adding the type to the end (e.g. `SomeClass-class`)
       // (Exclude disambiguated URLs that might be suffixed with `-\d+` (e.g. `SomeClass-1`))
-      {"type": 301, "regex": "^/api/(?P<package>[^/]+)/(?P<api>[^/]+)-\\D*$", "destination": "/api/:package/:api"},
-      {"type": 301, "regex": "^/api/(?P<package>[^/]+)/testing/index/(?P<api>[^/]+)$", "destination": "/api/:package/testing/:api"},
-      {"type": 301, "regex": "^/api/(?P<package>[^/]+)/testing/(?P<api>[^/]+)-\\D*$", "destination": "/api/:package/testing/:api"},
-      {"type": 301, "regex": "^/api/upgrade/(?P<package>[^/]+)/index/(?P<api>[^/]+)$", "destination": "/api/upgrade/:package/:api"},
-      {"type": 301, "regex": "^/api/upgrade/(?P<package>[^/]+)/(?P<api>[^/]+)-\\D*$", "destination": "/api/upgrade/:package/:api"},
+      {"type": 301, "source": "/api/:package/:api-@(class|decorator|directive|function|interface|let|pipe|type|type-alias|var)", "destination": "/api/:package/:api"},
+      {"type": 301, "source": "/api/:package/testing/index/:api", "destination": "/api/:package/testing/:api"},
+      {"type": 301, "source": "/api/:package/testing/:api-@(class|decorator|directive|function|interface|let|pipe|type|type-alias|var)", "destination": "/api/:package/testing/:api"},
+      {"type": 301, "source": "/api/upgrade/:package/index/:api", "destination": "/api/upgrade/:package/:api"},
+      {"type": 301, "source": "/api/upgrade/:package/:api-@(class|decorator|directive|function|interface|let|pipe|type|type-alias|var)", "destination": "/api/upgrade/:package/:api"},
 
       // URLs that use the old scheme before we moved the docs to the angular/angular repo
       {"type": 301, "source": "/docs/*/latest", "destination": "/docs"},
@@ -123,16 +170,27 @@
       {"type": 301, "source": "/testing", "destination": "/guide/testing"},
       {"type": 301, "source": "/testing/**", "destination": "/guide/testing"},
 
+      // Work around Firebase hosting bug with `/index.html?<query>` leading to infinite redirects.
+      // See https://github.com/angular/angular/issues/42518#issuecomment-858545483 for details.
+      {"type": 301, "source": "/index.html:query*", "destination": "/:query*"},
+
       // Strip off the `.html` extension, because Firebase will not do this automatically any more
       // (unless the new URL points to an existing file, which is not necessarily the case here).
-      {"type": 301, "source": "/:somePath*/:file.html", "destination": "/:somePath*/:file"},
       {"type": 301, "source": "/:topLevelFile.html", "destination": "/:topLevelFile"},
+      {"type": 301, "source": "/:somePath*/:file.html", "destination": "/:somePath*/:file"},
 
       // The below paths are referenced in users projects generated by the CLI
       {"type": 301, "source": "/config/tsconfig", "destination": "/guide/typescript-configuration"},
       {"type": 301, "source": "/config/solution-tsconfig", "destination": "https://devblogs.microsoft.com/typescript/announcing-typescript-3-9/#solution-style-tsconfig"},
       {"type": 301, "source": "/config/app-package-json", "destination": "/guide/strict-mode#non-local-side-effects-in-applications"},
-      {"type": 301, "source": "/strict", "destination": "/guide/strict-mode"}
+      {"type": 301, "source": "/strict", "destination": "/guide/strict-mode"},
+
+      // Use discoverable link for Angular DevTools and redirect to the guide page
+      {"type": 301, "source": "/devtools", "destination": "/guide/devtools"},
+
+      // Temporarily serve the guide at `/devtools` as well as `/guide/devtools` until users have
+      // their SW updated to a version that knows about the `/devtools` redirect.
+      {"type": 302, "source": "/generated/docs/devtools.json", "destination": "/generated/docs/guide/devtools.json"}
     ],
     "rewrites": [
       {
@@ -141,6 +199,27 @@
       }
     ],
     "headers": [
+      {
+        // All URLs
+        "source": "**",
+        "headers": [
+          // Report Trusted Types violations
+          {
+            "key": "Content-Security-Policy-Report-Only",
+
+            // The following Trusted Types policies are allowed:
+            // - angular: Angular's main internal policy. Defined in the `@angular/core` package.
+            // - angular#bundler: Used by Angular's bundler. Defined in the `webpack` package, enabled by `@angular-devkit/build-angular`.
+            // - angular#unsafe-bypass: For bypassSecurityTrust* usage. Defined in the `@angular/core` package.
+            // - aio#analytics: For the Google Analytics snippet. Defined in `index.html`.
+            // - google#safe: Used by the safevalues library. Defined in the `safevalues` package.
+
+            // csp.withgoogle.com is Google's CSP report collecting
+            // infrastructure.
+            "value": "require-trusted-types-for 'script'; trusted-types angular angular#bundler angular#unsafe-bypass aio#analytics google#safe; report-uri https://csp.withgoogle.com/csp/angular.io"
+          }
+        ]
+      },
       {
         // All paths (URLs without a file extension).
         "source": "**/!(*.*)",

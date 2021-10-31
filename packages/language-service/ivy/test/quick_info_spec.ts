@@ -9,7 +9,7 @@
 import {initMockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 
 import * as ts from 'typescript/lib/tsserverlibrary';
-import {LanguageServiceTestEnv, Project} from '../testing';
+import {createModuleAndProjectWithDeclarations, LanguageServiceTestEnv, Project} from '../testing';
 
 function quickInfoSkeleton(): {[fileName: string]: string} {
   return {
@@ -357,6 +357,20 @@ describe('quick info', () => {
           expectedDisplayString: '(variable) name: { readonly name: "name"; }'
         });
       });
+
+      it('should work for safe keyed reads', () => {
+        expectQuickInfo({
+          templateOverride: `<div>{{constNames?.[0¦]}}</div>`,
+          expectedSpanText: '0',
+          expectedDisplayString: '(property) 0: {\n    readonly name: "name";\n}'
+        });
+
+        expectQuickInfo({
+          templateOverride: `<div>{{constNames?.[0]?.na¦me}}</div>`,
+          expectedSpanText: 'constNames?.[0]?.name',
+          expectedDisplayString: '(property) name: "name"'
+        });
+      });
     });
 
     describe('pipes', () => {
@@ -429,6 +443,25 @@ describe('quick info', () => {
         });
       });
 
+      it('should work for safe method calls', () => {
+        const files = {
+          'app.ts': `import {Component} from '@angular/core';
+            @Component({template: '<div (click)="something?.myFunc()"></div>'})
+            export class AppCmp {
+              something!: {
+                /** Documentation for myFunc. */
+                myFunc(): void
+              };
+            }`,
+        };
+        const project = createModuleAndProjectWithDeclarations(env, 'test_project', files);
+        const appFile = project.openFile('app.ts');
+        appFile.moveCursorToText('something?.myF¦unc()');
+        const info = appFile.getQuickInfoAtPosition()!;
+        expect(toText(info.displayParts)).toEqual('(method) myFunc(): void');
+        expect(toText(info.documentation)).toEqual('Documentation for myFunc.');
+      });
+
       it('should work for accessed properties in writes', () => {
         expectQuickInfo({
           templateOverride: `<div (click)="hero.i¦d = 2"></div>`,
@@ -485,6 +518,48 @@ describe('quick info', () => {
         const documentation = toText(quickInfo!.documentation);
         expect(documentation).toBe('This is the title of the `AppCmp` Component.');
       });
+    });
+
+    it('should work for object literal with shorthand property declarations', () => {
+      initMockFileSystem('Native');
+      env = LanguageServiceTestEnv.setup();
+      project = env.addProject(
+          'test', {
+            'app.ts': `
+            import {Component, NgModule} from '@angular/core';
+            import {CommonModule} from '@angular/common';
+
+            @Component({
+              selector: 'some-cmp',
+              templateUrl: './app.html',
+            })
+            export class SomeCmp {
+              val1 = 'one';
+              val2 = 2;
+
+              doSomething(obj: {val1: string, val2: number}) {}
+            }
+
+            @NgModule({
+              declarations: [SomeCmp],
+              imports: [CommonModule],
+            })
+            export class AppModule{
+            }
+          `,
+            'app.html': `{{doSomething({val1, val2})}}`,
+          },
+          {strictTemplates: true});
+      env.expectNoSourceDiagnostics();
+      project.expectNoSourceDiagnostics();
+
+      const template = project.openFile('app.html');
+      template.moveCursorToText('val¦1');
+      const quickInfo = template.getQuickInfoAtPosition();
+      expect(toText(quickInfo!.displayParts)).toEqual('(property) SomeCmp.val1: string');
+      template.moveCursorToText('val¦2');
+      const quickInfo2 = template.getQuickInfoAtPosition();
+      expect(toText(quickInfo2!.displayParts)).toEqual('(property) SomeCmp.val2: number');
     });
   });
 
@@ -559,8 +634,13 @@ describe('quick info', () => {
       // checkTypeOfPipes is set to false when strict templates is false
       project = env.addProject('test', quickInfoSkeleton(), {strictTemplates: false});
       const templateOverride = `<p>The hero's birthday is {{birthday | da¦te: "MM/dd/yy"}}</p>`;
-      expectQuickInfo(
-          {templateOverride, expectedSpanText: 'date', expectedDisplayString: '(pipe) DatePipe'});
+      expectQuickInfo({
+        templateOverride,
+        expectedSpanText: 'date',
+        expectedDisplayString:
+            '(pipe) DatePipe.transform(value: string | number | Date, format?: string | undefined, timezone?: ' +
+            'string | undefined, locale?: string | undefined): string | null (+2 overloads)'
+      });
     });
 
     it('should still get quick info if there is an invalid css resource', () => {

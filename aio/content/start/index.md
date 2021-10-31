@@ -4,7 +4,7 @@ Welcome to Angular!
 
 This tutorial introduces you to the essentials of Angular by walking you through building an e-commerce site with a catalog, shopping cart, and check-out form.
 
-To help you get started right away, this tutorial uses a ready-made application that you can examine and modify interactively on [Stackblitz](https://stackblitz.com/)&mdash;without having to [set up a local work environment](guide/setup-local "Setup guide").
+To help you get started right away, this tutorial uses a ready-made application that you can examine and modify interactively on [StackBlitz](https://stackblitz.com/)&mdash;without having to [set up a local work environment](guide/setup-local "Setup guide").
 StackBlitz is a browser-based development environment where you can create, save, and share projects using a variety of technologies.
 
 ## Prerequisites
@@ -65,7 +65,7 @@ The preview features two areas:
 
 The project section on the left shows the source files that make up the application, including the infrastructure and configuration files.
 
-When you generate the StackBlitz example apps that accompany the tutorials, StackBlitz creates the starter files and mock data for you.
+When you generate the StackBlitz example applications that accompany the tutorials, StackBlitz creates the starter files and mock data for you.
 The files you use throughout the tutorial are in the `src` folder.
 
 For more information on how to use StackBlitz, see the [StackBlitz documentation](https://developer.stackblitz.com/docs/platform/).
@@ -199,7 +199,11 @@ This section walks you through creating a child component, `ProductAlertsCompone
 
   <code-example header="src/app/product-alerts/product-alerts.component.html" path="getting-started/src/app/product-alerts/product-alerts.component.1.html"></code-example>
 
-1. To display `ProductAlertsComponent` as a child of `ProductListComponent`, add the selector, `<app-product-alerts>` to `product-list.component.html`.
+1. To make `ProductAlertsComponent` available to other components in the application, add it to `AppModule`'s declarations in `app.module.ts`.
+
+  <code-example header="src/app/app.module.ts" path="getting-started/src/app/app.module.ts" region="declare-product-alerts"></code-example>
+
+1. Finally, to display `ProductAlertsComponent` as a child of `ProductListComponent`, add the selector, `<app-product-alerts>` to `product-list.component.html`.
   Pass the current product as input to the component using property binding.
 
   <code-example header="src/app/product-list/product-list.component.html" path="getting-started/src/app/product-list/product-list.component.5.html" region="app-product-alerts"></code-example>
@@ -219,6 +223,13 @@ The Phone XL price is over $700, so the **Notify Me** button appears on that pro
 To make the **Notify Me** button work, the child component needs to notify and pass the data to the parent component.
 The `ProductAlertsComponent` needs to emit an event when the user clicks **Notify Me** and the `ProductListComponent` needs to respond to the event.
 
+  <div class="alert is-helpful">
+
+  In new components, the Angular Generator includes an empty `constructor()`, the `OnInit` interface, and the `ngOnInit()` method.
+  Since these steps don't use them, the following code examples omit them for brevity.
+
+  </div>
+
 1. In `product-alerts.component.ts`, import `Output` and `EventEmitter` from `@angular/core`.
 
   <code-example header="src/app/product-alerts/product-alerts.component.ts" path="getting-started/src/app/product-alerts/product-alerts.component.ts" region="imports"></code-example>
@@ -227,13 +238,6 @@ The `ProductAlertsComponent` needs to emit an event when the user clicks **Notif
   Configuring `ProductAlertsComponent` with an `@Output()` allows the `ProductAlertsComponent` to emit an event when the value of the `notify` property changes.
 
   <code-example path="getting-started/src/app/product-alerts/product-alerts.component.ts" header="src/app/product-alerts/product-alerts.component.ts" region="input-output"></code-example>
-
-  <div class="alert is-helpful">
-
-  In new components, the Angular Generator includes an empty `constructor()`, the `OnInit` interface, and the `ngOnInit()` method.
-  Since these steps don't use them, the following code example omits them for brevity.
-
-  </div>
 
 1. In `product-alerts.component.html`, update the **Notify Me** button with an event binding to call the `notify.emit()` method.
 
@@ -269,4 +273,6 @@ In this section, you've created an application that iterates through data and fe
 To continue exploring Angular and developing this application:
 
 * Continue to [In-app navigation](start/start-routing "Getting started: In-app navigation") to create a product details page.
-* Skip ahead to [Deployment](start/start-deployment "Getting started: Deployment") to move to local development, or deploy your app to Firebase or your own server.
+* Skip ahead to [Deployment](start/start-deployment "Getting started: Deployment") to move to local development, or deploy your application to Firebase or your own server.
+
+@reviewed 2021-09-15

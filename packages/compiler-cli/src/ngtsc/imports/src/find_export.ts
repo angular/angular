@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as ts from 'typescript';
+import ts from 'typescript';
 import {ReflectionHost} from '../../reflection';
 import {isNamedDeclaration} from '../../util/src/typescript';
 
@@ -51,6 +51,10 @@ export function findExportedNameOfNode(
  * `ts.ExportSpecifier`s and need to be unwrapped.
  */
 function symbolDeclaresNode(sym: ts.Symbol, node: ts.Node, checker: ts.TypeChecker): boolean {
+  if (sym.declarations === undefined) {
+    return false;
+  }
+
   return sym.declarations.some(decl => {
     if (ts.isExportSpecifier(decl)) {
       const exportedSymbol = checker.getExportSpecifierLocalTargetSymbol(decl);

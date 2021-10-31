@@ -14,7 +14,7 @@ import { NpmPackageInfo, PackageSearchService } from './package-search.service';
 export class PackageSearchComponent implements OnInit {
   // #docregion debounce
   withRefresh = false;
-  packages$: Observable<NpmPackageInfo[]>;
+  packages$!: Observable<NpmPackageInfo[]>;
   private searchText$ = new Subject<string>();
 
   search(packageName: string) {
@@ -37,8 +37,8 @@ export class PackageSearchComponent implements OnInit {
   toggleRefresh() { this.withRefresh = ! this.withRefresh; }
 
   // #docregion getValue
-  getValue(target: EventTarget): string {
-    return (target as HTMLInputElement).value;
+  getValue(event: Event): string {
+    return (event.target as HTMLInputElement).value;
   }
   // #enddocregion getValue
 }

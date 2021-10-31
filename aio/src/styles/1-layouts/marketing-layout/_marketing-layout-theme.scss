@@ -1,0 +1,69 @@
+@use 'sass:map';
+@use '../../constants';
+@use '~@angular/material' as mat;
+
+@mixin theme($theme) {
+  $primary: map.get($theme, primary);
+  $foreground: map.get($theme, foreground);
+  $is-dark-theme: map.get($theme, is-dark);
+
+  .background-sky {
+    background: linear-gradient(145deg, mat.get-color-from-palette($primary, 900), if($is-dark-theme, mat.get-color-from-palette($primary, 700), #42a5f5));
+    color: mat.get-color-from-palette($foreground, text);
+  }
+
+  section#intro {
+    color: constants.$white;
+  }
+
+  .announcement-bar {
+    background-color: constants.$white;
+
+    .button {
+      color: constants.$white;
+      background-color: constants.$blue;
+
+      &:hover {
+        color: rgba(constants.$white, 0.7);
+      }
+    }
+  }
+
+  .home-row .card {
+    background-color: if($is-dark-theme, constants.$darkgray, constants.$white);
+
+    .card-text-container {
+      p {
+        color: if($is-dark-theme, constants.$offwhite, constants.$darkgray);
+      }
+    }
+
+    &:hover {
+      h2 {
+        color: if($is-dark-theme, constants.$cyan, constants.$blue);
+      }
+    }
+  }
+
+  .button.hero-cta {
+    background-color: if($is-dark-theme, constants.$darkgray, constants.$white);
+  }
+
+  .cta-bar {
+    .hero-cta {
+      color: if($is-dark-theme, constants.$cyan, constants.$blue);
+    }
+  }
+
+  .text-headline {
+    color: if($is-dark-theme, constants.$lightblue, constants.$blue);
+  }
+
+  .marketing-banner {
+    background-color: if($is-dark-theme, mat.get-color-from-palette($primary, 800), mat.get-color-from-palette($primary, 600));
+
+    .banner-headline {
+      color: constants.$white;
+    }
+  }
+}

@@ -11,6 +11,7 @@ import * as chars from '../chars';
 export enum TokenType {
   Character,
   Identifier,
+  PrivateIdentifier,
   Keyword,
   String,
   Operator,
@@ -56,6 +57,10 @@ export class Token {
 
   isIdentifier(): boolean {
     return this.type == TokenType.Identifier;
+  }
+
+  isPrivateIdentifier(): boolean {
+    return this.type == TokenType.PrivateIdentifier;
   }
 
   isKeyword(): boolean {
@@ -104,6 +109,7 @@ export class Token {
       case TokenType.Identifier:
       case TokenType.Keyword:
       case TokenType.Operator:
+      case TokenType.PrivateIdentifier:
       case TokenType.String:
       case TokenType.Error:
         return this.strValue;
@@ -121,6 +127,10 @@ function newCharacterToken(index: number, end: number, code: number): Token {
 
 function newIdentifierToken(index: number, end: number, text: string): Token {
   return new Token(index, end, TokenType.Identifier, 0, text);
+}
+
+function newPrivateIdentifierToken(index: number, end: number, text: string): Token {
+  return new Token(index, end, TokenType.PrivateIdentifier, 0, text);
 }
 
 function newKeywordToken(index: number, end: number, text: string): Token {
@@ -204,6 +214,7 @@ class _Scanner {
       case chars.$DQ:
         return this.scanString();
       case chars.$HASH:
+        return this.scanPrivateIdentifier();
       case chars.$PLUS:
       case chars.$MINUS:
       case chars.$STAR:
@@ -279,13 +290,37 @@ class _Scanner {
                                         newIdentifierToken(start, this.index, str);
   }
 
+  /** Scans an ECMAScript private identifier. */
+  scanPrivateIdentifier(): Token {
+    const start: number = this.index;
+    this.advance();
+    if (!isIdentifierStart(this.peek)) {
+      return this.error('Invalid character [#]', -1);
+    }
+    while (isIdentifierPart(this.peek)) this.advance();
+    const identifierName: string = this.input.substring(start, this.index);
+    return newPrivateIdentifierToken(start, this.index, identifierName);
+  }
+
   scanNumber(start: number): Token {
-    let simple: boolean = (this.index === start);
+    let simple = (this.index === start);
+    let hasSeparators = false;
     this.advance();  // Skip initial digit.
     while (true) {
       if (chars.isDigit(this.peek)) {
         // Do nothing.
-      } else if (this.peek == chars.$PERIOD) {
+      } else if (this.peek === chars.$_) {
+        // Separators are only valid when they're surrounded by digits. E.g. `1_0_1` is
+        // valid while `_101` and `101_` are not. The separator can't be next to the decimal
+        // point or another separator either. Note that it's unlikely that we'll hit a case where
+        // the underscore is at the start, because that's a valid identifier and it will be picked
+        // up earlier in the parsing. We validate for it anyway just in case.
+        if (!chars.isDigit(this.input.charCodeAt(this.index - 1)) ||
+            !chars.isDigit(this.input.charCodeAt(this.index + 1))) {
+          return this.error('Invalid numeric separator', 0);
+        }
+        hasSeparators = true;
+      } else if (this.peek === chars.$PERIOD) {
         simple = false;
       } else if (isExponentStart(this.peek)) {
         this.advance();
@@ -297,8 +332,12 @@ class _Scanner {
       }
       this.advance();
     }
-    const str: string = this.input.substring(start, this.index);
-    const value: number = simple ? parseIntAutoRadix(str) : parseFloat(str);
+
+    let str = this.input.substring(start, this.index);
+    if (hasSeparators) {
+      str = str.replace(/_/g, '');
+    }
+    const value = simple ? parseIntAutoRadix(str) : parseFloat(str);
     return newNumberToken(start, this.index, value);
   }
 
@@ -395,10 +434,6 @@ function isExponentStart(code: number): boolean {
 
 function isExponentSign(code: number): boolean {
   return code == chars.$MINUS || code == chars.$PLUS;
-}
-
-export function isQuote(code: number): boolean {
-  return code === chars.$SQ || code === chars.$DQ || code === chars.$BT;
 }
 
 function unescape(code: number): number {

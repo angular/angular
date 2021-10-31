@@ -1,0 +1,115 @@
+@use '../../mixins';
+
+$notificationHeight: 56px;
+
+// we need to override some of the toolbar styling
+.app-toolbar mat-toolbar-row.notification-container {
+  padding: 0;
+  height: auto;
+  overflow: hidden;
+}
+
+aio-notification {
+  display: flex;
+  position: relative;
+  align-items: center;
+  width: 100%;
+  height: $notificationHeight;
+  justify-content: center;
+
+  @media (max-width: 430px) {
+    justify-content: flex-start;
+    padding-left: 10px;
+  }
+
+  .close-button {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: $notificationHeight;
+    height: $notificationHeight;
+  }
+
+  .content {
+    max-width: calc(100% - #{$notificationHeight});
+    text-transform: none;
+    padding: 0;
+
+    > * {
+      display: flex;
+    }
+
+    .icon {
+      margin-right: 10px;
+      @media (max-width: 464px) {
+        display: none;
+      }
+    }
+
+    .message {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-right: 10px;
+    }
+
+    .action-button {
+      border-radius: 15px;
+      text-transform: uppercase;
+      padding: 0 10px;
+      @include mixins.font-size(12);
+      @media (max-width: 780px) {
+        display: none;
+      }
+    }
+  }
+}
+
+// Here are all the hacks to make the content and sidebars the right height
+// when the notification is visible
+.aio-notification-show {
+  .toc-container {
+    top: 76px + $notificationHeight;
+  }
+
+  .search-results {
+    padding-top: $notificationHeight;
+  }
+
+  mat-sidenav-container.sidenav-container {
+    .sidenav-content {
+      padding-top: 80px + $notificationHeight;
+    }
+
+    mat-sidenav.sidenav {
+      top: 64px + $notificationHeight;
+
+      @media (max-width: 600px) {
+        top: 56px + $notificationHeight;
+      }
+    }
+  }
+}
+
+@include mixins.marketing-pages {
+  &.aio-notification-show {
+    mat-sidenav-container.sidenav-container {
+      .sidenav-content {
+        padding-top: $notificationHeight;
+      }
+    }
+  }
+}
+
+// Animate the content when the notification bar is dismissed
+// this should be kept in sync with the animation durations in
+// - aio/src/app/layout/notification/notification.component.ts
+// - aio/src/app/app.component.ts : notificationDismissed()
+.aio-notification-animating {
+  .sidenav-content {
+    transition: padding-top 250ms ease;
+  }
+
+  mat-sidenav.sidenav, .toc-container {
+    transition: top 250ms ease;
+  }
+}

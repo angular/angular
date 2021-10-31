@@ -12,7 +12,7 @@ import {FormArray, FormControl, FormGroup} from '../../model';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../../validators';
 import {ControlContainer} from '../control_container';
 import {Form} from '../form_interface';
-import {ReactiveErrors} from '../reactive_errors';
+import {missingFormException} from '../reactive_errors';
 import {cleanUpControl, cleanUpFormContainer, cleanUpValidators, removeListItem, setUpControl, setUpFormContainer, setUpValidators, syncPendingControls} from '../shared';
 import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from '../validators';
 
@@ -114,7 +114,7 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
   /** @nodoc */
   ngOnDestroy() {
     if (this.form) {
-      cleanUpValidators(this.form, this, /* handleOnValidatorChange */ false);
+      cleanUpValidators(this.form, this);
 
       // Currently the `onCollectionChange` callback is rewritten each time the
       // `_registerOnCollectionChange` function is invoked. The implication is that cleanup should
@@ -132,7 +132,7 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
    * @description
    * Returns this directive's instance.
    */
-  get formDirective(): Form {
+  override get formDirective(): Form {
     return this;
   }
 
@@ -140,7 +140,7 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
    * @description
    * Returns the `FormGroup` bound to this directive.
    */
-  get control(): FormGroup {
+  override get control(): FormGroup {
     return this.form;
   }
 
@@ -149,7 +149,7 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
    * Returns an array representing the path to this group. Because this directive
    * always lives at the top level of a form, it always an empty array.
    */
-  get path(): string[] {
+  override get path(): string[] {
     return [];
   }
 
@@ -348,15 +348,15 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
   }
 
   private _updateValidators() {
-    setUpValidators(this.form, this, /* handleOnValidatorChange */ false);
+    setUpValidators(this.form, this);
     if (this._oldForm) {
-      cleanUpValidators(this._oldForm, this, /* handleOnValidatorChange */ false);
+      cleanUpValidators(this._oldForm, this);
     }
   }
 
   private _checkFormPresent() {
     if (!this.form && (typeof ngDevMode === 'undefined' || ngDevMode)) {
-      ReactiveErrors.missingFormException();
+      throw missingFormException();
     }
   }
 }

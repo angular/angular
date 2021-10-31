@@ -6,16 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {ErrorCode, ngErrorCode} from '../../src/ngtsc/diagnostics';
 import {absoluteFrom as _, getFileSystem, getSourceFileOrError} from '../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
-import {expectCompleteReuse, loadStandardTestFiles} from '../../src/ngtsc/testing';
+import {expectCompleteReuse, getSourceCodeForDiagnostic, loadStandardTestFiles} from '../../src/ngtsc/testing';
 
 import {NgtscTestEnvironment} from './env';
 
-const testFiles = loadStandardTestFiles();
+const testFiles = loadStandardTestFiles({fakeCore: true, fakeCommon: true});
 
 runInEachFileSystem(() => {
   describe('ngtsc type checking', () => {
@@ -24,66 +24,6 @@ runInEachFileSystem(() => {
     beforeEach(() => {
       env = NgtscTestEnvironment.setup(testFiles);
       env.tsconfig({fullTemplateTypeCheck: true});
-      env.write('node_modules/@angular/common/index.d.ts', `
-import * as i0 from '@angular/core';
-
-export declare class NgForOfContext<T, U extends i0.NgIterable<T> = i0.NgIterable<T>> {
-  $implicit: T;
-  count: number;
-  readonly even: boolean;
-  readonly first: boolean;
-  index: number;
-  readonly last: boolean;
-  ngForOf: U;
-  readonly odd: boolean;
-  constructor($implicit: T, ngForOf: U, index: number, count: number);
-}
-
-export declare class IndexPipe {
-  transform<T>(value: T[], index: number): T;
-
-  static ɵpipe: i0.ɵPipeDeclaration<IndexPipe, 'index'>;
-}
-
-export declare class SlicePipe {
-  transform<T>(value: ReadonlyArray<T>, start: number, end?: number): Array<T>;
-  transform(value: string, start: number, end?: number): string;
-  transform(value: null, start: number, end?: number): null;
-  transform(value: undefined, start: number, end?: number): undefined;
-  transform(value: any, start: number, end?: number): any;
-
-  static ɵpipe: i0.ɵPipeDeclaration<SlicePipe, 'slice'>;
-}
-
-export declare class NgForOf<T, U extends i0.NgIterable<T> = i0.NgIterable<T>> implements DoCheck {
-  ngForOf: (U & i0.NgIterable<T>) | undefined | null;
-  ngForTemplate: TemplateRef<NgForOfContext<T, U>>;
-  ngForTrackBy: TrackByFunction<T>;
-  constructor(_viewContainer: ViewContainerRef, _template: TemplateRef<NgForOfContext<T, U>>, _differs: IterableDiffers);
-  ngDoCheck(): void;
-  static ngTemplateContextGuard<T, U extends i0.NgIterable<T>>(dir: NgForOf<T, U>, ctx: any): ctx is NgForOfContext<T, U>;
-  static ɵdir: i0.ɵɵDirectiveDeclaration<NgForOf<any>, '[ngFor][ngForOf]', never, {'ngForOf': 'ngForOf'}, {}, never>;
-}
-
-export declare class NgIf<T = unknown> {
-  ngIf: T;
-  ngIfElse: TemplateRef<NgIfContext<T>> | null;
-  ngIfThen: TemplateRef<NgIfContext<T>> | null;
-  constructor(_viewContainer: ViewContainerRef, templateRef: TemplateRef<NgIfContext<T>>);
-  static ngTemplateGuard_ngIf: 'binding';
-  static ngTemplateContextGuard<T>(dir: NgIf<T>, ctx: any): ctx is NgIfContext<Exclude<T, false | 0 | "" | null | undefined>>;
-  static ɵdir: i0.ɵɵDirectiveDeclaration<NgIf<any>, '[ngIf]', never, {'ngIf': 'ngIf'}, {}, never>;
-}
-
-export declare class NgIfContext<T = unknown> {
-  $implicit: T;
-  ngIf: T;
-}
-
-export declare class CommonModule {
-  static ɵmod: i0.ɵɵNgModuleDeclaration<CommonModule, [typeof NgIf, typeof NgForOf, typeof IndexPipe, typeof SlicePipe], never, [typeof NgIf, typeof NgForOf, typeof IndexPipe, typeof SlicePipe]>;
-}
-`);
       env.write('node_modules/@angular/animations/index.d.ts', `
 export declare class AnimationEvent {
   element: any;
@@ -366,6 +306,115 @@ export declare class AnimationEvent {
       `);
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(0);
+    });
+
+    // https://devblogs.microsoft.com/typescript/announcing-typescript-4-3-beta/#separate-write-types-on-properties
+    it('should support separate write types on inputs', () => {
+      env.tsconfig({strictTemplates: true});
+      env.write('test.ts', `
+        import {Component, NgModule, Input} from '@angular/core';
+
+        @Component({
+          selector: 'test',
+          template: '<target-cmp disabled></target-cmp>',
+        })
+        export class TestCmp {}
+
+        @Component({template: '', selector: 'target-cmp'})
+        export class TargetCmp {
+          @Input()
+          get disabled(): boolean { return this._disabled; }
+          set disabled(value: string|boolean) { this._disabled = value === '' || !!value; }
+          private _disabled = false;
+        }
+
+        @NgModule({
+          declarations: [TestCmp, TargetCmp],
+        })
+        export class Module {}
+      `);
+      const diags = env.driveDiagnostics();
+      console.error(diags);
+      expect(diags.length).toBe(0);
+    });
+
+    it('should check split two way binding', () => {
+      env.tsconfig({strictTemplates: true});
+      env.write('test.ts', `
+        import {Component, Input, NgModule} from '@angular/core';
+
+        @Component({
+          selector: 'test',
+          template: '<child-cmp [(value)]="counterValue"></child-cmp>',
+        })
+
+        export class TestCmp {
+          counterValue = 0;
+        }
+
+        @Component({
+          selector: 'child-cmp',
+          template: '',
+        })
+
+        export class ChildCmp {
+          @Input() value = 0;
+        }
+
+        @NgModule({
+          declarations: [TestCmp, ChildCmp],
+        })
+        export class Module {}
+      `);
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(diags[0].code).toBe(ngErrorCode(ErrorCode.SPLIT_TWO_WAY_BINDING));
+      expect(getSourceCodeForDiagnostic(diags[0])).toBe('value');
+      expect(diags[0].relatedInformation!.length).toBe(2);
+      expect(getSourceCodeForDiagnostic(diags[0].relatedInformation![0])).toBe('ChildCmp');
+      expect(getSourceCodeForDiagnostic(diags[0].relatedInformation![1])).toBe('child-cmp');
+    });
+
+    it('when input and output go to different directives', () => {
+      env.tsconfig({strictTemplates: true});
+      env.write('test.ts', `
+        import {Component, Input, NgModule, Output, Directive} from '@angular/core';
+
+        @Component({
+          selector: 'test',
+          template: '<child-cmp [(value)]="counterValue"></child-cmp>',
+        })
+        export class TestCmp {
+          counterValue = 0;
+        }
+
+        @Directive({
+          selector: 'child-cmp'
+        })
+        export class ChildCmpDir {
+          @Output() valueChange: any;
+        }
+
+        @Component({
+          selector: 'child-cmp',
+          template: '',
+        })
+        export class ChildCmp {
+          @Input() value = 0;
+        }
+
+        @NgModule({
+          declarations: [TestCmp, ChildCmp, ChildCmpDir],
+        })
+        export class Module {}
+      `);
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(diags[0].code).toBe(ngErrorCode(ErrorCode.SPLIT_TWO_WAY_BINDING));
+      expect(getSourceCodeForDiagnostic(diags[0])).toBe('value');
+      expect(diags[0].relatedInformation!.length).toBe(2);
+      expect(getSourceCodeForDiagnostic(diags[0].relatedInformation![0])).toBe('ChildCmp');
+      expect(getSourceCodeForDiagnostic(diags[0].relatedInformation![1])).toBe('ChildCmpDir');
     });
 
     describe('strictInputTypes', () => {
@@ -998,6 +1047,115 @@ export declare class AnimationEvent {
     `);
 
       env.driveMain();
+    });
+
+    // https://github.com/angular/angular/issues/40125
+    it('should accept NgFor iteration when trackBy is used with a wider type', () => {
+      env.tsconfig({strictTemplates: true});
+      env.write('test.ts', `
+        import {CommonModule} from '@angular/common';
+        import {Component, NgModule} from '@angular/core';
+
+        interface Base {
+          id: string;
+        }
+
+        interface Derived extends Base {
+          name: string;
+        }
+
+        @Component({
+          selector: 'test',
+          template: '<div *ngFor="let derived of derivedList; trackBy: trackByBase">{{derived.name}}</div>',
+        })
+        class TestCmp {
+          derivedList!: Derived[];
+
+          trackByBase(index: number, item: Base): string {
+            return item.id;
+          }
+        }
+
+        @NgModule({
+          declarations: [TestCmp],
+          imports: [CommonModule],
+        })
+        class Module {}
+    `);
+
+      env.driveMain();
+    });
+
+    // https://github.com/angular/angular/issues/42609
+    it('should accept NgFor iteration when trackBy is used with an `any` array', () => {
+      env.tsconfig({strictTemplates: true});
+      env.write('test.ts', `
+        import {CommonModule} from '@angular/common';
+        import {Component, NgModule} from '@angular/core';
+
+        interface ItemType {
+          id: string;
+        }
+
+        @Component({
+          selector: 'test',
+          template: '<div *ngFor="let item of anyList; trackBy: trackByBase">{{item.name}}</div>',
+        })
+        class TestCmp {
+          anyList!: any[];
+
+          trackByBase(index: number, item: ItemType): string {
+            return item.id;
+          }
+        }
+
+        @NgModule({
+          declarations: [TestCmp],
+          imports: [CommonModule],
+        })
+        class Module {}
+    `);
+
+      env.driveMain();
+    });
+
+    it('should reject NgFor iteration when trackBy is incompatible with item type', () => {
+      env.tsconfig({strictTemplates: true});
+      env.write('test.ts', `
+        import {CommonModule} from '@angular/common';
+        import {Component, NgModule} from '@angular/core';
+
+        interface ItemType {
+          id: string;
+        }
+
+        interface UnrelatedType {
+          name: string;
+        }
+
+        @Component({
+          selector: 'test',
+          template: '<div *ngFor="let item of unrelatedList; trackBy: trackByBase">{{item.name}}</div>',
+        })
+        class TestCmp {
+          unrelatedList!: UnrelatedType[];
+
+          trackByBase(index: number, item: ItemType): string {
+            return item.id;
+          }
+        }
+
+        @NgModule({
+          declarations: [TestCmp],
+          imports: [CommonModule],
+        })
+        class Module {}
+    `);
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(diags[0].messageText)
+          .toContain(`is not assignable to type 'TrackByFunction<UnrelatedType>'.`);
     });
 
     it('should infer the context of NgFor', () => {
@@ -2348,8 +2506,3 @@ export declare class AnimationEvent {
     });
   });
 });
-
-function getSourceCodeForDiagnostic(diag: ts.Diagnostic): string {
-  const text = diag.file!.text;
-  return text.substr(diag.start!, diag.length!);
-}

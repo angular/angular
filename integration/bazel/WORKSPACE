@@ -5,18 +5,18 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 # Fetch rules_nodejs so we can install our npm dependencies
 http_archive(
     name = "build_bazel_rules_nodejs",
-    sha256 = "65067dcad93a61deb593be7d3d9a32a4577d09665536d8da536d731da5cd15e2",
-    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/3.4.2/rules_nodejs-3.4.2.tar.gz"],
+    sha256 = "4501158976b9da216295ac65d872b1be51e3eeb805273e68c516d2eb36ae1fbb",
+    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/4.4.1/rules_nodejs-4.4.1.tar.gz"],
 )
 
 # Fetch sass rules for compiling sass files
 http_archive(
     name = "io_bazel_rules_sass",
-    sha256 = "8f96a3324ebab0814ca2caaf3f14b655534377babdf919acb07b4571d15a0442",
-    strip_prefix = "rules_sass-1.32.12",
+    sha256 = "b17f129f0bec33b6ebefe53d51f0b7b80963835ad940b388eea4628e9d5835e7",
+    strip_prefix = "rules_sass-1.41.1",
     urls = [
-        "https://github.com/bazelbuild/rules_sass/archive/1.32.12.zip",
-        "https://mirror.bazel.build/github.com/bazelbuild/rules_sass/archive/1.32.12.zip",
+        "https://github.com/bazelbuild/rules_sass/archive/1.41.1.zip",
+        "https://mirror.bazel.build/github.com/bazelbuild/rules_sass/archive/1.41.1.zip",
     ],
 )
 
@@ -26,8 +26,8 @@ load("@build_bazel_rules_nodejs//:index.bzl", "node_repositories", "yarn_install
 # Setup the Node.js toolchain
 node_repositories(
     # Use same node version as root angular WORKSPACE since
-    node_version = "14.16.1",
-    yarn_version = "1.12.1",
+    node_version = "14.17.6",
+    yarn_version = "1.22.10",
 )
 
 # Install our npm dependencies into @npm

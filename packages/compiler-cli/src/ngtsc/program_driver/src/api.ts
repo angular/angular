@@ -6,8 +6,31 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as ts from 'typescript';
+import ts from 'typescript';
 import {AbsoluteFsPath} from '../../file_system';
+
+export interface FileUpdate {
+  /**
+   * The source file text.
+   */
+  newText: string;
+
+  /**
+   * Represents the source file from the original program that is being updated. If the file update
+   * targets a shim file then this is null, as shim files do not have an associated original file.
+   */
+  originalFile: ts.SourceFile|null;
+}
+
+export const NgOriginalFile = Symbol('NgOriginalFile');
+
+/**
+ * If an updated file has an associated original source file, then the original source file
+ * is attached to the updated file using the `NgOriginalFile` symbol.
+ */
+export interface MaybeSourceFileWithOriginalFile extends ts.SourceFile {
+  [NgOriginalFile]?: ts.SourceFile;
+}
 
 export interface ProgramDriver {
   /**
@@ -25,7 +48,7 @@ export interface ProgramDriver {
    * Incorporate a set of changes to either augment or completely replace the type-checking code
    * included in the type-checking program.
    */
-  updateFiles(contents: Map<AbsoluteFsPath, string>, updateMode: UpdateMode): void;
+  updateFiles(contents: Map<AbsoluteFsPath, FileUpdate>, updateMode: UpdateMode): void;
 
   /**
    * Retrieve a string version for a given `ts.SourceFile`, which much change when the contents of

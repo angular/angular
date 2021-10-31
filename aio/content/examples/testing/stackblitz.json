@@ -10,9 +10,8 @@
 
     "src/app/**/*.css",
     "src/app/**/*.html",
-    "src/app/**/*.ts",
-
-    "!src/**/*.spec.ts"
+    "src/app/**/*.ts"
   ],
-  "tags": ["testing"]
+  "tags": ["testing"],
+  "devDependencies": ["jasmine-core", "jasmine-marbles"]
 }

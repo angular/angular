@@ -8,7 +8,8 @@
 
 /// <reference types="node" />
 
-import * as cluster from 'cluster';
+import cluster from 'cluster';
+import module from 'module';
 
 import {AbsoluteFsPath, PathManipulation} from '../../../../src/ngtsc/file_system';
 import {Logger} from '../../../../src/ngtsc/logging';
@@ -20,7 +21,6 @@ import {stringifyTask} from '../tasks/utils';
 
 import {MessageFromWorker, TaskCompletedMessage, TransformedFilesMessage, UpdatePackageJsonMessage} from './api';
 import {Deferred, sendMessageToWorker} from './utils';
-
 
 /**
  * The cluster master is responsible for analyzing all entry-points, planning the work that needs to
@@ -44,7 +44,7 @@ export class ClusterMaster {
     }
 
     // Set the worker entry-point
-    cluster.setupMaster({exec: this.fileSystem.resolve(__dirname, 'worker.js')});
+    cluster.setupMaster({exec: getClusterWorkerScriptPath(fileSystem)});
 
     this.taskQueue = analyzeEntryPoints();
     this.onTaskCompleted = createTaskCompletedCallback(this.taskQueue);
@@ -56,8 +56,6 @@ export class ClusterMaster {
     }
 
     // Set up listeners for worker events (emitted on `cluster`).
-    cluster.on('online', this.wrapEventHandler(worker => this.onWorkerOnline(worker.id)));
-
     cluster.on(
         'message', this.wrapEventHandler((worker, msg) => this.onWorkerMessage(worker.id, msg)));
 
@@ -199,6 +197,14 @@ export class ClusterMaster {
 
   /** Handle a message from a worker. */
   private onWorkerMessage(workerId: number, msg: MessageFromWorker): void {
+    // A worker is now ready and can retrieve a processing task.
+    if (msg.type === 'ready') {
+      this.onWorkerReady(workerId);
+      return;
+    }
+
+    // All other messages except for `ready` are unexpected if the worker has
+    // not notified the `ClusterMaster` about being ready.
     if (!this.taskAssignments.has(workerId)) {
       const knownWorkers = Array.from(this.taskAssignments.keys());
       throw new Error(
@@ -221,8 +227,8 @@ export class ClusterMaster {
     }
   }
 
-  /** Handle a worker's coming online. */
-  private onWorkerOnline(workerId: number): void {
+  /** Handle a worker's coming online and ready for retrieving IPC messages. */
+  private onWorkerReady(workerId: number): void {
     if (this.taskAssignments.has(workerId)) {
       throw new Error(`Invariant violated: Worker #${workerId} came online more than once.`);
     }
@@ -329,4 +335,17 @@ export class ClusterMaster {
       }
     };
   }
+}
+
+/** Gets the absolute file path to the cluster worker script. */
+export function getClusterWorkerScriptPath(fileSystem: PathManipulation): AbsoluteFsPath {
+  // This is an interop allowing for the worker script to be determined in both
+  // a CommonJS module, or an ES module which does not come with `require` by default.
+  const requireFn =
+      typeof require !== 'undefined' ? require : module.createRequire(__ESM_IMPORT_META_URL__);
+  // We resolve the worker script using module resolution as in the package output,
+  // the worker might be bundled but exposed through a subpath export mapping.
+  const workerScriptPath =
+      requireFn.resolve('@angular/compiler-cli/ngcc/src/execution/cluster/ngcc_cluster_worker');
+  return fileSystem.resolve(workerScriptPath);
 }

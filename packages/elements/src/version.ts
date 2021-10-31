@@ -7,6 +7,7 @@
  */
 
 import {Version} from '@angular/core';
+
 /**
  * @publicApi
  */

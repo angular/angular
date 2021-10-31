@@ -5,7 +5,8 @@ import { Component } from '@angular/core';
   template: `
     <section>
       <h2>Open Close Component</h2>
-      <input type="checkbox" [checked]="logging" (click)="toggleLogging()"/> Console Log Animation Events
+      <input type="checkbox" id="log-checkbox" [checked]="logging" (click)="toggleLogging()"/>
+      <label for="log-checkbox">Console Log Animation Events</label>
 
       <app-open-close [logging]="logging"></app-open-close>
     </section>

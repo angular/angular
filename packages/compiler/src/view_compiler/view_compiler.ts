@@ -9,6 +9,7 @@
 import {CompileDirectiveMetadata, CompilePipeSummary, CompileQueryMetadata, rendererTypeName, tokenReference, viewClassName} from '../compile_metadata';
 import {CompileReflector} from '../compile_reflector';
 import {BindingForm, BuiltinConverter, convertActionBinding, convertPropertyBinding, convertPropertyBindingBuiltins, EventHandlerVars, LocalResolver} from '../compiler_util/expression_converter';
+import {OutputContext} from '../constant_pool';
 import {ArgumentType, BindingFlags, ChangeDetectionStrategy, NodeFlags, QueryBindingType, QueryValueType, ViewFlags} from '../core';
 import {AST, ASTWithSource, Interpolation} from '../expression_parser/ast';
 import {Identifiers} from '../identifiers';
@@ -18,13 +19,12 @@ import * as o from '../output/output_ast';
 import {convertValueToOutputAst} from '../output/value_util';
 import {ParseSourceSpan} from '../parse_util';
 import {AttrAst, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, DirectiveAst, ElementAst, EmbeddedTemplateAst, NgContentAst, PropertyBindingType, ProviderAst, QueryMatch, ReferenceAst, TemplateAst, TemplateAstVisitor, templateVisitAll, TextAst, VariableAst} from '../template_parser/template_ast';
-import {OutputContext} from '../util';
 
 import {componentFactoryResolverProviderDef, depDef, lifecycleHookToNodeFlag, providerDef} from './provider_compiler';
 
 const CLASS_ATTR = 'class';
 const STYLE_ATTR = 'style';
-const IMPLICIT_TEMPLATE_VAR = '\$implicit';
+const IMPLICIT_TEMPLATE_VAR = '$implicit';
 
 export class ViewCompileResult {
   constructor(public viewClassVar: string, public rendererTypeVar: string) {}
@@ -680,9 +680,13 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
   }
 
   notifyImplicitReceiverUse(): void {
-    // Not needed in View Engine as View Engine walks through the generated
+    // Not needed in ViewEngine as ViewEngine walks through the generated
     // expressions to figure out if the implicit receiver is used and needs
     // to be generated as part of the pre-update statements.
+  }
+
+  maybeRestoreView(): void {
+    // Not necessary in ViewEngine, because view restoration is an Ivy concept.
   }
 
   private _createLiteralArrayConverter(sourceSpan: ParseSourceSpan, argCount: number):
@@ -752,17 +756,13 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
       const pipeValueExpr: o.Expression =
           o.importExpr(Identifiers.nodeValue).callFn([compViewExpr, o.literal(pipeNodeIndex)]);
 
-      return (args: o.Expression[]) => callUnwrapValue(
-                 expression.nodeIndex, expression.bindingIndex,
-                 callCheckStmt(checkIndex, [pipeValueExpr].concat(args)));
+      return (args: o.Expression[]) => callCheckStmt(checkIndex, [pipeValueExpr].concat(args));
     } else {
       const nodeIndex = this._createPipe(expression.sourceSpan, pipe);
       const nodeValueExpr =
           o.importExpr(Identifiers.nodeValue).callFn([VIEW_VAR, o.literal(nodeIndex)]);
 
-      return (args: o.Expression[]) => callUnwrapValue(
-                 expression.nodeIndex, expression.bindingIndex,
-                 nodeValueExpr.callMethod('transform', args));
+      return (args: o.Expression[]) => nodeValueExpr.prop('transform').callFn(args);
     }
   }
 
@@ -1008,12 +1008,6 @@ function callCheckStmt(nodeIndex: number, exprs: o.Expression[]): o.Expression {
     return CHECK_VAR.callFn(
         [VIEW_VAR, o.literal(nodeIndex), o.literal(ArgumentType.Inline), ...exprs]);
   }
-}
-
-function callUnwrapValue(nodeIndex: number, bindingIdx: number, expr: o.Expression): o.Expression {
-  return o.importExpr(Identifiers.unwrapValue).callFn([
-    VIEW_VAR, o.literal(nodeIndex), o.literal(bindingIdx), expr
-  ]);
 }
 
 function elementEventNameAndTarget(

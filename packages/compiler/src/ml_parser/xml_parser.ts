@@ -10,14 +10,12 @@ import {TokenizeOptions} from './lexer';
 import {Parser, ParseTreeResult} from './parser';
 import {getXmlTagDefinition} from './xml_tags';
 
-export {ParseTreeResult, TreeError} from './parser';
-
 export class XmlParser extends Parser {
   constructor() {
     super(getXmlTagDefinition);
   }
 
-  parse(source: string, url: string, options?: TokenizeOptions): ParseTreeResult {
+  override parse(source: string, url: string, options?: TokenizeOptions): ParseTreeResult {
     return super.parse(source, url, options);
   }
 }

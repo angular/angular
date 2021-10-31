@@ -19,22 +19,22 @@ class BaseError extends Error {
     this._nativeError = nativeError;
   }
 
-  get message() {
+  override get message() {
     return this._nativeError.message;
   }
-  set message(message) {
+  override set message(message) {
     this._nativeError.message = message;
   }
-  get name() {
+  override get name() {
     return this._nativeError.name;
   }
-  get stack() {
+  override get stack() {
     return (this._nativeError as any).stack;
   }
-  set stack(value) {
+  override set stack(value) {
     (this._nativeError as any).stack = value;
   }
-  toString() {
+  override toString() {
     return this._nativeError.toString();
   }
 }
@@ -47,7 +47,7 @@ class WrappedError extends BaseError {
     this.originalError = error;
   }
 
-  get stack() {
+  override get stack() {
     return ((this.originalError instanceof Error ? this.originalError : this._nativeError) as any)
         .stack;
   }
@@ -58,7 +58,7 @@ class TestError extends WrappedError {
     super(`${message} caused by: ${error instanceof Error ? error.message : error}`, error);
   }
 
-  get message() {
+  override get message() {
     return 'test ' + this.originalError.message;
   }
 }
@@ -68,11 +68,11 @@ class TestMessageError extends WrappedError {
     super(`${message} caused by: ${error instanceof Error ? error.message : error}`, error);
   }
 
-  get message() {
+  override get message() {
     return 'test ' + this.originalError.message;
   }
 
-  set message(value) {
+  override set message(value) {
     this.originalError.message = value;
   }
 }

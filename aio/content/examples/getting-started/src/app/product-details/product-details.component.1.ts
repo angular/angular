@@ -3,7 +3,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
-import { products } from '../products';
+import { Product, products } from '../products';
 // #enddocregion imports
 
 @Component({
@@ -13,12 +13,11 @@ import { products } from '../products';
 })
 // #docregion props-methods, product-prop
 export class ProductDetailsComponent implements OnInit {
-  product;
+
+  product: Product | undefined;
   // #enddocregion product-prop
 
-  constructor(
-    private route: ActivatedRoute,
-  ) { }
+  constructor(private route: ActivatedRoute) { }
 
   // #enddocregion props-methods
   // #docregion get-product

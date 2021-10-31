@@ -8,9 +8,12 @@ import { MissionService } from './mission.service';
   template: `
     <h2>Mission Control</h2>
     <button (click)="announce()">Announce mission</button>
-    <app-astronaut *ngFor="let astronaut of astronauts"
+
+    <app-astronaut
+      *ngFor="let astronaut of astronauts"
       [astronaut]="astronaut">
     </app-astronaut>
+
     <h3>History</h3>
     <ul>
       <li *ngFor="let event of history">{{event}}</li>

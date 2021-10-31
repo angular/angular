@@ -60,10 +60,12 @@ export function i18nIcuMsg(message: string, placeholders: Placeholder[]): string
 /**
  * Describes placeholder type used in tests.
  *
- * Note: the type is an array (not an object), since it's important to preserve the order of
- * placeholders (so that we can compare it with generated output).
+ * - The first item is the placeholder name.
+ * - The second item is the identifier of the variable that contains the placeholder.
+ * - The third (optional) items is the id of the message that this placeholder references.
+ *   This is used for matching ICU placeholders to ICU messages.
  */
-export type Placeholder = [string, string];
+export type Placeholder = [name: string, indentifier: string, associatedId: string];
 
 /**
  * Describes message metadata object.
@@ -80,7 +82,7 @@ interface Meta {
  */
 function i18nPlaceholdersToString(placeholders: Placeholder[]): string {
   if (placeholders.length === 0) return '';
-  const result = placeholders.map(([key, value]) => `"${key}": ${quotedValue(value)}`);
+  const result = placeholders.map(([name, identifier]) => `"${name}": ${quotedValue(identifier)}`);
   return `, { ${result.join(',')} }`;
 }
 
@@ -90,11 +92,12 @@ function i18nPlaceholdersToString(placeholders: Placeholder[]): string {
 function i18nMsgInsertLocalizePlaceholders(message: string, placeholders: Placeholder[]): string {
   if (placeholders.length > 0) {
     message = message.replace(/{\$(.*?)}/g, function(_, name) {
-      const value = placeholders.find(([k, _]) => k === name)![1];
+      const placeholder = placeholders.find((p) => p[0] === name)!;
       // e.g. startDivTag -> START_DIV_TAG
       const key = name.replace(/[A-Z]/g, (ch: string) => '_' + ch).toUpperCase();
+      const associated = placeholder.length === 3 ? `@@${placeholder[2]}` : '';
       return '$' +
-          `{${quotedValue(value)}}:${key}:`;
+          `{${quotedValue(placeholder[1])}}:${key}${associated}:`;
     });
   }
   return message;

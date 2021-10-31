@@ -5,7 +5,7 @@
   "author": "angular",
   "license": "MIT",
   "engines": {
-    "node": "^12.14.1 || ^14.0.0"
+    "node": "^12.20.0 || ^14.15.0 || >=16.10.0"
   },
   "peerDependencies": {
     "@angular/animations": "0.0.0-PLACEHOLDER",
@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "domino": "^2.1.2",
-    "tslib": "^2.1.0",
+    "tslib": "^2.3.0",
     "xhr2": "^0.2.0"
   },
   "repository": {
@@ -29,15 +29,8 @@
     "packageGroup": "NG_UPDATE_PACKAGE_GROUP"
   },
   "sideEffects": [
-    "./bundles/platform-server-init.umd.js",
-    "./bundles/platform-server-init.umd.min.js",
-    "./esm2015/init/src/init.js",
-    "./fesm2015/init.js",
-    "./__ivy_ngcc__/bundles/platform-server-init.umd.js",
-    "./__ivy_ngcc__/esm2015/init/src/init.js",
-    "./__ivy_ngcc__/fesm2015/init.js"
-  ],
-  "publishConfig":{
-    "registry":"https://wombat-dressing-room.appspot.com"
-  }
+    "./esm2020/init/src/init.mjs",
+    "./fesm2015/init.mjs",
+    "./fesm2020/init.mjs"
+  ]
 }

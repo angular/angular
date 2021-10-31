@@ -74,6 +74,8 @@ export class I18nMetaVisitor implements html.Visitor {
   }
 
   visitElement(element: html.Element): any {
+    let message: i18n.Message|undefined = undefined;
+
     if (hasI18nAttrs(element)) {
       this.hasI18nMeta = true;
       const attrs: html.Attribute[] = [];
@@ -83,12 +85,13 @@ export class I18nMetaVisitor implements html.Visitor {
         if (attr.name === I18N_ATTR) {
           // root 'i18n' node attribute
           const i18n = element.i18n || attr.value;
-          const message = this._generateI18nMessage(element.children, i18n, setI18nRefs);
-          // do not assign empty i18n meta
-          if (message.nodes.length) {
-            element.i18n = message;
+          message = this._generateI18nMessage(element.children, i18n, setI18nRefs);
+          if (message.nodes.length === 0) {
+            // Ignore the message if it is empty.
+            message = undefined;
           }
-
+          // Store the message on the element
+          element.i18n = message;
         } else if (attr.name.startsWith(I18N_ATTR_PREFIX)) {
           // 'i18n-*' attributes
           const name = attr.name.slice(I18N_ATTR_PREFIX.length);
@@ -121,11 +124,11 @@ export class I18nMetaVisitor implements html.Visitor {
         element.attrs = attrs;
       }
     }
-    html.visitAll(this, element.children, element.i18n);
+    html.visitAll(this, element.children, message);
     return element;
   }
 
-  visitExpansion(expansion: html.Expansion, currentMessage: i18n.Message|undefined): any {
+  visitExpansion(expansion: html.Expansion, currentMessage: i18n.Message|null): any {
     let message;
     const meta = expansion.i18n;
     this.hasI18nMeta = true;
@@ -137,6 +140,10 @@ export class I18nMetaVisitor implements html.Visitor {
       message = this._generateI18nMessage([expansion], meta);
       const icu = icuFromI18nMessage(message);
       icu.name = name;
+      if (currentMessage !== null) {
+        // Also update the placeholderToMessage map with this new message
+        currentMessage.placeholderToMessage[name] = message;
+      }
     } else {
       // ICU is a top level message, try to use metadata from container element if provided via
       // `context` argument. Note: context may not be available for standalone ICUs (without

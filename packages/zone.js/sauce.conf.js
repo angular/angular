@@ -38,12 +38,6 @@ module.exports = function(config, ignoredLaunchers) {
     // 'SL_IOS9': {base: 'SauceLabs', browserName: 'iphone', platform: 'OS X 10.10', version:
     // '9.3'},
     'SL_IOS10': {base: 'SauceLabs', browserName: 'iphone', platform: 'OS X 10.10', version: '10.3'},
-    'SL_IE11': {
-      base: 'SauceLabs',
-      browserName: 'internet explorer',
-      platform: 'Windows 10',
-      version: '11'
-    },
     'SL_MSEDGE': {
       base: 'SauceLabs',
       browserName: 'MicrosoftEdge',

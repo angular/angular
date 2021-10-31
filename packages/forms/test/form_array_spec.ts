@@ -7,7 +7,6 @@
  */
 
 import {fakeAsync, tick} from '@angular/core/testing';
-import {AsyncTestCompleter, beforeEach, describe, inject, it} from '@angular/core/testing/src/testing_internal';
 import {AbstractControl, FormArray, FormControl, FormGroup, ValidationErrors, ValidatorFn} from '@angular/forms';
 import {Validators} from '@angular/forms/src/validators';
 import {of} from 'rxjs';
@@ -856,64 +855,60 @@ describe('FormArray', () => {
       a = new FormArray([c1, c2]);
     });
 
-    it('should fire an event after the value has been updated',
-       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         a.valueChanges.subscribe({
-           next: (value: any) => {
-             expect(a.value).toEqual(['new1', 'old2']);
-             expect(value).toEqual(['new1', 'old2']);
-             async.done();
-           }
-         });
-         c1.setValue('new1');
-       }));
+    it('should fire an event after the value has been updated', done => {
+      a.valueChanges.subscribe({
+        next: (value: any) => {
+          expect(a.value).toEqual(['new1', 'old2']);
+          expect(value).toEqual(['new1', 'old2']);
+          done();
+        }
+      });
+      c1.setValue('new1');
+    });
 
-    it('should fire an event after the control\'s observable fired an event',
-       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         let controlCallbackIsCalled = false;
+    it('should fire an event after the control\'s observable fired an event', done => {
+      let controlCallbackIsCalled = false;
 
 
-         c1.valueChanges.subscribe({
-           next: (value: any) => {
-             controlCallbackIsCalled = true;
-           }
-         });
+      c1.valueChanges.subscribe({
+        next: (value: any) => {
+          controlCallbackIsCalled = true;
+        }
+      });
 
-         a.valueChanges.subscribe({
-           next: (value: any) => {
-             expect(controlCallbackIsCalled).toBe(true);
-             async.done();
-           }
-         });
+      a.valueChanges.subscribe({
+        next: (value: any) => {
+          expect(controlCallbackIsCalled).toBe(true);
+          done();
+        }
+      });
 
-         c1.setValue('new1');
-       }));
+      c1.setValue('new1');
+    });
 
-    it('should fire an event when a control is removed',
-       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         a.valueChanges.subscribe({
-           next: (value: any) => {
-             expect(value).toEqual(['old1']);
-             async.done();
-           }
-         });
+    it('should fire an event when a control is removed', done => {
+      a.valueChanges.subscribe({
+        next: (value: any) => {
+          expect(value).toEqual(['old1']);
+          done();
+        }
+      });
 
-         a.removeAt(1);
-       }));
+      a.removeAt(1);
+    });
 
-    it('should fire an event when a control is added',
-       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         a.removeAt(1);
+    it('should fire an event when a control is added', done => {
+      a.removeAt(1);
 
-         a.valueChanges.subscribe({
-           next: (value: any) => {
-             expect(value).toEqual(['old1', 'old2']);
-             async.done();
-           }
-         });
+      a.valueChanges.subscribe({
+        next: (value: any) => {
+          expect(value).toEqual(['old1', 'old2']);
+          done();
+        }
+      });
 
-         a.push(c2);
-       }));
+      a.push(c2);
+    });
   });
 
   describe('get', () => {
@@ -1059,6 +1054,23 @@ describe('FormArray', () => {
 
          expect(g.errors).toEqual({'async': true, 'other': true});
          expect(g.pending).toEqual(false);
+       }));
+
+    it('should fire statusChanges events when async validators are added via options object',
+       fakeAsync(() => {
+         // The behavior is tested (in other spec files) for each of the model types (`FormControl`,
+         // `FormGroup` and `FormArray`).
+         let statuses: string[] = [];
+
+         // Create a form control with an async validator added via options object.
+         const asc = new FormArray([], {asyncValidators: [() => Promise.resolve(null)]});
+
+         // Subscribe to status changes.
+         asc.statusChanges.subscribe((status: any) => statuses.push(status));
+
+         // After a tick, the async validator should change status PENDING -> VALID.
+         tick();
+         expect(statuses).toEqual(['VALID']);
        }));
   });
 

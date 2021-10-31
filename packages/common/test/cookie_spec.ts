@@ -17,7 +17,6 @@
  */
 
 import {parseCookieValue} from '@angular/common/src/cookie';
-import {describe, expect, it} from '@angular/core/testing/src/testing_internal';
 
 {
   describe('cookies', () => {

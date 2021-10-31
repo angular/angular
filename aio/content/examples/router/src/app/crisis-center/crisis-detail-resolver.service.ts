@@ -19,7 +19,7 @@ export class CrisisDetailResolverService implements Resolve<Crisis> {
   constructor(private cs: CrisisService, private router: Router) {}
 
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Crisis> | Observable<never> {
-    const id = route.paramMap.get('id');
+    const id = route.paramMap.get('id')!;
 
     return this.cs.getCrisis(id).pipe(
       take(1),

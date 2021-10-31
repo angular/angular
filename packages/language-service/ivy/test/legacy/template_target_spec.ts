@@ -147,7 +147,7 @@ describe('getTargetAtPosition for template AST', () => {
     const {context} = getTargetAtPosition(nodes, position)!;
     const {node} = context as SingleNodeTarget;
     expect(isExpressionNode(node!)).toBe(true);
-    expect(node).toBeInstanceOf(e.MethodCall);
+    expect(node).toBeInstanceOf(e.PropertyRead);
   });
 
   it('should locate element children', () => {
@@ -234,7 +234,7 @@ describe('getTargetAtPosition for template AST', () => {
     expect(errors).toBe(null);
     const {context} = getTargetAtPosition(nodes, position)!;
     const {node} = context as SingleNodeTarget;
-    expect(node).toBeInstanceOf(e.MethodCall);
+    expect(node).toBeInstanceOf(e.PropertyRead);
   });
 
   it('should locate template attribute key', () => {
@@ -471,6 +471,15 @@ describe('getTargetAtPosition for expression AST', () => {
     expect(node).toBeInstanceOf(e.KeyedRead);
   });
 
+  it('should locate safe keyed read', () => {
+    const {errors, nodes, position} = parse(`{{ foo?.['bar']¦ }}`);
+    expect(errors).toBe(null);
+    const {context} = getTargetAtPosition(nodes, position)!;
+    const {node} = context as SingleNodeTarget;
+    expect(isExpressionNode(node!)).toBe(true);
+    expect(node).toBeInstanceOf(e.SafeKeyedRead);
+  });
+
   it('should locate property write', () => {
     const {errors, nodes, position} = parse(`<div (foo)="b¦ar=$event"></div>`);
     expect(errors).toBe(null);
@@ -537,7 +546,7 @@ describe('getTargetAtPosition for expression AST', () => {
     const {context} = getTargetAtPosition(nodes, position)!;
     const {node} = context as SingleNodeTarget;
     expect(isExpressionNode(node!)).toBe(true);
-    expect(node).toBeInstanceOf(e.MethodCall);
+    expect(node).toBeInstanceOf(e.Call);
   });
 
   it('should locate safe method call', () => {
@@ -546,16 +555,16 @@ describe('getTargetAtPosition for expression AST', () => {
     const {context} = getTargetAtPosition(nodes, position)!;
     const {node} = context as SingleNodeTarget;
     expect(isExpressionNode(node!)).toBe(true);
-    expect(node).toBeInstanceOf(e.SafeMethodCall);
+    expect(node).toBeInstanceOf(e.Call);
   });
 
   it('should identify when in the argument position in a no-arg method call', () => {
     const {errors, nodes, position} = parse(`{{ title.toString(¦) }}`);
     expect(errors).toBe(null);
     const {context} = getTargetAtPosition(nodes, position)!;
-    expect(context.kind).toEqual(TargetNodeKind.MethodCallExpressionInArgContext);
+    expect(context.kind).toEqual(TargetNodeKind.CallExpressionInArgContext);
     const {node} = context as SingleNodeTarget;
-    expect(node).toBeInstanceOf(e.MethodCall);
+    expect(node).toBeInstanceOf(e.Call);
   });
 
   it('should locate literal primitive in interpolation', () => {
@@ -612,6 +621,38 @@ describe('getTargetAtPosition for expression AST', () => {
     const {node} = context as SingleNodeTarget;
     expect(isExpressionNode(node!)).toBe(true);
     expect(node).toBeInstanceOf(e.Conditional);
+  });
+
+  describe('object literal shorthand', () => {
+    it('should locate on literal with one shorthand property', () => {
+      const {errors, nodes, position} = parse(`{{ {va¦l1} }}`);
+      expect(errors).toBe(null);
+      const {context} = getTargetAtPosition(nodes, position)!;
+      expect(context.kind).toBe(TargetNodeKind.RawExpression);
+      const {node} = context as SingleNodeTarget;
+      expect(node).toBeInstanceOf(e.PropertyRead);
+      expect((node as e.PropertyRead).name).toBe('val1');
+    });
+
+    it('should locate on literal with multiple shorthand properties', () => {
+      const {errors, nodes, position} = parse(`{{ {val1, va¦l2} }}`);
+      expect(errors).toBe(null);
+      const {context} = getTargetAtPosition(nodes, position)!;
+      expect(context.kind).toBe(TargetNodeKind.RawExpression);
+      const {node} = context as SingleNodeTarget;
+      expect(node).toBeInstanceOf(e.PropertyRead);
+      expect((node as e.PropertyRead).name).toBe('val2');
+    });
+
+    it('should locale on property with mixed shorthand and regular properties', () => {
+      const {errors, nodes, position} = parse(`{{ {val1: 'val1', va¦l2} }}`);
+      expect(errors).toBe(null);
+      const {context} = getTargetAtPosition(nodes, position)!;
+      expect(context.kind).toBe(TargetNodeKind.RawExpression);
+      const {node} = context as SingleNodeTarget;
+      expect(node).toBeInstanceOf(e.PropertyRead);
+      expect((node as e.PropertyRead).name).toBe('val2');
+    });
   });
 });
 
@@ -786,5 +827,41 @@ describe('findNodeAtPosition for microsyntax expression', () => {
     const {context} = getTargetAtPosition(nodes, position)!;
     expect(context.kind).toBe(TargetNodeKind.ElementInBodyContext);
     expect((context as SingleNodeTarget).node).toBeInstanceOf(t.Element);
+  });
+});
+
+describe('unclosed elements', () => {
+  it('should locate children of unclosed elements', () => {
+    const {errors, nodes, position} = parse(`<div> {{b¦ar}}`);
+    expect(errors).toBe(null);
+    const {context} = getTargetAtPosition(nodes, position)!;
+    const {node} = context as SingleNodeTarget;
+    expect(isExpressionNode(node!)).toBe(true);
+    expect(node).toBeInstanceOf(e.PropertyRead);
+  });
+
+  it('should locate children of outside of unclosed when parent is closed elements', () => {
+    const {nodes, position} = parse(`<li><div></li> {{b¦ar}}`);
+    const {context} = getTargetAtPosition(nodes, position)!;
+    const {node} = context as SingleNodeTarget;
+    expect(isExpressionNode(node!)).toBe(true);
+    expect(node).toBeInstanceOf(e.PropertyRead);
+  });
+
+  it('should locate nodes before unclosed element', () => {
+    const {nodes, position} = parse(`<li>{{b¦ar}}<div></li>`);
+    const {context} = getTargetAtPosition(nodes, position)!;
+    const {node} = context as SingleNodeTarget;
+    expect(isExpressionNode(node!)).toBe(true);
+    expect(node).toBeInstanceOf(e.PropertyRead);
+  });
+
+  it('should be correct for end tag of parent node with unclosed child', () => {
+    const {nodes, position} = parse(`<li><div><div>{{bar}}</l¦i>`);
+    const {context} = getTargetAtPosition(nodes, position)!;
+    const {node} = context as SingleNodeTarget;
+    expect(isTemplateNode(node!)).toBe(true);
+    expect(node).toBeInstanceOf(t.Element);
+    expect((node as t.Element).name).toBe('li');
   });
 });

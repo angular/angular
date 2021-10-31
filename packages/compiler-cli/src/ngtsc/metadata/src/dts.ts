@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {Reference} from '../../imports';
 import {ClassDeclaration, isNamedClassDeclaration, ReflectionHost, TypeValueReferenceKind} from '../../reflection';
 
-import {DirectiveMeta, MetadataReader, NgModuleMeta, PipeMeta} from './api';
+import {DirectiveMeta, MetadataReader, MetaType, NgModuleMeta, PipeMeta} from './api';
 import {ClassPropertyMapping} from './property_mapping';
 import {extractDirectiveTypeCheckMeta, extractReferencesFromType, readStringArrayType, readStringMapType, readStringType} from './util';
 
@@ -30,7 +30,7 @@ export class DtsMetadataReader implements MetadataReader {
    */
   getNgModuleMetadata(ref: Reference<ClassDeclaration>): NgModuleMeta|null {
     const clazz = ref.node;
-    const resolutionContext = clazz.getSourceFile().fileName;
+
     // This operation is explicitly not memoized, as it depends on `ref.ownedByModuleGuess`.
     // TODO(alxhub): investigate caching of .d.ts module metadata.
     const ngModuleDef = this.reflector.getMembersOfClass(clazz).find(
@@ -49,12 +49,10 @@ export class DtsMetadataReader implements MetadataReader {
     const [_, declarationMetadata, importMetadata, exportMetadata] = ngModuleDef.type.typeArguments;
     return {
       ref,
-      declarations: extractReferencesFromType(
-          this.checker, declarationMetadata, ref.ownedByModuleGuess, resolutionContext),
-      exports: extractReferencesFromType(
-          this.checker, exportMetadata, ref.ownedByModuleGuess, resolutionContext),
-      imports: extractReferencesFromType(
-          this.checker, importMetadata, ref.ownedByModuleGuess, resolutionContext),
+      declarations:
+          extractReferencesFromType(this.checker, declarationMetadata, ref.bestGuessOwningModule),
+      exports: extractReferencesFromType(this.checker, exportMetadata, ref.bestGuessOwningModule),
+      imports: extractReferencesFromType(this.checker, importMetadata, ref.bestGuessOwningModule),
       schemas: [],
       rawDeclarations: null,
     };
@@ -95,6 +93,7 @@ export class DtsMetadataReader implements MetadataReader {
     const outputs =
         ClassPropertyMapping.fromMappedObject(readStringMapType(def.type.typeArguments[4]));
     return {
+      type: MetaType.Directive,
       ref,
       name: clazz.name.text,
       isComponent,
@@ -131,7 +130,12 @@ export class DtsMetadataReader implements MetadataReader {
       return null;
     }
     const name = type.literal.text;
-    return {ref, name};
+    return {
+      type: MetaType.Pipe,
+      ref,
+      name,
+      nameExpr: null,
+    };
   }
 }
 

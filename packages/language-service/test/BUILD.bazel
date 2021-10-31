@@ -72,13 +72,13 @@ filegroup(
 jasmine_node_test(
     name = "test",
     data = [
-        "//packages/common:npm_package",
-        "//packages/core:npm_package",
-        "//packages/forms:npm_package",
+        "@npm//@angular/common-12",
+        "@npm//@angular/core-12",
+        "@npm//@angular/forms-12",
     ],
     tags = [
         # the language service is not yet compatible with Ivy
-        "no-ivy-aot",
+        "view-engine-only",
     ],
     deps = [
         ":features_test_lib",
@@ -88,13 +88,13 @@ jasmine_node_test(
 jasmine_node_test(
     name = "infra_test",
     data = [
-        "//packages/common:npm_package",
-        "//packages/core:npm_package",
-        "//packages/forms:npm_package",
+        "@npm//@angular/common-12",
+        "@npm//@angular/core-12",
+        "@npm//@angular/forms-12",
     ],
     tags = [
         # the language service is not yet compatible with Ivy
-        "no-ivy-aot",
+        "view-engine-only",
     ],
     deps = [
         ":infra_test_lib",
@@ -121,14 +121,14 @@ ts_library(
 jasmine_node_test(
     name = "diagnostics",
     data = [
-        "//packages/common:npm_package",
-        "//packages/core:npm_package",
-        "//packages/forms:npm_package",
+        "@npm//@angular/common-12",
+        "@npm//@angular/core-12",
+        "@npm//@angular/forms-12",
     ],
     tags = [
         # Disabled as these tests pertain to diagnostics in the old ngc compiler. The Ivy ngtsc
         # compiler has its own tests for diagnostics.
-        "no-ivy-aot",
+        "view-engine-only",
     ],
     deps = [
         ":diagnostics_lib",

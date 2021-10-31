@@ -1,36 +1,18 @@
+load("@bazel_skylib//rules:build_test.bzl", "build_test")
 load("//tools:defaults.bzl", "jasmine_node_test", "ng_module", "ts_library")
 
 ts_library(
     name = "ng_module_ivy_test_lib",
     testonly = True,
     srcs = ["ng_module_ivy_test.ts"],
-    tags = ["ivy-only"],
+    tags = [],
     deps = ["@npm//@bazel/runfiles"],
 )
 
-# `ng_module` with `compilation_mode` explicitly set to `partial`.
-ng_module(
-    name = "test_module_partial_compilation",
-    srcs = ["test_module_partial_compilation.ts"],
-    compilation_mode = "partial",
-    tags = ["ivy-only"],
-    deps = ["//packages/core"],
-)
-
-# `ng_module` with `compilation_mode` explicitly set to `full`.
-ng_module(
-    name = "test_module_full_compilation",
-    srcs = ["test_module_full_compilation.ts"],
-    compilation_mode = "full",
-    tags = ["ivy-only"],
-    deps = ["//packages/core"],
-)
-
-# `ng_module` with no specific `compilation_mode` attribute specified.
 ng_module(
     name = "test_module_default_compilation",
     srcs = ["test_module_default_compilation.ts"],
-    tags = ["ivy-only"],
+    tags = [],
     deps = ["//packages/core"],
 )
 
@@ -39,8 +21,21 @@ jasmine_node_test(
     srcs = [":ng_module_ivy_test_lib"],
     data = [
         ":test_module_default_compilation",
-        ":test_module_full_compilation",
-        ":test_module_partial_compilation",
     ],
-    tags = ["ivy-only"],
+    tags = [],
+)
+
+ng_module(
+    name = "test_module_warnings_lib",
+    srcs = ["test_module_warnings.ts"],
+    experimental_extended_template_diagnostics = True,
+    strict_templates = True,
+    tags = [],
+    deps = ["//packages/core"],
+)
+
+build_test(
+    name = "test_module_warnings",
+    tags = [],
+    targets = [":test_module_warnings_lib"],
 )

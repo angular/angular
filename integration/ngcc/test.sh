@@ -209,7 +209,7 @@ ngcc --formats fesm2015
 assertFailed "Expected 'ngcc --formats fesm2015' to fail (since '--formats' is deprecated)."
 
 # Does it timeout if there is another ngcc process running
-LOCKFILE=node_modules/@angular/compiler-cli/ngcc/__ngcc_lock_file__
+LOCKFILE=node_modules/@angular/compiler-cli/bundles/ngcc/__ngcc_lock_file__
 touch $LOCKFILE
 trap "[[ -f $LOCKFILE ]] && rm $LOCKFILE" EXIT
 ngcc
@@ -227,11 +227,3 @@ assertSucceeded "Expected the app to successfully compile with the ngcc-processe
 
   grep "directives: \[.*\.MatButton.*\]" dist/src/main.js
   assertSucceeded "Expected the compiled app's 'main.ts' to list 'MatButton' in 'directives'."
-
-
-# 'ivy-ngcc' should fail with an appropriate error message.
-  ivy-ngcc
-  assertFailed "Expected 'ivy-ngcc' to fail (since it was renamed to 'ngcc')."
-
-  ivy-ngcc 2>&1 | grep "Error: The 'ivy-ngcc' command was renamed to just 'ngcc'. Please update your usage."
-  assertSucceeded "Expected 'ivy-ngcc' to show an appropriate error message."

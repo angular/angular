@@ -8,5 +8,6 @@
     "!src/main-specs.ts"
   ],
   "file": "src/app/app.component.ts", 
-  "tags": ["http"]
+  "tags": ["http"],
+  "devDependencies": ["jasmine-core"]
 }

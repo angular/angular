@@ -8,12 +8,12 @@ import { HeroService } from '../hero.service';
 import { Hero } from '../hero';
 
 @Component({
-  selector: 'app-hero-detaill',
+  selector: 'app-hero-detail',
   templateUrl: './hero-detail.component.html',
   styleUrls: ['./hero-detail.component.css']
 })
 export class HeroDetailComponent implements OnInit  {
-  hero$: Observable<Hero>;
+  hero$!: Observable<Hero>;
 
   constructor(
     private route: ActivatedRoute,
@@ -23,7 +23,7 @@ export class HeroDetailComponent implements OnInit  {
 
   // #docregion snapshot
   ngOnInit() {
-    const id = this.route.snapshot.paramMap.get('id');
+    const id = this.route.snapshot.paramMap.get('id')!;
 
     this.hero$ = this.service.getHero(id);
   }

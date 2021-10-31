@@ -1,0 +1,73 @@
+@use '../../constants';
+@use '../../mixins';
+
+/* SELECT MENU */
+
+aio-select {
+  .form-select-menu {
+    position: relative;
+  }
+
+  .form-select-button {
+    box-sizing: border-box;
+    border-radius: 4px;
+    @include mixins.font-size(14);
+    font-weight: 400;
+    @include mixins.line-height(32);
+    outline: none;
+    padding: 4px 16px;
+    text-align: left;
+    width: 100%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+
+    strong {
+      font-weight: 600;
+      margin-right: 8px;
+      text-transform: capitalize;
+    }
+
+    &[disabled] {
+      cursor: not-allowed;
+    }
+  }
+
+  .form-select-dropdown {
+    border-radius: 4px;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    z-index: constants.$layer-2;
+
+    li {
+      cursor: pointer;
+      @include mixins.font-size(14);
+      @include mixins.line-height(32);
+      margin: 0;
+      padding: 4px 16px 4px 40px;
+      position: relative;
+      transition: all 0.2s;
+      border: 1px solid transparent;
+
+      &:first-child {
+        border-radius: 4px 4px 0 0;
+      }
+
+      &:last-child {
+        border-radius: 0 0 4px 4px;
+      }
+
+      .symbol {
+        left: 16px;
+        position: absolute;
+        top: 12px;
+        z-index: constants.$layer-5;
+      }
+    }
+  }
+}

@@ -17,22 +17,22 @@
     "@angular/platform-browser-dynamic": "file:../../dist/packages-dist/platform-browser-dynamic",
     "@angular/platform-server": "file:../../dist/packages-dist/platform-server",
     "express": "4.16.4",
-    "rxjs": "file:../../node_modules/rxjs",
+    "rxjs": "^7.3.0",
     "typescript": "file:../../node_modules/typescript",
     "zone.js": "file:../../dist/zone.js-dist/archive/zone.js.tgz"
   },
   "devDependencies": {
+    "@babel/core": "^7.15.5",
     "@types/jasmine": "file:../../node_modules/@types/jasmine",
     "@types/jasminewd2": "file:../../node_modules/@types/jasminewd2",
     "@types/node": "file:../../node_modules/@types/node",
-    "babel-core": "6.26.3",
-    "babel-loader": "6.4.1",
-    "babel-preset-es2015": "6.24.1",
+    "babel-loader": "^8.2.2",
     "concurrently": "3.1.0",
     "protractor": "file:../../node_modules/protractor",
     "puppeteer": "file:../../node_modules/puppeteer",
-    "raw-loader": "0.5.1",
-    "webpack": "2.7.0"
+    "raw-loader": "^4.0.2",
+    "webpack": "^5.53.0",
+    "webpack-cli": "^4.8.0"
   },
   "//resolutions-comment": "Ensure a single version of webdriver-manager which comes from root node_modules that has already run webdriver-manager update",
   "resolutions": {
@@ -41,7 +41,7 @@
   "scripts": {
     "build": "./build.sh",
     "test": "yarn build && concurrently \"yarn serve\" \"yarn protractor\" --kill-others --success first",
-    "serve": "node built/server-bundle.js",
+    "serve": "node webpack-out/server-bundle.js",
     "preprotractor": "tsc -p e2e",
     "protractor": "protractor e2e/protractor.config.js"
   }

@@ -6,7 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {describe, expect, it} from '@angular/core/testing/src/testing_internal';
+// This isn't used for anything, but for some reason Bazel won't
+// serve the file if there isn't at least one import.
+import '@angular/core/testing';
 
 {
   describe('Shim', () => {

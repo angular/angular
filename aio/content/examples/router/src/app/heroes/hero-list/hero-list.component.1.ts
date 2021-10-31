@@ -12,7 +12,7 @@ import { Hero } from '../hero';
   styleUrls: ['./hero-list.component.css']
 })
 export class HeroListComponent implements OnInit {
-  heroes$: Observable<Hero[]>;
+  heroes$!: Observable<Hero[]>;
 
   constructor(
     private router: Router,

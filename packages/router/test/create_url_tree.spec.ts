@@ -27,6 +27,16 @@ describe('createUrlTree', () => {
       expect(serializer.serialize(t2)).toEqual('/a/c/c2?m=v1&m=v2');
     });
 
+    it('should support parameter with empty arrays as values', () => {
+      const p1 = serializer.parse('/a/c');
+      const t1 = create(p1.root.children[PRIMARY_OUTLET], 1, p1, ['c2'], {m: []});
+      expect(serializer.serialize(t1)).toEqual('/a/c/c2');
+
+      const p2 = serializer.parse('/a/c');
+      const t2 = create(p2.root.children[PRIMARY_OUTLET], 1, p2, ['c2'], {m: [], n: 1});
+      expect(serializer.serialize(t2)).toEqual('/a/c/c2?n=1');
+    });
+
     it('should set query params', () => {
       const p = serializer.parse('/');
       const t = createRoot(p, [], {a: 'hey'});

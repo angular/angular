@@ -1,8 +1,7 @@
-import './testing/global-jasmine';
 import 'jasmine-core/lib/jasmine-core/jasmine-html.js';
 import 'jasmine-core/lib/jasmine-core/boot.js';
 
-declare var jasmine;
+declare var jasmine: any;
 
 import './polyfills';
 
@@ -28,7 +27,7 @@ function bootstrap() {
     location.reload();
     return;
   } else {
-    window.onload(undefined);
+    window.onload?.({} as Event);
     (window as any).jasmineRef = jasmine.getEnv();
   }
 

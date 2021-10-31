@@ -8,7 +8,7 @@
 
 import {CompilePipeSummary, StaticSymbol} from '@angular/compiler';
 import * as path from 'path';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {BuiltinType, DeclarationKind, Definition, Signature, Span, Symbol, SymbolDeclaration, SymbolQuery, SymbolTable} from './symbols';
 
@@ -242,6 +242,9 @@ function selectSignature(type: ts.Type, context: TypeContext, types: Symbol[]): 
   function allParameterTypesMatch(signature: ts.Signature) {
     const tc = context.checker;
     return signature.getParameters().every((parameter: ts.Symbol, i: number) => {
+      if (parameter.valueDeclaration === undefined) {
+        return false;
+      }
       const type = tc.getTypeOfSymbolAtLocation(parameter, parameter.valueDeclaration);
       return type === passedInTypes[i];
     });
@@ -348,7 +351,7 @@ class TypeWrapper implements Symbol {
 // If stringIndexType a primitive type(e.g. 'string'), the Symbol is undefined;
 // and in AstType.resolvePropertyRead method, the Symbol.type should get the right type.
 class StringIndexTypeWrapper extends TypeWrapper {
-  public readonly type = new TypeWrapper(this.tsType, this.context);
+  public override readonly type = new TypeWrapper(this.tsType, this.context);
 }
 
 class SymbolWrapper implements Symbol {

@@ -17,7 +17,7 @@ type AstPath = AstPathBase<AST>;
 function findAstAt(ast: AST, position: number, excludeEmpty: boolean = false): AstPath {
   const path: AST[] = [];
   const visitor = new class extends RecursiveAstVisitor {
-    visit(ast: AST) {
+    override visit(ast: AST) {
       if ((!excludeEmpty || ast.sourceSpan.start < ast.sourceSpan.end) &&
           inSpan(position, ast.sourceSpan)) {
         const isNotNarrower = path.length && !isNarrower(ast.span, path[path.length - 1].span);
@@ -67,13 +67,14 @@ export function getExpressionCompletions(
     visitBinary(_ast) {},
     visitChain(_ast) {},
     visitConditional(_ast) {},
-    visitFunctionCall(_ast) {},
+    visitCall(_ast) {},
     visitImplicitReceiver(_ast) {},
     visitThisReceiver(_ast) {},
     visitInterpolation(_ast) {
       result = undefined;
     },
     visitKeyedRead(_ast) {},
+    visitSafeKeyedRead(_ast) {},
     visitKeyedWrite(_ast) {},
     visitLiteralArray(_ast) {},
     visitLiteralMap(_ast) {},
@@ -87,7 +88,6 @@ export function getExpressionCompletions(
         result = undefined;
       }
     },
-    visitMethodCall(_ast) {},
     visitPipe(ast) {
       if (position >= ast.exp.span.end &&
           (!ast.args || !ast.args.length || position < (<AST>ast.args[0]).span.start)) {
@@ -108,10 +108,6 @@ export function getExpressionCompletions(
     visitQuote(_ast) {
       // For a quote, return the members of any (if there are any).
       result = templateInfo.query.getBuiltinType(BuiltinType.Any).members();
-    },
-    visitSafeMethodCall(ast) {
-      const receiverType = getType(ast.receiver);
-      result = receiverType ? receiverType.members() : scope;
     },
     visitSafePropertyRead(ast) {
       const receiverType = getType(ast.receiver);
@@ -163,20 +159,16 @@ export function getExpressionSymbol(
     visitBinary(_ast) {},
     visitChain(_ast) {},
     visitConditional(_ast) {},
-    visitFunctionCall(_ast) {},
+    visitCall(_ast) {},
     visitImplicitReceiver(_ast) {},
     visitThisReceiver(_ast) {},
     visitInterpolation(_ast) {},
     visitKeyedRead(_ast) {},
+    visitSafeKeyedRead(_ast) {},
     visitKeyedWrite(_ast) {},
     visitLiteralArray(_ast) {},
     visitLiteralMap(_ast) {},
     visitLiteralPrimitive(_ast) {},
-    visitMethodCall(ast) {
-      const receiverType = getType(ast.receiver);
-      symbol = receiverType && receiverType.members().get(ast.name);
-      span = spanFromName(ast);
-    },
     visitPipe(ast) {
       if (inSpan(position, ast.nameSpan, /* exclusive */ true)) {
         // We are in a position a pipe name is expected.
@@ -198,11 +190,6 @@ export function getExpressionSymbol(
       span = spanFromName(ast);
     },
     visitQuote(_ast) {},
-    visitSafeMethodCall(ast) {
-      const receiverType = getType(ast.receiver);
-      symbol = receiverType && receiverType.members().get(ast.name);
-      span = spanFromName(ast);
-    },
     visitSafePropertyRead(ast) {
       const receiverType = getType(ast.receiver);
       symbol = receiverType && receiverType.members().get(ast.name);

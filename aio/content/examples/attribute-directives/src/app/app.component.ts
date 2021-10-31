@@ -7,5 +7,5 @@ import { Component } from '@angular/core';
 })
 // #docregion class
 export class AppComponent {
-  color: string;
+  color = '';
 }

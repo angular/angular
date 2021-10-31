@@ -28,7 +28,7 @@ By convention, the module class name is `AppRoutingModule` and it belongs in the
 
 Use the CLI to generate it.
 
-<code-example language="sh" class="code-shell">
+<code-example language="sh">
   ng generate module app-routing --flat --module=app
 </code-example>
 
@@ -93,7 +93,7 @@ configures it with the `routes` in one step by calling
 
 </div>
 
-Next, `AppRoutingModule` exports `RouterModule` so it will be available throughout the app.
+Next, `AppRoutingModule` exports `RouterModule` so it will be available throughout the application.
 
 <code-example path="toh-pt5/src/app/app-routing.module.ts" header="src/app/app-routing.module.ts (exports array)" region="export-routermodule">
 </code-example>
@@ -120,7 +120,7 @@ because `AppModule` imports `AppRoutingModule` which exported `RouterModule`. Th
 
 You should still be running with this CLI command.
 
-<code-example language="sh" class="code-shell">
+<code-example language="sh">
   ng serve
 </code-example>
 
@@ -132,6 +132,9 @@ The route path to `HeroesComponent` is `/heroes`.
 
 Append `/heroes` to the URL in the browser address bar.
 You should see the familiar heroes master/detail view.
+
+Remove `/heroes` from the URL in the browser address bar.
+The browser should refresh and display the application title but not the list of heroes.
 
 {@a routerlink}
 
@@ -174,7 +177,7 @@ So far there's only the heroes view.
 
 Add a `DashboardComponent` using the CLI:
 
-<code-example language="sh" class="code-shell">
+<code-example language="sh">
   ng generate component dashboard
 </code-example>
 
@@ -310,7 +313,7 @@ At this point, all application routes are in place.
 The `DashboardComponent` hero links do nothing at the moment.
 
 Now that the router has a route to `HeroDetailComponent`,
-fix the dashboard hero links to navigate via the _parameterized_ dashboard route.
+fix the dashboard hero links to navigate using the _parameterized_ dashboard route.
 
 <code-example
   path="toh-pt5/src/app/dashboard/dashboard.component.html"
@@ -367,7 +370,7 @@ This section explains the following:
 
 * Get the route that created it
 * Extract the `id` from the route
-* Acquire the hero with that `id` from the server via the `HeroService`
+* Acquire the hero with that `id` from the server using the `HeroService`
 
 Add the following imports:
 

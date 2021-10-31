@@ -184,7 +184,9 @@ export class NoopAnimationPlayer implements AnimationPlayer {
       this._onDestroyFns = [];
     }
   }
-  reset(): void {}
+  reset(): void {
+    this._started = false;
+  }
   setPosition(position: number): void {
     this._position = this.totalTime ? position * this.totalTime : 1;
   }

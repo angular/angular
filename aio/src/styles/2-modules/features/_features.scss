@@ -1,0 +1,49 @@
+@use '../../mixins';
+
+// FEATURES MARKETING PAGE SPECIFIC STYLES
+
+.feature-section {
+  margin: 0 0 32px;
+
+  .feature-header, .text-headline {
+    text-align: center;
+  }
+
+  .feature-header img {
+    margin: 16px;
+    max-width: 70px;
+  }
+
+  .feature-title {
+    @include mixins.font-size(16);
+    font-weight: 500;
+    margin: 8px 0px;
+    clear: both;
+  }
+
+  .feature-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;  // This is required for browsers that do not support
+                                    // `space-evenly` (such as IE11).
+    justify-content: space-evenly;
+
+    @media (max-width: 1057px) {
+      flex-direction: column;
+    }
+
+    .feature {
+      max-width: 300px;
+      margin: 0 16px;
+
+      @media (max-width: 1057px) {
+        max-width: 100%;
+        padding: 8px 10%;
+      }
+
+      @media (max-width: 768px) {
+        padding: 8px 0;
+      }
+    }
+  }
+}

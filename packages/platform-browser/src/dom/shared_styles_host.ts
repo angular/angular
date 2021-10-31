@@ -34,35 +34,47 @@ export class SharedStylesHost {
 
 @Injectable()
 export class DomSharedStylesHost extends SharedStylesHost implements OnDestroy {
-  private _hostNodes = new Set<Node>();
-  private _styleNodes = new Set<Node>();
+  // Maps all registered host nodes to a list of style nodes that have been added to the host node.
+  private _hostNodes = new Map<Node, Node[]>();
+
   constructor(@Inject(DOCUMENT) private _doc: any) {
     super();
-    this._hostNodes.add(_doc.head);
+    this._hostNodes.set(_doc.head, []);
   }
 
-  private _addStylesToHost(styles: Set<string>, host: Node): void {
+  private _addStylesToHost(styles: Set<string>, host: Node, styleNodes: Node[]): void {
     styles.forEach((style: string) => {
       const styleEl = this._doc.createElement('style');
       styleEl.textContent = style;
-      this._styleNodes.add(host.appendChild(styleEl));
+      styleNodes.push(host.appendChild(styleEl));
     });
   }
 
   addHost(hostNode: Node): void {
-    this._addStylesToHost(this._stylesSet, hostNode);
-    this._hostNodes.add(hostNode);
+    const styleNodes: Node[] = [];
+    this._addStylesToHost(this._stylesSet, hostNode, styleNodes);
+    this._hostNodes.set(hostNode, styleNodes);
   }
 
   removeHost(hostNode: Node): void {
+    const styleNodes = this._hostNodes.get(hostNode);
+    if (styleNodes) {
+      styleNodes.forEach(removeStyle);
+    }
     this._hostNodes.delete(hostNode);
   }
 
-  onStylesAdded(additions: Set<string>): void {
-    this._hostNodes.forEach(hostNode => this._addStylesToHost(additions, hostNode));
+  override onStylesAdded(additions: Set<string>): void {
+    this._hostNodes.forEach((styleNodes, hostNode) => {
+      this._addStylesToHost(additions, hostNode, styleNodes);
+    });
   }
 
   ngOnDestroy(): void {
-    this._styleNodes.forEach(styleNode => getDOM().remove(styleNode));
+    this._hostNodes.forEach(styleNodes => styleNodes.forEach(removeStyle));
   }
+}
+
+function removeStyle(styleNode: Node): void {
+  getDOM().remove(styleNode);
 }

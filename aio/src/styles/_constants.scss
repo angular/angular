@@ -10,7 +10,12 @@ $layer-4: 4;
 $layer-5: 5;
 
 // COLOR PALETTE
+$cyan: #39d0ff;
+$powderblue: #bae0ff;
+$lightblue: #7fc9ff;
 $blue: #1976D2;
+$warmblue: #7491ff;
+$coldblue: #8ccade;
 $darkblue: #1669bb;
 $accentblue: #1E88E5;
 $brightred: #DD0031;
@@ -33,6 +38,7 @@ $darkorange: #940;
 $anti-pattern: $brightred;
 
 // API & CODE COLORS
+$amber-200: #AA3000;
 $amber-700: #FFA000;
 $blue-400: #42A5F5;
 $blue-500: #2196F3;
@@ -115,6 +121,10 @@ $api-symbols: (
   pipe: (
     content: 'P',
     background: $blue-grey-600
+  ),
+  element: (
+    content: 'El',
+    background: $amber-200
   ),
   type-alias: (
     content: 'T',

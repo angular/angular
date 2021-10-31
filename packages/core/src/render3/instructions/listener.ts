@@ -131,8 +131,11 @@ function listenerInternal(
 
   let processOutputs = true;
 
-  // add native event listener - applicable to elements only
-  if (tNode.type & TNodeType.AnyRNode) {
+  // Adding a native event listener is applicable when:
+  // - The corresponding TNode represents a DOM element.
+  // - The event target has a resolver (usually resulting in a global object,
+  //   such as `window` or `document`).
+  if ((tNode.type & TNodeType.AnyRNode) || eventTargetResolver) {
     const native = getNativeByTNode(tNode, lView) as RElement;
     const target = eventTargetResolver ? eventTargetResolver(native) : native;
     const lCleanupIndex = lCleanup.length;

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {absoluteFrom, getFileSystem, getSourceFileOrError} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
@@ -2506,7 +2506,7 @@ runInEachFileSystem(() => {
         const externalLibWithoutTypingsIndex = _('/an_external_lib_without_typings/index.js');
 
         class TestEsm2015ReflectionHost extends Esm2015ReflectionHost {
-          getExportsOfModule(node: ts.Node) {
+          override getExportsOfModule(node: ts.Node) {
             if (ts.isSourceFile(node) && (node.fileName === externalLibWithoutTypingsIndex)) {
               throw new Error(
                   `'getExportsOfModule()' called on '${externalLibWithoutTypingsIndex}'.`);

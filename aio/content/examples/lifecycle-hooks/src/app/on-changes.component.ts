@@ -17,8 +17,8 @@ import { Hero } from './hero';
 })
 export class OnChangesComponent implements OnChanges {
 // #docregion inputs
-  @Input() hero: Hero;
-  @Input() power: string;
+  @Input() hero!: Hero;
+  @Input() power = '';
 // #enddocregion inputs
 
   changeLog: string[] = [];

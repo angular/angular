@@ -154,6 +154,7 @@ export function setup() {
     useSingleInferredProject: true,
     useInferredProjectPerProjectRoot: true,
     typingsInstaller: ts.server.nullTypingsInstaller,
+    session: undefined
   });
   // Opening APP_COMPONENT forces a new ConfiguredProject to be created based
   // on the tsconfig.json in the test project.

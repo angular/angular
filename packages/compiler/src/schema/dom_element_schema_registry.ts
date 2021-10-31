@@ -14,6 +14,7 @@ import {dashCaseToCamelCase} from '../util';
 import {SECURITY_SCHEMA} from './dom_security_schema';
 import {ElementSchemaRegistry} from './element_schema_registry';
 
+const EVENT = 'event';
 const BOOLEAN = 'boolean';
 const NUMBER = 'number';
 const STRING = 'string';
@@ -249,30 +250,36 @@ const _PROP_TO_ATTR: {[name: string]: string} =
 
 export class DomElementSchemaRegistry extends ElementSchemaRegistry {
   private _schema: {[element: string]: {[property: string]: string}} = {};
+  // We don't allow binding to events for security reasons. Allowing event bindings would almost
+  // certainly introduce bad XSS vulnerabilities. Instead, we store events in a separate schema.
+  private _eventSchema: {[element: string]: Set<string>} = {};
 
   constructor() {
     super();
     SCHEMA.forEach(encodedType => {
       const type: {[property: string]: string} = {};
+      const events: Set<string> = new Set();
       const [strType, strProperties] = encodedType.split('|');
       const properties = strProperties.split(',');
       const [typeNames, superName] = strType.split('^');
-      typeNames.split(',').forEach(tag => this._schema[tag.toLowerCase()] = type);
+      typeNames.split(',').forEach(tag => {
+        this._schema[tag.toLowerCase()] = type;
+        this._eventSchema[tag.toLowerCase()] = events;
+      });
       const superType = superName && this._schema[superName.toLowerCase()];
       if (superType) {
         Object.keys(superType).forEach((prop: string) => {
           type[prop] = superType[prop];
         });
+        for (const superEvent of this._eventSchema[superName.toLowerCase()]) {
+          events.add(superEvent);
+        }
       }
       properties.forEach((property: string) => {
         if (property.length > 0) {
           switch (property[0]) {
             case '*':
-              // We don't yet support events.
-              // If ever allowing to bind to events, GO THROUGH A SECURITY REVIEW, allowing events
-              // will
-              // almost certainly introduce bad XSS vulnerabilities.
-              // type[property.substring(1)] = EVENT;
+              events.add(property.substring(1));
               break;
             case '!':
               type[property.substring(1)] = BOOLEAN;
@@ -291,7 +298,7 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
     });
   }
 
-  hasProperty(tagName: string, propName: string, schemaMetas: SchemaMetadata[]): boolean {
+  override hasProperty(tagName: string, propName: string, schemaMetas: SchemaMetadata[]): boolean {
     if (schemaMetas.some((schema) => schema.name === NO_ERRORS_SCHEMA.name)) {
       return true;
     }
@@ -312,7 +319,7 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
     return !!elementProperties[propName];
   }
 
-  hasElement(tagName: string, schemaMetas: SchemaMetadata[]): boolean {
+  override hasElement(tagName: string, schemaMetas: SchemaMetadata[]): boolean {
     if (schemaMetas.some((schema) => schema.name === NO_ERRORS_SCHEMA.name)) {
       return true;
     }
@@ -341,7 +348,8 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
    * above are assumed to have the 'NONE' security context, i.e. that they are safe inert
    * string values. Only specific well known attack vectors are assigned their appropriate context.
    */
-  securityContext(tagName: string, propName: string, isAttribute: boolean): SecurityContext {
+  override securityContext(tagName: string, propName: string, isAttribute: boolean):
+      SecurityContext {
     if (isAttribute) {
       // NB: For security purposes, use the mapped property name, not the attribute name.
       propName = this.getMappedPropName(propName);
@@ -359,15 +367,15 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
     return ctx ? ctx : SecurityContext.NONE;
   }
 
-  getMappedPropName(propName: string): string {
+  override getMappedPropName(propName: string): string {
     return _ATTR_TO_PROP[propName] || propName;
   }
 
-  getDefaultComponentElementName(): string {
+  override getDefaultComponentElementName(): string {
     return 'ng-component';
   }
 
-  validateProperty(name: string): {error: boolean, msg?: string} {
+  override validateProperty(name: string): {error: boolean, msg?: string} {
     if (name.toLowerCase().startsWith('on')) {
       const msg = `Binding to event property '${name}' is disallowed for security reasons, ` +
           `please use (${name.slice(2)})=...` +
@@ -379,7 +387,7 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
     }
   }
 
-  validateAttribute(name: string): {error: boolean, msg?: string} {
+  override validateAttribute(name: string): {error: boolean, msg?: string} {
     if (name.toLowerCase().startsWith('on')) {
       const msg = `Binding to event attribute '${name}' is disallowed for security reasons, ` +
           `please use (${name.slice(2)})=...`;
@@ -389,7 +397,7 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
     }
   }
 
-  allKnownElementNames(): string[] {
+  override allKnownElementNames(): string[] {
     return Object.keys(this._schema);
   }
 
@@ -399,12 +407,17 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
     return Object.keys(elementProperties).map(prop => _PROP_TO_ATTR[prop] ?? prop);
   }
 
-  normalizeAnimationStyleProperty(propName: string): string {
+  allKnownEventsOfElement(tagName: string): string[] {
+    return Array.from(this._eventSchema[tagName.toLowerCase()] ?? []);
+  }
+
+  override normalizeAnimationStyleProperty(propName: string): string {
     return dashCaseToCamelCase(propName);
   }
 
-  normalizeAnimationStyleValue(camelCaseProp: string, userProvidedProp: string, val: string|number):
-      {error: string, value: string} {
+  override normalizeAnimationStyleValue(
+      camelCaseProp: string, userProvidedProp: string,
+      val: string|number): {error: string, value: string} {
     let unit: string = '';
     const strVal = val.toString().trim();
     let errorMsg: string = null!;

@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {absoluteFrom, AbsoluteFsPath, getFileSystem, getSourceFileOrError, LogicalFileSystem, NgtscCompilerHost} from '../../file_system';
 import {runInEachFileSystem, TestFile} from '../../file_system/testing';
@@ -19,7 +19,7 @@ import {InliningMode, PendingFileTypeCheckingData, TypeCheckContextImpl, TypeChe
 import {TemplateSourceManager} from '../src/source';
 import {TypeCheckFile} from '../src/type_check_file';
 
-import {ALL_ENABLED_CONFIG} from './test_utils';
+import {ALL_ENABLED_CONFIG} from '../testing';
 
 runInEachFileSystem(() => {
   describe('ngtsc typechecking', () => {

@@ -345,7 +345,6 @@ describe('Format date', () => {
     // https://github.com/angular/angular/issues/21491
     it('should not assume UTC for iso strings in Safari if the timezone is not defined', () => {
       // this test only works if the timezone is not in UTC
-      // which is the case for BrowserStack when we test Safari
       if (new Date().getTimezoneOffset() !== 0) {
         expect(formatDate('2018-01-11T13:00:00', 'HH', ɵDEFAULT_LOCALE_ID))
             .not.toEqual(formatDate('2018-01-11T13:00:00Z', 'HH', ɵDEFAULT_LOCALE_ID));
@@ -392,7 +391,7 @@ describe('Format date', () => {
 
     it(`should format the date correctly in various locales`, () => {
       expect(formatDate(date, 'short', 'de')).toEqual('15.06.15, 09:03');
-      expect(formatDate(date, 'short', 'ar')).toEqual('15‏/6‏/2015 9:03 ص');
+      expect(formatDate(date, 'short', 'ar')).toEqual('15‏/6‏/2015, 9:03 ص');
       expect(formatDate(date, 'dd-MM-yy', 'th')).toEqual('15-06-15');
       expect(formatDate(date, 'a', 'hu')).toEqual('de.');
       expect(formatDate(date, 'a', 'sr')).toEqual('пре подне');

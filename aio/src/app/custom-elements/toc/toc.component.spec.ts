@@ -110,7 +110,9 @@ describe('TocComponent', () => {
       describe('when fewer than `maxPrimary` TocItems', () => {
 
         beforeEach(() => {
-          tocService.tocList.next([tocItem('Heading A'), tocItem('Heading B'), tocItem('Heading C'), tocItem('Heading D')]);
+          tocService.tocList.next(
+            [ tocItem('Heading A'), tocItem('Heading B'), tocItem('Heading C'), tocItem('Heading D') ]
+          );
           fixture.detectChanges();
           page = setPage();
         });
@@ -122,12 +124,12 @@ describe('TocComponent', () => {
         it('should not have secondary items', () => {
           expect(tocComponent.type).toEqual('EmbeddedSimple');
           const aSecond = page.listItems.find(item => item.classes.secondary);
-          expect(aSecond).toBeFalsy('should not find a secondary');
+          expect(aSecond).withContext('should not find a secondary').toBeFalsy();
         });
 
         it('should not display expando buttons', () => {
-          expect(page.tocHeadingButtonEmbedded).toBeFalsy('top expand/collapse button');
-          expect(page.tocMoreButton).toBeFalsy('bottom more button');
+          expect(page.tocHeadingButtonEmbedded).withContext('top expand/collapse button').toBeFalsy();
+          expect(page.tocMoreButton).withContext('bottom more button').toBeFalsy();
         });
       });
 
@@ -145,7 +147,7 @@ describe('TocComponent', () => {
         });
 
         it('should not display the h1 item', () => {
-          expect(page.listItems.find(item => item.classes.h1)).toBeFalsy('should not find h1 item');
+          expect(page.listItems.find(item => item.classes.h1)).withContext('should not find h1 item').toBeFalsy();
         });
 
         it('should be in "collapsed" (not expanded) state at the start', () => {
@@ -157,8 +159,8 @@ describe('TocComponent', () => {
         });
 
         it('should display expando buttons', () => {
-          expect(page.tocHeadingButtonEmbedded).toBeTruthy('top expand/collapse button');
-          expect(page.tocMoreButton).toBeTruthy('bottom more button');
+          expect(page.tocHeadingButtonEmbedded).withContext('top expand/collapse button').toBeTruthy();
+          expect(page.tocMoreButton).withContext('bottom more button').toBeTruthy();
         });
 
         it('should have secondary items', () => {
@@ -168,7 +170,7 @@ describe('TocComponent', () => {
         // CSS will hide items with the secondary class when collapsed
         it('should have secondary item with a secondary class', () => {
           const aSecondary = page.listItems.find(item => item.classes.secondary);
-          expect(aSecondary).toBeTruthy('should find a secondary');
+          expect(aSecondary).withContext('should find a secondary').toBeTruthy();
         });
 
         describe('after click tocHeading button', () => {
@@ -270,12 +272,12 @@ describe('TocComponent', () => {
     it('should not have secondary items', () => {
       expect(tocComponent.type).toEqual('Floating');
       const aSecond = page.listItems.find(item => item.classes.secondary);
-      expect(aSecond).toBeFalsy('should not find a secondary');
+      expect(aSecond).withContext('should not find a secondary').toBeFalsy();
     });
 
     it('should not display expando buttons', () => {
-      expect(page.tocHeadingButtonEmbedded).toBeFalsy('top expand/collapse button');
-      expect(page.tocMoreButton).toBeFalsy('bottom more button');
+      expect(page.tocHeadingButtonEmbedded).withContext('top expand/collapse button').toBeFalsy();
+      expect(page.tocMoreButton).withContext('bottom more button').toBeFalsy();
     });
 
     it('should display H1 title', () => {

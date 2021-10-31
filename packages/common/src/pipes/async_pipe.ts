@@ -7,7 +7,7 @@
  */
 
 import {ChangeDetectorRef, EventEmitter, OnDestroy, Pipe, PipeTransform, ɵisPromise, ɵisSubscribable} from '@angular/core';
-import {Subscribable, Unsubscribable} from 'rxjs';
+import {Observable, Subscribable, Unsubscribable} from 'rxjs';
 
 import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
 
@@ -61,7 +61,8 @@ const _subscribableStrategy = new SubscribableStrategy();
  * The `async` pipe subscribes to an `Observable` or `Promise` and returns the latest value it has
  * emitted. When a new value is emitted, the `async` pipe marks the component to be checked for
  * changes. When the component gets destroyed, the `async` pipe unsubscribes automatically to avoid
- * potential memory leaks.
+ * potential memory leaks. When the reference of the expression changes, the `async` pipe
+ * automatically unsubscribes from the old `Observable` or `Promise` and subscribes to the new one.
  *
  * @usageNotes
  *
@@ -95,10 +96,14 @@ export class AsyncPipe implements OnDestroy, PipeTransform {
     }
   }
 
-  transform<T>(obj: Subscribable<T>|Promise<T>): T|null;
+  // NOTE(@benlesh): Because Observable has deprecated a few call patterns for `subscribe`,
+  // TypeScript has a hard time matching Observable to Subscribable, for more information
+  // see https://github.com/microsoft/TypeScript/issues/43643
+
+  transform<T>(obj: Observable<T>|Subscribable<T>|Promise<T>): T|null;
   transform<T>(obj: null|undefined): null;
-  transform<T>(obj: Subscribable<T>|Promise<T>|null|undefined): T|null;
-  transform<T>(obj: Subscribable<T>|Promise<T>|null|undefined): T|null {
+  transform<T>(obj: Observable<T>|Subscribable<T>|Promise<T>|null|undefined): T|null;
+  transform<T>(obj: Observable<T>|Subscribable<T>|Promise<T>|null|undefined): T|null {
     if (!this._obj) {
       if (obj) {
         this._subscribe(obj);

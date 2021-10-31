@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {LegacyNgcOptions, StrictTemplateOptions} from '@angular/compiler-cli/src/ngtsc/core/api';
+import {InternalOptions, LegacyNgcOptions, StrictTemplateOptions} from '@angular/compiler-cli/src/ngtsc/core/api';
 import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem, getSourceFileOrError} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {OptimizeFor, TemplateTypeChecker} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import * as ts from 'typescript/lib/tsserverlibrary';
@@ -44,7 +44,8 @@ function writeTsconfig(
           null, 2));
 }
 
-export type TestableOptions = StrictTemplateOptions&Pick<LegacyNgcOptions, 'fullTemplateTypeCheck'>;
+export type TestableOptions =
+    StrictTemplateOptions&InternalOptions&Pick<LegacyNgcOptions, 'fullTemplateTypeCheck'>;
 
 export class Project {
   private tsProject: ts.server.Project;
@@ -115,6 +116,15 @@ export class Project {
     }
 
     return this.buffers.get(projectFileName)!;
+  }
+
+  getSourceFile(projectFileName: string): ts.SourceFile|undefined {
+    const fileName = absoluteFrom(`/${this.name}/${projectFileName}`);
+    return this.tsProject.getSourceFile(this.projectService.toPath(fileName));
+  }
+
+  getTypeChecker(): ts.TypeChecker {
+    return this.ngLS.compilerFactory.getOrCreate().getCurrentProgram().getTypeChecker();
   }
 
   getDiagnosticsForFile(projectFileName: string): ts.Diagnostic[] {

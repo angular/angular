@@ -17,7 +17,7 @@ export class TooltipDirective {
 }
 
 @Component({
-  selector: 'my-app',
+  selector: 'app-root',
   template: 'Hello World!'
 })
 class MyAppComponent {

@@ -44,16 +44,11 @@ jasmine_node_test(
     data = [
         "//packages/core:npm_package",
     ],
-    tags = [
-        # Disabled as the tests pertain to the old extraction tool only, whereas the Ivy extraction
-        # tool will likely work differently.
-        "no-ivy-aot",
-    ],
     deps = [
         ":extract_i18n_lib",
         "//packages/common:npm_package",
         "//packages/core",
-        "@npm//minimist",
+        "@npm//yargs",
     ],
 )
 
@@ -68,6 +63,7 @@ ts_library(
         ":test_utils",
         "//packages/compiler",
         "//packages/compiler-cli",
+        "@npm//tsickle",
         "@npm//typescript",
     ],
 )
@@ -77,22 +73,21 @@ jasmine_node_test(
     timeout = "long",  # 900 seconds
     bootstrap = ["//tools/testing:node_es5"],
     data = [
-        "//packages/common:npm_package",
-        "//packages/core:npm_package",
-        "//packages/platform-browser:npm_package",
-        "//packages/router:npm_package",
+        "@npm//@angular/common-12",
+        "@npm//@angular/core-12",
+        "@npm//@angular/platform-browser-12",
+        "@npm//@angular/router-12",
     ],
     tags = [
         # Disabled as these tests are specific to the old ngc compiler, and not ngtsc which has its
         # own tests under //packages/compiler-cli/test/ngtsc.
-        "no-ivy-aot",
+        "view-engine-only",
     ],
     deps = [
         ":ngc_lib",
         "//packages/core",
-        "@npm//minimist",
         "@npm//rxjs",
-        "@npm//tsickle",
+        "@npm//yargs",
     ],
 )
 

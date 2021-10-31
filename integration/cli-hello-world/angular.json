@@ -40,7 +40,6 @@
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
-              "extractCss": true,
               "namedChunks": false,
               "extractLicenses": true,
               "vendorChunk": false,
@@ -73,11 +72,9 @@
               "browserTarget": "cli-hello-world:build:production"
             },
             "ci": {
-              "progress": false
             },
             "ci-production": {
               "browserTarget": "cli-hello-world:build:production",
-              "progress": false
             }
           }
         },

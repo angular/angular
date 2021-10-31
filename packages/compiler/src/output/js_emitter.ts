@@ -5,11 +5,6 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
-
-import {StaticSymbol} from '../aot/static_symbol';
-import {CompileIdentifierMetadata} from '../compile_metadata';
-
 import {EmitterVisitorContext, OutputEmitter} from './abstract_emitter';
 import {AbstractJsEmitterVisitor} from './abstract_js_emitter';
 import * as o from './output_ast';
@@ -41,7 +36,7 @@ export class JavaScriptEmitter implements OutputEmitter {
 class JsEmitterVisitor extends AbstractJsEmitterVisitor {
   importsWithPrefixes = new Map<string, string>();
 
-  visitExternalExpr(ast: o.ExternalExpr, ctx: EmitterVisitorContext): any {
+  override visitExternalExpr(ast: o.ExternalExpr, ctx: EmitterVisitorContext): any {
     const {name, moduleName} = ast.value;
     if (moduleName) {
       let prefix = this.importsWithPrefixes.get(moduleName);
@@ -54,21 +49,21 @@ class JsEmitterVisitor extends AbstractJsEmitterVisitor {
     ctx.print(ast, name!);
     return null;
   }
-  visitDeclareVarStmt(stmt: o.DeclareVarStmt, ctx: EmitterVisitorContext): any {
+  override visitDeclareVarStmt(stmt: o.DeclareVarStmt, ctx: EmitterVisitorContext): any {
     super.visitDeclareVarStmt(stmt, ctx);
     if (stmt.hasModifier(o.StmtModifier.Exported)) {
       ctx.println(stmt, exportVar(stmt.name));
     }
     return null;
   }
-  visitDeclareFunctionStmt(stmt: o.DeclareFunctionStmt, ctx: EmitterVisitorContext): any {
+  override visitDeclareFunctionStmt(stmt: o.DeclareFunctionStmt, ctx: EmitterVisitorContext): any {
     super.visitDeclareFunctionStmt(stmt, ctx);
     if (stmt.hasModifier(o.StmtModifier.Exported)) {
       ctx.println(stmt, exportVar(stmt.name));
     }
     return null;
   }
-  visitDeclareClassStmt(stmt: o.ClassStmt, ctx: EmitterVisitorContext): any {
+  override visitDeclareClassStmt(stmt: o.ClassStmt, ctx: EmitterVisitorContext): any {
     super.visitDeclareClassStmt(stmt, ctx);
     if (stmt.hasModifier(o.StmtModifier.Exported)) {
       ctx.println(stmt, exportVar(stmt.name));

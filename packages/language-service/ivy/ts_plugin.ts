@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript/lib/tsserverlibrary';
 
-import {GetComponentLocationsForTemplateResponse, GetTcbResponse, NgLanguageService} from '../api';
+import {GetComponentLocationsForTemplateResponse, GetTcbResponse, GetTemplateLocationForComponentResponse, NgLanguageService} from '../api';
 
 import {LanguageService} from './language_service';
 
@@ -95,15 +95,17 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
   function getCompletionEntryDetails(
       fileName: string, position: number, entryName: string,
       formatOptions: ts.FormatCodeOptions|ts.FormatCodeSettings|undefined, source: string|undefined,
-      preferences: ts.UserPreferences|undefined): ts.CompletionEntryDetails|undefined {
+      preferences: ts.UserPreferences|undefined,
+      data: ts.CompletionEntryData|undefined): ts.CompletionEntryDetails|undefined {
     if (angularOnly) {
       return ngLS.getCompletionEntryDetails(
-          fileName, position, entryName, formatOptions, preferences);
+          fileName, position, entryName, formatOptions, preferences, data);
     } else {
       // If TS could answer the query, then return that result. Otherwise, return from Angular LS.
       return tsLS.getCompletionEntryDetails(
-                 fileName, position, entryName, formatOptions, source, preferences) ??
-          ngLS.getCompletionEntryDetails(fileName, position, entryName, formatOptions, preferences);
+                 fileName, position, entryName, formatOptions, source, preferences, data) ??
+          ngLS.getCompletionEntryDetails(
+              fileName, position, entryName, formatOptions, preferences, data);
     }
   }
 
@@ -153,6 +155,15 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
     return ngLS.getComponentLocationsForTemplate(fileName);
   }
 
+  /**
+   * Given a location inside a component, finds the location of the inline template or the file for
+   * the `templateUrl`.
+   */
+  function getTemplateLocationForComponent(
+      fileName: string, position: number): GetTemplateLocationForComponentResponse {
+    return ngLS.getTemplateLocationForComponent(fileName, position);
+  }
+
   return {
     ...tsLS,
     getSemanticDiagnostics,
@@ -169,6 +180,7 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
     getCompilerOptionsDiagnostics,
     getComponentLocationsForTemplate,
     getSignatureHelpItems,
+    getTemplateLocationForComponent,
   };
 }
 

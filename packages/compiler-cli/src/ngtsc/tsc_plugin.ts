@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {CompilationTicket, freshCompilationTicket, incrementalFromStateTicket, NgCompiler, NgCompilerHost} from './core';
 import {NgCompilerOptions, UnifiedModulesHost} from './core/api';

@@ -59,7 +59,7 @@ export const INJECTOR_IMPL = INJECTOR_IMPL__PRE_R3__;
  */
 export abstract class Injector {
   static THROW_IF_NOT_FOUND = THROW_IF_NOT_FOUND;
-  static NULL: Injector = new NullInjector();
+  static NULL: Injector = (/* @__PURE__ */ new NullInjector());
 
   /**
    * Retrieves an instance from the injector based on the provided token.
@@ -106,7 +106,7 @@ export abstract class Injector {
   /** @nocollapse */
   static ɵprov = /** @pureOrBreakMyCode */ ɵɵdefineInjectable({
     token: Injector,
-    providedIn: 'any' as any,
+    providedIn: 'any',
     factory: () => ɵɵinject(INJECTOR),
   });
 

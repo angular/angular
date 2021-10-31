@@ -9,7 +9,7 @@ A basic understanding of the following:
 
 The `ngsw-config.json` configuration file specifies which files and data URLs the Angular service
 worker should cache and how it should update the cached files and data. The [Angular CLI](cli)
-processes the configuration file during `ng build`. Manually, you can process it with the
+processes the configuration file during `ng build`. Manually, process it with the
 `ngsw-config` tool (where `<project-name>` is the name of the project being built):
 
 <code-example language="sh">
@@ -25,7 +25,7 @@ Unless otherwise noted, patterns use a limited glob format:
 * `**` matches 0 or more path segments.
 * `*` matches 0 or more characters excluding `/`.
 * `?` matches exactly one character excluding `/`.
-* The `!` prefix marks the pattern as being negative, meaning that only files that don't match the pattern will be included.
+* The `!` prefix marks the pattern as being negative, meaning that only files that don't match the pattern are included.
 
 Example patterns:
 
@@ -33,7 +33,8 @@ Example patterns:
 * `/*.html` specifies only HTML files in the root.
 * `!/**/*.map` exclude all sourcemaps.
 
-Each section of the configuration file is described below.
+
+The following sections describe each property of the configuration file.
 
 ## `appData`
 
@@ -47,7 +48,7 @@ Specifies the file that serves as the index page to satisfy navigation requests.
 
 ## `assetGroups`
 
-*Assets* are resources that are part of the application version that update along with the application. They can include resources loaded from the page's origin as well as third-party resources loaded from CDNs and other external URLs. As not all such external URLs may be known at build time, URL patterns can be matched.
+*Assets* are resources that are part of the application version that update along with the application. They can include resources loaded from the page's origin as well as third-party resources loaded from CDNs and other external URLs. As not all such external URLs might be known at build time, URL patterns can be matched.
 
 This field contains an array of asset groups, each of which defines a set of asset resources and the policy by which they are cached.
 
@@ -103,7 +104,7 @@ The `installMode` determines how these resources are initially cached. The `inst
 
 * `prefetch` tells the Angular service worker to fetch every single listed resource while it's caching the current version of the application. This is bandwidth-intensive but ensures resources are available whenever they're requested, even if the browser is currently offline.
 
-* `lazy` does not cache any of the resources up front. Instead, the Angular service worker only caches resources for which it receives requests. This is an on-demand caching mode. Resources that are never requested will not be cached. This is useful for things like images at different resolutions, so the service worker only caches the correct assets for the particular screen and orientation.
+* `lazy` does not cache any of the resources up front. Instead, the Angular service worker only caches resources for which it receives requests. This is an on-demand caching mode. Resources that are never requested are not cached. This is useful for things like images at different resolutions, so the service worker only caches the correct assets for the particular screen and orientation.
 
 Defaults to `prefetch`.
 
@@ -123,7 +124,7 @@ This section describes the resources to cache, broken up into the following grou
 
 * `files` lists patterns that match files in the distribution directory. These can be single files or glob-like patterns that match a number of files.
 
-* `urls` includes both URLs and URL patterns that will be matched at runtime. These resources are not fetched directly and do not have content hashes, but they will be cached according to their HTTP headers. This is most useful for CDNs such as the Google Fonts service.<br>
+* `urls` includes both URLs and URL patterns that are matched at runtime. These resources are not fetched directly and do not have content hashes, but they are cached according to their HTTP headers. This is most useful for CDNs such as the Google Fonts service.<br>
   _(Negative glob patterns are not supported and `?` will be matched literally; that is, it will not match any character other than `?`.)_
 
 ### `cacheQueryOptions`
@@ -189,14 +190,14 @@ A list of URL patterns. URLs that match these patterns are cached according to t
  * `?` is matched literally; that is, it matches *only* the character `?`.
 
 ### `version`
-Occasionally APIs change formats in a way that is not backward-compatible. A new version of the application may not be compatible with the old API format and thus may not be compatible with existing cached resources from that API.
+Occasionally APIs change formats in a way that is not backward-compatible. A new version of the application might not be compatible with the old API format and thus might not be compatible with existing cached resources from that API.
 
 `version` provides a mechanism to indicate that the resources being cached have been updated in a backwards-incompatible way, and that the old cache entries&mdash;those from previous versions&mdash;should be discarded.
 
 `version` is an integer field and defaults to `1`.
 
 ### `cacheConfig`
-This section defines the policy by which matching requests will be cached.
+This section defines the policy by which matching requests are cached.
 
 #### `maxSize`
 (required) The maximum number of entries, or responses, in the cache. Open-ended caches can grow in unbounded ways and eventually exceed storage quotas, calling for eviction.
@@ -210,10 +211,10 @@ This section defines the policy by which matching requests will be cached.
 * `s`: seconds
 * `u`: milliseconds
 
-For example, the string `3d12h` will cache content for up to three and a half days.
+For example, the string `3d12h` caches content for up to three and a half days.
 
 #### `timeout`
-This duration string specifies the network timeout. The network timeout is how long the Angular service worker will wait for the network to respond before using a cached response, if configured to do so. `timeout` is a duration string, using the following unit suffixes:
+This duration string specifies the network timeout. The network timeout is how long the Angular service worker waits for the network to respond before using a cached response, if configured to do so. `timeout` is a duration string, using the following unit suffixes:
 
 * `d`: days
 * `h`: hours
@@ -221,7 +222,7 @@ This duration string specifies the network timeout. The network timeout is how l
 * `s`: seconds
 * `u`: milliseconds
 
-For example, the string `5s30u` will translate to five seconds and 30 milliseconds of network timeout.
+For example, the string `5s30u` translates to five seconds and 30 milliseconds of network timeout.
 
 #### `strategy`
 
@@ -237,12 +238,12 @@ The Angular service worker can use either of two caching strategies for data res
 You can also emulate a third strategy, [staleWhileRevalidate](https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#stale-while-revalidate), which returns cached data (if available), but also fetches fresh data from the network in the background for next time.
 To use this strategy set `strategy` to `freshness` and `timeout` to `0u` in `cacheConfig`.
 
-This will essentially do the following:
+This essentially does the following:
 
 1. Try to fetch from the network first.
-2. If the network request does not complete after 0ms (that is, immediately), fall back to the cache (ignoring cache age).
-3. Once the network request completes, update the cache for future requests.
-4. If the resource does not exist in the cache, wait for the network request anyway.
+1. If the network request does not complete after 0ms (that is, immediately), fall back to the cache (ignoring cache age).
+1. Once the network request completes, update the cache for future requests.
+1. If the resource does not exist in the cache, wait for the network request anyway.
 
 </div>
 
@@ -256,11 +257,11 @@ This optional section enables you to specify a custom list of URLs that will be 
 
 ### Handling navigation requests
 
-The ServiceWorker will redirect navigation requests that don't match any `asset` or `data` group to the specified [index file](#index-file). A request is considered to be a navigation request if:
+The ServiceWorker redirects navigation requests that don't match any `asset` or `data` group to the specified [index file](#index-file). A request is considered to be a navigation request if:
 
 1. Its [mode](https://developer.mozilla.org/en-US/docs/Web/API/Request/mode) is `navigation`.
 2. It accepts a `text/html` response (as determined by the value of the `Accept` header).
-3. Its URL matches certain criteria (see below).
+3. Its URL matches certain criteria (see the following).
 
 By default, these criteria are:
 
@@ -275,11 +276,11 @@ To configure whether navigation requests are sent through to the network or not,
 
 ### Matching navigation request URLs
 
-While these default criteria are fine in most cases, it is sometimes desirable to configure different rules. For example, you may want to ignore specific routes (that are not part of the Angular app) and pass them through to the server.
+While these default criteria are fine in most cases, it is sometimes desirable to configure different rules. For example, you might want to ignore specific routes (that are not part of the Angular app) and pass them through to the server.
 
-This field contains an array of URLs and [glob-like](#glob-patterns) URL patterns that will be matched at runtime. It can contain both negative patterns (that is, patterns starting with `!`) and non-negative patterns and URLs.
+This field contains an array of URLs and [glob-like](#glob-patterns) URL patterns that are matched at runtime. It can contain both negative patterns (that is, patterns starting with `!`) and non-negative patterns and URLs.
 
-Only requests whose URLs match _any_ of the non-negative URLs/patterns and _none_ of the negative ones will be considered navigation requests. The URL query will be ignored when matching.
+Only requests whose URLs match _any_ of the non-negative URLs/patterns and _none_ of the negative ones are considered navigation requests. The URL query is ignored when matching.
 
 If the field is omitted, it defaults to:
 

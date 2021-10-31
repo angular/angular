@@ -7,7 +7,7 @@
  */
 
 import {Diagnostic} from '@angular/compiler-cli';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {ErrorCode, ngErrorCode} from '../../src/ngtsc/diagnostics';
 import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';

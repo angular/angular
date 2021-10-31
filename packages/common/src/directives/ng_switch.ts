@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, DoCheck, Host, Input, TemplateRef, ViewContainerRef} from '@angular/core';
+import {Directive, DoCheck, Host, Input, Optional, TemplateRef, ViewContainerRef, ɵRuntimeError as RuntimeError, ɵRuntimeErrorCode as RuntimeErrorCode} from '@angular/core';
 
 export class SwitchView {
   private _created = false;
@@ -197,7 +197,11 @@ export class NgSwitchCase implements DoCheck {
 
   constructor(
       viewContainer: ViewContainerRef, templateRef: TemplateRef<Object>,
-      @Host() private ngSwitch: NgSwitch) {
+      @Optional() @Host() private ngSwitch: NgSwitch) {
+    if ((typeof ngDevMode === 'undefined' || ngDevMode) && !ngSwitch) {
+      throwNgSwitchProviderNotFoundError('ngSwitchCase', 'NgSwitchCase');
+    }
+
     ngSwitch._addCase();
     this._view = new SwitchView(viewContainer, templateRef);
   }
@@ -228,7 +232,20 @@ export class NgSwitchCase implements DoCheck {
 export class NgSwitchDefault {
   constructor(
       viewContainer: ViewContainerRef, templateRef: TemplateRef<Object>,
-      @Host() ngSwitch: NgSwitch) {
+      @Optional() @Host() ngSwitch: NgSwitch) {
+    if ((typeof ngDevMode === 'undefined' || ngDevMode) && !ngSwitch) {
+      throwNgSwitchProviderNotFoundError('ngSwitchDefault', 'NgSwitchDefault');
+    }
+
     ngSwitch._addDefault(new SwitchView(viewContainer, templateRef));
   }
+}
+
+function throwNgSwitchProviderNotFoundError(attrName: string, directiveName: string): never {
+  throw new RuntimeError(
+      RuntimeErrorCode.TEMPLATE_STRUCTURE_ERROR,
+      `An element with the "${attrName}" attribute ` +
+          `(matching the "${
+              directiveName}" directive) must be located inside an element with the "ngSwitch" attribute ` +
+          `(matching "NgSwitch" directive)`);
 }

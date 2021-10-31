@@ -8,7 +8,7 @@
 
 /// <reference types="node" />
 
-import * as cluster from 'cluster';
+import cluster from 'cluster';
 
 import {AbsoluteFsPath} from '../../../../src/ngtsc/file_system';
 import {JsonObject} from '../../packages/entry_point';

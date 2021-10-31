@@ -6,7 +6,7 @@ import { Directive, ElementRef, Input, OnChanges } from '@angular/core';
 export class HeroHighlightDirective implements OnChanges {
 
   // Aliased because `color` is a better property name than `heroHighlight`
-  @Input('heroHighlight') color: string;
+  @Input('heroHighlight') color = '';
 
   constructor(private el: ElementRef) {}
 

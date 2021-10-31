@@ -65,7 +65,7 @@ export function makeDecorator<T>(
         // prevents the property is copied during subclassing.
         const annotations = cls.hasOwnProperty(ANNOTATIONS) ?
             (cls as any)[ANNOTATIONS] :
-            Object.defineProperty(cls, ANNOTATIONS, {value: []})[ANNOTATIONS];
+            (Object.defineProperty(cls, ANNOTATIONS, {value: []}) as any)[ANNOTATIONS];
         annotations.push(annotationInstance);
 
 

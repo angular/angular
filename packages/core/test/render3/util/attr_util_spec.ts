@@ -9,7 +9,6 @@
 import {AttributeMarker} from '@angular/core/src/render3';
 import {TAttributes} from '@angular/core/src/render3/interfaces/node';
 import {mergeHostAttribute, mergeHostAttrs} from '@angular/core/src/render3/util/attrs_utils';
-import {describe} from '@angular/core/testing/src/testing_internal';
 
 describe('attr_util', () => {
   describe('mergeHostAttribute', () => {

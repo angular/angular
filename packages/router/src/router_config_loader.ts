@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Compiler, InjectFlags, InjectionToken, Injector, NgModuleFactory, NgModuleFactoryLoader} from '@angular/core';
+import {Compiler, InjectFlags, InjectionToken, Injector, NgModuleFactory} from '@angular/core';
 import {ConnectableObservable, from, Observable, of, Subject} from 'rxjs';
 import {catchError, map, mergeMap, refCount, tap} from 'rxjs/operators';
 
@@ -16,14 +16,19 @@ import {standardizeConfig} from './utils/config';
 
 /**
  * The [DI token](guide/glossary/#di-token) for a router configuration.
- * @see `ROUTES`
+ *
+ * `ROUTES` is a low level API for router configuration via dependency injection.
+ *
+ * We recommend that in almost all cases to use higher level APIs such as `RouterModule.forRoot()`,
+ * `RouterModule.forChild()`, `provideRoutes`, or `Router.resetConfig()`.
+ *
  * @publicApi
  */
 export const ROUTES = new InjectionToken<Route[][]>('ROUTES');
 
 export class RouterConfigLoader {
   constructor(
-      private loader: NgModuleFactoryLoader, private compiler: Compiler,
+      private injector: Injector, private compiler: Compiler,
       private onLoadStartListener?: (r: Route) => void,
       private onLoadEndListener?: (r: Route) => void) {}
 
@@ -64,16 +69,12 @@ export class RouterConfigLoader {
   }
 
   private loadModuleFactory(loadChildren: LoadChildren): Observable<NgModuleFactory<any>> {
-    if (typeof loadChildren === 'string') {
-      return from(this.loader.load(loadChildren));
-    } else {
-      return wrapIntoObservable(loadChildren()).pipe(mergeMap((t: any) => {
-        if (t instanceof NgModuleFactory) {
-          return of(t);
-        } else {
-          return from(this.compiler.compileModuleAsync(t));
-        }
-      }));
-    }
+    return wrapIntoObservable(loadChildren()).pipe(mergeMap((t: any) => {
+      if (t instanceof NgModuleFactory) {
+        return of(t);
+      } else {
+        return from(this.compiler.compileModuleAsync(t));
+      }
+    }));
   }
 }

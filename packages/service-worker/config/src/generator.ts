@@ -9,7 +9,7 @@
 import {parseDurationToMs} from './duration';
 import {Filesystem} from './filesystem';
 import {globToRegex} from './glob';
-import {Config} from './in';
+import {AssetGroup, Config} from './in';
 
 const DEFAULT_NAVIGATION_URLS = [
   '/**',           // Include all URLs.
@@ -45,8 +45,13 @@ export class Generator {
 
   private async processAssetGroups(config: Config, hashTable: {[file: string]: string|undefined}):
       Promise<Object[]> {
+    // Retrieve all files of the build.
+    const allFiles = await this.fs.list('/');
     const seenMap = new Set<string>();
-    return Promise.all((config.assetGroups || []).map(async (group) => {
+    const filesPerGroup = new Map<AssetGroup, string[]>();
+
+    // Computed which files belong to each asset-group.
+    for (const group of (config.assetGroups || [])) {
       if ((group.resources as any).versionedFiles) {
         throw new Error(
             `Asset-group '${group.name}' in 'ngsw-config.json' uses the 'versionedFiles' option, ` +
@@ -54,27 +59,30 @@ export class Generator {
       }
 
       const fileMatcher = globListToMatcher(group.resources.files || []);
-      const allFiles = await this.fs.list('/');
-
       const matchedFiles = allFiles.filter(fileMatcher).filter(file => !seenMap.has(file)).sort();
+
       matchedFiles.forEach(file => seenMap.add(file));
+      filesPerGroup.set(group, matchedFiles);
+    }
 
-      // Add the hashes.
-      await matchedFiles.reduce(async (previous, file) => {
-        await previous;
-        const hash = await this.fs.hash(file);
-        hashTable[joinUrls(this.baseHref, file)] = hash;
-      }, Promise.resolve());
+    // Compute hashes for all matched files and add them to the hash-table.
+    const allMatchedFiles = ([] as string[]).concat(...Array.from(filesPerGroup.values())).sort();
+    const allMatchedHashes = await Promise.all(allMatchedFiles.map(file => this.fs.hash(file)));
+    allMatchedFiles.forEach((file, idx) => {
+      hashTable[joinUrls(this.baseHref, file)] = allMatchedHashes[idx];
+    });
 
-      return {
-        name: group.name,
-        installMode: group.installMode || 'prefetch',
-        updateMode: group.updateMode || group.installMode || 'prefetch',
-        cacheQueryOptions: buildCacheQueryOptions(group.cacheQueryOptions),
-        urls: matchedFiles.map(url => joinUrls(this.baseHref, url)),
-        patterns: (group.resources.urls || []).map(url => urlToRegex(url, this.baseHref, true)),
-      };
-    }));
+    // Generate and return the processed asset-groups.
+    return Array.from(filesPerGroup.entries())
+        .map(([group, matchedFiles]) => ({
+               name: group.name,
+               installMode: group.installMode || 'prefetch',
+               updateMode: group.updateMode || group.installMode || 'prefetch',
+               cacheQueryOptions: buildCacheQueryOptions(group.cacheQueryOptions),
+               urls: matchedFiles.map(url => joinUrls(this.baseHref, url)),
+               patterns:
+                   (group.resources.urls || []).map(url => urlToRegex(url, this.baseHref, true)),
+             }));
   }
 
   private processDataGroups(config: Config): Object[] {

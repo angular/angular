@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ivyEnabled, obsoleteInIvy} from '@angular/private/testing';
 import {runfiles} from '@bazel/runfiles';
 import * as path from 'path';
 import * as shx from 'shelljs';
+import {matchesObjectWithOrder} from './test_utils';
 
 // Resolve the "npm_package" directory by using the runfile resolution. Note that we need to
 // resolve the "package.json" of the package since otherwise NodeJS would resolve the "main"
@@ -51,17 +51,42 @@ describe('@angular/core ng_package', () => {
       });
 
       it('should contain module resolution mappings', () => {
-        expect(shx.grep('"main":', packageJson)).toContain(`./bundles/core.umd.js`);
-        expect(shx.grep('"module":', packageJson)).toContain(`./fesm2015/core.js`);
-        expect(shx.grep('"es2015":', packageJson)).toContain(`./fesm2015/core.js`);
-        expect(shx.grep('"esm2015":', packageJson)).toContain(`./esm2015/core.js`);
-        expect(shx.grep('"typings":', packageJson)).toContain(`./core.d.ts`);
+        const data = JSON.parse(shx.cat(packageJson)) as any;
+        expect(data).toEqual(jasmine.objectContaining({
+          module: `./fesm2015/core.mjs`,
+          es2020: `./fesm2020/core.mjs`,
+          esm2020: `./esm2020/core.mjs`,
+          fesm2020: `./fesm2020/core.mjs`,
+          fesm2015: `./fesm2015/core.mjs`,
+          typings: `./core.d.ts`,
+          exports: matchesObjectWithOrder({
+            './schematics/*': {default: './schematics/*.js'},
+            './package.json': {default: './package.json'},
+            '.': {
+              types: './core.d.ts',
+              esm2020: './esm2020/core.mjs',
+              es2020: './fesm2020/core.mjs',
+              es2015: './fesm2015/core.mjs',
+              node: './fesm2015/core.mjs',
+              default: './fesm2020/core.mjs'
+            },
+            './testing': {
+              types: './testing/testing.d.ts',
+              esm2020: './esm2020/testing/testing.mjs',
+              es2020: './fesm2020/testing.mjs',
+              es2015: './fesm2015/testing.mjs',
+              node: './fesm2015/testing.mjs',
+              default: './fesm2020/testing.mjs'
+            }
+          }),
+        }));
       });
 
       it('should contain metadata for ng update', () => {
         interface PackageJson {
           'ng-update': {packageGroup: string[];};
         }
+
         expect(shx.cat(packageJson)).not.toContain('NG_UPDATE_PACKAGE_GROUP');
         expect((JSON.parse(shx.cat(packageJson)) as PackageJson)['ng-update'].packageGroup)
             .toContain('@angular/core');
@@ -69,88 +94,59 @@ describe('@angular/core ng_package', () => {
     });
 
     describe('typescript support', () => {
-      if (ivyEnabled) {
-        it('should have an index d.ts file', () => {
-          expect(shx.cat('core.d.ts')).toContain(`export *`);
-        });
+      it('should not have amd module names', () => {
+        expect(shx.cat('core.d.ts')).not.toContain('<amd-module name');
+      });
+      it('should have an index d.ts file', () => {
+        expect(shx.cat('core.d.ts')).toContain('export declare');
+      });
 
-        it('should not have amd module names', () => {
-          expect(shx.cat('public_api.d.ts')).not.toContain('<amd-module name');
-        });
-      } else {
-        it('should have an index d.ts file', () => {
-          expect(shx.cat('core.d.ts')).toContain('export declare');
-        });
-        it('should have an r3_symbols d.ts file', () => {
-          expect(shx.cat('src/r3_symbols.d.ts')).toContain('export declare');
-        });
-      }
+      // The `r3_symbols` file was needed for View Engine ngcc processing.
+      // This test ensures we no longer ship it by accident.
+      it('should not have an r3_symbols d.ts file', () => {
+        expect(shx.test('-e', 'src/r3_symbols.d.ts')).toBe(false);
+      });
     });
 
-    obsoleteInIvy('metadata files are no longer needed or produced in Ivy')
-        .describe('angular metadata', () => {
-          it('should have metadata.json files', () => {
-            expect(shx.cat('core.metadata.json')).toContain(`"__symbolic":"module"`);
-          });
-          it('should not have self-references in metadata.json', () => {
-            expect(shx.cat('core.metadata.json')).not.toContain(`"from":"./core"`);
-          });
-        });
-
-    describe('fesm2015', () => {
-      it('should have a fesm15 file in the /fesm2015 directory', () => {
-        expect(shx.cat('fesm2015/core.js')).toContain(`export {`);
+    describe('fesm2020', () => {
+      it('should have a fesm2020 file in the /fesm2020 directory', () => {
+        expect(shx.cat('fesm2020/core.mjs')).toContain(`export {`);
       });
 
       it('should have a source map', () => {
-        expect(shx.cat('fesm2015/core.js.map'))
-            .toContain(`{"version":3,"file":"core.js","sources":`);
+        expect(shx.cat('fesm2020/core.mjs.map'))
+            .toContain(`{"version":3,"file":"core.mjs","sources":`);
       });
 
       it('should have the version info in the header', () => {
-        expect(shx.cat('fesm2015/core.js'))
+        expect(shx.cat('fesm2020/core.mjs'))
             .toMatch(/@license Angular v\d+\.\d+\.\d+(?!-PLACEHOLDER)/);
       });
-
-      obsoleteInIvy('we no longer need to export private symbols')
-          .it('should have been built from the generated bundle index', () => {
-            expect(shx.cat('fesm2015/core.js')).toMatch('export {.*makeParamDecorator');
-          });
     });
 
-    describe('esm2015', () => {
+    describe('fesm2015', () => {
+      it('should have a fesm2015 file in the /fesm2015 directory', () => {
+        expect(shx.cat('fesm2015/core.mjs')).toContain(`export {`);
+      });
+
+      it('should have a source map', () => {
+        expect(shx.cat('fesm2015/core.mjs.map'))
+            .toContain(`{"version":3,"file":"core.mjs","sources":`);
+      });
+
+      it('should have the version info in the header', () => {
+        expect(shx.cat('fesm2015/core.mjs'))
+            .toMatch(/@license Angular v\d+\.\d+\.\d+(?!-PLACEHOLDER)/);
+      });
+    });
+
+    describe('esm2020', () => {
       it('should not contain any *.ngfactory.js files', () => {
-        expect(shx.find('esm2015').filter(f => f.endsWith('.ngfactory.js'))).toEqual([]);
+        expect(shx.find('esm2020').filter(f => f.includes('.ngfactory'))).toEqual([]);
       });
 
       it('should not contain any *.ngsummary.js files', () => {
-        expect(shx.find('esm2015').filter(f => f.endsWith('.ngsummary.js'))).toEqual([]);
-      });
-    });
-
-    describe('umd', () => {
-      it('should have a umd file in the /bundles directory', () => {
-        expect(shx.ls('bundles/core.umd.js').length).toBe(1, 'File not found');
-      });
-
-      it('should have a source map next to the umd file', () => {
-        expect(shx.ls('bundles/core.umd.js.map').length).toBe(1, 'File not found');
-      });
-
-      it('should have the version info in the header', () => {
-        expect(shx.cat('bundles/core.umd.js'))
-            .toMatch(/@license Angular v\d+\.\d+\.\d+(?!-PLACEHOLDER)/);
-      });
-
-      it('should have tslib helpers', () => {
-        expect(shx.cat('bundles/core.umd.js')).toContain('function __extends');
-        expect(shx.cat('bundles/core.umd.js')).not.toContain('undefined.__extends');
-      });
-      it('should have an AMD name', () => {
-        expect(shx.cat('bundles/core.umd.js')).toContain('define(\'@angular/core\'');
-      });
-      it('should define ng global symbols', () => {
-        expect(shx.cat('bundles/core.umd.js')).toContain('global.ng.core = {}');
+        expect(shx.find('esm2020').filter(f => f.includes('.ngsummary'))).toEqual([]);
       });
     });
   });
@@ -165,75 +161,56 @@ describe('@angular/core ng_package', () => {
 
       it('should have its module resolution mappings defined in the nested package.json', () => {
         const packageJson = p`testing/package.json`;
-        expect(shx.grep('"main":', packageJson)).toContain(`../bundles/core-testing.umd.js`);
-        expect(shx.grep('"module":', packageJson)).toContain(`../fesm2015/testing.js`);
-        expect(shx.grep('"es2015":', packageJson)).toContain(`../fesm2015/testing.js`);
-        expect(shx.grep('"esm2015":', packageJson)).toContain(`../esm2015/testing/testing.js`);
-        expect(shx.grep('"typings":', packageJson)).toContain(`./testing.d.ts`);
+        const data = JSON.parse(shx.cat(packageJson)) as any;
+
+        expect(data).toEqual(jasmine.objectContaining({
+          module: `../fesm2015/testing.mjs`,
+          es2020: `../fesm2020/testing.mjs`,
+          esm2020: `../esm2020/testing/testing.mjs`,
+          fesm2020: `../fesm2020/testing.mjs`,
+          fesm2015: `../fesm2015/testing.mjs`,
+          typings: `./testing.d.ts`,
+        }));
+        expect(data.exports).toBeUndefined();
       });
     });
 
     describe('typings', () => {
-      if (ivyEnabled) {
-        const typingsFile = p`testing/index.d.ts`;
-        it('should have a typings file', () => {
-          expect(shx.cat(typingsFile)).toContain(`export * from './public_api';`);
-        });
-      } else {
-        const typingsFile = p`testing/testing.d.ts`;
-        it('should have a typings file', () => {
-          expect(shx.cat(typingsFile)).toContain('export declare');
-        });
-      }
-
-      obsoleteInIvy(
-          'now that we don\'t need metadata files, we don\'t need these redirects to help resolve paths to them')
-          .it('should have an \'redirect\' d.ts file in the parent dir', () => {
-            expect(shx.cat('testing.d.ts')).toContain(`export * from './testing/testing';`);
-          });
+      const typingsFile = p`testing/testing.d.ts`;
+      it('should have a typings file', () => {
+        expect(shx.cat(typingsFile)).toContain('export declare');
+      });
     });
 
-    obsoleteInIvy('metadata files are no longer needed or produced in Ivy')
-        .describe('angular metadata file', () => {
-          it('should have a \'redirect\' metadata.json file next to the d.ts file', () => {
-            expect(shx.cat('testing.metadata.json'))
-                .toContain(
-                    `"exports":[{"from":"./testing/testing"}],"flatModuleIndexRedirect":true`);
-          });
-        });
-
-    describe('fesm2015', () => {
-      it('should have a fesm15 file in the /fesm2015 directory', () => {
-        expect(shx.cat('fesm2015/testing.js')).toContain(`export {`);
+    describe('fesm2020', () => {
+      it('should have a fesm2020 file in the /fesm2020 directory', () => {
+        expect(shx.cat('fesm2020/testing.mjs')).toContain(`export {`);
       });
 
       it('should have a source map', () => {
-        expect(shx.cat('fesm2015/testing.js.map'))
-            .toContain(`{"version":3,"file":"testing.js","sources":`);
+        expect(shx.cat('fesm2020/testing.mjs.map'))
+            .toContain(`{"version":3,"file":"testing.mjs","sources":`);
       });
 
       it('should have the version info in the header', () => {
-        expect(shx.cat('fesm2015/testing.js'))
+        expect(shx.cat('fesm2020/testing.mjs'))
             .toMatch(/@license Angular v\d+\.\d+\.\d+(?!-PLACEHOLDER)/);
       });
     });
 
-    describe('umd', () => {
-      it('should have a umd file in the /bundles directory', () => {
-        expect(shx.ls('bundles/core-testing.umd.js').length).toBe(1, 'File not found');
+    describe('fesm2015', () => {
+      it('should have a fesm105 file in the /fesm2015 directory', () => {
+        expect(shx.cat('fesm2015/testing.mjs')).toContain(`export {`);
       });
 
-      it('should have a source map next to the umd file', () => {
-        expect(shx.ls('bundles/core-testing.umd.js.map').length).toBe(1, 'File not found');
+      it('should have a source map', () => {
+        expect(shx.cat('fesm2015/testing.mjs.map'))
+            .toContain(`{"version":3,"file":"testing.mjs","sources":`);
       });
 
-      it('should have an AMD name', () => {
-        expect(shx.cat('bundles/core-testing.umd.js'))
-            .toContain('define(\'@angular/core/testing\'');
-      });
-
-      it('should define ng global symbols', () => {
-        expect(shx.cat('bundles/core-testing.umd.js')).toContain('global.ng.core.testing = {}');
+      it('should have the version info in the header', () => {
+        expect(shx.cat('fesm2015/testing.mjs'))
+            .toMatch(/@license Angular v\d+\.\d+\.\d+(?!-PLACEHOLDER)/);
       });
     });
   });

@@ -8,7 +8,7 @@
 
 import {initMockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 
-import {humanizeDocumentSpanLike, LanguageServiceTestEnv, Project} from '../testing';
+import {assertFileNames, assertTextSpans, humanizeDocumentSpanLike, LanguageServiceTestEnv, Project} from '../testing';
 
 describe('type definitions', () => {
   let env: LanguageServiceTestEnv;
@@ -33,11 +33,10 @@ describe('type definitions', () => {
     const project = env.addProject('test', files, {strictTemplates: false});
     const definitions =
         getTypeDefinitionsAndAssertBoundSpan(project, {templateOverride: '{{"1/1/2020" | dat¦e}}'});
-    expect(definitions!.length).toEqual(1);
+    expect(definitions!.length).toEqual(3);
 
-    const [def] = definitions;
-    expect(def.textSpan).toContain('DatePipe');
-    expect(def.contextSpan).toContain('DatePipe');
+    assertTextSpans(definitions, ['transform']);
+    assertFileNames(definitions, ['index.d.ts']);
   });
 
   function getTypeDefinitionsAndAssertBoundSpan(

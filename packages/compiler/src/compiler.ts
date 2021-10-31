@@ -50,7 +50,6 @@ export * from './aot/static_symbol';
 export * from './aot/static_symbol_resolver';
 export * from './aot/summary_resolver';
 export {isLoweredSymbol, createLoweredSymbol} from './aot/util';
-export {LazyRoute} from './aot/lazy_routes';
 export * from './ast_path';
 export * from './summary_resolver';
 export {Identifiers} from './identifiers';
@@ -75,10 +74,11 @@ export * from './ml_parser/html_parser';
 export * from './ml_parser/html_tags';
 export * from './ml_parser/interpolation_config';
 export * from './ml_parser/tags';
+export {ParseTreeResult, TreeError} from './ml_parser/parser';
 export {LexerRange} from './ml_parser/lexer';
 export * from './ml_parser/xml_parser';
 export {NgModuleCompiler} from './ng_module_compiler';
-export {ArrayType, AssertNotNull, DYNAMIC_TYPE, BinaryOperator, BinaryOperatorExpr, BuiltinMethod, BuiltinType, BuiltinTypeName, BuiltinVar, CastExpr, ClassField, ClassMethod, ClassStmt, CommaExpr, ConditionalExpr, DeclareFunctionStmt, DeclareVarStmt, Expression, ExpressionStatement, ExpressionType, ExpressionVisitor, ExternalExpr, ExternalReference, literalMap, FunctionExpr, IfStmt, InstantiateExpr, InvokeFunctionExpr, InvokeMethodExpr, LiteralArrayExpr, LiteralExpr, LiteralMapExpr, MapType, NotExpr, NONE_TYPE, ReadKeyExpr, ReadPropExpr, ReadVarExpr, ReturnStatement, StatementVisitor, TaggedTemplateExpr, TemplateLiteral, TemplateLiteralElement, ThrowStmt, TryCatchStmt, Type, TypeVisitor, WrappedNodeExpr, WriteKeyExpr, WritePropExpr, WriteVarExpr, StmtModifier, Statement, STRING_TYPE, TypeofExpr, collectExternalReferences, jsDocComment, leadingComment, LeadingComment, JSDocComment, UnaryOperator, UnaryOperatorExpr, LocalizedString} from './output/output_ast';
+export {ArrayType, AssertNotNull, DYNAMIC_TYPE, BinaryOperator, BinaryOperatorExpr, BuiltinMethod, BuiltinType, BuiltinTypeName, BuiltinVar, CastExpr, ClassField, ClassMethod, ClassStmt, CommaExpr, ConditionalExpr, DeclareFunctionStmt, DeclareVarStmt, Expression, ExpressionStatement, ExpressionType, ExpressionVisitor, ExternalExpr, ExternalReference, literalMap, FunctionExpr, IfStmt, InstantiateExpr, InvokeFunctionExpr, LiteralArrayExpr, LiteralExpr, LiteralMapExpr, MapType, NotExpr, NONE_TYPE, ReadKeyExpr, ReadPropExpr, ReadVarExpr, ReturnStatement, StatementVisitor, TaggedTemplateExpr, TemplateLiteral, TemplateLiteralElement, ThrowStmt, TryCatchStmt, Type, TypeVisitor, WrappedNodeExpr, WriteKeyExpr, WritePropExpr, WriteVarExpr, StmtModifier, Statement, STRING_TYPE, TypeofExpr, collectExternalReferences, jsDocComment, leadingComment, LeadingComment, JSDocComment, UnaryOperator, UnaryOperatorExpr, LocalizedString} from './output/output_ast';
 export {EmitterVisitorContext} from './output/abstract_emitter';
 export {JitEvaluator} from './output/output_jit';
 export * from './output/ts_emitter';
@@ -88,7 +88,7 @@ export * from './selector';
 export * from './style_compiler';
 export * from './template_parser/template_parser';
 export {ViewCompiler} from './view_compiler/view_compiler';
-export {getParseErrors, isSyntaxError, syntaxError, Version} from './util';
+export {Version} from './util';
 export {SourceMap} from './output/source_map';
 export * from './injectable_compiler_2';
 export * from './render3/partial/api';
@@ -114,6 +114,8 @@ export {compileDeclareInjectorFromMetadata} from './render3/partial/injector';
 export {compileDeclareNgModuleFromMetadata} from './render3/partial/ng_module';
 export {compileDeclarePipeFromMetadata} from './render3/partial/pipe';
 export {publishFacade} from './jit_compiler_facade';
+export {emitDistinctChangesOnlyDefaultValue, ChangeDetectionStrategy, ViewEncapsulation} from './core';
+export * as outputAst from './output/output_ast';
 // This file only reexports content of the `src` folder. Keep it that way.
 
 // This function call has a global side effects and publishes the compiler into global namespace for

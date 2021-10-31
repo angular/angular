@@ -148,7 +148,6 @@ Angular provides three categories of data binding according to the direction of 
       <code-example>
         {{expression}}
         [target]="expression"
-        bind-target="expression"
       </code-example>
 
     </td>
@@ -163,7 +162,6 @@ Angular provides three categories of data binding according to the direction of 
       <td>
         <code-example>
           (target)="statement"
-          on-target="statement"
         </code-example>
       </td>
 
@@ -178,7 +176,6 @@ Angular provides three categories of data binding according to the direction of 
       <td>
         <code-example>
           [(target)]="expression"
-          bindon-target="expression"
         </code-example>
       </td>
       <td>

@@ -10,24 +10,18 @@ export interface Option {
   templateUrl: 'select.component.html'
 })
 export class SelectComponent implements OnInit {
-  @Input()
-  selected: Option;
+  @Input() selected: Option;
 
-  @Input()
-  options: Option[];
+  @Input() options: Option[];
 
-  // tslint:disable-next-line: no-output-native
-  @Output()
-  change = new EventEmitter<{option: Option, index: number}>();
+  // eslint-disable-next-line @angular-eslint/no-output-native
+  @Output() change = new EventEmitter<{option: Option, index: number}>();
 
-  @Input()
-  showSymbol = false;
+  @Input() showSymbol = false;
 
-  @Input()
-  label: string;
+  @Input() label: string;
 
-  @Input()
-  disabled: boolean;
+  @Input() disabled: boolean;
 
   showOptions = false;
 

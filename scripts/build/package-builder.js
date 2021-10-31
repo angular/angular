@@ -34,7 +34,7 @@ set('-e');
 const baseDir = resolve(`${__dirname}/../..`);
 
 /** @type {string} The command to use for running bazel. */
-const bazelCmd = `yarn --cwd "${baseDir}" --silent bazel`;
+const bazelCmd = process.env.BAZEL ?? `yarn --cwd "${baseDir}" --silent bazel`;
 
 /** @type {string} The absolute path to the bazel-bin directory. */
 const bazelBin = exec(`${bazelCmd} info bazel-bin`, true);
@@ -60,12 +60,11 @@ module.exports = {
  *
  * @param {string} destDir Path to the output directory into which we copy the npm packages.
  * This path should either be absolute or relative to the project root.
- * @param {boolean} enableIvy True, if Ivy should be used.
  * @param {string} description Human-readable description of the build.
  * @param {boolean?} isRelease True, if the build should be stamped for a release.
  * @returns {Array<{name: string, outputPath: string}} A list of packages built.
  */
-function buildTargetPackages(destDir, enableIvy, description, isRelease = false) {
+function buildTargetPackages(destDir, description, isRelease = false) {
   console.info('##################################');
   console.info(`${scriptPath}:`);
   console.info('  Building @angular/* npm packages');
@@ -81,10 +80,19 @@ function buildTargetPackages(destDir, enableIvy, description, isRelease = false)
       bazelCmd} query --output=label "attr('tags', '\\[.*release-with-framework.*\\]', //packages/...) intersect kind('ng_package|pkg_npm', //packages/...)"`;
   const targets = exec(getTargetsCmd, true).split(/\r?\n/);
 
+  // If we are in release mode, run `bazel clean` to ensure the execroot and action cache
+  // are not populated. This is necessary because targets using `npm_package` rely on
+  // workspace status variables for the package version. Such NPM package targets are not
+  // rebuilt if only the workspace status variables change. This could result in accidental
+  // re-use of previously built package output with a different `version` in the `package.json`.
+  if (isRelease) {
+    console.info('Building in release mode. Resetting the Bazel execroot and action cache..');
+    exec(`${bazelCmd} clean`);
+  }
+
   // Use either `--config=snapshot` or `--config=release` so that builds are created with the
   // correct embedded version info.
-  exec(`${bazelCmd} build --config=${isRelease ? 'release' : 'snapshot'} --config=${
-      enableIvy ? 'ivy' : 'view-engine'} ${targets.join(' ')}`);
+  exec(`${bazelCmd} build --config=${isRelease ? 'release' : 'snapshot'} ${targets.join(' ')}`);
 
   // Create the output directory.
   const absDestDir = resolve(baseDir, destDir);

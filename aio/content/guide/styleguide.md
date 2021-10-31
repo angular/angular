@@ -24,7 +24,7 @@ On the other hand, you need a really unusual case for breaking a *Do* guideline.
 <div class="s-rule consider">
 
 **Consider** guidelines should generally be followed.
-If you fully understand the meaning behind the guideline and have a good reason to deviate, then do so. Please strive to be consistent.
+If you fully understand the meaning behind the guideline and have a good reason to deviate, then do so. Aim to be consistent.
 
 </div>
 
@@ -53,9 +53,9 @@ The guideline uses the shortcut `hero.component.ts|html|css|spec` to represent t
 ## Single responsibility
 
 Apply the
-<a href="https://wikipedia.org/wiki/Single_responsibility_principle"><i>single responsibility principle</i> (SRP)</a>
+<a href="https://wikipedia.org/wiki/Single_responsibility_principle"><i>single responsibility principle (SRP)</i></a>
 to all components, services, and other symbols.
-This helps make the app cleaner, easier to read and maintain, and more testable.
+This helps make the application cleaner, easier to read and maintain, and more testable.
 
 {@a 01-01}
 
@@ -167,7 +167,7 @@ supporting classes into their own, dedicated files.
 
 
 
-As the app grows, this rule becomes even more important.
+As the application grows, this rule becomes even more important.
 <a href="#toc">Back to top</a>
 
 
@@ -306,7 +306,7 @@ Naming conventions are hugely important to maintainability and readability. This
 
 
 
-**Why?** The naming conventions should simply help find desired code faster and make it easier to understand.
+**Why?** The naming conventions should help find desired code faster and make it easier to understand.
 
 
 </div>
@@ -840,7 +840,7 @@ As always, strive for consistency.
 
 <div class="s-rule do">
 
-**Do** put bootstrapping and platform logic for the app in a file named `main.ts`.
+**Do** put bootstrapping and platform logic for the application in a file named `main.ts`.
 
 </div>
 
@@ -852,7 +852,7 @@ As always, strive for consistency.
 
 <div class="s-rule avoid">
 
-**Avoid** putting app logic in `main.ts`. Instead, consider placing it in a component or service.
+**Avoid** putting application logic in `main.ts`. Instead, consider placing it in a component or service.
 
 </div>
 
@@ -933,19 +933,19 @@ For example, the prefix `toh` represents **T**our **o**f **H**eroes and the pref
 
 <div class="s-rule do">
 
-**Do** use a prefix that identifies the feature area or the app itself.
+**Do** use a prefix that identifies the feature area or the application itself.
 
 </div>
 
 <div class="s-why">
 
-**Why?** Prevents element name collisions with components in other apps and with native HTML elements.
+**Why?** Prevents element name collisions with components in other applications and with native HTML elements.
 
 </div>
 
 <div class="s-why">
 
-**Why?** Makes it easier to promote and share the component in other apps.
+**Why?** Makes it easier to promote and share the component in other applications.
 
 </div>
 
@@ -1636,9 +1636,9 @@ A consistent class and file name convention make these modules easy to spot and 
 
 ## Application structure and NgModules
 
-Have a near-term view of implementation and a long-term vision. Start small but keep in mind where the app is heading down the road.
+Have a near-term view of implementation and a long-term vision. Start small but keep in mind where the application is heading.
 
-All of the app's code goes in a folder named `src`.
+All of the application's code goes in a folder named `src`.
 All feature areas are in their own folder, with their own NgModule.
 
 All content is one asset per file. Each component, service, and pipe is in its own file.
@@ -1658,7 +1658,7 @@ Use the naming conventions for files in this guide.
 
 
 
-**Do** structure the app such that you can **L**ocate code quickly,
+**Do** structure the application such that you can **L**ocate code quickly,
 **I**dentify the code at a glance,
 keep the **F**lattest structure you can, and
 **T**ry to be DRY.
@@ -1703,7 +1703,7 @@ _can I quickly open and start work in all of the related files for this feature_
 
 
 
-**Do** make locating code intuitive, simple, and fast.
+**Do** make locating code intuitive and fast.
 
 
 </div>
@@ -1904,7 +1904,7 @@ But if something is not obvious or departs from a convention, then spell it out.
 
 
 
-**Do** start small but keep in mind where the app is heading down the road.
+**Do** start small but keep in mind where the application is heading down the road.
 
 
 </div>
@@ -1926,7 +1926,7 @@ But if something is not obvious or departs from a convention, then spell it out.
 
 
 
-**Do** put all of the app's code in a folder named `src`.
+**Do** put all of the application's code in a folder named `src`.
 
 
 </div>
@@ -1948,7 +1948,7 @@ But if something is not obvious or departs from a convention, then spell it out.
 
 
 
-**Why?** Helps keep the app structure small and easy to maintain in the early stages, while being easy to evolve as the app grows.
+**Why?** Helps keep the application structure small and easy to maintain in the early stages, while being easy to evolve as the application grows.
 
 
 </div>
@@ -1959,7 +1959,7 @@ But if something is not obvious or departs from a convention, then spell it out.
 
 
 
-**Why?** Components often have four files (e.g. `*.html`, `*.css`, `*.ts`, and `*.spec.ts`) and can clutter a folder quickly.
+**Why?** Components often have four files (for example, `*.html`, `*.css`, `*.ts`, and `*.spec.ts`) and can clutter a folder quickly.
 
 
 </div>
@@ -2201,7 +2201,7 @@ Here is a compliant folder and file structure:
 
 
 While components in dedicated folders are widely preferred,
-another option for small apps is to keep components flat (not in a dedicated folder).
+another option for small applications is to keep components flat (not in a dedicated folder).
 This adds up to four files to the existing folder, but also reduces the folder nesting.
 Whatever you choose, be consistent.
 
@@ -2238,7 +2238,7 @@ at a glance. The structure is as flat as it can be and there are no repetitive o
 
 <div class="s-why">
 
-**Why?** Helps reduce the app from becoming cluttered through organizing the
+**Why?** Helps reduce the application from becoming cluttered through organizing the
 content and keeping them aligned with the LIFT guidelines.
 
 </div>
@@ -2290,7 +2290,7 @@ and more difficult in a flat structure.
 
 
 
-**Do** create an NgModule in the app's root folder,
+**Do** create an NgModule in the application's root folder,
 for example, in `/src/app`.
 
 
@@ -2302,7 +2302,7 @@ for example, in `/src/app`.
 
 
 
-**Why?** Every app requires at least one root NgModule.
+**Why?** Every application requires at least one root NgModule.
 
 
 </div>
@@ -2759,6 +2759,30 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 
 <a href="#toc">Back to top</a>
 
+### Do not add filtering and sorting logic to pipes
+
+#### Style 04-13
+
+<div class="s-rule avoid">
+
+**Avoid** adding filtering or sorting logic into custom pipes.
+
+</div>
+
+<div class="s-rule do">
+
+**Do** pre-compute the filtering and sorting logic in components or services before binding the model in templates.
+
+</div>
+
+<div class="s-why-last">
+
+**Why?** Filtering and especially sorting are expensive operations. As Angular can call pipe methods many times per second, sorting and filtering operations can degrade the user experience severely for even moderately-sized lists.
+
+</div>
+
+<a href="#toc">Back to top</a>
+
 ## Components
 
 {@a 05-03}
@@ -3195,7 +3219,7 @@ helps instantly identify which members of the component serve which purpose.
 
 
 
-**Why?** Logic may be reused by multiple components when placed within a service and exposed via a function.
+**Why?** Logic may be reused by multiple components when placed within a service and exposed as a function.
 
 
 </div>
@@ -3651,7 +3675,7 @@ Compare with the less preferred `host` metadata alternative.
 
 
 
-**Do** provide a service with the app root injector in the `@Injectable` decorator of the service.
+**Do** provide a service with the application root injector in the `@Injectable` decorator of the service.
 
 
 </div>

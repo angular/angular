@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {ClassDeclaration, ClassMember, ClassMemberKind, Declaration, DeclarationKind, Decorator, FunctionDefinition, isNamedFunctionDeclaration, KnownDeclaration, Parameter, reflectObjectLiteral} from '../../../src/ngtsc/reflection';
 import {getTsHelperFnFromDeclaration, getTsHelperFnFromIdentifier, hasNameIdentifier} from '../utils';
@@ -34,7 +34,7 @@ import {NgccClassSymbol} from './ngcc_host';
  *
  */
 export class Esm5ReflectionHost extends Esm2015ReflectionHost {
-  getBaseClassExpression(clazz: ClassDeclaration): ts.Expression|null {
+  override getBaseClassExpression(clazz: ClassDeclaration): ts.Expression|null {
     const superBaseClassExpression = super.getBaseClassExpression(clazz);
     if (superBaseClassExpression !== null) {
       return superBaseClassExpression;
@@ -71,7 +71,7 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
    * @returns metadata about the `Declaration` if the original declaration is found, or `null`
    * otherwise.
    */
-  getDeclarationOfIdentifier(id: ts.Identifier): Declaration|null {
+  override getDeclarationOfIdentifier(id: ts.Identifier): Declaration|null {
     const declaration = super.getDeclarationOfIdentifier(id);
 
     if (declaration === null) {
@@ -127,7 +127,7 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
    * @param node the function declaration to parse.
    * @returns an object containing the node, statements and parameters of the function.
    */
-  getDefinitionOfFunction(node: ts.Node): FunctionDefinition|null {
+  override getDefinitionOfFunction(node: ts.Node): FunctionDefinition|null {
     const definition = super.getDefinitionOfFunction(node);
     if (definition === null) {
       return null;
@@ -155,7 +155,7 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
    * @param decl The `Declaration` to check.
    * @return The passed in `Declaration` (potentially enhanced with a `KnownDeclaration`).
    */
-  detectKnownDeclaration<T extends Declaration>(decl: T): T {
+  override detectKnownDeclaration<T extends Declaration>(decl: T): T {
     decl = super.detectKnownDeclaration(decl);
 
     // Also check for TS helpers
@@ -180,7 +180,8 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
    * @param declaration the declaration whose symbol we are finding.
    * @returns the symbol for the node or `undefined` if it is not a "class" or has no symbol.
    */
-  protected getClassSymbolFromInnerDeclaration(declaration: ts.Node): NgccClassSymbol|undefined {
+  protected override getClassSymbolFromInnerDeclaration(declaration: ts.Node): NgccClassSymbol
+      |undefined {
     const classSymbol = super.getClassSymbolFromInnerDeclaration(declaration);
     if (classSymbol !== undefined) {
       return classSymbol;
@@ -210,7 +211,7 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
    * @returns an array of `ts.ParameterDeclaration` objects representing each of the parameters in
    * the class's constructor or `null` if there is no constructor.
    */
-  protected getConstructorParameterDeclarations(classSymbol: NgccClassSymbol):
+  protected override getConstructorParameterDeclarations(classSymbol: NgccClassSymbol):
       ts.ParameterDeclaration[]|null {
     const constructor = classSymbol.implementation.valueDeclaration;
     if (!ts.isFunctionDeclaration(constructor)) return null;
@@ -248,7 +249,8 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
    * @param paramDecoratorsProperty the property that holds the parameter info we want to get.
    * @returns an array of objects containing the type and decorators for each parameter.
    */
-  protected getParamInfoFromStaticProperty(paramDecoratorsProperty: ts.Symbol): ParamInfo[]|null {
+  protected override getParamInfoFromStaticProperty(paramDecoratorsProperty: ts.Symbol):
+      ParamInfo[]|null {
     const paramDecorators = getPropertyValueFromSymbol(paramDecoratorsProperty);
     // The decorators array may be wrapped in a function. If so unwrap it.
     const returnStatement = getReturnStatement(paramDecorators);
@@ -284,15 +286,15 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
    * @param isStatic true if this member is static, false if it is an instance property.
    * @returns the reflected member information, or null if the symbol is not a member.
    */
-  protected reflectMembers(symbol: ts.Symbol, decorators?: Decorator[], isStatic?: boolean):
-      ClassMember[]|null {
+  protected override reflectMembers(
+      symbol: ts.Symbol, decorators?: Decorator[], isStatic?: boolean): ClassMember[]|null {
     const node = symbol.valueDeclaration || symbol.declarations && symbol.declarations[0];
     const propertyDefinition = node && getPropertyDefinition(node);
     if (propertyDefinition) {
       const members: ClassMember[] = [];
       if (propertyDefinition.setter) {
         members.push({
-          node,
+          node: node!,
           implementation: propertyDefinition.setter,
           kind: ClassMemberKind.Setter,
           type: null,
@@ -310,7 +312,7 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
       }
       if (propertyDefinition.getter) {
         members.push({
-          node,
+          node: node!,
           implementation: propertyDefinition.getter,
           kind: ClassMemberKind.Getter,
           type: null,
@@ -348,7 +350,7 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
    * to reference the inner identifier inside the IIFE.
    * @returns an array of statements that may contain helper calls.
    */
-  protected getStatementsForClass(classSymbol: NgccClassSymbol): ts.Statement[] {
+  protected override getStatementsForClass(classSymbol: NgccClassSymbol): ts.Statement[] {
     const classDeclarationParent = classSymbol.implementation.valueDeclaration.parent;
     return ts.isBlock(classDeclarationParent) ? Array.from(classDeclarationParent.statements) : [];
   }
@@ -571,6 +573,7 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
    *
    * 1. `__spread(arguments)`
    * 2. `__spreadArray([], __read(arguments))`
+   * 3. `__spreadArray([], __read(arguments), false)`
    *
    * The tslib helpers may have been emitted inline as in the above example, or they may be read
    * from a namespace import.
@@ -585,8 +588,8 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
       // `__spread(arguments)`
       return call.args.length === 1 && isArgumentsIdentifier(call.args[0]);
     } else if (call.helper === KnownDeclaration.TsHelperSpreadArray) {
-      // `__spreadArray([], __read(arguments))`
-      if (call.args.length !== 2) {
+      // `__spreadArray([], __read(arguments), false)`
+      if (call.args.length !== 2 && call.args.length !== 3) {
         return false;
       }
 

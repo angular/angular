@@ -8,7 +8,7 @@ export abstract class Base { name = 'Count Basie'; }
 
 // Marker class, used as an interface
 // #docregion parent
-export abstract class Parent { name: string; }
+export abstract class Parent { abstract name: string; }
 // #enddocregion parent
 
 const DifferentParent = Parent;
@@ -153,7 +153,7 @@ export class BethComponent implements Parent {
 export class AlexComponent extends Base
 // #enddocregion alex-class-signature
 {
-  name = 'Alex';
+  override name = 'Alex';
 }
 // #enddocregion alex-1
 

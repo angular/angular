@@ -1,10 +1,10 @@
 {
   "compilerOptions": {
-    "target": "es5",
-    "module": "commonjs",
+    "target": "es2020",
+    "module": "es2020",
     "declaration": true,
     "moduleResolution": "node",
-    "lib": ["es2015", "dom"],
+    "lib": ["es2020", "dom"],
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "outDir": "node_modules/lib1_built",
@@ -14,10 +14,4 @@
   "files": [
     "src/lib1.ts"
   ],
-  "angularCompilerOptions": {
-    "skipTemplateCodegen": true,
-    "flatModuleOutFile": "index.js",
-    "flatModuleId": "lib1_built",
-    "enableIvy": false,
-  }
 }

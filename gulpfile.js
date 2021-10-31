@@ -19,8 +19,4 @@ function loadTask(fileName, taskName) {
 
 
 gulp.task('source-map-test', loadTask('source-map-test'));
-gulp.task('changelog', loadTask('changelog'));
 gulp.task('changelog:zonejs', loadTask('changelog-zonejs'));
-gulp.task('cldr:extract', loadTask('cldr', 'extract'));
-gulp.task('cldr:download', loadTask('cldr', 'download'));
-gulp.task('cldr:gen-closure-locale', loadTask('cldr', 'closure'));

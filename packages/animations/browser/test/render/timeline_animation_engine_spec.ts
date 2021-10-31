@@ -110,11 +110,11 @@ class SuffixNormalizer extends AnimationStyleNormalizer {
     super();
   }
 
-  normalizePropertyName(propertyName: string, errors: string[]): string {
+  override normalizePropertyName(propertyName: string, errors: string[]): string {
     return propertyName + this._suffix;
   }
 
-  normalizeStyleValue(
+  override normalizeStyleValue(
       userProvidedProperty: string, normalizedProperty: string, value: string|number,
       errors: string[]): string {
     return value + this._suffix;
@@ -122,7 +122,7 @@ class SuffixNormalizer extends AnimationStyleNormalizer {
 }
 
 class SuperMockDriver extends MockAnimationDriver {
-  computeStyle(element: any, prop: string, defaultValue?: string): string {
+  override computeStyle(element: any, prop: string, defaultValue?: string): string {
     return '*star*';
   }
 }

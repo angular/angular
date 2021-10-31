@@ -132,9 +132,11 @@ describe('XMLHttpRequest', function() {
 
   it('should invoke xhr task even onload listener throw error', function(done) {
     const oriWindowError = window.onerror;
-    window.onerror = function() {};
+    const logs: string[] = [];
+    window.onerror = function(err: any) {
+      logs.push(err);
+    };
     try {
-      const logs: string[] = [];
       const xhrZone = Zone.current.fork({
         name: 'xhr',
         onInvokeTask: (delegate, curr, target, task, applyThis, applyArgs) => {
@@ -156,7 +158,7 @@ describe('XMLHttpRequest', function() {
           throw new Error('test');
         };
         const unhandledRejection = (e: PromiseRejectionEvent) => {
-          logs.push(e.reason.message);
+          fail('should not be here');
         };
         window.addEventListener('unhandledrejection', unhandledRejection);
         req.addEventListener('load', () => {
@@ -165,8 +167,7 @@ describe('XMLHttpRequest', function() {
             expect(logs).toEqual([
               'hasTask true', 'invokeTask XMLHttpRequest.addEventListener:load', 'onload',
               'invokeTask XMLHttpRequest.addEventListener:load', 'onload1',
-              'invokeTask XMLHttpRequest.send', 'hasTask false',
-              'invokeTask Window.addEventListener:unhandledrejection', 'test'
+              'invokeTask XMLHttpRequest.send', 'hasTask false', 'Uncaught Error: test'
             ]);
             window.removeEventListener('unhandledrejection', unhandledRejection);
             window.onerror = oriWindowError;

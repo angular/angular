@@ -1,0 +1,20 @@
+.page-guide-roadmap {
+  .completed-details {
+    box-shadow: none;
+    margin-top: 4rem;
+    padding: 4rem 0 2rem;
+
+    > summary {
+      justify-content: space-between;
+      padding: 0;
+    }
+
+    > .details-content {
+      padding: 0;
+    }
+  }
+
+  .roadmap-last-updated {
+    font-style: italic;
+  }
+}

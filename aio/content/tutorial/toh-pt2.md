@@ -153,7 +153,7 @@ After the browser refreshes, the application is broken.
 
 Open the browser developer tools and look in the console for an error message like this:
 
-<code-example language="sh" class="code-shell">
+<code-example language="sh">
   HeroesComponent.html:3 ERROR TypeError: Cannot read property 'name' of undefined
 </code-example>
 
@@ -205,7 +205,7 @@ To apply the `.selected` class to the `<li>` when the user clicks it, use class 
 </div>
 
 Angular's [class binding](guide/attribute-binding#class-binding) can add and remove a CSS class conditionally.
-Just add `[class.some-css-class]="some-condition"` to the element you want to style.
+Add `[class.some-css-class]="some-condition"` to the element you want to style.
 
 Add the following `[class.selected]` binding to the `<li>` in the `HeroesComponent` template:
 

@@ -478,7 +478,7 @@ describe('serializeI18nMessageForLocalize', () => {
        expect(messageParts[3].text).toEqual('');
        expect(messageParts[3].sourceSpan.toString()).toEqual('');
        expect(messageParts[4].text).toEqual(' D');
-       expect(messageParts[4].sourceSpan.toString()).toEqual('D');
+       expect(messageParts[4].sourceSpan.toString()).toEqual(' D');
 
        expect(placeHolders[0].text).toEqual('START_TAG_SPAN');
        expect(placeHolders[0].sourceSpan.toString()).toEqual('<span>');
@@ -570,15 +570,14 @@ describe('serializeI18nMessageForLocalize', () => {
   });
 
   it('should serialize ICU with nested HTML containing further ICUs for `$localize()`', () => {
+    const icu = placeholder('ICU');
+    icu.associatedMessage = jasmine.any(i18n.Message) as unknown as i18n.Message;
     expect(
         serialize(
             '{gender, select, male {male} female {female} other {other}}<div>{gender, select, male {male} female {female} other {other}}</div>'))
         .toEqual({
           messageParts: [literal(''), literal(''), literal(''), literal(''), literal('')],
-          placeHolders: [
-            placeholder('ICU'), placeholder('START_TAG_DIV'), placeholder('ICU'),
-            placeholder('CLOSE_TAG_DIV')
-          ]
+          placeHolders: [icu, placeholder('START_TAG_DIV'), icu, placeholder('CLOSE_TAG_DIV')],
         });
   });
 

@@ -1,4 +1,4 @@
-export class Crisis {
+export interface Crisis {
   id: number;
   name: string;
 }

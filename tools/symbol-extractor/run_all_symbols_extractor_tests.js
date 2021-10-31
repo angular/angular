@@ -8,11 +8,12 @@
 
 // TODO(josephperrott): migrate golden testing to ng-dev toolset
 const {spawnSync} = require('child_process');
-const minimist = require('minimist');
+const {Parser: parser} = require('yargs/helpers');
 const path = require('path');
 
 // Remove all command line flags from the arguments.
-const argv = minimist(process.argv.slice(2));
+const argv = parser(process.argv.slice(2));
+
 // The command the user would like to run, either 'accept' or 'test'
 const USER_COMMAND = argv._[0];
 // The shell command to query for all tests.
@@ -38,8 +39,7 @@ const ALL_ACCEPT_TARGETS = ALL_TEST_TARGETS.map(test => `${test}.accept`);
 function runBazelCommandOnTargets(command, targets, present) {
   for (const target of targets) {
     process.stdout.write(`${present}: ${target}`);
-    const commandResult =
-        spawnSync('yarn', ['-s', 'bazel', command, '--config=ivy', target], {encoding: 'utf8'});
+    const commandResult = spawnSync('yarn', ['-s', 'bazel', command, target], {encoding: 'utf8'});
     process.stdout.clearLine();
     process.stdout.cursorTo(0);
     if (commandResult.status) {

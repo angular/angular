@@ -1,0 +1,71 @@
+@use 'sass:color';
+@use '../../constants';
+
+@mixin theme($theme) {
+  // This rule overrides some Angular Material styles defined for `.mat-button`
+  // (hence we include `.mat-button` in the selector).
+  a.button.mat-button,
+  .button {
+    // COLORS
+
+    &.button-secondary {
+      background: constants.$mediumgray;
+      color: rgba(constants.$white, 0.87);
+    }
+
+    &.button-plain {
+      background: constants.$white;
+      color: rgba(constants.$darkgray, 0.87);
+    }
+
+    &.button-subtle {
+      background: constants.$mediumgray;
+      color: color.adjust(constants.$offwhite, $lightness: -10%);
+
+      &:hover {
+        color: rgba(constants.$white, 0.7);
+      }
+    }
+
+    &.button-blue {
+      background: constants.$blue;
+      color: rgba(constants.$white, 0.87);
+
+      &:hover {
+        color: rgba(constants.$white, 0.7);
+      }
+    }
+
+    &.button-banner {
+      background: constants.$darkgray;
+      color: rgba(constants.$white, 0.87);
+    }
+  }
+
+  .cta-bar {
+    .button {
+      &:hover {
+        color: constants.$offwhite;
+      }
+    }
+  }
+
+  .group-buttons {
+    // This rule overrides some Angular Material styles defined for `.mat-button`
+    // (hence we include `.mat-button` in the selector).
+    button.button.mat-button.filter-button {
+      background-color: rgba(constants.$blue, 0.2);
+
+      &.selected {
+        background-color: constants.$blue;
+        color: constants.$white;
+      }
+
+      &:focus,
+      &:hover {
+        background-color: rgba(constants.$blue, 0.7);
+        color: constants.$white;
+      }
+    }
+  }
+}

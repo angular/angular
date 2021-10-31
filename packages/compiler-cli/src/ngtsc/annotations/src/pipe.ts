@@ -7,12 +7,12 @@
  */
 
 import {compileClassMetadata, compileDeclareClassMetadata, compileDeclarePipeFromMetadata, compilePipeFromMetadata, FactoryTarget, R3ClassMetadata, R3PipeMetadata, Statement, WrappedNodeExpr} from '@angular/compiler';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {Reference} from '../../imports';
 import {SemanticSymbol} from '../../incremental/semantic_graph';
-import {InjectableClassRegistry, MetadataRegistry} from '../../metadata';
+import {InjectableClassRegistry, MetadataRegistry, MetaType} from '../../metadata';
 import {PartialEvaluator} from '../../partial_evaluator';
 import {PerfEvent, PerfRecorder} from '../../perf';
 import {ClassDeclaration, Decorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
@@ -27,6 +27,7 @@ import {compileResults, findAngularDecorator, getValidConstructorDependencies, m
 export interface PipeHandlerData {
   meta: R3PipeMetadata;
   classMetadata: R3ClassMetadata|null;
+  pipeNameExpr: ts.Expression;
 }
 
 /**
@@ -37,7 +38,7 @@ export class PipeSymbol extends SemanticSymbol {
     super(decl);
   }
 
-  isPublicApiAffected(previousSymbol: SemanticSymbol): boolean {
+  override isPublicApiAffected(previousSymbol: SemanticSymbol): boolean {
     if (!(previousSymbol instanceof PipeSymbol)) {
       return true;
     }
@@ -45,7 +46,7 @@ export class PipeSymbol extends SemanticSymbol {
     return this.name !== previousSymbol.name;
   }
 
-  isTypeCheckApiAffected(previousSymbol: SemanticSymbol): boolean {
+  override isTypeCheckApiAffected(previousSymbol: SemanticSymbol): boolean {
     return this.isPublicApiAffected(previousSymbol);
   }
 }
@@ -134,6 +135,7 @@ export class PipeDecoratorHandler implements
           pure,
         },
         classMetadata: extractClassMetadata(clazz, this.reflector, this.isCore),
+        pipeNameExpr,
       },
     };
   }
@@ -144,7 +146,8 @@ export class PipeDecoratorHandler implements
 
   register(node: ClassDeclaration, analysis: Readonly<PipeHandlerData>): void {
     const ref = new Reference(node);
-    this.metaRegistry.registerPipeMetadata({ref, name: analysis.meta.pipeName});
+    this.metaRegistry.registerPipeMetadata(
+        {type: MetaType.Pipe, ref, name: analysis.meta.pipeName, nameExpr: analysis.pipeNameExpr});
 
     this.injectableRegistry.registerInjectable(node);
   }

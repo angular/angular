@@ -7,7 +7,10 @@
  */
 /// <reference types="node" />
 import * as fs from 'fs';
+import module from 'module';
 import * as p from 'path';
+import {fileURLToPath} from 'url';
+
 import {AbsoluteFsPath, FileStats, FileSystem, PathManipulation, PathSegment, PathString, ReadonlyFileSystem} from './types';
 
 /**
@@ -51,6 +54,14 @@ export class NodeJSPathManipulation implements PathManipulation {
   }
 }
 
+// CommonJS/ESM interop for determining the current file name and containing
+// directory. These paths are needed for detecting whether the file system
+// is case sensitive, or for finding the TypeScript default libraries.
+// TODO(devversion): Simplify this in the future if devmode uses ESM as well.
+const isCommonJS = typeof __filename !== 'undefined';
+const currentFileUrl = isCommonJS ? null : __ESM_IMPORT_META_URL__;
+const currentFileName = isCommonJS ? __filename : fileURLToPath(currentFileUrl!);
+
 /**
  * A wrapper around the Node.js file-system that supports readonly operations and path manipulation.
  */
@@ -60,7 +71,7 @@ export class NodeJSReadonlyFileSystem extends NodeJSPathManipulation implements 
     if (this._caseSensitive === undefined) {
       // Note the use of the real file-system is intentional:
       // `this.exists()` relies upon `isCaseSensitive()` so that would cause an infinite recursion.
-      this._caseSensitive = !fs.existsSync(this.normalize(toggleCase(__filename)));
+      this._caseSensitive = !fs.existsSync(this.normalize(toggleCase(currentFileName)));
     }
     return this._caseSensitive;
   }
@@ -86,7 +97,9 @@ export class NodeJSReadonlyFileSystem extends NodeJSPathManipulation implements 
     return this.resolve(fs.realpathSync(path));
   }
   getDefaultLibLocation(): AbsoluteFsPath {
-    return this.resolve(require.resolve('typescript'), '..');
+    // TODO(devversion): Once devmode output uses ESM, we can simplify this.
+    const requireFn = isCommonJS ? require : module.createRequire(currentFileUrl!);
+    return this.resolve(requireFn.resolve('typescript'), '..');
   }
 }
 

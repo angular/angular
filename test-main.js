@@ -9,7 +9,7 @@
 // Tun on full stack traces in errors to help debugging
 Error.stackTraceLimit = Infinity;
 
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 100;
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 15000;
 
 // Cancel Karma's synchronous start,
 // we will call `__karma__.start()` later, once all the specs are loaded.
@@ -134,42 +134,6 @@ Promise
 
 
 function loadCustomElementsPolyfills() {
-  var loadedPromise = Promise.resolve();
-
-  // The custom elements polyfill relies on `MutationObserver`.
-  if (!window.MutationObserver) {
-    loadedPromise = loadedPromise
-                        .then(function() {
-                          return System.import('node_modules/mutation-observer/index.js');
-                        })
-                        .then(function(MutationObserver) {
-                          window.MutationObserver = MutationObserver;
-                        });
-  }
-
-  // The custom elements polyfill relies on `Object.setPrototypeOf()`.
-  if (!Object.setPrototypeOf) {
-    var getDescriptor = function getDescriptor(obj, prop) {
-      var descriptor;
-      while (obj && !descriptor) {
-        descriptor = Object.getOwnPropertyDescriptor(obj, prop);
-        obj = Object.getPrototypeOf(obj);
-      }
-      return descriptor || {};
-    };
-    var setPrototypeOf = function setPrototypeOf(obj, proto) {
-      for (var prop in proto) {
-        if (!obj.hasOwnProperty(prop)) {
-          Object.defineProperty(obj, prop, getDescriptor(proto, prop));
-        }
-      }
-      return obj;
-    };
-
-    Object.defineProperty(setPrototypeOf, '$$shimmed', {value: true});
-    Object.setPrototypeOf = setPrototypeOf;
-  }
-
   // The custom elements polyfill will patch properties and methods on `(HTML)Element` and `Node`
   // (among others), including `(HTML)Element#innerHTML` and `Node#removeChild()`:
   // https://github.com/webcomponents/custom-elements/blob/4f7072c0dbda4beb505d16967acfffd33337b325/src/Patch/Element.js#L28-L73
@@ -209,46 +173,39 @@ function loadCustomElementsPolyfills() {
       // Allow ES5 functions as custom element constructors.
       'node_modules/@webcomponents/custom-elements/src/native-shim.js';
 
-  loadedPromise = loadedPromise
-                      .then(function() {
-                        return System.import(polyfillPath);
-                      })
-                      .then(function() {
-                        // `packages/compiler/test/schema/schema_extractor.ts` relies on
-                        // `HTMLElement.name`, but custom element polyfills will replace
-                        // `HTMLElement` with an anonymous function.
-                        Object.defineProperty(HTMLElement, 'name', {value: 'HTMLElement'});
+  return System.import(polyfillPath).then(function() {
+    // `packages/compiler/test/schema/schema_extractor.ts` relies on
+    // `HTMLElement.name`, but custom element polyfills will replace
+    // `HTMLElement` with an anonymous function.
+    Object.defineProperty(HTMLElement, 'name', {value: 'HTMLElement'});
 
-                        // Create helper functions on `window` for patching/restoring
-                        // properties/methods.
-                        Object.keys(patchConfig).forEach(function(prop) {
-                          var patchMethod = '$$patch_' + prop;
-                          var restoreMethod = '$$restore_' + prop;
+    // Create helper functions on `window` for patching/restoring
+    // properties/methods.
+    Object.keys(patchConfig).forEach(function(prop) {
+      var patchMethod = '$$patch_' + prop;
+      var restoreMethod = '$$restore_' + prop;
 
-                          if (!patchTargets[prop]) {
-                            // No patching detected. Create no-op functions.
-                            window[patchMethod] = window[restoreMethod] = function() {};
-                          } else {
-                            var patchTarget = patchTargets[prop];
-                            var originalDescriptor = originalDescriptors[prop];
-                            var patchedDescriptor =
-                                Object.getOwnPropertyDescriptor(patchTarget, prop);
+      if (!patchTargets[prop]) {
+        // No patching detected. Create no-op functions.
+        window[patchMethod] = window[restoreMethod] = function() {};
+      } else {
+        var patchTarget = patchTargets[prop];
+        var originalDescriptor = originalDescriptors[prop];
+        var patchedDescriptor = Object.getOwnPropertyDescriptor(patchTarget, prop);
 
-                            window[patchMethod] = function() {
-                              Object.defineProperty(patchTarget, prop, patchedDescriptor);
-                            };
-                            window[restoreMethod] = function() {
-                              Object.defineProperty(patchTarget, prop, originalDescriptor);
-                            };
+        window[patchMethod] = function() {
+          Object.defineProperty(patchTarget, prop, patchedDescriptor);
+        };
+        window[restoreMethod] = function() {
+          Object.defineProperty(patchTarget, prop, originalDescriptor);
+        };
 
-                            // Restore `prop`. The patch will be manually applied only during the
-                            // `@angular/elements` tests that need it.
-                            window[restoreMethod]();
-                          }
-                        });
-                      });
-
-  return loadedPromise;
+        // Restore `prop`. The patch will be manually applied only during the
+        // `@angular/elements` tests that need it.
+        window[restoreMethod]();
+      }
+    });
+  });
 }
 
 function onlySpecFiles(path) {

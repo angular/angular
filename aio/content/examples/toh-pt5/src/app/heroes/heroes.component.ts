@@ -10,7 +10,7 @@ import { HeroService } from '../hero.service';
 })
 // #docregion class
 export class HeroesComponent implements OnInit {
-  heroes: Hero[];
+  heroes: Hero[] = [];
 
   constructor(private heroService: HeroService) { }
 

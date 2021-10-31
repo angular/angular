@@ -238,7 +238,7 @@ class ThrowingVisitor implements TemplateAstVisitor {
 }
 
 class FooAstTransformer extends ThrowingVisitor {
-  visitElement(ast: ElementAst, context: any): any {
+  override visitElement(ast: ElementAst, context: any): any {
     if (ast.name != 'div') return ast;
     return new ElementAst(
         'foo', [], [], [], [], [], [], false, [], [], ast.ngContentIndex, ast.sourceSpan,
@@ -247,7 +247,7 @@ class FooAstTransformer extends ThrowingVisitor {
 }
 
 class BarAstTransformer extends FooAstTransformer {
-  visitElement(ast: ElementAst, context: any): any {
+  override visitElement(ast: ElementAst, context: any): any {
     if (ast.name != 'foo') return ast;
     return new ElementAst(
         'bar', [], [], [], [], [], [], false, [], [], ast.ngContentIndex, ast.sourceSpan,
@@ -340,7 +340,7 @@ describe('TemplateAstVisitor', () => {
 
   it('should visit NgContentAst', () => {
     expectVisitedNode(new class extends NullVisitor {
-      visitNgContent(ast: NgContentAst, context: any): any {
+      override visitNgContent(ast: NgContentAst, context: any): any {
         return ast;
       }
     }, new NgContentAst(0, 0, null!));
@@ -348,7 +348,7 @@ describe('TemplateAstVisitor', () => {
 
   it('should visit EmbeddedTemplateAst', () => {
     expectVisitedNode(new class extends NullVisitor {
-      visitEmbeddedTemplate(ast: EmbeddedTemplateAst, context: any) {
+      override visitEmbeddedTemplate(ast: EmbeddedTemplateAst, context: any) {
         return ast;
       }
     }, new EmbeddedTemplateAst([], [], [], [], [], [], false, [], [], 0, null!));
@@ -356,7 +356,7 @@ describe('TemplateAstVisitor', () => {
 
   it('should visit ElementAst', () => {
     expectVisitedNode(new class extends NullVisitor {
-      visitElement(ast: ElementAst, context: any) {
+      override visitElement(ast: ElementAst, context: any) {
         return ast;
       }
     }, new ElementAst('foo', [], [], [], [], [], [], false, [], [], 0, null!, null!));
@@ -364,7 +364,7 @@ describe('TemplateAstVisitor', () => {
 
   it('should visit RefererenceAst', () => {
     expectVisitedNode(new class extends NullVisitor {
-      visitReference(ast: ReferenceAst, context: any): any {
+      override visitReference(ast: ReferenceAst, context: any): any {
         return ast;
       }
     }, new ReferenceAst('foo', null!, null!, null!));
@@ -372,7 +372,7 @@ describe('TemplateAstVisitor', () => {
 
   it('should visit VariableAst', () => {
     expectVisitedNode(new class extends NullVisitor {
-      visitVariable(ast: VariableAst, context: any): any {
+      override visitVariable(ast: VariableAst, context: any): any {
         return ast;
       }
     }, new VariableAst('foo', 'bar', null!));
@@ -380,7 +380,7 @@ describe('TemplateAstVisitor', () => {
 
   it('should visit BoundEventAst', () => {
     expectVisitedNode(new class extends NullVisitor {
-      visitEvent(ast: BoundEventAst, context: any): any {
+      override visitEvent(ast: BoundEventAst, context: any): any {
         return ast;
       }
     }, new BoundEventAst('foo', 'bar', 'goo', null!, null!, null!));
@@ -388,7 +388,7 @@ describe('TemplateAstVisitor', () => {
 
   it('should visit BoundElementPropertyAst', () => {
     expectVisitedNode(new class extends NullVisitor {
-      visitElementProperty(ast: BoundElementPropertyAst, context: any): any {
+      override visitElementProperty(ast: BoundElementPropertyAst, context: any): any {
         return ast;
       }
     }, new BoundElementPropertyAst('foo', null!, null!, null!, 'bar', null!));
@@ -396,7 +396,7 @@ describe('TemplateAstVisitor', () => {
 
   it('should visit AttrAst', () => {
     expectVisitedNode(new class extends NullVisitor {
-      visitAttr(ast: AttrAst, context: any): any {
+      override visitAttr(ast: AttrAst, context: any): any {
         return ast;
       }
     }, new AttrAst('foo', 'bar', null!));
@@ -404,7 +404,7 @@ describe('TemplateAstVisitor', () => {
 
   it('should visit BoundTextAst', () => {
     expectVisitedNode(new class extends NullVisitor {
-      visitBoundText(ast: BoundTextAst, context: any): any {
+      override visitBoundText(ast: BoundTextAst, context: any): any {
         return ast;
       }
     }, new BoundTextAst(null!, 0, null!));
@@ -412,7 +412,7 @@ describe('TemplateAstVisitor', () => {
 
   it('should visit TextAst', () => {
     expectVisitedNode(new class extends NullVisitor {
-      visitText(ast: TextAst, context: any): any {
+      override visitText(ast: TextAst, context: any): any {
         return ast;
       }
     }, new TextAst('foo', 0, null!));
@@ -420,7 +420,7 @@ describe('TemplateAstVisitor', () => {
 
   it('should visit DirectiveAst', () => {
     expectVisitedNode(new class extends NullVisitor {
-      visitDirective(ast: DirectiveAst, context: any): any {
+      override visitDirective(ast: DirectiveAst, context: any): any {
         return ast;
       }
     }, new DirectiveAst(null!, [], [], [], 0, null!));
@@ -428,7 +428,7 @@ describe('TemplateAstVisitor', () => {
 
   it('should visit DirectiveAst', () => {
     expectVisitedNode(new class extends NullVisitor {
-      visitDirectiveProperty(ast: BoundDirectivePropertyAst, context: any): any {
+      override visitDirectiveProperty(ast: BoundDirectivePropertyAst, context: any): any {
         return ast;
       }
     }, new BoundDirectivePropertyAst('foo', 'bar', null!, null!));
@@ -1622,7 +1622,8 @@ Reference "#a" is defined several times ("<div #a></div><div [ERROR ->]#a></div>
     describe('inline templates', () => {
       it('should report an error on variables declared with #', () => {
         expect(() => humanizeTplAst(parse('<div *ngIf="#a=b">', [])))
-            .toThrowError(/Parser Error: Unexpected token # at column 1/);
+            .toThrowError(
+                /Parser Error: Private identifiers are not supported\. Unexpected private identifier: #a at column 1/);
       });
 
       it('should parse variables via let ...', () => {

@@ -1,12 +1,12 @@
-package(default_visibility = ["//visibility:public"])
-
 load("//tools:defaults.bzl", "ng_rollup_bundle", "ts_library")
 load("//tools/size-tracking:index.bzl", "js_size_tracking_test")
+
+package(default_visibility = ["//visibility:public"])
 
 ts_library(
     name = "core_all",
     srcs = ["index.ts"],
-    tags = ["ivy-only"],
+    tags = [],
     deps = [
         "//packages/core",
     ],
@@ -15,9 +15,6 @@ ts_library(
 ng_rollup_bundle(
     name = "bundle",
     entry_point = ":index.ts",
-    tags = [
-        "ivy-only",
-    ],
     deps = [
         ":core_all",
         "//packages/core",
@@ -28,9 +25,6 @@ ng_rollup_bundle(
 js_size_tracking_test(
     name = "size_test",
     src = "angular/packages/core/test/bundling/core_all/bundle.min.js",
-    # Ensures that this target runs with "--config=ivy" (aka Ivy). This is necessary
-    # because we don't run this test on CI currently, but if we run it manually, we need to
-    # ensure that it runs with Ivy for proper size comparisons.
     angular_ivy_enabled = "True",
     data = [
         "bundle.golden_size_map_ivy.json",
@@ -41,7 +35,6 @@ js_size_tracking_test(
     max_percentage_diff = 15,
     source_map = "angular/packages/core/test/bundling/core_all/bundle.min.js.map",
     tags = [
-        "ivy-only",
         "manual",
     ],
 )
@@ -63,6 +56,6 @@ js_size_tracking_test(
     source_map = "angular/packages/core/test/bundling/core_all/bundle.min.js.map",
     tags = [
         "manual",
-        "no-ivy-aot",
+        "view-engine-only",
     ],
 )

@@ -6,10 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Adapter, Context} from './adapter';
+import {Adapter} from './adapter';
 import {Database, Table} from './database';
+import {CacheTable} from './db-cache';
 import {DebugHandler} from './debug';
 import {DataGroupConfig} from './manifest';
+import {NamedCache} from './named-cache-storage';
 
 /**
  * A metadata record of how old a particular cached resource is.
@@ -227,7 +229,7 @@ export class DataGroup {
   /**
    * The `Cache` instance in which resources belonging to this group are cached.
    */
-  private readonly cache: Promise<Cache>;
+  private readonly cache: Promise<NamedCache>;
 
   /**
    * Tracks the LRU state of resources in this cache.
@@ -247,13 +249,11 @@ export class DataGroup {
   constructor(
       private scope: ServiceWorkerGlobalScope, private adapter: Adapter,
       private config: DataGroupConfig, private db: Database, private debugHandler: DebugHandler,
-      private prefix: string) {
-    this.patterns = this.config.patterns.map(pattern => new RegExp(pattern));
-    this.cache = this.scope.caches.open(`${this.prefix}:dynamic:${this.config.name}:cache`);
-    this.lruTable = this.db.open(
-        `${this.prefix}:dynamic:${this.config.name}:lru`, this.config.cacheQueryOptions);
-    this.ageTable = this.db.open(
-        `${this.prefix}:dynamic:${this.config.name}:age`, this.config.cacheQueryOptions);
+      cacheNamePrefix: string) {
+    this.patterns = config.patterns.map(pattern => new RegExp(pattern));
+    this.cache = adapter.caches.open(`${cacheNamePrefix}:${config.name}:cache`);
+    this.lruTable = this.db.open(`${cacheNamePrefix}:${config.name}:lru`, config.cacheQueryOptions);
+    this.ageTable = this.db.open(`${cacheNamePrefix}:${config.name}:age`, config.cacheQueryOptions);
   }
 
   /**
@@ -294,7 +294,7 @@ export class DataGroup {
    * Process a fetch event and return a `Response` if the resource is covered by this group,
    * or `null` otherwise.
    */
-  async handleFetch(req: Request, ctx: Context): Promise<Response|null> {
+  async handleFetch(req: Request, event: ExtendableEvent): Promise<Response|null> {
     // Do nothing
     if (!this.patterns.some(pattern => pattern.test(req.url))) {
       return null;
@@ -314,9 +314,9 @@ export class DataGroup {
         // Handle the request with whatever strategy was selected.
         switch (this.config.strategy) {
           case 'freshness':
-            return this.handleFetchWithFreshness(req, ctx, lru);
+            return this.handleFetchWithFreshness(req, event, lru);
           case 'performance':
-            return this.handleFetchWithPerformance(req, ctx, lru);
+            return this.handleFetchWithPerformance(req, event, lru);
           default:
             throw new Error(`Unknown strategy: ${this.config.strategy}`);
         }
@@ -337,7 +337,7 @@ export class DataGroup {
     }
   }
 
-  private async handleFetchWithPerformance(req: Request, ctx: Context, lru: LruList):
+  private async handleFetchWithPerformance(req: Request, event: ExtendableEvent, lru: LruList):
       Promise<Response|null> {
     let res: Response|null|undefined = null;
 
@@ -348,7 +348,7 @@ export class DataGroup {
       res = fromCache.res;
       // Check the age of the resource.
       if (this.config.refreshAheadMs !== undefined && fromCache.age >= this.config.refreshAheadMs) {
-        ctx.waitUntil(this.safeCacheResponse(req, this.safeFetch(req), lru));
+        event.waitUntil(this.safeCacheResponse(req, this.safeFetch(req), lru));
       }
     }
 
@@ -367,7 +367,7 @@ export class DataGroup {
       res = this.adapter.newResponse(null, {status: 504, statusText: 'Gateway Timeout'});
 
       // Cache the network response eventually.
-      ctx.waitUntil(this.safeCacheResponse(req, networkFetch, lru));
+      event.waitUntil(this.safeCacheResponse(req, networkFetch, lru));
     } else {
       // The request completed in time, so cache it inline with the response flow.
       await this.safeCacheResponse(req, res, lru);
@@ -376,7 +376,7 @@ export class DataGroup {
     return res;
   }
 
-  private async handleFetchWithFreshness(req: Request, ctx: Context, lru: LruList):
+  private async handleFetchWithFreshness(req: Request, event: ExtendableEvent, lru: LruList):
       Promise<Response|null> {
     // Start with a network fetch.
     const [timeoutFetch, networkFetch] = this.networkFetchWithTimeout(req);
@@ -392,7 +392,7 @@ export class DataGroup {
 
     // If the network fetch times out or errors, fall back on the cache.
     if (res === undefined) {
-      ctx.waitUntil(this.safeCacheResponse(req, networkFetch, lru, true));
+      event.waitUntil(this.safeCacheResponse(req, networkFetch, lru, true));
 
       // Ignore the age, the network response will be cached anyway due to the
       // behavior of freshness.
@@ -550,10 +550,21 @@ export class DataGroup {
   async cleanup(): Promise<void> {
     // Remove both the cache and the database entries which track LRU stats.
     await Promise.all([
-      this.scope.caches.delete(`${this.prefix}:dynamic:${this.config.name}:cache`),
-      this.db.delete(`${this.prefix}:dynamic:${this.config.name}:age`),
-      this.db.delete(`${this.prefix}:dynamic:${this.config.name}:lru`),
+      this.cache.then(cache => this.adapter.caches.delete(cache.name)),
+      this.ageTable.then(table => this.db.delete(table.name)),
+      this.lruTable.then(table => this.db.delete(table.name)),
     ]);
+  }
+  /**
+   * Return a list of the names of all caches used by this group.
+   */
+  async getCacheNames(): Promise<string[]> {
+    const [cache, ageTable, lruTable] = await Promise.all([
+      this.cache,
+      this.ageTable as Promise<CacheTable>,
+      this.lruTable as Promise<CacheTable>,
+    ]);
+    return [cache.name, ageTable.cacheName, lruTable.cacheName];
   }
 
   /**

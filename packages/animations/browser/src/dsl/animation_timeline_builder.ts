@@ -825,18 +825,18 @@ class SubTimelineBuilder extends TimelineBuilder {
   public timings: AnimateTimings;
 
   constructor(
-      driver: AnimationDriver, public element: any, public keyframes: ɵStyleData[],
+      driver: AnimationDriver, element: any, public keyframes: ɵStyleData[],
       public preStyleProps: string[], public postStyleProps: string[], timings: AnimateTimings,
       private _stretchStartingKeyframe: boolean = false) {
     super(driver, element, timings.delay);
     this.timings = {duration: timings.duration, delay: timings.delay, easing: timings.easing};
   }
 
-  containsAnimation(): boolean {
+  override containsAnimation(): boolean {
     return this.keyframes.length > 1;
   }
 
-  buildKeyframes(): AnimationTimelineInstruction {
+  override buildKeyframes(): AnimationTimelineInstruction {
     let keyframes = this.keyframes;
     let {delay, duration, easing} = this.timings;
     if (this._stretchStartingKeyframe && delay) {

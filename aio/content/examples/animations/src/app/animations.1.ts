@@ -1,7 +1,9 @@
-// #docregion
-import { animation, style, animate } from '@angular/animations';
+// #docplaster
+// #docregion animation-const, trigger-const
+import { animation, style, animate, trigger, transition, useAnimation } from '@angular/animations';
+// #enddocregion trigger-const
 
-export const transAnimation = animation([
+export const transitionAnimation = animation([
   style({
     height: '{{ height }}',
     opacity: '{{ opacity }}',
@@ -9,3 +11,19 @@ export const transAnimation = animation([
   }),
   animate('{{ time }}')
 ]);
+// #enddocregion animation-const
+
+// #docregion trigger-const
+export const triggerAnimation = trigger('openClose', [
+  transition('open => closed', [
+    useAnimation(transitionAnimation, {
+      params: {
+        height: 0,
+        opacity: 1,
+        backgroundColor: 'red',
+        time: '1s'
+      }
+    })
+  ])
+]);
+// #enddocregion trigger-const
