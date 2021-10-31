@@ -434,6 +434,14 @@ import { FormsModule } from '@angular/forms';
 })
 export class DemoModule { }
 
+const closureVariable = 'closureVariable';
+
+// #docregion PureFunction
+const pureFunction = (arg) => arg;
+
+const notPureFunction = () => closureVariable;
+// #enddocregion PureFunction
+
 // #docregion TestingOnlyUnitFunctionality
 export const realParams = {prop: 'A'};
 
