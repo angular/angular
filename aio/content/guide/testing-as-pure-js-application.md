@@ -1,7 +1,25 @@
 ## Unit Testing Angular App As Pure JS Application
 
+### Unit Testing role
+
 Unit testing is low-level testing. A unit can be any simple part of an application.
 It can be a module as a unit, or a component as a unit, or a method as a unit.
+
+The goal of unit testing is to throw the errors if a unit functionality is unexpectedly changed which is close to term "regression scope".
+As a developers we want to be sure that our changes do not involve any regression, what's why unit tests are often one of the quality gates for projects CI.
+
+### Unit Testing criteria
+
+Unit testing should follow next criteria to be able to be integrated to CI and used as a regular quality gate:
+- fast
+- stable
+- independent
+- finite
+- simple
+
+All of these criteria can be achieved because in mostly cases unit tests are written by developers and can be tested like a "white box" since developers have access to the tested unit.
+
+### Unit Testing in JavaScript
 
 In JavaScript, unit testing mostly means testing of methods. In this context, the goal of this testing is to cover <b>only tested methods functionality</b>.
 
@@ -228,11 +246,8 @@ In the test we need to follow the same principle to simplify it.
  spy(param);
  expect(spy).toHaveBeenCalledWith(param); // successful #valid
 
- spy(anotherParam);
- expect(spy).toHaveBeenCalledWith(param); // failed #valid
-```
+### Unit Testing as a pure application example
 
-<code-example
-path="testing/src/app/hero/hero-list.component.no-testbed.spec.ts"
-header="app/hero/hero-list.component.no-testbed.spec.ts (tests as pure javascript)">
-</code-example>
+<code-example path="testing/src/hero/hero-list.component.ts" region="ReadonlyProperties"></code-example>
+
+<code-example path="testing/src/hero/hero-list.component.spec.js" region="ReadonlyProperties" header="hero-list.component.spec.js"></code-example>
