@@ -1,17 +1,20 @@
-# Use published libraries
+# Usage of Angular libraries published to npm
 
-When building Angular applications you can take advantage of sophisticated first-party libraries, such as [Angular Material][AngularMaterialMain], as well as rich ecosystem of third-party libraries.
-See the [Angular Resources][AioResources] page for links to the most popular ones.
+When you build your Angular application, take advantage of sophisticated first-party libraries, as well as rich ecosystem of third-party libraries.
+[Angular Material][AngularMaterialMain] is an example of a sophisticated first-party library.
+For links to the most popular libraries, see [Angular Resources][AioResources].
 
 ## Install libraries
 
 Libraries are published as [npm packages][AioGuideNpmPackages], usually together with schematics that integrate them with the Angular CLI.
-To integrate reusable library code into an application, you need to install the package and import the provided functionality where you will use it.
-For most published Angular libraries, use the Angular CLI `ng add <lib_name>` command.
+To integrate reusable library code into an application, you need to install the package and import the provided functionality in the location you use it.
+For most published Angular libraries, use the `ng add <lib_name>` Angular CLI command.
 
-The `ng add` command uses a package manager such as [npm][NpmjsMain] or [yarn][YarnpkgMain] to install the library package, and invokes schematics that are included in the package to other scaffolding within the project code, such as adding import statements, fonts, and themes.
+The `ng add` Angular CLI command uses a package manager to install the library package and invokes schematics that are included in the package to other scaffolding within the project code.
+Examples of package managers include [npm][NpmjsMain] or [yarn][YarnpkgMain].
+Additional scaffolding within the project code includes import statements, fonts, and themes.
 
-A published library typically provides a README or other documentation on how to add that lib to your application.
+A published library typically provides a `README` file or other documentation on how to add that library to your application.
 For an example, see the [Angular Material][AngularMaterialMain] documentation.
 
 ### Library typings
@@ -29,12 +32,12 @@ npm install @types/d3 --save-dev
 </code-example>
 
 Types defined in a `@types/` package for a library installed into the workspace are automatically added to the TypeScript configuration for the project that uses that library.
-TypeScript looks for types in the `node_modules/@types` folder by default, so you do not have to add each type package individually.
+TypeScript looks for types in the `node_modules/@types` directory by default, so you do not have to add each type package individually.
 
-If a library does not have typings available at `@types/`, you can still use it by manually adding typings for it.
+If a library does not have typings available at `@types/`, you may use it by manually adding typings for it.
 To do this:
 
-1.  Create a `typings.d.ts` file in your `src/` folder.
+1.  Create a `typings.d.ts` file in your `src/` directory.
     This file is automatically included as global type definition.
 
 1.  Add the following code in `src/typings.d.ts`:
@@ -62,14 +65,14 @@ To do this:
 
     </code-example>
 
-You can define more typings as needed.
+Define more typings as needed.
 
 ## Updating libraries
 
-Libraries can be updated by their publishers, and also have their own dependencies which need to be kept current.
-To check for updates to your installed libraries, use the [`ng update` command][AioCliUpdate].
+A library is able to be updated by the publisher, and also has individual dependencies which need to be kept current.
+To check for updates to your installed libraries, use the [`ng update`][AioCliUpdate] Angular CLI command.
 
-Use `ng update <lib_name>` to update individual library versions.
+Use `ng update <lib_name>` Angular CLI command to update individual library versions.
 The Angular CLI checks the latest published release of the library, and if the latest version is newer than your installed version, downloads it and updates your `package.json` to match the latest version.
 
 When you update Angular to a new version, you need to make sure that any libraries you are using are current.
@@ -78,56 +81,67 @@ See the [Angular Update Guide][AngularUpdateMain] for help.
 
 ## Adding a library to the runtime global scope
 
-Legacy JavaScript libraries that are not imported into an application can be added to the runtime global scope and loaded as if they were in a script tag.
-Configure the CLI to do this at build time using the "scripts" and "styles" options of the build target in the [CLI configuration file][AioGuideWorkspaceConfig], `angular.json`.
+If a legacy JavaScript library is not imported into an application, you may add it to the runtime global scope and load it as if it was added in a script tag.
+Configure the Angular CLI to do this at build time using the `scripts` and `styles` options of the build target in the [`angular.json`][AioGuideWorkspaceConfig] workspace build configuration file.
 
-For example, to use the [Bootstrap 4][GetbootstrapDocs40GettingStartedIntroduction] library, first install the library and its dependencies using the npm package manager:
+For example, to use the [Bootstrap 4][GetbootstrapDocs40GettingStartedIntroduction] library
 
-<code-example format="shell" language="shell">
+1.  Install the library and the associated dependencies using the npm package manager:
 
-npm install jquery --save
-npm install popper.js --save
-npm install bootstrap --save
+    <code-example format="shell" language="shell">
 
-</code-example>
+    npm install jquery --save
+    npm install popper.js --save
+    npm install bootstrap --save
 
-In the `angular.json` configuration file, add the associated script files to the "scripts" array:
+    </code-example>
 
-<code-example format="json" language="json">
+1.  In the `angular.json` configuration file, add the associated script files to the `scripts` array:
 
-"scripts": [
-  "node_modules/jquery/dist/jquery.slim.js",
-  "node_modules/popper.js/dist/umd/popper.js",
-  "node_modules/bootstrap/dist/js/bootstrap.js"
-],
+    <code-example format="json" language="json">
 
-</code-example>
+    "scripts": [
+      "node_modules/jquery/dist/jquery.slim.js",
+      "node_modules/popper.js/dist/umd/popper.js",
+      "node_modules/bootstrap/dist/js/bootstrap.js"
+    ],
 
-Add the Bootstrap CSS file to the "styles" array:
+    </code-example>
 
-<code-example format="css" language="css">
+1.  Add the `bootstrap.css` CSS file to the `styles` array:
 
-"styles": [
-  "node_modules/bootstrap/dist/css/bootstrap.css",
-  "src/styles.css"
-],
+    <code-example format="css" language="css">
 
-</code-example>
+    "styles": [
+      "node_modules/bootstrap/dist/css/bootstrap.css",
+      "src/styles.css"
+    ],
 
-Run or restart `ng serve` to see Bootstrap 4 working in your application.
+    </code-example>
+
+1.  Run or restart the `ng serve` Angular CLI command to see Bootstrap 4 work in your application.
 
 ### Using runtime-global libraries inside your app
 
-Once you import a library using the "scripts" array, you should **not** import it using an import statement in your TypeScript code (such as `import * as $ from 'jquery';`).
-If you do, you will end up with two different copies of the library: one imported as a global library, and one imported as a module.
-This is especially bad for libraries with plugins, like JQuery, because each copy will have different plugins.
+After you import a library using the "scripts" array, do **not** import it using an import statement in your TypeScript code.
+The following code snippet is an example import statement.
 
-Instead, download typings for your library (`npm install @types/jquery`) and follow the library installation steps.
+<code-example format="typscript" language="typescript">
+
+import * as $ from 'jquery';
+
+</code-example>
+
+If you inport it using import statements, you have two different copies of the library: one imported as a global library, and one imported as a module.
+This is especially bad for libraries with plugins, like JQuery, because each copy includes different plugins.
+
+Instead, run the `npm install @types/jquery` Angular CLI command to download typings for your library and then follow the library installation steps.
 This gives you access to the global variables exposed by that library.
 
 ### Defining typings for runtime-global libraries
 
 If the global library you need to use does not have global typings, you can declare them manually as `any` in `src/typings.d.ts`.
+
 For example:
 
 <code-example format="typescript" language="typescript">
@@ -138,7 +152,7 @@ declare var libraryName: any;
 
 Some scripts extend other libraries; for instance with JQuery plugins:
 
-<code-example>
+<code-example format="typescript" language="typescript">
 
 $('.test').myPlugin();
 
@@ -157,7 +171,7 @@ interface JQuery {
 
 If you do not add the interface for the script-defined extension, your IDE shows an error:
 
-<code-example>
+<code-example format="none" language="none">
 
 [TS][Error] Property 'myPlugin' does not exist on type 'JQuery'
 
@@ -168,7 +182,6 @@ If you do not add the interface for the script-defined extension, your IDE shows
 [AioCliUpdate]: cli/update "ng update | CLI |Angular"
 
 [AioGuideNpmPackages]: guide/npm-packages "Workspace npm dependencies | Angular"
-
 [AioGuideWorkspaceConfig]: guide/workspace-config "Angular workspace configuration | Angular"
 
 [AioResources]: resources "Explore Angular Resources | Angular"
@@ -187,4 +200,4 @@ If you do not add the interface for the script-defined extension, your IDE shows
 
 <!-- end links -->
 
-@reviewed 2021-10-9
+@reviewed 2021-11-01
