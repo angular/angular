@@ -1868,7 +1868,7 @@ runInEachFileSystem(() => {
         mainNgcc({basePath: '/node_modules', propertiesToConsider: ['esm2015']});
         expect(consoleInfoSpy)
             .toHaveBeenCalledWith(
-                '- @angular/common/http (https://github.com/angular/angular.git)');
+                '- @angular/common/http [esm2015] (https://github.com/angular/angular.git)');
       });
 
       it('should use a custom logger if provided', () => {
@@ -1879,7 +1879,7 @@ runInEachFileSystem(() => {
           logger,
         });
         expect(logger.logs.info).toContain([
-          '- @angular/common/http (https://github.com/angular/angular.git)'
+          '- @angular/common/http [esm2015] (https://github.com/angular/angular.git)'
         ]);
       });
     });

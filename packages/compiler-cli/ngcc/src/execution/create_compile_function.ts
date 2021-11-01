@@ -55,7 +55,7 @@ export function getCreateCompileFn(
         return;
       }
 
-      logger.info(`- ${entryPoint.name} (${entryPoint.repositoryUrl})`);
+      logger.info(`- ${entryPoint.name} [${formatProperty}] (${entryPoint.repositoryUrl})`);
       logger.debug(`    property: ${formatProperty}, format: ${format}`);
 
       const bundle = makeEntryPointBundle(

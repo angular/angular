@@ -57,42 +57,83 @@ runInEachFileSystem(() => {
          });
        });
 
-    it('should return an object containing repositoryUrl extracted from the package level package.json',
+    it('should return an object containing repositoryUrl extracted from the package level package.json (defined as an object)',
        () => {
+         const packagePath = '/project/node_modules/some_package';
          loadTestFiles([
            {
-             name: _('/project/node_modules/some_package/package.json'),
+             name: _(`${packagePath}/package.json`),
              contents:
                  '{ "name": "some_package", "repository": { "url": "https://github.com/some_org/some_package" } }',
            },
            {
-             name: _('/project/node_modules/some_package/valid_entry_point/package.json'),
+             name: _(`${packagePath}/valid_entry_point/package.json`),
              contents: createPackageJson('valid_entry_point')
            },
            {
-             name: _(
-                 '/project/node_modules/some_package/valid_entry_point/valid_entry_point.metadata.json'),
+             name: _(`${packagePath}/valid_entry_point/valid_entry_point.metadata.json`),
              contents: 'some meta data'
            },
          ]);
          const config = new NgccConfiguration(fs, _('/project'));
          const entryPoint = getEntryPointInfo(
-             fs, config, new MockLogger(), SOME_PACKAGE,
-             _('/project/node_modules/some_package/valid_entry_point'));
-         expect(entryPoint).toEqual({
-           name: 'some_package/valid_entry_point',
-           path: _('/project/node_modules/some_package/valid_entry_point'),
-           packageName: 'some_package',
-           packagePath: SOME_PACKAGE,
+             fs, config, new MockLogger(), SOME_PACKAGE, _(`${packagePath}/valid_entry_point`));
+         expect(entryPoint).toEqual(jasmine.objectContaining({
            repositoryUrl: 'https://github.com/some_org/some_package',
-           packageJson: loadPackageJson(fs, '/project/node_modules/some_package/valid_entry_point'),
-           typings:
-               _(`/project/node_modules/some_package/valid_entry_point/valid_entry_point.d.ts`),
-           compiledByAngular: true,
-           ignoreMissingDependencies: false,
-           generateDeepReexports: false,
-         });
+         }));
        });
+
+    it('should return an object containing repositoryUrl extracted from the package level package.json (defined as a string)',
+       () => {
+         const packagePath = '/project/node_modules/some_package';
+         loadTestFiles([
+           {
+             name: _(`${packagePath}/package.json`),
+             contents:
+                 '{ "name": "some_package", "repository": "https://github.com/some_org/some_package" }',
+           },
+           {
+             name: _(`${packagePath}/valid_entry_point/package.json`),
+             contents: createPackageJson('valid_entry_point')
+           },
+           {
+             name: _(`${packagePath}/valid_entry_point/valid_entry_point.metadata.json`),
+             contents: 'some meta data'
+           },
+         ]);
+         const config = new NgccConfiguration(fs, _('/project'));
+         const entryPoint = getEntryPointInfo(
+             fs, config, new MockLogger(), SOME_PACKAGE, _(`${packagePath}/valid_entry_point`));
+         expect(entryPoint).toEqual(jasmine.objectContaining({
+           repositoryUrl: 'https://github.com/some_org/some_package',
+         }));
+       });
+
+    it('should return an object containing an empty repositoryUrl if the package level package.json does not define it',
+       () => {
+         const packagePath = '/project/node_modules/some_package';
+         loadTestFiles([
+           {
+             name: _(`${packagePath}/package.json`),
+             contents: '{ "name": "some_package" } }',
+           },
+           {
+             name: _(`${packagePath}/valid_entry_point/package.json`),
+             contents: createPackageJson('valid_entry_point')
+           },
+           {
+             name: _(`${packagePath}/valid_entry_point/valid_entry_point.metadata.json`),
+             contents: 'some meta data'
+           },
+         ]);
+         const config = new NgccConfiguration(fs, _('/project'));
+         const entryPoint = getEntryPointInfo(
+             fs, config, new MockLogger(), SOME_PACKAGE, _(`${packagePath}/valid_entry_point`));
+         expect(entryPoint).toEqual(jasmine.objectContaining({
+           repositoryUrl: '',
+         }));
+       });
+
     it('should return `IGNORED_ENTRY_POINT` if configured to ignore the specified entry-point', () => {
       loadTestFiles([
         {

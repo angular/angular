@@ -48,8 +48,8 @@ assertSucceeded "Expected ngcc to report bad option."
 
 # node --inspect-brk $(npm bin)/ngcc -p esm2015
 # Run ngcc and check it logged compilation output as expected
-ngcc | grep -e '- @angular/core (https://github\.com/angular/angular\.git)'
-assertSucceeded "Expected 'ngcc' to log '- @angular/core (https://github.com/angular/angular.git)'."
+ngcc | grep -e '- @angular/core \[fesm2015\] (https://github\.com/angular/angular\.git)'
+assertSucceeded "Expected 'ngcc' to log '- @angular/core [fesm2015] (https://github.com/angular/angular.git)'."
 
 
 # Did it add the appropriate build markers?
