@@ -953,7 +953,7 @@ export class Router {
                            // This is only applicable with initial navigation, so setting
                            // `navigated` only when not redirecting resolves this scenario.
                            this.navigated = true;
-                           this.restoreHistory(t);
+                           this.restoreHistory(t, true);
                          }
                          const navCancel = new NavigationCancel(
                              t.id, this.serializeUrl(t.extractedUrl), e.message);
@@ -990,7 +990,7 @@ export class Router {
                          /* All other errors should reset to the router's internal URL reference to
                           * the pre-error state. */
                        } else {
-                         this.restoreHistory(t);
+                         this.restoreHistory(t, true);
                          const navError =
                              new NavigationError(t.id, this.serializeUrl(t.extractedUrl), e);
                          eventsSubject.next(navError);
@@ -1447,7 +1447,7 @@ export class Router {
    * Performs the necessary rollback action to restore the browser URL to the
    * state before the transition.
    */
-  private restoreHistory(t: NavigationTransition) {
+  private restoreHistory(t: NavigationTransition, restoringFromCaughtError = false) {
     if (this.canceledNavigationResolution === 'computed') {
       const targetPagePosition = this.currentPageId - t.targetPageId;
       // The navigator change the location before triggered the browser event,
@@ -1469,12 +1469,20 @@ export class Router {
         // TODO(atscott): resetting the `browserUrlTree` should really be done in `resetState`.
         // Investigate if this can be done by running TGP.
         this.browserUrlTree = t.currentUrlTree;
+        this.resetUrlToCurrentUrlTree();
       } else {
         // The browser URL and router state was not updated before the navigation cancelled so
         // there's no restoration needed.
       }
     } else if (this.canceledNavigationResolution === 'replace') {
-      this.resetState(t);
+      // TODO(atscott): It seems like we should _always_ reset the state here. It would be a no-op
+      // for `deferred` navigations that haven't change the internal state yet because guards
+      // reject. For 'eager' navigations, it seems like we also really should reset the state
+      // because the navigation was cancelled. Investigate if this can be done by running TGP.
+      if (restoringFromCaughtError) {
+        this.resetState(t);
+      }
+      this.resetUrlToCurrentUrlTree();
     }
   }
 
@@ -1487,7 +1495,6 @@ export class Router {
     // addition, the URLHandlingStrategy may be configured to specifically preserve parts of the URL
     // when merging, such as the query params so they are not lost on a refresh.
     this.rawUrlTree = this.urlHandlingStrategy.merge(this.currentUrlTree, t.rawUrl);
-    this.resetUrlToCurrentUrlTree();
   }
 
   private resetUrlToCurrentUrlTree(): void {
