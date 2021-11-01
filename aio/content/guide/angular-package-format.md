@@ -26,6 +26,14 @@ Developers can rely on Angular CLI and [ng-packagr](https://github.com/ng-packag
 
 The following example shows a simplified version of the `@angular/core` package's file layout, with an explanation for each file in the package. This table describes the file layout under `node_modules/@angular/core` annotated to describe the purpose of files and directories:
 
+<style>
+  table tbody>tr>td {
+    padding: 8px;
+    vertical-align: middle;
+    line-height: normal;
+  }
+</style>
+
 <table>
 <tbody>
 <tr>
@@ -41,70 +49,31 @@ The following example shows a simplified version of the `@angular/core` package'
 <td>Bundled .d.ts for the primary entrypoint (@angular/core)</td>
 </tr>
 <tr>
-<td><pre>esm2020/</pre></td>
+<td><pre>esm2020/
+  core.mjs
+  index.mjs
+  public_api.mjs</pre></td>
 <td>Tree of @angular/core's sources in unflattened ES2020 format.</td>
-</tr>
-<tr>
-<td><pre>esm2020/src/</pre>
-<td></td>
 </tr>
 <tr>
 <td><pre>esm2020/testing/</pre></td>
 <td>Tree of the @angular/core/testing entrypoint in unflattened ES2020 format.</td>
 </tr>
 <tr>
-<td><pre>esm2020/core.mjs</pre></td>
-<td></td>
-</tr>
-</tr>
-<tr>
-<td><pre>esm2020/index.mjs</pre></td>
-<td></td>
-</tr>
-<tr>
-<td><pre>esm2020/public_api.mjs</pre></td>
-<td></td>
-</tr>
-
-<tr>
-<td><pre>fesm2015/</pre></td>
+<td><pre>fesm2015/
+  core.mjs
+  core.mjs.map
+  testing.mjs
+  testing.mjs.map</pre></td>
 <td>Code for all entrypoints in a flattened (FESM) ES2015 format, along with sourcemaps.</td>
 </tr>
 <tr>
-<td><pre>fesm2015/core.mjs</pre></td>
-<td></td>
-</tr>
-<tr>
-<td><pre>fesm2015/core.mjs.map</pre></td>
-<td></td>
-</tr>
-<tr>
-<td><pre>fesm2015/testing.mjs</pre></td>
-<td></td>
-</tr>
-<tr>
-<td><pre>fesm2015/testing.mjs.map</pre></td>
-<td></td>
-</tr>
-<tr>
-<td><pre>fesm2020/</pre></td>
+<td><pre>fesm2020/
+  core.mjs
+  core.mjs.map
+  testing.mjs
+  testing.mjs.map</pre></td>
 <td>Code for all entrypoints in flattened (FESM) ES2020 format, along with sourcemaps.</td>
-</tr>
-<tr>
-<td><pre>fesm2020/core.mjs</pre></td>
-<td></td>
-</tr>
-<tr>
-<td><pre>fesm2020/core.mjs.map</pre></td>
-<td></td>
-</tr>
-<tr>
-<td><pre>fesm2020/testing.mjs</pre></td>
-<td></td>
-</tr>
-<tr>
-<td><pre>fesm2020/testing.mjs.map</pre></td>
-<td></td>
 </tr>
 <tr>
 <td><pre>testing/</pre></td>
@@ -123,12 +92,12 @@ The following example shows a simplified version of the `@angular/core` package'
 
 ## `package.json`
 
-Besides defining the package to NPM, the primary `package.json` performs several important functions:
+The primary `package.json` contains important package metadata, including the following:
 
-* It declares the package to be in EcmaScript Module (ESM) format, using `.mjs` files.
-* It contains an `"exports"` field which defines the available source code formats of all entrypoints.
-* It contains keys which define the available source code formats of the primary `@angular/core` entrypoint, for tools which do not understand `"exports"`. These keys are considered deprecated, and will be removed as the support for `"exports"` rolls out across the ecosystem.
-* It declares the side-effectfulness of the package.
+* It [declares](#esm-declaration) the package to be in EcmaScript Module (ESM) format.
+* It contains an [`"exports"` field](#exports) which defines the available source code formats of all entrypoints.
+* It contains [keys](#legacy-resolution-keys) which define the available source code formats of the primary `@angular/core` entrypoint, for tools which do not understand `"exports"`. These keys are considered deprecated, and will be removed as the support for `"exports"` rolls out across the ecosystem.
+* It declares whether the package contains [side-effects](#side-effects).
 
 ### ESM declaration
 
@@ -140,7 +109,7 @@ The top-level `package.json` contains the key:
 }
 </code-example>
 
-This informs resolvers that code within the package is using EcmaScript Modules as opposed to CommonJS modules, and uses the `.mjs` file extension.
+This informs resolvers that code within the package is using EcmaScript Modules as opposed to CommonJS modules.
 
 ### `"exports"`
 
@@ -177,15 +146,16 @@ Of primary interest are the `"."` and the `"./testing"` keys, which define the a
 
 * Typings (`.d.ts` files)
 `.d.ts` files are used by TypeScript when depending on a given package.
-* `es2020` - ES2020 code flattened into a single `.mjs` file.
-* `es2015` - ES2015 code flattened into a single `.mjs` file.
-* `esm2020` - ES2020 code in unflattened `.mjs` files.
-The ESM2020 format is included for the purpose of experimentation. Current bundlers are generally better at optimizing flattened files, but new tools are in development which may benefit from processing inputs in their original (unflattened) ES module format.
+* `es2020` - ES2020 code flattened into a single source file.
+* `es2015` - ES2015 code flattened into a single source file.
+* `esm2020` - ES2020 code in unflattened source files (this format is included for experimentation - see [this discussion of defaults](#note-about-the-defaults-in-packagejson) for details).
 
 Tooling that is aware of these keys may preferentially select a desirable code format from `"exports"`. The remaining 2 keys control the default behavior of tooling:
 
 * `"node"` selects flattened ES2015 code when the package is loaded in Node.
-This format is used due to the requirements of `zone.js`, which does not support native `async`/`await` ES2017 syntax. Therefore, Node is instructed to use ES2015 code, where `async`/`await` structures have been downleveled into Promises.
+
+    This format is used due to the requirements of `zone.js`, which does not support native `async`/`await` ES2017 syntax. Therefore, Node is instructed to use ES2015 code, where `async`/`await` structures have been downleveled into Promises.
+
 * `"default"` selects flattened ES2020 code for all other consumers.
 
 ### Legacy resolution keys
@@ -207,9 +177,7 @@ As above, a module resolver can use these keys to load a specific code format. N
 
 ### Side effects
 
-The last function of `package.json` is to declare whether the package has side-effects. By default, EcmaScript Modules are side-effectful: importing from a module ensures that any code at the top level of that module will execute. This is often undesirable, as most side-effectful code in typical modules is not truly side-effectful, but instead only affects specific symbols. If those symbols are not imported and used, it's often desirable to remove them in an optimization process known as tree-shaking, and the side-effectful code can prevent this.
-
-To work around this problem, packages can declare that they do not depend on side-effectful code at the top level of their modules, giving optimizers more freedom to tree-shake code from the package. This is done with another key in `package.json`:
+The last function of `package.json` is to declare whether the package has [side-effects](#sideeffects-flag).
 
 <code-example language="js">
 {
@@ -223,7 +191,7 @@ Most Angular packages should not depend on top-level side effects, and thus shou
 
 In addition to the top-level `package.json`, secondary entrypoints have a corresponding directory with its own `package.json`. For example, in `@angular/core` the `@angular/core/testing` entrypoint is represented by `testing/package.json`.
 
-This secondary `package.json` is required for legacy resolvers which do not support `"exports"`. 
+This secondary `package.json` is required for legacy resolvers which do not support `"exports"`. We expect these files to be removed in a future version of the Angular Package Format, once support for `"exports"` is consistent across the ecosystem.
 
 ## Entrypoints and Code Splitting
 
@@ -318,11 +286,13 @@ Once the index file (e.g. `my-ui-lib.js`) is generated by ngc, bundlers and opti
 
 #### Note about the defaults in package.json
 
-As of webpack v4 the flattening of ES modules optimization should not be necessary for webpack users, and in fact theoretically we should be able to get better code-splitting without flattening of modules in webpack. In practice we still see size regressions when using unflattened modules as input for webpack v4. This is why `"module"` and `"es2020"` package.json entries still point to fesm files. We are investigating this issue and expect that we'll switch the "module" and "es2020" package.json entry points to unflattened files when the size regression issue is resolved.
+As of webpack v4 the flattening of ES modules optimization should not be necessary for webpack users, and in fact theoretically we should be able to get better code-splitting without flattening of modules in webpack. In practice we still see size regressions when using unflattened modules as input for webpack v4. This is why `"module"` and `"es2020"` package.json entries still point to fesm files. We are investigating this issue and expect that we'll switch the `"module"` and `"es2020"` package.json entry points to unflattened files when the size regression issue is resolved. The APF currently includes unflattened ESM2020 code for the purpose of validating such a future change.
 
-### webpack v4 "sideEffects": false
+### "sideEffects" flag
 
-As of webpack v4, packages that contain a special property called `"sideEffects"` set to false in their package.json, will be processed by webpack more aggressively than those that don't. The end result of these optimizations should be smaller bundle size and better code distribution in bundle chunks after code-splitting. This optimization can break your code if it contains non-local side-effects - this is however not common in Angular applications and it's usually a sign of bad design. Our recommendation is for all packages to claim the side-effect free status by setting the `sideEffects` property to `false`, and that developers follow the [Angular Style Guide](https://angular.io/guide/styleguide) which naturally results in code without non-local side-effects.
+By default, EcmaScript Modules are side-effectful: importing from a module ensures that any code at the top level of that module will execute. This is often undesirable, as most side-effectful code in typical modules is not truly side-effectful, but instead only affects specific symbols. If those symbols are not imported and used, it's often desirable to remove them in an optimization process known as tree-shaking, and the side-effectful code can prevent this.
+
+Build tools such as Webpack support a flag which allows ackages to declare that they do not depend on side-effectful code at the top level of their modules, giving the tools more freedom to tree-shake code from the package. The end result of these optimizations should be smaller bundle size and better code distribution in bundle chunks after code-splitting. This optimization can break your code if it contains non-local side-effects - this is however not common in Angular applications and it's usually a sign of bad design. Our recommendation is for all packages to claim the side-effect free status by setting the `sideEffects` property to `false`, and that developers follow the [Angular Style Guide](https://angular.io/guide/styleguide) which naturally results in code without non-local side-effects.
 
 More info: [webpack docs on side-effects](https://github.com/webpack/webpack/tree/master/examples/side-effects)
  
@@ -348,6 +318,14 @@ As of APF v10, we recommend adding tslib as a direct dependency of your primary 
 ## Definition of Terms
 
 The following terms are used throughout this document very intentionally. In this section we define all of them to provide additional clarity.
+
+<style>
+dt {
+  font-size: larger;
+  font-weight: bold;
+  padding: 16px 0px;
+}
+</style>
 
 <dl>
 <dt>Package</dt>
