@@ -208,4 +208,4 @@ To see Angular in action, see our [Getting Started](start) tutorial. This tutori
 
 To explore Angular's capabilities further, we recommend reading through the sections, Understanding Angular and Developer Guides.
 
-@reviewed 2021-09-14
+@reviewed 2021-10-28
