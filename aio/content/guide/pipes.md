@@ -150,13 +150,7 @@ The following code example shows two component definitions:
 
 The browser displays the following:
 
-<code-example language="none">
-
-Power Booster
-
-Superpower boost: 1024
-
-</code-example>
+<code-example path="pipes/src/app/precedence.component.html" region="browserDisplay"></code-example>
 
 <div class="alert is-helpful">
 
@@ -342,18 +336,7 @@ In the preceding example, a breakpoint on the pipe's request for data shows the 
 
 The `fetch` and `fetch-json` pipes display the heroes in the browser as follows:
 
-<code-example language="none">
-
-Heroes from JSON File
-
-Windstorm
-Bombasto
-Magneto
-Tornado
-
-Heroes as JSON: [ { "name": "Windstorm", "canFly": true }, { "name": "Bombasto", "canFly": false }, { "name": "Magneto", "canFly": false }, { "name": "Tornado", "canFly": true } ]
-
-</code-example>
+<code-example path="pipes/src/app/hero-list.component.html" language="none" region="herosList"></code-example>
 
 <div class="alert is-helpful">
 
