@@ -1,5 +1,5 @@
 /// Emits a CSS class, `.cdk-visually-hidden`. This class can be applied to an element
-/// to make that element visually hidden while remaining available to assitive technology.
+/// to make that element visually hidden while remaining available to assistive technology.
 @mixin a11y-visually-hidden() {
   .cdk-visually-hidden {
     border: 0;
