@@ -72,7 +72,7 @@ function runEmptyRouterLinkExpressionMigration(
     compilerModule: typeof import('@angular/compiler')) {
   const {program} = createMigrationProgram(tree, tsconfigPath, basePath);
   const typeChecker = program.getTypeChecker();
-  const templateVisitor = new NgComponentTemplateVisitor(typeChecker);
+  const templateVisitor = new NgComponentTemplateVisitor(typeChecker, basePath, tree);
   const sourceFiles =
       program.getSourceFiles().filter(sourceFile => canMigrateFile(basePath, sourceFile, program));
 
