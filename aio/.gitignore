@@ -27,6 +27,7 @@
 
 # misc
 /.firebase/
+/.angular/cache
 /.sass-cache
 /connect.lock
 /coverage
