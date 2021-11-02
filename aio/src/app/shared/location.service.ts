@@ -30,9 +30,7 @@ export class LocationService {
 
     this.urlSubject.next(location.path(true));
 
-    this.location.subscribe(state => {
-      return this.urlSubject.next(state.url || '');
-    });
+    this.location.subscribe(state => this.urlSubject.next(state.url || ''));
   }
 
   /**
@@ -79,7 +77,7 @@ export class LocationService {
   }
 
   search() {
-    const search: { [index: string]: string|undefined; } = {};
+    const search: { [index: string]: string|undefined } = {};
     const path = this.location.path();
     const q = path.indexOf('?');
     if (q > -1) {
@@ -147,11 +145,16 @@ export class LocationService {
     }
 
     const { pathname, search, hash } = anchor;
-    const relativeUrl = pathname + search + hash;
+    // Fix in-page anchors that are supposed to point to fragments inside the page, but are resolved
+    // relative the the root path (`/`), due to the base URL being set to `/`.
+    // (See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base#in-page_anchors.)
+    const isInPageAnchor = anchor.getAttribute('href')?.startsWith('#') ?? false;
+    const correctPathname = isInPageAnchor ? this.location.path() : pathname;
+    const relativeUrl = correctPathname + search + hash;
     this.urlParser.href = relativeUrl;
 
     // don't navigate if external link or has extension
-    if ( anchor.href !== this.urlParser.href ||
+    if ( (!isInPageAnchor && anchor.href !== this.urlParser.href) ||
          !/\/[^/.]*$/.test(pathname) ) {
       return true;
     }

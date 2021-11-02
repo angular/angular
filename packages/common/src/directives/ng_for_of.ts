@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, DoCheck, EmbeddedViewRef, Input, isDevMode, IterableChangeRecord, IterableChanges, IterableDiffer, IterableDiffers, NgIterable, TemplateRef, TrackByFunction, ViewContainerRef} from '@angular/core';
+import {Directive, DoCheck, EmbeddedViewRef, Input, IterableChangeRecord, IterableChanges, IterableDiffer, IterableDiffers, NgIterable, TemplateRef, TrackByFunction, ViewContainerRef} from '@angular/core';
 
 /**
  * @publicApi
@@ -38,7 +38,7 @@ export class NgForOfContext<T, U extends NgIterable<T> = NgIterable<T>> {
  * of the cloned templates.
  *
  * The `ngForOf` directive is generally used in the
- * [shorthand form](guide/structural-directives#the-asterisk--prefix) `*ngFor`.
+ * [shorthand form](guide/structural-directives#asterisk) `*ngFor`.
  * In this form, the template to be rendered for each iteration is the content
  * of an anchor element containing the directive.
  *
@@ -67,11 +67,11 @@ export class NgForOfContext<T, U extends NgIterable<T> = NgIterable<T>> {
  * context according to its lexical position.
  *
  * When using the shorthand syntax, Angular allows only [one structural directive
- * on an element](guide/structural-directives#one-structural-directive-per-host-element).
+ * on an element](guide/built-in-directives#one-per-element).
  * If you want to iterate conditionally, for example,
  * put the `*ngIf` on a container element that wraps the `*ngFor` element.
  * For futher discussion, see
- * [Structural Directives](guide/structural-directives#one-per-element).
+ * [Structural Directives](guide/built-in-directives#one-per-element).
  *
  * @usageNotes
  *
@@ -133,7 +133,7 @@ export class NgForOfContext<T, U extends NgIterable<T> = NgIterable<T>> {
 export class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCheck {
   /**
    * The value of the iterable expression, which can be used as a
-   * [template input variable](guide/structural-directives#template-input-variable).
+   * [template input variable](guide/structural-directives#shorthand).
    */
   @Input()
   set ngForOf(ngForOf: U&NgIterable<T>|undefined|null) {
@@ -141,25 +141,26 @@ export class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCh
     this._ngForOfDirty = true;
   }
   /**
-   * A function that defines how to track changes for items in the iterable.
+   * Specifies a custom `TrackByFunction` to compute the identity of items in an iterable.
    *
-   * When items are added, moved, or removed in the iterable,
-   * the directive must re-render the appropriate DOM nodes.
-   * To minimize churn in the DOM, only nodes that have changed
-   * are re-rendered.
+   * If a custom `TrackByFunction` is not provided, `NgForOf` will use the item's [object
+   * identity](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/is)
+   * as the key.
    *
-   * By default, the change detector assumes that
-   * the object instance identifies the node in the iterable.
-   * When this function is supplied, the directive uses
-   * the result of calling this function to identify the item node,
-   * rather than the identity of the object itself.
+   * `NgForOf` uses the computed key to associate items in an iterable with DOM elements
+   * it produces for these items.
    *
-   * The function receives two inputs,
-   * the iteration index and the associated node data.
+   * A custom `TrackByFunction` is useful to provide good user experience in cases when items in an
+   * iterable rendered using `NgForOf` have a natural identifier (for example, custom ID or a
+   * primary key), and this iterable could be updated with new object instances that still
+   * represent the same underlying entity (for example, when data is re-fetched from the server,
+   * and the iterable is recreated and re-rendered, but most of the data is still the same).
+   *
+   * @see `TrackByFunction`
    */
   @Input()
   set ngForTrackBy(fn: TrackByFunction<T>) {
-    if (isDevMode() && fn != null && typeof fn !== 'function') {
+    if ((typeof ngDevMode === 'undefined' || ngDevMode) && fn != null && typeof fn !== 'function') {
       // TODO(vicb): use a log service once there is a public one available
       if (<any>console && <any>console.warn) {
         console.warn(

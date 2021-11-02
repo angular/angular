@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {AbsoluteFsPath, join} from '../../file_system';
 import {NoopImportRewriter, Reference, ReferenceEmitter} from '../../imports';
@@ -16,7 +16,7 @@ import {TypeCheckBlockMetadata, TypeCheckingConfig} from '../api';
 import {DomSchemaChecker} from './dom';
 import {Environment} from './environment';
 import {OutOfBandDiagnosticRecorder} from './oob';
-import {generateTypeCheckBlock} from './type_check_block';
+import {generateTypeCheckBlock, TcbGenericContextBehavior} from './type_check_block';
 
 
 
@@ -43,22 +43,21 @@ export class TypeCheckFile extends Environment {
 
   addTypeCheckBlock(
       ref: Reference<ClassDeclaration<ts.ClassDeclaration>>, meta: TypeCheckBlockMetadata,
-      domSchemaChecker: DomSchemaChecker, oobRecorder: OutOfBandDiagnosticRecorder): void {
+      domSchemaChecker: DomSchemaChecker, oobRecorder: OutOfBandDiagnosticRecorder,
+      genericContextBehavior: TcbGenericContextBehavior): void {
     const fnId = ts.createIdentifier(`_tcb${this.nextTcbId++}`);
-    const fn = generateTypeCheckBlock(this, ref, fnId, meta, domSchemaChecker, oobRecorder);
+    const fn = generateTypeCheckBlock(
+        this, ref, fnId, meta, domSchemaChecker, oobRecorder, genericContextBehavior);
     this.tcbStatements.push(fn);
   }
 
-  render(): string {
+  render(removeComments: boolean): string {
     let source: string = this.importManager.getAllImports(this.contextFile.fileName)
-                             .map(i => `import * as ${i.qualifier} from '${i.specifier}';`)
+                             .map(i => `import * as ${i.qualifier.text} from '${i.specifier}';`)
                              .join('\n') +
         '\n\n';
-    const printer = ts.createPrinter();
+    const printer = ts.createPrinter({removeComments});
     source += '\n';
-    for (const stmt of this.helperStatements) {
-      source += printer.printNode(ts.EmitHint.Unspecified, stmt, this.contextFile) + '\n';
-    }
     for (const stmt of this.pipeInstStatements) {
       source += printer.printNode(ts.EmitHint.Unspecified, stmt, this.contextFile) + '\n';
     }
@@ -78,7 +77,7 @@ export class TypeCheckFile extends Environment {
     return source;
   }
 
-  getPreludeStatements(): ts.Statement[] {
+  override getPreludeStatements(): ts.Statement[] {
     return [];
   }
 }

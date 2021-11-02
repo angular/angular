@@ -15,12 +15,14 @@ module.exports = function regionParser() {
     html: html,
     svg: html,
     css: blockC,
+    conf: inlineHash,
     yaml: inlineHash,
     yml: inlineHash,
+    sh: inlineHash,
     jade: inlineCOnly,
     pug: inlineCOnly,
-    json: inlineC,
-    'json.annotated': inlineC
+    json: inlineCOnly,
+    'json.annotated': inlineCOnly
   };
 
   return regionParserImpl;
@@ -58,7 +60,9 @@ module.exports = function regionParser() {
               }
               region.open = true;
               if (plaster) {
-                region.lines.push(plaster);
+                // Use the same indent as the docregion marker
+                const indent = startRegion[0].split(/[^ ]/, 1);
+                region.lines.push(indent + plaster);
               }
             } else {
               regionMap[regionName] = {lines: [], open: true};

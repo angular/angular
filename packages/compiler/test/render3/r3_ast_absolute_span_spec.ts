@@ -360,4 +360,15 @@ describe('expression AST absolute source spans', () => {
       expect(spans).toContain(['nestedPlaceholder', new AbsoluteSourceSpan(89, 106)]);
     });
   });
+
+  describe('object literal', () => {
+    it('is correct for object literals with shorthand property declarations', () => {
+      const spans =
+          humanizeExpressionSource(parse('<div (click)="test({a: 1, b, c: 3, foo})"></div>').nodes);
+
+      expect(spans).toContain(['{a: 1, b: b, c: 3, foo: foo}', new AbsoluteSourceSpan(19, 39)]);
+      expect(spans).toContain(['b', new AbsoluteSourceSpan(26, 27)]);
+      expect(spans).toContain(['foo', new AbsoluteSourceSpan(35, 38)]);
+    });
+  });
 });

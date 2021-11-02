@@ -1,9 +1,10 @@
 // #docregion
 import { Architect } from '@angular-devkit/architect';
 import { TestingArchitectHost } from '@angular-devkit/architect/testing';
-import { logging, schema } from '@angular-devkit/core';
+import { schema } from '@angular-devkit/core';
+import { promises as fs } from 'fs';
 
-describe('Command Runner Builder', () => {
+describe('Copy File Builder', () => {
   let architect: Architect;
   let architectHost: TestingArchitectHost;
 
@@ -21,17 +22,12 @@ describe('Command Runner Builder', () => {
     await architectHost.addBuilderFromPackage('..');
   });
 
-  it('can run node', async () => {
-    // Create a logger that keeps an array of all messages that were logged.
-    const logger = new logging.Logger('');
-    const logs = [];
-    logger.subscribe(ev => logs.push(ev.message));
-
+  it('can copy files', async () => {
     // A "run" can have multiple outputs, and contains progress information.
-    const run = await architect.scheduleBuilder('@example/command-runner:command', {
-      command: 'node',
-      args: ['--print', '\'foo\''],
-    }, { logger });  // We pass the logger for checking later.
+    const run = await architect.scheduleBuilder('@example/copy-file:copy', {
+      source: 'package.json',
+      destination: 'package-copy.json',
+    });
 
     // The "result" member (of type BuilderOutput) is the next output.
     const output = await run.result;
@@ -41,8 +37,10 @@ describe('Command Runner Builder', () => {
     // to be scheduled.
     await run.stop();
 
-    // Expect that foo was logged
-    expect(logs).toContain('foo');
+    // Expect that the copied file is the same as its source.
+    const sourceContent = await fs.readFile('package.json', 'utf8');
+    const destinationContent = await fs.readFile('package-copy.json', 'utf8');
+    expect(destinationContent).toBe(sourceContent);
   });
 });
 // #enddocregion

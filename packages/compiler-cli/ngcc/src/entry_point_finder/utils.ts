@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteFsPath, getFileSystem, isRoot, resolve} from '../../../src/ngtsc/file_system';
+import {AbsoluteFsPath, getFileSystem, PathManipulation, ReadonlyFileSystem} from '../../../src/ngtsc/file_system';
 import {Logger} from '../../../src/ngtsc/logging';
 import {PathMappings} from '../path_mappings';
 
@@ -34,31 +34,62 @@ export function getBasePaths(
   const fs = getFileSystem();
   const basePaths = [sourceDirectory];
   if (pathMappings) {
-    const baseUrl = resolve(pathMappings.baseUrl);
+    const baseUrl = fs.resolve(pathMappings.baseUrl);
     if (fs.isRoot(baseUrl)) {
       logger.warn(
           `The provided pathMappings baseUrl is the root path ${baseUrl}.\n` +
           `This is likely to mess up how ngcc finds entry-points and is probably not correct.\n` +
           `Please check your path mappings configuration such as in the tsconfig.json file.`);
     }
-    Object.values(pathMappings.paths).forEach(paths => paths.forEach(path => {
-      // We only want base paths that exist and are not files
-      let basePath = fs.resolve(baseUrl, extractPathPrefix(path));
-      if (fs.exists(basePath) && fs.stat(basePath).isFile()) {
-        basePath = fs.dirname(basePath);
+    for (const paths of Object.values(pathMappings.paths)) {
+      for (const path of paths) {
+        let foundMatch = false;
+
+        // We only want base paths that exist and are not files
+        const {prefix, hasWildcard} = extractPathPrefix(path);
+        let basePath = fs.resolve(baseUrl, prefix);
+        if (fs.exists(basePath) && fs.stat(basePath).isFile()) {
+          basePath = fs.dirname(basePath);
+        }
+
+        if (fs.exists(basePath)) {
+          // The `basePath` is itself a directory
+          basePaths.push(basePath);
+          foundMatch = true;
+        }
+
+        if (hasWildcard) {
+          // The path contains a wildcard (`*`) so also try searching for directories that start
+          // with the wildcard prefix path segment.
+          const wildcardContainer = fs.dirname(basePath);
+          const wildcardPrefix = fs.basename(basePath);
+          if (isExistingDirectory(fs, wildcardContainer)) {
+            const candidates = fs.readdir(wildcardContainer);
+            for (const candidate of candidates) {
+              if (candidate.startsWith(wildcardPrefix)) {
+                const candidatePath = fs.resolve(wildcardContainer, candidate);
+                if (isExistingDirectory(fs, candidatePath)) {
+                  foundMatch = true;
+                  basePaths.push(candidatePath);
+                }
+              }
+            }
+          }
+        }
+
+        if (!foundMatch) {
+          // We neither found a direct match (i.e. `basePath` is an existing directory) nor a
+          // directory that starts with a wildcard prefix.
+          logger.debug(
+              `The basePath "${basePath}" computed from baseUrl "${baseUrl}" and path mapping "${
+                  path}" does not exist in the file-system.\n` +
+              `It will not be scanned for entry-points.`);
+        }
       }
-      if (fs.exists(basePath)) {
-        basePaths.push(basePath);
-      } else {
-        logger.debug(
-            `The basePath "${basePath}" computed from baseUrl "${baseUrl}" and path mapping "${
-                path}" does not exist in the file-system.\n` +
-            `It will not be scanned for entry-points.`);
-      }
-    }));
+    }
   }
 
-  const dedupedBasePaths = dedupePaths(basePaths);
+  const dedupedBasePaths = dedupePaths(fs, basePaths);
 
   // We want to ensure that the `sourceDirectory` is included when it is a node_modules folder.
   // Otherwise our entry-point finding algorithm would fail to walk that folder.
@@ -70,13 +101,18 @@ export function getBasePaths(
   return dedupedBasePaths;
 }
 
+function isExistingDirectory(fs: ReadonlyFileSystem, path: AbsoluteFsPath): boolean {
+  return fs.exists(path) && fs.stat(path).isDirectory();
+}
+
 /**
  * Extract everything in the `path` up to the first `*`.
  * @param path The path to parse.
- * @returns The extracted prefix.
+ * @returns The extracted prefix and a flag to indicate whether there was a wildcard `*`.
  */
-function extractPathPrefix(path: string) {
-  return path.split('*', 1)[0];
+function extractPathPrefix(path: string): {prefix: string, hasWildcard: boolean} {
+  const [prefix, rest] = path.split('*', 2);
+  return {prefix, hasWildcard: rest !== undefined};
 }
 
 /**
@@ -103,10 +139,10 @@ export function trackDuration<T = void>(task: () => T extends Promise<unknown>? 
  * (Note that we do not get `d` even though `d/e` and `d/f` share a base directory, since `d` is not
  * one of the base paths.)
  */
-export function dedupePaths(paths: AbsoluteFsPath[]): AbsoluteFsPath[] {
+function dedupePaths(fs: PathManipulation, paths: AbsoluteFsPath[]): AbsoluteFsPath[] {
   const root: Node = {children: new Map()};
   for (const path of paths) {
-    addPath(root, path);
+    addPath(fs, root, path);
   }
   return flattenTree(root);
 }
@@ -114,9 +150,9 @@ export function dedupePaths(paths: AbsoluteFsPath[]): AbsoluteFsPath[] {
 /**
  * Add a path (defined by the `segments`) to the current `node` in the tree.
  */
-function addPath(root: Node, path: AbsoluteFsPath): void {
+function addPath(fs: PathManipulation, root: Node, path: AbsoluteFsPath): void {
   let node = root;
-  if (!isRoot(path)) {
+  if (!fs.isRoot(path)) {
     const segments = path.split('/');
     for (let index = 0; index < segments.length; index++) {
       if (isLeaf(node)) {

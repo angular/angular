@@ -2,7 +2,7 @@
 # Property binding
 
 Property binding in Angular helps you set values for properties of HTML elements or directives.
-With property binding, you can do things such as toggle button functionality, set paths programmatically, and share values between components.
+Use property binding to do things such as toggle button functionality, set paths programmatically, and share values between components.
 
 <div class="alert is-helpful">
 
@@ -17,8 +17,6 @@ To get the most out of property binding, you should be familiar with the followi
 * [Basics of components](guide/architecture-components)
 * [Basics of templates](guide/glossary#template)
 * [Binding syntax](guide/binding-syntax)
-
-<hr />
 
 ## Understanding the flow of data
 
@@ -45,7 +43,7 @@ In most cases, the target name is the name of a property, even when it appears t
 In this example, `src` is the name of the `<img>` element property.
 
 The brackets, `[]`, cause Angular to evaluate the right-hand side of the assignment as a dynamic expression.
-Without the brackets, Angular treats the the right-hand side as a string literal and sets the property to that static value.
+Without the brackets, Angular treats the right-hand side as a string literal and sets the property to that static value.
 
 <code-example path="property-binding/src/app/app.component.html" region="no-evaluation" header="src/app.component.html"></code-example>
 
@@ -79,7 +77,7 @@ You'd get this error:
 
 <code-example language="bash">
   Template parse errors:
-  Can't bind to 'colspan' since it isn't a known native property
+  Can't bind to 'colspan' because it isn't a known built-in property
 </code-example>
 
 As the message says, the `<td>` element does not have a `colspan` property. This is true
@@ -193,10 +191,8 @@ The following binding pairs do the same thing.
 
 <code-example path="property-binding/src/app/app.component.html" region="property-binding-interpolation" header="src/app/app.component.html"></code-example>
 
-You can use either form when rendering data values as strings, though interpolation is preferable for readability.
+Use either form when rendering data values as strings, though interpolation is preferable for readability.
 However, when setting an element property to a non-string data value, you must use property binding.
-
-<hr />
 
 ## What's next
 

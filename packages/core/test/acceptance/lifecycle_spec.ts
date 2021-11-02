@@ -7,8 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {ChangeDetectorRef, Component, ComponentFactoryResolver, ContentChildren, Directive, Input, NgModule, OnChanges, QueryList, SimpleChanges, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
-import {SimpleChange} from '@angular/core/src/core';
+import {AfterViewInit, ChangeDetectorRef, Component, ComponentFactoryResolver, ContentChildren, Directive, DoCheck, Input, NgModule, OnChanges, QueryList, SimpleChange, SimpleChanges, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {onlyInIvy} from '@angular/private/testing';
@@ -1254,17 +1253,17 @@ it('should call all hooks in correct order when several directives on same node'
 
   @Directive({selector: 'div'})
   class DirA extends AllHooks {
-    @Input('a') id: number = 0;
+    @Input('a') override id: number = 0;
   }
 
   @Directive({selector: 'div'})
   class DirB extends AllHooks {
-    @Input('b') id: number = 0;
+    @Input('b') override id: number = 0;
   }
 
   @Directive({selector: 'div'})
   class DirC extends AllHooks {
-    @Input('c') id: number = 0;
+    @Input('c') override id: number = 0;
   }
 
   @Component({selector: 'app-comp', template: '<div [a]="1" [b]="2" [c]="3"></div>'})
@@ -4378,4 +4377,72 @@ describe('non-regression', () => {
 
     expect(destroyed).toBeTruthy();
   });
+
+  onlyInIvy('Use case is not supported in ViewEngine')
+      .it('should not throw when calling detectChanges from a setter in the presence of a data binding, ngOnChanges and ngAfterViewInit',
+          () => {
+            const hooks: string[] = [];
+
+            @Directive({selector: '[testDir]'})
+            class TestDirective implements OnChanges, AfterViewInit {
+              constructor(private _changeDetectorRef: ChangeDetectorRef) {}
+
+              @Input('testDir')
+              set value(_value: any) {
+                this._changeDetectorRef.detectChanges();
+              }
+              ngOnChanges() {
+                hooks.push('ngOnChanges');
+              }
+              ngAfterViewInit() {
+                hooks.push('ngAfterViewInit');
+              }
+            }
+
+            @Component({template: `<div [testDir]="value">{{value}}</div>`})
+            class App {
+              value = 1;
+            }
+
+            TestBed.configureTestingModule({declarations: [App, TestDirective]});
+            const fixture = TestBed.createComponent(App);
+            expect(() => fixture.detectChanges()).not.toThrow();
+            expect(hooks).toEqual(['ngOnChanges', 'ngAfterViewInit']);
+            expect(fixture.nativeElement.textContent.trim()).toBe('1');
+          });
+
+  onlyInIvy('Use case is not supported in ViewEngine')
+      .it('should call hooks in the correct order when calling detectChanges in a setter', () => {
+        const hooks: string[] = [];
+
+        @Directive({selector: '[testDir]'})
+        class TestDirective implements OnChanges, DoCheck, AfterViewInit {
+          constructor(private _changeDetectorRef: ChangeDetectorRef) {}
+
+          @Input('testDir')
+          set value(_value: any) {
+            this._changeDetectorRef.detectChanges();
+          }
+          ngOnChanges() {
+            hooks.push('ngOnChanges');
+          }
+          ngDoCheck() {
+            hooks.push('ngDoCheck');
+          }
+          ngAfterViewInit() {
+            hooks.push('ngAfterViewInit');
+          }
+        }
+
+        @Component({template: `<div [testDir]="value">{{value}}</div>`})
+        class App {
+          value = 1;
+        }
+
+        TestBed.configureTestingModule({declarations: [App, TestDirective]});
+        const fixture = TestBed.createComponent(App);
+        expect(() => fixture.detectChanges()).not.toThrow();
+        expect(hooks).toEqual(['ngOnChanges', 'ngDoCheck', 'ngAfterViewInit']);
+        expect(fixture.nativeElement.textContent.trim()).toBe('1');
+      });
 });

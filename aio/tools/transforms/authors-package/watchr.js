@@ -29,15 +29,11 @@ if (process.argv.indexOf('--watch-only') === -1) {
   console.log('Skip the full doc-gen by running: `yarn docs-watch --watch-only`');
   console.log('================================================================');
   const {Dgeni} = require('dgeni');
-  const dgeni = new Dgeni([require('../angular.io-package')]);
-
-  // Turn off all the potential failures for this doc-gen one-off run.
-  // This enables authors to run `docs-watch` while the docs are still in an unstable state.
-  const injector = dgeni.configureInjector();
-  injector.get('linkInlineTagDef').failOnBadLink = false;
-  injector.get('checkAnchorLinksProcessor').$enabled = false;
-  injector.get('renderExamples').ignoreBrokenExamples = true;
-
+  const dgeni = new Dgeni([
+    // The base-authoring-package will turn off potential failures for this doc-gen one-off run.
+    // This enables authors to run `docs-watch` while the docs are still in an unstable state.
+    require('./base-authoring-package'),
+    require('../angular.io-package')]);
   p = dgeni.generate();
 }
 

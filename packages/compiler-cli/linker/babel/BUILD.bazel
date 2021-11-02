@@ -10,9 +10,10 @@ ts_library(
     deps = [
         "//packages/compiler",
         "//packages/compiler-cli/linker",
+        "//packages/compiler-cli/src/ngtsc/file_system",
+        "//packages/compiler-cli/src/ngtsc/logging",
         "//packages/compiler-cli/src/ngtsc/translator",
         "@npm//@babel/core",
-        "@npm//@babel/types",
         "@npm//@types/babel__core",
         "@npm//@types/babel__traverse",
     ],

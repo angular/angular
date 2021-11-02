@@ -7,7 +7,7 @@
  */
 
 import {dirname, resolve} from 'path';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 /** Update recorder for managing imports. */
 export interface ImportManagerUpdateRecorder {

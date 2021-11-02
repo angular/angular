@@ -11,7 +11,6 @@ import {inspect} from 'util';
 
 import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
 import {loadStandardTestFiles} from '../../src/ngtsc/testing';
-import {tsSourceMapBug29300Fixed} from '../../src/ngtsc/util/src/ts_source_map_bug_29300';
 
 import {NgtscTestEnvironment} from './env';
 import {getMappedSegments, SegmentMapping} from './sourcemap_utils';
@@ -430,9 +429,9 @@ runInEachFileSystem((os) => {
         it('should correctly handle collapsed whitespace in interpolation placeholder source-mappings',
            () => {
              const mappings = compileAndMap(
-                 `<div i18n title="  pre-title {{title_value}}  post-title" i18n-title>  pre-body {{body_value}}  post-body</div>`);
+                 `<div i18n title="  pre-title {{name}}  post-title" i18n-title>  pre-body {{greeting}}  post-body</div>`);
              expectMapping(mappings, {
-               source: '<div i18n title="  pre-title {{title_value}}  post-title" i18n-title>  ',
+               source: '<div i18n title="  pre-title {{name}}  post-title" i18n-title>',
                generated: 'i0.ɵɵelementStart(0, "div", 0)',
                sourceUrl: '../test.ts',
              });
@@ -447,7 +446,7 @@ runInEachFileSystem((os) => {
                sourceUrl: '../test.ts',
              });
              expectMapping(mappings, {
-               source: '{{body_value}}',
+               source: '{{greeting}}',
                generated: '"\\uFFFD0\\uFFFD"',
                sourceUrl: '../test.ts',
              });
@@ -465,38 +464,38 @@ runInEachFileSystem((os) => {
              // $localize expressions
              expectMapping(mappings, {
                sourceUrl: '../test.ts',
-               source: 'pre-p\n  ',
+               source: '\n  pre-p\n  ',
                generated: '` pre-p ${',
              });
              expectMapping(mappings, {
                sourceUrl: '../test.ts',
-               source: '<p>\n    ',
+               source: '<p>',
                generated: '"\\uFFFD#2\\uFFFD"',
              });
              expectMapping(mappings, {
                sourceUrl: '../test.ts',
-               source: 'in-p\n  ',
+               source: '\n    in-p\n  ',
                generated: '}:START_PARAGRAPH: in-p ${',
              });
              expectMapping(mappings, {
                sourceUrl: '../test.ts',
-               source: '</p>\n  ',
+               source: '</p>',
                generated: '"\\uFFFD/#2\\uFFFD"',
              });
              expectMapping(mappings, {
                sourceUrl: '../test.ts',
-               source: 'post-p\n',
+               source: '\n  post-p\n',
                generated: '}:CLOSE_PARAGRAPH: post-p\n`',
              });
              // ivy instructions
              expectMapping(mappings, {
                sourceUrl: '../test.ts',
-               source: '<div i18n>\n  ',
+               source: '<div i18n>',
                generated: 'i0.ɵɵelementStart(0, "div")',
              });
              expectMapping(mappings, {
                sourceUrl: '../test.ts',
-               source: '<div i18n>\n  ',
+               source: '<div i18n>',
                generated: 'i0.ɵɵi18nStart(1, 0)',
              });
              expectMapping(mappings, {
@@ -586,37 +585,6 @@ runInEachFileSystem((os) => {
         });
       });
 
-      it('should create (simple backtick string) inline template source-mapping', () => {
-        const mappings = compileAndMap('<div>this is a test</div><div>{{ 1 + 2 }}</div>');
-
-        // Creation mode
-        expectMapping(
-            mappings,
-            {generated: 'i0.ɵɵelementStart(0, "div")', source: '<div>', sourceUrl: '../test.ts'});
-        expectMapping(mappings, {
-          generated: 'i0.ɵɵtext(1, "this is a test")',
-          source: 'this is a test',
-          sourceUrl: '../test.ts'
-        });
-        expectMapping(
-            mappings, {generated: 'i0.ɵɵelementEnd()', source: '</div>', sourceUrl: '../test.ts'});
-        expectMapping(
-            mappings,
-            {generated: 'i0.ɵɵelementStart(2, "div")', source: '<div>', sourceUrl: '../test.ts'});
-        expectMapping(
-            mappings, {generated: 'i0.ɵɵtext(3)', source: '{{ 1 + 2 }}', sourceUrl: '../test.ts'});
-        expectMapping(
-            mappings, {generated: 'i0.ɵɵelementEnd()', source: '</div>', sourceUrl: '../test.ts'});
-
-        // TODO(benlesh): We need to circle back and prevent the extra parens from being generated.
-        // Update mode
-        expectMapping(mappings, {
-          generated: 'i0.ɵɵtextInterpolate(1 + 2)',
-          source: '{{ 1 + 2 }}',
-          sourceUrl: '../test.ts'
-        });
-      });
-
       it('should create correct inline template source-mapping when the source contains escape sequences',
          () => {
            // Note that the escaped double quotes, which need un-escaping to be parsed correctly.
@@ -634,103 +602,127 @@ runInEachFileSystem((os) => {
          });
     });
 
-    if (tsSourceMapBug29300Fixed()) {
-      describe('External templates (where TS supports source-mapping)', () => {
-        it('should create external template source-mapping', () => {
-          const mappings =
-              compileAndMap('<div>this is a test</div><div>{{ 1 + 2 }}</div>', './dir/test.html');
+    describe('External templates (where TS supports source-mapping)', () => {
+      it('should create external template source-mapping', () => {
+        const mappings =
+            compileAndMap('<div>this is a test</div><div>{{ 1 + 2 }}</div>', './dir/test.html');
 
-          // Creation mode
-          expectMapping(mappings, {
-            generated: 'i0.ɵɵelementStart(0, "div")',
-            source: '<div>',
-            sourceUrl: '../dir/test.html'
-          });
-          expectMapping(mappings, {
-            generated: 'i0.ɵɵtext(1, "this is a test")',
-            source: 'this is a test',
-            sourceUrl: '../dir/test.html'
-          });
-          expectMapping(
-              mappings,
-              {generated: 'i0.ɵɵelementEnd()', source: '</div>', sourceUrl: '../dir/test.html'});
-          expectMapping(mappings, {
-            generated: 'i0.ɵɵelementStart(2, "div")',
-            source: '<div>',
-            sourceUrl: '../dir/test.html'
-          });
-          expectMapping(
-              mappings,
-              {generated: 'i0.ɵɵtext(3)', source: '{{ 1 + 2 }}', sourceUrl: '../dir/test.html'});
-          expectMapping(
-              mappings,
-              {generated: 'i0.ɵɵelementEnd()', source: '</div>', sourceUrl: '../dir/test.html'});
-
-          // Update mode
-          expectMapping(mappings, {
-            generated: 'i0.ɵɵtextInterpolate(1 + 2)',
-            source: '{{ 1 + 2 }}',
-            sourceUrl: '../dir/test.html'
-          });
+        // Creation mode
+        expectMapping(mappings, {
+          generated: 'i0.ɵɵelementStart(0, "div")',
+          source: '<div>',
+          sourceUrl: '../dir/test.html'
         });
+        expectMapping(mappings, {
+          generated: 'i0.ɵɵtext(1, "this is a test")',
+          source: 'this is a test',
+          sourceUrl: '../dir/test.html'
+        });
+        expectMapping(
+            mappings,
+            {generated: 'i0.ɵɵelementEnd()', source: '</div>', sourceUrl: '../dir/test.html'});
+        expectMapping(mappings, {
+          generated: 'i0.ɵɵelementStart(2, "div")',
+          source: '<div>',
+          sourceUrl: '../dir/test.html'
+        });
+        expectMapping(
+            mappings,
+            {generated: 'i0.ɵɵtext(3)', source: '{{ 1 + 2 }}', sourceUrl: '../dir/test.html'});
+        expectMapping(
+            mappings,
+            {generated: 'i0.ɵɵelementEnd()', source: '</div>', sourceUrl: '../dir/test.html'});
 
-        it('should create correct mappings when templateUrl is in a different rootDir', () => {
-          const mappings = compileAndMap(
-              '<div>this is a test</div><div>{{ 1 + 2 }}</div>', 'extraRootDir/test.html');
-
-          // Creation mode
-          expectMapping(mappings, {
-            generated: 'i0.ɵɵelementStart(0, "div")',
-            source: '<div>',
-            sourceUrl: '../extraRootDir/test.html'
-          });
-          expectMapping(mappings, {
-            generated: 'i0.ɵɵtext(1, "this is a test")',
-            source: 'this is a test',
-            sourceUrl: '../extraRootDir/test.html'
-          });
-          expectMapping(mappings, {
-            generated: 'i0.ɵɵelementEnd()',
-            source: '</div>',
-            sourceUrl: '../extraRootDir/test.html'
-          });
-          expectMapping(mappings, {
-            generated: 'i0.ɵɵelementStart(2, "div")',
-            source: '<div>',
-            sourceUrl: '../extraRootDir/test.html'
-          });
-          expectMapping(mappings, {
-            generated: 'i0.ɵɵtext(3)',
-            source: '{{ 1 + 2 }}',
-            sourceUrl: '../extraRootDir/test.html'
-          });
-          expectMapping(mappings, {
-            generated: 'i0.ɵɵelementEnd()',
-            source: '</div>',
-            sourceUrl: '../extraRootDir/test.html'
-          });
-
-          // Update mode
-          expectMapping(mappings, {
-            generated: 'i0.ɵɵtextInterpolate(1 + 2)',
-            source: '{{ 1 + 2 }}',
-            sourceUrl: '../extraRootDir/test.html'
-          });
+        // Update mode
+        expectMapping(mappings, {
+          generated: 'i0.ɵɵtextInterpolate(1 + 2)',
+          source: '{{ 1 + 2 }}',
+          sourceUrl: '../dir/test.html'
         });
       });
-    }
+
+      it('should create correct mappings when templateUrl is in a different rootDir', () => {
+        const mappings = compileAndMap(
+            '<div>this is a test</div><div>{{ 1 + 2 }}</div>', 'extraRootDir/test.html');
+
+        // Creation mode
+        expectMapping(mappings, {
+          generated: 'i0.ɵɵelementStart(0, "div")',
+          source: '<div>',
+          sourceUrl: '../extraRootDir/test.html'
+        });
+        expectMapping(mappings, {
+          generated: 'i0.ɵɵtext(1, "this is a test")',
+          source: 'this is a test',
+          sourceUrl: '../extraRootDir/test.html'
+        });
+        expectMapping(mappings, {
+          generated: 'i0.ɵɵelementEnd()',
+          source: '</div>',
+          sourceUrl: '../extraRootDir/test.html'
+        });
+        expectMapping(mappings, {
+          generated: 'i0.ɵɵelementStart(2, "div")',
+          source: '<div>',
+          sourceUrl: '../extraRootDir/test.html'
+        });
+        expectMapping(mappings, {
+          generated: 'i0.ɵɵtext(3)',
+          source: '{{ 1 + 2 }}',
+          sourceUrl: '../extraRootDir/test.html'
+        });
+        expectMapping(mappings, {
+          generated: 'i0.ɵɵelementEnd()',
+          source: '</div>',
+          sourceUrl: '../extraRootDir/test.html'
+        });
+
+        // Update mode
+        expectMapping(mappings, {
+          generated: 'i0.ɵɵtextInterpolate(1 + 2)',
+          source: '{{ 1 + 2 }}',
+          sourceUrl: '../extraRootDir/test.html'
+        });
+      });
+    });
+
 
     function compileAndMap(template: string, templateUrl: string|null = null) {
       const templateConfig = templateUrl ? `templateUrl: '${templateUrl}'` :
                                            ('template: `' + template.replace(/`/g, '\\`') + '`');
       env.write('test.ts', `
-        import {Component} from '@angular/core';
+        import {Component, Directive, Input, Output, EventEmitter, Pipe, NgModule} from '@angular/core';
+
+        @Directive({
+          selector: '[ngModel],[attr],[ngModelChange]'
+        })
+        export class AllDirective {
+          @Input() ngModel!: any;
+          @Output() ngModelChange = new EventEmitter<any>();
+          @Input() attr!: any;
+        }
+
+        @Pipe({name: 'percent'})
+        export class PercentPipe {
+          transform(v: any) {}
+        }
 
         @Component({
           selector: 'test-cmp',
           ${templateConfig}
         })
-        export class TestCmp {}
+        export class TestCmp {
+          name = '';
+          isInitial = false;
+          doSomething() {}
+          items: any[] = [];
+          greeting = '';
+        }
+
+        @NgModule({
+          declarations: [TestCmp, AllDirective, PercentPipe],
+        })
+        export class Module {}
     `);
       if (templateUrl) {
         env.write(templateUrl, template);

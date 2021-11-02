@@ -7,6 +7,7 @@
  */
 
 import * as path from 'path';
+import ts from 'typescript';
 
 import {readConfiguration} from '../src/perform_compile';
 
@@ -76,5 +77,121 @@ describe('perform_compile', () => {
 
        const {options} = readConfiguration(path.resolve(basePath, 'tsconfig-level-1.json'));
        expect(options.enableIvy).toBe(false);
+     });
+
+  it('should override options defined in tsconfig with those defined in `existingOptions`', () => {
+    support.writeFiles({
+      'tsconfig-level-1.json': `{
+          "compilerOptions": {
+            "target": "es2020"
+          },
+          "angularCompilerOptions": {
+            "annotateForClosureCompiler": true
+          }
+        }
+      `
+    });
+
+    const {options} = readConfiguration(
+        path.resolve(basePath, 'tsconfig-level-1.json'),
+        {annotateForClosureCompiler: false, target: ts.ScriptTarget.ES2015, enableIvy: false});
+
+    expect(options).toEqual(jasmine.objectContaining({
+      enableIvy: false,
+      target: ts.ScriptTarget.ES2015,
+      annotateForClosureCompiler: false,
+    }));
+  });
+
+  it('should merge tsconfig "angularCompilerOptions" when extends points to node package', () => {
+    support.writeFiles({
+      'tsconfig-level-1.json': `{
+          "extends": "@angular-ru/tsconfig",
+          "angularCompilerOptions": {
+            "enableIvy": false
+          }
+        }
+      `,
+      'node_modules/@angular-ru/tsconfig/tsconfig.json': `{
+          "compilerOptions": {
+            "strict": true
+          },
+          "angularCompilerOptions": {
+            "skipMetadataEmit": true
+          }
+        }
+      `,
+      'node_modules/@angular-ru/tsconfig/package.json': `{
+        "name": "@angular-ru/tsconfig",
+        "version": "0.0.0",
+        "main": "./tsconfig.json"
+      }
+    `,
+    });
+
+    const {options} = readConfiguration(path.resolve(basePath, 'tsconfig-level-1.json'));
+    expect(options).toEqual(jasmine.objectContaining({
+      strict: true,
+      skipMetadataEmit: true,
+      enableIvy: false,
+    }));
+  });
+
+  it('should merge tsconfig "angularCompilerOptions" when extends points to an extension less non rooted file',
+     () => {
+       support.writeFiles({
+         'tsconfig-level-1.json': `{
+            "extends": "@1stg/tsconfig/angular",
+            "angularCompilerOptions": {
+              "enableIvy": false
+            }
+          }`,
+         'node_modules/@1stg/tsconfig/angular.json': `{
+            "compilerOptions": {
+              "strict": true
+            },
+            "angularCompilerOptions": {
+              "skipMetadataEmit": true
+            }
+          }`,
+         'node_modules/@1stg/tsconfig/package.json': `{
+            "name": "@1stg/tsconfig",
+            "version": "0.0.0"
+          }`,
+       });
+
+       const {options} = readConfiguration(path.resolve(basePath, 'tsconfig-level-1.json'));
+       expect(options).toEqual(jasmine.objectContaining({
+         strict: true,
+         skipMetadataEmit: true,
+         enableIvy: false,
+       }));
+     });
+
+  it('should merge tsconfig "angularCompilerOptions" when extends points to a non rooted file without json extension',
+     () => {
+       support.writeFiles({
+         'tsconfig-level-1.json': `{
+            "extends": "./tsconfig.app",
+            "angularCompilerOptions": {
+              "enableIvy": false
+            }
+          }`,
+         'tsconfig.app.json': `{
+            "compilerOptions": {
+              "strict": true
+            },
+            "angularCompilerOptions": {
+              "skipMetadataEmit": true
+            }
+          }`,
+       });
+
+       const {options} = readConfiguration(path.resolve(basePath, 'tsconfig-level-1.json'));
+       expect(options).toEqual(jasmine.objectContaining({
+         strict: true,
+         skipMetadataEmit: true,
+         enableIvy: false,
+       }));
      });
 });

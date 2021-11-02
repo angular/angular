@@ -120,8 +120,8 @@ describe('TwainComponent', () => {
        }));
     // #enddocregion fake-async-test
 
-    // #docregion async-test
-    it('should show quote after getQuote (async)', waitForAsync(() => {
+    // #docregion waitForAsync-test
+    it('should show quote after getQuote (waitForAsync)', waitForAsync(() => {
          fixture.detectChanges();  // ngOnInit()
          expect(quoteEl.textContent).toBe('...', 'should show placeholder');
 
@@ -131,7 +131,7 @@ describe('TwainComponent', () => {
            expect(errorMessage()).toBeNull('should not show error');
          });
        }));
-    // #enddocregion async-test
+    // #enddocregion waitForAsync-test
 
 
     // #docregion quote-done-test
@@ -161,7 +161,6 @@ describe('TwainComponent', () => {
     });
     // #enddocregion spy-done-test
 
-    // #docregion async-error-test
     it('should display error when TwainService fails', fakeAsync(() => {
          // tell spy to return an async error observable
          getQuoteSpy.and.returnValue(asyncError<string>('TwainService test failure'));
@@ -173,6 +172,5 @@ describe('TwainComponent', () => {
          expect(errorMessage()).toMatch(/test failure/, 'should display error');
          expect(quoteEl.textContent).toBe('...', 'should show placeholder');
        }));
-    // #enddocregion async-error-test
   });
 });

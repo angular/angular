@@ -61,6 +61,6 @@ purposes. Each command is backed by a corresponding script inside
   for more info.
 
 - `aio-dev-mode`:
-  Links external source files (from the Docker host) to interal source files (in the Docker
+  Links external source files (from the Docker host) to internal source files (in the Docker
   container). This makes it easier to use an IDE to edit files in the host that are then
   tested in the container. See the [debugging docs](misc--debug-docker-container.md) for more info.

@@ -3,6 +3,7 @@
 import { DebugElement } from '@angular/core';
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
+import { first } from 'rxjs/operators';
 
 import { addMatchers, click } from '../../testing';
 import { Hero } from '../model/hero';
@@ -18,7 +19,7 @@ describe('DashboardHeroComponent class only', () => {
     const hero: Hero = {id: 42, name: 'Test'};
     comp.hero = hero;
 
-    comp.selected.subscribe((selectedHero: Hero) => expect(selectedHero).toBe(hero));
+    comp.selected.pipe(first()).subscribe((selectedHero: Hero) => expect(selectedHero).toBe(hero));
     comp.click();
   });
   // #enddocregion class-only
@@ -68,8 +69,8 @@ describe('DashboardHeroComponent when tested directly', () => {
 
   // #docregion click-test
   it('should raise selected event when clicked (triggerEventHandler)', () => {
-    let selectedHero: Hero;
-    comp.selected.subscribe((hero: Hero) => selectedHero = hero);
+    let selectedHero: Hero | undefined;
+    comp.selected.pipe(first()).subscribe((hero: Hero) => selectedHero = hero);
 
     // #docregion trigger-event-handler
     heroDe.triggerEventHandler('click', null);
@@ -80,8 +81,8 @@ describe('DashboardHeroComponent when tested directly', () => {
 
   // #docregion click-test-2
   it('should raise selected event when clicked (element.click)', () => {
-    let selectedHero: Hero;
-    comp.selected.subscribe((hero: Hero) => selectedHero = hero);
+    let selectedHero: Hero | undefined;
+    comp.selected.pipe(first()).subscribe((hero: Hero) => selectedHero = hero);
 
     heroEl.click();
     expect(selectedHero).toBe(expectedHero);
@@ -89,16 +90,24 @@ describe('DashboardHeroComponent when tested directly', () => {
   // #enddocregion click-test-2
 
   // #docregion click-test-3
-  it('should raise selected event when clicked (click helper)', () => {
-    let selectedHero: Hero;
-    comp.selected.subscribe((hero: Hero) => selectedHero = hero);
+  it('should raise selected event when clicked (click helper with DebugElement)', () => {
+    let selectedHero: Hero | undefined;
+    comp.selected.pipe(first()).subscribe((hero: Hero) => selectedHero = hero);
 
     click(heroDe);  // click helper with DebugElement
-    click(heroEl);  // click helper with native element
 
     expect(selectedHero).toBe(expectedHero);
   });
   // #enddocregion click-test-3
+
+  it('should raise selected event when clicked (click helper with native element)', () => {
+    let selectedHero: Hero | undefined;
+    comp.selected.pipe(first()).subscribe((hero: Hero) => selectedHero = hero);
+
+    click(heroEl);  // click helper with native element
+
+    expect(selectedHero).toBe(expectedHero);
+  });
 });
 
 //////////////////
@@ -152,7 +161,7 @@ import { Component } from '@angular/core';
 })
 class TestHostComponent {
   hero: Hero = {id: 42, name: 'Test Name'};
-  selectedHero: Hero;
+  selectedHero: Hero | undefined;
   onSelected(hero: Hero) {
     this.selectedHero = hero;
   }

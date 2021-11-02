@@ -94,10 +94,8 @@ describe('component', () => {
     }
 
     class MyModule {
-      static ɵinj = ɵɵdefineInjector({
-        factory: () => new MyModule(),
-        providers: [{provide: MyService, useValue: new MyService('injector')}]
-      });
+      static ɵinj = ɵɵdefineInjector(
+          {providers: [{provide: MyService, useValue: new MyService('injector')}]});
     }
 
     it('should support bootstrapping without injector', () => {

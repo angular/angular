@@ -6,7 +6,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {replaceTsWithNgInErrors} from '../../../src/ngtsc/diagnostics';
 import {FileSystem} from '../../../src/ngtsc/file_system';
@@ -15,6 +15,7 @@ import {ParsedConfiguration} from '../../../src/perform_compile';
 import {getEntryPointFormat} from '../packages/entry_point';
 import {makeEntryPointBundle} from '../packages/entry_point_bundle';
 import {createModuleResolutionCache, SharedFileCache} from '../packages/source_file_cache';
+import {Transformer} from '../packages/transformer';
 import {PathMappings} from '../path_mappings';
 import {FileWriter} from '../writing/file_writer';
 
@@ -29,7 +30,6 @@ export function getCreateCompileFn(
     enableI18nLegacyMessageIdFormat: boolean, tsConfig: ParsedConfiguration|null,
     pathMappings: PathMappings|undefined): CreateCompileFn {
   return (beforeWritingFiles, onTaskCompleted) => {
-    const {Transformer} = require('../packages/transformer');
     const transformer = new Transformer(fileSystem, logger, tsConfig);
     const sharedFileCache = new SharedFileCache(fileSystem);
     const moduleResolutionCache = createModuleResolutionCache(fileSystem);
@@ -46,12 +46,13 @@ export function getCreateCompileFn(
       // (i.e. they are defined in `entryPoint.packageJson`). Furthermore, they are also guaranteed
       // to be among `SUPPORTED_FORMAT_PROPERTIES`.
       // Based on the above, `formatPath` should always be defined and `getEntryPointFormat()`
-      // should always return a format here (and not `undefined`).
+      // should always return a format here (and not `undefined`) unless `formatPath` points to a
+      // missing or empty file.
       if (!formatPath || !format) {
-        // This should never happen.
-        throw new Error(
-            `Invariant violated: No format-path or format for ${entryPoint.path} : ` +
-            `${formatProperty} (formatPath: ${formatPath} | format: ${format})`);
+        onTaskCompleted(
+            task, TaskProcessingOutcome.Failed,
+            `property \`${formatProperty}\` pointing to a missing or empty file: ${formatPath}`);
+        return;
       }
 
       logger.info(`Compiling ${entryPoint.name} : ${formatProperty} as ${format}`);

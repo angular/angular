@@ -191,13 +191,14 @@ ivyEnabled && describe('render3 jit', () => {
       constructor(public token: Token) {}
     }
 
-    const injectorDef: ɵɵInjectorDef<Module> = (Module as any).ɵinj;
-    const instance = injectorDef.factory();
+    const factory: FactoryFn<Module> = (Module as any).ɵfac;
+    const instance = factory();
 
     // Since the instance was created outside of an injector using the module, the
     // injection will use the default provider, not the provider from the module.
     expect(instance.token).toBe('default');
 
+    const injectorDef: ɵɵInjectorDef<Module> = (Module as any).ɵinj;
     expect(injectorDef.providers).toEqual([{provide: Token, useValue: 'test'}]);
   });
 

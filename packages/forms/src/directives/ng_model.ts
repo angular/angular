@@ -18,7 +18,7 @@ import {NgControl} from './ng_control';
 import {NgForm} from './ng_form';
 import {NgModelGroup} from './ng_model_group';
 import {controlPath, isPropertyUpdated, selectValueAccessor, setUpControl} from './shared';
-import {TemplateDrivenErrors} from './template_driven_errors';
+import {formGroupNameException, missingNameException, modelParentException} from './template_driven_errors';
 import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from './validators';
 
 export const formControlBinding: any = {
@@ -136,7 +136,7 @@ const resolvedPromise = (() => Promise.resolve(null))();
   exportAs: 'ngModel'
 })
 export class NgModel extends NgControl implements OnChanges, OnDestroy {
-  public readonly control: FormControl = new FormControl();
+  public override readonly control: FormControl = new FormControl();
 
   // At runtime we coerce arbitrary values assigned to the "disabled" input to a "boolean".
   // This is not reflected in the type of the property because outside of templates, consumers
@@ -162,7 +162,7 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
    * uses this name as a key to retrieve this control's value.
    */
   // TODO(issue/24571): remove '!'.
-  @Input() name!: string;
+  @Input() override name!: string;
 
   /**
    * @description
@@ -240,7 +240,7 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
    * Returns an array that represents the path from the top-level form to this control.
    * Each index is the string name of the control on that level.
    */
-  get path(): string[] {
+  override get path(): string[] {
     return this._parent ? controlPath(this.name, this._parent) : [this.name];
   }
 
@@ -258,7 +258,7 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
    *
    * @param newValue The new value emitted by `ngModelChange`.
    */
-  viewToModelUpdate(newValue: any): void {
+  override viewToModelUpdate(newValue: any): void {
     this.viewModel = newValue;
     this.update.emit(newValue);
   }
@@ -295,9 +295,9 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
     if (typeof ngDevMode === 'undefined' || ngDevMode) {
       if (!(this._parent instanceof NgModelGroup) &&
           this._parent instanceof AbstractFormGroupDirective) {
-        TemplateDrivenErrors.formGroupNameException();
+        throw formGroupNameException();
       } else if (!(this._parent instanceof NgModelGroup) && !(this._parent instanceof NgForm)) {
-        TemplateDrivenErrors.modelParentException();
+        throw modelParentException();
       }
     }
   }
@@ -306,7 +306,7 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
     if (this.options && this.options.name) this.name = this.options.name;
 
     if (!this._isStandalone() && !this.name && (typeof ngDevMode === 'undefined' || ngDevMode)) {
-      TemplateDrivenErrors.missingNameException();
+      throw missingNameException();
     }
   }
 

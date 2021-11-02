@@ -171,6 +171,11 @@ export const COMPILER_PROVIDERS__POST_R3__ =
 export const COMPILER_PROVIDERS = COMPILER_PROVIDERS__PRE_R3__;
 /**
  * @publicApi
+ *
+ * @deprecated
+ * Ivy JIT mode doesn't require accessing this symbol.
+ * See [JIT API changes due to ViewEngine deprecation](guide/deprecations#jit-api-changes) for
+ * additional context.
  */
 export class JitCompilerFactory implements CompilerFactory {
   private _defaultOptions: CompilerOptions[];

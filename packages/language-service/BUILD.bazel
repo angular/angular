@@ -3,10 +3,22 @@ load("//tools:defaults.bzl", "pkg_npm", "ts_library")
 package(default_visibility = ["//visibility:public"])
 
 ts_library(
+    name = "api",
+    srcs = [
+        "api.ts",
+        "index.ts",
+    ],
+    prodmode_module = "commonjs",
+    deps = [
+        "@npm//@types/node",
+        "@npm//typescript",
+    ],
+)
+
+ts_library(
     name = "language-service",
     srcs = glob(
         [
-            "*.ts",
             "src/**/*.ts",
         ],
         exclude = [
@@ -14,6 +26,7 @@ ts_library(
         ],
     ),
     deps = [
+        ":api",
         ":ts_utils",
         "//packages:types",
         "//packages/compiler",
@@ -44,10 +57,8 @@ pkg_npm(
         "//integration:__pkg__",
     ],
     deps = [
-        ":language-service",
-        "//packages/language-service/ivy",
+        ":api",
         # min bundle is not used at the moment; omit from package to speed up build
         "//packages/language-service/bundles:language-service.js",
-        "//packages/language-service/bundles:ivy.js",
     ],
 )

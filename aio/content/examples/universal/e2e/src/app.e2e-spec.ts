@@ -1,17 +1,16 @@
 import { browser, by, element, ElementArrayFinder, ElementFinder, logging } from 'protractor';
 
 class Hero {
-  id: number;
-  name: string;
+  constructor(public id: number, public name: string) {}
 
   // Factory methods
 
   // Hero from string formatted as '<id> <name>'.
   static fromString(s: string): Hero {
-    return {
-      id: +s.substr(0, s.indexOf(' ')),
-      name: s.substr(s.indexOf(' ') + 1),
-    };
+    return new Hero(
+      +s.substr(0, s.indexOf(' ')),
+      s.substr(s.indexOf(' ') + 1),
+    );
   }
 
   // Hero from hero list <li> element.
@@ -62,7 +61,7 @@ describe('Universal', () => {
 
     const expectedViewNames = ['Dashboard', 'Heroes'];
     it(`has views ${expectedViewNames}`, async () => {
-      const viewNames = await getPageElts().navElts.map(el => el.getText());
+      const viewNames = await getPageElts().navElts.map(el => el!.getText());
       expect(viewNames).toEqual(expectedViewNames);
     });
 
@@ -172,7 +171,7 @@ describe('Universal', () => {
 
       for (const button of buttons) {
         // Inherited styles from styles.css
-        expect(await button.getCssValue('font-family')).toBe('Arial');
+        expect(await button.getCssValue('font-family')).toBe('Arial, sans-serif');
         expect(await button.getCssValue('border')).toContain('none');
         expect(await button.getCssValue('padding')).toBe('5px 10px');
         expect(await button.getCssValue('border-radius')).toBe('4px');
@@ -183,7 +182,7 @@ describe('Universal', () => {
 
       const addButton = element(by.buttonText('add'));
       // Inherited styles from styles.css
-      expect(await addButton.getCssValue('font-family')).toBe('Arial');
+      expect(await addButton.getCssValue('font-family')).toBe('Arial, sans-serif');
       expect(await addButton.getCssValue('border')).toContain('none');
       expect(await addButton.getCssValue('padding')).toBe('5px 10px');
       expect(await addButton.getCssValue('border-radius')).toBe('4px');
@@ -285,7 +284,7 @@ describe('Universal', () => {
   }
 
   async function toHeroArray(allHeroes: ElementArrayFinder): Promise<Hero[]> {
-    return await allHeroes.map(Hero.fromLi);
+    return await allHeroes.map(hero => Hero.fromLi(hero!));
   }
 
   async function updateHeroNameInDetailView(): Promise<void> {

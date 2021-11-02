@@ -8,7 +8,7 @@
 
 import {Directive, ElementRef, forwardRef, Host, Input, OnDestroy, Optional, Renderer2, StaticProvider} from '@angular/core';
 
-import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
+import {BuiltInControlValueAccessor, ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
 
 export const SELECT_VALUE_ACCESSOR: StaticProvider = {
   provide: NG_VALUE_ACCESSOR,
@@ -75,9 +75,8 @@ function _extractId(valueString: string): string {
  * ```
  *
  * **Note:** We listen to the 'change' event because 'input' events aren't fired
- * for selects in Firefox and IE:
- * https://bugzilla.mozilla.org/show_bug.cgi?id=1024350
- * https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/4660045/
+ * for selects in IE, see:
+ * https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/input_event#browser_compatibility
  *
  * @ngModule ReactiveFormsModule
  * @ngModule FormsModule
@@ -89,7 +88,8 @@ function _extractId(valueString: string): string {
   host: {'(change)': 'onChange($event.target.value)', '(blur)': 'onTouched()'},
   providers: [SELECT_VALUE_ACCESSOR]
 })
-export class SelectControlValueAccessor implements ControlValueAccessor {
+export class SelectControlValueAccessor extends BuiltInControlValueAccessor implements
+    ControlValueAccessor {
   /** @nodoc */
   value: any;
 
@@ -98,18 +98,6 @@ export class SelectControlValueAccessor implements ControlValueAccessor {
 
   /** @internal */
   _idCounter: number = 0;
-
-  /**
-   * The registered callback function called when a change event occurs on the input element.
-   * @nodoc
-   */
-  onChange = (_: any) => {};
-
-  /**
-   * The registered callback function called when a blur event occurs on the input element.
-   * @nodoc
-   */
-  onTouched = () => {};
 
   /**
    * @description
@@ -126,8 +114,6 @@ export class SelectControlValueAccessor implements ControlValueAccessor {
 
   private _compareWith: (o1: any, o2: any) => boolean = Object.is;
 
-  constructor(private _renderer: Renderer2, private _elementRef: ElementRef) {}
-
   /**
    * Sets the "value" property on the input element. The "selectedIndex"
    * property is also set if an ID is provided on the option element.
@@ -137,37 +123,21 @@ export class SelectControlValueAccessor implements ControlValueAccessor {
     this.value = value;
     const id: string|null = this._getOptionId(value);
     if (id == null) {
-      this._renderer.setProperty(this._elementRef.nativeElement, 'selectedIndex', -1);
+      this.setProperty('selectedIndex', -1);
     }
     const valueString = _buildValueString(id, value);
-    this._renderer.setProperty(this._elementRef.nativeElement, 'value', valueString);
+    this.setProperty('value', valueString);
   }
 
   /**
    * Registers a function called when the control value changes.
    * @nodoc
    */
-  registerOnChange(fn: (value: any) => any): void {
+  override registerOnChange(fn: (value: any) => any): void {
     this.onChange = (valueString: string) => {
       this.value = this._getOptionValue(valueString);
       fn(this.value);
     };
-  }
-
-  /**
-   * Registers a function called when the control is touched.
-   * @nodoc
-   */
-  registerOnTouched(fn: () => any): void {
-    this.onTouched = fn;
-  }
-
-  /**
-   * Sets the "disabled" property on the select input element.
-   * @nodoc
-   */
-  setDisabledState(isDisabled: boolean): void {
-    this._renderer.setProperty(this._elementRef.nativeElement, 'disabled', isDisabled);
   }
 
   /** @internal */

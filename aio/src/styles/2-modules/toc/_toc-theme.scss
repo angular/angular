@@ -1,0 +1,95 @@
+@use 'sass:color';
+@use 'sass:map';
+@use '../../constants';
+@use '~@angular/material' as mat;
+
+@mixin theme($theme) {
+  $foreground: map.get($theme, foreground);
+  $is-dark-theme: map.get($theme, is-dark);
+
+  aio-toc {
+    .toc-inner {
+      .toc-heading {
+        &.secondary {
+          &:hover {
+            color: constants.$accentblue;
+          }
+        }
+      }
+
+      button {
+        &.toc-heading,
+        &.toc-more-items {
+          &.embedded:focus {
+            background: if($is-dark-theme, constants.$darkgray, constants.$lightgray);
+            color: if($is-dark-theme, constants.$white, constants.$mediumgray);
+          }
+        }
+
+        &.toc-heading {
+          &:hover:not(.embedded) {
+            color: constants.$accentblue;
+          }
+        }
+
+        &.toc-more-items {
+          color: if($is-dark-theme, constants.$lightgray, constants.$mediumgray);
+
+          &:hover {
+            color: constants.$accentblue;
+          }
+        }
+      }
+
+      ul.toc-list {
+        li {
+          &.h1:after {
+            background: if($is-dark-theme, constants.$mediumgray, constants.$lightgray);
+          }
+
+          a {
+            color: if($is-dark-theme, constants.$white, color.adjust(constants.$darkgray, $lightness: 10%));
+          }
+
+          &:hover {
+            * {
+              color: if($is-dark-theme, constants.$lightblue, constants.$accentblue);
+            }
+          }
+
+          &.active {
+            * {
+              color: if($is-dark-theme, constants.$cyan, constants.$blue);
+            }
+
+            a:before {
+              background: if($is-dark-theme, constants.$cyan, constants.$blue);
+            }
+          }
+        }
+
+        &:not(.embedded) li {
+          &:before {
+            border-left-color: if($is-dark-theme, constants.$darkgray, constants.$lightgray);
+          }
+
+          &:not(.active):hover {
+            a:before {
+              background: constants.$lightgray;
+            }
+          }
+        }
+      }
+    }
+
+    &.embedded {
+      .toc-inner {
+        .toc-heading {
+          &.secondary {
+            color: mat.get-color-from-palette($foreground, text);
+          }
+        }
+      }
+    }
+  }
+}

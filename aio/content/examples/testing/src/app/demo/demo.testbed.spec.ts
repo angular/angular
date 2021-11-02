@@ -37,7 +37,6 @@ describe('demo (with TestBed):', () => {
 
   ////////  Service Tests  /////////////
 
-  // #docregion ValueService
   describe('ValueService', () => {
 
     // #docregion value-service-before-each
@@ -61,7 +60,7 @@ describe('demo (with TestBed):', () => {
 
     it('can inject a default value when service is not provided', () => {
       // #docregion testbed-get-w-null
-      service = TestBed.inject(NotProvided, null); // service is null
+      expect(TestBed.inject(NotProvided, null)).toBeNull();
       // #enddocregion testbed-get-w-null
     });
 
@@ -92,7 +91,6 @@ describe('demo (with TestBed):', () => {
       expect(value).toBe('promise value');
     }));
   });
-  // #enddocregion ValueService
 
   describe('MasterService', () => {
     // #docregion master-service-before-each
@@ -232,8 +230,6 @@ describe('demo (with TestBed):', () => {
       expect(rowComp.hero.name).toBe(heroName, 'component.hero');
     });
 
-
-    // #docregion ButtonComp
     it('should support clicking a button', () => {
       const fixture = TestBed.createComponent(LightswitchComponent);
       const btn = fixture.debugElement.query(By.css('button'));
@@ -246,7 +242,6 @@ describe('demo (with TestBed):', () => {
       fixture.detectChanges();
       expect(span.textContent).toMatch(/is on/i, 'after click');
     });
-    // #enddocregion ButtonComp
 
     // ngModel is async so we must wait for it with promise-based `whenStable`
     it('should support entering text in input box (ngModel)', waitForAsync(() => {
@@ -324,7 +319,6 @@ describe('demo (with TestBed):', () => {
         `After ngModel updates the model, comp.name should be ${expectedNewName} `);
     }));
 
-    // #docregion ReversePipeComp
     it('ReversePipeComp should reverse the input text', fakeAsync(() => {
       const inputText = 'the quick brown fox.';
       const expectedText = '.xof nworb kciuq eht';
@@ -350,7 +344,6 @@ describe('demo (with TestBed):', () => {
       expect(span.textContent).toBe(expectedText, 'output span');
       expect(comp.text).toBe(inputText, 'component.text');
     }));
-    // #enddocregion ReversePipeComp
 
     // Use this technique to find attached directives of any kind
     it('can examine attached directives and listeners', () => {
@@ -367,7 +360,6 @@ describe('demo (with TestBed):', () => {
       expect(inputEl.listeners.length).toBeGreaterThan(2, 'several listeners attached');
     });
 
-    // #docregion dom-attributes
     it('BankAccountComponent should set attributes, styles, classes, and properties', () => {
       const fixture = TestBed.createComponent(BankAccountParentComponent);
       fixture.detectChanges();
@@ -380,22 +372,19 @@ describe('demo (with TestBed):', () => {
 
       expect(el.context).toBe(childComp, 'context is the child component');
 
-      expect(el.attributes.account).toBe(childComp.id, 'account attribute');
-      expect(el.attributes.bank).toBe(childComp.bank, 'bank attribute');
+      expect(el.attributes['account']).toBe(childComp.id, 'account attribute');
+      expect(el.attributes['bank']).toBe(childComp.bank, 'bank attribute');
 
-      expect(el.classes.closed).toBe(true, 'closed class');
-      expect(el.classes.open).toBeFalsy('open class');
+      expect(el.classes['closed']).toBe(true, 'closed class');
+      expect(el.classes['open']).toBeFalsy('open class');
 
-      expect(el.styles.color).toBe(comp.color, 'color style');
-      expect(el.styles.width).toBe(comp.width + 'px', 'width style');
-      // #enddocregion dom-attributes
+      expect(el.styles['color']).toBe(comp.color, 'color style');
+      expect(el.styles['width']).toBe(comp.width + 'px', 'width style');
 
       // Removed on 12/02/2016 when ceased public discussion of the `Renderer`. Revive in future?
       // expect(el.properties['customProperty']).toBe(true, 'customProperty');
 
-      // #docregion dom-attributes
     });
-    // #enddocregion dom-attributes
 
 
   });
@@ -475,7 +464,7 @@ describe('demo (with TestBed):', () => {
         })
         .createComponent(TestComponent);
 
-      let testBedProvider: ValueService;
+      let testBedProvider!: ValueService;
       let tcProvider: ValueService;
       let tpcProvider: FakeValueService;
 
@@ -521,11 +510,11 @@ describe('demo (with TestBed):', () => {
       expect(comp.children.toArray().length).toBe(4,
         'three different child components and an ElementRef with #content');
 
-      expect(el.references.nc).toBe(comp, '#nc reference to component');
+      expect(el.references['nc']).toBe(comp, '#nc reference to component');
 
       // #docregion custom-predicate
       // Filter for DebugElements with a #content reference
-      const contentRefs = el.queryAll( de => de.references.content);
+      const contentRefs = el.queryAll( de => de.references['content']);
       // #enddocregion custom-predicate
       expect(contentRefs.length).toBe(4, 'elements w/ a #content reference');
     });
@@ -628,7 +617,7 @@ describe('demo (with TestBed):', () => {
 
       child.childValue = 'bar';
 
-      return new Promise(resolve => {
+      return new Promise<void>(resolve => {
         // Wait one JS engine turn!
         setTimeout(() => resolve(), 0);
       })
@@ -709,5 +698,5 @@ class FakeGrandchildComponent { }
 
 @Injectable()
 class FakeValueService extends ValueService {
-  value = 'faked value';
+  override value = 'faked value';
 }

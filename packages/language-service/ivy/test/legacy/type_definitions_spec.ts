@@ -18,7 +18,7 @@ describe('type definitions', () => {
   beforeAll(() => {
     const {project, service: _service, tsLS} = setup();
     service = _service;
-    ngLS = new LanguageService(project, tsLS);
+    ngLS = new LanguageService(project, tsLS, {});
   });
 
   const possibleArrayDefFiles = new Set([
@@ -32,7 +32,7 @@ describe('type definitions', () => {
 
   describe('elements', () => {
     it('should work for native elements', () => {
-      const defs = getTypeDefinitionsAndAssertBoundSpan({
+      const defs = getTypeDefinitions({
         templateOverride: `<butt¦on></button>`,
       });
       expect(defs.length).toEqual(2);
@@ -42,7 +42,7 @@ describe('type definitions', () => {
     });
 
     it('should return directives which match the element tag', () => {
-      const defs = getTypeDefinitionsAndAssertBoundSpan({
+      const defs = getTypeDefinitions({
         templateOverride: `<butt¦on compound custom-button></button>`,
       });
       expect(defs.length).toEqual(3);
@@ -63,7 +63,7 @@ describe('type definitions', () => {
 
   describe('directives', () => {
     it('should work for directives', () => {
-      const definitions = getTypeDefinitionsAndAssertBoundSpan({
+      const definitions = getTypeDefinitions({
         templateOverride: `<div string-model¦></div>`,
       });
       expect(definitions.length).toEqual(1);
@@ -73,7 +73,7 @@ describe('type definitions', () => {
     });
 
     it('should work for components', () => {
-      const definitions = getTypeDefinitionsAndAssertBoundSpan({
+      const definitions = getTypeDefinitions({
         templateOverride: `<t¦est-comp></test-comp>`,
       });
       expect(definitions.length).toEqual(1);
@@ -82,7 +82,7 @@ describe('type definitions', () => {
     });
 
     it('should work for structural directives', () => {
-      const definitions = getTypeDefinitionsAndAssertBoundSpan({
+      const definitions = getTypeDefinitions({
         templateOverride: `<div *¦ngFor="let item of heroes"></div>`,
       });
       expect(definitions.length).toEqual(1);
@@ -94,12 +94,12 @@ describe('type definitions', () => {
     });
 
     it('should work for directives with compound selectors', () => {
-      let defs = getTypeDefinitionsAndAssertBoundSpan({
+      let defs = getTypeDefinitions({
         templateOverride: `<button com¦pound custom-button></button>`,
       });
       expect(defs.length).toEqual(1);
       expect(defs[0].contextSpan).toContain('export class CompoundCustomButtonDirective');
-      defs = getTypeDefinitionsAndAssertBoundSpan({
+      defs = getTypeDefinitions({
         templateOverride: `<button compound cu¦stom-button></button>`,
       });
       expect(defs.length).toEqual(1);
@@ -110,7 +110,7 @@ describe('type definitions', () => {
   describe('bindings', () => {
     describe('inputs', () => {
       it('should return something for input providers with non-primitive types', () => {
-        const defs = getTypeDefinitionsAndAssertBoundSpan({
+        const defs = getTypeDefinitions({
           templateOverride: `<button compound custom-button [config¦]="{}"></button>`,
         });
         expect(defs.length).toEqual(1);
@@ -118,7 +118,7 @@ describe('type definitions', () => {
       });
 
       it('should work for structural directive inputs ngForTrackBy', () => {
-        const definitions = getTypeDefinitionsAndAssertBoundSpan({
+        const definitions = getTypeDefinitions({
           templateOverride: `<div *ngFor="let item of heroes; tr¦ackBy: test;"></div>`,
         });
         expect(definitions!.length).toEqual(1);
@@ -129,7 +129,7 @@ describe('type definitions', () => {
       });
 
       it('should work for structural directive inputs ngForOf', () => {
-        const definitions = getTypeDefinitionsAndAssertBoundSpan({
+        const definitions = getTypeDefinitions({
           templateOverride: `<div *ngFor="let item o¦f heroes"></div>`,
         });
         // In addition to all the array defs, this will also return the NgForOf def because the
@@ -140,7 +140,7 @@ describe('type definitions', () => {
       });
 
       it('should return nothing for two-way binding providers', () => {
-        const definitions = getTypeDefinitionsAndAssertBoundSpan({
+        const definitions = getTypeDefinitions({
           templateOverride: `<test-comp string-model [(mo¦del)]="title"></test-comp>`,
         });
         // TODO(atscott): This should actually return EventEmitter type but we only match the input
@@ -151,7 +151,7 @@ describe('type definitions', () => {
 
     describe('outputs', () => {
       it('should work for event providers', () => {
-        const definitions = getTypeDefinitionsAndAssertBoundSpan({
+        const definitions = getTypeDefinitions({
           templateOverride: `<test-comp (te¦st)="myClick($event)"></test-comp>`,
         });
         expect(definitions!.length).toEqual(2);
@@ -167,7 +167,7 @@ describe('type definitions', () => {
       });
 
       it('should return the directive when the event is part of the selector', () => {
-        const definitions = getTypeDefinitionsAndAssertBoundSpan({
+        const definitions = getTypeDefinitions({
           templateOverride: `<div (eventSelect¦or)="title = ''"></div>`,
         });
         expect(definitions!.length).toEqual(3);
@@ -176,12 +176,24 @@ describe('type definitions', () => {
         const directiveDef = definitions[2];
         expect(directiveDef.contextSpan).toContain('export class EventSelectorDirective');
       });
+
+      it('should work for native event outputs', () => {
+        const definitions = getTypeDefinitions({
+          templateOverride: `<div (cl¦ick)="myClick($event)"></div>`,
+        });
+        expect(definitions!.length).toEqual(1);
+        expect(definitions[0].textSpan).toEqual('addEventListener');
+        expect(definitions[0].contextSpan)
+            .toEqual(
+                'addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;');
+        expect(definitions[0].fileName).toContain('lib.dom.d.ts');
+      });
     });
   });
 
   describe('references', () => {
     it('should work for element references', () => {
-      const defs = getTypeDefinitionsAndAssertBoundSpan({
+      const defs = getTypeDefinitions({
         templateOverride: `<div #chart></div>{{char¦t}}`,
       });
       expect(defs.length).toEqual(2);
@@ -190,7 +202,7 @@ describe('type definitions', () => {
     });
 
     it('should work for directive references', () => {
-      const defs = getTypeDefinitionsAndAssertBoundSpan({
+      const defs = getTypeDefinitions({
         templateOverride: `<div #mod¦el="stringModel" string-model></div>`,
       });
       expect(defs.length).toEqual(1);
@@ -201,7 +213,7 @@ describe('type definitions', () => {
 
   describe('variables', () => {
     it('should work for array members', () => {
-      const definitions = getTypeDefinitionsAndAssertBoundSpan({
+      const definitions = getTypeDefinitions({
         templateOverride: `<div *ngFor="let hero of heroes">{{her¦o}}</div>`,
       });
       expect(definitions!.length).toEqual(1);
@@ -214,7 +226,7 @@ describe('type definitions', () => {
   describe('pipes', () => {
     it('should work for pipes', () => {
       const templateOverride = `<p>The hero's birthday is {{birthday | da¦te: "MM/dd/yy"}}</p>`;
-      const definitions = getTypeDefinitionsAndAssertBoundSpan({
+      const definitions = getTypeDefinitions({
         templateOverride,
       });
       expect(definitions!.length).toEqual(1);
@@ -227,7 +239,7 @@ describe('type definitions', () => {
 
   describe('expressions', () => {
     it('should return nothing for primitives', () => {
-      const definitions = getTypeDefinitionsAndAssertBoundSpan({
+      const definitions = getTypeDefinitions({
         templateOverride: `<div>{{ tit¦le }}</div>`,
       });
       expect(definitions!.length).toEqual(0);
@@ -236,7 +248,7 @@ describe('type definitions', () => {
     // TODO(atscott): Investigate why this returns nothing in the test environment. This actually
     // works in the extension.
     xit('should work for functions on primitives', () => {
-      const definitions = getTypeDefinitionsAndAssertBoundSpan({
+      const definitions = getTypeDefinitions({
         templateOverride: `<div>{{ title.toLower¦case() }}</div>`,
       });
       expect(definitions!.length).toEqual(1);
@@ -245,7 +257,7 @@ describe('type definitions', () => {
     });
 
     it('should work for accessed property reads', () => {
-      const definitions = getTypeDefinitionsAndAssertBoundSpan({
+      const definitions = getTypeDefinitions({
         templateOverride: `<div>{{heroes[0].addre¦ss}}</div>`,
       });
       expect(definitions!.length).toEqual(1);
@@ -256,7 +268,7 @@ describe('type definitions', () => {
     });
 
     it('should work for $event', () => {
-      const definitions = getTypeDefinitionsAndAssertBoundSpan({
+      const definitions = getTypeDefinitions({
         templateOverride: `<button (click)="title=$ev¦ent"></button>`,
       });
       expect(definitions!.length).toEqual(2);
@@ -269,7 +281,7 @@ describe('type definitions', () => {
     });
 
     it('should work for method calls', () => {
-      const definitions = getTypeDefinitionsAndAssertBoundSpan({
+      const definitions = getTypeDefinitions({
         templateOverride: `<div (click)="setT¦itle('title')"></div>`,
       });
       expect(definitions!.length).toEqual(1);
@@ -280,7 +292,7 @@ describe('type definitions', () => {
     });
 
     it('should work for accessed properties in writes', () => {
-      const definitions = getTypeDefinitionsAndAssertBoundSpan({
+      const definitions = getTypeDefinitions({
         templateOverride: `<div (click)="hero.add¦ress = undefined"></div>`,
       });
       expect(definitions!.length).toEqual(1);
@@ -291,21 +303,21 @@ describe('type definitions', () => {
     });
 
     it('should work for variables in structural directives', () => {
-      const definitions = getTypeDefinitionsAndAssertBoundSpan({
+      const definitions = getTypeDefinitions({
         templateOverride: `<div *ngFor="let item of heroes as her¦oes2; trackBy: test;"></div>`,
       });
       expectAllDefinitions(definitions, new Set(['Array']), possibleArrayDefFiles);
     });
 
     it('should work for uses of members in structural directives', () => {
-      const definitions = getTypeDefinitionsAndAssertBoundSpan({
+      const definitions = getTypeDefinitions({
         templateOverride: `<div *ngFor="let item of heroes as heroes2">{{her¦oes2}}</div>`,
       });
       expectAllDefinitions(definitions, new Set(['Array']), possibleArrayDefFiles);
     });
 
     it('should work for members in structural directives', () => {
-      const definitions = getTypeDefinitionsAndAssertBoundSpan({
+      const definitions = getTypeDefinitions({
         templateOverride: `<div *ngFor="let item of her¦oes; trackBy: test;"></div>`,
       });
       expectAllDefinitions(definitions, new Set(['Array']), possibleArrayDefFiles);
@@ -319,7 +331,7 @@ describe('type definitions', () => {
     });
   });
 
-  function getTypeDefinitionsAndAssertBoundSpan({templateOverride}: {templateOverride: string}):
+  function getTypeDefinitions({templateOverride}: {templateOverride: string}):
       HumanizedDefinitionInfo[] {
     const {position} = service.overwriteInlineTemplate(APP_COMPONENT, templateOverride);
     const defs = ngLS.getTypeDefinitionAtPosition(APP_COMPONENT, position);

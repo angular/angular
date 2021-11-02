@@ -6,6 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export {PerfRecorder} from './src/api';
+export * from './src/api';
 export {NOOP_PERF_RECORDER} from './src/noop';
-export {PerfTracker} from './src/tracking';
+export {ActivePerfRecorder, DelegatingPerfRecorder} from './src/recorder';

@@ -10,10 +10,6 @@
 import {RNode} from './renderer_dom';
 import {LView} from './view';
 
-/**
- * This property will be monkey-patched on elements, components and directives
- */
-export const MONKEY_PATCH_KEY_NAME = '__ngContext__';
 
 /**
  * The internal view context which is specific to a given DOM element, directive or

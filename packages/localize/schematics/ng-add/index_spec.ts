@@ -22,7 +22,7 @@ describe('ng-add schematic', () => {
       `/***************************************************************************************************
  * Zone JS is required by default for Angular itself.
  */
-import 'zone.js/dist/zone';`;
+import 'zone.js';`;
   const mainServerContent = `import { enableProdMode } from '@angular/core';
 import { environment } from './environments/environment';
 if (environment.production) {
@@ -177,9 +177,10 @@ export { renderModule, renderModuleFactory } from '@angular/platform-server';`;
   it('should add package to `devDependencies` by default', async () => {
     host = await schematicRunner.runSchematicAsync('ng-add', defaultOptions, host).toPromise();
     const packageJsonText = host.readContent('/package.json');
-    expect(JSON.parse(packageJsonText).devDependencies?.['@angular/localize'])
-        .toBe('~0.0.0-PLACEHOLDER');
-    expect(JSON.parse(packageJsonText).dependencies?.['@angular/localize']).toBeUndefined();
+    const packageJsonObj = JSON.parse(packageJsonText) as
+        {devDependencies: {[key: string]: string}, dependencies: {[key: string]: string}};
+    expect(packageJsonObj.devDependencies?.['@angular/localize']).toBe('~0.0.0-PLACEHOLDER');
+    expect(packageJsonObj.dependencies?.['@angular/localize']).toBeUndefined();
   });
 
   it('should add package to `dependencies` if `useAtRuntime` is `true`', async () => {
@@ -187,8 +188,9 @@ export { renderModule, renderModuleFactory } from '@angular/platform-server';`;
                .runSchematicAsync('ng-add', {...defaultOptions, useAtRuntime: true}, host)
                .toPromise();
     const packageJsonText = host.readContent('/package.json');
-    expect(JSON.parse(packageJsonText).dependencies?.['@angular/localize'])
-        .toBe('~0.0.0-PLACEHOLDER');
-    expect(JSON.parse(packageJsonText).devDependencies?.['@angular/localize']).toBeUndefined();
+    const packageJsonObj = JSON.parse(packageJsonText) as
+        {devDependencies: {[key: string]: string}, dependencies: {[key: string]: string}};
+    expect(packageJsonObj.dependencies?.['@angular/localize']).toBe('~0.0.0-PLACEHOLDER');
+    expect(packageJsonObj.devDependencies?.['@angular/localize']).toBeUndefined();
   });
 });

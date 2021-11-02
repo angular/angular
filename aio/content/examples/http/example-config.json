@@ -2,6 +2,6 @@
   "projectType": "testing",
   "tests": [
     {"cmd": "yarn", "args": ["test", "--browsers=ChromeHeadless", "--no-watch"]},
-    {"cmd": "yarn", "args": ["e2e", "--prod", "--protractor-config=e2e/protractor-puppeteer.conf.js", "--no-webdriver-update", "--port={PORT}"]}
+    {"cmd": "yarn", "args": ["e2e", "--configuration=production", "--protractor-config=e2e/protractor-puppeteer.conf.js", "--no-webdriver-update", "--port={PORT}"]}
   ]
 }

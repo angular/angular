@@ -252,5 +252,14 @@ function sanitizeHtml(defaultDoc: any, unsafeHtmlInput: string): string {
             .toMatch(/<a href="unsafe:(&#12288;)?javascript:alert\(1\)">CLICKME<\/a>/);
       });
     }
+
+    if (isDOMParserAvailable()) {
+      it('should work even if DOMParser returns a null body', () => {
+        // Simulate `DOMParser.parseFromString()` returning a null body.
+        // See https://github.com/angular/angular/issues/39834
+        spyOn(window.DOMParser.prototype, 'parseFromString').and.returnValue({body: null} as any);
+        expect(sanitizeHtml(defaultDoc, 'Hello, World')).toEqual('Hello, World');
+      });
+    }
   });
 }

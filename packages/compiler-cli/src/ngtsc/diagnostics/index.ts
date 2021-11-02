@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+export {COMPILER_ERRORS_WITH_GUIDES} from './src/docs';
 export {FatalDiagnosticError, isFatalDiagnosticError, makeDiagnostic, makeRelatedInformation} from './src/error';
-export {ErrorCode, ngErrorCode} from './src/error_code';
-export {replaceTsWithNgInErrors} from './src/util';
+export {ErrorCode} from './src/error_code';
+export {ERROR_DETAILS_PAGE_BASE_URL} from './src/error_details_base_url';
+export {ngErrorCode, replaceTsWithNgInErrors} from './src/util';

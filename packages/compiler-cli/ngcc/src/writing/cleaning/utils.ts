@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteFsPath, FileSystem} from '../../../../src/ngtsc/file_system';
+import {AbsoluteFsPath, ReadonlyFileSystem} from '../../../../src/ngtsc/file_system';
 
 /**
  * Returns true if the given `path` is a directory (not a symlink) and actually exists.
@@ -13,7 +13,7 @@ import {AbsoluteFsPath, FileSystem} from '../../../../src/ngtsc/file_system';
  * @param fs the current filesystem
  * @param path the path to check
  */
-export function isLocalDirectory(fs: FileSystem, path: AbsoluteFsPath): boolean {
+export function isLocalDirectory(fs: ReadonlyFileSystem, path: AbsoluteFsPath): boolean {
   if (fs.exists(path)) {
     const stat = fs.lstat(path);
     return stat.isDirectory();

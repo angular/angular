@@ -5,8 +5,9 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
+
 import {CssKeyframesPlayer} from '../../../src/render/css_keyframes/css_keyframes_player';
-import {DOMAnimation} from '../../../src/render/web_animations/dom_animation';
 import {WebAnimationsDriver} from '../../../src/render/web_animations/web_animations_driver';
 import {WebAnimationsPlayer} from '../../../src/render/web_animations/web_animations_player';
 
@@ -49,6 +50,21 @@ import {WebAnimationsPlayer} from '../../../src/render/web_animations/web_animat
         expect(player instanceof WebAnimationsPlayer).toBeTruthy();
       });
     });
+
+    if (browserDetection.supportsShadowDom) {
+      describe('when animation is inside a shadow DOM', () => {
+        it('should consider an element inside the shadow DOM to be contained by the document body',
+           (() => {
+             const hostElement = createElement();
+             const shadowRoot = hostElement.attachShadow({mode: 'open'});
+             const elementToAnimate = createElement();
+             shadowRoot.appendChild(elementToAnimate);
+             document.body.appendChild(hostElement);
+             const animator = new WebAnimationsDriver();
+             expect(animator.containsElement(document.body, elementToAnimate)).toBeTrue();
+           }));
+      });
+    }
   });
 }
 

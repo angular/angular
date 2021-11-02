@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {CompileDirectiveMetadata, CompileDirectiveSummary, CompileNgModuleMetadata, CompileNgModuleSummary, CompilePipeMetadata, CompileProviderMetadata, CompileSummaryKind, CompileTypeMetadata, CompileTypeSummary} from '../compile_metadata';
+import {OutputContext} from '../constant_pool';
 import * as o from '../output/output_ast';
 import {Summary, SummaryResolver} from '../summary_resolver';
-import {OutputContext, ValueTransformer, ValueVisitor, visitValue} from '../util';
+import {ValueTransformer, ValueVisitor, visitValue} from '../util';
 
 import {StaticSymbol, StaticSymbolCache} from './static_symbol';
 import {ResolvedStaticSymbol, StaticSymbolResolver, unwrapResolvedMetadata} from './static_symbol_resolver';
@@ -234,7 +235,7 @@ class ToJsonSerializer extends ValueTransformer {
     return visitValue(value, this, flags);
   }
 
-  visitOther(value: any, context: any): any {
+  override visitOther(value: any, context: any): any {
     if (value instanceof StaticSymbol) {
       let baseSymbol = this.symbolResolver.getStaticSymbol(value.filePath, value.name);
       const index = this.visitStaticSymbol(baseSymbol, context);
@@ -249,7 +250,7 @@ class ToJsonSerializer extends ValueTransformer {
    * TODO: find out a way to have line and character numbers in errors without
    * excessive recompilation in bazel.
    */
-  visitStringMap(map: {[key: string]: any}, context: any): any {
+  override visitStringMap(map: {[key: string]: any}, context: any): any {
     if (map['__symbolic'] === 'resolved') {
       return visitValue(map['symbol'], this, context);
     }
@@ -461,7 +462,7 @@ class FromJsonDeserializer extends ValueTransformer {
     summaries: Summary<StaticSymbol>[],
     importAs: {symbol: StaticSymbol, importAs: StaticSymbol}[]
   } {
-    const data: {moduleName: string|null, summaries: any[], symbols: any[]} = JSON.parse(json);
+    const data = JSON.parse(json) as {moduleName: string | null, summaries: any[], symbols: any[]};
     const allImportAs: {symbol: StaticSymbol, importAs: StaticSymbol}[] = [];
     this.symbols = data.symbols.map(
         (serializedSymbol) => this.symbolCache.get(
@@ -481,7 +482,7 @@ class FromJsonDeserializer extends ValueTransformer {
     return {moduleName: data.moduleName, summaries, importAs: allImportAs};
   }
 
-  visitStringMap(map: {[key: string]: any}, context: any): any {
+  override visitStringMap(map: {[key: string]: any}, context: any): any {
     if ('__symbol' in map) {
       const baseSymbol = this.symbols[map['__symbol']];
       const members = map['members'];

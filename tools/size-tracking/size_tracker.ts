@@ -7,7 +7,7 @@
  */
 
 import {readFileSync} from 'fs';
-import {SourceMapConsumer} from 'source-map';
+import {RawSourceMap, SourceMapConsumer} from 'source-map';
 
 import {DirectorySizeEntry, FileSizeData, omitCommonPathPrefix, sortFileSizeData} from './file_size_data';
 
@@ -23,7 +23,8 @@ export class SizeTracker {
 
   constructor(private filePath: string, private sourceMapPath: string) {
     this.fileContent = readFileSync(filePath, 'utf8');
-    this.consumer = new SourceMapConsumer(JSON.parse(readFileSync(sourceMapPath, 'utf8')));
+    this.consumer =
+        new SourceMapConsumer(JSON.parse(readFileSync(sourceMapPath, 'utf8')) as RawSourceMap);
     this.sizeResult = this._computeSizeResult();
   }
 

@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, BindingPipe, BindingType, BoundTarget, DYNAMIC_TYPE, ImplicitReceiver, MethodCall, ParsedEventType, ParseSourceSpan, PropertyRead, PropertyWrite, SchemaMetadata, ThisReceiver, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstBoundText, TmplAstElement, TmplAstIcu, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
-import * as ts from 'typescript';
+import {AST, BindingPipe, BindingType, BoundTarget, Call, DYNAMIC_TYPE, ImplicitReceiver, ParsedEventType, ParseSourceSpan, PropertyRead, PropertyWrite, SafePropertyRead, SchemaMetadata, ThisReceiver, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstBoundText, TmplAstElement, TmplAstIcu, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
+import ts from 'typescript';
 
 import {Reference} from '../../imports';
 import {ClassPropertyName} from '../../metadata';
-import {ClassDeclaration} from '../../reflection';
+import {ClassDeclaration, ReflectionHost} from '../../reflection';
 import {TemplateId, TypeCheckableDirectiveMeta, TypeCheckBlockMetadata} from '../api';
 
 import {addExpressionIdentifier, ExpressionIdentifier, markIgnoreDiagnostics} from './comments';
@@ -22,6 +22,36 @@ import {astToTypescript, NULL_AS_ANY} from './expression';
 import {OutOfBandDiagnosticRecorder} from './oob';
 import {ExpressionSemanticVisitor} from './template_semantics';
 import {tsCallMethod, tsCastToAny, tsCreateElement, tsCreateTypeQueryForCoercedInput, tsCreateVariable, tsDeclareVariable} from './ts_util';
+import {requiresInlineTypeCtor} from './type_constructor';
+import {TypeParameterEmitter} from './type_parameter_emitter';
+
+/**
+ * Controls how generics for the component context class will be handled during TCB generation.
+ */
+export enum TcbGenericContextBehavior {
+  /**
+   * References to generic parameter bounds will be emitted via the `TypeParameterEmitter`.
+   *
+   * The caller must verify that all parameter bounds are emittable in order to use this mode.
+   */
+  UseEmitter,
+
+  /**
+   * Generic parameter declarations will be copied directly from the `ts.ClassDeclaration` of the
+   * component class.
+   *
+   * The caller must only use the generated TCB code in a context where such copies will still be
+   * valid, such as an inline type check block.
+   */
+  CopyClassNodes,
+
+  /**
+   * Any generic parameters for the component context class will be set to `any`.
+   *
+   * Produces a less useful type, but is always safe to use.
+   */
+  FallbackToAny,
+}
 
 /**
  * Given a `ts.ClassDeclaration` for a component, and metadata regarding that component, compose a
@@ -44,11 +74,14 @@ import {tsCallMethod, tsCastToAny, tsCreateElement, tsCreateTypeQueryForCoercedI
  * and bindings.
  * @param oobRecorder used to record errors regarding template elements which could not be correctly
  * translated into types during TCB generation.
+ * @param genericContextBehavior controls how generic parameters (especially parameters with generic
+ * bounds) will be referenced from the generated TCB code.
  */
 export function generateTypeCheckBlock(
     env: Environment, ref: Reference<ClassDeclaration<ts.ClassDeclaration>>, name: ts.Identifier,
     meta: TypeCheckBlockMetadata, domSchemaChecker: DomSchemaChecker,
-    oobRecorder: OutOfBandDiagnosticRecorder): ts.FunctionDeclaration {
+    oobRecorder: OutOfBandDiagnosticRecorder,
+    genericContextBehavior: TcbGenericContextBehavior): ts.FunctionDeclaration {
   const tcb = new Context(
       env, domSchemaChecker, oobRecorder, meta.id, meta.boundTarget, meta.pipes, meta.schemas);
   const scope = Scope.forNodes(tcb, null, tcb.boundTarget.target.template !, /* guard */ null);
@@ -57,7 +90,34 @@ export function generateTypeCheckBlock(
     throw new Error(
         `Expected TypeReferenceNode when referencing the ctx param for ${ref.debugName}`);
   }
-  const paramList = [tcbCtxParam(ref.node, ctxRawType.typeName, env.config.useContextGenericType)];
+
+  let typeParameters: ts.TypeParameterDeclaration[]|undefined = undefined;
+  let typeArguments: ts.TypeNode[]|undefined = undefined;
+
+  if (ref.node.typeParameters !== undefined) {
+    if (!env.config.useContextGenericType) {
+      genericContextBehavior = TcbGenericContextBehavior.FallbackToAny;
+    }
+
+    switch (genericContextBehavior) {
+      case TcbGenericContextBehavior.UseEmitter:
+        // Guaranteed to emit type parameters since we checked that the class has them above.
+        typeParameters = new TypeParameterEmitter(ref.node.typeParameters, env.reflector)
+                             .emit(typeRef => env.referenceType(typeRef))!;
+        typeArguments = typeParameters.map(param => ts.factory.createTypeReferenceNode(param.name));
+        break;
+      case TcbGenericContextBehavior.CopyClassNodes:
+        typeParameters = [...ref.node.typeParameters];
+        typeArguments = typeParameters.map(param => ts.factory.createTypeReferenceNode(param.name));
+        break;
+      case TcbGenericContextBehavior.FallbackToAny:
+        typeArguments = ref.node.typeParameters.map(
+            () => ts.factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword));
+        break;
+    }
+  }
+
+  const paramList = [tcbCtxParam(ref.node, ctxRawType.typeName, typeArguments)];
 
   const scopeStatements = scope.render();
   const innerBody = ts.createBlock([
@@ -73,7 +133,7 @@ export function generateTypeCheckBlock(
       /* modifiers */ undefined,
       /* asteriskToken */ undefined,
       /* name */ name,
-      /* typeParameters */ env.config.useContextGenericType ? ref.node.typeParameters : undefined,
+      /* typeParameters */ env.config.useContextGenericType ? typeParameters : undefined,
       /* parameters */ paramList,
       /* type */ undefined,
       /* body */ body);
@@ -132,14 +192,14 @@ class TcbElementOp extends TcbOp {
     super();
   }
 
-  get optional() {
+  override get optional() {
     // The statement generated by this operation is only used for type-inference of the DOM
     // element's type and won't report diagnostics by itself, so the operation is marked as optional
     // to avoid generating statements for DOM elements that are never referenced.
     return true;
   }
 
-  execute(): ts.Identifier {
+  override execute(): ts.Identifier {
     const id = this.tcb.allocateId();
     // Add the declaration of the element using document.createElement.
     const initializer = tsCreateElement(this.element.name);
@@ -162,11 +222,11 @@ class TcbVariableOp extends TcbOp {
     super();
   }
 
-  get optional() {
+  override get optional() {
     return false;
   }
 
-  execute(): ts.Identifier {
+  override execute(): ts.Identifier {
     // Look for a context variable for the template.
     const ctx = this.scope.resolve(this.template);
 
@@ -203,9 +263,9 @@ class TcbTemplateContextOp extends TcbOp {
   }
 
   // The declaration of the context variable is only needed when the context is actually referenced.
-  readonly optional = true;
+  override readonly optional = true;
 
-  execute(): ts.Identifier {
+  override execute(): ts.Identifier {
     // Allocate a template ctx variable and declare it with an 'any' type. The type of this variable
     // may be narrowed as a result of template guard conditions.
     const ctx = this.tcb.allocateId();
@@ -227,11 +287,11 @@ class TcbTemplateBodyOp extends TcbOp {
     super();
   }
 
-  get optional() {
+  override get optional() {
     return false;
   }
 
-  execute(): null {
+  override execute(): null {
     // An `if` will be constructed, within which the template's children will be type checked. The
     // `if` is used for two reasons: it creates a new syntactic scope, isolating variables declared
     // in the template's TCB from the outer context, and it allows any directives on the templates
@@ -285,11 +345,20 @@ class TcbTemplateBodyOp extends TcbOp {
 
         // The second kind of guard is a template context guard. This guard narrows the template
         // rendering context variable `ctx`.
-        if (dir.hasNgTemplateContextGuard && this.tcb.env.config.applyTemplateContextGuards) {
-          const ctx = this.scope.resolve(this.template);
-          const guardInvoke = tsCallMethod(dirId, 'ngTemplateContextGuard', [dirInstId, ctx]);
-          addParseSpanInfo(guardInvoke, this.template.sourceSpan);
-          directiveGuards.push(guardInvoke);
+        if (dir.hasNgTemplateContextGuard) {
+          if (this.tcb.env.config.applyTemplateContextGuards) {
+            const ctx = this.scope.resolve(this.template);
+            const guardInvoke = tsCallMethod(dirId, 'ngTemplateContextGuard', [dirInstId, ctx]);
+            addParseSpanInfo(guardInvoke, this.template.sourceSpan);
+            directiveGuards.push(guardInvoke);
+          } else if (
+              this.template.variables.length > 0 &&
+              this.tcb.env.config.suggestionsForSuboptimalTypeInference) {
+            // The compiler could have inferred a better type for the variables in this template,
+            // but was prevented from doing so by the type-checking configuration. Issue a warning
+            // diagnostic.
+            this.tcb.oobRecorder.suboptimalTypeInference(this.tcb.id, this.template.variables);
+          }
         }
       }
     }
@@ -345,11 +414,11 @@ class TcbTextInterpolationOp extends TcbOp {
     super();
   }
 
-  get optional() {
+  override get optional() {
     return false;
   }
 
-  execute(): null {
+  override execute(): null {
     const expr = tcbExpression(this.binding.value, this.tcb, this.scope);
     this.scope.addStatement(ts.createExpressionStatement(expr));
     return null;
@@ -357,36 +426,89 @@ class TcbTextInterpolationOp extends TcbOp {
 }
 
 /**
- * A `TcbOp` which constructs an instance of a directive _without_ setting any of its inputs. Inputs
- * are later set in the `TcbDirectiveInputsOp`. Type checking was found to be faster when done in
- * this way as opposed to `TcbDirectiveCtorOp` which is only necessary when the directive is
- * generic.
- *
- * Executing this operation returns a reference to the directive instance variable with its inferred
- * type.
+ * A `TcbOp` which constructs an instance of a directive. For generic directives, generic
+ * parameters are set to `any` type.
  */
-class TcbDirectiveTypeOp extends TcbOp {
+abstract class TcbDirectiveTypeOpBase extends TcbOp {
   constructor(
-      private tcb: Context, private scope: Scope, private node: TmplAstTemplate|TmplAstElement,
-      private dir: TypeCheckableDirectiveMeta) {
+      protected tcb: Context, protected scope: Scope,
+      protected node: TmplAstTemplate|TmplAstElement, protected dir: TypeCheckableDirectiveMeta) {
     super();
   }
 
-  get optional() {
+  override get optional() {
     // The statement generated by this operation is only used to declare the directive's type and
     // won't report diagnostics by itself, so the operation is marked as optional to avoid
     // generating declarations for directives that don't have any inputs/outputs.
     return true;
   }
 
-  execute(): ts.Identifier {
-    const id = this.tcb.allocateId();
+  override execute(): ts.Identifier {
+    const dirRef = this.dir.ref as Reference<ClassDeclaration<ts.ClassDeclaration>>;
 
-    const type = this.tcb.env.referenceType(this.dir.ref);
+    const rawType = this.tcb.env.referenceType(this.dir.ref);
+
+    let type: ts.TypeNode;
+    if (this.dir.isGeneric === false || dirRef.node.typeParameters === undefined) {
+      type = rawType;
+    } else {
+      if (!ts.isTypeReferenceNode(rawType)) {
+        throw new Error(
+            `Expected TypeReferenceNode when referencing the type for ${this.dir.ref.debugName}`);
+      }
+      const typeArguments = dirRef.node.typeParameters.map(
+          () => ts.factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword));
+      type = ts.factory.createTypeReferenceNode(rawType.typeName, typeArguments);
+    }
+
+    const id = this.tcb.allocateId();
     addExpressionIdentifier(type, ExpressionIdentifier.DIRECTIVE);
     addParseSpanInfo(type, this.node.startSourceSpan || this.node.sourceSpan);
     this.scope.addStatement(tsDeclareVariable(id, type));
     return id;
+  }
+}
+
+/**
+ * A `TcbOp` which constructs an instance of a non-generic directive _without_ setting any of its
+ * inputs. Inputs are later set in the `TcbDirectiveInputsOp`. Type checking was found to be
+ * faster when done in this way as opposed to `TcbDirectiveCtorOp` which is only necessary when the
+ * directive is generic.
+ *
+ * Executing this operation returns a reference to the directive instance variable with its inferred
+ * type.
+ */
+class TcbNonGenericDirectiveTypeOp extends TcbDirectiveTypeOpBase {
+  /**
+   * Creates a variable declaration for this op's directive of the argument type. Returns the id of
+   * the newly created variable.
+   */
+  override execute(): ts.Identifier {
+    const dirRef = this.dir.ref as Reference<ClassDeclaration<ts.ClassDeclaration>>;
+    if (this.dir.isGeneric) {
+      throw new Error(`Assertion Error: expected ${dirRef.debugName} not to be generic.`);
+    }
+    return super.execute();
+  }
+}
+
+/**
+ * A `TcbOp` which constructs an instance of a generic directive with its generic parameters set
+ * to `any` type. This op is like `TcbDirectiveTypeOp`, except that generic parameters are set to
+ * `any` type. This is used for situations where we want to avoid inlining.
+ *
+ * Executing this operation returns a reference to the directive instance variable with its generic
+ * type parameters set to `any`.
+ */
+class TcbGenericDirectiveTypeWithAnyParamsOp extends TcbDirectiveTypeOpBase {
+  override execute(): ts.Identifier {
+    const dirRef = this.dir.ref as Reference<ClassDeclaration<ts.ClassDeclaration>>;
+    if (dirRef.node.typeParameters === undefined) {
+      throw new Error(`Assertion Error: expected typeParameters when creating a declaration for ${
+          dirRef.debugName}`);
+    }
+
+    return super.execute();
   }
 }
 
@@ -421,9 +543,9 @@ class TcbReferenceOp extends TcbOp {
 
   // The statement generated by this operation is only used to for the Type Checker
   // so it can map a reference variable in the template directly to a node in the TCB.
-  readonly optional = true;
+  override readonly optional = true;
 
-  execute(): ts.Identifier {
+  override execute(): ts.Identifier {
     const id = this.tcb.allocateId();
     let initializer =
         this.target instanceof TmplAstTemplate || this.target instanceof TmplAstElement ?
@@ -469,9 +591,9 @@ class TcbInvalidReferenceOp extends TcbOp {
   }
 
   // The declaration of a missing reference is only needed when the reference is resolved.
-  readonly optional = true;
+  override readonly optional = true;
 
-  execute(): ts.Identifier {
+  override execute(): ts.Identifier {
     const id = this.tcb.allocateId();
     this.scope.addStatement(tsCreateVariable(id, NULL_AS_ANY));
     return id;
@@ -497,13 +619,13 @@ class TcbDirectiveCtorOp extends TcbOp {
     super();
   }
 
-  get optional() {
+  override get optional() {
     // The statement generated by this operation is only used to infer the directive's type and
     // won't report diagnostics by itself, so the operation is marked as optional.
     return true;
   }
 
-  execute(): ts.Identifier {
+  override execute(): ts.Identifier {
     const id = this.tcb.allocateId();
     addExpressionIdentifier(id, ExpressionIdentifier.DIRECTIVE);
     addParseSpanInfo(id, this.node.startSourceSpan || this.node.sourceSpan);
@@ -512,6 +634,11 @@ class TcbDirectiveCtorOp extends TcbOp {
 
     const inputs = getBoundInputs(this.dir, this.node, this.tcb);
     for (const input of inputs) {
+      // Skip text attributes if configured to do so.
+      if (!this.tcb.env.config.checkTypeOfAttributes &&
+          input.attribute instanceof TmplAstTextAttribute) {
+        continue;
+      }
       for (const fieldName of input.fieldNames) {
         // Skip the field if an attribute has already been bound to it; we can't have a duplicate
         // key in the type constructor call.
@@ -544,7 +671,7 @@ class TcbDirectiveCtorOp extends TcbOp {
     return id;
   }
 
-  circularFallback(): TcbOp {
+  override circularFallback(): TcbOp {
     return new TcbDirectiveCtorCircularFallbackOp(this.tcb, this.scope, this.node, this.dir);
   }
 }
@@ -562,11 +689,11 @@ class TcbDirectiveInputsOp extends TcbOp {
     super();
   }
 
-  get optional() {
+  override get optional() {
     return false;
   }
 
-  execute(): null {
+  override execute(): null {
     let dirId: ts.Expression|null = null;
 
     // TODO(joost): report duplicate properties
@@ -654,6 +781,12 @@ class TcbDirectiveInputsOp extends TcbOp {
       }
 
       addParseSpanInfo(assignment, input.attribute.sourceSpan);
+      // Ignore diagnostics for text attributes if configured to do so.
+      if (!this.tcb.env.config.checkTypeOfAttributes &&
+          input.attribute instanceof TmplAstTextAttribute) {
+        markIgnoreDiagnostics(assignment);
+      }
+
       this.scope.addStatement(ts.createExpressionStatement(assignment));
     }
 
@@ -682,11 +815,11 @@ class TcbDirectiveCtorCircularFallbackOp extends TcbOp {
     super();
   }
 
-  get optional() {
+  override get optional() {
     return false;
   }
 
-  execute(): ts.Identifier {
+  override execute(): ts.Identifier {
     const id = this.tcb.allocateId();
     const typeCtor = this.tcb.env.typeCtorFor(this.dir);
     const circularPlaceholder = ts.createCall(
@@ -713,11 +846,11 @@ class TcbDomSchemaCheckerOp extends TcbOp {
     super();
   }
 
-  get optional() {
+  override get optional() {
     return false;
   }
 
-  execute(): ts.Expression|null {
+  override execute(): ts.Expression|null {
     if (this.checkElement) {
       this.tcb.domSchemaChecker.checkElement(this.tcb.id, this.element, this.tcb.schemas);
     }
@@ -773,11 +906,11 @@ class TcbUnclaimedInputsOp extends TcbOp {
     super();
   }
 
-  get optional() {
+  override get optional() {
     return false;
   }
 
-  execute(): null {
+  override execute(): null {
     // `this.inputs` contains only those bindings not matched by any directive. These bindings go to
     // the element itself.
     let elId: ts.Expression|null = null;
@@ -839,11 +972,11 @@ export class TcbDirectiveOutputsOp extends TcbOp {
     super();
   }
 
-  get optional() {
+  override get optional() {
     return false;
   }
 
-  execute(): null {
+  override execute(): null {
     let dirId: ts.Expression|null = null;
     const outputs = this.dir.outputs;
 
@@ -851,36 +984,36 @@ export class TcbDirectiveOutputsOp extends TcbOp {
       if (output.type !== ParsedEventType.Regular || !outputs.hasBindingPropertyName(output.name)) {
         continue;
       }
+
+      if (this.tcb.env.config.checkTypeOfOutputEvents && output.name.endsWith('Change')) {
+        const inputName = output.name.slice(0, -6);
+        isSplitTwoWayBinding(inputName, output, this.node.inputs, this.tcb);
+      }
       // TODO(alxhub): consider supporting multiple fields with the same property name for outputs.
       const field = outputs.getByBindingPropertyName(output.name)![0].classPropertyName;
 
+      if (dirId === null) {
+        dirId = this.scope.resolve(this.node, this.dir);
+      }
+      const outputField = ts.createElementAccess(dirId, ts.createStringLiteral(field));
+      addParseSpanInfo(outputField, output.keySpan);
       if (this.tcb.env.config.checkTypeOfOutputEvents) {
         // For strict checking of directive events, generate a call to the `subscribe` method
         // on the directive's output field to let type information flow into the handler function's
         // `$event` parameter.
-        //
-        // Note that the `EventEmitter<T>` type from '@angular/core' that is typically used for
-        // outputs has a typings deficiency in its `subscribe` method. The generic type `T` is not
-        // carried into the handler function, which is vital for inference of the type of `$event`.
-        // As a workaround, the directive's field is passed into a helper function that has a
-        // specially crafted set of signatures, to effectively cast `EventEmitter<T>` to something
-        // that has a `subscribe` method that properly carries the `T` into the handler function.
         const handler = tcbCreateEventHandler(output, this.tcb, this.scope, EventParamType.Infer);
-
-        if (dirId === null) {
-          dirId = this.scope.resolve(this.node, this.dir);
-        }
-        const outputField = ts.createElementAccess(dirId, ts.createStringLiteral(field));
-        addParseSpanInfo(outputField, output.keySpan);
-        const outputHelper =
-            ts.createCall(this.tcb.env.declareOutputHelper(), undefined, [outputField]);
-        const subscribeFn = ts.createPropertyAccess(outputHelper, 'subscribe');
+        const subscribeFn = ts.createPropertyAccess(outputField, 'subscribe');
         const call = ts.createCall(subscribeFn, /* typeArguments */ undefined, [handler]);
         addParseSpanInfo(call, output.sourceSpan);
         this.scope.addStatement(ts.createExpressionStatement(call));
       } else {
-        // If strict checking of directive events is disabled, emit a handler function where the
-        // `$event` parameter has an explicit `any` type.
+        // If strict checking of directive events is disabled:
+        //
+        // * We still generate the access to the output field as a statement in the TCB so consumers
+        //   of the `TemplateTypeChecker` can still find the node for the class member for the
+        //   output.
+        // * Emit a handler function where the `$event` parameter has an explicit `any` type.
+        this.scope.addStatement(ts.createExpressionStatement(outputField));
         const handler = tcbCreateEventHandler(output, this.tcb, this.scope, EventParamType.Any);
         this.scope.addStatement(ts.createExpressionStatement(handler));
       }
@@ -890,39 +1023,6 @@ export class TcbDirectiveOutputsOp extends TcbOp {
     }
 
     return null;
-  }
-
-  /**
-   * Outputs are a `ts.CallExpression` that look like one of the two:
-   *  - `_outputHelper(_t1["outputField"]).subscribe(handler);`
-   *  - `_t1.addEventListener(handler);`
-   * This method reverses the operations to create a call expression for a directive output.
-   * It unpacks the given call expression and returns the original element access (i.e.
-   * `_t1["outputField"]` in the example above). Returns `null` if the given call expression is not
-   * the expected structure of an output binding
-   */
-  static decodeOutputCallExpression(node: ts.CallExpression): ts.ElementAccessExpression|null {
-    // `node.expression` === `_outputHelper(_t1["outputField"]).subscribe` or `_t1.addEventListener`
-    if (!ts.isPropertyAccessExpression(node.expression) ||
-        node.expression.name.text === 'addEventListener') {
-      // `addEventListener` outputs do not have an `ElementAccessExpression` for the output field.
-      return null;
-    }
-
-    if (!ts.isCallExpression(node.expression.expression)) {
-      return null;
-    }
-
-    // `node.expression.expression` === `_outputHelper(_t1["outputField"])`
-    if (node.expression.expression.arguments.length === 0) {
-      return null;
-    }
-
-    const [outputFieldAccess] = node.expression.expression.arguments;
-    if (!ts.isElementAccessExpression(outputFieldAccess)) {
-      return null;
-    }
-    return outputFieldAccess;
   }
 }
 
@@ -940,11 +1040,11 @@ class TcbUnclaimedOutputsOp extends TcbOp {
     super();
   }
 
-  get optional() {
+  override get optional() {
     return false;
   }
 
-  execute(): null {
+  override execute(): null {
     let elId: ts.Expression|null = null;
 
     // TODO(alxhub): this could be more efficient.
@@ -952,6 +1052,14 @@ class TcbUnclaimedOutputsOp extends TcbOp {
       if (this.claimedOutputs.has(output.name)) {
         // Skip this event handler as it was claimed by a directive.
         continue;
+      }
+
+      if (this.tcb.env.config.checkTypeOfOutputEvents && output.name.endsWith('Change')) {
+        const inputName = output.name.slice(0, -6);
+        if (isSplitTwoWayBinding(inputName, output, this.element.inputs, this.tcb)) {
+          // Skip this event handler as the error was already handled.
+          continue;
+        }
       }
 
       if (output.type === ParsedEventType.Animation) {
@@ -973,8 +1081,10 @@ class TcbUnclaimedOutputsOp extends TcbOp {
         if (elId === null) {
           elId = this.scope.resolve(this.element);
         }
+        const propertyAccess = ts.createPropertyAccess(elId, 'addEventListener');
+        addParseSpanInfo(propertyAccess, output.keySpan);
         const call = ts.createCall(
-            /* expression */ ts.createPropertyAccess(elId, 'addEventListener'),
+            /* expression */ propertyAccess,
             /* typeArguments */ undefined,
             /* arguments */[ts.createStringLiteral(output.name), handler]);
         addParseSpanInfo(call, output.sourceSpan);
@@ -1006,9 +1116,9 @@ class TcbComponentContextCompletionOp extends TcbOp {
     super();
   }
 
-  readonly optional = false;
+  override readonly optional = false;
 
-  execute(): null {
+  override execute(): null {
     const ctx = ts.createIdentifier('ctx');
     const ctxDot = ts.createPropertyAccess(ctx, '');
     markIgnoreDiagnostics(ctxDot);
@@ -1408,8 +1518,27 @@ class Scope {
 
     const dirMap = new Map<TypeCheckableDirectiveMeta, number>();
     for (const dir of directives) {
-      const directiveOp = dir.isGeneric ? new TcbDirectiveCtorOp(this.tcb, this, node, dir) :
-                                          new TcbDirectiveTypeOp(this.tcb, this, node, dir);
+      let directiveOp: TcbOp;
+      const host = this.tcb.env.reflector;
+      const dirRef = dir.ref as Reference<ClassDeclaration<ts.ClassDeclaration>>;
+
+      if (!dir.isGeneric) {
+        // The most common case is that when a directive is not generic, we use the normal
+        // `TcbNonDirectiveTypeOp`.
+        directiveOp = new TcbNonGenericDirectiveTypeOp(this.tcb, this, node, dir);
+      } else if (
+          !requiresInlineTypeCtor(dirRef.node, host) ||
+          this.tcb.env.config.useInlineTypeConstructors) {
+        // For generic directives, we use a type constructor to infer types. If a directive requires
+        // an inline type constructor, then inlining must be available to use the
+        // `TcbDirectiveCtorOp`. If not we, we fallback to using `any` – see below.
+        directiveOp = new TcbDirectiveCtorOp(this.tcb, this, node, dir);
+      } else {
+        // If inlining is not available, then we give up on infering the generic params, and use
+        // `any` type for the directive's generic parameters.
+        directiveOp = new TcbGenericDirectiveTypeWithAnyParamsOp(this.tcb, this, node, dir);
+      }
+
       const dirIndex = this.opQueue.push(directiveOp) - 1;
       dirMap.set(dir, dirIndex);
 
@@ -1514,27 +1643,13 @@ interface TcbBoundInput {
 }
 
 /**
- * Create the `ctx` parameter to the top-level TCB function.
- *
- * This is a parameter with a type equivalent to the component type, with all generic type
- * parameters listed (without their generic bounds).
+ * Create the `ctx` parameter to the top-level TCB function, with the given generic type arguments.
  */
 function tcbCtxParam(
     node: ClassDeclaration<ts.ClassDeclaration>, name: ts.EntityName,
-    useGenericType: boolean): ts.ParameterDeclaration {
-  let typeArguments: ts.TypeNode[]|undefined = undefined;
-  // Check if the component is generic, and pass generic type parameters if so.
-  if (node.typeParameters !== undefined) {
-    if (useGenericType) {
-      typeArguments =
-          node.typeParameters.map(param => ts.createTypeReferenceNode(param.name, undefined));
-    } else {
-      typeArguments =
-          node.typeParameters.map(() => ts.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword));
-    }
-  }
-  const type = ts.createTypeReferenceNode(name, typeArguments);
-  return ts.createParameter(
+    typeArguments: ts.TypeNode[]|undefined): ts.ParameterDeclaration {
+  const type = ts.factory.createTypeReferenceNode(name, typeArguments);
+  return ts.factory.createParameterDeclaration(
       /* decorators */ undefined,
       /* modifiers */ undefined,
       /* dotDotDotToken */ undefined,
@@ -1589,15 +1704,15 @@ class TcbExpressionTranslator {
     } else if (ast instanceof ImplicitReceiver) {
       // AST instances representing variables and references look very similar to property reads
       // or method calls from the component context: both have the shape
-      // PropertyRead(ImplicitReceiver, 'propName') or MethodCall(ImplicitReceiver, 'methodName').
+      // PropertyRead(ImplicitReceiver, 'propName') or Call(ImplicitReceiver, 'methodName').
       //
-      // `translate` will first try to `resolve` the outer PropertyRead/MethodCall. If this works,
+      // `translate` will first try to `resolve` the outer PropertyRead/Call. If this works,
       // it's because the `BoundTarget` found an expression target for the whole expression, and
       // therefore `translate` will never attempt to `resolve` the ImplicitReceiver of that
-      // PropertyRead/MethodCall.
+      // PropertyRead/Call.
       //
       // Therefore if `resolve` is called on an `ImplicitReceiver`, it's because no outer
-      // PropertyRead/MethodCall resolved to a variable or reference, and therefore this is a
+      // PropertyRead/Call resolved to a variable or reference, and therefore this is a
       // property read or method call on the component context itself.
       return ts.createIdentifier('ctx');
     } else if (ast instanceof BindingPipe) {
@@ -1610,23 +1725,32 @@ class TcbExpressionTranslator {
 
         // Use an 'any' value to at least allow the rest of the expression to be checked.
         pipe = NULL_AS_ANY;
-      } else if (this.tcb.env.config.checkTypeOfPipes) {
+      } else {
         // Use a variable declared as the pipe's type.
         pipe = this.tcb.env.pipeInst(pipeRef);
-      } else {
-        // Use an 'any' value when not checking the type of the pipe.
-        pipe = NULL_AS_ANY;
       }
       const args = ast.args.map(arg => this.translate(arg));
-      const result = tsCallMethod(pipe, 'transform', [expr, ...args]);
+      let methodAccess: ts.Expression =
+          ts.factory.createPropertyAccessExpression(pipe, 'transform');
+      addParseSpanInfo(methodAccess, ast.nameSpan);
+      if (!this.tcb.env.config.checkTypeOfPipes) {
+        methodAccess = ts.factory.createAsExpression(
+            methodAccess, ts.factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword));
+      }
+
+      const result = ts.createCall(
+          /* expression */ methodAccess,
+          /* typeArguments */ undefined,
+          /* argumentsArray */[expr, ...args]);
       addParseSpanInfo(result, ast.sourceSpan);
       return result;
     } else if (
-        ast instanceof MethodCall && ast.receiver instanceof ImplicitReceiver &&
-        !(ast.receiver instanceof ThisReceiver)) {
+        ast instanceof Call &&
+        (ast.receiver instanceof PropertyRead || ast.receiver instanceof SafePropertyRead) &&
+        !(ast.receiver.receiver instanceof ThisReceiver)) {
       // Resolve the special `$any(expr)` syntax to insert a cast of the argument to type `any`.
       // `$any(expr)` -> `expr as any`
-      if (ast.name === '$any' && ast.args.length === 1) {
+      if (ast.receiver.name === '$any' && ast.args.length === 1) {
         const expr = this.translate(ast.args[0]);
         const exprAsAny =
             ts.createAsExpression(expr, ts.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword));
@@ -1645,7 +1769,7 @@ class TcbExpressionTranslator {
       }
 
       const method = wrapForDiagnostics(receiver);
-      addParseSpanInfo(method, ast.nameSpan);
+      addParseSpanInfo(method, ast.receiver.nameSpan);
       const args = ast.args.map(arg => this.translate(arg));
       const node = ts.createCall(method, undefined, args);
       addParseSpanInfo(node, ast.sourceSpan);
@@ -1724,11 +1848,6 @@ function getBoundInputs(
   const processAttribute = (attr: TmplAstBoundAttribute|TmplAstTextAttribute) => {
     // Skip non-property bindings.
     if (attr instanceof TmplAstBoundAttribute && attr.type !== BindingType.Property) {
-      return;
-    }
-
-    // Skip text attributes if configured to do so.
-    if (!tcb.env.config.checkTypeOfAttributes && attr instanceof TmplAstTextAttribute) {
       return;
     }
 
@@ -1852,6 +1971,7 @@ function tcbCreateEventHandler(
       /* name */ EVENT_PARAMETER,
       /* questionToken */ undefined,
       /* type */ eventParamType);
+  addExpressionIdentifier(eventParam, ExpressionIdentifier.EVENT_PARAMETER);
 
   return ts.createFunctionExpression(
       /* modifier */ undefined,
@@ -1873,8 +1993,33 @@ function tcbEventHandlerExpression(ast: AST, tcb: Context, scope: Scope): ts.Exp
   return translator.translate(ast);
 }
 
+function isSplitTwoWayBinding(
+    inputName: string, output: TmplAstBoundEvent, inputs: TmplAstBoundAttribute[], tcb: Context) {
+  const input = inputs.find(input => input.name === inputName);
+  if (input === undefined || input.sourceSpan !== output.sourceSpan) {
+    return false;
+  }
+  // Input consumer should be a directive because it's claimed
+  const inputConsumer = tcb.boundTarget.getConsumerOfBinding(input) as TypeCheckableDirectiveMeta;
+  const outputConsumer = tcb.boundTarget.getConsumerOfBinding(output);
+  if (outputConsumer === null || inputConsumer.ref === undefined ||
+      outputConsumer instanceof TmplAstTemplate) {
+    return false;
+  }
+  if (outputConsumer instanceof TmplAstElement) {
+    tcb.oobRecorder.splitTwoWayBinding(
+        tcb.id, input, output, inputConsumer.ref.node, outputConsumer);
+    return true;
+  } else if (outputConsumer.ref !== inputConsumer.ref) {
+    tcb.oobRecorder.splitTwoWayBinding(
+        tcb.id, input, output, inputConsumer.ref.node, outputConsumer.ref.node);
+    return true;
+  }
+  return false;
+}
+
 class TcbEventHandlerTranslator extends TcbExpressionTranslator {
-  protected resolve(ast: AST): ts.Expression|null {
+  protected override resolve(ast: AST): ts.Expression|null {
     // Recognize a property read on the implicit receiver corresponding with the event parameter
     // that is available in event bindings. Since this variable is a parameter of the handler
     // function that the converted expression becomes a child of, just create a reference to the

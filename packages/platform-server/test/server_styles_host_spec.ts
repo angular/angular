@@ -11,7 +11,7 @@ import {ServerStylesHost} from '@angular/platform-server/src/styles_host';
 
 
 (function() {
-if (getDOM().supportsDOMEvents()) return;  // NODE only
+if (getDOM().supportsDOMEvents) return;  // NODE only
 
 describe('ServerStylesHost', () => {
   let ssh: ServerStylesHost;

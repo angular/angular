@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import * as ts from 'typescript';
+import ts from 'typescript';
 import {absoluteFrom, getSourceFileOrError} from '../../file_system';
 import {runInEachFileSystem} from '../../file_system/testing';
 import {getDeclaration, makeProgram} from '../../testing';
@@ -151,6 +151,30 @@ runInEachFileSystem(() => {
         const args = host.getConstructorParameters(clazz)!;
         expect(args.length).toBe(1);
         expectParameter(args[0], 'bar', {moduleName: './bar', name: 'Bar'});
+      });
+
+      it('should reflect an argument from a namespace declarations', () => {
+        const {program} = makeProgram([{
+          name: _('/entry.ts'),
+          contents: `
+            export declare class Bar {}
+            declare namespace i1 {
+              export {
+                Bar,
+              }
+            }
+
+            class Foo {
+              constructor(bar: i1.Bar) {}
+            }
+        `
+        }]);
+        const clazz = getDeclaration(program, _('/entry.ts'), 'Foo', isNamedClassDeclaration);
+        const checker = program.getTypeChecker();
+        const host = new TypeScriptReflectionHost(checker);
+        const args = host.getConstructorParameters(clazz)!;
+        expect(args.length).toBe(1);
+        expectParameter(args[0], 'bar', 'i1.Bar');
       });
 
       it('should reflect an argument from a default import', () => {

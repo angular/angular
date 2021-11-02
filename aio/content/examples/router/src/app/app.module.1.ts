@@ -15,7 +15,6 @@ import { HeroListComponent } from './hero-list/hero-list.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 // #docregion first-config
 
-// #docregion appRoutes
 const appRoutes: Routes = [
   { path: 'crisis-center', component: CrisisListComponent },
   { path: 'heroes', component: HeroListComponent },
@@ -27,7 +26,6 @@ const appRoutes: Routes = [
 // #enddocregion wildcard
 // #docregion first-config
 ];
-// #enddocregion appRoutes
 
 @NgModule({
   imports: [

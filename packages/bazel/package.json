@@ -4,35 +4,39 @@
   "description": "Angular - bazel build rules",
   "author": "angular",
   "license": "MIT",
+  "engines": {
+    "node": "^12.20.0 || ^14.15.0 || >=16.10.0"
+  },
   "bin": {
     "api-extractor": "./src/api-extractor/index.js",
     "ngc-wrapped": "./src/ngc-wrapped/index.js",
     "packager": "./src/ng_package/packager.js",
-    "xi18n": "./src/ngc-wrapped/extract_i18n.js",
-    "modify_tsconfig": "./src/modify_tsconfig.js"
+    "xi18n": "./src/ngc-wrapped/extract_i18n.js"
   },
   "typings": "./src/ngc-wrapped/index.d.ts",
   "bazelBin": {
     "ngc-wrapped": {
       "additionalAttributes": {
-        "configuration_env_vars": "[\"angular_ivy_enabled\"]"
+        "configuration_env_vars": "[\"angular_ivy_enabled\"]",
+        "templated_args": "[\"--bazel_patch_module_resolver\"]"
       }
     }
   },
   "dependencies": {
-    "@microsoft/api-extractor": "^7.7.13",
-    "shelljs": "0.8.2",
-    "tsickle": "^0.38.0"
+    "@microsoft/api-extractor": "7.18.16",
+    "shelljs": "0.8.4",
+    "tsickle": "^0.38.0",
+    "tslib": "^2.3.0"
   },
   "peerDependencies": {
     "@angular/compiler-cli": "0.0.0-PLACEHOLDER",
     "@bazel/typescript": ">=1.0.0",
-    "terser": "^4.3.1",
-    "typescript": ">=4.0 <4.1",
-    "rollup": ">=1.20.0",
-    "rollup-plugin-commonjs": ">=9.0.0",
-    "rollup-plugin-node-resolve": ">=4.2.0",
-    "rollup-plugin-sourcemaps": ">=0.4.0"
+    "@rollup/plugin-commonjs": "^21.0.0",
+    "@rollup/plugin-node-resolve": "^13.0.4",
+    "rollup": "^2.56.3",
+    "rollup-plugin-sourcemaps": "^0.6.3",
+    "terser": "^5.9.0",
+    "typescript": ">=4.4.2 <4.5"
   },
   "peerDependenciesMeta": {
     "terser": {
@@ -46,8 +50,5 @@
   },
   "ng-update": {
     "packageGroup": "NG_UPDATE_PACKAGE_GROUP"
-  },
-  "publishConfig": {
-    "registry": "https://wombat-dressing-room.appspot.com"
   }
 }

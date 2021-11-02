@@ -8,5 +8,6 @@ module.exports = function filterPipes() {
     docs.filter(doc =>
       doc.docType !== 'pipe' ||
       doc.pipeOptions.name !== '\'' + words[index] + '\'' ||
-      index > 0 && words[index - 1].trim() === '|');
+      index === 0 ||
+      words[index - 1].trim() === '|');
 };

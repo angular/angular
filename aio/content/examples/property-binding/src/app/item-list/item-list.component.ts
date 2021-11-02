@@ -10,7 +10,7 @@ import { Item } from '../item';
 export class ItemListComponent {
   listItems = ITEMS;
   // #docregion item-input
-  @Input() items: Item[];
+  @Input() items: Item[] = [];
   // #enddocregion item-input
   constructor() { }
 

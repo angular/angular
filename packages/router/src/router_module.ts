@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_BASE_HREF, HashLocationStrategy, Location, LOCATION_INITIALIZED, LocationStrategy, PathLocationStrategy, PlatformLocation, ViewportScroller, ɵgetDOM as getDOM} from '@angular/common';
-import {ANALYZE_FOR_ENTRY_COMPONENTS, APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, ApplicationRef, Compiler, ComponentRef, Inject, Injectable, InjectionToken, Injector, ModuleWithProviders, NgModule, NgModuleFactoryLoader, NgProbeToken, Optional, Provider, SkipSelf, SystemJsNgModuleLoader} from '@angular/core';
+import {APP_BASE_HREF, HashLocationStrategy, Location, LOCATION_INITIALIZED, LocationStrategy, PathLocationStrategy, PlatformLocation, ViewportScroller} from '@angular/common';
+import {ANALYZE_FOR_ENTRY_COMPONENTS, APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, ApplicationRef, Compiler, ComponentRef, Inject, Injectable, InjectionToken, Injector, ModuleWithProviders, NgModule, NgProbeToken, OnDestroy, Optional, Provider, SkipSelf} from '@angular/core';
 import {of, Subject} from 'rxjs';
 
 import {EmptyOutletComponent} from './components/empty_outlet';
@@ -52,14 +52,13 @@ export const ROUTER_PROVIDERS: Provider[] = [
     provide: Router,
     useFactory: setupRouter,
     deps: [
-      UrlSerializer, ChildrenOutletContexts, Location, Injector, NgModuleFactoryLoader, Compiler,
-      ROUTES, ROUTER_CONFIGURATION, [UrlHandlingStrategy, new Optional()],
+      UrlSerializer, ChildrenOutletContexts, Location, Injector, Compiler, ROUTES,
+      ROUTER_CONFIGURATION, [UrlHandlingStrategy, new Optional()],
       [RouteReuseStrategy, new Optional()]
     ]
   },
   ChildrenOutletContexts,
   {provide: ActivatedRoute, useFactory: rootRoute, deps: [Router]},
-  {provide: NgModuleFactoryLoader, useClass: SystemJsNgModuleLoader},
   RouterPreloader,
   NoPreloading,
   PreloadAllModules,
@@ -236,7 +235,7 @@ export function provideRoutes(routes: Routes): any {
  * The following values have been [deprecated](guide/releases#deprecation-practices) since v11,
  * and should not be used for new applications.
  *
- * * 'enabled' - This option is 1:1 replaceable with `enabledNonBlocking`.
+ * * 'enabled' - This option is 1:1 replaceable with `enabledBlocking`.
  *
  * @see `forRoot()`
  *
@@ -360,7 +359,15 @@ export interface ExtraOptions {
    * Defines how the router merges parameters, data, and resolved data from parent to child
    * routes. By default ('emptyOnly'), inherits parent parameters only for
    * path-less or component-less routes.
+   *
    * Set to 'always' to enable unconditional inheritance of parent parameters.
+   *
+   * Note that when dealing with matrix parameters, "parent" refers to the parent `Route`
+   * config which does not necessarily mean the "URL segment to the left". When the `Route` `path`
+   * contains multiple segments, the matrix parameters must appear on the last segment. For example,
+   * matrix parameters for `{path: 'a/b', component: MyComp}` should appear as `a/b;foo=bar` and not
+   * `a;foo=bar/b`.
+   *
    */
   paramsInheritanceStrategy?: 'emptyOnly'|'always';
 
@@ -403,7 +410,9 @@ export interface ExtraOptions {
    * ];
    * ```
    *
-   * From the `ContainerComponent`, this will not work:
+   * From the `ContainerComponent`, you should be able to navigate to `AComponent` using
+   * the following `routerLink`, but it will not work if `relativeLinkResolution` is set
+   * to `'legacy'`:
    *
    * `<a [routerLink]="['./a']">Link to A</a>`
    *
@@ -411,20 +420,43 @@ export interface ExtraOptions {
    *
    * `<a [routerLink]="['../a']">Link to A</a>`
    *
-   * In other words, you're required to use `../` rather than `./`.
+   * In other words, you're required to use `../` rather than `./` when the relative link
+   * resolution is set to `'legacy'`.
    *
    * The default in v11 is `corrected`.
    */
   relativeLinkResolution?: 'legacy'|'corrected';
+
+  /**
+   * Configures how the Router attempts to restore state when a navigation is cancelled.
+   *
+   * 'replace' - Always uses `location.replaceState` to set the browser state to the state of the
+   * router before the navigation started. This means that if the URL of the browser is updated
+   * _before_ the navigation is canceled, the Router will simply replace the item in history rather
+   * than trying to restore to the previous location in the session history. This happens most
+   * frequently with `urlUpdateStrategy: 'eager'` and navigations with the browser back/forward
+   * buttons.
+   *
+   * 'computed' - Will attempt to return to the same index in the session history that corresponds
+   * to the Angular route when the navigation gets cancelled. For example, if the browser back
+   * button is clicked and the navigation is cancelled, the Router will trigger a forward navigation
+   * and vice versa.
+   *
+   * Note: the 'computed' option is incompatible with any `UrlHandlingStrategy` which only
+   * handles a portion of the URL because the history restoration navigates to the previous place in
+   * the browser history rather than simply resetting a portion of the URL.
+   *
+   * The default value is `replace` when not set.
+   */
+  canceledNavigationResolution?: 'replace'|'computed';
 }
 
 export function setupRouter(
     urlSerializer: UrlSerializer, contexts: ChildrenOutletContexts, location: Location,
-    injector: Injector, loader: NgModuleFactoryLoader, compiler: Compiler, config: Route[][],
-    opts: ExtraOptions = {}, urlHandlingStrategy?: UrlHandlingStrategy,
-    routeReuseStrategy?: RouteReuseStrategy) {
-  const router = new Router(
-      null, urlSerializer, contexts, location, injector, loader, compiler, flatten(config));
+    injector: Injector, compiler: Compiler, config: Route[][], opts: ExtraOptions = {},
+    urlHandlingStrategy?: UrlHandlingStrategy, routeReuseStrategy?: RouteReuseStrategy) {
+  const router =
+      new Router(null, urlSerializer, contexts, location, injector, compiler, flatten(config));
 
   if (urlHandlingStrategy) {
     router.urlHandlingStrategy = urlHandlingStrategy;
@@ -437,12 +469,13 @@ export function setupRouter(
   assignExtraOptionsToRouter(opts, router);
 
   if (opts.enableTracing) {
-    const dom = getDOM();
     router.events.subscribe((e: Event) => {
-      dom.logGroup(`Router Event: ${(<any>e.constructor).name}`);
-      dom.log(e.toString());
-      dom.log(e);
-      dom.logGroupEnd();
+      // tslint:disable:no-console
+      console.group?.(`Router Event: ${(<any>e.constructor).name}`);
+      console.log(e.toString());
+      console.log(e);
+      console.groupEnd?.();
+      // tslint:enable:no-console
     });
   }
 
@@ -473,6 +506,10 @@ export function assignExtraOptionsToRouter(opts: ExtraOptions, router: Router): 
   if (opts.urlUpdateStrategy) {
     router.urlUpdateStrategy = opts.urlUpdateStrategy;
   }
+
+  if (opts.canceledNavigationResolution) {
+    router.canceledNavigationResolution = opts.canceledNavigationResolution;
+  }
 }
 
 export function rootRoute(router: Router): ActivatedRoute {
@@ -491,8 +528,9 @@ export function rootRoute(router: Router): ActivatedRoute {
  * pauses. It waits for the hook to be resolved. We then resolve it only in a bootstrap listener.
  */
 @Injectable()
-export class RouterInitializer {
-  private initNavigation: boolean = false;
+export class RouterInitializer implements OnDestroy {
+  private initNavigation = false;
+  private destroyed = false;
   private resultOfPreactivationDone = new Subject<void>();
 
   constructor(private injector: Injector) {}
@@ -500,6 +538,11 @@ export class RouterInitializer {
   appInitializer(): Promise<any> {
     const p: Promise<any> = this.injector.get(LOCATION_INITIALIZED, Promise.resolve(null));
     return p.then(() => {
+      // If the injector was destroyed, the DI lookups below will fail.
+      if (this.destroyed) {
+        return Promise.resolve(true);
+      }
+
       let resolve: Function = null!;
       const res = new Promise(r => resolve = r);
       const router = this.injector.get(Router);
@@ -554,6 +597,10 @@ export class RouterInitializer {
     this.resultOfPreactivationDone.next(null!);
     this.resultOfPreactivationDone.complete();
   }
+
+  ngOnDestroy() {
+    this.destroyed = true;
+  }
 }
 
 export function getAppInitializer(r: RouterInitializer) {
@@ -573,7 +620,7 @@ export function getBootstrapListener(r: RouterInitializer) {
 export const ROUTER_INITIALIZER =
     new InjectionToken<(compRef: ComponentRef<any>) => void>('Router Initializer');
 
-export function provideRouterInitializer() {
+export function provideRouterInitializer(): ReadonlyArray<Provider> {
   return [
     RouterInitializer,
     {

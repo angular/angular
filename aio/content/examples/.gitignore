@@ -28,7 +28,6 @@
 **/tsconfig.json
 **/tsconfig.app.json
 **/tsconfig.spec.json
-**/tslint.json
 **/karma-test-shim.js
 **/browser-test-shim.js
 **/node_modules
@@ -56,6 +55,7 @@ dist/
 !systemjs.config.*.js
 !karma-test-shim.*.js
 !copy-dist-files.js
+!i18n/angular.json
 
 # AngularJS files
 !**/*.ajs.js
@@ -98,3 +98,10 @@ upgrade-phonecat-3-final/rollup-config.js
 
 # schematics
 !schematics-for-libraries/projects/my-lib/package.json
+
+#angular-compiler-options
+!angular-compiler-options/tsconfig.json
+!angular-compiler-options/tsconfig.app.json
+
+# deprecated-example
+!deprecation-guide/angular.package.json

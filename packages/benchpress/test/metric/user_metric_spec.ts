@@ -7,7 +7,6 @@
  */
 
 import {Injector, StaticProvider} from '@angular/core';
-import {AsyncTestCompleter, describe, expect, inject, it} from '@angular/core/testing/src/testing_internal';
 
 import {Options, PerfLogEvent, PerfLogFeatures, UserMetric, WebDriverAdapter} from '../../index';
 
@@ -42,23 +41,22 @@ describe('user metric', () => {
   });
 
   describe('endMeasure', () => {
-    it('should stop measuring when all properties have numeric values',
-       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         const metric = createMetric(
-             [[]], new PerfLogFeatures(),
-             {userMetrics: {'loadTime': 'time to load', 'content': 'time to see content'}});
-         metric.beginMeasure().then(() => metric.endMeasure(true)).then(values => {
-           expect(values['loadTime']).toBe(25);
-           expect(values['content']).toBe(250);
-           async.done();
-         });
+    it('should stop measuring when all properties have numeric values', done => {
+      const metric = createMetric(
+          [[]], new PerfLogFeatures(),
+          {userMetrics: {'loadTime': 'time to load', 'content': 'time to see content'}});
+      metric.beginMeasure().then(() => metric.endMeasure(true)).then(values => {
+        expect(values['loadTime']).toBe(25);
+        expect(values['content']).toBe(250);
+        done();
+      });
 
-         wdAdapter.data['loadTime'] = 25;
-         // Wait before setting 2nd property.
-         setTimeout(() => {
-           wdAdapter.data['content'] = 250;
-         }, 50);
-       }), 600);
+      wdAdapter.data['loadTime'] = 25;
+      // Wait before setting 2nd property.
+      setTimeout(() => {
+        wdAdapter.data['content'] = 250;
+      }, 50);
+    }, 600);
   });
 });
 })();
@@ -66,7 +64,7 @@ describe('user metric', () => {
 class MockDriverAdapter extends WebDriverAdapter {
   data: any = {};
 
-  executeScript(script: string): any {
+  override executeScript(script: string): any {
     // Just handles `return window.propName` ignores `delete window.propName`.
     if (script.indexOf('return window.') == 0) {
       const metricName = script.substring('return window.'.length);

@@ -18,9 +18,6 @@ jasmine_node_test(
         "//packages/compiler-cli/test/compliance/test_cases",
     ],
     shard_count = 2,
-    tags = [
-        "ivy-only",
-    ],
     deps = [
         ":test_lib",
     ],

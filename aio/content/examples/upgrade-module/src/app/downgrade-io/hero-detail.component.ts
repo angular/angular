@@ -11,7 +11,7 @@ import { Hero } from '../hero';
   `
 })
 export class HeroDetailComponent {
-  @Input() hero: Hero;
+  @Input() hero!: Hero;
   @Output() deleted = new EventEmitter<Hero>();
   onDelete() {
     this.deleted.emit(this.hero);

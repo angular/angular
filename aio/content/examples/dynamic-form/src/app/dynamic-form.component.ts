@@ -12,14 +12,14 @@ import { QuestionControlService } from './question-control.service';
 })
 export class DynamicFormComponent implements OnInit {
 
-  @Input() questions: QuestionBase<string>[] = [];
-  form: FormGroup;
+  @Input() questions: QuestionBase<string>[] | null = [];
+  form!: FormGroup;
   payLoad = '';
 
-  constructor(private qcs: QuestionControlService) {  }
+  constructor(private qcs: QuestionControlService) {}
 
   ngOnInit() {
-    this.form = this.qcs.toFormGroup(this.questions);
+    this.form = this.qcs.toFormGroup(this.questions as QuestionBase<string>[]);
   }
 
   onSubmit() {

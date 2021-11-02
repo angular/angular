@@ -27,6 +27,16 @@ describe('createUrlTree', () => {
       expect(serializer.serialize(t2)).toEqual('/a/c/c2?m=v1&m=v2');
     });
 
+    it('should support parameter with empty arrays as values', () => {
+      const p1 = serializer.parse('/a/c');
+      const t1 = create(p1.root.children[PRIMARY_OUTLET], 1, p1, ['c2'], {m: []});
+      expect(serializer.serialize(t1)).toEqual('/a/c/c2');
+
+      const p2 = serializer.parse('/a/c');
+      const t2 = create(p2.root.children[PRIMARY_OUTLET], 1, p2, ['c2'], {m: [], n: 1});
+      expect(serializer.serialize(t2)).toEqual('/a/c/c2?n=1');
+    });
+
     it('should set query params', () => {
       const p = serializer.parse('/');
       const t = createRoot(p, [], {a: 'hey'});
@@ -267,6 +277,18 @@ describe('createUrlTree', () => {
     expect(serializer.serialize(t)).toEqual('/a/b;aa=22;bb=33');
   });
 
+  it('should stringify matrix parameters', () => {
+    const pr = serializer.parse('/r');
+    const relative = create(pr.root.children[PRIMARY_OUTLET], 0, pr, [{pp: 22}]);
+    const segmentR = relative.root.children[PRIMARY_OUTLET].segments[0];
+    expect(segmentR.parameterMap.get('pp')).toEqual('22');
+
+    const pa = serializer.parse('/a');
+    const absolute = createRoot(pa, ['/b', {pp: 33}]);
+    const segmentA = absolute.root.children[PRIMARY_OUTLET].segments[0];
+    expect(segmentA.parameterMap.get('pp')).toEqual('33');
+  });
+
   describe('relative navigation', () => {
     it('should work', () => {
       const p = serializer.parse('/a/(c//left:cp)(left:ap)');
@@ -394,7 +416,7 @@ function createRoot(tree: UrlTree, commands: any[], queryParams?: Params, fragme
       new BehaviorSubject(null!), new BehaviorSubject(null!), new BehaviorSubject(null!),
       new BehaviorSubject(null!), new BehaviorSubject(null!), PRIMARY_OUTLET, 'someComponent', s);
   advanceActivatedRoute(a);
-  return createUrlTree(a, tree, commands, queryParams!, fragment!);
+  return createUrlTree(a, tree, commands, queryParams ?? null, fragment ?? null);
 }
 
 function create(
@@ -410,5 +432,5 @@ function create(
       new BehaviorSubject(null!), new BehaviorSubject(null!), new BehaviorSubject(null!),
       new BehaviorSubject(null!), new BehaviorSubject(null!), PRIMARY_OUTLET, 'someComponent', s);
   advanceActivatedRoute(a);
-  return createUrlTree(a, tree, commands, queryParams!, fragment!);
+  return createUrlTree(a, tree, commands, queryParams ?? null, fragment ?? null);
 }

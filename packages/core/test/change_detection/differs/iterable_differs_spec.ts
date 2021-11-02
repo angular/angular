@@ -6,10 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector} from '@angular/core';
-import {IterableDiffers} from '@angular/core/src/change_detection/differs/iterable_differs';
-
-import {SpyIterableDifferFactory} from '../../spies';
+import {Injector, IterableDiffer, IterableDifferFactory, IterableDiffers, NgModule, TrackByFunction} from '@angular/core';
+import {TestBed} from '@angular/core/testing';
 
 {
   describe('IterableDiffers', function() {
@@ -18,9 +16,10 @@ import {SpyIterableDifferFactory} from '../../spies';
     let factory3: any;
 
     beforeEach(() => {
-      factory1 = new SpyIterableDifferFactory();
-      factory2 = new SpyIterableDifferFactory();
-      factory3 = new SpyIterableDifferFactory();
+      const getFactory = () => jasmine.createSpyObj('IterableDifferFactory', ['supports']);
+      factory1 = getFactory();
+      factory2 = getFactory();
+      factory3 = getFactory();
     });
 
     it('should throw when no suitable implementation found', () => {
@@ -30,17 +29,17 @@ import {SpyIterableDifferFactory} from '../../spies';
     });
 
     it('should return the first suitable implementation', () => {
-      factory1.spy('supports').and.returnValue(false);
-      factory2.spy('supports').and.returnValue(true);
-      factory3.spy('supports').and.returnValue(true);
+      factory1.supports.and.returnValue(false);
+      factory2.supports.and.returnValue(true);
+      factory3.supports.and.returnValue(true);
 
       const differs = IterableDiffers.create(<any>[factory1, factory2, factory3]);
       expect(differs.find('some object')).toBe(factory2);
     });
 
     it('should copy over differs from the parent repo', () => {
-      factory1.spy('supports').and.returnValue(true);
-      factory2.spy('supports').and.returnValue(false);
+      factory1.supports.and.returnValue(true);
+      factory2.supports.and.returnValue(false);
 
       const parent = IterableDiffers.create(<any>[factory1]);
       const child = IterableDiffers.create(<any>[factory2], parent);
@@ -49,13 +48,6 @@ import {SpyIterableDifferFactory} from '../../spies';
     });
 
     describe('.extend()', () => {
-      it('should throw if calling extend when creating root injector', () => {
-        const injector = Injector.create([IterableDiffers.extend([])]);
-
-        expect(() => injector.get(IterableDiffers))
-            .toThrowError(/Cannot extend IterableDiffers without a parent injector/);
-      });
-
       it('should extend di-inherited differs', () => {
         const parent = new IterableDiffers([factory1]);
         const injector = Injector.create([{provide: IterableDiffers, useValue: parent}]);
@@ -65,6 +57,32 @@ import {SpyIterableDifferFactory} from '../../spies';
         expect(childInjector.get<IterableDiffers>(IterableDiffers).factories).toEqual([
           factory2, factory1
         ]);
+      });
+
+      it('should support .extend in root NgModule', () => {
+        const DIFFER: IterableDiffer<any> = {} as any;
+        const log: string[] = [];
+        class MyIterableDifferFactory implements IterableDifferFactory {
+          supports(objects: any): boolean {
+            log.push('supports', objects);
+            return true;
+          }
+          create<V>(trackByFn?: TrackByFunction<V>): IterableDiffer<V> {
+            log.push('create');
+            return DIFFER;
+          }
+        }
+
+
+        @NgModule({providers: [IterableDiffers.extend([new MyIterableDifferFactory()])]})
+        class MyModule {
+        }
+
+        TestBed.configureTestingModule({imports: [MyModule]});
+        const differs = TestBed.inject(IterableDiffers);
+        const differ = differs.find('VALUE').create(null!);
+        expect(differ).toEqual(DIFFER);
+        expect(log).toEqual(['supports', 'VALUE', 'create']);
       });
     });
   });

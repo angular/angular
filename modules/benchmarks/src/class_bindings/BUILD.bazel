@@ -1,18 +1,12 @@
+load("@npm//@angular/dev-infra-private/bazel/benchmark/component_benchmark:component_benchmark.bzl", "component_benchmark")
+
 package(default_visibility = ["//modules/benchmarks:__subpackages__"])
-
-load("@io_bazel_rules_sass//sass:sass.bzl", "sass_binary")
-load("//dev-infra/benchmark/component_benchmark:component_benchmark.bzl", "component_benchmark")
-
-sass_binary(
-    name = "class_bindings_styles",
-    src = ":styles.scss",
-)
 
 component_benchmark(
     name = "benchmark",
     driver = ":class_bindings.perf-spec.ts",
     driver_deps = [
-        "//dev-infra/benchmark/driver-utilities",
+        "@npm//@angular/dev-infra-private/bazel/benchmark/driver-utilities",
         "@npm//@types/jasmine",
         "@npm//protractor",
     ],
@@ -28,5 +22,5 @@ component_benchmark(
         exclude = ["**/*.perf-spec.ts"],
     ),
     prefix = "",
-    styles = [":class_bindings_styles"],
+    styles = ["styles.css"],
 )

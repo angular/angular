@@ -1,0 +1,11 @@
+{
+  "ban-reviewed-conversions": [
+    "src/app/custom-elements/code/code.component.ts",
+    "src/app/custom-elements/code/pretty-printer.service.ts",
+    "src/app/documents/document.service.ts",
+    "src/app/shared/security.ts"
+  ],
+  "ban-worker-calls": [
+    "src/app/search/search.service.ts"
+  ]
+}

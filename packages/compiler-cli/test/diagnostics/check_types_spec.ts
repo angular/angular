@@ -10,7 +10,7 @@ import * as ng from '@angular/compiler-cli';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {expectNoDiagnostics, setup, TestSupport} from '../test_support';
 

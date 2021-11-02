@@ -6,5 +6,5 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export {NgCompiler} from './src/compiler';
+export * from './src/compiler';
 export {NgCompilerHost} from './src/host';

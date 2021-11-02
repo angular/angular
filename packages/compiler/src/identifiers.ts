@@ -66,8 +66,6 @@ export class Identifiers {
   static directiveInject: o.ExternalReference = {name: 'ɵɵdirectiveInject', moduleName: CORE};
   static INJECTOR: o.ExternalReference = {name: 'INJECTOR', moduleName: CORE};
   static Injector: o.ExternalReference = {name: 'Injector', moduleName: CORE};
-  static ɵɵdefineInjectable: o.ExternalReference = {name: 'ɵɵdefineInjectable', moduleName: CORE};
-  static InjectableDef: o.ExternalReference = {name: 'ɵɵInjectableDef', moduleName: CORE};
   static ViewEncapsulation: o.ExternalReference = {
     name: 'ViewEncapsulation',
     moduleName: CORE,
@@ -110,7 +108,6 @@ export class Identifiers {
   static pipeDef: o.ExternalReference = {name: 'ɵpid', moduleName: CORE};
   static nodeValue: o.ExternalReference = {name: 'ɵnov', moduleName: CORE};
   static ngContentDef: o.ExternalReference = {name: 'ɵncd', moduleName: CORE};
-  static unwrapValue: o.ExternalReference = {name: 'ɵunv', moduleName: CORE};
   static createRendererType2: o.ExternalReference = {name: 'ɵcrt', moduleName: CORE};
   // type only
   static RendererType2: o.ExternalReference = {
@@ -124,7 +121,6 @@ export class Identifiers {
     moduleName: CORE,
   };
   static createComponentFactory: o.ExternalReference = {name: 'ɵccf', moduleName: CORE};
-  static setClassMetadata: o.ExternalReference = {name: 'ɵsetClassMetadata', moduleName: CORE};
 }
 
 export function createTokenForReference(reference: any): CompileTokenMetadata {

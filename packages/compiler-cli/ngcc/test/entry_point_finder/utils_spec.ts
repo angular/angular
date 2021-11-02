@@ -48,6 +48,24 @@ runInEachFileSystem(() => {
       ]);
     });
 
+    it('should find base-paths that start with a wildcard prefix', () => {
+      const projectDirectory = _('/path/to/project');
+      const fs = getFileSystem();
+      fs.ensureDir(fs.resolve(projectDirectory, 'dist'));
+      fs.ensureDir(fs.resolve(projectDirectory, 'dist-a'));
+      fs.ensureDir(fs.resolve(projectDirectory, 'dist-b'));
+
+      const sourceDirectory = _('/path/to/project/node_modules');
+      const pathMappings = {baseUrl: projectDirectory, paths: {'@dist*': ['dist*']}};
+      const basePaths = getBasePaths(logger, sourceDirectory, pathMappings);
+      expect(basePaths).toEqual([
+        sourceDirectory,
+        fs.resolve(projectDirectory, 'dist'),
+        fs.resolve(projectDirectory, 'dist-a'),
+        fs.resolve(projectDirectory, 'dist-b'),
+      ]);
+    });
+
     it('should not be confused by folders that have the same starting string', () => {
       const projectDirectory = _('/path/to/project');
       const fs = getFileSystem();

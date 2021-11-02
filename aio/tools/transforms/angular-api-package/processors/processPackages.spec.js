@@ -163,6 +163,47 @@ describe('processPackages processor', () => {
     ]);
   });
 
+  it('should compute whether the entry point has public exports', () => {
+    const docs = [
+      {
+        fileInfo: { filePath: 'some/package-1/index' },
+        docType: 'module',
+        id: 'package-1',
+        exports: [
+          { docType: 'class', id: 'class-1' },
+        ]
+      },
+      {
+        fileInfo: { filePath: 'some/package-1/sub-1index' },
+        docType: 'module',
+        id: 'package-1/sub-1',
+        exports: [],
+      },
+      {
+        fileInfo: { filePath: 'some/package-2/index' },
+        docType: 'module',
+        id: 'package-2',
+        exports: [],
+      },
+      {
+        fileInfo: { filePath: 'some/package-1/sub-1index' },
+        docType: 'module',
+        id: 'package-1/sub-1',
+        exports: [
+          { docType: 'const', id: 'const-2' },
+          { docType: 'enum', id: 'enum-3' },
+        ],
+      },
+    ];
+    const processor = processorFactory({ packageContentFiles: {} });
+    processor.$process(docs);
+
+    expect(docs[0].hasPublicExports).toBeTrue();
+    expect(docs[1].hasPublicExports).toBeFalse();
+    expect(docs[2].hasPublicExports).toBeFalse();
+    expect(docs[3].hasPublicExports).toBeTrue();
+  });
+
   it('should compute the deprecated status of each entry point', () => {
     const docs = [
       {
@@ -199,6 +240,12 @@ describe('processPackages processor', () => {
           { docType: 'class', id: 'class-6' },
         ]
       },
+      {
+        fileInfo: { filePath: 'some/package-4/index' },
+        docType: 'module',
+        id: 'package-4',
+        exports: []
+      },
     ];
     const processor = processorFactory({ packageContentFiles: {} });
     processor.$process(docs);
@@ -207,6 +254,7 @@ describe('processPackages processor', () => {
     expect(docs[1].deprecated).toBeTruthy();
     expect(docs[2].deprecated).toBeUndefined();
     expect(docs[3].deprecated).toBeUndefined();
+    expect(docs[4].deprecated).toBeUndefined();
   });
 
   it('should compute the deprecated status of packages', () => {

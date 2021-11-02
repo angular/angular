@@ -16,7 +16,7 @@ In the following example, the template statement `deleteHero()` appears in quote
 
 When the user clicks the **Delete hero** button, Angular calls the `deleteHero()` method in the component class.
 
-You can use template statements with elements, components, or directives in response to events.
+Use template statements with elements, components, or directives in response to events.
 
 <div class="alert is-helpful">
 
@@ -50,7 +50,7 @@ For example, `deleteHero()` of `(click)="deleteHero()"` is a method of the compo
 
 The statement context may also refer to properties of the template's own context.
 In the following example, the component's event handling method, `onSave()` takes the template's own `$event` object as an argument.
-On the next two lines, the `deleteHero()` method takes a [template input variable](guide/built-in-directives#template-input-variable), `hero`, and `onSubmit()` takes a [template reference variable](guide/template-reference-variables), `#heroForm`.
+On the next two lines, the `deleteHero()` method takes a [template input variable](guide/structural-directives#shorthand), `hero`, and `onSubmit()` takes a [template reference variable](guide/template-reference-variables), `#heroForm`.
 
 <code-example path="template-syntax/src/app/app.component.html" region="context-var-statement" header="src/app/app.component.html"></code-example>
 
@@ -63,7 +63,7 @@ In the preceding `deleteHero(hero)`, the `hero` is the template input variable, 
 
 * **Conciseness**
 
-  Keep template statements minimal by using method calls or basic property assignments.
+  Use method calls or basic property assignments to keep template statements minimal.
 
 * **Work within the context**
 

@@ -1,13 +1,13 @@
 import { docRegionEvent } from './simple-creation.3';
 
 describe('simple-creation.3', () => {
-  let triggerMousemove;
-  let mockConsole;
-  let input;
-  let mockDocument;
+  let triggerMousemove: (event: Partial<MouseEvent>) => void;
+  let consoleSpy: jasmine.SpyObj<Console>;
+  let input: HTMLInputElement;
+  let mockDocument: Document;
 
   beforeEach(() => {
-    mockConsole = {log: jasmine.createSpy('log')};
+    consoleSpy = jasmine.createSpyObj<Console>('console', ['log']);
     input = {
       addEventListener: jasmine
         .createSpy('addEventListener')
@@ -17,20 +17,20 @@ describe('simple-creation.3', () => {
           }
         }),
       removeEventListener: jasmine.createSpy('removeEventListener'),
-    };
-    mockDocument = { getElementById: () => input };
+    } as unknown as HTMLInputElement;
+    mockDocument = { getElementById: () => input } as unknown as Document;
   });
 
   it('should log coords when subscribing', () => {
-    docRegionEvent(mockConsole, mockDocument);
+    docRegionEvent(consoleSpy, mockDocument);
 
-    expect(mockConsole.log).not.toHaveBeenCalled();
+    expect(consoleSpy.log).not.toHaveBeenCalled();
 
     triggerMousemove({ clientX: 50, clientY: 50 });
     triggerMousemove({ clientX: 30, clientY: 50 });
     triggerMousemove({ clientX: 50, clientY: 30 });
-    expect(mockConsole.log).toHaveBeenCalledTimes(3);
-    expect(mockConsole.log.calls.allArgs()).toEqual([
+    expect(consoleSpy.log).toHaveBeenCalledTimes(3);
+    expect(consoleSpy.log.calls.allArgs()).toEqual([
       ['Coords: 50 X 50'],
       ['Coords: 30 X 50'],
       ['Coords: 50 X 30']
@@ -38,16 +38,16 @@ describe('simple-creation.3', () => {
   });
 
   it('should call unsubscribe when clientX and clientY are below < 40 ', () => {
-    docRegionEvent(mockConsole, mockDocument);
+    docRegionEvent(consoleSpy, mockDocument);
 
-    expect(mockConsole.log).not.toHaveBeenCalled();
+    expect(consoleSpy.log).not.toHaveBeenCalled();
 
     // Ensure that we have unsubscribed.
     triggerMousemove({ clientX: 30, clientY: 30 });
     expect(input.removeEventListener).toHaveBeenCalledWith('mousemove', triggerMousemove, undefined);
-    mockConsole.log.calls.reset();
+    consoleSpy.log.calls.reset();
 
     triggerMousemove({ clientX: 50, clientY: 50 });
-    expect(mockConsole.log).not.toHaveBeenCalled();
+    expect(consoleSpy.log).not.toHaveBeenCalled();
   });
 });

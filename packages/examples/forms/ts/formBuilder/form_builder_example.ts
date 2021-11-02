@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-// #docregion Component, disabled-control
+// #docregion disabled-control
 import {Component, Inject} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 // #enddocregion disabled-control
@@ -42,7 +42,6 @@ export class FormBuilderComp {
         {updateOn: 'change'});
   }
 }
-// #enddocregion
 
 // #docregion disabled-control
 @Component({

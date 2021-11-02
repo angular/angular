@@ -6,8 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AsyncTestCompleter, describe, expect, inject, it} from '@angular/core/testing/src/testing_internal';
-
 import {Injector, Options, WebDriverExtension} from '../index';
 
 (function() {
@@ -28,21 +26,19 @@ function createExtension(ids: any[], caps: any) {
 }
 
 describe('WebDriverExtension.provideFirstSupported', () => {
-  it('should provide the extension that matches the capabilities',
-     inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-       createExtension(['m1', 'm2', 'm3'], {'browser': 'm2'}).then((m) => {
-         expect(m.id).toEqual('m2');
-         async.done();
-       });
-     }));
+  it('should provide the extension that matches the capabilities', done => {
+    createExtension(['m1', 'm2', 'm3'], {'browser': 'm2'}).then((m) => {
+      expect(m.id).toEqual('m2');
+      done();
+    });
+  });
 
-  it('should throw if there is no match',
-     inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-       createExtension(['m1'], {'browser': 'm2'}).catch((err) => {
-         expect(err != null).toBe(true);
-         async.done();
-       });
-     }));
+  it('should throw if there is no match', done => {
+    createExtension(['m1'], {'browser': 'm2'}).catch((err) => {
+      expect(err != null).toBe(true);
+      done();
+    });
+  });
 });
 })();
 
@@ -51,7 +47,7 @@ class MockExtension extends WebDriverExtension {
     super();
   }
 
-  supports(capabilities: {[key: string]: any}): boolean {
+  override supports(capabilities: {[key: string]: any}): boolean {
     return capabilities['browser'] === this.id;
   }
 }

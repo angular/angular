@@ -1,5 +1,5 @@
 load("//tools:defaults.bzl", "ts_devserver", "ts_library")
-load("//dev-infra/benchmark/component_benchmark:benchmark_test.bzl", "benchmark_test")
+load("@npm//@angular/dev-infra-private/bazel/benchmark/component_benchmark:benchmark_test.bzl", "benchmark_test")
 load("//modules/benchmarks:e2e_test.bzl", "e2e_test")
 
 package(default_visibility = ["//modules/benchmarks:__subpackages__"])
@@ -16,7 +16,7 @@ ts_library(
 
 ts_devserver(
     name = "devserver",
-    bootstrap = ["@npm//:node_modules/angular/angular.js"],
+    bootstrap = ["@npm//:node_modules/angular-1.8/angular.js"],
     entry_module = "angular/modules/benchmarks/src/tree/ng1/index",
     port = 4200,
     static_files = ["index.html"],

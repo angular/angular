@@ -63,9 +63,11 @@ describe('Ivy NgModule', () => {
       }
 
       const errorCode = ivyEnabled ? 'NG0200: ' : '';
+      const errorLink = ivyEnabled ? '. Find more at https://angular.io/errors/NG0200' : '';
       expect(() => createInjector(AModule))
           .toThrowError(`${
-              errorCode}Circular dependency in DI detected for AModule. Dependency path: AModule > BModule > AModule`);
+              errorCode}Circular dependency in DI detected for AModule. Dependency path: AModule > BModule > AModule${
+              errorLink}`);
     });
 
     it('merges imports and exports', () => {

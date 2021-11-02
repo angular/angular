@@ -5,9 +5,24 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {AstFactory, BinaryOperator, LeadingComment, ObjectLiteralProperty, SourceMapRange, TemplateLiteral, UnaryOperator, VariableDeclarationType} from './api/ast_factory';
+
+/**
+ * Different optimizers use different annotations on a function or method call to indicate its pure
+ * status.
+ */
+enum PureAnnotation {
+  /**
+   * Closure's annotation for purity is `@pureOrBreakMyCode`, but this needs to be in a semantic
+   * (jsdoc) enabled comment. Thus, the actual comment text for Closure must include the `*` that
+   * turns a `/*` comment into a `/**` comment, as well as surrounding whitespace.
+   */
+  CLOSURE = '* @pureOrBreakMyCode ',
+
+  TERSER = '@__PURE__',
+}
 
 const UNARY_OPERATORS: Record<UnaryOperator, ts.PrefixUnaryOperator> = {
   '+': ts.SyntaxKind.PlusToken,
@@ -32,6 +47,7 @@ const BINARY_OPERATORS: Record<BinaryOperator, ts.BinaryOperator> = {
   '!==': ts.SyntaxKind.ExclamationEqualsEqualsToken,
   '||': ts.SyntaxKind.BarBarToken,
   '+': ts.SyntaxKind.PlusToken,
+  '??': ts.SyntaxKind.QuestionQuestionToken,
 };
 
 const VAR_TYPES: Record<VariableDeclarationType, ts.NodeFlags> = {
@@ -45,6 +61,8 @@ const VAR_TYPES: Record<VariableDeclarationType, ts.NodeFlags> = {
  */
 export class TypeScriptAstFactory implements AstFactory<ts.Statement, ts.Expression> {
   private externalSourceFiles = new Map<string, ts.SourceMapSource>();
+
+  constructor(private annotateForClosureCompiler: boolean) {}
 
   attachComments = attachComments;
 
@@ -68,7 +86,9 @@ export class TypeScriptAstFactory implements AstFactory<ts.Statement, ts.Express
     const call = ts.createCall(callee, undefined, args);
     if (pure) {
       ts.addSyntheticLeadingComment(
-          call, ts.SyntaxKind.MultiLineCommentTrivia, '@__PURE__', /* trailing newline */ false);
+          call, ts.SyntaxKind.MultiLineCommentTrivia,
+          this.annotateForClosureCompiler ? PureAnnotation.CLOSURE : PureAnnotation.TERSER,
+          /* trailing newline */ false);
     }
     return call;
   }

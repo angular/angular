@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as ts from 'typescript';
+import ts from 'typescript';
 
-import {ModuleResolver} from '../../imports';
+import {PerfPhase, PerfRecorder} from '../../perf';
 
 /**
  * A cached graph of imports in the `ts.Program`.
@@ -17,9 +17,9 @@ import {ModuleResolver} from '../../imports';
  * dependencies within the same program are tracked; imports into packages on NPM are not.
  */
 export class ImportGraph {
-  private map = new Map<ts.SourceFile, Set<ts.SourceFile>>();
+  private imports = new Map<ts.SourceFile, Set<ts.SourceFile>>();
 
-  constructor(private resolver: ModuleResolver) {}
+  constructor(private checker: ts.TypeChecker, private perf: PerfRecorder) {}
 
   /**
    * List the direct (not transitive) imports of a given `ts.SourceFile`.
@@ -27,29 +27,48 @@ export class ImportGraph {
    * This operation is cached.
    */
   importsOf(sf: ts.SourceFile): Set<ts.SourceFile> {
-    if (!this.map.has(sf)) {
-      this.map.set(sf, this.scanImports(sf));
+    if (!this.imports.has(sf)) {
+      this.imports.set(sf, this.scanImports(sf));
     }
-    return this.map.get(sf)!;
+    return this.imports.get(sf)!;
   }
 
   /**
-   * Lists the transitive imports of a given `ts.SourceFile`.
+   * Find an import path from the `start` SourceFile to the `end` SourceFile.
+   *
+   * This function implements a breadth first search that results in finding the
+   * shortest path between the `start` and `end` points.
+   *
+   * @param start the starting point of the path.
+   * @param end the ending point of the path.
+   * @returns an array of source files that connect the `start` and `end` source files, or `null` if
+   *     no path could be found.
    */
-  transitiveImportsOf(sf: ts.SourceFile): Set<ts.SourceFile> {
-    const imports = new Set<ts.SourceFile>();
-    this.transitiveImportsOfHelper(sf, imports);
-    return imports;
-  }
-
-  private transitiveImportsOfHelper(sf: ts.SourceFile, results: Set<ts.SourceFile>): void {
-    if (results.has(sf)) {
-      return;
+  findPath(start: ts.SourceFile, end: ts.SourceFile): ts.SourceFile[]|null {
+    if (start === end) {
+      // Escape early for the case where `start` and `end` are the same.
+      return [start];
     }
-    results.add(sf);
-    this.importsOf(sf).forEach(imported => {
-      this.transitiveImportsOfHelper(imported, results);
-    });
+
+    const found = new Set<ts.SourceFile>([start]);
+    const queue: Found[] = [new Found(start, null)];
+
+    while (queue.length > 0) {
+      const current = queue.shift()!;
+      const imports = this.importsOf(current.sourceFile);
+      for (const importedFile of imports) {
+        if (!found.has(importedFile)) {
+          const next = new Found(importedFile, current);
+          if (next.sourceFile === end) {
+            // We have hit the target `end` path so we can stop here.
+            return next.toPath();
+          }
+          found.add(importedFile);
+          queue.push(next);
+        }
+      }
+    }
+    return null;
   }
 
   /**
@@ -63,24 +82,62 @@ export class ImportGraph {
   }
 
   private scanImports(sf: ts.SourceFile): Set<ts.SourceFile> {
-    const imports = new Set<ts.SourceFile>();
-    // Look through the source file for import statements.
-    sf.statements.forEach(stmt => {
-      if ((ts.isImportDeclaration(stmt) || ts.isExportDeclaration(stmt)) &&
-          stmt.moduleSpecifier !== undefined && ts.isStringLiteral(stmt.moduleSpecifier)) {
-        // Resolve the module to a file, and check whether that file is in the ts.Program.
-        const moduleName = stmt.moduleSpecifier.text;
-        const moduleFile = this.resolver.resolveModule(moduleName, sf.fileName);
-        if (moduleFile !== null && isLocalFile(moduleFile)) {
+    return this.perf.inPhase(PerfPhase.CycleDetection, () => {
+      const imports = new Set<ts.SourceFile>();
+      // Look through the source file for import and export statements.
+      for (const stmt of sf.statements) {
+        if ((!ts.isImportDeclaration(stmt) && !ts.isExportDeclaration(stmt)) ||
+            stmt.moduleSpecifier === undefined) {
+          continue;
+        }
+
+        if (ts.isImportDeclaration(stmt) && stmt.importClause !== undefined &&
+            stmt.importClause.isTypeOnly) {
+          // Exclude type-only imports as they are always elided, so they don't contribute to
+          // cycles.
+          continue;
+        }
+
+        const symbol = this.checker.getSymbolAtLocation(stmt.moduleSpecifier);
+        if (symbol === undefined || symbol.valueDeclaration === undefined) {
+          // No symbol could be found to skip over this import/export.
+          continue;
+        }
+        const moduleFile = symbol.valueDeclaration;
+        if (ts.isSourceFile(moduleFile) && isLocalFile(moduleFile)) {
           // Record this local import.
           imports.add(moduleFile);
         }
       }
+      return imports;
     });
-    return imports;
   }
 }
 
 function isLocalFile(sf: ts.SourceFile): boolean {
-  return !sf.fileName.endsWith('.d.ts');
+  return !sf.isDeclarationFile;
+}
+
+/**
+ * A helper class to track which SourceFiles are being processed when searching for a path in
+ * `getPath()` above.
+ */
+class Found {
+  constructor(readonly sourceFile: ts.SourceFile, readonly parent: Found|null) {}
+
+  /**
+   * Back track through this found SourceFile and its ancestors to generate an array of
+   * SourceFiles that form am import path between two SourceFiles.
+   */
+  toPath(): ts.SourceFile[] {
+    const array: ts.SourceFile[] = [];
+    let current: Found|null = this;
+    while (current !== null) {
+      array.push(current.sourceFile);
+      current = current.parent;
+    }
+    // Pushing and then reversing, O(n), rather than unshifting repeatedly, O(n^2), avoids
+    // manipulating the array on every iteration: https://stackoverflow.com/a/26370620
+    return array.reverse();
+  }
 }

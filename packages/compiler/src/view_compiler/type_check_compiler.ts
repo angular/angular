@@ -11,11 +11,11 @@ import {StaticReflector} from '../aot/static_reflector';
 import {StaticSymbol} from '../aot/static_symbol';
 import {CompileDirectiveMetadata, CompilePipeSummary} from '../compile_metadata';
 import {BindingForm, convertActionBinding, convertPropertyBinding, convertPropertyBindingBuiltins, EventHandlerVars, LocalResolver} from '../compiler_util/expression_converter';
+import {OutputContext} from '../constant_pool';
 import {AST, ASTWithSource, Interpolation} from '../expression_parser/ast';
 import * as o from '../output/output_ast';
 import {ParseSourceSpan} from '../parse_util';
 import {AttrAst, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, DirectiveAst, ElementAst, EmbeddedTemplateAst, NgContentAst, ReferenceAst, TemplateAst, TemplateAstVisitor, templateVisitAll, TextAst, VariableAst} from '../template_parser/template_ast';
-import {OutputContext} from '../util';
 
 
 /**
@@ -78,6 +78,7 @@ const DYNAMIC_VAR_NAME = '_any';
 
 class TypeCheckLocalResolver implements LocalResolver {
   notifyImplicitReceiverUse(): void {}
+  maybeRestoreView(): void {}
   getLocal(name: string): o.Expression|null {
     if (name === EventHandlerVars.event.name) {
       // References to the event should not be type-checked.
@@ -290,6 +291,8 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
   }
 
   notifyImplicitReceiverUse(): void {}
+  maybeRestoreView(): void {}
+
   getLocal(name: string): o.Expression|null {
     if (name == EventHandlerVars.event.name) {
       return o.variable(this.getOutputVar(o.BuiltinTypeName.Dynamic));
@@ -351,7 +354,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
               const pipeExpr = this.options.fullTemplateTypeCheck ?
                   o.variable(this.pipeOutputVar(name)) :
                   o.variable(this.getOutputVar(o.BuiltinTypeName.Dynamic));
-              return pipeExpr.callMethod('transform', args);
+              return pipeExpr.prop('transform').callFn(args);
             },
           },
           expression.value)

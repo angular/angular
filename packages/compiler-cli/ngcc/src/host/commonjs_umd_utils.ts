@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as ts from 'typescript';
+import ts from 'typescript';
 import {Declaration} from '../../../src/ngtsc/reflection';
 import {isAssignment} from '../../../src/ngtsc/util/src/typescript';
 
@@ -78,7 +78,7 @@ export function findNamespaceOfIdentifier(id: ts.Identifier): ts.Identifier|null
 export function findRequireCallReference(id: ts.Identifier, checker: ts.TypeChecker): RequireCall|
     null {
   const symbol = checker.getSymbolAtLocation(id) || null;
-  const declaration = symbol && symbol.valueDeclaration;
+  const declaration = symbol?.valueDeclaration ?? symbol?.declarations?.[0];
   const initializer =
       declaration && ts.isVariableDeclaration(declaration) && declaration.initializer || null;
   return initializer && isRequireCall(initializer) ? initializer : null;

@@ -1,0 +1,82 @@
+{
+  "$schema": "../test_case_schema.json",
+  "cases": [
+    {
+      "description": "should emit the ProvidersFeature feature when providers and viewProviders are used",
+      "inputFiles": [
+        "providers_feature_providers_and_view_providers.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "providers_feature_providers_and_view_providers_features.js",
+              "generated": "providers_feature_providers_and_view_providers.js"
+            }
+          ],
+          "failureMessage": "Incorrect features"
+        }
+      ]
+    },
+    {
+      "description": "should emit the ProvidersFeature feature when providers only",
+      "inputFiles": [
+        "providers_feature_providers_only.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "providers_feature_providers_only_features.js",
+              "generated": "providers_feature_providers_only.js"
+            }
+          ],
+          "failureMessage": "Incorrect features"
+        }
+      ]
+    },
+    {
+      "description": "should emit the ProvidersFeature feature when viewProviders only",
+      "inputFiles": [
+        "providers_feature_view_providers_only.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "providers_feature_view_providers_only_features.js",
+              "generated": "providers_feature_view_providers_only.js"
+            }
+          ],
+          "failureMessage": "Incorrect features"
+        }
+      ]
+    },
+    {
+      "description": "should not emit the ProvidersFeature feature when no providers",
+      "inputFiles": [
+        "providers_feature_no_providers.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "providers_feature_no_providers_definition.js",
+              "generated": "providers_feature_no_providers.js"
+            }
+          ],
+          "failureMessage": "Incorrect definition"
+        },
+        {
+          "files": [
+            {
+              "expected": "providers_feature_no_providers_factory.js",
+              "generated": "providers_feature_no_providers.js"
+            }
+          ],
+          "failureMessage": "Incorrect factory"
+        }
+      ]
+    }
+  ]
+}

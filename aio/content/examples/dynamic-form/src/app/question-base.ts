@@ -1,6 +1,6 @@
 // #docregion
 export class QuestionBase<T> {
-  value: T;
+  value: T|undefined;
   key: string;
   label: string;
   required: boolean;

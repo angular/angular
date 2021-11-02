@@ -1,7 +1,6 @@
 // #docplaster
 // #docregion
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { DebugElement } from '@angular/core';
 
 import { BannerComponent } from './banner.component';
 
@@ -11,18 +10,15 @@ describe('BannerComponent (inline template)', () => {
   let fixture: ComponentFixture<BannerComponent>;
   let h1: HTMLElement;
 
-  // #docregion configure-and-create
   beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [ BannerComponent ],
     });
     fixture = TestBed.createComponent(BannerComponent);
-    // #enddocregion configure-and-create
     component = fixture.componentInstance; // BannerComponent test instance
     h1 = fixture.nativeElement.querySelector('h1');
-    // #docregion configure-and-create
   });
-  // #enddocregion setup, configure-and-create
+  // #enddocregion setup
 
   // #docregion test-w-o-detect-changes
   it('no title in the DOM after createComponent()', () => {

@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BindingPipe, PropertyWrite, TmplAstReference, TmplAstVariable} from '@angular/compiler';
-import * as ts from 'typescript';
+import {BindingPipe, PropertyWrite, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstElement, TmplAstReference, TmplAstVariable} from '@angular/compiler';
+import ts from 'typescript';
 
 import {ErrorCode, makeDiagnostic, makeRelatedInformation, ngErrorCode} from '../../diagnostics';
 import {ClassDeclaration} from '../../reflection';
-import {TemplateId} from '../api';
-import {makeTemplateDiagnostic, TemplateDiagnostic} from '../diagnostics';
+import {TemplateDiagnostic, TemplateId} from '../api';
+import {makeTemplateDiagnostic} from '../diagnostics';
 
 import {TemplateSourceResolver} from './tcb_util';
 
@@ -68,6 +68,19 @@ export interface OutOfBandDiagnosticRecorder {
 
   requiresInlineTypeConstructors(
       templateId: TemplateId, node: ClassDeclaration, directives: ClassDeclaration[]): void;
+
+  /**
+   * Report a warning when structural directives support context guards, but the current
+   * type-checking configuration prohibits their usage.
+   */
+  suboptimalTypeInference(templateId: TemplateId, variables: TmplAstVariable[]): void;
+
+  /**
+   * Reports a split two way binding error message.
+   */
+  splitTwoWayBinding(
+      templateId: TemplateId, input: TmplAstBoundAttribute, output: TmplAstBoundEvent,
+      inputConsumer: ClassDeclaration, outputConsumer: ClassDeclaration|TmplAstElement): void;
 }
 
 export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecorder {
@@ -127,10 +140,12 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
     }
     this._diagnostics.push(makeTemplateDiagnostic(
         templateId, mapping, sourceSpan, ts.DiagnosticCategory.Error,
-        ngErrorCode(ErrorCode.WRITE_TO_READ_ONLY_VARIABLE), errorMsg, {
+        ngErrorCode(ErrorCode.WRITE_TO_READ_ONLY_VARIABLE), errorMsg, [{
           text: `The variable ${assignment.name} is declared here.`,
-          span: target.valueSpan || target.sourceSpan,
-        }));
+          start: target.valueSpan?.start.offset || target.sourceSpan.start.offset,
+          end: target.valueSpan?.end.offset || target.sourceSpan.end.offset,
+          sourceFile: mapping.node.getSourceFile(),
+        }]));
   }
 
   duplicateTemplateVar(
@@ -146,10 +161,12 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
     // TODO(alxhub): allocate to a tighter span once one is available.
     this._diagnostics.push(makeTemplateDiagnostic(
         templateId, mapping, variable.sourceSpan, ts.DiagnosticCategory.Error,
-        ngErrorCode(ErrorCode.DUPLICATE_VARIABLE_DECLARATION), errorMsg, {
+        ngErrorCode(ErrorCode.DUPLICATE_VARIABLE_DECLARATION), errorMsg, [{
           text: `The variable '${firstDecl.name}' was first declared here.`,
-          span: firstDecl.sourceSpan,
-        }));
+          start: firstDecl.sourceSpan.start.offset,
+          end: firstDecl.sourceSpan.end.offset,
+          sourceFile: mapping.node.getSourceFile(),
+        }]));
   }
 
   requiresInlineTcb(templateId: TemplateId, node: ClassDeclaration): void {
@@ -173,6 +190,82 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
         templateId, ErrorCode.INLINE_TYPE_CTOR_REQUIRED, node.name, message,
         directives.map(
             dir => makeRelatedInformation(dir.name, `Requires an inline type constructor.`))));
+  }
+
+  suboptimalTypeInference(templateId: TemplateId, variables: TmplAstVariable[]): void {
+    const mapping = this.resolver.getSourceMapping(templateId);
+
+    // Select one of the template variables that's most suitable for reporting the diagnostic. Any
+    // variable will do, but prefer one bound to the context's $implicit if present.
+    let diagnosticVar: TmplAstVariable|null = null;
+    for (const variable of variables) {
+      if (diagnosticVar === null || (variable.value === '' || variable.value === '$implicit')) {
+        diagnosticVar = variable;
+      }
+    }
+    if (diagnosticVar === null) {
+      // There is no variable on which to report the diagnostic.
+      return;
+    }
+
+    let varIdentification = `'${diagnosticVar.name}'`;
+    if (variables.length === 2) {
+      varIdentification += ` (and 1 other)`;
+    } else if (variables.length > 2) {
+      varIdentification += ` (and ${variables.length - 1} others)`;
+    }
+    const message =
+        `This structural directive supports advanced type inference, but the current compiler configuration prevents its usage. The variable ${
+            varIdentification} will have type 'any' as a result.\n\nConsider enabling the 'strictTemplates' option in your tsconfig.json for better type inference within this template.`;
+
+    this._diagnostics.push(makeTemplateDiagnostic(
+        templateId, mapping, diagnosticVar.keySpan, ts.DiagnosticCategory.Suggestion,
+        ngErrorCode(ErrorCode.SUGGEST_SUBOPTIMAL_TYPE_INFERENCE), message));
+  }
+
+  splitTwoWayBinding(
+      templateId: TemplateId, input: TmplAstBoundAttribute, output: TmplAstBoundEvent,
+      inputConsumer: ClassDeclaration, outputConsumer: ClassDeclaration|TmplAstElement): void {
+    const mapping = this.resolver.getSourceMapping(templateId);
+    const errorMsg = `The property and event halves of the two-way binding '${
+        input.name}' are not bound to the same target.
+            Find more at https://angular.io/guide/two-way-binding#how-two-way-binding-works`;
+
+    const relatedMessages: {text: string; start: number; end: number;
+                            sourceFile: ts.SourceFile;}[] = [];
+
+    relatedMessages.push({
+      text: `The property half of the binding is to the '${inputConsumer.name.text}' component.`,
+      start: inputConsumer.name.getStart(),
+      end: inputConsumer.name.getEnd(),
+      sourceFile: inputConsumer.name.getSourceFile(),
+    });
+
+    if (outputConsumer instanceof TmplAstElement) {
+      let message = `The event half of the binding is to a native event called '${
+          input.name}' on the <${outputConsumer.name}> DOM element.`;
+      if (!mapping.node.getSourceFile().isDeclarationFile) {
+        message += `\n \n Are you missing an output declaration called '${output.name}'?`;
+      }
+      relatedMessages.push({
+        text: message,
+        start: outputConsumer.sourceSpan.start.offset + 1,
+        end: outputConsumer.sourceSpan.start.offset + outputConsumer.name.length + 1,
+        sourceFile: mapping.node.getSourceFile(),
+      });
+    } else {
+      relatedMessages.push({
+        text: `The event half of the binding is to the '${outputConsumer.name.text}' component.`,
+        start: outputConsumer.name.getStart(),
+        end: outputConsumer.name.getEnd(),
+        sourceFile: outputConsumer.name.getSourceFile(),
+      });
+    }
+
+
+    this._diagnostics.push(makeTemplateDiagnostic(
+        templateId, mapping, input.keySpan, ts.DiagnosticCategory.Error,
+        ngErrorCode(ErrorCode.SPLIT_TWO_WAY_BINDING), errorMsg, relatedMessages));
   }
 }
 

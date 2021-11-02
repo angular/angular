@@ -1,0 +1,51 @@
+@use 'sass:map';
+@use '../../constants';
+@use '~@angular/material' as mat;
+
+@mixin theme($theme) {
+  $background: map.get($theme, background);
+  $is-dark-theme: map.get($theme, is-dark);
+
+  table {
+    box-shadow: 0 2px 2px rgba(constants.$mediumgray, 0.24), 0 0 2px rgba(if($is-dark-theme, constants.$white, constants.$black), 0.12);
+    background-color: if($is-dark-theme, mat.get-color-from-palette($background, background), constants.$white);
+
+    thead > {
+      tr > th {
+        background: if($is-dark-theme, constants.$deepgray, rgba(constants.$lightgray, 0.2));
+        border-bottom: 1px solid if($is-dark-theme, constants.$darkgray, constants.$lightgray);
+        color: if($is-dark-theme, constants.$white, constants.$darkgray);
+      }
+    }
+
+    tbody > tr > {
+      th,
+      td {
+        border-bottom: 1px solid if($is-dark-theme, constants.$darkgray, constants.$lightgray);
+      }
+
+      td {
+        tr td:first-child {
+          @media (max-width: 480px) {
+            background-color: constants.$lightgray;
+          }
+        }
+      }
+
+      th {
+        background: if($is-dark-theme, constants.$deepgray, rgba(constants.$lightgray, 0.2));
+        &:not(:last-child) {
+          border-right: 1px solid if($is-dark-theme, constants.$darkgray, constants.$lightgray);
+        }
+      }
+    }
+
+    tbody > tr {
+      &:last-child td {
+        @media (max-width: 480px) {
+          border-bottom: 1px solid if($is-dark-theme, constants.$deepgray, constants.$lightgray);
+        }
+      }
+    }
+  }
+}

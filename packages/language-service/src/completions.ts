@@ -196,7 +196,7 @@ class HtmlVisitor implements Visitor {
     // any test cases for it.
     const element = this.htmlPath.first(Element);
     if (element &&
-        getHtmlTagDefinition(element.name).contentType !== TagContentType.PARSABLE_DATA) {
+        getHtmlTagDefinition(element.name).getContentType() !== TagContentType.PARSABLE_DATA) {
       return [];
     }
     // This is to account for cases like <h1> <a> text | </h1> where the
@@ -408,23 +408,23 @@ class ExpressionVisitor extends NullTemplateVisitor {
     return Array.from(this.completions.values());
   }
 
-  visitDirectiveProperty(ast: BoundDirectivePropertyAst): void {
+  override visitDirectiveProperty(ast: BoundDirectivePropertyAst): void {
     this.processExpressionCompletions(ast.value);
   }
 
-  visitElementProperty(ast: BoundElementPropertyAst): void {
+  override visitElementProperty(ast: BoundElementPropertyAst): void {
     this.processExpressionCompletions(ast.value);
   }
 
-  visitEvent(ast: BoundEventAst): void {
+  override visitEvent(ast: BoundEventAst): void {
     this.processExpressionCompletions(ast.handler);
   }
 
-  visitElement(): void {
+  override visitElement(): void {
     // no-op for now
   }
 
-  visitAttr(ast: AttrAst) {
+  override visitAttr(ast: AttrAst) {
     const binding = getBindingDescriptor(ast.name);
     if (binding && binding.kind === ATTR.KW_MICROSYNTAX) {
       // This a template binding given by micro syntax expression.
@@ -459,7 +459,7 @@ class ExpressionVisitor extends NullTemplateVisitor {
     }
   }
 
-  visitReference(_ast: ReferenceAst, context: ElementAst) {
+  override visitReference(_ast: ReferenceAst, context: ElementAst) {
     context.directives.forEach(dir => {
       const {exportAs} = dir.directive;
       if (exportAs) {
@@ -469,7 +469,7 @@ class ExpressionVisitor extends NullTemplateVisitor {
     });
   }
 
-  visitBoundText(ast: BoundTextAst) {
+  override visitBoundText(ast: BoundTextAst) {
     if (inSpan(this.position, ast.value.sourceSpan)) {
       const completions = getExpressionCompletions(
           this.getExpressionScope(), ast.value, this.position, this.info.template);
@@ -511,7 +511,7 @@ class ExpressionVisitor extends NullTemplateVisitor {
    * These directives allows declaration of "let" variables, adds context-specific
    * symbols like $implicit, index, count, among other behaviors.
    * For a complete description of such format, see
-   * https://angular.io/guide/structural-directives#the-asterisk--prefix
+   * https://angular.io/guide/structural-directives#asterisk
    *
    * @param attr descriptor for attribute name and value pair
    * @param binding template binding for the expression in the attribute

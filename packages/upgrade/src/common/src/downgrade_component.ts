@@ -174,8 +174,8 @@ export function downgradeComponent(info: {
 
           const injectorPromise = new ParentInjectorPromise(element);
           const facade = new DowngradeComponentAdapter(
-              element, attrs, scope, ngModel, injector, $injector, $compile, $parse,
-              componentFactory, wrapCallback);
+              element, attrs, scope, ngModel, injector, $compile, $parse, componentFactory,
+              wrapCallback);
 
           const projectableNodes = facade.compileContents();
           facade.createComponent(projectableNodes);
@@ -232,7 +232,7 @@ class ParentInjectorPromise extends SyncPromise<Injector> {
     element.data!(this.injectorKey, this);
   }
 
-  resolve(injector: Injector): void {
+  override resolve(injector: Injector): void {
     // Store the real injector on the element.
     this.element.data!(this.injectorKey, injector);
 

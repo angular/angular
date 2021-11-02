@@ -7,7 +7,6 @@
  */
 
 import {fakeAsync, tick} from '@angular/core/testing';
-import {AsyncTestCompleter, beforeEach, describe, inject, it} from '@angular/core/testing/src/testing_internal';
 import {AbstractControl, FormArray, FormControl, FormGroup, ValidationErrors, ValidatorFn} from '@angular/forms';
 import {Validators} from '@angular/forms/src/validators';
 import {of} from 'rxjs';
@@ -18,12 +17,14 @@ describe('FormArray', () => {
   describe('adding/removing', () => {
     let a: FormArray;
     let c1: FormControl, c2: FormControl, c3: FormControl;
+    let logger: string[];
 
     beforeEach(() => {
       a = new FormArray([]);
       c1 = new FormControl(1);
       c2 = new FormControl(2);
       c3 = new FormControl(3);
+      logger = [];
     });
 
     it('should support pushing', () => {
@@ -63,6 +64,100 @@ describe('FormArray', () => {
       a.insert(1, c2);
 
       expect(a.controls).toEqual([c1, c2, c3]);
+    });
+
+    it('should not emit events when calling `FormArray.push` with `emitEvent: false`', () => {
+      a.valueChanges.subscribe(() => logger.push('value change'));
+      a.statusChanges.subscribe(() => logger.push('status change'));
+
+      a.push(c1, {emitEvent: false});
+
+      expect(a.length).toEqual(1);
+      expect(a.controls).toEqual([c1]);
+      expect(logger).toEqual([]);
+    });
+
+    it('should not emit events when calling `FormArray.removeAt` with `emitEvent: false`', () => {
+      a.push(c1);
+      a.push(c2);
+      a.push(c3);
+
+      a.valueChanges.subscribe(() => logger.push('value change'));
+      a.statusChanges.subscribe(() => logger.push('status change'));
+
+      a.removeAt(1, {emitEvent: false});
+
+      expect(a.controls).toEqual([c1, c3]);
+      expect(logger).toEqual([]);
+    });
+
+    it('should not emit events when calling `FormArray.clear` with `emitEvent: false`', () => {
+      a.push(c1);
+      a.push(c2);
+      a.push(c3);
+
+      a.valueChanges.subscribe(() => logger.push('value change'));
+      a.statusChanges.subscribe(() => logger.push('status change'));
+
+      a.clear({emitEvent: false});
+
+      expect(a.controls).toEqual([]);
+      expect(logger).toEqual([]);
+    });
+
+    it('should not emit events when calling `FormArray.insert` with `emitEvent: false`', () => {
+      a.push(c1);
+      a.push(c3);
+
+      a.valueChanges.subscribe(() => logger.push('value change'));
+      a.statusChanges.subscribe(() => logger.push('status change'));
+
+      a.insert(1, c2, {emitEvent: false});
+
+      expect(a.controls).toEqual([c1, c2, c3]);
+      expect(logger).toEqual([]);
+    });
+
+    it('should not emit events when calling `FormArray.setControl` with `emitEvent: false`', () => {
+      a.push(c1);
+      a.push(c3);
+
+      a.valueChanges.subscribe(() => logger.push('value change'));
+      a.statusChanges.subscribe(() => logger.push('status change'));
+
+      a.setControl(1, c2, {emitEvent: false});
+
+      expect(a.controls).toEqual([c1, c2]);
+      expect(logger).toEqual([]);
+    });
+
+    it('should not emit status change events when `FormArray.push` is called with `emitEvent: false`',
+       () => {
+         // Adding validators to make sure there are no status change event submitted when form
+         // becomes invalid.
+         const validatorFn = (value: any) => value.controls.length > 0 ? {controls: true} : null;
+         const asyncValidatorFn = (value: any) => of(validatorFn(value));
+         const arr = new FormArray([], validatorFn, asyncValidatorFn);
+         expect(arr.valid).toBe(true);
+
+         arr.statusChanges.subscribe(() => logger.push('status change'));
+
+         arr.push(c1, {emitEvent: false});
+
+         expect(arr.valid).toBe(false);
+         expect(logger).toEqual([]);
+       });
+
+    it('should not emit events on the parent when called with `emitEvent: false`', () => {
+      const form = new FormGroup({child: a});
+
+      form.valueChanges.subscribe(() => logger.push('form value change'));
+      a.valueChanges.subscribe(() => logger.push('array value change'));
+      form.statusChanges.subscribe(() => logger.push('form status change'));
+      a.statusChanges.subscribe(() => logger.push('array status change'));
+
+      a.push(new FormControl(5), {emitEvent: false});
+      expect(logger).toEqual([]);
     });
   });
 
@@ -235,23 +330,15 @@ describe('FormArray', () => {
         expect(logger).toEqual(['control1', 'control2', 'array', 'form']);
       });
 
-      it('should not fire an event when explicitly specified', fakeAsync(() => {
-           form.valueChanges.subscribe((value) => {
-             throw 'Should not happen';
-           });
-           a.valueChanges.subscribe((value) => {
-             throw 'Should not happen';
-           });
-           c.valueChanges.subscribe((value) => {
-             throw 'Should not happen';
-           });
-           c2.valueChanges.subscribe((value) => {
-             throw 'Should not happen';
-           });
+      it('should not fire events when called with `emitEvent: false`', () => {
+        form.valueChanges.subscribe(() => logger.push('form'));
+        a.valueChanges.subscribe(() => logger.push('array'));
+        c.valueChanges.subscribe(() => logger.push('control1'));
+        c2.valueChanges.subscribe(() => logger.push('control2'));
 
-           a.setValue(['one', 'two'], {emitEvent: false});
-           tick();
-         }));
+        a.setValue(['one', 'two'], {emitEvent: false});
+        expect(logger).toEqual([]);
+      });
 
       it('should emit one statusChange event per control', () => {
         form.statusChanges.subscribe(() => logger.push('form'));
@@ -266,12 +353,13 @@ describe('FormArray', () => {
   });
 
   describe('patchValue', () => {
-    let c: FormControl, c2: FormControl, a: FormArray;
+    let c: FormControl, c2: FormControl, a: FormArray, a2: FormArray;
 
     beforeEach(() => {
       c = new FormControl('');
       c2 = new FormControl('');
       a = new FormArray([c, c2]);
+      a2 = new FormArray([a]);
     });
 
     it('should set its own value', () => {
@@ -329,6 +417,16 @@ describe('FormArray', () => {
       expect(a.value).toEqual(['', '']);
     });
 
+    it('should ignore a array if `null` or `undefined` are used as values', () => {
+      const INITIAL_STATE = [['', '']];
+
+      a2.patchValue([null]);
+      expect(a2.value).toEqual(INITIAL_STATE);
+
+      a2.patchValue([undefined]);
+      expect(a2.value).toEqual(INITIAL_STATE);
+    });
+
     describe('patchValue() events', () => {
       let form: FormGroup;
       let logger: any[];
@@ -358,23 +456,32 @@ describe('FormArray', () => {
         expect(logger).toEqual(['control1', 'array', 'form']);
       });
 
-      it('should not fire an event when explicitly specified', fakeAsync(() => {
-           form.valueChanges.subscribe((value) => {
-             throw 'Should not happen';
-           });
-           a.valueChanges.subscribe((value) => {
-             throw 'Should not happen';
-           });
-           c.valueChanges.subscribe((value) => {
-             throw 'Should not happen';
-           });
-           c2.valueChanges.subscribe((value) => {
-             throw 'Should not happen';
-           });
+      it('should not emit valueChange events for skipped controls (represented as `null` or `undefined`)',
+         () => {
+           const logEvent = () => logger.push('valueChanges event');
 
-           a.patchValue(['one', 'two'], {emitEvent: false});
-           tick();
-         }));
+           const [formArrayControl1, formArrayControl2] = (a2.controls as FormArray[])[0].controls;
+
+           formArrayControl1.valueChanges.subscribe(logEvent);
+           formArrayControl2.valueChanges.subscribe(logEvent);
+
+           a2.patchValue([null]);
+           a2.patchValue([undefined]);
+
+           // No events are expected in `valueChanges` since
+           // all controls were skipped in `patchValue`.
+           expect(logger).toEqual([]);
+         });
+
+      it('should not fire events when called with `emitEvent: false`', () => {
+        form.valueChanges.subscribe(() => logger.push('form'));
+        a.valueChanges.subscribe(() => logger.push('array'));
+        c.valueChanges.subscribe(() => logger.push('control1'));
+        c2.valueChanges.subscribe(() => logger.push('control2'));
+
+        a.patchValue(['one', 'two'], {emitEvent: false});
+        expect(logger).toEqual([]);
+      });
 
       it('should emit one statusChange event per control', () => {
         form.statusChanges.subscribe(() => logger.push('form'));
@@ -577,26 +684,16 @@ describe('FormArray', () => {
         expect(logger).toEqual(['control1', 'control2', 'array', 'form']);
       });
 
-      it('should not fire an event when explicitly specified', fakeAsync(() => {
-           form.valueChanges.subscribe((value) => {
-             throw 'Should not happen';
-           });
-           a.valueChanges.subscribe((value) => {
-             throw 'Should not happen';
-           });
-           c.valueChanges.subscribe((value) => {
-             throw 'Should not happen';
-           });
-           c2.valueChanges.subscribe((value) => {
-             throw 'Should not happen';
-           });
-           c3.valueChanges.subscribe((value) => {
-             throw 'Should not happen';
-           });
+      it('should not fire events when called with `emitEvent: false`', () => {
+        form.valueChanges.subscribe(() => logger.push('form'));
+        a.valueChanges.subscribe(() => logger.push('array'));
+        c.valueChanges.subscribe(() => logger.push('control1'));
+        c2.valueChanges.subscribe(() => logger.push('control2'));
+        c3.valueChanges.subscribe(() => logger.push('control3'));
 
-           a.reset([], {emitEvent: false});
-           tick();
-         }));
+        a.reset([], {emitEvent: false});
+        expect(logger).toEqual([]);
+      });
 
       it('should emit one statusChange event per reset control', () => {
         form.statusChanges.subscribe(() => logger.push('form'));
@@ -736,7 +833,7 @@ describe('FormArray', () => {
         expect(logger).toEqual([]);
       });
 
-      it('should not emit event when emitEvent = false', () => {
+      it('should not emit events when called with `emitEvent: false`', () => {
         c.markAsPending({emitEvent: false});
         expect(logger).toEqual([]);
       });
@@ -758,64 +855,60 @@ describe('FormArray', () => {
       a = new FormArray([c1, c2]);
     });
 
-    it('should fire an event after the value has been updated',
-       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         a.valueChanges.subscribe({
-           next: (value: any) => {
-             expect(a.value).toEqual(['new1', 'old2']);
-             expect(value).toEqual(['new1', 'old2']);
-             async.done();
-           }
-         });
-         c1.setValue('new1');
-       }));
+    it('should fire an event after the value has been updated', done => {
+      a.valueChanges.subscribe({
+        next: (value: any) => {
+          expect(a.value).toEqual(['new1', 'old2']);
+          expect(value).toEqual(['new1', 'old2']);
+          done();
+        }
+      });
+      c1.setValue('new1');
+    });
 
-    it('should fire an event after the control\'s observable fired an event',
-       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         let controlCallbackIsCalled = false;
+    it('should fire an event after the control\'s observable fired an event', done => {
+      let controlCallbackIsCalled = false;
 
 
-         c1.valueChanges.subscribe({
-           next: (value: any) => {
-             controlCallbackIsCalled = true;
-           }
-         });
+      c1.valueChanges.subscribe({
+        next: (value: any) => {
+          controlCallbackIsCalled = true;
+        }
+      });
 
-         a.valueChanges.subscribe({
-           next: (value: any) => {
-             expect(controlCallbackIsCalled).toBe(true);
-             async.done();
-           }
-         });
+      a.valueChanges.subscribe({
+        next: (value: any) => {
+          expect(controlCallbackIsCalled).toBe(true);
+          done();
+        }
+      });
 
-         c1.setValue('new1');
-       }));
+      c1.setValue('new1');
+    });
 
-    it('should fire an event when a control is removed',
-       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         a.valueChanges.subscribe({
-           next: (value: any) => {
-             expect(value).toEqual(['old1']);
-             async.done();
-           }
-         });
+    it('should fire an event when a control is removed', done => {
+      a.valueChanges.subscribe({
+        next: (value: any) => {
+          expect(value).toEqual(['old1']);
+          done();
+        }
+      });
 
-         a.removeAt(1);
-       }));
+      a.removeAt(1);
+    });
 
-    it('should fire an event when a control is added',
-       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         a.removeAt(1);
+    it('should fire an event when a control is added', done => {
+      a.removeAt(1);
 
-         a.valueChanges.subscribe({
-           next: (value: any) => {
-             expect(value).toEqual(['old1', 'old2']);
-             async.done();
-           }
-         });
+      a.valueChanges.subscribe({
+        next: (value: any) => {
+          expect(value).toEqual(['old1', 'old2']);
+          done();
+        }
+      });
 
-         a.push(c2);
-       }));
+      a.push(c2);
+    });
   });
 
   describe('get', () => {
@@ -961,6 +1054,23 @@ describe('FormArray', () => {
 
          expect(g.errors).toEqual({'async': true, 'other': true});
          expect(g.pending).toEqual(false);
+       }));
+
+    it('should fire statusChanges events when async validators are added via options object',
+       fakeAsync(() => {
+         // The behavior is tested (in other spec files) for each of the model types (`FormControl`,
+         // `FormGroup` and `FormArray`).
+         let statuses: string[] = [];
+
+         // Create a form control with an async validator added via options object.
+         const asc = new FormArray([], {asyncValidators: [() => Promise.resolve(null)]});
+
+         // Subscribe to status changes.
+         asc.statusChanges.subscribe((status: any) => statuses.push(status));
+
+         // After a tick, the async validator should change status PENDING -> VALID.
+         tick();
+         expect(statuses).toEqual(['VALID']);
        }));
   });
 
@@ -1183,7 +1293,7 @@ describe('FormArray', () => {
         expect(logger).toEqual(['control', 'array', 'form']);
       });
 
-      it('should not emit value change events when emitEvent = false', () => {
+      it('should not emit value change events when called with `emitEvent: false`', () => {
         c.valueChanges.subscribe(() => logger.push('control'));
         a.valueChanges.subscribe(() => logger.push('array'));
         form.valueChanges.subscribe(() => logger.push('form'));
@@ -1194,7 +1304,7 @@ describe('FormArray', () => {
         expect(logger).toEqual([]);
       });
 
-      it('should not emit status change events when emitEvent = false', () => {
+      it('should not emit status change events when called with `emitEvent: false`', () => {
         c.statusChanges.subscribe(() => logger.push('control'));
         a.statusChanges.subscribe(() => logger.push('array'));
         form.statusChanges.subscribe(() => logger.push('form'));

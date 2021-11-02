@@ -370,8 +370,7 @@ describe('providers', () => {
 
   describe('single', () => {
     class MyModule {
-      static ɵinj = ɵɵdefineInjector(
-          {factory: () => new MyModule(), providers: [{provide: String, useValue: 'From module'}]});
+      static ɵinj = ɵɵdefineInjector({providers: [{provide: String, useValue: 'From module'}]});
     }
 
     describe('without directives', () => {
@@ -637,10 +636,8 @@ describe('providers', () => {
 
   describe('multi', () => {
     class MyModule {
-      static ɵinj = ɵɵdefineInjector({
-        factory: () => new MyModule(),
-        providers: [{provide: String, useValue: 'From module', multi: true}]
-      });
+      static ɵinj =
+          ɵɵdefineInjector({providers: [{provide: String, useValue: 'From module', multi: true}]});
     }
 
     describe('without directives', () => {
@@ -956,10 +953,7 @@ describe('providers', () => {
 
     it('should work with a module', () => {
       class MyModule {
-        static ɵinj = ɵɵdefineInjector({
-          factory: () => new MyModule(),
-          providers: [{provide: String, useValue: 'From module'}]
-        });
+        static ɵinj = ɵɵdefineInjector({providers: [{provide: String, useValue: 'From module'}]});
       }
 
       @Injectable({providedIn: MyModule})
@@ -1084,7 +1078,6 @@ describe('providers', () => {
 
          class MyAppModule {
            static ɵinj = ɵɵdefineInjector({
-             factory: () => new MyAppModule(),
              imports: [],
              providers:
                  [
@@ -1169,8 +1162,7 @@ describe('providers', () => {
 
   describe('injection flags', () => {
     class MyModule {
-      static ɵinj = ɵɵdefineInjector(
-          {factory: () => new MyModule(), providers: [{provide: String, useValue: 'Module'}]});
+      static ɵinj = ɵɵdefineInjector({providers: [{provide: String, useValue: 'Module'}]});
     }
     it('should not fall through to ModuleInjector if flags limit the scope', () => {
       expectProvidersScenario({
@@ -1301,11 +1293,11 @@ describe('providers', () => {
 
       @addFoo()
       class Parent extends GrandParent {
-        static ɵfac = function Parent_Factory() {};
+        static override ɵfac = function Parent_Factory() {};
       }
 
       class Child extends Parent {
-        static ɵfac = function Child_Factory() {};
+        static override ɵfac = function Child_Factory() {};
       }
 
       expect(ɵɵgetInheritedFactory(Child).name).toBe('Parent_Factory');
@@ -1319,12 +1311,12 @@ describe('providers', () => {
       }
 
       class Parent extends GrandParent {
-        static ɵfac = function Parent_Factory() {};
+        static override ɵfac = function Parent_Factory() {};
       }
 
       @addFoo()
       class Child extends Parent {
-        static ɵfac = function Child_Factory() {};
+        static override ɵfac = function Child_Factory() {};
       }
 
       expect(ɵɵgetInheritedFactory(Child).name).toBe('Parent_Factory');
@@ -1339,11 +1331,11 @@ describe('providers', () => {
       }
 
       class Parent extends GrandParent {
-        static ɵfac = function Parent_Factory() {};
+        static override ɵfac = function Parent_Factory() {};
       }
 
       class Child extends Parent {
-        static ɵfac = function Child_Factory() {};
+        static override ɵfac = function Child_Factory() {};
       }
 
       expect(ɵɵgetInheritedFactory(Child).name).toBe('Parent_Factory');
@@ -1359,12 +1351,12 @@ describe('providers', () => {
 
       @addFoo()
       class Parent extends GrandParent {
-        static ɵfac = function Parent_Factory() {};
+        static override ɵfac = function Parent_Factory() {};
       }
 
       @addFoo()
       class Child extends Parent {
-        static ɵfac = function Child_Factory() {};
+        static override ɵfac = function Child_Factory() {};
       }
 
       expect(ɵɵgetInheritedFactory(Child).name).toBe('Parent_Factory');
@@ -1381,11 +1373,11 @@ describe('providers', () => {
 
          @addFoo()
          class Parent extends GrandParent {
-           static ɵfac = function Parent_Factory() {};
+           static override ɵfac = function Parent_Factory() {};
          }
 
          class Child extends Parent {
-           static ɵfac = function Child_Factory() {};
+           static override ɵfac = function Child_Factory() {};
          }
 
          expect(ɵɵgetInheritedFactory(Child).name).toBe('Parent_Factory');

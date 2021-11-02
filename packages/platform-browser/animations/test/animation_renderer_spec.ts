@@ -7,10 +7,12 @@
  */
 import {animate, AnimationPlayer, AnimationTriggerMetadata, state, style, transition, trigger} from '@angular/animations';
 import {ɵAnimationEngine as AnimationEngine} from '@angular/animations/browser';
-import {Component, Injectable, NgZone, RendererFactory2, RendererType2, ViewChild} from '@angular/core';
+import {Component, destroyPlatform, Injectable, NgModule, NgZone, RendererFactory2, RendererType2, ViewChild} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
+import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {BrowserAnimationsModule, ɵAnimationRendererFactory as AnimationRendererFactory, ɵInjectableAnimationEngine as InjectableAnimationEngine} from '@angular/platform-browser/animations';
 import {DomRendererFactory2} from '@angular/platform-browser/src/dom/dom_renderer';
+import {onlyInIvy, withBody} from '@angular/private/testing';
 
 import {el} from '../../testing/src/browser_util';
 
@@ -323,6 +325,37 @@ describe('AnimationRendererFactory', () => {
     expect(renderer.log).toEqual(['begin', 'end']);
   });
 });
+
+onlyInIvy('View Engine uses another mechanism of removing DOM nodes').describe('destroy', () => {
+  beforeEach(destroyPlatform);
+  afterEach(destroyPlatform);
+
+  it('should clear bootstrapped component contents',
+     withBody('<div>before</div><app-root></app-root><div>after</div>', async () => {
+       @Component({selector: 'app-root', template: 'app-root content'})
+       class AppComponent {
+       }
+
+       @NgModule({
+         imports: [BrowserAnimationsModule],
+         declarations: [AppComponent],
+         bootstrap: [AppComponent]
+       })
+       class AppModule {
+       }
+
+       const ngModuleRef = await platformBrowserDynamic().bootstrapModule(AppModule);
+
+       const root = document.body.querySelector('app-root')!;
+       expect(root.textContent).toEqual('app-root content');
+       expect(document.body.childNodes.length).toEqual(3);
+
+       ngModuleRef.destroy();
+
+       expect(document.body.querySelector('app-root')).toBeFalsy();  // host element is removed
+       expect(document.body.childNodes.length).toEqual(2);           // other elements are preserved
+     }));
+});
 })();
 
 @Injectable()
@@ -335,26 +368,26 @@ class MockAnimationEngine extends InjectableAnimationEngine {
     data.push(args);
   }
 
-  registerTrigger(
+  override registerTrigger(
       componentId: string, namespaceId: string, hostElement: any, name: string,
       metadata: AnimationTriggerMetadata): void {
     this.triggers.push(metadata);
   }
 
-  onInsert(namespaceId: string, element: any): void {
+  override onInsert(namespaceId: string, element: any): void {
     this._capture('onInsert', [element]);
   }
 
-  onRemove(namespaceId: string, element: any, domFn: () => any): void {
+  override onRemove(namespaceId: string, element: any, domFn: () => any): void {
     this._capture('onRemove', [element]);
   }
 
-  process(namespaceId: string, element: any, property: string, value: any): boolean {
+  override process(namespaceId: string, element: any, property: string, value: any): boolean {
     this._capture('setProperty', [element, property, value]);
     return true;
   }
 
-  listen(
+  override listen(
       namespaceId: string, element: any, eventName: string, eventPhase: string,
       callback: (event: any) => any): () => void {
     // we don't capture the callback here since the renderer wraps it in a zone
@@ -362,21 +395,21 @@ class MockAnimationEngine extends InjectableAnimationEngine {
     return () => {};
   }
 
-  flush() {}
+  override flush() {}
 
-  destroy(namespaceId: string) {}
+  override destroy(namespaceId: string) {}
 }
 
 @Injectable()
 class ExtendedAnimationRendererFactory extends AnimationRendererFactory {
   public log: string[] = [];
 
-  begin() {
+  override begin() {
     super.begin();
     this.log.push('begin');
   }
 
-  end() {
+  override end() {
     super.end();
     this.log.push('end');
   }

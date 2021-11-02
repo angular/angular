@@ -9,9 +9,26 @@
 const TS = /\.tsx?$/i;
 const D_TS = /\.d\.ts$/i;
 
-import * as ts from 'typescript';
-import {AbsoluteFsPath, absoluteFrom} from '../../file_system';
+import ts from 'typescript';
+import {AbsoluteFsPath, getFileSystem} from '../../file_system';
 import {DeclarationNode} from '../../reflection';
+
+/**
+ * Type describing a symbol that is guaranteed to have a value declaration.
+ */
+export type SymbolWithValueDeclaration = ts.Symbol&{
+  valueDeclaration: ts.Declaration;
+  declarations: ts.Declaration[];
+};
+
+export function isSymbolWithValueDeclaration(symbol: ts.Symbol|null|
+                                             undefined): symbol is SymbolWithValueDeclaration {
+  // If there is a value declaration set, then the `declarations` property is never undefined. We
+  // still check for the property to exist as this matches with the type that `symbol` is narrowed
+  // to.
+  return symbol != null && symbol.valueDeclaration !== undefined &&
+      symbol.declarations !== undefined;
+}
 
 export function isDtsPath(filePath: string): boolean {
   return D_TS.test(filePath);
@@ -83,6 +100,11 @@ export function isTypeDeclaration(node: ts.Node): node is ts.EnumDeclaration|
       ts.isInterfaceDeclaration(node);
 }
 
+export function isNamedDeclaration(node: ts.Node): node is ts.Declaration&{name: ts.Identifier} {
+  const namedNode = node as {name?: ts.Identifier};
+  return namedNode.name !== undefined && ts.isIdentifier(namedNode.name);
+}
+
 export function isExported(node: DeclarationNode): boolean {
   let topLevel: ts.Node = node;
   if (ts.isVariableDeclaration(node) && ts.isVariableDeclarationList(node.parent)) {
@@ -92,21 +114,25 @@ export function isExported(node: DeclarationNode): boolean {
       topLevel.modifiers.some(modifier => modifier.kind === ts.SyntaxKind.ExportKeyword);
 }
 
-export function getRootDirs(host: ts.CompilerHost, options: ts.CompilerOptions): AbsoluteFsPath[] {
+export function getRootDirs(
+    host: Pick<ts.CompilerHost, 'getCurrentDirectory'|'getCanonicalFileName'>,
+    options: ts.CompilerOptions): AbsoluteFsPath[] {
   const rootDirs: string[] = [];
+  const cwd = host.getCurrentDirectory();
+  const fs = getFileSystem();
   if (options.rootDirs !== undefined) {
     rootDirs.push(...options.rootDirs);
   } else if (options.rootDir !== undefined) {
     rootDirs.push(options.rootDir);
   } else {
-    rootDirs.push(host.getCurrentDirectory());
+    rootDirs.push(cwd);
   }
 
   // In Windows the above might not always return posix separated paths
   // See:
   // https://github.com/Microsoft/TypeScript/blob/3f7357d37f66c842d70d835bc925ec2a873ecfec/src/compiler/sys.ts#L650
   // Also compiler options might be set via an API which doesn't normalize paths
-  return rootDirs.map(rootDir => absoluteFrom(host.getCanonicalFileName(rootDir)));
+  return rootDirs.map(rootDir => fs.resolve(cwd, host.getCanonicalFileName(rootDir)));
 }
 
 export function nodeDebugInfo(node: ts.Node): string {
@@ -157,3 +183,23 @@ export type SubsetOfKeys<T, K extends keyof T> = K;
 export type RequiredDelegations<T> = {
   [M in keyof Required<T>]: T[M];
 };
+
+/**
+ * Source files may become redirects to other source files when their package name and version are
+ * identical. TypeScript creates a proxy source file for such source files which has an internal
+ * `redirectInfo` property that refers to the original source file.
+ */
+interface RedirectedSourceFile extends ts.SourceFile {
+  redirectInfo?: {unredirected: ts.SourceFile;};
+}
+
+/**
+ * Obtains the non-redirected source file for `sf`.
+ */
+export function toUnredirectedSourceFile(sf: ts.SourceFile): ts.SourceFile {
+  const redirectInfo = (sf as RedirectedSourceFile).redirectInfo;
+  if (redirectInfo === undefined) {
+    return sf;
+  }
+  return redirectInfo.unredirected;
+}

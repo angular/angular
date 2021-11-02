@@ -6,13 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {CssSelector, DirectiveMeta as T2DirectiveMeta, parseTemplate, R3TargetBinder, SelectorMatcher, TmplAstElement} from '@angular/compiler';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {absoluteFrom} from '../../file_system';
 import {runInEachFileSystem} from '../../file_system/testing';
-import {NOOP_DEFAULT_IMPORT_RECORDER, ReferenceEmitter} from '../../imports';
+import {ReferenceEmitter} from '../../imports';
 import {DtsMetadataReader, InjectableClassRegistry, LocalMetadataRegistry} from '../../metadata';
 import {PartialEvaluator} from '../../partial_evaluator';
+import {NOOP_PERF_RECORDER} from '../../perf';
 import {ClassDeclaration, isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
 import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from '../../scope';
 import {getDeclaration, makeProgram} from '../../testing';
@@ -105,6 +106,7 @@ runInEachFileSystem(() => {
         isComponent: false,
         name: 'Dir',
         selector: '[dir]',
+        isStructural: false,
       };
       matcher.addSelectables(CssSelector.parse('[dir]'), dirMeta);
 
@@ -118,6 +120,30 @@ runInEachFileSystem(() => {
       // and field names.
       expect(propBindingConsumer).toBe(dirMeta);
     });
+
+    it('should identify a structural directive', () => {
+      const src = `
+        import {Directive, TemplateRef} from '@angular/core';
+
+        @Directive({selector: 'test-dir'})
+        export class TestDir {
+          constructor(private ref: TemplateRef) {}
+        }
+      `;
+      const {program} = makeProgram([
+        {
+          name: _('/node_modules/@angular/core/index.d.ts'),
+          contents: 'export const Directive: any; export declare class TemplateRef {}',
+        },
+        {
+          name: _('/entry.ts'),
+          contents: src,
+        },
+      ]);
+
+      const analysis = analyzeDirective(program, 'TestDir');
+      expect(analysis.isStructural).toBeTrue();
+    });
   });
 
   // Helpers
@@ -127,7 +153,7 @@ runInEachFileSystem(() => {
         super(checker);
       }
 
-      hasBaseClass(_class: ClassDeclaration): boolean {
+      override hasBaseClass(_class: ClassDeclaration): boolean {
         return hasBaseClass;
       }
     }
@@ -142,10 +168,11 @@ runInEachFileSystem(() => {
         null);
     const injectableRegistry = new InjectableClassRegistry(reflectionHost);
     const handler = new DirectiveDecoratorHandler(
-        reflectionHost, evaluator, scopeRegistry, scopeRegistry, metaReader,
-        NOOP_DEFAULT_IMPORT_RECORDER, injectableRegistry, /*isCore*/ false,
+        reflectionHost, evaluator, scopeRegistry, scopeRegistry, metaReader, injectableRegistry,
+        /*isCore*/ false,
+        /*semanticDepGraphUpdater*/ null,
         /*annotateForClosureCompiler*/ false,
-        /*detectUndecoratedClassesWithAngularFeatures*/ false);
+        /*detectUndecoratedClassesWithAngularFeatures*/ false, NOOP_PERF_RECORDER);
 
     const DirNode = getDeclaration(program, _('/entry.ts'), dirName, isNamedClassDeclaration);
 

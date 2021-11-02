@@ -1,14 +1,10 @@
-// #docregion
 import { Inject, Injectable, InjectionToken } from '@angular/core';
 
-// #docregion storage-token
 export const BROWSER_STORAGE = new InjectionToken<Storage>('Browser Storage', {
   providedIn: 'root',
   factory: () => localStorage
 });
-// #enddocregion storage-token
 
-// #docregion inject-storage-token
 @Injectable({
   providedIn: 'root'
 })
@@ -31,4 +27,3 @@ export class BrowserStorageService {
     this.storage.clear();
   }
 }
-// #enddocregion inject-storage-token

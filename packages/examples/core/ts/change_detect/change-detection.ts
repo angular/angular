@@ -12,7 +12,7 @@ import {FormsModule} from '@angular/forms';
 
 // #docregion mark-for-check
 @Component({
-  selector: 'my-app',
+  selector: 'app-root',
   template: `Number of ticks: {{numberOfTicks}}`,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

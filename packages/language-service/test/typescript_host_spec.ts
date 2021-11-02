@@ -6,8 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as ngc from '@angular/compiler';
-import * as ts from 'typescript';
+// Note: We do not use a namespace import here because this will result in the
+// named exports being modified if we apply jasmine spies on `path`. Using
+// the default export gives us an object where we can patch properties on.
+import path from 'path';
+import ts from 'typescript';
 
 import {TypeScriptServiceHost} from '../src/typescript_host';
 
@@ -107,6 +110,15 @@ describe('TypeScriptServiceHost', () => {
     expect(templates.length).toBe(1);
     const template = templates[0];
     expect(template.source).toContain('<h2>{{hero.name}} details!</h2>');
+  });
+
+  // https://github.com/angular/vscode-ng-language-service/issues/892
+  it('should resolve external templates with `#` in the path', () => {
+    const tsLSHost = new MockTypescriptHost(['/app/main.ts']);
+    const tsLS = ts.createLanguageService(tsLSHost);
+    const ngLSHost = new TypeScriptServiceHost(tsLSHost, tsLS);
+    ngLSHost.getAnalyzedModules();
+    expect(ngLSHost.getExternalTemplates() as string[]).toContain('/app/#inner/inner.html');
   });
 
   // https://github.com/angular/angular/issues/32301
@@ -230,7 +242,7 @@ describe('TypeScriptServiceHost', () => {
     let content = `
     import {CommonModule} from '@angular/common';
     import {NgModule} from '@angular/core';
-    
+
     @NgModule({
       entryComponents: [CommonModule],
     })
@@ -248,7 +260,7 @@ describe('TypeScriptServiceHost', () => {
     content = `
     import {CommonModule} from '@angular/common';
     import {NgModule} from '@angular/core';
-    
+
     @NgModule({})
     export class AppModule {}
     `;
@@ -256,5 +268,20 @@ describe('TypeScriptServiceHost', () => {
     // Check that analyzing modules successfully still works.
     newModules = ngLSHost.getAnalyzedModules();
     expect(newModules.ngModules.length).toBeGreaterThan(0);
+  });
+
+  it('should normalize path on Windows', () => {
+    // Spy on the `path.resolve()` method called by the URL resolver and mimic
+    // behavior on Windows.
+    spyOn(path, 'resolve').and.callFake((...pathSegments: string[]) => {
+      return path.win32.resolve(...pathSegments);
+    });
+    const tsLSHost = new MockTypescriptHost(['/app/main.ts']);
+    const tsLS = ts.createLanguageService(tsLSHost);
+    const ngLSHost = new TypeScriptServiceHost(tsLSHost, tsLS);
+    ngLSHost.getAnalyzedModules();
+    const externalTemplates: string[] = ngLSHost.getExternalTemplates();
+    // External templates should be normalized.
+    expect(externalTemplates).toContain('/app/test.ng');
   });
 });

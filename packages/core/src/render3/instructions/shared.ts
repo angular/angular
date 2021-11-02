@@ -13,12 +13,13 @@ import {ViewEncapsulation} from '../../metadata/view';
 import {validateAgainstEventAttributes, validateAgainstEventProperties} from '../../sanitization/sanitization';
 import {Sanitizer} from '../../sanitization/sanitizer';
 import {assertDefined, assertDomNode, assertEqual, assertGreaterThanOrEqual, assertIndexInRange, assertNotEqual, assertNotSame, assertSame, assertString} from '../../util/assert';
+import {escapeCommentText} from '../../util/dom';
 import {createNamedArrayType} from '../../util/named_array_type';
 import {initNgDevMode} from '../../util/ng_dev_mode';
 import {normalizeDebugBindingName, normalizeDebugBindingValue} from '../../util/ng_reflect';
 import {stringify} from '../../util/stringify';
 import {assertFirstCreatePass, assertFirstUpdatePass, assertLContainer, assertLView, assertTNodeForLView, assertTNodeForTView} from '../assert';
-import {attachPatchData} from '../context_discovery';
+import {attachPatchData, readPatchedLView} from '../context_discovery';
 import {getFactoryDef} from '../definition_factory';
 import {diPublicInInjector, getNodeInjectable, getOrCreateNodeInjectorForNode} from '../di';
 import {formatRuntimeError, RuntimeError, RuntimeErrorCode} from '../error_code';
@@ -36,13 +37,14 @@ import {CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_COMPONENT_VIEW, DE
 import {assertPureTNodeType, assertTNodeType} from '../node_assert';
 import {updateTextNode} from '../node_manipulation';
 import {isInlineTemplate, isNodeMatchingSelectorList} from '../node_selector_matcher';
+import {profiler, ProfilerEvent} from '../profiler';
 import {enterView, getBindingsEnabled, getCurrentDirectiveIndex, getCurrentParentTNode, getCurrentTNode, getCurrentTNodePlaceholderOk, getSelectedIndex, isCurrentTNodeParent, isInCheckNoChangesMode, isInI18nBlock, leaveView, setBindingIndex, setBindingRootForHostBindings, setCurrentDirectiveIndex, setCurrentQueryIndex, setCurrentTNode, setIsInCheckNoChangesMode, setSelectedIndex} from '../state';
 import {NO_CHANGE} from '../tokens';
 import {isAnimationProp, mergeHostAttrs} from '../util/attrs_utils';
 import {INTERPOLATION_DELIMITER} from '../util/misc_utils';
 import {renderStringify, stringifyForError} from '../util/stringify_utils';
 import {getFirstLContainer, getLViewParent, getNextLContainer} from '../util/view_traversal_utils';
-import {getComponentLViewByIndex, getNativeByIndex, getNativeByTNode, isCreationMode, readPatchedLView, resetPreOrderHookFlags, unwrapLView, updateTransplantedViewCount, viewAttachedToChangeDetector} from '../util/view_utils';
+import {getComponentLViewByIndex, getNativeByIndex, getNativeByTNode, isCreationMode, resetPreOrderHookFlags, unwrapLView, updateTransplantedViewCount, viewAttachedToChangeDetector} from '../util/view_utils';
 
 import {selectIndexInternal} from './advance';
 import {attachLContainerDebug, attachLViewDebug, cloneToLViewFromTViewBlueprint, cloneToTViewData, LCleanup, LViewBlueprint, MatchesArray, TCleanup, TNodeDebug, TNodeInitialInputs, TNodeLocalNames, TViewComponents, TViewConstructor} from './lview_debug';
@@ -334,6 +336,7 @@ export function renderView<T>(tView: TView, lView: LView, context: T): void {
     // an error, mark the view as corrupted so we can try to recover.
     if (tView.firstCreatePass) {
       tView.incompleteFirstPass = true;
+      tView.firstCreatePass = false;
     }
 
     throw error;
@@ -500,16 +503,25 @@ export function renderComponentOrTemplate<T>(
 function executeTemplate<T>(
     tView: TView, lView: LView, templateFn: ComponentTemplate<T>, rf: RenderFlags, context: T) {
   const prevSelectedIndex = getSelectedIndex();
+  const isUpdatePhase = rf & RenderFlags.Update;
   try {
     setSelectedIndex(-1);
-    if (rf & RenderFlags.Update && lView.length > HEADER_OFFSET) {
+    if (isUpdatePhase && lView.length > HEADER_OFFSET) {
       // When we're updating, inherently select 0 so we don't
       // have to generate that instruction for most update blocks.
       selectIndexInternal(tView, lView, HEADER_OFFSET, isInCheckNoChangesMode());
     }
+
+    const preHookType =
+        isUpdatePhase ? ProfilerEvent.TemplateUpdateStart : ProfilerEvent.TemplateCreateStart;
+    profiler(preHookType, context);
     templateFn(rf, context);
   } finally {
     setSelectedIndex(prevSelectedIndex);
+
+    const postHookType =
+        isUpdatePhase ? ProfilerEvent.TemplateUpdateEnd : ProfilerEvent.TemplateCreateEnd;
+    profiler(postHookType, context);
   }
 }
 
@@ -752,14 +764,26 @@ export function locateHostElement(
  * On the first template pass, saves in TView:
  * - Cleanup function
  * - Index of context we just saved in LView.cleanupInstances
+ *
+ * This function can also be used to store instance specific cleanup fns. In that case the `context`
+ * is `null` and the function is store in `LView` (rather than it `TView`).
  */
 export function storeCleanupWithContext(
     tView: TView, lView: LView, context: any, cleanupFn: Function): void {
-  const lCleanup = getLCleanup(lView);
-  lCleanup.push(context);
+  const lCleanup = getOrCreateLViewCleanup(lView);
+  if (context === null) {
+    // If context is null that this is instance specific callback. These callbacks can only be
+    // inserted after template shared instances. For this reason in ngDevMode we freeze the TView.
+    if (ngDevMode) {
+      Object.freeze(getOrCreateTViewCleanup(tView));
+    }
+    lCleanup.push(cleanupFn);
+  } else {
+    lCleanup.push(context);
 
-  if (tView.firstCreatePass) {
-    getTViewCleanup(tView).push(cleanupFn, lCleanup.length - 1);
+    if (tView.firstCreatePass) {
+      getOrCreateTViewCleanup(tView).push(cleanupFn, lCleanup.length - 1);
+    }
   }
 }
 
@@ -1031,7 +1055,8 @@ function setNgReflectProperty(
           (element as RElement).setAttribute(attrName, debugValue);
     }
   } else {
-    const textContent = `bindings=${JSON.stringify({[attrName]: debugValue}, null, 2)}`;
+    const textContent =
+        escapeCommentText(`bindings=${JSON.stringify({[attrName]: debugValue}, null, 2)}`);
     if (isProceduralRenderer(renderer)) {
       renderer.setValue((element as RComment), textContent);
     } else {
@@ -1992,12 +2017,12 @@ export function storePropertyBindingMetadata(
 
 export const CLEAN_PROMISE = _CLEAN_PROMISE;
 
-export function getLCleanup(view: LView): any[] {
+export function getOrCreateLViewCleanup(view: LView): any[] {
   // top level variables should not be exported for performance reasons (PERF_NOTES.md)
   return view[CLEANUP] || (view[CLEANUP] = ngDevMode ? new LCleanup() : []);
 }
 
-function getTViewCleanup(tView: TView): any[] {
+export function getOrCreateTViewCleanup(tView: TView): any[] {
   return tView.cleanup || (tView.cleanup = ngDevMode ? new TCleanup() : []);
 }
 

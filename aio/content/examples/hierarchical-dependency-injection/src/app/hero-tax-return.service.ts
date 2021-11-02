@@ -5,8 +5,8 @@ import { HeroesService } from './heroes.service';
 
 @Injectable()
 export class HeroTaxReturnService {
-  private currentTaxReturn: HeroTaxReturn;
-  private originalTaxReturn: HeroTaxReturn;
+  private currentTaxReturn!: HeroTaxReturn;
+  private originalTaxReturn!: HeroTaxReturn;
 
   constructor(private heroService: HeroesService) { }
 

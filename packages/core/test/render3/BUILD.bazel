@@ -53,7 +53,6 @@ ts_library(
     name = "domino",
     testonly = True,
     srcs = [
-        "domino.d.ts",
         "load_domino.ts",
     ],
     deps = [

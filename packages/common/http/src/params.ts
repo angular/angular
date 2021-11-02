@@ -73,7 +73,10 @@ export class HttpUrlEncodingCodec implements HttpParameterCodec {
 function paramParser(rawParams: string, codec: HttpParameterCodec): Map<string, string[]> {
   const map = new Map<string, string[]>();
   if (rawParams.length > 0) {
-    const params: string[] = rawParams.split('&');
+    // The `window.location.search` can be used while creating an instance of the `HttpParams` class
+    // (e.g. `new HttpParams({ fromString: window.location.search })`). The `window.location.search`
+    // may start with the `?` char, so we strip it if it's present.
+    const params: string[] = rawParams.replace(/^\?/, '').split('&');
     params.forEach((param: string) => {
       const eqIdx = param.indexOf('=');
       const [key, val]: string[] = eqIdx == -1 ?
@@ -86,22 +89,35 @@ function paramParser(rawParams: string, codec: HttpParameterCodec): Map<string, 
   }
   return map;
 }
+
+/**
+ * Encode input string with standard encodeURIComponent and then un-encode specific characters.
+ */
+const STANDARD_ENCODING_REGEX = /%(\d[a-f0-9])/gi;
+const STANDARD_ENCODING_REPLACEMENTS: {[x: string]: string} = {
+  '40': '@',
+  '3A': ':',
+  '24': '$',
+  '2C': ',',
+  '3B': ';',
+  '2B': '+',
+  '3D': '=',
+  '3F': '?',
+  '2F': '/',
+};
+
 function standardEncoding(v: string): string {
-  return encodeURIComponent(v)
-      .replace(/%40/gi, '@')
-      .replace(/%3A/gi, ':')
-      .replace(/%24/gi, '$')
-      .replace(/%2C/gi, ',')
-      .replace(/%3B/gi, ';')
-      .replace(/%2B/gi, '+')
-      .replace(/%3D/gi, '=')
-      .replace(/%3F/gi, '?')
-      .replace(/%2F/gi, '/');
+  return encodeURIComponent(v).replace(
+      STANDARD_ENCODING_REGEX, (s, t) => STANDARD_ENCODING_REPLACEMENTS[t] ?? s);
+}
+
+function valueToString(value: string|number|boolean): string {
+  return `${value}`;
 }
 
 interface Update {
   param: string;
-  value?: string;
+  value?: string|number|boolean;
   op: 'a'|'d'|'s';
 }
 
@@ -118,7 +134,7 @@ export interface HttpParamsOptions {
   fromString?: string;
 
   /** Object map of the HTTP parameters. Mutually exclusive with `fromString`. */
-  fromObject?: {[param: string]: string|ReadonlyArray<string>};
+  fromObject?: {[param: string]: string|number|boolean|ReadonlyArray<string|number|boolean>};
 
   /** Encoding codec used to parse and serialize the parameters. */
   encoder?: HttpParameterCodec;
@@ -205,8 +221,29 @@ export class HttpParams {
    * @param value The new value to add.
    * @return A new body with the appended value.
    */
-  append(param: string, value: string): HttpParams {
+  append(param: string, value: string|number|boolean): HttpParams {
     return this.clone({param, value, op: 'a'});
+  }
+
+  /**
+   * Constructs a new body with appended values for the given parameter name.
+   * @param params parameters and values
+   * @return A new body with the new value.
+   */
+  appendAll(params: {[param: string]: string|number|boolean|ReadonlyArray<string|number|boolean>}):
+      HttpParams {
+    const updates: Update[] = [];
+    Object.keys(params).forEach(param => {
+      const value = params[param];
+      if (Array.isArray(value)) {
+        value.forEach(_value => {
+          updates.push({param, value: _value, op: 'a'});
+        });
+      } else {
+        updates.push({param, value: value as (string | number | boolean), op: 'a'});
+      }
+    });
+    return this.clone(updates);
   }
 
   /**
@@ -215,7 +252,7 @@ export class HttpParams {
    * @param value The new value.
    * @return A new body with the new value.
    */
-  set(param: string, value: string): HttpParams {
+  set(param: string, value: string|number|boolean): HttpParams {
     return this.clone({param, value, op: 's'});
   }
 
@@ -226,7 +263,7 @@ export class HttpParams {
    * @return A new body with the given value removed, or with all values
    * removed if no value is specified.
    */
-  delete(param: string, value?: string): HttpParams {
+  delete(param: string, value?: string|number|boolean): HttpParams {
     return this.clone({param, value, op: 'd'});
   }
 
@@ -251,10 +288,10 @@ export class HttpParams {
         .join('&');
   }
 
-  private clone(update: Update): HttpParams {
+  private clone(update: Update|Update[]): HttpParams {
     const clone = new HttpParams({encoder: this.encoder} as HttpParamsOptions);
     clone.cloneFrom = this.cloneFrom || this;
-    clone.updates = (this.updates || []).concat([update]);
+    clone.updates = (this.updates || []).concat(update);
     return clone;
   }
 
@@ -270,13 +307,13 @@ export class HttpParams {
           case 'a':
           case 's':
             const base = (update.op === 'a' ? this.map!.get(update.param) : undefined) || [];
-            base.push(update.value!);
+            base.push(valueToString(update.value!));
             this.map!.set(update.param, base);
             break;
           case 'd':
             if (update.value !== undefined) {
               let base = this.map!.get(update.param) || [];
-              const idx = base.indexOf(update.value);
+              const idx = base.indexOf(valueToString(update.value));
               if (idx !== -1) {
                 base.splice(idx, 1);
               }

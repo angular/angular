@@ -31,6 +31,5 @@
     "src/module",
     "src/bootstrap",
     "test/all_spec",
-    "test/test_ngtools_api"
   ]
 }

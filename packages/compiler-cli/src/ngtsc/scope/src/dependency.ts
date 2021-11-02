@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {AliasingHost, Reference} from '../../imports';
 import {DirectiveMeta, MetadataReader, PipeMeta} from '../../metadata';
@@ -124,7 +124,6 @@ export class MetadataDtsModuleScopeResolver implements DtsModuleScopeResolver {
 
       // The export was not a directive, a pipe, or a module. This is an error.
       // TODO(alxhub): produce a ts.Diagnostic
-      throw new Error(`Exported value ${exportRef.debugName} was not a directive, pipe, or module`);
     }
 
     const exportScope: ExportScope = {
@@ -132,6 +131,7 @@ export class MetadataDtsModuleScopeResolver implements DtsModuleScopeResolver {
         directives,
         pipes,
         ngModules: Array.from(ngModules),
+        isPoisoned: false,
       },
     };
     this.cache.set(clazz, exportScope);
@@ -150,9 +150,12 @@ export class MetadataDtsModuleScopeResolver implements DtsModuleScopeResolver {
       return dirOrPipe;
     }
 
+    // TypeScript incorrectly narrows the type here:
+    // https://github.com/microsoft/TypeScript/issues/43966.
+    // TODO: Remove/Update once https://github.com/microsoft/TypeScript/issues/43966 is resolved.
     return {
       ...dirOrPipe,
       ref: ref.cloneWithAlias(alias),
-    };
+    } as T;
   }
 }

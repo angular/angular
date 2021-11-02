@@ -49,13 +49,9 @@ function declareTests(config?: {useJit: boolean}) {
       });
     });
 
-    let originalLog: (msg: any) => any;
     beforeEach(() => {
-      originalLog = getDOM().log;
-      getDOM().log = (msg) => { /* disable logging */ };
-    });
-    afterEach(() => {
-      getDOM().log = originalLog;
+      // Disable logging for these tests.
+      spyOn(console, 'log').and.callFake(() => {});
     });
 
     describe('events', () => {
@@ -128,7 +124,7 @@ function declareTests(config?: {useJit: boolean}) {
         cmp.detectChanges();
         const div = cmp.debugElement.children[0];
         expect(div.injector.get(OnPrefixDir).onclick).toBe(value);
-        expect(getDOM().getProperty(div.nativeElement, 'onclick')).not.toBe(value);
+        expect(div.nativeElement.onclick).not.toBe(value);
         expect(div.nativeElement.hasAttribute('onclick')).toEqual(false);
       });
     });
@@ -145,7 +141,7 @@ function declareTests(config?: {useJit: boolean}) {
         const trusted = sanitizer.bypassSecurityTrustUrl('javascript:alert(1)');
         ci.ctxProp = trusted;
         fixture.detectChanges();
-        expect(getDOM().getProperty(e, 'href')).toEqual('javascript:alert(1)');
+        expect(e.getAttribute('href')).toEqual('javascript:alert(1)');
       });
 
       it('should error when using the wrong trusted value', () => {
@@ -171,25 +167,21 @@ function declareTests(config?: {useJit: boolean}) {
         const ci = fixture.componentInstance;
         ci.ctxProp = trusted;
         fixture.detectChanges();
-        expect(getDOM().getProperty(e, 'href')).toMatch(/SafeValue(%20| )must(%20| )use/);
+        expect(e.href).toMatch(/SafeValue(%20| )must(%20| )use/);
       });
     });
 
     describe('sanitizing', () => {
-      function checkEscapeOfHrefProperty(fixture: ComponentFixture<any>, isAttribute: boolean) {
+      function checkEscapeOfHrefProperty(fixture: ComponentFixture<any>) {
         const e = fixture.debugElement.children[0].nativeElement;
         const ci = fixture.componentInstance;
         ci.ctxProp = 'hello';
         fixture.detectChanges();
-        // In the browser, reading href returns an absolute URL. On the server side,
-        // it just echoes back the property.
-        let value = isAttribute ? e.getAttribute('href') : getDOM().getProperty(e, 'href');
-        expect(value).toMatch(/.*\/?hello$/);
+        expect(e.getAttribute('href')).toMatch(/.*\/?hello$/);
 
         ci.ctxProp = 'javascript:alert(1)';
         fixture.detectChanges();
-        value = isAttribute ? e.getAttribute('href') : getDOM().getProperty(e, 'href');
-        expect(value).toEqual('unsafe:javascript:alert(1)');
+        expect(e.getAttribute('href')).toEqual('unsafe:javascript:alert(1)');
       }
 
       it('should escape unsafe properties', () => {
@@ -197,7 +189,7 @@ function declareTests(config?: {useJit: boolean}) {
         TestBed.overrideComponent(SecuredComponent, {set: {template}});
         const fixture = TestBed.createComponent(SecuredComponent);
 
-        checkEscapeOfHrefProperty(fixture, false);
+        checkEscapeOfHrefProperty(fixture);
       });
 
       it('should escape unsafe attributes', () => {
@@ -205,7 +197,7 @@ function declareTests(config?: {useJit: boolean}) {
         TestBed.overrideComponent(SecuredComponent, {set: {template}});
         const fixture = TestBed.createComponent(SecuredComponent);
 
-        checkEscapeOfHrefProperty(fixture, true);
+        checkEscapeOfHrefProperty(fixture);
       });
 
       it('should escape unsafe properties if they are used in host bindings', () => {
@@ -220,7 +212,7 @@ function declareTests(config?: {useJit: boolean}) {
         TestBed.overrideComponent(SecuredComponent, {set: {template}});
         const fixture = TestBed.createComponent(SecuredComponent);
 
-        checkEscapeOfHrefProperty(fixture, false);
+        checkEscapeOfHrefProperty(fixture);
       });
 
       it('should escape unsafe attributes if they are used in host bindings', () => {
@@ -235,7 +227,7 @@ function declareTests(config?: {useJit: boolean}) {
         TestBed.overrideComponent(SecuredComponent, {set: {template}});
         const fixture = TestBed.createComponent(SecuredComponent);
 
-        checkEscapeOfHrefProperty(fixture, true);
+        checkEscapeOfHrefProperty(fixture);
       });
 
       modifiedInIvy('Unknown property error thrown during update mode, not creation mode')

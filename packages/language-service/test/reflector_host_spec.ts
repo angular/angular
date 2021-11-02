@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as path from 'path';
-import * as ts from 'typescript';
+import path from 'path';
+import ts from 'typescript';
 
 import {ReflectorHost} from '../src/reflector_host';
 import {TypeScriptServiceHost} from '../src/typescript_host';
@@ -59,8 +59,8 @@ describe('reflector_host_spec', () => {
     // This resolves all Angular directives in the project.
     ngLSHost.getAnalyzedModules();
     const secondCount = spy.calls.count();
-    expect(secondCount).toBeGreaterThan(500);
-    expect(secondCount).toBeLessThan(600);
+    expect(secondCount).toBeGreaterThan(400);
+    expect(secondCount).toBeLessThan(500);
     spy.calls.reset();
 
     // Third count is due to recompution after the program changes.

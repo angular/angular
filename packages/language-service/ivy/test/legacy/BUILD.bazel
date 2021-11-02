@@ -6,6 +6,8 @@ ts_library(
     srcs = glob(["*.ts"]),
     deps = [
         "//packages/compiler",
+        "//packages/compiler-cli/src/ngtsc/core:api",
+        "//packages/compiler-cli/src/ngtsc/diagnostics",
         "//packages/language-service/ivy",
         "@npm//typescript",
     ],
@@ -23,9 +25,6 @@ jasmine_node_test(
         "//packages/core",
         "//packages/forms",
         "//packages/language-service/test:project",
-    ],
-    tags = [
-        "ivy-only",
     ],
     deps = [
         ":legacy_lib",

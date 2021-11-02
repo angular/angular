@@ -13,7 +13,7 @@ import {share} from 'rxjs/operators';
 
 import {ApplicationInitStatus} from './application_init';
 import {APP_BOOTSTRAP_LISTENER, PLATFORM_INITIALIZER} from './application_tokens';
-import {getCompilerFacade} from './compiler/compiler_facade';
+import {getCompilerFacade, JitCompilerUsage} from './compiler/compiler_facade';
 import {Console} from './console';
 import {Injectable} from './di/injectable';
 import {InjectionToken} from './di/injection_token';
@@ -94,7 +94,11 @@ export function compileNgModuleFactory__POST_R3__<M>(
     return Promise.resolve(moduleFactory);
   }
 
-  const compiler = getCompilerFacade();
+  const compiler = getCompilerFacade({
+    usage: JitCompilerUsage.Decorator,
+    kind: 'NgModule',
+    type: moduleType,
+  });
   const compilerInjector = Injector.create({providers: compilerProviders});
   const resourceLoader = compilerInjector.get(compiler.ResourceLoader);
   // The resource loader can also return a string while the "resolveComponentResources"
@@ -157,7 +161,7 @@ export function createPlatform(injector: Injector): PlatformRef {
 
 /**
  * Creates a factory for a platform. Can be used to provide or override `Providers` specific to
- * your applciation's runtime needs, such as `PLATFORM_INITIALIZER` and `PLATFORM_ID`.
+ * your application's runtime needs, such as `PLATFORM_INITIALIZER` and `PLATFORM_ID`.
  * @param parentPlatformFactory Another platform factory to modify. Allows you to compose factories
  * to build up configurations that might be required by different libraries or parts of the
  * application.
@@ -326,6 +330,9 @@ export class PlatformRef {
    *
    * let moduleRef = platformBrowser().bootstrapModuleFactory(MyModuleNgFactory);
    * ```
+   *
+   * @deprecated Passing NgModule factories as the `PlatformRef.bootstrapModuleFactory` function
+   *     argument is deprecated. Use the `PlatformRef.bootstrapModule` API instead.
    */
   bootstrapModuleFactory<M>(moduleFactory: NgModuleFactory<M>, options?: BootstrapOptions):
       Promise<NgModuleRef<M>> {
@@ -350,12 +357,17 @@ export class PlatformRef {
       if (!exceptionHandler) {
         throw new Error('No ErrorHandler. Is platform module (BrowserModule) included?');
       }
-      moduleRef.onDestroy(() => remove(this._modules, moduleRef));
-      ngZone!.runOutsideAngular(() => ngZone!.onError.subscribe({
-        next: (error: any) => {
-          exceptionHandler.handleError(error);
-        }
-      }));
+      ngZone!.runOutsideAngular(() => {
+        const subscription = ngZone!.onError.subscribe({
+          next: (error: any) => {
+            exceptionHandler.handleError(error);
+          }
+        });
+        moduleRef.onDestroy(() => {
+          remove(this._modules, moduleRef);
+          subscription.unsubscribe();
+        });
+      });
       return _callAndReportToErrorHandler(exceptionHandler, ngZone!, () => {
         const initStatus: ApplicationInitStatus = moduleRef.injector.get(ApplicationInitStatus);
         initStatus.runInitializers();
@@ -592,8 +604,8 @@ export class ApplicationRef {
   private _bootstrapListeners: ((compRef: ComponentRef<any>) => void)[] = [];
   private _views: InternalViewRef[] = [];
   private _runningTick: boolean = false;
-  private _enforceNoNewChanges: boolean = false;
   private _stable = true;
+  private _onMicrotaskEmptySubscription: Subscription;
 
   /**
    * Get a list of component types registered to this application.
@@ -616,13 +628,10 @@ export class ApplicationRef {
 
   /** @internal */
   constructor(
-      private _zone: NgZone, private _console: Console, private _injector: Injector,
-      private _exceptionHandler: ErrorHandler,
+      private _zone: NgZone, private _injector: Injector, private _exceptionHandler: ErrorHandler,
       private _componentFactoryResolver: ComponentFactoryResolver,
       private _initStatus: ApplicationInitStatus) {
-    this._enforceNoNewChanges = isDevMode();
-
-    this._zone.onMicrotaskEmpty.subscribe({
+    this._onMicrotaskEmptySubscription = this._zone.onMicrotaskEmpty.subscribe({
       next: () => {
         this._zone.run(() => {
           this.tick();
@@ -680,20 +689,123 @@ export class ApplicationRef {
   }
 
   /**
-   * Bootstrap a new component at the root level of the application.
+   * Bootstrap a component onto the element identified by its selector or, optionally, to a
+   * specified element.
    *
    * @usageNotes
    * ### Bootstrap process
    *
-   * When bootstrapping a new root component into an application, Angular mounts the
-   * specified application component onto DOM elements identified by the componentType's
-   * selector and kicks off automatic change detection to finish initializing the component.
+   * When bootstrapping a component, Angular mounts it onto a target DOM element
+   * and kicks off automatic change detection. The target DOM element can be
+   * provided using the `rootSelectorOrNode` argument.
    *
-   * Optionally, a component can be mounted onto a DOM element that does not match the
-   * componentType's selector.
+   * If the target DOM element is not provided, Angular tries to find one on a page
+   * using the `selector` of the component that is being bootstrapped
+   * (first matched element is used).
    *
    * ### Example
-   * {@example core/ts/platform/platform.ts region='longform'}
+   *
+   * Generally, we define the component to bootstrap in the `bootstrap` array of `NgModule`,
+   * but it requires us to know the component while writing the application code.
+   *
+   * Imagine a situation where we have to wait for an API call to decide about the component to
+   * bootstrap. We can use the `ngDoBootstrap` hook of the `NgModule` and call this method to
+   * dynamically bootstrap a component.
+   *
+   * {@example core/ts/platform/platform.ts region='componentSelector'}
+   *
+   * Optionally, a component can be mounted onto a DOM element that does not match the
+   * selector of the bootstrapped component.
+   *
+   * In the following example, we are providing a CSS selector to match the target element.
+   *
+   * {@example core/ts/platform/platform.ts region='cssSelector'}
+   *
+   * While in this example, we are providing reference to a DOM node.
+   *
+   * {@example core/ts/platform/platform.ts region='domNode'}
+   */
+  bootstrap<C>(component: Type<C>, rootSelectorOrNode?: string|any): ComponentRef<C>;
+
+  /**
+   * Bootstrap a component onto the element identified by its selector or, optionally, to a
+   * specified element.
+   *
+   * @usageNotes
+   * ### Bootstrap process
+   *
+   * When bootstrapping a component, Angular mounts it onto a target DOM element
+   * and kicks off automatic change detection. The target DOM element can be
+   * provided using the `rootSelectorOrNode` argument.
+   *
+   * If the target DOM element is not provided, Angular tries to find one on a page
+   * using the `selector` of the component that is being bootstrapped
+   * (first matched element is used).
+   *
+   * ### Example
+   *
+   * Generally, we define the component to bootstrap in the `bootstrap` array of `NgModule`,
+   * but it requires us to know the component while writing the application code.
+   *
+   * Imagine a situation where we have to wait for an API call to decide about the component to
+   * bootstrap. We can use the `ngDoBootstrap` hook of the `NgModule` and call this method to
+   * dynamically bootstrap a component.
+   *
+   * {@example core/ts/platform/platform.ts region='componentSelector'}
+   *
+   * Optionally, a component can be mounted onto a DOM element that does not match the
+   * selector of the bootstrapped component.
+   *
+   * In the following example, we are providing a CSS selector to match the target element.
+   *
+   * {@example core/ts/platform/platform.ts region='cssSelector'}
+   *
+   * While in this example, we are providing reference to a DOM node.
+   *
+   * {@example core/ts/platform/platform.ts region='domNode'}
+   *
+   * @deprecated Passing Component factories as the `Application.bootstrap` function argument is
+   *     deprecated. Pass Component Types instead.
+   */
+  bootstrap<C>(componentFactory: ComponentFactory<C>, rootSelectorOrNode?: string|any):
+      ComponentRef<C>;
+
+  /**
+   * Bootstrap a component onto the element identified by its selector or, optionally, to a
+   * specified element.
+   *
+   * @usageNotes
+   * ### Bootstrap process
+   *
+   * When bootstrapping a component, Angular mounts it onto a target DOM element
+   * and kicks off automatic change detection. The target DOM element can be
+   * provided using the `rootSelectorOrNode` argument.
+   *
+   * If the target DOM element is not provided, Angular tries to find one on a page
+   * using the `selector` of the component that is being bootstrapped
+   * (first matched element is used).
+   *
+   * ### Example
+   *
+   * Generally, we define the component to bootstrap in the `bootstrap` array of `NgModule`,
+   * but it requires us to know the component while writing the application code.
+   *
+   * Imagine a situation where we have to wait for an API call to decide about the component to
+   * bootstrap. We can use the `ngDoBootstrap` hook of the `NgModule` and call this method to
+   * dynamically bootstrap a component.
+   *
+   * {@example core/ts/platform/platform.ts region='componentSelector'}
+   *
+   * Optionally, a component can be mounted onto a DOM element that does not match the
+   * selector of the bootstrapped component.
+   *
+   * In the following example, we are providing a CSS selector to match the target element.
+   *
+   * {@example core/ts/platform/platform.ts region='cssSelector'}
+   *
+   * While in this example, we are providing reference to a DOM node.
+   *
+   * {@example core/ts/platform/platform.ts region='domNode'}
    */
   bootstrap<C>(componentOrFactory: ComponentFactory<C>|Type<C>, rootSelectorOrNode?: string|any):
       ComponentRef<C> {
@@ -715,19 +827,27 @@ export class ApplicationRef {
         isBoundToModule(componentFactory) ? undefined : this._injector.get(NgModuleRef);
     const selectorOrNode = rootSelectorOrNode || componentFactory.selector;
     const compRef = componentFactory.create(Injector.NULL, [], selectorOrNode, ngModule);
-
-    compRef.onDestroy(() => {
-      this._unloadComponent(compRef);
-    });
+    const nativeElement = compRef.location.nativeElement;
     const testability = compRef.injector.get(Testability, null);
-    if (testability) {
-      compRef.injector.get(TestabilityRegistry)
-          .registerApplication(compRef.location.nativeElement, testability);
+    const testabilityRegistry = testability && compRef.injector.get(TestabilityRegistry);
+    if (testability && testabilityRegistry) {
+      testabilityRegistry.registerApplication(nativeElement, testability);
     }
 
+    compRef.onDestroy(() => {
+      this.detachView(compRef.hostView);
+      remove(this.components, compRef);
+      if (testabilityRegistry) {
+        testabilityRegistry.unregisterApplication(nativeElement);
+      }
+    });
+
     this._loadComponent(compRef);
-    if (isDevMode()) {
-      this._console.log(
+    // Note that we have still left the `isDevMode()` condition in order to avoid
+    // creating a breaking change for projects that still use the View Engine.
+    if ((typeof ngDevMode === 'undefined' || ngDevMode) && isDevMode()) {
+      const _console = this._injector.get(Console);
+      _console.log(
           `Angular is running in development mode. Call enableProdMode() to enable production mode.`);
     }
     return compRef;
@@ -753,7 +873,9 @@ export class ApplicationRef {
       for (let view of this._views) {
         view.detectChanges();
       }
-      if (this._enforceNoNewChanges) {
+      // Note that we have still left the `isDevMode()` condition in order to avoid
+      // creating a breaking change for projects that still use the View Engine.
+      if ((typeof ngDevMode === 'undefined' || ngDevMode) && isDevMode()) {
         for (let view of this._views) {
           view.checkNoChanges();
         }
@@ -796,15 +918,10 @@ export class ApplicationRef {
     listeners.forEach((listener) => listener(componentRef));
   }
 
-  private _unloadComponent(componentRef: ComponentRef<any>): void {
-    this.detachView(componentRef.hostView);
-    remove(this.components, componentRef);
-  }
-
   /** @internal */
   ngOnDestroy() {
-    // TODO(alxhub): Dispose of the NgZone.
     this._views.slice().forEach((view) => view.destroy());
+    this._onMicrotaskEmptySubscription.unsubscribe();
   }
 
   /**

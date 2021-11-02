@@ -462,7 +462,7 @@ function declareTestsUsingBootstrap() {
       destroyPlatform();
     });
 
-    if (getDOM().supportsDOMEvents()) {
+    if (getDOM().supportsDOMEvents) {
       // This test needs a real DOM....
 
       it('should keep change detecting if there was an error', (done) => {

@@ -87,8 +87,8 @@ const removeEventListener = 'removeEventListener';
           Services.checkAndUpdateView(view);
 
           const el = rootNodes[0];
-          expect(getDOM().getProperty(el, 'title')).toBe('v1');
-          expect(getDOM().getProperty(el, 'value')).toBe('v2');
+          expect(el.title).toBe('v1');
+          expect(el.value).toBe('v2');
         });
       });
     });

@@ -1,0 +1,22 @@
+{
+  "$schema": "../../test_case_schema.json",
+  "cases": [
+    {
+      "description": "should handle safe keyed reads inside templates",
+      "inputFiles": [
+        "safe_keyed_read.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "safe_keyed_read_template.js",
+              "generated": "safe_keyed_read.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    }
+  ]
+}

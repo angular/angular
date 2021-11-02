@@ -7,9 +7,8 @@
  */
 
 import {HttpClient} from '@angular/common/http/src/client';
-import {HttpErrorResponse, HttpEventType, HttpResponse} from '@angular/common/http/src/response';
+import {HttpErrorResponse, HttpEventType, HttpResponse, HttpStatusCode} from '@angular/common/http/src/response';
 import {HttpClientTestingBackend} from '@angular/common/http/testing/src/backend';
-import {ddescribe, describe, fit, it} from '@angular/core/testing/src/testing_internal';
 import {toArray} from 'rxjs/operators';
 
 {
@@ -51,9 +50,33 @@ import {toArray} from 'rxjs/operators';
         expect(req.request.headers.get('X-Option')).toEqual('true');
         req.flush({});
       });
-      it('with params', done => {
+      it('with string params', done => {
         client.get('/test', {params: {'test': 'true'}}).subscribe(() => done());
         backend.expectOne('/test?test=true').flush({});
+      });
+      it('with an array of string params', done => {
+        client.get('/test', {params: {'test': ['a', 'b']}}).subscribe(() => done());
+        backend.expectOne('/test?test=a&test=b').flush({});
+      });
+      it('with number params', done => {
+        client.get('/test', {params: {'test': 2}}).subscribe(() => done());
+        backend.expectOne('/test?test=2').flush({});
+      });
+      it('with an array of number params', done => {
+        client.get('/test', {params: {'test': [2, 3]}}).subscribe(() => done());
+        backend.expectOne('/test?test=2&test=3').flush({});
+      });
+      it('with boolean params', done => {
+        client.get('/test', {params: {'test': true}}).subscribe(() => done());
+        backend.expectOne('/test?test=true').flush({});
+      });
+      it('with an array of boolean params', done => {
+        client.get('/test', {params: {'test': [true, false]}}).subscribe(() => done());
+        backend.expectOne('/test?test=true&test=false').flush({});
+      });
+      it('with an array of params of different types', done => {
+        client.get('/test', {params: {'test': [true, 'a', 2] as const}}).subscribe(() => done());
+        backend.expectOne('/test?test=true&test=a&test=2').flush({});
       });
       it('for an arraybuffer', done => {
         const body = new ArrayBuffer(4);
@@ -105,7 +128,7 @@ import {toArray} from 'rxjs/operators';
         client.post('/test', 'text body', {observe: 'response', responseType: 'text'})
             .subscribe(res => {
               expect(res.ok).toBeTruthy();
-              expect(res.status).toBe(200);
+              expect(res.status).toBe(HttpStatusCode.Ok);
               done();
             });
         backend.expectOne('/test').flush('hello world');
@@ -114,7 +137,7 @@ import {toArray} from 'rxjs/operators';
         const body = {data: 'json body'};
         client.post('/test', body, {observe: 'response', responseType: 'text'}).subscribe(res => {
           expect(res.ok).toBeTruthy();
-          expect(res.status).toBe(200);
+          expect(res.status).toBe(HttpStatusCode.Ok);
           done();
         });
         const testReq = backend.expectOne('/test');
@@ -124,7 +147,7 @@ import {toArray} from 'rxjs/operators';
       it('with a json body of false', done => {
         client.post('/test', false, {observe: 'response', responseType: 'text'}).subscribe(res => {
           expect(res.ok).toBeTruthy();
-          expect(res.status).toBe(200);
+          expect(res.status).toBe(HttpStatusCode.Ok);
           done();
         });
         const testReq = backend.expectOne('/test');
@@ -134,7 +157,7 @@ import {toArray} from 'rxjs/operators';
       it('with a json body of 0', done => {
         client.post('/test', 0, {observe: 'response', responseType: 'text'}).subscribe(res => {
           expect(res.ok).toBeTruthy();
-          expect(res.status).toBe(200);
+          expect(res.status).toBe(HttpStatusCode.Ok);
           done();
         });
         const testReq = backend.expectOne('/test');
@@ -145,11 +168,35 @@ import {toArray} from 'rxjs/operators';
         const body = new ArrayBuffer(4);
         client.post('/test', body, {observe: 'response', responseType: 'text'}).subscribe(res => {
           expect(res.ok).toBeTruthy();
-          expect(res.status).toBe(200);
+          expect(res.status).toBe(HttpStatusCode.Ok);
           done();
         });
         const testReq = backend.expectOne('/test');
         expect(testReq.request.body).toBe(body);
+        testReq.flush('hello world');
+      });
+    });
+    describe('makes a DELETE request', () => {
+      it('with body', done => {
+        const body = {data: 'json body'};
+        client.delete('/test', {observe: 'response', responseType: 'text', body: body})
+            .subscribe(res => {
+              expect(res.ok).toBeTruthy();
+              expect(res.status).toBe(200);
+              done();
+            });
+        const testReq = backend.expectOne('/test');
+        expect(testReq.request.body).toBe(body);
+        testReq.flush('hello world');
+      });
+      it('without body', done => {
+        client.delete('/test', {observe: 'response', responseType: 'text'}).subscribe(res => {
+          expect(res.ok).toBeTruthy();
+          expect(res.status).toBe(200);
+          done();
+        });
+        const testReq = backend.expectOne('/test');
+        expect(testReq.request.body).toBe(null);
         testReq.flush('hello world');
       });
     });
@@ -167,7 +214,8 @@ import {toArray} from 'rxjs/operators';
           done();
         });
         backend.expectOne('/test').flush(
-            {'data': 'hello world'}, {status: 500, statusText: 'Server error'});
+            {'data': 'hello world'},
+            {status: HttpStatusCode.InternalServerError, statusText: 'Server error'});
       });
     });
   });

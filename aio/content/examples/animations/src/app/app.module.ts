@@ -31,14 +31,14 @@ import { InsertRemoveComponent } from './insert-remove.component';
       { path: 'open-close', component: OpenClosePageComponent },
       { path: 'status', component: StatusSliderPageComponent },
       { path: 'toggle', component: ToggleAnimationsPageComponent },
-      { path: 'heroes', component: HeroListPageComponent, data: {animation: 'FilterPage'} },
+      { path: 'heroes', component: HeroListPageComponent,
+        data: { animation: 'FilterPage' } },
       { path: 'hero-groups', component: HeroListGroupPageComponent },
       { path: 'enter-leave', component: HeroListEnterLeavePageComponent },
       { path: 'auto', component: HeroListAutoCalcPageComponent },
       { path: 'insert-remove', component: InsertRemoveComponent},
-      { path: 'home', component: HomeComponent, data: {animation: 'HomePage'} },
-      { path: 'about', component: AboutComponent, data: {animation: 'AboutPage'} },
-
+      { path: 'home', component: HomeComponent, data: { animation: 'HomePage' } },
+      { path: 'about', component: AboutComponent, data: { animation: 'AboutPage' } },
     ])
   ],
   // #enddocregion route-animation-data

@@ -45,6 +45,9 @@ export const IMPLICIT_REFERENCE = '$implicit';
 /** Non bindable attribute name **/
 export const NON_BINDABLE_ATTR = 'ngNonBindable';
 
+/** Name for the variable keeping track of the context returned by `ɵɵrestoreView`. */
+export const RESTORED_VIEW_CONTEXT_NAME = 'restoredCtx';
+
 /**
  * Creates an allocator for a temporary variable.
  *
@@ -98,17 +101,24 @@ function mapToExpression(
     let declaredName: string;
     let publicName: string;
     let minifiedName: string;
+    let needsDeclaredName: boolean;
     if (Array.isArray(value)) {
       [publicName, declaredName] = value;
+      minifiedName = key;
+      needsDeclaredName = publicName !== declaredName;
     } else {
       [declaredName, publicName] = splitAtColon(key, [key, value]);
+      minifiedName = declaredName;
+      // Only include the declared name if extracted from the key, i.e. the key contains a colon.
+      // Otherwise the declared name should be omitted even if it is different from the public name,
+      // as it may have already been minified.
+      needsDeclaredName = publicName !== declaredName && key.includes(':');
     }
-    minifiedName = declaredName;
     return {
       key: minifiedName,
       // put quotes around keys that contain potentially unsafe characters
       quoted: UNSAFE_OBJECT_KEY_NAME_REGEXP.test(minifiedName),
-      value: (keepDeclared && publicName !== declaredName) ?
+      value: (keepDeclared && needsDeclaredName) ?
           o.literalArr([asLiteral(publicName), asLiteral(declaredName)]) :
           asLiteral(publicName)
     };
@@ -142,12 +152,17 @@ export function getQueryPredicate(
   }
 }
 
-export class DefinitionMap {
+/**
+ * A representation for an object literal used during codegen of definition objects. The generic
+ * type `T` allows to reference a documented type of the generated structure, such that the
+ * property names that are set can be resolved to their documented declaration.
+ */
+export class DefinitionMap<T = any> {
   values: {key: string, quoted: boolean, value: o.Expression}[] = [];
 
-  set(key: string, value: o.Expression|null): void {
+  set(key: keyof T, value: o.Expression|null): void {
     if (value) {
-      this.values.push({key, value, quoted: false});
+      this.values.push({key: key as string, value, quoted: false});
     }
   }
 

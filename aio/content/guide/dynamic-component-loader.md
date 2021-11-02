@@ -1,8 +1,6 @@
 # Dynamic component loader
 
-Component templates are not always fixed. An application may need to load new components at runtime.
-
-This cookbook shows you how to use `ComponentFactoryResolver` to add components dynamically.
+Component templates are not always fixed. An application might need to load new components at runtime. This cookbook shows you how to add components dynamically.
 
 See the <live-example name="dynamic-component-loader"></live-example>
 of the code in this cookbook.
@@ -28,7 +26,7 @@ Angular comes with its own API for loading components dynamically.
 
 ## The anchor directive
 
-Before you can add components you have to define an anchor point
+Before adding components, you have to define an anchor point
 to tell Angular where to insert components.
 
 The ad banner uses a helper directive called `AdDirective` to
@@ -113,10 +111,6 @@ value to select an `adItem` from the array.
 
 
 
-After `loadComponent()` selects an ad, it uses `ComponentFactoryResolver`
-to resolve a `ComponentFactory` for each specific component.
-The `ComponentFactory` then creates an instance of each component.
-
 Next, you're targeting the `viewContainerRef` that
 exists on this specific instance of the component. How do you know it's
 this specific instance? Because it's referring to `adHost` and `adHost` is the
@@ -172,3 +166,5 @@ Here are two sample components and the `AdComponent` interface for reference:
 </div>
 
 See the <live-example name="dynamic-component-loader"></live-example>.
+
+@reviewed 2021-09-17

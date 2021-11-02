@@ -76,7 +76,7 @@ describe('config', () => {
 
     it('should throw when redirectTo and loadChildren are used together', () => {
       expect(() => {
-        validateConfig([{path: 'a', redirectTo: 'b', loadChildren: 'value'}]);
+        validateConfig([{path: 'a', redirectTo: 'b', loadChildren: jasmine.createSpy('value')}]);
       })
           .toThrowError(
               `Invalid configuration of route 'a': redirectTo and loadChildren cannot be used together`);
@@ -84,7 +84,7 @@ describe('config', () => {
 
     it('should throw when children and loadChildren are used together', () => {
       expect(() => {
-        validateConfig([{path: 'a', children: [], loadChildren: 'value'}]);
+        validateConfig([{path: 'a', children: [], loadChildren: jasmine.createSpy('value')}]);
       })
           .toThrowError(
               `Invalid configuration of route 'a': children and loadChildren cannot be used together`);
@@ -96,6 +96,15 @@ describe('config', () => {
       })
           .toThrowError(
               `Invalid configuration of route 'a': redirectTo and component cannot be used together`);
+    });
+
+    it('should throw when component and redirectTo are used together', () => {
+      expect(() => {
+        validateConfig([{path: 'a', redirectTo: 'b', canActivate: []}]);
+      })
+          .toThrowError(
+              `Invalid configuration of route 'a': redirectTo and canActivate cannot be used together. ` +
+              `Redirects happen before activation so canActivate will never be executed.`);
     });
 
     it('should throw when path and matcher are used together', () => {
@@ -159,7 +168,7 @@ describe('config', () => {
         validateConfig([{path: 'a', outlet: 'aux', children: []}]);
       }).not.toThrow();
       expect(() => {
-        validateConfig([{path: 'a', outlet: 'aux', loadChildren: 'child'}]);
+        validateConfig([{path: 'a', outlet: 'aux', loadChildren: jasmine.createSpy('child')}]);
       }).not.toThrow();
     });
   });

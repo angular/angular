@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as ts from 'typescript';
+import ts from 'typescript';
 import {createLanguageService} from '../src/language_service';
 import {TypeScriptServiceHost} from '../src/typescript_host';
 import {MockTypescriptHost} from './test_utils';
@@ -87,6 +87,19 @@ describe('diagnostics', () => {
       expect(diags.length).toBe(1);
       expect(diags[0].messageText).toBe('Unable to resolve signature for call of $any');
     }
+  });
+
+  it('should not produce diagnostics for absolute template url', () => {
+    mockHost.override(APP_COMPONENT, `
+      import {Component} from '@angular/core';
+
+      @Component({
+        templateUrl: '${TEST_TEMPLATE}',
+      })
+      export class AppComponent {}
+    `);
+    const diags = ngLS.getSemanticDiagnostics(APP_COMPONENT);
+    expect(diags).toEqual([]);
   });
 
   it('should not produce diagnostics for slice pipe with arguments', () => {
@@ -817,8 +830,7 @@ describe('diagnostics', () => {
     const tsDiags = tsLS.getSemanticDiagnostics(APP_COMPONENT);
     expect(tsDiags.length).toBe(1);
     expect(tsDiags[0].messageText)
-        .toBe(
-            `Module '"../node_modules/@angular/core/core"' has no exported member 'OpaqueToken'.`);
+        .toBe(`Module '"@angular/core"' has no exported member 'OpaqueToken'.`);
   });
 
   describe('templates', () => {

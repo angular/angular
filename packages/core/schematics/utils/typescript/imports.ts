@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 export type Import = {
   name: string,
@@ -19,7 +19,7 @@ export function getImportOfIdentifier(typeChecker: ts.TypeChecker, node: ts.Iden
     null {
   const symbol = typeChecker.getSymbolAtLocation(node);
 
-  if (!symbol || !symbol.declarations.length) {
+  if (!symbol || symbol.declarations === undefined || !symbol.declarations.length) {
     return null;
   }
 
@@ -110,7 +110,7 @@ export function replaceImport(
 
 
 /** Finds an import specifier with a particular name. */
-function findImportSpecifier(
+export function findImportSpecifier(
     nodes: ts.NodeArray<ts.ImportSpecifier>, specifierName: string): ts.ImportSpecifier|undefined {
   return nodes.find(element => {
     const {name, propertyName} = element;

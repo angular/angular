@@ -1,0 +1,13 @@
+{
+  "$schema": "../../test_case_schema.json",
+  "cases": [
+    {
+      "description": "should be able to generate the hello world component",
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    }
+  ]
+}

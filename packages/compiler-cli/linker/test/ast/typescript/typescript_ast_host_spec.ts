@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import * as ts from 'typescript';
+import ts from 'typescript';
 import {TypeScriptAstHost} from '../../../src/ast/typescript/typescript_ast_host';
 
 describe('TypeScriptAstHost', () => {
@@ -94,6 +94,11 @@ describe('TypeScriptAstHost', () => {
       expect(host.isBooleanLiteral(expr('false'))).toBe(true);
     });
 
+    it('should return true if the expression is a minified boolean literal', () => {
+      expect(host.isBooleanLiteral(expr('!0'))).toBe(true);
+      expect(host.isBooleanLiteral(expr('!1'))).toBe(true);
+    });
+
     it('should return false if the expression is not a boolean literal', () => {
       expect(host.isBooleanLiteral(expr('"moo"'))).toBe(false);
       expect(host.isBooleanLiteral(expr('\'moo\''))).toBe(false);
@@ -104,6 +109,8 @@ describe('TypeScriptAstHost', () => {
       expect(host.isBooleanLiteral(expr('null'))).toBe(false);
       expect(host.isBooleanLiteral(expr('\'a\' + \'b\''))).toBe(false);
       expect(host.isBooleanLiteral(expr('\`moo\`'))).toBe(false);
+      expect(host.isBooleanLiteral(expr('!2'))).toBe(false);
+      expect(host.isBooleanLiteral(expr('~1'))).toBe(false);
     });
   });
 
@@ -111,6 +118,11 @@ describe('TypeScriptAstHost', () => {
     it('should extract the boolean value', () => {
       expect(host.parseBooleanLiteral(expr('true'))).toEqual(true);
       expect(host.parseBooleanLiteral(expr('false'))).toEqual(false);
+    });
+
+    it('should extract a minified boolean value', () => {
+      expect(host.parseBooleanLiteral(expr('!0'))).toEqual(true);
+      expect(host.parseBooleanLiteral(expr('!1'))).toEqual(false);
     });
 
     it('should error if the value is not a boolean literal', () => {
@@ -254,6 +266,59 @@ describe('TypeScriptAstHost', () => {
       expect(() => host.parseReturnValue(rhs('x = () => { const x = 10; }')))
           .toThrowError(
               'Unsupported syntax, expected a function body with a single return statement.');
+    });
+  });
+
+  describe('isCallExpression()', () => {
+    it('should return true if the expression is a call expression', () => {
+      expect(host.isCallExpression(expr('foo()'))).toBe(true);
+      expect(host.isCallExpression(expr('foo.bar()'))).toBe(true);
+      expect(host.isCallExpression(expr('(foo)(1)'))).toBe(true);
+    });
+
+    it('should return false if the expression is not a call expression', () => {
+      expect(host.isCallExpression(expr('[]'))).toBe(false);
+      expect(host.isCallExpression(expr('"moo"'))).toBe(false);
+      expect(host.isCallExpression(expr('\'moo\''))).toBe(false);
+      expect(host.isCallExpression(expr('someIdentifier'))).toBe(false);
+      expect(host.isCallExpression(expr('42'))).toBe(false);
+      expect(host.isCallExpression(rhs('x = {}'))).toBe(false);
+      expect(host.isCallExpression(expr('null'))).toBe(false);
+      expect(host.isCallExpression(expr('\'a\' + \'b\''))).toBe(false);
+      expect(host.isCallExpression(expr('\`moo\`'))).toBe(false);
+    });
+  });
+
+  describe('parseCallee()', () => {
+    it('should return the callee expression', () => {
+      const foo = jasmine.objectContaining({text: 'foo', kind: ts.SyntaxKind.Identifier});
+      const bar = jasmine.objectContaining({kind: ts.SyntaxKind.PropertyAccessExpression});
+      expect(host.parseCallee(expr('foo()'))).toEqual(foo);
+      expect(host.parseCallee(expr('foo.bar()'))).toEqual(bar);
+    });
+
+    it('should error if the node is not a call expression', () => {
+      expect(() => host.parseCallee(expr('[]')))
+          .toThrowError('Unsupported syntax, expected a call expression.');
+    });
+  });
+
+  describe('parseArguments()', () => {
+    it('should return the arguments as an array of expressions', () => {
+      const arg1 = jasmine.objectContaining({text: '12', kind: ts.SyntaxKind.NumericLiteral});
+      const arg2 = jasmine.objectContaining({kind: ts.SyntaxKind.ArrayLiteralExpression});
+      expect(host.parseArguments(expr('foo(12, [])'))).toEqual([arg1, arg2]);
+      expect(host.parseArguments(expr('foo.bar()'))).toEqual([]);
+    });
+
+    it('should error if the node is not a call expression', () => {
+      expect(() => host.parseArguments(expr('[]')))
+          .toThrowError('Unsupported syntax, expected a call expression.');
+    });
+
+    it('should error if an argument uses spread syntax', () => {
+      expect(() => host.parseArguments(expr('foo(1, ...[])')))
+          .toThrowError('Unsupported syntax, expected argument not to use spread syntax.');
     });
   });
 

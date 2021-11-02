@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {TypeScriptReflectionHost} from '../../src/ngtsc/reflection';
-import {getDownlevelDecoratorsTransform} from '../../src/transformers/downlevel_decorators_transform';
+import {getDownlevelDecoratorsTransform} from '../../src/transformers/downlevel_decorators_transform/index';
 import {MockAotContext, MockCompilerHost} from '../mocks';
 
 const TEST_FILE_INPUT = '/test.ts';
@@ -182,7 +182,7 @@ describe('downlevel decorator transform', () => {
 
     expect(diagnostics.length).toBe(0);
     expect(output).toContain(dedent`
-      MyClass = tslib_1.__decorate([
+      MyClass = (0, tslib_1.__decorate)([
         SomeUnknownDecorator()
       ], MyClass);
     `);
@@ -197,7 +197,7 @@ describe('downlevel decorator transform', () => {
 
     expect(diagnostics.length).toBe(0);
     expect(output).toContain(dedent`
-      MyClass = tslib_1.__decorate([
+      MyClass = (0, tslib_1.__decorate)([
         DecoratorBuilder().customClassDecorator
       ], MyClass);
     `);
@@ -231,7 +231,7 @@ describe('downlevel decorator transform', () => {
 
     expect(diagnostics.length).toBe(0);
     expect(output).toContain(dedent`
-      tslib_1.__decorate([
+      (0, tslib_1.__decorate)([
         SomeDecorator()
       ], MyDir.prototype, "disabled", void 0);
     `);
@@ -424,11 +424,20 @@ describe('downlevel decorator transform', () => {
 
     expect(diagnostics.length).toBe(0);
     expect(output).toContain(dedent`
+      /** @type {!Array<{type: !Function, args: (undefined|!Array<?>)}>} */
       MyDir.decorators = [
         { type: core_1.Directive }
       ];
-      /** @nocollapse */
-      MyDir.ctorParameters = () => [
+    `);
+    expect(output).toContain(dedent`
+      /**
+       * @type {function(): !Array<(null|{
+       *   type: ?,
+       *   decorators: (undefined|!Array<{type: !Function, args: (undefined|!Array<?>)}>),
+       * })>}
+       * @nocollapse
+       */
+       MyDir.ctorParameters = () => [
         { type: ClassInject }
       ];
     `);
@@ -664,8 +673,8 @@ describe('downlevel decorator transform', () => {
       expect(diagnostics.length).toBe(0);
       expect(output).not.toContain('MyService.decorators');
       expect(output).toContain(dedent`
-        MyService = tslib_1.__decorate([
-          core_1.Injectable()
+        MyService = (0, tslib_1.__decorate)([
+          (0, core_1.Injectable)()
         ], MyService);
       `);
     });
@@ -690,8 +699,8 @@ describe('downlevel decorator transform', () => {
         MyService.ctorParameters = () => [
           { type: InjectClass }
         ];
-        MyService = tslib_1.__decorate([
-          core_1.Injectable()
+        MyService = (0, tslib_1.__decorate)([
+          (0, core_1.Injectable)()
         ], MyService);
       `);
     });
@@ -716,8 +725,8 @@ describe('downlevel decorator transform', () => {
         MyService.ctorParameters = () => [
           { type: InjectClass, decorators: [{ type: core_1.Inject, args: ['test',] }] }
         ];
-        MyService = tslib_1.__decorate([
-          core_1.Injectable()
+        MyService = (0, tslib_1.__decorate)([
+          (0, core_1.Injectable)()
         ], MyService);
       `);
     });
@@ -739,6 +748,107 @@ describe('downlevel decorator transform', () => {
         };
       `);
     });
+  });
+
+  describe('transforming multiple files', () => {
+    it('should work correctly for multiple files that import distinct declarations', () => {
+      context.writeFile('foo_service.d.ts', `
+        export declare class Foo {};
+      `);
+      context.writeFile('foo.ts', `
+        import {Injectable} from '@angular/core';
+        import {Foo} from './foo_service';
+
+        @Injectable()
+        export class MyService {
+          constructor(foo: Foo) {}
+        }
+      `);
+
+      context.writeFile('bar_service.d.ts', `
+        export declare class Bar {};
+      `);
+      context.writeFile('bar.ts', `
+        import {Injectable} from '@angular/core';
+        import {Bar} from './bar_service';
+
+        @Injectable()
+        export class MyService {
+          constructor(bar: Bar) {}
+        }
+      `);
+
+      const {program, transformers} = createProgramWithTransform(['/foo.ts', '/bar.ts']);
+      program.emit(undefined, undefined, undefined, undefined, transformers);
+
+      expect(context.readFile('/foo.js')).toContain(`import { Foo } from './foo_service';`);
+      expect(context.readFile('/bar.js')).toContain(`import { Bar } from './bar_service';`);
+    });
+
+    it('should not result in a stack overflow for a large number of files', () => {
+      // The decorators transform used to patch `ts.EmitResolver.isReferencedAliasDeclaration`
+      // repeatedly for each source file in the program, causing a stack overflow once a large
+      // number of source files was reached. This test verifies that emit succeeds even when there's
+      // lots of source files. See https://github.com/angular/angular/issues/40276.
+      context.writeFile('foo.d.ts', `
+        export declare class Foo {};
+      `);
+
+      // A somewhat minimal number of source files that used to trigger a stack overflow.
+      const numberOfTestFiles = 6500;
+      const files: string[] = [];
+      for (let i = 0; i < numberOfTestFiles; i++) {
+        const file = `/${i}.ts`;
+        files.push(file);
+        context.writeFile(file, `
+          import {Injectable} from '@angular/core';
+          import {Foo} from './foo';
+
+          @Injectable()
+          export class MyService {
+            constructor(foo: Foo) {}
+          }
+        `);
+      }
+
+      const {program, transformers} = createProgramWithTransform(files);
+
+      let written = 0;
+      program.emit(undefined, (fileName, outputText) => {
+        written++;
+
+        // The below assertion throws an explicit error instead of using a Jasmine expectation,
+        // as we want to abort on the first failure, if any. This avoids as many as `numberOfFiles`
+        // expectation failures, which would bloat the test output.
+        if (!outputText.includes(`import { Foo } from './foo';`)) {
+          throw new Error(`Transform failed to preserve the import in ${fileName}:\n${outputText}`);
+        }
+      }, undefined, undefined, transformers);
+      expect(written).toBe(numberOfTestFiles);
+    });
+
+    function createProgramWithTransform(files: string[]) {
+      const program = ts.createProgram(
+          files, {
+            moduleResolution: ts.ModuleResolutionKind.NodeJs,
+            importHelpers: true,
+            lib: [],
+            module: ts.ModuleKind.ESNext,
+            target: ts.ScriptTarget.Latest,
+            declaration: false,
+            experimentalDecorators: true,
+            emitDecoratorMetadata: false,
+          },
+          host);
+      const typeChecker = program.getTypeChecker();
+      const reflectionHost = new TypeScriptReflectionHost(typeChecker);
+      const transformers: ts.CustomTransformers = {
+        before: [getDownlevelDecoratorsTransform(
+            program.getTypeChecker(), reflectionHost, diagnostics,
+            /* isCore */ false, isClosureEnabled, skipClassDecorators)]
+      };
+      return {program, transformers};
+    }
   });
 });
 

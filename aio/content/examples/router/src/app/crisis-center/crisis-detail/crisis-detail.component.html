@@ -1,13 +1,10 @@
 <div *ngIf="crisis">
-  <h3>"{{ editName }}"</h3>
+  <h3>{{ editName }}</h3>
+  <p>Id: {{ crisis.id }}</p>
+  <label for="crisis-name">Crisis name: </label>
+  <input type="text" id="crisis-name" [(ngModel)]="editName" placeholder="name"/>
   <div>
-    <label>Id: </label>{{ crisis.id }}</div>
-  <div>
-    <label>Name: </label>
-    <input [(ngModel)]="editName" placeholder="name"/>
-  </div>
-  <p>
     <button (click)="save()">Save</button>
     <button (click)="cancel()">Cancel</button>
-  </p>
+  </div>
 </div>

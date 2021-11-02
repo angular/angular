@@ -8,21 +8,21 @@
 /* tslint:disable:no-console  */
 require('zone.js/bundles/zone-node.umd.js');
 
-import {enableProdMode, NgModuleFactory} from '@angular/core';
-import {renderModuleFactory} from '@angular/platform-server';
+import {enableProdMode, Type} from '@angular/core';
+import {renderModule} from '@angular/platform-server';
 import * as express from 'express';
 
-import {HelloWorldServerModuleNgFactory} from './helloworld/app.server.ngfactory';
-const helloworld = require('raw-loader!./helloworld/index.html');
+import {HelloWorldServerModule} from './helloworld/app.server';
+const {default: helloworld} = require('raw-loader!./helloworld/index.html');
 
-import {TransferStateServerModuleNgFactory} from './transferstate/app.server.ngfactory';
-const transferstate = require('raw-loader!./transferstate/index.html');
+import {TransferStateServerModule} from './transferstate/app.server';
+const {default: transferstate} = require('raw-loader!./transferstate/index.html');
 
 const app = express();
 
-function render<T>(moduleFactory: NgModuleFactory<T>, html: string) {
+function render(moduleType: Type<any>, html: string) {
   return (req, res) => {
-    renderModuleFactory(moduleFactory, {
+    renderModule(moduleType, {
       document: html,
       url: req.url,
     }).then((response) => { res.send(response); });
@@ -32,13 +32,13 @@ function render<T>(moduleFactory: NgModuleFactory<T>, html: string) {
 enableProdMode();
 
 // Client bundles will be statically served from the built/ directory.
-app.use('/built', express.static('built'));
+app.use('/webpack-out', express.static('webpack-out'));
 
 // Keep the browser logs free of errors.
 app.get('/favicon.ico', (req, res) => { res.send(''); });
 
 //-----------ADD YOUR SERVER SIDE RENDERED APP HERE ----------------------
-app.get('/helloworld', render(HelloWorldServerModuleNgFactory, helloworld));
-app.get('/transferstate', render(TransferStateServerModuleNgFactory, transferstate));
+app.get('/helloworld', render(HelloWorldServerModule, helloworld));
+app.get('/transferstate', render(TransferStateServerModule, transferstate));
 
 app.listen(4206, function() { console.log('Server listening on port 4206!'); });

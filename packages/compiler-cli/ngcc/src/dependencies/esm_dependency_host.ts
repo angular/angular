@@ -5,8 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import * as ts from 'typescript';
-import {AbsoluteFsPath, FileSystem} from '../../../src/ngtsc/file_system';
+import ts from 'typescript';
+import {AbsoluteFsPath, ReadonlyFileSystem} from '../../../src/ngtsc/file_system';
 import {DependencyHostBase} from './dependency_host';
 import {ModuleResolver} from './module_resolver';
 
@@ -15,14 +15,15 @@ import {ModuleResolver} from './module_resolver';
  */
 export class EsmDependencyHost extends DependencyHostBase {
   constructor(
-      fs: FileSystem, moduleResolver: ModuleResolver, private scanImportExpressions = true) {
+      fs: ReadonlyFileSystem, moduleResolver: ModuleResolver,
+      private scanImportExpressions = true) {
     super(fs, moduleResolver);
   }
   // By skipping trivia here we don't have to account for it in the processing below
   // It has no relevance to capturing imports.
   private scanner = ts.createScanner(ts.ScriptTarget.Latest, /* skipTrivia */ true);
 
-  protected canSkipFile(fileContents: string): boolean {
+  protected override canSkipFile(fileContents: string): boolean {
     return !hasImportOrReexportStatements(fileContents);
   }
 
@@ -42,7 +43,7 @@ export class EsmDependencyHost extends DependencyHostBase {
    * Specifically, backticked strings are particularly challenging since it is possible
    * to recursively nest backticks and TypeScript expressions within each other.
    */
-  protected extractImports(file: AbsoluteFsPath, fileContents: string): Set<string> {
+  protected override extractImports(file: AbsoluteFsPath, fileContents: string): Set<string> {
     const imports = new Set<string>();
     const templateStack: ts.SyntaxKind[] = [];
     let lastToken: ts.SyntaxKind = ts.SyntaxKind.Unknown;

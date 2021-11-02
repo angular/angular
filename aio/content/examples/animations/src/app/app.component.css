@@ -1,7 +1,3 @@
-:host {
-  display: block;
-}
-
-section {
-  margin-top: 100px;
+nav a {
+  padding: .7rem;
 }

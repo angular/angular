@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {WrappedValue} from '../change_detection/change_detection_util';
 import {PipeTransform} from '../change_detection/pipe_transform';
 import {setInjectImplementation} from '../di/inject_switch';
 import {getFactoryDef} from './definition_factory';
@@ -16,8 +15,7 @@ import {store, ɵɵdirectiveInject} from './instructions/all';
 import {PipeDef, PipeDefList} from './interfaces/definition';
 import {HEADER_OFFSET, LView, TVIEW} from './interfaces/view';
 import {pureFunction1Internal, pureFunction2Internal, pureFunction3Internal, pureFunction4Internal, pureFunctionVInternal} from './pure_function';
-import {getBindingIndex, getBindingRoot, getLView, getTView} from './state';
-import {NO_CHANGE} from './tokens';
+import {getBindingRoot, getLView, getTView} from './state';
 import {load} from './util/view_utils';
 
 
@@ -99,12 +97,10 @@ export function ɵɵpipeBind1(index: number, slotOffset: number, v1: any): any {
   const adjustedIndex = index + HEADER_OFFSET;
   const lView = getLView();
   const pipeInstance = load<PipeTransform>(lView, adjustedIndex);
-  return unwrapValue(
-      lView,
-      isPure(lView, adjustedIndex) ?
-          pureFunction1Internal(
-              lView, getBindingRoot(), slotOffset, pipeInstance.transform, v1, pipeInstance) :
-          pipeInstance.transform(v1));
+  return isPure(lView, adjustedIndex) ?
+      pureFunction1Internal(
+          lView, getBindingRoot(), slotOffset, pipeInstance.transform, v1, pipeInstance) :
+      pipeInstance.transform(v1);
 }
 
 /**
@@ -124,12 +120,10 @@ export function ɵɵpipeBind2(index: number, slotOffset: number, v1: any, v2: an
   const adjustedIndex = index + HEADER_OFFSET;
   const lView = getLView();
   const pipeInstance = load<PipeTransform>(lView, adjustedIndex);
-  return unwrapValue(
-      lView,
-      isPure(lView, adjustedIndex) ?
-          pureFunction2Internal(
-              lView, getBindingRoot(), slotOffset, pipeInstance.transform, v1, v2, pipeInstance) :
-          pipeInstance.transform(v1, v2));
+  return isPure(lView, adjustedIndex) ?
+      pureFunction2Internal(
+          lView, getBindingRoot(), slotOffset, pipeInstance.transform, v1, v2, pipeInstance) :
+      pipeInstance.transform(v1, v2);
 }
 
 /**
@@ -150,12 +144,10 @@ export function ɵɵpipeBind3(index: number, slotOffset: number, v1: any, v2: an
   const adjustedIndex = index + HEADER_OFFSET;
   const lView = getLView();
   const pipeInstance = load<PipeTransform>(lView, adjustedIndex);
-  return unwrapValue(
-      lView,
-      isPure(lView, adjustedIndex) ? pureFunction3Internal(
-                                         lView, getBindingRoot(), slotOffset,
-                                         pipeInstance.transform, v1, v2, v3, pipeInstance) :
-                                     pipeInstance.transform(v1, v2, v3));
+  return isPure(lView, adjustedIndex) ?
+      pureFunction3Internal(
+          lView, getBindingRoot(), slotOffset, pipeInstance.transform, v1, v2, v3, pipeInstance) :
+      pipeInstance.transform(v1, v2, v3);
 }
 
 /**
@@ -178,12 +170,10 @@ export function ɵɵpipeBind4(
   const adjustedIndex = index + HEADER_OFFSET;
   const lView = getLView();
   const pipeInstance = load<PipeTransform>(lView, adjustedIndex);
-  return unwrapValue(
-      lView,
-      isPure(lView, adjustedIndex) ? pureFunction4Internal(
-                                         lView, getBindingRoot(), slotOffset,
-                                         pipeInstance.transform, v1, v2, v3, v4, pipeInstance) :
-                                     pipeInstance.transform(v1, v2, v3, v4));
+  return isPure(lView, adjustedIndex) ? pureFunction4Internal(
+                                            lView, getBindingRoot(), slotOffset,
+                                            pipeInstance.transform, v1, v2, v3, v4, pipeInstance) :
+                                        pipeInstance.transform(v1, v2, v3, v4);
 }
 
 /**
@@ -202,32 +192,12 @@ export function ɵɵpipeBindV(index: number, slotOffset: number, values: [any, .
   const adjustedIndex = index + HEADER_OFFSET;
   const lView = getLView();
   const pipeInstance = load<PipeTransform>(lView, adjustedIndex);
-  return unwrapValue(
-      lView,
-      isPure(lView, adjustedIndex) ?
-          pureFunctionVInternal(
-              lView, getBindingRoot(), slotOffset, pipeInstance.transform, values, pipeInstance) :
-          pipeInstance.transform.apply(pipeInstance, values));
+  return isPure(lView, adjustedIndex) ?
+      pureFunctionVInternal(
+          lView, getBindingRoot(), slotOffset, pipeInstance.transform, values, pipeInstance) :
+      pipeInstance.transform.apply(pipeInstance, values);
 }
 
 function isPure(lView: LView, index: number): boolean {
   return (<PipeDef<any>>lView[TVIEW].data[index]).pure;
-}
-
-/**
- * Unwrap the output of a pipe transformation.
- * In order to trick change detection into considering that the new value is always different from
- * the old one, the old value is overwritten by NO_CHANGE.
- *
- * @param newValue the pipe transformation output.
- */
-function unwrapValue(lView: LView, newValue: any): any {
-  if (WrappedValue.isWrapped(newValue)) {
-    newValue = WrappedValue.unwrap(newValue);
-    // The NO_CHANGE value needs to be written at the index where the impacted binding value is
-    // stored
-    const bindingToInvalidateIdx = getBindingIndex();
-    lView[bindingToInvalidateIdx] = NO_CHANGE;
-  }
-  return newValue;
 }

@@ -7,7 +7,7 @@
  */
 
 import {DirectiveMeta as T2DirectiveMeta, SchemaMetadata} from '@angular/compiler';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {Reference} from '../../imports';
 import {ClassDeclaration} from '../../reflection';
@@ -80,10 +80,17 @@ export interface DirectiveTypeCheckMeta {
   isGeneric: boolean;
 }
 
+export enum MetaType {
+  Pipe,
+  Directive,
+}
+
 /**
  * Metadata collected for a directive within an NgModule's scope.
  */
 export interface DirectiveMeta extends T2DirectiveMeta, DirectiveTypeCheckMeta {
+  type: MetaType.Directive;
+
   ref: Reference<ClassDeclaration>;
   /**
    * Unparsed selector of the directive, or null if the directive does not have a selector.
@@ -108,6 +115,17 @@ export interface DirectiveMeta extends T2DirectiveMeta, DirectiveTypeCheckMeta {
    * another type, it could not statically determine the base class.
    */
   baseClass: Reference<ClassDeclaration>|'dynamic'|null;
+
+  /**
+   * Whether the directive had some issue with its declaration that means it might not have complete
+   * and reliable metadata.
+   */
+  isPoisoned: boolean;
+
+  /**
+   * Whether the directive is likely a structural directive (injects `TemplateRef`).
+   */
+  isStructural: boolean;
 }
 
 /**
@@ -133,8 +151,10 @@ export interface TemplateGuardMeta {
  * Metadata for a pipe within an NgModule's scope.
  */
 export interface PipeMeta {
+  type: MetaType.Pipe;
   ref: Reference<ClassDeclaration>;
   name: string;
+  nameExpr: ts.Expression|null;
 }
 
 /**

@@ -34,11 +34,11 @@ export class AppComponent {
     console.warn(`Parent says: crossing off ${item}.`);
   }
 
-  buyClearanceItem(item) {
+  buyClearanceItem(item: string) {
     console.warn(`Parent says: buying ${item}.`);
   }
 
-  saveForLater(item) {
+  saveForLater(item: string) {
     console.warn(`Parent says: saving ${item} for later.`);
   }
 

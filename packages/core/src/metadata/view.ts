@@ -40,7 +40,7 @@ export enum ViewEncapsulation {
    * Use Shadow DOM to encapsulate styles.
    *
    * For the DOM this means using modern [Shadow
-   * DOM](https://w3c.github.io/webcomponents/spec/shadow/) and
+   * DOM](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_shadow_DOM) and
    * creating a ShadowRoot for Component's Host Element.
    */
   ShadowDom = 3

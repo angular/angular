@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {InjectFlags} from '../di';
+import {InternalInjectFlags} from '../di/interface/injector';
 import {TNode, TNodeType} from '../render3/interfaces/node';
 import {isComponentHost} from '../render3/interfaces/type_checks';
 import {DECLARATION_COMPONENT_VIEW, LView} from '../render3/interfaces/view';
@@ -125,22 +127,17 @@ export abstract class ChangeDetectorRef {
    * @internal
    * @nocollapse
    */
-  static __NG_ELEMENT_ID__: () => ChangeDetectorRef = SWITCH_CHANGE_DETECTOR_REF_FACTORY;
-
-  /**
-   * This marker is need so that the JIT compiler can correctly identify this class as special.
-   *
-   * @internal
-   * @nocollapse
-   */
-  static __ChangeDetectorRef__ = true;
+  static __NG_ELEMENT_ID__:
+      (flags: InjectFlags) => ChangeDetectorRef = SWITCH_CHANGE_DETECTOR_REF_FACTORY;
 }
 
 
 
 /** Returns a ChangeDetectorRef (a.k.a. a ViewRef) */
-export function injectChangeDetectorRef(isPipe = false): ChangeDetectorRef {
-  return createViewRef(getCurrentTNode()!, getLView(), isPipe);
+export function injectChangeDetectorRef(flags: InjectFlags): ChangeDetectorRef {
+  return createViewRef(
+      getCurrentTNode()!, getLView(),
+      (flags & InternalInjectFlags.ForPipe) === InternalInjectFlags.ForPipe);
 }
 
 /**
@@ -152,10 +149,7 @@ export function injectChangeDetectorRef(isPipe = false): ChangeDetectorRef {
  * @returns The ChangeDetectorRef to use
  */
 function createViewRef(tNode: TNode, lView: LView, isPipe: boolean): ChangeDetectorRef {
-  // `isComponentView` will be true for Component and Directives (but not for Pipes).
-  // See https://github.com/angular/angular/pull/33072 for proper fix
-  const isComponentView = !isPipe && isComponentHost(tNode);
-  if (isComponentView) {
+  if (isComponentHost(tNode) && !isPipe) {
     // The LView represents the location where the component is declared.
     // Instead we want the LView for the component View and so we need to look it up.
     const componentView = getComponentLViewByIndex(tNode.index, lView);  // look down

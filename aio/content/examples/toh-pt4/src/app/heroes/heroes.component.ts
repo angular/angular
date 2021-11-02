@@ -15,15 +15,13 @@ import { MessageService } from '../message.service';
 })
 export class HeroesComponent implements OnInit {
 
-  selectedHero: Hero;
+  selectedHero?: Hero;
 
   // #docregion heroes
-  heroes: Hero[];
+  heroes: Hero[] = [];
   // #enddocregion heroes
 
-  // #docregion ctor
   constructor(private heroService: HeroService, private messageService: MessageService) { }
-  // #enddocregion ctor
 
   // #docregion ng-on-init
   ngOnInit() {

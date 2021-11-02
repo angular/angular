@@ -43,6 +43,7 @@ ts_library(
     tsconfig = ":tsconfig.json",
     deps = [
         "//packages/private/testing",
+        "@npm//@bazel/runfiles",
     ],
 )
 

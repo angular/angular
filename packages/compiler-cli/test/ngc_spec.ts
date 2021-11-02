@@ -8,9 +8,11 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import * as ts from 'typescript';
+import * as tsickle from 'tsickle';
+import ts from 'typescript';
 
 import {main, mainDiagnosticsForTest, readCommandLineAndConfiguration, watchMode} from '../src/main';
+
 import {setup, stripAnsi} from './test_support';
 
 describe('ngc transformer command-line', () => {
@@ -328,6 +330,34 @@ describe('ngc transformer command-line', () => {
 
       expect(exitCode).toEqual(1);
     });
+  });
+
+  it('should give a specific error when an Angular Ivy NgModule is imported', () => {
+    writeConfig(`{
+      "extends": "./tsconfig-base.json",
+      "files": ["mymodule.ts"]
+    }`);
+    write('node_modules/test/index.d.ts', `
+      export declare class FooModule {
+        static ɵmod = null;
+      }
+    `);
+    write('mymodule.ts', `
+      import {NgModule} from '@angular/core';
+      import {FooModule} from 'test';
+
+      @NgModule({
+        imports: [FooModule],
+      })
+      export class TestModule {}
+    `);
+
+    const exitCode = main(['-p', basePath], errorSpy);
+    expect(errorSpy).toHaveBeenCalledTimes(1);
+    const message = errorSpy.calls.mostRecent().args[0];
+
+    // The error message should mention Ivy specifically.
+    expect(message).toContain('Angular Ivy');
   });
 
   describe('compile ngfactory files', () => {
@@ -648,7 +678,8 @@ describe('ngc transformer command-line', () => {
         export class MyModule {}
       `);
 
-        const exitCode = main(['-p', basePath], errorSpy);
+        const exitCode =
+            main(['-p', basePath], errorSpy, undefined, undefined, undefined, undefined, tsickle);
         expect(exitCode).toEqual(0);
 
         const mymodulejs = path.resolve(outDir, 'mymodule.js');
@@ -680,14 +711,15 @@ describe('ngc transformer command-line', () => {
         export class MyModule {}
       `);
 
-        const exitCode = main(['-p', basePath], errorSpy);
+        const exitCode =
+            main(['-p', basePath], errorSpy, undefined, undefined, undefined, undefined, tsickle);
         expect(exitCode).toEqual(0);
 
         const mymodulejs = path.resolve(outDir, 'mymodule.js');
         const mymoduleSource = fs.readFileSync(mymodulejs, 'utf8');
         expect(mymoduleSource).toContain('@fileoverview added by tsickle');
         expect(mymoduleSource).toContain('@param {?} p');
-        expect(mymoduleSource).toMatch(/\/\*\* @nocollapse \*\/\s+MyComp\.ctorParameters = /);
+        expect(mymoduleSource).toContain('@nocollapse');
       });
     });
 
@@ -721,7 +753,8 @@ describe('ngc transformer command-line', () => {
         export class MyModule {}
     `);
 
-      const exitCode = main(['-p', basePath], errorSpy);
+      const exitCode =
+          main(['-p', basePath], errorSpy, undefined, undefined, undefined, undefined, tsickle);
       expect(exitCode).toEqual(0);
       const mymodulejs = path.resolve(outDir, 'mymodule.js');
       const mymoduleSource = fs.readFileSync(mymodulejs, 'utf8');
@@ -889,7 +922,7 @@ describe('ngc transformer command-line', () => {
           import {Component, NgModule} from '@angular/core';
           import {RouterModule} from '@angular/router';
 
-          export function foo(): string {
+          export function foo(): any {
             console.log('side-effect');
             return 'test';
           }
@@ -923,7 +956,7 @@ describe('ngc transformer command-line', () => {
           import {Component, NgModule} from '@angular/core';
           import {RouterModule} from '@angular/router';
 
-          export function foo(): string {
+          export function foo(): any {
             console.log('side-effect');
             return 'test';
           }
@@ -1671,7 +1704,7 @@ describe('ngc transformer command-line', () => {
         const config = readCommandLineAndConfiguration(['-p', basePath]);
         const compile = watchMode(config.project, config.options, errorSpy);
 
-        return new Promise(resolve => {
+        return new Promise<void>(resolve => {
           compile.ready(() => {
             cb();
 
@@ -2090,10 +2123,12 @@ describe('ngc transformer command-line', () => {
   });
 
   describe('tree shakeable services', () => {
-    function compileService(source: string): string {
+    function compileService(source: string, withTsickle = false): string {
       write('service.ts', source);
 
-      const exitCode = main(['-p', path.join(basePath, 'tsconfig.json')], errorSpy);
+      const exitCode = main(
+          ['-p', path.join(basePath, 'tsconfig.json')], errorSpy, undefined, undefined, undefined,
+          undefined, withTsickle ? tsickle : undefined);
       expect(exitCode).toEqual(0);
 
       const servicePath = path.resolve(outDir, 'service.js');
@@ -2152,7 +2187,7 @@ describe('ngc transformer command-line', () => {
       });
     });
 
-    it('compiles a basic InjectableDef', () => {
+    it('compiles a basic Injectable definition', () => {
       const source = compileService(`
         import {Injectable} from '@angular/core';
         import {Module} from './module';
@@ -2175,7 +2210,7 @@ describe('ngc transformer command-line', () => {
         },
         "files": ["service.ts"]
       }`);
-      const source = compileService(`
+      const input = `
         import {Injectable} from '@angular/core';
         import {Module} from './module';
 
@@ -2183,11 +2218,13 @@ describe('ngc transformer command-line', () => {
           providedIn: Module,
         })
         export class Service {}
-      `);
+      `;
+
+      const source = compileService(input, /* withTsickle */ true);
       expect(source).toMatch(/\/\*\* @nocollapse \*\/ Service\.ɵprov =/);
     });
 
-    it('compiles a useValue InjectableDef', () => {
+    it('compiles a useValue Injectable definition', () => {
       const source = compileService(`
         import {Injectable} from '@angular/core';
         import {Module} from './module';
@@ -2203,7 +2240,7 @@ describe('ngc transformer command-line', () => {
       expect(source).toMatch(/ɵprov.*return CONST_SERVICE/);
     });
 
-    it('compiles a useExisting InjectableDef', () => {
+    it('compiles a useExisting Injectable definition', () => {
       const source = compileService(`
         import {Injectable} from '@angular/core';
         import {Module} from './module';
@@ -2220,7 +2257,7 @@ describe('ngc transformer command-line', () => {
       expect(source).toMatch(/ɵprov.*return ..\.ɵɵinject\(Existing\)/);
     });
 
-    it('compiles a useFactory InjectableDef with optional dep', () => {
+    it('compiles a useFactory Injectable definition with optional dep', () => {
       const source = compileService(`
         import {Injectable, Optional} from '@angular/core';
         import {Module} from './module';
@@ -2240,7 +2277,7 @@ describe('ngc transformer command-line', () => {
       expect(source).toMatch(/ɵprov.*return ..\(..\.ɵɵinject\(Existing, 8\)/);
     });
 
-    it('compiles a useFactory InjectableDef with skip-self dep', () => {
+    it('compiles a useFactory Injectable definition with skip-self dep', () => {
       const source = compileService(`
         import {Injectable, SkipSelf} from '@angular/core';
         import {Module} from './module';
@@ -2302,6 +2339,22 @@ describe('ngc transformer command-line', () => {
         }
       `);
       expect(source).toMatch(/new Service\(i0\.ɵɵinject\(exports\.TOKEN\)\);/);
+    });
+
+    it('compiles an injectable using `forwardRef` inside `providedIn`', () => {
+      const source = compileService(`
+        import {Injectable, forwardRef} from '@angular/core';
+        import {Module} from './module';
+
+        @Injectable({
+          providedIn: forwardRef(() => Module),
+        })
+        export class Service {}
+      `);
+
+      expect(source).toMatch(/ɵprov = .+\.ɵɵdefineInjectable\(/);
+      expect(source).toMatch(/ɵprov.*token: Service/);
+      expect(source).toMatch(/ɵprov.*providedIn: .+\.Module/);
     });
   });
 

@@ -13,13 +13,37 @@ In the following example, the `Logger` class provides a `Logger` instance.
 <code-example path="dependency-injection/src/app/providers.component.ts" region="providers-logger">
 </code-example>
 
-You can, however, configure an injector with an alternative provider in order to deliver some other object that provides the needed logging functionality.
+You can, however, configure an injector with an alternative provider to deliver some other object that provides the needed logging functionality.
 
-You can configure an injector with a service class, you can provide a substitute class, an object, or a factory function.
+Configure an injector with a service class, and provide a substitute class, an object, or a factory function.
+
+
+{@a token}
+
+{@a injection-token}
+
+## Dependency injection tokens
+
+When you configure an [injector](guide/glossary#injector) with a [provider](guide/glossary#provider), you are associating that provider with a [dependency injection token](guide/glossary#di-token), or DI token.
+The injector lets Angular create a map of any internal dependencies.
+The DI token acts as a key to that map.
+
+The dependency value is an instance, and the class type serves as a lookup key.
+Here, the injector uses the `HeroService` type as the token for looking up `heroService`.
+
+<code-example path="dependency-injection/src/app/injector.component.ts" region="get-hero-service" header="src/app/injector.component.ts"></code-example>
+
+When you define a constructor parameter with the `HeroService` class type, Angular knows to inject the service associated with that `HeroService` class token:
+
+<code-example path="dependency-injection/src/app/heroes/hero-list.component.ts" region="ctor-signature" header="src/app/heroes/hero-list.component.ts">
+</code-example>
+
+Though classes provide many dependency values, the expanded `provide` object lets you associate different kinds of providers with a DI token.
+
 
 {@a provide}
 
-##  Defining providers
+## Defining providers
 
 The class provider syntax is a shorthand expression that expands into a provider configuration, defined by the [`Provider` interface](api/core/Provider).
 The following example is the class provider syntax for providing a `Logger` class in the `providers` array.
@@ -32,21 +56,22 @@ Angular expands the `providers` value into a full provider object as follows.
 <code-example path="dependency-injection/src/app/providers.component.ts" region="providers-3" >
 </code-example>
 
-The expanded provider configuration is an object literal with two properties.
+The expanded provider configuration is an object literal with two properties:
 
-1. The `provide` property holds the [token](guide/dependency-injection#token) that serves as the key for both locating a dependency value and configuring the injector.
-2. The second property is a provider definition object, which tells the injector how to create the dependency value.
+* The `provide` property holds the [token](#token)
+that serves as the key for both locating a dependency value and configuring the injector.
+
+* The second property is a provider definition object, which tells the injector how to create the dependency value.
 The provider-definition key can be `useClass`, as in the example.
 It can also be `useExisting`, `useValue`, or `useFactory`.
-Each of these keys provides a different type of dependency, as discussed below.
-
+Each of these keys provides a different type of dependency, as discussed in the following section.
 
 {@a class-provider}
 
-## Configuring the injector to use alternative class providers
+## Specifying an alternative class provider
 
-To configure the injector to return a different class that provides the same service, you can use the `useClass` property.
-In this example, the injector returns a `BetterLogger` instance when using the `Logger` token.
+Different classes can provide the same service.
+For example, the following code tells the injector to return a `BetterLogger` instance when the component asks for a logger using the `Logger` token.
 
 <code-example path="dependency-injection/src/app/providers.component.ts" region="providers-4" >
 </code-example>
@@ -89,7 +114,7 @@ Generally, writing variations of the same parent alias provider uses [forwardRef
 
 <code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="alex-providers" header="dependency-injection-in-action/src/app/parent-finder.component.ts"></code-example>
 
-To streamline your code, you can extract that logic into a helper function using the `provideParent()` helper function.
+To streamline your code, extract that logic into a helper function using the `provideParent()` helper function.
 
 <code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="provide-the-parent" header="dependency-injection-in-action/src/app/parent-finder.component.ts"></code-example>
 
@@ -142,18 +167,18 @@ To provide and inject the configuration object, specify the object in the `@NgMo
 
 ### Using an `InjectionToken` object
 
-You can define and use an `InjectionToken` object for choosing a provider token for non-class dependencies.
+Define and use an `InjectionToken` object for choosing a provider token for non-class dependencies.
 The following example defines a token, `APP_CONFIG` of the type `InjectionToken`.
 
 <code-example path="dependency-injection/src/app/app.config.ts" region="token" header="src/app/app.config.ts"></code-example>
 
-The optional type parameter, `app.config`, and the token description, `<AppConfig>` specify the token's purpose.
+The optional type parameter, `<AppConfig>`, and the token description, `app.config`, specify the token's purpose.
 
 Next, register the dependency provider in the component using the `InjectionToken` object of `APP_CONFIG`.
 
 <code-example path="dependency-injection/src/app/providers.component.ts" header="src/app/providers.component.ts" region="providers-9"></code-example>
 
-Now you can inject the configuration object into the constructor with `@Inject()` parameter decorator.
+Now, inject the configuration object into the constructor with `@Inject()` parameter decorator.
 
 <code-example path="dependency-injection/src/app/app.component.2.ts" region="ctor" header="src/app/app.component.ts"></code-example>
 
@@ -166,7 +191,7 @@ In TypeScript, an interface is a design-time artifact, and doesn't have a runtim
 
 When the transpiler changes TypeScript to JavaScript, the interface disappears because JavaScript doesn't have interfaces.
 
-Since there is no interface for Angular to find at runtime, the interface cannot be a token, nor can you inject it.
+Because there is no interface for Angular to find at runtime, the interface cannot be a token, nor can you inject it.
 
 <code-example path="dependency-injection/src/app/providers.component.ts" region="providers-9-interface"></code-example>
 
@@ -178,7 +203,7 @@ Since there is no interface for Angular to find at runtime, the interface cannot
 
 ## Using factory providers
 
-To create a changeable, dependent value based on information unavailable before run time, you can use a factory provider.
+To create a changeable, dependent value based on information unavailable before run time, use a factory provider.
 
 In the following example, only authorized users should see secret heroes in the `HeroService`.
 Authorization can change during the course of a single application session, as when a different user logs in .
@@ -198,7 +223,7 @@ You inject both `Logger` and `UserService` into the factory provider so the inje
 
 * The `useFactory` field specifies that the provider is a factory function whose implementation is `heroServiceFactory`.
 
-* The `deps` property is an array of [provider tokens](guide/dependency-injection#token).
+* The `deps` property is an array of [provider tokens](#token).
 The `Logger` and `UserService` classes serve as tokens for their own class providers.
 The injector resolves these tokens and injects the corresponding services into the matching `heroServiceFactory` factory function parameters.
 

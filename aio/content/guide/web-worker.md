@@ -1,6 +1,6 @@
 # Background processing using web workers
 
-[Web workers](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API) allow you to run CPU-intensive computations in a background thread,
+[Web workers](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API) lets you run CPU-intensive computations in a background thread,
 freeing the main thread to update the user interface.
 If you find your application performs a lot of computations, such as generating CAD drawings or doing heavy geometrical calculations, using web workers can help increase your application's performance.
 
@@ -42,7 +42,7 @@ The command performs the following actions.
   <code-example language="typescript" header="src/app/app.component.ts">
   if (typeof Worker !== 'undefined') {
     // Create a new
-    const worker = new Worker('./app.worker', { type: 'module' });
+    const worker = new Worker(new URL('./app.worker', import.meta.url));
     worker.onmessage = ({ data }) => {
       console.log(`page got message: ${data}`);
     };

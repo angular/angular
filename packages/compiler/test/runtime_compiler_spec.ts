@@ -13,8 +13,6 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 import {MockDirectiveResolver} from '../testing';
 
-import {SpyResourceLoader} from './spies';
-
 @Component({selector: 'child-cmp'})
 class ChildComp {
 }
@@ -91,22 +89,20 @@ class SomeCompWithUrlTemplate {
 
   describe('RuntimeCompiler', () => {
     let compiler: Compiler;
-    let resourceLoader: SpyResourceLoader;
+    let resourceLoader: {get: jasmine.Spy};
     let dirResolver: MockDirectiveResolver;
-    let injector: Injector;
 
     beforeEach(() => {
-      TestBed.configureCompiler({providers: [SpyResourceLoader.PROVIDE]});
+      resourceLoader = jasmine.createSpyObj('ResourceLoader', ['get']);
+      TestBed.configureCompiler({providers: [{provide: ResourceLoader, useValue: resourceLoader}]});
     });
 
     beforeEach(fakeAsync(inject(
         [Compiler, ResourceLoader, DirectiveResolver, Injector],
-        (_compiler: Compiler, _resourceLoader: SpyResourceLoader,
-         _dirResolver: MockDirectiveResolver, _injector: Injector) => {
+        (_compiler: Compiler, _resourceLoader: any, _dirResolver: MockDirectiveResolver) => {
           compiler = _compiler;
           resourceLoader = _resourceLoader;
           dirResolver = _dirResolver;
-          injector = _injector;
         })));
 
     describe('compileModuleAsync', () => {
@@ -118,7 +114,7 @@ class SomeCompWithUrlTemplate {
            class SomeModule {
            }
 
-           resourceLoader.spy('get').and.callFake(() => Promise.resolve('hello'));
+           resourceLoader.get.and.callFake(() => Promise.resolve('hello'));
            let ngModuleFactory: NgModuleFactory<any> = undefined!;
            compiler.compileModuleAsync(SomeModule).then((f) => ngModuleFactory = f);
            tick();
@@ -133,7 +129,7 @@ class SomeCompWithUrlTemplate {
         class SomeModule {
         }
 
-        resourceLoader.spy('get').and.callFake(() => Promise.resolve(''));
+        resourceLoader.get.and.callFake(() => Promise.resolve(''));
         expect(() => compiler.compileModuleSync(SomeModule))
             .toThrowError(`Can't compile synchronously as ${
                 stringify(SomeCompWithUrlTemplate)} is still being loaded!`);
@@ -145,7 +141,7 @@ class SomeCompWithUrlTemplate {
            class SomeModule {
            }
 
-           resourceLoader.spy('get').and.callFake(() => Promise.resolve(''));
+           resourceLoader.get.and.callFake(() => Promise.resolve(''));
            dirResolver.setDirective(SomeComp, new Component({selector: 'some-cmp', template: ''}));
            dirResolver.setDirective(
                ChildComp, new Component({selector: 'child-cmp', templateUrl: '/someTpl.html'}));
@@ -163,7 +159,7 @@ class SomeCompWithUrlTemplate {
            class SomeModule {
            }
 
-           resourceLoader.spy('get').and.callFake(() => Promise.resolve('hello'));
+           resourceLoader.get.and.callFake(() => Promise.resolve('hello'));
            compiler.compileModuleAsync(SomeModule);
            tick();
 

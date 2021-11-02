@@ -7,14 +7,13 @@
  */
 
 import {ɵgetDOM as getDOM} from '@angular/common';
-import {beforeEach, describe, expect, it} from '@angular/core/testing/src/testing_internal';
 import {isTextNode} from '@angular/platform-browser/testing/src/browser_util';
 
 {
   describe('dom adapter', () => {
     let defaultDoc: any;
     beforeEach(() => {
-      defaultDoc = getDOM().supportsDOMEvents() ? document : getDOM().createHtmlDocument();
+      defaultDoc = getDOM().supportsDOMEvents ? document : getDOM().createHtmlDocument();
     });
 
     it('should be able to create text nodes and use them with the other APIs', () => {
@@ -36,7 +35,7 @@ import {isTextNode} from '@angular/platform-browser/testing/src/browser_util';
       expect(() => getDOM().remove(d)).not.toThrow();
     });
 
-    if (getDOM().supportsDOMEvents()) {
+    if (getDOM().supportsDOMEvents) {
       describe('getBaseHref', () => {
         beforeEach(() => getDOM().resetBaseElement());
 

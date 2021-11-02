@@ -7,7 +7,7 @@
  */
 
 import {ResourceLoader} from '@angular/compiler';
-import {ApplicationInitStatus, Compiler, COMPILER_OPTIONS, Component, Directive, Injector, InjectorType, LOCALE_ID, ModuleWithComponentFactories, ModuleWithProviders, NgModule, NgModuleFactory, NgZone, Pipe, PlatformRef, Provider, Type, ɵcompileComponent as compileComponent, ɵcompileDirective as compileDirective, ɵcompileNgModuleDefs as compileNgModuleDefs, ɵcompilePipe as compilePipe, ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID, ɵDirectiveDef as DirectiveDef, ɵgetInjectableDef as getInjectableDef, ɵNG_COMP_DEF as NG_COMP_DEF, ɵNG_DIR_DEF as NG_DIR_DEF, ɵNG_INJ_DEF as NG_INJ_DEF, ɵNG_MOD_DEF as NG_MOD_DEF, ɵNG_PIPE_DEF as NG_PIPE_DEF, ɵNgModuleFactory as R3NgModuleFactory, ɵNgModuleTransitiveScopes as NgModuleTransitiveScopes, ɵNgModuleType as NgModuleType, ɵpatchComponentDefWithScope as patchComponentDefWithScope, ɵRender3ComponentFactory as ComponentFactory, ɵRender3NgModuleRef as NgModuleRef, ɵsetLocaleId as setLocaleId, ɵtransitiveScopesFor as transitiveScopesFor, ɵɵInjectableDef as InjectableDef} from '@angular/core';
+import {ApplicationInitStatus, Compiler, COMPILER_OPTIONS, Component, Directive, Injector, InjectorType, LOCALE_ID, ModuleWithComponentFactories, ModuleWithProviders, NgModule, NgModuleFactory, NgZone, Pipe, PlatformRef, Provider, resolveForwardRef, Type, ɵcompileComponent as compileComponent, ɵcompileDirective as compileDirective, ɵcompileNgModuleDefs as compileNgModuleDefs, ɵcompilePipe as compilePipe, ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID, ɵDirectiveDef as DirectiveDef, ɵgetInjectableDef as getInjectableDef, ɵNG_COMP_DEF as NG_COMP_DEF, ɵNG_DIR_DEF as NG_DIR_DEF, ɵNG_INJ_DEF as NG_INJ_DEF, ɵNG_MOD_DEF as NG_MOD_DEF, ɵNG_PIPE_DEF as NG_PIPE_DEF, ɵNgModuleFactory as R3NgModuleFactory, ɵNgModuleTransitiveScopes as NgModuleTransitiveScopes, ɵNgModuleType as NgModuleType, ɵpatchComponentDefWithScope as patchComponentDefWithScope, ɵRender3ComponentFactory as ComponentFactory, ɵRender3NgModuleRef as NgModuleRef, ɵsetLocaleId as setLocaleId, ɵtransitiveScopesFor as transitiveScopesFor, ɵɵInjectableDeclaration as InjectableDeclaration} from '@angular/core';
 
 import {clearResolutionOfComponentResourcesQueue, isComponentDefPendingResolution, resolveComponentResources, restoreComponentResolutionQueue} from '../../src/metadata/resource_loading';
 
@@ -174,21 +174,21 @@ export class R3TestBedCompiler {
       providerDef = {provide: token};
     }
 
-    const injectableDef: InjectableDef<any>|null =
+    const injectableDef: InjectableDeclaration<any>|null =
         typeof token !== 'string' ? getInjectableDef(token) : null;
-    const isRoot = injectableDef !== null && injectableDef.providedIn === 'root';
-    const overridesBucket = isRoot ? this.rootProviderOverrides : this.providerOverrides;
+    const providedIn = injectableDef === null ? null : resolveForwardRef(injectableDef.providedIn);
+    const overridesBucket =
+        providedIn === 'root' ? this.rootProviderOverrides : this.providerOverrides;
     overridesBucket.push(providerDef);
 
     // Keep overrides grouped by token as well for fast lookups using token
     this.providerOverridesByToken.set(token, providerDef);
-    if (injectableDef !== null && injectableDef.providedIn !== null &&
-        typeof injectableDef.providedIn !== 'string') {
-      const existingOverrides = this.providerOverridesByModule.get(injectableDef.providedIn);
+    if (injectableDef !== null && providedIn !== null && typeof providedIn !== 'string') {
+      const existingOverrides = this.providerOverridesByModule.get(providedIn);
       if (existingOverrides !== undefined) {
         existingOverrides.push(providerDef);
       } else {
-        this.providerOverridesByModule.set(injectableDef.providedIn, [providerDef]);
+        this.providerOverridesByModule.set(providedIn, [providerDef]);
       }
     }
   }
@@ -353,7 +353,7 @@ export class R3TestBedCompiler {
     if (this.overriddenModules.size > 0) {
       // Module overrides (via `TestBed.overrideModule`) might affect scopes that were previously
       // calculated and stored in `transitiveCompileScopes`. If module overrides are present,
-      // collect all affected modules and reset scopes to force their re-calculatation.
+      // collect all affected modules and reset scopes to force their re-calculation.
       const testingModuleDef = (this.testModuleType as any)[NG_MOD_DEF];
       const affectedModules = this.collectModulesAffectedByOverrides(testingModuleDef.imports);
       if (affectedModules.size > 0) {
@@ -538,6 +538,8 @@ export class R3TestBedCompiler {
           this.queueTypeArray(maybeUnwrapFn(def.declarations), value);
           queueTypesFromModulesArrayRecur(maybeUnwrapFn(def.imports));
           queueTypesFromModulesArrayRecur(maybeUnwrapFn(def.exports));
+        } else if (isModuleWithProviders(value)) {
+          queueTypesFromModulesArrayRecur([value.ngModule]);
         }
       }
     };

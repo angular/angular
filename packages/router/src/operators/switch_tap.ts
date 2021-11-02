@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {from, MonoTypeOperatorFunction, ObservableInput} from 'rxjs';
+import {from, MonoTypeOperatorFunction, ObservableInput, of} from 'rxjs';
 import {map, switchMap} from 'rxjs/operators';
 
 /**
@@ -17,13 +17,11 @@ import {map, switchMap} from 'rxjs/operators';
  */
 export function switchTap<T>(next: (x: T) => void|ObservableInput<any>):
     MonoTypeOperatorFunction<T> {
-  return function(source) {
-    return source.pipe(switchMap(v => {
-      const nextResult = next(v);
-      if (nextResult) {
-        return from(nextResult).pipe(map(() => v));
-      }
-      return from([v]);
-    }));
-  };
+  return switchMap(v => {
+    const nextResult = next(v);
+    if (nextResult) {
+      return from(nextResult).pipe(map(() => v));
+    }
+    return of(v);
+  });
 }

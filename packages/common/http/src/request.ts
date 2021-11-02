@@ -6,8 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {HttpContext} from './context';
 import {HttpHeaders} from './headers';
 import {HttpParams} from './params';
+
 
 /**
  * Construction interface for `HttpRequest`s.
@@ -16,6 +18,7 @@ import {HttpParams} from './params';
  */
 interface HttpRequestInit {
   headers?: HttpHeaders;
+  context?: HttpContext;
   reportProgress?: boolean;
   params?: HttpParams;
   responseType?: 'arraybuffer'|'blob'|'json'|'text';
@@ -66,6 +69,15 @@ function isFormData(value: any): value is FormData {
 }
 
 /**
+ * Safely assert whether the given value is a URLSearchParams instance.
+ *
+ * In some execution environments URLSearchParams is not defined.
+ */
+function isUrlSearchParams(value: any): value is URLSearchParams {
+  return typeof URLSearchParams !== 'undefined' && value instanceof URLSearchParams;
+}
+
+/**
  * An outgoing HTTP request with an optional typed body.
  *
  * `HttpRequest` represents an outgoing request, including URL, method,
@@ -90,6 +102,11 @@ export class HttpRequest<T> {
    */
   // TODO(issue/24571): remove '!'.
   readonly headers!: HttpHeaders;
+
+  /**
+   * Shared and mutable context that can be used by interceptors
+   */
+  readonly context!: HttpContext;
 
   /**
    * Whether this request should be made in a way that exposes progress events.
@@ -119,6 +136,13 @@ export class HttpRequest<T> {
 
   /**
    * Outgoing URL parameters.
+   *
+   * To pass a string representation of HTTP parameters in the URL-query-string format,
+   * the `HttpParamsOptions`' `fromString` may be used. For example:
+   *
+   * ```
+   * new HttpParams({fromString: 'angular=awesome'})
+   * ```
    */
   // TODO(issue/24571): remove '!'.
   readonly params!: HttpParams;
@@ -130,6 +154,7 @@ export class HttpRequest<T> {
 
   constructor(method: 'DELETE'|'GET'|'HEAD'|'JSONP'|'OPTIONS', url: string, init?: {
     headers?: HttpHeaders,
+    context?: HttpContext,
     reportProgress?: boolean,
     params?: HttpParams,
     responseType?: 'arraybuffer'|'blob'|'json'|'text',
@@ -137,6 +162,7 @@ export class HttpRequest<T> {
   });
   constructor(method: 'POST'|'PUT'|'PATCH', url: string, body: T|null, init?: {
     headers?: HttpHeaders,
+    context?: HttpContext,
     reportProgress?: boolean,
     params?: HttpParams,
     responseType?: 'arraybuffer'|'blob'|'json'|'text',
@@ -144,6 +170,7 @@ export class HttpRequest<T> {
   });
   constructor(method: string, url: string, body: T|null, init?: {
     headers?: HttpHeaders,
+    context?: HttpContext,
     reportProgress?: boolean,
     params?: HttpParams,
     responseType?: 'arraybuffer'|'blob'|'json'|'text',
@@ -152,6 +179,7 @@ export class HttpRequest<T> {
   constructor(
       method: string, readonly url: string, third?: T|{
         headers?: HttpHeaders,
+        context?: HttpContext,
         reportProgress?: boolean,
         params?: HttpParams,
         responseType?: 'arraybuffer'|'blob'|'json'|'text',
@@ -159,6 +187,7 @@ export class HttpRequest<T> {
       }|null,
       fourth?: {
         headers?: HttpHeaders,
+        context?: HttpContext,
         reportProgress?: boolean,
         params?: HttpParams,
         responseType?: 'arraybuffer'|'blob'|'json'|'text',
@@ -196,6 +225,10 @@ export class HttpRequest<T> {
         this.headers = options.headers;
       }
 
+      if (!!options.context) {
+        this.context = options.context;
+      }
+
       if (!!options.params) {
         this.params = options.params;
       }
@@ -204,6 +237,11 @@ export class HttpRequest<T> {
     // If no headers have been passed in, construct a new HttpHeaders instance.
     if (!this.headers) {
       this.headers = new HttpHeaders();
+    }
+
+    // If no context have been passed in, construct a new HttpContext instance.
+    if (!this.context) {
+      this.context = new HttpContext();
     }
 
     // If no parameters have been passed in, construct a new HttpUrlEncodedParams instance.
@@ -244,7 +282,7 @@ export class HttpRequest<T> {
     // Check whether the body is already in a serialized form. If so,
     // it can just be returned directly.
     if (isArrayBuffer(this.body) || isBlob(this.body) || isFormData(this.body) ||
-        typeof this.body === 'string') {
+        isUrlSearchParams(this.body) || typeof this.body === 'string') {
       return this.body;
     }
     // Check whether the body is an instance of HttpUrlEncodedParams.
@@ -293,9 +331,9 @@ export class HttpRequest<T> {
     if (this.body instanceof HttpParams) {
       return 'application/x-www-form-urlencoded;charset=UTF-8';
     }
-    // Arrays, objects, and numbers will be encoded as JSON.
+    // Arrays, objects, boolean and numbers will be encoded as JSON.
     if (typeof this.body === 'object' || typeof this.body === 'number' ||
-        Array.isArray(this.body)) {
+        typeof this.body === 'boolean') {
       return 'application/json';
     }
     // No type could be inferred.
@@ -305,6 +343,7 @@ export class HttpRequest<T> {
   clone(): HttpRequest<T>;
   clone(update: {
     headers?: HttpHeaders,
+    context?: HttpContext,
     reportProgress?: boolean,
     params?: HttpParams,
     responseType?: 'arraybuffer'|'blob'|'json'|'text',
@@ -317,6 +356,7 @@ export class HttpRequest<T> {
   }): HttpRequest<T>;
   clone<V>(update: {
     headers?: HttpHeaders,
+    context?: HttpContext,
     reportProgress?: boolean,
     params?: HttpParams,
     responseType?: 'arraybuffer'|'blob'|'json'|'text',
@@ -329,6 +369,7 @@ export class HttpRequest<T> {
   }): HttpRequest<V>;
   clone(update: {
     headers?: HttpHeaders,
+    context?: HttpContext,
     reportProgress?: boolean,
     params?: HttpParams,
     responseType?: 'arraybuffer'|'blob'|'json'|'text',
@@ -363,6 +404,9 @@ export class HttpRequest<T> {
     let headers = update.headers || this.headers;
     let params = update.params || this.params;
 
+    // Pass on context if needed
+    const context = update.context ?? this.context;
+
     // Check whether the caller has asked to add headers.
     if (update.setHeaders !== undefined) {
       // Set every requested header.
@@ -382,6 +426,7 @@ export class HttpRequest<T> {
     return new HttpRequest(method, url, body, {
       params,
       headers,
+      context,
       reportProgress,
       responseType,
       withCredentials,

@@ -13,13 +13,6 @@ import {Type} from '../interface/type';
 import {SchemaMetadata} from '../metadata/schema';
 import {compileNgModule as render3CompileNgModule} from '../render3/jit/module';
 import {makeDecorator, TypeDecorator} from '../util/decorators';
-import {NgModuleDef} from './ng_module_def';
-
-
-/**
- * @publicApi
- */
-export type ɵɵNgModuleDefWithMeta<T, Declarations, Imports, Exports> = NgModuleDef<T>;
 
 
 /**
@@ -206,7 +199,10 @@ export interface NgModule {
    * using one of the imperative techniques, such as `ViewContainerRef.createComponent()`.
    *
    * @see [Entry Components](guide/entry-components)
-   * @deprecated Since 9.0.0. With Ivy, this property is no longer necessary.
+   * @deprecated
+   * Since 9.0.0. With Ivy, this property is no longer necessary.
+   * (You may need to keep these if building a library that will be consumed by a View Engine
+   * application.)
    */
   entryComponents?: Array<Type<any>|any[]>;
 
@@ -230,9 +226,8 @@ export interface NgModule {
   schemas?: Array<SchemaMetadata|any[]>;
 
   /**
-   * A name or path that uniquely identifies this NgModule in `getModuleFactory`.
-   * If left `undefined`, the NgModule is not registered with
-   * `getModuleFactory`.
+   * A name or path that uniquely identifies this NgModule in `getNgModuleById`.
+   * If left `undefined`, the NgModule is not registered with `getNgModuleById`.
    */
   id?: string;
 
@@ -271,11 +266,10 @@ function preR3NgModuleCompile(moduleType: Type<any>, metadata?: NgModule): void 
     imports = [...imports, metadata.exports];
   }
 
-  (moduleType as InjectorType<any>).ɵinj = ɵɵdefineInjector({
-    factory: convertInjectableProviderToFactory(moduleType, {useClass: moduleType}),
-    providers: metadata && metadata.providers,
-    imports: imports,
-  });
+  const moduleInjectorType = moduleType as InjectorType<any>;
+  moduleInjectorType.ɵfac = convertInjectableProviderToFactory(moduleType, {useClass: moduleType});
+  moduleInjectorType.ɵinj =
+      ɵɵdefineInjector({providers: metadata && metadata.providers, imports: imports});
 }
 
 

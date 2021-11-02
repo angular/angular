@@ -15,7 +15,7 @@ import {assertDefined} from '../../util/assert';
 import {createNamedArrayType} from '../../util/named_array_type';
 import {initNgDevMode} from '../../util/ng_dev_mode';
 import {assertNodeInjector} from '../assert';
-import {getInjectorIndex} from '../di';
+import {getInjectorIndex, getParentInjectorLocation} from '../di';
 import {CONTAINER_HEADER_OFFSET, HAS_TRANSPLANTED_VIEWS, LContainer, MOVED_VIEWS, NATIVE} from '../interfaces/container';
 import {ComponentTemplate, DirectiveDef, DirectiveDefList, PipeDefList, ViewQueriesFunction} from '../interfaces/definition';
 import {NO_PARENT_INJECTOR, NodeInjectorOffset} from '../interfaces/injector';
@@ -25,7 +25,7 @@ import {LQueries, TQueries} from '../interfaces/query';
 import {Renderer3, RendererFactory3} from '../interfaces/renderer';
 import {RComment, RElement, RNode} from '../interfaces/renderer_dom';
 import {getTStylingRangeNext, getTStylingRangeNextDuplicate, getTStylingRangePrev, getTStylingRangePrevDuplicate, TStylingKey, TStylingRange} from '../interfaces/styling';
-import {CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DebugNode, DECLARATION_VIEW, DestroyHookData, FLAGS, HEADER_OFFSET, HookData, HOST, HostBindingOpCodes, INJECTOR, LContainerDebug as ILContainerDebug, LView, LViewDebug as ILViewDebug, LViewDebugRange, LViewDebugRangeContent, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, RENDERER_FACTORY, SANITIZER, T_HOST, TData, TView as ITView, TVIEW, TView, TViewType, TViewTypeAsString} from '../interfaces/view';
+import {CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DebugNode, DECLARATION_VIEW, DestroyHookData, FLAGS, HEADER_OFFSET, HookData, HOST, HostBindingOpCodes, INJECTOR, LContainerDebug as ILContainerDebug, LView, LViewDebug as ILViewDebug, LViewDebugRange, LViewDebugRangeContent, LViewFlags, NEXT, NodeInjectorDebug, PARENT, QUERIES, RENDERER, RENDERER_FACTORY, SANITIZER, T_HOST, TData, TView as ITView, TVIEW, TView, TViewType, TViewTypeAsString} from '../interfaces/view';
 import {attachDebugObject} from '../util/debug_utils';
 import {getParentInjectorIndex, getParentInjectorView} from '../util/injector_utils';
 import {unwrapRNode} from '../util/view_utils';
@@ -102,7 +102,6 @@ function getLViewToClone(type: TViewType, name: string|null): Array<any> {
       }
       return embeddedArray;
   }
-  throw new Error('unreachable code');
 }
 
 function nameSuffix(text: string|null|undefined): string {
@@ -216,8 +215,20 @@ class TNode implements ITNode {
   debugNodeInjectorPath(lView: LView): DebugNode[] {
     const path: DebugNode[] = [];
     let injectorIndex = getInjectorIndex(this, lView);
-    ngDevMode && assertNodeInjector(lView, injectorIndex);
+    if (injectorIndex === -1) {
+      // Looks like the current `TNode` does not have `NodeInjector` associated with it => look for
+      // parent NodeInjector.
+      const parentLocation = getParentInjectorLocation(this, lView);
+      if (parentLocation !== NO_PARENT_INJECTOR) {
+        // We found a parent, so start searching from the parent location.
+        injectorIndex = getParentInjectorIndex(parentLocation);
+        lView = getParentInjectorView(parentLocation, lView);
+      } else {
+        // No parents have been found, so there are no `NodeInjector`s to consult.
+      }
+    }
     while (injectorIndex !== -1) {
+      ngDevMode && assertNodeInjector(lView, injectorIndex);
       const tNode = lView[TVIEW].data[injectorIndex + NodeInjectorOffset.TNODE] as TNode;
       path.push(buildDebugNode(tNode, lView));
       const parentLocation = lView[injectorIndex + NodeInjectorOffset.PARENT];
@@ -583,15 +594,19 @@ export function buildDebugNode(tNode: ITNode, lView: LView): DebugNode {
   return {
     html: toHtml(native),
     type: toTNodeTypeAsString(tNode.type),
+    tNode,
     native: native as any,
     children: toDebugNodes(tNode.child, lView),
     factories,
     instances,
-    injector: buildNodeInjectorDebug(tNode, tView, lView)
+    injector: buildNodeInjectorDebug(tNode, tView, lView),
+    get injectorResolutionPath() {
+      return (tNode as TNode).debugNodeInjectorPath(lView);
+    },
   };
 }
 
-function buildNodeInjectorDebug(tNode: ITNode, tView: ITView, lView: LView) {
+function buildNodeInjectorDebug(tNode: ITNode, tView: ITView, lView: LView): NodeInjectorDebug {
   const viewProviders: Type<any>[] = [];
   for (let i = (tNode as TNode).providerIndexStart_; i < (tNode as TNode).providerIndexEnd_; i++) {
     viewProviders.push(tView.data[i] as Type<any>);
@@ -633,6 +648,9 @@ function binary(array: any[], idx: number): string {
  * @param idx
  */
 function toBloom(array: any[], idx: number): string {
+  if (idx < 0) {
+    return 'NO_NODE_INJECTOR';
+  }
   return `${binary(array, idx + 7)}_${binary(array, idx + 6)}_${binary(array, idx + 5)}_${
       binary(array, idx + 4)}_${binary(array, idx + 3)}_${binary(array, idx + 2)}_${
       binary(array, idx + 1)}_${binary(array, idx + 0)}`;

@@ -5,8 +5,6 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
-// #docregion TemplateDriven
 import {Component} from '@angular/core';
 
 @Component({
@@ -25,4 +23,3 @@ import {Component} from '@angular/core';
 export class RadioButtonComp {
   myFood = 'lamb';
 }
-// #enddocregion

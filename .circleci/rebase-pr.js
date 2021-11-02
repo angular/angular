@@ -92,7 +92,7 @@ async function _main() {
  * likely correct branch will be the first one encountered in the list.
  */
 function getRefFromBranchList(gitOutput) {
-  const branches = gitOutput.split('\n').map(b => b.split('/').slice(1).join('').trim());
+  const branches = gitOutput.split('\n').map(b => b.split('/').slice(1).join('/').trim());
   return branches.sort((a, b) => {
     if (a === 'master') {
       return -1;
@@ -152,7 +152,7 @@ function getCommonAncestorSha(sha1, sha2) {
  */
 function addAndFetchRemote(owner, name) {
   const remoteName = `${owner}_${name}`;
-  exec(`git remote add ${remoteName} https://github.com/${owner}/${name}.git`, false);
+  exec(`git remote add ${remoteName} https://github.com/${owner}/${name}.git`, true);
   exec(`git fetch ${remoteName}`);
   return remoteName;
 }
@@ -194,14 +194,14 @@ function getRefsAndShasForChange() {
  *
  * Return the trimmed stdout as a string, with an added attribute of the exit code.
  */
-function exec(command, allowStderr = true) {
-  let output = new String();
-  output.code = 0;
+function exec(command, ignoreError = false) {
   try {
-    output += execSync(command, {stdio: ['pipe', 'pipe', 'pipe']}).toString().trim();
+    return execSync(command, {stdio: 'pipe'}).toString().trim();
   } catch (err) {
-    allowStderr && console.error(err.stderr.toString());
-    output.code = err.status;
+    if (ignoreError) {
+      return '';
+    }
+
+    throw err;
   }
-  return output;
 }

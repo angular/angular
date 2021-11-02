@@ -8,7 +8,7 @@
 
 import {Directive, ElementRef, forwardRef, Renderer2, StaticProvider} from '@angular/core';
 
-import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
+import {BuiltInControlValueAccessor, ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
 
 export const RANGE_VALUE_ACCESSOR: StaticProvider = {
   provide: NG_VALUE_ACCESSOR,
@@ -50,53 +50,23 @@ export const RANGE_VALUE_ACCESSOR: StaticProvider = {
   },
   providers: [RANGE_VALUE_ACCESSOR]
 })
-export class RangeValueAccessor implements ControlValueAccessor {
-  /**
-   * The registered callback function called when a change or input event occurs on the input
-   * element.
-   * @nodoc
-   */
-  onChange = (_: any) => {};
-
-  /**
-   * The registered callback function called when a blur event occurs on the input element.
-   * @nodoc
-   */
-  onTouched = () => {};
-
-  constructor(private _renderer: Renderer2, private _elementRef: ElementRef) {}
-
+export class RangeValueAccessor extends BuiltInControlValueAccessor implements
+    ControlValueAccessor {
   /**
    * Sets the "value" property on the input element.
    * @nodoc
    */
   writeValue(value: any): void {
-    this._renderer.setProperty(this._elementRef.nativeElement, 'value', parseFloat(value));
+    this.setProperty('value', parseFloat(value));
   }
 
   /**
    * Registers a function called when the control value changes.
    * @nodoc
    */
-  registerOnChange(fn: (_: number|null) => void): void {
+  override registerOnChange(fn: (_: number|null) => void): void {
     this.onChange = (value) => {
       fn(value == '' ? null : parseFloat(value));
     };
-  }
-
-  /**
-   * Registers a function called when the control is touched.
-   * @nodoc
-   */
-  registerOnTouched(fn: () => void): void {
-    this.onTouched = fn;
-  }
-
-  /**
-   * Sets the "disabled" property on the range input element.
-   * @nodoc
-   */
-  setDisabledState(isDisabled: boolean): void {
-    this._renderer.setProperty(this._elementRef.nativeElement, 'disabled', isDisabled);
   }
 }

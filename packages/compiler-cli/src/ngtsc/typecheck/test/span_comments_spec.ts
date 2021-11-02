@@ -6,9 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {tcb, TestDeclaration} from './test_utils';
+import {initMockFileSystem} from '../../file_system/testing';
+import {tcb, TestDeclaration} from '../testing';
 
 describe('type check blocks diagnostics', () => {
+  beforeEach(() => initMockFileSystem('Native'));
+
   describe('parse spans', () => {
     it('should annotate unary ops', () => {
       expect(tcbWithSpans('{{ -a }}')).toContain('(-((ctx).a /*4,5*/) /*4,5*/) /*3,5*/');
@@ -36,7 +39,16 @@ describe('type check blocks diagnostics', () => {
       const TEMPLATE = '{{ m({foo: a, bar: b}) }}';
       expect(tcbWithSpans(TEMPLATE))
           .toContain(
-              '(ctx).m /*3,4*/({ "foo": ((ctx).a /*11,12*/) /*11,12*/, "bar": ((ctx).b /*19,20*/) /*19,20*/ } /*5,21*/) /*3,22*/');
+              '((((ctx).m /*3,4*/) /*3,4*/)({ "foo": ((ctx).a /*11,12*/) /*11,12*/, "bar": ((ctx).b /*19,20*/) /*19,20*/ } /*5,21*/) /*3,22*/)');
+    });
+
+    it('should annotate literal map expressions with shorthand declarations', () => {
+      // The additional method call is present to avoid that the object literal is emitted as
+      // statement, which would wrap it into parenthesis that clutter the expected output.
+      const TEMPLATE = '{{ m({a, b}) }}';
+      expect(tcbWithSpans(TEMPLATE))
+          .toContain(
+              '((((ctx).m /*3,4*/) /*3,4*/)({ "a": ((ctx).a /*6,7*/) /*6,7*/, "b": ((ctx).b /*9,10*/) /*9,10*/ } /*5,11*/) /*3,12*/)');
     });
 
     it('should annotate literal array expressions', () => {
@@ -64,21 +76,21 @@ describe('type check blocks diagnostics', () => {
       const TEMPLATE = `{{ method(a, b) }}`;
       expect(tcbWithSpans(TEMPLATE))
           .toContain(
-              '(ctx).method /*3,9*/(((ctx).a /*10,11*/) /*10,11*/, ((ctx).b /*13,14*/) /*13,14*/) /*3,15*/');
+              '((((ctx).method /*3,9*/) /*3,9*/)(((ctx).a /*10,11*/) /*10,11*/, ((ctx).b /*13,14*/) /*13,14*/) /*3,15*/)');
     });
 
     it('should annotate method calls of variables', () => {
       const TEMPLATE = `<ng-template let-method>{{ method(a, b) }}</ng-template>`;
       expect(tcbWithSpans(TEMPLATE))
           .toContain(
-              '(_t2 /*27,39*/) /*27,33*/(((ctx).a /*34,35*/) /*34,35*/, ((ctx).b /*37,38*/) /*37,38*/) /*27,39*/');
+              '((_t2 /*27,33*/)(((ctx).a /*34,35*/) /*34,35*/, ((ctx).b /*37,38*/) /*37,38*/) /*27,39*/)');
     });
 
     it('should annotate function calls', () => {
       const TEMPLATE = `{{ method(a)(b, c) }}`;
       expect(tcbWithSpans(TEMPLATE))
           .toContain(
-              '((ctx).method /*3,9*/(((ctx).a /*10,11*/) /*10,11*/) /*3,12*/)(((ctx).b /*13,14*/) /*13,14*/, ((ctx).c /*16,17*/) /*16,17*/) /*3,18*/');
+              '(((((ctx).method /*3,9*/) /*3,9*/)(((ctx).a /*10,11*/) /*10,11*/) /*3,12*/)(((ctx).b /*13,14*/) /*13,14*/, ((ctx).c /*16,17*/) /*16,17*/) /*3,18*/)');
     });
 
     it('should annotate property access', () => {
@@ -91,7 +103,7 @@ describe('type check blocks diagnostics', () => {
       const TEMPLATE = `<div (click)='a.b.c = d'></div>`;
       expect(tcbWithSpans(TEMPLATE))
           .toContain(
-              '(((((((ctx).a /*14,15*/) /*14,15*/).b /*16,17*/) /*14,17*/).c /*18,19*/) /*14,23*/ = ((ctx).d /*22,23*/) /*22,23*/) /*14,23*/');
+              '(((((((ctx).a /*14,15*/) /*14,15*/).b /*16,17*/) /*14,17*/).c /*18,19*/) /*14,23*/ = (((ctx).d /*22,23*/) /*22,23*/)) /*14,23*/');
     });
 
     it('should $event property writes', () => {
@@ -110,20 +122,27 @@ describe('type check blocks diagnostics', () => {
       const TEMPLATE = `<div (click)="a[b] = c"></div>`;
       expect(tcbWithSpans(TEMPLATE))
           .toContain(
-              '((((ctx).a /*14,15*/) /*14,15*/)[((ctx).b /*16,17*/) /*16,17*/] = ((ctx).c /*21,22*/) /*21,22*/) /*14,22*/');
+              '((((ctx).a /*14,15*/) /*14,15*/)[((ctx).b /*16,17*/) /*16,17*/] = (((ctx).c /*21,22*/) /*21,22*/)) /*14,22*/');
     });
 
     it('should annotate safe property access', () => {
       const TEMPLATE = `{{ a?.b }}`;
       expect(tcbWithSpans(TEMPLATE))
-          .toContain('((null as any) ? (((ctx).a /*3,4*/) /*3,4*/)!.b : undefined) /*3,7*/');
+          .toContain('(null as any ? (((ctx).a /*3,4*/) /*3,4*/)!.b /*6,7*/ : undefined) /*3,7*/');
     });
 
     it('should annotate safe method calls', () => {
       const TEMPLATE = `{{ a?.method(b) }}`;
       expect(tcbWithSpans(TEMPLATE))
           .toContain(
-              '((null as any) ? (((ctx).a /*3,4*/) /*3,4*/)!.method /*6,12*/(((ctx).b /*13,14*/) /*13,14*/) : undefined) /*3,15*/');
+              '((null as any ? ((null as any ? (((ctx).a /*3,4*/) /*3,4*/)!.method /*6,12*/ : undefined) /*3,12*/)!(((ctx).b /*13,14*/) /*13,14*/) : undefined) /*3,15*/)');
+    });
+
+    it('should annotate safe keyed reads', () => {
+      const TEMPLATE = `{{ a?.[0] }}`;
+      expect(tcbWithSpans(TEMPLATE))
+          .toContain(
+              '(null as any ? (((ctx).a /*3,4*/) /*3,4*/)![0 /*7,8*/] /*3,9*/ : undefined) /*3,9*/');
     });
 
     it('should annotate $any casts', () => {
@@ -146,8 +165,9 @@ describe('type check blocks diagnostics', () => {
         pipeName: 'test',
       }];
       const block = tcbWithSpans(TEMPLATE, PIPES);
+      expect(block).toContain('var _pipe1: i0.TestPipe = null!');
       expect(block).toContain(
-          '((null as TestPipe).transform(((ctx).a /*3,4*/) /*3,4*/, ((ctx).b /*12,13*/) /*12,13*/) /*3,13*/);');
+          '(_pipe1.transform /*7,11*/(((ctx).a /*3,4*/) /*3,4*/, ((ctx).b /*12,13*/) /*12,13*/) /*3,13*/);');
     });
 
     describe('attaching multiple comments for multiple references', () => {

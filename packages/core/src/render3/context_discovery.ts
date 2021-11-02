@@ -7,14 +7,14 @@
  */
 import '../util/ng_dev_mode';
 
-import {assertDomNode} from '../util/assert';
+import {assertDefined, assertDomNode} from '../util/assert';
 
-import {EMPTY_ARRAY} from './empty';
-import {LContext, MONKEY_PATCH_KEY_NAME} from './interfaces/context';
+import {EMPTY_ARRAY} from '../util/empty';
+import {LContext} from './interfaces/context';
 import {TNode, TNodeFlags} from './interfaces/node';
 import {RElement, RNode} from './interfaces/renderer_dom';
 import {CONTEXT, HEADER_OFFSET, HOST, LView, TVIEW} from './interfaces/view';
-import {getComponentLViewByIndex, readPatchedData, unwrapRNode} from './util/view_utils';
+import {getComponentLViewByIndex, unwrapRNode} from './util/view_utils';
 
 
 
@@ -171,11 +171,34 @@ export function getComponentViewByInstance(componentInstance: {}): LView {
 }
 
 /**
+ * This property will be monkey-patched on elements, components and directives.
+ */
+const MONKEY_PATCH_KEY_NAME = '__ngContext__';
+
+/**
  * Assigns the given data to the given target (which could be a component,
  * directive or DOM node instance) using monkey-patching.
  */
 export function attachPatchData(target: any, data: LView|LContext) {
+  ngDevMode && assertDefined(target, 'Target expected');
   target[MONKEY_PATCH_KEY_NAME] = data;
+}
+
+/**
+ * Returns the monkey-patch value data present on the target (which could be
+ * a component, directive or a DOM node).
+ */
+export function readPatchedData(target: any): LView|LContext|null {
+  ngDevMode && assertDefined(target, 'Target expected');
+  return target[MONKEY_PATCH_KEY_NAME] || null;
+}
+
+export function readPatchedLView(target: any): LView|null {
+  const value = readPatchedData(target);
+  if (value) {
+    return Array.isArray(value) ? value : (value as LContext).lView;
+  }
+  return null;
 }
 
 export function isComponentInstance(instance: any): boolean {

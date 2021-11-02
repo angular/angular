@@ -7,21 +7,24 @@
  */
 import {CommonModule} from '@angular/common';
 import {Component, Directive, HostBinding, InjectionToken, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy} from '@angular/core/src/change_detection';
+import {EventEmitter} from '@angular/core/src/event_emitter';
+import {Input, Output, ViewEncapsulation} from '@angular/core/src/metadata';
 import {isLView} from '@angular/core/src/render3/interfaces/type_checks';
 import {CONTEXT} from '@angular/core/src/render3/interfaces/view';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {getElementStyles} from '@angular/core/testing/src/styling';
-import {expect} from '@angular/core/testing/src/testing_internal';
 import {onlyInIvy} from '@angular/private/testing';
 
+import {getLContext} from '../../src/render3/context_discovery';
 import {getHostElement, markDirty} from '../../src/render3/index';
-import {getComponent, getComponentLView, getContext, getDebugNode, getDirectives, getInjectionTokens, getInjector, getListeners, getLocalRefs, getOwningComponent, getRootComponents, loadLContext} from '../../src/render3/util/discovery_utils';
+import {ComponentDebugMetadata, getComponent, getComponentLView, getContext, getDebugNode, getDirectiveMetadata, getDirectives, getInjectionTokens, getInjector, getListeners, getLocalRefs, getOwningComponent, getRootComponents} from '../../src/render3/util/discovery_utils';
 
 onlyInIvy('Ivy-specific utilities').describe('discovery utils', () => {
   let fixture: ComponentFixture<MyApp>;
   let myApp: MyApp;
   let dirA: DirectiveA[];
-  let childComponent: DirectiveA[];
+  let childComponent: (DirectiveA|Child)[];
   let child: NodeListOf<Element>;
   let span: NodeListOf<Element>;
   let div: NodeListOf<Element>;
@@ -55,6 +58,8 @@ onlyInIvy('Ivy-specific utilities').describe('discovery utils', () => {
 
   @Directive({selector: '[dirA]', exportAs: 'dirA'})
   class DirectiveA {
+    @Input('a') b = 2;
+    @Output('c') d = new EventEmitter();
     constructor() {
       dirA.push(this);
     }
@@ -73,6 +78,8 @@ onlyInIvy('Ivy-specific utilities').describe('discovery utils', () => {
   })
   class MyApp {
     text: string = 'INIT';
+    @Input('a') b = 2;
+    @Output('c') d = new EventEmitter();
     constructor() {
       myApp = this;
     }
@@ -263,9 +270,9 @@ onlyInIvy('Ivy-specific utilities').describe('discovery utils', () => {
     });
   });
 
-  describe('loadLContext', () => {
+  describe('getLContext', () => {
     it('should work on components', () => {
-      const lContext = loadLContext(child[0]);
+      const lContext = getLContext(child[0])!;
       expect(lContext).toBeDefined();
       expect(lContext.native as any).toBe(child[0]);
     });
@@ -273,7 +280,7 @@ onlyInIvy('Ivy-specific utilities').describe('discovery utils', () => {
     it('should work on templates', () => {
       const templateComment = Array.from((fixture.nativeElement as HTMLElement).childNodes)
                                   .find((node: ChildNode) => node.nodeType === Node.COMMENT_NODE)!;
-      const lContext = loadLContext(templateComment);
+      const lContext = getLContext(templateComment)!;
       expect(lContext).toBeDefined();
       expect(lContext.native as any).toBe(templateComment);
     });
@@ -283,9 +290,26 @@ onlyInIvy('Ivy-specific utilities').describe('discovery utils', () => {
                                      .find(
                                          (node: ChildNode) => node.nodeType === Node.COMMENT_NODE &&
                                              node.textContent === `ng-container`)!;
-      const lContext = loadLContext(ngContainerComment);
+      const lContext = getLContext(ngContainerComment)!;
       expect(lContext).toBeDefined();
       expect(lContext.native as any).toBe(ngContainerComment);
+    });
+  });
+
+  describe('getDirectiveMetadata', () => {
+    it('should work with components', () => {
+      const metadata = getDirectiveMetadata(myApp);
+      expect(metadata!.inputs).toEqual({a: 'b'});
+      expect(metadata!.outputs).toEqual({c: 'd'});
+      expect((metadata as ComponentDebugMetadata).changeDetection)
+          .toBe(ChangeDetectionStrategy.Default);
+      expect((metadata as ComponentDebugMetadata).encapsulation).toBe(ViewEncapsulation.None);
+    });
+
+    it('should work with directives', () => {
+      const metadata = getDirectiveMetadata(getDirectives(div[0])[0]);
+      expect(metadata!.inputs).toEqual({a: 'b'});
+      expect(metadata!.outputs).toEqual({c: 'd'});
     });
   });
 });
@@ -358,6 +382,16 @@ onlyInIvy('Ivy-specific utilities').describe('discovery utils deprecated', () =>
       const elm2 = elements[1];
       const elm2Dirs = getDirectives(elm2);
       expect(elm2Dirs).toContain(fixture.componentInstance.myDir3Instance!);
+    });
+
+    it('should not throw if it cannot find LContext', () => {
+      let result: any;
+
+      expect(() => {
+        result = getDirectives(document.createElement('div'));
+      }).not.toThrow();
+
+      expect(result).toEqual([]);
     });
   });
 

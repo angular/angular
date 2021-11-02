@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {AbsoluteSourceSpan, ParseSourceSpan} from '@angular/compiler';
-import * as ts from 'typescript';
-import {TemplateId} from '../api';
-import {makeTemplateDiagnostic, TemplateDiagnostic} from '../diagnostics';
+import ts from 'typescript';
+import {TemplateDiagnostic, TemplateId} from '../api';
+import {makeTemplateDiagnostic} from '../diagnostics';
 import {getTemplateMapping, TemplateSourceResolver} from './tcb_util';
 
 
@@ -91,7 +91,8 @@ export function translateDiagnostic(
   if (diagnostic.file === undefined || diagnostic.start === undefined) {
     return null;
   }
-  const fullMapping = getTemplateMapping(diagnostic.file, diagnostic.start, resolver);
+  const fullMapping = getTemplateMapping(
+      diagnostic.file, diagnostic.start, resolver, /*isDiagnosticsRequest*/ true);
   if (fullMapping === null) {
     return null;
   }

@@ -1,9 +1,7 @@
 // #docplaster
 // #docregion
 import { NgModule } from '@angular/core';
-// #docregion import-router
 import { RouterModule, Routes } from '@angular/router';
-// #enddocregion import-router
 
 import { ComposeMessageComponent } from './compose-message/compose-message.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';

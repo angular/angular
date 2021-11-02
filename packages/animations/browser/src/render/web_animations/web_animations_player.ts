@@ -156,6 +156,9 @@ export class WebAnimationsPlayer implements AnimationPlayer {
   }
 
   setPosition(p: number): void {
+    if (this.domPlayer === undefined) {
+      this.init();
+    }
     this.domPlayer.currentTime = p * this.time;
   }
 

@@ -26,7 +26,7 @@ export function createOfflineCompileUrlResolver(): UrlResolver {
  *
  * ## Example
  *
- * {@example compiler/ts/url_resolver/url_resolver.ts region='url_resolver'}
+ * <code-example path="compiler/ts/url_resolver/url_resolver.ts"></code-example>
  *
  * @security  When compiling templates at runtime, you must
  * ensure that the entire template comes from a trusted source.

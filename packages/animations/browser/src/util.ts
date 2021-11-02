@@ -252,23 +252,6 @@ export function iteratorToArray(iterator: any): any[] {
   return arr;
 }
 
-export function mergeAnimationOptions(
-    source: AnimationOptions, destination: AnimationOptions): AnimationOptions {
-  if (source.params) {
-    const p0 = source.params;
-    if (!destination.params) {
-      destination.params = {};
-    }
-    const p1 = destination.params;
-    Object.keys(p0).forEach(param => {
-      if (!p1.hasOwnProperty(param)) {
-        p1[param] = p0[param];
-      }
-    });
-  }
-  return destination;
-}
-
 const DASH_CASE_REGEXP = /-+([a-z0-9])/g;
 export function dashCaseToCamelCase(input: string): string {
   return input.replace(DASH_CASE_REGEXP, (...m: any[]) => m[1].toUpperCase());

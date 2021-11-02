@@ -8,8 +8,8 @@ import { Component, OnInit } from '@angular/core';
 // #docregion example
 export class ToastComponent implements OnInit {
   // public properties
-  message: string;
-  title: string;
+  message = '';
+  title = '';
 
   // private fields
   private defaults = {

@@ -20,20 +20,23 @@ describe ('HeroesService (with spies)', () => {
     heroService = new HeroService(httpClientSpy as any);
   });
 
-  it('should return expected heroes (HttpClient called once)', () => {
+  it('should return expected heroes (HttpClient called once)', (done: DoneFn) => {
     const expectedHeroes: Hero[] =
       [{ id: 1, name: 'A' }, { id: 2, name: 'B' }];
 
     httpClientSpy.get.and.returnValue(asyncData(expectedHeroes));
 
     heroService.getHeroes().subscribe(
-      heroes => expect(heroes).toEqual(expectedHeroes, 'expected heroes'),
-      fail
+      heroes => {
+        expect(heroes).toEqual(expectedHeroes, 'expected heroes');
+        done();
+      },
+      done.fail
     );
     expect(httpClientSpy.get.calls.count()).toBe(1, 'one call');
   });
 
-  it('should return an error when the server returns a 404', () => {
+  it('should return an error when the server returns a 404', (done: DoneFn) => {
     const errorResponse = new HttpErrorResponse({
       error: 'test 404 error',
       status: 404, statusText: 'Not Found'
@@ -42,8 +45,11 @@ describe ('HeroesService (with spies)', () => {
     httpClientSpy.get.and.returnValue(asyncError(errorResponse));
 
     heroService.getHeroes().subscribe(
-      heroes => fail('expected an error, not heroes'),
-      error  => expect(error.message).toContain('test 404 error')
+      heroes => done.fail('expected an error, not heroes'),
+      error  => {
+        expect(error.message).toContain('test 404 error');
+        done();
+      }
     );
   });
   // #enddocregion test-with-spies
@@ -180,7 +186,6 @@ describe('HeroesService (with mocks)', () => {
       req.flush(msg, {status: 404, statusText: 'Not Found'});
     });
 
-    // #docregion network-error
     it('should turn network error into user-facing error', () => {
       const emsg = 'simulated network error';
 
@@ -196,19 +201,16 @@ describe('HeroesService (with mocks)', () => {
       // Connection timeout, DNS error, offline, etc
       const errorEvent = new ErrorEvent('so sad', {
         message: emsg,
-        // #enddocregion network-error
         // The rest of this is optional and not used.
         // Just showing that you could provide this too.
         filename: 'HeroService.ts',
         lineno: 42,
         colno: 21
-      // #docregion network-error
       });
 
       // Respond with mock error
       req.error(errorEvent);
     });
-    // #enddocregion network-error
   });
 
   // TODO: test other HeroService methods

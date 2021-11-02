@@ -26,6 +26,8 @@ export class Message {
   /** The ids to use if there are no custom id and if `i18nLegacyMessageIdFormat` is not empty */
   legacyIds: string[] = [];
 
+  messageString = serializeMessage(this.nodes);
+
   /**
    * @param nodes message AST
    * @param placeholders maps placeholder names to static content and their source spans
@@ -199,4 +201,43 @@ export class RecurseVisitor implements Visitor {
   visitPlaceholder(ph: Placeholder, context?: any): any {}
 
   visitIcuPlaceholder(ph: IcuPlaceholder, context?: any): any {}
+}
+
+
+/**
+ * Serialize the message to the Localize backtick string format that would appear in compiled code.
+ */
+function serializeMessage(messageNodes: Node[]): string {
+  const visitor = new LocalizeMessageStringVisitor();
+  const str = messageNodes.map(n => n.visit(visitor)).join('');
+  return str;
+}
+
+class LocalizeMessageStringVisitor implements Visitor {
+  visitText(text: Text): any {
+    return text.value;
+  }
+
+  visitContainer(container: Container): any {
+    return container.children.map(child => child.visit(this)).join('');
+  }
+
+  visitIcu(icu: Icu): any {
+    const strCases =
+        Object.keys(icu.cases).map((k: string) => `${k} {${icu.cases[k].visit(this)}}`);
+    return `{${icu.expressionPlaceholder}, ${icu.type}, ${strCases.join(' ')}}`;
+  }
+
+  visitTagPlaceholder(ph: TagPlaceholder): any {
+    const children = ph.children.map(child => child.visit(this)).join('');
+    return `{$${ph.startName}}${children}{$${ph.closeName}}`;
+  }
+
+  visitPlaceholder(ph: Placeholder): any {
+    return `{$${ph.name}}`;
+  }
+
+  visitIcuPlaceholder(ph: IcuPlaceholder): any {
+    return `{$${ph.name}}`;
+  }
 }

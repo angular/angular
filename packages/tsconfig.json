@@ -7,13 +7,16 @@
     "downlevelIteration": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "module": "commonjs",
+    "module": "es2020",
     "strict": true,
     "moduleResolution": "node",
+    "esModuleInterop": true,
     "strictNullChecks": true,
     "strictPropertyInitialization": true,
     "outDir": "../dist/all/@angular",
     "noImplicitAny": true,
+    "noImplicitOverride": true,
+    "useUnknownInCatchVariables": false,
     "noFallthroughCasesInSwitch": true,
     "paths": {
       "selenium-webdriver": ["./node_modules/@types/selenium-webdriver/index.d.ts"],
@@ -24,10 +27,10 @@
     },
     "rootDir": ".",
     "inlineSourceMap": true,
-    "lib": ["es5", "dom", "es2015.promise", "es2015.collection", "es2015.iterable", "es2015.core", "es2017.object"],
+    "lib": ["es2020", "dom"],
     "skipDefaultLibCheck": true,
     "skipLibCheck": true,
-    "target": "es5",
+    "target": "es2020",
     "types": ["angular"]
   },
   "bazelOptions": {
@@ -37,6 +40,7 @@
     "bazel",
     "common/locales",
     "compiler-cli/integrationtest",
+    "compiler-cli/test/compliance",
     "core/schematics",
     "elements/schematics",
     // Do not build the example package because there are no legacy tests that need to be

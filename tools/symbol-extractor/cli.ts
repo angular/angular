@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {runfiles} from '@bazel/runfiles';
 import * as fs from 'fs';
-import {SymbolExtractor} from './symbol_extractor';
 
-const runfiles = require(process.env['BAZEL_NODE_RUNFILES_HELPER'] as string);
+import {SymbolExtractor} from './symbol_extractor';
 
 if (require.main === module) {
   const args = process.argv.slice(2) as [string, string];

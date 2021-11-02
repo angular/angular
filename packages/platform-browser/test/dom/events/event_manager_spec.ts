@@ -8,7 +8,6 @@
 
 import {ɵgetDOM as getDOM} from '@angular/common';
 import {NgZone} from '@angular/core/src/zone/ng_zone';
-import {beforeEach, describe, expect, it} from '@angular/core/testing/src/testing_internal';
 import {DomEventsPlugin} from '@angular/platform-browser/src/dom/events/dom_events';
 import {EventManager, EventManagerPlugin} from '@angular/platform-browser/src/dom/events/event_manager';
 import {createMouseEvent, el} from '../../../testing/src/browser_util';
@@ -21,7 +20,7 @@ let zone: NgZone;
 
 describe('EventManager', () => {
   beforeEach(() => {
-    doc = getDOM().supportsDOMEvents() ? document : getDOM().createHtmlDocument();
+    doc = getDOM().supportsDOMEvents ? document : getDOM().createHtmlDocument();
     zone = new NgZone({});
     domEventPlugin = new DomEventsPlugin(doc);
   });
@@ -337,7 +336,7 @@ describe('EventManager', () => {
 
   it('should only trigger one Change detection when bubbling with shouldCoalesceEventChangeDetection = true',
      (done: DoneFn) => {
-       doc = getDOM().supportsDOMEvents() ? document : getDOM().createHtmlDocument();
+       doc = getDOM().supportsDOMEvents ? document : getDOM().createHtmlDocument();
        zone = new NgZone({shouldCoalesceEventChangeDetection: true});
        domEventPlugin = new DomEventsPlugin(doc);
        const element = el('<div></div>');
@@ -374,7 +373,7 @@ describe('EventManager', () => {
 
   it('should only trigger one Change detection when bubbling with shouldCoalesceRunChangeDetection = true',
      (done: DoneFn) => {
-       doc = getDOM().supportsDOMEvents() ? document : getDOM().createHtmlDocument();
+       doc = getDOM().supportsDOMEvents ? document : getDOM().createHtmlDocument();
        zone = new NgZone({shouldCoalesceRunChangeDetection: true});
        domEventPlugin = new DomEventsPlugin(doc);
        const element = el('<div></div>');
@@ -411,7 +410,7 @@ describe('EventManager', () => {
 
   it('should not drain micro tasks queue too early with shouldCoalesceEventChangeDetection=true',
      (done: DoneFn) => {
-       doc = getDOM().supportsDOMEvents() ? document : getDOM().createHtmlDocument();
+       doc = getDOM().supportsDOMEvents ? document : getDOM().createHtmlDocument();
        zone = new NgZone({shouldCoalesceEventChangeDetection: true});
        domEventPlugin = new DomEventsPlugin(doc);
        const element = el('<div></div>');
@@ -436,13 +435,13 @@ describe('EventManager', () => {
          removerChildFocus = manager.addEventListener(child, 'blur', blurHandler);
        });
        const sub = zone.onStable.subscribe(() => {
+         sub.unsubscribe();
          logs.push('begin');
          Promise.resolve().then(() => {
            logs.push('promise resolved');
          });
          element.appendChild(child);
          getDOM().dispatchEvent(child, dispatchedBlurEvent);
-         sub.unsubscribe();
          logs.push('end');
        });
        getDOM().dispatchEvent(element, dispatchedClickEvent);
@@ -457,7 +456,7 @@ describe('EventManager', () => {
 
   it('should not drain micro tasks queue too early with shouldCoalesceRunChangeDetection=true',
      (done: DoneFn) => {
-       doc = getDOM().supportsDOMEvents() ? document : getDOM().createHtmlDocument();
+       doc = getDOM().supportsDOMEvents ? document : getDOM().createHtmlDocument();
        zone = new NgZone({shouldCoalesceRunChangeDetection: true});
        domEventPlugin = new DomEventsPlugin(doc);
        const element = el('<div></div>');
@@ -482,13 +481,13 @@ describe('EventManager', () => {
          removerChildFocus = manager.addEventListener(child, 'blur', blurHandler);
        });
        const sub = zone.onStable.subscribe(() => {
+         sub.unsubscribe();
          logs.push('begin');
          Promise.resolve().then(() => {
            logs.push('promise resolved');
          });
          element.appendChild(child);
          getDOM().dispatchEvent(child, dispatchedBlurEvent);
-         sub.unsubscribe();
          logs.push('end');
        });
        getDOM().dispatchEvent(element, dispatchedClickEvent);
@@ -511,11 +510,11 @@ class FakeEventManagerPlugin extends EventManagerPlugin {
     super(doc);
   }
 
-  supports(eventName: string): boolean {
+  override supports(eventName: string): boolean {
     return this.supportedEvents.indexOf(eventName) > -1;
   }
 
-  addEventListener(element: any, eventName: string, handler: Function) {
+  override addEventListener(element: any, eventName: string, handler: Function) {
     this.eventHandler[eventName] = handler;
     return () => {
       delete this.eventHandler[eventName];
@@ -527,10 +526,10 @@ class FakeNgZone extends NgZone {
   constructor() {
     super({enableLongStackTrace: false, shouldCoalesceEventChangeDetection: true});
   }
-  run<T>(fn: (...args: any[]) => T, applyThis?: any, applyArgs?: any[]): T {
+  override run<T>(fn: (...args: any[]) => T, applyThis?: any, applyArgs?: any[]): T {
     return fn();
   }
-  runOutsideAngular(fn: Function) {
+  override runOutsideAngular(fn: Function) {
     return fn();
   }
 }

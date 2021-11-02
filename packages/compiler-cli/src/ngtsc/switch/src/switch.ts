@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 const IVY_SWITCH_PRE_SUFFIX = '__PRE_R3__';
 const IVY_SWITCH_POST_SUFFIX = '__POST_R3__';

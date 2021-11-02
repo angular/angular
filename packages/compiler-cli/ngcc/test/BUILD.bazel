@@ -19,19 +19,20 @@ ts_library(
         "//packages/compiler-cli/src/ngtsc/file_system",
         "//packages/compiler-cli/src/ngtsc/file_system/testing",
         "//packages/compiler-cli/src/ngtsc/imports",
+        "//packages/compiler-cli/src/ngtsc/incremental/semantic_graph",
         "//packages/compiler-cli/src/ngtsc/logging/testing",
         "//packages/compiler-cli/src/ngtsc/partial_evaluator",
         "//packages/compiler-cli/src/ngtsc/reflection",
+        "//packages/compiler-cli/src/ngtsc/sourcemaps",
         "//packages/compiler-cli/src/ngtsc/testing",
         "//packages/compiler-cli/src/ngtsc/transform",
         "//packages/compiler-cli/src/ngtsc/translator",
         "@npm//@types/convert-source-map",
-        "@npm//convert-source-map",
+        "@npm//@types/yargs",
         "@npm//dependency-graph",
         "@npm//magic-string",
         "@npm//sourcemap-codec",
         "@npm//typescript",
-        "@npm//yargs",
     ],
 )
 
@@ -76,12 +77,12 @@ babel(
     name = "fesm5_angular_core",
     outs = ["fesm5_angular_core.js"],
     args = [
-        "$(execpath //packages/core:npm_package)/fesm2015/core.js",
+        "$(execpath @npm//:node_modules/@angular/core-12/fesm2015/core.js)",
         "--presets @babel/preset-env",
         "--out-file $(execpath fesm5_angular_core.js)",
     ],
     data = [
-        "//packages/core:npm_package",
+        "@npm//:node_modules/@angular/core-12/fesm2015/core.js",
         "@npm//@babel/preset-env",
     ],
 )
@@ -92,14 +93,16 @@ jasmine_node_test(
     bootstrap = ["//tools/testing:node_no_angular_es5"],
     data = [
         ":fesm5_angular_core",
-        "//packages/common:npm_package",
-        "//packages/core:npm_package",
+        "@npm//@angular/common-12",
+        "@npm//@angular/core-12",
         "@npm//rxjs",
     ],
     shard_count = 4,
-    tags = [
-        # Disabled in AOT mode because we want ngcc to compile non-AOT Angular packages.
-        "no-ivy-aot",
+    tags = [],
+    templated_args = [
+        # TODO(josephperrott): update dependency usages to no longer need bazel patch module resolver
+        # See: https://github.com/bazelbuild/rules_nodejs/wiki#--bazel_patch_module_resolver-now-defaults-to-false-2324
+        "--bazel_patch_module_resolver",
     ],
     deps = [
         ":integration_lib",

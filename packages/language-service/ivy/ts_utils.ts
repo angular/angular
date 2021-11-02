@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 /**
  * Return the node that most tightly encompasses the specified `position`.
@@ -27,4 +27,70 @@ export function getParentClassDeclaration(startNode: ts.Node): ts.ClassDeclarati
     startNode = startNode.parent;
   }
   return undefined;
+}
+
+/**
+ * Returns a property assignment from the assignment value if the property name
+ * matches the specified `key`, or `null` if there is no match.
+ */
+export function getPropertyAssignmentFromValue(value: ts.Node, key: string): ts.PropertyAssignment|
+    null {
+  const propAssignment = value.parent;
+  if (!propAssignment || !ts.isPropertyAssignment(propAssignment) ||
+      propAssignment.name.getText() !== key) {
+    return null;
+  }
+  return propAssignment;
+}
+
+/**
+ * Given a decorator property assignment, return the ClassDeclaration node that corresponds to the
+ * directive class the property applies to.
+ * If the property assignment is not on a class decorator, no declaration is returned.
+ *
+ * For example,
+ *
+ * @Component({
+ *   template: '<div></div>'
+ *   ^^^^^^^^^^^^^^^^^^^^^^^---- property assignment
+ * })
+ * class AppComponent {}
+ *           ^---- class declaration node
+ *
+ * @param propAsgnNode property assignment
+ */
+export function getClassDeclFromDecoratorProp(propAsgnNode: ts.PropertyAssignment):
+    ts.ClassDeclaration|undefined {
+  if (!propAsgnNode.parent || !ts.isObjectLiteralExpression(propAsgnNode.parent)) {
+    return;
+  }
+  const objLitExprNode = propAsgnNode.parent;
+  if (!objLitExprNode.parent || !ts.isCallExpression(objLitExprNode.parent)) {
+    return;
+  }
+  const callExprNode = objLitExprNode.parent;
+  if (!callExprNode.parent || !ts.isDecorator(callExprNode.parent)) {
+    return;
+  }
+  const decorator = callExprNode.parent;
+  if (!decorator.parent || !ts.isClassDeclaration(decorator.parent)) {
+    return;
+  }
+  const classDeclNode = decorator.parent;
+  return classDeclNode;
+}
+
+/**
+ * Collects all member methods, including those from base classes.
+ */
+export function collectMemberMethods(
+    clazz: ts.ClassDeclaration, typeChecker: ts.TypeChecker): ts.MethodDeclaration[] {
+  const members: ts.MethodDeclaration[] = [];
+  const apparentProps = typeChecker.getTypeAtLocation(clazz).getApparentProperties();
+  for (const prop of apparentProps) {
+    if (prop.valueDeclaration && ts.isMethodDeclaration(prop.valueDeclaration)) {
+      members.push(prop.valueDeclaration);
+    }
+  }
+  return members;
 }

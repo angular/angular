@@ -20,11 +20,4 @@ build --local_ram_resources=32768
 # All build executed remotely should be done using our RBE configuration.
 build:remote --google_default_credentials
 
-# Upload to GCP's Build Status viewer to allow for us to have better viewing of execution/build
-# logs. This is only done on CI as the BES (GCP's Build Status viewer) API requires credentials
-# from service accounts, rather than end user accounts.
-build:remote --bes_backend=buildeventservice.googleapis.com
-build:remote --bes_timeout=30s
-build:remote --bes_results_url="https://source.cloud.google.com/results/invocations/"
-
 build --config=remote

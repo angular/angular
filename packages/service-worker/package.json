@@ -4,8 +4,22 @@
   "description": "Angular - service worker tooling!",
   "author": "angular",
   "license": "MIT",
+  "engines": {
+    "node": "^12.20.0 || ^14.15.0 || >=16.10.0"
+  },
+  "exports": {
+    "./ngsw-worker.js": {
+      "default": "./ngsw-worker.js"
+    },
+    "./safety-worker.js": {
+      "default": "./safety-worker.js"
+    },
+    "./config/schema.json": {
+      "default": "./config/schema.json"
+    }
+  },
   "dependencies": {
-    "tslib": "^2.0.0"
+    "tslib": "^2.3.0"
   },
   "peerDependencies": {
     "@angular/core": "0.0.0-PLACEHOLDER",
@@ -22,8 +36,5 @@
   "ng-update": {
     "packageGroup": "NG_UPDATE_PACKAGE_GROUP"
   },
-  "sideEffects": false,
-  "publishConfig":{
-    "registry":"https://wombat-dressing-room.appspot.com"
-  }
+  "sideEffects": false
 }

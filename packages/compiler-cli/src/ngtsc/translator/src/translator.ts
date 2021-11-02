@@ -33,28 +33,30 @@ const BINARY_OPERATORS = new Map<o.BinaryOperator, BinaryOperator>([
   [o.BinaryOperator.NotIdentical, '!=='],
   [o.BinaryOperator.Or, '||'],
   [o.BinaryOperator.Plus, '+'],
+  [o.BinaryOperator.NullishCoalesce, '??'],
 ]);
 
-export type RecordWrappedNodeExprFn<TExpression> = (expr: TExpression) => void;
+export type RecordWrappedNodeFn<TExpression> = (node: o.WrappedNodeExpr<TExpression>) => void;
 
 export interface TranslatorOptions<TExpression> {
-  downlevelLocalizedStrings?: boolean;
+  downlevelTaggedTemplates?: boolean;
   downlevelVariableDeclarations?: boolean;
-  recordWrappedNodeExpr?: RecordWrappedNodeExprFn<TExpression>;
+  recordWrappedNode?: RecordWrappedNodeFn<TExpression>;
+  annotateForClosureCompiler?: boolean;
 }
 
 export class ExpressionTranslatorVisitor<TStatement, TExpression> implements o.ExpressionVisitor,
                                                                              o.StatementVisitor {
-  private downlevelLocalizedStrings: boolean;
+  private downlevelTaggedTemplates: boolean;
   private downlevelVariableDeclarations: boolean;
-  private recordWrappedNodeExpr: RecordWrappedNodeExprFn<TExpression>;
+  private recordWrappedNode: RecordWrappedNodeFn<TExpression>;
 
   constructor(
       private factory: AstFactory<TStatement, TExpression>,
       private imports: ImportGenerator<TExpression>, options: TranslatorOptions<TExpression>) {
-    this.downlevelLocalizedStrings = options.downlevelLocalizedStrings === true;
+    this.downlevelTaggedTemplates = options.downlevelTaggedTemplates === true;
     this.downlevelVariableDeclarations = options.downlevelVariableDeclarations === true;
-    this.recordWrappedNodeExpr = options.recordWrappedNodeExpr || (() => {});
+    this.recordWrappedNode = options.recordWrappedNode || (() => {});
   }
 
   visitDeclareVarStmt(stmt: o.DeclareVarStmt, context: Context): TStatement {
@@ -150,21 +152,24 @@ export class ExpressionTranslatorVisitor<TStatement, TExpression> implements o.E
     return this.factory.createAssignment(target, expr.value.visitExpression(this, context));
   }
 
-  visitInvokeMethodExpr(ast: o.InvokeMethodExpr, context: Context): TExpression {
-    const target = ast.receiver.visitExpression(this, context);
-    return this.setSourceMapRange(
-        this.factory.createCallExpression(
-            ast.name !== null ? this.factory.createPropertyAccess(target, ast.name) : target,
-            ast.args.map(arg => arg.visitExpression(this, context)),
-            /* pure */ false),
-        ast.sourceSpan);
-  }
-
   visitInvokeFunctionExpr(ast: o.InvokeFunctionExpr, context: Context): TExpression {
     return this.setSourceMapRange(
         this.factory.createCallExpression(
             ast.fn.visitExpression(this, context),
             ast.args.map(arg => arg.visitExpression(this, context)), ast.pure),
+        ast.sourceSpan);
+  }
+
+  visitTaggedTemplateExpr(ast: o.TaggedTemplateExpr, context: Context): TExpression {
+    return this.setSourceMapRange(
+        this.createTaggedTemplateExpression(ast.tag.visitExpression(this, context), {
+          elements: ast.template.elements.map(e => createTemplateElement({
+                                                cooked: e.text,
+                                                raw: e.rawText,
+                                                range: e.sourceSpan ?? ast.sourceSpan,
+                                              })),
+          expressions: ast.template.expressions.map(e => e.visitExpression(this, context))
+        }),
         ast.sourceSpan);
   }
 
@@ -202,13 +207,14 @@ export class ExpressionTranslatorVisitor<TStatement, TExpression> implements o.E
     }
 
     const localizeTag = this.factory.createIdentifier('$localize');
+    return this.setSourceMapRange(
+        this.createTaggedTemplateExpression(localizeTag, {elements, expressions}), ast.sourceSpan);
+  }
 
-    // Now choose which implementation to use to actually create the necessary AST nodes.
-    const localizeCall = this.downlevelLocalizedStrings ?
-        this.createES5TaggedTemplateFunctionCall(localizeTag, {elements, expressions}) :
-        this.factory.createTaggedTemplate(localizeTag, {elements, expressions});
-
-    return this.setSourceMapRange(localizeCall, ast.sourceSpan);
+  private createTaggedTemplateExpression(tag: TExpression, template: TemplateLiteral<TExpression>):
+      TExpression {
+    return this.downlevelTaggedTemplates ? this.createES5TaggedTemplateFunctionCall(tag, template) :
+                                           this.factory.createTaggedTemplate(tag, template);
   }
 
   /**
@@ -365,7 +371,7 @@ export class ExpressionTranslatorVisitor<TStatement, TExpression> implements o.E
   }
 
   visitWrappedNodeExpr(ast: o.WrappedNodeExpr<any>, _context: Context): any {
-    this.recordWrappedNodeExpr(ast.node);
+    this.recordWrappedNode(ast);
     return ast.node;
   }
 

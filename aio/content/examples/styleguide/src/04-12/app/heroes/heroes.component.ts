@@ -7,7 +7,7 @@ import { LoggerService } from '../core/logger.service';
   templateUrl: './heroes.component.html'
 })
 export class HeroesComponent {
-  heroes: any[];
+  heroes: any[] = [];
 
   constructor(private loggerService: LoggerService) { }
 

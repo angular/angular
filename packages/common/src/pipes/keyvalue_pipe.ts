@@ -49,6 +49,7 @@ export class KeyValuePipe implements PipeTransform {
 
   private differ!: KeyValueDiffer<any, any>;
   private keyValues: Array<KeyValue<any, any>> = [];
+  private compareFn: (a: KeyValue<any, any>, b: KeyValue<any, any>) => number = defaultComparator;
 
   /*
    * NOTE: when the `input` value is a simple Record<K, V> object, the keys are extracted with
@@ -91,13 +92,17 @@ export class KeyValuePipe implements PipeTransform {
     }
 
     const differChanges: KeyValueChanges<K, V>|null = this.differ.diff(input as any);
+    const compareFnChanged = compareFn !== this.compareFn;
 
     if (differChanges) {
       this.keyValues = [];
       differChanges.forEachItem((r: KeyValueChangeRecord<K, V>) => {
         this.keyValues.push(makeKeyValuePair(r.key, r.currentValue!));
       });
+    }
+    if (differChanges || compareFnChanged) {
       this.keyValues.sort(compareFn);
+      this.compareFn = compareFn;
     }
     return this.keyValues;
   }

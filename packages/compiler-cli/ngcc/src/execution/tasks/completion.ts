@@ -5,13 +5,13 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {FileSystem, resolve} from '../../../../src/ngtsc/file_system';
+import {PathManipulation, ReadonlyFileSystem} from '../../../../src/ngtsc/file_system';
 import {Logger} from '../../../../src/ngtsc/logging';
 import {markAsProcessed} from '../../packages/build_marker';
 import {getEntryPointFormat, PackageJsonFormatProperties} from '../../packages/entry_point';
 import {PackageJsonUpdater} from '../../writing/package_json_updater';
 
-import {Task, TaskCompletedCallback, TaskProcessingOutcome, TaskQueue} from './api';
+import {DtsProcessing, Task, TaskCompletedCallback, TaskProcessingOutcome, TaskQueue} from './api';
 
 /**
  * A function that can handle a specific outcome of a task completion.
@@ -46,14 +46,14 @@ export function composeTaskCompletedCallbacks(
  *
  * @param pkgJsonUpdater The service used to update the package.json
  */
-export function createMarkAsProcessedHandler(pkgJsonUpdater: PackageJsonUpdater):
-    TaskCompletedHandler {
+export function createMarkAsProcessedHandler(
+    fs: PathManipulation, pkgJsonUpdater: PackageJsonUpdater): TaskCompletedHandler {
   return (task: Task): void => {
     const {entryPoint, formatPropertiesToMarkAsProcessed, processDts} = task;
-    const packageJsonPath = resolve(entryPoint.path, 'package.json');
+    const packageJsonPath = fs.resolve(entryPoint.path, 'package.json');
     const propsToMarkAsProcessed: PackageJsonFormatProperties[] =
         [...formatPropertiesToMarkAsProcessed];
-    if (processDts) {
+    if (processDts !== DtsProcessing.No) {
       propsToMarkAsProcessed.push('typings');
     }
     markAsProcessed(
@@ -64,13 +64,9 @@ export function createMarkAsProcessedHandler(pkgJsonUpdater: PackageJsonUpdater)
 /**
  * Create a handler that will throw an error.
  */
-export function createThrowErrorHandler(fs: FileSystem): TaskCompletedHandler {
+export function createThrowErrorHandler(fs: ReadonlyFileSystem): TaskCompletedHandler {
   return (task: Task, message: string|null): void => {
-    const format = getEntryPointFormat(fs, task.entryPoint, task.formatProperty);
-    throw new Error(
-        `Failed to compile entry-point ${task.entryPoint.name} (${task.formatProperty} as ${
-            format})` +
-        (message !== null ? ` due to ${message}` : ''));
+    throw new Error(createErrorMessage(fs, task, message));
   };
 }
 
@@ -78,13 +74,17 @@ export function createThrowErrorHandler(fs: FileSystem): TaskCompletedHandler {
  * Create a handler that logs an error and marks the task as failed.
  */
 export function createLogErrorHandler(
-    logger: Logger, fs: FileSystem, taskQueue: TaskQueue): TaskCompletedHandler {
+    logger: Logger, fs: ReadonlyFileSystem, taskQueue: TaskQueue): TaskCompletedHandler {
   return (task: Task, message: string|null): void => {
     taskQueue.markAsFailed(task);
-    const format = getEntryPointFormat(fs, task.entryPoint, task.formatProperty);
-    logger.error(
-        `Failed to compile entry-point ${task.entryPoint.name} (${task.formatProperty} as ${
-            format})` +
-        (message !== null ? ` due to ${message}` : ''));
+    logger.error(createErrorMessage(fs, task, message));
   };
+}
+
+function createErrorMessage(fs: ReadonlyFileSystem, task: Task, message: string|null): string {
+  const jsFormat = `\`${task.formatProperty}\` as ${
+      getEntryPointFormat(fs, task.entryPoint, task.formatProperty) ?? 'unknown format'}`;
+  const format = task.typingsOnly ? `typings only using ${jsFormat}` : jsFormat;
+  message = message !== null ? ` due to ${message}` : '';
+  return `Failed to compile entry-point ${task.entryPoint.name} (${format})` + message;
 }

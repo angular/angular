@@ -19,15 +19,16 @@ import {EntryPoint, EntryPointJsonProperty, EntryPointPackageJson, SUPPORTED_FOR
 import {cleanOutdatedPackages} from '../writing/cleaning/package_cleaner';
 
 import {AnalyzeEntryPointsFn} from './api';
-import {PartiallyOrderedTasks, TaskQueue} from './tasks/api';
+import {DtsProcessing, PartiallyOrderedTasks, TaskQueue} from './tasks/api';
 
 /**
  * Create the function for performing the analysis of the entry-points.
  */
 export function getAnalyzeEntryPointsFn(
     logger: Logger, finder: EntryPointFinder, fileSystem: FileSystem,
-    supportedPropertiesToConsider: EntryPointJsonProperty[], compileAllFormats: boolean,
-    propertiesToConsider: string[], inParallel: boolean): AnalyzeEntryPointsFn {
+    supportedPropertiesToConsider: EntryPointJsonProperty[], typingsOnly: boolean,
+    compileAllFormats: boolean, propertiesToConsider: string[],
+    inParallel: boolean): AnalyzeEntryPointsFn {
   return () => {
     logger.debug('Analyzing entry-points...');
     const startTime = Date.now();
@@ -48,10 +49,8 @@ export function getAnalyzeEntryPointsFn(
 
     for (const entryPoint of entryPoints) {
       const packageJson = entryPoint.packageJson;
-      const hasProcessedTypings = hasBeenProcessed(packageJson, 'typings');
-      const {propertiesToProcess, equivalentPropertiesMap} =
-          getPropertiesToProcess(packageJson, supportedPropertiesToConsider, compileAllFormats);
-      let processDts = !hasProcessedTypings;
+      const {propertiesToProcess, equivalentPropertiesMap} = getPropertiesToProcess(
+          packageJson, supportedPropertiesToConsider, compileAllFormats, typingsOnly);
 
       if (propertiesToProcess.length === 0) {
         // This entry-point is unprocessable (i.e. there is no format property that is of interest
@@ -61,6 +60,16 @@ export function getAnalyzeEntryPointsFn(
         unprocessableEntryPointPaths.push(entryPoint.path);
         continue;
       }
+
+      const hasProcessedTypings = hasBeenProcessed(packageJson, 'typings');
+      if (hasProcessedTypings && typingsOnly) {
+        // Typings for this entry-point have already been processed and we're in typings-only mode,
+        // so no task has to be created for this entry-point.
+        logger.debug(`Skipping ${entryPoint.name} : typings have already been processed.`);
+        continue;
+      }
+      let processDts = hasProcessedTypings ? DtsProcessing.No :
+                                             typingsOnly ? DtsProcessing.Only : DtsProcessing.Yes;
 
       for (const formatProperty of propertiesToProcess) {
         if (hasBeenProcessed(entryPoint.packageJson, formatProperty)) {
@@ -73,7 +82,7 @@ export function getAnalyzeEntryPointsFn(
         tasks.push({entryPoint, formatProperty, formatPropertiesToMarkAsProcessed, processDts});
 
         // Only process typings for the first property (if not already processed).
-        processDts = false;
+        processDts = DtsProcessing.No;
       }
     }
 
@@ -114,7 +123,7 @@ function logInvalidEntryPoints(logger: Logger, invalidEntryPoints: InvalidEntryP
  */
 function getPropertiesToProcess(
     packageJson: EntryPointPackageJson, propertiesToConsider: EntryPointJsonProperty[],
-    compileAllFormats: boolean): {
+    compileAllFormats: boolean, typingsOnly: boolean): {
   propertiesToProcess: EntryPointJsonProperty[];
   equivalentPropertiesMap: Map<EntryPointJsonProperty, EntryPointJsonProperty[]>;
 } {
@@ -156,7 +165,8 @@ function getPropertiesToProcess(
   const equivalentPropertiesMap = new Map<EntryPointJsonProperty, EntryPointJsonProperty[]>();
   for (const prop of propertiesToConsider) {
     const formatPath = packageJson[prop]!;
-    const equivalentProperties = formatPathToProperties[formatPath];
+    // If we are only processing typings then there should be no format properties to mark
+    const equivalentProperties = typingsOnly ? [] : formatPathToProperties[formatPath];
     equivalentPropertiesMap.set(prop, equivalentProperties);
   }
 

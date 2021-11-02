@@ -1,0 +1,26 @@
+@use '../../constants';
+
+@mixin theme($theme) {
+  .error-list {
+    li {
+      .symbol {
+        &.runtime {
+          background: constants.$green-500;
+        }
+
+        &.compiler {
+          background: constants.$blue-500;
+        }
+      }
+
+      a {
+        color: constants.$blue-grey-600;
+
+        &:hover {
+          background: constants.$blue-grey-50;
+          color: constants.$blue-500;
+        }
+      }
+    }
+  }
+}

@@ -533,7 +533,7 @@ export interface Component extends Directive {
   encapsulation?: ViewEncapsulation;
 
   /**
-   * Overrides the default encapsulation start and end delimiters (`{{` and `}}`)
+   * Overrides the default interpolation start and end delimiters (`{{` and `}}`).
    */
   interpolation?: [string, string];
 
@@ -823,6 +823,11 @@ export interface HostListenerDecorator {
   /**
    * Decorator that declares a DOM event to listen for,
    * and provides a handler method to run when that event occurs.
+   *
+   * Angular invokes the supplied handler method when the host element emits the specified event,
+   * and updates the bound element with the result.
+   *
+   * If the handler method returns false, applies `preventDefault` on the bound element.
    */
   (eventName: string, args?: string[]): any;
   new(eventName: string, args?: string[]): any;

@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as ts from 'typescript';
+import ts from 'typescript';
 
-import {ResourceLoader} from '../../annotations';
-import {NgCompilerAdapter} from '../../core/api';
+import {ResourceLoader, ResourceLoaderContext} from '../../annotations';
+import {NgCompilerAdapter, ResourceHostContext} from '../../core/api';
 import {AbsoluteFsPath, join, PathSegment} from '../../file_system';
 import {RequiredDelegations} from '../../util/src/typescript';
 
@@ -27,6 +27,7 @@ export class AdapterResourceLoader implements ResourceLoader {
   private lookupResolutionHost = createLookupResolutionHost(this.adapter);
 
   canPreload = !!this.adapter.readResource;
+  canPreprocess = !!this.adapter.transformResource;
 
   constructor(private adapter: NgCompilerAdapter, private options: ts.CompilerOptions) {}
 
@@ -45,7 +46,8 @@ export class AdapterResourceLoader implements ResourceLoader {
   resolve(url: string, fromFile: string): string {
     let resolvedUrl: string|null = null;
     if (this.adapter.resourceNameToFileName) {
-      resolvedUrl = this.adapter.resourceNameToFileName(url, fromFile);
+      resolvedUrl = this.adapter.resourceNameToFileName(
+          url, fromFile, (url: string, fromFile: string) => this.fallbackResolve(url, fromFile));
     } else {
       resolvedUrl = this.fallbackResolve(url, fromFile);
     }
@@ -62,11 +64,12 @@ export class AdapterResourceLoader implements ResourceLoader {
    * `load()` method.
    *
    * @param resolvedUrl The url (resolved by a call to `resolve()`) of the resource to preload.
+   * @param context Information about the resource such as the type and containing file.
    * @returns A Promise that is resolved once the resource has been loaded or `undefined` if the
    * file has already been loaded.
    * @throws An Error if pre-loading is not available.
    */
-  preload(resolvedUrl: string): Promise<void>|undefined {
+  preload(resolvedUrl: string, context: ResourceLoaderContext): Promise<void>|undefined {
     if (!this.adapter.readResource) {
       throw new Error(
           'HostResourceLoader: the CompilerHost provided does not support pre-loading resources.');
@@ -77,7 +80,20 @@ export class AdapterResourceLoader implements ResourceLoader {
       return this.fetching.get(resolvedUrl);
     }
 
-    const result = this.adapter.readResource(resolvedUrl);
+    let result = this.adapter.readResource(resolvedUrl);
+
+    if (this.adapter.transformResource && context.type === 'style') {
+      const resourceContext: ResourceHostContext = {
+        type: 'style',
+        containingFile: context.containingFile,
+        resourceFile: resolvedUrl,
+      };
+      result = Promise.resolve(result).then(async (str) => {
+        const transformResult = await this.adapter.transformResource!(str, resourceContext);
+        return transformResult === null ? str : transformResult.content;
+      });
+    }
+
     if (typeof result === 'string') {
       this.cache.set(resolvedUrl, result);
       return undefined;
@@ -89,6 +105,28 @@ export class AdapterResourceLoader implements ResourceLoader {
       this.fetching.set(resolvedUrl, fetchCompletion);
       return fetchCompletion;
     }
+  }
+
+  /**
+   * Preprocess the content data of an inline resource, asynchronously.
+   *
+   * @param data The existing content data from the inline resource.
+   * @param context Information regarding the resource such as the type and containing file.
+   * @returns A Promise that resolves to the processed data. If no processing occurs, the
+   * same data string that was passed to the function will be resolved.
+   */
+  async preprocessInline(data: string, context: ResourceLoaderContext): Promise<string> {
+    if (!this.adapter.transformResource || context.type !== 'style') {
+      return data;
+    }
+
+    const transformResult = await this.adapter.transformResource(
+        data, {type: 'style', containingFile: context.containingFile, resourceFile: null});
+    if (transformResult === null) {
+      return data;
+    }
+
+    return transformResult.content;
   }
 
   /**
@@ -111,6 +149,13 @@ export class AdapterResourceLoader implements ResourceLoader {
     }
     this.cache.set(resolvedUrl, result);
     return result;
+  }
+
+  /**
+   * Invalidate the entire resource cache.
+   */
+  invalidate(): void {
+    this.cache.clear();
   }
 
   /**

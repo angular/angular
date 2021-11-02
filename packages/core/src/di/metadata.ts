@@ -8,6 +8,9 @@
 
 import {makeParamDecorator} from '../util/decorators';
 
+import {attachInjectFlag} from './injector_compatibility';
+import {DecoratorFlags, InternalInjectFlags} from './interface/injector';
+
 
 /**
  * Type of the Inject decorator / constructor function.
@@ -54,8 +57,10 @@ export interface Inject {
  * @Annotation
  * @publicApi
  */
-export const Inject: InjectDecorator = makeParamDecorator('Inject', (token: any) => ({token}));
-
+export const Inject: InjectDecorator = attachInjectFlag(
+    // Disable tslint because `DecoratorFlags` is a const enum which gets inlined.
+    // tslint:disable-next-line: no-toplevel-property-access
+    makeParamDecorator('Inject', (token: any) => ({token})), DecoratorFlags.Inject);
 
 /**
  * Type of the Optional decorator / constructor function.
@@ -66,14 +71,14 @@ export interface OptionalDecorator {
   /**
    * Parameter decorator to be used on constructor parameters,
    * which marks the parameter as being an optional dependency.
-   * The DI framework provides null if the dependency is not found.
+   * The DI framework provides `null` if the dependency is not found.
    *
    * Can be used together with other parameter decorators
    * that modify how dependency injection operates.
    *
    * @usageNotes
    *
-   * The following code allows the possibility of a null result:
+   * The following code allows the possibility of a `null` result:
    *
    * <code-example path="core/di/ts/metadata_spec.ts" region="Optional">
    * </code-example>
@@ -97,7 +102,10 @@ export interface Optional {}
  * @Annotation
  * @publicApi
  */
-export const Optional: OptionalDecorator = makeParamDecorator('Optional');
+export const Optional: OptionalDecorator =
+    // Disable tslint because `InternalInjectFlags` is a const enum which gets inlined.
+    // tslint:disable-next-line: no-toplevel-property-access
+    attachInjectFlag(makeParamDecorator('Optional'), InternalInjectFlags.Optional);
 
 /**
  * Type of the Self decorator / constructor function.
@@ -110,7 +118,7 @@ export interface SelfDecorator {
    * which tells the DI framework to start dependency resolution from the local injector.
    *
    * Resolution works upward through the injector hierarchy, so the children
-   * of this class must configure their own providers or be prepared for a null result.
+   * of this class must configure their own providers or be prepared for a `null` result.
    *
    * @usageNotes
    *
@@ -142,7 +150,10 @@ export interface Self {}
  * @Annotation
  * @publicApi
  */
-export const Self: SelfDecorator = makeParamDecorator('Self');
+export const Self: SelfDecorator =
+    // Disable tslint because `InternalInjectFlags` is a const enum which gets inlined.
+    // tslint:disable-next-line: no-toplevel-property-access
+    attachInjectFlag(makeParamDecorator('Self'), InternalInjectFlags.Self);
 
 
 /**
@@ -187,7 +198,10 @@ export interface SkipSelf {}
  * @Annotation
  * @publicApi
  */
-export const SkipSelf: SkipSelfDecorator = makeParamDecorator('SkipSelf');
+export const SkipSelf: SkipSelfDecorator =
+    // Disable tslint because `InternalInjectFlags` is a const enum which gets inlined.
+    // tslint:disable-next-line: no-toplevel-property-access
+    attachInjectFlag(makeParamDecorator('SkipSelf'), InternalInjectFlags.SkipSelf);
 
 /**
  * Type of the `Host` decorator / constructor function.
@@ -202,7 +216,7 @@ export interface HostDecorator {
    *
    * @usageNotes
    *
-   * The following shows use with the `@Optional` decorator, and allows for a null result.
+   * The following shows use with the `@Optional` decorator, and allows for a `null` result.
    *
    * <code-example path="core/di/ts/metadata_spec.ts" region="Host">
    * </code-example>
@@ -227,4 +241,7 @@ export interface Host {}
  * @Annotation
  * @publicApi
  */
-export const Host: HostDecorator = makeParamDecorator('Host');
+export const Host: HostDecorator =
+    // Disable tslint because `InternalInjectFlags` is a const enum which gets inlined.
+    // tslint:disable-next-line: no-toplevel-property-access
+    attachInjectFlag(makeParamDecorator('Host'), InternalInjectFlags.Host);

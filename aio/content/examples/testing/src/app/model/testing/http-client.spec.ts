@@ -1,5 +1,3 @@
-// #docplaster
-// #docregion imports
 // Http testing module and mocking controller
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 
@@ -7,7 +5,6 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { TestBed } from '@angular/core/testing';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
-// #enddocregion imports
 import { HttpHeaders } from '@angular/common/http';
 
 interface Data {
@@ -16,7 +13,6 @@ interface Data {
 
 const testUrl = '/data';
 
-// #docregion setup
 describe('HttpClient testing', () => {
   let httpClient: HttpClient;
   let httpTestingController: HttpTestingController;
@@ -30,17 +26,13 @@ describe('HttpClient testing', () => {
     httpClient = TestBed.inject(HttpClient);
     httpTestingController = TestBed.inject(HttpTestingController);
   });
-  // #enddocregion setup
-  // #docregion afterEach
+
   afterEach(() => {
     // After every test, assert that there are no more pending requests.
     httpTestingController.verify();
   });
-  // #enddocregion afterEach
-  // #docregion setup
+
   /// Tests begin ///
-  // #enddocregion setup
-  // #docregion get-test
   it('can test HttpClient.get', () => {
     const testData: Data = {name: 'Test Data'};
 
@@ -66,7 +58,7 @@ describe('HttpClient testing', () => {
     // Finally, assert that there are no outstanding requests.
     httpTestingController.verify();
   });
-  // #enddocregion get-test
+
   it('can test HttpClient.get with matching header', () => {
     const testData: Data = {name: 'Test Data'};
 
@@ -78,13 +70,11 @@ describe('HttpClient testing', () => {
         expect(data).toEqual(testData)
       );
 
-      // Find request with a predicate function.
-    // #docregion predicate
+    // Find request with a predicate function.
     // Expect one request with an authorization header
     const req = httpTestingController.expectOne(
       request => request.headers.has('Authorization')
     );
-    // #enddocregion predicate
     req.flush(testData);
   });
 
@@ -104,7 +94,6 @@ describe('HttpClient testing', () => {
     httpClient.get<Data[]>(testUrl)
       .subscribe(d => expect(d).toEqual(testData, 'should be expected data'));
 
-    // #docregion multi-request
     // get all pending requests that match the given URL
     const requests = httpTestingController.match(testUrl);
     expect(requests.length).toEqual(3);
@@ -113,10 +102,8 @@ describe('HttpClient testing', () => {
     requests[0].flush([]);
     requests[1].flush([testData[0]]);
     requests[2].flush(testData);
-    // #enddocregion multi-request
   });
 
-  // #docregion 404
   it('can test for 404 error', () => {
     const emsg = 'deliberate 404 error';
 
@@ -133,9 +120,7 @@ describe('HttpClient testing', () => {
     // Respond with mock error
     req.flush(emsg, { status: 404, statusText: 'Not Found' });
   });
-  // #enddocregion 404
 
-  // #docregion network-error
   it('can test for network error', () => {
     const emsg = 'simulated network error';
 
@@ -152,19 +137,16 @@ describe('HttpClient testing', () => {
     // Connection timeout, DNS error, offline, etc
     const errorEvent = new ErrorEvent('so sad', {
       message: emsg,
-      // #enddocregion network-error
       // The rest of this is optional and not used.
       // Just showing that you could provide this too.
       filename: 'HeroService.ts',
       lineno: 42,
       colno: 21
-    // #docregion network-error
     });
 
     // Respond with mock error
     req.error(errorEvent);
   });
-  // #enddocregion network-error
 
   it('httpTestingController.verify should fail if HTTP response not simulated', () => {
     // Sends request
@@ -187,6 +169,4 @@ describe('HttpClient testing', () => {
   //   // Sends request which is never handled by this test
   //   httpClient.get('some/api').subscribe();
   // });
-// #docregion setup
 });
-// #enddocregion setup

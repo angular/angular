@@ -10,12 +10,14 @@ import * as e from '../../../src/expression_parser/ast';
 import {Lexer} from '../../../src/expression_parser/lexer';
 import {Parser} from '../../../src/expression_parser/parser';
 import * as html from '../../../src/ml_parser/ast';
-import {HtmlParser, ParseTreeResult} from '../../../src/ml_parser/html_parser';
+import {HtmlParser} from '../../../src/ml_parser/html_parser';
 import {WhitespaceVisitor} from '../../../src/ml_parser/html_whitespaces';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../../../src/ml_parser/interpolation_config';
+import {ParseTreeResult} from '../../../src/ml_parser/parser';
 import * as a from '../../../src/render3/r3_ast';
 import {htmlAstToRender3Ast, Render3ParseResult} from '../../../src/render3/r3_template_transform';
 import {I18nMetaVisitor} from '../../../src/render3/view/i18n/meta';
+import {LEADING_TRIVIA_CHARS} from '../../../src/render3/view/template';
 import {BindingParser} from '../../../src/template_parser/binding_parser';
 import {MockSchemaRegistry} from '../../../testing';
 
@@ -78,15 +80,18 @@ export function toStringExpression(expr: e.AST): string {
 
 // Parse an html string to IVY specific info
 export function parseR3(
-    input: string, options: {preserveWhitespaces?: boolean, leadingTriviaChars?: string[]} = {}):
-    Render3ParseResult {
+    input: string,
+    options: {preserveWhitespaces?: boolean,
+              leadingTriviaChars?: string[],
+              ignoreError?: boolean} = {}): Render3ParseResult {
   const htmlParser = new HtmlParser();
 
-  const parseResult = htmlParser.parse(
-      input, 'path:://to/template',
-      {tokenizeExpansionForms: true, leadingTriviaChars: options.leadingTriviaChars});
+  const parseResult = htmlParser.parse(input, 'path:://to/template', {
+    tokenizeExpansionForms: true,
+    leadingTriviaChars: options.leadingTriviaChars ?? LEADING_TRIVIA_CHARS,
+  });
 
-  if (parseResult.errors.length > 0) {
+  if (parseResult.errors.length > 0 && !options.ignoreError) {
     const msg = parseResult.errors.map(e => e.toString()).join('\n');
     throw new Error(msg);
   }
@@ -103,9 +108,9 @@ export function parseR3(
       ['onEvent'], ['onEvent']);
   const bindingParser =
       new BindingParser(expressionParser, DEFAULT_INTERPOLATION_CONFIG, schemaRegistry, null, []);
-  const r3Result = htmlAstToRender3Ast(htmlNodes, bindingParser);
+  const r3Result = htmlAstToRender3Ast(htmlNodes, bindingParser, {collectCommentNodes: false});
 
-  if (r3Result.errors.length > 0) {
+  if (r3Result.errors.length > 0 && !options.ignoreError) {
     const msg = r3Result.errors.map(e => e.toString()).join('\n');
     throw new Error(msg);
   }

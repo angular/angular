@@ -145,7 +145,7 @@ export function isMetadataSymbolicExpression(value: any): value is MetadataSymbo
 export interface MetadataSymbolicBinaryExpression {
   __symbolic: 'binary';
   operator: '&&'|'||'|'|'|'^'|'&'|'=='|'!='|'==='|'!=='|'<'|'>'|'<='|'>='|'instanceof'|'in'|'as'|
-      '<<'|'>>'|'>>>'|'+'|'-'|'*'|'/'|'%'|'**';
+      '<<'|'>>'|'>>>'|'+'|'-'|'*'|'/'|'%'|'**'|'??';
   left: MetadataValue;
   right: MetadataValue;
 }

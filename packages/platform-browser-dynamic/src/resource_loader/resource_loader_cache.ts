@@ -29,7 +29,7 @@ export class CachedResourceLoader extends ResourceLoader {
     }
   }
 
-  get(url: string): Promise<string> {
+  override get(url: string): Promise<string> {
     if (this._cache.hasOwnProperty(url)) {
       return Promise.resolve(this._cache[url]);
     } else {

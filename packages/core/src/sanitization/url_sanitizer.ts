@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {isDevMode} from '../util/is_dev_mode';
 
 /**
  * A pattern that recognizes a commonly useful subset of URLs that are safe.
@@ -47,7 +46,7 @@ export function _sanitizeUrl(url: string): string {
   url = String(url);
   if (url.match(SAFE_URL_PATTERN) || url.match(DATA_URL_PATTERN)) return url;
 
-  if (isDevMode()) {
+  if (typeof ngDevMode === 'undefined' || ngDevMode) {
     console.warn(`WARNING: sanitizing unsafe URL value ${url} (see https://g.co/ng/security#xss)`);
   }
 

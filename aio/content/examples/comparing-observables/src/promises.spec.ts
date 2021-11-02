@@ -2,11 +2,11 @@ import { docRegionError, docRegionPromise } from './promises';
 
 describe('promises', () => {
   it('should print 2', (doneFn: DoneFn) => {
-    const consoleLogSpy = spyOn(console, 'log');
-    const pr = docRegionPromise(console, 2);
+    const consoleSpy = jasmine.createSpyObj<Console>('console', ['log']);
+    const pr = docRegionPromise(consoleSpy, 2);
     pr.then((value) => {
-      expect(consoleLogSpy).toHaveBeenCalledTimes(1);
-      expect(consoleLogSpy).toHaveBeenCalledWith(2);
+      expect(consoleSpy.log).toHaveBeenCalledTimes(1);
+      expect(consoleSpy.log).toHaveBeenCalledWith(2);
       expect(value).toBe(4);
       doneFn();
     });

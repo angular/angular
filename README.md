@@ -1,4 +1,4 @@
-<h1 align="center">Angular - One framework. Mobile & desktop.</h1>
+<h1 align="center">Angular - The modern web developer's platform.</h1>
 
 <p align="center">
   <img src="aio/src/assets/images/logos/angular/angular.png" alt="angular-logo" width="120px" height="120px"/>
@@ -81,6 +81,8 @@ cd [PROJECT NAME]
 ng serve
 ```
 
+Angular is cross-platform, fast, scalable, has incredible tooling, and is loved by millions.
+
 ## Quickstart
 
 [Get started in 5 minutes][quickstart].
@@ -110,7 +112,7 @@ Read through our [contributing guidelines][contributing] to learn about our subm
 
 ### Want to Help?
 
-Want to file a bug, contribute some code, or improve documentation? Excellent! Read up on our guidelines for [contributing][contributing] and then check out one of our issues in the [hotlist: community-help](https://github.com/angular/angular/labels/hotlist%3A%20community-help).
+Want to file a bug, contribute some code, or improve documentation? Excellent! Read up on our guidelines for [contributing][contributing] and then check out one of our issues labeled as <kbd>[help wanted](https://github.com/angular/angular/labels/help%20wanted)</kbd> or <kbd>[good first issue](https://github.com/angular/angular/labels/good%20first%20issue)</kbd>.
 
 ### Code of Conduct
 
@@ -121,7 +123,10 @@ Help us keep Angular open and inclusive. Please read and follow our [Code of Con
 Join the conversation and help the community.
 
 - [Twitter][twitter]
+- [Discord][discord]
 - [Gitter][gitter]
+- [YouTube][youtube]
+- [StackOverflow][stackoverflow]
 - Find a Local [Meetup][meetup]
 
 [![Love Angular badge](https://img.shields.io/badge/angular-love-blue?logo=angular&angular=love)](https://www.github.com/angular/angular)
@@ -147,5 +152,8 @@ Join the conversation and help the community.
 [npm]: https://www.npmjs.com/get-npm
 [codeofconduct]: CODE_OF_CONDUCT.md
 [twitter]: https://www.twitter.com/angular
+[discord]: https://discord.gg/angular
 [gitter]: https://gitter.im/angular/angular
+[stackoverflow]: https://stackoverflow.com/questions/tagged/angular
+[youtube]: https://youtube.com/angular
 [meetup]: https://www.meetup.com/find/?keywords=angular"

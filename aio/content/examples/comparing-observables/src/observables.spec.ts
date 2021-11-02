@@ -2,11 +2,11 @@ import { docRegionChain, docRegionObservable, docRegionUnsubscribe } from './obs
 
 describe('observables', () => {
   it('should print 2', (doneFn: DoneFn) => {
-    const consoleLogSpy = spyOn(console, 'log');
-    const observable = docRegionObservable(console);
+    const consoleSpy = jasmine.createSpyObj<Console>('console', ['log']);
+    const observable = docRegionObservable(consoleSpy);
     observable.subscribe(() => {
-      expect(consoleLogSpy).toHaveBeenCalledTimes(1);
-      expect(consoleLogSpy).toHaveBeenCalledWith(2);
+      expect(consoleSpy.log).toHaveBeenCalledTimes(1);
+      expect(consoleSpy.log).toHaveBeenCalledWith(2);
       doneFn();
     });
   });

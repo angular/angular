@@ -8,7 +8,6 @@ import { AdminDashboardComponent } from './admin-dashboard/admin-dashboard.compo
 import { ManageCrisesComponent } from './manage-crises/manage-crises.component';
 import { ManageHeroesComponent } from './manage-heroes/manage-heroes.component';
 
-// #docregion admin-route
 import { AuthGuard } from '../auth/auth.guard';
 
 // #docregion can-activate-child

@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteFsPath, FileSystem} from '../../../src/ngtsc/file_system';
+import {AbsoluteFsPath, ReadonlyFileSystem} from '../../../src/ngtsc/file_system';
 import {Logger} from '../../../src/ngtsc/logging';
 import {ParsedConfiguration} from '../../../src/perform_compile';
 
@@ -32,19 +32,20 @@ export class ProgramBasedEntryPointFinder extends TracingEntryPointFinder {
   private entryPointsWithDependencies: Map<AbsoluteFsPath, EntryPointWithDependencies>|null = null;
 
   constructor(
-      fs: FileSystem, config: NgccConfiguration, logger: Logger, resolver: DependencyResolver,
-      private entryPointCollector: EntryPointCollector,
+      fs: ReadonlyFileSystem, config: NgccConfiguration, logger: Logger,
+      resolver: DependencyResolver, private entryPointCollector: EntryPointCollector,
       private entryPointManifest: EntryPointManifest, basePath: AbsoluteFsPath,
       private tsConfig: ParsedConfiguration, projectPath: AbsoluteFsPath) {
     super(
-        fs, config, logger, resolver, basePath, getPathMappingsFromTsConfig(tsConfig, projectPath));
+        fs, config, logger, resolver, basePath,
+        getPathMappingsFromTsConfig(fs, tsConfig, projectPath));
   }
 
   /**
    * Return an array containing the external import paths that were extracted from the source-files
    * of the program defined by the tsconfig.json.
    */
-  protected getInitialEntryPointPaths(): AbsoluteFsPath[] {
+  protected override getInitialEntryPointPaths(): AbsoluteFsPath[] {
     const moduleResolver = new ModuleResolver(this.fs, this.pathMappings, ['', '.ts', '/index.ts']);
     const host = new EsmDependencyHost(this.fs, moduleResolver);
     const dependencies = createDependencyInfo();
@@ -70,7 +71,8 @@ export class ProgramBasedEntryPointFinder extends TracingEntryPointFinder {
    * @returns the entry-point and its dependencies or `null` if the entry-point is not compiled by
    *     Angular or cannot be determined.
    */
-  protected getEntryPointWithDeps(entryPointPath: AbsoluteFsPath): EntryPointWithDependencies|null {
+  protected override getEntryPointWithDeps(entryPointPath: AbsoluteFsPath):
+      EntryPointWithDependencies|null {
     const entryPoints = this.findOrLoadEntryPoints();
     if (!entryPoints.has(entryPointPath)) {
       return null;

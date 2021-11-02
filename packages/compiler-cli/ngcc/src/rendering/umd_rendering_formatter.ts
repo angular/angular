@@ -5,10 +5,10 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {dirname, relative} from 'canonical-path';
 import MagicString from 'magic-string';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
+import {PathManipulation} from '../../../src/ngtsc/file_system';
 import {Reexport} from '../../../src/ngtsc/imports';
 import {Import, ImportManager} from '../../../src/ngtsc/translator';
 import {ExportInfo} from '../analysis/private_declarations_analyzer';
@@ -26,8 +26,8 @@ type AmdConditional = ts.ConditionalExpression&{whenTrue: ts.CallExpression};
  * wrapper function for AMD, CommonJS and global module formats.
  */
 export class UmdRenderingFormatter extends Esm5RenderingFormatter {
-  constructor(protected umdHost: UmdReflectionHost, isCore: boolean) {
-    super(umdHost, isCore);
+  constructor(fs: PathManipulation, protected umdHost: UmdReflectionHost, isCore: boolean) {
+    super(fs, umdHost, isCore);
   }
 
   /**
@@ -50,7 +50,7 @@ export class UmdRenderingFormatter extends Esm5RenderingFormatter {
    *
    * (See that the `z` import is not being used by the factory function.)
    */
-  addImports(output: MagicString, imports: Import[], file: ts.SourceFile): void {
+  override addImports(output: MagicString, imports: Import[], file: ts.SourceFile): void {
     if (imports.length === 0) {
       return;
     }
@@ -61,19 +61,19 @@ export class UmdRenderingFormatter extends Esm5RenderingFormatter {
       return;
     }
 
-    const wrapperFunction = umdModule.wrapperFn;
+    const {wrapperFn, factoryFn} = umdModule;
 
     // We need to add new `require()` calls for each import in the CommonJS initializer
-    renderCommonJsDependencies(output, wrapperFunction, imports);
-    renderAmdDependencies(output, wrapperFunction, imports);
-    renderGlobalDependencies(output, wrapperFunction, imports);
-    renderFactoryParameters(output, wrapperFunction, imports);
+    renderCommonJsDependencies(output, wrapperFn, imports);
+    renderAmdDependencies(output, wrapperFn, imports);
+    renderGlobalDependencies(output, wrapperFn, imports);
+    renderFactoryParameters(output, factoryFn, imports);
   }
 
   /**
    * Add the exports to the bottom of the UMD module factory function.
    */
-  addExports(
+  override addExports(
       output: MagicString, entryPointBasePath: string, exports: ExportInfo[],
       importManager: ImportManager, file: ts.SourceFile): void {
     const umdModule = this.umdHost.getUmdModule(file);
@@ -87,7 +87,7 @@ export class UmdRenderingFormatter extends Esm5RenderingFormatter {
         lastStatement ? lastStatement.getEnd() : factoryFunction.body.getEnd() - 1;
     exports.forEach(e => {
       const basePath = stripExtension(e.from);
-      const relativePath = './' + relative(dirname(entryPointBasePath), basePath);
+      const relativePath = './' + this.fs.relative(this.fs.dirname(entryPointBasePath), basePath);
       const namedImport = entryPointBasePath !== basePath ?
           importManager.generateNamedImport(relativePath, e.identifier) :
           {symbol: e.identifier, moduleImport: null};
@@ -97,7 +97,7 @@ export class UmdRenderingFormatter extends Esm5RenderingFormatter {
     });
   }
 
-  addDirectExports(
+  override addDirectExports(
       output: MagicString, exports: Reexport[], importManager: ImportManager,
       file: ts.SourceFile): void {
     const umdModule = this.umdHost.getUmdModule(file);
@@ -120,7 +120,7 @@ export class UmdRenderingFormatter extends Esm5RenderingFormatter {
   /**
    * Add the constants to the top of the UMD factory function.
    */
-  addConstants(output: MagicString, constants: string, file: ts.SourceFile): void {
+  override addConstants(output: MagicString, constants: string, file: ts.SourceFile): void {
     if (constants === '') {
       return;
     }
@@ -210,22 +210,9 @@ function renderGlobalDependencies(
  * Add dependency parameters to the UMD factory function.
  */
 function renderFactoryParameters(
-    output: MagicString, wrapperFunction: ts.FunctionExpression, imports: Import[]) {
-  const wrapperCall = wrapperFunction.parent as ts.CallExpression;
-  const secondArgument = wrapperCall.arguments[1];
-  if (!secondArgument) {
-    return;
-  }
-
-  // Be resilient to the factory being inside parentheses
-  const factoryFunction =
-      ts.isParenthesizedExpression(secondArgument) ? secondArgument.expression : secondArgument;
-  if (!ts.isFunctionExpression(factoryFunction)) {
-    return;
-  }
-
+    output: MagicString, factoryFunction: ts.FunctionExpression, imports: Import[]) {
   const parameters = factoryFunction.parameters;
-  const parameterString = imports.map(i => i.qualifier).join(',');
+  const parameterString = imports.map(i => i.qualifier.text).join(',');
   if (parameters.length > 0) {
     const injectionPoint = parameters[0].getFullStart();
     output.appendLeft(injectionPoint, parameterString + ',');

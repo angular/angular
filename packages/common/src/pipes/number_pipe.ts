@@ -17,32 +17,60 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
  * @ngModule CommonModule
  * @description
  *
- * Transforms a number into a string,
- * formatted according to locale rules that determine group sizing and
- * separator, decimal-point character, and other locale-specific
- * configurations.
- *
- * If no parameters are specified, the function rounds off to the nearest value using this
- * [rounding method](https://en.wikibooks.org/wiki/Arithmetic/Rounding).
- * The behavior differs from that of the JavaScript ```Math.round()``` function.
- * In the following case for example, the pipe rounds down where
- * ```Math.round()``` rounds up:
- *
- * ```html
- * -2.5 | number:'1.0-0'
- * > -3
- * Math.round(-2.5)
- * > -2
- * ```
+ * Formats a value according to digit options and locale rules.
+ * Locale determines group sizing and separator,
+ * decimal point character, and other locale-specific configurations.
  *
  * @see `formatNumber()`
  *
  * @usageNotes
- * The following code shows how the pipe transforms numbers
- * into text strings, according to various format specifications,
- * where the caller's default locale is `en-US`.
+ *
+ * ### digitsInfo
+ *
+ * The value's decimal representation is specified by the `digitsInfo`
+ * parameter, written in the following format:<br>
+ *
+ * ```
+ * {minIntegerDigits}.{minFractionDigits}-{maxFractionDigits}
+ * ```
+ *
+ *  - `minIntegerDigits`:
+ * The minimum number of integer digits before the decimal point.
+ * Default is 1.
+ *
+ * - `minFractionDigits`:
+ * The minimum number of digits after the decimal point.
+ * Default is 0.
+ *
+ *  - `maxFractionDigits`:
+ * The maximum number of digits after the decimal point.
+ * Default is 3.
+ *
+ * If the formatted value is truncated it will be rounded using the "to-nearest" method:
+ *
+ * ```
+ * {{3.6 | number: '1.0-0'}}
+ * <!--will output '4'-->
+ *
+ * {{-3.6 | number:'1.0-0'}}
+ * <!--will output '-4'-->
+ * ```
+ *
+ * ### locale
+ *
+ * `locale` will format a value according to locale rules.
+ * Locale determines group sizing and separator,
+ * decimal point character, and other locale-specific configurations.
+ *
+ * When not supplied, uses the value of `LOCALE_ID`, which is `en-US` by default.
+ *
+ * See [Setting your app locale](guide/i18n-common-locale-id).
  *
  * ### Example
+ *
+ * The following code shows how the pipe transforms values
+ * according to various format specifications,
+ * where the caller's default locale is `en-US`.
  *
  * <code-example path="common/pipes/ts/number_pipe.ts" region='NumberPipe'></code-example>
  *
@@ -52,24 +80,16 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
 export class DecimalPipe implements PipeTransform {
   constructor(@Inject(LOCALE_ID) private _locale: string) {}
 
-  /**
-   * @param value The number to be formatted.
-   * @param digitsInfo Decimal representation options, specified by a string
-   * in the following format:<br>
-   * <code>{minIntegerDigits}.{minFractionDigits}-{maxFractionDigits}</code>.
-   *   - `minIntegerDigits`: The minimum number of integer digits before the decimal point.
-   * Default is `1`.
-   *   - `minFractionDigits`: The minimum number of digits after the decimal point.
-   * Default is `0`.
-   *   - `maxFractionDigits`: The maximum number of digits after the decimal point.
-   * Default is `3`.
-   * @param locale A locale code for the locale format rules to use.
-   * When not supplied, uses the value of `LOCALE_ID`, which is `en-US` by default.
-   * See [Setting your app locale](guide/i18n#setting-up-the-locale-of-your-app).
-   */
   transform(value: number|string, digitsInfo?: string, locale?: string): string|null;
   transform(value: null|undefined, digitsInfo?: string, locale?: string): null;
   transform(value: number|string|null|undefined, digitsInfo?: string, locale?: string): string|null;
+  /**
+   * @param value The value to be formatted.
+   * @param digitsInfo Sets digit and decimal representation.
+   * [See more](#digitsinfo).
+   * @param locale Specifies what locale format rules to use.
+   * [See more](#locale).
+   */
   transform(value: number|string|null|undefined, digitsInfo?: string, locale?: string): string
       |null {
     if (!isValue(value)) return null;
@@ -109,6 +129,9 @@ export class DecimalPipe implements PipeTransform {
 export class PercentPipe implements PipeTransform {
   constructor(@Inject(LOCALE_ID) private _locale: string) {}
 
+  transform(value: number|string, digitsInfo?: string, locale?: string): string|null;
+  transform(value: null|undefined, digitsInfo?: string, locale?: string): null;
+  transform(value: number|string|null|undefined, digitsInfo?: string, locale?: string): string|null;
   /**
    *
    * @param value The number to be formatted as a percentage.
@@ -123,11 +146,8 @@ export class PercentPipe implements PipeTransform {
    * Default is `0`.
    * @param locale A locale code for the locale format rules to use.
    * When not supplied, uses the value of `LOCALE_ID`, which is `en-US` by default.
-   * See [Setting your app locale](guide/i18n#setting-up-the-locale-of-your-app).
+   * See [Setting your app locale](guide/i18n-common-locale-id).
    */
-  transform(value: number|string, digitsInfo?: string, locale?: string): string|null;
-  transform(value: null|undefined, digitsInfo?: string, locale?: string): null;
-  transform(value: number|string|null|undefined, digitsInfo?: string, locale?: string): string|null;
   transform(value: number|string|null|undefined, digitsInfo?: string, locale?: string): string
       |null {
     if (!isValue(value)) return null;
@@ -157,7 +177,7 @@ export class PercentPipe implements PipeTransform {
  * The default currency code is currently always `USD` but this is deprecated from v9.
  *
  * **In v11 the default currency code will be taken from the current locale identified by
- * the `LOCAL_ID` token. See the [i18n guide](guide/i18n#setting-up-the-locale-of-your-app) for
+ * the `LOCALE_ID` token. See the [i18n guide](guide/i18n-common-locale-id) for
  * more information.**
  *
  * If you need the previous behavior then set it by creating a `DEFAULT_CURRENCY_CODE` provider in
@@ -187,6 +207,18 @@ export class CurrencyPipe implements PipeTransform {
       @Inject(LOCALE_ID) private _locale: string,
       @Inject(DEFAULT_CURRENCY_CODE) private _defaultCurrencyCode: string = 'USD') {}
 
+  transform(
+      value: number|string, currencyCode?: string,
+      display?: 'code'|'symbol'|'symbol-narrow'|string|boolean, digitsInfo?: string,
+      locale?: string): string|null;
+  transform(
+      value: null|undefined, currencyCode?: string,
+      display?: 'code'|'symbol'|'symbol-narrow'|string|boolean, digitsInfo?: string,
+      locale?: string): null;
+  transform(
+      value: number|string|null|undefined, currencyCode?: string,
+      display?: 'code'|'symbol'|'symbol-narrow'|string|boolean, digitsInfo?: string,
+      locale?: string): string|null;
   /**
    *
    * @param value The number to be formatted as currency.
@@ -218,22 +250,10 @@ export class CurrencyPipe implements PipeTransform {
    * For example, the Canadian dollar has 2 digits, whereas the Chilean peso has none.
    * @param locale A locale code for the locale format rules to use.
    * When not supplied, uses the value of `LOCALE_ID`, which is `en-US` by default.
-   * See [Setting your app locale](guide/i18n#setting-up-the-locale-of-your-app).
+   * See [Setting your app locale](guide/i18n-common-locale-id).
    */
   transform(
-      value: number|string, currencyCode?: string,
-      display?: 'code'|'symbol'|'symbol-narrow'|string|boolean, digitsInfo?: string,
-      locale?: string): string|null;
-  transform(
-      value: null|undefined, currencyCode?: string,
-      display?: 'code'|'symbol'|'symbol-narrow'|string|boolean, digitsInfo?: string,
-      locale?: string): null;
-  transform(
-      value: number|string|null|undefined, currencyCode?: string,
-      display?: 'code'|'symbol'|'symbol-narrow'|string|boolean, digitsInfo?: string,
-      locale?: string): string|null;
-  transform(
-      value: number|string|null|undefined, currencyCode?: string,
+      value: number|string|null|undefined, currencyCode: string = this._defaultCurrencyCode,
       display: 'code'|'symbol'|'symbol-narrow'|string|boolean = 'symbol', digitsInfo?: string,
       locale?: string): string|null {
     if (!isValue(value)) return null;
@@ -241,7 +261,7 @@ export class CurrencyPipe implements PipeTransform {
     locale = locale || this._locale;
 
     if (typeof display === 'boolean') {
-      if (<any>console && <any>console.warn) {
+      if ((typeof ngDevMode === 'undefined' || ngDevMode) && <any>console && <any>console.warn) {
         console.warn(
             `Warning: the currency pipe has been changed in Angular v5. The symbolDisplay option (third parameter) is now a string instead of a boolean. The accepted values are "code", "symbol" or "symbol-narrow".`);
       }

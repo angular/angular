@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {getCompilerFacade, R3InjectorMetadataFacade} from '../../compiler/compiler_facade';
+import {getCompilerFacade, JitCompilerUsage, R3InjectorMetadataFacade} from '../../compiler/compiler_facade';
 import {resolveForwardRef} from '../../di/forward_ref';
 import {NG_INJ_DEF} from '../../di/interface/defs';
 import {reflectDependencies} from '../../di/jit/util';
@@ -16,15 +16,14 @@ import {ModuleWithProviders, NgModule} from '../../metadata/ng_module';
 import {NgModuleDef, NgModuleTransitiveScopes, NgModuleType} from '../../metadata/ng_module_def';
 import {deepForEach, flatten} from '../../util/array_utils';
 import {assertDefined} from '../../util/assert';
+import {EMPTY_ARRAY} from '../../util/empty';
 import {getComponentDef, getDirectiveDef, getNgModuleDef, getPipeDef} from '../definition';
-import {NG_COMP_DEF, NG_DIR_DEF, NG_MOD_DEF, NG_PIPE_DEF} from '../fields';
+import {NG_COMP_DEF, NG_DIR_DEF, NG_FACTORY_DEF, NG_MOD_DEF, NG_PIPE_DEF} from '../fields';
 import {ComponentDef} from '../interfaces/definition';
 import {maybeUnwrapFn} from '../util/misc_utils';
 import {stringifyForError} from '../util/stringify_utils';
 
 import {angularCoreEnv} from './environment';
-
-const EMPTY_ARRAY: Type<any>[] = [];
 
 interface ModuleQueueItem {
   moduleType: Type<any>;
@@ -94,7 +93,7 @@ export function compileNgModule(moduleType: Type<any>, ngModule: NgModule = {}):
 }
 
 /**
- * Compiles and adds the `ɵmod` and `ɵinj` properties to the module class.
+ * Compiles and adds the `ɵmod`, `ɵfac` and `ɵinj` properties to the module class.
  *
  * It's possible to compile a module via this API which will allow duplicate declarations in its
  * root.
@@ -115,20 +114,21 @@ export function compileNgModuleDefs(
           // go into an infinite loop before we've reached the point where we throw all the errors.
           throw new Error(`'${stringifyForError(moduleType)}' module can't import itself`);
         }
-        ngModuleDef = getCompilerFacade().compileNgModule(
-            angularCoreEnv, `ng:///${moduleType.name}/ɵmod.js`, {
-              type: moduleType,
-              bootstrap: flatten(ngModule.bootstrap || EMPTY_ARRAY).map(resolveForwardRef),
-              declarations: declarations.map(resolveForwardRef),
-              imports: flatten(ngModule.imports || EMPTY_ARRAY)
-                           .map(resolveForwardRef)
-                           .map(expandModuleWithProviders),
-              exports: flatten(ngModule.exports || EMPTY_ARRAY)
-                           .map(resolveForwardRef)
-                           .map(expandModuleWithProviders),
-              schemas: ngModule.schemas ? flatten(ngModule.schemas) : null,
-              id: ngModule.id || null,
-            });
+        const compiler = getCompilerFacade(
+            {usage: JitCompilerUsage.Decorator, kind: 'NgModule', type: moduleType});
+        ngModuleDef = compiler.compileNgModule(angularCoreEnv, `ng:///${moduleType.name}/ɵmod.js`, {
+          type: moduleType,
+          bootstrap: flatten(ngModule.bootstrap || EMPTY_ARRAY).map(resolveForwardRef),
+          declarations: declarations.map(resolveForwardRef),
+          imports: flatten(ngModule.imports || EMPTY_ARRAY)
+                       .map(resolveForwardRef)
+                       .map(expandModuleWithProviders),
+          exports: flatten(ngModule.exports || EMPTY_ARRAY)
+                       .map(resolveForwardRef)
+                       .map(expandModuleWithProviders),
+          schemas: ngModule.schemas ? flatten(ngModule.schemas) : null,
+          id: ngModule.id || null,
+        });
         // Set `schemas` on ngModuleDef to an empty array in JIT mode to indicate that runtime
         // should verify that there are no unknown elements in a template. In AOT mode, that check
         // happens at compile time and `schemas` information is not present on Component and Module
@@ -141,6 +141,26 @@ export function compileNgModuleDefs(
     }
   });
 
+  let ngFactoryDef: any = null;
+  Object.defineProperty(moduleType, NG_FACTORY_DEF, {
+    get: () => {
+      if (ngFactoryDef === null) {
+        const compiler = getCompilerFacade(
+            {usage: JitCompilerUsage.Decorator, kind: 'NgModule', type: moduleType});
+        ngFactoryDef = compiler.compileFactory(angularCoreEnv, `ng:///${moduleType.name}/ɵfac.js`, {
+          name: moduleType.name,
+          type: moduleType,
+          deps: reflectDependencies(moduleType),
+          target: compiler.FactoryTarget.NgModule,
+          typeArgumentCount: 0,
+        });
+      }
+      return ngFactoryDef;
+    },
+    // Make the property configurable in dev mode to allow overriding in tests
+    configurable: !!ngDevMode,
+  });
+
   let ngInjectorDef: any = null;
   Object.defineProperty(moduleType, NG_INJ_DEF, {
     get: () => {
@@ -151,15 +171,16 @@ export function compileNgModuleDefs(
         const meta: R3InjectorMetadataFacade = {
           name: moduleType.name,
           type: moduleType,
-          deps: reflectDependencies(moduleType),
           providers: ngModule.providers || EMPTY_ARRAY,
           imports: [
             (ngModule.imports || EMPTY_ARRAY).map(resolveForwardRef),
             (ngModule.exports || EMPTY_ARRAY).map(resolveForwardRef),
           ],
         };
-        ngInjectorDef = getCompilerFacade().compileInjector(
-            angularCoreEnv, `ng:///${moduleType.name}/ɵinj.js`, meta);
+        const compiler = getCompilerFacade(
+            {usage: JitCompilerUsage.Decorator, kind: 'NgModule', type: moduleType});
+        ngInjectorDef =
+            compiler.compileInjector(angularCoreEnv, `ng:///${moduleType.name}/ɵinj.js`, meta);
       }
       return ngInjectorDef;
     },
@@ -356,12 +377,12 @@ function getAnnotation<T>(type: any, name: string): T|null {
  * NgModule the component belongs to. We keep the list of compiled components here so that the
  * TestBed can reset it later.
  */
-let ownerNgModule = new Map<Type<any>, NgModuleType<any>>();
-let verifiedNgModule = new Map<NgModuleType<any>, boolean>();
+let ownerNgModule = new WeakMap<Type<any>, NgModuleType<any>>();
+let verifiedNgModule = new WeakMap<NgModuleType<any>, boolean>();
 
 export function resetCompiledComponents(): void {
-  ownerNgModule = new Map<Type<any>, NgModuleType<any>>();
-  verifiedNgModule = new Map<NgModuleType<any>, boolean>();
+  ownerNgModule = new WeakMap<Type<any>, NgModuleType<any>>();
+  verifiedNgModule = new WeakMap<NgModuleType<any>, boolean>();
   moduleQueue.length = 0;
 }
 

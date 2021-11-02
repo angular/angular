@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AsyncTestCompleter, beforeEach, describe, expect, inject, it} from '@angular/core/testing/src/testing_internal';
 import {filter} from 'rxjs/operators';
 
 import {EventEmitter} from '../src/event_emitter';
@@ -19,51 +18,47 @@ import {EventEmitter} from '../src/event_emitter';
       emitter = new EventEmitter();
     });
 
-    it('should call the next callback',
-       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         emitter.subscribe({
-           next: (value: any) => {
-             expect(value).toEqual(99);
-             async.done();
-           }
-         });
-         emitter.emit(99);
-       }));
+    it('should call the next callback', done => {
+      emitter.subscribe({
+        next: (value: any) => {
+          expect(value).toEqual(99);
+          done();
+        }
+      });
+      emitter.emit(99);
+    });
 
-    it('should call the throw callback',
-       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         emitter.subscribe({
-           next: () => {},
-           error: (error: any) => {
-             expect(error).toEqual('Boom');
-             async.done();
-           }
-         });
-         emitter.error('Boom');
-       }));
+    it('should call the throw callback', done => {
+      emitter.subscribe({
+        next: () => {},
+        error: (error: any) => {
+          expect(error).toEqual('Boom');
+          done();
+        }
+      });
+      emitter.error('Boom');
+    });
 
-    it('should work when no throw callback is provided',
-       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         emitter.subscribe({
-           next: () => {},
-           error: (_: any) => {
-             async.done();
-           }
-         });
-         emitter.error('Boom');
-       }));
+    it('should work when no throw callback is provided', done => {
+      emitter.subscribe({
+        next: () => {},
+        error: (_: any) => {
+          done();
+        }
+      });
+      emitter.error('Boom');
+    });
 
-    it('should call the return callback',
-       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         emitter.subscribe({
-           next: () => {},
-           error: (_: any) => {},
-           complete: () => {
-             async.done();
-           }
-         });
-         emitter.complete();
-       }));
+    it('should call the return callback', done => {
+      emitter.subscribe({
+        next: () => {},
+        error: (_: any) => {},
+        complete: () => {
+          done();
+        }
+      });
+      emitter.complete();
+    });
 
     it('should subscribe to the wrapper synchronously', () => {
       let called = false;
@@ -77,27 +72,26 @@ import {EventEmitter} from '../src/event_emitter';
       expect(called).toBe(true);
     });
 
-    it('delivers next and error events synchronously',
-       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         const log: any[] /** TODO #9100 */ = [];
+    it('delivers next and error events synchronously', done => {
+      const log: any[] /** TODO #9100 */ = [];
 
-         emitter.subscribe({
-           next: (x: any) => {
-             log.push(x);
-             expect(log).toEqual([1, 2]);
-           },
-           error: (err: any) => {
-             log.push(err);
-             expect(log).toEqual([1, 2, 3, 4]);
-             async.done();
-           }
-         });
-         log.push(1);
-         emitter.emit(2);
-         log.push(3);
-         emitter.error(4);
-         log.push(5);
-       }));
+      emitter.subscribe({
+        next: (x: any) => {
+          log.push(x);
+          expect(log).toEqual([1, 2]);
+        },
+        error: (err: any) => {
+          log.push(err);
+          expect(log).toEqual([1, 2, 3, 4]);
+          done();
+        }
+      });
+      log.push(1);
+      emitter.emit(2);
+      log.push(3);
+      emitter.error(4);
+      log.push(5);
+    });
 
     it('delivers next and complete events synchronously', () => {
       const log: any[] /** TODO #9100 */ = [];
@@ -121,19 +115,18 @@ import {EventEmitter} from '../src/event_emitter';
       expect(log).toEqual([1, 2, 3, 4, 5]);
     });
 
-    it('delivers events asynchronously when forced to async mode',
-       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         const e = new EventEmitter(true);
-         const log: any[] /** TODO #9100 */ = [];
-         e.subscribe((x: any) => {
-           log.push(x);
-           expect(log).toEqual([1, 3, 2]);
-           async.done();
-         });
-         log.push(1);
-         e.emit(2);
-         log.push(3);
-       }));
+    it('delivers events asynchronously when forced to async mode', done => {
+      const e = new EventEmitter(true);
+      const log: any[] /** TODO #9100 */ = [];
+      e.subscribe((x: any) => {
+        log.push(x);
+        expect(log).toEqual([1, 3, 2]);
+        done();
+      });
+      log.push(1);
+      e.emit(2);
+      log.push(3);
+    });
 
     it('reports whether it has subscribers', () => {
       const e = new EventEmitter(false);
@@ -156,21 +149,17 @@ import {EventEmitter} from '../src/event_emitter';
       expect(emitter.observers.length).toBe(0);
     });
 
-    it('unsubscribing a subscriber invokes the dispose method', () => {
-      inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-        const sub = emitter.subscribe();
-        sub.add(() => async.done());
-        sub.unsubscribe();
-      });
+    it('unsubscribing a subscriber invokes the dispose method', done => {
+      const sub = emitter.subscribe();
+      sub.add(() => done());
+      sub.unsubscribe();
     });
 
     it('unsubscribing a subscriber after applying operators with pipe() invokes the dispose method',
-       () => {
-         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-           const sub = emitter.pipe(filter(() => true)).subscribe();
-           sub.add(() => async.done());
-           sub.unsubscribe();
-         });
+       done => {
+         const sub = emitter.pipe(filter(() => true)).subscribe();
+         sub.add(() => done());
+         sub.unsubscribe();
        });
 
     it('error thrown inside an Rx chain propagates to the error handler and disposes the chain',

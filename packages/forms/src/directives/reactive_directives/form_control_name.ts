@@ -14,7 +14,7 @@ import {AbstractFormGroupDirective} from '../abstract_form_group_directive';
 import {ControlContainer} from '../control_container';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '../control_value_accessor';
 import {NgControl} from '../ng_control';
-import {ReactiveErrors} from '../reactive_errors';
+import {controlParentException, disabledAttrWarning, ngModelGroupException} from '../reactive_errors';
 import {_ngModelWarning, controlPath, isPropertyUpdated, selectValueAccessor} from '../shared';
 import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from '../validators';
 
@@ -75,7 +75,7 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
    * Tracks the `FormControl` instance bound to the directive.
    */
   // TODO(issue/24571): remove '!'.
-  readonly control!: FormControl;
+  override readonly control!: FormControl;
 
   /**
    * @description
@@ -87,7 +87,7 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
    * to indices when iterating over controls in a `FormArray`.
    */
   // TODO(issue/24571): remove '!'.
-  @Input('formControlName') name!: string|number|null;
+  @Input('formControlName') override name!: string|number|null;
 
   /**
    * @description
@@ -96,7 +96,7 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
   @Input('disabled')
   set isDisabled(isDisabled: boolean) {
     if (typeof ngDevMode === 'undefined' || ngDevMode) {
-      ReactiveErrors.disabledAttrWarning();
+      console.warn(disabledAttrWarning);
     }
   }
 
@@ -145,7 +145,9 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
   ngOnChanges(changes: SimpleChanges) {
     if (!this._added) this._setUpControl();
     if (isPropertyUpdated(changes, this.viewModel)) {
-      _ngModelWarning('formControlName', FormControlName, this, this._ngModelWarningConfig);
+      if (typeof ngDevMode === 'undefined' || ngDevMode) {
+        _ngModelWarning('formControlName', FormControlName, this, this._ngModelWarningConfig);
+      }
       this.viewModel = this.model;
       this.formDirective.updateModel(this, this.model);
     }
@@ -164,7 +166,7 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
    *
    * @param newValue The new value for the view model.
    */
-  viewToModelUpdate(newValue: any): void {
+  override viewToModelUpdate(newValue: any): void {
     this.viewModel = newValue;
     this.update.emit(newValue);
   }
@@ -174,7 +176,7 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
    * Returns an array that represents the path from the top-level form to this control.
    * Each index is the string name of the control on that level.
    */
-  get path(): string[] {
+  override get path(): string[] {
     return controlPath(this.name == null ? this.name : this.name.toString(), this._parent!);
   }
 
@@ -190,12 +192,12 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
     if (typeof ngDevMode === 'undefined' || ngDevMode) {
       if (!(this._parent instanceof FormGroupName) &&
           this._parent instanceof AbstractFormGroupDirective) {
-        ReactiveErrors.ngModelGroupException();
+        throw ngModelGroupException();
       } else if (
           !(this._parent instanceof FormGroupName) &&
           !(this._parent instanceof FormGroupDirective) &&
           !(this._parent instanceof FormArrayName)) {
-        ReactiveErrors.controlParentException();
+        throw controlParentException();
       }
     }
   }

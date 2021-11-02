@@ -7,7 +7,6 @@
  */
 import {NgZone} from '@angular/core';
 import {fakeAsync, inject, tick} from '@angular/core/testing';
-import {afterEach, beforeEach, describe, expect, it,} from '@angular/core/testing/src/testing_internal';
 import {EventManager} from '@angular/platform-browser';
 import {HammerGestureConfig, HammerGesturesPlugin,} from '@angular/platform-browser/src/dom/events/hammer_gestures';
 
@@ -58,7 +57,7 @@ import {HammerGestureConfig, HammerGesturesPlugin,} from '@angular/platform-brow
       let originalHammerGlobal: any;
 
       // Fake Hammer instance ("mc") used to test the underlying event registration.
-      let fakeHammerInstance: {on: () => void, off: () => void};
+      let fakeHammerInstance: {on: jasmine.Spy, off: jasmine.Spy};
 
       // Inject the NgZone so that we can make it available to the plugin through a fake
       // EventManager.
@@ -66,6 +65,8 @@ import {HammerGestureConfig, HammerGesturesPlugin,} from '@angular/platform-brow
       beforeEach(inject([NgZone], (z: NgZone) => {
         ngZone = z;
       }));
+
+      let loaderCalled = 0;
 
       beforeEach(() => {
         originalHammerGlobal = (window as any).Hammer;
@@ -76,10 +77,13 @@ import {HammerGestureConfig, HammerGesturesPlugin,} from '@angular/platform-brow
           off: jasmine.createSpy('mc.off'),
         };
 
-        loader = () => new Promise((resolve, reject) => {
-          resolveLoader = resolve;
-          failLoader = reject;
-        });
+        loader = () => {
+          loaderCalled++;
+          return new Promise((resolve, reject) => {
+            resolveLoader = resolve;
+            failLoader = reject;
+          });
+        };
 
         // Make the hammer config return a fake hammer instance
         const hammerConfig = new HammerGestureConfig();
@@ -95,7 +99,17 @@ import {HammerGestureConfig, HammerGesturesPlugin,} from '@angular/platform-brow
       });
 
       afterEach(() => {
+        loaderCalled = 0;
         (window as any).Hammer = originalHammerGlobal;
+      });
+
+      it('should call the loader provider only once', () => {
+        plugin.addEventListener(someElement, 'swipe', () => {});
+        plugin.addEventListener(someElement, 'panleft', () => {});
+        plugin.addEventListener(someElement, 'panright', () => {});
+        // Ensure that the loader is called only once, because previouly
+        // it was called the same number of times as `addEventListener` was called.
+        expect(loaderCalled).toEqual(1);
       });
 
       it('should not log a warning when HammerJS is not loaded', () => {

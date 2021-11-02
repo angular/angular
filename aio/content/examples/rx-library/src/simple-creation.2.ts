@@ -9,7 +9,7 @@
 
 // #enddocregion interval
 
-export function docRegionInterval(console) {
+export function docRegionInterval(console: Console) {
   // #docregion interval
   // Create an Observable that will publish a value on an interval
   const secondsCounter = interval(1000);

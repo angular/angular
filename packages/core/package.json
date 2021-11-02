@@ -4,12 +4,20 @@
   "description": "Angular - the core framework",
   "author": "angular",
   "license": "MIT",
+  "engines": {
+    "node": "^12.20.0 || ^14.15.0 || >=16.10.0"
+  },
+  "exports": {
+    "./schematics/*": {
+      "default": "./schematics/*.js"
+    }
+  },
   "dependencies": {
-    "tslib": "^2.0.0"
+    "tslib": "^2.3.0"
   },
   "peerDependencies": {
-    "rxjs": "^6.5.3",
-    "zone.js": "~0.11.3"
+    "rxjs": "^6.5.3 || ^7.4.0",
+    "zone.js": "~0.11.4"
   },
   "repository": {
     "type": "git",
@@ -20,8 +28,5 @@
     "migrations": "./schematics/migrations.json",
     "packageGroup": "NG_UPDATE_PACKAGE_GROUP"
   },
-  "sideEffects": false,
-  "publishConfig": {
-    "registry": "https://wombat-dressing-room.appspot.com"
-  }
+  "sideEffects": false
 }

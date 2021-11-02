@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ElementRef} from '../linker/element_ref';
+import {ElementRef, unwrapElementRef} from '../linker/element_ref';
 import {QueryList} from '../linker/query_list';
 
 import {asElementData, asProviderData, asQueryList, NodeDef, NodeFlags, QueryBindingDef, QueryBindingType, QueryDef, QueryValueType, ViewData} from './types';
@@ -50,8 +50,8 @@ export function queryDef(
   };
 }
 
-export function createQuery(): QueryList<any> {
-  return new QueryList();
+export function createQuery(emitDistinctChangesOnly: boolean): QueryList<any> {
+  return new QueryList(emitDistinctChangesOnly);
 }
 
 export function dirtyParentQueries(view: ViewData) {
@@ -107,7 +107,7 @@ export function checkAndUpdateQuery(view: ViewData, nodeDef: NodeDef) {
     newValues = calcQueryValues(view, 0, view.def.nodes.length - 1, nodeDef.query!, []);
     directiveInstance = view.component;
   }
-  queryList.reset(newValues);
+  queryList.reset(newValues, unwrapElementRef);
   const bindings = nodeDef.query!.bindings;
   let notify = false;
   for (let i = 0; i < bindings.length; i++) {

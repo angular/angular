@@ -5,6 +5,6 @@
  */
 
 module.exports = function ignoreGenericWords() {
-  const ignoredWords = new Set(['a', 'classes', 'create', 'error', 'group', 'request', 'target', 'value', '_']);
+  const ignoredWords = new Set(['a', 'classes', 'create', 'error', 'group', 'request', 'state', 'target', 'value', '_']);
   return (docs, words, index) => ignoredWords.has(words[index].toLowerCase()) ? [] : docs;
 };

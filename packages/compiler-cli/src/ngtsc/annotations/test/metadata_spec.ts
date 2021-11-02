@@ -5,15 +5,16 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import * as ts from 'typescript';
+import {compileClassMetadata} from '@angular/compiler';
+import ts from 'typescript';
 
 import {absoluteFrom, getSourceFileOrError} from '../../file_system';
 import {runInEachFileSystem, TestFile} from '../../file_system/testing';
-import {NOOP_DEFAULT_IMPORT_RECORDER, NoopImportRewriter} from '../../imports';
+import {NoopImportRewriter} from '../../imports';
 import {TypeScriptReflectionHost} from '../../reflection';
 import {getDeclaration, makeProgram} from '../../testing';
 import {ImportManager, translateStatement} from '../../translator';
-import {generateSetClassMetadataCall} from '../src/metadata';
+import {extractClassMetadata} from '../src/metadata';
 
 runInEachFileSystem(() => {
   describe('ngtsc setClassMetadata converter', () => {
@@ -24,7 +25,7 @@ runInEachFileSystem(() => {
     @Component('metadata') class Target {}
     `);
       expect(res).toEqual(
-          `/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(Target, [{ type: Component, args: ['metadata'] }], null, null); })();`);
+          `(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(Target, [{ type: Component, args: ['metadata'] }], null, null); })();`);
     });
 
     it('should convert namespaced decorated class metadata', () => {
@@ -34,7 +35,7 @@ runInEachFileSystem(() => {
     @core.Component('metadata') class Target {}
     `);
       expect(res).toEqual(
-          `/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(Target, [{ type: core.Component, args: ['metadata'] }], null, null); })();`);
+          `(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(Target, [{ type: core.Component, args: ['metadata'] }], null, null); })();`);
     });
 
     it('should convert decorated class constructor parameter metadata', () => {
@@ -127,13 +128,14 @@ runInEachFileSystem(() => {
         {target: ts.ScriptTarget.ES2015});
     const host = new TypeScriptReflectionHost(program.getTypeChecker());
     const target = getDeclaration(program, _('/index.ts'), 'Target', ts.isClassDeclaration);
-    const call = generateSetClassMetadataCall(target, host, NOOP_DEFAULT_IMPORT_RECORDER, false);
+    const call = extractClassMetadata(target, host, false);
     if (call === null) {
       return '';
     }
     const sf = getSourceFileOrError(program, _('/index.ts'));
     const im = new ImportManager(new NoopImportRewriter(), 'i');
-    const tsStatement = translateStatement(call, im);
+    const stmt = compileClassMetadata(call).toStmt();
+    const tsStatement = translateStatement(stmt, im);
     const res = ts.createPrinter().printNode(ts.EmitHint.Unspecified, tsStatement, sf);
     return res.replace(/\s+/g, ' ');
   }

@@ -6,16 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {absoluteFrom, AbsoluteFsPath, getSourceFileOrError} from '../../file_system';
 import {runInEachFileSystem} from '../../file_system/testing';
+import {FileUpdate, TsCreateProgramDriver, UpdateMode} from '../../program_driver';
 import {sfExtensionData, ShimReferenceTagger} from '../../shims';
 import {expectCompleteReuse, makeProgram} from '../../testing';
-import {OptimizeFor, UpdateMode} from '../api';
-import {ReusedProgramStrategy} from '../src/augmented_program';
+import {OptimizeFor} from '../api';
 
-import {setup} from './test_utils';
+import {setup} from '../testing';
 
 runInEachFileSystem(() => {
   describe('template type-checking program', () => {
@@ -37,29 +37,38 @@ runInEachFileSystem(() => {
 
     it('should have complete reuse if no structural changes are made to shims', () => {
       const {program, host, options, typecheckPath} = makeSingleFileProgramWithTypecheckShim();
-      const programStrategy = new ReusedProgramStrategy(program, host, options, ['ngtypecheck']);
+      const programStrategy = new TsCreateProgramDriver(program, host, options, ['ngtypecheck']);
 
       // Update /main.ngtypecheck.ts without changing its shape. Verify that the old program was
       // reused completely.
       programStrategy.updateFiles(
-          new Map([[typecheckPath, 'export const VERSION = 2;']]), UpdateMode.Complete);
+          new Map([[typecheckPath, createUpdate('export const VERSION = 2;')]]),
+          UpdateMode.Complete);
 
-      expectCompleteReuse(program);
+      expectCompleteReuse(programStrategy.getProgram());
     });
 
     it('should have complete reuse if no structural changes are made to input files', () => {
       const {program, host, options, mainPath} = makeSingleFileProgramWithTypecheckShim();
-      const programStrategy = new ReusedProgramStrategy(program, host, options, ['ngtypecheck']);
+      const programStrategy = new TsCreateProgramDriver(program, host, options, ['ngtypecheck']);
 
       // Update /main.ts without changing its shape. Verify that the old program was reused
       // completely.
       programStrategy.updateFiles(
-          new Map([[mainPath, 'export const STILL_NOT_A_COMPONENT = true;']]), UpdateMode.Complete);
+          new Map([[mainPath, createUpdate('export const STILL_NOT_A_COMPONENT = true;')]]),
+          UpdateMode.Complete);
 
-      expectCompleteReuse(program);
+      expectCompleteReuse(programStrategy.getProgram());
     });
   });
 });
+
+function createUpdate(text: string): FileUpdate {
+  return {
+    newText: text,
+    originalFile: null,
+  };
+}
 
 function makeSingleFileProgramWithTypecheckShim(): {
   program: ts.Program,

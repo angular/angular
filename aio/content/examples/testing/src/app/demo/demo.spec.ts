@@ -8,7 +8,7 @@ import {
 
 ///////// Fakes /////////
 export class FakeValueService extends ValueService {
-  value = 'faked service value';
+  override value = 'faked service value';
 }
 ////////////////////////
 describe('demo (no TestBed):', () => {
@@ -111,8 +111,6 @@ describe('demo (no TestBed):', () => {
     // #enddocregion no-before-each-setup
   });
 
-  // #docregion ReversePipe
-
   describe('ReversePipe', () => {
     let pipe: ReversePipe;
 
@@ -128,7 +126,6 @@ describe('demo (no TestBed):', () => {
     });
 
   });
-  // #enddocregion ReversePipe
 
   // #docregion Lightswitch
   describe('LightswitchComp', () => {

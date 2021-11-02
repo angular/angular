@@ -72,7 +72,7 @@ export class EventsComponent implements OnInit {
       // If no work shop date create conference date string
       dateString = processDate(event.date);
     }
-    dateString = `${dateString}, ${new Date(event.date.end).getFullYear()}`;
+    dateString = `${dateString}, ${new Date(event.date.end).getUTCFullYear()}`;
     return dateString;
   }
 }
@@ -83,14 +83,14 @@ function processDate(dates: Duration) {
   const endDate = new Date(dates.end);
 
   // Create a date string in the start like January 31
-  let processedDate = `${MONTHS[startDate.getMonth()]} ${startDate.getDate()}`;
+  let processedDate = `${MONTHS[startDate.getUTCMonth()]} ${startDate.getUTCDate()}`;
 
   // If they are in different months add the string '- February 2' Making the final string January 31 - February 2
-  if (startDate.getMonth() !== endDate.getMonth()) {
-    processedDate = `${processedDate} - ${MONTHS[endDate.getMonth()]} ${endDate.getDate()}`;
-  } else if (startDate.getDate() !== endDate.getDate()) {
+  if (startDate.getUTCMonth() !== endDate.getUTCMonth()) {
+    processedDate = `${processedDate} - ${MONTHS[endDate.getUTCMonth()]} ${endDate.getUTCDate()}`;
+  } else if (startDate.getUTCDate() !== endDate.getUTCDate()) {
     // If not add - date eg it will make // January 30-31
-    processedDate = `${processedDate}-${endDate.getDate()}`;
+    processedDate = `${processedDate}-${endDate.getUTCDate()}`;
   }
 
   return processedDate;

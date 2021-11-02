@@ -69,7 +69,7 @@ More info on the possible HTTP status codes and their meaning can be found
 
 
 ### Updating PR visibility
-- nginx receives a natification that a PR has been updated and passes it through to the
+- nginx receives a notification that a PR has been updated and passes it through to the
   preview-server. This could, for example, be sent by a GitHub webhook every time a PR's labels
   change.
   E.g.: `ngbuilds.io/pr-updated` (payload: `{"number":<PR>,"action":"labeled"}`)

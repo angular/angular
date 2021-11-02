@@ -7,7 +7,7 @@
  */
 
 import {BoundTarget, CssSelector, parseTemplate, ParseTemplateOptions, R3TargetBinder, SelectorMatcher} from '@angular/compiler';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {absoluteFrom, AbsoluteFsPath} from '../../file_system';
 import {Reference} from '../../imports';
@@ -54,6 +54,7 @@ export function getBoundTemplate(
       inputs: ClassPropertyMapping.fromMappedObject({}),
       outputs: ClassPropertyMapping.fromMappedObject({}),
       exportAs: null,
+      isStructural: false,
     });
   });
   const binder = new R3TargetBinder(matcher);

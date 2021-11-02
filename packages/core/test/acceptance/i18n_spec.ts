@@ -652,12 +652,15 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
         const lViewDebug = lView.debug!;
         fixture.detectChanges();
         expect((fixture.nativeElement as Element).textContent).toEqual('just now');
-        expect(lViewDebug.nodes.map(toTypeContent)).toEqual(['IcuContainer(<!--ICU 20:0-->)']);
+        expect(lViewDebug.nodes.map(toTypeContent)).toEqual([
+          `IcuContainer(<!--ICU ${HEADER_OFFSET + 0}:0-->)`
+        ]);
         // We want to ensure that the ICU container does not have any content!
         // This is because the content is instance dependent and therefore can't be shared
         // across `TNode`s.
         expect(lViewDebug.nodes[0].children.map(toTypeContent)).toEqual([]);
-        expect(fixture.nativeElement.innerHTML).toEqual('just now<!--ICU 20:0-->');
+        expect(fixture.nativeElement.innerHTML)
+            .toEqual(`just now<!--ICU ${HEADER_OFFSET + 0}:0-->`);
       });
 
       it('should support multiple ICUs', () => {
@@ -674,15 +677,16 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
         `);
         const lView = getComponentLView(fixture.componentInstance);
         expect(lView.debug!.nodes.map(toTypeContent)).toEqual([
-          'IcuContainer(<!--ICU 20:0-->)',
-          'IcuContainer(<!--ICU 21:0-->)',
+          `IcuContainer(<!--ICU ${HEADER_OFFSET + 0}:0-->)`,
+          `IcuContainer(<!--ICU ${HEADER_OFFSET + 1}:0-->)`,
         ]);
         // We want to ensure that the ICU container does not have any content!
         // This is because the content is instance dependent and therefore can't be shared
         // across `TNode`s.
         expect(lView.debug!.nodes[0].children.map(toTypeContent)).toEqual([]);
         expect(fixture.nativeElement.innerHTML)
-            .toEqual('just now<!--ICU 20:0-->Mr. Angular<!--ICU 21:0-->');
+            .toEqual(`just now<!--ICU ${HEADER_OFFSET + 0}:0-->Mr. Angular<!--ICU ${
+                HEADER_OFFSET + 1}:0-->`);
       });
     });
   });
@@ -778,19 +782,21 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
         other {({{name}})}
       }</div>`);
       expect(fixture.nativeElement.innerHTML)
-          .toEqual(`<div>aucun <b>email</b>!<!--ICU 21:0--> - (Angular)<!--ICU 21:3--></div>`);
+          .toEqual(`<div>aucun <b>email</b>!<!--ICU ${HEADER_OFFSET + 1}:0--> - (Angular)<!--ICU ${
+              HEADER_OFFSET + 1}:3--></div>`);
 
       fixture.componentRef.instance.count = 4;
       fixture.detectChanges();
       expect(fixture.nativeElement.innerHTML)
-          .toEqual(
-              `<div>4 <span title="Angular">emails</span><!--ICU 21:0--> - (Angular)<!--ICU 21:3--></div>`);
+          .toEqual(`<div>4 <span title="Angular">emails</span><!--ICU ${
+              HEADER_OFFSET + 1}:0--> - (Angular)<!--ICU ${HEADER_OFFSET + 1}:3--></div>`);
 
       fixture.componentRef.instance.count = 0;
       fixture.componentRef.instance.name = 'John';
       fixture.detectChanges();
       expect(fixture.nativeElement.innerHTML)
-          .toEqual(`<div>aucun <b>email</b>!<!--ICU 21:0--> - (John)<!--ICU 21:3--></div>`);
+          .toEqual(`<div>aucun <b>email</b>!<!--ICU ${HEADER_OFFSET + 1}:0--> - (John)<!--ICU ${
+              HEADER_OFFSET + 1}:3--></div>`);
     });
 
     it('with custom interpolation config', () => {
@@ -829,9 +835,9 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
       expect(fixture.nativeElement.innerHTML)
           .toEqual(
               `<div>` +
-              `<span>aucun <b>email</b>!<!--ICU 21:0--></span>` +
+              `<span>aucun <b>email</b>!<!--ICU ${HEADER_OFFSET + 1}:0--></span>` +
               ` - ` +
-              `<span>(Angular)<!--ICU 21:3--></span>` +
+              `<span>(Angular)<!--ICU ${HEADER_OFFSET + 1}:3--></span>` +
               `</div>`);
 
       fixture.componentRef.instance.count = 4;
@@ -839,9 +845,10 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
       expect(fixture.nativeElement.innerHTML)
           .toEqual(
               `<div>` +
-              `<span>4 <span title="Angular">emails</span><!--ICU 21:0--></span>` +
+              `<span>4 <span title="Angular">emails</span><!--ICU ${
+                  HEADER_OFFSET + 1}:0--></span>` +
               ` - ` +
-              `<span>(Angular)<!--ICU 21:3--></span>` +
+              `<span>(Angular)<!--ICU ${HEADER_OFFSET + 1}:3--></span>` +
               `</div>`);
 
       fixture.componentRef.instance.count = 0;
@@ -850,9 +857,9 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
       expect(fixture.nativeElement.innerHTML)
           .toEqual(
               `<div>` +
-              `<span>aucun <b>email</b>!<!--ICU 21:0--></span>` +
+              `<span>aucun <b>email</b>!<!--ICU ${HEADER_OFFSET + 1}:0--></span>` +
               ` - ` +
-              `<span>(John)<!--ICU 21:3--></span>` +
+              `<span>(John)<!--ICU ${HEADER_OFFSET + 1}:3--></span>` +
               `</div>`);
     });
 
@@ -867,7 +874,7 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
         other {({{name}})}
       }</span></div>`);
       expect(fixture.nativeElement.innerHTML)
-          .toEqual(`<div><span>(Angular)<!--ICU 20:0--></span><!--bindings={
+          .toEqual(`<div><span>(Angular)<!--ICU ${HEADER_OFFSET + 0}:0--></span><!--bindings={
   "ng-reflect-ng-if": "true"
 }--></div>`);
 
@@ -887,7 +894,7 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
         other {({{name}})}
       }</ng-container>`);
       expect(fixture.nativeElement.innerHTML)
-          .toEqual(`(Angular)<!--ICU 21:0--><!--ng-container-->`);
+          .toEqual(`(Angular)<!--ICU ${HEADER_OFFSET + 1}:0--><!--ng-container-->`);
     });
 
     it('inside <ng-template>', () => {
@@ -922,12 +929,13 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
                        other {animals}
                      }!}
       }</div>`);
-      expect(fixture.nativeElement.innerHTML).toEqual(`<div>zero<!--ICU 21:1--></div>`);
+      expect(fixture.nativeElement.innerHTML)
+          .toEqual(`<div>zero<!--ICU ${HEADER_OFFSET + 1}:1--></div>`);
 
       fixture.componentRef.instance.count = 4;
       fixture.detectChanges();
       expect(fixture.nativeElement.innerHTML)
-          .toEqual(`<div>4 animaux<!--nested ICU 0-->!<!--ICU 21:1--></div>`);
+          .toEqual(`<div>4 animaux<!--nested ICU 0-->!<!--ICU ${HEADER_OFFSET + 1}:1--></div>`);
     });
 
     it('nested with interpolations in "other" blocks', () => {
@@ -947,16 +955,18 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
                      }!}
         other {other - {{count}}}
       }</div>`);
-      expect(fixture.nativeElement.innerHTML).toEqual(`<div>zero<!--ICU 21:1--></div>`);
+      expect(fixture.nativeElement.innerHTML)
+          .toEqual(`<div>zero<!--ICU ${HEADER_OFFSET + 1}:1--></div>`);
 
       fixture.componentRef.instance.count = 2;
       fixture.detectChanges();
       expect(fixture.nativeElement.innerHTML)
-          .toEqual(`<div>2 animaux<!--nested ICU 0-->!<!--ICU 21:1--></div>`);
+          .toEqual(`<div>2 animaux<!--nested ICU 0-->!<!--ICU ${HEADER_OFFSET + 1}:1--></div>`);
 
       fixture.componentRef.instance.count = 4;
       fixture.detectChanges();
-      expect(fixture.nativeElement.innerHTML).toEqual(`<div>autre - 4<!--ICU 21:1--></div>`);
+      expect(fixture.nativeElement.innerHTML)
+          .toEqual(`<div>autre - 4<!--ICU ${HEADER_OFFSET + 1}:1--></div>`);
     });
 
     it('should return the correct plural form for ICU expressions when using "ro" locale', () => {
@@ -989,31 +999,34 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
             =other {lots of emails}
           }`);
 
-      expect(fixture.nativeElement.innerHTML).toEqual('no email<!--ICU 20:0-->');
+      expect(fixture.nativeElement.innerHTML).toEqual(`no email<!--ICU ${HEADER_OFFSET + 0}:0-->`);
 
       // Change detection cycle, no model changes
       fixture.detectChanges();
-      expect(fixture.nativeElement.innerHTML).toEqual('no email<!--ICU 20:0-->');
+      expect(fixture.nativeElement.innerHTML).toEqual(`no email<!--ICU ${HEADER_OFFSET + 0}:0-->`);
 
       fixture.componentInstance.count = 3;
       fixture.detectChanges();
-      expect(fixture.nativeElement.innerHTML).toEqual('a few emails<!--ICU 20:0-->');
+      expect(fixture.nativeElement.innerHTML)
+          .toEqual(`a few emails<!--ICU ${HEADER_OFFSET + 0}:0-->`);
 
       fixture.componentInstance.count = 1;
       fixture.detectChanges();
-      expect(fixture.nativeElement.innerHTML).toEqual('one email<!--ICU 20:0-->');
+      expect(fixture.nativeElement.innerHTML).toEqual(`one email<!--ICU ${HEADER_OFFSET + 0}:0-->`);
 
       fixture.componentInstance.count = 10;
       fixture.detectChanges();
-      expect(fixture.nativeElement.innerHTML).toEqual('a few emails<!--ICU 20:0-->');
+      expect(fixture.nativeElement.innerHTML)
+          .toEqual(`a few emails<!--ICU ${HEADER_OFFSET + 0}:0-->`);
 
       fixture.componentInstance.count = 20;
       fixture.detectChanges();
-      expect(fixture.nativeElement.innerHTML).toEqual('lots of emails<!--ICU 20:0-->');
+      expect(fixture.nativeElement.innerHTML)
+          .toEqual(`lots of emails<!--ICU ${HEADER_OFFSET + 0}:0-->`);
 
       fixture.componentInstance.count = 0;
       fixture.detectChanges();
-      expect(fixture.nativeElement.innerHTML).toEqual('no email<!--ICU 20:0-->');
+      expect(fixture.nativeElement.innerHTML).toEqual(`no email<!--ICU ${HEADER_OFFSET + 0}:0-->`);
     });
 
     it(`should return the correct plural form for ICU expressions when using "es" locale`, () => {
@@ -1040,31 +1053,34 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
             =other {lots of emails}
           }`);
 
-      expect(fixture.nativeElement.innerHTML).toEqual('no email<!--ICU 20:0-->');
+      expect(fixture.nativeElement.innerHTML).toEqual(`no email<!--ICU ${HEADER_OFFSET + 0}:0-->`);
 
       // Change detection cycle, no model changes
       fixture.detectChanges();
-      expect(fixture.nativeElement.innerHTML).toEqual('no email<!--ICU 20:0-->');
+      expect(fixture.nativeElement.innerHTML).toEqual(`no email<!--ICU ${HEADER_OFFSET + 0}:0-->`);
 
       fixture.componentInstance.count = 3;
       fixture.detectChanges();
-      expect(fixture.nativeElement.innerHTML).toEqual('lots of emails<!--ICU 20:0-->');
+      expect(fixture.nativeElement.innerHTML)
+          .toEqual(`lots of emails<!--ICU ${HEADER_OFFSET + 0}:0-->`);
 
       fixture.componentInstance.count = 1;
       fixture.detectChanges();
-      expect(fixture.nativeElement.innerHTML).toEqual('one email<!--ICU 20:0-->');
+      expect(fixture.nativeElement.innerHTML).toEqual(`one email<!--ICU ${HEADER_OFFSET + 0}:0-->`);
 
       fixture.componentInstance.count = 10;
       fixture.detectChanges();
-      expect(fixture.nativeElement.innerHTML).toEqual('lots of emails<!--ICU 20:0-->');
+      expect(fixture.nativeElement.innerHTML)
+          .toEqual(`lots of emails<!--ICU ${HEADER_OFFSET + 0}:0-->`);
 
       fixture.componentInstance.count = 20;
       fixture.detectChanges();
-      expect(fixture.nativeElement.innerHTML).toEqual('lots of emails<!--ICU 20:0-->');
+      expect(fixture.nativeElement.innerHTML)
+          .toEqual(`lots of emails<!--ICU ${HEADER_OFFSET + 0}:0-->`);
 
       fixture.componentInstance.count = 0;
       fixture.detectChanges();
-      expect(fixture.nativeElement.innerHTML).toEqual('no email<!--ICU 20:0-->');
+      expect(fixture.nativeElement.innerHTML).toEqual(`no email<!--ICU ${HEADER_OFFSET + 0}:0-->`);
     });
 
     it('projection', () => {
@@ -1159,12 +1175,14 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
       expect(fixture.debugElement.nativeElement.innerHTML)
-          .toContain('<my-cmp><div>ONE<!--ICU 21:0--></div><!--container--></my-cmp>');
+          .toContain(
+              `<my-cmp><div>ONE<!--ICU ${HEADER_OFFSET + 1}:0--></div><!--container--></my-cmp>`);
 
       fixture.componentRef.instance.count = 2;
       fixture.detectChanges();
       expect(fixture.debugElement.nativeElement.innerHTML)
-          .toContain('<my-cmp><div>OTHER<!--ICU 21:0--></div><!--container--></my-cmp>');
+          .toContain(
+              `<my-cmp><div>OTHER<!--ICU ${HEADER_OFFSET + 1}:0--></div><!--container--></my-cmp>`);
 
       // destroy component
       fixture.componentInstance.condition = false;
@@ -1176,7 +1194,8 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
       fixture.componentInstance.count = 1;
       fixture.detectChanges();
       expect(fixture.debugElement.nativeElement.innerHTML)
-          .toContain('<my-cmp><div>ONE<!--ICU 21:0--></div><!--container--></my-cmp>');
+          .toContain(
+              `<my-cmp><div>ONE<!--ICU ${HEADER_OFFSET + 1}:0--></div><!--container--></my-cmp>`);
     });
 
     it('with nested ICU expression and inside a container when creating a view via vcr.createEmbeddedView',
@@ -1247,13 +1266,14 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
          dir!.attachEmbeddedView();
          fixture.detectChanges();
          expect(fixture.debugElement.nativeElement.innerHTML)
-             .toBe(
-                 '<my-cmp><div>2 animals<!--nested ICU 0-->!<!--ICU 21:1--></div><!--container--></my-cmp>');
+             .toBe(`<my-cmp><div>2 animals<!--nested ICU 0-->!<!--ICU ${
+                 HEADER_OFFSET + 1}:1--></div><!--container--></my-cmp>`);
 
          fixture.componentRef.instance.count = 1;
          fixture.detectChanges();
          expect(fixture.debugElement.nativeElement.innerHTML)
-             .toBe('<my-cmp><div>ONE<!--ICU 21:1--></div><!--container--></my-cmp>');
+             .toBe(`<my-cmp><div>ONE<!--ICU ${
+                 HEADER_OFFSET + 1}:1--></div><!--container--></my-cmp>`);
        });
 
     it('with nested containers', () => {
@@ -1604,17 +1624,23 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
     });
 
     it('multiple attributes', () => {
-      loadTranslations({[computeMsgId('hello {$INTERPOLATION}')]: 'bonjour {$INTERPOLATION}'});
+      loadTranslations({
+        [computeMsgId('hello {$INTERPOLATION} - {$INTERPOLATION_1}')]:
+            'bonjour {$INTERPOLATION} - {$INTERPOLATION_1}',
+        [computeMsgId('bye {$INTERPOLATION} - {$INTERPOLATION_1}')]:
+            'au revoir {$INTERPOLATION} - {$INTERPOLATION_1}',
+      });
       const fixture = initWithTemplate(
           AppComp,
-          `<input i18n i18n-title title="hello {{name}}" i18n-placeholder placeholder="hello {{name}}">`);
+          `<input i18n i18n-title title="hello {{name}} - {{count}}" i18n-placeholder placeholder="bye {{count}} - {{name}}">`);
       expect(fixture.nativeElement.innerHTML)
-          .toEqual(`<input title="bonjour Angular" placeholder="bonjour Angular">`);
+          .toEqual(`<input title="bonjour Angular - 0" placeholder="au revoir 0 - Angular">`);
 
       fixture.componentRef.instance.name = 'John';
+      fixture.componentRef.instance.count = 5;
       fixture.detectChanges();
       expect(fixture.nativeElement.innerHTML)
-          .toEqual(`<input title="bonjour John" placeholder="bonjour John">`);
+          .toEqual(`<input title="bonjour John - 5" placeholder="au revoir 5 - John">`);
     });
 
     it('on removed elements', () => {
@@ -1728,6 +1754,27 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
       expect(titleDirInstances[0].elRef.nativeElement instanceof HTMLButtonElement).toBeTruthy();
 
       expect(titleDirInstances[0].title).toBe('Bonjour');
+    });
+
+    it('should support static i18n attributes on inline templates', () => {
+      loadTranslations({[computeMsgId('Hello')]: 'Bonjour'});
+      @Component({
+        selector: 'my-cmp',
+        template: `
+          <div *ngIf="true" i18n-title title="Hello"></div>
+        `,
+      })
+      class Cmp {
+      }
+
+      TestBed.configureTestingModule({
+        imports: [CommonModule],
+        declarations: [Cmp],
+      });
+      const fixture = TestBed.createComponent(Cmp);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.firstChild.title).toBe('Bonjour');
     });
 
     it('should allow directive inputs (as an interpolated prop) on <ng-template>', () => {
@@ -2335,14 +2382,14 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
       const fixture = TestBed.createComponent(Parent);
       fixture.detectChanges();
       expect(fixture.nativeElement.innerHTML)
-          .toEqual(
-              `<child><div>Contenu enfant et projection depuis Parent<!--ICU 21:0--></div></child>`);
+          .toEqual(`<child><div>Contenu enfant et projection depuis Parent<!--ICU ${
+              HEADER_OFFSET + 1}:0--></div></child>`);
 
       fixture.componentRef.instance.name = 'angular';
       fixture.detectChanges();
       expect(fixture.nativeElement.innerHTML)
-          .toEqual(
-              `<child><div>Contenu enfant et projection depuis Angular<!--ICU 21:0--></div></child>`);
+          .toEqual(`<child><div>Contenu enfant et projection depuis Angular<!--ICU ${
+              HEADER_OFFSET + 1}:0--></div></child>`);
     });
 
     it(`shouldn't project deleted projections in i18n blocks`, () => {

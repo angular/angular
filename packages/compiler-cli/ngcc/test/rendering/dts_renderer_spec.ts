@@ -5,10 +5,10 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {fromObject} from 'convert-source-map';
+import mapHelpers from 'convert-source-map';
 import MagicString from 'magic-string';
 import {encode} from 'sourcemap-codec';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {absoluteFrom, getFileSystem} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
@@ -141,7 +141,7 @@ runInEachFileSystem(() => {
           result.find(f => f.path === _('/node_modules/test-package/typings/file.d.ts'))!;
       expect(typingsFile.contents)
           .toContain(
-              'foo(x: number): number;\n    static ɵfac: ɵngcc0.ɵɵFactoryDef<A, never>;\n    static ɵdir: ɵngcc0.ɵɵDirectiveDefWithMeta');
+              'foo(x: number): number;\n    static ɵfac: ɵngcc0.ɵɵFactoryDeclaration<A, never>;\n    static ɵdir: ɵngcc0.ɵɵDirectiveDeclaration');
     });
 
     it('should render imports into typings files', () => {
@@ -217,7 +217,7 @@ runInEachFileSystem(() => {
 
     it('should render an internal source map for files whose original file has an internal source map',
        () => {
-         const sourceMap = fromObject({
+         const sourceMap = mapHelpers.fromObject({
            'version': 3,
            'file': 'file.d.ts',
            'sources': ['file.d.ts'],

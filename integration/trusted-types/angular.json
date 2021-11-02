@@ -75,12 +75,9 @@
             "production": {
               "browserTarget": "trusted-types:build:production"
             },
-            "ci": {
-              "progress": false
-            },
+            "ci": { },
             "ci-production": {
               "browserTarget": "trusted-types:build:production",
-              "progress": false
             }
           }
         },

@@ -169,17 +169,43 @@ export class RouterLink implements OnChanges {
    * @see {@link Router#navigateByUrl Router#navigateByUrl}
    */
   @Input() state?: {[k: string]: any};
-  private commands: any[] = [];
-  private preserve!: boolean;
+  /**
+   * Passed to {@link Router#createUrlTree Router#createUrlTree} as part of the
+   * `UrlCreationOptions`.
+   * Specify a value here when you do not want to use the default value
+   * for `routerLink`, which is the current activated route.
+   * Note that a value of `undefined` here will use the `routerLink` default.
+   * @see {@link UrlCreationOptions#relativeTo UrlCreationOptions#relativeTo}
+   * @see {@link Router#createUrlTree Router#createUrlTree}
+   */
+  @Input() relativeTo?: ActivatedRoute|null;
+
+  private commands: any[]|null = null;
 
   /** @internal */
   onChanges = new Subject<RouterLink>();
 
   constructor(
       private router: Router, private route: ActivatedRoute,
-      @Attribute('tabindex') tabIndex: string, renderer: Renderer2, el: ElementRef) {
-    if (tabIndex == null) {
-      renderer.setAttribute(el.nativeElement, 'tabindex', '0');
+      @Attribute('tabindex') private readonly tabIndexAttribute: string|null|undefined,
+      private readonly renderer: Renderer2, private readonly el: ElementRef) {
+    this.setTabIndexIfNotOnNativeEl('0');
+  }
+
+  /**
+   * Modifies the tab index if there was not a tabindex attribute on the element during
+   * instantiation.
+   */
+  private setTabIndexIfNotOnNativeEl(newTabIndex: string|null) {
+    if (this.tabIndexAttribute != null /* both `null` and `undefined` */) {
+      return;
+    }
+    const renderer = this.renderer;
+    const nativeElement = this.el.nativeElement;
+    if (newTabIndex !== null) {
+      renderer.setAttribute(nativeElement, 'tabindex', newTabIndex);
+    } else {
+      renderer.removeAttribute(nativeElement, 'tabindex');
     }
   }
 
@@ -194,21 +220,27 @@ export class RouterLink implements OnChanges {
    * Commands to pass to {@link Router#createUrlTree Router#createUrlTree}.
    *   - **array**: commands to pass to {@link Router#createUrlTree Router#createUrlTree}.
    *   - **string**: shorthand for array of commands with just the string, i.e. `['/route']`
-   *   - **null|undefined**: shorthand for an empty array of commands, i.e. `[]`
+   *   - **null|undefined**: effectively disables the `routerLink`
    * @see {@link Router#createUrlTree Router#createUrlTree}
    */
   @Input()
   set routerLink(commands: any[]|string|null|undefined) {
     if (commands != null) {
       this.commands = Array.isArray(commands) ? commands : [commands];
+      this.setTabIndexIfNotOnNativeEl('0');
     } else {
-      this.commands = [];
+      this.commands = null;
+      this.setTabIndexIfNotOnNativeEl(null);
     }
   }
 
   /** @nodoc */
   @HostListener('click')
   onClick(): boolean {
+    if (this.urlTree === null) {
+      return true;
+    }
+
     const extras = {
       skipLocationChange: attrBoolValue(this.skipLocationChange),
       replaceUrl: attrBoolValue(this.replaceUrl),
@@ -218,9 +250,14 @@ export class RouterLink implements OnChanges {
     return true;
   }
 
-  get urlTree(): UrlTree {
+  get urlTree(): UrlTree|null {
+    if (this.commands === null) {
+      return null;
+    }
     return this.router.createUrlTree(this.commands, {
-      relativeTo: this.route,
+      // If the `relativeTo` input is not defined, we want to use `this.route` by default.
+      // Otherwise, we should use the value provided by the user in the input.
+      relativeTo: this.relativeTo !== undefined ? this.relativeTo : this.route,
       queryParams: this.queryParams,
       fragment: this.fragment,
       queryParamsHandling: this.queryParamsHandling,
@@ -296,14 +333,24 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
    * @see {@link Router#navigateByUrl Router#navigateByUrl}
    */
   @Input() state?: {[k: string]: any};
-  private commands: any[] = [];
+  /**
+   * Passed to {@link Router#createUrlTree Router#createUrlTree} as part of the
+   * `UrlCreationOptions`.
+   * Specify a value here when you do not want to use the default value
+   * for `routerLink`, which is the current activated route.
+   * Note that a value of `undefined` here will use the `routerLink` default.
+   * @see {@link UrlCreationOptions#relativeTo UrlCreationOptions#relativeTo}
+   * @see {@link Router#createUrlTree Router#createUrlTree}
+   */
+  @Input() relativeTo?: ActivatedRoute|null;
+
+  private commands: any[]|null = null;
   private subscription: Subscription;
-  // TODO(issue/24571): remove '!'.
-  private preserve!: boolean;
 
   // the url displayed on the anchor element.
-  // TODO(issue/24571): remove '!'.
-  @HostBinding() href!: string;
+  // @HostBinding('attr.href') is used rather than @HostBinding() because it removes the
+  // href attribute when it becomes `null`.
+  @HostBinding('attr.href') href: string|null = null;
 
   /** @internal */
   onChanges = new Subject<RouterLinkWithHref>();
@@ -322,7 +369,7 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
    * Commands to pass to {@link Router#createUrlTree Router#createUrlTree}.
    *   - **array**: commands to pass to {@link Router#createUrlTree Router#createUrlTree}.
    *   - **string**: shorthand for array of commands with just the string, i.e. `['/route']`
-   *   - **null|undefined**: shorthand for an empty array of commands, i.e. `[]`
+   *   - **null|undefined**: Disables the link by removing the `href`
    * @see {@link Router#createUrlTree Router#createUrlTree}
    */
   @Input()
@@ -330,7 +377,7 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
     if (commands != null) {
       this.commands = Array.isArray(commands) ? commands : [commands];
     } else {
-      this.commands = [];
+      this.commands = null;
     }
   }
 
@@ -354,7 +401,7 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
       return true;
     }
 
-    if (typeof this.target === 'string' && this.target != '_self') {
+    if (typeof this.target === 'string' && this.target != '_self' || this.urlTree === null) {
       return true;
     }
 
@@ -368,12 +415,19 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
   }
 
   private updateTargetUrlAndHref(): void {
-    this.href = this.locationStrategy.prepareExternalUrl(this.router.serializeUrl(this.urlTree));
+    this.href = this.urlTree !== null ?
+        this.locationStrategy.prepareExternalUrl(this.router.serializeUrl(this.urlTree)) :
+        null;
   }
 
-  get urlTree(): UrlTree {
+  get urlTree(): UrlTree|null {
+    if (this.commands === null) {
+      return null;
+    }
     return this.router.createUrlTree(this.commands, {
-      relativeTo: this.route,
+      // If the `relativeTo` input is not defined, we want to use `this.route` by default.
+      // Otherwise, we should use the value provided by the user in the input.
+      relativeTo: this.relativeTo !== undefined ? this.relativeTo : this.route,
       queryParams: this.queryParams,
       fragment: this.fragment,
       queryParamsHandling: this.queryParamsHandling,

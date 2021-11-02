@@ -8,7 +8,7 @@
 
 import {Directive, ElementRef, forwardRef, Renderer2} from '@angular/core';
 
-import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
+import {BuiltInControlValueAccessor, ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
 
 export const CHECKBOX_VALUE_ACCESSOR: any = {
   provide: NG_VALUE_ACCESSOR,
@@ -45,50 +45,13 @@ export const CHECKBOX_VALUE_ACCESSOR: any = {
   host: {'(change)': 'onChange($event.target.checked)', '(blur)': 'onTouched()'},
   providers: [CHECKBOX_VALUE_ACCESSOR]
 })
-export class CheckboxControlValueAccessor implements ControlValueAccessor {
-  /**
-   * The registered callback function called when a change event occurs on the input element.
-   * @nodoc
-   */
-  onChange = (_: any) => {};
-
-  /**
-   * The registered callback function called when a blur event occurs on the input element.
-   * @nodoc
-   */
-  onTouched = () => {};
-
-  constructor(private _renderer: Renderer2, private _elementRef: ElementRef) {}
-
+export class CheckboxControlValueAccessor extends BuiltInControlValueAccessor implements
+    ControlValueAccessor {
   /**
    * Sets the "checked" property on the input element.
    * @nodoc
    */
   writeValue(value: any): void {
-    this._renderer.setProperty(this._elementRef.nativeElement, 'checked', value);
-  }
-
-  /**
-   * Registers a function called when the control value changes.
-   * @nodoc
-   */
-  registerOnChange(fn: (_: any) => {}): void {
-    this.onChange = fn;
-  }
-
-  /**
-   * Registers a function called when the control is touched.
-   * @nodoc
-   */
-  registerOnTouched(fn: () => {}): void {
-    this.onTouched = fn;
-  }
-
-  /**
-   * Sets the "disabled" property on the input element.
-   * @nodoc
-   */
-  setDisabledState(isDisabled: boolean): void {
-    this._renderer.setProperty(this._elementRef.nativeElement, 'disabled', isDisabled);
+    this.setProperty('checked', value);
   }
 }

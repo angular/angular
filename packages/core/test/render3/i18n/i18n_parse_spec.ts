@@ -11,8 +11,7 @@ import {applyCreateOpCodes} from '@angular/core/src/render3/i18n/i18n_apply';
 import {i18nStartFirstCreatePass} from '@angular/core/src/render3/i18n/i18n_parse';
 import {getTIcu} from '@angular/core/src/render3/i18n/i18n_util';
 import {I18nUpdateOpCodes, IcuType, TI18n} from '@angular/core/src/render3/interfaces/i18n';
-import {HEADER_OFFSET} from '@angular/core/src/render3/interfaces/view';
-import {expect} from '@angular/core/testing/src/testing_internal';
+import {HEADER_OFFSET, HOST} from '@angular/core/src/render3/interfaces/view';
 import {matchTI18n, matchTIcu} from '../matchers';
 import {matchDebug} from '../utils';
 import {ViewFixture} from '../view_fixture';
@@ -26,8 +25,8 @@ describe('i18n_parse', () => {
       const tI18n = toT18n('some text');
       expect(tI18n).toEqual(matchTI18n({
         create: matchDebug([
-          'lView[22] = document.createText("some text");',
-          'parent.appendChild(lView[22]);',
+          `lView[${HEADER_OFFSET + 2}] = document.createText("some text");`,
+          `parent.appendChild(lView[${HEADER_OFFSET + 2}]);`,
         ]),
         update: [] as unknown as I18nUpdateOpCodes,
       }));
@@ -57,30 +56,30 @@ describe('i18n_parse', () => {
         }|after`);
       expect(tI18n).toEqual(matchTI18n({
         create: matchDebug([
-          'lView[22] = document.createText("before|");',
-          'parent.appendChild(lView[22]);',
-          'lView[23] = document.createComment("ICU 20:0");',
-          'parent.appendChild(lView[23]);',
-          'lView[27] = document.createText("|after");',
-          'parent.appendChild(lView[27]);',
+          `lView[${HEADER_OFFSET + 2}] = document.createText("before|");`,
+          `parent.appendChild(lView[${HEADER_OFFSET + 2}]);`,
+          `lView[${HEADER_OFFSET + 3}] = document.createComment("ICU ${HEADER_OFFSET + 0}:0");`,
+          `parent.appendChild(lView[${HEADER_OFFSET + 3}]);`,
+          `lView[${HEADER_OFFSET + 7}] = document.createText("|after");`,
+          `parent.appendChild(lView[${HEADER_OFFSET + 7}]);`,
         ]),
         update: matchDebug([
-          'if (mask & 0b1) { icuSwitchCase(23, `${lView[i-1]}`); }',
+          `if (mask & 0b1) { icuSwitchCase(${HEADER_OFFSET + 3}, \`\${lView[i-1]}\`); }`,
         ])
       }));
-      expect(getTIcu(fixture.tView, 23)).toEqual(matchTIcu({
+      expect(getTIcu(fixture.tView, HEADER_OFFSET + 3)).toEqual(matchTIcu({
         type: IcuType.select,
-        anchorIdx: 23,
-        currentCaseLViewIndex: 24,
+        anchorIdx: HEADER_OFFSET + 3,
+        currentCaseLViewIndex: HEADER_OFFSET + 4,
         cases: ['A', 'other'],
         create: [
           matchDebug([
-            'lView[25] = document.createTextNode("caseA")',
-            '(lView[0] as Element).appendChild(lView[25])'
+            `lView[${HEADER_OFFSET + 5}] = document.createTextNode("caseA")`,
+            `(lView[${HOST}] as Element).appendChild(lView[${HEADER_OFFSET + 5}])`
           ]),
           matchDebug([
-            'lView[26] = document.createTextNode("otherCase")',
-            '(lView[0] as Element).appendChild(lView[26])',
+            `lView[${HEADER_OFFSET + 6}] = document.createTextNode("otherCase")`,
+            `(lView[${HOST}] as Element).appendChild(lView[${HEADER_OFFSET + 6}])`,
           ])
         ],
         update: [
@@ -88,29 +87,32 @@ describe('i18n_parse', () => {
           matchDebug([]),
         ],
         remove: [
-          matchDebug(['remove(lView[25])']),
-          matchDebug(['remove(lView[26])']),
+          matchDebug([`remove(lView[${HEADER_OFFSET + 5}])`]),
+          matchDebug([`remove(lView[${HEADER_OFFSET + 6}])`]),
         ],
       }));
 
       fixture.apply(() => {
         applyCreateOpCodes(fixture.lView, tI18n.create, fixture.host, null);
-        expect(fixture.host.innerHTML).toEqual('before|<!--ICU 20:0-->|after');
+        expect(fixture.host.innerHTML).toEqual(`before|<!--ICU ${HEADER_OFFSET + 0}:0-->|after`);
       });
       fixture.apply(() => {
         ɵɵi18nExp('A');
-        ɵɵi18nApply(0);  // index 0 + HEADER_OFFSET = 20;
-        expect(fixture.host.innerHTML).toEqual('before|caseA<!--ICU 20:0-->|after');
+        ɵɵi18nApply(0);
+        expect(fixture.host.innerHTML)
+            .toEqual(`before|caseA<!--ICU ${HEADER_OFFSET + 0}:0-->|after`);
       });
       fixture.apply(() => {
         ɵɵi18nExp('x');
-        ɵɵi18nApply(0);  // index 0 + HEADER_OFFSET = 20;
-        expect(fixture.host.innerHTML).toEqual('before|otherCase<!--ICU 20:0-->|after');
+        ɵɵi18nApply(0);
+        expect(fixture.host.innerHTML)
+            .toEqual(`before|otherCase<!--ICU ${HEADER_OFFSET + 0}:0-->|after`);
       });
       fixture.apply(() => {
         ɵɵi18nExp('A');
-        ɵɵi18nApply(0);  // index 0 + HEADER_OFFSET = 20;
-        expect(fixture.host.innerHTML).toEqual('before|caseA<!--ICU 20:0-->|after');
+        ɵɵi18nApply(0);
+        expect(fixture.host.innerHTML)
+            .toEqual(`before|caseA<!--ICU ${HEADER_OFFSET + 0}:0-->|after`);
       });
     });
 
@@ -122,23 +124,25 @@ describe('i18n_parse', () => {
       }`);
       fixture.apply(() => {
         applyCreateOpCodes(fixture.lView, tI18n.create, fixture.host, null);
-        expect(fixture.host.innerHTML).toEqual('<!--ICU 20:0-->');
+        expect(fixture.host.innerHTML).toEqual(`<!--ICU ${HEADER_OFFSET + 0}:0-->`);
       });
       fixture.apply(() => {
         ɵɵi18nExp('A');
-        ɵɵi18nApply(0);  // index 0 + HEADER_OFFSET = 20;
-        expect(fixture.host.innerHTML).toEqual('Hello <b>world<i>!</i></b><!--ICU 20:0-->');
+        ɵɵi18nApply(0);
+        expect(fixture.host.innerHTML)
+            .toEqual(`Hello <b>world<i>!</i></b><!--ICU ${HEADER_OFFSET + 0}:0-->`);
       });
       fixture.apply(() => {
         ɵɵi18nExp('x');
-        ɵɵi18nApply(0);  // index 0 + HEADER_OFFSET = 20;
+        ɵɵi18nApply(0);
         expect(fixture.host.innerHTML)
-            .toEqual('<div>nestedOther<!--nested ICU 0--></div><!--ICU 20:0-->');
+            .toEqual(`<div>nestedOther<!--nested ICU 0--></div><!--ICU ${HEADER_OFFSET + 0}:0-->`);
       });
       fixture.apply(() => {
         ɵɵi18nExp('A');
-        ɵɵi18nApply(0);  // index 0 + HEADER_OFFSET = 20;
-        expect(fixture.host.innerHTML).toEqual('Hello <b>world<i>!</i></b><!--ICU 20:0-->');
+        ɵɵi18nApply(0);
+        expect(fixture.host.innerHTML)
+            .toEqual(`Hello <b>world<i>!</i></b><!--ICU ${HEADER_OFFSET + 0}:0-->`);
       });
     });
 
@@ -170,32 +174,32 @@ describe('i18n_parse', () => {
         }`);
       expect(tI18n).toEqual(matchTI18n({
         create: matchDebug([
-          'lView[24] = document.createComment("ICU 20:0");',
-          'parent.appendChild(lView[24]);',
+          `lView[${HEADER_OFFSET + 4}] = document.createComment("ICU ${HEADER_OFFSET + 0}:0");`,
+          `parent.appendChild(lView[${HEADER_OFFSET + 4}]);`,
         ]),
         update: matchDebug([
-          'if (mask & 0b1) { icuSwitchCase(24, `${lView[i-1]}`); }',
-          'if (mask & 0b10) { icuSwitchCase(27, `${lView[i-2]}`); }',
-          'if (mask & 0b100) { icuUpdateCase(27); }',
+          `if (mask & 0b1) { icuSwitchCase(${HEADER_OFFSET + 4}, \`\${lView[i-1]}\`); }`,
+          `if (mask & 0b10) { icuSwitchCase(${HEADER_OFFSET + 7}, \`\${lView[i-2]}\`); }`,
+          `if (mask & 0b100) { icuUpdateCase(${HEADER_OFFSET + 7}); }`,
         ]),
       }));
-      expect(getTIcu(fixture.tView, 24)).toEqual(matchTIcu({
+      expect(getTIcu(fixture.tView, HEADER_OFFSET + 4)).toEqual(matchTIcu({
         type: IcuType.select,
-        anchorIdx: 24,
-        currentCaseLViewIndex: 25,
+        anchorIdx: HEADER_OFFSET + 4,
+        currentCaseLViewIndex: HEADER_OFFSET + 5,
         cases: ['A', 'other'],
         create: [
           matchDebug([
-            'lView[26] = document.createTextNode("parentA ")',
-            '(lView[0] as Element).appendChild(lView[26])',
-            'lView[27] = document.createComment("nested ICU 0")',
-            '(lView[0] as Element).appendChild(lView[27])',
-            'lView[31] = document.createTextNode("!")',
-            '(lView[0] as Element).appendChild(lView[31])',
+            `lView[${HEADER_OFFSET + 6}] = document.createTextNode("parentA ")`,
+            `(lView[${HOST}] as Element).appendChild(lView[${HEADER_OFFSET + 6}])`,
+            `lView[${HEADER_OFFSET + 7}] = document.createComment("nested ICU 0")`,
+            `(lView[${HOST}] as Element).appendChild(lView[${HEADER_OFFSET + 7}])`,
+            `lView[${HEADER_OFFSET + 11}] = document.createTextNode("!")`,
+            `(lView[${HOST}] as Element).appendChild(lView[${HEADER_OFFSET + 11}])`,
           ]),
           matchDebug([
-            'lView[32] = document.createTextNode("parentOther")',
-            '(lView[0] as Element).appendChild(lView[32])',
+            `lView[${HEADER_OFFSET + 12}] = document.createTextNode("parentOther")`,
+            `(lView[${HOST}] as Element).appendChild(lView[${HEADER_OFFSET + 12}])`,
           ])
         ],
         update: [
@@ -204,76 +208,79 @@ describe('i18n_parse', () => {
         ],
         remove: [
           matchDebug([
-            'remove(lView[26])',
-            'removeNestedICU(27)',
-            'remove(lView[27])',
-            'remove(lView[31])',
+            `remove(lView[${HEADER_OFFSET + 6}])`,
+            `removeNestedICU(${HEADER_OFFSET + 7})`,
+            `remove(lView[${HEADER_OFFSET + 7}])`,
+            `remove(lView[${HEADER_OFFSET + 11}])`,
           ]),
           matchDebug([
-            'remove(lView[32])',
+            `remove(lView[${HEADER_OFFSET + 12}])`,
           ])
         ],
       }));
 
-      expect(getTIcu(fixture.tView, 27)).toEqual(matchTIcu({
+      expect(getTIcu(fixture.tView, HEADER_OFFSET + 7)).toEqual(matchTIcu({
         type: IcuType.select,
-        anchorIdx: 27,
-        currentCaseLViewIndex: 28,
+        anchorIdx: HEADER_OFFSET + 7,
+        currentCaseLViewIndex: HEADER_OFFSET + 8,
         cases: ['0', 'other'],
         create: [
           matchDebug([
-            'lView[29] = document.createTextNode("nested0")',
-            '(lView[0] as Element).appendChild(lView[29])'
+            `lView[${HEADER_OFFSET + 9}] = document.createTextNode("nested0")`,
+            `(lView[${HOST}] as Element).appendChild(lView[${HEADER_OFFSET + 9}])`
           ]),
           matchDebug([
-            'lView[30] = document.createTextNode("")',
-            '(lView[0] as Element).appendChild(lView[30])',
+            `lView[${HEADER_OFFSET + 10}] = document.createTextNode("")`,
+            `(lView[${HOST}] as Element).appendChild(lView[${HEADER_OFFSET + 10}])`,
           ])
         ],
         update: [
           matchDebug([]),
           matchDebug([
-            'if (mask & 0b100) { (lView[30] as Text).textContent = `${lView[i-3]}`; }',
+            `if (mask & 0b100) { (lView[${
+                HEADER_OFFSET + 10}] as Text).textContent = \`\${lView[i-3]}\`; }`,
           ]),
         ],
         remove: [
-          matchDebug(['remove(lView[29])']),
-          matchDebug(['remove(lView[30])']),
+          matchDebug([`remove(lView[${HEADER_OFFSET + 9}])`]),
+          matchDebug([`remove(lView[${HEADER_OFFSET + 10}])`]),
         ],
       }));
 
       fixture.apply(() => {
         applyCreateOpCodes(fixture.lView, tI18n.create, fixture.host, null);
-        expect(fixture.host.innerHTML).toEqual('<!--ICU 20:0-->');
+        expect(fixture.host.innerHTML).toEqual(`<!--ICU ${HEADER_OFFSET + 0}:0-->`);
       });
       fixture.apply(() => {
         ɵɵi18nExp('A');
         ɵɵi18nExp('0');
         ɵɵi18nExp('value1');
-        ɵɵi18nApply(0);  // index 0 + HEADER_OFFSET = 20;
+        ɵɵi18nApply(0);
         expect(fixture.host.innerHTML)
-            .toEqual('parentA nested0<!--nested ICU 0-->!<!--ICU 20:0-->');
+            .toEqual(`parentA nested0<!--nested ICU 0-->!<!--ICU ${HEADER_OFFSET + 0}:0-->`);
       });
       fixture.apply(() => {
         ɵɵi18nExp('A');
         ɵɵi18nExp('x');
         ɵɵi18nExp('value1');
-        ɵɵi18nApply(0);  // index 0 + HEADER_OFFSET = 20;
-        expect(fixture.host.innerHTML).toEqual('parentA value1<!--nested ICU 0-->!<!--ICU 20:0-->');
+        ɵɵi18nApply(0);
+        expect(fixture.host.innerHTML)
+            .toEqual(`parentA value1<!--nested ICU 0-->!<!--ICU ${HEADER_OFFSET + 0}:0-->`);
       });
       fixture.apply(() => {
         ɵɵi18nExp('x');
         ɵɵi18nExp('x');
         ɵɵi18nExp('value2');
-        ɵɵi18nApply(0);  // index 0 + HEADER_OFFSET = 20;
-        expect(fixture.host.innerHTML).toEqual('parentOther<!--ICU 20:0-->');
+        ɵɵi18nApply(0);
+        expect(fixture.host.innerHTML).toEqual(`parentOther<!--ICU ${HEADER_OFFSET + 0}:0-->`);
       });
       fixture.apply(() => {
         ɵɵi18nExp('A');
         ɵɵi18nExp('A');
         ɵɵi18nExp('value2');
-        ɵɵi18nApply(0);  // index 0 + HEADER_OFFSET = 20;
-        expect(fixture.host.innerHTML).toEqual('parentA value2<!--nested ICU 0-->!<!--ICU 20:0-->');
+        ɵɵi18nApply(0);
+        expect(fixture.host.innerHTML)
+            .toEqual(`parentA value2<!--nested ICU 0-->!<!--ICU ${HEADER_OFFSET + 0}:0-->`);
       });
     });
   });

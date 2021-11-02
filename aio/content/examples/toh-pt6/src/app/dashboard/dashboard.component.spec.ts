@@ -12,7 +12,7 @@ describe('DashboardComponent', () => {
   let component: DashboardComponent;
   let fixture: ComponentFixture<DashboardComponent>;
   let heroService;
-  let getHeroesSpy;
+  let getHeroesSpy: jasmine.Spy;
 
   beforeEach(waitForAsync(() => {
     heroService = jasmine.createSpyObj('HeroService', ['getHeroes']);
@@ -37,7 +37,7 @@ describe('DashboardComponent', () => {
   });
 
   it('should display "Top Heroes" as headline', () => {
-    expect(fixture.nativeElement.querySelector('h3').textContent).toEqual('Top Heroes');
+    expect(fixture.nativeElement.querySelector('h2').textContent).toEqual('Top Heroes');
   });
 
   it('should call heroService', waitForAsync(() => {

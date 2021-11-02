@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {Reference, ReferenceEmitter} from '../../imports';
-import {ClassPropertyMapping, CompoundMetadataRegistry, DirectiveMeta, LocalMetadataRegistry, MetadataRegistry, PipeMeta} from '../../metadata';
+import {ClassPropertyMapping, CompoundMetadataRegistry, DirectiveMeta, LocalMetadataRegistry, MetadataRegistry, MetaType, PipeMeta} from '../../metadata';
 import {ClassDeclaration} from '../../reflection';
 import {ScopeData} from '../src/api';
 import {DtsModuleScopeResolver} from '../src/dependency';
@@ -219,7 +219,7 @@ describe('LocalModuleScopeRegistry', () => {
       rawDeclarations: null,
     });
 
-    expect(scopeRegistry.getScopeOfModule(ModuleA.node)).toBe('error');
+    expect(scopeRegistry.getScopeOfModule(ModuleA.node)!.compilation.isPoisoned).toBeTrue();
 
     // ModuleA should have associated diagnostics as it exports `Dir` without declaring it.
     expect(scopeRegistry.getDiagnosticsOfModule(ModuleA.node)).not.toBeNull();
@@ -232,6 +232,7 @@ describe('LocalModuleScopeRegistry', () => {
 function fakeDirective(ref: Reference<ClassDeclaration>): DirectiveMeta {
   const name = ref.debugName!;
   return {
+    type: MetaType.Directive,
     ref,
     name,
     selector: `[${ref.debugName}]`,
@@ -248,12 +249,14 @@ function fakeDirective(ref: Reference<ClassDeclaration>): DirectiveMeta {
     undeclaredInputFields: new Set<string>(),
     isGeneric: false,
     baseClass: null,
+    isPoisoned: false,
+    isStructural: false,
   };
 }
 
 function fakePipe(ref: Reference<ClassDeclaration>): PipeMeta {
   const name = ref.debugName!;
-  return {ref, name};
+  return {type: MetaType.Pipe, ref, name, nameExpr: null};
 }
 
 class MockDtsModuleScopeResolver implements DtsModuleScopeResolver {

@@ -28,35 +28,21 @@ function createNode(
     value._futureSnapshot = curr.value;
     const children = createOrReuseChildren(routeReuseStrategy, curr, prevState);
     return new TreeNode<ActivatedRoute>(value, children);
-
-    // retrieve an activated route that is used to be displayed, but is not currently displayed
   } else {
-    const detachedRouteHandle =
-        <DetachedRouteHandleInternal>routeReuseStrategy.retrieve(curr.value);
-    if (detachedRouteHandle) {
-      const tree: TreeNode<ActivatedRoute> = detachedRouteHandle.route;
-      setFutureSnapshotsOfActivatedRoutes(curr, tree);
-      return tree;
-
-    } else {
-      const value = createActivatedRoute(curr.value);
-      const children = curr.children.map(c => createNode(routeReuseStrategy, c));
-      return new TreeNode<ActivatedRoute>(value, children);
+    if (routeReuseStrategy.shouldAttach(curr.value)) {
+      // retrieve an activated route that is used to be displayed, but is not currently displayed
+      const detachedRouteHandle = routeReuseStrategy.retrieve(curr.value);
+      if (detachedRouteHandle !== null) {
+        const tree = (detachedRouteHandle as DetachedRouteHandleInternal).route;
+        tree.value._futureSnapshot = curr.value;
+        tree.children = curr.children.map(c => createNode(routeReuseStrategy, c));
+        return tree;
+      }
     }
-  }
-}
 
-function setFutureSnapshotsOfActivatedRoutes(
-    curr: TreeNode<ActivatedRouteSnapshot>, result: TreeNode<ActivatedRoute>): void {
-  if (curr.value.routeConfig !== result.value.routeConfig) {
-    throw new Error('Cannot reattach ActivatedRouteSnapshot created from a different route');
-  }
-  if (curr.children.length !== result.children.length) {
-    throw new Error('Cannot reattach ActivatedRouteSnapshot with a different number of children');
-  }
-  result.value._futureSnapshot = curr.value;
-  for (let i = 0; i < curr.children.length; ++i) {
-    setFutureSnapshotsOfActivatedRoutes(curr.children[i], result.children[i]);
+    const value = createActivatedRoute(curr.value);
+    const children = curr.children.map(c => createNode(routeReuseStrategy, c));
+    return new TreeNode<ActivatedRoute>(value, children);
   }
 }
 

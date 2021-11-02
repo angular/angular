@@ -30,9 +30,7 @@ export class HeroContactComponent {
       this.hasLogger = true;
       loggerService.logInfo('HeroContactComponent can log!');
     }
-  // #docregion ctor
   }
-  // #enddocregion ctor
 
   get phoneNumber() { return this.heroCache.hero.phone; }
 

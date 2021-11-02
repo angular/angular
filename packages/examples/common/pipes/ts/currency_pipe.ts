@@ -45,20 +45,3 @@ export class CurrencyPipeComponent {
   b: number = 1.3495;
 }
 // #enddocregion
-
-// #docregion DeprecatedCurrencyPipe
-@Component({
-  selector: 'deprecated-currency-pipe',
-  template: `<div>
-    <!--output 'CAD0.26'-->
-    <p>A: {{a | currency:'CAD'}}</p>
-
-    <!--output '$0,001.35'-->
-    <p>B: {{b | currency:'CAD':true:'4.2-2'}}</p>
-  </div>`
-})
-export class DeprecatedCurrencyPipeComponent {
-  a: number = 0.259;
-  b: number = 1.3495;
-}
-// #enddocregion

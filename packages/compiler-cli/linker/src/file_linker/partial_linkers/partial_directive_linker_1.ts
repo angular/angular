@@ -5,23 +5,26 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {compileDirectiveFromMetadata, ConstantPool, makeBindingParser, ParseLocation, ParseSourceFile, ParseSourceSpan, R3DirectiveMetadata, R3HostMetadata, R3QueryMetadata, R3Reference} from '@angular/compiler';
-import * as o from '@angular/compiler/src/output/output_ast';
+import {compileDirectiveFromMetadata, ConstantPool, makeBindingParser, outputAst as o, ParseLocation, ParseSourceFile, ParseSourceSpan, R3DeclareDirectiveMetadata, R3DeclareQueryMetadata, R3DirectiveMetadata, R3HostMetadata, R3PartialDeclaration, R3QueryMetadata} from '@angular/compiler';
 
+import {AbsoluteFsPath} from '../../../../src/ngtsc/file_system';
 import {Range} from '../../ast/ast_host';
 import {AstObject, AstValue} from '../../ast/ast_value';
 import {FatalLinkerError} from '../../fatal_linker_error';
 
 import {PartialLinker} from './partial_linker';
+import {wrapReference} from './util';
 
 /**
  * A `PartialLinker` that is designed to process `ɵɵngDeclareDirective()` call expressions.
  */
 export class PartialDirectiveLinkerVersion1<TExpression> implements PartialLinker<TExpression> {
+  constructor(private sourceUrl: AbsoluteFsPath, private code: string) {}
+
   linkPartialDeclaration(
-      sourceUrl: string, code: string, constantPool: ConstantPool,
-      metaObj: AstObject<TExpression>): o.Expression {
-    const meta = toR3DirectiveMeta(metaObj, code, sourceUrl);
+      constantPool: ConstantPool,
+      metaObj: AstObject<R3PartialDeclaration, TExpression>): o.Expression {
+    const meta = toR3DirectiveMeta(metaObj, this.code, this.sourceUrl);
     const def = compileDirectiveFromMetadata(meta, constantPool, makeBindingParser());
     return def.expression;
   }
@@ -31,7 +34,8 @@ export class PartialDirectiveLinkerVersion1<TExpression> implements PartialLinke
  * Derives the `R3DirectiveMetadata` structure from the AST object.
  */
 export function toR3DirectiveMeta<TExpression>(
-    metaObj: AstObject<TExpression>, code: string, sourceUrl: string): R3DirectiveMetadata {
+    metaObj: AstObject<R3DeclareDirectiveMetadata, TExpression>, code: string,
+    sourceUrl: AbsoluteFsPath): R3DirectiveMetadata {
   const typeExpr = metaObj.getValue('type');
   const typeName = typeExpr.getSymbolName();
   if (typeName === null) {
@@ -73,7 +77,8 @@ export function toR3DirectiveMeta<TExpression>(
 /**
  * Decodes the AST value for a single input to its representation as used in the metadata.
  */
-function toInputMapping<TExpression>(value: AstValue<TExpression>): string|[string, string] {
+function toInputMapping<TExpression>(value: AstValue<string|[string, string], TExpression>):
+    string|[string, string] {
   if (value.isString()) {
     return value.getString();
   }
@@ -90,7 +95,8 @@ function toInputMapping<TExpression>(value: AstValue<TExpression>): string|[stri
 /**
  * Extracts the host metadata configuration from the AST metadata object.
  */
-function toHostMetadata<TExpression>(metaObj: AstObject<TExpression>): R3HostMetadata {
+function toHostMetadata<TExpression>(metaObj: AstObject<R3DeclareDirectiveMetadata, TExpression>):
+    R3HostMetadata {
   if (!metaObj.has('host')) {
     return {
       attributes: {},
@@ -127,7 +133,8 @@ function toHostMetadata<TExpression>(metaObj: AstObject<TExpression>): R3HostMet
 /**
  * Extracts the metadata for a single query from an AST object.
  */
-function toQueryMetadata<TExpression>(obj: AstObject<TExpression>): R3QueryMetadata {
+function toQueryMetadata<TExpression>(obj: AstObject<R3DeclareQueryMetadata, TExpression>):
+    R3QueryMetadata {
   let predicate: R3QueryMetadata['predicate'];
   const predicateExpr = obj.getValue('predicate');
   if (predicateExpr.isArray()) {
@@ -140,13 +147,11 @@ function toQueryMetadata<TExpression>(obj: AstObject<TExpression>): R3QueryMetad
     first: obj.has('first') ? obj.getBoolean('first') : false,
     predicate,
     descendants: obj.has('descendants') ? obj.getBoolean('descendants') : false,
+    emitDistinctChangesOnly:
+        obj.has('emitDistinctChangesOnly') ? obj.getBoolean('emitDistinctChangesOnly') : true,
     read: obj.has('read') ? obj.getOpaque('read') : null,
     static: obj.has('static') ? obj.getBoolean('static') : false,
   };
-}
-
-function wrapReference<TExpression>(wrapped: o.WrappedNodeExpr<TExpression>): R3Reference {
-  return {value: wrapped, type: wrapped};
 }
 
 export function createSourceSpan(range: Range, code: string, sourceUrl: string): ParseSourceSpan {

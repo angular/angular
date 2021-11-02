@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-// #docregion Component
 import {animate, state, style, transition, trigger} from '@angular/animations';
 import {Component, NgModule} from '@angular/core';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
@@ -59,5 +58,3 @@ export class MyExpandoCmp {
     {imports: [BrowserAnimationsModule], declarations: [MyExpandoCmp], bootstrap: [MyExpandoCmp]})
 export class AppModule {
 }
-
-// #enddocregion

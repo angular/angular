@@ -13,10 +13,11 @@ import {MockCache} from '../testing/cache';
 import {MockRequest} from '../testing/fetch';
 import {MockFileSystemBuilder, MockServerStateBuilder, tmpHashTableForFs} from '../testing/mock';
 import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope';
+import {envIsSupported} from '../testing/utils';
 
 (function() {
 // Skip environments that don't support the minimum APIs needed to run the SW tests.
-if (!SwTestHarness.envIsSupported()) {
+if (!envIsSupported()) {
   return;
 }
 
@@ -126,7 +127,7 @@ describe('data cache', () => {
   let driver: Driver;
   beforeEach(async () => {
     scope = new SwTestHarnessBuilder().withServerState(server).build();
-    driver = new Driver(scope, scope, new CacheDatabase(scope, scope));
+    driver = new Driver(scope, scope, new CacheDatabase(scope));
 
     // Initialize.
     expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
@@ -144,7 +145,7 @@ describe('data cache', () => {
   describe('in performance mode', () => {
     it('names the caches correctly', async () => {
       expect(await makeRequest(scope, '/api/test')).toEqual('version 1');
-      const keys = await scope.caches.keys();
+      const keys = await scope.caches.original.keys();
       expect(keys.every(key => key.startsWith('ngsw:/:'))).toEqual(true);
     });
 

@@ -22,33 +22,36 @@ import { getTestHeroes } from './test-heroes';
 export class TestHeroService extends HeroService {
 
   constructor() {
-    super(null);
+    // This is a fake testing service that won't be making HTTP
+    // requests so we can pass in `null` as the HTTP client.
+    super(null!);
   }
 
   heroes = getTestHeroes();
-  lastResult: Observable<any>; // result from last method call
+  lastResult!: Observable<any>; // result from last method call
 
-  addHero(hero: Hero): Observable<Hero> {
+  override addHero(hero: Hero): Observable<Hero> {
     throw new Error('Method not implemented.');
   }
 
-  deleteHero(hero: number | Hero): Observable<Hero> {
+  override deleteHero(hero: number | Hero): Observable<Hero> {
     throw new Error('Method not implemented.');
   }
 
-  getHeroes(): Observable<Hero[]> {
+  override getHeroes(): Observable<Hero[]> {
     return this.lastResult = asyncData(this.heroes);
   }
 
-  getHero(id: number | string): Observable<Hero> {
+  override getHero(id: number | string): Observable<Hero> {
     if (typeof id === 'string') {
       id = parseInt(id, 10);
     }
     const hero = this.heroes.find(h => h.id === id);
-    return this.lastResult = asyncData(hero);
+    this.lastResult = asyncData(hero);
+    return this.lastResult;
   }
 
-  updateHero(hero: Hero): Observable<Hero> {
+  override updateHero(hero: Hero): Observable<Hero> {
     return this.lastResult = this.getHero(hero.id).pipe(
       map(h => {
         if (h) {

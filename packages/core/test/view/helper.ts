@@ -12,7 +12,7 @@ import {ArgumentType, initServicesIfNeeded, NodeCheckFn, NodeDef, rootRenderNode
 import {TestBed} from '@angular/core/testing';
 
 export function isBrowser() {
-  return getDOM().supportsDOMEvents();
+  return getDOM().supportsDOMEvents;
 }
 
 export const ARG_TYPE_VALUES = [ArgumentType.Inline, ArgumentType.Dynamic];

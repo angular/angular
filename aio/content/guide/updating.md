@@ -1,8 +1,8 @@
 # Keeping your Angular projects up-to-date
 
-Just like Web and the entire web ecosystem, Angular is continuously improving. Angular balances continuous improvement with a strong focus on stability and making updates easy. Keeping your Angular app up-to-date enables you to take advantage of leading-edge new features, as well as optimizations and bug fixes.
+Just like Web and the entire web ecosystem, Angular is continuously improving. Angular balances continuous improvement with a strong focus on stability and making updates straightforward. Keeping your Angular application up-to-date enables you to take advantage of leading-edge new features, as well as optimizations and bug fixes.
 
-This document contains information and resources to help you keep your Angular apps and libraries up-to-date.
+This document contains information and resources to help you keep your Angular applications and libraries up-to-date.
 
 For information about our versioning policy and practices&mdash;including
 support and deprecation practices, as well as the release schedule&mdash;see [Angular versioning and releases](guide/releases "Angular versioning and releases").
@@ -31,13 +31,13 @@ To review a complete list of changes, organized by version, see the [Angular cha
 {@a checking-version-app}
 ## Checking your version of Angular
 
-To check your app's version of Angular: From within your project directory, use the `ng version` command.
+To check your application's version of Angular: From within your project directory, use the `ng version` command.
 
 
 {@a checking-version-angular}
 ## Finding the current version of Angular
 
-The most recent stable released version of Angular appears in the [Angular documentation](https://angular.io/docs "Angular documentation") at the bottom of the left side navigation. For example, `stable (v5.2.9)`.
+The most recent stable released version of Angular appears in the [Angular documentation](docs "Angular documentation") at the bottom of the left side navigation. For example, `stable (v5.2.9)`.
 
 You can also find the most current version of Angular by using the CLI command [`ng update`](cli/update). By default, [`ng update`](cli/update)(without additional arguments) lists the updates that are available to you.
 
@@ -45,7 +45,7 @@ You can also find the most current version of Angular by using the CLI command [
 {@a updating}
 ## Updating your environment and apps
 
-To make updating easy, we provide complete instructions in the interactive [Angular Update Guide](https://update.angular.io/ "Angular Update Guide").
+To make updating uncomplicated, we provide complete instructions in the interactive [Angular Update Guide](https://update.angular.io/ "Angular Update Guide").
 
 The Angular Update Guide provides customized update instructions, based on the current and target versions that you specify. It includes basic and advanced update paths, to match the complexity of your applications. It also includes troubleshooting information and any recommended manual changes to help you get the most out of the new release.
 

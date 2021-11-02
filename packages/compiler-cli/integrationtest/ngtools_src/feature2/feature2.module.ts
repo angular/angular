@@ -17,8 +17,11 @@ export class FeatureComponent {
   declarations: [FeatureComponent],
   imports: [RouterModule.forChild([
     {path: '', component: FeatureComponent},
-    {path: 'd', loadChildren: './default.module'},
-    {path: 'e', loadChildren: 'feature/feature.module#FeatureModule'},
+    {path: 'd', loadChildren: () => import('./default.module').then(mod => mod.default)},
+    {
+      path: 'e',
+      loadChildren: () => import('../feature/feature.module').then(mod => mod.FeatureModule)
+    },
   ])]
 })
 export class Feature2Module {

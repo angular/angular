@@ -8,6 +8,7 @@
 
 import {RendererStyleFlags2, RendererType2} from '@angular/core';
 import {ChangeDetectorRef} from '@angular/core/src/change_detection/change_detector_ref';
+import {InjectFlags} from '@angular/core/src/di';
 import {Provider} from '@angular/core/src/di/interface/provider';
 import {ElementRef} from '@angular/core/src/linker/element_ref';
 import {TemplateRef} from '@angular/core/src/linker/template_ref';
@@ -294,13 +295,13 @@ export function renderTemplate<T>(
         providedRendererFactory, renderer, null, null);
     enterView(hostLView);
 
-    const def: ComponentDef<any> = ɵɵdefineComponent({
-      type: Object,
-      template: templateFn,
-      decls: decls,
-      vars: vars,
-      consts: consts,
-    });
+    const def = ɵɵdefineComponent({
+                  type: Object,
+                  template: templateFn,
+                  decls: decls,
+                  vars: vars,
+                  consts: consts,
+                }) as ComponentDef<any>;
     def.directiveDefs = directives || null;
     def.pipeDefs = pipes || null;
 
@@ -459,7 +460,8 @@ export function enableIvyInjectableFactories() {
   (ElementRef as any)[NG_ELEMENT_ID] = () => R3_ELEMENT_REF_FACTORY();
   (TemplateRef as any)[NG_ELEMENT_ID] = () => R3_TEMPLATE_REF_FACTORY();
   (ViewContainerRef as any)[NG_ELEMENT_ID] = () => R3_VIEW_CONTAINER_REF_FACTORY();
-  (ChangeDetectorRef as any)[NG_ELEMENT_ID] = () => R3_CHANGE_DETECTOR_REF_FACTORY();
+  (ChangeDetectorRef as any)[NG_ELEMENT_ID] = (flags: InjectFlags) =>
+      R3_CHANGE_DETECTOR_REF_FACTORY(flags);
   (Renderer2 as any)[NG_ELEMENT_ID] = () => R3_RENDERER2_FACTORY();
 }
 

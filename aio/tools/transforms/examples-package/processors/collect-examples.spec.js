@@ -98,7 +98,6 @@ describe('collectExampleRegions processor', () => {
         expect(regionParser).toHaveBeenCalledWith('Example C', 'js');
       });
 
-
     it('should attach parsed content as renderedContent to the example file docs', () => {
       const docs = [
         createDoc('A', 'examples-1/x/app.js'),
@@ -205,7 +204,7 @@ describe('collectExampleRegions processor', () => {
 
 function createDoc(content, relativePath, docType) {
   return {
-    fileInfo: {relativePath: relativePath, extension: path.extname(relativePath).substr(1)},
+    fileInfo: {relativePath: relativePath, baseName: path.basename(relativePath), extension: path.extname(relativePath).substr(1)},
     content: content,
     docType: docType || 'example-file',
     startingLine: 1

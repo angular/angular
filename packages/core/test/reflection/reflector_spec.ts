@@ -202,13 +202,48 @@ class TestObj {
       });
 
       // See: https://github.com/angular/angular/issues/38453
-      it('should support ES2015 downleveled classes', () => {
-        const {ChildNoCtor, ChildNoCtorPrivateProps, ChildWithCtor} =
-            require('./es5_downleveled_inheritance_fixture');
+      it('should support ES2015 downleveled classes (workspace TypeScript version) (downlevelIteration=true)',
+         () => {
+           const {ChildNoCtor, ChildNoCtorPrivateProps, ChildWithCtor} =
+               require('./es5_downleveled_inheritance_fixture');
 
-        expect(isDelegateCtor(ChildNoCtor.toString())).toBe(true);
-        expect(isDelegateCtor(ChildNoCtorPrivateProps.toString())).toBe(true);
-        expect(isDelegateCtor(ChildWithCtor.toString())).toBe(false);
+           expect(isDelegateCtor(ChildNoCtor.toString())).toBe(true);
+           expect(isDelegateCtor(ChildNoCtorPrivateProps.toString())).toBe(true);
+           expect(isDelegateCtor(ChildWithCtor.toString())).toBe(false);
+         });
+
+      it('should support ES2015 downleveled classes (<TS4.2) (downlevelIteration=true)', () => {
+        const ChildNoCtor = `function ChildNoCtor() {
+          return _super !== null && _super.apply(this, arguments) || this;
+        }`;
+        const ChildNoCtorPrivateProps = `function ChildNoCtorPrivateProps() {
+          var _this = _super.apply(this, __spread(arguments)) || this;
+          _this.x = 10;
+          return _this;
+        }`;
+        const ChildWithCtor = `function ChildWithCtor() {
+          return _super.call(this) || this;
+        }`;
+        expect(isDelegateCtor(ChildNoCtor)).toBe(true);
+        expect(isDelegateCtor(ChildNoCtorPrivateProps)).toBe(true);
+        expect(isDelegateCtor(ChildWithCtor)).toBe(false);
+      });
+
+      it('should support ES2015 downleveled classes (>=TS4.2) (downlevelIteration=true)', () => {
+        const ChildNoCtor = `function ChildNoCtor() {
+          return _super !== null && _super.apply(this, arguments) || this;
+        }`;
+        const ChildNoCtorPrivateProps = `function ChildNoCtorPrivateProps() {
+          var _this = _super.apply(this, __spreadArray([], __read(arguments))) || this;
+          _this.x = 10;
+          return _this;
+        }`;
+        const ChildWithCtor = `function ChildWithCtor() {
+          return _super.call(this) || this;
+        }`;
+        expect(isDelegateCtor(ChildNoCtor)).toBe(true);
+        expect(isDelegateCtor(ChildNoCtorPrivateProps)).toBe(true);
+        expect(isDelegateCtor(ChildWithCtor)).toBe(false);
       });
 
       it('should support ES2015 classes when minified', () => {
@@ -388,7 +423,7 @@ class TestObj {
 
         class Child extends Parent {
           // TODO(issue/24571): remove '!'.
-          @PropDecorator('b2') b!: B;
+          @PropDecorator('b2') override b!: B;
           // TODO(issue/24571): remove '!'.
           @PropDecorator('c') c!: C;
         }
@@ -420,7 +455,7 @@ class TestObj {
         }
 
         class Child extends Parent {
-          hook2() {}
+          override hook2() {}
           hook3() {}
         }
 
@@ -442,7 +477,7 @@ class TestObj {
         }
 
         class Child extends Parent {
-          static decorators = [{type: ClassDecorator, args: [{value: 'child'}]}];
+          static override decorators = [{type: ClassDecorator, args: [{value: 'child'}]}];
         }
 
         class ChildNoDecorators extends Parent {}
@@ -473,7 +508,7 @@ class TestObj {
         class Child extends Parent {}
 
         class ChildWithCtor extends Parent {
-          static ctorParameters = () =>
+          static override ctorParameters = () =>
               [{type: C, decorators: [{type: ParamDecorator, args: ['c']}]},
           ]
           constructor() {
@@ -506,7 +541,7 @@ class TestObj {
         }
 
         class Child extends Parent {
-          static propDecorators: any = {
+          static override propDecorators: any = {
             'b': [{type: PropDecorator, args: ['b2']}],
             'c': [{type: PropDecorator, args: ['c']}],
           };
@@ -533,7 +568,7 @@ class TestObj {
         }
 
         class Child extends Parent {
-          static annotations = [new ClassDecorator({value: 'child'})];
+          static override annotations = [new ClassDecorator({value: 'child'})];
         }
 
         class ChildNoDecorators extends Parent {}
@@ -564,7 +599,7 @@ class TestObj {
         class Child extends Parent {}
 
         class ChildWithCtor extends Parent {
-          static parameters = [
+          static override parameters = [
             [C, new ParamDecorator('c')],
           ];
           constructor() {
@@ -597,7 +632,7 @@ class TestObj {
         }
 
         class Child extends Parent {
-          static propMetadata: any = {
+          static override propMetadata: any = {
             'b': [new PropDecorator('b2')],
             'c': [new PropDecorator('c')],
           };

@@ -7,7 +7,7 @@
  */
 
 import {ParseSourceSpan} from '@angular/compiler';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {DEFAULT_ERROR_CODE, Diagnostic, SOURCE} from '../transformers/api';
 import {GENERATED_FILES} from '../transformers/util';

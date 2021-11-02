@@ -1,11 +1,11 @@
 // #docregion
-import { Directive, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { AbstractControl, NG_VALIDATORS, Validator, ValidatorFn, Validators } from '@angular/forms';
+import { Directive, Input } from '@angular/core';
+import { AbstractControl, NG_VALIDATORS, ValidationErrors, Validator, ValidatorFn } from '@angular/forms';
 
 // #docregion custom-validator
 /** A hero's name can't match the given regular expression */
 export function forbiddenNameValidator(nameRe: RegExp): ValidatorFn {
-  return (control: AbstractControl): {[key: string]: any} | null => {
+  return (control: AbstractControl): ValidationErrors | null => {
     const forbidden = nameRe.test(control.value);
     return forbidden ? {forbiddenName: {value: control.value}} : null;
   };
@@ -20,9 +20,9 @@ export function forbiddenNameValidator(nameRe: RegExp): ValidatorFn {
   // #enddocregion directive-providers
 })
 export class ForbiddenValidatorDirective implements Validator {
-  @Input('appForbiddenName') forbiddenName: string;
+  @Input('appForbiddenName') forbiddenName = '';
 
-  validate(control: AbstractControl): {[key: string]: any} | null {
+  validate(control: AbstractControl): ValidationErrors | null {
     return this.forbiddenName ? forbiddenNameValidator(new RegExp(this.forbiddenName, 'i'))(control)
                               : null;
   }

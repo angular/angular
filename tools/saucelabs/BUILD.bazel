@@ -55,6 +55,7 @@ nodejs_binary(
     name = "karma-saucelabs",
     data = [
         "sauce-service.sh",
+        "@npm//@bazel/runfiles",
         "@npm//karma",
         "@npm//sauce-connect",
         "@npm//shelljs",

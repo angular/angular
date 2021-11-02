@@ -175,7 +175,7 @@ def npm_integration_test(name, **kwargs):
     )
 
     tags = kwargs.pop("tags", [])
-    npm_deps = ["@npm//tmp"]
+    npm_deps = ["@npm//tmp", "@npm//@bazel/runfiles"]
 
     nodejs_test(
         name = name,

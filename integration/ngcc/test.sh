@@ -6,8 +6,6 @@
 # Each statement should be followed by an `assert*` or `exit 1` statement.
 set +e -x
 
-PATH=$PATH:$(npm bin)
-
 function assertFailed {
   if [[ $? -eq 0 ]]; then
     echo "FAIL: $1";
@@ -81,13 +79,13 @@ assertSucceeded "Expected 'ngcc' to log 'Compiling'."
 
 
 # Did it compile @angular/core/ApplicationModule correctly?
-  grep "ApplicationModule.ɵmod = ɵɵdefineNgModule" node_modules/@angular/core/fesm2015/core.js
+  grep "ApplicationModule.ɵmod = /\*@__PURE__\*/ ɵɵdefineNgModule" node_modules/@angular/core/fesm2015/core.js
   assertSucceeded "Expected 'ngcc' to correctly compile 'ApplicationModule' in '@angular/core' (fesm2015)."
 
-  grep "ApplicationModule.ɵmod = ɵɵdefineNgModule" node_modules/@angular/core/bundles/core.umd.js
+  grep "ApplicationModule.ɵmod = /\*@__PURE__\*/ ɵɵdefineNgModule" node_modules/@angular/core/bundles/core.umd.js
   assertSucceeded "Expected 'ngcc' to correctly compile 'ApplicationModule' in '@angular/core' (main)."
 
-  grep "ApplicationModule.ɵmod = ɵngcc0.ɵɵdefineNgModule" node_modules/@angular/core/esm2015/src/application_module.js
+  grep "ApplicationModule.ɵmod = /\*@__PURE__\*/ ɵngcc0.ɵɵdefineNgModule" node_modules/@angular/core/esm2015/src/application_module.js
   assertSucceeded "Expected 'ngcc' to correctly compile 'ApplicationModule' in '@angular/core' (esm2015)."
 
 # Did it place the `setClassMetadata` call correctly?
@@ -99,23 +97,23 @@ assertSucceeded "Expected 'ngcc' to log 'Compiling'."
   grep "import [*] as ɵngcc0 from './src/r3_symbols';" node_modules/@angular/core/core.d.ts
   assertSucceeded "Expected 'ngcc' to add an import for 'src/r3_symbols' in '@angular/core' typings."
 
-  grep "static ɵinj: ɵngcc0.ɵɵInjectorDef<ApplicationModule>;" node_modules/@angular/core/core.d.ts
+  grep "static ɵinj: ɵngcc0.ɵɵInjectorDeclaration<ApplicationModule>;" node_modules/@angular/core/core.d.ts
   assertSucceeded "Expected 'ngcc' to add a definition for 'ApplicationModule.ɵinj' in '@angular/core' typings."
 
 
 # Did it generate a base factory call for synthesized constructors correctly?
-  grep "const ɵMatTable_BaseFactory = /\*@__PURE__\*/ ɵngcc0.ɵɵgetInheritedFactory(MatTable);" node_modules/@angular/material/esm2015/table/table.js
+  grep "/\*@__PURE__\*/ function () { let ɵMatTable_BaseFactory; return function MatTable_Factory(t) { return (ɵMatTable_BaseFactory || (ɵMatTable_BaseFactory = ɵngcc0.ɵɵgetInheritedFactory(MatTable)))(t || MatTable); }; }();" node_modules/@angular/material/esm2015/table/table.js
   assertSucceeded "Expected 'ngcc' to generate a base factory for 'MatTable' in '@angular/material' (esm2015)."
 
-  grep "var ɵMatTable_BaseFactory = /\*@__PURE__\*/ ɵngcc0.ɵɵgetInheritedFactory(MatTable);" node_modules/@angular/material/esm5/table/table.js
+  grep "/\*@__PURE__\*/ function () { var ɵMatTable_BaseFactory; return function MatTable_Factory(t) { return (ɵMatTable_BaseFactory || (ɵMatTable_BaseFactory = ɵngcc0.ɵɵgetInheritedFactory(MatTable)))(t || MatTable); }; }();" node_modules/@angular/material/esm5/table/table.js
   assertSucceeded "Expected 'ngcc' to generate a base factory for 'MatTable' in '@angular/material' (esm5)."
 
 
 # Did it generate an abstract directive definition for undecorated classes with inputs and view queries?
-  grep "_MatMenuBase.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: _MatMenuBase" node_modules/@angular/material/esm2015/menu/menu.js
+  grep "_MatMenuBase.ɵdir = /\*@__PURE__\*/ ɵngcc0.ɵɵdefineDirective({ type: _MatMenuBase" node_modules/@angular/material/esm2015/menu/menu.js
   assertSucceeded "Expected 'ngcc' to generate an abstract directive definition for 'MatMenuBase' in '@angular/material' (esm2015)."
 
-  grep "_MatMenuBase.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: _MatMenuBase" node_modules/@angular/material/esm5/menu/menu.js
+  grep "_MatMenuBase.ɵdir = /\*@__PURE__\*/ ɵngcc0.ɵɵdefineDirective({ type: _MatMenuBase" node_modules/@angular/material/esm5/menu/menu.js
   assertSucceeded "Expected 'ngcc' to generate an abstract directive definition for 'MatMenuBase' in '@angular/material' (esm5)."
 
 
@@ -211,7 +209,7 @@ ngcc --formats fesm2015
 assertFailed "Expected 'ngcc --formats fesm2015' to fail (since '--formats' is deprecated)."
 
 # Does it timeout if there is another ngcc process running
-LOCKFILE=node_modules/@angular/compiler-cli/ngcc/__ngcc_lock_file__
+LOCKFILE=node_modules/@angular/compiler-cli/bundles/ngcc/__ngcc_lock_file__
 touch $LOCKFILE
 trap "[[ -f $LOCKFILE ]] && rm $LOCKFILE" EXIT
 ngcc
@@ -229,11 +227,3 @@ assertSucceeded "Expected the app to successfully compile with the ngcc-processe
 
   grep "directives: \[.*\.MatButton.*\]" dist/src/main.js
   assertSucceeded "Expected the compiled app's 'main.ts' to list 'MatButton' in 'directives'."
-
-
-# 'ivy-ngcc' should fail with an appropriate error message.
-  ivy-ngcc
-  assertFailed "Expected 'ivy-ngcc' to fail (since it was renamed to 'ngcc')."
-
-  ivy-ngcc 2>&1 | grep "Error: The 'ivy-ngcc' command was renamed to just 'ngcc'. Please update your usage."
-  assertSucceeded "Expected 'ivy-ngcc' to show an appropriate error message."

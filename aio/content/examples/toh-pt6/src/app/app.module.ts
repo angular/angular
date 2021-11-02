@@ -1,5 +1,4 @@
 // #docplaster
-// #docregion , v1
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
@@ -18,9 +17,7 @@ import { AppComponent } from './app.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { HeroDetailComponent } from './hero-detail/hero-detail.component';
 import { HeroesComponent } from './heroes/heroes.component';
-// #enddocregion v1
 import { HeroSearchComponent } from './hero-search/hero-search.component';
-// #docregion v1
 import { MessagesComponent } from './messages/messages.component';
 
     // #docregion import-httpclientmodule
@@ -51,13 +48,10 @@ import { MessagesComponent } from './messages/messages.component';
     HeroesComponent,
     HeroDetailComponent,
     MessagesComponent,
-    // #enddocregion v1
     HeroSearchComponent
-    // #docregion v1
   ],
   bootstrap: [ AppComponent ]
 // #docregion import-httpclientmodule
 })
 // #enddocregion import-httpclientmodule
 export class AppModule { }
-// #enddocregion , v1

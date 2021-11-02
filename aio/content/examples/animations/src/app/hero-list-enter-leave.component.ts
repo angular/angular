@@ -16,7 +16,6 @@ import { Hero } from './hero';
 
 @Component({
   selector: 'app-hero-list-enter-leave',
-  // #docregion template
   template: `
     <ul class="heroes">
       <li *ngFor="let hero of heroes"
@@ -28,7 +27,6 @@ import { Hero } from './hero';
       </li>
     </ul>
   `,
-  // #enddocregion template
   styleUrls: ['./hero-list-page.component.css'],
   // #docregion animationdef
   animations: [
@@ -46,7 +44,7 @@ import { Hero } from './hero';
   // #enddocregion animationdef
 })
 export class HeroListEnterLeaveComponent {
-  @Input() heroes: Hero[];
+  @Input() heroes: Hero[] = [];
 
   @Output() remove = new EventEmitter<number>();
 

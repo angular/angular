@@ -5,9 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteFsPath, FileSystem, PathSegment} from '../../../src/ngtsc/file_system';
+import {AbsoluteFsPath, PathSegment, ReadonlyFileSystem} from '../../../src/ngtsc/file_system';
 import {Logger} from '../../../src/ngtsc/logging';
-
 import {EntryPointWithDependencies} from '../dependencies/dependency_host';
 import {DependencyResolver} from '../dependencies/dependency_resolver';
 import {NgccConfiguration} from '../packages/configuration';
@@ -20,7 +19,7 @@ import {NGCC_DIRECTORY} from '../writing/new_entry_point_file_writer';
  */
 export class EntryPointCollector {
   constructor(
-      private fs: FileSystem, private config: NgccConfiguration, private logger: Logger,
+      private fs: ReadonlyFileSystem, private config: NgccConfiguration, private logger: Logger,
       private resolver: DependencyResolver) {}
 
   /**

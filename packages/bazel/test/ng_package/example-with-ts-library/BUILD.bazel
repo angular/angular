@@ -14,7 +14,6 @@ ng_package(
     srcs = [
         "package.json",
     ],
-    entry_point = ":index.ts",
     deps = [
         ":example",
         "//packages/bazel/test/ng_package/example-with-ts-library/portal",

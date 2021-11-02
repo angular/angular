@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {devModeEqual, WrappedValue} from '../change_detection/change_detection';
+import {devModeEqual} from '../change_detection/change_detection';
 import {SOURCE} from '../di/injector_compatibility';
 import {ViewEncapsulation} from '../metadata/view';
 import {RendererType2} from '../render/api_flags';
@@ -26,16 +26,6 @@ export function tokenKey(token: any): string {
     _tokenKeyCache.set(token, key);
   }
   return key;
-}
-
-export function unwrapValue(view: ViewData, nodeIdx: number, bindingIdx: number, value: any): any {
-  if (WrappedValue.isWrapped(value)) {
-    value = WrappedValue.unwrap(value);
-    const globalBindingIdx = view.def.nodes[nodeIdx].bindingIndex + bindingIdx;
-    const oldValue = WrappedValue.unwrap(view.oldValues[globalBindingIdx]);
-    view.oldValues[globalBindingIdx] = new WrappedValue(oldValue);
-  }
-  return value;
 }
 
 const UNDEFINED_RENDERER_TYPE_ID = '$$undefined';
@@ -233,6 +223,8 @@ export function getParentRenderElement(view: ViewData, renderHost: any, def: Nod
          (renderParent.element!.componentRendererType!.encapsulation ===
               ViewEncapsulation.ShadowDom ||
           // TODO(FW-2290): remove the `encapsulation === 1` fallback logic in v12.
+          // @ts-ignore TODO: Remove as part of FW-2290. TS complains about us dealing with an enum
+          // value that is not known (but previously was the value for ViewEncapsulation.Native)
           renderParent.element!.componentRendererType!.encapsulation === 1))) {
       // only children of non components, or children of components with native encapsulation should
       // be attached.
@@ -444,5 +436,4 @@ function _toStringWithNull(v: any): string {
   return v != null ? v.toString() : '';
 }
 
-export const EMPTY_ARRAY: any[] = [];
 export const EMPTY_MAP: {[key: string]: any} = {};

@@ -6,15 +6,15 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import * as yargs from 'yargs';
+import yargs from 'yargs';
 
-import {resolve, setFileSystem, NodeJSFileSystem} from '../../src/ngtsc/file_system';
+import {setFileSystem, NodeJSFileSystem} from '../../src/ngtsc/file_system';
 import {ConsoleLogger, LogLevel} from '../../src/ngtsc/logging';
 import {NgccOptions} from './ngcc_options';
 
 export function parseCommandLineOptions(args: string[]): NgccOptions {
   const options =
-      yargs
+      yargs(args)
           .option('s', {
             alias: 'source',
             describe:
@@ -22,7 +22,7 @@ export function parseCommandLineOptions(args: string[]): NgccOptions {
             default: './node_modules',
             type: 'string',
           })
-          .option('f', {alias: 'formats', hidden: true, array: true, type: 'string'})
+          .option('f', {alias: 'formats', hidden: true, array: true, type: 'string'})
           .option('p', {
             alias: 'properties',
             array: true,
@@ -49,7 +49,14 @@ export function parseCommandLineOptions(args: string[]): NgccOptions {
           })
           .option('first-only', {
             describe:
-                'If specified then only the first matching package.json property will be compiled.',
+                'If specified then only the first matching package.json property will be compiled.\n' +
+                'This option is overridden by `--typings-only`.',
+            type: 'boolean',
+          })
+          .option('typings-only', {
+            describe:
+                'If specified then only the typings files are processed, and no JS source files will be modified.\n' +
+                'Setting this option will force `--first-only` to be set, since only one format is needed to process the typings',
             type: 'boolean',
           })
           .option('create-ivy-entry-points', {
@@ -107,7 +114,7 @@ export function parseCommandLineOptions(args: string[]): NgccOptions {
           })
           .strict()
           .help()
-          .parse(args);
+          .parseSync();
 
   if (options.f?.length) {
     console.error(
@@ -115,12 +122,14 @@ export function parseCommandLineOptions(args: string[]): NgccOptions {
     process.exit(1);
   }
 
-  setFileSystem(new NodeJSFileSystem());
+  const fs = new NodeJSFileSystem();
+  setFileSystem(fs);
 
-  const baseSourcePath = resolve(options.s || './node_modules');
+  const baseSourcePath = fs.resolve(options.s || './node_modules');
   const propertiesToConsider = options.p;
   const targetEntryPointPath = options.t;
   const compileAllFormats = !options['first-only'];
+  const typingsOnly = options['typings-only'];
   const createNewEntryPointFormats = options['create-ivy-entry-points'];
   const logLevel = options.l as keyof typeof LogLevel | undefined;
   const enableI18nLegacyMessageIdFormat = options['legacy-message-ids'];
@@ -138,6 +147,7 @@ export function parseCommandLineOptions(args: string[]): NgccOptions {
     basePath: baseSourcePath,
     propertiesToConsider,
     targetEntryPointPath,
+    typingsOnly,
     compileAllFormats,
     createNewEntryPointFormats,
     logger,

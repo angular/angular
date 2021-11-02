@@ -86,7 +86,7 @@ describe('Lifecycle hooks', () => {
     const parentEle = element(by.tagName('after-view-parent'));
     const buttonEle = parentEle.element(by.tagName('button')); // Reset
     const commentEle = parentEle.element(by.className('comment'));
-    const logEles = parentEle.all(by.css('h4 ~ div'));
+    const logEles = parentEle.all(by.css('h3 ~ div'));
     const childViewInputEle = parentEle.element(by.css('app-child-view input'));
     let logCount: number;
 
@@ -113,7 +113,7 @@ describe('Lifecycle hooks', () => {
     const parentEle = element(by.tagName('after-content-parent'));
     const buttonEle = parentEle.element(by.tagName('button')); // Reset
     const commentEle = parentEle.element(by.className('comment'));
-    const logEles = parentEle.all(by.css('h4 ~ div'));
+    const logEles = parentEle.all(by.css('h3 ~ div'));
     const childViewInputEle = parentEle.element(by.css('app-child input'));
     let logCount = await logEles.count();
 
@@ -136,8 +136,8 @@ describe('Lifecycle hooks', () => {
     const inputEle = element(by.css('spy-parent input'));
     const addHeroButtonEle = element(by.cssContainingText('spy-parent button', 'Add Hero'));
     const resetHeroesButtonEle = element(by.cssContainingText('spy-parent button', 'Reset Heroes'));
-    const heroEles = element.all(by.css('spy-parent div[appSpy'));
-    const logEles = element.all(by.css('spy-parent h4 ~ div'));
+    const heroEles = element.all(by.css('spy-parent div p'));
+    const logEles = element.all(by.css('spy-parent h3 ~ div'));
 
     expect(await heroEles.count()).toBe(2, 'should have two heroes displayed');
     expect(await logEles.count()).toBe(2, 'should have two log entries');
@@ -156,18 +156,19 @@ describe('Lifecycle hooks', () => {
   it('should support "spy counter"', async () => {
     const updateCounterButtonEle = element(by.cssContainingText('counter-parent button', 'Update'));
     const resetCounterButtonEle = element(by.cssContainingText('counter-parent button', 'Reset'));
-    const textEle = element(by.css('counter-parent app-counter > div'));
-    const logEles = element.all(by.css('counter-parent h4 ~ div'));
+    const textEle = element(by.css('counter-parent app-counter p'));
+    const logEles = element.all(by.css('counter-parent .info .log'));
 
     expect(await textEle.getText()).toContain('Counter = 0');
-    expect(await logEles.count()).toBe(2, 'should start with two log entries');
+    expect(await logEles.count()).toBe(3, 'should start with one change log and two lifecycle log entries, including reset');
 
     await updateCounterButtonEle.click();
     expect(await textEle.getText()).toContain('Counter = 1');
-    expect(await logEles.count()).toBe(3, 'should now have 3 log entries');
+    expect(await logEles.count()).toBe(5, 'should now have 2 change log entries and 3 lifecycle log entries, including reset');
 
     await resetCounterButtonEle.click();
     expect(await textEle.getText()).toContain('Counter = 0');
-    expect(await logEles.count()).toBe(7, 'should now have 7 log entries - 3 prev + 1 reset + 2 destroy + 1 init');
+    expect(await logEles.count()).toBe(8, 'should now have 8 log entries - 1 change log + 2 reset + 2 destroy + 3 init');
+
   });
 });

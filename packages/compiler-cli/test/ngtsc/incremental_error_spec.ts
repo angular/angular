@@ -239,12 +239,13 @@ runInEachFileSystem(() => {
         export class TargetCmp {}
       `);
       env.write('module.ts', `
-        import {NgModule} from '@angular/core';
+        import {NgModule, NO_ERRORS_SCHEMA} from '@angular/core';
         import {TargetCmp} from './target';
         import {TestCmp} from './test';
 
         @NgModule({
           declarations: [TestCmp, TargetCmp],
+          schemas: [NO_ERRORS_SCHEMA],
         })
         export class Module {}
       `);
@@ -268,7 +269,7 @@ runInEachFileSystem(() => {
       env.write('test.ts', `
         import {Component} from '@angular/core';
 
-        @Component({selector: 'test-cmp', template: '...'})
+        @Component({selector: 'test-cmp-fixed', template: '...'})
         export class TestCmp {}
       `);
 
@@ -283,9 +284,41 @@ runInEachFileSystem(() => {
         '/module.js',
 
         // Because TargetCmp also belongs to the same module, it should be re-emitted since
-        // TestCmp's elector may have changed.
+        // TestCmp's selector was changed.
         '/target.js',
       ]);
+    });
+
+    it('should recover from an error in an external template', () => {
+      env.write('mod.ts', `
+        import {NgModule} from '@angular/core';
+        import {Cmp} from './cmp';
+
+        @NgModule({
+          declarations: [Cmp],
+        })
+        export class Mod {}
+      `);
+      env.write('cmp.html', '{{ error = "true" }} ');
+      env.write('cmp.ts', `
+        import {Component} from '@angular/core';
+
+        @Component({
+          templateUrl: './cmp.html',
+          selector: 'some-cmp',
+        })
+        export class Cmp {
+          error = 'false';
+        }
+      `);
+
+      // Diagnostics should show for the broken component template.
+      expect(env.driveDiagnostics().length).toBeGreaterThan(0);
+
+      env.write('cmp.html', '{{ error }} ');
+
+      // There should be no diagnostics.
+      env.driveMain();
     });
 
     it('should recover from an error even across multiple NgModules', () => {
@@ -297,7 +330,7 @@ runInEachFileSystem(() => {
       env.write('a.ts', `
         import {Component} from '@angular/core';
 
-        @Component({selector: 'test-cmp', template: '...'})
+        @Component({selector: 'test-cmp', template: '<div dir></div>'})
         export class CmpA {}
       `);
       env.write('b.ts', `
@@ -325,17 +358,16 @@ runInEachFileSystem(() => {
         export class Module {}
       `);
       env.write('lib.ts', `
-        import {Component, NgModule} from '@angular/core';
+        import {Directive, NgModule} from '@angular/core';
 
-        @Component({
-          selector: 'lib-cmp',
-          template: '...',
+        @Directive({
+          selector: '[dir]',
         })
-        export class LibCmp {}
+        export class LibDir {}
 
         @NgModule({
-          declarations: [LibCmp],
-          exports: [LibCmp],
+          declarations: [LibDir],
+          exports: [LibDir],
         })
         export class LibModule {}
       `);
@@ -346,17 +378,27 @@ runInEachFileSystem(() => {
 
       // Introduce the error in LibModule
       env.write('lib.ts', `
-      import {Component, NgModule} from '@angular/core';
+      import {Directive, NgModule} from '@angular/core';
 
-      @Component({
-        selector: 'lib-cmp',
-        template: '...',
+      @Directive({
+        selector: '[dir]',
       })
-      export class LibCmp {}
+      export class LibDir {}
+
+      @Directive({
+        selector: '[dir]',
+      })
+      export class NewDir {}
 
       @NgModule({
-        declarations: [LibCmp],
-        exports: [LibCmp],
+        declarations: [NewDir],
+      })
+      export class NewModule {}
+
+      @NgModule({
+        declarations: [LibDir],
+        imports: [NewModule],
+        exports: [LibDir, NewModule],
       })
       export class LibModule // missing braces
       `);
@@ -375,9 +417,13 @@ runInEachFileSystem(() => {
       })
       export class LibCmp {}
 
+      @NgModule({})
+      export class NewModule {}
+
       @NgModule({
         declarations: [LibCmp],
-        exports: [LibCmp],
+        imports: [NewModule],
+        exports: [LibCmp, NewModule],
       })
       export class LibModule {}
       `);
@@ -385,9 +431,10 @@ runInEachFileSystem(() => {
       env.driveMain();
 
       expectToHaveWritten([
-        // Both CmpA and CmpB should be re-emitted.
+        // CmpA should be re-emitted as `NewModule` was added since the successful emit, which added
+        // `NewDir` as a matching directive to CmpA. Alternatively, CmpB should not be re-emitted
+        // as it does not use the newly added directive.
         '/a.js',
-        '/b.js',
 
         // So should the module itself.
         '/module.js',
@@ -407,11 +454,11 @@ runInEachFileSystem(() => {
         env.driveMain();
         env.flushWrittenFileTracking();
 
-        // Update ACmp to have a different selector, isn't matched in BCmp's template.
+        // Update ACmp
         env.write('a.ts', `
           import {Component} from '@angular/core';
 
-          @Component({selector: 'not-a-cmp', template: '...'})
+          @Component({selector: 'a-cmp', template: 'new template'})
           export class ACmp {}
        `);
 
@@ -436,8 +483,7 @@ runInEachFileSystem(() => {
           '/other.js',
           '/a.js',
 
-          // Bcause they depend on a.ts
-          '/b.js',
+          // Because they depend on a.ts
           '/module.js',
         ]);
       });
@@ -480,7 +526,10 @@ runInEachFileSystem(() => {
           '/other.js',
 
           // Because a.html changed
-          '/a.js', '/module.js',
+          '/a.js',
+
+          // module.js should not be re-emitted, as it is not affected by the change and its remote
+          // scope is unaffected.
 
           // b.js and module.js should not be re-emitted, because specifically when tracking
           // resource dependencies, the compiler knows that a change to a resource file only affects

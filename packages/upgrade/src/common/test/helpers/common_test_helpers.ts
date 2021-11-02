@@ -23,7 +23,11 @@ const ng1Versions = [
   },
   {
     label: '1.7',
-    files: [`angular/${ANGULARJS_FILENAME}`, 'angular-mocks/angular-mocks.js'],
+    files: [`angular-1.7/${ANGULARJS_FILENAME}`, 'angular-mocks-1.7/angular-mocks.js'],
+  },
+  {
+    label: '1.8',
+    files: [`angular-1.8/${ANGULARJS_FILENAME}`, 'angular-mocks-1.8/angular-mocks.js'],
   },
 ];
 

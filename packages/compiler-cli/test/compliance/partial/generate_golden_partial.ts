@@ -36,9 +36,10 @@ export function generateGoldenPartial(testConfigPath: string): void {
  */
 function* compilePartials(fs: FileSystem, test: ComplianceTest): Generator<PartiallyCompiledFile> {
   const builtDirectory = getBuildOutputDirectory(fs);
-  for (const generatedPath of compileTest(
-           fs, test.inputFiles, test.compilerOptions,
-           {compilationMode: 'partial', ...test.angularCompilerOptions})) {
+  for (const generatedPath of compileTest(fs, test.inputFiles, test.compilerOptions, {
+         compilationMode: 'partial',
+         ...test.angularCompilerOptions
+       }).emittedFiles) {
     yield {
       path: fs.relative(builtDirectory, generatedPath),
       content: fs.readFile(generatedPath),

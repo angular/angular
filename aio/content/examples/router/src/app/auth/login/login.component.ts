@@ -12,18 +12,18 @@ export class LoginComponent {
   message: string;
 
   constructor(public authService: AuthService, public router: Router) {
-    this.setMessage();
+    this.message = this.getMessage();
   }
 
-  setMessage() {
-    this.message = 'Logged ' + (this.authService.isLoggedIn ? 'in' : 'out');
+  getMessage() {
+    return 'Logged ' + (this.authService.isLoggedIn ? 'in' : 'out');
   }
 
   login() {
     this.message = 'Trying to log in ...';
 
     this.authService.login().subscribe(() => {
-      this.setMessage();
+      this.message = this.getMessage();
       if (this.authService.isLoggedIn) {
         // Usually you would use the redirect URL from the auth service.
         // However to keep the example simple, we will always redirect to `/admin`.
@@ -46,6 +46,6 @@ export class LoginComponent {
 
   logout() {
     this.authService.logout();
-    this.setMessage();
+    this.message = this.getMessage();
   }
 }

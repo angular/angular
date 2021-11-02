@@ -327,7 +327,9 @@ function createViewNodes(view: ViewData) {
         break;
       case NodeFlags.TypeContentQuery:
       case NodeFlags.TypeViewQuery:
-        nodeData = createQuery() as any;
+        nodeData = createQuery(
+                       (nodeDef.flags & NodeFlags.EmitDistinctChangesOnly) ===
+                       NodeFlags.EmitDistinctChangesOnly) as any;
         break;
       case NodeFlags.TypeNgContent:
         appendNgContent(view, renderHost, nodeDef);

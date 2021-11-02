@@ -20,7 +20,7 @@ ts_devserver(
     bootstrap = [
         "//packages/zone.js/bundles:zone.umd.js",
         "@npm//:node_modules/reflect-metadata/Reflect.js",
-        "@npm//:node_modules/angular/angular.js",
+        "@npm//:node_modules/angular-1.8/angular.js",
     ],
     entry_module = "angular/modules/playground/src/upgrade/index",
     port = 4200,

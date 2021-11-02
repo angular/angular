@@ -104,6 +104,7 @@ export class RendererAnimationPlayer implements AnimationPlayer {
 
   reset(): void {
     this._command('reset');
+    this._started = false;
   }
 
   setPosition(p: number): void {
@@ -111,7 +112,7 @@ export class RendererAnimationPlayer implements AnimationPlayer {
   }
 
   getPosition(): number {
-    return 0;
+    return this._renderer.engine.players[+this.id]?.getPosition() ?? 0;
   }
 
   public totalTime = 0;

@@ -1,5 +1,12 @@
-<p>Where we'll be presenting:</p>
-<table class="is-full-width">
+<h2>Where we'll be presenting:</h2>
+<div *ngIf="!upcomingEvents?.length">
+  <p>We don't have any upcoming speaking engagements at the moment.</p>
+  <p>Until something comes up, make sure you check our <a href="https://www.youtube.com/angular">YouTube channel</a>
+    and follow us on <a href="https://twitter.com/angular">social media</a>.</p>
+  <p>If you want us to be part of your event reach out on <a href="mailto:devrel@angular.io">devrel@angular.io</a>!</p>
+</div>
+
+<table class="is-full-width" *ngIf="upcomingEvents?.length">
   <thead>
     <tr>
       <th>Event</th>
@@ -7,7 +14,7 @@
       <th>Date</th>
     </tr>
   </thead>
-  <tbody >
+  <tbody>
     <tr *ngFor="let event of upcomingEvents">
       <th><a href="{{event.linkUrl}}" title="{{event.tooltip}}">{{event.name}}</a></th>
       <td>{{event.location}}</td>
@@ -20,7 +27,9 @@
   </tbody>
 </table>
 
-<p>Where we already presented:</p>
+<br />
+
+<h2>Where we already presented:</h2>
 <table class="is-full-width">
   <thead>
     <tr>

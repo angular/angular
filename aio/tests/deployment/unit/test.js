@@ -18,4 +18,8 @@ register({project: join(__dirname, 'tsconfig.json')});
 
 const runner = new Jasmine({projectBaseDir: __dirname});
 runner.loadConfig({spec_files: ['**/*.spec.ts']});
-runner.execute();
+runner.execute().catch((error) => {
+  // Something broke so non-zero exit to prevent the process from succeeding.
+  console.error(error);
+  process.exit(1);
+});

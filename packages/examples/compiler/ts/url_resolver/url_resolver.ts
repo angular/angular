@@ -11,13 +11,12 @@ import {Component, NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
-@Component({selector: 'my-app', template: 'empty'})
+@Component({selector: 'app-root', template: 'empty'})
 class MyApp {
 }
 
-// #docregion url_resolver
 class MyUrlResolver extends UrlResolver {
-  resolve(baseUrl: string, url: string): string {
+  override resolve(baseUrl: string, url: string): string {
     // Serve CSS files from a special CDN.
     if (url.substr(-4) === '.css') {
       return super.resolve('http://cdn.myapp.com/css/', url);
@@ -37,4 +36,3 @@ class AppModule {
 export function main() {
   platformBrowserDynamic().bootstrapModule(AppModule);
 }
-// #enddocregion

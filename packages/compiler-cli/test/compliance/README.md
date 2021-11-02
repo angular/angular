@@ -38,6 +38,7 @@ Each test-case can specify:
 * A `description` of the test.
 * The `inputFiles` that will be compiled.
 * Additional `compilerOptions` and `angularCompilerOptions` that are passed to the compiler.
+* Whether to exclude this test-case from certain tests running under certain compilation modes (`compilationModeFilter`).
 * A collection of `expectations` definitions that will be checked against the generated files.
 
 Note that there is a JSON schema for the `TEST_CASES.json` file stored at `test_cases/test_case_schema.json`.
@@ -77,23 +78,75 @@ The paths are relative to the `TEST_CASES.json` file.
 
 If no `inputFiles` property is provided, the default is `["test.ts"]`.
 
+Note that test-cases can share input files, but you should only do this if these input files are
+going to be compiled using the same options. This is because only one version of the compiled input
+file is retrieved from the golden partial file to be used in the linker tests. This can cause the
+linker tests to fail if they are provided with a compiled file (from the golden partial) that was
+compiled with different options to what are expected for that test-case.
+
 
 ### Expectations
 
-An expectation consists of a collection of expected `files` pairs, and a `failureMessage`, which
-is displayed if the expectation check fails.
+An expectation consists of a `failureMessage`, which is displayed if the expectation check fails,
+a collection of expected `files` pairs and/or a collection of `expectedErrors`.
 
-Each file-pair consists of a path to a `generated` file (relative to the build output folder),
+Each expected file-pair consists of a path to a `generated` file (relative to the build output folder),
 and a path to an `expected` file (relative to the test case).
 
 The `generated` file is checked to see if it "matches" the `expected` file. The matching is
 resilient to whitespace and variable name changes.
 
-If no `failureMessage` property is provided, the default is `"Incorrect generated output."`.
-
 If no `files` property is provided, the default is a a collection of objects `{expected, generated}`,
 where `expected` and `generated` are computed by taking each path in the `inputFiles` collection
 and replacing the `.ts` extension with `.js`.
+
+Each expected error must have a `message` property and, optionally, a `location` property. These are
+parsed as regular expressions (so `.` and `(` etc must be escaped) and tested against the errors that
+are returned as diagnostics from the compilation.
+
+If no `failureMessage` property is provided, the default is `"Incorrect generated output."`.
+
+
+### Expected file format
+
+The expected files look like JavaScript but are actually specially formatted to allow matching
+with the generated output. The generated and expected files are tokenized and then the tokens
+are intelligently matched to check whether they are equivalent.
+
+* Whitespace tolerant - the tokens can be separated by any amount of whitespace
+* Code skipping - you can skip sections of code in the generated output by adding an ellipsis
+  (…) to the expectation file.
+* Identifier tolerant - identifiers in the expectation file that start and end with a dollar
+  (e.g. `$r3$`) will be matched against any identifier. But the matching will ensure that the
+  same identifier name appears consistently elsewhere in the file.
+* Macro expansion - we can add macros to the expected files that will be expanded to blocks
+  of code dynamically. The following macros are defined in the
+  `test_helpers/expected_file_macros.ts` file:
+  * I18n messages - for example:
+    `__i18nMsg__('message string', [ ['placeholder', 'pair] ], { meta: 'properties'})`.
+  * Attribute markers - for example: `__AttributeMarker.Bindings__`.
+
+### Source-map checks
+
+To check a mapping, add a `// SOURCE:` comment to the end of a line in an expectation file:
+
+```
+<generated code> // SOURCE: "<source-url>" "<source code>"
+```
+
+The generated code, stripped of the `// SOURCE: ` comment, will still be checked as normal by the
+`expectEmit()` helper. But, prior to that, the source-map segments are checked to ensure that there
+is a mapping from `<generated code>` to `<source code>` found in the file at `<source-url>`.
+
+Note:
+
+* The source-url should be absolute, with the directory containing the TEST_CASES.json file assumed
+  to be `/`.
+* Whitespace is important and will be included when comparing the segments.
+* There is a single space character between each part of the line.
+* Double quotes in the mapping must be escaped.
+* Newlines within a mapping must be escaped since the mapping and comment must all appear on a
+  single line of this file.
 
 
 ## Running tests
@@ -101,19 +154,18 @@ and replacing the `.ts` extension with `.js`.
 The simplest way to run all the compliance tests is:
 
 ```sh
-yarn test-ivy-aot //packages/compiler-cli/test/compliance/...
+yarn test //packages/compiler-cli/test/compliance/...
 ```
 
 If you only want to run one of the three types of test you can be more specific:
 
 ```sh
-yarn test-ivy-aot //packages/compiler-cli/test/compliance/full
-yarn test-ivy-aot //packages/compiler-cli/test/compliance/linked
-yarn test-ivy-aot //packages/compiler-cli/test/compliance/test_cases/...
+yarn test //packages/compiler-cli/test/compliance/full
+yarn test //packages/compiler-cli/test/compliance/linked
+yarn test //packages/compiler-cli/test/compliance/test_cases/...
 ```
 
 (The last command runs the partial compilation tests.)
-
 
 ## Updating a golden partial file
 
@@ -134,14 +186,42 @@ bazel run //packages/compiler-cli/test/compliance/test_cases:<path/to/test_case>
 where to replace `<path/to/test_case>` with the path (relative to `test_cases`) of the directory
 that contains the `GOLDEN_PARTIAL.js` to update.
 
+To update all golden partial files, the following command can be run:
+
+```sh
+node packages/compiler-cli/test/compliance/update_all_goldens.js
+```
 
 ## Debugging test-cases
 
-Compliance tests are basically `jasmine_node_test` rules. As such, they can be debugged
-just like any other `jasmine_node_test`.  The standard approach is to add `--config=debug`
+The full and linked compliance tests are basically `jasmine_node_test` rules. As such, they can be
+debugged just like any other `jasmine_node_test`.  The standard approach is to add `--config=debug`
 to the Bazel test command.
 
-It is useful when debugging to focus on a single test-case.
+For example:
+
+```sg
+yarn test //packages/compiler-cli/test/compliance/full --config=debug
+yarn test //packages/compiler-cli/test/compliance/linked --config=debug
+```
+
+To debug generating the partial golden output use the following form of Bazel command:
+
+```sh
+yarn bazel run //packages/compiler-cli/test/compliance/test_cases:generate_partial_for_<path/to/test_case>.debug
+```
+
+The `path/to/test_case` is relative to the `test_cases` directory. So for this `TEST_CASES.json` file at:
+
+```
+packages/compiler-cli/test/compliance/test_cases/r3_view_compiler_directives/directives/matching/TEST_CASES.json
+```
+
+The command to debug the test-cases would be:
+
+```
+yarn bazel run //packages/compiler-cli/test/compliance/test_cases:generate_partial_for_r3_view_compiler_directives/directives/matching.debug
+```
 
 
 ### Focusing test-cases
@@ -154,4 +234,3 @@ This is equivalent to using jasmine `fit()`.
 
 You can exclude a test case by setting `"excludeTest": true` in the `TEST_CASES.json` file.
 This is equivalent to using jasmine `xit()`.
-

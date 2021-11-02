@@ -5,15 +5,15 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteSourceSpan, CssSelector, ParseSourceSpan, SelectorMatcher} from '@angular/compiler';
+import {AbsoluteSourceSpan, CssSelector, ParseSourceSpan, SelectorMatcher, TmplAstBoundEvent} from '@angular/compiler';
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
+import {absoluteFrom, absoluteFromSourceFile, AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {isExternalResource} from '@angular/compiler-cli/src/ngtsc/metadata';
 import {DeclarationNode} from '@angular/compiler-cli/src/ngtsc/reflection';
-import {DirectiveSymbol} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
-import {Diagnostic as ngDiagnostic, isNgDiagnostic} from '@angular/compiler-cli/src/transformers/api';
+import {DirectiveSymbol, TemplateTypeChecker} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import * as e from '@angular/compiler/src/expression_parser/ast';  // e for expression AST
 import * as t from '@angular/compiler/src/render3/r3_ast';         // t for template AST
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {ALIAS_NAME, SYMBOL_PUNC} from './display_parts';
 import {findTightestNode, getParentClassDeclaration} from './ts_utils';
@@ -22,20 +22,19 @@ export function getTextSpanOfNode(node: t.Node|e.AST): ts.TextSpan {
   if (isTemplateNodeWithKeyAndValue(node)) {
     return toTextSpan(node.keySpan);
   } else if (
-      node instanceof e.PropertyWrite || node instanceof e.MethodCall ||
-      node instanceof e.BindingPipe || node instanceof e.PropertyRead) {
-    // The `name` part of a `PropertyWrite`, `MethodCall`, and `BindingPipe` does not
-    // have its own AST so there is no way to retrieve a `Symbol` for just the `name` via a specific
-    // node.
+      node instanceof e.PropertyWrite || node instanceof e.BindingPipe ||
+      node instanceof e.PropertyRead) {
+    // The `name` part of a `PropertyWrite` and `BindingPipe` does not have its own AST
+    // so there is no way to retrieve a `Symbol` for just the `name` via a specific node.
     return toTextSpan(node.nameSpan);
   } else {
     return toTextSpan(node.sourceSpan);
   }
 }
 
-export function toTextSpan(span: AbsoluteSourceSpan|ParseSourceSpan): ts.TextSpan {
+export function toTextSpan(span: AbsoluteSourceSpan|ParseSourceSpan|e.ParseSpan): ts.TextSpan {
   let start: number, end: number;
-  if (span instanceof AbsoluteSourceSpan) {
+  if (span instanceof AbsoluteSourceSpan || span instanceof e.ParseSpan) {
     start = span.start;
     end = span.end;
   } else {
@@ -52,6 +51,26 @@ interface NodeWithKeyAndValue extends t.Node {
 
 export function isTemplateNodeWithKeyAndValue(node: t.Node|e.AST): node is NodeWithKeyAndValue {
   return isTemplateNode(node) && node.hasOwnProperty('keySpan');
+}
+
+export function isWithinKey(position: number, node: NodeWithKeyAndValue): boolean {
+  let {keySpan, valueSpan} = node;
+  if (valueSpan === undefined && node instanceof TmplAstBoundEvent) {
+    valueSpan = node.handlerSpan;
+  }
+  const isWithinKeyValue =
+      isWithin(position, keySpan) || !!(valueSpan && isWithin(position, valueSpan));
+  return isWithinKeyValue;
+}
+
+export function isWithinKeyValue(position: number, node: NodeWithKeyAndValue): boolean {
+  let {keySpan, valueSpan} = node;
+  if (valueSpan === undefined && node instanceof TmplAstBoundEvent) {
+    valueSpan = node.handlerSpan;
+  }
+  const isWithinKeyValue =
+      isWithin(position, keySpan) || !!(valueSpan && isWithin(position, valueSpan));
+  return isWithinKeyValue;
 }
 
 export function isTemplateNode(node: t.Node|e.AST): node is t.Node {
@@ -101,7 +120,7 @@ function getInlineTemplateInfoAtPosition(
 export function getTemplateInfoAtPosition(
     fileName: string, position: number, compiler: NgCompiler): TemplateInfo|undefined {
   if (isTypeScriptFile(fileName)) {
-    const sf = compiler.getNextProgram().getSourceFile(fileName);
+    const sf = compiler.getCurrentProgram().getSourceFile(fileName);
     if (sf === undefined) {
       return undefined;
     }
@@ -151,7 +170,7 @@ function getFirstComponentForTemplateFile(fileName: string, compiler: NgCompiler
  * Given an attribute node, converts it to string form.
  */
 function toAttributeString(attribute: t.TextAttribute|t.BoundAttribute|t.BoundEvent): string {
-  if (attribute instanceof t.BoundEvent) {
+  if (attribute instanceof t.BoundEvent || attribute instanceof t.BoundAttribute) {
     return `[${attribute.name}]`;
   } else {
     return `[${attribute.name}=${attribute.valueSpan?.toString() ?? ''}]`;
@@ -208,6 +227,13 @@ export function getDirectiveMatchesForElementTag(
       getDirectiveMatchesForSelector(directives, getNodeName(element) + allAttrs.join(''));
   const matchesWithoutElement = getDirectiveMatchesForSelector(directives, allAttrs.join(''));
   return difference(allDirectiveMatches, matchesWithoutElement);
+}
+
+
+export function makeElementSelector(element: t.Element|t.Template): string {
+  const attributes = getAttributes(element);
+  const allAttrs = attributes.map(toAttributeString);
+  return getNodeName(element) + allAttrs.join('');
 }
 
 /**
@@ -305,4 +331,63 @@ export function isTypeScriptFile(fileName: string): boolean {
 
 export function isExternalTemplate(fileName: string): boolean {
   return !isTypeScriptFile(fileName);
+}
+
+export function isWithin(position: number, span: AbsoluteSourceSpan|ParseSourceSpan): boolean {
+  let start: number, end: number;
+  if (span instanceof ParseSourceSpan) {
+    start = span.start.offset;
+    end = span.end.offset;
+  } else {
+    start = span.start;
+    end = span.end;
+  }
+  // Note both start and end are inclusive because we want to match conditions
+  // like ¦start and end¦ where ¦ is the cursor.
+  return start <= position && position <= end;
+}
+
+/**
+ * For a given location in a shim file, retrieves the corresponding file url for the template and
+ * the span in the template.
+ */
+export function getTemplateLocationFromShimLocation(
+    templateTypeChecker: TemplateTypeChecker, shimPath: AbsoluteFsPath,
+    positionInShimFile: number): {templateUrl: AbsoluteFsPath, span: ParseSourceSpan}|null {
+  const mapping =
+      templateTypeChecker.getTemplateMappingAtShimLocation({shimPath, positionInShimFile});
+  if (mapping === null) {
+    return null;
+  }
+  const {templateSourceMapping, span} = mapping;
+
+  let templateUrl: AbsoluteFsPath;
+  if (templateSourceMapping.type === 'direct') {
+    templateUrl = absoluteFromSourceFile(templateSourceMapping.node.getSourceFile());
+  } else if (templateSourceMapping.type === 'external') {
+    templateUrl = absoluteFrom(templateSourceMapping.templateUrl);
+  } else {
+    // This includes indirect mappings, which are difficult to map directly to the code
+    // location. Diagnostics similarly return a synthetic template string for this case rather
+    // than a real location.
+    return null;
+  }
+  return {templateUrl, span};
+}
+
+export function isBoundEventWithSyntheticHandler(event: t.BoundEvent): boolean {
+  // An event binding with no value (e.g. `(event|)`) parses to a `BoundEvent` with a
+  // `LiteralPrimitive` handler with value `'ERROR'`, as opposed to a property binding with no
+  // value which has an `EmptyExpr` as its value. This is a synthetic node created by the binding
+  // parser, and is not suitable to use for Language Service analysis. Skip it.
+  //
+  // TODO(alxhub): modify the parser to generate an `EmptyExpr` instead.
+  let handler: e.AST = event.handler;
+  if (handler instanceof e.ASTWithSource) {
+    handler = handler.ast;
+  }
+  if (handler instanceof e.LiteralPrimitive && handler.value === 'ERROR') {
+    return true;
+  }
+  return false;
 }

@@ -5,10 +5,10 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {ParsedConfiguration} from '../../..';
-import {FileSystem} from '../../../src/ngtsc/file_system';
+import {ReadonlyFileSystem} from '../../../src/ngtsc/file_system';
 import {Logger} from '../../../src/ngtsc/logging';
 import {TypeScriptReflectionHost} from '../../../src/ngtsc/reflection';
 import {DecorationAnalyzer} from '../analysis/decoration_analyzer';
@@ -17,6 +17,7 @@ import {NgccReferencesRegistry} from '../analysis/ngcc_references_registry';
 import {ExportInfo, PrivateDeclarationsAnalyzer} from '../analysis/private_declarations_analyzer';
 import {SwitchMarkerAnalyses, SwitchMarkerAnalyzer} from '../analysis/switch_marker_analyzer';
 import {CompiledFile} from '../analysis/types';
+import {DtsProcessing} from '../execution/tasks/api';
 import {CommonJsReflectionHost} from '../host/commonjs_host';
 import {DelegatingReflectionHost} from '../host/delegating_host';
 import {Esm2015ReflectionHost} from '../host/esm2015_host';
@@ -64,7 +65,7 @@ export type TransformResult = {
  */
 export class Transformer {
   constructor(
-      private fs: FileSystem, private logger: Logger,
+      private fs: ReadonlyFileSystem, private logger: Logger,
       private tsConfig: ParsedConfiguration|null = null) {}
 
   /**
@@ -92,15 +93,19 @@ export class Transformer {
     }
 
     // Transform the source files and source maps.
-    const srcFormatter = this.getRenderingFormatter(ngccReflectionHost, bundle);
+    let renderedFiles: FileToWrite[] = [];
 
-    const renderer =
-        new Renderer(reflectionHost, srcFormatter, this.fs, this.logger, bundle, this.tsConfig);
-    let renderedFiles = renderer.renderProgram(
-        decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses);
+    if (bundle.dtsProcessing !== DtsProcessing.Only) {
+      // Render the transformed JavaScript files only if we are not doing "typings-only" processing.
+      const srcFormatter = this.getRenderingFormatter(ngccReflectionHost, bundle);
+      const renderer =
+          new Renderer(reflectionHost, srcFormatter, this.fs, this.logger, bundle, this.tsConfig);
+      renderedFiles = renderer.renderProgram(
+          decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses);
+    }
 
     if (bundle.dts) {
-      const dtsFormatter = new EsmRenderingFormatter(reflectionHost, bundle.isCore);
+      const dtsFormatter = new EsmRenderingFormatter(this.fs, reflectionHost, bundle.isCore);
       const dtsRenderer =
           new DtsRenderer(dtsFormatter, this.fs, this.logger, reflectionHost, bundle);
       const renderedDtsFiles = dtsRenderer.renderProgram(
@@ -129,16 +134,16 @@ export class Transformer {
   getRenderingFormatter(host: NgccReflectionHost, bundle: EntryPointBundle): RenderingFormatter {
     switch (bundle.format) {
       case 'esm2015':
-        return new EsmRenderingFormatter(host, bundle.isCore);
+        return new EsmRenderingFormatter(this.fs, host, bundle.isCore);
       case 'esm5':
-        return new Esm5RenderingFormatter(host, bundle.isCore);
+        return new Esm5RenderingFormatter(this.fs, host, bundle.isCore);
       case 'umd':
         if (!(host instanceof UmdReflectionHost)) {
           throw new Error('UmdRenderer requires a UmdReflectionHost');
         }
-        return new UmdRenderingFormatter(host, bundle.isCore);
+        return new UmdRenderingFormatter(this.fs, host, bundle.isCore);
       case 'commonjs':
-        return new CommonJsRenderingFormatter(host, bundle.isCore);
+        return new CommonJsRenderingFormatter(this.fs, host, bundle.isCore);
       default:
         throw new Error(`Renderer for "${bundle.format}" not yet implemented.`);
     }

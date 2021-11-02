@@ -18,7 +18,7 @@ const { CONTENTS_PATH, GUIDE_EXAMPLES_PATH } = require('../config');
 module.exports = new Package('angular-content', [basePackage, contentPackage])
 
   // Where do we get the source files?
-  .config(function(readFilesProcessor, collectExamples, renderExamples) {
+  .config(function(readFilesProcessor, collectExamples) {
 
     const gitignoreFilePath = path.resolve(GUIDE_EXAMPLES_PATH, '.gitignore');
     const gitignoreFile = fs.readFileSync(gitignoreFilePath, 'utf8');
@@ -91,8 +91,6 @@ module.exports = new Package('angular-content', [basePackage, contentPackage])
 
     collectExamples.exampleFolders.push('examples');
     collectExamples.registerIgnoredExamples(ignoredExamplePaths, gitignoreFilePath);
-
-    renderExamples.ignoreBrokenExamples = true;
   })
 
 

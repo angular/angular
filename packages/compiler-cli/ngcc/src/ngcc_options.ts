@@ -7,7 +7,7 @@
  */
 import * as os from 'os';
 
-import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem} from '../../src/ngtsc/file_system';
+import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem, PathManipulation} from '../../src/ngtsc/file_system';
 import {ConsoleLogger, Logger, LogLevel} from '../../src/ngtsc/logging';
 import {ParsedConfiguration, readConfiguration} from '../../src/perform_compile';
 
@@ -43,8 +43,20 @@ export interface SyncNgccOptions {
   propertiesToConsider?: string[];
 
   /**
+   * Whether to only process the typings files for this entry-point.
+   *
+   * This is useful when running ngcc only to provide typings files to downstream tooling such as
+   * the Angular Language Service or ng-packagr. Defaults to `false`.
+   *
+   * If this is set to `true` then `compileAllFormats` is forced to `false`.
+   */
+  typingsOnly?: boolean;
+
+  /**
    * Whether to process all formats specified by (`propertiesToConsider`)  or to stop processing
-   * this entry-point at the first matching format. Defaults to `true`.
+   * this entry-point at the first matching format.
+   *
+   * Defaults to `true`, but is forced to `false` if `typingsOnly` is `true`.
    */
   compileAllFormats?: boolean;
 
@@ -172,10 +184,11 @@ export function getSharedSetup(options: NgccOptions): SharedSetup&RequiredNgccOp
     basePath,
     targetEntryPointPath,
     propertiesToConsider = SUPPORTED_FORMAT_PROPERTIES,
+    typingsOnly = false,
     compileAllFormats = true,
     createNewEntryPointFormats = false,
     logger = new ConsoleLogger(LogLevel.info),
-    pathMappings = getPathMappingsFromTsConfig(tsConfig, projectPath),
+    pathMappings = getPathMappingsFromTsConfig(fileSystem, tsConfig, projectPath),
     async = false,
     errorOnFailedEntryPoint = false,
     enableI18nLegacyMessageIdFormat = true,
@@ -188,12 +201,19 @@ export function getSharedSetup(options: NgccOptions): SharedSetup&RequiredNgccOp
     errorOnFailedEntryPoint = true;
   }
 
+  if (typingsOnly) {
+    // If we only want to process the typings then we do not want to waste time trying to process
+    // multiple JS formats.
+    compileAllFormats = false;
+  }
+
   checkForSolutionStyleTsConfig(fileSystem, logger, projectPath, options.tsConfigPath, tsConfig);
 
   return {
     basePath,
     targetEntryPointPath,
     propertiesToConsider,
+    typingsOnly,
     compileAllFormats,
     createNewEntryPointFormats,
     logger,
@@ -239,7 +259,7 @@ export function clearTsConfigCache() {
 }
 
 function checkForSolutionStyleTsConfig(
-    fileSystem: FileSystem, logger: Logger, projectPath: AbsoluteFsPath,
+    fileSystem: PathManipulation, logger: Logger, projectPath: AbsoluteFsPath,
     tsConfigPath: string|null|undefined, tsConfig: ParsedConfiguration|null): void {
   if (tsConfigPath !== null && !tsConfigPath && tsConfig !== null &&
       tsConfig.rootNames.length === 0 && tsConfig.projectReferences !== undefined &&

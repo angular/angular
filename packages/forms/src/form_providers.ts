@@ -9,12 +9,13 @@
 import {ModuleWithProviders, NgModule} from '@angular/core';
 
 import {InternalFormsSharedModule, NG_MODEL_WITH_FORM_CONTROL_WARNING, REACTIVE_DRIVEN_DIRECTIVES, TEMPLATE_DRIVEN_DIRECTIVES} from './directives';
-import {RadioControlRegistry} from './directives/radio_control_value_accessor';
-import {FormBuilder} from './form_builder';
 
 /**
  * Exports the required providers and directives for template-driven forms,
  * making them available for import by NgModules that import this module.
+ *
+ * Providers associated with this module:
+ * * `RadioControlRegistry`
  *
  * @see [Forms Overview](/guide/forms-overview)
  * @see [Template-driven Forms Guide](/guide/forms)
@@ -23,7 +24,6 @@ import {FormBuilder} from './form_builder';
  */
 @NgModule({
   declarations: TEMPLATE_DRIVEN_DIRECTIVES,
-  providers: [RadioControlRegistry],
   exports: [InternalFormsSharedModule, TEMPLATE_DRIVEN_DIRECTIVES]
 })
 export class FormsModule {
@@ -33,6 +33,10 @@ export class FormsModule {
  * Exports the required infrastructure and directives for reactive forms,
  * making them available for import by NgModules that import this module.
  *
+ * Providers associated with this module:
+ * * `FormBuilder`
+ * * `RadioControlRegistry`
+ *
  * @see [Forms Overview](guide/forms-overview)
  * @see [Reactive Forms Guide](guide/reactive-forms)
  *
@@ -40,7 +44,6 @@ export class FormsModule {
  */
 @NgModule({
   declarations: [REACTIVE_DRIVEN_DIRECTIVES],
-  providers: [FormBuilder, RadioControlRegistry],
   exports: [InternalFormsSharedModule, REACTIVE_DRIVEN_DIRECTIVES]
 })
 export class ReactiveFormsModule {

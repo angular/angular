@@ -7,6 +7,7 @@
  */
 
 import {getDebugContext, getErrorLogger, getOriginalError} from './errors';
+import {DebugContext} from './view/types';
 
 
 
@@ -58,22 +59,17 @@ export class ErrorHandler {
   }
 
   /** @internal */
-  _findContext(error: any): any {
-    if (error) {
-      return getDebugContext(error) ? getDebugContext(error) :
-                                      this._findContext(getOriginalError(error));
-    }
-
-    return null;
+  _findContext(error: any): DebugContext|null {
+    return error ? (getDebugContext(error) || this._findContext(getOriginalError(error))) : null;
   }
 
   /** @internal */
-  _findOriginalError(error: Error): any {
-    let e = getOriginalError(error);
+  _findOriginalError(error: any): Error|null {
+    let e = error && getOriginalError(error);
     while (e && getOriginalError(e)) {
       e = getOriginalError(e);
     }
 
-    return e;
+    return e || null;
   }
 }

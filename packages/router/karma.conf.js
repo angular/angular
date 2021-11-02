@@ -28,7 +28,7 @@ module.exports = function(config) {
       // Polyfills.
       'node_modules/core-js/client/core.js',
       'node_modules/reflect-metadata/Reflect.js',
-      'third_party/shims_for_IE.js',
+      'third_party/shims_for_internal_tests.js',
 
       // System.js for module loading
       'node_modules/systemjs/dist/system-polyfills.js',
@@ -89,7 +89,6 @@ module.exports = function(config) {
 
     plugins: [
       'karma-jasmine',
-      'karma-browserstack-launcher',
       'karma-sauce-launcher',
       'karma-chrome-launcher',
       'karma-sourcemap-loader',

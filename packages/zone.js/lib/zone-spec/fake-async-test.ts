@@ -756,7 +756,7 @@ Zone.__load_patch('fakeasync', (global: any, Zone: ZoneType, api: _ZonePrivate) 
       if (!ProxyZoneSpec) {
         throw new Error(
             'ProxyZoneSpec is needed for the async() test helper but could not be found. ' +
-            'Please make sure that your environment includes zone.js/dist/proxy.js');
+            'Please make sure that your environment includes zone.js/plugins/proxy');
       }
       const proxyZoneSpec = ProxyZoneSpec.assertPresent();
       if (Zone.current.get('FakeAsyncTestZoneSpec')) {

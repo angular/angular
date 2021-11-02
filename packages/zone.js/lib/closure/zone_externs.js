@@ -420,7 +420,7 @@ Task.prototype.zone;
  * @type {number}
  */
 Task.prototype.runCount;
-Task.prototype.cancelSchduleRequest = function() {};
+Task.prototype.cancelScheduleRequest = function() {};
 
 /**
  * @interface

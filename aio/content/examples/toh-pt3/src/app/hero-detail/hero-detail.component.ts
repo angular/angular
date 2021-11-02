@@ -13,7 +13,7 @@ import { Hero } from '../hero';
 })
 export class HeroDetailComponent implements OnInit {
   // #docregion input-hero
-  @Input() hero: Hero;
+  @Input() hero?: Hero;
   // #enddocregion input-hero
 
   constructor() { }

@@ -7,8 +7,9 @@
  */
 
 import {AotCompilerHost, collectExternalReferences, EmitterVisitorContext, GeneratedFile, ParseSourceSpan, syntaxError, TypeScriptEmitter} from '@angular/compiler';
+import fs from 'fs';
 import * as path from 'path';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {TypeCheckHost} from '../diagnostics/translate_diagnostics';
 import {ModuleMetadata} from '../metadata/index';
@@ -253,7 +254,8 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
         try {
           const modulePath = importedFile.substring(0, importedFile.length - moduleName.length) +
               importedFilePackageName;
-          const packageJson = require(modulePath + '/package.json');
+          const packageJson =
+              JSON.parse(fs.readFileSync(modulePath + '/package.json', 'utf8')) as any;
           const packageTypings = join(modulePath, packageJson.typings);
           if (packageTypings === originalImportedFile) {
             moduleName = importedFilePackageName;
@@ -584,13 +586,15 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
             if (this.originalFileExists(packageFile)) {
               // Once we see a package.json file, assume false until it we find the bundle index.
               result = false;
-              const packageContent: any = JSON.parse(assert(this.context.readFile(packageFile)));
+              const packageContent =
+                  JSON.parse(assert(this.context.readFile(packageFile))) as {typings: string};
               if (packageContent.typings) {
                 const typings = path.normalize(path.join(directory, packageContent.typings));
                 if (DTS.test(typings)) {
                   const metadataFile = typings.replace(DTS, '.metadata.json');
                   if (this.originalFileExists(metadataFile)) {
-                    const metadata = JSON.parse(assert(this.context.readFile(metadataFile)));
+                    const metadata = JSON.parse(assert(this.context.readFile(metadataFile))) as
+                        {flatModuleIndexRedirect: string, importAs: string};
                     if (metadata.flatModuleIndexRedirect) {
                       this.flatModuleIndexRedirectNames.add(typings);
                       // Note: don't set result = true,

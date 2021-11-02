@@ -14,10 +14,7 @@ import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 @Component({selector: 'my-component', template: 'text'})
 class MyAppComponent {
 }
-
-// #docregion providers
 @NgModule({imports: [BrowserModule], bootstrap: [MyAppComponent]})
 class AppModule {
 }
 platformBrowserDynamic().bootstrapModule(AppModule);
-// #enddocregion

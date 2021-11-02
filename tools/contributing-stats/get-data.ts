@@ -23,8 +23,8 @@
  */
 
 import {graphql as unauthenticatedGraphql} from '@octokit/graphql';
-import * as minimist from 'minimist';
 import {alias, params, query as graphqlQuery, types} from 'typed-graphqlify';
+import yargs from 'yargs';
 
 // The organization to be considered for the queries.
 const ORG = 'angular';
@@ -34,19 +34,10 @@ const REPOS = ['angular', 'components', 'angular-cli'];
 /**
  * Handle flags for the script.
  */
-const args = minimist(process.argv.slice(2), {
-  string: ['since'],
-  boolean: ['use-created'],
-  unknown: (option: string) => {
-    console.error(`Unknown option: ${option}`);
-    process.exit(1);
-  }
-});
-
-if (!args['since']) {
-  console.error(`Please provide --since [date]`);
-  process.exit(1);
-}
+const args = yargs.option('use-created', {type: 'boolean'})
+                 .option('since', {type: 'string', demandOption: true})
+                 .strictOptions()
+                 .argv;
 
 /**
  * Authenticated instance of Github GraphQl API service, relies on a
@@ -112,7 +103,7 @@ async function getAllOrgMembers() {
 
   while (hasNextPage) {
     const {query, params} = queryBuilder(100, cursor);
-    const results = await graphql(query, params) as typeof MEMBERS_QUERY;
+    const results = await graphql(query.toString(), params) as typeof MEMBERS_QUERY;
 
     results.organization.membersWithRole.nodes.forEach(
         (node: {login: string}) => members.push(node.login));
@@ -237,7 +228,7 @@ async function run(date: string) {
     console.info(['Username', ...buildQueryAndParams('', date).labels].join(','));
 
     for (const username of allOrgMembers) {
-      const results = await graphql(buildQueryAndParams(username, date).query);
+      const results = await graphql(buildQueryAndParams(username, date).query.toString());
       const values = Object.values(results).map(result => `${result.issueCount}`);
       console.info([username, ...values].join(','));
     }

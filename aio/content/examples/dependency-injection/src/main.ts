@@ -8,6 +8,4 @@ if (environment.production) {
   enableProdMode();
 }
 
-// #docregion bootstrap
 platformBrowserDynamic().bootstrapModule(AppModule);
-// #enddocregion bootstrap

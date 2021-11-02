@@ -14,6 +14,7 @@ const LOCAL_MARKER_PATH = 'node_modules/_local_.json';
 
 const ANGULAR_ROOT_DIR = path.resolve(__dirname, '../../..');
 const ANGULAR_DIST_PACKAGES_DIR = path.join(ANGULAR_ROOT_DIR, 'dist/packages-dist');
+const AIMWA_DIST_PACKAGES_DIR = path.join(ANGULAR_ROOT_DIR, 'dist/angular-in-memory-web-api-dist');
 const ZONEJS_DIST_PACKAGES_DIR = path.join(ANGULAR_ROOT_DIR, 'dist/zone.js-dist');
 const DIST_PACKAGES_BUILD_SCRIPT = path.join(ANGULAR_ROOT_DIR, 'scripts/build/build-packages-dist.js');
 const DIST_PACKAGES_BUILD_CMD = `"${process.execPath}" "${DIST_PACKAGES_BUILD_SCRIPT}"`;
@@ -161,7 +162,9 @@ class NgPackagesInstaller {
         this._log(`Overriding dependency with peerDependency: ${key}: ${peerDepRange}`);
         dependencies[key] = peerDepRange;
       } else {
-        this._log(`${devDependencies[key] ? 'Overriding' : 'Assigning'} devDependency with peerDependency: ${key}: ${peerDepRange}`);
+        this._log(
+          `${devDependencies[key] ? 'Overriding' : 'Assigning'} devDependency with peerDependency: ` +
+          `${key}: ${peerDepRange}`);
         devDependencies[key] = peerDepRange;
       }
     });
@@ -182,10 +185,11 @@ class NgPackagesInstaller {
       shelljs.exec(DIST_PACKAGES_BUILD_CMD);
     } else {
       this._warn([
-        'Automatically building the local Angular/Zone.js packages is currently not supported on Windows.',
-        `Please, ensure '${ANGULAR_DIST_PACKAGES_DIR}' and '${ZONEJS_DIST_PACKAGES_DIR}' exist and are up-to-date ` +
-          `(e.g. by running '${DIST_PACKAGES_BUILD_SCRIPT}' in Git Bash for Windows, Windows Subsystem for Linux or ` +
-          'a Linux docker container or VM).',
+        'Automatically building the local Angular/angular-in-memory-web-api/zone.js packages is currently not ' +
+          'supported on Windows.',
+        `Please, ensure '${ANGULAR_DIST_PACKAGES_DIR}', '${AIMWA_DIST_PACKAGES_DIR}' and ` +
+          `'${ZONEJS_DIST_PACKAGES_DIR}' exist and are up-to-date (e.g. by running '${DIST_PACKAGES_BUILD_SCRIPT}' ` +
+          'in Git Bash for Windows, Windows Subsystem for Linux or a Linux docker container or VM).',
         '',
         'Proceeding anyway...',
       ].join('\n'));
@@ -220,8 +224,9 @@ class NgPackagesInstaller {
    * 'package.json' file.)
    */
   _getDistPackages() {
-    this._log(`Angular distributable directory: ${ANGULAR_DIST_PACKAGES_DIR}.`);
-    this._log(`Zone.js distributable directory: ${ZONEJS_DIST_PACKAGES_DIR}.`);
+    this._log(`Distributable directory for Angular framework: ${ANGULAR_DIST_PACKAGES_DIR}`);
+    this._log(`Distributable directory for angular-in-memory-web-api: ${AIMWA_DIST_PACKAGES_DIR}`);
+    this._log(`Distributable directory for zone.js: ${ZONEJS_DIST_PACKAGES_DIR}`);
 
     if (this.buildPackages) {
       this._buildDistPackages();
@@ -259,10 +264,11 @@ class NgPackagesInstaller {
 
     const packageConfigs = {
       ...collectPackages(ANGULAR_DIST_PACKAGES_DIR),
+      ...collectPackages(AIMWA_DIST_PACKAGES_DIR),
       ...collectPackages(ZONEJS_DIST_PACKAGES_DIR),
     };
 
-    this._log('Found the following Angular distributables:', Object.keys(packageConfigs).map(key => `\n - ${key}`));
+    this._log('Found the following Angular distributables:', ...Object.keys(packageConfigs).map(key => `\n - ${key}`));
     return packageConfigs;
   }
 
@@ -274,7 +280,7 @@ class NgPackagesInstaller {
 
   /**
    * Log a message if the `debug` property is set to true.
-   * @param {...string[]} messages - The messages to be logged.
+   * @param {string[]} messages - The messages to be logged.
    */
   _log(...messages) {
     if (this.debug) {
@@ -336,7 +342,8 @@ class NgPackagesInstaller {
     const parsed = lockfile.parse(lockfileContent);
 
     if (parsed.type !== 'success') {
-      throw new Error(`[${NgPackagesInstaller.name}]: Error parsing lockfile '${lockfilePath}' (result type: ${parsed.type}).`);
+      throw new Error(
+        `[${NgPackagesInstaller.name}]: Error parsing lockfile '${lockfilePath}' (result type: ${parsed.type}).`);
     }
 
     return parsed.object;
@@ -359,7 +366,7 @@ class NgPackagesInstaller {
 
   /**
    * Log a warning message do draw user's attention.
-   * @param {...string[]} messages - The messages to be logged.
+   * @param {string[]} messages - The messages to be logged.
    */
   _warn(...messages) {
     const lines = messages.join(' ').split('\n');
@@ -397,6 +404,7 @@ function main() {
     return new NgPackagesInstaller(projectDir, options);
   };
 
+  /* eslint-disable max-len */
   yargs
     .usage('$0 <cmd> [args]')
 
@@ -418,6 +426,7 @@ function main() {
     .strict()
     .wrap(yargs.terminalWidth())
     .argv;
+  /* eslint-enable max-len */
 }
 
 module.exports = NgPackagesInstaller;

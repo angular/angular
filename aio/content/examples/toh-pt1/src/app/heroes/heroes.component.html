@@ -4,7 +4,6 @@
 <!-- #enddocregion pipe -->
 <div><span>id: </span>{{hero.id}}</div>
 <div>
-  <label>name:
-    <input [(ngModel)]="hero.name" placeholder="name"/>
-  </label>
+  <label for="name">Hero name: </label>
+  <input id="name" [(ngModel)]="hero.name" placeholder="name">
 </div>

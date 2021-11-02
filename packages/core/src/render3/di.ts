@@ -8,12 +8,11 @@
 
 import {isForwardRef, resolveForwardRef} from '../di/forward_ref';
 import {injectRootLimpMode, setInjectImplementation} from '../di/inject_switch';
-import {InjectionToken} from '../di/injection_token';
 import {Injector} from '../di/injector';
 import {InjectorMarkers} from '../di/injector_marker';
-import {getInjectorDef} from '../di/interface/defs';
 import {InjectFlags} from '../di/interface/injector';
-import {AbstractType, Type} from '../interface/type';
+import {ProviderToken} from '../di/provider_token';
+import {Type} from '../interface/type';
 import {assertDefined, assertEqual, assertIndexInRange} from '../util/assert';
 import {noSideEffects} from '../util/closure';
 
@@ -87,6 +86,13 @@ export function setIncludeViewProviders(v: boolean): boolean {
 const BLOOM_SIZE = 256;
 const BLOOM_MASK = BLOOM_SIZE - 1;
 
+/**
+ * The number of bits that is represented by a single bloom bucket. JS bit operations are 32 bits,
+ * so each bucket represents 32 distinct tokens which accounts for log2(32) = 5 bits of a bloom hash
+ * number.
+ */
+const BLOOM_BUCKET_BITS = 5;
+
 /** Counter used to generate unique IDs for directives. */
 let nextNgElementId = 0;
 
@@ -99,7 +105,7 @@ let nextNgElementId = 0;
  * @param type The directive token to register
  */
 export function bloomAdd(
-    injectorIndex: number, tView: TView, type: Type<any>|InjectionToken<any>|string): void {
+    injectorIndex: number, tView: TView, type: ProviderToken<any>|string): void {
   ngDevMode && assertEqual(tView.firstCreatePass, true, 'expected firstCreatePass to be true');
   let id: number|undefined;
   if (typeof type === 'string') {
@@ -116,27 +122,17 @@ export function bloomAdd(
 
   // We only have BLOOM_SIZE (256) slots in our bloom filter (8 buckets * 32 bits each),
   // so all unique IDs must be modulo-ed into a number from 0 - 255 to fit into the filter.
-  const bloomBit = id & BLOOM_MASK;
+  const bloomHash = id & BLOOM_MASK;
 
   // Create a mask that targets the specific bit associated with the directive.
   // JS bit operations are 32 bits, so this will be a number between 2^0 and 2^31, corresponding
   // to bit positions 0 - 31 in a 32 bit integer.
-  const mask = 1 << bloomBit;
+  const mask = 1 << bloomHash;
 
-  // Use the raw bloomBit number to determine which bloom filter bucket we should check
-  // e.g: bf0 = [0 - 31], bf1 = [32 - 63], bf2 = [64 - 95], bf3 = [96 - 127], etc
-  const b7 = bloomBit & 0x80;
-  const b6 = bloomBit & 0x40;
-  const b5 = bloomBit & 0x20;
-  const tData = tView.data as number[];
-
-  if (b7) {
-    b6 ? (b5 ? (tData[injectorIndex + 7] |= mask) : (tData[injectorIndex + 6] |= mask)) :
-         (b5 ? (tData[injectorIndex + 5] |= mask) : (tData[injectorIndex + 4] |= mask));
-  } else {
-    b6 ? (b5 ? (tData[injectorIndex + 3] |= mask) : (tData[injectorIndex + 2] |= mask)) :
-         (b5 ? (tData[injectorIndex + 1] |= mask) : (tData[injectorIndex] |= mask));
-  }
+  // Each bloom bucket in `tData` represents `BLOOM_BUCKET_BITS` number of bits of `bloomHash`.
+  // Any bits in `bloomHash` beyond `BLOOM_BUCKET_BITS` indicate the bucket offset that the mask
+  // should be written to.
+  (tView.data as number[])[injectorIndex + (bloomHash >> BLOOM_BUCKET_BITS)] |= mask;
 }
 
 /**
@@ -267,7 +263,7 @@ export function getParentInjectorLocation(tNode: TNode, lView: LView): RelativeI
  * @param token The type or the injection token to be made public
  */
 export function diPublicInInjector(
-    injectorIndex: number, tView: TView, token: InjectionToken<any>|Type<any>): void {
+    injectorIndex: number, tView: TView, token: ProviderToken<any>): void {
   bloomAdd(injectorIndex, tView, token);
 }
 
@@ -347,8 +343,7 @@ export function injectAttributeImpl(tNode: TNode, attrNameToInject: string): str
 
 
 function notFoundValueOrThrow<T>(
-    notFoundValue: T|null, token: Type<T>|AbstractType<T>|InjectionToken<T>, flags: InjectFlags): T|
-    null {
+    notFoundValue: T|null, token: ProviderToken<T>, flags: InjectFlags): T|null {
   if (flags & InjectFlags.Optional) {
     return notFoundValue;
   } else {
@@ -366,8 +361,7 @@ function notFoundValueOrThrow<T>(
  * @returns the value from the injector or throws an exception
  */
 function lookupTokenUsingModuleInjector<T>(
-    lView: LView, token: Type<T>|AbstractType<T>|InjectionToken<T>, flags: InjectFlags,
-    notFoundValue?: any): T|null {
+    lView: LView, token: ProviderToken<T>, flags: InjectFlags, notFoundValue?: any): T|null {
   if (flags & InjectFlags.Optional && notFoundValue === undefined) {
     // This must be set or the NullInjector will throw for optional deps
     notFoundValue = null;
@@ -409,7 +403,7 @@ function lookupTokenUsingModuleInjector<T>(
  * @returns the value from the injector, `null` when not found, or `notFoundValue` if provided
  */
 export function getOrCreateInjectable<T>(
-    tNode: TDirectiveHostNode|null, lView: LView, token: Type<T>|AbstractType<T>|InjectionToken<T>,
+    tNode: TDirectiveHostNode|null, lView: LView, token: ProviderToken<T>,
     flags: InjectFlags = InjectFlags.Default, notFoundValue?: any): T|null {
   if (tNode !== null) {
     const bloomHash = bloomHashBitOrFactory(token);
@@ -424,7 +418,7 @@ export function getOrCreateInjectable<T>(
             lookupTokenUsingModuleInjector<T>(lView, token, flags, notFoundValue);
       }
       try {
-        const value = bloomHash();
+        const value = bloomHash(flags);
         if (value == null && !(flags & InjectFlags.Optional)) {
           throwProviderNotFoundError(token);
         } else {
@@ -509,8 +503,8 @@ export function createNodeInjector(): Injector {
 }
 
 function searchTokensOnInjector<T>(
-    injectorIndex: number, lView: LView, token: Type<T>|AbstractType<T>|InjectionToken<T>,
-    previousTView: TView|null, flags: InjectFlags, hostTElementNode: TNode|null) {
+    injectorIndex: number, lView: LView, token: ProviderToken<T>, previousTView: TView|null,
+    flags: InjectFlags, hostTElementNode: TNode|null) {
   const currentTView = lView[TVIEW];
   const tNode = currentTView.data[injectorIndex + NodeInjectorOffset.TNODE] as TNode;
   // First, we need to determine if view providers can be accessed by the starting element.
@@ -556,8 +550,8 @@ function searchTokensOnInjector<T>(
  * @returns Index of a found directive or provider, or null when none found.
  */
 export function locateDirectiveOrProvider<T>(
-    tNode: TNode, tView: TView, token: Type<T>|AbstractType<T>|InjectionToken<T>|string,
-    canAccessViewProviders: boolean, isHostSpecialCase: boolean|number): number|null {
+    tNode: TNode, tView: TView, token: ProviderToken<T>|string, canAccessViewProviders: boolean,
+    isHostSpecialCase: boolean|number): number|null {
   const nodeProviderIndexes = tNode.providerIndexes;
   const tInjectables = tView.data;
 
@@ -571,8 +565,7 @@ export function locateDirectiveOrProvider<T>(
   // When the host special case applies, only the viewProviders and the component are visible
   const endIndex = isHostSpecialCase ? injectablesStart + cptViewProvidersCount : directiveEnd;
   for (let i = startingIndex; i < endIndex; i++) {
-    const providerTokenOrDef =
-        tInjectables[i] as InjectionToken<any>| Type<any>| DirectiveDef<any>| string;
+    const providerTokenOrDef = tInjectables[i] as ProviderToken<any>| DirectiveDef<any>| string;
     if (i < directivesStart && token === providerTokenOrDef ||
         i >= directivesStart && (providerTokenOrDef as DirectiveDef<any>).type === token) {
       return i;
@@ -647,8 +640,7 @@ export function getNodeInjectable(
  * @returns the matching bit to check in the bloom filter or `null` if the token is not known.
  *   When the returned value is negative then it represents special values such as `Injector`.
  */
-export function bloomHashBitOrFactory(token: Type<any>|AbstractType<any>|InjectionToken<any>|
-                                      string): number|Function|undefined {
+export function bloomHashBitOrFactory(token: ProviderToken<any>|string): number|Function|undefined {
   ngDevMode && assertDefined(token, 'token must be defined');
   if (typeof token === 'string') {
     return token.charCodeAt(0) || 0;
@@ -675,22 +667,11 @@ export function bloomHasToken(bloomHash: number, injectorIndex: number, injector
   // JS bit operations are 32 bits, so this will be a number between 2^0 and 2^31, corresponding
   // to bit positions 0 - 31 in a 32 bit integer.
   const mask = 1 << bloomHash;
-  const b7 = bloomHash & 0x80;
-  const b6 = bloomHash & 0x40;
-  const b5 = bloomHash & 0x20;
 
-  // Our bloom filter size is 256 bits, which is eight 32-bit bloom filter buckets:
-  // bf0 = [0 - 31], bf1 = [32 - 63], bf2 = [64 - 95], bf3 = [96 - 127], etc.
-  // Get the bloom filter value from the appropriate bucket based on the directive's bloomBit.
-  let value: number;
-
-  if (b7) {
-    value = b6 ? (b5 ? injectorView[injectorIndex + 7] : injectorView[injectorIndex + 6]) :
-                 (b5 ? injectorView[injectorIndex + 5] : injectorView[injectorIndex + 4]);
-  } else {
-    value = b6 ? (b5 ? injectorView[injectorIndex + 3] : injectorView[injectorIndex + 2]) :
-                 (b5 ? injectorView[injectorIndex + 1] : injectorView[injectorIndex]);
-  }
+  // Each bloom bucket in `injectorView` represents `BLOOM_BUCKET_BITS` number of bits of
+  // `bloomHash`. Any bits in `bloomHash` beyond `BLOOM_BUCKET_BITS` indicate the bucket offset
+  // that should be used.
+  const value = injectorView[injectorIndex + (bloomHash >> BLOOM_BUCKET_BITS)];
 
   // If the bloom filter value has the bit corresponding to the directive's bloomBit flipped on,
   // this injector is a potential match.
@@ -707,30 +688,9 @@ export class NodeInjector implements Injector {
       private _tNode: TElementNode|TContainerNode|TElementContainerNode|null,
       private _lView: LView) {}
 
-  get(token: any, notFoundValue?: any): any {
-    return getOrCreateInjectable(this._tNode, this._lView, token, undefined, notFoundValue);
+  get(token: any, notFoundValue?: any, flags?: InjectFlags): any {
+    return getOrCreateInjectable(this._tNode, this._lView, token, flags, notFoundValue);
   }
-}
-
-/**
- * @codeGenApi
- */
-export function ɵɵgetFactoryOf<T>(type: Type<any>): FactoryFn<T>|null {
-  const typeAny = type as any;
-
-  if (isForwardRef(type)) {
-    return (() => {
-             const factory = ɵɵgetFactoryOf<T>(resolveForwardRef(typeAny));
-             return factory ? factory() : null;
-           }) as any;
-  }
-
-  let factory = getFactoryDef<T>(typeAny);
-  if (factory === null) {
-    const injectorDef = getInjectorDef<T>(typeAny);
-    factory = injectorDef && injectorDef.factory;
-  }
-  return factory || null;
 }
 
 /**
@@ -739,13 +699,13 @@ export function ɵɵgetFactoryOf<T>(type: Type<any>): FactoryFn<T>|null {
 export function ɵɵgetInheritedFactory<T>(type: Type<any>): (type: Type<T>) => T {
   return noSideEffects(() => {
     const ownConstructor = type.prototype.constructor;
-    const ownFactory = ownConstructor[NG_FACTORY_DEF] || ɵɵgetFactoryOf(ownConstructor);
+    const ownFactory = ownConstructor[NG_FACTORY_DEF] || getFactoryOf(ownConstructor);
     const objectPrototype = Object.prototype;
     let parent = Object.getPrototypeOf(type.prototype).constructor;
 
     // Go up the prototype until we hit `Object`.
     while (parent && parent !== objectPrototype) {
-      const factory = parent[NG_FACTORY_DEF] || ɵɵgetFactoryOf(parent);
+      const factory = parent[NG_FACTORY_DEF] || getFactoryOf(parent);
 
       // If we hit something that has a factory and the factory isn't the same as the type,
       // we've found the inherited factory. Note the check that the factory isn't the type's
@@ -765,4 +725,14 @@ export function ɵɵgetInheritedFactory<T>(type: Type<any>): (type: Type<T>) => 
     // latter has to be assumed.
     return t => new t();
   });
+}
+
+function getFactoryOf<T>(type: Type<any>): ((type?: Type<T>) => T | null)|null {
+  if (isForwardRef(type)) {
+    return () => {
+      const factory = getFactoryOf<T>(resolveForwardRef(type));
+      return factory && factory();
+    };
+  }
+  return getFactoryDef<T>(type);
 }

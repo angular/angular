@@ -5,32 +5,44 @@
   padding: 0;
   width: 15em;
 }
+
+input {
+  display: block;
+  width: 100%;
+  padding: .5rem;
+  margin: 1rem 0;
+  box-sizing: border-box;
+}
+
 .heroes li {
   position: relative;
   cursor: pointer;
-  background-color: #EEE;
-  margin: .5em;
-  padding: .3em 0;
-  height: 1.6em;
-  border-radius: 4px;
 }
 
 .heroes li:hover {
-  color: #607D8B;
-  background-color: #DDD;
   left: .1em;
 }
 
 .heroes a {
   color: #333;
   text-decoration: none;
-  position: relative;
+  background-color: #EEE;
+  margin: .5em;
+  padding: .3em 0;
+  height: 1.6em;
+  border-radius: 4px;
   display: block;
-  width: 250px;
+  width: 100%;
 }
 
 .heroes a:hover {
-  color: #607D8B;
+  color: #2c3a41;
+  background-color: #e6e6e6;
+}
+
+.heroes a:active {
+  background-color: #525252;
+  color: #fafafa;
 }
 
 .heroes .badge {
@@ -38,7 +50,7 @@
   font-size: small;
   color: white;
   padding: 0.8em 0.7em 0 0.7em;
-  background-color: #405061;
+  background-color:#405061;
   line-height: 1em;
   position: relative;
   left: -1px;
@@ -50,27 +62,28 @@
   border-radius: 4px 0 0 4px;
 }
 
-/* #docregion additions */
-button {
-  background-color: #eee;
-  border: none;
-  padding: 5px 10px;
-  border-radius: 4px;
-  cursor: pointer;
-  cursor: hand;
-  font-family: Arial;
+.add-button {
+ padding: .5rem 1.5rem;
+ font-size: 1rem;
+ margin-bottom: 2rem;
 }
 
-button:hover {
-  background-color: #cfd8dc;
+.add-button:hover {
+  color: white;
+  background-color: #42545C;
 }
 
 button.delete {
-  position: relative;
-  left: 194px;
-  top: -32px;
-  background-color: gray !important;
+  position: absolute;
+  left: 210px;
+  top: 5px;
+  background-color: white;
+  color:  #525252;
+  font-size: 1.1rem;
+  padding: 1px 10px 3px 10px;
+}
+
+button.delete:hover {
+  background-color: #525252;
   color: white;
 }
-/* #enddocregion additions */
-

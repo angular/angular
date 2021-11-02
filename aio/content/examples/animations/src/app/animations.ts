@@ -1,10 +1,9 @@
-// #docregion reusable
 import {
   animation, trigger, animateChild, group,
   transition, animate, style, query
 } from '@angular/animations';
 
-export const transAnimation = animation([
+export const transitionAnimation = animation([
   style({
     height: '{{ height }}',
     opacity: '{{ opacity }}',
@@ -12,7 +11,6 @@ export const transAnimation = animation([
   }),
   animate('{{ time }}')
 ]);
-// #enddocregion reusable
 
 // Routable animations
 // #docregion route-animations

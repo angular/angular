@@ -19,15 +19,28 @@ import {Identifiers} from './identifiers';
 import {getAllLifecycleHooks} from './lifecycle_reflector';
 import {HtmlParser} from './ml_parser/html_parser';
 import {NgModuleResolver} from './ng_module_resolver';
+import {CompileIdentifierMetadata, identifierName, syntaxError} from './parse_util';
 import {PipeResolver} from './pipe_resolver';
 import {ElementSchemaRegistry} from './schema/element_schema_registry';
 import {CssSelector} from './selector';
 import {SummaryResolver} from './summary_resolver';
-import {Console, isPromise, noUndefined, resolveForwardRef, stringify, SyncAsync, syntaxError, ValueTransformer, visitValue} from './util';
+import {Console, isPromise, noUndefined, resolveForwardRef, stringify, SyncAsync, ValueTransformer, visitValue} from './util';
 
 export type ErrorCollector = (error: any, type?: any) => void;
 
 export const ERROR_COMPONENT_TYPE = 'ngComponentType';
+
+const MISSING_NG_MODULE_METADATA_ERROR_DATA = 'ngMissingNgModuleMetadataErrorData';
+export interface MissingNgModuleMetadataErrorData {
+  fileName: string;
+  className: string;
+}
+
+
+export function getMissingNgModuleMetadataErrorData(error: any): MissingNgModuleMetadataErrorData|
+    null {
+  return error[MISSING_NG_MODULE_METADATA_ERROR_DATA] ?? null;
+}
 
 // Design notes:
 // - don't lazily create metadata:
@@ -118,7 +131,7 @@ export class CompileMetadataResolver {
   }
 
   getHostComponentType(dirType: any): StaticSymbol|cpl.ProxyClass {
-    const name = `${cpl.identifierName({reference: dirType})}_Host`;
+    const name = `${identifierName({reference: dirType})}_Host`;
     if (dirType instanceof StaticSymbol) {
       return this._staticSymbolCache.get(dirType.filePath, name);
     }
@@ -521,14 +534,14 @@ export class CompileMetadataResolver {
     if (!meta) {
       return null;
     }
-    const declaredDirectives: cpl.CompileIdentifierMetadata[] = [];
-    const exportedNonModuleIdentifiers: cpl.CompileIdentifierMetadata[] = [];
-    const declaredPipes: cpl.CompileIdentifierMetadata[] = [];
+    const declaredDirectives: CompileIdentifierMetadata[] = [];
+    const exportedNonModuleIdentifiers: CompileIdentifierMetadata[] = [];
+    const declaredPipes: CompileIdentifierMetadata[] = [];
     const importedModules: cpl.CompileNgModuleSummary[] = [];
     const exportedModules: cpl.CompileNgModuleSummary[] = [];
     const providers: cpl.CompileProviderMetadata[] = [];
     const entryComponents: cpl.CompileEntryComponentMetadata[] = [];
-    const bootstrapComponents: cpl.CompileIdentifierMetadata[] = [];
+    const bootstrapComponents: CompileIdentifierMetadata[] = [];
     const schemas: SchemaMetadata[] = [];
 
     if (meta.imports) {
@@ -563,11 +576,18 @@ export class CompileMetadataResolver {
               this.getNgModuleSummary(importedModuleType, alreadyCollecting);
           alreadyCollecting.delete(importedModuleType);
           if (!importedModuleSummary) {
-            this._reportError(
-                syntaxError(`Unexpected ${this._getTypeDescriptor(importedType)} '${
-                    stringifyType(importedType)}' imported by the module '${
-                    stringifyType(moduleType)}'. Please add a @NgModule annotation.`),
-                moduleType);
+            const err = syntaxError(`Unexpected ${this._getTypeDescriptor(importedType)} '${
+                stringifyType(importedType)}' imported by the module '${
+                stringifyType(moduleType)}'. Please add a @NgModule annotation.`);
+            // If possible, record additional context for this error to enable more useful
+            // diagnostics on the compiler side.
+            if (importedType instanceof StaticSymbol) {
+              (err as any)[MISSING_NG_MODULE_METADATA_ERROR_DATA] = {
+                fileName: importedType.filePath,
+                className: importedType.name,
+              } as MissingNgModuleMetadataErrorData;
+            }
+            this._reportError(err, moduleType);
             return;
           }
           importedModules.push(importedModuleSummary);
@@ -653,8 +673,8 @@ export class CompileMetadataResolver {
       });
     }
 
-    const exportedDirectives: cpl.CompileIdentifierMetadata[] = [];
-    const exportedPipes: cpl.CompileIdentifierMetadata[] = [];
+    const exportedDirectives: CompileIdentifierMetadata[] = [];
+    const exportedPipes: CompileIdentifierMetadata[] = [];
     exportedNonModuleIdentifiers.forEach((exportedId) => {
       if (transitiveModule.directivesSet.has(exportedId.reference)) {
         exportedDirectives.push(exportedId);
@@ -817,7 +837,7 @@ export class CompileMetadataResolver {
     return result;
   }
 
-  private _getIdentifierMetadata(type: Type): cpl.CompileIdentifierMetadata {
+  private _getIdentifierMetadata(type: Type): CompileIdentifierMetadata {
     type = resolveForwardRef(type);
     return {reference: type};
   }
@@ -1074,7 +1094,7 @@ export class CompileMetadataResolver {
   private _getEntryComponentsFromProvider(provider: cpl.ProviderMeta, type?: any):
       cpl.CompileEntryComponentMetadata[] {
     const components: cpl.CompileEntryComponentMetadata[] = [];
-    const collectedIdentifiers: cpl.CompileIdentifierMetadata[] = [];
+    const collectedIdentifiers: CompileIdentifierMetadata[] = [];
 
     if (provider.useFactory || provider.useExisting || provider.useClass) {
       this._reportError(
@@ -1196,6 +1216,7 @@ export class CompileMetadataResolver {
       selectors,
       first: q.first,
       descendants: q.descendants,
+      emitDistinctChangesOnly: q.emitDistinctChangesOnly,
       propertyName,
       read: q.read ? this._getTokenMetadata(q.read) : null!,
       static: q.static
@@ -1243,12 +1264,12 @@ function isValidType(value: any): boolean {
   return (value instanceof StaticSymbol) || (value instanceof Type);
 }
 
-function extractIdentifiers(value: any, targetIdentifiers: cpl.CompileIdentifierMetadata[]) {
+function extractIdentifiers(value: any, targetIdentifiers: CompileIdentifierMetadata[]) {
   visitValue(value, new _CompileValueConverter(), targetIdentifiers);
 }
 
 class _CompileValueConverter extends ValueTransformer {
-  visitOther(value: any, targetIdentifiers: cpl.CompileIdentifierMetadata[]): any {
+  override visitOther(value: any, targetIdentifiers: CompileIdentifierMetadata[]): any {
     targetIdentifiers.push({reference: value});
   }
 }

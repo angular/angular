@@ -12,7 +12,7 @@ import {setup} from '@angular/compiler-cli/test/test_support';
 import {ViewEncapsulation, ɵConsole as Console} from '@angular/core';
 import * as fs from 'fs';
 import * as path from 'path';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {DiagnosticTemplateInfo} from '../src/types';
 import {getClassMembers, getPipesTable, getSymbolQuery} from '../src/typescript_symbols';
@@ -174,13 +174,13 @@ export class DiagnosticContext {
       const pipeResolver = new PipeResolver(this.reflector);
       const elementSchemaRegistry = new DomElementSchemaRegistry();
       const resourceLoader = new class extends ResourceLoader {
-        get(url: string): Promise<string> {
+        override get(url: string): Promise<string> {
           return Promise.resolve('');
         }
       };
       const urlResolver = createOfflineCompileUrlResolver();
       const htmlParser = new class extends HtmlParser {
-        parse(): ParseTreeResult {
+        override parse(): ParseTreeResult {
           return new ParseTreeResult([], []);
         }
       };

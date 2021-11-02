@@ -12,7 +12,9 @@ import {Injector} from '../di/injector';
 import {Type} from '../interface/type';
 import {Sanitizer} from '../sanitization/sanitizer';
 import {assertDefined, assertIndexInRange} from '../util/assert';
+
 import {assertComponentType} from './assert';
+import {readPatchedLView} from './context_discovery';
 import {getComponentDef} from './definition';
 import {diPublicInInjector, getOrCreateNodeInjectorForNode} from './di';
 import {throwProviderNotFoundError} from './errors_di';
@@ -31,7 +33,6 @@ import {setUpAttributes} from './util/attrs_utils';
 import {publishDefaultGlobalUtils} from './util/global_utils';
 import {defaultScheduler} from './util/misc_utils';
 import {getRootContext} from './util/view_traversal_utils';
-import {readPatchedLView} from './util/view_utils';
 
 
 
@@ -178,7 +179,7 @@ export function createRootComponentView(
   ngDevMode && assertIndexInRange(rootView, index);
   rootView[index] = rNode;
   // '#host' is added here as we don't know the real host DOM name (we don't want to read it) and at
-  // the same time we want to communicate the the debug `TNode` that this is a special `TNode`
+  // the same time we want to communicate the debug `TNode` that this is a special `TNode`
   // representing a host element.
   const tNode: TElementNode = getOrCreateTNode(tView, index, TNodeType.Element, '#host', null);
   const mergedAttrs = tNode.mergedAttrs = def.hostAttrs;

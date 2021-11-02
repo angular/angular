@@ -6,7 +6,7 @@ import { Hero } from './hero';
 import { HeroService } from './hero.service';
 
 /////// HeroesBaseComponent /////
-// #docregion heroes-base, injection
+// #docregion heroes-base
 @Component({
   selector: 'app-unsorted-heroes',
   template: `<div *ngFor="let hero of heroes">{{hero.name}}</div>`,
@@ -14,9 +14,8 @@ import { HeroService } from './hero.service';
 })
 export class HeroesBaseComponent implements OnInit {
   constructor(private heroService: HeroService) { }
-// #enddocregion injection
 
-  heroes: Array<Hero>;
+  heroes: Hero[] = [];
 
   ngOnInit() {
     this.heroes = this.heroService.getAllHeroes();
@@ -26,9 +25,8 @@ export class HeroesBaseComponent implements OnInit {
   // Post-process heroes in derived class override.
   protected afterGetHeroes() {}
 
-// #docregion injection
 }
-// #enddocregion heroes-base,injection
+// #enddocregion heroes-base
 
 /////// SortedHeroesComponent /////
 // #docregion sorted-heroes
@@ -42,7 +40,7 @@ export class SortedHeroesComponent extends HeroesBaseComponent {
     super(heroService);
   }
 
-  protected afterGetHeroes() {
+  protected override afterGetHeroes() {
     this.heroes = this.heroes.sort((h1, h2) => {
       return h1.name < h2.name ? -1 :
             (h1.name > h2.name ? 1 : 0);

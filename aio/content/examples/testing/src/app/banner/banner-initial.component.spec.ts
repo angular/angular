@@ -1,14 +1,14 @@
 // #docplaster
-// #docregion import-by
-// #enddocregion import-by
 // #docregion import-debug-element
 import { DebugElement } from '@angular/core';
 // #enddocregion import-debug-element
 // #docregion v1
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
 
 // #enddocregion v1
+// #docregion import-by
+import { By } from '@angular/platform-browser';
+// #enddocregion import-by
 import { BannerComponent } from './banner-initial.component';
 
 /*
@@ -56,7 +56,7 @@ describe('BannerComponent (minimal)', () => {
 });
 // #enddocregion v2
 
-// #docregion v3, v4
+// #docregion v3
 describe('BannerComponent (with beforeEach)', () => {
   let component: BannerComponent;
   let fixture: ComponentFixture<BannerComponent>;
@@ -84,7 +84,7 @@ describe('BannerComponent (with beforeEach)', () => {
     // #docregion nativeElement
     const bannerElement: HTMLElement = fixture.nativeElement;
     // #enddocregion nativeElement
-    const p = bannerElement.querySelector('p');
+    const p = bannerElement.querySelector('p')!;
     expect(p.textContent).toEqual('banner works!');
   });
   // #enddocregion v4-test-3
@@ -96,7 +96,7 @@ describe('BannerComponent (with beforeEach)', () => {
     const bannerDe: DebugElement = fixture.debugElement;
     const bannerEl: HTMLElement = bannerDe.nativeElement;
     // #enddocregion debugElement-nativeElement
-    const p = bannerEl.querySelector('p');
+    const p = bannerEl.querySelector('p')!;
     expect(p.textContent).toEqual('banner works!');
   });
   // #enddocregion v4-test-4
@@ -111,4 +111,4 @@ describe('BannerComponent (with beforeEach)', () => {
   // #enddocregion v4-test-5
   // #docregion v3
 });
-// #enddocregion v3, v4
+// #enddocregion v3

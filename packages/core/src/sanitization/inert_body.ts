@@ -16,7 +16,8 @@ import {trustedHTMLFromString} from '../util/security/trusted_types';
  * Fallback: InertDocument strategy
  */
 export function getInertBodyHelper(defaultDoc: Document): InertBodyHelper {
-  return isDOMParserAvailable() ? new DOMParserHelper() : new InertDocumentHelper(defaultDoc);
+  const inertDocumentHelper = new InertDocumentHelper(defaultDoc);
+  return isDOMParserAvailable() ? new DOMParserHelper(inertDocumentHelper) : inertDocumentHelper;
 }
 
 export interface InertBodyHelper {
@@ -31,6 +32,8 @@ export interface InertBodyHelper {
  * This is the default strategy used in browsers that support it.
  */
 class DOMParserHelper implements InertBodyHelper {
+  constructor(private inertDocumentHelper: InertBodyHelper) {}
+
   getInertBodyElement(html: string): HTMLElement|null {
     // We add these extra elements to ensure that the rest of the content is parsed as expected
     // e.g. leading whitespace is maintained and tags like `<meta>` do not get hoisted to the
@@ -41,6 +44,12 @@ class DOMParserHelper implements InertBodyHelper {
       const body = new window.DOMParser()
                        .parseFromString(trustedHTMLFromString(html) as string, 'text/html')
                        .body as HTMLBodyElement;
+      if (body === null) {
+        // In some browsers (e.g. Mozilla/5.0 iPad AppleWebKit Mobile) the `body` property only
+        // becomes available in the following tick of the JS engine. In that case we fall back to
+        // the `inertDocumentHelper` instead.
+        return this.inertDocumentHelper.getInertBodyElement(html);
+      }
       body.removeChild(body.firstChild!);
       return body;
     } catch {

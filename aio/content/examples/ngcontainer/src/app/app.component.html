@@ -2,9 +2,7 @@
 <!-- #docregion -->
 <h1>&lt;ng-container&gt;</h1>
 
-<!-- #docregion ngif -->
 <div *ngIf="hero">{{hero.name}}</div>
-<!-- #enddocregion ngif -->
 
 <hr>
 
@@ -14,7 +12,6 @@
 <button (click)="hero = hero ? null : heroes[0]">Toggle hero</button>
 
 <h4>#1 &lt;ng-container&gt; and &lt;p&gt;</h4>
-<!-- #docregion ngif-ngcontainer -->
 <p>
   I turned the corner
   <ng-container *ngIf="hero">
@@ -22,8 +19,6 @@
   </ng-container>
   and continued on my way.
 </p>
-<!-- #enddocregion ngif-ngcontainer -->
-<!-- #docregion ngif-span -->
 <p>
   I turned the corner
   <span *ngIf="hero">
@@ -31,12 +26,10 @@
   </span>
   and continued on my way.
 </p>
-<!-- #enddocregion ngif-span -->
 
 <h4>#2 &lt;ng-container&gt; and &lt;p&gt;</h4>
 
 <div *ngIf="hero">
-  <!-- #docregion ngif-ngcontainer-2 -->
   <p>
     {{hero.name}} is
     <ng-container *ngFor="let trait of heroTraits; let first=first; let last=last">
@@ -45,9 +38,7 @@
       {{trait}}
     </ng-container>.
   </p>
-  <!-- #enddocregion ngif-ngcontainer-2 -->
 
-  <!-- #docregion ngif-span-2 -->
   <p>
     {{hero.name}} is
     <span *ngFor="let trait of heroTraits; let first=first; let last=last">
@@ -56,28 +47,23 @@
       {{trait}}
     </span>.
   </p>
-  <!-- #enddocregion ngif-span-2 -->
 
 <br>
 
 <h4>#3 &lt;ng-container&gt; and &lt;p&gt;</h4>
-    <!-- #docregion ngif-span-3 -->
-    <p>
-      <label><input type="checkbox" [checked]="showId" (change)="showId=!showId">Show ID</label>
-    </p>
-    <!-- #enddocregion ngif-span-3 -->
+  <p>
+    <label><input type="checkbox" [checked]="showId" (change)="showId=!showId">Show ID</label>
+  </p>
 
   <div>
     The <code>hero.id</code> in the &lt;span&gt;
     is caught by the <span>p-span</span> CSS:
-    <!-- #docregion ngif-span-3 -->
     <p>
       <span *ngIf="showId">
         Id: ({{hero.id}})
       </span>
       Name: {{hero.name}}
     </p>
-    <!-- #enddocregion ngif-span-3 -->
   </div>
 
   <div>
@@ -129,7 +115,6 @@
   Pick your favorite hero
   (<label><input type="checkbox" checked (change)="showSad=!showSad">show sad</label>)
 </div>
-<!-- #docregion select-span -->
 <select [(ngModel)]="hero">
   <span *ngFor="let h of heroes">
     <span *ngIf="showSad || h?.emotion !== 'sad'">
@@ -137,14 +122,12 @@
     </span>
   </span>
 </select>
-<!-- #enddocregion select-span -->
 
 <p><i>&lt;select&gt; with &lt;ng-container&gt;</i></p>
 <div>
   Pick your favorite hero
   (<label><input type="checkbox" checked (change)="showSad=!showSad">show sad</label>)
 </div>
-<!-- #docregion select-ngcontainer -->
 <select [(ngModel)]="hero">
   <ng-container *ngFor="let h of heroes">
     <ng-container *ngIf="showSad || h?.emotion !== 'sad'">
@@ -152,7 +135,6 @@
     </ng-container>
   </ng-container>
 </select>
-<!-- #enddocregion select-ngcontainer -->
 
 <br><br><br><br>
 
@@ -168,7 +150,6 @@
 <p>Options with &lt;ng-container&gt;</p>
 
 <select #traitPicker>
-  <!-- #docregion select-ngcontainer-2 -->
   <ng-container *ngIf="showDefaultTraits">
     <!-- Default traits -->
     <option value="loyal">LOYAL</option>
@@ -178,12 +159,10 @@
   <option *ngFor="let trait of heroTraits" [value]="trait">
     {{ trait | uppercase }}
   </option>
-  <!-- #enddocregion select-ngcontainer-2 -->
 </select>
 
 
 <p>Options with &lt;span&gt;</p>
-<!-- #docregion select-span-2 -->
 <select>
   <!-- Default traits are always excluded because intermediate <span> is illegal -->
   <span *ngIf="showDefaultTraits">
@@ -195,7 +174,6 @@
     {{ trait | uppercase }}
   </option>
 </select>
-<!-- #enddocregion select-span-2 -->
 
 <br>
 
@@ -218,7 +196,6 @@
   </tr>
 
 <ng-container *ngIf="divNgIf">
-  <!-- #docregion ngif-div -->
   <div *ngIf="strucDirs">
     <tr>
       <td>xxx</td><td>S</td><td>div with *ngIf formats crazy.</td>
@@ -227,10 +204,8 @@
       <td>yyy</td><td>S</td><td>div with *ngIf formats crazy.</td>
     </tr>
   </div>
-  <!-- #enddocregion ngif-div -->
 </ng-container>
 
-  <!-- #docregion ngif-ngcontainer-4 -->
   <ng-container *ngIf="strucDirs">
     <tr>
       <td>NgFor</td><td>S</td><td>Repeat the template for each item in a list.</td>
@@ -239,7 +214,6 @@
       <td>NgIf</td><td>S</td><td>Add or remove DOM elements.</td>
     </tr>
   </ng-container>
-  <!-- #enddocregion ngif-ngcontainer-4 -->
 
   <ng-container *ngIf="attrDirs">
     <tr>
@@ -247,11 +221,9 @@
     </tr>
   </ng-container>
 
-  <!-- #docregion ngif-tr -->
   <tr *ngIf="strucDirs">
     <td>NgSwitch</td><td>S</td><td>Include in DOM if case matches the switch value.</td>
   </tr>
-  <!-- #enddocregion ngif-tr -->
 
 </table>
 
@@ -260,20 +232,14 @@
 <h3>Do not confuse &lt;ng-container&gt; with &lt;ng-content&gt;</h3>
 
 <p>&lt;ng-container&gt;Inside ng-container&lt;/ng-container&gt;</p>
-<!-- #docregion ngcontainer-bare -->
 <ng-container>Inside ng-container</ng-container>
-<!-- #enddocregion ngcontainer-bare -->
 
 <p>&lt;ng-content&gt;this is an Angular parse error&lt;/ng-content&gt;</p>
-<!-- #docregion ngcontent-bad -->
 <!--  <ng-content>this is an Angular parse error</ng-content>  -->
-<!-- #enddocregion ngcontent-bad -->
 <div class="code">Template parse errors:<br>
 &lt;ng-content&gt; element cannot have content.</div>
 
 <p>Demo of &lt;/ng-content&gt;</p>
-<!-- #docregion content-comp -->
 <content-comp>
   Projected content
 </content-comp>
-<!-- #enddocregion content-comp -->

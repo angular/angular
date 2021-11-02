@@ -59,7 +59,7 @@ class SomeComponent {
       const errorHandler = new ErrorHandler();
       (errorHandler as any)._console = mockConsole as any;
 
-      const platformModule = getDOM().supportsDOMEvents() ?
+      const platformModule = getDOM().supportsDOMEvents ?
           BrowserModule :
           require('@angular/platform-server').ServerModule;
 

@@ -1,0 +1,152 @@
+@use '../../constants';
+@use '../../mixins';
+
+code-example,
+code-tabs {
+  clear: both;
+  display: block;
+
+  code {
+    overflow: auto;
+  }
+
+  ol {
+    list-style: decimal;
+  }
+
+  .mat-card {
+    padding: 0;
+    border-radius: 5px;
+  }
+}
+
+code-example {
+  &:not(.no-box) {
+    border-radius: 5px;
+    margin: 16px auto;
+  }
+
+  &.no-box {
+    pre.prettyprint {
+      margin: 0;
+    }
+
+    code {
+      background-color: transparent;
+    }
+  }
+
+  code {
+    overflow: auto;
+  }
+
+  header {
+    border-radius: 5px 5px 0 0;
+    @include mixins.font-size(16);
+    padding: 8px 16px;
+  }
+}
+
+code-tabs {
+  margin: 16px 0;
+
+  .code-tab-group {
+    .mat-tab-body {
+      overflow-y: hidden;
+
+      .mat-tab-body-content {
+        height: auto;
+        transform: none;
+
+        .fadeIn {
+          animation: opacity 2s ease-in;
+        }
+      }
+    }
+  }
+}
+
+aio-code {
+  pre.prettyprint {
+    position: relative;
+    display: flex;
+    min-height: 32px;
+    margin: 16px 24px;
+    white-space: pre-wrap;
+    align-items: center;
+
+    code {
+      a {
+        color: inherit;
+      }
+
+      span {
+        @include mixins.line-height(24);
+      }
+
+      ol.linenums {
+        margin: 0;
+
+        li {
+          margin: 0;
+          font-family: constants.$code-font;
+          font-size: 90%;
+          @include mixins.line-height(24);
+        }
+      }
+    }
+
+    .copy-button {
+      position: absolute;
+      top: -7px;
+      right: -19px;
+      padding: 0;
+      overflow: visible; // This is required for the button to be displayed correctly in IE11.
+
+      background-color: transparent;
+      border: none;
+      cursor: pointer;
+    }
+  }
+}
+
+.sidenav-content {
+  code {
+    a {
+      font-size: inherit;
+      font-weight: inherit;
+    }
+  }
+
+  :not(h1):not(h2):not(h3):not(h4):not(h5):not(h6):not(pre) {
+    > code {
+      border-radius: 4px;
+      padding: 0 4px;
+    }
+
+    &:not(a) > code {
+      padding: 4px;
+    }
+  }
+
+  .page-guide-cheatsheet & {
+    td:first-of-type,
+    th {
+      code {
+        background-color: inherit;
+        padding: 0;
+        white-space: pre-wrap;
+      }
+    }
+  }
+
+  .code-anchor {
+    cursor: pointer;
+    text-decoration: none;
+    font-size: inherit;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}

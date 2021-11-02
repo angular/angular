@@ -10,11 +10,14 @@
  * Used for stringify render output in Ivy.
  * Important! This function is very performance-sensitive and we should
  * be extra careful not to introduce megamorphic reads in it.
+ * Check `core/test/render3/perf/render_stringify` for benchmarks and alternate implementations.
  */
 export function renderStringify(value: any): string {
   if (typeof value === 'string') return value;
   if (value == null) return '';
-  return '' + value;
+  // Use `String` so that it invokes the `toString` method of the value. Note that this
+  // appears to be faster than calling `value.toString` (see `render_stringify` benchmark).
+  return String(value);
 }
 
 

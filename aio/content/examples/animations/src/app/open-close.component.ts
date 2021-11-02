@@ -5,7 +5,7 @@ import { trigger, transition, state, animate, style, AnimationEvent } from '@ang
 // #docregion component, events1
 @Component({
   selector: 'app-open-close',
-// #docregion trigger, trigger-wildcard1, trigger-transition
+// #docregion trigger-wildcard1, trigger-transition
   animations: [
     trigger('openClose', [
 // #docregion state1
@@ -20,8 +20,8 @@ import { trigger, transition, state, animate, style, AnimationEvent } from '@ang
 // #docregion state2
       state('closed', style({
         height: '100px',
-        opacity: 0.5,
-        backgroundColor: 'green'
+        opacity: 0.8,
+        backgroundColor: 'blue'
       })),
 // #enddocregion state2, trigger-wildcard1
 // #docregion transition1
@@ -33,7 +33,7 @@ import { trigger, transition, state, animate, style, AnimationEvent } from '@ang
       transition('closed => open', [
         animate('0.5s')
       ]),
-// #enddocregion transition2, trigger, component
+// #enddocregion transition2, component
 // #docregion trigger-wildcard1
       transition('* => closed', [
         animate('1s')
@@ -54,15 +54,14 @@ import { trigger, transition, state, animate, style, AnimationEvent } from '@ang
         ),
       ]),
 // #enddocregion transition4
-// #docregion transition3
       transition('* => *', [
         animate('1s')
       ]),
-// #enddocregion transition3, trigger-transition
-// #docregion trigger, component, trigger-wildcard1, events1
+// #enddocregion trigger-transition
+// #docregion component, trigger-wildcard1, events1
     ]),
   ],
-// #enddocregion trigger, trigger-wildcard1
+// #enddocregion trigger-wildcard1
   templateUrl: 'open-close.component.html',
   styleUrls: ['open-close.component.css']
 })
@@ -79,7 +78,7 @@ export class OpenCloseComponent {
 
 // #enddocregion component
 // #docregion events1, events
-  onAnimationEvent( event: AnimationEvent ) {
+  onAnimationEvent(event: AnimationEvent) {
 // #enddocregion events1, events
     if (!this.logging) {
       return;
@@ -88,16 +87,16 @@ export class OpenCloseComponent {
     // openClose is trigger name in this example
     console.warn(`Animation Trigger: ${event.triggerName}`);
 
-    // phaseName is start or done
+    // phaseName is "start" or "done"
     console.warn(`Phase: ${event.phaseName}`);
 
-    // in our example, totalTime is 1000 or 1 second
+    // in our example, totalTime is 1000 (number of milliseconds in a second)
     console.warn(`Total time: ${event.totalTime}`);
 
-    // in our example, fromState is either open or closed
+    // in our example, fromState is either "open" or "closed"
     console.warn(`From: ${event.fromState}`);
 
-    // in our example, toState either open or closed
+    // in our example, toState either "open" or "closed"
     console.warn(`To: ${event.toState}`);
 
     // the HTML element itself, the button in this case

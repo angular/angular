@@ -10,7 +10,7 @@ import {Adapter} from './src/adapter';
 import {CacheDatabase} from './src/db-cache';
 import {Driver} from './src/driver';
 
-const scope = self as any as ServiceWorkerGlobalScope;
+const scope = self as unknown as ServiceWorkerGlobalScope;
 
-const adapter = new Adapter(scope.registration.scope);
-const driver = new Driver(scope, adapter, new CacheDatabase(scope, adapter));
+const adapter = new Adapter(scope.registration.scope, self.caches);
+new Driver(scope, adapter, new CacheDatabase(adapter));

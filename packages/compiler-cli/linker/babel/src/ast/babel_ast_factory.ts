@@ -5,15 +5,18 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import * as t from '@babel/types';
-
 import {assert} from '../../../../linker';
 import {AstFactory, BinaryOperator, LeadingComment, ObjectLiteralProperty, SourceMapRange, TemplateLiteral, VariableDeclarationType} from '../../../../src/ngtsc/translator';
+import {types as t} from '../babel_core';
 
 /**
  * A Babel flavored implementation of the AstFactory.
  */
 export class BabelAstFactory implements AstFactory<t.Statement, t.Expression> {
+  constructor(
+      /** The absolute path to the source file being compiled. */
+      private sourceUrl: string) {}
+
   attachComments(statement: t.Statement, leadingComments: LeadingComment[]): void {
     // We must process the comments in reverse because `t.addComment()` will add new ones in front.
     for (let i = leadingComments.length - 1; i >= 0; i--) {
@@ -35,6 +38,7 @@ export class BabelAstFactory implements AstFactory<t.Statement, t.Expression> {
     switch (operator) {
       case '&&':
       case '||':
+      case '??':
         return t.logicalExpression(operator, leftOperand, rightOperand);
       default:
         return t.binaryExpression(operator, leftOperand, rightOperand);
@@ -138,9 +142,11 @@ export class BabelAstFactory implements AstFactory<t.Statement, t.Expression> {
     if (sourceMapRange === null) {
       return node;
     }
-    // Note that the linker only works on a single file at a time, so there is no need to track the
-    // filename. Babel will just use the current filename in the source-map.
     node.loc = {
+      // Add in the filename so that we can map to external template files.
+      // Note that Babel gets confused if you specify a filename when it is the original source
+      // file. This happens when the template is inline, in which case just use `undefined`.
+      filename: sourceMapRange.url !== this.sourceUrl ? sourceMapRange.url : undefined,
       start: {
         line: sourceMapRange.start.line + 1,  // lines are 1-based in Babel.
         column: sourceMapRange.start.column,
@@ -149,7 +155,7 @@ export class BabelAstFactory implements AstFactory<t.Statement, t.Expression> {
         line: sourceMapRange.end.line + 1,  // lines are 1-based in Babel.
         column: sourceMapRange.end.column,
       },
-    };
+    } as any;  // Needed because the Babel typings for `loc` don't include `filename`.
     node.start = sourceMapRange.start.offset;
     node.end = sourceMapRange.end.offset;
 

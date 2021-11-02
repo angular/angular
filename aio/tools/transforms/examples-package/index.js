@@ -13,6 +13,7 @@ module.exports =
 
         .processor(require('./processors/collect-examples'))
         .processor(require('./processors/render-examples'))
+        .processor(require('./processors/check-for-unused-example-regions'))
 
         .config(function(readFilesProcessor, exampleFileReader) {
           readFilesProcessor.fileReaders.push(exampleFileReader);

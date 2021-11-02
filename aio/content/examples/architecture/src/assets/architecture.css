@@ -1,0 +1,23 @@
+ul {
+  padding-left: 0;
+}
+
+li {
+  list-style-type: none;
+  padding: 1rem;
+  background-color: aliceblue;
+  border: 1px solid #444;
+  margin-bottom: .5rem;
+}
+
+li:hover {
+  background-color: #444;
+  color: white;
+  cursor: pointer;
+}
+
+label {
+  display: block;
+  padding-bottom: .4rem;
+  margin-top: 1rem;
+}

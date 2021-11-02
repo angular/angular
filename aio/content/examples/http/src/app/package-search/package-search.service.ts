@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 
 import { Observable, of } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { catchError } from 'rxjs/operators';
 
 import { HttpErrorHandler, HandleError } from '../http-error-handler.service';
 
@@ -12,19 +12,13 @@ export interface NpmPackageInfo {
   description: string;
 }
 
-export const searchUrl = 'https://npmsearch.com/query';
-
-const httpOptions = {
-  headers: new HttpHeaders({
-    'x-refresh':  'true'
-  })
-};
+export const searchUrl = '/packages/query';
 
 function createHttpOptions(packageName: string, refresh = false) {
-    // npm package name search api
-    // e.g., http://npmsearch.com/query?q=dom'
-    const params = new HttpParams({ fromObject: { q: packageName } });
-    const headerMap = refresh ? {'x-refresh': 'true'} : {};
+    // package name search api
+    // e.g., /packages/query?name=dom'
+    const params = new HttpParams({ fromObject: { name: packageName } });
+    const headerMap: Record<string, string> = refresh ? {'x-refresh': 'true'} : {};
     const headers = new HttpHeaders(headerMap) ;
     return { headers, params };
 }
@@ -36,7 +30,7 @@ export class PackageSearchService {
   constructor(
     private http: HttpClient,
     httpErrorHandler: HttpErrorHandler) {
-    this.handleError = httpErrorHandler.createHandleError('HeroesService');
+    this.handleError = httpErrorHandler.createHandleError('PackageSearchService');
   }
 
   search(packageName: string, refresh = false): Observable<NpmPackageInfo[]> {
@@ -45,16 +39,7 @@ export class PackageSearchService {
 
     const options = createHttpOptions(packageName, refresh);
 
-    // TODO: Add error handling
-    return this.http.get(searchUrl, options).pipe(
-      map((data: any) => {
-        return data.results.map((entry: any) => ({
-            name: entry.name[0],
-            version: entry.version[0],
-            description: entry.description[0]
-          } as NpmPackageInfo )
-        );
-      }),
+    return this.http.get<NpmPackageInfo[]>(searchUrl, options).pipe(
       catchError(this.handleError('search', []))
     );
   }

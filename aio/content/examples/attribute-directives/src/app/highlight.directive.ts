@@ -9,12 +9,10 @@ export class HighlightDirective {
   constructor(private el: ElementRef) { }
 
   // #docregion defaultColor
-  @Input() defaultColor: string;
+  @Input() defaultColor = '';
   // #enddocregion defaultColor
 
-  // #docregion color
-  @Input('appHighlight') highlightColor: string;
-  // #enddocregion color
+  @Input('appHighlight') highlightColor = '';
 
   // #docregion mouse-enter
   @HostListener('mouseenter') onMouseEnter() {
@@ -23,7 +21,7 @@ export class HighlightDirective {
   // #enddocregion mouse-enter
 
   @HostListener('mouseleave') onMouseLeave() {
-    this.highlight(null);
+    this.highlight('');
   }
 
   private highlight(color: string) {

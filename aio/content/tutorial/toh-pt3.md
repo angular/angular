@@ -12,7 +12,7 @@ The `HeroDetailComponent` will present details of a selected hero.
 
 <div class="alert is-helpful">
 
-  For the sample app that this page describes, see the <live-example></live-example>.
+  For the sample application that this page describes, see the <live-example></live-example>.
 
 </div>
 
@@ -20,7 +20,7 @@ The `HeroDetailComponent` will present details of a selected hero.
 
 Use the Angular CLI to generate a new component named `hero-detail`.
 
-<code-example language="sh" class="code-shell">
+<code-example language="sh">
   ng generate component hero-detail
 </code-example>
 
@@ -79,13 +79,12 @@ Add a `hero` property, preceded by the `@Input()` decorator.
 
 That's the only change you should make to the `HeroDetailComponent` class.
 There are no more properties. There's no presentation logic.
-This component simply receives a hero object through its `hero` property and displays it.
+This component only receives a hero object through its `hero` property and displays it.
 
 ## Show the `HeroDetailComponent`
 
-The `HeroesComponent` is still a master/detail view.
-
-It used to display the hero details on its own, before you cut that portion of the template. Now it will delegate to the `HeroDetailComponent`.
+The `HeroesComponent` used to display the hero details on its own, before you removed that portion of the template.
+This section guides you through delegating logic to the `HeroDetailComponent`.
 
 The two components will have a parent/child relationship.
 The parent `HeroesComponent` will control the child `HeroDetailComponent`
@@ -121,7 +120,7 @@ The revised `HeroesComponent` template should look like this:
 <code-example path="toh-pt3/src/app/heroes/heroes.component.html"
   header="heroes.component.html"></code-example>
 
-The browser refreshes and the app starts working again as it did before.
+The browser refreshes and the application starts working again as it did before.
 
 ## What changed?
 
@@ -131,7 +130,7 @@ Now the `HeroDetailComponent` is presenting those details instead of the `Heroes
 
 Refactoring the original `HeroesComponent` into two components yields benefits, both now and in the future:
 
-1. You simplified the `HeroesComponent` by reducing its responsibilities.
+1. You reduced the `HeroesComponent` responsibilities.
 
 1. You can evolve the `HeroDetailComponent` into a rich hero editor
 without touching the parent `HeroesComponent`.

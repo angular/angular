@@ -1,0 +1,42 @@
+@use '../../mixins';
+
+.error-list {
+  display: grid;
+  list-style: none;
+  padding: 0;
+  overflow: hidden;
+
+  @media screen and (max-width: 600px) {
+    margin: 0 0 0 -8px;
+  }
+
+  li {
+    @include mixins.font-size(14);
+    margin: 8px 0;
+    @include mixins.line-height(14);
+    padding: 0;
+    float: left;
+    overflow: hidden;
+    min-width: 220px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    .symbol.runtime:before {
+      content: "R";
+    }
+
+    .symbol.compiler:before {
+      content: "C";
+    }
+
+    a {
+      display: inline-block;
+      @include mixins.line-height(16);
+      padding: 0 16px 0;
+      text-decoration: none;
+      transition: all .3s;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+}

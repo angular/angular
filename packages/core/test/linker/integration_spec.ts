@@ -7,7 +7,7 @@
  */
 
 import {CommonModule, DOCUMENT, ɵgetDOM as getDOM} from '@angular/common';
-import {Compiler, ComponentFactory, ComponentRef, ErrorHandler, EventEmitter, Host, Inject, Injectable, InjectionToken, Injector, NgModule, NgModuleRef, NO_ERRORS_SCHEMA, OnDestroy, SkipSelf, ViewRef, ɵivyEnabled as ivyEnabled} from '@angular/core';
+import {Compiler, ComponentFactory, ComponentRef, ErrorHandler, EventEmitter, Host, Inject, Injectable, InjectionToken, Injector, NgModule, NgModuleRef, NO_ERRORS_SCHEMA, OnDestroy, SkipSelf, ViewChild, ViewRef, ɵivyEnabled as ivyEnabled} from '@angular/core';
 import {ChangeDetectionStrategy, ChangeDetectorRef, PipeTransform} from '@angular/core/src/change_detection/change_detection';
 import {getDebugContext} from '@angular/core/src/errors';
 import {ComponentFactoryResolver} from '@angular/core/src/linker/component_factory_resolver';
@@ -109,8 +109,7 @@ function declareTests(config?: {useJit: boolean}) {
         fixture.componentInstance.ctxProp = 'Hello World!';
         fixture.detectChanges();
 
-        expect(getDOM().getProperty(fixture.debugElement.children[0].nativeElement, 'id'))
-            .toEqual('Hello World!');
+        expect(fixture.debugElement.children[0].nativeElement.id).toEqual('Hello World!');
       });
 
       it('should consume binding to aria-* attributes', () => {
@@ -168,13 +167,11 @@ function declareTests(config?: {useJit: boolean}) {
            const fixture = TestBed.createComponent(MyComp);
 
            fixture.detectChanges();
-           expect(getDOM().getProperty(fixture.debugElement.children[0].nativeElement, 'tabIndex'))
-               .toEqual(0);
+           expect(fixture.debugElement.children[0].nativeElement.tabIndex).toEqual(0);
 
            fixture.componentInstance.ctxNumProp = 5;
            fixture.detectChanges();
-           expect(getDOM().getProperty(fixture.debugElement.children[0].nativeElement, 'tabIndex'))
-               .toEqual(5);
+           expect(fixture.debugElement.children[0].nativeElement.tabIndex).toEqual(5);
          });
 
       it('should consume binding to camel-cased properties', () => {
@@ -184,13 +181,11 @@ function declareTests(config?: {useJit: boolean}) {
         const fixture = TestBed.createComponent(MyComp);
 
         fixture.detectChanges();
-        expect(getDOM().getProperty(fixture.debugElement.children[0].nativeElement, 'readOnly'))
-            .toBeFalsy();
+        expect(fixture.debugElement.children[0].nativeElement.readOnly).toBeFalsy();
 
         fixture.componentInstance.ctxBoolProp = true;
         fixture.detectChanges();
-        expect(getDOM().getProperty(fixture.debugElement.children[0].nativeElement, 'readOnly'))
-            .toBeTruthy();
+        expect(fixture.debugElement.children[0].nativeElement.readOnly).toBeTruthy();
       });
 
       it('should consume binding to innerHtml', () => {
@@ -236,7 +231,7 @@ function declareTests(config?: {useJit: boolean}) {
         fixture.debugElement.componentInstance.ctxProp = 'foo';
         fixture.detectChanges();
 
-        expect(getDOM().getProperty(nativeEl, 'htmlFor')).toBe('foo');
+        expect(nativeEl.htmlFor).toBe('foo');
       });
 
       it('should consume directive watch expression change.', () => {
@@ -617,7 +612,7 @@ function declareTests(config?: {useJit: boolean}) {
           expect(cmp.numberOfChecks).toEqual(2);
         });
 
-        if (getDOM().supportsDOMEvents()) {
+        if (getDOM().supportsDOMEvents) {
           it('should allow to destroy a component from within a host event handler',
              fakeAsync(() => {
                TestBed.configureTestingModule({declarations: [MyComp, [[PushCmpWithHostEvent]]]});
@@ -922,7 +917,7 @@ function declareTests(config?: {useJit: boolean}) {
 
         fixture.detectChanges();
 
-        expect(getDOM().getProperty(tc.nativeElement, 'id')).toEqual('newId');
+        expect(tc.nativeElement.id).toEqual('newId');
       });
 
       it('should not use template variables for expressions in hostProperties', () => {
@@ -996,7 +991,7 @@ function declareTests(config?: {useJit: boolean}) {
 
 
 
-      if (getDOM().supportsDOMEvents()) {
+      if (getDOM().supportsDOMEvents) {
         it('should support preventing default on render events', () => {
           TestBed.configureTestingModule({
             declarations:
@@ -1641,6 +1636,159 @@ function declareTests(config?: {useJit: boolean}) {
       expect(fixture.nativeElement).toHaveText('');
     });
 
+
+    describe('moving embedded views of projectable nodes in a dynamic component', () => {
+      @Component({selector: 'menu-item', template: ''})
+      class DynamicMenuItem {
+        @ViewChild('templateRef', {static: true}) templateRef!: TemplateRef<any>;
+        itemContent!: string;
+      }
+
+      @NgModule({
+        declarations: [DynamicMenuItem],
+        entryComponents: [DynamicMenuItem],
+      })
+      class DynamicMenuItemModule {
+      }
+
+      @Component({selector: 'test', template: `<ng-container #menuItemsContainer></ng-container>`})
+      class TestCmp {
+        constructor(public cfr: ComponentFactoryResolver) {}
+        @ViewChild('menuItemsContainer', {static: true, read: ViewContainerRef})
+        menuItemsContainer!: ViewContainerRef;
+      }
+
+      beforeEach(() => {
+        TestBed.configureTestingModule({
+          declarations: [TestCmp],
+          imports: [DynamicMenuItemModule],
+        });
+      });
+
+      const createElWithContent = (content: string, tagName = 'span') => {
+        const element = document.createElement(tagName);
+        element.textContent = content;
+        return element;
+      };
+
+      it('should support moving embedded views of projectable nodes', () => {
+        TestBed.overrideTemplate(
+            DynamicMenuItem, `<ng-template #templateRef><ng-content></ng-content></ng-template>`);
+
+        const fixture = TestBed.createComponent(TestCmp);
+        const menuItemsContainer = fixture.componentInstance.menuItemsContainer;
+        const dynamicCmptFactory =
+            fixture.componentInstance.cfr.resolveComponentFactory(DynamicMenuItem);
+
+        const cmptRefWithAa =
+            dynamicCmptFactory.create(Injector.NULL, [[createElWithContent('Aa')]]);
+        const cmptRefWithBb =
+            dynamicCmptFactory.create(Injector.NULL, [[createElWithContent('Bb')]]);
+        const cmptRefWithCc =
+            dynamicCmptFactory.create(Injector.NULL, [[createElWithContent('Cc')]]);
+
+        menuItemsContainer.insert(cmptRefWithAa.instance.templateRef.createEmbeddedView({}));
+        menuItemsContainer.insert(cmptRefWithBb.instance.templateRef.createEmbeddedView({}));
+        menuItemsContainer.insert(cmptRefWithCc.instance.templateRef.createEmbeddedView({}));
+
+        menuItemsContainer.move(menuItemsContainer.get(0)!, 1);
+        expect(fixture.nativeElement.textContent).toBe('BbAaCc');
+        menuItemsContainer.move(menuItemsContainer.get(2)!, 1);
+        expect(fixture.nativeElement.textContent).toBe('BbCcAa');
+      });
+
+      it('should support moving embedded views of projectable nodes in multiple slots', () => {
+        TestBed.overrideTemplate(
+            DynamicMenuItem,
+            `<ng-template #templateRef><ng-content select="span"></ng-content><ng-content select="button"></ng-content></ng-template>`);
+
+        const fixture = TestBed.createComponent(TestCmp);
+        const menuItemsContainer = fixture.componentInstance.menuItemsContainer;
+        const dynamicCmptFactory =
+            fixture.componentInstance.cfr.resolveComponentFactory(DynamicMenuItem);
+
+        const cmptRefWithAa = dynamicCmptFactory.create(
+            Injector.NULL, [[createElWithContent('A')], [createElWithContent('a', 'button')]]);
+        const cmptRefWithBb = dynamicCmptFactory.create(
+            Injector.NULL, [[createElWithContent('B')], [createElWithContent('b', 'button')]]);
+        const cmptRefWithCc = dynamicCmptFactory.create(
+            Injector.NULL, [[createElWithContent('C')], [createElWithContent('c', 'button')]]);
+
+        menuItemsContainer.insert(cmptRefWithAa.instance.templateRef.createEmbeddedView({}));
+        menuItemsContainer.insert(cmptRefWithBb.instance.templateRef.createEmbeddedView({}));
+        menuItemsContainer.insert(cmptRefWithCc.instance.templateRef.createEmbeddedView({}));
+
+        menuItemsContainer.move(menuItemsContainer.get(0)!, 1);
+        expect(fixture.nativeElement.textContent).toBe('BbAaCc');
+        menuItemsContainer.move(menuItemsContainer.get(2)!, 1);
+        expect(fixture.nativeElement.textContent).toBe('BbCcAa');
+      });
+
+      it('should support moving embedded views of projectable nodes in multiple slots and interpolations',
+         () => {
+           TestBed.overrideTemplate(
+               DynamicMenuItem,
+               `<ng-template #templateRef><ng-content select="span"></ng-content>{{itemContent}}<ng-content select="button"></ng-content></ng-template>`);
+
+           TestBed.configureTestingModule(
+               {declarations: [TestCmp], imports: [DynamicMenuItemModule]});
+
+           const fixture = TestBed.createComponent(TestCmp);
+           const menuItemsContainer = fixture.componentInstance.menuItemsContainer;
+           const dynamicCmptFactory =
+               fixture.componentInstance.cfr.resolveComponentFactory(DynamicMenuItem);
+
+           const cmptRefWithAa = dynamicCmptFactory.create(
+               Injector.NULL, [[createElWithContent('A')], [createElWithContent('a', 'button')]]);
+           const cmptRefWithBb = dynamicCmptFactory.create(
+               Injector.NULL, [[createElWithContent('B')], [createElWithContent('b', 'button')]]);
+           const cmptRefWithCc = dynamicCmptFactory.create(
+               Injector.NULL, [[createElWithContent('C')], [createElWithContent('c', 'button')]]);
+
+           menuItemsContainer.insert(cmptRefWithAa.instance.templateRef.createEmbeddedView({}));
+           menuItemsContainer.insert(cmptRefWithBb.instance.templateRef.createEmbeddedView({}));
+           menuItemsContainer.insert(cmptRefWithCc.instance.templateRef.createEmbeddedView({}));
+
+           cmptRefWithAa.instance.itemContent = '0';
+           cmptRefWithBb.instance.itemContent = '1';
+           cmptRefWithCc.instance.itemContent = '2';
+
+           fixture.detectChanges();
+
+           menuItemsContainer.move(menuItemsContainer.get(0)!, 1);
+           expect(fixture.nativeElement.textContent).toBe('B1bA0aC2c');
+           menuItemsContainer.move(menuItemsContainer.get(2)!, 1);
+           expect(fixture.nativeElement.textContent).toBe('B1bC2cA0a');
+         });
+
+      it('should support moving embedded views with empty projectable slots', () => {
+        TestBed.overrideTemplate(
+            DynamicMenuItem, `<ng-template #templateRef><ng-content></ng-content></ng-template>`);
+
+        const fixture = TestBed.createComponent(TestCmp);
+        const menuItemsContainer = fixture.componentInstance.menuItemsContainer;
+        const dynamicCmptFactory =
+            fixture.componentInstance.cfr.resolveComponentFactory(DynamicMenuItem);
+
+        const cmptRefWithAa = dynamicCmptFactory.create(Injector.NULL, [[]]);
+        const cmptRefWithBb =
+            dynamicCmptFactory.create(Injector.NULL, [[createElWithContent('Bb')]]);
+        const cmptRefWithCc =
+            dynamicCmptFactory.create(Injector.NULL, [[createElWithContent('Cc')]]);
+
+        menuItemsContainer.insert(cmptRefWithAa.instance.templateRef.createEmbeddedView({}));
+        menuItemsContainer.insert(cmptRefWithBb.instance.templateRef.createEmbeddedView({}));
+        menuItemsContainer.insert(cmptRefWithCc.instance.templateRef.createEmbeddedView({}));
+
+        menuItemsContainer.move(menuItemsContainer.get(0)!, 1);  // [ Bb, NULL, Cc]
+        expect(fixture.nativeElement.textContent).toBe('BbCc');
+        menuItemsContainer.move(menuItemsContainer.get(2)!, 1);  // [ Bb, Cc, NULL]
+        expect(fixture.nativeElement.textContent).toBe('BbCc');
+        menuItemsContainer.move(menuItemsContainer.get(0)!, 1);  // [ Cc, Bb, NULL]
+        expect(fixture.nativeElement.textContent).toBe('CcBb');
+      });
+    });
+
     describe('Property bindings', () => {
       modifiedInIvy('Unknown property error throws an error instead of logging it')
           .it('should throw on bindings to unknown properties', () => {
@@ -1728,7 +1876,7 @@ function declareTests(config?: {useJit: boolean}) {
         fixture.detectChanges();
 
         const el = fixture.nativeElement.querySelector('span');
-        expect(getDOM().getProperty(el, 'title')).toEqual('TITLE');
+        expect(el.title).toEqual('TITLE');
       });
     });
 
@@ -1944,7 +2092,7 @@ function declareTests(config?: {useJit: boolean}) {
         expect(fixture.debugElement.children[0].nativeElement.outerHTML).toContain('my-attr="aaa"');
       });
 
-      if (getDOM().supportsDOMEvents()) {
+      if (getDOM().supportsDOMEvents) {
         it('should support event decorators', fakeAsync(() => {
              TestBed.configureTestingModule({
                declarations: [MyComp, DirectiveWithPropDecorators],
@@ -2047,7 +2195,7 @@ function declareTests(config?: {useJit: boolean}) {
          }));
     });
 
-    if (getDOM().supportsDOMEvents()) {
+    if (getDOM().supportsDOMEvents) {
       describe('svg', () => {
         it('should support svg elements', () => {
           TestBed.configureTestingModule({declarations: [MyComp]});
@@ -2058,12 +2206,10 @@ function declareTests(config?: {useJit: boolean}) {
           const el = fixture.nativeElement;
           const svg = el.childNodes[0];
           const use = svg.childNodes[0];
-          expect(getDOM().getProperty(<Element>svg, 'namespaceURI'))
-              .toEqual('http://www.w3.org/2000/svg');
-          expect(getDOM().getProperty(<Element>use, 'namespaceURI'))
-              .toEqual('http://www.w3.org/2000/svg');
+          expect(svg.namespaceURI).toEqual('http://www.w3.org/2000/svg');
+          expect(use.namespaceURI).toEqual('http://www.w3.org/2000/svg');
 
-          const firstAttribute = getDOM().getProperty(<Element>use, 'attributes')[0];
+          const firstAttribute = use.attributes[0];
           expect(firstAttribute.name).toEqual('xlink:href');
           expect(firstAttribute.namespaceURI).toEqual('http://www.w3.org/1999/xlink');
         });
@@ -2079,12 +2225,9 @@ function declareTests(config?: {useJit: boolean}) {
           const svg = el.childNodes[0];
           const foreignObject = svg.childNodes[0];
           const p = foreignObject.childNodes[0];
-          expect(getDOM().getProperty(<Element>svg, 'namespaceURI'))
-              .toEqual('http://www.w3.org/2000/svg');
-          expect(getDOM().getProperty(<Element>foreignObject, 'namespaceURI'))
-              .toEqual('http://www.w3.org/2000/svg');
-          expect(getDOM().getProperty(<Element>p, 'namespaceURI'))
-              .toEqual('http://www.w3.org/1999/xhtml');
+          expect(svg.namespaceURI).toEqual('http://www.w3.org/2000/svg');
+          expect(foreignObject.namespaceURI).toEqual('http://www.w3.org/2000/svg');
+          expect(p.namespaceURI).toEqual('http://www.w3.org/1999/xhtml');
         });
       });
 

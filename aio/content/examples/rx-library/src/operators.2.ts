@@ -10,7 +10,7 @@
 
 // #enddocregion
 
-export function docRegionDefault(console) {
+export function docRegionDefault(console: Console) {
   // #docregion
   const squareOdd = of(1, 2, 3, 4, 5)
     .pipe(

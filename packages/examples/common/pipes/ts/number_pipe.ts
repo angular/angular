@@ -11,56 +11,35 @@ import {Component} from '@angular/core';
 // we need to import data for the french locale
 import localeFr from './locale-fr';
 
-// registering french data
-registerLocaleData(localeFr);
+registerLocaleData(localeFr, 'fr');
 
 // #docregion NumberPipe
 @Component({
   selector: 'number-pipe',
   template: `<div>
-    <!--output '2.718'-->
-    <p>e (no formatting): {{e | number}}</p>
 
-    <!--output '002.71828'-->
-    <p>e (3.1-5): {{e | number:'3.1-5'}}</p>
+    <p>
+      No specified formatting:
+      {{pi | number}}
+      <!--output: '3.142'-->
+    </p>
 
-    <!--output '0,002.71828'-->
-    <p>e (4.5-5): {{e | number:'4.5-5'}}</p>
+    <p>
+      With digitsInfo parameter specified:
+      {{pi | number:'4.1-5'}}
+      <!--output: '0,003.14159'-->
+    </p>
 
-    <!--output '0 002,71828'-->
-    <p>e (french): {{e | number:'4.5-5':'fr'}}</p>
+    <p>
+      With digitsInfo and
+      locale parameters specified:
+      {{pi | number:'4.1-5':'fr'}}
+      <!--output: '0 003,14159'-->
+    </p>
 
-    <!--output '3.14'-->
-    <p>pi (no formatting): {{pi | number}}</p>
-
-    <!--output '003.14'-->
-    <p>pi (3.1-5): {{pi | number:'3.1-5'}}</p>
-
-    <!--output '003.14000'-->
-    <p>pi (3.5-5): {{pi | number:'3.5-5'}}</p>
-
-    <!--output '-3' / unlike '-2' by Math.round()-->
-    <p>-2.5 (1.0-0): {{-2.5 | number:'1.0-0'}}</p>
   </div>`
 })
 export class NumberPipeComponent {
-  pi: number = 3.14;
-  e: number = 2.718281828459045;
-}
-// #enddocregion
-
-// #docregion DeprecatedNumberPipe
-@Component({
-  selector: 'deprecated-number-pipe',
-  template: `<div>
-    <p>e (no formatting): {{e}}</p>
-    <p>e (3.1-5): {{e | number:'3.1-5'}}</p>
-    <p>pi (no formatting): {{pi}}</p>
-    <p>pi (3.5-5): {{pi | number:'3.5-5'}}</p>
-  </div>`
-})
-export class DeprecatedNumberPipeComponent {
-  pi: number = 3.141592;
-  e: number = 2.718281828459045;
+  pi: number = 3.14159265359;
 }
 // #enddocregion

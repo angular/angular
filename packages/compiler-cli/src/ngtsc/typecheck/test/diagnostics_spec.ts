@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {absoluteFrom, getSourceFileOrError} from '../../file_system';
 import {runInEachFileSystem, TestFile} from '../../file_system/testing';
 import {OptimizeFor, TypeCheckingConfig} from '../api';
 
-import {ngForDeclaration, ngForDts, setup, TestDeclaration} from './test_utils';
+import {ngForDeclaration, ngForDts, setup, TestDeclaration} from '../testing';
 
 runInEachFileSystem(() => {
   describe('template diagnostics', () => {
@@ -399,6 +399,48 @@ runInEachFileSystem(() => {
 
         expect(messages).toEqual([]);
       });
+
+      it('does not produce diagnostic for fallback value using nullish coalescing', () => {
+        const messages = diagnose(`<div>{{ greet(name ?? 'Frodo') }}</div>`, `
+        export class TestComponent {
+          name: string | null;
+
+          greet(name: string) {
+            return 'hello ' + name;
+          }
+        }`);
+
+        expect(messages).toEqual([]);
+      });
+
+      it('does not produce diagnostic for safe keyed access', () => {
+        const messages =
+            diagnose(`<div [class.red-text]="person.favoriteColors?.[0] === 'red'"></div>`, `
+              export class TestComponent {
+                person: {
+                  favoriteColors?: string[];
+                };
+              }`);
+
+        expect(messages).toEqual([]);
+      });
+
+      it('infers a safe keyed read as undefined', () => {
+        const messages = diagnose(`<div (click)="log(person.favoriteColors?.[0])"></div>`, `
+          export class TestComponent {
+            person: {
+              favoriteColors?: string[];
+            };
+
+            log(color: string) {
+              console.log(color);
+            }
+          }`);
+
+        expect(messages).toEqual([
+          `TestComponent.html(1, 19): Argument of type 'string | undefined' is not assignable to parameter of type 'string'.`
+        ]);
+      });
     });
 
     it('computes line and column offsets', () => {
@@ -419,6 +461,50 @@ class TestComponent {
         `TestComponent.html(3, 15): Property 'srcc' does not exist on type 'TestComponent'. Did you mean 'src'?`,
         `TestComponent.html(4, 18): Property 'heihgt' does not exist on type 'TestComponent'. Did you mean 'height'?`,
       ]);
+    });
+
+    it('works for shorthand property declarations', () => {
+      const messages = diagnose(
+          `<div dir [input]="{a, b: 2}"></div>`, `
+        class Dir {
+          input: {a: string, b: number};
+        }
+        class TestComponent {
+          a: number;
+        }`,
+          [{
+            type: 'directive',
+            name: 'Dir',
+            selector: '[dir]',
+            exportAs: ['dir'],
+            inputs: {input: 'input'},
+          }]);
+
+      expect(messages).toEqual(
+          [`TestComponent.html(1, 20): Type 'number' is not assignable to type 'string'.`]);
+    });
+
+    it('works for shorthand property declarations referring to template variables', () => {
+      const messages = diagnose(
+          `
+          <span #span></span>
+          <div dir [input]="{span, b: 2}"></div>
+        `,
+          `
+          class Dir {
+            input: {span: string, b: number};
+          }
+          class TestComponent {}`,
+          [{
+            type: 'directive',
+            name: 'Dir',
+            selector: '[dir]',
+            exportAs: ['dir'],
+            inputs: {input: 'input'},
+          }]);
+
+      expect(messages).toEqual(
+          [`TestComponent.html(3, 30): Type 'HTMLElement' is not assignable to type 'string'.`]);
     });
   });
 

@@ -44,7 +44,7 @@ describe('ResourceService', () => {
     it('categories observable should complete', () => {
       let completed = false;
       resourceService.categories.subscribe({complete: () => completed = true});
-      expect(completed).toBe(true, 'observable completed');
+      expect(completed).withContext('observable completed').toBe(true);
     });
 
     it('should reshape contributors.json to sorted category array', () => {
@@ -58,17 +58,17 @@ describe('ResourceService', () => {
       const sub = cat.subCategories[0];
       const res = sub.resources[0];
 
-      expect(cat.id).toBe('cat-3', 'category id');
-      expect(sub.id).toBe('cat3-subcat2', 'subcat id');
-      expect(res.id).toBe('cat3-subcat2-res1', 'resources id');
+      expect(cat.id).withContext('category id').toBe('cat-3');
+      expect(sub.id).withContext('subcat id').toBe('cat3-subcat2');
+      expect(res.id).withContext('resources id').toBe('cat3-subcat2-res1');
     });
 
     it('resource knows its category and sub-category titles', () => {
       const cat = categories[1];
       const sub = cat.subCategories[0];
       const res = sub.resources[0];
-      expect(res.category).toBe(cat.title, 'category title');
-      expect(res.subCategory).toBe(sub.title, 'subcategory title');
+      expect(res.category).withContext('category title').toBe(cat.title);
+      expect(res.subCategory).withContext('subcategory title').toBe(sub.title);
     });
 
     it('should have expected SubCategories of "Cat 3"', () => {

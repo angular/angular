@@ -1,7 +1,7 @@
 ### Build
 
 ```
-yarn bazel build //packages/core/test/render3/perf:${BENCHMARK}_lib.min_debug.js --config=ivy
+yarn bazel build //packages/core/test/render3/perf:${BENCHMARK}_lib.min_debug.js
 ```
 
 ### Run 
@@ -72,15 +72,15 @@ The resulting output should look something like this:
 ### Notes
 
 To run the benchmark use `bazel run <benchmark_target>`, example:
-- `yarn bazel run --config=ivy //packages/core/test/render3/perf:noop_change_detection`
+- `yarn bazel run //packages/core/test/render3/perf:noop_change_detection`
 
 To profile, append `_profile` to the target name and attach a debugger via chrome://inspect, example:
-- `yarn bazel run --config=ivy //packages/core/test/render3/perf:noop_change_detection_profile`
+- `yarn bazel run //packages/core/test/render3/perf:noop_change_detection_profile`
 
 To interactively edit/rerun benchmarks use `ibazel` instead of `bazel`.
 
 To debug
 - Follow the directions in `profile_in_browser.html`
 OR
-- `yarn bazel build --config=ivy //packages/core/test/render3/perf:noop_change_detection`
+- `yarn bazel build //packages/core/test/render3/perf:noop_change_detection`
 - `node --inspect-brk bazel-out/darwin-fastbuild/bin/packages/core/test/render3/perf/noop_change_detection.min_debug.js`

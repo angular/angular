@@ -11,8 +11,6 @@ table {
   margin:20px;
   border:#ccc 1px solid;
 
-  -moz-border-radius:3px;
-  -webkit-border-radius:3px;
   border-radius:3px;
 }
 table th {
@@ -46,12 +44,8 @@ table tr:last-child td {
   border-bottom:0;
 }
 table tr:last-child td:first-child {
-  -moz-border-radius-bottomleft:3px;
-  -webkit-border-bottom-left-radius:3px;
   border-bottom-left-radius:3px;
 }
 table tr:last-child td:last-child {
-  -moz-border-radius-bottomright:3px;
-  -webkit-border-bottom-right-radius:3px;
   border-bottom-right-radius:3px;
 }

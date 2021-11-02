@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as ts from 'typescript';
+import ts from 'typescript';
 
-import {BazelAndG3Options, I18nOptions, LegacyNgcOptions, MiscOptions, NgcCompatibilityOptions, StrictTemplateOptions} from './public_options';
+import {BazelAndG3Options, I18nOptions, LegacyNgcOptions, MiscOptions, NgcCompatibilityOptions, StrictTemplateOptions, TargetOptions} from './public_options';
 
 
 /**
@@ -26,22 +26,10 @@ export interface TestOnlyOptions {
   _useHostForImportGeneration?: boolean;
 
   /**
-   * Turn on template type-checking in the Ivy compiler.
-   *
-   * This is an internal flag being used to roll out template type-checking in ngtsc. Turning it on
-   * by default before it's ready might break other users attempting to test the new compiler's
-   * behavior.
-   *
-   * @internal
-   */
-  ivyTemplateTypeCheck?: boolean;
-
-  /**
    * An option to enable ngtsc's internal performance tracing.
    *
-   * This should be a path to a JSON file where trace information will be written. An optional 'ts:'
-   * prefix will cause the trace to be written via the TS host instead of directly to the filesystem
-   * (not all hosts support this mode of operation).
+   * This should be a path to a JSON file where trace information will be written. This is sensitive
+   * to the compiler's working directory, and should likely be an absolute path.
    *
    * This is currently not exposed to users as the trace format is still unstable.
    */
@@ -49,19 +37,13 @@ export interface TestOnlyOptions {
 }
 
 /**
- * Options that specify compilation target.
+ * Internal only options for compiler.
  */
-export interface TargetOptions {
+export interface InternalOptions {
   /**
-   * Specifies the compilation mode to use. The following modes are available:
-   * - 'full': generates fully AOT compiled code using Ivy instructions.
-   * - 'partial': generates code in a stable, but intermediate form suitable to be published to NPM.
-   *
-   * To become public once the linker is ready.
-   *
-   * @internal
+   * Whether to run all template checks and generate extended template diagnostics.
    */
-  compilationMode?: 'full'|'partial';
+  _extendedTemplateDiagnostics?: boolean;
 }
 
 /**
@@ -73,4 +55,4 @@ export interface TargetOptions {
 export interface NgCompilerOptions extends ts.CompilerOptions, LegacyNgcOptions, BazelAndG3Options,
                                            NgcCompatibilityOptions, StrictTemplateOptions,
                                            TestOnlyOptions, I18nOptions, TargetOptions,
-                                           MiscOptions {}
+                                           InternalOptions, MiscOptions {}

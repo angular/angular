@@ -11,4 +11,5 @@ export {FatalLinkerError, isFatalLinkerError} from './src/fatal_linker_error';
 export {DeclarationScope} from './src/file_linker/declaration_scope';
 export {FileLinker} from './src/file_linker/file_linker';
 export {LinkerEnvironment} from './src/file_linker/linker_environment';
-export {LinkerOptions} from './src/file_linker/linker_options';
+export {DEFAULT_LINKER_OPTIONS, LinkerOptions} from './src/file_linker/linker_options';
+export {needsLinking} from './src/file_linker/needs_linking';

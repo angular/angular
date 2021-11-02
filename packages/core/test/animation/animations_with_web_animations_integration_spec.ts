@@ -512,6 +512,48 @@ describe('animation integration tests using web animations', function() {
        expect(elm.style.getPropertyValue('display')).toEqual('inline-block');
        expect(elm.style.getPropertyValue('position')).toEqual('fixed');
      });
+
+  it('should set normalized style property values on animation end', () => {
+    @Component({
+      selector: 'ani-cmp',
+      template: `
+          <div #elm [@myAnimation]="myAnimationExp" style="width: 100%; font-size: 2rem"></div>
+        `,
+      animations: [
+        trigger(
+            'myAnimation',
+            [
+              state('go', style({width: 300, 'font-size': 14})),
+              transition('* => go', [animate('1s')])
+            ]),
+      ]
+    })
+    class Cmp {
+      @ViewChild('elm', {static: true}) public element: any;
+
+      public myAnimationExp = '';
+    }
+
+    TestBed.configureTestingModule({declarations: [Cmp]});
+
+    const engine = TestBed.inject(ɵAnimationEngine);
+    const fixture = TestBed.createComponent(Cmp);
+    const cmp = fixture.componentInstance;
+
+    const elm = cmp.element.nativeElement;
+    expect(elm.style.getPropertyValue('width')).toEqual('100%');
+    expect(elm.style.getPropertyValue('font-size')).toEqual('2rem');
+
+    cmp.myAnimationExp = 'go';
+    fixture.detectChanges();
+
+    const player = engine.players.pop()!;
+    player.finish();
+    player.destroy();
+
+    expect(elm.style.getPropertyValue('width')).toEqual('300px');
+    expect(elm.style.getPropertyValue('font-size')).toEqual('14px');
+  });
 });
 })();
 

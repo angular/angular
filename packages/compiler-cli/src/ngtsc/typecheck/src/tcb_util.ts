@@ -7,14 +7,16 @@
  */
 
 import {AbsoluteSourceSpan, ParseSourceSpan} from '@angular/compiler';
-import {ClassDeclaration} from '@angular/compiler-cli/src/ngtsc/reflection';
-import * as ts from 'typescript';
+import {ClassDeclaration, ReflectionHost} from '@angular/compiler-cli/src/ngtsc/reflection';
+import ts from 'typescript';
 
+import {Reference} from '../../imports';
 import {getTokenAtPosition} from '../../util/src/typescript';
 import {FullTemplateMapping, SourceLocation, TemplateId, TemplateSourceMapping} from '../api';
 
-import {hasIgnoreMarker, readSpanComment} from './comments';
+import {hasIgnoreForDiagnosticsMarker, readSpanComment} from './comments';
 import {checkIfClassIsExported, checkIfGenericTypesAreUnbound} from './ts_util';
+import {TypeParameterEmitter} from './type_parameter_emitter';
 
 /**
  * Adapter interface which allows the template type-checking diagnostics code to interpret offsets
@@ -37,27 +39,60 @@ export interface TemplateSourceResolver {
   toParseSourceSpan(id: TemplateId, span: AbsoluteSourceSpan): ParseSourceSpan|null;
 }
 
-export function requiresInlineTypeCheckBlock(node: ClassDeclaration<ts.ClassDeclaration>): boolean {
+/**
+ * Indicates whether a particular component requires an inline type check block.
+ *
+ * This is not a boolean state as inlining might only be required to get the best possible
+ * type-checking, but the component could theoretically still be checked without it.
+ */
+export enum TcbInliningRequirement {
+  /**
+   * There is no way to type check this component without inlining.
+   */
+  MustInline,
+
+  /**
+   * Inlining should be used due to the component's generic bounds, but a non-inlining fallback
+   * method can be used if that's not possible.
+   */
+  ShouldInlineForGenericBounds,
+
+  /**
+   * There is no requirement for this component's TCB to be inlined.
+   */
+  None,
+}
+
+export function requiresInlineTypeCheckBlock(
+    node: ClassDeclaration<ts.ClassDeclaration>,
+    usedPipes: Map<string, Reference<ClassDeclaration<ts.ClassDeclaration>>>,
+    reflector: ReflectionHost): TcbInliningRequirement {
   // In order to qualify for a declared TCB (not inline) two conditions must be met:
   // 1) the class must be exported
-  // 2) it must not have constrained generic types
+  // 2) it must not have contextual generic type bounds
   if (!checkIfClassIsExported(node)) {
     // Condition 1 is false, the class is not exported.
-    return true;
-  } else if (!checkIfGenericTypesAreUnbound(node)) {
-    // Condition 2 is false, the class has constrained generic types
-    return true;
+    return TcbInliningRequirement.MustInline;
+  } else if (!checkIfGenericTypeBoundsAreContextFree(node, reflector)) {
+    // Condition 2 is false, the class has constrained generic types. It should be checked with an
+    // inline TCB if possible, but can potentially use fallbacks to avoid inlining if not.
+    return TcbInliningRequirement.ShouldInlineForGenericBounds;
+  } else if (Array.from(usedPipes.values())
+                 .some(pipeRef => !checkIfClassIsExported(pipeRef.node))) {
+    // If one of the pipes used by the component is not exported, a non-inline TCB will not be able
+    // to import it, so this requires an inline TCB.
+    return TcbInliningRequirement.MustInline;
   } else {
-    return false;
+    return TcbInliningRequirement.None;
   }
 }
 
 /** Maps a shim position back to a template location. */
 export function getTemplateMapping(
-    shimSf: ts.SourceFile, position: number, resolver: TemplateSourceResolver): FullTemplateMapping|
-    null {
+    shimSf: ts.SourceFile, position: number, resolver: TemplateSourceResolver,
+    isDiagnosticRequest: boolean): FullTemplateMapping|null {
   const node = getTokenAtPosition(shimSf, position);
-  const sourceLocation = findSourceLocation(node, shimSf);
+  const sourceLocation = findSourceLocation(node, shimSf, isDiagnosticRequest);
   if (sourceLocation === null) {
     return null;
   }
@@ -67,12 +102,15 @@ export function getTemplateMapping(
   if (span === null) {
     return null;
   }
+  // TODO(atscott): Consider adding a context span by walking up from `node` until we get a
+  // different span.
   return {sourceLocation, templateSourceMapping: mapping, span};
 }
 
-export function findTypeCheckBlock(file: ts.SourceFile, id: TemplateId): ts.Node|null {
+export function findTypeCheckBlock(
+    file: ts.SourceFile, id: TemplateId, isDiagnosticRequest: boolean): ts.Node|null {
   for (const stmt of file.statements) {
-    if (ts.isFunctionDeclaration(stmt) && getTemplateId(stmt, file) === id) {
+    if (ts.isFunctionDeclaration(stmt) && getTemplateId(stmt, file, isDiagnosticRequest) === id) {
       return stmt;
     }
   }
@@ -82,12 +120,14 @@ export function findTypeCheckBlock(file: ts.SourceFile, id: TemplateId): ts.Node
 /**
  * Traverses up the AST starting from the given node to extract the source location from comments
  * that have been emitted into the TCB. If the node does not exist within a TCB, or if an ignore
- * marker comment is found up the tree, this function returns null.
+ * marker comment is found up the tree (and this is part of a diagnostic request), this function
+ * returns null.
  */
-export function findSourceLocation(node: ts.Node, sourceFile: ts.SourceFile): SourceLocation|null {
+export function findSourceLocation(
+    node: ts.Node, sourceFile: ts.SourceFile, isDiagnosticsRequest: boolean): SourceLocation|null {
   // Search for comments until the TCB's function declaration is encountered.
   while (node !== undefined && !ts.isFunctionDeclaration(node)) {
-    if (hasIgnoreMarker(node, sourceFile)) {
+    if (hasIgnoreForDiagnosticsMarker(node, sourceFile) && isDiagnosticsRequest) {
       // There's an ignore marker on this node, so the diagnostic should not be reported.
       return null;
     }
@@ -96,7 +136,7 @@ export function findSourceLocation(node: ts.Node, sourceFile: ts.SourceFile): So
     if (span !== null) {
       // Once the positional information has been extracted, search further up the TCB to extract
       // the unique id that is attached with the TCB's function declaration.
-      const id = getTemplateId(node, sourceFile);
+      const id = getTemplateId(node, sourceFile, isDiagnosticsRequest);
       if (id === null) {
         return null;
       }
@@ -109,10 +149,11 @@ export function findSourceLocation(node: ts.Node, sourceFile: ts.SourceFile): So
   return null;
 }
 
-function getTemplateId(node: ts.Node, sourceFile: ts.SourceFile): TemplateId|null {
+function getTemplateId(
+    node: ts.Node, sourceFile: ts.SourceFile, isDiagnosticRequest: boolean): TemplateId|null {
   // Walk up to the function declaration of the TCB, the file information is attached there.
   while (!ts.isFunctionDeclaration(node)) {
-    if (hasIgnoreMarker(node, sourceFile)) {
+    if (hasIgnoreForDiagnosticsMarker(node, sourceFile) && isDiagnosticRequest) {
       // There's an ignore marker on this node, so the diagnostic should not be reported.
       return null;
     }
@@ -132,4 +173,10 @@ function getTemplateId(node: ts.Node, sourceFile: ts.SourceFile): TemplateId|nul
     const commentText = sourceFile.text.substring(pos + 2, end - 2);
     return commentText;
   }) as TemplateId || null;
+}
+
+export function checkIfGenericTypeBoundsAreContextFree(
+    node: ClassDeclaration<ts.ClassDeclaration>, reflector: ReflectionHost): boolean {
+  // Generic type parameters are considered context free if they can be emitted into any context.
+  return new TypeParameterEmitter(node.typeParameters, reflector).canEmit();
 }

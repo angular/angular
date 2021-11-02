@@ -10,7 +10,7 @@ import { Component, OnInit, Input } from '@angular/core';
 export class ItemDetailComponent implements OnInit {
 
   // #docregion input-type
-  @Input() childItem: string;
+  @Input() childItem = '';
   // #enddocregion input-type
 
   // items = ITEMS;

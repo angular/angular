@@ -1,5 +1,13 @@
 # Entry components
 
+<div class="alert is-helpful">
+
+Entry components are deprecated, for more information, see
+[entryComponents deprecation](guide/deprecations#entrycomponents-and-analyze_for_entry_components-no-longer-required)
+in the [Deprecated APIs and features](guide/deprecations).
+
+</div>
+
 An entry component is any component that Angular loads imperatively, (which means you’re not referencing it in the template), by type. You specify an entry component by bootstrapping it in an NgModule, or including it in a routing definition.
 
 <div class="alert is-helpful">
@@ -82,12 +90,12 @@ All router components must be entry components. Because this would require you t
 </div>
 
 Though the `@NgModule` decorator has an `entryComponents` array, most of the time
-you won't have to explicitly set any entry components because Angular adds components listed in `@NgModule.bootstrap` and those in route definitions to entry components automatically. Though these two mechanisms account for most entry components, if your app happens to bootstrap or dynamically load a component by type imperatively,
+you won't have to explicitly set any entry components because Angular adds components listed in `@NgModule.bootstrap` and those in route definitions to entry components automatically. Though these two mechanisms account for most entry components, if your application happens to bootstrap or dynamically load a component by type imperatively,
 you must add it to `entryComponents` explicitly.
 
 ### `entryComponents` and the compiler
 
-For production apps you want to load the smallest code possible.
+For production applications you want to load the smallest code possible.
 The code should contain only the classes that you actually need and
 exclude components that are never used. For this reason, the Angular compiler only generates code for components which are reachable from the `entryComponents`; This means that adding more references to `@NgModule.declarations` does not imply that they will necessarily be included in the final bundle.
 
@@ -99,8 +107,6 @@ If a component isn't an _entry component_ and isn't found in a template,
 the tree shaker will throw it away. So, it's best to add only the components that are truly entry components to help keep your app
 as trim as possible.
 
-
-<hr />
 
 ## More on Angular modules
 

@@ -1,8 +1,6 @@
 // #docplaster
 // #docregion
-// #docregion rxjs-operator-import
 import { switchMap } from 'rxjs/operators';
-// #enddocregion rxjs-operator-import
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 // #docregion imports
@@ -18,24 +16,20 @@ import { Hero } from '../hero';
   styleUrls: ['./hero-detail.component.css']
 })
 export class HeroDetailComponent implements OnInit  {
-  hero$: Observable<Hero>;
+  hero$!: Observable<Hero>;
 
-  // #docregion ctor
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private service: HeroService
   ) {}
-  // #enddocregion ctor
 
-  // #docregion ngOnInit
   ngOnInit() {
     this.hero$ = this.route.paramMap.pipe(
       switchMap((params: ParamMap) =>
-        this.service.getHero(params.get('id')))
+        this.service.getHero(params.get('id')!))
     );
   }
-  // #enddocregion ngOnInit
 
   // #docregion gotoHeroes
   gotoHeroes() {

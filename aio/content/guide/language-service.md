@@ -4,6 +4,20 @@ The Angular Language Service provides code editors with a way to get completions
 hints, and navigation inside Angular templates.
 It works with external templates in separate HTML files, and also with in-line templates.
 
+## Configuring compiler options for the Angular Language Service
+
+To enable the latest Language Service features, set the `strictTemplates` option in `tsconfig.json` by setting `strictTemplates` to `true,` as shown in the following example:
+
+<code-example language="json">
+
+  "angularCompilerOptions": {
+    "strictTemplates": true
+  }
+
+</code-example>
+
+For more information, see the [Angular compiler options](guide/angular-compiler-options) guide.
+
 ## Features
 
 Your editor autodetects that you are opening an Angular file.
@@ -23,7 +37,7 @@ Language services include:
 Autocompletion can speed up your development time by providing you with
 contextual possibilities and hints as you type.
 This example shows autocomplete in an interpolation. As you type it out,
-you can hit tab to complete.
+you can press tab to complete.
 
 <div class="lightbox">
   <img src="generated/images/guide/language-service/language-completion.gif" alt="autocompletion">
@@ -43,7 +57,7 @@ In this example, Angular doesn't know what `orders` is or where it comes from.
 
 ### Quick info and navigation
 
-The quick-info feature allows you to hover to see where components, directives, modules, and so on come from.
+The quick-info feature lets you hover to see where components, directives, and modules come from.
 You can then click "Go to definition" or press F12 to go directly to the definition.
 
 <div class="lightbox">
@@ -54,13 +68,19 @@ You can then click "Go to definition" or press F12 to go directly to the definit
 ## Angular Language Service in your editor
 
 Angular Language Service is currently available as an extension for [Visual Studio Code](https://code.visualstudio.com/),
-[WebStorm](https://www.jetbrains.com/webstorm), and [Sublime Text](https://www.sublimetext.com/).
+[WebStorm](https://www.jetbrains.com/webstorm), [Sublime Text](https://www.sublimetext.com/) and [Eclipse IDE](https://www.eclipse.org/eclipseide/).
 
 ### Visual Studio Code
 
-In [Visual Studio Code](https://code.visualstudio.com/), install the extension from the [Extensions: Marketplace](https://marketplace.visualstudio.com/items?itemName=Angular.ng-template). You can open the marketplace from the editor using the Extensions icon on the left menu pane, or use VS Quick Open (⌘+P on Mac, CTRL+P on Windows) and type "? ext".
+In [Visual Studio Code](https://code.visualstudio.com/), install the extension from the [Extensions: Marketplace](https://marketplace.visualstudio.com/items?itemName=Angular.ng-template). Open the marketplace from the editor using the Extensions icon on the left menu pane, or use VS Quick Open (⌘+P on Mac, CTRL+P on Windows) and type "? ext". In the marketplace, search for Angular Language Service extension, and click the **Install** button.
 
-In the marketplace, search for Angular Language Service extension, and click the **Install** button.
+The Visual Studio Code integration with the Angular language service is maintained and distributed by the Angular team.
+
+### Visual Studio
+
+In [Visual Studio](https://visualstudio.microsoft.com/), install the extension from the [Extensions: Marketplace](https://marketplace.visualstudio.com/items?itemName=TypeScriptTeam.AngularLanguageService). Open the marketplace from the editor selecting Extensions on the top menu pane, and then selecting Manage Extensions. In the marketplace, search for Angular Language Service extension, and click the **Install** button.
+
+The Visual Studio integration with the Angular language service is maintained and distributed by Microsoft with help from the Angular team. Check out the project [here](https://github.com/microsoft/vs-ng-language-service)
 
 ### WebStorm
 
@@ -101,9 +121,11 @@ npm install --save-dev @angular/language-service
 "typescript-tsdk": "<path to your folder>/node_modules/typescript/lib"
 </code-example>
 
-This allows the Angular Language Service to provide diagnostics and completions in `.ts` files.
+This lets the Angular Language Service provide diagnostics and completions in `.ts` files.
 
+### Eclipse IDE
 
+Either directly install the "Eclipse IDE for Web and JavaScript developers" package which comes with the Angular Language Server included, or from other Eclipse IDE packages, use Help > Eclipse Marketplace to find and install [Eclipse Wild Web Developer](https://marketplace.eclipse.org/content/wild-web-developer-html-css-javascript-typescript-nodejs-angular-json-yaml-kubernetes-xml).
 
 
 ## How the Language Service works
@@ -122,8 +144,6 @@ If you have an interpolation of `{{data.---}}` inside a `div` and need the compl
 The HTML AST can only tell the compiler that there is some text with the characters "`{{data.---}}`".
 That's when the template parser produces an expression AST, which resides within the template AST.
 The Angular Language Services then looks at `data.---` within its context, asks the TypeScript Language Service what the members of `data` are, and returns the list of possibilities.
-
-<hr>
 
 ## More information
 

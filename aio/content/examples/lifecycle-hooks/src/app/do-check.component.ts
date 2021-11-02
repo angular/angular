@@ -1,29 +1,23 @@
 /* tslint:disable:forin */
 // #docregion
-import { Component, DoCheck, Input, ViewChild } from '@angular/core';
+import { Component, DoCheck, Input } from '@angular/core';
 
-class Hero {
-  constructor(public name: string) {}
-}
+import { Hero } from './hero';
 
 @Component({
   selector: 'do-check',
   template: `
-  <div class="hero">
+  <div class="info">
     <p>{{hero.name}} can {{power}}</p>
 
-    <h4>-- Change Log --</h4>
-    <div *ngFor="let chg of changeLog">{{chg}}</div>
+    <h3>Change Log</h3>
+    <div *ngFor="let chg of changeLog" class="log">{{chg}}</div>
   </div>
-  `,
-  styles: [
-    '.hero {background: LightYellow; padding: 8px; margin-top: 8px}',
-    'p {background: Yellow; padding: 8px; margin-top: 8px}'
-  ]
+  `
 })
 export class DoCheckComponent implements DoCheck {
-  @Input() hero: Hero;
-  @Input() power: string;
+  @Input() hero!: Hero;
+  @Input() power = '';
 
   changeDetected = false;
   changeLog: string[] = [];
@@ -69,25 +63,5 @@ export class DoCheckComponent implements DoCheck {
   reset() {
     this.changeDetected = true;
     this.changeLog = [];
-  }
-}
-
-@Component({
-  selector: 'do-check-parent',
-  templateUrl: './do-check-parent.component.html',
-  styles: ['.parent {background: Lavender}']
-})
-export class DoCheckParentComponent {
-  hero: Hero;
-  power: string;
-  title = 'DoCheck';
-  @ViewChild(DoCheckComponent) childView: DoCheckComponent;
-
-  constructor() { this.reset(); }
-
-  reset() {
-    this.hero = new Hero('Windstorm');
-    this.power = 'sing';
-    if (this.childView) { this.childView.reset(); }
   }
 }

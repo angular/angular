@@ -209,6 +209,7 @@ export const enum NodeFlags {
   StaticQuery = 1 << 28,
   DynamicQuery = 1 << 29,
   TypeNgModule = 1 << 30,
+  EmitDistinctChangesOnly = 1 << 31,
   CatQuery = TypeContentQuery | TypeViewQuery,
 
   // mutually exclusive values...

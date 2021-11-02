@@ -8,9 +8,6 @@
 
 import {global} from '../../src/util/global';
 
-// Not yet available in TypeScript: https://github.com/Microsoft/TypeScript/pull/29332
-declare var globalThis: any /** TODO #9100 */;
-
 {
   describe('global', () => {
     it('should be global this value', () => {

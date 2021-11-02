@@ -11,7 +11,7 @@ const headerStart =
     ' * PARTIAL FILE: ';
 
 const headerEnd =
-    '\n ****************************************************************************************************/';
+    '\n ****************************************************************************************************/\n';
 
 /**
  * Render the partially compiled files into a single golden partial output string.
@@ -19,7 +19,7 @@ const headerEnd =
  * @param files The partially compiled files to be rendered.
  */
 export function renderGoldenPartial(files: PartiallyCompiledFile[]): string {
-  return files.map(file => `${headerStart + file.path + headerEnd}\n${file.content}`).join('\n');
+  return files.map(file => `${headerStart + file.path + headerEnd}${file.content}`).join('\n');
 }
 
 /**
@@ -35,7 +35,9 @@ export function parseGoldenPartial(partialContent: string): PartiallyCompiledFil
   const partials = partialContent.split(headerStart);
   for (const partial of partials) {
     const [path, content] = partial.split(headerEnd);
-    files.push({path, content});
+    if (path) {
+      files.push({path, content});
+    }
   }
   return files;
 }

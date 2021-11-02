@@ -98,7 +98,7 @@ describe('AsyncTestZoneSpec', function() {
     const atz = Zone.current.fork(testZoneSpec);
 
     atz.run(function() {
-      new Promise((resolve) => {
+      new Promise<void>((resolve) => {
         setTimeout(() => {
           resolve();
         }, 10);

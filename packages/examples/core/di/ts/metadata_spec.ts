@@ -103,9 +103,7 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 
         @Injectable()
         class NeedsDependency {
-          constructor(@SkipSelf() public dependency: Dependency) {
-            this.dependency = dependency;
-          }
+          constructor(@SkipSelf() public dependency: Dependency) {}
         }
 
         const parent = Injector.create({providers: [{provide: Dependency, deps: []}]});

@@ -396,7 +396,7 @@ export class StaticSymbolResolver {
     const self = this;
 
     class ReferenceTransformer extends ValueTransformer {
-      visitStringMap(map: {[key: string]: any}, functionParams: string[]): any {
+      override visitStringMap(map: {[key: string]: any}, functionParams: string[]): any {
         const symbolic = map['__symbolic'];
         if (symbolic === 'function') {
           const oldLen = functionParams.length;

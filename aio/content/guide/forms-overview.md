@@ -10,7 +10,7 @@ This guide provides information to help you decide which type of form works best
 
 This guide assumes that you have a basic understanding of the following.
 
-* [TypeScript](https://www.typescriptlang.org/docs/home.html "The TypeScript language") and HTML5 programming.
+* [TypeScript](https://www.typescriptlang.org/ "The TypeScript language") and HTML5 programming.
 
 * Angular app-design fundamentals, as described in [Angular Concepts](guide/architecture "Introduction to Angular concepts.").
 
@@ -22,11 +22,11 @@ Reactive forms and template-driven forms process and manage form data differentl
 
 * **Reactive forms** provide direct, explicit access to the underlying forms object model. Compared to template-driven forms, they are more robust: they're more scalable, reusable, and testable. If forms are a key part of your application, or you're already using reactive patterns for building your application, use reactive forms.
 
-* **Template-driven forms** rely on directives in the template to create and manipulate the underlying object model. They are useful for adding a simple form to an app, such as an email list signup form. They're easy to add to an app, but they don't scale as well as reactive forms. If you have very basic form requirements and logic that can be managed solely in the template, template-driven forms could be a good fit.
+* **Template-driven forms** rely on directives in the template to create and manipulate the underlying object model. They are useful for adding a simple form to an app, such as an email list signup form. They're straightforward to add to an app, but they don't scale as well as reactive forms. If you have very basic form requirements and logic that can be managed solely in the template, template-driven forms could be a good fit.
 
 ### Key differences
 
-The table below summarizes the key differences between reactive and template-driven forms.
+The following table summarizes the key differences between reactive and template-driven forms.
 
 <style>
   table {width: 100%};
@@ -36,19 +36,19 @@ The table below summarizes the key differences between reactive and template-dri
 ||Reactive|Template-driven|
 |--- |--- |--- |
 |[Setup of form model](#setup) | Explicit, created in component class | Implicit, created by directives |
-|[Data model](#data-flow-in-forms) | Structured and immutable | Unstructured and mutable |
-|Predictability | Synchronous | Asynchronous |
+|[Data model](#mutability-of-the-data-model) | Structured and immutable | Unstructured and mutable |
+|[Data flow](#data-flow-in-forms) | Synchronous | Asynchronous |
 |[Form validation](#validation) | Functions | Directives |
 
 ### Scalability
 
 If forms are a central part of your application, scalability is very important. Being able to reuse form models across components is critical.
 
-Reactive forms are more scalable than template-driven forms. They provide direct access to the underlying form API, and synchronous access to the form data model, making creating large-scale forms easier.
+Reactive forms are more scalable than template-driven forms. They provide direct access to the underlying form API, and use [synchronous data flow](#data-flow-in-reactive-forms) between the view and the data model, which makes creating large-scale forms easier.
 Reactive forms require less setup for testing, and testing does not require deep understanding of change detection to properly test form updates and validation.
 
 Template-driven forms focus on simple scenarios and are not as reusable.
-They abstract away the underlying form API, and provide only asynchronous access to the form data model.
+They abstract away the underlying form API, and use [asynchronous data flow](#data-flow-in-template-driven-forms) between the view and the data model.
 The abstraction of template-driven forms also affects testing.
 Tests are deeply reliant on manual change detection execution to run properly, and require more setup.
 
@@ -69,7 +69,7 @@ Both reactive and template-driven forms are built on the following base classes.
 
 * `FormArray` tracks the same values and status for an array of form controls.
 
-* `ControlValueAccessor` creates a bridge between Angular `FormControl` instances and native DOM elements.
+* `ControlValueAccessor` creates a bridge between Angular `FormControl` instances and built-in DOM elements.
 
 {@a setup-the-form-model}
 
@@ -119,6 +119,8 @@ Similarly, when the program logic changes values in the data model, those values
 Reactive and template-driven forms differ in how they handle data flowing from the user or from programmatic changes.
 The following diagrams illustrate both kinds of data flow for each type of form, using the favorite-color input field defined above.
 
+{@a data-flow-in-reactive-forms}
+
 ### Data flow in reactive forms
 
 In reactive forms each form element in the view is directly linked to the form model (a `FormControl` instance). Updates from the view to the model and from the model to the view are synchronous and do not depend on how the UI is rendered.
@@ -145,6 +147,8 @@ The model-to-view diagram shows how a programmatic change to the model is propag
 <div class="lightbox">
   <img src="generated/images/guide/forms-overview/dataflow-reactive-forms-mtv.png" alt="Reactive forms data flow - model to view">
 </div>
+
+{@a data-flow-in-template-driven-forms}
 
 ### Data flow in template-driven forms
 
@@ -181,6 +185,8 @@ The model-to-view diagram shows how data flows from model to view when the `favo
   <img src="generated/images/guide/forms-overview/dataflow-td-forms-mtv.png" alt="Template-driven forms data flow - model to view" width="100%">
 </div>
 
+{@a mutability-of-the-data-model}
+
 ### Mutability of the data model
 
 The change-tracking method plays a role in the efficiency of your application.
@@ -201,6 +207,7 @@ The difference is demonstrated in the previous examples that use the favorite-co
 * With template-driven forms, the **favorite color property** is always modified to its new value.
 
 {@a validation}
+
 ## Form validation
 
 Validation is an integral part of managing any set of forms. Whether you're checking for required fields or querying an external API for an existing username, Angular provides a set of built-in validators as well as the ability to create custom validators.
@@ -218,7 +225,7 @@ The following examples demonstrate the process of testing forms with reactive an
 
 ### Testing reactive forms
 
-Reactive forms provide a relatively easy testing strategy because they provide synchronous access to the form and data models, and they can be tested without rendering the UI.
+Reactive forms provide a relatively straightforward testing strategy because they provide synchronous access to the form and data models, and they can be tested without rendering the UI.
 In these tests, status and data are queried and manipulated through the control without interacting with the change detection cycle.
 
 The following tests use the favorite-color components from previous examples to verify the view-to-model and model-to-view data flows for a reactive form.

@@ -1,4 +1,3 @@
-// #docregion
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
@@ -13,20 +12,18 @@ import { switchMap } from 'rxjs/operators';
   styleUrls: ['./crisis-list.component.css']
 })
 export class CrisisListComponent implements OnInit {
-  crises$: Observable<Crisis[]>;
-  selectedId: number;
+  crises$!: Observable<Crisis[]>;
+  selectedId = 0;
 
-  // #docregion ctor
   constructor(
     private service: CrisisService,
     private route: ActivatedRoute
   ) {}
-  // #enddocregion ctor
 
   ngOnInit() {
     this.crises$ = this.route.paramMap.pipe(
       switchMap(params => {
-        this.selectedId = +params.get('id');
+        this.selectedId = parseInt(params.get('id')!, 10);
         return this.service.getCrises();
       })
     );

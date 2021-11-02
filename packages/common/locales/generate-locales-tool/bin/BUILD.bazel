@@ -1,0 +1,33 @@
+load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary")
+load("//tools:defaults.bzl", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+BIN_ENTRYPOINTS = [
+    "get-base-currencies-file",
+    "get-base-locale-file",
+    "get-closure-locale-file",
+    "write-locale-files-to-dist",
+]
+
+ts_library(
+    name = "bin",
+    srcs = glob(["*.ts"]),
+    deps = [
+        "//packages/common/locales/generate-locales-tool",
+        "@npm//@types/node",
+    ],
+)
+
+[nodejs_binary(
+    name = entrypoint,
+    data = [
+        ":bin",
+        "@cldr_data//:all_json",
+    ],
+    entry_point = ":%s.ts" % entrypoint,
+    # We need to patch the NodeJS module resolution as this binary runs as
+    # part of a genrule where the linker does not work as expected.
+    # See: https://github.com/bazelbuild/rules_nodejs/issues/2600.
+    templated_args = ["--bazel_patch_module_resolver"],
+) for entrypoint in BIN_ENTRYPOINTS]

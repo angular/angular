@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, EventEmitter, forwardRef, Inject, InjectionToken, Input, OnChanges, Optional, Output, Self, SimpleChanges} from '@angular/core';
+import {Directive, EventEmitter, forwardRef, Inject, InjectionToken, Input, OnChanges, OnDestroy, Optional, Output, Self, SimpleChanges} from '@angular/core';
 
 import {FormControl} from '../../model';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../../validators';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '../control_value_accessor';
 import {NgControl} from '../ng_control';
-import {ReactiveErrors} from '../reactive_errors';
-import {_ngModelWarning, isPropertyUpdated, selectValueAccessor, setUpControl} from '../shared';
+import {disabledAttrWarning} from '../reactive_errors';
+import {_ngModelWarning, cleanUpControl, isPropertyUpdated, selectValueAccessor, setUpControl} from '../shared';
 import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from '../validators';
 
 
@@ -51,7 +51,7 @@ export const formControlBinding: any = {
  * @publicApi
  */
 @Directive({selector: '[formControl]', providers: [formControlBinding], exportAs: 'ngForm'})
-export class FormControlDirective extends NgControl implements OnChanges {
+export class FormControlDirective extends NgControl implements OnChanges, OnDestroy {
   /**
    * Internal reference to the view model value.
    * @nodoc
@@ -72,7 +72,7 @@ export class FormControlDirective extends NgControl implements OnChanges {
   @Input('disabled')
   set isDisabled(isDisabled: boolean) {
     if (typeof ngDevMode === 'undefined' || ngDevMode) {
-      ReactiveErrors.disabledAttrWarning();
+      console.warn(disabledAttrWarning);
     }
   }
 
@@ -118,6 +118,10 @@ export class FormControlDirective extends NgControl implements OnChanges {
   /** @nodoc */
   ngOnChanges(changes: SimpleChanges): void {
     if (this._isControlChanged(changes)) {
+      const previousForm = changes['form'].previousValue;
+      if (previousForm) {
+        cleanUpControl(previousForm, this, /* validateControlPresenceOnChange */ false);
+      }
       setUpControl(this.form, this);
       if (this.control.disabled && this.valueAccessor!.setDisabledState) {
         this.valueAccessor!.setDisabledState!(true);
@@ -125,9 +129,18 @@ export class FormControlDirective extends NgControl implements OnChanges {
       this.form.updateValueAndValidity({emitEvent: false});
     }
     if (isPropertyUpdated(changes, this.viewModel)) {
-      _ngModelWarning('formControl', FormControlDirective, this, this._ngModelWarningConfig);
+      if (typeof ngDevMode === 'undefined' || ngDevMode) {
+        _ngModelWarning('formControl', FormControlDirective, this, this._ngModelWarningConfig);
+      }
       this.form.setValue(this.model);
       this.viewModel = this.model;
+    }
+  }
+
+  /** @nodoc */
+  ngOnDestroy() {
+    if (this.form) {
+      cleanUpControl(this.form, this, /* validateControlPresenceOnChange */ false);
     }
   }
 
@@ -136,7 +149,7 @@ export class FormControlDirective extends NgControl implements OnChanges {
    * Returns an array that represents the path from the top-level form to this control.
    * Each index is the string name of the control on that level.
    */
-  get path(): string[] {
+  override get path(): string[] {
     return [];
   }
 
@@ -144,7 +157,7 @@ export class FormControlDirective extends NgControl implements OnChanges {
    * @description
    * The `FormControl` bound to this directive.
    */
-  get control(): FormControl {
+  override get control(): FormControl {
     return this.form;
   }
 
@@ -154,7 +167,7 @@ export class FormControlDirective extends NgControl implements OnChanges {
    *
    * @param newValue The new value for the view model.
    */
-  viewToModelUpdate(newValue: any): void {
+  override viewToModelUpdate(newValue: any): void {
     this.viewModel = newValue;
     this.update.emit(newValue);
   }

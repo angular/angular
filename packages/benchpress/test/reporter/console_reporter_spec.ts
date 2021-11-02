@@ -7,7 +7,6 @@
  */
 
 import {StaticProvider} from '@angular/core';
-import {describe, expect, it} from '@angular/core/testing/src/testing_internal';
 
 import {ConsoleReporter, Injector, MeasureValues, SampleDescription} from '../../index';
 

@@ -7,11 +7,12 @@
  */
 import {DepGraph} from 'dependency-graph';
 import {EntryPoint} from '../../packages/entry_point';
-import {PartiallyOrderedTasks, Task, TaskDependencies} from './api';
+import {DtsProcessing, PartiallyOrderedTasks, Task, TaskDependencies} from './api';
 
 /** Stringify a task for debugging purposes. */
-export const stringifyTask = (task: Task): string => `{entryPoint: ${
-    task.entryPoint.name}, formatProperty: ${task.formatProperty}, processDts: ${task.processDts}}`;
+export const stringifyTask = (task: Task): string =>
+    `{entryPoint: ${task.entryPoint.name}, formatProperty: ${task.formatProperty}, ` +
+    `processDts: ${DtsProcessing[task.processDts]}}`;
 
 /**
  * Compute a mapping of tasks to the tasks that are dependent on them (if any).
@@ -55,7 +56,7 @@ export function computeTaskDependencies(
       }
     }
 
-    if (task.processDts) {
+    if (task.processDts !== DtsProcessing.No) {
       // SANITY CHECK:
       // There should only be one task per entry-point that generates typings (and thus can be a
       // dependency of other tasks), so the following should theoretically never happen, but check

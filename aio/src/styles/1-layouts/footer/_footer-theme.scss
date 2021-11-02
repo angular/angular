@@ -1,0 +1,27 @@
+@use 'sass:map';
+@use '../../constants';
+@use '~@angular/material' as mat;
+
+@mixin theme($theme) {
+  $primary: map.get($theme, primary);
+  $is-dark-theme: map.get($theme, is-dark);
+
+  footer {
+    // Because the footer background is always the same color in both light and dark mode, there is no need to specify a foreground color
+    background-color: mat.get-color-from-palette($primary, if($is-dark-theme, 900, 700));
+
+    aio-footer {
+      & > * {
+        color: constants.$white;
+      }
+
+      a {
+        color: constants.$white;
+      }
+
+      h3 {
+        color: constants.$white;
+      }
+    }
+  }
+}

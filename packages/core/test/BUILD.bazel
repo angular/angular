@@ -27,7 +27,7 @@ genrule(
         $(execpath @npm//typescript/bin:tsc) $< --outDir $$es2015_out_dir --target ES2015 \
             --types --module umd
         $(execpath @npm//typescript/bin:tsc) --outFile $@ $$es2015_out_file --allowJs \
-            --types --target ES5
+            --types --target ES5 --downlevelIteration
     """,
     tools = ["@npm//typescript/bin:tsc"],
 )

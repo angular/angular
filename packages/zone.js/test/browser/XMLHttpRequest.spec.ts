@@ -103,6 +103,85 @@ describe('XMLHttpRequest', function() {
     req!.send();
   });
 
+  it('should run onload listeners before internal readystatechange', function(done) {
+    const logs: string[] = [];
+    const xhrZone = Zone.current.fork({
+      name: 'xhr',
+      onInvokeTask: (delegate, curr, target, task, applyThis, applyArgs) => {
+        logs.push('invokeTask ' + task.source);
+        return delegate.invokeTask(target, task, applyThis, applyArgs);
+      }
+    });
+
+    xhrZone.run(function() {
+      const req = new XMLHttpRequest();
+      req.onload = function() {
+        logs.push('onload');
+        (window as any)[Zone.__symbol__('setTimeout')](() => {
+          expect(logs).toEqual([
+            'invokeTask XMLHttpRequest.addEventListener:load', 'onload',
+            'invokeTask XMLHttpRequest.send'
+          ])
+          done();
+        });
+      };
+      req.open('get', '/', true);
+      req.send();
+    });
+  });
+
+  it('should invoke xhr task even onload listener throw error', function(done) {
+    const oriWindowError = window.onerror;
+    const logs: string[] = [];
+    window.onerror = function(err: any) {
+      logs.push(err);
+    };
+    try {
+      const xhrZone = Zone.current.fork({
+        name: 'xhr',
+        onInvokeTask: (delegate, curr, target, task, applyThis, applyArgs) => {
+          logs.push('invokeTask ' + task.source);
+          return delegate.invokeTask(target, task, applyThis, applyArgs);
+        },
+        onHasTask: (delegate, curr, target, hasTaskState) => {
+          if (hasTaskState.change === 'macroTask') {
+            logs.push('hasTask ' + hasTaskState.macroTask);
+          }
+          return delegate.hasTask(target, hasTaskState);
+        }
+      });
+
+      xhrZone.run(function() {
+        const req = new XMLHttpRequest();
+        req.onload = function() {
+          logs.push('onload');
+          throw new Error('test');
+        };
+        const unhandledRejection = (e: PromiseRejectionEvent) => {
+          fail('should not be here');
+        };
+        window.addEventListener('unhandledrejection', unhandledRejection);
+        req.addEventListener('load', () => {
+          logs.push('onload1');
+          (window as any)[Zone.__symbol__('setTimeout')](() => {
+            expect(logs).toEqual([
+              'hasTask true', 'invokeTask XMLHttpRequest.addEventListener:load', 'onload',
+              'invokeTask XMLHttpRequest.addEventListener:load', 'onload1',
+              'invokeTask XMLHttpRequest.send', 'hasTask false', 'Uncaught Error: test'
+            ]);
+            window.removeEventListener('unhandledrejection', unhandledRejection);
+            window.onerror = oriWindowError;
+            done();
+          });
+        });
+        req.open('get', '/', true);
+        req.send();
+      });
+    } catch (e: any) {
+      window.onerror = oriWindowError;
+    }
+  });
+
   it('should return null when access ontimeout first time without error', function() {
     let req: XMLHttpRequest = new XMLHttpRequest();
     expect(req.ontimeout).toBe(null);

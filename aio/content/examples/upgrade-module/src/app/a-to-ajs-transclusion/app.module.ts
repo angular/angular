@@ -7,7 +7,6 @@ import { UpgradeModule, downgradeComponent } from '@angular/upgrade/static';
 import { heroDetail, HeroDetailDirective } from './hero-detail.component';
 import { ContainerComponent } from './container.component';
 
-// #docregion heroupgrade
 @NgModule({
   imports: [
     BrowserModule,
@@ -27,7 +26,6 @@ export class AppModule {
     this.upgrade.bootstrap(document.body, ['heroApp'], { strictDi: true });
   }
 }
-// #enddocregion heroupgrade
 
 angular.module('heroApp', [])
   .component('heroDetail', heroDetail)

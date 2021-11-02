@@ -7,12 +7,22 @@ exports_files(["package.json"])
 # isolation failures.
 
 ts_library(
+    name = "test_utils_lib",
+    testonly = True,
+    srcs = ["test_utils.ts"],
+    deps = [
+        "//packages:types",
+    ],
+)
+
+ts_library(
     name = "core_spec_lib",
     testonly = True,
     srcs = ["core_package.spec.ts"],
     deps = [
+        ":test_utils_lib",
         "//packages:types",
-        "//packages/private/testing",
+        "@npm//@bazel/runfiles",
         "@npm//@types/shelljs",
     ],
 )
@@ -32,8 +42,9 @@ ts_library(
     testonly = True,
     srcs = ["common_package.spec.ts"],
     deps = [
+        ":test_utils_lib",
         "//packages:types",
-        "//packages/private/testing",
+        "@npm//@bazel/runfiles",
         "@npm//@types/shelljs",
     ],
 )
@@ -53,6 +64,7 @@ ts_library(
     srcs = ["example_package.spec.ts"],
     deps = [
         "//packages:types",
+        "@npm//@bazel/runfiles",
         "@npm//@types/diff",
     ],
 )
@@ -68,8 +80,9 @@ jasmine_node_test(
     ],
     # We don't want to run the example_package golden test with Ivy yet. Currently the golden
     # file is based on non-ivy output and therefore won't work for ngc and Ivy at the same time.
-    # TODO: We should be able to have another golden for ivy-aot as well.
-    tags = ["no-ivy-aot"],
+    # TODO: Update test to rely on Ivy partial compilation after View Engine's removal, update the
+    # golden files as appropriate for the change in compilation.
+    tags = ["view-engine-only"],
     deps = ["@npm//diff"],
 )
 

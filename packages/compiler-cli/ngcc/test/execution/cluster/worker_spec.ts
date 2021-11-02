@@ -8,14 +8,14 @@
 
 /// <reference types="node" />
 
-import * as cluster from 'cluster';
+import cluster from 'cluster';
 import {EventEmitter} from 'events';
 
 import {AbsoluteFsPath} from '../../../../src/ngtsc/file_system';
 import {MockLogger} from '../../../../src/ngtsc/logging/testing';
 import {CreateCompileFn} from '../../../src/execution/api';
 import {startWorker} from '../../../src/execution/cluster/worker';
-import {Task, TaskCompletedCallback, TaskProcessingOutcome} from '../../../src/execution/tasks/api';
+import {DtsProcessing, Task, TaskCompletedCallback, TaskProcessingOutcome} from '../../../src/execution/tasks/api';
 import {FileToWrite} from '../../../src/rendering/utils';
 import {mockProperty, spyProperty} from '../../helpers/spy_utils';
 
@@ -63,8 +63,18 @@ describe('startWorker()', () => {
       expect(createCompileFnSpy).toHaveBeenCalledWith(jasmine.any(Function), jasmine.any(Function));
     });
 
+    it('should notify the cluster master once ready', () => {
+      startWorker(mockLogger, createCompileFnSpy);
+
+      expect(processSendSpy).toHaveBeenCalledTimes(1);
+      expect(processSendSpy).toHaveBeenCalledWith({type: 'ready'}, jasmine.any(Function));
+    });
+
     it('should set up `compileFn()` to send `transformed-files` messages to master', () => {
       startWorker(mockLogger, createCompileFnSpy);
+
+      expect(processSendSpy).toHaveBeenCalledTimes(1);
+      expect(processSendSpy).toHaveBeenCalledWith({type: 'ready'}, jasmine.any(Function));
 
       const mockTransformedFiles: FileToWrite[] = [
         {path: '/foo' as AbsoluteFsPath, contents: 'FOO'},
@@ -75,7 +85,7 @@ describe('startWorker()', () => {
 
       beforeWritingFiles(mockTransformedFiles);
 
-      expect(processSendSpy).toHaveBeenCalledTimes(1);
+      expect(processSendSpy).toHaveBeenCalledTimes(2);
       expect(processSendSpy)
           .toHaveBeenCalledWith(
               {type: 'transformed-files', files: ['/foo', '/bar']}, jasmine.any(Function));
@@ -84,6 +94,9 @@ describe('startWorker()', () => {
     it('should set up `compileFn()` to send `task-completed` messages to master', () => {
       startWorker(mockLogger, createCompileFnSpy);
       const onTaskCompleted: TaskCompletedCallback = createCompileFnSpy.calls.argsFor(0)[1];
+
+      // Reset as we are not interested in the initial messages.
+      processSendSpy.calls.reset();
 
       onTaskCompleted(null as any, TaskProcessingOutcome.Processed, null);
       expect(processSendSpy).toHaveBeenCalledTimes(1);
@@ -124,17 +137,17 @@ describe('startWorker()', () => {
       const mockTask = {
         entryPoint: {name: 'foo'},
         formatProperty: 'es2015',
-        processDts: true,
+        processDts: DtsProcessing.Yes,
       } as unknown as Task;
 
       startWorker(mockLogger, createCompileFnSpy);
       cluster.worker.emit('message', {type: 'process-task', task: mockTask});
 
       expect(compileFnSpy).toHaveBeenCalledWith(mockTask);
-      expect(processSendSpy).not.toHaveBeenCalled();
+      expect(processSendSpy).toHaveBeenCalledOnceWith({type: 'ready'}, jasmine.any(Function));
 
       expect(mockLogger.logs.debug[0]).toEqual([
-        '[Worker #42] Processing task: {entryPoint: foo, formatProperty: es2015, processDts: true}',
+        '[Worker #42] Processing task: {entryPoint: foo, formatProperty: es2015, processDts: Yes}',
       ]);
     });
 
@@ -142,7 +155,7 @@ describe('startWorker()', () => {
       const mockTask = {
         entryPoint: {name: 'foo'},
         formatProperty: 'es2015',
-        processDts: true,
+        processDts: DtsProcessing.Yes,
       } as unknown as Task;
 
       let err: string|Error;
@@ -178,7 +191,7 @@ describe('startWorker()', () => {
         const mockTask = {
           entryPoint: {name: 'foo'},
           formatProperty: 'es2015',
-          processDts: true,
+          processDts: DtsProcessing.Yes,
         } as unknown as Task;
 
         const noMemError = Object.assign(new Error('ENOMEM: not enough memory'), {code: 'ENOMEM'});
@@ -189,7 +202,7 @@ describe('startWorker()', () => {
 
         expect(mockLogger.logs.warn).toEqual([[`[Worker #42] ${noMemError.stack}`]]);
         expect(processExitSpy).toHaveBeenCalledWith(1);
-        expect(processSendSpy).not.toHaveBeenCalled();
+        expect(processSendSpy).toHaveBeenCalledOnceWith({type: 'ready'}, jasmine.any(Function));
       } finally {
         uninstallProcessExitSpies();
       }

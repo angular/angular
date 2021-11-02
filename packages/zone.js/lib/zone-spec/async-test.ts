@@ -194,7 +194,7 @@ Zone.__load_patch('asynctest', (global: any, Zone: ZoneType, api: _ZonePrivate) 
     if (AsyncTestZoneSpec === undefined) {
       throw new Error(
           'AsyncTestZoneSpec is needed for the async() test helper but could not be found. ' +
-          'Please make sure that your environment includes zone.js/dist/async-test.js');
+          'Please make sure that your environment includes zone.js/plugins/async-test');
     }
     const ProxyZoneSpec = (Zone as any)['ProxyZoneSpec'] as {
       get(): {setDelegate(spec: ZoneSpec): void; getDelegate(): ZoneSpec;};
@@ -203,7 +203,7 @@ Zone.__load_patch('asynctest', (global: any, Zone: ZoneType, api: _ZonePrivate) 
     if (!ProxyZoneSpec) {
       throw new Error(
           'ProxyZoneSpec is needed for the async() test helper but could not be found. ' +
-          'Please make sure that your environment includes zone.js/dist/proxy.js');
+          'Please make sure that your environment includes zone.js/plugins/proxy');
     }
     const proxyZoneSpec = ProxyZoneSpec.get();
     ProxyZoneSpec.assertPresent();

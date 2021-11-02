@@ -10,7 +10,7 @@ import {ElementRef, Injector, SimpleChanges} from '@angular/core';
 
 import {DirectiveRequireProperty, element as angularElement, IAugmentedJQuery, ICloneAttachFunction, ICompileService, IController, IControllerService, IDirective, IHttpBackendService, IInjectorService, ILinkFn, IScope, ITemplateCacheService, SingleOrListOrMap} from './angular1';
 import {$COMPILE, $CONTROLLER, $HTTP_BACKEND, $INJECTOR, $TEMPLATE_CACHE} from './constants';
-import {controllerKey, directiveNormalize, isFunction} from './util';
+import {cleanData, controllerKey, directiveNormalize, isFunction} from './util';
 
 
 
@@ -41,8 +41,7 @@ export class UpgradeHelper {
   private readonly $controller: IControllerService;
 
   constructor(
-      private injector: Injector, private name: string, elementRef: ElementRef,
-      directive?: IDirective) {
+      injector: Injector, private name: string, elementRef: ElementRef, directive?: IDirective) {
     this.$injector = injector.get($INJECTOR);
     this.$compile = this.$injector.get($COMPILE);
     this.$controller = this.$injector.get($CONTROLLER);
@@ -126,15 +125,7 @@ export class UpgradeHelper {
       controllerInstance.$onDestroy();
     }
     $scope.$destroy();
-
-    // Clean the jQuery/jqLite data on the component+child elements.
-    // Equivelent to how jQuery/jqLite invoke `cleanData` on an Element (this.element)
-    //  https://github.com/jquery/jquery/blob/e743cbd28553267f955f71ea7248377915613fd9/src/manipulation.js#L223
-    //  https://github.com/angular/angular.js/blob/26ddc5f830f902a3d22f4b2aab70d86d4d688c82/src/jqLite.js#L306-L312
-    // `cleanData` will invoke the AngularJS `$destroy` DOM event
-    //  https://github.com/angular/angular.js/blob/26ddc5f830f902a3d22f4b2aab70d86d4d688c82/src/Angular.js#L1911-L1924
-    angularElement.cleanData([this.element]);
-    angularElement.cleanData(this.element.querySelectorAll('*'));
+    cleanData(this.element);
   }
 
   prepareTransclusion(): ILinkFn|undefined {

@@ -7,11 +7,12 @@ import { TaxRateService } from './tax-rate.service';
   selector:    'app-sales-tax',
   template: `
     <h2>Sales Tax Calculator</h2>
-    <label>Amount: <input #amountBox (change)="0"></label>
-
+    <p><i>Enter a number and press enter to calculate tax.</i></p>
+    <label for="amount-input">Amount: </label>
+    <input type="text" id="amount-input" #amountBox (change)="0">
     <div *ngIf="amountBox.value">
-    The sales tax is
-     {{ getTax(amountBox.value) | currency:'USD':true:'1.2-2' }}
+    <p>The sales tax is
+     {{ getTax(amountBox.value) | currency:'USD':true:'1.2-2' }}</p>
     </div>
   `,
   providers: [SalesTaxService, TaxRateService]

@@ -5,32 +5,22 @@ import { FormsModule } from '@angular/forms';
 
 import { AppComponent } from './app.component';
 
-import {
-  AfterContentParentComponent,
-  AfterContentComponent,
-  ChildComponent
-} from './after-content.component';
+import { AfterContentParentComponent } from './after-content-parent.component';
+import { AfterContentComponent } from './after-content.component';
+import { ChildComponent } from './child.component';
 
-import {
-  AfterViewParentComponent,
-  AfterViewComponent,
-  ChildViewComponent
-} from './after-view.component';
+import { AfterViewParentComponent } from './after-view-parent.component';
+import { AfterViewComponent } from './after-view.component';
+import { ChildViewComponent } from './child-view.component';
 
-import {
-  CounterParentComponent,
-  MyCounterComponent
-} from './counter.component';
+import { CounterParentComponent } from './counter-parent.component';
+import { MyCounterComponent } from './counter.component';
 
-import {
-  DoCheckParentComponent,
-  DoCheckComponent
-} from './do-check.component';
+import { DoCheckParentComponent } from './do-check-parent.component';
+import { DoCheckComponent } from './do-check.component';
 
-import {
-  OnChangesParentComponent,
-  OnChangesComponent
-} from './on-changes.component';
+import { OnChangesParentComponent } from './on-changes-parent.component';
+import { OnChangesComponent } from './on-changes.component';
 
 import { PeekABooParentComponent } from './peek-a-boo-parent.component';
 import { PeekABooComponent } from './peek-a-boo.component';

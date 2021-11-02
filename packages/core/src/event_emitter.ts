@@ -8,7 +8,7 @@
 
 /// <reference types="rxjs" />
 
-import {Subject, Subscription} from 'rxjs';
+import {PartialObserver, Subject, Subscription} from 'rxjs';
 
 /**
  * Use in components with the `@Output` directive to emit custom events
@@ -81,15 +81,25 @@ export interface EventEmitter<T> extends Subject<T> {
    * @param value The value to emit.
    */
   emit(value?: T): void;
+
   /**
    * Registers handlers for events emitted by this instance.
-   * @param generatorOrNext When supplied, a custom handler for emitted events.
-   * @param error When supplied, a custom handler for an error notification
-   * from this emitter.
-   * @param complete When supplied, a custom handler for a completion
-   * notification from this emitter.
+   * @param next When supplied, a custom handler for emitted events.
+   * @param error When supplied, a custom handler for an error notification from this emitter.
+   * @param complete When supplied, a custom handler for a completion notification from this
+   *     emitter.
    */
-  subscribe(generatorOrNext?: any, error?: any, complete?: any): Subscription;
+  subscribe(next?: (value: T) => void, error?: (error: any) => void, complete?: () => void):
+      Subscription;
+  /**
+   * Registers handlers for events emitted by this instance.
+   * @param observerOrNext When supplied, a custom handler for emitted events, or an observer
+   *     object.
+   * @param error When supplied, a custom handler for an error notification from this emitter.
+   * @param complete When supplied, a custom handler for a completion notification from this
+   *     emitter.
+   */
+  subscribe(observerOrNext?: any, error?: any, complete?: any): Subscription;
 }
 
 class EventEmitter_ extends Subject<any> {
@@ -104,65 +114,44 @@ class EventEmitter_ extends Subject<any> {
     super.next(value);
   }
 
-  subscribe(generatorOrNext?: any, error?: any, complete?: any): Subscription {
-    let schedulerFn: (t: any) => any;
-    let errorFn = (err: any): any => null;
-    let completeFn = (): any => null;
+  override subscribe(observerOrNext?: any, error?: any, complete?: any): Subscription {
+    let nextFn = observerOrNext;
+    let errorFn = error || (() => null);
+    let completeFn = complete;
 
-    if (generatorOrNext && typeof generatorOrNext === 'object') {
-      schedulerFn = this.__isAsync ? (value: any) => {
-        setTimeout(() => generatorOrNext.next(value));
-      } : (value: any) => {
-        generatorOrNext.next(value);
-      };
+    if (observerOrNext && typeof observerOrNext === 'object') {
+      const observer = observerOrNext as PartialObserver<unknown>;
+      nextFn = observer.next?.bind(observer);
+      errorFn = observer.error?.bind(observer);
+      completeFn = observer.complete?.bind(observer);
+    }
 
-      if (generatorOrNext.error) {
-        errorFn = this.__isAsync ? (err) => {
-          setTimeout(() => generatorOrNext.error(err));
-        } : (err) => {
-          generatorOrNext.error(err);
-        };
+    if (this.__isAsync) {
+      errorFn = _wrapInTimeout(errorFn);
+
+      if (nextFn) {
+        nextFn = _wrapInTimeout(nextFn);
       }
 
-      if (generatorOrNext.complete) {
-        completeFn = this.__isAsync ? () => {
-          setTimeout(() => generatorOrNext.complete());
-        } : () => {
-          generatorOrNext.complete();
-        };
-      }
-    } else {
-      schedulerFn = this.__isAsync ? (value: any) => {
-        setTimeout(() => generatorOrNext(value));
-      } : (value: any) => {
-        generatorOrNext(value);
-      };
-
-      if (error) {
-        errorFn = this.__isAsync ? (err) => {
-          setTimeout(() => error(err));
-        } : (err) => {
-          error(err);
-        };
-      }
-
-      if (complete) {
-        completeFn = this.__isAsync ? () => {
-          setTimeout(() => complete());
-        } : () => {
-          complete();
-        };
+      if (completeFn) {
+        completeFn = _wrapInTimeout(completeFn);
       }
     }
 
-    const sink = super.subscribe(schedulerFn, errorFn, completeFn);
+    const sink = super.subscribe({next: nextFn, error: errorFn, complete: completeFn});
 
-    if (generatorOrNext instanceof Subscription) {
-      generatorOrNext.add(sink);
+    if (observerOrNext instanceof Subscription) {
+      observerOrNext.add(sink);
     }
 
     return sink;
   }
+}
+
+function _wrapInTimeout(fn: (value: unknown) => any) {
+  return (value: unknown) => {
+    setTimeout(fn, undefined, value);
+  };
 }
 
 /**

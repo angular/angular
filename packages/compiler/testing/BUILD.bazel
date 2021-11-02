@@ -17,5 +17,7 @@ ng_module(
         "//packages/compiler",
         "//packages/core",
         "@npm//@types/node",
+        "@npm//base64-js",
+        "@npm//source-map",
     ],
 )

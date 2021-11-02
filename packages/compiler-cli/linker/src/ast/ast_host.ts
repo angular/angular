@@ -36,11 +36,17 @@ export interface AstHost<TExpression> {
   parseNumericLiteral(num: TExpression): number;
 
   /**
-   * Return `true` if the given expression is a boolean literal, or false otherwise.
+   * Return `true` if the given expression can be considered a boolean literal, or false otherwise.
+   *
+   * Note that this should also cover the special case of some minified code where `true` and
+   * `false` are replaced by `!0` and `!1` respectively.
    */
   isBooleanLiteral(node: TExpression): boolean;
   /**
    * Parse the boolean value from the given expression, or throw if it is not a boolean literal.
+   *
+   * Note that this should also cover the special case of some minified code where `true` and
+   * `false` are replaced by `!0` and `!1` respectively.
    */
   parseBooleanLiteral(bool: TExpression): boolean;
 
@@ -73,6 +79,21 @@ export interface AstHost<TExpression> {
    * statement, extracting the returned expression, or throw if it is not possible.
    */
   parseReturnValue(fn: TExpression): TExpression;
+
+  /**
+   * Return true if the given expression is a call expression, or false otherwise.
+   */
+  isCallExpression(node: TExpression): boolean;
+  /**
+   * Returns the expression that is called in the provided call expression, or throw if it is not
+   * a call expression.
+   */
+  parseCallee(call: TExpression): TExpression;
+  /**
+   * Returns the argument expressions for the provided call expression, or throw if it is not
+   * a call expression.
+   */
+  parseArguments(call: TExpression): TExpression[];
 
   /**
    * Compute the location range of the expression in the source file, to be used for source-mapping.

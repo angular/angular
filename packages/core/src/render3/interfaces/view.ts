@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectionToken} from '../../di/injection_token';
 import {Injector} from '../../di/injector';
+import {ProviderToken} from '../../di/provider_token';
 import {Type} from '../../interface/type';
 import {SchemaMetadata} from '../../metadata/schema';
 import {Sanitizer} from '../../sanitization/sanitizer';
@@ -163,8 +163,11 @@ export interface LView extends Array<any> {
    *
    * These change per LView instance, so they cannot be stored on TView. Instead,
    * TView.cleanup saves an index to the necessary context in this array.
+   *
+   * After `LView` is created it is possible to attach additional instance specific functions at the
+   * end of the `lView[CLENUP]` because we know that no more `T` level cleanup functions will be
+   * addeded here.
    */
-  // TODO: flatten into LView[]
   [CLEANUP]: any[]|null;
 
   /**
@@ -901,9 +904,8 @@ export type DestroyHookData = (HookEntry|HookData)[];
  *
  * Injector bloom filters are also stored here.
  */
-export type TData =
-    (TNode|PipeDef<any>|DirectiveDef<any>|ComponentDef<any>|number|TStylingRange|TStylingKey|
-     Type<any>|InjectionToken<any>|TI18n|I18nUpdateOpCodes|TIcu|null|string)[];
+export type TData = (TNode|PipeDef<any>|DirectiveDef<any>|ComponentDef<any>|number|TStylingRange|
+                     TStylingKey|ProviderToken<any>|TI18n|I18nUpdateOpCodes|TIcu|null|string)[];
 
 // Note: This hack is necessary so we don't erroneously get a circular dependency
 // failure based on types.
@@ -1087,6 +1089,11 @@ export interface DebugNode {
   html: string|null;
 
   /**
+   * Associated `TNode`
+   */
+  tNode: TNode;
+
+  /**
    * Human readable node type.
    */
   type: string;
@@ -1115,6 +1122,11 @@ export interface DebugNode {
    * NodeInjector information.
    */
   injector: NodeInjectorDebug;
+
+  /**
+   * Injector resolution path.
+   */
+  injectorResolutionPath: any;
 }
 
 export interface NodeInjectorDebug {

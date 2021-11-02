@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectionToken} from '../../di/injection_token';
-import {Type} from '../../interface/type';
+import {ProviderToken} from '../../di/provider_token';
 import {QueryList} from '../../linker/query_list';
 
 import {TNode} from './node';
@@ -17,10 +16,40 @@ import {TView} from './view';
  * An object representing query metadata extracted from query annotations.
  */
 export interface TQueryMetadata {
-  predicate: Type<any>|InjectionToken<unknown>|string[];
-  descendants: boolean;
+  predicate: ProviderToken<unknown>|string[];
   read: any;
-  isStatic: boolean;
+  flags: QueryFlags;
+}
+
+/**
+ * A set of flags to be used with Queries.
+ *
+ * NOTE: Ensure changes here are reflected in `packages/compiler/src/render3/view/compiler.ts`
+ */
+export const enum QueryFlags {
+  /**
+   * No flags
+   */
+  none = 0b0000,
+
+  /**
+   * Whether or not the query should descend into children.
+   */
+  descendants = 0b0001,
+
+  /**
+   * The query can be computed statically and hence can be assigned eagerly.
+   *
+   * NOTE: Backwards compatibility with ViewEngine.
+   */
+  isStatic = 0b0010,
+
+  /**
+   * If the `QueryList` should fire change event only if actual change to query was computed (vs old
+   * behavior where the change was fired whenever the query was recomputed, even if the recomputed
+   * query resulted in the same list.)
+   */
+  emitDistinctChangesOnly = 0b0100,
 }
 
 /**

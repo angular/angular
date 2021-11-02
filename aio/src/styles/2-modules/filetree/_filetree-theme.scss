@@ -1,0 +1,20 @@
+@use '../../constants';
+
+@mixin theme($theme) {
+  .filetree {
+    background: constants.$white;
+    border: 4px solid constants.$lightgray;
+
+    .file {
+      color: constants.$darkgray;
+    }
+
+    .children {
+      .file {
+        &:before {
+          border-color: constants.$lightgray;
+        }
+      }
+    }
+  }
+}

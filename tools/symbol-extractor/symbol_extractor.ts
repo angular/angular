@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 
 export interface Symbol {
@@ -47,7 +47,10 @@ export class SymbolExtractor {
           break;
         case ts.SyntaxKind.VariableDeclaration:
           const varDecl = child as ts.VariableDeclaration;
-          if (varDecl.initializer && fnRecurseDepth !== 0) {
+          // Terser optimizes variable declarations with `undefined` as initializer
+          // by omitting the initializer completely. We capture such declarations as well.
+          // https://github.com/terser/terser/blob/86ea74d5c12ae51b64468/CHANGELOG.md#v540.
+          if (fnRecurseDepth !== 0) {
             symbols.push({name: stripSuffix(varDecl.name.getText())});
           }
           if (fnRecurseDepth == 0 && isRollupExportSymbol(varDecl)) {
@@ -74,14 +77,14 @@ export class SymbolExtractor {
 
   static diff(actual: Symbol[], expected: string|((Symbol | string)[])): {[name: string]: number} {
     if (typeof expected == 'string') {
-      expected = JSON.parse(expected);
+      expected = JSON.parse(expected) as string[];
     }
     const diff: {[name: string]: number} = {};
 
     // All symbols in the golden file start out with a count corresponding to the number of symbols
     // with that name. Once they are matched with symbols in the actual output, the count should
     // even out to 0.
-    (expected as (Symbol | string)[]).forEach((nameOrSymbol) => {
+    expected.forEach(nameOrSymbol => {
       const symbolName = typeof nameOrSymbol == 'string' ? nameOrSymbol : nameOrSymbol.name;
       diff[symbolName] = (diff[symbolName] || 0) + 1;
     });

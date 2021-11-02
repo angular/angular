@@ -54,8 +54,7 @@ export class SyncLocker {
     const pid = this.lockFile.read();
     throw new Error(
         `ngcc is already running at process with id ${pid}.\n` +
-        `If you are running multiple builds in parallel then you should pre-process your node_modules via the command line ngcc tool before starting the builds;\n` +
-        `See https://v9.angular.io/guide/ivy#speeding-up-ngcc-compilation.\n` +
+        `If you are running multiple builds in parallel then you might try pre-processing your node_modules via the command line ngcc tool before starting the builds.\n` +
         `(If you are sure no ngcc process is running then you should delete the lock-file at ${
             this.lockFile.path}.)`);
   }

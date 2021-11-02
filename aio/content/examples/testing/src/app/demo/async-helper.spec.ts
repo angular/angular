@@ -1,7 +1,7 @@
 // tslint:disable-next-line:no-unused-variable
-import { fakeAsync, tick, waitForAsync } from '@angular/core/testing';
-import { interval, of } from 'rxjs';
-import { delay, take } from 'rxjs/operators';
+import {fakeAsync, tick, waitForAsync} from '@angular/core/testing';
+import {interval, of} from 'rxjs';
+import {delay, take} from 'rxjs/operators';
 
 describe('Angular async helper', () => {
   describe('async', () => {
@@ -131,13 +131,13 @@ describe('Angular async helper', () => {
 
     // #docregion fake-async-test-rxjs
     it('should get Date diff correctly in fakeAsync with rxjs scheduler', fakeAsync(() => {
-         // need to add `import 'zone.js/dist/zone-patch-rxjs-fake-async'
+         // need to add `import 'zone.js/plugins/zone-patch-rxjs-fake-async'
          // to patch rxjs scheduler
-         let result = null;
+         let result = '';
          of('hello').pipe(delay(1000)).subscribe(v => {
            result = v;
          });
-         expect(result).toBeNull();
+         expect(result).toBe('');
          tick(1000);
          expect(result).toBe('hello');
 
@@ -156,7 +156,7 @@ describe('Angular async helper', () => {
   // #docregion fake-async-test-clock
   describe('use jasmine.clock()', () => {
     // need to config __zone_symbol__fakeAsyncPatchLock flag
-    // before loading zone.js/dist/zone-testing
+    // before loading zone.js/testing
     beforeEach(() => {
       jasmine.clock().install();
     });
@@ -175,16 +175,15 @@ describe('Angular async helper', () => {
   });
   // #enddocregion fake-async-test-clock
 
-  // #docregion async-test-promise-then
   describe('test jsonp', () => {
     function jsonp(url: string, callback: () => void) {
       // do a jsonp call which is not zone aware
     }
     // need to config __zone_symbol__supportWaitUnResolvedChainedPromise flag
-    // before loading zone.js/dist/zone-testing
+    // before loading zone.js/testing
     it('should wait until promise.then is called', waitForAsync(() => {
          let finished = false;
-         new Promise((res, rej) => {
+         new Promise<void>(res => {
            jsonp('localhost:8080/jsonp', () => {
              // success callback and resolve the promise
              finished = true;
@@ -197,5 +196,4 @@ describe('Angular async helper', () => {
          });
        }));
   });
-  // #enddocregion async-test-promise-then
 });

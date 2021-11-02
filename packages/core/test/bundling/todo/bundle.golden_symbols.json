@@ -6,13 +6,16 @@
     "name": "ChangeDetectionStrategy"
   },
   {
+    "name": "ComponentFactory"
+  },
+  {
+    "name": "ComponentRef"
+  },
+  {
     "name": "DefaultIterableDiffer"
   },
   {
     "name": "DefaultIterableDifferFactory"
-  },
-  {
-    "name": "EMPTY_ARRAY"
   },
   {
     "name": "EMPTY_ARRAY"
@@ -34,6 +37,9 @@
   },
   {
     "name": "IterableDiffers"
+  },
+  {
+    "name": "LifecycleHooksFeature"
   },
   {
     "name": "NG_COMP_DEF"
@@ -58,6 +64,9 @@
   },
   {
     "name": "NOT_FOUND"
+  },
+  {
+    "name": "NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR"
   },
   {
     "name": "NO_CHANGE"
@@ -96,6 +105,12 @@
     "name": "RecordViewTuple"
   },
   {
+    "name": "RendererFactory2"
+  },
+  {
+    "name": "RootViewRef"
+  },
+  {
     "name": "RuntimeError"
   },
   {
@@ -106,6 +121,9 @@
   },
   {
     "name": "SWITCH_VIEW_CONTAINER_REF_FACTORY"
+  },
+  {
+    "name": "Sanitizer"
   },
   {
     "name": "SimpleChange"
@@ -141,7 +159,13 @@
     "name": "TodoStore"
   },
   {
+    "name": "VERSION"
+  },
+  {
     "name": "VE_ViewContainerRef"
+  },
+  {
+    "name": "Version"
   },
   {
     "name": "ViewContainerRef"
@@ -183,6 +207,9 @@
     "name": "_global"
   },
   {
+    "name": "_injectImplementation"
+  },
+  {
     "name": "_renderCompCount"
   },
   {
@@ -222,6 +249,9 @@
     "name": "assertTemplate"
   },
   {
+    "name": "attachInjectFlag"
+  },
+  {
     "name": "attachPatchData"
   },
   {
@@ -243,6 +273,9 @@
     "name": "cleanUpView"
   },
   {
+    "name": "collectNativeNodes"
+  },
+  {
     "name": "collectStylingFromDirectives"
   },
   {
@@ -261,6 +294,9 @@
     "name": "createDirectivesInstances"
   },
   {
+    "name": "createElementNode"
+  },
+  {
     "name": "createElementRef"
   },
   {
@@ -276,10 +312,22 @@
     "name": "createNodeInjector"
   },
   {
+    "name": "createRootComponent"
+  },
+  {
+    "name": "createRootComponentView"
+  },
+  {
+    "name": "createRootContext"
+  },
+  {
     "name": "createTView"
   },
   {
     "name": "defaultErrorLogger"
+  },
+  {
+    "name": "defaultIterableDiffersFactory"
   },
   {
     "name": "defaultScheduler"
@@ -292,6 +340,9 @@
   },
   {
     "name": "detachView"
+  },
+  {
+    "name": "detectChangesInRootView"
   },
   {
     "name": "detectChangesInternal"
@@ -345,6 +396,9 @@
     "name": "generatePropertyAliases"
   },
   {
+    "name": "getBeforeNodeForView"
+  },
+  {
     "name": "getClosureSafeProperty"
   },
   {
@@ -363,19 +417,16 @@
     "name": "getCurrentTNodePlaceholderOk"
   },
   {
-    "name": "getDebugContext"
-  },
-  {
     "name": "getDeclarationTNode"
   },
   {
     "name": "getFirstLContainer"
   },
   {
-    "name": "getInjectorIndex"
+    "name": "getFirstNativeNode"
   },
   {
-    "name": "getLCleanup"
+    "name": "getInjectorIndex"
   },
   {
     "name": "getLView"
@@ -400,6 +451,9 @@
   },
   {
     "name": "getOrCreateInjectable"
+  },
+  {
+    "name": "getOrCreateLViewCleanup"
   },
   {
     "name": "getOrCreateNodeInjectorForNode"
@@ -432,6 +486,9 @@
     "name": "getPreviousIndex"
   },
   {
+    "name": "getProjectionNodes"
+  },
+  {
     "name": "getSelectedIndex"
   },
   {
@@ -439,6 +496,9 @@
   },
   {
     "name": "getSymbolIterator"
+  },
+  {
+    "name": "getTNode"
   },
   {
     "name": "getTStylingRangeNext"
@@ -561,6 +621,9 @@
     "name": "leaveViewLight"
   },
   {
+    "name": "locateHostElement"
+  },
+  {
     "name": "lookupTokenUsingModuleInjector"
   },
   {
@@ -577,6 +640,9 @@
   },
   {
     "name": "markViewDirty"
+  },
+  {
+    "name": "maybeWrapInNotSelector"
   },
   {
     "name": "mergeHostAttribute"
@@ -619,6 +685,9 @@
   },
   {
     "name": "refreshComponent"
+  },
+  {
+    "name": "refreshContainsDirtyView"
   },
   {
     "name": "refreshContentQueries"
@@ -723,10 +792,19 @@
     "name": "stringify"
   },
   {
+    "name": "stringifyCSSSelector"
+  },
+  {
     "name": "stringifyForError"
   },
   {
     "name": "throwProviderNotFoundError"
+  },
+  {
+    "name": "tickRootContext"
+  },
+  {
+    "name": "toRefArray"
   },
   {
     "name": "toTStylingRange"

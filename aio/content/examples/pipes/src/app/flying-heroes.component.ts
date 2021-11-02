@@ -7,7 +7,7 @@ import { HEROES } from './heroes';
 @Component({
   selector: 'app-flying-heroes',
   templateUrl: './flying-heroes.component.html',
-  styles: ['#flyers, #all {font-style: italic}']
+  styles: ['#flyers, #all {font-style: italic}', 'button {display: block}', 'input {margin: .25rem .25rem .5rem 0;}']
 })
 // #docregion v1
 export class FlyingHeroesComponent {
@@ -35,9 +35,7 @@ export class FlyingHeroesComponent {
 // #enddocregion v1
     } else {
       // Pipe updates display because heroes array is a new object
-// #docregion concat
       this.heroes = this.heroes.concat(hero);
-// #enddocregion concat
     }
 // #docregion v1
   }
@@ -47,15 +45,11 @@ export class FlyingHeroesComponent {
 // #enddocregion v1
 
 ////// Identical except for impure pipe //////
-// #docregion impure-component
 @Component({
   selector: 'app-flying-heroes-impure',
   templateUrl: './flying-heroes-impure.component.html',
-// #enddocregion impure-component
-  styles: ['.flyers, .all {font-style: italic}'],
-// #docregion impure-component
+  styles: ['#flyers, #all {font-style: italic}', 'button {display: block}', 'input {margin: .25rem .25rem .5rem 0;}'],
 })
 export class FlyingHeroesImpureComponent extends FlyingHeroesComponent {
-  title = 'Flying Heroes (impure pipe)';
+  override title = 'Flying Heroes (impure pipe)';
 }
-// #enddocregion impure-component

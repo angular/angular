@@ -85,48 +85,49 @@ runInEachFileSystem(() => {
         const COMMON_PACKAGE_PATH = _('/node_modules/@angular/common/package.json');
         const fs = getFileSystem();
         const pkgUpdater = new DirectPackageJsonUpdater(fs);
-        let pkg = JSON.parse(fs.readFile(COMMON_PACKAGE_PATH));
+        // TODO: Determine the correct/best type for the `pkg` type.
+        let pkg = JSON.parse(fs.readFile(COMMON_PACKAGE_PATH)) as EntryPointPackageJson;
         expect(pkg.__processed_by_ivy_ngcc__).toBeUndefined();
         expect(pkg.scripts).toBeUndefined();
 
         markAsProcessed(pkgUpdater, pkg, COMMON_PACKAGE_PATH, ['fesm2015', 'fesm5']);
-        pkg = JSON.parse(fs.readFile(COMMON_PACKAGE_PATH));
-        expect(pkg.__processed_by_ivy_ngcc__.fesm2015).toBe('0.0.0-PLACEHOLDER');
-        expect(pkg.__processed_by_ivy_ngcc__.fesm5).toBe('0.0.0-PLACEHOLDER');
-        expect(pkg.__processed_by_ivy_ngcc__.esm2015).toBeUndefined();
-        expect(pkg.__processed_by_ivy_ngcc__.esm5).toBeUndefined();
-        expect(pkg.scripts.prepublishOnly).toBeDefined();
+        pkg = JSON.parse(fs.readFile(COMMON_PACKAGE_PATH)) as EntryPointPackageJson;
+        expect(pkg.__processed_by_ivy_ngcc__!.fesm2015).toBe('0.0.0-PLACEHOLDER');
+        expect(pkg.__processed_by_ivy_ngcc__!.fesm5).toBe('0.0.0-PLACEHOLDER');
+        expect(pkg.__processed_by_ivy_ngcc__!.esm2015).toBeUndefined();
+        expect(pkg.__processed_by_ivy_ngcc__!.esm5).toBeUndefined();
+        expect(pkg.scripts!.prepublishOnly).toBeDefined();
 
         markAsProcessed(pkgUpdater, pkg, COMMON_PACKAGE_PATH, ['esm2015', 'esm5']);
-        pkg = JSON.parse(fs.readFile(COMMON_PACKAGE_PATH));
-        expect(pkg.__processed_by_ivy_ngcc__.fesm2015).toBe('0.0.0-PLACEHOLDER');
-        expect(pkg.__processed_by_ivy_ngcc__.fesm5).toBe('0.0.0-PLACEHOLDER');
-        expect(pkg.__processed_by_ivy_ngcc__.esm2015).toBe('0.0.0-PLACEHOLDER');
-        expect(pkg.__processed_by_ivy_ngcc__.esm5).toBe('0.0.0-PLACEHOLDER');
-        expect(pkg.scripts.prepublishOnly).toBeDefined();
+        pkg = JSON.parse(fs.readFile(COMMON_PACKAGE_PATH)) as EntryPointPackageJson;
+        expect(pkg.__processed_by_ivy_ngcc__!.fesm2015).toBe('0.0.0-PLACEHOLDER');
+        expect(pkg.__processed_by_ivy_ngcc__!.fesm5).toBe('0.0.0-PLACEHOLDER');
+        expect(pkg.__processed_by_ivy_ngcc__!.esm2015).toBe('0.0.0-PLACEHOLDER');
+        expect(pkg.__processed_by_ivy_ngcc__!.esm5).toBe('0.0.0-PLACEHOLDER');
+        expect(pkg.scripts!.prepublishOnly).toBeDefined();
       });
 
       it('should update the packageJson object in-place', () => {
         const COMMON_PACKAGE_PATH = _('/node_modules/@angular/common/package.json');
         const fs = getFileSystem();
         const pkgUpdater = new DirectPackageJsonUpdater(fs);
-        const pkg = JSON.parse(fs.readFile(COMMON_PACKAGE_PATH));
+        const pkg = JSON.parse(fs.readFile(COMMON_PACKAGE_PATH)) as EntryPointPackageJson;
         expect(pkg.__processed_by_ivy_ngcc__).toBeUndefined();
         expect(pkg.scripts).toBeUndefined();
 
         markAsProcessed(pkgUpdater, pkg, COMMON_PACKAGE_PATH, ['fesm2015', 'fesm5']);
-        expect(pkg.__processed_by_ivy_ngcc__.fesm2015).toBe('0.0.0-PLACEHOLDER');
-        expect(pkg.__processed_by_ivy_ngcc__.fesm5).toBe('0.0.0-PLACEHOLDER');
-        expect(pkg.__processed_by_ivy_ngcc__.esm2015).toBeUndefined();
-        expect(pkg.__processed_by_ivy_ngcc__.esm5).toBeUndefined();
-        expect(pkg.scripts.prepublishOnly).toBeDefined();
+        expect(pkg.__processed_by_ivy_ngcc__!.fesm2015).toBe('0.0.0-PLACEHOLDER');
+        expect(pkg.__processed_by_ivy_ngcc__!.fesm5).toBe('0.0.0-PLACEHOLDER');
+        expect(pkg.__processed_by_ivy_ngcc__!.esm2015).toBeUndefined();
+        expect(pkg.__processed_by_ivy_ngcc__!.esm5).toBeUndefined();
+        expect(pkg.scripts!.prepublishOnly).toBeDefined();
 
         markAsProcessed(pkgUpdater, pkg, COMMON_PACKAGE_PATH, ['esm2015', 'esm5']);
-        expect(pkg.__processed_by_ivy_ngcc__.fesm2015).toBe('0.0.0-PLACEHOLDER');
-        expect(pkg.__processed_by_ivy_ngcc__.fesm5).toBe('0.0.0-PLACEHOLDER');
-        expect(pkg.__processed_by_ivy_ngcc__.esm2015).toBe('0.0.0-PLACEHOLDER');
-        expect(pkg.__processed_by_ivy_ngcc__.esm5).toBe('0.0.0-PLACEHOLDER');
-        expect(pkg.scripts.prepublishOnly).toBeDefined();
+        expect(pkg.__processed_by_ivy_ngcc__!.fesm2015).toBe('0.0.0-PLACEHOLDER');
+        expect(pkg.__processed_by_ivy_ngcc__!.fesm5).toBe('0.0.0-PLACEHOLDER');
+        expect(pkg.__processed_by_ivy_ngcc__!.esm2015).toBe('0.0.0-PLACEHOLDER');
+        expect(pkg.__processed_by_ivy_ngcc__!.esm5).toBe('0.0.0-PLACEHOLDER');
+        expect(pkg.scripts!.prepublishOnly).toBeDefined();
       });
 
       it('should one perform one write operation for all updated properties', () => {
@@ -134,7 +135,7 @@ runInEachFileSystem(() => {
         const fs = getFileSystem();
         const pkgUpdater = new DirectPackageJsonUpdater(fs);
         const writeFileSpy = spyOn(fs, 'writeFile');
-        let pkg = JSON.parse(fs.readFile(COMMON_PACKAGE_PATH));
+        let pkg = JSON.parse(fs.readFile(COMMON_PACKAGE_PATH)) as EntryPointPackageJson;
 
         markAsProcessed(
             pkgUpdater, pkg, COMMON_PACKAGE_PATH, ['fesm2015', 'fesm5', 'esm2015', 'esm5']);
@@ -146,34 +147,34 @@ runInEachFileSystem(() => {
         const fs = getFileSystem();
         const pkgUpdater = new DirectPackageJsonUpdater(fs);
         const prepublishOnly = 'existing script';
-        let pkg = JSON.parse(fs.readFile(COMMON_PACKAGE_PATH));
+        let pkg = JSON.parse(fs.readFile(COMMON_PACKAGE_PATH)) as EntryPointPackageJson;
         pkg.scripts = {prepublishOnly};
 
         markAsProcessed(pkgUpdater, pkg, COMMON_PACKAGE_PATH, ['fesm2015']);
-        pkg = JSON.parse(fs.readFile(COMMON_PACKAGE_PATH));
-        expect(pkg.scripts.prepublishOnly).toContain('This is not allowed');
-        expect(pkg.scripts.prepublishOnly__ivy_ngcc_bak).toBe(prepublishOnly);
+        pkg = JSON.parse(fs.readFile(COMMON_PACKAGE_PATH)) as EntryPointPackageJson;
+        expect(pkg.scripts!.prepublishOnly).toContain('This is not allowed');
+        expect(pkg.scripts!.prepublishOnly__ivy_ngcc_bak).toBe(prepublishOnly);
       });
 
       it(`should not keep backup of overwritten 'prepublishOnly' script`, () => {
         const COMMON_PACKAGE_PATH = _('/node_modules/@angular/common/package.json');
         const fs = getFileSystem();
         const pkgUpdater = new DirectPackageJsonUpdater(fs);
-        let pkg = JSON.parse(fs.readFile(COMMON_PACKAGE_PATH));
+        let pkg = JSON.parse(fs.readFile(COMMON_PACKAGE_PATH)) as EntryPointPackageJson;
 
         markAsProcessed(pkgUpdater, pkg, COMMON_PACKAGE_PATH, ['fesm2015']);
 
-        pkg = JSON.parse(fs.readFile(COMMON_PACKAGE_PATH));
-        expect(pkg.scripts.prepublishOnly).toContain('This is not allowed');
-        expect(pkg.scripts.prepublishOnly__ivy_ngcc_bak).toBeUndefined();
+        pkg = JSON.parse(fs.readFile(COMMON_PACKAGE_PATH)) as EntryPointPackageJson;
+        expect(pkg.scripts!.prepublishOnly).toContain('This is not allowed');
+        expect(pkg.scripts!.prepublishOnly__ivy_ngcc_bak).toBeUndefined();
 
         // Running again, now that there is `prepublishOnly` script (created by `ngcc`), it should
         // still not back it up as `prepublishOnly__ivy_ngcc_bak`.
         markAsProcessed(pkgUpdater, pkg, COMMON_PACKAGE_PATH, ['fesm2015']);
 
-        pkg = JSON.parse(fs.readFile(COMMON_PACKAGE_PATH));
-        expect(pkg.scripts.prepublishOnly).toContain('This is not allowed');
-        expect(pkg.scripts.prepublishOnly__ivy_ngcc_bak).toBeUndefined();
+        pkg = JSON.parse(fs.readFile(COMMON_PACKAGE_PATH)) as EntryPointPackageJson;
+        expect(pkg.scripts!.prepublishOnly).toContain('This is not allowed');
+        expect(pkg.scripts!.prepublishOnly__ivy_ngcc_bak).toBeUndefined();
       });
     });
 

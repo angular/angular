@@ -13,7 +13,7 @@ import {InjectionToken} from '../di/injection_token';
  * It is used for i18n extraction, by i18n pipes (DatePipe, I18nPluralPipe, CurrencyPipe,
  * DecimalPipe and PercentPipe) and by ICU expressions.
  *
- * See the [i18n guide](guide/i18n#setting-up-locale) for more information.
+ * See the [i18n guide](guide/i18n-common-locale-id) for more information.
  *
  * @usageNotes
  * ### Example
@@ -37,7 +37,7 @@ export const LOCALE_ID = new InjectionToken<string>('LocaleId');
  * CurrencyPipe when there is no currency code passed into it. This is only used by
  * CurrencyPipe and has no relation to locale currency. Defaults to USD if not configured.
  *
- * See the [i18n guide](guide/i18n#setting-up-locale) for more information.
+ * See the [i18n guide](guide/i18n-common-locale-id) for more information.
  *
  * <div class="alert is-helpful">
  *
@@ -76,7 +76,7 @@ export const DEFAULT_CURRENCY_CODE = new InjectionToken<string>('DefaultCurrency
  * Use this token at bootstrap to provide the content of your translation file (`xtb`,
  * `xlf` or `xlf2`) when you want to translate your application in another language.
  *
- * See the [i18n guide](guide/i18n#merge) for more information.
+ * See the [i18n guide](guide/i18n-common-merge) for more information.
  *
  * @usageNotes
  * ### Example
@@ -102,7 +102,7 @@ export const TRANSLATIONS = new InjectionToken<string>('Translations');
  * Provide this token at bootstrap to set the format of your {@link TRANSLATIONS}: `xtb`,
  * `xlf` or `xlf2`.
  *
- * See the [i18n guide](guide/i18n#merge) for more information.
+ * See the [i18n guide](guide/i18n-common-merge) for more information.
  *
  * @usageNotes
  * ### Example
@@ -128,7 +128,7 @@ export const TRANSLATIONS_FORMAT = new InjectionToken<string>('TranslationsForma
  * - Warning (default): show a warning in the console and/or shell.
  * - Ignore: do nothing.
  *
- * See the [i18n guide](guide/i18n#missing-translation) for more information.
+ * See the [i18n guide](guide/i18n-common-merge#report-missing-translations) for more information.
  *
  * @usageNotes
  * ### Example

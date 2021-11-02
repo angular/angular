@@ -1,5 +1,5 @@
 // #docplaster
-// #docregion, preload-v1
+// #docregion
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 

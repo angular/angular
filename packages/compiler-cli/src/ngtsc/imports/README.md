@@ -167,8 +167,6 @@ It consists of two mechanisms:
 
 1. A `DefaultImportTracker`, which records information about both default imports encountered in the program as well as usages of those imports added during compilation.
 
-A `DefaultImportRecorder` interface is used to allow for a noop implementation in cases (like ngcc) where this tracking isn't necessary.
-
 2. A TypeScript transformer which processes default import statements and can preserve those which are actually used.
 
 This is accessed via `DefaultImportTracker.importPreservingTransformer`.

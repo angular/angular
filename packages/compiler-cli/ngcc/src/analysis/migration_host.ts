@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {absoluteFromSourceFile, AbsoluteFsPath} from '../../../src/ngtsc/file_system';
 import {MetadataReader} from '../../../src/ngtsc/metadata';
@@ -32,9 +32,14 @@ export class DefaultMigrationHost implements MigrationHost {
     const migratedTraits = this.compiler.injectSyntheticDecorator(clazz, decorator, flags);
 
     for (const trait of migratedTraits) {
-      if (trait.state === TraitState.ERRORED) {
-        trait.diagnostics =
-            trait.diagnostics.map(diag => createMigrationDiagnostic(diag, clazz, decorator));
+      if ((trait.state === TraitState.Analyzed || trait.state === TraitState.Resolved) &&
+          trait.analysisDiagnostics !== null) {
+        trait.analysisDiagnostics = trait.analysisDiagnostics.map(
+            diag => createMigrationDiagnostic(diag, clazz, decorator));
+      }
+      if (trait.state === TraitState.Resolved && trait.resolveDiagnostics !== null) {
+        trait.resolveDiagnostics =
+            trait.resolveDiagnostics.map(diag => createMigrationDiagnostic(diag, clazz, decorator));
       }
     }
   }

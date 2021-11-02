@@ -3,7 +3,6 @@
  * Adjust as necessary for your application needs.
  */
 (function (global) {
-  // #docregion paths
   System.config({
     paths: {
       // paths serve as alias
@@ -12,7 +11,6 @@
     map: {
       'ng-loader': '../src/systemjs-angular-loader.js',
       app: '/app',
-      // #enddocregion paths
       // angular bundles
       '@angular/core': 'npm:@angular/core/bundles/core.umd.js',
       '@angular/common': 'npm:@angular/common/bundles/common.umd.js',
@@ -29,9 +27,7 @@
       // other libraries
       'rxjs': 'npm:rxjs',
       'angular-in-memory-web-api': 'npm:angular-in-memory-web-api',
-      // #docregion paths
     },
-    // #enddocregion paths
     // packages tells the System loader how to load when no filename and/or no extension
     packages: {
       'app': {

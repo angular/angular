@@ -27,19 +27,21 @@ export type NavigationTrigger = 'imperative'|'popstate'|'hashchange';
  * The following code shows how a class subscribes to router events.
  *
  * ```ts
+ * import {Event, RouterEvent, Router} from '@angular/router';
+ *
  * class MyService {
- *   constructor(public router: Router, logger: Logger) {
+ *   constructor(public router: Router) {
  *     router.events.pipe(
  *        filter((e: Event): e is RouterEvent => e instanceof RouterEvent)
  *     ).subscribe((e: RouterEvent) => {
- *       logger.log(e.id, e.url);
+ *       // Do something
  *     });
  *   }
  * }
  * ```
  *
  * @see `Event`
- * @see [Router events summary](guide/router#router-events)
+ * @see [Router events summary](guide/router-reference#router-events)
  * @publicApi
  */
 export class RouterEvent {
@@ -100,7 +102,7 @@ export class NavigationStart extends RouterEvent {
   }
 
   /** @docsNotRequired */
-  toString(): string {
+  override toString(): string {
     return `NavigationStart(id: ${this.id}, url: '${this.url}')`;
   }
 }
@@ -126,7 +128,7 @@ export class NavigationEnd extends RouterEvent {
   }
 
   /** @docsNotRequired */
-  toString(): string {
+  override toString(): string {
     return `NavigationEnd(id: ${this.id}, url: '${this.url}', urlAfterRedirects: '${
         this.urlAfterRedirects}')`;
   }
@@ -134,7 +136,7 @@ export class NavigationEnd extends RouterEvent {
 
 /**
  * An event triggered when a navigation is canceled, directly or indirectly.
- * This can happen when a route guard
+ * This can happen for several reasons including when a route guard
  * returns `false` or initiates a redirect by returning a `UrlTree`.
  *
  * @see `NavigationStart`
@@ -155,7 +157,7 @@ export class NavigationCancel extends RouterEvent {
   }
 
   /** @docsNotRequired */
-  toString(): string {
+  override toString(): string {
     return `NavigationCancel(id: ${this.id}, url: '${this.url}')`;
   }
 }
@@ -181,7 +183,7 @@ export class NavigationError extends RouterEvent {
   }
 
   /** @docsNotRequired */
-  toString(): string {
+  override toString(): string {
     return `NavigationError(id: ${this.id}, url: '${this.url}', error: ${this.error})`;
   }
 }
@@ -205,7 +207,7 @@ export class RoutesRecognized extends RouterEvent {
   }
 
   /** @docsNotRequired */
-  toString(): string {
+  override toString(): string {
     return `RoutesRecognized(id: ${this.id}, url: '${this.url}', urlAfterRedirects: '${
         this.urlAfterRedirects}', state: ${this.state})`;
   }
@@ -231,7 +233,7 @@ export class GuardsCheckStart extends RouterEvent {
     super(id, url);
   }
 
-  toString(): string {
+  override toString(): string {
     return `GuardsCheckStart(id: ${this.id}, url: '${this.url}', urlAfterRedirects: '${
         this.urlAfterRedirects}', state: ${this.state})`;
   }
@@ -259,14 +261,14 @@ export class GuardsCheckEnd extends RouterEvent {
     super(id, url);
   }
 
-  toString(): string {
+  override toString(): string {
     return `GuardsCheckEnd(id: ${this.id}, url: '${this.url}', urlAfterRedirects: '${
         this.urlAfterRedirects}', state: ${this.state}, shouldActivate: ${this.shouldActivate})`;
   }
 }
 
 /**
- * An event triggered at the the start of the Resolve phase of routing.
+ * An event triggered at the start of the Resolve phase of routing.
  *
  * Runs in the "resolve" phase whether or not there is anything to resolve.
  * In future, may change to only run when there are things to be resolved.
@@ -288,7 +290,7 @@ export class ResolveStart extends RouterEvent {
     super(id, url);
   }
 
-  toString(): string {
+  override toString(): string {
     return `ResolveStart(id: ${this.id}, url: '${this.url}', urlAfterRedirects: '${
         this.urlAfterRedirects}', state: ${this.state})`;
   }
@@ -313,7 +315,7 @@ export class ResolveEnd extends RouterEvent {
     super(id, url);
   }
 
-  toString(): string {
+  override toString(): string {
     return `ResolveEnd(id: ${this.id}, url: '${this.url}', urlAfterRedirects: '${
         this.urlAfterRedirects}', state: ${this.state})`;
   }
@@ -465,7 +467,7 @@ export class Scroll {
  * * [ResolveStart](api/router/ResolveStart): When the router begins the *resolve*
  * phase of routing.
  * * [ResolveEnd](api/router/ResolveEnd): When the router finishes the *resolve*
- * phase of routing successfuly.
+ * phase of routing successfully.
  * * [ChildActivationEnd](api/router/ChildActivationEnd): When the router finishes
  * activating a route's children.
  * * [ActivationEnd](api/router/ActivationEnd): When the router finishes activating a route.

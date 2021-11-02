@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 /**
  * Metadata extracted from an instance of a decorator on another declaration, or synthesized from
@@ -474,6 +474,16 @@ export enum KnownDeclaration {
    * Indicates the `__spreadArrays` TypeScript helper function.
    */
   TsHelperSpreadArrays,
+
+  /**
+   * Indicates the `__spreadArray` TypeScript helper function.
+   */
+  TsHelperSpreadArray,
+
+  /**
+   * Indicates the `__read` TypeScript helper function.
+   */
+  TsHelperRead,
 }
 
 /**
@@ -846,4 +856,14 @@ export interface ReflectionHost {
    * have a different name than it does externally.
    */
   getAdjacentNameOfClass(clazz: ClassDeclaration): ts.Identifier;
+
+  /**
+   * Returns `true` if a declaration is exported from the module in which it's defined.
+   *
+   * Not all mechanisms by which a declaration is exported can be statically detected, especially
+   * when processing already compiled JavaScript. A `false` result does not indicate that the
+   * declaration is never visible outside its module, only that it was not exported via one of the
+   * export mechanisms that the `ReflectionHost` is capable of statically checking.
+   */
+  isStaticallyExported(decl: ts.Node): boolean;
 }

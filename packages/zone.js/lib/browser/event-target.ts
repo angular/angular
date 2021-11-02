@@ -29,7 +29,7 @@ export function eventTargetPatch(_global: any, api: _ZonePrivate) {
   if (!EVENT_TARGET || !EVENT_TARGET.prototype) {
     return;
   }
-  api.patchEventTarget(_global, [EVENT_TARGET && EVENT_TARGET.prototype]);
+  api.patchEventTarget(_global, api, [EVENT_TARGET && EVENT_TARGET.prototype]);
 
   return true;
 }

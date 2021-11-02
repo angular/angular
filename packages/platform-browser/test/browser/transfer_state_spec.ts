@@ -9,7 +9,7 @@
 import {DOCUMENT} from '@angular/common';
 import {TestBed} from '@angular/core/testing';
 import {BrowserModule, BrowserTransferStateModule, TransferState} from '@angular/platform-browser';
-import {escapeHtml, makeStateKey, StateKey, unescapeHtml} from '@angular/platform-browser/src/browser/transfer_state';
+import {escapeHtml, makeStateKey, unescapeHtml} from '@angular/platform-browser/src/browser/transfer_state';
 
 (function() {
 function removeScriptTag(doc: Document, id: string) {
@@ -37,6 +37,7 @@ describe('TransferState', () => {
   let doc: Document;
 
   const TEST_KEY = makeStateKey<number>('test');
+  const BOOLEAN_KEY = makeStateKey<boolean>('boolean');
   const DELAYED_KEY = makeStateKey<string>('delayed');
 
   beforeEach(() => {
@@ -80,9 +81,9 @@ describe('TransferState', () => {
 
   it('supports setting and accessing value \'false\' via get', () => {
     const transferState: TransferState = TestBed.inject(TransferState);
-    transferState.set(TEST_KEY, false);
-    expect(transferState.get(TEST_KEY, true)).toBe(false);
-    expect(transferState.hasKey(TEST_KEY)).toBe(true);
+    transferState.set(BOOLEAN_KEY, false);
+    expect(transferState.get(BOOLEAN_KEY, true)).toBe(false);
+    expect(transferState.hasKey(BOOLEAN_KEY)).toBe(true);
   });
 
   it('supports setting and accessing value \'null\' via get', () => {
@@ -127,7 +128,7 @@ describe('escape/unescape', () => {
         '{&q;testString&q;:&q;&l;/script&g;&l;script&g;' +
         'alert(&s;Hello&a;&s; + \\&q;World\\&q;);&q;}');
 
-    const unescapedObj = JSON.parse(unescapeHtml(escaped));
+    const unescapedObj = JSON.parse(unescapeHtml(escaped)) as {testString: string};
     expect(unescapedObj['testString']).toBe(testString);
   });
 });

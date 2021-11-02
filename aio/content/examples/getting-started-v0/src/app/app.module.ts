@@ -20,6 +20,8 @@ import { ProductListComponent } from './product-list/product-list.component';
     TopBarComponent,
     ProductListComponent
   ],
-  bootstrap: [ AppComponent ]
+  bootstrap: [
+    AppComponent
+  ]
 })
 export class AppModule { }

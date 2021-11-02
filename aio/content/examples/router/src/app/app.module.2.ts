@@ -1,6 +1,3 @@
-// #docplaster
-// #docregion
-// #docregion hero-import
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
@@ -26,6 +23,4 @@ import { PageNotFoundComponent } from './page-not-found/page-not-found.component
   ],
   bootstrap: [ AppComponent ]
 })
-// #enddocregion hero-import
 export class AppModule { }
-// #enddocregion

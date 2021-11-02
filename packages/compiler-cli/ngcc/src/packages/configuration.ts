@@ -6,25 +6,32 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {createHash} from 'crypto';
-import {satisfies} from 'semver';
+import module from 'module';
+import semver from 'semver';
 import * as vm from 'vm';
 
-import {AbsoluteFsPath, dirname, FileSystem, join, resolve} from '../../../src/ngtsc/file_system';
+import {AbsoluteFsPath, PathManipulation, ReadonlyFileSystem} from '../../../src/ngtsc/file_system';
 
 import {PackageJsonFormatPropertiesMap} from './entry_point';
 
 /**
  * The format of a project level configuration file.
  */
-export interface NgccProjectConfig<T = RawNgccPackageConfig> {
+export interface NgccProjectConfig {
   /**
    * The packages that are configured by this project config.
    */
-  packages?: {[packagePath: string]: T|undefined};
+  packages?: {[packagePath: string]: RawNgccPackageConfig|undefined};
   /**
    * Options that control how locking the process is handled.
    */
   locking?: ProcessLockingConfiguration;
+  /**
+   * Name of hash algorithm used to generate hashes of the configuration.
+   *
+   * Defaults to `sha256`.
+   */
+  hashAlgorithm?: string;
 }
 
 /**
@@ -96,7 +103,108 @@ interface VersionedPackageConfig extends RawNgccPackageConfig {
   versionRange: string;
 }
 
-type PartiallyProcessedConfig = Required<NgccProjectConfig<VersionedPackageConfig[]>>;
+/**
+ * The internal representation of a configuration file. Configured packages are transformed into
+ * `ProcessedNgccPackageConfig` when a certain version is requested.
+ */
+export class PartiallyProcessedConfig {
+  /**
+   * The packages that are configured by this project config, keyed by package name.
+   */
+  packages = new Map<string, VersionedPackageConfig[]>();
+  /**
+   * Options that control how locking the process is handled.
+   */
+  locking: ProcessLockingConfiguration = {};
+  /**
+   * Name of hash algorithm used to generate hashes of the configuration.
+   *
+   * Defaults to `sha256`.
+   */
+  hashAlgorithm = 'sha256';
+
+  constructor(projectConfig: NgccProjectConfig) {
+    // locking configuration
+    if (projectConfig.locking !== undefined) {
+      this.locking = projectConfig.locking;
+    }
+
+    // packages configuration
+    for (const packageNameAndVersion in projectConfig.packages) {
+      const packageConfig = projectConfig.packages[packageNameAndVersion];
+      if (packageConfig) {
+        const [packageName, versionRange = '*'] = this.splitNameAndVersion(packageNameAndVersion);
+        this.addPackageConfig(packageName, {...packageConfig, versionRange});
+      }
+    }
+
+    // hash algorithm config
+    if (projectConfig.hashAlgorithm !== undefined) {
+      this.hashAlgorithm = projectConfig.hashAlgorithm;
+    }
+  }
+
+  private splitNameAndVersion(packageNameAndVersion: string): [string, string|undefined] {
+    const versionIndex = packageNameAndVersion.lastIndexOf('@');
+    // Note that > 0 is because we don't want to match @ at the start of the line
+    // which is what you would have with a namespaced package, e.g. `@angular/common`.
+    return versionIndex > 0 ?
+        [
+          packageNameAndVersion.substring(0, versionIndex),
+          packageNameAndVersion.substring(versionIndex + 1),
+        ] :
+        [packageNameAndVersion, undefined];
+  }
+
+  /**
+   * Registers the configuration for a particular version of the provided package.
+   */
+  private addPackageConfig(packageName: string, config: VersionedPackageConfig): void {
+    if (!this.packages.has(packageName)) {
+      this.packages.set(packageName, []);
+    }
+    this.packages.get(packageName)!.push(config);
+  }
+
+  /**
+   * Finds the configuration for a particular version of the provided package.
+   */
+  findPackageConfig(packageName: string, version: string|null): VersionedPackageConfig|null {
+    if (!this.packages.has(packageName)) {
+      return null;
+    }
+
+    const configs = this.packages.get(packageName)!;
+    if (version === null) {
+      // The package has no version (!) - perhaps the entry-point was from a deep import, which made
+      // it impossible to find the package.json.
+      // So just return the first config that matches the package name.
+      return configs[0];
+    }
+    return configs.find(
+               config =>
+                   semver.satisfies(version, config.versionRange, {includePrerelease: true})) ??
+        null;
+  }
+
+  /**
+   * Converts the configuration into a JSON representation that is used to compute a hash of the
+   * configuration.
+   */
+  toJson(): string {
+    return JSON.stringify(this, (key: string, value: unknown) => {
+      if (value instanceof Map) {
+        const res: Record<string, unknown> = {};
+        for (const [k, v] of value) {
+          res[k] = v;
+        }
+        return res;
+      } else {
+        return value;
+      }
+    });
+  }
+}
 
 /**
  * The default configuration for ngcc.
@@ -160,6 +268,11 @@ export const DEFAULT_NGCC_CONFIG: NgccProjectConfig = {
 
 const NGCC_CONFIG_FILENAME = 'ngcc.config.js';
 
+// CommonJS/ESM interop for determining the current file name and containing
+// directory. The path is needed for loading the user configuration.
+const isCommonJS = typeof require !== 'undefined';
+const currentFileUrl = isCommonJS ? null : __ESM_IMPORT_META_URL__;
+
 /**
  * The processed package level configuration as a result of processing a raw package level config.
  */
@@ -186,13 +299,14 @@ export class ProcessedNgccPackageConfig implements Omit<RawNgccPackageConfig, 'e
    */
   ignorableDeepImportMatchers: RegExp[];
 
-  constructor(packagePath: AbsoluteFsPath, {
+  constructor(fs: PathManipulation, packagePath: AbsoluteFsPath, {
     entryPoints = {},
     ignorableDeepImportMatchers = [],
   }: RawNgccPackageConfig) {
     const absolutePathEntries: [AbsoluteFsPath, NgccEntryPointConfig][] =
-        Object.entries(entryPoints).map(([relativePath,
-                                          config]) => [resolve(packagePath, relativePath), config]);
+        Object.entries(entryPoints).map(([
+                                          relativePath, config
+                                        ]) => [fs.resolve(packagePath, relativePath), config]);
 
     this.packagePath = packagePath;
     this.entryPoints = new Map(absolutePathEntries);
@@ -229,10 +343,12 @@ export class NgccConfiguration {
   private projectConfig: PartiallyProcessedConfig;
   private cache = new Map<string, VersionedPackageConfig>();
   readonly hash: string;
+  readonly hashAlgorithm: string;
 
-  constructor(private fs: FileSystem, baseDir: AbsoluteFsPath) {
-    this.defaultConfig = this.processProjectConfig(DEFAULT_NGCC_CONFIG);
-    this.projectConfig = this.processProjectConfig(this.loadProjectConfig(baseDir));
+  constructor(private fs: ReadonlyFileSystem, baseDir: AbsoluteFsPath) {
+    this.defaultConfig = new PartiallyProcessedConfig(DEFAULT_NGCC_CONFIG);
+    this.projectConfig = new PartiallyProcessedConfig(this.loadProjectConfig(baseDir));
+    this.hashAlgorithm = this.projectConfig.hashAlgorithm;
     this.hash = this.computeHash();
   }
 
@@ -261,7 +377,7 @@ export class NgccConfiguration {
   getPackageConfig(packageName: string, packagePath: AbsoluteFsPath, version: string|null):
       ProcessedNgccPackageConfig {
     const rawPackageConfig = this.getRawPackageConfig(packageName, packagePath, version);
-    return new ProcessedNgccPackageConfig(packagePath, rawPackageConfig);
+    return new ProcessedNgccPackageConfig(this.fs, packagePath, rawPackageConfig);
   }
 
   private getRawPackageConfig(
@@ -272,9 +388,7 @@ export class NgccConfiguration {
       return this.cache.get(cacheKey)!;
     }
 
-    const projectLevelConfig = this.projectConfig.packages ?
-        findSatisfactoryVersion(this.projectConfig.packages[packageName], version) :
-        null;
+    const projectLevelConfig = this.projectConfig.findPackageConfig(packageName, version);
     if (projectLevelConfig !== null) {
       this.cache.set(cacheKey, projectLevelConfig);
       return projectLevelConfig;
@@ -286,9 +400,7 @@ export class NgccConfiguration {
       return packageLevelConfig;
     }
 
-    const defaultLevelConfig = this.defaultConfig.packages ?
-        findSatisfactoryVersion(this.defaultConfig.packages[packageName], version) :
-        null;
+    const defaultLevelConfig = this.defaultConfig.findPackageConfig(packageName, version);
     if (defaultLevelConfig !== null) {
       this.cache.set(cacheKey, defaultLevelConfig);
       return defaultLevelConfig;
@@ -297,30 +409,8 @@ export class NgccConfiguration {
     return {versionRange: '*'};
   }
 
-  private processProjectConfig(projectConfig: NgccProjectConfig): PartiallyProcessedConfig {
-    const processedConfig: PartiallyProcessedConfig = {packages: {}, locking: {}};
-
-    // locking configuration
-    if (projectConfig.locking !== undefined) {
-      processedConfig.locking = projectConfig.locking;
-    }
-
-    // packages configuration
-    for (const packageNameAndVersion in projectConfig.packages) {
-      const packageConfig = projectConfig.packages[packageNameAndVersion];
-      if (packageConfig) {
-        const [packageName, versionRange = '*'] = this.splitNameAndVersion(packageNameAndVersion);
-        const packageConfigs =
-            processedConfig.packages[packageName] || (processedConfig.packages[packageName] = []);
-        packageConfigs!.push({...packageConfig, versionRange});
-      }
-    }
-
-    return processedConfig;
-  }
-
   private loadProjectConfig(baseDir: AbsoluteFsPath): NgccProjectConfig {
-    const configFilePath = join(baseDir, NGCC_CONFIG_FILENAME);
+    const configFilePath = this.fs.join(baseDir, NGCC_CONFIG_FILENAME);
     if (this.fs.exists(configFilePath)) {
       try {
         return this.evalSrcFile(configFilePath);
@@ -334,7 +424,7 @@ export class NgccConfiguration {
 
   private loadPackageConfig(packagePath: AbsoluteFsPath, version: string|null):
       VersionedPackageConfig|null {
-    const configFilePath = join(packagePath, NGCC_CONFIG_FILENAME);
+    const configFilePath = this.fs.join(packagePath, NGCC_CONFIG_FILENAME);
     if (this.fs.exists(configFilePath)) {
       try {
         const packageConfig = this.evalSrcFile(configFilePath);
@@ -351,48 +441,21 @@ export class NgccConfiguration {
   }
 
   private evalSrcFile(srcPath: AbsoluteFsPath): any {
+    const requireFn = isCommonJS ? require : module.createRequire(currentFileUrl!);
     const src = this.fs.readFile(srcPath);
     const theExports = {};
     const sandbox = {
       module: {exports: theExports},
       exports: theExports,
-      require,
-      __dirname: dirname(srcPath),
+      require: requireFn,
+      __dirname: this.fs.dirname(srcPath),
       __filename: srcPath
     };
     vm.runInNewContext(src, sandbox, {filename: srcPath});
     return sandbox.module.exports;
   }
 
-  private splitNameAndVersion(packageNameAndVersion: string): [string, string|undefined] {
-    const versionIndex = packageNameAndVersion.lastIndexOf('@');
-    // Note that > 0 is because we don't want to match @ at the start of the line
-    // which is what you would have with a namespaced package, e.g. `@angular/common`.
-    return versionIndex > 0 ?
-        [
-          packageNameAndVersion.substring(0, versionIndex),
-          packageNameAndVersion.substring(versionIndex + 1),
-        ] :
-        [packageNameAndVersion, undefined];
-  }
-
   private computeHash(): string {
-    return createHash('md5').update(JSON.stringify(this.projectConfig)).digest('hex');
+    return createHash(this.hashAlgorithm).update(this.projectConfig.toJson()).digest('hex');
   }
-}
-
-function findSatisfactoryVersion(configs: VersionedPackageConfig[]|undefined, version: string|null):
-    VersionedPackageConfig|null {
-  if (configs === undefined) {
-    return null;
-  }
-  if (version === null) {
-    // The package has no version (!) - perhaps the entry-point was from a deep import, which made
-    // it impossible to find the package.json.
-    // So just return the first config that matches the package name.
-    return configs[0];
-  }
-  return configs.find(
-             config => satisfies(version, config.versionRange, {includePrerelease: true})) ||
-      null;
 }

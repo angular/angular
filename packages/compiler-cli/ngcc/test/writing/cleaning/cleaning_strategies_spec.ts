@@ -47,7 +47,7 @@ runInEachFileSystem(() => {
           fs.ensureDir(fs.dirname(packageJsonPath));
           fs.writeFile(packageJsonPath, JSON.stringify(packageJson));
           strategy.clean(packageJsonPath, fs.basename(packageJsonPath));
-          const newPackageJson: EntryPointPackageJson = JSON.parse(fs.readFile(packageJsonPath));
+          const newPackageJson = JSON.parse(fs.readFile(packageJsonPath)) as EntryPointPackageJson;
           expect(newPackageJson).toEqual({name: 'test-package'});
         });
 
@@ -60,7 +60,7 @@ runInEachFileSystem(() => {
           fs.ensureDir(fs.dirname(packageJsonPath));
           fs.writeFile(packageJsonPath, JSON.stringify(packageJson));
           strategy.clean(packageJsonPath, fs.basename(packageJsonPath));
-          const newPackageJson: EntryPointPackageJson = JSON.parse(fs.readFile(packageJsonPath));
+          const newPackageJson = JSON.parse(fs.readFile(packageJsonPath)) as EntryPointPackageJson;
           expect(newPackageJson).toEqual({name: 'test-package'});
         });
 
@@ -73,7 +73,7 @@ runInEachFileSystem(() => {
           fs.ensureDir(fs.dirname(packageJsonPath));
           fs.writeFile(packageJsonPath, JSON.stringify(packageJson));
           strategy.clean(packageJsonPath, fs.basename(packageJsonPath));
-          const newPackageJson: EntryPointPackageJson = JSON.parse(fs.readFile(packageJsonPath));
+          const newPackageJson = JSON.parse(fs.readFile(packageJsonPath)) as EntryPointPackageJson;
           expect(newPackageJson).toEqual({name: 'test-package'});
         });
 
@@ -87,7 +87,7 @@ runInEachFileSystem(() => {
           fs.ensureDir(fs.dirname(packageJsonPath));
           fs.writeFile(packageJsonPath, JSON.stringify(packageJson));
           strategy.clean(packageJsonPath, fs.basename(packageJsonPath));
-          const newPackageJson: EntryPointPackageJson = JSON.parse(fs.readFile(packageJsonPath));
+          const newPackageJson = JSON.parse(fs.readFile(packageJsonPath)) as EntryPointPackageJson;
           expect(newPackageJson).toEqual({
             name: 'test-package',
             scripts: {test: 'do testing'},
@@ -109,7 +109,8 @@ runInEachFileSystem(() => {
              fs.ensureDir(fs.dirname(packageJsonPath));
              fs.writeFile(packageJsonPath, JSON.stringify(packageJson));
              strategy.clean(packageJsonPath, fs.basename(packageJsonPath));
-             const newPackageJson: EntryPointPackageJson = JSON.parse(fs.readFile(packageJsonPath));
+             const newPackageJson =
+                 JSON.parse(fs.readFile(packageJsonPath)) as EntryPointPackageJson;
              expect(newPackageJson).toEqual({
                name: 'test-package',
                scripts: {prepublishOnly: 'original', test: 'do testing'},
@@ -129,7 +130,7 @@ runInEachFileSystem(() => {
           fs.ensureDir(fs.dirname(packageJsonPath));
           fs.writeFile(packageJsonPath, JSON.stringify(packageJson));
           strategy.clean(packageJsonPath, fs.basename(packageJsonPath));
-          const newPackageJson: EntryPointPackageJson = JSON.parse(fs.readFile(packageJsonPath));
+          const newPackageJson = JSON.parse(fs.readFile(packageJsonPath)) as EntryPointPackageJson;
           expect(newPackageJson).toEqual({
             name: 'test-package',
             scripts: {

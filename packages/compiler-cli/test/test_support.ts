@@ -8,7 +8,7 @@
 /// <reference types="node" />
 import * as fs from 'fs';
 import * as path from 'path';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import * as ng from '../index';
 import {NodeJSFileSystem, setFileSystem} from '../src/ngtsc/file_system';
@@ -57,7 +57,6 @@ function createTestSupportFor(basePath: string) {
     'newLine': ts.NewLineKind.LineFeed,
     'module': ts.ModuleKind.ES2015,
     'moduleResolution': ts.ModuleResolutionKind.NodeJs,
-    'enableIvy': false,
     'lib': Object.freeze([
       path.resolve(basePath, 'node_modules/typescript/lib/lib.es6.d.ts'),
     ]) as string[],

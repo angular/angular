@@ -8,7 +8,7 @@
 
 /// <reference types="node" />
 
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {AbsoluteFsPath, dirname, join} from '../../file_system';
 import {TopLevelShimGenerator} from '../../shims/api';

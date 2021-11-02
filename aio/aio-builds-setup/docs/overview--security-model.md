@@ -69,7 +69,7 @@ This section describes how each of the aforementioned sub-tasks is accomplished:
    We perform a number of preliminary checks:
    - Was the webhook triggered by the designated CircleCI job (currently `aio_preview`)?
    - Was the build successful?
-   - Are the associated GitHub organisation and repository what we expect (e.g. `angular/angular`)?
+   - Are the associated GitHub organization and repository what we expect (e.g. `angular/angular`)?
    - Has the PR touched any files that might affect the angular.io app (currently the `aio/` or
      `packages/` directories, ignoring spec files)?
 

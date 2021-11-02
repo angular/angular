@@ -6,21 +6,23 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {makeDiagnostic} from '../../../src/ngtsc/diagnostics';
 import {absoluteFrom} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
+import {SemanticSymbol} from '../../../src/ngtsc/incremental/semantic_graph';
 import {MockLogger} from '../../../src/ngtsc/logging/testing';
 import {ClassDeclaration, Decorator, isNamedClassDeclaration} from '../../../src/ngtsc/reflection';
 import {getDeclaration, loadTestFiles} from '../../../src/ngtsc/testing';
-import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence, TraitState} from '../../../src/ngtsc/transform';
+import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from '../../../src/ngtsc/transform';
 import {DefaultMigrationHost} from '../../src/analysis/migration_host';
 import {NgccTraitCompiler} from '../../src/analysis/ngcc_trait_compiler';
 import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
 import {createComponentDecorator} from '../../src/migrations/utils';
 import {EntryPointBundle} from '../../src/packages/entry_point_bundle';
 import {makeTestEntryPointBundle} from '../helpers/utils';
+import {getTraitDiagnostics} from '../host/util';
 
 runInEachFileSystem(() => {
   describe('DefaultMigrationHost', () => {
@@ -43,7 +45,8 @@ runInEachFileSystem(() => {
     });
 
     function createMigrationHost({entryPoint, handlers}: {
-      entryPoint: EntryPointBundle; handlers: DecoratorHandler<unknown, unknown, unknown>[]
+      entryPoint: EntryPointBundle;
+      handlers: DecoratorHandler<unknown, unknown, SemanticSymbol|null, unknown>[]
     }) {
       const reflectionHost = new Esm2015ReflectionHost(new MockLogger(), false, entryPoint.src);
       const compiler = new NgccTraitCompiler(handlers, reflectionHost);
@@ -78,12 +81,13 @@ runInEachFileSystem(() => {
 
         const record = compiler.recordFor(mockClazz)!;
         const migratedTrait = record.traits[0];
-        if (migratedTrait.state !== TraitState.ERRORED) {
+        const diagnostics = getTraitDiagnostics(migratedTrait);
+        if (diagnostics === null) {
           return fail('Expected migrated class trait to be in an error state');
         }
 
-        expect(migratedTrait.diagnostics.length).toBe(1);
-        expect(ts.flattenDiagnosticMessageText(migratedTrait.diagnostics[0].messageText, '\n'))
+        expect(diagnostics.length).toBe(1);
+        expect(ts.flattenDiagnosticMessageText(diagnostics[0].messageText, '\n'))
             .toEqual(
                 `test diagnostic\n` +
                 `  Occurs for @Component decorator inserted by an automatic migration\n` +
@@ -188,7 +192,7 @@ runInEachFileSystem(() => {
   });
 });
 
-class DetectDecoratorHandler implements DecoratorHandler<unknown, unknown, unknown> {
+class DetectDecoratorHandler implements DecoratorHandler<unknown, unknown, null, unknown> {
   readonly name = DetectDecoratorHandler.name;
 
   constructor(private decorator: string, readonly precedence: HandlerPrecedence) {}
@@ -208,12 +212,16 @@ class DetectDecoratorHandler implements DecoratorHandler<unknown, unknown, unkno
     return {};
   }
 
+  symbol(node: ClassDeclaration, analysis: Readonly<unknown>): null {
+    return null;
+  }
+
   compileFull(node: ClassDeclaration): CompileResult|CompileResult[] {
     return [];
   }
 }
 
-class DiagnosticProducingHandler implements DecoratorHandler<unknown, unknown, unknown> {
+class DiagnosticProducingHandler implements DecoratorHandler<unknown, unknown, null, unknown> {
   readonly name = DiagnosticProducingHandler.name;
   readonly precedence = HandlerPrecedence.PRIMARY;
 
@@ -224,6 +232,10 @@ class DiagnosticProducingHandler implements DecoratorHandler<unknown, unknown, u
 
   analyze(node: ClassDeclaration): AnalysisOutput<any> {
     return {diagnostics: [makeDiagnostic(9999, node, 'test diagnostic')]};
+  }
+
+  symbol(node: ClassDeclaration, analysis: Readonly<unknown>): null {
+    return null;
   }
 
   compileFull(node: ClassDeclaration): CompileResult|CompileResult[] {

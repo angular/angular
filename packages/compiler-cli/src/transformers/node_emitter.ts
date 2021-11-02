@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AssertNotNull, BinaryOperator, BinaryOperatorExpr, BuiltinMethod, BuiltinVar, CastExpr, ClassStmt, CommaExpr, ConditionalExpr, DeclareFunctionStmt, DeclareVarStmt, ExpressionStatement, ExpressionVisitor, ExternalExpr, ExternalReference, FunctionExpr, IfStmt, InstantiateExpr, InvokeFunctionExpr, InvokeMethodExpr, LeadingComment, leadingComment, LiteralArrayExpr, LiteralExpr, LiteralMapExpr, LocalizedString, NotExpr, ParseSourceFile, ParseSourceSpan, PartialModule, ReadKeyExpr, ReadPropExpr, ReadVarExpr, ReturnStatement, Statement, StatementVisitor, StmtModifier, ThrowStmt, TryCatchStmt, TypeofExpr, UnaryOperator, UnaryOperatorExpr, WrappedNodeExpr, WriteKeyExpr, WritePropExpr, WriteVarExpr} from '@angular/compiler';
-import * as ts from 'typescript';
+import {AssertNotNull, BinaryOperator, BinaryOperatorExpr, BuiltinMethod, BuiltinVar, CastExpr, ClassStmt, CommaExpr, ConditionalExpr, DeclareFunctionStmt, DeclareVarStmt, ExpressionStatement, ExpressionVisitor, ExternalExpr, ExternalReference, FunctionExpr, IfStmt, InstantiateExpr, InvokeFunctionExpr, LeadingComment, leadingComment, LiteralArrayExpr, LiteralExpr, LiteralMapExpr, LocalizedString, NotExpr, ParseSourceFile, ParseSourceSpan, PartialModule, ReadKeyExpr, ReadPropExpr, ReadVarExpr, ReturnStatement, Statement, StatementVisitor, StmtModifier, TaggedTemplateExpr, ThrowStmt, TryCatchStmt, TypeofExpr, UnaryOperator, UnaryOperatorExpr, WrappedNodeExpr, WriteKeyExpr, WritePropExpr, WriteVarExpr} from '@angular/compiler';
+import ts from 'typescript';
 
 import {attachComments} from '../ngtsc/translator';
 import {error} from './util';
@@ -527,21 +527,16 @@ export class NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
             expr.value.visitExpression(this, null)));
   }
 
-  visitInvokeMethodExpr(expr: InvokeMethodExpr): RecordedNode<ts.CallExpression> {
-    const methodName = getMethodName(expr);
-    return this.postProcess(
-        expr,
-        ts.createCall(
-            ts.createPropertyAccess(expr.receiver.visitExpression(this, null), methodName),
-            /* typeArguments */ undefined, expr.args.map(arg => arg.visitExpression(this, null))));
-  }
-
   visitInvokeFunctionExpr(expr: InvokeFunctionExpr): RecordedNode<ts.CallExpression> {
     return this.postProcess(
         expr,
         ts.createCall(
             expr.fn.visitExpression(this, null), /* typeArguments */ undefined,
             expr.args.map(arg => arg.visitExpression(this, null))));
+  }
+
+  visitTaggedTemplateExpr(expr: TaggedTemplateExpr): RecordedNode<ts.TaggedTemplateExpression> {
+    throw new Error('tagged templates are not supported in pre-ivy mode.');
   }
 
   visitInstantiateExpr(expr: InstantiateExpr): RecordedNode<ts.NewExpression> {
@@ -668,6 +663,9 @@ export class NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
       case BinaryOperator.Or:
         binaryOperator = ts.SyntaxKind.BarBarToken;
         break;
+      case BinaryOperator.NullishCoalesce:
+        binaryOperator = ts.SyntaxKind.QuestionQuestionToken;
+        break;
       case BinaryOperator.Plus:
         binaryOperator = ts.SyntaxKind.PlusToken;
         break;
@@ -780,7 +778,6 @@ function modifierFromModifier(modifier: StmtModifier): ts.Modifier {
     case StmtModifier.Static:
       return ts.createToken(ts.SyntaxKind.StaticKeyword);
   }
-  return error(`unknown statement modifier`);
 }
 
 function translateModifiers(modifiers: StmtModifier[]|null): ts.Modifier[]|undefined {

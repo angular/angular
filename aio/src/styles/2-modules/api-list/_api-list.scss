@@ -1,0 +1,135 @@
+@use '../../constants';
+@use '../../mixins';
+
+/* API LIST STYLES */
+
+aio-api-list {
+  .api-filter {
+    display: flex;
+    margin: 0 auto;
+
+    @media (max-width: 600px) {
+      flex-direction: column;
+      margin: 16px auto;
+    }
+
+    /* API FILTER MENU */
+    aio-select {
+      width: 200px;
+
+      @media screen and (max-width: 600px) {
+        width: 100%;
+      }
+    }
+
+    .form-select-menu,
+    .form-search {
+      margin: 8px;
+
+      @media screen and (max-width: 600px) {
+        margin-left: 0;
+      }
+    }
+
+    aio-select:first-child {
+      .form-select-menu {
+        margin-left: 0;
+      }
+    }
+
+    .form-search {
+      position: relative;
+      float: left;
+
+      input {
+        box-sizing: border-box;
+        border-radius: 4px;
+        @include mixins.font-size(14);
+        @include mixins.line-height(32);
+        outline: none;
+        padding: 4px 16px 4px 32px;
+        transition: all .2s;
+        width: 182px;
+
+        @include mixins.placeholder {
+          @include mixins.font-size(14);
+        }
+
+        @media screen and (max-width: 600px) {
+          width: 100%;
+        }
+      }
+
+      .material-icons {
+        @include mixins.font-size(20);
+        left: 8px;
+        pointer-events: none;
+        position: absolute;
+        top: 12px;
+        width: 20px;
+        z-index: constants.$layer-1;
+      }
+    }
+
+    /* API SEARCH ICON */
+    .material-icons {
+      right: 48px;
+    }
+  }
+
+  /* LAYOUT */
+
+  .api-list-container {
+    display: flex;
+    flex-direction: column;
+    padding: 16px 0;
+    position: relative;
+
+    @media handheld and (max-width: constants.$phone-breakpoint),
+    screen and (max-device-width: constants.$phone-breakpoint),
+    screen and (max-width: constants.$tablet-breakpoint) {
+      padding: 24px 0 0;
+    }
+
+    h2 {
+      margin-top: 16px;
+      margin-bottom: 16px;
+    }
+
+    /* API CLASS LIST */
+    .api-list {
+      list-style: none;
+      margin: 0 0 32px -8px;
+      padding: 0;
+      overflow: hidden;
+
+      @media screen and (max-width: 600px) {
+        margin: 0 0 0 -8px;
+      }
+
+      li {
+        @include mixins.font-size(14);
+        margin: 8px 0;
+        @include mixins.line-height(14);
+        padding: 0;
+        float: left;
+        width: 33%;
+        overflow: hidden;
+        min-width: 330px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+
+        a {
+          @include mixins.line-height(16);
+          padding: 0 16px;
+          text-decoration: none;
+          transition: all .3s;
+
+          &.deprecated-api-item {
+            text-decoration: line-through;
+          }
+        }
+      }
+    }
+  }
+}

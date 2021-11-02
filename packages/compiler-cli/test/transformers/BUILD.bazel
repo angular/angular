@@ -9,6 +9,7 @@ ts_library(
         "//packages/compiler",
         "//packages/compiler-cli",
         "//packages/compiler-cli/src/ngtsc/reflection",
+        "//packages/compiler-cli/src/transformers/downlevel_decorators_transform",
         "//packages/compiler-cli/test:test_utils",
         "//packages/compiler/test:test_utils",
         "//packages/core",
@@ -22,14 +23,14 @@ jasmine_node_test(
     timeout = "long",  # 900 seconds
     bootstrap = ["//tools/testing:node_es5"],
     data = [
-        "//packages/common:npm_package",
-        "//packages/core:npm_package",
-        "//packages/router:npm_package",
+        "@npm//@angular/common-12",
+        "@npm//@angular/core-12",
+        "@npm//@angular/router-12",
     ],
     tags = [
         # Disabled as these tests pertain to the old compiler and not ngtsc, which doesn't use any
         # of these transformer utilities.
-        "no-ivy-aot",
+        "view-engine-only",
     ],
     deps = [
         ":test_lib",

@@ -6,22 +6,23 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {GeneratedFile} from '@angular/compiler';
-import * as ts from 'typescript';
+import {GeneratedFile, HtmlParser, MessageBundle} from '@angular/compiler';
+import ts from 'typescript';
 
 import * as api from '../transformers/api';
+import {i18nExtract} from '../transformers/i18n';
 import {verifySupportedTypeScriptVersion} from '../typescript_support';
 
-import {NgCompiler, NgCompilerHost} from './core';
+import {CompilationTicket, freshCompilationTicket, incrementalFromCompilerTicket, NgCompiler, NgCompilerHost} from './core';
 import {NgCompilerOptions} from './core/api';
+import {absoluteFrom, AbsoluteFsPath, getFileSystem, resolve} from './file_system';
 import {TrackedIncrementalBuildStrategy} from './incremental';
 import {IndexedComponent} from './indexer';
-import {NOOP_PERF_RECORDER, PerfRecorder, PerfTracker} from './perf';
+import {ActivePerfRecorder, PerfCheckpoint as PerfCheckpoint, PerfEvent, PerfPhase} from './perf';
+import {TsCreateProgramDriver} from './program_driver';
 import {DeclarationNode} from './reflection';
 import {retagAllTsFiles, untagAllTsFiles} from './shims';
-import {ReusedProgramStrategy} from './typecheck';
-
-
+import {OptimizeFor} from './typecheck/api';
 
 /**
  * Entrypoint to the Angular Compiler (Ivy+) which sits behind the `api.Program` interface, allowing
@@ -36,41 +37,22 @@ export class NgtscProgram implements api.Program {
    */
   private tsProgram: ts.Program;
 
-  /**
-   * The TypeScript program to use for the next incremental compilation.
-   *
-   * Once a TS program is used to create another (an incremental compilation operation), it can no
-   * longer be used to do so again.
-   *
-   * Since template type-checking uses the primary program to create a type-checking program, after
-   * this happens the primary program is no longer suitable for starting a subsequent compilation,
-   * and the template type-checking program should be used instead.
-   *
-   * Thus, the program which should be used for the next incremental compilation is tracked in
-   * `reuseTsProgram`, separately from the "primary" program which is always used for emit.
-   */
-  private reuseTsProgram: ts.Program;
-  private closureCompilerEnabled: boolean;
   private host: NgCompilerHost;
-  private perfRecorder: PerfRecorder = NOOP_PERF_RECORDER;
-  private perfTracker: PerfTracker|null = null;
   private incrementalStrategy: TrackedIncrementalBuildStrategy;
 
   constructor(
       rootNames: ReadonlyArray<string>, private options: NgCompilerOptions,
       delegateHost: api.CompilerHost, oldProgram?: NgtscProgram) {
+    const perfRecorder = ActivePerfRecorder.zeroedToNow();
+
+    perfRecorder.phase(PerfPhase.Setup);
+
     // First, check whether the current TS version is supported.
     if (!options.disableTypeScriptVersionCheck) {
       verifySupportedTypeScriptVersion();
     }
 
-    if (options.tracePerformance !== undefined) {
-      this.perfTracker = PerfTracker.zeroedToNow();
-      this.perfRecorder = this.perfTracker;
-    }
-    this.closureCompilerEnabled = !!options.annotateForClosureCompiler;
-
-    const reuseProgram = oldProgram?.reuseTsProgram;
+    const reuseProgram = oldProgram?.compiler.getCurrentProgram();
     this.host = NgCompilerHost.wrap(delegateHost, rootNames, options, reuseProgram ?? null);
 
     if (reuseProgram !== undefined) {
@@ -81,8 +63,12 @@ export class NgtscProgram implements api.Program {
       retagAllTsFiles(reuseProgram);
     }
 
-    this.tsProgram = ts.createProgram(this.host.inputFiles, options, this.host, reuseProgram);
-    this.reuseTsProgram = this.tsProgram;
+    this.tsProgram = perfRecorder.inPhase(
+        PerfPhase.TypeScriptProgramCreate,
+        () => ts.createProgram(this.host.inputFiles, options, this.host, reuseProgram));
+
+    perfRecorder.phase(PerfPhase.Unaccounted);
+    perfRecorder.memory(PerfCheckpoint.TypeScriptProgramCreate);
 
     this.host.postProgramCreationCleanup();
 
@@ -90,17 +76,41 @@ export class NgtscProgram implements api.Program {
     // the program.
     untagAllTsFiles(this.tsProgram);
 
-    const reusedProgramStrategy = new ReusedProgramStrategy(
+    const programDriver = new TsCreateProgramDriver(
         this.tsProgram, this.host, this.options, this.host.shimExtensionPrefixes);
 
     this.incrementalStrategy = oldProgram !== undefined ?
         oldProgram.incrementalStrategy.toNextBuildStrategy() :
         new TrackedIncrementalBuildStrategy();
+    const modifiedResourceFiles = new Set<AbsoluteFsPath>();
+    if (this.host.getModifiedResourceFiles !== undefined) {
+      const strings = this.host.getModifiedResourceFiles();
+      if (strings !== undefined) {
+        for (const fileString of strings) {
+          modifiedResourceFiles.add(absoluteFrom(fileString));
+        }
+      }
+    }
+
+    let ticket: CompilationTicket;
+    if (oldProgram === undefined) {
+      ticket = freshCompilationTicket(
+          this.tsProgram, options, this.incrementalStrategy, programDriver, perfRecorder,
+          /* enableTemplateTypeChecker */ false, /* usePoisonedData */ false);
+    } else {
+      ticket = incrementalFromCompilerTicket(
+          oldProgram.compiler,
+          this.tsProgram,
+          this.incrementalStrategy,
+          programDriver,
+          modifiedResourceFiles,
+          perfRecorder,
+      );
+    }
+
 
     // Create the NgCompiler which will drive the rest of the compilation.
-    this.compiler = new NgCompiler(
-        this.host, options, this.tsProgram, reusedProgramStrategy, this.incrementalStrategy,
-        /** enableTemplateTypeChecker */ false, reuseProgram, this.perfRecorder);
+    this.compiler = NgCompiler.fromTicket(ticket, this.host);
   }
 
   getTsProgram(): ts.Program {
@@ -108,54 +118,64 @@ export class NgtscProgram implements api.Program {
   }
 
   getReuseTsProgram(): ts.Program {
-    return this.reuseTsProgram;
+    return this.compiler.getCurrentProgram();
   }
 
   getTsOptionDiagnostics(cancellationToken?: ts.CancellationToken|
                          undefined): readonly ts.Diagnostic[] {
-    return this.tsProgram.getOptionsDiagnostics(cancellationToken);
+    return this.compiler.perfRecorder.inPhase(
+        PerfPhase.TypeScriptDiagnostics,
+        () => this.tsProgram.getOptionsDiagnostics(cancellationToken));
   }
 
   getTsSyntacticDiagnostics(
       sourceFile?: ts.SourceFile|undefined,
       cancellationToken?: ts.CancellationToken|undefined): readonly ts.Diagnostic[] {
-    const ignoredFiles = this.compiler.ignoreForDiagnostics;
-    if (sourceFile !== undefined) {
-      if (ignoredFiles.has(sourceFile)) {
-        return [];
-      }
-
-      return this.tsProgram.getSyntacticDiagnostics(sourceFile, cancellationToken);
-    } else {
-      const diagnostics: ts.Diagnostic[] = [];
-      for (const sf of this.tsProgram.getSourceFiles()) {
-        if (!ignoredFiles.has(sf)) {
-          diagnostics.push(...this.tsProgram.getSyntacticDiagnostics(sf, cancellationToken));
+    return this.compiler.perfRecorder.inPhase(PerfPhase.TypeScriptDiagnostics, () => {
+      const ignoredFiles = this.compiler.ignoreForDiagnostics;
+      let res: readonly ts.Diagnostic[];
+      if (sourceFile !== undefined) {
+        if (ignoredFiles.has(sourceFile)) {
+          return [];
         }
+
+        res = this.tsProgram.getSyntacticDiagnostics(sourceFile, cancellationToken);
+      } else {
+        const diagnostics: ts.Diagnostic[] = [];
+        for (const sf of this.tsProgram.getSourceFiles()) {
+          if (!ignoredFiles.has(sf)) {
+            diagnostics.push(...this.tsProgram.getSyntacticDiagnostics(sf, cancellationToken));
+          }
+        }
+        res = diagnostics;
       }
-      return diagnostics;
-    }
+      return res;
+    });
   }
 
   getTsSemanticDiagnostics(
       sourceFile?: ts.SourceFile|undefined,
       cancellationToken?: ts.CancellationToken|undefined): readonly ts.Diagnostic[] {
-    const ignoredFiles = this.compiler.ignoreForDiagnostics;
-    if (sourceFile !== undefined) {
-      if (ignoredFiles.has(sourceFile)) {
-        return [];
-      }
-
-      return this.tsProgram.getSemanticDiagnostics(sourceFile, cancellationToken);
-    } else {
-      const diagnostics: ts.Diagnostic[] = [];
-      for (const sf of this.tsProgram.getSourceFiles()) {
-        if (!ignoredFiles.has(sf)) {
-          diagnostics.push(...this.tsProgram.getSemanticDiagnostics(sf, cancellationToken));
+    return this.compiler.perfRecorder.inPhase(PerfPhase.TypeScriptDiagnostics, () => {
+      const ignoredFiles = this.compiler.ignoreForDiagnostics;
+      let res: readonly ts.Diagnostic[];
+      if (sourceFile !== undefined) {
+        if (ignoredFiles.has(sourceFile)) {
+          return [];
         }
+
+        res = this.tsProgram.getSemanticDiagnostics(sourceFile, cancellationToken);
+      } else {
+        const diagnostics: ts.Diagnostic[] = [];
+        for (const sf of this.tsProgram.getSourceFiles()) {
+          if (!ignoredFiles.has(sf)) {
+            diagnostics.push(...this.tsProgram.getSemanticDiagnostics(sf, cancellationToken));
+          }
+        }
+        res = diagnostics;
       }
-      return diagnostics;
-    }
+      return res;
+    });
   }
 
   getNgOptionDiagnostics(cancellationToken?: ts.CancellationToken|
@@ -181,9 +201,11 @@ export class NgtscProgram implements api.Program {
       }
     }
 
-    const diagnostics = this.compiler.getDiagnostics(sf);
-    this.reuseTsProgram = this.compiler.getNextProgram();
-    return diagnostics;
+    if (sf === undefined) {
+      return this.compiler.getDiagnostics();
+    } else {
+      return this.compiler.getDiagnosticsForFile(sf, OptimizeFor.WholeProgram);
+    }
   }
 
   /**
@@ -198,7 +220,15 @@ export class NgtscProgram implements api.Program {
   }
 
   listLazyRoutes(entryRoute?: string|undefined): api.LazyRoute[] {
-    return this.compiler.listLazyRoutes(entryRoute);
+    return [];
+  }
+
+  private emitXi18n(): void {
+    const ctx = new MessageBundle(new HtmlParser(), [], {}, this.options.i18nOutLocale ?? null);
+    this.compiler.xi18n(ctx);
+    i18nExtract(
+        this.options.i18nOutFormat ?? null, this.options.i18nOutFile ?? null, this.host,
+        this.options, ctx, resolve);
   }
 
   emit(opts?: {
@@ -208,73 +238,99 @@ export class NgtscProgram implements api.Program {
     emitCallback?: api.TsEmitCallback | undefined;
     mergeEmitResultsCallback?: api.TsMergeEmitResultsCallback | undefined;
   }|undefined): ts.EmitResult {
-    const {transformers} = this.compiler.prepareEmit();
-    const ignoreFiles = this.compiler.ignoreForEmit;
-    const emitCallback = opts && opts.emitCallback || defaultEmitCallback;
+    // Check if emission of the i18n messages bundle was requested.
+    if (opts !== undefined && opts.emitFlags !== undefined &&
+        opts.emitFlags & api.EmitFlags.I18nBundle) {
+      this.emitXi18n();
 
-    const writeFile: ts.WriteFileCallback =
-        (fileName: string, data: string, writeByteOrderMark: boolean,
-         onError: ((message: string) => void)|undefined,
-         sourceFiles: ReadonlyArray<ts.SourceFile>|undefined) => {
-          if (sourceFiles !== undefined) {
-            // Record successful writes for any `ts.SourceFile` (that's not a declaration file)
-            // that's an input to this write.
-            for (const writtenSf of sourceFiles) {
-              if (writtenSf.isDeclarationFile) {
-                continue;
-              }
-
-              this.compiler.incrementalDriver.recordSuccessfulEmit(writtenSf);
-            }
-          }
-          this.host.writeFile(fileName, data, writeByteOrderMark, onError, sourceFiles);
+      // `api.EmitFlags` is a View Engine compiler concept. We only pay attention to the absence of
+      // the other flags here if i18n emit was requested (since this is usually done in the xi18n
+      // flow, where we don't want to emit JS at all).
+      if (!(opts.emitFlags & api.EmitFlags.JS)) {
+        return {
+          diagnostics: [],
+          emitSkipped: true,
+          emittedFiles: [],
         };
-
-    const customTransforms = opts && opts.customTransformers;
-    const beforeTransforms = transformers.before || [];
-    const afterDeclarationsTransforms = transformers.afterDeclarations;
-
-    if (customTransforms !== undefined && customTransforms.beforeTs !== undefined) {
-      beforeTransforms.push(...customTransforms.beforeTs);
+      }
     }
 
-    const emitSpan = this.perfRecorder.start('emit');
-    const emitResults: ts.EmitResult[] = [];
+    this.compiler.perfRecorder.memory(PerfCheckpoint.PreEmit);
 
-    for (const targetSourceFile of this.tsProgram.getSourceFiles()) {
-      if (targetSourceFile.isDeclarationFile || ignoreFiles.has(targetSourceFile)) {
-        continue;
+    const res = this.compiler.perfRecorder.inPhase(PerfPhase.TypeScriptEmit, () => {
+      const {transformers} = this.compiler.prepareEmit();
+      const ignoreFiles = this.compiler.ignoreForEmit;
+      const emitCallback = opts && opts.emitCallback || defaultEmitCallback;
+
+      const writeFile: ts.WriteFileCallback =
+          (fileName: string, data: string, writeByteOrderMark: boolean,
+           onError: ((message: string) => void)|undefined,
+           sourceFiles: ReadonlyArray<ts.SourceFile>|undefined) => {
+            if (sourceFiles !== undefined) {
+              // Record successful writes for any `ts.SourceFile` (that's not a declaration file)
+              // that's an input to this write.
+              for (const writtenSf of sourceFiles) {
+                if (writtenSf.isDeclarationFile) {
+                  continue;
+                }
+
+                this.compiler.incrementalCompilation.recordSuccessfulEmit(writtenSf);
+              }
+            }
+            this.host.writeFile(fileName, data, writeByteOrderMark, onError, sourceFiles);
+          };
+
+      const customTransforms = opts && opts.customTransformers;
+      const beforeTransforms = transformers.before || [];
+      const afterDeclarationsTransforms = transformers.afterDeclarations;
+
+      if (customTransforms !== undefined && customTransforms.beforeTs !== undefined) {
+        beforeTransforms.push(...customTransforms.beforeTs);
       }
 
-      if (this.compiler.incrementalDriver.safeToSkipEmit(targetSourceFile)) {
-        continue;
+      const emitResults: ts.EmitResult[] = [];
+
+      for (const targetSourceFile of this.tsProgram.getSourceFiles()) {
+        if (targetSourceFile.isDeclarationFile || ignoreFiles.has(targetSourceFile)) {
+          continue;
+        }
+
+        if (this.compiler.incrementalCompilation.safeToSkipEmit(targetSourceFile)) {
+          this.compiler.perfRecorder.eventCount(PerfEvent.EmitSkipSourceFile);
+          continue;
+        }
+
+        this.compiler.perfRecorder.eventCount(PerfEvent.EmitSourceFile);
+
+        emitResults.push(emitCallback({
+          targetSourceFile,
+          program: this.tsProgram,
+          host: this.host,
+          options: this.options,
+          emitOnlyDtsFiles: false,
+          writeFile,
+          customTransformers: {
+            before: beforeTransforms,
+            after: customTransforms && customTransforms.afterTs,
+            afterDeclarations: afterDeclarationsTransforms,
+          } as any,
+        }));
       }
 
-      const fileEmitSpan = this.perfRecorder.start('emitFile', targetSourceFile);
-      emitResults.push(emitCallback({
-        targetSourceFile,
-        program: this.tsProgram,
-        host: this.host,
-        options: this.options,
-        emitOnlyDtsFiles: false,
-        writeFile,
-        customTransformers: {
-          before: beforeTransforms,
-          after: customTransforms && customTransforms.afterTs,
-          afterDeclarations: afterDeclarationsTransforms,
-        } as any,
-      }));
-      this.perfRecorder.stop(fileEmitSpan);
+      this.compiler.perfRecorder.memory(PerfCheckpoint.Emit);
+
+      // Run the emit, including a custom transformer that will downlevel the Ivy decorators in
+      // code.
+      return ((opts && opts.mergeEmitResultsCallback) || mergeEmitResults)(emitResults);
+    });
+
+    // Record performance analysis information to disk if we've been asked to do so.
+    if (this.options.tracePerformance !== undefined) {
+      const perf = this.compiler.perfRecorder.finalize();
+      getFileSystem().writeFile(
+          getFileSystem().resolve(this.options.tracePerformance), JSON.stringify(perf, null, 2));
     }
-
-    this.perfRecorder.stop(emitSpan);
-
-    if (this.perfTracker !== null && this.options.tracePerformance !== undefined) {
-      this.perfTracker.serializeToFile(this.options.tracePerformance, this.host);
-    }
-
-    // Run the emit, including a custom transformer that will downlevel the Ivy decorators in code.
-    return ((opts && opts.mergeEmitResultsCallback) || mergeEmitResults)(emitResults);
+    return res;
   }
 
   getIndexedComponents(): Map<DeclarationNode, IndexedComponent> {

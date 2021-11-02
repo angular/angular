@@ -2,10 +2,13 @@
   "name": "@angular/language-service",
   "version": "0.0.0-PLACEHOLDER",
   "description": "Angular - language services",
-  "main": "./bundles/language-service.js",
+  "main": "./index.js",
   "typings": "./index.d.ts",
   "author": "angular",
   "license": "MIT",
+  "engines": {
+    "node": "^12.20.0 || ^14.15.0 || >=16.10.0"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/angular/angular.git",
@@ -13,8 +16,5 @@
   },
   "ng-update": {
     "packageGroup": "NG_UPDATE_PACKAGE_GROUP"
-  },
-  "publishConfig":{
-    "registry":"https://wombat-dressing-room.appspot.com"
   }
 }

@@ -18,7 +18,7 @@ describe('definitions', () => {
   beforeAll(() => {
     const {project, service: _service, tsLS} = setup();
     service = _service;
-    ngLS = new LanguageService(project, tsLS);
+    ngLS = new LanguageService(project, tsLS, {});
   });
 
   beforeEach(() => {
@@ -43,7 +43,7 @@ describe('definitions', () => {
       const {position} =
           service.overwriteInlineTemplate(APP_COMPONENT, `<ng-templ¦ate></ng-template>`);
       const definitionAndBoundSpan = ngLS.getDefinitionAndBoundSpan(APP_COMPONENT, position);
-      expect(definitionAndBoundSpan!.definitions).toEqual([]);
+      expect(definitionAndBoundSpan).toBeUndefined();
     });
   });
 
@@ -181,17 +181,14 @@ describe('definitions', () => {
           templateOverride: `<test-comp string-model [(mo¦del)]="title"></test-comp>`,
           expectedSpanText: 'model',
         });
-        // TODO(atscott): This should really return 2 definitions, 1 for the input and 1 for the
-        // output.
-        //  The TemplateTypeChecker also only returns the first match in the TCB for a given
-        //  sourceSpan so even if we also requested the TmplAstBoundEvent, we'd still get back the
-        //  symbol for the
-        //  @Input because the input appears first in the TCB and they have the same sourceSpan.
-        expect(definitions!.length).toEqual(1);
+        expect(definitions!.length).toEqual(2);
 
-        const [def] = definitions;
-        expect(def.textSpan).toEqual('model');
-        expect(def.contextSpan).toEqual(`@Input() model: string = 'model';`);
+        const [inputDef, outputDef] = definitions;
+        expect(inputDef.textSpan).toEqual('model');
+        expect(inputDef.contextSpan).toEqual(`@Input() model: string = 'model';`);
+        expect(outputDef.textSpan).toEqual('modelChange');
+        expect(outputDef.contextSpan)
+            .toEqual(`@Output() modelChange: EventEmitter<string> = new EventEmitter();`);
       });
     });
 
@@ -228,17 +225,28 @@ describe('definitions', () => {
         expect(directiveDef.textSpan).toEqual('EventSelectorDirective');
         expect(directiveDef.contextSpan).toContain('export class EventSelectorDirective');
       });
+
+      it('should work for $event from native element', () => {
+        const definitions = getDefinitionsAndAssertBoundSpan({
+          templateOverride: `<div (cl¦ick)="myClick($event)"></div>`,
+          expectedSpanText: 'click',
+        });
+        expect(definitions!.length).toEqual(1);
+        expect(definitions[0].textSpan).toEqual('addEventListener');
+        expect(definitions[0].contextSpan)
+            .toContain('addEventListener<K extends keyof HTMLElementEventMap>');
+        expect(definitions[0].fileName).toContain('lib.dom.d.ts');
+      });
     });
   });
 
   describe('references', () => {
     it('should work for element reference declarations', () => {
-      const definitions = getDefinitionsAndAssertBoundSpan({
-        templateOverride: `<div #cha¦rt></div>{{chart}}`,
-        expectedSpanText: 'chart',
-      });
+      const {position} =
+          service.overwriteInlineTemplate(APP_COMPONENT, `<div #cha¦rt></div>{{chart}}`);
+      const definitionAndBoundSpan = ngLS.getDefinitionAndBoundSpan(APP_COMPONENT, position);
       // We're already at the definition, so nothing is returned
-      expect(definitions).toEqual([]);
+      expect(definitionAndBoundSpan).toBeUndefined();
     });
 
     it('should work for element reference uses', () => {
@@ -449,6 +457,32 @@ describe('definitions', () => {
           service.overwriteInlineTemplate(APP_COMPONENT, `<div>{{$an¦y(title)}}</div>`);
       const definitionAndBoundSpan = ngLS.getDefinitionAndBoundSpan(APP_COMPONENT, position);
       expect(definitionAndBoundSpan).toBeUndefined();
+    });
+
+    it('should work for object literals with shorthand declarations in an action', () => {
+      const definitions = getDefinitionsAndAssertBoundSpan({
+        templateOverride: `<div (click)="setHero({na¦me, id: 1})"></div>`,
+        expectedSpanText: 'name',
+      });
+      expect(definitions!.length).toEqual(1);
+
+      const [def] = definitions;
+      expect(def.textSpan).toEqual('name');
+      expect(def.fileName).toContain('/app/app.component.ts');
+      expect(def.contextSpan).toContain(`name = 'Frodo';`);
+    });
+
+    it('should work for object literals with shorthand declarations in a data binding', () => {
+      const definitions = getDefinitionsAndAssertBoundSpan({
+        templateOverride: `{{ {na¦me} }}`,
+        expectedSpanText: 'name',
+      });
+      expect(definitions!.length).toEqual(1);
+
+      const [def] = definitions;
+      expect(def.textSpan).toEqual('name');
+      expect(def.fileName).toContain('/app/app.component.ts');
+      expect(def.contextSpan).toContain(`name = 'Frodo';`);
     });
   });
 

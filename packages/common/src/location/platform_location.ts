@@ -40,8 +40,14 @@ import {DOCUMENT} from '../dom_tokens';
 export abstract class PlatformLocation {
   abstract getBaseHrefFromDOM(): string;
   abstract getState(): unknown;
-  abstract onPopState(fn: LocationChangeListener): void;
-  abstract onHashChange(fn: LocationChangeListener): void;
+  /**
+   * Returns a function that, when executed, removes the `popstate` event handler.
+   */
+  abstract onPopState(fn: LocationChangeListener): VoidFunction;
+  /**
+   * Returns a function that, when executed, removes the `hashchange` event handler.
+   */
+  abstract onHashChange(fn: LocationChangeListener): VoidFunction;
 
   abstract get href(): string;
   abstract get protocol(): string;
@@ -58,6 +64,10 @@ export abstract class PlatformLocation {
   abstract forward(): void;
 
   abstract back(): void;
+
+  historyGo?(relativePosition: number): void {
+    throw new Error('Not implemented');
+  }
 }
 
 export function useBrowserPlatformLocation() {
@@ -114,48 +124,52 @@ export class BrowserPlatformLocation extends PlatformLocation {
   // This is moved to its own method so that `MockPlatformLocationStrategy` can overwrite it
   /** @internal */
   _init() {
-    (this as {location: Location}).location = getDOM().getLocation();
-    this._history = getDOM().getHistory();
+    (this as {location: Location}).location = window.location;
+    this._history = window.history;
   }
 
-  getBaseHrefFromDOM(): string {
+  override getBaseHrefFromDOM(): string {
     return getDOM().getBaseHref(this._doc)!;
   }
 
-  onPopState(fn: LocationChangeListener): void {
-    getDOM().getGlobalEventTarget(this._doc, 'window').addEventListener('popstate', fn, false);
+  override onPopState(fn: LocationChangeListener): VoidFunction {
+    const window = getDOM().getGlobalEventTarget(this._doc, 'window');
+    window.addEventListener('popstate', fn, false);
+    return () => window.removeEventListener('popstate', fn);
   }
 
-  onHashChange(fn: LocationChangeListener): void {
-    getDOM().getGlobalEventTarget(this._doc, 'window').addEventListener('hashchange', fn, false);
+  override onHashChange(fn: LocationChangeListener): VoidFunction {
+    const window = getDOM().getGlobalEventTarget(this._doc, 'window');
+    window.addEventListener('hashchange', fn, false);
+    return () => window.removeEventListener('hashchange', fn);
   }
 
-  get href(): string {
+  override get href(): string {
     return this.location.href;
   }
-  get protocol(): string {
+  override get protocol(): string {
     return this.location.protocol;
   }
-  get hostname(): string {
+  override get hostname(): string {
     return this.location.hostname;
   }
-  get port(): string {
+  override get port(): string {
     return this.location.port;
   }
-  get pathname(): string {
+  override get pathname(): string {
     return this.location.pathname;
   }
-  get search(): string {
+  override get search(): string {
     return this.location.search;
   }
-  get hash(): string {
+  override get hash(): string {
     return this.location.hash;
   }
-  set pathname(newPath: string) {
+  override set pathname(newPath: string) {
     this.location.pathname = newPath;
   }
 
-  pushState(state: any, title: string, url: string): void {
+  override pushState(state: any, title: string, url: string): void {
     if (supportsState()) {
       this._history.pushState(state, title, url);
     } else {
@@ -163,7 +177,7 @@ export class BrowserPlatformLocation extends PlatformLocation {
     }
   }
 
-  replaceState(state: any, title: string, url: string): void {
+  override replaceState(state: any, title: string, url: string): void {
     if (supportsState()) {
       this._history.replaceState(state, title, url);
     } else {
@@ -171,15 +185,19 @@ export class BrowserPlatformLocation extends PlatformLocation {
     }
   }
 
-  forward(): void {
+  override forward(): void {
     this._history.forward();
   }
 
-  back(): void {
+  override back(): void {
     this._history.back();
   }
 
-  getState(): unknown {
+  override historyGo(relativePosition: number = 0): void {
+    this._history.go(relativePosition);
+  }
+
+  override getState(): unknown {
     return this._history.state;
   }
 }

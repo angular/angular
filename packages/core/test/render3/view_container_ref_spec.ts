@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {QueryFlags} from '@angular/core/src/render3/interfaces/query';
 import {HEADER_OFFSET} from '@angular/core/src/render3/interfaces/view';
 import {ChangeDetectorRef, Component as _Component, ComponentFactoryResolver, ElementRef, QueryList, TemplateRef, ViewContainerRef, ViewRef} from '../../src/core';
 import {ViewEncapsulation} from '../../src/metadata';
@@ -368,7 +369,7 @@ describe('ViewContainerRef', () => {
           viewQuery:
               function(rf: RenderFlags, ctx: any) {
                 if (rf & RenderFlags.Create) {
-                  ɵɵviewQuery(['foo'], true);
+                  ɵɵviewQuery(['foo'], QueryFlags.descendants);
                 }
                 if (rf & RenderFlags.Update) {
                   let tmp: any;

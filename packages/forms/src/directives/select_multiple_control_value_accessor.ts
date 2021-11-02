@@ -8,7 +8,7 @@
 
 import {Directive, ElementRef, forwardRef, Host, Input, OnDestroy, Optional, Renderer2, StaticProvider} from '@angular/core';
 
-import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
+import {BuiltInControlValueAccessor, ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
 
 export const SELECT_MULTIPLE_VALUE_ACCESSOR: StaticProvider = {
   provide: NG_VALUE_ACCESSOR,
@@ -81,7 +81,8 @@ abstract class HTMLCollection {
   host: {'(change)': 'onChange($event.target)', '(blur)': 'onTouched()'},
   providers: [SELECT_MULTIPLE_VALUE_ACCESSOR]
 })
-export class SelectMultipleControlValueAccessor implements ControlValueAccessor {
+export class SelectMultipleControlValueAccessor extends BuiltInControlValueAccessor implements
+    ControlValueAccessor {
   /**
    * The current value.
    * @nodoc
@@ -93,18 +94,6 @@ export class SelectMultipleControlValueAccessor implements ControlValueAccessor 
 
   /** @internal */
   _idCounter: number = 0;
-
-  /**
-   * The registered callback function called when a change event occurs on the input element.
-   * @nodoc
-   */
-  onChange = (_: any) => {};
-
-  /**
-   * The registered callback function called when a blur event occurs on the input element.
-   * @nodoc
-   */
-  onTouched = () => {};
 
   /**
    * @description
@@ -120,8 +109,6 @@ export class SelectMultipleControlValueAccessor implements ControlValueAccessor 
   }
 
   private _compareWith: (o1: any, o2: any) => boolean = Object.is;
-
-  constructor(private _renderer: Renderer2, private _elementRef: ElementRef) {}
 
   /**
    * Sets the "value" property on one or of more of the select's options.
@@ -149,7 +136,7 @@ export class SelectMultipleControlValueAccessor implements ControlValueAccessor 
    * and writes an array of the selected options.
    * @nodoc
    */
-  registerOnChange(fn: (value: any) => any): void {
+  override registerOnChange(fn: (value: any) => any): void {
     this.onChange = (_: any) => {
       const selected: Array<any> = [];
       if (_.selectedOptions !== undefined) {
@@ -174,22 +161,6 @@ export class SelectMultipleControlValueAccessor implements ControlValueAccessor 
       this.value = selected;
       fn(selected);
     };
-  }
-
-  /**
-   * Registers a function called when the control is touched.
-   * @nodoc
-   */
-  registerOnTouched(fn: () => any): void {
-    this.onTouched = fn;
-  }
-
-  /**
-   * Sets the "disabled" property on the select input element.
-   * @nodoc
-   */
-  setDisabledState(isDisabled: boolean): void {
-    this._renderer.setProperty(this._elementRef.nativeElement, 'disabled', isDisabled);
   }
 
   /** @internal */

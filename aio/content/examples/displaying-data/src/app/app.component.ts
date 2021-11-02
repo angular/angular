@@ -1,5 +1,3 @@
-// #docplaster
-// #docregion final
 import { Component } from '@angular/core';
 
 import { Hero } from './hero';
@@ -15,9 +13,7 @@ import { Hero } from './hero';
       {{ hero.name }}
       </li>
   </ul>
-  // #docregion message
   <p *ngIf="heroes.length > 3">There are many heroes!</p>
-  // #enddocregion message
 `
 })
 export class AppComponent {

@@ -33,7 +33,7 @@ class Dashboard {
 }
 
 class TurboEngine extends Engine {
-  static PROVIDER = {provide: Engine, useClass: TurboEngine, deps: []};
+  static override PROVIDER = {provide: Engine, useClass: TurboEngine, deps: []};
 }
 
 class Car {
@@ -65,7 +65,7 @@ class CarWithDashboard {
 }
 
 class SportsCar extends Car {
-  static PROVIDER = {provide: Car, useClass: SportsCar, deps: [Engine]};
+  static override PROVIDER = {provide: Car, useClass: SportsCar, deps: [Engine]};
 }
 
 class CyclicEngine {

@@ -6,8 +6,7 @@ package(default_visibility = ["//visibility:public"])
 
 exports_files([
     "tsconfig.json",
-    "rollup-es5.config.js",
-    "rollup-es5_global-es2015.config.js",
+    "rollup.config.js",
 ])
 
 genrule(

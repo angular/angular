@@ -66,6 +66,7 @@ DEFAULT_NG_XI18N = (
 )
 FLAT_DTS_FILE_SUFFIX = ".bundle.d.ts"
 TsConfigInfo = _TsConfigInfo
+
 js_ecma_script_module_info = _js_ecma_script_module_info
 js_module_info = _js_module_info
 js_named_module_info = _js_named_module_info

@@ -6,23 +6,21 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {describe, expect, it} from '@angular/core/testing/src/testing_internal';
+import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
 import {BrowserViewportScroller, ViewportScroller} from '../src/viewport_scroller';
 
 describe('BrowserViewportScroller', () => {
-  let scroller: ViewportScroller;
-  let documentSpy: any;
-  let windowSpy: any;
-
-  beforeEach(() => {
-    windowSpy =
-        jasmine.createSpyObj('window', ['history', 'scrollTo', 'pageXOffset', 'pageYOffset']);
-    windowSpy.history.scrollRestoration = 'auto';
-    documentSpy = jasmine.createSpyObj('document', ['getElementById', 'getElementsByName']);
-    scroller = new BrowserViewportScroller(documentSpy, windowSpy, null!);
-  });
-
   describe('setHistoryScrollRestoration', () => {
+    let scroller: ViewportScroller;
+    let windowSpy: any;
+
+    beforeEach(() => {
+      windowSpy =
+          jasmine.createSpyObj('window', ['history', 'scrollTo', 'pageXOffset', 'pageYOffset']);
+      windowSpy.history.scrollRestoration = 'auto';
+      scroller = new BrowserViewportScroller(document, windowSpy);
+    });
+
     function createNonWritableScrollRestoration() {
       Object.defineProperty(windowSpy.history, 'scrollRestoration', {
         value: 'auto',
@@ -43,34 +41,106 @@ describe('BrowserViewportScroller', () => {
   });
 
   describe('scrollToAnchor', () => {
+    // Testing scroll behavior does not make sense outside a browser
+    if (isNode) return;
     const anchor = 'anchor';
-    const el = document.createElement('a');
+    let scroller: BrowserViewportScroller;
 
-    it('should only call getElementById when an element is found by id', () => {
-      documentSpy.getElementById.and.returnValue(el);
-      spyOn<any>(scroller, 'scrollToElement');
-      scroller.scrollToAnchor(anchor);
-      expect(documentSpy.getElementById).toHaveBeenCalledWith(anchor);
-      expect(documentSpy.getElementsByName).not.toHaveBeenCalled();
-      expect((scroller as any).scrollToElement).toHaveBeenCalledWith(el);
+    beforeEach(() => {
+      scroller = new BrowserViewportScroller(document, window);
+      scroller.scrollToPosition([0, 0]);
     });
 
-    it('should call getElementById and getElementsByName when an element is found by name', () => {
-      documentSpy.getElementsByName.and.returnValue([el]);
-      spyOn<any>(scroller, 'scrollToElement');
+    it('should scroll when element with matching id is found', () => {
+      const {anchorNode, cleanup} = createTallElement();
+      anchorNode.id = anchor;
       scroller.scrollToAnchor(anchor);
-      expect(documentSpy.getElementById).toHaveBeenCalledWith(anchor);
-      expect(documentSpy.getElementsByName).toHaveBeenCalledWith(anchor);
-      expect((scroller as any).scrollToElement).toHaveBeenCalledWith(el);
+      expect(scroller.getScrollPosition()[1]).not.toEqual(0);
+      cleanup();
     });
 
-    it('should not call scrollToElement when an element is not found by its id or its name', () => {
-      documentSpy.getElementsByName.and.returnValue([]);
-      spyOn<any>(scroller, 'scrollToElement');
+    it('should scroll when anchor with matching name is found', () => {
+      const {anchorNode, cleanup} = createTallElement();
+      anchorNode.name = anchor;
       scroller.scrollToAnchor(anchor);
-      expect(documentSpy.getElementById).toHaveBeenCalledWith(anchor);
-      expect(documentSpy.getElementsByName).toHaveBeenCalledWith(anchor);
-      expect((scroller as any).scrollToElement).not.toHaveBeenCalled();
+      expect(scroller.getScrollPosition()[1]).not.toEqual(0);
+      cleanup();
     });
+
+    it('should not scroll when no matching element is found', () => {
+      const {cleanup} = createTallElement();
+      scroller.scrollToAnchor(anchor);
+      expect(scroller.getScrollPosition()[1]).toEqual(0);
+      cleanup();
+    });
+
+    it('should scroll when element with matching id is found inside the shadow DOM', () => {
+      // This test is only relevant for browsers that support shadow DOM.
+      if (!browserDetection.supportsShadowDom) {
+        return;
+      }
+
+      const {anchorNode, cleanup} = createTallElementWithShadowRoot();
+      anchorNode.id = anchor;
+      scroller.scrollToAnchor(anchor);
+      expect(scroller.getScrollPosition()[1]).not.toEqual(0);
+      cleanup();
+    });
+
+    it('should scroll when anchor with matching name is found inside the shadow DOM', () => {
+      // This test is only relevant for browsers that support shadow DOM.
+      if (!browserDetection.supportsShadowDom) {
+        return;
+      }
+
+      const {anchorNode, cleanup} = createTallElementWithShadowRoot();
+      anchorNode.name = anchor;
+      scroller.scrollToAnchor(anchor);
+      expect(scroller.getScrollPosition()[1]).not.toEqual(0);
+      cleanup();
+    });
+
+    function createTallElement() {
+      const tallItem = document.createElement('div');
+      tallItem.style.height = '3000px';
+      document.body.appendChild(tallItem);
+      const anchorNode = createAnchorNode();
+      document.body.appendChild(anchorNode);
+
+      return {
+        anchorNode,
+        cleanup: () => {
+          document.body.removeChild(tallItem);
+          document.body.removeChild(anchorNode);
+        }
+      };
+    }
+
+    function createTallElementWithShadowRoot() {
+      const tallItem = document.createElement('div');
+      tallItem.style.height = '3000px';
+      document.body.appendChild(tallItem);
+
+      const elementWithShadowRoot = document.createElement('div');
+      const shadowRoot = elementWithShadowRoot.attachShadow({mode: 'open'});
+      const anchorNode = createAnchorNode();
+      shadowRoot.appendChild(anchorNode);
+      document.body.appendChild(elementWithShadowRoot);
+
+      return {
+        anchorNode,
+        cleanup: () => {
+          document.body.removeChild(tallItem);
+          document.body.removeChild(elementWithShadowRoot);
+        }
+      };
+    }
+
+    function createAnchorNode() {
+      const anchorNode = document.createElement('a');
+      anchorNode.innerText = 'some link';
+      anchorNode.href = '#';
+      return anchorNode;
+    }
   });
 });

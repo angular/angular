@@ -120,6 +120,50 @@ export interface R3DirectiveMetadata {
 }
 
 /**
+ * Specifies how a list of declaration type references should be emitted into the generated code.
+ */
+export const enum DeclarationListEmitMode {
+  /**
+   * The list of declarations is emitted into the generated code as is.
+   *
+   * ```
+   * directives: [MyDir],
+   * ```
+   */
+  Direct,
+
+  /**
+   * The list of declarations is emitted into the generated code wrapped inside a closure, which
+   * is needed when at least one declaration is a forward reference.
+   *
+   * ```
+   * directives: function () { return [MyDir, ForwardDir]; },
+   * ```
+   */
+  Closure,
+
+  /**
+   * Similar to `Closure`, with the addition that the list of declarations can contain individual
+   * items that are themselves forward references. This is relevant for JIT compilations, as
+   * unwrapping the forwardRef cannot be done statically so must be deferred. This mode emits
+   * the declaration list using a mapping transform through `resolveForwardRef` to ensure that
+   * any forward references within the list are resolved when the outer closure is invoked.
+   *
+   * Consider the case where the runtime has captured two declarations in two distinct values:
+   * ```
+   * const dirA = MyDir;
+   * const dirB = forwardRef(function() { return ForwardRef; });
+   * ```
+   *
+   * This mode would emit the declarations captured in `dirA` and `dirB` as follows:
+   * ```
+   * directives: function () { return [dirA, dirB].map(ng.resolveForwardRef); },
+   * ```
+   */
+  ClosureResolved,
+}
+
+/**
  * Information needed to compile a component for the render3 runtime.
  */
 export interface R3ComponentMetadata extends R3DirectiveMetadata {
@@ -152,11 +196,9 @@ export interface R3ComponentMetadata extends R3DirectiveMetadata {
   directives: R3UsedDirectiveMetadata[];
 
   /**
-   * Whether to wrap the 'directives' and/or `pipes` array, if one is generated, in a closure.
-   *
-   * This is done when the directives or pipes contain forward references.
+   * Specifies how the 'directives' and/or `pipes` array, if generated, need to be emitted.
    */
-  wrapDirectivesAndPipesInClosure: boolean;
+  declarationListEmitMode: DeclarationListEmitMode;
 
   /**
    * A collection of styling data that will be applied and scoped to the component.
@@ -235,6 +277,11 @@ export interface R3UsedDirectiveMetadata {
    * Name under which the directive is exported, if any (exportAs in Angular). Null otherwise.
    */
   exportAs: string[]|null;
+
+  /**
+   * If true then this directive is actually a component; otherwise it is not.
+   */
+  isComponent?: boolean;
 }
 
 /**
@@ -263,6 +310,13 @@ export interface R3QueryMetadata {
   descendants: boolean;
 
   /**
+   * If the `QueryList` should fire change event only if actual change to query was computed (vs old
+   * behavior where the change was fired whenever the query was recomputed, even if the recomputed
+   * query resulted in the same list.)
+   */
+  emitDistinctChangesOnly: boolean;
+
+  /**
    * An expression representing a type to read from each matched node, or null if the default value
    * for a given node is to be returned.
    */
@@ -282,22 +336,6 @@ export interface R3QueryMetadata {
    * content hooks and ngAfterViewInit for view hooks).
    */
   static: boolean;
-}
-
-/**
- * Output of render3 directive compilation.
- */
-export interface R3DirectiveDef {
-  expression: o.Expression;
-  type: o.Type;
-}
-
-/**
- * Output of render3 component compilation.
- */
-export interface R3ComponentDef {
-  expression: o.Expression;
-  type: o.Type;
 }
 
 /**

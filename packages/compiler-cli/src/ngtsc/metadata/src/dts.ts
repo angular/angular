@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {Reference} from '../../imports';
-import {ClassDeclaration, isNamedClassDeclaration, ReflectionHost} from '../../reflection';
+import {ClassDeclaration, isNamedClassDeclaration, ReflectionHost, TypeValueReferenceKind} from '../../reflection';
 
-import {DirectiveMeta, MetadataReader, NgModuleMeta, PipeMeta} from './api';
+import {DirectiveMeta, MetadataReader, MetaType, NgModuleMeta, PipeMeta} from './api';
 import {ClassPropertyMapping} from './property_mapping';
 import {extractDirectiveTypeCheckMeta, extractReferencesFromType, readStringArrayType, readStringMapType, readStringType} from './util';
 
@@ -30,7 +30,7 @@ export class DtsMetadataReader implements MetadataReader {
    */
   getNgModuleMetadata(ref: Reference<ClassDeclaration>): NgModuleMeta|null {
     const clazz = ref.node;
-    const resolutionContext = clazz.getSourceFile().fileName;
+
     // This operation is explicitly not memoized, as it depends on `ref.ownedByModuleGuess`.
     // TODO(alxhub): investigate caching of .d.ts module metadata.
     const ngModuleDef = this.reflector.getMembersOfClass(clazz).find(
@@ -49,12 +49,10 @@ export class DtsMetadataReader implements MetadataReader {
     const [_, declarationMetadata, importMetadata, exportMetadata] = ngModuleDef.type.typeArguments;
     return {
       ref,
-      declarations: extractReferencesFromType(
-          this.checker, declarationMetadata, ref.ownedByModuleGuess, resolutionContext),
-      exports: extractReferencesFromType(
-          this.checker, exportMetadata, ref.ownedByModuleGuess, resolutionContext),
-      imports: extractReferencesFromType(
-          this.checker, importMetadata, ref.ownedByModuleGuess, resolutionContext),
+      declarations:
+          extractReferencesFromType(this.checker, declarationMetadata, ref.bestGuessOwningModule),
+      exports: extractReferencesFromType(this.checker, exportMetadata, ref.bestGuessOwningModule),
+      imports: extractReferencesFromType(this.checker, importMetadata, ref.bestGuessOwningModule),
       schemas: [],
       rawDeclarations: null,
     };
@@ -77,14 +75,28 @@ export class DtsMetadataReader implements MetadataReader {
       return null;
     }
 
+    const isComponent = def.name === 'ɵcmp';
+
+    const ctorParams = this.reflector.getConstructorParameters(clazz);
+
+    // A directive is considered to be structural if:
+    // 1) it's a directive, not a component, and
+    // 2) it injects `TemplateRef`
+    const isStructural = !isComponent && ctorParams !== null && ctorParams.some(param => {
+      return param.typeValueReference.kind === TypeValueReferenceKind.IMPORTED &&
+          param.typeValueReference.moduleName === '@angular/core' &&
+          param.typeValueReference.importedName === 'TemplateRef';
+    });
+
     const inputs =
         ClassPropertyMapping.fromMappedObject(readStringMapType(def.type.typeArguments[3]));
     const outputs =
         ClassPropertyMapping.fromMappedObject(readStringMapType(def.type.typeArguments[4]));
     return {
+      type: MetaType.Directive,
       ref,
       name: clazz.name.text,
-      isComponent: def.name === 'ɵcmp',
+      isComponent,
       selector: readStringType(def.type.typeArguments[1]),
       exportAs: readStringArrayType(def.type.typeArguments[2]),
       inputs,
@@ -92,6 +104,8 @@ export class DtsMetadataReader implements MetadataReader {
       queries: readStringArrayType(def.type.typeArguments[5]),
       ...extractDirectiveTypeCheckMeta(clazz, inputs, this.reflector),
       baseClass: readBaseClass(clazz, this.checker, this.reflector),
+      isPoisoned: false,
+      isStructural,
     };
   }
 
@@ -116,7 +130,12 @@ export class DtsMetadataReader implements MetadataReader {
       return null;
     }
     const name = type.literal.text;
-    return {ref, name};
+    return {
+      type: MetaType.Pipe,
+      ref,
+      name,
+      nameExpr: null,
+    };
   }
 }
 

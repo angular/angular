@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {ErrorCode, ngErrorCode} from '../../diagnostics';
 import {findFlatIndexEntryPoint, FlatIndexGenerator} from '../../entry_point';
@@ -59,6 +59,7 @@ export class DelegatingCompilerHost implements
   readDirectory = this.delegateMethod('readDirectory');
   readFile = this.delegateMethod('readFile');
   readResource = this.delegateMethod('readResource');
+  transformResource = this.delegateMethod('transformResource');
   realpath = this.delegateMethod('realpath');
   resolveModuleNames = this.delegateMethod('resolveModuleNames');
   resolveTypeReferenceDirectives = this.delegateMethod('resolveTypeReferenceDirectives');
@@ -101,6 +102,12 @@ export class NgCompilerHost extends DelegatingCompilerHost implements
     this.constructionDiagnostics = diagnostics;
     this.inputFiles = [...inputFiles, ...shimAdapter.extraInputFiles];
     this.rootDirs = rootDirs;
+
+    if (this.resolveModuleNames === undefined) {
+      // In order to reuse the module resolution cache during the creation of the type-check
+      // program, we'll need to provide `resolveModuleNames` if the delegate did not provide one.
+      this.resolveModuleNames = this.createCachedResolveModuleNamesFunction();
+    }
   }
 
   /**
@@ -262,5 +269,18 @@ export class NgCompilerHost extends DelegatingCompilerHost implements
 
   get unifiedModulesHost(): UnifiedModulesHost|null {
     return this.fileNameToModuleName !== undefined ? this as UnifiedModulesHost : null;
+  }
+
+  private createCachedResolveModuleNamesFunction(): ts.CompilerHost['resolveModuleNames'] {
+    const moduleResolutionCache = ts.createModuleResolutionCache(
+        this.getCurrentDirectory(), this.getCanonicalFileName.bind(this));
+
+    return (moduleNames, containingFile, reusedNames, redirectedReference, options) => {
+      return moduleNames.map(moduleName => {
+        const module = ts.resolveModuleName(
+            moduleName, containingFile, options, this, moduleResolutionCache, redirectedReference);
+        return module.resolvedModule;
+      });
+    };
   }
 }

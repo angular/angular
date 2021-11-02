@@ -31,6 +31,12 @@ export function assertString(actual: any, msg: string): asserts actual is string
   }
 }
 
+export function assertFunction(actual: any, msg: string): asserts actual is Function {
+  if (!(typeof actual === 'function')) {
+    throwError(msg, actual === null ? 'null' : typeof actual, 'function', '===');
+  }
+}
+
 export function assertEqual<T>(actual: T, expected: T, msg: string) {
   if (!(actual == expected)) {
     throwError(msg, actual, expected, '==');

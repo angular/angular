@@ -281,23 +281,24 @@ export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChan
       this._remove(record);
     }
 
-    // Attempt to see if we have seen the item before.
-    record = this._linkedRecords === null ? null : this._linkedRecords.get(itemTrackBy, index);
+    // See if we have evicted the item, which used to be at some anterior position of _itHead list.
+    record = this._unlinkedRecords === null ? null : this._unlinkedRecords.get(itemTrackBy, null);
     if (record !== null) {
-      // We have seen this before, we need to move it forward in the collection.
-      // But first we need to check if identity changed, so we can update in view if necessary
+      // It is an item which we have evicted earlier: reinsert it back into the list.
+      // But first we need to check if identity changed, so we can update in view if necessary.
       if (!Object.is(record.item, item)) this._addIdentityChange(record, item);
 
-      this._moveAfter(record, previousRecord, index);
+      this._reinsertAfter(record, previousRecord, index);
     } else {
-      // Never seen it, check evicted list.
-      record = this._unlinkedRecords === null ? null : this._unlinkedRecords.get(itemTrackBy, null);
+      // Attempt to see if the item is at some posterior position of _itHead list.
+      record = this._linkedRecords === null ? null : this._linkedRecords.get(itemTrackBy, index);
       if (record !== null) {
-        // It is an item which we have evicted earlier: reinsert it back into the list.
-        // But first we need to check if identity changed, so we can update in view if necessary
+        // We have the item in _itHead at/after `index` position. We need to move it forward in the
+        // collection.
+        // But first we need to check if identity changed, so we can update in view if necessary.
         if (!Object.is(record.item, item)) this._addIdentityChange(record, item);
 
-        this._reinsertAfter(record, previousRecord, index);
+        this._moveAfter(record, previousRecord, index);
       } else {
         // It is a new item: add it.
         record =

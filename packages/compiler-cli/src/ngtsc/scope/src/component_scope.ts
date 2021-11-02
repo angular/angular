@@ -13,7 +13,7 @@ import {LocalModuleScope} from './local';
  * Read information about the compilation scope of components.
  */
 export interface ComponentScopeReader {
-  getScopeForComponent(clazz: ClassDeclaration): LocalModuleScope|null|'error';
+  getScopeForComponent(clazz: ClassDeclaration): LocalModuleScope|null;
 
   /**
    * Get the `RemoteScope` required for this component, if any.
@@ -34,7 +34,7 @@ export interface ComponentScopeReader {
 export class CompoundComponentScopeReader implements ComponentScopeReader {
   constructor(private readers: ComponentScopeReader[]) {}
 
-  getScopeForComponent(clazz: ClassDeclaration): LocalModuleScope|null|'error' {
+  getScopeForComponent(clazz: ClassDeclaration): LocalModuleScope|null {
     for (const reader of this.readers) {
       const meta = reader.getScopeForComponent(clazz);
       if (meta !== null) {

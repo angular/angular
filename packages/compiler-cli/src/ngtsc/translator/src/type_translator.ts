@@ -7,7 +7,7 @@
  */
 
 import * as o from '@angular/compiler';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {Context} from './context';
 import {ImportManager} from './import_manager';
@@ -90,11 +90,11 @@ export class TypeTranslatorVisitor implements o.ExpressionVisitor, o.TypeVisitor
     throw new Error('Method not implemented.');
   }
 
-  visitInvokeMethodExpr(ast: o.InvokeMethodExpr, context: Context): never {
+  visitInvokeFunctionExpr(ast: o.InvokeFunctionExpr, context: Context): never {
     throw new Error('Method not implemented.');
   }
 
-  visitInvokeFunctionExpr(ast: o.InvokeFunctionExpr, context: Context): never {
+  visitTaggedTemplateExpr(ast: o.TaggedTemplateExpr, context: Context): never {
     throw new Error('Method not implemented.');
   }
 

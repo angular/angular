@@ -34,7 +34,7 @@ set('-e');
 const baseDir = resolve(`${__dirname}/../..`);
 
 /** @type {string} The command to use for running bazel. */
-const bazelCmd = `yarn --cwd "${baseDir}" --silent bazel`;
+const bazelCmd = process.env.BAZEL ?? `yarn --cwd "${baseDir}" --silent bazel`;
 
 /** @type {string} The absolute path to the bazel-bin directory. */
 const bazelBin = exec(`${bazelCmd} info bazel-bin`, true);
@@ -58,13 +58,13 @@ module.exports = {
 /**
  * Build the Angular packages.
  *
- * @param {string} destPath Path to the output directory into which we copy the npm packages.
+ * @param {string} destDir Path to the output directory into which we copy the npm packages.
  * This path should either be absolute or relative to the project root.
- * @param {boolean} enableIvy True, if Ivy should be used.
  * @param {string} description Human-readable description of the build.
+ * @param {boolean?} isRelease True, if the build should be stamped for a release.
  * @returns {Array<{name: string, outputPath: string}} A list of packages built.
  */
-function buildTargetPackages(destPath, enableIvy, description) {
+function buildTargetPackages(destDir, description, isRelease = false) {
   console.info('##################################');
   console.info(`${scriptPath}:`);
   console.info('  Building @angular/* npm packages');
@@ -80,20 +80,32 @@ function buildTargetPackages(destPath, enableIvy, description) {
       bazelCmd} query --output=label "attr('tags', '\\[.*release-with-framework.*\\]', //packages/...) intersect kind('ng_package|pkg_npm', //packages/...)"`;
   const targets = exec(getTargetsCmd, true).split(/\r?\n/);
 
-  // Use `--config=release` so that snapshot builds get published with embedded version info.
-  exec(`${bazelCmd} build --config=release --config=${enableIvy ? 'ivy' : 'view-engine'} ${
-      targets.join(' ')}`);
+  // If we are in release mode, run `bazel clean` to ensure the execroot and action cache
+  // are not populated. This is necessary because targets using `npm_package` rely on
+  // workspace status variables for the package version. Such NPM package targets are not
+  // rebuilt if only the workspace status variables change. This could result in accidental
+  // re-use of previously built package output with a different `version` in the `package.json`.
+  if (isRelease) {
+    console.info('Building in release mode. Resetting the Bazel execroot and action cache..');
+    exec(`${bazelCmd} clean`);
+  }
+
+  // Use either `--config=snapshot` or `--config=release` so that builds are created with the
+  // correct embedded version info.
+  exec(`${bazelCmd} build --config=${isRelease ? 'release' : 'snapshot'} ${targets.join(' ')}`);
 
   // Create the output directory.
-  const absDestPath = resolve(baseDir, destPath);
-  if (!test('-d', absDestPath)) mkdir('-p', absDestPath);
+  const absDestDir = resolve(baseDir, destDir);
+  if (!test('-d', absDestDir)) {
+    mkdir('-p', absDestDir);
+  }
 
   targets.forEach(target => {
     const pkg = target.replace(/\/\/packages\/(.*):npm_package/, '$1');
 
     // Skip any that don't have an "npm_package" target.
     const srcDir = `${bazelBin}/packages/${pkg}/npm_package`;
-    const destDir = `${absDestPath}/${pkg}`;
+    const destDir = `${absDestDir}/${pkg}`;
 
     if (test('-d', srcDir)) {
       console.info(`# Copy artifacts to ${destDir}`);

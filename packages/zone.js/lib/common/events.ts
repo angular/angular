@@ -28,8 +28,11 @@ if (typeof window !== 'undefined') {
         passiveSupported = true;
       }
     });
-    window.addEventListener('test', options, options);
-    window.removeEventListener('test', options, options);
+    // Note: We pass the `options` object as the event handler too. This is not compatible with the
+    // signature of `addEventListener` or `removeEventListener` but enables us to remove the handler
+    // without an actual handler.
+    window.addEventListener('test', options as any, options);
+    window.removeEventListener('test', options as any, options);
   } catch (err) {
     passiveSupported = false;
   }
@@ -86,7 +89,7 @@ export interface PatchEventTargetOptions {
 }
 
 export function patchEventTarget(
-    _global: any, apis: any[], patchOptions?: PatchEventTargetOptions) {
+    _global: any, api: _ZonePrivate, apis: any[], patchOptions?: PatchEventTargetOptions) {
   const ADD_EVENT_LISTENER = (patchOptions && patchOptions.add) || ADD_EVENT_LISTENER_STR;
   const REMOVE_EVENT_LISTENER = (patchOptions && patchOptions.rm) || REMOVE_EVENT_LISTENER_STR;
 
@@ -101,7 +104,7 @@ export function patchEventTarget(
   const PREPEND_EVENT_LISTENER = 'prependListener';
   const PREPEND_EVENT_LISTENER_SOURCE = '.' + PREPEND_EVENT_LISTENER + ':';
 
-  const invokeTask = function(task: any, target: any, event: Event) {
+  const invokeTask = function(task: any, target: any, event: Event): Error|undefined {
     // for better performance, check isRemoved which is set
     // by removeEventListener
     if (task.isRemoved) {
@@ -114,7 +117,15 @@ export function patchEventTarget(
       task.originalDelegate = delegate;
     }
     // invoke static task.invoke
-    task.invoke(task, target, [event]);
+    // need to try/catch error here, otherwise, the error in one event listener
+    // will break the executions of the other event listeners. Also error will
+    // not remove the event listener when `once` options is true.
+    let error;
+    try {
+      task.invoke(task, target, [event]);
+    } catch (err) {
+      error = err;
+    }
     const options = task.options;
     if (options && typeof options === 'object' && options.once) {
       // if options.once is true, after invoke once remove listener here
@@ -123,10 +134,10 @@ export function patchEventTarget(
       const delegate = task.originalDelegate ? task.originalDelegate : task.callback;
       target[REMOVE_EVENT_LISTENER].call(target, event.type, delegate, options);
     }
+    return error;
   };
 
-  // global shared zoneAwareCallback to handle all event callback with capture = false
-  const globalZoneAwareCallback = function(this: unknown, event: Event) {
+  function globalCallback(context: unknown, event: Event, isCapture: boolean) {
     // https://github.com/angular/zone.js/issues/911, in IE, sometimes
     // event will be undefined, so we need to use window.event
     event = event || _global.event;
@@ -135,13 +146,15 @@ export function patchEventTarget(
     }
     // event.target is needed for Samsung TV and SourceBuffer
     // || global is needed https://github.com/angular/zone.js/issues/190
-    const target: any = this || event.target || _global;
-    const tasks = target[zoneSymbolEventNames[event.type][FALSE_STR]];
+    const target: any = context || event.target || _global;
+    const tasks = target[zoneSymbolEventNames[event.type][isCapture ? TRUE_STR : FALSE_STR]];
     if (tasks) {
+      const errors = [];
       // invoke all tasks which attached to current target with given event.type and capture = false
       // for performance concern, if task.length === 1, just invoke
       if (tasks.length === 1) {
-        invokeTask(tasks[0], target, event);
+        const err = invokeTask(tasks[0], target, event);
+        err && errors.push(err);
       } else {
         // https://github.com/angular/zone.js/issues/836
         // copy the tasks array before invoke, to avoid
@@ -151,42 +164,33 @@ export function patchEventTarget(
           if (event && (event as any)[IMMEDIATE_PROPAGATION_SYMBOL] === true) {
             break;
           }
-          invokeTask(copyTasks[i], target, event);
+          const err = invokeTask(copyTasks[i], target, event);
+          err && errors.push(err);
+        }
+      }
+      // Since there is only one error, we don't need to schedule microTask
+      // to throw the error.
+      if (errors.length === 1) {
+        throw errors[0];
+      } else {
+        for (let i = 0; i < errors.length; i++) {
+          const err = errors[i];
+          api.nativeScheduleMicroTask(() => {
+            throw err;
+          });
         }
       }
     }
+  }
+
+  // global shared zoneAwareCallback to handle all event callback with capture = false
+  const globalZoneAwareCallback = function(this: unknown, event: Event) {
+    return globalCallback(this, event, false);
   };
 
   // global shared zoneAwareCallback to handle all event callback with capture = true
   const globalZoneAwareCaptureCallback = function(this: unknown, event: Event) {
-    // https://github.com/angular/zone.js/issues/911, in IE, sometimes
-    // event will be undefined, so we need to use window.event
-    event = event || _global.event;
-    if (!event) {
-      return;
-    }
-    // event.target is needed for Samsung TV and SourceBuffer
-    // || global is needed https://github.com/angular/zone.js/issues/190
-    const target: any = this || event.target || _global;
-    const tasks = target[zoneSymbolEventNames[event.type][TRUE_STR]];
-    if (tasks) {
-      // invoke all tasks which attached to current target with given event.type and capture = false
-      // for performance concern, if task.length === 1, just invoke
-      if (tasks.length === 1) {
-        invokeTask(tasks[0], target, event);
-      } else {
-        // https://github.com/angular/zone.js/issues/836
-        // copy the tasks array before invoke, to avoid
-        // the callback will remove itself or other listener
-        const copyTasks = tasks.slice();
-        for (let i = 0; i < copyTasks.length; i++) {
-          if (event && (event as any)[IMMEDIATE_PROPAGATION_SYMBOL] === true) {
-            break;
-          }
-          invokeTask(copyTasks[i], target, event);
-        }
-      }
-    }
+    return globalCallback(this, event, true);
   };
 
   function patchEventTargetMethods(obj: any, patchOptions?: PatchEventTargetOptions) {

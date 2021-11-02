@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {AbsoluteFsPath, FileSystem, NgtscCompilerHost} from '../../../src/ngtsc/file_system';
 import {isWithinPackage} from '../analysis/util';
@@ -26,7 +26,8 @@ export class NgccSourcesCompilerHost extends NgtscCompilerHost {
     super(fs, options);
   }
 
-  getSourceFile(fileName: string, languageVersion: ts.ScriptTarget): ts.SourceFile|undefined {
+  override getSourceFile(fileName: string, languageVersion: ts.ScriptTarget): ts.SourceFile
+      |undefined {
     return this.cache.getCachedSourceFile(fileName, languageVersion);
   }
 
@@ -78,7 +79,8 @@ export class NgccDtsCompilerHost extends NgtscCompilerHost {
     super(fs, options);
   }
 
-  getSourceFile(fileName: string, languageVersion: ts.ScriptTarget): ts.SourceFile|undefined {
+  override getSourceFile(fileName: string, languageVersion: ts.ScriptTarget): ts.SourceFile
+      |undefined {
     return this.cache.getCachedSourceFile(fileName, languageVersion);
   }
 

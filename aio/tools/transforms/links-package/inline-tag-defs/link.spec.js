@@ -25,7 +25,7 @@ describe('link inline-tag-def', function() {
     const doc = {};
     const tagName = 'link';
     const tagDescription = 'doc-id link text';
-    getLinkInfo.and.returnValue({ url: 'url/to/doc', title: 'link text' });
+    getLinkInfo.and.returnValue({ url: 'url/to/doc', title: 'link text', valid: true });
     tag.handler(doc, tagName, tagDescription);
     expect(getLinkInfo).toHaveBeenCalledWith('doc-id', 'link text', doc);
   });
@@ -34,7 +34,7 @@ describe('link inline-tag-def', function() {
     const doc = {};
     const tagName = 'link';
     const tagDescription = 'doc-id link text';
-    getLinkInfo.and.returnValue({ url: 'url/to/doc', title: 'link text' });
+    getLinkInfo.and.returnValue({ url: 'url/to/doc', title: 'link text', valid: true });
     const result = tag.handler(doc, tagName, tagDescription);
     expect(result).toEqual('<a href=\'url/to/doc\'>link text</a>');
   });
@@ -43,6 +43,7 @@ describe('link inline-tag-def', function() {
     const doc = {};
     const tagName = 'link';
     const tagDescription = 'doc-id link text';
+    tag.failOnBadLink = false;
     getLinkInfo.and.returnValue({ valid: false, error: 'Error message', errorType: 'error' });
     expect(() => tag.handler(doc, tagName, tagDescription)).not.toThrow();
     expect(log.warn).toHaveBeenCalledWith('Error in {@link doc-id link text} - Error message - doc');

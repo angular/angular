@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {Reference} from '../../imports';
 import {OwningModule} from '../../imports/src/references';
@@ -220,6 +220,15 @@ export class StaticInterpreter {
       if (node.originalKeywordKind === ts.SyntaxKind.UndefinedKeyword) {
         return undefined;
       } else {
+        // Check if the symbol here is imported.
+        if (this.dependencyTracker !== null && this.host.getImportOfIdentifier(node) !== null) {
+          // It was, but no declaration for the node could be found. This means that the dependency
+          // graph for the current file cannot be properly updated to account for this (broken)
+          // import. Instead, the originating file is reported as failing dependency analysis,
+          // ensuring that future compilations will always attempt to re-resolve the previously
+          // broken identifier.
+          this.dependencyTracker.recordDependencyAnalysisFailure(context.originatingFile);
+        }
         return DynamicValue.fromUnknownIdentifier(node);
       }
     }
@@ -267,12 +276,28 @@ export class StaticInterpreter {
       return this.getReference(node, context);
     }
   }
-
   private visitVariableDeclaration(node: ts.VariableDeclaration, context: Context): ResolvedValue {
     const value = this.host.getVariableValue(node);
     if (value !== null) {
       return this.visitExpression(value, context);
     } else if (isVariableDeclarationDeclared(node)) {
+      // If the declaration has a literal type that can be statically reduced to a value, resolve to
+      // that value. If not, the historical behavior for variable declarations is to return a
+      // `Reference` to the variable, as the consumer could use it in a context where knowing its
+      // static value is not necessary.
+      //
+      // Arguably, since the value cannot be statically determined, we should return a
+      // `DynamicValue`. This returns a `Reference` because it's the same behavior as before
+      // `visitType` was introduced.
+      //
+      // TODO(zarend): investigate switching to a `DynamicValue` and verify this won't break any
+      // use cases, especially in ngcc
+      if (node.type !== undefined) {
+        const evaluatedType = this.visitType(node.type, context);
+        if (!(evaluatedType instanceof DynamicValue)) {
+          return evaluatedType;
+        }
+      }
       return this.getReference(node, context);
     } else {
       return undefined;
@@ -438,13 +463,14 @@ export class StaticInterpreter {
             node, DynamicValue.fromExternalReference(node.expression, lhs));
       }
 
-      // If the function is declared in a different file, resolve the foreign function expression
-      // using the absolute module name of that file (if any).
-      if (lhs.bestGuessOwningModule !== null) {
+      // If the foreign expression occurs in a different file, then assume that the owning module
+      // of the call expression should also be used for the resolved foreign expression.
+      if (expr.getSourceFile() !== node.expression.getSourceFile() &&
+          lhs.bestGuessOwningModule !== null) {
         context = {
           ...context,
           absoluteModuleName: lhs.bestGuessOwningModule.specifier,
-          resolutionContext: node.getSourceFile().fileName,
+          resolutionContext: lhs.bestGuessOwningModule.resolutionContext,
         };
       }
 
@@ -671,6 +697,28 @@ export class StaticInterpreter {
 
   private getReference<T extends DeclarationNode>(node: T, context: Context): Reference<T> {
     return new Reference(node, owningModule(context));
+  }
+
+  private visitType(node: ts.TypeNode, context: Context): ResolvedValue {
+    if (ts.isLiteralTypeNode(node)) {
+      return this.visitExpression(node.literal, context);
+    } else if (ts.isTupleTypeNode(node)) {
+      return this.visitTupleType(node, context);
+    } else if (ts.isNamedTupleMember(node)) {
+      return this.visitType(node.type, context);
+    }
+
+    return DynamicValue.fromDynamicType(node);
+  }
+
+  private visitTupleType(node: ts.TupleTypeNode, context: Context): ResolvedValueArray {
+    const res: ResolvedValueArray = [];
+
+    for (const elem of node.elements) {
+      res.push(this.visitType(elem, context));
+    }
+
+    return res;
   }
 }
 

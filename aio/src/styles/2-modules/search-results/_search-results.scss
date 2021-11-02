@@ -1,0 +1,86 @@
+@use '../../mixins';
+
+aio-search-results {
+  z-index: 10;
+
+  .search-results {
+    display: flex;
+    flex-direction: row;
+    overflow: auto;
+    padding: 0px 32px;
+    border-top: 68px solid transparent;
+    width: auto;
+    max-height: 95vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 5;
+    box-sizing: border-box;
+
+    .search-area {
+      margin: 0 auto;
+      padding: 16px;
+
+      .search-section-header {
+        @include mixins.font-size(16);
+        font-weight: 400;
+        margin: 10px 0px 5px;
+        text-transform: uppercase;
+      }
+
+      ul {
+        margin: 0;
+        padding: 0;
+
+        li {
+          list-style: none;
+        }
+
+        .search-result-item {
+          @include mixins.font-size(14);
+          @include mixins.line-height(24);
+          display: inline-block;
+          font-weight: normal;
+          padding: 0.6rem 0;
+
+          &a {
+            text-decoration: none;
+          }
+        }
+
+        &.priority-pages {
+          padding: 0.5rem 0;
+
+          .search-result-item {
+            font-weight: bold;
+          }
+        }
+      }
+    }
+
+    .no-results {
+      text-align: center;
+      margin: 16px;
+    }
+
+    a {
+      font-weight: 500;
+    }
+
+    @media (max-width: 600px) {
+      display: block;
+    }
+  }
+
+  &.embedded {
+    .search-results {
+      padding: 0;
+      color: inherit;
+      max-height: 100%;
+      position: relative;
+      background-color: inherit;
+      box-shadow: none;
+    }
+  }
+}

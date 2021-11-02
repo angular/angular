@@ -1,7 +1,7 @@
 import { animate, state, style, trigger, transition } from '@angular/animations';
 import { Component, EventEmitter, HostBinding, Inject, Input, OnInit, Output } from '@angular/core';
 import { CurrentDateToken } from 'app/shared/current-date';
-import { WindowToken } from 'app/shared/window';
+import { LocalStorage } from 'app/shared/storage.service';
 
 const LOCAL_STORAGE_NAMESPACE = 'aio-notification/';
 
@@ -11,7 +11,7 @@ const LOCAL_STORAGE_NAMESPACE = 'aio-notification/';
   animations: [
     trigger('hideAnimation', [
       state('show', style({height: '*'})),
-      state('hide', style({height: 0})),
+      state('hide', style({display: 'none', height: 0})),
       // this should be kept in sync with the animation durations in:
       // - aio/src/styles/2-modules/_notification.scss
       // - aio/src/app/app.component.ts : notificationDismissed()
@@ -20,35 +20,15 @@ const LOCAL_STORAGE_NAMESPACE = 'aio-notification/';
   ]
 })
 export class NotificationComponent implements OnInit {
-  private storage: Storage;
-
   @Input() dismissOnContentClick: boolean;
   @Input() notificationId: string;
   @Input() expirationDate: string;
-  @Output() dismissed = new EventEmitter();
+  @Output() dismissed = new EventEmitter<void>();
 
   @HostBinding('@hideAnimation')
   showNotification: 'show'|'hide';
 
-  constructor(
-    @Inject(WindowToken) window: Window,
-    @Inject(CurrentDateToken) private currentDate: Date
-  ) {
-    try {
-      this.storage = window.localStorage;
-    } catch {
-      // When cookies are disabled in the browser, even trying to access
-      // `window.localStorage` throws an error. Use a no-op storage.
-      this.storage = {
-        length: 0,
-        clear: () => undefined,
-        getItem: () => null,
-        key: () => null,
-        removeItem: () => undefined,
-        setItem: () => undefined
-      };
-    }
-  }
+  constructor(@Inject(LocalStorage) private storage: Storage, @Inject(CurrentDateToken) private currentDate: Date) {}
 
   ngOnInit() {
     const previouslyHidden = this.storage.getItem(LOCAL_STORAGE_NAMESPACE + this.notificationId) === 'hide';

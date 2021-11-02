@@ -7,8 +7,8 @@
  */
 
 import {Type, Writable} from '../../interface/type';
+import {EMPTY_ARRAY, EMPTY_OBJ} from '../../util/empty';
 import {fillProperties} from '../../util/property';
-import {EMPTY_ARRAY, EMPTY_OBJ} from '../empty';
 import {ComponentDef, ContentQueriesFunction, DirectiveDef, DirectiveDefFeature, HostBindingsFunction, RenderFlags, ViewQueriesFunction} from '../interfaces/definition';
 import {TAttributes} from '../interfaces/node';
 import {isComponentDef} from '../interfaces/type_checks';

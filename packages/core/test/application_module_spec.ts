@@ -7,12 +7,12 @@
  */
 
 import {DEFAULT_CURRENCY_CODE, LOCALE_ID} from '@angular/core';
+import {inject} from '@angular/core/testing';
 import {ivyEnabled} from '@angular/private/testing';
 
 import {getLocaleId} from '../src/render3';
 import {global} from '../src/util/global';
 import {TestBed} from '../testing';
-import {describe, expect, inject, it} from '../testing/src/testing_internal';
 
 {
   describe('Application module', () => {

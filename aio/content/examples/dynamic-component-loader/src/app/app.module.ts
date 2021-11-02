@@ -1,4 +1,3 @@
-// #docregion
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { AppComponent } from './app.component';
@@ -10,18 +9,19 @@ import { AdService } from './ad.service';
 
 @NgModule({
   imports: [ BrowserModule ],
-  providers: [AdService],
-  declarations: [ AppComponent,
-                  AdBannerComponent,
-                  HeroJobAdComponent,
-                  HeroProfileComponent,
-                  AdDirective ],
-  // #docregion entry-components
-  entryComponents: [ HeroJobAdComponent, HeroProfileComponent ],
-  // #enddocregion entry-components
+  providers: [ AdService ],
+  declarations: [
+    AppComponent,
+    AdBannerComponent,
+    HeroJobAdComponent,
+    HeroProfileComponent,
+    AdDirective
+  ],
+  entryComponents: [
+    HeroJobAdComponent,
+    HeroProfileComponent
+  ],
   bootstrap: [ AppComponent ]
 })
-export class AppModule {
-  constructor() {}
-}
+export class AppModule { }
 

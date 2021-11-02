@@ -48,14 +48,14 @@ describe('getPreviousMajorVersions', () => {
     `
     });
     expect(getPreviousMajorVersions()).toEqual([
-      semver('4.2.10'),
-      semver('3.8.1'),
+      semver.parse('4.2.10'),
+      semver.parse('3.8.1'),
     ]);
   });
 });
 
 function mockVersionInfo() {
-  return {currentVersion: new semver('5.1.0')};
+  return {currentVersion: semver.parse('5.1.0')};
 }
 
 function mockPackageInfo() {

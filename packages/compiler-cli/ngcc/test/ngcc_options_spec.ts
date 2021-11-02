@@ -5,7 +5,10 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import * as os from 'os';
+// Note: We do not use a namespace import here because this will result in the
+// named exports being modified if we apply jasmine spies on `realFs`. Using
+// the default export gives us an object where we can patch properties on.
+import os from 'os';
 
 import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem} from '../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
@@ -98,6 +101,23 @@ runInEachFileSystem(() => {
       expect(setup.tsConfigPath).toEqual(pathToProjectTsConfig);
       expect(setup.tsConfig?.rootNames).toEqual([]);
       expect((setup.logger as MockLogger).logs.warn).toEqual([]);
+    });
+
+    it('should not modify `compileAllFormats` if `typingsOnly` is falsy', () => {
+      let setup = getSharedSetup({...createOptions(), compileAllFormats: true, typingsOnly: false});
+      expect(setup.typingsOnly).toBe(false);
+      expect(setup.compileAllFormats).toBe(true);
+
+      setup = getSharedSetup({...createOptions(), compileAllFormats: true});
+      expect(setup.typingsOnly).toBe(false);
+      expect(setup.compileAllFormats).toBe(true);
+    });
+
+    it('should force `compileAllFormats` to false if `typingsOnly` is true', () => {
+      const setup =
+          getSharedSetup({...createOptions(), compileAllFormats: true, typingsOnly: true});
+      expect(setup.typingsOnly).toBe(true);
+      expect(setup.compileAllFormats).toBe(false);
     });
   });
 

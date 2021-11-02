@@ -10,7 +10,7 @@
 
 const shell = require('shelljs');
 const karmaBin = require.resolve('karma/bin/karma');
-const runfiles = require(process.env['BAZEL_NODE_RUNFILES_HELPER']);
+const {runfiles} = require('@bazel/runfiles');
 const sauceService = runfiles.resolveWorkspaceRelative(process.argv[2]);
 process.argv = [
   process.argv[0],

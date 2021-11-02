@@ -45,13 +45,6 @@ sed('-i', '(\'response\' in xhr)', '(\'response\' in (xhr as any))',
     'node_modules/rxjs/src/observable/dom/AjaxObservable.ts');
 */
 
-// make chrome 74 work on OSX with karma under bazel
-// remove when we update to the next @bazel/karma release
-log('\n# patch: @bazel/karma 0.29.0 to disable chrome sandbox for OSX');
-sed('-i', 'process.platform !== \'linux\'',
-    'process.platform !== \'linux\' && process.platform !== \'darwin\'',
-    'node_modules/@bazel/karma/karma.conf.js');
-
 // Workaround https://github.com/bazelbuild/rules_nodejs/issues/1033
 // TypeScript doesn't understand typings without "declare module" unless
 // they are actually resolved by the @types default mechanism
@@ -68,7 +61,21 @@ ls('node_modules/@types').filter(f => f.startsWith('babel__')).forEach(pkg => {
   }
 });
 
-log('\n# patch: delete d.ts files refering to rxjs-compat');
+log('\n# patch: use local version of @angular/* and zone.js in component_benchmark from @angular/dev-infra.-private');
+[['@npm//@angular/platform-browser', '@angular//packages/platform-browser'],
+ ['@npm//@angular/core', '@angular//packages/core'],
+ [
+   'load\\("@npm//@angular/bazel:index.bzl", "ng_module"\\)',
+   'load\("@angular//tools:defaults.bzl", "ng_module"\)'
+ ],
+ ['@npm//zone.js', '//packages/zone.js/bundles:zone.umd.js'],
+
+].forEach(([matcher, replacement]) => {
+  sed('-i', matcher, replacement,
+      'node_modules/@angular/dev-infra-private/bazel/benchmark/component_benchmark/component_benchmark.bzl');
+});
+
+log('\n# patch: delete d.ts files referring to rxjs-compat');
 // more info in https://github.com/angular/angular/pull/33786
 rm('-rf', [
   'node_modules/rxjs/add/',

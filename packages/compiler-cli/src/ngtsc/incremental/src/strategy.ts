@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as ts from 'typescript';
-import {IncrementalDriver} from './state';
+import ts from 'typescript';
+import {IncrementalState} from './state';
 
 /**
  * Strategy used to manage the association between a `ts.Program` and the `IncrementalDriver` which
@@ -17,13 +17,19 @@ export interface IncrementalBuildStrategy {
   /**
    * Determine the Angular `IncrementalDriver` for the given `ts.Program`, if one is available.
    */
-  getIncrementalDriver(program: ts.Program): IncrementalDriver|null;
+  getIncrementalState(program: ts.Program): IncrementalState|null;
 
   /**
    * Associate the given `IncrementalDriver` with the given `ts.Program` and make it available to
    * future compilations.
    */
-  setIncrementalDriver(driver: IncrementalDriver, program: ts.Program): void;
+  setIncrementalState(driver: IncrementalState, program: ts.Program): void;
+
+  /**
+   * Convert this `IncrementalBuildStrategy` into a possibly new instance to be used in the next
+   * incremental compilation (may be a no-op if the strategy is not stateful).
+   */
+  toNextBuildStrategy(): IncrementalBuildStrategy;
 }
 
 /**
@@ -31,33 +37,37 @@ export interface IncrementalBuildStrategy {
  * incremental data.
  */
 export class NoopIncrementalBuildStrategy implements IncrementalBuildStrategy {
-  getIncrementalDriver(): null {
+  getIncrementalState(): null {
     return null;
   }
 
-  setIncrementalDriver(): void {}
+  setIncrementalState(): void {}
+
+  toNextBuildStrategy(): IncrementalBuildStrategy {
+    return this;
+  }
 }
 
 /**
  * Tracks an `IncrementalDriver` within the strategy itself.
  */
 export class TrackedIncrementalBuildStrategy implements IncrementalBuildStrategy {
-  private driver: IncrementalDriver|null = null;
+  private state: IncrementalState|null = null;
   private isSet: boolean = false;
 
-  getIncrementalDriver(): IncrementalDriver|null {
-    return this.driver;
+  getIncrementalState(): IncrementalState|null {
+    return this.state;
   }
 
-  setIncrementalDriver(driver: IncrementalDriver): void {
-    this.driver = driver;
+  setIncrementalState(state: IncrementalState): void {
+    this.state = state;
     this.isSet = true;
   }
 
   toNextBuildStrategy(): TrackedIncrementalBuildStrategy {
     const strategy = new TrackedIncrementalBuildStrategy();
-    // Only reuse a driver that was explicitly set via `setIncrementalDriver`.
-    strategy.driver = this.isSet ? this.driver : null;
+    // Only reuse state that was explicitly set via `setIncrementalState`.
+    strategy.state = this.isSet ? this.state : null;
     return strategy;
   }
 }
@@ -67,16 +77,20 @@ export class TrackedIncrementalBuildStrategy implements IncrementalBuildStrategy
  * program under `SYM_INCREMENTAL_DRIVER`.
  */
 export class PatchedProgramIncrementalBuildStrategy implements IncrementalBuildStrategy {
-  getIncrementalDriver(program: ts.Program): IncrementalDriver|null {
-    const driver = (program as any)[SYM_INCREMENTAL_DRIVER];
-    if (driver === undefined || !(driver instanceof IncrementalDriver)) {
+  getIncrementalState(program: ts.Program): IncrementalState|null {
+    const state = (program as MayHaveIncrementalState)[SYM_INCREMENTAL_STATE];
+    if (state === undefined) {
       return null;
     }
-    return driver;
+    return state;
   }
 
-  setIncrementalDriver(driver: IncrementalDriver, program: ts.Program): void {
-    (program as any)[SYM_INCREMENTAL_DRIVER] = driver;
+  setIncrementalState(state: IncrementalState, program: ts.Program): void {
+    (program as MayHaveIncrementalState)[SYM_INCREMENTAL_STATE] = state;
+  }
+
+  toNextBuildStrategy(): IncrementalBuildStrategy {
+    return this;
   }
 }
 
@@ -94,4 +108,8 @@ export class PatchedProgramIncrementalBuildStrategy implements IncrementalBuildS
  * support this behind the API of passing an old `ts.Program`, the `IncrementalDriver` is stored on
  * the `ts.Program` under this symbol.
  */
-const SYM_INCREMENTAL_DRIVER = Symbol('NgIncrementalDriver');
+const SYM_INCREMENTAL_STATE = Symbol('NgIncrementalState');
+
+interface MayHaveIncrementalState {
+  [SYM_INCREMENTAL_STATE]?: IncrementalState;
+}

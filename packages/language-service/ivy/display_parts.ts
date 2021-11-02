@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ReferenceSymbol, ShimLocation, Symbol, SymbolKind, VariableSymbol} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
-import * as ts from 'typescript';
+import {isNamedClassDeclaration} from '@angular/compiler-cli/src/ngtsc/reflection';
+import {DirectiveInScope, ReferenceSymbol, ShimLocation, Symbol, SymbolKind, VariableSymbol} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
+import ts from 'typescript';
 
 
 // Reverse mappings of enum would generate strings
@@ -22,6 +23,7 @@ export const SYMBOL_TEXT = ts.SymbolDisplayPartKind[ts.SymbolDisplayPartKind.tex
  * Label for various kinds of Angular entities for TS display info.
  */
 export enum DisplayInfoKind {
+  ATTRIBUTE = 'attribute',
   COMPONENT = 'component',
   DIRECTIVE = 'directive',
   EVENT = 'event',
@@ -40,7 +42,7 @@ export interface DisplayInfo {
   documentation: ts.SymbolDisplayPart[]|undefined;
 }
 
-export function getDisplayInfo(
+export function getSymbolDisplayInfo(
     tsLS: ts.LanguageService, typeChecker: ts.TypeChecker,
     symbol: ReferenceSymbol|VariableSymbol): DisplayInfo {
   let kind: DisplayInfoKind;
@@ -125,4 +127,54 @@ function getDocumentationFromTypeDefAtLocation(
   }
   return tsLS.getQuickInfoAtPosition(typeDefs[0].fileName, typeDefs[0].textSpan.start)
       ?.documentation;
+}
+
+export function getDirectiveDisplayInfo(
+    tsLS: ts.LanguageService, dir: DirectiveInScope): DisplayInfo {
+  const kind = dir.isComponent ? DisplayInfoKind.COMPONENT : DisplayInfoKind.DIRECTIVE;
+  const decl = dir.tsSymbol.declarations.find(ts.isClassDeclaration);
+  if (decl === undefined || decl.name === undefined) {
+    return {kind, displayParts: [], documentation: []};
+  }
+
+  const res = tsLS.getQuickInfoAtPosition(decl.getSourceFile().fileName, decl.name.getStart());
+  if (res === undefined) {
+    return {kind, displayParts: [], documentation: []};
+  }
+
+  const displayParts =
+      createDisplayParts(dir.tsSymbol.name, kind, dir.ngModule?.name?.text, undefined);
+
+  return {
+    kind,
+    displayParts,
+    documentation: res.documentation,
+  };
+}
+
+export function getTsSymbolDisplayInfo(
+    tsLS: ts.LanguageService, checker: ts.TypeChecker, symbol: ts.Symbol, kind: DisplayInfoKind,
+    ownerName: string|null): DisplayInfo|null {
+  const decl = symbol.valueDeclaration;
+  if (decl === undefined ||
+      (!ts.isPropertyDeclaration(decl) && !ts.isMethodDeclaration(decl) &&
+       !isNamedClassDeclaration(decl)) ||
+      !ts.isIdentifier(decl.name)) {
+    return null;
+  }
+  const res = tsLS.getQuickInfoAtPosition(decl.getSourceFile().fileName, decl.name.getStart());
+  if (res === undefined) {
+    return {kind, displayParts: [], documentation: []};
+  }
+
+  const type = checker.getDeclaredTypeOfSymbol(symbol);
+  const typeString = checker.typeToString(type);
+
+  const displayParts = createDisplayParts(symbol.name, kind, ownerName ?? undefined, typeString);
+
+  return {
+    kind,
+    displayParts,
+    documentation: res.documentation,
+  };
 }

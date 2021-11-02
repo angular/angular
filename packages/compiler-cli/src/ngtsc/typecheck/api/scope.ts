@@ -6,7 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as ts from 'typescript';
+import ts from 'typescript';
+import {ClassDeclaration} from '../../reflection';
+import {SymbolWithValueDeclaration} from '../../util/src/typescript';
 
 /**
  * Metadata on a directive which is available in the scope of a template.
@@ -15,7 +17,12 @@ export interface DirectiveInScope {
   /**
    * The `ts.Symbol` for the directive class.
    */
-  tsSymbol: ts.Symbol;
+  tsSymbol: SymbolWithValueDeclaration;
+
+  /**
+   * The module which declares the directive.
+   */
+  ngModule: ClassDeclaration|null;
 
   /**
    * The selector for the directive or component.
@@ -26,6 +33,11 @@ export interface DirectiveInScope {
    * `true` if this directive is a component.
    */
   isComponent: boolean;
+
+  /**
+   * `true` if this directive is a structural directive.
+   */
+  isStructural: boolean;
 }
 
 /**

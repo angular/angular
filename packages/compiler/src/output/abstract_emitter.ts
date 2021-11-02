@@ -319,21 +319,6 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
     }
     return null;
   }
-  visitInvokeMethodExpr(expr: o.InvokeMethodExpr, ctx: EmitterVisitorContext): any {
-    expr.receiver.visitExpression(this, ctx);
-    let name = expr.name;
-    if (expr.builtin != null) {
-      name = this.getBuiltinMethodName(expr.builtin);
-      if (name == null) {
-        // some builtins just mean to skip the call.
-        return null;
-      }
-    }
-    ctx.print(expr, `.${name}(`);
-    this.visitAllExpressions(expr.args, ctx, `,`);
-    ctx.print(expr, `)`);
-    return null;
-  }
 
   abstract getBuiltinMethodName(method: o.BuiltinMethod): string;
 
@@ -342,6 +327,17 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
     ctx.print(expr, `(`);
     this.visitAllExpressions(expr.args, ctx, ',');
     ctx.print(expr, `)`);
+    return null;
+  }
+  visitTaggedTemplateExpr(expr: o.TaggedTemplateExpr, ctx: EmitterVisitorContext): any {
+    expr.tag.visitExpression(this, ctx);
+    ctx.print(expr, '`' + expr.template.elements[0].rawText);
+    for (let i = 1; i < expr.template.elements.length; i++) {
+      ctx.print(expr, '${');
+      expr.template.expressions[i - 1].visitExpression(this, ctx);
+      ctx.print(expr, `}${expr.template.elements[i].rawText}`);
+    }
+    ctx.print(expr, '`');
     return null;
   }
   visitWrappedNodeExpr(ast: o.WrappedNodeExpr<any>, ctx: EmitterVisitorContext): any {
@@ -498,6 +494,9 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
         break;
       case o.BinaryOperator.BiggerEquals:
         opStr = '>=';
+        break;
+      case o.BinaryOperator.NullishCoalesce:
+        opStr = '??';
         break;
       default:
         throw new Error(`Unknown operator ${ast.operator}`);

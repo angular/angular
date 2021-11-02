@@ -284,11 +284,13 @@ export function getTView(): TView {
  * walking the declaration view tree in listeners to get vars from parent views.
  *
  * @param viewToRestore The OpaqueViewState instance to restore.
+ * @returns Context of the restored OpaqueViewState instance.
  *
  * @codeGenApi
  */
-export function ɵɵrestoreView(viewToRestore: OpaqueViewState) {
+export function ɵɵrestoreView<T = any>(viewToRestore: OpaqueViewState): T {
   instructionState.lFrame.contextLView = viewToRestore as any as LView;
+  return (viewToRestore as any as LView)[CONTEXT] as T;
 }
 
 

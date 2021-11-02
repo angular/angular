@@ -22,6 +22,10 @@ export const ELEMENT_MODULE_LOAD_CALLBACKS_AS_ROUTES = [
     loadChildren: () => import('./search/file-not-found-search.module').then(m => m.FileNotFoundSearchModule)
   },
   {
+    selector: 'aio-angular-dist-tag',
+    loadChildren: () => import('./dist-tag/dist-tag.module').then(m => m.DistTagModule)
+  },
+  {
     selector: 'aio-resource-list',
     loadChildren: () => import('./resource/resource-list.module').then(m => m.ResourceListModule)
   },
@@ -56,7 +60,9 @@ export interface WithCustomElementComponent {
 }
 
 /** Injection token to provide the element path modules. */
-export const ELEMENT_MODULE_LOAD_CALLBACKS_TOKEN = new InjectionToken<Map<string, LoadChildrenCallback>>('aio/elements-map');
+export const ELEMENT_MODULE_LOAD_CALLBACKS_TOKEN = new InjectionToken<
+  Map<string, LoadChildrenCallback>
+>('aio/elements-map');
 
 /** Map of possible custom element selectors to their lazy-loadable module paths. */
 export const ELEMENT_MODULE_LOAD_CALLBACKS = new Map<string, LoadChildrenCallback>();

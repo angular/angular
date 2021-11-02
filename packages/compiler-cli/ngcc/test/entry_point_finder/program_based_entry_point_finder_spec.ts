@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem, relative} from '../../../src/ngtsc/file_system';
+import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
 import {MockLogger} from '../../../src/ngtsc/logging/testing';
 import {loadTestFiles} from '../../../src/ngtsc/testing';
@@ -231,7 +231,7 @@ runInEachFileSystem(() => {
       function dumpEntryPointPaths(
           basePath: AbsoluteFsPath, entryPoints: EntryPoint[]): [string, string][] {
         return entryPoints.map(
-            x => [relative(basePath, x.packagePath), relative(basePath, x.path)]);
+            x => [fs.relative(basePath, x.packagePath), fs.relative(basePath, x.path)]);
       }
     });
   });

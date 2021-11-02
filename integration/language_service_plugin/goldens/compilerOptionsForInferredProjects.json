@@ -1,8 +1,0 @@
-{
-  "seq": 0,
-  "type": "response",
-  "command": "compilerOptionsForInferredProjects",
-  "request_seq": 1,
-  "success": true,
-  "body": true
-}

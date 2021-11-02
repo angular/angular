@@ -10,7 +10,7 @@ import {resolveForwardRef} from '../di/forward_ref';
 import {Injector} from '../di/injector';
 import {setCurrentInjector} from '../di/injector_compatibility';
 import {INJECTOR} from '../di/injector_token';
-import {getInjectableDef, ɵɵInjectableDef} from '../di/interface/defs';
+import {getInjectableDef, ɵɵInjectableDeclaration} from '../di/interface/defs';
 import {INJECTOR_SCOPE} from '../di/scope';
 import {NgModuleRef} from '../linker/ng_module_factory';
 import {newArray} from '../util/array_utils';
@@ -102,7 +102,7 @@ export function resolveNgModuleDep(
         return data;
     }
     const providerDef = data._def.providersByKey[tokenKey];
-    let injectableDef: ɵɵInjectableDef<any>|null;
+    let injectableDef: ɵɵInjectableDeclaration<any>|null;
     if (providerDef) {
       let providerInstance = data._providers[providerDef.index];
       if (providerInstance === undefined) {
@@ -137,8 +137,8 @@ function moduleTransitivelyPresent(ngModule: NgModuleData, scope: any): boolean 
   return ngModule._def.modules.indexOf(scope) > -1;
 }
 
-function targetsModule(ngModule: NgModuleData, def: ɵɵInjectableDef<any>): boolean {
-  const providedIn = def.providedIn;
+function targetsModule(ngModule: NgModuleData, def: ɵɵInjectableDeclaration<any>): boolean {
+  const providedIn = resolveForwardRef(def.providedIn);
   return providedIn != null &&
       (providedIn === 'any' || providedIn === ngModule._def.scope ||
        moduleTransitivelyPresent(ngModule, providedIn));

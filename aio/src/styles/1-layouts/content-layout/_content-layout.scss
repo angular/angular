@@ -1,0 +1,40 @@
+@use '../../mixins';
+
+.sidenav-container {
+  width: 100%;
+  height: 100vh;
+}
+
+.sidenav-content {
+  display: block;  // This is required for browsers that do not recognize `<main>` as a block
+                   // element (such as IE11).
+  min-height: 100vh;
+  padding: 80px 3rem 2rem;
+  max-width: 50em;
+  margin: 0 auto;
+
+  @media screen and (max-width: 600px) {
+    min-height: 450px;
+    padding: 80px 2rem 1rem;
+  }
+
+  @media screen and (max-width: 480px) {
+    padding: 80px 1rem 1rem;
+  }
+
+  @include mixins.marketing-pages(
+      $extraSelectors: ('.page-api', '.page-file-not-found', '.page-guide-cheatsheet'),
+      $nestParentSelector: true) {
+    max-width: none;
+  }
+
+  button {
+    min-width: 24px;
+  }
+}
+
+aio-menu {
+  @media (max-width: 600px) {
+    display: none;
+  }
+}

@@ -59,7 +59,7 @@ Observables are often compared to promises. Here are some key differences:
 
   <code-example
     path="comparing-observables/src/observables.ts"
-    header="src/observables.ts (unsubcribe)"
+    header="src/observables.ts (unsubscribe)"
     region="unsubscribe">
   </code-example>
 

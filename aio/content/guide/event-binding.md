@@ -1,6 +1,6 @@
 # Event binding
 
-Event binding allows you to listen for and respond to user actions such as keystrokes, mouse movements, clicks, and touches.
+Event binding lets you listen for and respond to user actions such as keystrokes, mouse movements, clicks, and touches.
 
 <div class="alert is-helpful">
 
@@ -23,6 +23,26 @@ The event binding listens for the button's click events and calls the component'
 <div class="lightbox">
   <img src='generated/images/guide/template-syntax/syntax-diagram.svg' alt="Syntax diagram">
 </div>
+
+## Binding to passive events
+
+Angular also supports passive event listeners. For example, use the following steps to make a scroll event passive.
+
+1. Create a file `zone-flags.ts` under `src` directory.
+2. Add the following line into this file.
+
+```
+(window as any)['__zone_symbol__PASSIVE_EVENTS'] = ['scroll'];
+```
+
+3. In the `src/polyfills.ts` file, before importing zone.js, import the newly created `zone-flags`.
+
+```
+import './zone-flags';
+import 'zone.js';  // Included with Angular CLI.
+```
+
+After those steps, if you add event listeners for the `scroll` event, the listeners will be `passive`.
 
 ## Custom events with `EventEmitter`
 
@@ -58,8 +78,6 @@ In the following example, Angular checks to see if `myClick` is an event on the 
 <code-example path="event-binding/src/app/app.component.html" region="custom-directive" header="src/app/app.component.html"></code-example>
 
 If the target event name, `myClick` fails to match an element event or an output property of `ClickDirective`, Angular reports an "unknown directive" error.
-
-<hr />
 
 ## What's next
 

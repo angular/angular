@@ -5,7 +5,9 @@ describe('site App', () => {
   let page: SitePage;
 
   beforeEach(async () => {
-    await SitePage.setWindowWidth(1050);   // Make the window wide enough to show the SideNav side-by-side.
+    // Make the window wide enough to show the SideNav side-by-side
+    // (bigger than the app component's showTopMenuWidth).
+    await SitePage.setWindowWidth(1200);
     page = new SitePage();
   });
 
@@ -36,7 +38,7 @@ describe('site App', () => {
 
     // Test all headings (and sub-headings).
     expect(await navItemHeadings.count()).toBeGreaterThan(0);
-    await navItemHeadings.each(heading => testNavItemHeading(heading!, 1));
+    await navItemHeadings.each(heading => heading && testNavItemHeading(heading, 1));
 
     // Helpers
     async function expectToBeCollapsed(elementFinder: ElementFinder) {
@@ -63,7 +65,7 @@ describe('site App', () => {
       // Recursively test child-headings (while this heading is expanded).
       const nextLevel = level + 1;
       const childNavItemHeadings = page.getNavItemHeadings(children, nextLevel);
-      await childNavItemHeadings.each(childHeading => testNavItemHeading(childHeading!, nextLevel));
+      await childNavItemHeadings.each(childHeading => childHeading && testNavItemHeading(childHeading, nextLevel));
 
       // Ensure heading does not cause navigation when collapsing.
       await page.click(heading);
@@ -144,7 +146,7 @@ describe('site App', () => {
     it('should have contributors listed in each group', async () => {
       // WebDriver calls `scrollIntoView()` on the element to bring it into the visible area of the
       // browser, before clicking it. By default, this aligns the top of the element to the top of
-      // the window. As a result, the element may end up behing the fixed top menu, thus being
+      // the window. As a result, the element may end up behind the fixed top menu, thus being
       // unclickable. To avoid this, we click the element directly using JavaScript instead.
       const clickButton =
           (elementFinder: ElementFinder) => browser.executeScript('arguments[0].click()', elementFinder);
@@ -217,11 +219,10 @@ describe('site App', () => {
     });
 
     it('should search the index for words found in the url', async () => {
-      await page.navigateTo('http/router');
+      await page.navigateTo('common/http');
       const results = await page.getSearchResults();
 
-      expect(results).toContain('HttpRequest');
-      expect(results).toContain('Router');
+      expect(results).toContain('common/http package');
     });
   });
 
@@ -229,15 +230,15 @@ describe('site App', () => {
     it('should be present on all docs pages', async () => {
       await page.navigateTo('tutorial/toh-pt1');
       expect(await page.ghLinks.count()).toEqual(1);
-      /* tslint:disable:max-line-length */
+      /* eslint-disable max-len */
       expect(await page.ghLinks.get(0).getAttribute('href'))
         .toMatch(/https:\/\/github\.com\/angular\/angular\/edit\/master\/aio\/content\/tutorial\/toh-pt1\.md\?message=docs%3A%20describe%20your%20change\.\.\./);
 
-      await page.navigateTo('guide/http');
+      await page.navigateTo('guide/router');
       expect(await page.ghLinks.count()).toEqual(1);
-      /* tslint:disable:max-line-length */
       expect(await page.ghLinks.get(0).getAttribute('href'))
-        .toMatch(/https:\/\/github\.com\/angular\/angular\/edit\/master\/aio\/content\/guide\/http\.md\?message=docs%3A%20describe%20your%20change\.\.\./);
+        .toMatch(/https:\/\/github\.com\/angular\/angular\/edit\/master\/aio\/content\/guide\/router\.md\?message=docs%3A%20describe%20your%20change\.\.\./);
+      /* eslint-enable max-len */
     });
 
     it('should not be present on top level pages', async () => {

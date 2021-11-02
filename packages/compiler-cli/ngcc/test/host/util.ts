@@ -5,7 +5,10 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import * as ts from 'typescript';
+import {Trait, TraitState} from '@angular/compiler-cli/src/ngtsc/transform';
+import ts from 'typescript';
+
+import {SemanticSymbol} from '../../../src/ngtsc/incremental/semantic_graph';
 import {CtorParameter, TypeValueReferenceKind} from '../../../src/ngtsc/reflection';
 
 /**
@@ -47,4 +50,19 @@ export function expectTypeValueReferencesForParameters(
       }
     }
   });
+}
+
+export function getTraitDiagnostics(trait: Trait<unknown, unknown, SemanticSymbol|null, unknown>):
+    ts.Diagnostic[]|null {
+  if (trait.state === TraitState.Analyzed) {
+    return trait.analysisDiagnostics;
+  } else if (trait.state === TraitState.Resolved) {
+    const diags = [
+      ...(trait.analysisDiagnostics ?? []),
+      ...(trait.resolveDiagnostics ?? []),
+    ];
+    return diags.length > 0 ? diags : null;
+  } else {
+    return null;
+  }
 }

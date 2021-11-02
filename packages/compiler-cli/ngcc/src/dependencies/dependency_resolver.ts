@@ -7,8 +7,9 @@
  */
 
 import {DepGraph} from 'dependency-graph';
+import module from 'module';
 
-import {AbsoluteFsPath, FileSystem, resolve} from '../../../src/ngtsc/file_system';
+import {AbsoluteFsPath, ReadonlyFileSystem} from '../../../src/ngtsc/file_system';
 import {Logger} from '../../../src/ngtsc/logging';
 import {NgccConfiguration} from '../packages/configuration';
 import {EntryPoint, EntryPointFormat, getEntryPointFormat, SUPPORTED_FORMAT_PROPERTIES} from '../packages/entry_point';
@@ -16,7 +17,7 @@ import {PartiallyOrderedList} from '../utils';
 
 import {createDependencyInfo, DependencyHost, EntryPointWithDependencies} from './dependency_host';
 
-const builtinNodeJsModules = new Set<string>(require('module').builtinModules);
+const builtinNodeJsModules = new Set<string>(module.builtinModules);
 
 /**
  * Holds information about entry points that are removed because
@@ -84,7 +85,7 @@ export interface SortedEntryPointsInfo extends DependencyDiagnostics {
  */
 export class DependencyResolver {
   constructor(
-      private fs: FileSystem, private logger: Logger, private config: NgccConfiguration,
+      private fs: ReadonlyFileSystem, private logger: Logger, private config: NgccConfiguration,
       private hosts: Partial<Record<EntryPointFormat, DependencyHost>>,
       private typingsHost: DependencyHost) {}
   /**
@@ -212,7 +213,7 @@ export class DependencyResolver {
       const format = getEntryPointFormat(this.fs, entryPoint, property);
       if (format === undefined) continue;
 
-      return {format, path: resolve(entryPoint.path, formatPath)};
+      return {format, path: this.fs.resolve(entryPoint.path, formatPath)};
     }
 
     throw new Error(

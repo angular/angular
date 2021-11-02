@@ -17,6 +17,40 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {ivyEnabled, modifiedInIvy, onlyInIvy} from '@angular/private/testing';
 
 describe('styling', () => {
+  /**
+   * This helper function tests to see if the current browser supports non standard way of writing
+   * into styles.
+   *
+   * This is not the correct way to write to style and is not supported in IE11.
+   * ```
+   * div.style = 'color: white';
+   * ```
+   *
+   * This is the correct way to write to styles:
+   * ```
+   * div.style.cssText = 'color: white';
+   * ```
+   *
+   * Even though writing to `div.style` is not officially supported, it works in all
+   * browsers except IE11.
+   *
+   * This function detects this condition and allows us to skip affected tests.
+   */
+  let _supportsWritingStringsToStyleProperty: boolean|null = null;
+  function supportsWritingStringsToStyleProperty() {
+    if (_supportsWritingStringsToStyleProperty === null) {
+      const div = document.createElement('div');
+      const CSS = 'color: white;';
+      try {
+        (div as any).style = CSS;
+      } catch (e) {
+        _supportsWritingStringsToStyleProperty = false;
+      }
+      _supportsWritingStringsToStyleProperty = (div.style.cssText === CSS);
+    }
+    return _supportsWritingStringsToStyleProperty;
+  }
+
   beforeEach(ngDevModeResetPerfCounters);
 
   describe('apply in prioritization order', () => {
@@ -259,6 +293,29 @@ describe('styling', () => {
 
       const header = fixture.nativeElement.querySelector('h1') as HTMLElement;
       expect(getComputedStyle(header).getPropertyValue('width')).toEqual('100px');
+    });
+
+    it('should support case-sensitive css variables', () => {
+      // This test only works in browsers which support CSS variables.
+      if (!supportsCssVariables) {
+        return;
+      }
+
+      @Component({
+        template: `
+          <div [style.--MyVar]="'100px'">
+            <span style="width: var(--MyVar)">CONTENT</span>
+          </div>
+        `
+      })
+      class Cmp {
+      }
+      TestBed.configureTestingModule({declarations: [Cmp]});
+      const fixture = TestBed.createComponent(Cmp);
+      fixture.detectChanges();
+
+      const span = fixture.nativeElement.querySelector('span') as HTMLElement;
+      expect(getComputedStyle(span).getPropertyValue('width')).toEqual('100px');
     });
   });
 
@@ -3069,6 +3126,64 @@ describe('styling', () => {
     expect(fixture.debugElement.nativeElement.innerHTML).toContain('three');
   });
 
+  it('should allow static and bound `class` attribute, but use last occurrence', () => {
+    @Component({
+      template: `
+        <div id="first" class="zero {{one}}" [class]="'two'"></div>
+        <div id="second" [class]="'two'" class="zero {{one}}"></div>
+      `,
+    })
+    class MyComp {
+      one = 'one';
+    }
+
+    TestBed.configureTestingModule({declarations: [MyComp]});
+    const fixture = TestBed.createComponent(MyComp);
+    fixture.detectChanges();
+
+    const first = fixture.nativeElement.querySelector('#first').outerHTML;
+    expect(first).not.toContain('zero');
+    expect(first).not.toContain('one');
+    expect(first).toContain('two');
+
+    const second = fixture.nativeElement.querySelector('#second').outerHTML;
+    expect(second).toContain('zero');
+    expect(second).toContain('one');
+    expect(second).not.toContain('two');
+  });
+
+  it('should allow static and bound `style` attribute, but use last occurrence', () => {
+    if (!ivyEnabled && !supportsWritingStringsToStyleProperty()) {
+      // VE does not treat `[style]` as anything special, instead it simply writes to the
+      // `style` property on the element like so `element.style=value`. This seems to work fine
+      // every where except IE11, where it throws an error and as a consequence this test fails in
+      // VE on IE11.
+      return;
+    }
+
+    @Component({
+      template: `
+        <div id="first" style="margin: {{margin}}" [style]="'padding: 20px;'"></div>
+        <div id="second" [style]="'padding: 20px;'" style="margin: {{margin}}"></div>
+      `,
+    })
+    class MyComp {
+      margin = '10px';
+    }
+
+    TestBed.configureTestingModule({declarations: [MyComp]});
+    const fixture = TestBed.createComponent(MyComp);
+    fixture.detectChanges();
+
+    const first = fixture.nativeElement.querySelector('#first').outerHTML;
+    expect(first).not.toContain('margin');
+    expect(first).toContain('padding');
+
+    const second = fixture.nativeElement.querySelector('#second').outerHTML;
+    expect(second).toContain('margin');
+    expect(second).not.toContain('padding');
+  });
+
   it('should allow to reset style property value defined using [style.prop.px] binding', () => {
     @Component({
       template: '<div [style.left.px]="left"></div>',
@@ -3624,35 +3739,6 @@ describe('styling', () => {
       const div: HTMLElement = fixture.nativeElement.querySelector('div');
       expectStyle(div).toEqual({color: 'white', display: 'block'});
     });
-
-    /**
-     * Tests to see if the current browser supports non standard way of writing into styles.
-     *
-     * This is not the correct way to write to style and is not supported in IE11.
-     * ```
-     * div.style = 'color: white';
-     * ```
-     *
-     * This is the correct way to write to styles:
-     * ```
-     * div.style.cssText = 'color: white';
-     * ```
-     *
-     * Even though writing to `div.style` is not officially supported, it works in all
-     * browsers except IE11.
-     *
-     * This function detects this condition and allows us to skip the test.
-     */
-    function supportsWritingStringsToStyleProperty() {
-      const div = document.createElement('div');
-      const CSS = 'color: white;';
-      try {
-        (div as any).style = CSS;
-      } catch (e) {
-        return false;
-      }
-      return div.style.cssText === CSS;
-    }
 
     onlyInIvy('styling priority resolution is Ivy only feature.')
         .it('should allow lookahead binding on second pass #35118', () => {

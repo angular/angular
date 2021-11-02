@@ -11,18 +11,16 @@ const SHARED_NODE_MODULES_PATH = path.resolve(SHARED_PATH, 'node_modules');
 const BOILERPLATE_BASE_PATH = path.resolve(SHARED_PATH, 'boilerplate');
 const BOILERPLATE_CLI_PATH = path.resolve(BOILERPLATE_BASE_PATH, 'cli');
 const BOILERPLATE_COMMON_PATH = path.resolve(BOILERPLATE_BASE_PATH, 'common');
-const BOILERPLATE_VIEWENGINE_PATH = path.resolve(BOILERPLATE_BASE_PATH, 'viewengine');
 
 class ExampleBoilerPlate {
   /**
    * Add boilerplate files to all the examples
    */
-  add(viewengine = false) {
+  add() {
     // Get all the examples folders, indicated by those that contain a `example-config.json` file
     const exampleFolders =
         this.getFoldersContaining(EXAMPLES_BASE_PATH, EXAMPLE_CONFIG_FILENAME, 'node_modules');
     const gitignore = ignore().add(fs.readFileSync(path.resolve(BOILERPLATE_BASE_PATH, '.gitignore'), 'utf8'));
-    const isPathIgnored = absolutePath => gitignore.ignores(path.relative(BOILERPLATE_BASE_PATH, absolutePath));
 
     if (!fs.existsSync(SHARED_NODE_MODULES_PATH)) {
       throw new Error(
@@ -30,12 +28,20 @@ class ExampleBoilerPlate {
           'Perhaps you need to run "yarn example-use-npm" or "yarn example-use-local" to install the dependencies?');
     }
 
-    if (!viewengine) {
-      shelljs.exec(`yarn --cwd ${SHARED_PATH} ngcc --properties es2015 browser module main --first-only --create-ivy-entry-points`);
-    }
+    shelljs.exec(`yarn --cwd ${SHARED_PATH} ngcc --properties es2015 main`);
 
     exampleFolders.forEach(exampleFolder => {
       const exampleConfig = this.loadJsonFile(path.resolve(exampleFolder, EXAMPLE_CONFIG_FILENAME));
+
+      // Compute additional boilerplate files that should not be copied over for this specific example
+      // This allows the example to override boilerplate files locally, perhaps to include doc-regions specific to the example.
+      const overrideBoilerplate = exampleConfig['overrideBoilerplate'] || [];
+      const boilerplateIgnore = ignore().add(gitignore).add(
+        // Note that the `*` here is to skip over the boilerplate folder itself.
+        // E.g. if the override is `a/b` then we what to match `cli/a/b` and `i18n/a/b` etc.
+        overrideBoilerplate.map(p => path.join('*', p))
+      );
+      const isPathIgnored = absolutePath => boilerplateIgnore.ignores(path.relative(BOILERPLATE_BASE_PATH, absolutePath));
 
       // Link the node modules - requires admin access (on Windows) because it adds symlinks
       const destinationNodeModules = path.resolve(exampleFolder, 'node_modules');
@@ -58,13 +64,6 @@ class ExampleBoilerPlate {
       if (exampleConfig.useCommonBoilerplate !== false) {
         this.copyDirectoryContents(BOILERPLATE_COMMON_PATH, exampleFolder, isPathIgnored);
       }
-
-      // Copy ViewEngine (pre-Ivy) specific files
-      if (viewengine) {
-        const veBoilerPlateType = boilerPlateType === 'systemjs' ? 'systemjs' : 'cli';
-        const veBoilerPlateBasePath = path.resolve(BOILERPLATE_VIEWENGINE_PATH, veBoilerPlateType);
-        this.copyDirectoryContents(veBoilerPlateBasePath, exampleFolder, isPathIgnored);
-      }
     });
   }
 
@@ -73,10 +72,39 @@ class ExampleBoilerPlate {
    */
   remove() { shelljs.exec('git clean -xdfq', {cwd: EXAMPLES_BASE_PATH}); }
 
+  listOverrides() {
+    const exampleFolders =
+        this.getFoldersContaining(EXAMPLES_BASE_PATH, EXAMPLE_CONFIG_FILENAME, 'node_modules');
+
+    const overriddenFiles = [];
+    exampleFolders.forEach(exampleFolder => {
+      const exampleConfig = this.loadJsonFile(path.resolve(exampleFolder, EXAMPLE_CONFIG_FILENAME));
+      const overrideBoilerplate = exampleConfig['overrideBoilerplate'] || [];
+      if (overrideBoilerplate.length > 0) {
+        for (const file of overrideBoilerplate) {
+          overriddenFiles.push(path.relative(EXAMPLES_BASE_PATH, path.resolve(exampleFolder, file)));
+        }
+      }
+    });
+
+    if (overriddenFiles.length > 0) {
+      console.log(`Boilerplate files that have been overridden in examples:`);
+      for (const file of overriddenFiles) {
+        console.log(` - ${file}`);
+      }
+      console.log(`(All these paths are relative to ${EXAMPLES_BASE_PATH}.)`);
+      console.log('If you are updating the boilerplate files then also consider updating these too.');
+    } else {
+      console.log('No boilerplate files have been overridden in examples.');
+      console.log('You are safe to update the boilerplate files.');
+    }
+  }
+
   main() {
     yargs.usage('$0 <cmd> [args]')
-        .command('add', 'add the boilerplate to each example', yrgs => this.add(yrgs.argv.viewengine))
+        .command('add', 'add the boilerplate to each example', yrgs => this.add())
         .command('remove', 'remove the boilerplate from each example', () => this.remove())
+        .command('list-overrides', 'list all the boilerplate files that have been overridden in examples', () => this.listOverrides())
         .demandCommand(1, 'Please supply a command from the list above')
         .argv;
   }

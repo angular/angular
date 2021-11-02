@@ -12,9 +12,6 @@
     "name": "INJECTOR_SCOPE"
   },
   {
-    "name": "Inject"
-  },
-  {
     "name": "InjectFlags"
   },
   {
@@ -48,19 +45,13 @@
     "name": "NullInjector"
   },
   {
-    "name": "Optional"
-  },
-  {
     "name": "R3Injector"
   },
   {
+    "name": "RuntimeError"
+  },
+  {
     "name": "ScopedService"
-  },
-  {
-    "name": "Self"
-  },
-  {
-    "name": "SkipSelf"
   },
   {
     "name": "THROW_IF_NOT_FOUND"
@@ -73,6 +64,9 @@
   },
   {
     "name": "_currentInjector"
+  },
+  {
+    "name": "_injectImplementation"
   },
   {
     "name": "deepForEach"
@@ -102,6 +96,9 @@
     "name": "injectArgs"
   },
   {
+    "name": "injectInjectorOnly"
+  },
+  {
     "name": "injectableDefOrInjectorDefFactory"
   },
   {
@@ -111,9 +108,6 @@
     "name": "isValueProvider"
   },
   {
-    "name": "makeParamDecorator"
-  },
-  {
     "name": "makeRecord"
   },
   {
@@ -121,6 +115,9 @@
   },
   {
     "name": "setCurrentInjector"
+  },
+  {
+    "name": "setInjectImplementation"
   },
   {
     "name": "stringify"

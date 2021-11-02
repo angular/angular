@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {absoluteFrom, getFileSystem, getSourceFileOrError} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
@@ -1784,6 +1784,8 @@ runInEachFileSystem(() => {
                 }(this, (function (exports) { 'use strict';
 
                   var __spread = (this && this.__spread) || function (...args) { /* ... */ }
+                  var __spreadArray = (this && this.__spreadArray) || function (...args) { /* ... */ }
+                  var __read = (this && this.__read) || function (...args) { /* ... */ }
             `;
               break;
             case 'inlined_with_suffix':
@@ -1795,6 +1797,8 @@ runInEachFileSystem(() => {
                 }(this, (function (exports) { 'use strict';
 
                   var __spread$1 = (this && this.__spread$1) || function (...args) { /* ... */ }
+                  var __spreadArray$1 = (this && this.__spreadArray$1) || function (...args) { /* ... */ }
+                  var __read$2 = (this && this.__read$2) || function (...args) { /* ... */ }
               `;
               break;
           }
@@ -1897,11 +1901,33 @@ runInEachFileSystem(() => {
             expect(parameters).toBeNull();
           });
 
+          it('recognizes delegate super call using inline spreadArray helper', () => {
+            const parameters = getConstructorParameters(
+                `
+            function TestClass() {
+              return _super.apply(this, __spreadArray([], __read(arguments))) || this;
+            }`,
+                'inlined');
+
+            expect(parameters).toBeNull();
+          });
+
           it('recognizes delegate super call using inline spread helper with suffix', () => {
             const parameters = getConstructorParameters(
                 `
             function TestClass() {
               return _super.apply(this, __spread$1(arguments)) || this;
+            }`,
+                'inlined_with_suffix');
+
+            expect(parameters).toBeNull();
+          });
+
+          it('recognizes delegate super call using inline spreadArray helper with suffix', () => {
+            const parameters = getConstructorParameters(
+                `
+            function TestClass() {
+              return _super.apply(this, __spreadArray$1([], __read$2(arguments))) || this;
             }`,
                 'inlined_with_suffix');
 
@@ -1919,12 +1945,36 @@ runInEachFileSystem(() => {
             expect(parameters).toBeNull();
           });
 
+          it('recognizes delegate super call using imported spreadArray helper', () => {
+            const parameters = getConstructorParameters(
+                `
+            function TestClass() {
+              return _super.apply(this, tslib_1.__spreadArray([], tslib.__read(arguments))) || this;
+            }`,
+                'imported');
+
+            expect(parameters).toBeNull();
+          });
+
           describe('with class member assignment', () => {
             it('recognizes delegate super call using inline spread helper', () => {
               const parameters = getConstructorParameters(
                   `
               function TestClass() {
                 var _this = _super.apply(this, __spread(arguments)) || this;
+                _this.synthesizedProperty = null;
+                return _this;
+              }`,
+                  'inlined');
+
+              expect(parameters).toBeNull();
+            });
+
+            it('recognizes delegate super call using inline spreadArray helper', () => {
+              const parameters = getConstructorParameters(
+                  `
+              function TestClass() {
+                var _this = _super.apply(this, __spreadArray([], __read(arguments))) || this;
                 _this.synthesizedProperty = null;
                 return _this;
               }`,
@@ -1946,11 +1996,37 @@ runInEachFileSystem(() => {
               expect(parameters).toBeNull();
             });
 
+            it('recognizes delegate super call using inline spreadArray helper with suffix', () => {
+              const parameters = getConstructorParameters(
+                  `
+              function TestClass() {
+                var _this = _super.apply(this, __spreadArray$1([], __read$2(arguments))) || this;
+                _this.synthesizedProperty = null;
+                return _this;
+              }`,
+                  'inlined_with_suffix');
+
+              expect(parameters).toBeNull();
+            });
+
             it('recognizes delegate super call using imported spread helper', () => {
               const parameters = getConstructorParameters(
                   `
               function TestClass() {
                 var _this = _super.apply(this, tslib_1.__spread(arguments)) || this;
+                _this.synthesizedProperty = null;
+                return _this;
+              }`,
+                  'imported');
+
+              expect(parameters).toBeNull();
+            });
+
+            it('recognizes delegate super call using imported spreadArray helper', () => {
+              const parameters = getConstructorParameters(
+                  `
+              function TestClass() {
+                var _this = _super.apply(this, tslib_1.__spreadArray([], tslib.__read(arguments))) || this;
                 _this.synthesizedProperty = null;
                 return _this;
               }`,
@@ -2331,10 +2407,14 @@ runInEachFileSystem(() => {
               function __assign(t, ...sources) { /* ... */ }
               function __spread(...args) { /* ... */ }
               function __spreadArrays(...args) { /* ... */ }
+              function __spreadArray(to, from) { /* ... */ }
+              function __read(o) { /* ... */ }
 
               var a = __assign({foo: 'bar'}, {baz: 'qux'});
               var b = __spread(['foo', 'bar'], ['baz', 'qux']);
               var c = __spreadArrays(['foo', 'bar'], ['baz', 'qux']);
+              var d = __spreadArray(['foo', 'bar'], ['baz', 'qux']);
+              var e = __read(['foo', 'bar']);
             })));
           `,
           };
@@ -2349,6 +2429,8 @@ runInEachFileSystem(() => {
           testForHelper('a', '__assign', KnownDeclaration.TsHelperAssign);
           testForHelper('b', '__spread', KnownDeclaration.TsHelperSpread);
           testForHelper('c', '__spreadArrays', KnownDeclaration.TsHelperSpreadArrays);
+          testForHelper('d', '__spreadArray', KnownDeclaration.TsHelperSpreadArray);
+          testForHelper('e', '__read', KnownDeclaration.TsHelperRead);
         });
 
         it('should recognize suffixed TypeScript helpers (as function declarations)', () => {
@@ -2363,10 +2445,14 @@ runInEachFileSystem(() => {
               function __assign$1(t, ...sources) { /* ... */ }
               function __spread$2(...args) { /* ... */ }
               function __spreadArrays$3(...args) { /* ... */ }
+              function __spreadArray$3(to, from) { /* ... */ }
+              function __read$3(o) { /* ... */ }
 
               var a = __assign$1({foo: 'bar'}, {baz: 'qux'});
               var b = __spread$2(['foo', 'bar'], ['baz', 'qux']);
               var c = __spreadArrays$3(['foo', 'bar'], ['baz', 'qux']);
+              var d = __spreadArray$3(['foo', 'bar'], ['baz', 'qux']);
+              var e = __read$3(['foo', 'bar']);
             })));
           `,
           };
@@ -2381,6 +2467,8 @@ runInEachFileSystem(() => {
           testForHelper('a', '__assign$1', KnownDeclaration.TsHelperAssign);
           testForHelper('b', '__spread$2', KnownDeclaration.TsHelperSpread);
           testForHelper('c', '__spreadArrays$3', KnownDeclaration.TsHelperSpreadArrays);
+          testForHelper('d', '__spreadArray$3', KnownDeclaration.TsHelperSpreadArray);
+          testForHelper('e', '__read$3', KnownDeclaration.TsHelperRead);
         });
 
         it('should recognize TypeScript helpers (as variable declarations)', () => {
@@ -2395,10 +2483,14 @@ runInEachFileSystem(() => {
               var __assign = (this && this.__assign) || function (t, ...sources) { /* ... */ }
               var __spread = (this && this.__spread) || function (...args) { /* ... */ }
               var __spreadArrays = (this && this.__spreadArrays) || function (...args) { /* ... */ }
+              var __spreadArray = (this && this.__spreadArray) || function (to, from) { /* ... */ }
+              var __read = (this && this.__read) || function (o) { /* ... */ }
 
               var a = __assign({foo: 'bar'}, {baz: 'qux'});
               var b = __spread(['foo', 'bar'], ['baz', 'qux']);
               var c = __spreadArrays(['foo', 'bar'], ['baz', 'qux']);
+              var d = __spreadArray(['foo', 'bar'], ['baz', 'qux']);
+              var e = __read(['foo', 'bar']);
             })));
           `,
           };
@@ -2413,6 +2505,8 @@ runInEachFileSystem(() => {
           testForHelper('a', '__assign', KnownDeclaration.TsHelperAssign);
           testForHelper('b', '__spread', KnownDeclaration.TsHelperSpread);
           testForHelper('c', '__spreadArrays', KnownDeclaration.TsHelperSpreadArrays);
+          testForHelper('d', '__spreadArray', KnownDeclaration.TsHelperSpreadArray);
+          testForHelper('e', '__read', KnownDeclaration.TsHelperRead);
         });
 
         it('should recognize suffixed TypeScript helpers (as variable declarations)', () => {
@@ -2427,10 +2521,14 @@ runInEachFileSystem(() => {
               var __assign$1 = (this && this.__assign$1) || function (t, ...sources) { /* ... */ }
               var __spread$2 = (this && this.__spread$2) || function (...args) { /* ... */ }
               var __spreadArrays$3 = (this && this.__spreadArrays$3) || function (...args) { /* ... */ }
+              var __spreadArray$3 = (this && this.__spreadArray$3) || function (to, from) { /* ... */ }
+              var __read$3 = (this && this.__read$3) || function (o) { /* ... */ }
 
               var a = __assign$1({foo: 'bar'}, {baz: 'qux'});
               var b = __spread$2(['foo', 'bar'], ['baz', 'qux']);
               var c = __spreadArrays$3(['foo', 'bar'], ['baz', 'qux']);
+              var d = __spreadArray$3(['foo', 'bar'], ['baz', 'qux']);
+              var e = __read$3(['foo', 'bar']);
             })));
           `,
           };
@@ -2445,6 +2543,8 @@ runInEachFileSystem(() => {
           testForHelper('a', '__assign$1', KnownDeclaration.TsHelperAssign);
           testForHelper('b', '__spread$2', KnownDeclaration.TsHelperSpread);
           testForHelper('c', '__spreadArrays$3', KnownDeclaration.TsHelperSpreadArrays);
+          testForHelper('d', '__spreadArray$3', KnownDeclaration.TsHelperSpreadArray);
+          testForHelper('e', '__read$3', KnownDeclaration.TsHelperRead);
         });
 
         it('should recognize imported TypeScript helpers', () => {
@@ -2460,6 +2560,8 @@ runInEachFileSystem(() => {
                 var a = tslib_1.__assign({foo: 'bar'}, {baz: 'qux'});
                 var b = tslib_1.__spread(['foo', 'bar'], ['baz', 'qux']);
                 var c = tslib_1.__spreadArrays(['foo', 'bar'], ['baz', 'qux']);
+                var d = tslib_1.__spreadArray(['foo', 'bar'], ['baz', 'qux']);
+                var e = tslib_1.__read(['foo', 'bar']);
               })));
             `,
             },
@@ -2469,6 +2571,8 @@ runInEachFileSystem(() => {
               export declare function __assign(t: any, ...sources: any[]): any;
               export declare function __spread(...args: any[][]): any[];
               export declare function __spreadArrays(...args: any[][]): any[];
+              export declare function __spreadArray(to: any[], from: any[]): any[];
+              export declare function __read(o: any, n?: number): any[];
             `,
             },
           ];
@@ -2487,6 +2591,8 @@ runInEachFileSystem(() => {
           testForHelper('a', '__assign', KnownDeclaration.TsHelperAssign, 'tslib');
           testForHelper('b', '__spread', KnownDeclaration.TsHelperSpread, 'tslib');
           testForHelper('c', '__spreadArrays', KnownDeclaration.TsHelperSpreadArrays, 'tslib');
+          testForHelper('d', '__spreadArray', KnownDeclaration.TsHelperSpreadArray, 'tslib');
+          testForHelper('e', '__read', KnownDeclaration.TsHelperRead, 'tslib');
         });
 
         it('should recognize undeclared, unimported TypeScript helpers (by name)', () => {
@@ -2501,6 +2607,8 @@ runInEachFileSystem(() => {
               var a = __assign({foo: 'bar'}, {baz: 'qux'});
               var b = __spread(['foo', 'bar'], ['baz', 'qux']);
               var c = __spreadArrays(['foo', 'bar'], ['baz', 'qux']);
+              var d = __spreadArray(['foo', 'bar'], ['baz', 'qux']);
+              var e = __read(['foo', 'bar']);
             })));
           `,
           };
@@ -2527,6 +2635,8 @@ runInEachFileSystem(() => {
           testForHelper('a', '__assign', KnownDeclaration.TsHelperAssign);
           testForHelper('b', '__spread', KnownDeclaration.TsHelperSpread);
           testForHelper('c', '__spreadArrays', KnownDeclaration.TsHelperSpreadArrays);
+          testForHelper('d', '__spreadArray', KnownDeclaration.TsHelperSpreadArray);
+          testForHelper('e', '__read', KnownDeclaration.TsHelperRead);
         });
 
         it('should recognize suffixed, undeclared, unimported TypeScript helpers (by name)', () => {
@@ -2541,6 +2651,8 @@ runInEachFileSystem(() => {
               var a = __assign$1({foo: 'bar'}, {baz: 'qux'});
               var b = __spread$2(['foo', 'bar'], ['baz', 'qux']);
               var c = __spreadArrays$3(['foo', 'bar'], ['baz', 'qux']);
+              var d = __spreadArray$3(['foo', 'bar'], ['baz', 'qux']);
+              var e = __read$3(['foo', 'bar']);
             })));
           `,
           };
@@ -2567,6 +2679,8 @@ runInEachFileSystem(() => {
           testForHelper('a', '__assign$1', KnownDeclaration.TsHelperAssign);
           testForHelper('b', '__spread$2', KnownDeclaration.TsHelperSpread);
           testForHelper('c', '__spreadArrays$3', KnownDeclaration.TsHelperSpreadArrays);
+          testForHelper('d', '__spreadArray$3', KnownDeclaration.TsHelperSpreadArray);
+          testForHelper('e', '__read$3', KnownDeclaration.TsHelperRead);
         });
 
         it('should recognize enum declarations with string values', () => {
@@ -2841,6 +2955,8 @@ runInEachFileSystem(() => {
             export declare function __assign(t: any, ...sources: any[]): any;
             export declare function __spread(...args: any[][]): any[];
             export declare function __spreadArrays(...args: any[][]): any[];
+            export declare function __spreadArray(to: any[], from: any[]): any[];
+            export declare function __read(o: any, n?: number): any[];
             export declare function __unknownHelper(...args: any[]): any;
           `,
           };
@@ -2855,6 +2971,8 @@ runInEachFileSystem(() => {
                 ['__assign', KnownDeclaration.TsHelperAssign],
                 ['__spread', KnownDeclaration.TsHelperSpread],
                 ['__spreadArrays', KnownDeclaration.TsHelperSpreadArrays],
+                ['__spreadArray', KnownDeclaration.TsHelperSpreadArray],
+                ['__read', KnownDeclaration.TsHelperRead],
                 ['__unknownHelper', null],
               ]);
         });

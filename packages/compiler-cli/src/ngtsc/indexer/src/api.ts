@@ -14,7 +14,7 @@ import {ClassDeclaration, DeclarationNode} from '../../reflection';
  */
 export enum IdentifierKind {
   Property,
-  Method,
+  Method,  // TODO: No longer being used. To be removed together with `MethodIdentifier`.
   Element,
   Template,
   Attribute,
@@ -46,7 +46,10 @@ export interface PropertyIdentifier extends ExpressionIdentifier {
   kind: IdentifierKind.Property;
 }
 
-/** Describes a method accessed in a template. */
+/**
+ * Describes a method accessed in a template.
+ * @deprecated No longer being used. To be removed.
+ */
 export interface MethodIdentifier extends ExpressionIdentifier {
   kind: IdentifierKind.Method;
 }
@@ -109,8 +112,8 @@ export interface VariableIdentifier extends TemplateIdentifier {
  * Identifiers recorded at the top level of the template, without any context about the HTML nodes
  * they were discovered in.
  */
-export type TopLevelIdentifier = PropertyIdentifier|MethodIdentifier|ElementIdentifier|
-    TemplateNodeIdentifier|ReferenceIdentifier|VariableIdentifier;
+export type TopLevelIdentifier = PropertyIdentifier|ElementIdentifier|TemplateNodeIdentifier|
+    ReferenceIdentifier|VariableIdentifier|MethodIdentifier;
 
 /**
  * Describes the absolute byte offsets of a text anchor in a source code.

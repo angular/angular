@@ -37,6 +37,7 @@ export function flattenInheritedDirectiveMetadata(
   let isDynamic = false;
   let inputs = ClassPropertyMapping.empty();
   let outputs = ClassPropertyMapping.empty();
+  let isStructural: boolean = false;
 
   const addMetadata = (meta: DirectiveMeta): void => {
     if (meta.baseClass === 'dynamic') {
@@ -50,6 +51,8 @@ export function flattenInheritedDirectiveMetadata(
         isDynamic = true;
       }
     }
+
+    isStructural = isStructural || meta.isStructural;
 
     inputs = ClassPropertyMapping.merge(inputs, meta.inputs);
     outputs = ClassPropertyMapping.merge(outputs, meta.outputs);
@@ -79,5 +82,6 @@ export function flattenInheritedDirectiveMetadata(
     restrictedInputFields,
     stringLiteralInputFields,
     baseClass: isDynamic ? 'dynamic' : null,
+    isStructural,
   };
 }

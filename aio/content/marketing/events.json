@@ -1,5 +1,27 @@
 [
   {
+    "name": "Angular Global Summit",
+    "location": "Online",
+    "linkUrl": "https://link.geekle.us/angular/offsite",
+    "date": {
+      "start": "2021-06-01",
+      "end": "2021-06-02"
+    }
+  },
+  {
+    "name": "ng-conf",
+    "location": "Online",
+    "linkUrl": "https://www.2021.ng-conf.org/",
+    "date": {
+      "start": "2021-04-22",
+      "end": "2021-04-23"
+    },
+    "workshopsDate": {
+      "start": "2021-04-12",
+      "end": "2021-04-15"
+    }
+  },
+  {
     "name": "ng-china",
     "location": "Online",
     "linkUrl": "https://ng-china.org/",

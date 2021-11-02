@@ -17,7 +17,7 @@ import {BaseTaskQueue} from './base_task_queue';
  * before requesting the next one.
  */
 export class SerialTaskQueue extends BaseTaskQueue {
-  computeNextTask(): Task|null {
+  override computeNextTask(): Task|null {
     const nextTask = this.tasks.shift() || null;
 
     if (nextTask) {

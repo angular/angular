@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem, relative} from '../../../src/ngtsc/file_system';
+import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
 import {MockLogger} from '../../../src/ngtsc/logging/testing';
 import {loadTestFiles} from '../../../src/ngtsc/testing';
@@ -16,7 +16,7 @@ import {ModuleResolver} from '../../src/dependencies/module_resolver';
 import {TargetedEntryPointFinder} from '../../src/entry_point_finder/targeted_entry_point_finder';
 import {NGCC_VERSION} from '../../src/packages/build_marker';
 import {NgccConfiguration, ProcessedNgccPackageConfig} from '../../src/packages/configuration';
-import {EntryPoint} from '../../src/packages/entry_point';
+import {EntryPoint, EntryPointPackageJson} from '../../src/packages/entry_point';
 import {PathMappings} from '../../src/path_mappings';
 
 runInEachFileSystem(() => {
@@ -118,7 +118,7 @@ runInEachFileSystem(() => {
         loadTestFiles(createPackage(basePath, 'some-package'));
         spyOn(config, 'getPackageConfig')
             .and.returnValue(
-                new ProcessedNgccPackageConfig(_Abs('/project/node_modules/some-package'), {
+                new ProcessedNgccPackageConfig(fs, _Abs('/project/node_modules/some-package'), {
                   entryPoints: {
                     '.': {ignore: true},
                   },
@@ -355,6 +355,56 @@ runInEachFileSystem(() => {
            ]);
          });
 
+      it('should correctly compute the package path for a target whose name contains the string of another package',
+         () => {
+           // Create the "my-lib" package - it doesn't need to be a real entry-point
+           const myLibPath = _Abs('/project/dist/my-lib');
+           loadTestFiles([{
+             name: fs.resolve(myLibPath, 'package.json'),
+             contents: JSON.stringify({name: 'my-lib'})
+           }]);
+
+           // Create the "my-lib-other" Angular entry-point
+           const myLibOtherPath = _Abs('/project/dist/my-lib-other');
+           loadTestFiles([
+             {
+               name: fs.resolve(myLibOtherPath, 'package.json'),
+               contents: JSON.stringify({
+                 name: `my-lib-other`,
+                 typings: `./my-lib-other.d.ts`,
+                 fesm2015: `./fesm2015/my-lib-other.js`,
+                 esm5: `./esm5/my-lib-other.js`,
+                 main: `./common/my-lib-other.js`,
+               })
+             },
+             {name: fs.resolve(myLibOtherPath, 'my-lib-other.metadata.json'), contents: 'metadata'},
+             {name: fs.resolve(myLibOtherPath, 'my-lib-other.d.ts'), contents: 'typings'},
+             {name: fs.resolve(myLibOtherPath, 'fesm2015/my-lib-other.js'), contents: ''},
+             {name: fs.resolve(myLibOtherPath, 'esm5/my-lib-other.js'), contents: ''},
+             {name: fs.resolve(myLibOtherPath, 'commonjs/my-lib-other.js'), contents: ''},
+           ]);
+
+           const basePath = _Abs('/project/node_modules');
+           const pathMappings: PathMappings = {
+             baseUrl: '/project',
+             paths: {
+               'lib1': ['dist/my-lib'],
+               'lib2': ['dist/my-lib-other'],
+             }
+           };
+
+           const srcHost = new EsmDependencyHost(fs, new ModuleResolver(fs, pathMappings));
+           const dtsHost = new DtsDependencyHost(fs, pathMappings);
+           resolver = new DependencyResolver(fs, logger, config, {esm2015: srcHost}, dtsHost);
+           const finder = new TargetedEntryPointFinder(
+               fs, config, logger, resolver, basePath, pathMappings, myLibOtherPath);
+           const {entryPoints} = finder.findEntryPoints();
+
+           expect(dumpEntryPointPaths(basePath, entryPoints)).toEqual([
+             ['../dist/my-lib-other', '../dist/my-lib-other'],
+           ]);
+         });
+
       it('should handle pathMappings that map to files or non-existent directories', () => {
         const basePath = _Abs('/path_mapped/node_modules');
         const targetPath = _Abs('/path_mapped/node_modules/test');
@@ -383,7 +433,7 @@ runInEachFileSystem(() => {
       function dumpEntryPointPaths(
           basePath: AbsoluteFsPath, entryPoints: EntryPoint[]): [string, string][] {
         return entryPoints.map(
-            x => [relative(basePath, x.packagePath), relative(basePath, x.path)]);
+            x => [fs.relative(basePath, x.packagePath), fs.relative(basePath, x.path)]);
       }
     });
 
@@ -419,7 +469,7 @@ runInEachFileSystem(() => {
         loadTestFiles(createPackage(basePath, 'some-package'));
         spyOn(config, 'getPackageConfig')
             .and.returnValue(
-                new ProcessedNgccPackageConfig(_Abs('/project/node_modules/some-package'), {
+                new ProcessedNgccPackageConfig(fs, _Abs('/project/node_modules/some-package'), {
                   entryPoints: {
                     '.': {ignore: true},
                   },
@@ -505,7 +555,7 @@ runInEachFileSystem(() => {
 
              // Add a build marker to the package.json
              const packageJsonPath = _Abs(`${targetPath}/package.json`);
-             const packageJson = JSON.parse(fs.readFile(packageJsonPath));
+             const packageJson = JSON.parse(fs.readFile(packageJsonPath)) as EntryPointPackageJson;
              packageJson.__processed_by_ivy_ngcc__ = {
                esm5: NGCC_VERSION,
              };
@@ -529,7 +579,7 @@ runInEachFileSystem(() => {
 
           // Add build markers to the package.json
           const packageJsonPath = _Abs(`${targetPath}/package.json`);
-          const packageJson = JSON.parse(fs.readFile(packageJsonPath));
+          const packageJson = JSON.parse(fs.readFile(packageJsonPath)) as EntryPointPackageJson;
           packageJson.__processed_by_ivy_ngcc__ = {
             fesm2015: NGCC_VERSION,
             esm5: NGCC_VERSION,
@@ -575,7 +625,7 @@ runInEachFileSystem(() => {
 
              // Add build markers to the package.json
              const packageJsonPath = _Abs(`${targetPath}/package.json`);
-             const packageJson = JSON.parse(fs.readFile(packageJsonPath));
+             const packageJson = JSON.parse(fs.readFile(packageJsonPath)) as EntryPointPackageJson;
              packageJson.__processed_by_ivy_ngcc__ = {
                esm5: NGCC_VERSION,
              };
@@ -601,7 +651,7 @@ runInEachFileSystem(() => {
 
              // Add build markers to the package.json
              const packageJsonPath = _Abs(`${targetPath}/package.json`);
-             const packageJson = JSON.parse(fs.readFile(packageJsonPath));
+             const packageJson = JSON.parse(fs.readFile(packageJsonPath)) as EntryPointPackageJson;
              packageJson.__processed_by_ivy_ngcc__ = {
                fesm2015: NGCC_VERSION,
              };

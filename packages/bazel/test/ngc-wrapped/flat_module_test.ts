@@ -7,6 +7,7 @@
  */
 
 import {obsoleteInIvy, onlyInIvy} from '@angular/private/testing';
+import {runfiles} from '@bazel/runfiles';
 import {existsSync, readFileSync} from 'fs';
 import {dirname, join} from 'path';
 
@@ -16,7 +17,7 @@ describe('flat_module ng_module', () => {
 
   beforeAll(() => {
     packageOutput =
-        dirname(require.resolve('angular/packages/bazel/test/ngc-wrapped/flat_module/index.js'));
+        dirname(runfiles.resolve('angular/packages/bazel/test/ngc-wrapped/flat_module/index.js'));
     flatModuleOutFile = join(packageOutput, 'flat_module.js');
   });
 

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {AbsoluteFsPath} from '../../../file_system';
 import {FactoryTracker} from '../../../shims/api';
@@ -28,7 +28,7 @@ export type ExtendedCompilerHostMethods =
     'getCurrentDirectory'|
     // Additional methods of `ExtendedTsCompilerHost` related to resource files (e.g. HTML
     // templates). These are optional.
-    'getModifiedResourceFiles'|'readResource'|'resourceNameToFileName';
+    'getModifiedResourceFiles'|'readResource'|'resourceNameToFileName'|'transformResource';
 
 /**
  * Adapter for `NgCompiler` that allows it to be used in various circumstances, such as

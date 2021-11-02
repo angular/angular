@@ -17,17 +17,19 @@ import { ElementsLoader } from 'app/custom-elements/elements-loader';
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 export class TestDocViewerComponent extends DocViewerComponent {
-  currViewContainer: HTMLElement;
-  nextViewContainer: HTMLElement;
+  override currViewContainer: HTMLElement;
+  override nextViewContainer: HTMLElement;
 
   // Only used for type-casting; the actual implementation is irrelevant.
-  prepareTitleAndToc(_targetElem: HTMLElement, _docId: string): () => void { return null as any; }
+  override prepareTitleAndToc(_targetElem: HTMLElement, _docId: string): () => void {
+    return null as any;
+  }
 
   // Only used for type-casting; the actual implementation is irrelevant.
-  render(_doc: DocumentContents): Observable<void> { return null as any; }
+  override render(_doc: DocumentContents): Observable<void> { return null as any; }
 
   // Only used for type-casting; the actual implementation is irrelevant.
-  swapViews(_onInsertedCb?: () => void): Observable<void> { return null as any; }
+  override swapViews(_onInsertedCb?: () => void): Observable<void> { return null as any; }
 }
 
 

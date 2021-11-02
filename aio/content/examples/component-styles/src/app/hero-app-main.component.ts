@@ -12,5 +12,5 @@ import { Hero } from './hero';
   `
 })
 export class HeroAppMainComponent {
-  @Input() hero: Hero;
+  @Input() hero!: Hero;
 }

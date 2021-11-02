@@ -7,7 +7,6 @@
  */
 
 import {fakeAsync, tick} from '@angular/core/testing';
-import {AsyncTestCompleter, beforeEach, describe, inject, it} from '@angular/core/testing/src/testing_internal';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 
 import {FormArray} from '@angular/forms/src/model';
@@ -313,6 +312,57 @@ describe('FormControl', () => {
       c.setValidators([Validators.required]);
       expect(c.validator).not.toBe(null);
     });
+
+    it('should check presence of and remove a validator set in the control constructor', () => {
+      const c = new FormControl('', Validators.required);
+      expect(c.hasValidator(Validators.required)).toEqual(true);
+
+      c.removeValidators(Validators.required);
+      expect(c.hasValidator(Validators.required)).toEqual(false);
+
+      c.addValidators(Validators.required);
+      expect(c.hasValidator(Validators.required)).toEqual(true);
+    });
+
+    it('should check presence of and remove a validator set with addValidators', () => {
+      const c = new FormControl('');
+      expect(c.hasValidator(Validators.required)).toEqual(false);
+      c.addValidators(Validators.required);
+      expect(c.hasValidator(Validators.required)).toEqual(true);
+
+      c.removeValidators(Validators.required);
+      expect(c.hasValidator(Validators.required)).toEqual(false);
+    });
+
+    it('should check presence of and remove multiple validators set at the same time', () => {
+      const c = new FormControl('3');
+      const minValidator = Validators.min(4);
+      c.addValidators([Validators.required, minValidator]);
+      expect(c.hasValidator(Validators.required)).toEqual(true);
+      expect(c.hasValidator(minValidator)).toEqual(true);
+
+      c.removeValidators([Validators.required, minValidator]);
+      expect(c.hasValidator(Validators.required)).toEqual(false);
+      expect(c.hasValidator(minValidator)).toEqual(false);
+    });
+
+    it('should be able to remove a validator added multiple times', () => {
+      const c = new FormControl('', Validators.required);
+      c.addValidators(Validators.required);
+      c.addValidators(Validators.required);
+      expect(c.hasValidator(Validators.required)).toEqual(true);
+
+      c.removeValidators(Validators.required);
+      expect(c.hasValidator(Validators.required)).toEqual(false);
+    });
+
+    it('should return false when checking presence of a validator not identical by reference',
+       () => {
+         const minValidator = Validators.min(5);
+         const c = new FormControl('1', minValidator);
+         expect(c.hasValidator(minValidator)).toEqual(true);
+         expect(c.hasValidator(Validators.min(5))).toEqual(false);
+       });
   });
 
   describe('asyncValidator', () => {
@@ -509,6 +559,61 @@ describe('FormControl', () => {
          tick();
          expect(c.status).toEqual('DISABLED');
        }));
+
+    it('should check presence of and remove a validator set in the control constructor', () => {
+      const asyncVal = asyncValidator('expected');
+      const c = new FormControl('', null, asyncVal);
+      expect(c.hasAsyncValidator(asyncVal)).toEqual(true);
+
+      c.removeAsyncValidators(asyncVal);
+      expect(c.hasAsyncValidator(asyncVal)).toEqual(false);
+
+      c.addAsyncValidators(asyncVal);
+      expect(c.hasAsyncValidator(asyncVal)).toEqual(true);
+    });
+
+    it('should check presence of and remove a validator set with addValidators', () => {
+      const c = new FormControl('');
+      const asyncVal = asyncValidator('expected');
+      c.addAsyncValidators(asyncVal);
+      expect(c.hasAsyncValidator(asyncVal)).toEqual(true);
+
+      c.removeAsyncValidators(asyncVal);
+      expect(c.hasAsyncValidator(asyncVal)).toEqual(false);
+    });
+
+    it('should check presence of and remove multiple validators set at the same time', () => {
+      const c = new FormControl('3');
+      const asyncVal1 = asyncValidator('expected1');
+      const asyncVal2 = asyncValidator('expected2');
+      c.addAsyncValidators([asyncVal1, asyncVal2]);
+      expect(c.hasAsyncValidator(asyncVal1)).toEqual(true);
+      expect(c.hasAsyncValidator(asyncVal2)).toEqual(true);
+
+      c.removeAsyncValidators([asyncVal1, asyncVal2]);
+      expect(c.hasAsyncValidator(asyncVal1)).toEqual(false);
+      expect(c.hasAsyncValidator(asyncVal2)).toEqual(false);
+    });
+
+    it('should be able to remove a validator added multiple times', () => {
+      const asyncVal = asyncValidator('expected');
+      const c = new FormControl('', null, asyncVal);
+      c.addAsyncValidators(asyncVal);
+      c.addAsyncValidators(asyncVal);
+      expect(c.hasAsyncValidator(asyncVal)).toEqual(true);
+
+      c.removeAsyncValidators(asyncVal);
+      expect(c.hasAsyncValidator(asyncVal)).toEqual(false);
+    });
+
+    it('should return false when checking presence of a validator not identical by reference',
+       () => {
+         const asyncVal = asyncValidator('expected');
+         const asyncValDifferentFn = asyncValidator('expected');
+         const c = new FormControl('1', null, asyncVal);
+         expect(c.hasAsyncValidator(asyncVal)).toEqual(true);
+         expect(c.hasAsyncValidator(asyncValDifferentFn)).toEqual(false);
+       });
   });
 
   describe('dirty', () => {
@@ -857,17 +962,16 @@ describe('FormControl', () => {
       c = new FormControl('old', Validators.required);
     });
 
-    it('should fire an event after the value has been updated',
-       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         c.valueChanges.subscribe({
-           next: (value: any) => {
-             expect(c.value).toEqual('new');
-             expect(value).toEqual('new');
-             async.done();
-           }
-         });
-         c.setValue('new');
-       }));
+    it('should fire an event after the value has been updated', done => {
+      c.valueChanges.subscribe({
+        next: (value: any) => {
+          expect(c.value).toEqual('new');
+          expect(value).toEqual('new');
+          done();
+        }
+      });
+      c.setValue('new');
+    });
 
     it('should fire an event after the status has been updated to invalid', fakeAsync(() => {
          c.statusChanges.subscribe({
@@ -879,6 +983,22 @@ describe('FormControl', () => {
 
          c.setValue('');
          tick();
+       }));
+
+    it('should fire statusChanges events for async validators added via options object',
+       fakeAsync(() => {
+         // The behavior can be tested for each of the model types.
+         let statuses: string[] = [];
+
+         // Create a form control with an async validator added via options object.
+         const asc = new FormControl('', {asyncValidators: [() => Promise.resolve(null)]});
+
+         // Subscribe to status changes.
+         asc.statusChanges.subscribe((status: any) => statuses.push(status));
+
+         // After a tick, the async validator should change status PENDING -> VALID.
+         tick();
+         expect(statuses).toEqual(['VALID']);
        }));
 
     it('should fire an event after the status has been updated to pending', fakeAsync(() => {
@@ -911,27 +1031,25 @@ describe('FormControl', () => {
        }));
 
     // TODO: remove the if statement after making observable delivery sync
-    it('should update set errors and status before emitting an event',
-       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         c.valueChanges.subscribe((value: any /** TODO #9100 */) => {
-           expect(c.valid).toEqual(false);
-           expect(c.errors).toEqual({'required': true});
-           async.done();
-         });
-         c.setValue('');
-       }));
+    it('should update set errors and status before emitting an event', done => {
+      c.valueChanges.subscribe((value: any /** TODO #9100 */) => {
+        expect(c.valid).toEqual(false);
+        expect(c.errors).toEqual({'required': true});
+        done();
+      });
+      c.setValue('');
+    });
 
-    it('should return a cold observable',
-       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         c.setValue('will be ignored');
-         c.valueChanges.subscribe({
-           next: (value: any) => {
-             expect(value).toEqual('new');
-             async.done();
-           }
-         });
-         c.setValue('new');
-       }));
+    it('should return a cold observable', done => {
+      c.setValue('will be ignored');
+      c.valueChanges.subscribe({
+        next: (value: any) => {
+          expect(value).toEqual('new');
+          done();
+        }
+      });
+      c.setValue('new');
+    });
   });
 
   describe('setErrors', () => {

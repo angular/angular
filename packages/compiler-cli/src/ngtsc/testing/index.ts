@@ -7,5 +7,6 @@
  */
 export * from './src/utils';
 export * from './src/cached_source_files';
+export * from './src/compiler_host';
 export * from './src/mock_file_loading';
 export * from './src/runfile_helpers';

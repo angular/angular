@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {runfiles} from '@bazel/runfiles';
 import * as crypto from 'crypto';
 import {createPatch} from 'diff';
 import * as fs from 'fs';
@@ -21,18 +22,18 @@ const packagesToTest: TestPackage[] = [
     // Resolve the "npm_package" directory by using the runfile resolution. Note that we need to
     // resolve the "package.json" of the package since otherwise NodeJS would resolve the "main"
     // file, which is not necessarily at the root of the "npm_package".
-    packagePath: path.dirname(
-        require.resolve('angular/packages/bazel/test/ng_package/example/npm_package/package.json')),
-    goldenFilePath: require.resolve('./example_package.golden')
+    packagePath: path.dirname(runfiles.resolve(
+        'angular/packages/bazel/test/ng_package/example/npm_package/package.json')),
+    goldenFilePath: runfiles.resolvePackageRelative('./example_package.golden')
   },
   {
     displayName: 'Example with ts_library NPM package',
     // Resolve the "npm_package" directory by using the runfile resolution. Note that we need to
     // resolve the "package.json" of the package since otherwise NodeJS would resolve the "main"
     // file, which is not necessarily at the root of the "npm_package".
-    packagePath: path.dirname(require.resolve(
+    packagePath: path.dirname(runfiles.resolve(
         'angular/packages/bazel/test/ng_package/example-with-ts-library/npm_package/package.json')),
-    goldenFilePath: require.resolve('./example_with_ts_library_package.golden')
+    goldenFilePath: runfiles.resolvePackageRelative('./example_with_ts_library_package.golden')
   },
 ];
 

@@ -44,6 +44,7 @@ export {
   SWITCH_ELEMENT_REF_FACTORY__POST_R3__ as ɵSWITCH_ELEMENT_REF_FACTORY__POST_R3__,
 } from './linker/element_ref';
 export { getModuleFactory__POST_R3__ as ɵgetModuleFactory__POST_R3__ } from './linker/ng_module_factory_loader';
+export { getNgModuleById__POST_R3__ as ɵgetNgModuleById__POST_R3__ } from './linker/ng_module_factory_loader';
 export { registerNgModuleType as ɵregisterNgModuleType } from './linker/ng_module_factory_registration';
 export {
   SWITCH_TEMPLATE_REF_FACTORY__POST_R3__ as ɵSWITCH_TEMPLATE_REF_FACTORY__POST_R3__,
@@ -56,9 +57,6 @@ export {
   SWITCH_COMPILE_DIRECTIVE__POST_R3__ as ɵSWITCH_COMPILE_DIRECTIVE__POST_R3__,
   SWITCH_COMPILE_PIPE__POST_R3__ as ɵSWITCH_COMPILE_PIPE__POST_R3__,
 } from './metadata/directives';
-export {
-  ɵɵNgModuleDefWithMeta,
-} from './metadata/ng_module';
 export {
   SWITCH_COMPILE_NGMODULE__POST_R3__ as ɵSWITCH_COMPILE_NGMODULE__POST_R3__,
 } from './metadata/ng_module';
@@ -126,14 +124,14 @@ export {
   ɵɵclassMapInterpolate8,
   ɵɵclassMapInterpolateV,
   ɵɵclassProp,
-  ɵɵComponentDefWithMeta,
+  ɵɵComponentDeclaration,
   ɵɵcontentQuery,
   ɵɵCopyDefinitionFeature,
   ɵɵdefineComponent,
   ɵɵdefineDirective,
   ɵɵdefineNgModule,
   ɵɵdefinePipe,
-  ɵɵDirectiveDefWithMeta,
+  ɵɵDirectiveDeclaration,
   ɵɵdirectiveInject,
   ɵɵdisableBindings,
   ɵɵelement,
@@ -143,9 +141,8 @@ export {
   ɵɵelementEnd,
   ɵɵelementStart,
   ɵɵenableBindings,
-  ɵɵFactoryDef,
+  ɵɵFactoryDeclaration,
   ɵɵgetCurrentView,
-  ɵɵgetFactoryOf,
   ɵɵgetInheritedFactory,
   ɵɵhostProperty,
   ɵɵi18n,
@@ -157,7 +154,7 @@ export {
   ɵɵi18nStart,
   ɵɵInheritDefinitionFeature,
   ɵɵinjectAttribute,
-  ɵɵinjectPipeChangeDetectorRef,
+  ɵɵInjectorDeclaration,
   ɵɵinvalidFactory,
   ɵɵlistener,
   ɵɵloadQuery,
@@ -165,8 +162,7 @@ export {
   ɵɵnamespaceMathML,
   ɵɵnamespaceSVG,
   ɵɵnextContext,
-  ɵɵngDeclareComponent,
-  ɵɵngDeclareDirective,
+  ɵɵNgModuleDeclaration,
   ɵɵNgOnChangesFeature,
   ɵɵpipe,
   ɵɵpipeBind1,
@@ -174,7 +170,7 @@ export {
   ɵɵpipeBind3,
   ɵɵpipeBind4,
   ɵɵpipeBindV,
-  ɵɵPipeDefWithMeta,
+  ɵɵPipeDeclaration,
   ɵɵprojection,
   ɵɵprojectionDef,
   ɵɵproperty,
@@ -208,8 +204,6 @@ export {
 
   ɵɵsetComponentScope,
   ɵɵsetNgModuleScope,
-  ɵɵstaticContentQuery,
-  ɵɵstaticViewQuery,
   ɵɵstyleMap,
   ɵɵstyleMapInterpolate1,
   ɵɵstyleMapInterpolate2,
@@ -275,12 +269,25 @@ export {
   transitiveScopesFor as ɵtransitiveScopesFor,
 } from './render3/jit/module';
 export {
+  FactoryTarget as ɵɵFactoryTarget,
+  ɵɵngDeclareClassMetadata,
+  ɵɵngDeclareComponent,
+  ɵɵngDeclareDirective,
+  ɵɵngDeclareFactory,
+  ɵɵngDeclareInjectable,
+  ɵɵngDeclareInjector,
+  ɵɵngDeclareNgModule,
+  ɵɵngDeclarePipe,
+} from './render3/jit/partial';
+export {
   compilePipe as ɵcompilePipe,
 } from './render3/jit/pipe';
+export { Profiler as ɵProfiler, ProfilerEvent as ɵProfilerEvent } from './render3/profiler';
 export {
   publishDefaultGlobalUtils as ɵpublishDefaultGlobalUtils
 ,
   publishGlobalUtil as ɵpublishGlobalUtil} from './render3/util/global_utils';
+export {ViewRef as ɵViewRef} from './render3/view_ref';
 export {
   bypassSanitizationTrustHtml as ɵbypassSanitizationTrustHtml,
   bypassSanitizationTrustResourceUrl as ɵbypassSanitizationTrustResourceUrl,

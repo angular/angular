@@ -6,11 +6,13 @@
 /* tslint:disable:no-shadowed-variable */
 /* tslint:disable:align */
 // #docregion ajax
+  import { Observable } from 'rxjs';
   import { ajax } from 'rxjs/ajax';
 
 // Create an Observable that will create an AJAX request
 // #enddocregion ajax
-export function docRegionAjax(console, ajax) {
+export function docRegionAjax<T>(console: Console,
+                                 ajax: (url: string) => Observable<{status: number, response: T}>) {
   // #docregion ajax
   const apiData = ajax('/api/data');
   // Subscribe to create the request

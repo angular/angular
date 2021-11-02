@@ -323,7 +323,7 @@ Angular also supports passive event listeners. For example, you can use the foll
 
 ```
 import './zone-flags';
-import 'zone.js/dist/zone';  // Included with Angular CLI.
+import 'zone.js';  // Included with Angular CLI.
 ```
 
 After those steps, if you add event listeners for the `scroll` event, the listeners will be `passive`.

@@ -22,10 +22,21 @@ A compiler which integrates Angular compilation into this process follows a very
 1. A `ts.CompilerHost` is created.
 2. That `ts.CompilerHost` is wrapped in an `NgCompilerHost`, which adds Angular specific files to the compilation.
 3. A `ts.Program` is created from the `NgCompilerHost` and its augmented set of root files.
-4. An `NgCompiler` is created using the `ts.Program`.
+4. A `CompilationTicket` is created, optionally incorporating any state from a previous compilation run.
+4. An `NgCompiler` is created using the `CompilationTicket`.
 5. Diagnostics can be gathered from the `ts.Program` as normal, as well as from the `NgCompiler`.
 6. Prior to `emit`, `NgCompiler.prepareEmit` is called to retrieve the Angular transformers which need to be fed to `ts.Program.emit`.
 7. `emit` is called on the `ts.Program` with the Angular transformers from above, which produces JavaScript code with Angular extensions.
+
+# `NgCompiler` and incremental compilation
+
+The Angular compiler is capable of incremental compilation, where information from a previous compilation is used to accelerate the next compilation. During compilation, the compiler produces two major kinds of information: local information (such as component and directive metadata) and global information (such as reified NgModule scopes). Incremental compilation is managed in two ways:
+
+1. For most changes, a new `NgCompiler` can selectively inherit local information from a previous instance, and only needs to recompute it where an underlying TypeScript file has change. Global information is always recomputed from scratch in this case.
+
+2. For specific changes, such as those in component resources, an `NgCompiler` can be reused in its entirety, and updated to incorporate the effects of such changes without needing to recompute any other information.
+
+Note that these two modes differ in terms of whether a new `NgCompiler` instance is needed or whether a previous one can reused. To prevent leaking this implementation complexity and shield consumers from having to manage the lifecycle of `NgCompiler` so specifically, this process is abstracted via `CompilationTicket`s. Consumers first obtain a `CompilationTicket` (depending on the nature of the incoming change), and then use this ticket to retrieve an `NgCompiler` instance. In creating the `CompilationTicket`, the compiler can decide whether to reuse an old `NgCompiler` instance or to create a new one.
 
 ## Asynchronous compilation
 

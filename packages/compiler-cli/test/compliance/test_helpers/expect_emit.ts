@@ -8,17 +8,21 @@
 import {escapeRegExp} from '@angular/compiler/src/util';
 
 const IDENTIFIER = /[A-Za-z_$ɵ][A-Za-z0-9_$]*/;
+const COMMENT_START = /\/\*/;
+const COMMENT_END = /\*\//;
 const OPERATOR =
-    /!|\?|%|\*|\/|\^|&&?|\|\|?|\(|\)|\{|\}|\[|\]|:|;|<=?|>=?|={1,3}|!==?|=>|\+\+?|--?|@|,|\.|\.\.\.|`|\\'/;
+    /!|\?|%|\*|\/|\^|&&?|\|\|?|\(|\)|\{|\}|\[|\]|:|;|<=?|>=?|={1,3}|!==?|=>|\+\+?|--?|@|,|\.|\.\.\.|\\`|\\'/;
 const STRING = /'(\\'|[^'])*'|"(\\"|[^"])*"/;
-const BACKTICK_STRING = /\\`(([\s\S]*?)(\$\{[^}]*?\})?)*?[^\\]\\`/;
+const INLINE_BACKTICK_STRING = /`(([\s\S]*?)(\$\{[^}]*?\})?)*?[^\\]`/;
+const SINGLE_BACKTICK_STRING = new RegExp('^' + INLINE_BACKTICK_STRING.source);
 const BACKTICK_INTERPOLATION = /(\$\{[^}]*\})/;
 const NUMBER = /\d+/;
 
 const ELLIPSIS = '…';
 const TOKEN = new RegExp(
-    `\\s*((${IDENTIFIER.source})|(${BACKTICK_STRING.source})|(${OPERATOR.source})|(${
-        STRING.source})|${NUMBER.source}|${ELLIPSIS})\\s*`,
+    `\\s*((${COMMENT_START.source})|(${COMMENT_END.source})|(${IDENTIFIER.source})|(${
+        INLINE_BACKTICK_STRING.source})|(${OPERATOR.source})|(${STRING.source})|${NUMBER.source}|${
+        ELLIPSIS})\\s*`,
     'y');
 
 type Piece = string|RegExp;
@@ -34,20 +38,28 @@ function tokenize(text: string): Piece[] {
 
   let match: RegExpMatchArray|null;
   let tokenizedTextEnd = 0;
+  let inComment = false;
   const pieces: Piece[] = [];
-
   while ((match = TOKEN.exec(text)) !== null) {
-    const [fullMatch, token] = match;
+    const [, token] = match;
     if (token === 'IDENT') {
       pieces.push(IDENTIFIER);
     } else if (token === ELLIPSIS) {
       pieces.push(SKIP);
-    } else if (match = BACKTICK_STRING.exec(token)) {
-      pieces.push(...tokenizeBackTickString(token));
+    } else if (match = SINGLE_BACKTICK_STRING.exec(token)) {
+      if (inComment) {
+        // We are in a comment block so just treat a backtick as a normal token.
+        // Store the token and reset the matcher.
+        pieces.push('`');
+        TOKEN.lastIndex = tokenizedTextEnd + 1;
+      } else {
+        pieces.push(...tokenizeBackTickString(token));
+      }
     } else {
+      updateCommentState(token);
       pieces.push(token);
     }
-    tokenizedTextEnd += fullMatch.length;
+    tokenizedTextEnd = TOKEN.lastIndex;
   }
 
   if (pieces.length === 0 || tokenizedTextEnd < text.length) {
@@ -63,6 +75,14 @@ function tokenize(text: string): Piece[] {
   TOKEN.lastIndex = lastIndex;
 
   return pieces;
+
+  function updateCommentState(token: string) {
+    if (token === '/*') {
+      inComment = true;
+    } else if (token === '*/') {
+      inComment = false;
+    }
+  }
 }
 
 /**
@@ -72,10 +92,7 @@ function tokenize(text: string): Piece[] {
  */
 function tokenizeBackTickString(str: string): Piece[] {
   const pieces: Piece[] = ['`'];
-  // Unescape backticks that are inside the backtick string
-  // (we had to double escape them in the test string so they didn't look like string markers)
-  str = str.replace(/\\\\\\`/g, '\\`');
-  const backTickPieces = str.slice(2, -2).split(BACKTICK_INTERPOLATION);
+  const backTickPieces = str.slice(1, -1).split(BACKTICK_INTERPOLATION);
   backTickPieces.forEach((backTickPiece) => {
     if (BACKTICK_INTERPOLATION.test(backTickPiece)) {
       // An interpolation so tokenize this expression
@@ -88,6 +105,11 @@ function tokenizeBackTickString(str: string): Piece[] {
   pieces.push('`');
   return pieces;
 }
+
+const RESET = '\x1b[0m';
+const BLUE = '\x1b[36m';
+const RED = '\x1b[31m';
+const GREEN = '\x1b[32m';
 
 export function expectEmit(
     source: string, expected: string, description: string,
@@ -117,14 +139,17 @@ export function expectEmit(
             `...${fullContext.substr(-contextLength)}` :
             fullContext;
         throw new Error(
-            `${description}:\nFailed to find "${expectedPiece}" after "${context}" in:\n'${
-                source.substr(
-                    0, last)}[<---HERE expected "${expectedPiece}"]${source.substr(last)}'`);
-        return;
+            `${RED}${description}:\n${RESET}${BLUE}Failed to find${RESET} "${expectedPiece}"\n` +
+            `${BLUE}After ${RESET}"${context}"\n` +
+            `${BLUE}In generated file:${RESET}\n\n` +
+            `${source.substr(0, last)}` +
+            `${RED}[[[ <<<<---HERE expected "${GREEN}${expectedPiece}${RED}" ]]]${RESET}` +
+            `${source.substr(last)}`);
       } else {
         last = (m.index || 0) + m[0].length;
       }
     }
+
     throw new Error(
         `Test helper failure: Expected expression failed but the reporting logic could not find where it failed in: ${
             source}`);

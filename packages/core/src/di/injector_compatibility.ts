@@ -8,20 +8,27 @@
 
 import '../util/ng_dev_mode';
 
-import {AbstractType, Type} from '../interface/type';
+import {Type} from '../interface/type';
 import {getClosureSafeProperty} from '../util/property';
 import {stringify} from '../util/stringify';
+
 import {resolveForwardRef} from './forward_ref';
 import {getInjectImplementation, injectRootLimpMode} from './inject_switch';
-import {InjectionToken} from './injection_token';
 import {Injector} from './injector';
-import {InjectFlags} from './interface/injector';
+import {DecoratorFlags, InjectFlags, InternalInjectFlags} from './interface/injector';
 import {ValueProvider} from './interface/provider';
-import {Inject, Optional, Self, SkipSelf} from './metadata';
+import {ProviderToken} from './provider_token';
 
 
 const _THROW_IF_NOT_FOUND = {};
 export const THROW_IF_NOT_FOUND = _THROW_IF_NOT_FOUND;
+
+/*
+ * Name of a property (that we patch onto DI decorator), which is used as an annotation of which
+ * InjectFlag this decorator represents. This allows to avoid direct references to the DI decorators
+ * in the code, thus making them tree-shakable.
+ */
+const DI_DECORATOR_FLAG = '__NG_DI_FLAG__';
 
 export const NG_TEMP_TOKEN_PATH = 'ngTempTokenPath';
 const NG_TOKEN_PATH = 'ngTokenPath';
@@ -46,11 +53,10 @@ export function setCurrentInjector(injector: Injector|null|undefined): Injector|
   return former;
 }
 
-export function injectInjectorOnly<T>(token: Type<T>|AbstractType<T>|InjectionToken<T>): T;
-export function injectInjectorOnly<T>(
-    token: Type<T>|AbstractType<T>|InjectionToken<T>, flags?: InjectFlags): T|null;
-export function injectInjectorOnly<T>(
-    token: Type<T>|AbstractType<T>|InjectionToken<T>, flags = InjectFlags.Default): T|null {
+export function injectInjectorOnly<T>(token: ProviderToken<T>): T;
+export function injectInjectorOnly<T>(token: ProviderToken<T>, flags?: InjectFlags): T|null;
+export function injectInjectorOnly<T>(token: ProviderToken<T>, flags = InjectFlags.Default): T|
+    null {
   if (_currentInjector === undefined) {
     throw new Error(`inject() must be called from an injection context`);
   } else if (_currentInjector === null) {
@@ -73,11 +79,9 @@ export function injectInjectorOnly<T>(
  * @codeGenApi
  * @publicApi This instruction has been emitted by ViewEngine for some time and is deployed to npm.
  */
-export function ɵɵinject<T>(token: Type<T>|AbstractType<T>|InjectionToken<T>): T;
-export function ɵɵinject<T>(
-    token: Type<T>|AbstractType<T>|InjectionToken<T>, flags?: InjectFlags): T|null;
-export function ɵɵinject<T>(
-    token: Type<T>|AbstractType<T>|InjectionToken<T>, flags = InjectFlags.Default): T|null {
+export function ɵɵinject<T>(token: ProviderToken<T>): T;
+export function ɵɵinject<T>(token: ProviderToken<T>, flags?: InjectFlags): T|null;
+export function ɵɵinject<T>(token: ProviderToken<T>, flags = InjectFlags.Default): T|null {
   return (getInjectImplementation() || injectInjectorOnly)(resolveForwardRef(token), flags);
 }
 
@@ -119,7 +123,7 @@ Please check that 1) the type for the parameter at index ${
  * @param flags Optional flags that control how injection is executed.
  * The flags correspond to injection strategies that can be specified with
  * parameter decorators `@Host`, `@Self`, `@SkipSef`, and `@Optional`.
- * @returns True if injection is successful, null otherwise.
+ * @returns the injected value if injection is successful, `null` otherwise.
  *
  * @usageNotes
  *
@@ -131,7 +135,7 @@ Please check that 1) the type for the parameter at index ${
  */
 export const inject = ɵɵinject;
 
-export function injectArgs(types: (Type<any>|InjectionToken<any>|any[])[]): any[] {
+export function injectArgs(types: (ProviderToken<any>|any[])[]): any[] {
   const args: any[] = [];
   for (let i = 0; i < types.length; i++) {
     const arg = resolveForwardRef(types[i]);
@@ -144,15 +148,14 @@ export function injectArgs(types: (Type<any>|InjectionToken<any>|any[])[]): any[
 
       for (let j = 0; j < arg.length; j++) {
         const meta = arg[j];
-        if (meta instanceof Optional || meta.ngMetadataName === 'Optional' || meta === Optional) {
-          flags |= InjectFlags.Optional;
-        } else if (
-            meta instanceof SkipSelf || meta.ngMetadataName === 'SkipSelf' || meta === SkipSelf) {
-          flags |= InjectFlags.SkipSelf;
-        } else if (meta instanceof Self || meta.ngMetadataName === 'Self' || meta === Self) {
-          flags |= InjectFlags.Self;
-        } else if (meta instanceof Inject || meta === Inject) {
-          type = meta.token;
+        const flag = getInjectFlag(meta);
+        if (typeof flag === 'number') {
+          // Special case when we handle @Inject decorator.
+          if (flag === DecoratorFlags.Inject) {
+            type = meta.token;
+          } else {
+            flags |= flag;
+          }
         } else {
           type = meta;
         }
@@ -166,6 +169,30 @@ export function injectArgs(types: (Type<any>|InjectionToken<any>|any[])[]): any[
   return args;
 }
 
+/**
+ * Attaches a given InjectFlag to a given decorator using monkey-patching.
+ * Since DI decorators can be used in providers `deps` array (when provider is configured using
+ * `useFactory`) without initialization (e.g. `Host`) and as an instance (e.g. `new Host()`), we
+ * attach the flag to make it available both as a static property and as a field on decorator
+ * instance.
+ *
+ * @param decorator Provided DI decorator.
+ * @param flag InjectFlag that should be applied.
+ */
+export function attachInjectFlag(decorator: any, flag: InternalInjectFlags|DecoratorFlags): any {
+  decorator[DI_DECORATOR_FLAG] = flag;
+  decorator.prototype[DI_DECORATOR_FLAG] = flag;
+  return decorator;
+}
+
+/**
+ * Reads monkey-patched property that contains InjectFlag attached to a decorator.
+ *
+ * @param token Token that may contain monkey-patched DI flags property.
+ */
+export function getInjectFlag(token: any): number|undefined {
+  return token[DI_DECORATOR_FLAG];
+}
 
 export function catchInjectorError(
     e: any, token: any, injectorErrorName: string, source: string|null): never {

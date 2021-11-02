@@ -6,37 +6,53 @@ import {
   chain, mergeWith
 } from '@angular-devkit/schematics';
 
-import { strings, normalize, experimental } from '@angular-devkit/core';
+import { strings, normalize, virtualFs, workspaces } from '@angular-devkit/core';
 // #enddocregion schematics-imports
 
 import { Schema as MyServiceSchema } from './schema';
 // #enddocregion schema-imports
 
+function createHost(tree: Tree): workspaces.WorkspaceHost {
+  return {
+    async readFile(path: string): Promise<string> {
+      const data = tree.read(path);
+      if (!data) {
+        throw new SchematicsException('File not found.');
+      }
+      return virtualFs.fileBufferToString(data);
+    },
+    async writeFile(path: string, data: string): Promise<void> {
+      return tree.overwrite(path, data);
+    },
+    async isDirectory(path: string): Promise<boolean> {
+      return !tree.exists(path) && tree.getDir(path).subfiles.length > 0;
+    },
+    async isFile(path: string): Promise<boolean> {
+      return tree.exists(path);
+    },
+  };
+}
+
 export function myService(options: MyServiceSchema): Rule {
-  return (tree: Tree) => {
-    const workspaceConfig = tree.read('/angular.json');
-    if (!workspaceConfig) {
-      throw new SchematicsException('Could not find Angular workspace configuration');
-    }
+  return async (tree: Tree) => {
+    const host = createHost(tree);
+    const { workspace } = await workspaces.readWorkspace('/', host);
 
-    // convert workspace to string
-    const workspaceContent = workspaceConfig.toString();
-
-    // parse workspace string into JSON object
-    const workspace: experimental.workspace.WorkspaceSchema = JSON.parse(workspaceContent);
 // #enddocregion workspace
+
+// #docregion project-info
 // #docregion project-fallback
     if (!options.project) {
-      options.project = workspace.defaultProject;
+      options.project = workspace.extensions.defaultProject;
     }
 // #enddocregion project-fallback
 
-// #docregion project-info
-    const projectName = options.project as string;
+    const project = workspace.projects.get(options.project);
+    if (!project) {
+      throw new SchematicsException(`Invalid project name: ${options.project}`);
+    }
 
-    const project = workspace.projects[projectName];
-
-    const projectType = project.projectType === 'application' ? 'app' : 'lib';
+    const projectType = project.extensions.projectType === 'application' ? 'app' : 'lib';
 // #enddocregion project-info
 
 // #docregion path

@@ -245,7 +245,7 @@ export type UnaryOperator = '+'|'-'|'!';
  * The binary operators supported by the `AstFactory`.
  */
 export type BinaryOperator =
-    '&&'|'>'|'>='|'&'|'/'|'=='|'==='|'<'|'<='|'-'|'%'|'*'|'!='|'!=='|'||'|'+';
+    '&&'|'>'|'>='|'&'|'/'|'=='|'==='|'<'|'<='|'-'|'%'|'*'|'!='|'!=='|'||'|'+'|'??';
 
 /**
  * The original location of the start or end of a node created by the `AstFactory`.

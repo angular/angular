@@ -1,9 +1,13 @@
 import { Component, ElementRef, EventEmitter, Input, OnChanges, Output, ViewChild } from '@angular/core';
+import { Clipboard } from '@angular/cdk/clipboard';
 import { Logger } from 'app/shared/logger.service';
 import { PrettyPrinter } from './pretty-printer.service';
-import { CopierService } from 'app/shared/copier.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Observable, of } from 'rxjs';
 import { tap } from 'rxjs/operators';
+import { unwrapHtmlForSink } from 'safevalues';
+import { htmlFromStringKnownToSatisfyTypeContract } from 'safevalues/unsafe/reviewed';
+import { fromOuterHTML } from 'app/shared/security';
 
 /**
  * Formatted Code Block
@@ -47,17 +51,19 @@ export class CodeComponent implements OnChanges {
   private codeText: string;
 
   /** Code that should be formatted with current inputs and displayed in the view. */
-  set code(code: string) {
+  set code(code: TrustedHTML) {
     this._code = code;
 
-    if (!this._code || !this._code.trim()) {
+    if (!this._code.toString().trim()) {
       this.showMissingCodeMessage();
     } else {
       this.formatDisplayedCode();
     }
   }
-  get code(): string { return this._code; }
-  _code: string;
+  get code(): TrustedHTML {
+    return this._code;
+  }
+  _code: TrustedHTML;
 
   /** Whether the copy button should be shown. */
   @Input() hideCopy: boolean;
@@ -96,7 +102,7 @@ export class CodeComponent implements OnChanges {
   constructor(
     private snackbar: MatSnackBar,
     private pretty: PrettyPrinter,
-    private copier: CopierService,
+    private clipboard: Clipboard,
     private logger: Logger) {}
 
   ngOnChanges() {
@@ -108,29 +114,39 @@ export class CodeComponent implements OnChanges {
   }
 
   private formatDisplayedCode() {
+    const linenums = this.getLinenums();
     const leftAlignedCode = leftAlign(this.code);
     this.setCodeHtml(leftAlignedCode); // start with unformatted code
     this.codeText = this.getCodeText(); // store the unformatted code as text (for copying)
 
-    this.pretty
-        .formatCode(leftAlignedCode, this.language, this.getLinenums())
-        .pipe(tap(() => this.codeFormatted.emit()))
-        .subscribe(c => this.setCodeHtml(c), () => { /* ignore failure to format */ }
-    );
+    const skipPrettify = of(undefined);
+    const prettifyCode = this.pretty
+        .formatCode(leftAlignedCode, this.language, linenums)
+        .pipe(tap(formattedCode => this.setCodeHtml(formattedCode)));
+
+    if (linenums !== false && this.language === 'none') {
+      this.logger.warn("Using 'linenums' with 'language: none' is currently not supported.");
+    }
+
+    ((this.language === 'none' ? skipPrettify : prettifyCode) as Observable<unknown>)
+        .subscribe(() => this.codeFormatted.emit(), () => { /* ignore failure to format */ });
   }
 
   /** Sets the message showing that the code could not be found. */
   private showMissingCodeMessage() {
     const src = this.path ? this.path + (this.region ? '#' + this.region : '') : '';
-    const srcMsg = src ? ` for\n${src}` : '.';
-    this.setCodeHtml(`<p class="code-missing">The code sample is missing${srcMsg}</p>`);
+    const msg = `The code sample is missing${src ? ` for\n${src}` : '.'}`;
+    const el = document.createElement('p');
+    el.className = 'code-missing';
+    el.textContent = msg;
+    this.setCodeHtml(fromOuterHTML(el));
   }
 
   /** Sets the innerHTML of the code container to the provided code string. */
-  private setCodeHtml(formattedCode: string) {
+  private setCodeHtml(formattedCode: TrustedHTML) {
     // **Security:** Code example content is provided by docs authors and as such its considered to
     // be safe for innerHTML purposes.
-    this.codeContainer.nativeElement.innerHTML = formattedCode;
+    this.codeContainer.nativeElement.innerHTML = unwrapHtmlForSink(formattedCode);
   }
 
   /** Gets the textContent of the displayed code element. */
@@ -144,7 +160,7 @@ export class CodeComponent implements OnChanges {
   /** Copies the code snippet to the user's clipboard. */
   doCopy() {
     const code = this.codeText;
-    const successfullyCopied = this.copier.copyText(code);
+    const successfullyCopied = this.clipboard.copy(code);
 
     if (successfullyCopied) {
       this.logger.log('Copied code to clipboard:', code);
@@ -168,10 +184,10 @@ export class CodeComponent implements OnChanges {
   }
 }
 
-function leftAlign(text: string): string {
+function leftAlign(text: TrustedHTML): TrustedHTML {
   let indent = Number.MAX_VALUE;
 
-  const lines = text.split('\n');
+  const lines = text.toString().split('\n');
   lines.forEach(line => {
     const lineIndent = line.search(/\S/);
     if (lineIndent !== -1) {
@@ -179,5 +195,7 @@ function leftAlign(text: string): string {
     }
   });
 
-  return lines.map(line => line.substr(indent)).join('\n').trim();
+  return htmlFromStringKnownToSatisfyTypeContract(
+      lines.map(line => line.substr(indent)).join('\n').trim(),
+      'safe manipulation of existing trusted HTML');
 }

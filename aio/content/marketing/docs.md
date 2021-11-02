@@ -7,29 +7,31 @@ Tutorials and guides include downloadable examples to accelerate your projects.
 
 
 <div class="card-container">
-  <a href="guide/setup-local" class="docs-card"
-    title="Angular Local Environment Setup">
-      <section>Get Started</section>
-      <p>Set up your local environment for development with the Angular CLI.</p>
-      <p class="card-footer">Local setup</p>
+  <a href="guide/what-is-angular" class="docs-card" title="Angular Platform Overview">
+    <section>What is Angular</section>
+    <p>Get a high-level overview of the Angular platform.</p>
+    <p class="card-footer">Platform overview</p>
+  </a>
+  <a href="start" class="docs-card" title="Getting started">
+    <section>Getting started</section>
+    <p>Examine and work with a small ready-made Angular app, without any setup.</p>
+    <p class="card-footer">Try it now</p>
   </a>
   <a href="guide/architecture" class="docs-card" title="Angular Concepts">
-      <section>Learn and Explore</section>
-      <p>Learn about the fundamental design concepts and architecture of Angular apps.</p>
-      <p class="card-footer">Introduction to Angular concepts</p>
+    <section>Learn and Explore</section>
+    <p>Learn about the fundamental design concepts and architecture of Angular apps.</p>
+    <p class="card-footer">Introduction to Angular concepts</p>
   </a>
-  <a href="start" class="docs-card" title="Try out Angular">
-      <section>Take a Look</section>
-      <p>Examine and work with a small ready-made Angular app, without any setup.</p>
-      <p class="card-footer">Try it now</p>
+  <a href="guide/setup-local" class="docs-card" title="Angular Local Environment Setup">
+    <section>Set up your environment</section>
+    <p>Set up your local environment for development with the Angular CLI.</p>
+    <p class="card-footer">Local setup</p>
   </a>
-  <a href="tutorial" class="docs-card" title="Create an app">
-      <section>Hello World</section>
-      <p>Work through a full tutorial to create your first app.</p>
-      <p class="card-footer">Tour of Heroes tutorial</p>
+  <a href="tutorial" class="docs-card" title="Work through a full tutorial">
+    <section>Hello World</section>
+    <p>Work through a full tutorial to create your first app.</p>
+    <p class="card-footer">Tour of Heroes tutorial</p>
   </a>
-
-
 </div>
 
 

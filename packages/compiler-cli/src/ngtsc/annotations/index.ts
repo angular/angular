@@ -8,7 +8,7 @@
 
 /// <reference types="node" />
 
-export {ResourceLoader} from './src/api';
+export {ResourceLoader, ResourceLoaderContext} from './src/api';
 export {ComponentDecoratorHandler} from './src/component';
 export {DirectiveDecoratorHandler} from './src/directive';
 export {InjectableDecoratorHandler} from './src/injectable';

@@ -1,13 +1,10 @@
-// #docregion
 import { HttpClient } from '@angular/common/http';
 import { Pipe, PipeTransform } from '@angular/core';
 
-// #docregion pipe-metadata
 @Pipe({
   name: 'fetch',
   pure: false
 })
-// #enddocregion pipe-metadata
 export class FetchJsonPipe implements PipeTransform {
   private cachedData: any = null;
   private cachedUrl = '';

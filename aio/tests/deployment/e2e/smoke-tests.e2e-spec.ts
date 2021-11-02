@@ -18,8 +18,8 @@ describe(browser.baseUrl, () => {
       await page.goTo('');
       const text = await page.getDocViewerText();
 
-      expect(text).toContain('one framework');
-      expect(text).toContain('mobile & desktop');
+      expect(text).toContain('modern web');
+      expect(text).toContain('developer\'s platform');
     });
 
     describe('(marketing pages)', () => {
@@ -68,6 +68,7 @@ describe(browser.baseUrl, () => {
         /* Directive */ 'api/common/NgIf': 'class ngif',
         /* Enum */ 'api/core/ChangeDetectionStrategy': 'enum changedetectionstrategy',
         /* Function */ 'api/animations/animate': 'animate(',
+        /* Global */ 'api/core/global/ngApplyChanges': 'ng.applychanges(',
         /* Interface */ 'api/core/OnDestroy': 'interface ondestroy',
         /* Pipe */ 'api/common/JsonPipe': '| json',
         /* Type-Alias */ 'api/common/http/HttpEvent': 'type httpevent',
@@ -103,11 +104,10 @@ describe(browser.baseUrl, () => {
     });
 
     it('should show relevant results on 404', async () => {
-      await page.goTo('http/router');
+      await page.goTo('common/http');
       const results = await page.getSearchResults();
 
-      expect(results).toContain('HttpClient');
-      expect(results).toContain('Router');
+      expect(results).toContain('common/http package');
     });
   });
 });

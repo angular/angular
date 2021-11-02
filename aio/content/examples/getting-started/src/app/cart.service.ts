@@ -1,15 +1,17 @@
-// #docplaster
 // #docregion import-http
 import { Injectable } from '@angular/core';
-
 import { HttpClient } from '@angular/common/http';
-// #enddocregion import-http
+// #docregion props
+import { Product } from './products';
+// #enddocregion props, import-http
+
 @Injectable({
   providedIn: 'root'
 })
 // #docregion props, methods, inject-http, get-shipping
 export class CartService {
-  items = [];
+// #enddocregion get-shipping
+  items: Product[] = [];
 // #enddocregion props, methods
 
   constructor(
@@ -18,7 +20,7 @@ export class CartService {
 // #enddocregion inject-http
 // #docregion methods
 
-  addToCart(product) {
+  addToCart(product: Product) {
     this.items.push(product);
   }
 
@@ -32,8 +34,10 @@ export class CartService {
   }
 // #enddocregion methods
 
+// #docregion get-shipping
   getShippingPrices() {
-    return this.http.get('/assets/shipping.json');
+    return this.http.get<{type: string, price: number}[]>('/assets/shipping.json');
   }
 // #docregion props, methods, inject-http
 }
+// #enddocregion props, methods, inject-http

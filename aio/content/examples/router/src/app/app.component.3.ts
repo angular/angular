@@ -11,17 +11,13 @@ import { Router } from '@angular/router';
   // #enddocregion h-anchor
   */
   /* Incomplete Crisis Center link when CC lacks a default
-  // #docregion cc-anchor-fail
   // The link now fails with a "non-terminal link" error
   // #docregion cc-anchor-w-default
   <a [routerLink]="['/crisis-center']">Crisis Center</a>
   // #enddocregion cc-anchor-w-default
-  // #enddocregion cc-anchor-fail
   */
   /* Crisis Center link when CC lacks a default
-  // #docregion cc-anchor-no-default
   <a [routerLink]="['/crisis-center/']">Crisis Center</a>
-  // #enddocregion cc-anchor-no-default
   */
   /* Crisis Center Detail link
   // #docregion Dragon-anchor

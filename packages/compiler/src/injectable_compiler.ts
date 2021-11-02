@@ -7,16 +7,15 @@
  */
 
 import {StaticSymbol} from './aot/static_symbol';
-import {CompileInjectableMetadata, CompileNgModuleMetadata, CompileProviderMetadata, identifierName} from './compile_metadata';
+import {CompileInjectableMetadata} from './compile_metadata';
 import {CompileReflector} from './compile_reflector';
-import {InjectFlags, NodeFlags} from './core';
+import {OutputContext} from './constant_pool';
+import {InjectFlags} from './core';
 import {Identifiers} from './identifiers';
 import * as o from './output/output_ast';
 import {convertValueToOutputAst} from './output/value_util';
-import {typeSourceSpan} from './parse_util';
-import {NgModuleProviderAnalyzer} from './provider_analyzer';
-import {OutputContext} from './util';
-import {componentFactoryResolverProviderDef, depDef, providerDef} from './view_compiler/provider_compiler';
+import {identifierName} from './parse_util';
+import {Identifiers as R3} from './render3/r3_identifiers';
 
 type MapEntry = {
   key: string,
@@ -116,7 +115,7 @@ export class InjectableCompiler {
       mapEntry('token', ctx.importExpr(injectable.type.reference)),
       mapEntry('providedIn', providedIn),
     ];
-    return o.importExpr(Identifiers.ɵɵdefineInjectable).callFn([o.literalMap(def)]);
+    return o.importExpr(R3.ɵɵdefineInjectable).callFn([o.literalMap(def)], undefined, true);
   }
 
   compile(injectable: CompileInjectableMetadata, ctx: OutputContext): void {

@@ -148,12 +148,13 @@ export class AnimationGroupPlayer implements AnimationPlayer {
   }
 
   getPosition(): number {
-    let min = 0;
-    this.players.forEach(player => {
-      const p = player.getPosition();
-      min = Math.min(p, min);
-    });
-    return min;
+    const longestPlayer =
+        this.players.reduce((longestSoFar: AnimationPlayer|null, player: AnimationPlayer) => {
+          const newPlayerIsLongest =
+              longestSoFar === null || player.totalTime > longestSoFar.totalTime;
+          return newPlayerIsLongest ? player : longestSoFar;
+        }, null);
+    return longestPlayer != null ? longestPlayer.getPosition() : 0;
   }
 
   beforeDestroy(): void {

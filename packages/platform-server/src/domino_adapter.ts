@@ -5,17 +5,13 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-const domino = require('domino');
 
-import {ɵBrowserDomAdapter as BrowserDomAdapter} from '@angular/platform-browser';
 import {ɵsetRootDomAdapter as setRootDomAdapter} from '@angular/common';
+import {ɵBrowserDomAdapter as BrowserDomAdapter} from '@angular/platform-browser';
+import * as domino from 'domino';
 
-function _notImplemented(methodName: string) {
-  return new Error('This method is not implemented in DominoAdapter: ' + methodName);
-}
-
-function setDomTypes() {
-  // Make all Domino types available as types in the global env.
+export function setDomTypes() {
+  // Make all Domino types available in the global env.
   Object.assign(global, domino.impl);
   (global as any)['KeyboardEvent'] = domino.impl.Event;
 }
@@ -40,59 +36,34 @@ export function serializeDocument(doc: Document): string {
  * DOM Adapter for the server platform based on https://github.com/fgnass/domino.
  */
 export class DominoAdapter extends BrowserDomAdapter {
-  static makeCurrent() {
+  static override makeCurrent() {
     setDomTypes();
     setRootDomAdapter(new DominoAdapter());
   }
 
+  override readonly supportsDOMEvents = false;
   private static defaultDoc: Document;
 
-  log(error: string) {
-    // tslint:disable-next-line:no-console
-    console.log(error);
-  }
-
-  logGroup(error: string) {
-    console.error(error);
-  }
-
-  logGroupEnd() {}
-
-  supportsDOMEvents(): boolean {
-    return false;
-  }
-
-  createHtmlDocument(): HTMLDocument {
+  override createHtmlDocument(): HTMLDocument {
     return parseDocument('<html><head><title>fakeTitle</title></head><body></body></html>');
   }
 
-  getDefaultDocument(): Document {
+  override getDefaultDocument(): Document {
     if (!DominoAdapter.defaultDoc) {
       DominoAdapter.defaultDoc = domino.createDocument();
     }
     return DominoAdapter.defaultDoc;
   }
 
-  isElementNode(node: any): boolean {
+  override isElementNode(node: any): boolean {
     return node ? node.nodeType === DominoAdapter.defaultDoc.ELEMENT_NODE : false;
   }
-  isShadowRoot(node: any): boolean {
+  override isShadowRoot(node: any): boolean {
     return node.shadowRoot == node;
   }
 
-  getProperty(el: Element, name: string): any {
-    if (name === 'href') {
-      // Domino tries to resolve href-s which we do not want. Just return the
-      // attribute value.
-      return el.getAttribute('href');
-    } else if (name === 'innerText') {
-      // Domino does not support innerText. Just map it to textContent.
-      return el.textContent;
-    }
-    return (<any>el)[name];
-  }
-
-  getGlobalEventTarget(doc: Document, target: string): EventTarget|null {
+  /** @deprecated No longer being used in Ivy code. To be removed in version 14. */
+  override getGlobalEventTarget(doc: Document, target: string): EventTarget|null {
     if (target === 'window') {
       return doc.defaultView;
     }
@@ -105,17 +76,12 @@ export class DominoAdapter extends BrowserDomAdapter {
     return null;
   }
 
-  getBaseHref(doc: Document): string {
-    const base = doc.documentElement!.querySelector('base');
-    let href = '';
-    if (base) {
-      href = base.getAttribute('href')!;
-    }
+  override getBaseHref(doc: Document): string {
     // TODO(alxhub): Need relative path logic from BrowserDomAdapter here?
-    return href;
+    return doc.documentElement!.querySelector('base')?.getAttribute('href') || '';
   }
 
-  dispatchEvent(el: Node, evt: any) {
+  override dispatchEvent(el: Node, evt: any) {
     el.dispatchEvent(evt);
 
     // Dispatch the event to the window also.
@@ -126,24 +92,11 @@ export class DominoAdapter extends BrowserDomAdapter {
     }
   }
 
-  getHistory(): History {
-    throw _notImplemented('getHistory');
-  }
-  getLocation(): Location {
-    throw _notImplemented('getLocation');
-  }
-  getUserAgent(): string {
+  override getUserAgent(): string {
     return 'Fake user agent';
   }
 
-  performanceNow(): number {
-    return Date.now();
-  }
-
-  supportsCookies(): boolean {
-    return false;
-  }
-  getCookie(name: string): string {
-    throw _notImplemented('getCookie');
+  override getCookie(name: string): string {
+    throw new Error('getCookie has not been implemented');
   }
 }

@@ -30,9 +30,7 @@ export type Renderer3 = ObjectOrientedRenderer3|ProceduralRenderer3;
 
 export type GlobalTargetName = 'document'|'window'|'body';
 
-export type GlobalTargetResolver = (element: any) => {
-  name: GlobalTargetName, target: EventTarget
-};
+export type GlobalTargetResolver = (element: any) => EventTarget;
 
 /**
  * Object Oriented style of API needed to create elements and text nodes.

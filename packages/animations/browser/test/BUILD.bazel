@@ -24,6 +24,7 @@ ts_library(
         "//packages/animations/browser/testing",
         "//packages/core",
         "//packages/core/testing",
+        "//packages/platform-browser/testing",
     ],
 )
 

@@ -67,6 +67,27 @@ import {WebAnimationsPlayer} from '../../../src/render/web_animations/web_animat
       player.finish();
       expect(log).toEqual(['started', 'done']);
     });
+
+    it('should allow setting position before animation is started', () => {
+      const player = new WebAnimationsPlayer(element, [], {duration: 1000});
+
+      player.setPosition(0.5);
+      const p = innerPlayer!;
+      expect(p.log).toEqual(['pause']);
+      expect(p.currentTime).toEqual(500);
+    });
+
+    it('should continue playing animations from setPosition', () => {
+      const player = new WebAnimationsPlayer(element, [], {duration: 1000});
+
+      player.play();
+      const p = innerPlayer!;
+      expect(p.log).toEqual(['play']);
+
+      player.setPosition(0.5);
+      expect(p.currentTime).toEqual(500);
+      expect(p.log).toEqual(['play']);
+    });
   });
 }
 

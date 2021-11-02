@@ -7,10 +7,8 @@ import { FormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 // #enddocregion auth, animations-module
-// #docregion inspect-config
 import { Router } from '@angular/router';
 
-// #enddocregion inspect-config
 // #docregion auth
 import { AppComponent } from './app.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';

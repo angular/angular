@@ -20,7 +20,7 @@ const DEFAULT_NAMESPACE_ID = 'id';
 (function() {
 const driver = new MockAnimationDriver();
 
-// these tests are only mean't to be run within the DOM
+// these tests are only meant to be run within the DOM
 if (isNode) return;
 
 describe('TransitionAnimationEngine', () => {
@@ -693,11 +693,11 @@ class SuffixNormalizer extends AnimationStyleNormalizer {
     super();
   }
 
-  normalizePropertyName(propertyName: string, errors: string[]): string {
+  override normalizePropertyName(propertyName: string, errors: string[]): string {
     return propertyName + this._suffix;
   }
 
-  normalizeStyleValue(
+  override normalizeStyleValue(
       userProvidedProperty: string, normalizedProperty: string, value: string|number,
       errors: string[]): string {
     return value + this._suffix;
@@ -709,14 +709,14 @@ class ExactCssValueNormalizer extends AnimationStyleNormalizer {
     super();
   }
 
-  normalizePropertyName(propertyName: string, errors: string[]): string {
+  override normalizePropertyName(propertyName: string, errors: string[]): string {
     if (!this._allowedValues[propertyName]) {
       errors.push(`The CSS property \`${propertyName}\` is not allowed`);
     }
     return propertyName;
   }
 
-  normalizeStyleValue(
+  override normalizeStyleValue(
       userProvidedProperty: string, normalizedProperty: string, value: string|number,
       errors: string[]): string {
     const expectedValue = this._allowedValues[userProvidedProperty];
@@ -736,7 +736,7 @@ function registerTrigger(
   const ast = buildAnimationAst(driver, metadata as AnimationMetadata, errors) as TriggerAst;
   if (errors.length) {
   }
-  const trigger = buildTrigger(name, ast);
+  const trigger = buildTrigger(name, ast, new NoopAnimationStyleNormalizer());
   engine.register(id, element);
   engine.registerTrigger(id, name, trigger);
 }

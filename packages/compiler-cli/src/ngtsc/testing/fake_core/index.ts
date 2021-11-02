@@ -70,9 +70,10 @@ export interface SimpleChanges {
   [propName: string]: any;
 }
 
-export type ɵɵNgModuleDefWithMeta<ModuleT, DeclarationsT, ImportsT, ExportsT> = any;
-export type ɵɵDirectiveDefWithMeta<DirT, SelectorT, ExportAsT, InputsT, OutputsT, QueriesT> = any;
-export type ɵɵPipeDefWithMeta<PipeT, NameT> = any;
+export type ɵɵNgModuleDeclaration<ModuleT, DeclarationsT, ImportsT, ExportsT> = unknown;
+export type ɵɵDirectiveDeclaration<DirT, SelectorT, ExportAsT, InputsT, OutputsT, QueriesT> =
+    unknown;
+export type ɵɵPipeDeclaration<PipeT, NameT> = unknown;
 
 export enum ViewEncapsulation {
   Emulated = 0,
@@ -90,7 +91,10 @@ export const CUSTOM_ELEMENTS_SCHEMA: any = false;
 export const NO_ERRORS_SCHEMA: any = false;
 
 export class EventEmitter<T> {
-  subscribe(generatorOrNext?: any, error?: any, complete?: any): unknown {
+  subscribe(next?: (value: T) => void, error?: (error: any) => void, complete?: () => void):
+      unknown;
+  subscribe(observerOrNext?: any, error?: any, complete?: any): unknown;
+  subscribe(observerOrNext?: any, error?: any, complete?: any): unknown {
     return null;
   }
 }
@@ -105,4 +109,12 @@ export class NgZone {}
 
 export interface PipeTransform {
   transform(value: any, ...args: any[]): any;
+}
+
+export interface OnDestroy {
+  ngOnDestroy(): void;
+}
+
+export interface TrackByFunction<T> {
+  <U extends T>(index: number, item: T&U): any;
 }

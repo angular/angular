@@ -140,8 +140,7 @@ The following table lists some of the key AngularJS template features with their
 
       Angular has true template input variables that are explicitly defined using the `let` keyword.
 
-      For more information, see the [ngFor micro-syntax](guide/built-in-directives#microsyntax)
-      section of the [Built-in Directives](guide/built-in-directives) page.
+      For more information, see the [Structural directive shorthand](guide/structural-directives#shorthand) section of [Structural Directives](guide/structural-directives).
     </td>
 
   </tr>
@@ -191,7 +190,7 @@ The following are some of the key AngularJS built-in directives and their equiva
 
       The application startup process is called **bootstrapping**.
 
-      Although you can bootstrap an AngularJS app in code,
+      Although you can bootstrap an AngularJS application in code,
       many applications bootstrap declaratively with the `ng-app` directive,
       giving it the name of the application's module (`movieHunter`).
     </td>
@@ -208,7 +207,7 @@ The following are some of the key AngularJS built-in directives and their equiva
 
 
       Angular doesn't have a bootstrap directive.
-      To launch the app in code, explicitly bootstrap the application's root module (`AppModule`)
+      To launch the application in code, explicitly bootstrap the application's root module (`AppModule`)
       in `main.ts`
       and the application's root component (`AppComponent`) in `app.module.ts`.
     </td>
@@ -641,7 +640,7 @@ The following are some of the key AngularJS built-in directives and their equiva
       For more information on style binding, see the [Style binding](guide/attribute-binding#style-binding) section of the
       [Attribute binding](guide/attribute-binding) page.
 
-      For more information on the `ngStyle` directive, see the [NgStyle](guide/built-in-directives#ngStyle)
+      For more information on the `ngStyle` directive, see the [NgStyle](guide/built-in-directives#ngstyle)
       section of the [Built-in directives](guide/built-in-directives) page.
     </td>
 
@@ -692,9 +691,9 @@ The following are some of the key AngularJS built-in directives and their equiva
 
       In this example, if `favoriteHero` is not set, the `ngSwitch` value is `null`
       and `*ngSwitchDefault` displays, "Please enter ...".
-      If `favoriteHero` is set, the app checks the movie hero by calling a component method.
-      If that method returns `true`, the app selects `*ngSwitchCase="true"` and displays: "Excellent choice!"
-      If that methods returns `false`, the app selects `*ngSwitchCase="false"` and displays: "No movie, sorry!"
+      If `favoriteHero` is set, the application checks the movie hero by calling a component method.
+      If that method returns `true`, the application selects `*ngSwitchCase="true"` and displays: "Excellent choice!"
+      If that methods returns `false`, the application selects `*ngSwitchCase="false"` and displays: "No movie, sorry!"
 
       The (*) before `ngSwitchCase` and `ngSwitchDefault` is required in this example.
 

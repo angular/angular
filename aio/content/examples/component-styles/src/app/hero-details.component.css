@@ -3,22 +3,26 @@
 @import './hero-details-box.css';
 /* #enddocregion import */
 
+
 /* #docregion host */
 :host {
-  display: block;
-  border: 1px solid black;
+  font-style: italic;
 }
 /* #enddocregion host */
 
 /* #docregion hostfunction */
+:host {
+  font-style: italic;
+}
+
 :host(.active) {
-  border-width: 3px;
+  font-weight: bold;
 }
 /* #enddocregion hostfunction */
 
 /* #docregion hostcontext */
-:host-context(.theme-light) h2 {
-  background-color: #eef;
+:host-context(.active) {
+  font-style: italic;
 }
 /* #enddocregion hostcontext */
 

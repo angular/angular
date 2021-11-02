@@ -48,13 +48,11 @@ const someHero = new Hero(42, 'Magma', 'Had a great month!', '555-555-5555');
 export class HeroOfTheMonthComponent {
   logs: string[] = [];
 
-// #docregion ctor-signature
   constructor(
       logger: MinimalLogger,
       public heroOfTheMonth: Hero,
       @Inject(RUNNERS_UP) public runnersUp: string,
       @Inject(TITLE) public title: string)
-// #enddocregion ctor-signature
   {
     this.logs = logger.logs;
     logger.logInfo('starting up');

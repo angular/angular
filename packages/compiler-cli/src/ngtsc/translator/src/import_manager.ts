@@ -5,9 +5,19 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import * as ts from 'typescript';
+import ts from 'typescript';
 import {ImportRewriter, NoopImportRewriter} from '../../imports';
-import {Import, ImportGenerator, NamedImport} from './api/import_generator';
+import {ImportGenerator, NamedImport} from './api/import_generator';
+
+/**
+ * Information about an import that has been added to a module.
+ */
+export interface Import {
+  /** The name of the module that has been imported. */
+  specifier: string;
+  /** The `ts.Identifer` by which the imported module is known. */
+  qualifier: ts.Identifier;
+}
 
 export class ImportManager implements ImportGenerator<ts.Identifier> {
   private specifierToIdentifier = new Map<string, ts.Identifier>();
@@ -42,11 +52,14 @@ export class ImportManager implements ImportGenerator<ts.Identifier> {
   }
 
   getAllImports(contextPath: string): Import[] {
-    const imports: {specifier: string, qualifier: string}[] = [];
-    this.specifierToIdentifier.forEach((qualifier, specifier) => {
-      specifier = this.rewriter.rewriteSpecifier(specifier, contextPath);
-      imports.push({specifier, qualifier: qualifier.text});
-    });
+    const imports: Import[] = [];
+    for (const [originalSpecifier, qualifier] of this.specifierToIdentifier) {
+      const specifier = this.rewriter.rewriteSpecifier(originalSpecifier, contextPath);
+      imports.push({
+        specifier,
+        qualifier,
+      });
+    }
     return imports;
   }
 }

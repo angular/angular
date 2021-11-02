@@ -10,14 +10,12 @@ import {getHtmlTagDefinition} from './html_tags';
 import {TokenizeOptions} from './lexer';
 import {Parser, ParseTreeResult} from './parser';
 
-export {ParseTreeResult, TreeError} from './parser';
-
 export class HtmlParser extends Parser {
   constructor() {
     super(getHtmlTagDefinition);
   }
 
-  parse(source: string, url: string, options?: TokenizeOptions): ParseTreeResult {
+  override parse(source: string, url: string, options?: TokenizeOptions): ParseTreeResult {
     return super.parse(source, url, options);
   }
 }

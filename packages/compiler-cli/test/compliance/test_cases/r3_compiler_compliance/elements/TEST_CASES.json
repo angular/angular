@@ -28,6 +28,23 @@
       ]
     },
     {
+      "description": "should handle SVG with an embedded ng-template",
+      "inputFiles": [
+        "svg_embedded_view.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "svg_embedded_view_template.js",
+              "generated": "svg_embedded_view.js"
+            }
+          ],
+          "failureMessage": "Incorrect template."
+        }
+      ]
+    },
+    {
       "description": "should handle MathML",
       "inputFiles": [
         "mathml.ts"
@@ -220,6 +237,17 @@
       "description": "should de-duplicate attribute arrays",
       "inputFiles": [
         "deduplicate_attributes.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect generated template."
+        }
+      ]
+    },
+    {
+      "description": "should specify security-sensitive constant attributes as template literals",
+      "inputFiles": [
+        "security_sensitive_constant_attributes.ts"
       ],
       "expectations": [
         {

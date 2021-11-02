@@ -2,27 +2,17 @@
 // #docregion
 import { AfterViewChecked, AfterViewInit, Component, ViewChild } from '@angular/core';
 
+import { ChildViewComponent } from './child-view.component';
 import { LoggerService } from './logger.service';
 
-//////////////////
-// #docregion child-view
-@Component({
-  selector: 'app-child-view',
-  template: '<input [(ngModel)]="hero">'
-})
-export class ChildViewComponent {
-  hero = 'Magneta';
-}
-// #enddocregion child-view
-
-//////////////////////
 @Component({
   selector: 'after-view',
 // #docregion template
   template: `
-    <div>-- child view begins --</div>
+    <div>child view begins</div>
       <app-child-view></app-child-view>
-    <div>-- child view ends --</div>`
+    <div>child view ends</div>
+  `
 // #enddocregion template
    + `
     <p *ngIf="comment" class="comment">
@@ -38,7 +28,7 @@ export class AfterViewComponent implements  AfterViewChecked, AfterViewInit {
   private prevHero = '';
 
   // Query for a VIEW child of type `ChildViewComponent`
-  @ViewChild(ChildViewComponent) viewChild: ChildViewComponent;
+  @ViewChild(ChildViewComponent) viewChild!: ChildViewComponent;
 
   // #enddocregion hooks
   constructor(private logger: LoggerService) {
@@ -84,34 +74,3 @@ export class AfterViewComponent implements  AfterViewChecked, AfterViewInit {
   // ...
 }
 // #enddocregion hooks
-
-//////////////
-@Component({
-  selector: 'after-view-parent',
-  template: `
-  <div class="parent">
-    <h2>AfterView</h2>
-
-    <after-view  *ngIf="show"></after-view>
-
-    <h4>-- AfterView Logs --</h4>
-    <p><button (click)="reset()">Reset</button></p>
-    <div *ngFor="let msg of logger.logs">{{msg}}</div>
-  </div>
-  `,
-  styles: ['.parent {background: burlywood}'],
-  providers: [LoggerService]
-})
-export class AfterViewParentComponent {
-  show = true;
-
-  constructor(public logger: LoggerService) {
-  }
-
-  reset() {
-    this.logger.clear();
-    // quickly remove and reload AfterViewComponent which recreates it
-    this.show = false;
-    this.logger.tick_then(() => this.show = true);
-  }
-}

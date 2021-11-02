@@ -7,7 +7,6 @@
  */
 
 import {isTrustedTypesSink} from '@angular/compiler/src/schema/trusted_types_sinks';
-import {describe, expect, it} from '@angular/core/testing/src/testing_internal';
 
 {
   describe('isTrustedTypesSink', () => {

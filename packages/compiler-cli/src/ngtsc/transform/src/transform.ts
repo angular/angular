@@ -7,11 +7,13 @@
  */
 
 import {ConstantPool} from '@angular/compiler';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
-import {DefaultImportRecorder, ImportRewriter} from '../../imports';
+import {DefaultImportTracker, ImportRewriter} from '../../imports';
+import {getDefaultImportDeclaration} from '../../imports/src/default';
+import {PerfPhase, PerfRecorder} from '../../perf';
 import {Decorator, ReflectionHost} from '../../reflection';
-import {ImportManager, RecordWrappedNodeExprFn, translateExpression, translateStatement} from '../../translator';
+import {ImportManager, RecordWrappedNodeFn, translateExpression, translateStatement, TranslatorOptions} from '../../translator';
 import {visit, VisitListEntryResult, Visitor} from '../../util/src/visitor';
 
 import {CompileResult} from './api';
@@ -33,14 +35,16 @@ interface FileOverviewMeta {
 
 export function ivyTransformFactory(
     compilation: TraitCompiler, reflector: ReflectionHost, importRewriter: ImportRewriter,
-    defaultImportRecorder: DefaultImportRecorder, isCore: boolean,
+    defaultImportTracker: DefaultImportTracker, perf: PerfRecorder, isCore: boolean,
     isClosureCompilerEnabled: boolean): ts.TransformerFactory<ts.SourceFile> {
-  const recordWrappedNodeExpr = createRecorderFn(defaultImportRecorder);
+  const recordWrappedNode = createRecorderFn(defaultImportTracker);
   return (context: ts.TransformationContext): ts.Transformer<ts.SourceFile> => {
     return (file: ts.SourceFile): ts.SourceFile => {
-      return transformIvySourceFile(
-          compilation, context, reflector, importRewriter, file, isCore, isClosureCompilerEnabled,
-          recordWrappedNodeExpr);
+      return perf.inPhase(
+          PerfPhase.Compile,
+          () => transformIvySourceFile(
+              compilation, context, reflector, importRewriter, file, isCore,
+              isClosureCompilerEnabled, recordWrappedNode));
     };
   };
 }
@@ -57,7 +61,7 @@ class IvyCompilationVisitor extends Visitor {
     super();
   }
 
-  visitClassDeclaration(node: ts.ClassDeclaration):
+  override visitClassDeclaration(node: ts.ClassDeclaration):
       VisitListEntryResult<ts.Statement, ts.ClassDeclaration> {
     // Determine if this class has an Ivy field that needs to be added, and compile the field
     // to an expression if so.
@@ -78,12 +82,12 @@ class IvyTransformationVisitor extends Visitor {
       private compilation: TraitCompiler,
       private classCompilationMap: Map<ts.ClassDeclaration, CompileResult[]>,
       private reflector: ReflectionHost, private importManager: ImportManager,
-      private recordWrappedNodeExpr: RecordWrappedNodeExprFn<ts.Expression>,
+      private recordWrappedNodeExpr: RecordWrappedNodeFn<ts.Expression>,
       private isClosureCompilerEnabled: boolean, private isCore: boolean) {
     super();
   }
 
-  visitClassDeclaration(node: ts.ClassDeclaration):
+  override visitClassDeclaration(node: ts.ClassDeclaration):
       VisitListEntryResult<ts.Statement, ts.ClassDeclaration> {
     // If this class is not registered in the map, it means that it doesn't have Angular decorators,
     // thus no further processing is required.
@@ -91,15 +95,18 @@ class IvyTransformationVisitor extends Visitor {
       return {node};
     }
 
+    const translateOptions: TranslatorOptions<ts.Expression> = {
+      recordWrappedNode: this.recordWrappedNodeExpr,
+      annotateForClosureCompiler: this.isClosureCompilerEnabled,
+    };
+
     // There is at least one field to add.
     const statements: ts.Statement[] = [];
     const members = [...node.members];
 
     for (const field of this.classCompilationMap.get(node)!) {
       // Translate the initializer for the field into TS nodes.
-      const exprNode = translateExpression(
-          field.initializer, this.importManager,
-          {recordWrappedNodeExpr: this.recordWrappedNodeExpr});
+      const exprNode = translateExpression(field.initializer, this.importManager, translateOptions);
 
       // Create a static property declaration for the new field.
       const property = ts.createProperty(
@@ -116,10 +123,7 @@ class IvyTransformationVisitor extends Visitor {
             /* hasTrailingNewLine */ false);
       }
 
-      field.statements
-          .map(
-              stmt => translateStatement(
-                  stmt, this.importManager, {recordWrappedNodeExpr: this.recordWrappedNodeExpr}))
+      field.statements.map(stmt => translateStatement(stmt, this.importManager, translateOptions))
           .forEach(stmt => statements.push(stmt));
 
       members.push(property);
@@ -249,7 +253,7 @@ function transformIvySourceFile(
     compilation: TraitCompiler, context: ts.TransformationContext, reflector: ReflectionHost,
     importRewriter: ImportRewriter, file: ts.SourceFile, isCore: boolean,
     isClosureCompilerEnabled: boolean,
-    recordWrappedNodeExpr: RecordWrappedNodeExprFn<ts.Expression>): ts.SourceFile {
+    recordWrappedNode: RecordWrappedNodeFn<ts.Expression>): ts.SourceFile {
   const constantPool = new ConstantPool(isClosureCompilerEnabled);
   const importManager = new ImportManager(importRewriter);
 
@@ -271,7 +275,7 @@ function transformIvySourceFile(
   // results obtained at Step 1.
   const transformationVisitor = new IvyTransformationVisitor(
       compilation, compilationVisitor.classCompilationMap, reflector, importManager,
-      recordWrappedNodeExpr, isClosureCompilerEnabled, isCore);
+      recordWrappedNode, isClosureCompilerEnabled, isCore);
   let sf = visit(file, transformationVisitor, context);
 
   // Generate the constant statements first, as they may involve adding additional imports
@@ -279,9 +283,10 @@ function transformIvySourceFile(
   const downlevelTranslatedCode = getLocalizeCompileTarget(context) < ts.ScriptTarget.ES2015;
   const constants =
       constantPool.statements.map(stmt => translateStatement(stmt, importManager, {
-                                    recordWrappedNodeExpr,
-                                    downlevelLocalizedStrings: downlevelTranslatedCode,
+                                    recordWrappedNode,
+                                    downlevelTaggedTemplates: downlevelTranslatedCode,
                                     downlevelVariableDeclarations: downlevelTranslatedCode,
+                                    annotateForClosureCompiler: isClosureCompilerEnabled,
                                   }));
 
   // Preserve @fileoverview comments required by Closure, since the location might change as a
@@ -366,11 +371,12 @@ function isFromAngularCore(decorator: Decorator): boolean {
   return decorator.import !== null && decorator.import.from === '@angular/core';
 }
 
-function createRecorderFn(defaultImportRecorder: DefaultImportRecorder):
-    RecordWrappedNodeExprFn<ts.Expression> {
-  return expr => {
-    if (ts.isIdentifier(expr)) {
-      defaultImportRecorder.recordUsedIdentifier(expr);
+function createRecorderFn(defaultImportTracker: DefaultImportTracker):
+    RecordWrappedNodeFn<ts.Expression> {
+  return node => {
+    const importDecl = getDefaultImportDeclaration(node);
+    if (importDecl !== null) {
+      defaultImportTracker.recordUsedImport(importDecl);
     }
   };
 }

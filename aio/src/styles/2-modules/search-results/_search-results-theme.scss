@@ -1,0 +1,66 @@
+@use 'sass:color';
+@use 'sass:map';
+@use '../../constants';
+@use '~@angular/material' as mat;
+
+@mixin theme($theme) {
+  $foreground: map.get($theme, foreground);
+  $is-dark-theme: map.get($theme, is-dark);
+
+  aio-search-results {
+    .search-results {
+      background-color: constants.$darkgray;
+      box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.3);
+
+      .search-area {
+        .search-section-header {
+          color: constants.$white;
+        }
+
+        ul {
+          .search-result-item {
+            color: if($is-dark-theme, constants.$offwhite, constants.$lightgray);
+
+            &:hover {
+              color: constants.$white;
+            }
+          }
+        }
+      }
+
+      .no-results {
+        color: constants.$white;
+      }
+
+      a {
+        color: mat.get-color-from-palette($foreground, text);
+      }
+    }
+
+    &.embedded {
+      .search-results {
+        .search-area {
+          .search-section-header {
+            color: constants.$darkgray;
+          }
+
+          .search-result-item {
+            color: if($is-dark-theme, constants.$offwhite, color.adjust(constants.$darkgray, $lightness: 10%));
+
+            &:hover {
+              color: constants.$accentblue;
+            }
+          }
+        }
+
+        .no-results {
+          color: mat.get-color-from-palette($foreground, text);
+        }
+
+        a {
+          color: constants.$blue;
+        }
+      }
+    }
+  }
+}

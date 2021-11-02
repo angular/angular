@@ -4,7 +4,7 @@ import { AbstractControl, FormGroup, NG_VALIDATORS, ValidationErrors, Validator,
 
 // #docregion cross-validation-validator
 /** A hero's name can't match the hero's alter ego */
-export const identityRevealedValidator: ValidatorFn = (control: FormGroup): ValidationErrors | null => {
+export const identityRevealedValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
   const name = control.get('name');
   const alterEgo = control.get('alterEgo');
 
@@ -18,7 +18,7 @@ export const identityRevealedValidator: ValidatorFn = (control: FormGroup): Vali
   providers: [{ provide: NG_VALIDATORS, useExisting: IdentityRevealedValidatorDirective, multi: true }]
 })
 export class IdentityRevealedValidatorDirective implements Validator {
-  validate(control: AbstractControl): ValidationErrors {
+  validate(control: AbstractControl): ValidationErrors | null {
     return identityRevealedValidator(control);
   }
 }

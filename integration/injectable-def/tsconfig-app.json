@@ -1,17 +1,14 @@
 {
   "compilerOptions": {
-    "target": "es5",
-    "module": "commonjs",
+    "target": "es2020",
+    "module": "es2020",
     "moduleResolution": "node",
-    "lib": ["es2015", "dom"],
+    "lib": ["es2020", "dom"],
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "outDir": "dist",
     "types": ["node"],
     "rootDir": "."
-  },
-  "angularCompilerOptions": {
-    "enableIvy": false,
   },
   "files": [
     "src/app.ts",

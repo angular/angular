@@ -10,7 +10,7 @@ ng_module(
         ],
     ),
     module_name = "app_built",
-    tags = ["ivy-only"],
+    tags = [],
     deps = [
         "//packages/core",
         "@npm//rxjs",

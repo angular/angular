@@ -13,7 +13,7 @@ export const ISO8601_DATE_REGEX =
 //    1        2       3         4          5          6          7          8  9     10      11
 const NAMED_FORMATS: {[localeId: string]: {[format: string]: string}} = {};
 const DATE_FORMATS_SPLIT =
-    /((?:[^GyYMLwWdEabBhHmsSzZO']+)|(?:'(?:[^']|'')*')|(?:G{1,5}|y{1,4}|Y{1,4}|M{1,5}|L{1,5}|w{1,2}|W{1}|d{1,2}|E{1,6}|a{1,5}|b{1,5}|B{1,5}|h{1,2}|H{1,2}|m{1,2}|s{1,2}|S{1,3}|z{1,4}|Z{1,5}|O{1,4}))([\s\S]*)/;
+    /((?:[^BEGHLMOSWYZabcdhmswyz']+)|(?:'(?:[^']|'')*')|(?:G{1,5}|y{1,4}|Y{1,4}|M{1,5}|L{1,5}|w{1,2}|W{1}|d{1,2}|E{1,6}|c{1,6}|a{1,5}|b{1,5}|B{1,5}|h{1,2}|H{1,2}|m{1,2}|s{1,2}|S{1,3}|z{1,4}|Z{1,5}|O{1,4}))([\s\S]*)/;
 
 enum ZoneWidth {
   Short,
@@ -57,7 +57,7 @@ enum TranslationType {
  * @returns The formatted date string.
  *
  * @see `DatePipe`
- * @see [Internationalization (i18n) Guide](https://angular.io/guide/i18n)
+ * @see [Internationalization (i18n) Guide](https://angular.io/guide/i18n-overview)
  *
  * @publicApi
  */
@@ -99,6 +99,38 @@ export function formatDate(
   });
 
   return text;
+}
+
+/**
+ * Create a new Date object with the given date value, and the time set to midnight.
+ *
+ * We cannot use `new Date(year, month, date)` because it maps years between 0 and 99 to 1900-1999.
+ * See: https://github.com/angular/angular/issues/40377
+ *
+ * Note that this function returns a Date object whose time is midnight in the current locale's
+ * timezone. In the future we might want to change this to be midnight in UTC, but this would be a
+ * considerable breaking change.
+ */
+function createDate(year: number, month: number, date: number): Date {
+  // The `newDate` is set to midnight (UTC) on January 1st 1970.
+  // - In PST this will be December 31st 1969 at 4pm.
+  // - In GMT this will be January 1st 1970 at 1am.
+  // Note that they even have different years, dates and months!
+  const newDate = new Date(0);
+
+  // `setFullYear()` allows years like 0001 to be set correctly. This function does not
+  // change the internal time of the date.
+  // Consider calling `setFullYear(2019, 8, 20)` (September 20, 2019).
+  // - In PST this will now be September 20, 2019 at 4pm
+  // - In GMT this will now be September 20, 2019 at 1am
+
+  newDate.setFullYear(year, month, date);
+  // We want the final date to be at local midnight, so we reset the time.
+  // - In PST this will now be September 20, 2019 at 12am
+  // - In GMT this will now be September 20, 2019 at 12am
+  newDate.setHours(0, 0, 0);
+
+  return newDate;
 }
 
 function getNamedFormat(locale: string, format: string): string {
@@ -362,13 +394,13 @@ function timeZoneGetter(width: ZoneWidth): DateFormatter {
 const JANUARY = 0;
 const THURSDAY = 4;
 function getFirstThursdayOfYear(year: number) {
-  const firstDayOfYear = (new Date(year, JANUARY, 1)).getDay();
-  return new Date(
+  const firstDayOfYear = createDate(year, JANUARY, 1).getDay();
+  return createDate(
       year, 0, 1 + ((firstDayOfYear <= THURSDAY) ? THURSDAY : THURSDAY + 7) - firstDayOfYear);
 }
 
 function getThursdayThisWeek(datetime: Date) {
-  return new Date(
+  return createDate(
       datetime.getFullYear(), datetime.getMonth(),
       datetime.getDate() + (THURSDAY - datetime.getDay()));
 }
@@ -413,7 +445,7 @@ const DATE_FORMATS: {[format: string]: DateFormatter} = {};
 // Based on CLDR formats:
 // See complete list: http://www.unicode.org/reports/tr35/tr35-dates.html#Date_Field_Symbol_Table
 // See also explanations: http://cldr.unicode.org/translation/date-time
-// TODO(ocombe): support all missing cldr formats: Y, U, Q, D, F, e, c, j, J, C, A, v, V, X, x
+// TODO(ocombe): support all missing cldr formats: U, Q, D, F, e, j, J, C, A, v, V, X, x
 function getDateFormatter(format: string): DateFormatter|null {
   if (DATE_FORMATS[format]) {
     return DATE_FORMATS[format];
@@ -523,6 +555,26 @@ function getDateFormatter(format: string): DateFormatter|null {
       break;
     case 'dd':
       formatter = dateGetter(DateType.Date, 2);
+      break;
+
+    // Day of the Week StandAlone (1, 1, Mon, Monday, M, Mo)
+    case 'c':
+    case 'cc':
+      formatter = dateGetter(DateType.Day, 1);
+      break;
+    case 'ccc':
+      formatter =
+          dateStrGetter(TranslationType.Days, TranslationWidth.Abbreviated, FormStyle.Standalone);
+      break;
+    case 'cccc':
+      formatter = dateStrGetter(TranslationType.Days, TranslationWidth.Wide, FormStyle.Standalone);
+      break;
+    case 'ccccc':
+      formatter =
+          dateStrGetter(TranslationType.Days, TranslationWidth.Narrow, FormStyle.Standalone);
+      break;
+    case 'cccccc':
+      formatter = dateStrGetter(TranslationType.Days, TranslationWidth.Short, FormStyle.Standalone);
       break;
 
     // Day of the Week
@@ -711,14 +763,7 @@ export function toDate(value: string|number|Date): Date {
   if (typeof value === 'string') {
     value = value.trim();
 
-    const parsedNb = parseFloat(value);
-
-    // any string that only contains numbers, like "1234" but not like "1234hello"
-    if (!isNaN(value as any - parsedNb)) {
-      return new Date(parsedNb);
-    }
-
-    if (/^(\d{4}-\d{1,2}-\d{1,2})$/.test(value)) {
+    if (/^(\d{4}(-\d{1,2}(-\d{1,2})?)?)$/.test(value)) {
       /* For ISO Strings without time the day, month and year must be extracted from the ISO String
       before Date creation to avoid time offset and errors in the new Date.
       If we only replace '-' with ',' in the ISO String ("2015,01,01"), and try to create a new
@@ -726,8 +771,15 @@ export function toDate(value: string|number|Date): Date {
       If we leave the '-' ("2015-01-01") and try to create a new Date("2015-01-01") the timeoffset
       is applied.
       Note: ISO months are 0 for January, 1 for February, ... */
-      const [y, m, d] = value.split('-').map((val: string) => +val);
-      return new Date(y, m - 1, d);
+      const [y, m = 1, d = 1] = value.split('-').map((val: string) => +val);
+      return createDate(y, m - 1, d);
+    }
+
+    const parsedNb = parseFloat(value);
+
+    // any string that only contains numbers, like "1234" but not like "1234hello"
+    if (!isNaN(value as any - parsedNb)) {
+      return new Date(parsedNb);
     }
 
     let match: RegExpMatchArray|null;

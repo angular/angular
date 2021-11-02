@@ -5,8 +5,11 @@ ts_library(
     testonly = True,
     srcs = ["linked_compile_spec.ts"],
     deps = [
+        "//packages/compiler-cli/linker",
         "//packages/compiler-cli/linker/babel",
         "//packages/compiler-cli/src/ngtsc/file_system",
+        "//packages/compiler-cli/src/ngtsc/logging",
+        "//packages/compiler-cli/src/ngtsc/sourcemaps",
         "//packages/compiler-cli/test/compliance/test_helpers",
         "@npm//@types/babel__core",
     ],
@@ -20,9 +23,6 @@ jasmine_node_test(
         "//packages/compiler-cli/test/compliance/test_cases",
     ],
     shard_count = 2,
-    tags = [
-        "ivy-only",
-    ],
     deps = [
         ":test_lib",
     ],

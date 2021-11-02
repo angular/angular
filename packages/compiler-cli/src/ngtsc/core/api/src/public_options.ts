@@ -27,6 +27,10 @@ export interface LegacyNgcOptions {
    * For maximum type-checking, set this to `true`, and set `strictTemplates` to `true`.
    *
    * It is an error for this flag to be `false`, while `strictTemplates` is set to `true`.
+   *
+   * @deprecated The `fullTemplateTypeCheck` option has been superseded by the more granular
+   * `strictTemplates` family of compiler options. Usage of `fullTemplateTypeCheck` is therefore
+   * deprecated, `strictTemplates` and its related options should be used instead.
    */
   fullTemplateTypeCheck?: boolean;
 
@@ -127,9 +131,9 @@ export interface StrictTemplateOptions {
   /**
    * If `true`, implies all template strictness flags below (unless individually disabled).
    *
-   * Has no effect unless `fullTemplateTypeCheck` is also enabled.
+   * This flag is a superset of the deprecated `fullTemplateTypeCheck` option.
    *
-   * Defaults to `false`, even if "fullTemplateTypeCheck" is set.
+   * Defaults to `false`, even if "fullTemplateTypeCheck" is `true`.
    */
   strictTemplates?: boolean;
 
@@ -310,6 +314,22 @@ export interface I18nOptions {
   i18nInLocale?: string;
 
   /**
+   * Export format (xlf, xlf2 or xmb) when the xi18n operation is requested.
+   */
+  i18nOutFormat?: string;
+
+  /**
+   * Path to the extracted message file to emit when the xi18n operation is requested.
+   */
+  i18nOutFile?: string;
+
+
+  /**
+   * Locale of the application (used when xi18n is requested).
+   */
+  i18nOutLocale?: string;
+
+  /**
    * Render `$localize` messages with legacy format ids.
    *
    * This is only active if we are building with `enableIvy: true`.
@@ -338,6 +358,22 @@ export interface I18nOptions {
    * The default is `false`, but this will be switched in a future major release.
    */
   i18nNormalizeLineEndingsInICUs?: boolean;
+}
+
+/**
+ * Options that specify compilation target.
+ *
+ * @publicApi
+ */
+export interface TargetOptions {
+  /**
+   * Specifies the compilation mode to use. The following modes are available:
+   * - 'full': generates fully AOT compiled code using Ivy instructions.
+   * - 'partial': generates code in a stable, but intermediate form suitable for publication to NPM.
+   *
+   * The default value is 'full'.
+   */
+  compilationMode?: 'full'|'partial';
 }
 
 /**

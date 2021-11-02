@@ -16,7 +16,7 @@ ng_module(
     tags = [
         # Disabled as this test is specific to the flat module indexing of metadata.json files that
         # the old ngc compiler does. Ivy has no metadata.json files so this test does not apply.
-        "no-ivy-aot",
+        "view-engine-only",
     ],
     deps = [
         "//packages/core",
@@ -37,6 +37,6 @@ jasmine_node_test(
     tags = [
         # Disabled as this test is specific to the flat module indexing of metadata.json files that
         # the old ngc compiler does. Ivy has no metadata.json files so this test does not apply.
-        "no-ivy-aot",
+        "view-engine-only",
     ],
 )

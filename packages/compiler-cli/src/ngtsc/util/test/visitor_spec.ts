@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {absoluteFrom, getSourceFileOrError} from '../../file_system';
 import {runInEachFileSystem} from '../../file_system/testing';
@@ -13,7 +13,7 @@ import {makeProgram} from '../../testing';
 import {visit, VisitListEntryResult, Visitor} from '../src/visitor';
 
 class TestAstVisitor extends Visitor {
-  visitClassDeclaration(node: ts.ClassDeclaration):
+  override visitClassDeclaration(node: ts.ClassDeclaration):
       VisitListEntryResult<ts.Statement, ts.ClassDeclaration> {
     const name = node.name!.text;
     const statics = node.members.filter(

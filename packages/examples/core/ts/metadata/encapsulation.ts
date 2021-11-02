@@ -10,7 +10,7 @@ import {Component, ViewEncapsulation} from '@angular/core';
 
 // #docregion longform
 @Component({
-  selector: 'my-app',
+  selector: 'app-root',
   template: `
     <h1>Hello World!</h1>
     <span class="red">Shadow DOM Rocks!</span>

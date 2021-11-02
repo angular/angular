@@ -51,23 +51,34 @@ export interface Render3ParseResult {
   styles: string[];
   styleUrls: string[];
   ngContentSelectors: string[];
+  // Will be defined if `Render3ParseOptions['collectCommentNodes']` is true
+  commentNodes?: t.Comment[];
+}
+
+interface Render3ParseOptions {
+  collectCommentNodes: boolean;
 }
 
 export function htmlAstToRender3Ast(
-    htmlNodes: html.Node[], bindingParser: BindingParser): Render3ParseResult {
-  const transformer = new HtmlAstToIvyAst(bindingParser);
+    htmlNodes: html.Node[], bindingParser: BindingParser,
+    options: Render3ParseOptions): Render3ParseResult {
+  const transformer = new HtmlAstToIvyAst(bindingParser, options);
   const ivyNodes = html.visitAll(transformer, htmlNodes);
 
   // Errors might originate in either the binding parser or the html to ivy transformer
   const allErrors = bindingParser.errors.concat(transformer.errors);
 
-  return {
+  const result: Render3ParseResult = {
     nodes: ivyNodes,
     errors: allErrors,
     styleUrls: transformer.styleUrls,
     styles: transformer.styles,
-    ngContentSelectors: transformer.ngContentSelectors,
+    ngContentSelectors: transformer.ngContentSelectors
   };
+  if (options.collectCommentNodes) {
+    result.commentNodes = transformer.commentNodes;
+  }
+  return result;
 }
 
 class HtmlAstToIvyAst implements html.Visitor {
@@ -75,9 +86,11 @@ class HtmlAstToIvyAst implements html.Visitor {
   styles: string[] = [];
   styleUrls: string[] = [];
   ngContentSelectors: string[] = [];
+  // This array will be populated if `Render3ParseOptions['collectCommentNodes']` is true
+  commentNodes: t.Comment[] = [];
   private inI18nBlock: boolean = false;
 
-  constructor(private bindingParser: BindingParser) {}
+  constructor(private bindingParser: BindingParser, private options: Render3ParseOptions) {}
 
   // HTML visitor
   visitElement(element: html.Element): t.Node|null {
@@ -287,6 +300,9 @@ class HtmlAstToIvyAst implements html.Visitor {
   }
 
   visitComment(comment: html.Comment): null {
+    if (this.options.collectCommentNodes) {
+      this.commentNodes.push(new t.Comment(comment.value || '', comment.sourceSpan));
+    }
     return null;
   }
 
@@ -458,6 +474,8 @@ class HtmlAstToIvyAst implements html.Visitor {
       this.reportError(`"-" is not allowed in reference names`, sourceSpan);
     } else if (identifier.length === 0) {
       this.reportError(`Reference does not have a name`, sourceSpan);
+    } else if (references.some(reference => reference.name === identifier)) {
+      this.reportError(`Reference "#${identifier}" is defined more than once`, sourceSpan);
     }
 
     references.push(new t.Reference(identifier, value, sourceSpan, keySpan, valueSpan));

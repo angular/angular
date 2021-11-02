@@ -2,13 +2,11 @@
 // #docregion
 import { Component, OnInit } from '@angular/core';
 
-// #docregion rxjs-imports
 import { Observable, Subject } from 'rxjs';
 
 import {
    debounceTime, distinctUntilChanged, switchMap
  } from 'rxjs/operators';
-// #enddocregion rxjs-imports
 
 import { Hero } from '../hero';
 import { HeroService } from '../hero.service';
@@ -20,7 +18,7 @@ import { HeroService } from '../hero.service';
 })
 export class HeroSearchComponent implements OnInit {
   // #docregion heroes-stream
-  heroes$: Observable<Hero[]>;
+  heroes$!: Observable<Hero[]>;
   // #enddocregion heroes-stream
   // #docregion searchTerms
   private searchTerms = new Subject<string>();

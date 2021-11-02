@@ -7,14 +7,14 @@
  */
 import * as o from '@angular/compiler';
 import {ImportGenerator, NamedImport, TypeScriptAstFactory} from '@angular/compiler-cli/src/ngtsc/translator';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {Translator} from '../../src/file_linker/translator';
 import {generate} from './helpers';
 
 describe('Translator', () => {
   let factory: TypeScriptAstFactory;
-  beforeEach(() => factory = new TypeScriptAstFactory());
+  beforeEach(() => factory = new TypeScriptAstFactory(/* annotateForClosureCompiler */ false));
 
   describe('translateExpression()', () => {
     it('should generate expression specific output', () => {

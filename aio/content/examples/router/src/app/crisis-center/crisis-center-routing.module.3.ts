@@ -1,5 +1,3 @@
-// #docplaster
-// #docregion
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
@@ -8,7 +6,6 @@ import { CrisisListComponent } from './crisis-list/crisis-list.component';
 import { CrisisCenterComponent } from './crisis-center/crisis-center.component';
 import { CrisisDetailComponent } from './crisis-detail/crisis-detail.component';
 
-// #docregion can-deactivate-guard
 import { CanDeactivateGuard } from '../can-deactivate.guard';
 
 const crisisCenterRoutes: Routes = [
@@ -44,4 +41,3 @@ const crisisCenterRoutes: Routes = [
   ]
 })
 export class CrisisCenterRoutingModule { }
-// #enddocregion

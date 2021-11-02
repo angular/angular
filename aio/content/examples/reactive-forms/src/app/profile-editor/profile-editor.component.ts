@@ -1,15 +1,10 @@
 // #docplaster
-// #docregion form-builder
 import { Component } from '@angular/core';
-// #docregion form-builder-imports
 import { FormBuilder } from '@angular/forms';
-// #enddocregion form-builder-imports
 // #docregion validator-imports
 import { Validators } from '@angular/forms';
 // #enddocregion validator-imports
-// #docregion form-array-imports
 import { FormArray } from '@angular/forms';
-// #enddocregion form-array-imports
 
 @Component({
   selector: 'app-profile-editor',
@@ -27,13 +22,13 @@ export class ProfileEditorComponent {
       state: [''],
       zip: ['']
     }),
-// #enddocregion form-builder, required-validator
+// #enddocregion required-validator
     aliases: this.fb.array([
       this.fb.control('')
     ])
-// #docregion form-builder, required-validator
+// #docregion required-validator
   });
-// #enddocregion form-builder, required-validator, aliases
+// #enddocregion required-validator, aliases
 // #docregion aliases-getter
 
   get aliases() {
@@ -41,10 +36,7 @@ export class ProfileEditorComponent {
   }
 
 // #enddocregion aliases-getter
-// #docregion inject-form-builder, form-builder
   constructor(private fb: FormBuilder) { }
-
-// #enddocregion inject-form-builder
 
   updateProfile() {
     this.profileForm.patchValue({
@@ -54,7 +46,6 @@ export class ProfileEditorComponent {
       }
     });
   }
-// #enddocregion form-builder
 // #docregion add-alias
 
   addAlias() {
@@ -68,6 +59,4 @@ export class ProfileEditorComponent {
     console.warn(this.profileForm.value);
   }
 // #enddocregion on-submit
-// #docregion form-builder
 }
-// #enddocregion form-builder

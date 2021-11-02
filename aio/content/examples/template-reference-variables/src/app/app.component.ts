@@ -39,7 +39,7 @@ export class AppComponent {
 
   {{ ref.value }}`;
 
-  @ViewChild('itemForm', { static: false }) form: NgForm;
+  @ViewChild('itemForm', { static: false }) form!: NgForm;
 
   get submitMessage() { return this._submitMessage; }
   private _submitMessage = '';  // tslint:disable-line: variable-name

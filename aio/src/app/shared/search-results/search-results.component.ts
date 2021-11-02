@@ -28,9 +28,17 @@ export class SearchResultsComponent implements OnChanges {
   @Output()
   resultSelected = new EventEmitter<SearchResult>();
 
-  readonly defaultArea = 'other';
   searchState: SearchState = SearchState.InProgress;
-  readonly topLevelFolders = ['api', 'cli', 'guide', 'start', 'tutorial'];
+  readonly defaultArea = 'other';
+  readonly folderToAreaMap: Record<string, string> = {
+      api: 'api',
+      cli: 'cli',
+      docs: 'guides',
+      errors: 'errors',
+      guide: 'guides',
+      start: 'tutorials',
+      tutorial: 'tutorials',
+  };
   searchAreas: SearchArea[] = [];
 
   ngOnChanges() {
@@ -59,7 +67,7 @@ export class SearchResultsComponent implements OnChanges {
     const searchAreaMap: { [key: string]: SearchResult[] } = {};
     search.results.forEach(result => {
       if (!result.title) { return; } // bad data; should fix
-      const areaName = this.computeAreaName(result) || this.defaultArea;
+      const areaName = this.computeAreaName(result);
       const area = searchAreaMap[areaName] = searchAreaMap[areaName] || [];
       area.push(result);
     });
@@ -75,12 +83,9 @@ export class SearchResultsComponent implements OnChanges {
   }
 
   // Split the search result path and use the top level folder, if there is one, as the area name.
-  private computeAreaName(result: SearchResult) {
-    if (this.topLevelFolders.indexOf(result.path) !== -1) {
-      return result.path;
-    }
-    const [areaName, rest] = result.path.split('/', 2);
-    return rest && areaName;
+  private computeAreaName(result: SearchResult): string {
+    const [folder] = result.path.split('/', 1);
+    return this.folderToAreaMap[folder] ?? this.defaultArea;
   }
 }
 
@@ -98,10 +103,10 @@ function splitPages(allPages: SearchResult[]) {
     }
   });
   while (priorityPages.length < 5 && pages.length) {
-    priorityPages.push(pages.shift()!);
+    priorityPages.push(pages.shift() as SearchResult);
   }
   while (priorityPages.length < 5 && deprecated.length) {
-    priorityPages.push(deprecated.shift()!);
+    priorityPages.push(deprecated.shift() as SearchResult);
   }
   pages.sort(compareResults);
 

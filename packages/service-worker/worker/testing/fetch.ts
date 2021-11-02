@@ -29,7 +29,7 @@ export class MockBody implements Body {
   }
 
   async json(): Promise<any> {
-    return JSON.parse(this.getBody());
+    return JSON.parse(this.getBody()) as any;
   }
 
   async text(): Promise<string> {
@@ -99,7 +99,6 @@ export class MockHeaders implements Headers {
 export class MockRequest extends MockBody implements Request {
   readonly isHistoryNavigation: boolean = false;
   readonly isReloadNavigation: boolean = false;
-  readonly body!: ReadableStream;
   readonly cache: RequestCache = 'default';
   readonly credentials: RequestCredentials = 'omit';
   readonly destination: RequestDestination = 'document';

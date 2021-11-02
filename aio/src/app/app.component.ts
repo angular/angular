@@ -1,4 +1,13 @@
-import { Component, ElementRef, HostBinding, HostListener, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  HostBinding,
+  HostListener,
+  OnInit,
+  QueryList,
+  ViewChild,
+  ViewChildren,
+} from '@angular/core';
 import { MatSidenav } from '@angular/material/sidenav';
 import { DocumentContents, DocumentService } from 'app/documents/document.service';
 import { NotificationComponent } from 'app/layout/notification/notification.component';
@@ -10,11 +19,12 @@ import { Deployment } from 'app/shared/deployment.service';
 import { LocationService } from 'app/shared/location.service';
 import { ScrollService } from 'app/shared/scroll.service';
 import { TocService } from 'app/shared/toc.service';
+import { SwUpdatesService } from 'app/sw-updates/sw-updates.service';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { first, map } from 'rxjs/operators';
 
 const sideNavView = 'SideNav';
-export const showTopMenuWidth = 1048;
+export const showTopMenuWidth = 1150;
 export const dockSideNavWidth = 992;
 export const showFloatingTocWidth = 800;
 
@@ -23,6 +33,12 @@ export const showFloatingTocWidth = 800;
   templateUrl: './app.component.html',
 })
 export class AppComponent implements OnInit {
+
+  static reducedMotion = window.matchMedia('(prefers-reduced-motion)').matches;
+
+  // Disable all Angular animations if the user prefers reduced motion or for the initial render.
+  @HostBinding('@.disabled')
+  get disableAnimations(): boolean { return AppComponent.reducedMotion || this.isStarting; }
 
   currentDocument: DocumentContents;
   currentDocVersion: NavigationNode;
@@ -50,14 +66,12 @@ export class AppComponent implements OnInit {
    *
    * * `page-...`: computed from the current document id (e.g. events, guide-security, tutorial-toh-pt2)
    * * `folder-...`: computed from the top level folder for an id (e.g. guide, tutorial, etc)
-   * * `view-...`: computef from the navigation view (e.g. SideNav, TopBar, etc)
+   * * `view-...`: computed from the navigation view (e.g. SideNav, TopBar, etc)
    */
   @HostBinding('class')
   hostClasses = '';
 
-  // Disable all Angular animations for the initial render.
-  @HostBinding('@.disabled')
-  isStarting = true;
+  private isStarting = true;
   isTransitioning = true;
   isFetching = false;
   showTopMenu = false;
@@ -79,7 +93,7 @@ export class AppComponent implements OnInit {
   private currentUrl: string;
 
   get isOpened() { return this.dockSideNav && this.isSideNavDoc; }
-  get mode() { return this.dockSideNav && (this.isSideNavDoc || this.showTopMenu) ? 'side' : 'over'; }
+  get mode() { return this.isOpened ? 'side' : 'over'; }
 
   // Search related properties
   showSearchResults = false;
@@ -104,6 +118,7 @@ export class AppComponent implements OnInit {
     private navigationService: NavigationService,
     private scrollService: ScrollService,
     private searchService: SearchService,
+    private swUpdatesService: SwUpdatesService,
     private tocService: TocService
   ) { }
 
@@ -160,10 +175,10 @@ export class AppComponent implements OnInit {
       }
       this.docVersions = [...computedVersions, ...versions];
 
-      // Find the current version - eithers title matches the current deployment mode
+      // Find the current version - either title matches the current deployment mode
       // or its title matches the major version of the current version info
       this.currentDocVersion = this.docVersions.find(version =>
-        version.title === this.deployment.mode || version.title === `v${versionInfo.major}`)!;
+        version.title === this.deployment.mode || version.title === `v${versionInfo.major}`) as NavigationNode;
       this.currentDocVersion.title += ` (v${versionInfo.raw})`;
     });
 
@@ -192,6 +207,9 @@ export class AppComponent implements OnInit {
       .subscribe(() => this.updateShell());
 
     this.locationService.currentUrl.subscribe(url => this.currentUrl = url);
+
+    // Start listening for SW version update events.
+    this.swUpdatesService.enable();
   }
 
   onDocReady() {

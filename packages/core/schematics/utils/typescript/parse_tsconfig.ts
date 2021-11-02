@@ -7,7 +7,7 @@
  */
 
 import * as path from 'path';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 export function parseTsconfigFile(tsconfigPath: string, basePath: string): ts.ParsedCommandLine {
   const {config} = ts.readConfigFile(tsconfigPath, ts.sys.readFile);

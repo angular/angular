@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {XhrFactory} from '@angular/common';
 import {HttpHeaders} from '@angular/common/http/src/headers';
-import {XhrFactory} from '@angular/common/http/src/xhr';
 
 export class MockXhrFactory implements XhrFactory {
   // TODO(issue/24571): remove '!'.
@@ -54,6 +54,8 @@ export class MockXMLHttpRequest {
 
   listeners: {
     error?: (event: ErrorEvent) => void,
+    timeout?: (event: ErrorEvent) => void,
+    abort?: () => void,
     load?: () => void,
     progress?: (event: ProgressEvent) => void,
     uploadProgress?: (event: ProgressEvent) => void,
@@ -70,11 +72,13 @@ export class MockXMLHttpRequest {
     this.body = body;
   }
 
-  addEventListener(event: 'error'|'load'|'progress'|'uploadProgress', handler: Function): void {
+  addEventListener(
+      event: 'error'|'timeout'|'load'|'progress'|'uploadProgress'|'abort',
+      handler: Function): void {
     this.listeners[event] = handler as any;
   }
 
-  removeEventListener(event: 'error'|'load'|'progress'|'uploadProgress'): void {
+  removeEventListener(event: 'error'|'timeout'|'load'|'progress'|'uploadProgress'|'abort'): void {
     delete this.listeners[event];
   }
 
@@ -126,6 +130,18 @@ export class MockXMLHttpRequest {
   mockErrorEvent(error: any): void {
     if (this.listeners.error) {
       this.listeners.error(error);
+    }
+  }
+
+  mockTimeoutEvent(error: any): void {
+    if (this.listeners.timeout) {
+      this.listeners.timeout(error);
+    }
+  }
+
+  mockAbortEvent(): void {
+    if (this.listeners.abort) {
+      this.listeners.abort();
     }
   }
 

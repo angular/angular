@@ -6,15 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {assertDefined} from '../util/assert';
-
+import {assertParentView} from './assert';
 import {icuContainerIterate} from './i18n/i18n_tree_shaking';
 import {CONTAINER_HEADER_OFFSET} from './interfaces/container';
-import {TElementNode, TIcuContainerNode, TNode, TNodeType} from './interfaces/node';
+import {TIcuContainerNode, TNode, TNodeType} from './interfaces/node';
 import {RNode} from './interfaces/renderer_dom';
 import {isLContainer} from './interfaces/type_checks';
 import {DECLARATION_COMPONENT_VIEW, LView, T_HOST, TVIEW, TView} from './interfaces/view';
 import {assertTNodeType} from './node_assert';
+import {getProjectionNodes} from './node_manipulation';
 import {getLViewParent} from './util/view_traversal_utils';
 import {unwrapRNode} from './util/view_utils';
 
@@ -58,23 +58,12 @@ export function collectNativeNodes(
         result.push(rNode);
       }
     } else if (tNodeType & TNodeType.Projection) {
-      const componentView = lView[DECLARATION_COMPONENT_VIEW];
-      const componentHost = componentView[T_HOST] as TElementNode;
-      const slotIdx = tNode.projection as number;
-      ngDevMode &&
-          assertDefined(
-              componentHost.projection,
-              'Components with projection nodes (<ng-content>) must have projection slots defined.');
-
-      const nodesInSlot = componentHost.projection![slotIdx];
+      const nodesInSlot = getProjectionNodes(lView, tNode);
       if (Array.isArray(nodesInSlot)) {
         result.push(...nodesInSlot);
       } else {
-        const parentView = getLViewParent(componentView)!;
-        ngDevMode &&
-            assertDefined(
-                parentView,
-                'Component views should always have a parent view (component\'s host view)');
+        const parentView = getLViewParent(lView[DECLARATION_COMPONENT_VIEW])!;
+        ngDevMode && assertParentView(parentView);
         collectNativeNodes(parentView[TVIEW], parentView, nodesInSlot, result, true);
       }
     }

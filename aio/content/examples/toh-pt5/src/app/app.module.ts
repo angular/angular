@@ -1,4 +1,3 @@
-// #docregion
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
@@ -9,7 +8,6 @@ import { HeroDetailComponent } from './hero-detail/hero-detail.component';
 import { HeroesComponent } from './heroes/heroes.component';
 import { MessagesComponent } from './messages/messages.component';
 
-// #docregion routing-module
 import { AppRoutingModule } from './app-routing.module';
 
 @NgModule({
@@ -18,8 +16,6 @@ import { AppRoutingModule } from './app-routing.module';
     FormsModule,
     AppRoutingModule
   ],
-// #enddocregion routing-module
-  // #docregion dashboard
   declarations: [
     AppComponent,
     DashboardComponent,
@@ -27,9 +23,6 @@ import { AppRoutingModule } from './app-routing.module';
     HeroDetailComponent,
     MessagesComponent
   ],
-  // #enddocregion dashboard
   bootstrap: [ AppComponent ]
-// #docregion routing-module
 })
 export class AppModule { }
-// #enddocregion routing-module

@@ -16,6 +16,19 @@ export interface Node {
   visit<Result>(visitor: Visitor<Result>): Result;
 }
 
+/**
+ * This is an R3 `Node`-like wrapper for a raw `html.Comment` node. We do not currently
+ * require the implementation of a visitor for Comments as they are only collected at
+ * the top-level of the R3 AST, and only if `Render3ParseOptions['collectCommentNodes']`
+ * is true.
+ */
+export class Comment implements Node {
+  constructor(public value: string, public sourceSpan: ParseSourceSpan) {}
+  visit<Result>(_visitor: Visitor<Result>): Result {
+    throw new Error('visit() not implemented for Comment');
+  }
+}
+
 export class Text implements Node {
   constructor(public value: string, public sourceSpan: ParseSourceSpan) {}
   visit<Result>(visitor: Visitor<Result>): Result {
@@ -190,11 +203,15 @@ export class NullVisitor implements Visitor<void> {
 export class RecursiveVisitor implements Visitor<void> {
   visitElement(element: Element): void {
     visitAll(this, element.attributes);
+    visitAll(this, element.inputs);
+    visitAll(this, element.outputs);
     visitAll(this, element.children);
     visitAll(this, element.references);
   }
   visitTemplate(template: Template): void {
     visitAll(this, template.attributes);
+    visitAll(this, template.inputs);
+    visitAll(this, template.outputs);
     visitAll(this, template.children);
     visitAll(this, template.references);
     visitAll(this, template.variables);

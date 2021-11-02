@@ -29,7 +29,7 @@ const profileTests =
 
 // build tests
 shell.exec(
-    `yarn bazel build --config=ivy ` +
+    `yarn bazel build ` +
     profileTests.map((name) => `//packages/core/test/render3/perf:${name}_lib.min_debug.js`)
         .join(' '));
 

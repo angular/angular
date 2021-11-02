@@ -7,10 +7,11 @@
  */
 
 import {TmplAstElement, TmplAstReference, TmplAstTemplate, TmplAstVariable} from '@angular/compiler';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {AbsoluteFsPath} from '../../file_system';
-import {ClassDeclaration} from '../../reflection';
+import {SymbolWithValueDeclaration} from '../../util/src/typescript';
+
 import {DirectiveInScope} from './scope';
 
 export enum SymbolKind {
@@ -24,13 +25,19 @@ export enum SymbolKind {
   Template,
   Expression,
   DomBinding,
+  Pipe,
 }
 
 /**
  * A representation of an entity in the `TemplateAst`.
  */
 export type Symbol = InputBindingSymbol|OutputBindingSymbol|ElementSymbol|ReferenceSymbol|
-    VariableSymbol|ExpressionSymbol|DirectiveSymbol|TemplateSymbol|DomBindingSymbol;
+    VariableSymbol|ExpressionSymbol|DirectiveSymbol|TemplateSymbol|DomBindingSymbol|PipeSymbol;
+
+/**
+ * A `Symbol` which declares a new named entity in the template scope.
+ */
+export type TemplateDeclarationSymbol = ReferenceSymbol|VariableSymbol;
 
 /** Information about where a `ts.Node` can be found in the type check block shim file. */
 export interface ShimLocation {
@@ -255,9 +262,6 @@ export interface DirectiveSymbol extends DirectiveInScope {
 
   /** The location in the shim file for the variable that holds the type of the directive. */
   shimLocation: ShimLocation;
-
-  /** The `NgModule` that this directive is declared in or `null` if it could not be determined. */
-  ngModule: ClassDeclaration|null;
 }
 
 /**
@@ -270,4 +274,38 @@ export interface DomBindingSymbol {
 
   /** The symbol for the element or template of the text attribute. */
   host: ElementSymbol|TemplateSymbol;
+}
+
+/**
+ * A representation for a call to a pipe's transform method in the TCB.
+ */
+export interface PipeSymbol {
+  kind: SymbolKind.Pipe;
+
+  /** The `ts.Type` of the transform node. */
+  tsType: ts.Type;
+
+  /**
+   * The `ts.Symbol` for the transform call. This could be `null` when `checkTypeOfPipes` is set to
+   * `false` because the transform call would be of the form `(_pipe1 as any).transform()`
+   */
+  tsSymbol: ts.Symbol|null;
+
+  /** The position of the transform call in the template. */
+  shimLocation: ShimLocation;
+
+  /** The symbol for the pipe class as an instance that appears in the TCB. */
+  classSymbol: ClassSymbol;
+}
+
+/** Represents an instance of a class found in the TCB, i.e. `var _pipe1: MyPipe = null!; */
+export interface ClassSymbol {
+  /** The `ts.Type` of class. */
+  tsType: ts.Type;
+
+  /** The `ts.Symbol` for class. */
+  tsSymbol: SymbolWithValueDeclaration;
+
+  /** The position for the variable declaration for the class instance. */
+  shimLocation: ShimLocation;
 }

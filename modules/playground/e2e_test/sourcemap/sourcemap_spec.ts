@@ -6,11 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {readFileSync} from 'fs';
 import {$, browser} from 'protractor';
 import {logging} from 'selenium-webdriver';
-
-const fs = require('fs');
-const sourceMap = require('source-map');
+import {RawSourceMap, SourceMapConsumer} from 'source-map';
 
 describe('sourcemaps', function() {
   const URL = '/';
@@ -36,19 +35,17 @@ describe('sourcemaps', function() {
 
 
       const content =
-          fs.readFileSync(require.resolve('../../src/sourcemap/index.js')).toString('utf8');
+          readFileSync(require.resolve('../../src/sourcemap/index.js')).toString('utf8');
       const marker = '//# sourceMappingURL=data:application/json;base64,';
       const index = content.indexOf(marker);
       const sourceMapData =
           Buffer.from(content.substring(index + marker.length), 'base64').toString('utf8');
 
-      const decoder = new sourceMap.SourceMapConsumer(JSON.parse(sourceMapData));
-
+      const decoder = new SourceMapConsumer(JSON.parse(sourceMapData) as RawSourceMap);
       const originalPosition = decoder.originalPositionFor({line: errorLine, column: errorColumn});
-
-      const sourceCodeLines = fs.readFileSync(require.resolve('../../src/sourcemap/index.ts'), {
-                                  encoding: 'UTF-8'
-                                }).split('\n');
+      const sourceCodeLines = readFileSync(require.resolve('../../src/sourcemap/index.ts'), {
+                                encoding: 'UTF-8'
+                              }).split('\n');
       expect(sourceCodeLines[originalPosition.line - 1])
           .toMatch(/throw new Error\(\'Sourcemap test\'\)/);
     });

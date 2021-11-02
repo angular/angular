@@ -12,21 +12,17 @@ import {NgModuleDef, NgModuleType} from '../metadata/ng_module_def';
 import {SchemaMetadata} from '../metadata/schema';
 import {ViewEncapsulation} from '../metadata/view';
 import {noSideEffects} from '../util/closure';
+import {EMPTY_ARRAY, EMPTY_OBJ} from '../util/empty';
 import {initNgDevMode} from '../util/ng_dev_mode';
 import {stringify} from '../util/stringify';
-import {EMPTY_ARRAY, EMPTY_OBJ} from './empty';
-import {NG_COMP_DEF, NG_DIR_DEF, NG_LOC_ID_DEF, NG_MOD_DEF, NG_PIPE_DEF} from './fields';
+import {NG_COMP_DEF, NG_DIR_DEF, NG_MOD_DEF, NG_PIPE_DEF} from './fields';
 import {ComponentDef, ComponentDefFeature, ComponentTemplate, ComponentType, ContentQueriesFunction, DirectiveDef, DirectiveDefFeature, DirectiveTypesOrFactory, HostBindingsFunction, PipeDef, PipeTypesOrFactory, ViewQueriesFunction} from './interfaces/definition';
-import {AttributeMarker, TAttributes, TConstantsOrFactory} from './interfaces/node';
-import {CssSelectorList, SelectorFlags} from './interfaces/projection';
+import {TAttributes, TConstantsOrFactory} from './interfaces/node';
+import {CssSelectorList} from './interfaces/projection';
 
 
 let _renderCompCount = 0;
 
-// While these types are unused here, they are required so that types don't
-// get resolved lazily. see: https://github.com/Microsoft/web-build-tools/issues/1050
-type _web_build_tools_issue_1050_SelectorFlags = SelectorFlags;
-type _web_build_tools_issue_1050_AttributeMarker = AttributeMarker;
 
 /**
  * Create a component definition object.
@@ -287,67 +283,65 @@ export function ɵɵdefineComponent<T>(componentDefinition: {
    * The set of schemas that declare elements to be allowed in the component's template.
    */
   schemas?: SchemaMetadata[] | null;
-}): never {
+}): unknown {
   return noSideEffects(() => {
-           // Initialize ngDevMode. This must be the first statement in ɵɵdefineComponent.
-           // See the `initNgDevMode` docstring for more information.
-           (typeof ngDevMode === 'undefined' || ngDevMode) && initNgDevMode();
+    // Initialize ngDevMode. This must be the first statement in ɵɵdefineComponent.
+    // See the `initNgDevMode` docstring for more information.
+    (typeof ngDevMode === 'undefined' || ngDevMode) && initNgDevMode();
 
-           const type = componentDefinition.type;
-           const typePrototype = type.prototype;
-           const declaredInputs: {[key: string]: string} = {} as any;
-           const def: Mutable<ComponentDef<any>, keyof ComponentDef<any>> = {
-             type: type,
-             providersResolver: null,
-             decls: componentDefinition.decls,
-             vars: componentDefinition.vars,
-             factory: null,
-             template: componentDefinition.template || null!,
-             consts: componentDefinition.consts || null,
-             ngContentSelectors: componentDefinition.ngContentSelectors,
-             hostBindings: componentDefinition.hostBindings || null,
-             hostVars: componentDefinition.hostVars || 0,
-             hostAttrs: componentDefinition.hostAttrs || null,
-             contentQueries: componentDefinition.contentQueries || null,
-             declaredInputs: declaredInputs,
-             inputs: null!,   // assigned in noSideEffects
-             outputs: null!,  // assigned in noSideEffects
-             exportAs: componentDefinition.exportAs || null,
-             onPush: componentDefinition.changeDetection === ChangeDetectionStrategy.OnPush,
-             directiveDefs: null!,  // assigned in noSideEffects
-             pipeDefs: null!,       // assigned in noSideEffects
-             selectors: componentDefinition.selectors || EMPTY_ARRAY,
-             viewQuery: componentDefinition.viewQuery || null,
-             features: componentDefinition.features as DirectiveDefFeature[] || null,
-             data: componentDefinition.data || {},
-             // TODO(misko): convert ViewEncapsulation into const enum so that it can be used
-             // directly in the next line. Also `None` should be 0 not 2.
-             encapsulation: componentDefinition.encapsulation || ViewEncapsulation.Emulated,
-             id: 'c',
-             styles: componentDefinition.styles || EMPTY_ARRAY,
-             _: null as never,
-             setInput: null,
-             schemas: componentDefinition.schemas || null,
-             tView: null,
-           };
-           const directiveTypes = componentDefinition.directives!;
-           const feature = componentDefinition.features;
-           const pipeTypes = componentDefinition.pipes!;
-           def.id += _renderCompCount++;
-           def.inputs = invertObject(componentDefinition.inputs, declaredInputs),
-           def.outputs = invertObject(componentDefinition.outputs),
-           feature && feature.forEach((fn) => fn(def));
-           def.directiveDefs = directiveTypes ?
-               () => (typeof directiveTypes === 'function' ? directiveTypes() : directiveTypes)
-                         .map(extractDirectiveDef) :
-               null;
-           def.pipeDefs = pipeTypes ?
-               () =>
-                   (typeof pipeTypes === 'function' ? pipeTypes() : pipeTypes).map(extractPipeDef) :
-               null;
+    const type = componentDefinition.type;
+    const declaredInputs: {[key: string]: string} = {} as any;
+    const def: Mutable<ComponentDef<any>, keyof ComponentDef<any>> = {
+      type: type,
+      providersResolver: null,
+      decls: componentDefinition.decls,
+      vars: componentDefinition.vars,
+      factory: null,
+      template: componentDefinition.template || null!,
+      consts: componentDefinition.consts || null,
+      ngContentSelectors: componentDefinition.ngContentSelectors,
+      hostBindings: componentDefinition.hostBindings || null,
+      hostVars: componentDefinition.hostVars || 0,
+      hostAttrs: componentDefinition.hostAttrs || null,
+      contentQueries: componentDefinition.contentQueries || null,
+      declaredInputs: declaredInputs,
+      inputs: null!,   // assigned in noSideEffects
+      outputs: null!,  // assigned in noSideEffects
+      exportAs: componentDefinition.exportAs || null,
+      onPush: componentDefinition.changeDetection === ChangeDetectionStrategy.OnPush,
+      directiveDefs: null!,  // assigned in noSideEffects
+      pipeDefs: null!,       // assigned in noSideEffects
+      selectors: componentDefinition.selectors || EMPTY_ARRAY,
+      viewQuery: componentDefinition.viewQuery || null,
+      features: componentDefinition.features as DirectiveDefFeature[] || null,
+      data: componentDefinition.data || {},
+      // TODO(misko): convert ViewEncapsulation into const enum so that it can be used
+      // directly in the next line. Also `None` should be 0 not 2.
+      encapsulation: componentDefinition.encapsulation || ViewEncapsulation.Emulated,
+      id: 'c',
+      styles: componentDefinition.styles || EMPTY_ARRAY,
+      _: null,
+      setInput: null,
+      schemas: componentDefinition.schemas || null,
+      tView: null,
+    };
+    const directiveTypes = componentDefinition.directives!;
+    const feature = componentDefinition.features;
+    const pipeTypes = componentDefinition.pipes!;
+    def.id += _renderCompCount++;
+    def.inputs = invertObject(componentDefinition.inputs, declaredInputs),
+    def.outputs = invertObject(componentDefinition.outputs),
+    feature && feature.forEach((fn) => fn(def));
+    def.directiveDefs = directiveTypes ?
+        () => (typeof directiveTypes === 'function' ? directiveTypes() : directiveTypes)
+                  .map(extractDirectiveDef) :
+        null;
+    def.pipeDefs = pipeTypes ?
+        () => (typeof pipeTypes === 'function' ? pipeTypes() : pipeTypes).map(extractPipeDef) :
+        null;
 
-           return def as never;
-         }) as never;
+    return def;
+  });
 }
 
 /**
@@ -411,23 +405,23 @@ export function ɵɵdefineNgModule<T>(def: {
 
   /** Unique ID for the module that is used with `getModuleFactory`. */
   id?: string | null;
-}): never {
-  const res: NgModuleDef<T> = {
-    type: def.type,
-    bootstrap: def.bootstrap || EMPTY_ARRAY,
-    declarations: def.declarations || EMPTY_ARRAY,
-    imports: def.imports || EMPTY_ARRAY,
-    exports: def.exports || EMPTY_ARRAY,
-    transitiveCompileScopes: null,
-    schemas: def.schemas || null,
-    id: def.id || null,
-  };
-  if (def.id != null) {
-    noSideEffects(() => {
+}): unknown {
+  return noSideEffects(() => {
+    const res: NgModuleDef<T> = {
+      type: def.type,
+      bootstrap: def.bootstrap || EMPTY_ARRAY,
+      declarations: def.declarations || EMPTY_ARRAY,
+      imports: def.imports || EMPTY_ARRAY,
+      exports: def.exports || EMPTY_ARRAY,
+      transitiveCompileScopes: null,
+      schemas: def.schemas || null,
+      id: def.id || null,
+    };
+    if (def.id != null) {
       autoRegisterModuleById[def.id!] = def.type as unknown as NgModuleType;
-    });
-  }
-  return res as never;
+    }
+    return res;
+  });
 }
 
 /**
@@ -452,13 +446,13 @@ export function ɵɵsetNgModuleScope(type: any, scope: {
    * module.
    */
   exports?: Type<any>[] | (() => Type<any>[]);
-}): void {
+}): unknown {
   return noSideEffects(() => {
-           const ngModuleDef = getNgModuleDef(type, true);
-           ngModuleDef.declarations = scope.declarations || EMPTY_ARRAY;
-           ngModuleDef.imports = scope.imports || EMPTY_ARRAY;
-           ngModuleDef.exports = scope.exports || EMPTY_ARRAY;
-         }) as never;
+    const ngModuleDef = getNgModuleDef(type, true);
+    ngModuleDef.declarations = scope.declarations || EMPTY_ARRAY;
+    ngModuleDef.imports = scope.imports || EMPTY_ARRAY;
+    ngModuleDef.exports = scope.exports || EMPTY_ARRAY;
+  });
 }
 
 /**
@@ -717,14 +711,14 @@ export function ɵɵdefinePipe<T>(pipeDef: {
 
   /** Whether the pipe is pure. */
   pure?: boolean
-}): never {
+}): unknown {
   return (<PipeDef<T>>{
-           type: pipeDef.type,
-           name: pipeDef.name,
-           factory: null,
-           pure: pipeDef.pure !== false,
-           onDestroy: pipeDef.type.prototype.ngOnDestroy || null
-         }) as never;
+    type: pipeDef.type,
+    name: pipeDef.name,
+    factory: null,
+    pure: pipeDef.pure !== false,
+    onDestroy: pipeDef.type.prototype.ngOnDestroy || null
+  });
 }
 
 /**
@@ -753,8 +747,4 @@ export function getNgModuleDef<T>(type: any, throwNotFound?: boolean): NgModuleD
     throw new Error(`Type ${stringify(type)} does not have 'ɵmod' property.`);
   }
   return ngModuleDef;
-}
-
-export function getNgLocaleIdDef(type: any): string|null {
-  return (type as any)[NG_LOC_ID_DEF] || null;
 }

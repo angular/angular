@@ -8,17 +8,16 @@ const nameSuffix = 'X';
 const newHeroName = targetHero.name + nameSuffix;
 
 class Hero {
-  id: number;
-  name: string;
+  constructor(public id: number, public name: string) {}
 
   // Factory methods
 
   // Get hero from s formatted as '<id> <name>'.
   static fromString(s: string): Hero {
-    return {
-      id: +s.substr(0, s.indexOf(' ')),
-      name: s.substr(s.indexOf(' ') + 1),
-    };
+    return new Hero(
+      +s.substr(0, s.indexOf(' ')),
+      s.substr(s.indexOf(' ') + 1),
+    );
   }
 
   // Get hero id and name from the given detail element.
@@ -46,7 +45,7 @@ describe('Tutorial part 5', () => {
 
       appDashboardHref: navElts.get(0),
       appDashboard: element(by.css('app-root app-dashboard')),
-      topHeroes: element.all(by.css('app-root app-dashboard > div h4')),
+      topHeroes: element.all(by.css('app-root app-dashboard > div a')),
 
       appHeroesHref: navElts.get(1),
       appHeroes: element(by.css('app-root app-heroes')),
@@ -67,7 +66,7 @@ describe('Tutorial part 5', () => {
 
     const expectedViewNames = ['Dashboard', 'Heroes'];
     it(`has views ${expectedViewNames}`, async () => {
-      const viewNames = await getPageElts().navElts.map(el => el.getText());
+      const viewNames = await getPageElts().navElts.map(el => el!.getText());
       expect(viewNames).toEqual(expectedViewNames);
     });
 

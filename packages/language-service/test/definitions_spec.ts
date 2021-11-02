@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {createLanguageService} from '../src/language_service';
 import {TypeScriptServiceHost} from '../src/typescript_host';
@@ -418,6 +418,19 @@ describe('definitions', () => {
     const [def] = definitions!;
     expect(def.fileName).toBe('/app/test.ng');
     expect(def.textSpan).toEqual({start: 0, length: 0});
+  });
+
+  it('should be able to find a template from an absolute url', () => {
+    const fileName = mockHost.addCode(`
+      @Component({
+        templateUrl: '${TEST_TEMPLATE}',
+      })
+      export class MyComponent {}`);
+
+    const marker = mockHost.readFile(fileName)!.indexOf(TEST_TEMPLATE);
+    const result = ngService.getDefinitionAndBoundSpan(fileName, marker);
+
+    expect(result?.definitions?.[0].fileName).toBe(TEST_TEMPLATE);
   });
 
   it('should be able to find a stylesheet from a url', () => {

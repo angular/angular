@@ -11,7 +11,6 @@ ts_library(
     deps = [
         "//packages/compiler-cli/src/ngtsc/file_system",
         "//packages/compiler-cli/src/ngtsc/file_system/testing",
-        "@npm//@types/fs-extra",
         "@npm//typescript",
     ],
 )

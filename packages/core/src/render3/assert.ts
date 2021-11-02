@@ -7,6 +7,7 @@
  */
 
 import {assertDefined, assertEqual, assertNumber, throwError} from '../util/assert';
+
 import {getComponentDef, getNgModuleDef} from './definition';
 import {LContainer} from './interfaces/container';
 import {DirectiveDef} from './interfaces/definition';
@@ -14,8 +15,7 @@ import {TIcu} from './interfaces/i18n';
 import {NodeInjectorOffset} from './interfaces/injector';
 import {TNode} from './interfaces/node';
 import {isLContainer, isLView} from './interfaces/type_checks';
-import {HEADER_OFFSET, LView, TVIEW, TView} from './interfaces/view';
-
+import {DECLARATION_COMPONENT_VIEW, HEADER_OFFSET, LView, T_HOST, TVIEW, TView} from './interfaces/view';
 
 // [Assert functions do not constraint type when they are guarded by a truthy
 // expression.](https://github.com/microsoft/TypeScript/issues/37295)
@@ -133,6 +133,20 @@ export function assertBetween(lower: number, upper: number, index: number) {
   if (!(lower <= index && index < upper)) {
     throwError(`Index out of range (expecting ${lower} <= ${index} < ${upper})`);
   }
+}
+
+export function assertProjectionSlots(lView: LView, errMessage?: string) {
+  assertDefined(lView[DECLARATION_COMPONENT_VIEW], 'Component views should exist.');
+  assertDefined(
+      lView[DECLARATION_COMPONENT_VIEW][T_HOST]!.projection,
+      errMessage ||
+          'Components with projection nodes (<ng-content>) must have projection slots defined.');
+}
+
+export function assertParentView(lView: LView|null, errMessage?: string) {
+  assertDefined(
+      lView,
+      errMessage || 'Component views should always have a parent view (component\'s host view)');
 }
 
 

@@ -370,7 +370,11 @@ export class AnimationTransitionNamespace {
 
   prepareLeaveAnimationListeners(element: any) {
     const listeners = this._elementListeners.get(element);
-    if (listeners) {
+    const elementStates = this._engine.statesByElement.get(element);
+
+    // if this statement fails then it means that the element was picked up
+    // by an earlier flush (or there are no listeners at all to track the leave).
+    if (listeners && elementStates) {
       const visitedTriggers = new Set<string>();
       listeners.forEach(listener => {
         const triggerName = listener.name;
@@ -379,7 +383,6 @@ export class AnimationTransitionNamespace {
 
         const trigger = this._triggers[triggerName];
         const transition = trigger.fallbackTransition;
-        const elementStates = this._engine.statesByElement.get(element)!;
         const fromState = elementStates[triggerName] || DEFAULT_STATE_VALUE;
         const toState = new StateValue(VOID_VALUE);
         const player = new TransitionAnimationPlayer(this.id, triggerName, element);
@@ -400,7 +403,6 @@ export class AnimationTransitionNamespace {
 
   removeNode(element: any, context: any): void {
     const engine = this._engine;
-
     if (element.childElementCount) {
       this._signalRemovalForInnerTriggers(element, context);
     }
@@ -569,7 +571,7 @@ export class TransitionAnimationEngine {
 
   createNamespace(namespaceId: string, hostElement: any) {
     const ns = new AnimationTransitionNamespace(namespaceId, hostElement, this);
-    if (hostElement.parentNode) {
+    if (this.bodyNode && this.driver.containsElement(this.bodyNode, hostElement)) {
       this._balanceNamespaceList(ns, hostElement);
     } else {
       // defer this later until flush during when the host element has
@@ -578,7 +580,7 @@ export class TransitionAnimationEngine {
       this.newHostElements.set(hostElement, ns);
 
       // given that this host element is apart of the animation code, it
-      // may or may not be inserted by a parent node that is an of an
+      // may or may not be inserted by a parent node that is of an
       // animation renderer type. If this happens then we can still have
       // access to this item when we query for :enter nodes. If the parent
       // is a renderer then the set data-structure will normalize the entry
@@ -810,7 +812,7 @@ export class TransitionAnimationEngine {
   }
 
   whenRenderingDone(): Promise<any> {
-    return new Promise(resolve => {
+    return new Promise<void>(resolve => {
       if (this.players.length) {
         return optimizeGroupPlayer(this.players).onDone(() => resolve());
       } else {

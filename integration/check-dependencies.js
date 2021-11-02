@@ -43,7 +43,7 @@ const lockfilePath = `${projectDir}/yarn.lock`;
 console.log(`Checking dependencies for '${projectDir}'...`);
 
 // Collect non-local dependencies (in `[name, version]` pairs).
-// (Also ingore `git+https:` dependencies, because checking them is not straight-forward.)
+// (Also ignore `git+https:` dependencies, because checking them is not straight-forward.)
 const pkgJson = JSON.parse(readFileSync(pkgJsonPath, 'utf8'));
 const deps = [
   ...Object.entries(pkgJson.dependencies || {}),

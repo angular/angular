@@ -32,8 +32,30 @@ export interface Task extends JsonObject {
    */
   formatPropertiesToMarkAsProcessed: EntryPointJsonProperty[];
 
-  /** Whether to also process typings for this entry-point as part of the task. */
-  processDts: boolean;
+  /**
+   * Whether to process typings for this entry-point as part of the task.
+   */
+  processDts: DtsProcessing;
+}
+
+/**
+ * The options for processing Typescript typings (.d.ts) files.
+ */
+export enum DtsProcessing {
+  /**
+   * Yes, process the typings for this entry point as part of the task.
+   */
+  Yes,
+  /**
+   * No, do not process the typings as part of this task - they must have already been processed by
+   * another task or previous ngcc process.
+   */
+  No,
+  /**
+   * Only process the typings for this entry-point; do not render any JavaScript files for the
+   * `formatProperty` of this task.
+   */
+  Only,
 }
 
 /**

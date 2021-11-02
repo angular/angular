@@ -219,7 +219,11 @@ export class StylingBuilder {
     if (isEmptyExpression(value)) {
       return null;
     }
-    name = normalizePropName(name);
+    // CSS custom properties are case-sensitive so we shouldn't normalize them.
+    // See: https://www.w3.org/TR/css-variables-1/#defining-variables
+    if (!isCssCustomProperty(name)) {
+      name = hyphenate(name);
+    }
     const {property, hasOverrideFlag, suffix: bindingSuffix} = parseProperty(name);
     suffix = typeof suffix === 'string' && suffix.length !== 0 ? suffix : bindingSuffix;
     const entry:
@@ -246,10 +250,6 @@ export class StylingBuilder {
     const entry:
         BoundStylingEntry = {name: property, value, sourceSpan, hasOverrideFlag, suffix: null};
     if (isMapBased) {
-      if (this._classMapInput) {
-        throw new Error(
-            '[class] and [className] bindings cannot be used on the same element simultaneously');
-      }
       this._classMapInput = entry;
     } else {
       (this._singleClassInputs = this._singleClassInputs || []).push(entry);
@@ -611,6 +611,10 @@ function getStylePropInterpolationExpression(interpolation: Interpolation) {
   }
 }
 
-function normalizePropName(prop: string): string {
-  return hyphenate(prop);
+/**
+ * Checks whether property name is a custom CSS property.
+ * See: https://www.w3.org/TR/css-variables-1
+ */
+function isCssCustomProperty(name: string): boolean {
+  return name.startsWith('--');
 }

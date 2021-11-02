@@ -12,13 +12,14 @@ import { FirebaseRedirector, FirebaseRedirectConfig } from '../../../tools/fireb
 
 
 const AIO_DIR = resolvePath(__dirname, '../../..');
+export const PATH_TO_LEGACY_URLS = resolvePath(__dirname, 'URLS_TO_REDIRECT.txt');
 
 export function getRedirector() {
   return new FirebaseRedirector(loadRedirects());
 }
 
 export function getSwNavigationUrlChecker() {
-  const config = loadJson(`${AIO_DIR}/ngsw-config.json`);
+  const config = loadJson(`${AIO_DIR}/src/generated/ngsw-config.json`);
   const navigationUrlSpecs = processNavigationUrls('', config.navigationUrls);
 
   const includePatterns = navigationUrlSpecs
@@ -40,8 +41,10 @@ export function loadRedirects(): FirebaseRedirectConfig[] {
 }
 
 export function loadLegacyUrls() {
-  const pathToLegacyUrls = `${__dirname}/URLS_TO_REDIRECT.txt`;
-  const urls = readFileSync(pathToLegacyUrls, 'utf8').split('\n').map(line => line.split('\t'));
+  const urls = readFileSync(PATH_TO_LEGACY_URLS, 'utf8')
+      .split('\n')
+      .filter(line => line.trim() !== '')
+      .map(line => line.split(/\s*-->\s*/));
   return urls;
 }
 

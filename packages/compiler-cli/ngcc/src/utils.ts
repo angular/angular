@@ -5,9 +5,9 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import * as ts from 'typescript';
+import ts from 'typescript';
 
-import {absoluteFrom, AbsoluteFsPath, FileSystem, isRooted} from '../../src/ngtsc/file_system';
+import {absoluteFrom, AbsoluteFsPath, isRooted, ReadonlyFileSystem} from '../../src/ngtsc/file_system';
 import {DeclarationNode, KnownDeclaration} from '../../src/ngtsc/reflection';
 
 /**
@@ -122,7 +122,7 @@ export class FactoryMap<K, V> {
  * @returns An absolute path to the first matching existing file, or `null` if none exist.
  */
 export function resolveFileWithPostfixes(
-    fs: FileSystem, path: AbsoluteFsPath, postFixes: string[]): AbsoluteFsPath|null {
+    fs: ReadonlyFileSystem, path: AbsoluteFsPath, postFixes: string[]): AbsoluteFsPath|null {
   for (const postFix of postFixes) {
     const testPath = absoluteFrom(path + postFix);
     if (fs.exists(testPath) && fs.stat(testPath).isFile()) {
@@ -161,6 +161,10 @@ export function getTsHelperFnFromIdentifier(id: ts.Identifier): KnownDeclaration
       return KnownDeclaration.TsHelperSpread;
     case '__spreadArrays':
       return KnownDeclaration.TsHelperSpreadArrays;
+    case '__spreadArray':
+      return KnownDeclaration.TsHelperSpreadArray;
+    case '__read':
+      return KnownDeclaration.TsHelperRead;
     default:
       return null;
   }

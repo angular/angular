@@ -9,19 +9,20 @@
 import {NgswCommChannel} from '@angular/service-worker/src/low_level';
 import {SwPush} from '@angular/service-worker/src/push';
 import {SwUpdate} from '@angular/service-worker/src/update';
-import {MockServiceWorkerContainer, MockServiceWorkerRegistration} from '@angular/service-worker/testing/mock';
+import {MockServiceWorkerContainer} from '@angular/service-worker/testing/mock';
 import {CacheDatabase} from '@angular/service-worker/worker/src/db-cache';
 import {Driver} from '@angular/service-worker/worker/src/driver';
 import {Manifest} from '@angular/service-worker/worker/src/manifest';
 import {MockRequest} from '@angular/service-worker/worker/testing/fetch';
 import {MockFileSystemBuilder, MockServerStateBuilder, tmpHashTableForFs} from '@angular/service-worker/worker/testing/mock';
 import {SwTestHarness, SwTestHarnessBuilder} from '@angular/service-worker/worker/testing/scope';
+import {envIsSupported} from '@angular/service-worker/worker/testing/utils';
 import {Observable} from 'rxjs';
 import {take} from 'rxjs/operators';
 
 (function() {
 // Skip environments that don't support the minimum APIs needed to run the SW tests.
-if (!SwTestHarness.envIsSupported()) {
+if (!envIsSupported()) {
   return;
 }
 
@@ -78,7 +79,6 @@ const serverUpdate =
 describe('ngsw + companion lib', () => {
   let mock: MockServiceWorkerContainer;
   let comm: NgswCommChannel;
-  let reg: MockServiceWorkerRegistration;
   let scope: SwTestHarness;
   let driver: Driver;
 
@@ -87,9 +87,9 @@ describe('ngsw + companion lib', () => {
     mock = new MockServiceWorkerContainer();
     comm = new NgswCommChannel(mock as any);
     scope = new SwTestHarnessBuilder().withServerState(server).build();
-    driver = new Driver(scope, scope, new CacheDatabase(scope, scope));
+    driver = new Driver(scope, scope, new CacheDatabase(scope));
 
-    scope.clients.add('default');
+    scope.clients.add('default', scope.registration.scope);
     scope.clients.getMock('default')!.queue.subscribe(msg => {
       mock.sendMessage(msg);
     });
@@ -102,7 +102,6 @@ describe('ngsw + companion lib', () => {
     });
 
     mock.setupSw();
-    reg = mock.mockRegistration!;
 
     await Promise.all(scope.handleFetch(new MockRequest('/only.txt'), 'default'));
     await driver.initialized;
@@ -117,9 +116,7 @@ describe('ngsw + companion lib', () => {
     const update = new SwUpdate(comm);
     scope.updateServerState(serverUpdate);
 
-    const gotUpdateNotice = (async () => {
-      const notice = await obsToSinglePromise(update.available);
-    })();
+    const gotUpdateNotice = (async () => await obsToSinglePromise(update.available))();
 
     await update.checkForUpdate();
     await gotUpdateNotice;

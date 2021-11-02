@@ -657,8 +657,10 @@ describe('providers', () => {
         constructor(public foo: SomeProvider) {}
       }
 
-      TestBed.configureTestingModule(
-          {declarations: [App], providers: [{provide: SomeProvider, useClass: SomeProviderImpl}]});
+      // We don't configure the `SomeProvider` in the TestingModule so that it uses the
+      // tree-shakable provider given in the `@Injectable` decorator above, which makes use of the
+      // `forwardRef()`.
+      TestBed.configureTestingModule({declarations: [App]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 

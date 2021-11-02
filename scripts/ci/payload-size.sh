@@ -96,7 +96,7 @@ addMessage() {
   # because $CI_COMMIT_RANGE may contain the previous SHA which will not be in the
   # force push or commit, hence we default to last commit.
   message=$(git --git-dir ${PROJECT_ROOT}/.git log --oneline $commitRange -- || git --git-dir ${PROJECT_ROOT}/.git log --oneline -n1)
-  message=$(echo $message | sed 's/\\/\\\\/g' | sed 's/"/\\"/g')
+  message=$(echo $message | sed 's/\r//g' | sed 's/\\/\\\\/g' | sed 's/"/\\"/g')
   payloadData="$payloadData\"message\": \"$message\", "
 }
 

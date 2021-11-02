@@ -1,10 +1,11 @@
-/* tslint:disable component-selector */
+/* eslint-disable  @angular-eslint/component-selector */
 import { AfterViewInit, Component, ElementRef, Input, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { fromInnerHTML } from 'app/shared/security';
 import { CodeComponent } from './code.component';
 
 export interface TabInfo {
   class: string;
-  code: string;
+  code: TrustedHTML;
   path: string;
   region: string;
 
@@ -55,11 +56,19 @@ export class CodeTabsComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     this.tabs = [];
-    const codeExamples = Array.from(this.content.nativeElement.querySelectorAll('code-pane'));
+    const contentElem = this.content.nativeElement;
+    const codeExamples = Array.from(contentElem.querySelectorAll('code-pane'));
 
     for (const tabContent of codeExamples) {
       this.tabs.push(this.getTabInfo(tabContent));
     }
+
+    // Remove DOM nodes that are no longer needed.
+    //
+    // NOTE:
+    // In IE11, doing this also empties the `<code-pane>` nodes captured in `codeExamples` ¯\_(ツ)_/¯
+    // Only remove the unnecessary nodes after having captured the `<code-pane>` contents.
+    contentElem.textContent = '';
   }
 
   ngAfterViewInit() {
@@ -72,7 +81,7 @@ export class CodeTabsComponent implements OnInit, AfterViewInit {
   private getTabInfo(tabContent: Element): TabInfo {
     return {
       class: tabContent.getAttribute('class') || '',
-      code: tabContent.innerHTML,
+      code: fromInnerHTML(tabContent),
       path: tabContent.getAttribute('path') || '',
       region: tabContent.getAttribute('region') || '',
 

@@ -1,3 +1,22 @@
+<a name="0.11.4"></a>
+## [0.11.4](https://github.com/angular/angular/compare/zone.js-0.11.3...zone.js-0.11.4) (2021-02-10)
+
+
+### Bug Fixes
+
+* **zone.js:** fesm2015 bundle should also be strict module. ([#40456](https://github.com/angular/angular/issues/40456)) ([f35f7c6](https://github.com/angular/angular/commit/f35f7c6)), closes [#40215](https://github.com/angular/angular/issues/40215) [#40215](https://github.com/angular/angular/issues/40215)
+* **zone.js:** fix typo in zone_externs ([#40348](https://github.com/angular/angular/issues/40348)) ([8116edb](https://github.com/angular/angular/commit/8116edb))
+* **zone.js:** patch child method that overrides an already patched method ([#39850](https://github.com/angular/angular/issues/39850)) ([82e3f54](https://github.com/angular/angular/commit/82e3f54))
+* **zone.js:** setTimeout patch should clean tasksByHandleId cache. ([#40586](https://github.com/angular/angular/issues/40586)) ([0652b29](https://github.com/angular/angular/commit/0652b29)), closes [#40387](https://github.com/angular/angular/issues/40387)
+* **zone.js:** update build tooling for latest changes in rules_nodejs ([#40710](https://github.com/angular/angular/issues/40710)) ([2827845](https://github.com/angular/angular/commit/2827845))
+
+
+### Features
+
+* **zone.js:** monkey patches queueMicrotask() ([#38904](https://github.com/angular/angular/issues/38904)) ([27358eb](https://github.com/angular/angular/commit/27358eb)), closes [#38863](https://github.com/angular/angular/issues/38863)
+
+
+
 <a name="0.11.3"></a>
 ## [0.11.3](https://github.com/angular/angular/compare/zone.js-0.11.2...zone.js-0.11.3) (2020-10-27)
 

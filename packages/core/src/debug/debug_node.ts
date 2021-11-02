@@ -8,11 +8,12 @@
 
 import {Injector} from '../di/injector';
 import {assertTNodeForLView} from '../render3/assert';
+import {getLContext} from '../render3/context_discovery';
 import {CONTAINER_HEADER_OFFSET, LContainer, NATIVE} from '../render3/interfaces/container';
 import {TElementNode, TNode, TNodeFlags, TNodeType} from '../render3/interfaces/node';
 import {isComponentHost, isLContainer} from '../render3/interfaces/type_checks';
 import {DECLARATION_COMPONENT_VIEW, LView, PARENT, T_HOST, TData, TVIEW} from '../render3/interfaces/view';
-import {getComponent, getContext, getInjectionTokens, getInjector, getListeners, getLocalRefs, getOwningComponent, loadLContext} from '../render3/util/discovery_utils';
+import {getComponent, getContext, getInjectionTokens, getInjector, getListeners, getLocalRefs, getOwningComponent} from '../render3/util/discovery_utils';
 import {INTERPOLATION_DELIMITER} from '../render3/util/misc_utils';
 import {renderStringify} from '../render3/util/stringify_utils';
 import {getComponentLViewByIndex, getNativeByTNodeOrNull} from '../render3/util/view_utils';
@@ -31,13 +32,52 @@ export class DebugEventListener {
  * @publicApi
  */
 export interface DebugNode {
+  /**
+   * The callbacks attached to the component's @Output properties and/or the element's event
+   * properties.
+   */
   readonly listeners: DebugEventListener[];
+
+  /**
+   * The `DebugElement` parent. Will be `null` if this is the root element.
+   */
   readonly parent: DebugElement|null;
+
+  /**
+   * The underlying DOM node.
+   */
   readonly nativeNode: any;
+
+  /**
+   * The host dependency injector. For example, the root element's component instance injector.
+   */
   readonly injector: Injector;
+
+  /**
+   * The element's own component instance, if it has one.
+   */
   readonly componentInstance: any;
+
+  /**
+   * An object that provides parent context for this element. Often an ancestor component instance
+   * that governs this element.
+   *
+   * When an element is repeated within *ngFor, the context is an `NgForOf` whose `$implicit`
+   * property is the value of the row instance value. For example, the `hero` in `*ngFor="let hero
+   * of heroes"`.
+   */
   readonly context: any;
+
+  /**
+   * Dictionary of objects associated with template local variables (e.g. #foo), keyed by the local
+   * variable name.
+   */
   readonly references: {[key: string]: any};
+
+  /**
+   * This component's injector lookup tokens. Includes the component itself plus the tokens that the
+   * component lists in its providers metadata.
+   */
   readonly providerTokens: any[];
 }
 export class DebugNode__PRE_R3__ {
@@ -77,20 +117,101 @@ export class DebugNode__PRE_R3__ {
 
 /**
  * @publicApi
+ *
+ * @see [Component testing scenarios](guide/testing-components-scenarios)
+ * @see [Basics of testing components](guide/testing-components-basics)
+ * @see [Testing utility APIs](guide/testing-utility-apis)
  */
 export interface DebugElement extends DebugNode {
+  /**
+   * The element tag name, if it is an element.
+   */
   readonly name: string;
+
+  /**
+   *  A map of property names to property values for an element.
+   *
+   *  This map includes:
+   *  - Regular property bindings (e.g. `[id]="id"`)
+   *  - Host property bindings (e.g. `host: { '[id]': "id" }`)
+   *  - Interpolated property bindings (e.g. `id="{{ value }}")
+   *
+   *  It does not include:
+   *  - input property bindings (e.g. `[myCustomInput]="value"`)
+   *  - attribute bindings (e.g. `[attr.role]="menu"`)
+   */
   readonly properties: {[key: string]: any};
+
+  /**
+   *  A map of attribute names to attribute values for an element.
+   */
   readonly attributes: {[key: string]: string|null};
+
+  /**
+   * A map containing the class names on the element as keys.
+   *
+   * This map is derived from the `className` property of the DOM element.
+   *
+   * Note: The values of this object will always be `true`. The class key will not appear in the KV
+   * object if it does not exist on the element.
+   *
+   * @see [Element.className](https://developer.mozilla.org/en-US/docs/Web/API/Element/className)
+   */
   readonly classes: {[key: string]: boolean};
+
+  /**
+   * The inline styles of the DOM element.
+   *
+   * Will be `null` if there is no `style` property on the underlying DOM element.
+   *
+   * @see [ElementCSSInlineStyle](https://developer.mozilla.org/en-US/docs/Web/API/ElementCSSInlineStyle/style)
+   */
   readonly styles: {[key: string]: string|null};
+
+  /**
+   * The `childNodes` of the DOM element as a `DebugNode` array.
+   *
+   * @see [Node.childNodes](https://developer.mozilla.org/en-US/docs/Web/API/Node/childNodes)
+   */
   readonly childNodes: DebugNode[];
+
+  /**
+   * The underlying DOM element at the root of the component.
+   */
   readonly nativeElement: any;
+
+  /**
+   * The immediate `DebugElement` children. Walk the tree by descending through `children`.
+   */
   readonly children: DebugElement[];
 
+  /**
+   * @returns the first `DebugElement` that matches the predicate at any depth in the subtree.
+   */
   query(predicate: Predicate<DebugElement>): DebugElement;
+
+  /**
+   * @returns All `DebugElement` matches for the predicate at any depth in the subtree.
+   */
   queryAll(predicate: Predicate<DebugElement>): DebugElement[];
+
+  /**
+   * @returns All `DebugNode` matches for the predicate at any depth in the subtree.
+   */
   queryAllNodes(predicate: Predicate<DebugNode>): DebugNode[];
+
+  /**
+   * Triggers the event by its name if there is a corresponding listener in the element's
+   * `listeners` collection.
+   *
+   * If the event lacks a listener or there's some other problem, consider
+   * calling `nativeElement.dispatchEvent(eventObject)`.
+   *
+   * @param eventName The name of the event to trigger
+   * @param eventObj The _event object_ expected by the handler
+   *
+   * @see [Testing components scenarios](guide/testing-components-scenarios#trigger-event-handler)
+   */
   triggerEventHandler(eventName: string, eventObj: any): void;
 }
 export class DebugElement__PRE_R3__ extends DebugNode__PRE_R3__ implements DebugElement {
@@ -261,13 +382,13 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
   }
 
   get name(): string {
-    try {
-      const context = loadLContext(this.nativeNode)!;
+    const context = getLContext(this.nativeNode);
+    if (context !== null) {
       const lView = context.lView;
       const tData = lView[TVIEW].data;
       const tNode = tData[context.nodeIndex] as TNode;
       return tNode.value!;
-    } catch (e) {
+    } else {
       return this.nativeNode.nodeName;
     }
   }
@@ -285,8 +406,8 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
    *  - attribute bindings (e.g. `[attr.role]="menu"`)
    */
   get properties(): {[key: string]: any;} {
-    const context = loadLContext(this.nativeNode, false);
-    if (context == null) {
+    const context = getLContext(this.nativeNode);
+    if (context === null) {
       return {};
     }
 
@@ -311,8 +432,8 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
       return attributes;
     }
 
-    const context = loadLContext(element, false);
-    if (context == null) {
+    const context = getLContext(element);
+    if (context === null) {
       return {};
     }
 
@@ -501,7 +622,7 @@ function _queryAllR3(
 function _queryAllR3(
     parentElement: DebugElement, predicate: Predicate<DebugElement>|Predicate<DebugNode>,
     matches: DebugElement[]|DebugNode[], elementsOnly: boolean) {
-  const context = loadLContext(parentElement.nativeNode, false);
+  const context = getLContext(parentElement.nativeNode);
   if (context !== null) {
     const parentTNode = context.lView[TVIEW].data[context.nodeIndex] as TNode;
     _queryNodeChildrenR3(

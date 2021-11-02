@@ -43,7 +43,7 @@ export class Options {
 }
 
 function writeFile(filename: string, content: string): Promise<any> {
-  return new Promise(function(resolve, reject) {
+  return new Promise<void>(function(resolve, reject) {
     fs.writeFile(filename, content, (error) => {
       if (error) {
         reject(error);

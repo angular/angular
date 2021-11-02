@@ -12,8 +12,6 @@ declare var WorkerGlobalScope: any /** TODO #9100 */;
 // We don't want to include the whole node.d.ts this this compilation unit so we'll just fake
 // the global "global" var for now.
 declare var global: any /** TODO #9100 */;
-// Not yet available in TypeScript: https://github.com/Microsoft/TypeScript/pull/29332
-declare var globalThis: any /** TODO #9100 */;
 
 const __globalThis = typeof globalThis !== 'undefined' && globalThis;
 const __window = typeof window !== 'undefined' && window;

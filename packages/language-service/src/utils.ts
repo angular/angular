@@ -7,7 +7,8 @@
  */
 
 import {AstPath, BoundEventAst, CompileDirectiveSummary, CompileTypeMetadata, CssSelector, DirectiveAst, ElementAst, EmbeddedTemplateAst, HtmlAstPath, identifierName, Identifiers, Node, ParseSourceSpan, RecursiveTemplateAstVisitor, RecursiveVisitor, TemplateAst, TemplateAstPath, templateVisitAll, visitAll} from '@angular/compiler';
-import {getClassDeclFromDecoratorProp, getPropertyAssignmentFromValue} from './ts_utils';
+import * as path from 'path';
+
 import {AstResult, DiagnosticTemplateInfo, SelectorInfo, Span, Symbol, SymbolQuery} from './types';
 
 interface SpanHolder {
@@ -106,7 +107,7 @@ export function findTemplateAstAt(ast: TemplateAst[], position: number): Templat
       }
     }
 
-    visitEmbeddedTemplate(ast: EmbeddedTemplateAst, context: any): any {
+    override visitEmbeddedTemplate(ast: EmbeddedTemplateAst, context: any): any {
       return this.visitChildren(context, visit => {
         // Ignore reference, variable and providers
         visit(ast.attrs);
@@ -115,7 +116,7 @@ export function findTemplateAstAt(ast: TemplateAst[], position: number): Templat
       });
     }
 
-    visitElement(ast: ElementAst, context: any): any {
+    override visitElement(ast: ElementAst, context: any): any {
       return this.visitChildren(context, visit => {
         // Ingnore providers
         visit(ast.attrs);
@@ -127,7 +128,7 @@ export function findTemplateAstAt(ast: TemplateAst[], position: number): Templat
       });
     }
 
-    visitDirective(ast: DirectiveAst, context: any): any {
+    override visitDirective(ast: DirectiveAst, context: any): any {
       // Ignore the host properties of a directive
       const result = this.visitChildren(context, visit => {
         visit(ast.inputs);
@@ -203,4 +204,14 @@ export function findOutputBinding(
       }
     }
   }
+}
+
+/**
+ * Returns an absolute path from the text in `node`. If the text is already
+ * an absolute path, return it as is, otherwise join the path with the filename
+ * of the source file.
+ */
+export function extractAbsoluteFilePath(node: ts.StringLiteralLike) {
+  const url = node.text;
+  return path.isAbsolute(url) ? url : path.join(path.dirname(node.getSourceFile().fileName), url);
 }

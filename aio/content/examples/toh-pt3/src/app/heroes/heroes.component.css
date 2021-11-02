@@ -16,16 +16,20 @@
   border-radius: 4px;
 }
 .heroes li:hover {
-  color: #607D8B;
-  background-color: #DDD;
+  color: #2c3a41;
+  background-color: #e6e6e6;
   left: .1em;
 }
 .heroes li.selected {
-  background-color: #CFD8DC;
+  background-color: black;
   color: white;
 }
 .heroes li.selected:hover {
-  background-color: #BBD8DC;
+  background-color: #505050;
+  color: white;
+}
+.heroes li.selected:active {
+  background-color: black;
   color: white;
 }
 .heroes .badge {

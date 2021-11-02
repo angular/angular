@@ -13,7 +13,7 @@ before loading zone.js.
     __Zone_disable_blocking = true; // Zone will not patch alert/prompt/confirm
     __Zone_disable_PromiseRejectionEvent = true; // Zone will not patch PromiseRejectionEventHandler
   </script>
-  <script src="../dist/zone.js"></script>
+  <script src="../bundles/zone.umd.js"></script>
 ```
 
 Below is the full list of currently supported modules.
@@ -85,12 +85,12 @@ you can do like this.
       }
     ];
   </script>
-  <script src="../dist/zone.js"></script>
+  <script src="../bundles/zone.umd.js"></script>
 ```
 
 - Error
 
-By default, `zone.js/dist/zone-error` will not be loaded for performance concern.
+By default, `zone.js/plugins/zone-error` will not be loaded for performance concern.
 This package will provide following functionality.
 
   1. Error inherit: handle `extend Error` issue.
@@ -125,13 +125,13 @@ This package will provide following functionality.
   The second feature will slow down the `Error` performance, so `zone.js` provide a flag to let you be able to control the behavior.
   The flag is `__Zone_Error_ZoneJsInternalStackFrames_policy`. And the available options is:
 
-    1. default: this is the default one, if you load `zone.js/dist/zone-error` without
+    1. default: this is the default one, if you load `zone.js/plugins/zone-error` without
      setting the flag, `default` will be used, and `ZoneJsInternalStackFrames` will be available
      when `new Error()`, you can get a `error.stack`  which is `zone stack free`. But this
      will slow down `new Error()` a little bit.
 
     2. disable: this will disable `ZoneJsInternalStackFrames` feature, and if you load
-     `zone.js/dist/zone-error`, you will only get a `wrapped Error` which can handle
+     `zone.js/plugins/zone-error`, you will only get a `wrapped Error` which can handle
       `Error inherit` issue.
 
     3. lazy: this is a feature to let you be able to get `ZoneJsInternalStackFrames` feature,

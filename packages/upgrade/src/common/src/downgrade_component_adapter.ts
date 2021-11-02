@@ -8,10 +8,10 @@
 
 import {ApplicationRef, ChangeDetectorRef, ComponentFactory, ComponentRef, EventEmitter, Injector, OnChanges, SimpleChange, SimpleChanges, StaticProvider, Testability, TestabilityRegistry, Type} from '@angular/core';
 
-import {IAttributes, IAugmentedJQuery, ICompileService, IInjectorService, INgModelController, IParseService, IScope} from './angular1';
+import {IAttributes, IAugmentedJQuery, ICompileService, INgModelController, IParseService, IScope} from './angular1';
 import {PropertyBinding} from './component_info';
 import {$SCOPE} from './constants';
-import {getTypeName, hookupNgModel, strictEquals} from './util';
+import {cleanData, getTypeName, hookupNgModel, strictEquals} from './util';
 
 const INITIAL_VALUE = {
   __UNINITIALIZED__: true
@@ -33,8 +33,8 @@ export class DowngradeComponentAdapter {
   constructor(
       private element: IAugmentedJQuery, private attrs: IAttributes, private scope: IScope,
       private ngModel: INgModelController, private parentInjector: Injector,
-      private $injector: IInjectorService, private $compile: ICompileService,
-      private $parse: IParseService, private componentFactory: ComponentFactory<any>,
+      private $compile: ICompileService, private $parse: IParseService,
+      private componentFactory: ComponentFactory<any>,
       private wrapCallback: <T>(cb: () => T) => () => T) {
     this.componentScope = scope.$new();
   }
@@ -216,11 +216,33 @@ export class DowngradeComponentAdapter {
     const destroyComponentRef = this.wrapCallback(() => this.componentRef.destroy());
     let destroyed = false;
 
-    this.element.on!('$destroy', () => this.componentScope.$destroy());
+    this.element.on!('$destroy', () => {
+      // The `$destroy` event may have been triggered by the `cleanData()` call in the
+      // `componentScope` `$destroy` handler below. In that case, we don't want to call
+      // `componentScope.$destroy()` again.
+      if (!destroyed) this.componentScope.$destroy();
+    });
     this.componentScope.$on('$destroy', () => {
       if (!destroyed) {
         destroyed = true;
         testabilityRegistry.unregisterApplication(this.componentRef.location.nativeElement);
+
+        // The `componentScope` might be getting destroyed, because an ancestor element is being
+        // removed/destroyed. If that is the case, jqLite/jQuery would normally invoke `cleanData()`
+        // on the removed element and all descendants.
+        //   https://github.com/angular/angular.js/blob/2e72ea13fa98bebf6ed4b5e3c45eaf5f990ed16f/src/jqLite.js#L349-L355
+        //   https://github.com/jquery/jquery/blob/6984d1747623dbc5e87fd6c261a5b6b1628c107c/src/manipulation.js#L182
+        //
+        // Here, however, `destroyComponentRef()` may under some circumstances remove the element
+        // from the DOM and therefore it will no longer be a descendant of the removed element when
+        // `cleanData()` is called. This would result in a memory leak, because the element's data
+        // and event handlers (and all objects directly or indirectly referenced by them) would be
+        // retained.
+        //
+        // To ensure the element is always properly cleaned up, we manually call `cleanData()` on
+        // this element and its descendants before destroying the `ComponentRef`.
+        cleanData(this.element[0]);
+
         destroyComponentRef();
       }
     });
@@ -250,7 +272,6 @@ export class DowngradeComponentAdapter {
  */
 export function groupNodesBySelector(ngContentSelectors: string[], nodes: Node[]): Node[][] {
   const projectableNodes: Node[][] = [];
-  let wildcardNgContentIndex: number;
 
   for (let i = 0, ii = ngContentSelectors.length; i < ii; ++i) {
     projectableNodes[i] = [];

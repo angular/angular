@@ -15,7 +15,6 @@ import { UserService } from './user.service';
 
 import { ProvidersModule } from './providers.module';
 
-// #docregion ngmodule
 @NgModule({
   imports: [
     BrowserModule,
@@ -25,14 +24,12 @@ import { ProvidersModule } from './providers.module';
     AppComponent,
     CarComponent,
     HeroesComponent,
-    // #enddocregion ngmodule
     HeroesTspComponent,
     HeroListComponent,
     InjectorComponent,
     TestComponent
-    // #docregion ngmodule
   ],
-  // #docregion providers, providers-2
+  // #docregion providers
   providers: [
     // #enddocregion providers
     Logger,
@@ -40,7 +37,7 @@ import { ProvidersModule } from './providers.module';
     UserService,
     { provide: APP_CONFIG, useValue: HERO_DI_CONFIG }
   ],
-  // #enddocregion providers, providers-2
+  // #enddocregion providers
   exports: [ CarComponent, HeroesComponent ],
   bootstrap: [ AppComponent ]
 })

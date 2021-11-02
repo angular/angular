@@ -8,7 +8,7 @@
 
 import * as chokidar from 'chokidar';
 import * as path from 'path';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {Diagnostics, exitCodeFromResult, ParsedConfiguration, performCompilation, PerformCompilationResult, readConfiguration} from './perform_compile';
 import * as api from './transformers/api';
@@ -127,7 +127,7 @@ export function performWatchCompilation(host: PerformWatchHost):
 
   // Watch basePath, ignoring .dotfiles
   let resolveReadyPromise: () => void;
-  const readyPromise = new Promise(resolve => resolveReadyPromise = resolve);
+  const readyPromise = new Promise<void>(resolve => resolveReadyPromise = resolve);
   // Note: ! is ok as options are filled after the first compilation
   // Note: ! is ok as resolvedReadyPromise is filled by the previous call
   const fileWatcher =

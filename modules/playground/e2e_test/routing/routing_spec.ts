@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {verifyNoBrowserErrors} from '@angular/dev-infra-private/bazel/benchmark/driver-utilities';
 import {$, browser, by, element, ExpectedConditions} from 'protractor';
-
-import {verifyNoBrowserErrors} from '../../../../dev-infra/benchmark/driver-utilities';
 
 function waitForElement(selector: string) {
   // Waits for the element with id 'abc' to be present on the dom.

@@ -7,14 +7,14 @@
  */
 
 import {TmplAstTemplate} from '@angular/compiler';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import {absoluteFrom, getSourceFileOrError} from '../../file_system';
 import {runInEachFileSystem} from '../../file_system/testing';
 import {getTokenAtPosition} from '../../util/src/typescript';
 import {CompletionKind, GlobalCompletion, TemplateTypeChecker, TypeCheckingConfig} from '../api';
 
-import {getClass, setup, TypeCheckingTarget} from './test_utils';
+import {getClass, setup, TypeCheckingTarget} from '../testing';
 
 runInEachFileSystem(() => {
   describe('TemplateTypeChecker.getGlobalCompletions()', () => {
@@ -70,32 +70,6 @@ runInEachFileSystem(() => {
 
       expect(userAtTopLevel.kind).toBe(CompletionKind.Reference);
       expect(userInNgFor.kind).toBe(CompletionKind.Variable);
-    });
-
-    it('should invalidate cached completions when overrides change', () => {
-      // The template starts with a #foo local reference.
-      const {completions: before, templateTypeChecker, component} =
-          setupCompletions('<div #foo></div>');
-      expect(Array.from(before.templateContext.keys())).toEqual(['foo']);
-
-      // Override the template and change the name of the local reference to #bar. This should
-      // invalidate any cached completions.
-      templateTypeChecker.overrideComponentTemplate(component, '<div #bar></div>');
-
-      // Fresh completions should include the #bar reference instead.
-      const afterOverride =
-          templateTypeChecker.getGlobalCompletions(/* root template */ null, component)!;
-      expect(afterOverride).toBeDefined();
-      expect(Array.from(afterOverride.templateContext.keys())).toEqual(['bar']);
-
-      // Reset the template to its original. This should also invalidate any cached completions.
-      templateTypeChecker.resetOverrides();
-
-      // Fresh completions should include the original #foo now.
-      const afterReset =
-          templateTypeChecker.getGlobalCompletions(/* root template */ null, component)!;
-      expect(afterReset).toBeDefined();
-      expect(Array.from(afterReset.templateContext.keys())).toEqual(['foo']);
     });
   });
 
@@ -167,7 +141,7 @@ function setupCompletions(
     context = tmpl;
   }
 
-  const completions = templateTypeChecker.getGlobalCompletions(context, SomeCmp)!;
+  const completions = templateTypeChecker.getGlobalCompletions(context, SomeCmp, null!)!;
   expect(completions).toBeDefined();
   return {
     completions,
