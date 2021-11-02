@@ -76,7 +76,7 @@ describe('routerlink emptyExpr assignment migration', () => {
 
     await runMigration();
     expect(warnOutput.length).toBe(1);
-    expect(warnOutput[0]).toMatch(/^⮑ {3}index.ts@5:25/);
+    expect(warnOutput[0]).toMatch(/^⮑ {3}index\.ts@5:25/);
 
     const content = tree.readContent('/index.ts');
     expect(content).toContain(`<div [routerLink]="[]"></div>`);
@@ -101,7 +101,7 @@ describe('routerlink emptyExpr assignment migration', () => {
     await runMigration();
 
     expect(warnOutput.length).toBe(1);
-    expect(warnOutput).toMatch(/^⮑ {3}tmpl.html@3:20/);
+    expect(warnOutput).toMatch(/^⮑ {3}tmpl\.html@3:20/);
 
     const content = tree.readContent('/tmpl.html');
     expect(content).toContain(`<some-comp [routerLink]="[]"></some-comp>`);
@@ -215,9 +215,30 @@ describe('routerlink emptyExpr assignment migration', () => {
 
     await runMigration();
     expect(warnOutput.length).toBe(1);
-    expect(warnOutput[0]).toMatch(/^⮑ {3}index.ts@4:35/);
+    expect(warnOutput[0]).toMatch(/^⮑ {3}index\.ts@4:35/);
 
     const content = tree.readContent('/index.ts');
     expect(content).toContain(`<div [routerLink]='[]'>\r\n{{1}}\r\n</div>`);
+  });
+
+  it('should work for files that use CRLF line endings before routerLink bindings', async () => {
+    writeFile(
+        '/index.ts',
+        `
+      import {Component} from '@angular/core';
+
+      @Component({` +
+            'template: `' +
+            '\r\n\r\n\r\n<div [routerLink]>{{1}}</div>`' +
+            `})
+      export class MyComp {}
+    `);
+
+    await runMigration();
+    expect(warnOutput.length).toBe(1);
+    expect(warnOutput[0]).toMatch(/^⮑ {3}index\.ts@7:6/);
+
+    const content = tree.readContent('/index.ts');
+    expect(content).toContain(`\r\n\r\n\r\n<div [routerLink]="[]">{{1}}</div>`);
   });
 });
