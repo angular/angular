@@ -97,16 +97,24 @@ export class NgComponentTemplateVisitor {
       if (propertyName === 'template' && ts.isStringLiteralLike(property.initializer)) {
         // Need to add an offset of one to the start because the template quotes are
         // not part of the template content.
-        const templateStartIdx = property.initializer.getStart() + 1;
+        // The `getText()` method gives us the original raw text.
+        // We could have used the `text` property, but if the template is defined as a backtick
+        // string then the `text` property contains a "cooked" version of the string. Such cooked
+        // strings will have converted CRLF characters to only LF. This messes up string
+        // replacements in template migrations.
+        // The raw text returned by `getText()` includes the enclosing quotes so we change the
+        // `content` and `start` values accordingly.
+        const content = property.initializer.getText().slice(1, -1);
+        const start = property.initializer.getStart() + 1;
         const filePath = resolve(sourceFileName);
         this.resolvedTemplates.push({
           filePath: filePath,
           container: node,
-          content: property.initializer.text,
+          content,
           inline: true,
-          start: templateStartIdx,
+          start: start,
           getCharacterAndLineOfPosition: pos =>
-              ts.getLineAndCharacterOfPosition(sourceFile, pos + templateStartIdx)
+              ts.getLineAndCharacterOfPosition(sourceFile, pos + start)
         });
       }
       if (propertyName === 'templateUrl' && ts.isStringLiteralLike(property.initializer)) {
