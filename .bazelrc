@@ -81,15 +81,6 @@ test --test_output=errors
 build --deleted_packages=integration/bazel,integration/bazel/src,integration/bazel/src/hello-world,integration/bazel/test,integration/bazel/tools,integration/bazel/test/e2e
 query --deleted_packages=integration/bazel,integration/bazel/src,integration/bazel/src/hello-world,integration/bazel/test,integration/bazel/tools,integration/bazel/test/e2e
 
-################################
-# Temporary Settings for Ivy   #
-################################
-# Set the default compiler used for bazel builds to be Ivy.
-build --define=angular_ivy_enabled=True
-
-build:view-engine --define=angular_ivy_enabled=False
-build:ivy --define=angular_ivy_enabled=True
-
 ##################################
 # Remote Build Execution support #
 # Turn on these settings with    #
