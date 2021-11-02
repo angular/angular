@@ -42,7 +42,7 @@ jobs:
           repoToken: '${{secrets.GITHUB_TOKEN}}'
           firebaseServiceAccount: '${{secrets.FIREBASE_PREVIEW_SERVICE_TOKEN}}'
           expires: 20d
-          projectId: angular-components-test
+          projectId: ng-comp-dev
           channelId: pr-${{steps.pr_info.outputs.number}}-${{steps.pr_info.outputs.sha}}
 
       - uses: marocchino/sticky-pull-request-comment@v2
