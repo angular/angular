@@ -12,10 +12,6 @@ test --test_output=errors
 build --local_ram_resources=14336
 build --local_cpu_resources=8
 
-# Use the Angular Ivy compiler
-# See https://github.com/angular/angular/blob/master/docs/BAZEL.md#various-flags-used-for-tests
-build --define=angular_ivy_enabled=True
-
 # Temporary define while angular depends on the legacy rollup_bundle rule.
 # TODO: remove this setting after https://github.com/angular/angular/pull/33201 lands.
 build --define=enable_legacy_rollup_rule=1

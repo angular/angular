@@ -390,7 +390,6 @@ def ng_benchmark(**kwargs):
 def nodejs_binary(data = [], **kwargs):
     """Default values for nodejs_binary"""
     _nodejs_binary(
-        configuration_env_vars = ["angular_ivy_enabled"],
         data = data + ["@npm//source-map-support"],
         **kwargs
     )
@@ -431,9 +430,7 @@ def jasmine_node_test(bootstrap = [], **kwargs):
         "@npm//tslib",
         "@npm//xhr2",
     ]
-    configuration_env_vars = kwargs.pop("configuration_env_vars", []) + [
-        "angular_ivy_enabled",
-    ]
+    configuration_env_vars = kwargs.pop("configuration_env_vars", [])
 
     # TODO(josephperrott): update dependency usages to no longer need bazel patch module resolver
     # See: https://github.com/bazelbuild/rules_nodejs/wiki#--bazel_patch_module_resolver-now-defaults-to-false-2324
