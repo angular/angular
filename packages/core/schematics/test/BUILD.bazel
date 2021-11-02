@@ -20,10 +20,6 @@ ts_library(
 
 jasmine_node_test(
     name = "test",
-    tags = [
-        # TODO: Reenable tests after determining if they appropriately rely on ViewEngine
-        "view-engine-only",
-    ],
     deps = [
         ":test_lib",
         "@npm//shelljs",
