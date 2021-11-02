@@ -1,5 +1,4 @@
 # Developer guide: getting your environment set up
-
 1. Make sure you have both `node` and `yarn` installed.
    We recommend using `nvm` to manage your node versions.
 2. angular/components uses Bazel which requires certain Bash and UNIX tools.
@@ -19,7 +18,6 @@ To bring up a local server, run `yarn dev-app`. This will automatically watch fo
 and rebuild. The browser should refresh automatically when changes are made.
 
 ### Running tests
-
 To run unit tests, run `yarn test <target>`. The `target` can be either a short name (e.g. `yarn test button`) or an explicit path `yarn test src/cdk/stepper`.
 To run the e2e tests, run `yarn e2e`.
 To run lint, run `yarn lint`.
@@ -67,7 +65,6 @@ at the file under `tools/public_api_guard/<target>.d.ts`.
 
 
 ### Disabling Git hooks
-
 If your development workflow does not intend the commit message validation to run automatically
 when commits are being created, or if you do not want to run the formatter upon `git commit`, you
 can disable any installed Git hooks by setting `HUSKY=0` in your shell environment. e.g.
@@ -79,3 +76,10 @@ export HUSKY=0
 # .bashrc
 export HUSKY=0
 ```
+
+### Injecting variables into the dev app
+Variables can be injected into the dev app by creating the `src/dev-app/variables.json` file.
+They'll be made available under the `window.DEV_APP_VARIABLES` object. The file isn't checked into
+Git and it can be used to pass private configuration like API keys. Variables currently being used:
+
+* `GOOGLE_MAPS_KEY` - Optional key for the Google Maps API.
