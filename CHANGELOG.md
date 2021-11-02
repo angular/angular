@@ -1,3 +1,19 @@
+<a name="13.0.0-rc.3"></a>
+# 13.0.0-rc.3 (2021-11-01)
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [8ae99821d6](https://github.com/angular/angular/commit/8ae99821d657ba940df998f6abec425f8a1f4cb1) | fix | support `InjectFlags` argument in `NodeInjector.get()` ([#41592](https://github.com/angular/angular/pull/41592)) |
+### elements
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a468213f34](https://github.com/angular/angular/commit/a468213f34943b7ddf234e6f9fd406431173d6a0) | fix | remove `ng-add` schematic ([#43975](https://github.com/angular/angular/pull/43975)) |
+| [f544a53f5f](https://github.com/angular/angular/commit/f544a53f5f3667b4c557537543a9b74a122d5f24) | fix | remove incorrect `@angular/platform-browser` peer dependency ([#43975](https://github.com/angular/angular/pull/43975)) |
+## Special Thanks
+Alan Agius, Alex Rickabaugh, Andrew Kushnir, Andrew Scott, George Kalpakas, Jessica Janiuk, Jochen Kraushaar, Joe Martin (Crowdstaffing), Pete Bacon Darwin, mgechev and vthinkxie
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="13.0.0-rc.2"></a>
 # 13.0.0-rc.2 (2021-10-27)
 ### compiler-cli
