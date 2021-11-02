@@ -26,8 +26,6 @@ There are a few key techniques and patterns that you can apply to future proof a
 
 ### Follow the AngularJS Style Guide
 
-{@a follow-the-angular-styleguide}
-
 The [AngularJS Style Guide][GithubJohnpapaAngularStyleguideBlobPrimaryA1ReadmeMd] collects patterns and practices that have been proven to result in cleaner and more maintainable AngularJS applications.
 It contains a wealth of information about how to write and organize AngularJS code &mdash;and equally importantly&mdash; how **not** to write and organize AngularJS code.
 
@@ -943,7 +941,7 @@ In terms of project structure, this is where the work begins:
 </div>
 
 This is actually a pretty good starting point.
-The code uses the AngularJS 1.5 component API and the organization follows the [AngularJS Style Guide][GithubJohnpapaAngularStyleguideBlobPrimaryA1ReadmeMd], which is an important [preparation step][AioGuideUpgradeFollowTheAngularStyleguide] before a successful upgrade.
+The code uses the AngularJS 1.5 component API and the organization follows the [AngularJS Style Guide][GithubJohnpapaAngularStyleguideBlobPrimaryA1ReadmeMd], which is an important [preparation step][AioGuideUpgradeFollowTheAngularjsStyleGuide] before a successful upgrade.
 
 *   Each component, service, and filter is in its own source file, as per the
     [Rule of 1][GithubJohnpapaAngularStyleguideBlobPrimaryA1ReadmeMdSingleResponsibility].
@@ -1715,7 +1713,7 @@ And for the phone list component, a few adjustments to the router make the `Rout
 [AioGuideRouter]: guide/router "Common Routing Tasks | Angular"
 [AioGuideTypescriptConfiguration]: guide/typescript-configuration "TypeScript configuration | Angular"
 [AioGuideUpgradeBootstrappingHybridApplications]: guide/upgrade#bootstrapping-hybrid-applications "Bootstrapping hybrid applications - Upgrading from AngularJS to Angular | Angular"
-[AioGuideUpgradeFollowTheAngularStyleguide]: guide/upgrade#follow-the-angular-styleguide "Follow the AngularJS Style Guide - Upgrading from AngularJS to Angular | Angular"
+[AioGuideUpgradeFollowTheAngularjsStyleGuide]: guide/upgrade#follow-the-angularjs-style-guide "Follow the AngularJS Style Guide - Upgrading from AngularJS to Angular | Angular"
 [AioGuideUpgradeMakingAngularjsDependenciesInjectableToAngular]: guide/upgrade#making-angularjs-dependencies-injectable-to-angular "Making AngularJS Dependencies Injectable to Angular - Upgrading from AngularJS to Angular | Angular"
 [AioGuideUpgradePreparation]: guide/upgrade#preparation "Preparation - Upgrading from AngularJS to Angular | Angular"
 [AioGuideUpgradeUpgradingWithNgupgrade]: guide/upgrade#upgrading-with-ngupgrade "Upgrading with ngUpgrade - Upgrading from AngularJS to Angular | Angular"
@@ -1763,4 +1761,4 @@ And for the phone list component, a few adjustments to the router make the `Rout
 
 <!-- end links -->
 
-@reviewed 2021-10-26
+@reviewed 2021-11-02
