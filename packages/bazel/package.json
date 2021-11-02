@@ -17,7 +17,6 @@
   "bazelBin": {
     "ngc-wrapped": {
       "additionalAttributes": {
-        "configuration_env_vars": "[\"angular_ivy_enabled\"]",
         "templated_args": "[\"--bazel_patch_module_resolver\"]"
       }
     }
