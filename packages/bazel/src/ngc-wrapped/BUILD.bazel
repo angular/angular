@@ -27,7 +27,6 @@ ts_library(
 
 nodejs_binary(
     name = "ngc-wrapped",
-    configuration_env_vars = ["angular_ivy_enabled"],
     data = [
         ":ngc_lib",
         "//packages/bazel/third_party/github.com/bazelbuild/bazel/src/main/protobuf:worker_protocol.proto",
