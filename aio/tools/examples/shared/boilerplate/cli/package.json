@@ -27,12 +27,12 @@
     "zone.js": "~0.11.4"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "~13.0.0-rc.0",
-    "@angular/cli": "~13.0.0-rc.0",
+    "@angular-devkit/build-angular": "~13.0.0-rc.3",
+    "@angular/cli": "~13.0.0-rc.3",
     "@angular/compiler-cli": "~13.0.0-next.0",
-    "@types/jasmine": "~3.9.0",
+    "@types/jasmine": "~3.10.0",
     "@types/node": "^12.11.1",
-    "jasmine-core": "~3.9.0",
+    "jasmine-core": "~3.10.0",
     "jasmine-marbles": "~0.8.3",
     "jasmine-spec-reporter": "~7.0.0",
     "karma": "~6.3.0",
