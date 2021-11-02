@@ -22,7 +22,7 @@ const deprecatedFunction = 'async';
 const newFunction = 'waitForAsync';
 
 /** TSLint rule that migrates from `async` to `waitForAsync`. */
-export class WaitForAsyncRule extends Rules.TypedRule {
+export class Rule extends Rules.TypedRule {
   override applyWithProgram(sourceFile: ts.SourceFile, program: ts.Program): RuleFailure[] {
     const failures: RuleFailure[] = [];
     const asyncImportSpecifier =
