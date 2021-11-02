@@ -370,7 +370,6 @@ def _ng_package_impl(ctx):
             module_name = ng_module_metadata.module_name
             es2020_entry_point = ng_module_metadata.flat_module_out_prodmode_file
             typings_file = ng_module_metadata.typings_file
-            metadata_file = ng_module_metadata.metadata_file
             guessed_paths = False
 
             _debug(
@@ -390,7 +389,6 @@ def _ng_package_impl(ctx):
             # typings entry-point through the most reasonable defaults (i.e. "package/index").
             es2020_entry_point = _find_matching_file(unscoped_esm2020, "%s/index.mjs" % entry_point_package)
             typings_file = _find_matching_file(unscoped_type_definitions, "%s/index.d.ts" % entry_point_package)
-            metadata_file = None
             guessed_paths = True
 
         bundle_name = "%s.mjs" % (primary_bundle_name if is_primary_entry_point else entry_point)
@@ -405,7 +403,6 @@ def _ng_package_impl(ctx):
             fesm2020_file = fesm2020_file,
             fesm2015_file = fesm2015_file,
             typings_file = typings_file,
-            metadata_file = metadata_file,
             guessed_paths = guessed_paths,
         ))
 
@@ -473,9 +470,6 @@ def _ng_package_impl(ctx):
     # in the TypeScript program easily.
     metadata_arg = {}
     for m in collected_entry_points:
-        if m.metadata_file:
-            packager_inputs.extend([m.metadata_file])
-
         # The captured properties need to match the `EntryPointInfo` interface
         # in the packager executable tool.
         metadata_arg[m.module_name] = {

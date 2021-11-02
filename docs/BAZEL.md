@@ -59,11 +59,8 @@ keeps the outputs up-to-date as you save sources.
 
 If you're experiencing problems with seemingly unrelated tests failing, it may be because you're not using the proper flags with your Bazel test runs in Angular.
 
-See also: [`//.bazelrc`](https://github.com/angular/angular/blob/master/.bazelrc) where `--define=angular_ivy_enabled=False` is defined as default.
-
 - `--config=debug`: build and launch in debug mode (see [debugging](#debugging) instructions below)
 - `--test_arg=--node_options=--inspect=9228`: change the inspector port.
-- `--config=view-engine` Enables ViewEngine mode if present, otherwise Ivy is used. This switches which compiler is used (ngc or ngtsc)
 - `--test_tag_filters=<tag>`: filter tests down to tags defined in the `tag` config of your rules in any given `BUILD.bazel`.
 
 
@@ -81,7 +78,7 @@ For additional info and testing options, see the
 [nodejs_test documentation](https://bazelbuild.github.io/rules_nodejs/Built-ins.html#nodejs_test).
 
 - Click on "Resume script execution" to let the code run until the first `debugger` statement or a previously set breakpoint.
-- If you're debugging an ivy test and you want to inspect the generated template instructions, find the template of your component in the call stack and click on `(source mapped from [CompName].js)` at the bottom of the code. You can also disable sourcemaps in the options or go to sources and look into ng:// namespace to see all the generated code.
+- If you're debugging a test and you want to inspect the generated template instructions, find the template of your component in the call stack and click on `(source mapped from [CompName].js)` at the bottom of the code. You can also disable sourcemaps in the options or go to sources and look into ng:// namespace to see all the generated code.
 
 ### Debugging a Node Test in VSCode
 

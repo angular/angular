@@ -25,7 +25,6 @@ ng_rollup_bundle(
 js_size_tracking_test(
     name = "size_test",
     src = "angular/packages/core/test/bundling/core_all/bundle.min.js",
-    angular_ivy_enabled = "True",
     data = [
         "bundle.golden_size_map.json",
         ":bundle",
