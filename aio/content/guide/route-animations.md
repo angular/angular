@@ -75,6 +75,11 @@ Animations can be defined directly inside your components. For this example you 
 
 The following code snippet defines a reusable animation named `slideInAnimation`.
 
+<div class="alert is-important">
+
+**Note:** `animateChild()` does not currently work with route transition animations. Please see GitHub Issue <a href="https://github.com/angular/angular/issues/30477">#30477</a> for more information.
+
+</div>
 
 <code-example path="animations/src/app/animations.ts" header="src/app/animations.ts" region="route-animations" language="typescript"></code-example>
 
@@ -108,6 +113,12 @@ During a transition, a new view is inserted directly after the old one and both 
 Use the `query()` method to find and animate elements within the current host component. The `query(":enter")` statement returns the view that is being inserted, and `query(":leave")` returns the view that is being removed.
 
 Assume that you are routing from the *Home => About*.
+
+<div class="alert is-important">
+
+**Note:** `animateChild()` does not currently work with route transition animations. Please see GitHub Issue <a href="https://github.com/angular/angular/issues/30477">#30477</a> for more information.
+
+</div>
 
 <code-example path="animations/src/app/animations.ts" header="src/app/animations.ts (excerpt)" region="query" language="typescript"></code-example>
 

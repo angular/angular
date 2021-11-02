@@ -1,5 +1,11 @@
 # Introduction to Angular animations
 
+<div class="alert is-important">
+
+***The Angular team does not currently have a Web Animations API domain expert on staff.*** As such, the ```@angular/animations``` package, and all bugs/issues related to it, have been significantly deprioritized. Some example code in this document may not function as described. If you would like to contribute to Angular, please see [Contributing to Angular](https://github.com/angular/angular/blob/master/CONTRIBUTING.md)
+
+</div>
+
 Animation provides the illusion of motion: HTML elements change styling over time. Well-designed animations can make your application more fun and straightforward to use, but they aren't just cosmetic. Animations can improve your application and user experience in a number of ways:
 
 * Without animations, web page transitions can seem abrupt and jarring.
@@ -314,7 +320,7 @@ What it does
 
 <tr>
 <td><code>animateChild()</code></td>
-<td>Allows animations on child components to be run within the same timeframe as the parent.</td>
+<td>Allows animations on child components to be run within the same timeframe as the parent. <strong>Note:</strong> Please see GitHub Issue <a href="https://github.com/angular/angular/issues/30477">#30477</a> before attempting to use <code>animateChild()</code> together with route transition animations.</td>
 </tr>
 
 </table>
