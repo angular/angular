@@ -71,11 +71,7 @@ INTEGRATION_TESTS = {
     "ng-add-localize": {},
     "ng_elements": {},
     "ng_update": {},
-    "ng_update_migrations": {
-        # TODO(devversion): re-enable this test once the migrations are updated to support the ESM compiler-cli.
-        # Waiting on: https://github.com/angular/angular/pull/43657.
-        "tags": ["manual"],
-    },
+    "ng_update_migrations": {},
     "ngcc": {
         "use_view_engine_packages": [
             "@angular/animations",
