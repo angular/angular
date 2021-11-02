@@ -20,9 +20,7 @@ async function main() {
     run_id: workflowId,
   });
 
-  const matchArtifact = artifacts.data.artifacts.find(
-    artifact => artifact.name === artifactName,
-  );
+  const matchArtifact = artifacts.data.artifacts.find(artifact => artifact.name === artifactName);
 
   const download = await github.actions.downloadArtifact({
     owner,

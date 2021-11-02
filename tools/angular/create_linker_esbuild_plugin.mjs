@@ -16,20 +16,24 @@ function isNgDeclareCallExpression(nodePath) {
 
   // Expect the `ngDeclare` identifier to be used as part of a property access that
   // is invoked within a call expression. e.g. `i0.ɵɵngDeclare<>`.
-  return nodePath.parentPath?.type === 'MemberExpression' &&
-    nodePath.parentPath.parentPath?.type === 'CallExpression';
+  return (
+    nodePath.parentPath?.type === 'MemberExpression' &&
+    nodePath.parentPath.parentPath?.type === 'CallExpression'
+  );
 }
 
 /** Asserts that the given AST does not contain any Angular partial declaration. */
 async function assertNoPartialDeclaration(filePath, ast, traverseFn) {
   // Naively check if there are any Angular declarations left that haven't been linked.
   traverseFn(ast, {
-    Identifier: (astPath) => {
+    Identifier: astPath => {
       if (isNgDeclareCallExpression(astPath)) {
         throw astPath.buildCodeFrameError(
-          `Found Angular declaration that has not been linked. ${filePath}`, Error);
+          `Found Angular declaration that has not been linked. ${filePath}`,
+          Error,
+        );
       }
-    }
+    },
   });
 }
 
@@ -57,8 +61,8 @@ export async function createLinkerEsbuildPlugin(filter, ensureNoPartialDeclarati
 
   return {
     name: 'ng-linker-esbuild',
-    setup: (build) => {
-      build.onLoad({filter}, async (args) => {
+    setup: build => {
+      build.onLoad({filter}, async args => {
         const filePath = args.path;
         const content = await fs.promises.readFile(filePath, 'utf8');
         const {ast, code} = await babel.transformAsync(content, {

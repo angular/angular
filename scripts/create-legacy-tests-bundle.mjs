@@ -21,7 +21,6 @@ const outFile = join(distDir, 'legacy-test-bundle.spec.js');
 const ngcBinFile = join(nodeModulesDir, '@angular/compiler-cli/bundles/src/bin/ngc.js');
 const legacyOutputDir = join(distDir, 'legacy-test-out');
 
-
 /**
  * This script builds the whole library in `angular/components` together with its
  * spec files into a single IIFE bundle.
@@ -72,10 +71,10 @@ async function compileSassFiles() {
   for (const file of sassFiles) {
     const outRelativePath = relative(projectDir, file).replace(/\.scss$/, '.css');
     const outPath = join(projectDir, outRelativePath);
-    const task = renderSassFileAsync(file).then(async (content) => {
+    const task = renderSassFileAsync(file).then(async content => {
       console.info('Compiled, now writing:', outRelativePath);
       await fs.promises.mkdir(dirname(outPath), {recursive: true});
-      await fs.promises.writeFile(outPath, content)
+      await fs.promises.writeFile(outPath, content);
     });
 
     sassTasks.push(task);
@@ -93,7 +92,10 @@ async function compileSassFiles() {
 async function compileProjectWithNgtsc() {
   // Build the project with Ngtsc so that external resources are inlined.
   const ngcProcess = child_process.spawnSync(
-      'node', [ngcBinFile, '--project', legacyTsconfigPath], {shell: true, stdio: 'inherit'});
+    'node',
+    [ngcBinFile, '--project', legacyTsconfigPath],
+    {shell: true, stdio: 'inherit'},
+  );
 
   if (ngcProcess.error || ngcProcess.status !== 0) {
     throw Error('Unable to compile tests and library. See error above.');
@@ -137,9 +139,9 @@ async function createEntryPointSpecFile() {
 /** Helper function to render a Sass file asynchronously using promises. */
 async function renderSassFileAsync(inputFile) {
   return new Promise((resolve, reject) => {
-    sass.render(
-        {file: inputFile, includePaths: [nodeModulesDir]},
-        (err, result) => err ? reject(err) : resolve(result.css));
+    sass.render({file: inputFile, includePaths: [nodeModulesDir]}, (err, result) =>
+      err ? reject(err) : resolve(result.css),
+    );
   });
 }
 
@@ -149,10 +151,11 @@ async function renderSassFileAsync(inputFile) {
  */
 async function createResolveEsbuildPlugin() {
   return {
-    name: 'ng-resolve-esbuild', setup: (build) => {
-      build.onResolve({filter: /@angular\//}, async (args) => {
+    name: 'ng-resolve-esbuild',
+    setup: build => {
+      build.onResolve({filter: /@angular\//}, async args => {
         const pkgName = args.path.substr('@angular/'.length);
-        let resolvedPath = join(legacyOutputDir, pkgName)
+        let resolvedPath = join(legacyOutputDir, pkgName);
         let stats = await statGraceful(resolvedPath);
 
         // If the resolved path points to a directory, resolve the contained `index.js` file
@@ -168,8 +171,8 @@ async function createResolveEsbuildPlugin() {
 
         return stats !== null ? {path: resolvedPath} : undefined;
       });
-    }
-  }
+    },
+  };
 }
 
 /** Creates an ESBuild plugin that runs the Angular linker on framework packages. */
@@ -183,8 +186,8 @@ async function createLinkerEsbuildPlugin() {
 
   return {
     name: 'ng-linker-esbuild',
-    setup: (build) => {
-      build.onLoad({filter: /fesm2020/}, async (args) => {
+    setup: build => {
+      build.onLoad({filter: /fesm2020/}, async args => {
         const filePath = args.path;
         const content = await fs.promises.readFile(filePath, 'utf8');
         const {code} = await transformAsync(content, {

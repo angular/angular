@@ -5,5 +5,5 @@
   "quoteProps": "preserve",
   "bracketSpacing": false,
   "arrowParens": "avoid",
-  "embeddedLanguageFormatting": "off",
+  "embeddedLanguageFormatting": "off"
 }

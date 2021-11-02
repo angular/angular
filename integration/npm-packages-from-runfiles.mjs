@@ -20,12 +20,14 @@ export function getNpmPackagesFromRunfiles() {
   const workspacePath = 'angular_material/src';
   if (!runfilesManifestPath) {
     const packageRunfilesDir = path.join(process.env.RUNFILES, workspacePath);
-    return fs.readdirSync(packageRunfilesDir)
+    return fs
+      .readdirSync(packageRunfilesDir)
       .map(name => ({name, pkgPath: path.join(packageRunfilesDir, name, 'npm_package/')}))
       .filter(({pkgPath}) => fs.existsSync(pkgPath));
   }
   const workspaceManifestPathRegex = new RegExp(`^${workspacePath}/[\\w-]+/npm_package$`);
-  return fs.readFileSync(runfilesManifestPath, 'utf8')
+  return fs
+    .readFileSync(runfilesManifestPath, 'utf8')
     .split('\n')
     .map(mapping => mapping.split(' '))
     .filter(([runfilePath]) => runfilePath.match(workspaceManifestPathRegex))

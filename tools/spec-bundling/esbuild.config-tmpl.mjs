@@ -8,14 +8,13 @@
 
 // Note: This needs to be a workspace manifest path as this ESBuild config
 // is generated and can end up in arbitrary Bazel packages.
-import {
-  createLinkerEsbuildPlugin
-} from 'angular_material/tools/angular/create_linker_esbuild_plugin.mjs';
+import {createLinkerEsbuildPlugin} from 'angular_material/tools/angular/create_linker_esbuild_plugin.mjs';
 
 // Conditionally, based on whether partial compilation is enabled, we run the
 // linker on all files part of the test.
-const plugins = TMPL_PARTIAL_COMPILATION_ENABLED ?
-  [await createLinkerEsbuildPlugin(/.*/, /* ensureNoPartialDeclaration */ true)] : []
+const plugins = TMPL_PARTIAL_COMPILATION_ENABLED
+  ? [await createLinkerEsbuildPlugin(/.*/, /* ensureNoPartialDeclaration */ true)]
+  : [];
 
 export default {
   // `tslib` sets the `module` condition to resolve to ESM.

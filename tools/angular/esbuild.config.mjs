@@ -15,6 +15,6 @@ export default {
   plugins: [
     // Only run the linker on `fesm2020/` bundles. This should not have an effect on
     // the bundle output, but helps speeding up ESBuild when it visits other modules.
-    await createLinkerEsbuildPlugin(/fesm2020/)
-  ]
+    await createLinkerEsbuildPlugin(/fesm2020/),
+  ],
 };

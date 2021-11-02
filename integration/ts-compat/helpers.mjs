@@ -1,8 +1,8 @@
-import {join}  from 'path';
-import {unlinkSync}  from 'fs';
+import {join} from 'path';
+import {unlinkSync} from 'fs';
 import shelljs from 'shelljs';
-import {fork}  from 'child_process';
-import {getNpmPackagesFromRunfiles}  from '../npm-packages-from-runfiles.mjs';
+import {fork} from 'child_process';
+import {getNpmPackagesFromRunfiles} from '../npm-packages-from-runfiles.mjs';
 import {runfiles} from '@bazel/runfiles';
 
 // Exit if any command fails.
@@ -14,7 +14,8 @@ const npmPackages = getNpmPackagesFromRunfiles();
 const nodeModulesDir = runfiles.resolve('npm/node_modules');
 // Path to the generated file that imports all entry-points.
 const testFilePath = runfiles.resolveWorkspaceRelative(
-  'integration/ts-compat/import-all-entry-points.ts');
+  'integration/ts-compat/import-all-entry-points.ts',
+);
 
 /**
  * Runs the TypeScript compatibility test with the specified tsc binary. The
@@ -40,17 +41,19 @@ export async function runTypeScriptCompatibilityTest(tscBinPath) {
       // Disables automatic type resolution. In non-sandbox environments, the node modules
       // are accessible and types could end up as part of the program.
       '--types',
-      '--lib', 'es2015,dom',
+      '--lib',
+      'es2015,dom',
       // Ensures that `node_modules` can be resolved. By default, in sandbox environments the
       // node modules cannot be resolved because they are wrapped in the `npm/node_modules` folder
-      '--baseUrl', nodeModulesDir,
-      testFilePath
+      '--baseUrl',
+      nodeModulesDir,
+      testFilePath,
     ];
     // Run `tsc` to compile the project. The stdout/stderr output is inherited, so that
     // warnings and errors are printed to the console.
     const tscProcess = fork(tscBinPath, tscArgs, {stdio: 'inherit'});
 
-    tscProcess.on('exit', (exitCode) => {
+    tscProcess.on('exit', exitCode => {
       // Remove symlinks to keep a clean repository state.
       for (const {name} of npmPackages) {
         console.info(`Removing link for "@angular/${name}"..`);
@@ -60,5 +63,4 @@ export async function runTypeScriptCompatibilityTest(tscBinPath) {
       exitCode === 0 ? resolve() : reject();
     });
   });
-};
-
+}
