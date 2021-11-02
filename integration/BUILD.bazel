@@ -68,6 +68,7 @@ INTEGRATION_TESTS = {
     },
     "ivy-i18n": {},
     "trusted-types": {},
+    "ng-add-localize": {},
     "ng_elements": {},
     "ng_update": {},
     "ng_update_migrations": {
