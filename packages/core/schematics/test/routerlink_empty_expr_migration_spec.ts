@@ -241,4 +241,32 @@ describe('routerlink emptyExpr assignment migration', () => {
     const content = tree.readContent('/index.ts');
     expect(content).toContain(`\r\n\r\n\r\n<div [routerLink]="[]">{{1}}</div>`);
   });
+
+
+  it('should avoid duplicated transforms if files are part of multiple targets', async () => {
+    writeFile('/angular.json', JSON.stringify({
+      version: 1,
+      projects: {
+        build: {
+          architect: {
+            build: {options: {tsConfig: './tsconfig.json'}},
+            test: {options: {tsConfig: './tsconfig.json'}}
+          }
+        },
+      }
+    }));
+
+    writeFile('/tmpl.html', `<some-comp [routerLink]=""></some-comp>`);
+    writeFile('/index.ts', `
+      import {Component} from '@angular/core';
+
+      @Component({templateUrl: './tmpl.html'})
+      export class MyComp {}
+    `);
+
+    await runMigration();
+
+    const content = tree.readContent('/tmpl.html');
+    expect(content).toContain(`<some-comp [routerLink]="[]"></some-comp>`);
+  });
 });
