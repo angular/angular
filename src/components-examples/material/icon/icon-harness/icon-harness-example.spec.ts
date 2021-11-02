@@ -1,10 +1,6 @@
-import {TestBed, ComponentFixture} from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {HarnessLoader, parallel} from '@angular/cdk/testing';
-import {
-  BrowserDynamicTestingModule,
-  platformBrowserDynamicTesting,
-} from '@angular/platform-browser-dynamic/testing';
 import {IconHarnessExample} from './icon-harness-example';
 import {MatIconModule, MatIconRegistry} from '@angular/material/icon';
 import {MatIconHarness} from '@angular/material/icon/testing';
@@ -13,10 +9,6 @@ import {DomSanitizer} from '@angular/platform-browser';
 describe('IconHarnessExample', () => {
   let fixture: ComponentFixture<IconHarnessExample>;
   let loader: HarnessLoader;
-
-  beforeAll(() => {
-    TestBed.initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDynamicTesting());
-  });
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({

@@ -1,21 +1,13 @@
 import {HarnessLoader, parallel} from '@angular/cdk/testing';
-import {TestBed, ComponentFixture} from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {MatListHarness} from '@angular/material/list/testing';
-import {
-  BrowserDynamicTestingModule,
-  platformBrowserDynamicTesting,
-} from '@angular/platform-browser-dynamic/testing';
 import {MatListModule} from '@angular/material/list';
 import {ListHarnessExample} from './list-harness-example';
 
 describe('ListHarnessExample', () => {
   let fixture: ComponentFixture<ListHarnessExample>;
   let loader: HarnessLoader;
-
-  beforeAll(() => {
-    TestBed.initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDynamicTesting());
-  });
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({

@@ -1,21 +1,15 @@
-import {TestBed, ComponentFixture} from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {MatButtonHarness} from '@angular/material/button/testing';
 import {MatCardHarness} from '@angular/material/card/testing';
 import {HarnessLoader, parallel} from '@angular/cdk/testing';
-import {
-  BrowserDynamicTestingModule,
-  platformBrowserDynamicTesting,
-} from '@angular/platform-browser-dynamic/testing';
 import {MatCardModule} from '@angular/material/card';
 import {CardHarnessExample} from './card-harness-example';
 
 describe('CardHarnessExample', () => {
   let fixture: ComponentFixture<CardHarnessExample>;
   let loader: HarnessLoader;
-  beforeAll(() => {
-    TestBed.initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDynamicTesting());
-  });
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [MatCardModule],

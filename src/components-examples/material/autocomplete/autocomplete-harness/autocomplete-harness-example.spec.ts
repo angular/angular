@@ -1,21 +1,13 @@
-import {TestBed, ComponentFixture} from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {MatAutocompleteHarness} from '@angular/material/autocomplete/testing';
 import {HarnessLoader} from '@angular/cdk/testing';
-import {
-  BrowserDynamicTestingModule,
-  platformBrowserDynamicTesting,
-} from '@angular/platform-browser-dynamic/testing';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import {AutocompleteHarnessExample} from './autocomplete-harness-example';
 
 describe('AutocompleteHarnessExample', () => {
   let fixture: ComponentFixture<AutocompleteHarnessExample>;
   let loader: HarnessLoader;
-
-  beforeAll(() => {
-    TestBed.initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDynamicTesting());
-  });
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({

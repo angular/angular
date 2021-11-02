@@ -1,11 +1,7 @@
-import {TestBed, ComponentFixture} from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {MatSortHarness} from '@angular/material/sort/testing';
 import {HarnessLoader, parallel} from '@angular/cdk/testing';
-import {
-  BrowserDynamicTestingModule,
-  platformBrowserDynamicTesting,
-} from '@angular/platform-browser-dynamic/testing';
 import {MatSortModule} from '@angular/material/sort';
 import {SortHarnessExample} from './sort-harness-example';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
@@ -13,10 +9,6 @@ import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 describe('SortHarnessExample', () => {
   let fixture: ComponentFixture<SortHarnessExample>;
   let loader: HarnessLoader;
-
-  beforeAll(() => {
-    TestBed.initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDynamicTesting());
-  });
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
