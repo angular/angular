@@ -314,7 +314,7 @@ What it does
 
 <tr>
 <td><code>animateChild()</code></td>
-<td>Allows animations on child components to be run within the same timeframe as the parent.</td>
+<td>Allows animations on child components to be run within the same timeframe as the parent. <strong>Note:</strong> Please see GitHub Issue <a href="https://github.com/angular/angular/issues/30477">#30477</a> before attempting to use <code>animateChild()</code> together with route transition animations.</td>
 </tr>
 
 </table>
