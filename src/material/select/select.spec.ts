@@ -4407,7 +4407,7 @@ describe('MatSelect', () => {
 
       it('should fall back to "below" positioning properly when scrolled', fakeAsync(() => {
         // Give plenty of space for the select to open below the trigger
-        fixture.componentInstance.heightBelow = 650;
+        fixture.componentInstance.heightBelow = 2000;
         fixture.detectChanges();
 
         // Select an option too low in the list to fit in limited space above
