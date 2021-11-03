@@ -15,7 +15,6 @@ nodejs_test(
         "//src/youtube-player:npm_package",
         "@npm//@angular/compiler-cli",
         "@npm//@babel/core",
-        "@npm//@babel/traverse",
         "@npm//chalk",
         "@npm//glob",
     ],

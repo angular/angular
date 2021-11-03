@@ -9,7 +9,6 @@ import {getNpmPackagesFromRunfiles} from '../npm-packages-from-runfiles.mjs';
 import fs from 'fs';
 import path from 'path';
 import babel from '@babel/core';
-import traverse from '@babel/traverse';
 import glob from 'glob';
 import chalk from 'chalk';
 
@@ -57,7 +56,7 @@ if (failedPackages) {
  * @returns An object containing linker failures and passed files.
  */
 function testPackage(pkg) {
-  const entryPointFesmFiles = glob.sync(`fesm2015/**/*.js`, {cwd: pkg.pkgPath});
+  const entryPointFesmFiles = glob.sync(`+(fesm2015|fesm2020)/**/*.mjs`, {cwd: pkg.pkgPath});
   const passedFiles = [];
   const failures = [];
 
@@ -80,7 +79,7 @@ function testPackage(pkg) {
       });
 
       // Naively check if there are any Angular declarations left that haven't been linked.
-      traverse(ast, {
+      babel.traverse(ast, {
         Identifier: astPath => {
           if (astPath.node.name.startsWith('ɵɵngDeclare')) {
             throw astPath.buildCodeFrameError(
