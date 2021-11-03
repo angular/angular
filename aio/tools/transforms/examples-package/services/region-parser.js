@@ -10,6 +10,7 @@ module.exports = function regionParser() {
   regionParserImpl.regionMatchers = {
     ts: inlineC,
     js: inlineC,
+    mjs: inlineCOnly,
     es6: inlineC,
     dart: inlineC,
     html: html,
