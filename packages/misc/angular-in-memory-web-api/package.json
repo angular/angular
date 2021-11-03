@@ -5,8 +5,8 @@
   "author": "angular",
   "license": "MIT",
   "peerDependencies": {
-    "@angular/core": "^12.0.0",
-    "@angular/common": "^12.0.0",
+    "@angular/core": "^13.0.0",
+    "@angular/common": "^13.0.0",
     "rxjs": "^6.5.3 || ^7.4.0"
   },
   "dependencies": {
