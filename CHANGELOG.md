@@ -1,3 +1,14 @@
+<a name="13.1.0-next.0"></a>
+# 13.1.0-next.0 "tungsten-dodecahedron" (2021-11-03)
+### material
+| Commit | Type | Description |
+| -- | -- | -- |
+| [1b6c93571c](https://github.com/angular/components/commit/1b6c93571c4615deb929f7b0e72c3e42478a31ec) | fix | **table:** set class and role on no data row ([#23749](https://github.com/angular/components/pull/23749)) |
+## Special Thanks
+Amy Sorto, Andrew Seguin, Jeremy Elbourn, Kristiyan Kostadinov, Paul Gschwendtner, Wagner Maciel and Zach Arend
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="13.0.0"></a>
 # 13.0.0 "fir-valise" (2021-11-03)
 ## Breaking Changes
