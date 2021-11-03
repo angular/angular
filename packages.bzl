@@ -1,10 +1,10 @@
 # Each individual package uses a placeholder for the version of Angular to ensure they're
 # all in-sync. This map is passed to each ng_package rule to stamp out the appropriate
 # version for the placeholders.
-ANGULAR_PACKAGE_VERSION = "^13.0.0-0 || ^14.0.0-0"
+ANGULAR_PACKAGE_VERSION = "^13.0.0 || ^14.0.0-0"
 MDC_PACKAGE_VERSION = "14.0.0-canary.1af7c1c4a.0"
 TSLIB_PACKAGE_VERSION = "^2.3.0"
-RXJS_PACKAGE_VERSION = "^6.5.3 || ^7.0.0"
+RXJS_PACKAGE_VERSION = "^6.5.3 || ^7.4.0"
 
 # Each placeholder is used to stamp versions during the build process, replacing the key with it's
 # value pair. These replacements occur during building of `npm_package` and `ng_package` stamping in
