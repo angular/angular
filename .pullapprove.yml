@@ -1089,6 +1089,7 @@ groups:
       - *can-be-global-docs-approved
       - >
         contains_any_globs(files, [
+          'aio/content/examples/angular-linker-plugin/webpack.config.mjs',
           'aio/content/guide/creating-libraries.md',
           'aio/content/guide/libraries.md',
           'aio/content/guide/using-libraries.md',
