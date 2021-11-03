@@ -20,12 +20,13 @@ import {compileInjector, R3InjectorMetadata} from './render3/r3_injector_compile
 import {R3JitReflector} from './render3/r3_jit';
 import {compileNgModule, compileNgModuleDeclarationExpression, R3NgModuleMetadata} from './render3/r3_module_compiler';
 import {compilePipeFromMetadata, R3PipeMetadata} from './render3/r3_pipe_compiler';
-import {createMayBeForwardRefExpression, getSafePropertyAccessString, MaybeForwardRefExpression, wrapReference} from './render3/util';
+import {createMayBeForwardRefExpression, ForwardRefHandling, getSafePropertyAccessString, MaybeForwardRefExpression, wrapReference} from './render3/util';
 import {DeclarationListEmitMode, R3ComponentMetadata, R3DirectiveMetadata, R3HostMetadata, R3QueryMetadata, R3UsedDirectiveMetadata} from './render3/view/api';
 import {compileComponentFromMetadata, compileDirectiveFromMetadata, ParsedHostBindings, parseHostBindings, verifyHostBindings} from './render3/view/compiler';
 import {makeBindingParser, parseTemplate} from './render3/view/template';
 import {ResourceLoader} from './resource_loader';
 import {DomElementSchemaRegistry} from './schema/dom_element_schema_registry';
+import {resolveForwardRef} from './util';
 
 export class CompilerFacadeImpl implements CompilerFacade {
   FactoryTarget = FactoryTarget as any;
@@ -293,8 +294,7 @@ const USE_EXISTING = Object.keys({useExisting: null})[0];
 function convertToR3QueryMetadata(facade: R3QueryMetadataFacade): R3QueryMetadata {
   return {
     ...facade,
-    predicate: Array.isArray(facade.predicate) ? facade.predicate :
-                                                 new WrappedNodeExpr(facade.predicate),
+    predicate: convertQueryPredicate(facade.predicate),
     read: facade.read ? new WrappedNodeExpr(facade.read) : null,
     static: facade.static,
     emitDistinctChangesOnly: facade.emitDistinctChangesOnly,
@@ -306,13 +306,21 @@ function convertQueryDeclarationToMetadata(declaration: R3DeclareQueryMetadataFa
   return {
     propertyName: declaration.propertyName,
     first: declaration.first ?? false,
-    predicate: Array.isArray(declaration.predicate) ? declaration.predicate :
-                                                      new WrappedNodeExpr(declaration.predicate),
+    predicate: convertQueryPredicate(declaration.predicate),
     descendants: declaration.descendants ?? false,
     read: declaration.read ? new WrappedNodeExpr(declaration.read) : null,
     static: declaration.static ?? false,
     emitDistinctChangesOnly: declaration.emitDistinctChangesOnly ?? true,
   };
+}
+
+function convertQueryPredicate(predicate: OpaqueValue|string[]): MaybeForwardRefExpression|
+    string[] {
+  return Array.isArray(predicate) ?
+      // The predicate is an array of strings so pass it through.
+      predicate :
+      // The predicate is a type - assume that we will need to unwrap any `forwardRef()` calls.
+      createMayBeForwardRefExpression(new WrappedNodeExpr(predicate), ForwardRefHandling.Wrapped);
 }
 
 function convertDirectiveFacadeToMetadata(facade: R3DirectiveMetadataFacade): R3DirectiveMetadata {
@@ -475,13 +483,13 @@ type R3DirectiveMetadataFacadeNoPropAndWhitespace =
  * In JIT mode we do not want the compiler to wrap the expression in a `forwardRef()` call because,
  * if it is referencing a type that has not yet been defined, it will have already been wrapped in
  * a `forwardRef()` - either by the application developer or during partial-compilation. Thus we can
- * set `isForwardRef` to `false`.
+ * use `ForwardRefHandling.None`.
  */
 function convertToProviderExpression(obj: any, property: string): MaybeForwardRefExpression|
     undefined {
   if (obj.hasOwnProperty(property)) {
     return createMayBeForwardRefExpression(
-        new WrappedNodeExpr(obj[property]), /* isForwardRef */ false);
+        new WrappedNodeExpr(obj[property]), ForwardRefHandling.None);
   } else {
     return undefined;
   }
@@ -498,8 +506,8 @@ function wrapExpression(obj: any, property: string): WrappedNodeExpr<any>|undefi
 function computeProvidedIn(providedIn: Function|string|null|undefined): MaybeForwardRefExpression {
   const expression = typeof providedIn === 'function' ? new WrappedNodeExpr(providedIn) :
                                                         new LiteralExpr(providedIn ?? null);
-  // See `convertToProviderExpression()` for why `isForwardRef` is false.
-  return createMayBeForwardRefExpression(expression, /* isForwardRef */ false);
+  // See `convertToProviderExpression()` for why this uses `ForwardRefHandling.None`.
+  return createMayBeForwardRefExpression(expression, ForwardRefHandling.None);
 }
 
 function convertR3DependencyMetadataArray(facades: R3DependencyMetadataFacade[]|null|
