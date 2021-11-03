@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {compileClassMetadata, compileDeclareClassMetadata, compileDeclareDirectiveFromMetadata, compileDirectiveFromMetadata, ConstantPool, emitDistinctChangesOnlyDefaultValue, Expression, ExternalExpr, FactoryTarget, getSafePropertyAccessString, makeBindingParser, ParsedHostBindings, ParseError, parseHostBindings, R3ClassMetadata, R3DirectiveMetadata, R3FactoryMetadata, R3QueryMetadata, Statement, verifyHostBindings, WrappedNodeExpr} from '@angular/compiler';
+import {compileClassMetadata, compileDeclareClassMetadata, compileDeclareDirectiveFromMetadata, compileDirectiveFromMetadata, ConstantPool, createMayBeForwardRefExpression, emitDistinctChangesOnlyDefaultValue, Expression, ExternalExpr, FactoryTarget, ForwardRefHandling, getSafePropertyAccessString, makeBindingParser, MaybeForwardRefExpression, ParsedHostBindings, ParseError, parseHostBindings, R3ClassMetadata, R3DirectiveMetadata, R3FactoryMetadata, R3QueryMetadata, Statement, verifyHostBindings, WrappedNodeExpr} from '@angular/compiler';
 import ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
@@ -531,17 +531,21 @@ export function extractQueryMetadata(
         ErrorCode.DECORATOR_ARITY_WRONG, exprNode, `@${name} must have arguments`);
   }
   const first = name === 'ViewChild' || name === 'ContentChild';
-  const node = tryUnwrapForwardRef(args[0], reflector) ?? args[0];
+  const forwardReferenceTarget = tryUnwrapForwardRef(args[0], reflector);
+  const node = forwardReferenceTarget ?? args[0];
+
   const arg = evaluator.evaluate(node);
 
   /** Whether or not this query should collect only static results (see view/api.ts)  */
   let isStatic: boolean = false;
 
   // Extract the predicate
-  let predicate: Expression|string[]|null = null;
+  let predicate: MaybeForwardRefExpression|string[]|null = null;
   if (arg instanceof Reference || arg instanceof DynamicValue) {
     // References and predicates that could not be evaluated statically are emitted as is.
-    predicate = new WrappedNodeExpr(node);
+    predicate = createMayBeForwardRefExpression(
+        new WrappedNodeExpr(node),
+        forwardReferenceTarget !== null ? ForwardRefHandling.Unwrapped : ForwardRefHandling.None);
   } else if (typeof arg === 'string') {
     predicate = [arg];
   } else if (isStringArrayOrDie(arg, `@${name} predicate`, node)) {

@@ -12,7 +12,7 @@ import * as o from '../../output/output_ast';
 import {ParseSourceSpan} from '../../parse_util';
 import * as t from '../r3_ast';
 import {R3DependencyMetadata} from '../r3_factory';
-import {R3Reference} from '../util';
+import {MaybeForwardRefExpression, R3Reference} from '../util';
 
 
 /**
@@ -302,7 +302,7 @@ export interface R3QueryMetadata {
    * Either an expression representing a type or `InjectionToken` for the query
    * predicate, or a set of string selectors.
    */
-  predicate: o.Expression|string[];
+  predicate: MaybeForwardRefExpression|string[];
 
   /**
    * Whether to include only direct children or all descendants.
