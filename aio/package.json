@@ -23,7 +23,7 @@
     "test": "yarn check-env && ng test",
     "pree2e": "yarn check-env && yarn update-webdriver",
     "e2e": "ng e2e --no-webdriver-update",
-    "presetup": "yarn --cwd .. install && yarn install --frozen-lockfile && yarn ~~check-env && yarn ~~clean-generated && yarn boilerplate:remove",
+    "presetup": "yarn --cwd .. install --frozen-lockfile && yarn install --frozen-lockfile && yarn ~~check-env && yarn ~~clean-generated && yarn boilerplate:remove",
     "setup": "yarn example-use-npm && yarn aio-use-npm",
     "postsetup": "yarn boilerplate:add && yarn extract-cli-command-docs && yarn docs",
     "presetup-local": "yarn presetup",
