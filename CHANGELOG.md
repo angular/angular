@@ -1,3 +1,96 @@
+<a name="13.0.0"></a>
+# 13.0.0 "fir-valise" (2021-11-03)
+## Breaking Changes
+### cdk
+- * `CKD_COPY_TO_CLIPBOARD_CONFIG` has been removed. Use `CDK_COPY_TO_CLIPBOARD_CONFIG` instead.
+
+- * `ConnectedPositionStrategy` has been removed. Use `FlexibleConnectedPositionStrategy` instead.
+* `OverlayPositionBuilder.connectedTo` has been removed. Use `OverlayPositionBuilder.flexibleConnectedTo` instead.
+### material
+- * `CanColorCtor` is no longer necessary and has been removed.
+* `CanDisableRippleCtor` is no longer necessary and has been removed.
+* `CanDisableCtor` is no longer necessary and has been removed.
+* `CanUpdateErrorStateCtor` is no longer necessary and has been removed.
+* `HasInitializedCtor` is no longer necessary and has been removed.
+* `HasTabIndexCtor` is no longer necessary and has been removed.
+
+- * Material now requires at least version 1.34.0 of Sass. Version 1.38.0 is recommended.
+
+- * The `_document` and `_dialog` parameters have been removed from the `MatDatepicker` and `MatDateRangePicker` constructors.
+
+- * `MatFormFieldHarness.getHarnessLoaderForPrefix` has been removed. Use `MatFormFieldHarness.getPrefixText` instead.
+* `MatFormFieldHarness.getHarnessLoaderForSuffix` has been removed. Use `MatFormFieldHarness.getSuffixText` instead.
+* The `_labelOptions` parameter of the `MatFormField` constructor has been removed.
+* `MatFormField.underlineRef` has been removed.
+
+- * `matTextareaAutosize` has been removed. Use `cdkTextareaAutosize` from the `@angular/cdk/text-field` module instead.
+
+- * `MatTabHarness.getHarnessLoaderForContent` has been removed. Use `MatTabHarness.getRootHarnessLoader` instead.
+### youtube-player
+- * `YouTubePlayer.createEventsBoundInZone` has been removed.
+### material-date-fns-adapter
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e8dd070bbd](https://github.com/angular/components/commit/e8dd070bbdfa77b9799d4baabb97d564176d7c05) | feat | add date adapter for date-fns ([#23262](https://github.com/angular/components/pull/23262)) |
+| [2a358120f4](https://github.com/angular/components/commit/2a358120f4623efdb614017719a79cf3df6ba2fd) | fix | locale not passed into parse function ([#23653](https://github.com/angular/components/pull/23653)) |
+### material-experimental
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2789d8eb5f](https://github.com/angular/components/commit/2789d8eb5f61ea4cb28ff8c6225178179e610571) | feat | **mdc-card:** add DI token for configuring appearance ([#23302](https://github.com/angular/components/pull/23302)) |
+| [a4ae3b88c0](https://github.com/angular/components/commit/a4ae3b88c0f2d7a0110ec08787db33dc1991c2c5) | feat | **mdc-slide-toggle:** switch to non-deprecated styles ([#23143](https://github.com/angular/components/pull/23143)) |
+| [e7a77edf1e](https://github.com/angular/components/commit/e7a77edf1e3f0215c26715366a31bf9c3f5e6cfd) | fix | **mdc-tabs:** update theming api ([#23855](https://github.com/angular/components/pull/23855)) |
+### youtube-player
+| Commit | Type | Description |
+| -- | -- | -- |
+| [7539cf2837](https://github.com/angular/components/commit/7539cf28371a938bc4f052d14be4bfa1b529300c) | refactor | remove deprecated APIs for v13 ([#23520](https://github.com/angular/components/pull/23520)) |
+### google-maps
+| Commit | Type | Description |
+| -- | -- | -- |
+| [7c16258cfb](https://github.com/angular/components/commit/7c16258cfb18c2d74b692e53e640e56b5d877e75) | feat | switch to non-deprecated typings ([#23350](https://github.com/angular/components/pull/23350)) |
+### material
+| Commit | Type | Description |
+| -- | -- | -- |
+| [3dc5af4bfd](https://github.com/angular/components/commit/3dc5af4bfd2e15fe9a1330740068732cfc65d29f) | feat | **dialog:** add support for content sections in harness ([#23357](https://github.com/angular/components/pull/23357)) |
+| [e4b54aa2b7](https://github.com/angular/components/commit/e4b54aa2b7afeb9fe228f1d3638eb44192353e8b) | feat | **progress-bar:** add default options injection token ([#23363](https://github.com/angular/components/pull/23363)) |
+| [6c724c18a7](https://github.com/angular/components/commit/6c724c18a7520e686ed9779d8aa058d8c1e5e435) | fix | **chips:** show required asterisk when using required validator ([#23379](https://github.com/angular/components/pull/23379)) |
+| [728cf1c8eb](https://github.com/angular/components/commit/728cf1c8ebd49e089f4bae945511bb0918972c26) | fix | **dialog:** improve screen reader support when opened ([#23085](https://github.com/angular/components/pull/23085)) |
+| [881edec3e6](https://github.com/angular/components/commit/881edec3e6fa837c913006df12299448bba62853) | fix | **icon:** make icon-registry compatible with Trusted Types ([#23140](https://github.com/angular/components/pull/23140)) |
+| [1568b35972](https://github.com/angular/components/commit/1568b3597236549b0669aee869f5f0875c18db4d) | fix | **input:** show required asterisk when using required validator ([#23362](https://github.com/angular/components/pull/23362)) |
+| [64ba72f1fd](https://github.com/angular/components/commit/64ba72f1fd39623c96589ad00347f895ffb88b8a) | fix | **select:** show required asterisk when using required validator ([#23500](https://github.com/angular/components/pull/23500)) |
+| [01734b35af](https://github.com/angular/components/commit/01734b35afa10be68c482dc7370c4d1ae88e499c) | fix | **sidenav:** restore focus with correct origin when closing via the backdrop ([#23492](https://github.com/angular/components/pull/23492)) |
+| [7bc9bfb9dc](https://github.com/angular/components/commit/7bc9bfb9dc233256f6e7063c62e4371a5a1da346) | refactor | **core:** remove deprecated APIs for v13 ([#23529](https://github.com/angular/components/pull/23529)) |
+| [40f0674e39](https://github.com/angular/components/commit/40f0674e3959d53cd6413cf3a5c30053ca0973d9) | refactor | **core:** update minimum required sass version and clean up workarounds ([#23414](https://github.com/angular/components/pull/23414)) |
+| [f8dc1770d1](https://github.com/angular/components/commit/f8dc1770d100e272bbfa7e89e6376751caa35d5c) | refactor | **datepicker:** remove deprecated APIs for v13 ([#23574](https://github.com/angular/components/pull/23574)) |
+| [700c0601c0](https://github.com/angular/components/commit/700c0601c03c113925562fd31f49d66a65ac3dae) | refactor | **form-field:** remove deprecated APIs for version 13 ([#23389](https://github.com/angular/components/pull/23389)) |
+| [760b4564fa](https://github.com/angular/components/commit/760b4564fa41f1d13d4e07e9cba4fa3440284af7) | refactor | **input:** remove deprecated autosize directive ([#23408](https://github.com/angular/components/pull/23408)) |
+| [3ad08940f1](https://github.com/angular/components/commit/3ad08940f13aad9403b89722eb7dd5f388a4d536) | refactor | **tabs:** remove deprecated APIs for v13 ([#23426](https://github.com/angular/components/pull/23426)) |
+### cdk
+| Commit | Type | Description |
+| -- | -- | -- |
+| [51796e1601](https://github.com/angular/components/commit/51796e160199d0c369931585d4bd3b0eeedf5684) | feat | **overlay:** Extend `cdkConnectedOverlayOrigin` to support more types. ([#23253](https://github.com/angular/components/pull/23253)) |
+| [04b5a08190](https://github.com/angular/components/commit/04b5a08190a1d7b126846317d9aad9c954c5e0f9) | feat | **schematics:** add migration for removed symbols ([#23530](https://github.com/angular/components/pull/23530)) |
+| [b25283cda9](https://github.com/angular/components/commit/b25283cda9be37d11f8c380ad6fcc078d5be5da0) | fix | **a11y:** error on firefox ([#23395](https://github.com/angular/components/pull/23395)) |
+| [219e1f558a](https://github.com/angular/components/commit/219e1f558a93378cad9f9ceeb225fe5a4e833022) | fix | **drag-drop:** add conditional to scroll update ([#23337](https://github.com/angular/components/pull/23337)) |
+| [6e1f522d6a](https://github.com/angular/components/commit/6e1f522d6a50d6f589d069775bc771b5590bff4c) | fix | **drag-drop:** allow using cdkDragRootElement w/ comment tag ([#23596](https://github.com/angular/components/pull/23596)) |
+| [d70faa0018](https://github.com/angular/components/commit/d70faa001872361cad7ac19cba51fe69f42f73d2) | fix | **drag-drop:** sorted event emitted multiple times for single-item list ([#23589](https://github.com/angular/components/pull/23589)) |
+| [f2ff9e3142](https://github.com/angular/components/commit/f2ff9e31425f0e395e6926bcaf48f876688000d8) | fix | **schematics:** drop tilde imports when updating to v13 ([#23732](https://github.com/angular/components/pull/23732)) |
+| [692ebafe7b](https://github.com/angular/components/commit/692ebafe7baab75771f0f279b7e7090ec4f903aa) | fix | **testing:** fake touch event does not set proper touch identifier |
+| [5833597a7a](https://github.com/angular/components/commit/5833597a7ad8adca95da5533fb6f1efa5340a623) | refactor | **clipboard:** clean up deprecated APIs for v13 ([#23401](https://github.com/angular/components/pull/23401)) |
+| [8d39384770](https://github.com/angular/components/commit/8d393847704cb8a2fa9c28bd1feb3ed8700fdea0) | refactor | **overlay:** remove deprecated connected position strategy |
+### multiple
+| Commit | Type | Description |
+| -- | -- | -- |
+| [769996ed3f](https://github.com/angular/components/commit/769996ed3f359c1a168ae35abb1de1231958f7bc) | feat | add options to autoFocus field for dialogs ([#22780](https://github.com/angular/components/pull/22780)) |
+| [db18b4093f](https://github.com/angular/components/commit/db18b4093f23ae5c0ef76f6a9699c670ee5d55f7) | feat | add support for TypeScript 4.4 ([#23646](https://github.com/angular/components/pull/23646)) |
+### ng-add
+| Commit | Type | Description |
+| -- | -- | -- |
+| [5c22a1dbf0](https://github.com/angular/components/commit/5c22a1dbf0c7e808e28749870415fbba31f2d9e9) | fix | syntax error due to ES2020 being used for ng-add with NodeJS 12.x ([#23744](https://github.com/angular/components/pull/23744)) |
+## Special Thanks
+Amy Sorto, Andrew Seguin, Charles, Jeremy Elbourn, Joey Perrott, Kristiyan Kostadinov, Md. Enzam Hossain, Michael Prentice, Miles Malerba, Paul Gschwendtner, Ruslan Lekhman, Suguru Inatomi, Wagner Maciel, Zach Arend, bjarkler and mmalerba
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="13.0.0-rc.3"></a>
 # 13.0.0-rc.3 "fir-valise" (2021-11-02)
 ### material-experimental
