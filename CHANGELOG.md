@@ -90,7 +90,25 @@ Although unlikely, it is possible that this change will cause TypeScript type-ch
 some cases. If necessary, update your types to account for the new
 return type.
 ## Deprecations
-### 
+### core
+- Angular no longer requires component factories to dynamically create components. The factory-based signature of the `ViewContainerRef.createComponent` function is deprecated in favor of a different signature that allows passing component classes instead.
+
+- The `getModuleFactory` function is deprecated in favor of the `getNgModuleById` one. With Ivy it's possible to work with NgModule classes directly, without retrieving corresponding factories, so the `getNgModuleById` should be used instead.
+
+- Ivy made it possible to avoid the need to resolve Component and NgModule factories. Framework APIs allow to use Component and NgModule Types directly. As a result, the `PlatformRef.bootstrapModuleFactory` and a factory-based signature of the `ApplicationRef.bootstrap` method are now obsolete and are now deprecated. The `PlatformRef.bootstrapModuleFactory` calls can be replaced with `PlatformRef.bootstrapModule` ones. The `ApplicationRef.bootstrap` method allows to provide Component Type, so this can be used a replacement for the factory-based calls.
+
+- In ViewEngine, [JIT compilation](https://angular.io/guide/glossary#jit) required special providers (like `Compiler`, `CompilerFactory`, etc) to be injected in the app and corresponding methods to be invoked. With Ivy, JIT compilation takes place implicitly if the Component, NgModule, etc have not already been [AOT compiled](https://angular.io/guide/glossary#aot). Those special providers were made available in Ivy for backwards-compatibility with ViewEngine to make the transition to Ivy smoother. Since ViewEngine is deprecated and will soon be removed, those symbols are now deprecated as well:
+
+- `ModuleWithComponentFactories`
+- `Compiler`
+- `CompilerFactory`
+- `JitCompilerFactory`
+- `NgModuleFactory`
+
+Important note: this deprecation doesn't affect JIT mode in Ivy (JIT remains available with Ivy).
+
+- In Ivy, AOT summary files are unused in TestBed. Passing AOT summary files in TestBed has no effect, so the `aotSummaries` usage in TestBed is deprecated and will be removed in a future version of Angular.
+### platform-server
 - The `renderModuleFactory` symbol in `@angular/platform-server` is no longer necessary as of Angular v13.
 
 The `renderModuleFactory` calls can be replaced with `renderModule`.
@@ -221,40 +239,6 @@ Alan Agius, George Kalpakas, Jochen Kraushaar, Joe Martin (Crowdstaffing), Joost
 
 <!-- CHANGELOG SPLIT MARKER -->
 
-<a name="13.0.0-rc.3"></a>
-# 13.0.0-rc.3 (2021-11-01)
-### core
-| Commit | Type | Description |
-| -- | -- | -- |
-| [8ae99821d6](https://github.com/angular/angular/commit/8ae99821d657ba940df998f6abec425f8a1f4cb1) | fix | support `InjectFlags` argument in `NodeInjector.get()` ([#41592](https://github.com/angular/angular/pull/41592)) |
-### elements
-| Commit | Type | Description |
-| -- | -- | -- |
-| [a468213f34](https://github.com/angular/angular/commit/a468213f34943b7ddf234e6f9fd406431173d6a0) | fix | remove `ng-add` schematic ([#43975](https://github.com/angular/angular/pull/43975)) |
-| [f544a53f5f](https://github.com/angular/angular/commit/f544a53f5f3667b4c557537543a9b74a122d5f24) | fix | remove incorrect `@angular/platform-browser` peer dependency ([#43975](https://github.com/angular/angular/pull/43975)) |
-## Special Thanks
-Alan Agius, Alex Rickabaugh, Andrew Kushnir, Andrew Scott, George Kalpakas, Jessica Janiuk, Jochen Kraushaar, Joe Martin (Crowdstaffing), Pete Bacon Darwin, mgechev and vthinkxie
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="13.0.0-rc.2"></a>
-# 13.0.0-rc.2 (2021-10-27)
-### compiler-cli
-| Commit | Type | Description |
-| -- | -- | -- |
-| [8e13c351ac](https://github.com/angular/angular/commit/8e13c351acb8087f5a101d70bd7f9f9aebbdc1bc) | fix | avoid broken references in .d.ts files due to @internal markers ([#43527](https://github.com/angular/angular/pull/43527)) |
-### ngcc
-| Commit | Type | Description |
-| -- | -- | -- |
-| [7c5d642106](https://github.com/angular/angular/commit/7c5d64210697bfb467eff2bcad866d829ae039c5) | fix | support alternate UMD layout when adding new imports ([#43931](https://github.com/angular/angular/pull/43931)) |
-### router
-| Commit | Type | Description |
-| -- | -- | -- |
-| [adc68b100b](https://github.com/angular/angular/commit/adc68b100b98aef171ee298cc23bd5291b106526) | fix | reuse route strategy fix ([#43791](https://github.com/angular/angular/pull/43791)) |
-## Special Thanks
-Alan Agius, Andrew Kushnir, Doug Parker, George Kalpakas, Jessica Janiuk, Joey Perrott, JoostK, Mladen Jakovljević, Tomasz Domański, Virginia Dooley, Willy Schott, amayer42, dirk diebel, ericcheng2005, iRealNirmal and krzysztof-grzybek
-
-
 <a name="12.2.12"></a>
 # 12.2.12 (2021-10-27)
 ### compiler-cli
@@ -269,29 +253,6 @@ Alan Agius, Andrew Kushnir, Doug Parker, George Kalpakas, Jessica Janiuk, Joey P
 Alan Agius, Andrew Kushnir, George Kalpakas, Jessica Janiuk, Joey Perrott, JoostK, Mladen Jakovljević, Virginia Dooley, amayer42, dirk diebel and ericcheng2005
 
 <!-- CHANGELOG SPLIT MARKER -->
-
-<a name="13.0.0-rc.1"></a>
-# 13.0.0-rc.1 (2021-10-20)
-### compiler
-| Commit | Type | Description |
-| -- | -- | -- |
-| [14b492df26](https://github.com/angular/angular/commit/14b492df26fcb3f2218f67878a382e8f7dff2c05) | fix | do not error if $any is used inside a listener ([#43866](https://github.com/angular/angular/pull/43866)) |
-### compiler-cli
-| Commit | Type | Description |
-| -- | -- | -- |
-| [426a3ecae7](https://github.com/angular/angular/commit/426a3ecae7288c2cb3e8928d7fe56b0b4552d821) | fix | updates `ngc` to pass the build when only warnings are emitted ([#43673](https://github.com/angular/angular/pull/43673)) |
-### ngcc
-| Commit | Type | Description |
-| -- | -- | -- |
-| [c882b9fa8b](https://github.com/angular/angular/commit/c882b9fa8b36ca1ca274b9024510e18c559ce3f4) | fix | support alternate wrapper function layout for UMD ([#43879](https://github.com/angular/angular/pull/43879)) |
-### router
-| Commit | Type | Description |
-| -- | -- | -- |
-| [dc6909ad3e](https://github.com/angular/angular/commit/dc6909ad3e4880eaae57442d29c7bcdb133a62b1) | fix | Do not clear currentNavigation if already set to next one ([#43852](https://github.com/angular/angular/pull/43852)) |
-| [772e08d14e](https://github.com/angular/angular/commit/772e08d14e534f20e4376109e81604965e189abf) | fix | fix Router's public API for canceledNavigationResolution ([#43842](https://github.com/angular/angular/pull/43842)) |
-## Special Thanks
-Alan Agius, Andrew Kushnir, Andrew Scott, David Shevitz, Doug Parker, George Kalpakas, Joe Martin (Crowdstaffing), Joey Perrott, JoostK, Kristiyan Kostadinov, Natalia Venditto, Paul Gschwendtner, Pete Bacon Darwin, Younes Jaaidi and dario-piotrowicz
-
 
 <a name="12.2.11"></a>
 # 12.2.11 (2021-10-20)
@@ -308,52 +269,10 @@ Alan Agius, Andrew Kushnir, Andrew Scott, David Shevitz, George Kalpakas, Joe Ma
 
 <!-- CHANGELOG SPLIT MARKER -->
 
-<a name="13.0.0-rc.0"></a>
-# 13.0.0-rc.0 (2021-10-13)
-## Deprecations
-### 
-- The `renderModuleFactory` symbol in `@angular/platform-server` is no longer necessary as of Angular v13.
-
-The `renderModuleFactory` calls can be replaced with `renderModule`.
-### 
-| Commit | Type | Description |
-| -- | -- | -- |
-| [747553dd68](https://github.com/angular/angular/commit/747553dd68209fe25a9704fe7094b4b3fb38bf06) | docs | deprecate ViewEngine-based `renderModuleFactory` ([#43757](https://github.com/angular/angular/pull/43757)) |
-### core
-| Commit | Type | Description |
-| -- | -- | -- |
-| [7396021e4b](https://github.com/angular/angular/commit/7396021e4b22faca47b7fc0bab188c838090f3e7) | fix | avoid duplicating comments in TestBed teardown migration ([#43776](https://github.com/angular/angular/pull/43776)) |
-## Special Thanks
-Alan Agius, Andrew Scott, Daniel Díaz, David Shevitz, Doug Parker, George Kalpakas, Joe Martin (Crowdstaffing), Joey Perrott, Kristiyan Kostadinov, Paul Gschwendtner, Tanguy Nodet, Thomas Turrell-Croft, dario-piotrowicz, hchiam, markostanimirovic and mgechev
-
-<!-- CHANGELOG SPLIT MARKER -->
-
 <a name="12.2.10"></a>
 # 12.2.10 (2021-10-13)
 ## Special Thanks
 Alan Agius, Daniel Díaz, David Shevitz, Doug Parker, George Kalpakas, Joe Martin (Crowdstaffing), Tanguy Nodet, Thomas Turrell-Croft, dario-piotrowicz, hchiam, markostanimirovic and mgechev
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="13.0.0-next.15"></a>
-# 13.0.0-next.15 (2021-10-07)
-### bazel
-| Commit | Type | Description |
-| -- | -- | -- |
-| [d977701a43](https://github.com/angular/angular/commit/d977701a43866e9f9fae9f83f224e4b6980a8bd4) | feat | allow for custom conditions to be set in `ng_package` targets ([#43764](https://github.com/angular/angular/pull/43764)) |
-## Special Thanks
-Dylan Hunn and Paul Gschwendtner
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="13.0.0-next.14"></a>
-# 13.0.0-next.14 (2021-10-06)
-### common
-| Commit | Type | Description |
-| -- | -- | -- |
-| [adf4481211](https://github.com/angular/angular/commit/adf4481211ac0a2eabf560f42ef5193ca550ec98) | feat | add injection token for default date pipe timezone ([#43611](https://github.com/angular/angular/pull/43611)) |
-## Special Thanks
-Alex Rickabaugh, Dylan Hunn, Kristiyan Kostadinov and Pete Bacon Darwin
 
 <!-- CHANGELOG SPLIT MARKER -->
 
@@ -373,175 +292,6 @@ Alex Rickabaugh, Dylan Hunn, Kristiyan Kostadinov and Pete Bacon Darwin
 | [c4ecc07838](https://github.com/angular/angular/commit/c4ecc07838de5149a360b11de1c8c4ef18b1fe77) | fix | make `ngsw.json` generation deterministic and correct ([#43679](https://github.com/angular/angular/pull/43679)) |
 ## Special Thanks
 Alan Agius, Daniel Díaz, George Kalpakas, JoostK, Kristiyan Kostadinov, Pete Bacon Darwin, Wey-Han Liaw, dario-piotrowicz, iRealNirmal, little-pinecone, mgechev, ultrasonicsoft and xiaohanxu-nick
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="13.0.0-next.13"></a>
-# 13.0.0-next.13 (2021-10-06)
-## Breaking Changes
-### core
-- NodeJS versions older than `v12.20.0` are no longer
-supported due to the Angular packages using the NodeJS package exports
-feature with subpath patterns.
-### bazel
-| Commit | Type | Description |
-| -- | -- | -- |
-| [cd1b52483e](https://github.com/angular/angular/commit/cd1b52483e886f6e2ad6cde23ff8a2225cafa219) | feat | expose `esm2020` and `es2020` conditions in APF package exports ([#43740](https://github.com/angular/angular/pull/43740)) |
-### core
-| Commit | Type | Description |
-| -- | -- | -- |
-| [e0a0d05d45](https://github.com/angular/angular/commit/e0a0d05d45bcb93448a8c2fd03f9e1783146cf00) | feat | update node version support range to support v16 ([#43740](https://github.com/angular/angular/pull/43740)) |
-## Special Thanks
-Alan Agius, Andrew Kushnir, George Kalpakas, Kristiyan Kostadinov, Paul Gschwendtner, Pete Bacon Darwin and dario-piotrowicz
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="13.0.0-next.12"></a>
-# 13.0.0-next.12 (2021-10-05)
-## Breaking Changes
-### core
-- TypeScript versions older than 4.4.2 are no longer supported.
-### service-worker
-- The return type of `SwUpdate#activateUpdate` and `SwUpdate#checkForUpdate` changed to `Promise<boolean>`.
-
-Although unlikely, it is possible that this change will cause TypeScript type-checking to fail in
-some cases. If necessary, update your types to account for the new
-return type.
-## Deprecations
-### service-worker
-- The `SwUpdate#activated` observable is deprecated.
-
-The `SwUpdate#activated` observable only emits values as a direct response to calling
-`SwUpdate#activateUpdate()` and was only useful for determining whether the call resulted in an
-update or not. Now, the return value of `SwUpdate#activateUpdate()` can be used to determine the
-outcome of the operation and therefore using `SwUpdate#activated` does not offer any benefit.
-
-- The `SwUpdate#availalbe` observable is deprecated.
-
-The new `SwUpdate#versionUpdates` observable provides the same information and more. Therefore, it
-is possible to rebuild the same behavior as `SwUpdate#availalbe` using the events emitted by
-`SwUpdate#versionUpdates` and filtering for `VersionReadyEvent` events.
-As a result, the `SwUpdate#availalbe` observable is now redundant.
-### bazel
-| Commit | Type | Description |
-| -- | -- | -- |
-| [dbe656d1e0](https://github.com/angular/angular/commit/dbe656d1e0569304c7001296ec90cf2e9cc8c91f) | fix | ngc-wrapped should not rely on linker for external workspaces ([#43690](https://github.com/angular/angular/pull/43690)) |
-### compiler-cli
-| Commit | Type | Description |
-| -- | -- | -- |
-| [263feba5c2](https://github.com/angular/angular/commit/263feba5c2d56e8433068718d1fdcbc3b2ae144c) | fix | handle nullable expressions correctly in the nullish coalescing extended template diagnostic ([#43572](https://github.com/angular/angular/pull/43572)) |
-### core
-| Commit | Type | Description |
-| -- | -- | -- |
-| [c14085e434](https://github.com/angular/angular/commit/c14085e43493f0a1eaea1df949cbf6f3b13b72a0) | feat | drop support for TypeScript 4.2 and 4.3 ([#43642](https://github.com/angular/angular/pull/43642)) |
-| [7fd0428aae](https://github.com/angular/angular/commit/7fd0428aae3a7d94bfc8fee764ac24f5fe3fbb41) | fix | don't rethrow errors if test teardown has been disabled ([#43635](https://github.com/angular/angular/pull/43635)) |
-### language-service
-| Commit | Type | Description |
-| -- | -- | -- |
-| [69957f72e2](https://github.com/angular/angular/commit/69957f72e240e516fe65146c314014fadc43dd1f) | feat | provide snippets for attribute ([#43590](https://github.com/angular/angular/pull/43590)) |
-### router
-| Commit | Type | Description |
-| -- | -- | -- |
-| [2ab2a080b6](https://github.com/angular/angular/commit/2ab2a080b638126af9c422282002b7c1bdaced7b) | fix | unset attachRef when router-outlet is destroyed to avoid mounting a destroyed component ([#43697](https://github.com/angular/angular/pull/43697)) |
-### service-worker
-| Commit | Type | Description |
-| -- | -- | -- |
-| [59225f5586](https://github.com/angular/angular/commit/59225f5586f1319a47768cef2e3325d7ab6940af) | feat | `SwUpdate#activeUpdate` and `SwUpdate#checkForUpdate` should have a meaningful outcome ([#43668](https://github.com/angular/angular/pull/43668)) |
-| [0dc45446fe](https://github.com/angular/angular/commit/0dc45446fe487febaefaf68a928c5a249880f2f3) | feat | expose more version update events ([#43668](https://github.com/angular/angular/pull/43668)) |
-| [fddb50b597](https://github.com/angular/angular/commit/fddb50b597ceaacc77f8412dda29f0ae2bd3efbe) | fix | make `ngsw.json` generation deterministic and correct ([#43679](https://github.com/angular/angular/pull/43679)) |
-## Special Thanks
-Alan Agius, Andrew Scott, Doug Parker, George Kalpakas, Kristiyan Kostadinov, Maximilian Köller, Paul Gschwendtner, Wey-Han Liaw and ivanwonder
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="13.0.0-next.11"></a>
-# 13.0.0-next.11 (2021-10-04)
-### core
-| Commit | Type | Description |
-| -- | -- | -- |
-| [a3960846da](https://github.com/angular/angular/commit/a3960846da1f73282306560302daa3a4ddeca0f7) | feat | add `createNgModuleRef` function to create `NgModuleRef` based on NgModule class ([#43580](https://github.com/angular/angular/pull/43580)) |
-| [fe1f6421d2](https://github.com/angular/angular/commit/fe1f6421d2b647adb706e65f69ec2e40e604fac3) | feat | add `getNgModuleById` function to retrieve loaded NgModules by id ([#43580](https://github.com/angular/angular/pull/43580)) |
-| [81c7eb813c](https://github.com/angular/angular/commit/81c7eb813c27f08d2d640f34e165a1b5e487bac2) | feat | add migration to opt out existing apps from new test module teardown behavior ([#43353](https://github.com/angular/angular/pull/43353)) |
-| [94ba59bc9d](https://github.com/angular/angular/commit/94ba59bc9db81ae04f20e8147b5133a0d3d45510) | feat | enable test module teardown by default ([#43353](https://github.com/angular/angular/pull/43353)) |
-## Special Thanks
-Andrew Kushnir, Andrew Scott, Charles Lyding, George Kalpakas, Joey Perrott, JoostK, Kristiyan Kostadinov, dario-piotrowicz, iRealNirmal, mgechev and ultrasonicsoft
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="13.0.0-next.10"></a>
-# 13.0.0-next.10 (2021-10-01)
-## Breaking Changes
-### core
-- The `WrappedValue` class can no longer be imported from `@angular/core`,
-which may result in compile errors or failures at runtime if outdated
-libraries are used that are still using `WrappedValue`. The usage of
-`WrappedValue` should be removed as no replacement is available.
-### bazel
-| Commit | Type | Description |
-| -- | -- | -- |
-| [4886585875](https://github.com/angular/angular/commit/48865858750bc1607f20db9b6bf9f913870742bc) | feat | create transition for enabling partial compilation ([#43431](https://github.com/angular/angular/pull/43431)) |
-| [49b82ae561](https://github.com/angular/angular/commit/49b82ae56112c1e0d58ac28bcab1705e1f678ab1) | feat | implement partial compilation APF v13 for `ng_package` rule ([#43431](https://github.com/angular/angular/pull/43431)) |
-| [274cb38e0b](https://github.com/angular/angular/commit/274cb38e0bb9a8bff4a48d1d15f4e16e59ec6f88) | feat | switch prodmode output to ES2020 ([#43431](https://github.com/angular/angular/pull/43431)) |
-| [73ac50c447](https://github.com/angular/angular/commit/73ac50c44759c5d3048f11d6f98b98a5e625df58) | feat | wire up partial compilation build setting in `ng_module` ([#43431](https://github.com/angular/angular/pull/43431)) |
-### core
-| Commit | Type | Description |
-| -- | -- | -- |
-| [ad6407dcd0](https://github.com/angular/angular/commit/ad6407dcd02881c55b6c44b18a3eefc7fed247f8) | fix | handle invalid constructor parameters in partial factory declarations ([#43619](https://github.com/angular/angular/pull/43619)) |
-| [8878183521](https://github.com/angular/angular/commit/88781835212354d7058a3674a04c2a1dd4b8f9c3) | perf | remove support for the deprecated `WrappedValue` ([#43507](https://github.com/angular/angular/pull/43507)) |
-## Special Thanks
-Daniel Díaz, George Kalpakas, JoostK, Paul Gschwendtner, Pete Bacon Darwin, dario-piotrowicz, little-pinecone and xiaohanxu-nick
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="13.0.0-next.9"></a>
-# 13.0.0-next.9 (2021-09-30)
-## Breaking Changes
-### router
-- It is no longer possible to use `Route.loadChildren` using a string
-value. The following supporting classes were removed from
-`@angular/core`:
-
-- `NgModuleFactoryLoader`
-- `SystemJsNgModuleFactoryLoader`
-
-The `@angular/router` package no longer exports these symbols:
-
-- `SpyNgModuleFactoryLoader`
-- `DeprecatedLoadChildren`
-
-The signature of the `setupTestingRouter` function from
-`@angular/core/testing` has been changed to drop its `NgModuleFactoryLoader`
-parameter, as an argument for that parameter can no longer be created.
-### bazel
-| Commit | Type | Description |
-| -- | -- | -- |
-| [62d7005a52](https://github.com/angular/angular/commit/62d7005a52304f41a48f878f176f40e90437a555) | feat | add `strict_templates` and `experimental_extended_template_diagnostics` to `ng_module()` rule ([#43582](https://github.com/angular/angular/pull/43582)) |
-| [e0a72857cc](https://github.com/angular/angular/commit/e0a72857ccda2b21a91875ee714fef608b54c083) | fix | construct a manifest file even when warnings are emitted ([#43582](https://github.com/angular/angular/pull/43582)) |
-### compiler-cli
-| Commit | Type | Description |
-| -- | -- | -- |
-| [8d2b6affcd](https://github.com/angular/angular/commit/8d2b6affcd8c4592ca939109f4f51e65da977652) | fix | correctly interpret token arrays in @Injectable `deps` ([#43226](https://github.com/angular/angular/pull/43226)) |
-| [8f7fdc59af](https://github.com/angular/angular/commit/8f7fdc59af7f1b0a51b07e69044368c223b9f186) | fix | not evaluating new signature for __spreadArray ([#43618](https://github.com/angular/angular/pull/43618)) |
-### core
-| Commit | Type | Description |
-| -- | -- | -- |
-| [7dccbdd27b](https://github.com/angular/angular/commit/7dccbdd27be13eb7287f535f482b1de2c13fca74) | feat | add support for Types in ViewContainerRef.createComponent ([#43022](https://github.com/angular/angular/pull/43022)) |
-| [66fb311d20](https://github.com/angular/angular/commit/66fb311d205e51647e2c1f84a6e3adf5ef3cfd64) | fix | incorrect signature for initTestEnvironment ([#43615](https://github.com/angular/angular/pull/43615)) |
-### language-service
-| Commit | Type | Description |
-| -- | -- | -- |
-| [3e37e8979d](https://github.com/angular/angular/commit/3e37e8979d19a1ab41dea56a6b086dd0daa837f1) | fix | provide dom event completions ([#43299](https://github.com/angular/angular/pull/43299)) |
-### ngcc
-| Commit | Type | Description |
-| -- | -- | -- |
-| [988cca7ef5](https://github.com/angular/angular/commit/988cca7ef59df9c740b988eabb94fa084cfa5451) | fix | do not fail for packages which correspond with `Object` members ([#43589](https://github.com/angular/angular/pull/43589)) |
-### router
-| Commit | Type | Description |
-| -- | -- | -- |
-| [4f3beffdbf](https://github.com/angular/angular/commit/4f3beffdbfa974b380b2225f163d363dd17e10bd) | feat | emit activate/deactivate events when an outlet gets attached/detached ([#43333](https://github.com/angular/angular/pull/43333)) |
-| [361273fad5](https://github.com/angular/angular/commit/361273fad5030c900c83d333a779f6edbe20c688) | refactor | remove support for `loadChildren` string syntax ([#43591](https://github.com/angular/angular/pull/43591)) |
-## Special Thanks
-Adrien Crivelli, Alex Rickabaugh, Andrew Kushnir, Andrew Scott, Bobby Galli, Charles Lyding, Chris, Daniel Díaz, Dmitrij Kuba, Doug Parker, JoostK, Kristiyan Kostadinov, Pete Bacon Darwin, Rafael Santana, Raj Sekhar, Ricardo Chavarria, Teri Glover, dario-piotrowicz, enisfr and wszgrcy
 
 <!-- CHANGELOG SPLIT MARKER -->
 
@@ -568,70 +318,6 @@ Adrien Crivelli, Alex Rickabaugh, Andrew Scott, Bobby Galli, Chris, Daniel Díaz
 
 <!-- CHANGELOG SPLIT MARKER -->
 
-<a name="13.0.0-next.8"></a>
-# 13.0.0-next.8 (2021-09-27)
-### core
-| Commit | Type | Description |
-| -- | -- | -- |
-| [ea61ec2562](https://github.com/angular/angular/commit/ea61ec25628206d18a424906f685c0d0fd6aa714) | feat | support TypeScript 4.4 ([#43281](https://github.com/angular/angular/pull/43281)) |
-### forms
-| Commit | Type | Description |
-| -- | -- | -- |
-| [d9d8f950e9](https://github.com/angular/angular/commit/d9d8f950e90567c79b43eb156b81810a9f3d5c93) | feat | allow disabling min/max validators dynamically (by setting the value to `null`) ([#42978](https://github.com/angular/angular/pull/42978)) |
-### service-worker
-| Commit | Type | Description |
-| -- | -- | -- |
-| [e131540f71](https://github.com/angular/angular/commit/e131540f7183041448be771dc91cb4224362e988) | fix | do not unassign clients from a broken version ([#43518](https://github.com/angular/angular/pull/43518)) |
-## Special Thanks
-Alan Agius, Daniel Díaz, Dario Piotrowicz, George Kalpakas, Joe Martin (Crowdstaffing), Kristiyan Kostadinov, Teri Glover, Virginia Dooley and iRealNirmal
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="13.0.0-next.7"></a>
-# 13.0.0-next.7 (2021-09-22)
-## Breaking Changes
-### router
-- The router will no longer replace the browser URL when a new navigation
-cancels an ongoing navigation. This often causes URL flicker and was
-only in place to support some AngularJS hybrid applications. Hybrid
-applications which rely on the `navigationId` being present on initial
-navigations that were handled by the Angular router should instead
-subscribe to `NavigationCancel` events and perform the
-`location.replaceState` themselves to add `navigationId` to the Router
-state.
-In addition, tests which assert `urlChanges` on the `SpyLocation` may
-need to be adjusted to account for the `replaceState` which is no longer
-triggered.
-### common
-| Commit | Type | Description |
-| -- | -- | -- |
-| [df792ebc26](https://github.com/angular/angular/commit/df792ebc260b6a3a1eecd33c9de858e7943f8128) | fix | titlecase pipe incorrectly handling numbers ([#43476](https://github.com/angular/angular/pull/43476)) |
-### compiler
-| Commit | Type | Description |
-| -- | -- | -- |
-| [feba4d2719](https://github.com/angular/angular/commit/feba4d27191089301ae1926952403107ae2bb75d) | fix | include leading whitespace in source-spans of i18n messages ([#43132](https://github.com/angular/angular/pull/43132)) |
-### compiler-cli
-| Commit | Type | Description |
-| -- | -- | -- |
-| [9470f56ad3](https://github.com/angular/angular/commit/9470f56ad3159f5fba7731db49de39eb1734f616) | fix | handle directives that refer to a namespaced class in a type parameter bound ([#43511](https://github.com/angular/angular/pull/43511)) |
-### migrations
-| Commit | Type | Description |
-| -- | -- | -- |
-| [77bd2538cb](https://github.com/angular/angular/commit/77bd2538cb8fe114a326209791d7ec043d65ea9e) | fix | apply individual expression edits to preserve newline characters ([#43519](https://github.com/angular/angular/pull/43519)) |
-| [d849350c7b](https://github.com/angular/angular/commit/d849350c7bf19117bbf85e2d854b5be4d5eb4b25) | fix | Ensure routerLink migration doesn't update unrelated files ([#43519](https://github.com/angular/angular/pull/43519)) |
-### platform-browser
-| Commit | Type | Description |
-| -- | -- | -- |
-| [35725f5550](https://github.com/angular/angular/commit/35725f5550e305762038f154f1c9a0b9e809c883) | fix | improve error message for missing animation trigger ([#41356](https://github.com/angular/angular/pull/41356)) |
-### router
-| Commit | Type | Description |
-| -- | -- | -- |
-| [c5d0bd4966](https://github.com/angular/angular/commit/c5d0bd4966a4fc595d57f75569754b4d224ef2ba) | fix | Prevent URL flicker when new navigations cancel ongoing ones ([#43496](https://github.com/angular/angular/pull/43496)) |
-## Special Thanks
-Andrew Scott, Daniel Díaz, George Kalpakas, Jessica Janiuk, JoostK, Kristiyan Kostadinov, Mwiku, Pei Wang, Pete Bacon Darwin, Teri Glover, Virginia Dooley, Xiaohanxu1996, dario-piotrowicz and kirjs
-
-<!-- CHANGELOG SPLIT MARKER -->
-
 <a name="12.2.7"></a>
 # 12.2.7 (2021-09-22)
 ### common
@@ -652,31 +338,6 @@ Andrew Scott, Daniel Díaz, George Kalpakas, Jessica Janiuk, JoostK, Kristiyan K
 | [adc7c56ede](https://github.com/angular/angular/commit/adc7c56ede7ad34a90f5ef1b878e261836b25c45) | fix | improve error message for missing animation trigger ([#41356](https://github.com/angular/angular/pull/41356)) |
 ## Special Thanks
 Andrew Scott, Daniel Díaz, George Kalpakas, JoostK, Kristiyan Kostadinov, Mwiku, Pete Bacon Darwin, Teri Glover, Virginia Dooley, Xiaohanxu1996, dario-piotrowicz and kirjs
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="13.0.0-next.6"></a>
-# 13.0.0-next.6 (2021-09-15)
-### animations
-| Commit | Type | Description |
-| -- | -- | -- |
-| [6c84c5f513](https://github.com/angular/angular/commit/6c84c5f513d8a0775ab2f7e5de46d5619cbcbc19) | fix | emit pure annotations to static property initializers ([#43344](https://github.com/angular/angular/pull/43344)) |
-### core
-| Commit | Type | Description |
-| -- | -- | -- |
-| [c80278ac4a](https://github.com/angular/angular/commit/c80278ac4abf260eefeb14955203c3f8fd80622b) | fix | emit pure annotations to static property initializers ([#43344](https://github.com/angular/angular/pull/43344)) |
-### router
-| Commit | Type | Description |
-| -- | -- | -- |
-| [0e8548f667](https://github.com/angular/angular/commit/0e8548f667e5fdefa3ac7cdf1ba47e3e17011ffc) | fix | Allow renavigating to failed URLs ([#43424](https://github.com/angular/angular/pull/43424)) |
-| [796da641f0](https://github.com/angular/angular/commit/796da641f0a29e9f5f5de115c456da37426e971c) | fix | Do not modify parts of URL excluded from with 'eager' updates ([#43421](https://github.com/angular/angular/pull/43421)) |
-| [9e039ca68b](https://github.com/angular/angular/commit/9e039ca68bfae5328f3fc1f16fabd7673c466a25) | fix | Only trigger router navigation on `popstate` events from `Location` subscription ([#43328](https://github.com/angular/angular/pull/43328)) |
-### service-worker
-| Commit | Type | Description |
-| -- | -- | -- |
-| [59353c6305](https://github.com/angular/angular/commit/59353c6305076e1ac1b38aa0a1653a7404beb963) | fix | clear service worker cache in safety worker ([#43324](https://github.com/angular/angular/pull/43324)) |
-## Special Thanks
-Alan Agius, Amadou Sall, Andrew Kushnir, Andrew Scott, Aristeidis Bampakos, Bjarki, Charles Lyding, David Shevitz, George Kalpakas, Joe Martin (Crowdstaffing), Michele Stieven, Naveed Ahmed, Pei Wang, dario-piotrowicz, mezhik91 and mgechev
 
 <!-- CHANGELOG SPLIT MARKER -->
 
@@ -703,41 +364,6 @@ Alan Agius, Amadou Sall, Andrew Kushnir, Andrew Scott, Aristeidis Bampakos, Bjar
 
 <!-- CHANGELOG SPLIT MARKER -->
 
-<a name="13.0.0-next.5"></a>
-# 13.0.0-next.5 (2021-09-08)
-## Breaking Changes
-### common
-- The behavior of the `SpyLocation` used by the `RouterTestingModule` has changed
-to match the behavior of browsers. It no longer emits a 'popstate' event
-when `Location.go` is called. In addition, `simulateHashChange` now
-triggers _both_ a `hashchange` and a `popstate` event.
-Tests which use `location.go` and expect the changes to be picked up by
-the `Router` should likely change to `simulateHashChange` instead.
-Each test is different in what it attempts to assert so there is no
-single change that works for all tests. Each test using the `SpyLocation` to
-simulate browser URL changes should be evaluated on a case-by-case basis.
-### common
-| Commit | Type | Description |
-| -- | -- | -- |
-| [c6a93001eb](https://github.com/angular/angular/commit/c6a93001eb74374b0fbc6aea1286fe1183d21382) | fix | synchronise location mock behavior with the navigators ([#41730](https://github.com/angular/angular/pull/41730)) |
-### language-service
-| Commit | Type | Description |
-| -- | -- | -- |
-| [fc3b50e427](https://github.com/angular/angular/commit/fc3b50e4275c84a1cd3f75e4b52ee2dc4b65c35c) | fix | exclude the `SafePropertyRead` when applying the optional chaining ([#43321](https://github.com/angular/angular/pull/43321)) |
-### migrations
-| Commit | Type | Description |
-| -- | -- | -- |
-| [2efc18e675](https://github.com/angular/angular/commit/2efc18e6757157589004e23d8d22b7967de4387d) | fix | migration failed finding tsconfig file ([#43343](https://github.com/angular/angular/pull/43343)) |
-### router
-| Commit | Type | Description |
-| -- | -- | -- |
-| [3c6b653089](https://github.com/angular/angular/commit/3c6b653089837459809a370ebcaf8911c3bab9ed) | feat | Option to correctly restore history on failed navigation ([#43289](https://github.com/angular/angular/pull/43289)) |
-| [95f3aecc29](https://github.com/angular/angular/commit/95f3aecc292cafd6ec8f693842d35318f33089ae) | fix | add more context to `Unhandled Navigation Error` ([#43291](https://github.com/angular/angular/pull/43291)) |
-## Special Thanks
-Ahmed Ayed, Alan Agius, Andrew Scott, Charles Barnes, Enea Jahollari, George Kalpakas, Ikko Ashimine, Paul Gschwendtner, Pete Bacon Darwin, William Sedlacek, dario-piotrowicz and ivanwonder
-
-<!-- CHANGELOG SPLIT MARKER -->
-
 <a name="12.2.5"></a>
 # 12.2.5 (2021-09-08)
 ### router
@@ -746,21 +372,6 @@ Ahmed Ayed, Alan Agius, Andrew Scott, Charles Barnes, Enea Jahollari, George Kal
 | [a0bd6e90f9](https://github.com/angular/angular/commit/a0bd6e90f987377320b3b337d8c3a33235658e9a) | fix: add more context to `Unhandled Navigation Error` ([#43291](https://github.com/angular/angular/pull/43291)) |
 ## Special Thanks:
 Alan Agius, Charles Barnes, Enea Jahollari, George Kalpakas, Ikko Ashimine, Paul Gschwendtner, Pete Bacon Darwin, William Sedlacek and dario-piotrowicz
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="13.0.0-next.4"></a>
-# 13.0.0-next.4 (2021-09-01)
-### compiler-cli
-| Commit | Description |
-| -- | -- |
-| [4341a5f4cb](https://github.com/angular/angular/commit/4341a5f4cb7969b5c06d46a6afbd95cbccab8d95) | fix: Emit type annotations for synthesized decorator fields ([#43021](https://github.com/angular/angular/pull/43021)) |
-### router
-| Commit | Description |
-| -- | -- |
-| [faf9f5a3bc](https://github.com/angular/angular/commit/faf9f5a3bc444bb6cbf75916c8022f60e0742bca) | feat: new output that would notify when link is activated ([#43280](https://github.com/angular/angular/pull/43280)) |
-## Special Thanks:
-Alan Agius, Andrew Scott, Daniel Trevino, George Kalpakas, Jessica Janiuk, Joey Perrott, JoostK, Kristiyan Kostadinov, anandtiwary, nickreid and segunb
 
 <!-- CHANGELOG SPLIT MARKER -->
 
@@ -775,43 +386,6 @@ Andrew Scott, Daniel Trevino, George Kalpakas, Joey Perrott, Kristiyan Kostadino
 
 <!-- CHANGELOG SPLIT MARKER -->
 
-<a name="13.0.0-next.3"></a>
-# 13.0.0-next.3 (2021-08-25)
-## Breaking Changes
-### router
-- Previously `null` and `undefined` inputs for `routerLink` were
-equivalent to empty string and there was no way to disable the link's
-navigation.
-In addition, the `href` is changed from a property `HostBinding()` to an
-attribute binding (`HostBinding('attr.href')`). The effect of this
-change is that `DebugElement.properties['href']` will now return the
-`href` value returned by the native element which will be the full URL
-rather than the internal value of the `RouterLink` `href` property.
-### compiler-cli
-| Commit | Description |
-| -- | -- |
-| [bed121c34f](https://github.com/angular/angular/commit/bed121c34f9c4ec4741a4690693423bb7ed66982) | feat: inline resources when generating class metadata calls ([#43178](https://github.com/angular/angular/pull/43178)) |
-### core
-| Commit | Description |
-| -- | -- |
-| [e57691c9c5](https://github.com/angular/angular/commit/e57691c9c5f8456f7dc75180aa1e80330da560fe) | feat: Add migration to update empty routerLinks in templates ([#43176](https://github.com/angular/angular/pull/43176)) |
-### language-service
-| Commit | Description |
-| -- | -- |
-| [b10d90bef6](https://github.com/angular/angular/commit/b10d90bef6a3d1b721d087268aa7377985dd4c4f) | feat: Add method for retrieving the component template at the cursor location ([#43208](https://github.com/angular/angular/pull/43208)) |
-### router
-| Commit | Description |
-| -- | -- |
-| [ccb09b4558](https://github.com/angular/angular/commit/ccb09b4558a3864fb5b2fe2214d08f1c1fe2758f) | fix: null/undefined routerLink should disable navigation ([#43087](https://github.com/angular/angular/pull/43087)) |
-### service-worker
-| Commit | Description |
-| -- | -- |
-| [6e924313c3](https://github.com/angular/angular/commit/6e924313c3bd93236227e92a5054fc8cc9b37644) | fix: NPE if onActionClick is undefined ([#43210](https://github.com/angular/angular/pull/43210)) |
-## Special Thanks:
-Alex Rickabaugh, Andrew Scott, Daniel Trevino, George Kalpakas, Paul Gschwendtner, dario-piotrowicz and shlasouski
-
-<!-- CHANGELOG SPLIT MARKER -->
-
 <a name="12.2.3"></a>
 # 12.2.3 (2021-08-25)
 ### service-worker
@@ -820,33 +394,6 @@ Alex Rickabaugh, Andrew Scott, Daniel Trevino, George Kalpakas, Paul Gschwendtne
 | [fc7f92159d](https://github.com/angular/angular/commit/fc7f92159df16e894d9909cfc8969ed4b7d9924a) | fix: NPE if onActionClick is undefined ([#43210](https://github.com/angular/angular/pull/43210)) |
 ## Special Thanks:
 Daniel Trevino, Erik Slack, George Kalpakas, dario-piotrowicz and shlasouski
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="13.0.0-next.2"></a>
-# 13.0.0-next.2 (2021-08-18)
-### animations
-| Commit | Description |
-| -- | -- |
-| [3cb1f18f97](https://github.com/angular/angular/commit/3cb1f18f976190189440e281581e712aaf0250e4) | fix: add pure annotations to static property initializers ([#43064](https://github.com/angular/angular/pull/43064)) |
-### core
-| Commit | Description |
-| -- | -- |
-| [27a89a9298](https://github.com/angular/angular/commit/27a89a929818dc2d249c2833c4a75582a7dc1349) | fix: add pure annotations to static property initializers ([#43064](https://github.com/angular/angular/pull/43064)) |
-### language-service
-| Commit | Description |
-| -- | -- |
-| [d5f9890c92](https://github.com/angular/angular/commit/d5f9890c9205b4a121275ace84b26776aedd0478) | feat: auto-apply optional chaining on nullable symbol ([#42995](https://github.com/angular/angular/pull/42995)) |
-### platform-browser
-| Commit | Description |
-| -- | -- |
-| [7e71370fe6](https://github.com/angular/angular/commit/7e71370fe6a9e802f68f7d3dbbfd0194ecde2d4f) | perf: avoid intermediate arrays in server transition ([#43145](https://github.com/angular/angular/pull/43145)) |
-### router
-| Commit | Description |
-| -- | -- |
-| [286b2807de](https://github.com/angular/angular/commit/286b2807de61dcd6e24ced5c142fbc6eda9dfbec) | fix: eagerly update internal state on browser-triggered navigations ([#43102](https://github.com/angular/angular/pull/43102)) |
-## Special Thanks:
-Alan Agius, Andrew Scott, Aristeidis Bampakos, Charles Lyding, Dylan Hunn, Edoardo Dusi, Erik Slack, George Kalpakas, Joe Martin (Crowdstaffing), Joey Perrott, Kirk Larkin, Kristiyan Kostadinov, Paul Gschwendtner, Pete Bacon Darwin, TIffany Davis, Theoklitos Bampouris, ali, dario-piotrowicz, ivanwonder and pichuser
 
 <!-- CHANGELOG SPLIT MARKER -->
 
@@ -873,33 +420,6 @@ Andrew Scott, Aristeidis Bampakos, Charles Lyding, Edoardo Dusi, George Kalpakas
 
 <!-- CHANGELOG SPLIT MARKER -->
 
-<a name="13.0.0-next.1"></a>
-# 13.0.0-next.1 (2021-08-11)
-### forms
-| Commit | Description |
-| -- | -- |
-| [e49fc96ed3](https://github.com/angular/angular/commit/e49fc96ed33c26434a14b80487dd912d8c76cace) | feat(forms): Make Form Statuses use stricter types. ([#42952](https://github.com/angular/angular/pull/42952)) |
-### router
-| Commit | Description |
-| -- | -- |
-| [bbad42310b](https://github.com/angular/angular/commit/bbad42310b6ba4df803917fa9b32e1e702eca531) | fix(router): ensure check for match options is compatible with property renaming ([#43086](https://github.com/angular/angular/pull/43086)) |
-| [784671597e](https://github.com/angular/angular/commit/784671597e0b28d9696bdc325b426a6c7be0cd8e) | fix(router): Allow question marks in query param values ([#31187](https://github.com/angular/angular/pull/31187)) |
-## Breaking Changes
-### forms
-A new type called `FormControlStatus` has been introduced, which is a union of all possible status strings for form controls. `AbstractControl.status` has been narrowed from `string` to `FormControlStatus`, and `statusChanges` has been narrowed from `Observable<any>` to `Observable<FormControlStatus>`. Most applications should consume the new types seamlessly. Any breakage caused by this change is likely due to one of the following two problems: (1) the app is comparing `AbstractControl.status` against a string which is not a valid status; or, (2) the app is using `statusChanges` events as if they were something other than strings.
-### router
-The default url serializer would previously drop
-everything after and including a question mark in query parameters. That
-is, for a navigation to `/path?q=hello?&other=123`, the query
-params would be parsed to just `{q: 'hello'}`. This is
-incorrect because the URI spec allows for question mark characers in
-query data. This change will now correctly parse the params for the
-above example to be `{v: 'hello?', other: '123'}`.
-## Special Thanks:
-Amadou Sall, Andrew Kushnir, Andrew Scott, Daniel Trevino, Dylan Hunn, Erik Slack, Fabien BERNARD, George Kalpakas, Jeroen van Warmerdam, Joey Perrott, Jon Rimmer, Tim Gates and Vugar_Abdullayev
-
-<!-- CHANGELOG SPLIT MARKER -->
-
 <a name="12.2.1"></a>
 # 12.2.1 (2021-08-11)
 ### router
@@ -908,38 +428,6 @@ Amadou Sall, Andrew Kushnir, Andrew Scott, Daniel Trevino, Dylan Hunn, Erik Slac
 | [dd3abdb9d9](https://github.com/angular/angular/commit/dd3abdb9d9b2c4363fb1f468a05bf449b55f55a5) | fix(router): ensure check for match options is compatible with property renaming ([#43086](https://github.com/angular/angular/pull/43086)) |
 ## Special Thanks:
 Amadou Sall, Andrew Kushnir, Andrew Scott, Daniel Trevino, Erik Slack, Fabien BERNARD, George Kalpakas, Jeroen van Warmerdam, Joey Perrott, Tim Gates and Vugar_Abdullayev
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="13.0.0-next.0"></a>
-# 13.0.0-next.0 (2021-08-04)
-### compiler-cli
-| Commit | Description |
-| -- | -- |
-| [ed9cfb674f](https://github.com/angular/angular/commit/ed9cfb674f8e52b416ccdaf9aa9c46955b8448f5) | fix(compiler-cli): use correct module resolution context for absolute imports in .d.ts files ([#42879](https://github.com/angular/angular/pull/42879)) |
-| [5fb23eccea](https://github.com/angular/angular/commit/5fb23ecceaccf0629308dd50210b65f67d51f024) | perf(compiler-cli): skip analysis in incremental builds for files without Angular behavior ([#42562](https://github.com/angular/angular/pull/42562)) |
-### core
-| Commit | Description |
-| -- | -- |
-| [8628826535](https://github.com/angular/angular/commit/8628826535233ba5bc6b973cef860355b4c41931) | fix(core): incorrect error reported when trying to re-create view which had an error during creation ([#43005](https://github.com/angular/angular/pull/43005)) |
-| [eefe1682e8](https://github.com/angular/angular/commit/eefe1682e8099b73b6e50bb227b5a7f63105c63d) | fix(core): correctly handle `null` or `undefined` in `ErrorHandler#handleError()` ([#42881](https://github.com/angular/angular/pull/42881)) |
-### forms
-| Commit | Description |
-| -- | -- |
-| [1d9d02696e](https://github.com/angular/angular/commit/1d9d02696eadbee2c2f719e432efca22f1e494e9) | feat(forms): add hasValidators, addValidators, and removeValidators methods (for both sync and async) ([#42838](https://github.com/angular/angular/pull/42838)) |
-| [a502279592](https://github.com/angular/angular/commit/a50227959222f39884aac284544d1626aee5ca64) | feat(forms): allow minLength/maxLength validator to be bound to `null` ([#42565](https://github.com/angular/angular/pull/42565)) |
-### language-service
-| Commit | Description |
-| -- | -- |
-| [f0c5ba08f6](https://github.com/angular/angular/commit/f0c5ba08f63c60f7542dfd3592c4cfd42bd579bc) | fix(language-service): global autocomplete doesn't work when the user tries to modify the symbol ([#42923](https://github.com/angular/angular/pull/42923)) |
-| [7c35ca0e00](https://github.com/angular/angular/commit/7c35ca0e0030f2ded12ddca9092e31f510cebeb1) | feat(language-service): support autocomplete string literal union types in templates ([#42729](https://github.com/angular/angular/pull/42729)) |
-### router
-| Commit | Description |
-| -- | -- |
-| [0d81b007e4](https://github.com/angular/angular/commit/0d81b007e48a0ac801d2614601fb8180a3517865) | fix(router): add missing outlet events to RouterOutletContract ([#42431](https://github.com/angular/angular/pull/42431)) |
-| [dbae00195e](https://github.com/angular/angular/commit/dbae00195e114ac8b967201283962a7e2c0581b4) | feat(router): ability to provide custom route reuse strategy via DI for `RouterTestingModule` ([#42434](https://github.com/angular/angular/pull/42434)) |
-## Special Thanks:
-Alex Rickabaugh, Andrew Kushnir, Andrew Scott, Daniel Trevino, Dmitrij Kuba, Dylan Hunn, George Kalpakas, Joe Martin, Joey Perrott, JoostK, Kristiyan Kostadinov, Nichola Alkhouri, Paul Gschwendtner, Pete Bacon Darwin, Steven Masala, Teri Glover, Vladyslav, Yuvaraj, atscott, codebriefcase, dario-piotrowicz, iRealNirmal and ivanwonder
 
 <!-- CHANGELOG SPLIT MARKER -->
 
