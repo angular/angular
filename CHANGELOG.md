@@ -1,3 +1,14 @@
+<a name="13.0.0-rc.3"></a>
+# 13.0.0-rc.3 "fir-valise" (2021-11-02)
+### material-experimental
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e7a77edf1e](https://github.com/angular/components/commit/e7a77edf1e3f0215c26715366a31bf9c3f5e6cfd) | fix | **mdc-tabs:** update theming api ([#23855](https://github.com/angular/components/pull/23855)) |
+## Special Thanks
+Andrew Seguin, Joey Perrott, Kristiyan Kostadinov, Paul Gschwendtner and Suguru Inatomi
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="13.0.0-rc.2"></a>
 # 13.0.0-rc.2 "tweed-thimble" (2021-10-27)
 ### cdk
