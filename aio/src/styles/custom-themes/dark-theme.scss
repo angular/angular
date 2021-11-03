@@ -1,5 +1,5 @@
 @use '../app-theme';
-@use '~@angular/material' as mat;
+@use '@angular/material' as mat;
 
 $ng-io-primary: mat.define-palette(mat.$blue-palette, 700, 600, 900);
 $ng-io-accent: mat.define-palette(mat.$red-palette, 700, 600, 800);
