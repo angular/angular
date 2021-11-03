@@ -1,3 +1,17 @@
+<a name="13.1.0-next.0"></a>
+# 13.1.0-next.0 (2021-11-03)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c85bcb0c63](https://github.com/angular/angular/commit/c85bcb0c636d65706541d44be62694720f12ad9e) | feat | reference ICU message IDs from their placeholders ([#43534](https://github.com/angular/angular/pull/43534)) |
+### localize
+| Commit | Type | Description |
+| -- | -- | -- |
+| [d3cf222a81](https://github.com/angular/angular/commit/d3cf222a8193bc7ccd9e7ce886846d1f79131627) | feat | support "associated message ids" for placeholders ([#43534](https://github.com/angular/angular/pull/43534)) |
+## Special Thanks
+Alex Rickabaugh, Andrew Kushnir, Andrew Scott, Doug Parker, Dylan Hunn, George Kalpakas, Jessica Janiuk, Joey Perrott, Paul Gschwendtner and Pete Bacon Darwin
+
+
 <a name="13.0.0"></a>
 # 13.0.0 (2021-11-03)
 ## Breaking Changes
