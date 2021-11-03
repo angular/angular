@@ -251,14 +251,18 @@ An application installs many Angular libraries from npm into its `node_modules` 
 However, the code in these libraries cannot be bundled directly along with the built application as it is not fully compiled.
 To finish compilation, use the Angular linker.
 
-For applications that don't use the Angular CLI, the linker is available as a Babel plugin.
-Use the Babel plugin using the module `@angular/compiler-cli/linker/babel` to incorporate into your builds.
-For example, integrate the plugin into a custom Webpack build by registering the linker as a plugin for `babel-loader`.
-
-Previously, if you ran `yarn install` or `npm install` you had to re-run `ngcc`.
-Now, libraries only need to be processed by the linker a single time, regardless of other npm operations.
+For applications that don't use the Angular CLI, the linker is available as a [Babel](https://babeljs.io/) plugin.
+The plugin is to be imported from `@angular/compiler-cli/linker/babel`.
 
 The Angular linker Babel plugin supports build caching, meaning that libraries only need to be processed by the linker a single time, regardless of other npm operations.
+
+Example of integrating the plugin into a custom [Webpack](https://webpack.js.org/) build by registering the linker as a [Babel](https://babeljs.io/) plugin using [babel-loader](https://webpack.js.org/loaders/babel-loader/#options).
+
+<code-example
+  path="angular-linker-plugin/webpack.config.mjs"
+  region="webpack-config"
+  header="webpack.config.mjs">
+</code-example>
 
 <div class="alert is-helpful">
 
@@ -266,4 +270,4 @@ The Angular CLI integrates the linker plugin automatically, so if consumers of y
 
 </div>
 
-@reviewed 2021-10-29
+@reviewed 2021-11-03
