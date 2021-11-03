@@ -192,6 +192,21 @@ Ahmed Ayed, Alan Agius, Alex Rickabaugh, Andrew Kushnir, Andrew Scott, Bjarki, C
 
 <!-- CHANGELOG SPLIT MARKER -->
 
+<a name="12.2.13"></a>
+# 12.2.13 (2021-11-03)
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [9a89db790f](https://github.com/angular/angular/commit/9a89db790f2453c11df6778c3c8639114797ae28) | fix | avoid broken references in .d.ts files due to @internal markers ([#43965](https://github.com/angular/angular/pull/43965)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [8f402c9d06](https://github.com/angular/angular/commit/8f402c9d06f4e6f16759f73df44438f2ba725a30) | fix | support `InjectFlags` argument in `NodeInjector.get()` ([#41592](https://github.com/angular/angular/pull/41592)) |
+## Special Thanks
+Alan Agius, George Kalpakas, Jochen Kraushaar, Joe Martin (Crowdstaffing), JoostK and vthinkxie
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="13.0.0-rc.3"></a>
 # 13.0.0-rc.3 (2021-11-01)
 ### core
