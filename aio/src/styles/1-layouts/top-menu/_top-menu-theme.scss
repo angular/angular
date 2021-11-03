@@ -1,7 +1,7 @@
 @use 'sass:map';
 @use '../../constants';
 @use '../../mixins';
-@use '~@angular/material' as mat;
+@use '@angular/material' as mat;
 
 @mixin theme($theme) {
   $primary: map.get($theme, primary);
