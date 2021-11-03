@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {compileClassMetadata, CompileClassMetadataFn, compileDeclareClassMetadata, compileDeclareInjectableFromMetadata, compileInjectable, createMayBeForwardRefExpression, FactoryTarget, LiteralExpr, MaybeForwardRefExpression, R3ClassMetadata, R3CompiledExpression, R3DependencyMetadata, R3InjectableMetadata, WrappedNodeExpr} from '@angular/compiler';
+import {compileClassMetadata, CompileClassMetadataFn, compileDeclareClassMetadata, compileDeclareInjectableFromMetadata, compileInjectable, createMayBeForwardRefExpression, FactoryTarget, ForwardRefHandling, LiteralExpr, MaybeForwardRefExpression, R3ClassMetadata, R3CompiledExpression, R3DependencyMetadata, R3InjectableMetadata, WrappedNodeExpr} from '@angular/compiler';
 import ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
@@ -162,7 +162,7 @@ function extractInjectableMetadata(
       type,
       typeArgumentCount,
       internalType,
-      providedIn: createMayBeForwardRefExpression(new LiteralExpr(null), false),
+      providedIn: createMayBeForwardRefExpression(new LiteralExpr(null), ForwardRefHandling.None),
     };
   } else if (decorator.args.length === 1) {
     const metaNode = decorator.args[0];
@@ -180,7 +180,7 @@ function extractInjectableMetadata(
 
     const providedIn = meta.has('providedIn') ?
         getProviderExpression(meta.get('providedIn')!, reflector) :
-        createMayBeForwardRefExpression(new LiteralExpr(null), false);
+        createMayBeForwardRefExpression(new LiteralExpr(null), ForwardRefHandling.None);
 
     let deps: R3DependencyMetadata[]|undefined = undefined;
     if ((meta.has('useClass') || meta.has('useFactory')) && meta.has('deps')) {
@@ -223,7 +223,8 @@ function getProviderExpression(
     expression: ts.Expression, reflector: ReflectionHost): MaybeForwardRefExpression {
   const forwardRefValue = tryUnwrapForwardRef(expression, reflector);
   return createMayBeForwardRefExpression(
-      new WrappedNodeExpr(forwardRefValue ?? expression), forwardRefValue !== null);
+      new WrappedNodeExpr(forwardRefValue ?? expression),
+      forwardRefValue !== null ? ForwardRefHandling.Unwrapped : ForwardRefHandling.None);
 }
 
 function extractInjectableCtorDeps(
