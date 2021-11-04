@@ -306,7 +306,7 @@ jobs:
           # We need to explicitly specify the --symlink_prefix option because otherwise we would
           # not be able to easily find the output bin directory when uploading artifacts for size
           # measurements.
-          command: yarn test  --symlink_prefix=dist/ //...
+          command: yarn test --symlink_prefix=dist/ -- //...
           no_output_timeout: 20m
         # Publish bundle artifacts which will be used to calculate the size change. **Note**: Make
         # sure that the size plugin from the Angular robot fetches the artifacts from this CircleCI
