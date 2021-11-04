@@ -8,7 +8,7 @@ ts_library(
         "//packages/compiler",
         "//packages/compiler-cli/src/ngtsc/core:api",
         "//packages/compiler-cli/src/ngtsc/diagnostics",
-        "//packages/language-service/ivy",
+        "//packages/language-service/src",
         "@npm//typescript",
     ],
 )

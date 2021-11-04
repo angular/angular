@@ -8,7 +8,7 @@
 
 import {initMockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 import ts from 'typescript';
-import {DisplayInfoKind, unsafeCastDisplayInfoKindToScriptElementKind} from '../display_parts';
+import {DisplayInfoKind, unsafeCastDisplayInfoKindToScriptElementKind} from '../src/display_parts';
 
 import {LanguageServiceTestEnv, OpenBuffer} from '../testing';
 

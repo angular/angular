@@ -9,7 +9,7 @@
     "experimentalDecorators": true,
     "moduleResolution": "node",
     "target": "es2015",
-    "baseUrl": "../../../../../../",
+    "baseUrl": "../../../../../",
     "paths": {
       "@angular/*": [
         "packages/*"

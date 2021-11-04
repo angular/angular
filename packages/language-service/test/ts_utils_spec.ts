@@ -8,8 +8,9 @@
 
 import {initMockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 import ts from 'typescript';
+
+import {collectMemberMethods, findTightestNode} from '../src/ts_utils';
 import {LanguageServiceTestEnv, OpenBuffer, Project} from '../testing';
-import {collectMemberMethods, findTightestNode} from '../ts_utils';
 
 describe('ts utils', () => {
   describe('collectMemberMethods', () => {
