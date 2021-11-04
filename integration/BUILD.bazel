@@ -29,8 +29,6 @@ INTEGRATION_TESTS = {
             # as they will compete for the resources of other parallel tests slowing
             # everything down. Ask Bazel to allocate multiple CPUs for these tests with "cpu:n" tag.
             "cpu:3",
-            # TODO(devversion): re-enable this once https://github.com/bazelbuild/rules_nodejs/pull/2987 is available.
-            "manual",
         ],
     },
     "cli-elements-universal": {},

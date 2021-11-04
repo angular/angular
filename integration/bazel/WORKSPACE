@@ -27,7 +27,7 @@ load("@build_bazel_rules_nodejs//:index.bzl", "node_repositories", "yarn_install
 node_repositories(
     # Use same node version as root angular WORKSPACE since
     node_version = "14.17.6",
-    yarn_version = "1.22.10",
+    yarn_version = "1.22.11",
 )
 
 # Install our npm dependencies into @npm
@@ -64,3 +64,7 @@ browser_repositories(
 load("@io_bazel_rules_sass//:defs.bzl", "sass_repositories")
 
 sass_repositories()
+
+load("@build_bazel_rules_nodejs//toolchains/esbuild:esbuild_repositories.bzl", "esbuild_repositories")
+
+esbuild_repositories()

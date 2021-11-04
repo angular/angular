@@ -2,6 +2,7 @@ load("@npm//@bazel/concatjs:index.bzl", "karma_web_test_suite")
 load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
 load("@npm//@angular/bazel:index.bzl", "ng_package")
 load("//tools:ng_ts_library.bzl", "ng_ts_library")
+load("//tools/angular:index.bzl", "FRAMEWORK_AMD_FILES")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -58,8 +59,10 @@ karma_web_test_suite(
     ],
     # rules_webtesting has a required_tag "native" for `chromium-local` browser
     tags = ["native"],
-    deps = [
+    deps = FRAMEWORK_AMD_FILES + [
+        "@npm//:node_modules/tslib/tslib.js",
+        "//test:angular_test_init",
+        "//tools:rxjs_umd_files",
         ":test_lib",
-        "//src:rxjs_umd_modules",
     ],
 )

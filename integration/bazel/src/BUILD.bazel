@@ -1,9 +1,8 @@
 load("@build_bazel_rules_nodejs//:index.bzl", "pkg_web")
 load("@npm//http-server:index.bzl", "http_server")
 load("@npm//@angular/bazel:index.bzl", "ng_module")
-load("@npm//@bazel/rollup:index.bzl", "rollup_bundle")
+load("@npm//@bazel/esbuild:index.bzl", "esbuild", "esbuild_config")
 load("@npm//@bazel/terser:index.bzl", "terser_minified")
-load("@npm//@bazel/concatjs:index.bzl", "concatjs_devserver")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -26,39 +25,21 @@ ng_module(
     ],
 )
 
-filegroup(
-    name = "rxjs_umd_modules",
-    srcs = [
-        # do not sort
-        "@npm//:node_modules/rxjs/bundles/rxjs.umd.js",
-        ":rxjs_shims.js",
+esbuild_config(
+    name = "bundle_esbuild_config",
+    config_file = "bundle-esbuild.config.mjs",
+    deps = [
+        "@npm//@angular/compiler-cli",
+        "@npm//@babel/core",
     ],
 )
 
-concatjs_devserver(
-    name = "devserver",
-    entry_module = "bazel_integration_test/src/main",
-    scripts = [
-        ":rxjs_umd_modules",
-    ],
-    # Use the same bundle serving path as prodserver so that we can share
-    # an index.html file.
-    serving_path = "/bundle.min.js",
-    static_files = [
-        "index.html",
-        "@npm//:node_modules/zone.js/bundles/zone.umd.min.js",
-    ],
-    deps = ["//src"],
-)
-
-rollup_bundle(
+esbuild(
     name = "bundle",
-    config_file = "rollup.config.js",
+    config = ":bundle_esbuild_config",
     entry_point = ":main.ts",
     deps = [
         "//src",
-        "@npm//@rollup/plugin-commonjs",
-        "@npm//@rollup/plugin-node-resolve",
     ],
 )
 
