@@ -14,6 +14,9 @@ Alex Rickabaugh, Andrew Kushnir, Andrew Scott, Doug Parker, Dylan Hunn, George K
 
 <a name="13.0.0"></a>
 # 13.0.0 (2021-11-03)
+
+[Blog post "Angular v13 is now available"](http://goo.gle/angular-v13).
+
 ## Breaking Changes
 ### common
 - The behavior of the `SpyLocation` used by the `RouterTestingModule` has changed
