@@ -7,11 +7,21 @@
  */
 
 import {APP_BASE_HREF} from '@angular/common';
-import {NgModule} from '@angular/core';
+import {NgModule, ɵivyEnabled as ivyEnabled} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {Router, RouterModule} from '@angular/router';
 
 describe('router integration acceptance', () => {
+  it('check TestBed version (1)', () => {
+    const msg = 'This test uses: ' + (ivyEnabled ? 'Ivy' : 'ViewEngine');
+    throw new Error(msg);
+  });
+
+  it('check TestBed version (2)', () => {
+    const msg = 'This test uses: ' + (ivyEnabled ? 'Ivy' : 'ViewEngine');
+    fail(msg);
+  });
+
   // Test case that ensures that we don't regress in multi-provider ordering
   // which is leveraged in the router. See: FW-1349
   it('should have correct order for multiple routes declared in different modules', () => {
