@@ -19,19 +19,34 @@
     "useUnknownInCatchVariables": false,
     "noFallthroughCasesInSwitch": true,
     "paths": {
-      "selenium-webdriver": ["./node_modules/@types/selenium-webdriver/index.d.ts"],
-      "rxjs/*": ["./node_modules/rxjs/*"],
-      "@angular/*": ["./packages/*"],
-      "zone.js/*": ["./packages/zone.js/*"],
-      "angular-in-memory-web-api": ["./packages/misc/angular-in-memory-web-api/index.ts"]
+      "selenium-webdriver": [
+        "./node_modules/@types/selenium-webdriver/index.d.ts"
+      ],
+      "rxjs/*": [
+        "./node_modules/rxjs/*"
+      ],
+      "@angular/*": [
+        "./packages/*"
+      ],
+      "zone.js/*": [
+        "./packages/zone.js/*"
+      ],
+      "angular-in-memory-web-api": [
+        "./packages/misc/angular-in-memory-web-api/index.ts"
+      ]
     },
     "rootDir": ".",
     "inlineSourceMap": true,
-    "lib": ["es2020", "dom"],
+    "lib": [
+      "es2020",
+      "dom"
+    ],
     "skipDefaultLibCheck": true,
     "skipLibCheck": true,
     "target": "es2020",
-    "types": ["angular"]
+    "types": [
+      "angular"
+    ]
   },
   "bazelOptions": {
     "suppressTsconfigOverrideWarnings": true
@@ -49,7 +64,7 @@
     // Http doesn't need to built since it is no longer maintained and
     // will be removed eventually. See: FW-1392.
     "http/**",
-    "language-service/test/project",
+    "language-service/ivy/test/legacy/project",
     "platform-server/integrationtest",
     "router/test/aot_ngsummary_test"
   ]

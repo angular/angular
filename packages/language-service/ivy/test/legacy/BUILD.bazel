@@ -24,9 +24,15 @@ jasmine_node_test(
         "//packages/common",
         "//packages/core",
         "//packages/forms",
-        "//packages/language-service/test:project",
+        ":project",
     ],
     deps = [
         ":legacy_lib",
     ],
+)
+
+filegroup(
+    name = "project",
+    srcs = glob(["project/**/*"]),
+    visibility = ["//packages/language-service:__subpackages__"],
 )
