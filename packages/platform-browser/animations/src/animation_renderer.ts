@@ -34,8 +34,9 @@ export class AnimationRendererFactory implements RendererFactory2 {
       // a host leave animation, the view engine will call `removeChild` for the parent
       // component renderer as well as for the child component renderer.
       // Therefore, we need to check if we already removed the element.
-      if (delegate && delegate.parentNode(element)) {
-        delegate.removeChild(element.parentNode, element);
+      const parentNode = delegate?.parentNode(element);
+      if (parentNode) {
+        delegate.removeChild(parentNode, element);
       }
     };
   }
