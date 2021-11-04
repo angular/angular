@@ -91,8 +91,7 @@ Promise
     // Load necessary testing packages.
     .then(function() {
       return Promise.all([
-        System.import('@angular/compiler'),
-        System.import('@angular/core/testing'),
+        System.import('@angular/compiler'), System.import('@angular/core/testing'),
         System.import('@angular/platform-browser-dynamic/testing'),
         System.import('@angular/platform-browser/animations')
       ]);
@@ -100,9 +99,9 @@ Promise
 
     // Set up the test injector.
     .then(function(mods) {
-      var coreTesting = mods[0];
-      var pbdTesting = mods[1];
-      var pbAnimations = mods[2];
+      var coreTesting = mods[1];
+      var pbdTesting = mods[2];
+      var pbAnimations = mods[3];
 
       coreTesting.TestBed.initTestEnvironment(
           [pbdTesting.BrowserDynamicTestingModule, pbAnimations.NoopAnimationsModule],
