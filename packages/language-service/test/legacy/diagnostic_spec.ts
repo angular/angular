@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {LanguageService} from '../../language_service';
+import {LanguageService} from '../../src/language_service';
 
 import {MockService, setup, TEST_TEMPLATE} from './mock_host';
 

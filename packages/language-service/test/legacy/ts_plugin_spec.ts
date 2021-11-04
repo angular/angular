@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {LanguageService} from '../../language_service';
-import {getExternalFiles} from '../../ts_plugin';
+import {LanguageService} from '../../src/language_service';
+import {getExternalFiles} from '../../src/ts_plugin';
 
 import {APP_COMPONENT, setup} from './mock_host';
 

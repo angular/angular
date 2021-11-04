@@ -9,7 +9,7 @@
 import {ErrorCode, ngErrorCode} from '@angular/compiler-cli/src/ngtsc/diagnostics';
 import * as ts from 'typescript/lib/tsserverlibrary';
 
-import {LanguageService} from '../../language_service';
+import {LanguageService} from '../../src/language_service';
 
 import {MockConfigFileFs, MockService, setup, TEST_TEMPLATE, TSCONFIG} from './mock_host';
 

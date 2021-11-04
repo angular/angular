@@ -7,7 +7,7 @@
  */
 
 import * as ts from 'typescript/lib/tsserverlibrary';
-import {LanguageService} from '../../language_service';
+import {LanguageService} from '../../src/language_service';
 
 /**
  * A file that is currently open in the `ts.Project`, with a cursor position.

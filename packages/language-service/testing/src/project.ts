@@ -10,7 +10,7 @@ import {InternalOptions, LegacyNgcOptions, StrictTemplateOptions} from '@angular
 import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem, getSourceFileOrError} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {OptimizeFor, TemplateTypeChecker} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import * as ts from 'typescript/lib/tsserverlibrary';
-import {LanguageService} from '../../language_service';
+import {LanguageService} from '../../src/language_service';
 import {OpenBuffer} from './buffer';
 
 export type ProjectFiles = {

@@ -10,7 +10,7 @@ import {NgCompilerOptions} from '@angular/compiler-cli/src/ngtsc/core/api';
 import {join} from 'path';
 import * as ts from 'typescript/lib/tsserverlibrary';
 
-import {isTypeScriptFile} from '../../utils';
+import {isTypeScriptFile} from '../../src/utils';
 
 const logger: ts.server.Logger = {
   close(): void{},
@@ -32,8 +32,8 @@ const logger: ts.server.Logger = {
 };
 
 export const TEST_SRCDIR = process.env.TEST_SRCDIR!;
-export const PROJECT_DIR = join(
-    TEST_SRCDIR, 'angular', 'packages', 'language-service', 'ivy', 'test', 'legacy', 'project');
+export const PROJECT_DIR =
+    join(TEST_SRCDIR, 'angular', 'packages', 'language-service', 'test', 'legacy', 'project');
 export const TSCONFIG = join(PROJECT_DIR, 'tsconfig.json');
 export const APP_COMPONENT = join(PROJECT_DIR, 'app', 'app.component.ts');
 export const APP_MAIN = join(PROJECT_DIR, 'app', 'main.ts');
@@ -141,7 +141,7 @@ function createHost(configFileFs: MockConfigFileFs): ts.server.ServerHost {
 
 /**
  * Create a ConfiguredProject and an actual program for the test project located
- * in packages/language-service/ivy/test/legacy/project. Project creation exercises the
+ * in packages/language-service/test/legacy/project. Project creation exercises the
  * actual code path, but a mock host is used for the filesystem to intercept
  * and modify test files.
  */
