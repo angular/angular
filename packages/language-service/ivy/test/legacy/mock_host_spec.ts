@@ -30,7 +30,7 @@ describe('mock host', () => {
     expect(project).toBeInstanceOf(ts.server.ConfiguredProject);
     const configPath = (project as ts.server.ConfiguredProject).getConfigFilePath();
     expect(configPath.substring(TEST_SRCDIR.length))
-        .toBe('/angular/packages/language-service/test/project/tsconfig.json');
+        .toBe('/angular/packages/language-service/ivy/test/legacy/project/tsconfig.json');
     const program = tsLS.getProgram();
     expect(program).toBeDefined();
     const sourceFiles = program!.getSourceFiles().map(sf => {
@@ -46,9 +46,9 @@ describe('mock host', () => {
       '/angular/packages/core/src/core.d.ts',
       '/angular/packages/forms/src/forms.d.ts',
       // This shows that project files are present
-      '/angular/packages/language-service/test/project/app/app.component.ts',
-      '/angular/packages/language-service/test/project/app/main.ts',
-      '/angular/packages/language-service/test/project/app/parsing-cases.ts',
+      '/angular/packages/language-service/ivy/test/legacy/project/app/app.component.ts',
+      '/angular/packages/language-service/ivy/test/legacy/project/app/main.ts',
+      '/angular/packages/language-service/ivy/test/legacy/project/app/parsing-cases.ts',
     ]));
   });
 
