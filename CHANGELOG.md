@@ -51,7 +51,7 @@ query data. This change will now correctly parse the params for the
 above example to be `{v: 'hello?', other: '123'}`.
 
 - Previously `null` and `undefined` inputs for `routerLink` were
-equaivalent to empty string and there was no way to disable the link's
+equivalent to empty string and there was no way to disable the link's
 navigation.
 In addition, the `href` is changed from a property `HostBinding()` to an
 attribute binding (`HostBinding('attr.href')`). The effect of this
@@ -129,7 +129,7 @@ The new `SwUpdate#versionUpdates` observable provides the same information and m
 is possible to rebuild the same behavior as `SwUpdate#availalbe` using the events emitted by
 `SwUpdate#versionUpdates` and filtering for `VersionReadyEvent` events.
 As a result, the `SwUpdate#availalbe` observable is now redundant.
-### 
+###
 | Commit | Type | Description |
 | -- | -- | -- |
 | [747553dd68](https://github.com/angular/angular/commit/747553dd68209fe25a9704fe7094b4b3fb38bf06) | docs | deprecate ViewEngine-based `renderModuleFactory` ([#43757](https://github.com/angular/angular/pull/43757)) |
