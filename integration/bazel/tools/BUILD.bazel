@@ -1,5 +1,7 @@
 load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary")
 
+package(default_visibility = ["//visibility:public"])
+
 # Custom ts_library compiler that runs tsc_wrapped with angular/compiler-cli statically linked
 # This can be used with worker mode because we don't need the linker at runtime to make
 # the angular plugin loadable
@@ -12,4 +14,13 @@ nodejs_binary(
     ],
     entry_point = "@npm//:node_modules/@bazel/typescript/internal/tsc_wrapped/tsc_wrapped.js",
     visibility = ["//:__subpackages__"],
+)
+
+filegroup(
+    name = "rxjs_umd_files",
+    srcs = [
+        # do not sort
+        "@npm//:node_modules/rxjs/bundles/rxjs.umd.js",
+        ":rxjs_shims.js",
+    ],
 )

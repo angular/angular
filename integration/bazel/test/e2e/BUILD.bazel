@@ -25,15 +25,7 @@ ts_library(
 )
 
 protractor_web_test_suite(
-    name = "devserver_test",
-    configuration = "//:protractor.conf.js",
-    on_prepare = ":ts_on_prepare",
-    server = "//src:devserver",
-    deps = [":e2e"],
-)
-
-protractor_web_test_suite(
-    name = "prodserver_test",
+    name = "test",
     configuration = "//:protractor.conf.js",
     on_prepare = ":ts_on_prepare",
     server = "//src:prodserver",

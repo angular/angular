@@ -1,0 +1,14 @@
+load("@npm//@bazel/typescript:index.bzl", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_library(
+    name = "angular_test_init",
+    testonly = True,
+    srcs = ["angular_test_init.spec.ts"],
+    deps = [
+        "@npm//@angular/compiler",
+        "@npm//@angular/core",
+        "@npm//@angular/platform-browser-dynamic",
+    ],
+)
