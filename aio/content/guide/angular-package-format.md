@@ -103,7 +103,7 @@ Tooling that is aware of these keys may preferentially select a desirable code f
 
 * `"node"` selects flattened ES2015 code when the package is loaded in Node.
 
-    This format is used due to the requirements of `zone.js`, which does not support native `async`/`await` ES2017 syntax. Therefore, Node is instructed to use ES2015 code, where `async`/`await` structures have been downleveled into Promises.
+    This format is used due to the requirements of `zone.js`, which does not support native <code class="no-auto-link">async</code>/`await` ES2017 syntax. Therefore, Node is instructed to use ES2015 code, where <code class="no-auto-link">async</code>/`await` structures have been downleveled into Promises.
 
 * `"default"` selects flattened ES2020 code for all other consumers.
 
