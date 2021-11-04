@@ -8,4 +8,4 @@
 
 export const SWITCH_IVY_ENABLED__POST_R3__ = true;
 const SWITCH_IVY_ENABLED__PRE_R3__ = false;
-export const ivyEnabled = SWITCH_IVY_ENABLED__PRE_R3__;
+export const ivyEnabled = true;  // SWITCH_IVY_ENABLED__PRE_R3__;
