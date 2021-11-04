@@ -3,7 +3,7 @@ load("@npm//@angular/dev-infra-private/bazel/benchmark/ng_rollup_bundle:ng_rollu
 ng_rollup_bundle(
     name = "language-service",
     build_optimizer = False,
-    entry_point = "//packages/language-service/ivy:ts_plugin.ts",
+    entry_point = "//packages/language-service/src:ts_plugin.ts",
     format = "amd",
     globals = {
         "os": "os",
@@ -15,7 +15,7 @@ ng_rollup_bundle(
     license_banner = ":banner",
     visibility = ["//packages/language-service:__pkg__"],
     deps = [
-        "//packages/language-service/ivy",
+        "//packages/language-service/src",
     ],
 )
 

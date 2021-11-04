@@ -193,7 +193,7 @@ export function getExternalFiles(project: ts.server.Project): string[] {
     if (scriptInfo.scriptKind === ts.ScriptKind.External) {
       // script info for typecheck file is marked as external, see
       // getOrCreateTypeCheckScriptInfo() in
-      // packages/language-service/ivy/language_service.ts
+      // packages/language-service/src/language_service.ts
       typecheckFiles.push(scriptInfo.fileName);
     }
   }
