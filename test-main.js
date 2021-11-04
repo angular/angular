@@ -91,6 +91,7 @@ Promise
     // Load necessary testing packages.
     .then(function() {
       return Promise.all([
+        System.import('@angular/compiler'),
         System.import('@angular/core/testing'),
         System.import('@angular/platform-browser-dynamic/testing'),
         System.import('@angular/platform-browser/animations')
