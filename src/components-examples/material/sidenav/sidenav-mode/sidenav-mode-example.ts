@@ -9,5 +9,5 @@ import {FormControl} from '@angular/forms';
 })
 export class SidenavModeExample {
   mode = new FormControl('over');
-  shouldRun = [/(^|\.)plnkr\.co$/, /(^|\.)stackblitz\.io$/].some(h => h.test(window.location.host));
+  shouldRun = /(^|.)(stackblitz|webcontainer).(io|com)$/.test(window.location.host);
 }

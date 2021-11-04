@@ -10,5 +10,5 @@ export class SidenavOpenCloseExample {
   events: string[] = [];
   opened: boolean;
 
-  shouldRun = [/(^|\.)plnkr\.co$/, /(^|\.)stackblitz\.io$/].some(h => h.test(window.location.host));
+  shouldRun = /(^|.)(stackblitz|webcontainer).(io|com)$/.test(window.location.host);
 }
