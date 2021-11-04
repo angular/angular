@@ -26,69 +26,18 @@ Developers can rely on Angular CLI and [ng-packagr](https://github.com/ng-packag
 
 The following example shows a simplified version of the `@angular/core` package's file layout, with an explanation for each file in the package. This table describes the file layout under `node_modules/@angular/core` annotated to describe the purpose of files and directories:
 
-<style>
-  table tbody>tr>td {
-    padding: 8px;
-    vertical-align: middle;
-    line-height: normal;
-  }
-</style>
-
-<table>
-<tbody>
-<tr>
-<td><pre>README.md</pre>
-<td>Package README, used by npmjs web UI</td>
-</tr>
-<tr>
-<td><pre>package.json</pre></td>
-<td>Primary package.json, describing the package itself as well as all available entrypoints and code formats. This file contains the "exports" mapping used by runtimes and tools to perform module resolution.</td>
-</tr>
-<tr>
-<td><pre>core.d.ts</pre></td>
-<td>Bundled .d.ts for the primary entrypoint (@angular/core)</td>
-</tr>
-<tr>
-<td><pre>esm2020/
-  core.mjs
-  index.mjs
-  public_api.mjs</pre></td>
-<td>Tree of @angular/core's sources in unflattened ES2020 format.</td>
-</tr>
-<tr>
-<td><pre>esm2020/testing/</pre></td>
-<td>Tree of the @angular/core/testing entrypoint in unflattened ES2020 format.</td>
-</tr>
-<tr>
-<td><pre>fesm2015/
-  core.mjs
-  core.mjs.map
-  testing.mjs
-  testing.mjs.map</pre></td>
-<td>Code for all entrypoints in a flattened (FESM) ES2015 format, along with sourcemaps.</td>
-</tr>
-<tr>
-<td><pre>fesm2020/
-  core.mjs
-  core.mjs.map
-  testing.mjs
-  testing.mjs.map</pre></td>
-<td>Code for all entrypoints in flattened (FESM) ES2020 format, along with sourcemaps.</td>
-</tr>
-<tr>
-<td><pre>testing/</pre></td>
-<td>Directory representing the "testing" entrypoint.</td>
-</tr>
-<tr>
-<td><pre>testing/package.json</pre></td>
-<td>Defines the @angular/core/testing entrypoint with its typings for TypeScript, which does not support the top level "exports" based module resolution.</td>
-</tr>
-<tr>
-<td><pre>testing/testing.d.ts</pre></td>
-<td>Actual .d.ts for the @angular/core/testing entrypoint</td>
-</tr>
-</tbody>
-</table>
+| FILES                                                                                                                                     | PURPOSE                                                                                                                                                                                                      |
+| :---------------------------------------------------------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `README.md`                                                                                                                               | Package README, used by npmjs web UI.                                                                                                                                                                        |
+| `package.json`                                                                                                                            | Primary package.json, describing the package itself as well as all available entrypoints and code formats. This file contains the "exports" mapping used by runtimes and tools to perform module resolution. |
+| `core.d.ts`                                                                                                                               | Bundled `.d.ts` for the primary entrypoint `@angular/core`.                                                                                                                                                  |
+| `esm2020/`<br>&nbsp;&nbsp;─ `core.mjs`<br>&nbsp;&nbsp;─ `index.mjs`<br>&nbsp;&nbsp;─ `public_api.mjs`                                     | Tree of @angular/core's sources in unflattened ES2020 format.                                                                                                                                                |
+| `esm2020/testing/`                                                                                                                        | Tree of the `@angular/core/testing` entrypoint in unflattened ES2020 format.                                                                                                                                 |
+| `fesm2015/`<br>&nbsp;&nbsp;─ `core.mjs`<br>&nbsp;&nbsp;─ `core.mjs.map`<br>&nbsp;&nbsp;─ `testing.mjs`<br>&nbsp;&nbsp;─ `testing.mjs.map` | Code for all entrypoints in a flattened (FESM) ES2015 format, along with sourcemaps.                                                                                                                         |
+| `fesm2020/`<br>&nbsp;&nbsp;─ `core.mjs`<br>&nbsp;&nbsp;─ `core.mjs.map`<br>&nbsp;&nbsp;─ `testing.mjs`<br>&nbsp;&nbsp;─ `testing.mjs.map` | Code for all entrypoints in flattened (FESM) ES2020 format, along with sourcemaps.                                                                                                                           |
+| `testing/`                                                                                                                                | Directory representing the "testing" entrypoint.                                                                                                                                                             |
+| `testing/package.json`                                                                                                                    | Defines the @angular/core/testing entrypoint with its typings for TypeScript, which does not support the top level "exports" based module resolution.                                                        |
+| `testing/testing.d.ts`                                                                                                                    | Actual `.d.ts` for the `@angular/core/testing` entrypoint                                                                                                                                                    |
 
 ## `package.json`
 
