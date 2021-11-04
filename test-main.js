@@ -23,13 +23,15 @@ System.config({
   defaultJSExtensions: true,
   map: {
     'benchpress/*': 'dist/js/dev/es5/benchpress/*.js',
-    '@angular': 'dist/all/@angular',
-    'domino': 'dist/all/@angular/empty.js',
-    'url': 'dist/all/@angular/empty.js',
-    'xhr2': 'dist/all/@angular/empty.js',
-    '@angular/platform-server/src/domino_adapter': 'dist/all/@angular/empty.js',
-    'angular-in-memory-web-api': 'dist/all/@angular/misc/angular-in-memory-web-api',
+    '@angular': 'dist/bin/packages',
+    'angular/packages': 'dist/bin/packages',
+    'domino': 'dist/bin/packages/empty.js',
+    'url': 'dist/bin/packages/empty.js',
+    'xhr2': 'dist/bin/packages/empty.js',
+    '@angular/platform-server/src/domino_adapter': 'dist/bin/packages/empty.js',
+    'angular-in-memory-web-api': 'dist/bin/packages/misc/angular-in-memory-web-api',
     'rxjs': 'node_modules/rxjs',
+    'tslib': 'node_modules/tslib',
   },
   packages: {
     '@angular/core/src/render3': {main: 'index.js', defaultExtension: 'js'},
@@ -69,11 +71,15 @@ System.config({
     '@angular/platform-server': {main: 'index.js', defaultExtension: 'js'},
     '@angular/private/testing': {main: 'index.js', defaultExtension: 'js'},
     '@angular/elements': {main: 'index.js', defaultExtension: 'js'},
+    '@angular/benchpress': {main: 'index.js', defaultExtension: 'js'},
+    '@angular/examples': {main: 'index.js', defaultExtension: 'js'},
+    '@angular/service-worker': {main: 'index.js', defaultExtension: 'js'},
     'rxjs/ajax': {main: 'index.js', defaultExtension: 'js'},
     'rxjs/operators': {main: 'index.js', defaultExtension: 'js'},
     'rxjs/testing': {main: 'index.js', defaultExtension: 'js'},
     'rxjs/websocket': {main: 'index.js', defaultExtension: 'js'},
     'rxjs': {main: 'index.js', defaultExtension: 'js'},
+    'tslib': {main: 'tslib.js', defaultExtension: 'js'},
   }
 });
 

@@ -25,9 +25,16 @@ module.exports = function(config) {
     },
 
     files: [
+
+
+      // Dependencies built by Bazel. See `config.yml` for steps running before
+      // the legacy Saucelabs tests run.
+      'dist/bin/packages/zone.js/npm_package/bundles/zone.umd.js',
+      'dist/bin/packages/zone.js/npm_package/bundles/zone-testing.umd.js',
+      'dist/bin/packages/zone.js/npm_package/bundles/task-tracking.umd.js',
       // Sources and specs.
       // Loaded through the System loader, in `test-main.js`.
-      {pattern: 'dist/all/@angular/**/*.js', included: false, watched: true},
+      {pattern: 'dist/bin/packages/**/*.js', included: false, watched: true},
 
       // Serve AngularJS for `ngUpgrade` testing.
       {pattern: 'node_modules/angular-1.5/angular?(.min).js', included: false, watched: false},
@@ -42,12 +49,6 @@ module.exports = function(config) {
       'node_modules/core-js-bundle/index.js',
       'node_modules/jasmine-ajax/lib/mock-ajax.js',
 
-      // Dependencies built by Bazel. See `config.yml` for steps running before
-      // the legacy Saucelabs tests run.
-      'dist/bin/packages/zone.js/npm_package/bundles/zone.umd.js',
-      'dist/bin/packages/zone.js/npm_package/bundles/zone-testing.umd.js',
-      'dist/bin/packages/zone.js/npm_package/bundles/task-tracking.umd.js',
-
       // Including systemjs because it defines `__eval`, which produces correct stack traces.
       'test-events.js',
       'third_party/shims_for_internal_tests.js',
@@ -60,6 +61,7 @@ module.exports = function(config) {
         watched: false
       },
 
+      {pattern: 'node_modules/tslib/**', included: false, watched: false, served: true},
       {pattern: 'node_modules/rxjs/**', included: false, watched: false, served: true},
       'node_modules/reflect-metadata/Reflect.js',
       'tools/build/file2modulename.js',
@@ -74,27 +76,27 @@ module.exports = function(config) {
     ],
 
     exclude: [
-      'dist/all/@angular/_testing_init/**',
-      'dist/all/@angular/**/e2e_test/**',
-      'dist/all/@angular/**/*node_only_spec.js',
-      'dist/all/@angular/benchpress/**',
-      'dist/all/@angular/compiler-cli/**',
-      'dist/all/@angular/compiler-cli/src/ngtsc/**',
-      'dist/all/@angular/compiler-cli/test/compliance/**',
-      'dist/all/@angular/compiler-cli/test/ngtsc/**',
-      'dist/all/@angular/compiler/test/aot/**',
-      'dist/all/@angular/compiler/test/render3/**',
-      'dist/all/@angular/core/test/bundling/**',
-      'dist/all/@angular/core/test/render3/ivy/**',
-      'dist/all/@angular/core/test/render3/jit/**',
-      'dist/all/@angular/core/test/render3/perf/**',
-      'dist/all/@angular/elements/schematics/**',
-      'dist/all/@angular/examples/**/e2e_test/*',
-      'dist/all/@angular/language-service/**',
-      'dist/all/@angular/localize/**/test/**',
-      'dist/all/@angular/localize/schematics/**',
-      'dist/all/@angular/router/**/test/**',
-      'dist/all/@angular/platform-browser/testing/e2e_util.js',
+      'dist/bin/packages/_testing_init/**',
+      'dist/bin/packages/**/e2e_test/**',
+      'dist/bin/packages/**/*node_only_spec.js',
+      'dist/bin/packages/benchpress/**',
+      'dist/bin/packages/compiler-cli/**',
+      'dist/bin/packages/compiler-cli/src/ngtsc/**',
+      'dist/bin/packages/compiler-cli/test/compliance/**',
+      'dist/bin/packages/compiler-cli/test/ngtsc/**',
+      'dist/bin/packages/compiler/test/aot/**',
+      'dist/bin/packages/compiler/test/render3/**',
+      'dist/bin/packages/core/test/bundling/**',
+      'dist/bin/packages/core/test/render3/ivy/**',
+      'dist/bin/packages/core/test/render3/jit/**',
+      'dist/bin/packages/core/test/render3/perf/**',
+      'dist/bin/packages/elements/schematics/**',
+      'dist/bin/packages/examples/**/e2e_test/*',
+      'dist/bin/packages/language-service/**',
+      'dist/bin/packages/localize/**/test/**',
+      'dist/bin/packages/localize/schematics/**',
+      'dist/bin/packages/router/**/test/**',
+      'dist/bin/packages/platform-browser/testing/e2e_util.js',
       'dist/examples/**/e2e_test/**',
     ],
 

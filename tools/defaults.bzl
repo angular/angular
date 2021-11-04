@@ -342,7 +342,7 @@ def karma_web_test_suite(name, **kwargs):
             "@npm//@angular/dev-infra-private/bazel/browsers/firefox:firefox",
         ],
         data = data,
-        tags = tags,
+        tags = tags + ['karma_test'],
         **kwargs
     )
 
