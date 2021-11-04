@@ -450,7 +450,7 @@ function main(args: string[]): void {
         es2015: normalizePath(fesm2015OutRelativePath),
         // We declare the `node` condition and point to the ES2015 output as we currently still
         // support NodeJS v12 which does not fully support ES2020 output. We chose ES2015 over
-        // ES2029 because we wan async/await downleveled as this allows for patching withZoneJS.
+        // ES2020 because we wan async/await downleveled as this allows for patching withZoneJS.
         // TODO(devversion): remove/replace this if NodeJS v12 is no longer supported.
         node: normalizePath(fesm2015OutRelativePath),
         // Note: The default conditions needs to be the last one.
@@ -482,7 +482,7 @@ function main(args: string[]): void {
     for (const conditionName of Object.keys(mapping) as [keyof ConditionalExport]) {
       if (subpathExport[conditionName] !== undefined) {
         throw Error(
-            `Found a conflicting export condition for "${subpath}". The "${conditionName} ` +
+            `Found a conflicting export condition for "${subpath}". The "${conditionName}" ` +
             `condition would be overridden by the packager. Please unset it.`);
       }
 
