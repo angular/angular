@@ -1,0 +1,19 @@
+name: Feature
+description: Propose a new feature for Angular Material or the CDK
+title: "feat(COMPONENT): TITLE"
+labels: ["feature", "needs triage"]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Feature Description
+      description: Provide a brief summary of the feature you would like to see.
+    validations:
+      required: true
+  - type: textarea
+    id: use-case
+    attributes:
+      label: Use Case
+      description: Describe the use case(s) that the proposed feature would enable.
+    validations:
+      required: false

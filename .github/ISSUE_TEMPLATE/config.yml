@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Angular Framework
+    url: https://github.com/angular/angular/issues/new
+    about: Issues and feature requests for Angular Framework

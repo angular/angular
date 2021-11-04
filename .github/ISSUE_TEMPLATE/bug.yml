@@ -1,0 +1,65 @@
+name: Bug Report
+description: Report a bug in Angular Material or the CDK
+title: "bug(COMPONENT): TITLE"
+labels: ["needs triage"]
+body:
+  - type: checkboxes
+    id: is-regression
+    attributes:
+      label: Is this a regression?
+      description: Did this behavior use to work in the previous version?
+      options:
+        - label: Yes, this behavior used to work in the previous version
+  - type: input
+    id: version-bug-was-not-present
+    attributes:
+      label: The previous version in which this bug was not present was
+    validations:
+      required: false
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: A clear and concise description of the problem.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: |
+        **Use StackBlitz to reproduce your issue:**
+        - [Components](https://stackblitz.com/fork/components-issue)
+        - [Harnesses](https://stackblitz.com/fork/harness-issue)
+      value: |
+        Steps to reproduce:
+        1. 
+        2. 
+    validations:
+      required: true
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Expected Behavior
+      description: What behavior were you expecting to see?
+    validations:
+      required: true
+  - type: textarea
+    id: actual-behavior
+    attributes:
+      label: Actual Behavior
+      description: What behavior did you actually see?
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: You can use `ng version` command.
+      value: |
+        - Angular:
+        - CDK/Material:
+        - Browser(s):
+        - Operating System (e.g. Windows, macOS, Ubuntu):
+    validations:
+      required: true

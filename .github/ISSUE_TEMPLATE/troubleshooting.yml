@@ -1,0 +1,55 @@
+name: Troubleshooting
+description: Request for help on an issue you are facing with Angular Material or the CDK
+title: "help(COMPONENT): TITLE"
+labels: ["troubleshooting", "needs triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        The Angular team can't provide general troubleshooting help. However, the extended community of users can provide more help:
+        - [StackOverflow](https://stackoverflow.com/questions/tagged/angular-material2)
+        - [Gitter](https://gitter.im/angular/material2)
+        - [Google Groups](https://groups.google.com/forum/#!forum/angular-material2)
+
+        Issues should capture only bug reports and feature requests. However, we understand that it is not always clear whether an issue is caused by a bug or incorrect usage of a feature/component.
+        Most support requests will be automatically closed. If the answer is quickly obvious, though, we might be able to provide a brief answer.
+  - type: textarea
+    id: description
+    attributes:
+      label: What are you trying to do?
+    validations:
+      required: true
+  - type: textarea
+    id: troubleshooting-steps
+    attributes:
+      label: What troubleshooting steps have you tried?
+      description: What are you seeing that does not match your expectations?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: |
+        We can only help if we can reproduce the problem ourselves.
+        **Use StackBlitz to demonstrate what you are trying to do:**
+        - [Components](https://stackblitz.com/fork/components-issue)
+        - [Harnesses](https://stackblitz.com/fork/harness-issue)
+      value: |
+        Steps to reproduce:
+        1. 
+        2. 
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: You can use `ng version` command.
+      value: |
+        - Angular:
+        - CDK/Material:
+        - Browser(s):
+        - Operating System (e.g. Windows, macOS, Ubuntu):
+    validations:
+      required: true
