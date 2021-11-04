@@ -4,7 +4,7 @@
   "semanticPrefix": "build",
   "separateMajorMinor": false,
   "prHourlyLimit": 2,
-  "labels": ["target: minor", "comp: build & ci", "action: review"],
+  "labels": ["target: patch", "comp: build & ci", "action: review"],
   "timezone": "America/Tijuana",
   "lockFileMaintenance": {
     "enabled": true
