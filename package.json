@@ -143,7 +143,7 @@
     "rollup": "~2.58.0",
     "rollup-plugin-preserve-shebang": "^1.0.1",
     "rollup-plugin-sourcemaps": "^0.6.3",
-    "rxjs": "^6.5.3",
+    "rxjs": "^6.6.7",
     "selenium-webdriver": "3.5.0",
     "shelljs": "^0.8.4",
     "source-map": "^0.6.1",
