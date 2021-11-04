@@ -7,6 +7,6 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
 // #docregion set-title
-  title = 'Tour of Heroes';
+  title = 'Hello Angular!';
 // #enddocregion set-title
 }
