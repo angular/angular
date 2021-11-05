@@ -495,8 +495,8 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
 
     // SVG elements return an `SVGAnimatedString` instead of a plain string for the `className`.
     const className = element.className as string | SVGAnimatedString;
-    const classes = className && typeof className !== 'string' ? className.baseVal.split(' ') :
-                                                                 className.split(' ');
+    const classes =
+        typeof className !== 'string' ? className.baseVal.split(' ') : className.split(' ');
 
     classes.forEach((value: string) => result[value] = true);
 
