@@ -1,4 +1,5 @@
 declare var angular: angular.IAngularStatic;
+import '@angular/compiler';
 // #docregion ngmodule
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
