@@ -191,8 +191,9 @@ function registerDestroyHooksIfSupported(
     tView: TView, provider: Exclude<Provider, any[]>, contextIndex: number,
     indexInFactory?: number) {
   const providerIsTypeProvider = isTypeProvider(provider);
-  if (providerIsTypeProvider || isClassProvider(provider)) {
-    const prototype = ((provider as ClassProvider).useClass || provider).prototype;
+  const providerIsClassProvider = isClassProvider(provider);
+  if (providerIsTypeProvider || providerIsClassProvider) {
+    const prototype = providerIsClassProvider ? provider.useClass.prototype : provider.prototype;
     const ngOnDestroy = prototype.ngOnDestroy;
     if (ngOnDestroy) {
       const hooks = tView.destroyHooks || (tView.destroyHooks = []);
