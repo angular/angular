@@ -53,6 +53,7 @@ v13 -> v16
 | `@angular/upgrade`                  | [`@angular/upgrade`](#upgrade)                                                                             | <!--v8--> v11         |
 | `@angular/upgrade`                  | [`getAngularLib`](#upgrade-static)                                                                         | <!--v8--> v11         |
 | `@angular/upgrade`                  | [`setAngularLib`](#upgrade-static)                                                                         | <!--v8--> v11         |
+| `@angular/upgrade`                  | [Factory-based signature of `downgradeModule`](#upgrade-static)                                                                         | <!--v13--> v15         |
 | template syntax                     | [`<template>`](#template-tag)                                                                              | <!--v7--> v11         |
 | polyfills                           | [reflect-metadata](#reflect-metadata)                                                                      | <!--v8--> v11         |
 | `@angular/compiler-cli`             | [Input setter coercion](#input-setter-coercion)                                                            | <!--v13--> v15        |
@@ -184,6 +185,7 @@ This section contains a complete list all of the currently-deprecated APIs, with
 | :-------------------------------------------------- | :------------------------------------------------------------ | :-------------------- | :--------------------------------------------- |
 | [`getAngularLib`](api/upgrade/static/getAngularLib) | [`getAngularJSGlobal`](api/upgrade/static/getAngularJSGlobal) | v5                    | See [Upgrading from AngularJS](guide/upgrade). |
 | [`setAngularLib`](api/upgrade/static/setAngularLib) | [`setAngularJSGlobal`](api/upgrade/static/setAngularJSGlobal) | v5                    | See [Upgrading from AngularJS](guide/upgrade). |
+| [Factory-based signature of `downgradeModule`](api/upgrade/static/downgradeModule) | [NgModule-based signature of `downgradeModule`](api/upgrade/static/downgradeModule) | v13                    | The `downgradeModule` supports more ergonomic NgModule-based API (vs NgModule factory based API). |
 
 {@a deprecated-features}
 
