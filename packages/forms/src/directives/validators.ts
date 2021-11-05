@@ -13,7 +13,7 @@ import {AbstractControl} from '../model';
 import {emailValidator, maxLengthValidator, maxValidator, minLengthValidator, minValidator, NG_VALIDATORS, nullValidator, patternValidator, requiredTrueValidator, requiredValidator} from '../validators';
 
 /**
- * Method that updates string to integer if not alread a number
+ * Method that updates string to integer if not already a number
  *
  * @param value The value to convert to integer
  * @returns value of parameter in number or integer.
