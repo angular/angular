@@ -17,6 +17,23 @@
           "failureMessage": "Incorrect template"
         }
       ]
+    },
+    {
+      "description": "should handle safe method calls inside templates",
+      "inputFiles": [
+        "safe_method_call.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "safe_method_call.js",
+              "generated": "safe_method_call.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
     }
   ]
 }

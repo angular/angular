@@ -63,3 +63,48 @@ export declare class MyModule {
     static ɵinj: i0.ɵɵInjectorDeclaration<MyModule>;
 }
 
+/****************************************************************************************************
+ * PARTIAL FILE: safe_method_call.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+export class MyApp {
+}
+MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "ng-component", ngImport: i0, template: `
+    <span [title]="person?.getName(false)"></span>
+    <span [title]="person?.getName(false) || ''"></span>
+    <span [title]="person?.getName(false)?.toLowerCase()"></span>
+    <span [title]="person?.getName(config.get('title')?.enabled)"></span>
+    <span [title]="person?.getName(config.get('title')?.enabled ?? true)"></span>
+`, isInline: true });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
+            type: Component,
+            args: [{
+                    template: `
+    <span [title]="person?.getName(false)"></span>
+    <span [title]="person?.getName(false) || ''"></span>
+    <span [title]="person?.getName(false)?.toLowerCase()"></span>
+    <span [title]="person?.getName(config.get('title')?.enabled)"></span>
+    <span [title]="person?.getName(config.get('title')?.enabled ?? true)"></span>
+`
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: safe_method_call.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class MyApp {
+    person?: {
+        getName: (includeTitle: boolean | undefined) => string;
+    };
+    config: {
+        get: (name: string) => {
+            enabled: boolean;
+        } | undefined;
+    };
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyApp, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "ng-component", never, {}, {}, never, never>;
+}
+
