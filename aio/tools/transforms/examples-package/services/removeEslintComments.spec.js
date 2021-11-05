@@ -24,7 +24,7 @@ describe('removeEslintComments', () => {
     const rmv = source => removeEslintComments(source, 'ts');
 
     it('should remove correctly eslint-disable comments', () => {
-      const source = `/* eslint-disable @angular-eslint/no-input-rename,
+      let source = `/* eslint-disable @angular-eslint/no-input-rename,
       @angular-eslint/no-inputs-metadata-property,
       @angular-eslint/no-output-rename,
       @angular-eslint/no-outputs-metadata-property */
@@ -37,6 +37,9 @@ describe('removeEslintComments', () => {
         'import { Component, EventEmitter, Input, Output } from \'@angular/core\';\n\n {6}@Component({\n {6}'
         )
       );
+      source = `/* eslint-disable foo */
+          var foo = 'foo';`;
+      expect(rmv(source)).toEqual('var foo = \'foo\';');
     });
 
     it('should remove correctly eslint-enable and eslint-disable comments', () => {
@@ -112,6 +115,9 @@ describe('removeEslintComments', () => {
         /*eslint-enable no-vars*/
         `;
       expect(rmv(source)).toMatch(createRegexForMatching(' {5}var v4 = 456;\n {8}'));
+      source = `/*eslint-disable foo*/
+        var v5 = 567;`;
+      expect(rmv(source)).toEqual('var v5 = 567;');
     });
 
     it('should ignore generic comments including the eslint terms', () => {
