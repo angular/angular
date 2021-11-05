@@ -100,11 +100,16 @@
     },
     {
       "title": "Understanding Angular",
-      "tooltip": "Learn the concepts essential to becoming a proficient Angular developer.",
+      "tooltip": "Learn the essential concepts to become a proficient Angular developer.",
       "children": [
         {
+          "title": "Overview",
+          "url": "guide/understanding-angular-overview",
+          "tooltip": "Learn about the most common parts of an Angular application."
+        },
+        {
           "title": "Components",
-          "tooltip": "Building dynamic views with data binding",
+          "tooltip": "Learn more about how to use data binding to build dynamic views",
           "children": [
             {
               "url": "guide/component-overview",
@@ -249,12 +254,17 @@
       ]
     },
     {
-      "title": "Developer Guides",
+      "title": "Developer guides",
       "tooltip": "Learn more about how to use Angular to build your applications.",
       "children": [
         {
-          "title": "Routing & Navigation",
-          "tooltip": "Build in-app navigation among views using the Angular Router.",
+          "url": "guide/developer-guide-overview",
+          "title": "Overview",
+          "tooltip": "A list of developer guides for building Angular applications."
+        },
+        {
+          "title": "Routing and Navigation",
+          "tooltip": "Learn how to use Angular Router to build in-app navigation between views.",
           "children": [
             {
               "url": "guide/routing-overview",
