@@ -10701,10 +10701,10 @@ symbol-tree@^3.2.4:
   resolved "https://registry.yarnpkg.com/symbol-tree/-/symbol-tree-3.2.4.tgz#430637d248ba77e078883951fb9aa0eed7c63fa2"
   integrity sha512-9QNk5KwDF+Bvz+PyObkmSYjI5ksVUYtjW7AU22r2NKcfLJcXp96hkDWU3+XndOsUb+AQ9QhfzfCT2O+CNWT5Tw==
 
-systemjs@0.19.39:
-  version "0.19.39"
-  resolved "https://registry.yarnpkg.com/systemjs/-/systemjs-0.19.39.tgz#e513e6f91a25a37b8b607c51c7989ee0d67b9356"
-  integrity sha1-5RPm+Rolo3uLYHxRx5ie4NZ7k1Y=
+systemjs@~0.19.39:
+  version "0.19.47"
+  resolved "https://registry.yarnpkg.com/systemjs/-/systemjs-0.19.47.tgz#c8c93937180f3f5481c769cd2720763fb4a31c6f"
+  integrity sha1-yMk5NxgPP1SBx2nNJyB2P7SjHG8=
   dependencies:
     when "^3.7.5"
 
