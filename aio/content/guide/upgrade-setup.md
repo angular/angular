@@ -115,88 +115,32 @@ Since the quickstart repository is deprecated, it is no longer updated and you n
    ```
 
 5. In order to be able to load the latest Angular framework packages (in ES2015 format) correctly, replace the relevant entries in `src/systemjs.config.js`:
-    ```js
-    System.config({
-      // ...
-      map: {
-        // ...
-        '@angular/core': 'npm:@angular/core/fesm2015/core.mjs',
-        '@angular/common': 'npm:@angular/common/fesm2015/common.mjs',
-        '@angular/compiler': 'npm:@angular/compiler/fesm2015/compiler.mjs',
-        '@angular/platform-browser': 'npm:@angular/platform-browser/fesm2015/platform-browser.mjs',
-        '@angular/platform-browser-dynamic': 'npm:@angular/platform-browser-dynamic/fesm2015/platform-browser-dynamic.mjs',
-        '@angular/router': 'npm:@angular/router/fesm2015/router.mjs',
-        '@angular/forms': 'npm:@angular/forms/fesm2015/forms.mjs',
-        // ...
-      },
-      // ...
-    });
-    ```
+
+    <code-examples
+        path="upgrade-phonecat-2-hybrid/systemjs.config.1.js"
+        region="angular-paths">
+    </code-example>
 
 6. In order to be able to load the latest RxJS package correctly, replace the relevant entries in `src/systemjs.config.js`:
-    ```js
-    System.config({
-      // ...
-      map: {
-        // ...
-        'rxjs': 'npm:rxjs/dist/cjs',
-        'rxjs/operators': 'npm:rxjs/dist/cjs/operators',
-        // ...
-      },
-      // ...
-      packages: {
-        // ...
-        rxjs: {
-          defaultExtension: 'js',
-          format: 'cjs',
-          main: 'index.js'
-        },
-        'rxjs/operators': {
-          defaultExtension: 'js',
-          format: 'cjs',
-          main: 'index.js'
-        },
-        // ...
-      }
-    });
-    ```
+
+    <code-examples
+        path="upgrade-phonecat-2-hybrid/systemjs.config.1.js"
+        region="rxjs-paths">
+    </code-example>
 
 7. In order to be able to load the `tslib` package (which is required for files transpiled by TypeScript), add the following entry to `src/systemjs.config.js`:
-    ```js
-    System.config({
-      // ...
-      map: {
-        // ...
-        'tslib': 'npm:tslib/tslib.js',
-        // ...
-      },
-      // ...
-    });
-    ```
+
+    <code-examples
+        path="upgrade-phonecat-2-hybrid/systemjs.config.1.js"
+        region="tslib-paths">
+    </code-example>
 
 8. In order for SystemJS to be able to load the ES2015 Angular files correctly, add the following entries to `src/systemjs.config.js`:
-    ```js
-    System.config({
-      // ...
-      map: {
-        // ...
-        'plugin-babel': 'npm:systemjs-plugin-babel/plugin-babel.js',
-        'systemjs-babel-build': 'npm:systemjs-plugin-babel/systemjs-babel-browser.js'
-      },
-      transpiler: 'plugin-babel',
-      // ...
-      packages: {
-        // ...
-        meta: {
-          '*.mjs': {
-            babelOptions: {
-              es2015: false
-            }
-          }
-        }
-      }
-    });
-    ```
+
+    <code-examples
+        path="upgrade-phonecat-2-hybrid/systemjs.config.1.js"
+        region="plugin-babel">
+    </code-example>
 
 9. Finally, in order to prevent TypeScript typecheck errors for dependencies, add the following entry to `src/tsconfig.json`:
     ```json
