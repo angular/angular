@@ -426,7 +426,7 @@ There is one notable exception to the rule of using Angular attribute syntax for
 It has to do with input or output names that consist of multiple words.
 In Angular, you would bind these attributes using camelCase:
 
-<code-example format="typescript" language="typescript">
+<code-example language="html">
 
 [myHero]="hero"
 (heroDeleted)="handleHeroDeleted($event)"
@@ -435,7 +435,7 @@ In Angular, you would bind these attributes using camelCase:
 
 But when using them from AngularJS templates, you must use kebab-case:
 
-<code-example format="typescript" language="typescript">
+<code-example language="html">
 
 [my-hero]="hero"
 (hero-deleted)="handleHeroDeleted($event)"
@@ -722,7 +722,7 @@ This module enables a *unified* location service that shifts responsibilities fr
 
 To use the `LocationUpgradeModule`, import the symbol from `@angular/common/upgrade` and add it to your `AppModule` imports using the static `LocationUpgradeModule.config()` method.
 
-<code-example format="typescript" language="typescript">
+<code-example language="typescript">
 
 // Other imports ...
 import { LocationUpgradeModule } from '@angular/common/upgrade';
@@ -742,7 +742,7 @@ The `LocationUpgradeModule.config()` method accepts a configuration object that 
 The `useHash` property defaults to `false`, and the `hashPrefix` defaults to an empty `string`.
 Pass the configuration object to override the defaults.
 
-<code-example format="typescript" language="typescript">
+<code-example language="typescript">
 
 LocationUpgradeModule.config({
   useHash: true,
@@ -764,7 +764,7 @@ This gives you a single way to navigate within both sides of your hybrid applica
 
 For usage of the `$location` service as a provider in AngularJS, you need to downgrade the `$locationShim` using a factory provider.
 
-<code-example format="typescript" language="typescript">
+<code-example language="typescript">
 
 // Other imports ...
 import { $locationShim } from '@angular/common/upgrade';
@@ -805,7 +805,8 @@ Now you'll see how to bring that application to the brave new world of Angular.
 During the process you'll learn how to apply the steps outlined in the [preparation guide][AioGuideUpgradePreparation].
 You'll align the application with Angular and also start writing in TypeScript.
 
-To follow along with the tutorial, clone the [angular-phonecat][GithubAngularAngularPhonecat] repository and apply the steps as you go.
+This tutorial is based on the 1.5.x version of the `angular-phonecat` tutorial, which is preserved in the [1.5-snapshot][GithubAngularAngularPhonecatCommits15Snapshot] branch of the repository.
+To follow along, clone the [angular-phonecat][GithubAngularAngularPhonecat] repository, check out the `1.5-snapshot` branch and apply the steps as you go.
 
 In terms of project structure, this is where the work begins:
 
@@ -960,7 +961,7 @@ You'll also start to gradually phase out the Bower package manager in favor of N
 
 Begin by installing TypeScript to the project.
 
-<code-example format="shell" language="shell">
+<code-example language="shell">
 
 npm i typescript --save-dev
 
@@ -971,7 +972,7 @@ AngularJS, AngularJS Material, and the Jasmine unit test framework.
 
 For the PhoneCat app, we can install the necessary type definitions by running the following command:
 
-<code-example format="shell" language="shell">
+<code-example language="shell">
 
 npm install @types/jasmine @types/angular @types/angular-animate @types/angular-aria @types/angular-cookies @types/angular-mocks @types/angular-resource @types/angular-route @types/angular-sanitize --save-dev
 
@@ -979,7 +980,7 @@ npm install @types/jasmine @types/angular @types/angular-animate @types/angular-
 
 If you are using AngularJS Material, you can install the type definitions via:
 
-<code-example format="shell" language="shell">
+<code-example language="shell">
 
 npm install @types/angular-material --save-dev
 
@@ -990,7 +991,7 @@ The `tsconfig.json` file tells the TypeScript compiler how to turn your TypeScri
 
 Finally, you should add some npm scripts in `package.json` to compile the TypeScript files to JavaScript (based on the `tsconfig.json` configuration file):
 
-<code-example format="shell" language="shell">
+<code-example language="shell">
 
 "scripts": {
   "tsc": "tsc",
@@ -1001,7 +1002,7 @@ Finally, you should add some npm scripts in `package.json` to compile the TypeSc
 
 Now launch the TypeScript compiler from the command line in watch mode:
 
-<code-example format="shell" language="shell">
+<code-example language="shell">
 
 npm run tsc:w
 
@@ -1106,7 +1107,7 @@ Take a look at the results of the [upgrade setup instructions][AioGuideUpgradeSe
 
 Once these are done, run:
 
-<code-example format="shell" language="shell">
+<code-example language="shell">
 
 npm install
 
@@ -1118,7 +1119,7 @@ You'll need to load files from `node_modules` and the project root instead of fr
 Move the `app/index.html` file to the project root directory.
 Then change the development server root path in `package.json` to also point to the project root instead of `app`:
 
-<code-example format="json" language="json">
+<code-example language="json">
 
 "start": "http-server ./ -a localhost -p 8000 -c-1",
 
@@ -1206,7 +1207,7 @@ If your use case requires the UMD format, use [`rollup`][RollupjsMain] to manual
 
 1.  Use `npm` to globally install `rollup`
 
-    <code-example format="shell" language="shell">
+    <code-example language="shell">
 
     npm i -g rollup
 
@@ -1214,7 +1215,7 @@ If your use case requires the UMD format, use [`rollup`][RollupjsMain] to manual
 
 1.  Output the version of `rollup` and verify the installation was successful
 
-    <code-example format="shell" language="shell">
+    <code-example language="shell">
 
     rollup -v
 
@@ -1225,7 +1226,7 @@ If your use case requires the UMD format, use [`rollup`][RollupjsMain] to manual
     1.  Create a file named `rollup.config.js`
     1.  Copy the following content into `rollup.config.js`
 
-        <code-example format="javascript" language="javascript">
+        <code-example language="javascript">
 
         export default {
           input: 'node_modules/@angular/core/fesm2015/core.js',
@@ -1240,7 +1241,7 @@ If your use case requires the UMD format, use [`rollup`][RollupjsMain] to manual
 
 1.  Use `rollup` to create the `bundle.js` UMD bundle using settings in `rollup.config.js`
 
-    <code-example format="shell" language="shell">
+    <code-example language="shell">
 
     rollup -c rollup.config.js
 
@@ -1566,7 +1567,7 @@ The external typings for AngularJS may be uninstalled as well.
 The only ones you still need are for Jasmine and Angular polyfills.
 The `@angular/upgrade` package and its mapping in `systemjs.config.js` can also go.
 
-<code-example format="shell" language="shell">
+<code-example language="shell">
 
 npm uninstall @angular/upgrade --save
 npm uninstall @types/angular @types/angular-animate @types/angular-cookies @types/angular-mocks @types/angular-resource @types/angular-route @types/angular-sanitize --save-dev
@@ -1600,7 +1601,7 @@ But when you change the bootstrap to that of a Hybrid app, you must make a few c
 
 Update the `protractor-conf.js` to sync with hybrid applications:
 
-<code-example format="shell" language="shell">
+<code-example language="javascript">
 
 ng12Hybrid: true
 
@@ -1622,7 +1623,7 @@ At this point, you need to tell Protractor that it should not be looking for an 
 
 Replace the `ng12Hybrid` previously added with the following in `protractor-conf.js`:
 
-<code-example format="javascript" language="javascript">
+<code-example language="javascript">
 
 useAllAngular2AppRoots: true,
 
@@ -1738,6 +1739,7 @@ And for the phone list component, a few adjustments to the router make the `Rout
 [GithubAngularAngularIssues38366]: https://github.com/angular/angular/issues/38366 " Issue 38366: RFC: Ivy Library Distribution| angular/angular | GitHub"
 
 [GithubAngularAngularPhonecat]: https://github.com/angular/angular-phonecat "angular/angular-phonecat | GitHub"
+[GithubAngularAngularPhonecatCommits15Snapshot]: https://github.com/angular/angular-phonecat/commits/1.5-snapshot "angular/angular-phonecat v1.5 | GitHub"
 
 [GithubAngularQuickstart]: https://github.com/angular/quickstart "angular/quickstart | GitHub"
 
