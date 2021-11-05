@@ -324,7 +324,7 @@ You can see how this can be done with SystemJS by following the instructions in 
 
 You also need to install the `@angular/upgrade` package using `npm install @angular/upgrade --save` and add a mapping for the `@angular/upgrade/static` package:
 
-<code-example path="upgrade-module/src/systemjs.config.1.js" region="upgrade-static-umd" header="systemjs.config.js (map)"></code-example>
+<code-example path="upgrade-module/src/systemjs.config.1.js" region="upgrade-static-package" header="systemjs.config.js (map)"></code-example>
 
 Next, create an `app.module.ts` file and add the following `NgModule` class:
 

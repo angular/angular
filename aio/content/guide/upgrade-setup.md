@@ -35,25 +35,10 @@ Perform the _clone-to-launch_ steps with these terminal commands.
   git clone https://github.com/angular/quickstart.git quickstart
   cd quickstart
   npm install
-  npm start
-
 </code-example>
 
 
-
-<div class="alert is-important">
-
-
-
-`npm start` fails in _Bash for Windows_ in versions earlier than the Creator's Update (April 2017).
-
-
-</div>
-
-
-
 {@a download}
-
 
 ## Download
 <a href="https://github.com/angular/quickstart/archive/master.zip" title="Download the QuickStart seed repository">Download the QuickStart seed</a>
@@ -62,26 +47,10 @@ and unzip it into your project folder. Then perform the remaining steps with the
 <code-example language="sh">
   cd quickstart
   npm install
-  npm start
-
 </code-example>
 
 
-
-<div class="alert is-important">
-
-
-
-`npm start` fails in _Bash for Windows_ in versions earlier than the Creator's Update (April 2017).
-
-
-</div>
-
-
-
 {@a non-essential}
-
-
 
 ## Delete _non-essential_ files (optional)
 
@@ -122,6 +91,69 @@ Open a terminal window in the project folder and enter the following commands fo
 
 </code-example>
 
+
+## Update dependency versions
+
+Since the quickstart repository is deprecated, it is no longer updated and you need some additional steps to use the latest Angular.
+
+1. Remove the obsolete `@angular/http` package (both from `package.json > dependencies` and `src/systemjs.config.js > SystemJS.config() > map`).
+
+2. Install the latest versions of the Angular framework packages by running:
+   ```sh
+   npm install --save @angular/common@latest @angular/compiler@latest @angular/core@latest @angular/forms@latest @angular/platform-browser@latest @angular/platform-browser-dynamic@latest @angular/router@latest
+   ```
+
+3. Install the latest versions of other packages used by Angular (RxJS, TypeScript, Zone.js) by running:
+   ```sh
+   npm install --save rxjs@latest zone.js@latest
+   npm install --save-dev typescript@latest
+   ```
+
+4. Install the `systemjs-plugin-babel` package. This will later be used to load the Angular framework files, which are in ES2015 format, using SystemJS.
+   ```sh
+   npm install --save systemjs-plugin-babel@latest
+   ```
+
+5. In order to be able to load the latest Angular framework packages (in ES2015 format) correctly, replace the relevant entries in `src/systemjs.config.js`:
+
+    <code-examples
+        path="upgrade-phonecat-2-hybrid/systemjs.config.1.js"
+        region="angular-paths">
+    </code-example>
+
+6. In order to be able to load the latest RxJS package correctly, replace the relevant entries in `src/systemjs.config.js`:
+
+    <code-examples
+        path="upgrade-phonecat-2-hybrid/systemjs.config.1.js"
+        region="rxjs-paths">
+    </code-example>
+
+7. In order to be able to load the `tslib` package (which is required for files transpiled by TypeScript), add the following entry to `src/systemjs.config.js`:
+
+    <code-examples
+        path="upgrade-phonecat-2-hybrid/systemjs.config.1.js"
+        region="tslib-paths">
+    </code-example>
+
+8. In order for SystemJS to be able to load the ES2015 Angular files correctly, add the following entries to `src/systemjs.config.js`:
+
+    <code-examples
+        path="upgrade-phonecat-2-hybrid/systemjs.config.1.js"
+        region="plugin-babel">
+    </code-example>
+
+9. Finally, in order to prevent TypeScript typecheck errors for dependencies, add the following entry to `src/tsconfig.json`:
+    ```json
+    {
+      "compilerOptions": {
+        "skipLibCheck": true,
+        // ...
+      }
+    }
+    ```
+
+With that, you can now run `npm start` and have the application built and served.
+Once built, the application will be automatically opened in a new browser tab and it will be automatically reloaded when you make changes to the source code.
 
 
 {@a seed}
