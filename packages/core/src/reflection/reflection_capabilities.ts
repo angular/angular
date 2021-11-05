@@ -15,70 +15,6 @@ import {stringify} from '../util/stringify';
 import {PlatformReflectionCapabilities} from './platform_reflection_capabilities';
 import {GetterFn, MethodFn, SetterFn} from './types';
 
-
-
-/*
- * #########################
- * Attention: These Regular expressions have to hold even if the code is minified!
- * ##########################
- */
-
-/**
- * Regular expression that detects pass-through constructors for ES5 output. This Regex
- * intends to capture the common delegation pattern emitted by TypeScript and Babel. Also
- * it intends to capture the pattern where existing constructors have been downleveled from
- * ES2015 to ES5 using TypeScript w/ downlevel iteration. e.g.
- *
- * ```
- *   function MyClass() {
- *     var _this = _super.apply(this, arguments) || this;
- * ```
- *
- * downleveled to ES5 with `downlevelIteration` for TypeScript < 4.2:
- * ```
- *   function MyClass() {
- *     var _this = _super.apply(this, __spread(arguments)) || this;
- * ```
- *
- * or downleveled to ES5 with `downlevelIteration` for TypeScript >= 4.2:
- * ```
- *   function MyClass() {
- *     var _this = _super.apply(this, __spreadArray([], __read(arguments), false)) || this;
- * ```
- *
- * More details can be found in: https://github.com/angular/angular/issues/38453.
- */
-export const ES5_DELEGATE_CTOR =
-    /^function\s+\S+\(\)\s*{[\s\S]+\.apply\(this,\s*(arguments|(?:[^()]+\(\[\],)?[^()]+\(arguments\).*)\)/;
-/** Regular expression that detects ES2015 classes which extend from other classes. */
-export const ES2015_INHERITED_CLASS = /^class\s+[A-Za-z\d$_]*\s*extends\s+[^{]+{/;
-/**
- * Regular expression that detects ES2015 classes which extend from other classes and
- * have an explicit constructor defined.
- */
-export const ES2015_INHERITED_CLASS_WITH_CTOR =
-    /^class\s+[A-Za-z\d$_]*\s*extends\s+[^{]+{[\s\S]*constructor\s*\(/;
-/**
- * Regular expression that detects ES2015 classes which extend from other classes
- * and inherit a constructor.
- */
-export const ES2015_INHERITED_CLASS_WITH_DELEGATE_CTOR =
-    /^class\s+[A-Za-z\d$_]*\s*extends\s+[^{]+{[\s\S]*constructor\s*\(\)\s*{\s*super\(\.\.\.arguments\)/;
-
-/**
- * Determine whether a stringified type is a class which delegates its constructor
- * to its parent.
- *
- * This is not trivial since compiled code can actually contain a constructor function
- * even if the original source code did not. For instance, when the child class contains
- * an initialized instance property.
- */
-export function isDelegateCtor(typeStr: string): boolean {
-  return ES5_DELEGATE_CTOR.test(typeStr) ||
-      ES2015_INHERITED_CLASS_WITH_DELEGATE_CTOR.test(typeStr) ||
-      (ES2015_INHERITED_CLASS.test(typeStr) && !ES2015_INHERITED_CLASS_WITH_CTOR.test(typeStr));
-}
-
 export class ReflectionCapabilities implements PlatformReflectionCapabilities {
   private _reflect: any;
 
@@ -123,18 +59,6 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
   }
 
   private _ownParameters(type: Type<any>, parentCtor: any): any[][]|null {
-    const typeStr = type.toString();
-    // If we have no decorators, we only have function.length as metadata.
-    // In that case, to detect whether a child class declared an own constructor or not,
-    // we need to look inside of that constructor to check whether it is
-    // just calling the parent.
-    // This also helps to work around for https://github.com/Microsoft/TypeScript/issues/12439
-    // that sets 'design:paramtypes' to []
-    // if a class inherits from another class but has no ctor declared itself.
-    if (isDelegateCtor(typeStr)) {
-      return null;
-    }
-
     // Prefer the direct API.
     if ((<any>type).parameters && (<any>type).parameters !== parentCtor.parameters) {
       return (<any>type).parameters;
@@ -162,11 +86,22 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
       return this._zipTypesAndAnnotations(paramTypes, paramAnnotations);
     }
 
-    // If a class has no decorators, at least create metadata
-    // based on function.length.
-    // Note: We know that this is a real constructor as we checked
-    // the content of the constructor above.
-    return newArray<any[]>(type.length);
+    // If no metadata is available, then we consider the number of arguments as last resort. If
+    // the constructor has no parameters then we return null to indicate that the type does not have
+    // an own constructor. This decision is taken to support "synthesized constructors": those are
+    // constructors that did not originally exist in the TypeScript code but were emitted in
+    // JavaScript. For example, field initializers cause a constructor to be emitted, and ES5
+    // downleveling always declares a function that acts as constructor.
+    //
+    // If a class did originally have a constructor without parameters, returning null here does
+    // result in a false negative. This is acceptable given that all classes that participate in DI
+    // must have an Angular decorator, which would have resulted in metadata to be present.
+    const nrOfArgs = type.length;
+    if (nrOfArgs > 0) {
+      return newArray(nrOfArgs, []);
+    } else {
+      return null;
+    }
   }
 
   parameters(type: Type<any>): any[][] {

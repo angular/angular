@@ -7,9 +7,8 @@
  */
 
 import {Reflector} from '@angular/core/src/reflection/reflection';
-import {isDelegateCtor, ReflectionCapabilities} from '@angular/core/src/reflection/reflection_capabilities';
+import {ReflectionCapabilities} from '@angular/core/src/reflection/reflection_capabilities';
 import {makeDecorator, makeParamDecorator, makePropDecorator} from '@angular/core/src/util/decorators';
-import {global} from '@angular/core/src/util/global';
 
 interface ClassDecoratorFactory {
   (data: ClassDecorator): any;
@@ -180,134 +179,6 @@ class TestObj {
       });
     });
 
-    describe('isDelegateCtor', () => {
-      it('should support ES5 compiled classes', () => {
-        // These classes will be compiled to ES5 code so their stringified form
-        // below will contain ES5 constructor functions rather than native classes.
-        class Parent {}
-
-        class ChildNoCtor extends Parent {}
-        class ChildWithCtor extends Parent {
-          constructor() {
-            super();
-          }
-        }
-        class ChildNoCtorPrivateProps extends Parent {
-          private x = 10;
-        }
-
-        expect(isDelegateCtor(ChildNoCtor.toString())).toBe(true);
-        expect(isDelegateCtor(ChildNoCtorPrivateProps.toString())).toBe(true);
-        expect(isDelegateCtor(ChildWithCtor.toString())).toBe(false);
-      });
-
-      // See: https://github.com/angular/angular/issues/38453
-      it('should support ES2015 downleveled classes (workspace TypeScript version) (downlevelIteration=true)',
-         () => {
-           const {ChildNoCtor, ChildNoCtorPrivateProps, ChildWithCtor} =
-               require('./es5_downleveled_inheritance_fixture');
-
-           expect(isDelegateCtor(ChildNoCtor.toString())).toBe(true);
-           expect(isDelegateCtor(ChildNoCtorPrivateProps.toString())).toBe(true);
-           expect(isDelegateCtor(ChildWithCtor.toString())).toBe(false);
-         });
-
-      it('should support ES2015 downleveled classes (<TS4.2) (downlevelIteration=true)', () => {
-        const ChildNoCtor = `function ChildNoCtor() {
-          return _super !== null && _super.apply(this, arguments) || this;
-        }`;
-        const ChildNoCtorPrivateProps = `function ChildNoCtorPrivateProps() {
-          var _this = _super.apply(this, __spread(arguments)) || this;
-          _this.x = 10;
-          return _this;
-        }`;
-        const ChildWithCtor = `function ChildWithCtor() {
-          return _super.call(this) || this;
-        }`;
-        expect(isDelegateCtor(ChildNoCtor)).toBe(true);
-        expect(isDelegateCtor(ChildNoCtorPrivateProps)).toBe(true);
-        expect(isDelegateCtor(ChildWithCtor)).toBe(false);
-      });
-
-      it('should support ES2015 downleveled classes (>=TS4.2) (downlevelIteration=true)', () => {
-        const ChildNoCtor = `function ChildNoCtor() {
-          return _super !== null && _super.apply(this, arguments) || this;
-        }`;
-        const ChildNoCtorPrivateProps = `function ChildNoCtorPrivateProps() {
-          var _this = _super.apply(this, __spreadArray([], __read(arguments))) || this;
-          _this.x = 10;
-          return _this;
-        }`;
-        const ChildWithCtor = `function ChildWithCtor() {
-          return _super.call(this) || this;
-        }`;
-        expect(isDelegateCtor(ChildNoCtor)).toBe(true);
-        expect(isDelegateCtor(ChildNoCtorPrivateProps)).toBe(true);
-        expect(isDelegateCtor(ChildWithCtor)).toBe(false);
-      });
-
-      it('should support ES2015 classes when minified', () => {
-        // These classes are ES2015 in minified form
-        const ChildNoCtorMinified = 'class ChildNoCtor extends Parent{}';
-        const ChildWithCtorMinified = 'class ChildWithCtor extends Parent{constructor(){super()}}';
-        const ChildNoCtorPrivatePropsMinified =
-            'class ChildNoCtorPrivateProps extends Parent{constructor(){super(...arguments);this.x=10}}';
-
-        expect(isDelegateCtor(ChildNoCtorMinified)).toBe(true);
-        expect(isDelegateCtor(ChildNoCtorPrivatePropsMinified)).toBe(true);
-        expect(isDelegateCtor(ChildWithCtorMinified)).toBe(false);
-      });
-
-      it('should not throw when no prototype on type', () => {
-        // Cannot test arrow function here due to the compilation
-        const dummyArrowFn = function() {};
-        Object.defineProperty(dummyArrowFn, 'prototype', {value: undefined});
-        expect(() => reflector.annotations(dummyArrowFn as any)).not.toThrow();
-      });
-
-      it('should support native class', () => {
-        // These classes are defined as strings unlike the tests above because otherwise
-        // the compiler (of these tests) will convert them to ES5 constructor function
-        // style classes.
-        const ChildNoCtor = `class ChildNoCtor extends Parent {}\n`;
-        const ChildWithCtor = `class ChildWithCtor extends Parent {\n` +
-            `  constructor() { super(); }` +
-            `}\n`;
-        const ChildNoCtorComplexBase = `class ChildNoCtor extends Parent['foo'].bar(baz) {}\n`;
-        const ChildWithCtorComplexBase = `class ChildWithCtor extends Parent['foo'].bar(baz) {\n` +
-            `  constructor() { super(); }` +
-            `}\n`;
-        const ChildNoCtorPrivateProps = `class ChildNoCtorPrivateProps extends Parent {\n` +
-            `  constructor() {\n` +
-            // Note that the instance property causes a pass-through constructor to be synthesized
-            `    super(...arguments);\n` +
-            `    this.x = 10;\n` +
-            `  }\n` +
-            `}\n`;
-
-        expect(isDelegateCtor(ChildNoCtor)).toBe(true);
-        expect(isDelegateCtor(ChildNoCtorPrivateProps)).toBe(true);
-        expect(isDelegateCtor(ChildWithCtor)).toBe(false);
-        expect(isDelegateCtor(ChildNoCtorComplexBase)).toBe(true);
-        expect(isDelegateCtor(ChildWithCtorComplexBase)).toBe(false);
-      });
-
-      it('should properly handle all class forms', () => {
-        const ctor = (str: string) => expect(isDelegateCtor(str)).toBe(false);
-        const noCtor = (str: string) => expect(isDelegateCtor(str)).toBe(true);
-
-        ctor(`class Bar extends Foo {constructor(){}}`);
-        ctor(`class Bar extends Foo { constructor ( ) {} }`);
-        ctor(`class Bar extends Foo { other(){}; constructor(){} }`);
-
-        noCtor(`class extends Foo{}`);
-        noCtor(`class extends Foo {}`);
-        noCtor(`class Bar extends Foo {}`);
-        noCtor(`class $Bar1_ extends $Fo0_ {}`);
-        noCtor(`class Bar extends Foo { other(){} }`);
-      });
-    });
-
     describe('inheritance with decorators', () => {
       it('should inherit annotations', () => {
         @ClassDecorator({value: 'parent'})
@@ -376,6 +247,19 @@ class TestObj {
           }
         }
 
+        class ChildWithEmptyCtorNoDecorator extends Parent {
+          constructor() {
+            super(null!, null!);
+          }
+        }
+
+        @ClassDecorator({value: 'child'})
+        class ChildWithEmptyCtorWithDecorator extends Parent {
+          constructor() {
+            super(null!, null!);
+          }
+        }
+
         class NoDecorators {}
 
         // Check that metadata for Parent was not changed!
@@ -400,8 +284,25 @@ class TestObj {
         // If we have no decorator, we don't get metadata about the ctor params.
         // But we should still get an array of the right length based on function.length.
         expect(reflector.parameters(ChildWithCtorNoDecorator)).toEqual([
-          undefined, undefined, undefined
-        ] as any[]);  // TODO: Review use of `any` here (#19904)
+          [],
+          [],
+          [],
+        ]);
+
+        // For a class without decorator that has an explicit constructor without any parameter, we
+        // still capture the parameter metadata from the base class. This is arguably not desirable
+        // as it would cause Angular's DI mechanism to inject the dependencies from the base class
+        // into the constructor that does not take any arguments, however a class is required to
+        // have a decorator to take part in DI in the first place (hence a class without decorator
+        // is not compatible with DI).
+        expect(reflector.parameters(ChildWithEmptyCtorNoDecorator)).toEqual([
+          [A, new ParamDecorator('a')],
+          [B, new ParamDecorator('b')],
+        ]);
+
+        // For a class with decorator with an own constructor with parameters we do not consider
+        // the constructor parameters of the base class.
+        expect(reflector.parameters(ChildWithEmptyCtorWithDecorator)).toEqual([]);
 
         expect(reflector.parameters(NoDecorators)).toEqual([]);
         expect(reflector.parameters(<any>{})).toEqual([]);

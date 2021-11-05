@@ -40,18 +40,21 @@ class TestInterceptor implements HttpInterceptor {
   }
 }
 
+@Injectable()
 class InterceptorA extends TestInterceptor {
   constructor() {
     super('A');
   }
 }
 
+@Injectable()
 class InterceptorB extends TestInterceptor {
   constructor() {
     super('B');
   }
 }
 
+@Injectable()
 class InterceptorC extends TestInterceptor {
   constructor() {
     super('C');
