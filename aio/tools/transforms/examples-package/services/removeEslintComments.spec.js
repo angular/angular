@@ -40,6 +40,9 @@ describe('removeEslintComments', () => {
       source = `/* eslint-disable foo */
           var foo = 'foo';`;
       expect(rmv(source)).toEqual('var foo = \'foo\';');
+      source = `/* eslint-disable foo, bar, baz */
+          var fooBarBaz = 'foo, bar and baz';`;
+      expect(rmv(source)).toEqual('var fooBarBaz = \'foo, bar and baz\';');
     });
 
     it('should remove correctly eslint-enable and eslint-disable comments', () => {
@@ -61,8 +64,10 @@ describe('removeEslintComments', () => {
       expect(rmv(source)).toEqual('var i = 1;');
       source = 'const foo = "foo";// eslint-disable-line';
       expect(rmv(source)).toEqual('const foo = "foo";');
-      source = 'const baz = 123; /* eslint-disable-line no-unused-vars */';
-      expect(rmv(source)).toEqual('const baz = 123;');
+      source = 'const bar = 123; /* eslint-disable-line no-unused-vars */';
+      expect(rmv(source)).toEqual('const bar = 123;');
+      source = 'var baz = false; /* eslint-disable-line no-unused-vars, no-var */';
+      expect(rmv(source)).toEqual('var baz = false;');
     });
 
     it('should remove correctly eslint-disable-next-line comments', () => {
@@ -71,6 +76,9 @@ describe('removeEslintComments', () => {
       expect(rmv(source)).toEqual('const string = "string test";');
       source = '// eslint-disable-next-line foo';
       expect(rmv(source)).toEqual('');
+      source = `// eslint-disable-next-line no-console, quotes
+      console.log("log test");`;
+      expect(rmv(source)).toEqual('console.log("log test");');
     });
 
     it('should remove correctly a mix of different types of eslint comments', () => {
@@ -178,7 +186,7 @@ describe('removeEslintComments', () => {
     const rmv = source => removeEslintComments(source, 'html');
 
     it('should remove correctly eslint-disable comments', () => {
-      const source = `<!-- eslint-disable @angular-eslint/template/eqeqeq
+      const source = `<!-- eslint-disable @angular-eslint/template/eqeqeq,
                               @angular-eslint/template/accessibility-alt-text -->
                           <img *ngIf="src == null" scr="test" />`;
       expect(rmv(source)).toEqual('<img *ngIf="src == null" scr="test" />');
@@ -246,6 +254,10 @@ describe('removeEslintComments', () => {
         '<!-- eslint ignores this next line -->\n {8}<label>this label is not in a form, eslint should complain</label>'
         )
       );
+      source = `<!-- eslint-disable foo, bar, baz -->
+        <p>Foo, Bar and Baz</p>
+      <!-- eslint-enable -->`;
+      expect(rmv(source)).toEqual('<p>Foo, Bar and Baz</p>');
     });
 
     it('should ignore incorrect eslint comments', () => {
