@@ -42,21 +42,6 @@ describe('pipe', () => {
     expect(fixture.nativeElement.textContent).toBe('bob state:0');
   });
 
-  it('should throw if pipe is not found', () => {
-    @Component({
-      template: '{{1 | randomPipeName}}',
-    })
-    class App {
-    }
-
-    TestBed.configureTestingModule({declarations: [App]});
-
-    expect(() => {
-      const fixture = TestBed.createComponent(App);
-      fixture.detectChanges();
-    }).toThrowError(/The pipe 'randomPipeName' could not be found/);
-  });
-
   it('should support bindings', () => {
     @Directive({selector: '[my-dir]'})
     class Dir {
@@ -719,6 +704,131 @@ describe('pipe', () => {
              expect(log).toEqual([]);
            });
       }
+    });
+  });
+
+  describe('missing pipe detection logic', () => {
+    it('should throw an error if a pipe is not found in a component', () => {
+      @Component({
+        template: '{{ 1 | testMissingPipe }}',
+      })
+      class TestComponent {
+      }
+
+      TestBed.configureTestingModule({declarations: [TestComponent]});
+
+      expect(() => {
+        const fixture = TestBed.createComponent(TestComponent);
+        fixture.detectChanges();
+      })
+          .toThrowError(
+              /The pipe 'testMissingPipe' could not be found in the 'TestComponent' component!/);
+    });
+
+    it('should throw an error if a pipe is not found inside an inline template', () => {
+      @Component({
+        template: `
+          <ng-container *ngIf="true">
+            {{ value | testMissingPipe }}
+          </ng-container>`
+      })
+      class TestComponent {
+        value: string = 'test';
+      }
+
+      TestBed.configureTestingModule({declarations: [TestComponent]});
+
+      expect(() => {
+        const fixture = TestBed.createComponent(TestComponent);
+        fixture.detectChanges();
+      })
+          .toThrowError(
+              /The pipe 'testMissingPipe' could not be found in the 'TestComponent' component!/);
+    });
+
+    it('should throw an error if a pipe is not found inside a projected content', () => {
+      @Component({selector: 'app-test-child', template: '<ng-content></ng-content>'})
+      class TestChildComponent {
+      }
+
+      @Component({
+        template: `
+          <app-test-child>
+            {{ value | testMissingPipe }}
+          </app-test-child>`
+      })
+      class TestComponent {
+        value: string = 'test';
+      }
+
+      TestBed.configureTestingModule({declarations: [TestComponent, TestChildComponent]});
+
+      expect(() => {
+        const fixture = TestBed.createComponent(TestComponent);
+        fixture.detectChanges();
+      })
+          .toThrowError(
+              /The pipe 'testMissingPipe' could not be found in the 'TestComponent' component!/);
+    });
+
+    it('should throw an error if a pipe is not found inside a projected content in an inline template',
+       () => {
+         @Component({selector: 'app-test-child', template: '<ng-content></ng-content>'})
+         class TestChildComponent {
+         }
+
+         @Component({
+           template: `
+          <app-test-child>
+            <ng-container *ngIf="true">
+              {{ value | testMissingPipe }}
+            </ng-container>
+          </app-test-child>`
+         })
+         class TestComponent {
+           value: string = 'test';
+         }
+
+         TestBed.configureTestingModule({declarations: [TestComponent, TestChildComponent]});
+
+         expect(() => {
+           const fixture = TestBed.createComponent(TestComponent);
+           fixture.detectChanges();
+         })
+             .toThrowError(
+                 /The pipe 'testMissingPipe' could not be found in the 'TestComponent' component!/);
+       });
+
+    it('should throw an error if a pipe is not found in a property binding', () => {
+      @Component({template: '<div [title]="value | testMissingPipe"></div>'})
+      class TestComponent {
+        value: string = 'test';
+      }
+
+      TestBed.configureTestingModule({declarations: [TestComponent]});
+
+      expect(() => {
+        const fixture = TestBed.createComponent(TestComponent);
+        fixture.detectChanges();
+      })
+          .toThrowError(
+              /The pipe 'testMissingPipe' could not be found in the 'TestComponent' component!/);
+    });
+
+    it('should throw an error if a pipe is not found inside a structural directive input', () => {
+      @Component({template: '<div *ngIf="isVisible | testMissingPipe"></div>'})
+      class TestComponent {
+        isVisible: boolean = true;
+      }
+
+      TestBed.configureTestingModule({declarations: [TestComponent]});
+
+      expect(() => {
+        const fixture = TestBed.createComponent(TestComponent);
+        fixture.detectChanges();
+      })
+          .toThrowError(
+              /The pipe 'testMissingPipe' could not be found in the 'TestComponent' component!/);
     });
   });
 });
