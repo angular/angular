@@ -457,8 +457,7 @@ function parseJitTemplate(
   const interpolationConfig =
       interpolation ? InterpolationConfig.fromArray(interpolation) : DEFAULT_INTERPOLATION_CONFIG;
   // Parse the template and check for errors.
-  const parsed = parseTemplate(
-      template, sourceMapUrl, {preserveWhitespaces: preserveWhitespaces, interpolationConfig});
+  const parsed = parseTemplate(template, sourceMapUrl, {preserveWhitespaces, interpolationConfig});
   if (parsed.errors !== null) {
     const errors = parsed.errors.map(err => err.toString()).join(', ');
     throw new Error(`Errors during JIT compilation of template for ${typeName}: ${errors}`);
@@ -495,9 +494,8 @@ function wrapExpression(obj: any, property: string): WrappedNodeExpr<any>|undefi
 }
 
 function computeProvidedIn(providedIn: Function|string|null|undefined): R3ProviderExpression {
-  const expression = (providedIn == null || typeof providedIn === 'string') ?
-      new LiteralExpr(providedIn ?? null) :
-      new WrappedNodeExpr(providedIn);
+  const expression = typeof providedIn === 'function' ? new WrappedNodeExpr(providedIn) :
+                                                        new LiteralExpr(providedIn ?? null);
   // See `convertToProviderExpression()` for why `isForwardRef` is false.
   return createR3ProviderExpression(expression, /* isForwardRef */ false);
 }
