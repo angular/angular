@@ -103,6 +103,11 @@
       "tooltip": "Learn the concepts essential to becoming a proficient Angular developer.",
       "children": [
         {
+          "title": "Overview",
+          "url": "guide/understanding-angular-overview",
+          "tooltip": "Learn about the most common elements of Angular applications."
+        },
+        {
           "title": "Components",
           "tooltip": "Building dynamic views with data binding",
           "children": [
@@ -252,6 +257,11 @@
       "title": "Developer Guides",
       "tooltip": "Learn more about how to use Angular to build your applications.",
       "children": [
+        {
+          "url": "guide/developer-guide-overview",
+          "title": "Overview",
+          "tooltip": "A list of developer guides for building Angular applications."
+        },
         {
           "title": "Routing & Navigation",
           "tooltip": "Build in-app navigation among views using the Angular Router.",
