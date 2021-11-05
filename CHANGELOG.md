@@ -13,30 +13,59 @@ Amy Sorto, Andrew Seguin, Jeremy Elbourn, Kristiyan Kostadinov, Paul Gschwendtne
 # 13.0.0 "fir-valise" (2021-11-03)
 ## Breaking Changes
 ### cdk
-- * `CKD_COPY_TO_CLIPBOARD_CONFIG` has been removed. Use `CDK_COPY_TO_CLIPBOARD_CONFIG` instead.
 
-- * `ConnectedPositionStrategy` has been removed. Use `FlexibleConnectedPositionStrategy` instead.
+If your application imports styles from `~@angular/cdk`, the `@import`/`@use` statements need to
+be updated to omit the tilde. The tilde syntax is deprecated within the webpack `sass-loader` and
+does not work with [APF v13](https://v13.angular.io/guide/angular-package-format).
+
+```scss
+// before
+@use '~@angular/cdk' as cdk;
+
+// after
+@use '@angular/cdk' as cdk;
+```
+
+The Angular CLI will automatically migrate your application with: `ng update @angular/cdk`.
+
+Additional breaking changes:
+* `CKD_COPY_TO_CLIPBOARD_CONFIG` has been removed. Use `CDK_COPY_TO_CLIPBOARD_CONFIG` instead.
+* `ConnectedPositionStrategy` has been removed. Use `FlexibleConnectedPositionStrategy` instead.
 * `OverlayPositionBuilder.connectedTo` has been removed. Use `OverlayPositionBuilder.flexibleConnectedTo` instead.
+
 ### material
-- * `CanColorCtor` is no longer necessary and has been removed.
+
+If your application imports styles from `~@angular/material`, the `@import`/`@use` statements need to
+be updated to omit the tilde. The tilde syntax is deprecated within the webpack `sass-loader` and
+does not work with [APF v13](https://v13.angular.io/guide/angular-package-format).
+
+```scss
+// before
+@use '~@angular/material' as mat;
+
+// after
+@use '@angular/material' as mat;
+```
+
+The Angular CLI will automatically migrate your application with: `ng update @angular/material`.
+
+Additionally, the following breaking changes have been made:
+
+* The minimum version of Sass has been bumped to `1.34.0`. Version `1.38.0` is recommended.
+* `CanColorCtor` is no longer necessary and has been removed.
 * `CanDisableRippleCtor` is no longer necessary and has been removed.
 * `CanDisableCtor` is no longer necessary and has been removed.
 * `CanUpdateErrorStateCtor` is no longer necessary and has been removed.
 * `HasInitializedCtor` is no longer necessary and has been removed.
 * `HasTabIndexCtor` is no longer necessary and has been removed.
-
-- * Material now requires at least version 1.34.0 of Sass. Version 1.38.0 is recommended.
-
-- * The `_document` and `_dialog` parameters have been removed from the `MatDatepicker` and `MatDateRangePicker` constructors.
-
-- * `MatFormFieldHarness.getHarnessLoaderForPrefix` has been removed. Use `MatFormFieldHarness.getPrefixText` instead.
+* The `_document` and `_dialog` parameters have been removed from the `MatDatepicker` and `MatDateRangePicker` constructors.
+* `MatFormFieldHarness.getHarnessLoaderForPrefix` has been removed. Use `MatFormFieldHarness.getPrefixText` instead.
 * `MatFormFieldHarness.getHarnessLoaderForSuffix` has been removed. Use `MatFormFieldHarness.getSuffixText` instead.
 * The `_labelOptions` parameter of the `MatFormField` constructor has been removed.
 * `MatFormField.underlineRef` has been removed.
+* `matTextareaAutosize` has been removed. Use `cdkTextareaAutosize` from the `@angular/cdk/text-field` module instead.
+* `MatTabHarness.getHarnessLoaderForContent` has been removed. Use `MatTabHarness.getRootHarnessLoader` instead.
 
-- * `matTextareaAutosize` has been removed. Use `cdkTextareaAutosize` from the `@angular/cdk/text-field` module instead.
-
-- * `MatTabHarness.getHarnessLoaderForContent` has been removed. Use `MatTabHarness.getRootHarnessLoader` instead.
 ### youtube-player
 - * `YouTubePlayer.createEventsBoundInZone` has been removed.
 ### material-date-fns-adapter
