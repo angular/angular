@@ -463,8 +463,6 @@ For more information, see [Security](guide/security).
 
 For the sample application that the testing guides describe, see the <live-example noDownload name="testing">sample app</live-example>.
 
-For the tests featured in the testing guides, see <live-example name="testing" stackblitz="specs" noDownload>tests</live-example>.
-
 Demonstrates techniques for testing Angular.
 For more information, see [Testing](guide/testing).
 
