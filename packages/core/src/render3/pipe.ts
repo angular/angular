@@ -8,12 +8,13 @@
 
 import {PipeTransform} from '../change_detection/pipe_transform';
 import {setInjectImplementation} from '../di/inject_switch';
+
 import {getFactoryDef} from './definition_factory';
 import {setIncludeViewProviders} from './di';
 import {RuntimeError, RuntimeErrorCode} from './error_code';
 import {store, ɵɵdirectiveInject} from './instructions/all';
 import {PipeDef, PipeDefList} from './interfaces/definition';
-import {HEADER_OFFSET, LView, TVIEW} from './interfaces/view';
+import {CONTEXT, DECLARATION_COMPONENT_VIEW, HEADER_OFFSET, LView, TVIEW} from './interfaces/view';
 import {pureFunction1Internal, pureFunction2Internal, pureFunction3Internal, pureFunction4Internal, pureFunctionVInternal} from './pure_function';
 import {getBindingRoot, getLView, getTView} from './state';
 import {load} from './util/view_utils';
@@ -35,7 +36,9 @@ export function ɵɵpipe(index: number, pipeName: string): any {
   const adjustedIndex = index + HEADER_OFFSET;
 
   if (tView.firstCreatePass) {
-    pipeDef = getPipeDef(pipeName, tView.pipeRegistry);
+    // The `getPipeDef` throws if a pipe with a given name is not found
+    // (so we use non-null assertion below).
+    pipeDef = getPipeDef(pipeName, tView.pipeRegistry)!;
     tView.data[adjustedIndex] = pipeDef;
     if (pipeDef.onDestroy) {
       (tView.destroyHooks || (tView.destroyHooks = [])).push(adjustedIndex, pipeDef.onDestroy);
@@ -69,7 +72,7 @@ export function ɵɵpipe(index: number, pipeName: string): any {
  * @param registry Full list of available pipes
  * @returns Matching PipeDef
  */
-function getPipeDef(name: string, registry: PipeDefList|null): PipeDef<any> {
+function getPipeDef(name: string, registry: PipeDefList|null): PipeDef<any>|undefined {
   if (registry) {
     for (let i = registry.length - 1; i >= 0; i--) {
       const pipeDef = registry[i];
@@ -78,7 +81,14 @@ function getPipeDef(name: string, registry: PipeDefList|null): PipeDef<any> {
       }
     }
   }
-  throw new RuntimeError(RuntimeErrorCode.PIPE_NOT_FOUND, `The pipe '${name}' could not be found!`);
+  if (ngDevMode) {
+    const lView = getLView();
+    const declarationLView = lView[DECLARATION_COMPONENT_VIEW];
+    const context = declarationLView[CONTEXT];
+    const component = context ? ` in the '${context.constructor.name}' component` : '';
+    throw new RuntimeError(
+        RuntimeErrorCode.PIPE_NOT_FOUND, `The pipe '${name}' could not be found${component}!`);
+  }
 }
 
 /**
