@@ -152,6 +152,29 @@ npm publish
 In your Angular library, the distributable can include additional assets like theming files, Sass mixins, or documentation (like a changelog).
 For more information [copy assets into your library as part of the build](https://github.com/ng-packagr/ng-packagr/blob/master/docs/copy-assets.md) and [embed assets in component styles](https://github.com/ng-packagr/ng-packagr/blob/master/docs/embed-assets-css.md).
 
+<div class="alert is-important">
+
+When including additional assets like Sass mixins or pre-compiled CSS. You need to add these manually to the conditional ["exports"](guide/angular-package-format/#exports) in the `package.json` of the primary entrypoint.
+
+`ng-packagr` will merge handwritten `"exports"` with the auto-generated ones, allowing for library authors to configure additional export subpaths, or custom conditions.
+
+<code-example language="json">
+"exports": {
+  ".": {
+    "sass": "./_index.scss",
+  },
+  "./theming": {
+    "sass": "./_theming.scss"
+  },
+  "./prebuilt-themes/indigo-pink.css": {
+    "style": "./prebuilt-themes/indigo-pink.css"
+  }
+}
+</code-example>
+
+The above is an extract from the [@angular/material](https://unpkg.com/browse/@angular/material/package.json) distributable.
+</div>
+
 ## Peer dependencies
 Angular libraries should list any `@angular/*` dependencies the library depends on as peer dependencies.
 This ensures that when modules ask for Angular, they all get the exact same module.
