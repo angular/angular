@@ -107,7 +107,8 @@ The following table provides the status for Angular versions under support.
 
 Version | Status | Released     | Active Ends  | LTS Ends
 ------- | ------ | ------------ | ------------ | ------------
-^12.0.0 | Active | May 12, 2021 | Nov 12, 2021 | Nov 12, 2022
+^13.0.0 | Active | Nov 04, 2021 | May 04, 2022 | May 04, 2023
+^12.0.0 | LTS    | May 12, 2021 | Nov 12, 2021 | Nov 12, 2022
 ^11.0.0 | LTS    | Nov 11, 2020 | May 11, 2021 | May 11, 2022
 ^10.0.0 | LTS    | Jun 24, 2020 | Dec 24, 2020 | Dec 24, 2021
 
