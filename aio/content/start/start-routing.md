@@ -18,10 +18,13 @@ The application already uses the Angular `Router` to navigate to the `ProductLis
 This section shows you how to define a route to show individual product details.
 
 1. Generate a new component for product details.
-    In the file list, right-click the `app` folder, choose `Angular Generator` and `Component`.
-    Name the component `product-details`.
+    In the terminal generate a new `product-details` component by running the following command:
 
-1. In `app.module.ts`, add a route for product details, with a `path` of `products/:productId` and `ProductDetailsComponent` for the `component`, include `ProductDetailsComponent` in `AppModule`'s declarations.
+    ```sh
+    ng generate component product-details
+    ```
+
+1. In `app.module.ts`, add a route for product details, with a `path` of `products/:productId` and `ProductDetailsComponent` for the `component`.
 
     <code-example header="src/app/app.module.ts" path="getting-started/src/app/app.module.ts" region="product-details-route">
     </code-example>
