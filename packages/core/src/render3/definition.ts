@@ -315,8 +315,6 @@ export function ɵɵdefineComponent<T>(componentDefinition: {
       viewQuery: componentDefinition.viewQuery || null,
       features: componentDefinition.features as DirectiveDefFeature[] || null,
       data: componentDefinition.data || {},
-      // TODO(misko): convert ViewEncapsulation into const enum so that it can be used
-      // directly in the next line. Also `None` should be 0 not 2.
       encapsulation: componentDefinition.encapsulation || ViewEncapsulation.Emulated,
       id: 'c',
       styles: componentDefinition.styles || EMPTY_ARRAY,
