@@ -25,13 +25,15 @@ This section walks you through adding a **Buy** button and setting up a cart ser
 
 ### Define a cart service
 
-1. To generate a cart service, right click on the `app` folder, choose **Angular Generator**, and choose **Service**.
-    Name the new service `cart`.
+This section walks you through creating the `CartService` that tracks products added to shopping cart.
 
-    <code-example header="src/app/cart.service.ts" path="getting-started/src/app/cart.service.1.ts"></code-example>
+1. In the terminal generate a new `cart` service by running the following command:
 
-1. Import the `Product` interface from `./products.js`.
-1. In the `CartService` class, define an `items` property to store the array of the current products in the cart.
+    ```sh
+    ng generate service cart
+    ```
+
+1. Import the `Product` interface from `./products.ts` into the `cart.service.ts` file, and in the `CartService` class, define an `items` property to store the array of the current products in the cart.
 
     <code-example path="getting-started/src/app/cart.service.ts" header="src/app/cart.service.ts" region="props"></code-example>
 
@@ -99,13 +101,19 @@ For customers to see their cart, you can create the cart view in two steps:
 
  To create the cart view, follow the same steps you did to create the `ProductDetailsComponent` and configure routing for the new component.
 
-1. Generate a cart component named `cart` by right-clicking the `app` folder, choosing **Angular Generator**, and **Component**.
+1. Generate a new component named `cart` in the terminal by running the following command:
+
+    ```sh
+    ng generate component cart
+    ```
+
+    This command will generate the `cart.component.ts` file and it associated template and styles files.
 
     <code-example header="src/app/cart/cart.component.ts" path="getting-started/src/app/cart/cart.component.1.ts"></code-example>
 
     StackBlitz also generates an `ngOnInit()` by default in components.  You can ignore the `CartComponent` `ngOnInit()` for this tutorial.
 
-1. Ensure that the newly created `CartComponent` is added to the module's `declarations` in `app.module.ts`.
+1. Note that the newly created `CartComponent` is added to the module's `declarations` in `app.module.ts`.
 
     <code-example header="src/app/app.module.ts" path="getting-started/src/app/app.module.ts" region="declare-cart">
     </code-example>
@@ -230,7 +238,13 @@ For more information about Angular's `HttpClient`, see the [Client-Server Intera
 
 Now that you've configured your application to retrieve shipping data, you can create a place to render that data.
 
-1. Generate a new component named `shipping` by right-clicking the `app` folder, choosing **Angular Generator**, and selecting **Component**.
+1. Generate a cart component named `shipping` in the terminal by running the following command:
+
+    ```sh
+    ng generate component shipping
+    ```
+
+    This command will generate the `shipping.component.ts` file and it associated template and styles files.
 
     <code-example header="src/app/shipping/shipping.component.ts" path="getting-started/src/app/shipping/shipping.component.1.ts"></code-example>
 
@@ -240,7 +254,7 @@ Now that you've configured your application to retrieve shipping data, you can c
     <code-example header="src/app/app.module.ts" path="getting-started/src/app/app.module.ts" region="shipping-route"></code-example>
 
     There's no link to the new shipping component yet, but you can see its template in the preview pane by entering the URL its route specifies.
-    The URL has the pattern: `https://getting-started.stackblitz.io/shipping` where the `getting-started.stackblitz.io` part may be different for your StackBlitz project.
+    The URL has the pattern: `https://angular-ynqttp--4200.local.webcontainer.io/shipping` where the `angular-ynqttp--4200.local.webcontainer.io` part may be different for your StackBlitz project.
 
 ### Configuring the `ShippingComponent` to use `CartService`
 
