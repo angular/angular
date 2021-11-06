@@ -241,6 +241,7 @@ groups:
           'aio/content/guide/change-detection-slow-computations.md',
           'aio/content/guide/change-detection-skipping-subtrees.md',
           'aio/content/images/guide/change-detection/**',
+          'aio/content/guide/class-binding.md',
           'aio/content/guide/cheatsheet.md',
           'aio/content/guide/component-interaction.md',
           'aio/content/examples/component-interaction/**',
