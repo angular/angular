@@ -107,6 +107,10 @@ Tooling that is aware of these keys may preferentially select a desirable code f
 
 * `"default"` selects flattened ES2020 code for all other consumers.
 
+Libraries may want to expose additional static files which are not captured by the exports of the JavaScript-based entry-points such as Sass mixins or pre-compiled CSS.
+
+For more information, see [Managing assets in a library](/guide/creating-libraries#managing-assets-in-a-library).
+
 ### Legacy resolution keys
 
 In addition to `"exports"`, the top-level `package.json` also defines legacy module resolution keys for resolvers that don't support `"exports"`. For `@angular/core` these are:
