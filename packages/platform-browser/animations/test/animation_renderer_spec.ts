@@ -132,7 +132,7 @@ describe('AnimationRenderer', () => {
   });
 
   describe('flushing animations', () => {
-    // these tests are only mean't to be run within the DOM
+    // these tests are only meant to be run within the DOM
     if (isNode) return;
 
     it('should flush and fire callbacks when the zone becomes stable', (async) => {
