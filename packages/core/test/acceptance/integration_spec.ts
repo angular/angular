@@ -2091,6 +2091,69 @@ describe('acceptance integration tests', () => {
     expect(fixture.nativeElement.textContent).toContain('Hello, unknown!');
   });
 
+  it('should handle nested calls to a safe access methods in templates', () => {
+    const log: string[] = [];
+
+    class Person {
+      constructor(public name: string, public title: string) {}
+
+      getName(includeTitle: boolean|undefined) {
+        log.push(`person.getName(${includeTitle})`);
+        return includeTitle ? `${this.title} ${this.name}` : this.name;
+      }
+    }
+
+    @Component({
+      template: `
+      <span>Hello, {{ (person?.getName(getConfig('showTitle')?.enabled ?? getDefaultShowTitle()) ?? getFallbackName()) }}!</span>
+    `
+    })
+    class App {
+      person: Person|null = null;
+      showTitle: boolean|null = null;
+
+      getConfig(name: string): {enabled: boolean}|null {
+        log.push(`getConfig(${name})`);
+        return this.showTitle !== null ? {enabled: this.showTitle} : null;
+      }
+
+      getDefaultShowTitle(): boolean {
+        log.push(`getDefaultShowTitle()`);
+        return false;
+      }
+
+      getFallbackName(): string {
+        log.push(`getFallbackName()`);
+        return 'unknown';
+      }
+    }
+
+    TestBed.configureTestingModule({declarations: [App]});
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges(/* checkNoChanges */ false);
+    expect(fixture.nativeElement.textContent).toContain('Hello, unknown!');
+    expect(log).toEqual(['getFallbackName()']);
+    log.length = 0;
+
+    fixture.componentInstance.person = new Person('Penelope', 'Lady');
+    fixture.detectChanges(/* checkNoChanges */ false);
+    expect(fixture.nativeElement.textContent).toContain('Hello, Penelope!');
+    expect(log).toEqual(['getConfig(showTitle)', 'getDefaultShowTitle()', 'person.getName(false)']);
+    log.length = 0;
+
+    fixture.componentInstance.showTitle = true;
+    fixture.detectChanges(/* checkNoChanges */ false);
+    expect(fixture.nativeElement.textContent).toContain('Hello, Lady Penelope!');
+    expect(log).toEqual(['getConfig(showTitle)', 'person.getName(true)']);
+    log.length = 0;
+
+    fixture.componentInstance.showTitle = false;
+    fixture.detectChanges(/* checkNoChanges */ false);
+    expect(fixture.nativeElement.textContent).toContain('Hello, Penelope!');
+    expect(log).toEqual(['getConfig(showTitle)', 'person.getName(false)']);
+    log.length = 0;
+  });
+
   describe('tView.firstUpdatePass', () => {
     function isFirstUpdatePass() {
       const lView = getLView();
