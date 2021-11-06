@@ -128,7 +128,7 @@ describe('removeEslintComments', () => {
       expect(rmv(source)).toEqual('var v5 = 567;');
     });
 
-    it('should ignore generic comments including the eslint terms', () => {
+    it('should ignore generic comments containing eslint terms', () => {
       let source = `
         /* this is not an eslint-disable comment */
         // and this is not an eslint-disable-line comment
@@ -178,6 +178,19 @@ describe('removeEslintComments', () => {
           ' {10}@Input() eslintTest: () => {};\n {6}'
         )
       );
+    });
+
+    it('should remove correctly eslint directive comments containing descriptions', () => {
+      let source = `// eslint-disable-next-line a-rule, another-rule -- those are buggy!!
+      const aRule = "another-rule";`;
+      expect(rmv(source)).toEqual('const aRule = "another-rule";');
+      source = `/* eslint-disable max-len, no-var --
+        Disabling the rule is necessary here because we have
+        variables declared with var which contain very long strings
+      */
+
+      export class Utils {`;
+      expect(rmv(source)).toMatch(createRegexForMatching('\n {6}export class Utils {'));
     });
 
   });
@@ -242,7 +255,7 @@ describe('removeEslintComments', () => {
       expect(rmv(source)).toEqual('<label>another label outside a form</label>');
     });
 
-    it('should ignore generic comments including the eslint terms in them', () => {
+    it('should ignore generic comments containing eslint terms', () => {
       let source = '<p *ngIf="text == null">{{ text }}</p> <!-- this like could be disabled with an eslint-disable-line comment -->';
       expect(rmv(source)).toEqual(source);
       source = `<!-- eslint-disable -->
@@ -272,6 +285,22 @@ describe('removeEslintComments', () => {
         <!-- eslint-enable-next-line -->
       `;
       expect(rmv(source)).toEqual(source);
+    });
+
+    it('should remove correctly eslint directive comments containing descriptions', () => {
+      let source = `<!-- eslint-disable-next-line foo -- the following span needs to violate foo for business reasons -->
+      <span>violating foo</span>`;
+      expect(rmv(source)).toEqual('<span>violating foo</span>');
+      source = `
+      <!-- eslint-disable foo, bar, baz
+        --
+        This whole template does not respect rules foo, bar and baz,
+        a task for refactoring it has been added to the backlog for
+        now we just eslint-disable foo, bar and baz for the whole file
+      -->
+
+      <main>`;
+      expect(rmv(source)).toMatch(createRegexForMatching('\n {6}\n {6}<main>'));
     });
 
   });
