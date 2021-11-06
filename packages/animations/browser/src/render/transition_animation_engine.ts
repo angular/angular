@@ -244,7 +244,7 @@ export class AnimationTransitionNamespace {
       // only remove the player if it is queued on the EXACT same trigger/namespace
       // we only also deal with queued players here because if the animation has
       // started then we want to keep the player alive until the flush happens
-      // (which is where the previousPlayers are passed into the new palyer)
+      // (which is where the previousPlayers are passed into the new player)
       if (player.namespaceId == this.id && player.triggerName == triggerName && player.queued) {
         player.destroy();
       }
@@ -579,7 +579,7 @@ export class TransitionAnimationEngine {
       // the namespace list
       this.newHostElements.set(hostElement, ns);
 
-      // given that this host element is apart of the animation code, it
+      // given that this host element is a part of the animation code, it
       // may or may not be inserted by a parent node that is of an
       // animation renderer type. If this happens then we can still have
       // access to this item when we query for :enter nodes. If the parent
@@ -652,8 +652,8 @@ export class TransitionAnimationEngine {
     // normally there should only be one namespace per element, however
     // if @triggers are placed on both the component element and then
     // its host element (within the component code) then there will be
-    // two namespaces returned. We use a set here to simply the dedupe
-    // of namespaces incase there are multiple triggers both the elm and host
+    // two namespaces returned. We use a set here to simply deduplicate
+    // the namespaces in case (for the reason described above) there are multiple triggers
     const namespaces = new Set<AnimationTransitionNamespace>();
     const elementStates = this.statesByElement.get(element);
     if (elementStates) {
@@ -1008,10 +1008,10 @@ export class TransitionAnimationEngine {
           return;
         }
 
-        // even though the element may not be apart of the DOM, it may
-        // still be added at a later point (due to the mechanics of content
+        // even though the element may not be in the DOM, it may still
+        // be added at a later point (due to the mechanics of content
         // projection and/or dynamic component insertion) therefore it's
-        // important we still style the element.
+        // important to still style the element.
         if (nodeIsOrphaned) {
           player.onStart(() => eraseStyles(element, instruction.fromStyles));
           player.onDestroy(() => setStyles(element, instruction.toStyles));
@@ -1019,8 +1019,9 @@ export class TransitionAnimationEngine {
           return;
         }
 
-        // if a unmatched transition is queued to go then it SHOULD NOT render
-        // an animation and cancel the previously running animations.
+        // if an unmatched transition is queued and ready to go
+        // then it SHOULD NOT render an animation and cancel the
+        // previously running animations.
         if (entry.isFallbackTransition) {
           player.onStart(() => eraseStyles(element, instruction.fromStyles));
           player.onDestroy(() => setStyles(element, instruction.toStyles));
@@ -1028,11 +1029,11 @@ export class TransitionAnimationEngine {
           return;
         }
 
-        // this means that if a parent animation uses this animation as a sub trigger
-        // then it will instruct the timeline builder to not add a player delay, but
-        // instead stretch the first keyframe gap up until the animation starts. The
-        // reason this is important is to prevent extra initialization styles from being
-        // required by the user in the animation.
+        // this means that if a parent animation uses this animation as a sub-trigger
+        // then it will instruct the timeline builder not to add a player delay, but
+        // instead stretch the first keyframe gap until the animation starts. This is
+        // important in order to prevent extra initialization styles from being
+        // required by the user for the animation.
         instruction.timelines.forEach(tl => tl.stretchStartingKeyframe = true);
 
         subTimelines.append(element, instruction.timelines);
@@ -1078,10 +1079,10 @@ export class TransitionAnimationEngine {
     }
 
     const allPreviousPlayersMap = new Map<any, TransitionAnimationPlayer[]>();
-    // this map works to tell which element in the DOM tree is contained by
-    // which animation. Further down below this map will get populated once
-    // the players are built and in doing so it can efficiently figure out
-    // if a sub player is skipped due to a parent player having priority.
+    // this map tells us which element in the DOM tree is contained by
+    // which animation. Further down this map will get populated once
+    // the players are built and in doing so we can use it to efficiently
+    // figure out if a sub player is skipped due to a parent player having priority.
     const animationElementMap = new Map<any, any>();
     queuedInstructions.forEach(entry => {
       const element = entry.element;
@@ -1102,13 +1103,13 @@ export class TransitionAnimationEngine {
       });
     });
 
-    // this is a special case for nodes that will be removed (either by)
+    // this is a special case for nodes that will be removed either by
     // having their own leave animations or by being queried in a container
     // that will be removed once a parent animation is complete. The idea
     // here is that * styles must be identical to ! styles because of
     // backwards compatibility (* is also filled in by default in many places).
-    // Otherwise * styles will return an empty value or auto since the element
-    // that is being getComputedStyle'd will not be visible (since * = destination)
+    // Otherwise * styles will return an empty value or "auto" since the element
+    // passed to getComputedStyle will not be visible (since * === destination)
     const replaceNodes = allLeaveNodes.filter(node => {
       return replacePostStylesAsPre(node, allPreStyleElements, allPostStyleElements);
     });
@@ -1202,9 +1203,9 @@ export class TransitionAnimationEngine {
       }
     });
 
-    // find all of the sub players' corresponding inner animation player
+    // find all of the sub players' corresponding inner animation players
     subPlayers.forEach(player => {
-      // even if any players are not found for a sub animation then it
+      // even if no players are found for a sub animation it
       // will still complete itself after the next tick since it's Noop
       const playersForElement = skippedPlayersMap.get(player.element);
       if (playersForElement && playersForElement.length) {

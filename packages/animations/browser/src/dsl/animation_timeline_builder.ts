@@ -57,14 +57,14 @@ const LEAVE_TOKEN_REGEX = new RegExp(LEAVE_TOKEN, 'g');
  * [TimelineBuilder]
  * This class is responsible for tracking the styles and building a series of keyframe objects for a
  * timeline between a start and end time. The builder starts off with an initial timeline and each
- * time the AST comes across a `group()`, `keyframes()` or a combination of the two wihtin a
+ * time the AST comes across a `group()`, `keyframes()` or a combination of the two within a
  * `sequence()` then it will generate a sub timeline for each step as well as a new one after
  * they are complete.
  *
  * As the AST is traversed, the timing state on each of the timelines will be incremented. If a sub
  * timeline was created (based on one of the cases above) then the parent timeline will attempt to
  * merge the styles used within the sub timelines into itself (only with group() this will happen).
- * This happens with a merge operation (much like how the merge works in mergesort) and it will only
+ * This happens with a merge operation (much like how the merge works in mergeSort) and it will only
  * copy the most recently used styles from the sub timelines into the parent timeline. This ensures
  * that if the styles are used later on in another phase of the animation then they will be the most
  * up-to-date values.
@@ -89,7 +89,7 @@ const LEAVE_TOKEN_REGEX = new RegExp(LEAVE_TOKEN, 'g');
  * from all previous keyframes up until where it is first used. For the timeline keyframe generation
  * to properly fill in the style it will place the previous value (the value from the parent
  * timeline) or a default value of `*` into the backFill object. Given that each of the keyframe
- * styles are objects that prototypically inhert from the backFill object, this means that if a
+ * styles are objects that prototypically inherits from the backFill object, this means that if a
  * value is added into the backFill then it will automatically propagate any missing values to all
  * keyframes. Therefore the missing `height` value will be properly filled into the already
  * processed keyframes.
@@ -228,7 +228,7 @@ export class AnimationTimelineBuilderVisitor implements AstVisitor {
     if (ast.steps.length) {
       ast.steps.forEach(s => visitDslNode(this, s, ctx));
 
-      // this is here just incase the inner steps only contain or end with a style() call
+      // this is here just in case the inner steps only contain or end with a style() call
       ctx.currentTimeline.applyStylesToKeyframe();
 
       // this means that some animation function within the sequence
@@ -567,7 +567,7 @@ export class AnimationTimelineContext {
     if (includeSelf) {
       results.push(this.element);
     }
-    if (selector.length > 0) {  // if :self is only used then the selector is empty
+    if (selector.length > 0) {  // only if :self is used then the selector can be empty
       selector = selector.replace(ENTER_TOKEN_REGEX, '.' + this._enterClassName);
       selector = selector.replace(LEAVE_TOKEN_REGEX, '.' + this._leaveClassName);
       const multi = limit != 1;
@@ -857,7 +857,7 @@ class SubTimelineBuilder extends TimelineBuilder {
         When the keyframe is stretched then it means that the delay before the animation
         starts is gone. Instead the first keyframe is placed at the start of the animation
         and it is then copied to where it starts when the original delay is over. This basically
-        means nothing animates during that delay, but the styles are still renderered. For this
+        means nothing animates during that delay, but the styles are still rendered. For this
         to work the original offset values that exist in the original keyframes must be "warped"
         so that they can take the new keyframe + delay into account.
 

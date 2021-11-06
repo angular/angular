@@ -19,7 +19,7 @@ const DEFAULT_NAMESPACE_ID = 'id';
 const DEFAULT_COMPONENT_ID = '1';
 
 (function() {
-// these tests are only mean't to be run within the DOM (for now)
+// these tests are only meant to be run within the DOM (for now)
 if (isNode) return;
 
 describe('animation tests', function() {
@@ -3622,7 +3622,7 @@ describe('animation tests', function() {
       ]);
     });
 
-    it('should convert hyphenated properties to camelcase by default that are auto/pre style properties',
+    it('should convert hyphenated properties to camelCase by default that are auto/pre style properties',
        () => {
          @Component({
            selector: 'cmp',
