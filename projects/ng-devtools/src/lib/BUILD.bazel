@@ -1,4 +1,4 @@
-load("//tools:angular_ts_library.bzl", "ng_ts_library")
+load("//tools:angular_ts_project.bzl", "ng_ts_project")
 load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
 
 package(default_visibility = ["//visibility:public"])
@@ -8,7 +8,7 @@ sass_binary(
     src = "devtools.component.scss",
 )
 
-ng_ts_library(
+ng_ts_project(
     name = "lib",
     srcs = glob(
         include = ["*.ts"],
@@ -35,7 +35,7 @@ ng_ts_library(
     tsconfig = "//projects/ng-devtools:tsconfig-lib"
 )
 
-ng_ts_library(
+ng_ts_project(
     name = "theme",
     srcs = glob(
         include = ["theme-service.ts"],

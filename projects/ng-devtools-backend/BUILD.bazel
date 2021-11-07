@@ -1,6 +1,7 @@
-load("//tools:angular_ts_library.bzl", "ng_ts_library")
-load("@npm//@bazel/typescript:index.bzl", "ts_config", "ts_library")
-load("@npm//@bazel/concatjs:index.bzl", "karma_web_test_suite")
+load("@npm//@bazel/typescript:index.bzl", "ts_config")
+load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
+load("//tools:typescript.bzl", "ts_project")
+
 
 package(default_visibility = ["//visibility:public"])
 
@@ -10,12 +11,17 @@ ts_config(
     deps = ["//:tsconfig.json"],
 )
 
-ng_ts_library(
-    name = "ng-devtools-backend",
+ts_project(
+    name = "ng-devtools-backend-ts",
     srcs = ["index.ts"],
     deps = [
         "//projects/ng-devtools-backend/src",
     ],
-    module_name = "ng-devtools-backend",
     tsconfig = ":tsconfig-lib"
+)
+
+js_library(
+    name = "ng-devtools-backend",
+    package_name = "ng-devtools-backend",
+    deps = [":ng-devtools-backend-ts"],
 )

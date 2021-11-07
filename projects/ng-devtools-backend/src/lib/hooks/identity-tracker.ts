@@ -1,7 +1,10 @@
 import { ComponentTreeNode, DirectiveInstanceType, ComponentInstanceType } from '../interfaces';
 import { ElementPosition, DevToolsNode } from 'protocol';
 import { buildDirectiveForest } from '../component-tree';
-import { Type } from '@angular/core';
+
+export declare interface Type<T> extends Function {
+  new (...args: any[]): T;
+}
 
 interface TreeNode {
   parent: TreeNode;

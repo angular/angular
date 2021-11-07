@@ -1,10 +1,11 @@
 load("@npm//@bazel/rollup:index.bzl", "rollup_bundle")
 load("@npm//@bazel/terser:index.bzl", "terser_minified")
-load("//tools:angular_ts_library.bzl", "ng_ts_library")
 load("@io_bazel_rules_sass//:defs.bzl", "sass_library", "sass_binary")
 load("@build_bazel_rules_nodejs//:index.bzl", "pkg_web")
 load("@npm//html-insert-assets:index.bzl", "html_insert_assets")
-load("@npm//@bazel/typescript:index.bzl", "ts_library")
+load("//tools:angular_ts_project.bzl", "ng_ts_project")
+load("//tools:typescript.bzl", "ts_project")
+load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -20,18 +21,22 @@ sass_binary(
     sourcemap = False,
 )
 
-ts_library(
-    name = "devtools",
+ts_project(
+    name = "devtools-ts",
     srcs = [
         "devtools.ts"
     ],
     deps = [
         "@npm//@types/chrome",
     ],
-    tsconfig = "//projects/shell-chrome:tsconfig-app",
 )
 
-ng_ts_library(
+js_library(
+    name = "devtools",
+    deps = [":devtools-ts"]
+)
+
+ng_ts_project(
     name = "src",
     srcs = [
       "main.ts",
@@ -44,8 +49,6 @@ ng_ts_library(
       "@npm//@angular/core",
       "@npm//@angular/platform-browser-dynamic",
     ],
-    tsconfig = "//projects/shell-chrome:tsconfig-app",
-    module_name = "shell-chrome",
 )
 
 

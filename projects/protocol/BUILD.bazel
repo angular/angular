@@ -1,5 +1,8 @@
-load("@npm//@bazel/typescript:index.bzl", "ts_library", "ts_config")
-load("@npm//@bazel/concatjs:index.bzl", "karma_web_test_suite")
+load("@npm//@bazel/typescript:index.bzl", "ts_config")
+load("//tools:typescript.bzl", "ts_test_project")
+load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
+load("//tools:typescript.bzl", "ts_project")
+load("//tools:defaults.bzl", "karma_web_test_suite")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -17,38 +20,36 @@ ts_config(
     deps = ["//:tsconfig.json"],
 )
 
-ts_library(
-    name = "protocol",
+ts_project(
+    name = "protocol-ts",
     srcs = glob(["**/*.ts"], exclude = ["**/*.spec.ts", "src/test.ts"]),
     deps = [
         "@npm//@angular/core",
         "@npm//@angular/platform-browser-dynamic",
         "@npm//@types",
     ],
-    module_name = "protocol",
     tsconfig = ":tsconfig-lib",
 )
 
-ts_library(
+js_library(
+    name = "protocol",
+    package_name = "protocol",
+    deps = [":protocol-ts"],
+)
+
+ts_test_project(
     name = "protocol_test",
-    testonly = True,
     srcs = glob(["**/*.spec.ts"]),
     deps = [
         ":protocol",
         "@npm//@angular/core",
         "@npm//@angular/platform-browser-dynamic",
         "@npm//@types",
-        "@npm//@types/jasmine",
     ],
-    tsconfig = ":tsconfig-spec",
 )
 
 karma_web_test_suite(
     name = "test",
-    browsers = [
-        "//:no-sandbox-chrome",
-    ],
-    tags = ["native"],
     deps = [
         "//projects/protocol:protocol_test",
     ],

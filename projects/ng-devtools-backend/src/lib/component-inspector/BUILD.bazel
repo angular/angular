@@ -1,10 +1,10 @@
-load("//tools:angular_ts_library.bzl", "ng_ts_library")
-load("@npm//@bazel/typescript:index.bzl", "ts_library")
-load("@npm//@bazel/concatjs:index.bzl", "karma_web_test_suite")
+load("//tools:typescript.bzl", "ts_project")
+load("//tools:typescript.bzl", "ts_test_project")
+load("//tools:defaults.bzl", "karma_web_test_suite")
 
 package(default_visibility = ["//visibility:public"])
 
-ng_ts_library(
+ts_project(
     name = "component-inspector",
     srcs = ["component-inspector.ts"],
     deps = [
@@ -13,29 +13,17 @@ ng_ts_library(
         "//projects/ng-devtools-backend/src/lib:component-tree",
         "//projects/ng-devtools-backend/src/lib:interfaces",
         "//projects/ng-devtools-backend/src/lib/hooks",
-        "@npm//rxjs",
-        "@npm//@angular/core"
     ],
     tsconfig = "//projects/ng-devtools-backend:tsconfig-lib"
 )
 
 karma_web_test_suite(
     name = "test",
-    browsers = [
-        "//:no-sandbox-chrome",
-    ],
-    tags = ["native"],
-    deps = [
-        ":test-lib",
-        "@npm//:node_modules/tslib/tslib.js",
-        "//src:rxjs_umd_modules",
-        "//src:semver-dsl_umd_modules",
-    ],
+    deps = [":test-lib"],
 )
 
-ts_library(
+ts_test_project(
     name = "test-lib",
-    testonly = True,
     srcs = [
         "component-inspector.spec.ts",
     ],
@@ -47,7 +35,6 @@ ts_library(
         "//projects/ng-devtools-backend/src/lib:highlighter",
         "@npm//@angular/core",
         "@npm//@types",
-        "@npm//@types/jasmine",
         "//projects/ng-devtools-backend/src/lib:interfaces",
         "//projects/ng-devtools-backend/src/lib:utils",
     ],

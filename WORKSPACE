@@ -28,11 +28,11 @@ bazel_skylib_workspace()
 # Fetch rules_nodejs so we can install our npm dependencies
 http_archive(
     name = "build_bazel_rules_nodejs",
-    sha256 = "8f5f192ba02319254aaf2cdcca00ec12eaafeb979a80a1e946773c520ae0a2c9",
-    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/3.7.0/rules_nodejs-3.7.0.tar.gz"],
+    sha256 = "3635797a96c7bfcd0d265dacd722a07335e64d6ded9834af8d3f1b7ba5a25bba",
+    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/4.3.0/rules_nodejs-4.3.0.tar.gz"],
 )
 
-load("@build_bazel_rules_nodejs//:index.bzl", "node_repositories")
+load("@build_bazel_rules_nodejs//:index.bzl", "node_repositories", "yarn_install")
 
 # Setup the Node.js toolchain
 node_repositories(
@@ -43,11 +43,16 @@ node_repositories(
 # Fetch sass rules for compiling sass files
 http_archive(
     name = "io_bazel_rules_sass",
-    sha256 = "dcead3cbe749d8e9467d28e326ea8ea3a126bc6095a0e1665222c94ff9db6fcc",
-    strip_prefix = "rules_sass-1.36.0",
+    sha256 = "5313032124ff191eed68efcfbdc6ee9b5198093b2b80a8e640ea34feabbffc69",
+    patch_args = ["-p1"],
+    patches = [
+        # Updates @bazel/work dep to 4.0.0 inside rules_sass so it is compatible
+        "//:io_bazel_rules_sass.patch",
+    ],
+    strip_prefix = "rules_sass-1.34.0",
     urls = [
-        "https://github.com/bazelbuild/rules_sass/archive/1.36.0.zip",
-        "https://mirror.bazel.build/github.com/bazelbuild/rules_sass/archive/1.36.0.zip",
+        "https://github.com/bazelbuild/rules_sass/archive/1.34.0.zip",
+        "https://mirror.bazel.build/github.com/bazelbuild/rules_sass/archive/1.34.0.zip",
     ],
 )
 
@@ -84,3 +89,16 @@ browser_repositories(
 load("@io_bazel_rules_sass//sass:sass_repositories.bzl", "sass_repositories")
 
 sass_repositories()
+
+# Setup esbuild repositories
+load("@build_bazel_rules_nodejs//toolchains/esbuild:esbuild_repositories.bzl", "esbuild_repositories")
+
+esbuild_repositories()
+
+# Setup repositories for browsers provided by the shared dev-infra package.
+load(
+    "@npm//@angular/dev-infra-private/bazel/browsers:browser_repositories.bzl",
+    _dev_infra_browser_repositories = "browser_repositories",
+)
+
+_dev_infra_browser_repositories()

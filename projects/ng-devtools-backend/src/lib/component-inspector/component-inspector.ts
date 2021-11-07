@@ -1,10 +1,12 @@
 import { unHighlight, highlight, findComponentAndHost } from '../highlighter';
-import { Type } from '@angular/core';
 import { findNodeInForest } from '../component-tree';
 import { ComponentTreeNode } from '../interfaces';
 import { ElementPosition } from 'protocol';
 import { initializeOrGetDirectiveForestHooks } from '../hooks';
 
+interface Type<T> extends Function {
+  new (...args: any[]): T;
+}
 export interface ComponentInspectorOptions {
   onComponentEnter: (id: number) => void;
   onComponentSelect: (id: number) => void;

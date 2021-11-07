@@ -1,8 +1,9 @@
-load("//tools:angular_ts_library.bzl", "ng_ts_library")
+load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
+load("//tools:typescript.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
-ng_ts_library(
+ts_project(
     name = "application-operations",
     srcs = ["index.ts"],
     deps = [

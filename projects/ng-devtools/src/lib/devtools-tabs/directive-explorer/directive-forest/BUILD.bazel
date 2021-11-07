@@ -1,5 +1,6 @@
-load("//tools:angular_ts_library.bzl", "ng_ts_library")
 load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
+load("//tools:angular_ts_project.bzl", "ng_ts_project")
+
 
 package(default_visibility = ["//visibility:public"])
 
@@ -8,7 +9,7 @@ sass_binary(
     src = "directive-forest.component.scss",
 )
 
-ng_ts_library(
+ng_ts_project(
     name = "directive-forest",
     srcs = [
         "directive-forest-utils.ts",

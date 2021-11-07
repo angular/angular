@@ -1,10 +1,10 @@
-load("//tools:angular_ts_library.bzl", "ng_ts_library")
-load("@npm//@bazel/typescript:index.bzl", "ts_library")
-load("@npm//@bazel/concatjs:index.bzl", "karma_web_test_suite")
+load("//tools:typescript.bzl", "ts_project")
+load("//tools:typescript.bzl", "ts_test_project")
+load("//tools:defaults.bzl", "karma_web_test_suite")
 
 package(default_visibility = ["//visibility:public"])
 
-ng_ts_library(
+ts_project(
     name = "directive-forest",
     srcs = glob(
         include = ["*.ts"],
@@ -22,25 +22,19 @@ ng_ts_library(
 
 karma_web_test_suite(
     name = "test",
-    browsers = [
-        "//:no-sandbox-chrome",
-    ],
-    tags = ["native"],
     deps = [
         ":test-lib",
     ],
 )
 
-ts_library(
+ts_test_project(
     name = "test-lib",
-    testonly = True,
     srcs = [
         "render-tree.spec.ts",
     ],
     deps = [
         ":directive-forest",
         "@npm//@types",
-        "@npm//@types/jasmine",
         "//projects/ng-devtools-backend/src/lib:interfaces",
         "//projects/ng-devtools-backend/src/lib:utils",
     ],

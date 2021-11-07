@@ -1,17 +1,15 @@
-load("//tools:angular_ts_library.bzl", "ng_ts_library")
-load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
-load("@npm//@bazel/concatjs:index.bzl", "karma_web_test_suite")
-load("@npm//@bazel/typescript:index.bzl", "ts_library")
+load("//tools:typescript.bzl", "ts_project")
+load("//tools:typescript.bzl", "ts_test_project")
+load("//tools:defaults.bzl", "karma_web_test_suite")
+
+
+
 
 package(default_visibility = ["//visibility:public"])
 
-ng_ts_library(
+ts_project(
     name = "component-data-source",
-    srcs = glob(
-        include = [
-            "index.ts",
-        ],
-    ),
+    srcs = ["index.ts"],
     deps = [
         "//projects/protocol",
         "//projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/index-forest",
@@ -26,9 +24,8 @@ ng_ts_library(
 )
 
 
-ts_library(
+ts_test_project(
     name = "component-data-source-test",
-    testonly = True,
     srcs = glob(["**/*.spec.ts"]),
     deps = [
         ":component-data-source",
@@ -39,13 +36,7 @@ ts_library(
 
 karma_web_test_suite(
     name = "test",
-    browsers = [
-        "//:no-sandbox-chrome",
-    ],
-    tags = ["native"],
     deps = [
         ":component-data-source-test",
-        "//src:rxjs_umd_modules",
-        "@npm//:node_modules/tslib/tslib.js",
     ],
 )

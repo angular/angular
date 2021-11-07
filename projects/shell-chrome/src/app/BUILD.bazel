@@ -1,8 +1,8 @@
-load("//tools:angular_ts_library.bzl", "ng_ts_library")
 load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
-load("@npm//@bazel/typescript:index.bzl", "ts_library")
 load("@npm//@bazel/rollup:index.bzl", "rollup_bundle")
 load("@npm//@bazel/terser:index.bzl", "terser_minified")
+load("//tools:angular_ts_project.bzl", "ng_ts_project")
+load("//tools:typescript.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -11,7 +11,7 @@ sass_binary(
     src = "app.component.scss",
 )
 
-ng_ts_library(
+ng_ts_project(
     name = "app",
     srcs = [
         "app.component.ts",
@@ -36,10 +36,9 @@ ng_ts_library(
         "@npm//@angular/core",
         "@npm//@angular/platform-browser",
     ],
-    tsconfig = "//projects/shell-chrome:tsconfig-app",
 )
 
-ts_library(
+ts_project(
     name = "ng-validate",
     srcs = [
         "ng-validate.ts"
@@ -47,34 +46,33 @@ ts_library(
     deps = [
         "@npm//@types/chrome"
     ],
-    tsconfig = "//projects/shell-chrome:tsconfig-app",
 )
 
-ts_library(
+ts_project(
     name = "chrome-window-extensions",
     srcs = [
         "chrome-window-extensions.ts"
     ],
     deps = [
         "//projects/ng-devtools-backend",
-        "//projects/ng-devtools-backend/src/lib:component-tree"
+        "//projects/ng-devtools-backend/src/lib:component-tree",
+        "@npm//@types"
     ],
-    tsconfig = "//projects/shell-chrome:tsconfig-app",
 )
 
-ts_library(
+ts_project(
     name = "chrome-application-environment",
     srcs = [
         "chrome-application-environment.ts"
     ],
     deps = [
         "//projects/shell-chrome/src/environments:environment",
-        "//projects/ng-devtools"
+        "//projects/ng-devtools",
+        "@npm//@types"
     ],
-    tsconfig = "//projects/shell-chrome:tsconfig-app",
 )
 
-ts_library(
+ts_project(
     name = "chrome-application-operations",
     srcs = [
         "chrome-application-operations.ts"
@@ -82,24 +80,23 @@ ts_library(
     deps = [
         "//projects/protocol",
         "//projects/ng-devtools",
-        "@npm//@types/chrome"
+        "@npm//@types"
     ],
-    tsconfig = "//projects/shell-chrome:tsconfig-app",
 )
 
-ts_library(
+ts_project(
     name = "same-page-message-bus",
     srcs = [
         "same-page-message-bus.ts",
     ],
     deps = [
         "//projects/protocol",
-        "@npm//@angular/core"
+        "@npm//@angular/core",
+        "@npm//@types"
     ],
-    tsconfig = "//projects/shell-chrome:tsconfig-app",
 )
 
-ts_library(
+ts_project(
     name = "zone-aware-chrome-message-bus",
     srcs = [
         "zone-aware-chrome-message-bus.ts",
@@ -108,32 +105,31 @@ ts_library(
         ":chrome-message-bus",
         "//projects/protocol",
         "@npm//@angular/core",
+        "@npm//@types"
     ],
-    tsconfig = "//projects/shell-chrome:tsconfig-app",
 )
 
-ts_library(
+ts_project(
     name = "chrome-message-bus",
     srcs = [
         "chrome-message-bus.ts"
     ],
     deps = [
         "//projects/protocol",
-        "@npm//@angular/core"
+        "@npm//@angular/core",
+        "@npm//@types"
     ],
-    tsconfig = "//projects/shell-chrome:tsconfig-app",
 )
 
-ts_library(
+ts_project(
     name = "background",
     srcs = [
         "background.ts"
     ],
     deps = ["//projects/shell-chrome/src/app:ng-validate"],
-    tsconfig = "//projects/shell-chrome:tsconfig-app",
 )
 
-ts_library(
+ts_project(
     name = "backend",
     srcs = [
         "backend.ts"
@@ -142,23 +138,22 @@ ts_library(
         ":same-page-message-bus",
         "//projects/shell-chrome/src/app:chrome-window-extensions",
         "//projects/ng-devtools-backend",
-        "//projects/ng-devtools-backend/src/lib:highlighter"
+        "//projects/ng-devtools-backend/src/lib:highlighter",
+        "@npm//@types"
     ],
-    tsconfig = "//projects/shell-chrome:tsconfig-app",
 )
 
-ts_library(
+ts_project(
     name = "content-script",
     srcs = [
         "content-script.ts"
     ],
     deps = [
-        "@npm//@types/chrome",
+        "@npm//@types",
         ":chrome-message-bus",
         ":same-page-message-bus",
          "//projects/protocol",
     ],
-    tsconfig = "//projects/shell-chrome:tsconfig-app",
 )
 
 rollup_bundle(

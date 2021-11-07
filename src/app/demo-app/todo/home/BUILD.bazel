@@ -1,4 +1,4 @@
-load("//tools:angular_ts_library.bzl", "ng_ts_library")
+load("//tools:angular_ts_project.bzl", "ng_ts_project")
 load("@io_bazel_rules_sass//:defs.bzl", "multi_sass_binary")
 
 package(default_visibility = ["//visibility:public"])
@@ -8,7 +8,7 @@ multi_sass_binary(
     srcs = ["todo.component.scss"],
 )
 
-ng_ts_library(
+ng_ts_project(
     name = "home",
     srcs = [
         "home.module.ts",

@@ -1,9 +1,11 @@
-import { Type } from '@angular/core';
-
 let overlay: any;
 let overlayContent: HTMLElement;
 
 declare const ng: any;
+
+interface Type<T> extends Function {
+  new (...args: any[]): T;
+}
 
 export const DEV_TOOLS_HIGHLIGHT_NODE_ID = '____ngDevToolsHighlight';
 
