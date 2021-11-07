@@ -1,10 +1,10 @@
-load("//tools:angular_ts_library.bzl", "ng_ts_library")
-load("@npm//@bazel/concatjs:index.bzl", "karma_web_test_suite")
-load("@npm//@bazel/typescript:index.bzl", "ts_library")
+load("//tools:angular_ts_project.bzl", "ng_ts_project")
+load("//tools:typescript.bzl", "ts_test_project")
+load("//tools:defaults.bzl", "karma_web_test_suite")
 
 package(default_visibility = ["//visibility:public"])
 
-ng_ts_library(
+ng_ts_project(
     name = "property-resolver",
     srcs = [
         "flatten.ts",
@@ -27,26 +27,26 @@ ng_ts_library(
     tsconfig = "//projects/ng-devtools:tsconfig-lib"
 )
 
-ts_library(
+ts_test_project(
     name = "property-resolver-test",
-    testonly = True,
-    srcs = glob(["**/*.spec.ts"]),
+    srcs = [
+        "arrayify-props.spec.ts",
+        "directive-property-resolver.spec.ts",
+        "element-property-resolver.spec.ts",
+        "property-data-source.spec.ts",
+    ],
     deps = [
         ":property-resolver",
-        "@npm//@angular/cdk",
         "//projects/protocol",
+        "@npm//@angular/cdk",
+        "@npm//@angular/material",
     ],
 )
 
 karma_web_test_suite(
     name = "test",
-    browsers = [
-        "//:no-sandbox-chrome",
-    ],
-    tags = ["native"],
     deps = [
         ":property-resolver-test",
-        "//src:rxjs_umd_modules",
-        "@npm//:node_modules/tslib/tslib.js",
+        "@npm//@angular/material",
     ],
 )

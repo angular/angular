@@ -1,5 +1,6 @@
-load("//tools:angular_ts_library.bzl", "ng_ts_library")
-load("@npm//@bazel/typescript:index.bzl", "ts_config", "ts_library")
+load("//tools:angular_ts_project.bzl", "ng_ts_project")
+load("@npm//@bazel/typescript:index.bzl", "ts_config")
+load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -11,8 +12,8 @@ ts_config(
     deps = ["//:tsconfig.json"],
 )
 
-ng_ts_library(
-    name = "ng-devtools",
+ng_ts_project(
+    name = "ng-devtools-ts",
     srcs = ["index.ts"],
     deps = [
         "//projects/ng-devtools/src",
@@ -21,7 +22,6 @@ ng_ts_library(
         "@npm//@angular/core",
         "@npm//memo-decorator",
         "@npm//webtreemap",
-        "@npm//@types/d3",
         "@npm//d3",
         "@npm//@angular/material",
         "@npm//@angular/forms",
@@ -33,5 +33,10 @@ ng_ts_library(
         "@npm//@types",
     ],
     tsconfig = ":tsconfig-lib",
-    module_name = "ng-devtools",
+)
+
+js_library(
+    name = "ng-devtools",
+    package_name = "ng-devtools",
+    deps = [":ng-devtools-ts"]
 )

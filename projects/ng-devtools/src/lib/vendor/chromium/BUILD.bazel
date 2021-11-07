@@ -1,9 +1,8 @@
-load("@npm//@bazel/typescript:index.bzl", "ts_library")
+load("//tools:typescript.bzl", "ts_project")
 
 package(default_visibility = ["//:__subpackages__"])
 
-ts_library(
+ts_project(
     name = "chromium",
     srcs = ["date-utilities.ts"],
-    module_name = "chromium"
 )

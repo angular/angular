@@ -6,6 +6,7 @@ import { DemoApplicationOperations } from '../demo-application-operations';
 import { ApplicationEnvironment, ApplicationOperations } from 'ng-devtools';
 import { DemoApplicationEnvironment } from '../demo-application-environment';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+
 @NgModule({
   declarations: [AppComponent],
   imports: [

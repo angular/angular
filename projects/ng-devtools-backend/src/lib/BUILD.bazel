@@ -1,10 +1,10 @@
-load("//tools:angular_ts_library.bzl", "ng_ts_library")
-load("@npm//@bazel/typescript:index.bzl", "ts_library")
-load("@npm//@bazel/concatjs:index.bzl", "karma_web_test_suite")
+load("//tools:defaults.bzl", "karma_web_test_suite")
+load("//tools:typescript.bzl", "ts_test_project")
+load("//tools:typescript.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
-ng_ts_library(
+ts_project(
     name = "lib",
     srcs = ["index.ts"],
     deps = [
@@ -20,18 +20,13 @@ ng_ts_library(
 
 karma_web_test_suite(
     name = "highlighter-test",
-    browsers = [
-        "//:no-sandbox-chrome",
-    ],
-    tags = ["native"],
     deps = [
         ":highlighter-test-lib",
     ],
 )
 
-ts_library(
+ts_test_project(
     name = "highlighter-test-lib",
-    testonly = True,
     srcs = [
         "highlighter.spec.ts"
     ],
@@ -40,20 +35,16 @@ ts_library(
         "@npm//@angular/core",
         "@npm//@angular/platform-browser-dynamic",
         "@npm//@types",
-        "@npm//@types/jasmine",
     ],
 )
 
-ng_ts_library(
+ts_project(
     name = "highlighter",
     srcs = ["highlighter.ts"],
-    deps = [
-        "@npm//@angular/core"
-    ],
     tsconfig = "//projects/ng-devtools-backend:tsconfig-lib"
 )
 
-ng_ts_library(
+ts_project(
     name = "interfaces",
     srcs = ["interfaces.ts"],
     deps = [
@@ -64,16 +55,12 @@ ng_ts_library(
 
 karma_web_test_suite(
     name = "router-tree-test",
-    browsers = [
-        "//:no-sandbox-chrome",
-    ],
-    tags = ["native"],
     deps = [
         ":router-tree-test-lib",
     ],
 )
 
-ts_library(
+ts_test_project(
     name = "router-tree-test-lib",
     srcs = [
         "router-tree.spec.ts"
@@ -85,21 +72,19 @@ ts_library(
         "@npm//@angular/router",
         "@npm//@angular/platform-browser-dynamic",
         "@npm//@types",
-        "@npm//@types/jasmine",
     ],
 )
 
-ng_ts_library(
+ts_project(
     name = "router-tree",
     srcs = ["router-tree.ts"],
     deps = [
         "//projects/protocol",
-        "@npm//@angular/router",
     ],
     tsconfig = "//projects/ng-devtools-backend:tsconfig-lib"
 )
 
-ng_ts_library(
+ts_project(
     name = "set-console-reference",
     srcs = ["set-console-reference.ts"],
     deps = [
@@ -110,19 +95,20 @@ ng_ts_library(
     tsconfig = "//projects/ng-devtools-backend:tsconfig-lib"
 )
 
-ng_ts_library(
+ts_project(
     name = "utils",
     srcs = ["utils.ts"],
     tsconfig = "//projects/ng-devtools-backend:tsconfig-lib"
 )
 
-ng_ts_library(
+
+ts_project(
     name = "version",
     srcs = ["version.ts"],
     tsconfig = "//projects/ng-devtools-backend:tsconfig-lib"
 )
 
-ng_ts_library(
+ts_project(
     name = "client-event-subscribers",
     srcs = ["client-event-subscribers.ts"],
     deps = [
@@ -141,14 +127,13 @@ ng_ts_library(
     tsconfig = "//projects/ng-devtools-backend:tsconfig-lib"
 )
 
-ng_ts_library(
+ts_project(
     name = "component-tree",
     srcs = ["component-tree.ts"],
     deps = [
         "//projects/protocol",
         "//projects/ng-devtools-backend/src/lib/state-serializer",
         "//projects/ng-devtools-backend/src/lib/directive-forest",
-        "@npm//@angular/core",
         ":interfaces"
     ],
     tsconfig = "//projects/ng-devtools-backend:tsconfig-lib"
@@ -156,29 +141,23 @@ ng_ts_library(
 
 karma_web_test_suite(
     name = "angular-check-test",
-    browsers = [
-        "//:no-sandbox-chrome",
-    ],
-    tags = ["native"],
     deps = [
         ":angular-check-test-lib",
     ],
 )
 
-ts_library(
+ts_test_project(
     name = "angular-check-test-lib",
-    testonly = True,
     srcs = [
         "angular-check.spec.ts"
     ],
     deps = [
         ":angular-check",
         "@npm//@types",
-        "@npm//@types/jasmine",
     ],
 )
 
-ng_ts_library(
+ts_project(
     name = "angular-check",
     srcs = ["angular-check.ts"],
     tsconfig = "//projects/ng-devtools-backend:tsconfig-lib"

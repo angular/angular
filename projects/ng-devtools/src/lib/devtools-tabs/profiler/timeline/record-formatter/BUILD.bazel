@@ -1,10 +1,10 @@
-load("//tools:angular_ts_library.bzl", "ng_ts_library")
-load("@npm//@bazel/typescript:index.bzl", "ts_library")
-load("@npm//@bazel/concatjs:index.bzl", "karma_web_test_suite")
+load("//tools:typescript.bzl", "ts_project")
+load("//tools:typescript.bzl", "ts_test_project")
+load("//tools:defaults.bzl", "karma_web_test_suite")
 
 package(default_visibility = ["//visibility:public"])
 
-ng_ts_library(
+ts_project(
     name = "record-formatter",
     srcs = glob(
         include = [
@@ -25,7 +25,7 @@ ng_ts_library(
     tsconfig = "//projects/ng-devtools:tsconfig-lib"
 )
 
-ts_library(
+ts_project(
     name = "record-formatter-spec-constants",
     srcs = ["record-formatter-spec-constants.ts"],
     deps = [
@@ -38,9 +38,8 @@ ts_library(
     tsconfig = "//projects/ng-devtools:tsconfig-lib"
 )
 
-ts_library(
+ts_test_project(
     name = "test-lib",
-    testonly = True,
     srcs = [
         "record-formatter.spec.ts",
         "frame-merger.spec.ts",
@@ -55,12 +54,8 @@ ts_library(
 
 karma_web_test_suite(
     name = "test",
-    browsers = [
-        "//:no-sandbox-chrome",
-    ],
-    tags = ["native"],
     deps = [
-        "//projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter:test-lib",
+        ":test-lib",
     ],
 )
 

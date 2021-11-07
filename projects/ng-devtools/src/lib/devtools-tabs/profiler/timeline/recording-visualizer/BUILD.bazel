@@ -1,5 +1,5 @@
-load("//tools:angular_ts_library.bzl", "ng_ts_library")
 load("@io_bazel_rules_sass//:defs.bzl", "multi_sass_binary")
+load("//tools:angular_ts_project.bzl", "ng_ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -15,7 +15,7 @@ multi_sass_binary(
     ],
 )
 
-ng_ts_library(
+ng_ts_project(
     name = "recording-visualizer",
     srcs = [
         "recording-visualizer.module.ts",

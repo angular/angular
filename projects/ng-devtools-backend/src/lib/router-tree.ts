@@ -1,5 +1,9 @@
 import { Route } from 'protocol';
-import { Router, Routes, Route as AngularRoute } from '@angular/router';
+
+// todo(aleksanderbodurri): type these properly
+type AngularRoute = any;
+type Routes = any;
+type Router = any;
 
 export function parseRoutes(router: Router): Route {
   const rootName = (router as any).rootComponentType?.name || 'no-name';

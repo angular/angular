@@ -1,10 +1,10 @@
-load("//tools:angular_ts_library.bzl", "ng_ts_library")
-load("@npm//@bazel/typescript:index.bzl", "ts_library")
-load("@npm//@bazel/concatjs:index.bzl", "karma_web_test_suite")
+load("//tools:typescript.bzl", "ts_test_project")
+load("//tools:angular_ts_project.bzl", "ng_ts_project")
+load("//tools:defaults.bzl", "karma_web_test_suite")
 
 package(default_visibility = ["//visibility:public"])
 
-ng_ts_library(
+ng_ts_project(
     name = "state-serializer",
     srcs = glob(
         include = ["*.ts"],
@@ -19,19 +19,13 @@ ng_ts_library(
 
 karma_web_test_suite(
     name = "test",
-    browsers = [
-        "//:no-sandbox-chrome",
-    ],
-    tags = ["native"],
     deps = [
-        "@npm//:node_modules/tslib/tslib.js",
         ":test-lib"
     ],
 )
 
-ts_library(
+ts_test_project(
     name = "test-lib",
-    testonly = True,
     srcs = [
         "state-serializer.spec.ts",
     ],
@@ -39,6 +33,5 @@ ts_library(
         ":state-serializer",
         "//projects/protocol",
         "@npm//@types",
-        "@npm//@types/jasmine",
     ],
 )

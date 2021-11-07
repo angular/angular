@@ -1,6 +1,8 @@
-load("@npm//@bazel/concatjs:index.bzl", "concatjs_devserver")
 load("@npm//html-insert-assets:index.bzl", "html_insert_assets")
-load("//tools:angular_ts_library.bzl", "ng_ts_library")
+load("//tools:angular_ts_project.bzl", "ng_ts_project")
+load("@npm//@bazel/rollup:index.bzl", "rollup_bundle")
+load("@npm//history-server:index.bzl", "history_server")
+load("@build_bazel_rules_nodejs//:index.bzl", "pkg_web")
 
 package(default_visibility = ["//:__subpackages__"])
 
@@ -18,13 +20,15 @@ html_insert_assets(
         "--roots=. $(RULEDIR)",
         "--assets",
     ] + ["$(execpath %s)" % s for s in _ASSETS] + [
-        # This file doesn't exist during the build, but will be served by concatjs_devserver
-        "./_/ts_scripts.js",
+        "--scripts --module $(execpath :bundle-es2015)/index.js",
     ],
-    data = ["//projects/demo-no-zone/src:_index.html"] + _ASSETS,
+    data = [
+        "//projects/demo-no-zone/src:_index.html",
+        ":bundle-es2015",
+    ] + _ASSETS,
 )
 
-ng_ts_library(
+ng_ts_project(
     name = "src",
     srcs = ["main.ts"],
     deps = [
@@ -36,28 +40,34 @@ ng_ts_library(
         "@npm//rxjs",
         "@npm//@types",
     ],
-    module_name = "demo-no-zone",
+    tsconfig = "//projects/demo-no-zone:tsconfig-app"
 )
 
-filegroup(
-    name = "rxjs_umd_modules",
-    srcs = [
-        ":rxjs_shims.js",
-        "@npm//:node_modules/rxjs/bundles/rxjs.umd.js",
+rollup_bundle(
+    name = "bundle-es2015",
+    config_file = "rollup.config.js",
+    entry_points = {
+        ":main.ts": "index",
+    },
+    output_dir = True,
+    deps = [
+        ":src",
+        "@npm//@rollup/plugin-commonjs",
+        "@npm//@rollup/plugin-node-resolve",
     ],
 )
 
-concatjs_devserver(
-    name = "devserver",
-    entry_module = "demo-no-zone/main",
-    scripts = [
-        "@npm//:node_modules/tslib/tslib.js",
-        ":rxjs_umd_modules",
-    ],
-    static_files = _ASSETS + [
-        "//projects/demo-no-zone/src:src",
+pkg_web(
+    name = "devapp",
+    srcs = _ASSETS + [
+        ":bundle-es2015",
         ":inject_scripts_for_dev",
     ],
-    deps = ["//projects/demo-no-zone/src"],
-    port = 4200
+    additional_root_paths = [],
+)
+
+history_server(
+    name = "devserver",
+    data = [":devapp"],
+    templated_args = ["-a $$(rlocation $(rootpath :devapp))", "--port 4200"],
 )

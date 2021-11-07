@@ -1,9 +1,8 @@
-load("//tools:angular_ts_library.bzl", "ng_ts_library")
-load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
+load("//tools:typescript.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
-ng_ts_library(
+ts_project(
     name = "diffing",
     srcs = glob(
         include = [

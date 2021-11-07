@@ -1,10 +1,11 @@
-load("//tools:angular_ts_library.bzl", "ng_ts_library")
-load("@npm//@bazel/typescript:index.bzl", "ts_library")
-load("@npm//@bazel/concatjs:index.bzl", "karma_web_test_suite")
+load("//tools:typescript.bzl", "ts_project")
+load("//tools:typescript.bzl", "ts_test_project")
+load("//tools:defaults.bzl", "karma_web_test_suite")
+
 
 package(default_visibility = ["//visibility:public"])
 
-ng_ts_library(
+ts_project(
     name = "tree-map-formatter",
     srcs = glob(
         include = [
@@ -16,19 +17,14 @@ ng_ts_library(
     ),
     deps = [
         "//projects/protocol",
-        "//projects/ng-devtools/src/lib:theme",
         "//projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter",
         "//projects/ng-devtools/src/lib/vendor/memo-decorator",
-        "@npm//@angular/core",
-        "@npm//rxjs",
-        "@npm//@types",
     ],
     tsconfig = "//projects/ng-devtools:tsconfig-lib"
 )
 
-ts_library(
+ts_test_project(
     name = "test-lib",
-    testonly = True,
     srcs = [
         "tree-map-formatter.spec.ts"
     ],
@@ -42,12 +38,7 @@ ts_library(
 
 karma_web_test_suite(
     name = "test",
-    browsers = [
-        "//:no-sandbox-chrome",
-    ],
-    tags = ["native"],
     deps = [
-        "//projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter/tree-map-formatter:test-lib",
-        "@npm//:node_modules/tslib/tslib.js",
+        ":test-lib",
     ],
 )

@@ -1,0 +1,20 @@
+index 314d400b..bbdfbf87 100755
+--- a/sass/package.json
++++ b/sass/package.json
+@@ -1,6 +1,6 @@
+ {
+   "devDependencies": {
+-    "@bazel/worker": "3.0.0",
++    "@bazel/worker": "4.0.0-beta.0",
+     "sass": "1.34.0"
+   }
+ }
+index 9cb20561..dbcc7880 100755
+--- a/sass/sass_repositories.bzl
++++ b/sass/sass_repositories.bzl
+@@ -32,4 +32,5 @@ def sass_repositories():
+         # node_modules folders in the @io_bazel_rules_sass external repository. This is
+         # not supported by managed_directories.
+         symlink_node_modules = False,
++        frozen_lockfile = False,
+     )

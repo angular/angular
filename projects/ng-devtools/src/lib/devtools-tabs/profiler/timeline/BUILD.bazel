@@ -1,8 +1,10 @@
-load("//tools:angular_ts_library.bzl", "ng_ts_library")
+load("//tools:angular_ts_project.bzl", "ng_ts_project")
 load("@io_bazel_rules_sass//:defs.bzl", "sass_library", "sass_binary", "multi_sass_binary")
-load("@npm//@bazel/typescript:index.bzl", "ts_library")
-load("@npm//@bazel/concatjs:index.bzl", "karma_web_test_suite")
+load("//tools:typescript.bzl", "ts_test_project")
+load("//tools:defaults.bzl", "karma_web_test_suite")
+
 package(default_visibility = ["//visibility:public"])
+
 
 multi_sass_binary(
     name = "timeline-styles",
@@ -20,7 +22,7 @@ sass_binary(
     src = "recording-modal.component.scss",
 )
 
-ng_ts_library(
+ng_ts_project(
     name = "timeline",
     srcs = [
         "timeline.component.ts",
@@ -57,9 +59,8 @@ ng_ts_library(
     tsconfig = "//projects/ng-devtools:tsconfig-lib"
 )
 
-ts_library(
+ts_test_project(
     name = "test-lib",
-    testonly = True,
     srcs = [
         "filter.spec.ts",
         "timeline.component.spec.ts"
@@ -71,13 +72,7 @@ ts_library(
 
 karma_web_test_suite(
     name = "test",
-    browsers = [
-        "//:no-sandbox-chrome",
-    ],
-    tags = ["native"],
     deps = [
         ":test-lib",
-        "//src:rxjs_umd_modules",
-        "@npm//:node_modules/tslib/tslib.js",
     ],
 )
