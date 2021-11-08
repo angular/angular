@@ -8,7 +8,7 @@
     "paths": {
       "@angular/*": ["./*"]
     },
-    "types": ["jasmine", "node"],
+    "types": ["jasmine"],
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true
   },

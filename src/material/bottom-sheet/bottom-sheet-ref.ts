@@ -38,7 +38,7 @@ export class MatBottomSheetRef<T = any, R = any> {
   private _result: R | undefined;
 
   /** Handle to the timeout that's running as a fallback in case the exit animation doesn't fire. */
-  private _closeFallbackTimeout: any;
+  private _closeFallbackTimeout: number;
 
   constructor(containerInstance: MatBottomSheetContainer, private _overlayRef: OverlayRef) {
     this.containerInstance = containerInstance;

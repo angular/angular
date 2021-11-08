@@ -258,7 +258,7 @@ export abstract class _MatTooltipBase<T extends _TooltipComponentBase>
   private _document: Document;
 
   /** Timer started at the last `touchstart` event. */
-  private _touchstartTimeout: any;
+  private _touchstartTimeout: number;
 
   /** Emits when the component is destroyed. */
   private readonly _destroyed = new Subject<void>();
@@ -807,10 +807,10 @@ export abstract class _TooltipComponentBase implements OnDestroy {
   tooltipClass: string | string[] | Set<string> | {[key: string]: any};
 
   /** The timeout ID of any current timer set to show the tooltip */
-  _showTimeoutId: any;
+  _showTimeoutId: number | undefined;
 
   /** The timeout ID of any current timer set to hide the tooltip */
-  _hideTimeoutId: any;
+  _hideTimeoutId: number | undefined;
 
   /** Property watched by the animation framework to show or hide the tooltip */
   _visibility: TooltipVisibility = 'initial';

@@ -45,7 +45,7 @@ export class MatSnackBarRef<T> {
    * Timeout ID for the duration setTimeout call. Used to clear the timeout if the snackbar is
    * dismissed before the duration passes.
    */
-  private _durationTimeoutId: any;
+  private _durationTimeoutId: number;
 
   /** Whether the snack bar was dismissed using the action button. */
   private _dismissedByAction = false;

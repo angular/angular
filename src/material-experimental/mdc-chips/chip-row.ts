@@ -104,7 +104,7 @@ export class MatChipRow
    * Timeout used to give some time between `focusin` and `focusout`
    * in order to determine whether focus has left the chip.
    */
-  private _focusoutTimeout: any;
+  private _focusoutTimeout: number | null;
 
   constructor(
     @Inject(DOCUMENT) private readonly _document: any,
