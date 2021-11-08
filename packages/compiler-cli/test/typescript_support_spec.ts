@@ -32,4 +32,16 @@ describe('checkVersion', () => {
     expect(() => checkVersion('2.8.0', MIN_TS_VERSION, MAX_TS_VERSION))
         .toThrowError(versionError('2.8.0'));
   });
+
+  it('should throw when an out-of-bounds pre-release version is used', () => {
+    expect(() => checkVersion('2.7.0-beta', MIN_TS_VERSION, MAX_TS_VERSION))
+        .toThrowError(versionError('2.7.0-beta'));
+    expect(() => checkVersion('2.8.5-rc.3', MIN_TS_VERSION, MAX_TS_VERSION))
+        .toThrowError(versionError('2.8.5-rc.3'));
+  });
+
+  it('should not throw when a valid pre-release version is used', () => {
+    expect(() => checkVersion('2.7.2-beta', MIN_TS_VERSION, MAX_TS_VERSION)).not.toThrow();
+    expect(() => checkVersion('2.7.9-rc.8', MIN_TS_VERSION, MAX_TS_VERSION)).not.toThrow();
+  });
 });
