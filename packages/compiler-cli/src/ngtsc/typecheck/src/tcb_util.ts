@@ -7,15 +7,15 @@
  */
 
 import {AbsoluteSourceSpan, ParseSourceSpan} from '@angular/compiler';
-import {ClassDeclaration, ReflectionHost} from '@angular/compiler-cli/src/ngtsc/reflection';
 import ts from 'typescript';
 
+import {ClassDeclaration, ReflectionHost} from '../../../../src/ngtsc/reflection';
 import {Reference} from '../../imports';
 import {getTokenAtPosition} from '../../util/src/typescript';
 import {FullTemplateMapping, SourceLocation, TemplateId, TemplateSourceMapping} from '../api';
 
 import {hasIgnoreForDiagnosticsMarker, readSpanComment} from './comments';
-import {checkIfClassIsExported, checkIfGenericTypesAreUnbound} from './ts_util';
+import {checkIfClassIsExported} from './ts_util';
 import {TypeParameterEmitter} from './type_parameter_emitter';
 
 /**
