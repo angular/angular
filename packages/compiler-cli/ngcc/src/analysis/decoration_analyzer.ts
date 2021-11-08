@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {ConstantPool} from '@angular/compiler';
-import {NOOP_PERF_RECORDER} from '@angular/compiler-cli/src/ngtsc/perf';
 import ts from 'typescript';
 
 import {ParsedConfiguration} from '../../..';
@@ -18,6 +17,7 @@ import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy,
 import {SemanticSymbol} from '../../../src/ngtsc/incremental/semantic_graph';
 import {CompoundMetadataReader, CompoundMetadataRegistry, DtsMetadataReader, InjectableClassRegistry, LocalMetadataRegistry, ResourceRegistry} from '../../../src/ngtsc/metadata';
 import {PartialEvaluator} from '../../../src/ngtsc/partial_evaluator';
+import {NOOP_PERF_RECORDER} from '../../../src/ngtsc/perf';
 import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver, TypeCheckScopeRegistry} from '../../../src/ngtsc/scope';
 import {DecoratorHandler} from '../../../src/ngtsc/transform';
 import {NgccReflectionHost} from '../host/ngcc_host';

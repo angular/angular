@@ -5,10 +5,10 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {PathManipulation} from '@angular/compiler-cli/src/ngtsc/file_system';
 import MagicString from 'magic-string';
 import ts from 'typescript';
 
+import {PathManipulation} from '../../../src/ngtsc/file_system';
 import {Reexport} from '../../../src/ngtsc/imports';
 import {Import, ImportManager} from '../../../src/ngtsc/translator';
 import {ExportInfo} from '../analysis/private_declarations_analyzer';
