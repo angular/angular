@@ -12,7 +12,17 @@
  * toNumbers('2.0.1'); // returns [2, 0, 1]
  */
 export function toNumbers(value: string): number[] {
-  return value.split('.').map(Number);
+  // Drop any suffixes starting with `-` so that versions like `1.2.3-rc.5` are treated as `1.2.3`.
+  const suffixIndex = value.lastIndexOf('-');
+  return value.slice(0, suffixIndex === -1 ? value.length : suffixIndex).split('.').map(segment => {
+    const parsed = parseInt(segment, 10);
+
+    if (isNaN(parsed)) {
+      throw Error(`Unable to parse version string ${value}.`);
+    }
+
+    return parsed;
+  });
 }
 
 /**

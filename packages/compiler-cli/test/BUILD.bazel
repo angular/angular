@@ -145,3 +145,22 @@ jasmine_node_test(
         "//packages/core",
     ],
 )
+
+ts_library(
+    name = "typescript_support_lib",
+    testonly = True,
+    srcs = [
+        "typescript_support_spec.ts",
+    ],
+    deps = [
+        "//packages/compiler-cli",
+    ],
+)
+
+jasmine_node_test(
+    name = "typescript_support",
+    bootstrap = ["//tools/testing:node_es5"],
+    deps = [
+        ":typescript_support_lib",
+    ],
+)
