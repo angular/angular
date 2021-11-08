@@ -8,13 +8,9 @@ This topic lists the various developer guides that can help you learn about thes
 
 To get the most out of these developer guides, you should review the following topics:
 
-* [What is Angular][angular-overview]
-* [Getting started tutorial][getting-started]
-* [Understanding Angular][understanding-angular]
-
-[angular-overview]: guide/what-is-angular
-[getting-started]: start
-[understanding-angular]: guide/understanding-angular-overview
+* [What is Angular][AioGuideWhatIsAngular]
+* [Getting started tutorial][AioStart]
+* [Understanding Angular][AioGuideUnderstandingAngularOverview]
 
 ## Learn about Angular's features
 
@@ -70,3 +66,17 @@ To get the most out of these developer guides, you should review the following t
     <p class="card-footer">Prerendering</p>
   </a>
 </div>
+
+<!-- links -->
+
+[AioGuideUnderstandingAngularOverview]: guide/understanding-angular-overview "Understanding Angular | Angular"
+
+[AioGuideWhatIsAngular]: guide/what-is-angular "What is Angular\? | Angular"
+
+[AioStart]: start "Getting started with Angular | Angular"
+
+<!-- external links -->
+
+<!-- end links -->
+
+@reviewed 2021-11-05

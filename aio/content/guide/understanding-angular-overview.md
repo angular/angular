@@ -1,6 +1,6 @@
 # Understanding Angular
 
-As described in [What Is Angular][angular-overview], the Angular frameworks consists of four basic elements:
+As described in [What Is Angular][AioGuideWhatIsAngular], the Angular frameworks consists of four basic elements:
 
 * Components
 * Templates
@@ -13,11 +13,8 @@ Not every application uses all four elements equally. But understanding these el
 
 To get the most out of these developer guides, you should review the following topics:
 
-* [What is Angular][angular-overview]
-* [Getting started tutorial][getting-started]
-
-[angular-overview]: guide/what-is-angular
-[getting-started]: start
+* [What is Angular][AioGuideWhatIsAngular]
+* [Getting started tutorial][AioStart]
 
 ## Learn about Angular basics
 
@@ -48,3 +45,15 @@ To get the most out of these developer guides, you should review the following t
     <p class="card-footer">Angular Universal</p>
   </a> -->
 </div>
+
+<!-- links -->
+
+[AioGuideWhatIsAngular]: guide/what-is-angular "What is Angular\? | Angular"
+
+[AioStart]: start "Getting started with Angular | Angular"
+
+<!-- external links -->
+
+<!-- end links -->
+
+@reviewed 2021-11-05
