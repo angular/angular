@@ -17,7 +17,6 @@ import {
   AfterContentInit,
   Attribute,
   Directive,
-  DoCheck,
   ElementRef,
   Input,
   IterableDiffers,
@@ -37,10 +36,13 @@ const _MatTreeNodeBase = mixinTabIndex(mixinDisabled(CdkTreeNode));
   exportAs: 'matTreeNode',
   inputs: ['role', 'disabled', 'tabIndex'],
   providers: [{provide: CdkTreeNode, useExisting: MatTreeNode}],
+  host: {
+    'class': 'mat-tree-node',
+  },
 })
 export class MatTreeNode<T, K = T>
   extends _MatTreeNodeBase<T, K>
-  implements CanDisable, DoCheck, HasTabIndex, OnInit, OnDestroy
+  implements CanDisable, HasTabIndex, OnInit, OnDestroy
 {
   constructor(
     elementRef: ElementRef<HTMLElement>,
@@ -48,23 +50,13 @@ export class MatTreeNode<T, K = T>
     @Attribute('tabindex') tabIndex: string,
   ) {
     super(elementRef, tree);
-
     this.tabIndex = Number(tabIndex) || 0;
-    // The classes are directly added here instead of in the host property because classes on
-    // the host property are not inherited with View Engine. It is not set as a @HostBinding because
-    // it is not set by the time it's children nodes try to read the class from it.
-    // TODO: move to host after View Engine deprecation
-    elementRef.nativeElement.classList.add('mat-tree-node');
   }
 
   // This is a workaround for https://github.com/angular/angular/issues/23091
   // In aot mode, the lifecycle hooks from parent class are not called.
   override ngOnInit() {
     super.ngOnInit();
-  }
-
-  override ngDoCheck() {
-    super.ngDoCheck();
   }
 
   override ngOnDestroy() {
@@ -100,10 +92,13 @@ export class MatTreeNodeDef<T> extends CdkTreeNodeDef<T> {
     {provide: CdkTreeNode, useExisting: MatNestedTreeNode},
     {provide: CDK_TREE_NODE_OUTLET_NODE, useExisting: MatNestedTreeNode},
   ],
+  host: {
+    'class': 'mat-nested-tree-node',
+  },
 })
 export class MatNestedTreeNode<T, K = T>
   extends CdkNestedTreeNode<T, K>
-  implements AfterContentInit, DoCheck, OnDestroy, OnInit
+  implements AfterContentInit, OnDestroy, OnInit
 {
   @Input('matNestedTreeNode') node: T;
 
@@ -136,11 +131,6 @@ export class MatNestedTreeNode<T, K = T>
   ) {
     super(elementRef, tree, differs);
     this.tabIndex = Number(tabIndex) || 0;
-    // The classes are directly added here instead of in the host property because classes on
-    // the host property are not inherited with View Engine. It is not set as a @HostBinding because
-    // it is not set by the time it's children nodes try to read the class from it.
-    // TODO: move to host after View Engine deprecation
-    elementRef.nativeElement.classList.add('mat-nested-tree-node');
   }
 
   // This is a workaround for https://github.com/angular/angular/issues/19145
@@ -148,10 +138,6 @@ export class MatNestedTreeNode<T, K = T>
   // TODO(tinayuangao): Remove when the angular issue #19145 is fixed
   override ngOnInit() {
     super.ngOnInit();
-  }
-
-  override ngDoCheck() {
-    super.ngDoCheck();
   }
 
   override ngAfterContentInit() {

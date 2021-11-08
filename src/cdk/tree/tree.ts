@@ -14,7 +14,6 @@ import {
   Component,
   ContentChildren,
   Directive,
-  DoCheck,
   ElementRef,
   Input,
   IterableChangeRecord,
@@ -316,8 +315,12 @@ export class CdkTree<T, K = T> implements AfterContentChecked, CollectionViewer,
 @Directive({
   selector: 'cdk-tree-node',
   exportAs: 'cdkTreeNode',
+  host: {
+    'class': 'cdk-tree-node',
+    '[attr.aria-expanded]': 'isExpanded',
+  },
 })
-export class CdkTreeNode<T, K = T> implements DoCheck, FocusableOption, OnDestroy, OnInit {
+export class CdkTreeNode<T, K = T> implements FocusableOption, OnDestroy, OnInit {
   /**
    * The role of the tree node.
    * @deprecated The correct role is 'treeitem', 'group' should not be used. This input will be
@@ -364,13 +367,6 @@ export class CdkTreeNode<T, K = T> implements DoCheck, FocusableOption, OnDestro
     return this._tree.treeControl.isExpanded(this._data);
   }
 
-  private _setExpanded(_expanded: boolean) {
-    this._isAriaExpanded = _expanded;
-    this._elementRef.nativeElement.setAttribute('aria-expanded', `${_expanded}`);
-  }
-
-  protected _isAriaExpanded: boolean;
-
   get level(): number {
     // If the treeControl has a getLevel method, use it to get the level. Otherwise read the
     // aria-level off the parent node and use it as the level for this node (note aria-level is
@@ -382,27 +378,12 @@ export class CdkTreeNode<T, K = T> implements DoCheck, FocusableOption, OnDestro
 
   constructor(protected _elementRef: ElementRef<HTMLElement>, protected _tree: CdkTree<T, K>) {
     CdkTreeNode.mostRecentTreeNode = this as CdkTreeNode<T, K>;
-    // The classes are directly added here instead of in the host property because classes on
-    // the host property are not inherited with View Engine. It is not set as a @HostBinding because
-    // it is not set by the time it's children nodes try to read the class from it.
-    // TODO: move to host after View Engine deprecation
-    this._elementRef.nativeElement.classList.add('cdk-tree-node');
     this.role = 'treeitem';
   }
 
   ngOnInit(): void {
     this._parentNodeAriaLevel = getParentNodeAriaLevel(this._elementRef.nativeElement);
     this._elementRef.nativeElement.setAttribute('aria-level', `${this.level + 1}`);
-  }
-
-  ngDoCheck() {
-    // aria-expanded is be set here because the expanded state is stored in the tree control and
-    // the node isn't aware when the state is changed.
-    // It is not set using a @HostBinding because they sometimes get lost with Mixin based classes.
-    // TODO: move to host after View Engine deprecation
-    if (this.isExpanded != this._isAriaExpanded) {
-      this._setExpanded(this.isExpanded);
-    }
   }
 
   ngOnDestroy() {

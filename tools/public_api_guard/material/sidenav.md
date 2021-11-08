@@ -50,12 +50,8 @@ export function MAT_DRAWER_DEFAULT_AUTOSIZE_FACTORY(): boolean;
 // @public
 export class MatDrawer implements AfterContentInit, AfterContentChecked, OnDestroy {
     constructor(_elementRef: ElementRef<HTMLElement>, _focusTrapFactory: FocusTrapFactory, _focusMonitor: FocusMonitor, _platform: Platform, _ngZone: NgZone, _interactivityChecker: InteractivityChecker, _doc: any, _container?: MatDrawerContainer | undefined);
-    // (undocumented)
-    _animationDoneListener(event: AnimationEvent_2): void;
     readonly _animationEnd: Subject<AnimationEvent_2>;
     readonly _animationStarted: Subject<AnimationEvent_2>;
-    // (undocumented)
-    _animationStartListener(event: AnimationEvent_2): void;
     _animationState: 'open-instant' | 'open' | 'void';
     get autoFocus(): AutoFocusTarget | string | boolean;
     set autoFocus(value: AutoFocusTarget | string | boolean);

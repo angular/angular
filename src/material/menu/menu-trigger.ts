@@ -29,8 +29,6 @@ import {
   Directive,
   ElementRef,
   EventEmitter,
-  HostBinding,
-  HostListener,
   Inject,
   InjectionToken,
   Input,
@@ -74,7 +72,16 @@ const passiveEventListenerOptions = normalizePassiveListenerOptions({passive: tr
 
 // TODO(andrewseguin): Remove the kebab versions in favor of camelCased attribute selectors
 
-@Directive()
+@Directive({
+  host: {
+    'aria-haspopup': 'true',
+    '[attr.aria-expanded]': 'menuOpen || null',
+    '[attr.aria-controls]': 'menuOpen ? menu.panelId : null',
+    '(click)': '_handleClick($event)',
+    '(mousedown)': '_handleMousedown($event)',
+    '(keydown)': '_handleKeydown($event)',
+  },
+})
 export abstract class _MatMenuTriggerBase implements AfterContentInit, OnDestroy {
   private _portal: TemplatePortal;
   private _overlayRef: OverlayRef | null = null;
@@ -103,22 +110,6 @@ export abstract class _MatMenuTriggerBase implements AfterContentInit, OnDestroy
   // Tracking input type is necessary so it's possible to only auto-focus
   // the first item of the list when the menu is opened via the keyboard
   _openedBy: Exclude<FocusOrigin, 'program' | null> | undefined = undefined;
-
-  @HostBinding('attr.aria-expanded')
-  // Need tp use getter for HostBinding
-  // tslint:disable-next-line:no-private-getters
-  get _ariaExpanded() {
-    return this.menuOpen || null;
-  }
-
-  @HostBinding('attr.aria-controls')
-  // Need tp use getter for HostBinding
-  // tslint:disable-next-line:no-private-getters
-  get _ariaControl() {
-    return this.menuOpen ? this.menu.panelId : null;
-  }
-
-  @HostBinding('attr.aria-haspopup') _ariaHaspopup = true;
 
   /**
    * @deprecated
@@ -529,7 +520,6 @@ export abstract class _MatMenuTriggerBase implements AfterContentInit, OnDestroy
   }
 
   /** Handles mouse presses on the trigger. */
-  @HostListener('mousedown', ['$event'])
   _handleMousedown(event: MouseEvent): void {
     if (!isFakeMousedownFromScreenReader(event)) {
       // Since right or middle button clicks won't trigger the `click` event,
@@ -546,7 +536,6 @@ export abstract class _MatMenuTriggerBase implements AfterContentInit, OnDestroy
   }
 
   /** Handles key presses on the trigger. */
-  @HostListener('keydown', ['$event'])
   _handleKeydown(event: KeyboardEvent): void {
     const keyCode = event.keyCode;
 
@@ -566,7 +555,6 @@ export abstract class _MatMenuTriggerBase implements AfterContentInit, OnDestroy
   }
 
   /** Handles click events on the trigger. */
-  @HostListener('click', ['$event'])
   _handleClick(event: MouseEvent): void {
     if (this.triggersSubmenu()) {
       // Stop event propagation to avoid closing the parent menu.

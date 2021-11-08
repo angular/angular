@@ -15,7 +15,6 @@ import {
   Output,
   EventEmitter,
   Inject,
-  HostListener,
   NgZone,
   OnDestroy,
 } from '@angular/core';
@@ -53,6 +52,12 @@ function removeIcons(element: Element) {
     'role': 'menuitem',
     'class': 'cdk-menu-item',
     '[attr.aria-disabled]': 'disabled || null',
+    '(blur)': '_resetTabIndex()',
+    '(mouseout)': '_resetTabIndex()',
+    '(focus)': '_setTabIndex()',
+    '(mouseenter)': '_setTabIndex($event)',
+    '(click)': 'trigger()',
+    '(keydown)': '_onKeydown($event)',
   },
 })
 export class CdkMenuItem implements FocusableOption, FocusableElement, Toggler, OnDestroy {
@@ -104,12 +109,6 @@ export class CdkMenuItem implements FocusableOption, FocusableElement, Toggler, 
     this._elementRef.nativeElement.focus();
   }
 
-  // In Ivy the `host` metadata will be merged, whereas in ViewEngine it is overridden. In order
-  // to avoid double event listeners, we need to use `HostListener`. Once Ivy is the default, we
-  // can move this back into `host`.
-  // tslint:disable:no-host-decorator-in-concrete
-  @HostListener('blur')
-  @HostListener('mouseout')
   /** Reset the _tabindex to -1. */
   _resetTabIndex() {
     if (!this._isStandaloneItem()) {
@@ -117,12 +116,6 @@ export class CdkMenuItem implements FocusableOption, FocusableElement, Toggler, 
     }
   }
 
-  // In Ivy the `host` metadata will be merged, whereas in ViewEngine it is overridden. In order
-  // to avoid double event listeners, we need to use `HostListener`. Once Ivy is the default, we
-  // can move this back into `host`.
-  // tslint:disable:no-host-decorator-in-concrete
-  @HostListener('focus')
-  @HostListener('mouseenter', ['$event'])
   /**
    * Set the tab index to 0 if not disabled and it's a focus event, or a mouse enter if this element
    * is not in a menu bar.
@@ -143,11 +136,6 @@ export class CdkMenuItem implements FocusableOption, FocusableElement, Toggler, 
     return !this._parentMenu;
   }
 
-  // In Ivy the `host` metadata will be merged, whereas in ViewEngine it is overridden. In order
-  // to avoid double event listeners, we need to use `HostListener`. Once Ivy is the default, we
-  // can move this back into `host`.
-  // tslint:disable:no-host-decorator-in-concrete
-  @HostListener('click')
   /**
    * If the menu item is not disabled and the element does not have a menu trigger attached, emit
    * on the cdkMenuItemTriggered emitter and close all open menus.
@@ -192,11 +180,6 @@ export class CdkMenuItem implements FocusableOption, FocusableElement, Toggler, 
     return clone.textContent?.trim() || '';
   }
 
-  // In Ivy the `host` metadata will be merged, whereas in ViewEngine it is overridden. In order
-  // to avoid double event listeners, we need to use `HostListener`. Once Ivy is the default, we
-  // can move this back into `host`.
-  // tslint:disable:no-host-decorator-in-concrete
-  @HostListener('keydown', ['$event'])
   /**
    * Handles keyboard events for the menu item, specifically either triggering the user defined
    * callback or opening/closing the current menu based on whether the left or right arrow key was

@@ -7,33 +7,30 @@
  */
 
 import {DOCUMENT} from '@angular/common';
-import {
-  AfterViewInit,
-  Directive,
-  ElementRef,
-  HostListener,
-  Inject,
-  OnDestroy,
-  QueryList,
-} from '@angular/core';
+import {AfterViewInit, Directive, ElementRef, Inject, OnDestroy, QueryList} from '@angular/core';
 import {MDCListAdapter, MDCListFoundation} from '@material/list';
 import {Subscription} from 'rxjs';
 import {startWith} from 'rxjs/operators';
 import {MatListBase, MatListItemBase} from './list-base';
 
-@Directive()
+@Directive({
+  host: {
+    '(keydown)': '_handleKeydown($event)',
+    '(click)': '_handleClick($event)',
+    '(focusin)': '_handleFocusin($event)',
+    '(focusout)': '_handleFocusout($event)',
+  },
+})
 /** @docs-private */
 export abstract class MatInteractiveListBase<T extends MatListItemBase>
   extends MatListBase
   implements AfterViewInit, OnDestroy
 {
-  @HostListener('keydown', ['$event'])
   _handleKeydown(event: KeyboardEvent) {
     const index = this._indexForElement(event.target as HTMLElement);
     this._foundation.handleKeydown(event, this._elementAtIndex(index) === event.target, index);
   }
 
-  @HostListener('click', ['$event'])
   _handleClick(event: MouseEvent) {
     // The `toggleCheckbox` parameter can always be `true` as it only has an effect if the list
     // is recognized as checkbox selection list. For such lists, we would always want to toggle
@@ -47,7 +44,6 @@ export abstract class MatInteractiveListBase<T extends MatListItemBase>
     );
   }
 
-  @HostListener('focusin', ['$event'])
   _handleFocusin(event: FocusEvent) {
     const itemIndex = this._indexForElement(event.target as HTMLElement);
     const tabIndex = this._itemsArr[itemIndex]?._hostElement.tabIndex;
@@ -64,7 +60,6 @@ export abstract class MatInteractiveListBase<T extends MatListItemBase>
     this._foundation.handleFocusIn(itemIndex);
   }
 
-  @HostListener('focusout', ['$event'])
   _handleFocusout(event: FocusEvent) {
     this._foundation.handleFocusOut(this._indexForElement(event.target as HTMLElement));
   }

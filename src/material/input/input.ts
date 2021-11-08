@@ -14,7 +14,6 @@ import {
   Directive,
   DoCheck,
   ElementRef,
-  HostListener,
   Inject,
   Input,
   NgZone,
@@ -85,6 +84,9 @@ const _MatInputBase = mixinErrorState(
     // state usually overlaps with `aria-required` when the input is empty and can be redundant.
     '[attr.aria-invalid]': '(empty && required) ? null : errorState',
     '[attr.aria-required]': 'required',
+    '(focus)': '_focusChanged(true)',
+    '(blur)': '_focusChanged(false)',
+    '(input)': '_onInput()',
   },
   providers: [{provide: MatFormFieldControl, useExisting: MatInput}],
 })
@@ -365,15 +367,7 @@ export class MatInput
     this._elementRef.nativeElement.focus(options);
   }
 
-  // We have to use a `HostListener` here in order to support both Ivy and ViewEngine.
-  // In Ivy the `host` bindings will be merged when this class is extended, whereas in
-  // ViewEngine they're overwritten.
-  // TODO(crisbeto): we move this back into `host` once Ivy is turned on by default.
   /** Callback for the cases where the focused state of the input changes. */
-  // tslint:disable:no-host-decorator-in-concrete
-  @HostListener('focus', ['true'])
-  @HostListener('blur', ['false'])
-  // tslint:enable:no-host-decorator-in-concrete
   _focusChanged(isFocused: boolean) {
     if (isFocused !== this.focused) {
       this.focused = isFocused;
@@ -381,12 +375,6 @@ export class MatInput
     }
   }
 
-  // We have to use a `HostListener` here in order to support both Ivy and ViewEngine.
-  // In Ivy the `host` bindings will be merged when this class is extended, whereas in
-  // ViewEngine they're overwritten.
-  // TODO(crisbeto): we move this back into `host` once Ivy is turned on by default.
-  // tslint:disable-next-line:no-host-decorator-in-concrete
-  @HostListener('input')
   _onInput() {
     // This is a noop function and is used to let Angular know whenever the value changes.
     // Angular will run a new change detection each time the `input` event has been dispatched.

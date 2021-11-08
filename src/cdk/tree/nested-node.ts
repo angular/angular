@@ -9,7 +9,6 @@ import {
   AfterContentInit,
   ContentChildren,
   Directive,
-  DoCheck,
   ElementRef,
   IterableDiffer,
   IterableDiffers,
@@ -38,10 +37,13 @@ import {getTreeControlFunctionsMissingError} from './tree-errors';
     {provide: CdkTreeNode, useExisting: CdkNestedTreeNode},
     {provide: CDK_TREE_NODE_OUTLET_NODE, useExisting: CdkNestedTreeNode},
   ],
+  host: {
+    'class': 'cdk-nested-tree-node',
+  },
 })
 export class CdkNestedTreeNode<T, K = T>
   extends CdkTreeNode<T, K>
-  implements AfterContentInit, DoCheck, OnDestroy, OnInit
+  implements AfterContentInit, OnDestroy, OnInit
 {
   /** Differ used to find the changes in the data provided by the data source. */
   private _dataDiffer: IterableDiffer<T>;
@@ -63,11 +65,6 @@ export class CdkNestedTreeNode<T, K = T>
     protected _differs: IterableDiffers,
   ) {
     super(elementRef, tree);
-    // The classes are directly added here instead of in the host property because classes on
-    // the host property are not inherited with View Engine. It is not set as a @HostBinding because
-    // it is not set by the time it's children nodes try to read the class from it.
-    // TODO: move to host after View Engine deprecation
-    elementRef.nativeElement.classList.add('cdk-nested-tree-node');
   }
 
   ngAfterContentInit() {
@@ -92,10 +89,6 @@ export class CdkNestedTreeNode<T, K = T>
   // In aot mode, the lifecycle hooks from parent class are not called.
   override ngOnInit() {
     super.ngOnInit();
-  }
-
-  override ngDoCheck() {
-    super.ngDoCheck();
   }
 
   override ngOnDestroy() {

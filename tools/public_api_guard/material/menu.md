@@ -288,12 +288,6 @@ export class MatMenuTrigger extends _MatMenuTriggerBase {
 // @public (undocumented)
 export abstract class _MatMenuTriggerBase implements AfterContentInit, OnDestroy {
     constructor(_overlay: Overlay, _element: ElementRef<HTMLElement>, _viewContainerRef: ViewContainerRef, scrollStrategy: any, parentMenu: MatMenuPanel, _menuItemInstance: MatMenuItem, _dir: Directionality, _focusMonitor?: FocusMonitor | undefined);
-    // (undocumented)
-    get _ariaControl(): string | null | undefined;
-    // (undocumented)
-    get _ariaExpanded(): true | null;
-    // (undocumented)
-    _ariaHaspopup: boolean;
     closeMenu(): void;
     // @deprecated (undocumented)
     get _deprecatedMatMenuTriggerFor(): MatMenuPanel;

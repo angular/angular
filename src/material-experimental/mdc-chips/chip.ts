@@ -19,7 +19,6 @@ import {
   Directive,
   ElementRef,
   EventEmitter,
-  HostListener,
   Inject,
   Input,
   NgZone,
@@ -106,6 +105,7 @@ const _MatChipMixinBase = mixinTabIndex(mixinColor(mixinDisableRipple(MatChipBas
     '[id]': 'id',
     '[attr.disabled]': 'disabled || null',
     '[attr.aria-disabled]': 'disabled.toString()',
+    '(transitionend)': '_handleTransitionEnd($event)',
   },
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -141,12 +141,6 @@ export class MatChip
   /** Whether animations for the chip are enabled. */
   _animationsDisabled: boolean;
 
-  // We have to use a `HostListener` here in order to support both Ivy and ViewEngine.
-  // In Ivy the `host` bindings will be merged when this class is extended, whereas in
-  // ViewEngine they're overwritten.
-  // TODO(mmalerba): we move this back into `host` once Ivy is turned on by default.
-  // tslint:disable-next-line:no-host-decorator-in-concrete
-  @HostListener('transitionend', ['$event'])
   _handleTransitionEnd(event: TransitionEvent) {
     this._chipFoundation.handleTransitionEnd(event);
   }

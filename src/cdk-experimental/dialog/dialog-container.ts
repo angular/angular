@@ -24,7 +24,6 @@ import {
   ComponentRef,
   ElementRef,
   EmbeddedViewRef,
-  HostBinding,
   Inject,
   NgZone,
   OnDestroy,
@@ -70,6 +69,11 @@ export function throwDialogContentAlreadyAttachedError() {
     }`,
     '(@dialog.start)': '_onAnimationStart($event)',
     '(@dialog.done)': '_animationDone.next($event)',
+    'tabindex': '-1',
+    '[attr.role]': '_config.role',
+    'aria-modal': 'true',
+    '[attr.aria-label]': '_config.ariaLabel || null',
+    '[attr.aria-describedby]': '_config.ariaDescribedBy',
   },
 })
 export class CdkDialogContainer extends BasePortalOutlet implements OnDestroy {
@@ -83,30 +87,6 @@ export class CdkDialogContainer extends BasePortalOutlet implements OnDestroy {
 
   /** The class that traps and manages focus within the dialog. */
   private _focusTrap = this._focusTrapFactory.create(this._elementRef.nativeElement);
-
-  // @HostBinding is used in the class as it is expected to be extended. Since @Component decorator
-  // metadata is not inherited by child classes, instead the host binding data is defined in a way
-  // that can be inherited.
-  // tslint:disable:no-host-decorator-in-concrete no-private-getters
-  @HostBinding('attr.aria-label') get _ariaLabel() {
-    return this._config.ariaLabel || null;
-  }
-
-  @HostBinding('attr.aria-describedby')
-  get _ariaDescribedBy() {
-    return this._config.ariaDescribedBy;
-  }
-
-  @HostBinding('attr.role') get _role() {
-    return this._config.role;
-  }
-
-  @HostBinding('attr.aria-modal') _ariaModal: boolean = true;
-
-  @HostBinding('attr.tabindex') get _tabindex() {
-    return -1;
-  }
-  // tslint:disable:no-host-decorator-in-concrete no-private-getters
 
   /** The portal host inside of this container into which the dialog content will be loaded. */
   @ViewChild(CdkPortalOutlet, {static: true}) _portalHost: CdkPortalOutlet;

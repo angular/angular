@@ -13,7 +13,6 @@ import {
   ContentChildren,
   Directive,
   ElementRef,
-  HostBinding,
   Inject,
   Input,
   NgZone,
@@ -42,7 +41,12 @@ function toggleClass(el: Element, className: string, on: boolean) {
   }
 }
 
-@Directive()
+@Directive({
+  host: {
+    '[class.mdc-list-item--disabled]': 'disabled',
+    '[attr.aria-disabled]': 'disabled',
+  },
+})
 /** @docs-private */
 export abstract class MatListItemBase implements AfterContentInit, OnDestroy, RippleTarget {
   /** Query list matching list-item line elements. */
@@ -72,8 +76,6 @@ export abstract class MatListItemBase implements AfterContentInit, OnDestroy, Ri
   private _disableRipple: boolean = false;
 
   /** Whether the list-item is disabled. */
-  @HostBinding('class.mdc-list-item--disabled')
-  @HostBinding('attr.aria-disabled')
   @Input()
   get disabled(): boolean {
     return this._disabled || (this._listBase && this._listBase.disabled);
@@ -194,10 +196,14 @@ export abstract class MatListItemBase implements AfterContentInit, OnDestroy, Ri
   static ngAcceptInputType_disableRipple: BooleanInput;
 }
 
-@Directive()
+@Directive({
+  host: {
+    '[class.mat-mdc-list-non-interactive]': '_isNonInteractive',
+    '[attr.aria-disabled]': 'disabled',
+  },
+})
 /** @docs-private */
 export abstract class MatListBase {
-  @HostBinding('class.mat-mdc-list-non-interactive')
   _isNonInteractive: boolean = true;
 
   /** Whether ripples for all list items is disabled. */
@@ -211,7 +217,6 @@ export abstract class MatListBase {
   private _disableRipple: boolean = false;
 
   /** Whether all list items are disabled. */
-  @HostBinding('attr.aria-disabled')
   @Input()
   get disabled(): boolean {
     return this._disabled;

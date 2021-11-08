@@ -41,8 +41,6 @@ import {
   QueryList,
   ViewChild,
   ViewEncapsulation,
-  HostListener,
-  HostBinding,
 } from '@angular/core';
 import {fromEvent, merge, Observable, Subject} from 'rxjs';
 import {
@@ -142,6 +140,9 @@ export class MatDrawerContent extends CdkScrollable implements AfterContentInit 
     '[class.mat-drawer-side]': 'mode === "side"',
     '[class.mat-drawer-opened]': 'opened',
     'tabIndex': '-1',
+    '[@transform]': '_animationState',
+    '(@transform.start)': '_animationStarted.next($event)',
+    '(@transform.done)': '_animationEnd.next($event)',
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
@@ -244,11 +245,6 @@ export class MatDrawer implements AfterContentInit, AfterContentChecked, OnDestr
   readonly _animationEnd = new Subject<AnimationEvent>();
 
   /** Current state of the sidenav animation. */
-  // @HostBinding is used in the class as it is expected to be extended.  Since @Component decorator
-  // metadata is not inherited by child classes, instead the host binding data is defined in a way
-  // that can be inherited.
-  // tslint:disable-next-line:no-host-decorator-in-concrete
-  @HostBinding('@transform')
   _animationState: 'open-instant' | 'open' | 'void' = 'void';
 
   /** Event emitted when the drawer open state is changed. */
@@ -564,26 +560,6 @@ export class MatDrawer implements AfterContentInit, AfterContentChecked, OnDestr
       // The focus trap is only enabled when the drawer is open in any mode other than side.
       this._focusTrap.enabled = this.opened && this.mode !== 'side';
     }
-  }
-
-  // We have to use a `HostListener` here in order to support both Ivy and ViewEngine.
-  // In Ivy the `host` bindings will be merged when this class is extended, whereas in
-  // ViewEngine they're overwritten.
-  // TODO(crisbeto): we move this back into `host` once Ivy is turned on by default.
-  // tslint:disable-next-line:no-host-decorator-in-concrete
-  @HostListener('@transform.start', ['$event'])
-  _animationStartListener(event: AnimationEvent) {
-    this._animationStarted.next(event);
-  }
-
-  // We have to use a `HostListener` here in order to support both Ivy and ViewEngine.
-  // In Ivy the `host` bindings will be merged when this class is extended, whereas in
-  // ViewEngine they're overwritten.
-  // TODO(crisbeto): we move this back into `host` once Ivy is turned on by default.
-  // tslint:disable-next-line:no-host-decorator-in-concrete
-  @HostListener('@transform.done', ['$event'])
-  _animationDoneListener(event: AnimationEvent) {
-    this._animationEnd.next(event);
   }
 
   static ngAcceptInputType_disableClose: BooleanInput;

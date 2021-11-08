@@ -17,7 +17,6 @@ import {
   OnDestroy,
   TemplateRef,
   ViewContainerRef,
-  HostListener,
 } from '@angular/core';
 import {fromEvent, fromEventPattern, merge, Subject} from 'rxjs';
 import {
@@ -496,6 +495,9 @@ export class CdkRowHoverContent implements AfterViewInit, OnDestroy {
  */
 @Directive({
   selector: '[cdkEditOpen]',
+  host: {
+    '(click)': 'openEdit($event)',
+  },
 })
 export class CdkEditOpen {
   constructor(
@@ -510,11 +512,6 @@ export class CdkEditOpen {
     }
   }
 
-  // In Ivy the `host` metadata will be merged, whereas in ViewEngine it is overridden. In order
-  // to avoid double event listeners, we need to use `HostListener`. Once Ivy is the default, we
-  // can move this back into `host`.
-  // tslint:disable-next-line:no-host-decorator-in-concrete
-  @HostListener('click', ['$event'])
   openEdit(evt: Event): void {
     this.editEventDispatcher.editing.next(closest(this.elementRef.nativeElement!, CELL_SELECTOR));
     evt.stopPropagation();

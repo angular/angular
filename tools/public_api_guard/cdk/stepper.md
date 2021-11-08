@@ -163,8 +163,6 @@ export class CdkStepperModule {
 export class CdkStepperNext {
     constructor(_stepper: CdkStepper);
     // (undocumented)
-    _handleClick(): void;
-    // (undocumented)
     _stepper: CdkStepper;
     type: string;
     // (undocumented)
@@ -176,8 +174,6 @@ export class CdkStepperNext {
 // @public
 export class CdkStepperPrevious {
     constructor(_stepper: CdkStepper);
-    // (undocumented)
-    _handleClick(): void;
     // (undocumented)
     _stepper: CdkStepper;
     type: string;

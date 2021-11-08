@@ -3,7 +3,7 @@ Utility functions for coercing `@Input`s into specific types.
 ### Example
 
 ```ts
-import {Directive, ElementRef, HostListener} from '@angular/core';
+import {Directive, ElementRef} from '@angular/core';
 import {
   coerceBooleanProperty,
   BooleanInput,

@@ -12,7 +12,6 @@ import { ChangeDetectorRef } from '@angular/core';
 import { CollectionViewer } from '@angular/cdk/collections';
 import { DataSource } from '@angular/cdk/collections';
 import { Directionality } from '@angular/cdk/bidi';
-import { DoCheck } from '@angular/core';
 import { ElementRef } from '@angular/core';
 import { FocusableOption } from '@angular/cdk/a11y';
 import * as i0 from '@angular/core';
@@ -56,7 +55,7 @@ export abstract class BaseTreeControl<T, K = T> implements TreeControl<T, K> {
 export const CDK_TREE_NODE_OUTLET_NODE: InjectionToken<{}>;
 
 // @public
-export class CdkNestedTreeNode<T, K = T> extends CdkTreeNode<T, K> implements AfterContentInit, DoCheck, OnDestroy, OnInit {
+export class CdkNestedTreeNode<T, K = T> extends CdkTreeNode<T, K> implements AfterContentInit, OnDestroy, OnInit {
     constructor(elementRef: ElementRef<HTMLElement>, tree: CdkTree<T, K>, _differs: IterableDiffers);
     protected _children: T[];
     protected _clear(): void;
@@ -64,8 +63,6 @@ export class CdkNestedTreeNode<T, K = T> extends CdkTreeNode<T, K> implements Af
     protected _differs: IterableDiffers;
     // (undocumented)
     ngAfterContentInit(): void;
-    // (undocumented)
-    ngDoCheck(): void;
     // (undocumented)
     ngOnDestroy(): void;
     // (undocumented)
@@ -118,7 +115,7 @@ export class CdkTreeModule {
 }
 
 // @public
-export class CdkTreeNode<T, K = T> implements DoCheck, FocusableOption, OnDestroy, OnInit {
+export class CdkTreeNode<T, K = T> implements FocusableOption, OnDestroy, OnInit {
     constructor(_elementRef: ElementRef<HTMLElement>, _tree: CdkTree<T, K>);
     get data(): T;
     set data(value: T);
@@ -130,14 +127,10 @@ export class CdkTreeNode<T, K = T> implements DoCheck, FocusableOption, OnDestro
     protected _elementRef: ElementRef<HTMLElement>;
     focus(): void;
     // (undocumented)
-    protected _isAriaExpanded: boolean;
-    // (undocumented)
     get isExpanded(): boolean;
     // (undocumented)
     get level(): number;
     static mostRecentTreeNode: CdkTreeNode<any> | null;
-    // (undocumented)
-    ngDoCheck(): void;
     // (undocumented)
     ngOnDestroy(): void;
     // (undocumented)
