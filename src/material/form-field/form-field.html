@@ -16,7 +16,11 @@
       </div>
     </ng-container>
 
-    <div class="mat-form-field-prefix" *ngIf="_prefixChildren.length">
+    <div
+      class="mat-form-field-prefix"
+      *ngIf="_prefixChildren.length"
+      (cdkObserveContent)="updateOutlineGap()"
+      [cdkObserveContentDisabled]="appearance != 'outline'">
       <ng-content select="[matPrefix]"></ng-content>
     </div>
 
