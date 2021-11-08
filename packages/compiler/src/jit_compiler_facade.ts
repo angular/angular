@@ -10,7 +10,7 @@
 import {CompilerFacade, CoreEnvironment, ExportedCompilerFacade, OpaqueValue, R3ComponentMetadataFacade, R3DeclareComponentFacade, R3DeclareDependencyMetadataFacade, R3DeclareDirectiveFacade, R3DeclareFactoryFacade, R3DeclareInjectableFacade, R3DeclareInjectorFacade, R3DeclareNgModuleFacade, R3DeclarePipeFacade, R3DeclareQueryMetadataFacade, R3DeclareUsedDirectiveFacade, R3DependencyMetadataFacade, R3DirectiveMetadataFacade, R3FactoryDefMetadataFacade, R3InjectableMetadataFacade, R3InjectorMetadataFacade, R3NgModuleMetadataFacade, R3PipeMetadataFacade, R3QueryMetadataFacade, StringMap, StringMapWithRename} from './compiler_facade_interface';
 import {ConstantPool} from './constant_pool';
 import {ChangeDetectionStrategy, HostBinding, HostListener, Input, Output, ViewEncapsulation} from './core';
-import {compileInjectable, createR3ProviderExpression, R3ProviderExpression} from './injectable_compiler_2';
+import {compileInjectable} from './injectable_compiler_2';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from './ml_parser/interpolation_config';
 import {DeclareVarStmt, Expression, literal, LiteralExpr, Statement, StmtModifier, WrappedNodeExpr} from './output/output_ast';
 import {JitEvaluator} from './output/output_jit';
@@ -20,7 +20,7 @@ import {compileInjector, R3InjectorMetadata} from './render3/r3_injector_compile
 import {R3JitReflector} from './render3/r3_jit';
 import {compileNgModule, compileNgModuleDeclarationExpression, R3NgModuleMetadata} from './render3/r3_module_compiler';
 import {compilePipeFromMetadata, R3PipeMetadata} from './render3/r3_pipe_compiler';
-import {getSafePropertyAccessString, wrapReference} from './render3/util';
+import {createMayBeForwardRefExpression, getSafePropertyAccessString, MaybeForwardRefExpression, wrapReference} from './render3/util';
 import {DeclarationListEmitMode, R3ComponentMetadata, R3DirectiveMetadata, R3HostMetadata, R3QueryMetadata, R3UsedDirectiveMetadata} from './render3/view/api';
 import {compileComponentFromMetadata, compileDirectiveFromMetadata, ParsedHostBindings, parseHostBindings, verifyHostBindings} from './render3/view/compiler';
 import {makeBindingParser, parseTemplate} from './render3/view/template';
@@ -477,9 +477,11 @@ type R3DirectiveMetadataFacadeNoPropAndWhitespace =
  * a `forwardRef()` - either by the application developer or during partial-compilation. Thus we can
  * set `isForwardRef` to `false`.
  */
-function convertToProviderExpression(obj: any, property: string): R3ProviderExpression|undefined {
+function convertToProviderExpression(obj: any, property: string): MaybeForwardRefExpression|
+    undefined {
   if (obj.hasOwnProperty(property)) {
-    return createR3ProviderExpression(new WrappedNodeExpr(obj[property]), /* isForwardRef */ false);
+    return createMayBeForwardRefExpression(
+        new WrappedNodeExpr(obj[property]), /* isForwardRef */ false);
   } else {
     return undefined;
   }
@@ -493,11 +495,11 @@ function wrapExpression(obj: any, property: string): WrappedNodeExpr<any>|undefi
   }
 }
 
-function computeProvidedIn(providedIn: Function|string|null|undefined): R3ProviderExpression {
+function computeProvidedIn(providedIn: Function|string|null|undefined): MaybeForwardRefExpression {
   const expression = typeof providedIn === 'function' ? new WrappedNodeExpr(providedIn) :
                                                         new LiteralExpr(providedIn ?? null);
   // See `convertToProviderExpression()` for why `isForwardRef` is false.
-  return createR3ProviderExpression(expression, /* isForwardRef */ false);
+  return createMayBeForwardRefExpression(expression, /* isForwardRef */ false);
 }
 
 function convertR3DependencyMetadataArray(facades: R3DependencyMetadataFacade[]|null|
