@@ -8,6 +8,7 @@
 
 import {escapeIdentifier} from '../output/abstract_emitter';
 import * as o from '../output/output_ast';
+import {Identifiers} from './r3_identifiers';
 
 export function typeWithParameters(type: o.Expression, numParams: number): o.ExpressionType {
   if (numParams === 0) {
@@ -78,4 +79,72 @@ export function wrapReference(value: any): R3Reference {
 export function refsToArray(refs: R3Reference[], shouldForwardDeclare: boolean): o.Expression {
   const values = o.literalArr(refs.map(ref => ref.value));
   return shouldForwardDeclare ? o.fn([], [new o.ReturnStatement(values)]) : values;
+}
+
+
+/**
+ * Describes an expression that may have been wrapped in a `forwardRef()` guard.
+ *
+ * This is used when describing expressions that can refer to types that may eagerly reference types
+ * that have not yet been defined.
+ */
+export interface MaybeForwardRefExpression<T extends o.Expression = o.Expression> {
+  /**
+   * The unwrapped expression.
+   */
+  expression: T;
+  /**
+   * If true, then the `expression` contains a reference to something that has not yet been
+   * defined.
+   *
+   * This means that the expression must not be eagerly evaluated. Instead it must be wrapped in a
+   * function closure that will be evaluated lazily to allow the definition of the expression to be
+   * evaluated first.
+   *
+   * In some cases the expression will naturally be placed inside such a function closure, such as
+   * in a fully compiled factory function. In those cases nothing more needs to be done.
+   *
+   * But in other cases, such as partial-compilation the expression will be located in top level
+   * code so will need to be wrapped in a function that is passed to a `forwardRef()` call.
+   */
+  isForwardRef: boolean;
+}
+
+export function createMayBeForwardRefExpression<T extends o.Expression>(
+    expression: T, isForwardRef: boolean): MaybeForwardRefExpression<T> {
+  return {expression, isForwardRef};
+}
+
+/**
+ * Convert a `MaybeForwardRefExpression` to an `Expression`, possibly wrapping its expression in a
+ * `forwardRef()` call.
+ *
+ * If `MaybeForwardRefExpression.isForwardRef` is true then the expression was originally wrapped in
+ * a `forwardRef()` call to prevent the value from being eagerly evaluated in the code.
+ *
+ * Normally, the linker will statically process the code, putting the `expression` inside a factory
+ * function so the `forwardRef()` wrapper is not evaluated before it has been defined. But if the
+ * partial declaration is evaluated by the JIT compiler the `forwardRef()` call is still needed to
+ * prevent eager evaluation of the `expression`.
+ *
+ * So in partial declarations, expressions that could be forward-refs are wrapped in `forwardRef()`
+ * calls, and this is then unwrapped in the linker as necessary.
+ *
+ * See `packages/compiler-cli/src/ngtsc/annotations/src/injectable.ts` and
+ * `packages/compiler/src/jit_compiler_facade.ts` for more information.
+ */
+export function convertFromMaybeForwardRefExpression(
+    {expression, isForwardRef}: MaybeForwardRefExpression): o.Expression {
+  return isForwardRef ? generateForwardRef(expression) : expression;
+}
+
+/**
+ * Generate an expression that has the given `expr` wrapped in the following form:
+ *
+ * ```
+ * forwardRef(() => expr)
+ * ```
+ */
+export function generateForwardRef(expr: o.Expression): o.Expression {
+  return o.importExpr(Identifiers.forwardRef).callFn([o.fn([], [new o.ReturnStatement(expr)])]);
 }

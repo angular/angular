@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {compileInjectable, ConstantPool, createR3ProviderExpression, outputAst as o, R3DeclareInjectableMetadata, R3InjectableMetadata, R3PartialDeclaration} from '@angular/compiler';
+import {compileInjectable, ConstantPool, createMayBeForwardRefExpression, outputAst as o, R3DeclareInjectableMetadata, R3InjectableMetadata, R3PartialDeclaration} from '@angular/compiler';
 
 import {AstObject} from '../../ast/ast_value';
 import {FatalLinkerError} from '../../fatal_linker_error';
@@ -44,7 +44,7 @@ export function toR3InjectableMeta<TExpression>(
     internalType: typeExpr.getOpaque(),
     typeArgumentCount: 0,
     providedIn: metaObj.has('providedIn') ? extractForwardRef(metaObj.getValue('providedIn')) :
-                                            createR3ProviderExpression(o.literal(null), false),
+                                            createMayBeForwardRefExpression(o.literal(null), false),
   };
 
   if (metaObj.has('useClass')) {

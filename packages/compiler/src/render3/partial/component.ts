@@ -10,7 +10,7 @@ import {DEFAULT_INTERPOLATION_CONFIG} from '../../ml_parser/interpolation_config
 import * as o from '../../output/output_ast';
 import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../parse_util';
 import {Identifiers as R3} from '../r3_identifiers';
-import {R3CompiledExpression} from '../util';
+import {generateForwardRef, R3CompiledExpression} from '../util';
 import {DeclarationListEmitMode, R3ComponentMetadata, R3UsedDirectiveMetadata} from '../view/api';
 import {createComponentType} from '../view/compiler';
 import {ParsedTemplate} from '../view/template';
@@ -18,7 +18,7 @@ import {DefinitionMap} from '../view/util';
 
 import {R3DeclareComponentMetadata, R3DeclareUsedDirectiveMetadata} from './api';
 import {createDirectiveDefinitionMap} from './directive';
-import {generateForwardRef, toOptionalLiteralArray} from './util';
+import {toOptionalLiteralArray} from './util';
 
 export interface DeclareComponentTemplateInfo {
   /**
