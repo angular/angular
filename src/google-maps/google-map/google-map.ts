@@ -104,6 +104,10 @@ export class GoogleMap implements OnChanges, OnInit, OnDestroy {
   }
   private _options = DEFAULT_OPTIONS;
 
+  /** Event emitted when the map is initialized. */
+  @Output() readonly mapInitialized: EventEmitter<google.maps.Map> =
+    new EventEmitter<google.maps.Map>();
+
   /**
    * See
    * https://developers.google.com/maps/documentation/javascript/events#auth-errors
@@ -305,6 +309,7 @@ export class GoogleMap implements OnChanges, OnInit, OnDestroy {
         this.googleMap = new google.maps.Map(this._mapEl, this._combineOptions());
       });
       this._eventManager.setTarget(this.googleMap);
+      this.mapInitialized.emit(this.googleMap);
     }
   }
 
