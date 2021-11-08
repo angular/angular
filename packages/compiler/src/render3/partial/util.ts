@@ -7,7 +7,6 @@
  */
 import * as o from '../../output/output_ast';
 import {R3DependencyMetadata} from '../r3_factory';
-import {Identifiers} from '../r3_identifiers';
 import {DefinitionMap} from '../view/util';
 import {R3DeclareDependencyMetadata} from './api';
 
@@ -83,15 +82,4 @@ export function compileDependency(dep: R3DependencyMetadata): o.LiteralMapExpr {
     depMeta.set('skipSelf', o.literal(true));
   }
   return depMeta.toLiteralMap();
-}
-
-/**
- * Generate an expression that has the given `expr` wrapped in the following form:
- *
- * ```
- * forwardRef(() => expr)
- * ```
- */
-export function generateForwardRef(expr: o.Expression): o.Expression {
-  return o.importExpr(Identifiers.forwardRef).callFn([o.fn([], [new o.ReturnStatement(expr)])]);
 }
