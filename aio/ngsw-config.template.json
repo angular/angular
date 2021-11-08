@@ -13,10 +13,7 @@
           "/assets/images/favicons/favicon.ico",
           "/assets/js/*.js",
           "/*.css",
-          "/*.js",
-          "!/ngsw-worker.js",
-          "!/safety-worker.js",
-          "!/worker-basic.min.js"
+          "/*.js"
         ],
         "urls": [
           "https://fonts.googleapis.com/**",
