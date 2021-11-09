@@ -1,13 +1,13 @@
 # Understanding Angular
 
-As described in [What Is Angular][AioGuideWhatIsAngular], the Angular framework consists of four basic elements:
+To understand the capabilities of the Angular framework, you need to learn about the following:
 
 * Components
 * Templates
-* Dependency injection
 * Directives
+* Dependency injection
 
-Not every application uses all four elements equally. But understanding these elements can help you build scalable and robust Angular applications.
+The topics in this section explain these features and concepts, and how you can use them.
 
 ## Prerequisites
 
