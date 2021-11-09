@@ -17,7 +17,6 @@ import {Log} from '@angular/core/testing/src/testing_internal';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {ivyEnabled, modifiedInIvy, onlyInIvy} from '@angular/private/testing';
 
 @Component({selector: 'non-existent', template: ''})
 class NonExistentComp {
@@ -149,43 +148,25 @@ function bootstrap(
 
     afterEach(destroyPlatform);
 
-    modifiedInIvy('bootstrapping non-Component throws in View Engine')
-        .it('should throw if bootstrapped Directive is not a Component', done => {
-          const logger = new MockConsole();
-          const errorHandler = new ErrorHandler();
-          (errorHandler as any)._console = logger as any;
-          expect(
-              () => bootstrap(
-                  HelloRootDirectiveIsNotCmp, [{provide: ErrorHandler, useValue: errorHandler}]))
-              .toThrowError(`HelloRootDirectiveIsNotCmp cannot be used as an entry component.`);
-          done();
-        });
-
-    onlyInIvy('bootstrapping non-Component rejects Promise in Ivy')
-        .it('should throw if bootstrapped Directive is not a Component', done => {
-          const logger = new MockConsole();
-          const errorHandler = new ErrorHandler();
-          (errorHandler as any)._console = logger as any;
-          bootstrap(HelloRootDirectiveIsNotCmp, [
-            {provide: ErrorHandler, useValue: errorHandler}
-          ]).catch((error: Error) => {
-            expect(error).toEqual(
-                new Error(`HelloRootDirectiveIsNotCmp cannot be used as an entry component.`));
-            done();
-          });
-        });
+    it('should throw if bootstrapped Directive is not a Component', done => {
+      const logger = new MockConsole();
+      const errorHandler = new ErrorHandler();
+      (errorHandler as any)._console = logger as any;
+      bootstrap(HelloRootDirectiveIsNotCmp, [
+        {provide: ErrorHandler, useValue: errorHandler}
+      ]).catch((error: Error) => {
+        expect(error).toEqual(
+            new Error(`HelloRootDirectiveIsNotCmp cannot be used as an entry component.`));
+        done();
+      });
+    });
 
     it('should retrieve sanitizer', inject([Injector], (injector: Injector) => {
          const sanitizer: Sanitizer|null = injector.get(Sanitizer, null);
-         if (ivyEnabled) {
-           // In Ivy we don't want to have sanitizer in DI. We use DI only to overwrite the
-           // sanitizer, but not for default one. The default one is pulled in by the Ivy
-           // instructions as needed.
-           expect(sanitizer).toBe(null);
-         } else {
-           // In VE we always need to have Sanitizer available.
-           expect(sanitizer).not.toBe(null);
-         }
+         // We don't want to have sanitizer in DI. We use DI only to overwrite the
+         // sanitizer, but not for default one. The default one is pulled in by the Ivy
+         // instructions as needed.
+         expect(sanitizer).toBe(null);
        }));
 
     it('should throw if no element is found', done => {
@@ -227,14 +208,7 @@ function bootstrap(
       bootstrap(RootCmp, [{provide: ErrorHandler, useValue: errorHandler}], [], [
         CustomModule
       ]).then(null, (e: Error) => {
-        let errorMsg: string;
-        if (ivyEnabled) {
-          errorMsg = `R3InjectorError(TestModule)[IDontExist -> IDontExist -> IDontExist]: \n`;
-        } else {
-          errorMsg = `StaticInjectorError(TestModule)[CustomCmp -> IDontExist]: \n` +
-              '  StaticInjectorError(Platform: core)[CustomCmp -> IDontExist]: \n' +
-              '    NullInjectorError: No provider for IDontExist!';
-        }
+        const errorMsg = `R3InjectorError(TestModule)[IDontExist -> IDontExist -> IDontExist]: \n`;
         expect(e.message).toContain(errorMsg);
         done();
         return null;

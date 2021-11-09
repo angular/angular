@@ -13,38 +13,36 @@ import {bypassSanitizationTrustHtml, bypassSanitizationTrustStyle, bypassSanitiz
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
-import {ivyEnabled, onlyInIvy} from '@angular/private/testing';
 
 describe('host bindings', () => {
-  onlyInIvy('map-based [style] and [class] bindings are not supported in VE')
-      .it('should render host bindings on the root component', () => {
-        @Component({template: '...'})
-        class MyApp {
-          @HostBinding('style') myStylesExp = {};
-          @HostBinding('class') myClassesExp = {};
-        }
+  it('should render host bindings on the root component', () => {
+    @Component({template: '...'})
+    class MyApp {
+      @HostBinding('style') myStylesExp = {};
+      @HostBinding('class') myClassesExp = {};
+    }
 
-        TestBed.configureTestingModule({declarations: [MyApp]});
-        const fixture = TestBed.createComponent(MyApp);
-        const element = fixture.nativeElement;
-        fixture.detectChanges();
+    TestBed.configureTestingModule({declarations: [MyApp]});
+    const fixture = TestBed.createComponent(MyApp);
+    const element = fixture.nativeElement;
+    fixture.detectChanges();
 
-        const component = fixture.componentInstance;
-        component.myStylesExp = {width: '100px'};
-        component.myClassesExp = 'foo';
-        fixture.detectChanges();
+    const component = fixture.componentInstance;
+    component.myStylesExp = {width: '100px'};
+    component.myClassesExp = 'foo';
+    fixture.detectChanges();
 
-        expect(element.style['width']).toEqual('100px');
-        expect(element.classList.contains('foo')).toBeTruthy();
+    expect(element.style['width']).toEqual('100px');
+    expect(element.classList.contains('foo')).toBeTruthy();
 
-        component.myStylesExp = {width: '200px'};
-        component.myClassesExp = 'bar';
-        fixture.detectChanges();
+    component.myStylesExp = {width: '200px'};
+    component.myClassesExp = 'bar';
+    fixture.detectChanges();
 
-        expect(element.style['width']).toEqual('200px');
-        expect(element.classList.contains('foo')).toBeFalsy();
-        expect(element.classList.contains('bar')).toBeTruthy();
-      });
+    expect(element.style['width']).toEqual('200px');
+    expect(element.classList.contains('foo')).toBeFalsy();
+    expect(element.classList.contains('bar')).toBeTruthy();
+  });
 
   describe('defined in @Component', () => {
     it('should combine the inherited static classes of a parent and child component', () => {
@@ -61,9 +59,7 @@ describe('host bindings', () => {
       fixture.detectChanges();
 
       const element = fixture.nativeElement;
-      if (ivyEnabled) {
-        expect(element.classList.contains('bar')).toBeTruthy();
-      }
+      expect(element.classList.contains('bar')).toBeTruthy();
       expect(element.classList.contains('foo')).toBeTruthy();
       expect(element.classList.contains('baz')).toBeTruthy();
     });
@@ -519,88 +515,86 @@ describe('host bindings', () => {
       expect(childElement.style.opacity).toEqual('0.5');
     });
 
-    onlyInIvy('[style.prop] and [class.name] prioritization is a new feature')
-        .it('should prioritize styling present in the order of directive hostBinding evaluation, but consider sub-classed directive styling to be the most important',
-            () => {
-              @Component({template: '<div child-dir sibling-dir></div>'})
-              class MyApp {
-              }
+    it('should prioritize styling present in the order of directive hostBinding evaluation, but consider sub-classed directive styling to be the most important',
+       () => {
+         @Component({template: '<div child-dir sibling-dir></div>'})
+         class MyApp {
+         }
 
-              @Directive({selector: '[parent-dir]'})
-              class ParentDir {
-                @HostBinding('style.width')
-                get width1() {
-                  return '100px';
-                }
+         @Directive({selector: '[parent-dir]'})
+         class ParentDir {
+           @HostBinding('style.width')
+           get width1() {
+             return '100px';
+           }
 
-                @HostBinding('style.height')
-                get height1() {
-                  return '100px';
-                }
+           @HostBinding('style.height')
+           get height1() {
+             return '100px';
+           }
 
-                @HostBinding('style.color')
-                get color1() {
-                  return 'red';
-                }
-              }
+           @HostBinding('style.color')
+           get color1() {
+             return 'red';
+           }
+         }
 
-              @Directive({selector: '[child-dir]'})
-              class ChildDir extends ParentDir {
-                @HostBinding('style.width')
-                get width2() {
-                  return '200px';
-                }
+         @Directive({selector: '[child-dir]'})
+         class ChildDir extends ParentDir {
+           @HostBinding('style.width')
+           get width2() {
+             return '200px';
+           }
 
-                @HostBinding('style.height')
-                get height2() {
-                  return '200px';
-                }
-              }
+           @HostBinding('style.height')
+           get height2() {
+             return '200px';
+           }
+         }
 
-              @Directive({selector: '[sibling-dir]'})
-              class SiblingDir {
-                @HostBinding('style.width')
-                get width3() {
-                  return '300px';
-                }
+         @Directive({selector: '[sibling-dir]'})
+         class SiblingDir {
+           @HostBinding('style.width')
+           get width3() {
+             return '300px';
+           }
 
-                @HostBinding('style.height')
-                get height3() {
-                  return '300px';
-                }
+           @HostBinding('style.height')
+           get height3() {
+             return '300px';
+           }
 
-                @HostBinding('style.opacity')
-                get opacity3() {
-                  return '0.5';
-                }
+           @HostBinding('style.opacity')
+           get opacity3() {
+             return '0.5';
+           }
 
-                @HostBinding('style.color')
-                get color1() {
-                  return 'blue';
-                }
-              }
+           @HostBinding('style.color')
+           get color1() {
+             return 'blue';
+           }
+         }
 
-              TestBed.configureTestingModule(
-                  {declarations: [MyApp, ParentDir, SiblingDir, ChildDir]});
-              const fixture = TestBed.createComponent(MyApp);
-              const element = fixture.nativeElement;
-              fixture.detectChanges();
+         TestBed.configureTestingModule({declarations: [MyApp, ParentDir, SiblingDir, ChildDir]});
+         const fixture = TestBed.createComponent(MyApp);
+         const element = fixture.nativeElement;
+         fixture.detectChanges();
 
-              const childElement = element.querySelector('div');
+         const childElement = element.querySelector('div');
 
-              // width/height values were set in all directives, but the sub-class directive
-              // (ChildDir) had priority over the parent directive (ParentDir) which is why its
-              // value won. It also won over Dir because the SiblingDir directive was declared
-              // later in `declarations`.
-              expect(childElement.style.width).toEqual('200px');
-              expect(childElement.style.height).toEqual('200px');
+         // width/height values were set in all directives, but the sub-class directive
+         // (ChildDir) had priority over the parent directive (ParentDir) which is why its
+         // value won. It also won over Dir because the SiblingDir directive was declared
+         // later in `declarations`.
+         expect(childElement.style.width).toEqual('200px');
+         expect(childElement.style.height).toEqual('200px');
 
-              // ParentDir styled the color first before Dir
-              expect(childElement.style.color).toEqual('red');
+         // ParentDir styled the color first before Dir
+         expect(childElement.style.color).toEqual('red');
 
-              // Dir was the only directive to style opacity
-              expect(childElement.style.opacity).toEqual('0.5');
-            });
+         // Dir was the only directive to style opacity
+         expect(childElement.style.opacity).toEqual('0.5');
+       });
 
     it('should allow class-bindings to be placed on ng-container elements', () => {
       @Component({
@@ -1164,66 +1158,60 @@ describe('host bindings', () => {
     const fixture = TestBed.createComponent(MyComp);
     fixture.detectChanges();
     const div: HTMLElement = fixture.debugElement.nativeElement.firstChild;
-    expect(div.id).toEqual(
-        ivyEnabled ?
-            // In ivy the correct result is `tmpl` because template has the highest priority.
-            'tmpl' :
-            // In VE the order was simply that of execution and so dir2 would win.
-            'dir2');
+    expect(div.id).toEqual('tmpl');
   });
 
-  onlyInIvy('Host bindings do not get merged in ViewEngine')
-      .it('should work correctly with inherited directives with hostBindings', () => {
-        @Directive({selector: '[superDir]', host: {'[id]': 'id'}})
-        class SuperDirective {
-          id = 'my-id';
-        }
+  it('should work correctly with inherited directives with hostBindings', () => {
+    @Directive({selector: '[superDir]', host: {'[id]': 'id'}})
+    class SuperDirective {
+      id = 'my-id';
+    }
 
-        @Directive({selector: '[subDir]', host: {'[title]': 'title'}})
-        class SubDirective extends SuperDirective {
-          title = 'my-title';
-        }
+    @Directive({selector: '[subDir]', host: {'[title]': 'title'}})
+    class SubDirective extends SuperDirective {
+      title = 'my-title';
+    }
 
-        @Component({
-          template: `
+    @Component({
+      template: `
         <div subDir></div>
         <div superDir></div>
       `
-        })
-        class App {
-          @ViewChild(SubDirective) subDir!: SubDirective;
-          @ViewChild(SuperDirective) superDir!: SuperDirective;
-        }
+    })
+    class App {
+      @ViewChild(SubDirective) subDir!: SubDirective;
+      @ViewChild(SuperDirective) superDir!: SuperDirective;
+    }
 
-        TestBed.configureTestingModule({declarations: [App, SuperDirective, SubDirective]});
-        const fixture = TestBed.createComponent(App);
-        fixture.detectChanges();
-        const els = fixture.nativeElement.querySelectorAll('div') as NodeListOf<HTMLElement>;
+    TestBed.configureTestingModule({declarations: [App, SuperDirective, SubDirective]});
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+    const els = fixture.nativeElement.querySelectorAll('div') as NodeListOf<HTMLElement>;
 
-        const firstDivEl = els[0];
-        const secondDivEl = els[1];
+    const firstDivEl = els[0];
+    const secondDivEl = els[1];
 
-        // checking first div element with inherited directive
-        expect(firstDivEl.id).toEqual('my-id');
-        expect(firstDivEl.title).toEqual('my-title');
+    // checking first div element with inherited directive
+    expect(firstDivEl.id).toEqual('my-id');
+    expect(firstDivEl.title).toEqual('my-title');
 
-        fixture.componentInstance.subDir.title = 'new-title';
-        fixture.detectChanges();
-        expect(firstDivEl.id).toEqual('my-id');
-        expect(firstDivEl.title).toEqual('new-title');
+    fixture.componentInstance.subDir.title = 'new-title';
+    fixture.detectChanges();
+    expect(firstDivEl.id).toEqual('my-id');
+    expect(firstDivEl.title).toEqual('new-title');
 
-        fixture.componentInstance.subDir.id = 'new-id';
-        fixture.detectChanges();
-        expect(firstDivEl.id).toEqual('new-id');
-        expect(firstDivEl.title).toEqual('new-title');
+    fixture.componentInstance.subDir.id = 'new-id';
+    fixture.detectChanges();
+    expect(firstDivEl.id).toEqual('new-id');
+    expect(firstDivEl.title).toEqual('new-title');
 
-        // checking second div element with simple directive
-        expect(secondDivEl.id).toEqual('my-id');
+    // checking second div element with simple directive
+    expect(secondDivEl.id).toEqual('my-id');
 
-        fixture.componentInstance.superDir.id = 'new-id';
-        fixture.detectChanges();
-        expect(secondDivEl.id).toEqual('new-id');
-      });
+    fixture.componentInstance.superDir.id = 'new-id';
+    fixture.detectChanges();
+    expect(secondDivEl.id).toEqual('new-id');
+  });
 
   it('should support host attributes', () => {
     @Directive({selector: '[hostAttributeDir]', host: {'role': 'listbox'}})
@@ -1425,7 +1413,7 @@ describe('host bindings', () => {
         /* isAttribute */ false);
   });
 
-  onlyInIvy('VE would silently ignore this').describe('host binding on containers', () => {
+  describe('host binding on containers', () => {
     @Directive({selector: '[staticHostAtt]', host: {'static': 'attr'}})
     class StaticHostAttr {
       constructor() {}
@@ -1474,7 +1462,7 @@ describe('host bindings', () => {
     });
   });
 
-  onlyInIvy('VE does not support this').describe('host bindings on edge case properties', () => {
+  describe('host bindings on edge case properties', () => {
     it('should handle host bindings with the same name as a primitive value', () => {
       @Directive({
         selector: '[dir]',

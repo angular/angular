@@ -12,7 +12,6 @@ import {ComponentFixture, fakeAsync, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {isTextNode} from '@angular/platform-browser/testing/src/browser_util';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {ivyEnabled, modifiedInIvy, onlyInIvy} from '@angular/private/testing';
 
 import {MockResourceLoader} from './resource_loader_mock';
 
@@ -547,57 +546,29 @@ describe(`ChangeDetection`, () => {
            expect(renderLog.loggedValues).toEqual(['null state:0', 'bob state:1', 'bart state:2']);
          }));
 
-      modifiedInIvy('Pure pipes are instantiated differently in view engine and ivy')
-          .it('should call pure pipes that are used multiple times only when the arguments change and share state between pipe instances',
-              fakeAsync(() => {
-                const ctx = createCompFixture(
-                    `<div [id]="name | countingPipe"></div><div [id]="age | countingPipe"></div>` +
-                        '<div *ngFor="let x of [1,2]" [id]="address.city | countingPipe"></div>',
-                    Person);
-                ctx.componentInstance.name = 'a';
-                ctx.componentInstance.age = 10;
-                ctx.componentInstance.address = new Address('mtv');
-                ctx.detectChanges(false);
-                expect(renderLog.loggedValues).toEqual([
-                  'mtv state:0', 'mtv state:1', 'a state:2', '10 state:3'
-                ]);
-                ctx.detectChanges(false);
-                expect(renderLog.loggedValues).toEqual([
-                  'mtv state:0', 'mtv state:1', 'a state:2', '10 state:3'
-                ]);
-                ctx.componentInstance.age = 11;
-                ctx.detectChanges(false);
-                expect(renderLog.loggedValues).toEqual([
-                  'mtv state:0', 'mtv state:1', 'a state:2', '10 state:3', '11 state:4'
-                ]);
-              }));
-
-      // this is the ivy version of the above tests - the difference is in pure pipe instantiation
-      // logic and binding execution order
-      ivyEnabled &&
-          it('should call pure pipes that are used multiple times only when the arguments change',
-             fakeAsync(() => {
-               const ctx = createCompFixture(
-                   `<div [id]="name | countingPipe"></div><div [id]="age | countingPipe"></div>` +
-                       '<div *ngFor="let x of [1,2]" [id]="address.city | countingPipe"></div>',
-                   Person);
-               ctx.componentInstance.name = 'a';
-               ctx.componentInstance.age = 10;
-               ctx.componentInstance.address = new Address('mtv');
-               ctx.detectChanges(false);
-               expect(renderLog.loggedValues).toEqual([
-                 'a state:0', '10 state:0', 'mtv state:0', 'mtv state:0'
-               ]);
-               ctx.detectChanges(false);
-               expect(renderLog.loggedValues).toEqual([
-                 'a state:0', '10 state:0', 'mtv state:0', 'mtv state:0'
-               ]);
-               ctx.componentInstance.age = 11;
-               ctx.detectChanges(false);
-               expect(renderLog.loggedValues).toEqual([
-                 'a state:0', '10 state:0', 'mtv state:0', 'mtv state:0', '11 state:1'
-               ]);
-             }));
+      it('should call pure pipes that are used multiple times only when the arguments change',
+         fakeAsync(() => {
+           const ctx = createCompFixture(
+               `<div [id]="name | countingPipe"></div><div [id]="age | countingPipe"></div>` +
+                   '<div *ngFor="let x of [1,2]" [id]="address.city | countingPipe"></div>',
+               Person);
+           ctx.componentInstance.name = 'a';
+           ctx.componentInstance.age = 10;
+           ctx.componentInstance.address = new Address('mtv');
+           ctx.detectChanges(false);
+           expect(renderLog.loggedValues).toEqual([
+             'a state:0', '10 state:0', 'mtv state:0', 'mtv state:0'
+           ]);
+           ctx.detectChanges(false);
+           expect(renderLog.loggedValues).toEqual([
+             'a state:0', '10 state:0', 'mtv state:0', 'mtv state:0'
+           ]);
+           ctx.componentInstance.age = 11;
+           ctx.detectChanges(false);
+           expect(renderLog.loggedValues).toEqual([
+             'a state:0', '10 state:0', 'mtv state:0', 'mtv state:0', '11 state:1'
+           ]);
+         }));
 
       it('should call impure pipes on each change detection run', fakeAsync(() => {
            const ctx = _bindSimpleValue('name | countingImpurePipe', Person);
@@ -1144,9 +1115,7 @@ describe(`ChangeDetection`, () => {
          const ctx = createCompFixture('<div [id]="a" [changed]="b"></div>', TestData);
 
          ctx.componentInstance.b = 1;
-         const errMsgRegExp = ivyEnabled ?
-             /Previous value: 'undefined'\. Current value: '1'/g :
-             /Previous value: 'changed: undefined'\. Current value: 'changed: 1'/g;
+         const errMsgRegExp = /Previous value: 'undefined'\. Current value: '1'/g;
          expect(() => ctx.checkNoChanges()).toThrowError(errMsgRegExp);
        }));
 
@@ -1166,9 +1135,7 @@ describe(`ChangeDetection`, () => {
          ctx.detectChanges();
 
          ctx.componentInstance.b = 2;
-         const errMsgRegExp = ivyEnabled ?
-             /Previous value: '1'\. Current value: '2'/g :
-             /Previous value: 'changed: 1'\. Current value: 'changed: 2'/g;
+         const errMsgRegExp = /Previous value: '1'\. Current value: '2'/g;
          expect(() => ctx.checkNoChanges()).toThrowError(errMsgRegExp);
        }));
 
@@ -1292,19 +1259,6 @@ describe(`ChangeDetection`, () => {
          ctx.detectChanges();
          expect(cmp.renderCount).toBe(count);
        }));
-  });
-
-  describe('multi directive order', () => {
-    modifiedInIvy('order of bindings to directive inputs is different in ivy')
-        .it('should follow the DI order for the same element', fakeAsync(() => {
-              const ctx =
-                  createCompFixture('<div orderCheck2="2" orderCheck0="0" orderCheck1="1"></div>');
-
-              ctx.detectChanges(false);
-              ctx.destroy();
-
-              expect(directiveLog.filter(['set'])).toEqual(['0.set', '1.set', '2.set']);
-            }));
   });
 
   describe('nested view recursion', () => {
@@ -1441,49 +1395,26 @@ describe(`ChangeDetection`, () => {
         expect(log).toEqual(['inner-start', 'main-tpl', 'outer-tpl']);
       });
 
-      modifiedInIvy('Views should not be dirty checked if inserted into CD-detached view tree')
-          .it('should dirty check projected views if the declaration place is dirty checked',
-              () => {
-                ctx.detectChanges(false);
-                log = [];
-                innerComp.cdRef.detach();
-                mainComp.cdRef.detectChanges();
+      it('should not dirty check views that are inserted into a detached tree, even if the declaration place is dirty checked',
+         () => {
+           ctx.detectChanges(false);
+           log = [];
+           innerComp.cdRef.detach();
+           mainComp.cdRef.detectChanges();
 
-                expect(log).toEqual(['main-start', 'outer-start', 'main-tpl', 'outer-tpl']);
+           expect(log).toEqual(['main-start', 'outer-start']);
 
-                log = [];
-                outerComp.cdRef.detectChanges();
+           log = [];
+           outerComp.cdRef.detectChanges();
 
-                expect(log).toEqual(['outer-start', 'outer-tpl']);
+           expect(log).toEqual(['outer-start']);
 
-                log = [];
-                outerComp.cdRef.detach();
-                mainComp.cdRef.detectChanges();
+           log = [];
+           outerComp.cdRef.detach();
+           mainComp.cdRef.detectChanges();
 
-                expect(log).toEqual(['main-start', 'main-tpl']);
-              });
-
-      onlyInIvy('Views should not be dirty checked if inserted into CD-detached view tree')
-          .it('should not dirty check views that are inserted into a detached tree, even if the declaration place is dirty checked',
-              () => {
-                ctx.detectChanges(false);
-                log = [];
-                innerComp.cdRef.detach();
-                mainComp.cdRef.detectChanges();
-
-                expect(log).toEqual(['main-start', 'outer-start']);
-
-                log = [];
-                outerComp.cdRef.detectChanges();
-
-                expect(log).toEqual(['outer-start']);
-
-                log = [];
-                outerComp.cdRef.detach();
-                mainComp.cdRef.detectChanges();
-
-                expect(log).toEqual(['main-start']);
-              });
+           expect(log).toEqual(['main-start']);
+         });
     });
   });
 

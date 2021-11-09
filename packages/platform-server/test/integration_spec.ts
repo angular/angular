@@ -14,7 +14,6 @@ import {ApplicationRef, CompilerFactory, Component, destroyPlatform, getPlatform
 import {inject, waitForAsync} from '@angular/core/testing';
 import {BrowserModule, makeStateKey, Title, TransferState} from '@angular/platform-browser';
 import {BEFORE_APP_SERIALIZED, INITIAL_CONFIG, platformDynamicServer, PlatformState, renderModule, renderModuleFactory, ServerModule, ServerTransferStateModule} from '@angular/platform-server';
-import {ivyEnabled, modifiedInIvy} from '@angular/private/testing';
 import {Observable} from 'rxjs';
 import {first} from 'rxjs/operators';
 
@@ -590,12 +589,6 @@ describe('platform-server integration', () => {
       // PlatformConfig takes in a parsed document so that it can be cached across requests.
       doc = '<html><head></head><body><app></app></body></html>';
       called = false;
-      // We use `window` and `document` directly in some parts of render3 for ivy
-      // Only set it to undefined for legacy
-      if (!ivyEnabled) {
-        (global as any)['window'] = undefined;
-        (global as any)['document'] = undefined;
-      }
     });
     afterEach(() => {
       expect(called).toBe(true);
@@ -624,15 +617,6 @@ describe('platform-server integration', () => {
            called = true;
          });
        }));
-
-    modifiedInIvy('Will not support binding to innerText in Ivy since domino does not')
-        .it('should support binding to innerText', waitForAsync(() => {
-              renderModule(InnerTextModule, {document: doc}).then(output => {
-                expect(output).toBe(
-                    '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER"><div innertext="Some text">Some text</div></app></body></html>');
-                called = true;
-              });
-            }));
 
     it('using renderModuleFactory should work',
        waitForAsync(inject([PlatformRef], (defaultPlatform: PlatformRef) => {

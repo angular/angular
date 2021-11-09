@@ -11,7 +11,6 @@ import {AfterViewInit, Component, ContentChild, ContentChildren, Directive, Elem
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {onlyInIvy} from '@angular/private/testing';
 
 describe('query logic', () => {
   beforeEach(() => {
@@ -61,22 +60,21 @@ describe('query logic', () => {
       expect(comp.viewChildren.first).toBeAnInstanceOf(ElementRef);
     });
 
-    onlyInIvy('multiple local refs are supported in Ivy')
-        .it('should return ElementRefs when HTML elements are labeled and retrieved', () => {
-          const template = `
+    it('should return ElementRefs when HTML elements are labeled and retrieved', () => {
+      const template = `
               <div #viewQuery #first>A</div>
               <div #viewQuery #second>B</div>
             `;
-          const fixture = initWithTemplate(QueryComp, template);
-          const comp = fixture.componentInstance;
+      const fixture = initWithTemplate(QueryComp, template);
+      const comp = fixture.componentInstance;
 
-          expect(comp.viewChild).toBeAnInstanceOf(ElementRef);
-          expect(comp.viewChild.nativeElement).toBe(fixture.debugElement.children[0].nativeElement);
+      expect(comp.viewChild).toBeAnInstanceOf(ElementRef);
+      expect(comp.viewChild.nativeElement).toBe(fixture.debugElement.children[0].nativeElement);
 
-          expect(comp.viewChildren.first).toBeAnInstanceOf(ElementRef);
-          expect(comp.viewChildren.last).toBeAnInstanceOf(ElementRef);
-          expect(comp.viewChildren.length).toBe(2);
-        });
+      expect(comp.viewChildren.first).toBeAnInstanceOf(ElementRef);
+      expect(comp.viewChildren.last).toBeAnInstanceOf(ElementRef);
+      expect(comp.viewChildren.length).toBe(2);
+    });
 
     it('should return TemplateRef when template is labeled and retrieved', () => {
       const template = `
@@ -100,22 +98,21 @@ describe('query logic', () => {
       expect(instance.contentOptions.length).toBe(0);
     });
 
-    onlyInIvy('multiple local refs are supported in Ivy')
-        .it('should return TemplateRefs when templates are labeled and retrieved', () => {
-          const template = `
+    it('should return TemplateRefs when templates are labeled and retrieved', () => {
+      const template = `
               <ng-template #viewQuery></ng-template>
               <ng-template #viewQuery></ng-template>
             `;
-          const fixture = initWithTemplate(QueryComp, template);
-          const comp = fixture.componentInstance;
-          expect(comp.viewChild).toBeAnInstanceOf(TemplateRef);
-          expect(comp.viewChild.elementRef.nativeElement)
-              .toBe(fixture.debugElement.childNodes[0].nativeNode);
+      const fixture = initWithTemplate(QueryComp, template);
+      const comp = fixture.componentInstance;
+      expect(comp.viewChild).toBeAnInstanceOf(TemplateRef);
+      expect(comp.viewChild.elementRef.nativeElement)
+          .toBe(fixture.debugElement.childNodes[0].nativeNode);
 
-          expect(comp.viewChildren.first).toBeAnInstanceOf(TemplateRef);
-          expect(comp.viewChildren.last).toBeAnInstanceOf(TemplateRef);
-          expect(comp.viewChildren.length).toBe(2);
-        });
+      expect(comp.viewChildren.first).toBeAnInstanceOf(TemplateRef);
+      expect(comp.viewChildren.last).toBeAnInstanceOf(TemplateRef);
+      expect(comp.viewChildren.length).toBe(2);
+    });
 
     it('should set static view child queries in creation mode (and just in creation mode)', () => {
       const fixture = TestBed.createComponent(StaticViewQueryComp);
@@ -397,21 +394,20 @@ describe('query logic', () => {
       expect(instance.contentOptions.length).toBe(2);
     });
 
-    onlyInIvy('multiple local refs are supported in Ivy')
-        .it('should return Component instances when Components are labeled and retrieved', () => {
-          const template = `
+    it('should return Component instances when Components are labeled and retrieved', () => {
+      const template = `
                 <local-ref-query-component #q>
                   <simple-comp-a #contentQuery></simple-comp-a>
                   <simple-comp-b #contentQuery></simple-comp-b>
                 </local-ref-query-component>
               `;
-          const fixture = initWithTemplate(AppComp, template);
-          const comp = fixture.debugElement.children[0].references['q'];
-          expect(comp.contentChild).toBeAnInstanceOf(SimpleCompA);
-          expect(comp.contentChildren.first).toBeAnInstanceOf(SimpleCompA);
-          expect(comp.contentChildren.last).toBeAnInstanceOf(SimpleCompB);
-          expect(comp.contentChildren.length).toBe(2);
-        });
+      const fixture = initWithTemplate(AppComp, template);
+      const comp = fixture.debugElement.children[0].references['q'];
+      expect(comp.contentChild).toBeAnInstanceOf(SimpleCompA);
+      expect(comp.contentChildren.first).toBeAnInstanceOf(SimpleCompA);
+      expect(comp.contentChildren.last).toBeAnInstanceOf(SimpleCompB);
+      expect(comp.contentChildren.length).toBe(2);
+    });
 
 
     it('should return ElementRef when HTML element is labeled and retrieved', () => {
@@ -425,25 +421,24 @@ describe('query logic', () => {
       expect(comp.contentChildren.first).toBeAnInstanceOf(ElementRef);
     });
 
-    onlyInIvy('multiple local refs are supported in Ivy')
-        .it('should return ElementRefs when HTML elements are labeled and retrieved', () => {
-          const template = `
+    it('should return ElementRefs when HTML elements are labeled and retrieved', () => {
+      const template = `
               <local-ref-query-component #q>
                 <div #contentQuery></div>
                 <div #contentQuery></div>
               </local-ref-query-component>
             `;
-          const fixture = initWithTemplate(AppComp, template);
-          const firstChild = fixture.debugElement.children[0];
-          const comp = firstChild.references['q'];
+      const fixture = initWithTemplate(AppComp, template);
+      const firstChild = fixture.debugElement.children[0];
+      const comp = firstChild.references['q'];
 
-          expect(comp.contentChild).toBeAnInstanceOf(ElementRef);
-          expect(comp.contentChild.nativeElement).toBe(firstChild.children[0].nativeElement);
+      expect(comp.contentChild).toBeAnInstanceOf(ElementRef);
+      expect(comp.contentChild.nativeElement).toBe(firstChild.children[0].nativeElement);
 
-          expect(comp.contentChildren.first).toBeAnInstanceOf(ElementRef);
-          expect(comp.contentChildren.last).toBeAnInstanceOf(ElementRef);
-          expect(comp.contentChildren.length).toBe(2);
-        });
+      expect(comp.contentChildren.first).toBeAnInstanceOf(ElementRef);
+      expect(comp.contentChildren.last).toBeAnInstanceOf(ElementRef);
+      expect(comp.contentChildren.length).toBe(2);
+    });
 
     it('should return TemplateRef when template is labeled and retrieved', () => {
       const template = `
@@ -456,26 +451,24 @@ describe('query logic', () => {
       expect(comp.contentChildren.first).toBeAnInstanceOf(TemplateRef);
     });
 
-    onlyInIvy('multiple local refs are supported in Ivy')
-        .it('should return TemplateRefs when templates are labeled and retrieved', () => {
-          const template = `
+    it('should return TemplateRefs when templates are labeled and retrieved', () => {
+      const template = `
               <local-ref-query-component #q>
                 <ng-template #contentQuery></ng-template>
                 <ng-template #contentQuery></ng-template>
               </local-ref-query-component>
             `;
-          const fixture = initWithTemplate(AppComp, template);
-          const firstChild = fixture.debugElement.children[0];
-          const comp = firstChild.references['q'];
+      const fixture = initWithTemplate(AppComp, template);
+      const firstChild = fixture.debugElement.children[0];
+      const comp = firstChild.references['q'];
 
-          expect(comp.contentChild).toBeAnInstanceOf(TemplateRef);
-          expect(comp.contentChild.elementRef.nativeElement)
-              .toBe(firstChild.childNodes[0].nativeNode);
+      expect(comp.contentChild).toBeAnInstanceOf(TemplateRef);
+      expect(comp.contentChild.elementRef.nativeElement).toBe(firstChild.childNodes[0].nativeNode);
 
-          expect(comp.contentChildren.first).toBeAnInstanceOf(TemplateRef);
-          expect(comp.contentChildren.last).toBeAnInstanceOf(TemplateRef);
-          expect(comp.contentChildren.length).toBe(2);
-        });
+      expect(comp.contentChildren.first).toBeAnInstanceOf(TemplateRef);
+      expect(comp.contentChildren.last).toBeAnInstanceOf(TemplateRef);
+      expect(comp.contentChildren.length).toBe(2);
+    });
 
     it('should set static content child queries in creation mode (and just in creation mode)',
        () => {
@@ -1063,21 +1056,19 @@ describe('query logic', () => {
       expect(isElementRefLike(cmptWithQuery.localRefsTargets.first)).toBeTruthy();
     });
 
-    onlyInIvy(
-        'VE uses injectors hierarchy to determine if node matches, ivy uses elements as written in a template')
-        .it('should match directives on <ng-container> when crossing nested <ng-container>', () => {
-          @Directive({selector: '[targetDir]'})
-          class TargetDir {
-          }
+    it('should match directives on <ng-container> when crossing nested <ng-container>', () => {
+      @Directive({selector: '[targetDir]'})
+      class TargetDir {
+      }
 
-          @Component({selector: 'needs-target', template: ``})
-          class NeedsTarget {
-            @ContentChildren(TargetDir) targets!: QueryList<HTMLElement>;
-          }
+      @Component({selector: 'needs-target', template: ``})
+      class NeedsTarget {
+        @ContentChildren(TargetDir) targets!: QueryList<HTMLElement>;
+      }
 
-          @Component({
-            selector: 'test-cmpt',
-            template: `
+      @Component({
+        selector: 'test-cmpt',
+        template: `
           <needs-target>
             <ng-container>
               <ng-container targetDir>
@@ -1088,17 +1079,17 @@ describe('query logic', () => {
             </ng-container>
           </needs-target>
         `,
-          })
-          class TestCmpt {
-          }
+      })
+      class TestCmpt {
+      }
 
-          TestBed.configureTestingModule({declarations: [TestCmpt, NeedsTarget, TargetDir]});
-          const fixture = TestBed.createComponent(TestCmpt);
-          const cmptWithQuery = fixture.debugElement.children[0].injector.get(NeedsTarget);
+      TestBed.configureTestingModule({declarations: [TestCmpt, NeedsTarget, TargetDir]});
+      const fixture = TestBed.createComponent(TestCmpt);
+      const cmptWithQuery = fixture.debugElement.children[0].injector.get(NeedsTarget);
 
-          fixture.detectChanges();
-          expect(cmptWithQuery.targets.length).toBe(3);
-        });
+      fixture.detectChanges();
+      expect(cmptWithQuery.targets.length).toBe(3);
+    });
   });
 
 

@@ -6,13 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CommonModule, ɵgetDOM as getDOM} from '@angular/common';
+import {ɵgetDOM as getDOM} from '@angular/common';
 import {Component, ComponentFactoryResolver, ComponentRef, Directive, ElementRef, Injector, Input, NgModule, NO_ERRORS_SCHEMA, OnInit, TemplateRef, ViewChild, ViewContainerRef, ViewEncapsulation} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {modifiedInIvy} from '@angular/private/testing';
 
 describe('projection', () => {
   beforeEach(() => TestBed.configureTestingModule({declarations: [MainComp, OtherComp, Simple]}));
@@ -141,47 +140,6 @@ describe('projection', () => {
     const component = componentFactory.create(injector, [[nodeOne], [nodeTwo]]);
     expect(component.location.nativeElement).toHaveText('(one, two)');
   });
-
-  modifiedInIvy(
-      'FW-886: `projectableNodes` passed to a componentFactory should be in the order of' +
-      'declaration. In Ivy, the ng-content slots are determined with breadth-first search.')
-      .it('should respect order of declaration for projectable nodes', () => {
-        @Component({
-          selector: 'multiple-content-tags',
-          template: `
-          1<ng-content select="h1"></ng-content>
-          2<ng-template [ngIf]="true"><ng-content></ng-content></ng-template>
-          3<ng-content select="h2"></ng-content>
-        `,
-        })
-        class MultipleContentTagsComponent {
-        }
-
-        @NgModule({
-          declarations: [MultipleContentTagsComponent],
-          entryComponents: [MultipleContentTagsComponent],
-          imports: [CommonModule],
-          schemas: [NO_ERRORS_SCHEMA],
-        })
-        class MyModule {
-        }
-
-        TestBed.configureTestingModule({imports: [MyModule]});
-        const injector: Injector = TestBed.inject(Injector);
-
-        const componentFactoryResolver: ComponentFactoryResolver =
-            injector.get(ComponentFactoryResolver);
-        const componentFactory =
-            componentFactoryResolver.resolveComponentFactory(MultipleContentTagsComponent);
-        expect(componentFactory.ngContentSelectors).toEqual(['h1', '*', 'h2']);
-
-        const nodeOne = getDOM().getDefaultDocument().createTextNode('one');
-        const nodeTwo = getDOM().getDefaultDocument().createTextNode('two');
-        const nodeThree = getDOM().getDefaultDocument().createTextNode('three');
-        const component = componentFactory.create(injector, [[nodeOne], [nodeTwo], [nodeThree]]);
-        component.changeDetectorRef.detectChanges();
-        expect(component.location.nativeElement.textContent.trim()).toBe('1one 2two 3three');
-      });
 
   it('should redistribute only direct children', () => {
     TestBed.configureTestingModule({declarations: [MultipleContentTagsComponent]});

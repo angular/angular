@@ -8,7 +8,6 @@
 
 import {Component, Directive, DoCheck, Input, OnChanges, OnInit, SimpleChanges, Type} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {modifiedInIvy, onlyInIvy} from '@angular/private/testing';
 
 describe('exports', () => {
   beforeEach(() => {
@@ -49,49 +48,26 @@ describe('exports', () => {
       expect(fixture.nativeElement.lastChild.textContent).toContain('Drew!?@');  // text node
     });
 
-    modifiedInIvy('Supporting input changes in hooks is limited in Ivy')
-        .it('should support backward reference', () => {
-          const fixture = initWithTemplate(
-              AppComp,
-              '{{ myDir.name }} <div dir-on-change #myDir="dirOnChange" [in]="true"></div>');
-          fixture.detectChanges();
-          expect(fixture.nativeElement.firstChild.textContent).toContain('Drew!?@');  // text node
-          expect(fixture.nativeElement.lastChild.title).toBe('Drew!?@');              // div element
-        });
+    it('should not support backward reference', () => {
+      expect(() => {
+        const fixture = initWithTemplate(
+            AppComp, '{{ myDir.name }} <div dir-on-change #myDir="dirOnChange" [in]="true"></div>');
+        fixture.detectChanges();
+      })
+          .toThrowError(
+              /ExpressionChangedAfterItHasBeenCheckedError: Expression has changed after it was checked/);
+    });
 
-    onlyInIvy('Supporting input changes in hooks is limited in Ivy')
-        .it('should not support backward reference', () => {
-          expect(() => {
-            const fixture = initWithTemplate(
-                AppComp,
-                '{{ myDir.name }} <div dir-on-change #myDir="dirOnChange" [in]="true"></div>');
-            fixture.detectChanges();
-          })
-              .toThrowError(
-                  /ExpressionChangedAfterItHasBeenCheckedError: Expression has changed after it was checked/);
-        });
-
-    modifiedInIvy('Supporting input changes in hooks is limited in Ivy')
-        .it('should support reference on the same node', () => {
-          const fixture = initWithTemplate(
-              AppComp,
-              '<div dir-on-change #myDir="dirOnChange" [in]="true" [id]="myDir.name"></div>');
-          fixture.detectChanges();
-          expect(fixture.nativeElement.firstChild.id).toBe('Drew!?@');
-          expect(fixture.nativeElement.firstChild.title).toBe('Drew!?@');
-        });
-
-    onlyInIvy('Supporting input changes in hooks is limited in Ivy')
-        .it('should not support reference on the same node', () => {
-          expect(() => {
-            const fixture = initWithTemplate(
-                AppComp,
-                '<div dir-on-change #myDir="dirOnChange" [in]="true" [id]="myDir.name"></div>');
-            fixture.detectChanges();
-          })
-              .toThrowError(
-                  /ExpressionChangedAfterItHasBeenCheckedError: Expression has changed after it was checked/);
-        });
+    it('should not support reference on the same node', () => {
+      expect(() => {
+        const fixture = initWithTemplate(
+            AppComp,
+            '<div dir-on-change #myDir="dirOnChange" [in]="true" [id]="myDir.name"></div>');
+        fixture.detectChanges();
+      })
+          .toThrowError(
+              /ExpressionChangedAfterItHasBeenCheckedError: Expression has changed after it was checked/);
+    });
 
     it('should support input referenced by host binding on that directive', () => {
       const fixture =
@@ -101,13 +77,12 @@ describe('exports', () => {
     });
   });
 
-  onlyInIvy('Different error message is thrown in View Engine')
-      .it('should throw if export name is not found', () => {
-        expect(() => {
-          const fixture = initWithTemplate(AppComp, '<div #myDir="dir"></div>');
-          fixture.detectChanges();
-        }).toThrowError(/Export of name 'dir' not found!/);
-      });
+  it('should throw if export name is not found', () => {
+    expect(() => {
+      const fixture = initWithTemplate(AppComp, '<div #myDir="dir"></div>');
+      fixture.detectChanges();
+    }).toThrowError(/Export of name 'dir' not found!/);
+  });
 
   it('should support component instance fed into directive', () => {
     const fixture = initWithTemplate(
@@ -120,11 +95,8 @@ describe('exports', () => {
     expect(dirWithInput.comp).toEqual(myComp);
   });
 
-
-  onlyInIvy(
-      'in Ivy first declared ref is selected in case of multiple non-unique refs, when VE used the last one')
-      .it('should point to the first declared ref', () => {
-        const fixture = initWithTemplate(AppComp, `
+  it('should point to the first declared ref', () => {
+    const fixture = initWithTemplate(AppComp, `
           <div>
             <input value="First" #ref />
             <input value="Second" #ref />
@@ -132,9 +104,9 @@ describe('exports', () => {
             <span>{{ ref.value }}</span>
           </div>
         `);
-        fixture.detectChanges();
-        expect(fixture.nativeElement.querySelector('span').innerHTML).toBe('First');
-      });
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('span').innerHTML).toBe('First');
+  });
 
   describe('forward refs', () => {
     it('should work with basic text bindings', () => {

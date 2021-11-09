@@ -10,7 +10,6 @@ import {CommonModule} from '@angular/common';
 import {Component, Directive, ErrorHandler, EventEmitter, HostListener, Input, OnInit, Output, QueryList, TemplateRef, ViewChild, ViewChildren, ViewContainerRef} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
-import {onlyInIvy} from '@angular/private/testing';
 
 function getNoOfNativeListeners(): number {
   return ngDevMode ? ngDevMode.rendererAddEventListener : 0;
@@ -67,75 +66,70 @@ describe('event listeners', () => {
       }
     }
 
-    onlyInIvy('ngDevMode.rendererAddEventListener counters are only available in ivy')
-        .it('should coalesce multiple event listeners for the same event on the same element',
-            () => {
-              @Component({
-                selector: 'test-cmpt',
-                template:
-                    `<with-clicks-cmpt></with-clicks-cmpt><with-clicks-cmpt></with-clicks-cmpt>`
-              })
-              class TestCmpt {
-              }
+    it('should coalesce multiple event listeners for the same event on the same element', () => {
+      @Component({
+        selector: 'test-cmpt',
+        template: `<with-clicks-cmpt></with-clicks-cmpt><with-clicks-cmpt></with-clicks-cmpt>`
+      })
+      class TestCmpt {
+      }
 
-              TestBed.configureTestingModule(
-                  {declarations: [TestCmpt, WithClicksCmpt, LikesClicks, MdButton]});
-              const noOfEventListenersRegisteredSoFar = getNoOfNativeListeners();
-              const fixture = TestBed.createComponent(TestCmpt);
-              fixture.detectChanges();
-              const buttonDebugEls = fixture.debugElement.queryAll(By.css('button'));
-              const withClicksEls = fixture.debugElement.queryAll(By.css('with-clicks-cmpt'));
+      TestBed.configureTestingModule(
+          {declarations: [TestCmpt, WithClicksCmpt, LikesClicks, MdButton]});
+      const noOfEventListenersRegisteredSoFar = getNoOfNativeListeners();
+      const fixture = TestBed.createComponent(TestCmpt);
+      fixture.detectChanges();
+      const buttonDebugEls = fixture.debugElement.queryAll(By.css('button'));
+      const withClicksEls = fixture.debugElement.queryAll(By.css('with-clicks-cmpt'));
 
-              // We want to assert that only one native event handler was registered but still all
-              // directives are notified when an event fires. This assertion can only be verified in
-              // the ngDevMode (but the coalescing always happens!).
-              ngDevMode &&
-                  expect(getNoOfNativeListeners()).toBe(noOfEventListenersRegisteredSoFar + 2);
+      // We want to assert that only one native event handler was registered but still all
+      // directives are notified when an event fires. This assertion can only be verified in
+      // the ngDevMode (but the coalescing always happens!).
+      ngDevMode && expect(getNoOfNativeListeners()).toBe(noOfEventListenersRegisteredSoFar + 2);
 
-              buttonDebugEls[0].nativeElement.click();
-              expect(withClicksEls[0].injector.get(WithClicksCmpt).counter).toBe(1);
-              expect(buttonDebugEls[0].injector.get(LikesClicks).counter).toBe(1);
-              expect(buttonDebugEls[0].injector.get(MdButton).counter).toBe(1);
-              expect(withClicksEls[1].injector.get(WithClicksCmpt).counter).toBe(0);
-              expect(buttonDebugEls[1].injector.get(LikesClicks).counter).toBe(0);
-              expect(buttonDebugEls[1].injector.get(MdButton).counter).toBe(0);
+      buttonDebugEls[0].nativeElement.click();
+      expect(withClicksEls[0].injector.get(WithClicksCmpt).counter).toBe(1);
+      expect(buttonDebugEls[0].injector.get(LikesClicks).counter).toBe(1);
+      expect(buttonDebugEls[0].injector.get(MdButton).counter).toBe(1);
+      expect(withClicksEls[1].injector.get(WithClicksCmpt).counter).toBe(0);
+      expect(buttonDebugEls[1].injector.get(LikesClicks).counter).toBe(0);
+      expect(buttonDebugEls[1].injector.get(MdButton).counter).toBe(0);
 
-              buttonDebugEls[1].nativeElement.click();
-              expect(withClicksEls[0].injector.get(WithClicksCmpt).counter).toBe(1);
-              expect(buttonDebugEls[0].injector.get(LikesClicks).counter).toBe(1);
-              expect(buttonDebugEls[0].injector.get(MdButton).counter).toBe(1);
-              expect(withClicksEls[1].injector.get(WithClicksCmpt).counter).toBe(1);
-              expect(buttonDebugEls[1].injector.get(LikesClicks).counter).toBe(1);
-              expect(buttonDebugEls[1].injector.get(MdButton).counter).toBe(1);
-            });
+      buttonDebugEls[1].nativeElement.click();
+      expect(withClicksEls[0].injector.get(WithClicksCmpt).counter).toBe(1);
+      expect(buttonDebugEls[0].injector.get(LikesClicks).counter).toBe(1);
+      expect(buttonDebugEls[0].injector.get(MdButton).counter).toBe(1);
+      expect(withClicksEls[1].injector.get(WithClicksCmpt).counter).toBe(1);
+      expect(buttonDebugEls[1].injector.get(LikesClicks).counter).toBe(1);
+      expect(buttonDebugEls[1].injector.get(MdButton).counter).toBe(1);
+    });
 
-    onlyInIvy('ngDevMode.rendererAddEventListener counters are only available in ivy')
-        .it('should coalesce multiple event listeners in presence of queries', () => {
-          @Component({
-            selector: 'test-cmpt',
-            template: `<button likes-clicks (click)="counter = counter+1">Click me!</button>`
-          })
-          class TestCmpt {
-            counter = 0;
+    it('should coalesce multiple event listeners in presence of queries', () => {
+      @Component({
+        selector: 'test-cmpt',
+        template: `<button likes-clicks (click)="counter = counter+1">Click me!</button>`
+      })
+      class TestCmpt {
+        counter = 0;
 
-            @ViewChildren('nothing') nothing!: QueryList<any>;
-          }
+        @ViewChildren('nothing') nothing!: QueryList<any>;
+      }
 
-          TestBed.configureTestingModule({declarations: [TestCmpt, LikesClicks]});
-          const noOfEventListenersRegisteredSoFar = getNoOfNativeListeners();
-          const fixture = TestBed.createComponent(TestCmpt);
-          fixture.detectChanges();
-          const buttonDebugEl = fixture.debugElement.query(By.css('button'));
+      TestBed.configureTestingModule({declarations: [TestCmpt, LikesClicks]});
+      const noOfEventListenersRegisteredSoFar = getNoOfNativeListeners();
+      const fixture = TestBed.createComponent(TestCmpt);
+      fixture.detectChanges();
+      const buttonDebugEl = fixture.debugElement.query(By.css('button'));
 
-          // We want to assert that only one native event handler was registered but still all
-          // directives are notified when an event fires. This assertion can only be verified in
-          // the ngDevMode (but the coalescing always happens!).
-          ngDevMode && expect(getNoOfNativeListeners()).toBe(noOfEventListenersRegisteredSoFar + 1);
+      // We want to assert that only one native event handler was registered but still all
+      // directives are notified when an event fires. This assertion can only be verified in
+      // the ngDevMode (but the coalescing always happens!).
+      ngDevMode && expect(getNoOfNativeListeners()).toBe(noOfEventListenersRegisteredSoFar + 1);
 
-          buttonDebugEl.nativeElement.click();
-          expect(buttonDebugEl.injector.get(LikesClicks).counter).toBe(1);
-          expect(fixture.componentInstance.counter).toBe(1);
-        });
+      buttonDebugEl.nativeElement.click();
+      expect(buttonDebugEl.injector.get(LikesClicks).counter).toBe(1);
+      expect(fixture.componentInstance.counter).toBe(1);
+    });
 
 
     it('should try to execute remaining coalesced listeners if one of the listeners throws', () => {
@@ -398,136 +392,132 @@ describe('event listeners', () => {
     expect(comp.counter).toBe(1);
   });
 
-  onlyInIvy('global event listeners on non-node host elements are supported only in Ivy')
-      .it('should bind global event listeners on an ng-container directive host', () => {
-        let clicks = 0;
+  it('should bind global event listeners on an ng-container directive host', () => {
+    let clicks = 0;
 
-        @Directive({selector: '[add-global-listener]'})
-        class AddGlobalListener {
-          @HostListener('document:click')
-          handleClick() {
-            clicks++;
-          }
-        }
+    @Directive({selector: '[add-global-listener]'})
+    class AddGlobalListener {
+      @HostListener('document:click')
+      handleClick() {
+        clicks++;
+      }
+    }
 
-        @Component({
-          template: `
+    @Component({
+      template: `
             <ng-container add-global-listener>
               <button>Click me!</button>
             </ng-container>
           `
-        })
-        class MyComp {
-        }
+    })
+    class MyComp {
+    }
 
-        TestBed.configureTestingModule({declarations: [MyComp, AddGlobalListener]});
-        const fixture = TestBed.createComponent(MyComp);
-        fixture.detectChanges();
-        const button = fixture.nativeElement.querySelector('button');
-        button.click();
-        fixture.detectChanges();
-        expect(clicks).toBe(1);
-      });
+    TestBed.configureTestingModule({declarations: [MyComp, AddGlobalListener]});
+    const fixture = TestBed.createComponent(MyComp);
+    fixture.detectChanges();
+    const button = fixture.nativeElement.querySelector('button');
+    button.click();
+    fixture.detectChanges();
+    expect(clicks).toBe(1);
+  });
 
-  onlyInIvy('global event listeners on non-node host elements are supported only in Ivy')
-      .it('should bind global event listeners on an ng-template directive host', () => {
-        let clicks = 0;
+  it('should bind global event listeners on an ng-template directive host', () => {
+    let clicks = 0;
 
-        @Directive({selector: '[add-global-listener]'})
-        class AddGlobalListener {
-          @HostListener('document:click')
-          handleClick() {
-            clicks++;
-          }
-        }
+    @Directive({selector: '[add-global-listener]'})
+    class AddGlobalListener {
+      @HostListener('document:click')
+      handleClick() {
+        clicks++;
+      }
+    }
 
-        @Component({
-          template: `
+    @Component({
+      template: `
             <ng-template #template add-global-listener>
               <button>Click me!</button>
             </ng-template>
 
             <ng-container [ngTemplateOutlet]="template"></ng-container>
           `
-        })
-        class MyComp {
-        }
+    })
+    class MyComp {
+    }
 
-        TestBed.configureTestingModule(
-            {declarations: [MyComp, AddGlobalListener], imports: [CommonModule]});
-        const fixture = TestBed.createComponent(MyComp);
-        fixture.detectChanges();
-        const button = fixture.nativeElement.querySelector('button');
-        button.click();
-        fixture.detectChanges();
-        expect(clicks).toBe(1);
-      });
+    TestBed.configureTestingModule(
+        {declarations: [MyComp, AddGlobalListener], imports: [CommonModule]});
+    const fixture = TestBed.createComponent(MyComp);
+    fixture.detectChanges();
+    const button = fixture.nativeElement.querySelector('button');
+    button.click();
+    fixture.detectChanges();
+    expect(clicks).toBe(1);
+  });
 
-  onlyInIvy('global event listeners on non-node host elements are supported only in Ivy')
-      .it('should bind global event listeners on a structural directive host', () => {
-        let clicks = 0;
+  it('should bind global event listeners on a structural directive host', () => {
+    let clicks = 0;
 
-        @Directive({selector: '[add-global-listener]'})
-        class AddGlobalListener implements OnInit {
-          @HostListener('document:click')
-          handleClick() {
-            clicks++;
-          }
+    @Directive({selector: '[add-global-listener]'})
+    class AddGlobalListener implements OnInit {
+      @HostListener('document:click')
+      handleClick() {
+        clicks++;
+      }
 
-          constructor(private _vcr: ViewContainerRef, private _templateRef: TemplateRef<any>) {}
+      constructor(private _vcr: ViewContainerRef, private _templateRef: TemplateRef<any>) {}
 
-          ngOnInit() {
-            this._vcr.createEmbeddedView(this._templateRef);
-          }
-        }
+      ngOnInit() {
+        this._vcr.createEmbeddedView(this._templateRef);
+      }
+    }
 
-        @Component({
-          template: `
+    @Component({
+      template: `
             <div *add-global-listener>
               <button>Click me!</button>
             </div>
           `
-        })
-        class MyComp {
-        }
+    })
+    class MyComp {
+    }
 
-        TestBed.configureTestingModule({declarations: [MyComp, AddGlobalListener]});
-        const fixture = TestBed.createComponent(MyComp);
-        fixture.detectChanges();
-        const button = fixture.nativeElement.querySelector('button');
-        button.click();
-        fixture.detectChanges();
-        expect(clicks).toBe(1);
-      });
+    TestBed.configureTestingModule({declarations: [MyComp, AddGlobalListener]});
+    const fixture = TestBed.createComponent(MyComp);
+    fixture.detectChanges();
+    const button = fixture.nativeElement.querySelector('button');
+    button.click();
+    fixture.detectChanges();
+    expect(clicks).toBe(1);
+  });
 
-  onlyInIvy('issue has only been resolved for Ivy')
-      .it('should be able to access a property called $event using `this`', () => {
-        let eventVariable: number|undefined;
-        let eventObject: MouseEvent|undefined;
+  it('should be able to access a property called $event using `this`', () => {
+    let eventVariable: number|undefined;
+    let eventObject: MouseEvent|undefined;
 
-        @Component({
-          template: `
+    @Component({
+      template: `
         <button (click)="clicked(this.$event, $event)">Click me!</button>
       `,
-        })
-        class MyComp {
-          $event = 10;
+    })
+    class MyComp {
+      $event = 10;
 
-          clicked(value: number, event: MouseEvent) {
-            eventVariable = value;
-            eventObject = event;
-          }
-        }
+      clicked(value: number, event: MouseEvent) {
+        eventVariable = value;
+        eventObject = event;
+      }
+    }
 
-        TestBed.configureTestingModule({declarations: [MyComp]});
-        const fixture = TestBed.createComponent(MyComp);
-        fixture.detectChanges();
-        fixture.nativeElement.querySelector('button').click();
-        fixture.detectChanges();
+    TestBed.configureTestingModule({declarations: [MyComp]});
+    const fixture = TestBed.createComponent(MyComp);
+    fixture.detectChanges();
+    fixture.nativeElement.querySelector('button').click();
+    fixture.detectChanges();
 
-        expect(eventVariable).toBe(10);
-        expect(eventObject?.type).toBe('click');
-      });
+    expect(eventVariable).toBe(10);
+    expect(eventObject?.type).toBe('click');
+  });
 
   it('should be able to use a keyed write on `this` from a listener inside an ng-template', () => {
     @Component({
