@@ -8,7 +8,6 @@ ts_library(
         "//packages:types",
         "//packages/compiler",
         "//packages/compiler/test/expression_parser/utils",
-        "//packages/compiler/testing",
         "//packages/platform-browser/testing",
     ],
 )

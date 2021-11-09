@@ -1,6 +1,6 @@
-package(default_visibility = ["//visibility:private"])
-
 load("//tools:defaults.bzl", "jasmine_node_test", "karma_web_test_suite", "ts_library")
+
+package(default_visibility = ["//visibility:private"])
 
 ts_library(
     name = "acceptance_lib",
@@ -17,7 +17,6 @@ ts_library(
         "//packages/common",
         "//packages/common/locales",
         "//packages/compiler",
-        "//packages/compiler/testing",
         "//packages/core",
         "//packages/core/src/util",
         "//packages/core/test/render3:matchers",

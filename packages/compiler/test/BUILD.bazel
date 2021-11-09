@@ -7,10 +7,6 @@ NODE_ONLY = [
     "aot/**/*.ts",
 ]
 
-UTILS = [
-    "aot/test_util.ts",
-]
-
 circular_dependency_test(
     name = "circular_deps_test",
     entry_point = "angular/packages/compiler/index.js",
@@ -18,28 +14,11 @@ circular_dependency_test(
 )
 
 ts_library(
-    name = "test_utils",
-    testonly = True,
-    srcs = UTILS,
-    visibility = [
-        "//packages/compiler-cli/test:__subpackages__",
-        "//packages/compiler/test:__subpackages__",
-    ],
-    deps = [
-        "//packages:types",
-        "//packages/compiler",
-        "//packages/compiler-cli",
-        "//packages/compiler-cli/src/ngtsc/testing",
-        "@npm//typescript",
-    ],
-)
-
-ts_library(
     name = "test_lib",
     testonly = True,
     srcs = glob(
         ["**/*.ts"],
-        exclude = NODE_ONLY + UTILS,
+        exclude = NODE_ONLY,
     ),
     deps = [
         "//packages:types",
@@ -47,13 +26,14 @@ ts_library(
         "//packages/compiler",
         "//packages/compiler/test/expression_parser/utils",
         "//packages/compiler/test/ml_parser/util",
-        "//packages/compiler/testing",
         "//packages/core",
         "//packages/core/src/compiler",
         "//packages/core/testing",
         "//packages/platform-browser",
         "//packages/platform-browser-dynamic",
         "//packages/platform-browser/testing",
+        "@npm//base64-js",
+        "@npm//source-map",
     ],
 )
 
@@ -62,15 +42,11 @@ ts_library(
     testonly = True,
     srcs = glob(
         NODE_ONLY,
-        exclude = UTILS,
     ),
     deps = [
         ":test_lib",
-        ":test_utils",
         "//packages/compiler",
-        "//packages/compiler-cli",
         "//packages/compiler/test/expression_parser/utils",
-        "//packages/compiler/testing",
         "//packages/core",
         "@npm//typescript",
     ],
@@ -79,14 +55,6 @@ ts_library(
 jasmine_node_test(
     name = "test",
     bootstrap = ["//tools/testing:node_es5"],
-    data = [
-        "@npm//@angular/animations-12",
-        "@npm//@angular/core-12",
-    ],
-    tags = [
-        # Disabled as these tests pertain to the old ngc compilation and are not relevant in Ivy.
-        "view-engine-only",
-    ],
     deps = [
         ":test_lib",
         ":test_node_only_lib",
@@ -97,10 +65,6 @@ jasmine_node_test(
 
 karma_web_test_suite(
     name = "test_web",
-    tags = [
-        # Disabled as these tests pertain to the old ngc compilation and are not relevant in Ivy.
-        "view-engine-only",
-    ],
     deps = [
         ":test_lib",
     ],
