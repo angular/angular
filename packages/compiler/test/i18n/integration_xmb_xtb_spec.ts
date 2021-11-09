@@ -12,7 +12,8 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 import {configureCompiler, createComponent, HTML, serializeTranslations, validateHtml} from './integration_common';
 
-describe('i18n XMB/XTB integration spec', () => {
+// TODO(alxhub): figure out if this test is still relevant.
+xdescribe('i18n XMB/XTB integration spec', () => {
   describe('(with LF line endings)', () => {
     beforeEach(waitForAsync(() => configureCompiler(XTB + LF_LINE_ENDING_XTB, 'xtb')));
 

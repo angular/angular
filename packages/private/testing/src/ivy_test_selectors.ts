@@ -60,7 +60,7 @@ export function obsoleteInIvy(reason: string): JasmineMethods {
  * ```
  */
 export function onlyInIvy(reason: string): JasmineMethods {
-  return ivyEnabled ? PASSTHROUGH : IGNORE;
+  return PASSTHROUGH;
 }
 
 /**
@@ -81,7 +81,7 @@ export function onlyInIvy(reason: string): JasmineMethods {
  * ```
  */
 export function modifiedInIvy(reason: string): JasmineMethods {
-  return ivyEnabled ? IGNORE : PASSTHROUGH;
+  return IGNORE;
 }
 
 export interface JasmineMethods {

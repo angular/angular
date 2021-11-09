@@ -9,4 +9,4 @@
 /**
  * This variable shows if Ivy should be enabled at runtime.
  */
-export const ivyEnabled = false;
+export const ivyEnabled = true;

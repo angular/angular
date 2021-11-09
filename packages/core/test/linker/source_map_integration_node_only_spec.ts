@@ -10,14 +10,15 @@ import {ResourceLoader, SourceMap} from '@angular/compiler';
 import {CompilerFacadeImpl} from '@angular/compiler/src/jit_compiler_facade';
 import {JitEvaluator} from '@angular/compiler/src/output/output_jit';
 import {escapeRegExp} from '@angular/compiler/src/util';
-import {extractSourceMap, originalPositionFor} from '@angular/compiler/testing/src/output/source_map_util';
-import {MockResourceLoader} from '@angular/compiler/testing/src/resource_loader_mock';
 import {Attribute, Component, Directive, ErrorHandler, ɵglobal} from '@angular/core';
 import {CompilerFacade, ExportedCompilerFacade} from '@angular/core/src/compiler/compiler_facade';
 import {getErrorLogger} from '@angular/core/src/errors';
 import {resolveComponentResources} from '@angular/core/src/metadata/resource_loading';
 import {fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {modifiedInIvy, onlyInIvy} from '@angular/private/testing';
+
+import {MockResourceLoader} from './resource_loader_mock';
+import {extractSourceMap, originalPositionFor} from './source_map_util';
 
 describe('jit source mapping', () => {
   let resourceLoader: MockResourceLoader;
