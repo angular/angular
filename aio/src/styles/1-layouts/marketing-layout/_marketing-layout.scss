@@ -41,7 +41,8 @@ section#intro {
   display: flex;
   align-items: center;
   position: relative;
-  width: 900px;
+  max-width: 900px;
+  width: 100%;
   height: 480px;
   margin: 0 auto -32px;
   padding: 48px 0 0;
@@ -50,11 +51,9 @@ section#intro {
     background-image: url(/assets/images/logos/angular/angular.svg);
   }
 
-  @media (max-width: 780px) {
+  @media (max-width: 65rem) {
     flex-direction: column;
     justify-content: center;
-    width: 100%;
-    max-width: 100vw;
     padding: 40px 0 32px;
 
     button {
@@ -71,7 +70,7 @@ section#intro {
     padding-top: 0;
     padding-bottom: 0;
 
-    @media  (max-width: 780px) {
+    @media  (max-width: 65rem) {
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -91,7 +90,7 @@ section#intro {
       display: none;
     }
 
-    @media (max-width: 780px) {
+    @media (max-width: 65rem) {
       text-align: center;
     }
 
