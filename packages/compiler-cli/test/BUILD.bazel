@@ -52,45 +52,6 @@ jasmine_node_test(
     ],
 )
 
-# ngc_spec
-ts_library(
-    name = "ngc_lib",
-    testonly = True,
-    srcs = [
-        "ngc_spec.ts",
-    ],
-    deps = [
-        ":test_utils",
-        "//packages/compiler",
-        "//packages/compiler-cli",
-        "@npm//tsickle",
-        "@npm//typescript",
-    ],
-)
-
-jasmine_node_test(
-    name = "ngc",
-    timeout = "long",  # 900 seconds
-    bootstrap = ["//tools/testing:node_es5"],
-    data = [
-        "@npm//@angular/common-12",
-        "@npm//@angular/core-12",
-        "@npm//@angular/platform-browser-12",
-        "@npm//@angular/router-12",
-    ],
-    tags = [
-        # Disabled as these tests are specific to the old ngc compiler, and not ngtsc which has its
-        # own tests under //packages/compiler-cli/test/ngtsc.
-        "view-engine-only",
-    ],
-    deps = [
-        ":ngc_lib",
-        "//packages/core",
-        "@npm//rxjs",
-        "@npm//yargs",
-    ],
-)
-
 # perform_watch_spec
 ts_library(
     name = "perform_watch_lib",

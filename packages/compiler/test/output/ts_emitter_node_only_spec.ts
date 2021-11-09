@@ -13,7 +13,7 @@ import {SourceMap} from '@angular/compiler/src/output/source_map';
 import {TypeScriptEmitter} from '@angular/compiler/src/output/ts_emitter';
 import {ParseSourceSpan} from '@angular/compiler/src/parse_util';
 
-import {extractSourceMap, originalPositionFor} from '@angular/compiler/testing/src/output/source_map_util';
+import {extractSourceMap, originalPositionFor} from './source_map_util';
 
 const someGenFilePath = 'somePackage/someGenFile';
 
