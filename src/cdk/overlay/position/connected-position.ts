@@ -7,7 +7,6 @@
  */
 
 /** Horizontal dimension of a connection point on the perimeter of the origin or overlay element. */
-import {Optional} from '@angular/core';
 export type HorizontalConnectionPos = 'start' | 'center' | 'end';
 
 /** Vertical dimension of a connection point on the perimeter of the origin or overlay element. */
@@ -91,7 +90,7 @@ export class ConnectedOverlayPositionChange {
     /** The position used as a result of this change. */
     public connectionPair: ConnectionPositionPair,
     /** @docs-private */
-    @Optional() public scrollableViewProperties: ScrollingVisibility,
+    public scrollableViewProperties: ScrollingVisibility,
   ) {}
 }
 
