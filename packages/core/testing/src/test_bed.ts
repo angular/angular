@@ -12,8 +12,8 @@ import {ComponentFixture} from './component_fixture';
 import {MetadataOverride} from './metadata_override';
 import {_getTestBedRender3, TestBedRender3} from './r3_test_bed';
 import {ComponentFixtureAutoDetect, ComponentFixtureNoNgZone, ModuleTeardownOptions, TEARDOWN_TESTING_MODULE_ON_DESTROY_DEFAULT, TestBedStatic, TestComponentRenderer, TestEnvironmentOptions, TestModuleMetadata} from './test_bed_common';
-import {TestingCompiler, TestingCompilerFactory} from './test_compiler';
 
+const TestingCompiler: any = null;
 
 let _nextRootElementId = 0;
 
@@ -275,7 +275,7 @@ export class TestBedViewEngine implements TestBed {
 
   private _instantiated: boolean = false;
 
-  private _compiler: TestingCompiler = null!;
+  private _compiler: any = null!;
   private _moduleRef: NgModuleRef<any>|null = null;
   private _moduleFactory: NgModuleFactory<any>|null = null;
   private _pendingModuleFactory: Type<unknown>|null = null;
@@ -416,7 +416,7 @@ export class TestBedViewEngine implements TestBed {
 
     const moduleType = this._createCompilerAndModule();
     this._pendingModuleFactory = moduleType;
-    return this._compiler.compileModuleAndAllComponentsAsync(moduleType).then(result => {
+    return this._compiler.compileModuleAndAllComponentsAsync(moduleType).then((result: any) => {
       // If the module mismatches by the time the promise resolves, it means that the module has
       // already been destroyed and a new compilation has started. If that's the case, avoid
       // overwriting the module factory, because it can cause downstream errors.
@@ -460,9 +460,9 @@ export class TestBedViewEngine implements TestBed {
     const ngZoneInjector = Injector.create({
       providers: providers,
       parent: this.platform.injector,
-      name: this._moduleFactory.moduleType.name
+      name: this._moduleFactory!.moduleType.name
     });
-    this._moduleRef = this._moduleFactory.create(ngZoneInjector);
+    this._moduleRef = this._moduleFactory!.create(ngZoneInjector);
     // ApplicationInitStatus.runInitializers() is marked @internal to core. So casting to any
     // before accessing it.
     try {
@@ -499,7 +499,7 @@ export class TestBedViewEngine implements TestBed {
     class DynamicTestModule {
     }
 
-    const compilerFactory = this.platform.injector.get(TestingCompilerFactory);
+    const compilerFactory = this.platform.injector.get(null!) as any;
     this._compiler = compilerFactory.createTestingCompiler(this._compilerOptions);
     for (const summary of [this._testEnvAotSummaries, ...this._aotSummaries]) {
       this._compiler.loadAotSummaries(summary);

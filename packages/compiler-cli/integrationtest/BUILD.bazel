@@ -1,4 +1,3 @@
-load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_test")
 load("//tools:defaults.bzl", "nodejs_binary")
 
 package(default_visibility = ["//visibility:public"])
@@ -21,50 +20,4 @@ nodejs_binary(
         "@npm//reflect-metadata",
     ],
     entry_point = "//packages/compiler-cli:src/extract_i18n.ts",
-)
-
-nodejs_test(
-    name = "integrationtest",
-    data = [
-        ":ngc_bin",
-        ":ng_xi18n",
-        "@nodejs//:node",
-        "@npm//domino",
-        "@npm//chokidar",
-        "@npm//source-map-support",
-        "@npm//shelljs",
-        "@npm//typescript",
-        "@npm//reflect-metadata",
-        "@npm//rxjs",
-        "@npm//tslib",
-        "@npm//jasmine/bin:jasmine",
-        "@npm//xhr2",
-        "@npm//@types/node",
-        "@npm//@types/jasmine",
-        # we need to reference zone.d.ts typing file from zone.js build target
-        # instead of npm because angular repo will not depends on npm zone.js
-        # any longer.
-        "//packages/zone.js/lib:zone_d_ts",
-        # we need to reference zone.js npm_package build target
-        # instead of npm because angular repo will not depends on npm zone.js
-        # any longer, so we need to build a zone.js npm release first.
-        "//packages/zone.js:npm_package",
-        "//packages/animations:npm_package",
-        "//packages/common:npm_package",
-        "//packages/compiler:npm_package",
-        "//packages/compiler-cli:npm_package",
-        "//packages/core:npm_package",
-        "//packages/forms:npm_package",
-        "//packages/platform-browser:npm_package",
-        "//packages/platform-browser-dynamic:npm_package",
-        "//packages/platform-server:npm_package",
-        "//packages/router:npm_package",
-    ] + glob(["**/*"]),
-    entry_point = "test.js",
-    tags = [
-        # TODO(josephperrott): reenable or remove test after investigating the cause of failures
-        # on windows CI runs.
-        "manual",
-        "view-engine-only",
-    ],
 )
