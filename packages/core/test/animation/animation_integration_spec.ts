@@ -13,7 +13,6 @@ import {fakeAsync, flushMicrotasks, TestBed} from '@angular/core/testing';
 import {ɵDomRendererFactory2} from '@angular/platform-browser';
 import {ANIMATION_MODULE_TYPE, BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {hasStyle} from '@angular/platform-browser/testing/src/browser_util';
-import {ivyEnabled, modifiedInIvy} from '@angular/private/testing';
 
 const DEFAULT_NAMESPACE_ID = 'id';
 const DEFAULT_COMPONENT_ID = '1';
@@ -3195,9 +3194,7 @@ describe('animation tests', function() {
           expect(element.style['height']).toEqual(height);
         }
 
-        // In Ivy, change detection needs to run before the ViewQuery for cmp.element will
-        // resolve. Keeping this test enabled since we still want to test the animation logic.
-        if (ivyEnabled) fixture.detectChanges();
+        fixture.detectChanges();
 
         const cmp = fixture.componentInstance;
         const element = cmp.element.nativeElement;
@@ -3772,53 +3769,6 @@ describe('animation tests', function() {
       TestBed.createComponent(Cmp);
     }).not.toThrowError();
   });
-
-  modifiedInIvy('FW-952 - Error recovery is handled differently in Ivy than VE')
-      .it('should continue to clean up DOM-related animation artifacts even if a compiler-level error is thrown midway',
-          () => {
-            @Component({
-              selector: 'if-cmp',
-              animations: [
-                trigger(
-                    'foo',
-                    [
-                      transition('* => something', []),
-                    ]),
-              ],
-              template: `
-          value = {{ foo[bar] }}
-          <div #contents>
-            <div *ngIf="exp">1</div>
-            <div *ngIf="exp" @foo>2</div>
-            <div *ngIf="exp" [@foo]="'123'">3</div>
-          </div>
-        `,
-            })
-            class Cmp {
-              exp: any = false;
-
-              @ViewChild('contents', {static: true}) public contents: any;
-            }
-
-            TestBed.configureTestingModule({declarations: [Cmp]});
-
-            const engine = TestBed.inject(ɵAnimationEngine);
-            const fixture = TestBed.createComponent(Cmp);
-
-            const runCD = () => fixture.detectChanges();
-            const cmp = fixture.componentInstance;
-
-            cmp.exp = true;
-            expect(runCD).toThrow();
-
-            const contents = cmp.contents.nativeElement;
-            expect(contents.innerText.replace(/\s+/gm, '')).toEqual('123');
-
-            cmp.exp = false;
-            expect(runCD).toThrow();
-
-            expect(contents.innerText.trim()).toEqual('');
-          });
 
   describe('errors for not using the animation module', () => {
     beforeEach(() => {

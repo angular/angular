@@ -14,13 +14,12 @@ import {isLView} from '@angular/core/src/render3/interfaces/type_checks';
 import {CONTEXT} from '@angular/core/src/render3/interfaces/view';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {getElementStyles} from '@angular/core/testing/src/styling';
-import {onlyInIvy} from '@angular/private/testing';
 
 import {getLContext} from '../../src/render3/context_discovery';
 import {getHostElement, markDirty} from '../../src/render3/index';
 import {ComponentDebugMetadata, getComponent, getComponentLView, getContext, getDebugNode, getDirectiveMetadata, getDirectives, getInjectionTokens, getInjector, getListeners, getLocalRefs, getOwningComponent, getRootComponents} from '../../src/render3/util/discovery_utils';
 
-onlyInIvy('Ivy-specific utilities').describe('discovery utils', () => {
+describe('discovery utils', () => {
   let fixture: ComponentFixture<MyApp>;
   let myApp: MyApp;
   let dirA: DirectiveA[];
@@ -314,7 +313,7 @@ onlyInIvy('Ivy-specific utilities').describe('discovery utils', () => {
   });
 });
 
-onlyInIvy('Ivy-specific utilities').describe('discovery utils deprecated', () => {
+describe('discovery utils deprecated', () => {
   describe('getRootComponents()', () => {
     it('should return a list of the root components of the application from an element', () => {
       @Component({selector: 'inner-comp', template: '<div></div>'})

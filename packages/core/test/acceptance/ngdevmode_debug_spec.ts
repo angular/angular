@@ -13,7 +13,6 @@ import {getComponentLView} from '@angular/core/src/render3/util/discovery_utils'
 import {createNamedArrayType} from '@angular/core/src/util/named_array_type';
 import {ngDevModeResetPerfCounters} from '@angular/core/src/util/ng_dev_mode';
 import {TestBed} from '@angular/core/testing';
-import {onlyInIvy} from '@angular/private/testing';
 
 class SupportsArraySubclassing extends Array {}
 
@@ -28,7 +27,7 @@ const runtimeSupportsArraySubclassing =
     (new (createNamedArrayType('SupportsArraySubclassing'))).constructor.name ===
     'SupportsArraySubclassing';
 
-onlyInIvy('Debug information exist in ivy only').describe('ngDevMode debug', () => {
+describe('ngDevMode debug', () => {
   describe('LViewDebug', () => {
     beforeEach(ngDevModeResetPerfCounters);
 

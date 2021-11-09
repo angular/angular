@@ -10,7 +10,6 @@ import {CommonModule} from '@angular/common';
 import {ChangeDetectorRef, Component, ComponentFactoryResolver, Directive, EmbeddedViewRef, Injectable, Injector, Input, NgModule, TemplateRef, ViewChild, ViewContainerRef, ViewRef} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
-import {onlyInIvy} from '@angular/private/testing';
 
 describe('view insertion', () => {
   describe('of a simple template', () => {
@@ -337,15 +336,14 @@ describe('view insertion', () => {
             .toBe('insert|before');
       });
 
-      onlyInIvy('VE incorrectly inserts views before ng-container content')
-          .it('should insert before a view with a ng-container where ViewContainerRef is injected',
-              () => {
-                expect(createAndInsertViews(`
+      it('should insert before a view with a ng-container where ViewContainerRef is injected',
+         () => {
+           expect(createAndInsertViews(`
           <ng-container [ngTemplateOutlet]="after">|before</ng-container>
           <ng-template #after>|after</ng-template>
         `).textContent)
-                    .toBe('insert|before|after');
-              });
+               .toBe('insert|before|after');
+         });
 
 
       it('should insert before a view with an element where ViewContainerRef is injected', () => {
@@ -592,7 +590,7 @@ describe('view insertion', () => {
          class AppComponent {
            @ViewChild('container', {read: ViewContainerRef, static: true}) vcr!: ViewContainerRef;
 
-           @ViewChild('template', {read: TemplateRef, static: true}) template !: TemplateRef<any>;
+           @ViewChild('template', {read: TemplateRef, static: true}) template!: TemplateRef<any>;
 
            click() {
              this.vcr.createEmbeddedView(this.template, undefined, 0);
@@ -707,36 +705,35 @@ describe('view insertion', () => {
       expect(fixture.nativeElement.textContent).toContain('OK');
     });
 
-    onlyInIvy('Test depends on static inputs being set during creation')
-        .it('should consistently report errors raised a directive input setter', () => {
-          @Directive({
-            selector: '[failInInputAlways]',
-          })
-          class FailInInputAlways {
-            @Input()
-            set failInInputAlways(_: string) {
-              throw new Error('Error in an input');
-            }
-          }
+    it('should consistently report errors raised a directive input setter', () => {
+      @Directive({
+        selector: '[failInInputAlways]',
+      })
+      class FailInInputAlways {
+        @Input()
+        set failInInputAlways(_: string) {
+          throw new Error('Error in an input');
+        }
+      }
 
-          @Component({
-            template: `<div failInInputAlways="static"></div>`,
-          })
-          class TestCmpt {
-          }
+      @Component({
+        template: `<div failInInputAlways="static"></div>`,
+      })
+      class TestCmpt {
+      }
 
-          TestBed.configureTestingModule({
-            declarations: [TestCmpt, FailInInputAlways],
-          });
+      TestBed.configureTestingModule({
+        declarations: [TestCmpt, FailInInputAlways],
+      });
 
-          expect(() => {
-            TestBed.createComponent(TestCmpt);
-          }).toThrowError('Error in an input');
+      expect(() => {
+        TestBed.createComponent(TestCmpt);
+      }).toThrowError('Error in an input');
 
-          expect(() => {
-            TestBed.createComponent(TestCmpt);
-          }).toThrowError('Error in an input');
-        });
+      expect(() => {
+        TestBed.createComponent(TestCmpt);
+      }).toThrowError('Error in an input');
+    });
 
     it('should consistently report errors raised a static query setter', () => {
       @Directive({
@@ -906,7 +903,7 @@ describe('view insertion', () => {
         `,
       })
       class App {
-        @ViewChild('broken') template !: TemplateRef<unknown>;
+        @ViewChild('broken') template!: TemplateRef<unknown>;
 
         constructor(private _viewContainerRef: ViewContainerRef) {}
 
