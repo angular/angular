@@ -318,16 +318,6 @@ describe('MatSlideToggle without forms', () => {
       expect(document.activeElement).toBe(inputElement);
     }));
 
-    it('should focus on underlying element when the host is focused', fakeAsync(() => {
-      expect(document.activeElement).not.toBe(inputElement);
-
-      slideToggleElement.focus();
-      fixture.detectChanges();
-      flush();
-
-      expect(document.activeElement).toBe(inputElement);
-    }));
-
     it('should not manually move focus to underlying when focus comes from mouse or touch', inject(
       [FocusMonitor],
       (focusMonitor: FocusMonitor) => {
@@ -410,13 +400,13 @@ describe('MatSlideToggle without forms', () => {
         .toBe(5);
     }));
 
-    it('should set the tabindex of the host element to -1', fakeAsync(() => {
+    it('should remove the tabindex from the host node', fakeAsync(() => {
       const fixture = TestBed.createComponent(SlideToggleWithTabindexAttr);
 
       fixture.detectChanges();
 
       const slideToggle = fixture.debugElement.query(By.directive(MatSlideToggle))!.nativeElement;
-      expect(slideToggle.getAttribute('tabindex')).toBe('-1');
+      expect(slideToggle.hasAttribute('tabindex')).toBe(false);
     }));
 
     it('should remove the tabindex from the host element when disabled', fakeAsync(() => {

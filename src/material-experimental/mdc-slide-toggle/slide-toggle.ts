@@ -66,8 +66,8 @@ export class MatSlideToggleChange {
   host: {
     'class': 'mat-mdc-slide-toggle',
     '[id]': 'id',
-    // Needs to be `-1` so it can still receive programmatic focus.
-    '[attr.tabindex]': 'disabled ? null : -1',
+    // Needs to be removed since it causes some a11y issues (see #21266).
+    '[attr.tabindex]': 'null',
     '[attr.aria-label]': 'null',
     '[attr.aria-labelledby]': 'null',
     '[class.mat-primary]': 'color === "primary"',
@@ -221,12 +221,7 @@ export class MatSlideToggle implements ControlValueAccessor, AfterViewInit, OnDe
     foundation.setChecked(this.checked);
 
     this._focusMonitor.monitor(this._elementRef, true).subscribe(focusOrigin => {
-      // Only forward focus manually when it was received programmatically or through the
-      // keyboard. We should not do this for mouse/touch focus for two reasons:
-      // 1. It can prevent clicks from landing in Chrome (see #18269).
-      // 2. They're already handled by the wrapping `label` element.
       if (focusOrigin === 'keyboard' || focusOrigin === 'program') {
-        this._switchElement.nativeElement.focus();
         this._focused = true;
       } else if (!focusOrigin) {
         // When a focused element becomes disabled, the browser *immediately* fires a blur event.

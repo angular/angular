@@ -83,8 +83,8 @@ const _MatSlideToggleBase = mixinTabIndex(
   host: {
     'class': 'mat-slide-toggle',
     '[id]': 'id',
-    // Needs to be `-1` so it can still receive programmatic focus.
-    '[attr.tabindex]': 'disabled ? null : -1',
+    // Needs to be removed since it causes some a11y issues (see #21266).
+    '[attr.tabindex]': 'null',
     '[attr.aria-label]': 'null',
     '[attr.aria-labelledby]': 'null',
     '[class.mat-checked]': 'checked',
@@ -198,13 +198,7 @@ export class MatSlideToggle
 
   ngAfterContentInit() {
     this._focusMonitor.monitor(this._elementRef, true).subscribe(focusOrigin => {
-      // Only forward focus manually when it was received programmatically or through the
-      // keyboard. We should not do this for mouse/touch focus for two reasons:
-      // 1. It can prevent clicks from landing in Chrome (see #18269).
-      // 2. They're already handled by the wrapping `label` element.
-      if (focusOrigin === 'keyboard' || focusOrigin === 'program') {
-        this._inputElement.nativeElement.focus();
-      } else if (!focusOrigin) {
+      if (!focusOrigin) {
         // When a focused element becomes disabled, the browser *immediately* fires a blur event.
         // Angular does not expect events to be raised during change detection, so any state
         // change (such as a form control's 'ng-touched') will cause a changed-after-checked
