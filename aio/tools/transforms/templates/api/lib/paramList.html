@@ -22,7 +22,7 @@
         <code>{$ parameter.name $}</code>
       </td>
       {%- if showType %}
-      <td class="param-type"><code>{% if r/^\{/.test(parameter.type) and r/\}$/.test(parameter.type) and parameter.type.length > 20 %}object{% else %}{$ parameter.type $}{% endif %}</code></td>
+      <td class="param-type"><code>{% if r/^\{/.test(parameter.type) and r/\}$/.test(parameter.type) and parameter.type.length > 20 %}object{% else %}{$ parameter.type | escape $}{% endif %}</code></td>
       {%- endif %}
       <td class="param-description">
         {%- if (parameter.shortDescription | trim) or (parameter.description | trim) %}
