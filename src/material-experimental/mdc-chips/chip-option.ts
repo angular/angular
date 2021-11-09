@@ -50,6 +50,7 @@ export class MatChipSelectionChange {
     '[class.mat-mdc-chip-with-avatar]': 'leadingIcon',
     '[class.mat-mdc-chip-with-trailing-icon]': 'trailingIcon || removeIcon',
     '[class.mat-mdc-chip-selected]': 'selected',
+    '[class.mat-mdc-chip-multiple]': '_chipListMultiple',
     '[id]': 'id',
     '[tabIndex]': 'tabIndex',
     '[attr.disabled]': 'disabled || null',

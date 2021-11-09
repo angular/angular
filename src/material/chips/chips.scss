@@ -98,6 +98,11 @@ $chip-remove-size: 18px;
       // Use 2px here since the dotted outline is a little thinner.
       outline: dotted 2px;
     }
+
+    // Seleted state is shown using a background color which isn't visible in high contrast mode.
+    &.mat-chip-selected {
+      outline-width: 3px;
+    }
   }
 
   &.mat-chip-disabled {
