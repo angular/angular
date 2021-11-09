@@ -18,8 +18,9 @@ import {INTERPOLATION_DELIMITER} from '../render3/util/misc_utils';
 import {renderStringify} from '../render3/util/stringify_utils';
 import {getComponentLViewByIndex, getNativeByTNodeOrNull} from '../render3/util/view_utils';
 import {assertDomNode} from '../util/assert';
-import {DebugContext} from '../view/types';
 
+// TODO(alxhub): recombine the interfaces and implementations here and move the docs back onto the
+// original classes.
 
 /**
  * @publicApi
@@ -79,40 +80,6 @@ export interface DebugNode {
    * component lists in its providers metadata.
    */
   readonly providerTokens: any[];
-}
-export class DebugNode__PRE_R3__ {
-  readonly listeners: DebugEventListener[] = [];
-  readonly parent: DebugElement|null = null;
-  readonly nativeNode: any;
-  private readonly _debugContext: DebugContext;
-
-  constructor(nativeNode: any, parent: DebugNode|null, _debugContext: DebugContext) {
-    this._debugContext = _debugContext;
-    this.nativeNode = nativeNode;
-    if (parent && parent instanceof DebugElement__PRE_R3__) {
-      parent.addChild(this);
-    }
-  }
-
-  get injector(): Injector {
-    return this._debugContext.injector;
-  }
-
-  get componentInstance(): any {
-    return this._debugContext.component;
-  }
-
-  get context(): any {
-    return this._debugContext.context;
-  }
-
-  get references(): {[key: string]: any} {
-    return this._debugContext.references;
-  }
-
-  get providerTokens(): any[] {
-    return this._debugContext.providerTokens;
-  }
 }
 
 /**
@@ -214,123 +181,12 @@ export interface DebugElement extends DebugNode {
    */
   triggerEventHandler(eventName: string, eventObj: any): void;
 }
-export class DebugElement__PRE_R3__ extends DebugNode__PRE_R3__ implements DebugElement {
-  readonly name!: string;
-  readonly properties: {[key: string]: any} = {};
-  readonly attributes: {[key: string]: string|null} = {};
-  readonly classes: {[key: string]: boolean} = {};
-  readonly styles: {[key: string]: string|null} = {};
-  readonly childNodes: DebugNode[] = [];
-  readonly nativeElement: any;
-
-  constructor(nativeNode: any, parent: any, _debugContext: DebugContext) {
-    super(nativeNode, parent, _debugContext);
-    this.nativeElement = nativeNode;
-  }
-
-  addChild(child: DebugNode) {
-    if (child) {
-      this.childNodes.push(child);
-      (child as {parent: DebugNode}).parent = this;
-    }
-  }
-
-  removeChild(child: DebugNode) {
-    const childIndex = this.childNodes.indexOf(child);
-    if (childIndex !== -1) {
-      (child as {parent: DebugNode | null}).parent = null;
-      this.childNodes.splice(childIndex, 1);
-    }
-  }
-
-  insertChildrenAfter(child: DebugNode, newChildren: DebugNode[]) {
-    const siblingIndex = this.childNodes.indexOf(child);
-    if (siblingIndex !== -1) {
-      this.childNodes.splice(siblingIndex + 1, 0, ...newChildren);
-      newChildren.forEach(c => {
-        if (c.parent) {
-          (c.parent as DebugElement__PRE_R3__).removeChild(c);
-        }
-        (child as {parent: DebugNode}).parent = this;
-      });
-    }
-  }
-
-  insertBefore(refChild: DebugNode, newChild: DebugNode): void {
-    const refIndex = this.childNodes.indexOf(refChild);
-    if (refIndex === -1) {
-      this.addChild(newChild);
-    } else {
-      if (newChild.parent) {
-        (newChild.parent as DebugElement__PRE_R3__).removeChild(newChild);
-      }
-      (newChild as {parent: DebugNode}).parent = this;
-      this.childNodes.splice(refIndex, 0, newChild);
-    }
-  }
-
-  query(predicate: Predicate<DebugElement>): DebugElement {
-    const results = this.queryAll(predicate);
-    return results[0] || null;
-  }
-
-  queryAll(predicate: Predicate<DebugElement>): DebugElement[] {
-    const matches: DebugElement[] = [];
-    _queryElementChildren(this, predicate, matches);
-    return matches;
-  }
-
-  queryAllNodes(predicate: Predicate<DebugNode>): DebugNode[] {
-    const matches: DebugNode[] = [];
-    _queryNodeChildren(this, predicate, matches);
-    return matches;
-  }
-
-  get children(): DebugElement[] {
-    return this.childNodes  //
-               .filter((node) => node instanceof DebugElement__PRE_R3__) as DebugElement[];
-  }
-
-  triggerEventHandler(eventName: string, eventObj: any) {
-    this.listeners.forEach((listener) => {
-      if (listener.name == eventName) {
-        listener.callback(eventObj);
-      }
-    });
-  }
-}
 
 /**
  * @publicApi
  */
 export function asNativeElements(debugEls: DebugElement[]): any {
   return debugEls.map((el) => el.nativeElement);
-}
-
-function _queryElementChildren(
-    element: DebugElement, predicate: Predicate<DebugElement>, matches: DebugElement[]) {
-  element.childNodes.forEach(node => {
-    if (node instanceof DebugElement__PRE_R3__) {
-      if (predicate(node)) {
-        matches.push(node);
-      }
-      _queryElementChildren(node, predicate, matches);
-    }
-  });
-}
-
-function _queryNodeChildren(
-    parentNode: DebugNode, predicate: Predicate<DebugNode>, matches: DebugNode[]) {
-  if (parentNode instanceof DebugElement__PRE_R3__) {
-    parentNode.childNodes.forEach(node => {
-      if (predicate(node)) {
-        matches.push(node);
-      }
-      if (node instanceof DebugElement__PRE_R3__) {
-        _queryNodeChildren(node, predicate, matches);
-      }
-    });
-  }
 }
 
 class DebugNode__POST_R3__ implements DebugNode {
@@ -843,10 +699,6 @@ function collectPropertyBindings(
 // Need to keep the nodes in a global Map so that multiple angular apps are supported.
 const _nativeNodeToDebugNode = new Map<any, DebugNode>();
 
-function getDebugNode__PRE_R3__(nativeNode: any): DebugNode|null {
-  return _nativeNodeToDebugNode.get(nativeNode) || null;
-}
-
 const NG_DEBUG_PROPERTY = '__ng_debug__';
 
 export function getDebugNode__POST_R3__(nativeNode: Element): DebugElement__POST_R3__;
@@ -867,18 +719,13 @@ export function getDebugNode__POST_R3__(nativeNode: any): DebugNode|null {
 /**
  * @publicApi
  */
-export const getDebugNode: (nativeNode: any) => DebugNode | null = getDebugNode__PRE_R3__;
-
-
-export function getDebugNodeR2__PRE_R3__(nativeNode: any): DebugNode|null {
-  return getDebugNode__PRE_R3__(nativeNode);
-}
+export const getDebugNode: (nativeNode: any) => DebugNode | null = getDebugNode__POST_R3__;
 
 export function getDebugNodeR2__POST_R3__(_nativeNode: any): DebugNode|null {
   return null;
 }
 
-export const getDebugNodeR2: (nativeNode: any) => DebugNode | null = getDebugNodeR2__PRE_R3__;
+export const getDebugNodeR2: (nativeNode: any) => DebugNode | null = getDebugNodeR2__POST_R3__;
 
 
 export function getAllDebugNodes(): DebugNode[] {
@@ -906,9 +753,9 @@ export interface Predicate<T> {
 /**
  * @publicApi
  */
-export const DebugNode: {new (...args: any[]): DebugNode} = DebugNode__PRE_R3__;
+export const DebugNode: {new (...args: any[]): DebugNode} = DebugNode__POST_R3__;
 
 /**
  * @publicApi
  */
-export const DebugElement: {new (...args: any[]): DebugElement} = DebugElement__PRE_R3__;
+export const DebugElement: {new (...args: any[]): DebugElement} = DebugElement__POST_R3__;

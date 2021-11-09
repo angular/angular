@@ -7,7 +7,7 @@
  */
 
 import {APP_INITIALIZER, ChangeDetectorRef, Compiler, Component, Directive, ErrorHandler, Inject, Injectable, InjectionToken, Injector, Input, LOCALE_ID, ModuleWithProviders, NgModule, Optional, Pipe, Type, ViewChild, ɵsetClassMetadata as setClassMetadata, ɵɵdefineComponent as defineComponent, ɵɵdefineInjector as defineInjector, ɵɵdefineNgModule as defineNgModule, ɵɵsetNgModuleScope as setNgModuleScope, ɵɵtext as text} from '@angular/core';
-import {getTestBed, TestBed, TestBedViewEngine} from '@angular/core/testing/src/test_bed';
+import {getTestBed, TestBed} from '@angular/core/testing/src/test_bed';
 import {By} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {onlyInIvy} from '@angular/private/testing';
@@ -1386,10 +1386,10 @@ describe('TestBed', () => {
 
 describe('TestBed module teardown', () => {
   // Cast the `TestBed` to the internal data type since we're testing private APIs.
-  let TestBed: TestBedRender3|TestBedViewEngine;
+  let TestBed: TestBedRender3;
 
   beforeEach(() => {
-    TestBed = getTestBed() as unknown as (TestBedRender3 | TestBedViewEngine);
+    TestBed = getTestBed() as unknown as TestBedRender3;
     TestBed.resetTestingModule();
   });
 

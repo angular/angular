@@ -7,9 +7,8 @@
  */
 
 import {CommonModule, DOCUMENT, ɵgetDOM as getDOM} from '@angular/common';
-import {Compiler, ComponentFactory, ComponentRef, ErrorHandler, EventEmitter, Host, Inject, Injectable, InjectionToken, Injector, NgModule, NgModuleRef, NO_ERRORS_SCHEMA, OnDestroy, SkipSelf, ViewChild, ViewRef, ɵivyEnabled as ivyEnabled} from '@angular/core';
+import {Compiler, ComponentFactory, ComponentRef, ErrorHandler, EventEmitter, Host, Inject, Injectable, InjectionToken, Injector, NgModule, NgModuleRef, NO_ERRORS_SCHEMA, OnDestroy, SkipSelf, ViewChild, ViewRef} from '@angular/core';
 import {ChangeDetectionStrategy, ChangeDetectorRef, PipeTransform} from '@angular/core/src/change_detection/change_detection';
-import {getDebugContext} from '@angular/core/src/errors';
 import {ComponentFactoryResolver} from '@angular/core/src/linker/component_factory_resolver';
 import {ElementRef} from '@angular/core/src/linker/element_ref';
 import {QueryList} from '@angular/core/src/linker/query_list';
@@ -26,18 +25,9 @@ import {stringify} from '../../src/util/stringify';
 
 const ANCHOR_ELEMENT = new InjectionToken('AnchorElement');
 
-if (ivyEnabled) {
-  describe('ivy', () => {
-    declareTests();
-  });
-} else {
-  describe('jit', () => {
-    declareTests({useJit: true});
-  });
-  describe('no jit', () => {
-    declareTests({useJit: false});
-  });
-}
+describe('ivy', () => {
+  declareTests();
+});
 
 function declareTests(config?: {useJit: boolean}) {
   describe('integration tests', function() {
@@ -1534,74 +1524,11 @@ function declareTests(config?: {useJit: boolean}) {
               TestBed.createComponent(MyComp);
               throw 'Should throw';
             } catch (e) {
-              const c = getDebugContext(e);
-              expect(c.componentRenderElement.nodeName.toUpperCase()).toEqual('DIV');
-              expect((<Injector>c.injector).get).toBeTruthy();
+              // const c = getDebugContext(e);
+              // expect(c.componentRenderElement.nodeName.toUpperCase()).toEqual('DIV');
+              // expect((<Injector>c.injector).get).toBeTruthy();
             }
           });
-
-      obsoleteInIvy('DebugContext is not patched on exceptions in ivy')
-          .it('should provide an error context when an error happens in change detection', () => {
-            TestBed.configureTestingModule({declarations: [MyComp, DirectiveThrowingAnError]});
-            const template = `<input [value]="one.two.three" #local>`;
-            TestBed.overrideComponent(MyComp, {set: {template}});
-            const fixture = TestBed.createComponent(MyComp);
-            try {
-              fixture.detectChanges();
-              throw 'Should throw';
-            } catch (e) {
-              const c = getDebugContext(e);
-              expect(c.renderNode.nodeName.toUpperCase()).toEqual('INPUT');
-              expect(c.componentRenderElement.nodeName.toUpperCase()).toEqual('DIV');
-              expect((<Injector>c.injector).get).toBeTruthy();
-              expect(c.context).toEqual(fixture.componentInstance);
-              expect(c.references['local']).toBeDefined();
-            }
-          });
-
-      obsoleteInIvy('DebugContext is not patched on exceptions in ivy')
-          .it('should provide an error context when an error happens in change detection (text node)',
-              () => {
-                TestBed.configureTestingModule({declarations: [MyComp]});
-                const template = `<div>{{one.two.three}}</div>`;
-                TestBed.overrideComponent(MyComp, {set: {template}});
-                const fixture = TestBed.createComponent(MyComp);
-                try {
-                  fixture.detectChanges();
-                  throw 'Should throw';
-                } catch (e) {
-                  const c = getDebugContext(e);
-                  expect(c.renderNode).toBeTruthy();
-                }
-              });
-
-      obsoleteInIvy('DebugContext is not patched on exceptions in ivy')
-          .it('should provide an error context when an error happens in an event handler',
-              fakeAsync(() => {
-                TestBed.configureTestingModule({
-                  declarations: [MyComp, DirectiveEmittingEvent, DirectiveListeningEvent],
-                  schemas: [NO_ERRORS_SCHEMA],
-                });
-                const template = `<span emitter listener (event)="throwError()" #local></span>`;
-                TestBed.overrideComponent(MyComp, {set: {template}});
-                const fixture = TestBed.createComponent(MyComp);
-                tick();
-
-                const tc = fixture.debugElement.children[0];
-
-                const errorHandler = tc.injector.get(ErrorHandler);
-                let err: any;
-                spyOn(errorHandler, 'handleError').and.callFake((e: any) => err = e);
-                tc.injector.get(DirectiveEmittingEvent).fireEvent('boom');
-
-                expect(err).toBeTruthy();
-                const c = getDebugContext(err);
-                expect(c.renderNode.nodeName.toUpperCase()).toEqual('SPAN');
-                expect(c.componentRenderElement.nodeName.toUpperCase()).toEqual('DIV');
-                expect((<Injector>c.injector).get).toBeTruthy();
-                expect(c.context).toEqual(fixture.componentInstance);
-                expect(c.references['local']).toBeDefined();
-              }));
     });
 
     it('should support imperative views', () => {
@@ -2967,7 +2894,10 @@ export class ParentCmp {
   name: string = 'hello';
 }
 
-@Component({selector: 'cmp', template: ''})
+@Component({
+  selector: 'cmp',
+  template: '',
+})
 class SomeCmpWithInput {
   @Input() test$: any;
 }

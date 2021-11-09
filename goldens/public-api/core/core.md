@@ -139,10 +139,10 @@ export interface ClassSansProvider {
 export class Compiler {
     clearCache(): void;
     clearCacheFor(type: Type<any>): void;
-    compileModuleAndAllComponentsAsync: <T>(moduleType: Type<T>) => Promise<ModuleWithComponentFactories<T>>;
-    compileModuleAndAllComponentsSync: <T>(moduleType: Type<T>) => ModuleWithComponentFactories<T>;
-    compileModuleAsync: <T>(moduleType: Type<T>) => Promise<NgModuleFactory<T>>;
-    compileModuleSync: <T>(moduleType: Type<T>) => NgModuleFactory<T>;
+    compileModuleAndAllComponentsAsync<T>(moduleType: Type<T>): Promise<ModuleWithComponentFactories<T>>;
+    compileModuleAndAllComponentsSync<T>(moduleType: Type<T>): ModuleWithComponentFactories<T>;
+    compileModuleAsync<T>(moduleType: Type<T>): Promise<NgModuleFactory<T>>;
+    compileModuleSync<T>(moduleType: Type<T>): NgModuleFactory<T>;
     getModuleId(moduleType: Type<any>): string | undefined;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<Compiler, never>;
@@ -281,7 +281,7 @@ export interface ContentChildrenDecorator {
 }
 
 // @public
-export const createNgModuleRef: <T>(ngModule: Type<T>, parentInjector?: Injector) => NgModuleRef<T>;
+export function createNgModuleRef<T>(ngModule: Type<T>, parentInjector?: Injector): NgModuleRef<T>;
 
 // @public
 export function createPlatform(injector: Injector): PlatformRef;
@@ -500,10 +500,10 @@ export interface ForwardRefFn {
 export const getDebugNode: (nativeNode: any) => DebugNode | null;
 
 // @public @deprecated
-export const getModuleFactory: (id: string) => NgModuleFactory<any>;
+export function getModuleFactory(id: string): NgModuleFactory<any>;
 
 // @public
-export const getNgModuleById: <T>(id: string) => Type<T>;
+export function getNgModuleById<T>(id: string): Type<T>;
 
 // @public
 export function getPlatform(): PlatformRef | null;
@@ -1238,7 +1238,7 @@ export type StaticProvider = ValueProvider | ExistingProvider | StaticClassProvi
 // @public
 export abstract class TemplateRef<C> {
     abstract createEmbeddedView(context: C): EmbeddedViewRef<C>;
-    abstract get elementRef(): ElementRef;
+    abstract readonly elementRef: ElementRef;
 }
 
 // @public

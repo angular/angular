@@ -156,8 +156,9 @@ export class ClusterMaster {
         `Worker #${worker.id} exited unexpectedly (code: ${code} | signal: ${signal}).\n` +
         `  Current task: ${(assignment == null) ? '-' : stringifyTask(assignment.task)}\n` +
         `  Current phase: ${
-            (assignment == null) ? '-' :
-                                   (assignment.files == null) ? 'compiling' : 'writing files'}`);
+            (assignment == null)           ? '-' :
+                (assignment.files == null) ? 'compiling' :
+                                             'writing files'}`);
 
     if (assignment == null) {
       // The crashed worker process was not in the middle of a task:

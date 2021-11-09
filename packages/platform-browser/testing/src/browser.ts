@@ -5,8 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {APP_ID, createPlatformFactory, NgModule, NgZone, PLATFORM_INITIALIZER, platformCore, PlatformRef, StaticProvider} from '@angular/core';
-import {BrowserModule, ɵBrowserDomAdapter as BrowserDomAdapter, ɵELEMENT_PROBE_PROVIDERS as ELEMENT_PROBE_PROVIDERS} from '@angular/platform-browser';
+import {APP_ID, createPlatformFactory, NgModule, NgZone, PLATFORM_INITIALIZER, platformCore, StaticProvider} from '@angular/core';
+import {BrowserModule, ɵBrowserDomAdapter as BrowserDomAdapter} from '@angular/platform-browser';
 
 import {BrowserDetection, createNgZone} from './browser_util';
 
@@ -35,7 +35,6 @@ export const platformBrowserTesting =
   exports: [BrowserModule],
   providers: [
     {provide: APP_ID, useValue: 'a'},
-    ELEMENT_PROBE_PROVIDERS,
     {provide: NgZone, useFactory: createNgZone},
   ]
 })

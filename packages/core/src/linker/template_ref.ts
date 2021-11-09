@@ -13,15 +13,9 @@ import {DECLARATION_LCONTAINER, LView, LViewFlags, QUERIES, TView} from '../rend
 import {getCurrentTNode, getLView} from '../render3/state';
 import {ViewRef as R3_ViewRef} from '../render3/view_ref';
 import {assertDefined} from '../util/assert';
-import {noop} from '../util/noop';
+
 import {createElementRef, ElementRef} from './element_ref';
 import {EmbeddedViewRef} from './view_ref';
-
-
-
-export const SWITCH_TEMPLATE_REF_FACTORY__POST_R3__ = injectTemplateRef;
-const SWITCH_TEMPLATE_REF_FACTORY__PRE_R3__ = noop;
-const SWITCH_TEMPLATE_REF_FACTORY: typeof injectTemplateRef = SWITCH_TEMPLATE_REF_FACTORY__PRE_R3__;
 
 /**
  * Represents an embedded template that can be used to instantiate embedded views.
@@ -54,7 +48,7 @@ export abstract class TemplateRef<C> {
    *
    */
   // TODO(i): rename to anchor or location
-  abstract get elementRef(): ElementRef;
+  abstract readonly elementRef: ElementRef;
 
   /**
    * Instantiates an embedded view based on this template,
@@ -69,15 +63,17 @@ export abstract class TemplateRef<C> {
    * @internal
    * @nocollapse
    */
-  static __NG_ELEMENT_ID__: () => TemplateRef<any>| null = SWITCH_TEMPLATE_REF_FACTORY;
+  static __NG_ELEMENT_ID__: () => TemplateRef<any>| null = injectTemplateRef;
 }
 
 const ViewEngineTemplateRef = TemplateRef;
 
+// TODO(alxhub): combine interface and implementation. Currently this is challenging since something
+// in g3 depends on them being separate.
 const R3TemplateRef = class TemplateRef<T> extends ViewEngineTemplateRef<T> {
   constructor(
       private _declarationLView: LView, private _declarationTContainer: TContainerNode,
-      public elementRef: ElementRef) {
+      public override elementRef: ElementRef) {
     super();
   }
 
