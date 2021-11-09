@@ -3,7 +3,7 @@
 {% extends 'export-base.template.html' -%}
 
 {% block overview %}
-{% if doc.overloads.length > 0 and doc.overloads < 3 -%}
+{% if doc.overloads.length > 0 and doc.overloads.length < 3 -%}
   {% for overload in doc.overloads -%}
     {$ memberHelpers.renderOverloadInfo(overload, 'function-overload', doc) $}
     {% if not loop.last %}<hr class="hr-margin fullwidth">{% endif %}
