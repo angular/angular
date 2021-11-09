@@ -12,61 +12,25 @@
 //
 // no code actually imports these symbols from the @angular/core entry point
 export {
-  compileNgModuleFactory__POST_R3__ as ɵcompileNgModuleFactory__POST_R3__,
-  isBoundToModule__POST_R3__ as ɵisBoundToModule__POST_R3__
+  compileNgModuleFactory as ɵcompileNgModuleFactory,
+  isBoundToModule as ɵisBoundToModule
 } from './application_ref';
 export {
-  SWITCH_CHANGE_DETECTOR_REF_FACTORY__POST_R3__ as ɵSWITCH_CHANGE_DETECTOR_REF_FACTORY__POST_R3__,
+  injectChangeDetectorRef as ɵinjectChangeDetectorRef,
 } from './change_detection/change_detector_ref';
 export {
-  getDebugNode__POST_R3__ as ɵgetDebugNode__POST_R3__,
+  getDebugNode as ɵgetDebugNode,
 } from './debug/debug_node';
-export {
-  SWITCH_COMPILE_INJECTABLE__POST_R3__ as ɵSWITCH_COMPILE_INJECTABLE__POST_R3__,
-} from './di/injectable';
-export {INJECTOR_IMPL__POST_R3__ as ɵINJECTOR_IMPL__POST_R3__} from './di/injector';
 export {
   NG_INJ_DEF as ɵNG_INJ_DEF,
   NG_PROV_DEF as ɵNG_PROV_DEF,
 } from './di/interface/defs';
-export {CREATE_ATTRIBUTE_DECORATOR__POST_R3__ as ɵCREATE_ATTRIBUTE_DECORATOR__POST_R3__} from './di/metadata_attr';
 export {createInjector as ɵcreateInjector} from './di/r3_injector';
-export {
-  SWITCH_IVY_ENABLED__POST_R3__ as ɵSWITCH_IVY_ENABLED__POST_R3__,
-} from './ivy_switch';
-export {
-  Compiler_compileModuleAndAllComponentsAsync__POST_R3__ as ɵCompiler_compileModuleAndAllComponentsAsync__POST_R3__,
-  Compiler_compileModuleAndAllComponentsSync__POST_R3__ as ɵCompiler_compileModuleAndAllComponentsSync__POST_R3__,
-  Compiler_compileModuleAsync__POST_R3__ as ɵCompiler_compileModuleAsync__POST_R3__,
-  Compiler_compileModuleSync__POST_R3__ as ɵCompiler_compileModuleSync__POST_R3__,
-} from './linker/compiler';
-export {
-  SWITCH_ELEMENT_REF_FACTORY__POST_R3__ as ɵSWITCH_ELEMENT_REF_FACTORY__POST_R3__,
-} from './linker/element_ref';
-export { getModuleFactory__POST_R3__ as ɵgetModuleFactory__POST_R3__ } from './linker/ng_module_factory_loader';
-export { getNgModuleById__POST_R3__ as ɵgetNgModuleById__POST_R3__ } from './linker/ng_module_factory_loader';
 export { registerNgModuleType as ɵregisterNgModuleType } from './linker/ng_module_factory_registration';
-export {
-  SWITCH_TEMPLATE_REF_FACTORY__POST_R3__ as ɵSWITCH_TEMPLATE_REF_FACTORY__POST_R3__,
-} from './linker/template_ref';
-export {
-  SWITCH_VIEW_CONTAINER_REF_FACTORY__POST_R3__ as ɵSWITCH_VIEW_CONTAINER_REF_FACTORY__POST_R3__,
-} from './linker/view_container_ref';
-export {
-  SWITCH_COMPILE_COMPONENT__POST_R3__ as ɵSWITCH_COMPILE_COMPONENT__POST_R3__,
-  SWITCH_COMPILE_DIRECTIVE__POST_R3__ as ɵSWITCH_COMPILE_DIRECTIVE__POST_R3__,
-  SWITCH_COMPILE_PIPE__POST_R3__ as ɵSWITCH_COMPILE_PIPE__POST_R3__,
-} from './metadata/directives';
-export {
-  SWITCH_COMPILE_NGMODULE__POST_R3__ as ɵSWITCH_COMPILE_NGMODULE__POST_R3__,
-} from './metadata/ng_module';
 export {
   NgModuleDef as ɵNgModuleDef,
   NgModuleTransitiveScopes as ɵNgModuleTransitiveScopes,
 } from './metadata/ng_module_def';
-export {
-  SWITCH_RENDERER2_FACTORY__POST_R3__ as ɵSWITCH_RENDERER2_FACTORY__POST_R3__,
-} from './render/api';
 export {
   getLContext as ɵgetLContext
 } from './render3/context_discovery';

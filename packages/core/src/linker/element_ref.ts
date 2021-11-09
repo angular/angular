@@ -11,7 +11,6 @@ import {RElement} from '../render3/interfaces/renderer_dom';
 import {LView} from '../render3/interfaces/view';
 import {getCurrentTNode, getLView} from '../render3/state';
 import {getNativeByTNode} from '../render3/util/view_utils';
-import {noop} from '../util/noop';
 
 /**
  * Creates an ElementRef from the most recent node.
@@ -32,10 +31,6 @@ export function injectElementRef(): ElementRef {
 export function createElementRef(tNode: TNode, lView: LView): ElementRef {
   return new ElementRef(getNativeByTNode(tNode, lView) as RElement);
 }
-
-export const SWITCH_ELEMENT_REF_FACTORY__POST_R3__ = injectElementRef;
-const SWITCH_ELEMENT_REF_FACTORY__PRE_R3__ = noop;
-const SWITCH_ELEMENT_REF_FACTORY: typeof injectElementRef = SWITCH_ELEMENT_REF_FACTORY__PRE_R3__;
 
 /**
  * A wrapper around a native element inside of a View.
@@ -84,7 +79,7 @@ export class ElementRef<T = any> {
    * @internal
    * @nocollapse
    */
-  static __NG_ELEMENT_ID__: () => ElementRef = SWITCH_ELEMENT_REF_FACTORY;
+  static __NG_ELEMENT_ID__: () => ElementRef = injectElementRef;
 }
 
 /**

@@ -8,16 +8,11 @@
 
 import {I18nSelectPipe} from '@angular/common';
 import {PipeResolver} from '@angular/compiler/src/pipe_resolver';
-import {JitReflector} from '@angular/platform-browser-dynamic/src/compiler_reflector';
 
 {
   describe('I18nSelectPipe', () => {
     const pipe: I18nSelectPipe = new I18nSelectPipe();
     const mapping = {'male': 'Invite him.', 'female': 'Invite her.', 'other': 'Invite them.'};
-
-    it('should be marked as pure', () => {
-      expect(new PipeResolver(new JitReflector()).resolve(I18nSelectPipe)!.pure).toEqual(true);
-    });
 
     describe('transform', () => {
       it('should return the "male" text if value is "male"', () => {

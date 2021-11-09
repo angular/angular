@@ -8,6 +8,7 @@
 import * as o from '../../output/output_ast';
 import {R3DependencyMetadata} from '../r3_factory';
 import {DefinitionMap} from '../view/util';
+
 import {R3DeclareDependencyMetadata} from './api';
 
 /**

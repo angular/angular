@@ -114,15 +114,6 @@
     "name": "RuntimeError"
   },
   {
-    "name": "SWITCH_ELEMENT_REF_FACTORY"
-  },
-  {
-    "name": "SWITCH_TEMPLATE_REF_FACTORY"
-  },
-  {
-    "name": "SWITCH_VIEW_CONTAINER_REF_FACTORY"
-  },
-  {
     "name": "Sanitizer"
   },
   {
@@ -534,7 +525,16 @@
     "name": "initTNodeFlags"
   },
   {
+    "name": "injectElementRef"
+  },
+  {
     "name": "injectInjectorOnly"
+  },
+  {
+    "name": "injectTemplateRef"
+  },
+  {
+    "name": "injectViewContainerRef"
   },
   {
     "name": "insertBloom"

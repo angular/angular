@@ -9,6 +9,7 @@
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {FormsModule} from '@angular/forms';
+
 import {InnerComponent} from './#inner/component';
 import {AppComponent} from './app.component';
 import * as ParsingCases from './parsing-cases';

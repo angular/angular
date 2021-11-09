@@ -6,7 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {NgIf} from '@angular/common';
 import {RElement} from '@angular/core/src/render3/interfaces/renderer_dom';
+
 import {RendererType2} from '../../src/render/api_flags';
 import {getLContext, readPatchedData} from '../../src/render3/context_discovery';
 import {AttributeMarker, ɵɵadvance, ɵɵattribute, ɵɵdefineComponent, ɵɵdefineDirective, ɵɵhostProperty, ɵɵproperty} from '../../src/render3/index';
@@ -18,7 +20,6 @@ import {ɵɵsanitizeUrl} from '../../src/sanitization/sanitization';
 import {Sanitizer} from '../../src/sanitization/sanitizer';
 import {SecurityContext} from '../../src/sanitization/security';
 
-import {NgIf} from './common_with_def';
 import {ComponentFixture, MockRendererFactory, renderToHtml} from './render_util';
 
 describe('render3 integration test', () => {
