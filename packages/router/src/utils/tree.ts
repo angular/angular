@@ -98,12 +98,37 @@ export class TreeNode<T> {
 }
 
 // Return the list of T indexed by outlet name
-export function nodeChildrenAsMap<T extends {outlet: string}>(node: TreeNode<T>|null) {
+export function nodeChildrenAsMap < T extends {
+  outlet: string;
+  routeConfig?: {canDeactivateChild?: any[]; canDeactivate?: any[]}|null
+}
+> (node: TreeNode<T>|null) {
   const map: {[outlet: string]: TreeNode<T>} = {};
 
   if (node) {
-    node.children.forEach(child => map[child.value.outlet] = child);
+    node.children.forEach(child => {
+      generateChildConfigFromNode(child, node);
+      map[child.value.outlet] = child;
+    });
   }
 
   return map;
+}
+
+function generateChildConfigFromNode<
+    T extends {routeConfig?: {canDeactivateChild?: any[]; canDeactivate?: any[]} | null}>(
+    child: TreeNode<T>, node: TreeNode<T>) {
+  const canDeactivateChild =
+      node.value.routeConfig?.canDeactivateChild ? node.value.routeConfig.canDeactivateChild : [];
+  if (canDeactivateChild && canDeactivateChild.length > 0) {
+    child.value.routeConfig = {
+      ...child.value.routeConfig,
+      canDeactivateChild: child.value.routeConfig?.canDeactivateChild ?
+          [...child.value.routeConfig.canDeactivateChild, ...canDeactivateChild] :
+          canDeactivateChild,
+      canDeactivate: child.value.routeConfig?.canDeactivate ?
+          [...child.value.routeConfig.canDeactivate, ...canDeactivateChild] :
+          canDeactivateChild
+    };
+  }
 }

@@ -439,6 +439,13 @@ export interface Route {
    */
   canDeactivate?: any[];
   /**
+   * An array of DI tokens used to look up `canDeactivate()`
+   * handlers for children's root, in order to determine if the current user is allowed to
+   * deactivate a child of the component. By default, any user can deactivate a child.
+   *
+   */
+  canDeactivateChild?: any[];
+  /**
    * An array of DI tokens used to look up `CanLoad()`
    * handlers, in order to determine if the current user is allowed to
    * load the component. By default, any user can load.

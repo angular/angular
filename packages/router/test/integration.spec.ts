@@ -4038,6 +4038,89 @@ describe('Integration', () => {
            expect(fixture.nativeElement).toHaveText('lazy-loaded');
          })));
     });
+    describe('canDeactivateChild', () => {
+      describe('should be invoked when deactivating a child', () => {
+        class AlwaysFalse implements CanDeactivate<SimpleCmp|BlankCmp> {
+          canDeactivate(
+              component: SimpleCmp|BlankCmp, route: ActivatedRouteSnapshot,
+              state: RouterStateSnapshot): boolean {
+            return false;
+          }
+        }
+        beforeEach(() => {
+          TestBed.configureTestingModule({providers: [AlwaysFalse]});
+        });
+
+        it('works', fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+             const fixture = createRoot(router, RootCmp);
+
+             router.resetConfig([{
+               path: '',
+               canDeactivateChild: [AlwaysFalse],
+               children: [
+                 {
+                   path: 'user',
+                   children:
+                       [{path: 'foo', component: SimpleCmp}, {path: 'bar', component: BlankCmp}]
+                 },
+               ]
+             }]);
+
+             router.navigateByUrl('/user/foo');
+             advance(fixture);
+
+             expect(location.path()).toEqual('/user/foo');
+
+             router.navigateByUrl('/user/bar');
+             advance(fixture);
+
+             expect(location.path()).toEqual('/user/foo');
+           })));
+      });
+
+      it('should find the guard provided in lazy loaded module',
+         fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+           @Component({selector: 'admin', template: '<router-outlet></router-outlet>'})
+           class AdminComponent {
+           }
+
+           @Component({selector: 'lazy', template: 'lazy-loaded'})
+           class LazyLoadedComponent {
+           }
+
+           @NgModule({
+             declarations: [AdminComponent, LazyLoadedComponent],
+             imports: [RouterModule.forChild([{
+               path: '',
+               component: AdminComponent,
+               children: [{
+                 path: '',
+                 canDeactivateChild: ['alwaysFalse'],
+                 children: [{path: '', component: LazyLoadedComponent}]
+               }]
+             }])],
+             providers: [{provide: 'alwaysFalse', useValue: () => false}],
+           })
+           class LazyLoadedModule {
+           }
+
+           const fixture = createRoot(router, RootCmp);
+
+           router.resetConfig([{path: 'admin/:id', loadChildren: () => LazyLoadedModule}]);
+
+           router.navigateByUrl('/admin/21');
+           advance(fixture);
+
+           expect(location.path()).toEqual('/admin/21');
+           expect(fixture.nativeElement).toHaveText('lazy-loaded');
+
+           router.navigateByUrl('/admin/22');
+           advance(fixture);
+
+           expect(location.path()).toEqual('/admin/21');
+           expect(fixture.nativeElement).toHaveText('lazy-loaded');
+         })));
+    });
 
     describe('CanLoad', () => {
       let canLoadRunCount = 0;
