@@ -3,6 +3,7 @@ import path from 'canonical-path';
 import fs from 'fs-extra';
 import {globbySync} from 'globby';
 import jsdom from 'jsdom';
+import json5 from 'json5';
 import {fileURLToPath} from 'url';
 
 import regionExtractor from '../transforms/examples-package/services/region-parser.js';
