@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {NgIf} from '@angular/common';
 import {withBody} from '@angular/private/testing';
 
 import {ChangeDetectionStrategy, DoCheck, OnInit} from '../../src/core';
@@ -16,7 +17,6 @@ import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {Renderer3, RendererFactory3} from '../../src/render3/interfaces/renderer';
 import {FLAGS, LViewFlags} from '../../src/render3/interfaces/view';
 
-import {NgIf} from './common_with_def';
 import {containerEl, createComponent, renderComponent, requestAnimationFrame} from './render_util';
 
 describe('change detection', () => {

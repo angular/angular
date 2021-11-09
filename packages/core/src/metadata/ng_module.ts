@@ -6,12 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectorType, ɵɵdefineInjector} from '../di/interface/defs';
 import {Provider} from '../di/interface/provider';
-import {convertInjectableProviderToFactory} from '../di/util';
 import {Type} from '../interface/type';
 import {SchemaMetadata} from '../metadata/schema';
-import {compileNgModule as render3CompileNgModule} from '../render3/jit/module';
+import {compileNgModule} from '../render3/jit/module';
 import {makeDecorator, TypeDecorator} from '../util/decorators';
 
 
@@ -257,22 +255,4 @@ export const NgModule: NgModuleDecorator = makeDecorator(
      * * The `imports` and `exports` options bring in members from other modules, and make
      * this module's members available to others.
      */
-    (type: Type<any>, meta: NgModule) => SWITCH_COMPILE_NGMODULE(type, meta));
-
-
-function preR3NgModuleCompile(moduleType: Type<any>, metadata?: NgModule): void {
-  let imports = (metadata && metadata.imports) || [];
-  if (metadata && metadata.exports) {
-    imports = [...imports, metadata.exports];
-  }
-
-  const moduleInjectorType = moduleType as InjectorType<any>;
-  moduleInjectorType.ɵfac = convertInjectableProviderToFactory(moduleType, {useClass: moduleType});
-  moduleInjectorType.ɵinj =
-      ɵɵdefineInjector({providers: metadata && metadata.providers, imports: imports});
-}
-
-
-export const SWITCH_COMPILE_NGMODULE__POST_R3__ = render3CompileNgModule;
-const SWITCH_COMPILE_NGMODULE__PRE_R3__ = preR3NgModuleCompile;
-const SWITCH_COMPILE_NGMODULE: typeof render3CompileNgModule = SWITCH_COMPILE_NGMODULE__PRE_R3__;
+    (type: Type<any>, meta: NgModule) => compileNgModule(type, meta));

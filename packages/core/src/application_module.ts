@@ -15,7 +15,6 @@ import {Inject, Optional, SkipSelf} from './di/metadata';
 import {ErrorHandler} from './error_handler';
 import {DEFAULT_LOCALE_ID, USD_CURRENCY_CODE} from './i18n/localization';
 import {DEFAULT_CURRENCY_CODE, LOCALE_ID} from './i18n/tokens';
-import {ivyEnabled} from './ivy_switch';
 import {ComponentFactoryResolver} from './linker';
 import {Compiler} from './linker/compiler';
 import {NgModule} from './metadata';
@@ -58,8 +57,7 @@ export function getGlobalLocale(): string {
     //
     // * During runtime translation evaluation, the developer is required to set `$localize.locale`
     //   if required, or just to provide their own `LOCALE_ID` provider.
-    return (ivyEnabled && typeof $localize !== 'undefined' && $localize.locale) ||
-        DEFAULT_LOCALE_ID;
+    return (typeof $localize !== 'undefined' && $localize.locale) || DEFAULT_LOCALE_ID;
   }
 }
 

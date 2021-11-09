@@ -139,10 +139,10 @@ export interface ClassSansProvider {
 export class Compiler {
     clearCache(): void;
     clearCacheFor(type: Type<any>): void;
-    compileModuleAndAllComponentsAsync: <T>(moduleType: Type<T>) => Promise<ModuleWithComponentFactories<T>>;
-    compileModuleAndAllComponentsSync: <T>(moduleType: Type<T>) => ModuleWithComponentFactories<T>;
-    compileModuleAsync: <T>(moduleType: Type<T>) => Promise<NgModuleFactory<T>>;
-    compileModuleSync: <T>(moduleType: Type<T>) => NgModuleFactory<T>;
+    compileModuleAndAllComponentsAsync<T>(moduleType: Type<T>): Promise<ModuleWithComponentFactories<T>>;
+    compileModuleAndAllComponentsSync<T>(moduleType: Type<T>): ModuleWithComponentFactories<T>;
+    compileModuleAsync<T>(moduleType: Type<T>): Promise<NgModuleFactory<T>>;
+    compileModuleSync<T>(moduleType: Type<T>): NgModuleFactory<T>;
     getModuleId(moduleType: Type<any>): string | undefined;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<Compiler, never>;
@@ -281,7 +281,7 @@ export interface ContentChildrenDecorator {
 }
 
 // @public
-export const createNgModuleRef: <T>(ngModule: Type<T>, parentInjector?: Injector) => NgModuleRef<T>;
+export function createNgModuleRef<T>(ngModule: Type<T>, parentInjector?: Injector): NgModuleRef<T>;
 
 // @public
 export function createPlatform(injector: Injector): PlatformRef;
@@ -500,10 +500,10 @@ export interface ForwardRefFn {
 export const getDebugNode: (nativeNode: any) => DebugNode | null;
 
 // @public @deprecated
-export const getModuleFactory: (id: string) => NgModuleFactory<any>;
+export function getModuleFactory(id: string): NgModuleFactory<any>;
 
 // @public
-export const getNgModuleById: <T>(id: string) => Type<T>;
+export function getNgModuleById<T>(id: string): Type<T>;
 
 // @public
 export function getPlatform(): PlatformRef | null;
@@ -1236,9 +1236,10 @@ export interface StaticClassSansProvider {
 export type StaticProvider = ValueProvider | ExistingProvider | StaticClassProvider | ConstructorProvider | FactoryProvider | any[];
 
 // @public
-export abstract class TemplateRef<C> {
-    abstract createEmbeddedView(context: C): EmbeddedViewRef<C>;
-    abstract get elementRef(): ElementRef;
+export class TemplateRef<T> {
+    constructor(_declarationLView: LView, _declarationTContainer: TContainerNode, elementRef: ElementRef);
+    createEmbeddedView(context: T): EmbeddedViewRef<T>;
+    readonly elementRef: ElementRef;
 }
 
 // @public
@@ -1373,28 +1374,41 @@ export interface ViewChildrenDecorator {
 }
 
 // @public
-export abstract class ViewContainerRef {
-    abstract clear(): void;
-    abstract createComponent<C>(componentType: Type<C>, options?: {
+export class ViewContainerRef {
+    constructor(_lContainer: LContainer, _hostTNode: TElementNode | TContainerNode | TElementContainerNode, _hostLView: LView);
+    // (undocumented)
+    clear(): void;
+    // (undocumented)
+    createComponent<C>(componentType: Type<C>, options?: {
         index?: number;
         injector?: Injector;
-        ngModuleRef?: NgModuleRef<unknown>;
         projectableNodes?: Node[][];
+        ngModuleRef?: NgModuleRef<unknown>;
     }): ComponentRef<C>;
-    // @deprecated
-    abstract createComponent<C>(componentFactory: ComponentFactory<C>, index?: number, injector?: Injector, projectableNodes?: any[][], ngModuleRef?: NgModuleRef<any>): ComponentRef<C>;
-    abstract createEmbeddedView<C>(templateRef: TemplateRef<C>, context?: C, index?: number): EmbeddedViewRef<C>;
-    abstract detach(index?: number): ViewRef | null;
-    abstract get element(): ElementRef;
-    abstract get(index: number): ViewRef | null;
-    abstract indexOf(viewRef: ViewRef): number;
-    abstract get injector(): Injector;
-    abstract insert(viewRef: ViewRef, index?: number): ViewRef;
-    abstract get length(): number;
-    abstract move(viewRef: ViewRef, currentIndex: number): ViewRef;
     // @deprecated (undocumented)
-    abstract get parentInjector(): Injector;
-    abstract remove(index?: number): void;
+    createComponent<C>(componentFactory: ComponentFactory<C>, index?: number | undefined, injector?: Injector | undefined, projectableNodes?: any[][] | undefined, ngModuleRef?: NgModuleRef<any> | undefined): ComponentRef<C>;
+    // (undocumented)
+    createEmbeddedView<C>(templateRef: TemplateRef<C>, context?: C, index?: number): EmbeddedViewRef<C>;
+    // (undocumented)
+    detach(index?: number): ViewRef | null;
+    // (undocumented)
+    get element(): ElementRef;
+    // (undocumented)
+    get(index: number): ViewRef | null;
+    // (undocumented)
+    indexOf(viewRef: ViewRef): number;
+    // (undocumented)
+    get injector(): Injector;
+    // (undocumented)
+    insert(viewRef: ViewRef, index?: number): ViewRef;
+    // (undocumented)
+    get length(): number;
+    // (undocumented)
+    move(viewRef: ViewRef, newIndex: number): ViewRef;
+    // @deprecated (undocumented)
+    get parentInjector(): Injector;
+    // (undocumented)
+    remove(index?: number): void;
 }
 
 // @public

@@ -13,15 +13,9 @@ import {DECLARATION_LCONTAINER, LView, LViewFlags, QUERIES, TView} from '../rend
 import {getCurrentTNode, getLView} from '../render3/state';
 import {ViewRef as R3_ViewRef} from '../render3/view_ref';
 import {assertDefined} from '../util/assert';
-import {noop} from '../util/noop';
+
 import {createElementRef, ElementRef} from './element_ref';
 import {EmbeddedViewRef} from './view_ref';
-
-
-
-export const SWITCH_TEMPLATE_REF_FACTORY__POST_R3__ = injectTemplateRef;
-const SWITCH_TEMPLATE_REF_FACTORY__PRE_R3__ = noop;
-const SWITCH_TEMPLATE_REF_FACTORY: typeof injectTemplateRef = SWITCH_TEMPLATE_REF_FACTORY__PRE_R3__;
 
 /**
  * Represents an embedded template that can be used to instantiate embedded views.
@@ -41,7 +35,7 @@ const SWITCH_TEMPLATE_REF_FACTORY: typeof injectTemplateRef = SWITCH_TEMPLATE_RE
  *
  * @publicApi
  */
-export abstract class TemplateRef<C> {
+export class TemplateRef<T> {
   /**
    * The anchor element in the parent view for this embedded view.
    *
@@ -54,7 +48,13 @@ export abstract class TemplateRef<C> {
    *
    */
   // TODO(i): rename to anchor or location
-  abstract get elementRef(): ElementRef;
+  readonly elementRef: ElementRef;
+
+  constructor(
+      private _declarationLView: LView, private _declarationTContainer: TContainerNode,
+      elementRef: ElementRef) {
+    this.elementRef = elementRef;
+  }
 
   /**
    * Instantiates an embedded view based on this template,
@@ -63,25 +63,7 @@ export abstract class TemplateRef<C> {
    * in the `<ng-template>` usage.
    * @returns The new embedded view object.
    */
-  abstract createEmbeddedView(context: C): EmbeddedViewRef<C>;
-
-  /**
-   * @internal
-   * @nocollapse
-   */
-  static __NG_ELEMENT_ID__: () => TemplateRef<any>| null = SWITCH_TEMPLATE_REF_FACTORY;
-}
-
-const ViewEngineTemplateRef = TemplateRef;
-
-const R3TemplateRef = class TemplateRef<T> extends ViewEngineTemplateRef<T> {
-  constructor(
-      private _declarationLView: LView, private _declarationTContainer: TContainerNode,
-      public elementRef: ElementRef) {
-    super();
-  }
-
-  override createEmbeddedView(context: T): EmbeddedViewRef<T> {
+  createEmbeddedView(context: T): EmbeddedViewRef<T> {
     const embeddedTView = this._declarationTContainer.tViews as TView;
     const embeddedLView = createLView(
         this._declarationLView, embeddedTView, context, LViewFlags.CheckAlways, null,
@@ -100,7 +82,13 @@ const R3TemplateRef = class TemplateRef<T> extends ViewEngineTemplateRef<T> {
 
     return new R3_ViewRef<T>(embeddedLView);
   }
-};
+
+  /**
+   * @internal
+   * @nocollapse
+   */
+  static __NG_ELEMENT_ID__: () => TemplateRef<any>| null = injectTemplateRef;
+}
 
 /**
  * Creates a TemplateRef given a node.
@@ -121,7 +109,7 @@ export function injectTemplateRef<T>(): TemplateRef<T>|null {
 export function createTemplateRef<T>(hostTNode: TNode, hostLView: LView): TemplateRef<T>|null {
   if (hostTNode.type & TNodeType.Container) {
     ngDevMode && assertDefined(hostTNode.tViews, 'TView must be allocated');
-    return new R3TemplateRef(
+    return new TemplateRef(
         hostLView, hostTNode as TContainerNode, createElementRef(hostTNode, hostLView));
   }
   return null;

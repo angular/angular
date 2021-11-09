@@ -7,6 +7,7 @@
  */
 
 import * as ts from 'typescript/lib/tsserverlibrary';
+
 import {LanguageService} from '../../src/language_service';
 
 /**

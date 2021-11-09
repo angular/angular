@@ -8,6 +8,7 @@
 
 import {escapeIdentifier} from '../output/abstract_emitter';
 import * as o from '../output/output_ast';
+
 import {Identifiers} from './r3_identifiers';
 
 export function typeWithParameters(type: o.Expression, numParams: number): o.ExpressionType {

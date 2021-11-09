@@ -11,6 +11,7 @@ import {convertFromMaybeForwardRefExpression, R3CompiledExpression} from '../uti
 import {R3DirectiveMetadata, R3HostMetadata, R3QueryMetadata} from '../view/api';
 import {createDirectiveType} from '../view/compiler';
 import {asLiteral, conditionallyCreateMapObjectLiteral, DefinitionMap} from '../view/util';
+
 import {R3DeclareDirectiveMetadata, R3DeclareQueryMetadata} from './api';
 import {toOptionalLiteralMap} from './util';
 

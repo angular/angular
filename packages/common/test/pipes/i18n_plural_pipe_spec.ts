@@ -8,7 +8,6 @@
 
 import {I18nPluralPipe, NgLocalization} from '@angular/common';
 import {PipeResolver} from '@angular/compiler/src/pipe_resolver';
-import {JitReflector} from '@angular/platform-browser-dynamic/src/compiler_reflector';
 
 {
   describe('I18nPluralPipe', () => {
@@ -25,10 +24,6 @@ import {JitReflector} from '@angular/platform-browser-dynamic/src/compiler_refle
     beforeEach(() => {
       localization = new TestLocalization();
       pipe = new I18nPluralPipe(localization);
-    });
-
-    it('should be marked as pure', () => {
-      expect(new PipeResolver(new JitReflector()).resolve(I18nPluralPipe)!.pure).toEqual(true);
     });
 
     describe('transform', () => {

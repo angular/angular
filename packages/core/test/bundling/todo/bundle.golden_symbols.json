@@ -96,12 +96,6 @@
     "name": "Optional"
   },
   {
-    "name": "R3TemplateRef"
-  },
-  {
-    "name": "R3ViewContainerRef"
-  },
-  {
     "name": "RecordViewTuple"
   },
   {
@@ -112,15 +106,6 @@
   },
   {
     "name": "RuntimeError"
-  },
-  {
-    "name": "SWITCH_ELEMENT_REF_FACTORY"
-  },
-  {
-    "name": "SWITCH_TEMPLATE_REF_FACTORY"
-  },
-  {
-    "name": "SWITCH_VIEW_CONTAINER_REF_FACTORY"
   },
   {
     "name": "Sanitizer"
@@ -162,9 +147,6 @@
     "name": "VERSION"
   },
   {
-    "name": "VE_ViewContainerRef"
-  },
-  {
     "name": "Version"
   },
   {
@@ -172,9 +154,6 @@
   },
   {
     "name": "ViewEncapsulation"
-  },
-  {
-    "name": "ViewEngineTemplateRef"
   },
   {
     "name": "ViewRef"
@@ -534,7 +513,16 @@
     "name": "initTNodeFlags"
   },
   {
+    "name": "injectElementRef"
+  },
+  {
     "name": "injectInjectorOnly"
+  },
+  {
+    "name": "injectTemplateRef"
+  },
+  {
+    "name": "injectViewContainerRef"
   },
   {
     "name": "insertBloom"

@@ -7,7 +7,9 @@
  */
 
 import {ElementRef, forwardRef, ɵɵngDeclareDirective} from '@angular/core';
+
 import {AttributeMarker, DirectiveDef} from '../../../src/render3';
+
 import {functionContaining} from './matcher';
 
 describe('directive declaration jit compilation', () => {
