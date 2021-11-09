@@ -100,9 +100,6 @@ export const config = {
       'should not change focus when pressing HOME with a modifier key',
       'should not change focus when pressing END with a modifier key',
 
-      // The indirect descendant test scenario never worked (even in the non-MDC list) and
-      // therefore this test has been removed.
-      'should pick up indirect descendant lines',
       // MDC-based list does not support more than three lines.
       'should apply a particular class to lists with more than 3 lines',
     ],

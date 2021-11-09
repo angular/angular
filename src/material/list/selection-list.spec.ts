@@ -45,7 +45,6 @@ describe('MatSelectionList without forms', () => {
             SelectionListWithOnlyOneOption,
             SelectionListWithIndirectChildOptions,
             SelectionListWithSelectedOptionAndValue,
-            SelectionListWithIndirectDescendantLines,
           ],
         });
 
@@ -804,14 +803,6 @@ describe('MatSelectionList without forms', () => {
       const listItemEl = componentFixture.debugElement.query(By.directive(MatListOption))!;
       expect(listItemEl.componentInstance.selected).toBe(true);
       expect(listItemEl.componentInstance.value).toBe(componentFixture.componentInstance.itemValue);
-    });
-
-    it('should pick up indirect descendant lines', () => {
-      const componentFixture = TestBed.createComponent(SelectionListWithIndirectDescendantLines);
-      componentFixture.detectChanges();
-
-      const option = componentFixture.nativeElement.querySelector('mat-list-option');
-      expect(option.classList).toContain('mat-2-line');
     });
 
     it('should have a focus indicator', () => {
@@ -1941,20 +1932,6 @@ class SelectionListWithIcon {}
 class SelectionListWithIndirectChildOptions {
   @ViewChildren(MatListOption) optionInstances: QueryList<MatListOption>;
 }
-
-// Note the blank `ngSwitch` which we need in order to hit the bug that we're testing.
-@Component({
-  template: `
-  <mat-selection-list>
-    <mat-list-option>
-      <ng-container [ngSwitch]="true">
-        <h3 mat-line>Item</h3>
-        <p mat-line>Item description</p>
-      </ng-container>
-    </mat-list-option>
-  </mat-selection-list>`,
-})
-class SelectionListWithIndirectDescendantLines {}
 
 @Component({
   template: `

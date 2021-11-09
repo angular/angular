@@ -29,9 +29,10 @@ ng_test_library(
     ),
     deps = [
         ":testing",
+        "//src/cdk/testing",
+        "//src/cdk/testing/testbed",
         "//src/material-experimental/mdc-list",
         "//src/material/divider/testing",
-        "//src/material/list/testing:harness_tests_lib",
     ],
 )
 
