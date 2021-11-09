@@ -10,8 +10,6 @@ import {ANALYZE_FOR_ENTRY_COMPONENTS, Compiler, Component, ComponentFactoryResol
 import {ɵɵdefineInjectable} from '@angular/core/src/di/interface/defs';
 import {NgModuleType} from '@angular/core/src/render3';
 import {getNgModuleDef} from '@angular/core/src/render3/definition';
-import {NgModuleData} from '@angular/core/src/view/types';
-import {tokenKey} from '@angular/core/src/view/util';
 import {ComponentFixture, inject, TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {modifiedInIvy, obsoleteInIvy, onlyInIvy} from '@angular/private/testing';
@@ -1430,39 +1428,6 @@ function declareTests(config?: {useJit: boolean}) {
       });
 
       describe('tree shakable providers', () => {
-        modifiedInIvy('Ivy and VE have different internal fields to access providers')
-            .it('definition should not persist across NgModuleRef instances', () => {
-              @NgModule()
-              class SomeModule {
-              }
-
-              class Bar {
-                static ɵprov = ɵɵdefineInjectable({
-                  token: Bar,
-                  factory: () => new Bar(),
-                  providedIn: SomeModule,
-                });
-              }
-
-              const factory = createModuleFactory(SomeModule);
-              const ngModuleRef1 = factory.create(null);
-
-              // Inject a tree shakeable provider token.
-              ngModuleRef1.injector.get(Bar);
-
-              // Tree Shakeable provider definition should get added to the NgModule data.
-              const providerDef1 =
-                  (ngModuleRef1 as NgModuleData)._def.providersByKey[tokenKey(Bar)];
-              expect(providerDef1).not.toBeUndefined();
-
-              // Instantiate the same module. The tree shakeable provider
-              // definition should not already be present.
-              const ngModuleRef2 = factory.create(null);
-              const providerDef2 =
-                  (ngModuleRef2 as NgModuleData)._def.providersByKey[tokenKey(Bar)];
-              expect(providerDef2).toBeUndefined();
-            });
-
         onlyInIvy(`Ivy and VE have different internal fields to access providers`)
             .it('definition should not persist across NgModuleRef instances', () => {
               @NgModule()

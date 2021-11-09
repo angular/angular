@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import * as o from '@angular/compiler';
+
 import {AstFactory, Context, ExpressionTranslatorVisitor, ImportGenerator, TranslatorOptions} from '../../../src/ngtsc/translator';
 
 /**

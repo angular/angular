@@ -90,24 +90,6 @@
     "name": "Compiler"
   },
   {
-    "name": "Compiler_compileModuleAndAllComponentsAsync"
-  },
-  {
-    "name": "Compiler_compileModuleAndAllComponentsSync"
-  },
-  {
-    "name": "Compiler_compileModuleAndAllComponentsSync__POST_R3__"
-  },
-  {
-    "name": "Compiler_compileModuleAsync"
-  },
-  {
-    "name": "Compiler_compileModuleSync"
-  },
-  {
-    "name": "Compiler_compileModuleSync__POST_R3__"
-  },
-  {
     "name": "ComponentFactory"
   },
   {
@@ -235,9 +217,6 @@
   },
   {
     "name": "INJECTOR"
-  },
-  {
-    "name": "INJECTOR_IMPL"
   },
   {
     "name": "INJECTOR_SCOPE"
@@ -487,18 +466,6 @@
   },
   {
     "name": "SERVER_TRANSITION_PROVIDERS"
-  },
-  {
-    "name": "SWITCH_ELEMENT_REF_FACTORY"
-  },
-  {
-    "name": "SWITCH_RENDERER2_FACTORY"
-  },
-  {
-    "name": "SWITCH_TEMPLATE_REF_FACTORY"
-  },
-  {
-    "name": "SWITCH_VIEW_CONTAINER_REF_FACTORY"
   },
   {
     "name": "SafeSubscriber"
@@ -784,6 +751,9 @@
   },
   {
     "name": "createElementRef"
+  },
+  {
+    "name": "createInjector"
   },
   {
     "name": "createInjectorWithoutInjectorInstances"
@@ -1131,10 +1101,19 @@
     "name": "injectArgs"
   },
   {
+    "name": "injectElementRef"
+  },
+  {
     "name": "injectInjectorOnly"
   },
   {
     "name": "injectRootLimpMode"
+  },
+  {
+    "name": "injectTemplateRef"
+  },
+  {
+    "name": "injectViewContainerRef"
   },
   {
     "name": "injectableDefOrInjectorDefFactory"

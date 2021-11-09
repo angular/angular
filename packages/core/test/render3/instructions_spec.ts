@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgForOfContext} from '@angular/common';
+import {NgForOf, NgForOfContext} from '@angular/common';
 import {getSortedClassName} from '@angular/core/testing/src/styling';
 
 import {ɵɵdefineComponent} from '../../src/render3/definition';
@@ -17,7 +17,6 @@ import {ɵɵsanitizeHtml, ɵɵsanitizeResourceUrl, ɵɵsanitizeScript, ɵɵsanit
 import {Sanitizer} from '../../src/sanitization/sanitizer';
 import {SecurityContext} from '../../src/sanitization/security';
 
-import {NgForOf} from './common_with_def';
 import {ComponentFixture, TemplateFixture} from './render_util';
 
 describe('instructions', () => {

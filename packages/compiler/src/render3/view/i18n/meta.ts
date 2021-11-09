@@ -173,8 +173,9 @@ export class I18nMetaVisitor implements html.Visitor {
    * @returns the parsed metadata.
    */
   private _parseMetadata(meta: string|i18n.I18nMeta): I18nMeta {
-    return typeof meta === 'string' ? parseI18nMeta(meta) :
-                                      meta instanceof i18n.Message ? meta : {};
+    return typeof meta === 'string'  ? parseI18nMeta(meta) :
+        meta instanceof i18n.Message ? meta :
+                                       {};
   }
 
   /**
@@ -200,9 +201,9 @@ export class I18nMetaVisitor implements html.Visitor {
       // `packages/compiler/src/render3/view/template.ts`).
       // In that case we want to reuse the legacy message generated in the 1st pass (see
       // `setI18nRefs()`).
-      const previousMessage = meta instanceof i18n.Message ?
-          meta :
-          meta instanceof i18n.IcuPlaceholder ? meta.previousMessage : undefined;
+      const previousMessage = meta instanceof i18n.Message ? meta :
+          meta instanceof i18n.IcuPlaceholder              ? meta.previousMessage :
+                                                             undefined;
       message.legacyIds = previousMessage ? previousMessage.legacyIds : [];
     }
   }

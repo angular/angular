@@ -11,7 +11,6 @@ import localeEn from '@angular/common/locales/en';
 import localeEnExtra from '@angular/common/locales/extra/en';
 import {PipeResolver} from '@angular/compiler/src/pipe_resolver';
 import {ɵregisterLocaleData, ɵunregisterLocaleData} from '@angular/core';
-import {JitReflector} from '@angular/platform-browser-dynamic/src/compiler_reflector';
 
 {
   describe('DatePipe', () => {
@@ -25,10 +24,6 @@ import {JitReflector} from '@angular/platform-browser-dynamic/src/compiler_refle
     beforeEach(() => {
       date = new Date(2015, 5, 15, 9, 3, 1, 550);
       pipe = new DatePipe('en-US', null);
-    });
-
-    it('should be marked as pure', () => {
-      expect(new PipeResolver(new JitReflector()).resolve(DatePipe)!.pure).toEqual(true);
     });
 
     describe('supports', () => {

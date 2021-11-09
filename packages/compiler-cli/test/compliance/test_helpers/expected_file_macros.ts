@@ -7,6 +7,7 @@
  */
 import {AttributeMarker, SelectorFlags} from '@angular/compiler/src/core';
 import {QueryFlags} from '@angular/compiler/src/render3/view/compiler';
+
 import {i18nIcuMsg, i18nMsg, i18nMsgWithPostprocess, Placeholder, resetMessageIndex} from './i18n_helpers';
 
 const EXPECTED_FILE_MACROS: [RegExp, (...args: string[]) => string][] = [

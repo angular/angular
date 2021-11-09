@@ -52,6 +52,8 @@ const UNDEFINED = {};
  * Notice, we don't use the `new` operator because we explicitly want to have the `Injector`
  * resolve all of the object's dependencies automatically.
  *
+ * TODO: delete in v14.
+ *
  * @deprecated from v5 - slow and brings in a lot of code, Use `Injector.create` instead.
  * @publicApi
  */
