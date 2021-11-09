@@ -18,7 +18,6 @@ import {EventManager, ɵDomSharedStylesHost} from '@angular/platform-browser';
 import {ɵAnimationRendererFactory} from '@angular/platform-browser/animations';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {ServerRendererFactory2} from '@angular/platform-server/src/server_renderer';
-import {onlyInIvy} from '@angular/private/testing';
 
 describe('renderer factory lifecycle', () => {
   let logs: string[] = [];
@@ -79,7 +78,7 @@ describe('renderer factory lifecycle', () => {
     });
   });
 
-  onlyInIvy('FW-1320: Ivy creates renderer twice.').it('should work with a component', () => {
+  it('should work with a component', () => {
     const fixture = TestBed.createComponent(SomeComponent);
     fixture.detectChanges();
     expect(logs).toEqual(
@@ -89,14 +88,13 @@ describe('renderer factory lifecycle', () => {
     expect(logs).toEqual(['begin', 'some_component update', 'end']);
   });
 
-  onlyInIvy('FW-1320: Ivy creates renderer twice.')
-      .it('should work with a component which throws', () => {
-        expect(() => {
-          const fixture = TestBed.createComponent(SomeComponentWhichThrows);
-          fixture.detectChanges();
-        }).toThrow();
-        expect(logs).toEqual(['create', 'create', 'begin', 'end']);
-      });
+  it('should work with a component which throws', () => {
+    expect(() => {
+      const fixture = TestBed.createComponent(SomeComponentWhichThrows);
+      fixture.detectChanges();
+    }).toThrow();
+    expect(logs).toEqual(['create', 'create', 'begin', 'end']);
+  });
 });
 
 describe('animation renderer factory', () => {
@@ -255,7 +253,7 @@ describe('custom renderer', () => {
   });
 });
 
-onlyInIvy('access global ngDevMode').describe('Renderer2 destruction hooks', () => {
+describe('Renderer2 destruction hooks', () => {
   @Component({
     selector: 'some-component',
     template: `

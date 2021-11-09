@@ -14,7 +14,6 @@ import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {createMouseEvent, hasClass} from '@angular/platform-browser/testing/src/browser_util';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {ivyEnabled, onlyInIvy} from '@angular/private/testing';
 
 @Injectable()
 class Logger {
@@ -745,12 +744,11 @@ class TestCmptWithPropInterpolation {
         expect(() => el.query(e => e.injector === null)).not.toThrow();
       });
 
-      onlyInIvy('VE does not match elements created outside Angular context')
-          .it('when using the out-of-context element as the DebugElement query root', () => {
-            const debugElOutsideAngularContext = el.query(By.css('ul'));
-            expect(debugElOutsideAngularContext.queryAll(By.css('li')).length).toBe(1);
-            expect(debugElOutsideAngularContext.query(By.css('li'))).toBeDefined();
-          });
+      it('when using the out-of-context element as the DebugElement query root', () => {
+        const debugElOutsideAngularContext = el.query(By.css('ul'));
+        expect(debugElOutsideAngularContext.queryAll(By.css('li')).length).toBe(1);
+        expect(debugElOutsideAngularContext.query(By.css('li'))).toBeDefined();
+      });
     });
 
     it('DebugElement.queryAll should pick up both elements inserted via the view and through Renderer2',
@@ -912,18 +910,17 @@ class TestCmptWithPropInterpolation {
         expect(Object.keys(button.properties).filter(key => key.startsWith('on'))).toEqual([]);
       });
 
-      onlyInIvy('Show difference in behavior')
-          .it('should pickup all of the element properties', () => {
-            TestBed.overrideTemplate(
-                TestCmptWithPropInterpolation, `<button title="myTitle"></button>`);
-            const fixture = TestBed.createComponent(TestCmptWithPropInterpolation);
-            fixture.detectChanges();
+      it('should pickup all of the element properties', () => {
+        TestBed.overrideTemplate(
+            TestCmptWithPropInterpolation, `<button title="myTitle"></button>`);
+        const fixture = TestBed.createComponent(TestCmptWithPropInterpolation);
+        fixture.detectChanges();
 
-            const host = fixture.debugElement;
-            const button = fixture.debugElement.query(By.css('button'));
+        const host = fixture.debugElement;
+        const button = fixture.debugElement.query(By.css('button'));
 
-            expect(button.properties.title).toEqual('myTitle');
-          });
+        expect(button.properties.title).toEqual('myTitle');
+      });
     });
 
     it('should trigger events registered via Renderer2', () => {
@@ -955,7 +952,7 @@ class TestCmptWithPropInterpolation {
       // Ivy depends on `eventListeners` to pick up events that haven't been registered through
       // Angular templates. At the time of writing Zone.js doesn't add `eventListeners` in Node
       // environments so we have to skip the test.
-      if (!ivyEnabled || typeof fixture.debugElement.nativeElement.eventListeners === 'function') {
+      if (typeof fixture.debugElement.nativeElement.eventListeners === 'function') {
         const event = {value: true};
         fixture.detectChanges();
         fixture.debugElement.triggerEventHandler('click', event);

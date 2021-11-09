@@ -16,7 +16,6 @@ import {getLocaleId} from '@angular/core/src/render3';
 import {BrowserModule} from '@angular/platform-browser';
 import {createTemplate, dispatchEvent, getContent} from '@angular/platform-browser/testing/src/browser_util';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {onlyInIvy} from '@angular/private/testing';
 
 import {NoopNgZone} from '../src/zone/ng_zone';
 import {ComponentFixtureNoNgZone, inject, TestBed, waitForAsync, withModule} from '../testing';
@@ -345,21 +344,20 @@ class SomeComponent {
         expect(loadResourceSpy).toHaveBeenCalledWith('/test-template.html');
       });
 
-      onlyInIvy('We only need to define `LOCALE_ID` for runtime i18n')
-          .it('should define `LOCALE_ID`', async () => {
-            @Component({
-              selector: 'i18n-app',
-              templateUrl: '',
-            })
-            class I18nComponent {
-            }
+      it('should define `LOCALE_ID`', async () => {
+        @Component({
+          selector: 'i18n-app',
+          templateUrl: '',
+        })
+        class I18nComponent {
+        }
 
-            const testModule = createModule(
-                {component: I18nComponent, providers: [{provide: LOCALE_ID, useValue: 'ro'}]});
-            await defaultPlatform.bootstrapModule(testModule);
+        const testModule = createModule(
+            {component: I18nComponent, providers: [{provide: LOCALE_ID, useValue: 'ro'}]});
+        await defaultPlatform.bootstrapModule(testModule);
 
-            expect(getLocaleId()).toEqual('ro');
-          });
+        expect(getLocaleId()).toEqual('ro');
+      });
 
       it('should wait for APP_INITIALIZER to set providers for `LOCALE_ID`', async () => {
         let locale: string = '';

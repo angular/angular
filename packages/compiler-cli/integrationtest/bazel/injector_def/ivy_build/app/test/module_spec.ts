@@ -7,10 +7,9 @@
  */
 
 import {forwardRef, Injectable, InjectionToken, Injector, NgModule, ɵcreateInjector as createInjector} from '@angular/core';
-import {ivyEnabled} from '@angular/private/testing';
 import {AOT_TOKEN, AotModule, AotService} from 'app_built/src/module';
 
-describe('Ivy NgModule', () => {
+describe('NgModule', () => {
   describe('AOT', () => {
     let injector: Injector;
 
@@ -62,12 +61,11 @@ describe('Ivy NgModule', () => {
       class BModule {
       }
 
-      const errorCode = ivyEnabled ? 'NG0200: ' : '';
-      const errorLink = ivyEnabled ? '. Find more at https://angular.io/errors/NG0200' : '';
       expect(() => createInjector(AModule))
-          .toThrowError(`${
-              errorCode}Circular dependency in DI detected for AModule. Dependency path: AModule > BModule > AModule${
-              errorLink}`);
+          .toThrowError(
+              'NG0200: Circular dependency in DI detected for AModule. ' +
+              'Dependency path: AModule > BModule > AModule. ' +
+              'Find more at https://angular.io/errors/NG0200');
     });
 
     it('merges imports and exports', () => {

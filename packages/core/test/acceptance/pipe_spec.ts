@@ -9,7 +9,6 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Directive, Inject, Injectable, InjectionToken, Input, NgModule, OnChanges, OnDestroy, Pipe, PipeTransform, SimpleChanges, ViewChild} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {ivyEnabled} from '@angular/private/testing';
 
 describe('pipe', () => {
   @Pipe({name: 'countingPipe'})

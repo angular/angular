@@ -10,7 +10,6 @@ import {CommonModule} from '@angular/common';
 import {AfterViewInit, ChangeDetectorRef, Component, ComponentFactoryResolver, ContentChildren, Directive, DoCheck, Input, NgModule, OnChanges, QueryList, SimpleChange, SimpleChanges, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
-import {onlyInIvy} from '@angular/private/testing';
 
 describe('onChanges', () => {
   it('should correctly support updating one Input among many', () => {
@@ -3938,65 +3937,63 @@ describe('onDestroy', () => {
     expect(() => fixture.destroy()).not.toThrow();
   });
 
-  onlyInIvy(
-      'View Engine has the opposite behavior, where it calls destroy on the directives first, then the components')
-      .it('should be called on directives after component', () => {
-        const events: string[] = [];
+  it('should be called on directives after component', () => {
+    const events: string[] = [];
 
-        @Directive({
-          selector: '[dir]',
-        })
-        class Dir {
-          @Input('dir') name = '';
+    @Directive({
+      selector: '[dir]',
+    })
+    class Dir {
+      @Input('dir') name = '';
 
-          ngOnDestroy() {
-            events.push('dir ' + this.name);
-          }
-        }
+      ngOnDestroy() {
+        events.push('dir ' + this.name);
+      }
+    }
 
-        @Component({
-          selector: 'comp',
-          template: `<p>test</p>`,
-        })
-        class Comp {
-          @Input() name = '';
+    @Component({
+      selector: 'comp',
+      template: `<p>test</p>`,
+    })
+    class Comp {
+      @Input() name = '';
 
-          ngOnDestroy() {
-            events.push('comp ' + this.name);
-          }
-        }
+      ngOnDestroy() {
+        events.push('comp ' + this.name);
+      }
+    }
 
-        @Component({
-          template: `
+    @Component({
+      template: `
         <div *ngIf="show">
           <comp name="1" dir="1"></comp>
           <comp name="2" dir="2"></comp>
         </div>
       `
-        })
-        class App {
-          show = true;
-        }
+    })
+    class App {
+      show = true;
+    }
 
-        TestBed.configureTestingModule({
-          declarations: [App, Dir, Comp],
-          imports: [CommonModule],
-        });
-        const fixture = TestBed.createComponent(App);
-        fixture.detectChanges();
+    TestBed.configureTestingModule({
+      declarations: [App, Dir, Comp],
+      imports: [CommonModule],
+    });
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
 
-        expect(events).toEqual([]);
+    expect(events).toEqual([]);
 
-        fixture.componentInstance.show = false;
-        fixture.detectChanges();
+    fixture.componentInstance.show = false;
+    fixture.detectChanges();
 
-        expect(events).toEqual([
-          'comp 1',
-          'dir 1',
-          'comp 2',
-          'dir 2',
-        ]);
-      });
+    expect(events).toEqual([
+      'comp 1',
+      'dir 1',
+      'comp 2',
+      'dir 2',
+    ]);
+  });
 
   it('should be called on directives on an element', () => {
     const events: string[] = [];
@@ -4378,71 +4375,69 @@ describe('non-regression', () => {
     expect(destroyed).toBeTruthy();
   });
 
-  onlyInIvy('Use case is not supported in ViewEngine')
-      .it('should not throw when calling detectChanges from a setter in the presence of a data binding, ngOnChanges and ngAfterViewInit',
-          () => {
-            const hooks: string[] = [];
+  it('should not throw when calling detectChanges from a setter in the presence of a data binding, ngOnChanges and ngAfterViewInit',
+     () => {
+       const hooks: string[] = [];
 
-            @Directive({selector: '[testDir]'})
-            class TestDirective implements OnChanges, AfterViewInit {
-              constructor(private _changeDetectorRef: ChangeDetectorRef) {}
+       @Directive({selector: '[testDir]'})
+       class TestDirective implements OnChanges, AfterViewInit {
+         constructor(private _changeDetectorRef: ChangeDetectorRef) {}
 
-              @Input('testDir')
-              set value(_value: any) {
-                this._changeDetectorRef.detectChanges();
-              }
-              ngOnChanges() {
-                hooks.push('ngOnChanges');
-              }
-              ngAfterViewInit() {
-                hooks.push('ngAfterViewInit');
-              }
-            }
+         @Input('testDir')
+         set value(_value: any) {
+           this._changeDetectorRef.detectChanges();
+         }
+         ngOnChanges() {
+           hooks.push('ngOnChanges');
+         }
+         ngAfterViewInit() {
+           hooks.push('ngAfterViewInit');
+         }
+       }
 
-            @Component({template: `<div [testDir]="value">{{value}}</div>`})
-            class App {
-              value = 1;
-            }
+       @Component({template: `<div [testDir]="value">{{value}}</div>`})
+       class App {
+         value = 1;
+       }
 
-            TestBed.configureTestingModule({declarations: [App, TestDirective]});
-            const fixture = TestBed.createComponent(App);
-            expect(() => fixture.detectChanges()).not.toThrow();
-            expect(hooks).toEqual(['ngOnChanges', 'ngAfterViewInit']);
-            expect(fixture.nativeElement.textContent.trim()).toBe('1');
-          });
+       TestBed.configureTestingModule({declarations: [App, TestDirective]});
+       const fixture = TestBed.createComponent(App);
+       expect(() => fixture.detectChanges()).not.toThrow();
+       expect(hooks).toEqual(['ngOnChanges', 'ngAfterViewInit']);
+       expect(fixture.nativeElement.textContent.trim()).toBe('1');
+     });
 
-  onlyInIvy('Use case is not supported in ViewEngine')
-      .it('should call hooks in the correct order when calling detectChanges in a setter', () => {
-        const hooks: string[] = [];
+  it('should call hooks in the correct order when calling detectChanges in a setter', () => {
+    const hooks: string[] = [];
 
-        @Directive({selector: '[testDir]'})
-        class TestDirective implements OnChanges, DoCheck, AfterViewInit {
-          constructor(private _changeDetectorRef: ChangeDetectorRef) {}
+    @Directive({selector: '[testDir]'})
+    class TestDirective implements OnChanges, DoCheck, AfterViewInit {
+      constructor(private _changeDetectorRef: ChangeDetectorRef) {}
 
-          @Input('testDir')
-          set value(_value: any) {
-            this._changeDetectorRef.detectChanges();
-          }
-          ngOnChanges() {
-            hooks.push('ngOnChanges');
-          }
-          ngDoCheck() {
-            hooks.push('ngDoCheck');
-          }
-          ngAfterViewInit() {
-            hooks.push('ngAfterViewInit');
-          }
-        }
+      @Input('testDir')
+      set value(_value: any) {
+        this._changeDetectorRef.detectChanges();
+      }
+      ngOnChanges() {
+        hooks.push('ngOnChanges');
+      }
+      ngDoCheck() {
+        hooks.push('ngDoCheck');
+      }
+      ngAfterViewInit() {
+        hooks.push('ngAfterViewInit');
+      }
+    }
 
-        @Component({template: `<div [testDir]="value">{{value}}</div>`})
-        class App {
-          value = 1;
-        }
+    @Component({template: `<div [testDir]="value">{{value}}</div>`})
+    class App {
+      value = 1;
+    }
 
-        TestBed.configureTestingModule({declarations: [App, TestDirective]});
-        const fixture = TestBed.createComponent(App);
-        expect(() => fixture.detectChanges()).not.toThrow();
-        expect(hooks).toEqual(['ngOnChanges', 'ngDoCheck', 'ngAfterViewInit']);
-        expect(fixture.nativeElement.textContent.trim()).toBe('1');
-      });
+    TestBed.configureTestingModule({declarations: [App, TestDirective]});
+    const fixture = TestBed.createComponent(App);
+    expect(() => fixture.detectChanges()).not.toThrow();
+    expect(hooks).toEqual(['ngOnChanges', 'ngDoCheck', 'ngAfterViewInit']);
+    expect(fixture.nativeElement.textContent.trim()).toBe('1');
+  });
 });

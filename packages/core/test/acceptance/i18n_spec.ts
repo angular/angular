@@ -20,12 +20,11 @@ import {TestBed} from '@angular/core/testing';
 import {clearTranslations, loadTranslations} from '@angular/localize';
 import {By, ɵDomRendererFactory2 as DomRendererFactory2} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {onlyInIvy} from '@angular/private/testing';
 import {BehaviorSubject} from 'rxjs';
 
 
 
-onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
+describe('runtime i18n', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [AppComp, DirectiveWithTplRef, UppercasePipe],
@@ -2480,7 +2479,7 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
       @Component({selector: 'div-query', template: '<ng-container #vc></ng-container>'})
       class DivQuery {
         // TODO(issue/24571): remove '!'.
-        @ContentChild(TemplateRef, {static: true}) template !: TemplateRef<any>;
+        @ContentChild(TemplateRef, {static: true}) template!: TemplateRef<any>;
 
         // TODO(issue/24571): remove '!'.
         @ViewChild('vc', {read: ViewContainerRef, static: true}) vc!: ViewContainerRef;

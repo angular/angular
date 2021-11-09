@@ -6,11 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompilerConfig, ResourceLoader} from '@angular/compiler';
+import {ResourceLoader} from '@angular/compiler';
 import {Compiler, Component, ComponentFactoryResolver, CUSTOM_ELEMENTS_SCHEMA, Directive, Inject, Injectable, InjectionToken, Injector, Input, NgModule, Optional, Pipe, SkipSelf, Type, ɵstringify as stringify} from '@angular/core';
 import {fakeAsync, getTestBed, inject, TestBed, tick, waitForAsync, withModule} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {ivyEnabled, modifiedInIvy, obsoleteInIvy, onlyInIvy} from '@angular/private/testing';
 
 // Services, and components for the tests.
 
@@ -820,23 +819,6 @@ const bTok = new InjectionToken<string>('b');
                 expect(compFixture.nativeElement).toHaveText('Hello world!');
               }));
         });
-
-        describe('useJit true', () => {
-          beforeEach(() => TestBed.configureCompiler({useJit: true}));
-          obsoleteInIvy('the Render3 compiler JiT mode is not configurable')
-              .it('should set the value into CompilerConfig',
-                  inject([CompilerConfig], (config: CompilerConfig) => {
-                    expect(config.useJit).toBe(true);
-                  }));
-        });
-        describe('useJit false', () => {
-          beforeEach(() => TestBed.configureCompiler({useJit: false}));
-          obsoleteInIvy('the Render3 compiler JiT mode is not configurable')
-              .it('should set the value into CompilerConfig',
-                  inject([CompilerConfig], (config: CompilerConfig) => {
-                    expect(config.useJit).toBe(false);
-                  }));
-        });
       });
     });
 
@@ -919,44 +901,24 @@ const bTok = new InjectionToken<string>('b');
               expect(withModule(
                          {declarations: [InlineCompWithUrlTemplate]},
                          () => TestBed.createComponent(InlineCompWithUrlTemplate)))
-                  .toThrowError(
-                      ivyEnabled ?
-                          `Component 'InlineCompWithUrlTemplate' is not resolved:
+                  .toThrowError(`Component 'InlineCompWithUrlTemplate' is not resolved:
  - templateUrl: /base/angular/packages/platform-browser/test/static_assets/test.html
-Did you run and wait for 'resolveComponentResources()'?` :
-                          `This test module uses the component ${
-                              stringify(
-                                  InlineCompWithUrlTemplate)} which is using a "templateUrl" or "styleUrls", but they were never compiled. ` +
-                              `Please call "TestBed.compileComponents" before your test.`);
+Did you run and wait for 'resolveComponentResources()'?`);
             });
       });
 
-      modifiedInIvy(`Unknown property error thrown instead of logging a message`)
-          .it('should error on unknown bound properties on custom elements by default', () => {
-            @Component({template: '<some-element [someUnknownProp]="true"></some-element>'})
-            class ComponentUsingInvalidProperty {
-            }
+      it('should error on unknown bound properties on custom elements by default', () => {
+        @Component({template: '<div [someUnknownProp]="true"></div>'})
+        class ComponentUsingInvalidProperty {
+        }
 
-            expect(
-                () => withModule(
-                    {declarations: [ComponentUsingInvalidProperty]},
-                    () => TestBed.createComponent(ComponentUsingInvalidProperty))())
-                .toThrowError(/Can't bind to 'someUnknownProp'/);
-          });
-
-      onlyInIvy(`Unknown property error logged instead of throwing`)
-          .it('should error on unknown bound properties on custom elements by default', () => {
-            @Component({template: '<div [someUnknownProp]="true"></div>'})
-            class ComponentUsingInvalidProperty {
-            }
-
-            const spy = spyOn(console, 'error');
-            withModule({declarations: [ComponentUsingInvalidProperty]}, () => {
-              const fixture = TestBed.createComponent(ComponentUsingInvalidProperty);
-              fixture.detectChanges();
-            })();
-            expect(spy.calls.mostRecent().args[0]).toMatch(/Can't bind to 'someUnknownProp'/);
-          });
+        const spy = spyOn(console, 'error');
+        withModule({declarations: [ComponentUsingInvalidProperty]}, () => {
+          const fixture = TestBed.createComponent(ComponentUsingInvalidProperty);
+          fixture.detectChanges();
+        })();
+        expect(spy.calls.mostRecent().args[0]).toMatch(/Can't bind to 'someUnknownProp'/);
+      });
     });
 
     describe('creating components', () => {

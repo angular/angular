@@ -9,7 +9,6 @@
 import {Component, ComponentFactoryResolver, Injector, NgModule, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {ivyEnabled, onlyInIvy} from '@angular/private/testing';
 
 describe('TemplateRef', () => {
   describe('rootNodes', () => {
@@ -40,18 +39,10 @@ describe('TemplateRef', () => {
       expect(rootNodes.length).toBe(3);
     });
 
-    /**
-     * This is different as compared to the view engine implementation which returns a comment node
-     * in this case:
-     * https://stackblitz.com/edit/angular-uiqry6?file=src/app/app.component.ts
-     *
-     * Returning a comment node for a template ref with no nodes is wrong is fixed in Ivy.
-     */
-    onlyInIvy('Fixed: Ivy no longer adds a comment node in this case.')
-        .it('should return an empty array for embedded view with no nodes', () => {
-          const rootNodes = getRootNodes('<ng-template #templateRef></ng-template>');
-          expect(rootNodes.length).toBe(0);
-        });
+    it('should return an empty array for embedded view with no nodes', () => {
+      const rootNodes = getRootNodes('<ng-template #templateRef></ng-template>');
+      expect(rootNodes.length).toBe(0);
+    });
 
     it('should include projected nodes and their children', () => {
       @Component({
@@ -65,7 +56,7 @@ describe('TemplateRef', () => {
         exportAs: 'menuContent'
       })
       class MenuContent {
-        @ViewChild(TemplateRef, {static: true}) template !: TemplateRef<any>;
+        @ViewChild(TemplateRef, {static: true}) template!: TemplateRef<any>;
       }
 
       @Component({
@@ -168,33 +159,25 @@ describe('TemplateRef', () => {
           </ng-template>
         `);
 
-      if (ivyEnabled) {
-        expect(rootNodes.length).toBe(4);
-        expect(rootNodes[0].nodeType).toBe(Node.COMMENT_NODE);  // ng-container
-        expect(rootNodes[1].nodeType).toBe(Node.TEXT_NODE);     // "Updated " text
-        expect(rootNodes[2].nodeType).toBe(Node.COMMENT_NODE);  // ICU container
-        expect(rootNodes[3].nodeType).toBe(Node.TEXT_NODE);     // "one minute ago" text
-      } else {
-        // ViewEngine seems to produce very different DOM structure as compared to ivy
-        // when it comes to ICU containers - this needs more investigation / fix.
-        expect(rootNodes.length).toBe(7);
-      }
+      expect(rootNodes.length).toBe(4);
+      expect(rootNodes[0].nodeType).toBe(Node.COMMENT_NODE);  // ng-container
+      expect(rootNodes[1].nodeType).toBe(Node.TEXT_NODE);     // "Updated " text
+      expect(rootNodes[2].nodeType).toBe(Node.COMMENT_NODE);  // ICU container
+      expect(rootNodes[3].nodeType).toBe(Node.TEXT_NODE);     // "one minute ago" text
     });
 
     it('should return an empty array for an embedded view with projection and no projectable nodes',
        () => {
          const rootNodes =
              getRootNodes(`<ng-template #templateRef><ng-content></ng-content></ng-template>`);
-         // VE will, incorrectly, return an additional comment node in this case
-         expect(rootNodes.length).toBe(ivyEnabled ? 0 : 1);
+         expect(rootNodes.length).toBe(0);
        });
 
     it('should return an empty array for an embedded view with multiple projections and no projectable nodes',
        () => {
          const rootNodes = getRootNodes(
              `<ng-template #templateRef><ng-content></ng-content><ng-content select="foo"></ng-content></ng-template>`);
-         // VE will, incorrectly, return an additional comment node in this case
-         expect(rootNodes.length).toBe(ivyEnabled ? 0 : 1);
+         expect(rootNodes.length).toBe(0);
        });
 
     describe('projectable nodes provided to a dynamically created component', () => {
@@ -234,9 +217,7 @@ describe('TemplateRef', () => {
         const projectableNodes = [[document.createTextNode('textNode')]];
         const cmptRef = dynamicCmptFactory.create(Injector.NULL, projectableNodes);
         const viewRef = cmptRef.instance.templateRef.createEmbeddedView({});
-
-        // VE will, incorrectly, return an additional comment node in this case
-        expect(viewRef.rootNodes.length).toBe(ivyEnabled ? 1 : 2);
+        expect(viewRef.rootNodes.length).toBe(1);
       });
 
       it('should return an empty collection when no projectable nodes were provided', () => {
@@ -250,9 +231,7 @@ describe('TemplateRef', () => {
         // There are slots but projectable nodes were not provided - nothing should be returned
         const cmptRef = dynamicCmptFactory.create(Injector.NULL, []);
         const viewRef = cmptRef.instance.templateRef.createEmbeddedView({});
-
-        // VE will, incorrectly, return an additional comment node in this case
-        expect(viewRef.rootNodes.length).toBe(ivyEnabled ? 0 : 1);
+        expect(viewRef.rootNodes.length).toBe(0);
       });
 
       it('should return an empty collection when projectable nodes were provided but there are no slots',
@@ -267,9 +246,7 @@ describe('TemplateRef', () => {
            const projectableNodes = [[document.createTextNode('textNode')]];
            const cmptRef = dynamicCmptFactory.create(Injector.NULL, projectableNodes);
            const viewRef = cmptRef.instance.templateRef.createEmbeddedView({});
-
-           // VE will, incorrectly, return an additional comment node in this case
-           expect(viewRef.rootNodes.length).toBe(ivyEnabled ? 0 : 1);
+           expect(viewRef.rootNodes.length).toBe(0);
          });
     });
   });

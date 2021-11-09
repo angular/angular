@@ -9,7 +9,7 @@
 import {ApplicationRef, COMPILER_OPTIONS, Component, destroyPlatform, NgModule, NgZone, TestabilityRegistry, ViewEncapsulation} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
-import {onlyInIvy, withBody} from '@angular/private/testing';
+import {withBody} from '@angular/private/testing';
 
 describe('bootstrap', () => {
   beforeEach(destroyPlatform);
@@ -242,7 +242,7 @@ describe('bootstrap', () => {
          }));
     });
 
-    onlyInIvy('options cannot be changed in Ivy').describe('changing bootstrap options', () => {
+    describe('changing bootstrap options', () => {
       beforeEach(() => {
         spyOn(console, 'error');
       });
