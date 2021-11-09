@@ -25,7 +25,7 @@ To get the most out of these developer guides, you should review the following t
     <p>Learn about Angular's two approaches to forms: template-driven and reactive.</p>
     <p class="card-footer">Forms</p>
   </a>
-  <a href="guide/http" class="docs-card" title="Angular HTTPClient developer guide">
+  <a href="guide/http" class="docs-card" title="Angular HTTP Client developer guide">
     <section>HTTP</section>
     <p>Learn how to connect to servers using Angular's HTTP client service.</p>
     <p class="card-footer">HTTPClient</p>
