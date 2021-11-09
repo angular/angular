@@ -84,7 +84,7 @@ export function generateTypeCheckBlock(
     genericContextBehavior: TcbGenericContextBehavior): ts.FunctionDeclaration {
   const tcb = new Context(
       env, domSchemaChecker, oobRecorder, meta.id, meta.boundTarget, meta.pipes, meta.schemas);
-  const scope = Scope.forNodes(tcb, null, tcb.boundTarget.target.template !, /* guard */ null);
+  const scope = Scope.forNodes(tcb, null, tcb.boundTarget.target.template!, /* guard */ null);
   const ctxRawType = env.referenceType(ref);
   if (!ts.isTypeReferenceNode(ctxRawType)) {
     throw new Error(

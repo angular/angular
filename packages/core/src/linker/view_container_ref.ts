@@ -27,20 +27,12 @@ import {getNativeByTNode, unwrapRNode, viewAttachedToContainer} from '../render3
 import {ViewRef as R3ViewRef} from '../render3/view_ref';
 import {addToArray, removeFromArray} from '../util/array_utils';
 import {assertDefined, assertEqual, assertGreaterThan, assertLessThan} from '../util/assert';
-import {noop} from '../util/noop';
 
 import {ComponentFactory, ComponentRef} from './component_factory';
 import {createElementRef, ElementRef} from './element_ref';
 import {NgModuleRef} from './ng_module_factory';
 import {TemplateRef} from './template_ref';
 import {EmbeddedViewRef, ViewRef} from './view_ref';
-
-
-export const SWITCH_VIEW_CONTAINER_REF_FACTORY__POST_R3__ = injectViewContainerRef;
-const SWITCH_VIEW_CONTAINER_REF_FACTORY__PRE_R3__ = noop as typeof injectViewContainerRef;
-const SWITCH_VIEW_CONTAINER_REF_FACTORY: typeof injectViewContainerRef =
-    SWITCH_VIEW_CONTAINER_REF_FACTORY__PRE_R3__;
-
 /**
  * Represents a container where one or more views can be attached to a component.
  *
@@ -202,7 +194,7 @@ export abstract class ViewContainerRef {
    * @internal
    * @nocollapse
    */
-  static __NG_ELEMENT_ID__: () => ViewContainerRef = SWITCH_VIEW_CONTAINER_REF_FACTORY;
+  static __NG_ELEMENT_ID__: () => ViewContainerRef = injectViewContainerRef;
 }
 
 /**
@@ -218,6 +210,8 @@ export function injectViewContainerRef(): ViewContainerRef {
 
 const VE_ViewContainerRef = ViewContainerRef;
 
+// TODO(alxhub): cleaning up this indirection triggers a subtle bug in Closure in g3. Once the fix
+// for that lands, this can be cleaned up.
 const R3ViewContainerRef = class ViewContainerRef extends VE_ViewContainerRef {
   constructor(
       private _lContainer: LContainer,

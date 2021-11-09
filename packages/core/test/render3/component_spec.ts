@@ -6,13 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {NgIf} from '@angular/common';
+
 import {ViewEncapsulation, ɵɵdefineInjectable, ɵɵdefineInjector} from '../../src/core';
 import {createInjector} from '../../src/di/r3_injector';
 import {AttributeMarker, markDirty, ɵɵadvance, ɵɵdefineComponent, ɵɵdirectiveInject, ɵɵproperty, ɵɵtemplate} from '../../src/render3/index';
 import {ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵtext, ɵɵtextInterpolate} from '../../src/render3/instructions/all';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 
-import {NgIf} from './common_with_def';
 import {ComponentFixture, containerEl, createComponent, MockRendererFactory, renderComponent, requestAnimationFrame, toHtml} from './render_util';
 
 describe('component', () => {

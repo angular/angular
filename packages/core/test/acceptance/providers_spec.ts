@@ -8,6 +8,7 @@
 
 import {CommonModule} from '@angular/common';
 import {Component, Directive, forwardRef, Inject, Injectable, InjectionToken, Injector, NgModule, Optional} from '@angular/core';
+import {leaveView, specOnlyIsInstructionStateEmpty} from '@angular/core/src/render3/state';
 import {inject, TestBed, waitForAsync} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -597,8 +598,15 @@ describe('providers', () => {
       expect(myCompInstance.svc.value).toEqual('some value');
     });
 
-    describe('injection without bootstrapping', () => {
+    // TODO(alxhub): find a way to isolate this test from running in a dirty
+    // environment where a current LView exists (probably from some other test
+    // bootstrapping and then not cleaning up).
+    xdescribe('injection without bootstrapping', () => {
       beforeEach(() => {
+        // Maybe something like this?
+        while (!specOnlyIsInstructionStateEmpty()) {
+          leaveView();
+        }
         TestBed.configureTestingModule({declarations: [MyComp], providers: [MyComp, MyService]});
       });
 

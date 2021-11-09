@@ -24,10 +24,9 @@ import {ErrorHandler} from './error_handler';
 import {DEFAULT_LOCALE_ID} from './i18n/localization';
 import {LOCALE_ID} from './i18n/tokens';
 import {Type} from './interface/type';
-import {ivyEnabled} from './ivy_switch';
-import {COMPILER_OPTIONS, CompilerFactory, CompilerOptions} from './linker/compiler';
+import {COMPILER_OPTIONS, CompilerOptions} from './linker/compiler';
 import {ComponentFactory, ComponentRef} from './linker/component_factory';
-import {ComponentFactoryBoundToModule, ComponentFactoryResolver} from './linker/component_factory_resolver';
+import {ComponentFactoryResolver} from './linker/component_factory_resolver';
 import {InternalNgModuleRef, NgModuleFactory, NgModuleRef} from './linker/ng_module_factory';
 import {InternalViewRef, ViewRef} from './linker/view_ref';
 import {isComponentResourceResolutionQueueEmpty, resolveComponentResources} from './metadata/resource_loading';
@@ -45,19 +44,7 @@ import {NgZone, NoopNgZone} from './zone/ng_zone';
 
 let _platform: PlatformRef;
 
-let compileNgModuleFactory:
-    <M>(injector: Injector, options: CompilerOptions, moduleType: Type<M>) =>
-        Promise<NgModuleFactory<M>> = compileNgModuleFactory__PRE_R3__;
-
-function compileNgModuleFactory__PRE_R3__<M>(
-    injector: Injector, options: CompilerOptions,
-    moduleType: Type<M>): Promise<NgModuleFactory<M>> {
-  const compilerFactory: CompilerFactory = injector.get(CompilerFactory);
-  const compiler = compilerFactory.createCompiler([options]);
-  return compiler.compileModuleAsync(moduleType);
-}
-
-export function compileNgModuleFactory__POST_R3__<M>(
+export function compileNgModuleFactory<M>(
     injector: Injector, options: CompilerOptions,
     moduleType: Type<M>): Promise<NgModuleFactory<M>> {
   ngDevMode && assertNgModuleType(moduleType);
@@ -106,23 +93,11 @@ export function compileNgModuleFactory__POST_R3__<M>(
       .then(() => moduleFactory);
 }
 
-// the `window.ng` global utilities are only available in non-VE versions of
-// Angular. The function switch below will make sure that the code is not
-// included into Angular when PRE mode is active.
-export function publishDefaultGlobalUtils__PRE_R3__() {}
-export function publishDefaultGlobalUtils__POST_R3__() {
+export function publishDefaultGlobalUtils() {
   ngDevMode && _publishDefaultGlobalUtils();
 }
 
-let publishDefaultGlobalUtils: () => any = publishDefaultGlobalUtils__PRE_R3__;
-
-let isBoundToModule: <C>(cf: ComponentFactory<C>) => boolean = isBoundToModule__PRE_R3__;
-
-export function isBoundToModule__PRE_R3__<C>(cf: ComponentFactory<C>): boolean {
-  return cf instanceof ComponentFactoryBoundToModule;
-}
-
-export function isBoundToModule__POST_R3__<C>(cf: ComponentFactory<C>): boolean {
+export function isBoundToModule<C>(cf: ComponentFactory<C>): boolean {
   return (cf as R3ComponentFactory<C>).isBoundToModule;
 }
 
@@ -371,11 +346,9 @@ export class PlatformRef {
         const initStatus: ApplicationInitStatus = moduleRef.injector.get(ApplicationInitStatus);
         initStatus.runInitializers();
         return initStatus.donePromise.then(() => {
-          if (ivyEnabled) {
-            // If the `LOCALE_ID` provider is defined at bootstrap then we set the value for ivy
-            const localeId = moduleRef.injector.get(LOCALE_ID, DEFAULT_LOCALE_ID);
-            setLocaleId(localeId || DEFAULT_LOCALE_ID);
-          }
+          // If the `LOCALE_ID` provider is defined at bootstrap then we set the value for ivy
+          const localeId = moduleRef.injector.get(LOCALE_ID, DEFAULT_LOCALE_ID);
+          setLocaleId(localeId || DEFAULT_LOCALE_ID);
           this._moduleDoBootstrap(moduleRef);
           return moduleRef;
         });

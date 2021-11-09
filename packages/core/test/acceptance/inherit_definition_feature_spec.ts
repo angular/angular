@@ -8,7 +8,6 @@
 
 import {state, style, trigger} from '@angular/animations';
 import {Component, ContentChildren, Directive, EventEmitter, HostBinding, HostListener, Input, OnChanges, Output, QueryList, ViewChildren} from '@angular/core';
-import {ivyEnabled} from '@angular/core/src/ivy_switch';
 import {getDirectiveDef} from '@angular/core/src/render3/definition';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
@@ -111,18 +110,16 @@ describe('inheritance', () => {
       });
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges(false);  // Don't check for no changes (so that assertion does not need
-                                     // to worry about it.)
+      // to worry about it.)
 
       expect(log).toEqual([
         'Base.backgroundColor', 'Super.color', 'Sub1.height',  //
         'Base.backgroundColor', 'Super.color', 'Sub2.width',   //
       ]);
-      if (ivyEnabled) {
-        expect(getDirectiveDef(BaseDirective)!.hostVars).toEqual(2);
-        expect(getDirectiveDef(SuperDirective)!.hostVars).toEqual(4);
-        expect(getDirectiveDef(Sub1Directive)!.hostVars).toEqual(6);
-        expect(getDirectiveDef(Sub2Directive)!.hostVars).toEqual(6);
-      }
+      expect(getDirectiveDef(BaseDirective)!.hostVars).toEqual(2);
+      expect(getDirectiveDef(SuperDirective)!.hostVars).toEqual(4);
+      expect(getDirectiveDef(Sub1Directive)!.hostVars).toEqual(6);
+      expect(getDirectiveDef(Sub2Directive)!.hostVars).toEqual(6);
     });
   });
 

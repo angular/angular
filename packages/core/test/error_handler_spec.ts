@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ERROR_DEBUG_CONTEXT, ERROR_LOGGER, ERROR_TYPE, wrappedError} from '@angular/core/src/util/errors';
+import {ERROR_LOGGER, ERROR_TYPE, wrappedError} from '@angular/core/src/util/errors';
 
 import {ErrorHandler} from '../src/error_handler';
 
@@ -42,7 +42,8 @@ describe('ErrorHandler', () => {
     expect(errorToString(undefined)).toBe('ERROR#undefined');
   });
 
-  describe('context', () => {
+  // TODO(alxhub): delete as Ivy doesn't use context.
+  xdescribe('context', () => {
     it('should print nested context', () => {
       const cause = new Error('message!');
       const context = {
@@ -93,7 +94,6 @@ ERROR CONTEXT#Context`);
 
 function debugError(originalError: any, context: any): Error {
   const error = wrappedError(`Error in ${context.source}`, originalError);
-  (error as any)[ERROR_DEBUG_CONTEXT] = context;
   (error as any)[ERROR_TYPE] = debugError;
   return error;
 }

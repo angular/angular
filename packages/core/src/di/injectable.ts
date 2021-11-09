@@ -9,12 +9,10 @@
 import {Type} from '../interface/type';
 import {makeDecorator, TypeDecorator} from '../util/decorators';
 
-import {getInjectableDef, InjectableType, ɵɵdefineInjectable} from './interface/defs';
 import {ClassSansProvider, ConstructorSansProvider, ExistingSansProvider, FactorySansProvider, StaticClassSansProvider, ValueSansProvider} from './interface/provider';
-import {compileInjectable as render3CompileInjectable} from './jit/injectable';
-import {convertInjectableProviderToFactory} from './util';
+import {compileInjectable} from './jit/injectable';
 
-
+export {compileInjectable};
 
 /**
  * Injectable providers used in `@Injectable` decorator.
@@ -91,25 +89,4 @@ export interface Injectable {
  */
 export const Injectable: InjectableDecorator = makeDecorator(
     'Injectable', undefined, undefined, undefined,
-    (type: Type<any>, meta: Injectable) => SWITCH_COMPILE_INJECTABLE(type as any, meta));
-
-
-/**
- * Supports @Injectable() in JIT mode for Render2.
- */
-function render2CompileInjectable(
-    injectableType: Type<any>,
-    options?: {providedIn?: Type<any>|'root'|'platform'|'any'|null}&InjectableProvider): void {
-  if (options && options.providedIn !== undefined && !getInjectableDef(injectableType)) {
-    (injectableType as InjectableType<any>).ɵprov = ɵɵdefineInjectable({
-      token: injectableType,
-      providedIn: options.providedIn,
-      factory: convertInjectableProviderToFactory(injectableType, options),
-    });
-  }
-}
-
-export const SWITCH_COMPILE_INJECTABLE__POST_R3__ = render3CompileInjectable;
-const SWITCH_COMPILE_INJECTABLE__PRE_R3__ = render2CompileInjectable;
-const SWITCH_COMPILE_INJECTABLE: typeof render3CompileInjectable =
-    SWITCH_COMPILE_INJECTABLE__PRE_R3__;
+    (type: Type<any>, meta: Injectable) => compileInjectable(type as any, meta));

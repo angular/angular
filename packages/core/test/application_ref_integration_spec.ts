@@ -6,13 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef, Component, DoCheck, NgModule, OnInit, TestabilityRegistry, ɵivyEnabled as ivyEnabled} from '@angular/core';
+import {ApplicationRef, Component, DoCheck, NgModule, OnInit, TestabilityRegistry} from '@angular/core';
 import {getTestBed} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {withBody} from '@angular/private/testing';
+
 import {NgModuleFactory} from '../src/render3/ng_module_ref';
 
-ivyEnabled && describe('ApplicationRef bootstrap', () => {
+describe('ApplicationRef bootstrap', () => {
   @Component({
     selector: 'hello-world',
     template: '<div>Hello {{ name }}</div>',
@@ -66,7 +67,8 @@ ivyEnabled && describe('ApplicationRef bootstrap', () => {
        const moduleRef =
            await getTestBed().platform.bootstrapModuleFactory(MyAppModuleFactory, {ngZone: 'noop'});
 
-       const ngUtils = (global as any).ng;
+       const glob = typeof global !== 'undefined' ? global : window;
+       const ngUtils = (glob as any).ng;
        expect(ngUtils.getComponent).toBeTruthy();
      }));
 });

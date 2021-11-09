@@ -11,7 +11,6 @@ import {ElementRef, QueryList} from '@angular/core';
 import {Injectable} from '@angular/core/src/di/injectable';
 import {setCurrentInjector, ɵɵinject} from '@angular/core/src/di/injector_compatibility';
 import {ɵɵdefineInjectable, ɵɵInjectorDef} from '@angular/core/src/di/interface/defs';
-import {ivyEnabled} from '@angular/core/src/ivy_switch';
 import {ContentChild, ContentChildren, ViewChild, ViewChildren} from '@angular/core/src/metadata/di';
 import {Component, Directive, HostBinding, HostListener, Input, Pipe} from '@angular/core/src/metadata/directives';
 import {NgModule} from '@angular/core/src/metadata/ng_module';
@@ -21,7 +20,7 @@ import {ComponentDef, PipeDef} from '@angular/core/src/render3/interfaces/defini
 
 
 
-ivyEnabled && describe('render3 jit', () => {
+describe('render3 jit', () => {
   let injector: any;
   beforeAll(() => {
     injector = setCurrentInjector(null);

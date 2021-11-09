@@ -7,7 +7,9 @@
  */
 
 import {ChangeDetectionStrategy, Component, Directive, ElementRef, forwardRef, Pipe, Type, ViewEncapsulation, ɵɵngDeclareComponent} from '@angular/core';
+
 import {AttributeMarker, ComponentDef} from '../../../src/render3';
+
 import {functionContaining} from './matcher';
 
 describe('component declaration jit compilation', () => {
