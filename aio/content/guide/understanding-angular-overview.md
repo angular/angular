@@ -1,13 +1,13 @@
 # Understanding Angular
 
-As described in [What Is Angular][AioGuideWhatIsAngular], the Angular frameworks consists of four basic elements:
+As described in [What Is Angular][AioGuideWhatIsAngular], the Angular framework consists of four basic elements:
 
 * Components
 * Templates
 * Dependency injection
 * Directives
 
-Not every application uses all four elements equally. But understanding these elements can help you build scalable, robust Angular applications.
+Not every application uses all four elements equally. But understanding these elements can help you build scalable and robust Angular applications.
 
 ## Prerequisites
 

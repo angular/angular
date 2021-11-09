@@ -1,6 +1,6 @@
 # Angular Developer Guides
 
-As an application framework, Angular includes collection of well-integrated libraries that cover a wide variety of features, including routing, forms management, client-server communication, and more.
+As an application framework, Angular includes a collection of well-integrated libraries that cover a wide variety of features, including routing, forms management, client-server communication, and more.
 
 This topic lists the various developer guides that can help you learn about these Angular features so you can determine if and when to add them to your application.
 
@@ -37,7 +37,7 @@ To get the most out of these developer guides, you should review the following t
   </a>
   <a href="guide/i18n-overview" class="docs-card" title="Angular internationalization developer guide">
     <section>Internationalization</section>
-    <p>Learn about internationalization, the process for using Angular applications in different locales.</p>
+    <p>Learn how to localize your Angular application.</p>
     <p class="card-footer">i18n</p>
   </a>
   <a href="guide/animations" class="docs-card" title="Angular animations developer guide">
@@ -52,7 +52,7 @@ To get the most out of these developer guides, you should review the following t
   </a>
   <a href="guide/web-worker" class="docs-card" title="Web Workers">
     <section>Web Workers</section>
-    <p>Web workers lets you run CPU-intensive computations in a background thread.</p>
+    <p>Web workers let you run CPU-intensive computations in a background thread.</p>
     <p class="card-footer">Web Workers</p>
   </a>
   <a href="guide/universal" class="docs-card" title="Server-side rendering">
