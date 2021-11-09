@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {obsoleteInIvy, onlyInIvy} from '@angular/private/testing';
 import {runfiles} from '@bazel/runfiles';
 import {existsSync, readFileSync} from 'fs';
 import {dirname, join} from 'path';
@@ -26,15 +25,8 @@ describe('flat_module ng_module', () => {
   });
 
   describe('flat module out file', () => {
-    obsoleteInIvy('Ngtsc computes the AMD module name differently than NGC')
-        .it('should have a proper AMD module name', () => {
-          expect(readFileSync(flatModuleOutFile, 'utf8'))
-              .toContain(`define("flat_module/flat_module"`);
-        });
-
-    onlyInIvy('Ngtsc computes the AMD module name differently than NGC')
-        .it('should have a proper AMD module name', () => {
-          expect(readFileSync(flatModuleOutFile, 'utf8')).toContain(`define("flat_module"`);
-        });
+    it('should have a proper AMD module name', () => {
+      expect(readFileSync(flatModuleOutFile, 'utf8')).toContain(`define("flat_module"`);
+    });
   });
 });

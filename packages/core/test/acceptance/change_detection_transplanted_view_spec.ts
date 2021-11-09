@@ -11,7 +11,6 @@ import {ChangeDetectionStrategy, ChangeDetectorRef, Component, DoCheck, Input, T
 import {AfterViewChecked} from '@angular/core/src/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {onlyInIvy} from '@angular/private/testing';
 
 describe('change detection for transplanted views', () => {
   describe('when declaration appears before insertion', () => {
@@ -324,7 +323,7 @@ describe('change detection for transplanted views', () => {
       changeDetection: ChangeDetectionStrategy.OnPush
     })
     class Insertion {
-      @Input() template !: TemplateRef<{}>;
+      @Input() template!: TemplateRef<{}>;
       name = 'initial';
       constructor(readonly changeDetectorRef: ChangeDetectorRef) {}
     }
@@ -479,7 +478,7 @@ describe('change detection for transplanted views', () => {
       template: `<ng-container [ngTemplateOutlet]="template"></ng-container>`
     })
     class CheckAlwaysInsertion {
-      @Input() template !: TemplateRef<{}>;
+      @Input() template!: TemplateRef<{}>;
     }
 
     @Component({
@@ -488,7 +487,7 @@ describe('change detection for transplanted views', () => {
       changeDetection: ChangeDetectionStrategy.OnPush
     })
     class OnPushInsertionHost {
-      @Input() template !: TemplateRef<{}>;
+      @Input() template!: TemplateRef<{}>;
       constructor(readonly cdr: ChangeDetectorRef) {}
     }
     @Component({
@@ -542,7 +541,7 @@ describe('change detection for transplanted views', () => {
       expect(fixture.nativeElement.textContent).toEqual('new');
     });
 
-    onlyInIvy('behavior is inconsistent in VE').describe('when insertion is detached', () => {
+    describe('when insertion is detached', () => {
       it('does not refresh CheckAlways transplants', () => {
         const fixture = getFixture(CheckAlwaysDeclaration);
         fixture.detectChanges();
@@ -570,7 +569,7 @@ describe('change detection for transplanted views', () => {
       changeDetection: ChangeDetectionStrategy.OnPush
     })
     class TripleTemplate {
-      @Input() template !: TemplateRef<{}>;
+      @Input() template!: TemplateRef<{}>;
     }
 
     @Component({

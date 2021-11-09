@@ -9,7 +9,6 @@ import {CommonModule} from '@angular/common';
 import {Component, Directive, Input, QueryList, ViewChild, ViewChildren} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
-import {onlyInIvy} from '@angular/private/testing';
 
 describe('components using pure function instructions internally', () => {
   describe('with array literals', () => {
@@ -476,7 +475,7 @@ describe('components using pure function instructions internally', () => {
     });
   });
 
-  onlyInIvy('issue has only been fixed for Ivy').describe('identical literals', () => {
+  describe('identical literals', () => {
     @Directive({selector: '[dir]'})
     class Dir {
       @Input('dir') value: any;

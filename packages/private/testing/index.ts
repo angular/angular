@@ -7,4 +7,3 @@
  */
 
 export * from './src/render3';
-export * from './src/ivy_test_selectors';

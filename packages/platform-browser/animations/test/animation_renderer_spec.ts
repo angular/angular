@@ -12,7 +12,7 @@ import {TestBed} from '@angular/core/testing';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {BrowserAnimationsModule, ɵAnimationRendererFactory as AnimationRendererFactory, ɵInjectableAnimationEngine as InjectableAnimationEngine} from '@angular/platform-browser/animations';
 import {DomRendererFactory2} from '@angular/platform-browser/src/dom/dom_renderer';
-import {onlyInIvy, withBody} from '@angular/private/testing';
+import {withBody} from '@angular/private/testing';
 
 import {el} from '../../testing/src/browser_util';
 
@@ -326,7 +326,7 @@ describe('AnimationRendererFactory', () => {
   });
 });
 
-onlyInIvy('View Engine uses another mechanism of removing DOM nodes').describe('destroy', () => {
+describe('destroy', () => {
   beforeEach(destroyPlatform);
   afterEach(destroyPlatform);
 
