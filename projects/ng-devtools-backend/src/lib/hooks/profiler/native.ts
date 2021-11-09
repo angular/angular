@@ -10,6 +10,7 @@ type ProfilerCallback = (event: ɵProfilerEvent, instanceOrLView: {}, hookOrList
 export class NgProfiler extends Profiler {
   private _tracker = IdentityTracker.getInstance();
   private _callbacks: ProfilerCallback[] = [];
+  private _lastDirectiveInstance: {} | null = null;
 
   constructor(config: Partial<Hooks> = {}) {
     super(config);
@@ -66,7 +67,7 @@ export class NgProfiler extends Profiler {
     return;
   }
 
-  [ɵProfilerEvent.TemplateUpdateStart](directive: any, _hookOrListener: any): void {
+  [ɵProfilerEvent.TemplateUpdateStart](context: any, _hookOrListener: any): void {
     if (!this._inChangeDetection) {
       this._inChangeDetection = true;
       runOutsideAngular(() => {
@@ -77,19 +78,44 @@ export class NgProfiler extends Profiler {
       });
     }
 
-    const position = this._tracker.getDirectivePosition(directive);
-    const id = this._tracker.getDirectiveId(directive);
+    const position = this._tracker.getDirectivePosition(context);
+    const id = this._tracker.getDirectiveId(context);
 
-    this._onChangeDetectionStart(directive, getDirectiveHostElement(directive), id, position);
+    // If we can find the position and the ID we assume that this is a component instance.
+    // Alternatively, if we can't find the ID or the position, we assume that this is a
+    // context of an embedded view (for example, NgForOfContext, NgIfContext, or a custom one).
+    if (position !== undefined && id !== undefined) {
+      this._lastDirectiveInstance = context;
+    }
+
+    if (id !== undefined && position !== undefined) {
+      this._onChangeDetectionStart(context, getDirectiveHostElement(context), id, position);
+      return;
+    }
+
+    this._onChangeDetectionStart(
+      this._lastDirectiveInstance,
+      getDirectiveHostElement(this._lastDirectiveInstance),
+      this._tracker.getDirectiveId(this._lastDirectiveInstance),
+      this._tracker.getDirectivePosition(this._lastDirectiveInstance)
+    );
   }
 
-  [ɵProfilerEvent.TemplateUpdateEnd](directive: any, _hookOrListener: any): void {
-    const position = this._tracker.getDirectivePosition(directive);
-    const id = this._tracker.getDirectiveId(directive);
+  [ɵProfilerEvent.TemplateUpdateEnd](context: any, _hookOrListener: any): void {
+    const position = this._tracker.getDirectivePosition(context);
+    const id = this._tracker.getDirectiveId(context);
 
-    if (this._tracker.hasDirective(directive) && id !== undefined && position !== undefined) {
-      this._onChangeDetectionEnd(directive, getDirectiveHostElement(directive), id, position);
+    if (this._tracker.hasDirective(context) && id !== undefined && position !== undefined) {
+      this._onChangeDetectionEnd(context, getDirectiveHostElement(context), id, position);
+      return;
     }
+
+    this._onChangeDetectionEnd(
+      this._lastDirectiveInstance,
+      getDirectiveHostElement(this._lastDirectiveInstance),
+      this._tracker.getDirectiveId(this._lastDirectiveInstance),
+      this._tracker.getDirectivePosition(this._lastDirectiveInstance)
+    );
   }
 
   [ɵProfilerEvent.LifecycleHookStart](directive: any, hook: any): void {

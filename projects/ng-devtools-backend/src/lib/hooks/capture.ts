@@ -31,20 +31,20 @@ export const stop = (): ProfilerFrame => {
   return result;
 };
 
-const startEvent = (map: { [key: string]: number }, directive: any, label: string) => {
+const startEvent = (map: Record<string, number>, directive: any, label: string) => {
   const name = getDirectiveName(directive);
   const key = `${name}#${label}`;
   map[key] = performance.now();
 };
 
-const getEventStart = (map: { [key: string]: number }, directive: any, label: string) => {
+const getEventStart = (map: Record<string, number>, directive: any, label: string) => {
   const name = getDirectiveName(directive);
   const key = `${name}#${label}`;
   return map[key];
 };
 
 const getHooks = (onFrame: (frame: ProfilerFrame) => void): Partial<Hooks> => {
-  const timeStartMap: { [key: string]: number } = {};
+  const timeStartMap: Record<string, number> = {};
   return {
     // We flush here because it's possible the current node to overwrite
     // an existing removed node.
@@ -82,6 +82,7 @@ const getHooks = (onFrame: (frame: ProfilerFrame) => void): Partial<Hooks> => {
     },
     onChangeDetectionEnd(component: any): void {
       const profile = eventMap.get(component);
+
       if (profile) {
         let current = profile.changeDetection;
         if (current === undefined) {
