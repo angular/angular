@@ -1,11 +1,11 @@
+load("//tools:defaults.bzl", "ng_module")
+
 package(default_visibility = [
     "//modules/playground:__subpackages__",
     "//packages:__subpackages__",
 ])
 
 exports_files(["package.json"])
-
-load("//tools:defaults.bzl", "ng_module")
 
 ng_module(
     name = "testing",
@@ -17,18 +17,4 @@ ng_module(
     deps = [
         "//packages/core",
     ],
-)
-
-## Controls if Ivy is enabled. (Temporary target until we permanently switch over to Ivy)
-##
-## This file generates `src/angular_ivy_enabled.ts` file which exports a truthy value
-## whether Ivy should be enabled based on the `--defined=angular_ivy_enabled` value so
-## runtime can detect which mode it is running in.
-##
-## See: `//.bazelrc` where `--define=angular_ivy_enabled=false` is defined as default.
-## See: `./src/angular_ivy_enabled.ts` for more details.
-genrule(
-    name = "angular_ivy_enabled",
-    outs = ["src/angular_ivy_enabled.ts"],
-    cmd = "echo export const ivyEnabled = \"'True'.toString() == '$(angular_ivy_enabled)'\" > $@",
 )
