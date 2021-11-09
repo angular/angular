@@ -44,7 +44,7 @@ section#intro {
   max-width: 900px;
   width: 100%;
   height: 480px;
-  margin: 0 auto -32px;
+  margin: 0 auto;
   padding: 48px 0 0;
 
   .hero-logo {
@@ -240,9 +240,11 @@ section#intro {
 
   article {
     padding: 3rem;
+    padding-top: 0;
 
     @media (max-width: 800px) {
       padding: 2.2rem;
+      padding-top: 0;
     }
   }
 }
