@@ -41,6 +41,19 @@ export class StackblitzBuilder {
     }
   }
 
+  _addDependencies(config, postData) {
+    // Extract npm package dependencies
+    const exampleType = this._getExampleType(config.basePath);
+    const packageJson = this._getBoilerplatePackageJson(exampleType) || this._getBoilerplatePackageJson('cli');
+    const exampleDependencies = packageJson.dependencies;
+
+    // Add unit test packages from devDependencies for unit test examples
+    const devDependencies = packageJson.devDependencies;
+    (config.devDependencies || []).forEach(dep => exampleDependencies[dep] = devDependencies[dep]);
+
+    postData.dependencies = JSON.stringify(exampleDependencies);
+  }
+
   _getExampleType(exampleDir) {
     const configPath = `${exampleDir}/example-config.json`;
     const configSrc = fs.existsSync(configPath) && fs.readFileSync(configPath, 'utf-8').trim();
@@ -90,9 +103,7 @@ export class StackblitzBuilder {
     try {
       const config = this._initConfigAndCollectFileNames(configFileName);
       const postData = this._createPostData(config, configFileName);
-
-      this._addStackblitzrc(postData);
-
+      this._addDependencies(config, postData);
       const html = this._createStackblitzHtml(config, postData);
       fs.writeFileSync(outputFileName, html, 'utf-8');
       if (altFileName) {
@@ -148,19 +159,9 @@ export class StackblitzBuilder {
     }
   }
 
-  _addStackblitzrc(postData) {
-    postData['project[files][.stackblitzrc]'] = JSON.stringify({
-      installDependencies: true,
-      startCommand: 'turbo start',
-      env: {
-        ENABLE_CJS_IMPORTS: true
-      }
-    });
-  }
-
   _createBaseStackblitzHtml(config) {
     const file = `?file=${this._getPrimaryFile(config)}`;
-    const action = `https://stackblitz.com/run${file}`;
+    const action = `https://run.stackblitz.com/api/angular/v1${file}`;
 
     return `
       <!DOCTYPE html><html lang="en"><body>
@@ -231,14 +232,25 @@ export class StackblitzBuilder {
 
       content = regionExtractor()(content, extn.substr(1)).contents;
 
-      postData[`project[files][${relativeFileName}]`] = content;
+      postData[`files[${relativeFileName}]`] = content;
     });
 
-    const tags = ['angular', 'example', ...config.tags || []];
-    tags.forEach((tag, ix) => postData[`project[tags][${ix}]`] = tag);
+    // Stackblitz defaults to ViewEngine unless `"enableIvy": true`
+    // So if there is a tsconfig.json file and there is no `enableIvy` property, we need to
+    // explicitly set it.
+    const tsConfigJSON = postData['files[tsconfig.json]'];
+    if (tsConfigJSON !== undefined) {
+      const tsConfig = json5.parse(tsConfigJSON);
+      if (tsConfig.angularCompilerOptions.enableIvy === undefined) {
+        tsConfig.angularCompilerOptions.enableIvy = true;
+        postData['files[tsconfig.json]'] = JSON.stringify(tsConfig, null, 2);
+      }
+    }
 
-    postData['project[description]'] = `Angular Example - ${config.description}`;
-    postData['project[template]'] = 'node';
+    const tags = ['angular', 'example', ...config.tags || []];
+    tags.forEach((tag, ix) => postData[`tags[${ix}]`] = tag);
+
+    postData.description = `Angular Example - ${config.description}`;
 
     return postData;
   }
@@ -297,9 +309,14 @@ export class StackblitzBuilder {
 
     const defaultExcludes = [
       '!**/e2e/**/*.*',
+      '!**/package.json',
       '!**/example-config.json',
       '!**/.editorconfig',
       '!**/wallaby.js',
+      '!**/karma-test-shim.js',
+      '!**/karma.conf.js',
+      '!**/test.ts',
+      '!**/tsconfig.app.json',
       '!**/*stackblitz.*'
     ];
 
