@@ -18,10 +18,7 @@ describe('component declaration jit compilation', () => {
                 }) as ComponentDef<TestClass>;
 
     expectComponentDef(def, {
-      template: functionContaining([
-        // NOTE: the `anonymous` match is to support IE11, as functions don't have a name there.
-        /(?:element|anonymous)[^(]*\(0,'div'\)/,
-      ]),
+      template: functionContaining([/element[^(]*\(0,'div'\)/]),
     });
   });
 
@@ -130,15 +127,13 @@ describe('component declaration jit compilation', () => {
       contentQueries: functionContaining([
         // "byRef" should use `contentQuery` with `0` (`QueryFlags.none`) for query flag
         // without a read token, and bind to the full query result.
-        // NOTE: the `anonymous` match is to support IE11, as functions don't have a name there.
-        /(?:contentQuery|anonymous)[^(]*\(dirIndex,_c0,4\)/,
+        /contentQuery[^(]*\(dirIndex,_c0,4\)/,
         '(ctx.byRef = _t)',
 
         // "byToken" should use `staticContentQuery` with `3`
         // (`QueryFlags.descendants|QueryFlags.isStatic`) for query flag and `ElementRef` as
         // read token, and bind to the first result in the query result.
-        // NOTE: the `anonymous` match is to support IE11, as functions don't have a name there.
-        /(?:contentQuery|anonymous)[^(]*\(dirIndex,[^,]*String[^,]*,3,[^)]*ElementRef[^)]*\)/,
+        /contentQuery[^(]*\(dirIndex,[^,]*String[^,]*,3,[^)]*ElementRef[^)]*\)/,
         '(ctx.byToken = _t.first)',
       ]),
     });
@@ -168,16 +163,14 @@ describe('component declaration jit compilation', () => {
     expectComponentDef(def, {
       viewQuery: functionContaining([
         // "byRef" should use `viewQuery` with `0` (`QueryFlags.none`) for query flag without a read
-        // token, and bind to the full query result. NOTE: the `anonymous` match is to support IE11,
-        // as functions don't have a name there.
-        /(?:viewQuery|anonymous)[^(]*\(_c0,4\)/,
+        // token, and bind to the full query result.
+        /viewQuery[^(]*\(_c0,4\)/,
         '(ctx.byRef = _t)',
 
         // "byToken" should use `viewQuery` with `3`
         // (`QueryFlags.descendants|QueryFlags.isStatic`) for query flag and `ElementRef` as
         // read token, and bind to the first result in the query result.
-        // NOTE: the `anonymous` match is to support IE11, as functions don't have a name there.
-        /(?:viewQuery|anonymous)[^(]*\([^,]*String[^,]*,3,[^)]*ElementRef[^)]*\)/,
+        /viewQuery[^(]*\([^,]*String[^,]*,3,[^)]*ElementRef[^)]*\)/,
         '(ctx.byToken = _t.first)',
       ]),
     });
@@ -210,9 +203,8 @@ describe('component declaration jit compilation', () => {
       ],
       hostBindings: functionContaining([
         'return ctx.handleEvent($event)',
-        // NOTE: the `anonymous` match is to support IE11, as functions don't have a name there.
-        /(?:hostProperty|anonymous)[^(]*\('foo',ctx\.foo\.prop\)/,
-        /(?:attribute|anonymous)[^(]*\('bar',ctx\.bar\.prop\)/,
+        /hostProperty[^(]*\('foo',ctx\.foo\.prop\)/,
+        /attribute[^(]*\('bar',ctx\.bar\.prop\)/,
       ]),
       hostVars: 2,
     });
@@ -309,16 +301,14 @@ describe('component declaration jit compilation', () => {
 
     expectComponentDef(whenTrue, {
       template: functionContaining([
-        // NOTE: the `anonymous` match is to support IE11, as functions don't have a name there.
-        /(?:elementStart|anonymous)[^(]*\(0,'div'\)/,
-        /(?:text|anonymous)[^(]*\(1,'    Foo    '\)/,
+        /elementStart[^(]*\(0,'div'\)/,
+        /text[^(]*\(1,'    Foo    '\)/,
       ]),
     });
     expectComponentDef(whenOmitted, {
       template: functionContaining([
-        // NOTE: the `anonymous` match is to support IE11, as functions don't have a name there.
-        /(?:elementStart|anonymous)[^(]*\(0,'div'\)/,
-        /(?:text|anonymous)[^(]*\(1,' Foo '\)/,
+        /elementStart[^(]*\(0,'div'\)/,
+        /text[^(]*\(1,' Foo '\)/,
       ]),
     });
   });
@@ -332,8 +322,7 @@ describe('component declaration jit compilation', () => {
 
     expectComponentDef(def, {
       template: functionContaining([
-        // NOTE: the `anonymous` match is to support IE11, as functions don't have a name there.
-        /(?:textInterpolate|anonymous)[^(]*\(ctx.foo\)/,
+        /textInterpolate[^(]*\(ctx.foo\)/,
       ]),
     });
   });
