@@ -225,10 +225,9 @@
   dependencies:
     tslib "^2.0.0"
 
-"@angular/dev-infra-private@https://github.com/angular/dev-infra-private-builds.git#3fa82dcb0d0a6edd2c3653b7d4582714c1cebb7b":
-  version "0.0.0"
-  uid "3fa82dcb0d0a6edd2c3653b7d4582714c1cebb7b"
-  resolved "https://github.com/angular/dev-infra-private-builds.git#3fa82dcb0d0a6edd2c3653b7d4582714c1cebb7b"
+"@angular/dev-infra-private@https://github.com/angular/dev-infra-private-builds.git#2cfe4b98a157927b319a3a00b467ff6233dc3337":
+  version "0.0.0-0474a28f6c7dbc47b8075e78223b2eeb8cd37c2e"
+  resolved "https://github.com/angular/dev-infra-private-builds.git#2cfe4b98a157927b319a3a00b467ff6233dc3337"
   dependencies:
     "@actions/core" "^1.4.0"
     "@actions/github" "^5.0.0"
@@ -253,6 +252,7 @@
     "@rollup/plugin-commonjs" "^21.0.0"
     "@rollup/plugin-node-resolve" "^13.0.4"
     "@types/tmp" "^0.2.1"
+    "@yarnpkg/lockfile" "^1.1.0"
     chalk "^4.1.0"
     clang-format "^1.4.0"
     cli-progress "^3.7.0"
@@ -12495,7 +12495,6 @@ sass@1.43.4:
 
 "sauce-connect@https://saucelabs.com/downloads/sc-4.6.2-linux.tar.gz":
   version "0.0.0"
-  uid "7b7f35433af9c3380758e048894d7b9aecf3754e"
   resolved "https://saucelabs.com/downloads/sc-4.6.2-linux.tar.gz#7b7f35433af9c3380758e048894d7b9aecf3754e"
 
 saucelabs@^1.5.0:
