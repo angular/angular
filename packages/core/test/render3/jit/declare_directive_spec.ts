@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ElementRef, ɵɵngDeclareDirective} from '@angular/core';
+import {ElementRef, forwardRef, ɵɵngDeclareDirective} from '@angular/core';
 import {AttributeMarker, DirectiveDef} from '../../../src/render3';
 import {functionContaining} from './matcher';
 
@@ -118,6 +118,27 @@ describe('directive declaration jit compilation', () => {
     });
   });
 
+  it('should compile content queries with forwardRefs', () => {
+    const def = ɵɵngDeclareDirective({
+                  type: TestClass,
+                  queries: [
+                    {
+                      propertyName: 'byRef',
+                      predicate: forwardRef(() => Child),
+                    },
+                  ],
+                }) as DirectiveDef<TestClass>;
+
+    class Child {}
+
+    expectDirectiveDef(def, {
+      contentQueries: functionContaining([
+        /contentQuery[^(]*\(dirIndex,[^,]*resolveForwardRef[^,]*forward_ref[^,]*,[\s]*4\)/,
+        '(ctx.byRef = _t)',
+      ]),
+    });
+  });
+
   it('should compile view queries', () => {
     const def = ɵɵngDeclareDirective({
                   type: TestClass,
@@ -152,6 +173,27 @@ describe('directive declaration jit compilation', () => {
         // NOTE: the `anonymous` match is to support IE11, as functions don't have a name there.
         /(?:viewQuery|anonymous)[^(]*\([^,]*String[^,]*,3,[^)]*ElementRef[^)]*\)/,
         '(ctx.byToken = _t.first)',
+      ]),
+    });
+  });
+
+  it('should compile view queries with forwardRefs', () => {
+    const def = ɵɵngDeclareDirective({
+                  type: TestClass,
+                  viewQueries: [
+                    {
+                      propertyName: 'byRef',
+                      predicate: forwardRef(() => Child),
+                    },
+                  ],
+                }) as DirectiveDef<TestClass>;
+
+    class Child {}
+
+    expectDirectiveDef(def, {
+      viewQuery: functionContaining([
+        /viewQuery[^(]*\([^,]*resolveForwardRef[^,]*forward_ref[^,]*,[\s]*4\)/,
+        '(ctx.byRef = _t)',
       ]),
     });
   });

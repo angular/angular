@@ -233,8 +233,8 @@ export interface R3DeclareQueryMetadata {
   first?: boolean;
 
   /**
-   * Either an expression representing a type or `InjectionToken` for the query
-   * predicate, or a set of string selectors.
+   * Either an expression representing a type (possibly wrapped in a `forwardRef()`) or
+   * `InjectionToken` for the query predicate, or a set of string selectors.
    */
   predicate: o.Expression|string[];
 
