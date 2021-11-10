@@ -7,7 +7,8 @@
  */
 
 /**
- * Defines template and style encapsulation options available for Component's {@link Component}.
+ * Defines the CSS styles encapsulation policies for the {@link Component} decorator's
+ * `encapsulation` option.
  *
  * See {@link Component#encapsulation encapsulation}.
  *
@@ -23,10 +24,9 @@ export enum ViewEncapsulation {
   // https://github.com/angular/angular/issues/44119 for additional information.
 
   /**
-   * Emulate `Native` scoping of styles by adding an attribute containing surrogate id to the Host
-   * Element and pre-processing the style rules provided via {@link Component#styles styles} or
-   * {@link Component#styleUrls styleUrls}, and adding the new Host Element attribute to all
-   * selectors.
+   * Emulates a native Shadow DOM encapsulation behavior by adding a specific attribute to the
+   * component's host element and applying the same attribute to all the CSS selectors provided
+   * via {@link Component#styles styles} or {@link Component#styleUrls styleUrls}.
    *
    * This is the default option.
    */
@@ -35,16 +35,16 @@ export enum ViewEncapsulation {
   // Historically the 1 value was for `Native` encapsulation which has been removed as of v11.
 
   /**
-   * Don't provide any template or style encapsulation.
+   * Doesn't provide any sort of CSS style encapsulation, meaning that all the styles provided
+   * via {@link Component#styles styles} or {@link Component#styleUrls styleUrls} are applicable
+   * to any HTML element of the application regardless of their host Component.
    */
   None = 2,
 
   /**
-   * Use Shadow DOM to encapsulate styles.
-   *
-   * For the DOM this means using modern [Shadow
-   * DOM](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_shadow_DOM) and
-   * creating a ShadowRoot for Component's Host Element.
+   * Uses the browser's native Shadow DOM API to encapsulate CSS styles, meaning that it creates
+   * a ShadowRoot for the component's host element which is then used to encapsulate
+   * all the Component's styling.
    */
   ShadowDom = 3
 }
