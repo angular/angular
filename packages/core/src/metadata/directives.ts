@@ -517,18 +517,20 @@ export interface Component extends Directive {
   animations?: any[];
 
   /**
-   * An encapsulation policy for the template and CSS styles. One of:
-   * - `ViewEncapsulation.Emulated`: Use shimmed CSS that
-   * emulates the native behavior.
-   * - `ViewEncapsulation.None`: Use global CSS without any
-   * encapsulation.
-   * - `ViewEncapsulation.ShadowDom`: Use Shadow DOM v1 to encapsulate styles.
+   * An encapsulation policy for the component's CSS styles.
+   * Possible values:
+   * - `ViewEncapsulation.Emulated`: Modifies CSS selectors in order to emulate
+   *                                 a native Shadow DOM CSS encapsulation behavior.
+   * - `ViewEncapsulation.None`: Uses CSS styles globally without any sort of encapsulation.
+   * - `ViewEncapsulation.ShadowDom`: Uses the browser's native Shadow DOM API to encapsulate CSS
+   * styles.
    *
-   * If not supplied, the value is taken from `CompilerOptions`. The default compiler option is
-   * `ViewEncapsulation.Emulated`.
+   * If not supplied, the value is taken from the `CompilerOptions`
+   * which defaults to `ViewEncapsulation.Emulated`.
    *
-   * If the policy is set to `ViewEncapsulation.Emulated` and the component has no `styles`
-   * or `styleUrls` specified, the policy is automatically switched to `ViewEncapsulation.None`.
+   * If the policy is `ViewEncapsulation.Emulated` and the component has no
+   * {@link Component#styles styles} nor {@link Component#styleUrls styleUrls},
+   * the policy is automatically switched to `ViewEncapsulation.None`.
    */
   encapsulation?: ViewEncapsulation;
 
