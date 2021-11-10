@@ -10,9 +10,3 @@ import { Component } from '@angular/core';
 })
 export class QuestSummaryComponent { }
 // #enddocregion
-/*
-  // #docregion encapsulation.shadow
-  // warning: not all browsers support shadow DOM encapsulation at this time
-  encapsulation: ViewEncapsulation.ShadowDom
-  // #enddocregion encapsulation.shadow
-*/
