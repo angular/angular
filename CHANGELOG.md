@@ -1,3 +1,28 @@
+<a name="13.0.1"></a>
+# 13.0.1 (2021-11-10)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [ee2031d9f4](https://github.com/angular/angular/commit/ee2031d9f498e9b6db90f34538376c2955378914) | fix | ensure that partially compiled queries can handle forward references ([#44113](https://github.com/angular/angular/pull/44113)) |
+| [e5a960b159](https://github.com/angular/angular/commit/e5a960b15964e0ae9140437846f3ffb7e95d3dc4) | fix | generate correct code for safe method calls ([#44088](https://github.com/angular/angular/pull/44088)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [dede29e4f3](https://github.com/angular/angular/commit/dede29e4f31a7f3931eb3894260747d7b772e6c2) | fix | ensure literal types are retained when `strictNullInputTypes` is disabled ([#38305](https://github.com/angular/angular/pull/38305)) |
+| [04df3a0b92](https://github.com/angular/angular/commit/04df3a0b92a839686df974ed5d7df7febbbc1b27) | fix | handle pre-release versions when checking version ([#44109](https://github.com/angular/angular/pull/44109)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [4c700b6244](https://github.com/angular/angular/commit/4c700b6244a6df9c185bcc0913f68e3b3654812a) | fix | do not use Function constructors in development mode to avoid CSP violations ([#43587](https://github.com/angular/angular/pull/43587)) |
+### platform-browser
+| Commit | Type | Description |
+| -- | -- | -- |
+| [30a27adf9a](https://github.com/angular/angular/commit/30a27adf9af634fc4ce10d643362a727bf908825) | fix | use correct parent in animation removeChild callback ([#44033](https://github.com/angular/angular/pull/44033)) |
+## Special Thanks
+A. Singh, Alan Agius, Alex Rickabaugh, Andrew Kushnir, Andrew Scott, Aristeidis Bampakos, George Kalpakas, Joe Martin (Crowdstaffing), Joel Lefkowitz, Joey Perrott, JoostK, Kristiyan Kostadinov, Michael Urban, Paul Gschwendtner, Pavan Kumar Jadda, Pei Wang, Pete Bacon Darwin, Roman Frołow, dario-piotrowicz, iRealNirmal, ileil, kreuzerk, mgechev, profanis and raman
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="13.1.0-next.0"></a>
 # 13.1.0-next.0 (2021-11-03)
 ### compiler
