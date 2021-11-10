@@ -1,3 +1,36 @@
+<a name="13.1.0-next.1"></a>
+# 13.1.0-next.1 (2021-11-10)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [393efa54e6](https://github.com/angular/angular/commit/393efa54e669c4ae1e479fd59fc4f9ea69ab77e9) | fix | ensure that partially compiled queries can handle forward references ([#44113](https://github.com/angular/angular/pull/44113)) |
+| [b249e24979](https://github.com/angular/angular/commit/b249e24979d1494957b429ef73f37b68b9087ef9) | fix | generate correct code for safe method calls ([#44088](https://github.com/angular/angular/pull/44088)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2a2744721b](https://github.com/angular/angular/commit/2a2744721b429cbce7fd9dabc2963c1c679b67bd) | fix | ensure literal types are retained when `strictNullInputTypes` is disabled ([#38305](https://github.com/angular/angular/pull/38305)) |
+| [247c18dee0](https://github.com/angular/angular/commit/247c18dee011f8a743b0b438b8ba2f017b113921) | fix | handle pre-release versions when checking version ([#44109](https://github.com/angular/angular/pull/44109)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [4f8eaac7ff](https://github.com/angular/angular/commit/4f8eaac7ff2b73dd18d6317c955d447011a69301) | fix | do not use Function constructors in development mode to avoid CSP violations ([#43587](https://github.com/angular/angular/pull/43587)) |
+### http
+| Commit | Type | Description |
+| -- | -- | -- |
+| [d452b388bd](https://github.com/angular/angular/commit/d452b388bdc0d661f41ab382f5e7ac998b0f9915) | feat | add `has()` method to `HttpContext` class ([#43887](https://github.com/angular/angular/pull/43887)) |
+### platform-browser
+| Commit | Type | Description |
+| -- | -- | -- |
+| [236bdff831](https://github.com/angular/angular/commit/236bdff831f7dc794d5a03e2d82921887bd5eda8) | fix | use correct parent in animation removeChild callback ([#44033](https://github.com/angular/angular/pull/44033)) |
+### upgrade
+| Commit | Type | Description |
+| -- | -- | -- |
+| [34f990986c](https://github.com/angular/angular/commit/34f990986cade3ce6b355354d1e2f6e5ec2f18ec) | feat | support NgModule class as an argument of the `downgradeModule` function ([#43973](https://github.com/angular/angular/pull/43973)) |
+## Special Thanks
+A. Singh, Alan Agius, Andrew Kushnir, Andrew Scott, Aristeidis Bampakos, Dustin M. Eastway, George Kalpakas, HyperLife1119, Jelle Bruisten, Joe Martin (Crowdstaffing), Joel Lefkowitz, Joey Perrott, JoostK, Kristiyan Kostadinov, Michael Urban, Paul Gschwendtner, Pavan Kumar Jadda, Pei Wang, Pete Bacon Darwin, Roman Frołow, dario-piotrowicz, iRealNirmal, ileil, kreuzerk, mgechev, profanis and raman
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="13.0.1"></a>
 # 13.0.1 (2021-11-10)
 ### compiler
