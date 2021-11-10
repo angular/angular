@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {compileComponentFromMetadata, ConstantPool, DeclarationListEmitMode, DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig, makeBindingParser, parseTemplate, R3ComponentMetadata, R3DeclareComponentMetadata, R3DeclareUsedDirectiveMetadata, R3PartialDeclaration, R3UsedDirectiveMetadata} from '@angular/compiler';
+import {compileComponentFromMetadata, ConstantPool, DeclarationListEmitMode, DEFAULT_INTERPOLATION_CONFIG, ForwardRefHandling, InterpolationConfig, makeBindingParser, parseTemplate, R3ComponentMetadata, R3DeclareComponentMetadata, R3DeclareUsedDirectiveMetadata, R3PartialDeclaration, R3UsedDirectiveMetadata} from '@angular/compiler';
 import {ChangeDetectionStrategy, ViewEncapsulation} from '@angular/compiler/src/core';
 import * as o from '@angular/compiler/src/output/output_ast';
 
@@ -71,8 +71,8 @@ export class PartialComponentLinkerVersion1<TStatement, TExpression> implements
             const type = directiveExpr.getValue('type');
             const selector = directiveExpr.getString('selector');
 
-            const {expression: typeExpr, isForwardRef} = extractForwardRef(type);
-            if (isForwardRef) {
+            const {expression: typeExpr, forwardRef} = extractForwardRef(type);
+            if (forwardRef === ForwardRefHandling.Unwrapped) {
               declarationListEmitMode = DeclarationListEmitMode.Closure;
             }
 
@@ -103,8 +103,8 @@ export class PartialComponentLinkerVersion1<TStatement, TExpression> implements
     let pipes = new Map<string, o.Expression>();
     if (metaObj.has('pipes')) {
       pipes = metaObj.getObject('pipes').toMap(pipe => {
-        const {expression: pipeType, isForwardRef} = extractForwardRef(pipe);
-        if (isForwardRef) {
+        const {expression: pipeType, forwardRef} = extractForwardRef(pipe);
+        if (forwardRef === ForwardRefHandling.Unwrapped) {
           declarationListEmitMode = DeclarationListEmitMode.Closure;
         }
         return pipeType;

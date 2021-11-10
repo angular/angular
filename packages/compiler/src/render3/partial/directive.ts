@@ -7,7 +7,7 @@
  */
 import * as o from '../../output/output_ast';
 import {Identifiers as R3} from '../r3_identifiers';
-import {R3CompiledExpression} from '../util';
+import {convertFromMaybeForwardRefExpression, R3CompiledExpression} from '../util';
 import {R3DirectiveMetadata, R3HostMetadata, R3QueryMetadata} from '../view/api';
 import {createDirectiveType} from '../view/compiler';
 import {asLiteral, conditionallyCreateMapObjectLiteral, DefinitionMap} from '../view/util';
@@ -96,7 +96,9 @@ function compileQuery(query: R3QueryMetadata): o.LiteralMapExpr {
     meta.set('first', o.literal(true));
   }
   meta.set(
-      'predicate', Array.isArray(query.predicate) ? asLiteral(query.predicate) : query.predicate);
+      'predicate',
+      Array.isArray(query.predicate) ? asLiteral(query.predicate) :
+                                       convertFromMaybeForwardRefExpression(query.predicate));
   if (!query.emitDistinctChangesOnly) {
     // `emitDistinctChangesOnly` is special because we expect it to be `true`.
     // Therefore we explicitly emit the field, and explicitly place it only when it's `false`.

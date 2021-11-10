@@ -9,7 +9,7 @@
 import * as o from './output/output_ast';
 import {compileFactoryFunction, FactoryTarget, R3DependencyMetadata, R3FactoryDelegateType, R3FactoryMetadata} from './render3/r3_factory';
 import {Identifiers} from './render3/r3_identifiers';
-import {generateForwardRef, MaybeForwardRefExpression, R3CompiledExpression, R3Reference, typeWithParameters} from './render3/util';
+import {convertFromMaybeForwardRefExpression, ForwardRefHandling, generateForwardRef, MaybeForwardRefExpression, R3CompiledExpression, R3Reference, typeWithParameters} from './render3/util';
 import {DefinitionMap} from './render3/view/util';
 
 export interface R3InjectableMetadata {
@@ -116,10 +116,7 @@ export function compileInjectable(
 
   // Only generate providedIn property if it has a non-null value
   if ((meta.providedIn.expression as o.LiteralExpr).value !== null) {
-    injectableProps.set(
-        'providedIn',
-        meta.providedIn.isForwardRef ? generateForwardRef(meta.providedIn.expression) :
-                                       meta.providedIn.expression);
+    injectableProps.set('providedIn', convertFromMaybeForwardRefExpression(meta.providedIn));
   }
 
   const expression = o.importExpr(Identifiers.ɵɵdefineInjectable)

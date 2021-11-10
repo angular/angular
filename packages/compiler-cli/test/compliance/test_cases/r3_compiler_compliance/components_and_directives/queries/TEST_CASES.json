@@ -17,6 +17,20 @@
       ]
     },
     {
+      "description": "should support view queries with forwardRefs",
+      "inputFiles": [
+        "view_query_forward_ref.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Invalid ViewQuery declaration",
+          "files": [
+            "view_query_forward_ref.js"
+          ]
+        }
+      ]
+    },
+    {
       "description": "should support view queries with local refs",
       "inputFiles": [
         "view_query_for_local_ref.ts"
@@ -71,6 +85,20 @@
           "failureMessage": "Invalid ContentQuery declaration",
           "files": [
             "content_query_for_directive.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should support content queries with forwardRefs",
+      "inputFiles": [
+        "content_query_forward_ref.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Invalid ContentQuery declaration",
+          "files": [
+            "content_query_forward_ref.js"
           ]
         }
       ]

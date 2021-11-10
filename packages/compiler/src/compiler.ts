@@ -103,7 +103,7 @@ export {compileNgModule, R3NgModuleMetadata} from './render3/r3_module_compiler'
 export {compileInjector, R3InjectorMetadata} from './render3/r3_injector_compiler';
 export {compilePipeFromMetadata, R3PipeMetadata} from './render3/r3_pipe_compiler';
 export {makeBindingParser, ParsedTemplate, parseTemplate, ParseTemplateOptions} from './render3/view/template';
-export {MaybeForwardRefExpression, R3CompiledExpression, R3Reference, createMayBeForwardRefExpression, devOnlyGuardedExpression, getSafePropertyAccessString} from './render3/util';
+export {ForwardRefHandling, MaybeForwardRefExpression, R3CompiledExpression, R3Reference, createMayBeForwardRefExpression, devOnlyGuardedExpression, getSafePropertyAccessString} from './render3/util';
 export {compileComponentFromMetadata, compileDirectiveFromMetadata, parseHostBindings, ParsedHostBindings, verifyHostBindings} from './render3/view/compiler';
 export {compileDeclareClassMetadata} from './render3/partial/class_metadata';
 export {compileDeclareComponentFromMetadata, DeclareComponentTemplateInfo} from './render3/partial/component';
