@@ -19,7 +19,8 @@
  * @publicApi
  */
 export enum ViewEncapsulation {
-  // TODO: consider making `ViewEncapsulation` a `const enum` instead. See https://github.com/angular/angular/issues/44119 for additional information.
+  // TODO: consider making `ViewEncapsulation` a `const enum` instead. See
+  // https://github.com/angular/angular/issues/44119 for additional information.
 
   /**
    * Emulate `Native` scoping of styles by adding an attribute containing surrogate id to the Host
