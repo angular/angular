@@ -40,13 +40,18 @@ The version number is incremented based on the level of change included in the r
 {@a updating}
 ### Supported update paths
 
-In alignment with the preceding versioning scheme as described, we commit to support the following update paths:
+You can `ng update` to any version of Angular, provided that the following criteria are met:
 
-* If you are updating within the **same major version,** then you can skip any intermediate versions and update directly to the targeted version. For example, you can update directly from 7.0.0 to 7.2.11.
+*   The version you want to update *to* is supported.
+*   The version you want to update *from* is within one major version of the version you want to
+    upgrade to.
 
+For example, you can update from version 11 to version 12, provided that version 12 is still
+supported. If you want to update across multiple major versions, perform each update one
+major version at a time. For example, to update from version 10 to version 12:
 
-* If you are updating from **one major version to another,** then we recommend that you **don't skip major versions.** Follow the instructions to incrementally update to the next major version, testing and validating at each step. For example, if you want to update from version 6.x.x to version 8.x.x, we recommend that you update to the latest 7.x.x release first. After successfully updating to 7.x.x, you can then update to 8.x.x.
-
+1. Update from version 10 to version 11.
+1. Update from version 11 to version 12.
 
 See [Keeping Up-to-Date](guide/updating "Updating your projects") for more information about updating your Angular projects to the most recent version.
 
@@ -83,7 +88,6 @@ In general, expect the following release cycle:
 * A patch release and pre-release (`next` or `rc`) build almost every week
 
 This cadence of releases gives eager developers access to new features as soon as they are fully developed and pass through our code review and integration testing processes, while maintaining the stability and reliability of the platform for production users that prefer to receive features after they have been validated by Google and other developers that use the pre-release builds.
-
 
 
 {@a lts}
