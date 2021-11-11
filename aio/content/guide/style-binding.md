@@ -19,12 +19,12 @@ Optionally, you can add a unit extension like `em` or `%`, which requires a numb
 
 <div class="alert is-helpful">
 
-To write a style in dash-case, type the following:
+1. To write a style in dash-case, type the following:
 
 <code-example language="html">&lt;nav [style.background-color]="expression"
 &gt;&lt;/nav&gt;
 
-To write a style in camelCase, type the following:
+2. To write a style in camelCase, type the following:
 
   &lt;nav [style.backgroundColor]="expression"
 &gt;&lt;/nav&gt;</code-example>
@@ -117,7 +117,7 @@ However, using the preceding style binding syntax without `NgStyle` is preferred
 </div>
 
 {@a styling-precedence}
-## Styling Precedence
+## Styling precedence
 
 A single HTML element can have its CSS class list and style values bound to multiple sources (for example, host bindings from multiple directives).
 
@@ -182,4 +182,4 @@ However, if `dirWithHostBinding` sets its binding to `null`, the `width` propert
 
 * TBD
 
-@reviewed 2021-11-05
+@reviewed 2021-11-11
