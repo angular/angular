@@ -751,6 +751,14 @@
     "bio": "Preston is a JavaScript developer, husband, and father of four from Roy, UT. He also writes blog posts, creates training courses for Thinkster.io, and loves learning more about web development. In his free time he likes to spend time with his family and play or watch basketball (Go Jazz!). ",
     "groups": ["GDE"]
   },
+  "profanis": {
+    "name": "Fanis Prodromou",
+    "picture": "profanis.jpg",
+    "twitter": "prodromouf",
+    "website": "https://blog.profanis.me",
+    "bio": "Fanis is a Full Stack JavaScript developer, Angular GDE, speaker at meetups, author of the book 'Mastering Angular Reactive Forms', and he constantly creates videos in his YouTube channel to share his knowledge with others. He also teaches Angular in Code.Hub institute and mentors other developers. When he is not behind a keyboard, he spends time with his lovely daughter and enjoys family time with his wife.",
+    "groups": ["GDE"]
+  },
   "ralph": {
     "name": "Ralph Wang",
     "picture": "ralph.jpg",
