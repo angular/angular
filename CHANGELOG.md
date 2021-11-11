@@ -1,3 +1,26 @@
+<a name="13.0.1"></a>
+# 13.0.1 "chalk-city" (2021-11-11)
+### cdk
+| Commit | Type | Description |
+| -- | -- | -- |
+| [36fa18b5a4](https://github.com/angular/components/commit/36fa18b5a4dfbd7fbd2a629121d5e59b1d60e3d1) | fix | **overlay:** remove Optional decorator in ConnectedOverlayPositionChange constructor ([#23735](https://github.com/angular/components/pull/23735)) |
+### material
+| Commit | Type | Description |
+| -- | -- | -- |
+| [15237f8c13](https://github.com/angular/components/commit/15237f8c131afde6eb3735689a980a4e18233d03) | fix | **chips:** add selected indication in high contrast mode ([#23828](https://github.com/angular/components/pull/23828)) |
+| [e8a6eed7bf](https://github.com/angular/components/commit/e8a6eed7bf19faf1b6a011f56aad08ca70b7fb49) | fix | **chips:** Declare that MatChipInput.inputElement is always defined ([#23868](https://github.com/angular/components/pull/23868)) |
+| [2fc63ef9e7](https://github.com/angular/components/commit/2fc63ef9e712483bbb8c850a624e5dcf0b156aac) | fix | **core:** test environment check not picking up jest ([#23722](https://github.com/angular/components/pull/23722)) |
+| [5d49df1df6](https://github.com/angular/components/commit/5d49df1df6193bd5f15ebd871ca41473ad4aef6e) | fix | **form-field:** update outline gap when prefix changes ([#23869](https://github.com/angular/components/pull/23869)) |
+| [2b99632813](https://github.com/angular/components/commit/2b9963281300a43c33251a3b512a97b7084d6ebe) | fix | **slide-toggle:** remove tabindex from host node ([#23891](https://github.com/angular/components/pull/23891)) |
+### multiple
+| Commit | Type | Description |
+| -- | -- | -- |
+| [9a3fc9a1ad](https://github.com/angular/components/commit/9a3fc9a1ad0e306d12c9fb56e74b4d933620f9e2) | fix | update to angular v13.0.1 to emit proper partial compilation output ([#23951](https://github.com/angular/components/pull/23951)) |
+## Special Thanks
+Jeremy Elbourn, Joey Perrott, Kristiyan Kostadinov, Marco Marche, Miles Malerba, Paul Gschwendtner and Ruslan Lekhman
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="12.2.13"></a>
 # 12.2.13 "sandstone-salamander" (2021-11-11)
 ### material
