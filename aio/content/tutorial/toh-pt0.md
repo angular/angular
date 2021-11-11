@@ -8,7 +8,9 @@ In this part of the tutorial, you'll do the following:
 
 1. Create a new Angular project, using [Stackblitz][stackblitz].
 1. Serve the application.
-1. Try out [text interpolation][text-interpolation], a basic feature that allows you to incorporate dynamic string values into an Angular template.
+1. Display the application title using [text interpolation](guide/text-interpolation).
+1. Add a logo with [property binding](guide/property-binding).
+1. Change the logo size using [attribute binding](guide/attribute-binding).
 
 <!-- <div class="alert is-helpful">
 
