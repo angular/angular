@@ -1,3 +1,30 @@
+<a name="13.1.0-next.1"></a>
+# 13.1.0-next.1 "tulle-turkey" (2021-11-11)
+### cdk
+| Commit | Type | Description |
+| -- | -- | -- |
+| [1267263a83](https://github.com/angular/components/commit/1267263a83d039a62011ac189cdf81b772a39310) | fix | **overlay:** remove Optional decorator in ConnectedOverlayPositionChange constructor ([#23735](https://github.com/angular/components/pull/23735)) |
+### material
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2c637d3129](https://github.com/angular/components/commit/2c637d3129865d3e3e475fea3f1cd3353e06394f) | fix | **chips:** add selected indication in high contrast mode ([#23828](https://github.com/angular/components/pull/23828)) |
+| [72d2e5af89](https://github.com/angular/components/commit/72d2e5af89944fe30a11e7487c17ffc3ce863dc6) | fix | **chips:** Declare that MatChipInput.inputElement is always defined ([#23868](https://github.com/angular/components/pull/23868)) |
+| [ff7fd485d6](https://github.com/angular/components/commit/ff7fd485d61f1ac38df11ff49825d03db44eac54) | fix | **core:** test environment check not picking up jest ([#23722](https://github.com/angular/components/pull/23722)) |
+| [a6d41413cc](https://github.com/angular/components/commit/a6d41413cca4ce446c3eebc03318c880f3b8ef1a) | fix | **form-field:** update outline gap when prefix changes ([#23869](https://github.com/angular/components/pull/23869)) |
+| [b533e619ec](https://github.com/angular/components/commit/b533e619ec724ec76deffc67ff6cf923bb7d9c91) | fix | **slide-toggle:** remove tabindex from host node ([#23891](https://github.com/angular/components/pull/23891)) |
+### google-maps
+| Commit | Type | Description |
+| -- | -- | -- |
+| [7dbe9a4282](https://github.com/angular/components/commit/7dbe9a42829a2e71cca3363e9a97ec0ea45be276) | feat | Getting google.maps.Map instance ([#23856](https://github.com/angular/components/pull/23856)) |
+### multiple
+| Commit | Type | Description |
+| -- | -- | -- |
+| [8cb0f12924](https://github.com/angular/components/commit/8cb0f129243af31545f884668fdcd91f772272c4) | fix | update to angular v13.0.1 to emit proper partial compilation output ([#23951](https://github.com/angular/components/pull/23951)) |
+## Special Thanks
+Amy Sorto, Jeremy Elbourn, Joey Perrott, Kristiyan Kostadinov, Marco Marche, Miles Malerba, Paul Gschwendtner, Ruslan Lekhman and Umer Naeem
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="13.0.1"></a>
 # 13.0.1 "chalk-city" (2021-11-11)
 ### cdk
