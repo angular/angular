@@ -1,8 +1,14 @@
-# The hero editor
+# Tour of Heroes: Components and templates
 
-The application now has a basic title.
-Next you will create a new component to display hero information
-and place that component in the application shell.
+This tutorial introduces you to Angular components.
+Components are the fundamental building blocks of Angular applications.
+They display data on the screen, listen for user input, and take action based on that input.
+
+A component consists of three things:
+
+* **A component class** that handles data and functionality.
+* **An HTML template** that determines the UI.
+* **Component-specific styles** that define the look and feel.
 
 <div class="alert is-helpful">
 

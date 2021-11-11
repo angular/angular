@@ -6,7 +6,5 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-// #docregion set-title
   title = 'Hello Angular!';
-// #enddocregion set-title
 }

@@ -1,14 +1,8 @@
 # Tour of Heroes: Components and templates
 
-This tutorial introduces you to Angular components.
-Components are the fundamental building blocks of Angular applications.
-They display data on the screen, listen for user input, and take action based on that input.
+This tutorial introduces you to the basics of creating an Angular application. You'll create a starter application and test out Angular text interpolation feature.
 
-A component consists of three things:
-
-* **A component class** that handles data and functionality.
-* **An HTML template** that determines the UI.
-* **Component-specific styles** that define the look and feel.
+## Objectives
 
 In this part of the tutorial, you'll do the following:
 
@@ -30,17 +24,16 @@ To create the sample project:
 1. Log into Stackblitz using your GitHub account.
 1. Fork the project.
 
-## Update the application title
+## Display the application title with text interpolation
 
-In this section, you'll use Angular's [text interpolation][text-interpolation] to update the application title.
+In this section, you'll use Angular's [text interpolation][text-interpolation] to display the application's title.
 
 To update the application title:
 
 1. Open the component class file `app.component.ts`.
-1. Locate the `title` property.
-1. Change the value of the `title` property to `Tour of Heroes`.
+1. Set the value of the `title` property to `Tour of Heroes`.
 
-<code-example path="toh-pt0/src/app/app.component.ts" header="app.component.ts"></code-example>
+<code-example path="toh-pt0/src/app/app.component.1.ts" header="app.component.ts" region="text-interpolation"></code-example>
 
 The double curly braces are Angular's *interpolation binding* syntax.
 This interpolation binding presents the component's `title` property value
@@ -49,6 +42,36 @@ inside the HTML header tag.
 The browser refreshes and displays the new application title.
 
 {@a app-wide-styles}
+
+## Add a logo with property binding
+
+Next, you'll add the Angular logo to the application title using Angular's [property binding](guide/property-binding) feature.
+
+To add the Angular logo:
+
+1. Open the component class file `app.component.ts`.
+1. Add a new property, `logo` and set its value to `https://angular.io/assets/images/logos/angular/angular.svg`.
+   <code-example path="toh-pt0/src/app/app.component.1.ts" header="app.component.ts" region="property-binding"></code-example>
+1. Open the component template file, `app.component.html`.
+1. Update the title as follows.
+   <code-example path="toh-pt0/src/app/app.component.1.html" header="app.component.html"></code-example>
+
+The square brackets, `[]`, that surround the `src` property indicates to Angular that this property is a target property. A target property is the DOM property to which you want to assign a value.
+
+For more information on property binding, see [Property binding](guide/property-binding).
+
+## Change the logo size using attribute binding
+
+At present, the logo you added in the previous section is too large. In this section, you'll adjust the size using Angular's [attribute binding](guide/attribute-binding) feature.
+
+To change the logo size:
+
+1. Open the component class file `app.component.ts`.
+1. Add a new property, `logoWidth` and set its value to `25%`.
+   <code-example path="toh-pt0/src/app/app.component.1.ts" header="app.component.ts" region="attribute-binding"></code-example>
+1. Open the component template file, `app.component.html`.
+1. Update the title as follows.
+   <code-example path="toh-pt0/src/app/app.component.2.html" header="app.component.html"></code-example>
 
 ## Add application styles
 
