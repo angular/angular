@@ -17,6 +17,12 @@
     },
     "./locales/*": {
       "default": "./locales/*.mjs"
+    },
+    "./locales": {
+      "default": "./locales"
+    },
+    "./locales/extra": {
+      "default": "./locales/extra"
     }
   },
   "peerDependencies": {
