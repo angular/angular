@@ -206,13 +206,12 @@ export interface R3ComponentMetadata extends R3DirectiveMetadata {
   styles: string[];
 
   /**
-   * An encapsulation policy for the component's CSS styles.
+   * An encapsulation policy for the component's styles.
    * Possible values:
-   * - `ViewEncapsulation.Emulated`: Modifies CSS selectors in order to emulate
+   * - `ViewEncapsulation.Emulated`: Apply modified component styles in order to emulate
    *                                 a native Shadow DOM CSS encapsulation behavior.
-   * - `ViewEncapsulation.None`: Uses CSS styles globally without any sort of encapsulation.
-   * - `ViewEncapsulation.ShadowDom`: Uses the browser's native Shadow DOM API to encapsulate CSS
-   * styles.
+   * - `ViewEncapsulation.None`: Apply component styles globally without any sort of encapsulation.
+   * - `ViewEncapsulation.ShadowDom`: Use the browser's native Shadow DOM API to encapsulate styles.
    */
   encapsulation: ViewEncapsulation;
 
