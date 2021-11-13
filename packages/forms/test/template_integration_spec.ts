@@ -1315,6 +1315,14 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
 
            expect(input.nativeElement.checked).toBe(false);
            expect(control.hasError('required')).toBe(true);
+
+           fixture.componentInstance.required = false;
+           dispatchEvent(input.nativeElement, 'change');
+           fixture.detectChanges();
+           tick();
+
+           expect(input.nativeElement.checked).toBe(false);
+           expect(control.hasError('required')).toBe(false);
          }));
 
       it('should validate email', fakeAsync(() => {

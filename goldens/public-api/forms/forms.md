@@ -167,7 +167,6 @@ export class CheckboxControlValueAccessor extends BuiltInControlValueAccessor im
 
 // @public
 export class CheckboxRequiredValidator extends RequiredValidator {
-    validate(control: AbstractControl): ValidationErrors | null;
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<CheckboxRequiredValidator, "input[type=checkbox][required][formControlName],input[type=checkbox][required][formControl],input[type=checkbox][required][ngModel]", never, {}, {}, never>;
     // (undocumented)
@@ -694,11 +693,10 @@ export class ReactiveFormsModule {
 }
 
 // @public
-export class RequiredValidator implements Validator {
-    registerOnValidatorChange(fn: () => void): void;
-    get required(): boolean | string;
-    set required(value: boolean | string);
-    validate(control: AbstractControl): ValidationErrors | null;
+export class RequiredValidator extends AbstractValidatorDirective {
+    // (undocumented)
+    enabled(input: boolean): boolean;
+    required: boolean | string;
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<RequiredValidator, ":not([type=checkbox])[required][formControlName],:not([type=checkbox])[required][formControl],:not([type=checkbox])[required][ngModel]", never, { "required": "required"; }, {}, never>;
     // (undocumented)

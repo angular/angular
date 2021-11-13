@@ -2268,6 +2268,21 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
 
         expect(checkbox.nativeElement.checked).toBe(true);
         expect(control.hasError('required')).toEqual(false);
+
+        checkbox.nativeElement.required = false;
+        dispatchEvent(checkbox.nativeElement, 'change');
+        fixture.detectChanges();
+
+        expect(checkbox.nativeElement.checked).toBe(true);
+        expect(control.hasError('required')).toEqual(false);
+
+        checkbox.nativeElement.checked = false;
+        checkbox.nativeElement.required = true;
+        dispatchEvent(checkbox.nativeElement, 'change');
+        fixture.detectChanges();
+
+        expect(checkbox.nativeElement.checked).toBe(false);
+        expect(control.hasError('required')).toEqual(true);
       });
 
       // Note: this scenario goes against validator function rules were `null` is the only
