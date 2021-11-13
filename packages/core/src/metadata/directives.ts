@@ -517,7 +517,7 @@ export interface Component extends Directive {
   animations?: any[];
 
   /**
-   * An encapsulation policy for the component's CSS styles.
+   * An encapsulation policy for the component's styling.
    * Possible values:
    * - `ViewEncapsulation.Emulated`: Apply modified component styles in order to emulate
    *                                 a native Shadow DOM CSS encapsulation behavior.
