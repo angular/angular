@@ -30,6 +30,9 @@
     "name": "AbstractFormGroupDirective"
   },
   {
+    "name": "AbstractValidatorDirective"
+  },
+  {
     "name": "AnonymousSubject"
   },
   {
@@ -1311,6 +1314,9 @@
     "name": "notFoundValueOrThrow"
   },
   {
+    "name": "nullValidator"
+  },
+  {
     "name": "observable"
   },
   {
@@ -1399,6 +1405,9 @@
   },
   {
     "name": "renderView"
+  },
+  {
+    "name": "requiredValidator"
   },
   {
     "name": "resetPreOrderHookFlags"

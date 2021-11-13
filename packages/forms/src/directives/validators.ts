@@ -15,22 +15,33 @@ import {emailValidator, maxLengthValidator, maxValidator, minLengthValidator, mi
 /**
  * Method that updates string to integer if not already a number
  *
- * @param value The value to convert to integer
- * @returns value of parameter in number or integer.
+ * @param value The value to convert to integer.
+ * @returns value of parameter converted to number or integer.
  */
 function toInteger(value: string|number): number {
   return typeof value === 'number' ? value : parseInt(value, 10);
 }
 
 /**
+ * Method that converts null, false or 'false' string to boolean.
+ *
+ * @param value input value.
+ * @returns value of parameter converted to boolean.
+ */
+function toBoolean(input: unknown): boolean {
+  return input != null && input !== false && `${input}` !== 'false';
+}
+
+/**
  * Method that ensures that provided value is a float (and converts it to float if needed).
  *
- * @param value The value to convert to float
- * @returns value of parameter in number or float.
+ * @param value The value to convert to float.
+ * @returns value of parameter converted to number or float.
  */
 function toFloat(value: string|number): number {
   return typeof value === 'number' ? value : parseFloat(value);
 }
+
 /**
  * @description
  * Defines the map of errors returned from failed validation checks.
@@ -356,41 +367,34 @@ export const CHECKBOX_REQUIRED_VALIDATOR: StaticProvider = {
   selector:
       ':not([type=checkbox])[required][formControlName],:not([type=checkbox])[required][formControl],:not([type=checkbox])[required][ngModel]',
   providers: [REQUIRED_VALIDATOR],
-  host: {'[attr.required]': 'required ? "" : null'}
+  host: {'[attr.required]': 'enabled() ? "" : null'}
 })
-export class RequiredValidator implements Validator {
+export class RequiredValidator extends AbstractValidatorDirective {
   private _required = false;
-  private _onChange?: () => void;
-
   /**
    * @description
    * Tracks changes to the required attribute bound to this directive.
    */
   @Input()
-  get required(): boolean|string {
+  get required(): boolean {
     return this._required;
   }
 
   set required(value: boolean|string) {
-    this._required = value != null && value !== false && `${value}` !== 'false';
-    if (this._onChange) this._onChange();
+    this._required = toBoolean(value);
   }
 
-  /**
-   * Method that validates whether the control is empty.
-   * Returns the validation result if enabled, otherwise null.
-   * @nodoc
-   */
-  validate(control: AbstractControl): ValidationErrors|null {
-    return this.required ? requiredValidator(control) : null;
-  }
+  /** @internal */
+  override inputName = 'required';
 
-  /**
-   * Registers a callback function to call when the validator inputs change.
-   * @nodoc
-   */
-  registerOnValidatorChange(fn: () => void): void {
-    this._onChange = fn;
+  /** @internal */
+  override normalizeInput = (input: unknown) => input;
+
+  /** @internal */
+  override createValidator = (input: unknown): ValidatorFn => requiredValidator;
+
+  override enabled(): boolean {
+    return this.required;
   }
 }
 
@@ -420,17 +424,11 @@ export class RequiredValidator implements Validator {
   selector:
       'input[type=checkbox][required][formControlName],input[type=checkbox][required][formControl],input[type=checkbox][required][ngModel]',
   providers: [CHECKBOX_REQUIRED_VALIDATOR],
-  host: {'[attr.required]': 'required ? "" : null'}
+  host: {'[attr.required]': 'enabled() ? "" : null'}
 })
 export class CheckboxRequiredValidator extends RequiredValidator {
-  /**
-   * Method that validates whether or not the checkbox has been checked.
-   * Returns the validation result if enabled, otherwise null.
-   * @nodoc
-   */
-  override validate(control: AbstractControl): ValidationErrors|null {
-    return this.required ? requiredTrueValidator(control) : null;
-  }
+  /** @internal */
+  override createValidator = (input: unknown): ValidatorFn => requiredTrueValidator;
 }
 
 /**
