@@ -771,8 +771,8 @@ export function sequence(
  * style({ width: 100, height: 0 })
  * ```
  *
- * The following example uses auto-styling to allow a component to animate from
- * a height of 0 up to the height of the parent element:
+ * The following example uses auto-styling to allow an element to animate from
+ * a height of 0 up to its full height:
  *
  * ```
  * style({ height: 0 }),
