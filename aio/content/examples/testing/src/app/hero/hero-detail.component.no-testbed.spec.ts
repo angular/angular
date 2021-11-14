@@ -1,6 +1,9 @@
+import { Router } from '@angular/router';
+
 import { asyncData, ActivatedRouteStub } from '../../testing';
 
 import { HeroDetailComponent } from './hero-detail.component';
+import { HeroDetailService } from './hero-detail.service';
 import { Hero } from '../model/hero';
 
 //////////  Tests  ////////////////////
@@ -8,13 +11,13 @@ import { Hero } from '../model/hero';
 describe('HeroDetailComponent - no TestBed', () => {
   let comp: HeroDetailComponent;
   let expectedHero: Hero;
-  let hds: any;
-  let router: any;
+  let hds: jasmine.SpyObj<HeroDetailService>;
+  let router: jasmine.SpyObj<Router>;
 
   beforeEach((done: DoneFn) => {
     expectedHero = {id: 42, name: 'Bubba' };
     const activatedRoute = new ActivatedRouteStub({ id: expectedHero.id });
-    router = jasmine.createSpyObj('router', ['navigate']);
+    router = jasmine.createSpyObj('Router', ['navigate']);
 
     hds = jasmine.createSpyObj('HeroDetailService', ['getHero', 'saveHero']);
     hds.getHero.and.returnValue(asyncData(expectedHero));

@@ -11,13 +11,13 @@ import { HeroService } from './hero.service';
 
 describe ('HeroesService (with spies)', () => {
   // #docregion test-with-spies
-  let httpClientSpy: { get: jasmine.Spy };
+  let httpClientSpy: jasmine.SpyObj<HttpClient>;
   let heroService: HeroService;
 
   beforeEach(() => {
     // TODO: spy on other methods too
     httpClientSpy = jasmine.createSpyObj('HttpClient', ['get']);
-    heroService = new HeroService(httpClientSpy as any);
+    heroService = new HeroService(httpClientSpy);
   });
 
   it('should return expected heroes (HttpClient called once)', (done: DoneFn) => {
