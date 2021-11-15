@@ -10,8 +10,10 @@ $mat-tab-animation-duration: 500ms !default;
 
 // Combines the various structural styles we need for the tab group and tab nav bar.
 @mixin structural-styles {
-  @include mdc-tab.without-ripple($query: mdc-helpers.$mat-base-styles-query);
-  @include mdc-tab-indicator.core-styles($query: mdc-helpers.$mat-base-styles-query);
+  @include mdc-helpers.disable-fallback-declarations {
+    @include mdc-tab.without-ripple($query: mdc-helpers.$mat-base-styles-query);
+    @include mdc-tab-indicator.core-styles($query: mdc-helpers.$mat-base-styles-query);
+  }
 
   .mat-mdc-tab-ripple {
     position: absolute;

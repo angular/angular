@@ -5,6 +5,7 @@
 @use '@material/feature-targeting' as mdc-feature-targeting;
 @use '@material/typography' as mdc-typography;
 @use '@material/theme/theme-color' as mdc-theme-color;
+@use '@material/theme/css' as mdc-theme-css;
 @use 'sass:map';
 @use '../../material/core/theming/theming';
 @use '../../material/core/typography/typography';
@@ -169,7 +170,9 @@ $mat-typography-mdc-level-mappings: (
   );
 
   // Apply given rules.
-  @content;
+  @include disable-fallback-declarations {
+    @content;
+  }
 
   // Reset the original values.
   mdc-theme-color.$primary: $orig-primary;
@@ -196,8 +199,18 @@ $mat-typography-mdc-level-mappings: (
   }
 
   // Apply given rules.
-  @content;
+  @include disable-fallback-declarations {
+    @content;
+  }
 
   // Reset the original values.
   mdc-typography.$styles: $orig-mdc-typography-styles;
+}
+
+// Disables MDC's CSS custom property fallbacks for the specified mixin content.
+@mixin disable-fallback-declarations {
+  $previous-value: mdc-theme-css.$enable-fallback-declarations;
+  mdc-theme-css.$enable-fallback-declarations: false;
+  @content;
+  mdc-theme-css.$enable-fallback-declarations: $previous-value;
 }

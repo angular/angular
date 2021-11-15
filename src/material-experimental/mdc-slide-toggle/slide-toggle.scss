@@ -8,8 +8,10 @@
 @use '../../material/core/style/layout-common';
 @use '../../cdk/a11y';
 
-@include mdc-form-field.core-styles($query: mdc-helpers.$mat-base-styles-query);
-@include mdc-switch.static-styles-without-ripple;
+@include mdc-helpers.disable-fallback-declarations {
+  @include mdc-form-field.core-styles($query: mdc-helpers.$mat-base-styles-query);
+  @include mdc-switch.static-styles-without-ripple;
+}
 
 .mat-mdc-slide-toggle {
   display: inline-block;
@@ -20,7 +22,9 @@
   .mdc-switch {
     // MDC theme styles also include structural styles so we have to include the theme at least
     // once here. The values will be overwritten by our own theme file afterwards.
-    @include mdc-switch-theme.theme-styles(mdc-switch-theme.$light-theme);
+    @include mdc-helpers.disable-fallback-declarations {
+      @include mdc-switch-theme.theme-styles(mdc-switch-theme.$light-theme);
+    }
   }
 
   // The ripple needs extra specificity so the base ripple styling doesn't override its `position`.
