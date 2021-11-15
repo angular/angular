@@ -1,6 +1,5 @@
-import {createPlugin, Plugin, utils} from 'stylelint';
+import {createPlugin, utils} from 'stylelint';
 import {basename, join} from 'path';
-import {Result, Root} from 'postcss';
 
 const ruleName = 'material/no-unused-import';
 const messages = utils.ruleMessages(ruleName, {
@@ -11,8 +10,8 @@ const messages = utils.ruleMessages(ruleName, {
 });
 
 /** Stylelint plugin that flags unused `@use` statements. */
-const factory = (isEnabled: boolean, _options: never, context: {fix: boolean}) => {
-  return (root: Root, result: Result) => {
+const plugin = createPlugin(ruleName, (isEnabled: boolean, _options, context) => {
+  return (root, result) => {
     if (!isEnabled) {
       return;
     }
@@ -26,29 +25,27 @@ const factory = (isEnabled: boolean, _options: never, context: {fix: boolean}) =
         // Flag namespaces we didn't manage to parse so that we can fix the parsing logic.
         if (!namespace) {
           utils.report({
-            // We need these `as any` casts, because Stylelint uses an older version
-            // of the postcss typings that don't match up with our anymore.
-            result: result as any,
+            result,
             ruleName,
             message: messages.invalid(rule.params),
-            node: rule as any,
+            node: rule,
           });
         } else if (!fileContent.includes(namespace + '.')) {
           if (context.fix) {
             rule.remove();
           } else {
             utils.report({
-              result: result as any,
+              result,
               ruleName,
               message: messages.expected(namespace),
-              node: rule as any,
+              node: rule,
             });
           }
         }
       }
     });
   };
-};
+});
 
 /** Extracts the namespace of an `@use` rule from its parameters.  */
 function extractNamespaceFromUseStatement(params: string): string | null {
@@ -88,9 +85,4 @@ function extractNamespaceFromUseStatement(params: string): string | null {
   return null;
 }
 
-// Note: We need to cast the value explicitly to `Plugin` because the stylelint types
-// do not type the context parameter. https://stylelint.io/developer-guide/rules#add-autofix
-const plugin = createPlugin(ruleName, factory as unknown as Plugin);
-plugin.ruleName = ruleName;
-plugin.messages = messages;
-module.exports = plugin;
+export default plugin;

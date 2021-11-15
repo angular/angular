@@ -35,6 +35,4 @@ const plugin = createPlugin(ruleName, (isEnabled: boolean) => {
   };
 });
 
-plugin.ruleName = ruleName;
-plugin.messages = messages;
 export default plugin;

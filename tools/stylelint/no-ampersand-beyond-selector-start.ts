@@ -21,15 +21,14 @@ interface RuleOptions {
  * Based off the `selector-nested-pattern` Stylelint rule.
  * Source: https://github.com/stylelint/stylelint/blob/master/lib/rules/selector-nested-pattern/
  */
-const plugin = createPlugin(ruleName, (isEnabled: boolean, _options?) => {
+const plugin = createPlugin(ruleName, (isEnabled: boolean, options: RuleOptions) => {
   return (root, result) => {
     if (!isEnabled) {
       return;
     }
 
-    const options = _options as RuleOptions;
     const filePattern = new RegExp(options.filePattern);
-    const fileName = basename(root.source!.input.file!);
+    const fileName = basename(root.source.input.file);
 
     if (!filePattern.test(fileName)) {
       return;
@@ -57,6 +56,4 @@ function hasInvalidAmpersandUsage(selector: string): boolean {
   return selector.split(',').some(part => part.trim().indexOf('&', 1) > -1);
 }
 
-plugin.ruleName = ruleName;
-plugin.messages = messages;
 export default plugin;

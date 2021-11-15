@@ -15,15 +15,14 @@ interface RuleOptions {
  * Stylelint plugin that will log a warning for all top-level CSS rules.
  * Can be used in theme files to ensure that everything is inside a mixin.
  */
-const plugin = createPlugin(ruleName, (isEnabled: boolean, _options) => {
+const plugin = createPlugin(ruleName, (isEnabled: boolean, options: RuleOptions) => {
   return (root, result) => {
     if (!isEnabled) {
       return;
     }
 
-    const options = _options as RuleOptions;
     const filePattern = new RegExp(options.filePattern);
-    const fileName = basename(root.source!.input.file!);
+    const fileName = basename(root.source.input.file);
 
     if (!filePattern.test(fileName) || !root.nodes) {
       return;
@@ -45,6 +44,4 @@ const plugin = createPlugin(ruleName, (isEnabled: boolean, _options) => {
   };
 });
 
-plugin.ruleName = ruleName;
-plugin.messages = messages;
 export default plugin;

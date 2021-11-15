@@ -19,7 +19,7 @@ const plugin = createPlugin(ruleName, (isEnabled: boolean, options?: {filePatter
 
     const filePattern = options?.filePattern ? new RegExp(options.filePattern) : null;
 
-    if (filePattern && !filePattern?.test(basename(root.source!.input.file!))) {
+    if (filePattern && !filePattern?.test(basename(root.source.input.file))) {
       return;
     }
 
@@ -38,6 +38,4 @@ const plugin = createPlugin(ruleName, (isEnabled: boolean, options?: {filePatter
   };
 });
 
-plugin.ruleName = ruleName;
-plugin.messages = messages;
 export default plugin;

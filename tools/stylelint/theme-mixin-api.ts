@@ -1,6 +1,6 @@
-import {createPlugin, Plugin, utils} from 'stylelint';
+import {createPlugin, utils} from 'stylelint';
 import {basename} from 'path';
-import {AtRule, atRule, decl, Declaration, Node, Result, Root} from 'postcss';
+import {AtRule, atRule, decl, Declaration, Node} from 'postcss';
 
 /** Name of this stylelint rule. */
 const ruleName = 'material/theme-mixin-api';
@@ -21,9 +21,9 @@ const themeMixinRegex = /^(density|color|typography|theme)\((.*)\)$/;
  *      consistently check for duplicative theme styles so that we can warn consumers. The
  *      plugin ensures that style-generating statements are nested inside the duplication check.
  */
-const plugin = (isEnabled: boolean, _options: never, context: {fix: boolean}) => {
-  return (root: Root, result: Result) => {
-    const componentName = getComponentNameFromPath(root.source!.input.file!);
+const plugin = createPlugin(ruleName, (isEnabled: boolean, _options, context) => {
+  return (root, result) => {
+    const componentName = getComponentNameFromPath(root.source.input.file);
 
     if (!componentName || !isEnabled) {
       return;
@@ -209,7 +209,7 @@ const plugin = (isEnabled: boolean, _options: never, context: {fix: boolean}) =>
       utils.report({result: result as any, ruleName, node: node as any, message});
     }
   };
-};
+});
 
 /** Figures out the name of the component from a file path. */
 function getComponentNameFromPath(filePath: string): string | null {
@@ -235,6 +235,4 @@ function stripNewlinesAndIndentation(value: string): string {
   return value.replace(/(\r|\n)\s+/g, '');
 }
 
-// Note: We need to cast the value explicitly to `Plugin` because the stylelint types
-// do not type the context parameter. https://stylelint.io/developer-guide/rules#add-autofix
-module.exports = createPlugin(ruleName, plugin as unknown as Plugin);
+export default plugin;

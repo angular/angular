@@ -1,4 +1,5 @@
 {
+  "customSyntax": "postcss-scss",
   "defaultSeverity": "error",
   "reportNeedlessDisables": true,
   "reportInvalidScopeDisables": true,
