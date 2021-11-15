@@ -847,7 +847,7 @@ export class MatSlider
 
   /** Gets the slider thumb input of the given thumb position. */
   _getInput(thumbPosition: Thumb): MatSliderThumb {
-    return thumbPosition === Thumb.END ? this._inputs.last : this._inputs.first;
+    return thumbPosition === Thumb.END ? this._inputs.last! : this._inputs.first!;
   }
 
   /** Gets the slider thumb HTML input element of the given thumb position. */
@@ -856,7 +856,7 @@ export class MatSlider
   }
 
   _getThumb(thumbPosition: Thumb): MatSliderVisualThumb {
-    return thumbPosition === Thumb.END ? this._thumbs.last : this._thumbs.first;
+    return thumbPosition === Thumb.END ? this._thumbs.last! : this._thumbs.first!;
   }
 
   /** Gets the slider thumb HTML element of the given thumb position. */

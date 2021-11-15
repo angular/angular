@@ -262,7 +262,7 @@ export class CdkTree<T, K = T> implements AfterContentChecked, CollectionViewer,
    */
   _getNodeDef(data: T, i: number): CdkTreeNodeDef<T> {
     if (this._nodeDefs.length === 1) {
-      return this._nodeDefs.first;
+      return this._nodeDefs.first!;
     }
 
     const nodeDef =

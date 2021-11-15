@@ -386,7 +386,7 @@ export class _MatMenuBase
     // Move focus to the menu panel so keyboard events like Escape still work. Also this will
     // give _some_ feedback to screen readers.
     if (!manager.activeItem && this._directDescendantItems.length) {
-      let element = this._directDescendantItems.first._getHostElement().parentElement;
+      let element = this._directDescendantItems.first!._getHostElement().parentElement;
 
       // Because the `mat-menu` is at the DOM insertion point, not inside the overlay, we don't
       // have a nice way of getting a hold of the menu panel. We can't use a `ViewChild` either
