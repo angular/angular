@@ -362,6 +362,9 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
 }
 
 // @public
+export type FormControlStatus = 'VALID' | 'INVALID' | 'PENDING' | 'DISABLED';
+
+// @public
 export class FormGroup extends AbstractControl {
     constructor(controls: {
         [key: string]: AbstractControl;
