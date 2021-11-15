@@ -37,6 +37,9 @@
       "@angular/components-examples/*": ["./src/components-examples/*"]
     }
   },
+  "angularCompilerOptions": {
+    "strictTemplates": true,
+  },
   "include": [
     "src/**/*.ts",
     "e2e/**/*.ts",
