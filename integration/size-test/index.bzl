@@ -53,6 +53,7 @@ def size_test(name, file, deps):
         # Link the workspace root so that files can be loaded from the workspace.
         link_workspace_root = True,
         sourcemap = "external",
+        sources_content = True,
     )
 
     terser_minified(

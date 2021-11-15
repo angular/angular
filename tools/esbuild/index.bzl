@@ -5,7 +5,18 @@ load("//tools/esbuild:devmode-output.bzl", "extract_devmode_output_with_mappings
 # Re-export of the actual esbuild definitions.
 esbuild_config = _esbuild_config
 
-def esbuild(name, deps = [], mapping_targets = [], testonly = False, **kwargs):
+def esbuild(
+        name,
+        deps = [],
+        mapping_targets = [],
+        testonly = False,
+        # Inline source contents to make debugging easier. Contents are inlined by default
+        # in ESBuild but `@bazel/esbuild` sets the default to `false`. Inlining sources is
+        # helpful as otherwise developers would need to manually wire up the Bazel execroot
+        # as workspace in the Chrome devtools.
+        # https://github.com/bazelbuild/rules_nodejs/blob/c30a26c13d20dac48dc9f220370cb02a317b13f3/packages/esbuild/esbuild.bzl#L333.
+        sources_content = True,
+        **kwargs):
     # Extract all JS module sources before passing to ESBuild. The ESBuild rule requests
     # both the devmode and prodmode unfortunately and this would slow-down the development
     # turnaround significantly. We only request the devmode sources which are ESM as well.
@@ -14,6 +25,7 @@ def esbuild(name, deps = [], mapping_targets = [], testonly = False, **kwargs):
     _esbuild(
         name = name,
         deps = devmode_targets,
+        sources_content = sources_content,
         testonly = testonly,
         **kwargs
     )
