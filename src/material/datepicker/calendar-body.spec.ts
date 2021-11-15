@@ -47,9 +47,43 @@ describe('MatCalendarBody', () => {
     });
 
     it('highlights today', () => {
-      const todayCell = calendarBodyNativeElement.querySelector('.mat-calendar-body-today')!;
+      const todayCells = calendarBodyNativeElement.querySelectorAll('.mat-calendar-body-today')!;
+      expect(todayCells.length).toBe(1);
+
+      const todayCell = todayCells[0];
+
       expect(todayCell).not.toBeNull();
-      expect(todayCell.innerHTML.trim()).toBe('3');
+      expect(todayCell.textContent!.trim()).toBe('3');
+    });
+
+    it('sets aria-current="date" on today', () => {
+      const todayCells = calendarBodyNativeElement.querySelectorAll(
+        '[aria-current="date"] .mat-calendar-body-today',
+      )!;
+      expect(todayCells.length).toBe(1);
+
+      const todayCell = todayCells[0];
+
+      expect(todayCell).not.toBeNull();
+      expect(todayCell.textContent!.trim()).toBe('3');
+    });
+
+    it('does not highlight today if today is not within the scope', () => {
+      testComponent.todayValue = 100000;
+      fixture.detectChanges();
+
+      const todayCell = calendarBodyNativeElement.querySelector('.mat-calendar-body-today')!;
+      expect(todayCell).toBeNull();
+    });
+
+    it('does not set aria-current="date" on any cell if today is not ' + 'the scope', () => {
+      testComponent.todayValue = 100000;
+      fixture.detectChanges();
+
+      const todayCell = calendarBodyNativeElement.querySelector(
+        '[aria-current="date"] .mat-calendar-body-today',
+      )!;
+      expect(todayCell).toBeNull();
     });
 
     it('highlights selected', () => {

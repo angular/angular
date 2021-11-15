@@ -49,6 +49,7 @@
       [attr.aria-label]="item.ariaLabel"
       [attr.aria-disabled]="!item.enabled || null"
       [attr.aria-selected]="_isSelected(item.compareValue)"
+      [attr.aria-current]="todayValue === item.compareValue ? 'date' : null"
       (click)="_cellClicked(item, $event)"
       [style.width]="_cellWidth"
       [style.paddingTop]="_cellPadding"
