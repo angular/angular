@@ -138,6 +138,13 @@ import {HttpHeaders} from '@angular/common/http/src/headers';
         expect(headers.get('Transfer-Encoding')).toEqual('chunked');
         expect(headers.get('Connection')).toEqual('keep-alive');
       });
+
+      it('should be split by comma', () => {
+        const response = `X-My-Custom-Header: value1, value2`;
+        const headers = new HttpHeaders(response);
+        expect(headers.getAll('X-My-Custom-Header')).toEqual(['value1', 'value2']);
+        expect(headers.get('X-My-Custom-Header')).toEqual('value1, value2');
+      });
     });
   });
 }
