@@ -1,3 +1,6 @@
+# Generated files for infrastructure.
+.yarn/releases/*.cjs
+
 # These schematic ng-generate files are template files that cannot be formatted.
 src/material/schematics/ng-generate/*/files/**/*
 src/cdk/schematics/ng-generate/*/files/**/*
