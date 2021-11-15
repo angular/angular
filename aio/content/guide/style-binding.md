@@ -10,9 +10,7 @@ Use style binding to set styles dynamically.
 
 To create a single style binding, use the prefix `style` followed by a dot and the name of the CSS style.
 
-To set the ‘width’ style, type the following:
-
-[style.width]="width"
+To set the ‘width’ style, type `[style.width]="width"`.
 
 Angular sets the property to the value of the bound expression, which is usually a string.
 Optionally, you can add a unit extension like `em` or `%`, which requires a number type.
@@ -182,4 +180,4 @@ However, if `dirWithHostBinding` sets its binding to `null`, the `width` propert
 
 * TBD
 
-@reviewed 2021-11-11
+@reviewed 2021-11-15
