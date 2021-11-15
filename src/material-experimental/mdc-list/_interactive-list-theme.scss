@@ -26,8 +26,8 @@
 
   // MDC still shows focus/selected state if the item is disabled.
   // Just hover styles should not show up for disabled items.
-  .mat-mdc-list-item-interactive:not(.mdc-list-item--disabled) {
-    &:hover::before {
+  .mat-mdc-list-item-interactive:not(.mdc-list-item--disabled):not(.mdc-list-item--selected) {
+    &:not(:focus):hover::before {
       opacity: mdc-ripple.states-opacity($active-base-color, hover);
     }
   }
