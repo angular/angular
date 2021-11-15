@@ -8,7 +8,7 @@
 
 import {Directive, Output, Input, EventEmitter, AfterContentInit, OnDestroy} from '@angular/core';
 
-import {Direction, Directionality} from './directionality';
+import {Direction, Directionality, _resolveDirectionality} from './directionality';
 
 /**
  * Directive to listen for changes of direction of part of the DOM.
@@ -40,14 +40,16 @@ export class Dir implements Directionality, AfterContentInit, OnDestroy {
   get dir(): Direction {
     return this._dir;
   }
-  set dir(value: Direction) {
-    const old = this._dir;
-    const normalizedValue = value ? value.toLowerCase() : value;
+  set dir(value: Direction | 'auto') {
+    const previousValue = this._dir;
 
+    // Note: `_resolveDirectionality` resolves the language based on the browser's language,
+    // whereas the browser does it based on the content of the element. Since doing so based
+    // on the content can be expensive, for now we're doing the simpler matching.
+    this._dir = _resolveDirectionality(value);
     this._rawDir = value;
-    this._dir = normalizedValue === 'ltr' || normalizedValue === 'rtl' ? normalizedValue : 'ltr';
 
-    if (old !== this._dir && this._isInitialized) {
+    if (previousValue !== this._dir && this._isInitialized) {
       this.change.emit(this._dir);
     }
   }
