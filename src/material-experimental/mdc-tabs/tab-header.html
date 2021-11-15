@@ -21,7 +21,7 @@
     class="mat-mdc-tab-list"
     role="tablist"
     (cdkObserveContent)="_onContentChanges()">
-    <div class="mat-mdc-tab-labels">
+    <div class="mat-mdc-tab-labels" #tabListInner>
       <ng-content></ng-content>
     </div>
   </div>

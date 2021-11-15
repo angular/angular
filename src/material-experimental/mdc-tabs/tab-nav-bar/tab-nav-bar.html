@@ -12,7 +12,7 @@
 
 <div class="mat-mdc-tab-link-container" #tabListContainer (keydown)="_handleKeydown($event)">
   <div class="mat-mdc-tab-list" #tabList (cdkObserveContent)="_onContentChanges()">
-    <div class="mat-mdc-tab-links">
+    <div class="mat-mdc-tab-links" #tabListInner>
       <ng-content></ng-content>
     </div>
   </div>

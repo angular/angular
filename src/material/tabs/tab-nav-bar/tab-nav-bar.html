@@ -15,7 +15,7 @@
     [class._mat-animation-noopable]="_animationMode === 'NoopAnimations'"
     #tabList
     (cdkObserveContent)="_onContentChanges()">
-    <div class="mat-tab-links">
+    <div class="mat-tab-links" #tabListInner>
       <ng-content></ng-content>
     </div>
     <mat-ink-bar></mat-ink-bar>

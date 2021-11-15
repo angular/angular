@@ -76,6 +76,7 @@ export abstract class MatPaginatedTabHeader
   abstract _inkBar: {hide: () => void; alignToElement: (element: HTMLElement) => void};
   abstract _tabListContainer: ElementRef<HTMLElement>;
   abstract _tabList: ElementRef<HTMLElement>;
+  abstract _tabListInner: ElementRef<HTMLElement>;
   abstract _nextPaginator: ElementRef<HTMLElement>;
   abstract _previousPaginator: ElementRef<HTMLElement>;
 
@@ -452,7 +453,7 @@ export abstract class MatPaginatedTabHeader
       labelBeforePos = offsetLeft;
       labelAfterPos = labelBeforePos + offsetWidth;
     } else {
-      labelAfterPos = this._tabList.nativeElement.offsetWidth - offsetLeft;
+      labelAfterPos = this._tabListInner.nativeElement.offsetWidth - offsetLeft;
       labelBeforePos = labelAfterPos - offsetWidth;
     }
 
@@ -481,7 +482,7 @@ export abstract class MatPaginatedTabHeader
       this._showPaginationControls = false;
     } else {
       const isEnabled =
-        this._tabList.nativeElement.scrollWidth > this._elementRef.nativeElement.offsetWidth;
+        this._tabListInner.nativeElement.scrollWidth > this._elementRef.nativeElement.offsetWidth;
 
       if (!isEnabled) {
         this.scrollDistance = 0;
@@ -523,7 +524,7 @@ export abstract class MatPaginatedTabHeader
    * should be called sparingly.
    */
   _getMaxScrollDistance(): number {
-    const lengthOfTabList = this._tabList.nativeElement.scrollWidth;
+    const lengthOfTabList = this._tabListInner.nativeElement.scrollWidth;
     const viewLength = this._tabListContainer.nativeElement.offsetWidth;
     return lengthOfTabList - viewLength || 0;
   }

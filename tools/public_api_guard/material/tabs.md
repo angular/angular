@@ -296,6 +296,8 @@ export class MatTabHeader extends _MatTabHeaderBase {
     // (undocumented)
     _tabListContainer: ElementRef;
     // (undocumented)
+    _tabListInner: ElementRef;
+    // (undocumented)
     static ɵcmp: i0.ɵɵComponentDeclaration<MatTabHeader, "mat-tab-header", never, { "selectedIndex": "selectedIndex"; }, { "selectFocusedIndex": "selectFocusedIndex"; "indexFocused": "indexFocused"; }, ["_items"], ["*"]>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatTabHeader, [null, null, null, { optional: true; }, null, null, { optional: true; }]>;
@@ -405,6 +407,8 @@ export class MatTabNav extends _MatTabNavBase {
     _tabList: ElementRef;
     // (undocumented)
     _tabListContainer: ElementRef;
+    // (undocumented)
+    _tabListInner: ElementRef;
     // (undocumented)
     static ɵcmp: i0.ɵɵComponentDeclaration<MatTabNav, "[mat-tab-nav-bar]", ["matTabNavBar", "matTabNav"], { "color": "color"; }, {}, ["_items"], ["*"]>;
     // (undocumented)

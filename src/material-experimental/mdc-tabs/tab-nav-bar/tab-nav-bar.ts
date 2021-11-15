@@ -82,6 +82,7 @@ export class MatTabNav extends _MatTabNavBase implements AfterContentInit {
   @ContentChildren(forwardRef(() => MatTabLink), {descendants: true}) _items: QueryList<MatTabLink>;
   @ViewChild('tabListContainer', {static: true}) _tabListContainer: ElementRef;
   @ViewChild('tabList', {static: true}) _tabList: ElementRef;
+  @ViewChild('tabListInner', {static: true}) _tabListInner: ElementRef;
   @ViewChild('nextPaginator') _nextPaginator: ElementRef<HTMLElement>;
   @ViewChild('previousPaginator') _previousPaginator: ElementRef<HTMLElement>;
   _inkBar: MatInkBar;

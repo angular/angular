@@ -167,6 +167,7 @@ export class MatTabNav extends _MatTabNavBase {
   @ViewChild(MatInkBar, {static: true}) _inkBar: MatInkBar;
   @ViewChild('tabListContainer', {static: true}) _tabListContainer: ElementRef;
   @ViewChild('tabList', {static: true}) _tabList: ElementRef;
+  @ViewChild('tabListInner', {static: true}) _tabListInner: ElementRef;
   @ViewChild('nextPaginator') _nextPaginator: ElementRef<HTMLElement>;
   @ViewChild('previousPaginator') _previousPaginator: ElementRef<HTMLElement>;
 
