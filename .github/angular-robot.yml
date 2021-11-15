@@ -44,7 +44,6 @@ merge:
     # list of labels that a PR needs to have, checked with a regexp (e.g. "PR target:" will work for the label "PR target: master")
     requiredLabels:
       - "target: *"
-      - "cla: yes"
 
     # list of labels that a PR shouldn't have, checked after the required labels with a regexp
     forbiddenLabels:
@@ -52,7 +51,6 @@ merge:
       - "pr: blocked"
       - "pr: needs*"
       - "presubmit failures"
-      - "cla: no"
 
     # list of PR statuses that need to be successful
     requiredStatuses:
