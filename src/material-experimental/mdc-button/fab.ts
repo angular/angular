@@ -66,20 +66,11 @@ const defaults = MAT_FAB_DEFAULT_OPTIONS_FACTORY();
   selector: `button[mat-fab]`,
   templateUrl: 'button.html',
   styleUrls: ['fab.css'],
-  // TODO: change to MAT_BUTTON_INPUTS/MAT_BUTTON_HOST with spread after ViewEngine is deprecated
-  inputs: ['disabled', 'disableRipple', 'color', 'extended'],
+  inputs: [...MAT_BUTTON_INPUTS, 'extended'],
   host: {
+    ...MAT_BUTTON_HOST,
     '[class.mdc-fab--extended]': 'extended',
     '[class.mat-mdc-extended-fab]': 'extended',
-    '[attr.disabled]': 'disabled || null',
-    '[class._mat-animation-noopable]': '_animationMode === "NoopAnimations"',
-    // MDC automatically applies the primary theme color to the button, but we want to support
-    // an unthemed version. If color is undefined, apply a CSS class that makes it easy to
-    // select and style this "theme".
-    '[class.mat-unthemed]': '!color',
-    // Add a class that applies to all buttons. This makes it easier to target if somebody
-    // wants to target all Material buttons.
-    '[class.mat-mdc-button-base]': 'true',
   },
   exportAs: 'matButton',
   encapsulation: ViewEncapsulation.None,
@@ -153,26 +144,11 @@ export class MatMiniFabButton extends MatButtonBase {
   selector: `a[mat-fab]`,
   templateUrl: 'button.html',
   styleUrls: ['fab.css'],
-  // TODO: change to MAT_ANCHOR_INPUTS/MAT_ANCHOR_HOST with spread after ViewEngine is deprecated
-  inputs: ['disabled', 'disableRipple', 'color', 'tabIndex', 'extended'],
+  inputs: [...MAT_BUTTON_INPUTS, 'extended'],
   host: {
+    ...MAT_ANCHOR_HOST,
     '[class.mdc-fab--extended]': 'extended',
     '[class.mat-mdc-extended-fab]': 'extended',
-    '[attr.disabled]': 'disabled || null',
-    '[class._mat-animation-noopable]': '_animationMode === "NoopAnimations"',
-
-    // Note that we ignore the user-specified tabindex when it's disabled for
-    // consistency with the `mat-button` applied on native buttons where even
-    // though they have an index, they're not tabbable.
-    '[attr.tabindex]': 'disabled ? -1 : (tabIndex || 0)',
-    '[attr.aria-disabled]': 'disabled.toString()',
-    // MDC automatically applies the primary theme color to the button, but we want to support
-    // an unthemed version. If color is undefined, apply a CSS class that makes it easy to
-    // select and style this "theme".
-    '[class.mat-unthemed]': '!color',
-    // Add a class that applies to all buttons. This makes it easier to target if somebody
-    // wants to target all Material buttons.
-    '[class.mat-mdc-button-base]': 'true',
   },
   exportAs: 'matButton, matAnchor',
   encapsulation: ViewEncapsulation.None,

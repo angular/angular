@@ -37,6 +37,5 @@ import {
     MatDialogContent,
   ],
   providers: [MatDialog, MAT_DIALOG_SCROLL_STRATEGY_PROVIDER],
-  entryComponents: [MatDialogContainer],
 })
 export class MatDialogModule {}

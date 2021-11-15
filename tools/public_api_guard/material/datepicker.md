@@ -741,16 +741,12 @@ export abstract class MatDateSelectionModel<S, D = ExtractDateTypeFromSelection<
 }
 
 // @public
-export class MatEndDate<D> extends _MatDateRangeInputBase<D> implements CanUpdateErrorState, DoCheck, OnInit {
+export class MatEndDate<D> extends _MatDateRangeInputBase<D> implements CanUpdateErrorState {
     constructor(rangeInput: MatDateRangeInputParent<D>, elementRef: ElementRef<HTMLInputElement>, defaultErrorStateMatcher: ErrorStateMatcher, injector: Injector, parentForm: NgForm, parentFormGroup: FormGroupDirective, dateAdapter: DateAdapter<D>, dateFormats: MatDateFormats);
     // (undocumented)
     protected _assignValueToModel(value: D | null): void;
     // (undocumented)
     protected _getValueFromModel(modelValue: DateRange<D>): D | null;
-    // (undocumented)
-    ngDoCheck(): void;
-    // (undocumented)
-    ngOnInit(): void;
     // (undocumented)
     _onKeydown(event: KeyboardEvent): void;
     // (undocumented)
@@ -885,7 +881,7 @@ export class MatSingleDateSelectionModel<D> extends MatDateSelectionModel<D | nu
 }
 
 // @public
-export class MatStartDate<D> extends _MatDateRangeInputBase<D> implements CanUpdateErrorState, DoCheck, OnInit {
+export class MatStartDate<D> extends _MatDateRangeInputBase<D> implements CanUpdateErrorState {
     constructor(rangeInput: MatDateRangeInputParent<D>, elementRef: ElementRef<HTMLInputElement>, defaultErrorStateMatcher: ErrorStateMatcher, injector: Injector, parentForm: NgForm, parentFormGroup: FormGroupDirective, dateAdapter: DateAdapter<D>, dateFormats: MatDateFormats);
     // (undocumented)
     protected _assignValueToModel(value: D | null): void;
@@ -894,10 +890,6 @@ export class MatStartDate<D> extends _MatDateRangeInputBase<D> implements CanUpd
     getMirrorValue(): string;
     // (undocumented)
     protected _getValueFromModel(modelValue: DateRange<D>): D | null;
-    // (undocumented)
-    ngDoCheck(): void;
-    // (undocumented)
-    ngOnInit(): void;
     // (undocumented)
     protected _shouldHandleChangeEvent(change: DateSelectionModelChange<DateRange<D>>): boolean;
     // (undocumented)

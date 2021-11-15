@@ -33,6 +33,5 @@ import {MatSnackBarAction, MatSnackBarActions, MatSnackBarLabel} from './snack-b
     MatSnackBarActions,
     MatSnackBarAction,
   ],
-  entryComponents: [MatSimpleSnackBar, MatSnackBarContainer],
 })
 export class MatSnackBarModule {}

@@ -37,6 +37,5 @@ import {
     {provide: DIALOG_CONTAINER, useValue: CdkDialogContainer},
     {provide: DIALOG_CONFIG, useValue: DialogConfig},
   ],
-  entryComponents: [CdkDialogContainer],
 })
 export class DialogModule {}

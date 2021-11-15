@@ -16,6 +16,5 @@ import {MatBottomSheetContainer} from './bottom-sheet-container';
   imports: [OverlayModule, MatCommonModule, PortalModule],
   exports: [MatBottomSheetContainer, MatCommonModule],
   declarations: [MatBottomSheetContainer],
-  entryComponents: [MatBottomSheetContainer],
 })
 export class MatBottomSheetModule {}

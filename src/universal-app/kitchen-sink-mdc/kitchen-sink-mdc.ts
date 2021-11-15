@@ -62,7 +62,6 @@ export class KitchenSinkMdc {
   ],
   declarations: [KitchenSinkMdc, TestEntryComponent],
   exports: [KitchenSinkMdc, TestEntryComponent],
-  entryComponents: [TestEntryComponent],
   providers: [
     {
       // If an error is thrown asynchronously during server-side rendering it'll get logged to stderr,

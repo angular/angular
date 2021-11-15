@@ -171,9 +171,6 @@ export class MatTreeNodePadding<T, K = T> extends CdkTreeNodePadding<T, K> {
 // @public
 export class MatTreeNodeToggle<T, K = T> extends CdkTreeNodeToggle<T, K> {
     // (undocumented)
-    get recursive(): boolean;
-    set recursive(value: boolean);
-    // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<MatTreeNodeToggle<any, any>, "[matTreeNodeToggle]", never, { "recursive": "matTreeNodeToggleRecursive"; }, {}, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatTreeNodeToggle<any, any>, never>;

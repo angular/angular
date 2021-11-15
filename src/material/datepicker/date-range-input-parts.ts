@@ -208,10 +208,7 @@ const _MatDateRangeInputBase = mixinErrorState(MatDateRangeInputPartBase);
   outputs: ['dateChange', 'dateInput'],
   inputs: ['errorStateMatcher'],
 })
-export class MatStartDate<D>
-  extends _MatDateRangeInputBase<D>
-  implements CanUpdateErrorState, DoCheck, OnInit
-{
+export class MatStartDate<D> extends _MatDateRangeInputBase<D> implements CanUpdateErrorState {
   /** Validator that checks that the start date isn't after the end date. */
   private _startValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
     const start = this._dateAdapter.getValidDateOrNull(
@@ -233,9 +230,6 @@ export class MatStartDate<D>
     @Optional() dateAdapter: DateAdapter<D>,
     @Optional() @Inject(MAT_DATE_FORMATS) dateFormats: MatDateFormats,
   ) {
-    // TODO(crisbeto): this constructor shouldn't be necessary, but ViewEngine doesn't seem to
-    // handle DI correctly when it is inherited from `MatDateRangeInputPartBase`. We can drop this
-    // constructor once ViewEngine is removed.
     super(
       rangeInput,
       elementRef,
@@ -246,26 +240,6 @@ export class MatStartDate<D>
       dateAdapter,
       dateFormats,
     );
-  }
-
-  override ngOnInit() {
-    // Normally this happens automatically, but it seems to break if not added explicitly when all
-    // of the criteria below are met:
-    // 1) The class extends a TS mixin.
-    // 2) The application is running in ViewEngine.
-    // 3) The application is being transpiled through tsickle.
-    // This can be removed once google3 is completely migrated to Ivy.
-    super.ngOnInit();
-  }
-
-  override ngDoCheck() {
-    // Normally this happens automatically, but it seems to break if not added explicitly when all
-    // of the criteria below are met:
-    // 1) The class extends a TS mixin.
-    // 2) The application is running in ViewEngine.
-    // 3) The application is being transpiled through tsickle.
-    // This can be removed once google3 is completely migrated to Ivy.
-    super.ngDoCheck();
   }
 
   protected _validator = Validators.compose([...super._getValidators(), this._startValidator]);
@@ -334,10 +308,7 @@ export class MatStartDate<D>
   outputs: ['dateChange', 'dateInput'],
   inputs: ['errorStateMatcher'],
 })
-export class MatEndDate<D>
-  extends _MatDateRangeInputBase<D>
-  implements CanUpdateErrorState, DoCheck, OnInit
-{
+export class MatEndDate<D> extends _MatDateRangeInputBase<D> implements CanUpdateErrorState {
   /** Validator that checks that the end date isn't before the start date. */
   private _endValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
     const end = this._dateAdapter.getValidDateOrNull(this._dateAdapter.deserialize(control.value));
@@ -357,9 +328,6 @@ export class MatEndDate<D>
     @Optional() dateAdapter: DateAdapter<D>,
     @Optional() @Inject(MAT_DATE_FORMATS) dateFormats: MatDateFormats,
   ) {
-    // TODO(crisbeto): this constructor shouldn't be necessary, but ViewEngine doesn't seem to
-    // handle DI correctly when it is inherited from `MatDateRangeInputPartBase`. We can drop this
-    // constructor once ViewEngine is removed.
     super(
       rangeInput,
       elementRef,
@@ -370,26 +338,6 @@ export class MatEndDate<D>
       dateAdapter,
       dateFormats,
     );
-  }
-
-  override ngOnInit() {
-    // Normally this happens automatically, but it seems to break if not added explicitly when all
-    // of the criteria below are met:
-    // 1) The class extends a TS mixin.
-    // 2) The application is running in ViewEngine.
-    // 3) The application is being transpiled through tsickle.
-    // This can be removed once google3 is completely migrated to Ivy.
-    super.ngOnInit();
-  }
-
-  override ngDoCheck() {
-    // Normally this happens automatically, but it seems to break if not added explicitly when all
-    // of the criteria below are met:
-    // 1) The class extends a TS mixin.
-    // 2) The application is running in ViewEngine.
-    // 3) The application is being transpiled through tsickle.
-    // This can be removed once google3 is completely migrated to Ivy.
-    super.ngDoCheck();
   }
 
   protected _validator = Validators.compose([...super._getValidators(), this._endValidator]);

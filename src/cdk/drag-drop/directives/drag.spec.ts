@@ -4698,17 +4698,6 @@ describe('CdkDrag', () => {
     }));
 
     it('should be able to start dragging again if the dragged item is destroyed', fakeAsync(() => {
-      // We have some behavior where we move the dragged element out to the bottom of the `body`,
-      // in order to work around a browser issue. We restore the element when dragging stops, but
-      // the problem is that if it's destroyed before we've had a chance to return it, ViewEngine
-      // will throw an error since the element isn't in its original parent. Skip this test if the
-      // component hasn't been compiled with Ivy since the assertions depend on the element being
-      // removed while dragging.
-      // TODO(crisbeto): remove this check once ViewEngine has been dropped.
-      if (!DraggableInDropZone.hasOwnProperty('ɵcmp')) {
-        return;
-      }
-
       const fixture = createComponent(DraggableInDropZone);
       fixture.detectChanges();
 

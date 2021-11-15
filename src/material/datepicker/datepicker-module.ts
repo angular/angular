@@ -83,6 +83,5 @@ import {MatDatepickerActions, MatDatepickerApply, MatDatepickerCancel} from './d
     MatDatepickerApply,
   ],
   providers: [MatDatepickerIntl, MAT_DATEPICKER_SCROLL_STRATEGY_FACTORY_PROVIDER],
-  entryComponents: [MatDatepickerContent, MatCalendarHeader],
 })
 export class MatDatepickerModule {}

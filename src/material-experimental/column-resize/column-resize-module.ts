@@ -23,7 +23,6 @@ const ENTRY_COMMON_COMPONENTS = [MatColumnResizeOverlayHandle];
 @NgModule({
   declarations: ENTRY_COMMON_COMPONENTS,
   exports: ENTRY_COMMON_COMPONENTS,
-  entryComponents: ENTRY_COMMON_COMPONENTS,
 })
 export class MatColumnResizeCommonModule {}
 

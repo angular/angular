@@ -19,6 +19,5 @@ import {MatSnackBarContainer} from './snack-bar-container';
   imports: [OverlayModule, PortalModule, CommonModule, MatButtonModule, MatCommonModule],
   exports: [MatSnackBarContainer, MatCommonModule],
   declarations: [MatSnackBarContainer, SimpleSnackBar],
-  entryComponents: [MatSnackBarContainer, SimpleSnackBar],
 })
 export class MatSnackBarModule {}

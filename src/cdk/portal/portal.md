@@ -50,9 +50,7 @@ A component can use `@ViewChild` or `@ViewChildren` to get a reference to a
 `CdkPortal`.
 
 ##### `ComponentPortal`
-Used to create a portal from a component type. When a component is dynamically created using
-portals, it must be included in the `entryComponents` of its `NgModule`if your project uses ViewEngine. Projects
-using Angular Ivy don't need `entryComponents`.
+Used to create a portal from a component type.
 
 Usage:
 ```ts

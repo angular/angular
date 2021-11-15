@@ -39,38 +39,6 @@ export class YourDialog {
 }
 ```
 
-### Configuring dialog content via `entryComponents`
-**You only need to specify `entryComponents` if your project uses ViewEngine. Projects
-using Angular Ivy don't need `entryComponents`.**
-
-Because `MatDialog` instantiates components at run-time, the Angular compiler needs extra
-information to create the necessary `ComponentFactory` for your dialog content component.
-
-For any component loaded into a dialog, you must include your component class in the list of
-`entryComponents` in your NgModule definition so that the Angular compiler knows to create
-the `ComponentFactory` for it.
-
-```ts
-@NgModule({
-  imports: [
-    // ...
-    MatDialogModule
-  ],
-
-  declarations: [
-    AppComponent,
-    ExampleDialogComponent
-  ],
-
-  entryComponents: [
-    ExampleDialogComponent
-  ],
-
-  bootstrap: [AppComponent]
-})
-export class AppModule {}
-```
-
 ### Specifying global configuration defaults
 Default dialog options can be specified by providing an instance of `MatDialogConfig` for
 MAT_DIALOG_DEFAULT_OPTIONS in your application's root module.
@@ -194,5 +162,5 @@ sheet attempts to restore focus.
 You can add handling for this situation with the `afterClosed()` observable from `MatDialogRef`.
 
 <!-- example({"example":"dialog-from-menu",
-              "file":"dialog-from-menu-example.ts", 
+              "file":"dialog-from-menu-example.ts",
               "region":"focus-restoration"}) -->
