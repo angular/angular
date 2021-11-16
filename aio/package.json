@@ -156,7 +156,7 @@
     "karma-jasmine": "~4.0.0",
     "karma-jasmine-html-reporter": "~1.7.0",
     "light-server": "^2.9.1",
-    "lighthouse": "^8.5.1",
+    "lighthouse": "^9.0.0",
     "lighthouse-logger": "^1.3.0",
     "lodash": "^4.17.21",
     "lunr": "^2.3.9",
