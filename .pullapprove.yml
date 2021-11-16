@@ -1244,7 +1244,6 @@ groups:
         - jelbourn
         - petebacondarwin
         - jessicajaniuk
-        - zarend
         # OOO as of 2020-09-28 - pkozlowski-opensource
     reviews:
       request: 4 # Request reviews from four people
@@ -1274,7 +1273,6 @@ groups:
         - jelbourn
         - petebacondarwin
         - jessicajaniuk
-        - zarend
         # OOO as of 2020-09-28 - pkozlowski-opensource
     reviews:
       request: 4 # Request reviews from four people
@@ -1304,7 +1302,6 @@ groups:
         - jelbourn
         - petebacondarwin
         - jessicajaniuk
-        - zarend
         # OOO as of 2020-09-28 - pkozlowski-opensource
 
   ####################################################################################
