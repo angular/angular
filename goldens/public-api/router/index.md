@@ -86,6 +86,8 @@ export class ActivationEnd {
     snapshot: ActivatedRouteSnapshot;
     // (undocumented)
     toString(): string;
+    // (undocumented)
+    readonly type = EventType.ActivationEnd;
 }
 
 // @public
@@ -96,6 +98,8 @@ export class ActivationStart {
     snapshot: ActivatedRouteSnapshot;
     // (undocumented)
     toString(): string;
+    // (undocumented)
+    readonly type = EventType.ActivationStart;
 }
 
 // @public
@@ -139,6 +143,8 @@ export class ChildActivationEnd {
     snapshot: ActivatedRouteSnapshot;
     // (undocumented)
     toString(): string;
+    // (undocumented)
+    readonly type = EventType.ChildActivationEnd;
 }
 
 // @public
@@ -149,6 +155,8 @@ export class ChildActivationStart {
     snapshot: ActivatedRouteSnapshot;
     // (undocumented)
     toString(): string;
+    // (undocumented)
+    readonly type = EventType.ChildActivationStart;
 }
 
 // @public
@@ -194,8 +202,44 @@ export class DefaultUrlSerializer implements UrlSerializer {
 export type DetachedRouteHandle = {};
 
 // @public
-type Event_2 = RouterEvent | RouteConfigLoadStart | RouteConfigLoadEnd | ChildActivationStart | ChildActivationEnd | ActivationStart | ActivationEnd | Scroll;
+type Event_2 = RouterEvent | NavigationStart | NavigationEnd | NavigationCancel | NavigationError | RoutesRecognized | GuardsCheckStart | GuardsCheckEnd | RouteConfigLoadStart | RouteConfigLoadEnd | ChildActivationStart | ChildActivationEnd | ActivationStart | ActivationEnd | Scroll | ResolveStart | ResolveEnd;
 export { Event_2 as Event }
+
+// @public
+export const enum EventType {
+    // (undocumented)
+    ActivationEnd = 14,
+    // (undocumented)
+    ActivationStart = 13,
+    // (undocumented)
+    ChildActivationEnd = 12,
+    // (undocumented)
+    ChildActivationStart = 11,
+    // (undocumented)
+    GuardsCheckEnd = 8,
+    // (undocumented)
+    GuardsCheckStart = 7,
+    // (undocumented)
+    NavigationCancel = 2,
+    // (undocumented)
+    NavigationEnd = 1,
+    // (undocumented)
+    NavigationError = 3,
+    // (undocumented)
+    NavigationStart = 0,
+    // (undocumented)
+    ResolveEnd = 6,
+    // (undocumented)
+    ResolveStart = 5,
+    // (undocumented)
+    RouteConfigLoadEnd = 10,
+    // (undocumented)
+    RouteConfigLoadStart = 9,
+    // (undocumented)
+    RoutesRecognized = 4,
+    // (undocumented)
+    Scroll = 15
+}
 
 // @public
 export interface ExtraOptions {
@@ -231,6 +275,8 @@ export class GuardsCheckEnd extends RouterEvent {
     // (undocumented)
     toString(): string;
     // (undocumented)
+    readonly type = EventType.GuardsCheckEnd;
+    // (undocumented)
     urlAfterRedirects: string;
 }
 
@@ -245,6 +291,8 @@ export class GuardsCheckStart extends RouterEvent {
     state: RouterStateSnapshot;
     // (undocumented)
     toString(): string;
+    // (undocumented)
+    readonly type = EventType.GuardsCheckStart;
     // (undocumented)
     urlAfterRedirects: string;
 }
@@ -296,6 +344,8 @@ export class NavigationCancel extends RouterEvent {
     reason: string;
     // (undocumented)
     toString(): string;
+    // (undocumented)
+    readonly type = EventType.NavigationCancel;
 }
 
 // @public
@@ -306,6 +356,8 @@ export class NavigationEnd extends RouterEvent {
     urlAfterRedirects: string);
     // (undocumented)
     toString(): string;
+    // (undocumented)
+    readonly type = EventType.NavigationEnd;
     // (undocumented)
     urlAfterRedirects: string;
 }
@@ -320,6 +372,8 @@ export class NavigationError extends RouterEvent {
     error: any;
     // (undocumented)
     toString(): string;
+    // (undocumented)
+    readonly type = EventType.NavigationError;
 }
 
 // @public
@@ -331,18 +385,20 @@ export class NavigationStart extends RouterEvent {
     constructor(
     id: number,
     url: string,
-    navigationTrigger?: 'imperative' | 'popstate' | 'hashchange',
+    navigationTrigger?: NavigationTrigger,
     restoredState?: {
         [k: string]: any;
         navigationId: number;
     } | null);
-    navigationTrigger?: 'imperative' | 'popstate' | 'hashchange';
+    navigationTrigger?: NavigationTrigger;
     restoredState?: {
         [k: string]: any;
         navigationId: number;
     } | null;
     // (undocumented)
     toString(): string;
+    // (undocumented)
+    readonly type = EventType.NavigationStart;
 }
 
 // @public
@@ -424,6 +480,8 @@ export class ResolveEnd extends RouterEvent {
     // (undocumented)
     toString(): string;
     // (undocumented)
+    readonly type = EventType.ResolveEnd;
+    // (undocumented)
     urlAfterRedirects: string;
 }
 
@@ -438,6 +496,8 @@ export class ResolveStart extends RouterEvent {
     state: RouterStateSnapshot;
     // (undocumented)
     toString(): string;
+    // (undocumented)
+    readonly type = EventType.ResolveStart;
     // (undocumented)
     urlAfterRedirects: string;
 }
@@ -472,6 +532,8 @@ export class RouteConfigLoadEnd {
     route: Route;
     // (undocumented)
     toString(): string;
+    // (undocumented)
+    readonly type = EventType.RouteConfigLoadEnd;
 }
 
 // @public
@@ -482,6 +544,8 @@ export class RouteConfigLoadStart {
     route: Route;
     // (undocumented)
     toString(): string;
+    // (undocumented)
+    readonly type = EventType.RouteConfigLoadStart;
 }
 
 // @public
@@ -746,6 +810,8 @@ export class RoutesRecognized extends RouterEvent {
     // (undocumented)
     toString(): string;
     // (undocumented)
+    readonly type = EventType.RoutesRecognized;
+    // (undocumented)
     urlAfterRedirects: string;
 }
 
@@ -766,6 +832,8 @@ export class Scroll {
     readonly routerEvent: NavigationEnd;
     // (undocumented)
     toString(): string;
+    // (undocumented)
+    readonly type = EventType.Scroll;
 }
 
 // @public

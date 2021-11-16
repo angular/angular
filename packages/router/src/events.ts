@@ -21,6 +21,30 @@ import {ActivatedRouteSnapshot, RouterStateSnapshot} from './router_state';
 export type NavigationTrigger = 'imperative'|'popstate'|'hashchange';
 
 /**
+ * Identifies the type of a router event.
+ *
+ * @publicApi
+ */
+export const enum EventType {
+  NavigationStart,
+  NavigationEnd,
+  NavigationCancel,
+  NavigationError,
+  RoutesRecognized,
+  ResolveStart,
+  ResolveEnd,
+  GuardsCheckStart,
+  GuardsCheckEnd,
+  RouteConfigLoadStart,
+  RouteConfigLoadEnd,
+  ChildActivationStart,
+  ChildActivationEnd,
+  ActivationStart,
+  ActivationEnd,
+  Scroll,
+}
+
+/**
  * Base for events the router goes through, as opposed to events tied to a specific
  * route. Fired one time for any given navigation.
  *
@@ -58,6 +82,8 @@ export class RouterEvent {
  * @publicApi
  */
 export class NavigationStart extends RouterEvent {
+  readonly type = EventType.NavigationStart;
+
   /**
    * Identifies the call or event that triggered the navigation.
    * An `imperative` trigger is a call to `router.navigateByUrl()` or `router.navigate()`.
@@ -66,7 +92,7 @@ export class NavigationStart extends RouterEvent {
    * @see `NavigationCancel`
    * @see `NavigationError`
    */
-  navigationTrigger?: 'imperative'|'popstate'|'hashchange';
+  navigationTrigger?: NavigationTrigger;
 
   /**
    * The navigation state that was previously supplied to the `pushState` call,
@@ -93,7 +119,7 @@ export class NavigationStart extends RouterEvent {
       /** @docsNotRequired */
       url: string,
       /** @docsNotRequired */
-      navigationTrigger: 'imperative'|'popstate'|'hashchange' = 'imperative',
+      navigationTrigger: NavigationTrigger = 'imperative',
       /** @docsNotRequired */
       restoredState: {[k: string]: any, navigationId: number}|null = null) {
     super(id, url);
@@ -117,6 +143,8 @@ export class NavigationStart extends RouterEvent {
  * @publicApi
  */
 export class NavigationEnd extends RouterEvent {
+  readonly type = EventType.NavigationEnd;
+
   constructor(
       /** @docsNotRequired */
       id: number,
@@ -146,6 +174,8 @@ export class NavigationEnd extends RouterEvent {
  * @publicApi
  */
 export class NavigationCancel extends RouterEvent {
+  readonly type = EventType.NavigationCancel;
+
   constructor(
       /** @docsNotRequired */
       id: number,
@@ -172,6 +202,8 @@ export class NavigationCancel extends RouterEvent {
  * @publicApi
  */
 export class NavigationError extends RouterEvent {
+  readonly type = EventType.NavigationError;
+
   constructor(
       /** @docsNotRequired */
       id: number,
@@ -194,6 +226,8 @@ export class NavigationError extends RouterEvent {
  * @publicApi
  */
 export class RoutesRecognized extends RouterEvent {
+  readonly type = EventType.RoutesRecognized;
+
   constructor(
       /** @docsNotRequired */
       id: number,
@@ -221,6 +255,8 @@ export class RoutesRecognized extends RouterEvent {
  * @publicApi
  */
 export class GuardsCheckStart extends RouterEvent {
+  readonly type = EventType.GuardsCheckStart;
+
   constructor(
       /** @docsNotRequired */
       id: number,
@@ -247,6 +283,8 @@ export class GuardsCheckStart extends RouterEvent {
  * @publicApi
  */
 export class GuardsCheckEnd extends RouterEvent {
+  readonly type = EventType.GuardsCheckEnd;
+
   constructor(
       /** @docsNotRequired */
       id: number,
@@ -278,6 +316,8 @@ export class GuardsCheckEnd extends RouterEvent {
  * @publicApi
  */
 export class ResolveStart extends RouterEvent {
+  readonly type = EventType.ResolveStart;
+
   constructor(
       /** @docsNotRequired */
       id: number,
@@ -303,6 +343,8 @@ export class ResolveStart extends RouterEvent {
  * @publicApi
  */
 export class ResolveEnd extends RouterEvent {
+  readonly type = EventType.ResolveEnd;
+
   constructor(
       /** @docsNotRequired */
       id: number,
@@ -329,6 +371,8 @@ export class ResolveEnd extends RouterEvent {
  * @publicApi
  */
 export class RouteConfigLoadStart {
+  readonly type = EventType.RouteConfigLoadStart;
+
   constructor(
       /** @docsNotRequired */
       public route: Route) {}
@@ -345,6 +389,8 @@ export class RouteConfigLoadStart {
  * @publicApi
  */
 export class RouteConfigLoadEnd {
+  readonly type = EventType.RouteConfigLoadEnd;
+
   constructor(
       /** @docsNotRequired */
       public route: Route) {}
@@ -362,6 +408,8 @@ export class RouteConfigLoadEnd {
  * @publicApi
  */
 export class ChildActivationStart {
+  readonly type = EventType.ChildActivationStart;
+
   constructor(
       /** @docsNotRequired */
       public snapshot: ActivatedRouteSnapshot) {}
@@ -379,6 +427,8 @@ export class ChildActivationStart {
  * @publicApi
  */
 export class ChildActivationEnd {
+  readonly type = EventType.ChildActivationEnd;
+
   constructor(
       /** @docsNotRequired */
       public snapshot: ActivatedRouteSnapshot) {}
@@ -397,6 +447,8 @@ export class ChildActivationEnd {
  * @publicApi
  */
 export class ActivationStart {
+  readonly type = EventType.ActivationStart;
+
   constructor(
       /** @docsNotRequired */
       public snapshot: ActivatedRouteSnapshot) {}
@@ -415,6 +467,8 @@ export class ActivationStart {
  * @publicApi
  */
 export class ActivationEnd {
+  readonly type = EventType.ActivationEnd;
+
   constructor(
       /** @docsNotRequired */
       public snapshot: ActivatedRouteSnapshot) {}
@@ -430,6 +484,8 @@ export class ActivationEnd {
  * @publicApi
  */
 export class Scroll {
+  readonly type = EventType.Scroll;
+
   constructor(
       /** @docsNotRequired */
       readonly routerEvent: NavigationEnd,
@@ -479,5 +535,60 @@ export class Scroll {
  *
  * @publicApi
  */
-export type Event = RouterEvent|RouteConfigLoadStart|RouteConfigLoadEnd|ChildActivationStart|
-    ChildActivationEnd|ActivationStart|ActivationEnd|Scroll;
+export type Event =
+    RouterEvent|NavigationStart|NavigationEnd|NavigationCancel|NavigationError|RoutesRecognized|
+    GuardsCheckStart|GuardsCheckEnd|RouteConfigLoadStart|RouteConfigLoadEnd|ChildActivationStart|
+    ChildActivationEnd|ActivationStart|ActivationEnd|Scroll|ResolveStart|ResolveEnd;
+
+
+export function stringifyEvent(routerEvent: Event): string {
+  if (!('type' in routerEvent)) {
+    return `Unknown Router Event: ${routerEvent.constructor.name}`;
+  }
+  switch (routerEvent.type) {
+    case EventType.ActivationEnd:
+      return `ActivationEnd(path: '${routerEvent.snapshot.routeConfig?.path || ''}')`;
+    case EventType.ActivationStart:
+      return `ActivationStart(path: '${routerEvent.snapshot.routeConfig?.path || ''}')`;
+    case EventType.ChildActivationEnd:
+      return `ChildActivationEnd(path: '${routerEvent.snapshot.routeConfig?.path || ''}')`;
+    case EventType.ChildActivationStart:
+      return `ChildActivationStart(path: '${routerEvent.snapshot.routeConfig?.path || ''}')`;
+    case EventType.GuardsCheckEnd:
+      return `GuardsCheckEnd(id: ${routerEvent.id}, url: '${
+          routerEvent.url}', urlAfterRedirects: '${routerEvent.urlAfterRedirects}', state: ${
+          routerEvent.state}, shouldActivate: ${routerEvent.shouldActivate})`;
+    case EventType.GuardsCheckStart:
+      return `GuardsCheckStart(id: ${routerEvent.id}, url: '${
+          routerEvent.url}', urlAfterRedirects: '${routerEvent.urlAfterRedirects}', state: ${
+          routerEvent.state})`;
+    case EventType.NavigationCancel:
+      return `NavigationCancel(id: ${routerEvent.id}, url: '${routerEvent.url}')`;
+    case EventType.NavigationEnd:
+      return `NavigationEnd(id: ${routerEvent.id}, url: '${routerEvent.url}', urlAfterRedirects: '${
+          routerEvent.urlAfterRedirects}')`;
+    case EventType.NavigationError:
+      return `NavigationError(id: ${routerEvent.id}, url: '${routerEvent.url}', error: ${
+          routerEvent.error})`;
+    case EventType.NavigationStart:
+      return `NavigationStart(id: ${routerEvent.id}, url: '${routerEvent.url}')`;
+    case EventType.ResolveEnd:
+      return `ResolveEnd(id: ${routerEvent.id}, url: '${routerEvent.url}', urlAfterRedirects: '${
+          routerEvent.urlAfterRedirects}', state: ${routerEvent.state})`;
+    case EventType.ResolveStart:
+      return `ResolveStart(id: ${routerEvent.id}, url: '${routerEvent.url}', urlAfterRedirects: '${
+          routerEvent.urlAfterRedirects}', state: ${routerEvent.state})`;
+    case EventType.RouteConfigLoadEnd:
+      return `RouteConfigLoadEnd(path: ${routerEvent.route.path})`;
+    case EventType.RouteConfigLoadStart:
+      return `RouteConfigLoadStart(path: ${routerEvent.route.path})`;
+    case EventType.RoutesRecognized:
+      return `RoutesRecognized(id: ${routerEvent.id}, url: '${
+          routerEvent.url}', urlAfterRedirects: '${routerEvent.urlAfterRedirects}', state: ${
+          routerEvent.state})`;
+    case EventType.Scroll:
+      const pos =
+          routerEvent.position ? `${routerEvent.position[0]}, ${routerEvent.position[1]}` : null;
+      return `Scroll(anchor: '${routerEvent.anchor}', position: '${pos}')`;
+  }
+}
