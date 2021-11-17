@@ -8,17 +8,17 @@
 
 import {EnvironmentInjector, Injector} from '@angular/core';
 import {concat, defer, from, MonoTypeOperatorFunction, Observable, of, OperatorFunction, pipe} from 'rxjs';
-import {concatMap, first, map, mergeMap, tap} from 'rxjs/operators';
+import {concatMap, filter, first, map, mergeMap, tap} from 'rxjs/operators';
 
 import {ActivationStart, ChildActivationStart, Event} from '../events';
-import {CanActivateChildFn, CanActivateFn, CanDeactivateFn, CanLoadFn, Route} from '../models';
+import {CanActivateChildFn, CanActivateFn, CanDeactivateFn, CanLoadFn, CanMatch, CanMatchFn, Route} from '../models';
 import {NavigationTransition} from '../router';
 import {ActivatedRouteSnapshot, RouterStateSnapshot} from '../router_state';
 import {navigationCancelingError} from '../shared';
 import {UrlSegment, UrlSerializer, UrlTree} from '../url_tree';
 import {wrapIntoObservable} from '../utils/collection';
 import {CanActivate, CanDeactivate, getCanActivateChild, getToken} from '../utils/preactivation';
-import {isBoolean, isCanActivate, isCanActivateChild, isCanDeactivate, isCanLoad, isFunction, isUrlTree} from '../utils/type_guards';
+import {isBoolean, isCanActivate, isCanActivateChild, isCanDeactivate, isCanLoad, isCanMatch, isFunction, isUrlTree} from '../utils/type_guards';
 
 import {prioritizedGuardValue} from './prioritized_guard_value';
 
@@ -178,7 +178,6 @@ function runCanDeactivate(
   return of(canDeactivateObservables).pipe(prioritizedGuardValue());
 }
 
-
 export function runCanLoadGuards(
     injector: EnvironmentInjector, route: Route, segments: UrlSegment[],
     urlSerializer: UrlSerializer): Observable<boolean> {
@@ -220,4 +219,23 @@ function redirectIfUrlTree(urlSerializer: UrlSerializer):
       }),
       map(result => result === true),
   );
+}
+
+export function runCanMatchGuards(
+    injector: Injector, route: Route, segments: UrlSegment[],
+    urlSerializer: UrlSerializer): Observable<boolean> {
+  const canMatch = route.canMatch;
+  if (!canMatch || canMatch.length === 0) return of(true);
+
+  const canMatchObservables = canMatch.map(injectionToken => {
+    const guard = injector.get<CanMatch|CanMatchFn>(injectionToken);
+    const guardVal = isCanMatch(guard) ? guard.canMatch(route, segments) : guard(route, segments);
+    return wrapIntoObservable(guardVal);
+  });
+
+  return of(canMatchObservables)
+      .pipe(
+          prioritizedGuardValue(),
+          redirectIfUrlTree(urlSerializer),
+      );
 }

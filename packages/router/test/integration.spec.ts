@@ -6,19 +6,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_BASE_HREF, CommonModule, HashLocationStrategy, Location, LOCATION_INITIALIZED, LocationStrategy, PlatformLocation} from '@angular/common';
+import {CommonModule, HashLocationStrategy, Location, LocationStrategy} from '@angular/common';
 import {SpyLocation} from '@angular/common/testing';
 import {ChangeDetectionStrategy, Component, EventEmitter, Inject, Injectable, InjectionToken, NgModule, NgModuleRef, NgZone, OnDestroy, ViewChild, ɵConsole as Console, ɵNoopNgZone as NoopNgZone} from '@angular/core';
 import {ComponentFixture, fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {ActivatedRoute, ActivatedRouteSnapshot, ActivationEnd, ActivationStart, CanActivate, CanDeactivate, ChildActivationEnd, ChildActivationStart, DefaultUrlSerializer, DetachedRouteHandle, Event, GuardsCheckEnd, GuardsCheckStart, Navigation, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, ParamMap, Params, PreloadAllModules, PreloadingStrategy, PRIMARY_OUTLET, Resolve, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, Router, RouteReuseStrategy, RouterEvent, RouterLink, RouterLinkWithHref, RouterModule, RouterPreloader, RouterStateSnapshot, RoutesRecognized, RunGuardsAndResolvers, UrlHandlingStrategy, UrlSegmentGroup, UrlSerializer, UrlTree} from '@angular/router';
-import {EMPTY, Observable, Observer, of, Subscription, SubscriptionLike} from 'rxjs';
+import {EMPTY, Observable, Observer, of, Subscription} from 'rxjs';
 import {delay, filter, first, map, mapTo, tap} from 'rxjs/operators';
 
+import {CanMatch} from '../src/models';
 import {forEach} from '../src/utils/collection';
 import {getLoadedRoutes} from '../src/utils/config';
-import {isUrlTree} from '../src/utils/type_guards';
 import {RouterTestingModule} from '../testing';
 
 describe('Integration', () => {
@@ -4738,6 +4738,110 @@ describe('Integration', () => {
 
                expect(logger.logs).toEqual(['canDeactivate_simple', 'canDeactivate_team']);
              })));
+    });
+
+    describe('canMatch', () => {
+      @Injectable({providedIn: 'root'})
+      class ConfigurableGuard implements CanMatch {
+        result: Promise<boolean|UrlTree>|Observable<boolean|UrlTree>|boolean|UrlTree = false;
+        canMatch() {
+          return this.result;
+        }
+      }
+
+      it('falls back to second route when canMatch returns false', fakeAsync(() => {
+           const router = TestBed.inject(Router);
+           router.resetConfig([
+             {path: 'a', canMatch: [ConfigurableGuard], component: BlankCmp},
+             {path: 'a', component: SimpleCmp},
+           ]);
+           const fixture = createRoot(router, RootCmp);
+
+           router.navigateByUrl('/a');
+           advance(fixture);
+           expect(fixture.nativeElement.innerHTML).toContain('simple');
+         }));
+
+      it('uses route when canMatch returns true', fakeAsync(() => {
+           const router = TestBed.inject(Router);
+           TestBed.inject(ConfigurableGuard).result = Promise.resolve(true);
+           router.resetConfig([
+             {path: 'a', canMatch: [ConfigurableGuard], component: SimpleCmp},
+             {path: 'a', component: BlankCmp},
+           ]);
+           const fixture = createRoot(router, RootCmp);
+
+
+           router.navigateByUrl('/a');
+           advance(fixture);
+           expect(fixture.nativeElement.innerHTML).toContain('simple');
+         }));
+
+      it('can return UrlTree from canMatch guard', fakeAsync(() => {
+           const router = TestBed.inject(Router);
+           TestBed.inject(ConfigurableGuard).result =
+               Promise.resolve(router.createUrlTree(['/team/1']));
+           router.resetConfig([
+             {path: 'a', canMatch: [ConfigurableGuard], component: SimpleCmp},
+             {path: 'team/:id', component: TeamCmp},
+           ]);
+           const fixture = createRoot(router, RootCmp);
+
+
+           router.navigateByUrl('/a');
+           advance(fixture);
+           expect(fixture.nativeElement.innerHTML).toContain('team');
+         }));
+
+      it('runs canMatch guards provided in lazy module', fakeAsync(() => {
+           const router = TestBed.inject(Router);
+           @Component(
+               {selector: 'lazy', template: 'lazy-loaded-parent [<router-outlet></router-outlet>]'})
+           class ParentLazyLoadedComponent {
+           }
+
+           @Component({selector: 'lazy', template: 'lazy-loaded-child'})
+           class ChildLazyLoadedComponent {
+           }
+           @Injectable()
+           class LazyCanMatchFalse implements CanMatch {
+             canMatch() {
+               return false;
+             }
+           }
+           @Component({template: 'restricted'})
+           class Restricted {
+           }
+           @NgModule({
+             declarations: [ParentLazyLoadedComponent, ChildLazyLoadedComponent, Restricted],
+             providers: [LazyCanMatchFalse],
+             imports: [RouterModule.forChild([
+               {
+                 path: 'loaded',
+                 canMatch: [LazyCanMatchFalse],
+                 component: Restricted,
+                 children: [{path: 'child', component: Restricted}],
+               },
+               {
+                 path: 'loaded',
+                 component: ParentLazyLoadedComponent,
+                 children: [{path: 'child', component: ChildLazyLoadedComponent}]
+               }
+             ])]
+           })
+           class LoadedModule {
+           }
+
+
+           const fixture = createRoot(router, RootCmp);
+
+           router.resetConfig([{path: 'lazy', loadChildren: () => LoadedModule}]);
+           router.navigateByUrl('/lazy/loaded/child');
+           advance(fixture);
+
+           expect(TestBed.inject(Location).path()).toEqual('/lazy/loaded/child');
+           expect(fixture.nativeElement).toHaveText('lazy-loaded-parent [lazy-loaded-child]');
+         }));
     });
   });
 

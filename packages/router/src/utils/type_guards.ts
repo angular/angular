@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CanActivate, CanActivateChild, CanDeactivate, CanLoad} from '../models';
+import {CanActivate, CanActivateChild, CanDeactivate, CanLoad, CanMatch} from '../models';
 import {UrlTree} from '../url_tree';
 
 /**
@@ -48,4 +48,7 @@ export function isCanActivateChild(guard: any): guard is CanActivateChild {
 
 export function isCanDeactivate<T>(guard: any): guard is CanDeactivate<T> {
   return guard && isFunction<CanDeactivate<T>>(guard.canDeactivate);
+}
+export function isCanMatch(guard: any): guard is CanMatch {
+  return guard && isFunction<CanMatch>(guard.canMatch);
 }

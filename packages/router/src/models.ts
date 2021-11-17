@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {EnvironmentInjector, ImportedNgModuleProviders, NgModuleFactory, Provider, Type} from '@angular/core';
+import {EnvironmentInjector, ImportedNgModuleProviders, InjectionToken, NgModuleFactory, Provider, Type} from '@angular/core';
 import {Observable} from 'rxjs';
 
 import {ActivatedRouteSnapshot, RouterStateSnapshot} from './router_state';
@@ -455,6 +455,12 @@ export interface Route {
    */
   canActivate?: any[];
   /**
+   * An array of DI tokens used to look up `CanMatch()`
+   * handlers, in order to determine if the current user is allowed to
+   * match the `Route`. By default, any route can match.
+   */
+  canMatch?: Array<Type<CanMatch>|InjectionToken<CanMatchFn>>;
+  /**
    * An array of DI tokens used to look up `CanActivateChild()` handlers,
    * in order to determine if the current user is allowed to activate
    * a child of the component. By default, any user can activate a child.
@@ -804,6 +810,103 @@ export type CanDeactivateFn<T> =
     (component: T, currentRoute: ActivatedRouteSnapshot, currentState: RouterStateSnapshot,
      nextState?: RouterStateSnapshot) =>
         Observable<boolean|UrlTree>|Promise<boolean|UrlTree>|boolean|UrlTree;
+
+/**
+ * @description
+ *
+ * Interface that a class can implement to be a guard deciding if a `Route` can be matched.
+ * If all guards return `true`, navigation continues and the `Router` will use the `Route` during
+ * activation. If any guard returns `false`, the `Route` is skipped for matching and other `Route`
+ * configurations are processed instead.
+ *
+ * The following example implements a `CanMatch` function that decides whether the
+ * current user has permission to access the users page.
+ *
+ *
+ * ```
+ * class UserToken {}
+ * class Permissions {
+ *   canAccess(user: UserToken, id: string, segments: UrlSegment[]): boolean {
+ *     return true;
+ *   }
+ * }
+ *
+ * @Injectable()
+ * class CanMatchTeamSection implements CanMatch {
+ *   constructor(private permissions: Permissions, private currentUser: UserToken) {}
+ *
+ *   canLoad(route: Route, segments: UrlSegment[]): Observable<boolean>|Promise<boolean>|boolean {
+ *     return this.permissions.canAccess(this.currentUser, route, segments);
+ *   }
+ * }
+ * ```
+ *
+ * Here, the defined guard function is provided as part of the `Route` object
+ * in the router configuration:
+ *
+ * ```
+ *
+ * @NgModule({
+ *   imports: [
+ *     RouterModule.forRoot([
+ *       {
+ *         path: 'team/:id',
+ *         component: TeamComponent,
+ *         loadChildren: () => import('./team').then(mod => mod.TeamModule),
+ *         canMatch: [CanMatchTeamSection]
+ *       },
+ *       {
+ *         path: '**',
+ *         component: NotFoundComponent
+ *       }
+ *     ])
+ *   ],
+ *   providers: [CanMatchTeamSection, UserToken, Permissions]
+ * })
+ * class AppModule {}
+ * ```
+ *
+ * If the `CanMatchTeamSection` were to return `false`, the router would continue navigating to the
+ * `team/:id` URL, but would load the `NotFoundComponent` because the `Route` for `'team/:id'`
+ * could not be used for a URL match but the catch-all `**` `Route` did instead.
+ *
+ * You can alternatively provide an in-line function with the `canMatch` signature:
+ *
+ * ```
+ * @NgModule({
+ *   imports: [
+ *     RouterModule.forRoot([
+ *       {
+ *         path: 'team/:id',
+ *         component: TeamComponent,
+ *         loadChildren: () => import('./team').then(mod => mod.TeamModule),
+ *         canMatch: ['canMatchTeamSection']
+ *       },
+ *       {
+ *         path: '**',
+ *         component: NotFoundComponent
+ *       }
+ *     ])
+ *   ],
+ *   providers: [
+ *     {
+ *       provide: 'canMatchTeamSection',
+ *       useValue: (route: Route, segments: UrlSegment[]) => true
+ *     }
+ *   ]
+ * })
+ * class AppModule {}
+ * ```
+ *
+ * @publicApi
+ */
+export interface CanMatch {
+  canMatch(route: Route, segments: UrlSegment[]):
+      Observable<boolean|UrlTree>|Promise<boolean|UrlTree>|boolean|UrlTree;
+}
+
+export type CanMatchFn = (route: Route, segments: UrlSegment[]) =>
+    Observable<boolean|UrlTree>|Promise<boolean|UrlTree>|boolean;
 
 /**
  * @description

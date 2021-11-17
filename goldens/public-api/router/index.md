@@ -136,6 +136,12 @@ export interface CanLoad {
 }
 
 // @public
+export interface CanMatch {
+    // (undocumented)
+    canMatch(route: Route, segments: UrlSegment[]): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree;
+}
+
+// @public
 export class ChildActivationEnd {
     constructor(
     snapshot: ActivatedRouteSnapshot);
@@ -511,6 +517,7 @@ export interface Route {
     canActivateChild?: any[];
     canDeactivate?: any[];
     canLoad?: any[];
+    canMatch?: Array<Type<CanMatch> | InjectionToken<CanMatchFn>>;
     children?: Routes;
     component?: Type<any>;
     data?: Data;
