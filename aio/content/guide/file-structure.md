@@ -35,13 +35,12 @@ The top level of the workspace contains workspace-wide configuration files, conf
 | `.editorconfig`        | Configuration for code editors. See [EditorConfig](https://editorconfig.org/). |
 | `.gitignore`           | Specifies intentionally untracked files that [Git](https://git-scm.com/) should ignore. |
 | `README.md`            | Introductory documentation for the root application. |
-| `angular.json`         | CLI configuration defaults for all projects in the workspace, including configuration options for build, serve, and test tools that the CLI uses, such as [TSLint](https://palantir.github.io/tslint/), [Karma](https://karma-runner.github.io/), and [Protractor](https://www.protractortest.org/). For details, see [Angular Workspace Configuration](guide/workspace-config). |
+| `angular.json`         | CLI configuration defaults for all projects in the workspace, including configuration options for build, serve, and test tools that the CLI uses, such as [Karma](https://karma-runner.github.io/), and [Protractor](https://www.protractortest.org/). For details, see [Angular Workspace Configuration](guide/workspace-config). |
 | `package.json`          | Configures [npm package dependencies](guide/npm-packages) that are available to all projects in the workspace. See [npm documentation](https://docs.npmjs.com/files/package.json) for the specific format and contents of this file. |
 | `package-lock.json`     | Provides version information for all packages installed into `node_modules` by the npm client. See [npm documentation](https://docs.npmjs.com/files/package-lock.json) for details. If you use the yarn client, this file will be [yarn.lock](https://yarnpkg.com/lang/en/docs/yarn-lock/) instead. |
 | `src/`                  | Source files for the root-level application project. |
 | `node_modules/`         | Provides [npm packages](guide/npm-packages) to the entire workspace. Workspace-wide `node_modules` dependencies are visible to all projects. |
 | `tsconfig.json`         | The base [TypeScript](https://www.typescriptlang.org/) configuration for projects in the workspace. All other configuration files inherit from this base file. For more information, see the [Configuration inheritance with extends](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html#configuration-inheritance-with-extends) section of the TypeScript documentation.|
-| `tslint.json`           | Default [TSLint](https://palantir.github.io/tslint/) configuration for projects in the workspace. |
 
 
 ## Application project files
@@ -101,7 +100,7 @@ Angular components, templates, and styles go here.
 The application-specific configuration files for the root application reside at the workspace root level.
 For a multi-project workspace, project-specific configuration files are in the project root, under `projects/project-name/`.
 
-Project-specific [TypeScript](https://www.typescriptlang.org/) configuration files inherit from the workspace-wide `tsconfig.json`, and project-specific [TSLint](https://palantir.github.io/tslint/) configuration files inherit from the workspace-wide `tslint.json`.
+Project-specific [TypeScript](https://www.typescriptlang.org/) configuration files inherit from the workspace-wide `tsconfig.json`.
 
 | APPLICATION-SPECIFIC CONFIG FILES    | PURPOSE |
 | :--------------------- | :------------------------------------------|
@@ -109,7 +108,6 @@ Project-specific [TypeScript](https://www.typescriptlang.org/) configuration fil
 | `karma.conf.js`      | Application-specific [Karma](https://karma-runner.github.io/2.0/config/configuration-file.html) configuration. |
 | `tsconfig.app.json`    | Application-specific [TypeScript](https://www.typescriptlang.org/) configuration, including TypeScript and Angular template compiler options. See [TypeScript Configuration](guide/typescript-configuration) and [Angular Compiler Options](guide/angular-compiler-options). |
 | `tsconfig.spec.json`   | [TypeScript](https://www.typescriptlang.org/) configuration for the application tests. See [TypeScript Configuration](guide/typescript-configuration). |
-| `tslint.json`          | Application-specific [TSLint](https://palantir.github.io/tslint/) configuration. |
 
 
 {@a multiple-projects}
@@ -171,4 +169,3 @@ Under the `projects/` folder, the `my-lib` folder contains your library code.
 | `tsconfig.lib.json`  | Library-specific [TypeScript](https://www.typescriptlang.org/) configuration, including TypeScript and Angular template compiler options. See [TypeScript Configuration](guide/typescript-configuration).            |
 | `tsconfig.lib.prod.json`  | Library-specific [TypeScript](https://www.typescriptlang.org/) configuration that is used when building the library in production mode.              |
 | `tsconfig.spec.json` | [TypeScript](https://www.typescriptlang.org/) configuration for the library tests. See [TypeScript Configuration](guide/typescript-configuration).                                                                     |
-| `tslint.json`        | Library-specific [TSLint](https://palantir.github.io/tslint/) configuration. |
