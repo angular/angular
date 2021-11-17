@@ -1646,9 +1646,8 @@ A guard's return value controls the router's behavior:
 
 <div class="alert is-helpful">
 
-**NOTE**: <br />
-The guard can also tell the router to navigate elsewhere, effectively canceling the current navigation.
-When doing so inside a guard, the guard should return `false`.
+**Note:** The guard can also tell the router to navigate elsewhere, effectively canceling the current navigation.
+When doing so inside a guard, the guard should return `UrlTree`;
 
 </div>
 
@@ -1675,12 +1674,16 @@ The router supports multiple guard interfaces:
 | [`CanDeactivate`](api/router/CanDeactivate)       | To mediate navigation *away* from the current route                 |
 | [`Resolve`](api/router/Resolve)                   | To perform route data retrieval *before* route activation           |
 | [`CanLoad`](api/router/CanLoad)                   | To mediate navigation *to* a feature module loaded *asynchronously* |
+| [`CanMatch`](api/router/CanMatch)                 | To control whether a `Route` should be used at all, even if the `path` matches the URL segment. |
 
 You can have multiple guards at every level of a routing hierarchy.
 The router checks the `CanDeactivate` guards first, from the deepest child route to the top.
 Then it checks the `CanActivate` and `CanActivateChild` guards from the top down to the deepest child route.
 If the feature module is loaded asynchronously, the `CanLoad` guard is checked before the module is loaded.
-If *any* guard returns false, pending guards that have not completed are canceled, and the entire navigation is canceled.
+
+With the exception of `CanMatch`, if *any* guard returns false, pending guards that have not completed are canceled, and the entire navigation is canceled. If a `CanMatch` guard returns `false`, the `Router` continues
+processing the rest of the `Routes` to see if a different `Route` config matches the URL. You can think of this 
+as though the `Router` is pretending the `Route` with the `CanMatch` guard did not exist.
 
 There are several examples over the next few sections.
 
@@ -1940,6 +1943,19 @@ In `app.module.ts`, import and add the `AuthModule` to the `AppModule` imports.
     <code-pane header="src/app/auth/login/login.component.ts" path="router/src/app/auth/login/login.component.1.ts"></code-pane>
     <code-pane header="src/app/auth/auth.module.ts" path="router/src/app/auth/auth.module.ts"></code-pane>
 </code-tabs>
+
+<a id="can-match-guard"></a>
+
+### `CanMatch`: Controlling `Route` matching based on application conditions
+
+As an alternative to using a `CanActivate` guard which redirects the user to a new page if they do not have access, you can instead
+use a `CanMatch` guard to control whether the `Router` even attempts to activate a `Route`. This allows you to have
+multiple `Route` configurations which share the same `path` but are match based on different conditions. In addition, this approach
+can allow the `Router` to match the wildcard `Route` instead.
+
+<code-example path="router/src/app/auth/auth.guard.2.ts" header="src/app/auth/auth.guard.ts (excerpt)" region="can-match"></code-example>
+
+<code-example path="router/src/app/admin/admin-routing.module.2.ts" header="src/app/admin/admin-routing.module.ts (guarded admin route)" region="can-match"></code-example>
 
 <a id="can-activate-child-guard"></a>
 

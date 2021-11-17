@@ -6,7 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Injector} from '@angular/core';
+import {Observable, of} from 'rxjs';
+import {map} from 'rxjs/operators';
+
 import {Route} from '../models';
+import {runCanMatchGuards} from '../operators/check_guards';
 import {defaultUrlMatcher, PRIMARY_OUTLET} from '../shared';
 import {UrlSegment, UrlSegmentGroup} from '../url_tree';
 
@@ -28,6 +33,19 @@ const noMatch: MatchResult = {
   parameters: {},
   positionalParamSegments: {}
 };
+
+export function matchWithChecks(
+    segmentGroup: UrlSegmentGroup, route: Route, segments: UrlSegment[],
+    injector: Injector): Observable<MatchResult> {
+  const result = match(segmentGroup, route, segments);
+  if (!result.matched) {
+    return of(result);
+  }
+  return runCanMatchGuards(injector, route, segments)
+      .pipe(
+          map((v) => v === true ? result : {...noMatch}),
+      );
+}
 
 export function match(
     segmentGroup: UrlSegmentGroup, route: Route, segments: UrlSegment[]): MatchResult {
