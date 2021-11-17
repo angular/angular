@@ -8,8 +8,8 @@
 
 import * as chars from '../chars';
 import {ParseError, ParseLocation, ParseSourceFile, ParseSourceSpan} from '../parse_util';
-import {NAMED_ENTITIES} from './entities';
 
+import {NAMED_ENTITIES} from './entities';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from './interpolation_config';
 import {TagContentType, TagDefinition} from './tags';
 import {IncompleteTagOpenToken, TagOpenStartToken, Token, TokenType} from './tokens';
@@ -476,7 +476,7 @@ class _Tokenizer {
     this._endToken([content]);
   }
 
-  private _consumePrefixAndName(): string[] {
+  private _consumePrefixAndName(isTag: boolean = true): string[] {
     const nameOrPrefixStart = this._cursor.clone();
     let prefix: string = '';
     while (this._cursor.peek() !== chars.$COLON && !isPrefixEnd(this._cursor.peek())) {
@@ -485,7 +485,9 @@ class _Tokenizer {
     let nameStart: CharacterCursor;
     if (this._cursor.peek() === chars.$COLON) {
       prefix = this._cursor.getChars(nameOrPrefixStart);
-      this._cursor.advance();
+      if (!(prefix === '' && !isTag)) {
+        this._cursor.advance();
+      }
       nameStart = this._cursor.clone();
     } else {
       nameStart = nameOrPrefixStart;
@@ -573,7 +575,7 @@ class _Tokenizer {
       throw this._createError(_unexpectedCharacterErrorMsg(attrNameStart), this._cursor.getSpan());
     }
     this._beginToken(TokenType.ATTR_NAME);
-    const prefixAndName = this._consumePrefixAndName();
+    const prefixAndName = this._consumePrefixAndName(false);
     this._endToken(prefixAndName);
   }
 

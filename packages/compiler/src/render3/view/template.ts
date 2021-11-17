@@ -763,7 +763,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
         const value = input.value.visit(this._valueConverter);
         if (value !== undefined) {
           const params: any[] = [];
-          const [attrNamespace, attrName] = splitNsName(input.name);
+          const [attrNamespace, attrName] = splitNsName(input.name, false);
           const isAttributeBinding = inputType === BindingType.Attribute;
           const sanitizationRef = resolveSanitizationFn(input.securityContext, isAttributeBinding);
           if (sanitizationRef) params.push(sanitizationRef);
@@ -1532,7 +1532,7 @@ function getLiteralFactory(
  * @param name Name of the attribute, including the namespace.
  */
 function getAttributeNameLiterals(name: string): o.LiteralExpr[] {
-  const [attributeNamespace, attributeName] = splitNsName(name);
+  const [attributeNamespace, attributeName] = splitNsName(name, false);
   const nameLiteral = o.literal(attributeName);
 
   if (attributeNamespace) {
@@ -1830,7 +1830,7 @@ export function createCssSelector(
   cssSelector.setElement(elementNameNoNs);
 
   Object.getOwnPropertyNames(attributes).forEach((name) => {
-    const nameNoNs = splitNsName(name)[1];
+    const nameNoNs = splitNsName(name, false)[1];
     const value = attributes[name];
 
     cssSelector.addAttribute(nameNoNs, value);

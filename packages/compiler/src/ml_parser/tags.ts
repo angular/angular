@@ -24,8 +24,11 @@ export interface TagDefinition {
   getContentType(prefix?: string): TagContentType;
 }
 
-export function splitNsName(elementName: string): [string|null, string] {
-  if (elementName[0] != ':') {
+export function splitNsName(
+    elementName: string, isElementName: boolean = true): [string|null, string] {
+  const isInvalidNamespace =
+      elementName.lastIndexOf(':') === 0 || (elementName.slice(0, 2) === '::');
+  if (elementName[0] !== ':' || (!isElementName && isInvalidNamespace)) {
     return [null, elementName];
   }
 

@@ -391,6 +391,14 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn, humanizeNodes} 
           ]);
         });
 
+        it('should parse attributes when namespace is invalid', () => {
+          expect(humanizeDom(parser.parse('<svg:use :disabled="disabled" />', 'TestComp')))
+              .toEqual([
+                [html.Element, ':svg:use', 0],
+                [html.Attribute, ':disabled', 'disabled', ['disabled']],
+              ]);
+        });
+
         it('should support a prematurely terminated interpolation in attribute', () => {
           const {errors, rootNodes} = parser.parse('<div p="{{ abc"><span></span>', 'TestComp');
           expect(humanizeNodes(rootNodes, true)).toEqual([
