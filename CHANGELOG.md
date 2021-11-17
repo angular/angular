@@ -1,3 +1,28 @@
+<a name="13.0.2"></a>
+# 13.0.2 "taffy-tangerine" (2021-11-17)
+### cdk
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a24b1ac301](https://github.com/angular/components/commit/a24b1ac301e01e2e9c8d619f0a0628008c2609a7) | fix | **drag-drop:** handle not working when it has a child inside shadow DOM |
+| [a38fcc2924](https://github.com/angular/components/commit/a38fcc2924f0de03e8a6fd45bacc9aafea87c1f0) | fix | **testing:** fake events not propagating through shadow DOM |
+### material
+| Commit | Type | Description |
+| -- | -- | -- |
+| [ba5d36a0ba](https://github.com/angular/components/commit/ba5d36a0bab9df5220d82c1e28057e7aabe802e7) | fix | **datepicker:** Add aria-current="date" to current date ([#23714](https://github.com/angular/components/pull/23714)) |
+| [759d85a2ff](https://github.com/angular/components/commit/759d85a2fff0d287143d0617c4394c864a4c6dcd) | fix | **tabs:** pagination sometimes incorrectly shown after zoom ([#23759](https://github.com/angular/components/pull/23759)) |
+### material-experimental
+| Commit | Type | Description |
+| -- | -- | -- |
+| [59ea11602a](https://github.com/angular/components/commit/59ea11602ad9a443c3e1652c5175d3929509f4f1) | fix | **mdc-list:** don't override focus styles with hover ([#23840](https://github.com/angular/components/pull/23840)) |
+### multiple
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e5c589d473](https://github.com/angular/components/commit/e5c589d47313da99a438e58e5154e314513b0ffa) | perf | don't emit fallbacks for CSS variables in experimental components ([#23912](https://github.com/angular/components/pull/23912)) |
+## Special Thanks
+ByzantineFailure, Dario Piotrowicz, Jeremy Elbourn, Joey Perrott, Kristiyan Kostadinov, Miles Malerba and Paul Gschwendtner
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="13.1.0-next.1"></a>
 # 13.1.0-next.1 "tulle-turkey" (2021-11-11)
 ### cdk
