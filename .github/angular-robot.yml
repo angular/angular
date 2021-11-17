@@ -113,7 +113,6 @@ merge:
       - 'ci/circleci: build'
       - 'ci/circleci: lint'
       - 'ci/angular: size'
-      - 'cla/google'
       - 'google3'
       - 'pullapprove'
 
