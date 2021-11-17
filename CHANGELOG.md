@@ -1,3 +1,29 @@
+<a name="13.1.0-next.2"></a>
+# 13.1.0-next.2 "putty-pomelo" (2021-11-17)
+### cdk
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c381a6c5ae](https://github.com/angular/components/commit/c381a6c5ae1bd0b25e91384bc8bf03198064aa2b) | feat | **bidi:** support `auto` direction value ([#23906](https://github.com/angular/components/pull/23906)) |
+| [b9cda574c9](https://github.com/angular/components/commit/b9cda574c9f9b127b7b018212556678e4fd573c2) | fix | **drag-drop:** handle not working when it has a child inside shadow DOM |
+| [48df9d6788](https://github.com/angular/components/commit/48df9d6788c2bc4e7622755284b4901447a568bb) | fix | **testing:** fake events not propagating through shadow DOM |
+### material
+| Commit | Type | Description |
+| -- | -- | -- |
+| [6f1a1b7520](https://github.com/angular/components/commit/6f1a1b75201a6eeacf9b02f4ba35672c1e9b66b7) | fix | **datepicker:** Add aria-current="date" to current date ([#23714](https://github.com/angular/components/pull/23714)) |
+| [8cdd3d7c76](https://github.com/angular/components/commit/8cdd3d7c763113ed03cf6b6889fb41f40f57dda9) | fix | **tabs:** pagination sometimes incorrectly shown after zoom ([#23759](https://github.com/angular/components/pull/23759)) |
+### material-experimental
+| Commit | Type | Description |
+| -- | -- | -- |
+| [edc2aa353f](https://github.com/angular/components/commit/edc2aa353fab2cbb32841431571542edfd5f6b60) | fix | **mdc-list:** don't override focus styles with hover ([#23840](https://github.com/angular/components/pull/23840)) |
+### multiple
+| Commit | Type | Description |
+| -- | -- | -- |
+| [4350552f5c](https://github.com/angular/components/commit/4350552f5c145182c8fc17586d8a826c40481b59) | perf | don't emit fallbacks for CSS variables in experimental components ([#23912](https://github.com/angular/components/pull/23912)) |
+## Special Thanks
+ByzantineFailure, Dario Piotrowicz, Jeremy Elbourn, Joey Perrott, Kristiyan Kostadinov, Miles Malerba and Paul Gschwendtner
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="13.0.2"></a>
 # 13.0.2 "taffy-tangerine" (2021-11-17)
 ### cdk
