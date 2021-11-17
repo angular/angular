@@ -1,3 +1,13 @@
+<a name="13.1.0-next.2"></a>
+# 13.1.0-next.2 (2021-11-17)
+
+This release contains various API docs improvements.
+
+## Special Thanks
+Andrew Kushnir, Armen Vardanyan, Dylan Hunn, Joey Perrott, Martin von Gagern, Paul Gschwendtner, Pete Bacon Darwin, Ramesh Thiruchelvam, dario-piotrowicz and fusho-takahashi
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="13.0.2"></a>
 # 13.0.2 (2021-11-17)
 
