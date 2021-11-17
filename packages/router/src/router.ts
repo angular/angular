@@ -585,10 +585,11 @@ export class Router {
   /**
    * Creates the router service.
    */
-  // TODO: vsavkin make internal after the final is out.
   constructor(
       private rootComponentType: Type<any>|null, private urlSerializer: UrlSerializer,
       private rootContexts: ChildrenOutletContexts, private location: Location, injector: Injector,
+      // Note: the `compiler` argument is unused, but dropping it would be a breaking change.
+      // TODO: remove the `compiler` argument in the next major release (v14).
       compiler: Compiler, public config: Routes) {
     const onLoadStart = (r: Route) => this.triggerEvent(new RouteConfigLoadStart(r));
     const onLoadEnd = (r: Route) => this.triggerEvent(new RouteConfigLoadEnd(r));
@@ -603,7 +604,7 @@ export class Router {
     this.rawUrlTree = this.currentUrlTree;
     this.browserUrlTree = this.currentUrlTree;
 
-    this.configLoader = new RouterConfigLoader(injector, compiler, onLoadStart, onLoadEnd);
+    this.configLoader = new RouterConfigLoader(injector, onLoadStart, onLoadEnd);
     this.routerState = createEmptyState(this.currentUrlTree, this.rootComponentType);
 
     this.transitions = new BehaviorSubject<NavigationTransition>({

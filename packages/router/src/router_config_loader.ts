@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Compiler, InjectFlags, InjectionToken, Injector, NgModuleFactory} from '@angular/core';
+import {createNgModuleRef, InjectFlags, InjectionToken, Injector, NgModuleFactory, Type} from '@angular/core';
 import {ConnectableObservable, from, Observable, of, Subject} from 'rxjs';
-import {catchError, map, mergeMap, refCount, tap} from 'rxjs/operators';
+import {catchError, map, mergeMap, refCount} from 'rxjs/operators';
 
 import {LoadChildren, LoadedRouterConfig, Route} from './models';
 import {flatten, wrapIntoObservable} from './utils/collection';
@@ -26,10 +26,12 @@ import {standardizeConfig} from './utils/config';
  */
 export const ROUTES = new InjectionToken<Route[][]>('ROUTES');
 
+const isNgModuleFactory = (v: unknown): v is NgModuleFactory<unknown> =>
+    v instanceof NgModuleFactory;
+
 export class RouterConfigLoader {
   constructor(
-      private injector: Injector, private compiler: Compiler,
-      private onLoadStartListener?: (r: Route) => void,
+      private injector: Injector, private onLoadStartListener?: (r: Route) => void,
       private onLoadEndListener?: (r: Route) => void) {}
 
   load(parentInjector: Injector, route: Route): Observable<LoadedRouterConfig> {
@@ -40,22 +42,25 @@ export class RouterConfigLoader {
     if (this.onLoadStartListener) {
       this.onLoadStartListener(route);
     }
-    const moduleFactory$ = this.loadModuleFactory(route.loadChildren!);
-    const loadRunner = moduleFactory$.pipe(
-        map((factory: NgModuleFactory<any>) => {
+    const ngModule$ = this.loadNgModule(route.loadChildren!);
+    const loadRunner = ngModule$.pipe(
+        map((ngModule: Type<unknown>|NgModuleFactory<unknown>) => {
           if (this.onLoadEndListener) {
             this.onLoadEndListener(route);
           }
-          const module = factory.create(parentInjector);
+          const ngModuleRef = isNgModuleFactory(ngModule) ?
+              ngModule.create(parentInjector) :
+              createNgModuleRef(ngModule, parentInjector);
+
           // When loading a module that doesn't provide `RouterModule.forChild()` preloader
           // will get stuck in an infinite loop. The child module's Injector will look to
           // its parent `Injector` when it doesn't find any ROUTES so it will return routes
           // for it's parent module instead.
           return new LoadedRouterConfig(
-              flatten(
-                  module.injector.get(ROUTES, undefined, InjectFlags.Self | InjectFlags.Optional))
+              flatten(ngModuleRef.injector.get(
+                          ROUTES, undefined, InjectFlags.Self | InjectFlags.Optional))
                   .map(standardizeConfig),
-              module);
+              ngModuleRef);
         }),
         catchError((err) => {
           route._loader$ = undefined;
@@ -68,13 +73,10 @@ export class RouterConfigLoader {
     return route._loader$;
   }
 
-  private loadModuleFactory(loadChildren: LoadChildren): Observable<NgModuleFactory<any>> {
+  private loadNgModule(loadChildren: LoadChildren):
+      Observable<Type<unknown>|NgModuleFactory<unknown>> {
     return wrapIntoObservable(loadChildren()).pipe(mergeMap((t: any) => {
-      if (t instanceof NgModuleFactory) {
-        return of(t);
-      } else {
-        return from(this.compiler.compileModuleAsync(t));
-      }
+      return isNgModuleFactory(t) ? of(t) : from(Promise.resolve(t));
     }));
   }
 }

@@ -1452,6 +1452,9 @@
     "name": "isNameOnlyAttributeMarker"
   },
   {
+    "name": "isNgModuleFactory"
+  },
+  {
     "name": "isNodeMatchingSelector"
   },
   {

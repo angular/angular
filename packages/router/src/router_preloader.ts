@@ -77,12 +77,14 @@ export class RouterPreloader implements OnDestroy {
   private subscription?: Subscription;
 
   constructor(
+      // Note: the `compiler` argument is unused, but dropping it would be a breaking change.
+      // TODO: remove the `compiler` argument in the next major release (v14).
       private router: Router, compiler: Compiler, private injector: Injector,
       private preloadingStrategy: PreloadingStrategy) {
     const onStartLoad = (r: Route) => router.triggerEvent(new RouteConfigLoadStart(r));
     const onEndLoad = (r: Route) => router.triggerEvent(new RouteConfigLoadEnd(r));
 
-    this.loader = new RouterConfigLoader(injector, compiler, onStartLoad, onEndLoad);
+    this.loader = new RouterConfigLoader(injector, onStartLoad, onEndLoad);
   }
 
   setUpPreloading(): void {
