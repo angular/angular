@@ -18,7 +18,7 @@
     "build-local": "yarn ~~build",
     "prebuild-local-ci": "yarn setup-local-ci",
     "build-local-ci": "yarn ~~build --progress=false",
-    "extract-cli-command-docs": "node tools/transforms/cli-docs-package/extract-cli-commands.js afd86f0cd",
+    "extract-cli-command-docs": "node tools/transforms/cli-docs-package/extract-cli-commands.js b8e198ba5",
     "lint": "yarn check-env && yarn docs-lint && ng lint && yarn example-lint && yarn tools-lint && yarn security-lint",
     "test": "yarn check-env && ng test",
     "pree2e": "yarn check-env && yarn update-webdriver",
