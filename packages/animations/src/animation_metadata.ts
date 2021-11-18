@@ -1114,10 +1114,6 @@ export function animation(
  * with animations that are assigned using the Angular animation library. CSS keyframes
  * and transitions are not handled by this API.
  *
- * `animateChild()` does not currently work with route transition animations. Please see
- * GitHub Issue {@link https://github.com/angular/angular/issues/30477 #30477} for more
- * information.
- *
  * @publicApi
  */
 export function animateChild(options: AnimateChildOptions|null = null):
