@@ -269,6 +269,8 @@ def pkg_npm(name, use_prodmode_output = False, **kwargs):
         provider = "JSEcmaScriptModuleInfo" if use_prodmode_output else "JSModuleInfo",
         include_declarations = True,
         include_default_files = True,
+        forward_linker_mappings = False,
+        include_external_npm_packages = False,
         deps = deps,
     )
 
