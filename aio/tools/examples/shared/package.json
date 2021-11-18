@@ -35,7 +35,6 @@
     "@angular/service-worker": "~13.0.0-next.0",
     "@angular/upgrade": "~13.0.0-next.0",
     "@nguniversal/express-engine": "~13.0.0-rc.0",
-    "@webcomponents/custom-elements": "^1.4.2",
     "angular": "1.8.0",
     "angular-in-memory-web-api": "~0.11.0",
     "angular-route": "1.8.0",

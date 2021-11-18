@@ -22,7 +22,6 @@
     "@angular/platform-browser": "~13.0.0-next.0",
     "@angular/platform-browser-dynamic": "~13.0.0-next.0",
     "@angular/router": "~13.0.0-next.0",
-    "@webcomponents/custom-elements": "^1.4.2",
     "angular-in-memory-web-api": "~0.11.0",
     "rxjs": "~7.4.0",
     "tslib": "^2.3.0",
