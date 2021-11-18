@@ -38,7 +38,6 @@ import {setJitOptions} from './render3/jit/jit_options';
 import {NgModuleFactory as R3NgModuleFactory} from './render3/ng_module_ref';
 import {publishDefaultGlobalUtils as _publishDefaultGlobalUtils} from './render3/util/global_utils';
 import {Testability, TestabilityRegistry} from './testability/testability';
-import {isDevMode} from './util/is_dev_mode';
 import {isPromise} from './util/lang';
 import {scheduleMicroTask} from './util/microtask';
 import {stringify} from './util/stringify';
@@ -468,7 +467,7 @@ function getNgZone(
     ngZone = new NoopNgZone();
   } else {
     ngZone = (ngZoneOption === 'zone.js' ? undefined : ngZoneOption) || new NgZone({
-               enableLongStackTrace: isDevMode(),
+               enableLongStackTrace: typeof ngDevMode === 'undefined' ? false : !!ngDevMode,
                shouldCoalesceEventChangeDetection: !!extra?.ngZoneEventCoalescing,
                shouldCoalesceRunChangeDetection: !!extra?.ngZoneRunCoalescing
              });
@@ -843,9 +842,7 @@ export class ApplicationRef {
     });
 
     this._loadComponent(compRef);
-    // Note that we have still left the `isDevMode()` condition in order to avoid
-    // creating a breaking change for projects that still use the View Engine.
-    if ((typeof ngDevMode === 'undefined' || ngDevMode) && isDevMode()) {
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
       const _console = this._injector.get(Console);
       _console.log(
           `Angular is running in development mode. Call enableProdMode() to enable production mode.`);
@@ -873,9 +870,7 @@ export class ApplicationRef {
       for (let view of this._views) {
         view.detectChanges();
       }
-      // Note that we have still left the `isDevMode()` condition in order to avoid
-      // creating a breaking change for projects that still use the View Engine.
-      if ((typeof ngDevMode === 'undefined' || ngDevMode) && isDevMode()) {
+      if (typeof ngDevMode === 'undefined' || ngDevMode) {
         for (let view of this._views) {
           view.checkNoChanges();
         }
