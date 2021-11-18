@@ -21,8 +21,6 @@
  * - `performance:90` _(Only run audits for the `performance` category and require a score of 90 or higher.)_
  *
  * If `<log-file>` is defined, the full results will be logged there.
- *
- * (Skips HTTPS-related audits, when run for an HTTP URL.)
  */
 
 // Imports
