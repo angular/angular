@@ -1,6 +1,6 @@
 load("@build_bazel_rules_nodejs//:index.bzl", "generated_file_test")
 load("//tools:defaults.bzl", "api_golden_test", "api_golden_test_npm_package", "ng_module", "ng_package")
-load("//tools:tsec.bzl", "tsec_test")
+load("@npm//tsec:index.bzl", "tsec_test")
 load("//packages/common/locales:index.bzl", "generate_base_locale_file")
 
 package(default_visibility = ["//visibility:public"])
