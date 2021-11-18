@@ -86,7 +86,7 @@ executors:
         type: string
         default: medium
     docker:
-      - image: cimg/node:14.17.6@sha256:589b5e494173bfb48923fa8d29b010b4d17079ac98d08de95dd4a78e57f5aa0b
+      - image: cimg/node:16.10.0
     resource_class: << parameters.resource_class >>
     working_directory: ~/ng
 
@@ -96,7 +96,7 @@ executors:
         type: string
         default: medium
     docker:
-      - image: cimg/node:14.17.6-browsers@sha256:aa6d08a04d13dd8aa18ae94be70a703c14dde0e99ea572e885e548f47f95eaa9
+      - image: cimg/node:16.10.0-browsers
     resource_class: << parameters.resource_class >>
     working_directory: ~/ng
 
