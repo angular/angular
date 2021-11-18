@@ -122,7 +122,7 @@ export class MockPlatformLocation implements PlatformLocation {
       this.baseHref = config.appBaseHref || '';
 
       const parsedChanges =
-          this.parseChanges(null, config.startUrl || 'http://<empty>/', this.baseHref);
+          this.parseChanges(null, config.startUrl || 'http://_empty_/', this.baseHref);
       this.urlChanges[0] = {...parsedChanges};
     }
   }
