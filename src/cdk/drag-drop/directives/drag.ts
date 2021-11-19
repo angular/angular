@@ -370,16 +370,7 @@ export class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDestroy {
       return this.element.nativeElement.closest<HTMLElement>(boundary);
     }
 
-    const element = coerceElement(boundary);
-
-    if (
-      (typeof ngDevMode === 'undefined' || ngDevMode) &&
-      !element.contains(this.element.nativeElement)
-    ) {
-      throw Error('Draggable element is not inside of the node passed into cdkDragBoundary.');
-    }
-
-    return element;
+    return coerceElement(boundary);
   }
 
   /** Syncs the inputs of the CdkDrag with the options of the underlying DragRef. */
