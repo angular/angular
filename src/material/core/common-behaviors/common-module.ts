@@ -8,7 +8,7 @@
 
 import {HighContrastModeDetector} from '@angular/cdk/a11y';
 import {BidiModule} from '@angular/cdk/bidi';
-import {Inject, InjectionToken, isDevMode, NgModule, Optional, Version} from '@angular/core';
+import {Inject, InjectionToken, NgModule, Optional, Version} from '@angular/core';
 import {VERSION as CDK_VERSION} from '@angular/cdk';
 import {DOCUMENT} from '@angular/common';
 import {_isTestEnvironment} from '@angular/cdk/platform';
@@ -57,42 +57,37 @@ export class MatCommonModule {
   /** Whether we've done the global sanity checks (e.g. a theme is loaded, there is a doctype). */
   private _hasDoneGlobalChecks = false;
 
-  /** Configured sanity checks. */
-  private _sanityChecks: SanityChecks;
-
-  /** Used to reference correct document/window */
-  protected _document: Document;
-
   constructor(
     highContrastModeDetector: HighContrastModeDetector,
-    @Optional() @Inject(MATERIAL_SANITY_CHECKS) sanityChecks: any,
-    @Inject(DOCUMENT) document: any,
+    @Optional() @Inject(MATERIAL_SANITY_CHECKS) private _sanityChecks: SanityChecks,
+    @Inject(DOCUMENT) private _document: Document,
   ) {
-    this._document = document;
-
     // While A11yModule also does this, we repeat it here to avoid importing A11yModule
     // in MatCommonModule.
     highContrastModeDetector._applyBodyHighContrastModeCssClasses();
 
-    // Note that `_sanityChecks` is typed to `any`, because AoT
-    // throws an error if we use the `SanityChecks` type directly.
-    this._sanityChecks = sanityChecks;
-
     if (!this._hasDoneGlobalChecks) {
-      this._checkDoctypeIsDefined();
-      this._checkThemeIsPresent();
-      this._checkCdkVersionMatch();
       this._hasDoneGlobalChecks = true;
+
+      if (typeof ngDevMode === 'undefined' || ngDevMode) {
+        if (this._checkIsEnabled('doctype')) {
+          _checkDoctypeIsDefined(this._document);
+        }
+
+        if (this._checkIsEnabled('theme')) {
+          _checkThemeIsPresent(this._document);
+        }
+
+        if (this._checkIsEnabled('version')) {
+          _checkCdkVersionMatch();
+        }
+      }
     }
   }
 
   /** Gets whether a specific sanity check is enabled. */
   private _checkIsEnabled(name: keyof GranularSanityChecks): boolean {
-    // TODO(crisbeto): we can't use `ngDevMode` here yet, because ViewEngine apps might not support
-    // it. Since these checks can have performance implications and they aren't tree shakeable
-    // in their current form, we can leave the `isDevMode` check in for now.
-    // tslint:disable-next-line:ban
-    if (!isDevMode() || _isTestEnvironment()) {
+    if (_isTestEnvironment()) {
       return false;
     }
 
@@ -102,60 +97,57 @@ export class MatCommonModule {
 
     return !!this._sanityChecks[name];
   }
+}
 
-  private _checkDoctypeIsDefined(): void {
-    if (this._checkIsEnabled('doctype') && !this._document.doctype) {
-      console.warn(
-        'Current document does not have a doctype. This may cause ' +
-          'some Angular Material components not to behave as expected.',
-      );
-    }
+/** Checks that the page has a doctype. */
+function _checkDoctypeIsDefined(doc: Document): void {
+  if (!doc.doctype) {
+    console.warn(
+      'Current document does not have a doctype. This may cause ' +
+        'some Angular Material components not to behave as expected.',
+    );
+  }
+}
+
+/** Checks that a theme has been included. */
+function _checkThemeIsPresent(doc: Document): void {
+  // We need to assert that the `body` is defined, because these checks run very early
+  // and the `body` won't be defined if the consumer put their scripts in the `head`.
+  if (!doc.body || typeof getComputedStyle !== 'function') {
+    return;
   }
 
-  private _checkThemeIsPresent(): void {
-    // We need to assert that the `body` is defined, because these checks run very early
-    // and the `body` won't be defined if the consumer put their scripts in the `head`.
-    if (
-      !this._checkIsEnabled('theme') ||
-      !this._document.body ||
-      typeof getComputedStyle !== 'function'
-    ) {
-      return;
-    }
+  const testElement = doc.createElement('div');
+  testElement.classList.add('mat-theme-loaded-marker');
+  doc.body.appendChild(testElement);
 
-    const testElement = this._document.createElement('div');
+  const computedStyle = getComputedStyle(testElement);
 
-    testElement.classList.add('mat-theme-loaded-marker');
-    this._document.body.appendChild(testElement);
-
-    const computedStyle = getComputedStyle(testElement);
-
-    // In some situations the computed style of the test element can be null. For example in
-    // Firefox, the computed style is null if an application is running inside of a hidden iframe.
-    // See: https://bugzilla.mozilla.org/show_bug.cgi?id=548397
-    if (computedStyle && computedStyle.display !== 'none') {
-      console.warn(
-        'Could not find Angular Material core theme. Most Material ' +
-          'components may not work as expected. For more info refer ' +
-          'to the theming guide: https://material.angular.io/guide/theming',
-      );
-    }
-
-    testElement.remove();
+  // In some situations the computed style of the test element can be null. For example in
+  // Firefox, the computed style is null if an application is running inside of a hidden iframe.
+  // See: https://bugzilla.mozilla.org/show_bug.cgi?id=548397
+  if (computedStyle && computedStyle.display !== 'none') {
+    console.warn(
+      'Could not find Angular Material core theme. Most Material ' +
+        'components may not work as expected. For more info refer ' +
+        'to the theming guide: https://material.angular.io/guide/theming',
+    );
   }
 
-  /** Checks whether the material version matches the cdk version */
-  private _checkCdkVersionMatch(): void {
-    if (this._checkIsEnabled('version') && VERSION.full !== CDK_VERSION.full) {
-      console.warn(
-        'The Angular Material version (' +
-          VERSION.full +
-          ') does not match ' +
-          'the Angular CDK version (' +
-          CDK_VERSION.full +
-          ').\n' +
-          'Please ensure the versions of these two packages exactly match.',
-      );
-    }
+  testElement.remove();
+}
+
+/** Checks whether the Material version matches the CDK version. */
+function _checkCdkVersionMatch(): void {
+  if (VERSION.full !== CDK_VERSION.full) {
+    console.warn(
+      'The Angular Material version (' +
+        VERSION.full +
+        ') does not match ' +
+        'the Angular CDK version (' +
+        CDK_VERSION.full +
+        ').\n' +
+        'Please ensure the versions of these two packages exactly match.',
+    );
   }
 }

@@ -188,8 +188,7 @@ export const MAT_RIPPLE_GLOBAL_OPTIONS: InjectionToken<RippleGlobalOptions>;
 
 // @public
 export class MatCommonModule {
-    constructor(highContrastModeDetector: HighContrastModeDetector, sanityChecks: any, document: any);
-    protected _document: Document;
+    constructor(highContrastModeDetector: HighContrastModeDetector, _sanityChecks: SanityChecks, _document: Document);
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatCommonModule, [null, { optional: true; }, null]>;
     // (undocumented)
