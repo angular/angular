@@ -13,7 +13,7 @@ mat-sidenav-container.sidenav-container {
   transform: none;
 
   &.has-floating-toc {
-    .mat-sidenav-content {
+    .sidenav-content {
       margin-right: 18vw;
     }
   }
