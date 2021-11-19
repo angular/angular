@@ -121,12 +121,12 @@
     ora "5.4.1"
     rxjs "6.6.7"
 
-"@angular-eslint/builder@^12.5.0":
-  version "12.6.1"
-  resolved "https://registry.yarnpkg.com/@angular-eslint/builder/-/builder-12.6.1.tgz#9c65dde8dbab20bc40667ee336c9e51697b5e171"
-  integrity sha512-w5hkN3ZEWAQusqFnwv4MbC8TsY6Eh4pgKShAKfYA0GmqmCp3QZG1vHRbpV1Rs0WQIzoa3RRXRiIMt6STgf8SAA==
+"@angular-eslint/builder@^13.0.0":
+  version "13.0.1"
+  resolved "https://registry.yarnpkg.com/@angular-eslint/builder/-/builder-13.0.1.tgz#568bf7df41b7ff4fcf51d2d2188b372da6152bcd"
+  integrity sha512-z43jUpA4xm767ze/yWwvoy5PdvSe57DAvXHlHywv0iYxXl1OhytPIA0CdOA3ZWkbSWWVmWmFzELeYfGnE3+igg==
   dependencies:
-    "@nrwl/devkit" "12.6.0"
+    "@nrwl/devkit" "13.1.3"
 
 "@angular-eslint/bundled-angular-compiler@12.6.1":
   version "12.6.1"
@@ -1538,32 +1538,62 @@
     node-gyp "^8.2.0"
     read-package-json-fast "^2.0.1"
 
-"@nrwl/devkit@12.6.0":
-  version "12.6.0"
-  resolved "https://registry.yarnpkg.com/@nrwl/devkit/-/devkit-12.6.0.tgz#a2bdd4c144f05597302580bcf31443abdd9dc6be"
-  integrity sha512-tvw/4n2JD/38UuzdxFCoj1+x02BAKK4EvtLhwUK5XSBF0wDYFBp5rHfxvUD9ZcoiRRrZA4QGFjhDljrfj95F2A==
+"@nrwl/cli@*":
+  version "13.2.0"
+  resolved "https://registry.yarnpkg.com/@nrwl/cli/-/cli-13.2.0.tgz#b6adcae4067dbf2745a06dd820ba3448f9099c20"
+  integrity sha512-zpDkt+e1cZS+/3IVJLXcmwwvy/vnW/FAQdSecvrEkYZPIMFfVFlL6814RebuIyg5LKak5rdqIPp+ndv5quTkzg==
   dependencies:
-    "@nrwl/tao" "12.6.0"
+    "@nrwl/tao" "13.2.0"
+    chalk "4.1.0"
+    enquirer "~2.3.6"
+    v8-compile-cache "2.3.0"
+    yargs "15.4.1"
+    yargs-parser "20.0.0"
+
+"@nrwl/devkit@13.1.3":
+  version "13.1.3"
+  resolved "https://registry.yarnpkg.com/@nrwl/devkit/-/devkit-13.1.3.tgz#8b119587984371a4caf0b3601a7481e04bac65a3"
+  integrity sha512-TAAsZJvVc/obeH0rZKY6miVhyM2GHGb8qIWp9MAIdLlXf4VDcNC7rxwb5OrGVSwuTTjqGYBGPUx0yEogOOJthA==
+  dependencies:
+    "@nrwl/tao" "13.1.3"
     ejs "^3.1.5"
     ignore "^5.0.4"
     rxjs "^6.5.4"
     semver "7.3.4"
     tslib "^2.0.0"
 
-"@nrwl/tao@12.6.0":
-  version "12.6.0"
-  resolved "https://registry.yarnpkg.com/@nrwl/tao/-/tao-12.6.0.tgz#b0ef91cbc0a8b7747407d1f25b0be669d9a8ddc7"
-  integrity sha512-h6X+mqmTlZjA9nqlyPAu9TFNORHAMcC1BD8H8kA8lTHN1nktLHQ266qpHVLsxcqww2EYsVqQaKaOpUacck49+w==
+"@nrwl/tao@13.1.3":
+  version "13.1.3"
+  resolved "https://registry.yarnpkg.com/@nrwl/tao/-/tao-13.1.3.tgz#5a88029b0aa9dfd4bca0a86d3dde2b608c468b36"
+  integrity sha512-/IwJgSgCBD1SaF+n8RuXX2OxDAh8ut/+P8pMswjm8063ac30UlAHjQ4XTYyskLH8uoUmNi2hNaGgHUrkwt7tQA==
   dependencies:
     chalk "4.1.0"
     enquirer "~2.3.6"
     fs-extra "^9.1.0"
     jsonc-parser "3.0.0"
+    nx "13.1.3"
     rxjs "^6.5.4"
     rxjs-for-await "0.0.2"
     semver "7.3.4"
     tmp "~0.2.1"
     tslib "^2.0.0"
+    yargs-parser "20.0.0"
+
+"@nrwl/tao@13.2.0":
+  version "13.2.0"
+  resolved "https://registry.yarnpkg.com/@nrwl/tao/-/tao-13.2.0.tgz#d153fe3ceea414ff5a5960cbb47c8a5ba1fb4858"
+  integrity sha512-1mxEJ9o3DftTteMaLVcNBewnfkYafm1vHmoWmtaJCFZ85xeYJ8bZQioFFYoRLN0eqWhpkgr8JzKj0VPoqKHrow==
+  dependencies:
+    chalk "4.1.0"
+    enquirer "~2.3.6"
+    fs-extra "^9.1.0"
+    jsonc-parser "3.0.0"
+    nx "13.2.0"
+    rxjs "^6.5.4"
+    rxjs-for-await "0.0.2"
+    semver "7.3.4"
+    tmp "~0.2.1"
+    tslib "^2.3.0"
     yargs-parser "20.0.0"
 
 "@opentelemetry/api@^1.0.0":
@@ -8625,6 +8655,20 @@ nwsapi@^2.2.0:
   resolved "https://registry.yarnpkg.com/nwsapi/-/nwsapi-2.2.0.tgz#204879a9e3d068ff2a55139c2c772780681a38b7"
   integrity sha512-h2AatdwYH+JHiZpv7pt/gSX1XoRGb7L/qSIeuqA6GwYoF9w1vP1cw42TO0aI2pNyshRK5893hNSl+1//vHK7hQ==
 
+nx@13.1.3:
+  version "13.1.3"
+  resolved "https://registry.yarnpkg.com/nx/-/nx-13.1.3.tgz#0b2db9b5bc87a47fb3a90014d2b2abb44f568851"
+  integrity sha512-clM0NQhQKYkqcNz2E3uYRMLwhp2L/9dBhJhQi9XBX4IAyA2gWAomhRIlLm5Xxg3g4h1xwSpP3eJ5t89VikY8Pw==
+  dependencies:
+    "@nrwl/cli" "*"
+
+nx@13.2.0:
+  version "13.2.0"
+  resolved "https://registry.yarnpkg.com/nx/-/nx-13.2.0.tgz#b61894244bfe4f660c2b688c4bd8eccba9bef4b5"
+  integrity sha512-6EmHNwU3wsxfpy57+MQGbMcvrd9CImw3OU2OCW8Ddywi6UVmoVevaHgcxyOsUlaicj/4xU+7Pv5fGt4q1uAjyw==
+  dependencies:
+    "@nrwl/cli" "*"
+
 oauth-sign@~0.9.0:
   version "0.9.0"
   resolved "https://registry.yarnpkg.com/oauth-sign/-/oauth-sign-0.9.0.tgz#47a7b016baa68b5fa0ecf3dee08a85c679ac6455"
@@ -12109,7 +12153,7 @@ uuid@^3.0.0, uuid@^3.3.2, uuid@^3.4.0:
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-3.4.0.tgz#b23e4358afa8a202fe7a100af1f5f883f02007ee"
   integrity sha512-HjSDRw6gZE5JMggctHBcjVak08+KEVhSIiDzFnT9S9aegmp85S/bReBVTb4QTFaRNptJ9kuYaNhnbNEOkbKb/A==
 
-v8-compile-cache@^2.0.3:
+v8-compile-cache@2.3.0, v8-compile-cache@^2.0.3:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/v8-compile-cache/-/v8-compile-cache-2.3.0.tgz#2de19618c66dc247dcfb6f99338035d8245a2cee"
   integrity sha512-l8lCEmLcLYZh4nbunNZvQCJc5pv7+RCwa8q/LdUx8u7lsWvPDKmpodJAJNwkAhJC//dFY48KuIEmjtd4RViDrA==
@@ -12676,7 +12720,7 @@ yargs-parser@^20.2.2, yargs-parser@^20.2.4:
   resolved "https://registry.yarnpkg.com/yargs-parser/-/yargs-parser-20.2.9.tgz#2eb7dc3b0289718fc295f362753845c41a0c94ee"
   integrity sha512-y11nGElTIV+CT3Zv9t7VKl+Q3hTQoT9a1Qzezhhl6Rp21gJ/IVTW7Z3y9EWXhuUBC2Shnf+DX0antecpAwSP8w==
 
-yargs@^15.3.1:
+yargs@15.4.1, yargs@^15.3.1:
   version "15.4.1"
   resolved "https://registry.yarnpkg.com/yargs/-/yargs-15.4.1.tgz#0d87a16de01aee9d8bec2bfbf74f67851730f4f8"
   integrity sha512-aePbxDmcYW++PaqBsJ+HYUFwCdv4LVvdnhBy78E57PIor8/OVvhMrADFFEDh8DHDFRv/O9i3lPhsENjO7QX0+A==
