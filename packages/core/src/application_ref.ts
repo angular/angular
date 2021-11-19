@@ -32,6 +32,7 @@ import {InternalViewRef, ViewRef} from './linker/view_ref';
 import {isComponentResourceResolutionQueueEmpty, resolveComponentResources} from './metadata/resource_loading';
 import {assertNgModuleType} from './render3/assert';
 import {ComponentFactory as R3ComponentFactory} from './render3/component_ref';
+import {RuntimeError, RuntimeErrorCode} from './render3/error_code';
 import {setLocaleId} from './render3/i18n/i18n_locale_id';
 import {setJitOptions} from './render3/jit/jit_options';
 import {NgModuleFactory as R3NgModuleFactory} from './render3/ng_module_ref';
@@ -123,8 +124,10 @@ export class NgProbeToken {
 export function createPlatform(injector: Injector): PlatformRef {
   if (_platform && !_platform.destroyed &&
       !_platform.injector.get(ALLOW_MULTIPLE_PLATFORMS, false)) {
-    throw new Error(
-        'There can be only one platform. Destroy the previous one to create a new one.');
+    const errorMessage = (typeof ngDevMode === 'undefined' || ngDevMode) ?
+        'There can be only one platform. Destroy the previous one to create a new one.' :
+        '';
+    throw new RuntimeError(RuntimeErrorCode.MULTIPLE_PLATFORMS, errorMessage);
   }
   publishDefaultGlobalUtils();
   _platform = injector.get(PlatformRef);
@@ -177,11 +180,15 @@ export function assertPlatform(requiredToken: any): PlatformRef {
   const platform = getPlatform();
 
   if (!platform) {
-    throw new Error('No platform exists!');
+    const errorMessage =
+        (typeof ngDevMode === 'undefined' || ngDevMode) ? 'No platform exists!' : '';
+    throw new RuntimeError(RuntimeErrorCode.PLATFORM_NOT_FOUND, errorMessage);
   }
 
-  if (!platform.injector.get(requiredToken, null)) {
-    throw new Error(
+  if ((typeof ngDevMode === 'undefined' || ngDevMode) &&
+      !platform.injector.get(requiredToken, null)) {
+    throw new RuntimeError(
+        RuntimeErrorCode.MULTIPLE_PLATFORMS,
         'A platform with a different configuration has been created. Please destroy it first.');
   }
 
@@ -329,7 +336,10 @@ export class PlatformRef {
       const moduleRef = <InternalNgModuleRef<M>>moduleFactory.create(ngZoneInjector);
       const exceptionHandler: ErrorHandler|null = moduleRef.injector.get(ErrorHandler, null);
       if (!exceptionHandler) {
-        throw new Error('No ErrorHandler. Is platform module (BrowserModule) included?');
+        const errorMessage = (typeof ngDevMode === 'undefined' || ngDevMode) ?
+            'No ErrorHandler. Is platform module (BrowserModule) included?' :
+            '';
+        throw new RuntimeError(RuntimeErrorCode.ERROR_HANDLER_NOT_FOUND, errorMessage);
       }
       ngZone!.runOutsideAngular(() => {
         const subscription = ngZone!.onError.subscribe({
@@ -388,12 +398,12 @@ export class PlatformRef {
     } else if (moduleRef.instance.ngDoBootstrap) {
       moduleRef.instance.ngDoBootstrap(appRef);
     } else {
-      throw new Error(
-          `The module ${
-              stringify(
-                  moduleRef.instance
-                      .constructor)} was bootstrapped, but it does not declare "@NgModule.bootstrap" components nor a "ngDoBootstrap" method. ` +
-          `Please define one of these.`);
+      const errorMessage = (typeof ngDevMode === 'undefined' || ngDevMode) ?
+          `The module ${stringify(moduleRef.instance.constructor)} was bootstrapped, ` +
+              `but it does not declare "@NgModule.bootstrap" components nor a "ngDoBootstrap" method. ` +
+              `Please define one of these.` :
+          '';
+      throw new RuntimeError(RuntimeErrorCode.BOOTSTRAP_COMPONENTS_NOT_FOUND, errorMessage);
     }
     this._modules.push(moduleRef);
   }
@@ -419,7 +429,10 @@ export class PlatformRef {
    */
   destroy() {
     if (this._destroyed) {
-      throw new Error('The platform has already been destroyed!');
+      const errorMessage = (typeof ngDevMode === 'undefined' || ngDevMode) ?
+          'The platform has already been destroyed!' :
+          '';
+      throw new RuntimeError(RuntimeErrorCode.ALREADY_DESTROYED_PLATFORM, errorMessage);
     }
     this._modules.slice().forEach(module => module.destroy());
     this._destroyListeners.forEach(listener => listener());
@@ -782,8 +795,11 @@ export class ApplicationRef {
   bootstrap<C>(componentOrFactory: ComponentFactory<C>|Type<C>, rootSelectorOrNode?: string|any):
       ComponentRef<C> {
     if (!this._initStatus.done) {
-      throw new Error(
-          'Cannot bootstrap as there are still asynchronous initializers running. Bootstrap components in the `ngDoBootstrap` method of the root module.');
+      const errorMessage = (typeof ngDevMode === 'undefined' || ngDevMode) ?
+          'Cannot bootstrap as there are still asynchronous initializers running. ' +
+              'Bootstrap components in the `ngDoBootstrap` method of the root module.' :
+          '';
+      throw new RuntimeError(RuntimeErrorCode.ASYNC_INITIALIZERS_STILL_RUNNING, errorMessage);
     }
     let componentFactory: ComponentFactory<C>;
     if (componentOrFactory instanceof ComponentFactory) {
@@ -835,7 +851,10 @@ export class ApplicationRef {
    */
   tick(): void {
     if (this._runningTick) {
-      throw new Error('ApplicationRef.tick is called recursively');
+      const errorMessage = (typeof ngDevMode === 'undefined' || ngDevMode) ?
+          'ApplicationRef.tick is called recursively' :
+          '';
+      throw new RuntimeError(RuntimeErrorCode.RECURSIVE_APPLICATION_REF_TICK, errorMessage);
     }
 
     try {
