@@ -2661,11 +2661,6 @@
     "@webassemblyjs/ast" "1.11.1"
     "@xtuc/long" "4.2.2"
 
-"@webcomponents/custom-elements@^1.4.2":
-  version "1.4.2"
-  resolved "https://registry.yarnpkg.com/@webcomponents/custom-elements/-/custom-elements-1.4.2.tgz#a6fe80325c2b09e88e988c712144bc667c565499"
-  integrity sha512-bLw2XH9+2NBwmn7BI6WA2oIo2eOfBpl+GjAqkF/qnkZ8kq3HY5tKYTxtKowWALAferTp3wKD8W6FSn5OyK+rtQ==
-
 "@wessberg/ts-evaluator@0.0.25":
   version "0.0.25"
   resolved "https://registry.yarnpkg.com/@wessberg/ts-evaluator/-/ts-evaluator-0.0.25.tgz#23a2585d8f5fb197ae26ba17b80c7fae263ea357"
