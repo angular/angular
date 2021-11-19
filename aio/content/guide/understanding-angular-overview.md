@@ -26,7 +26,7 @@ To get the most out of these developer guides, you should review the following t
   </a>
   <a href="guide/template-syntax" class="docs-card" title="Templates">
     <section>Templates</section>
-    <p>Learn about building an Angular template.</p>
+    <p>Learn about how to build an Angular template.</p>
     <p class="card-footer">Templates</p>
   </a>
   <a href="guide/built-in-directives" class="docs-card" title="Directives">
@@ -36,7 +36,7 @@ To get the most out of these developer guides, you should review the following t
   </a>
   <a href="guide/dependency-injection" class="docs-card" title="Dependency injection">
     <section>Dependency injection</section>
-    <p>Learn about dependency injection. Dependency injection refers to services or objects that a class needs to perform its function.</p>
+    <p>Learn about dependency injection. Dependency injection refers to services or objects that a class needs to perform a specific function.</p>
     <p class="card-footer">Dependency injection</p>
   </a>
   <!-- <a href="guide/rendering-overview" class="docs-card" title="Angular service worker developer guide">

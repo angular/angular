@@ -5,7 +5,7 @@ As an application framework, Angular includes a collection of well-integrated li
 
 The Angular libraries include routing, forms management, client-server communication, and more.
 
-This topic lists the various developer guides that can help you learn about these Angular features so you can determine if and when to add them to your application.
+This topic lists the various developer guides for you to learn more about these Angular features and to help you determine the correct use of each in your application.
 
 ## Prerequisites
 
@@ -25,13 +25,13 @@ To get the most out of these developer guides, you should review the following t
   </a>
   <a href="guide/forms-overview" class="docs-card" title="Angular forms developer guide">
     <section>Forms</section>
-    <p>Learn about Angular's two approaches to forms: template-driven and reactive.</p>
+    <p>Learn about the two approaches to forms in Angular: template-driven and reactive.</p>
     <p class="card-footer">Forms</p>
   </a>
   <a href="guide/http" class="docs-card" title="Angular HTTP client developer guide">
     <section>HTTP</section>
-    <p>Learn how to connect to servers using Angular's HTTP client service.</p>
-    <p class="card-footer">HTTPClient</p>
+    <p>Learn how to connect to a server using the HTTP client service in Angular.</p>
+    <p class="card-footer">HTTP client</p>
   </a>
   <a href="guide/testing" class="docs-card" title="Angular testing developer guide">
     <section>Testing</section>
@@ -41,32 +41,32 @@ To get the most out of these developer guides, you should review the following t
   <a href="guide/i18n-overview" class="docs-card" title="Angular internationalization developer guide">
     <section>Internationalization</section>
     <p>Learn how to localize your Angular application.</p>
-    <p class="card-footer">i18n & $localize</p>
+    <p class="card-footer">i18n and $localize</p>
   </a>
   <a href="guide/animations" class="docs-card" title="Angular animations developer guide">
     <section>Animations</section>
-    <p>Learn about how to add animations to your Angular applications.</p>
+    <p>Learn about how to add an animation to your Angular application.</p>
     <p class="card-footer">Animations</p>
   </a>
   <a href="guide/service-worker-intro" class="docs-card" title="Angular service worker developer guide">
     <section>Service Workers and PWA</section>
-    <p>Learn about service workers and how they help you create progressive web applications.</p>
+    <p>Learn about how to us a service worker to create a progressive web application.</p>
     <p class="card-footer">Service workers and PWA</p>
   </a>
   <a href="guide/web-worker" class="docs-card" title="Web Workers">
     <section>Web Workers</section>
-    <p>Web workers let you run CPU-intensive computations in a background thread.</p>
+    <p>Learn more about how to use a web worker to run a CPU-intensive computation in a background thread.</p>
     <p class="card-footer">Web Workers</p>
   </a>
   <a href="guide/universal" class="docs-card" title="Server-side rendering">
     <section>Server-side rendering</section>
-    <p>Learn about Angular Universal, which allows you to generate static application pages.</p>
+    <p>Learn more about how to use Angular Universal to create a static application page.</p>
     <p class="card-footer">Server-side rendering</p>
   </a>
   <a href="guide/prerendering" class="docs-card" title="Pre-rendering">
-    <section>Prerendering</section>
-    <p>Learn about prerendering, where a dynamic page is processed at build time.</p>
-    <p class="card-footer">Prerendering</p>
+    <section>Pre-rendering</section>
+    <p>Learn about how to use pre-rendering to process a dynamic page at build time.</p>
+    <p class="card-footer">Pre-rendering</p>
   </a>
 </div>
 
