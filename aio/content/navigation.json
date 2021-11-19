@@ -254,7 +254,7 @@
       ]
     },
     {
-      "title": "Developer Guides",
+      "title": "Developer guides",
       "tooltip": "Learn more about how to use Angular to build your applications.",
       "children": [
         {
@@ -263,7 +263,7 @@
           "tooltip": "A list of developer guides for building Angular applications."
         },
         {
-          "title": "Routing & Navigation",
+          "title": "Routing and Navigation",
           "tooltip": "Build in-app navigation among views using the Angular Router.",
           "children": [
             {

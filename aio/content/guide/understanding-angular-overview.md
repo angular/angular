@@ -21,22 +21,22 @@ To get the most out of these developer guides, you should review the following t
 <div class="card-container">
   <a href="guide/component-overview" class="docs-card" title="Components">
     <section>Components</section>
-    <p>Learn about Angular components; a key building block of Angular development.</p>
+    <p>Learn about Angular components. A component is a key building block of Angular development.</p>
     <p class="card-footer">Components</p>
   </a>
   <a href="guide/template-syntax" class="docs-card" title="Templates">
-    <section>Forms</section>
-    <p>Learn about building Angular templates.</p>
+    <section>Templates</section>
+    <p>Learn about building an Angular template.</p>
     <p class="card-footer">Templates</p>
   </a>
   <a href="guide/built-in-directives" class="docs-card" title="Directives">
     <section>Directives</section>
-    <p>Learn about Angular directives: classes that add additional behavior to elements in your Angular applications.</p>
+    <p>Learn about Angular directives. A directive is a class that adds additional behavior to elements in your Angular applications.</p>
     <p class="card-footer">Directives</p>
   </a>
   <a href="guide/dependency-injection" class="docs-card" title="Dependency injection">
     <section>Dependency injection</section>
-    <p>Learn about dependency injection: services or objects that a class needs to perform its function.</p>
+    <p>Learn about dependency injection. Dependency injection refers to services or objects that a class needs to perform its function.</p>
     <p class="card-footer">Dependency injection</p>
   </a>
   <!-- <a href="guide/rendering-overview" class="docs-card" title="Angular service worker developer guide">

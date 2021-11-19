@@ -1,6 +1,9 @@
 # Angular Developer Guides
 
-As an application framework, Angular includes a collection of well-integrated libraries that cover a wide variety of features, including routing, forms management, client-server communication, and more.
+As an application framework, Angular includes a collection of well-integrated libraries that cover a wide variety of features.
+
+
+The Angular libraries include routing, forms management, client-server communication, and more.
 
 This topic lists the various developer guides that can help you learn about these Angular features so you can determine if and when to add them to your application.
 
@@ -25,7 +28,7 @@ To get the most out of these developer guides, you should review the following t
     <p>Learn about Angular's two approaches to forms: template-driven and reactive.</p>
     <p class="card-footer">Forms</p>
   </a>
-  <a href="guide/http" class="docs-card" title="Angular HTTP Client developer guide">
+  <a href="guide/http" class="docs-card" title="Angular HTTP client developer guide">
     <section>HTTP</section>
     <p>Learn how to connect to servers using Angular's HTTP client service.</p>
     <p class="card-footer">HTTPClient</p>
@@ -38,7 +41,7 @@ To get the most out of these developer guides, you should review the following t
   <a href="guide/i18n-overview" class="docs-card" title="Angular internationalization developer guide">
     <section>Internationalization</section>
     <p>Learn how to localize your Angular application.</p>
-    <p class="card-footer">i18n</p>
+    <p class="card-footer">i18n & $localize</p>
   </a>
   <a href="guide/animations" class="docs-card" title="Angular animations developer guide">
     <section>Animations</section>
@@ -60,7 +63,7 @@ To get the most out of these developer guides, you should review the following t
     <p>Learn about Angular Universal, which allows you to generate static application pages.</p>
     <p class="card-footer">Server-side rendering</p>
   </a>
-  <a href="guide/prerendering" class="docs-card" title="prerendering">
+  <a href="guide/prerendering" class="docs-card" title="Pre-rendering">
     <section>Prerendering</section>
     <p>Learn about prerendering, where a dynamic page is processed at build time.</p>
     <p class="card-footer">Prerendering</p>
