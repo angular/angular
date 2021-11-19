@@ -1,7 +1,6 @@
 load("@build_bazel_rules_nodejs//:index.bzl", "pkg_web")
-load("//tools:defaults.bzl", "ng_module", "sass_binary")
+load("//tools:defaults.bzl", "devmode_esbuild", "esbuild_config", "ng_module", "sass_binary")
 load("//tools/dev-server:index.bzl", "dev_server")
-load("//tools/esbuild:index.bzl", "esbuild", "esbuild_config")
 load("//src/components-examples:config.bzl", "ALL_EXAMPLES")
 load("//tools/angular:index.bzl", "LINKER_PROCESSED_FW_PACKAGES")
 
@@ -111,7 +110,7 @@ esbuild_config(
     config_file = "esbuild.config.mjs",
 )
 
-esbuild(
+devmode_esbuild(
     name = "bundles",
     config = ":esbuild_config",
     entry_points = [":main.ts"] + ["%s:index.ts" % e for e in ALL_EXAMPLES],

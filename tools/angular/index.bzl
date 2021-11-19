@@ -1,5 +1,5 @@
 load("//:packages.bzl", "ANGULAR_PACKAGES")
-load("//tools/esbuild:index.bzl", "esbuild")
+load("@npm//@angular/dev-infra-private/bazel/esbuild:index.bzl", "esbuild")
 load("@build_bazel_rules_nodejs//internal/linker:link_node_modules.bzl", "LinkerPackageMappingInfo")
 load("@build_bazel_rules_nodejs//:providers.bzl", "ExternalNpmPackageInfo", "JSModuleInfo")
 

@@ -1,23 +1,13 @@
-load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
-load("//tools/esbuild:index.bzl", "esbuild_config")
+load("@npm//@angular/dev-infra-private/bazel/esbuild:index.bzl", "esbuild_config")
 load(":index.bzl", "create_angular_bundle_targets")
 
 package(default_visibility = ["//visibility:public"])
-
-js_library(
-    name = "create_linker_esbuild_plugin",
-    srcs = ["create_linker_esbuild_plugin.mjs"],
-    deps = [
-        "@npm//@angular/compiler-cli",
-        "@npm//@babel/core",
-    ],
-)
 
 esbuild_config(
     name = "esbuild_config",
     config_file = "esbuild.config.mjs",
     deps = [
-        ":create_linker_esbuild_plugin",
+        "@npm//@angular/dev-infra-private/shared-scripts/angular-linker:js_lib",
     ],
 )
 

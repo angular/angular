@@ -1,8 +1,6 @@
 #!/usr/bin/env node
 
-import {ConsoleLogger, LogLevel, NodeJSFileSystem} from '@angular/compiler-cli';
-import {createEs2015LinkerPlugin} from '@angular/compiler-cli/linker/babel';
-import {transformAsync} from '@babel/core';
+import {createLinkerEsbuildPlugin} from '@angular/dev-infra-private/shared-scripts/angular-linker/esbuild-plugin.mjs';
 import child_process from 'child_process';
 import esbuild from 'esbuild';
 import fs from 'fs';
@@ -37,7 +35,7 @@ async function main() {
   await compileProjectWithNgtsc();
 
   const specEntryPointFile = await createEntryPointSpecFile();
-  const esbuildLinkerPlugin = await createLinkerEsbuildPlugin();
+  const esbuildLinkerPlugin = await createLinkerEsbuildPlugin(/fesm2020/, false);
   const esbuildResolvePlugin = await createResolveEsbuildPlugin();
 
   const result = await esbuild.build({
@@ -170,33 +168,6 @@ async function createResolveEsbuildPlugin() {
         }
 
         return stats !== null ? {path: resolvedPath} : undefined;
-      });
-    },
-  };
-}
-
-/** Creates an ESBuild plugin that runs the Angular linker on framework packages. */
-async function createLinkerEsbuildPlugin() {
-  const linkerBabelPlugin = createEs2015LinkerPlugin({
-    fileSystem: new NodeJSFileSystem(),
-    logger: new ConsoleLogger(LogLevel.warn),
-    // We enable JIT mode as unit tests also will rely on the linked ESM files.
-    linkerJitMode: true,
-  });
-
-  return {
-    name: 'ng-linker-esbuild',
-    setup: build => {
-      build.onLoad({filter: /fesm2020/}, async args => {
-        const filePath = args.path;
-        const content = await fs.promises.readFile(filePath, 'utf8');
-        const {code} = await transformAsync(content, {
-          filename: filePath,
-          filenameRelative: filePath,
-          plugins: [linkerBabelPlugin],
-          sourceMaps: 'inline',
-        });
-        return {contents: code};
       });
     },
   };

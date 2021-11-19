@@ -1,6 +1,5 @@
 load("//tools/dev-server:index.bzl", "dev_server")
-load("//tools:defaults.bzl", "ng_module", "sass_binary")
-load("//tools/esbuild:index.bzl", "esbuild", "esbuild_config")
+load("//tools:defaults.bzl", "devmode_esbuild", "esbuild_config", "ng_module", "sass_binary")
 load("//src/components-examples:config.bzl", "ALL_EXAMPLES")
 load("//tools/angular:index.bzl", "LINKER_PROCESSED_FW_PACKAGES")
 
@@ -103,7 +102,7 @@ esbuild_config(
     config_file = "esbuild.config.mjs",
 )
 
-esbuild(
+devmode_esbuild(
     name = "bundles",
     testonly = True,
     config = ":esbuild_config",
