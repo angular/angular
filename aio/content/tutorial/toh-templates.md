@@ -1,29 +1,23 @@
-# Tour of Heroes: Getting started
+# Tour of Heroes: Templates
 
-This tutorial introduces you to the basics of creating an Angular application. You'll create a starter application and test out Angular text interpolation feature.
+Most Angular applications consist of the following:
+
+* A component that defines a class that contains application data and logic
+* A template that defines a view to display in a target environment.
+
+In this tutorial, you'll explore some of the key capabilities of Angular templates.
+
+## Prerequisites
+
+Before you start this tutorial, you should understand the concepts covered in [Tour of Heroes: Hello Angular](tutorial/toh-hello-angular). Specifically, you'll need a Stackblitz Angular application.
 
 ## Objectives
 
-In this part of the tutorial, you'll do the following:
+In this tutorial, you'll do the following:
 
-1. Create a new Angular project, using [Stackblitz][stackblitz].
-1. Display the application title using [text interpolation](guide/text-interpolation).
+1. Display a new application title using [text interpolation](guide/text-interpolation).
 1. Add a logo with [property binding](guide/property-binding).
 1. Change the logo size using [attribute binding](guide/attribute-binding).
-
-<!-- <div class="alert is-helpful">
-
-  For the sample application that this page describes, see the <live-example></live-example>.
-
-</div> -->
-
-## Create the sample project
-
-To create the sample project:
-
-1. Open the <live-example name="toh-pt0" noDownload>starter project</live-example>  in StackBlitz.
-1. Log into Stackblitz using your GitHub account.
-1. Fork the project.
 
 ## Display the application title with text interpolation
 
@@ -74,42 +68,14 @@ To change the logo size:
 1. Update the title as follows.
    <code-example path="toh-pt0/src/app/app.component.2.html" header="app.component.html"></code-example>
 
-## Add application styles
+## Display a greeting using event binding
 
-Define application-wide styles in the `app.component.css` file.
-Angular applies these styles across all application components.
+Another important type of binding that Angular supports is [event binding](guide/event-binding). To see event binding in action, add a button to your application that displays a greeting when clicked.
 
-To add application styles:
+To display a greeting using event binding:
 
-1. Open the `src/styles.css` file.
-1. Add the following code to the file.
-
-   <code-example path="toh-pt0/src/styles.1.css" header="src/styles.css (excerpt)">
-   </code-example>
-
-## Final code review
-
-Here are the code files discussed on this page.
-
-<code-tabs>
-
-  <code-pane header="src/app/app.component.ts" path="toh-pt0/src/app/app.component.ts">
-  </code-pane>
-
-  <code-pane header="src/app/app.component.html" path="toh-pt0/src/app/app.component.html">
-  </code-pane>
-
-  <code-pane
-    header="src/styles.css (excerpt)"
-    path="toh-pt0/src/styles.1.css">
-  </code-pane>
-</code-tabs>
-
-## Summary
-
-* You created the initial application structure using the Angular CLI.
-* You learned that Angular components display data.
-* You used the double curly braces of interpolation to display the application title.
-
-[stackblitz]: https://stackblitz.com/
-[text-interpolation]: guide/interpolation
+1. Open the component template file, `app.component.html`.
+1. Add a `button` element as follows.
+   <code-example path="toh-pt0/src/app/app.component.3.html" header="app.component.html" region="event-binding"></code-example>
+1. Open the component class file, `app.component.ts`.
+1. Add a `showGreeting` method, as follows.
