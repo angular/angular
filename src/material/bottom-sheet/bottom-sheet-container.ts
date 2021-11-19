@@ -306,7 +306,9 @@ export class MatBottomSheetContainer extends BasePortalOutlet implements OnDestr
 
     // The `focus` method isn't available during server-side rendering.
     if (this._elementRef.nativeElement.focus) {
-      Promise.resolve().then(() => this._elementRef.nativeElement.focus());
+      this._ngZone.runOutsideAngular(() => {
+        Promise.resolve().then(() => this._elementRef.nativeElement.focus());
+      });
     }
   }
 }
