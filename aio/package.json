@@ -107,7 +107,7 @@
     "@angular-eslint/builder": "^12.5.0",
     "@angular-eslint/eslint-plugin": "^12.5.0",
     "@angular-eslint/eslint-plugin-template": "^12.5.0",
-    "@angular-eslint/template-parser": "^12.5.0",
+    "@angular-eslint/template-parser": "^13.0.0",
     "@angular/cli": "13.0.3",
     "@angular/compiler-cli": "13.0.2",
     "@types/jasmine": "~3.10.0",
