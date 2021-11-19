@@ -22,6 +22,7 @@ import {EntryPointJsonProperty, EntryPointPackageJson, SUPPORTED_FORMAT_PROPERTI
 import {EntryPointManifestFile} from '../../src/packages/entry_point_manifest';
 import {Transformer} from '../../src/packages/transformer';
 import {DirectPackageJsonUpdater, PackageJsonUpdater} from '../../src/writing/package_json_updater';
+import {mockRequireResolveForLockfile} from '../helpers/utils';
 
 import {compileIntoApf, compileIntoFlatEs2015Package, compileIntoFlatEs5Package, loadNgccIntegrationTestFiles} from './util';
 
@@ -46,6 +47,7 @@ runInEachFileSystem(() => {
       _ = absoluteFrom;
       fs = getFileSystem();
       pkgJsonUpdater = new DirectPackageJsonUpdater(fs);
+      mockRequireResolveForLockfile();
       initMockFileSystem(fs, testFiles);
 
       // Force single-process execution in unit tests by mocking available CPUs to 1.
