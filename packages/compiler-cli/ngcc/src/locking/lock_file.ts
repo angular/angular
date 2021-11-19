@@ -19,8 +19,8 @@ export function getLockFilePath(fs: PathManipulation) {
   // allows us to have a consistent position for the lock file to reside. We are unable to rely
   // on `__dirname` (or equivalent) as this code is being bundled and different entry-points
   // will have dedicated bundles where the lock file location would differ then.
-  const ngccEntryPointFile = requireFn.resolve('@angular/compiler-cli/ngcc');
-  return fs.resolve(ngccEntryPointFile, '../__ngcc_lock_file__');
+  const ngccEntryPointFile = requireFn.resolve('@angular/compiler-cli/package.json');
+  return fs.resolve(ngccEntryPointFile, '../../../.ngcc_lock_file');
 }
 
 export interface LockFile {
