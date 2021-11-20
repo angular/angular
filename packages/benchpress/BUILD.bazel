@@ -26,7 +26,7 @@ pkg_npm(
     ],
     # Do not add more to this list.
     # Dependencies on the full npm_package cause long re-builds.
-    visibility = ["//integration:__pkg__"],
+    visibility = ["//integration:__subpackages__"],
     deps = [
         ":benchpress",
     ],
