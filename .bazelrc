@@ -72,16 +72,6 @@ test --test_output=errors
 # Bazel flags for CircleCI are in /.circleci/bazel.linux.rc and /.circleci/bazel.windows.rc
 
 ##################################
-# Settings for integration tests #
-##################################
-
-# Trick bazel into treating BUILD files under integration/bazel as being regular files
-# This lets us glob() up all the files inside this integration test to make them inputs to tests
-# (Note, we cannot use common --deleted_packages because the bazel version command doesn't support it)
-build --deleted_packages=integration/bazel,integration/bazel/src,integration/bazel/src/hello-world,integration/bazel/test,integration/bazel/tools,integration/bazel/test/e2e
-query --deleted_packages=integration/bazel,integration/bazel/src,integration/bazel/src/hello-world,integration/bazel/test,integration/bazel/tools,integration/bazel/test/e2e
-
-##################################
 # Remote Build Execution support #
 # Turn on these settings with    #
 #  --config=remote               #
@@ -140,8 +130,8 @@ build --flag_alias=ng_perf=//packages/compiler-cli:ng_perf
 # The nested Bazel integration test workspace should not be analysed as part of
 # Skyframe, but should also not be ignored in order to be able to glob for its files.
 # TODO: Simplify this once https://github.com/bazelbuild/bazel/issues/12034 is fixed
-build --deleted_packages=integration/bazel,integration/bazel/src,integration/bazel/src/hello-world,integration/bazel/test,integration/bazel/test/e2e,integration/bazel/tools,integration/bazel/tools/angular
-query --deleted_packages=integration/bazel,integration/bazel/src,integration/bazel/src/hello-world,integration/bazel/test,integration/bazel/test/e2e,integration/bazel/tools,integration/bazel/tools/angular
+build --deleted_packages=integration/bazel_workspace_tests/bazel_ngtsc_plugin,integration/bazel_workspace_tests/bazel_ngtsc_plugin/src,integration/bazel_workspace_tests/bazel_ngtsc_plugin/src/hello-world,integration/bazel_workspace_tests/bazel_ngtsc_plugin/test,integration/bazel_workspace_tests/bazel_ngtsc_plugin/test/e2e,integration/bazel_workspace_tests/bazel_ngtsc_plugin/tools,integration/bazel_workspace_tests/bazel_ngtsc_plugin/tools/angular
+query --deleted_packages=integration/bazel_workspace_tests/bazel_ngtsc_plugin,integration/bazel_workspace_tests/bazel_ngtsc_plugin/src,integration/bazel_workspace_tests/bazel_ngtsc_plugin/src/hello-world,integration/bazel_workspace_tests/bazel_ngtsc_plugin/test,integration/bazel_workspace_tests/bazel_ngtsc_plugin/test/e2e,integration/bazel_workspace_tests/bazel_ngtsc_plugin/tools,integration/bazel_workspace_tests/bazel_ngtsc_plugin/tools/angular
 
 ####################################################
 # User bazel configuration
