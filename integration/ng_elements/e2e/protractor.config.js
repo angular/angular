@@ -4,10 +4,11 @@ exports.config = {
   specs: [
     '../built/e2e/*.e2e-spec.js'
   ],
+  chromeDriver: process.env.CHROMEDRIVER_BIN,
   capabilities: {
     browserName: 'chrome',
     chromeOptions: {
-      binary: require('puppeteer').executablePath(),
+      binary: process.env.CHROME_BIN,
       // See /integration/README.md#browser-tests for more info on these args
       args: ['--no-sandbox', '--headless', '--disable-gpu', '--disable-dev-shm-usage', '--hide-scrollbars', '--mute-audio']
     }

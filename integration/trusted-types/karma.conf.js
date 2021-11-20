@@ -1,11 +1,6 @@
 // Karma configuration file, see link for more information
 // https://karma-runner.github.io/1.0/config/configuration-file.html
 
-// Env var CHROME_BIN is later picked up by karma-chrome-launcher that is triggered by
-// `browsers: ['ChromeHeadlessNoSandbox']` below.
-// See https://github.com/karma-runner/karma-chrome-launcher#usage for more info.
-process.env.CHROME_BIN = require('puppeteer').executablePath();
-
 module.exports = function(config) {
   config.set({
     basePath: '',

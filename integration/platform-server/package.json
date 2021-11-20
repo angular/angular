@@ -29,14 +29,9 @@
     "babel-loader": "^8.2.2",
     "concurrently": "3.1.0",
     "protractor": "file:../../node_modules/protractor",
-    "puppeteer": "file:../../node_modules/puppeteer",
     "raw-loader": "^4.0.2",
     "webpack": "^5.53.0",
     "webpack-cli": "^4.8.0"
-  },
-  "//resolutions-comment": "Ensure a single version of webdriver-manager which comes from root node_modules that has already run webdriver-manager update",
-  "resolutions": {
-    "**/webdriver-manager": "file:../../node_modules/webdriver-manager"
   },
   "scripts": {
     "build": "./build.sh",
