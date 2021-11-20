@@ -29,22 +29,12 @@
     "@angular/compiler-cli": "file:../../dist/packages-dist/compiler-cli",
     "@angular/language-service": "file:../../dist/packages-dist/language-service",
     "@types/jasmine": "file:../../node_modules/@types/jasmine",
-    "@types/jasminewd2": "file:../../node_modules/@types/jasminewd2",
     "@types/node": "file:../../node_modules/@types/node",
     "chalk": "2.4.2",
     "diff": "4.0.1",
     "glob": "7.1.4",
     "jasmine-core": "3.4.0",
     "jasmine-spec-reporter": "4.2.1",
-    "karma": "4.4.0",
-    "karma-chrome-launcher": "2.2.0",
-    "karma-jasmine": "2.0.1",
-    "karma-jasmine-html-reporter": "1.4.2",
-    "protractor": "file:../../node_modules/protractor",
     "typescript": "file:../../node_modules/typescript"
-  },
-  "//resolutions-comment": "Ensure a single version of webdriver-manager which comes from root node_modules that has already run webdriver-manager update",
-  "resolutions": {
-    "**/webdriver-manager": "file:../../node_modules/webdriver-manager"
   }
 }

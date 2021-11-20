@@ -7,7 +7,6 @@
     "e2e": "ng e2e --port 0",
     "lint": "ng lint",
     "ng": "ng",
-    "postinstall": "ngcc --properties es2015 browser module main --first-only --create-ivy-entry-points",
     "start": "ng serve",
     "pretest": "ng version && rm -fr ../tmp",
     "test": "ng test && yarn e2e --configuration=ci && yarn e2e --configuration=ci-production && yarn translated:test && yarn translated:legacy-xlf:test && yarn translated:legacy-xmb:test",
@@ -62,14 +61,9 @@
     "karma-jasmine-html-reporter": "1.4.2",
     "npm-run-all": "4.1.5",
     "protractor": "file:../../node_modules/protractor",
-    "puppeteer": "file:../../node_modules/puppeteer",
     "serve": "11.2.0",
     "ts-node": "8.3.0",
     "tslint": "5.18.0",
     "typescript": "file:../../node_modules/typescript"
-  },
-  "//resolutions-comment": "Ensure a single version of webdriver-manager which comes from root node_modules that has already run webdriver-manager update",
-  "resolutions": {
-    "**/webdriver-manager": "file:../../node_modules/webdriver-manager"
   }
 }
