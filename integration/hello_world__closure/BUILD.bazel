@@ -1,0 +1,11 @@
+load("//integration:index.bzl", "ng_integration_test")
+
+ng_integration_test(
+    name = "test",
+    # TODO: Re-enable the payload_size_tracking command:
+    # We should define ngDevMode to false in Closure, but --define only works in the global scope.
+    # With ngDevMode not being set to false, this size tracking test provides little value but a lot of
+    # headache to continue updating the size.
+    # commands = "payload_size_tracking",
+    setup_chromium = True,
+)
