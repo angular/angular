@@ -2,7 +2,6 @@
   "name": "angular-integration",
   "version": "0.0.0",
   "license": "MIT",
-  "type": "module",
   "dependencies": {
     "@angular/animations": "file:../../dist/packages-dist/animations",
     "@angular/common": "file:../../dist/packages-dist/common",
@@ -24,11 +23,7 @@
     "protractor": "file:../../node_modules/protractor",
     "rollup": "file:../../node_modules/rollup"
   },
-  "//resolutions-comment": "Ensure a single version of webdriver-manager which comes from root node_modules that has already run webdriver-manager update",
-  "resolutions": {
-    "**/webdriver-manager": "file:../../node_modules/webdriver-manager"
-  },
   "scripts": {
-    "test": "./test.sh"
+    "test": "./run_test.sh"
   }
 }

@@ -7,7 +7,6 @@
     "e2e": "ng e2e --port 0",
     "lint": "ng lint",
     "ng": "ng",
-    "postinstall": "ngcc --properties es2015 browser module main --first-only --create-ivy-entry-points",
     "start": "ng serve",
     "pretest": "ng version",
     "test": "ng test && yarn e2e --configuration=ci && yarn e2e --configuration=ci-production"
