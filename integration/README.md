@@ -104,7 +104,7 @@ When adding a new integration test, follow the steps below to add a bazel test t
    1. `integration/new_test/node_modules`
    2. `integration/new_test/.yarn_local_cache`
 4. Add any other untracked folders to `.bazelignore` that may contain `BUILD` files
-5. If there are BUILD files in the integration test folder (except for the top-level one defining the test), add those folders to the `--deleted_packages` in the `.bazelrc`. An example is the `bazel` integration test.
+5. If there are BUILD files in the integration test folder (except for the top-level one defining the test), add those folders to the `--deleted_packages` in the `.bazelrc`. An example is the `bazel_ngtsc_plugin` test within `//integration/bazel_workspace_tests`.
 
 ## Manually configured ports
 
