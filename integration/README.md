@@ -90,25 +90,48 @@ The downside of this is that this will apply to all tests and not just the resou
 Two of the integration tests that run Bazel-in-Bazel are particularly resource intensive and are tagged "manual" and "exclusive". To run these tests use,
 
 ```
-yarn bazel test //integration:bazel_test
-yarn bazel test //integration:bazel-schematics_test
+yarn bazel test //integration/bazel:test
+yarn bazel test //integration/cli-hello-world-ivy-minimal:test
 ```
 
 ## Adding a new integration test
 
 When adding a new integration test, follow the steps below to add a bazel test target for the new test.
 
-1. Add new test to `INTEGRATION_TESTS` object in `/integration/BUILD.bazel` (and tag as `"view-engine-only"` if not meant to be run against ivy bundles).
-2. If test requires ports and does not support ethereal ports then make sure the port is unique and add it to the "manually configured ports" comment to document which port it is using
+1. Add a build file using the `ng_integration_test` rule from `//integration:index.bzl`.
+2. If test requires ports and does not support ethereal ports then make sure the port is unique and add it to the "manually configured ports" section to document which port it is using
 3. Add at least the following two entries `.bazelignore` (as they may contain BUILD files)
    1. `integration/new_test/node_modules`
    2. `integration/new_test/.yarn_local_cache`
 4. Add any other untracked folders to `.bazelignore` that may contain `BUILD` files
-5. If there are tracked BUILD files in the integration test folder (`integration/bazel` has these for example) add those folders to the `build --deleted_packages` and `query --deleted_packages` lines in `.bazelrc`
+5. If there are BUILD files in the integration test folder (except for the top-level one defining the test), add those folders to the `--deleted_packages` in the `.bazelrc`. An example is the `bazel` integration test.
+
+## Manually configured ports
+
+Some integration ports must be managed manually to be unique and in other
+cases the tests are able to select a random free port.
+
+Where `ng e2e` is used we pass `ng e2e --port 0` which prompts the cli
+to select a random free port for the e2e test. The protractor.conf is
+automatically updated to use this port.
+
+Karma automatically finds a free port so no effort is needed there.
+
+The manually configured ports are as follows:
+
+| TEST | PORT | CONFIGURATION |
+| ---------------------------- | ---------------- | -------------------------------------- |
+| dynamic-compiler             |      4201        | /e2e/browser.config.json: "port": 4201 |
+| hello_world__closure         |      4202        | /e2e/browser.config.json: "port": 4202 |
+| i18n                         |      4204        | /e2e/browser.config.json: "port": 4204 |
+| ng_elements                  |      4205        | /e2e/browser.config.json: "port": 4205 |
+| platform-server              |      4206        | /src/server.ts: app.listen(4206,...    |
+
+**Note**: This will become obsolete soon once we start running integration tests with RBE and within a sandbox environment.
 
 ## Browser tests
 
-For integration tests we use the puppeteer provisioned version of Chrome. For both Karma and Protractor tests we set a number of browser testing flags. To avoid duplication, they will be listed and explained here and the code will reference this file for more information.
+For integration tests we use the Bazel-managed versions of `chromium`. For both Karma and Protractor tests we set a number of browser testing flags. To avoid duplication, they will be listed and explained here and the code will reference this file for more information.
 
 ### No Sandbox: --no-sandbox
 
@@ -144,9 +167,10 @@ See: https://stackoverflow.com/questions/50642308/webdriverexception-unknown-err
 
 If size regression occurs, one way to debug is to get a build which shows the code before and after. Here are the steps to do that.
 
-1. Check out both the `master` branch as well as the your change (let's refer to it as `change` branch) into two different working locations. (A suggested way to do this is using `git worktree`.)
+1. Check out both the `master` branch as well as your change (let's refer to it as `change` branch) into two different working locations. (A suggested way to do this is using `git worktree`.)
 2. In both `master` and `change` locations update the failing tests `package.json` with `NG_BUILD_DEBUG_OPTIMIZE=minify` environment variable so that the resulting build would contain a human readable but optimized output. As an example:
    - Open `integration/cli-hello-world/package.json` and prefix `NG_BUILD_DEBUG_OPTIMIZE=minify` into the `build` rule. Resulting in something like: `"build": "NG_BUILD_DEBUG_OPTIMIZE=minify ng build --prod",`
-   - Run `bazel run //integration:cli-hello-world_test.debug` to build the output. (optionally just run `yarn build` in the directory if you want to do a quick rebuild which will only pick up changes to the test application (not framework).)
+   - Run `bazel test //integration/cli-hello-world:test --test_output=streamed --cache_test_results=no` to run the test.
+   - Open the test temporary directory as printed out by Bazel.
    - Diff the `master` vs `change` to see the differences. `myDiffTool change/integration/cli-hello-world/dist/main-es2015.*.js master/integration/cli-hello-world/dist/main-es2015.*.js`
    - The above should give you a better understanding as to what has changed and what is causing the regression.

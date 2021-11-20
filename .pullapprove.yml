@@ -1195,7 +1195,6 @@ groups:
           'tools/contributing-stats/**',
           'tools/gulp-tasks/**',
           'tools/npm/**',
-          'tools/npm_integration_test/**',
           'tools/rxjs/**',
           'tools/saucelabs/**',
           'tools/size-tracking/**',
