@@ -1,0 +1,142 @@
+# Copyright Google LLC All Rights Reserved.
+#
+# Use of this source code is governed by an MIT-style license that can be
+# found in the LICENSE file at https://angular.io/license
+"""Angular integration testing
+"""
+
+load("//integration:npm_package_archives.bzl", "NPM_PACKAGE_ARCHIVES", "npm_package_archive_label")
+load("@npm//@angular/dev-infra-private/bazel/integration:index.bzl", "integration_test")
+
+# The generated npm packages should ALWAYS be replaced in integration tests
+# so we pass them to the `check_npm_packages` attribute of npm_integration_test
+FRAMEWORK_PACKAGES = [
+    "@angular/animations",
+    "@angular/bazel",
+    "@angular/benchpress",
+    "@angular/common",
+    "@angular/compiler",
+    "@angular/compiler-cli",
+    "@angular/core",
+    "@angular/elements",
+    "@angular/forms",
+    "@angular/language-service",
+    "@angular/localize",
+    "@angular/platform-browser",
+    "@angular/platform-browser-dynamic",
+    "@angular/platform-server",
+    "@angular/router",
+    "@angular/service-worker",
+    "@angular/upgrade",
+    "zone.js",
+]
+
+def _ng_integration_test(name, setup_chromium = False, **kwargs):
+    "Set defaults for the npm_integration_test common to the angular repo"
+    payload_size_tracking = kwargs.pop("payload_size_tracking", [])
+    pinned_npm_packages = kwargs.pop("pinned_npm_packages", [])
+    use_view_engine_packages = kwargs.pop("use_view_engine_packages", [])
+    toolchains = kwargs.pop("toolchains", [])
+    environment = kwargs.pop("environment", {})
+    data = kwargs.pop("data", [])
+
+    data += [
+        # The Yarn files also need to be part of the integration test as runfiles
+        # because the `yarn_bin` target is not a self-contained standalone binary.
+        "@nodejs//:yarn_files",
+    ]
+
+    if setup_chromium:
+        data += ["@npm//@angular/dev-infra-private/bazel/browsers/chromium"]
+        toolchains += ["@npm//@angular/dev-infra-private/bazel/browsers/chromium:toolchain_alias"]
+        environment.update({
+            "CHROMEDRIVER_BIN": "$(CHROMEDRIVER)",
+            "CHROME_BIN": "$(CHROMIUM)",
+        })
+
+    # By default run `yarn install` followed by `yarn test` using the tools linked
+    # into the integration tests (using the `tool_mappings` attribute).
+    commands = [
+        "yarn install --cache-folder ./.yarn_local_cache",
+        "yarn test",
+    ]
+
+    command_type = kwargs.pop("commands", "default")
+
+    if command_type == "payload_size_tracking":
+        commands += [
+            "yarn build",
+            # TODO: Replace the track payload-size script with a RBE and Windows-compatible script.
+            "$(rootpath //:scripts/ci/track-payload-size.sh) %s dist/*.js true $${RUNFILES}/angular/$(rootpath //goldens:size-tracking/integration-payloads.json)" % name,
+        ]
+        data += [
+            "//goldens:size-tracking/integration-payloads.json",
+            "//:scripts/ci/track-payload-size.sh",
+            "//:scripts/ci/payload-size.sh",
+            "//:scripts/ci/payload-size.js",
+        ]
+
+    # Complete list of npm packages to override in the test's package.json file mapped to
+    # tgz archive to use for the replacement. This is the full list for all integration
+    # tests. Any given integration does not need to use all of these packages.
+    npm_packages = {}
+    for pkg in NPM_PACKAGE_ARCHIVES:
+        if pkg not in pinned_npm_packages:
+            npm_packages["@npm//:" + npm_package_archive_label(pkg)] = pkg
+    for pkg in FRAMEWORK_PACKAGES:
+        # If the generated Angular framework package is listed in the `use_view_engine_packages`
+        # list, we will not use the local-built NPM package, but instead map to the
+        # corresponding View Engine v12.x package from the `@npm//` workspace.
+        if pkg in use_view_engine_packages:
+            npm_packages["@npm//:" + npm_package_archive_label("%s-12" % pkg)] = pkg
+        else:
+            last_segment_name = pkg.split("/")[-1]
+            npm_packages["//packages/%s:npm_package_archive" % last_segment_name] = pkg
+
+    integration_test(
+        name = name,
+        commands = commands,
+        npm_packages = npm_packages,
+        tags = kwargs.pop("tags", []) + [
+            # `integration` tag is used for filtering out these tests from the normal
+            # developer workflow
+            "integration",
+            # Integration tests do not work inside of a sandbox as they may run host applications such
+            # as chrome (which is run by ng) that require access to files outside of the sandbox.
+            "no-sandbox",
+            # Remote doesn't work as it needs network access right now
+            "no-remote-exec",
+        ],
+        data = data,
+        environment = environment,
+        toolchains = toolchains,
+        tool_mappings = {
+            "@nodejs//:yarn_bin": "yarn",
+            "@nodejs//:node_bin": "node",
+        },
+        # 15-minute timeout
+        timeout = "long",
+        # Tells bazel that this test should be allocated a large amount of memory.
+        # See https://docs.bazel.build/versions/2.0.0/be/common-definitions.html#common-attributes-tests.
+        size = "enormous",
+        **kwargs
+    )
+
+def ng_integration_test(name, **kwargs):
+    "Sets up the integration test target based on the test folder name"
+
+    native.filegroup(
+        name = "_%s_sources" % name,
+        srcs = native.glob(
+            include = ["**/*"],
+            exclude = [
+                "node_modules/**",
+                ".yarn_local_cache/**",
+            ],
+        ),
+    )
+    _ng_integration_test(
+        name = name,
+        srcs = kwargs.pop("srcs", ["_%s_sources" % name]),
+        **kwargs
+    )
