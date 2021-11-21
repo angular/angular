@@ -4,7 +4,6 @@ exports_files([
     "karma.conf.js",
 ])
 
-
 # Dupe from angular/components
 #
 # todo(aleksanderbodurri): Remove this when when spec-bundling bazel logic is moved to

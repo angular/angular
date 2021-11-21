@@ -8,11 +8,11 @@ ng_ts_project(
         include = ["*.ts"],
     ),
     angular_assets = ["app.component.html"],
+    tsconfig = "//projects/demo-no-zone:tsconfig-app",
     deps = [
-        "@npm//@angular/core",
         "@npm//@angular/common",
+        "@npm//@angular/core",
         "@npm//@angular/platform-browser",
         "@npm//rxjs",
     ],
-    tsconfig = "//projects/demo-no-zone:tsconfig-app"
 )

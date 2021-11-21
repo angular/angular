@@ -15,28 +15,28 @@ ts_config(
 ng_ts_project(
     name = "ng-devtools-ts",
     srcs = ["index.ts"],
+    tsconfig = ":tsconfig-lib",
     deps = [
         "//projects/ng-devtools/src",
         "//projects/protocol",
-        "@npm//ngx-flamegraph",
-        "@npm//@angular/core",
-        "@npm//memo-decorator",
-        "@npm//webtreemap",
-        "@npm//d3",
-        "@npm//@angular/material",
-        "@npm//@angular/forms",
-        "@npm//@angular/common",
-        "@npm//@angular/platform-browser-dynamic",
-        "@npm//@angular/cdk",
         "@npm//@angular/animations",
-        "@npm//rxjs",
+        "@npm//@angular/cdk",
+        "@npm//@angular/common",
+        "@npm//@angular/core",
+        "@npm//@angular/forms",
+        "@npm//@angular/material",
+        "@npm//@angular/platform-browser-dynamic",
         "@npm//@types",
+        "@npm//d3",
+        "@npm//memo-decorator",
+        "@npm//ngx-flamegraph",
+        "@npm//rxjs",
+        "@npm//webtreemap",
     ],
-    tsconfig = ":tsconfig-lib",
 )
 
 js_library(
     name = "ng-devtools",
     package_name = "ng-devtools",
-    deps = [":ng-devtools-ts"]
+    deps = [":ng-devtools-ts"],
 )

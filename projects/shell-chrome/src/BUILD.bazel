@@ -1,6 +1,6 @@
 load("@npm//@bazel/rollup:index.bzl", "rollup_bundle")
 load("@npm//@bazel/terser:index.bzl", "terser_minified")
-load("@io_bazel_rules_sass//:defs.bzl", "sass_library", "sass_binary")
+load("@io_bazel_rules_sass//:defs.bzl", "sass_binary", "sass_library")
 load("@build_bazel_rules_nodejs//:index.bzl", "pkg_web")
 load("@npm//html-insert-assets:index.bzl", "html_insert_assets")
 load("//tools:angular_ts_project.bzl", "ng_ts_project")
@@ -11,20 +11,20 @@ package(default_visibility = ["//visibility:public"])
 
 sass_library(
     name = "material-theming",
-    srcs = ["@npm//:node_modules/@angular/material/_index.scss"]
+    srcs = ["@npm//:node_modules/@angular/material/_index.scss"],
 )
 
 sass_binary(
     name = "shell-chrome-styles",
     src = "styles.scss",
-    deps = [":material-theming"],
     sourcemap = False,
+    deps = [":material-theming"],
 )
 
 ts_project(
     name = "devtools-ts",
     srcs = [
-        "devtools.ts"
+        "devtools.ts",
     ],
     deps = [
         "@npm//@types/chrome",
@@ -33,24 +33,23 @@ ts_project(
 
 js_library(
     name = "devtools",
-    deps = [":devtools-ts"]
+    deps = [":devtools-ts"],
 )
 
 ng_ts_project(
     name = "src",
     srcs = [
-      "main.ts",
-      "polyfills.ts"
+        "main.ts",
+        "polyfills.ts",
     ],
     deps = [
-      "//projects/shell-chrome/src/app",
-      "//projects/shell-chrome/src/environments:environment",
-      "//projects/ng-devtools",
-      "@npm//@angular/core",
-      "@npm//@angular/platform-browser-dynamic",
+        "//projects/ng-devtools",
+        "//projects/shell-chrome/src/app",
+        "//projects/shell-chrome/src/environments:environment",
+        "@npm//@angular/core",
+        "@npm//@angular/platform-browser-dynamic",
     ],
 )
-
 
 rollup_bundle(
     name = "devtools-app-bundle-es2015",
@@ -73,7 +72,6 @@ terser_minified(
 _ASSETS = [
     # This label references an output of the "styles" sass_binary above.
     ":shell-chrome-styles",
-
     ":manifest.json",
 
     # We load zone.js outside the bundle. That's because it's a "pollyfill"
@@ -102,7 +100,7 @@ rollup_bundle(
     format = "iife",
     deps = [
         ":devtools",
-    ]
+    ],
 )
 
 pkg_web(

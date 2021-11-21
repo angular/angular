@@ -1,7 +1,6 @@
 load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
 load("//tools:angular_ts_project.bzl", "ng_ts_project")
 
-
 package(default_visibility = ["//visibility:public"])
 
 sass_binary(
@@ -12,28 +11,28 @@ sass_binary(
 ng_ts_project(
     name = "directive-forest",
     srcs = [
-        "directive-forest-utils.ts",
         "directive-forest.component.ts",
-        "directive-forest.module.ts"
+        "directive-forest.module.ts",
+        "directive-forest-utils.ts",
     ],
     angular_assets = [
         "directive-forest.component.html",
-        ":directive-forest-component-styles"
+        ":directive-forest-component-styles",
     ],
+    tsconfig = "//projects/ng-devtools:tsconfig-lib",
     deps = [
-        "//projects/protocol",
+        "//projects/ng-devtools/src/lib/devtools-tabs/diffing",
         "//projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/breadcrumbs",
+        "//projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/component-data-source",
         "//projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/filter",
         "//projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/index-forest",
-        "//projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/component-data-source",
-        "//projects/ng-devtools/src/lib/devtools-tabs/diffing",
         "//projects/ng-devtools/src/lib/devtools-tabs/tab-update",
-        "@npm//@angular/core",
-        "@npm//@angular/common",
+        "//projects/protocol",
         "@npm//@angular/cdk",
+        "@npm//@angular/common",
+        "@npm//@angular/core",
         "@npm//@angular/material",
-        "@npm//rxjs",
         "@npm//@types",
+        "@npm//rxjs",
     ],
-    tsconfig = "//projects/ng-devtools:tsconfig-lib"
 )

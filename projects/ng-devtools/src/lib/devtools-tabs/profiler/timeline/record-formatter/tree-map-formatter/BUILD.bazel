@@ -2,7 +2,6 @@ load("//tools:typescript.bzl", "ts_project")
 load("//tools:typescript.bzl", "ts_test_project")
 load("//tools:defaults.bzl", "karma_web_test_suite")
 
-
 package(default_visibility = ["//visibility:public"])
 
 ts_project(
@@ -12,27 +11,27 @@ ts_project(
             "*.ts",
         ],
         exclude = [
-            "tree-map-formatter.spec.ts"
-        ]
+            "tree-map-formatter.spec.ts",
+        ],
     ),
+    tsconfig = "//projects/ng-devtools:tsconfig-lib",
     deps = [
-        "//projects/protocol",
         "//projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter",
         "//projects/ng-devtools/src/lib/vendor/memo-decorator",
+        "//projects/protocol",
     ],
-    tsconfig = "//projects/ng-devtools:tsconfig-lib"
 )
 
 ts_test_project(
     name = "test-lib",
     srcs = [
-        "tree-map-formatter.spec.ts"
+        "tree-map-formatter.spec.ts",
     ],
     deps = [
-        "//projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter:record-formatter-spec-constants",
         ":tree-map-formatter",
-        "//projects/protocol",
         "//projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter",
+        "//projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter:record-formatter-spec-constants",
+        "//projects/protocol",
     ],
 )
 

@@ -9,16 +9,15 @@ ts_project(
             "*.ts",
         ],
     ),
+    tsconfig = "//projects/ng-devtools:tsconfig-lib",
     deps = [
-        "//projects/protocol",
         "//projects/ng-devtools/src/lib:theme",
         "//projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter",
         "//projects/ng-devtools/src/lib/vendor/memo-decorator",
+        "//projects/protocol",
         "@npm//@angular/core",
-        "@npm//rxjs",
-        "@npm//ngx-flamegraph",
         "@npm//@types",
+        "@npm//ngx-flamegraph",
+        "@npm//rxjs",
     ],
-    tsconfig = "//projects/ng-devtools:tsconfig-lib"
 )
-

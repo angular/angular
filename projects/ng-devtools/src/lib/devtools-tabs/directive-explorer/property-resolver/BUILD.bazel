@@ -7,24 +7,24 @@ package(default_visibility = ["//visibility:public"])
 ng_ts_project(
     name = "property-resolver",
     srcs = [
-        "flatten.ts",
         "arrayify-props.ts",
         "directive-property-resolver.ts",
         "element-property-resolver.ts",
+        "flatten.ts",
         "property-data-source.ts",
         "property-expanded-directive-properties.ts",
     ],
+    tsconfig = "//projects/ng-devtools:tsconfig-lib",
     deps = [
         "//projects/ng-devtools/src/lib/devtools-tabs/diffing",
         "//projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/index-forest",
         "//projects/protocol",
-        "@npm//@angular/core",
         "@npm//@angular/cdk",
+        "@npm//@angular/core",
         "@npm//@angular/material",
-        "@npm//rxjs",
         "@npm//@types",
+        "@npm//rxjs",
     ],
-    tsconfig = "//projects/ng-devtools:tsconfig-lib"
 )
 
 ts_test_project(

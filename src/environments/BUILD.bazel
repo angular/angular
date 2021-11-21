@@ -5,12 +5,12 @@ package(default_visibility = ["//visibility:public"])
 ts_project(
     name = "environments",
     srcs = [
-        "environment.ts",
+        "environment.e2e.ts",
         "environment.prod.ts",
-        "environment.e2e.ts"
+        "environment.ts",
     ],
+    tsconfig = "//:tsconfig.json",
     deps = [
         "@npm//@angular/platform-browser",
     ],
-    tsconfig = "//:tsconfig.json",
 )

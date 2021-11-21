@@ -6,26 +6,26 @@ package(default_visibility = ["//visibility:public"])
 multi_sass_binary(
     name = "recording-visualizer-styles",
     srcs = [
+        "bar-chart.component.scss",
+        "bargraph-visualizer.component.scss",
+        "execution-details.component.scss",
+        "flamegraph-visualizer.component.scss",
         "timeline-visualizer.component.scss",
         "tree-map-visualizer.component.scss",
-        "flamegraph-visualizer.component.scss",
-        "bargraph-visualizer.component.scss",
-        "bar-chart.component.scss",
-        "execution-details.component.scss",
     ],
 )
 
 ng_ts_project(
     name = "recording-visualizer",
     srcs = [
+        "bar-chart.component.ts",
+        "bargraph-visualizer.component.ts",
+        "execution-details.component.ts",
+        "flamegraph-visualizer.component.ts",
+        "profile-formatter.ts",
         "recording-visualizer.module.ts",
         "timeline-visualizer.component.ts",
         "tree-map-visualizer.component.ts",
-        "flamegraph-visualizer.component.ts",
-        "bargraph-visualizer.component.ts",
-        "bar-chart.component.ts",
-        "execution-details.component.ts",
-        "profile-formatter.ts"
     ],
     angular_assets = [
         "timeline-visualizer.component.html",
@@ -34,26 +34,24 @@ ng_ts_project(
         "bargraph-visualizer.component.html",
         "bar-chart.component.html",
         "execution-details.component.html",
-        ":recording-visualizer-styles"
+        ":recording-visualizer-styles",
     ],
+    tsconfig = "//projects/ng-devtools:tsconfig-lib",
     deps = [
-        "//projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter/tree-map-formatter",
-        "//projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter/flamegraph-formatter",
+        "//projects/ng-devtools/src/lib:theme",
         "//projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter/bargraph-formatter",
+        "//projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter/flamegraph-formatter",
+        "//projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter/tree-map-formatter",
         "//projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/visualization-mode",
         "//projects/ng-devtools/src/lib/vendor/angular-split",
-        "//projects/ng-devtools/src/lib:theme",
-        "//projects/protocol",
         "//projects/ng-devtools/src/lib/vendor/webtreemap",
-        "@npm//ngx-flamegraph",
+        "//projects/protocol",
         "@npm//@angular/animations",
-        "@npm//@angular/core",
         "@npm//@angular/common",
+        "@npm//@angular/core",
         "@npm//@angular/material",
-        "@npm//rxjs",
         "@npm//@types",
+        "@npm//ngx-flamegraph",
+        "@npm//rxjs",
     ],
-    tsconfig = "//projects/ng-devtools:tsconfig-lib"
 )
-
-

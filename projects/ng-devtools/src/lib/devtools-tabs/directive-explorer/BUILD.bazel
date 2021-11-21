@@ -4,7 +4,6 @@ load("@npm//@bazel/typescript:index.bzl", "ts_config")
 load("//tools:typescript.bzl", "ts_test_project")
 load("//tools:defaults.bzl", "karma_web_test_suite")
 
-
 package(default_visibility = ["//visibility:public"])
 
 sass_binary(
@@ -16,30 +15,30 @@ ng_ts_project(
     name = "directive-explorer",
     srcs = [
         "directive-explorer.component.ts",
-        "directive-explorer.module.ts"
+        "directive-explorer.module.ts",
     ],
     angular_assets = [
         "directive-explorer.component.html",
-        ":directive-explorer-component-styles"
+        ":directive-explorer-component-styles",
     ],
+    tsconfig = "//projects/ng-devtools:tsconfig-lib",
     deps = [
-        "//projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-tab",
-        "//projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-resolver",
-        "//projects/ng-devtools/src/lib/vendor/angular-split",
         "//projects/ng-devtools/src/lib/application-operations",
-        "//projects/protocol",
         "//projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest",
         "//projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/breadcrumbs",
         "//projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/component-data-source",
         "//projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/index-forest",
-        "@npm//@angular/core",
-        "@npm//@angular/common",
+        "//projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-resolver",
+        "//projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-tab",
+        "//projects/ng-devtools/src/lib/vendor/angular-split",
+        "//projects/protocol",
         "@npm//@angular/cdk",
+        "@npm//@angular/common",
+        "@npm//@angular/core",
         "@npm//@angular/material",
-        "@npm//rxjs",
         "@npm//@types",
+        "@npm//rxjs",
     ],
-    tsconfig = "//projects/ng-devtools:tsconfig-lib"
 )
 
 ts_test_project(
@@ -47,9 +46,9 @@ ts_test_project(
     srcs = ["directive-explorer.spec.ts"],
     deps = [
         ":directive-explorer",
+        "//projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest",
         "//projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/index-forest",
         "//projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-resolver",
-        "//projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest",
         "//projects/protocol",
     ],
 )

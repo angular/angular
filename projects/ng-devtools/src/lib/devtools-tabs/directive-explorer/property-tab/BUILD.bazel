@@ -6,36 +6,36 @@ package(default_visibility = ["//visibility:public"])
 multi_sass_binary(
     name = "property-tab-styles",
     srcs = [
+        "component-metadata.component.scss",
         "property-tab.component.scss",
         "property-tab-header.component.scss",
-        "component-metadata.component.scss",
     ],
 )
 
 ng_ts_project(
     name = "property-tab",
     srcs = [
-        "property-tab.component.ts",
-        "property-tab-header.component.ts",
         "component-metadata.component.ts",
+        "property-tab.component.ts",
         "property-tab.module.ts",
+        "property-tab-header.component.ts",
     ],
     angular_assets = [
         "property-tab.component.html",
         "property-tab-header.component.html",
         "component-metadata.component.html",
-        ":property-tab-styles"
+        ":property-tab-styles",
     ],
+    tsconfig = "//projects/ng-devtools:tsconfig-lib",
     deps = [
-        "//projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-tab/property-view",
-        "//projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-resolver",
-        "//projects/protocol",
         "//projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/index-forest",
-        "@npm//@angular/core",
+        "//projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-resolver",
+        "//projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-tab/property-view",
+        "//projects/protocol",
         "@npm//@angular/common",
+        "@npm//@angular/core",
         "@npm//@angular/material",
-        "@npm//rxjs",
         "@npm//@types",
+        "@npm//rxjs",
     ],
-    tsconfig = "//projects/ng-devtools:tsconfig-lib"
 )

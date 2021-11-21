@@ -20,13 +20,19 @@ ts_config(
 
 ts_project(
     name = "shared-utils-ts",
-    srcs = glob(["**/*.ts"], exclude = ["**/*.spec.ts", "src/test.ts"]),
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = [
+            "**/*.spec.ts",
+            "src/test.ts",
+        ],
+    ),
+    tsconfig = ":tsconfig-lib",
     deps = [
         "@npm//@angular/core",
         "@npm//@angular/platform-browser-dynamic",
         "@npm//@types",
     ],
-    tsconfig = ":tsconfig-lib"
 )
 
 js_library(

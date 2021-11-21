@@ -16,14 +16,14 @@ ng_ts_project(
     ],
     angular_assets = [
         "filter.component.html",
-        ":filter-component-styles"
+        ":filter-component-styles",
     ],
+    tsconfig = "//projects/ng-devtools:tsconfig-lib",
     deps = [
-        "@npm//@angular/core",
         "@npm//@angular/common",
+        "@npm//@angular/core",
         "@npm//@angular/material",
-        "@npm//rxjs",
         "@npm//@types",
+        "@npm//rxjs",
     ],
-    tsconfig = "//projects/ng-devtools:tsconfig-lib"
 )

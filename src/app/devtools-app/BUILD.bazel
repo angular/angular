@@ -12,22 +12,19 @@ ng_ts_project(
     name = "devtools-app",
     srcs = [
         "devtools-app.component.ts",
-        "devtools-app.module.ts"
+        "devtools-app.module.ts",
     ],
     angular_assets = [
         "devtools-app.component.html",
-        ":devtools-app-component-styles"
-    ],
-    deps = [
-        "//src:iframe-message-bus",
-        "//projects/protocol",
-        "//projects/ng-devtools",
-        "@npm//@angular/core",
-        "@npm//@angular/common",
-        "@npm//@angular/router",
+        ":devtools-app-component-styles",
     ],
     tsconfig = "//:tsconfig.json",
+    deps = [
+        "//projects/ng-devtools",
+        "//projects/protocol",
+        "//src:iframe-message-bus",
+        "@npm//@angular/common",
+        "@npm//@angular/core",
+        "@npm//@angular/router",
+    ],
 )
-
-
-

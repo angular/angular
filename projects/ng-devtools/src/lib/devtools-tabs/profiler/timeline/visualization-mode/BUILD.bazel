@@ -5,5 +5,5 @@ package(default_visibility = ["//visibility:public"])
 ts_project(
     name = "visualization-mode",
     srcs = ["index.ts"],
-    tsconfig = "//projects/ng-devtools:tsconfig-lib"
+    tsconfig = "//projects/ng-devtools:tsconfig-lib",
 )

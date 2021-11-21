@@ -1,6 +1,6 @@
 load("@npm//html-insert-assets:index.bzl", "html_insert_assets")
 load("//tools:angular_ts_project.bzl", "ng_ts_project")
-load("@io_bazel_rules_sass//:defs.bzl", "sass_library", "sass_binary")
+load("@io_bazel_rules_sass//:defs.bzl", "sass_binary", "sass_library")
 load("@npm//@bazel/rollup:index.bzl", "rollup_bundle")
 load("@npm//history-server:index.bzl", "history_server")
 load("@build_bazel_rules_nodejs//:index.bzl", "pkg_web")
@@ -10,14 +10,14 @@ package(default_visibility = ["//visibility:public"])
 
 sass_library(
     name = "material-theming",
-    srcs = ["@npm//:node_modules/@angular/material/_index.scss"]
+    srcs = ["@npm//:node_modules/@angular/material/_index.scss"],
 )
 
 sass_binary(
     name = "demo-styles",
     src = "styles.scss",
-    deps = [":material-theming"],
     sourcemap = False,
+    deps = [":material-theming"],
 )
 
 _ASSETS = [
@@ -45,17 +45,17 @@ html_insert_assets(
 ng_ts_project(
     name = "demo",
     srcs = ["main.ts"],
-    deps = [
-        "//src/environments",
-        "//src/app",
-        "@npm//@angular/core",
-        "@npm//@angular/common",
-        "@npm//@angular/platform-browser-dynamic",
-        "@npm//@angular/platform-browser",
-        "@npm//rxjs",
-        "@npm//@types",
-    ],
     tsconfig = "//:tsconfig.json",
+    deps = [
+        "//src/app",
+        "//src/environments",
+        "@npm//@angular/common",
+        "@npm//@angular/core",
+        "@npm//@angular/platform-browser",
+        "@npm//@angular/platform-browser-dynamic",
+        "@npm//@types",
+        "@npm//rxjs",
+    ],
 )
 
 ng_ts_project(
@@ -63,7 +63,7 @@ ng_ts_project(
     srcs = ["demo-application-environment.ts"],
     deps = [
         "//projects/ng-devtools",
-        "//src/environments"
+        "//src/environments",
     ],
 )
 
@@ -71,8 +71,8 @@ ng_ts_project(
     name = "demo-application-operations",
     srcs = ["demo-application-operations.ts"],
     deps = [
+        "//projects/ng-devtools",
         "//projects/protocol",
-        "//projects/ng-devtools"
     ],
 )
 
@@ -80,8 +80,8 @@ ng_ts_project(
     name = "iframe-message-bus",
     srcs = ["iframe-message-bus.ts"],
     deps = [
-        '//projects/protocol'
-    ]
+        "//projects/protocol",
+    ],
 )
 
 ng_ts_project(
@@ -89,8 +89,8 @@ ng_ts_project(
     srcs = ["zone-unaware-iframe-message-bus.ts"],
     deps = [
         ":iframe-message-bus",
-        "//projects/protocol"
-    ]
+        "//projects/protocol",
+    ],
 )
 
 rollup_bundle(
@@ -99,13 +99,13 @@ rollup_bundle(
     entry_points = {
         ":main.ts": "index.dev",
     },
+    format = "esm",
     output_dir = True,
     deps = [
         ":demo",
         "@npm//@rollup/plugin-commonjs",
         "@npm//@rollup/plugin-node-resolve",
     ],
-    format = 'esm'
 )
 
 pkg_web(
@@ -119,5 +119,8 @@ pkg_web(
 history_server(
     name = "devserver",
     data = [":devapp"],
-    templated_args = ["-a $$(rlocation $(rootpath :devapp))", "--port 4200"],
+    templated_args = [
+        "-a $$(rlocation $(rootpath :devapp))",
+        "--port 4200",
+    ],
 )

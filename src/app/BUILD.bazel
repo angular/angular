@@ -16,19 +16,19 @@ ng_ts_project(
     ],
     angular_assets = [
         "app.component.html",
-        ":app-component-styles"
-    ],
-    deps = [
-        "//src/app/devtools-app",
-        "//src/app/demo-app",
-        "//src:demo-application-operations",
-        "//src:demo-application-environment",
-        "//projects/ng-devtools",
-        "@npm//@angular/core",
-        "@npm//@angular/router",
-        "@npm//@angular/platform-browser",
+        ":app-component-styles",
     ],
     tsconfig = "//:tsconfig.json",
+    deps = [
+        "//projects/ng-devtools",
+        "//src:demo-application-environment",
+        "//src:demo-application-operations",
+        "//src/app/demo-app",
+        "//src/app/devtools-app",
+        "@npm//@angular/core",
+        "@npm//@angular/platform-browser",
+        "@npm//@angular/router",
+    ],
 )
 
 # ng_ts_project(
