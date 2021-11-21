@@ -24,7 +24,7 @@ const SAMPLE_REQ = new HttpRequest<never>('JSONP', '/test');
 
 {
   describe('JsonpClientBackend', () => {
-    let home = {};
+    let home: any;
     let document: MockDocument;
     let backend: JsonpClientBackend;
     beforeEach(() => {
@@ -62,10 +62,19 @@ const SAMPLE_REQ = new HttpRequest<never>('JSONP', '/test');
       });
       document.mockError(error);
     });
-    it('allows the callback to be invoked when the request is cancelled', () => {
-      backend.handle(SAMPLE_REQ).subscribe().unsubscribe();
-      runOnlyCallback(home, {data: 'This is a test'});
+    it('prevents the script from executing when the request is cancelled', () => {
+      const sub = backend.handle(SAMPLE_REQ).subscribe();
+      expect(Object.keys(home).length).toBe(1);
+      const keys = Object.keys(home);
+      const spy = jasmine.createSpy('spy', home[keys[0]]);
+
+      sub.unsubscribe();
+      document.mockLoad();
       expect(Object.keys(home).length).toBe(0);
+      expect(spy).not.toHaveBeenCalled();
+      // The script element should have been transferred to a different document to prevent it from
+      // executing.
+      expect(document.mock!.ownerDocument).not.toEqual(document);
     });
     describe('throws an error', () => {
       it('when request method is not JSONP',
