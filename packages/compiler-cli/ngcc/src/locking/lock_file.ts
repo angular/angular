@@ -10,9 +10,6 @@ import module from 'module';
 
 import {AbsoluteFsPath, PathManipulation} from '../../../src/ngtsc/file_system';
 
-const lockFileName = '.ngcc_lock_file';
-const nodeModulesDirectory = 'node_modules';
-
 export function getLockFilePath(fs: PathManipulation) {
   // This is an interop allowing for the unlocking script to be determined in both
   // a CommonJS module, or an ES module which does not come with `require` by default.
@@ -22,14 +19,8 @@ export function getLockFilePath(fs: PathManipulation) {
   // allows us to have a consistent position for the lock file to reside. We are unable to rely
   // on `__dirname` (or equivalent) as this code is being bundled and different entry-points
   // will have dedicated bundles where the lock file location would differ then.
-  const ngccEntryPointFile = requireFn.resolve('@angular/compiler-cli/ngcc');
-  const nodeModulesIndex = ngccEntryPointFile.lastIndexOf(nodeModulesDirectory);
-  const lockFilePath = nodeModulesIndex === -1 ?
-      fs.resolve(ngccEntryPointFile, '..', lockFileName) :
-      fs.resolve(
-          ngccEntryPointFile.slice(0, nodeModulesIndex + nodeModulesDirectory.length),
-          lockFileName);
-  return lockFilePath;
+  const ngccEntryPointFile = requireFn.resolve('@angular/compiler-cli/package.json');
+  return fs.resolve(ngccEntryPointFile, '../../../.ngcc_lock_file');
 }
 
 export interface LockFile {

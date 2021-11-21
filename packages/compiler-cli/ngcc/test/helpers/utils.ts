@@ -119,3 +119,18 @@ var __assign${suffix} = null;
 export function getRootFiles(testFiles: TestFile[]): AbsoluteFsPath[] {
   return testFiles.filter(f => f.isRoot !== false).map(f => absoluteFrom(f.name));
 }
+
+/**
+ * Mock out the lockfile path resolution, which uses `require.resolve()`.
+ */
+export function mockRequireResolveForLockfile() {
+  const moduleConstructor: any = module.constructor;
+  const originalResolveFileName = moduleConstructor._resolveFilename;
+  spyOn<any>(moduleConstructor, '_resolveFilename').and.callFake(function(request: string) {
+    if (request === '@angular/compiler-cli/package.json') {
+      return '/node_modules/' + request;
+    } else {
+      return originalResolveFileName.apply(null, arguments as any);
+    }
+  });
+}

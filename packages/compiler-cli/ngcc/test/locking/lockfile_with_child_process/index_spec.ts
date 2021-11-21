@@ -13,6 +13,7 @@ import {runInEachFileSystem} from '../../../../src/ngtsc/file_system/testing';
 import {MockLogger} from '../../../../src/ngtsc/logging/testing';
 import {getLockFilePath} from '../../../src/locking/lock_file';
 import {LockFileWithChildProcess} from '../../../src/locking/lock_file_with_child_process';
+import {mockRequireResolveForLockfile} from '../../helpers/utils';
 
 runInEachFileSystem(() => {
   describe('LockFileWithChildProcess', () => {
@@ -54,6 +55,10 @@ runInEachFileSystem(() => {
         };
       }
     }
+
+    beforeEach(() => {
+      mockRequireResolveForLockfile();
+    });
 
     describe('constructor', () => {
       it('should create the unlocker process', () => {
