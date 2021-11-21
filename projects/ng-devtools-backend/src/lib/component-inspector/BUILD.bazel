@@ -7,14 +7,14 @@ package(default_visibility = ["//visibility:public"])
 ts_project(
     name = "component-inspector",
     srcs = ["component-inspector.ts"],
+    tsconfig = "//projects/ng-devtools-backend:tsconfig-lib",
     deps = [
-        "//projects/protocol",
-        "//projects/ng-devtools-backend/src/lib:highlighter",
         "//projects/ng-devtools-backend/src/lib:component-tree",
+        "//projects/ng-devtools-backend/src/lib:highlighter",
         "//projects/ng-devtools-backend/src/lib:interfaces",
         "//projects/ng-devtools-backend/src/lib/hooks",
+        "//projects/protocol",
     ],
-    tsconfig = "//projects/ng-devtools-backend:tsconfig-lib"
 )
 
 karma_web_test_suite(
@@ -29,13 +29,13 @@ ts_test_project(
     ],
     deps = [
         ":component-inspector",
-        "//projects/protocol",
         "//projects/ng-devtools-backend/src/lib:component-tree",
-        "//projects/ng-devtools-backend/src/lib/hooks",
         "//projects/ng-devtools-backend/src/lib:highlighter",
-        "@npm//@angular/core",
-        "@npm//@types",
         "//projects/ng-devtools-backend/src/lib:interfaces",
         "//projects/ng-devtools-backend/src/lib:utils",
+        "//projects/ng-devtools-backend/src/lib/hooks",
+        "//projects/protocol",
+        "@npm//@angular/core",
+        "@npm//@types",
     ],
 )

@@ -31,16 +31,16 @@ html_insert_assets(
 ng_ts_project(
     name = "src",
     srcs = ["main.ts"],
+    tsconfig = "//projects/demo-no-zone:tsconfig-app",
     deps = [
         "//projects/demo-no-zone/src/app",
-        "@npm//@angular/core",
         "@npm//@angular/common",
-        "@npm//@angular/platform-browser-dynamic",
+        "@npm//@angular/core",
         "@npm//@angular/platform-browser",
-        "@npm//rxjs",
+        "@npm//@angular/platform-browser-dynamic",
         "@npm//@types",
+        "@npm//rxjs",
     ],
-    tsconfig = "//projects/demo-no-zone:tsconfig-app"
 )
 
 rollup_bundle(
@@ -69,5 +69,8 @@ pkg_web(
 history_server(
     name = "devserver",
     data = [":devapp"],
-    templated_args = ["-a $$(rlocation $(rootpath :devapp))", "--port 4200"],
+    templated_args = [
+        "-a $$(rlocation $(rootpath :devapp))",
+        "--port 4200",
+    ],
 )

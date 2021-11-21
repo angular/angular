@@ -12,28 +12,28 @@ ng_ts_project(
         ],
         exclude = ["flamegraph-formatter.spec.ts"],
     ),
+    tsconfig = "//projects/ng-devtools:tsconfig-lib",
     deps = [
         "//projects/ng-devtools/src/lib:theme",
-        "//projects/protocol",
         "//projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter",
+        "//projects/protocol",
         "@npm//@angular/core",
+        "@npm//@types",
         "@npm//memo-decorator",
         "@npm//rxjs",
-        "@npm//@types",
     ],
-    tsconfig = "//projects/ng-devtools:tsconfig-lib"
 )
 
 ts_test_project(
     name = "test-lib",
     srcs = [
-        "flamegraph-formatter.spec.ts"
+        "flamegraph-formatter.spec.ts",
     ],
     deps = [
-        "//projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter:record-formatter-spec-constants",
         ":flamegraph-formatter",
-        "//projects/protocol",
         "//projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter",
+        "//projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter:record-formatter-spec-constants",
+        "//projects/protocol",
     ],
 )
 

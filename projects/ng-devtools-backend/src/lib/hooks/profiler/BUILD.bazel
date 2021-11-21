@@ -6,17 +6,15 @@ ts_project(
     name = "profiler",
     srcs = glob(
         include = ["*.ts"],
-        exclude = ["*.spec.ts"]
+        exclude = ["*.spec.ts"],
     ),
+    tsconfig = "//projects/ng-devtools-backend:tsconfig-lib",
     deps = [
-        "//projects/protocol",
         "//projects/ng-devtools-backend/src/lib:utils",
-        "//projects/ng-devtools-backend/src/lib/hooks:identity-tracker",
         "//projects/ng-devtools-backend/src/lib/directive-forest",
+        "//projects/ng-devtools-backend/src/lib/hooks:identity-tracker",
+        "//projects/protocol",
+        "@npm//@angular/core",
         "@npm//rxjs",
-        "@npm//@angular/core"
     ],
-    tsconfig = "//projects/ng-devtools-backend:tsconfig-lib"
 )
-
-

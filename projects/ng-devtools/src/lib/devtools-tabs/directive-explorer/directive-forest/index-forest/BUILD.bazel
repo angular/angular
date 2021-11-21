@@ -7,11 +7,11 @@ package(default_visibility = ["//visibility:public"])
 ts_project(
     name = "index-forest",
     srcs = ["index.ts"],
+    tsconfig = "//projects/ng-devtools:tsconfig-lib",
     deps = [
         "//projects/protocol",
-        "@npm//@angular/material"
+        "@npm//@angular/material",
     ],
-    tsconfig = "//projects/ng-devtools:tsconfig-lib"
 )
 
 ts_test_project(

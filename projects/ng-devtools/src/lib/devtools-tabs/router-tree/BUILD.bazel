@@ -18,14 +18,14 @@ ng_ts_project(
         ":router-tree.component.html",
         ":router-tree-styles",
     ],
+    tsconfig = "//projects/ng-devtools:tsconfig-lib",
     deps = [
-         "//projects/protocol",
-        "@npm//@angular/core",
+        "//projects/protocol",
         "@npm//@angular/common",
+        "@npm//@angular/core",
         "@npm//@angular/material",
-        "@npm//d3",
         "@npm//@types",
+        "@npm//d3",
         "@npm//rxjs",
     ],
-    tsconfig = "//projects/ng-devtools:tsconfig-lib"
 )

@@ -19,23 +19,23 @@ ng_ts_project(
     ],
     angular_assets = [
         "devtools-tabs.component.html",
-        ":devtools-tabs-component-styles"
+        ":devtools-tabs-component-styles",
     ],
+    tsconfig = "//projects/ng-devtools:tsconfig-lib",
     deps = [
         "//projects/ng-devtools/src/lib:theme",
-        "//projects/ng-devtools/src/lib/devtools-tabs/tab-update",
-        "//projects/ng-devtools/src/lib/devtools-tabs/router-tree",
-        "//projects/ng-devtools/src/lib/devtools-tabs/profiler",
         "//projects/ng-devtools/src/lib/application-environment",
-        "//projects/protocol",
         "//projects/ng-devtools/src/lib/devtools-tabs/directive-explorer",
-        "@npm//@angular/core",
+        "//projects/ng-devtools/src/lib/devtools-tabs/profiler",
+        "//projects/ng-devtools/src/lib/devtools-tabs/router-tree",
+        "//projects/ng-devtools/src/lib/devtools-tabs/tab-update",
+        "//projects/protocol",
         "@npm//@angular/common",
+        "@npm//@angular/core",
         "@npm//@angular/material",
-        "@npm//rxjs",
         "@npm//@types",
+        "@npm//rxjs",
     ],
-    tsconfig = "//projects/ng-devtools:tsconfig-lib"
 )
 
 ts_test_project(
@@ -43,8 +43,8 @@ ts_test_project(
     srcs = ["devtools-tabs.spec.ts"],
     deps = [
         ":devtools-tabs",
-        "//projects/ng-devtools/src/lib/devtools-tabs/tab-update",
         "//projects/ng-devtools/src/lib/application-environment",
+        "//projects/ng-devtools/src/lib/devtools-tabs/tab-update",
         "//projects/protocol",
     ],
 )

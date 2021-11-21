@@ -16,15 +16,13 @@ ng_ts_project(
         ],
     ),
     angular_assets = [
-        ":split-component-styles"
+        ":split-component-styles",
     ],
     deps = [
         "//projects/ng-devtools/src/lib/vendor/angular-split/lib/component:split",
-        "@npm//@angular/core",
         "@npm//@angular/common",
-        "@npm//rxjs",
+        "@npm//@angular/core",
         "@npm//@types",
+        "@npm//rxjs",
     ],
 )
-
-

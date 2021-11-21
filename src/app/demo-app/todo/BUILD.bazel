@@ -11,26 +11,23 @@ sass_binary(
 ng_ts_project(
     name = "todo",
     srcs = [
+        "app.module.ts",
         "app-todo.component.ts",
         "dialog.component.ts",
-        "app.module.ts"
     ],
     angular_assets = [
         "app-todo.component.html",
         "dialog.component.html",
-        ":app-todo-component-styles"
-    ],
-    deps = [
-        "//src/app/demo-app/todo/home",
-        "//src/app/demo-app/todo/about",
-        "@npm//@angular/core",
-        "@npm//@angular/common",
-        "@npm//@angular/router",
-        "@npm//@angular/forms",
-        "@npm//@angular/material",
+        ":app-todo-component-styles",
     ],
     tsconfig = "//:tsconfig.json",
+    deps = [
+        "//src/app/demo-app/todo/about",
+        "//src/app/demo-app/todo/home",
+        "@npm//@angular/common",
+        "@npm//@angular/core",
+        "@npm//@angular/forms",
+        "@npm//@angular/material",
+        "@npm//@angular/router",
+    ],
 )
-
-
-

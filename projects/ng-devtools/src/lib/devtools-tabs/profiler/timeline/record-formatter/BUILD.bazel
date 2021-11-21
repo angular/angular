@@ -16,37 +16,37 @@ ts_project(
             "frame-merger.spec.ts",
         ],
     ),
+    tsconfig = "//projects/ng-devtools:tsconfig-lib",
     deps = [
         "//projects/protocol",
         "@npm//@angular/core",
-        "@npm//rxjs",
         "@npm//@types",
+        "@npm//rxjs",
     ],
-    tsconfig = "//projects/ng-devtools:tsconfig-lib"
 )
 
 ts_project(
     name = "record-formatter-spec-constants",
     srcs = ["record-formatter-spec-constants.ts"],
+    tsconfig = "//projects/ng-devtools:tsconfig-lib",
     deps = [
         "//projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter/flamegraph-formatter",
         "//projects/protocol",
         "@npm//@angular/core",
-        "@npm//rxjs",
         "@npm//@types",
+        "@npm//rxjs",
     ],
-    tsconfig = "//projects/ng-devtools:tsconfig-lib"
 )
 
 ts_test_project(
     name = "test-lib",
     srcs = [
-        "record-formatter.spec.ts",
         "frame-merger.spec.ts",
+        "record-formatter.spec.ts",
     ],
     deps = [
-        ":record-formatter-spec-constants",
         ":record-formatter",
+        ":record-formatter-spec-constants",
         "//projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter/flamegraph-formatter",
         "//projects/protocol",
     ],
@@ -58,4 +58,3 @@ karma_web_test_suite(
         ":test-lib",
     ],
 )
-

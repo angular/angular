@@ -6,7 +6,11 @@ load("//tools:defaults.bzl", "karma_web_test_suite")
 
 package(default_visibility = ["//visibility:public"])
 
-exports_files(["tsconfig.lib.json", "tsconfig.spec.json", "karma.conf.js"])
+exports_files([
+    "tsconfig.lib.json",
+    "tsconfig.spec.json",
+    "karma.conf.js",
+])
 
 ts_config(
     name = "tsconfig-lib",
@@ -22,13 +26,19 @@ ts_config(
 
 ts_project(
     name = "protocol-ts",
-    srcs = glob(["**/*.ts"], exclude = ["**/*.spec.ts", "src/test.ts"]),
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = [
+            "**/*.spec.ts",
+            "src/test.ts",
+        ],
+    ),
+    tsconfig = ":tsconfig-lib",
     deps = [
         "@npm//@angular/core",
         "@npm//@angular/platform-browser-dynamic",
         "@npm//@types",
     ],
-    tsconfig = ":tsconfig-lib",
 )
 
 js_library(
@@ -54,4 +64,3 @@ karma_web_test_suite(
         "//projects/protocol:protocol_test",
     ],
 )
-

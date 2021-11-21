@@ -6,27 +6,27 @@ package(default_visibility = ["//visibility:public"])
 multi_sass_binary(
     name = "property-view-styles",
     srcs = [
-        "property-view.component.scss",
-        "property-view-tree.component.scss",
-        "property-view-header.component.scss",
-        "property-view-body.component.scss",
-        "property-preview.component.scss",
         "property-editor.component.scss",
+        "property-preview.component.scss",
         "property-tab-body.component.scss",
+        "property-view.component.scss",
+        "property-view-body.component.scss",
+        "property-view-header.component.scss",
+        "property-view-tree.component.scss",
     ],
 )
 
 ng_ts_project(
     name = "property-view",
     srcs = [
-        "property-view.component.ts",
-        "property-view-tree.component.ts",
-        "property-view-header.component.ts",
-        "property-view-body.component.ts",
-        "property-preview.component.ts",
         "property-editor.component.ts",
+        "property-preview.component.ts",
         "property-tab-body.component.ts",
+        "property-view.component.ts",
         "property-view.module.ts",
+        "property-view-body.component.ts",
+        "property-view-header.component.ts",
+        "property-view-tree.component.ts",
     ],
     angular_assets = [
         "property-view.component.html",
@@ -36,19 +36,19 @@ ng_ts_project(
         "property-preview.component.html",
         "property-editor.component.html",
         "property-tab-body.component.html",
-        ":property-view-styles"
+        ":property-view-styles",
     ],
+    tsconfig = "//projects/ng-devtools:tsconfig-lib",
     deps = [
+        "//projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/index-forest",
         "//projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-resolver",
         "//projects/protocol",
-        "//projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/index-forest",
-        "@npm//@angular/core",
-        "@npm//@angular/common",
-        "@npm//@angular/forms",
         "@npm//@angular/cdk",
+        "@npm//@angular/common",
+        "@npm//@angular/core",
+        "@npm//@angular/forms",
         "@npm//@angular/material",
-        "@npm//rxjs",
         "@npm//@types",
+        "@npm//rxjs",
     ],
-    tsconfig = "//projects/ng-devtools:tsconfig-lib"
 )

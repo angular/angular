@@ -8,16 +8,16 @@ ts_project(
     name = "directive-forest",
     srcs = glob(
         include = ["*.ts"],
-        exclude = ["*.spec.ts"]
+        exclude = ["*.spec.ts"],
     ),
+    tsconfig = "//projects/ng-devtools-backend:tsconfig-lib",
     deps = [
+        "//projects/ng-devtools-backend/src/lib:highlighter",
         "//projects/ng-devtools-backend/src/lib:interfaces",
         "//projects/ng-devtools-backend/src/lib:utils",
-        "//projects/ng-devtools-backend/src/lib:highlighter",
         "//projects/ng-devtools-backend/src/lib:version",
-        "@npm//semver-dsl"
+        "@npm//semver-dsl",
     ],
-    tsconfig = "//projects/ng-devtools-backend:tsconfig-lib"
 )
 
 karma_web_test_suite(
@@ -34,8 +34,8 @@ ts_test_project(
     ],
     deps = [
         ":directive-forest",
-        "@npm//@types",
         "//projects/ng-devtools-backend/src/lib:interfaces",
         "//projects/ng-devtools-backend/src/lib:utils",
+        "@npm//@types",
     ],
 )

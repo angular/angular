@@ -8,19 +8,19 @@ ng_ts_project(
     name = "state-serializer",
     srcs = glob(
         include = ["*.ts"],
-        exclude = ["*.spec.ts"]
+        exclude = ["*.spec.ts"],
     ),
+    tsconfig = "//projects/ng-devtools-backend:tsconfig-lib",
     deps = [
-        "//projects/protocol",
         "//projects/ng-devtools-backend/src/lib/directive-forest",
+        "//projects/protocol",
     ],
-    tsconfig = "//projects/ng-devtools-backend:tsconfig-lib"
 )
 
 karma_web_test_suite(
     name = "test",
     deps = [
-        ":test-lib"
+        ":test-lib",
     ],
 )
 

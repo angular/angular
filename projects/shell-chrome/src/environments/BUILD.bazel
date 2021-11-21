@@ -2,14 +2,13 @@ load("//tools:typescript.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
-
 ts_project(
     name = "environment",
     srcs = [
-      "environment.ts",
+        "environment.ts",
     ],
     deps = [
-      "//projects/ng-devtools",
-      "@npm//@types"
+        "//projects/ng-devtools",
+        "@npm//@types",
     ],
 )

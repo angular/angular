@@ -11,18 +11,18 @@ sass_binary(
 ng_ts_project(
     name = "split",
     srcs = [
+        "interface.ts",
         "split.component.ts",
         "split.module.ts",
         "splitArea.directive.ts",
         "utils.ts",
-        "interface.ts"
     ],
     angular_assets = [
         ":split-styles",
     ],
     deps = [
-        "@npm//@angular/core",
         "@npm//@angular/common",
-        "@npm//rxjs"
+        "@npm//@angular/core",
+        "@npm//rxjs",
     ],
 )

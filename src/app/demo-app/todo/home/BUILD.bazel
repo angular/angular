@@ -14,24 +14,21 @@ ng_ts_project(
         "home.module.ts",
         "sample.pipe.ts",
         "todo.component.ts",
+        "todo.ts",
         "todos.component.ts",
         "todos.pipe.ts",
         "todos.service.ts",
         "tooltip.directive.ts",
-        "todo.ts"
     ],
     angular_assets = [
         "todos.component.html",
         "todo.component.html",
-        ":home-styles"
-    ],
-    deps = [
-        "@npm//@angular/core",
-        "@npm//@angular/common",
-        "@npm//@angular/router",
+        ":home-styles",
     ],
     tsconfig = "//:tsconfig.json",
+    deps = [
+        "@npm//@angular/common",
+        "@npm//@angular/core",
+        "@npm//@angular/router",
+    ],
 )
-
-
-

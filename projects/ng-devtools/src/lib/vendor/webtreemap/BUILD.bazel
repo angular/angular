@@ -4,5 +4,8 @@ package(default_visibility = ["//:__subpackages__"])
 
 ts_project(
     name = "webtreemap",
-    srcs = ["tree.ts", "treemap.ts"],
+    srcs = [
+        "tree.ts",
+        "treemap.ts",
+    ],
 )

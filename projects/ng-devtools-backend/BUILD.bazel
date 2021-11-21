@@ -2,7 +2,6 @@ load("@npm//@bazel/typescript:index.bzl", "ts_config")
 load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
 load("//tools:typescript.bzl", "ts_project")
 
-
 package(default_visibility = ["//visibility:public"])
 
 ts_config(
@@ -14,10 +13,10 @@ ts_config(
 ts_project(
     name = "ng-devtools-backend-ts",
     srcs = ["index.ts"],
+    tsconfig = ":tsconfig-lib",
     deps = [
         "//projects/ng-devtools-backend/src",
     ],
-    tsconfig = ":tsconfig-lib"
 )
 
 js_library(

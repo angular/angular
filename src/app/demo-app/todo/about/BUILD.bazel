@@ -6,14 +6,11 @@ ng_ts_project(
     name = "about",
     srcs = [
         "about.component.ts",
-        "about.module.ts"
+        "about.module.ts",
     ],
+    tsconfig = "//:tsconfig.json",
     deps = [
         "@npm//@angular/core",
         "@npm//@angular/router",
     ],
-    tsconfig = "//:tsconfig.json",
 )
-
-
-

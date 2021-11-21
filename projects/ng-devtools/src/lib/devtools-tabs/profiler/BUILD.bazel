@@ -14,27 +14,25 @@ multi_sass_binary(
 ng_ts_project(
     name = "profiler",
     srcs = [
+        "file-api-service.ts",
         "profiler.component.ts",
-        "profiler-import-dialog.component.ts",
         "profiler.module.ts",
-        "file-api-service.ts"
+        "profiler-import-dialog.component.ts",
     ],
     angular_assets = [
         "profiler.component.html",
         "profiler-import-dialog.component.html",
-        ":profiler-styles"
+        ":profiler-styles",
     ],
+    tsconfig = "//projects/ng-devtools:tsconfig-lib",
     deps = [
-        "//projects/protocol",
-        "//projects/ng-devtools/src/lib/vendor/chromium",
         "//projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline",
-        "@npm//@angular/core",
-        "@npm//@angular/material",
-        "@npm//@angular/forms",
+        "//projects/ng-devtools/src/lib/vendor/chromium",
+        "//projects/protocol",
         "@npm//@angular/common",
+        "@npm//@angular/core",
+        "@npm//@angular/forms",
+        "@npm//@angular/material",
         "@npm//rxjs",
     ],
-    tsconfig = "//projects/ng-devtools:tsconfig-lib"
 )
-
-
