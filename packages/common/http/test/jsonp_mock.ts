@@ -7,7 +7,7 @@
  */
 
 export class MockScriptElement {
-  constructor() {}
+  constructor(public ownerDocument: MockDocument) {}
 
   listeners: {
     load?: (event: Event) => void,
@@ -28,8 +28,12 @@ export class MockDocument {
   mock!: MockScriptElement|null;
   readonly body: any = this;
 
+  implementation = {
+    createHTMLDocument: () => new MockDocument(),
+  };
+
   createElement(tag: 'script'): HTMLScriptElement {
-    return new MockScriptElement() as any as HTMLScriptElement;
+    return new MockScriptElement(this) as any as HTMLScriptElement;
   }
 
   appendChild(node: any): void {
@@ -42,11 +46,23 @@ export class MockDocument {
     }
   }
 
+  adoptNode(node: any) {
+    node.ownerDocument = this;
+  }
+
   mockLoad(): void {
-    this.mock!.listeners.load!(null as any);
+    // Mimic behavior described by
+    // https://html.spec.whatwg.org/multipage/scripting.html#execute-the-script-block
+    if (this.mock!.ownerDocument === this) {
+      this.mock!.listeners.load!(null as any);
+    }
   }
 
   mockError(err: Error) {
-    this.mock!.listeners.error!(err);
+    // Mimic behavior described by
+    // https://html.spec.whatwg.org/multipage/scripting.html#execute-the-script-block
+    if (this.mock!.ownerDocument === this) {
+      this.mock!.listeners.error!(err);
+    }
   }
 }
