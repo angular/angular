@@ -682,7 +682,7 @@ export class TransitionAnimationEngine {
     return false;
   }
 
-  insertNode(namespaceId: string, element: any, parent: any, insertBefore: boolean): void {
+  insertNode(namespaceId: string, element: any, parent: any): void {
     if (!isElementNode(element)) return;
 
     // special case for when an element is removed and reinserted (move operation)
@@ -713,10 +713,7 @@ export class TransitionAnimationEngine {
       }
     }
 
-    // only *directives and host elements are inserted before
-    if (insertBefore) {
-      this.collectEnterElement(element);
-    }
+    this.collectEnterElement(element);
   }
 
   collectEnterElement(element: any) {
@@ -936,7 +933,7 @@ export class TransitionAnimationEngine {
     enterNodeMap.forEach((nodes, root) => {
       const className = ENTER_CLASSNAME + i++;
       enterNodeMapIds.set(root, className);
-      nodes.forEach(node => addClass(node, className));
+      nodes.forEach(node => addClassRecursively(node, className));
     });
 
     const allLeaveNodes: any[] = [];
@@ -967,7 +964,7 @@ export class TransitionAnimationEngine {
     cleanupFns.push(() => {
       enterNodeMap.forEach((nodes, root) => {
         const className = enterNodeMapIds.get(root)!;
-        nodes.forEach(node => removeClass(node, className));
+        nodes.forEach(node => removeClassRecursively(node, className));
       });
 
       leaveNodeMap.forEach((nodes, root) => {
@@ -1734,6 +1731,15 @@ function addClass(element: any, className: string) {
   }
 }
 
+function addClassRecursively(element: any, className: string) {
+  if (isElementNode(element)) {
+    addClass(element, className);
+    element.childNodes.forEach(
+        (child: HTMLElement) => addClassRecursively(child, className),
+    );
+  }
+}
+
 function removeClass(element: any, className: string) {
   if (element.classList) {
     element.classList.remove(className);
@@ -1742,6 +1748,15 @@ function removeClass(element: any, className: string) {
     if (classes) {
       delete classes[className];
     }
+  }
+}
+
+function removeClassRecursively(element: any, className: string) {
+  if (isElementNode(element)) {
+    removeClass(element, className);
+    element.childNodes.forEach(
+        (child: HTMLElement) => removeClassRecursively(child, className),
+    );
   }
 }
 

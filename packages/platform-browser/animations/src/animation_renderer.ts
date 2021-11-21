@@ -164,13 +164,12 @@ export class BaseAnimationRenderer implements Renderer2 {
 
   appendChild(parent: any, newChild: any): void {
     this.delegate.appendChild(parent, newChild);
-    this.engine.onInsert(this.namespaceId, newChild, parent, false);
+    this.engine.onInsert(this.namespaceId, newChild, parent);
   }
 
-  insertBefore(parent: any, newChild: any, refChild: any, isMove: boolean = true): void {
+  insertBefore(parent: any, newChild: any, refChild: any): void {
     this.delegate.insertBefore(parent, newChild, refChild);
-    // If `isMove` true than we should animate this insert.
-    this.engine.onInsert(this.namespaceId, newChild, parent, isMove);
+    this.engine.onInsert(this.namespaceId, newChild, parent);
   }
 
   removeChild(parent: any, oldChild: any, isHostElement: boolean): void {

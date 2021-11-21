@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {AnimationMetadata, AnimationPlayer, AnimationTriggerMetadata} from '@angular/animations';
+
 import {TriggerAst} from '../dsl/animation_ast';
 import {buildAnimationAst} from '../dsl/animation_ast_builder';
 import {AnimationTrigger, buildTrigger} from '../dsl/animation_trigger';
@@ -62,8 +63,8 @@ export class AnimationEngine {
     this._transitionEngine.destroy(namespaceId, context);
   }
 
-  onInsert(namespaceId: string, element: any, parent: any, insertBefore: boolean): void {
-    this._transitionEngine.insertNode(namespaceId, element, parent, insertBefore);
+  onInsert(namespaceId: string, element: any, parent: any): void {
+    this._transitionEngine.insertNode(namespaceId, element, parent);
   }
 
   onRemove(namespaceId: string, element: any, context: any, isHostElement?: boolean): void {

@@ -159,7 +159,7 @@ describe('TransitionAnimationEngine', () => {
       registerTrigger(child, engine, childTrigger);
 
       element.appendChild(child);
-      engine.insertNode(DEFAULT_NAMESPACE_ID, child, element, true);
+      engine.insertNode(DEFAULT_NAMESPACE_ID, child, element);
 
       setProperty(element, engine, 'parent', 'value');
       setProperty(child, engine, 'child', 'visible');
@@ -652,9 +652,9 @@ describe('TransitionAnimationEngine', () => {
       element.appendChild(child2);
 
       element.appendChild(child1);
-      engine.insertNode(DEFAULT_NAMESPACE_ID, child1, element, true);
+      engine.insertNode(DEFAULT_NAMESPACE_ID, child1, element);
       element.appendChild(child2);
-      engine.insertNode(DEFAULT_NAMESPACE_ID, child2, element, true);
+      engine.insertNode(DEFAULT_NAMESPACE_ID, child2, element);
 
       expect(element.contains(child1)).toBe(true);
       expect(element.contains(child2)).toBe(true);

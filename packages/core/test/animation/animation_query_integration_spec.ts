@@ -1017,8 +1017,8 @@ describe('animation query tests', function() {
             <div [@myAnimation]="items.length" class="parent">
               <ng-container *ngFor="let item of items">
                 <section>
-                  <div *ngIf="item % 2 == 0">even {{ item }}</div>
-                  <div *ngIf="item % 2 == 1">odd {{ item }}</div>
+                  <div class="item" *ngIf="item % 2 == 0">even {{ item }}</div>
+                  <div class="item" *ngIf="item % 2 == 1">odd {{ item }}</div>
                 </section>
               </ng-container>
             </div>
@@ -1027,12 +1027,13 @@ describe('animation query tests', function() {
             'myAnimation',
             [
               transition('0 => 5', [
-                query(':enter', [
+                query('.item:enter', [
                   style({ opacity: '0' }),
                   animate(1000, style({ opacity: '1' }))
                 ])
               ]),
               transition('5 => 0', [
+                // TODO: :enter and :leave of inner elements behave differently they should probably be aligned
                 query(':leave', [
                   style({ opacity: '1' }),
                   animate(1000, style({ opacity: '0' }))
@@ -2515,27 +2516,80 @@ describe('animation query tests', function() {
          expect(element.innerText.trim()).toMatch(/this\s+child/mg);
        }));
 
-    it('should only mark outermost *directive nodes :enter and :leave when inserts and removals occur',
-       () => {
-         @Component({
-           selector: 'ani-cmp',
-           animations: [
-             trigger(
-                 'anim',
-                 [
-                   transition(
-                       '* => enter',
-                       [
-                         query(':enter', [animate(1000, style({color: 'red'}))]),
-                       ]),
-                   transition(
-                       '* => leave',
-                       [
-                         query(':leave', [animate(1000, style({color: 'blue'}))]),
-                       ]),
-                 ]),
-           ],
-           template: `
+    it('should mark all nodes :enter when their parent\'s insertion occurs', () => {
+      @Component({
+        selector: 'ani-cmp',
+        animations: [
+          trigger(
+              'anim',
+              [
+                transition(
+                    '* => enter',
+                    [
+                      query(':enter', [animate(1000, style({color: 'red'}))]),
+                    ]),
+              ]),
+        ],
+        template: `
+            <section class="container" [@anim]="exp ? 'enter' : 'leave'">
+              <div class="a" *ngIf="exp">
+                <div class="b">
+                  <div class="c">
+                    text
+                  </div>
+                </div>
+              </div>
+              <div class="d">
+                <div class="e">
+                  text2
+                </div>
+              </div>
+            </section>
+          `
+      })
+      class Cmp {
+        public exp = false;
+      }
+
+      TestBed.configureTestingModule({declarations: [Cmp]});
+
+      const engine = TestBed.inject(ɵAnimationEngine);
+      const fixture = TestBed.createComponent(Cmp);
+      const cmp = fixture.componentInstance;
+
+      cmp.exp = true;
+      fixture.detectChanges();
+      engine.flush();
+
+      let players = getLog();
+      resetLog();
+      expect(players.length).toEqual(5);
+      const [p1, p2, p3, p4, p5] = players;
+
+      expect(p1.element.classList.contains('a')).toBeTrue();
+      expect(p2.element.classList.contains('b')).toBeTrue();
+      expect(p3.element.classList.contains('c')).toBeTrue();
+      expect(p4.element.classList.contains('d')).toBeTrue();
+      expect(p5.element.classList.contains('e')).toBeTrue();
+    });
+
+    // TODO: this should most likely not happen anymore and all children of a removed parent
+    //       should be marked as :leave (so that they can be queried accordingly)
+    it('should only mark outermost *directive nodes :leave when removals occur', () => {
+      @Component({
+        selector: 'ani-cmp',
+        animations: [
+          trigger(
+              'anim',
+              [
+                transition(
+                    '* => leave',
+                    [
+                      query(':leave', [animate(1000, style({color: 'blue'}))]),
+                    ]),
+              ]),
+        ],
+        template: `
             <section class="container" [@anim]="exp ? 'enter' : 'leave'">
               <div class="a" *ngIf="exp">
                 <div class="b" *ngIf="exp">
@@ -2551,43 +2605,29 @@ describe('animation query tests', function() {
               </div>
             </section>
           `
-         })
-         class Cmp {
-           // TODO(issue/24571): remove '!'.
-           public exp!: boolean;
-         }
+      })
+      class Cmp {
+        public exp = true;
+      }
 
-         TestBed.configureTestingModule({declarations: [Cmp]});
+      TestBed.configureTestingModule({declarations: [Cmp]});
 
-         const engine = TestBed.inject(ɵAnimationEngine);
-         const fixture = TestBed.createComponent(Cmp);
-         const cmp = fixture.componentInstance;
-         const container = fixture.elementRef.nativeElement;
+      const engine = TestBed.inject(ɵAnimationEngine);
+      const fixture = TestBed.createComponent(Cmp);
+      const cmp = fixture.componentInstance;
+      fixture.detectChanges();
+      cmp.exp = false;
+      fixture.detectChanges();
+      engine.flush();
 
-         cmp.exp = true;
-         fixture.detectChanges();
-         engine.flush();
+      let players = getLog();
+      resetLog();
+      expect(players.length).toEqual(2);
+      const [p1, p2] = players;
 
-         let players = getLog();
-         resetLog();
-         expect(players.length).toEqual(2);
-         const [p1, p2] = players;
-
-         expect(p1.element.classList.contains('a')).toBeTrue();
-         expect(p2.element.classList.contains('d')).toBeTrue();
-
-         cmp.exp = false;
-         fixture.detectChanges();
-         engine.flush();
-
-         players = getLog();
-         resetLog();
-         expect(players.length).toEqual(2);
-         const [p3, p4] = players;
-
-         expect(p3.element.classList.contains('a')).toBeTrue();
-         expect(p4.element.classList.contains('d')).toBeTrue();
-       });
+      expect(p1.element.classList.contains('a')).toBeTrue();
+      expect(p2.element.classList.contains('d')).toBeTrue();
+    });
 
     it('should collect multiple root levels of :enter and :leave nodes', () => {
       @Component({
@@ -2599,22 +2639,22 @@ describe('animation query tests', function() {
               transition(
                   '* => *',
                   [
-                    query(':leave', [animate('1s', style({opacity: 0}))], {optional: true}),
-                    query(':enter', [animate('1s', style({opacity: 1}))], {optional: true})
+                    query('.q:leave', [animate('1s', style({opacity: 0}))], {optional: true}),
+                    query('.q:enter', [animate('1s', style({opacity: 1}))], {optional: true})
                   ])
             ])],
         template: `
             <div [@pageAnimation]="status">
               <header>
-                <div *ngIf="!loading" class="title">{{ title }}</div>
-                <div *ngIf="loading" class="loading">loading...</div>
+                <div *ngIf="!loading" class="title q">{{ title }}</div>
+                <div *ngIf="loading" class="loading q">loading...</div>
               </header>
               <section>
                 <div class="page">
-                  <div *ngIf="page1" class="page1">
+                  <div *ngIf="page1" class="page1 q">
                     <div *ngIf="true">page 1</div>
                   </div>
-                  <div *ngIf="page2" class="page2">
+                  <div *ngIf="page2" class="page2 q">
                     <div *ngIf="true">page 2</div>
                   </div>
                 </div>

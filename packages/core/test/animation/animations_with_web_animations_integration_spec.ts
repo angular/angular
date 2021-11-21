@@ -86,13 +86,7 @@ describe('animation integration tests using web animations', function() {
     @Component({
       selector: 'ani-cmp',
       template: `
-          <div @auto *ngIf="exp">
-            <div style="line-height:20px;">1</div>
-            <div style="line-height:20px;">2</div>
-            <div style="line-height:20px;">3</div>
-            <div style="line-height:20px;">4</div>
-            <div style="line-height:20px;">5</div>
-          </div>
+          <div @auto *ngIf="exp" style="height: 100px"></div>
         `,
       animations: [trigger(
           'auto',
@@ -315,7 +309,7 @@ describe('animation integration tests using web animations', function() {
        player = engine.players[0]! as TransitionAnimationPlayer;
        let queriedPlayers =
            ((player as TransitionAnimationPlayer).getRealPlayer() as AnimationGroupPlayer).players;
-       expect(queriedPlayers.length).toEqual(5);
+       expect(queriedPlayers.length).toEqual(10);
 
        let i = 0;
        for (i = 0; i < queriedPlayers.length; i++) {
