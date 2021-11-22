@@ -1,0 +1,60 @@
+load("//tools:typescript.bzl", "ts_project")
+load("//tools:typescript.bzl", "ts_test_project")
+load("//tools:defaults.bzl", "karma_web_test_suite")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_project(
+    name = "record-formatter",
+    srcs = glob(
+        include = [
+            "*.ts",
+        ],
+        exclude = [
+            "record-formatter-spec-constants.ts",
+            "record-formatter.spec.ts",
+            "frame-merger.spec.ts",
+        ],
+    ),
+    tsconfig = "//projects/ng-devtools:tsconfig-lib",
+    deps = [
+        "//projects/protocol",
+        "@npm//@angular/core",
+        "@npm//@types",
+        "@npm//rxjs",
+    ],
+)
+
+ts_project(
+    name = "record-formatter-spec-constants",
+    srcs = ["record-formatter-spec-constants.ts"],
+    tsconfig = "//projects/ng-devtools:tsconfig-lib",
+    deps = [
+        "//projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter/flamegraph-formatter",
+        "//projects/protocol",
+        "@npm//@angular/core",
+        "@npm//@types",
+        "@npm//rxjs",
+    ],
+)
+
+ts_test_project(
+    name = "test-lib",
+    srcs = [
+        "frame-merger.spec.ts",
+        "record-formatter.spec.ts",
+    ],
+    deps = [
+        ":record-formatter",
+        ":record-formatter-spec-constants",
+        "//projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter/flamegraph-formatter",
+        "//projects/protocol",
+    ],
+)
+
+karma_web_test_suite(
+    name = "test",
+    deps = [
+        ":test-lib",
+    ],
+)

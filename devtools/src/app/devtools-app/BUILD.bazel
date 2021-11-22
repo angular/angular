@@ -1,0 +1,30 @@
+load("//tools:angular_ts_project.bzl", "ng_ts_project")
+load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
+
+package(default_visibility = ["//visibility:public"])
+
+sass_binary(
+    name = "devtools-app-component-styles",
+    src = "devtools-app.component.scss",
+)
+
+ng_ts_project(
+    name = "devtools-app",
+    srcs = [
+        "devtools-app.component.ts",
+        "devtools-app.module.ts",
+    ],
+    angular_assets = [
+        "devtools-app.component.html",
+        ":devtools-app-component-styles",
+    ],
+    tsconfig = "//:tsconfig.json",
+    deps = [
+        "//projects/ng-devtools",
+        "//projects/protocol",
+        "//src:iframe-message-bus",
+        "@npm//@angular/common",
+        "@npm//@angular/core",
+        "@npm//@angular/router",
+    ],
+)

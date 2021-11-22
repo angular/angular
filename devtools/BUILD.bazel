@@ -1,0 +1,29 @@
+load("@io_bazel_rules_webtesting//web:web.bzl", "custom_browser")
+load("//tools:typescript.bzl", "ts_test_project")
+load("@npm//@bazel/typescript:index.bzl", "ts_config")
+
+package(default_visibility = ["//visibility:public"])
+
+exports_files([
+    "tsconfig.json",
+    "cypress.json",
+])
+
+ts_test_project(
+    name = "initialize_testbed",
+    srcs = [
+        "initialize_testbed.ts",
+    ],
+    deps = [
+        "@npm//@angular/core",
+        "@npm//@angular/platform-browser-dynamic",
+    ],
+)
+
+ts_config(
+    name = "tsconfig-spec",
+    src = "tsconfig.spec.json",
+    deps = [
+        "//:tsconfig.json",
+    ],
+)

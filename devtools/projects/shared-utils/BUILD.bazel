@@ -1,0 +1,60 @@
+load("@npm//@bazel/typescript:index.bzl", "ts_config")
+load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
+load("//tools:typescript.bzl", "ts_project")
+load("//tools:typescript.bzl", "ts_test_project")
+load("//tools:defaults.bzl", "karma_web_test_suite")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_config(
+    name = "tsconfig-lib",
+    src = "tsconfig.lib.json",
+    deps = ["//:tsconfig.json"],
+)
+
+ts_config(
+    name = "tsconfig-spec",
+    src = "tsconfig.spec.json",
+    deps = ["//:tsconfig.json"],
+)
+
+ts_project(
+    name = "shared-utils-ts",
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = [
+            "**/*.spec.ts",
+            "src/test.ts",
+        ],
+    ),
+    tsconfig = ":tsconfig-lib",
+    deps = [
+        "@npm//@angular/core",
+        "@npm//@angular/platform-browser-dynamic",
+        "@npm//@types",
+    ],
+)
+
+js_library(
+    name = "shared-utils",
+    package_name = "shared-utils",
+    deps = [":shared-utils-ts"],
+)
+
+ts_test_project(
+    name = "shared-utils-test",
+    srcs = glob(["**/*.spec.ts"]),
+    deps = [
+        ":shared-utils",
+        "@npm//@angular/core",
+        "@npm//@angular/platform-browser-dynamic",
+        "@npm//@types",
+    ],
+)
+
+karma_web_test_suite(
+    name = "test",
+    deps = [
+        "//projects/shared-utils:shared-utils-test",
+    ],
+)

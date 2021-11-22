@@ -1,0 +1,8 @@
+load("//tools:typescript.bzl", "ts_project")
+
+package(default_visibility = ["//:__subpackages__"])
+
+ts_project(
+    name = "chromium",
+    srcs = ["date-utilities.ts"],
+)

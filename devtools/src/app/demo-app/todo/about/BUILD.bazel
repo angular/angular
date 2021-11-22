@@ -1,0 +1,16 @@
+load("//tools:angular_ts_project.bzl", "ng_ts_project")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_ts_project(
+    name = "about",
+    srcs = [
+        "about.component.ts",
+        "about.module.ts",
+    ],
+    tsconfig = "//:tsconfig.json",
+    deps = [
+        "@npm//@angular/core",
+        "@npm//@angular/router",
+    ],
+)

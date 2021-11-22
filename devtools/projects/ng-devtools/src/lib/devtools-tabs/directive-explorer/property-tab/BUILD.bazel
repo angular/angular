@@ -1,0 +1,41 @@
+load("@io_bazel_rules_sass//:defs.bzl", "multi_sass_binary")
+load("//tools:angular_ts_project.bzl", "ng_ts_project")
+
+package(default_visibility = ["//visibility:public"])
+
+multi_sass_binary(
+    name = "property-tab-styles",
+    srcs = [
+        "component-metadata.component.scss",
+        "property-tab.component.scss",
+        "property-tab-header.component.scss",
+    ],
+)
+
+ng_ts_project(
+    name = "property-tab",
+    srcs = [
+        "component-metadata.component.ts",
+        "property-tab.component.ts",
+        "property-tab.module.ts",
+        "property-tab-header.component.ts",
+    ],
+    angular_assets = [
+        "property-tab.component.html",
+        "property-tab-header.component.html",
+        "component-metadata.component.html",
+        ":property-tab-styles",
+    ],
+    tsconfig = "//projects/ng-devtools:tsconfig-lib",
+    deps = [
+        "//projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/index-forest",
+        "//projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-resolver",
+        "//projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-tab/property-view",
+        "//projects/protocol",
+        "@npm//@angular/common",
+        "@npm//@angular/core",
+        "@npm//@angular/material",
+        "@npm//@types",
+        "@npm//rxjs",
+    ],
+)

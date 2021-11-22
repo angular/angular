@@ -1,0 +1,41 @@
+load("//tools:typescript.bzl", "ts_project")
+load("//tools:typescript.bzl", "ts_test_project")
+load("//tools:defaults.bzl", "karma_web_test_suite")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_project(
+    name = "directive-forest",
+    srcs = glob(
+        include = ["*.ts"],
+        exclude = ["*.spec.ts"],
+    ),
+    tsconfig = "//projects/ng-devtools-backend:tsconfig-lib",
+    deps = [
+        "//projects/ng-devtools-backend/src/lib:highlighter",
+        "//projects/ng-devtools-backend/src/lib:interfaces",
+        "//projects/ng-devtools-backend/src/lib:utils",
+        "//projects/ng-devtools-backend/src/lib:version",
+        "@npm//semver-dsl",
+    ],
+)
+
+karma_web_test_suite(
+    name = "test",
+    deps = [
+        ":test-lib",
+    ],
+)
+
+ts_test_project(
+    name = "test-lib",
+    srcs = [
+        "render-tree.spec.ts",
+    ],
+    deps = [
+        ":directive-forest",
+        "//projects/ng-devtools-backend/src/lib:interfaces",
+        "//projects/ng-devtools-backend/src/lib:utils",
+        "@npm//@types",
+    ],
+)

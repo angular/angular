@@ -1,0 +1,13 @@
+<div class="wrapper" @stagger>
+  <div
+    @appear
+    *ngFor="let bar of internalData; let i = index"
+    (click)="barClick.emit(originalData[i])"
+    class="bar"
+    [style.backgroundColor]="color"
+    [style.width.%]="bar.value"
+    [matTooltip]="bar.label"
+  >
+    <span>{{ bar.label }}</span>
+  </div>
+</div>

@@ -1,0 +1,126 @@
+load("@npm//html-insert-assets:index.bzl", "html_insert_assets")
+load("//tools:angular_ts_project.bzl", "ng_ts_project")
+load("@io_bazel_rules_sass//:defs.bzl", "sass_binary", "sass_library")
+load("@npm//@bazel/rollup:index.bzl", "rollup_bundle")
+load("@npm//history-server:index.bzl", "history_server")
+load("@build_bazel_rules_nodejs//:index.bzl", "pkg_web")
+load("//tools:typescript.bzl", "ts_project")
+
+package(default_visibility = ["//visibility:public"])
+
+sass_library(
+    name = "material-theming",
+    srcs = ["@npm//:node_modules/@angular/material/_index.scss"],
+)
+
+sass_binary(
+    name = "demo-styles",
+    src = "styles.scss",
+    sourcemap = False,
+    deps = [":material-theming"],
+)
+
+_ASSETS = [
+    "//src:demo-styles",
+    "@npm//:node_modules/zone.js/dist/zone.min.js",
+]
+
+html_insert_assets(
+    name = "inject_scripts_for_dev",
+    outs = ["index.html"],
+    args = [
+        "--html=$(execpath //src:_index.html)",
+        "--out=$@",
+        "--roots=. $(RULEDIR)",
+        "--assets",
+    ] + ["$(execpath %s)" % s for s in _ASSETS] + [
+        "--scripts --module $(execpath :bundle-es2015)/index.dev.js",
+    ],
+    data = [
+        "//src:_index.html",
+        ":bundle-es2015",
+    ] + _ASSETS,
+)
+
+ng_ts_project(
+    name = "demo",
+    srcs = ["main.ts"],
+    tsconfig = "//:tsconfig.json",
+    deps = [
+        "//src/app",
+        "//src/environments",
+        "@npm//@angular/common",
+        "@npm//@angular/core",
+        "@npm//@angular/platform-browser",
+        "@npm//@angular/platform-browser-dynamic",
+        "@npm//@types",
+        "@npm//rxjs",
+    ],
+)
+
+ng_ts_project(
+    name = "demo-application-environment",
+    srcs = ["demo-application-environment.ts"],
+    deps = [
+        "//projects/ng-devtools",
+        "//src/environments",
+    ],
+)
+
+ng_ts_project(
+    name = "demo-application-operations",
+    srcs = ["demo-application-operations.ts"],
+    deps = [
+        "//projects/ng-devtools",
+        "//projects/protocol",
+    ],
+)
+
+ng_ts_project(
+    name = "iframe-message-bus",
+    srcs = ["iframe-message-bus.ts"],
+    deps = [
+        "//projects/protocol",
+    ],
+)
+
+ng_ts_project(
+    name = "zone-unaware-iframe-message-bus",
+    srcs = ["zone-unaware-iframe-message-bus.ts"],
+    deps = [
+        ":iframe-message-bus",
+        "//projects/protocol",
+    ],
+)
+
+rollup_bundle(
+    name = "bundle-es2015",
+    config_file = "rollup.config.js",
+    entry_points = {
+        ":main.ts": "index.dev",
+    },
+    format = "esm",
+    output_dir = True,
+    deps = [
+        ":demo",
+        "@npm//@rollup/plugin-commonjs",
+        "@npm//@rollup/plugin-node-resolve",
+    ],
+)
+
+pkg_web(
+    name = "devapp",
+    srcs = _ASSETS + [
+        ":bundle-es2015",
+        ":inject_scripts_for_dev",
+    ],
+)
+
+history_server(
+    name = "devserver",
+    data = [":devapp"],
+    templated_args = [
+        "-a $$(rlocation $(rootpath :devapp))",
+        "--port 4200",
+    ],
+)

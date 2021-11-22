@@ -1,0 +1,163 @@
+load("//tools:defaults.bzl", "karma_web_test_suite")
+load("//tools:typescript.bzl", "ts_test_project")
+load("//tools:typescript.bzl", "ts_project")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_project(
+    name = "lib",
+    srcs = ["index.ts"],
+    tsconfig = "//projects/ng-devtools-backend:tsconfig-lib",
+    deps = [
+        ":client-event-subscribers",
+        "//projects/ng-devtools-backend/src/lib/component-inspector",
+        "//projects/ng-devtools-backend/src/lib/directive-forest",
+        "//projects/ng-devtools-backend/src/lib/hooks",
+        "//projects/ng-devtools-backend/src/lib/state-serializer",
+        "//projects/protocol",
+    ],
+)
+
+karma_web_test_suite(
+    name = "highlighter-test",
+    deps = [
+        ":highlighter-test-lib",
+    ],
+)
+
+ts_test_project(
+    name = "highlighter-test-lib",
+    srcs = [
+        "highlighter.spec.ts",
+    ],
+    deps = [
+        ":highlighter",
+        "@npm//@angular/core",
+        "@npm//@angular/platform-browser-dynamic",
+        "@npm//@types",
+    ],
+)
+
+ts_project(
+    name = "highlighter",
+    srcs = ["highlighter.ts"],
+    tsconfig = "//projects/ng-devtools-backend:tsconfig-lib",
+)
+
+ts_project(
+    name = "interfaces",
+    srcs = ["interfaces.ts"],
+    tsconfig = "//projects/ng-devtools-backend:tsconfig-lib",
+    deps = [
+        "//projects/protocol",
+    ],
+)
+
+karma_web_test_suite(
+    name = "router-tree-test",
+    deps = [
+        ":router-tree-test-lib",
+    ],
+)
+
+ts_test_project(
+    name = "router-tree-test-lib",
+    srcs = [
+        "router-tree.spec.ts",
+    ],
+    deps = [
+        ":router-tree",
+        "//projects/protocol",
+        "@npm//@angular/core",
+        "@npm//@angular/platform-browser-dynamic",
+        "@npm//@angular/router",
+        "@npm//@types",
+    ],
+)
+
+ts_project(
+    name = "router-tree",
+    srcs = ["router-tree.ts"],
+    tsconfig = "//projects/ng-devtools-backend:tsconfig-lib",
+    deps = [
+        "//projects/protocol",
+    ],
+)
+
+ts_project(
+    name = "set-console-reference",
+    srcs = ["set-console-reference.ts"],
+    tsconfig = "//projects/ng-devtools-backend:tsconfig-lib",
+    deps = [
+        ":interfaces",
+        "//projects/protocol",
+        "//projects/shared-utils",
+    ],
+)
+
+ts_project(
+    name = "utils",
+    srcs = ["utils.ts"],
+    tsconfig = "//projects/ng-devtools-backend:tsconfig-lib",
+)
+
+ts_project(
+    name = "version",
+    srcs = ["version.ts"],
+    tsconfig = "//projects/ng-devtools-backend:tsconfig-lib",
+)
+
+ts_project(
+    name = "client-event-subscribers",
+    srcs = ["client-event-subscribers.ts"],
+    tsconfig = "//projects/ng-devtools-backend:tsconfig-lib",
+    deps = [
+        ":angular-check",
+        ":component-tree",
+        ":highlighter",
+        ":interfaces",
+        ":set-console-reference",
+        ":utils",
+        "//projects/ng-devtools-backend/src/lib/component-inspector",
+        "//projects/ng-devtools-backend/src/lib/hooks",
+        "//projects/ng-devtools-backend/src/lib/state-serializer",
+        "//projects/protocol",
+        "@npm//rxjs",
+    ],
+)
+
+ts_project(
+    name = "component-tree",
+    srcs = ["component-tree.ts"],
+    tsconfig = "//projects/ng-devtools-backend:tsconfig-lib",
+    deps = [
+        ":interfaces",
+        "//projects/ng-devtools-backend/src/lib/directive-forest",
+        "//projects/ng-devtools-backend/src/lib/state-serializer",
+        "//projects/protocol",
+    ],
+)
+
+karma_web_test_suite(
+    name = "angular-check-test",
+    deps = [
+        ":angular-check-test-lib",
+    ],
+)
+
+ts_test_project(
+    name = "angular-check-test-lib",
+    srcs = [
+        "angular-check.spec.ts",
+    ],
+    deps = [
+        ":angular-check",
+        "@npm//@types",
+    ],
+)
+
+ts_project(
+    name = "angular-check",
+    srcs = ["angular-check.ts"],
+    tsconfig = "//projects/ng-devtools-backend:tsconfig-lib",
+)

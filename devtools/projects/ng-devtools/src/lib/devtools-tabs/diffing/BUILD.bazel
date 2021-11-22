@@ -1,0 +1,18 @@
+load("//tools:typescript.bzl", "ts_project")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_project(
+    name = "diffing",
+    srcs = glob(
+        include = [
+            "index.ts",
+        ],
+    ),
+    tsconfig = "//projects/ng-devtools:tsconfig-lib",
+    deps = [
+        "@npm//@angular/core",
+        "@npm//@types",
+        "@npm//rxjs",
+    ],
+)

@@ -1,0 +1,40 @@
+<as-split unit="percent" [gutterSize]="9">
+  <as-split-area size="75">
+    <ng-container [ngSwitch]="_visualizationMode">
+      <ng-container *ngSwitchCase="cmpVisualizationModes.FlameGraph">
+        <ng-flamegraph-visualizer
+          [frame]="frame"
+          [changeDetection]="changeDetection"
+          (nodeSelect)="handleNodeSelect($event)"
+        ></ng-flamegraph-visualizer>
+      </ng-container>
+      <ng-container *ngSwitchCase="cmpVisualizationModes.TreeMap">
+        <ng-tree-map-visualizer [frame]="frame"></ng-tree-map-visualizer>
+      </ng-container>
+      <ng-container *ngSwitchCase="cmpVisualizationModes.BarGraph">
+        <ng-bargraph-visualizer [frame]="frame" (nodeSelect)="handleNodeSelect($event)"></ng-bargraph-visualizer>
+      </ng-container>
+    </ng-container>
+  </as-split-area>
+  <as-split-area size="25" minSize="15" *ngIf="selectedEntry">
+    <mat-card class="selected-entry">
+      <mat-toolbar>{{ selectedEntry.label }} details</mat-toolbar>
+      <section class="entry-statistics">
+        <div class="txt-total-time">
+          <label>Total time spent:</label><span> {{ selectedEntry.value | number }} ms</span>
+        </div>
+        <div *ngIf="selectedEntry.value > 0">
+          <ng-execution-details [data]="selectedDirectives"> </ng-execution-details>
+        </div>
+        <div *ngIf="parentHierarchy.length > 0">
+          <div class="txt-total-time"><label>Parent Hierarchy</label></div>
+          <ul>
+            <li *ngFor="let parent of parentHierarchy">
+              {{ parent.name }}
+            </li>
+          </ul>
+        </div>
+      </section>
+    </mat-card>
+  </as-split-area>
+</as-split>

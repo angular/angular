@@ -1,0 +1,27 @@
+<mat-card class="filter">
+  <label>
+    <div class="search-icon">
+      <mat-icon color="primary">search</mat-icon>
+    </div>
+    <input
+      matInput
+      (input)="emitFilter($event)"
+      (keydown.enter)="emitNextMatched()"
+      (keydown.shift.enter)="emitPrevMatched()"
+      class="filter-input"
+      placeholder="Search components"
+    />
+  </label>
+  <div class="up-down-buttons" *ngIf="hasMatched">
+    <button mat-icon-button matTooltip="Select previous element" (click)="emitPrevMatched()">
+      <mat-icon class="mat-icon-rtl-mirror">
+        expand_less
+      </mat-icon>
+    </button>
+    <button mat-icon-button matTooltip="Select next element" (click)="emitNextMatched()">
+      <mat-icon class="">
+        expand_more
+      </mat-icon>
+    </button>
+  </div>
+</mat-card>

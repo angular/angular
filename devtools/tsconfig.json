@@ -1,0 +1,66 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "plugins": [
+      {
+        "name": "@bazel/tsetse",
+        "disabledRules": [
+          "must-type-assert-json-parse"
+        ]
+      }
+    ],
+    "baseUrl": "./",
+    "outDir": "bazel-out/darwin-fastbuild/bin",
+    "sourceMap": true,
+    "declaration": true,
+    "declarationMap": true,
+    "strictNullChecks": true,
+    "downlevelIteration": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "importHelpers": true,
+    "target": "es2020",
+    "typeRoots": [
+      "node_modules/@types"
+    ],
+    "lib": [
+      "es2018",
+      "dom"
+    ],
+    "paths": {
+      "ng-devtools": [
+        "projects/ng-devtools/src/public-api.ts",
+        "dist/ng-devtools"
+      ],
+      "ng-devtools-backend": [
+        "projects/ng-devtools-backend/src/public-api.ts",
+        "dist/ng-devtools-backend"
+      ],
+      "protocol": [
+        "projects/protocol/src/public-api.ts",
+        "dist/protocol"
+      ],
+      "shared-utils": [
+        "projects/shared-utils/src/public-api.ts",
+        "dist/shared-utils"
+      ]
+    },
+    "rootDirs": [
+      ".",
+      "./bazel-out/host",
+      "./bazel-out/darwin-fastbuild/bin",
+      "./bazel-out/k8-fastbuild/bin",
+      "./bazel-out/x64_windows-fastbuild/bin",
+      "./bazel-out/darwin-dbg/bin",
+      "./bazel-out/k8-dbg/bin",
+      "./bazel-out/x64_windows-dbg/bin",
+    ]
+  },
+  "angularCompilerOptions": {
+    "fullTemplateTypeCheck": true,
+    "strictInjectionParameters": true,
+    "enableIvy": true
+  }
+}

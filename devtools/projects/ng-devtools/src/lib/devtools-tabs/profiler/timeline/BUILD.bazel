@@ -1,0 +1,77 @@
+load("//tools:angular_ts_project.bzl", "ng_ts_project")
+load("@io_bazel_rules_sass//:defs.bzl", "multi_sass_binary", "sass_binary", "sass_library")
+load("//tools:typescript.bzl", "ts_test_project")
+load("//tools:defaults.bzl", "karma_web_test_suite")
+
+package(default_visibility = ["//visibility:public"])
+
+multi_sass_binary(
+    name = "timeline-styles",
+    srcs = [
+        "frame-selector.component.scss",
+        "recording-dialog.component.scss",
+        "timeline.component.scss",
+        "timeline-controls.component.scss",
+    ],
+)
+
+sass_binary(
+    name = "recording-modal-styles",
+    src = "recording-modal.component.scss",
+    include_paths = ["node_modules"],
+)
+
+ng_ts_project(
+    name = "timeline",
+    srcs = [
+        "filter.ts",
+        "frame-selector.component.ts",
+        "recording-dialog.component.ts",
+        "recording-modal.component.ts",
+        "timeline.component.ts",
+        "timeline.module.ts",
+        "timeline-controls.component.ts",
+    ],
+    angular_assets = [
+        "timeline.component.html",
+        "timeline-controls.component.html",
+        "recording-modal.component.html",
+        "recording-dialog.component.html",
+        "frame-selector.component.html",
+        ":timeline-styles",
+        ":recording-modal-styles",
+    ],
+    tsconfig = "//projects/ng-devtools:tsconfig-lib",
+    deps = [
+        "//projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter",
+        "//projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/recording-visualizer",
+        "//projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/visualization-mode",
+        "//projects/ng-devtools/src/lib/devtools-tabs/tab-update",
+        "//projects/protocol",
+        "@npm//@angular/cdk",
+        "@npm//@angular/common",
+        "@npm//@angular/core",
+        "@npm//@angular/forms",
+        "@npm//@angular/material",
+        "@npm//ngx-flamegraph",
+        "@npm//rxjs",
+    ],
+)
+
+ts_test_project(
+    name = "test-lib",
+    srcs = [
+        "filter.spec.ts",
+        "timeline.component.spec.ts",
+    ],
+    deps = [
+        ":timeline",
+    ],
+)
+
+karma_web_test_suite(
+    name = "test",
+    deps = [
+        ":test-lib",
+    ],
+)

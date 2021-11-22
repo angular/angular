@@ -1,0 +1,28 @@
+load("//tools:angular_ts_project.bzl", "ng_ts_project")
+load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
+
+package(default_visibility = ["//visibility:public"])
+
+sass_binary(
+    name = "split-component-styles",
+    src = "//projects/ng-devtools/src/lib/vendor/angular-split/lib/component:split.component.scss",
+)
+
+ng_ts_project(
+    name = "lib",
+    srcs = glob(
+        include = [
+            "*.ts",
+        ],
+    ),
+    angular_assets = [
+        ":split-component-styles",
+    ],
+    deps = [
+        "//projects/ng-devtools/src/lib/vendor/angular-split/lib/component:split",
+        "@npm//@angular/common",
+        "@npm//@angular/core",
+        "@npm//@types",
+        "@npm//rxjs",
+    ],
+)

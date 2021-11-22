@@ -1,0 +1,8 @@
+<div class="router-tree-wrapper">
+  <div class="no-routes" [hidden]="routes?.length !== 0">
+    <h1>There are no routes to display.</h1>
+  </div>
+  <svg #svgContainer class="svg-container" [hidden]="routes?.length === 0">
+    <g #mainGroup></g>
+  </svg>
+</div>

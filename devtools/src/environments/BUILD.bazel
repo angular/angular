@@ -1,0 +1,16 @@
+load("//tools:typescript.bzl", "ts_project")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_project(
+    name = "environments",
+    srcs = [
+        "environment.e2e.ts",
+        "environment.prod.ts",
+        "environment.ts",
+    ],
+    tsconfig = "//:tsconfig.json",
+    deps = [
+        "@npm//@angular/platform-browser",
+    ],
+)

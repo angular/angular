@@ -1,0 +1,30 @@
+load("@bazel_skylib//rules:common_settings.bzl", "bool_flag")
+
+exports_files([
+    "karma.conf.js",
+])
+
+# Dupe from angular/components
+#
+# todo(aleksanderbodurri): Remove this when when spec-bundling bazel logic is moved to
+# dev-infra repo
+
+config_setting(
+    name = "partial_compilation_enabled",
+    flag_values = {
+        "@npm//@angular/bazel/src:partial_compilation": "True",
+    },
+)
+
+bool_flag(
+    name = "force_partial_jit_compilation",
+    build_setting_default = False,
+)
+
+config_setting(
+    name = "force_partial_jit_compilation_enabled",
+    flag_values = {
+        "@npm//@angular/bazel/src:partial_compilation": "True",
+        ":force_partial_jit_compilation": "True",
+    },
+)

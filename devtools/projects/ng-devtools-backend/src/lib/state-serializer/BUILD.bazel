@@ -1,0 +1,37 @@
+load("//tools:typescript.bzl", "ts_test_project")
+load("//tools:angular_ts_project.bzl", "ng_ts_project")
+load("//tools:defaults.bzl", "karma_web_test_suite")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_ts_project(
+    name = "state-serializer",
+    srcs = glob(
+        include = ["*.ts"],
+        exclude = ["*.spec.ts"],
+    ),
+    tsconfig = "//projects/ng-devtools-backend:tsconfig-lib",
+    deps = [
+        "//projects/ng-devtools-backend/src/lib/directive-forest",
+        "//projects/protocol",
+    ],
+)
+
+karma_web_test_suite(
+    name = "test",
+    deps = [
+        ":test-lib",
+    ],
+)
+
+ts_test_project(
+    name = "test-lib",
+    srcs = [
+        "state-serializer.spec.ts",
+    ],
+    deps = [
+        ":state-serializer",
+        "//projects/protocol",
+        "@npm//@types",
+    ],
+)

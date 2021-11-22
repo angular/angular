@@ -1,0 +1,30 @@
+load("//tools:typescript.bzl", "ts_project")
+load("//tools:typescript.bzl", "ts_test_project")
+load("//tools:defaults.bzl", "karma_web_test_suite")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_project(
+    name = "index-forest",
+    srcs = ["index.ts"],
+    tsconfig = "//projects/ng-devtools:tsconfig-lib",
+    deps = [
+        "//projects/protocol",
+        "@npm//@angular/material",
+    ],
+)
+
+ts_test_project(
+    name = "index-forest-test",
+    srcs = glob(["**/*.spec.ts"]),
+    deps = [
+        ":index-forest",
+    ],
+)
+
+karma_web_test_suite(
+    name = "test",
+    deps = [
+        ":index-forest-test",
+    ],
+)

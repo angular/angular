@@ -1,0 +1,38 @@
+load("//tools:typescript.bzl", "ts_project")
+load("//tools:typescript.bzl", "ts_test_project")
+load("//tools:defaults.bzl", "karma_web_test_suite")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_project(
+    name = "component-data-source",
+    srcs = ["index.ts"],
+    tsconfig = "//projects/ng-devtools:tsconfig-lib",
+    deps = [
+        "//projects/ng-devtools/src/lib/devtools-tabs/diffing",
+        "//projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/index-forest",
+        "//projects/protocol",
+        "@npm//@angular/cdk",
+        "@npm//@angular/core",
+        "@npm//@angular/material",
+        "@npm//@types",
+        "@npm//rxjs",
+    ],
+)
+
+ts_test_project(
+    name = "component-data-source-test",
+    srcs = glob(["**/*.spec.ts"]),
+    deps = [
+        ":component-data-source",
+        "//projects/protocol",
+        "@npm//@angular/cdk",
+    ],
+)
+
+karma_web_test_suite(
+    name = "test",
+    deps = [
+        ":component-data-source-test",
+    ],
+)

@@ -1,0 +1,68 @@
+:host {
+  display: block;
+  overflow: auto;
+  height: 100%;
+  ::ng-deep {
+    .as-split-gutter-icon {
+      display: none;
+    }
+  }
+}
+
+.selected-entry {
+  padding: 0px;
+  height: 100%;
+
+  mat-toolbar {
+    padding-left: 9px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    line-height: 25px;
+    font-size: 11px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: auto;
+  }
+
+  section {
+    height: 100%;
+    overflow: auto;
+    font-family: Roboto, 'Helvetica Neue', sans-serif;
+    padding: 10px;
+  }
+}
+
+.entry-statistics {
+  div {
+    padding: 3px;
+
+    label {
+      opacity: 0.7;
+    }
+  }
+
+  span {
+    color: #8a1882;
+  }
+}
+
+.txt-total-time {
+  font-weight: bold;
+}
+
+ul {
+  list-style-type: square;
+  margin-block-start: 0px;
+  padding-inline-start: 20px;
+}
+
+:host-context(.dark-theme) {
+  .entry-statistics {
+    span {
+      color: #5cadd3;
+    }
+  }
+}

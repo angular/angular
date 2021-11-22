@@ -1,0 +1,9 @@
+load("//tools:typescript.bzl", "ts_project")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_project(
+    name = "visualization-mode",
+    srcs = ["index.ts"],
+    tsconfig = "//projects/ng-devtools:tsconfig-lib",
+)
