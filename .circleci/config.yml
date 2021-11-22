@@ -237,19 +237,21 @@ jobs:
       - checkout
       - save_month_to_file
       - init_environment
-      - run:
-          name: Rebase PR on target branch
-          # After checkout, rebase on top of target branch.
-          command: >
-            if [[ -n "${CIRCLE_PR_NUMBER}" ]]; then
-              # User is required for rebase.
-              git config user.name "angular-ci"
-              git config user.email "angular-ci"
-              # Rebase PR on top of target branch.
-              node .circleci/rebase-pr.js
-            else
-              echo "This build is not over a PR, nothing to do."
-            fi
+
+      # TODO(aleksanderbodurri): renable this as soon as angular-devtools is tranfered into angular/angular
+      # - run:
+      #     name: Rebase PR on target branch
+      #     # After checkout, rebase on top of target branch.
+      #     command: >
+      #       if [[ -n "${CIRCLE_PR_NUMBER}" ]]; then
+      #         # User is required for rebase.
+      #         git config user.name "angular-ci"
+      #         git config user.email "angular-ci"
+      #         # Rebase PR on top of target branch.
+      #         node .circleci/rebase-pr.js
+      #       else
+      #         echo "This build is not over a PR, nothing to do."
+      #       fi
       # This cache is saved in the build-npm-packages so that Bazel cache is also included.
       - restore_cache:
           keys:
