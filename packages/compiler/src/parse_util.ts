@@ -5,7 +5,6 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {StaticSymbol} from './aot/static_symbol';
 import * as chars from './chars';
 import {stringify} from './util';
 
@@ -155,15 +154,6 @@ export class ParseError {
   }
 }
 
-export function typeSourceSpan(kind: string, type: CompileIdentifierMetadata): ParseSourceSpan {
-  const moduleUrl = identifierModuleUrl(type);
-  const sourceFileName = moduleUrl != null ? `in ${kind} ${identifierName(type)} in ${moduleUrl}` :
-                                             `in ${kind} ${identifierName(type)}`;
-  const sourceFile = new ParseSourceFile('', sourceFileName);
-  return new ParseSourceSpan(
-      new ParseLocation(sourceFile, -1, -1, -1), new ParseLocation(sourceFile, -1, -1, -1));
-}
-
 /**
  * Generates Source Span object for a given R3 Type for JIT mode.
  *
@@ -206,9 +196,6 @@ export function identifierName(compileIdentifier: CompileIdentifierMetadata|null
     return null;
   }
   const ref = compileIdentifier.reference;
-  if (ref instanceof StaticSymbol) {
-    return ref.name;
-  }
   if (ref['__anonymousType']) {
     return ref['__anonymousType'];
   }
@@ -226,15 +213,6 @@ export function identifierName(compileIdentifier: CompileIdentifierMetadata|null
     identifier = sanitizeIdentifier(identifier);
   }
   return identifier;
-}
-
-export function identifierModuleUrl(compileIdentifier: CompileIdentifierMetadata): string {
-  const ref = compileIdentifier.reference;
-  if (ref instanceof StaticSymbol) {
-    return ref.filePath;
-  }
-  // Runtime type
-  return `./${stringify(ref)}`;
 }
 
 export interface CompileIdentifierMetadata {

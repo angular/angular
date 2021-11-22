@@ -156,7 +156,7 @@ export function setup(): TestSupport {
   return createTestSupportFor(tmpDirPath);
 }
 
-export function expectNoDiagnostics(options: ng.CompilerOptions, diags: ng.Diagnostics) {
+export function expectNoDiagnostics(options: ng.CompilerOptions, diags: readonly ts.Diagnostic[]) {
   const errorDiags = diags.filter(d => d.category !== ts.DiagnosticCategory.Message);
   if (errorDiags.length) {
     throw new Error(`Expected no diagnostics: ${ng.formatDiagnostics(errorDiags)}`);

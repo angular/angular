@@ -7,7 +7,6 @@
  */
 import {NodeJSFileSystem, setFileSystem} from './src/ngtsc/file_system';
 
-export {AotCompilerHost, AotCompilerHost as StaticReflectorHost, StaticReflector, StaticSymbol} from '@angular/compiler';
 export {VERSION} from './src/version';
 
 export * from './src/transformers/api';
@@ -17,8 +16,6 @@ export * from './src/perform_compile';
 
 // TODO(tbosch): remove this once usages in G3 are changed to `CompilerOptions`
 export {CompilerOptions as AngularCompilerOptions} from './src/transformers/api';
-
-export {ngToTsDiagnostic} from './src/transformers/util';
 
 // Internal exports needed for packages relying on the compiler-cli.
 // TODO: Remove this when the CLI has switched to the private entry-point.
