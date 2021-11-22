@@ -1,0 +1,29 @@
+load("@npm//@bazel/cypress:index.bzl", "cypress_web_test")
+load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
+
+js_library(
+    name = "devtools_e2e_specs",
+    testonly = 1,
+    srcs = glob(["**/*.e2e.js"]),
+)
+
+js_library(
+    name = "plugin_file",
+    testonly = 1,
+    srcs = ["plugin.js"],
+)
+
+cypress_web_test(
+    name = "devtools_e2e",
+    srcs = [
+        ":devtools_e2e_specs",
+    ],
+    config_file = "//:cypress.json",
+    data = [
+        # Place "//src:devapp here to so that cache is invalidated
+        # whenever the output of //src:devapp (the demo app that is being e2e tested)
+        # changes.
+        "//src:devapp",
+    ],
+    plugin_file = ":plugin_file",
+)

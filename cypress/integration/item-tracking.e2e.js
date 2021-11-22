@@ -1,3 +1,5 @@
+require('cypress-iframe');
+
 describe('Tracking items from application to component tree', () => {
   beforeEach(() => {
     cy.visit('/');
