@@ -7,7 +7,6 @@
  */
 
 import {I18nPluralPipe, NgLocalization} from '@angular/common';
-import {PipeResolver} from '@angular/compiler/src/pipe_resolver';
 
 {
   describe('I18nPluralPipe', () => {

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import type {AngularCompilerOptions, CompilerHost as NgCompilerHost, TsEmitCallback, Program, Diagnostics, Diagnostic as NgDiagnostic, CompilerOptions} from '@angular/compiler-cli';
+import type {AngularCompilerOptions, CompilerHost as NgCompilerHost, TsEmitCallback, Program, CompilerOptions} from '@angular/compiler-cli';
 import {BazelOptions, CachedFileLoader, CompilerHost, constructManifest, debug, FileCache, FileLoader, parseTsconfig, resolveNormalizedPath, runAsWorker, runWorkerLoop, UncachedFileLoader} from '@bazel/typescript';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -195,9 +195,9 @@ export function compile({
         bazelOpts: BazelOptions,
         files: string[],
         expectedOuts: string[],
-  gatherDiagnostics?: (program: Program) => Diagnostics,
+  gatherDiagnostics?: (program: Program) => readonly ts.Diagnostic[],
   bazelHost?: CompilerHost, ng: CompilerCliModule,
-}): {diagnostics: Diagnostics, program: Program} {
+}): {diagnostics: readonly ts.Diagnostic[], program: Program} {
   let fileLoader: FileLoader;
 
   if (bazelOpts.maxCacheSizeMb !== undefined) {
@@ -449,7 +449,7 @@ function convertToForwardSlashPath(filePath: string): string {
 
 function gatherDiagnosticsForInputsOnly(
     options: CompilerOptions, bazelOpts: BazelOptions, ngProgram: Program,
-    ng: CompilerCliModule): (NgDiagnostic|ts.Diagnostic)[] {
+    ng: CompilerCliModule): ts.Diagnostic[] {
   const tsProgram = ngProgram.getTsProgram();
 
   // For the Ivy compiler, track the amount of time spent fetching TypeScript diagnostics.
@@ -457,7 +457,7 @@ function gatherDiagnosticsForInputsOnly(
   if (ngProgram instanceof ng.NgtscProgram) {
     previousPhase = ngProgram.compiler.perfRecorder.phase(ng.PerfPhase.TypeScriptDiagnostics);
   }
-  const diagnostics: (NgDiagnostic|ts.Diagnostic)[] = [];
+  const diagnostics: ts.Diagnostic[] = [];
   // These checks mirror ts.getPreEmitDiagnostics, with the important
   // exception of avoiding b/30708240, which is that if you call
   // program.getDeclarationDiagnostics() it somehow corrupts the emit.

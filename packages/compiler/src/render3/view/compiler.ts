@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompileDirectiveSummary} from '../../compile_metadata';
 import {BindingForm, convertPropertyBinding} from '../../compiler_util/expression_converter';
 import {ConstantPool} from '../../constant_pool';
 import * as core from '../../core';
@@ -15,7 +14,6 @@ import * as o from '../../output/output_ast';
 import {ParseError, ParseSourceSpan, sanitizeIdentifier} from '../../parse_util';
 import {CssSelector, SelectorMatcher} from '../../selector';
 import {ShadowCss} from '../../shadow_css';
-import {CONTENT_ATTR, HOST_ATTR} from '../../style_compiler';
 import {BindingParser} from '../../template_parser/binding_parser';
 import {error} from '../../util';
 import {BoundEvent} from '../r3_ast';
@@ -31,6 +29,11 @@ import {asLiteral, chainedInstruction, conditionallyCreateMapObjectLiteral, CONT
 // This regex matches any binding names that contain the "attr." prefix, e.g. "attr.required"
 // If there is a match, the first matching group will contain the attribute name to bind.
 const ATTR_REGEX = /attr\.([^\]]+)/;
+
+
+const COMPONENT_VARIABLE = '%COMP%';
+const HOST_ATTR = `_nghost-${COMPONENT_VARIABLE}`;
+const CONTENT_ATTR = `_ngcontent-${COMPONENT_VARIABLE}`;
 
 function baseDirectiveFields(
     meta: R3DirectiveMetadata, constantPool: ConstantPool,
@@ -483,18 +486,18 @@ function createHostBindingsFunction(
   const updateStatements: o.Statement[] = [];
 
   const hostBindingSourceSpan = typeSourceSpan;
-  const directiveSummary = metadataAsSummary(hostBindingsMetadata);
 
   // Calculate host event bindings
-  const eventBindings =
-      bindingParser.createDirectiveHostEventAsts(directiveSummary, hostBindingSourceSpan);
+  const eventBindings = bindingParser.createDirectiveHostEventAsts(
+      hostBindingsMetadata.listeners, hostBindingSourceSpan);
   if (eventBindings && eventBindings.length) {
     const listeners = createHostListeners(eventBindings, name);
     createStatements.push(...listeners);
   }
 
   // Calculate the host property bindings
-  const bindings = bindingParser.createBoundHostProperties(directiveSummary, hostBindingSourceSpan);
+  const bindings = bindingParser.createBoundHostProperties(
+      hostBindingsMetadata.properties, hostBindingSourceSpan);
   const allOtherBindings: ParsedProperty[] = [];
 
   // We need to calculate the total amount of binding slots required by
@@ -707,19 +710,6 @@ function createHostListeners(eventBindings: ParsedEvent[], name?: string): o.Sta
   return instructions;
 }
 
-function metadataAsSummary(meta: R3HostMetadata): CompileDirectiveSummary {
-  // clang-format off
-  return {
-    // This is used by the BindingParser, which only deals with listeners and properties. There's no
-    // need to pass attributes to it.
-    hostAttributes: {},
-    hostListeners: meta.listeners,
-    hostProperties: meta.properties,
-  } as CompileDirectiveSummary;
-  // clang-format on
-}
-
-
 
 const HOST_REG_EXP = /^(?:\[([^\]]+)\])|(?:\(([^\)]+)\))$/;
 // Represents the groups in the above regex.
@@ -804,12 +794,11 @@ export function parseHostBindings(host: {[key: string]: string|o.Expression}): P
  */
 export function verifyHostBindings(
     bindings: ParsedHostBindings, sourceSpan: ParseSourceSpan): ParseError[] {
-  const summary = metadataAsSummary(bindings);
   // TODO: abstract out host bindings verification logic and use it instead of
   // creating events and properties ASTs to detect errors (FW-996)
   const bindingParser = makeBindingParser();
-  bindingParser.createDirectiveHostEventAsts(summary, sourceSpan);
-  bindingParser.createBoundHostProperties(summary, sourceSpan);
+  bindingParser.createDirectiveHostEventAsts(bindings.listeners, sourceSpan);
+  bindingParser.createBoundHostProperties(bindings.properties, sourceSpan);
   return bindingParser.errors;
 }
 

@@ -6,10 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {AttributeMarker} from '../../core';
-import {AST, ASTWithSource, BindingPipe, BindingType, Interpolation} from '../../expression_parser/ast';
+import {AST, ASTWithSource, BindingPipe, BindingType, EmptyExpr, Interpolation} from '../../expression_parser/ast';
 import * as o from '../../output/output_ast';
 import {ParseSourceSpan} from '../../parse_util';
-import {isEmptyExpression} from '../../template_parser/template_parser';
 import * as t from '../r3_ast';
 import {Identifiers as R3} from '../r3_identifiers';
 
@@ -617,4 +616,11 @@ function getStylePropInterpolationExpression(interpolation: Interpolation) {
  */
 function isCssCustomProperty(name: string): boolean {
   return name.startsWith('--');
+}
+
+function isEmptyExpression(ast: AST): boolean {
+  if (ast instanceof ASTWithSource) {
+    ast = ast.ast;
+  }
+  return ast instanceof EmptyExpr;
 }

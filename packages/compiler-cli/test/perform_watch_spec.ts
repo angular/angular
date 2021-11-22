@@ -234,11 +234,11 @@ class MockWatchHost {
   nextTimeoutListenerId = 1;
   timeoutListeners: {[id: string]: (() => void)} = {};
   fileChangeListeners: Array<((event: FileChangeEvent, fileName: string) => void)|null> = [];
-  diagnostics: ng.Diagnostic[] = [];
+  diagnostics: ts.Diagnostic[] = [];
   constructor(public config: ng.ParsedConfiguration) {}
 
-  reportDiagnostics(diags: ng.Diagnostics) {
-    this.diagnostics.push(...(diags as ng.Diagnostic[]));
+  reportDiagnostics(diags: readonly ts.Diagnostic[]) {
+    this.diagnostics.push(...diags);
   }
   readConfiguration() {
     return this.config;

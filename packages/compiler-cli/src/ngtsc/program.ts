@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {GeneratedFile, HtmlParser, MessageBundle} from '@angular/compiler';
+import {HtmlParser, MessageBundle} from '@angular/compiler';
 import ts from 'typescript';
 
 import * as api from '../transformers/api';
@@ -179,18 +179,18 @@ export class NgtscProgram implements api.Program {
   }
 
   getNgOptionDiagnostics(cancellationToken?: ts.CancellationToken|
-                         undefined): readonly(ts.Diagnostic|api.Diagnostic)[] {
+                         undefined): readonly ts.Diagnostic[] {
     return this.compiler.getOptionDiagnostics();
   }
 
   getNgStructuralDiagnostics(cancellationToken?: ts.CancellationToken|
-                             undefined): readonly api.Diagnostic[] {
+                             undefined): readonly ts.Diagnostic[] {
     return [];
   }
 
   getNgSemanticDiagnostics(
-      fileName?: string|undefined, cancellationToken?: ts.CancellationToken|undefined):
-      readonly(ts.Diagnostic|api.Diagnostic)[] {
+      fileName?: string|undefined,
+      cancellationToken?: ts.CancellationToken|undefined): readonly ts.Diagnostic[] {
     let sf: ts.SourceFile|undefined = undefined;
     if (fileName !== undefined) {
       sf = this.tsProgram.getSourceFile(fileName);
@@ -335,14 +335,6 @@ export class NgtscProgram implements api.Program {
 
   getIndexedComponents(): Map<DeclarationNode, IndexedComponent> {
     return this.compiler.getIndexedComponents();
-  }
-
-  getLibrarySummaries(): Map<string, api.LibrarySummary> {
-    throw new Error('Method not implemented.');
-  }
-
-  getEmittedGeneratedFiles(): Map<string, GeneratedFile> {
-    throw new Error('Method not implemented.');
   }
 
   getEmittedSourceFiles(): Map<string, ts.SourceFile> {
