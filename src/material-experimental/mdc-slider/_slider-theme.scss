@@ -15,7 +15,7 @@
 
     .mat-mdc-slider {
       &.mat-primary, &.mat-accent, &.mat-warn {
-        $is-dark: map-get($config, is-dark);
+        $is-dark: map.get($config, is-dark);
         $indicator-color: if($is-dark, white, black);
         $indicator-text-color: if($is-dark, black, white);
         $indicator-opacity: if($is-dark, 0.9, 0.6);

@@ -395,7 +395,7 @@ $_emitted-density: () !default;
 //
 //    @mixin my-custom-component-theme($theme) {
 //      .my-comp {
-//        background-color: mat-color(map-get($theme, primary));
+//        background-color: mat.get-color-from-palette(map.get($theme, primary));
 //      }
 //    }
 //
