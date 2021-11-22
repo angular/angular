@@ -6,13 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompileReflector} from '../compile_reflector';
 import {identifierName} from '../parse_util';
 
 import {EmitterVisitorContext} from './abstract_emitter';
 import {AbstractJsEmitterVisitor} from './abstract_js_emitter';
 import * as o from './output_ast';
 import {newTrustedFunctionForJIT} from './output_jit_trusted_types';
+
+export interface ExternalReferenceResolver {
+  resolveExternalReference(ref: o.ExternalReference): unknown;
+}
 
 /**
  * A helper class to manage the evaluation of JIT generated code.
@@ -22,15 +25,15 @@ export class JitEvaluator {
    *
    * @param sourceUrl The URL of the generated code.
    * @param statements An array of Angular statement AST nodes to be evaluated.
-   * @param reflector A helper used when converting the statements to executable code.
+   * @param refResolver Resolves `o.ExternalReference`s into values.
    * @param createSourceMaps If true then create a source-map for the generated code and include it
    * inline as a source-map comment.
    * @returns A map of all the variables in the generated code.
    */
   evaluateStatements(
-      sourceUrl: string, statements: o.Statement[], reflector: CompileReflector,
+      sourceUrl: string, statements: o.Statement[], refResolver: ExternalReferenceResolver,
       createSourceMaps: boolean): {[key: string]: any} {
-    const converter = new JitEmitterVisitor(reflector);
+    const converter = new JitEmitterVisitor(refResolver);
     const ctx = EmitterVisitorContext.createRoot();
     // Ensure generated code is in strict mode
     if (statements.length > 0 && !isUseStrictStatement(statements[0])) {
@@ -101,7 +104,7 @@ export class JitEmitterVisitor extends AbstractJsEmitterVisitor {
   private _evalArgValues: any[] = [];
   private _evalExportedVars: string[] = [];
 
-  constructor(private reflector: CompileReflector) {
+  constructor(private refResolver: ExternalReferenceResolver) {
     super();
   }
 
@@ -120,7 +123,7 @@ export class JitEmitterVisitor extends AbstractJsEmitterVisitor {
   }
 
   override visitExternalExpr(ast: o.ExternalExpr, ctx: EmitterVisitorContext): any {
-    this._emitReferenceToExternal(ast, this.reflector.resolveExternalReference(ast.value), ctx);
+    this._emitReferenceToExternal(ast, this.refResolver.resolveExternalReference(ast.value), ctx);
     return null;
   }
 

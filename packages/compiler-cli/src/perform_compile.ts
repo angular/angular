@@ -6,18 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {isSyntaxError, Position} from '@angular/compiler';
+import {isSyntaxError} from '@angular/compiler';
 import ts from 'typescript';
 
 import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem, ReadonlyFileSystem, relative, resolve} from '../src/ngtsc/file_system';
-import {NgCompilerOptions} from './ngtsc/core/api';
 
+import {NgCompilerOptions} from './ngtsc/core/api';
 import {replaceTsWithNgInErrors} from './ngtsc/diagnostics';
 import * as api from './transformers/api';
 import * as ng from './transformers/entry_points';
 import {createMessageDiagnostic} from './transformers/util';
-
-export type Diagnostics = ReadonlyArray<ts.Diagnostic|api.Diagnostic>;
 
 const defaultFormatHost: ts.FormatDiagnosticsHost = {
   getCurrentDirectory: () => ts.sys.getCurrentDirectory(),
@@ -25,80 +23,14 @@ const defaultFormatHost: ts.FormatDiagnosticsHost = {
   getNewLine: () => ts.sys.newLine
 };
 
-function displayFileName(fileName: string, host: ts.FormatDiagnosticsHost): string {
-  return relative(
-      resolve(host.getCurrentDirectory()), resolve(host.getCanonicalFileName(fileName)));
-}
-
-export function formatDiagnosticPosition(
-    position: Position, host: ts.FormatDiagnosticsHost = defaultFormatHost): string {
-  return `${displayFileName(position.fileName, host)}(${position.line + 1},${position.column + 1})`;
-}
-
-export function flattenDiagnosticMessageChain(
-    chain: api.DiagnosticMessageChain, host: ts.FormatDiagnosticsHost = defaultFormatHost,
-    indent = 0): string {
-  const newLine = host.getNewLine();
-  let result = '';
-  if (indent) {
-    result += newLine;
-
-    for (let i = 0; i < indent; i++) {
-      result += '  ';
-    }
-  }
-  result += chain.messageText;
-
-  const position = chain.position;
-  // add position if available, and we are not at the depest frame
-  if (position && indent !== 0) {
-    result += ` at ${formatDiagnosticPosition(position, host)}`;
-  }
-
-  indent++;
-  if (chain.next) {
-    for (const kid of chain.next) {
-      result += flattenDiagnosticMessageChain(kid, host, indent);
-    }
-  }
-  return result;
-}
-
-export function formatDiagnostic(
-    diagnostic: api.Diagnostic, host: ts.FormatDiagnosticsHost = defaultFormatHost) {
-  let result = '';
-  const newLine = host.getNewLine();
-  const span = diagnostic.span;
-  if (span) {
-    result += `${
-        formatDiagnosticPosition(
-            {fileName: span.start.file.url, line: span.start.line, column: span.start.col},
-            host)}: `;
-  } else if (diagnostic.position) {
-    result += `${formatDiagnosticPosition(diagnostic.position, host)}: `;
-  }
-  if (diagnostic.span && diagnostic.span.details) {
-    result += `${diagnostic.span.details}, ${diagnostic.messageText}${newLine}`;
-  } else if (diagnostic.chain) {
-    result += `${flattenDiagnosticMessageChain(diagnostic.chain, host)}.${newLine}`;
-  } else {
-    result += `${diagnostic.messageText}${newLine}`;
-  }
-  return result;
-}
-
 export function formatDiagnostics(
-    diags: Diagnostics, host: ts.FormatDiagnosticsHost = defaultFormatHost): string {
+    diags: ReadonlyArray<ts.Diagnostic>,
+    host: ts.FormatDiagnosticsHost = defaultFormatHost): string {
   if (diags && diags.length) {
     return diags
-        .map(diagnostic => {
-          if (api.isTsDiagnostic(diagnostic)) {
-            return replaceTsWithNgInErrors(
-                ts.formatDiagnosticsWithColorAndContext([diagnostic], host));
-          } else {
-            return formatDiagnostic(diagnostic, host);
-          }
-        })
+        .map(
+            diagnostic => replaceTsWithNgInErrors(
+                ts.formatDiagnosticsWithColorAndContext([diagnostic], host)))
         .join('');
   } else {
     return '';
@@ -264,12 +196,12 @@ function getExtendedConfigPathWorker(
 }
 
 export interface PerformCompilationResult {
-  diagnostics: Diagnostics;
+  diagnostics: ReadonlyArray<ts.Diagnostic>;
   program?: api.Program;
   emitResult?: ts.EmitResult;
 }
 
-export function exitCodeFromResult(diags: Diagnostics|undefined): number {
+export function exitCodeFromResult(diags: ReadonlyArray<ts.Diagnostic>|undefined): number {
   if (!diags) return 0;
   if (diags.every((diag) => diag.category !== ts.DiagnosticCategory.Error)) {
     // If we have a result and didn't get any errors, we succeeded.
@@ -298,14 +230,14 @@ export function performCompilation({
   oldProgram?: api.Program,
   emitCallback?: api.TsEmitCallback,
   mergeEmitResultsCallback?: api.TsMergeEmitResultsCallback,
-  gatherDiagnostics?: (program: api.Program) => Diagnostics,
+  gatherDiagnostics?: (program: api.Program) => ReadonlyArray<ts.Diagnostic>,
   customTransformers?: api.CustomTransformers,
   emitFlags?: api.EmitFlags,
   modifiedResourceFiles?: Set<string>| null,
 }): PerformCompilationResult {
   let program: api.Program|undefined;
   let emitResult: ts.EmitResult|undefined;
-  let allDiagnostics: Array<ts.Diagnostic|api.Diagnostic> = [];
+  let allDiagnostics: Array<ts.Diagnostic> = [];
   try {
     if (!host) {
       host = ng.createCompilerHost({options});
@@ -344,15 +276,21 @@ export function performCompilation({
       program = undefined;
       code = api.UNKNOWN_ERROR_CODE;
     }
-    allDiagnostics.push(
-        {category: ts.DiagnosticCategory.Error, messageText: errMsg, code, source: api.SOURCE});
+    allDiagnostics.push({
+      category: ts.DiagnosticCategory.Error,
+      messageText: errMsg,
+      code,
+      file: undefined,
+      start: undefined,
+      length: undefined,
+    });
     return {diagnostics: allDiagnostics, program};
   }
 }
-export function defaultGatherDiagnostics(program: api.Program): Diagnostics {
-  const allDiagnostics: Array<ts.Diagnostic|api.Diagnostic> = [];
+export function defaultGatherDiagnostics(program: api.Program): ReadonlyArray<ts.Diagnostic> {
+  const allDiagnostics: Array<ts.Diagnostic> = [];
 
-  function checkDiagnostics(diags: Diagnostics|undefined) {
+  function checkDiagnostics(diags: ReadonlyArray<ts.Diagnostic>|undefined) {
     if (diags) {
       allDiagnostics.push(...diags);
       return !hasErrors(diags);
@@ -367,7 +305,7 @@ export function defaultGatherDiagnostics(program: api.Program): Diagnostics {
 
   // Check syntactic diagnostics
   checkOtherDiagnostics =
-      checkOtherDiagnostics && checkDiagnostics(program.getTsSyntacticDiagnostics() as Diagnostics);
+      checkOtherDiagnostics && checkDiagnostics(program.getTsSyntacticDiagnostics());
 
   // Check TypeScript semantic and Angular structure diagnostics
   checkOtherDiagnostics =
@@ -377,11 +315,11 @@ export function defaultGatherDiagnostics(program: api.Program): Diagnostics {
 
   // Check Angular semantic diagnostics
   checkOtherDiagnostics =
-      checkOtherDiagnostics && checkDiagnostics(program.getNgSemanticDiagnostics() as Diagnostics);
+      checkOtherDiagnostics && checkDiagnostics(program.getNgSemanticDiagnostics());
 
   return allDiagnostics;
 }
 
-function hasErrors(diags: Diagnostics) {
+function hasErrors(diags: ReadonlyArray<ts.Diagnostic>) {
   return diags.some(d => d.category === ts.DiagnosticCategory.Error);
 }

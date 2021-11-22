@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {GeneratedFile, ParseSourceSpan, Position} from '@angular/compiler';
 import ts from 'typescript';
 
 import {ExtendedTsCompilerHost, NgCompilerOptions} from '../ngtsc/core/api';
@@ -15,28 +14,8 @@ export const DEFAULT_ERROR_CODE = 100;
 export const UNKNOWN_ERROR_CODE = 500;
 export const SOURCE = 'angular' as 'angular';
 
-export interface DiagnosticMessageChain {
-  messageText: string;
-  position?: Position;
-  next?: DiagnosticMessageChain[];
-}
-
-export interface Diagnostic {
-  messageText: string;
-  span?: ParseSourceSpan;
-  position?: Position;
-  chain?: DiagnosticMessageChain;
-  category: ts.DiagnosticCategory;
-  code: number;
-  source: 'angular';
-}
-
 export function isTsDiagnostic(diagnostic: any): diagnostic is ts.Diagnostic {
   return diagnostic != null && diagnostic.source !== 'angular';
-}
-
-export function isNgDiagnostic(diagnostic: any): diagnostic is Diagnostic {
-  return diagnostic != null && diagnostic.source === 'angular';
 }
 
 export interface CompilerOptions extends NgCompilerOptions, ts.CompilerOptions {
@@ -190,12 +169,6 @@ export interface TsMergeEmitResultsCallback {
   (results: ts.EmitResult[]): ts.EmitResult;
 }
 
-export interface LibrarySummary {
-  fileName: string;
-  text: string;
-  sourceFile?: ts.SourceFile;
-}
-
 export interface LazyRoute {
   route: string;
   module: {name: string, filePath: string};
@@ -220,8 +193,7 @@ export interface Program {
   /**
    * Retrieve options diagnostics for the Angular options used to create the program.
    */
-  getNgOptionDiagnostics(cancellationToken?: ts.CancellationToken):
-      ReadonlyArray<ts.Diagnostic|Diagnostic>;
+  getNgOptionDiagnostics(cancellationToken?: ts.CancellationToken): ReadonlyArray<ts.Diagnostic>;
 
   /**
    * Retrieve the syntax diagnostics from TypeScript. This is faster than calling
@@ -242,7 +214,8 @@ export interface Program {
    *
    * Angular structural information is required to produce these diagnostics.
    */
-  getNgStructuralDiagnostics(cancellationToken?: ts.CancellationToken): ReadonlyArray<Diagnostic>;
+  getNgStructuralDiagnostics(cancellationToken?: ts.CancellationToken):
+      ReadonlyArray<ts.Diagnostic>;
 
   /**
    * Retrieve the semantic diagnostics from TypeScript. This is equivalent to calling
@@ -257,7 +230,7 @@ export interface Program {
    * Angular structural information is required to produce these diagnostics.
    */
   getNgSemanticDiagnostics(fileName?: string, cancellationToken?: ts.CancellationToken):
-      ReadonlyArray<ts.Diagnostic|Diagnostic>;
+      ReadonlyArray<ts.Diagnostic>;
 
   /**
    * Load Angular structural information asynchronously. If this method is not called then the
@@ -285,18 +258,6 @@ export interface Program {
              emitCallback?: TsEmitCallback,
              mergeEmitResultsCallback?: TsMergeEmitResultsCallback
            }): ts.EmitResult;
-
-  /**
-   * Returns the .d.ts / .ngsummary.json / .ngfactory.d.ts files of libraries that have been emitted
-   * in this program or previous programs with paths that emulate the fact that these libraries
-   * have been compiled before with no outDir.
-   */
-  getLibrarySummaries(): Map<string, LibrarySummary>;
-
-  /**
-   * @internal
-   */
-  getEmittedGeneratedFiles(): Map<string, GeneratedFile>;
 
   /**
    * @internal

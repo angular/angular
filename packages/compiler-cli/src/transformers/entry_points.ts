@@ -6,9 +6,5 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import ts from 'typescript';
-
-import {CompilerHost, CompilerOptions, Program} from './api';
-
 export {createCompilerHost} from './compiler_host';
 export {createProgram} from './program';

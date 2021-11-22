@@ -169,7 +169,7 @@ export function parseR3(
       {'invalidProp': false}, {'mappedAttr': 'mappedProp'}, {'unknown': false, 'un-known': false},
       ['onEvent'], ['onEvent']);
   const bindingParser =
-      new BindingParser(expressionParser, DEFAULT_INTERPOLATION_CONFIG, schemaRegistry, null, []);
+      new BindingParser(expressionParser, DEFAULT_INTERPOLATION_CONFIG, schemaRegistry, []);
   const r3Result = htmlAstToRender3Ast(htmlNodes, bindingParser, {collectCommentNodes: false});
 
   if (r3Result.errors.length > 0 && !options.ignoreError) {
