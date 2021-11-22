@@ -205,25 +205,24 @@ the SHA of the commit being reverted.
 ### Type
 Must be one of the following:
 
-* **feat**: A new feature
-* **fix**: A bug fix
-* **docs**: Documentation only changes
-* **style**: Changes that do not affect the meaning of the code (white-space, formatting, missing
-  semi-colons, etc)
-* **refactor**: A code change that neither fixes a bug nor adds a feature
-* **perf**: A code change that improves performance
-* **test**: Adding missing tests or correcting existing tests
-* **build**: Changes that affect the build system, CI configuration or external dependencies
-            (example scopes: gulp, broccoli, npm)
-* **chore**: Other changes that don't modify `src` or `test` files
+* **feat**: Creates a new feature
+* **fix**: Fixes a previously discovered failure/bug
+* **docs**: Changes which exclusively affects documentation
+* **refactor**: Refactor without any change in functionality or API (includes style changes)
+* **perf**: Improves performance without any change in functionality or API
+* **test**: Improvements or corrections made to the project's test suite
+* **build**: Changes to local repository build system and tooling
+* **ci**: Changes to CI configuration and CI specific tooling
+* **release**: A release point in the repository
 
 ### Package
 The commit message should specify which package is affected by the change. For example:
 `material`, `cdk-experimental`, etc.
 
 ### Scope
-The scope could be anything specifying place of the commit change. For example
-`datepicker`, `dialog`, etc.
+The scope specifies place of the commit change. For example
+`material/datepicker`, `cdk-experimental/dialog`, etc.
+See full list [here][commit-message-scopes].
 
 ### Subject
 The subject contains succinct description of the change:
@@ -261,6 +260,7 @@ changes to be accepted, the CLA must be signed. It's a quick process, we promise
 [material-group]: https://groups.google.com/forum/#!forum/angular-material2
 [coc]: https://github.com/angular/code-of-conduct/blob/master/CODE_OF_CONDUCT.md
 [commit-message-format]: https://docs.google.com/document/d/1QrDFcIiPjSLDn3EL15IJygNPiHORgU1_OOAqWjiDU5Y/preview
+[commit-message-scopes]: https://github.com/angular/components/blob/master/.ng-dev/commit-message.ts#L10
 [corporate-cla]: http://code.google.com/legal/corporate-cla-v1.0.html
 [dev-doc]: https://github.com/angular/components/blob/master/DEV_ENVIRONMENT.md
 [github]: https://github.com/angular/components
