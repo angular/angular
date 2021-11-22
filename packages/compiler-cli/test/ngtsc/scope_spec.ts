@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Diagnostic} from '@angular/compiler-cli';
 import ts from 'typescript';
 
 import {ErrorCode, ngErrorCode} from '../../src/ngtsc/diagnostics';
@@ -388,7 +387,7 @@ runInEachFileSystem(() => {
   });
 
   function diagnosticToNode<T extends ts.Node>(
-      diagnostic: ts.Diagnostic|Diagnostic|ts.DiagnosticRelatedInformation,
+      diagnostic: ts.Diagnostic|ts.DiagnosticRelatedInformation,
       guard: (node: ts.Node) => node is T): T {
     const diag = diagnostic as ts.Diagnostic | ts.DiagnosticRelatedInformation;
     if (diag.file === undefined) {

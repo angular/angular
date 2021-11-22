@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {flatten} from '../../compile_metadata';
 import {BindingForm, BuiltinFunctionCall, convertActionBinding, convertPropertyBinding, convertUpdateArguments, LocalResolver} from '../../compiler_util/expression_converter';
 import {ConstantPool} from '../../constant_pool';
 import * as core from '../../core';
@@ -2226,8 +2225,7 @@ const elementRegistry = new DomElementSchemaRegistry();
  */
 export function makeBindingParser(
     interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG): BindingParser {
-  return new BindingParser(
-      new IvyParser(new Lexer()), interpolationConfig, elementRegistry, null, []);
+  return new BindingParser(new IvyParser(new Lexer()), interpolationConfig, elementRegistry, []);
 }
 
 export function resolveSanitizationFn(context: core.SecurityContext, isAttribute?: boolean) {
@@ -2405,4 +2403,11 @@ export interface ParsedTemplate {
    * option is enabled.
    */
   commentNodes?: t.Comment[];
+}
+
+function flatten<T>(list: Array<T|T[]>): T[] {
+  return list.reduce((flat: any[], item: T|T[]): T[] => {
+    const flatItem = Array.isArray(item) ? flatten(item) : item;
+    return (<T[]>flat).concat(flatItem);
+  }, []);
 }

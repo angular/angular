@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ResourceLoader, UrlResolver} from '@angular/compiler';
+import {ResourceLoader} from '@angular/compiler';
 import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ContentChild, DebugElement, Directive, DoCheck, EventEmitter, HostBinding, Injectable, Input, OnChanges, OnDestroy, OnInit, Output, Pipe, PipeTransform, Provider, RendererFactory2, RendererType2, SimpleChange, SimpleChanges, TemplateRef, Type, ViewChild, ViewContainerRef} from '@angular/core';
 import {ComponentFixture, fakeAsync, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
@@ -15,13 +15,9 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 import {MockResourceLoader} from './resource_loader_mock';
 
-export function createUrlResolverWithoutPackagePrefix(): UrlResolver {
-  return new UrlResolver();
-}
 
 const TEST_COMPILER_PROVIDERS: Provider[] = [
   {provide: ResourceLoader, useClass: MockResourceLoader, deps: []},
-  {provide: UrlResolver, useFactory: createUrlResolverWithoutPackagePrefix, deps: []}
 ];
 
 
