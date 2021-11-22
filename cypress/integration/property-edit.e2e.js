@@ -1,3 +1,5 @@
+require('cypress-iframe');
+
 describe('edit properties of directive in the property view tab', () => {
   beforeEach(() => {
     cy.visit('/');

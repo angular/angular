@@ -1,3 +1,5 @@
+require('cypress-iframe');
+
 describe('change of the state should reflect in property update', () => {
   beforeEach(() => {
     cy.visit('/');

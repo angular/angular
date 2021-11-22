@@ -1,3 +1,5 @@
+require('cypress-iframe');
+
 describe('node selection', () => {
   beforeEach(() => {
     cy.visit('/');

@@ -1751,6 +1751,11 @@
     source-map-support "0.5.9"
     tsutils "2.27.2"
 
+"@bazel/cypress@^4.4.5":
+  version "4.4.5"
+  resolved "https://registry.yarnpkg.com/@bazel/cypress/-/cypress-4.4.5.tgz#a96dee8b303507065d09aaa733386ae55245a708"
+  integrity sha512-4rku+NZhmiOhLImVoeB9IS7jxDzHFI3hAam3ZgYU8Pv0SfJHW8Obay7shAwVXI6uTgwIBlEkcWdfJ719Ooeo9A==
+
 "@bazel/esbuild@4.4.2", "@bazel/esbuild@^4.4.2":
   version "4.4.2"
   resolved "https://registry.yarnpkg.com/@bazel/esbuild/-/esbuild-4.4.2.tgz#e1f35922cc9b63e96cc8c263a77b8e1b2938a445"
@@ -4752,7 +4757,7 @@ cypress-iframe@^1.0.1:
   resolved "https://registry.yarnpkg.com/cypress-iframe/-/cypress-iframe-1.0.1.tgz#2a286cfd47a240aa9af0ad9f339f4c6f942089f8"
   integrity sha512-Ne+xkZmWMhfq3x6wbfzK/SzsVTCrJru3R3cLXsoSAZyfUtJDamXyaIieHXeea3pQDXF4wE2w4iUuvCYHhoD31g==
 
-cypress@^8.0.0:
+cypress@8.7.0:
   version "8.7.0"
   resolved "https://registry.yarnpkg.com/cypress/-/cypress-8.7.0.tgz#2ee371f383d8f233d3425b6cc26ddeec2668b6da"
   integrity sha512-b1bMC3VQydC6sXzBMFnSqcvwc9dTZMgcaOzT0vpSD+Gq1yFc+72JDWi55sfUK5eIeNLAtWOGy1NNb6UlhMvB+Q==

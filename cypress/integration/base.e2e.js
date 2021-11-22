@@ -1,3 +1,5 @@
+require('cypress-iframe');
+
 describe('Testing the Todo app Demo', () => {
   beforeEach(() => {
     cy.visit('/');
