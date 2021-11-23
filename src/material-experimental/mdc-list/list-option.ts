@@ -201,6 +201,8 @@ export class MatListOption extends MatListItemBase implements ListOption, OnInit
   }
 
   override ngOnDestroy(): void {
+    super.ngOnDestroy();
+
     if (this.selected) {
       // We have to delay this until the next tick in order
       // to avoid changed after checked errors.

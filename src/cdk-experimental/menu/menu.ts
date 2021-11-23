@@ -340,6 +340,7 @@ export class CdkMenu extends CdkMenuGroup implements Menu, AfterContentInit, OnI
   }
 
   override ngOnDestroy() {
+    super.ngOnDestroy();
     this._emitClosedEvent();
     this._pointerTracker?.destroy();
   }

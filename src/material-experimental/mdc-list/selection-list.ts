@@ -183,6 +183,7 @@ export class MatSelectionList
   }
 
   override ngOnDestroy() {
+    super.ngOnDestroy();
     this._destroyed.next();
     this._destroyed.complete();
     this._isDestroyed = true;
