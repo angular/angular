@@ -508,7 +508,7 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
 
              selectOptionViaUI('1: Object');
              assertOptionElementSelectedState([false, true, false]);
-             expect(spy.calls.count()).toBe(2);
+             expect(spy).toHaveBeenCalled();
            }));
 
         it('should reflect state of model after option selected and new options subsequently added',
