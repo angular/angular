@@ -8,6 +8,7 @@ dist
 aio/content
 aio/node_modules
 aio/tools/examples/shared/node_modules
+devtools/node_modules
 packages/bazel/node_modules
 
 # All integration test node_modules folders

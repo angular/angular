@@ -80,6 +80,6 @@ cldr_data_repository(
 )
 
 local_repository(
-    name = "angular_devtools",
+    name = "devtools",
     path = "devtools",
 )

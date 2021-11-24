@@ -733,6 +733,18 @@ jobs:
           name: Test all windows CI targets
           command: bazel test --test_tag_filters="-browser:chromium-local" //packages/compiler-cli/...
           no_output_timeout: 15m
+  test_angular_devtools:
+    executor:
+      name: default-executor
+    steps:
+      - custom_attach_workspace
+      - init_environment
+      - run: sudo apt-get update
+      - run: sudo apt-get -y install libgtk-3-0 libasound2 libnss3 libxss1 libdrm2 libgbm-dev libxshmfence-dev
+      - run: yarn --cwd devtools install --frozen-lockfile --non-interactive --cache-folder ~/.cache/yarn
+      - run: yarn --cwd devtools test:ci
+      - run: yarn --cwd devtools build:chrome
+      - run: yarn --cwd devtools cy:ci
 
 workflows:
   version: 2
@@ -800,6 +812,9 @@ workflows:
           requires:
             - setup
       - test_win:
+          requires:
+            - setup
+      - test_angular_devtools:
           requires:
             - setup
 
