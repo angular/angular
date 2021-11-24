@@ -293,18 +293,19 @@ export function createPlatformFactory(parentPlatformFactory: ((extraProviders?: 
 export const CUSTOM_ELEMENTS_SCHEMA: SchemaMetadata;
 
 // @public (undocumented)
-export interface DebugElement extends DebugNode {
-    readonly attributes: {
+export class DebugElement extends DebugNode {
+    constructor(nativeNode: Element);
+    get attributes(): {
         [key: string]: string | null;
     };
-    readonly childNodes: DebugNode[];
-    readonly children: DebugElement[];
-    readonly classes: {
+    get childNodes(): DebugNode[];
+    get children(): DebugElement[];
+    get classes(): {
         [key: string]: boolean;
     };
-    readonly name: string;
-    readonly nativeElement: any;
-    readonly properties: {
+    get name(): string;
+    get nativeElement(): any;
+    get properties(): {
         [key: string]: any;
     };
     // (undocumented)
@@ -313,16 +314,11 @@ export interface DebugElement extends DebugNode {
     queryAll(predicate: Predicate<DebugElement>): DebugElement[];
     // (undocumented)
     queryAllNodes(predicate: Predicate<DebugNode>): DebugNode[];
-    readonly styles: {
+    get styles(): {
         [key: string]: string | null;
     };
     triggerEventHandler(eventName: string, eventObj: any): void;
 }
-
-// @public (undocumented)
-export const DebugElement: {
-    new (...args: any[]): DebugElement;
-};
 
 // @public (undocumented)
 export class DebugEventListener {
@@ -334,23 +330,19 @@ export class DebugEventListener {
 }
 
 // @public (undocumented)
-export interface DebugNode {
-    readonly componentInstance: any;
-    readonly context: any;
-    readonly injector: Injector;
-    readonly listeners: DebugEventListener[];
+export class DebugNode {
+    constructor(nativeNode: Node);
+    get componentInstance(): any;
+    get context(): any;
+    get injector(): Injector;
+    get listeners(): DebugEventListener[];
     readonly nativeNode: any;
-    readonly parent: DebugElement | null;
-    readonly providerTokens: any[];
-    readonly references: {
+    get parent(): DebugElement | null;
+    get providerTokens(): any[];
+    get references(): {
         [key: string]: any;
     };
 }
-
-// @public (undocumented)
-export const DebugNode: {
-    new (...args: any[]): DebugNode;
-};
 
 // @public
 export const DEFAULT_CURRENCY_CODE: InjectionToken<string>;
@@ -497,7 +489,7 @@ export interface ForwardRefFn {
 }
 
 // @public (undocumented)
-export const getDebugNode: (nativeNode: any) => DebugNode | null;
+export function getDebugNode(nativeNode: any): DebugNode | null;
 
 // @public @deprecated
 export function getModuleFactory(id: string): NgModuleFactory<any>;
