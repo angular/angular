@@ -147,3 +147,21 @@ jasmine_node_test(
         ":typescript_support_lib",
     ],
 )
+
+# version_helpers_spec
+ts_library(
+    name = "version_helpers_lib",
+    testonly = True,
+    srcs = ["version_helpers_spec.ts"],
+    deps = [
+        "//packages/compiler-cli",
+    ],
+)
+
+jasmine_node_test(
+    name = "version_helpers",
+    bootstrap = ["//tools/testing:node_es5"],
+    deps = [
+        ":version_helpers_lib",
+    ],
+)
