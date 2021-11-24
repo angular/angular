@@ -19,9 +19,6 @@ import {renderStringify} from '../render3/util/stringify_utils';
 import {getComponentLViewByIndex, getNativeByTNodeOrNull} from '../render3/util/view_utils';
 import {assertDomNode} from '../util/assert';
 
-// TODO(alxhub): recombine the interfaces and implementations here and move the docs back onto the
-// original classes.
-
 /**
  * @publicApi
  */
@@ -32,32 +29,46 @@ export class DebugEventListener {
 /**
  * @publicApi
  */
-export interface DebugNode {
-  /**
-   * The callbacks attached to the component's @Output properties and/or the element's event
-   * properties.
-   */
-  readonly listeners: DebugEventListener[];
+export function asNativeElements(debugEls: DebugElement[]): any {
+  return debugEls.map((el) => el.nativeElement);
+}
 
-  /**
-   * The `DebugElement` parent. Will be `null` if this is the root element.
-   */
-  readonly parent: DebugElement|null;
-
+/**
+ * @publicApi
+ */
+export class DebugNode {
   /**
    * The underlying DOM node.
    */
   readonly nativeNode: any;
 
+  constructor(nativeNode: Node) {
+    this.nativeNode = nativeNode;
+  }
+
+  /**
+   * The `DebugElement` parent. Will be `null` if this is the root element.
+   */
+  get parent(): DebugElement|null {
+    const parent = this.nativeNode.parentNode as Element;
+    return parent ? new DebugElement(parent) : null;
+  }
+
   /**
    * The host dependency injector. For example, the root element's component instance injector.
    */
-  readonly injector: Injector;
+  get injector(): Injector {
+    return getInjector(this.nativeNode);
+  }
 
   /**
    * The element's own component instance, if it has one.
    */
-  readonly componentInstance: any;
+  get componentInstance(): any {
+    const nativeElement = this.nativeNode;
+    return nativeElement &&
+        (getComponent(nativeElement as Element) || getOwningComponent(nativeElement));
+  }
 
   /**
    * An object that provides parent context for this element. Often an ancestor component instance
@@ -67,19 +78,33 @@ export interface DebugNode {
    * property is the value of the row instance value. For example, the `hero` in `*ngFor="let hero
    * of heroes"`.
    */
-  readonly context: any;
+  get context(): any {
+    return getComponent(this.nativeNode as Element) || getContext(this.nativeNode as Element);
+  }
+
+  /**
+   * The callbacks attached to the component's @Output properties and/or the element's event
+   * properties.
+   */
+  get listeners(): DebugEventListener[] {
+    return getListeners(this.nativeNode as Element).filter(listener => listener.type === 'dom');
+  }
 
   /**
    * Dictionary of objects associated with template local variables (e.g. #foo), keyed by the local
    * variable name.
    */
-  readonly references: {[key: string]: any};
+  get references(): {[key: string]: any} {
+    return getLocalRefs(this.nativeNode);
+  }
 
   /**
    * This component's injector lookup tokens. Includes the component itself plus the tokens that the
    * component lists in its providers metadata.
    */
-  readonly providerTokens: any[];
+  get providerTokens(): any[] {
+    return getInjectionTokens(this.nativeNode as Element);
+  }
 }
 
 /**
@@ -89,154 +114,22 @@ export interface DebugNode {
  * @see [Basics of testing components](guide/testing-components-basics)
  * @see [Testing utility APIs](guide/testing-utility-apis)
  */
-export interface DebugElement extends DebugNode {
-  /**
-   * The element tag name, if it is an element.
-   */
-  readonly name: string;
-
-  /**
-   *  A map of property names to property values for an element.
-   *
-   *  This map includes:
-   *  - Regular property bindings (e.g. `[id]="id"`)
-   *  - Host property bindings (e.g. `host: { '[id]': "id" }`)
-   *  - Interpolated property bindings (e.g. `id="{{ value }}")
-   *
-   *  It does not include:
-   *  - input property bindings (e.g. `[myCustomInput]="value"`)
-   *  - attribute bindings (e.g. `[attr.role]="menu"`)
-   */
-  readonly properties: {[key: string]: any};
-
-  /**
-   *  A map of attribute names to attribute values for an element.
-   */
-  readonly attributes: {[key: string]: string|null};
-
-  /**
-   * A map containing the class names on the element as keys.
-   *
-   * This map is derived from the `className` property of the DOM element.
-   *
-   * Note: The values of this object will always be `true`. The class key will not appear in the KV
-   * object if it does not exist on the element.
-   *
-   * @see [Element.className](https://developer.mozilla.org/en-US/docs/Web/API/Element/className)
-   */
-  readonly classes: {[key: string]: boolean};
-
-  /**
-   * The inline styles of the DOM element.
-   *
-   * Will be `null` if there is no `style` property on the underlying DOM element.
-   *
-   * @see [ElementCSSInlineStyle](https://developer.mozilla.org/en-US/docs/Web/API/ElementCSSInlineStyle/style)
-   */
-  readonly styles: {[key: string]: string|null};
-
-  /**
-   * The `childNodes` of the DOM element as a `DebugNode` array.
-   *
-   * @see [Node.childNodes](https://developer.mozilla.org/en-US/docs/Web/API/Node/childNodes)
-   */
-  readonly childNodes: DebugNode[];
-
-  /**
-   * The underlying DOM element at the root of the component.
-   */
-  readonly nativeElement: any;
-
-  /**
-   * The immediate `DebugElement` children. Walk the tree by descending through `children`.
-   */
-  readonly children: DebugElement[];
-
-  /**
-   * @returns the first `DebugElement` that matches the predicate at any depth in the subtree.
-   */
-  query(predicate: Predicate<DebugElement>): DebugElement;
-
-  /**
-   * @returns All `DebugElement` matches for the predicate at any depth in the subtree.
-   */
-  queryAll(predicate: Predicate<DebugElement>): DebugElement[];
-
-  /**
-   * @returns All `DebugNode` matches for the predicate at any depth in the subtree.
-   */
-  queryAllNodes(predicate: Predicate<DebugNode>): DebugNode[];
-
-  /**
-   * Triggers the event by its name if there is a corresponding listener in the element's
-   * `listeners` collection.
-   *
-   * If the event lacks a listener or there's some other problem, consider
-   * calling `nativeElement.dispatchEvent(eventObject)`.
-   *
-   * @param eventName The name of the event to trigger
-   * @param eventObj The _event object_ expected by the handler
-   *
-   * @see [Testing components scenarios](guide/testing-components-scenarios#trigger-event-handler)
-   */
-  triggerEventHandler(eventName: string, eventObj: any): void;
-}
-
-/**
- * @publicApi
- */
-export function asNativeElements(debugEls: DebugElement[]): any {
-  return debugEls.map((el) => el.nativeElement);
-}
-
-class DebugNode__POST_R3__ implements DebugNode {
-  readonly nativeNode: Node;
-
-  constructor(nativeNode: Node) {
-    this.nativeNode = nativeNode;
-  }
-
-  get parent(): DebugElement|null {
-    const parent = this.nativeNode.parentNode as Element;
-    return parent ? new DebugElement__POST_R3__(parent) : null;
-  }
-
-  get injector(): Injector {
-    return getInjector(this.nativeNode);
-  }
-
-  get componentInstance(): any {
-    const nativeElement = this.nativeNode;
-    return nativeElement &&
-        (getComponent(nativeElement as Element) || getOwningComponent(nativeElement));
-  }
-  get context(): any {
-    return getComponent(this.nativeNode as Element) || getContext(this.nativeNode as Element);
-  }
-
-  get listeners(): DebugEventListener[] {
-    return getListeners(this.nativeNode as Element).filter(listener => listener.type === 'dom');
-  }
-
-  get references(): {[key: string]: any;} {
-    return getLocalRefs(this.nativeNode);
-  }
-
-  get providerTokens(): any[] {
-    return getInjectionTokens(this.nativeNode as Element);
-  }
-}
-
-class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugElement {
+export class DebugElement extends DebugNode {
   constructor(nativeNode: Element) {
     ngDevMode && assertDomNode(nativeNode);
     super(nativeNode);
   }
 
-  get nativeElement(): Element|null {
+  /**
+   * The underlying DOM element at the root of the component.
+   */
+  get nativeElement(): any {
     return this.nativeNode.nodeType == Node.ELEMENT_NODE ? this.nativeNode as Element : null;
   }
 
+  /**
+   * The element tag name, if it is an element.
+   */
   get name(): string {
     const context = getLContext(this.nativeNode);
     if (context !== null) {
@@ -261,7 +154,7 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
    *  - input property bindings (e.g. `[myCustomInput]="value"`)
    *  - attribute bindings (e.g. `[attr.role]="menu"`)
    */
-  get properties(): {[key: string]: any;} {
+  get properties(): {[key: string]: any} {
     const context = getLContext(this.nativeNode);
     if (context === null) {
       return {};
@@ -280,8 +173,11 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
     return properties;
   }
 
-  get attributes(): {[key: string]: string|null;} {
-    const attributes: {[key: string]: string|null;} = {};
+  /**
+   *  A map of attribute names to attribute values for an element.
+   */
+  get attributes(): {[key: string]: string|null} {
+    const attributes: {[key: string]: string|null} = {};
     const element = this.nativeElement;
 
     if (!element) {
@@ -338,6 +234,13 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
     return attributes;
   }
 
+  /**
+   * The inline styles of the DOM element.
+   *
+   * Will be `null` if there is no `style` property on the underlying DOM element.
+   *
+   * @see [ElementCSSInlineStyle](https://developer.mozilla.org/en-US/docs/Web/API/ElementCSSInlineStyle/style)
+   */
   get styles(): {[key: string]: string|null} {
     if (this.nativeElement && (this.nativeElement as HTMLElement).style) {
       return (this.nativeElement as HTMLElement).style as {[key: string]: any};
@@ -345,8 +248,18 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
     return {};
   }
 
-  get classes(): {[key: string]: boolean;} {
-    const result: {[key: string]: boolean;} = {};
+  /**
+   * A map containing the class names on the element as keys.
+   *
+   * This map is derived from the `className` property of the DOM element.
+   *
+   * Note: The values of this object will always be `true`. The class key will not appear in the KV
+   * object if it does not exist on the element.
+   *
+   * @see [Element.className](https://developer.mozilla.org/en-US/docs/Web/API/Element/className)
+   */
+  get classes(): {[key: string]: boolean} {
+    const result: {[key: string]: boolean} = {};
     const element = this.nativeElement as HTMLElement | SVGElement;
 
     // SVG elements return an `SVGAnimatedString` instead of a plain string for the `className`.
@@ -359,16 +272,24 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
     return result;
   }
 
+  /**
+   * The `childNodes` of the DOM element as a `DebugNode` array.
+   *
+   * @see [Node.childNodes](https://developer.mozilla.org/en-US/docs/Web/API/Node/childNodes)
+   */
   get childNodes(): DebugNode[] {
     const childNodes = this.nativeNode.childNodes;
     const children: DebugNode[] = [];
     for (let i = 0; i < childNodes.length; i++) {
       const element = childNodes[i];
-      children.push(getDebugNode__POST_R3__(element));
+      children.push(getDebugNode(element)!);
     }
     return children;
   }
 
+  /**
+   * The immediate `DebugElement` children. Walk the tree by descending through `children`.
+   */
   get children(): DebugElement[] {
     const nativeElement = this.nativeElement;
     if (!nativeElement) return [];
@@ -376,28 +297,49 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
     const children: DebugElement[] = [];
     for (let i = 0; i < childNodes.length; i++) {
       const element = childNodes[i];
-      children.push(getDebugNode__POST_R3__(element));
+      children.push(getDebugNode(element) as DebugElement);
     }
     return children;
   }
 
+  /**
+   * @returns the first `DebugElement` that matches the predicate at any depth in the subtree.
+   */
   query(predicate: Predicate<DebugElement>): DebugElement {
     const results = this.queryAll(predicate);
     return results[0] || null;
   }
 
+  /**
+   * @returns All `DebugElement` matches for the predicate at any depth in the subtree.
+   */
   queryAll(predicate: Predicate<DebugElement>): DebugElement[] {
     const matches: DebugElement[] = [];
-    _queryAllR3(this, predicate, matches, true);
+    _queryAll(this, predicate, matches, true);
     return matches;
   }
 
+  /**
+   * @returns All `DebugNode` matches for the predicate at any depth in the subtree.
+   */
   queryAllNodes(predicate: Predicate<DebugNode>): DebugNode[] {
     const matches: DebugNode[] = [];
-    _queryAllR3(this, predicate, matches, false);
+    _queryAll(this, predicate, matches, false);
     return matches;
   }
 
+  /**
+   * Triggers the event by its name if there is a corresponding listener in the element's
+   * `listeners` collection.
+   *
+   * If the event lacks a listener or there's some other problem, consider
+   * calling `nativeElement.dispatchEvent(eventObject)`.
+   *
+   * @param eventName The name of the event to trigger
+   * @param eventObj The _event object_ expected by the handler
+   *
+   * @see [Testing components scenarios](guide/testing-components-scenarios#trigger-event-handler)
+   */
   triggerEventHandler(eventName: string, eventObj: any): void {
     const node = this.nativeNode as any;
     const invokedListeners: Function[] = [];
@@ -469,19 +411,19 @@ function isPrimitiveValue(value: any): boolean {
  * @param matches the list of positive matches
  * @param elementsOnly whether only elements should be searched
  */
-function _queryAllR3(
+function _queryAll(
     parentElement: DebugElement, predicate: Predicate<DebugElement>, matches: DebugElement[],
     elementsOnly: true): void;
-function _queryAllR3(
+function _queryAll(
     parentElement: DebugElement, predicate: Predicate<DebugNode>, matches: DebugNode[],
     elementsOnly: false): void;
-function _queryAllR3(
+function _queryAll(
     parentElement: DebugElement, predicate: Predicate<DebugElement>|Predicate<DebugNode>,
     matches: DebugElement[]|DebugNode[], elementsOnly: boolean) {
   const context = getLContext(parentElement.nativeNode);
   if (context !== null) {
     const parentTNode = context.lView[TVIEW].data[context.nodeIndex] as TNode;
-    _queryNodeChildrenR3(
+    _queryNodeChildren(
         parentTNode, context.lView, predicate, matches, elementsOnly, parentElement.nativeNode);
   } else {
     // If the context is null, then `parentElement` was either created with Renderer2 or native DOM
@@ -500,7 +442,7 @@ function _queryAllR3(
  * @param elementsOnly whether only elements should be searched
  * @param rootNativeNode the root native node on which predicate should not be matched
  */
-function _queryNodeChildrenR3(
+function _queryNodeChildren(
     tNode: TNode, lView: LView, predicate: Predicate<DebugElement>|Predicate<DebugNode>,
     matches: DebugElement[]|DebugNode[], elementsOnly: boolean, rootNativeNode: any) {
   ngDevMode && assertTNodeForLView(tNode, lView);
@@ -509,20 +451,20 @@ function _queryNodeChildrenR3(
   if (tNode.type & (TNodeType.AnyRNode | TNodeType.ElementContainer)) {
     // Case 1: the TNode is an element
     // The native node has to be checked.
-    _addQueryMatchR3(nativeNode, predicate, matches, elementsOnly, rootNativeNode);
+    _addQueryMatch(nativeNode, predicate, matches, elementsOnly, rootNativeNode);
     if (isComponentHost(tNode)) {
       // If the element is the host of a component, then all nodes in its view have to be processed.
       // Note: the component's content (tNode.child) will be processed from the insertion points.
       const componentView = getComponentLViewByIndex(tNode.index, lView);
       if (componentView && componentView[TVIEW].firstChild) {
-        _queryNodeChildrenR3(
+        _queryNodeChildren(
             componentView[TVIEW].firstChild!, componentView, predicate, matches, elementsOnly,
             rootNativeNode);
       }
     } else {
       if (tNode.child) {
         // Otherwise, its children have to be processed.
-        _queryNodeChildrenR3(tNode.child, lView, predicate, matches, elementsOnly, rootNativeNode);
+        _queryNodeChildren(tNode.child, lView, predicate, matches, elementsOnly, rootNativeNode);
       }
 
       // We also have to query the DOM directly in order to catch elements inserted through
@@ -539,16 +481,16 @@ function _queryNodeChildrenR3(
     // processed.
     const nodeOrContainer = lView[tNode.index];
     if (isLContainer(nodeOrContainer)) {
-      _queryNodeChildrenInContainerR3(
+      _queryNodeChildrenInContainer(
           nodeOrContainer, predicate, matches, elementsOnly, rootNativeNode);
     }
   } else if (tNode.type & TNodeType.Container) {
     // Case 2: the TNode is a container
     // The native node has to be checked.
     const lContainer = lView[tNode.index];
-    _addQueryMatchR3(lContainer[NATIVE], predicate, matches, elementsOnly, rootNativeNode);
+    _addQueryMatch(lContainer[NATIVE], predicate, matches, elementsOnly, rootNativeNode);
     // Each view inside the container has to be processed.
-    _queryNodeChildrenInContainerR3(lContainer, predicate, matches, elementsOnly, rootNativeNode);
+    _queryNodeChildrenInContainer(lContainer, predicate, matches, elementsOnly, rootNativeNode);
   } else if (tNode.type & TNodeType.Projection) {
     // Case 3: the TNode is a projection insertion point (i.e. a <ng-content>).
     // The nodes projected at this location all need to be processed.
@@ -559,16 +501,16 @@ function _queryNodeChildrenR3(
 
     if (Array.isArray(head)) {
       for (let nativeNode of head) {
-        _addQueryMatchR3(nativeNode, predicate, matches, elementsOnly, rootNativeNode);
+        _addQueryMatch(nativeNode, predicate, matches, elementsOnly, rootNativeNode);
       }
     } else if (head) {
       const nextLView = componentView[PARENT]! as LView;
       const nextTNode = nextLView[TVIEW].data[head.index] as TNode;
-      _queryNodeChildrenR3(nextTNode, nextLView, predicate, matches, elementsOnly, rootNativeNode);
+      _queryNodeChildren(nextTNode, nextLView, predicate, matches, elementsOnly, rootNativeNode);
     }
   } else if (tNode.child) {
     // Case 4: the TNode is a view.
-    _queryNodeChildrenR3(tNode.child, lView, predicate, matches, elementsOnly, rootNativeNode);
+    _queryNodeChildren(tNode.child, lView, predicate, matches, elementsOnly, rootNativeNode);
   }
 
   // We don't want to go to the next sibling of the root node.
@@ -577,7 +519,7 @@ function _queryNodeChildrenR3(
     // link, depending on whether the current node has been projected.
     const nextTNode = (tNode.flags & TNodeFlags.isProjected) ? tNode.projectionNext : tNode.next;
     if (nextTNode) {
-      _queryNodeChildrenR3(nextTNode, lView, predicate, matches, elementsOnly, rootNativeNode);
+      _queryNodeChildren(nextTNode, lView, predicate, matches, elementsOnly, rootNativeNode);
     }
   }
 }
@@ -591,14 +533,14 @@ function _queryNodeChildrenR3(
  * @param elementsOnly whether only elements should be searched
  * @param rootNativeNode the root native node on which predicate should not be matched
  */
-function _queryNodeChildrenInContainerR3(
+function _queryNodeChildrenInContainer(
     lContainer: LContainer, predicate: Predicate<DebugElement>|Predicate<DebugNode>,
     matches: DebugElement[]|DebugNode[], elementsOnly: boolean, rootNativeNode: any) {
   for (let i = CONTAINER_HEADER_OFFSET; i < lContainer.length; i++) {
     const childView = lContainer[i] as LView;
     const firstChild = childView[TVIEW].firstChild;
     if (firstChild) {
-      _queryNodeChildrenR3(firstChild, childView, predicate, matches, elementsOnly, rootNativeNode);
+      _queryNodeChildren(firstChild, childView, predicate, matches, elementsOnly, rootNativeNode);
     }
   }
 }
@@ -612,7 +554,7 @@ function _queryNodeChildrenInContainerR3(
  * @param elementsOnly whether only elements should be searched
  * @param rootNativeNode the root native node on which predicate should not be matched
  */
-function _addQueryMatchR3(
+function _addQueryMatch(
     nativeNode: any, predicate: Predicate<DebugElement>|Predicate<DebugNode>,
     matches: DebugElement[]|DebugNode[], elementsOnly: boolean, rootNativeNode: any) {
   if (rootNativeNode !== nativeNode) {
@@ -623,7 +565,7 @@ function _addQueryMatchR3(
     // Type of the "predicate and "matches" array are set based on the value of
     // the "elementsOnly" parameter. TypeScript is not able to properly infer these
     // types with generics, so we manually cast the parameters accordingly.
-    if (elementsOnly && debugNode instanceof DebugElement__POST_R3__ && predicate(debugNode) &&
+    if (elementsOnly && (debugNode instanceof DebugElement) && predicate(debugNode) &&
         matches.indexOf(debugNode) === -1) {
       matches.push(debugNode);
     } else if (
@@ -653,7 +595,7 @@ function _queryNativeNodeDescendants(
     const debugNode = getDebugNode(node);
 
     if (debugNode) {
-      if (elementsOnly && debugNode instanceof DebugElement__POST_R3__ && predicate(debugNode) &&
+      if (elementsOnly && (debugNode instanceof DebugElement) && predicate(debugNode) &&
           matches.indexOf(debugNode) === -1) {
         matches.push(debugNode);
       } else if (
@@ -701,32 +643,25 @@ const _nativeNodeToDebugNode = new Map<any, DebugNode>();
 
 const NG_DEBUG_PROPERTY = '__ng_debug__';
 
-export function getDebugNode__POST_R3__(nativeNode: Element): DebugElement__POST_R3__;
-export function getDebugNode__POST_R3__(nativeNode: Node): DebugNode__POST_R3__;
-export function getDebugNode__POST_R3__(nativeNode: null): null;
-export function getDebugNode__POST_R3__(nativeNode: any): DebugNode|null {
+/**
+ * @publicApi
+ */
+export function getDebugNode(nativeNode: any): DebugNode|null {
   if (nativeNode instanceof Node) {
     if (!(nativeNode.hasOwnProperty(NG_DEBUG_PROPERTY))) {
       (nativeNode as any)[NG_DEBUG_PROPERTY] = nativeNode.nodeType == Node.ELEMENT_NODE ?
-          new DebugElement__POST_R3__(nativeNode as Element) :
-          new DebugNode__POST_R3__(nativeNode);
+          new DebugElement(nativeNode as Element) :
+          new DebugNode(nativeNode);
     }
     return (nativeNode as any)[NG_DEBUG_PROPERTY];
   }
   return null;
 }
 
-/**
- * @publicApi
- */
-export const getDebugNode: (nativeNode: any) => DebugNode | null = getDebugNode__POST_R3__;
-
-export function getDebugNodeR2__POST_R3__(_nativeNode: any): DebugNode|null {
+// TODO: cleanup all references to this function and remove it.
+export function getDebugNodeR2(_nativeNode: any): DebugNode|null {
   return null;
 }
-
-export const getDebugNodeR2: (nativeNode: any) => DebugNode | null = getDebugNodeR2__POST_R3__;
-
 
 export function getAllDebugNodes(): DebugNode[] {
   return Array.from(_nativeNodeToDebugNode.values());
@@ -749,13 +684,3 @@ export function removeDebugNodeFromIndex(node: DebugNode) {
 export interface Predicate<T> {
   (value: T): boolean;
 }
-
-/**
- * @publicApi
- */
-export const DebugNode: {new (...args: any[]): DebugNode} = DebugNode__POST_R3__;
-
-/**
- * @publicApi
- */
-export const DebugElement: {new (...args: any[]): DebugElement} = DebugElement__POST_R3__;
