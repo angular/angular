@@ -9,6 +9,10 @@ See the <live-example></live-example> for a working example containing the code 
 
 </div>
 
+## Prerequisites
+
+* TBD
+
 ## Syntax
 
 Attribute binding syntax resembles [property binding](guide/property-binding), but instead of an element property between brackets, you precede the name of the attribute with the prefix `attr`, followed by a dot.
@@ -97,5 +101,9 @@ Another example is the [RouterOutlet](api/router/RouterOutlet) directive, which 
   Remember, use [@Input()](api/core/Input) when you want to keep track of the attribute value and update the associated property. Use [@Attribute()](api/core/Attribute) when you want to inject the value of an HTML attribute to a component or directive constructor.
 
 </div>
+
+## What's next
+
+* TBD
 
 @reviewed 2021-11-24
