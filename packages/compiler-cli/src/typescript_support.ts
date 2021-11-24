@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import ts from 'typescript';
-import {compareVersions} from './diagnostics/typescript_version';
+
+import {compareVersions} from './version_helpers';
 
 /**
  * Minimum supported TypeScript version
