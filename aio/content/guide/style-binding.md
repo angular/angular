@@ -4,25 +4,24 @@ Use style binding to set styles dynamically.
 
 ## Prerequisites
 
-* TBD
+TBD
 
 ## Binding to a single style
 
 To create a single style binding, use the prefix `style` followed by a dot and the name of the CSS style.
 
-To set the ‘width’ style, type `[style.width]="width"`.
+For example, set the ‘width’ style, type the following:  `[style.width]="width"`
 
-Angular sets the property to the value of the bound expression, which is usually a string.
-Optionally, you can add a unit extension like `em` or `%`, which requires a number type.
+Angular sets the property to the value of the bound expression, which is usually a string.  Optionally, you can add a unit extension like `em` or `%`, which requires a number type.
 
 <div class="alert is-helpful">
 
-1. To write a style in dash-case, type the following:
+To write a style in dash-case, type the following:
 
 <code-example language="html">&lt;nav [style.background-color]="expression"
 &gt;&lt;/nav&gt;
 
-2. To write a style in camelCase, type the following:
+To write a style in camelCase, type the following:
 
   &lt;nav [style.backgroundColor]="expression"
 &gt;&lt;/nav&gt;</code-example>
@@ -31,8 +30,7 @@ Optionally, you can add a unit extension like `em` or `%`, which requires a numb
 
 ## Binding to multiple styles
 
-To toggle multiple styles, bind to the `[style]` attribute&mdash;for example, `[style]="styleExpression"`.
-The `styleExpression` can be one of:
+To toggle multiple styles, bind to the `[style]` attribute&mdash;for example, `[style]="styleExpression"`.  The `styleExpression` can be one of:
 
 * A string list of styles such as `"width: 100px; height: 100px; background-color: cornflowerblue;"`.
 * An object with style names as the keys and style values as the values, such as `{width: '100px', height: '100px', backgroundColor: 'cornflowerblue'}`.
@@ -107,77 +105,17 @@ The following table summarizes style binding syntax.
   </tr>
 </table>
 
-<div class="alert is-helpful">
-
-The [NgStyle](guide/built-in-directives/#ngstyle) directive can be used as an alternative to direct `[style]` bindings.
-However, using the preceding style binding syntax without `NgStyle` is preferred because due to improvements in style binding in Angular, `NgStyle` no longer provides significant value, and might eventually be removed in the future.
-
-</div>
+<div class="alert is-helpful"></div>
 
 {@a styling-precedence}
 ## Styling precedence
 
 A single HTML element can have its CSS class list and style values bound to multiple sources (for example, host bindings from multiple directives).
 
-When there are multiple bindings to the same class name or style property, Angular uses a set of precedence rules to resolve conflicts and determine which classes or styles are ultimately applied to the element.
+TBD - insert link to Understanding binding, Binding to style attributes section
 
-<div class="alert is-helpful">
-<h4>Styling precedence (highest to lowest)</h4>
+## What’s next
 
-1. Template bindings
-    1. Property binding (for example, `<div [class.foo]="hasFoo">` or `<div [style.color]="color">`)
-    1. Map binding (for example, `<div [class]="classExpr">` or `<div [style]="styleExpr">`)
-    1. Static value (for example, `<div class="foo">` or `<div style="color: blue">`)
-1. Directive host bindings
-    1. Property binding (for example, `host: {'[class.foo]': 'hasFoo'}` or `host: {'[style.color]': 'color'}`)
-    1. Map binding (for example, `host: {'[class]': 'classExpr'}` or `host: {'[style]': 'styleExpr'}`)
-    1. Static value (for example, `host: {'class': 'foo'}` or `host: {'style': 'color: blue'}`)
-1. Component host bindings
-    1. Property binding (for example, `host: {'[class.foo]': 'hasFoo'}` or `host: {'[style.color]': 'color'}`)
-    1. Map binding (for example, `host: {'[class]': 'classExpr'}` or `host: {'[style]': 'styleExpr'}`)
-    1. Static value (for example, `host: {'class': 'foo'}` or `host: {'style': 'color: blue'}`)
+TBD
 
-</div>
-
-The more specific a class or style binding is, the higher its precedence.
-
-A binding to a specific class (for example, `[class.foo]`) takes precedence over a generic `[class]` binding, and a binding to a specific style (for example, `[style.bar]`) takes precedence over a generic `[style]` binding.
-
-<code-example path="attribute-binding/src/app/app.component.html" region="basic-specificity" header="src/app/app.component.html"></code-example>
-
-Specificity rules also apply when it comes to bindings that originate from different sources.
-It's possible for an element to have bindings in the template where it's declared, from host bindings on matched directives, and from host bindings on matched components.
-
-Template bindings are the most specific because they apply to the element directly and exclusively, so they have the highest precedence.
-
-Directive host bindings are considered less specific because directives can be used in multiple locations, so they have a lower precedence than template bindings.
-
-Directives often augment component behavior, so host bindings from components have the lowest precedence.
-
-<code-example path="attribute-binding/src/app/app.component.html" region="source-specificity" header="src/app/app.component.html"></code-example>
-
-In addition, bindings take precedence over static attributes.
-
-In the following case, `class` and `[class]` have similar specificity, but the `[class]` binding takes precedence because it is dynamic.
-
-<code-example path="attribute-binding/src/app/app.component.html" region="dynamic-priority" header="src/app/app.component.html"></code-example>
-
-{@a styling-delegation}
-### Delegating to styles with lower precedence
-
-It is possible for higher precedence styles to "delegate" to lower precedence styles using `undefined` values.
-Whereas setting a style property to `null` ensures the style is removed, setting it to `undefined` causes Angular to fall back to the next-highest precedence binding to that style.
-
-For example, consider the following template:
-
-<code-example path="attribute-binding/src/app/app.component.html" region="style-delegation" header="src/app/app.component.html"></code-example>
-
-Imagine that the `dirWithHostBinding` directive and the `comp-with-host-binding` component both have a `[style.width]` host binding.
-In that case, if `dirWithHostBinding` sets its binding to `undefined`, the `width` property falls back to the value of the `comp-with-host-binding` host binding.
-However, if `dirWithHostBinding` sets its binding to `null`, the `width` property will be removed entirely.
-
-## What's next
-
-* TBD
-
-@reviewed 2021-11-15
+@reviewed 2021-11-24
