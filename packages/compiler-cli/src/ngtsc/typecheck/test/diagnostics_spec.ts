@@ -889,7 +889,7 @@ class TestComponent {
           .toContain(
               `main.ts(2, 20): Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
   Type 'undefined' is not assignable to type 'string'.
-  A failure occurred to report this error in 'TestComponent.html' at 1:20
+  Failed to report an error in 'TestComponent.html' at 1:20
     Error: Simulated parse failure`);
     });
 
@@ -909,7 +909,7 @@ class TestComponent {
           .toContain(
               `main.ts(2, 20): Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
   Type 'undefined' is not assignable to type 'string'.
-  A failure occurred to report this error in 'TestComponent.html' at 1:20
+  Failed to report an error in 'TestComponent.html' at 1:20
     Simulated parse failure`);
     });
   });

@@ -85,7 +85,7 @@ export function makeTemplateDiagnostic(
       sf = parseTemplateAsSourceFile(fileName, mapping.template);
     } catch (e) {
       const failureChain = makeDiagnosticChain(
-          `A failure occurred to report this error in '${fileName}' at ${span.start.line + 1}:${
+          `Failed to report an error in '${fileName}' at ${span.start.line + 1}:${
               span.start.col + 1}`,
           [
             makeDiagnosticChain((e as Error)?.stack ?? `${e}`),
