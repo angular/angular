@@ -691,14 +691,19 @@
               "tooltip": "Introduction to the Tour of Heroes app and tutorial"
             },
             {
-              "url": "tutorial/toh-pt0",
-              "title": "Create a Project",
-              "tooltip": "Creating the application shell"
+              "url": "tutorial/toh-hello-angular",
+              "title": "Hello Angular!",
+              "tooltip": "A five minute overview of the Angular developer experience."
             },
             {
-              "url": "tutorial/toh-pt1",
-              "title": "1. The Hero Editor",
-              "tooltip": "Part 1: Build a simple editor"
+              "url": "tutorial/toh-templates",
+              "title": "Templates",
+              "tooltip": "Learn about Angular templates."
+            },
+            {
+              "url": "tutorial/toh-components",
+              "title": "Components",
+              "tooltip": "Learn about Angular components."
             },
             {
               "url": "tutorial/toh-pt2",

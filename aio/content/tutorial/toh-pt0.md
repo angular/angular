@@ -7,7 +7,7 @@ This tutorial introduces you to the basics of creating an Angular application. Y
 In this part of the tutorial, you'll do the following:
 
 1. Create a new Angular project, using [Stackblitz][stackblitz].
-1. Display the application title using [text interpolation](guide/text-interpolation).
+1. Display the application title using [text interpolation](guide/interpolation).
 1. Add a logo with [property binding](guide/property-binding).
 1. Change the logo size using [attribute binding](guide/attribute-binding).
 
@@ -27,7 +27,7 @@ To create the sample project:
 
 ## Display the application title with text interpolation
 
-In this section, you'll use Angular's [text interpolation][text-interpolation] to display the application's title.
+In this section, you'll use Angular's [text interpolation](interpolation] to display the application's title.
 
 To update the application title:
 

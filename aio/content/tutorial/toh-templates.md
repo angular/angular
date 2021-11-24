@@ -15,13 +15,13 @@ Before you start this tutorial, you should understand the concepts covered in [T
 
 In this tutorial, you'll do the following:
 
-1. Display a new application title using [text interpolation](guide/text-interpolation).
+1. Display a new application title using [text interpolation](guide/interpolation).
 1. Add a logo with [property binding](guide/property-binding).
 1. Change the logo size using [attribute binding](guide/attribute-binding).
 
 ## Display the application title with text interpolation
 
-In this section, you'll use Angular's [text interpolation][text-interpolation] to display the application's title.
+In this section, you'll use Angular's [text interpolation](guide/interpolation) to display the application's title.
 
 To update the application title:
 
@@ -79,3 +79,12 @@ To display a greeting using event binding:
    <code-example path="toh-pt0/src/app/app.component.3.html" header="app.component.html" region="event-binding"></code-example>
 1. Open the component class file, `app.component.ts`.
 1. Add a `showGreeting` method, as follows.
+   <code-example path="toh-pt0/src/app/app.component.3.ts" header="app.component.ts" region="event-binding"></code-example>
+
+Your application now has a button labeled `Show Greeting`. When you click on the button, an alert box displays the message: `Hello, Angular developer!`.
+
+## What's next
+
+In this tutorial, you've explored how an Angular template works. You've added features such as interpolation, property binding, attribute binding, and event binding.
+
+To continue the Tour of Heroes tutorial, see [Tour of Heroes: Components](tutorial/toh-components).

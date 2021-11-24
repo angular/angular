@@ -15,7 +15,7 @@ To get the most out of this tutorial you should already have a basic understandi
 In this tutorial, you'll do the following:
 
 1. Create a new Angular project, using [Stackblitz][stackblitz].
-1. Display the application title using [text interpolation](guide/text-interpolation).
+1. Display the application title using [text interpolation](guide/interpolation).
 1. Explore some of the key files that are part of any Angular application.
 
 ## Create the sample project
