@@ -89,6 +89,13 @@ footer {
           margin: 8px 24px;
         }
       }
+
+      @media not all and (min-resolution:.001dpcm) { // hack to detect safari
+        // tweak needed as safari handles rem based media queries differently
+        @media (max-width: 50rem) {
+          flex-direction: column;
+        }
+      }
     }
   }
 
