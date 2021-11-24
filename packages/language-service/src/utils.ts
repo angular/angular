@@ -167,14 +167,19 @@ function getFirstComponentForTemplateFile(fileName: string, compiler: NgCompiler
 }
 
 /**
- * Given an attribute node, converts it to string form.
+ * Given an attribute node, converts it to string form for use as a CSS selector.
  */
-function toAttributeString(attribute: t.TextAttribute|t.BoundAttribute|t.BoundEvent): string {
+function toAttributeCssSelector(attribute: t.TextAttribute|t.BoundAttribute|t.BoundEvent): string {
+  let selector: string;
   if (attribute instanceof t.BoundEvent || attribute instanceof t.BoundAttribute) {
-    return `[${attribute.name}]`;
+    selector = `[${attribute.name}]`;
   } else {
-    return `[${attribute.name}=${attribute.valueSpan?.toString() ?? ''}]`;
+    selector = `[${attribute.name}=${attribute.valueSpan?.toString() ?? ''}]`;
   }
+  // Any dollar signs that appear in the attribute name and/or value need to be escaped because they
+  // need to be taken as literal characters rather than special selector behavior of dollar signs in
+  // CSS.
+  return selector.replace('$', '\\$');
 }
 
 function getNodeName(node: t.Template|t.Element): string {
@@ -222,7 +227,7 @@ function difference<T>(left: Set<T>, right: Set<T>): Set<T> {
 export function getDirectiveMatchesForElementTag(
     element: t.Template|t.Element, directives: DirectiveSymbol[]): Set<DirectiveSymbol> {
   const attributes = getAttributes(element);
-  const allAttrs = attributes.map(toAttributeString);
+  const allAttrs = attributes.map(toAttributeCssSelector);
   const allDirectiveMatches =
       getDirectiveMatchesForSelector(directives, getNodeName(element) + allAttrs.join(''));
   const matchesWithoutElement = getDirectiveMatchesForSelector(directives, allAttrs.join(''));
@@ -232,7 +237,7 @@ export function getDirectiveMatchesForElementTag(
 
 export function makeElementSelector(element: t.Element|t.Template): string {
   const attributes = getAttributes(element);
-  const allAttrs = attributes.map(toAttributeString);
+  const allAttrs = attributes.map(toAttributeCssSelector);
   return getNodeName(element) + allAttrs.join('');
 }
 
@@ -251,10 +256,10 @@ export function getDirectiveMatchesForAttribute(
     name: string, hostNode: t.Template|t.Element,
     directives: DirectiveSymbol[]): Set<DirectiveSymbol> {
   const attributes = getAttributes(hostNode);
-  const allAttrs = attributes.map(toAttributeString);
+  const allAttrs = attributes.map(toAttributeCssSelector);
   const allDirectiveMatches =
       getDirectiveMatchesForSelector(directives, getNodeName(hostNode) + allAttrs.join(''));
-  const attrsExcludingName = attributes.filter(a => a.name !== name).map(toAttributeString);
+  const attrsExcludingName = attributes.filter(a => a.name !== name).map(toAttributeCssSelector);
   const matchesWithoutAttr = getDirectiveMatchesForSelector(
       directives, getNodeName(hostNode) + attrsExcludingName.join(''));
   return difference(allDirectiveMatches, matchesWithoutAttr);
@@ -266,20 +271,26 @@ export function getDirectiveMatchesForAttribute(
  */
 function getDirectiveMatchesForSelector(
     directives: DirectiveSymbol[], selector: string): Set<DirectiveSymbol> {
-  const selectors = CssSelector.parse(selector);
-  if (selectors.length === 0) {
+  try {
+    const selectors = CssSelector.parse(selector);
+    if (selectors.length === 0) {
+      return new Set();
+    }
+    return new Set(directives.filter((dir: DirectiveSymbol) => {
+      if (dir.selector === null) {
+        return false;
+      }
+
+      const matcher = new SelectorMatcher();
+      matcher.addSelectables(CssSelector.parse(dir.selector));
+
+      return selectors.some(selector => matcher.match(selector, null));
+    }));
+  } catch {
+    // An invalid selector may throw an error. There would be no directive matches for an invalid
+    // selector.
     return new Set();
   }
-  return new Set(directives.filter((dir: DirectiveSymbol) => {
-    if (dir.selector === null) {
-      return false;
-    }
-
-    const matcher = new SelectorMatcher();
-    matcher.addSelectables(CssSelector.parse(dir.selector));
-
-    return selectors.some(selector => matcher.match(selector, null));
-  }));
 }
 
 /**
