@@ -1,6 +1,5 @@
 load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
 load("@npm//@bazel/rollup:index.bzl", "rollup_bundle")
-load("@npm//@bazel/terser:index.bzl", "terser_minified")
 load("//tools:angular_ts_project.bzl", "ng_ts_project")
 load("//tools:typescript.bzl", "ts_project")
 

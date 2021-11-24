@@ -156,8 +156,8 @@ def ng_karma_web_test_suite(name, browsers, specs, deps = [], bootstrap = [], st
     karma_web_test_suite(
         name,
         browsers,
-        specs=specs + default_specs,
-        deps=deps + default_deps,
-        bootstrap=bootstrap + default_bootstrap,
-        static_files=static_files
+        specs = specs + default_specs,
+        deps = deps + default_deps,
+        bootstrap = bootstrap + default_bootstrap,
+        static_files = static_files,
     )

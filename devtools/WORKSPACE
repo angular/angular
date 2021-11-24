@@ -9,6 +9,7 @@ workspace(
     name = "angular_devtools",
     managed_directories = {"@npm": ["node_modules"]},
 )
+
 # These rules are built-into Bazel but we need to load them first to download more rules
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
@@ -43,21 +44,18 @@ node_repositories(
 # Fetch sass rules for compiling sass files
 http_archive(
     name = "io_bazel_rules_sass",
-    sha256 = "5313032124ff191eed68efcfbdc6ee9b5198093b2b80a8e640ea34feabbffc69",
     patch_args = ["-p1"],
     patches = [
         # Updates @bazel/work dep to 4.0.0 inside rules_sass so it is compatible
         "//:io_bazel_rules_sass.patch",
     ],
+    sha256 = "5313032124ff191eed68efcfbdc6ee9b5198093b2b80a8e640ea34feabbffc69",
     strip_prefix = "rules_sass-1.34.0",
     urls = [
         "https://github.com/bazelbuild/rules_sass/archive/1.34.0.zip",
         "https://mirror.bazel.build/github.com/bazelbuild/rules_sass/archive/1.34.0.zip",
     ],
 )
-
-# Check the bazel version and download npm dependencies
-load("@build_bazel_rules_nodejs//:index.bzl", "yarn_install")
 
 # Setup the Node.js toolchain & install our npm dependencies into @npm
 yarn_install(
@@ -103,8 +101,10 @@ load(
 
 _dev_infra_browser_repositories()
 
-
 load("@build_bazel_rules_nodejs//toolchains/cypress:cypress_repositories.bzl", "cypress_repositories")
 
 # The name you pass here names the external repository you can load cypress_web_test from
-cypress_repositories(name = "cypress", version = "8.7.0")
+cypress_repositories(
+    name = "cypress",
+    version = "8.7.0",
+)

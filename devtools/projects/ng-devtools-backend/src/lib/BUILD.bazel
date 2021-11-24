@@ -1,6 +1,5 @@
 load("//tools:defaults.bzl", "karma_web_test_suite")
-load("//tools:typescript.bzl", "ts_test_project")
-load("//tools:typescript.bzl", "ts_project")
+load("//tools:typescript.bzl", "ts_project", "ts_test_project")
 
 package(default_visibility = ["//visibility:public"])
 
