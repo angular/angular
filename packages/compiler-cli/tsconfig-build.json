@@ -31,7 +31,6 @@
     "index.ts",
     "src/main.ts",
     "src/extract_i18n.ts",
-    "src/language_services.ts",
     "../../node_modules/@types/node/index.d.ts",
     "../../node_modules/@types/jasmine/index.d.ts"
   ]

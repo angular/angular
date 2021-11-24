@@ -8,28 +8,6 @@
     "packages/compiler-cli/ngcc/src/packages/entry_point.ts"
   ],
   [
-    "packages/compiler-cli/src/metadata/bundle_index_host.ts",
-    "packages/compiler-cli/src/transformers/metadata_cache.ts",
-    "packages/compiler-cli/src/metadata/index.ts"
-  ],
-  [
-    "packages/compiler-cli/src/metadata/bundle_index_host.ts",
-    "packages/compiler-cli/src/transformers/metadata_cache.ts",
-    "packages/compiler-cli/src/transformers/compiler_host.ts",
-    "packages/compiler-cli/src/metadata/index.ts"
-  ],
-  [
-    "packages/compiler-cli/src/metadata/bundle_index_host.ts",
-    "packages/compiler-cli/src/transformers/metadata_cache.ts",
-    "packages/compiler-cli/src/transformers/compiler_host.ts",
-    "packages/compiler-cli/src/transformers/metadata_reader.ts",
-    "packages/compiler-cli/src/metadata/index.ts"
-  ],
-  [
-    "packages/compiler-cli/src/metadata/collector.ts",
-    "packages/compiler-cli/src/metadata/evaluator.ts"
-  ],
-  [
     "packages/compiler-cli/src/ngtsc/partial_evaluator/src/interface.ts",
     "packages/compiler-cli/src/ngtsc/partial_evaluator/src/interpreter.ts"
   ],
