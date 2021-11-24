@@ -17,6 +17,7 @@ export const commitMessage: CommitMessageConfig = {
     'compiler-cli',
     'core',
     'dev-infra',
+    'devtools',
     'docs-infra',
     'elements',
     'forms',
