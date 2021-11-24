@@ -1,0 +1,70 @@
+# Bazel does not yet support wildcards or other .gitignore semantics for
+# .bazelignore. Two issues for this feature request are outstanding:
+# https://github.com/bazelbuild/bazel/issues/7093
+# https://github.com/bazelbuild/bazel/issues/8106
+.git
+node_modules
+dist
+aio/content
+aio/node_modules
+aio/tools/examples/shared/node_modules
+devtools/node_modules
+packages/bazel/node_modules
+
+# All integration test node_modules folders
+integration/bazel_workspace_tests/bazel_ngtsc_plugin/node_modules
+integration/cli-elements-universal/node_modules
+integration/cli-hello-world/node_modules
+integration/cli-hello-world-ivy-compat/node_modules
+integration/cli-hello-world-ivy-i18n/node_modules
+integration/cli-hello-world-ivy-minimal/node_modules
+integration/cli-hello-world-lazy/node_modules
+integration/dynamic-compiler/node_modules
+integration/hello_world__closure/node_modules
+integration/hello_world__systemjs_umd/node_modules
+integration/i18n/node_modules
+integration/injectable-def/node_modules
+integration/ivy-i18n/node_modules
+integration/ng-add-localize/node_modules
+integration/trusted-types/node_modules
+integration/forms/node_modules
+integration/ng_elements/node_modules
+integration/ng_elements_schematics/node_modules
+integration/ng_update/node_modules
+integration/ng_update_migrations/node_modules
+integration/ngcc/node_modules
+integration/platform-server/node_modules
+integration/service-worker-schema/node_modules
+integration/side-effects/node_modules
+integration/terser/node_modules
+integration/typings_test_ts36/node_modules
+integration/typings_test_ts37/node_modules
+
+# All integration test .yarn_local_cache folders
+integration/bazel_workspace_tests/bazel_ngtsc_plugin/.yarn_local_cache
+integration/cli-elements-universal/.yarn_local_cache
+integration/cli-hello-world/.yarn_local_cache
+integration/cli-hello-world-ivy-compat/.yarn_local_cache
+integration/cli-hello-world-ivy-i18n/.yarn_local_cache
+integration/cli-hello-world-ivy-minimal/.yarn_local_cache
+integration/cli-hello-world-lazy/.yarn_local_cache
+integration/dynamic-compiler/.yarn_local_cache
+integration/hello_world__closure/.yarn_local_cache
+integration/hello_world__systemjs_umd/.yarn_local_cache
+integration/i18n/.yarn_local_cache
+integration/injectable-def/.yarn_local_cache
+integration/ivy-i18n/.yarn_local_cache
+integration/ng-add-localize/.yarn_local_cache
+integration/trusted-types/.yarn_local_cache
+integration/forms/.yarn_local_cache
+integration/ng_elements/.yarn_local_cache
+integration/ng_elements_schematics/.yarn_local_cache
+integration/ng_update/.yarn_local_cache
+integration/ng_update_migrations/.yarn_local_cache
+integration/ngcc/.yarn_local_cache
+integration/platform-server/.yarn_local_cache
+integration/service-worker-schema/.yarn_local_cache
+integration/side-effects/.yarn_local_cache
+integration/terser/.yarn_local_cache
+integration/typings_test_ts36/.yarn_local_cache
+integration/typings_test_ts37/.yarn_local_cache
