@@ -225,6 +225,7 @@ groups:
         - crisbeto
         - IgorMinar
         - jelbourn
+        - jessicajaniuk
 
   # =========================================================
   #  Framework: Compiler
@@ -700,6 +701,7 @@ groups:
       users:
         - AndrewKushnir
         - IgorMinar
+        - jessicajaniuk
         # OOO as of 2020-09-28 - pkozlowski-opensource
 
   # =========================================================
