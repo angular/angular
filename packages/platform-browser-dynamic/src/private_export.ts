@@ -8,4 +8,3 @@
 
 export {platformCoreDynamic as ɵplatformCoreDynamic} from './platform_core_dynamic';
 export {INTERNAL_BROWSER_DYNAMIC_PLATFORM_PROVIDERS as ɵINTERNAL_BROWSER_DYNAMIC_PLATFORM_PROVIDERS} from './platform_providers';
-export {ResourceLoaderImpl as ɵResourceLoaderImpl} from './resource_loader/resource_loader_impl';
