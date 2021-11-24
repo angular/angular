@@ -1,6 +1,5 @@
 load("//tools:angular_ts_project.bzl", "ng_ts_project")
 load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
-load("@npm//@bazel/typescript:index.bzl", "ts_config")
 load("//tools:typescript.bzl", "ts_test_project")
 load("//tools:defaults.bzl", "karma_web_test_suite")
 

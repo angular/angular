@@ -1,7 +1,6 @@
 load("@npm//@bazel/typescript:index.bzl", "ts_config")
-load("//tools:typescript.bzl", "ts_test_project")
+load("//tools:typescript.bzl", "ts_project", "ts_test_project")
 load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
-load("//tools:typescript.bzl", "ts_project")
 load("//tools:defaults.bzl", "karma_web_test_suite")
 
 package(default_visibility = ["//visibility:public"])

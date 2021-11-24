@@ -1,4 +1,3 @@
-load("@io_bazel_rules_webtesting//web:web.bzl", "custom_browser")
 load("//tools:typescript.bzl", "ts_test_project")
 load("@npm//@bazel/typescript:index.bzl", "ts_config")
 

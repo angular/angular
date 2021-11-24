@@ -78,3 +78,8 @@ cldr_data_repository(
         "https://github.com/unicode-org/cldr-json/releases/download/39.0.0/cldr-39.0.0-json-full.zip": "a631764b6bb7967fab8cc351aff3ffa3f430a23646899976dd9d65801446def6",
     },
 )
+
+local_repository(
+    name = "angular_devtools",
+    path = "devtools",
+)

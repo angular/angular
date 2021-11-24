@@ -1,11 +1,10 @@
 load("@npm//@bazel/rollup:index.bzl", "rollup_bundle")
 load("@npm//@bazel/terser:index.bzl", "terser_minified")
 load("@io_bazel_rules_sass//:defs.bzl", "sass_binary", "sass_library")
-load("@build_bazel_rules_nodejs//:index.bzl", "pkg_web")
+load("@build_bazel_rules_nodejs//:index.bzl", "js_library", "pkg_web")
 load("@npm//html-insert-assets:index.bzl", "html_insert_assets")
 load("//tools:angular_ts_project.bzl", "ng_ts_project")
 load("//tools:typescript.bzl", "ts_project")
-load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
 
 package(default_visibility = ["//visibility:public"])
 

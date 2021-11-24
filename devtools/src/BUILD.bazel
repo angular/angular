@@ -4,7 +4,6 @@ load("@io_bazel_rules_sass//:defs.bzl", "sass_binary", "sass_library")
 load("@npm//@bazel/rollup:index.bzl", "rollup_bundle")
 load("@npm//history-server:index.bzl", "history_server")
 load("@build_bazel_rules_nodejs//:index.bzl", "pkg_web")
-load("//tools:typescript.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
