@@ -8,10 +8,8 @@
 import {NodeJSFileSystem, setFileSystem} from './src/ngtsc/file_system';
 
 export {AotCompilerHost, AotCompilerHost as StaticReflectorHost, StaticReflector, StaticSymbol} from '@angular/compiler';
-
 export {VERSION} from './src/version';
 
-export * from './src/metadata';
 export * from './src/transformers/api';
 export * from './src/transformers/entry_points';
 
