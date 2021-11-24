@@ -1,10 +1,10 @@
-# Class binding
+# Modifying classes with attribute binding
 
 Use class binding to add and remove CSS class names from an element's `class` attribute.
 
 ## Prerequisites
 
-* TBD
+TBD
 
 ## Binding to a single CSS `class`
 
@@ -90,6 +90,6 @@ The following table summarizes class binding syntax.
 
 ## What’s next
 
-* TBD
+TBD
 
-@reviewed 2021-11-05
+@reviewed 2021-11-24
