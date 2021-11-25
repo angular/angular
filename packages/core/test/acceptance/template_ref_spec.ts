@@ -186,23 +186,13 @@ describe('TemplateRef', () => {
         @ViewChild('templateRef', {static: true}) templateRef!: TemplateRef<any>;
       }
 
-      @NgModule({
-        declarations: [DynamicCmp],
-        entryComponents: [DynamicCmp],
-      })
-      class WithDynamicCmpModule {
-      }
-
       @Component({selector: 'test', template: ''})
       class TestCmp {
         constructor(public cfr: ComponentFactoryResolver) {}
       }
 
       beforeEach(() => {
-        TestBed.configureTestingModule({
-          declarations: [TestCmp],
-          imports: [WithDynamicCmpModule],
-        });
+        TestBed.configureTestingModule({declarations: [TestCmp, DynamicCmp]});
       });
 
       it('should return projectable nodes when provided', () => {

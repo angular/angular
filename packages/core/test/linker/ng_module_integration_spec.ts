@@ -246,11 +246,6 @@ describe('NgModule', () => {
          @NgModule({
            schemas: [CUSTOM_ELEMENTS_SCHEMA],
            declarations: [ComponentUsingInvalidProperty],
-
-           // Note that we need to add the component to `entryComponents`, because of the
-           // `createComp` call below. In Ivy the property validation happens during the
-           //  update phase so we need to create the component, in order for it to run.
-           entryComponents: [ComponentUsingInvalidProperty]
          })
          class SomeModule {
          }
@@ -462,10 +457,7 @@ describe('NgModule', () => {
   describe('directives and pipes', () => {
     describe('declarations', () => {
       it('should be supported in root modules', () => {
-        @NgModule({
-          declarations: [CompUsingModuleDirectiveAndPipe, SomeDirective, SomePipe],
-          entryComponents: [CompUsingModuleDirectiveAndPipe]
-        })
+        @NgModule({declarations: [CompUsingModuleDirectiveAndPipe, SomeDirective, SomePipe]})
         class SomeModule {
         }
 
@@ -477,10 +469,7 @@ describe('NgModule', () => {
       });
 
       it('should be supported in imported modules', () => {
-        @NgModule({
-          declarations: [CompUsingModuleDirectiveAndPipe, SomeDirective, SomePipe],
-          entryComponents: [CompUsingModuleDirectiveAndPipe]
-        })
+        @NgModule({declarations: [CompUsingModuleDirectiveAndPipe, SomeDirective, SomePipe]})
         class SomeImportedModule {
         }
 
@@ -507,8 +496,7 @@ describe('NgModule', () => {
           declarations: [
             ParentCompUsingModuleDirectiveAndPipe, CompUsingModuleDirectiveAndPipe, SomeDirective,
             SomePipe
-          ],
-          entryComponents: [ParentCompUsingModuleDirectiveAndPipe]
+          ]
         })
         class SomeModule {
         }
@@ -526,11 +514,7 @@ describe('NgModule', () => {
         class SomeImportedModule {
         }
 
-        @NgModule({
-          declarations: [CompUsingModuleDirectiveAndPipe],
-          imports: [SomeImportedModule],
-          entryComponents: [CompUsingModuleDirectiveAndPipe]
-        })
+        @NgModule({declarations: [CompUsingModuleDirectiveAndPipe], imports: [SomeImportedModule]})
         class SomeModule {
         }
 
@@ -549,8 +533,7 @@ describe('NgModule', () => {
 
            @NgModule({
              declarations: [CompUsingModuleDirectiveAndPipe],
-             imports: [{ngModule: SomeImportedModule}],
-             entryComponents: [CompUsingModuleDirectiveAndPipe]
+             imports: [{ngModule: SomeImportedModule}]
            })
            class SomeModule {
            }
@@ -571,11 +554,7 @@ describe('NgModule', () => {
         class SomeImportedModule {
         }
 
-        @NgModule({
-          declarations: [CompUsingModuleDirectiveAndPipe],
-          imports: [SomeImportedModule],
-          entryComponents: [CompUsingModuleDirectiveAndPipe]
-        })
+        @NgModule({declarations: [CompUsingModuleDirectiveAndPipe], imports: [SomeImportedModule]})
         class SomeModule {
         }
 
@@ -594,11 +573,7 @@ describe('NgModule', () => {
         class SomeImportedModule {
         }
 
-        @NgModule({
-          declarations: [CompUsingModuleDirectiveAndPipe],
-          imports: [SomeImportedModule],
-          entryComponents: [CompUsingModuleDirectiveAndPipe]
-        })
+        @NgModule({declarations: [CompUsingModuleDirectiveAndPipe], imports: [SomeImportedModule]})
         class SomeModule {
         }
 
@@ -615,11 +590,7 @@ describe('NgModule', () => {
         class SomeImportedModule {
         }
 
-        @NgModule({
-          declarations: [CompUsingModuleDirectiveAndPipe],
-          imports: [SomeImportedModule],
-          entryComponents: [CompUsingModuleDirectiveAndPipe]
-        })
+        @NgModule({declarations: [CompUsingModuleDirectiveAndPipe], imports: [SomeImportedModule]})
         class SomeModule {
         }
 
