@@ -176,9 +176,10 @@
     "gulp-conventional-changelog": "^2.0.35",
     "husky": "7.0.4",
     "inquirer": "^8.0.0",
+    "karma-parallel": "^0.3.1",
     "karma-sauce-launcher": "^4.3.6",
     "madge": "^5.0.0",
-    "sauce-connect": "https://saucelabs.com/downloads/sc-4.6.2-linux.tar.gz",
+    "sauce-connect": "https://saucelabs.com/downloads/sc-4.7.1-linux.tar.gz",
     "semver": "^7.3.5",
     "ts-node": "^10.0.0",
     "tsec": "0.2.0",
@@ -192,6 +193,7 @@
   "// 5": "Ensure a single version of webdriver-manager so it is hoisted as the integration tests depend on it being found at ../../node_modules/webdriver-manager",
   "// 6": "Ensure that `@babel/*` packages match the below versions to avoid conflicts with `types/babel__*`",
   "// 7": "Ensure that transitive dependencies on `https-proxy-agent` are at minimum v5 as older versions patch NodeJS directly, breaking tools like webdriver which is used by the karma-sauce-launcher as an example.",
+  "// 8": "Ensure that a single instance of the `saucelabs` package is used. Protractor and the Karma sauce launcher pull this package as dependency. A single instance allows for e.g. easier patching in the Karma config.",
   "resolutions": {
     "**/graceful-fs": "4.2.8",
     "**/webdriver-manager": "12.1.8",
@@ -202,6 +204,7 @@
     "@babel/template": "7.8.6",
     "@babel/traverse": "7.8.6",
     "@babel/types": "7.8.6",
-    "**/https-proxy-agent": "5.0.0"
+    "**/https-proxy-agent": "5.0.0",
+    "**/saucelabs": "4.7.8"
   }
 }

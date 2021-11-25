@@ -10,8 +10,6 @@ const browserProvidersConf = require('./browser-providers.conf');
 const {generateSeed} = require('./tools/jasmine-seed-generator');
 const {hostname} = require('os');
 
-// Karma configuration
-// Generated on Thu Sep 25 2014 11:52:02 GMT-0700 (PDT)
 module.exports = function(config) {
   const conf = {
     frameworks: ['jasmine'],
@@ -21,7 +19,7 @@ module.exports = function(config) {
         random: true,
         seed: generateSeed('karma-js.conf'),
       },
-      captureConsole: process.env.CI ? false : true,
+      captureConsole: true,
     },
 
     files: [
@@ -133,8 +131,8 @@ module.exports = function(config) {
       maxDuration: 5400,
     },
 
-    // Try "websocket" for a faster transmission first. Fallback to "polling" if necessary.
-    transports: ['websocket', 'polling'],
+    // Always use `polling` for increased communication stability.
+    transports: ['polling'],
 
     port: 9876,
     captureTimeout: 180000,
@@ -151,6 +149,15 @@ module.exports = function(config) {
     set: () => {},
   });
 
+  if (process.env.CIRCLECI) {
+    conf.frameworks.unshift('parallel');
+    conf.plugins.unshift(require('karma-parallel'));
+    conf.parallelOptions = {
+      executors: 2,
+      shardStrategy: 'round-robin',
+    };
+  }
+
   if (process.env['SAUCE_TUNNEL_IDENTIFIER']) {
     console.log(`SAUCE_TUNNEL_IDENTIFIER: ${process.env.SAUCE_TUNNEL_IDENTIFIER}`);
 
@@ -159,6 +166,13 @@ module.exports = function(config) {
     // Setup the Saucelabs plugin so that it can launch browsers using the proper tunnel.
     conf.sauceLabs.build = tunnelIdentifier;
     conf.sauceLabs.tunnelIdentifier = tunnelIdentifier;
+
+    // Patch the `saucelabs` package so that `karma-sauce-launcher` does not attempt downloading
+    // the test logs from upstream and tries re-uploading them with the Karma enhanced details.
+    // This slows-down tests/browser restarting and can decrease stability.
+    // https://github.com/karma-runner/karma-sauce-launcher/blob/59b0c5c877448e064ad56449cd906743721c6b62/src/launcher/launcher.ts#L72-L79.
+    require('saucelabs').default.prototype.downloadJobAsset =
+        () => Promise.resolve('<FAKE-LOGS>');
   }
 
   // For SauceLabs jobs, we set up a domain which resolves to the machine which launched
