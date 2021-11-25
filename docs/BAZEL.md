@@ -107,7 +107,7 @@ Apple+Shift+D on Mac) and click on the green play icon next to the configuration
 
 - Run test: `yarn bazel run packages/core/test:test_web_chromium` or `yarn bazel run packages/core/test:test_web_firefox`
 - Open chrome or firefox at: [http://localhost:9876/debug.html](http://localhost:9876/debug.html)
-- Open the browser's DevTools console to debug the tests (for example by focusing on specific tests via `fit` and/or `fdescribe` and also by adding `debugger` statements in them)
+- Open the browser's DevTools to debug the tests (for example by focusing on specific tests via `fit` and/or `fdescribe` and also by adding `debugger` statements in them)
 
 ### Debugging Bazel rules
 
