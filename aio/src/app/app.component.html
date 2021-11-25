@@ -56,17 +56,21 @@
     </div>
   </mat-sidenav>
 
-  <main class="sidenav-content" [id]="pageId" role="main">
-    <div id="main-content" tabindex="-1"></div>
-    <aio-mode-banner [mode]="deployment.mode" [version]="versionInfo"></aio-mode-banner>
-    <aio-doc-viewer [class.no-animations]="disableAnimations" [doc]="currentDocument" (docReady)="onDocReady()" (docRemoved)="onDocRemoved()" (docInserted)="onDocInserted()" (docRendered)="onDocRendered()">
-    </aio-doc-viewer>
-    <aio-dt *ngIf="dtOn" [(doc)]="currentDocument"></aio-dt>
-  </main>
+  <section class="sidenav-content-container">
 
-  <div *ngIf="hasFloatingToc" class="toc-container no-print" [style.max-height.px]="tocMaxHeight" (wheel)="restrainScrolling($event)">
-    <aio-lazy-ce selector="aio-toc"></aio-lazy-ce>
-  </div>
+    <main class="sidenav-content" [id]="pageId" role="main">
+      <div id="main-content" tabindex="-1"></div>
+      <aio-mode-banner [mode]="deployment.mode" [version]="versionInfo"></aio-mode-banner>
+      <aio-doc-viewer [class.no-animations]="disableAnimations" [doc]="currentDocument" (docReady)="onDocReady()" (docRemoved)="onDocRemoved()" (docInserted)="onDocInserted()" (docRendered)="onDocRendered()">
+      </aio-doc-viewer>
+      <aio-dt *ngIf="dtOn" [(doc)]="currentDocument"></aio-dt>
+    </main>
+
+    <div *ngIf="hasFloatingToc" class="toc-container no-print" [style.max-height.px]="tocMaxHeight" (wheel)="restrainScrolling($event)">
+      <aio-lazy-ce selector="aio-toc"></aio-lazy-ce>
+    </div>
+
+  </section>
 
   <footer class="no-print">
     <aio-footer [nodes]="footerNodes" [versionInfo]="versionInfo"></aio-footer>
