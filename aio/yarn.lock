@@ -11619,10 +11619,10 @@ tsconfig-paths@^3.11.0:
     minimist "^1.2.0"
     strip-bom "^3.0.0"
 
-tsec@^0.1.5:
-  version "0.1.11"
-  resolved "https://registry.yarnpkg.com/tsec/-/tsec-0.1.11.tgz#d24d0b36bfd73c83bf39db4211d29a0469457da4"
-  integrity sha512-GzUW2kyV8UgmEp0NPkcxsnlXimJj02kchmVde6FnzUfvpAp+l36MKT2swcCd0aS8QWfqaXNckXrFtjZhIGJWkw==
+tsec@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/tsec/-/tsec-0.2.0.tgz#f8417b6929eaf71c61ca9593e96f1f2f94cbc9b9"
+  integrity sha512-fk70XZHb7AIcPI6PbtlHp/rXbca4G+ocfjJxc4M3daf66VUsQc82WppqD0jle5FaqVLRLV37ukmwjCOSjXdI+A==
   dependencies:
     glob "^7.1.1"
     minimatch "^3.0.3"

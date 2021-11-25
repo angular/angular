@@ -173,7 +173,7 @@
     "timezone-mock": "^1.1.3",
     "tree-kill": "^1.1.0",
     "ts-node": "^10.0.0",
-    "tsec": "^0.1.5",
+    "tsec": "^0.2.0",
     "tslint": "~6.1.3",
     "typescript": "~4.5.2",
     "uglify-js": "^3.13.3",
