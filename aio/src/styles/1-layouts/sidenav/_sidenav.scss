@@ -13,13 +13,17 @@ mat-sidenav-container.sidenav-container {
   transform: none;
 
   &.has-floating-toc {
-    .sidenav-content {
-      margin-right: 18vw;
+    .sidenav-content-container {
+      padding-right: 18vw;
     }
   }
 
-  .sidenav-content {
+  .sidenav-content-container {
     height: auto;
+
+    .sidenav-content {
+      overflow-x: auto;
+    }
   }
 
   mat-sidenav.sidenav {
