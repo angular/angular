@@ -854,20 +854,13 @@ describe('View injector', () => {
         constructor(public vcr: ViewContainerRef) {}
       }
 
-      @NgModule({
-        declarations: [TestComp],
-        entryComponents: [TestComp],
-      })
-      class TestModule {
-      }
-
       const testInjector = <Injector>{
         get: (token: any, notFoundValue: any) =>
             token === 'someToken' ? 'someNewValue' : notFoundValue
       };
 
-      const compFactory = TestBed.configureTestingModule({imports: [TestModule]})
-                              .get(ComponentFactoryResolver)
+      const compFactory = TestBed.configureTestingModule({declarations: [TestComp]})
+                              .inject(ComponentFactoryResolver)
                               .resolveComponentFactory(TestComp);
       const component = compFactory.create(testInjector);
       expect(component.instance.vcr.parentInjector.get('someToken')).toBe('someNewValue');
@@ -946,17 +939,11 @@ describe('View injector', () => {
     class SomeComponent {
     }
 
-    @NgModule(
-        {declarations: [SomeComponent], exports: [SomeComponent], entryComponents: [SomeComponent]})
-    class SomeModule {
-    }
-
     @Component({selector: 'listener-and-on-destroy', template: ''})
     class ComponentThatLoadsAnotherComponentThenMovesIt {
       constructor(
           private viewContainerRef: ViewContainerRef,
           private componentFactoryResolver: ComponentFactoryResolver) {}
-
 
       ngOnInit() {
         // Dynamically load some component.
@@ -978,8 +965,7 @@ describe('View injector', () => {
 
     it('should not error when destroying a component that has been moved in the DOM', () => {
       TestBed.configureTestingModule({
-        imports: [SomeModule],
-        declarations: [ComponentThatLoadsAnotherComponentThenMovesIt],
+        declarations: [ComponentThatLoadsAnotherComponentThenMovesIt, SomeComponent],
       });
       const fixture = createComponentFixture(`<listener-and-on-destroy></listener-and-on-destroy>`);
       fixture.detectChanges();

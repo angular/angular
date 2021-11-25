@@ -66,7 +66,6 @@ class SomeComponent {
         providers: [{provide: ErrorHandler, useValue: errorHandler}, options.providers || []],
         imports: [platformModule],
         declarations: [options.component || SomeComponent],
-        entryComponents: [options.component || SomeComponent],
         bootstrap: options.bootstrap || []
       })
       class MyModule {
@@ -92,7 +91,6 @@ class SomeComponent {
              @NgModule({
                providers: [{provide: helloToken, useValue: 'component'}],
                declarations: [SomeComponent],
-               entryComponents: [SomeComponent],
              })
              class SomeModule {
              }
@@ -123,7 +121,6 @@ class SomeComponent {
              @NgModule({
                providers: [{provide: helloToken, useValue: 'component'}],
                declarations: [SomeComponent],
-               entryComponents: [SomeComponent],
              })
              class SomeModule {
              }

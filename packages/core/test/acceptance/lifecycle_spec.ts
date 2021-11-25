@@ -1569,15 +1569,7 @@ describe('onInit', () => {
       }
     }
 
-    // View Engine requires that DynamicComp be in entryComponents.
-    @NgModule({
-      declarations: [App, MyComp, DynamicComp],
-      entryComponents: [DynamicComp, App],
-    })
-    class AppModule {
-    }
-
-    TestBed.configureTestingModule({imports: [AppModule]});
+    TestBed.configureTestingModule({declarations: [App, MyComp, DynamicComp]});
 
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();

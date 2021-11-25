@@ -117,15 +117,7 @@ describe('projection', () => {
     class MultipleContentTagsComponent {
     }
 
-    @NgModule({
-      declarations: [MultipleContentTagsComponent],
-      entryComponents: [MultipleContentTagsComponent],
-      schemas: [NO_ERRORS_SCHEMA],
-    })
-    class MyModule {
-    }
-
-    TestBed.configureTestingModule({imports: [MyModule]});
+    TestBed.configureTestingModule({declarations: [MultipleContentTagsComponent]});
     const injector: Injector = TestBed.inject(Injector);
 
     const componentFactoryResolver: ComponentFactoryResolver =
@@ -710,18 +702,14 @@ describe('projection', () => {
       }
     }
 
-    @NgModule({
-      declarations: [WithContentCmpt, InsertTplRef, DelayedInsertTplRef, ReProjectCmpt],
-      entryComponents: [WithContentCmpt]
-    })
-    class TestModule {
-    }
-
     let fixture: ComponentFixture<TestComponent>;
 
     function createCmptInstance(
         tpl: string, projectableNodes: any[][]): ComponentRef<WithContentCmpt> {
-      TestBed.configureTestingModule({declarations: [TestComponent], imports: [TestModule]});
+      TestBed.configureTestingModule({
+        declarations:
+            [WithContentCmpt, InsertTplRef, DelayedInsertTplRef, ReProjectCmpt, TestComponent],
+      });
       TestBed.overrideTemplate(WithContentCmpt, tpl);
 
       fixture = TestBed.createComponent(TestComponent);

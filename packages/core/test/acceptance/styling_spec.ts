@@ -2651,14 +2651,7 @@ describe('styling', () => {
          prop = 'a';
        }
 
-       @NgModule({
-         entryComponents: [ChildCmp],
-         declarations: [ChildCmp],
-       })
-       class ChildCmpModule {
-       }
-
-       TestBed.configureTestingModule({declarations: [App, ParentCmp], imports: [ChildCmpModule]});
+       TestBed.configureTestingModule({declarations: [App, ParentCmp, ChildCmp]});
        const fixture = TestBed.createComponent(App);
        fixture.detectChanges(false);
 
@@ -2730,14 +2723,7 @@ describe('styling', () => {
          @ViewChild('parent', {static: true}) public parent: ParentCmp|null = null;
        }
 
-       @NgModule({
-         entryComponents: [ChildCmp],
-         declarations: [ChildCmp],
-       })
-       class ChildCmpModule {
-       }
-
-       TestBed.configureTestingModule({declarations: [App, ParentCmp], imports: [ChildCmpModule]});
+       TestBed.configureTestingModule({declarations: [App, ParentCmp, ChildCmp]});
        const fixture = TestBed.createComponent(App);
        fixture.detectChanges(false);
 
