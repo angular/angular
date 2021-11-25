@@ -18,9 +18,6 @@ import { ContainerComponent } from './container.component';
     HeroDetailDirective,
     // #enddocregion hero-detail-upgrade
     ContainerComponent
-  ],
-  entryComponents: [
-    ContainerComponent
   // #docregion hero-detail-upgrade
   ]
 })

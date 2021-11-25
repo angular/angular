@@ -16,7 +16,6 @@ import { SharedModule } from './shared/shared.module';
     AppComponent,
     HeroesComponent
   ],
-  exports: [ AppComponent ],
-  entryComponents: [ AppComponent ]
+  exports: [ AppComponent ]
 })
 export class AppModule {}

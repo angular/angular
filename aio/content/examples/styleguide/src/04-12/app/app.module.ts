@@ -16,7 +16,6 @@ import { CoreModule } from './core/core.module';
     AppComponent,
     HeroesComponent
   ],
-  exports: [ AppComponent ],
-  entryComponents: [ AppComponent ]
+  exports: [ AppComponent ]
 })
 export class AppModule {}

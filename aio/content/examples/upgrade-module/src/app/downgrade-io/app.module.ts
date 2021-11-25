@@ -16,9 +16,6 @@ import { HeroDetailComponent } from './hero-detail.component';
   ],
   declarations: [
     HeroDetailComponent
-  ],
-  entryComponents: [
-    HeroDetailComponent
   ]
 })
 export class AppModule {

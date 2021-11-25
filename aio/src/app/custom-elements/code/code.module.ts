@@ -7,7 +7,6 @@ import { PrettyPrinter } from './pretty-printer.service';
 @NgModule({
   imports: [ CommonModule, MatSnackBarModule ],
   declarations: [ CodeComponent ],
-  entryComponents: [ CodeComponent ],
   exports: [ CodeComponent ],
   providers: [ PrettyPrinter ]
 })

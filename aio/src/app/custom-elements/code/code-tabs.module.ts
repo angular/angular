@@ -9,8 +9,7 @@ import { WithCustomElementComponent } from '../element-registry';
 @NgModule({
   imports: [ CommonModule, MatCardModule, MatTabsModule, CodeModule ],
   declarations: [ CodeTabsComponent ],
-  exports: [ CodeTabsComponent ],
-  entryComponents: [ CodeTabsComponent ]
+  exports: [ CodeTabsComponent ]
 })
 export class CodeTabsModule implements WithCustomElementComponent {
   customElementComponent: Type<any> = CodeTabsComponent;

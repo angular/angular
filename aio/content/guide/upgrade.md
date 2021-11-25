@@ -381,8 +381,6 @@ If you want to only have change detection run whenthe inputs change, you can set
 
 Because `HeroDetailComponent` is an Angular component, you must also add it to the `declarations` in the `AppModule`.
 
-And because this component is being used from the AngularJS module, and is an entry point into the Angular application, you must add it to the `entryComponents` for the NgModule.
-
 <code-example path="upgrade-module/src/app/downgrade-static/app.module.ts" region="ngmodule" header="app.module.ts"></code-example>
 
 <div class="alert is-helpful">
@@ -777,7 +775,7 @@ angular.module('myHybridApp', [...])
 
 Once you introduce the Angular Router, using the Angular Router triggers navigations through the unified location service, still providing a single source for navigating with AngularJS and Angular.
 
-<!--TODO: 
+<!--TODO:
 Correctly document how to use AOT with SystemJS-based `ngUpgrade` apps (or better yet update the `ngUpgrade` examples/guides to use `@angular/cli`).
 See [https://github.com/angular/angular/issues/35989][GithubAngularAngularIssues35989].
 
@@ -1372,7 +1370,7 @@ The `as angular.IDirectiveFactory` cast tells the TypeScript compiler that the r
 <code-example path="upgrade-phonecat-2-hybrid/app/phone-list/phone-list.component.ts" region="downgrade-component" header="app/phone-list/phone-list.component.ts"></code-example>
 
 The new `PhoneListComponent` uses the Angular `ngModel` directive, located in the `FormsModule`.
-Add the `FormsModule` to `NgModule` imports, declare the new `PhoneListComponent` and finally add it to `entryComponents` since you downgraded it:
+Add the `FormsModule` to `NgModule` imports and declare the new `PhoneListComponent` since you downgraded it:
 
 <code-example path="upgrade-phonecat-2-hybrid/app/app.module.ts" region="phonelist" header="app.module.ts"></code-example>
 
@@ -1419,7 +1417,7 @@ There are several notable changes here:
     Unlike in AngularJS, Angular expressions do not fail silently when you try to refer to properties on undefined objects.
     You need to be explicit about cases where this is expected.
 
-Add `PhoneDetailComponent` component to the `NgModule` *declarations* and *entryComponents*:
+Add `PhoneDetailComponent` component to the `NgModule` *declarations*:
 
 <code-example path="upgrade-phonecat-2-hybrid/app/app.module.ts" region="phonedetail" header="app.module.ts"></code-example>
 
@@ -1549,7 +1547,6 @@ Switch the bootstrap method of the application from the `UpgradeModule` to the A
 If you haven't already, remove all references to the `UpgradeModule` from `app.module.ts`, as well as any [factory provider][AioGuideUpgradeMakingAngularjsDependenciesInjectableToAngular] for AngularJS services, and the `app/ajs-upgraded-providers.ts` file.
 
 Also remove any `downgradeInjectable()` or `downgradeComponent()` you find, together with the associated AngularJS factory or directive declarations.
-Since you no longer have downgraded components, you no longer list them in `entryComponents`.
 
 <code-example path="upgrade-phonecat-3-final/app/app.module.ts" header="app.module.ts"></code-example>
 
