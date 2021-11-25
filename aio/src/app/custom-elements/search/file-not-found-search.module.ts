@@ -6,8 +6,7 @@ import { WithCustomElementComponent } from '../element-registry';
 
 @NgModule({
   imports: [ CommonModule, SharedModule ],
-  declarations: [ FileNotFoundSearchComponent ],
-  entryComponents: [ FileNotFoundSearchComponent ]
+  declarations: [ FileNotFoundSearchComponent ]
 })
 export class FileNotFoundSearchModule implements WithCustomElementComponent {
   customElementComponent: Type<any> = FileNotFoundSearchComponent;

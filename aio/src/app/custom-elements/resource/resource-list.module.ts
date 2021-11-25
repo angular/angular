@@ -7,7 +7,6 @@ import { WithCustomElementComponent } from '../element-registry';
 @NgModule({
   imports: [ CommonModule ],
   declarations: [ ResourceListComponent ],
-  entryComponents: [ ResourceListComponent ],
   providers: [ ResourceService ]
 })
 export class ResourceListModule implements WithCustomElementComponent {

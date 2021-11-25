@@ -428,7 +428,6 @@ import { FormsModule } from '@angular/forms';
   imports: [BrowserModule, FormsModule],
   declarations: demoDeclarations,
   providers:    demoProviders,
-  entryComponents: [DemoComponent],
   bootstrap:       [DemoComponent]
 })
 export class DemoModule { }
