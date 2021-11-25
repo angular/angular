@@ -760,6 +760,11 @@
             "title": "Webucator",
             "url": "https://www.webucator.com/webdev-training/angular-training"
           },
+          "decoded-frontend": {
+            "desc": "YouTube Channel about Angular & Web Development",
+            "title": "Decoded Frontend",
+            "url": "https://www.youtube.com/DecodedFrontend"
+          },
           "-acceleb": {
             "desc": "Customized, Instructor-Led Angular Training",
             "title": "Accelebrate",
