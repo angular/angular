@@ -1139,10 +1139,10 @@ groups:
       - *can-be-global-docs-approved
       - >
         contains_any_globs(files, [
-          'aio/*',
+          'aio/{.*,*}',
           'aio/aio-builds-setup/**',
           'aio/content/cli-src/**',
-          'aio/content/examples/*',
+          'aio/content/examples/{.*,*}',
           'aio/scripts/**',
           'aio/src/**',
           'aio/tests/**',
@@ -1173,7 +1173,7 @@ groups:
       - *can-be-global-approved
       - >
         contains_any_globs(files, [
-          '*',
+          '{.*,*}',
           '.circleci/**',
           '.devcontainer/**',
           '.github/**',
@@ -1181,15 +1181,15 @@ groups:
           '.ng-dev/**',
           '.vscode/**',
           '.yarn/**',
-          'docs/*.md',
+          'docs/{.*,*}.md',
           'docs/images/**',
-          'goldens/*',
+          'goldens/{.*,*}',
           'goldens/public-api/manage.js',
-          'modules/*',
-          'packages/*',
+          'modules/{.*,*}',
+          'packages/{.*,*}',
           'packages/examples/test-utils/**',
           'packages/private/**',
-          'packages/examples/*',
+          'packages/examples/{.*,*}',
           'scripts/**',
           'third_party/**',
           'tools/build/**',
@@ -1207,7 +1207,7 @@ groups:
           'tools/tslint/**',
           'tools/utils/**',
           'tools/yarn/**',
-          'tools/*',
+          'tools/{.*,*}',
           '**/*.bzl'
           ])
     reviewers:
@@ -1232,12 +1232,12 @@ groups:
           'goldens/public-api/**',
           'docs/NAMING.md',
           'aio/content/guide/angular-package-format.md',
-          'aio/content/errors/*.md',
+          'aio/content/errors/{.*,*}.md',
           'aio/content/guide/glossary.md',
           'aio/content/guide/styleguide.md',
           'aio/content/examples/errors/**',
           'aio/content/examples/styleguide/**',
-          'aio/content/images/guide/styleguide/*'
+          'aio/content/images/guide/styleguide/{.*,*}'
           ])
     reviewers:
       users:
