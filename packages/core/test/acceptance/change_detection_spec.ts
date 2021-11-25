@@ -135,17 +135,7 @@ describe('change detection', () => {
         noop() {}
       }
 
-      // We need to declare a module so that we can specify `entryComponents`
-      // for when the test is run against ViewEngine.
-      @NgModule({
-        declarations: [App, ViewManipulation, DynamicComp],
-        exports: [App, ViewManipulation, DynamicComp],
-        entryComponents: [DynamicComp]
-      })
-      class AppModule {
-      }
-
-      TestBed.configureTestingModule({imports: [AppModule]});
+      TestBed.configureTestingModule({declarations: [App, ViewManipulation, DynamicComp]});
       const fixture = TestBed.createComponent(App);
       const vm: ViewManipulation = fixture.debugElement.childNodes[0].references['vm'];
       const factory = TestBed.get(ComponentFactoryResolver).resolveComponentFactory(DynamicComp);
@@ -201,7 +191,7 @@ describe('change detection', () => {
       class DynamicCmpt {
       }
 
-      @NgModule({declarations: [DynamicCmpt], entryComponents: [DynamicCmpt]})
+      @NgModule({declarations: [DynamicCmpt]})
       class DynamicModule {
       }
 

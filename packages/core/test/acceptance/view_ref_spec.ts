@@ -37,11 +37,7 @@ describe('ViewRef', () => {
       }
     }
 
-    @NgModule({declarations: [App, DynamicComponent], entryComponents: [DynamicComponent]})
-    class MyTestModule {
-    }
-
-    TestBed.configureTestingModule({imports: [MyTestModule]});
+    TestBed.configureTestingModule({declarations: [App, DynamicComponent]});
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -96,11 +92,7 @@ describe('ViewRef', () => {
       }
     }
 
-    @NgModule({declarations: [App, DynamicComponent], entryComponents: [DynamicComponent]})
-    class MyTestModule {
-    }
-
-    TestBed.configureTestingModule({imports: [MyTestModule]});
+    TestBed.configureTestingModule({declarations: [App, DynamicComponent]});
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
     fixture.componentInstance.create();
@@ -134,11 +126,7 @@ describe('ViewRef', () => {
       }
     }
 
-    @NgModule({declarations: [App, DynamicComponent], entryComponents: [DynamicComponent]})
-    class MyTestModule {
-    }
-
-    TestBed.configureTestingModule({imports: [MyTestModule]});
+    TestBed.configureTestingModule({declarations: [App, DynamicComponent]});
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
     fixture.componentInstance.create();

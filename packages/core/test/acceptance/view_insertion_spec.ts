@@ -504,15 +504,8 @@ describe('view insertion', () => {
         }
 
 
-        @NgModule({
-          declarations: [TestCmpt, ViewInsertingDir, DynamicComponent],
-          imports: [CommonModule],
-          entryComponents: [DynamicComponent]
-        })
-        class TestModule {
-        }
-
-        TestBed.configureTestingModule({imports: [TestModule]});
+        TestBed.configureTestingModule(
+            {declarations: [TestCmpt, ViewInsertingDir, DynamicComponent]});
 
         const fixture = TestBed.createComponent(TestCmpt);
         fixture.detectChanges();
@@ -553,16 +546,8 @@ describe('view insertion', () => {
            }
          }
 
-         @NgModule({
-           declarations: [DynamicComponent],
-           entryComponents: [DynamicComponent],
-         })
-         class TestModule {
-         }
-
          TestBed.configureTestingModule({
-           declarations: [AppComponent],
-           imports: [TestModule],
+           declarations: [AppComponent, DynamicComponent],
          });
          const fixture = TestBed.createComponent(AppComponent);
          fixture.detectChanges();

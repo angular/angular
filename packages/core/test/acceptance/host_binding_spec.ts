@@ -157,14 +157,7 @@ describe('host bindings', () => {
         prop2 = 1;
       }
 
-      @NgModule({
-        entryComponents: [ChildCmp],
-        declarations: [ChildCmp],
-      })
-      class ChildCmpModule {
-      }
-
-      TestBed.configureTestingModule({declarations: [App, ParentCmp], imports: [ChildCmpModule]});
+      TestBed.configureTestingModule({declarations: [App, ParentCmp, ChildCmp]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 

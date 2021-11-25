@@ -522,8 +522,7 @@ describe('di', () => {
               <ng-container #childOrigin></ng-container>
               <ng-container #childOriginWithDirB dirB></ng-container>
             </div>
-          </projector>`,
-          entryComponents: [Child]
+          </projector>`
         })
         class MyApp {
           @ViewChild('childOrigin', {read: ViewContainerRef, static: true})
@@ -2552,16 +2551,8 @@ describe('di', () => {
           }
         }
 
-        // this module is needed, so that View Engine can generate factory for ChildComp
-        @NgModule({
-          declarations: [DirectiveA, RootComp, ChildComp],
-          entryComponents: [RootComp, ChildComp],
-        })
-        class ModuleA {
-        }
-
         TestBed.configureTestingModule({
-          imports: [ModuleA],
+          declarations: [DirectiveA, RootComp, ChildComp],
           providers: [ServiceA],
         });
 

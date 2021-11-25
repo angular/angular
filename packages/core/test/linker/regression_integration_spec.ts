@@ -347,12 +347,7 @@ describe('regressions', () => {
     class App {
     }
 
-    @NgModule({declarations: [App], entryComponents: [App]})
-    class MyModule {
-    }
-
-    const modRef = TestBed.configureTestingModule({imports: [MyModule]}).get(NgModuleRef) as
-        NgModuleRef<MyModule>;
+    const modRef = TestBed.configureTestingModule({declarations: [App]}).inject(NgModuleRef);
     const compRef =
         modRef.componentFactoryResolver.resolveComponentFactory(App).create(Injector.NULL);
 
