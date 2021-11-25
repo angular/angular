@@ -105,9 +105,9 @@ Apple+Shift+D on Mac) and click on the green play icon next to the configuration
 
 ### Debugging a Karma Test
 
-- Run test: `yarn bazel run packages/core/test:test_web`
-- Open chrome at: [http://localhost:9876/debug.html](http://localhost:9876/debug.html)
-- Open chrome inspector
+- Run test: `yarn bazel run packages/core/test:test_web_chromium` or `yarn bazel run packages/core/test:test_web_firefox`
+- Open chrome or firefox at: [http://localhost:9876/debug.html](http://localhost:9876/debug.html)
+- Open the browser's console to see the tests run
 
 ### Debugging Bazel rules
 
