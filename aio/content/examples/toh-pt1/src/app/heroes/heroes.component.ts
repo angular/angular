@@ -2,7 +2,9 @@
 // #docregion, v1
 import { Component, OnInit } from '@angular/core';
 // #enddocregion v1
+// #docregion import-interface
 import { Hero } from '../hero';
+// #enddocregion import-interface
 // #docregion v1
 
 @Component({
@@ -17,11 +19,12 @@ export class HeroesComponent implements OnInit {
   hero = 'Windstorm';
   // #enddocregion add-hero
   */
-  // #docregion
+  // #docregion, hero-interface
   hero: Hero = {
     id: 1,
     name: 'Windstorm'
   };
+  // #enddocregion hero-interface
   // #docregion v1
 
   constructor() { }

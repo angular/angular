@@ -17,7 +17,6 @@ In this tutorial, you'll do the following:
 
 1. Use the Angular CLI to create a new component.
 1. Update the application view to display the component.
-1. Learn how to pass data between a parent component and a child component using Angular's `@Input` and `@Output` decorators.
 
 ## Create a heroes component
 
@@ -49,7 +48,7 @@ Open the component file, `heroes.component.ts`. The contents of this file should
 1. `templateUrl`&mdash; the location of the component's template file. In this tutorial, the file is `heroes.component.html`.
 1. `styleUrls`&mdash; the location of the component's private CSS styles. In this tutorial, the file is `heroes.component.css`.
 
-## Update the heroes component
+## Update the `heroes` component
 
 In this section, you'll add some additional functionality to the new `heroes` component. You'll add a new property, `hero` and bind that to the component's template. You'll also update your application to include the `heroes` component as a child component.
 
@@ -62,7 +61,7 @@ To update the `heroes` component
 
 ## Show the `HeroesComponent` view
 
-At this point, you can now display the heroes component in your application.
+At this point, you can now display the `heroes` component in your application.
 
 To display the component:
 
@@ -73,4 +72,25 @@ To display the component:
 
 Your application should update to display the name of a single hero, `Windstorm`.
 
-<!-- TODO Add Feature Component, Hero Details -->
+## Expanding the `heroes` component
+
+In this section, you'll define an interface for use within the `heroes` component. You'll then update the `heroes` component to use this new interface. These additions support additional features made in other Tour of Heroes tutorials.
+
+To expand the `heroes` component:
+
+1. From the terminal window in your Stackblitz project, create a new interface, `hero`.
+   <code-example language="sh">
+   ng generate interface hero
+   </code-example>
+1. Open the newly created `hero.ts` file and update its contents with the following code.
+   <code-example path="toh-pt1/src/app/hero.ts" header="src/app/heroes/hero.ts"></code-example>
+1. Open `heroes.component.ts` file.
+1. Add an `import` statement to import the `Hero` interface.
+   <code-example path="toh-pt1/src/app/heroes/heroes.component.ts" header="src/app/heroes/heroes.component.ts" region="import-interface"></code-example>
+1. Refactor the component's `hero` property to be of type `Hero`, with an initial ID of `1` and the name `Windstorm`.
+   <code-example path="toh-pt1/src/app/heroes/heroes.component.ts" header="src/app/heroes/heroes.component.ts" region="hero-interface"></code-example>
+1. Update the template for the `heroes` component to display the properties of a `hero` object.
+   <code-example path="toh-pt1/src/app/heroes/heroes.component.1.html" region="show-hero-2" header="heroes.component.html (HeroesComponent's template)"></code-example>
+
+Notice that the application updates to display the new information.
+

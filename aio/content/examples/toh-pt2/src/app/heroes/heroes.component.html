@@ -14,12 +14,9 @@
 <div *ngIf="selectedHero">
 
   <!-- #docregion selectedHero-details -->
-  <h2>{{selectedHero.name | uppercase}} Details</h2>
+  <h2>{{selectedHero.name }} Details</h2>
   <div><span>id: </span>{{selectedHero.id}}</div>
-  <div>
-    <label for="hero-name">Hero name: </label>
-    <input id="hero-name" [(ngModel)]="selectedHero.name" placeholder="name">
-  </div>
+  <div><span>name: </span>{{selectedHero.name}}</div>
   <!-- #enddocregion selectedHero-details -->
 
 </div>
