@@ -16,9 +16,6 @@ import { ContainerComponent } from './container.component';
   declarations: [
     ContainerComponent,
     HeroDetailDirective
-  ],
-  entryComponents: [
-    ContainerComponent
   ]
 })
 export class AppModule {

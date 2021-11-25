@@ -17,10 +17,6 @@ import { AdService } from './ad.service';
     HeroProfileComponent,
     AdDirective
   ],
-  entryComponents: [
-    HeroJobAdComponent,
-    HeroProfileComponent
-  ],
   bootstrap: [ AppComponent ]
 })
 export class AppModule { }

@@ -21,9 +21,6 @@ import { heroesServiceProvider } from './ajs-upgraded-providers';
   // #enddocregion register
   declarations: [
     HeroDetailComponent
-  ],
-  entryComponents: [
-    HeroDetailComponent
   ]
 // #docregion register
 })

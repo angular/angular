@@ -50,11 +50,7 @@ import { PhoneDetailComponent } from './phone-detail/phone-detail.component';
     CheckmarkPipe
     // #docregion phonelist, phonedetail
   ],
-  entryComponents: [
-    PhoneListComponent,
-    // #enddocregion phonelist
-    PhoneDetailComponent
-  ],
+  // #enddocregion phonelist
   // #docregion phone, routeparams
   providers: [
     Phone,
