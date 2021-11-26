@@ -249,7 +249,8 @@ describe('animation integration tests using web animations', function() {
                 overflow:hidden;
               }
               .list .inner {
-                line-height:50px;
+                box-sizing: border-box;
+                height: 50px;
               }
             `],
           template: `

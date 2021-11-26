@@ -7,8 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {Component, Directive, ElementRef, EventEmitter, NgModule, Output, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
-import {Input} from '@angular/core/src/metadata';
+import {Component, Directive, ElementRef, EventEmitter, Input, NgModule, Output, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 

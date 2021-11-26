@@ -127,7 +127,8 @@ describe('text instructions', () => {
     fixture.detectChanges();
     const div = fixture.nativeElement.querySelector('div');
 
-    expect(div.innerHTML).toBe('function foo() { }');
+    expect(div.innerHTML).toBe(fixture.componentInstance.test.toString());
+    expect(div.innerHTML).toContain('foo');
   });
 
   it('should stringify an object using its toString method', () => {
