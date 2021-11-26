@@ -19,10 +19,11 @@ import {DecorationAnalyzer} from '../../src/analysis/decoration_analyzer';
 import {NgccReferencesRegistry} from '../../src/analysis/ngcc_references_registry';
 import {UmdReflectionHost} from '../../src/host/umd_host';
 import {UmdRenderingFormatter} from '../../src/rendering/umd_rendering_formatter';
-import {AdditionalFormatOptions, createUmdModuleFactory, ParenthesisFormat, WrapperFunctionFormat} from '../helpers/umd_utils';
+import {AdditionalFormatOptions, testForEachUmdFormat, WrapperFunctionFormat} from '../helpers/umd_utils';
 import {makeTestEntryPointBundle} from '../helpers/utils';
 
-interface TestFileSpec extends Omit<TestFile, 'contents'> {
+interface TestFileSpec extends Omit<TestFile, 'name'|'contents'> {
+  name: string;
   contents: {
     preamble?: string; moduleName: string; dependencies: string[]; factoryBody: string;
     additionalOptions?: AdditionalFormatOptions;
@@ -52,32 +53,32 @@ function setup(file: TestFile) {
 }
 
 runInEachFileSystem(() => {
-  describe('UmdRenderingFormatter', () => {
-    let _: typeof absoluteFrom;
-    let PROGRAM_FILE_SPEC: TestFileSpec;
-    let PROGRAM_DECORATE_HELPER_FILE_SPEC: TestFileSpec;
-    let PROGRAM_WITH_GLOBAL_INITIALIZER_FILE_SPEC: TestFileSpec;
+  describe(
+      'UmdRenderingFormatter', testForEachUmdFormat(({createUmdModule, wrapperFunctionFormat}) => {
+        let _: typeof absoluteFrom;
+        let PROGRAM: TestFile;
+        let PROGRAM_DECORATE_HELPER: TestFile;
+        let PROGRAM_WITH_GLOBAL_INITIALIZER: TestFile;
 
-    beforeEach(() => {
-      _ = absoluteFrom;
+        const formatFactory = (spec: TestFileSpec): TestFile => ({
+          ...spec,
+          name: _(spec.name),
+          contents: `${spec.contents.preamble ?? ''}\n` +
+              createUmdModule(
+                        spec.contents.moduleName, spec.contents.dependencies,
+                        spec.contents.factoryBody, spec.contents.additionalOptions),
+        });
 
-      PROGRAM_WITH_GLOBAL_INITIALIZER_FILE_SPEC = {
-        name: _('/node_modules/test-package/some/file.js'),
-        contents: {
-          moduleName: 'file',
-          dependencies: ['some-side-effect', '/local-dep', '@angular/core'],
-          factoryBody: '',
-          additionalOptions: {hasGlobalInitializer: true},
-        },
-      };
+        beforeEach(() => {
+          _ = absoluteFrom;
 
-      PROGRAM_FILE_SPEC = {
-        name: _('/node_modules/test-package/some/file.js'),
-        contents: {
-          preamble: '/* A copyright notice */',
-          moduleName: 'file',
-          dependencies: ['some-side-effect', '/local-dep', '@angular/core'],
-          factoryBody: `
+          PROGRAM = formatFactory({
+            name: '/node_modules/test-package/some/file.js',
+            contents: {
+              preamble: '/* A copyright notice */',
+              moduleName: 'file',
+              dependencies: ['some-side-effect', '/local-dep', '@angular/core'],
+              factoryBody: `
 var A = (function() {
   function A() {}
   A.decorators = [
@@ -123,17 +124,15 @@ exports.C = C;
 exports.NoIife = NoIife;
 exports.BadIife = BadIife;
 `,
-        },
-      };
-
-
-      PROGRAM_DECORATE_HELPER_FILE_SPEC = {
-        name: _('/node_modules/test-package/some/file.js'),
-        contents: {
-          preamble: '/* A copyright notice */',
-          moduleName: 'file',
-          dependencies: ['/tslib', '@angular/core'],
-          factoryBody: `
+            },
+          });
+          PROGRAM_DECORATE_HELPER = formatFactory({
+            name: '/node_modules/test-package/some/file.js',
+            contents: {
+              preamble: '/* A copyright notice */',
+              moduleName: 'file',
+              dependencies: ['/tslib', '@angular/core'],
+              factoryBody: `
   var OtherA = function () { return function (node) { }; };
   var OtherB = function () { return function (node) { }; };
   var A = /** @class */ (function () {
@@ -178,34 +177,21 @@ exports.BadIife = BadIife;
   exports.D = D;
   // Some other content
 `,
-        },
-      };
-    });
-
-    [ParenthesisFormat.AroundFunction, ParenthesisFormat.AroundIife].forEach(parenFormat => {
-      const createUmdModule = createUmdModuleFactory(WrapperFunctionFormat.Rollup, parenFormat);
-      const formatFactory = (spec: TestFileSpec): TestFile => ({
-        ...spec,
-        contents: `${spec.contents.preamble ?? ''}\n` +
-            createUmdModule(
-                      spec.contents.moduleName, spec.contents.dependencies,
-                      spec.contents.factoryBody, spec.contents.additionalOptions),
-      });
-
-      describe(`(when dealing with ${parenFormat})`, () => {
-        let PROGRAM: TestFile;
-        let PROGRAM_DECORATE_HELPER: TestFile;
-        let PROGRAM_WITH_GLOBAL_INITIALIZER: TestFile;
-
-        beforeEach(() => {
-          PROGRAM = formatFactory(PROGRAM_FILE_SPEC);
-          PROGRAM_DECORATE_HELPER = formatFactory(PROGRAM_DECORATE_HELPER_FILE_SPEC);
-          PROGRAM_WITH_GLOBAL_INITIALIZER =
-              formatFactory(PROGRAM_WITH_GLOBAL_INITIALIZER_FILE_SPEC);
+            },
+          });
+          PROGRAM_WITH_GLOBAL_INITIALIZER = formatFactory({
+            name: '/node_modules/test-package/some/file.js',
+            contents: {
+              moduleName: 'file',
+              dependencies: ['some-side-effect', '/local-dep', '@angular/core'],
+              factoryBody: '',
+              additionalOptions: {hasGlobalInitializer: true},
+            },
+          });
         });
 
         describe('addImports', () => {
-          it('should append the given imports into the CommonJS factory call', () => {
+          it('should append the given imports into the CommonJS2 factory call', () => {
             const {renderer, program} = setup(PROGRAM);
             const file =
                 getSourceFileOrError(program, _('/node_modules/test-package/some/file.js'));
@@ -219,9 +205,33 @@ exports.BadIife = BadIife;
                 file);
             expect(output.toString())
                 .toContain(
-                    `typeof exports === 'object' && typeof module !== 'undefined' ?\n` +
-                    `    factory(require('@angular/core'),require('@angular/common'),exports, require('some-side-effect'), require('/local-dep'), require('@angular/core')) :`);
+                    wrapperFunctionFormat === WrapperFunctionFormat.Rollup ?
+                        `typeof exports === 'object' && typeof module !== 'undefined' ?\n` +
+                            `    factory(require('@angular/core'),require('@angular/common'),exports, require('some-side-effect'), require('/local-dep'), require('@angular/core')) :` :
+                        `if (typeof exports === 'object' && typeof module === 'object')\n` +
+                            `    module.exports = factory(require('@angular/core'),require('@angular/common'),require('some-side-effect'), require('/local-dep'), require('@angular/core'));`);
           });
+
+          if (wrapperFunctionFormat === WrapperFunctionFormat.Webpack) {
+            // The CommonJS (vs CommonJS2) format only applies to the Webpack format.
+            it('should append the given imports into the CommonJS factory call', () => {
+              const {renderer, program} = setup(PROGRAM);
+              const file =
+                  getSourceFileOrError(program, _('/node_modules/test-package/some/file.js'));
+              const output = new MagicString(PROGRAM.contents);
+              renderer.addImports(
+                  output,
+                  [
+                    {specifier: '@angular/core', qualifier: ts.createIdentifier('i0')},
+                    {specifier: '@angular/common', qualifier: ts.createIdentifier('i1')}
+                  ],
+                  file);
+              expect(output.toString())
+                  .toContain(
+                      `if (typeof exports === 'object')\n` +
+                      `    exports['file'] = factory(require('@angular/core'),require('@angular/common'),require('some-side-effect'), require('/local-dep'), require('@angular/core'));`);
+            });
+          }
 
           it('should append the given imports into the AMD initialization', () => {
             const {renderer, program} = setup(PROGRAM);
@@ -237,8 +247,11 @@ exports.BadIife = BadIife;
                 file);
             expect(output.toString())
                 .toContain(
-                    `typeof define === 'function' && define.amd ?\n` +
-                    `    define('file', ['@angular/core','@angular/common','exports', 'some-side-effect', '/local-dep', '@angular/core'], factory) :`);
+                    wrapperFunctionFormat === WrapperFunctionFormat.Rollup ?
+                        `typeof define === 'function' && define.amd ?\n` +
+                            `    define('file', ['@angular/core','@angular/common','exports', 'some-side-effect', '/local-dep', '@angular/core'], factory) :` :
+                        `if (typeof define === 'function' && define.amd)\n` +
+                            `    define(['@angular/core','@angular/common','some-side-effect', '/local-dep', '@angular/core'], factory);`);
           });
 
           it('should append the given imports into the global initialization', () => {
@@ -255,7 +268,9 @@ exports.BadIife = BadIife;
                 file);
             expect(output.toString())
                 .toContain(
-                    `(factory(global.ng.core,global.ng.common,global.file, global.someSideEffect, global.localDep, global.ng.core));`);
+                    wrapperFunctionFormat === WrapperFunctionFormat.Rollup ?
+                        `(factory(global.ng.core,global.ng.common,global.file, global.someSideEffect, global.localDep, global.ng.core));` :
+                        `root['file'] = factory(global.ng.core,global.ng.common,root['someSideEffect'], root['localDep'], root['ng']['core']);`);
           });
 
           it('should remap import identifiers to valid global properties', () => {
@@ -276,28 +291,35 @@ exports.BadIife = BadIife;
                 file);
             expect(output.toString())
                 .toContain(
-                    `(factory(` +
-                    `global.ngrx.store,global.ng.platformBrowserDynamic,global.ng.common.testing,global.angularFoo.package,` +
-                    `global.file, global.someSideEffect, global.localDep, global.ng.core));`);
+                    wrapperFunctionFormat === WrapperFunctionFormat.Rollup ?
+                        `(factory(` +
+                            `global.ngrx.store,global.ng.platformBrowserDynamic,global.ng.common.testing,global.angularFoo.package,` +
+                            `global.file, global.someSideEffect, global.localDep, global.ng.core));` :
+                        `root['file'] = factory(` +
+                            `global.ngrx.store,global.ng.platformBrowserDynamic,global.ng.common.testing,global.angularFoo.package,` +
+                            `root['someSideEffect'], root['localDep'], root['ng']['core']);`);
           });
 
-          it('should append the given imports into the global initialization, if it has a global/self initializer',
-             () => {
-               const {renderer, program} = setup(PROGRAM_WITH_GLOBAL_INITIALIZER);
-               const file =
-                   getSourceFileOrError(program, _('/node_modules/test-package/some/file.js'));
-               const output = new MagicString(file.text);
-               renderer.addImports(
-                   output,
-                   [
-                     {specifier: '@angular/core', qualifier: ts.createIdentifier('i0')},
-                     {specifier: '@angular/common', qualifier: ts.createIdentifier('i1')}
-                   ],
-                   file);
-               expect(output.toString())
-                   .toContain(
-                       `(global = global || self, factory(global.ng.core,global.ng.common,global.file, global.someSideEffect, global.localDep, global.ng.core))`);
-             });
+          if (wrapperFunctionFormat === WrapperFunctionFormat.Rollup) {
+            // Global initializer only applies to the Rollup format.
+            it('should append the given imports into the global initialization, if it has a global/self initializer',
+               () => {
+                 const {renderer, program} = setup(PROGRAM_WITH_GLOBAL_INITIALIZER);
+                 const file =
+                     getSourceFileOrError(program, _('/node_modules/test-package/some/file.js'));
+                 const output = new MagicString(file.text);
+                 renderer.addImports(
+                     output,
+                     [
+                       {specifier: '@angular/core', qualifier: ts.createIdentifier('i0')},
+                       {specifier: '@angular/common', qualifier: ts.createIdentifier('i1')}
+                     ],
+                     file);
+                 expect(output.toString())
+                     .toContain(
+                         `(global = global || self, factory(global.ng.core,global.ng.common,global.file, global.someSideEffect, global.localDep, global.ng.core))`);
+               });
+          }
 
           it('should append the given imports as parameters into the factory function definition',
              () => {
@@ -314,7 +336,9 @@ exports.BadIife = BadIife;
                    file);
                expect(output.toString())
                    .toContain(
-                       `(function (i0,i1,exports, someSideEffect, localDep, core) {\n  'use strict';`);
+                       wrapperFunctionFormat === WrapperFunctionFormat.Rollup ?
+                           `(function (i0,i1,exports, someSideEffect, localDep, core) {\n  'use strict';` :
+                           `function (i0,i1,someSideEffect, localDep, core) {\n  'use strict';`);
              });
 
           it('should handle the case where there were no prior imports nor exports', () => {
@@ -343,14 +367,28 @@ exports.BadIife = BadIife;
                 file);
             const outputSrc = output.toString();
 
-            expect(outputSrc).toContain(
-                `typeof exports === 'object' && typeof module !== 'undefined' ?\n` +
-                `    factory(require('@angular/core'),require('@angular/common')) :`);
-            expect(outputSrc).toContain(
-                `typeof define === 'function' && define.amd ?\n` +
-                `    define('file',['@angular/core','@angular/common'], factory) :`);
-            expect(outputSrc).toContain(`(factory(global.ng.core,global.ng.common));`);
-            expect(outputSrc).toContain(`(function (i0,i1) {\n  'use strict';`);
+            if (wrapperFunctionFormat === WrapperFunctionFormat.Rollup) {
+              expect(outputSrc).toContain(
+                  `typeof exports === 'object' && typeof module !== 'undefined' ?\n` +
+                  `    factory(require('@angular/core'),require('@angular/common')) :`);
+              expect(outputSrc).toContain(
+                  `typeof define === 'function' && define.amd ?\n` +
+                  `    define('file',['@angular/core','@angular/common'], factory) :`);
+              expect(outputSrc).toContain(`(factory(global.ng.core,global.ng.common));`);
+              expect(outputSrc).toContain(`(function (i0,i1) {\n  'use strict';`);
+            } else {
+              expect(outputSrc).toContain(
+                  `if (typeof exports === 'object' && typeof module === 'object')\n` +
+                  `    module.exports = factory(require('@angular/core'),require('@angular/common'));`);
+              expect(outputSrc).toContain(
+                  `if (typeof define === 'function' && define.amd)\n` +
+                  `    define(['@angular/core','@angular/common'], factory);`);
+              expect(outputSrc).toContain(
+                  `if (typeof exports === 'object')\n` +
+                  `    exports['file'] = factory(require('@angular/core'),require('@angular/common'));`);
+              expect(outputSrc).toContain(`factory(global.ng.core,global.ng.common);`);
+              expect(outputSrc).toContain(`function (i0,i1) {\n  'use strict';`);
+            }
           });
 
           it('should leave the file unchanged if there are no imports to add', () => {
@@ -393,16 +431,31 @@ exports.BadIife = BadIife;
                 file);
             const outputSrc = output.toString();
 
-            expect(outputSrc).toContain(
-                `typeof exports === 'object' && typeof module !== 'undefined' ?\n` +
-                `    factory(require('@angular/core'),require('@angular/common'),exports, require('/local-dep'), require('@angular/core'), require('some-side-effect')) :`);
-            expect(outputSrc).toContain(
-                `typeof define === 'function' && define.amd ?\n` +
-                `    define('file', ['@angular/core','@angular/common','exports', '/local-dep', '@angular/core', 'some-side-effect'], factory) :`);
-            expect(outputSrc).toContain(
-                `(factory(global.ng.core,global.ng.common,global.file, global.localDep, global.ng.core, global.someSideEffect));`);
-            expect(outputSrc).toContain(
-                `(function (i0,i1,exports, localDep, core) {\n  'use strict';`);
+            if (wrapperFunctionFormat === WrapperFunctionFormat.Rollup) {
+              expect(outputSrc).toContain(
+                  `typeof exports === 'object' && typeof module !== 'undefined' ?\n` +
+                  `    factory(require('@angular/core'),require('@angular/common'),exports, require('/local-dep'), require('@angular/core'), require('some-side-effect')) :`);
+              expect(outputSrc).toContain(
+                  `typeof define === 'function' && define.amd ?\n` +
+                  `    define('file', ['@angular/core','@angular/common','exports', '/local-dep', '@angular/core', 'some-side-effect'], factory) :`);
+              expect(outputSrc).toContain(
+                  `(factory(global.ng.core,global.ng.common,global.file, global.localDep, global.ng.core, global.someSideEffect));`);
+              expect(outputSrc).toContain(
+                  `(function (i0,i1,exports, localDep, core) {\n  'use strict';`);
+            } else {
+              expect(outputSrc).toContain(
+                  `if (typeof exports === 'object' && typeof module === 'object')\n` +
+                  `    module.exports = factory(require('@angular/core'),require('@angular/common'),require('/local-dep'), require('@angular/core'), require('some-side-effect'));`);
+              expect(outputSrc).toContain(
+                  `if (typeof define === 'function' && define.amd)\n` +
+                  `    define(['@angular/core','@angular/common','/local-dep', '@angular/core', 'some-side-effect'], factory);`);
+              expect(outputSrc).toContain(
+                  `if (typeof exports === 'object')\n` +
+                  `    exports['file'] = factory(require('@angular/core'),require('@angular/common'),require('/local-dep'), require('@angular/core'), require('some-side-effect'));`);
+              expect(outputSrc).toContain(
+                  `root['file'] = factory(global.ng.core,global.ng.common,root['localDep'], root['ng']['core'], root['someSideEffect']);`);
+              expect(outputSrc).toContain(`function (i0,i1,localDep, core) {\n  'use strict';`);
+            }
           });
         });
 
@@ -433,7 +486,7 @@ exports.ComponentA2 = i0.ComponentA2;
 exports.ComponentB = i1.ComponentB;
 exports.TopLevelComponent = TopLevelComponent;
 
-}))`);
+})`);
 
             expect(generateNamedImportSpy).toHaveBeenCalledWith('./a', 'ComponentA1');
             expect(generateNamedImportSpy).toHaveBeenCalledWith('./a', 'ComponentA2');
@@ -448,8 +501,7 @@ exports.TopLevelComponent = TopLevelComponent;
                 getSourceFileOrError(program, _('/node_modules/test-package/some/file.js'));
             const output = new MagicString(PROGRAM.contents);
             renderer.addConstants(output, 'var x = 3;', file);
-            expect(output.toString())
-                .toContain(`(this, (function (exports, someSideEffect, localDep, core) {
+            expect(output.toString()).toContain(`someSideEffect, localDep, core) {
 ${'  '}
 var x = 3;
 'use strict';
@@ -697,7 +749,5 @@ SOME DEFINITION TEXT
                 .toBe('var baz = "qux";');
           });
         });
-      });
-    });
-  });
+      }));
 });
