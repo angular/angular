@@ -19,14 +19,15 @@ import {NgccReflectionHost} from '../../src/host/ngcc_host';
 import {parseStatementForUmdModule, UmdReflectionHost} from '../../src/host/umd_host';
 import {BundleProgram} from '../../src/packages/bundle_program';
 import {hasNameIdentifier} from '../../src/utils';
+import {createUmdModuleFactory, WrapperFunctionFormat} from '../helpers/umd_utils';
 import {getRootFiles, makeTestBundleProgram} from '../helpers/utils';
 
 import {expectTypeValueReferencesForParameters} from './util';
 
 runInEachFileSystem(() => {
-  for (const wrapperFormat of ['rollup', 'webpack']) {
+  for (const wrapperFormat of [WrapperFunctionFormat.Rollup, WrapperFunctionFormat.Webpack]) {
     for (const mode of ['inline exports', 'exported vars']) {
-      describe(`UmdReflectionHost [with ${mode}][with wrapper format: ${wrapperFormat}]`, () => {
+      describe(`UmdReflectionHost [with ${mode}][with ${wrapperFormat}]`, () => {
         let _: typeof absoluteFrom;
 
         let SOME_DIRECTIVE_FILE: TestFile;
@@ -103,49 +104,7 @@ runInEachFileSystem(() => {
         /**
          * Create the code for a UMD module depending on the current wrapper function format.
          */
-        const createUmdModule = (moduleName: string, deps: string[], factoryBody: string) => {
-          const depsIdentifiers = deps.map(
-              dep => dep.replace(/^@angular\//, 'ng.').replace(/^\.\//, '').replace(/-/g, '_'));
-          const depsParamNames = deps.map((dep, i) => depsIdentifiers[i].replace(/^.*\./, ''));
-
-          switch (wrapperFormat) {
-            case 'rollup':
-              return `
-                (function (global, factory) {
-                  typeof exports === 'object' && typeof module !== 'undefined' ?
-                    factory(${['exports', ...deps.map(d => `require('${d}')`)].join(', ')}) :
-                  typeof define === 'function' && define.amd ?
-                    define('${moduleName}', [${
-                      ['exports', ...deps].map(d => `'${d}'`).join(', ')}], factory) :
-                    (factory(${
-                      [moduleName, ...depsIdentifiers].map(id => `global.${id}`).join(', ')}));
-                }(this, (function (${['exports', ...depsParamNames].join(', ')}) {
-                  'use strict';
-                  ${factoryBody}
-                })));
-              `;
-            case 'webpack':
-              return `
-                (function (root, factory) {
-                  if (typeof exports === 'object' && typeof module === 'object')
-                    module.exports = factory(${deps.map(d => `require('${d}')`).join(', ')});
-                  else if (typeof define === 'function' && define.amd)
-                    define([${deps.map(d => `'${d}'`).join(', ')}], factory);
-                  else if (typeof exports === 'object')
-                    exports['${moduleName}'] = factory(${
-                  deps.map(d => `require('${d}')`).join(', ')});
-                  else
-                    root['${moduleName}'] = factory(${
-                  depsIdentifiers.map(id => `root['${id}']`).join(', ')});
-                }(global, function (${depsParamNames.join(', ')}) {
-                  'use strict';
-                  ${factoryBody}
-                }));
-              `;
-            default:
-              throw new Error(`Unsupported wrapper format: ${wrapperFormat}`);
-          }
-        };
+        const createUmdModule = createUmdModuleFactory(wrapperFormat);
 
         /**
          * Select a predicate for matching an exported declaration based on whether the code
