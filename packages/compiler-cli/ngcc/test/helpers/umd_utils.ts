@@ -118,6 +118,25 @@ export function createUmdModuleFactory(
   };
 }
 
+export function testForEachUmdFormat(testSuite: (data: {
+                                       createUmdModule: ReturnType<typeof createUmdModuleFactory>,
+                                       wrapperFunctionFormat: WrapperFunctionFormat,
+                                       parenthesisFormat: ParenthesisFormat
+                                     }) => void) {
+  return () => {
+    for (const wrapperFunctionFormat
+             of [WrapperFunctionFormat.Rollup, WrapperFunctionFormat.Webpack]) {
+      for (const parenthesisFormat
+               of [ParenthesisFormat.AroundFunction, ParenthesisFormat.AroundIife]) {
+        const createUmdModule = createUmdModuleFactory(wrapperFunctionFormat, parenthesisFormat);
+        describe(`(with ${wrapperFunctionFormat} and ${parenthesisFormat})`, () => {
+          testSuite({createUmdModule, wrapperFunctionFormat, parenthesisFormat});
+        });
+      }
+    }
+  };
+}
+
 function stripIndentation(text: string): string {
   const lines = text.replace(/^ *\r?\n/, '').replace(/\r?\n *$/, '').split('\n');
   const minIndentation =
