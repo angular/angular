@@ -62,6 +62,7 @@ export class UmdRenderingFormatter extends Esm5RenderingFormatter {
 
     // We need to add new `require()` calls for each import in the CommonJS initializer
     renderCommonJsDependencies(output, factoryCalls.commonJs, imports);
+    renderCommonJsDependencies(output, factoryCalls.commonJs2, imports);
     renderAmdDependencies(output, factoryCalls.amdDefine, imports);
     renderGlobalDependencies(output, factoryCalls.global, imports);
     renderFactoryParameters(output, factoryFn, imports);
@@ -134,7 +135,7 @@ export class UmdRenderingFormatter extends Esm5RenderingFormatter {
 }
 
 /**
- * Add dependencies to the CommonJS part of the UMD wrapper function.
+ * Add dependencies to the CommonJS/CommonJS2 part of the UMD wrapper function.
  */
 function renderCommonJsDependencies(
     output: MagicString, factoryCall: ts.CallExpression|null, imports: Import[]) {
