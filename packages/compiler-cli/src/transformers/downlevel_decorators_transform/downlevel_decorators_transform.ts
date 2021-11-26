@@ -7,7 +7,9 @@
  */
 
 import ts from 'typescript';
+
 import {Decorator, ReflectionHost} from '../../ngtsc/reflection';
+
 import {isAliasImportDeclaration, loadIsReferencedAliasDeclarationPatch} from './patch_alias_reference_resolution';
 
 /**
@@ -432,9 +434,9 @@ export function getDownlevelDecoratorsTransform(
       ctor = ts.visitEachChild(ctor, decoratorDownlevelVisitor, context);
 
       const newParameters: ts.ParameterDeclaration[] = [];
-      const oldParameters =
-          ts.visitParameterList(ctor.parameters, decoratorDownlevelVisitor, context);
+      const oldParameters = ctor.parameters;
       const parametersInfo: ParameterDecorationInfo[] = [];
+
       for (const param of oldParameters) {
         const decoratorsToKeep: ts.Decorator[] = [];
         const paramInfo: ParameterDecorationInfo = {decorators: [], type: null};
@@ -465,9 +467,8 @@ export function getDownlevelDecoratorsTransform(
             param.dotDotDotToken, param.name, param.questionToken, param.type, param.initializer);
         newParameters.push(newParam);
       }
-      const updated = ts.updateConstructor(
-          ctor, ctor.decorators, ctor.modifiers, newParameters,
-          ts.visitFunctionBody(ctor.body, decoratorDownlevelVisitor, context));
+      const updated =
+          ts.updateConstructor(ctor, ctor.decorators, ctor.modifiers, newParameters, ctor.body);
       return [updated, parametersInfo];
     }
 
