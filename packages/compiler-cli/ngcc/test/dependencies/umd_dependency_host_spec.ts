@@ -13,9 +13,11 @@ import {loadTestFiles} from '../../../src/ngtsc/testing';
 import {createDependencyInfo} from '../../src/dependencies/dependency_host';
 import {ModuleResolver} from '../../src/dependencies/module_resolver';
 import {UmdDependencyHost} from '../../src/dependencies/umd_dependency_host';
+import {createUmdModuleFactory, WrapperFunctionFormat} from '../helpers/umd_utils';
 
 runInEachFileSystem(() => {
   describe('UmdDependencyHost', () => {
+    const createUmdModule = createUmdModuleFactory(WrapperFunctionFormat.Rollup);
     let _: typeof absoluteFrom;
     let host: UmdDependencyHost;
 
@@ -258,28 +260,11 @@ runInEachFileSystem(() => {
         {name: _('/dist/lib/shared/test/index.metadata.json'), contents: 'MOCK METADATA'},
       ]);
     }
-  });
 
-  function umd(moduleName: string, importPaths: string[], exportNames: string[] = []) {
-    const commonJsRequires = importPaths.map(p => `,require('${p}')`).join('');
-    const amdDeps = importPaths.map(p => `,'${p}'`).join('');
-    const globalParams =
-        importPaths.map(p => `,global.${p.replace('@angular/', 'ng.').replace(/\//g, '')}`)
-            .join('');
-    const params =
-        importPaths.map(p => `,${p.replace('@angular/', '').replace(/\.?\.?\//g, '')}`).join('');
-    const exportStatements =
-        exportNames.map(e => `  exports.${e.replace(/.+\./, '')} = ${e};`).join('\n');
-    return `
-(function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports${
-        commonJsRequires}) :
-  typeof define === 'function' && define.amd ? define('${moduleName}', ['exports'${
-        amdDeps}], factory) :
-  (factory(global.${moduleName}${globalParams}));
-}(this, (function (exports${params}) { 'use strict';
-${exportStatements}
-})));
-  `;
-  }
+    function umd(moduleName: string, importPaths: string[], exportNames: string[] = []) {
+      const exportStatements =
+          exportNames.map(e => `  exports.${e.replace(/.+\./, '')} = ${e};`).join('\n');
+      return createUmdModule(moduleName, importPaths, exportStatements);
+    }
+  });
 });
