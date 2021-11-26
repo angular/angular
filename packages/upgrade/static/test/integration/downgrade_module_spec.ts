@@ -622,7 +622,9 @@ withEachNg1Version(() => {
                angular.module_('ng1', [lazyModuleName])
                    .directive(
                        'ng2', downgradeComponent({component: Ng2AComponent, propagateDigest}))
-                   .run(($rootScope: angular.IRootScopeService) => $rootScope.value = 0);
+                   .run([
+                     '$rootScope', ($rootScope: angular.IRootScopeService) => $rootScope.value = 0
+                   ]);
 
            const element = html('<div><ng2 [value]="value" ng-if="loadNg2"></ng2></div>');
            const $injector = angular.bootstrap(element, [ng1Module.name]);
@@ -811,10 +813,13 @@ withEachNg1Version(() => {
            const ng1Module =
                angular.module_('ng1', [lazyModuleName])
                    .directive('ng2', downgradeComponent({component: Ng2Component, propagateDigest}))
-                   .run(($rootScope: angular.IRootScopeService) => {
-                     $rootScope.attrVal = 'bar';
-                     $rootScope.propVal = 'bar';
-                   });
+                   .run([
+                     '$rootScope',
+                     ($rootScope: angular.IRootScopeService) => {
+                       $rootScope.attrVal = 'bar';
+                       $rootScope.propVal = 'bar';
+                     }
+                   ]);
 
            const element = html('<ng2 attr-input="{{ attrVal }}" [prop-input]="propVal"></ng2>');
            const $injector = angular.bootstrap(element, [ng1Module.name]);

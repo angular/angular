@@ -29,6 +29,13 @@ describe('i18n debug', () => {
     });
 
     it('should print Attribute opCode', () => {
+      // The `sanitizeFn` is written as actual function, compared to it being an arrow function.
+      // This is done to make this test less reluctant to build process changes where e.g. an
+      // arrow function might be transformed to a function declaration in ES5.
+      const sanitizeFn = function(v: any) {
+        return v;
+      };
+
       expect(i18nUpdateOpCodesToString([
         0b01,    8,
         'pre ',  -4,
@@ -39,11 +46,12 @@ describe('i18n debug', () => {
         'pre ',  -4,
         ' in ',  -3,
         ' post', 1 << I18nUpdateOpCode.SHIFT_REF | I18nUpdateOpCode.Attr,
-        'title', (v: any) => v,
+        'title', sanitizeFn,
       ] as unknown as I18nUpdateOpCodes))
           .toEqual([
             'if (mask & 0b1) { (lView[1] as Element).setAttribute(\'title\', `pre ${lView[i-4]} in ${lView[i-3]} post`); }',
-            'if (mask & 0b10) { (lView[1] as Element).setAttribute(\'title\', (function (v) { return v; })(`pre ${lView[i-4]} in ${lView[i-3]} post`)); }'
+            `if (mask & 0b10) { (lView[1] as Element).setAttribute('title', (${
+                sanitizeFn.toString()})(\`pre $\{lView[i-4]} in $\{lView[i-3]} post\`)); }`
           ]);
     });
 

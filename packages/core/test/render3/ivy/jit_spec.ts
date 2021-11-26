@@ -7,14 +7,10 @@
  */
 import 'reflect-metadata';
 
-import {ElementRef, QueryList} from '@angular/core';
+import {Component, ContentChild, ContentChildren, Directive, ElementRef, HostBinding, HostListener, Input, NgModule, Pipe, QueryList, ViewChild, ViewChildren, ɵNgModuleDef as NgModuleDef} from '@angular/core';
 import {Injectable} from '@angular/core/src/di/injectable';
 import {setCurrentInjector, ɵɵinject} from '@angular/core/src/di/injector_compatibility';
 import {ɵɵdefineInjectable, ɵɵInjectorDef} from '@angular/core/src/di/interface/defs';
-import {ContentChild, ContentChildren, ViewChild, ViewChildren} from '@angular/core/src/metadata/di';
-import {Component, Directive, HostBinding, HostListener, Input, Pipe} from '@angular/core/src/metadata/directives';
-import {NgModule} from '@angular/core/src/metadata/ng_module';
-import {NgModuleDef} from '@angular/core/src/metadata/ng_module_def';
 import {FactoryFn} from '@angular/core/src/render3/definition_factory';
 import {ComponentDef, PipeDef} from '@angular/core/src/render3/interfaces/definition';
 

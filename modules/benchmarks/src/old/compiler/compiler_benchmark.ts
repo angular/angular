@@ -8,7 +8,7 @@
 
 import {CompilerConfig, DirectiveResolver} from '@angular/compiler';
 import {Component, ComponentResolver, Directive, ViewContainerRef,} from '@angular/core';
-import {ViewMetadata} from '@angular/core/src/metadata/view';
+import {ViewMetadata} from '@angular/core/view';
 import {PromiseWrapper} from '@angular/facade/src/async';
 import {print, Type} from '@angular/facade/src/lang';
 import {bootstrap} from '@angular/platform-browser';

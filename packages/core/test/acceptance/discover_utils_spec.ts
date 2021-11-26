@@ -6,10 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {CommonModule} from '@angular/common';
-import {Component, Directive, HostBinding, InjectionToken, ViewChild} from '@angular/core';
-import {ChangeDetectionStrategy} from '@angular/core/src/change_detection';
+import {ChangeDetectionStrategy, Component, Directive, HostBinding, InjectionToken, Input, Output, ViewChild, ViewEncapsulation} from '@angular/core';
 import {EventEmitter} from '@angular/core/src/event_emitter';
-import {Input, Output, ViewEncapsulation} from '@angular/core/src/metadata';
 import {isLView} from '@angular/core/src/render3/interfaces/type_checks';
 import {CONTEXT} from '@angular/core/src/render3/interfaces/view';
 import {ComponentFixture, TestBed} from '@angular/core/testing';

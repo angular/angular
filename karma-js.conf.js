@@ -23,10 +23,6 @@ module.exports = function(config) {
     },
 
     files: [
-      // Sources and specs.
-      // Loaded through the System loader, in `test-main.js`.
-      {pattern: 'dist/all/@angular/**/*.js', included: false, watched: true},
-
       // Serve AngularJS for `ngUpgrade` testing.
       {pattern: 'node_modules/angular-1.5/angular?(.min).js', included: false, watched: false},
       {pattern: 'node_modules/angular-mocks-1.5/angular-mocks.js', included: false, watched: false},
@@ -46,10 +42,9 @@ module.exports = function(config) {
       'dist/bin/packages/zone.js/npm_package/bundles/zone-testing.umd.js',
       'dist/bin/packages/zone.js/npm_package/bundles/task-tracking.umd.js',
 
-      // Including systemjs because it defines `__eval`, which produces correct stack traces.
-      'test-events.js',
-      'third_party/shims_for_internal_tests.js',
-      'node_modules/systemjs/dist/system.src.js',
+      // Static test assets.
+      {pattern: 'packages/platform-browser/test/static_assets/**/*', included: false},
+      {pattern: 'packages/platform-browser/test/browser/static_assets/**/*', included: false},
 
       // Serve polyfills necessary for testing the `elements` package.
       {
@@ -58,42 +53,9 @@ module.exports = function(config) {
         watched: false
       },
 
-      {pattern: 'node_modules/rxjs/**', included: false, watched: false, served: true},
       'node_modules/reflect-metadata/Reflect.js',
-      'tools/build/file2modulename.js',
-      'test-main.js',
-      {pattern: 'dist/all/@angular/empty.*', included: false, watched: false},
-      {pattern: 'packages/platform-browser/test/static_assets/**', included: false, watched: false},
-      {
-        pattern: 'packages/platform-browser/test/browser/static_assets/**',
-        included: false,
-        watched: false,
-      },
-    ],
 
-    exclude: [
-      'dist/all/@angular/_testing_init/**',
-      'dist/all/@angular/**/e2e_test/**',
-      'dist/all/@angular/**/*node_only_spec.js',
-      'dist/all/@angular/benchpress/**',
-      'dist/all/@angular/compiler-cli/**',
-      'dist/all/@angular/compiler-cli/src/ngtsc/**',
-      'dist/all/@angular/compiler-cli/test/compliance/**',
-      'dist/all/@angular/compiler-cli/test/ngtsc/**',
-      'dist/all/@angular/compiler/test/aot/**',
-      'dist/all/@angular/compiler/test/render3/**',
-      'dist/all/@angular/core/test/bundling/**',
-      'dist/all/@angular/core/test/render3/ivy/**',
-      'dist/all/@angular/core/test/render3/jit/**',
-      'dist/all/@angular/core/test/render3/perf/**',
-      'dist/all/@angular/elements/schematics/**',
-      'dist/all/@angular/examples/**/e2e_test/*',
-      'dist/all/@angular/language-service/**',
-      'dist/all/@angular/localize/**/test/**',
-      'dist/all/@angular/localize/schematics/**',
-      'dist/all/@angular/router/**/test/**',
-      'dist/all/@angular/platform-browser/testing/e2e_util.js',
-      'dist/examples/**/e2e_test/**',
+      'dist/legacy-test-bundle.spec.js',
     ],
 
     customLaunchers: browserProvidersConf.customLaunchers,
@@ -149,15 +111,6 @@ module.exports = function(config) {
     set: () => {},
   });
 
-  if (process.env.CIRCLECI) {
-    conf.frameworks.unshift('parallel');
-    conf.plugins.unshift(require('karma-parallel'));
-    conf.parallelOptions = {
-      executors: 2,
-      shardStrategy: 'round-robin',
-    };
-  }
-
   if (process.env['SAUCE_TUNNEL_IDENTIFIER']) {
     console.log(`SAUCE_TUNNEL_IDENTIFIER: ${process.env.SAUCE_TUNNEL_IDENTIFIER}`);
 
@@ -171,8 +124,7 @@ module.exports = function(config) {
     // the test logs from upstream and tries re-uploading them with the Karma enhanced details.
     // This slows-down tests/browser restarting and can decrease stability.
     // https://github.com/karma-runner/karma-sauce-launcher/blob/59b0c5c877448e064ad56449cd906743721c6b62/src/launcher/launcher.ts#L72-L79.
-    require('saucelabs').default.prototype.downloadJobAsset =
-        () => Promise.resolve('<FAKE-LOGS>');
+    require('saucelabs').default.prototype.downloadJobAsset = () => Promise.resolve('<FAKE-LOGS>');
   }
 
   // For SauceLabs jobs, we set up a domain which resolves to the machine which launched
