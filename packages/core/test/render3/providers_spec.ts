@@ -15,6 +15,7 @@ import {NgModuleFactory} from '../../src/render3/ng_module_ref';
 import {getInjector} from '../../src/render3/util/discovery_utils';
 
 import {getRendererFactory2} from './imported_renderer2';
+import {expectProvidersScenario} from './providers_helper';
 import {ComponentFixture} from './render_util';
 
 const Component: typeof _Component = function(...args: any[]): any {
@@ -37,6 +38,11 @@ describe('providers', () => {
 
     class GreeterClass implements Greeter {
       greet = 'Class';
+      hasBeenCleanedUp = false;
+
+      ngOnDestroy() {
+        this.hasBeenCleanedUp = true;
+      }
     }
 
     class GreeterDeps implements Greeter {
@@ -232,14 +238,20 @@ describe('providers', () => {
       });
 
       it('ClassProvider wrapped in forwardRef', () => {
+        let greeterInstance: GreeterClass|null = null;
+
         expectProvidersScenario({
           parent: {
             providers: [{provide: GREETER, useClass: forwardRef(() => GreeterClass)}],
             componentAssertion: () => {
-              expect(ɵɵdirectiveInject(GREETER).greet).toEqual('Class');
+              greeterInstance = ɵɵdirectiveInject(GREETER) as GreeterClass;
+              expect(greeterInstance.greet).toEqual('Class');
             }
           }
         });
+
+        expect(greeterInstance).not.toBeNull();
+        expect(greeterInstance!.hasBeenCleanedUp).toBe(true);
       });
 
       it('ExistingProvider wrapped in forwardRef', () => {
@@ -1386,167 +1398,3 @@ describe('providers', () => {
        });
   });
 });
-
-interface ComponentTest {
-  providers?: Provider[];
-  viewProviders?: Provider[];
-  directiveProviders?: Provider[];
-  directive2Providers?: Provider[];
-  directiveAssertion?: () => void;
-  componentAssertion?: () => void;
-}
-
-function expectProvidersScenario(defs: {
-  app?: ComponentTest,
-  parent?: ComponentTest,
-  viewChild?: ComponentTest,
-  contentChild?: ComponentTest,
-  ngModule?: InjectorType<any>,
-}): void {
-  function testComponentInjection<T>(def: ComponentTest|undefined, instance: T): T {
-    if (def) {
-      def.componentAssertion && def.componentAssertion();
-    }
-    return instance;
-  }
-
-  function testDirectiveInjection<T>(def: ComponentTest|undefined, instance: T): T {
-    if (def) {
-      def.directiveAssertion && def.directiveAssertion();
-    }
-    return instance;
-  }
-
-  class ViewChildComponent {
-    static ɵfac = () => testComponentInjection(defs.viewChild, new ViewChildComponent());
-    static ɵcmp = ɵɵdefineComponent({
-      type: ViewChildComponent,
-      selectors: [['view-child']],
-      decls: 1,
-      vars: 0,
-      template:
-          function(fs: RenderFlags, ctx: ViewChildComponent) {
-            if (fs & RenderFlags.Create) {
-              ɵɵtext(0, 'view-child');
-            }
-          },
-      features: defs.viewChild &&
-          [ɵɵProvidersFeature(defs.viewChild.providers || [], defs.viewChild.viewProviders || [])]
-    });
-  }
-
-  class ViewChildDirective {
-    static ɵfac = () => testDirectiveInjection(defs.viewChild, new ViewChildDirective());
-    static ɵdir = ɵɵdefineDirective({
-      type: ViewChildDirective,
-      selectors: [['view-child']],
-      features: defs.viewChild && [ɵɵProvidersFeature(defs.viewChild.directiveProviders || [])],
-    });
-  }
-
-  class ContentChildComponent {
-    static ɵfac =
-        () => {
-          return testComponentInjection(defs.contentChild, new ContentChildComponent());
-        }
-
-    static ɵcmp = ɵɵdefineComponent({
-      type: ContentChildComponent,
-      selectors: [['content-child']],
-      decls: 1,
-      vars: 0,
-      template:
-          function(fs: RenderFlags, ctx: ParentComponent) {
-            if (fs & RenderFlags.Create) {
-              ɵɵtext(0, 'content-child');
-            }
-          },
-      features: defs.contentChild &&
-          [ɵɵProvidersFeature(
-              defs.contentChild.providers || [], defs.contentChild.viewProviders || [])],
-    });
-  }
-
-  class ContentChildDirective {
-    static ɵfac =
-        () => {
-          return testDirectiveInjection(defs.contentChild, new ContentChildDirective());
-        }
-
-    static ɵdir = ɵɵdefineDirective({
-      type: ContentChildDirective,
-      selectors: [['content-child']],
-      features: defs.contentChild &&
-          [ɵɵProvidersFeature(defs.contentChild.directiveProviders || [])],
-    });
-  }
-
-
-  class ParentComponent {
-    static ɵfac = () => testComponentInjection(defs.parent, new ParentComponent());
-    static ɵcmp = ɵɵdefineComponent({
-      type: ParentComponent,
-      selectors: [['parent']],
-      decls: 1,
-      vars: 0,
-      template:
-          function(fs: RenderFlags, ctx: ParentComponent) {
-            if (fs & RenderFlags.Create) {
-              ɵɵelement(0, 'view-child');
-            }
-          },
-      features: defs.parent &&
-          [ɵɵProvidersFeature(defs.parent.providers || [], defs.parent.viewProviders || [])],
-      directives: [ViewChildComponent, ViewChildDirective]
-    });
-  }
-
-  class ParentDirective {
-    static ɵfac = () => testDirectiveInjection(defs.parent, new ParentDirective());
-    static ɵdir = ɵɵdefineDirective({
-      type: ParentDirective,
-      selectors: [['parent']],
-      features: defs.parent && [ɵɵProvidersFeature(defs.parent.directiveProviders || [])],
-    });
-  }
-
-  class ParentDirective2 {
-    static ɵfac = () => testDirectiveInjection(defs.parent, new ParentDirective2());
-    static ɵdir = ɵɵdefineDirective({
-      type: ParentDirective2,
-      selectors: [['parent']],
-      features: defs.parent && [ɵɵProvidersFeature(defs.parent.directive2Providers || [])],
-    });
-  }
-
-
-  class App {
-    static ɵfac = () => testComponentInjection(defs.app, new App());
-    static ɵcmp = ɵɵdefineComponent({
-      type: App,
-      selectors: [['app']],
-      decls: 2,
-      vars: 0,
-      template:
-          function(fs: RenderFlags, ctx: App) {
-            if (fs & RenderFlags.Create) {
-              ɵɵelementStart(0, 'parent');
-              ɵɵelement(1, 'content-child');
-              ɵɵelementEnd();
-            }
-          },
-      features: defs.app &&
-          [ɵɵProvidersFeature(defs.app.providers || [], defs.app.viewProviders || [])],
-      directives:
-          [
-            ParentComponent, ParentDirective2, ParentDirective, ContentChildComponent,
-            ContentChildDirective
-          ]
-    });
-  }
-
-
-  const fixture = new ComponentFixture(
-      App, {injector: defs.ngModule ? createInjector(defs.ngModule) : undefined});
-  expect(fixture.html).toEqual('<parent><view-child>view-child</view-child></parent>');
-}
