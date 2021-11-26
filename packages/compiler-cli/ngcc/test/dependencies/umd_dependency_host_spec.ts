@@ -33,6 +33,15 @@ runInEachFileSystem(() => {
         expect(ts.createSourceFile).not.toHaveBeenCalled();
       });
 
+      it('should correctly process files with no imports', () => {
+        const {dependencies, missing, deepImports} = createDependencyInfo();
+        host.collectDependencies(
+            _('/no/imports/but/cannot/skip/index.js'), {dependencies, missing, deepImports});
+        expect(dependencies.size).toBe(0);
+        expect(missing.size).toBe(0);
+        expect(deepImports.size).toBe(0);
+      });
+
       it('should resolve all the external imports of the source file', () => {
         const {dependencies, missing, deepImports} = createDependencyInfo();
         host.collectDependencies(
@@ -143,6 +152,18 @@ runInEachFileSystem(() => {
         },
         {name: _('/no/imports/or/re-exports/package.json'), contents: '{"esm2015": "./index.js"}'},
         {name: _('/no/imports/or/re-exports/index.metadata.json'), contents: 'MOCK METADATA'},
+        {
+          name: _('/no/imports/but/cannot/skip/index.js'),
+          contents:
+              '// A file containing text that looks like a `require("call")` to trick the host\n' +
+              '// into processing it even if it has no actual dependencies.\n' +
+              umd('no_imports_but_cannot_skip', []),
+        },
+        {
+          name: _('/no/imports/but/cannot/skip/package.json'),
+          contents: '{"esm2015": "./index.js"}'
+        },
+        {name: _('/no/imports/but/cannot/skip/index.metadata.json'), contents: 'MOCK METADATA'},
         {
           name: _('/external/imports/index.js'),
           contents: umd('imports_index', ['lib_1', 'lib_1/sub_1'])
