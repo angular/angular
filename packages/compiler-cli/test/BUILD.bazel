@@ -52,6 +52,28 @@ jasmine_node_test(
     ],
 )
 
+ts_library(
+    name = "downlevel_decorator_transform_lib",
+    testonly = True,
+    srcs = [
+        "downlevel_decorators_transform_spec.ts",
+    ],
+    deps = [
+        ":test_utils",
+        "//packages/compiler-cli/src/ngtsc/reflection",
+        "//packages/compiler-cli/src/transformers/downlevel_decorators_transform",
+        "@npm//typescript",
+    ],
+)
+
+jasmine_node_test(
+    name = "downlevel_decorator_transform",
+    bootstrap = ["//tools/testing:node_es5"],
+    deps = [
+        ":downlevel_decorator_transform_lib",
+    ],
+)
+
 # perform_watch_spec
 ts_library(
     name = "perform_watch_lib",
