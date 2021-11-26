@@ -292,9 +292,9 @@ export class UmdReflectionHost extends Esm5ReflectionHost {
       statement: WildcardReexportStatement, containingFile: ts.SourceFile): ExportDeclaration[] {
     const reexportArg = statement.expression.arguments[0];
 
-    const requireCall = isRequireCall(reexportArg) ?
-        reexportArg :
-        ts.isIdentifier(reexportArg) ? findRequireCallReference(reexportArg, this.checker) : null;
+    const requireCall = isRequireCall(reexportArg) ? reexportArg :
+        ts.isIdentifier(reexportArg) ? findRequireCallReference(reexportArg, this.checker) :
+                                       null;
 
     let importPath: string|null = null;
 
@@ -521,7 +521,25 @@ export function parseStatementForUmdModule(statement: ts.Statement): UmdModule|n
   const factoryFn = stripParentheses(wrapper.call.arguments[factoryFnParamIndex]);
   if (!factoryFn || !ts.isFunctionExpression(factoryFn)) return null;
 
-  return {wrapperFn: wrapper.fn, factoryFn};
+  let factoryCalls: UmdModule['factoryCalls']|null = null;
+
+  return {
+    wrapperFn: wrapper.fn,
+    factoryFn,
+    // Compute `factoryCalls` lazily, because in some cases they might not be needed for the task at
+    // hand.
+    // For example, if we just want to determine if an entry-point is in CommonJS or UMD format,
+    // trying to parse the wrapper function could potentially throw a (premature) error. By making
+    // the computation of `factoryCalls` lazy, such an error would be thrown later (during an
+    // operation where the format of the wrapper function does actually matter) or potentially not
+    // at all (if we end up not having to process that entry-point).
+    get factoryCalls() {
+      if (factoryCalls === null) {
+        factoryCalls = parseUmdWrapperFunction(this.wrapperFn);
+      }
+      return factoryCalls;
+    },
+  };
 }
 
 function getUmdWrapper(statement: ts.Statement):
@@ -547,51 +565,216 @@ function getUmdWrapper(statement: ts.Statement):
   return null;
 }
 
+/**
+ * Parse the wrapper function of a UMD module and extract info about the factory function calls for
+ * the various formats (CommonJS, AMD, global).
+ *
+ * The supported format for the UMD wrapper function body is a single statement which is a
+ * `ts.ConditionalExpression` (i.e. using a ternary operator). For example:
+ *
+ * ```js
+ * // Using a conditional expression:
+ * (function (global, factory) {
+ *   typeof exports === 'object' && typeof module !== 'undefined' ?
+ *     // CommonJS2 factory call.
+ *     factory(exports, require('foo'), require('bar')) :
+ *   typeof define === 'function' && define.amd ?
+ *     // AMD factory call.
+ *     define(['exports', 'foo', 'bar'], factory) :
+ *     // Global factory call.
+ *     (factory((global['my-lib'] = {}), global.foo, global.bar));
+ * }(this, (function (exports, foo, bar) {
+ *   // ...
+ * }));
+ * ```
+ */
+function parseUmdWrapperFunction(wrapperFn: ts.FunctionExpression): UmdModule['factoryCalls'] {
+  const stmt = wrapperFn.body.statements[0];
+  let conditionalFactoryCalls: UmdConditionalFactoryCall[];
+
+  if (ts.isExpressionStatement(stmt) && ts.isConditionalExpression(stmt.expression)) {
+    conditionalFactoryCalls = extractFactoryCallsFromConditionalExpression(stmt.expression);
+  } else {
+    throw new Error(
+        'UMD wrapper body is not in a supported format (expected a conditional expression):\n' +
+        wrapperFn.body.getText());
+  }
+
+  const factoryCalls = {
+    amdDefine: getAmdDefineCall(conditionalFactoryCalls),
+    commonJs: getCommonJsFactoryCall(conditionalFactoryCalls),
+    global: getGlobalFactoryCall(conditionalFactoryCalls),
+  };
+
+  if (factoryCalls.commonJs === null) {
+    throw new Error(
+        'Unable to find a CommonJS factory call inside the UMD wrapper function:\n' +
+        stmt.getText());
+  }
+
+  return factoryCalls as (typeof factoryCalls&{commonJs: ts.CallExpression});
+}
+
+/**
+ * Extract `UmdConditionalFactoryCall`s from a `ts.ConditionalExpression` of the form:
+ *
+ * ```js
+ * typeof exports === 'object' && typeof module !== 'undefined' ?
+ *   // CommonJS2 factory call.
+ *   factory(exports, require('foo'), require('bar')) :
+ * typeof define === 'function' && define.amd ?
+ *   // AMD factory call.
+ *   define(['exports', 'foo', 'bar'], factory) :
+ *   // Global factory call.
+ *   (factory((global['my-lib'] = {}), global.foo, global.bar));
+ * ```
+ */
+function extractFactoryCallsFromConditionalExpression(node: ts.ConditionalExpression):
+    UmdConditionalFactoryCall[] {
+  const factoryCalls: UmdConditionalFactoryCall[] = [];
+  let currentNode: ts.Expression = node;
+
+  while (ts.isConditionalExpression(currentNode)) {
+    if (!ts.isBinaryExpression(currentNode.condition)) {
+      throw new Error(
+          'Condition inside UMD wrapper is not a binary expression:\n' +
+          currentNode.condition.getText());
+    }
+
+    factoryCalls.push({
+      condition: currentNode.condition,
+      factoryCall: getFunctionCallFromExpression(currentNode.whenTrue),
+    });
+
+    currentNode = currentNode.whenFalse;
+  }
+
+  factoryCalls.push({
+    condition: null,
+    factoryCall: getFunctionCallFromExpression(currentNode),
+  });
+
+  return factoryCalls;
+}
+
+function getFunctionCallFromExpression(node: ts.Expression): ts.CallExpression {
+  // Be resilient to `node` being inside parenthesis.
+  if (ts.isParenthesizedExpression(node)) {
+    // NOTE:
+    // Since we are going further down the AST, there is no risk of infinite recursion.
+    return getFunctionCallFromExpression(node.expression);
+  }
+
+  // Be resilient to `node` being part of a comma expression.
+  if (ts.isBinaryExpression(node) && node.operatorToken.kind === ts.SyntaxKind.CommaToken) {
+    // NOTE:
+    // Since we are going further down the AST, there is no risk of infinite recursion.
+    return getFunctionCallFromExpression(node.right);
+  }
+
+  if (!ts.isCallExpression(node)) {
+    throw new Error('Expression inside UMD wrapper is not a call expression:\n' + node.getText());
+  }
+
+  return node;
+}
+
+/**
+ * Get the `define` call for setting up the AMD dependencies in the UMD wrapper.
+ */
+function getAmdDefineCall(calls: UmdConditionalFactoryCall[]): ts.CallExpression|null {
+  // The `define` call for AMD dependencies is the one that is guarded with a `&&` expression whose
+  // one side is a `typeof define` condition.
+  const amdConditionalCall = calls.find(
+      call => call.condition?.operatorToken.kind === ts.SyntaxKind.AmpersandAmpersandToken &&
+          oneOfBinaryConditions(call.condition, exp => isTypeOf(exp, 'define')) &&
+          ts.isIdentifier(call.factoryCall.expression) &&
+          call.factoryCall.expression.text === 'define');
+
+  return amdConditionalCall?.factoryCall ?? null;
+}
+
+/**
+ * Get the factory call for setting up the CommonJS dependencies in the UMD wrapper.
+ */
+function getCommonJsFactoryCall(calls: UmdConditionalFactoryCall[]): ts.CallExpression|null {
+  // The factory call for CommonJS dependencies is the one that is guarded with a `&&` expression
+  // whose one side is a `typeof exports` or `typeof module` condition.
+  const cjsConditionalCall = calls.find(
+      call => call.condition?.operatorToken.kind === ts.SyntaxKind.AmpersandAmpersandToken &&
+          oneOfBinaryConditions(call.condition, exp => isTypeOf(exp, 'exports', 'module')) &&
+          ts.isIdentifier(call.factoryCall.expression) &&
+          call.factoryCall.expression.text === 'factory');
+
+  return cjsConditionalCall?.factoryCall ?? null;
+}
+
+/**
+ * Get the factory call for setting up the global dependencies in the UMD wrapper.
+ */
+function getGlobalFactoryCall(calls: UmdConditionalFactoryCall[]): ts.CallExpression|null {
+  // The factory call for global dependencies is the one that is the final else-case (i.e. the one
+  // that has `condition: null`).
+  const globalConditionalCall = calls.find(call => call.condition === null);
+
+  return globalConditionalCall?.factoryCall ?? null;
+}
+
+function oneOfBinaryConditions(
+    node: ts.BinaryExpression, test: (expression: ts.Expression) => boolean) {
+  return test(node.left) || test(node.right);
+}
+
+function isTypeOf(node: ts.Expression, ...types: string[]): boolean {
+  return ts.isBinaryExpression(node) && ts.isTypeOfExpression(node.left) &&
+      ts.isIdentifier(node.left.expression) && types.includes(node.left.expression.text);
+}
 
 export function getImportsOfUmdModule(umdModule: UmdModule):
     {parameter: ts.ParameterDeclaration, path: string}[] {
   const imports: {parameter: ts.ParameterDeclaration, path: string}[] = [];
+  const cjsFactoryCall = umdModule.factoryCalls.commonJs;
+
   for (let i = 1; i < umdModule.factoryFn.parameters.length; i++) {
     imports.push({
       parameter: umdModule.factoryFn.parameters[i],
-      path: getRequiredModulePath(umdModule.wrapperFn, i)
+      path: getRequiredModulePath(cjsFactoryCall, i),
     });
   }
+
   return imports;
 }
 
 interface UmdModule {
   wrapperFn: ts.FunctionExpression;
   factoryFn: ts.FunctionExpression;
+  factoryCalls: {
+    commonJs: ts.CallExpression; amdDefine: ts.CallExpression | null;
+    global: ts.CallExpression | null;
+  };
 }
 
-function getRequiredModulePath(wrapperFn: ts.FunctionExpression, paramIndex: number): string {
-  const statement = wrapperFn.body.statements[0];
-  if (!ts.isExpressionStatement(statement)) {
+/**
+ * Represents a factory call found inside the UMD wrapper function.
+ *
+ * Each factory call corresponds to a format (such as AMD, CommonJS, etc.) and is guarded by a
+ * condition (except for the last factory call, which is reached when all other conditions fail).
+ */
+interface UmdConditionalFactoryCall {
+  condition: ts.BinaryExpression|null;
+  factoryCall: ts.CallExpression;
+}
+
+function getRequiredModulePath(cjsFactoryCall: ts.CallExpression, paramIndex: number): string {
+  const requireCall = cjsFactoryCall.arguments[paramIndex];
+
+  if (requireCall !== undefined && !isRequireCall(requireCall)) {
     throw new Error(
-        'UMD wrapper body is not an expression statement:\n' + wrapperFn.body.getText());
+        `Argument at index ${paramIndex} of UMD factory call is not a \`require\` call with a ` +
+        'single string argument:\n' + cjsFactoryCall.getText());
   }
-  const modulePaths: string[] = [];
-  findModulePaths(statement.expression);
 
-  // Since we were only interested in the `require()` calls, we miss the `exports` argument, so we
-  // need to subtract 1.
-  // E.g. `function(exports, dep1, dep2)` maps to `function(exports, require('path/to/dep1'),
-  // require('path/to/dep2'))`
-  return modulePaths[paramIndex - 1];
-
-  // Search the statement for calls to `require('...')` and extract the string value of the first
-  // argument
-  function findModulePaths(node: ts.Node) {
-    if (isRequireCall(node)) {
-      const argument = node.arguments[0];
-      if (ts.isStringLiteral(argument)) {
-        modulePaths.push(argument.text);
-      }
-    } else {
-      node.forEachChild(findModulePaths);
-    }
-  }
+  return requireCall.arguments[0].text;
 }
 
 /**

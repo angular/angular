@@ -851,6 +851,27 @@ runInEachFileSystem(() => {
         entryPoint.packageJson.main = './bundles/valid_entry_point';
         expect(getEntryPointFormat(fs, entryPoint, browserOrMain)).toBe('umd');
       });
+
+      it('should detect UMD even if the wrapper function is not of a supported format', () => {
+        // In order to correctly process UMD, we require that at least one CommonJS variant is
+        // present. However, for the purposes of detecting the module format, it should not matter
+        // what the body of the wrapper function looks like.
+        loadTestFiles([{
+          name: _(
+              '/project/node_modules/some_package/valid_entry_point/bundles/valid_entry_point/index.js'),
+          contents: `
+            (function (global, factory) {
+              // This is not a supported format for the wrapper function body, but it should still
+              // be detected as UMD (since it is closer to UMD than any other of the supported
+              // formats).
+              typeof define === 'function' && define.amd ? define([], factory) : factory();
+            })(this, function () { 'use strict'; });
+          `,
+        }]);
+
+        entryPoint.packageJson.main = './bundles/valid_entry_point';
+        expect(getEntryPointFormat(fs, entryPoint, browserOrMain)).toBe('umd');
+      });
     });
 
     it('should return `undefined` if the `browser` property is not a string', () => {
