@@ -239,6 +239,48 @@ describe('downlevel decorator transform', () => {
     expect(output).not.toContain('MyClass.propDecorators');
   });
 
+  // Regression test for a scenario where previously the class within a constructor body
+  // would be processed twice, where the downleveled class is revisited accidentally and
+  // caused invalid generation of the `ctorParameters` static class member.
+  it('should not duplicate constructor parameters for classes part of constructor body', () => {
+    // The bug with duplicated/invalid generation only surfaces when the actual class
+    // decorators are preserved and emitted by TypeScript itself. This setting is also
+    // disabled within the CLI.
+    skipClassDecorators = true;
+
+    const {output} = transform(`
+       import {Injectable} from '@angular/core';
+
+       export class ZoneToken {}
+
+       @Injectable()
+       export class Wrapper {
+         constructor(y: ZoneToken) {
+           @Injectable()
+           class ShouldBeProcessed {
+             constructor(x: ZoneToken) {}
+           }
+         }
+       }
+     `);
+
+    expect(diagnostics.length).toBe(0);
+    expect(output).toContain(dedent`
+      let Wrapper = class Wrapper {
+        constructor(y) {
+          let ShouldBeProcessed = class ShouldBeProcessed {
+            constructor(x) { }
+          };
+          ShouldBeProcessed.ctorParameters = () => [
+            { type: ZoneToken }
+          ];
+          ShouldBeProcessed = (0, tslib_1.__decorate)([
+            (0, core_1.Injectable)()
+          ], ShouldBeProcessed);
+        }
+      };`);
+  });
+
   // Angular is not concerned with type information for decorated class members. Instead,
   // the type is omitted. This also helps with server side rendering as DOM globals which
   // are used as types, do not load at runtime. https://github.com/angular/angular/issues/30586.
