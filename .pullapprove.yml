@@ -1196,6 +1196,7 @@ groups:
           'tools/circular_dependency_test/**',
           'tools/contributing-stats/**',
           'tools/gulp-tasks/**',
+          'tools/legacy-saucelabs/**',
           'tools/npm/**',
           'tools/npm_integration_test/**',
           'tools/rxjs/**',
