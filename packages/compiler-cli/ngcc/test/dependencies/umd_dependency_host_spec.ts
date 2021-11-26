@@ -165,10 +165,7 @@ runInEachFileSystem(() => {
               name: _('/no/imports/or/re-exports/index.js'),
               contents: '// some text but no import-like statements'
             },
-            {
-              name: _('/no/imports/or/re-exports/package.json'),
-              contents: '{"esm2015": "./index.js"}'
-            },
+            {name: _('/no/imports/or/re-exports/package.json'), contents: '{"main": "./index.js"}'},
             {name: _('/no/imports/or/re-exports/index.metadata.json'), contents: 'MOCK METADATA'},
             {
               name: _('/no/imports/but/cannot/skip/index.js'),
@@ -179,7 +176,7 @@ runInEachFileSystem(() => {
             },
             {
               name: _('/no/imports/but/cannot/skip/package.json'),
-              contents: '{"esm2015": "./index.js"}'
+              contents: '{"main": "./index.js"}'
             },
             {name: _('/no/imports/but/cannot/skip/index.metadata.json'), contents: 'MOCK METADATA'},
             {
@@ -190,37 +187,34 @@ runInEachFileSystem(() => {
                 }(this, function () {}));
               `,
             },
-            {name: _('/invalid/format/package.json'), contents: '{"esm2015": "./index.js"}'},
+            {name: _('/invalid/format/package.json'), contents: '{"main": "./index.js"}'},
             {name: _('/invalid/format/index.metadata.json'), contents: 'MOCK METADATA'},
             {
               name: _('/external/imports/index.js'),
               contents: umd('imports_index', ['lib_1', 'lib_1/sub_1'])
             },
-            {name: _('/external/imports/package.json'), contents: '{"esm2015": "./index.js"}'},
+            {name: _('/external/imports/package.json'), contents: '{"main": "./index.js"}'},
             {name: _('/external/imports/index.metadata.json'), contents: 'MOCK METADATA'},
             {
               name: _('/external/re-exports/index.js'),
               contents: umd('imports_index', ['lib_1', 'lib_1/sub_1'], ['lib_1.X', 'lib_1sub_1.Y'])
             },
-            {name: _('/external/re-exports/package.json'), contents: '{"esm2015": "./index.js"}'},
+            {name: _('/external/re-exports/package.json'), contents: '{"main": "./index.js"}'},
             {name: _('/external/re-exports/index.metadata.json'), contents: 'MOCK METADATA'},
             {
               name: _('/external/imports-missing/index.js'),
               contents: umd('imports_missing', ['lib_1', 'missing'])
             },
-            {
-              name: _('/external/imports-missing/package.json'),
-              contents: '{"esm2015": "./index.js"}'
-            },
+            {name: _('/external/imports-missing/package.json'), contents: '{"main": "./index.js"}'},
             {name: _('/external/imports-missing/index.metadata.json'), contents: 'MOCK METADATA'},
             {
               name: _('/external/deep-import/index.js'),
               contents: umd('deep_import', ['lib_1/deep/import'])
             },
-            {name: _('/external/deep-import/package.json'), contents: '{"esm2015": "./index.js"}'},
+            {name: _('/external/deep-import/package.json'), contents: '{"main": "./index.js"}'},
             {name: _('/external/deep-import/index.metadata.json'), contents: 'MOCK METADATA'},
             {name: _('/internal/outer/index.js'), contents: umd('outer', ['../inner'])},
-            {name: _('/internal/outer/package.json'), contents: '{"esm2015": "./index.js"}'},
+            {name: _('/internal/outer/package.json'), contents: '{"main": "./index.js"}'},
             {name: _('/internal/outer/index.metadata.json'), contents: 'MOCK METADATA'},
             {name: _('/internal/inner/index.js'), contents: umd('inner', ['lib_1/sub_1'], ['X'])},
             {
@@ -231,17 +225,17 @@ runInEachFileSystem(() => {
               name: _('/internal/circular_b/index.js'),
               contents: umd('circular_b', ['../circular_a', 'lib_1'], ['X'])
             },
-            {name: _('/internal/circular_a/package.json'), contents: '{"esm2015": "./index.js"}'},
+            {name: _('/internal/circular_a/package.json'), contents: '{"main": "./index.js"}'},
             {name: _('/internal/circular_a/index.metadata.json'), contents: 'MOCK METADATA'},
             {name: _('/re-directed/index.js'), contents: umd('re_directed', ['lib_1/sub_2'])},
-            {name: _('/re-directed/package.json'), contents: '{"esm2015": "./index.js"}'},
+            {name: _('/re-directed/package.json'), contents: '{"main": "./index.js"}'},
             {name: _('/re-directed/index.metadata.json'), contents: 'MOCK METADATA'},
             {
               name: _('/path-alias/index.js'),
               contents:
                   umd('path_alias', ['@app/components', '@app/shared', '@lib/shared/test', 'lib_1'])
             },
-            {name: _('/path-alias/package.json'), contents: '{"esm2015": "./index.js"}'},
+            {name: _('/path-alias/package.json'), contents: '{"main": "./index.js"}'},
             {name: _('/path-alias/index.metadata.json'), contents: 'MOCK METADATA'},
             {name: _('/node_modules/lib_1/index.d.ts'), contents: 'export declare class X {}'},
             {
