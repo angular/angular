@@ -735,7 +735,8 @@ runInEachFileSystem(() => {
             name: _('/wildcard_reexports_with_require.js'),
             contents: `(function (global, factory) {\n` +
                 `  typeof exports === 'object' && typeof module !== 'undefined' ? factory(require, exports) :\n` +
-                `  typeof define === 'function' && define.amd ? define('wildcard_reexports_with_require', ['require', 'exports'], factory);\n` +
+                `  typeof define === 'function' && define.amd ? define('wildcard_reexports_with_require', ['require', 'exports'], factory) :\n` +
+                `  (factory(global.require, global.wildcard_reexports_with_require));\n` +
                 `}(this, (function (require, exports) { 'use strict';\n` +
                 `  function __export(m) {\n` +
                 `    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];\n` +
@@ -749,7 +750,8 @@ runInEachFileSystem(() => {
             name: _('/define_property_reexports.js'),
             contents: `(function (global, factory) {\n` +
                 `  typeof exports === 'object' && typeof module !== 'undefined' ? factory(require, exports) :\n` +
-                `  typeof define === 'function' && define.amd ? define('define_property_reexports', ['require', 'exports'], factory);\n` +
+                `  typeof define === 'function' && define.amd ? define('define_property_reexports', ['require', 'exports'], factory) :\n` +
+                `  (factory(global.require, global.define_property_reexports));\n` +
                 `}(this, (function (require, exports) { 'use strict';\n` +
                 `var moduleA = require("./a_module");\n` +
                 `Object.defineProperty(exports, "newA", { enumerable: true, get: function () { return moduleA.a; } });\n` +
@@ -1769,7 +1771,7 @@ runInEachFileSystem(() => {
             case 'imported':
               fileHeaderWithUmd = `
               (function (global, factory) {
-                typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('tslib'))) :
+                typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('tslib')) :
                 typeof define === 'function' && define.amd ? define('test', ['exports', 'tslib'], factory) :
                     (factory(global.test, global.tslib));
                 }(this, (function (exports, tslib) { 'use strict';
@@ -1778,7 +1780,7 @@ runInEachFileSystem(() => {
             case 'inlined':
               fileHeaderWithUmd = `
               (function (global, factory) {
-                typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports)) :
+                typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
                 typeof define === 'function' && define.amd ? define('test', ['exports'], factory) :
                     (factory(global.test));
                 }(this, (function (exports) { 'use strict';
@@ -1791,7 +1793,7 @@ runInEachFileSystem(() => {
             case 'inlined_with_suffix':
               fileHeaderWithUmd = `
               (function (global, factory) {
-                typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports)) :
+                typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
                 typeof define === 'function' && define.amd ? define('test', ['exports'], factory) :
                     (factory(global.test));
                 }(this, (function (exports) { 'use strict';
