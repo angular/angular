@@ -18,7 +18,7 @@ import {DefinePropertyReexportStatement, ExportDeclaration, ExportsStatement, ex
 import {getInnerClassDeclaration, getOuterNodeFromInnerDeclaration, isAssignment} from './esm2015_host';
 import {Esm5ReflectionHost} from './esm5_host';
 import {NgccClassSymbol} from './ngcc_host';
-import {RequireAtLeastOneNonNullable, stripParentheses} from './utils';
+import {stripParentheses} from './utils';
 
 export class UmdReflectionHost extends Esm5ReflectionHost {
   protected umdModules =
@@ -629,20 +629,19 @@ function parseUmdWrapperFunction(wrapperFn: ts.FunctionExpression): UmdModule['f
         'statement):\n' + wrapperFn.body.getText());
   }
 
-  const factoryCalls = {
-    amdDefine: getAmdDefineCall(conditionalFactoryCalls),
-    commonJs: getCommonJsFactoryCall(conditionalFactoryCalls),
-    commonJs2: getCommonJs2FactoryCall(conditionalFactoryCalls),
-    global: getGlobalFactoryCall(conditionalFactoryCalls),
-  };
+  const amdDefine = getAmdDefineCall(conditionalFactoryCalls);
+  const commonJs = getCommonJsFactoryCall(conditionalFactoryCalls);
+  const commonJs2 = getCommonJs2FactoryCall(conditionalFactoryCalls);
+  const global = getGlobalFactoryCall(conditionalFactoryCalls);
+  const cjsCallForImports = commonJs2 || commonJs;
 
-  if (factoryCalls.commonJs === null && factoryCalls.commonJs2 === null) {
+  if (cjsCallForImports === null) {
     throw new Error(
         'Unable to find a CommonJS or CommonJS2 factory call inside the UMD wrapper function:\n' +
         stmt.getText());
   }
 
-  return factoryCalls as RequireAtLeastOneNonNullable<typeof factoryCalls, 'commonJs'|'commonJs2'>;
+  return {amdDefine, commonJs, commonJs2, global, cjsCallForImports};
 }
 
 /**
@@ -836,7 +835,7 @@ function isTypeOf(node: ts.Expression, ...types: string[]): boolean {
 export function getImportsOfUmdModule(umdModule: UmdModule):
     {parameter: ts.ParameterDeclaration, path: string}[] {
   const imports: {parameter: ts.ParameterDeclaration, path: string}[] = [];
-  const cjsFactoryCall = umdModule.factoryCalls.commonJs2 ?? umdModule.factoryCalls.commonJs!;
+  const cjsFactoryCall = umdModule.factoryCalls.cjsCallForImports;
 
   // Some UMD formats pass `exports` as the first argument to the factory call, while others don't.
   // Compute the index at which the dependencies start (i.e. the index of the first `require` call).
@@ -857,9 +856,9 @@ export function getImportsOfUmdModule(umdModule: UmdModule):
 interface UmdModule {
   wrapperFn: ts.FunctionExpression;
   factoryFn: ts.FunctionExpression;
-  factoryCalls: RequireAtLeastOneNonNullable<
-      Record<'amdDefine'|'commonJs'|'commonJs2'|'global', ts.CallExpression|null>,
-      'commonJs'|'commonJs2'>;
+  factoryCalls: Record<'amdDefine'|'commonJs'|'commonJs2'|'global', ts.CallExpression|null>&{
+    cjsCallForImports: ts.CallExpression;
+  };
 }
 
 /**
