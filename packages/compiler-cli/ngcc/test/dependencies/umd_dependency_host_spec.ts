@@ -147,6 +147,16 @@ runInEachFileSystem(() => {
             expect(dependencies.has(_('/node_modules/lib_1'))).toBe(true);
             expect(dependencies.has(_('/node_modules/lib_1/sub_1'))).toBe(true);
           });
+
+          it('should correctly report errors for invalid source files', () => {
+            const {dependencies, missing, deepImports} = createDependencyInfo();
+
+            expect(
+                () => host.collectDependencies(
+                    _('/invalid/format/index.js'), {dependencies, missing, deepImports}))
+                .toThrowError(
+                    /^UMD wrapper body is not in a supported format \(expected a conditional expression or if statement\)/);
+          });
         });
 
         function setupMockFileSystem(): void {
@@ -172,6 +182,16 @@ runInEachFileSystem(() => {
               contents: '{"esm2015": "./index.js"}'
             },
             {name: _('/no/imports/but/cannot/skip/index.metadata.json'), contents: 'MOCK METADATA'},
+            {
+              name: _('/invalid/format/index.js'),
+              contents: `
+                (function (global, factory) {
+                  const invalidWrapperFunctionFormat = require('true');
+                }(this, function () {}));
+              `,
+            },
+            {name: _('/invalid/format/package.json'), contents: '{"esm2015": "./index.js"}'},
+            {name: _('/invalid/format/index.metadata.json'), contents: 'MOCK METADATA'},
             {
               name: _('/external/imports/index.js'),
               contents: umd('imports_index', ['lib_1', 'lib_1/sub_1'])
