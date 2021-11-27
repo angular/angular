@@ -220,7 +220,7 @@ Any unique value will do, but using a descriptive name is helpful.
 
 2. You can now remove the diagnostic messages that show interpolated values.
 
-3. To confirm that two-way data binding works for the entire hero model, add a new text binding with the [`json` pipe](api/common/JsonPipe) (which would serialize the data to a string) at the top to the component's template.
+3. To confirm that two-way data binding works for the entire hero model, add a new text binding with the [`json`](api/common/JsonPipe) pipe (which would serialize the data to a string) at the top to the component's template.
 
 After these revisions, the form template should look like the following:
 
