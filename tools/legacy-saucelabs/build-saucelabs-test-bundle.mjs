@@ -104,7 +104,7 @@ async function findSpecFiles() {
 async function createEntryPointSpecFile() {
   const testFiles = await findSpecFiles();
 
-  let specEntryPointFile = `import './tools/testing/init_browser_spec.ts';`;
+  let specEntryPointFile = `import './tools/legacy-saucelabs/test-init.ts';`;
   let i = 0;
   const testNamespaces = [];
 
