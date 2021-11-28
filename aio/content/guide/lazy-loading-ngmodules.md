@@ -147,7 +147,7 @@ Then go to `localhost:4200` where you should see “customer-app” and three bu
   <img src="generated/images/guide/lazy-loading-ngmodules/three-buttons.png" width="300" alt="three buttons in the browser">
 </div>
 
-These buttons work, because the CLI automatically added the routes to the feature modules to the `routes` array in `app.module.ts`.
+These buttons work, because the CLI automatically added the routes to the feature modules to the `routes` array in `app-routing.module.ts`.
 
 {@a config-routes}
 
