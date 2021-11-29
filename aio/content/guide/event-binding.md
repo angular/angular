@@ -8,6 +8,10 @@ See the <live-example></live-example> for a working example containing the code 
 
 </div>
 
+## Prerequisites
+
+* TBD
+
 ## Binding to events
 
 To bind to an event you use the Angular event binding syntax.
@@ -82,3 +86,5 @@ If the target event name, `myClick` fails to match an element event or an output
 ## What's next
 
 For more information on how event binding works, see [How event binding works](guide/event-binding-concepts).
+
+@reviewed 2021-11-29
