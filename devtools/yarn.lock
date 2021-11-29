@@ -1742,14 +1742,14 @@
   resolved "https://registry.yarnpkg.com/@bazel/buildifier/-/buildifier-4.2.3.tgz#2c6e54faa12e31b75051834cf1cfa68c71678262"
   integrity sha512-19GqPhxlyh376mJT6kvvNAJbRCjDj4WFjqy+sT2LAMt5THMGSES8+lwde5J1jwpud/mqrNUIRjEzVZR5A/6+BA==
 
-"@bazel/concatjs@^3.7.0":
-  version "3.8.0"
-  resolved "https://registry.yarnpkg.com/@bazel/concatjs/-/concatjs-3.8.0.tgz#a6b2483f7799c58652fbe5347ab2b3063a1ae6ad"
-  integrity sha512-Qi/Glf407LKz7wC3VAGwtm+Sjr/b+RLv7ESdlMekOlzMCK83OWA0aNhKtbSKZ36hJ/ToDgEWtjus7o6svsJECQ==
+"@bazel/concatjs@4.3.0":
+  version "4.3.0"
+  resolved "https://registry.yarnpkg.com/@bazel/concatjs/-/concatjs-4.3.0.tgz#cf5be6aec1c6902e10051bba860cd9179048fe71"
+  integrity sha512-rhPMEMebdY/AVlbohaV2jJvVE3S3hNlJFZ4Be2rIgaBY7+l2u2FR24aYbFwwtzhpBS2wgqc9SfQPPXSDd0NWag==
   dependencies:
     protobufjs "6.8.8"
     source-map-support "0.5.9"
-    tsutils "2.27.2"
+    tsutils "3.21.0"
 
 "@bazel/cypress@^4.4.5":
   version "4.4.5"
@@ -11928,13 +11928,6 @@ tslint@~5.20.0:
     semver "^5.3.0"
     tslib "^1.8.0"
     tsutils "^2.29.0"
-
-tsutils@2.27.2:
-  version "2.27.2"
-  resolved "https://registry.yarnpkg.com/tsutils/-/tsutils-2.27.2.tgz#60ba88a23d6f785ec4b89c6e8179cac9b431f1c7"
-  integrity sha512-qf6rmT84TFMuxAKez2pIfR8UCai49iQsfB7YWVjV1bKpy/d0PWT5rEOSM6La9PiHZ0k1RRZQiwVdVJfQ3BPHgg==
-  dependencies:
-    tslib "^1.8.1"
 
 tsutils@3.21.0:
   version "3.21.0"
