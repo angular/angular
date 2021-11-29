@@ -1,94 +1,84 @@
-# Dependency injection in Angular
+# Understanding dependency injection
 
-Dependencies are services or objects that a class needs to perform its function.
-Dependency injection, or DI, is a design pattern in which a class requests dependencies from external sources rather than creating them.
+Dependency injection, or DI, is one of the fundamental concepts in Angular. DI is wired into the Angular framework and allows classes with Angular decorators, such as Components, Directives, Pipes, and Injectables, to configure dependencies that they need. 
 
-Angular's DI framework provides dependencies to a class upon instantiation.
-Use Angular DI to increase flexibility and modularity in your applications.
+Two main roles exist in the DI system: dependency consumer and dependency provider. 
 
-<div class="alert is-helpful">
+Angular facilitates the interaction between dependency consumers and dependency providers using an abstraction called [Injector](guide/glossary#injector). When a dependency is requested, the injector checks its registry to see if there is an instance already available there. If not, a new instance is created and stored in the registry. Angular creates an application-wide injector (also known as "root" injector) during the application bootstrap process, as well as any other injectors as needed. In most cases you don't need to manually create injectors, but you should know that there is a layer that connects providers and consumers.
 
-See the <live-example></live-example> for a working example containing the code snippets in this guide.
+This topic covers basic scenarios of how a class can act as a dependency. Angular also allows you to use functions, objects, primitive types such as string or Boolean, or any other types as dependencies. For more information, see [Dependency providers](guide/dependency-injection-providers].
 
-</div>
+## Providing dependency
 
-## Creating an injectable service
+Imagine there is a class called HeroService that needs to act as a dependency in a component.
 
-To create a new `HeroService` class in the `src/app/heroes` directory, use the following command.
+The first step is to add the @Injectable decorator to show that the class can be injected.
 
-<code-example format="shell" header="Generate the heroes/hero service" language="shell">
-
-ng generate service heroes/hero
-
+<code-example language="typescript">
+@Injectable()
+class HeroService {}
 </code-example>
 
-This command creates the following default `HeroService`.
+The next step is to make it available in the DI by providing it.  A dependency can be provided in multiple places:
 
-<code-example header="src/app/heroes/hero.service.ts (CLI-generated)" path="dependency-injection/src/app/heroes/hero.service.0.ts"></code-example>
+* At the Component level, using the `providers` field of the `@Component` decorator. In this case the `HeroService` becomes available to all instances of this component and other components and directives used in the template. For example:
 
-The `@Injectable()` decorator specifies that Angular can use this class in the DI system.
-The metadata, `providedIn: 'root'`, means that the `HeroService` is visible throughout the application.
+<code-example language="typescript">
+@Component({
+  selector: 'hero-list,
+  template: '...',
+  providers: [HeroService]
+})
+class HeroListComponent {}
+</code-example>
 
-Next, to get the hero mock data, add a `getHeroes()` method that returns the heroes from `mock.heroes.ts`.
+When you register a provider at the component level, you get a new instance of the service with each new instance of that component.
 
-<code-example header="src/app/heroes/hero.service.ts" path="dependency-injection/src/app/heroes/hero.service.3.ts"></code-example>
+* At the NgModule level, using the `providers` field of the `@NgModule` decorator. In this scenario, the `HeroService` is available to all components, directives and pipes declared in this NgModule. For example:
 
-For clarity and maintainability, it is recommended that you define components and services in separate files.
+<code-example language="typescript">
+@NgModule({
+  declarations: [HeroListComponent]
+  providers: [HeroService]
+})
+class HeroListModule {}
+</code-example>
 
-If you do combine a component and service in the same file, it is important to define the service first, and then the component.
-If you define the component before the service, Angular returns a run-time null reference error.
+When you register a provider with a specific NgModule, the same instance of a service is available to all components in that NgModule.
 
-<a id="injector-config"></a>
-<a id="bootstrap"></a>
+* At the application root level, which allows injecting it into other classes in the application. This can be done by adding the `providedIn: 'root'` field to the `@Injectable` decorator:
 
-## Injecting services
+<code-example language="typescript">
+@Injectable({
+  providedIn: 'root'
+})
+class HeroService {}
+</code-example>
 
-Injecting services lets a component access their features and data.
+When you provide the service at the root level, Angular creates a single, shared instance of the `HeroService` and injects it into any class that asks for it. Registering the provider in the `@Injectable` metadata also allows Angular to optimize an app by removing the service from the compiled application if it isn't used, a process known as tree-shaking.
 
-To inject a dependency in a component's `constructor()`, supply a constructor argument with the dependency type.
-The following example specifies the `HeroService` in the `HeroListComponent` constructor.
-The type of `heroService` is `HeroService`.
+## Providing dependency
 
-<code-example header="src/app/heroes/hero-list.component (constructor signature)" path="dependency-injection/src/app/heroes/hero-list.component.ts"
-region="ctor-signature"></code-example>
+The most common way to inject a dependency is to declare it in a class constructor. When Angular creates a new instance of a component, directive, or pipe class, it determines which services or other dependencies that class needs by looking at the constructor parameter types. For example, if the `HeroListComponent` needs the `HeroService`, the constructor can look like this:
 
-For more information, see [Providing dependencies in modules](guide/providers) and [Hierarchical injectors](guide/hierarchical-dependency-injection).
+<code-example language="typescript">
+@Component({ … })
+class HeroListComponent {
+  constructor(private service: HeroService) {}
+}
+</code-example>
 
-<a id="service-needs-service"></a>
+When Angular discovers that a component depends on a service, it first checks if the injector has any existing instances of that service. If a requested service instance doesn't yet exist, the injector creates one using the registered provider, and adds it to the injector before returning the service to Angular.
 
-## Using services in other services
+When all requested services have been resolved and returned, Angular can call the component's constructor with those services as arguments.
 
-When a service depends on another service, follow the same pattern as injecting into a component.
-In the following example `HeroService` depends on a `Logger` service to report its activities.
-
-First, import the `Logger` service.
-Next, inject the `Logger` service in the `HeroService` `constructor()` by specifying `private logger: Logger` within the parentheses.
-
-When you create a class whose `constructor()` has parameters, specify the type and metadata about those parameters so that Angular can inject the correct service.
-
-Here, `constructor()` specifies a type of `Logger` and stores the instance of `Logger` in a private field called `logger`.
-
-The following code tabs feature the `Logger` service and two versions of `HeroService`. 
-`HeroService (v2)` depends on `Logger` service, while `HeroService (v1)` doesn't depend on the `Logger` service.
-
-<code-tabs>
-    <code-pane header="src/app/heroes/hero.service (v2)" path="dependency-injection/src/app/heroes/hero.service.2.ts"></code-pane>
-    <code-pane header="src/app/heroes/hero.service (v1)" path="dependency-injection/src/app/heroes/hero.service.1.ts"></code-pane>
-    <code-pane header="src/app/logger.service" path="dependency-injection/src/app/logger.service.ts"></code-pane>
-</code-tabs>
-
-In this example, the `getHeroes()` method uses the `Logger` service by logging a message when fetching heroes.
+<div class="lightbox">
+  <img src="generated/images/guide/architecture/injector-injects.png" alt="Service" class="left">
+</div>
 
 ## What's next
 
-*   [Dependency providers](guide/dependency-injection-providers)
-*   [DI tokens and providers](guide/dependency-injection-providers)
-*   [Dependency Injection in Action](guide/dependency-injection-in-action)
+* [Creating and injecting services](guide/creating-injectable-service)
+* [Dependency Injection in Action](guide/dependency-injection-in-action)
 
-<!-- links -->
-
-<!-- external links -->
-
-<!-- end links -->
-
-@reviewed 2022-02-28
+@reviewed 2022-08-02
