@@ -4,11 +4,16 @@
   "title": "Material MDC Migration Schema",
   "type": "object",
   "properties": {
-    "path": {
+    "tsconfig": {
       "type": "string",
       "format": "path",
-      "description": "The path to migrate. (Defaults to the current working directory)",
-      "alias": "p",
+      "description": "Workspace-relative path to the TypeScript project that should be migrated."
+    },
+    "directory": {
+      "type": "string",
+      "format": "path",
+      "description": "Workspace-relative path to a directory which will be migrated.",
+      "alias": "d",
       "default": ""
     },
     "components": {

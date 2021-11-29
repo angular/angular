@@ -1,0 +1,89 @@
+load("@build_bazel_rules_nodejs//:index.bzl", "copy_to_bin")
+load("//tools:defaults.bzl", "esbuild", "jasmine_node_test", "pkg_npm", "spec_bundle", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+STATIC_ASSETS = [
+    "schema.json",
+]
+
+ts_library(
+    name = "mdc_migration_lib",
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = ["**/*.spec.ts"],
+    ),
+    deps = [
+        "//src/cdk/schematics",
+        "@npm//@angular-devkit/schematics",
+        "@npm//@types/node",
+    ],
+)
+
+esbuild(
+    name = "mdc_migration_bundle",
+    entry_point = ":index.ts",
+    external = [
+        "@angular/cdk/schematics",
+        "@angular-devkit/schematics",
+        "@angular-devkit/core",
+    ],
+    format = "cjs",
+    output = "index_bundled.js",
+    platform = "node",
+    target = "es2015",
+    deps = [":mdc_migration_lib"],
+)
+
+pkg_npm(
+    name = "npm_package",
+    srcs = STATIC_ASSETS,
+    deps = [":mdc_migration_bundle"],
+)
+
+########################################
+#   Testing configuration              #
+########################################
+
+ts_library(
+    name = "unit_tests_lib",
+    testonly = True,
+    srcs = glob(["**/*.spec.ts"]),
+    deps = [
+        ":mdc_migration_lib",
+        "//src/cdk/schematics/testing",
+        "@npm//@angular-devkit/core",
+        "@npm//@angular-devkit/schematics",
+        "@npm//@bazel/runfiles",
+        "@npm//@types/jasmine",
+        "@npm//@types/node",
+    ],
+)
+
+spec_bundle(
+    name = "unit_tests_bundle",
+    platform = "node",
+    deps = [":unit_tests_lib"],
+)
+
+copy_to_bin(
+    name = "unit_tests_assets",
+    testonly = True,
+    srcs = STATIC_ASSETS,
+)
+
+jasmine_node_test(
+    name = "unit_tests",
+    data = [
+        ":mdc_migration_bundle",
+        ":unit_tests_assets",
+        "//src/material/schematics:schematics_assets",
+    ],
+    deps = [
+        ":unit_tests_bundle",
+        # Runtime dependencies needed by the test and actual migration sources. These need
+        # to be specified explicitly here because they are not captured by the bundling.
+        "//src/cdk/schematics",
+        "@npm//@schematics/angular",
+    ],
+)

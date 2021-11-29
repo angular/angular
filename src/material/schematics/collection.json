@@ -47,7 +47,7 @@
     },
     "mdcMigration": {
       "description": "Migrate to MDC-based Angular Material components",
-      "factory": "./ng-generate/mdc-migration/index",
+      "factory": "./ng-generate/mdc-migration/index_bundled",
       "schema": "./ng-generate/mdc-migration/schema.json",
       "aliases": ["mdc-migration"]
     }

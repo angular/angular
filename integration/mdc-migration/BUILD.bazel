@@ -20,7 +20,7 @@ node_integration_test(
         # See: https://github.com/yarnpkg/yarn/issues/2165.
         # TODO(devversion): determine if a solution/workaround could live in the test runner.
         "yarn install --cache-folder .yarn_cache_folder/",
-        "yarn ng generate @angular/material:mdc-migration -c all",
+        "yarn ng generate @angular/material:mdc-migration -c all --tsconfig tsconfig.app.json",
         "yarn test",
     ],
     npm_packages = npmPackageMappings,

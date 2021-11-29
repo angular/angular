@@ -7,8 +7,10 @@
  */
 
 import {Rule, SchematicContext, Tree} from '@angular-devkit/schematics';
-import * as path from 'path';
 import {Schema} from './schema';
+import {DevkitFileSystem, UpdateProject, findStylesheetFiles} from '@angular/cdk/schematics';
+import {ThemingStylesMigration} from './rules/theming-styles';
+import {dirname} from 'path';
 
 /** Groups of components that must be migrated together. */
 const migrationGroups = [
@@ -51,10 +53,39 @@ function getComponentsToMigrate(requested: string[]): Set<string> {
 
 export default function (options: Schema): Rule {
   const componentsToMigrate = getComponentsToMigrate(options.components);
-  // TOOD(mmalerba): Use a workspace-releative rather than absolute path.
-  const pathToMigrate = path.resolve(options.path ?? process.cwd());
+  const tsconfigPath = options.tsconfig;
+  const migrationDir = options.directory ?? dirname(tsconfigPath);
 
-  console.log('Will migrate', [...componentsToMigrate], 'for', pathToMigrate);
+  console.log('Migrating:', [...componentsToMigrate]);
+  console.log('Directory:', migrationDir);
 
-  return (tree: Tree, context: SchematicContext) => tree;
+  return (tree: Tree, context: SchematicContext) => {
+    const fileSystem = new DevkitFileSystem(tree);
+    const program = UpdateProject.createProgramFromTsconfig(
+      fileSystem.resolve(tsconfigPath),
+      fileSystem,
+    );
+
+    const additionalStylesheetPaths = findStylesheetFiles(tree, migrationDir);
+    const project = new UpdateProject(context, program, fileSystem, new Set(), context.logger);
+    const {hasFailures} = project.migrate(
+      [ThemingStylesMigration],
+      null,
+      null,
+      additionalStylesheetPaths,
+    );
+
+    // Commit all recorded edits in the update recorder. We apply the edits after all
+    // migrations ran because otherwise offsets in the TypeScript program would be
+    // shifted and individual migrations could no longer update the same source file.
+    fileSystem.commitEdits();
+
+    if (hasFailures) {
+      context.logger.error('Unable to migrate project. See errors above.');
+    } else {
+      context.logger.info('Successfully migrated the project.');
+    }
+
+    return tree;
+  };
 }
