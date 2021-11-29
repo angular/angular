@@ -79,3 +79,5 @@ To display a selected hero using `*ngIf`:
    <code-example path="toh-pt2/src/app/heroes/heroes.component.html" region="ng-if" header="src/app/heroes/heroes.component.html (*ngIf)"></code-example>
 
 Notice the `div` element that includes the `*ngIf`. This directive ensures that the application renders the hero details section only after the user selects a hero from the list.
+
+<!-- TODO: Add what's next -->
