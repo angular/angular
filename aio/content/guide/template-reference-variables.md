@@ -1,4 +1,4 @@
-# Template variables
+# Understanding template variables
 
 Template variables help you use data from one part of a template in another part of the template.
 Use template variables to perform tasks such as respond to user input or finely tune your application's forms.
@@ -16,6 +16,10 @@ A template variable can refer to the following:
 See the <live-example></live-example> for a working example containing the code snippets in this guide.
 
 </div>
+
+## Prerequisites
+
+* TBD
 
 ## Syntax
 
@@ -176,3 +180,9 @@ A template variable refers to its attached element, component, or directive.
 
 Template input variables and template variables names have their own namespaces.
 The template input variable `hero` in `let hero` is distinct from the template variable `hero` in `#hero`.
+
+## What’s next
+
+* TBD
+
+@reviewed 2021-11-29
