@@ -71,6 +71,10 @@ export function getVersionUpgradeData<
   T extends keyof UpgradeData,
   U = ValueOfChanges<UpgradeData[T]>,
 >(migration: Migration<UpgradeData>, dataName: T): U[] {
+  if (migration.targetVersion === null) {
+    return [];
+  }
+
   // Note that below we need to cast to `unknown` first TS doesn't infer the type of T correctly.
   return getChangesForTarget<U>(
     migration.targetVersion,

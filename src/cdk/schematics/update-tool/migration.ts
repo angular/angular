@@ -41,8 +41,11 @@ export abstract class Migration<Data, Context = any> {
     public program: ts.Program,
     /** TypeChecker instance for the analysis program. */
     public typeChecker: ts.TypeChecker,
-    /** Version for which the migration rule should run. */
-    public targetVersion: TargetVersion,
+    /**
+     * Version for which the migration rule should run. Null if the migration
+     * is invoked manually.
+     */
+    public targetVersion: TargetVersion | null,
     /** Context data for the migration. */
     public context: Context,
     /** Upgrade data passed to the migration. */

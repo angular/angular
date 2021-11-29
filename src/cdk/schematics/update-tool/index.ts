@@ -45,14 +45,15 @@ export class UpdateProject<Context> {
   /**
    * Migrates the project to the specified target version.
    * @param migrationTypes Migrations that should be run.
-   * @param target Version the project should be updated to.
+   * @param target Version the project should be updated to. Can be `null` if the set of
+   *   specified migrations runs regardless of a target version.
    * @param data Upgrade data that is passed to all migration rules.
    * @param additionalStylesheetPaths Additional stylesheets that should be migrated, if not
    *   referenced in an Angular component. This is helpful for global stylesheets in a project.
    */
   migrate<Data>(
     migrationTypes: MigrationCtor<Data, Context>[],
-    target: TargetVersion,
+    target: TargetVersion | null,
     data: Data,
     additionalStylesheetPaths?: string[],
   ): {hasFailures: boolean} {
@@ -157,7 +158,7 @@ export class UpdateProject<Context> {
    */
   private _createMigrations<Data>(
     types: MigrationCtor<Data, Context>[],
-    target: TargetVersion,
+    target: TargetVersion | null,
     data: Data,
   ): Migration<Data, Context>[] {
     const result: Migration<Data, Context>[] = [];

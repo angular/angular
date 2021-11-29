@@ -990,7 +990,7 @@ export class HammerGesturesMigration extends DevkitMigration<null> {
   }
 
   /** Gets whether the migration is allowed to run for specified target version. */
-  private static _isAllowedVersion(target: TargetVersion) {
+  private static _isAllowedVersion(target: TargetVersion | null) {
     // This migration is only allowed to run for v9 or v10 target versions.
     return target === TargetVersion.V9 || target === TargetVersion.V10;
   }
