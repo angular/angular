@@ -60,6 +60,26 @@ export const NG_VALIDATORS = new InjectionToken<Array<Validator|Function>>('NgVa
  *
  * @see `NG_VALIDATORS`
  *
+ * @usageNotes
+ *
+ * ### Provide a custom async validator directive
+ *
+ * The following example implements the `AsyncValidator` interface to create an
+ * async validator directive with a custom error key.
+ *
+ * ```typescript
+ * @Directive({
+ *   selector: '[customAsyncValidator]',
+ *   providers: [{provide: NG_ASYNC_VALIDATORS, useExisting: CustomAsyncValidatorDirective, multi:
+ * true}]
+ * })
+ * class CustomAsyncValidatorDirective implements AsyncValidator {
+ *   validate(control: AbstractControl): Promise<ValidationErrors|null> {
+ *     return Promise.resolve({'custom': true});
+ *   }
+ * }
+ * ```
+ *
  * @publicApi
  */
 export const NG_ASYNC_VALIDATORS =
