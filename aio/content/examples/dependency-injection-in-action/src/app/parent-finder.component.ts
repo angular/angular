@@ -13,26 +13,18 @@ export abstract class Parent { abstract name: string; }
 
 const DifferentParent = Parent;
 
-// #docregion provide-parent, provide-the-parent
 // Helper method to provide the current component instance in the name of a `parentType`.
-// #enddocregion provide-the-parent
 // The `parentType` defaults to `Parent` when omitting the second parameter.
-// #docregion provide-the-parent
 export function provideParent
-// #enddocregion provide-the-parent
   (component: any, parentType?: any) {
     return { provide: parentType || Parent, useExisting: forwardRef(() => component) };
   }
-// #enddocregion provide-parent
 
 // Simpler syntax version that always provides the component in the name of `Parent`.
 export function provideTheParent
-// #docregion provide-the-parent
   (component: any) {
     return { provide: Parent, useExisting: forwardRef(() => component) };
   }
-// #enddocregion provide-the-parent
-
 
 ///////// C - Child //////////
 const templateC = `
@@ -119,9 +111,7 @@ export class BobComponent implements Parent {
 @Component({
   selector:   'beth',
   template:   templateB,
-// #docregion beth-providers
   providers:  [ provideParent(BethComponent, DifferentParent) ]
-// #enddocregion beth-providers
 })
 export class BethComponent implements Parent {
   name = 'Beth';
@@ -169,9 +159,7 @@ export class AlexComponent extends Base
       <bob></bob>
       <carol></carol>
     </div> `,
-// #docregion alice-providers
   providers:  [ provideParent(AliceComponent) ]
-// #enddocregion alice-providers
 })
 // #docregion alice-class-signature
 export class AliceComponent implements Parent

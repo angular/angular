@@ -277,14 +277,29 @@
           "tooltip": "Dependency Injection: creating and injecting services",
           "children": [
             {
+              "url": "guide/dependency-injection-overview",
+              "title": "Dependency injection in Angular",
+              "tooltip": "Dependency injection is a design pattern in which a class requests dependencies from external sources."
+            },          
+            {
               "url": "guide/dependency-injection",
-              "title": "Angular Dependency Injection",
+              "title": "Understanding Dependency Injection",
               "tooltip": "Angular's dependency injection system creates and delivers dependent services to Angular-created classes."
             },
             {
+              "url": "guide/creating-injectable-service",
+              "title": "Creating an injectable service",
+              "tooltip": "Example of creating an injectable service."
+            },
+            {
               "url": "guide/dependency-injection-providers",
-              "title": "DI Providers",
-              "tooltip": "More about the different kinds of providers."
+              "title": "Defining Dependency providers",
+              "tooltip": "A provider factory function is a plain function that Angular can call to create a dependency."
+            },
+            {
+              "url": "guide/hierarchical-dependency-injection",
+              "title": "Hierarchical injectors",
+              "tooltip": "Hierarchical dependency injection enables you to share dependencies between different parts of the application only when and if you need to."
             }
           ]
         }
@@ -924,11 +939,6 @@
                   "tooltip": "About Components, Templates, and Views."
                 },
                 {
-                  "url": "guide/architecture-services",
-                  "title": "Intro to Services and DI",
-                  "tooltip": "About services and dependency injection."
-                },
-                {
                   "url": "guide/architecture-next-steps",
                   "title": "Next Steps",
                   "tooltip": "Beyond the basics."
@@ -1083,11 +1093,6 @@
               "title": "Dependency injection",
               "tooltip": "Using dependency injection in Angular.",
               "children": [
-                {
-                  "url": "guide/hierarchical-dependency-injection",
-                  "title": "Hierarchical Injectors",
-                  "tooltip": "An injector tree parallels the component tree and supports nested dependencies."
-                },
                 {
                   "url": "guide/dependency-injection-in-action",
                   "title": "DI in Action",

@@ -1687,7 +1687,6 @@ And for the phone list component, a few adjustments to the router make the `Rout
 [AioGuideAotCompiler]: guide/aot-compiler "Ahead-of-time (AOT) compilation | Angular"
 [AioGuideBuiltInDirectives]: guide/built-in-directives "Built-in directives | Angular"
 [AioGuideDependencyInjection]: guide/dependency-injection "Dependency injection in Angular | Angular"
-[AioGuideDependencyInjectionProvidersFactoryProviders]: guide/dependency-injection-providers#factory-providers "Using factory providers - Dependency providers | Angular"
 [AioGuideGlossaryLazyLoading]: guide/glossary#lazy-loading "lazy loading - Glossary | Angular"
 [AioGuideHierarchicalDependencyInjection]: guide/hierarchical-dependency-injection "Hierarchical injectors | Angular"
 [AioGuideLifecycleHooks]: guide/lifecycle-hooks "Lifecycle hooks | Angular"

@@ -496,7 +496,7 @@ You also have the option of switching to the `HashLocationStrategy` with an over
 
 <div class="alert is-helpful">
 
-For more information on providers and the bootstrap process, see [Dependency Injection](guide/dependency-injection#bootstrap).
+For more information on providers and the bootstrap process, see [Dependency Injection](guide/dependency-injection-providers).
 
 </div>
 
