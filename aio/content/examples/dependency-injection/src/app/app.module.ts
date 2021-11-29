@@ -29,15 +29,11 @@ import { ProvidersModule } from './providers.module';
     InjectorComponent,
     TestComponent
   ],
-  // #docregion providers
   providers: [
-    // #enddocregion providers
     Logger,
-    // #docregion providers
     UserService,
     { provide: APP_CONFIG, useValue: HERO_DI_CONFIG }
   ],
-  // #enddocregion providers
   exports: [ CarComponent, HeroesComponent ],
   bootstrap: [ AppComponent ]
 })

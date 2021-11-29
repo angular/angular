@@ -21,9 +21,7 @@ import { Logger } from './logger.service';
 export class InjectorComponent {
   car: Car;
 
-  // #docregion get-hero-service
   heroService: HeroService;
-  // #enddocregion get-hero-service
   hero: Hero;
 
   constructor(private injector: Injector) {
