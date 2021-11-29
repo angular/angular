@@ -114,3 +114,12 @@ export function createFileSystemCompilerHost(
 
   return host;
 }
+
+/** Creates a format diagnostic host that works with the given file system. */
+export function createFormatDiagnosticHost(fileSystem: FileSystem): ts.FormatDiagnosticsHost {
+  return {
+    getCanonicalFileName: p => fileSystem.resolve(p),
+    getCurrentDirectory: () => '/',
+    getNewLine: () => '\n',
+  };
+}

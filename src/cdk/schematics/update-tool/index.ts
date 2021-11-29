@@ -183,6 +183,8 @@ export class UpdateProject<Context> {
   /**
    * Creates a program form the specified tsconfig and patches the host
    * to read files and directories through the given file system.
+   *
+   * @throws {TsconfigParseError} If the tsconfig could not be parsed.
    */
   static createProgramFromTsconfig(tsconfigPath: WorkspacePath, fs: FileSystem): ts.Program {
     const parsed = parseTsconfigFile(fs.resolve(tsconfigPath), fs);

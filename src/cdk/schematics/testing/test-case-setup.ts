@@ -73,7 +73,7 @@ export async function createTestCaseSetup(
   runner.logger.subscribe(entry => (logOutput += `${entry.message}\n`));
   const {appTree, writeFile} = await createFileSystemTestApp(runner);
 
-  _patchTypeScriptDefaultLib(appTree);
+  patchDevkitTreeToExposeTypeScript(appTree);
 
   // Write each test-case input to the file-system. This is necessary because otherwise
   // TypeScript compiler API won't be able to pick up the test cases.
@@ -222,7 +222,7 @@ export function defineJasmineTestCases(
  * default library typings. These need to be readable in unit tests because otherwise
  * type checking within migration rules is not working as in real applications.
  */
-export function _patchTypeScriptDefaultLib(tree: Tree) {
+export function patchDevkitTreeToExposeTypeScript<T extends Tree>(tree: T): T {
   const _originalRead = tree.read;
   tree.read = function (filePath: Path) {
     // In case a file within the TypeScript package is requested, we read the file from
@@ -235,4 +235,5 @@ export function _patchTypeScriptDefaultLib(tree: Tree) {
       return _originalRead.call(this, filePath);
     }
   };
+  return tree;
 }

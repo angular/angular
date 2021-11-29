@@ -9,6 +9,7 @@
 export * from './data/index';
 export * from './devkit-migration';
 export * from './devkit-migration-rule';
+export * from './devkit-file-system';
 export * from './html-parsing/angular';
 export * from './html-parsing/elements';
 export * from './typescript/base-types';

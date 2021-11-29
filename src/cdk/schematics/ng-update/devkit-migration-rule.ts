@@ -100,7 +100,8 @@ export function createMigrationSchematicRule(
       // In some applications, developers will have global stylesheets which are not
       // specified in any Angular component. Therefore we glob up all CSS and SCSS files
       // in the project and migrate them if needed.
-      // TODO: rework this to collect global stylesheets from the workspace config. COMP-280.
+      // TODO: rework this to collect global stylesheets from the workspace config.
+      // TODO: https://github.com/angular/components/issues/24032.
       const additionalStylesheetPaths = findStylesheetFiles(tree, project.root);
 
       if (buildTsconfigPath !== null) {
