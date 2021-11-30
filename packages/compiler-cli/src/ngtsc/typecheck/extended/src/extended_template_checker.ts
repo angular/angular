@@ -29,7 +29,8 @@ export class ExtendedTemplateCheckerImpl implements ExtendedTemplateChecker {
     for (const factory of templateCheckFactories) {
       // Read the diagnostic category from compiler options.
       const category = diagnosticLabelToCategory(
-          options?.extendedDiagnostics?.checks?.[factory.name] ?? DiagnosticCategoryLabel.Warning);
+          options?.extendedDiagnostics?.checks?.[factory.name] ??
+          options?.extendedDiagnostics?.defaultCategory ?? DiagnosticCategoryLabel.Warning);
 
       // Skip the diagnostic if suppressed via compiler options.
       if (category === null) {
