@@ -504,6 +504,18 @@
     "name": "UnsubscriptionError"
   },
   {
+    "name": "UntypedFormArray"
+  },
+  {
+    "name": "UntypedFormBuilder"
+  },
+  {
+    "name": "UntypedFormControl"
+  },
+  {
+    "name": "UntypedFormGroup"
+  },
+  {
     "name": "VERSION"
   },
   {
@@ -993,9 +1005,6 @@
     "name": "getPromiseCtor"
   },
   {
-    "name": "getRawValue"
-  },
-  {
     "name": "getSelectedIndex"
   },
   {
@@ -1131,13 +1140,10 @@
     "name": "isEmptyInputValue"
   },
   {
-    "name": "isFormArray"
-  },
-  {
-    "name": "isFormControl"
-  },
-  {
     "name": "isFormGroup"
+  },
+  {
+    "name": "isFormState"
   },
   {
     "name": "isForwardRef"
