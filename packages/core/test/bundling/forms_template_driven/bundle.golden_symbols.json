@@ -420,9 +420,6 @@
     "name": "RadioControlRegistryModule"
   },
   {
-    "name": "RecordViewTuple"
-  },
-  {
     "name": "RefCountOperator"
   },
   {
@@ -643,6 +640,9 @@
   },
   {
     "name": "applyView"
+  },
+  {
+    "name": "applyViewChange"
   },
   {
     "name": "attachInjectFlag"
