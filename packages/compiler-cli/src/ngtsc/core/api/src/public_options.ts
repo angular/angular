@@ -286,6 +286,12 @@ export interface DiagnosticOptions {
   /** Options which control how diagnostics are emitted from the compiler. */
   extendedDiagnostics?: {
     /**
+     * The category to use for configurable diagnostics which are not overridden by `checks`. Uses
+     * `warning` by default.
+     */
+    defaultCategory?: DiagnosticCategoryLabel;
+
+    /**
      * A map of each extended template diagnostic's name to its category. This can be expanded in
      * the future with more information for each check or for additional diagnostics not part of the
      * extended template diagnostics system.

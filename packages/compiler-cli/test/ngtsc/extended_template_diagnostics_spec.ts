@@ -156,6 +156,25 @@ runInEachFileSystem(() => {
         }));
       });
 
+      it('by emitting diagnostics with the default category', () => {
+        env.tsconfig({
+          strictTemplates: true,
+          _extendedTemplateDiagnostics: true,
+          extendedDiagnostics: {
+            defaultCategory: 'error',
+          },
+        });
+
+        env.write('test.ts', warningComponent);
+
+        const diagnostics = env.driveDiagnostics(1 /* expectedExitCode */);
+        expect(diagnostics.length).toBe(1);
+        expect(diagnostics[0]).toEqual(jasmine.objectContaining({
+          code: ngErrorCode(ErrorCode.INVALID_BANANA_IN_BOX),
+          category: ts.DiagnosticCategory.Error,
+        }));
+      });
+
       it('by emitting diagnostics configured as `warning`', () => {
         env.tsconfig({
           strictTemplates: true,
