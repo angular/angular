@@ -1,11 +1,4 @@
-import {
-  Compiler,
-  Inject,
-  Injectable,
-  NgModuleFactory,
-  NgModuleRef,
-  Type,
-} from '@angular/core';
+import { Compiler, Inject, Injectable, NgModuleRef, Type } from '@angular/core';
 import { ELEMENT_MODULE_LOAD_CALLBACKS_TOKEN, WithCustomElementComponent } from './element-registry';
 import { from, Observable, of } from 'rxjs';
 import { createCustomElement } from '@angular/elements';
@@ -52,21 +45,8 @@ export class ElementsLoader {
       // Load and register the custom element (for the first time).
       const modulePathLoader = this.elementsToLoad.get(selector) as LoadChildrenCallback;
       const loadedAndRegistered =
-        (modulePathLoader() as Promise<NgModuleFactory<WithCustomElementComponent> | Type<WithCustomElementComponent>>)
-          .then(elementModuleOrFactory => {
-            /**
-             * With View Engine, the NgModule factory is created and provided when loaded.
-             * With Ivy, only the NgModule class is provided loaded and must be compiled.
-             * This uses the same mechanism as the deprecated `SystemJsNgModuleLoader` in
-             * in `packages/core/src/linker/system_js_ng_module_factory_loader.ts`
-             * to pass on the NgModuleFactory, or compile the NgModule and return its NgModuleFactory.
-             */
-            if (elementModuleOrFactory instanceof NgModuleFactory) {
-              return elementModuleOrFactory;
-            } else {
-              return this.compiler.compileModuleAsync(elementModuleOrFactory);
-            }
-          })
+        (modulePathLoader() as Promise<Type<WithCustomElementComponent>>)
+          .then(elementModule => this.compiler.compileModuleAsync(elementModule))
           .then(elementModuleFactory => {
             const elementModuleRef = elementModuleFactory.create(this.moduleRef.injector);
             const injector = elementModuleRef.injector;

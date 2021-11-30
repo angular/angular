@@ -25,13 +25,20 @@ describe('ElementsLoader', () => {
       providers: [
         ElementsLoader,
         {
-          provide: ELEMENT_MODULE_LOAD_CALLBACKS_TOKEN, useValue: new Map<
-            string, () => Promise<NgModuleFactory<WithCustomElementComponent> | Type<WithCustomElementComponent>>
-          >([
-          ['element-a-selector', () => Promise.resolve(new FakeModuleFactory('element-a-module'))],
-          ['element-b-selector', () => Promise.resolve(new FakeModuleFactory('element-b-module'))],
-          ['element-c-selector', () => Promise.resolve(FakeCustomElementModule)]
-        ])},
+          provide: Compiler,
+          useValue: {
+            compileModuleAsync: jasmine.createSpy('compileModuleAsync').and.callFake(
+                (Mod: typeof FakeCustomElementModule) => new FakeModuleFactory(Mod.modulePath)),
+          },
+        },
+        {
+          provide: ELEMENT_MODULE_LOAD_CALLBACKS_TOKEN,
+          useValue: new Map<string, () => Promise<Type<WithCustomElementComponent>>>([
+            ['element-a-selector', async () => createFakeCustomElementModule('element-a-module')],
+            ['element-b-selector', async () => createFakeCustomElementModule('element-b-module')],
+            ['element-c-selector', async () => createFakeCustomElementModule('element-c-module')],
+          ]),
+        },
       ]
     });
 
@@ -230,8 +237,7 @@ describe('ElementsLoader', () => {
     );
 
     it('should be able to load and register an element after compiling its NgModule', fakeAsync(() => {
-      const compilerSpy = spyOn(compiler, 'compileModuleAsync')
-        .and.returnValue(Promise.resolve(new FakeModuleFactory('element-c-module')));
+      const compilerSpy = compiler.compileModuleAsync as unknown as jasmine.Spy;
 
       elementsLoader.loadCustomElement('element-c-selector');
       flushMicrotasks();
@@ -239,8 +245,12 @@ describe('ElementsLoader', () => {
       expect(definedSpy).toHaveBeenCalledTimes(1);
       expect(definedSpy).toHaveBeenCalledWith('element-c-selector', jasmine.any(Function));
 
-      expect(compilerSpy).toHaveBeenCalledTimes(1);
-      expect(compilerSpy).toHaveBeenCalledWith(FakeCustomElementModule);
+      expect(compilerSpy).toHaveBeenCalledBefore(definedSpy);
+      expect(compilerSpy).toHaveBeenCalledOnceWith(jasmine.any(Function));
+
+      const CompiledModuleClass: typeof FakeCustomElementModule = compilerSpy.calls.first().args[0];
+      expect(FakeCustomElementModule.isPrototypeOf(CompiledModuleClass)).toBeTrue();
+      expect(CompiledModuleClass.modulePath).toBe('element-c-module');
     }));
   });
 });
@@ -248,6 +258,7 @@ describe('ElementsLoader', () => {
 // TEST CLASSES/HELPERS
 
 class FakeCustomElementModule implements WithCustomElementComponent {
+  static readonly modulePath: string;
   customElementComponent: Type<any>;
 }
 
@@ -300,6 +311,12 @@ class FakeModuleFactory extends NgModuleFactory<any> {
   create(_parentInjector: Injector | null): NgModuleRef<any> {
     return this.moduleRefToCreate;
   }
+}
+
+function createFakeCustomElementModule(modulePath: string): typeof FakeCustomElementModule {
+  return class extends FakeCustomElementModule {
+    static override readonly modulePath = modulePath;
+  };
 }
 
 function returnPromisesFromSpy(spy: jasmine.Spy): Deferred[] {
