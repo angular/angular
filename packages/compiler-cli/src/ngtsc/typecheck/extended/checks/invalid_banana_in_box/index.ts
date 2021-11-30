@@ -9,17 +9,16 @@
 import {AST, TmplAstBoundEvent, TmplAstNode} from '@angular/compiler';
 import ts from 'typescript';
 
-import {ErrorCode} from '../../../../diagnostics';
+import {ErrorCode, ExtendedTemplateDiagnosticName} from '../../../../diagnostics';
 import {NgTemplateDiagnostic} from '../../../api';
-import {TemplateCheckWithVisitor, TemplateContext} from '../../api';
+import {TemplateCheckFactory, TemplateCheckWithVisitor, TemplateContext} from '../../api';
 
 /**
  * Ensures the two-way binding syntax is correct.
  * Parentheses should be inside the brackets "[()]".
  * Will return diagnostic information when "([])" is found.
  */
-export class InvalidBananaInBoxCheck extends
-    TemplateCheckWithVisitor<ErrorCode.INVALID_BANANA_IN_BOX> {
+class InvalidBananaInBoxCheck extends TemplateCheckWithVisitor<ErrorCode.INVALID_BANANA_IN_BOX> {
   override code = ErrorCode.INVALID_BANANA_IN_BOX as const;
 
   override visitNode(ctx: TemplateContext, component: ts.ClassDeclaration, node: TmplAstNode|AST):
@@ -39,3 +38,10 @@ export class InvalidBananaInBoxCheck extends
     return [diagnostic];
   }
 }
+
+export const factory: TemplateCheckFactory<
+    ErrorCode.INVALID_BANANA_IN_BOX, ExtendedTemplateDiagnosticName.INVALID_BANANA_IN_BOX> = {
+  code: ErrorCode.INVALID_BANANA_IN_BOX,
+  name: ExtendedTemplateDiagnosticName.INVALID_BANANA_IN_BOX,
+  create: () => new InvalidBananaInBoxCheck(),
+};

@@ -9,9 +9,9 @@
 import {AST, Binary, TmplAstNode} from '@angular/compiler';
 import ts from 'typescript';
 
-import {ErrorCode} from '../../../../diagnostics';
+import {ErrorCode, ExtendedTemplateDiagnosticName} from '../../../../diagnostics';
 import {NgTemplateDiagnostic, SymbolKind} from '../../../api';
-import {TemplateCheckWithVisitor, TemplateContext} from '../../api';
+import {TemplateCheckFactory, TemplateCheckWithVisitor, TemplateContext} from '../../api';
 
 /**
  * Ensures the left side of a nullish coalescing operation is nullable.
@@ -19,7 +19,7 @@ import {TemplateCheckWithVisitor, TemplateContext} from '../../api';
  * This check should only be use if `strictNullChecks` is enabled,
  * otherwise it would produce inaccurate results.
  */
-export class NullishCoalescingNotNullableCheck extends
+class NullishCoalescingNotNullableCheck extends
     TemplateCheckWithVisitor<ErrorCode.NULLISH_COALESCING_NOT_NULLABLE> {
   override code = ErrorCode.NULLISH_COALESCING_NOT_NULLABLE as const;
 
@@ -49,3 +49,11 @@ export class NullishCoalescingNotNullableCheck extends
     return [diagnostic];
   }
 }
+
+export const factory: TemplateCheckFactory<
+    ErrorCode.NULLISH_COALESCING_NOT_NULLABLE,
+    ExtendedTemplateDiagnosticName.NULLISH_COALESCING_NOT_NULLABLE> = {
+  code: ErrorCode.NULLISH_COALESCING_NOT_NULLABLE,
+  name: ExtendedTemplateDiagnosticName.NULLISH_COALESCING_NOT_NULLABLE,
+  create: () => new NullishCoalescingNotNullableCheck(),
+};
