@@ -30,8 +30,8 @@ import {TemplateTypeCheckerImpl} from '../../typecheck';
 import {OptimizeFor, TemplateTypeChecker, TypeCheckingConfig} from '../../typecheck/api';
 import {ExtendedTemplateCheckerImpl} from '../../typecheck/extended';
 import {ExtendedTemplateChecker, TemplateCheck} from '../../typecheck/extended/api';
-import {InvalidBananaInBoxCheck} from '../../typecheck/extended/checks/invalid_banana_in_box';
-import {NullishCoalescingNotNullableCheck} from '../../typecheck/extended/checks/nullish_coalescing_not_nullable';
+import {factory as invalidBananaInBoxFactory} from '../../typecheck/extended/checks/invalid_banana_in_box';
+import {factory as NullishCoalescingNotNullableFactory} from '../../typecheck/extended/checks/nullish_coalescing_not_nullable';
 import {getSourceFileOrNull, isDtsPath, toUnredirectedSourceFile} from '../../util/src/typescript';
 import {Xi18nContext} from '../../xi18n';
 import {NgCompilerAdapter, NgCompilerOptions} from '../api';
@@ -1067,9 +1067,9 @@ export class NgCompiler {
         reflector, this.adapter, this.incrementalCompilation, scopeRegistry, typeCheckScopeRegistry,
         this.delegatingPerfRecorder);
 
-    const templateChecks: TemplateCheck<ErrorCode>[] = [new InvalidBananaInBoxCheck()];
+    const templateChecks: TemplateCheck<ErrorCode>[] = [invalidBananaInBoxFactory.create()];
     if (this.options.strictNullChecks) {
-      templateChecks.push(new NullishCoalescingNotNullableCheck());
+      templateChecks.push(NullishCoalescingNotNullableFactory.create());
     }
     const extendedTemplateChecker =
         new ExtendedTemplateCheckerImpl(templateTypeChecker, checker, templateChecks);

@@ -7,16 +7,23 @@
  */
 
 import ts from 'typescript';
-import {ErrorCode, ngErrorCode} from '../../../../../diagnostics';
+
+import {ErrorCode, ExtendedTemplateDiagnosticName, ngErrorCode} from '../../../../../diagnostics';
 import {absoluteFrom, getSourceFileOrError} from '../../../../../file_system';
 import {runInEachFileSystem} from '../../../../../file_system/testing';
 import {getSourceCodeForDiagnostic} from '../../../../../testing';
 import {getClass, setup} from '../../../../testing';
-import {InvalidBananaInBoxCheck} from '../../../checks/invalid_banana_in_box/index';
+import {factory as invalidBananaInBoxFactory} from '../../../checks/invalid_banana_in_box/index';
 import {ExtendedTemplateCheckerImpl} from '../../../src/extended_template_checker';
 
 runInEachFileSystem(() => {
   describe('TemplateChecks', () => {
+    it('binds the error code to its extended template diagnostic name', () => {
+      expect(invalidBananaInBoxFactory.code).toBe(ErrorCode.INVALID_BANANA_IN_BOX);
+      expect(invalidBananaInBoxFactory.name)
+          .toBe(ExtendedTemplateDiagnosticName.INVALID_BANANA_IN_BOX);
+    });
+
     it('should produce invalid banana in a box warning', () => {
       const fileName = absoluteFrom('/main.ts');
       const {program, templateTypeChecker} = setup([{
@@ -29,7 +36,7 @@ runInEachFileSystem(() => {
       const sf = getSourceFileOrError(program, fileName);
       const component = getClass(sf, 'TestCmp');
       const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
-          templateTypeChecker, program.getTypeChecker(), [new InvalidBananaInBoxCheck()]);
+          templateTypeChecker, program.getTypeChecker(), [invalidBananaInBoxFactory.create()]);
       const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
       expect(diags.length).toBe(1);
       expect(diags[0].category).toBe(ts.DiagnosticCategory.Warning);
@@ -49,7 +56,7 @@ runInEachFileSystem(() => {
       const sf = getSourceFileOrError(program, fileName);
       const component = getClass(sf, 'TestCmp');
       const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
-          templateTypeChecker, program.getTypeChecker(), [new InvalidBananaInBoxCheck()]);
+          templateTypeChecker, program.getTypeChecker(), [invalidBananaInBoxFactory.create()]);
       const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
       expect(diags.length).toBe(0);
     });
@@ -67,7 +74,7 @@ runInEachFileSystem(() => {
          const sf = getSourceFileOrError(program, fileName);
          const component = getClass(sf, 'TestCmp');
          const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
-             templateTypeChecker, program.getTypeChecker(), [new InvalidBananaInBoxCheck()]);
+             templateTypeChecker, program.getTypeChecker(), [invalidBananaInBoxFactory.create()]);
          const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
          expect(diags.length).toBe(0);
        });
@@ -89,7 +96,7 @@ runInEachFileSystem(() => {
       const sf = getSourceFileOrError(program, fileName);
       const component = getClass(sf, 'TestCmp');
       const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
-          templateTypeChecker, program.getTypeChecker(), [new InvalidBananaInBoxCheck()]);
+          templateTypeChecker, program.getTypeChecker(), [invalidBananaInBoxFactory.create()]);
       const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
       expect(diags.length).toBe(2);
       expect(diags[0].category).toBe(ts.DiagnosticCategory.Warning);
