@@ -984,9 +984,6 @@
     "name": "getPromiseCtor"
   },
   {
-    "name": "getRawValue"
-  },
-  {
     "name": "getSelectedIndex"
   },
   {
@@ -1123,6 +1120,9 @@
   },
   {
     "name": "isFormGroup"
+  },
+  {
+    "name": "isFormState"
   },
   {
     "name": "isForwardRef"
