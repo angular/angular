@@ -102,9 +102,6 @@
     "name": "R3ViewContainerRef"
   },
   {
-    "name": "RecordViewTuple"
-  },
-  {
     "name": "RendererFactory2"
   },
   {
@@ -235,6 +232,9 @@
   },
   {
     "name": "applyView"
+  },
+  {
+    "name": "applyViewChange"
   },
   {
     "name": "assertTemplate"
