@@ -20,6 +20,7 @@ export enum DiagnosticCategoryLabel {
 // @public
 export interface DiagnosticOptions {
     extendedDiagnostics?: {
+        defaultCategory?: DiagnosticCategoryLabel;
         checks?: {
             [Name in ExtendedTemplateDiagnosticName]?: DiagnosticCategoryLabel;
         };
