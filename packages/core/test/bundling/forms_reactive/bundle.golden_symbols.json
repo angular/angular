@@ -435,9 +435,6 @@
     "name": "ReactiveFormsModule"
   },
   {
-    "name": "RecordViewTuple"
-  },
-  {
     "name": "RefCountOperator"
   },
   {
@@ -655,6 +652,9 @@
   },
   {
     "name": "applyView"
+  },
+  {
+    "name": "applyViewChange"
   },
   {
     "name": "attachInjectFlag"
