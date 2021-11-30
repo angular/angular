@@ -8,6 +8,7 @@ ts_library(
         "//packages/core/schematics:migrations.json",
     ],
     deps = [
+        "//packages/core/schematics/migrations/entry-components",
         "//packages/core/schematics/migrations/router-link-empty-expression",
         "//packages/core/schematics/migrations/testbed-teardown",
         "//packages/core/schematics/utils",
