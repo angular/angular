@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {DepGraph} from 'dependency-graph';
+
 import {DtsProcessing, PartiallyOrderedTasks} from '../../src/execution/tasks/api';
 import {EntryPoint, EntryPointJsonProperty} from '../../src/packages/entry_point';
 
@@ -53,7 +54,7 @@ export function createTasksAndGraph(
 
     for (let tIdx = 0; tIdx < tasksPerEntryPointCount; tIdx++) {
       const processDts = tIdx === 0 ? DtsProcessing.Yes : DtsProcessing.No;
-      const formatProperty = `prop-${tIdx}` as EntryPointJsonProperty;
+      const formatProperty = `prop-${tIdx}` as unknown as EntryPointJsonProperty;
       tasks.push({
         entryPoint,
         formatProperty: formatProperty,

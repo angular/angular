@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import ts from 'typescript';
+
 import {compareVersions} from './diagnostics/typescript_version';
 
 /**
@@ -25,7 +26,7 @@ const MIN_TS_VERSION = '4.4.2';
  * Note: this check is disabled in g3, search for
  * `angularCompilerOptions.disableTypeScriptVersionCheck` config param value in g3.
  */
-const MAX_TS_VERSION = '4.5.0';
+const MAX_TS_VERSION = '4.6.0';
 
 /**
  * The currently used version of TypeScript, which can be adjusted for testing purposes using

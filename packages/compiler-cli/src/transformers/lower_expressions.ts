@@ -10,6 +10,7 @@ import {createLoweredSymbol, isLoweredSymbol} from '@angular/compiler';
 import ts from 'typescript';
 
 import {CollectorOptions, isMetadataGlobalReferenceExpression, MetadataCollector, MetadataValue, ModuleMetadata} from '../metadata/index';
+import {createExportSpecifier} from '../ngtsc/util/src/typescript';
 
 import {MetadataCache, MetadataTransformer, ValueTransform} from './metadata_cache';
 
@@ -162,7 +163,7 @@ function transformSourceFile(
                       (accumulator, insert) => [...accumulator, ...insert.declarations],
                       [] as Declaration[])
                   .map(
-                      declaration => ts.createExportSpecifier(
+                      declaration => createExportSpecifier(
                           /* propertyName */ undefined, declaration.name)))));
 
       newStatements = tmpStatements;

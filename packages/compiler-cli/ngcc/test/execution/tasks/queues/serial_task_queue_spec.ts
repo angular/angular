@@ -11,7 +11,7 @@ import {MockLogger} from '../../../../../src/ngtsc/logging/testing';
 import {DtsProcessing, PartiallyOrderedTasks, Task, TaskQueue} from '../../../../src/execution/tasks/api';
 import {SerialTaskQueue} from '../../../../src/execution/tasks/queues/serial_task_queue';
 import {computeTaskDependencies} from '../../../../src/execution/tasks/utils';
-import {EntryPoint} from '../../../../src/packages/entry_point';
+import {EntryPoint, EntryPointJsonProperty} from '../../../../src/packages/entry_point';
 
 
 describe('SerialTaskQueue', () => {
@@ -35,7 +35,7 @@ describe('SerialTaskQueue', () => {
       const processDts = i % 2 === 0 ? DtsProcessing.Yes : DtsProcessing.No;
       tasks.push({
         entryPoint: entryPoint,
-        formatProperty: `prop-${i}`,
+        formatProperty: `prop-${i}` as unknown as EntryPointJsonProperty,
         formatPropertiesToMarkAsProcessed: [],
         processDts
       } as Task);

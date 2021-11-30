@@ -219,7 +219,7 @@ function createUnsuitableInjectionTokenError(
         makeRelatedInformation(
             reason.typeNode,
             'This type is imported using a type-only import, which prevents it from being usable as an injection token.'),
-        makeRelatedInformation(reason.importClause, 'The type-only import occurs here.'),
+        makeRelatedInformation(reason.node, 'The type-only import occurs here.'),
       ];
       break;
     case ValueUnavailableKind.NAMESPACE:

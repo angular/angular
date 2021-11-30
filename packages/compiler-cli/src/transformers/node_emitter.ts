@@ -10,6 +10,8 @@ import {AssertNotNull, BinaryOperator, BinaryOperatorExpr, BuiltinMethod, Builti
 import ts from 'typescript';
 
 import {attachComments} from '../ngtsc/translator';
+import {createExportSpecifier} from '../ngtsc/util/src/typescript';
+
 import {error} from './util';
 
 export interface Node {
@@ -222,7 +224,7 @@ export class NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
                 /* decorators */ undefined,
                 /* modifiers */ undefined,
                 ts.createNamedExports(
-                    reexports.map(({name, as}) => ts.createExportSpecifier(name, as))),
+                    reexports.map(({name, as}) => createExportSpecifier(name, as))),
                 /* moduleSpecifier */ createLiteral(exportedFilePath)));
   }
 
@@ -350,7 +352,7 @@ export class NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
           stmt,
           ts.createExportDeclaration(
               /*decorators*/ undefined, /*modifiers*/ undefined,
-              ts.createNamedExports([ts.createExportSpecifier(stmt.name, stmt.name)])));
+              ts.createNamedExports([createExportSpecifier(stmt.name, stmt.name)])));
       return [tsVarStmt, exportStmt];
     }
     return this.postProcess(stmt, ts.createVariableStatement(this.getModifiers(stmt), varDeclList));
@@ -749,22 +751,6 @@ export class NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
       return id;
     }
   }
-}
-
-function getMethodName(methodRef: {name: string|null; builtin: BuiltinMethod | null}): string {
-  if (methodRef.name) {
-    return methodRef.name;
-  } else {
-    switch (methodRef.builtin) {
-      case BuiltinMethod.Bind:
-        return 'bind';
-      case BuiltinMethod.ConcatArray:
-        return 'concat';
-      case BuiltinMethod.SubscribeObservable:
-        return 'subscribe';
-    }
-  }
-  throw new Error('Unexpected method reference form');
 }
 
 function modifierFromModifier(modifier: StmtModifier): ts.Modifier {
