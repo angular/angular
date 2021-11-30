@@ -9,7 +9,7 @@
 import {AST, ASTWithSource, RecursiveAstVisitor, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstBoundText, TmplAstContent, TmplAstElement, TmplAstIcu, TmplAstNode, TmplAstRecursiveVisitor, TmplAstReference, TmplAstTemplate, TmplAstText, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
 import ts from 'typescript';
 
-import {ErrorCode} from '../../../diagnostics';
+import {ErrorCode, ExtendedTemplateDiagnosticName} from '../../../diagnostics';
 import {NgTemplateDiagnostic, TemplateTypeChecker} from '../../api';
 
 /**
@@ -37,6 +37,19 @@ export interface TemplateContext {
    * in the template (it is not to query types outside the Angular component).
    */
   typeChecker: ts.TypeChecker;
+}
+
+/**
+ * A factory which creates a template check for a particular code and name. This binds the two
+ * together and associates them with a specific `TemplateCheck`.
+ */
+export interface TemplateCheckFactory<
+  Code extends ErrorCode,
+  Name extends ExtendedTemplateDiagnosticName,
+> {
+  code: Code;
+  name: Name;
+  create(): TemplateCheck<Code>;
 }
 
 /**

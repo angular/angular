@@ -8,16 +8,23 @@
 
 import ts from 'typescript';
 
-import {ErrorCode, ngErrorCode} from '../../../../../diagnostics';
+import {ErrorCode, ExtendedTemplateDiagnosticName, ngErrorCode} from '../../../../../diagnostics';
 import {absoluteFrom, getSourceFileOrError} from '../../../../../file_system';
 import {runInEachFileSystem} from '../../../../../file_system/testing';
 import {getSourceCodeForDiagnostic} from '../../../../../testing';
 import {getClass, setup} from '../../../../testing';
-import {NullishCoalescingNotNullableCheck} from '../../../checks/nullish_coalescing_not_nullable';
+import {factory as nullishCoalescingNotNullableFactory} from '../../../checks/nullish_coalescing_not_nullable';
 import {ExtendedTemplateCheckerImpl} from '../../../src/extended_template_checker';
 
 runInEachFileSystem(() => {
   describe('NullishCoalescingNotNullableCheck', () => {
+    it('binds the error code to its extended template diagnostic name', () => {
+      expect(nullishCoalescingNotNullableFactory.code)
+          .toBe(ErrorCode.NULLISH_COALESCING_NOT_NULLABLE);
+      expect(nullishCoalescingNotNullableFactory.name)
+          .toBe(ExtendedTemplateDiagnosticName.NULLISH_COALESCING_NOT_NULLABLE);
+    });
+
     it('should produce nullish coalescing warning', () => {
       const fileName = absoluteFrom('/main.ts');
       const {program, templateTypeChecker} = setup([{
@@ -30,7 +37,8 @@ runInEachFileSystem(() => {
       const sf = getSourceFileOrError(program, fileName);
       const component = getClass(sf, 'TestCmp');
       const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
-          templateTypeChecker, program.getTypeChecker(), [new NullishCoalescingNotNullableCheck()]);
+          templateTypeChecker, program.getTypeChecker(),
+          [nullishCoalescingNotNullableFactory.create()]);
       const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
       expect(diags.length).toBe(1);
       expect(diags[0].category).toBe(ts.DiagnosticCategory.Warning);
@@ -50,7 +58,8 @@ runInEachFileSystem(() => {
       const sf = getSourceFileOrError(program, fileName);
       const component = getClass(sf, 'TestCmp');
       const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
-          templateTypeChecker, program.getTypeChecker(), [new NullishCoalescingNotNullableCheck()]);
+          templateTypeChecker, program.getTypeChecker(),
+          [nullishCoalescingNotNullableFactory.create()]);
       const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
       expect(diags.length).toBe(0);
     });
@@ -67,7 +76,8 @@ runInEachFileSystem(() => {
       const sf = getSourceFileOrError(program, fileName);
       const component = getClass(sf, 'TestCmp');
       const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
-          templateTypeChecker, program.getTypeChecker(), [new NullishCoalescingNotNullableCheck()]);
+          templateTypeChecker, program.getTypeChecker(),
+          [nullishCoalescingNotNullableFactory.create()]);
       const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
       expect(diags.length).toBe(0);
     });
@@ -96,7 +106,7 @@ runInEachFileSystem(() => {
          const component = getClass(sf, 'TestCmp');
          const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
              templateTypeChecker, program.getTypeChecker(),
-             [new NullishCoalescingNotNullableCheck()]);
+             [nullishCoalescingNotNullableFactory.create()]);
          const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
          expect(diags.length).toBe(1);
          expect(diags[0].category).toBe(ts.DiagnosticCategory.Warning);
@@ -128,7 +138,8 @@ runInEachFileSystem(() => {
       const sf = getSourceFileOrError(program, fileName);
       const component = getClass(sf, 'TestCmp');
       const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
-          templateTypeChecker, program.getTypeChecker(), [new NullishCoalescingNotNullableCheck()]);
+          templateTypeChecker, program.getTypeChecker(),
+          [nullishCoalescingNotNullableFactory.create()]);
       const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
       expect(diags.length).toBe(0);
     });
@@ -153,7 +164,7 @@ runInEachFileSystem(() => {
          const component = getClass(sf, 'TestCmp');
          const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
              templateTypeChecker, program.getTypeChecker(),
-             [new NullishCoalescingNotNullableCheck()]);
+             [nullishCoalescingNotNullableFactory.create()]);
          const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
          expect(diags.length).toBe(0);
        });
