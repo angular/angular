@@ -161,9 +161,9 @@ export interface AbstractControlOptions {
 export interface FormControlOptions extends AbstractControlOptions {
   /**
    * @description
-   * Whether to use the initial value used to construct the FormControl as its default value as
-   * well. If this option is false or not provided, the default value of a FormControl is `null`.
-   * When a FormControl is {@link FormControl#reset} without an explicit value, its value reverts to
+   * Whether to use the initial value used to construct the {@link FormControl} as its default value
+   * as well. If this option is false or not provided, the default value of a FormControl is `null`.
+   * When a FormControl is reset without an explicit value, its value reverts to
    * its default value.
    */
   initialValueIsDefault?: boolean;
@@ -1177,7 +1177,6 @@ export abstract class AbstractControl {
       this._updateOn = opts.updateOn!;
     }
   }
-
   /**
    * Check to see if parent has been marked artificially dirty.
    *
@@ -1187,6 +1186,74 @@ export abstract class AbstractControl {
     const parentDirty = this._parent && this._parent.dirty;
     return !onlySelf && !!parentDirty && !this._parent!._anyControlsDirty();
   }
+}
+
+export interface FormControl extends AbstractControl {
+  readonly defaultValue: any;
+  /** @internal */
+  _onChange: Function[];
+  /** @internal */
+  _pendingValue: any;
+  /** @internal */
+  _pendingChange: boolean;
+  setValue(value: any, options?: {
+    onlySelf?: boolean,
+    emitEvent?: boolean,
+    emitModelToViewChange?: boolean,
+    emitViewToModelChange?: boolean
+  }): void;
+  patchValue(value: any, options?: {
+    onlySelf?: boolean,
+    emitEvent?: boolean,
+    emitModelToViewChange?: boolean,
+    emitViewToModelChange?: boolean
+  }): void;
+  reset(formState?: any, options?: {onlySelf?: boolean, emitEvent?: boolean}): void;
+  /** @internal */
+  _updateValue(): void;
+  /**  @internal */
+  _anyControls(condition: Function): boolean;
+  /** @internal */
+  _allControlsDisabled(): boolean;
+  registerOnChange(fn: Function): void;
+  /** @internal */
+  _unregisterOnChange(fn: Function): void;
+  registerOnDisabledChange(fn: (isDisabled: boolean) => void): void;
+  /** @internal */
+  _unregisterOnDisabledChange(fn: (isDisabled: boolean) => void): void;
+  /** @internal */
+  _forEachChild(cb: Function): void;
+  /** @internal */
+  _syncPendingControls(): boolean;
+}
+
+/**
+ * Various available constructors for `FormControl`.
+ * Do not use this interface directly. Instead, use `FormControl`:
+ * ```
+ * const fc = new FormControl('foo');
+ * ```
+ */
+export interface FormControlCtor {
+  /**
+   * Construct a FormControl with no initial value or validators.
+   */
+  new(): FormControl;
+
+  /**
+   * Creates a new `FormControl` instance.
+   *
+   * @param formState Initializes the control with an initial value,
+   * or an object that defines the initial value and disabled state.
+   *
+   * @param validatorOrOpts A synchronous validator function, or an array of
+   * such functions, or an `FormControlOptions` object that contains validation functions
+   * and a validation trigger.
+   *
+   * @param asyncValidator A single async validator or array of async validator functions
+   */
+  new(value: any, validatorOrOpts?: ValidatorFn|ValidatorFn[]|FormControlOptions|null,
+      asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null): FormControl;
 }
 
 /**
@@ -1210,7 +1277,7 @@ export abstract class AbstractControl {
  * ```ts
  * const control = new FormControl('some value');
  * console.log(control.value);     // 'some value'
- *```
+ * ```
  *
  * The following example initializes the control with a form state object. The `value`
  * and `disabled` keys are required in this case.
@@ -1283,10 +1350,8 @@ export abstract class AbstractControl {
  * console.log(control.value); // 'Drew'
  * console.log(control.status); // 'DISABLED'
  * ```
- *
- * @publicApi
  */
-export class FormControl extends AbstractControl {
+export class FormControlImpl extends AbstractControl {
   /**
    * The default value of this FormControl, used whenever the control is reset without an explicit
    * value. See {@link FormControlOptions#initialValueIsDefault} for more information on configuring
@@ -1296,14 +1361,14 @@ export class FormControl extends AbstractControl {
   public readonly defaultValue: any = null;
 
   /** @internal */
-  _onChange: Array<Function> = [];
+  _onChange: Function[] = [];
 
   /**
    * This field holds a pending value that has not yet been applied to the form's value.
    * It is `any` because the value is untyped.
    * @internal
    */
-  _pendingValue: any;
+  _pendingValue!: any;
 
   /** @internal */
   _pendingChange: boolean = false;
@@ -1315,7 +1380,7 @@ export class FormControl extends AbstractControl {
    * or an object that defines the initial value and disabled state.
    *
    * @param validatorOrOpts A synchronous validator function, or an array of
-   * such functions, or an `AbstractControlOptions` object that contains validation functions
+   * such functions, or a `FormControlOptions` object that contains validation functions
    * and a validation trigger.
    *
    * @param asyncValidator A single async validator or array of async validator functions
@@ -1525,6 +1590,12 @@ export class FormControl extends AbstractControl {
     }
   }
 }
+
+/**
+ * @overriddenImplementation The constructor for FormControl is decoupled from its implementation.
+ * This allows us to provide multiple constructor signatures.
+ */
+export const FormControl: FormControlCtor = FormControlImpl as FormControlCtor;
 
 /**
  * Tracks the value and validity state of a group of `FormControl` instances.
