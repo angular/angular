@@ -62,6 +62,11 @@
 
 version: 3
 
+availability:
+  users_unavailable:
+    - atscott # OOO as of 2021-12-01
+    - pkozlowski-opensource # OOO as of 2020-09-28
+
 # Meta field that goes unused by PullApprove to allow for defining aliases to be
 # used throughout the config.
 meta:
@@ -426,7 +431,7 @@ groups:
         - AndrewKushnir
         - atscott
         - jessicajaniuk
-        # OOO as of 2020-09-28 - pkozlowski-opensource
+        - pkozlowski-opensource
 
   # =========================================================
   #  Framework: Common
@@ -447,7 +452,7 @@ groups:
         - AndrewKushnir
         - atscott
         - jessicajaniuk
-        # OOO as of 2020-09-28 - pkozlowski-opensource
+        - pkozlowski-opensource
 
   # =========================================================
   #  Framework: Http
@@ -702,7 +707,7 @@ groups:
         - AndrewKushnir
         - IgorMinar
         - jessicajaniuk
-        # OOO as of 2020-09-28 - pkozlowski-opensource
+        - pkozlowski-opensource
 
   # =========================================================
   #  Framework: Benchmarks
@@ -720,7 +725,7 @@ groups:
         - alxhub
         - IgorMinar
         - jelbourn
-        # OOO as of 2020-09-28 - pkozlowski-opensource
+        - pkozlowski-opensource
 
   # =========================================================
   #  Framework: Playground
@@ -737,7 +742,7 @@ groups:
       users:
         - IgorMinar
         - jelbourn
-        # OOO as of 2020-09-28 - pkozlowski-opensource
+        - pkozlowski-opensource
 
   # =========================================================
   #  Framework: Security
@@ -764,7 +769,7 @@ groups:
       users:
         - IgorMinar
         - jelbourn
-        # OOO as of 2020-09-28 - pkozlowski-opensource
+        - pkozlowski-opensource
     reviews:
       request: -1 # request reviews from everyone
       required: 2 # require at least 2 approvals
@@ -1252,7 +1257,7 @@ groups:
         - jelbourn
         - petebacondarwin
         - jessicajaniuk
-        # OOO as of 2020-09-28 - pkozlowski-opensource
+        - pkozlowski-opensource
     reviews:
       request: 4 # Request reviews from four people
       required: 3 # Require that three people approve
@@ -1281,7 +1286,7 @@ groups:
         - jelbourn
         - petebacondarwin
         - jessicajaniuk
-        # OOO as of 2020-09-28 - pkozlowski-opensource
+        - pkozlowski-opensource
     reviews:
       request: 4 # Request reviews from four people
       required: 2 # Require that two people approve
@@ -1310,7 +1315,7 @@ groups:
         - jelbourn
         - petebacondarwin
         - jessicajaniuk
-        # OOO as of 2020-09-28 - pkozlowski-opensource
+        - pkozlowski-opensource
 
   ####################################################################################
   #  Special Cases
