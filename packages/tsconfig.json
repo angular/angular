@@ -18,6 +18,7 @@
     "noImplicitOverride": true,
     "useUnknownInCatchVariables": false,
     "noFallthroughCasesInSwitch": true,
+    "noPropertyAccessFromIndexSignature": true,
     "paths": {
       "selenium-webdriver": [
         "./node_modules/@types/selenium-webdriver/index.d.ts"
