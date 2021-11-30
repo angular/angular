@@ -1118,7 +1118,6 @@ export abstract class AbstractControl {
       this._updateOn = opts.updateOn!;
     }
   }
-
   /**
    * Check to see if parent has been marked artificially dirty.
    *
@@ -1131,13 +1130,15 @@ export abstract class AbstractControl {
 }
 
 /**
- * Tracks the value and validation status of an individual form control.
+ * Tracks the value and validation status of an individual form control. Constructed by {@link
+ * FormControlCtor}.
  *
  * This is one of the three fundamental building blocks of Angular forms, along with
  * `FormGroup` and `FormArray`. It extends the `AbstractControl` class that
  * implements most of the base functionality for accessing the value, validation status,
  * user interactions and events. See [usage examples below](#usage-notes).
  *
+ * @see FormControlCtor
  * @see `AbstractControl`
  * @see [Reactive Forms Guide](guide/reactive-forms)
  * @see [Usage Notes](#usage-notes)
@@ -1151,7 +1152,7 @@ export abstract class AbstractControl {
  * ```ts
  * const control = new FormControl('some value');
  * console.log(control.value);     // 'some value'
- *```
+ * ```
  *
  * The following example initializes the control with a form state object. The `value`
  * and `disabled` keys are required in this case.
@@ -1227,46 +1228,15 @@ export abstract class AbstractControl {
  *
  * @publicApi
  */
-export class FormControl extends AbstractControl {
+export declare interface FormControl extends AbstractControl {
   /** @internal */
-  _onChange: Function[] = [];
+  _onChange: Function[];
 
   /** @internal */
-  _pendingValue: any;
+  _pendingValue: boolean;
 
   /** @internal */
-  _pendingChange: any;
-
-  /**
-   * Creates a new `FormControl` instance.
-   *
-   * @param formState Initializes the control with an initial value,
-   * or an object that defines the initial value and disabled state.
-   *
-   * @param validatorOrOpts A synchronous validator function, or an array of
-   * such functions, or an `AbstractControlOptions` object that contains validation functions
-   * and a validation trigger.
-   *
-   * @param asyncValidator A single async validator or array of async validator functions
-   *
-   */
-  constructor(
-      formState: any = null,
-      validatorOrOpts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|null,
-      asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null) {
-    super(pickValidators(validatorOrOpts), pickAsyncValidators(asyncValidator, validatorOrOpts));
-    this._applyFormState(formState);
-    this._setUpdateStrategy(validatorOrOpts);
-    this._initObservables();
-    this.updateValueAndValidity({
-      onlySelf: true,
-      // If `asyncValidator` is present, it will trigger control status change from `PENDING` to
-      // `VALID` or `INVALID`.
-      // The status should be broadcasted via the `statusChanges` observable, so we set `emitEvent`
-      // to `true` to allow that during the control creation process.
-      emitEvent: !!this.asyncValidator
-    });
-  }
+  _pendingChange: boolean;
 
   /**
    * Sets a new value for the form control.
@@ -1291,19 +1261,12 @@ export class FormControl extends AbstractControl {
    * event to update the model.
    *
    */
-  override setValue(value: any, options: {
+  setValue(value: any, options?: {
     onlySelf?: boolean,
     emitEvent?: boolean,
     emitModelToViewChange?: boolean,
     emitViewToModelChange?: boolean
-  } = {}): void {
-    (this as {value: any}).value = this._pendingValue = value;
-    if (this._onChange.length && options.emitModelToViewChange !== false) {
-      this._onChange.forEach(
-          (changeFn) => changeFn(this.value, options.emitViewToModelChange !== false));
-    }
-    this.updateValueAndValidity(options);
-  }
+  }): void;
 
   /**
    * Patches the value of a control.
@@ -1314,14 +1277,12 @@ export class FormControl extends AbstractControl {
    *
    * @see `setValue` for options
    */
-  override patchValue(value: any, options: {
+  patchValue(value: any, options?: {
     onlySelf?: boolean,
     emitEvent?: boolean,
     emitModelToViewChange?: boolean,
     emitViewToModelChange?: boolean
-  } = {}): void {
-    this.setValue(value, options);
-  }
+  }): void;
 
   /**
    * Resets the form control, marking it `pristine` and `untouched`, and setting
@@ -1341,6 +1302,141 @@ export class FormControl extends AbstractControl {
    * When false, no events are emitted.
    *
    */
+  reset(formState?: any, options?: {onlySelf?: boolean, emitEvent?: boolean}): void;
+
+  /**
+   * @internal
+   */
+  _updateValue(): void;
+
+  /**
+   * @internal
+   */
+  _anyControls(condition: Function): boolean;
+
+  /**
+   * @internal
+   */
+  _allControlsDisabled(): boolean;
+
+  /**
+   * Register a listener for change events.
+   *
+   * @param fn The method that is called when the value changes
+   */
+  registerOnChange(fn: Function): void;
+
+  /**
+   * Internal function to unregister a change events listener.
+   * @internal
+   */
+  _unregisterOnChange(fn: Function): void;
+
+  /**
+   * Register a listener for disabled events.
+   *
+   * @param fn The method that is called when the disabled status changes.
+   */
+  registerOnDisabledChange(fn: (isDisabled: boolean) => void): void;
+
+  /**
+   * Internal function to unregister a disabled event listener.
+   * @internal
+   */
+  _unregisterOnDisabledChange(fn: (isDisabled: boolean) => void): void;
+
+  /**
+   * @internal
+   */
+  _forEachChild(cb: Function): void;
+
+  /** @internal */
+  _syncPendingControls(): boolean;
+}
+
+/**
+ * Various available constructors for `FormControl`.
+ *
+ * ```
+ * let fc = new FormControl('foo');
+ * ```
+ *
+ * {@link FormControl}
+ * @publicApi
+ */
+export declare interface FormControlCtor {
+  /**
+   * Construct a FormControl with no initial value or validators.
+   */
+  new(): FormControl;
+
+  /**
+   * Creates a new `FormControl` instance.
+   *
+   * @param formState Initializes the control with an initial value,
+   * or an object that defines the initial value and disabled state.
+   *
+   * @param validatorOrOpts A synchronous validator function, or an array of
+   * such functions, or an `AbstractControlOptions` object that contains validation functions
+   * and a validation trigger.
+   *
+   * @param asyncValidator A single async validator or array of async validator functions
+   */
+  new(value: any, validatorOrOpts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|null,
+      asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null): FormControl;
+}
+
+export class FormControlImpl extends AbstractControl {
+  /** @internal */
+  _onChange: Function[] = [];
+
+  /** @internal */
+  _pendingValue: boolean = false;
+
+  /** @internal */
+  _pendingChange: boolean = false;
+
+  constructor(
+      formState: any = null,
+      validatorOrOpts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|null,
+      asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null) {
+    super(pickValidators(validatorOrOpts), pickAsyncValidators(asyncValidator, validatorOrOpts));
+    this._applyFormState(formState);
+    this._setUpdateStrategy(validatorOrOpts);
+    this._initObservables();
+    this.updateValueAndValidity({
+      onlySelf: true,
+      // If `asyncValidator` is present, it will trigger control status change from `PENDING` to
+      // `VALID` or `INVALID`.
+      // The status should be broadcasted via the `statusChanges` observable, so we set `emitEvent`
+      // to `true` to allow that during the control creation process.
+      emitEvent: !!this.asyncValidator
+    });
+  }
+
+  override setValue(value: any, options: {
+    onlySelf?: boolean,
+    emitEvent?: boolean,
+    emitModelToViewChange?: boolean,
+    emitViewToModelChange?: boolean
+  } = {}): void {
+    (this as {value: any}).value = this._pendingValue = value;
+    if (this._onChange.length && options.emitModelToViewChange !== false) {
+      this._onChange.forEach(
+          (changeFn) => changeFn(this.value, options.emitViewToModelChange !== false));
+    }
+    this.updateValueAndValidity(options);
+  }
+
+  override patchValue(value: any, options: {
+    onlySelf?: boolean,
+    emitEvent?: boolean,
+    emitModelToViewChange?: boolean,
+    emitViewToModelChange?: boolean
+  } = {}): void {
+    this.setValue(value, options);
+  }
+
   override reset(formState: any = null, options: {onlySelf?: boolean, emitEvent?: boolean} = {}):
       void {
     this._applyFormState(formState);
@@ -1369,11 +1465,6 @@ export class FormControl extends AbstractControl {
     return this.disabled;
   }
 
-  /**
-   * Register a listener for change events.
-   *
-   * @param fn The method that is called when the value changes
-   */
   registerOnChange(fn: Function): void {
     this._onChange.push(fn);
   }
@@ -1386,11 +1477,6 @@ export class FormControl extends AbstractControl {
     removeListItem(this._onChange, fn);
   }
 
-  /**
-   * Register a listener for disabled events.
-   *
-   * @param fn The method that is called when the disabled status changes.
-   */
   registerOnDisabledChange(fn: (isDisabled: boolean) => void): void {
     this._onDisabledChange.push(fn);
   }
@@ -1431,6 +1517,10 @@ export class FormControl extends AbstractControl {
     }
   }
 }
+
+// The constructor for FormControl is decoupled from its implementation.
+// This allows us to provide multiple constructor signatures.
+export const FormControl: FormControlCtor = FormControlImpl as FormControlCtor;
 
 /**
  * Tracks the value and validity state of a group of `FormControl` instances.
