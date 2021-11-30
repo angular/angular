@@ -1,5 +1,13 @@
 #!/usr/bin/env node
 
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import multimatch from 'multimatch';
 import esbuild from 'esbuild';
 import fs from 'fs';
@@ -165,7 +173,7 @@ async function createResolveEsbuildPlugin() {
         return stats !== null ? {path: resolvedPath} : undefined;
       });
     }
-  }
+  };
 }
 
 /**
