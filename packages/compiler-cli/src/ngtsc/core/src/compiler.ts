@@ -28,10 +28,8 @@ import {generatedFactoryTransform} from '../../shims';
 import {aliasTransformFactory, CompilationMode, declarationTransformFactory, DecoratorHandler, DtsTransformRegistry, ivyTransformFactory, TraitCompiler} from '../../transform';
 import {TemplateTypeCheckerImpl} from '../../typecheck';
 import {OptimizeFor, TemplateTypeChecker, TypeCheckingConfig} from '../../typecheck/api';
-import {ExtendedTemplateCheckerImpl} from '../../typecheck/extended';
+import {ALL_DIAGNOSTIC_FACTORIES, ExtendedTemplateCheckerImpl} from '../../typecheck/extended';
 import {ExtendedTemplateChecker} from '../../typecheck/extended/api';
-import {factory as invalidBananaInBoxFactory} from '../../typecheck/extended/checks/invalid_banana_in_box';
-import {factory as NullishCoalescingNotNullableFactory} from '../../typecheck/extended/checks/nullish_coalescing_not_nullable';
 import {getSourceFileOrNull, isDtsPath, toUnredirectedSourceFile} from '../../util/src/typescript';
 import {Xi18nContext} from '../../xi18n';
 import {NgCompilerAdapter, NgCompilerOptions} from '../api';
@@ -1067,9 +1065,8 @@ export class NgCompiler {
         reflector, this.adapter, this.incrementalCompilation, scopeRegistry, typeCheckScopeRegistry,
         this.delegatingPerfRecorder);
 
-    const diagnosticFactories = [invalidBananaInBoxFactory, NullishCoalescingNotNullableFactory];
     const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
-        templateTypeChecker, checker, diagnosticFactories, this.options);
+        templateTypeChecker, checker, ALL_DIAGNOSTIC_FACTORIES, this.options);
 
     return {
       isCore,
