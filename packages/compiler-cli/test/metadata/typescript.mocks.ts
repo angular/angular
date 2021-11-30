@@ -67,7 +67,7 @@ export class Host implements ts.LanguageServiceHost {
     if (this.overrides.has(fileName)) {
       return this.overrides.get(fileName);
     }
-    if (/lib(.*)\.d\.ts/.test(fileName)) {
+    if (/^lib(.*)\.d\.ts/.test(fileName)) {
       const libDirPath = path.dirname(ts.getDefaultLibFilePath(this.getCompilationSettings()));
       const libPath = path.join(libDirPath, fileName);
       return fs.readFileSync(libPath, 'utf8');

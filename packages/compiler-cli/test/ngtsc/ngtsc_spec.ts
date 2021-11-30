@@ -2380,36 +2380,69 @@ function allTests(os: string) {
                  .toBe('This type is not supported as injection token.');
            });
 
-        it('should report an error when using a type-only import as injection token', () => {
-          env.tsconfig({strictInjectionParameters: true});
-          env.write(`types.ts`, `
-             export class TypeOnly {}
-           `);
-          env.write(`test.ts`, `
-             import {Injectable} from '@angular/core';
-             import type {TypeOnly} from './types';
+        it('should report an error when using a symbol from a type-only import clause as injection token',
+           () => {
+             env.tsconfig({strictInjectionParameters: true});
+             env.write(`types.ts`, `
+              export class TypeOnly {}
+            `);
+             env.write(`test.ts`, `
+              import {Injectable} from '@angular/core';
+              import type {TypeOnly} from './types';
 
-             @Injectable()
-             export class MyService {
-               constructor(param: TypeOnly) {}
-             }
-          `);
+              @Injectable()
+              export class MyService {
+                constructor(param: TypeOnly) {}
+              }
+            `);
 
-          const diags = env.driveDiagnostics();
-          expect(diags.length).toBe(1);
-          expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '\n'))
-              .toBe(
-                  `No suitable injection token for parameter 'param' of class 'MyService'.\n` +
-                  `  Consider changing the type-only import to a regular import, ` +
-                  `or use the @Inject decorator to specify an injection token.`);
-          expect(diags[0].relatedInformation!.length).toBe(2);
-          expect(diags[0].relatedInformation![0].messageText)
-              .toBe(
-                  'This type is imported using a type-only import, ' +
-                  'which prevents it from being usable as an injection token.');
-          expect(diags[0].relatedInformation![1].messageText)
-              .toBe('The type-only import occurs here.');
-        });
+             const diags = env.driveDiagnostics();
+             expect(diags.length).toBe(1);
+             expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '\n'))
+                 .toBe(
+                     `No suitable injection token for parameter 'param' of class 'MyService'.\n` +
+                     `  Consider changing the type-only import to a regular import, ` +
+                     `or use the @Inject decorator to specify an injection token.`);
+             expect(diags[0].relatedInformation!.length).toBe(2);
+             expect(diags[0].relatedInformation![0].messageText)
+                 .toBe(
+                     'This type is imported using a type-only import, ' +
+                     'which prevents it from being usable as an injection token.');
+             expect(diags[0].relatedInformation![1].messageText)
+                 .toBe('The type-only import occurs here.');
+           });
+
+        it('should report an error when using a symbol from a type-only import specifier as injection token',
+           () => {
+             env.tsconfig({strictInjectionParameters: true});
+             env.write(`types.ts`, `
+                export class TypeOnly {}
+              `);
+             env.write(`test.ts`, `
+                import {Injectable} from '@angular/core';
+                import {type TypeOnly} from './types';
+
+                @Injectable()
+                export class MyService {
+                  constructor(param: TypeOnly) {}
+                }
+              `);
+
+             const diags = env.driveDiagnostics();
+             expect(diags.length).toBe(1);
+             expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '\n'))
+                 .toBe(
+                     `No suitable injection token for parameter 'param' of class 'MyService'.\n` +
+                     `  Consider changing the type-only import to a regular import, ` +
+                     `or use the @Inject decorator to specify an injection token.`);
+             expect(diags[0].relatedInformation!.length).toBe(2);
+             expect(diags[0].relatedInformation![0].messageText)
+                 .toBe(
+                     'This type is imported using a type-only import, ' +
+                     'which prevents it from being usable as an injection token.');
+             expect(diags[0].relatedInformation![1].messageText)
+                 .toBe('The type-only import occurs here.');
+           });
 
         it('should report an error when using a primitive type as injection token', () => {
           env.tsconfig({strictInjectionParameters: true});
@@ -4770,12 +4803,14 @@ function allTests(os: string) {
        () => {
          env.write(`types.ts`, `
            export default class {}
-           export class TypeOnly {}
+           export class TypeOnlyOne {}
+           export class TypeOnlyTwo {}
          `);
          env.write(`test.ts`, `
            import {Component, Inject, Injectable} from '@angular/core';
            import type DefaultImport from './types';
-           import type {TypeOnly} from './types';
+           import type {TypeOnlyOne} from './types';
+           import {type TypeOnlyTwo} from './types';
            import type * as types from './types';
 
            @Component({
@@ -4784,9 +4819,10 @@ function allTests(os: string) {
            })
            export class SomeComp {
              constructor(
-               @Inject('token') namedImport: TypeOnly,
+               @Inject('token') namedImport: TypeOnlyOne,
                @Inject('token') defaultImport: DefaultImport,
-               @Inject('token') namespacedImport: types.TypeOnly,
+               @Inject('token') namespacedImport: types.TypeOnlyOne,
+               @Inject('token') typeOnlySpecifier: TypeOnlyTwo,
              ) {}
            }
         `);
@@ -4798,7 +4834,9 @@ function allTests(os: string) {
          // Default type-only import should not be emitted
          expect(jsContents).not.toContain('DefaultImport');
          // Named type-only import should not be emitted
-         expect(jsContents).not.toContain('TypeOnly');
+         expect(jsContents).not.toContain('TypeOnlyOne');
+         // Symbols from type-only specifiers should not be emitted
+         expect(jsContents).not.toContain('TypeOnlyTwo');
          // The parameter type in class metadata should be undefined
          expect(jsContents).toMatch(setClassMetadataRegExp('type: undefined'));
        });
@@ -4950,7 +4988,7 @@ function allTests(os: string) {
         expect(jsContents).not.toContain('setComponentScope');
       });
 
-      it('should not consider type-only imports during cycle detection', () => {
+      it('should not consider type-only import clauses during cycle detection', () => {
         env.write('test.ts', `
         import {NgModule} from '@angular/core';
         import {ACmp} from './a';
@@ -4984,6 +5022,50 @@ function allTests(os: string) {
         const jsContents = env.getContents('test.js');
         expect(jsContents).not.toContain('setComponentScope');
       });
+
+      it('should not consider import clauses where all the specifiers are type-only during cycle detection',
+         () => {
+           env.write('test.ts', `
+              import {NgModule} from '@angular/core';
+              import {SharedOne, SharedTwo} from './shared';
+              import {CyclicCmp} from './cyclic';
+
+              @NgModule({declarations: [SharedOne, SharedTwo, CyclicCmp]})
+              export class Module {}
+            `);
+           env.write('shared.ts', `
+              import {Component} from '@angular/core';
+
+              @Component({
+                selector: 'shared-one-cmp',
+                template: '<cyclic-cmp></cyclic-cmp>',
+              })
+              export class SharedOne {}
+
+              @Component({
+                selector: 'shared-two-cmp',
+                template: '<cyclic-cmp></cyclic-cmp>',
+              })
+              export class SharedTwo {}
+            `);
+           env.write('cyclic.ts', `
+              import {Component} from '@angular/core';
+              import {type SharedOne, type SharedTwo} from './shared';
+
+              @Component({
+                selector: 'cyclic-cmp',
+                template: 'does not use shared components',
+              })
+              export class CyclicCmp {
+                one: SharedOne;
+                two: SharedTwo;
+              }
+            `);
+
+           env.driveMain();
+           const jsContents = env.getContents('test.js');
+           expect(jsContents).not.toContain('setComponentScope');
+         });
 
       it('should only pass components actually used to setComponentScope', () => {
         env.write('test.ts', `

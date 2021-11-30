@@ -92,7 +92,7 @@ export class ImportGraph {
         }
 
         if (ts.isImportDeclaration(stmt) && stmt.importClause !== undefined &&
-            stmt.importClause.isTypeOnly) {
+            isTypeOnlyImportClause(stmt.importClause)) {
           // Exclude type-only imports as they are always elided, so they don't contribute to
           // cycles.
           continue;
@@ -116,6 +116,23 @@ export class ImportGraph {
 
 function isLocalFile(sf: ts.SourceFile): boolean {
   return !sf.isDeclarationFile;
+}
+
+function isTypeOnlyImportClause(node: ts.ImportClause): boolean {
+  // The clause itself is type-only (e.g. `import type {foo} from '...'`).
+  if (node.isTypeOnly) {
+    return true;
+  }
+
+  // All the specifiers in the cause are type-only (e.g. `import {type a, type b} from '...'`).
+  if (node.namedBindings !== undefined && ts.isNamedImports(node.namedBindings) &&
+      // TODO(crisbeto): the cast to `any` is here since g3 is still on TS 4.4.
+      // Should be cleaned up when g3 has been updated.
+      node.namedBindings.elements.every(specifier => (specifier as any).isTypeOnly)) {
+    return true;
+  }
+
+  return false;
 }
 
 /**
