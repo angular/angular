@@ -39,15 +39,8 @@ describe('mergeOverriddenImplementation processor', () => {
 
   it('should replace properties with those from the implementation and constructor docs', () => {
     const exportedNameDoc = {
-      overriddenImplementation: 'Foo has an overridden implementation.', // This processor should apply
-      declaration: { // Imitate a valid AST
-        name: {getText: () => 'Foo'},
-        type: {getText: () => 'FooCtor'},
-        initializer: {
-          expression: {getText: () => 'FooImpl'},
-        },
-      },
-      exportedProp: true, // This prop will be removed
+      overriddenImplementation: 'FooCtor', // This processor should apply
+      exportedProp: true, // Documentation on the exported interface will remain
     };
     const docs = [exportedNameDoc];
 
@@ -55,7 +48,6 @@ describe('mergeOverriddenImplementation processor', () => {
       switch(docName) {
         case 'Foo': return [exportedNameDoc];
         case 'FooCtor': return [{ctorProp: true, members: [{name: 'new'}]}];
-        case 'FooImpl': return [{implProp: true}];
       }
     };
 
@@ -63,8 +55,9 @@ describe('mergeOverriddenImplementation processor', () => {
     processor.$process(docs);
 
     expect(docs).toEqual([{
-      // Property copied from the implementation
-      implProp: true,
+      overriddenImplementation: 'FooCtor',
+      // Original documentation property
+      exportedProp: true,
       // Constructor signature property
       constructorDoc: {name: 'new'},
       // The exported symbol should be explicitly marked non-internal

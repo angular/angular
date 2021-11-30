@@ -296,8 +296,7 @@ export class FormBuilder {
 }
 
 // @public
-export class FormControl extends AbstractControl {
-    constructor(formState?: any, validatorOrOpts?: ValidatorFn | ValidatorFn[] | FormControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null);
+export interface FormControl extends AbstractControl {
     readonly defaultValue: any;
     patchValue(value: any, options?: {
         onlySelf?: boolean;
@@ -318,6 +317,9 @@ export class FormControl extends AbstractControl {
         emitViewToModelChange?: boolean;
     }): void;
 }
+
+// @public (undocumented)
+export const FormControl: ɵFormControlCtor;
 
 // @public
 export class FormControlDirective extends NgControl implements OnChanges, OnDestroy {
