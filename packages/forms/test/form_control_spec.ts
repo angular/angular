@@ -1526,5 +1526,56 @@ describe('FormControl', () => {
       });
     });
   });
+
+  describe('can be extended', () => {
+    // We don't technically support extending Forms classes, but people do it anyway.
+    // We need to make sure that there is some way to extend them to avoid causing breakage.
+
+    class FCExt extends FormControl {
+      constructor(formState?: any|{
+        value?: any;
+        disabled?: boolean;
+      }, ...args: any) {
+        super(formState, ...args);
+      }
+    }
+
+    it('should perform basic FormControl operations', () => {
+      const nc = new FCExt({value: 'foo'});
+      nc.setValue('bar');
+      // There is no need to assert because, if this test compiles, then it is possible to correctly
+      // extend FormControl.
+    });
+  });
+
+  describe('inspecting the prototype still provides FormControl type', () => {
+    // The constructor should be a function with a prototype property of T.
+    // (This is the assumption we don't want to break.)
+    type Constructor<T> = Function&{prototype: T};
+
+    function isInstanceOf<T>(value: Constructor<T>, arg: unknown): arg is T {
+      // The implementation does not matter; we want to check whether this guard narrows the type.
+      return true;
+    }
+
+    // This is a nullable FormControl, and we want isInstanceOf to narrow the type.
+    const fcOrNull: FormControl|null = new FormControl(42);
+
+    it('and is appropriately narrowed', () => {
+      if (isInstanceOf(FormControl, fcOrNull)) {
+        // If the guard does not work, then this code will not compile due to null being in the
+        // type.
+        fcOrNull.setValue(7);
+      }
+    });
+  });
+
+  describe('Function.name', () => {
+    it('returns FormControl', () => {
+      // This is always true in the trivial case, but can be broken by various methods of overriding
+      // FormControl's exported constructor.
+      expect(FormControl.name).toBe('FormControl');
+    });
+  });
 });
 })();
