@@ -323,6 +323,7 @@ pkg_web(
         ":bundle-es2015",
         ":inject_scripts_for_dev",
     ],
+    substitutions = {"BUILD_SCM_COMMIT_SHA": "{BUILD_SCM_COMMIT_SHA}"},
 )
 
 history_server(

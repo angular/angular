@@ -73,10 +73,6 @@
                 {
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.e2e.ts"
-                },
-                {
-                  "replace": "src/app/app.module.ts",
-                  "with": "src/app/app.e2e.module.ts"
                 }
               ]
             }
@@ -85,7 +81,6 @@
         "serve": {
           "builder": "ngx-build-plus:dev-server",
           "options": {
-            "extraWebpackConfig": "shell-dev-webpack.config.js",
             "browserTarget": "shell-dev:build"
           },
           "configurations": {
@@ -154,7 +149,6 @@
           "builder": "ngx-build-plus:browser",
           "options": {
             "outputPath": "dist/shell-chrome",
-            "extraWebpackConfig": "projects/shell-chrome/shell-chrome-webpack.config.js",
             "index": "projects/shell-chrome/src/index.html",
             "main": "projects/shell-chrome/src/main.ts",
             "polyfills": "projects/shell-chrome/src/polyfills.ts",

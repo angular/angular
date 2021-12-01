@@ -1,3 +1,7 @@
 import ../.bazelrc
 
 build --flag_alias=partial_compilation=@npm//@angular/bazel/src:partial_compilation
+
+# Snapshots should also be stamped with version control information.
+build --workspace_status_command="yarn -s ng-dev release build-env-stamp --mode=snapshot"
+build --stamp

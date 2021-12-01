@@ -1,14 +1,10 @@
-export interface Process {
-  env: Env;
-}
-
 interface Env {
   LATEST_SHA: string;
 }
 
 export interface Environment {
   production: boolean;
-  process: Process;
+  LATEST_SHA: string;
 }
 
 export abstract class ApplicationEnvironment {
