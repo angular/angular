@@ -739,12 +739,24 @@ jobs:
     steps:
       - custom_attach_workspace
       - init_environment
-      - run: sudo apt-get update
-      - run: sudo apt-get -y install libgtk-3-0 libasound2 libnss3 libxss1 libdrm2 libgbm-dev libxshmfence-dev libgtk2.0-0 libnotify-dev libgconf-2-4 libxtst6 xauth xvfb
-      - run: yarn --cwd devtools install --frozen-lockfile --non-interactive --cache-folder ~/.cache/yarn
-      - run: yarn --cwd devtools test:ci
-      - run: yarn --cwd devtools build:chrome
-      - run: yarn --cwd devtools cy:ci
+      - run:
+          name: Sync package index files
+          command: sudo apt-get update
+      - run:
+          name: Install Karma and Cypress dependencies
+          command: sudo apt-get -y install libgtk-3-0 libasound2 libnss3 libxss1 libdrm2 libgbm-dev libxshmfence-dev libgtk2.0-0 libnotify-dev libgconf-2-4 libxtst6 xauth xvfb
+      - run:
+          name: Install DevTools dependencies
+          command: yarn --cwd devtools install --frozen-lockfile --non-interactive --cache-folder ~/.cache/yarn
+      - run:
+          name: Run unit tests
+          command: yarn --cwd devtools test:ci
+      - run:
+          name: Test production build
+          command: yarn --cwd devtools build:chrome:ci
+      - run:
+          name: Run e2e tests
+          command: yarn --cwd devtools cy:ci
 
 workflows:
   version: 2
