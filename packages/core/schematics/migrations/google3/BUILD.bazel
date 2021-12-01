@@ -6,6 +6,7 @@ ts_library(
     tsconfig = "//packages/core/schematics:tsconfig.json",
     visibility = ["//packages/core/schematics/test/google3:__pkg__"],
     deps = [
+        "//packages/core/schematics/migrations/entry-components",
         "//packages/core/schematics/migrations/testbed-teardown",
         "//packages/core/schematics/utils",
         "//packages/core/schematics/utils/tslint",
