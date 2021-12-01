@@ -23,3 +23,5 @@ build:remote --google_default_credentials
 build --config=remote
 
 import ../.bazelrc
+
+build --flag_alias=partial_compilation=@npm//@angular/bazel/src:partial_compilation
