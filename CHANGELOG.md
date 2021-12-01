@@ -1,3 +1,39 @@
+<a name="13.0.3"></a>
+# 13.0.3 (2021-12-01)
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [6cdbfdbe6e](https://github.com/angular/angular/commit/6cdbfdbe6e54b0b5757907c6d0cda65b37995570) | fix | downlevel transform incorrectly extracting constructor parameters for nested classes ([#44281](https://github.com/angular/angular/pull/44281)) |
+| [305b76b45f](https://github.com/angular/angular/commit/305b76b45f20ac84f2c6e30a76eb66b17b31a122) | fix | interpret string concat calls ([#44167](https://github.com/angular/angular/pull/44167)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [0ca5c5bd09](https://github.com/angular/angular/commit/0ca5c5bd09cc5d40f1b0a259561b05d30f2d2e3e) | fix | add missing info about a component in the "pipe could not be found" error message ([#44081](https://github.com/angular/angular/pull/44081)) |
+| [907da3977a](https://github.com/angular/angular/commit/907da3977a38ab62ca7be9d388ff123e463d3581) | fix | destroy hooks not set up for `useClass` provider using `forwardRef` ([#44281](https://github.com/angular/angular/pull/44281)) |
+| [bcd3b4959b](https://github.com/angular/angular/commit/bcd3b4959bd40255079167088ff2e2f37dc905af) | fix | support cyclic metadata in TestBed overrides ([#44215](https://github.com/angular/angular/pull/44215)) |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [96fedd249e](https://github.com/angular/angular/commit/96fedd249e5b5669937b693fea406342adbac50d) | fix | make the `FormControlStatus` available as a public API ([#44183](https://github.com/angular/angular/pull/44183)) |
+### language-service
+| Commit | Type | Description |
+| -- | -- | -- |
+| [cabc1786de](https://github.com/angular/angular/commit/cabc1786de7635018a46ffd82734f4d6719c356e) | fix | Correctly parse inputs and selectors with dollar signs ([#44268](https://github.com/angular/angular/pull/44268)) |
+### ngcc
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b68994d20a](https://github.com/angular/angular/commit/b68994d20acd7d27416d87b0cb55fa19ce064259) | fix | correctly report error when collecting dependencies of UMD module ([#44245](https://github.com/angular/angular/pull/44245)) |
+| [6f5c0c1515](https://github.com/angular/angular/commit/6f5c0c15157d594073405c45714f1a7a25404f2f) | fix | ensure that ngcc does not write a lock-file into node_modules package directories ([#44228](https://github.com/angular/angular/pull/44228)) |
+| [bf5f734e9c](https://github.com/angular/angular/commit/bf5f734e9c38bfcc43688410e70d741ff19b9acb) | fix | support the UMD wrapper function format emitted by Webpack ([#44245](https://github.com/angular/angular/pull/44245)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [d265d0d241](https://github.com/angular/angular/commit/d265d0d2415ac45f0eaae0c375ab3ca2a4055975) | fix | prevent componentless routes from being detached ([#44240](https://github.com/angular/angular/pull/44240)) |
+## Special Thanks
+Alan Agius, Alex Rickabaugh, Andrew Kushnir, Andrew Scott, Artur, Christian-E, David Shevitz, Doug Parker, Douglas Parker, Dylan Hunn, George Kalpakas, Jessica Janiuk, Joey Perrott, JoostK, Kristiyan Kostadinov, Marc Redemske, Paul Gschwendtner, Pei Wang, Pete Bacon Darwin, Ramesh Thiruchelvam, Ravi Chandra, Rohan Pednekar, Ruslan Usmanov, dario-piotrowicz, profanis and unknown
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="13.1.0-next.2"></a>
 # 13.1.0-next.2 (2021-11-17)
 
