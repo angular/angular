@@ -1,3 +1,24 @@
+<a name="13.0.3"></a>
+# 13.0.3 "cerammic-almanac" (2021-12-01)
+### cdk
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a3f99f8c6a](https://github.com/angular/components/commit/a3f99f8c6ad8c7592e385cd49fb3c7fd4941cd74) | fix | **drag-drop:** remove boundary error ([#23966](https://github.com/angular/components/pull/23966)) |
+| [b92f0bc806](https://github.com/angular/components/commit/b92f0bc806527e5052e3b0df1cbb67140190d03d) | perf | **a11y:** tree-shake warnings in production ([#23967](https://github.com/angular/components/pull/23967)) |
+### material
+| Commit | Type | Description |
+| -- | -- | -- |
+| [73414a9ba6](https://github.com/angular/components/commit/73414a9ba6daa38d1ae04c5a3edb41f908747cf5) | perf | **bottom-sheet:** do not run change detection when focusing element ([#23965](https://github.com/angular/components/pull/23965)) |
+| [a25dda672b](https://github.com/angular/components/commit/a25dda672b545d96d8eb918a91da273cc5f95325) | perf | **core:** tree shake sanity checks ([#23969](https://github.com/angular/components/pull/23969)) |
+### multiple
+| Commit | Type | Description |
+| -- | -- | -- |
+| [f05a9c655a](https://github.com/angular/components/commit/f05a9c655a7a5f2e61dbf899337f19785d212e3d) | fix | some experimental components not cleaned up completely ([#23994](https://github.com/angular/components/pull/23994)) |
+## Special Thanks
+Artur Androsovych, Kristiyan Kostadinov, Paul Gschwendtner and Ruslan Lekhman
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="13.1.0-next.2"></a>
 # 13.1.0-next.2 "putty-pomelo" (2021-11-17)
 ### cdk
