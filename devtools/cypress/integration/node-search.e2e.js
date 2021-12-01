@@ -1,5 +1,5 @@
 function checkSearchedNodesLength(type, length) {
-  cy.get('.tree-wrapper').find(type).its('length').should('eq', length);
+  cy.get(`.tree-wrapper:first ${type}`).its('length').should('eq', length);
 }
 
 function inputSearchText(text) {

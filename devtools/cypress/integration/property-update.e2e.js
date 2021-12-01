@@ -18,11 +18,11 @@ describe('change of the state should reflect in property update', () => {
     cy.get('.explorer-panel:contains("app-todo")').find('ng-property-view mat-tree-node:contains("todo")').click();
 
     // Verify its value is now completed
-    cy.get('.explorer-panel:contains("app-todo")')
-      .find('ng-property-view mat-tree-node:contains("completed")')
-      .find('ng-property-editor .editor')
-      .should((el) => {
-        expect(el.text().trim()).equal('true');
-      });
+    cy.contains(
+      '.explorer-panel:contains("app-todo") ' +
+      'ng-property-view mat-tree-node:contains("completed") ' +
+      'ng-property-editor .editor',
+      'true'
+    );
   });
 });

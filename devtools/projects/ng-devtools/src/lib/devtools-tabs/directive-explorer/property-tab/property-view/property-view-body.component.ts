@@ -19,25 +19,28 @@ export class PropertyViewBodyComponent {
 
   categoryOrder = [0, 1, 2];
 
-  get panels(): { title: string; hidden: boolean; controls: DirectiveTreeData; documentation: string }[] {
+  get panels(): { title: string; hidden: boolean; controls: DirectiveTreeData; documentation: string, class: string }[] {
     return [
       {
         title: '@Inputs',
         hidden: this.directiveInputControls.dataSource.data.length === 0,
         controls: this.directiveInputControls,
         documentation: 'https://angular.io/api/core/Input',
+        class: 'cy-inputs'
       },
       {
         title: '@Outputs',
         hidden: this.directiveOutputControls.dataSource.data.length === 0,
         controls: this.directiveOutputControls,
         documentation: 'https://angular.io/api/core/Output',
+        class: 'cy-outputs'
       },
       {
         title: 'Properties',
         hidden: this.directiveStateControls.dataSource.data.length === 0,
         controls: this.directiveStateControls,
         documentation: 'https://angular.io/guide/property-binding',
+        class: 'cy-properties'
       },
     ];
   }

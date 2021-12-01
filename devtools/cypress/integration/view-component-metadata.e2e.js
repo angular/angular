@@ -12,14 +12,11 @@ describe('Viewing component metadata', () => {
     beforeEach(() => prepareHeaderExpansionPanelForAssertions('.tree-node:contains("app-todo[TooltipDirective]")'));
 
     it('should display view encapsulation', () => {
-      cy.get('.meta-data-container').find('.mat-button').first().should('have.text', ' View Encapsulation: Emulated');
+      cy.contains('.meta-data-container .mat-button:first', 'View Encapsulation: Emulated')
     });
 
     it('should display change detection strategy', () => {
-      cy.get('.meta-data-container')
-        .find('.mat-button')
-        .last()
-        .should('have.text', ' Change Detection Strategy: OnPush');
+      cy.contains('.meta-data-container .mat-button:last', 'Change Detection Strategy: OnPush')
     });
   });
 
@@ -27,80 +24,29 @@ describe('Viewing component metadata', () => {
     beforeEach(() => prepareHeaderExpansionPanelForAssertions('.tree-node:contains("app-demo-component")'));
 
     it('should display view encapsulation', () => {
-      cy.get('.meta-data-container').find('.mat-button').first().should('have.text', ' View Encapsulation: None');
+      cy.contains('.meta-data-container .mat-button:first', 'View Encapsulation: None')
     });
 
     it('should display change detection strategy', () => {
-      cy.get('.meta-data-container')
-        .find('.mat-button')
-        .last()
-        .should('have.text', ' Change Detection Strategy: Default');
+      cy.contains('.meta-data-container .mat-button:last', 'Change Detection Strategy: Default')
     });
 
     it('should display correct set of inputs', () => {
-      cy.get('mat-expansion-panel')
-        .eq(1)
-        .find('mat-expansion-panel-header')
-        .first()
-        .should('have.text', ' @Inputs open_in_new');
-
-      cy.get('mat-expansion-panel')
-        .eq(1)
-        .find('mat-tree-node')
-        .eq(0)
-        .find('span')
-        .eq(0)
-        .should('have.text', ' inputOne ');
-
-      cy.get('mat-expansion-panel')
-        .eq(1)
-        .find('mat-tree-node')
-        .eq(1)
-        .find('span')
-        .eq(0)
-        .should('have.text', ' inputTwo ');
+      cy.contains('.cy-inputs', '@Inputs');
+      cy.contains('.cy-inputs mat-tree-node:first span:first', 'inputOne');
+      cy.contains('.cy-inputs mat-tree-node:last span:first', 'inputTwo');
     });
-
+    
     it('should display correct set of outputs', () => {
-      cy.get('mat-expansion-panel')
-        .eq(2)
-        .find('mat-expansion-panel-header')
-        .first()
-        .should('have.text', ' @Outputs open_in_new');
-
-      cy.get('mat-expansion-panel')
-        .eq(2)
-        .find('mat-tree-node')
-        .eq(0)
-        .find('span')
-        .eq(0)
-        .should('have.text', ' outputOne ');
-
-      cy.get('mat-expansion-panel')
-        .eq(2)
-        .find('mat-tree-node')
-        .eq(1)
-        .find('span')
-        .eq(0)
-        .should('have.text', ' outputTwo ');
+      cy.contains('.cy-outputs', '@Outputs');
+      cy.contains('.cy-outputs mat-tree-node:first span:first', 'outputOne');
+      cy.contains('.cy-outputs mat-tree-node:last span:first', 'outputTwo');
     });
 
     it('should display correct set of properties', () => {
-      cy.get('mat-expansion-panel')
-        .eq(3)
-        .find('mat-expansion-panel-header')
-        .first()
-        .should('have.text', ' Properties open_in_new');
-
-      cy.get('mat-expansion-panel')
-        .eq(3)
-        .find('mat-tree-node')
-        .eq(0)
-        .find('span')
-        .eq(0)
-        .should('have.text', ' elementRef ');
-
-      cy.get('mat-expansion-panel').eq(3).find('mat-tree-node').eq(1).find('span').eq(0).should('have.text', ' zippy ');
+      cy.contains('.cy-properties', 'Properties');
+      cy.contains('.cy-properties mat-tree-node:first span:first', 'elementRef');
+      cy.contains('.cy-properties mat-tree-node:last span:first', 'zippy');
     });
   });
 });
