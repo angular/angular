@@ -1,3 +1,57 @@
+<a name="13.1.0-next.3"></a>
+# 13.1.0-next.3 (2021-12-01)
+## Deprecations
+### 
+- The `downgradeModule` function calls with NgModule factories are deprecated. Please use NgModule class based `downgradeModule` calls instead.
+### common
+- `TestRequest` from `@angular/common/http/testing` no longer
+accepts `ErrorEvent` when simulating XHR errors. Instead instances of
+`ProgressEvent` should be passed, matching with the native browser behavior.
+### 
+| Commit | Type | Description |
+| -- | -- | -- |
+| [dbc46d68b9](https://github.com/angular/angular/commit/dbc46d68b99f5516209991ee3421292fc8261bec) | docs | deprecate factory-based signature of the `downgradeModule` function ([#44090](https://github.com/angular/angular/pull/44090)) |
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [489cf42cd0](https://github.com/angular/angular/commit/489cf42cd07ac2b549ea958127590b30f1b3d28f) | fix | incorrect error type for XHR errors in `TestRequest` ([#36082](https://github.com/angular/angular/pull/36082)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [6c1573bc08](https://github.com/angular/angular/commit/6c1573bc08099bee40a6214c68e82fe91848a08a) | fix | downlevel transform incorrectly extracting constructor parameters for nested classes ([#44281](https://github.com/angular/angular/pull/44281)) |
+| [48ca7dce4f](https://github.com/angular/angular/commit/48ca7dce4fe1474820abc296824cda9e7824c159) | fix | interpret string concat calls ([#44167](https://github.com/angular/angular/pull/44167)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [5dff077d50](https://github.com/angular/angular/commit/5dff077d505da60ddead9f2ff2ddaaaea6feeb4a) | feat | add migration to remove entryComponents ([#44308](https://github.com/angular/angular/pull/44308)) |
+| [e65a245a0b](https://github.com/angular/angular/commit/e65a245a0b67c67f08a29f8c3ac2e3e7e824a029) | feat | add migration to remove entryComponents ([#44322](https://github.com/angular/angular/pull/44322)) |
+| [d56e3f43a1](https://github.com/angular/angular/commit/d56e3f43a1f3ca5004d2c5413167737cff7d936f) | feat | support TypeScript 4.5 ([#44164](https://github.com/angular/angular/pull/44164)) |
+| [b06e3981bc](https://github.com/angular/angular/commit/b06e3981bc1fa2b80465275cb657f0537b2c7385) | fix | add missing info about a component in the "pipe could not be found" error message ([#44081](https://github.com/angular/angular/pull/44081)) |
+| [43dfab447d](https://github.com/angular/angular/commit/43dfab447d48a4978e52d7c7d67d4527a79f4240) | fix | destroy hooks not set up for `useClass` provider using `forwardRef` ([#44281](https://github.com/angular/angular/pull/44281)) |
+| [b930547ffd](https://github.com/angular/angular/commit/b930547ffd951228c26e3c6bad456f90cc449e07) | fix | support cyclic metadata in TestBed overrides ([#44215](https://github.com/angular/angular/pull/44215)) |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [38c02e13a5](https://github.com/angular/angular/commit/38c02e13a51e6ae00df5a594936572d1b1cfd38c) | fix | make the `FormControlStatus` available as a public API ([#44183](https://github.com/angular/angular/pull/44183)) |
+### language-service
+| Commit | Type | Description |
+| -- | -- | -- |
+| [3aafa765ee](https://github.com/angular/angular/commit/3aafa765eef2dbbafd422050d21e7436b113a832) | fix | Correctly parse inputs and selectors with dollar signs ([#44268](https://github.com/angular/angular/pull/44268)) |
+### ngcc
+| Commit | Type | Description |
+| -- | -- | -- |
+| [de0975c6d9](https://github.com/angular/angular/commit/de0975c6d99bbe9332382a8f6f2b920f9e4b9d49) | fix | correctly report error when collecting dependencies of UMD module ([#44245](https://github.com/angular/angular/pull/44245)) |
+| [24b635395f](https://github.com/angular/angular/commit/24b635395f163e727effbf66da168dfbb29fc4a0) | fix | ensure that ngcc does not write a lock-file into node_modules package directories ([#44228](https://github.com/angular/angular/pull/44228)) |
+| [3c8a5d1c70](https://github.com/angular/angular/commit/3c8a5d1c706fe0ebff621f76eb9e98e0f5ec0f77) | fix | support the UMD wrapper function format emitted by Webpack ([#44245](https://github.com/angular/angular/pull/44245)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [f44cb57c12](https://github.com/angular/angular/commit/f44cb57c12c29e76167272c675c0ce23838ce723) | fix | prevent componentless routes from being detached ([#44240](https://github.com/angular/angular/pull/44240)) |
+## Special Thanks
+Alan Agius, Alex Rickabaugh, Andrew Kushnir, Andrew Scott, Artur, Christian-E, David Shevitz, Doug Parker, Douglas Parker, Dylan Hunn, George Kalpakas, Jessica Janiuk, Joey Perrott, JoostK, Kristiyan Kostadinov, Marc Redemske, Paul Gschwendtner, Pei Wang, Pete Bacon Darwin, Ramesh Thiruchelvam, Ravi Chandra, Rohan Pednekar, Ruslan Usmanov, dario-piotrowicz, profanis and unknown
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="13.0.3"></a>
 # 13.0.3 (2021-12-01)
 ### compiler-cli
