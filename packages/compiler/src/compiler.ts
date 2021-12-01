@@ -36,7 +36,6 @@ export {core};
 
 export * from './version';
 export {CompilerConfig, preserveWhitespacesDefault} from './config';
-export {Identifiers} from './identifiers';
 export * from './compile_reflector';
 export * from './url_resolver';
 export * from './resource_loader';

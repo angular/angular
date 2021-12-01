@@ -7,9 +7,9 @@
  */
 
 import * as cdAst from '../expression_parser/ast';
-import {Identifiers} from '../identifiers';
 import * as o from '../output/output_ast';
 import {ParseSourceSpan} from '../parse_util';
+import {error} from '../util';
 
 export class EventHandlerVars {
   static event = o.variable('$event');
@@ -73,7 +73,7 @@ export type InterpolationFunction = (args: o.Expression[]) => o.Expression;
  */
 export function convertActionBinding(
     localResolver: LocalResolver|null, implicitReceiver: o.Expression, action: cdAst.AST,
-    bindingId: string, interpolationFunction?: InterpolationFunction,
+    bindingId: string, interpolationFunction: InterpolationFunction,
     baseSourceSpan?: ParseSourceSpan, implicitReceiverAccesses?: Set<string>,
     globals?: Set<string>): ConvertActionBindingResult {
   if (!localResolver) {
@@ -171,7 +171,7 @@ export enum BindingForm {
 export function convertPropertyBinding(
     localResolver: LocalResolver|null, implicitReceiver: o.Expression,
     expressionWithoutBuiltins: cdAst.AST, bindingId: string, form: BindingForm,
-    interpolationFunction?: InterpolationFunction): ConvertPropertyBindingResult {
+    interpolationFunction: InterpolationFunction): ConvertPropertyBindingResult {
   if (!localResolver) {
     localResolver = new DefaultLocalResolver();
   }
@@ -214,8 +214,8 @@ export function convertPropertyBinding(
 export function convertUpdateArguments(
     localResolver: LocalResolver, contextVariableExpression: o.Expression,
     expressionWithArgumentsToExtract: cdAst.AST, bindingId: string) {
-  const visitor =
-      new _AstToIrVisitor(localResolver, contextVariableExpression, bindingId, undefined);
+  const visitor = new _AstToIrVisitor(
+      localResolver, contextVariableExpression, bindingId, () => error('Unexpected interpolation'));
   const outputExpr: o.InvokeFunctionExpr =
       expressionWithArgumentsToExtract.visit(visitor, _Mode.Expression);
 
@@ -329,7 +329,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
 
   constructor(
       private _localResolver: LocalResolver, private _implicitReceiver: o.Expression,
-      private bindingId: string, private interpolationFunction: InterpolationFunction|undefined,
+      private bindingId: string, private interpolationFunction: InterpolationFunction,
       private baseSourceSpan?: ParseSourceSpan, private implicitReceiverAccesses?: Set<string>) {}
 
   visitUnary(ast: cdAst.Unary, mode: _Mode): any {
@@ -451,14 +451,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
     }
     args.push(o.literal(ast.strings[ast.strings.length - 1]));
 
-    if (this.interpolationFunction) {
-      return this.interpolationFunction(args);
-    }
-    return ast.expressions.length <= 9 ?
-        o.importExpr(Identifiers.inlineInterpolate).callFn(args) :
-        o.importExpr(Identifiers.interpolate).callFn([
-          args[0], o.literalArr(args.slice(1), undefined, this.convertSourceSpan(ast.span))
-        ]);
+    return this.interpolationFunction(args);
   }
 
   visitKeyedRead(ast: cdAst.KeyedRead, mode: _Mode): any {
