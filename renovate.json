@@ -53,6 +53,7 @@
     "package.json",
     "packages/**/package.json",
     "aio/package.json",
+    "devtools/package.json",
     ".github/workflows/**/*.yml"
   ],
   "packageRules": [
