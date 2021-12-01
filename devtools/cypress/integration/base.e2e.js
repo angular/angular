@@ -15,15 +15,15 @@ describe('Testing the Todo app Demo', () => {
   });
 
   it('should contain the "Components" tab', () => {
-    cy.get('.mat-tab-links').contains('Components');
+    cy.contains('.mat-tab-links', 'Components');
   });
 
   it('should contain the "Profiler" tab', () => {
-    cy.get('.mat-tab-links').contains('Profiler');
+    cy.contains('.mat-tab-links', 'Profiler');
   });
 
   it('should contain "app-root" and "app-todo-demo" in the component tree', () => {
-    cy.get('.tree-node').contains('app-root');
-    cy.get('.tree-node').contains('app-todo-demo');
+    cy.contains('.tree-node', 'app-root');
+    cy.contains('.tree-node', 'app-todo-demo');
   });
 });

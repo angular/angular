@@ -1,6 +1,6 @@
 <mat-accordion cdkDropList (cdkDropListDropped)="drop($event)" *ngIf="controlsLoaded" [multi]="true">
   <div class="mat-accordion-content" *ngFor="let index of categoryOrder" cdkDrag>
-    <mat-expansion-panel *ngIf="!panels[index].hidden" [expanded]="true">
+    <mat-expansion-panel [class]="panels[index].class" *ngIf="!panels[index].hidden" [expanded]="true">
       <mat-expansion-panel-header collapsedHeight="25px" expandedHeight="25px">
         <mat-panel-title>
           {{ panels[index].title }}
