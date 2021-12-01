@@ -18,7 +18,7 @@ const TEST_STRING = `I'm a body!`;
   describe('HttpRequest', () => {
     describe('constructor', () => {
       it('initializes url', () => {
-        const req = new HttpRequest('', TEST_URL, null);
+        const req = new HttpRequest('GET', TEST_URL, null);
         expect(req.url).toBe(TEST_URL);
       });
       it('doesn\'t require a body for body-less methods', () => {
@@ -36,8 +36,8 @@ const TEST_STRING = `I'm a body!`;
         expect(req.body).toBeNull();
       });
       it('accepts a string request method', () => {
-        const req = new HttpRequest('TEST', TEST_URL, null);
-        expect(req.method).toBe('TEST');
+        const req = new HttpRequest('GET', TEST_URL, null);
+        expect(req.method).toBe('GET');
       });
       it('accepts a string body', () => {
         const req = new HttpRequest('POST', TEST_URL, TEST_STRING);

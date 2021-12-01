@@ -6,6 +6,7 @@
 
 import { HttpEvent } from '@angular/common/http';
 import { HttpHeaders } from '@angular/common/http';
+import { HttpMethod } from '@angular/common/http';
 import { HttpRequest } from '@angular/common/http';
 import * as i0 from '@angular/core';
 import * as i1 from '@angular/common/http';
@@ -40,7 +41,7 @@ export abstract class HttpTestingController {
 // @public
 export interface RequestMatch {
     // (undocumented)
-    method?: string;
+    method?: HttpMethod;
     // (undocumented)
     url?: string;
 }

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {HttpRequest} from '@angular/common/http';
+import {HttpMethod, HttpRequest} from '@angular/common/http';
 
 import {TestRequest} from './request';
 
@@ -16,7 +16,7 @@ import {TestRequest} from './request';
  * @publicApi
  */
 export interface RequestMatch {
-  method?: string;
+  method?: HttpMethod;
   url?: string;
 }
 
