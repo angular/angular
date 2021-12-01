@@ -26,23 +26,6 @@ function _splitAt(input: string, character: string, defaultValues: string[]): st
   return [input.slice(0, characterIndex).trim(), input.slice(characterIndex + 1).trim()];
 }
 
-export function visitValue(value: any, visitor: ValueVisitor, context: any): any {
-  if (Array.isArray(value)) {
-    return visitor.visitArray(<any[]>value, context);
-  }
-
-  if (isStrictStringMap(value)) {
-    return visitor.visitStringMap(<{[key: string]: any}>value, context);
-  }
-
-  if (value == null || typeof value == 'string' || typeof value == 'number' ||
-      typeof value == 'boolean') {
-    return visitor.visitPrimitive(value, context);
-  }
-
-  return visitor.visitOther(value, context);
-}
-
 export function isDefined(val: any): boolean {
   return val !== null && val !== undefined;
 }
@@ -51,49 +34,12 @@ export function noUndefined<T>(val: T|undefined): T {
   return val === undefined ? null! : val;
 }
 
-export interface ValueVisitor {
-  visitArray(arr: any[], context: any): any;
-  visitStringMap(map: {[key: string]: any}, context: any): any;
-  visitPrimitive(value: any, context: any): any;
-  visitOther(value: any, context: any): any;
+export function flatten<T>(list: Array<T|T[]>): T[] {
+  return list.reduce((flat: any[], item: T|T[]): T[] => {
+    const flatItem = Array.isArray(item) ? flatten(item) : item;
+    return (<T[]>flat).concat(flatItem);
+  }, []);
 }
-
-export class ValueTransformer implements ValueVisitor {
-  visitArray(arr: any[], context: any): any {
-    return arr.map(value => visitValue(value, this, context));
-  }
-  visitStringMap(map: {[key: string]: any}, context: any): any {
-    const result: {[key: string]: any} = {};
-    Object.keys(map).forEach(key => {
-      result[key] = visitValue(map[key], this, context);
-    });
-    return result;
-  }
-  visitPrimitive(value: any, context: any): any {
-    return value;
-  }
-  visitOther(value: any, context: any): any {
-    return value;
-  }
-}
-
-export type SyncAsync<T> = T|Promise<T>;
-
-export const SyncAsync = {
-  assertSync: <T>(value: SyncAsync<T>): T => {
-    if (isPromise(value)) {
-      throw new Error(`Illegal state: value cannot be a promise`);
-    }
-    return value;
-  },
-  then: <T, R>(value: SyncAsync<T>, cb: (value: T) => R | Promise<R>| SyncAsync<R>):
-      SyncAsync<R> => {
-        return isPromise(value) ? value.then(cb) : cb(value);
-      },
-  all: <T>(syncAsyncValues: SyncAsync<T>[]): SyncAsync<T[]> => {
-    return syncAsyncValues.some(isPromise) ? Promise.all(syncAsyncValues) : syncAsyncValues as T[];
-  }
-};
 
 export function error(msg: string): never {
   throw new Error(`Internal Error: ${msg}`);
@@ -102,11 +48,6 @@ export function error(msg: string): never {
 // Escape characters that have a special meaning in Regular Expressions
 export function escapeRegExp(s: string): string {
   return s.replace(/([.*+?^=!:${}()|[\]\/\\])/g, '\\$1');
-}
-
-const STRING_MAP_PROTO = Object.getPrototypeOf({});
-function isStrictStringMap(obj: any): boolean {
-  return typeof obj === 'object' && obj !== null && Object.getPrototypeOf(obj) === STRING_MAP_PROTO;
 }
 
 export type Byte = number;

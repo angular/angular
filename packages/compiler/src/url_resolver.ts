@@ -7,17 +7,6 @@
  */
 
 /**
- * Create a {@link UrlResolver} with no package prefix.
- */
-export function createUrlResolverWithoutPackagePrefix(): UrlResolver {
-  return new UrlResolver();
-}
-
-export function createOfflineCompileUrlResolver(): UrlResolver {
-  return new UrlResolver('.');
-}
-
-/**
  * Used by the {@link Compiler} when resolving HTML and CSS template URLs.
  *
  * This class can be overridden by the application developer to create custom behavior.
@@ -69,14 +58,6 @@ export const UrlResolver: UrlResolverCtor = class UrlResolverImpl {
     return resolvedUrl;
   }
 };
-
-/**
- * Extract the scheme of a URL.
- */
-export function getUrlScheme(url: string): string {
-  const match = _split(url);
-  return (match && match[_ComponentIndex.Scheme]) || '';
-}
 
 // The code below is adapted from Traceur:
 // https://github.com/google/traceur-compiler/blob/9511c1dafa972bf0de1202a8a863bad02f0f95a8/src/runtime/url.js

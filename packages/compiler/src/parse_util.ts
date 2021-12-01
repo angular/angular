@@ -5,7 +5,6 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {StaticSymbol} from './aot/static_symbol';
 import * as chars from './chars';
 import {stringify} from './util';
 
@@ -133,6 +132,12 @@ export class ParseSourceSpan {
   }
 }
 
+export interface Position {
+  fileName: string;
+  line: number;
+  column: number;
+}
+
 export enum ParseErrorLevel {
   WARNING,
   ERROR,
@@ -155,15 +160,6 @@ export class ParseError {
   }
 }
 
-export function typeSourceSpan(kind: string, type: CompileIdentifierMetadata): ParseSourceSpan {
-  const moduleUrl = identifierModuleUrl(type);
-  const sourceFileName = moduleUrl != null ? `in ${kind} ${identifierName(type)} in ${moduleUrl}` :
-                                             `in ${kind} ${identifierName(type)}`;
-  const sourceFile = new ParseSourceFile('', sourceFileName);
-  return new ParseSourceSpan(
-      new ParseLocation(sourceFile, -1, -1, -1), new ParseLocation(sourceFile, -1, -1, -1));
-}
-
 /**
  * Generates Source Span object for a given R3 Type for JIT mode.
  *
@@ -180,22 +176,10 @@ export function r3JitTypeSourceSpan(
       new ParseLocation(sourceFile, -1, -1, -1), new ParseLocation(sourceFile, -1, -1, -1));
 }
 
-export function syntaxError(msg: string, parseErrors?: ParseError[]): Error {
-  const error = Error(msg);
-  (error as any)[ERROR_SYNTAX_ERROR] = true;
-  if (parseErrors) (error as any)[ERROR_PARSE_ERRORS] = parseErrors;
-  return error;
-}
-
-const ERROR_SYNTAX_ERROR = 'ngSyntaxError';
-const ERROR_PARSE_ERRORS = 'ngParseErrors';
-
 export function isSyntaxError(error: Error): boolean {
-  return (error as any)[ERROR_SYNTAX_ERROR];
-}
-
-export function getParseErrors(error: Error): ParseError[] {
-  return (error as any)[ERROR_PARSE_ERRORS] || [];
+  // TODO(joost): this function is no longer relevant after ViewEngine removal; its usage should be
+  // cleaned up.
+  return false;
 }
 
 let _anonymousTypeIndex = 0;
@@ -206,9 +190,6 @@ export function identifierName(compileIdentifier: CompileIdentifierMetadata|null
     return null;
   }
   const ref = compileIdentifier.reference;
-  if (ref instanceof StaticSymbol) {
-    return ref.name;
-  }
   if (ref['__anonymousType']) {
     return ref['__anonymousType'];
   }
@@ -226,15 +207,6 @@ export function identifierName(compileIdentifier: CompileIdentifierMetadata|null
     identifier = sanitizeIdentifier(identifier);
   }
   return identifier;
-}
-
-export function identifierModuleUrl(compileIdentifier: CompileIdentifierMetadata): string {
-  const ref = compileIdentifier.reference;
-  if (ref instanceof StaticSymbol) {
-    return ref.filePath;
-  }
-  // Runtime type
-  return `./${stringify(ref)}`;
 }
 
 export interface CompileIdentifierMetadata {

@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 export {computeMsgId} from './digest';
-export {Extractor, ExtractorHost} from './extractor';
 export {I18NHtmlParser} from './i18n_html_parser';
 export {MessageBundle} from './message_bundle';
 export {Serializer} from './serializers/serializer';

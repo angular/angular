@@ -7,6 +7,7 @@
  */
 
 import {ParseSourceSpan} from '../parse_util';
+
 import * as o from './output_ast';
 import {SourceMapGenerator} from './source_map';
 
@@ -15,10 +16,6 @@ const _LEGAL_IDENTIFIER_RE = /^[$A-Z_][0-9A-Z_$]*$/i;
 const _INDENT_WITH = '  ';
 export const CATCH_ERROR_VAR = o.variable('error', null, null);
 export const CATCH_STACK_VAR = o.variable('stack', null, null);
-
-export interface OutputEmitter {
-  emitStatements(genFilePath: string, stmts: o.Statement[], preamble?: string|null): string;
-}
 
 class _EmittedLine {
   partsLength = 0;

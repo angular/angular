@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {GeneratedFile, HtmlParser, MessageBundle} from '@angular/compiler';
+import {HtmlParser, MessageBundle} from '@angular/compiler';
 import ts from 'typescript';
 
 import * as api from '../transformers/api';
@@ -338,14 +338,6 @@ export class NgtscProgram implements api.Program {
   }
 
   getLibrarySummaries(): Map<string, api.LibrarySummary> {
-    throw new Error('Method not implemented.');
-  }
-
-  getEmittedGeneratedFiles(): Map<string, GeneratedFile> {
-    throw new Error('Method not implemented.');
-  }
-
-  getEmittedSourceFiles(): Map<string, ts.SourceFile> {
     throw new Error('Method not implemented.');
   }
 }

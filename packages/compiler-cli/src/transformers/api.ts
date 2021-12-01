@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {GeneratedFile, ParseSourceSpan, Position} from '@angular/compiler';
+import {ParseSourceSpan, Position} from '@angular/compiler';
 import ts from 'typescript';
 
 import {ExtendedTsCompilerHost, NgCompilerOptions} from '../ngtsc/core/api';
@@ -292,14 +292,4 @@ export interface Program {
    * have been compiled before with no outDir.
    */
   getLibrarySummaries(): Map<string, LibrarySummary>;
-
-  /**
-   * @internal
-   */
-  getEmittedGeneratedFiles(): Map<string, GeneratedFile>;
-
-  /**
-   * @internal
-   */
-  getEmittedSourceFiles(): Map<string, ts.SourceFile>;
 }

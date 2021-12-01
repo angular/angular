@@ -9,7 +9,6 @@
 import {DatePipe} from '@angular/common';
 import localeEn from '@angular/common/locales/en';
 import localeEnExtra from '@angular/common/locales/extra/en';
-import {PipeResolver} from '@angular/compiler/src/pipe_resolver';
 import {ɵregisterLocaleData, ɵunregisterLocaleData} from '@angular/core';
 
 {

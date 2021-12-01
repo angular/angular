@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompileDirectiveSummary, CompilePipeSummary} from '../compile_metadata';
 import {SecurityContext} from '../core';
 import {AbsoluteSourceSpan, ASTWithSource, BindingPipe, BindingType, BoundElementProperty, EmptyExpr, ParsedEvent, ParsedEventType, ParsedProperty, ParsedPropertyType, ParsedVariable, ParserError, RecursiveAstVisitor, TemplateBinding, VariableBinding} from '../expression_parser/ast';
 import {Parser} from '../expression_parser/parser';
 import {InterpolationConfig} from '../ml_parser/interpolation_config';
 import {mergeNsAndName} from '../ml_parser/tags';
 import {ParseError, ParseErrorLevel, ParseLocation, ParseSourceSpan} from '../parse_util';
+import {R3HostMetadata} from '../render3/view/api';
 import {ElementSchemaRegistry} from '../schema/element_schema_registry';
 import {CssSelector} from '../selector';
 import {splitAtColon, splitAtPeriod} from '../util';
@@ -28,37 +28,20 @@ const ANIMATE_PROP_PREFIX = 'animate-';
  * Parses bindings in templates and in the directive host area.
  */
 export class BindingParser {
-  pipesByName: Map<string, CompilePipeSummary>|null = null;
-
-  private _usedPipes: Map<string, CompilePipeSummary> = new Map();
-
   constructor(
       private _exprParser: Parser, private _interpolationConfig: InterpolationConfig,
-      private _schemaRegistry: ElementSchemaRegistry, pipes: CompilePipeSummary[]|null,
-      public errors: ParseError[]) {
-    // When the `pipes` parameter is `null`, do not check for used pipes
-    // This is used in IVY when we might not know the available pipes at compile time
-    if (pipes) {
-      const pipesByName: Map<string, CompilePipeSummary> = new Map();
-      pipes.forEach(pipe => pipesByName.set(pipe.name, pipe));
-      this.pipesByName = pipesByName;
-    }
-  }
+      private _schemaRegistry: ElementSchemaRegistry, public errors: ParseError[]) {}
 
   get interpolationConfig(): InterpolationConfig {
     return this._interpolationConfig;
   }
 
-  getUsedPipes(): CompilePipeSummary[] {
-    return Array.from(this._usedPipes.values());
-  }
-
-  createBoundHostProperties(dirMeta: CompileDirectiveSummary, sourceSpan: ParseSourceSpan):
+  createBoundHostProperties(dirMeta: R3HostMetadata, sourceSpan: ParseSourceSpan):
       ParsedProperty[]|null {
-    if (dirMeta.hostProperties) {
+    if (dirMeta.properties) {
       const boundProps: ParsedProperty[] = [];
-      Object.keys(dirMeta.hostProperties).forEach(propName => {
-        const expression = dirMeta.hostProperties[propName];
+      Object.keys(dirMeta.properties).forEach(propName => {
+        const expression = dirMeta.properties[propName];
         if (typeof expression === 'string') {
           this.parsePropertyBinding(
               propName, expression, true, sourceSpan, sourceSpan.start.offset, undefined, [],
@@ -82,20 +65,12 @@ export class BindingParser {
     return null;
   }
 
-  createDirectiveHostPropertyAsts(
-      dirMeta: CompileDirectiveSummary, elementSelector: string,
-      sourceSpan: ParseSourceSpan): BoundElementProperty[]|null {
-    const boundProps = this.createBoundHostProperties(dirMeta, sourceSpan);
-    return boundProps &&
-        boundProps.map((prop) => this.createBoundElementProperty(elementSelector, prop));
-  }
-
-  createDirectiveHostEventAsts(dirMeta: CompileDirectiveSummary, sourceSpan: ParseSourceSpan):
+  createDirectiveHostEventAsts(dirMeta: R3HostMetadata, sourceSpan: ParseSourceSpan):
       ParsedEvent[]|null {
-    if (dirMeta.hostListeners) {
+    if (dirMeta.listeners) {
       const targetEvents: ParsedEvent[] = [];
-      Object.keys(dirMeta.hostListeners).forEach(propName => {
-        const expression = dirMeta.hostListeners[propName];
+      Object.keys(dirMeta.listeners).forEach(propName => {
+        const expression = dirMeta.listeners[propName];
         if (typeof expression === 'string') {
           // Use the `sourceSpan` for  `keySpan` and `handlerSpan`. This isn't really accurate, but
           // neither is the `sourceSpan`, as it represents the `sourceSpan` of the host itself
@@ -126,7 +101,6 @@ export class BindingParser {
       const ast = this._exprParser.parseInterpolation(
           value, sourceInfo, absoluteOffset, this._interpolationConfig)!;
       if (ast) this._reportExpressionParserErrors(ast.errors, sourceSpan);
-      this._checkPipes(ast, sourceSpan);
       return ast;
     } catch (e) {
       this._reportError(`${e}`, sourceSpan);
@@ -147,7 +121,6 @@ export class BindingParser {
       const ast =
           this._exprParser.parseInterpolationExpression(expression, sourceInfo, absoluteOffset);
       if (ast) this._reportExpressionParserErrors(ast.errors, sourceSpan);
-      this._checkPipes(ast, sourceSpan);
       return ast;
     } catch (e) {
       this._reportError(`${e}`, sourceSpan);
@@ -169,8 +142,8 @@ export class BindingParser {
    */
   parseInlineTemplateBinding(
       tplKey: string, tplValue: string, sourceSpan: ParseSourceSpan, absoluteValueOffset: number,
-      targetMatchableAttrs: string[][], targetProps: ParsedProperty[], targetVars: ParsedVariable[],
-      isIvyAst: boolean) {
+      targetMatchableAttrs: string[][], targetProps: ParsedProperty[],
+      targetVars: ParsedVariable[]) {
     const absoluteKeyOffset = sourceSpan.start.offset + TEMPLATE_ATTR_PREFIX.length;
     const bindings = this._parseTemplateBindings(
         tplKey, tplValue, sourceSpan, absoluteKeyOffset, absoluteValueOffset);
@@ -187,10 +160,9 @@ export class BindingParser {
             binding.value ? moveParseSourceSpan(sourceSpan, binding.value.span) : undefined;
         targetVars.push(new ParsedVariable(key, value, bindingSpan, keySpan, valueSpan));
       } else if (binding.value) {
-        const srcSpan = isIvyAst ? bindingSpan : sourceSpan;
         const valueSpan = moveParseSourceSpan(sourceSpan, binding.value.ast.sourceSpan);
         this._parsePropertyAst(
-            key, binding.value, srcSpan, keySpan, valueSpan, targetMatchableAttrs, targetProps);
+            key, binding.value, bindingSpan, keySpan, valueSpan, targetMatchableAttrs, targetProps);
       } else {
         targetMatchableAttrs.push([key, '' /* value */]);
         // Since this is a literal attribute with no RHS, source span should be
@@ -223,11 +195,6 @@ export class BindingParser {
       const bindingsResult = this._exprParser.parseTemplateBindings(
           tplKey, tplValue, sourceInfo, absoluteKeyOffset, absoluteValueOffset);
       this._reportExpressionParserErrors(bindingsResult.errors, sourceSpan);
-      bindingsResult.templateBindings.forEach((binding) => {
-        if (binding.value instanceof ASTWithSource) {
-          this._checkPipes(binding.value, sourceSpan);
-        }
-      });
       bindingsResult.warnings.forEach((warning) => {
         this._reportError(warning, sourceSpan, ParseErrorLevel.WARNING);
       });
@@ -360,7 +327,6 @@ export class BindingParser {
           this._exprParser.parseBinding(
               value, sourceInfo, absoluteOffset, this._interpolationConfig);
       if (ast) this._reportExpressionParserErrors(ast.errors, sourceSpan);
-      this._checkPipes(ast, sourceSpan);
       return ast;
     } catch (e) {
       this._reportError(`${e}`, sourceSpan);
@@ -512,7 +478,6 @@ export class BindingParser {
         this._reportError(`Empty expressions are not allowed`, sourceSpan);
         return this._exprParser.wrapLiteralPrimitive('ERROR', sourceInfo, absoluteOffset);
       }
-      this._checkPipes(ast, sourceSpan);
       return ast;
     } catch (e) {
       this._reportError(`${e}`, sourceSpan);
@@ -529,25 +494,6 @@ export class BindingParser {
   private _reportExpressionParserErrors(errors: ParserError[], sourceSpan: ParseSourceSpan) {
     for (const error of errors) {
       this._reportError(error.message, sourceSpan);
-    }
-  }
-
-  // Make sure all the used pipes are known in `this.pipesByName`
-  private _checkPipes(ast: ASTWithSource, sourceSpan: ParseSourceSpan): void {
-    if (ast && this.pipesByName) {
-      const collector = new PipeCollector();
-      ast.visit(collector);
-      collector.pipes.forEach((ast, pipeName) => {
-        const pipeMeta = this.pipesByName!.get(pipeName);
-        if (!pipeMeta) {
-          this._reportError(
-              `The pipe '${pipeName}' could not be found`,
-              new ParseSourceSpan(
-                  sourceSpan.start.moveBy(ast.span.start), sourceSpan.start.moveBy(ast.span.end)));
-        } else {
-          this._usedPipes.set(pipeName, pipeMeta);
-        }
-      });
     }
   }
 

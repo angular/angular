@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {flatten} from '../../compile_metadata';
 import {BindingForm, BuiltinFunctionCall, convertActionBinding, convertPropertyBinding, convertUpdateArguments, LocalResolver} from '../../compiler_util/expression_converter';
 import {ConstantPool} from '../../constant_pool';
 import * as core from '../../core';
@@ -27,7 +26,7 @@ import {DomElementSchemaRegistry} from '../../schema/dom_element_schema_registry
 import {isTrustedTypesSink} from '../../schema/trusted_types_sinks';
 import {CssSelector, SelectorMatcher} from '../../selector';
 import {BindingParser} from '../../template_parser/binding_parser';
-import {error, partitionArray} from '../../util';
+import {error, flatten, partitionArray} from '../../util';
 import * as t from '../r3_ast';
 import {Identifiers as R3} from '../r3_identifiers';
 import {htmlAstToRender3Ast} from '../r3_template_transform';
@@ -2226,8 +2225,7 @@ const elementRegistry = new DomElementSchemaRegistry();
  */
 export function makeBindingParser(
     interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG): BindingParser {
-  return new BindingParser(
-      new IvyParser(new Lexer()), interpolationConfig, elementRegistry, null, []);
+  return new BindingParser(new IvyParser(new Lexer()), interpolationConfig, elementRegistry, []);
 }
 
 export function resolveSanitizationFn(context: core.SecurityContext, isAttribute?: boolean) {
