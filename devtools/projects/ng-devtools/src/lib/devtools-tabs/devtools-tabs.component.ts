@@ -59,7 +59,7 @@ export class DevToolsTabsComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   get latestSHA(): string {
-    return this._applicationEnvironment.environment.process.env.LATEST_SHA;
+    return this._applicationEnvironment.environment.LATEST_SHA.slice(0, 8);
   }
 
   changeTab(tab: 'Profiler' | 'Components' | 'Router Tree'): void {
