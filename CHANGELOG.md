@@ -1,3 +1,24 @@
+<a name="13.1.0-next.3"></a>
+# 13.1.0-next.3 "plastic-animal" (2021-12-01)
+### cdk
+| Commit | Type | Description |
+| -- | -- | -- |
+| [02908ceb5d](https://github.com/angular/components/commit/02908ceb5d86a619a60bdfe4d8fdc503ae726cb2) | fix | **drag-drop:** remove boundary error ([#23966](https://github.com/angular/components/pull/23966)) |
+| [39921f4338](https://github.com/angular/components/commit/39921f43382e3abc90c14fd8602d0cf371239fce) | perf | **a11y:** tree-shake warnings in production ([#23967](https://github.com/angular/components/pull/23967)) |
+### material
+| Commit | Type | Description |
+| -- | -- | -- |
+| [7bbe68d580](https://github.com/angular/components/commit/7bbe68d5807b5e620763845a44cd68049553a950) | perf | **bottom-sheet:** do not run change detection when focusing element ([#23965](https://github.com/angular/components/pull/23965)) |
+| [738e514ec9](https://github.com/angular/components/commit/738e514ec98f4175bdd23b9496ea7e8d33de1ee6) | perf | **core:** tree shake sanity checks ([#23969](https://github.com/angular/components/pull/23969)) |
+### multiple
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a5fbf3a5fc](https://github.com/angular/components/commit/a5fbf3a5fc8b4776d5b11afbec2a1eeabe45cd40) | fix | some experimental components not cleaned up completely ([#23994](https://github.com/angular/components/pull/23994)) |
+## Special Thanks
+Andrew Seguin, Artur Androsovych, Kristiyan Kostadinov, Paul Gschwendtner and Ruslan Lekhman
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="13.0.3"></a>
 # 13.0.3 "cerammic-almanac" (2021-12-01)
 ### cdk
