@@ -1,7 +1,13 @@
 # Re-export of Bazel rules with repository-wide defaults
 
 load("@npm//@bazel/concatjs:index.bzl", _karma_web_test = "karma_web_test", _karma_web_test_suite = "karma_web_test_suite")
-load("//tools/spec-bundling:index.bzl", "spec_bundle")
+load("@npm//@angular/dev-infra-private/bazel/esbuild:index.bzl", _esbuild = "esbuild", _esbuild_config = "esbuild_config")
+load("@npm//@angular/dev-infra-private/bazel/spec-bundling:index.bzl", _spec_bundle = "spec_bundle")
+load("@npm//@angular/dev-infra-private/bazel:extract_js_module_output.bzl", "extract_js_module_output")
+load("//tools/angular:index.bzl", "LINKER_PROCESSED_FW_PACKAGES")
+
+esbuild = _esbuild
+esbuild_config = _esbuild_config
 
 def karma_web_test_suite(name, **kwargs):
     web_test_args = {}
@@ -23,6 +29,8 @@ def karma_web_test_suite(name, **kwargs):
             # Note: when changing the browser names here, also update the "yarn test"
             # script to reflect the new browser names.
             "@npm//@angular/dev-infra-private/bazel/browsers/chromium:chromium",
+
+            # todo(aleksanderbodurri): enable when firefox support is done
             # "@npm//@angular/dev-infra-private/bazel/browsers/firefox:firefox",
         ]
 
@@ -52,5 +60,27 @@ def karma_web_test_suite(name, **kwargs):
     # Default test suite with all configured browsers.
     _karma_web_test_suite(
         name = name,
+        **kwargs
+    )
+
+def spec_bundle(name, deps, **kwargs):
+    extract_js_module_output(
+        name = "%s_devmode_deps" % name,
+        deps = deps,
+        provider = "JSModuleInfo",
+        forward_linker_mappings = True,
+        include_external_npm_packages = True,
+        include_default_files = False,
+        include_declarations = False,
+        testonly = True,
+    )
+
+    _spec_bundle(
+        name = name,
+        # For specs, we always add the pre-processed linker FW packages so that these
+        # are resolved instead of the unprocessed FW entry-points through the `node_modules`.
+        deps = ["%s_devmode_deps" % name] + LINKER_PROCESSED_FW_PACKAGES,
+        workspace_name = "angular_devtools",
+        run_angular_linker = True,
         **kwargs
     )

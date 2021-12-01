@@ -61,7 +61,7 @@
     "@angular/bazel": "13.0.1",
     "@angular/cli": "github:angular/cli-builds#858ee211470523d39a9ff16b57b676be740f77cc",
     "@angular/compiler-cli": "github:angular/compiler-cli-builds#89c6b3464f3f46a9f46334825bbff3d784af4136",
-    "@angular/dev-infra-private": "https://github.com/angular/dev-infra-private-builds.git#2cfe4b98a157927b319a3a00b467ff6233dc3337",
+    "@angular/dev-infra-private": "https://github.com/angular/dev-infra-private-builds.git#c55a3937d45945489714273bfbbe9b803ceff89e",
     "@angular/elements": "github:angular/elements-builds#55c36f9d5381ffc06649a03bff3c2934b18ddd02",
     "@angular/language-service": "github:angular/language-service-builds#e16ca91c029934dde01557efcf860e2465629655",
     "@angular/localize": "13.0.1",
