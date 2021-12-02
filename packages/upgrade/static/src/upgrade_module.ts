@@ -193,18 +193,9 @@ export class UpgradeModule {
                 $DELEGATE,
                 (testabilityDelegate: ITestabilityService) => {
                   const originalWhenStable: Function = testabilityDelegate.whenStable;
-                  const injector = this.injector;
                   // Cannot use arrow function below because we need the context
                   const newWhenStable = function(callback: Function) {
-                    originalWhenStable.call(testabilityDelegate, function() {
-                      const ng2Testability: Testability = injector.get(Testability);
-                      if (ng2Testability.isStable()) {
-                        callback();
-                      } else {
-                        ng2Testability.whenStable(
-                            newWhenStable.bind(testabilityDelegate, callback));
-                      }
-                    });
+                    originalWhenStable.call(testabilityDelegate, function() {});
                   };
 
                   testabilityDelegate.whenStable = newWhenStable;
