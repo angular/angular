@@ -8,6 +8,7 @@
 
 import '../util/ng_dev_mode';
 
+import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {OnDestroy} from '../interface/lifecycle_hooks';
 import {Type} from '../interface/type';
 import {FactoryFn, getFactoryDef} from '../render3/definition_factory';
@@ -255,7 +256,10 @@ export class R3Injector {
 
   private assertNotDestroyed(): void {
     if (this._destroyed) {
-      throw new Error('Injector has already been destroyed.');
+      const errorMessage = (typeof ngDevMode === 'undefined' || ngDevMode) ?
+          'Injector has already been destroyed.' :
+          '';
+      throw new RuntimeError(RuntimeErrorCode.INJECTOR_ALREADY_DESTROYED, errorMessage);
     }
   }
 
@@ -446,7 +450,10 @@ function injectableDefOrInjectorDefFactory(token: ProviderToken<any>): FactoryFn
   // InjectionTokens should have an injectable def (ɵprov) and thus should be handled above.
   // If it's missing that, it's an error.
   if (token instanceof InjectionToken) {
-    throw new Error(`Token ${stringify(token)} is missing a ɵprov definition.`);
+    const errorMessage = (typeof ngDevMode === 'undefined' || ngDevMode) ?
+        `Token ${stringify(token)} is missing a ɵprov definition.` :
+        '';
+    throw new RuntimeError(RuntimeErrorCode.INVALID_INJECTION_TOKEN, errorMessage);
   }
 
   // Undecorated types can sometimes be created if they have no constructor arguments.
@@ -455,7 +462,8 @@ function injectableDefOrInjectorDefFactory(token: ProviderToken<any>): FactoryFn
   }
 
   // There was no way to resolve a factory for this token.
-  throw new Error('unreachable');
+  const errorMessage = (typeof ngDevMode === 'undefined' || ngDevMode) ? 'unreachable' : '';
+  throw new RuntimeError(RuntimeErrorCode.INVALID_INJECTION_TOKEN, errorMessage);
 }
 
 function getUndecoratedInjectableFactory(token: Function) {
@@ -463,7 +471,10 @@ function getUndecoratedInjectableFactory(token: Function) {
   const paramLength = token.length;
   if (paramLength > 0) {
     const args: string[] = newArray(paramLength, '?');
-    throw new Error(`Can't resolve all parameters for ${stringify(token)}: (${args.join(', ')}).`);
+    const errorMessage = (typeof ngDevMode === 'undefined' || ngDevMode) ?
+        `Can't resolve all parameters for ${stringify(token)}: (${args.join(', ')}).` :
+        '';
+    throw new RuntimeError(RuntimeErrorCode.INVALID_INJECTION_TOKEN, errorMessage);
   }
 
   // The constructor function appears to have no parameters.

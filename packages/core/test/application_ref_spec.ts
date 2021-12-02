@@ -516,12 +516,13 @@ class SomeComponent {
 
            vc.insert(hostView);
            expect(() => appRef.attachView(hostView))
-               .toThrowError('This view is already attached to a ViewContainer!');
+               .toThrowError('NG0902: This view is already attached to a ViewContainer!');
            hostView = vc.detach(0)!;
 
            appRef.attachView(hostView);
            expect(() => vc.insert(hostView))
-               .toThrowError('This view is already attached directly to the ApplicationRef!');
+               .toThrowError(
+                   'NG0902: This view is already attached directly to the ApplicationRef!');
          });
     });
   });

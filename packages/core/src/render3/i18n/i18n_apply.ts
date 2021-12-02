@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {RuntimeError, RuntimeErrorCode} from '../../errors';
 import {getPluralCase} from '../../i18n/localization';
 import {assertDefined, assertDomNode, assertEqual, assertGreaterThan, assertIndexInRange, throwError} from '../../util/assert';
 import {assertIndexInExpandoRange, assertTIcu} from '../assert';
@@ -20,6 +21,7 @@ import {createCommentNode, createElementNode, createTextNode, nativeInsertBefore
 import {getBindingIndex} from '../state';
 import {renderStringify} from '../util/stringify_utils';
 import {getNativeByIndex, unwrapRNode} from '../util/view_utils';
+
 import {getLocaleId} from './i18n_locale_id';
 import {getCurrentICUCaseIndex, getParentFromIcuCreateOpCode, getRefFromIcuCreateOpCode, getTIcu} from './i18n_util';
 
@@ -198,7 +200,11 @@ export function applyMutableOpCodes(
               attrValue, null);
           break;
         default:
-          throw new Error(`Unable to determine the type of mutate operation for "${opCode}"`);
+          if (ngDevMode) {
+            throw new RuntimeError(
+                RuntimeErrorCode.INVALID_I18N_STRUCTURE,
+                `Unable to determine the type of mutate operation for "${opCode}"`);
+          }
       }
     } else {
       switch (opCode) {
