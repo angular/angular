@@ -782,8 +782,8 @@ describe('animation query tests', function() {
       engine.flush();
 
       const players = getLog();
-      expect(players.length).toEqual(1);
-      const player = players[0];
+      expect(players.length).toEqual(2);
+      const player = players[1];
 
       expect(player.keyframes).toEqual([{height: '0px', offset: 0}, {height: '444px', offset: 1}]);
       player.finish();
@@ -1868,7 +1868,7 @@ describe('animation query tests', function() {
       const elm1 = cmp.elm1;
       const elm2 = cmp.elm2;
 
-      const [p1, p2] = getLog();
+      const [, p1, p2] = getLog();
       expect(p1.delay).toEqual(0);
       expect(p1.element).toEqual(elm1.nativeElement);
       expect(p1.duration).toEqual(1000);
@@ -1928,8 +1928,8 @@ describe('animation query tests', function() {
          const elements = parent.querySelectorAll('.item');
 
          const players = getLog();
-         expect(players.length).toEqual(7);
-         const [pA, pc1, pc2, pc3, pc4, pc5, pZ] = players;
+         expect(players.length).toEqual(12);
+         const [, , , , , pA, pc1, pc2, pc3, pc4, pc5, pZ] = players;
 
          expect(pA.element).toEqual(parent);
          expect(pA.delay).toEqual(0);
@@ -2110,17 +2110,17 @@ describe('animation query tests', function() {
       engine.flush();
 
       const players = getLog();
-      expect(players.length).toEqual(4);
-      const [pA, pc1, pc2, pZ] = players;
+      expect(players.length).toEqual(6);
+      const [, , , playerChildW, playerChildH, playerParent] = players;
 
-      expect(pc1.delay).toEqual(0);
-      expect(pc1.duration).toEqual(2800);
+      expect(playerChildW.delay).toEqual(0);
+      expect(playerChildW.duration).toEqual(2800);
 
-      expect(pc2.delay).toEqual(0);
-      expect(pc2.duration).toEqual(2500);
+      expect(playerChildH.delay).toEqual(0);
+      expect(playerChildH.duration).toEqual(2500);
 
-      expect(pZ.delay).toEqual(2800);
-      expect(pZ.duration).toEqual(1000);
+      expect(playerParent.delay).toEqual(2800);
+      expect(playerParent.duration).toEqual(1000);
     });
 
     it('should skip a sub animation when a zero duration value is passed in', () => {
@@ -2163,8 +2163,8 @@ describe('animation query tests', function() {
       engine.flush();
 
       const players = getLog();
-      expect(players.length).toEqual(2);
-      const [pA, pZ] = players;
+      expect(players.length).toEqual(3);
+      const [, pA, pZ] = players;
 
       expect(pA.delay).toEqual(0);
       expect(pA.duration).toEqual(1000);
@@ -2215,9 +2215,9 @@ describe('animation query tests', function() {
       engine.flush();
 
       const players = getLog();
-      expect(players.length).toEqual(3);
+      expect(players.length).toEqual(5);
 
-      const [p1, p2, p3] = players;
+      const [, p1, p2, p3] = players;
 
       // parent2 is evaluated first because it is inside of parent1
       expect(p1.element.classList.contains('parent2')).toBeTruthy();
@@ -2363,8 +2363,8 @@ describe('animation query tests', function() {
          fixture.detectChanges();
 
          let players = getLog();
-         expect(players.length).toEqual(1);
-         const [player] = players;
+         expect(players.length).toEqual(2);
+         const [, player] = players;
 
          expect(player.element.classList.contains('inner-div')).toBeTruthy();
          expect(player.keyframes).toEqual([
@@ -3140,10 +3140,10 @@ describe('animation query tests', function() {
          fixture.detectChanges();
          engine.flush();
          const players = getLog();
-         expect(players.length).toEqual(5);
-         const [p1, p2, p3, p4, p5] = players;
+         expect(players.length).toEqual(6);
+         const [, , , , , player] = players;
 
-         expect(p5.keyframes).toEqual([
+         expect(player.keyframes).toEqual([
            {offset: 0, width: '0px'}, {offset: .67, width: '0px'}, {offset: 1, width: '200px'}
          ]);
        });
@@ -3206,9 +3206,9 @@ describe('animation query tests', function() {
       fixture.detectChanges();
 
       const players = getLog();
-      expect(players.length).toEqual(2);
+      expect(players.length).toEqual(3);
 
-      const [p1, p2] = players;
+      const [, p1, p2] = players;
       expect(p1.element.classList.contains('container')).toBeTruthy();
       expect(p2.element.classList.contains('item')).toBeTruthy();
     });
@@ -3272,9 +3272,9 @@ describe('animation query tests', function() {
       fixture.detectChanges();
 
       const players = getLog();
-      expect(players.length).toEqual(2);
+      expect(players.length).toEqual(3);
 
-      const [p1, p2] = players;
+      const [, p1, p2] = players;
       expect(p1.element.classList.contains('container')).toBeTruthy();
       expect(p2.element.classList.contains('item')).toBeTruthy();
     });

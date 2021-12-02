@@ -154,7 +154,7 @@ export class AnimationTimelineBuilderVisitor implements AstVisitor {
   }
 
   visitAnimateChild(ast: AnimateChildAst, context: AnimationTimelineContext): any {
-    const elementInstructions = context.subInstructions.consume(context.element);
+    const elementInstructions = context.subInstructions.get(context.element);
     if (elementInstructions) {
       const innerContext = context.createSubContext(ast.options);
       const startTime = context.currentTimeline.currentTime;

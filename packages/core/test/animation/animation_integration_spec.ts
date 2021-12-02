@@ -979,9 +979,9 @@ describe('animation tests', function() {
            expect(fixture.nativeElement.children.length).toBe(1);
 
            engine.flush();
-           expect(getLog().length).toBe(1);
+           expect(getLog().length).toBe(2);
 
-           const player = getLog()[0];
+           const player = getLog()[1];
            expect(player.keyframes).toEqual([
              {opacity: '1', offset: 0},
              {opacity: '0', offset: 1},
@@ -3007,8 +3007,8 @@ describe('animation tests', function() {
          cmp.log = [];
 
          const players = getLog();
-         expect(players.length).toEqual(3);
-         const [p1, p2, p3] = players;
+         expect(players.length).toEqual(4);
+         const [, p1, p2, p3] = players;
 
          p1.finish();
          flushMicrotasks();
@@ -3080,10 +3080,9 @@ describe('animation tests', function() {
          cmp.log = [];
 
          const players = getLog();
-         // 1 + 4 + 4 = 9 players
-         expect(players.length).toEqual(9);
+         expect(players.length).toEqual(13);
 
-         const [pA, pq1a, pq1b, pq1c, pq1d, pq2a, pq2b, pq2c, pq2d] = getLog();
+         const [, , , , pA, pq1a, pq1b, pq1c, pq1d, pq2a, pq2b, pq2c, pq2d] = getLog();
          pA.finish();
          pq1a.finish();
          pq1b.finish();
@@ -3100,13 +3099,16 @@ describe('animation tests', function() {
 
          expect(cmp.log).toEqual(['all-done', 'c-0-done', 'c-1-done', 'c-2-done', 'c-3-done']);
 
-         expect(cmp.events['c-0'].totalTime).toEqual(4100);  // 1000 + 1000 + 1800 + 300
+         expect(cmp.events['all'].totalTime).toEqual(4100);  // 1000 + 1000 + 1800 + 300
+         expect(cmp.events['all'].element.innerText.trim().replaceAll('\n', ' '))
+             .toEqual('0 1 2 3');
+         expect(cmp.events['c-0'].totalTime).toEqual(1500);
          expect(cmp.events['c-0'].element.innerText.trim()).toEqual('0');
-         expect(cmp.events['c-1'].totalTime).toEqual(4100);
+         expect(cmp.events['c-1'].totalTime).toEqual(1500);
          expect(cmp.events['c-1'].element.innerText.trim()).toEqual('1');
-         expect(cmp.events['c-2'].totalTime).toEqual(4100);
+         expect(cmp.events['c-2'].totalTime).toEqual(1500);
          expect(cmp.events['c-2'].element.innerText.trim()).toEqual('2');
-         expect(cmp.events['c-3'].totalTime).toEqual(4100);
+         expect(cmp.events['c-3'].totalTime).toEqual(1500);
          expect(cmp.events['c-3'].element.innerText.trim()).toEqual('3');
        }));
   });
