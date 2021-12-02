@@ -295,19 +295,19 @@ describe('FormGroup', () => {
     it('should throw if fields are missing from supplied value (subset)', () => {
       expect(() => g.setValue({
         'one': 'one'
-      })).toThrowError(new RegExp(`Must supply a value for form control with name: 'two'`));
+      })).toThrowError(new RegExp(`NG1102: Must supply a value for form control with name: 'two'`));
     });
 
     it('should throw if a value is provided for a missing control (superset)', () => {
       expect(() => g.setValue({'one': 'one', 'two': 'two', 'three': 'three'}))
-          .toThrowError(new RegExp(`Cannot find form control with name: three`));
+          .toThrowError(new RegExp(`NG1101: Cannot find form control with name: 'three'`));
     });
 
     it('should throw if a value is not provided for a disabled control', () => {
       c2.disable();
       expect(() => g.setValue({
         'one': 'one'
-      })).toThrowError(new RegExp(`Must supply a value for form control with name: 'two'`));
+      })).toThrowError(new RegExp(`NG1102: Must supply a value for form control with name: 'two'`));
     });
 
     it('should throw if no controls are set yet', () => {

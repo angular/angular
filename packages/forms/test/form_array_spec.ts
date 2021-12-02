@@ -10,6 +10,7 @@ import {fakeAsync, tick} from '@angular/core/testing';
 import {AbstractControl, FormArray, FormControl, FormGroup, ValidationErrors, ValidatorFn} from '@angular/forms';
 import {Validators} from '@angular/forms/src/validators';
 import {of} from 'rxjs';
+
 import {asyncValidator} from './util';
 
 (function() {
@@ -290,19 +291,19 @@ describe('FormArray', () => {
 
     it('should throw if fields are missing from supplied value (subset)', () => {
       expect(() => a.setValue([, 'two']))
-          .toThrowError(new RegExp(`Must supply a value for form control at index: 0`));
+          .toThrowError(new RegExp(`NG1102: Must supply a value for form control at index: 0`));
     });
 
     it('should throw if a value is provided for a missing control (superset)', () => {
       expect(() => a.setValue([
         'one', 'two', 'three'
-      ])).toThrowError(new RegExp(`Cannot find form control at index 2`));
+      ])).toThrowError(new RegExp(`NG1101: Cannot find form control at index: 2`));
     });
 
     it('should throw if a value is not provided for a disabled control', () => {
       c2.disable();
       expect(() => a.setValue(['one']))
-          .toThrowError(new RegExp(`Must supply a value for form control at index: 1`));
+          .toThrowError(new RegExp(`NG1102: Must supply a value for form control at index: 1`));
     });
 
     it('should throw if no controls are set yet', () => {
