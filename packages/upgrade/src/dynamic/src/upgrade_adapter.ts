@@ -542,15 +542,7 @@ export class UpgradeAdapter {
                   const originalWhenStable: Function = testabilityDelegate.whenStable;
                   // Cannot use arrow function below because we need the context
                   const newWhenStable = function(this: unknown, callback: Function) {
-                    originalWhenStable.call(this, function(this: unknown) {
-                      const ng2Testability: Testability =
-                          upgradeAdapter.moduleRef!.injector.get(Testability);
-                      if (ng2Testability.isStable()) {
-                        callback.apply(this, arguments);
-                      } else {
-                        ng2Testability.whenStable(newWhenStable.bind(this, callback));
-                      }
-                    });
+                    originalWhenStable.call(this, function(this: unknown) {});
                   };
 
                   testabilityDelegate.whenStable = newWhenStable;
