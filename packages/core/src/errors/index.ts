@@ -55,6 +55,7 @@ export const enum RuntimeErrorCode {
 export const enum PackageErrorPrefix {
   CORE = 0,
   FORMS = 1,
+  COMMON = 2,
 }
 
 // Main class that should be used to throw runtime errors in the core package

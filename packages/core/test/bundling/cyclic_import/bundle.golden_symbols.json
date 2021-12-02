@@ -120,6 +120,9 @@
     "name": "createLView"
   },
   {
+    "name": "createRuntimeErrorClass"
+  },
+  {
     "name": "createTView"
   },
   {

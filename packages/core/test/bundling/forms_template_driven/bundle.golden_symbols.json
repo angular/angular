@@ -447,6 +447,9 @@
     "name": "RuntimeError"
   },
   {
+    "name": "RuntimeError"
+  },
+  {
     "name": "SCHEDULER"
   },
   {
@@ -645,6 +648,12 @@
     "name": "applyViewChange"
   },
   {
+    "name": "assertAllValuesPresent"
+  },
+  {
+    "name": "assertControlPresent"
+  },
+  {
     "name": "attachInjectFlag"
   },
   {
@@ -745,6 +754,9 @@
   },
   {
     "name": "createPlatformFactory"
+  },
+  {
+    "name": "createRuntimeErrorClass"
   },
   {
     "name": "createTView"
@@ -990,6 +1002,9 @@
     "name": "getPromiseCtor"
   },
   {
+    "name": "getRawValue"
+  },
+  {
     "name": "getSelectedIndex"
   },
   {
@@ -1120,6 +1135,9 @@
   },
   {
     "name": "isDirectiveHost"
+  },
+  {
+    "name": "isFormGroup"
   },
   {
     "name": "isForwardRef"

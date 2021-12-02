@@ -6,7 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, DoCheck, Host, Input, Optional, TemplateRef, ViewContainerRef, ɵRuntimeError as RuntimeError, ɵRuntimeErrorCode as RuntimeErrorCode} from '@angular/core';
+import {Directive, DoCheck, Host, Input, Optional, TemplateRef, ViewContainerRef} from '@angular/core';
+
+import {RuntimeError, RuntimeErrorCode} from '../errors';
 
 export class SwitchView {
   private _created = false;

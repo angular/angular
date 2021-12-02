@@ -312,6 +312,9 @@
     "name": "createRootContext"
   },
   {
+    "name": "createRuntimeErrorClass"
+  },
+  {
     "name": "createTView"
   },
   {

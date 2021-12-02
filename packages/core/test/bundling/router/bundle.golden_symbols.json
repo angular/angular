@@ -1059,6 +1059,9 @@
     "name": "createRouterScroller"
   },
   {
+    "name": "createRuntimeErrorClass"
+  },
+  {
     "name": "createTView"
   },
   {
