@@ -8,32 +8,35 @@
 
 import {ERROR_DETAILS_PAGE_BASE_URL} from './error_details_base_url';
 
+/**
+ * The list of error codes used in runtime code.
+ * Note: the negative sign denotes the fact that a particular code has a detailed guide on
+ * angular.io. Full list of available error guides can be found at https://angular.io/errors.
+ */
 export const enum RuntimeErrorCode {
-  // Internal Errors
-
   // Change Detection Errors
-  EXPRESSION_CHANGED_AFTER_CHECKED = '100',
-  RECURSIVE_APPLICATION_REF_TICK = '101',
+  EXPRESSION_CHANGED_AFTER_CHECKED = -100,
+  RECURSIVE_APPLICATION_REF_TICK = 101,
 
   // Dependency Injection Errors
-  CYCLIC_DI_DEPENDENCY = '200',
-  PROVIDER_NOT_FOUND = '201',
+  CYCLIC_DI_DEPENDENCY = -200,
+  PROVIDER_NOT_FOUND = -201,
 
   // Template Errors
-  MULTIPLE_COMPONENTS_MATCH = '300',
-  EXPORT_NOT_FOUND = '301',
-  PIPE_NOT_FOUND = '302',
-  UNKNOWN_BINDING = '303',
-  UNKNOWN_ELEMENT = '304',
-  TEMPLATE_STRUCTURE_ERROR = '305',
+  MULTIPLE_COMPONENTS_MATCH = -300,
+  EXPORT_NOT_FOUND = -301,
+  PIPE_NOT_FOUND = -302,
+  UNKNOWN_BINDING = 303,
+  UNKNOWN_ELEMENT = 304,
+  TEMPLATE_STRUCTURE_ERROR = 305,
 
   // Bootstrap Errors
-  MULTIPLE_PLATFORMS = '400',
-  PLATFORM_NOT_FOUND = '401',
-  ERROR_HANDLER_NOT_FOUND = '402',
-  BOOTSTRAP_COMPONENTS_NOT_FOUND = '403',
-  ALREADY_DESTROYED_PLATFORM = '404',
-  ASYNC_INITIALIZERS_STILL_RUNNING = '405',
+  MULTIPLE_PLATFORMS = 400,
+  PLATFORM_NOT_FOUND = 401,
+  ERROR_HANDLER_NOT_FOUND = 402,
+  BOOTSTRAP_COMPONENTS_NOT_FOUND = 403,
+  ALREADY_DESTROYED_PLATFORM = 404,
+  ASYNC_INITIALIZERS_STILL_RUNNING = 405,
 
   // Styling Errors
 
@@ -44,39 +47,50 @@ export const enum RuntimeErrorCode {
   // Compilation Errors
 }
 
-export class RuntimeError extends Error {
-  constructor(public code: RuntimeErrorCode, message: string) {
-    super(formatRuntimeError(code, message));
-  }
+/**
+ * Public-facing error code structure incudes a bit that represents a package from which the error
+ * was triggered: NG<PACKAGE><CODE>. This enum contains codes for each package that use shared
+ * runtime error infrastructure.
+ */
+export const enum PackageErrorPrefix {
+  CORE = 0,
+  FORMS = 1,
 }
 
-// Contains a set of error messages that have details guides at angular.io.
-// Full list of available error guides can be found at https://angular.io/errors
-/* tslint:disable:no-toplevel-property-access */
-export const RUNTIME_ERRORS_WITH_GUIDES = new Set([
-  RuntimeErrorCode.EXPRESSION_CHANGED_AFTER_CHECKED,
-  RuntimeErrorCode.CYCLIC_DI_DEPENDENCY,
-  RuntimeErrorCode.PROVIDER_NOT_FOUND,
-  RuntimeErrorCode.MULTIPLE_COMPONENTS_MATCH,
-  RuntimeErrorCode.EXPORT_NOT_FOUND,
-  RuntimeErrorCode.PIPE_NOT_FOUND,
-]);
-/* tslint:enable:no-toplevel-property-access */
+export interface RuntimeError<T> {
+  code: T;
+}
+
+export interface RuntimeErrorCtor<T> {
+  new(code: T, message: string): RuntimeError<T>;
+}
+
+export function createRuntimeErrorClass<T = RuntimeErrorCode>(packagePrefix: PackageErrorPrefix):
+    RuntimeErrorCtor<T> {
+  class RuntimeErrorImpl<T = RuntimeErrorCode> extends Error {
+    constructor(public code: T, message: string) {
+      super(formatRuntimeError<T>(code, message, packagePrefix));
+    }
+  }
+  return RuntimeErrorImpl as unknown as RuntimeErrorCtor<T>;
+}
+
+// tslint:disable-next-line:no-toplevel-property-access
+export const RuntimeError = createRuntimeErrorClass(PackageErrorPrefix.CORE);
 
 /** Called to format a runtime error */
-export function formatRuntimeError(code: RuntimeErrorCode, message: string): string {
-  const fullCode = code ? `NG0${code}: ` : '';
+export function formatRuntimeError<T = RuntimeErrorCode>(
+    code: T, message: string, packagePrefix: PackageErrorPrefix = PackageErrorPrefix.CORE): string {
+  const codeAsNumber = code as unknown as number;
+  // Error code might be a negative number, which is a special marker that instructs the logic to
+  // generate a link to the error details page on angular.io.
+  const fullCode = `NG${packagePrefix}${Math.abs(codeAsNumber)}`;
 
-  let errorMessage = `${fullCode}${message}`;
+  // TODO: add a test case for an empty `message` (make sure only code is produced).
+  let errorMessage = `${fullCode}${message ? ': ' + message : ''}`;
 
-  // Some runtime errors are still thrown without `ngDevMode` (for example
-  // `throwProviderNotFoundError`), so we add `ngDevMode` check here to avoid pulling
-  // `RUNTIME_ERRORS_WITH_GUIDES` symbol into prod bundles.
-  // TODO: revisit all instances where `RuntimeError` is thrown and see if `ngDevMode` can be added
-  // there instead to tree-shake more devmode-only code (and eventually remove `ngDevMode` check
-  // from this code).
-  if (ngDevMode && RUNTIME_ERRORS_WITH_GUIDES.has(code)) {
-    errorMessage = `${errorMessage}. Find more at ${ERROR_DETAILS_PAGE_BASE_URL}/NG0${code}`;
+  if (ngDevMode && codeAsNumber < 0) {
+    errorMessage = `${errorMessage}. Find more at ${ERROR_DETAILS_PAGE_BASE_URL}/${fullCode}`;
   }
   return errorMessage;
 }

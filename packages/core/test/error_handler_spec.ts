@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ERROR_LOGGER, ERROR_TYPE, wrappedError} from '@angular/core/src/util/errors';
-
 import {ErrorHandler} from '../src/error_handler';
+import {ERROR_LOGGER, wrappedError} from '../src/util/errors';
 
 class MockConsole {
   res: any[][] = [];
@@ -42,24 +41,6 @@ describe('ErrorHandler', () => {
     expect(errorToString(undefined)).toBe('ERROR#undefined');
   });
 
-  // TODO(alxhub): delete as Ivy doesn't use context.
-  xdescribe('context', () => {
-    it('should print nested context', () => {
-      const cause = new Error('message!');
-      const context = {
-        source: 'context!',
-        toString() {
-          return 'Context';
-        }
-      } as any;
-      const original = debugError(cause, context);
-      const e = errorToString(wrappedError('message', original));
-      expect(e).toEqual(`ERROR#Error: message caused by: Error in context! caused by: message!
-ORIGINAL ERROR#Error: message!
-ERROR CONTEXT#Context`);
-    });
-  });
-
   describe('original exception', () => {
     it('should print original exception message if available (original is Error)', () => {
       const realOriginal = new Error('inner');
@@ -91,9 +72,3 @@ ERROR CONTEXT#Context`);
   });
 });
 })();
-
-function debugError(originalError: any, context: any): Error {
-  const error = wrappedError(`Error in ${context.source}`, originalError);
-  (error as any)[ERROR_TYPE] = debugError;
-  return error;
-}
