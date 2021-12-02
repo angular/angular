@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {RuntimeError, RuntimeErrorCode} from '../../errors';
 import {Type, Writable} from '../../interface/type';
 import {EMPTY_ARRAY, EMPTY_OBJ} from '../../util/empty';
 import {fillProperties} from '../../util/property';
@@ -39,7 +40,10 @@ export function ɵɵInheritDefinitionFeature(definition: DirectiveDef<any>|Compo
       superDef = superType.ɵcmp || superType.ɵdir;
     } else {
       if (superType.ɵcmp) {
-        throw new Error('Directives cannot inherit Components');
+        const errorMessage = (typeof ngDevMode === 'undefined' || ngDevMode) ?
+            'Directives cannot inherit Components' :
+            '';
+        throw new RuntimeError(RuntimeErrorCode.INVALID_INHERITANCE, errorMessage);
       }
       // Don't use getComponentDef/getDirectiveDef. This logic relies on inheritance.
       superDef = superType.ɵdir;

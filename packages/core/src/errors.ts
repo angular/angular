@@ -26,6 +26,10 @@ export const enum RuntimeErrorCode {
   // Dependency Injection Errors
   CYCLIC_DI_DEPENDENCY = -200,
   PROVIDER_NOT_FOUND = -201,
+  INVALID_FACTORY_DEPENDENCY = 202,
+  MISSING_INJECTION_CONTEXT = 203,
+  INVALID_INJECTION_TOKEN = 204,
+  INJECTOR_ALREADY_DESTROYED = 205,
 
   // Template Errors
   MULTIPLE_COMPONENTS_MATCH = -300,
@@ -34,6 +38,7 @@ export const enum RuntimeErrorCode {
   UNKNOWN_BINDING = 303,
   UNKNOWN_ELEMENT = 304,
   TEMPLATE_STRUCTURE_ERROR = 305,
+  INVALID_EVENT_BINDING = 306,
 
   // Bootstrap Errors
   MULTIPLE_PLATFORMS = 400,
@@ -48,8 +53,16 @@ export const enum RuntimeErrorCode {
   // Declarations Errors
 
   // i18n Errors
+  INVALID_I18N_STRUCTURE = 700,
 
   // JIT Compilation Errors
+  // Other
+  INVALID_DIFFER_INPUT = 900,
+  NO_SUPPORTING_DIFFER_FACTORY = 901,
+  VIEW_ALREADY_ATTACHED = 902,
+  INVALID_INHERITANCE = 903,
+  UNSAFE_VALUE_IN_RESOURCE_URL = 904,
+  UNSAFE_VALUE_IN_SCRIPT = 905
 }
 
 export class RuntimeError<T = RuntimeErrorCode> extends Error {

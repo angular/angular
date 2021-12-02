@@ -8,6 +8,7 @@
 
 import '../util/ng_dev_mode';
 
+import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {Type} from '../interface/type';
 import {getClosureSafeProperty} from '../util/property';
 import {stringify} from '../util/stringify';
@@ -58,7 +59,10 @@ export function injectInjectorOnly<T>(token: ProviderToken<T>, flags?: InjectFla
 export function injectInjectorOnly<T>(token: ProviderToken<T>, flags = InjectFlags.Default): T|
     null {
   if (_currentInjector === undefined) {
-    throw new Error(`inject() must be called from an injection context`);
+    const errorMessage = (typeof ngDevMode === 'undefined' || ngDevMode) ?
+        `inject() must be called from an injection context` :
+        '';
+    throw new RuntimeError(RuntimeErrorCode.MISSING_INJECTION_CONTEXT, errorMessage);
   } else if (_currentInjector === null) {
     return injectRootLimpMode(token, undefined, flags);
   } else {
@@ -141,7 +145,10 @@ export function injectArgs(types: (ProviderToken<any>|any[])[]): any[] {
     const arg = resolveForwardRef(types[i]);
     if (Array.isArray(arg)) {
       if (arg.length === 0) {
-        throw new Error('Arguments array must have arguments.');
+        const errorMessage = (typeof ngDevMode === 'undefined' || ngDevMode) ?
+            'Arguments array must have arguments.' :
+            '';
+        throw new RuntimeError(RuntimeErrorCode.INVALID_DIFFER_INPUT, errorMessage);
       }
       let type: Type<any>|undefined = undefined;
       let flags: InjectFlags = InjectFlags.Default;

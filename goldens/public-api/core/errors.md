@@ -31,9 +31,27 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     EXPRESSION_CHANGED_AFTER_CHECKED = -100,
     // (undocumented)
+    INJECTOR_ALREADY_DESTROYED = 205,
+    // (undocumented)
+    INVALID_DIFFER_INPUT = 900,
+    // (undocumented)
+    INVALID_EVENT_BINDING = 306,
+    // (undocumented)
+    INVALID_FACTORY_DEPENDENCY = 202,
+    // (undocumented)
+    INVALID_I18N_STRUCTURE = 700,
+    // (undocumented)
+    INVALID_INHERITANCE = 903,
+    // (undocumented)
+    INVALID_INJECTION_TOKEN = 204,
+    // (undocumented)
+    MISSING_INJECTION_CONTEXT = 203,
+    // (undocumented)
     MULTIPLE_COMPONENTS_MATCH = -300,
     // (undocumented)
     MULTIPLE_PLATFORMS = 400,
+    // (undocumented)
+    NO_SUPPORTING_DIFFER_FACTORY = 901,
     // (undocumented)
     PIPE_NOT_FOUND = -302,
     // (undocumented)
@@ -47,7 +65,13 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     UNKNOWN_BINDING = 303,
     // (undocumented)
-    UNKNOWN_ELEMENT = 304
+    UNKNOWN_ELEMENT = 304,
+    // (undocumented)
+    UNSAFE_VALUE_IN_RESOURCE_URL = 904,
+    // (undocumented)
+    UNSAFE_VALUE_IN_SCRIPT = 905,
+    // (undocumented)
+    VIEW_ALREADY_ATTACHED = 902
 }
 
 // (No @packageDocumentation comment for this package)

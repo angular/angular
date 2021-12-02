@@ -3,8 +3,8 @@
     "master": {
       "uncompressed": {
         "runtime": 1083,
-        "main": 140067,
-        "polyfills": 36964
+        "main": 139416,
+        "polyfills": 37226
       }
     }
   },
@@ -24,7 +24,7 @@
     "master": {
       "uncompressed": {
         "runtime": 1105,
-        "main": 145783,
+        "main": 145132,
         "polyfills": 37248
       }
     }
@@ -33,7 +33,7 @@
     "master": {
       "uncompressed": {
         "runtime": 929,
-        "main": 138435,
+        "main": 137712,
         "polyfills": 37933
       }
     }
@@ -41,10 +41,10 @@
   "cli-hello-world-lazy": {
     "master": {
       "uncompressed": {
-        "runtime": 2812,
-        "main": 232617,
+        "runtime": 2835,
+        "main": 231989,
         "polyfills": 37244,
-        "src_app_lazy_lazy_module_ts": 796
+        "src_app_lazy_lazy_module_ts": 795
       }
     }
   },
@@ -52,8 +52,8 @@
     "master": {
       "uncompressed": {
         "runtime": 1063,
-        "main": 162811,
-        "polyfills": 36975
+        "main": 162121,
+        "polyfills": 37206
       }
     }
   },

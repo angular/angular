@@ -644,7 +644,7 @@ describe('NgModule', () => {
 
     it('should throw when no type and not @Inject (class case)', () => {
       expect(() => createInjector([NoAnnotations]))
-          .toThrowError('Can\'t resolve all parameters for NoAnnotations: (?).');
+          .toThrowError('NG0204: Can\'t resolve all parameters for NoAnnotations: (?).');
     });
 
     it('should cache instances', () => {
