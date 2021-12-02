@@ -37,7 +37,6 @@ import {setLocaleId} from './render3/i18n/i18n_locale_id';
 import {setJitOptions} from './render3/jit/jit_options';
 import {NgModuleFactory as R3NgModuleFactory} from './render3/ng_module_ref';
 import {publishDefaultGlobalUtils as _publishDefaultGlobalUtils} from './render3/util/global_utils';
-import {Testability, TestabilityRegistry} from './testability/testability';
 import {isPromise} from './util/lang';
 import {scheduleMicroTask} from './util/microtask';
 import {stringify} from './util/stringify';
@@ -815,19 +814,10 @@ export class ApplicationRef {
         isBoundToModule(componentFactory) ? undefined : this._injector.get(NgModuleRef);
     const selectorOrNode = rootSelectorOrNode || componentFactory.selector;
     const compRef = componentFactory.create(Injector.NULL, [], selectorOrNode, ngModule);
-    const nativeElement = compRef.location.nativeElement;
-    const testability = compRef.injector.get(Testability, null);
-    const testabilityRegistry = testability && compRef.injector.get(TestabilityRegistry);
-    if (testability && testabilityRegistry) {
-      testabilityRegistry.registerApplication(nativeElement, testability);
-    }
 
     compRef.onDestroy(() => {
       this.detachView(compRef.hostView);
       remove(this.components, compRef);
-      if (testabilityRegistry) {
-        testabilityRegistry.unregisterApplication(nativeElement);
-      }
     });
 
     this._loadComponent(compRef);

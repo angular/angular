@@ -24,7 +24,6 @@ export * from './render';
 export * from './linker';
 export * from './linker/ng_module_factory_loader_impl';
 export {DebugElement, DebugEventListener, DebugNode, asNativeElements, getDebugNode, Predicate} from './debug/debug_node';
-export {GetTestability, Testability, TestabilityRegistry, setTestabilityGetter} from './testability/testability';
 export * from './change_detection';
 export * from './platform_core_providers';
 export {TRANSLATIONS, TRANSLATIONS_FORMAT, LOCALE_ID, DEFAULT_CURRENCY_CODE, MissingTranslationStrategy} from './i18n/tokens';

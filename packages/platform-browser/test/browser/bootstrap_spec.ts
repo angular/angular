@@ -11,7 +11,6 @@ import {APP_INITIALIZER, Compiler, Component, createPlatformFactory, CUSTOM_ELEM
 import {ApplicationRef, destroyPlatform} from '@angular/core/src/application_ref';
 import {Console} from '@angular/core/src/console';
 import {ComponentRef} from '@angular/core/src/linker/component_factory';
-import {Testability, TestabilityRegistry} from '@angular/core/src/testability/testability';
 import {inject, TestBed} from '@angular/core/testing';
 import {Log} from '@angular/core/testing/src/testing_internal';
 import {BrowserModule} from '@angular/platform-browser';
@@ -405,24 +404,6 @@ function bootstrap(
           expect(style.getAttribute('ng-transition')).not.toBe('my-app');
         });
         done();
-      }, done.fail);
-    });
-
-    it('should register each application with the testability registry', done => {
-      const refPromise1: Promise<ComponentRef<any>> = bootstrap(HelloRootCmp, testProviders);
-      const refPromise2: Promise<ComponentRef<any>> = bootstrap(HelloRootCmp2, testProviders);
-
-      Promise.all([refPromise1, refPromise2]).then((refs: ComponentRef<any>[]) => {
-        const registry = refs[0].injector.get(TestabilityRegistry);
-        const testabilities =
-            [refs[0].injector.get(Testability), refs[1].injector.get(Testability)];
-
-        Promise.all(testabilities).then((testabilities: Testability[]) => {
-          expect(registry.findTestabilityInTree(el)).toEqual(testabilities[0]);
-          expect(registry.findTestabilityInTree(el2)).toEqual(testabilities[1]);
-
-          done();
-        }, done.fail);
       }, done.fail);
     });
 

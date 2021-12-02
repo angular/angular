@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectorRef, Component, destroyPlatform, EventEmitter, forwardRef, Input, NgModule, NgModuleFactory, NgZone, NO_ERRORS_SCHEMA, OnChanges, OnDestroy, Output, SimpleChange, SimpleChanges, Testability} from '@angular/core';
+import {ChangeDetectorRef, Component, destroyPlatform, EventEmitter, forwardRef, Input, NgModule, NgModuleFactory, NgZone, NO_ERRORS_SCHEMA, OnChanges, OnDestroy, Output, SimpleChange, SimpleChanges} from '@angular/core';
 import {fakeAsync, flushMicrotasks, tick, waitForAsync} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
@@ -3386,84 +3386,6 @@ withEachNg1Version(() => {
            adapter.bootstrap(element, ['ng1']).ready((ref) => {
              expect(document.body.textContent).toEqual('ng2-parent(ng2-child)');
              ref.dispose();
-           });
-         }));
-    });
-
-    describe('testability', () => {
-      it('should handle deferred bootstrap', waitForAsync(() => {
-           @NgModule({imports: [BrowserModule]})
-           class MyNg2Module {
-           }
-
-           const adapter: UpgradeAdapter = new UpgradeAdapter(MyNg2Module);
-           angular.module_('ng1', []);
-           let bootstrapResumed: boolean = false;
-
-           const element = html('<div></div>');
-           window.name = 'NG_DEFER_BOOTSTRAP!' + window.name;
-
-           adapter.bootstrap(element, ['ng1']).ready((ref) => {
-             expect(bootstrapResumed).toEqual(true);
-             ref.dispose();
-           });
-
-           setTimeout(() => {
-             bootstrapResumed = true;
-             (<any>window).angular.resumeBootstrap();
-           }, 100);
-         }));
-
-      it('should propagate return value of resumeBootstrap', fakeAsync(() => {
-           @NgModule({imports: [BrowserModule]})
-           class MyNg2Module {
-           }
-
-           const adapter: UpgradeAdapter = new UpgradeAdapter(MyNg2Module);
-           const ng1Module = angular.module_('ng1', []);
-           let a1Injector: angular.IInjectorService|undefined;
-           ng1Module.run([
-             '$injector',
-             function($injector: angular.IInjectorService) {
-               a1Injector = $injector;
-             }
-           ]);
-
-           const element = html('<div></div>');
-           window.name = 'NG_DEFER_BOOTSTRAP!' + window.name;
-
-           adapter.bootstrap(element, [ng1Module.name]).ready((ref) => {
-             ref.dispose();
-           });
-
-           tick(100);
-
-           const value = (<any>window).angular.resumeBootstrap();
-           expect(value).toBe(a1Injector);
-         }));
-
-      it('should wait for ng2 testability', waitForAsync(() => {
-           @NgModule({imports: [BrowserModule]})
-           class MyNg2Module {
-           }
-
-           const adapter: UpgradeAdapter = new UpgradeAdapter(MyNg2Module);
-           angular.module_('ng1', []);
-           const element = html('<div></div>');
-           adapter.bootstrap(element, ['ng1']).ready((ref) => {
-             const ng2Testability: Testability = ref.ng2Injector.get(Testability);
-             ng2Testability.increasePendingRequestCount();
-             let ng2Stable = false;
-
-             angular.getTestability(element).whenStable(() => {
-               expect(ng2Stable).toEqual(true);
-               ref.dispose();
-             });
-
-             setTimeout(() => {
-               ng2Stable = true;
-               ng2Testability.decreasePendingRequestCount();
-             }, 100);
            });
          }));
     });

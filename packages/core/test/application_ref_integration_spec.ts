@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef, Component, DoCheck, NgModule, OnInit, TestabilityRegistry} from '@angular/core';
+import {ApplicationRef, Component, DoCheck, NgModule, OnInit} from '@angular/core';
 import {getTestBed} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {withBody} from '@angular/private/testing';
@@ -55,10 +55,6 @@ describe('ApplicationRef bootstrap', () => {
            .toEqual(
                '<hello-world ng-version="0.0.0-PLACEHOLDER"><div>Hello Mundo</div></hello-world>');
        expect(helloWorldComponent.log).toEqual(['OnInit', 'DoCheck', 'DoCheck']);
-
-       // Cleanup TestabilityRegistry
-       const registry: TestabilityRegistry = getTestBed().get(TestabilityRegistry);
-       registry.unregisterAllApplications();
      }));
 
   it('should expose the `window.ng` global utilities',

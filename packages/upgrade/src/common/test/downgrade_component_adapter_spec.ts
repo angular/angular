@@ -5,8 +5,9 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {Compiler, Component, ComponentFactory, Injector, NgModule, TestabilityRegistry} from '@angular/core';
+import {Compiler, Component, ComponentFactory, Injector, NgModule} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
+
 import * as angular from '../src/angular1';
 import {DowngradeComponentAdapter, groupNodesBySelector} from '../src/downgrade_component_adapter';
 
@@ -81,7 +82,6 @@ withEachNg1Version(() => {
       let adapter: DowngradeComponentAdapter;
       let content: string;
       let compiler: Compiler;
-      let registry: TestabilityRegistry;
       let element: angular.IAugmentedJQuery;
 
       class mockScope implements angular.IScope {
@@ -171,30 +171,7 @@ withEachNg1Version(() => {
 
       beforeEach(() => {
         compiler = TestBed.inject(Compiler);
-        registry = TestBed.inject(TestabilityRegistry);
         adapter = getAdaptor();
-      });
-      beforeEach(() => registry.unregisterAllApplications());
-      afterEach(() => registry.unregisterAllApplications());
-
-      it('should add testabilities hook when creating components', () => {
-        let registry = TestBed.inject(TestabilityRegistry);
-        adapter.createComponent([]);
-        expect(registry.getAllTestabilities().length).toEqual(1);
-
-        adapter = getAdaptor();  // get a new adaptor to creat a new component
-        adapter.createComponent([]);
-        expect(registry.getAllTestabilities().length).toEqual(2);
-      });
-
-      it('should remove the testability hook when destroy a component', () => {
-        const registry = TestBed.inject(TestabilityRegistry);
-        expect(registry.getAllTestabilities().length).toEqual(0);
-        adapter.createComponent([]);
-        expect(registry.getAllTestabilities().length).toEqual(1);
-        adapter.registerCleanup();
-        element.remove!();
-        expect(registry.getAllTestabilities().length).toEqual(0);
       });
     });
   });

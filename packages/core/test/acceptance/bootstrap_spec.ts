@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef, COMPILER_OPTIONS, Component, destroyPlatform, NgModule, NgZone, TestabilityRegistry, ViewEncapsulation} from '@angular/core';
+import {ApplicationRef, COMPILER_OPTIONS, Component, destroyPlatform, NgModule, NgZone, ViewEncapsulation} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {withBody} from '@angular/private/testing';
@@ -158,15 +158,12 @@ describe('bootstrap', () => {
 
            const ngModuleRef = await platformBrowserDynamic().bootstrapModule(TestModule);
            const appRef = ngModuleRef.injector.get(ApplicationRef);
-           const testabilityRegistry = ngModuleRef.injector.get(TestabilityRegistry);
 
            expect(appRef.components.length).toBe(1);
-           expect(testabilityRegistry.getAllRootElements().length).toBe(1);
 
            ngModuleRef.destroy();  // also destroys an Injector instance.
 
            expect(appRef.components.length).toBe(0);
-           expect(testabilityRegistry.getAllRootElements().length).toBe(0);
          }));
 
       it('should cleanup ApplicationRef when ComponentRef is destroyed',
@@ -175,16 +172,13 @@ describe('bootstrap', () => {
 
            const ngModuleRef = await platformBrowserDynamic().bootstrapModule(TestModule);
            const appRef = ngModuleRef.injector.get(ApplicationRef);
-           const testabilityRegistry = ngModuleRef.injector.get(TestabilityRegistry);
            const componentRef = appRef.components[0];
 
            expect(appRef.components.length).toBe(1);
-           expect(testabilityRegistry.getAllRootElements().length).toBe(1);
 
            componentRef.destroy();
 
            expect(appRef.components.length).toBe(0);
-           expect(testabilityRegistry.getAllRootElements().length).toBe(0);
          }));
 
       it('should not throw in case ComponentRef is destroyed and Injector is destroyed after that',
@@ -193,17 +187,14 @@ describe('bootstrap', () => {
 
            const ngModuleRef = await platformBrowserDynamic().bootstrapModule(TestModule);
            const appRef = ngModuleRef.injector.get(ApplicationRef);
-           const testabilityRegistry = ngModuleRef.injector.get(TestabilityRegistry);
            const componentRef = appRef.components[0];
 
            expect(appRef.components.length).toBe(1);
-           expect(testabilityRegistry.getAllRootElements().length).toBe(1);
 
            componentRef.destroy();
            ngModuleRef.destroy();  // also destroys an Injector instance.
 
            expect(appRef.components.length).toBe(0);
-           expect(testabilityRegistry.getAllRootElements().length).toBe(0);
          }));
 
       it('should not throw in case Injector is destroyed and ComponentRef is destroyed after that',
@@ -212,17 +203,14 @@ describe('bootstrap', () => {
 
            const ngModuleRef = await platformBrowserDynamic().bootstrapModule(TestModule);
            const appRef = ngModuleRef.injector.get(ApplicationRef);
-           const testabilityRegistry = ngModuleRef.injector.get(TestabilityRegistry);
            const componentRef = appRef.components[0];
 
            expect(appRef.components.length).toBe(1);
-           expect(testabilityRegistry.getAllRootElements().length).toBe(1);
 
            ngModuleRef.destroy();  // also destroys an Injector instance.
            componentRef.destroy();
 
            expect(appRef.components.length).toBe(0);
-           expect(testabilityRegistry.getAllRootElements().length).toBe(0);
          }));
     });
 

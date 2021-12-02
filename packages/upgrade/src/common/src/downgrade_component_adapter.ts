@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef, ChangeDetectorRef, ComponentFactory, ComponentRef, EventEmitter, Injector, OnChanges, SimpleChange, SimpleChanges, StaticProvider, Testability, TestabilityRegistry, Type} from '@angular/core';
+import {ApplicationRef, ChangeDetectorRef, ComponentFactory, ComponentRef, EventEmitter, Injector, OnChanges, SimpleChange, SimpleChanges, StaticProvider} from '@angular/core';
 
 import {IAttributes, IAugmentedJQuery, ICompileService, INgModelController, IParseService, IScope} from './angular1';
 import {PropertyBinding} from './component_info';
@@ -66,16 +66,6 @@ export class DowngradeComponentAdapter {
     this.viewChangeDetector = this.componentRef.injector.get(ChangeDetectorRef);
     this.changeDetector = this.componentRef.changeDetectorRef;
     this.component = this.componentRef.instance;
-
-    // testability hook is commonly added during component bootstrap in
-    // packages/core/src/application_ref.bootstrap()
-    // in downgraded application, component creation will take place here as well as adding the
-    // testability hook.
-    const testability = this.componentRef.injector.get(Testability, null);
-    if (testability) {
-      this.componentRef.injector.get(TestabilityRegistry)
-          .registerApplication(this.componentRef.location.nativeElement, testability);
-    }
 
     hookupNgModel(this.ngModel, this.component);
   }
@@ -212,7 +202,6 @@ export class DowngradeComponentAdapter {
   }
 
   registerCleanup() {
-    const testabilityRegistry = this.componentRef.injector.get(TestabilityRegistry);
     const destroyComponentRef = this.wrapCallback(() => this.componentRef.destroy());
     let destroyed = false;
 
@@ -225,7 +214,6 @@ export class DowngradeComponentAdapter {
     this.componentScope.$on('$destroy', () => {
       if (!destroyed) {
         destroyed = true;
-        testabilityRegistry.unregisterApplication(this.componentRef.location.nativeElement);
 
         // The `componentScope` might be getting destroyed, because an ancestor element is being
         // removed/destroyed. If that is the case, jqLite/jQuery would normally invoke `cleanData()`

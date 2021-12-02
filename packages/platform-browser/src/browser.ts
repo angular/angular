@@ -7,22 +7,19 @@
  */
 
 import {CommonModule, DOCUMENT, XhrFactory, ɵPLATFORM_BROWSER_ID as PLATFORM_BROWSER_ID} from '@angular/common';
-import {APP_ID, ApplicationModule, createPlatformFactory, ErrorHandler, Inject, ModuleWithProviders, NgModule, NgZone, Optional, PLATFORM_ID, PLATFORM_INITIALIZER, platformCore, PlatformRef, RendererFactory2, Sanitizer, SkipSelf, StaticProvider, Testability, ɵINJECTOR_SCOPE as INJECTOR_SCOPE, ɵsetDocument} from '@angular/core';
+import {APP_ID, ApplicationModule, createPlatformFactory, ErrorHandler, Inject, ModuleWithProviders, NgModule, NgZone, Optional, PLATFORM_ID, PLATFORM_INITIALIZER, platformCore, PlatformRef, RendererFactory2, SkipSelf, StaticProvider, ɵINJECTOR_SCOPE as INJECTOR_SCOPE, ɵsetDocument} from '@angular/core';
 
 import {BrowserDomAdapter} from './browser/browser_adapter';
 import {SERVER_TRANSITION_PROVIDERS, TRANSITION_ID} from './browser/server-transition';
-import {BrowserGetTestability} from './browser/testability';
 import {BrowserXhr} from './browser/xhr';
 import {DomRendererFactory2} from './dom/dom_renderer';
 import {DomEventsPlugin} from './dom/events/dom_events';
 import {EVENT_MANAGER_PLUGINS, EventManager} from './dom/events/event_manager';
 import {KeyEventsPlugin} from './dom/events/key_events';
 import {DomSharedStylesHost, SharedStylesHost} from './dom/shared_styles_host';
-import {DomSanitizer, DomSanitizerImpl} from './security/dom_sanitization_service';
 
 export function initDomAdapter() {
   BrowserDomAdapter.makeCurrent();
-  BrowserGetTestability.init();
 }
 
 export function errorHandler(): ErrorHandler {
@@ -68,7 +65,6 @@ export const BROWSER_MODULE_PROVIDERS: StaticProvider[] = [
   {provide: RendererFactory2, useExisting: DomRendererFactory2},
   {provide: SharedStylesHost, useExisting: DomSharedStylesHost},
   {provide: DomSharedStylesHost, useClass: DomSharedStylesHost, deps: [DOCUMENT]},
-  {provide: Testability, useClass: Testability, deps: [NgZone]},
   {provide: EventManager, useClass: EventManager, deps: [EVENT_MANAGER_PLUGINS, NgZone]},
   {provide: XhrFactory, useClass: BrowserXhr, deps: []},
 ];
