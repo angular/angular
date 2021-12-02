@@ -107,7 +107,7 @@ For customers to see their cart, you can create the cart view in two steps:
     ng generate component cart
     ```
 
-    This command will generate the `cart.component.ts` file and it associated template and styles files.
+    This command will generate the `cart.component.ts` file and its associated template and styles files.
 
     <code-example header="src/app/cart/cart.component.ts" path="getting-started/src/app/cart/cart.component.1.ts"></code-example>
 
@@ -244,7 +244,7 @@ Now that you've configured your application to retrieve shipping data, you can c
     ng generate component shipping
     ```
 
-    This command will generate the `shipping.component.ts` file and it associated template and styles files.
+    This command will generate the `shipping.component.ts` file and its associated template and styles files.
 
     <code-example header="src/app/shipping/shipping.component.ts" path="getting-started/src/app/shipping/shipping.component.1.ts"></code-example>
 
