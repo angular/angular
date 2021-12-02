@@ -10,14 +10,8 @@ import {AnimationTimelineInstruction} from './animation_timeline_instruction';
 export class ElementInstructionMap {
   private _map = new Map<any, AnimationTimelineInstruction[]>();
 
-  consume(element: any): AnimationTimelineInstruction[] {
-    let instructions = this._map.get(element);
-    if (instructions) {
-      this._map.delete(element);
-    } else {
-      instructions = [];
-    }
-    return instructions;
+  get(element: any): AnimationTimelineInstruction[] {
+    return this._map.get(element) || [];
   }
 
   append(element: any, instructions: AnimationTimelineInstruction[]) {
