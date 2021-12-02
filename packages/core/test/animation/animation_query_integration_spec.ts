@@ -782,8 +782,8 @@ describe('animation query tests', function() {
       engine.flush();
 
       const players = getLog();
-      expect(players.length).toEqual(1);
-      const player = players[0];
+      expect(players.length).toEqual(2);
+      const player = players[1];
 
       expect(player.keyframes).toEqual([{height: '0px', offset: 0}, {height: '444px', offset: 1}]);
       player.finish();
@@ -1868,16 +1868,23 @@ describe('animation query tests', function() {
       const elm1 = cmp.elm1;
       const elm2 = cmp.elm2;
 
-      const [p1, p2] = getLog();
-      expect(p1.delay).toEqual(0);
-      expect(p1.element).toEqual(elm1.nativeElement);
-      expect(p1.duration).toEqual(1000);
-      expect(p1.keyframes).toEqual([{width: '0px', offset: 0}, {width: '100px', offset: 1}]);
+      const players = getLog();
 
-      expect(p2.delay).toEqual(0);
-      expect(p2.element).toEqual(elm2.nativeElement);
-      expect(p2.duration).toEqual(2000);
-      expect(p2.keyframes).toEqual([
+      // players:
+      //  - _scp (skipped child player): player for the child animation
+      //  - pp (parent player): player for parent animation (from 0px to 100px)
+      //  - pcp (parent child player):
+      //      player for child animation executed by parent via query and animateChild
+      const [_scp, pp, pcp] = players;
+      expect(pp.delay).toEqual(0);
+      expect(pp.element).toEqual(elm1.nativeElement);
+      expect(pp.duration).toEqual(1000);
+      expect(pp.keyframes).toEqual([{width: '0px', offset: 0}, {width: '100px', offset: 1}]);
+
+      expect(pcp.delay).toEqual(0);
+      expect(pcp.element).toEqual(elm2.nativeElement);
+      expect(pcp.duration).toEqual(2000);
+      expect(pcp.keyframes).toEqual([
         {height: '0px', offset: 0}, {height: '0px', offset: .5}, {height: '100px', offset: 1}
       ]);
     });
@@ -1928,36 +1935,45 @@ describe('animation query tests', function() {
          const elements = parent.querySelectorAll('.item');
 
          const players = getLog();
-         expect(players.length).toEqual(7);
-         const [pA, pc1, pc2, pc3, pc4, pc5, pZ] = players;
+         expect(players.length).toEqual(12);
 
-         expect(pA.element).toEqual(parent);
-         expect(pA.delay).toEqual(0);
-         expect(pA.duration).toEqual(1000);
+         // players:
+         //  - _sc1p, _sc2p, _sc3p, _sc4p (skipped child n (1 to 4) players):
+         //     players for the children animations
+         //  - pp1 (parent player 1): player for parent animation (from opacity 0 to opacity 1)
+         //  - pc1p, pc2p, pc3p, pc4p, pc5p  (parent child n (1 to 4) player):
+         //     players for children animations executed by parent via query and animateChild
+         //  - pp2 (parent player 2): player for parent animation (from opacity 1 to opacity 0)
+         const [_sc1p, _sc2p, _sc3p, _sc4p, _sc5p, pp1, pc1p, pc2p, pc3p, pc4p, pc5p, pp2] =
+             players;
 
-         expect(pc1.element).toEqual(elements[0]);
-         expect(pc1.delay).toEqual(0);
-         expect(pc1.duration).toEqual(4000);
+         expect(pp1.element).toEqual(parent);
+         expect(pp1.delay).toEqual(0);
+         expect(pp1.duration).toEqual(1000);
 
-         expect(pc2.element).toEqual(elements[1]);
-         expect(pc2.delay).toEqual(0);
-         expect(pc2.duration).toEqual(4000);
+         expect(pc1p.element).toEqual(elements[0]);
+         expect(pc1p.delay).toEqual(0);
+         expect(pc1p.duration).toEqual(4000);
 
-         expect(pc3.element).toEqual(elements[2]);
-         expect(pc3.delay).toEqual(0);
-         expect(pc3.duration).toEqual(4000);
+         expect(pc2p.element).toEqual(elements[1]);
+         expect(pc2p.delay).toEqual(0);
+         expect(pc2p.duration).toEqual(4000);
 
-         expect(pc4.element).toEqual(elements[3]);
-         expect(pc4.delay).toEqual(0);
-         expect(pc4.duration).toEqual(4000);
+         expect(pc3p.element).toEqual(elements[2]);
+         expect(pc3p.delay).toEqual(0);
+         expect(pc3p.duration).toEqual(4000);
 
-         expect(pc5.element).toEqual(elements[4]);
-         expect(pc5.delay).toEqual(0);
-         expect(pc5.duration).toEqual(4000);
+         expect(pc4p.element).toEqual(elements[3]);
+         expect(pc4p.delay).toEqual(0);
+         expect(pc4p.duration).toEqual(4000);
 
-         expect(pZ.element).toEqual(parent);
-         expect(pZ.delay).toEqual(4000);
-         expect(pZ.duration).toEqual(1000);
+         expect(pc5p.element).toEqual(elements[4]);
+         expect(pc5p.delay).toEqual(0);
+         expect(pc5p.duration).toEqual(4000);
+
+         expect(pp2.element).toEqual(parent);
+         expect(pp2.delay).toEqual(4000);
+         expect(pp2.duration).toEqual(1000);
        });
 
     it('should silently continue if a sub trigger is animated that doesn\'t exist', () => {
@@ -2110,17 +2126,27 @@ describe('animation query tests', function() {
       engine.flush();
 
       const players = getLog();
-      expect(players.length).toEqual(4);
-      const [pA, pc1, pc2, pZ] = players;
+      expect(players.length).toEqual(6);
 
-      expect(pc1.delay).toEqual(0);
-      expect(pc1.duration).toEqual(2800);
+      // players:
+      //  - _scwp (skipped child w player): player for the child animation (trigger w)
+      //  - _schp (skipped child h player): player for the child animation (trigger h)
+      //  - _pp1 (parent player 1): player for parent animation (from opacity 0 to opacity 1)
+      //  - pcwp (parent child w player):
+      //      player for child w animation executed by parent via query and animateChild
+      //  - pchp (parent child h player):
+      //      player for child w animation executed by parent via query and animateChild
+      //  - pp2 (parent player 2): player for parent animation (from opacity 1 to opacity 0)
+      const [_scwp, _schp, _pp1, pcwp, pchp, pp2] = players;
 
-      expect(pc2.delay).toEqual(0);
-      expect(pc2.duration).toEqual(2500);
+      expect(pcwp.delay).toEqual(0);
+      expect(pcwp.duration).toEqual(2800);
 
-      expect(pZ.delay).toEqual(2800);
-      expect(pZ.duration).toEqual(1000);
+      expect(pchp.delay).toEqual(0);
+      expect(pchp.duration).toEqual(2500);
+
+      expect(pp2.delay).toEqual(2800);
+      expect(pp2.duration).toEqual(1000);
     });
 
     it('should skip a sub animation when a zero duration value is passed in', () => {
@@ -2163,14 +2189,21 @@ describe('animation query tests', function() {
       engine.flush();
 
       const players = getLog();
-      expect(players.length).toEqual(2);
-      const [pA, pZ] = players;
+      expect(players.length).toEqual(3);
 
-      expect(pA.delay).toEqual(0);
-      expect(pA.duration).toEqual(1000);
+      // players:
+      //  - _scp (skipped child player): player for the child animation
+      //  - pp1 (parent player 1): player for parent animation (from opacity 0 to opacity 1)
+      //  - ( the player for the child animation executed by parent via query
+      //      and animateChild is skipped entirely )
+      //  - pp2 (parent player 2): player for parent animation (from opacity 1 to opacity 0)
+      const [_scp, pp1, pp2] = players;
 
-      expect(pZ.delay).toEqual(1000);
-      expect(pZ.duration).toEqual(1000);
+      expect(pp1.delay).toEqual(0);
+      expect(pp1.duration).toEqual(1000);
+
+      expect(pp2.delay).toEqual(1000);
+      expect(pp2.duration).toEqual(1000);
     });
 
     it('should only allow a sub animation to be used up by a parent trigger once', () => {
@@ -2215,14 +2248,23 @@ describe('animation query tests', function() {
       engine.flush();
 
       const players = getLog();
-      expect(players.length).toEqual(3);
+      expect(players.length).toEqual(5);
 
-      const [p1, p2, p3] = players;
+      // players:
+      //  - _scp (skipped child player): player for the child animation
+      // (note: parent2 is evaluated first because it is inside of parent1)
+      //  - p2p (parent 2 player): player for parent animation (from opacity 0 to opacity 1)
+      //  - p2cp (parent 2 child player):
+      //      player for child animation executed by parent 2 via query and animateChild
+      //  - p1p (parent 1 player): player for parent animation (from opacity 0 to opacity 1)
+      //  - p1cp (parent 1 child player):
+      //      player for child animation executed by parent 1 via query and animateChild
+      const [_scp, p2p, p2cp, p1p, p1cp] = players;
 
-      // parent2 is evaluated first because it is inside of parent1
-      expect(p1.element.classList.contains('parent2')).toBeTruthy();
-      expect(p2.element.classList.contains('child')).toBeTruthy();
-      expect(p3.element.classList.contains('parent1')).toBeTruthy();
+      expect(p2p.element.classList.contains('parent2')).toBeTruthy();
+      expect(p2cp.element.classList.contains('child')).toBeTruthy();
+      expect(p1p.element.classList.contains('parent1')).toBeTruthy();
+      expect(p1cp.element.classList.contains('child')).toBeTruthy();
     });
 
     it('should emulate a leave animation on the nearest sub host elements when a parent is removed',
@@ -2363,11 +2405,16 @@ describe('animation query tests', function() {
          fixture.detectChanges();
 
          let players = getLog();
-         expect(players.length).toEqual(1);
-         const [player] = players;
+         expect(players.length).toEqual(2);
 
-         expect(player.element.classList.contains('inner-div')).toBeTruthy();
-         expect(player.keyframes).toEqual([
+         // players:
+         //  - _scp (skipped child player): player for the child animation
+         //  - pcp (parent child player):
+         //     player for child animation executed by parent via query and animateChild
+         const [_scp, pcp] = players;
+
+         expect(pcp.element.classList.contains('inner-div')).toBeTruthy();
+         expect(pcp.keyframes).toEqual([
            {opacity: '0', offset: 0},
            {opacity: '1', offset: 1},
          ]);
@@ -3140,10 +3187,23 @@ describe('animation query tests', function() {
          fixture.detectChanges();
          engine.flush();
          const players = getLog();
-         expect(players.length).toEqual(5);
-         const [p1, p2, p3, p4, p5] = players;
+         expect(players.length).toEqual(6);
 
-         expect(p5.keyframes).toEqual([
+         // players:
+         //  - _sgcp (skipped grand child player): player for the grand child animation
+         //  - _psp (parent self player): player for parent self animation (opacity 0)
+         //  - _pgcp1 (parent grand child player 1):
+         //     player for child animation executed by parent via query (opacity 0)
+         //  - _pp1 (parent player 1): player for parent animation (from opacity 0 to opacity 1)
+         //  - _pgcp2 (parent grand child player 2):
+         //     player for child animation executed by parent via query and animate
+         //     (from opacity 0 to opacity 1)
+         //  - pgcp3 (parent grand child player 3):
+         //     player for child animation executed by parent via query and animateChild
+         //     (from 0px to 200px)
+         const [_sgcp, _psp, _pgcp1, _pp1, _pgcp2, pgcp3] = players;
+
+         expect(pgcp3.keyframes).toEqual([
            {offset: 0, width: '0px'}, {offset: .67, width: '0px'}, {offset: 1, width: '200px'}
          ]);
        });
@@ -3206,11 +3266,16 @@ describe('animation query tests', function() {
       fixture.detectChanges();
 
       const players = getLog();
-      expect(players.length).toEqual(2);
+      expect(players.length).toEqual(3);
 
-      const [p1, p2] = players;
-      expect(p1.element.classList.contains('container')).toBeTruthy();
-      expect(p2.element.classList.contains('item')).toBeTruthy();
+      // players:
+      //  - _scp (skipped child player): player for the child animation
+      //  - pp (parent player): player for parent animation (from opacity 0 to opacity 1)
+      //  - pcp (parent child player):
+      //      player for child animation executed by parent via query and animateChild
+      const [_scp, pp, pcp] = players;
+      expect(pp.element.classList.contains('container')).toBeTruthy();
+      expect(pcp.element.classList.contains('item')).toBeTruthy();
     });
 
     it('should scope :leave queries between sub animations', () => {
@@ -3272,11 +3337,16 @@ describe('animation query tests', function() {
       fixture.detectChanges();
 
       const players = getLog();
-      expect(players.length).toEqual(2);
+      expect(players.length).toEqual(3);
 
-      const [p1, p2] = players;
-      expect(p1.element.classList.contains('container')).toBeTruthy();
-      expect(p2.element.classList.contains('item')).toBeTruthy();
+      // players:
+      //  - _scp (skipped child player): player for the child animation
+      //  - pp (parent player): player for parent animation (from opacity 0 to opacity 1)
+      //  - pcp (parent child player):
+      //      player for child animation executed by parent via query and animateChild
+      const [_scp, pp, pcp] = players;
+      expect(pp.element.classList.contains('container')).toBeTruthy();
+      expect(pcp.element.classList.contains('item')).toBeTruthy();
     });
   });
 
