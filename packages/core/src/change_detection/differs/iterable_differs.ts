@@ -9,6 +9,7 @@
 import {ɵɵdefineInjectable} from '../../di/interface/defs';
 import {StaticProvider} from '../../di/interface/provider';
 import {Optional, SkipSelf} from '../../di/metadata';
+import {RuntimeError, RuntimeErrorCode} from '../../errors';
 import {DefaultIterableDifferFactory} from '../differs/default_iterable_differ';
 
 
@@ -250,8 +251,11 @@ export class IterableDiffers {
     if (factory != null) {
       return factory;
     } else {
-      throw new Error(`Cannot find a differ supporting object '${iterable}' of type '${
-          getTypeNameForDebugging(iterable)}'`);
+      const errorMessage = (typeof ngDevMode === 'undefined' || ngDevMode) ?
+          `Cannot find a differ supporting object '${iterable}' of type '${
+              getTypeNameForDebugging(iterable)}'` :
+          '';
+      throw new RuntimeError(RuntimeErrorCode.NO_SUPPORTING_DIFFER_FACTORY, errorMessage);
     }
   }
 }

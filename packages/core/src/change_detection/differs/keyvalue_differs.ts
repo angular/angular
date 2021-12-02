@@ -7,6 +7,8 @@
  */
 
 import {Optional, SkipSelf, StaticProvider, ɵɵdefineInjectable} from '../../di';
+import {RuntimeError, RuntimeErrorCode} from '../../errors';
+
 import {DefaultKeyValueDifferFactory} from './default_keyvalue_differ';
 
 
@@ -181,6 +183,9 @@ export class KeyValueDiffers {
     if (factory) {
       return factory;
     }
-    throw new Error(`Cannot find a differ supporting object '${kv}'`);
+    const errorMessage = (typeof ngDevMode === 'undefined' || ngDevMode) ?
+        `Cannot find a differ supporting object '${kv}'` :
+        '';
+    throw new RuntimeError(RuntimeErrorCode.NO_SUPPORTING_DIFFER_FACTORY, errorMessage);
   }
 }

@@ -7,9 +7,11 @@
  */
 
 import {ChangeDetectorRef as viewEngine_ChangeDetectorRef} from '../change_detection/change_detector_ref';
+import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {EmbeddedViewRef as viewEngine_EmbeddedViewRef, InternalViewRef as viewEngine_InternalViewRef, ViewRefTracker} from '../linker/view_ref';
 import {removeFromArray} from '../util/array_utils';
 import {assertEqual} from '../util/assert';
+
 import {collectNativeNodes} from './collect_native_nodes';
 import {checkNoChangesInRootView, checkNoChangesInternal, detectChangesInRootView, detectChangesInternal, markViewDirty, storeCleanupWithContext} from './instructions/shared';
 import {CONTAINER_HEADER_OFFSET, VIEW_REFS} from './interfaces/container';
@@ -284,7 +286,9 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_Int
 
   attachToViewContainerRef() {
     if (this._appRef) {
-      throw new Error('This view is already attached directly to the ApplicationRef!');
+      const errorMessage =
+          ngDevMode ? 'This view is already attached directly to the ApplicationRef!' : '';
+      throw new RuntimeError(RuntimeErrorCode.VIEW_ALREADY_ATTACHED, errorMessage);
     }
     this._attachedToViewContainer = true;
   }
@@ -296,7 +300,8 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_Int
 
   attachToAppRef(appRef: ViewRefTracker) {
     if (this._attachedToViewContainer) {
-      throw new Error('This view is already attached to a ViewContainer!');
+      const errorMessage = ngDevMode ? 'This view is already attached to a ViewContainer!' : '';
+      throw new RuntimeError(RuntimeErrorCode.VIEW_ALREADY_ATTACHED, errorMessage);
     }
     this._appRef = appRef;
   }
