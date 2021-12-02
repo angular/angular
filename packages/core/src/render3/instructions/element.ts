@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {RuntimeErrorCode} from '../../errors';
+import {formatRuntimeError} from '../../errors/util';
 import {assertDefined, assertEqual, assertIndexInRange} from '../../util/assert';
 import {assertFirstCreatePass, assertHasParent} from '../assert';
 import {attachPatchData} from '../context_discovery';
-import {formatRuntimeError, RuntimeErrorCode} from '../error_code';
 import {registerPostOrderHooks} from '../hooks';
 import {hasClassInput, hasStyleInput, TAttributes, TElementNode, TNode, TNodeFlags, TNodeType} from '../interfaces/node';
 import {RElement} from '../interfaces/renderer_dom';
@@ -21,6 +22,7 @@ import {decreaseElementDepthCount, getBindingIndex, getCurrentTNode, getElementD
 import {computeStaticStyling} from '../styling/static_styling';
 import {setUpAttributes} from '../util/attrs_utils';
 import {getConstant} from '../util/view_utils';
+
 import {setDirectiveInputsWhichShadowsStyling} from './property';
 import {createDirectivesInstances, executeContentQueries, getOrCreateTNode, matchingSchemas, resolveDirectives, saveResolvedLocalsInData} from './shared';
 
