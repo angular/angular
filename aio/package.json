@@ -130,7 +130,7 @@
     "dgeni": "^0.4.14",
     "dgeni-packages": "^0.29.2",
     "entities": "^3.0.0",
-    "eslint": "^7.26.0",
+    "eslint": "^8.0.0",
     "eslint-plugin-import": "^2.23.4",
     "eslint-plugin-jasmine": "^4.1.2",
     "eslint-plugin-jsdoc": "^37.0.0",
