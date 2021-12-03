@@ -13,6 +13,5 @@ const EXAMPLES = [BadgeOverviewExample, BadgeHarnessExample];
   imports: [MatBadgeModule, MatButtonModule, MatIconModule],
   declarations: EXAMPLES,
   exports: EXAMPLES,
-  entryComponents: EXAMPLES,
 })
 export class BadgeExamplesModule {}

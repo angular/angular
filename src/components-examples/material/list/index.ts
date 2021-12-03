@@ -28,6 +28,5 @@ const EXAMPLES = [
   imports: [CommonModule, MatIconModule, MatListModule],
   declarations: EXAMPLES,
   exports: EXAMPLES,
-  entryComponents: EXAMPLES,
 })
 export class ListExamplesModule {}

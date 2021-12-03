@@ -15,6 +15,5 @@ const EXAMPLES = [ElevationOverviewExample, RippleOverviewExample];
   imports: [MatButtonModule, MatCheckboxModule, MatInputModule, MatRippleModule, FormsModule],
   declarations: EXAMPLES,
   exports: EXAMPLES,
-  entryComponents: EXAMPLES,
 })
 export class CoreExamplesModule {}

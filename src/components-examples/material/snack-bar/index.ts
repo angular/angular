@@ -31,6 +31,5 @@ const EXAMPLES = [
   imports: [FormsModule, MatButtonModule, MatInputModule, MatSelectModule, MatSnackBarModule],
   declarations: [...EXAMPLES, PizzaPartyComponent],
   exports: EXAMPLES,
-  entryComponents: [...EXAMPLES, PizzaPartyComponent],
 })
 export class SnackBarExamplesModule {}

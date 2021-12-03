@@ -1,7 +1,7 @@
 import {ComponentPortal, PortalModule} from '@angular/cdk/portal';
 import {CdkScrollable, ScrollingModule, ViewportRuler} from '@angular/cdk/scrolling';
 import {dispatchFakeEvent, MockNgZone} from '../../testing/private';
-import {Component, ElementRef, NgModule, NgZone} from '@angular/core';
+import {Component, ElementRef, NgZone} from '@angular/core';
 import {fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
 import {Subscription} from 'rxjs';
 import {map} from 'rxjs/operators';
@@ -28,7 +28,8 @@ describe('FlexibleConnectedPositionStrategy', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [ScrollingModule, OverlayModule, OverlayTestModule],
+      imports: [ScrollingModule, OverlayModule, PortalModule],
+      declarations: [TestOverlay],
       providers: [{provide: NgZone, useFactory: () => (zone = new MockNgZone())}],
     });
 
@@ -2889,11 +2890,3 @@ function createOverflowContainerElement() {
   `,
 })
 class TestOverlay {}
-
-@NgModule({
-  imports: [OverlayModule, PortalModule],
-  exports: [TestOverlay],
-  declarations: [TestOverlay],
-  entryComponents: [TestOverlay],
-})
-class OverlayTestModule {}

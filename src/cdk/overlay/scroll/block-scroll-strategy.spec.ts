@@ -1,4 +1,4 @@
-import {Component, NgModule} from '@angular/core';
+import {Component} from '@angular/core';
 import {waitForAsync, inject, TestBed} from '@angular/core/testing';
 import {ComponentPortal, PortalModule} from '@angular/cdk/portal';
 import {Platform} from '@angular/cdk/platform';
@@ -21,7 +21,8 @@ describe('BlockScrollStrategy', () => {
       documentElement.classList.remove('cdk-global-scrollblock');
 
       TestBed.configureTestingModule({
-        imports: [OverlayModule, PortalModule, OverlayTestModule],
+        imports: [OverlayModule, PortalModule],
+        declarations: [FocacciaMsg],
       }).compileComponents();
     }),
   );
@@ -217,11 +218,3 @@ describe('BlockScrollStrategy', () => {
 /** Simple component that we can attach to the overlay. */
 @Component({template: '<p>Focaccia</p>'})
 class FocacciaMsg {}
-
-/** Test module to hold the component. */
-@NgModule({
-  imports: [OverlayModule, PortalModule],
-  declarations: [FocacciaMsg],
-  entryComponents: [FocacciaMsg],
-})
-class OverlayTestModule {}

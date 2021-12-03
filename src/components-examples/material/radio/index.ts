@@ -14,6 +14,5 @@ const EXAMPLES = [RadioHarnessExample, RadioNgModelExample, RadioOverviewExample
   imports: [ReactiveFormsModule, CommonModule, MatRadioModule, FormsModule],
   declarations: EXAMPLES,
   exports: EXAMPLES,
-  entryComponents: EXAMPLES,
 })
 export class RadioExamplesModule {}

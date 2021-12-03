@@ -32,6 +32,5 @@ const EXAMPLES = [
   imports: [CdkPopoverEditModule, CdkTableModule, FormsModule, CommonModule],
   declarations: EXAMPLES,
   exports: EXAMPLES,
-  entryComponents: EXAMPLES,
 })
 export class CdkPopoverEditExamplesModule {}

@@ -13,6 +13,5 @@ const EXAMPLES = [CdkTreeFlatExample, CdkTreeNestedExample];
   imports: [CdkTreeModule, MatButtonModule, MatIconModule],
   declarations: EXAMPLES,
   exports: EXAMPLES,
-  entryComponents: EXAMPLES,
 })
 export class CdkTreeExamplesModule {}

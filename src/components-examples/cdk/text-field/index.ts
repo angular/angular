@@ -24,6 +24,5 @@ const EXAMPLES = [
   imports: [CommonModule, TextFieldModule, MatButtonModule, MatInputModule, MatSelectModule],
   declarations: EXAMPLES,
   exports: EXAMPLES,
-  entryComponents: EXAMPLES,
 })
 export class CdkTextFieldExamplesModule {}

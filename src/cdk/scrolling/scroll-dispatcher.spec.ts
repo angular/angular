@@ -6,7 +6,7 @@ import {
   ComponentFixture,
   tick,
 } from '@angular/core/testing';
-import {NgModule, Component, ViewChild, ElementRef} from '@angular/core';
+import {Component, ViewChild, ElementRef} from '@angular/core';
 import {CdkScrollable, ScrollDispatcher, ScrollingModule} from './public-api';
 import {dispatchFakeEvent} from '../testing/private';
 
@@ -14,7 +14,8 @@ describe('ScrollDispatcher', () => {
   beforeEach(
     waitForAsync(() => {
       TestBed.configureTestingModule({
-        imports: [ScrollTestModule],
+        imports: [ScrollingModule],
+        declarations: [ScrollingComponent, NestedScrollingComponent],
       });
 
       TestBed.compileComponents();
@@ -308,13 +309,3 @@ class ScrollingComponent {
 class NestedScrollingComponent {
   @ViewChild('interestingElement') interestingElement: ElementRef<HTMLElement>;
 }
-
-const TEST_COMPONENTS = [ScrollingComponent, NestedScrollingComponent];
-@NgModule({
-  imports: [ScrollingModule],
-  providers: [ScrollDispatcher],
-  exports: TEST_COMPONENTS,
-  declarations: TEST_COMPONENTS,
-  entryComponents: TEST_COMPONENTS,
-})
-class ScrollTestModule {}

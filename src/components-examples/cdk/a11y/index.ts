@@ -17,6 +17,5 @@ const EXAMPLES = [
   imports: [A11yModule, MatSelectModule],
   declarations: EXAMPLES,
   exports: EXAMPLES,
-  entryComponents: EXAMPLES,
 })
 export class CdkA11yExamplesModule {}

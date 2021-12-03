@@ -20,7 +20,6 @@ import {
   Directive,
   Inject,
   Injector,
-  NgModule,
   NgZone,
   TemplateRef,
   ViewChild,
@@ -61,7 +60,17 @@ describe('MDC-based MatDialog', () => {
 
   beforeEach(fakeAsync(() => {
     TestBed.configureTestingModule({
-      imports: [MatDialogModule, DialogTestModule],
+      imports: [MatDialogModule, NoopAnimationsModule],
+      declarations: [
+        ComponentWithChildViewContainer,
+        ComponentWithTemplateRef,
+        PizzaMsg,
+        ContentElementDialog,
+        DialogWithInjectedData,
+        DialogWithoutFocusableElements,
+        DirectiveWithViewContainer,
+        ComponentWithContentElementTemplateRef,
+      ],
       providers: [
         {provide: Location, useClass: SpyLocation},
         {
@@ -1762,7 +1771,7 @@ describe('MDC-based MatDialog with a parent MatDialog', () => {
 
   beforeEach(fakeAsync(() => {
     TestBed.configureTestingModule({
-      imports: [MatDialogModule, DialogTestModule],
+      imports: [MatDialogModule, NoopAnimationsModule],
       declarations: [ComponentThatProvidesMatDialog],
       providers: [
         {
@@ -1876,7 +1885,8 @@ describe('MDC-based MatDialog with default options', () => {
     };
 
     TestBed.configureTestingModule({
-      imports: [MatDialogModule, DialogTestModule],
+      imports: [MatDialogModule, NoopAnimationsModule],
+      declarations: [ComponentWithChildViewContainer, DirectiveWithViewContainer],
       providers: [{provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: defaultConfig}],
     });
 
@@ -1943,7 +1953,8 @@ describe('MDC-based MatDialog with animations enabled', () => {
 
   beforeEach(fakeAsync(() => {
     TestBed.configureTestingModule({
-      imports: [MatDialogModule, DialogTestModule, BrowserAnimationsModule],
+      imports: [MatDialogModule, BrowserAnimationsModule],
+      declarations: [ComponentWithChildViewContainer, DirectiveWithViewContainer],
     });
 
     TestBed.compileComponents();
@@ -2116,33 +2127,3 @@ class DialogWithoutFocusableElements {}
   encapsulation: ViewEncapsulation.ShadowDom,
 })
 class ShadowDomComponent {}
-
-// Create a real (non-test) NgModule as a workaround for
-// https://github.com/angular/angular/issues/10760
-const TEST_DIRECTIVES = [
-  ComponentWithChildViewContainer,
-  ComponentWithTemplateRef,
-  PizzaMsg,
-  DirectiveWithViewContainer,
-  ComponentWithOnPushViewContainer,
-  ContentElementDialog,
-  DialogWithInjectedData,
-  DialogWithoutFocusableElements,
-  ComponentWithContentElementTemplateRef,
-  ShadowDomComponent,
-];
-
-@NgModule({
-  imports: [MatDialogModule, NoopAnimationsModule],
-  exports: TEST_DIRECTIVES,
-  declarations: TEST_DIRECTIVES,
-  entryComponents: [
-    ComponentWithChildViewContainer,
-    ComponentWithTemplateRef,
-    PizzaMsg,
-    ContentElementDialog,
-    DialogWithInjectedData,
-    DialogWithoutFocusableElements,
-  ],
-})
-class DialogTestModule {}

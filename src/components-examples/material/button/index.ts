@@ -14,6 +14,5 @@ const EXAMPLES = [ButtonOverviewExample, ButtonTypesExample, ButtonHarnessExampl
   imports: [MatButtonModule, MatDividerModule, MatIconModule],
   declarations: EXAMPLES,
   exports: EXAMPLES,
-  entryComponents: EXAMPLES,
 })
 export class ButtonExamplesModule {}

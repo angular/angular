@@ -13,7 +13,6 @@ import {
   Directive,
   Inject,
   Injector,
-  NgModule,
   TemplateRef,
   ViewChild,
   ViewContainerRef,
@@ -45,7 +44,16 @@ describe('Dialog', () => {
 
   beforeEach(fakeAsync(() => {
     TestBed.configureTestingModule({
-      imports: [DialogModule, DialogTestModule],
+      imports: [DialogModule, NoopAnimationsModule],
+      declarations: [
+        ComponentWithChildViewContainer,
+        ComponentWithTemplateRef,
+        PizzaMsg,
+        ContentElementDialog,
+        DialogWithInjectedData,
+        DialogWithoutFocusableElements,
+        DirectiveWithViewContainer,
+      ],
       providers: [{provide: Location, useClass: SpyLocation}],
     });
 
@@ -1138,7 +1146,7 @@ describe('Dialog with a parent Dialog', () => {
 
   beforeEach(fakeAsync(() => {
     TestBed.configureTestingModule({
-      imports: [DialogModule, DialogTestModule],
+      imports: [DialogModule, NoopAnimationsModule],
       declarations: [ComponentThatProvidesMatDialog],
       providers: [
         {
@@ -1315,32 +1323,3 @@ class DialogWithoutFocusableElements {}
   encapsulation: ViewEncapsulation.ShadowDom,
 })
 class ShadowDomComponent {}
-
-// Create a real (non-test) NgModule as a workaround for
-// https://github.com/angular/angular/issues/10760
-const TEST_DIRECTIVES = [
-  ComponentWithChildViewContainer,
-  ComponentWithTemplateRef,
-  PizzaMsg,
-  DirectiveWithViewContainer,
-  ComponentWithOnPushViewContainer,
-  ContentElementDialog,
-  DialogWithInjectedData,
-  DialogWithoutFocusableElements,
-  ShadowDomComponent,
-];
-
-@NgModule({
-  imports: [DialogModule, NoopAnimationsModule],
-  exports: TEST_DIRECTIVES,
-  declarations: TEST_DIRECTIVES,
-  entryComponents: [
-    ComponentWithChildViewContainer,
-    ComponentWithTemplateRef,
-    PizzaMsg,
-    ContentElementDialog,
-    DialogWithInjectedData,
-    DialogWithoutFocusableElements,
-  ],
-})
-class DialogTestModule {}

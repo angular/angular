@@ -64,6 +64,5 @@ const EXAMPLES = [
   imports: [DragDropModule, OverlayModule, CommonModule],
   declarations: EXAMPLES,
   exports: EXAMPLES,
-  entryComponents: EXAMPLES,
 })
 export class CdkDragDropExamplesModule {}

@@ -1,4 +1,4 @@
-import {NgModule, NgZone, Component} from '@angular/core';
+import {NgZone, Component} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {MockNgZone} from '../../testing/private';
 import {PortalModule, ComponentPortal} from '@angular/cdk/portal';
@@ -11,7 +11,8 @@ describe('GlobalPositonStrategy', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [GlobalOverlayTestModule],
+      imports: [OverlayModule, PortalModule],
+      declarations: [BlankPortal],
       providers: [{provide: NgZone, useFactory: () => (zone = new MockNgZone())}],
     });
 
@@ -370,11 +371,3 @@ describe('GlobalPositonStrategy', () => {
 
 @Component({template: ''})
 class BlankPortal {}
-
-@NgModule({
-  imports: [OverlayModule, PortalModule],
-  exports: [BlankPortal],
-  declarations: [BlankPortal],
-  entryComponents: [BlankPortal],
-})
-class GlobalOverlayTestModule {}

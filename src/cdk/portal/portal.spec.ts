@@ -6,7 +6,6 @@ import {
   ComponentRef,
   ElementRef,
   Injector,
-  NgModule,
   Optional,
   QueryList,
   TemplateRef,
@@ -24,7 +23,16 @@ import {CdkPortal, CdkPortalOutlet, PortalModule} from './portal-directives';
 
 describe('Portals', () => {
   beforeEach(() => {
-    TestBed.configureTestingModule({imports: [PortalModule, PortalTestModule]}).compileComponents();
+    TestBed.configureTestingModule({
+      imports: [PortalModule, CommonModule],
+      declarations: [
+        PortalTestApp,
+        UnboundPortalTestApp,
+        ArbitraryViewContainerRefComponent,
+        PizzaMsg,
+        SaveParentNodeOnInit,
+      ],
+    }).compileComponents();
   });
 
   describe('CdkPortalOutlet', () => {
@@ -802,20 +810,3 @@ class PortalTestApp {
 class UnboundPortalTestApp {
   @ViewChild(CdkPortalOutlet) portalOutlet: CdkPortalOutlet;
 }
-
-// Create a real (non-test) NgModule as a workaround for
-// https://github.com/angular/angular/issues/10760
-const TEST_COMPONENTS = [
-  PortalTestApp,
-  UnboundPortalTestApp,
-  ArbitraryViewContainerRefComponent,
-  PizzaMsg,
-];
-
-@NgModule({
-  imports: [CommonModule, PortalModule],
-  exports: TEST_COMPONENTS,
-  declarations: [...TEST_COMPONENTS, SaveParentNodeOnInit],
-  entryComponents: TEST_COMPONENTS,
-})
-class PortalTestModule {}

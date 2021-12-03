@@ -1,5 +1,5 @@
 import {TestBed, inject, fakeAsync} from '@angular/core/testing';
-import {Component, NgModule} from '@angular/core';
+import {Component} from '@angular/core';
 import {dispatchFakeEvent, dispatchMouseEvent} from '../../testing/private';
 import {OverlayModule, Overlay} from '../index';
 import {OverlayOutsideClickDispatcher} from './overlay-outside-click-dispatcher';
@@ -11,7 +11,8 @@ describe('OverlayOutsideClickDispatcher', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [OverlayModule, TestComponentModule],
+      imports: [OverlayModule],
+      declarations: [TestComponent],
     });
 
     inject(
@@ -186,78 +187,90 @@ describe('OverlayOutsideClickDispatcher', () => {
     overlayRef.dispose();
   });
 
-  it('should dispatch an event when a click is started outside the overlay and ' +
-    'released outside of it', () => {
-    const portal = new ComponentPortal(TestComponent);
-    const overlayRef = overlay.create();
-    overlayRef.attach(portal);
-    const context = document.createElement('div');
-    document.body.appendChild(context);
+  it(
+    'should dispatch an event when a click is started outside the overlay and ' +
+      'released outside of it',
+    () => {
+      const portal = new ComponentPortal(TestComponent);
+      const overlayRef = overlay.create();
+      overlayRef.attach(portal);
+      const context = document.createElement('div');
+      document.body.appendChild(context);
 
-    const spy = jasmine.createSpy('overlay mouse click event spy');
-    overlayRef.outsidePointerEvents().subscribe(spy);
+      const spy = jasmine.createSpy('overlay mouse click event spy');
+      overlayRef.outsidePointerEvents().subscribe(spy);
 
-    dispatchMouseEvent(context, 'pointerdown');
-    context.click();
-    expect(spy).toHaveBeenCalled();
+      dispatchMouseEvent(context, 'pointerdown');
+      context.click();
+      expect(spy).toHaveBeenCalled();
 
-    context.remove();
-    overlayRef.dispose();
-  });
+      context.remove();
+      overlayRef.dispose();
+    },
+  );
 
-  it('should not dispatch an event when a click is started inside the overlay and ' +
-    'released inside of it', () => {
-    const portal = new ComponentPortal(TestComponent);
-    const overlayRef = overlay.create();
-    overlayRef.attach(portal);
+  it(
+    'should not dispatch an event when a click is started inside the overlay and ' +
+      'released inside of it',
+    () => {
+      const portal = new ComponentPortal(TestComponent);
+      const overlayRef = overlay.create();
+      overlayRef.attach(portal);
 
-    const spy = jasmine.createSpy('overlay mouse click event spy');
-    overlayRef.outsidePointerEvents().subscribe(spy);
+      const spy = jasmine.createSpy('overlay mouse click event spy');
+      overlayRef.outsidePointerEvents().subscribe(spy);
 
-    dispatchMouseEvent(overlayRef.overlayElement, 'pointerdown');
-    overlayRef.overlayElement.click();
-    expect(spy).not.toHaveBeenCalled();
+      dispatchMouseEvent(overlayRef.overlayElement, 'pointerdown');
+      overlayRef.overlayElement.click();
+      expect(spy).not.toHaveBeenCalled();
 
-    overlayRef.dispose();
-  });
+      overlayRef.dispose();
+    },
+  );
 
-  it('should not dispatch an event when a click is started inside the overlay and ' +
-    'released outside of it', () => {
-    const portal = new ComponentPortal(TestComponent);
-    const overlayRef = overlay.create();
-    overlayRef.attach(portal);
-    const context = document.createElement('div');
-    document.body.appendChild(context);
+  it(
+    'should not dispatch an event when a click is started inside the overlay and ' +
+      'released outside of it',
+    () => {
+      const portal = new ComponentPortal(TestComponent);
+      const overlayRef = overlay.create();
+      overlayRef.attach(portal);
+      const context = document.createElement('div');
+      document.body.appendChild(context);
 
-    const spy = jasmine.createSpy('overlay mouse click event spy');
-    overlayRef.outsidePointerEvents().subscribe(spy);
+      const spy = jasmine.createSpy('overlay mouse click event spy');
+      overlayRef.outsidePointerEvents().subscribe(spy);
 
-    dispatchMouseEvent(overlayRef.overlayElement, 'pointerdown');
-    context.click();
-    expect(spy).not.toHaveBeenCalled();
+      dispatchMouseEvent(overlayRef.overlayElement, 'pointerdown');
+      context.click();
+      expect(spy).not.toHaveBeenCalled();
 
-    context.remove();
-    overlayRef.dispose();
-  });
+      context.remove();
+      overlayRef.dispose();
+    },
+  );
 
-  it('should not dispatch an event when a click is started outside the overlay and ' +
-    'released inside of it', () => {
-    const portal = new ComponentPortal(TestComponent);
-    const overlayRef = overlay.create();
-    overlayRef.attach(portal);
-    const context = document.createElement('div');
-    document.body.appendChild(context);
+  it(
+    'should not dispatch an event when a click is started outside the overlay and ' +
+      'released inside of it',
+    () => {
+      const portal = new ComponentPortal(TestComponent);
+      const overlayRef = overlay.create();
+      overlayRef.attach(portal);
+      const context = document.createElement('div');
+      document.body.appendChild(context);
 
-    const spy = jasmine.createSpy('overlay mouse click event spy');
-    overlayRef.outsidePointerEvents().subscribe(spy);
+      const spy = jasmine.createSpy('overlay mouse click event spy');
+      overlayRef.outsidePointerEvents().subscribe(spy);
 
-    dispatchMouseEvent(context, 'pointerdown');
-    overlayRef.overlayElement.click();
-    expect(spy).not.toHaveBeenCalled();
+      dispatchMouseEvent(context, 'pointerdown');
+      overlayRef.overlayElement.click();
+      expect(spy).not.toHaveBeenCalled();
 
-    context.remove();
-    overlayRef.dispose();
-  });
+      context.remove();
+      overlayRef.dispose();
+    },
+  );
 
   it('should dispatch an event when a context menu is triggered outside the overlay', () => {
     const portal = new ComponentPortal(TestComponent);
@@ -329,12 +342,3 @@ describe('OverlayOutsideClickDispatcher', () => {
   template: 'Hello',
 })
 class TestComponent {}
-
-// Create a real (non-test) NgModule as a workaround for
-// https://github.com/angular/angular/issues/10760
-@NgModule({
-  exports: [TestComponent],
-  declarations: [TestComponent],
-  entryComponents: [TestComponent],
-})
-class TestComponentModule {}

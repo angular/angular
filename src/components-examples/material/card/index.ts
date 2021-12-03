@@ -35,6 +35,5 @@ const EXAMPLES = [
   imports: [MatButtonModule, MatCardModule, MatDividerModule, MatProgressBarModule],
   declarations: EXAMPLES,
   exports: EXAMPLES,
-  entryComponents: EXAMPLES,
 })
 export class CardExamplesModule {}

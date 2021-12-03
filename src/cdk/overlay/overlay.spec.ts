@@ -8,7 +8,6 @@ import {
 } from '@angular/core/testing';
 import {
   Component,
-  NgModule,
   ViewChild,
   ViewContainerRef,
   ErrorHandler,
@@ -47,7 +46,8 @@ describe('Overlay', () => {
     waitForAsync(() => {
       dir = 'ltr';
       TestBed.configureTestingModule({
-        imports: [OverlayModule, PortalModule, OverlayTestModule],
+        imports: [OverlayModule, PortalModule],
+        declarations: [PizzaMsg, TestComponentWithTemplatePortals],
         providers: [
           {
             provide: Directionality,
@@ -1079,17 +1079,6 @@ class TestComponentWithTemplatePortals {
 
   constructor(public viewContainerRef: ViewContainerRef) {}
 }
-
-// Create a real (non-test) NgModule as a workaround for
-// https://github.com/angular/angular/issues/10760
-const TEST_COMPONENTS = [PizzaMsg, TestComponentWithTemplatePortals];
-@NgModule({
-  imports: [OverlayModule, PortalModule],
-  exports: TEST_COMPONENTS,
-  declarations: TEST_COMPONENTS,
-  entryComponents: TEST_COMPONENTS,
-})
-class OverlayTestModule {}
 
 class FakePositionStrategy implements PositionStrategy {
   element: HTMLElement;

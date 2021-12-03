@@ -38,6 +38,5 @@ const EXAMPLES = [
   imports: [ScrollingModule],
   declarations: EXAMPLES,
   exports: EXAMPLES,
-  entryComponents: EXAMPLES,
 })
 export class CdkScrollingExamplesModule {}

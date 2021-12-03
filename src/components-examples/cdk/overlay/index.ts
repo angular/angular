@@ -11,6 +11,5 @@ const EXAMPLES = [CdkOverlayBasicExample];
   imports: [OverlayModule],
   declarations: EXAMPLES,
   exports: EXAMPLES,
-  entryComponents: EXAMPLES,
 })
 export class CdkOverlayExamplesModule {}

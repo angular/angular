@@ -13,6 +13,5 @@ const EXAMPLES = [CdkPortalOverviewExample, ComponentPortalExample];
   imports: [PortalModule],
   declarations: EXAMPLES,
   exports: EXAMPLES,
-  entryComponents: EXAMPLES,
 })
 export class CdkPortalExamplesModule {}

@@ -1,5 +1,5 @@
 import {inject, TestBed, fakeAsync} from '@angular/core/testing';
-import {NgModule, Component, NgZone} from '@angular/core';
+import {Component, NgZone} from '@angular/core';
 import {Subject} from 'rxjs';
 import {ComponentPortal, PortalModule} from '@angular/cdk/portal';
 import {ScrollDispatcher, ViewportRuler} from '@angular/cdk/scrolling';
@@ -15,7 +15,8 @@ describe('CloseScrollStrategy', () => {
     scrollPosition = 0;
 
     TestBed.configureTestingModule({
-      imports: [OverlayModule, PortalModule, OverlayTestModule],
+      imports: [OverlayModule, PortalModule],
+      declarations: [MozarellaMsg],
       providers: [
         {
           provide: ScrollDispatcher,
@@ -138,11 +139,3 @@ describe('CloseScrollStrategy', () => {
 /** Simple component that we can attach to the overlay. */
 @Component({template: '<p>Mozarella</p>'})
 class MozarellaMsg {}
-
-/** Test module to hold the component. */
-@NgModule({
-  imports: [OverlayModule, PortalModule],
-  declarations: [MozarellaMsg],
-  entryComponents: [MozarellaMsg],
-})
-class OverlayTestModule {}

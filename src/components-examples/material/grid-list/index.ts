@@ -13,6 +13,5 @@ const EXAMPLES = [GridListDynamicExample, GridListHarnessExample, GridListOvervi
   imports: [CommonModule, MatGridListModule],
   declarations: EXAMPLES,
   exports: EXAMPLES,
-  entryComponents: EXAMPLES,
 })
 export class GridListExamplesModule {}

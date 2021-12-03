@@ -31,6 +31,5 @@ const EXAMPLES = [
   imports: [FormsModule, MatButtonToggleModule, MatIconModule, ReactiveFormsModule],
   declarations: EXAMPLES,
   exports: EXAMPLES,
-  entryComponents: EXAMPLES,
 })
 export class ButtonToggleExamplesModule {}

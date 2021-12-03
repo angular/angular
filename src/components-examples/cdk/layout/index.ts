@@ -10,6 +10,5 @@ const EXAMPLES = [BreakpointObserverOverviewExample];
   imports: [LayoutModule],
   declarations: EXAMPLES,
   exports: EXAMPLES,
-  entryComponents: EXAMPLES,
 })
 export class CdkLayoutExamplesModule {}

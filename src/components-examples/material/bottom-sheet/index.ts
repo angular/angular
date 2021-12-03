@@ -20,6 +20,5 @@ const EXAMPLES = [
   imports: [MatBottomSheetModule, MatButtonModule, MatListModule],
   declarations: EXAMPLES,
   exports: EXAMPLES,
-  entryComponents: EXAMPLES,
 })
 export class BottomSheetExamplesModule {}

@@ -12,6 +12,5 @@ const EXAMPLES = [IconHarnessExample, IconOverviewExample, IconSvgExample];
   imports: [MatIconModule],
   declarations: EXAMPLES,
   exports: EXAMPLES,
-  entryComponents: EXAMPLES,
 })
 export class IconExamplesModule {}

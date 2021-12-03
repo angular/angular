@@ -11,6 +11,5 @@ const EXAMPLES = [CdkAccordionOverviewExample];
   imports: [CommonModule, CdkAccordionModule],
   declarations: EXAMPLES,
   exports: EXAMPLES,
-  entryComponents: EXAMPLES,
 })
 export class CdkAccordionExamplesModule {}

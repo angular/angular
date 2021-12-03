@@ -28,6 +28,5 @@ const EXAMPLES = [
   imports: [MatButtonModule, MatIconModule, MatMenuModule],
   declarations: EXAMPLES,
   exports: EXAMPLES,
-  entryComponents: EXAMPLES,
 })
 export class MenuExamplesModule {}

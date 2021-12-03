@@ -16,6 +16,5 @@ const EXAMPLES = [MdcFormFieldCustomControlExample];
   imports: [CommonModule, MatFormFieldModule, MatIconModule, ReactiveFormsModule],
   declarations: [...EXAMPLES, MyTelInput],
   exports: [...EXAMPLES, MyTelInput],
-  entryComponents: EXAMPLES,
 })
 export class MdcFormFieldExamplesModule {}

@@ -1,7 +1,7 @@
 import {TestBed, inject} from '@angular/core/testing';
 import {dispatchKeyboardEvent} from '../../testing/private';
 import {ESCAPE} from '@angular/cdk/keycodes';
-import {Component, NgModule} from '@angular/core';
+import {Component} from '@angular/core';
 import {OverlayModule, Overlay} from '../index';
 import {OverlayKeyboardDispatcher} from './overlay-keyboard-dispatcher';
 import {ComponentPortal} from '@angular/cdk/portal';
@@ -12,7 +12,8 @@ describe('OverlayKeyboardDispatcher', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [OverlayModule, TestComponentModule],
+      imports: [OverlayModule],
+      declarations: [TestComponent],
     });
 
     inject([OverlayKeyboardDispatcher, Overlay], (kbd: OverlayKeyboardDispatcher, o: Overlay) => {
@@ -184,12 +185,3 @@ describe('OverlayKeyboardDispatcher', () => {
   template: 'Hello',
 })
 class TestComponent {}
-
-// Create a real (non-test) NgModule as a workaround for
-// https://github.com/angular/angular/issues/10760
-@NgModule({
-  exports: [TestComponent],
-  declarations: [TestComponent],
-  entryComponents: [TestComponent],
-})
-class TestComponentModule {}

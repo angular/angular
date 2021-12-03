@@ -29,6 +29,5 @@ const EXAMPLES = [
   imports: [CdkStepperModule, CommonModule, ReactiveFormsModule],
   declarations: EXAMPLES,
   exports: EXAMPLES,
-  entryComponents: EXAMPLES,
 })
 export class CdkStepperExamplesModule {}

@@ -24,7 +24,6 @@ import {MatFormField, MatFormFieldModule} from '@angular/material/form-field';
 import {DEC, JAN, JUL, JUN, SEP} from '../testing';
 import {By} from '@angular/platform-browser';
 import {_supportsShadowDom} from '@angular/cdk/platform';
-import {BrowserDynamicTestingModule} from '@angular/platform-browser-dynamic/testing';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {Subject} from 'rxjs';
 import {MatInputModule} from '../input/index';
@@ -47,7 +46,6 @@ describe('MatDatepicker', () => {
     component: Type<T>,
     imports: Type<any>[] = [],
     providers: Provider[] = [],
-    entryComponents: Type<any>[] = [],
     declarations: Type<any>[] = [],
   ): ComponentFixture<T> {
     TestBed.configureTestingModule({
@@ -61,14 +59,8 @@ describe('MatDatepicker', () => {
         ...imports,
       ],
       providers,
-      declarations: [component, ...declarations, ...entryComponents],
+      declarations: [component, ...declarations],
     });
-
-    TestBed.overrideModule(BrowserDynamicTestingModule, {
-      set: {
-        entryComponents: [entryComponents],
-      },
-    }).compileComponents();
 
     return TestBed.createComponent(component);
   }
@@ -2198,7 +2190,6 @@ describe('MatDatepicker', () => {
       DatepickerInputWithCustomValidator,
       [MatNativeDateModule],
       undefined,
-      undefined,
       [CustomValidator],
     );
     fixture.detectChanges();
@@ -2220,7 +2211,6 @@ describe('MatDatepicker', () => {
     const fixture = createComponent(
       DatepickerInputWithCustomValidator,
       [MatNativeDateModule],
-      undefined,
       undefined,
       [CustomValidator],
     );

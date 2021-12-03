@@ -10,6 +10,5 @@ const EXAMPLES = [CdkPlatformOverviewExample];
   imports: [PlatformModule],
   declarations: EXAMPLES,
   exports: EXAMPLES,
-  entryComponents: EXAMPLES,
 })
 export class CdkPlatformExamplesModule {}

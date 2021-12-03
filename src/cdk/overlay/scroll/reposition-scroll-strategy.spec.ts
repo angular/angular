@@ -1,5 +1,5 @@
 import {waitForAsync, inject, TestBed} from '@angular/core/testing';
-import {Component, NgModule} from '@angular/core';
+import {Component} from '@angular/core';
 import {Subject} from 'rxjs';
 import {ComponentPortal, PortalModule} from '@angular/cdk/portal';
 import {
@@ -20,7 +20,8 @@ describe('RepositionScrollStrategy', () => {
   beforeEach(
     waitForAsync(() => {
       TestBed.configureTestingModule({
-        imports: [OverlayModule, PortalModule, OverlayTestModule],
+        imports: [OverlayModule, PortalModule],
+        declarations: [PastaMsg],
         providers: [
           {
             provide: ScrollDispatcher,
@@ -119,11 +120,3 @@ describe('RepositionScrollStrategy', () => {
 /** Simple component that we can attach to the overlay. */
 @Component({template: '<p>Pasta</p>'})
 class PastaMsg {}
-
-/** Test module to hold the component. */
-@NgModule({
-  imports: [OverlayModule, PortalModule],
-  declarations: [PastaMsg],
-  entryComponents: [PastaMsg],
-})
-class OverlayTestModule {}

@@ -12,6 +12,5 @@ const EXAMPLES = [DividerHarnessExample, DividerOverviewExample];
   imports: [MatDividerModule, MatListModule],
   declarations: EXAMPLES,
   exports: EXAMPLES,
-  entryComponents: EXAMPLES,
 })
 export class DividerExamplesModule {}

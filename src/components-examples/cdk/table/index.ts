@@ -22,6 +22,5 @@ const EXAMPLES = [
   imports: [CdkTableModule],
   declarations: EXAMPLES,
   exports: EXAMPLES,
-  entryComponents: EXAMPLES,
 })
 export class CdkTableExamplesModule {}

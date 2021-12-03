@@ -20,6 +20,5 @@ const EXAMPLES = [
   imports: [MatButtonModule, MatIconModule, MatToolbarModule],
   declarations: EXAMPLES,
   exports: EXAMPLES,
-  entryComponents: EXAMPLES,
 })
 export class ToolbarExamplesModule {}

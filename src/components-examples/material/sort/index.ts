@@ -12,6 +12,5 @@ const EXAMPLES = [SortHarnessExample, SortOverviewExample];
   imports: [CommonModule, MatSortModule],
   declarations: EXAMPLES,
   exports: EXAMPLES,
-  entryComponents: EXAMPLES,
 })
 export class SortExamplesModule {}

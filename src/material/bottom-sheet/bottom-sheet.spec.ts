@@ -11,7 +11,6 @@ import {
   Directive,
   Inject,
   Injector,
-  NgModule,
   TemplateRef,
   ViewChild,
   ViewContainerRef,
@@ -45,7 +44,17 @@ describe('MatBottomSheet', () => {
 
   beforeEach(fakeAsync(() => {
     TestBed.configureTestingModule({
-      imports: [MatBottomSheetModule, BottomSheetTestModule],
+      imports: [MatBottomSheetModule, NoopAnimationsModule],
+      declarations: [
+        ComponentWithChildViewContainer,
+        ComponentWithTemplateRef,
+        ContentElementDialog,
+        PizzaMsg,
+        TacoMsg,
+        DirectiveWithViewContainer,
+        BottomSheetWithInjectedData,
+        ShadowDomComponent,
+      ],
       providers: [{provide: Location, useClass: SpyLocation}],
     }).compileComponents();
   }));
@@ -845,7 +854,7 @@ describe('MatBottomSheet with parent MatBottomSheet', () => {
 
   beforeEach(fakeAsync(() => {
     TestBed.configureTestingModule({
-      imports: [MatBottomSheetModule, BottomSheetTestModule, NoopAnimationsModule],
+      imports: [MatBottomSheetModule, NoopAnimationsModule],
       declarations: [ComponentThatProvidesMatBottomSheet],
     }).compileComponents();
   }));
@@ -931,7 +940,8 @@ describe('MatBottomSheet with default options', () => {
     };
 
     TestBed.configureTestingModule({
-      imports: [MatBottomSheetModule, BottomSheetTestModule],
+      imports: [MatBottomSheetModule, NoopAnimationsModule],
+      declarations: [ComponentWithChildViewContainer, DirectiveWithViewContainer],
       providers: [{provide: MAT_BOTTOM_SHEET_DEFAULT_OPTIONS, useValue: defaultConfig}],
     });
 
@@ -1054,31 +1064,3 @@ class BottomSheetWithInjectedData {
   encapsulation: ViewEncapsulation.ShadowDom,
 })
 class ShadowDomComponent {}
-
-// Create a real (non-test) NgModule as a workaround for
-// https://github.com/angular/angular/issues/10760
-const TEST_DIRECTIVES = [
-  ComponentWithChildViewContainer,
-  ComponentWithTemplateRef,
-  ContentElementDialog,
-  PizzaMsg,
-  TacoMsg,
-  DirectiveWithViewContainer,
-  BottomSheetWithInjectedData,
-  ShadowDomComponent,
-];
-
-@NgModule({
-  imports: [MatBottomSheetModule, NoopAnimationsModule],
-  exports: TEST_DIRECTIVES,
-  declarations: TEST_DIRECTIVES,
-  entryComponents: [
-    ComponentWithChildViewContainer,
-    ComponentWithTemplateRef,
-    ContentElementDialog,
-    PizzaMsg,
-    TacoMsg,
-    BottomSheetWithInjectedData,
-  ],
-})
-class BottomSheetTestModule {}

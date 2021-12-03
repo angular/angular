@@ -11,6 +11,5 @@ const EXAMPLES = [MdcCardFancyExample];
   imports: [MatButtonModule, MatCardModule],
   declarations: EXAMPLES,
   exports: EXAMPLES,
-  entryComponents: EXAMPLES,
 })
 export class MdcCardExamplesModule {}
