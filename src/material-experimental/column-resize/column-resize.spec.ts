@@ -159,8 +159,16 @@ abstract class BaseTestComponent {
   dataSource = new ElementDataSource();
   direction = 'ltr';
 
+  getTableHeight(): number {
+    return this.table.nativeElement.querySelector('.mat-table').offsetHeight;
+  }
+
   getTableWidth(): number {
     return this.table.nativeElement.querySelector('.mat-table').offsetWidth;
+  }
+
+  getHeaderRowHeight(): number {
+    return this.table.nativeElement.querySelector('.mat-header-row .mat-header-cell').offsetHeight;
   }
 
   getColumnElement(index: number): HTMLElement {
@@ -187,6 +195,10 @@ abstract class BaseTestComponent {
 
   getOverlayThumbElement(index: number): HTMLElement {
     return document.querySelectorAll('.mat-column-resize-overlay-thumb')[index] as HTMLElement;
+  }
+
+  getOverlayThumbTopElement(index: number): HTMLElement {
+    return document.querySelectorAll('.mat-column-resize-overlay-thumb-top')[index] as HTMLElement;
   }
 
   getOverlayThumbPosition(index: number): number {
@@ -372,6 +384,9 @@ describe('Material Popover Edit', () => {
       it('shows resize handle overlays on header row hover and while a resize handle is in use', fakeAsync(() => {
         expect(component.getOverlayThumbElement(0)).toBeUndefined();
 
+        const headerRowHeight = component.getHeaderRowHeight();
+        const tableHeight = component.getTableHeight();
+
         component.triggerHoverState();
         fixture.detectChanges();
 
@@ -382,6 +397,13 @@ describe('Material Popover Edit', () => {
           component.getOverlayThumbElement(2).classList.contains('mat-column-resize-overlay-thumb'),
         ).toBe(true);
 
+        (expect(component.getOverlayThumbElement(0).offsetHeight) as any).isApproximately(
+          headerRowHeight,
+        );
+        (expect(component.getOverlayThumbElement(2).offsetHeight) as any).isApproximately(
+          headerRowHeight,
+        );
+
         component.beginColumnResizeWithMouse(0);
 
         expect(
@@ -390,6 +412,16 @@ describe('Material Popover Edit', () => {
         expect(
           component.getOverlayThumbElement(2).classList.contains('mat-column-resize-overlay-thumb'),
         ).toBe(true);
+
+        (expect(component.getOverlayThumbElement(0).offsetHeight) as any).isApproximately(
+          tableHeight,
+        );
+        (expect(component.getOverlayThumbTopElement(0).offsetHeight) as any).isApproximately(
+          headerRowHeight,
+        );
+        (expect(component.getOverlayThumbElement(2).offsetHeight) as any).isApproximately(
+          headerRowHeight,
+        );
 
         component.completeResizeWithMouseInProgress(0);
         component.endHoverState();

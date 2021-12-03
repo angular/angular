@@ -9,8 +9,8 @@
   $foreground: map.get($config, foreground);
 
   $non-resizable-hover-divider: theming.get-color-from-palette($foreground, divider);
-  $resizable-hover-divider: theming.get-color-from-palette($primary, 200);
-  $resizable-active-divider: theming.get-color-from-palette($primary, 500);
+  $resizable-hover-divider: theming.get-color-from-palette($primary, 600);
+  $resizable-active-divider: theming.get-color-from-palette($primary, 600);
 
   // TODO: these styles don't really belong in the `color` part of the theme.
   // We should figure out a better place for them.
@@ -21,13 +21,16 @@
 
   .mat-column-resize-flex {
     .mat-header-cell,
-    .mat-cell {
+    .mat-mdc-header-cell,
+    .mat-cell,
+    .mat-mdc-cell {
       box-sizing: border-box;
       min-width: 32px;
     }
   }
 
-  .mat-header-cell {
+  .mat-header-cell,
+  .mat-mdc-header-cell {
     position: relative;
   }
 
@@ -36,6 +39,7 @@
   }
 
   .mat-header-cell:not(.mat-resizable)::after,
+  .mat-mdc-header-cell:not(.mat-resizable)::after,
   .mat-resizable-handle {
     background: transparent;
     bottom: 0;
@@ -46,28 +50,48 @@
     width: 1px;
   }
 
-  .mat-header-cell:not(.mat-resizable)::after {
+  .mat-header-cell:not(.mat-resizable)::after,
+  .mat-mdc-header-cell:not(.mat-resizable)::after {
     content: '';
   }
 
   .mat-header-cell:not(.mat-resizable)::after,
+  .mat-mdc-header-cell:not(.mat-resizable)::after,
   .mat-resizable-handle {
     right: 0;
   }
 
-  [dir='rtl'] .mat-header-cell:not(.mat-resizable)::after,
-  [dir='rtl'] .mat-resizable-handle {
-    left: 0;
-    right: auto;
-  }
+  .mat-header-row.cdk-column-resize-hover-or-active,
+  .mat-mdc-header-row.cdk-column-resize-hover-or-active {
+    .mat-header-cell,
+    .mat-mdc-header-cell {
+      border-right: none;
+    }
 
-  .mat-header-row.cdk-column-resize-hover-or-active {
-    .mat-header-cell:not(.mat-resizable)::after {
+    .mat-header-cell:not(.mat-resizable)::after,
+    .mat-mdc-header-cell:not(.mat-resizable)::after {
       background: $non-resizable-hover-divider;
     }
 
     .mat-resizable-handle {
       background: $resizable-hover-divider;
+    }
+  }
+
+  [dir='rtl'] {
+    .mat-header-cell:not(.mat-resizable)::after,
+    .mat-mdc-header-cell:not(.mat-resizable)::after,
+    .mat-resizable-handle {
+      left: 0;
+      right: auto;
+    }
+
+    .mat-header-row.cdk-column-resize-hover-or-active,
+    .mat-mdc-header-row.cdk-column-resize-hover-or-active {
+      .mat-header-cell,
+      .mat-mdc-header-cell {
+        border-left: none;
+      }
     }
   }
 
@@ -77,7 +101,8 @@
   }
 
   .mat-resizable-handle:focus,
-  .mat-header-row.cdk-column-resize-hover-or-active .mat-resizable-handle:focus {
+  .mat-header-row.cdk-column-resize-hover-or-active .mat-resizable-handle:focus,
+  .mat-mdc-header-row.cdk-column-resize-hover-or-active .mat-resizable-handle:focus {
     background: $resizable-active-divider;
     outline: none;
   }
@@ -94,10 +119,21 @@
     &:active {
       background: linear-gradient(90deg,
           transparent, transparent 7px,
-          $resizable-active-divider, $resizable-active-divider 1px,
-          transparent 8px, transparent);
+          $resizable-active-divider 7px, $resizable-active-divider 9px,
+          transparent 9px, transparent);
       will-change: transform;
+
+      .mat-column-resize-overlay-thumb-top {
+        background: linear-gradient(90deg,
+            transparent, transparent 4px,
+            $resizable-active-divider 4px, $resizable-active-divider 12px,
+            transparent 12px, transparent);
+      }
     }
+  }
+
+  .mat-column-resize-overlay-thumb-top {
+    width: 100%;
   }
 }
 
