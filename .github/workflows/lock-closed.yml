@@ -10,6 +10,6 @@ jobs:
     if: github.repository == 'angular/angular'
     runs-on: ubuntu-latest
     steps:
-      - uses: angular/dev-infra/github-actions/lock-closed@c2fb49a44ad9fa77f508010f950524ee97f5e8d5
+      - uses: angular/dev-infra/github-actions/lock-closed@486b6e2b6388e2bebf19e6daf0b4b997df62693c
         with:
           lock-bot-key: ${{ secrets.LOCK_BOT_PRIVATE_KEY }}
