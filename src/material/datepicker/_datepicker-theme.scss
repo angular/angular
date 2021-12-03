@@ -42,13 +42,14 @@ $calendar-weekday-table-font-size: 11px !default;
                 theming.get-color-from-palette($palette, default-contrast);
   }
 
-  .mat-calendar-body-cell:not(.mat-calendar-body-disabled):hover,
   .cdk-keyboard-focused .mat-calendar-body-active,
   .cdk-program-focused .mat-calendar-body-active {
-    & > .mat-calendar-body-cell-content {
-      @include _unselected-cell {
-        background-color: theming.get-color-from-palette($palette, 0.3);
-      }
+    @include _highlighted-cell($palette);
+  }
+
+  @media (hover: hover) {
+    .mat-calendar-body-cell:not(.mat-calendar-body-disabled):hover {
+      @include _highlighted-cell($palette);
     }
   }
 }
@@ -57,6 +58,15 @@ $calendar-weekday-table-font-size: 11px !default;
 @mixin _unselected-cell {
   &:not(.mat-calendar-body-selected):not(.mat-calendar-body-comparison-identical) {
     @content;
+  }
+}
+
+// Styles for a highlighted calendar cell (e.g. hovered or focused).
+@mixin _highlighted-cell($palette) {
+  & > .mat-calendar-body-cell-content {
+    @include _unselected-cell {
+      background-color: theming.get-color-from-palette($palette, 0.3);
+    }
   }
 }
 

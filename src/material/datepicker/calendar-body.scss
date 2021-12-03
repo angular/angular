@@ -274,14 +274,3 @@ $calendar-range-end-body-cell-size:
     text-align: right;
   }
 }
-
-// Disable the hover styles on non-hover devices. Since this is more of a progressive
-// enhancement and not all desktop browsers support this kind of media query, we can't
-// use something like `@media (hover)`.
-@media (hover: none) {
-  .mat-calendar-body-cell:not(.mat-calendar-body-disabled):hover {
-    & > .mat-calendar-body-cell-content:not(.mat-calendar-body-selected) {
-      background-color: transparent;
-    }
-  }
-}
