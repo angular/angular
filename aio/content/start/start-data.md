@@ -303,5 +303,5 @@ You now have a store application with a product catalog, a shopping cart, and yo
 
 To continue exploring Angular:
 
-* Continue to [Forms for User Input](start/start-forms "Forms for User Input") to finish the application by adding the shopping cart view and a checkout form.
+* Continue to [Forms for User Input](start/start-forms "Forms for User Input") to finish the application by adding a checkout form to the shopping cart view.
 * Skip ahead to [Deployment](start/start-deployment "Deployment") to move to local development, or deploy your application to Firebase or your own server.
