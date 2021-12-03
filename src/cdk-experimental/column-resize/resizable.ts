@@ -67,6 +67,7 @@ export abstract class Resizable<HandleComponent extends ResizeOverlayHandle>
   protected abstract readonly changeDetectorRef: ChangeDetectorRef;
 
   private _viewInitialized = false;
+  private _isDestroyed = false;
 
   /** The minimum width to allow the column to be sized to. */
   get minWidthPx(): number {
@@ -100,6 +101,7 @@ export abstract class Resizable<HandleComponent extends ResizeOverlayHandle>
     this._appendInlineHandle();
 
     this.styleScheduler.scheduleEnd(() => {
+      if (this._isDestroyed) return;
       this._viewInitialized = true;
       this._applyMinWidthPx();
       this._applyMaxWidthPx();
@@ -107,6 +109,7 @@ export abstract class Resizable<HandleComponent extends ResizeOverlayHandle>
   }
 
   ngOnDestroy(): void {
+    this._isDestroyed = true;
     this.destroyed.next();
     this.destroyed.complete();
     this.inlineHandle?.remove();
