@@ -5972,6 +5972,63 @@ describe('CdkDrag', () => {
       }),
     );
 
+    it('should return the last item to initial position when dragging back into a container with disabled sorting', fakeAsync(() => {
+      const fixture = createComponent(ConnectedDropZones);
+      fixture.detectChanges();
+
+      const groups = fixture.componentInstance.groupedDragItems;
+      const dropZones = fixture.componentInstance.dropInstances.map(d => d.element.nativeElement);
+      const lastIndex = groups[0].length - 1;
+      const lastItem = groups[0][lastIndex];
+      const targetRect = groups[1][2].element.nativeElement.getBoundingClientRect();
+
+      fixture.componentInstance.dropInstances.first.sortingDisabled = true;
+      startDraggingViaMouse(fixture, lastItem.element.nativeElement);
+
+      const placeholder = dropZones[0].querySelector('.cdk-drag-placeholder')!;
+
+      expect(placeholder).toBeTruthy();
+      expect(dropZones[0].contains(placeholder))
+        .withContext('Expected placeholder to be inside the first container.')
+        .toBe(true);
+      expect(getElementIndexByPosition(placeholder, 'top'))
+        .withContext('Expected placeholder to be at item index.')
+        .toBe(lastIndex);
+
+      dispatchMouseEvent(document, 'mousemove', targetRect.left + 1, targetRect.top + 1);
+      fixture.detectChanges();
+
+      expect(dropZones[1].contains(placeholder))
+        .withContext('Expected placeholder to be inside second container.')
+        .toBe(true);
+      expect(getElementIndexByPosition(placeholder, 'top'))
+        .withContext('Expected placeholder to be at the target index.')
+        .toBe(3);
+
+      const firstInitialSiblingRect = groups[0][0].element.nativeElement.getBoundingClientRect();
+
+      // Return the item to an index that is different from the initial one.
+      dispatchMouseEvent(
+        document,
+        'mousemove',
+        firstInitialSiblingRect.left,
+        firstInitialSiblingRect.top,
+      );
+      fixture.detectChanges();
+
+      expect(dropZones[0].contains(placeholder))
+        .withContext('Expected placeholder to be back inside first container.')
+        .toBe(true);
+      expect(getElementIndexByPosition(placeholder, 'top'))
+        .withContext('Expected placeholder to be back at the initial index.')
+        .toBe(lastIndex);
+
+      dispatchMouseEvent(document, 'mouseup');
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.droppedSpy).not.toHaveBeenCalled();
+    }));
+
     it(
       'should toggle a class when dragging an item inside a wrapper component component ' +
         'with OnPush change detection',
