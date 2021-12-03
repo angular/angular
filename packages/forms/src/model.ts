@@ -1054,10 +1054,10 @@ export abstract class AbstractControl {
   abstract _updateValue(): void;
 
   /** @internal */
-  abstract _forEachChild(cb: Function): void;
+  abstract _forEachChild(cb: (c: AbstractControl) => void): void;
 
   /** @internal */
-  abstract _anyControls(condition: Function): boolean;
+  abstract _anyControls(condition: (c: AbstractControl) => boolean): boolean;
 
   /** @internal */
   abstract _allControlsDisabled(): boolean;
@@ -1099,7 +1099,7 @@ export abstract class AbstractControl {
   }
 
   /** @internal */
-  _onDisabledChange: Function[] = [];
+  _onDisabledChange: Array<(isDisabled: boolean) => void> = [];
 
   /** @internal */
   _isBoxedValue(formState: any): boolean {
@@ -1229,13 +1229,12 @@ export abstract class AbstractControl {
  */
 export class FormControl extends AbstractControl {
   /** @internal */
-  _onChange: Function[] = [];
+  _onChange: Array<Function> = [];
+  /** @internal */
+  _pendingValue: boolean = false;
 
   /** @internal */
-  _pendingValue: any;
-
-  /** @internal */
-  _pendingChange: any;
+  _pendingChange: boolean = false;
 
   /**
    * Creates a new `FormControl` instance.
@@ -1358,7 +1357,7 @@ export class FormControl extends AbstractControl {
   /**
    * @internal
    */
-  override _anyControls(condition: Function): boolean {
+  override _anyControls(condition: (c: AbstractControl) => boolean): boolean {
     return false;
   }
 
@@ -1382,7 +1381,7 @@ export class FormControl extends AbstractControl {
    * Internal function to unregister a change events listener.
    * @internal
    */
-  _unregisterOnChange(fn: Function): void {
+  _unregisterOnChange(fn: (value?: any, emitModelEvent?: boolean) => void): void {
     removeListItem(this._onChange, fn);
   }
 
@@ -1406,7 +1405,7 @@ export class FormControl extends AbstractControl {
   /**
    * @internal
    */
-  override _forEachChild(cb: Function): void {}
+  override _forEachChild(cb: (c: AbstractControl) => void): void {}
 
   /** @internal */
   override _syncPendingControls(): boolean {
@@ -1847,7 +1846,7 @@ export class FormGroup extends AbstractControl {
   }
 
   /** @internal */
-  override _anyControls(condition: Function): boolean {
+  override _anyControls(condition: (c: AbstractControl) => boolean): boolean {
     for (const controlName of Object.keys(this.controls)) {
       const control = this.controls[controlName];
       if (this.contains(controlName) && condition(control)) {
@@ -1869,7 +1868,7 @@ export class FormGroup extends AbstractControl {
   }
 
   /** @internal */
-  _reduceChildren(initValue: any, fn: Function) {
+  _reduceChildren<T>(initValue: T, fn: (acc: T, control: AbstractControl, name: string) => T): T {
     let res = initValue;
     this._forEachChild((control: AbstractControl, name: string) => {
       res = fn(res, control, name);
@@ -2308,7 +2307,7 @@ export class FormArray extends AbstractControl {
   }
 
   /** @internal */
-  override _forEachChild(cb: Function): void {
+  override _forEachChild(cb: (c: AbstractControl, index: number) => void): void {
     this.controls.forEach((control: AbstractControl, index: number) => {
       cb(control, index);
     });
@@ -2322,7 +2321,7 @@ export class FormArray extends AbstractControl {
   }
 
   /** @internal */
-  override _anyControls(condition: Function): boolean {
+  override _anyControls(condition: (c: AbstractControl) => boolean): boolean {
     return this.controls.some((control: AbstractControl) => control.enabled && condition(control));
   }
 
