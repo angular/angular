@@ -22,6 +22,13 @@ export interface MatLuxonDateAdapterOptions {
    * {@default false}
    */
   useUtc: boolean;
+
+  /**
+   * Sets the first day of week.
+   * Changing this will change how Angular Material components like DatePicker shows start of week.
+   * {@default 0}
+   */
+  firstDayOfWeek: number;
 }
 
 /** InjectionToken for LuxonDateAdapter to configure options. */
@@ -37,6 +44,7 @@ export const MAT_LUXON_DATE_ADAPTER_OPTIONS = new InjectionToken<MatLuxonDateAda
 export function MAT_LUXON_DATE_ADAPTER_OPTIONS_FACTORY(): MatLuxonDateAdapterOptions {
   return {
     useUtc: false,
+    firstDayOfWeek: 0,
   };
 }
 
@@ -53,6 +61,7 @@ function range<T>(length: number, valueFunction: (index: number) => T): T[] {
 @Injectable()
 export class LuxonDateAdapter extends DateAdapter<LuxonDateTime> {
   private _useUTC: boolean;
+  private _firstDayOfWeek: number;
 
   constructor(
     @Optional() @Inject(MAT_DATE_LOCALE) dateLocale: string,
@@ -62,6 +71,7 @@ export class LuxonDateAdapter extends DateAdapter<LuxonDateTime> {
   ) {
     super();
     this._useUTC = !!options?.useUtc;
+    this._firstDayOfWeek = options?.firstDayOfWeek || 0;
     this.setLocale(dateLocale || LuxonDateTime.local().locale);
   }
 
@@ -109,8 +119,7 @@ export class LuxonDateAdapter extends DateAdapter<LuxonDateTime> {
   }
 
   getFirstDayOfWeek(): number {
-    // To customize the first day of the week, and can extend this adapter and override this method.
-    return 0;
+    return this._firstDayOfWeek;
   }
 
   getNumDaysInMonth(date: LuxonDateTime): number {
