@@ -226,7 +226,7 @@ function updateControl(control: FormControl, dir: NgControl): void {
 }
 
 function setUpModelChangePipeline(control: FormControl, dir: NgControl): void {
-  const onChange = (newValue: any, emitModelEvent: boolean) => {
+  const onChange = (newValue?: any, emitModelEvent?: boolean) => {
     // control -> view
     dir.valueAccessor!.writeValue(newValue);
 
