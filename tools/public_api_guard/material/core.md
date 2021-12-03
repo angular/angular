@@ -5,6 +5,7 @@
 ```ts
 
 import { _AbstractConstructor as _AbstractConstructor_2 } from '@angular/material/core';
+import { AbstractControl } from '@angular/forms';
 import { AfterViewChecked } from '@angular/core';
 import { BooleanInput } from '@angular/cdk/coercion';
 import { ChangeDetectorRef } from '@angular/core';
@@ -14,7 +15,6 @@ import { EventEmitter } from '@angular/core';
 import { FocusableOption } from '@angular/cdk/a11y';
 import { FocusOptions as FocusOptions_2 } from '@angular/cdk/a11y';
 import { FocusOrigin } from '@angular/cdk/a11y';
-import { FormControl } from '@angular/forms';
 import { FormGroupDirective } from '@angular/forms';
 import { HighContrastModeDetector } from '@angular/cdk/a11y';
 import * as i0 from '@angular/core';
@@ -133,7 +133,7 @@ export const defaultRippleAnimationConfig: {
 // @public
 export class ErrorStateMatcher {
     // (undocumented)
-    isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean;
+    isErrorState(control: AbstractControl | null, form: FormGroupDirective | NgForm | null): boolean;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<ErrorStateMatcher, never>;
     // (undocumented)
@@ -568,7 +568,7 @@ export function setLines(lines: QueryList<unknown>, element: ElementRef<HTMLElem
 // @public
 export class ShowOnDirtyErrorStateMatcher implements ErrorStateMatcher {
     // (undocumented)
-    isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean;
+    isErrorState(control: AbstractControl | null, form: FormGroupDirective | NgForm | null): boolean;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<ShowOnDirtyErrorStateMatcher, never>;
     // (undocumented)
