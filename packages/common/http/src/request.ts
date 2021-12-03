@@ -8,6 +8,7 @@
 
 import {HttpContext} from './context';
 import {HttpHeaders} from './headers';
+import {HttpMethod} from './method';
 import {HttpParams} from './params';
 
 /**
@@ -134,7 +135,7 @@ export class HttpRequest<T> {
   /**
    * The outgoing HTTP request method.
    */
-  readonly method: string;
+  readonly method: HttpMethod;
 
   /**
    * Outgoing URL parameters.
@@ -209,7 +210,7 @@ export class HttpRequest<T> {
     responseType?: 'arraybuffer'|'blob'|'json'|'text',
     withCredentials?: boolean,
   });
-  constructor(method: string, url: string, body: T|null, init?: {
+  constructor(method: HttpMethod|string, url: string, body: T|null, init?: {
     headers?: HttpHeaders,
     context?: HttpContext,
     reportProgress?: boolean,
@@ -245,7 +246,7 @@ export class HttpRequest<T> {
         withCredentials?: boolean,
         transferCache?: {includeHeaders?: string[]}|boolean
       }) {
-    this.method = method.toUpperCase();
+    this.method = method.toUpperCase() as HttpMethod;
     // Next, need to figure out which argument holds the HttpRequestInit
     // options, if any.
     let options: HttpRequestInit|undefined;
@@ -404,7 +405,7 @@ export class HttpRequest<T> {
     responseType?: 'arraybuffer'|'blob'|'json'|'text',
     withCredentials?: boolean,
     body?: T|null,
-    method?: string,
+    method?: HttpMethod,
     url?: string,
     setHeaders?: {[name: string]: string|string[]},
     setParams?: {[param: string]: string},
@@ -417,7 +418,7 @@ export class HttpRequest<T> {
     responseType?: 'arraybuffer'|'blob'|'json'|'text',
     withCredentials?: boolean,
     body?: V|null,
-    method?: string,
+    method?: HttpMethod,
     url?: string,
     setHeaders?: {[name: string]: string|string[]},
     setParams?: {[param: string]: string},
@@ -430,7 +431,7 @@ export class HttpRequest<T> {
     responseType?: 'arraybuffer'|'blob'|'json'|'text',
     withCredentials?: boolean,
     body?: any|null,
-    method?: string,
+    method?: HttpMethod,
     url?: string,
     setHeaders?: {[name: string]: string|string[]},
     setParams?: {[param: string]: string};

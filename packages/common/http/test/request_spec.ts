@@ -17,7 +17,7 @@ const TEST_STRING = `I'm a body!`;
 describe('HttpRequest', () => {
   describe('constructor', () => {
     it('initializes url', () => {
-      const req = new HttpRequest('', TEST_URL, null);
+      const req = new HttpRequest('TEST', TEST_URL, null);
       expect(req.url).toBe(TEST_URL);
     });
     it('doesn\'t require a body for body-less methods', () => {

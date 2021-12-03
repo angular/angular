@@ -25,6 +25,36 @@ describe('HttpClient TestRequest', () => {
     expect(resp).toBeNull();
   });
 
+  it('accepts a request match', () => {
+    const mock = new HttpClientTestingBackend();
+    const client = new HttpClient(mock);
+
+    let resp: any;
+    client.delete('/some-url').subscribe(body => {
+      resp = body;
+    });
+
+    const req = mock.expectOne({method: 'DELETE', url: '/some-url'});
+    req.flush(null);
+
+    expect(resp).toBeNull();
+  });
+
+  it('accepts a custom HTTP method', () => {
+    const mock = new HttpClientTestingBackend();
+    const client = new HttpClient(mock);
+
+    let resp: any;
+    client.request('TEST', '/some-url').subscribe(body => {
+      resp = body;
+    });
+
+    const req = mock.expectOne({method: 'TEST', url: '/some-url'});
+    req.flush(null);
+
+    expect(resp).toBeNull();
+  });
+
   it('throws if no request matches', () => {
     const mock = new HttpClientTestingBackend();
     const client = new HttpClient(mock);
