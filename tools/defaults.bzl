@@ -429,8 +429,10 @@ def spec_bundle(name, deps, **kwargs):
         deps = ["%s_devmode_deps" % name] + LINKER_PROCESSED_FW_PACKAGES,
         workspace_name = "angular_material",
         run_angular_linker = select({
-            # Pass through whether partial compilation is enabled or not. This is helpful
-            # for our integration tests which run all tests in partial compilation mode.
+            # Depending on whether partial compilation is enabled, we may want to run the linker
+            # to test the Angular compiler linker AOT processing. Additionally, a config setting
+            # can forcibly disable the linker to ensure tests rely on JIT linking at runtime.
+            "//tools:force_partial_jit_compilation_enabled": False,
             "//tools:partial_compilation_enabled": True,
             "//conditions:default": False,
         }),

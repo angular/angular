@@ -1,3 +1,5 @@
+load("@bazel_skylib//rules:common_settings.bzl", "bool_flag")
+
 package(default_visibility = ["//visibility:public"])
 
 exports_files([
@@ -10,6 +12,23 @@ config_setting(
     name = "partial_compilation_enabled",
     flag_values = {
         "@npm//@angular/bazel/src:partial_compilation": "True",
+    },
+)
+
+# Command line flag that can be specified to force the JIT compilation to be used for tests
+# with partial compilation. By default, tests are processed with the linker at build time.
+bool_flag(
+    name = "force_partial_jit_compilation",
+    build_setting_default = False,
+)
+
+# Config setting that matches if the force JIT compilation build setting is enabled.
+# This setting needs to be used in combination of the partial compilation build setting.
+config_setting(
+    name = "force_partial_jit_compilation_enabled",
+    flag_values = {
+        "@npm//@angular/bazel/src:partial_compilation": "True",
+        ":force_partial_jit_compilation": "True",
     },
 )
 
