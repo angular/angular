@@ -13919,10 +13919,10 @@ ts-node@^10.0.0, ts-node@^10.2.1:
     make-error "^1.1.1"
     yn "3.1.1"
 
-tsec@0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/tsec/-/tsec-0.2.0.tgz#f8417b6929eaf71c61ca9593e96f1f2f94cbc9b9"
-  integrity sha512-fk70XZHb7AIcPI6PbtlHp/rXbca4G+ocfjJxc4M3daf66VUsQc82WppqD0jle5FaqVLRLV37ukmwjCOSjXdI+A==
+tsec@0.2.1:
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/tsec/-/tsec-0.2.1.tgz#017423174b2be54f26da5cb7591dc7035996086b"
+  integrity sha512-RP9vhbRbRI9VH4CfOlQvo5W9HdfiPKq0gdiUOWI5oKmLaZKNFN8CsPwBfT5ySmhnKNwmmAS/BtY3WoTfABwwig==
   dependencies:
     glob "^7.1.1"
     minimatch "^3.0.3"
