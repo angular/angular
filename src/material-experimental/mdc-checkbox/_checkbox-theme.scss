@@ -1,6 +1,5 @@
 @use '@material/checkbox/checkbox' as mdc-checkbox;
 @use '@material/checkbox/checkbox-theme' as mdc-checkbox-theme;
-@use '@material/ripple/ripple-theme' as mdc-ripple-theme;
 @use '@material/form-field' as mdc-form-field;
 @use '@material/theme/theme-color' as mdc-theme-color;
 @use '@material/theme/theme';
@@ -16,17 +15,10 @@
 @mixin private-checkbox-styles-with-color($color) {
   @include mdc-checkbox-theme.theme-deprecated(
     (
-      density-scale: null,
       checkmark-color: mdc-theme-color.prop-value(on-#{$color}),
       container-checked-color: $color,
-      container-checked-hover-color: null,
       container-disabled-color: rgba(mdc-theme-color.prop-value(on-surface), 0.38),
       outline-color: rgba(mdc-theme-color.prop-value(on-surface), 0.54),
-      outline-hover-color: null,
-      ripple-color: mdc-theme-color.prop-value(on-surface),
-      ripple-opacity: mdc-ripple-theme.$dark-ink-opacities,
-      ripple-checked-color: $color,
-      ripple-checked-opacity: mdc-ripple-theme.$dark-ink-opacities,
     )
   );
 }
@@ -71,7 +63,6 @@
     );
 
     .mat-mdc-checkbox {
-      @include private-checkbox-styles-with-color(primary);
       @include mdc-form-field.core-styles($query: mdc-helpers.$mat-theme-styles-query);
       @include ripple-theme.color((
         foreground: (
