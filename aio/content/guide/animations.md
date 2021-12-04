@@ -82,11 +82,11 @@ In HTML, these attributes are set using ordinary CSS styles such as color and op
 
 ### Animation state and styles
 
-Use Angular's `state()` function to define different states to call at the end of each transition. This function takes two arguments: a unique name like `open` or `closed` and a `style()` function.
+Use Angular's <code>[state](api/animations/state)()</code> function to define different states to call at the end of each transition. This function takes two arguments: a unique name like `open` or `closed` and a `style()` function.
 
 Use the `style()` function to define a set of styles to associate with a given state name. You must use [*camelCase*](guide/glossary#case-conventions) for style attributes that contain dashes, such as `backgroundColor` or wrap them in quotes, such as `'background-color'`.
 
-Let's see how Angular's `state()` function works with the `style⁣­(⁠)` function to set CSS style attributes. In this code snippet, multiple style attributes are set at the same time for the state. In the `open` state, the button has a height of 200 pixels, an opacity of 1, and a yellow background color.
+Let's see how Angular's <code>[state](api/animations/state)()</code> function works with the `style⁣­(⁠)` function to set CSS style attributes. In this code snippet, multiple style attributes are set at the same time for the state. In the `open` state, the button has a height of 200 pixels, an opacity of 1, and a yellow background color.
 
 <code-example path="animations/src/app/open-close.component.ts" header="src/app/open-close.component.ts" region="state1" language="typescript">
 </code-example>
@@ -154,13 +154,13 @@ region="transition2">
 
 <div class="alert is-helpful">
 
-**Note:** Some additional notes on using styles within `state` and `transition` functions.
+**Note:** Some additional notes on using styles within [`state`](api/animations/state) and `transition` functions.
 
-* Use `state()` to define styles that are applied at the end of each transition, they persist after the animation completes.
+* Use <code>[state](api/animations/state)()</code> to define styles that are applied at the end of each transition, they persist after the animation completes.
 
 * Use `transition()` to define intermediate styles, which create the illusion of motion during the animation.
 
-* When animations are disabled, `transition()` styles can be skipped, but `state()` styles can't.
+* When animations are disabled, `transition()` styles can be skipped, but <code>[state](api/animations/state)()</code> styles can't.
 
 * Include multiple state pairs within the same `transition()` argument:<br/> `transition( 'on => off, off => void' )`.
 </div>
@@ -231,7 +231,7 @@ region="trigger">
 
 ### Summary
 
-You learned to add animation to a transition between two states, using `style()` and `state()` along with `animate()` for the timing.
+You learned to add animation to a transition between two states, using `style()` and <code>[state](api/animations/state)()</code> along with `animate()` for the timing.
 
 Learn about more advanced features in Angular animations under the Animation section, beginning with advanced techniques in [transition and triggers](guide/transition-and-triggers).
 
