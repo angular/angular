@@ -98,7 +98,7 @@ export declare interface AnimateChildOptions extends AnimationOptions {
 export const enum AnimationMetadataType {
   /**
    * Associates a named animation state with a set of CSS styles.
-   * See `state()`
+   * See [`state()`](api/animations/state)
    */
   State = 0,
   /**
@@ -204,7 +204,7 @@ export interface AnimationTriggerMetadata extends AnimationMetadata {
 
 /**
  * Encapsulates an animation state by associating a state name with a set of CSS styles.
- * Instantiated and returned by the `state()` function.
+ * Instantiated and returned by the [`state()`](api/animations/state) function.
  *
  * @publicApi
  */
@@ -450,13 +450,13 @@ export interface AnimationStaggerMetadata extends AnimationMetadata {
 }
 
 /**
- * Creates a named animation trigger, containing a  list of `state()`
+ * Creates a named animation trigger, containing a  list of [`state()`](api/animations/state)
  * and `transition()` entries to be evaluated when the expression
  * bound to the trigger changes.
  *
  * @param name An identifying string.
- * @param definitions  An animation definition object, containing an array of `state()`
- * and `transition()` declarations.
+ * @param definitions  An animation definition object, containing an array of
+ * [`state()`](api/animations/state) and `transition()` declarations.
  *
  * @return An object that encapsulates the trigger data.
  *
@@ -744,8 +744,8 @@ export function sequence(
 
 /**
  * Declares a key/value object containing CSS properties/styles that
- * can then be used for an animation `state`, within an animation `sequence`,
- * or as styling data for calls to `animate()` and `keyframes()`.
+ * can then be used for an animation [`state`](api/animations/state), within an animation
+ *`sequence`, or as styling data for calls to `animate()` and `keyframes()`.
  *
  * @param tokens A set of CSS styles or HTML styles associated with an animation state.
  * The value can be any of the following:
