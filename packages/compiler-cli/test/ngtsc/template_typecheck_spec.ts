@@ -8,10 +8,12 @@
 
 import ts from 'typescript';
 
+import {DiagnosticCategoryLabel} from '../../src/ngtsc/core/api';
 import {ErrorCode, ngErrorCode} from '../../src/ngtsc/diagnostics';
-import {absoluteFrom as _, getFileSystem, getSourceFileOrError} from '../../src/ngtsc/file_system';
+import {absoluteFrom as _, getSourceFileOrError} from '../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
 import {expectCompleteReuse, getSourceCodeForDiagnostic, loadStandardTestFiles} from '../../src/ngtsc/testing';
+import {factory as invalidBananaInBoxFactory} from '../../src/ngtsc/typecheck/extended/checks/invalid_banana_in_box';
 
 import {NgtscTestEnvironment} from './env';
 
@@ -2453,6 +2455,126 @@ export declare class AnimationEvent {
 
            const diags = env.driveDiagnostics();
            expect(diags.length).toBe(0);
+         });
+
+      it('should error if "strictTemplates" is false when "extendedDiagnostics" is configured', () => {
+        env.tsconfig({strictTemplates: false, extendedDiagnostics: {}});
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText)
+            .toContain(
+                'Angular compiler option "extendedDiagnostics" is configured, however "strictTemplates" is disabled.');
+      });
+      it('should not error if "strictTemplates" is true when "extendedDiagnostics" is configured',
+         () => {
+           env.tsconfig({strictTemplates: true, extendedDiagnostics: {}});
+
+           const diags = env.driveDiagnostics();
+           expect(diags).toEqual([]);
+         });
+      it('should not error if "strictTemplates" is false when "extendedDiagnostics" is not configured',
+         () => {
+           env.tsconfig({strictTemplates: false});
+
+           const diags = env.driveDiagnostics();
+           expect(diags).toEqual([]);
+         });
+
+      it('should error if "extendedDiagnostics.defaultCategory" is set to an unknown value', () => {
+        env.tsconfig({
+          extendedDiagnostics: {
+            defaultCategory: 'does-not-exist',
+          },
+        });
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText)
+            .toContain(
+                'Angular compiler option "extendedDiagnostics.defaultCategory" has an unknown diagnostic category: "does-not-exist".');
+        expect(diags[0].messageText).toContain(`
+Allowed diagnostic categories are:
+warning
+error
+suppress
+        `.trim());
+      });
+      it('should not error if "extendedDiagnostics.defaultCategory" is set to a known value',
+         () => {
+           env.tsconfig({
+             extendedDiagnostics: {
+               defaultCategory: DiagnosticCategoryLabel.Error,
+             },
+           });
+
+           const diags = env.driveDiagnostics();
+           expect(diags).toEqual([]);
+         });
+
+      it('should error if "extendedDiagnostics.checks" contains an unknown check', () => {
+        env.tsconfig({
+          extendedDiagnostics: {
+            checks: {
+              doesNotExist: DiagnosticCategoryLabel.Error,
+            },
+          },
+        });
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText)
+            .toContain(
+                'Angular compiler option "extendedDiagnostics.checks" has an unknown check: "doesNotExist".');
+      });
+      it('should not error if "extendedDiagnostics.checks" contains all known checks', () => {
+        env.tsconfig({
+          extendedDiagnostics: {
+            checks: {
+              [invalidBananaInBoxFactory.name]: DiagnosticCategoryLabel.Error,
+            },
+          },
+        });
+
+        const diags = env.driveDiagnostics();
+        expect(diags).toEqual([]);
+      });
+
+      it('should error if "extendedDiagnostics.checks" contains an unknown diagnostic category',
+         () => {
+           env.tsconfig({
+             extendedDiagnostics: {
+               checks: {
+                 [invalidBananaInBoxFactory.name]: 'does-not-exist',
+               },
+             },
+           });
+
+           const diags = env.driveDiagnostics();
+           expect(diags.length).toBe(1);
+           expect(diags[0].messageText)
+               .toContain(`Angular compiler option "extendedDiagnostics.checks['${
+                   invalidBananaInBoxFactory
+                       .name}']" has an unknown diagnostic category: "does-not-exist".`);
+           expect(diags[0].messageText).toContain(`
+Allowed diagnostic categories are:
+warning
+error
+suppress
+        `.trim());
+         });
+      it('should not error if "extendedDiagnostics.checks" contains all known diagnostic categories',
+         () => {
+           env.tsconfig({
+             extendedDiagnostics: {
+               checks: {
+                 [invalidBananaInBoxFactory.name]: DiagnosticCategoryLabel.Error,
+               },
+             },
+           });
+
+           const diags = env.driveDiagnostics();
+           expect(diags).toEqual([]);
          });
     });
 
