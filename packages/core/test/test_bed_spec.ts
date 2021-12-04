@@ -1242,10 +1242,15 @@ describe('TestBed', () => {
 
          TestBed.resetTestingModule();
 
+         const spy = spyOn(console, 'error');
+
          // Case #2: the `TestBed.configureTestingModule` was not invoked, thus the `ChildCmp`
          // should not be available in the `RootCmp` scope and no child content should be
          // rendered.
          fixture = TestBed.createComponent(RootCmp);
+         // also an error should be logged to the user informing them that
+         // the child component is not part of the module
+         expect(spy).toHaveBeenCalledTimes(1);
          fixture.detectChanges();
 
          childCmpInstance = fixture.debugElement.query(By.directive(ChildCmp));
