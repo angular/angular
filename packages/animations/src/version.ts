@@ -11,23 +11,6 @@
  * @description
  * Entry point for all public APIs of the animation package.
  */
-
-/**
- * @description
- *
- * Represents the version of angular/animations
- */
-export class Version {
-  public readonly major: string;
-  public readonly minor: string;
-  public readonly patch: string;
-
-  constructor(public full: string) {
-    const splits = full.split('.');
-    this.major = splits[0];
-    this.minor = splits[1];
-    this.patch = splits.slice(2).join('.');
-  }
-}
+import {Version} from '@angular/core';
 
 export const VERSION = new Version('0.0.0-PLACEHOLDER');
