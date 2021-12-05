@@ -1,4 +1,3 @@
-// tslint:disable: variable-name
 // #docregion
 describe('phoneDetail', () => {
 

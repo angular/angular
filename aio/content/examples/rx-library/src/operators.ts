@@ -3,7 +3,6 @@
   Because of how the code is merged together using the doc regions,
   we need to indent the imports with the function below.
 */
-/* tslint:disable:align */
 // #docregion
   import { of } from 'rxjs';
   import { map } from 'rxjs/operators';

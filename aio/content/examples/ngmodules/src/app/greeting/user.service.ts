@@ -24,5 +24,5 @@ export class UserService {
     const suffix = this.id > 1 ? ` times ${this.id}` : '';
     return this._userName + suffix;
   }
-  private _userName = 'Sherlock Holmes';  // tslint:disable-line: variable-name
+  private _userName = 'Sherlock Holmes';
 }

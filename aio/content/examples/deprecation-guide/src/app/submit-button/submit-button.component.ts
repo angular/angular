@@ -30,7 +30,6 @@ export class SubmitButtonComponent {
 })
 export class SubmitButtonValidComponent {
 
-  // tslint:disable: variable-name
   // #docregion submitButtonNarrow
   static ngAcceptInputType_disabled: boolean|'';
 

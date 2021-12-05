@@ -1,6 +1,5 @@
 import { browser, by, element, ElementFinder, ExpectedConditions as EC } from 'protractor';
 
-/* tslint:disable:quotemark */
 describe('Elements', () => {
   const messageInput = element(by.css('input'));
   const popupButtons = element.all(by.css('button'));

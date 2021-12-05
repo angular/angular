@@ -1,4 +1,3 @@
-/* tslint:disable: member-ordering */
 // #docregion
 class PhoneListController {
   phones: any[];

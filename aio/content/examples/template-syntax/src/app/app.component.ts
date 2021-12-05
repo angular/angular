@@ -1,5 +1,3 @@
-/* tslint:disable:forin member-ordering */
-
 import { AfterViewInit, Component, ElementRef, OnInit, QueryList, ViewChildren } from '@angular/core';
 
 import { Hero } from './hero';
