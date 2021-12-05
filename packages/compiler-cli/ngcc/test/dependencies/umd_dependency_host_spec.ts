@@ -13,7 +13,7 @@ import {loadTestFiles} from '../../../src/ngtsc/testing';
 import {createDependencyInfo} from '../../src/dependencies/dependency_host';
 import {ModuleResolver} from '../../src/dependencies/module_resolver';
 import {UmdDependencyHost} from '../../src/dependencies/umd_dependency_host';
-import {testForEachUmdFormat} from '../helpers/umd_utils';
+import {AdditionalFormatOptions, testForEachUmdFormat} from '../helpers/umd_utils';
 
 runInEachFileSystem(() => {
   describe(
@@ -50,6 +50,17 @@ runInEachFileSystem(() => {
             const {dependencies, missing, deepImports} = createDependencyInfo();
             host.collectDependencies(
                 _('/external/imports/index.js'), {dependencies, missing, deepImports});
+            expect(dependencies.size).toBe(2);
+            expect(missing.size).toBe(0);
+            expect(deepImports.size).toBe(0);
+            expect(dependencies.has(_('/node_modules/lib_1'))).toBe(true);
+            expect(dependencies.has(_('/node_modules/lib_1/sub_1'))).toBe(true);
+          });
+
+          it('should resolve imports preceeding the `exports` parameter', () => {
+            const {dependencies, missing, deepImports} = createDependencyInfo();
+            host.collectDependencies(
+                _('/external/preceeding/index.js'), {dependencies, missing, deepImports});
             expect(dependencies.size).toBe(2);
             expect(missing.size).toBe(0);
             expect(deepImports.size).toBe(0);
@@ -196,6 +207,13 @@ runInEachFileSystem(() => {
             {name: _('/external/imports/package.json'), contents: '{"main": "./index.js"}'},
             {name: _('/external/imports/index.metadata.json'), contents: 'MOCK METADATA'},
             {
+              name: _('/external/preceeding/index.js'),
+              contents:
+                  umd('imports_index', ['lib_1', 'lib_1/sub_1'], undefined, {exportsParamIndex: 1})
+            },
+            {name: _('/external/preceeding/package.json'), contents: '{"main": "./index.js"}'},
+            {name: _('/external/preceeding/index.metadata.json'), contents: 'MOCK METADATA'},
+            {
               name: _('/external/re-exports/index.js'),
               contents: umd('imports_index', ['lib_1', 'lib_1/sub_1'], ['lib_1.X', 'lib_1sub_1.Y'])
             },
@@ -293,10 +311,12 @@ runInEachFileSystem(() => {
           ]);
         }
 
-        function umd(moduleName: string, importPaths: string[], exportNames: string[] = []) {
+        function umd(
+            moduleName: string, importPaths: string[], exportNames: string[] = [],
+            additionalOptions?: AdditionalFormatOptions) {
           const exportStatements =
               exportNames.map(e => `  exports.${e.replace(/.+\./, '')} = ${e};`).join('\n');
-          return createUmdModule(moduleName, importPaths, exportStatements);
+          return createUmdModule(moduleName, importPaths, exportStatements, additionalOptions);
         }
       }));
 });

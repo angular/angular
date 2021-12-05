@@ -835,17 +835,22 @@ function isTypeOf(node: ts.Expression, ...types: string[]): boolean {
 export function getImportsOfUmdModule(umdModule: UmdModule):
     {parameter: ts.ParameterDeclaration, path: string}[] {
   const imports: {parameter: ts.ParameterDeclaration, path: string}[] = [];
-  const cjsFactoryCall = umdModule.factoryCalls.cjsCallForImports;
+  const factoryFnParams = umdModule.factoryFn.parameters;
+  const cjsFactoryCallArgs = umdModule.factoryCalls.cjsCallForImports.arguments;
 
-  // Some UMD formats pass `exports` as the first argument to the factory call, while others don't.
-  // Compute the index at which the dependencies start (i.e. the index of the first `require` call).
-  const depStartIndex = cjsFactoryCall.arguments.findIndex(arg => isRequireCall(arg));
+  for (let i = 0; i < factoryFnParams.length; i++) {
+    const arg = cjsFactoryCallArgs[i];
 
-  if (depStartIndex !== -1) {
-    for (let i = depStartIndex; i < umdModule.factoryFn.parameters.length; i++) {
+    // In some UMD formats, the CommonJS factory call may include arguments that are not `require()`
+    // calls (such as an `exports` argument). Also, since a previous ngcc invocation may have added
+    // new imports (and thus new `require()` call arguments), these non-`require()` arguments can be
+    // interspersed among the `require()` calls.
+    // To remain robust against various UMD formats, we ignore arguments that are not `require()`
+    // calls when looking for imports.
+    if (arg !== undefined && isRequireCall(arg)) {
       imports.push({
-        parameter: umdModule.factoryFn.parameters[i],
-        path: getRequiredModulePath(cjsFactoryCall, i),
+        parameter: factoryFnParams[i],
+        path: arg.arguments[0].text,
       });
     }
   }
@@ -870,18 +875,6 @@ interface UmdModule {
 interface UmdConditionalFactoryCall {
   condition: ts.BinaryExpression|null;
   factoryCall: ts.CallExpression;
-}
-
-function getRequiredModulePath(cjsFactoryCall: ts.CallExpression, paramIndex: number): string {
-  const requireCall = cjsFactoryCall.arguments[paramIndex];
-
-  if (requireCall !== undefined && !isRequireCall(requireCall)) {
-    throw new Error(
-        `Argument at index ${paramIndex} of UMD factory call is not a \`require\` call with a ` +
-        'single string argument:\n' + cjsFactoryCall.getText());
-  }
-
-  return requireCall.arguments[0].text;
 }
 
 /**
