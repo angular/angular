@@ -1143,7 +1143,9 @@ export function useAnimation(
  *
  * @param selector The element to query, or a set of elements that contain Angular-specific
  * characteristics, specified with one or more of the following tokens.
- *  - `query(":enter")` or `query(":leave")` : Query for newly inserted/removed elements.
+ *  - `query(":enter")` or `query(":leave")` : Query for newly inserted/removed elements (not
+ *     all elements can be queried via these tokens, see
+ *     [Entering and Leaving Elements](#entering-and-leaving-elements))
  *  - `query(":animating")` : Query all currently animating elements.
  *  - `query("@triggerName")` : Query elements that contain an animation trigger.
  *  - `query("@*")` : Query all elements that contain an animation triggers.
@@ -1156,6 +1158,9 @@ export function useAnimation(
  * @return An object that encapsulates the query data.
  *
  * @usageNotes
+ *
+ * ### Multiple Tokens
+ *
  * Tokens can be merged into a combined query selector string. For example:
  *
  * ```typescript
@@ -1182,6 +1187,26 @@ export function useAnimation(
  *   animate(...)
  * ], { optional: true })
  * ```
+ *
+ * ### Entering and Leaving Elements
+ *
+ * Not all elements can be queried via the `:enter` and `:leave` tokens, the only ones
+ * that can are those that Angular assumes can enter/leave based on their own logic
+ * (if their insertion/removal is simply a consequence of that of their parent they
+ * should be queried via a different token in their parent's `:enter`/`:leave` transitions).
+ *
+ * The only elements Angular assumes can enter/leave on their own logic (thus the only
+ * ones that can be queried via the `:enter` and `:leave` tokens) are:
+ *  - Those inserted dynamically (via `ViewContainerRef`)
+ *  - Those that have a structural directive (which, under the hood, are a subset of the above ones)
+ *
+ * <div class="alert is-helpful">
+ *
+ *  Note that elements will be successfully queried via `:enter`/`:leave` even if their
+ *  insertion/removal is not done manually via `ViewContainerRef`or caused by their structural
+ *  directive (e.g. they enter/exit alongside their parent).
+ *
+ * </div>
  *
  * ### Usage Example
  *
