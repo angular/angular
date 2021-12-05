@@ -351,7 +351,7 @@ exports.BadIife = BadIife;
                 factoryBody: `
                     var index = '';
                     return index;`,
-                additionalOptions: {omitExports: true},
+                additionalOptions: {exportsParamIndex: -1},
               },
             });
             const {renderer, program} = setup(PROGRAM);
