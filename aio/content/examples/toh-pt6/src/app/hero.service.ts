@@ -56,7 +56,7 @@ export class HeroService {
       .pipe(
         map(heroes => heroes[0]), // returns a {0|1} element array
         tap(h => {
-          const outcome = h ? `fetched` : `did not find`;
+          const outcome = h ? 'fetched' : 'did not find';
           this.log(`${outcome} hero id=${id}`);
         }),
         catchError(this.handleError<Hero>(`getHero id=${id}`))
@@ -128,6 +128,7 @@ export class HeroService {
   /**
    * Handle Http operation that failed.
    * Let the app continue.
+   *
    * @param operation - name of the operation that failed
    * @param result - optional value to return as the observable result
    */

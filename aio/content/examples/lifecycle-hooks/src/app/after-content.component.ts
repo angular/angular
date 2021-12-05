@@ -54,7 +54,7 @@ export class AfterContentComponent implements AfterContentChecked, AfterContentI
 
   // This surrogate for real business logic sets the `comment`
   private doSomething() {
-    this.comment = this.contentChild.hero.length > 10 ? `That's a long name` : '';
+    this.comment = this.contentChild.hero.length > 10 ? "That's a long name" : '';
   }
 
   private logIt(method: string) {

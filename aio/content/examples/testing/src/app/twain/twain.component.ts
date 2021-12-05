@@ -15,7 +15,7 @@ import { TwainService } from './twain.service';
     <p class="error" *ngIf="errorMessage">{{ errorMessage }}</p>`,
   // #enddocregion template
   styles: [
-    `.twain { font-style: italic; } .error { color: red; }`
+    '.twain { font-style: italic; } .error { color: red; }'
   ]
 
 })

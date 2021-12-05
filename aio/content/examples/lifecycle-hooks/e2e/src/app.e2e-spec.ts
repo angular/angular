@@ -132,7 +132,7 @@ describe('Lifecycle hooks', () => {
     expect(await logEles.count()).toBeLessThan(logCount, 'log should shrink after reset');
   });
 
-  it('should support spy\'s OnInit & OnDestroy hooks', async () => {
+  it("should support spy's OnInit & OnDestroy hooks", async () => {
     const inputEle = element(by.css('spy-parent input'));
     const addHeroButtonEle = element(by.cssContainingText('spy-parent button', 'Add Hero'));
     const resetHeroesButtonEle = element(by.cssContainingText('spy-parent button', 'Reset Heroes'));

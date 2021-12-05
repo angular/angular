@@ -1,5 +1,13 @@
 // #docplaster
-import {HttpClient, HttpContext, HttpContextToken, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
+import {
+  HttpClient,
+  HttpContext,
+  HttpContextToken,
+  HttpEvent,
+  HttpHandler,
+  HttpInterceptor,
+  HttpRequest,
+} from '@angular/common/http';
 import {Observable} from 'rxjs';
 /*
 // #docregion reading-context

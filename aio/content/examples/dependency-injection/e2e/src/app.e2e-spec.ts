@@ -57,7 +57,7 @@ describe('Dependency Injection Tests', () => {
     });
 
     it('Optional injection displays as expected', async () => {
-      expectedMsg = 'R.O.U.S.\'s? I don\'t think they exist!';
+      expectedMsg = "R.O.U.S.'s? I don't think they exist!";;
       expect(await element(by.css('#rodent')).getText()).toEqual(expectedMsg);
     });
   });
@@ -132,7 +132,7 @@ describe('Dependency Injection Tests', () => {
 
     it('should have button', async () => {
       expect(await element.all(by.cssContainingText('button', 'Next User'))
-        .get(0).isDisplayed()).toBe(true, '\'Next User\' button should be displayed');
+        .get(0).isDisplayed()).toBe(true, "'Next User' button should be displayed");
     });
 
     it('unauthorized user should have multiple unauthorized heroes', async () => {

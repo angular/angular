@@ -1,4 +1,7 @@
-export interface Hero { name: string; canFly: boolean; }
+export interface Hero {
+  name: string;
+  canFly: boolean;
+}
 export const HEROES: Hero[] =  [
   {name: 'Windstorm', canFly: true},
   {name: 'Bombasto',  canFly: false},

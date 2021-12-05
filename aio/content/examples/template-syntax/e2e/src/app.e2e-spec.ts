@@ -36,7 +36,7 @@ describe('Template Syntax', () => {
     expect(await input.getAttribute('value')).toEqual((+initSize + 1).toString());
   });
 
-  it('should change SVG rectangle\'s fill color on click', async () => {
+  it("should change SVG rectangle's fill color on click", async () => {
     const div = element(by.css('app-svg'));
     const colorSquare = div.element(by.css('rect'));
     const initialColor = await colorSquare.getAttribute('fill');

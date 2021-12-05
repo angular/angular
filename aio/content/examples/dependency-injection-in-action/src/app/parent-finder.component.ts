@@ -1,4 +1,4 @@
-// tslint:disable: component-selector space-before-function-paren
+/* eslint-disable space-before-function-paren */
 // #docplaster
 // #docregion
 import { Component, forwardRef, Optional, SkipSelf } from '@angular/core';

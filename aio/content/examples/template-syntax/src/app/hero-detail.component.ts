@@ -1,17 +1,16 @@
-/* tslint:disable use-input-property-decorator use-output-property-decorator */
+/* eslint-disable @angular-eslint/no-inputs-metadata-property, @angular-eslint/no-outputs-metadata-property */
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 import { Hero } from './hero';
 
 @Component({
   selector: 'app-hero-detail',
-  // tslint:disable: no-inputs-metadata-property no-outputs-metadata-property
   inputs: ['hero'],
   outputs: ['deleteRequest'],
-  // tslint:enable: no-inputs-metadata-property no-outputs-metadata-property
   styles: ['button {margin-left: 8px} div {margin: 8px 0} img {height:24px}'],
   template: `
   <div>
+    <!-- eslint-disable-next-line @angular-eslint/template/accessibility-alt-text -->
     <img src="{{heroImageUrl}}">
     <span [style.text-decoration]="lineThrough">
       {{prefix}} {{hero.name}}
@@ -40,6 +39,7 @@ export class HeroDetailComponent {
   selector: 'app-big-hero-detail',
   template: `
   <div class="detail">
+    <!-- eslint-disable-next-line @angular-eslint/template/accessibility-alt-text -->
     <img src="{{heroImageUrl}}">
     <div><b>{{hero.name}}</b></div>
     <div>Name: {{hero.name}}</div>

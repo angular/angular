@@ -7,6 +7,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
   <div>
     <button (click)="dec()" title="smaller">-</button>
     <button (click)="inc()" title="bigger">+</button>
+    <!-- eslint-disable-next-line @angular-eslint/template/accessibility-label-has-associated-control -->
     <label [style.font-size.px]="size">FontSize: {{size}}px</label>
   </div>`
 })

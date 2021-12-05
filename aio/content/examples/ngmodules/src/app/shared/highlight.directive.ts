@@ -1,4 +1,4 @@
-/* tslint:disable */
+/* eslint-disable @angular-eslint/directive-selector */
 // Exact copy of contact/highlight.directive except for color and message
 import { Directive, ElementRef } from '@angular/core';
 

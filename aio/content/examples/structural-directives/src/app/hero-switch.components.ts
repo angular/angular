@@ -4,7 +4,7 @@ import { Hero } from './hero';
 
 @Component({
   selector: 'app-happy-hero',
-  template: `Wow. You like {{hero.name}}. What a happy hero ... just like you.`
+  template: 'Wow. You like {{hero.name}}. What a happy hero ... just like you.'
 })
 export class HappyHeroComponent {
   @Input() hero!: Hero;
@@ -12,7 +12,7 @@ export class HappyHeroComponent {
 
 @Component({
   selector: 'app-sad-hero',
-  template: `You like {{hero.name}}? Such a sad hero. Are you sad too?`
+  template: 'You like {{hero.name}}? Such a sad hero. Are you sad too?'
 })
 export class SadHeroComponent {
   @Input() hero!: Hero;
@@ -20,7 +20,7 @@ export class SadHeroComponent {
 
 @Component({
   selector: 'app-confused-hero',
-  template: `Are you as confused as {{hero.name}}?`
+  template: 'Are you as confused as {{hero.name}}?'
 })
 export class ConfusedHeroComponent {
   @Input() hero!: Hero;
@@ -28,7 +28,7 @@ export class ConfusedHeroComponent {
 
 @Component({
   selector: 'app-unknown-hero',
-  template: `{{message}}`
+  template: '{{message}}'
 })
 export class UnknownHeroComponent {
   @Input() hero!: Hero;

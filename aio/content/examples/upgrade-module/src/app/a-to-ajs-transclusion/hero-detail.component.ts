@@ -1,4 +1,4 @@
-// tslint:disable: directive-selector
+/* eslint-disable @angular-eslint/directive-selector */
 // #docregion
 export const heroDetail = {
   bindings: {

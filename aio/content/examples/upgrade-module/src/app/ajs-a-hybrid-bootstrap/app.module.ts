@@ -1,7 +1,7 @@
-declare var angular: angular.IAngularStatic;
+declare const angular: angular.IAngularStatic;
 import '@angular/compiler';
 // #docregion ngmodule
-import { NgModule } from '@angular/core';
+import { DoBootstrap, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { UpgradeModule } from '@angular/upgrade/static';
 
@@ -11,7 +11,7 @@ import { UpgradeModule } from '@angular/upgrade/static';
     UpgradeModule
   ]
 })
-export class AppModule {
+export class AppModule implements DoBootstrap {
   constructor(private upgrade: UpgradeModule) { }
   ngDoBootstrap() {
     this.upgrade.bootstrap(document.body, ['heroApp'], { strictDi: true });

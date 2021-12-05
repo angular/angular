@@ -1,0 +1,23 @@
+{
+    "extends": "../../.eslintrc.json",
+    "ignorePatterns": ["*.*", "node_modules/", "!src/app/**/*.ts", "styleguide/**/*.avoid.ts"],
+    "rules": {
+        "@angular-eslint/component-selector": [
+           "error",
+           {
+             "type": "element",
+             "prefix": "", // TODO: Fix the code and change the prefix to `"app"` (or whatever makes sense).
+             "style": "kebab-case"
+           }
+         ],
+         "@angular-eslint/directive-selector": [
+           "error",
+           {
+             "type": "attribute",
+             "prefix": ["app", "toh"],
+             "style": "camelCase"
+           }
+         ],
+        "@typescript-eslint/no-non-null-assertion": "off" // TODO: Fix the code violating this rule and enable it.
+    }
+}

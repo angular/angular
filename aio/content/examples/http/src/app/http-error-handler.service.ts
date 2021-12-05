@@ -15,14 +15,14 @@ export class HttpErrorHandler {
   constructor(private messageService: MessageService) { }
 
   /** Create curried handleError function that already knows the service name */
-  createHandleError = (serviceName = '') => {
-    return <T>(operation = 'operation', result = {} as T) =>
+  createHandleError = (serviceName = '') =>
+    <T>(operation = 'operation', result = {} as T) =>
       this.handleError(serviceName, operation, result);
-  }
 
   /**
    * Returns a function that handles Http operation failures.
    * This error handler lets the app continue to run as if no error occurred.
+   *
    * @param serviceName = name of the data service that attempted the operation
    * @param operation - name of the operation that failed
    * @param result - optional value to return as the observable result

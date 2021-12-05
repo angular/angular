@@ -1,4 +1,4 @@
-// tslint:disable: directive-selector
+/* eslint-disable @angular-eslint/directive-selector */
 import { Directive, ElementRef, EventEmitter, Output } from '@angular/core';
 
 @Directive({selector: '[myClick]'})

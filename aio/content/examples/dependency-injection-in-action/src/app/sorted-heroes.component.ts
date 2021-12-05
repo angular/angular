@@ -9,7 +9,7 @@ import { HeroService } from './hero.service';
 // #docregion heroes-base
 @Component({
   selector: 'app-unsorted-heroes',
-  template: `<div *ngFor="let hero of heroes">{{hero.name}}</div>`,
+  template: '<div *ngFor="let hero of heroes">{{hero.name}}</div>',
   providers: [HeroService]
 })
 export class HeroesBaseComponent implements OnInit {
@@ -32,7 +32,7 @@ export class HeroesBaseComponent implements OnInit {
 // #docregion sorted-heroes
 @Component({
   selector: 'app-sorted-heroes',
-  template: `<div *ngFor="let hero of heroes">{{hero.name}}</div>`,
+  template: '<div *ngFor="let hero of heroes">{{hero.name}}</div>',
   providers: [HeroService]
 })
 export class SortedHeroesComponent extends HeroesBaseComponent {
@@ -41,10 +41,8 @@ export class SortedHeroesComponent extends HeroesBaseComponent {
   }
 
   protected override afterGetHeroes() {
-    this.heroes = this.heroes.sort((h1, h2) => {
-      return h1.name < h2.name ? -1 :
-            (h1.name > h2.name ? 1 : 0);
-    });
+    this.heroes = this.heroes.sort((h1, h2) => h1.name < h2.name ? -1 :
+            (h1.name > h2.name ? 1 : 0));
   }
 }
 // #enddocregion sorted-heroes
