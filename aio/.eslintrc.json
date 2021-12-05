@@ -27,7 +27,6 @@
             "style": "kebab-case"
           }
         ],
-        "max-len": ["error" , 120],
         "@angular-eslint/directive-selector": [
           "error",
           {
@@ -38,6 +37,7 @@
         ],
         "dot-notation": "error",
         "indent": "off",
+        "max-len": ["error", 120],
         "@typescript-eslint/member-delimiter-style": ["error", {
           "singleline": {
             "delimiter": "comma",
@@ -59,7 +59,8 @@
         "@typescript-eslint/no-shadow": ["error"],
         "no-tabs": "error",
         "no-underscore-dangle": "off",
-        "no-unused-expressions": "error",
+        "no-unused-expressions": "off",
+        "@typescript-eslint/no-unused-expressions": ["error"],
         "no-use-before-define": "off",
         "prefer-arrow/prefer-arrow-functions": "off",
         "quotes": "off",

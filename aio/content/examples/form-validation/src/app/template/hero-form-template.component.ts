@@ -1,4 +1,3 @@
-/* tslint:disable: member-ordering */
 import { Component } from '@angular/core';
 
 @Component({

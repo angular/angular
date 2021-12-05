@@ -13,6 +13,10 @@ export class LoggerService {
 
   private log(msg: any, isErr = false) {
     this.logs.push(msg);
-    isErr ? console.error(msg) : console.log(msg);
+    if (isErr) {
+      console.error(msg);
+    } else {
+      console.log(msg);
+    }
   }
 }

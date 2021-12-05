@@ -391,7 +391,7 @@ describe('demo (with TestBed):', () => {
 
   describe('TestBed component overrides:', () => {
 
-    it('should override ChildComp\'s template', () => {
+    it("should override ChildComp's template", () => {
 
       const fixture = TestBed.configureTestingModule({
         declarations: [Child1Component],
@@ -405,7 +405,7 @@ describe('demo (with TestBed):', () => {
       expect(fixture).toHaveText('Fake');
     });
 
-    it('should override TestProvidersComp\'s ValueService provider', () => {
+    it("should override TestProvidersComp's ValueService provider", () => {
       const fixture = TestBed.configureTestingModule({
         declarations: [TestProvidersComponent],
       })
@@ -428,7 +428,7 @@ describe('demo (with TestBed):', () => {
       expect(tokens).toContain(ValueService, 'ValueService');
     });
 
-    it('should override TestViewProvidersComp\'s ValueService viewProvider', () => {
+    it("should override TestViewProvidersComp's ValueService viewProvider", () => {
       const fixture = TestBed.configureTestingModule({
         declarations: [TestViewProvidersComponent],
       })
@@ -445,7 +445,7 @@ describe('demo (with TestBed):', () => {
       expect(fixture).toHaveText('injected value: faked value');
     });
 
-    it('injected provider should not be same as component\'s provider', () => {
+    it("injected provider should not be same as component's provider", () => {
 
       // TestComponent is parent of TestProvidersComponent
       @Component({ template: '<my-service-comp></my-service-comp>' })
@@ -465,13 +465,11 @@ describe('demo (with TestBed):', () => {
         .createComponent(TestComponent);
 
       let testBedProvider!: ValueService;
-      let tcProvider: ValueService;
-      let tpcProvider: FakeValueService;
 
       // `inject` uses TestBed's injector
       inject([ValueService], (s: ValueService) => testBedProvider = s)();
-      tcProvider = fixture.debugElement.injector.get(ValueService) as ValueService;
-      tpcProvider = fixture.debugElement.children[0].injector.get(ValueService) as FakeValueService;
+      const tcProvider = fixture.debugElement.injector.get(ValueService) as ValueService;
+      const tpcProvider = fixture.debugElement.children[0].injector.get(ValueService) as FakeValueService;
 
       expect(testBedProvider).not.toBe(tcProvider, 'testBed/tc not same providers');
       expect(testBedProvider).not.toBe(tpcProvider, 'testBed/tpc not same providers');
@@ -585,7 +583,7 @@ describe('demo (with TestBed):', () => {
       expect(child instanceof MyIfChildComponent).toBe(true, 'should create child');
     });
 
-    it('should have called child component\'s OnInit ', () => {
+    it("should have called child component's OnInit ", () => {
       fixture.detectChanges();
       getChild();
       expect(child.ngOnInitCalled).toBe(true);
@@ -680,19 +678,19 @@ describe('demo (with TestBed):', () => {
 
 @Component({
   selector: 'child-1',
-  template: `Fake Child`
+  template: 'Fake Child'
 })
 class FakeChildComponent { }
 
 @Component({
   selector: 'child-1',
-  template: `Fake Child(<grandchild-1></grandchild-1>)`
+  template: 'Fake Child(<grandchild-1></grandchild-1>)'
 })
 class FakeChildWithGrandchildComponent { }
 
 @Component({
   selector: 'grandchild-1',
-  template: `Fake Grandchild`
+  template: 'Fake Grandchild'
 })
 class FakeGrandchildComponent { }
 

@@ -1,4 +1,3 @@
-// tslint:disable: variable-name
 // #docplaster
 // #docregion
 import { Component, HostBinding, OnInit } from '@angular/core';

@@ -1,4 +1,7 @@
-/* tslint:disable directive-selector directive-class-suffix */
+/* eslint-disable @angular-eslint/directive-class-suffix,
+                  @angular-eslint/directive-selector,
+                  @angular-eslint/no-output-rename,
+                  @angular-eslint/no-outputs-metadata-property */
 import { Directive, ElementRef, EventEmitter, Output } from '@angular/core';
 
 @Directive({selector: '[myClick]'})
@@ -18,10 +21,8 @@ export class ClickDirective {
 
 @Directive({
   selector: '[myClick2]',
-  // tslint:disable: no-outputs-metadata-property
   outputs: ['clicks:myClick']  // propertyName:alias
 })
-// tslint:enable: no-outputs-metadata-property
 export class ClickDirective2 {
   clicks = new EventEmitter<string>();
   toggle = false;

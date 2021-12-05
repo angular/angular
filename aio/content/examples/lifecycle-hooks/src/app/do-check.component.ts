@@ -1,4 +1,3 @@
-/* tslint:disable:forin */
 // #docregion
 import { Component, DoCheck, Input } from '@angular/core';
 

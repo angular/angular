@@ -1,4 +1,4 @@
-/* tslint:disable:forin */
+/* eslint-disable guard-for-in */
 // #docregion
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 

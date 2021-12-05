@@ -8,7 +8,7 @@ import {
 ////////// CCarComponent ////////////
 @Component({
   selector: 'c-car',
-  template: `<div>C: {{description}}</div>`,
+  template: '<div>C: {{description}}</div>',
   providers: [
     { provide: CarService, useClass: CarService3 }
   ]

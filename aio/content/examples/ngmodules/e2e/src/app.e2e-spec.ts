@@ -70,7 +70,7 @@ describe('NgModule-example', () => {
 
   function contactTests(color: string, name?: string) {
     return () => {
-      it('shows the contact\'s owner', async () => {
+      it("shows the contact's owner", async () => {
         const contacts = getContactSectionStruct();
         expect(await contacts.header.getText()).toBe(`${name || 'Miss Marple'}'s Contacts`);
       });

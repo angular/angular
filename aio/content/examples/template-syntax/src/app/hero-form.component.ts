@@ -15,7 +15,6 @@ export class HeroFormComponent {
   @Input() hero!: Hero;
   @ViewChild('heroForm') form!: NgForm;
 
-  // tslint:disable-next-line:variable-name
   private _submitMessage = '';
 
   get submitMessage() {

@@ -11,7 +11,7 @@ export class PeekABooDirective implements OnInit {
 
   // implement OnInit's `ngOnInit` method
   ngOnInit() {
-    this.logIt(`OnInit`);
+    this.logIt('OnInit');
   }
 
   logIt(msg: string) {

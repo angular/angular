@@ -1,6 +1,5 @@
+/* eslint-disable max-len */
 import { browser, by, element, logging, WebElement } from 'protractor';
-
-/* tslint:disable:max-line-length */
 
 describe('View Encapsulation App', () => {
 

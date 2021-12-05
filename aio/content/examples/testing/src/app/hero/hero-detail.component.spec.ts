@@ -90,7 +90,7 @@ function overrideSetup() {
     expect(hdsSpy.getHero.calls.count()).toBe(1, 'getHero called once');
   });
 
-  it('should display stub hero\'s name', () => {
+  it("should display stub hero's name", () => {
     expect(page.nameDisplay.textContent).toBe(hdsSpy.testHero.name);
   });
 
@@ -163,7 +163,7 @@ function heroModuleSetup() {
     });
 
     // #docregion selected-tests
-    it('should display that hero\'s name', () => {
+    it("should display that hero's name", () => {
       expect(page.nameDisplay.textContent).toBe(expectedHero.name);
     });
     // #enddocregion route-good-id
@@ -247,7 +247,7 @@ function heroModuleSetup() {
   // #enddocregion route-bad-id
 
   // Why we must use `fixture.debugElement.injector` in `Page()`
-  it('cannot use `inject` to get component\'s provided HeroDetailService', () => {
+  it("cannot use `inject` to get component's provided HeroDetailService", () => {
     let service: HeroDetailService;
     fixture = TestBed.createComponent(HeroDetailComponent);
     expect(
@@ -285,7 +285,7 @@ function formsModuleSetup() {
   });
   // #enddocregion setup-forms-module
 
-  it('should display 1st hero\'s name', waitForAsync(() => {
+  it("should display 1st hero's name", waitForAsync(() => {
        const expectedHero = firstHero;
        activatedRoute.setParamMap({id: expectedHero.id});
        createComponent().then(() => {
@@ -316,7 +316,7 @@ function sharedModuleSetup() {
   });
   // #enddocregion setup-shared-module
 
-  it('should display 1st hero\'s name', waitForAsync(() => {
+  it("should display 1st hero's name", waitForAsync(() => {
        const expectedHero = firstHero;
        activatedRoute.setParamMap({id: expectedHero.id});
        createComponent().then(() => {

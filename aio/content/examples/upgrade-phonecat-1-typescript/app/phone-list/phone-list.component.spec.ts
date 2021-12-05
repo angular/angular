@@ -1,4 +1,3 @@
-// tslint:disable: variable-name
 describe('phoneList', () => {
 
   // Load the module that contains the `phoneList` component before each test

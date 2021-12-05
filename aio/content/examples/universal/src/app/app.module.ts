@@ -45,6 +45,7 @@ import { isPlatformBrowser } from '@angular/common';
 })
 export class AppModule {
   constructor(
+    // eslint-disable-next-line @typescript-eslint/ban-types
     @Inject(PLATFORM_ID) private platformId: object,
     @Inject(APP_ID) private appId: string) {
     const platform = isPlatformBrowser(platformId) ?

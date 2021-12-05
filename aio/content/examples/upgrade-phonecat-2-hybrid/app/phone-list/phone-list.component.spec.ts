@@ -1,4 +1,3 @@
-/* tslint:disable */
 // #docregion
 import {SpyLocation} from '@angular/common/testing';
 import {NO_ERRORS_SCHEMA} from '@angular/core';

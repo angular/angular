@@ -19,7 +19,8 @@ import { CartComponent } from './cart/cart.component';
 // #enddocregion declare-cart
 import { ShippingComponent } from './shipping/shipping.component';
 
-// #docregion product-details-route, http-client-module, shipping-route, cart-route, declare-product-alerts, declare-cart
+// #docregion product-details-route, http-client-module, shipping-route, cart-route, declare-product-alerts
+// #docregion declare-cart
 
 @NgModule({
   // #enddocregion declare-product-alerts, declare-cart

@@ -20,7 +20,11 @@ export class VoteTakerComponent {
   voters = ['Narco', 'Celeritas', 'Bombasto'];
 
   onVoted(agreed: boolean) {
-    agreed ? this.agreed++ : this.disagreed++;
+    if (agreed) {
+      this.agreed++;
+    } else {
+      this.disagreed++;
+    }
   }
 }
 // #enddocregion

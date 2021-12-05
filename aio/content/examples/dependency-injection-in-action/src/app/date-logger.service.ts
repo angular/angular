@@ -1,4 +1,3 @@
-/* tslint:disable:one-line*/
 // #docregion
 import { Injectable } from '@angular/core';
 

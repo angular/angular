@@ -1,4 +1,3 @@
-// tslint:disable: variable-name
 // #docregion
 import { inject, TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';

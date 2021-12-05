@@ -1,6 +1,5 @@
 import { browser, element, by } from 'protractor';
 
-/* tslint:disable:quotemark */
 describe('Dynamic Form', () => {
 
     beforeAll(() => browser.get(''));

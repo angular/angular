@@ -1,4 +1,3 @@
-/* tslint:disable:no-unused-variable */
 // #docplaster
 import { Component } from '@angular/core';
 

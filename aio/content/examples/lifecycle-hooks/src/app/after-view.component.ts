@@ -57,7 +57,7 @@ export class AfterViewComponent implements  AfterViewChecked, AfterViewInit {
   // #docregion do-something
   // This surrogate for real business logic sets the `comment`
   private doSomething() {
-    const c = this.viewChild.hero.length > 10 ? `That's a long name` : '';
+    const c = this.viewChild.hero.length > 10 ? "That's a long name" : '';
     if (c !== this.comment) {
       // Wait a tick because the component's view has already been checked
       this.logger.tick_then(() => this.comment = c);

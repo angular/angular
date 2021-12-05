@@ -18,9 +18,7 @@ export class HeroDetailService {
       id = parseInt(id, 10);
     }
     return this.heroService.getHero(id).pipe(
-      map(hero => {
-        return hero ? Object.assign({}, hero) : null; // clone or null
-      })
+      map(hero => hero ? Object.assign({}, hero) : null) // clone or null
     );
   }
 

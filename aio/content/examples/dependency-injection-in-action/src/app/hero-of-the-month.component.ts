@@ -1,4 +1,3 @@
-/* tslint:disable:one-line*/
 // #docplaster
 // #docregion injection-token
 import { InjectionToken } from '@angular/core';

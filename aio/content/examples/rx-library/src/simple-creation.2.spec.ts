@@ -8,14 +8,14 @@ describe('simple-creation.2', () => {
     const consoleSpy = jasmine.createSpyObj<Console>('console', ['log']);
     const subscription = docRegionInterval(consoleSpy);
     jasmine.clock().tick(1000);
-    expect(consoleSpy.log).toHaveBeenCalledWith('It\'s been 1 seconds since subscribing!');
+    expect(consoleSpy.log).toHaveBeenCalledWith("It's been 1 seconds since subscribing!");
     consoleSpy.log.calls.reset();
 
     jasmine.clock().tick(999);
     expect(consoleSpy.log).not.toHaveBeenCalled();
 
     jasmine.clock().tick(1);
-    expect(consoleSpy.log).toHaveBeenCalledWith('It\'s been 2 seconds since subscribing!');
+    expect(consoleSpy.log).toHaveBeenCalledWith("It's been 2 seconds since subscribing!");
     subscription.unsubscribe();
   });
 });

@@ -1,4 +1,4 @@
-// tslint:disable: no-host-metadata-property
+/* eslint-disable @angular-eslint/no-host-metadata-property */
 // #docregion progressbar-component
 import { Component, Input } from '@angular/core';
 
@@ -7,7 +7,7 @@ import { Component, Input } from '@angular/core';
  */
 @Component({
   selector: 'app-example-progressbar',
-  template: `<div class="bar" [style.width.%]="value"></div>`,
+  template: '<div class="bar" [style.width.%]="value"></div>',
   styleUrls: ['./progress-bar.component.css'],
   host: {
     // Sets the role for this component to "progressbar"

@@ -100,7 +100,7 @@ describe('HeroListComponent', () => {
     expect(isExpectedColor).toBe(true, 'backgroundColor');
   });
 
-  it('the `HighlightDirective` is among the element\'s providers', () => {
+  it("the `HighlightDirective` is among the element's providers", () => {
     expect(page.highlightDe.providerTokens).toContain(HighlightDirective, 'HighlightDirective');
   });
 });

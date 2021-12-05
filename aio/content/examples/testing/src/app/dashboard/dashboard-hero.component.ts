@@ -9,7 +9,8 @@ import { Hero } from '../model/hero';
   template: `
     <div (click)="click()" class="hero">
       {{hero.name | uppercase}}
-    </div>`,
+    </div>
+  `,
   styleUrls: [ './dashboard-hero.component.css' ]
 })
 // #docregion class

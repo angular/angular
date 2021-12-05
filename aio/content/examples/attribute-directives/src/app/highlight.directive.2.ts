@@ -1,4 +1,3 @@
-/* tslint:disable:no-unused-variable member-ordering */
 // #docplaster
 // #docregion imports
 import { Directive, ElementRef, HostListener } from '@angular/core';
