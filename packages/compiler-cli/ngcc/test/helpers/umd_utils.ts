@@ -7,8 +7,33 @@
  */
 
 export interface AdditionalFormatOptions {
+  /**
+   * The index of the `exports` parameter in the factory function (and thus the corresponding
+   * argument in the various factory calls). Passing -1 will cause the `exports` parameter/argument
+   * to be omitted altogether.
+   * (This option only affects the `Rollup` format.)
+   *
+   * Defaults to `0` (i.e. `exports` being the first argument).
+   */
+  exportsParamIndex?: number;
+
+  /**
+   * Whether to include an initializer for the `global` variable (`global = global || self`) before
+   * the global factory call.
+   * (This option only affects the `Rollup` format.)
+   *
+   * Defaults to `false` (i.e. not include an initialier for `global`).
+   */
   hasGlobalInitializer?: boolean;
-  omitExports?: boolean;
+
+  /**
+   * A set of dependencies that are not used in the factory function (i.e. for which factory
+   * function parameters are omitted).
+   * Unused dependencies must always follow used ones (if any). In other words, unused dependencies
+   * can only appear at the end of the dependency list.
+   *
+   * Defaults to an empty set (i.e. all dependencies are used).
+   */
   unusedDependencies?: Set<String>;
 }
 
@@ -27,7 +52,7 @@ export function createUmdModuleFactory(
     parenthesisFormat: ParenthesisFormat = ParenthesisFormat.AroundIife) {
   return function createUmdModule(
       moduleName: string, dependencies: string[], factoryBody: string,
-      {hasGlobalInitializer = false, omitExports = false, unusedDependencies = new Set()}:
+      {exportsParamIndex = 0, hasGlobalInitializer = false, unusedDependencies = new Set()}:
           AdditionalFormatOptions = {}) {
     // Ensure that any unused dependencies are at the end.
     const firstUnusedDepIndex = dependencies.findIndex(dep => unusedDependencies.has(dep));
@@ -48,14 +73,16 @@ export function createUmdModuleFactory(
                    .replace(/[-/](.?)/g, (_, g1) => g1.toUpperCase()));
     const depsParamNames = dependencies.filter(dep => !unusedDependencies.has(dep))
                                .map((dep, i) => depsIdentifiers[i].replace(/^.*\./, ''));
-    const maybePrepend = (item: string, arr: string[]) => omitExports ? arr : [item, ...arr];
+    const insertItem = (item: string, arr: string[]) => (exportsParamIndex < 0) ?
+        arr :
+        [...arr.slice(0, exportsParamIndex), item, ...arr.slice(exportsParamIndex)];
 
     switch (wrapperFunctionFormat) {
       case WrapperFunctionFormat.Rollup:
-        const cjsArgs = maybePrepend('exports', dependencies.map(d => `require('${d}')`));
-        const amdArgs = maybePrepend('exports', dependencies).map(d => `'${d}'`);
-        const globalArgs = maybePrepend(moduleName, depsIdentifiers).map(id => `global.${id}`);
-        const factoryParams = maybePrepend('exports', depsParamNames);
+        const cjsArgs = insertItem('exports', dependencies.map(d => `require('${d}')`));
+        const amdArgs = insertItem('exports', dependencies).map(d => `'${d}'`);
+        const globalArgs = insertItem(moduleName, depsIdentifiers).map(id => `global.${id}`);
+        const factoryParams = insertItem('exports', depsParamNames);
 
         wrapperFunctionDeclaration = stripIndentation(`
           function (global, factory) {
