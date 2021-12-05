@@ -3,7 +3,7 @@
   "ignorePatterns": [
     "*.js",
     "styleguide/**/*.avoid.ts",
-    "upgrade-*"
+    "upgrade-*" // TODO: Fix the code in the upgrade-* directories (which causes too many errors) and remove this entry.
   ],
   "overrides": [
     {
