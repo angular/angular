@@ -33,18 +33,18 @@ describe('Form Validation Tests', () => {
 const testName = 'Test Name';
 
 let page: {
-  section: ElementFinder,
-  form: ElementFinder,
-  title: ElementFinder,
-  nameInput: ElementFinder,
-  alterEgoInput: ElementFinder,
-  powerSelect: ElementFinder,
-  powerOption: ElementFinder,
-  errorMessages: ElementArrayFinder,
-  heroFormButtons: ElementArrayFinder,
-  heroSubmitted: ElementFinder,
-  alterEgoErrors: ElementFinder,
-  crossValidationErrorMessage: ElementFinder,
+  section: ElementFinder;
+  form: ElementFinder;
+  title: ElementFinder;
+  nameInput: ElementFinder;
+  alterEgoInput: ElementFinder;
+  powerSelect: ElementFinder;
+  powerOption: ElementFinder;
+  errorMessages: ElementArrayFinder;
+  heroFormButtons: ElementArrayFinder;
+  heroSubmitted: ElementFinder;
+  alterEgoErrors: ElementFinder;
+  crossValidationErrorMessage: ElementFinder;
 };
 
 function getPage(sectionTag: string) {

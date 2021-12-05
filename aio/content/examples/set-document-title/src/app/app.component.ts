@@ -12,11 +12,9 @@ import { Title } from '@angular/platform-browser';
     </p>
 
     <ul>
-      <!-- eslint-disable @angular-eslint/template/click-events-have-key-events -->
       <li><a (click)="setTitle('Good morning!')">Good morning</a>.</li>
       <li><a (click)="setTitle('Good afternoon!')">Good afternoon</a>.</li>
       <li><a (click)="setTitle('Good evening!')">Good evening</a>.</li>
-      <!-- eslint-enable @angular-eslint/template/click-events-have-key-events -->
     </ul>
   `,
 })

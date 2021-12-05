@@ -19,7 +19,6 @@ import { Hero } from './hero';
   selector: 'app-hero-list-groups',
   template: `
     <ul class="heroes">
-      <!-- eslint-disable @angular-eslint/template/click-events-have-key-events -->
       <li *ngFor="let hero of heroes"
           [@flyInOut]="'in'" (click)="removeHero(hero.id)">
           <div class="inner">

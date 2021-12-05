@@ -7,10 +7,10 @@ import { Hero } from '../model/hero';
 @Component({
   selector: 'dashboard-hero',
   template: `
-    <!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events -->
-    <div (click)="click()" class="hero"> <!--eslint-disable-line-->
+    <div (click)="click()" class="hero">
       {{hero.name | uppercase}}
-    </div>`,
+    </div>
+  `,
   styleUrls: [ './dashboard-hero.component.css' ]
 })
 // #docregion class

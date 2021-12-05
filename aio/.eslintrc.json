@@ -27,7 +27,6 @@
             "style": "kebab-case"
           }
         ],
-        "max-len": ["error" , 120],
         "@angular-eslint/directive-selector": [
           "error",
           {
@@ -38,6 +37,7 @@
         ],
         "dot-notation": "error",
         "indent": "off",
+        "max-len": ["error" , 120],
         "@typescript-eslint/member-delimiter-style": ["error", {
           "singleline": {
             "delimiter": "comma",

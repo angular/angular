@@ -11,7 +11,6 @@ import { HeroesService } from './heroes.service';
     <div>
       <h3>Hero Tax Returns</h3>
       <ul>
-        <!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events -->
         <li *ngFor="let hero of heroes | async"
             (click)="showTaxReturn(hero)">{{hero.name}}
         </li>

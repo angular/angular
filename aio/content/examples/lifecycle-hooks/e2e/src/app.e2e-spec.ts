@@ -160,15 +160,18 @@ describe('Lifecycle hooks', () => {
     const logEles = element.all(by.css('counter-parent .info .log'));
 
     expect(await textEle.getText()).toContain('Counter = 0');
-    expect(await logEles.count()).toBe(3, 'should start with one change log and two lifecycle log entries, including reset');
+    expect(await logEles.count())
+        .toBe(3, 'should start with one change log and two lifecycle log entries, including reset');
 
     await updateCounterButtonEle.click();
     expect(await textEle.getText()).toContain('Counter = 1');
-    expect(await logEles.count()).toBe(5, 'should now have 2 change log entries and 3 lifecycle log entries, including reset');
+    expect(await logEles.count())
+        .toBe(5, 'should now have 2 change log entries and 3 lifecycle log entries, including reset');
 
     await resetCounterButtonEle.click();
     expect(await textEle.getText()).toContain('Counter = 0');
-    expect(await logEles.count()).toBe(8, 'should now have 8 log entries - 1 change log + 2 reset + 2 destroy + 3 init');
+    expect(await logEles.count())
+        .toBe(8, 'should now have 8 log entries - 1 change log + 2 reset + 2 destroy + 3 init');
 
   });
 });

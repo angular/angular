@@ -4,8 +4,6 @@ import { Schema as MyServiceSchema } from './schema';
 
 // #docregion factory
 export function myService(options: MyServiceSchema): Rule {
-  return (tree: Tree) => {
-    return tree;
-  };
+  return (tree: Tree) => tree;
 }
 // #enddocregion factory

@@ -184,8 +184,7 @@ export class ParentComponent { }
 
 @Component({
   selector: 'io-comp',
-  template: `<!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events -->
-  <div class="hero" (click)="click()">Original {{hero.name}}</div>`
+  template: '<div class="hero" (click)="click()">Original {{hero.name}}</div>'
 })
 export class IoComponent {
   @Input() hero!: Hero;

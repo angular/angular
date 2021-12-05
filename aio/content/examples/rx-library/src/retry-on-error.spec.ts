@@ -16,9 +16,8 @@ describe('retry-on-error', () => {
   });
 
   it('should return an empty array after 3 retries + 1 initial request', () => {
-    const ajax = () => {
-      return of({ noresponse: true }).pipe(tap(() => consoleSpy.log('Subscribed to AJAX')));
-    };
+    const ajax =
+        () => of({ noresponse: true }).pipe(tap(() => consoleSpy.log('Subscribed to AJAX')));
 
     docRegionDefault(consoleSpy, ajax);
     expect(consoleSpy.log.calls.allArgs()).toEqual([
