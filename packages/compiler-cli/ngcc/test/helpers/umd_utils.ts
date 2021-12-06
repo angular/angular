@@ -8,16 +8,21 @@
 
 export interface AdditionalFormatOptions {
   /**
-   * The index of the `exports` parameter index in the factory function (and thus the corresponding
-   * argument in the various factory calls). (Only affects the `Rollup` format.)
+   * The index of the `exports` parameter in the factory function (and thus the corresponding
+   * argument in the various factory calls). Passing -1 will cause the `exports` parameter/argument
+   * to be omitted altogether.
+   * (This option only affects the `Rollup` format.)
    *
-   * Defaults to 0 (i.e. `exports` being the first argument).
+   * Defaults to `0` (i.e. `exports` being the first argument).
    */
   exportsParamIndex?: number;
 
   /**
    * Whether to include an initializer for the `global` variable (`global = global || self`) before
-   * the global factory call. (Only affects the `Rollup` format.)
+   * the global factory call.
+   * (This option only affects the `Rollup` format.)
+   *
+   * Defaults to `false` (i.e. not include an initialier for `global`).
    */
   hasGlobalInitializer?: boolean;
 
@@ -26,6 +31,8 @@ export interface AdditionalFormatOptions {
    * function parameters are omitted).
    * Unused dependencies must always follow used ones (if any). In other words, unused dependencies
    * can only appear at the end of the dependency list.
+   *
+   * Defaults to an empty set (i.e. all dependencies are used).
    */
   unusedDependencies?: Set<String>;
 }
