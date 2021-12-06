@@ -835,34 +835,24 @@ function isTypeOf(node: ts.Expression, ...types: string[]): boolean {
 export function getImportsOfUmdModule(umdModule: UmdModule):
     {parameter: ts.ParameterDeclaration, path: string}[] {
   const imports: {parameter: ts.ParameterDeclaration, path: string}[] = [];
-  const cjsFactoryCall = umdModule.factoryCalls.cjsCallForImports;
+  const factoryFnParams = umdModule.factoryFn.parameters;
+  const cjsFactoryCallArgs = umdModule.factoryCalls.cjsCallForImports.arguments;
 
-  for (let i = 0; i < umdModule.factoryFn.parameters.length; i++) {
-    const arg = cjsFactoryCall.arguments[i];
+  for (let i = 0; i < factoryFnParams.length; i++) {
+    const arg = cjsFactoryCallArgs[i];
 
-    if (arg === undefined) {
-      throw new Error(
-          `Missing argument at index ${i} from UMD factory call:\n` + cjsFactoryCall.getText());
+    // In some UMD formats, the CommonJS factory call may include arguments that are not `require()`
+    // calls (such as an `exports` argument). Also, since a previous ngcc invocation may have added
+    // new imports (and thus new `require()` call arguments), these non-`require()` arguments can be
+    // interspersed among the `require()` calls.
+    // To remain robust against various UMD formats, we ignore arguments that are not `require()`
+    // calls when looking for imports.
+    if (arg !== undefined && isRequireCall(arg)) {
+      imports.push({
+        parameter: factoryFnParams[i],
+        path: arg.arguments[0].text,
+      });
     }
-
-    if (ts.isIdentifier(arg) && arg.text === 'exports') {
-      // Some UMD formats pass `exports` as the first argument to the factory call, while others
-      // don't. Also, after ngcc has added new imports, `exports` might not be the first argument
-      // any more.
-      // Ignore `exports` and only look at other arguments for imports.
-      continue;
-    }
-
-    if (!isRequireCall(arg)) {
-      throw new Error(
-          `Argument at index ${i} of UMD factory call is not a \`require\` call with a single ` +
-          'string argument:\n' + cjsFactoryCall.getText());
-    }
-
-    imports.push({
-      parameter: umdModule.factoryFn.parameters[i],
-      path: arg.arguments[0].text,
-    });
   }
 
   return imports;
