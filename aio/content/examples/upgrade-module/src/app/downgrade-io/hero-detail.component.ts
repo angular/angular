@@ -6,7 +6,6 @@ import { Hero } from '../hero';
   selector: 'hero-detail',
   template: `
     <h2>{{hero.name}} details!</h2>
-    <!-- eslint-disable-next-line @angular-eslint/template/accessibility-label-has-associated-control -->
     <div><label>id: </label>{{hero.id}}</div>
     <button (click)="onDelete()">Delete</button>
   `

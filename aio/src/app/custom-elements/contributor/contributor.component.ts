@@ -8,7 +8,6 @@ import { CONTENT_URL_PREFIX } from 'app/documents/document.service';
   template: `
     <div [ngClass]="{ 'flipped': person.isFlipped }" class="contributor-card">
 
-        <!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events -->
         <div class="card-front" (click)="flipCard(person)">
             <h3>{{person.name}}</h3>
 
