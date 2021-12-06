@@ -1,4 +1,3 @@
-/* eslint-disable @angular-eslint/directive-selector */
 // #docregion
 // #docregion hero-detail-io
 export const heroDetail = {
