@@ -533,6 +533,17 @@ runInEachFileSystem(() => {
           .toBe('a.test.b');
     });
 
+    it('string `concat` function works', () => {
+      expect(evaluate(`const a = '12', b = '34';`, 'a[\'concat\'](b)')).toBe('1234');
+      expect(evaluate(`const a = '12', b = '3';`, 'a[\'concat\'](b)')).toBe('123');
+      expect(evaluate(`const a = '12', b = '3', c = '45';`, 'a[\'concat\'](b,c)')).toBe('12345');
+      expect(
+          evaluate(`const a = '1', b = 2, c = '3', d = true, e = null;`, 'a[\'concat\'](b,c,d,e)'))
+          .toBe('123truenull');
+      expect(evaluate('enum Test { VALUE = "test" };', '"a."[\'concat\'](Test.VALUE, ".b")'))
+          .toBe('a.test.b');
+    });
+
     it('should resolve non-literals as dynamic string', () => {
       const value = evaluate(`const a: any = [];`, '`a.${a}.b`');
 

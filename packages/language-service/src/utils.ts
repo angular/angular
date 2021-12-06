@@ -5,213 +5,400 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {AbsoluteSourceSpan, CssSelector, ParseSourceSpan, SelectorMatcher, TmplAstBoundEvent} from '@angular/compiler';
+import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
+import {absoluteFrom, absoluteFromSourceFile, AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {isExternalResource} from '@angular/compiler-cli/src/ngtsc/metadata';
+import {DeclarationNode} from '@angular/compiler-cli/src/ngtsc/reflection';
+import {DirectiveSymbol, TemplateTypeChecker} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
+import * as e from '@angular/compiler/src/expression_parser/ast';  // e for expression AST
+import * as t from '@angular/compiler/src/render3/r3_ast';         // t for template AST
+import ts from 'typescript';
 
-import {AstPath, BoundEventAst, CompileDirectiveSummary, CompileTypeMetadata, CssSelector, DirectiveAst, ElementAst, EmbeddedTemplateAst, HtmlAstPath, identifierName, Identifiers, Node, ParseSourceSpan, RecursiveTemplateAstVisitor, RecursiveVisitor, TemplateAst, TemplateAstPath, templateVisitAll, visitAll} from '@angular/compiler';
-import * as path from 'path';
+import {ALIAS_NAME, SYMBOL_PUNC} from './display_parts';
+import {findTightestNode, getParentClassDeclaration} from './ts_utils';
 
-import {AstResult, DiagnosticTemplateInfo, SelectorInfo, Span, Symbol, SymbolQuery} from './types';
-
-interface SpanHolder {
-  sourceSpan: ParseSourceSpan;
-  endSourceSpan?: ParseSourceSpan|null;
-  children?: SpanHolder[];
-}
-
-function isParseSourceSpan(value: any): value is ParseSourceSpan {
-  return value && !!value.start;
-}
-
-export function spanOf(span: SpanHolder): Span;
-export function spanOf(span: ParseSourceSpan): Span;
-export function spanOf(span: SpanHolder|ParseSourceSpan|undefined): Span|undefined;
-export function spanOf(span?: SpanHolder|ParseSourceSpan): Span|undefined {
-  if (!span) return undefined;
-  if (isParseSourceSpan(span)) {
-    return {start: span.start.offset, end: span.end.offset};
+export function getTextSpanOfNode(node: t.Node|e.AST): ts.TextSpan {
+  if (isTemplateNodeWithKeyAndValue(node)) {
+    return toTextSpan(node.keySpan);
+  } else if (
+      node instanceof e.PropertyWrite || node instanceof e.BindingPipe ||
+      node instanceof e.PropertyRead) {
+    // The `name` part of a `PropertyWrite` and `BindingPipe` does not have its own AST
+    // so there is no way to retrieve a `Symbol` for just the `name` via a specific node.
+    return toTextSpan(node.nameSpan);
   } else {
-    if (span.endSourceSpan) {
-      return {start: span.sourceSpan.start.offset, end: span.endSourceSpan.end.offset};
-    } else if (span.children && span.children.length) {
-      return {
-        start: span.sourceSpan.start.offset,
-        end: spanOf(span.children[span.children.length - 1])!.end
-      };
-    }
-    return {start: span.sourceSpan.start.offset, end: span.sourceSpan.end.offset};
+    return toTextSpan(node.sourceSpan);
   }
 }
 
-export function inSpan(position: number, span?: Span, exclusive?: boolean): boolean {
-  return span != null &&
-      (exclusive ? position >= span.start && position < span.end :
-                   position >= span.start && position <= span.end);
-}
-
-export function offsetSpan(span: Span, amount: number): Span {
-  return {start: span.start + amount, end: span.end + amount};
-}
-
-export function isNarrower(spanA: Span, spanB: Span): boolean {
-  return spanA.start >= spanB.start && spanA.end <= spanB.end;
-}
-
-export function isStructuralDirective(type: CompileTypeMetadata): boolean {
-  for (const diDep of type.diDeps) {
-    const diDepName = identifierName(diDep.token?.identifier);
-    if (diDepName === Identifiers.TemplateRef.name ||
-        diDepName === Identifiers.ViewContainerRef.name) {
-      return true;
-    }
+export function toTextSpan(span: AbsoluteSourceSpan|ParseSourceSpan|e.ParseSpan): ts.TextSpan {
+  let start: number, end: number;
+  if (span instanceof AbsoluteSourceSpan || span instanceof e.ParseSpan) {
+    start = span.start;
+    end = span.end;
+  } else {
+    start = span.start.offset;
+    end = span.end.offset;
   }
-  return false;
+  return {start, length: end - start};
 }
 
-export function getSelectors(info: AstResult): SelectorInfo {
-  const map = new Map<CssSelector, CompileDirectiveSummary>();
-  const results: CssSelector[] = [];
-  for (const directive of info.directives) {
-    const selectors: CssSelector[] = CssSelector.parse(directive.selector!);
-    for (const selector of selectors) {
-      results.push(selector);
-      map.set(selector, directive);
-    }
+interface NodeWithKeyAndValue extends t.Node {
+  keySpan: ParseSourceSpan;
+  valueSpan?: ParseSourceSpan;
+}
+
+export function isTemplateNodeWithKeyAndValue(node: t.Node|e.AST): node is NodeWithKeyAndValue {
+  return isTemplateNode(node) && node.hasOwnProperty('keySpan');
+}
+
+export function isWithinKey(position: number, node: NodeWithKeyAndValue): boolean {
+  let {keySpan, valueSpan} = node;
+  if (valueSpan === undefined && node instanceof TmplAstBoundEvent) {
+    valueSpan = node.handlerSpan;
   }
-  return {selectors: results, map};
+  const isWithinKeyValue =
+      isWithin(position, keySpan) || !!(valueSpan && isWithin(position, valueSpan));
+  return isWithinKeyValue;
 }
 
-export function diagnosticInfoFromTemplateInfo(info: AstResult): DiagnosticTemplateInfo {
-  return {
-    fileName: info.template.fileName,
-    offset: info.template.span.start,
-    query: info.template.query,
-    members: info.template.members,
-    htmlAst: info.htmlAst,
-    templateAst: info.templateAst,
-    source: info.template.source,
-  };
+export function isWithinKeyValue(position: number, node: NodeWithKeyAndValue): boolean {
+  let {keySpan, valueSpan} = node;
+  if (valueSpan === undefined && node instanceof TmplAstBoundEvent) {
+    valueSpan = node.handlerSpan;
+  }
+  const isWithinKeyValue =
+      isWithin(position, keySpan) || !!(valueSpan && isWithin(position, valueSpan));
+  return isWithinKeyValue;
 }
 
-export function findTemplateAstAt(ast: TemplateAst[], position: number): TemplateAstPath {
-  const path: TemplateAst[] = [];
-  const visitor = new class extends RecursiveTemplateAstVisitor {
-    visit(ast: TemplateAst): any {
-      let span = spanOf(ast);
-      if (inSpan(position, span)) {
-        const len = path.length;
-        if (!len || isNarrower(span, spanOf(path[len - 1]))) {
-          path.push(ast);
-        }
-      } else {
-        // Returning a value here will result in the children being skipped.
-        return true;
-      }
-    }
+export function isTemplateNode(node: t.Node|e.AST): node is t.Node {
+  // Template node implements the Node interface so we cannot use instanceof.
+  return node.sourceSpan instanceof ParseSourceSpan;
+}
 
-    override visitEmbeddedTemplate(ast: EmbeddedTemplateAst, context: any): any {
-      return this.visitChildren(context, visit => {
-        // Ignore reference, variable and providers
-        visit(ast.attrs);
-        visit(ast.directives);
-        visit(ast.children);
-      });
-    }
+export function isExpressionNode(node: t.Node|e.AST): node is e.AST {
+  return node instanceof e.AST;
+}
 
-    override visitElement(ast: ElementAst, context: any): any {
-      return this.visitChildren(context, visit => {
-        // Ingnore providers
-        visit(ast.attrs);
-        visit(ast.inputs);
-        visit(ast.outputs);
-        visit(ast.references);
-        visit(ast.directives);
-        visit(ast.children);
-      });
-    }
+export interface TemplateInfo {
+  template: t.Node[];
+  component: ts.ClassDeclaration;
+}
 
-    override visitDirective(ast: DirectiveAst, context: any): any {
-      // Ignore the host properties of a directive
-      const result = this.visitChildren(context, visit => {
-        visit(ast.inputs);
-      });
-      // We never care about the diretive itself, just its inputs.
-      if (path[path.length - 1] === ast) {
-        path.pop();
-      }
-      return result;
-    }
-  };
+function getInlineTemplateInfoAtPosition(
+    sf: ts.SourceFile, position: number, compiler: NgCompiler): TemplateInfo|undefined {
+  const expression = findTightestNode(sf, position);
+  if (expression === undefined) {
+    return undefined;
+  }
+  const classDecl = getParentClassDeclaration(expression);
+  if (classDecl === undefined) {
+    return undefined;
+  }
 
-  templateVisitAll(visitor, ast);
+  // Return `undefined` if the position is not on the template expression or the template resource
+  // is not inline.
+  const resources = compiler.getComponentResources(classDecl);
+  if (resources === null || isExternalResource(resources.template) ||
+      expression !== resources.template.expression) {
+    return undefined;
+  }
 
-  return new AstPath<TemplateAst>(path, position);
+  const template = compiler.getTemplateTypeChecker().getTemplate(classDecl);
+  if (template === null) {
+    return undefined;
+  }
+
+  return {template, component: classDecl};
 }
 
 /**
- * Find the tightest node at the specified `position` from the AST `nodes`, and
- * return the path to the node.
- * @param nodes HTML AST nodes
- * @param position
+ * Retrieves the `ts.ClassDeclaration` at a location along with its template nodes.
  */
-export function getPathToNodeAtPosition(nodes: Node[], position: number): HtmlAstPath {
-  const path: Node[] = [];
-  const visitor = new class extends RecursiveVisitor {
-    visit(ast: Node) {
-      const span = spanOf(ast);
-      if (inSpan(position, span)) {
-        path.push(ast);
-      } else {
-        // Returning a truthy value here will skip all children and terminate
-        // the visit.
-        return true;
-      }
+export function getTemplateInfoAtPosition(
+    fileName: string, position: number, compiler: NgCompiler): TemplateInfo|undefined {
+  if (isTypeScriptFile(fileName)) {
+    const sf = compiler.getCurrentProgram().getSourceFile(fileName);
+    if (sf === undefined) {
+      return undefined;
     }
-  };
-  visitAll(visitor, nodes);
-  return new AstPath<Node>(path, position);
+
+    return getInlineTemplateInfoAtPosition(sf, position, compiler);
+  } else {
+    return getFirstComponentForTemplateFile(fileName, compiler);
+  }
 }
 
+/**
+ * First, attempt to sort component declarations by file name.
+ * If the files are the same, sort by start location of the declaration.
+ */
+function tsDeclarationSortComparator(a: DeclarationNode, b: DeclarationNode): number {
+  const aFile = a.getSourceFile().fileName;
+  const bFile = b.getSourceFile().fileName;
+  if (aFile < bFile) {
+    return -1;
+  } else if (aFile > bFile) {
+    return 1;
+  } else {
+    return b.getFullStart() - a.getFullStart();
+  }
+}
+
+function getFirstComponentForTemplateFile(fileName: string, compiler: NgCompiler): TemplateInfo|
+    undefined {
+  const templateTypeChecker = compiler.getTemplateTypeChecker();
+  const components = compiler.getComponentsWithTemplateFile(fileName);
+  const sortedComponents = Array.from(components).sort(tsDeclarationSortComparator);
+  for (const component of sortedComponents) {
+    if (!ts.isClassDeclaration(component)) {
+      continue;
+    }
+    const template = templateTypeChecker.getTemplate(component);
+    if (template === null) {
+      continue;
+    }
+    return {template, component};
+  }
+
+  return undefined;
+}
 
 /**
- * Inverts an object's key-value pairs.
+ * Given an attribute node, converts it to string form for use as a CSS selector.
  */
-export function invertMap(obj: {[name: string]: string}): {[name: string]: string} {
-  const result: {[name: string]: string} = {};
-  for (const name of Object.keys(obj)) {
-    const v = obj[name];
-    result[v] = name;
+function toAttributeCssSelector(attribute: t.TextAttribute|t.BoundAttribute|t.BoundEvent): string {
+  let selector: string;
+  if (attribute instanceof t.BoundEvent || attribute instanceof t.BoundAttribute) {
+    selector = `[${attribute.name}]`;
+  } else {
+    selector = `[${attribute.name}=${attribute.valueSpan?.toString() ?? ''}]`;
+  }
+  // Any dollar signs that appear in the attribute name and/or value need to be escaped because they
+  // need to be taken as literal characters rather than special selector behavior of dollar signs in
+  // CSS.
+  return selector.replace('$', '\\$');
+}
+
+function getNodeName(node: t.Template|t.Element): string {
+  return node instanceof t.Template ? node.tagName : node.name;
+}
+
+/**
+ * Given a template or element node, returns all attributes on the node.
+ */
+function getAttributes(node: t.Template|
+                       t.Element): Array<t.TextAttribute|t.BoundAttribute|t.BoundEvent> {
+  const attributes: Array<t.TextAttribute|t.BoundAttribute|t.BoundEvent> =
+      [...node.attributes, ...node.inputs, ...node.outputs];
+  if (node instanceof t.Template) {
+    attributes.push(...node.templateAttrs);
+  }
+  return attributes;
+}
+
+/**
+ * Given two `Set`s, returns all items in the `left` which do not appear in the `right`.
+ */
+function difference<T>(left: Set<T>, right: Set<T>): Set<T> {
+  const result = new Set<T>();
+  for (const dir of left) {
+    if (!right.has(dir)) {
+      result.add(dir);
+    }
   }
   return result;
 }
 
+/**
+ * Given an element or template, determines which directives match because the tag is present. For
+ * example, if a directive selector is `div[myAttr]`, this would match div elements but would not if
+ * the selector were just `[myAttr]`. We find which directives are applied because of this tag by
+ * elimination: compare the directive matches with the tag present against the directive matches
+ * without it. The difference would be the directives which match because the tag is present.
+ *
+ * @param element The element or template node that the attribute/tag is part of.
+ * @param directives The list of directives to match against.
+ * @returns The list of directives matching the tag name via the strategy described above.
+ */
+// TODO(atscott): Add unit tests for this and the one for attributes
+export function getDirectiveMatchesForElementTag(
+    element: t.Template|t.Element, directives: DirectiveSymbol[]): Set<DirectiveSymbol> {
+  const attributes = getAttributes(element);
+  const allAttrs = attributes.map(toAttributeCssSelector);
+  const allDirectiveMatches =
+      getDirectiveMatchesForSelector(directives, getNodeName(element) + allAttrs.join(''));
+  const matchesWithoutElement = getDirectiveMatchesForSelector(directives, allAttrs.join(''));
+  return difference(allDirectiveMatches, matchesWithoutElement);
+}
+
+
+export function makeElementSelector(element: t.Element|t.Template): string {
+  const attributes = getAttributes(element);
+  const allAttrs = attributes.map(toAttributeCssSelector);
+  return getNodeName(element) + allAttrs.join('');
+}
 
 /**
- * Finds the directive member providing a template output binding, if one exists.
- * @param info aggregate template AST information
- * @param path narrowing
+ * Given an attribute name, determines which directives match because the attribute is present. We
+ * find which directives are applied because of this attribute by elimination: compare the directive
+ * matches with the attribute present against the directive matches without it. The difference would
+ * be the directives which match because the attribute is present.
+ *
+ * @param name The name of the attribute
+ * @param hostNode The node which the attribute appears on
+ * @param directives The list of directives to match against.
+ * @returns The list of directives matching the tag name via the strategy described above.
  */
-export function findOutputBinding(
-    binding: BoundEventAst, path: TemplateAstPath, query: SymbolQuery): Symbol|undefined {
-  const element = path.first(ElementAst);
-  if (element) {
-    for (const directive of element.directives) {
-      const invertedOutputs = invertMap(directive.directive.outputs);
-      const fieldName = invertedOutputs[binding.name];
-      if (fieldName) {
-        const classSymbol = query.getTypeSymbol(directive.directive.type.reference);
-        if (classSymbol) {
-          return classSymbol.members().get(fieldName);
-        }
-      }
+export function getDirectiveMatchesForAttribute(
+    name: string, hostNode: t.Template|t.Element,
+    directives: DirectiveSymbol[]): Set<DirectiveSymbol> {
+  const attributes = getAttributes(hostNode);
+  const allAttrs = attributes.map(toAttributeCssSelector);
+  const allDirectiveMatches =
+      getDirectiveMatchesForSelector(directives, getNodeName(hostNode) + allAttrs.join(''));
+  const attrsExcludingName = attributes.filter(a => a.name !== name).map(toAttributeCssSelector);
+  const matchesWithoutAttr = getDirectiveMatchesForSelector(
+      directives, getNodeName(hostNode) + attrsExcludingName.join(''));
+  return difference(allDirectiveMatches, matchesWithoutAttr);
+}
+
+/**
+ * Given a list of directives and a text to use as a selector, returns the directives which match
+ * for the selector.
+ */
+function getDirectiveMatchesForSelector(
+    directives: DirectiveSymbol[], selector: string): Set<DirectiveSymbol> {
+  try {
+    const selectors = CssSelector.parse(selector);
+    if (selectors.length === 0) {
+      return new Set();
     }
+    return new Set(directives.filter((dir: DirectiveSymbol) => {
+      if (dir.selector === null) {
+        return false;
+      }
+
+      const matcher = new SelectorMatcher();
+      matcher.addSelectables(CssSelector.parse(dir.selector));
+
+      return selectors.some(selector => matcher.match(selector, null));
+    }));
+  } catch {
+    // An invalid selector may throw an error. There would be no directive matches for an invalid
+    // selector.
+    return new Set();
   }
 }
 
 /**
- * Returns an absolute path from the text in `node`. If the text is already
- * an absolute path, return it as is, otherwise join the path with the filename
- * of the source file.
+ * Returns a new `ts.SymbolDisplayPart` array which has the alias imports from the tcb filtered
+ * out, i.e. `i0.NgForOf`.
  */
-export function extractAbsoluteFilePath(node: ts.StringLiteralLike) {
-  const url = node.text;
-  return path.isAbsolute(url) ? url : path.join(path.dirname(node.getSourceFile().fileName), url);
+export function filterAliasImports(displayParts: ts.SymbolDisplayPart[]): ts.SymbolDisplayPart[] {
+  const tcbAliasImportRegex = /i\d+/;
+  function isImportAlias(part: {kind: string, text: string}) {
+    return part.kind === ALIAS_NAME && tcbAliasImportRegex.test(part.text);
+  }
+  function isDotPunctuation(part: {kind: string, text: string}) {
+    return part.kind === SYMBOL_PUNC && part.text === '.';
+  }
+
+  return displayParts.filter((part, i) => {
+    const previousPart = displayParts[i - 1];
+    const nextPart = displayParts[i + 1];
+
+    const aliasNameFollowedByDot =
+        isImportAlias(part) && nextPart !== undefined && isDotPunctuation(nextPart);
+    const dotPrecededByAlias =
+        isDotPunctuation(part) && previousPart !== undefined && isImportAlias(previousPart);
+
+    return !aliasNameFollowedByDot && !dotPrecededByAlias;
+  });
+}
+
+export function isDollarEvent(n: t.Node|e.AST): n is e.PropertyRead {
+  return n instanceof e.PropertyRead && n.name === '$event' &&
+      n.receiver instanceof e.ImplicitReceiver && !(n.receiver instanceof e.ThisReceiver);
+}
+
+/**
+ * Returns a new array formed by applying a given callback function to each element of the array,
+ * and then flattening the result by one level.
+ */
+export function flatMap<T, R>(items: T[]|readonly T[], f: (item: T) => R[] | readonly R[]): R[] {
+  const results: R[] = [];
+  for (const x of items) {
+    results.push(...f(x));
+  }
+  return results;
+}
+
+export function isTypeScriptFile(fileName: string): boolean {
+  return fileName.endsWith('.ts');
+}
+
+export function isExternalTemplate(fileName: string): boolean {
+  return !isTypeScriptFile(fileName);
+}
+
+export function isWithin(position: number, span: AbsoluteSourceSpan|ParseSourceSpan): boolean {
+  let start: number, end: number;
+  if (span instanceof ParseSourceSpan) {
+    start = span.start.offset;
+    end = span.end.offset;
+  } else {
+    start = span.start;
+    end = span.end;
+  }
+  // Note both start and end are inclusive because we want to match conditions
+  // like ¦start and end¦ where ¦ is the cursor.
+  return start <= position && position <= end;
+}
+
+/**
+ * For a given location in a shim file, retrieves the corresponding file url for the template and
+ * the span in the template.
+ */
+export function getTemplateLocationFromShimLocation(
+    templateTypeChecker: TemplateTypeChecker, shimPath: AbsoluteFsPath,
+    positionInShimFile: number): {templateUrl: AbsoluteFsPath, span: ParseSourceSpan}|null {
+  const mapping =
+      templateTypeChecker.getTemplateMappingAtShimLocation({shimPath, positionInShimFile});
+  if (mapping === null) {
+    return null;
+  }
+  const {templateSourceMapping, span} = mapping;
+
+  let templateUrl: AbsoluteFsPath;
+  if (templateSourceMapping.type === 'direct') {
+    templateUrl = absoluteFromSourceFile(templateSourceMapping.node.getSourceFile());
+  } else if (templateSourceMapping.type === 'external') {
+    templateUrl = absoluteFrom(templateSourceMapping.templateUrl);
+  } else {
+    // This includes indirect mappings, which are difficult to map directly to the code
+    // location. Diagnostics similarly return a synthetic template string for this case rather
+    // than a real location.
+    return null;
+  }
+  return {templateUrl, span};
+}
+
+export function isBoundEventWithSyntheticHandler(event: t.BoundEvent): boolean {
+  // An event binding with no value (e.g. `(event|)`) parses to a `BoundEvent` with a
+  // `LiteralPrimitive` handler with value `'ERROR'`, as opposed to a property binding with no
+  // value which has an `EmptyExpr` as its value. This is a synthetic node created by the binding
+  // parser, and is not suitable to use for Language Service analysis. Skip it.
+  //
+  // TODO(alxhub): modify the parser to generate an `EmptyExpr` instead.
+  let handler: e.AST = event.handler;
+  if (handler instanceof e.ASTWithSource) {
+    handler = handler.ast;
+  }
+  if (handler instanceof e.LiteralPrimitive && handler.value === 'ERROR') {
+    return true;
+  }
+  return false;
 }

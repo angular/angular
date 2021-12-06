@@ -98,8 +98,9 @@ To tell the library how to build the schematics, add a `tsconfig.schematics.json
     </code-example>
 
     * The `build` script compiles your schematic using the custom `tsconfig.schematics.json` file.
-    * The `copy:*` statements copy compiled schematic files into the proper locations in the library output folder in order to preserve the file structure.
     * The `postbuild` script copies the schematic files after the `build` script completes.
+    * Both the `build` and the `postbuild` scripts require dependencies that are found in their parent directory.
+      They can be installed by running `npm install` prior to running the scripts.
 
 ## Providing generation support
 

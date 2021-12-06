@@ -11,7 +11,6 @@ import ts from 'typescript';
 import {absoluteFrom, getSourceFileOrError} from '../../file_system';
 import {runInEachFileSystem, TestFile} from '../../file_system/testing';
 import {OptimizeFor, TypeCheckingConfig} from '../api';
-
 import {ngForDeclaration, ngForDts, setup, TestDeclaration} from '../testing';
 
 runInEachFileSystem(() => {
@@ -276,6 +275,46 @@ runInEachFileSystem(() => {
         `TestComponent.html(1, 14): Property 'personn' does not exist on type 'TestComponent'. Did you mean 'person'?`,
       ]);
     });
+
+    it('should retain literal types in object literals together if strictNullInputBindings is disabled',
+       () => {
+         const messages = diagnose(
+             `<div dir [ngModelOptions]="{updateOn: 'change'}"></div>`, `
+              class Dir {
+                ngModelOptions: { updateOn: 'change'|'blur' };
+              }
+
+              class TestComponent {}`,
+             [{
+               type: 'directive',
+               name: 'Dir',
+               selector: '[dir]',
+               inputs: {'ngModelOptions': 'ngModelOptions'},
+             }],
+             [], {strictNullInputBindings: false});
+
+         expect(messages).toEqual([]);
+       });
+
+    it('should retain literal types in array literals together if strictNullInputBindings is disabled',
+       () => {
+         const messages = diagnose(
+             `<div dir [options]="['literal']"></div>`, `
+                class Dir {
+                  options!: Array<'literal'>;
+                }
+
+                class TestComponent {}`,
+             [{
+               type: 'directive',
+               name: 'Dir',
+               selector: '[dir]',
+               inputs: {'options': 'options'},
+             }],
+             [], {strictNullInputBindings: false});
+
+         expect(messages).toEqual([]);
+       });
 
     it('does not produce diagnostics for user code', () => {
       const messages = diagnose(`{{ person.name }}`, `

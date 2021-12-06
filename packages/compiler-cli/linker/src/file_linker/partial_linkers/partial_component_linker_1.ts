@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {ChangeDetectionStrategy, compileComponentFromMetadata, ConstantPool, DeclarationListEmitMode, DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig, makeBindingParser, outputAst as o, parseTemplate, R3ComponentMetadata, R3DeclareComponentMetadata, R3DeclareUsedDirectiveMetadata, R3PartialDeclaration, R3UsedDirectiveMetadata, ViewEncapsulation} from '@angular/compiler';
+import {ChangeDetectionStrategy, compileComponentFromMetadata, ConstantPool, DeclarationListEmitMode, DEFAULT_INTERPOLATION_CONFIG, ForwardRefHandling, InterpolationConfig, makeBindingParser, outputAst as o, parseTemplate, R3ComponentMetadata, R3DeclareComponentMetadata, R3DeclareUsedDirectiveMetadata, R3PartialDeclaration, R3UsedDirectiveMetadata, ViewEncapsulation} from '@angular/compiler';
 
 import {AbsoluteFsPath} from '../../../../src/ngtsc/file_system';
 import {Range} from '../../ast/ast_host';
@@ -69,8 +69,8 @@ export class PartialComponentLinkerVersion1<TStatement, TExpression> implements
             const type = directiveExpr.getValue('type');
             const selector = directiveExpr.getString('selector');
 
-            const {expression: typeExpr, isForwardRef} = extractForwardRef(type);
-            if (isForwardRef) {
+            const {expression: typeExpr, forwardRef} = extractForwardRef(type);
+            if (forwardRef === ForwardRefHandling.Unwrapped) {
               declarationListEmitMode = DeclarationListEmitMode.Closure;
             }
 
@@ -101,8 +101,8 @@ export class PartialComponentLinkerVersion1<TStatement, TExpression> implements
     let pipes = new Map<string, o.Expression>();
     if (metaObj.has('pipes')) {
       pipes = metaObj.getObject('pipes').toMap(pipe => {
-        const {expression: pipeType, isForwardRef} = extractForwardRef(pipe);
-        if (isForwardRef) {
+        const {expression: pipeType, forwardRef} = extractForwardRef(pipe);
+        if (forwardRef === ForwardRefHandling.Unwrapped) {
           declarationListEmitMode = DeclarationListEmitMode.Closure;
         }
         return pipeType;

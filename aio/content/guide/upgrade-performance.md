@@ -222,8 +222,7 @@ instructions in the [Upgrade Setup](guide/upgrade-setup "Setup for Upgrading fro
 You also need to install the `@angular/upgrade` package using `npm install @angular/upgrade --save`
 and add a mapping for the `@angular/upgrade/static` package:
 
-<code-example header="system.config.js">
-'@angular/upgrade/static': 'npm:@angular/upgrade/bundles/upgrade-static.umd.js',
+<code-example path="upgrade-module/src/systemjs.config.1.js" region="upgrade-static-package" header="systemjs.config.js (map)">
 </code-example>
 
 Next, create an `app.module.ts` file and add the following `NgModule` class:

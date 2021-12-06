@@ -21,8 +21,6 @@ This sample application is much like the one in the [_Tour of Heroes_ tutorial](
 
 <div class="alert is-helpful">
 
-  For a hands-on experience, <live-example name="testing" stackblitz="specs" noDownload>run tests and explore the test code</live-example> in your browser as your read this guide.
-
   If you'd like to experiment with the application that this guide describes, <live-example name="testing" noDownload>run it in your browser</live-example> or <live-example name="testing" downloadOnly>download and run it locally</live-example>.
 
 </div>

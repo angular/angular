@@ -9,10 +9,9 @@
 import {ChangeDetectionStrategy} from '../change_detection/constants';
 import {Provider} from '../di/interface/provider';
 import {Type} from '../interface/type';
-import {compileComponent as render3CompileComponent, compileDirective as render3CompileDirective} from '../render3/jit/directive';
-import {compilePipe as render3CompilePipe} from '../render3/jit/pipe';
+import {compileComponent, compileDirective} from '../render3/jit/directive';
+import {compilePipe} from '../render3/jit/pipe';
 import {makeDecorator, makePropDecorator, TypeDecorator} from '../util/decorators';
-import {noop} from '../util/noop';
 
 import {ViewEncapsulation} from './view';
 
@@ -297,7 +296,7 @@ export interface Directive {
  */
 export const Directive: DirectiveDecorator = makeDecorator(
     'Directive', (dir: Directive = {}) => dir, undefined, undefined,
-    (type: Type<any>, meta: Directive) => SWITCH_COMPILE_DIRECTIVE(type, meta));
+    (type: Type<any>, meta: Directive) => compileDirective(type, meta));
 
 /**
  * Component decorator interface
@@ -517,18 +516,19 @@ export interface Component extends Directive {
   animations?: any[];
 
   /**
-   * An encapsulation policy for the template and CSS styles. One of:
-   * - `ViewEncapsulation.Emulated`: Use shimmed CSS that
-   * emulates the native behavior.
-   * - `ViewEncapsulation.None`: Use global CSS without any
-   * encapsulation.
-   * - `ViewEncapsulation.ShadowDom`: Use Shadow DOM v1 to encapsulate styles.
+   * An encapsulation policy for the component's styling.
+   * Possible values:
+   * - `ViewEncapsulation.Emulated`: Apply modified component styles in order to emulate
+   *                                 a native Shadow DOM CSS encapsulation behavior.
+   * - `ViewEncapsulation.None`: Apply component styles globally without any sort of encapsulation.
+   * - `ViewEncapsulation.ShadowDom`: Use the browser's native Shadow DOM API to encapsulate styles.
    *
-   * If not supplied, the value is taken from `CompilerOptions`. The default compiler option is
-   * `ViewEncapsulation.Emulated`.
+   * If not supplied, the value is taken from the `CompilerOptions`
+   * which defaults to `ViewEncapsulation.Emulated`.
    *
-   * If the policy is set to `ViewEncapsulation.Emulated` and the component has no `styles`
-   * or `styleUrls` specified, the policy is automatically switched to `ViewEncapsulation.None`.
+   * If the policy is `ViewEncapsulation.Emulated` and the component has no
+   * {@link Component#styles styles} nor {@link Component#styleUrls styleUrls},
+   * the policy is automatically switched to `ViewEncapsulation.None`.
    */
   encapsulation?: ViewEncapsulation;
 
@@ -563,8 +563,7 @@ export interface Component extends Directive {
  */
 export const Component: ComponentDecorator = makeDecorator(
     'Component', (c: Component = {}) => ({changeDetection: ChangeDetectionStrategy.Default, ...c}),
-    Directive, undefined,
-    (type: Type<any>, meta: Component) => SWITCH_COMPILE_COMPONENT(type, meta));
+    Directive, undefined, (type: Type<any>, meta: Component) => compileComponent(type, meta));
 
 /**
  * Type of the Pipe decorator / constructor function.
@@ -633,7 +632,7 @@ export interface Pipe {
  */
 export const Pipe: PipeDecorator = makeDecorator(
     'Pipe', (p: Pipe) => ({pure: true, ...p}), undefined, undefined,
-    (type: Type<any>, meta: Pipe) => SWITCH_COMPILE_PIPE(type, meta));
+    (type: Type<any>, meta: Pipe) => compilePipe(type, meta));
 
 
 /**
@@ -907,17 +906,3 @@ export interface HostListener {
  */
 export const HostListener: HostListenerDecorator =
     makePropDecorator('HostListener', (eventName?: string, args?: string[]) => ({eventName, args}));
-
-
-
-export const SWITCH_COMPILE_COMPONENT__POST_R3__ = render3CompileComponent;
-export const SWITCH_COMPILE_DIRECTIVE__POST_R3__ = render3CompileDirective;
-export const SWITCH_COMPILE_PIPE__POST_R3__ = render3CompilePipe;
-
-const SWITCH_COMPILE_COMPONENT__PRE_R3__ = noop;
-const SWITCH_COMPILE_DIRECTIVE__PRE_R3__ = noop;
-const SWITCH_COMPILE_PIPE__PRE_R3__ = noop;
-
-const SWITCH_COMPILE_COMPONENT: typeof render3CompileComponent = SWITCH_COMPILE_COMPONENT__PRE_R3__;
-const SWITCH_COMPILE_DIRECTIVE: typeof render3CompileDirective = SWITCH_COMPILE_DIRECTIVE__PRE_R3__;
-const SWITCH_COMPILE_PIPE: typeof render3CompilePipe = SWITCH_COMPILE_PIPE__PRE_R3__;

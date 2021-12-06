@@ -12,7 +12,7 @@ import * as o from '../../output/output_ast';
 import {ParseSourceSpan} from '../../parse_util';
 import * as t from '../r3_ast';
 import {R3DependencyMetadata} from '../r3_factory';
-import {R3Reference} from '../util';
+import {MaybeForwardRefExpression, R3Reference} from '../util';
 
 
 /**
@@ -206,11 +206,12 @@ export interface R3ComponentMetadata extends R3DirectiveMetadata {
   styles: string[];
 
   /**
-   * An encapsulation policy for the template and CSS styles. One of:
-   * - `ViewEncapsulation.Emulated`: Use shimmed CSS that emulates the native behavior.
-   * - `ViewEncapsulation.None`: Use global CSS without any encapsulation.
-   * - `ViewEncapsulation.ShadowDom`: Use the latest ShadowDOM API to natively encapsulate styles
-   * into a shadow root.
+   * An encapsulation policy for the component's styling.
+   * Possible values:
+   * - `ViewEncapsulation.Emulated`: Apply modified component styles in order to emulate
+   *                                 a native Shadow DOM CSS encapsulation behavior.
+   * - `ViewEncapsulation.None`: Apply component styles globally without any sort of encapsulation.
+   * - `ViewEncapsulation.ShadowDom`: Use the browser's native Shadow DOM API to encapsulate styles.
    */
   encapsulation: ViewEncapsulation;
 
@@ -302,7 +303,7 @@ export interface R3QueryMetadata {
    * Either an expression representing a type or `InjectionToken` for the query
    * predicate, or a set of string selectors.
    */
-  predicate: o.Expression|string[];
+  predicate: MaybeForwardRefExpression|string[];
 
   /**
    * Whether to include only direct children or all descendants.

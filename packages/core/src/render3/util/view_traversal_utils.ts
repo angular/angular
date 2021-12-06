@@ -74,5 +74,5 @@ function getNearestLContainer(viewOrContainer: LContainer|LView|null) {
   while (viewOrContainer !== null && !isLContainer(viewOrContainer)) {
     viewOrContainer = viewOrContainer[NEXT];
   }
-  return viewOrContainer;
+  return viewOrContainer as LContainer | null;
 }

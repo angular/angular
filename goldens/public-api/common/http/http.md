@@ -1674,6 +1674,7 @@ export class HttpClientXsrfModule {
 export class HttpContext {
     delete(token: HttpContextToken<unknown>): HttpContext;
     get<T>(token: HttpContextToken<T>): T;
+    has(token: HttpContextToken<unknown>): boolean;
     // (undocumented)
     keys(): IterableIterator<HttpContextToken<unknown>>;
     set<T>(token: HttpContextToken<T>, value: T): HttpContext;

@@ -41,11 +41,9 @@ function main(argv: [string, string, string]|[string, string]): boolean {
   } else {
     passed = symbolExtractor.compareAndPrintError(goldenFilePath, goldenContent);
     if (!passed) {
-      const ivyEnabled = process.env['angular_ivy_enabled'] == 'True';
       console.error(`TEST FAILED!`);
       console.error(`  To update the golden file run: `);
-      console.error(`    yarn bazel run --config=${ivyEnabled ? 'ivy' : 'view-engine'} ${
-          process.env['TEST_TARGET']}.accept`);
+      console.error(`    yarn bazel run ${process.env['TEST_TARGET']}.accept`);
     }
   }
   return passed;

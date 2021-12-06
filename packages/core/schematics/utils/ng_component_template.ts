@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Tree} from '@angular-devkit/schematics';
 import {existsSync, readFileSync} from 'fs';
-import {dirname, resolve} from 'path';
+import {dirname, relative, resolve} from 'path';
 import ts from 'typescript';
 
 import {computeLineStartsMap, getLineAndCharacterFromPosition} from './line_mappings';
@@ -43,7 +44,7 @@ export interface ResolvedTemplate {
 export class NgComponentTemplateVisitor {
   resolvedTemplates: ResolvedTemplate[] = [];
 
-  constructor(public typeChecker: ts.TypeChecker) {}
+  constructor(public typeChecker: ts.TypeChecker, private _basePath: string, private _tree: Tree) {}
 
   visitNode(node: ts.Node) {
     if (node.kind === ts.SyntaxKind.ClassDeclaration) {
@@ -97,32 +98,45 @@ export class NgComponentTemplateVisitor {
       if (propertyName === 'template' && ts.isStringLiteralLike(property.initializer)) {
         // Need to add an offset of one to the start because the template quotes are
         // not part of the template content.
-        const templateStartIdx = property.initializer.getStart() + 1;
-        const filePath = resolve(sourceFileName);
+        // The `getText()` method gives us the original raw text.
+        // We could have used the `text` property, but if the template is defined as a backtick
+        // string then the `text` property contains a "cooked" version of the string. Such cooked
+        // strings will have converted CRLF characters to only LF. This messes up string
+        // replacements in template migrations.
+        // The raw text returned by `getText()` includes the enclosing quotes so we change the
+        // `content` and `start` values accordingly.
+        const content = property.initializer.getText().slice(1, -1);
+        const start = property.initializer.getStart() + 1;
         this.resolvedTemplates.push({
-          filePath: filePath,
+          filePath: sourceFileName,
           container: node,
-          content: property.initializer.text,
+          content,
           inline: true,
-          start: templateStartIdx,
+          start: start,
           getCharacterAndLineOfPosition: pos =>
-              ts.getLineAndCharacterOfPosition(sourceFile, pos + templateStartIdx)
+              ts.getLineAndCharacterOfPosition(sourceFile, pos + start)
         });
       }
       if (propertyName === 'templateUrl' && ts.isStringLiteralLike(property.initializer)) {
-        const templatePath = resolve(dirname(sourceFileName), property.initializer.text);
+        const templateDiskPath = resolve(dirname(sourceFileName), property.initializer.text);
+        // TODO(devversion): Remove this when the TypeScript compiler host is fully virtual
+        // relying on the devkit virtual tree and not dealing with disk paths. This is blocked on
+        // providing common utilities for schematics/migrations, given this is done in the
+        // Angular CDK already:
+        // https://github.com/angular/components/blob/3704400ee67e0190c9783e16367587489c803ebc/src/cdk/schematics/update-tool/utils/virtual-host.ts.
+        const templateDevkitPath = relative(this._basePath, templateDiskPath);
 
         // In case the template does not exist in the file system, skip this
         // external template.
-        if (!existsSync(templatePath)) {
+        if (!this._tree.exists(templateDevkitPath)) {
           return;
         }
 
-        const fileContent = readFileSync(templatePath, 'utf8');
+        const fileContent = this._tree.read(templateDevkitPath)!.toString();
         const lineStartsMap = computeLineStartsMap(fileContent);
 
         this.resolvedTemplates.push({
-          filePath: templatePath,
+          filePath: templateDiskPath,
           container: node,
           content: fileContent,
           inline: false,

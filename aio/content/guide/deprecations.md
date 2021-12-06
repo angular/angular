@@ -38,6 +38,7 @@ v13 -> v16
 | `@angular/common`                   | [`ReflectiveInjector`](#reflectiveinjector)                                                                | <!--v8--> v11         |
 | `@angular/common`                   | [`CurrencyPipe` - `DEFAULT_CURRENCY_CODE`](api/common/CurrencyPipe#currency-code-deprecation)              | <!--v9--> v11         |
 | `@angular/common/http`              | [`XhrFactory`](api/common/http/XhrFactory)                                                                 | <!--v12--> v15        |
+| `@angular/common/http/testing`      | [`TestRequest` accepting `ErrorEvent` for error simulation](#testrequest-errorevent)                       | <!--v13--> v16        |
 | `@angular/core`                     | [`DefaultIterableDiffer`](#core)                                                                           | <!--v7--> v11         |
 | `@angular/core`                     | [`ReflectiveKey`](#core)                                                                                   | <!--v8--> v11         |
 | `@angular/core`                     | [`RenderComponentType`](#core)                                                                             | <!--v7--> v11         |
@@ -53,6 +54,7 @@ v13 -> v16
 | `@angular/upgrade`                  | [`@angular/upgrade`](#upgrade)                                                                             | <!--v8--> v11         |
 | `@angular/upgrade`                  | [`getAngularLib`](#upgrade-static)                                                                         | <!--v8--> v11         |
 | `@angular/upgrade`                  | [`setAngularLib`](#upgrade-static)                                                                         | <!--v8--> v11         |
+| `@angular/upgrade`                  | [Factory-based signature of `downgradeModule`](#upgrade-static)                                                                         | <!--v13--> v15         |
 | template syntax                     | [`<template>`](#template-tag)                                                                              | <!--v7--> v11         |
 | polyfills                           | [reflect-metadata](#reflect-metadata)                                                                      | <!--v8--> v11         |
 | `@angular/compiler-cli`             | [Input setter coercion](#input-setter-coercion)                                                            | <!--v13--> v15        |
@@ -184,6 +186,7 @@ This section contains a complete list all of the currently-deprecated APIs, with
 | :-------------------------------------------------- | :------------------------------------------------------------ | :-------------------- | :--------------------------------------------- |
 | [`getAngularLib`](api/upgrade/static/getAngularLib) | [`getAngularJSGlobal`](api/upgrade/static/getAngularJSGlobal) | v5                    | See [Upgrading from AngularJS](guide/upgrade). |
 | [`setAngularLib`](api/upgrade/static/setAngularLib) | [`setAngularJSGlobal`](api/upgrade/static/setAngularJSGlobal) | v5                    | See [Upgrading from AngularJS](guide/upgrade). |
+| [Factory-based signature of `downgradeModule`](api/upgrade/static/downgradeModule) | [NgModule-based signature of `downgradeModule`](api/upgrade/static/downgradeModule) | v13                    | The `downgradeModule` supports more ergonomic NgModule-based API (vs NgModule factory based API). |
 
 {@a deprecated-features}
 
@@ -467,6 +470,26 @@ In ViewEngine, [JIT compilation](https://angular.io/guide/glossary#jit) required
 
 Important note: this deprecation doesn't affect JIT mode in Ivy (JIT remains available with Ivy, however we are exploring a possibility of deprecating it in the future. See [RFC: Exploration of use-cases for Angular JIT compilation mode](https://github.com/angular/angular/issues/43133)).
 
+{@a testrequest-errorevent}
+
+### `TestRequest` accepting `ErrorEvent`
+
+Angular provides utilities for testing `HttpClient`. The `TestRequest` class from
+`@angular/common/http/testing` mocks HTTP request objects for use with `HttpTestingController`.
+
+`TestRequest` provides an API for simulating an HTTP response with an error. In earlier versions
+of Angular, this API accepted objects of type `ErrorEvent`, which does not match the type of
+error event that browsers return natively. If you use `ErrorEvent` with `TestRequest`,
+you should switch to `ProgressEvent`.
+
+Here is an example using a `ProgressEvent`:
+
+```ts
+const mockError = new ProgressEvent('error');
+const mockRequest = httpTestingController.expectOne(..);
+
+mockRequest.error(mockError);
+```
 
 {@a deprecated-cli-flags}
 

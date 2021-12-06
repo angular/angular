@@ -12,7 +12,7 @@ import {isLView} from '../render3/interfaces/type_checks';
 import {LView, RENDERER} from '../render3/interfaces/view';
 import {getCurrentTNode, getLView} from '../render3/state';
 import {getComponentLViewByIndex} from '../render3/util/view_utils';
-import {noop} from '../util/noop';
+
 import {RendererStyleFlags2, RendererType2} from './api_flags';
 
 
@@ -237,13 +237,8 @@ export abstract class Renderer2 {
    * @internal
    * @nocollapse
    */
-  static __NG_ELEMENT_ID__: () => Renderer2 = () => SWITCH_RENDERER2_FACTORY();
+  static __NG_ELEMENT_ID__: () => Renderer2 = () => injectRenderer2();
 }
-
-
-export const SWITCH_RENDERER2_FACTORY__POST_R3__ = injectRenderer2;
-const SWITCH_RENDERER2_FACTORY__PRE_R3__ = noop;
-const SWITCH_RENDERER2_FACTORY: typeof injectRenderer2 = SWITCH_RENDERER2_FACTORY__PRE_R3__;
 
 /** Returns a Renderer2 (or throws when application was bootstrapped with Renderer3) */
 function getOrCreateRenderer2(lView: LView): Renderer2 {

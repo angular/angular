@@ -11,7 +11,6 @@ import {ApplicationRef, Component, ComponentFactoryResolver, ComponentRef, Eleme
 import {TestBed} from '@angular/core/testing';
 import {ɵDomRendererFactory2 as DomRendererFactory2} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {ivyEnabled, onlyInIvy} from '@angular/private/testing';
 
 import {domRendererFactory3} from '../../src/render3/interfaces/renderer';
 import {global} from '../../src/util/global';
@@ -59,59 +58,10 @@ describe('component', () => {
     });
   });
 
-  it('should support entry components from another module', () => {
-    @Component({selector: 'other-component', template: `bar`})
-    class OtherComponent {
-    }
-
-    @NgModule({
-      declarations: [OtherComponent],
-      exports: [OtherComponent],
-      entryComponents: [OtherComponent]
-    })
-    class OtherModule {
-    }
-
-    @Component({
-      selector: 'test_component',
-      template: `foo|<ng-template #vc></ng-template>`,
-      entryComponents: [OtherComponent]
-    })
-    class TestComponent {
-      @ViewChild('vc', {read: ViewContainerRef, static: true}) vcref!: ViewContainerRef;
-
-      constructor(private _cfr: ComponentFactoryResolver) {}
-
-      createComponentView<T>(cmptType: Type<T>): ComponentRef<T> {
-        const cf = this._cfr.resolveComponentFactory(cmptType);
-        return this.vcref.createComponent(cf);
-      }
-    }
-
-    TestBed.configureTestingModule({declarations: [TestComponent], imports: [OtherModule]});
-    const fixture = TestBed.createComponent(TestComponent);
-    fixture.detectChanges();
-
-    fixture.componentInstance.createComponentView(OtherComponent);
-    fixture.detectChanges();
-    expect(fixture.nativeElement).toHaveText('foo|bar');
-  });
-
   it('should be able to dynamically insert a component into a view container at the root of a component',
      () => {
        @Component({template: 'hello'})
        class HelloComponent {
-       }
-
-       // TODO: This module is only used to declare the `entryComponets` since
-       //  `configureTestingModule` doesn't support it. The module can be removed
-       // once ViewEngine is removed.
-       @NgModule({
-         declarations: [HelloComponent],
-         exports: [HelloComponent],
-         entryComponents: [HelloComponent]
-       })
-       class HelloModule {
        }
 
        @Component({selector: 'wrapper', template: '<ng-content></ng-content>'})
@@ -130,7 +80,7 @@ describe('component', () => {
          constructor(public componentFactoryResolver: ComponentFactoryResolver) {}
        }
 
-       TestBed.configureTestingModule({declarations: [App, Wrapper], imports: [HelloModule]});
+       TestBed.configureTestingModule({declarations: [App, Wrapper, HelloComponent]});
        const fixture = TestBed.createComponent(App);
        fixture.detectChanges();
 
@@ -247,13 +197,6 @@ describe('component', () => {
          }
        }
 
-       @NgModule({
-         declarations: [DynamicComponent],
-         entryComponents: [DynamicComponent],  // needed only for ViewEngine
-       })
-       class TestModule {
-       }
-
        @Component({
          selector: 'button',
          template: `
@@ -281,7 +224,7 @@ describe('component', () => {
          }
        }
 
-       TestBed.configureTestingModule({imports: [TestModule], declarations: [App]});
+       TestBed.configureTestingModule({declarations: [App, DynamicComponent]});
        const fixture = TestBed.createComponent(App);
        fixture.detectChanges();
 
@@ -327,13 +270,6 @@ describe('component', () => {
            class DynamicComponent {
            }
 
-           @NgModule({
-             declarations: [DynamicComponent],
-             entryComponents: [DynamicComponent],  // needed only for ViewEngine
-           })
-           class TestModule {
-           }
-
            @Component({
              selector: 'button',
              template: '<div id="app-root" #anchor></div>',
@@ -357,7 +293,7 @@ describe('component', () => {
              }
            }
 
-           TestBed.configureTestingModule({imports: [TestModule], declarations: [App]});
+           TestBed.configureTestingModule({declarations: [App, DynamicComponent]});
            const fixture = TestBed.createComponent(App);
            fixture.detectChanges();
 
@@ -388,18 +324,9 @@ describe('component', () => {
       }
 
       TestBed.configureTestingModule({declarations: [App, Comp]});
-      if (ivyEnabled) {
-        expect(() => TestBed.createComponent(App))
-            .toThrowError(
-                /"ng-container" tags cannot be used as component hosts. Please use a different tag to activate the Comp component/);
-      } else {
-        // In VE there is no special check for the case when `<ng-container>` is used as a host
-        // element for a Component. VE tries to attach Component's content to a Comment node that
-        // represents the `<ng-container>` location and this call fails with a
-        // browser/environment-specific error message, so we just verify that this scenario is
-        // triggering an error in VE.
-        expect(() => TestBed.createComponent(App)).toThrow();
-      }
+      expect(() => TestBed.createComponent(App))
+          .toThrowError(
+              /"ng-container" tags cannot be used as component hosts. Please use a different tag to activate the Comp component/);
     });
 
     it('should throw when <ng-template> is used as a host element for a Component', () => {
@@ -418,15 +345,9 @@ describe('component', () => {
       }
 
       TestBed.configureTestingModule({declarations: [App, Comp]});
-      if (ivyEnabled) {
-        expect(() => TestBed.createComponent(App))
-            .toThrowError(
-                /"ng-template" tags cannot be used as component hosts. Please use a different tag to activate the Comp component/);
-      } else {
-        expect(() => TestBed.createComponent(App))
-            .toThrowError(
-                /Components on an embedded template: Comp \("\[ERROR ->\]<ng-template><\/ng-template>"\)/);
-      }
+      expect(() => TestBed.createComponent(App))
+          .toThrowError(
+              /"ng-template" tags cannot be used as component hosts. Please use a different tag to activate the Comp component/);
     });
   });
 
@@ -553,17 +474,11 @@ describe('component', () => {
       }
     }
 
-    @NgModule({
-      declarations: [CompA],
-      entryComponents: [CompA],
-    })
+    @NgModule({declarations: [CompA]})
     class MyModuleA {
     }
 
-    @NgModule({
-      declarations: [CompB],
-      entryComponents: [CompB],
-    })
+    @NgModule({declarations: [CompB]})
     class MyModuleB {
     }
 
@@ -595,14 +510,7 @@ describe('component', () => {
     class AttSelectorCmp {
     }
 
-    @NgModule({
-      declarations: [AttSelectorCmp],
-      entryComponents: [AttSelectorCmp],
-    })
-    class AppModule {
-    }
-
-    TestBed.configureTestingModule({imports: [AppModule]});
+    TestBed.configureTestingModule({declarations: [AttSelectorCmp]});
     const cmpFactoryResolver = TestBed.inject(ComponentFactoryResolver);
     const cmpFactory = cmpFactoryResolver.resolveComponentFactory(AttSelectorCmp);
 
@@ -614,14 +522,7 @@ describe('component', () => {
     class ComplexSelectorCmp {
     }
 
-    @NgModule({
-      declarations: [ComplexSelectorCmp],
-      entryComponents: [ComplexSelectorCmp],
-    })
-    class AppModule {
-    }
-
-    TestBed.configureTestingModule({imports: [AppModule]});
+    TestBed.configureTestingModule({declarations: [ComplexSelectorCmp]});
     const cmpFactoryResolver = TestBed.inject(ComponentFactoryResolver);
     const cmpFactory = cmpFactoryResolver.resolveComponentFactory(ComplexSelectorCmp);
 
@@ -659,14 +560,6 @@ describe('component', () => {
         }
       }
 
-      // View Engine requires DynamicComponent to be in entryComponents.
-      @NgModule({
-        declarations: [App, DynamicComponent],
-        entryComponents: [App, DynamicComponent],
-      })
-      class AppModule {
-      }
-
       function _document(): any {
         // Tell Ivy about the global document
         ɵsetDocument(document);
@@ -674,7 +567,7 @@ describe('component', () => {
       }
 
       TestBed.configureTestingModule({
-        imports: [AppModule],
+        declarations: [App, DynamicComponent],
         providers: [
           {provide: DOCUMENT, useFactory: _document, deps: []},
           rendererProviders,
@@ -702,9 +595,7 @@ describe('component', () => {
     it('with Renderer2',
        () => runTestWithRenderer([{provide: RendererFactory2, useClass: DomRendererFactory2}]));
 
-    onlyInIvy('Renderer3 is supported only in Ivy')
-        .it('with Renderer3',
-            () =>
-                runTestWithRenderer([{provide: RendererFactory2, useValue: domRendererFactory3}]));
+    it('with Renderer3',
+       () => runTestWithRenderer([{provide: RendererFactory2, useValue: domRendererFactory3}]));
   });
 });

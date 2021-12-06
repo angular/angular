@@ -21,8 +21,7 @@ import { HeroesComponent } from './heroes/heroes.component';
     AppComponent,
     HeroesComponent
   ],
-  exports: [ AppComponent ],
-  entryComponents: [ AppComponent ]
+  exports: [ AppComponent ]
 })
 export class AppModule {}
 // #enddocregion example

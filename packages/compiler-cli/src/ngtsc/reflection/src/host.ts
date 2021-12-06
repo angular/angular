@@ -342,7 +342,7 @@ export interface NoValueDeclaration {
 export interface TypeOnlyImport {
   kind: ValueUnavailableKind.TYPE_ONLY_IMPORT;
   typeNode: ts.TypeNode;
-  importClause: ts.ImportClause;
+  node: ts.ImportClause|ts.ImportSpecifier;
 }
 
 export interface NamespaceImport {

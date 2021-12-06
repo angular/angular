@@ -86,7 +86,7 @@ executors:
         type: string
         default: medium
     docker:
-      - image: cimg/node:14.17.6@sha256:589b5e494173bfb48923fa8d29b010b4d17079ac98d08de95dd4a78e57f5aa0b
+      - image: cimg/node:16.10.0
     resource_class: << parameters.resource_class >>
     working_directory: ~/ng
 
@@ -96,7 +96,7 @@ executors:
         type: string
         default: medium
     docker:
-      - image: cimg/node:14.17.6-browsers@sha256:aa6d08a04d13dd8aa18ae94be70a703c14dde0e99ea572e885e548f47f95eaa9
+      - image: cimg/node:16.10.0-browsers
     resource_class: << parameters.resource_class >>
     working_directory: ~/ng
 
@@ -306,7 +306,7 @@ jobs:
           # We need to explicitly specify the --symlink_prefix option because otherwise we would
           # not be able to easily find the output bin directory when uploading artifacts for size
           # measurements.
-          command: yarn test  --symlink_prefix=dist/ //...
+          command: yarn test --symlink_prefix=dist/ -- //...
           no_output_timeout: 20m
         # Publish bundle artifacts which will be used to calculate the size change. **Note**: Make
         # sure that the size plugin from the Angular robot fetches the artifacts from this CircleCI
@@ -344,7 +344,7 @@ jobs:
           # See /tools/saucelabs/README.md for more info
           command: |
             yarn bazel run //tools/saucelabs:sauce_service_setup
-            TESTS=$(./node_modules/.bin/bazelisk query --output label '(kind(karma_web_test, ...) intersect attr("tags", "saucelabs", ...)) except attr("tags", "view-engine-only", ...) except attr("tags", "fixme-saucelabs", ...)')
+            TESTS=$(./node_modules/.bin/bazelisk query --output label '(kind(karma_web_test, ...) intersect attr("tags", "saucelabs", ...)) except attr("tags", "fixme-saucelabs", ...)')
             yarn bazel test --config=saucelabs ${TESTS}
             yarn bazel run //tools/saucelabs:sauce_service_stop
           no_output_timeout: 40m
@@ -614,9 +614,9 @@ jobs:
                 //packages/common/locales
 
             # Needed for the ES5 downlevel reflector test in `packages/core/test/reflection`.
-            mkdir -p dist/all/@angular/core/test/reflection/
+            mkdir -p dist/legacy-test-out/core/test/reflection/
             cp dist/bin/packages/core/test/reflection/es5_downleveled_inheritance_fixture.js \
-              dist/all/@angular/core/test/reflection/es5_downleveled_inheritance_fixture.js
+              dist/legacy-test-out/core/test/reflection/es5_downleveled_inheritance_fixture.js
             # Locale files are needed for i18n tests running within Saucelabs. These are added
             # directly as sources so that the TypeScript compilation of `/packages/tsconfig.json`
             # can succeed. Note that the base locale and currencies files are checked-in, so
@@ -624,11 +624,10 @@ jobs:
             mkdir -p packages/common/locales/extra
             cp dist/bin/packages/common/locales/*.ts packages/common/locales
             cp dist/bin/packages/common/locales/extra/*.ts packages/common/locales/extra
-      # add module umd tsc compile option so the test can work
-      # properly in the legacy browsers
-      - run: yarn tsc -p packages/tsconfig-legacy-saucelabs.json --module UMD
-      - run: yarn tsc -p modules --module UMD
+      # Build ZoneJS so that it can be loaded globally in the Karma tests.
       - run: yarn bazel build //packages/zone.js:npm_package
+      # Build the bundle for all tests to run within Saucelabs
+      - run: node tools/legacy-saucelabs/build-saucelabs-test-bundle.mjs
       - run:
           # Waiting on ready ensures that we don't run tests too early without Saucelabs not being ready.
           name: Waiting for Saucelabs tunnel to connect
@@ -636,8 +635,7 @@ jobs:
       - run:
           name: Running tests on Saucelabs.
           command: |
-            browsers=$(node -e 'console.log(require("./browser-providers.conf").sauceAliases.CI_REQUIRED.join(","))')
-            yarn karma start ./karma-js.conf.js --single-run --browsers=${browsers}
+            KARMA_WEB_TEST_MODE=SL_REQUIRED yarn karma start ./karma-js.conf.js --single-run
       - run:
           name: Stop Saucelabs tunnel service
           command: ./tools/saucelabs/sauce-service.sh stop
@@ -723,11 +721,11 @@ jobs:
       - setup_win
       - run:
           name: Build all windows CI targets
-          command: bazel build --build_tag_filters=-view-engine-only //packages/compiler-cli/...
+          command: bazel build //packages/compiler-cli/...
           no_output_timeout: 15m
       - run:
           name: Test all windows CI targets
-          command: bazel test --test_tag_filters="-view-engine-only,-browser:chromium-local" //packages/compiler-cli/...
+          command: bazel test --test_tag_filters="-browser:chromium-local" //packages/compiler-cli/...
           no_output_timeout: 15m
 
 workflows:

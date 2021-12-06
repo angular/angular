@@ -3,7 +3,6 @@ import path from 'canonical-path';
 import fs from 'fs-extra';
 import {globbySync} from 'globby';
 import jsdom from 'jsdom';
-import json5 from 'json5';
 import {fileURLToPath} from 'url';
 
 import regionExtractor from '../transforms/examples-package/services/region-parser.js';
@@ -39,19 +38,6 @@ export class StackblitzBuilder {
     if (failed) {
       process.exit(1);
     }
-  }
-
-  _addDependencies(config, postData) {
-    // Extract npm package dependencies
-    const exampleType = this._getExampleType(config.basePath);
-    const packageJson = this._getBoilerplatePackageJson(exampleType) || this._getBoilerplatePackageJson('cli');
-    const exampleDependencies = packageJson.dependencies;
-
-    // Add unit test packages from devDependencies for unit test examples
-    const devDependencies = packageJson.devDependencies;
-    (config.devDependencies || []).forEach(dep => exampleDependencies[dep] = devDependencies[dep]);
-
-    postData.dependencies = JSON.stringify(exampleDependencies);
   }
 
   _getExampleType(exampleDir) {
@@ -103,7 +89,9 @@ export class StackblitzBuilder {
     try {
       const config = this._initConfigAndCollectFileNames(configFileName);
       const postData = this._createPostData(config, configFileName);
-      this._addDependencies(config, postData);
+
+      this._addStackblitzrc(postData);
+
       const html = this._createStackblitzHtml(config, postData);
       fs.writeFileSync(outputFileName, html, 'utf-8');
       if (altFileName) {
@@ -159,9 +147,19 @@ export class StackblitzBuilder {
     }
   }
 
+  _addStackblitzrc(postData) {
+    postData['project[files][.stackblitzrc]'] = JSON.stringify({
+      installDependencies: true,
+      startCommand: 'turbo start',
+      env: {
+        ENABLE_CJS_IMPORTS: true
+      }
+    });
+  }
+
   _createBaseStackblitzHtml(config) {
     const file = `?file=${this._getPrimaryFile(config)}`;
-    const action = `https://run.stackblitz.com/api/angular/v1${file}`;
+    const action = `https://stackblitz.com/run${file}`;
 
     return `
       <!DOCTYPE html><html lang="en"><body>
@@ -232,25 +230,14 @@ export class StackblitzBuilder {
 
       content = regionExtractor()(content, extn.substr(1)).contents;
 
-      postData[`files[${relativeFileName}]`] = content;
+      postData[`project[files][${relativeFileName}]`] = content;
     });
 
-    // Stackblitz defaults to ViewEngine unless `"enableIvy": true`
-    // So if there is a tsconfig.json file and there is no `enableIvy` property, we need to
-    // explicitly set it.
-    const tsConfigJSON = postData['files[tsconfig.json]'];
-    if (tsConfigJSON !== undefined) {
-      const tsConfig = json5.parse(tsConfigJSON);
-      if (tsConfig.angularCompilerOptions.enableIvy === undefined) {
-        tsConfig.angularCompilerOptions.enableIvy = true;
-        postData['files[tsconfig.json]'] = JSON.stringify(tsConfig, null, 2);
-      }
-    }
-
     const tags = ['angular', 'example', ...config.tags || []];
-    tags.forEach((tag, ix) => postData[`tags[${ix}]`] = tag);
+    tags.forEach((tag, ix) => postData[`project[tags][${ix}]`] = tag);
 
-    postData.description = `Angular Example - ${config.description}`;
+    postData['project[description]'] = `Angular Example - ${config.description}`;
+    postData['project[template]'] = 'node';
 
     return postData;
   }
@@ -284,7 +271,7 @@ export class StackblitzBuilder {
     const config = this._parseConfig(configFileName);
 
     const defaultIncludes = ['**/*.ts', '**/*.js', '**/*.css', '**/*.html', '**/*.md', '**/*.json', '**/*.png', '**/*.svg'];
-    const boilerplateIncludes = ['src/environments/*.*', 'angular.json', 'src/polyfills.ts', 'tsconfig.json'];
+    const boilerplateIncludes = ['src/environments/*.*', 'src/polyfills.ts', '*.json'];
     if (config.files) {
       if (config.files.length > 0) {
         if (config.files[0][0] === '!') {
@@ -309,14 +296,9 @@ export class StackblitzBuilder {
 
     const defaultExcludes = [
       '!**/e2e/**/*.*',
-      '!**/package.json',
       '!**/example-config.json',
       '!**/.editorconfig',
       '!**/wallaby.js',
-      '!**/karma-test-shim.js',
-      '!**/karma.conf.js',
-      '!**/test.ts',
-      '!**/tsconfig.app.json',
       '!**/*stackblitz.*'
     ];
 

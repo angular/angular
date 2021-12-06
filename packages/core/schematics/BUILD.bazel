@@ -13,6 +13,7 @@ pkg_npm(
     ],
     visibility = ["//packages/core:__pkg__"],
     deps = [
+        "//packages/core/schematics/migrations/entry-components",
         "//packages/core/schematics/migrations/router-link-empty-expression",
         "//packages/core/schematics/migrations/testbed-teardown",
     ],

@@ -7,7 +7,6 @@ import { TocComponent } from './toc.component';
 @NgModule({
   imports: [ CommonModule, MatIconModule ],
   declarations: [ TocComponent ],
-  entryComponents: [ TocComponent ],
 })
 export class TocModule implements WithCustomElementComponent {
   customElementComponent: Type<any> = TocComponent;

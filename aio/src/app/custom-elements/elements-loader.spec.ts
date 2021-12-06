@@ -1,10 +1,4 @@
-import {
-  Compiler,
-  ComponentFactory,
-  ComponentFactoryResolver, ComponentRef, Injector, NgModuleFactory,
-  NgModuleRef,
-  Type,
-} from '@angular/core';
+import { Component, NgModule, Type } from '@angular/core';
 import { TestBed, fakeAsync, flushMicrotasks } from '@angular/core/testing';
 
 import { ElementsLoader } from './elements-loader';
@@ -18,25 +12,23 @@ interface Deferred {
 
 describe('ElementsLoader', () => {
   let elementsLoader: ElementsLoader;
-  let compiler: Compiler;
 
   beforeEach(() => {
     const injector = TestBed.configureTestingModule({
       providers: [
         ElementsLoader,
         {
-          provide: ELEMENT_MODULE_LOAD_CALLBACKS_TOKEN, useValue: new Map<
-            string, () => Promise<NgModuleFactory<WithCustomElementComponent> | Type<WithCustomElementComponent>>
-          >([
-          ['element-a-selector', () => Promise.resolve(new FakeModuleFactory('element-a-module'))],
-          ['element-b-selector', () => Promise.resolve(new FakeModuleFactory('element-b-module'))],
-          ['element-c-selector', () => Promise.resolve(FakeCustomElementModule)]
-        ])},
+          provide: ELEMENT_MODULE_LOAD_CALLBACKS_TOKEN,
+          useValue: new Map<string, () => Promise<Type<WithCustomElementComponent>>>([
+            ['element-a-selector', async () => createFakeCustomElementModule('element-a-module')],
+            ['element-b-selector', async () => createFakeCustomElementModule('element-b-module')],
+            ['element-c-selector', async () => createFakeCustomElementModule('element-c-module')],
+          ]),
+        },
       ]
     });
 
     elementsLoader = injector.inject(ElementsLoader);
-    compiler = injector.inject(Compiler);
   });
 
   describe('loadContainedCustomElements()', () => {
@@ -228,78 +220,32 @@ describe('ElementsLoader', () => {
         expect(definedSpy).toHaveBeenCalledTimes(1);
       })
     );
-
-    it('should be able to load and register an element after compiling its NgModule', fakeAsync(() => {
-      const compilerSpy = spyOn(compiler, 'compileModuleAsync')
-        .and.returnValue(Promise.resolve(new FakeModuleFactory('element-c-module')));
-
-      elementsLoader.loadCustomElement('element-c-selector');
-      flushMicrotasks();
-
-      expect(definedSpy).toHaveBeenCalledTimes(1);
-      expect(definedSpy).toHaveBeenCalledWith('element-c-selector', jasmine.any(Function));
-
-      expect(compilerSpy).toHaveBeenCalledTimes(1);
-      expect(compilerSpy).toHaveBeenCalledWith(FakeCustomElementModule);
-    }));
   });
 });
 
 // TEST CLASSES/HELPERS
 
 class FakeCustomElementModule implements WithCustomElementComponent {
+  static readonly modulePath: string;
   customElementComponent: Type<any>;
 }
 
-class FakeComponentFactory extends ComponentFactory<any> {
-  selector: string;
-  componentType: Type<any>;
-  ngContentSelectors: string[];
-  inputs = [{propName: this.identifyingInput, templateName: this.identifyingInput}];
-  outputs = [];
+function createFakeComponent(inputName: string): Type<any> {
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  @Component({inputs: [inputName]})
+  class FakeComponent {}
 
-  constructor(private identifyingInput: string) { super(); }
-
-  create(_injector: Injector,
-         _projectableNodes?: any[][],
-         _rootSelectorOrNode?: string | any,
-         _ngModule?: NgModuleRef<any>): ComponentRef<any> {
-    return jasmine.createSpy('ComponentRef') as any;
-  }
+  return FakeComponent;
 }
 
-class FakeComponentFactoryResolver extends ComponentFactoryResolver {
-  constructor(private modulePath: string) { super(); }
-
-  resolveComponentFactory(_component: Type<any>): ComponentFactory<any> {
-    return new FakeComponentFactory(this.modulePath);
-  }
-}
-
-class FakeModuleRef extends NgModuleRef<WithCustomElementComponent> {
-  injector = jasmine.createSpyObj('injector', ['get']);
-  componentFactoryResolver = new FakeComponentFactoryResolver(this.modulePath);
-  instance: WithCustomElementComponent = new FakeCustomElementModule();
-
-  constructor(private modulePath: string) {
-    super();
-
-    this.injector.get.and.returnValue(this.componentFactoryResolver);
+function createFakeCustomElementModule(modulePath: string): typeof FakeCustomElementModule {
+  @NgModule({})
+  class FakeModule extends FakeCustomElementModule {
+    static override readonly modulePath = modulePath;
+    override customElementComponent = createFakeComponent(modulePath);
   }
 
-  destroy() {}
-  onDestroy(_callback: () => void) {}
-}
-
-class FakeModuleFactory extends NgModuleFactory<any> {
-  moduleType: Type<any>;
-  moduleRefToCreate = new FakeModuleRef(this.modulePath);
-
-  constructor(private modulePath: string) { super(); }
-
-  create(_parentInjector: Injector | null): NgModuleRef<any> {
-    return this.moduleRefToCreate;
-  }
+  return FakeModule;
 }
 
 function returnPromisesFromSpy(spy: jasmine.Spy): Deferred[] {

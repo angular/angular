@@ -13,11 +13,9 @@ import {BrowserDomAdapter} from './browser/browser_adapter';
 import {SERVER_TRANSITION_PROVIDERS, TRANSITION_ID} from './browser/server-transition';
 import {BrowserGetTestability} from './browser/testability';
 import {BrowserXhr} from './browser/xhr';
-import {ELEMENT_PROBE_PROVIDERS} from './dom/debug/ng_probe';
 import {DomRendererFactory2} from './dom/dom_renderer';
 import {DomEventsPlugin} from './dom/events/dom_events';
 import {EVENT_MANAGER_PLUGINS, EventManager} from './dom/events/event_manager';
-import {HAMMER_PROVIDERS} from './dom/events/hammer_gestures';
 import {KeyEventsPlugin} from './dom/events/key_events';
 import {DomSharedStylesHost, SharedStylesHost} from './dom/shared_styles_host';
 import {DomSanitizer, DomSanitizerImpl} from './security/dom_sanitization_service';
@@ -43,21 +41,6 @@ export const INTERNAL_BROWSER_PLATFORM_PROVIDERS: StaticProvider[] = [
   {provide: DOCUMENT, useFactory: _document, deps: []},
 ];
 
-const BROWSER_SANITIZATION_PROVIDERS__PRE_R3__: StaticProvider[] = [
-  {provide: Sanitizer, useExisting: DomSanitizer},
-  {provide: DomSanitizer, useClass: DomSanitizerImpl, deps: [DOCUMENT]},
-];
-
-export const BROWSER_SANITIZATION_PROVIDERS__POST_R3__ = [];
-
-/**
- * @security Replacing built-in sanitization providers exposes the application to XSS risks.
- * Attacker-controlled data introduced by an unsanitized provider could expose your
- * application to XSS risks. For more detail, see the [Security Guide](https://g.co/ng/security).
- * @publicApi
- */
-export const BROWSER_SANITIZATION_PROVIDERS = BROWSER_SANITIZATION_PROVIDERS__PRE_R3__;
-
 /**
  * A factory function that returns a `PlatformRef` instance associated with browser service
  * providers.
@@ -68,7 +51,6 @@ export const platformBrowser: (extraProviders?: StaticProvider[]) => PlatformRef
     createPlatformFactory(platformCore, 'browser', INTERNAL_BROWSER_PLATFORM_PROVIDERS);
 
 export const BROWSER_MODULE_PROVIDERS: StaticProvider[] = [
-  BROWSER_SANITIZATION_PROVIDERS,
   {provide: INJECTOR_SCOPE, useValue: 'root'},
   {provide: ErrorHandler, useFactory: errorHandler, deps: []},
   {
@@ -78,7 +60,6 @@ export const BROWSER_MODULE_PROVIDERS: StaticProvider[] = [
     deps: [DOCUMENT, NgZone, PLATFORM_ID]
   },
   {provide: EVENT_MANAGER_PLUGINS, useClass: KeyEventsPlugin, multi: true, deps: [DOCUMENT]},
-  HAMMER_PROVIDERS,
   {
     provide: DomRendererFactory2,
     useClass: DomRendererFactory2,
@@ -90,7 +71,6 @@ export const BROWSER_MODULE_PROVIDERS: StaticProvider[] = [
   {provide: Testability, useClass: Testability, deps: [NgZone]},
   {provide: EventManager, useClass: EventManager, deps: [EVENT_MANAGER_PLUGINS, NgZone]},
   {provide: XhrFactory, useClass: BrowserXhr, deps: []},
-  ELEMENT_PROBE_PROVIDERS,
 ];
 
 /**

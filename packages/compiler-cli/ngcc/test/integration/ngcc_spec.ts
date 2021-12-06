@@ -22,6 +22,7 @@ import {EntryPointJsonProperty, EntryPointPackageJson, SUPPORTED_FORMAT_PROPERTI
 import {EntryPointManifestFile} from '../../src/packages/entry_point_manifest';
 import {Transformer} from '../../src/packages/transformer';
 import {DirectPackageJsonUpdater, PackageJsonUpdater} from '../../src/writing/package_json_updater';
+import {mockRequireResolveForLockfile} from '../helpers/utils';
 
 import {compileIntoApf, compileIntoFlatEs2015Package, compileIntoFlatEs5Package, loadNgccIntegrationTestFiles} from './util';
 
@@ -46,6 +47,7 @@ runInEachFileSystem(() => {
       _ = absoluteFrom;
       fs = getFileSystem();
       pkgJsonUpdater = new DirectPackageJsonUpdater(fs);
+      mockRequireResolveForLockfile();
       initMockFileSystem(fs, testFiles);
 
       // Force single-process execution in unit tests by mocking available CPUs to 1.
@@ -1867,7 +1869,8 @@ runInEachFileSystem(() => {
         const consoleInfoSpy = spyOn(console, 'info');
         mainNgcc({basePath: '/node_modules', propertiesToConsider: ['esm2015']});
         expect(consoleInfoSpy)
-            .toHaveBeenCalledWith('Compiling @angular/common/http : esm2015 as esm2015');
+            .toHaveBeenCalledWith(
+                '- @angular/common/http [esm2015/esm2015] (https://github.com/angular/angular.git)');
       });
 
       it('should use a custom logger if provided', () => {
@@ -1877,7 +1880,9 @@ runInEachFileSystem(() => {
           propertiesToConsider: ['esm2015'],
           logger,
         });
-        expect(logger.logs.info).toContain(['Compiling @angular/common/http : esm2015 as esm2015']);
+        expect(logger.logs.info).toContain([
+          '- @angular/common/http [esm2015/esm2015] (https://github.com/angular/angular.git)'
+        ]);
       });
     });
 

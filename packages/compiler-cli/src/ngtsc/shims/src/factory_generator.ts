@@ -159,9 +159,11 @@ function transformFactorySourceFile(
       const rewrittenModuleSpecifier =
           importRewriter.rewriteSpecifier('@angular/core', sourceFilePath);
       if (rewrittenModuleSpecifier !== stmt.moduleSpecifier.text) {
-        transformedStatements.push(ts.updateImportDeclaration(
+        // TODO(crisbeto): the cast to `any` is here since g3 is still on TS 4.4.
+        // Should be cleaned up when g3 has been updated.
+        transformedStatements.push((ts.updateImportDeclaration as any)(
             stmt, stmt.decorators, stmt.modifiers, stmt.importClause,
-            ts.createStringLiteral(rewrittenModuleSpecifier)));
+            ts.createStringLiteral(rewrittenModuleSpecifier), undefined));
 
         // Record the identifier by which this imported module goes, so references to its symbols
         // can be discovered later.

@@ -102,9 +102,6 @@
     "name": "R3ViewContainerRef"
   },
   {
-    "name": "RecordViewTuple"
-  },
-  {
     "name": "RendererFactory2"
   },
   {
@@ -112,15 +109,6 @@
   },
   {
     "name": "RuntimeError"
-  },
-  {
-    "name": "SWITCH_ELEMENT_REF_FACTORY"
-  },
-  {
-    "name": "SWITCH_TEMPLATE_REF_FACTORY"
-  },
-  {
-    "name": "SWITCH_VIEW_CONTAINER_REF_FACTORY"
   },
   {
     "name": "Sanitizer"
@@ -244,6 +232,9 @@
   },
   {
     "name": "applyView"
+  },
+  {
+    "name": "applyViewChange"
   },
   {
     "name": "assertTemplate"
@@ -534,7 +525,16 @@
     "name": "initTNodeFlags"
   },
   {
+    "name": "injectElementRef"
+  },
+  {
     "name": "injectInjectorOnly"
+  },
+  {
+    "name": "injectTemplateRef"
+  },
+  {
+    "name": "injectViewContainerRef"
   },
   {
     "name": "insertBloom"

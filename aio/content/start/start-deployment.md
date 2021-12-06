@@ -20,25 +20,26 @@ A best practice is to run your project locally before you deploy it. To run your
 
 ## Running your application locally
 
-1. Download the source code from your StackBlitz project by clicking the `Download Project` icon in the left menu, across from `Project`, to download your files.
+1. Download the source code from your StackBlitz project by clicking the `Download Project` icon in the left menu, across from `Project`, to download your project as a zip archive.
 
-1. Create a new Angular CLI workspace using the [`ng new`](cli/new "CLI ng new command reference") command, where `my-project-name` is what you would like to call your project:
+    <div class="lightbox">
+      <img src="generated/images/guide/start/download-project.png" alt="Download the stackblitz project">
+    </div>
+
+
+1. Unzip the archive change directory to the newly created project. For example:
 
     ```sh
-    ng new my-project-name
+    cd angular-ynqttp
     ```
     
-    This command displays a series of configuration prompts. For this tutorial, accept the default settings for each prompt.
-
-1. In your newly CLI-generated application, replace the `/src` folder with the `/src` folder from your `StackBlitz` download.
-
 1. Use the following CLI command to run your application locally:
 
     ```sh
     ng serve
     ```
 
-1. To see your application in the  browser, go to http://localhost:4200/.
+1. To see your application in the browser, go to http://localhost:4200/.
     If the default port 4200 is not available, you can specify another port with the port flag as in the following example:
 
      ```sh

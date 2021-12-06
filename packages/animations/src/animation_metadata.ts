@@ -771,8 +771,8 @@ export function sequence(
  * style({ width: 100, height: 0 })
  * ```
  *
- * The following example uses auto-styling to allow a component to animate from
- * a height of 0 up to the height of the parent element:
+ * The following example uses auto-styling to allow an element to animate from
+ * a height of 0 up to its full height:
  *
  * ```
  * style({ height: 0 }),
@@ -884,7 +884,7 @@ export function keyframes(steps: AnimationStyleMetadata[]): AnimationKeyframesSe
  * The animation steps run when the expression evaluates to true.
  *
  * - A state-change string takes the form "state1 => state2", where each side is a defined animation
- * state, or an asterix (*) to refer to a dynamic start or end state.
+ * state, or an asterisk (*) to refer to a dynamic start or end state.
  *   - The expression string can contain multiple comma-separated statements;
  * for example "state1 => state2, state3 => state4".
  *   - Special values `:enter` and `:leave` initiate a transition on the entry and exit states,

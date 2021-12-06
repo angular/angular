@@ -487,7 +487,8 @@ function normalizeSelector(selector: string): [string, boolean] {
     selector = selector.replace(SELF_TOKEN_REGEX, '');
   }
 
-  // the :enter and :leave selectors are filled in at runtime during timeline building
+  // Note: the :enter and :leave aren't normalized here since those
+  // selectors are filled in at runtime during timeline building
   selector = selector.replace(/@\*/g, NG_TRIGGER_SELECTOR)
                  .replace(/@\w+/g, match => NG_TRIGGER_SELECTOR + '-' + match.substr(1))
                  .replace(/:animating/g, NG_ANIMATING_SELECTOR);

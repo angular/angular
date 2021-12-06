@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Compiler, CompilerOptions, Injector, isDevMode, NgModule, NgModuleRef, NgZone, resolveForwardRef, StaticProvider, Testability, Type} from '@angular/core';
+import {Compiler, CompilerOptions, Injector, NgModule, NgModuleRef, NgZone, resolveForwardRef, StaticProvider, Testability, Type} from '@angular/core';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
 import {bootstrap, element as angularElement, IAngularBootstrapConfig, IAugmentedJQuery, IInjectorService, IModule, IProvideService, IRootScopeService, ITestabilityService, module_ as angularModule} from '../../common/src/angular1';
@@ -605,7 +605,7 @@ export class UpgradeAdapter {
                     let subscription = this.ngZone.onMicrotaskEmpty.subscribe({
                       next: () => {
                         if (rootScope.$$phase) {
-                          if (isDevMode()) {
+                          if (typeof ngDevMode === 'undefined' || ngDevMode) {
                             console.warn(
                                 'A digest was triggered while one was already in progress. This may mean that something is triggering digests outside the Angular zone.');
                           }

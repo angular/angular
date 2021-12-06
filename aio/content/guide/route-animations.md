@@ -75,7 +75,6 @@ Animations can be defined directly inside your components. For this example you 
 
 The following code snippet defines a reusable animation named `slideInAnimation`.
 
-
 <code-example path="animations/src/app/animations.ts" header="src/app/animations.ts" region="route-animations" language="typescript"></code-example>
 
 The animation definition performs the following tasks:

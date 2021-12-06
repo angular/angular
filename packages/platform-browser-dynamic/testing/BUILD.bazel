@@ -10,7 +10,6 @@ ng_module(
     deps = [
         "//packages/common",
         "//packages/compiler",
-        "//packages/compiler/testing",
         "//packages/core",
         "//packages/core/testing",
         "//packages/platform-browser",

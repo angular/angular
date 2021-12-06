@@ -40,7 +40,7 @@ strings, numbers, functions, entity models, configurations, business logic, and 
 ## Why list the same component in multiple `NgModule` properties?
 
 `AppComponent` is often listed in both `declarations` and `bootstrap`.
-You might see the same component listed in `declarations`, `exports`, and `entryComponents`.
+You might see the same component listed in `declarations` and `exports`.
 
 While that seems redundant, these properties have different functions.
 Membership in one list doesn't imply membership in another list.
@@ -461,62 +461,6 @@ loads the component dynamically into a `RouterOutlet`.
 
 For more information, see [Entry Components](guide/entry-components).
 
-
-## What's the difference between a _bootstrap_ component and an _entry component_?
-
-A bootstrapped component _is_ an [entry component](guide/ngmodule-faq#q-entry-component-defined)
-that Angular loads into the DOM during the bootstrap process (application launch).
-Other entry components are loaded dynamically by other means, such as with the router.
-
-The `@NgModule.bootstrap` property tells the compiler that this is an entry component _and_
-it should generate code to bootstrap the application with this component.
-
-There's no need to list a component in both the `bootstrap` and `entryComponents` lists,
-although doing so is harmless.
-
-For more information, see [Entry Components](guide/entry-components).
-
-
-## When do I add components to _entryComponents_?
-
-Most application developers won't need to add components to the `entryComponents`.
-
-Angular adds certain components to _entry components_ automatically.
-Components listed in `@NgModule.bootstrap` are added automatically.
-Components referenced in router configuration are added automatically.
-These two mechanisms account for almost all entry components.
-
-If your application happens to bootstrap or dynamically load a component _by type_ in some other manner,
-you must add it to `entryComponents` explicitly.
-
-Although it's harmless to add components to this list,
-it's best to add only the components that are truly _entry components_.
-Don't include components that [are referenced](guide/ngmodule-faq#q-template-reference)
-in the templates of other components.
-
-For more information, see [Entry Components](guide/entry-components).
-
-
-## Why does Angular need _entryComponents_?
-
-The reason is _tree shaking_. For production applications you want to load the smallest, fastest code possible. The code should contain only the classes that you actually need.
-It should exclude a component that's never used, whether or not that component is declared.
-
-In fact, many libraries declare and export components you'll never use.
-If you don't reference them, the tree shaker drops these components from the final code package.
-
-If the [Angular compiler](guide/ngmodule-faq#q-angular-compiler) generated code for every declared component, it would defeat the purpose of the tree shaker.
-
-Instead, the compiler adopts a recursive strategy that generates code only for the components you use.
-
-The compiler starts with the entry components,
-then it generates code for the declared components it [finds](guide/ngmodule-faq#q-template-reference) in an entry component's template,
-then for the declared components it discovers in the templates of previously compiled components,
-and so on. At the end of the process, the compiler has generated code for every entry component
-and every component reachable from an entry component.
-
-If a component isn't an _entry component_ or wasn't found in a template,
-the compiler omits it.
 
 
 ## What kinds of modules should I have and how should I use them?

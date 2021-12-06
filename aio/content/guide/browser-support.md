@@ -29,7 +29,7 @@ Angular supports most recent browsers. This includes the following specific vers
   </tr>
   <tr>
     <td>Android</td>
-    <td>Q (10.0), Pie (9.0), Oreo (8.0), Nougat (7.0)</td>
+    <td>2 most recent major versions</td>
   </tr>
 </table>
 
@@ -37,8 +37,7 @@ Angular supports most recent browsers. This includes the following specific vers
 <div class="alert is-helpful">
 
 Angular's continuous integration process runs unit tests of the framework on all of these browsers for every pull request,
-using [Sauce Labs](https://saucelabs.com/) and
-[BrowserStack](https://www.browserstack.com/).
+using [Sauce Labs](https://saucelabs.com/).
 
 </div>
 

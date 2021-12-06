@@ -843,7 +843,7 @@ For more information on pipes, see [Pipes](guide/pipes).
       <code-example hideCopy path="ajs-quick-reference/src/app/app.component.html" region="json"></code-example>
 
 
-      The Angular `json` pipe does the same thing.
+      The Angular [`json`](api/common/JsonPipe) pipe does the same thing.
     </td>
 
   </tr>
@@ -931,7 +931,7 @@ For more information on pipes, see [Pipes](guide/pipes).
       <code-example hideCopy path="ajs-quick-reference/src/app/app.component.html" region="number"></code-example>
 
 
-      The Angular `number` pipe is similar.
+      The Angular [`number`](api/common/DecimalPipe) pipe is similar.
       It provides more functionality when defining
       the decimal places, as shown in the second example above.
 

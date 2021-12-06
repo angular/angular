@@ -82,7 +82,6 @@ jasmine_node_test(
     # file is based on non-ivy output and therefore won't work for ngc and Ivy at the same time.
     # TODO: Update test to rely on Ivy partial compilation after View Engine's removal, update the
     # golden files as appropriate for the change in compilation.
-    tags = ["view-engine-only"],
     deps = ["@npm//diff"],
 )
 

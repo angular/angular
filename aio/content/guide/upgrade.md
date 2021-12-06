@@ -26,8 +26,6 @@ There are a few key techniques and patterns that you can apply to future proof a
 
 ### Follow the AngularJS Style Guide
 
-{@a follow-the-angular-styleguide}
-
 The [AngularJS Style Guide][GithubJohnpapaAngularStyleguideBlobPrimaryA1ReadmeMd] collects patterns and practices that have been proven to result in cleaner and more maintainable AngularJS applications.
 It contains a wealth of information about how to write and organize AngularJS code &mdash;and equally importantly&mdash; how **not** to write and organize AngularJS code.
 
@@ -326,7 +324,7 @@ You can see how this can be done with SystemJS by following the instructions in 
 
 You also need to install the `@angular/upgrade` package using `npm install @angular/upgrade --save` and add a mapping for the `@angular/upgrade/static` package:
 
-<code-example path="upgrade-module/src/systemjs.config.1.js" region="upgrade-static-umd" header="systemjs.config.js (map)"></code-example>
+<code-example path="upgrade-module/src/systemjs.config.1.js" region="upgrade-static-package" header="systemjs.config.js (map)"></code-example>
 
 Next, create an `app.module.ts` file and add the following `NgModule` class:
 
@@ -383,8 +381,6 @@ If you want to only have change detection run whenthe inputs change, you can set
 
 Because `HeroDetailComponent` is an Angular component, you must also add it to the `declarations` in the `AppModule`.
 
-And because this component is being used from the AngularJS module, and is an entry point into the Angular application, you must add it to the `entryComponents` for the NgModule.
-
 <code-example path="upgrade-module/src/app/downgrade-static/app.module.ts" region="ngmodule" header="app.module.ts"></code-example>
 
 <div class="alert is-helpful">
@@ -428,7 +424,7 @@ There is one notable exception to the rule of using Angular attribute syntax for
 It has to do with input or output names that consist of multiple words.
 In Angular, you would bind these attributes using camelCase:
 
-<code-example format="typescript" language="typescript">
+<code-example language="html">
 
 [myHero]="hero"
 (heroDeleted)="handleHeroDeleted($event)"
@@ -437,7 +433,7 @@ In Angular, you would bind these attributes using camelCase:
 
 But when using them from AngularJS templates, you must use kebab-case:
 
-<code-example format="typescript" language="typescript">
+<code-example language="html">
 
 [my-hero]="hero"
 (hero-deleted)="handleHeroDeleted($event)"
@@ -724,7 +720,7 @@ This module enables a *unified* location service that shifts responsibilities fr
 
 To use the `LocationUpgradeModule`, import the symbol from `@angular/common/upgrade` and add it to your `AppModule` imports using the static `LocationUpgradeModule.config()` method.
 
-<code-example format="typescript" language="typescript">
+<code-example language="typescript">
 
 // Other imports ...
 import { LocationUpgradeModule } from '@angular/common/upgrade';
@@ -744,7 +740,7 @@ The `LocationUpgradeModule.config()` method accepts a configuration object that 
 The `useHash` property defaults to `false`, and the `hashPrefix` defaults to an empty `string`.
 Pass the configuration object to override the defaults.
 
-<code-example format="typescript" language="typescript">
+<code-example language="typescript">
 
 LocationUpgradeModule.config({
   useHash: true,
@@ -766,7 +762,7 @@ This gives you a single way to navigate within both sides of your hybrid applica
 
 For usage of the `$location` service as a provider in AngularJS, you need to downgrade the `$locationShim` using a factory provider.
 
-<code-example format="typescript" language="typescript">
+<code-example language="typescript">
 
 // Other imports ...
 import { $locationShim } from '@angular/common/upgrade';
@@ -779,7 +775,7 @@ angular.module('myHybridApp', [...])
 
 Once you introduce the Angular Router, using the Angular Router triggers navigations through the unified location service, still providing a single source for navigating with AngularJS and Angular.
 
-<!--TODO: 
+<!--TODO:
 Correctly document how to use AOT with SystemJS-based `ngUpgrade` apps (or better yet update the `ngUpgrade` examples/guides to use `@angular/cli`).
 See [https://github.com/angular/angular/issues/35989][GithubAngularAngularIssues35989].
 
@@ -807,7 +803,8 @@ Now you'll see how to bring that application to the brave new world of Angular.
 During the process you'll learn how to apply the steps outlined in the [preparation guide][AioGuideUpgradePreparation].
 You'll align the application with Angular and also start writing in TypeScript.
 
-To follow along with the tutorial, clone the [angular-phonecat][GithubAngularAngularPhonecat] repository and apply the steps as you go.
+This tutorial is based on the 1.5.x version of the `angular-phonecat` tutorial, which is preserved in the [1.5-snapshot][GithubAngularAngularPhonecatCommits15Snapshot] branch of the repository.
+To follow along, clone the [angular-phonecat][GithubAngularAngularPhonecat] repository, check out the `1.5-snapshot` branch and apply the steps as you go.
 
 In terms of project structure, this is where the work begins:
 
@@ -943,7 +940,7 @@ In terms of project structure, this is where the work begins:
 </div>
 
 This is actually a pretty good starting point.
-The code uses the AngularJS 1.5 component API and the organization follows the [AngularJS Style Guide][GithubJohnpapaAngularStyleguideBlobPrimaryA1ReadmeMd], which is an important [preparation step][AioGuideUpgradeFollowTheAngularStyleguide] before a successful upgrade.
+The code uses the AngularJS 1.5 component API and the organization follows the [AngularJS Style Guide][GithubJohnpapaAngularStyleguideBlobPrimaryA1ReadmeMd], which is an important [preparation step][AioGuideUpgradeFollowTheAngularjsStyleGuide] before a successful upgrade.
 
 *   Each component, service, and filter is in its own source file, as per the
     [Rule of 1][GithubJohnpapaAngularStyleguideBlobPrimaryA1ReadmeMdSingleResponsibility].
@@ -962,7 +959,7 @@ You'll also start to gradually phase out the Bower package manager in favor of N
 
 Begin by installing TypeScript to the project.
 
-<code-example format="shell" language="shell">
+<code-example language="shell">
 
 npm i typescript --save-dev
 
@@ -973,7 +970,7 @@ AngularJS, AngularJS Material, and the Jasmine unit test framework.
 
 For the PhoneCat app, we can install the necessary type definitions by running the following command:
 
-<code-example format="shell" language="shell">
+<code-example language="shell">
 
 npm install @types/jasmine @types/angular @types/angular-animate @types/angular-aria @types/angular-cookies @types/angular-mocks @types/angular-resource @types/angular-route @types/angular-sanitize --save-dev
 
@@ -981,7 +978,7 @@ npm install @types/jasmine @types/angular @types/angular-animate @types/angular-
 
 If you are using AngularJS Material, you can install the type definitions via:
 
-<code-example format="shell" language="shell">
+<code-example language="shell">
 
 npm install @types/angular-material --save-dev
 
@@ -992,7 +989,7 @@ The `tsconfig.json` file tells the TypeScript compiler how to turn your TypeScri
 
 Finally, you should add some npm scripts in `package.json` to compile the TypeScript files to JavaScript (based on the `tsconfig.json` configuration file):
 
-<code-example format="shell" language="shell">
+<code-example language="shell">
 
 "scripts": {
   "tsc": "tsc",
@@ -1003,7 +1000,7 @@ Finally, you should add some npm scripts in `package.json` to compile the TypeSc
 
 Now launch the TypeScript compiler from the command line in watch mode:
 
-<code-example format="shell" language="shell">
+<code-example language="shell">
 
 npm run tsc:w
 
@@ -1108,7 +1105,7 @@ Take a look at the results of the [upgrade setup instructions][AioGuideUpgradeSe
 
 Once these are done, run:
 
-<code-example format="shell" language="shell">
+<code-example language="shell">
 
 npm install
 
@@ -1120,7 +1117,7 @@ You'll need to load files from `node_modules` and the project root instead of fr
 Move the `app/index.html` file to the project root directory.
 Then change the development server root path in `package.json` to also point to the project root instead of `app`:
 
-<code-example format="json" language="json">
+<code-example language="json">
 
 "start": "http-server ./ -a localhost -p 8000 -c-1",
 
@@ -1208,7 +1205,7 @@ If your use case requires the UMD format, use [`rollup`][RollupjsMain] to manual
 
 1.  Use `npm` to globally install `rollup`
 
-    <code-example format="shell" language="shell">
+    <code-example language="shell">
 
     npm i -g rollup
 
@@ -1216,7 +1213,7 @@ If your use case requires the UMD format, use [`rollup`][RollupjsMain] to manual
 
 1.  Output the version of `rollup` and verify the installation was successful
 
-    <code-example format="shell" language="shell">
+    <code-example language="shell">
 
     rollup -v
 
@@ -1227,7 +1224,7 @@ If your use case requires the UMD format, use [`rollup`][RollupjsMain] to manual
     1.  Create a file named `rollup.config.js`
     1.  Copy the following content into `rollup.config.js`
 
-        <code-example format="javascript" language="javascript">
+        <code-example language="javascript">
 
         export default {
           input: 'node_modules/@angular/core/fesm2015/core.js',
@@ -1242,7 +1239,7 @@ If your use case requires the UMD format, use [`rollup`][RollupjsMain] to manual
 
 1.  Use `rollup` to create the `bundle.js` UMD bundle using settings in `rollup.config.js`
 
-    <code-example format="shell" language="shell">
+    <code-example language="shell">
 
     rollup -c rollup.config.js
 
@@ -1373,7 +1370,7 @@ The `as angular.IDirectiveFactory` cast tells the TypeScript compiler that the r
 <code-example path="upgrade-phonecat-2-hybrid/app/phone-list/phone-list.component.ts" region="downgrade-component" header="app/phone-list/phone-list.component.ts"></code-example>
 
 The new `PhoneListComponent` uses the Angular `ngModel` directive, located in the `FormsModule`.
-Add the `FormsModule` to `NgModule` imports, declare the new `PhoneListComponent` and finally add it to `entryComponents` since you downgraded it:
+Add the `FormsModule` to `NgModule` imports and declare the new `PhoneListComponent` since you downgraded it:
 
 <code-example path="upgrade-phonecat-2-hybrid/app/app.module.ts" region="phonelist" header="app.module.ts"></code-example>
 
@@ -1420,7 +1417,7 @@ There are several notable changes here:
     Unlike in AngularJS, Angular expressions do not fail silently when you try to refer to properties on undefined objects.
     You need to be explicit about cases where this is expected.
 
-Add `PhoneDetailComponent` component to the `NgModule` *declarations* and *entryComponents*:
+Add `PhoneDetailComponent` component to the `NgModule` *declarations*:
 
 <code-example path="upgrade-phonecat-2-hybrid/app/app.module.ts" region="phonedetail" header="app.module.ts"></code-example>
 
@@ -1550,7 +1547,6 @@ Switch the bootstrap method of the application from the `UpgradeModule` to the A
 If you haven't already, remove all references to the `UpgradeModule` from `app.module.ts`, as well as any [factory provider][AioGuideUpgradeMakingAngularjsDependenciesInjectableToAngular] for AngularJS services, and the `app/ajs-upgraded-providers.ts` file.
 
 Also remove any `downgradeInjectable()` or `downgradeComponent()` you find, together with the associated AngularJS factory or directive declarations.
-Since you no longer have downgraded components, you no longer list them in `entryComponents`.
 
 <code-example path="upgrade-phonecat-3-final/app/app.module.ts" header="app.module.ts"></code-example>
 
@@ -1568,7 +1564,7 @@ The external typings for AngularJS may be uninstalled as well.
 The only ones you still need are for Jasmine and Angular polyfills.
 The `@angular/upgrade` package and its mapping in `systemjs.config.js` can also go.
 
-<code-example format="shell" language="shell">
+<code-example language="shell">
 
 npm uninstall @angular/upgrade --save
 npm uninstall @types/angular @types/angular-animate @types/angular-cookies @types/angular-mocks @types/angular-resource @types/angular-route @types/angular-sanitize --save-dev
@@ -1602,7 +1598,7 @@ But when you change the bootstrap to that of a Hybrid app, you must make a few c
 
 Update the `protractor-conf.js` to sync with hybrid applications:
 
-<code-example format="shell" language="shell">
+<code-example language="javascript">
 
 ng12Hybrid: true
 
@@ -1624,7 +1620,7 @@ At this point, you need to tell Protractor that it should not be looking for an 
 
 Replace the `ng12Hybrid` previously added with the following in `protractor-conf.js`:
 
-<code-example format="javascript" language="javascript">
+<code-example language="javascript">
 
 useAllAngular2AppRoots: true,
 
@@ -1715,7 +1711,7 @@ And for the phone list component, a few adjustments to the router make the `Rout
 [AioGuideRouter]: guide/router "Common Routing Tasks | Angular"
 [AioGuideTypescriptConfiguration]: guide/typescript-configuration "TypeScript configuration | Angular"
 [AioGuideUpgradeBootstrappingHybridApplications]: guide/upgrade#bootstrapping-hybrid-applications "Bootstrapping hybrid applications - Upgrading from AngularJS to Angular | Angular"
-[AioGuideUpgradeFollowTheAngularStyleguide]: guide/upgrade#follow-the-angular-styleguide "Follow the AngularJS Style Guide - Upgrading from AngularJS to Angular | Angular"
+[AioGuideUpgradeFollowTheAngularjsStyleGuide]: guide/upgrade#follow-the-angularjs-style-guide "Follow the AngularJS Style Guide - Upgrading from AngularJS to Angular | Angular"
 [AioGuideUpgradeMakingAngularjsDependenciesInjectableToAngular]: guide/upgrade#making-angularjs-dependencies-injectable-to-angular "Making AngularJS Dependencies Injectable to Angular - Upgrading from AngularJS to Angular | Angular"
 [AioGuideUpgradePreparation]: guide/upgrade#preparation "Preparation - Upgrading from AngularJS to Angular | Angular"
 [AioGuideUpgradeUpgradingWithNgupgrade]: guide/upgrade#upgrading-with-ngupgrade "Upgrading with ngUpgrade - Upgrading from AngularJS to Angular | Angular"
@@ -1740,6 +1736,7 @@ And for the phone list component, a few adjustments to the router make the `Rout
 [GithubAngularAngularIssues38366]: https://github.com/angular/angular/issues/38366 " Issue 38366: RFC: Ivy Library Distribution| angular/angular | GitHub"
 
 [GithubAngularAngularPhonecat]: https://github.com/angular/angular-phonecat "angular/angular-phonecat | GitHub"
+[GithubAngularAngularPhonecatCommits15Snapshot]: https://github.com/angular/angular-phonecat/commits/1.5-snapshot "angular/angular-phonecat v1.5 | GitHub"
 
 [GithubAngularQuickstart]: https://github.com/angular/quickstart "angular/quickstart | GitHub"
 
@@ -1763,4 +1760,4 @@ And for the phone list component, a few adjustments to the router make the `Rout
 
 <!-- end links -->
 
-@reviewed 2021-10-26
+@reviewed 2021-11-02

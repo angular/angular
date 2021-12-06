@@ -12,7 +12,8 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 import {configureCompiler, createComponent, HTML, serializeTranslations, validateHtml} from './integration_common';
 
-describe('i18n XLIFF integration spec', () => {
+// TODO(alxhub): figure out if this test is still relevant.
+xdescribe('i18n XLIFF integration spec', () => {
   describe('(with LF line endings)', () => {
     beforeEach(waitForAsync(
         () => configureCompiler(XLIFF2_TOMERGE + LF_LINE_ENDING_XLIFF2_TOMERGE, 'xlf2')));

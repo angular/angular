@@ -6083,6 +6083,57 @@ describe('Integration', () => {
          advance(fixture);
          expect(createdComps).toEqual(['parent', 'child', 'child']);
        }));
+
+    it('should not try to detach the outlet of a route that does not get to attach a component',
+       fakeAsync(() => {
+         @Component({selector: 'root', template: `<router-outlet></router-outlet>`})
+         class Root {
+         }
+
+         @Component({selector: 'component-a', template: 'Component A'})
+         class ComponentA {
+         }
+
+         @Component({selector: 'component-b', template: 'Component B'})
+         class ComponentB {
+         }
+
+         @NgModule({
+           declarations: [ComponentA],
+           imports: [RouterModule.forChild([{path: '', component: ComponentA}])],
+         })
+         class LoadedModule {
+         }
+
+         @NgModule({
+           declarations: [Root, ComponentB],
+           imports: [RouterTestingModule.withRoutes([
+             {path: 'a', loadChildren: () => LoadedModule}, {path: 'b', component: ComponentB}
+           ])],
+           providers: [
+             {provide: RouteReuseStrategy, useClass: AttachDetachReuseStrategy},
+           ]
+         })
+         class TestModule {
+         }
+
+         TestBed.configureTestingModule({imports: [TestModule]});
+
+         const router = TestBed.inject(Router);
+         const strategy = TestBed.inject(RouteReuseStrategy);
+         const fixture = createRoot(router, Root);
+
+         spyOn(strategy, 'shouldDetach').and.callThrough();
+
+         router.navigateByUrl('/a');
+         advance(fixture);
+
+         // Deactivate 'a'
+         // 'shouldDetach' should not be called for the componentless route
+         router.navigateByUrl('/b');
+         advance(fixture);
+         expect(strategy.shouldDetach).toHaveBeenCalledTimes(1);
+       }));
   });
 });
 

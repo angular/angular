@@ -6,16 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, Call, LiteralPrimitive, ParseSourceSpan, PropertyRead, SafePropertyRead, TmplAstElement, TmplAstNode, TmplAstTemplate, TmplAstTextAttribute} from '@angular/compiler';
-import {AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {AST, LiteralPrimitive, ParseSourceSpan, PropertyRead, SafePropertyRead, TmplAstElement, TmplAstNode, TmplAstTemplate, TmplAstTextAttribute} from '@angular/compiler';
 import ts from 'typescript';
 
+import {AbsoluteFsPath} from '../../../../src/ngtsc/file_system';
 import {ErrorCode} from '../../diagnostics';
 
 import {FullTemplateMapping, NgTemplateDiagnostic, TypeCheckableDirectiveMeta} from './api';
 import {GlobalCompletion} from './completion';
 import {DirectiveInScope, PipeInScope} from './scope';
-import {DirectiveSymbol, ElementSymbol, ShimLocation, Symbol, TemplateSymbol} from './symbols';
+import {ElementSymbol, ShimLocation, Symbol, TemplateSymbol} from './symbols';
 
 /**
  * Interface to the Angular Template Type Checker to extract diagnostics and intelligence from the

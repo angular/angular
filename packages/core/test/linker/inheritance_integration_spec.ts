@@ -8,7 +8,6 @@
 
 import {Component, Directive, HostBinding} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {modifiedInIvy, onlyInIvy} from '@angular/private/testing';
 
 @Directive({selector: '[directiveA]'})
 class DirectiveA {
@@ -69,22 +68,10 @@ describe('Inheritance logic', () => {
     expect(fixture.nativeElement.firstChild.title).toBe('DirectiveB Title');
   });
 
-  modifiedInIvy('View Engine allows Directives to extend Components')
-      .it('should handle Directives that extend Components', () => {
-        TestBed.configureTestingModule({declarations: [DirectiveExtendsComponent, App]});
-        const template = '<div directiveExtendsComponent>Some content</div>';
-        TestBed.overrideComponent(App, {set: {template}});
-        const fixture = TestBed.createComponent(App);
-        fixture.detectChanges();
-        expect(fixture.nativeElement.firstChild.title).toBe('DirectiveExtendsComponent Title');
-      });
-
-  onlyInIvy('Ivy does not allow Directives to extend Components')
-      .it('should throw in case a Directive tries to extend a Component', () => {
-        TestBed.configureTestingModule({declarations: [DirectiveExtendsComponent, App]});
-        const template = '<div directiveExtendsComponent>Some content</div>';
-        TestBed.overrideComponent(App, {set: {template}});
-        expect(() => TestBed.createComponent(App))
-            .toThrowError('Directives cannot inherit Components');
-      });
+  it('should throw in case a Directive tries to extend a Component', () => {
+    TestBed.configureTestingModule({declarations: [DirectiveExtendsComponent, App]});
+    const template = '<div directiveExtendsComponent>Some content</div>';
+    TestBed.overrideComponent(App, {set: {template}});
+    expect(() => TestBed.createComponent(App)).toThrowError('Directives cannot inherit Components');
+  });
 });

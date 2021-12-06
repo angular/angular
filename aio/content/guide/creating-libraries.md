@@ -152,6 +152,29 @@ npm publish
 In your Angular library, the distributable can include additional assets like theming files, Sass mixins, or documentation (like a changelog).
 For more information [copy assets into your library as part of the build](https://github.com/ng-packagr/ng-packagr/blob/master/docs/copy-assets.md) and [embed assets in component styles](https://github.com/ng-packagr/ng-packagr/blob/master/docs/embed-assets-css.md).
 
+<div class="alert is-important">
+
+When including additional assets like Sass mixins or pre-compiled CSS. You need to add these manually to the conditional ["exports"](guide/angular-package-format/#exports) in the `package.json` of the primary entrypoint.
+
+`ng-packagr` will merge handwritten `"exports"` with the auto-generated ones, allowing for library authors to configure additional export subpaths, or custom conditions.
+
+<code-example language="json">
+"exports": {
+  ".": {
+    "sass": "./_index.scss",
+  },
+  "./theming": {
+    "sass": "./_theming.scss"
+  },
+  "./prebuilt-themes/indigo-pink.css": {
+    "style": "./prebuilt-themes/indigo-pink.css"
+  }
+}
+</code-example>
+
+The above is an extract from the [@angular/material](https://unpkg.com/browse/@angular/material/package.json) distributable.
+</div>
+
 ## Peer dependencies
 Angular libraries should list any `@angular/*` dependencies the library depends on as peer dependencies.
 This ensures that when modules ask for Angular, they all get the exact same module.
@@ -251,14 +274,18 @@ An application installs many Angular libraries from npm into its `node_modules` 
 However, the code in these libraries cannot be bundled directly along with the built application as it is not fully compiled.
 To finish compilation, use the Angular linker.
 
-For applications that don't use the Angular CLI, the linker is available as a Babel plugin.
-Use the Babel plugin using the module `@angular/compiler-cli/linker/babel` to incorporate into your builds.
-For example, integrate the plugin into a custom Webpack build by registering the linker as a plugin for `babel-loader`.
-
-Previously, if you ran `yarn install` or `npm install` you had to re-run `ngcc`.
-Now, libraries only need to be processed by the linker a single time, regardless of other npm operations.
+For applications that don't use the Angular CLI, the linker is available as a [Babel](https://babeljs.io/) plugin.
+The plugin is to be imported from `@angular/compiler-cli/linker/babel`.
 
 The Angular linker Babel plugin supports build caching, meaning that libraries only need to be processed by the linker a single time, regardless of other npm operations.
+
+Example of integrating the plugin into a custom [Webpack](https://webpack.js.org/) build by registering the linker as a [Babel](https://babeljs.io/) plugin using [babel-loader](https://webpack.js.org/loaders/babel-loader/#options).
+
+<code-example
+  path="angular-linker-plugin/webpack.config.mjs"
+  region="webpack-config"
+  header="webpack.config.mjs">
+</code-example>
 
 <div class="alert is-helpful">
 
@@ -266,4 +293,4 @@ The Angular CLI integrates the linker plugin automatically, so if consumers of y
 
 </div>
 
-@reviewed 2021-10-29
+@reviewed 2021-11-03

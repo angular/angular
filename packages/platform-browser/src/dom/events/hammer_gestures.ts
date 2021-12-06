@@ -264,28 +264,6 @@ export class HammerGesturesPlugin extends EventManagerPlugin {
 }
 
 /**
- * In Ivy, support for Hammer gestures is optional, so applications must
- * import the `HammerModule` at root to turn on support. This means that
- * Hammer-specific code can be tree-shaken away if not needed.
- */
-export const HAMMER_PROVIDERS__POST_R3__ = [];
-
-/**
- * In View Engine, support for Hammer gestures is built-in by default.
- */
-export const HAMMER_PROVIDERS__PRE_R3__: Provider[] = [
-  {
-    provide: EVENT_MANAGER_PLUGINS,
-    useClass: HammerGesturesPlugin,
-    multi: true,
-    deps: [DOCUMENT, HAMMER_GESTURE_CONFIG, Console, [new Optional(), HAMMER_LOADER]]
-  },
-  {provide: HAMMER_GESTURE_CONFIG, useClass: HammerGestureConfig, deps: []},
-];
-
-export const HAMMER_PROVIDERS = HAMMER_PROVIDERS__PRE_R3__;
-
-/**
  * Adds support for HammerJS.
  *
  * Import this module at the root of your application so that Angular can work with
@@ -296,6 +274,16 @@ export const HAMMER_PROVIDERS = HAMMER_PROVIDERS__PRE_R3__;
  *
  * @publicApi
  */
-@NgModule({providers: HAMMER_PROVIDERS__PRE_R3__})
+@NgModule({
+  providers: [
+    {
+      provide: EVENT_MANAGER_PLUGINS,
+      useClass: HammerGesturesPlugin,
+      multi: true,
+      deps: [DOCUMENT, HAMMER_GESTURE_CONFIG, Console, [new Optional(), HAMMER_LOADER]]
+    },
+    {provide: HAMMER_GESTURE_CONFIG, useClass: HammerGestureConfig, deps: []},
+  ]
+})
 export class HammerModule {
 }

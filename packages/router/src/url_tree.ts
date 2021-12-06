@@ -293,7 +293,7 @@ export class UrlSegment {
       /** The matrix parameters associated with a segment */
       public parameters: {[name: string]: string}) {}
 
-  get parameterMap() {
+  get parameterMap(): ParamMap {
     if (!this._parameterMap) {
       this._parameterMap = convertToParamMap(this.parameters);
     }

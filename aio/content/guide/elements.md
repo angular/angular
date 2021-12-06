@@ -123,7 +123,7 @@ The recently-developed [custom elements](https://developer.mozilla.org/en-US/doc
 </tr>
 </table>
 
-Use the [Angular CLI](cli) to add the `@angular/elements` package to your workspace.
+To add the `@angular/elements` package to your workspace, run the following command:
 
 <code-example language="sh">
 

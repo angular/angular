@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {modifiedInIvy} from '@angular/private/testing';
 import {$, browser, by, element, ExpectedConditions} from 'protractor';
 
 import {verifyNoBrowserErrors} from '../../../../test-utils';

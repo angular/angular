@@ -29,8 +29,6 @@ INTEGRATION_TESTS = {
             # as they will compete for the resources of other parallel tests slowing
             # everything down. Ask Bazel to allocate multiple CPUs for these tests with "cpu:n" tag.
             "cpu:3",
-            # TODO(devversion): re-enable this once https://github.com/bazelbuild/rules_nodejs/pull/2987 is available.
-            "manual",
         ],
     },
     "cli-elements-universal": {},
@@ -68,13 +66,10 @@ INTEGRATION_TESTS = {
     },
     "ivy-i18n": {},
     "trusted-types": {},
+    "ng-add-localize": {},
     "ng_elements": {},
     "ng_update": {},
-    "ng_update_migrations": {
-        # TODO(devversion): re-enable this test once the migrations are updated to support the ESM compiler-cli.
-        # Waiting on: https://github.com/angular/angular/pull/43657.
-        "tags": ["manual"],
-    },
+    "ng_update_migrations": {},
     "ngcc": {
         "use_view_engine_packages": [
             "@angular/animations",
@@ -87,12 +82,7 @@ INTEGRATION_TESTS = {
             "@angular/router",
         ],
     },
-    "platform-server": {
-        # This test relies on ESM for running the app in SSR. RxJS added ESM resolution
-        # support with RXJS v7. We allow the version to be pinned to v7.
-        # TODO: Remove this and update the test once the project uses RxJS v7, or if rxjs v6 has ESM support.
-        "pinned_npm_packages": ["rxjs"],
-    },
+    "platform-server": {},
     "service-worker-schema": {},
     # The `side-effects` test is currently disabled as it does not run the
     # Angular linker plugin and therefore partial declarations are retained
@@ -107,6 +97,12 @@ INTEGRATION_TESTS = {
     "typings_test_ts44": {
         # Special case for `typings_test_ts44` test as we want to pin
         # `typescript` at version 4.4.x for that test and not link to the
+        # root @npm//typescript package.
+        "pinned_npm_packages": ["typescript"],
+    },
+    "typings_test_ts45": {
+        # Special case for `typings_test_ts45` test as we want to pin
+        # `typescript` at version 4.5.x for that test and not link to the
         # root @npm//typescript package.
         "pinned_npm_packages": ["typescript"],
     },

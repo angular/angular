@@ -8,7 +8,7 @@
 
 
 import {resolveForwardRef} from '../di/forward_ref';
-import {ClassProvider, Provider} from '../di/interface/provider';
+import {ClassProvider, Provider, TypeProvider} from '../di/interface/provider';
 import {isClassProvider, isTypeProvider, providerToFactory} from '../di/r3_injector';
 import {assertDefined} from '../util/assert';
 
@@ -191,9 +191,14 @@ function registerDestroyHooksIfSupported(
     tView: TView, provider: Exclude<Provider, any[]>, contextIndex: number,
     indexInFactory?: number) {
   const providerIsTypeProvider = isTypeProvider(provider);
-  if (providerIsTypeProvider || isClassProvider(provider)) {
-    const prototype = ((provider as ClassProvider).useClass || provider).prototype;
+  const providerIsClassProvider = isClassProvider(provider);
+
+  if (providerIsTypeProvider || providerIsClassProvider) {
+    // Resolve forward references as `useClass` can hold a forward reference.
+    const classToken = providerIsClassProvider ? resolveForwardRef(provider.useClass) : provider;
+    const prototype = classToken.prototype;
     const ngOnDestroy = prototype.ngOnDestroy;
+
     if (ngOnDestroy) {
       const hooks = tView.destroyHooks || (tView.destroyHooks = []);
 

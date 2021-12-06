@@ -16,7 +16,6 @@ import {getLocaleId} from '@angular/core/src/render3';
 import {BrowserModule} from '@angular/platform-browser';
 import {createTemplate, dispatchEvent, getContent} from '@angular/platform-browser/testing/src/browser_util';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {onlyInIvy} from '@angular/private/testing';
 
 import {NoopNgZone} from '../src/zone/ng_zone';
 import {ComponentFixtureNoNgZone, inject, TestBed, waitForAsync, withModule} from '../testing';
@@ -67,7 +66,6 @@ class SomeComponent {
         providers: [{provide: ErrorHandler, useValue: errorHandler}, options.providers || []],
         imports: [platformModule],
         declarations: [options.component || SomeComponent],
-        entryComponents: [options.component || SomeComponent],
         bootstrap: options.bootstrap || []
       })
       class MyModule {
@@ -93,7 +91,6 @@ class SomeComponent {
              @NgModule({
                providers: [{provide: helloToken, useValue: 'component'}],
                declarations: [SomeComponent],
-               entryComponents: [SomeComponent],
              })
              class SomeModule {
              }
@@ -124,7 +121,6 @@ class SomeComponent {
              @NgModule({
                providers: [{provide: helloToken, useValue: 'component'}],
                declarations: [SomeComponent],
-               entryComponents: [SomeComponent],
              })
              class SomeModule {
              }
@@ -170,7 +166,7 @@ class SomeComponent {
         appRef.attachView(fixture.componentRef.hostView);
         appRef.tick();
         expect(fixture.componentInstance.reenterErr.message)
-            .toBe('ApplicationRef.tick is called recursively');
+            .toBe('NG0101: ApplicationRef.tick is called recursively');
       });
 
       describe('APP_BOOTSTRAP_LISTENER', () => {
@@ -208,7 +204,7 @@ class SomeComponent {
                  createRootEl();
                  expect(() => ref.bootstrap(SomeComponent))
                      .toThrowError(
-                         'Cannot bootstrap as there are still asynchronous initializers running. Bootstrap components in the `ngDoBootstrap` method of the root module.');
+                         'NG0405: Cannot bootstrap as there are still asynchronous initializers running. Bootstrap components in the `ngDoBootstrap` method of the root module.');
                })));
       });
     });
@@ -277,7 +273,8 @@ class SomeComponent {
            return defaultPlatform.bootstrapModule(EmptyModule)
                .then(() => fail('expecting error'), (error) => {
                  expect(error.message)
-                     .toEqual('No ErrorHandler. Is platform module (BrowserModule) included?');
+                     .toEqual(
+                         'NG0402: No ErrorHandler. Is platform module (BrowserModule) included?');
                });
          }));
 
@@ -304,7 +301,7 @@ class SomeComponent {
            defaultPlatform.bootstrapModule(createModule({ngDoBootstrap: false}))
                .then(() => expect(false).toBe(true), (e) => {
                  const expectedErrMsg =
-                     `The module MyModule was bootstrapped, but it does not declare "@NgModule.bootstrap" components nor a "ngDoBootstrap" method. Please define one of these.`;
+                     `NG0403: The module MyModule was bootstrapped, but it does not declare "@NgModule.bootstrap" components nor a "ngDoBootstrap" method. Please define one of these.`;
                  expect(e.message).toEqual(expectedErrMsg);
                  expect(mockConsole.res[0].join('#')).toEqual('ERROR#Error: ' + expectedErrMsg);
                });
@@ -345,21 +342,20 @@ class SomeComponent {
         expect(loadResourceSpy).toHaveBeenCalledWith('/test-template.html');
       });
 
-      onlyInIvy('We only need to define `LOCALE_ID` for runtime i18n')
-          .it('should define `LOCALE_ID`', async () => {
-            @Component({
-              selector: 'i18n-app',
-              templateUrl: '',
-            })
-            class I18nComponent {
-            }
+      it('should define `LOCALE_ID`', async () => {
+        @Component({
+          selector: 'i18n-app',
+          templateUrl: '',
+        })
+        class I18nComponent {
+        }
 
-            const testModule = createModule(
-                {component: I18nComponent, providers: [{provide: LOCALE_ID, useValue: 'ro'}]});
-            await defaultPlatform.bootstrapModule(testModule);
+        const testModule = createModule(
+            {component: I18nComponent, providers: [{provide: LOCALE_ID, useValue: 'ro'}]});
+        await defaultPlatform.bootstrapModule(testModule);
 
-            expect(getLocaleId()).toEqual('ro');
-          });
+        expect(getLocaleId()).toEqual('ro');
+      });
 
       it('should wait for APP_INITIALIZER to set providers for `LOCALE_ID`', async () => {
         let locale: string = '';

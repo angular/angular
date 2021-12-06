@@ -14,7 +14,6 @@ import {Import, ImportManager} from '../../../src/ngtsc/translator';
 import {ModuleWithProvidersInfo} from '../analysis/module_with_providers_analyzer';
 import {ExportInfo} from '../analysis/private_declarations_analyzer';
 import {CompiledClass} from '../analysis/types';
-import {SwitchableVariableDeclaration} from '../host/ngcc_host';
 
 /**
  * The collected decorators that have become redundant after the compilation
@@ -41,9 +40,6 @@ export interface RenderingFormatter {
   addAdjacentStatements(output: MagicString, compiledClass: CompiledClass, statements: string):
       void;
   removeDecorators(output: MagicString, decoratorsToRemove: RedundantDecoratorMap): void;
-  rewriteSwitchableDeclarations(
-      outputText: MagicString, sourceFile: ts.SourceFile,
-      declarations: SwitchableVariableDeclaration[]): void;
   addModuleWithProvidersParams(
       outputText: MagicString, moduleWithProviders: ModuleWithProvidersInfo[],
       importManager: ImportManager): void;

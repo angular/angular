@@ -12,6 +12,8 @@ import * as o from '../../output/output_ast';
 import {ParseSourceSpan} from '../../parse_util';
 import {splitAtColon} from '../../util';
 import * as t from '../r3_ast';
+import {Identifiers as R3} from '../r3_identifiers';
+import {ForwardRefHandling} from '../util';
 
 import {R3QueryMetadata} from './api';
 import {isI18nAttribute} from './i18n/util';
@@ -148,7 +150,14 @@ export function getQueryPredicate(
     });
     return constantPool.getConstLiteral(o.literalArr(predicate), true);
   } else {
-    return query.predicate;
+    // The original predicate may have been wrapped in a `forwardRef()` call.
+    switch (query.predicate.forwardRef) {
+      case ForwardRefHandling.None:
+      case ForwardRefHandling.Unwrapped:
+        return query.predicate.expression;
+      case ForwardRefHandling.Wrapped:
+        return o.importExpr(R3.resolveForwardRef).callFn([query.predicate.expression]);
+    }
   }
 }
 

@@ -6,15 +6,14 @@ filegroup(
     name = "package_assets",
     srcs = [
         "collection.json",
+        "package.json",
     ],
     visibility = ["//packages/localize:__subpackages__"],
 )
 
 pkg_npm(
     name = "npm_package",
-    srcs = [
-        "collection.json",
-    ],
+    srcs = [":package_assets"],
     deps = [
         "//packages/localize/schematics/ng-add",
     ],

@@ -177,7 +177,7 @@ export interface R3DeclareComponentMetadata extends R3DeclareDirectiveMetadata {
   changeDetection?: ChangeDetectionStrategy;
 
   /**
-   * An encapsulation policy for the template and CSS styles.
+   * An encapsulation policy for the component's styling.
    * Defaults to `ViewEncapsulation.Emulated`.
    */
   encapsulation?: ViewEncapsulation;
@@ -233,8 +233,8 @@ export interface R3DeclareQueryMetadata {
   first?: boolean;
 
   /**
-   * Either an expression representing a type or `InjectionToken` for the query
-   * predicate, or a set of string selectors.
+   * Either an expression representing a type (possibly wrapped in a `forwardRef()`) or
+   * `InjectionToken` for the query predicate, or a set of string selectors.
    */
   predicate: o.Expression|string[];
 

@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵgetDOM as getDOM} from '@angular/common';
 import {CssSelector, SelectorMatcher} from '@angular/compiler/src/selector';
 import {el} from '@angular/platform-browser/testing/src/browser_util';
 

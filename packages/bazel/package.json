@@ -17,13 +17,12 @@
   "bazelBin": {
     "ngc-wrapped": {
       "additionalAttributes": {
-        "configuration_env_vars": "[\"angular_ivy_enabled\"]",
         "templated_args": "[\"--bazel_patch_module_resolver\"]"
       }
     }
   },
   "dependencies": {
-    "@microsoft/api-extractor": "7.18.16",
+    "@microsoft/api-extractor": "7.18.19",
     "shelljs": "0.8.4",
     "tsickle": "^0.38.0",
     "tslib": "^2.3.0"
@@ -36,7 +35,7 @@
     "rollup": "^2.56.3",
     "rollup-plugin-sourcemaps": "^0.6.3",
     "terser": "^5.9.0",
-    "typescript": ">=4.4.2 <4.5"
+    "typescript": ">=4.4.2 <4.6"
   },
   "peerDependenciesMeta": {
     "terser": {

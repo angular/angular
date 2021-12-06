@@ -15,7 +15,6 @@ import {DecorationAnalyzer} from '../analysis/decoration_analyzer';
 import {ModuleWithProvidersAnalyses, ModuleWithProvidersAnalyzer} from '../analysis/module_with_providers_analyzer';
 import {NgccReferencesRegistry} from '../analysis/ngcc_references_registry';
 import {ExportInfo, PrivateDeclarationsAnalyzer} from '../analysis/private_declarations_analyzer';
-import {SwitchMarkerAnalyses, SwitchMarkerAnalyzer} from '../analysis/switch_marker_analyzer';
 import {CompiledFile} from '../analysis/types';
 import {DtsProcessing} from '../execution/tasks/api';
 import {CommonJsReflectionHost} from '../host/commonjs_host';
@@ -81,7 +80,6 @@ export class Transformer {
     // Parse and analyze the files.
     const {
       decorationAnalyses,
-      switchMarkerAnalyses,
       privateDeclarationsAnalyses,
       moduleWithProvidersAnalyses,
       diagnostics
@@ -100,8 +98,7 @@ export class Transformer {
       const srcFormatter = this.getRenderingFormatter(ngccReflectionHost, bundle);
       const renderer =
           new Renderer(reflectionHost, srcFormatter, this.fs, this.logger, bundle, this.tsConfig);
-      renderedFiles = renderer.renderProgram(
-          decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses);
+      renderedFiles = renderer.renderProgram(decorationAnalyses, privateDeclarationsAnalyses);
     }
 
     if (bundle.dts) {
@@ -152,10 +149,6 @@ export class Transformer {
   analyzeProgram(reflectionHost: NgccReflectionHost, bundle: EntryPointBundle): ProgramAnalyses {
     const referencesRegistry = new NgccReferencesRegistry(reflectionHost);
 
-    const switchMarkerAnalyzer =
-        new SwitchMarkerAnalyzer(reflectionHost, bundle.entryPoint.packagePath);
-    const switchMarkerAnalyses = switchMarkerAnalyzer.analyzeProgram(bundle.src.program);
-
     const diagnostics: ts.Diagnostic[] = [];
     const decorationAnalyzer = new DecorationAnalyzer(
         this.fs, bundle, reflectionHost, referencesRegistry,
@@ -175,7 +168,6 @@ export class Transformer {
 
     return {
       decorationAnalyses,
-      switchMarkerAnalyses,
       privateDeclarationsAnalyses,
       moduleWithProvidersAnalyses,
       diagnostics
@@ -189,7 +181,6 @@ export function hasErrors(diagnostics: ts.Diagnostic[]) {
 
 interface ProgramAnalyses {
   decorationAnalyses: Map<ts.SourceFile, CompiledFile>;
-  switchMarkerAnalyses: SwitchMarkerAnalyses;
   privateDeclarationsAnalyses: ExportInfo[];
   moduleWithProvidersAnalyses: ModuleWithProvidersAnalyses|null;
   diagnostics: ts.Diagnostic[];

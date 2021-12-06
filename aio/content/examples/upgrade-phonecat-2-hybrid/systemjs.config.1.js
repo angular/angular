@@ -3,39 +3,58 @@
  * Adjust as necessary for your application needs.
  */
 (function (global) {
-  // #docregion paths
+  // #docregion paths, angular-paths, rxjs-paths, tslib-paths, plugin-babel
   System.config({
+    // #enddocregion angular-paths, rxjs-paths, tslib-paths, plugin-babel
     paths: {
       // paths serve as alias
       'npm:': '/node_modules/'
     },
+    // #docregion angular-paths, rxjs-paths, tslib-paths, plugin-babel
     map: {
+      // #enddocregion angular-paths, rxjs-paths, tslib-paths, plugin-babel
       'ng-loader': '../src/systemjs-angular-loader.js',
       app: '/app',
       // #enddocregion paths
       // angular bundles
-      '@angular/core': 'npm:@angular/core/bundles/core.umd.js',
-      '@angular/common': 'npm:@angular/common/bundles/common.umd.js',
-      '@angular/common/http': 'npm:@angular/common/bundles/common-http.umd.js',
-      '@angular/compiler': 'npm:@angular/compiler/bundles/compiler.umd.js',
-      '@angular/platform-browser': 'npm:@angular/platform-browser/bundles/platform-browser.umd.js',
-      '@angular/platform-browser-dynamic': 'npm:@angular/platform-browser-dynamic/bundles/platform-browser-dynamic.umd.js',
-      '@angular/router': 'npm:@angular/router/bundles/router.umd.js',
-      '@angular/router/upgrade': 'npm:@angular/router/bundles/router-upgrade.umd.js',
-      '@angular/forms': 'npm:@angular/forms/bundles/forms.umd.js',
+      // #docregion angular-paths
+      '@angular/core': 'npm:@angular/core/fesm2015/core.mjs',
+      '@angular/common': 'npm:@angular/common/fesm2015/common.mjs',
+      '@angular/common/http': 'npm:@angular/common/fesm2015/http.mjs',
+      '@angular/compiler': 'npm:@angular/compiler/fesm2015/compiler.mjs',
+      '@angular/platform-browser': 'npm:@angular/platform-browser/fesm2015/platform-browser.mjs',
+      '@angular/platform-browser-dynamic': 'npm:@angular/platform-browser-dynamic/fesm2015/platform-browser-dynamic.mjs',
+      '@angular/router': 'npm:@angular/router/fesm2015/router.mjs',
+      '@angular/router/upgrade': 'npm:@angular/router/fesm2015/upgrade.mjs',
+      '@angular/forms': 'npm:@angular/forms/fesm2015/forms.mjs',
+      // #enddocregion angular-paths
       // #docregion paths
-      '@angular/upgrade/static': 'npm:@angular/upgrade/bundles/upgrade-static.umd.js',
+      '@angular/upgrade/static': 'npm:@angular/upgrade/fesm2015/static.mjs',
       // #enddocregion paths
 
       // other libraries
-      'rxjs': 'npm:rxjs',
+      // #docregion rxjs-paths
+      'rxjs': 'npm:rxjs/dist/cjs',
+      'rxjs/operators': 'npm:rxjs/dist/cjs/operators',
+      // #enddocregion rxjs-paths
+      // #docregion tslib-paths
+      'tslib': 'npm:tslib/tslib.js',
+      // #enddocregion tslib-paths
       'angular-in-memory-web-api': 'npm:angular-in-memory-web-api',
-      // #docregion paths
-    },
-    // #enddocregion paths
 
+      // #docregion plugin-babel
+      'plugin-babel': 'npm:systemjs-plugin-babel/plugin-babel.js',
+      'systemjs-babel-build': 'npm:systemjs-plugin-babel/systemjs-babel-browser.js'
+      // #docregion paths, angular-paths, rxjs-paths, tslib-paths
+    },
+    // #enddocregion paths, angular-paths, rxjs-paths, tslib-paths
+
+    transpiler: 'plugin-babel',
+    // #enddocregion plugin-babel
     // packages tells the System loader how to load when no filename and/or no extension
+    // #docregion rxjs-paths, plugin-babel
     packages: {
+      // #enddocregion rxjs-paths, plugin-babel
       'app': {
         main: './main.js',
         defaultExtension: 'js',
@@ -49,11 +68,29 @@
         main: './index.js',
         defaultExtension: 'js'
       },
-      'rxjs/ajax': {main: 'index.js', defaultExtension: 'js' },
-      'rxjs/operators': {main: 'index.js', defaultExtension: 'js' },
-      'rxjs/testing': {main: 'index.js', defaultExtension: 'js' },
-      'rxjs/websocket': {main: 'index.js', defaultExtension: 'js' },
-      'rxjs': { main: 'index.js', defaultExtension: 'js' },
+      // #docregion rxjs-paths
+      'rxjs': {
+        defaultExtension: 'js',
+        format: 'cjs',
+        main: 'index.js'
+      },
+      'rxjs/operators': {
+        defaultExtension: 'js',
+        format: 'cjs',
+        main: 'index.js'
+      },
+      // #enddocregion rxjs-paths
+      // #docregion plugin-babel
+      'meta': {
+        '*.mjs': {
+          babelOptions: {
+            es2015: false
+          }
+        }
+      }
+      // #docregion rxjs-paths
     }
+    // #docregion angular-paths, tslib-paths
   });
+  // #enddocregion angular-paths, rxjs-paths, tslib-paths, plugin-babel
 })(this);

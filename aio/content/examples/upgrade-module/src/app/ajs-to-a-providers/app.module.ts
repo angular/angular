@@ -1,4 +1,5 @@
 declare var angular: angular.IAngularStatic;
+import '@angular/compiler';
 import { NgModule } from '@angular/core';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 import { BrowserModule } from '@angular/platform-browser';
@@ -19,9 +20,6 @@ import { heroesServiceProvider } from './ajs-upgraded-providers';
   ],
   // #enddocregion register
   declarations: [
-    HeroDetailComponent
-  ],
-  entryComponents: [
     HeroDetailComponent
   ]
 // #docregion register

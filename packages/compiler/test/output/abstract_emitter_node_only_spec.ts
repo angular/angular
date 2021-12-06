@@ -9,7 +9,8 @@
 import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '@angular/compiler';
 import {EmitterVisitorContext} from '@angular/compiler/src/output/abstract_emitter';
 import {SourceMap} from '@angular/compiler/src/output/source_map';
-import {extractSourceMap, originalPositionFor} from '@angular/compiler/testing/src/output/source_map_util';
+
+import {extractSourceMap, originalPositionFor} from './source_map_util';
 
 {
   describe('AbstractEmitter', () => {

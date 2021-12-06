@@ -9,11 +9,9 @@
 import {createTNode, createTView} from '@angular/core/src/render3/instructions/shared';
 import {TNodeType} from '@angular/core/src/render3/interfaces/node';
 import {TViewType} from '@angular/core/src/render3/interfaces/view';
-import {onlyInIvy} from '@angular/private/testing';
 
 import {isShapeOf, ShapeOf} from './is_shape_of';
 import {matchDomElement, matchDomText, matchObjectShape, matchTNode, matchTView} from './matchers';
-import {dedent} from './utils';
 
 describe('render3 matchers', () => {
   describe('matchObjectShape', () => {

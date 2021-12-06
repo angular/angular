@@ -9,7 +9,7 @@
 import ts from 'typescript';
 
 import {DynamicValue} from './dynamic';
-import {KnownFn, ResolvedValue, ResolvedValueArray} from './result';
+import {EnumValue, KnownFn, ResolvedValue, ResolvedValueArray} from './result';
 
 export class ArraySliceBuiltinFn extends KnownFn {
   constructor(private lhs: ResolvedValueArray) {
@@ -39,6 +39,29 @@ export class ArrayConcatBuiltinFn extends KnownFn {
         result.push(...arg);
       } else {
         result.push(arg);
+      }
+    }
+    return result;
+  }
+}
+
+export class StringConcatBuiltinFn extends KnownFn {
+  constructor(private lhs: string) {
+    super();
+  }
+
+  override evaluate(node: ts.CallExpression, args: ResolvedValueArray): ResolvedValue {
+    let result = this.lhs;
+    for (const arg of args) {
+      const resolved = arg instanceof EnumValue ? arg.resolved : arg;
+
+      if (typeof resolved === 'string' || typeof resolved === 'number' ||
+          typeof resolved === 'boolean' || resolved == null) {
+        // Cast to `any`, because `concat` will convert
+        // anything to a string, but TS only allows strings.
+        result = result.concat(resolved as any);
+      } else {
+        return DynamicValue.fromUnknown(node);
       }
     }
     return result;

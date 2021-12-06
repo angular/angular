@@ -6,145 +6,196 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as tss from 'typescript/lib/tsserverlibrary';
-import {NgLanguageService} from '../api';
+import * as ts from 'typescript/lib/tsserverlibrary';
 
-import {createLanguageService} from './language_service';
-import {TypeScriptServiceHost} from './typescript_host';
+import {GetComponentLocationsForTemplateResponse, GetTcbResponse, GetTemplateLocationForComponentResponse, NgLanguageService} from '../api';
 
-// Use a WeakMap to keep track of Project to Host mapping so that when Project
-// is deleted Host could be garbage collected.
-const PROJECT_MAP = new WeakMap<tss.server.Project, TypeScriptServiceHost>();
+import {LanguageService} from './language_service';
 
-/**
- * This function is called by tsserver to retrieve the external (non-TS) files
- * that should belong to the specified `project`. For Angular, these files are
- * external templates. This is called once when the project is loaded, then
- * every time when the program is updated.
- * @param project Project for which external files should be retrieved.
- */
-export function getExternalFiles(project: tss.server.Project): string[] {
-  if (!project.hasRoots()) {
-    // During project initialization where there is no root files yet we should
-    // not do any work.
-    return [];
-  }
-  const ngLsHost = PROJECT_MAP.get(project);
-  if (ngLsHost === undefined) {
-    return [];
-  }
-  ngLsHost.getAnalyzedModules();
-  return ngLsHost.getExternalTemplates().filter(fileName => {
-    // TODO(kyliau): Remove this when the following PR lands on the version of
-    // TypeScript used in this repo.
-    // https://github.com/microsoft/TypeScript/pull/41737
-    return project.fileExists(fileName);
-  });
-}
+export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
+  const {project, languageService: tsLS, config} = info;
+  const angularOnly = config?.angularOnly === true;
 
-export function create(info: tss.server.PluginCreateInfo): NgLanguageService {
-  const {languageService: tsLS, languageServiceHost: tsLSHost, config, project} = info;
-  // This plugin could operate under two different modes:
-  // 1. TS + Angular
-  //    Plugin augments TS language service to provide additional Angular
-  //    information. This only works with inline templates and is meant to be
-  //    used as a local plugin (configured via tsconfig.json)
-  // 2. Angular only
-  //    Plugin only provides information on Angular templates, no TS info at all.
-  //    This effectively disables native TS features and is meant for internal
-  //    use only.
-  const angularOnly = config ? config.angularOnly === true : false;
-  const ngLSHost = new TypeScriptServiceHost(tsLSHost, tsLS);
-  const ngLS = createLanguageService(ngLSHost);
-  PROJECT_MAP.set(project, ngLSHost);
+  const ngLS = new LanguageService(project, tsLS, config);
 
-  function getCompletionsAtPosition(
-      fileName: string, position: number, options: tss.GetCompletionsAtPositionOptions|undefined) {
+  function getSemanticDiagnostics(fileName: string): ts.Diagnostic[] {
+    const diagnostics: ts.Diagnostic[] = [];
     if (!angularOnly) {
-      const results = tsLS.getCompletionsAtPosition(fileName, position, options);
-      if (results && results.entries.length) {
-        // If TS could answer the query, then return results immediately.
-        return results;
-      }
+      diagnostics.push(...tsLS.getSemanticDiagnostics(fileName));
     }
-    return ngLS.getCompletionsAtPosition(fileName, position, options);
+    diagnostics.push(...ngLS.getSemanticDiagnostics(fileName));
+    return diagnostics;
   }
 
-  function getQuickInfoAtPosition(fileName: string, position: number): tss.QuickInfo|undefined {
-    if (!angularOnly) {
-      const result = tsLS.getQuickInfoAtPosition(fileName, position);
-      if (result) {
-        // If TS could answer the query, then return results immediately.
-        return result;
-      }
+  function getQuickInfoAtPosition(fileName: string, position: number): ts.QuickInfo|undefined {
+    if (angularOnly) {
+      return ngLS.getQuickInfoAtPosition(fileName, position);
+    } else {
+      // If TS could answer the query, then return that result. Otherwise, return from Angular LS.
+      return tsLS.getQuickInfoAtPosition(fileName, position) ??
+          ngLS.getQuickInfoAtPosition(fileName, position);
     }
-    return ngLS.getQuickInfoAtPosition(fileName, position);
   }
 
-  function getSemanticDiagnostics(fileName: string): tss.Diagnostic[] {
-    const results: tss.Diagnostic[] = [];
-    if (!angularOnly) {
-      results.push(...tsLS.getSemanticDiagnostics(fileName));
+  function getTypeDefinitionAtPosition(
+      fileName: string, position: number): readonly ts.DefinitionInfo[]|undefined {
+    if (angularOnly) {
+      return ngLS.getTypeDefinitionAtPosition(fileName, position);
+    } else {
+      // If TS could answer the query, then return that result. Otherwise, return from Angular LS.
+      return tsLS.getTypeDefinitionAtPosition(fileName, position) ??
+          ngLS.getTypeDefinitionAtPosition(fileName, position);
     }
-    // For semantic diagnostics we need to combine both TS + Angular results
-    results.push(...ngLS.getSemanticDiagnostics(fileName));
-    return results;
-  }
-
-  function getDefinitionAtPosition(
-      fileName: string, position: number): ReadonlyArray<tss.DefinitionInfo>|undefined {
-    if (!angularOnly) {
-      const results = tsLS.getDefinitionAtPosition(fileName, position);
-      if (results) {
-        // If TS could answer the query, then return results immediately.
-        return results;
-      }
-    }
-    const result = ngLS.getDefinitionAndBoundSpan(fileName, position);
-    if (!result || !result.definitions || !result.definitions.length) {
-      return;
-    }
-    return result.definitions;
   }
 
   function getDefinitionAndBoundSpan(
-      fileName: string, position: number): tss.DefinitionInfoAndBoundSpan|undefined {
-    if (!angularOnly) {
-      const result = tsLS.getDefinitionAndBoundSpan(fileName, position);
-      if (result) {
-        // If TS could answer the query, then return results immediately.
-        return result;
-      }
+      fileName: string, position: number): ts.DefinitionInfoAndBoundSpan|undefined {
+    if (angularOnly) {
+      return ngLS.getDefinitionAndBoundSpan(fileName, position);
+    } else {
+      // If TS could answer the query, then return that result. Otherwise, return from Angular LS.
+      return tsLS.getDefinitionAndBoundSpan(fileName, position) ??
+          ngLS.getDefinitionAndBoundSpan(fileName, position);
     }
-    return ngLS.getDefinitionAndBoundSpan(fileName, position);
   }
 
-  function getTcb(fileName: string, position: number) {
-    // Not implemented in VE Language Service
-    return undefined;
+  function getReferencesAtPosition(fileName: string, position: number): ts.ReferenceEntry[]|
+      undefined {
+    return ngLS.getReferencesAtPosition(fileName, position);
   }
 
-  function getTemplateLocationForComponent(fileName: string, position: number) {
-    // Not implemented in VE Language Service
-    return undefined;
+  function findRenameLocations(
+      fileName: string, position: number, findInStrings: boolean, findInComments: boolean,
+      providePrefixAndSuffixTextForRename?: boolean): readonly ts.RenameLocation[]|undefined {
+    // Most operations combine results from all extensions. However, rename locations are exclusive
+    // (results from only one extension are used) so our rename locations are a superset of the TS
+    // rename locations. As a result, we do not check the `angularOnly` flag here because we always
+    // want to include results at TS locations as well as locations in templates.
+    return ngLS.findRenameLocations(fileName, position);
   }
 
-  function getComponentLocationsForTemplate(fileName: string) {
-    // Not implemented in VE Language Service
-    return [];
+  function getRenameInfo(fileName: string, position: number): ts.RenameInfo {
+    // See the comment in `findRenameLocations` explaining why we don't check the `angularOnly`
+    // flag.
+    return ngLS.getRenameInfo(fileName, position);
+  }
+
+  function getCompletionsAtPosition(
+      fileName: string, position: number,
+      options: ts.GetCompletionsAtPositionOptions): ts.WithMetadata<ts.CompletionInfo>|undefined {
+    if (angularOnly) {
+      return ngLS.getCompletionsAtPosition(fileName, position, options);
+    } else {
+      // If TS could answer the query, then return that result. Otherwise, return from Angular LS.
+      return tsLS.getCompletionsAtPosition(fileName, position, options) ??
+          ngLS.getCompletionsAtPosition(fileName, position, options);
+    }
+  }
+
+  function getCompletionEntryDetails(
+      fileName: string, position: number, entryName: string,
+      formatOptions: ts.FormatCodeOptions|ts.FormatCodeSettings|undefined, source: string|undefined,
+      preferences: ts.UserPreferences|undefined,
+      data: ts.CompletionEntryData|undefined): ts.CompletionEntryDetails|undefined {
+    if (angularOnly) {
+      return ngLS.getCompletionEntryDetails(
+          fileName, position, entryName, formatOptions, preferences, data);
+    } else {
+      // If TS could answer the query, then return that result. Otherwise, return from Angular LS.
+      return tsLS.getCompletionEntryDetails(
+                 fileName, position, entryName, formatOptions, source, preferences, data) ??
+          ngLS.getCompletionEntryDetails(
+              fileName, position, entryName, formatOptions, preferences, data);
+    }
+  }
+
+  function getCompletionEntrySymbol(
+      fileName: string, position: number, name: string, source: string|undefined): ts.Symbol|
+      undefined {
+    if (angularOnly) {
+      return ngLS.getCompletionEntrySymbol(fileName, position, name);
+    } else {
+      // If TS could answer the query, then return that result. Otherwise, return from Angular LS.
+      return tsLS.getCompletionEntrySymbol(fileName, position, name, source) ??
+          ngLS.getCompletionEntrySymbol(fileName, position, name);
+    }
+  }
+  /**
+   * Gets global diagnostics related to the program configuration and compiler options.
+   */
+  function getCompilerOptionsDiagnostics(): ts.Diagnostic[] {
+    const diagnostics: ts.Diagnostic[] = [];
+    if (!angularOnly) {
+      diagnostics.push(...tsLS.getCompilerOptionsDiagnostics());
+    }
+    diagnostics.push(...ngLS.getCompilerOptionsDiagnostics());
+    return diagnostics;
+  }
+
+  function getSignatureHelpItems(
+      fileName: string, position: number,
+      options: ts.SignatureHelpItemsOptions): ts.SignatureHelpItems|undefined {
+    if (angularOnly) {
+      return ngLS.getSignatureHelpItems(fileName, position, options);
+    } else {
+      return tsLS.getSignatureHelpItems(fileName, position, options) ??
+          ngLS.getSignatureHelpItems(fileName, position, options);
+    }
+  }
+
+  function getTcb(fileName: string, position: number): GetTcbResponse|undefined {
+    return ngLS.getTcb(fileName, position);
+  }
+
+  /**
+   * Given an external template, finds the associated components that use it as a `templateUrl`.
+   */
+  function getComponentLocationsForTemplate(fileName: string):
+      GetComponentLocationsForTemplateResponse {
+    return ngLS.getComponentLocationsForTemplate(fileName);
+  }
+
+  /**
+   * Given a location inside a component, finds the location of the inline template or the file for
+   * the `templateUrl`.
+   */
+  function getTemplateLocationForComponent(
+      fileName: string, position: number): GetTemplateLocationForComponentResponse {
+    return ngLS.getTemplateLocationForComponent(fileName, position);
   }
 
   return {
-    // First clone the original TS language service
     ...tsLS,
-    // Then override the methods supported by Angular language service
-    getCompletionsAtPosition,
-    getQuickInfoAtPosition,
     getSemanticDiagnostics,
-    getDefinitionAtPosition,
+    getTypeDefinitionAtPosition,
+    getQuickInfoAtPosition,
     getDefinitionAndBoundSpan,
+    getReferencesAtPosition,
+    findRenameLocations,
+    getRenameInfo,
+    getCompletionsAtPosition,
+    getCompletionEntryDetails,
+    getCompletionEntrySymbol,
     getTcb,
+    getCompilerOptionsDiagnostics,
     getComponentLocationsForTemplate,
+    getSignatureHelpItems,
     getTemplateLocationForComponent,
   };
+}
+
+export function getExternalFiles(project: ts.server.Project): string[] {
+  if (!project.hasRoots()) {
+    return [];  // project has not been initialized
+  }
+  const typecheckFiles: string[] = [];
+  for (const scriptInfo of project.getScriptInfos()) {
+    if (scriptInfo.scriptKind === ts.ScriptKind.External) {
+      // script info for typecheck file is marked as external, see
+      // getOrCreateTypeCheckScriptInfo() in
+      // packages/language-service/src/language_service.ts
+      typecheckFiles.push(scriptInfo.fileName);
+    }
+  }
+  return typecheckFiles;
 }

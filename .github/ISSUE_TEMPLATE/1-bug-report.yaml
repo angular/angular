@@ -59,7 +59,7 @@ body:
   - type: textarea
     id: environment
     attributes:
-      label: Please provide the environment you discovered this bug in
+      label: Please provide the environment you discovered this bug in (run `ng version`)
       render: true
       placeholder: |
         Angular CLI: 12.0.5

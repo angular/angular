@@ -46,7 +46,6 @@
 #  Used for approving minor changes, large-scale refactorings, and in emergency situations.
 #
 # alxhub
-# IgorMinar
 # jelbourn
 # josephperrott
 #
@@ -57,10 +56,17 @@
 #
 # aikidave
 # gkalpak
-# petebacondarwin
+# josmar-crwdstffng
+# ileil
 # TeriGlover
+# TMDavisGoogle
 
 version: 3
+
+availability:
+  users_unavailable:
+    - atscott # OOO as of 2021-12-01
+    - pkozlowski-opensource # OOO as of 2020-09-28
 
 # Meta field that goes unused by PullApprove to allow for defining aliases to be
 # used throughout the config.
@@ -175,25 +181,21 @@ groups:
         - AndrewKushnir # Andrew Kushnir
         - andrewseguin # Andrew Seguin
         - atscott # Andrew Scott
-        - ayazhafiz # Ayaz Hafiz
         - clydin # Charles Lyding
         - crisbeto # Kristiyan Kostadinov
         - devversion # Paul Gschwendtner
         - dgp1130 # Doug Parker
+        - dylhunn # Dylan Hunn
         - filipesilva # Filipe Silva
         - gkalpak # Georgios Kalpakas
-        - gregmagolan # Greg Magolan
-        - IgorMinar # Igor Minar
-        - jbogarthyde # Judy Bogart
         - jelbourn # Jeremy Elbourn
         - jessicajaniuk # Jessica Janiuk
         - JiaLiPassion # Jia Li
         - JoostK # Joost Koehoorn
         - josephperrott # Joey Perrott
-        - manughub # Manu Murthy
+        - MarkTechson # Mark Thompson (Techson)
         - mgechev # Minko Gechev
         - mmalerba # Miles Malerba
-        - petebacondarwin # Pete Bacon Darwin
         - pkozlowski-opensource # Pawel Kozlowski
         - Splaktar # Michael Prentice
         - twerske # Emma Twersky
@@ -221,9 +223,10 @@ groups:
           ])
     reviewers:
       users:
+        - alxhub
         - crisbeto
-        - IgorMinar
         - jelbourn
+        - jessicajaniuk
 
   # =========================================================
   #  Framework: Compiler
@@ -246,8 +249,8 @@ groups:
           ])
     reviewers:
       users:
-        - AndrewKushnir
         - alxhub
+        - AndrewKushnir
         - atscott
         - JoostK
 
@@ -265,7 +268,6 @@ groups:
         - alxhub
         - gkalpak
         - JoostK
-        - petebacondarwin
 
   # =========================================================
   #  Framework: Migrations
@@ -281,6 +283,7 @@ groups:
         - alxhub
         - crisbeto
         - devversion
+        - dylhunn
 
   # =========================================================
   #  Framework: Core
@@ -319,6 +322,7 @@ groups:
           'aio/content/guide/component-overview.md',
           'aio/content/examples/component-overview/**',
           'aio/content/guide/component-styles.md',
+          'aio/content/guide/developer-guide-overview.md',
           'aio/content/guide/view-encapsulation.md',
           'aio/content/examples/component-styles/**',
           'aio/content/examples/content-projection/**',
@@ -408,6 +412,7 @@ groups:
           'aio/content/guide/style-precedence.md',
           'aio/content/images/guide/structural-directives/**',
           'aio/content/guide/template-statements.md',
+          'aio/content/guide/understanding-angular-overview.md',
           'aio/content/guide/user-input.md',
           'aio/content/examples/user-input/**',
           'aio/content/images/guide/user-input/**',
@@ -421,8 +426,9 @@ groups:
         - alxhub
         - AndrewKushnir
         - atscott
+        - dylhunn
         - jessicajaniuk
-        # OOO as of 2020-09-28 - pkozlowski-opensource
+        - pkozlowski-opensource
 
   # =========================================================
   #  Framework: Common
@@ -442,8 +448,9 @@ groups:
         - alxhub
         - AndrewKushnir
         - atscott
+        - dylhunn
         - jessicajaniuk
-        # OOO as of 2020-09-28 - pkozlowski-opensource
+        - pkozlowski-opensource
 
   # =========================================================
   #  Framework: Http
@@ -464,8 +471,11 @@ groups:
     reviewers:
       users:
         - alxhub
-        - IgorMinar
-        - petebacondarwin
+        - AndrewKushnir
+        - atscott
+        - dylhunn
+        - jessicajaniuk
+        - pkozlowski-opensource
 
   # =========================================================
   #  Framework: Elements
@@ -484,8 +494,14 @@ groups:
           ])
     reviewers:
       users:
+        - alxhub
+        - AndrewKushnir
         - andrewseguin
+        - atscott
+        - dylhunn
         - gkalpak
+        - jessicajaniuk
+        - pkozlowski-opensource
 
   # =========================================================
   #  Framework: Forms
@@ -518,6 +534,7 @@ groups:
     reviewers:
       users:
         - AndrewKushnir
+        - dylhunn
 
   # =========================================================
   #  Framework: i18n
@@ -562,7 +579,7 @@ groups:
     reviewers:
       users:
         - AndrewKushnir
-        - petebacondarwin
+        - dgp1130
 
   # =========================================================
   #  Framework: Platform Server
@@ -583,6 +600,11 @@ groups:
       users:
         - alan-agius4
         - alxhub
+        - AndrewKushnir
+        - atscott
+        - dylhunn
+        - jessicajaniuk
+        - pkozlowski-opensource
 
   # =========================================================
   #  Framework: Router
@@ -609,6 +631,7 @@ groups:
           ])
     reviewers:
       users:
+        - AndrewKushnir
         - atscott
 
   # =========================================================
@@ -637,7 +660,6 @@ groups:
       users:
         - alxhub
         - gkalpak
-        - IgorMinar
 
   # =========================================================
   #  Framework: Upgrade
@@ -666,8 +688,9 @@ groups:
           ])
     reviewers:
       users:
+        - alxhub
         - gkalpak
-        - petebacondarwin
+        - jessicajaniuk
 
   # =========================================================
   #  Framework: Testing
@@ -694,9 +717,12 @@ groups:
           ])
     reviewers:
       users:
+        - alxhub
         - AndrewKushnir
-        - IgorMinar
-        # OOO as of 2020-09-28 - pkozlowski-opensource
+        - atscott
+        - dylhunn
+        - jessicajaniuk
+        - pkozlowski-opensource
 
   # =========================================================
   #  Framework: Benchmarks
@@ -711,8 +737,12 @@ groups:
           ])
     reviewers:
       users:
-        - IgorMinar
-        # OOO as of 2020-09-28 - pkozlowski-opensource
+        - alxhub
+        - AndrewKushnir
+        - atscott
+        - dylhunn
+        - jessicajaniuk
+        - pkozlowski-opensource
 
   # =========================================================
   #  Framework: Playground
@@ -727,9 +757,12 @@ groups:
           ])
     reviewers:
       users:
-        - IgorMinar
-        - jelbourn
-        # OOO as of 2020-09-28 - pkozlowski-opensource
+        - alxhub
+        - AndrewKushnir
+        - atscott
+        - dylhunn
+        - jessicajaniuk
+        - pkozlowski-opensource
 
   # =========================================================
   #  Framework: Security
@@ -754,9 +787,10 @@ groups:
           ])
     reviewers:
       users:
-        - IgorMinar
+        - alxhub
         - jelbourn
-        # OOO as of 2020-09-28 - pkozlowski-opensource
+        - josephperrott
+        - pkozlowski-opensource
     reviews:
       request: -1 # request reviews from everyone
       required: 2 # require at least 2 approvals
@@ -777,7 +811,6 @@ groups:
     reviewers:
       users:
         - devversion
-        - IgorMinar
         - josephperrott
 
   # =========================================================
@@ -796,8 +829,8 @@ groups:
           ])
     reviewers:
       users:
+        - alxhub
         - atscott
-        - zarend
 
   # =========================================================
   #  zone.js
@@ -829,8 +862,13 @@ groups:
           ])
     reviewers:
       users:
-        - IgorMinar
+        - alxhub
+        - AndrewKushnir
+        - atscott
         - crisbeto
+        - dylhunn
+        - jessicajaniuk
+        - pkozlowski-opensource
 
   # =========================================================
   #  Benchpress
@@ -862,8 +900,13 @@ groups:
           ])
     reviewers:
       users:
-        - IgorMinar
+        - alxhub
+        - AndrewKushnir
+        - atscott
+        - dylhunn
+        - jessicajaniuk
         - josephperrott
+        - pkozlowski-opensource
 
   # =========================================================
   #  Docs: Contributors
@@ -880,6 +923,7 @@ groups:
           ])
     reviewers:
       users:
+        - MarkTechson
         - mgechev
         - twerske
 
@@ -914,8 +958,8 @@ groups:
     reviewers:
       users:
         - aikidave
-        - IgorMinar
-        - jelbourn
+        - AndrewKushnir
+        - jessicajaniuk
 
   # =========================================================
   #  Docs: Marketing
@@ -937,8 +981,9 @@ groups:
     reviewers:
       users:
         - aikidave
-        - IgorMinar
+        - MarkTechson
         - mgechev
+        - twerske
 
   # =========================================================
   #  Docs: Observables
@@ -964,6 +1009,8 @@ groups:
     reviewers:
       users:
         - alxhub
+        - atscott
+        - dylhunn
 
   # =========================================================
   #  Docs: Packaging, Tooling, Releasing
@@ -997,7 +1044,7 @@ groups:
           ])
     reviewers:
       users:
-        - IgorMinar
+        - alxhub
         - jelbourn
 
   # =========================================================
@@ -1015,6 +1062,7 @@ groups:
           ])
     reviewers:
       users:
+        - MarkTechson
         - mgechev
         - twerske
 
@@ -1038,7 +1086,6 @@ groups:
         - alan-agius4
         - clydin
         - dgp1130
-        - IgorMinar
     reviews:
       request: -1 # request reviews from everyone
       required: 2 # require at least 2 approvals
@@ -1076,7 +1123,7 @@ groups:
       users:
         - alan-agius4
         - clydin
-        - IgorMinar
+        - dgp1130
         - mgechev
 
   # =========================================================
@@ -1089,14 +1136,16 @@ groups:
       - *can-be-global-docs-approved
       - >
         contains_any_globs(files, [
+          'aio/content/examples/angular-linker-plugin/webpack.config.mjs',
           'aio/content/guide/creating-libraries.md',
           'aio/content/guide/libraries.md',
-          'aio/content/guide/using-libraries.md'
+          'aio/content/guide/using-libraries.md',
+          'aio/content/guide/angular-package-format.md'
           ])
     reviewers:
       users:
         - alan-agius4
-        - IgorMinar
+        - alxhub
         - mgechev
 
   # =========================================================
@@ -1118,7 +1167,7 @@ groups:
     reviewers:
       users:
         - alan-agius4
-        - IgorMinar
+        - dylhunn
         - mgechev
 
   # =========================================================
@@ -1152,9 +1201,9 @@ groups:
           ])
     reviewers:
       users:
+        - alxhub
         - gkalpak
-        - IgorMinar
-        - petebacondarwin
+        - josephperrott
 
   # =========================================================
   #  Dev-infra
@@ -1188,6 +1237,7 @@ groups:
           'tools/circular_dependency_test/**',
           'tools/contributing-stats/**',
           'tools/gulp-tasks/**',
+          'tools/legacy-saucelabs/**',
           'tools/npm/**',
           'tools/npm_integration_test/**',
           'tools/rxjs/**',
@@ -1205,9 +1255,7 @@ groups:
     reviewers:
       users:
         - devversion
-        - filipesilva
         - gkalpak
-        - IgorMinar
         - josephperrott
 
   # =========================================================
@@ -1223,6 +1271,7 @@ groups:
         contains_any_globs(files.exclude("goldens/public-api/manage.js"), [
           'goldens/public-api/**',
           'docs/NAMING.md',
+          'aio/content/guide/angular-package-format.md',
           'aio/content/errors/*.md',
           'aio/content/guide/glossary.md',
           'aio/content/guide/styleguide.md',
@@ -1233,14 +1282,12 @@ groups:
     reviewers:
       users:
         - AndrewKushnir
-        - IgorMinar
         - alxhub
         - atscott
+        - dylhunn
         - jelbourn
-        - petebacondarwin
         - jessicajaniuk
-        - zarend
-        # OOO as of 2020-09-28 - pkozlowski-opensource
+        - pkozlowski-opensource
     reviews:
       request: 4 # Request reviews from four people
       required: 3 # Require that three people approve
@@ -1261,15 +1308,13 @@ groups:
           ])
     reviewers:
       users:
-        - AndrewKushnir
-        - IgorMinar
         - alxhub
+        - AndrewKushnir
         - atscott
+        - dylhunn
         - jelbourn
-        - petebacondarwin
         - jessicajaniuk
-        - zarend
-        # OOO as of 2020-09-28 - pkozlowski-opensource
+        - pkozlowski-opensource
     reviews:
       request: 4 # Request reviews from four people
       required: 2 # Require that two people approve
@@ -1290,15 +1335,13 @@ groups:
         ])
     reviewers:
       users:
-        - AndrewKushnir
-        - IgorMinar
         - alxhub
+        - AndrewKushnir
         - atscott
+        - dylhunn
         - jelbourn
-        - petebacondarwin
         - jessicajaniuk
-        - zarend
-        # OOO as of 2020-09-28 - pkozlowski-opensource
+        - pkozlowski-opensource
 
   ####################################################################################
   #  Special Cases
@@ -1317,9 +1360,9 @@ groups:
           ])
     reviewers:
       users:
-        - AndrewKushnir
-        - IgorMinar
         - alxhub
-        - atscott
+        - AndrewKushnir
+        - andrewseguin
+        - dgp1130
         - jelbourn
         - josephperrott

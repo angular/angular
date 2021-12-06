@@ -52,9 +52,10 @@ exports.config = {
     jasmine.getEnv().addReporter(new Reporter(browser.params.outputFile));
   },
 
+  allScriptsTimeout: 60000,
+
   jasmineNodeOpts: {
-    // defaultTimeoutInterval: 60000,
-    defaultTimeoutInterval: 10000,
+    defaultTimeoutInterval: 60000,
     showTiming: true,
     print: function() {}
   },

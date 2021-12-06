@@ -13,7 +13,7 @@ import {AstObject, AstValue} from '../../ast/ast_value';
 import {FatalLinkerError} from '../../fatal_linker_error';
 
 import {PartialLinker} from './partial_linker';
-import {wrapReference} from './util';
+import {extractForwardRef, wrapReference} from './util';
 
 /**
  * A `PartialLinker` that is designed to process `ɵɵngDeclareDirective()` call expressions.
@@ -140,7 +140,7 @@ function toQueryMetadata<TExpression>(obj: AstObject<R3DeclareQueryMetadata, TEx
   if (predicateExpr.isArray()) {
     predicate = predicateExpr.getArray().map(entry => entry.getString());
   } else {
-    predicate = predicateExpr.getOpaque();
+    predicate = extractForwardRef(predicateExpr);
   }
   return {
     propertyName: obj.getString('propertyName'),

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_INITIALIZER, ApplicationRef, DebugNode, NgProbeToken, NgZone, Optional, Provider, ɵgetDebugNodeR2} from '@angular/core';
+import {ApplicationRef, DebugNode, NgProbeToken, NgZone, ɵgetDebugNodeR2} from '@angular/core';
 
 import {exportNgVar} from '../util';
 
@@ -36,28 +36,3 @@ export function _createNgProbeR2(coreTokens: NgProbeToken[]): any {
 function _ngProbeTokensToMap(tokens: NgProbeToken[]): {[name: string]: any} {
   return tokens.reduce((prev: any, t: any) => (prev[t.name] = t.token, prev), {});
 }
-
-/**
- * In Ivy, we don't support NgProbe because we have our own set of testing utilities
- * with more robust functionality.
- *
- * We shouldn't bring in NgProbe because it prevents DebugNode and friends from
- * tree-shaking properly.
- */
-export const ELEMENT_PROBE_PROVIDERS__POST_R3__ = [];
-
-/**
- * Providers which support debugging Angular applications (e.g. via `ng.probe`).
- */
-export const ELEMENT_PROBE_PROVIDERS__PRE_R3__: Provider[] = [
-  {
-    provide: APP_INITIALIZER,
-    useFactory: _createNgProbeR2,
-    deps: [
-      [NgProbeToken, new Optional()],
-    ],
-    multi: true,
-  },
-];
-
-export const ELEMENT_PROBE_PROVIDERS = ELEMENT_PROBE_PROVIDERS__PRE_R3__;

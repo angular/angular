@@ -46,10 +46,10 @@ assertSucceeded "Expected 'ngcc --help' to succeed."
 ngcc --unknown-option 2>&1 | grep 'Unknown arguments: unknown-option, unknownOption'
 assertSucceeded "Expected ngcc to report bad option."
 
-# node --inspect-brk $(npm bin)/ngcc -f esm2015
+# node --inspect-brk $(npm bin)/ngcc -p esm2015
 # Run ngcc and check it logged compilation output as expected
-ngcc | grep 'Compiling'
-assertSucceeded "Expected 'ngcc' to log 'Compiling'."
+ngcc | grep -e '- @angular/core \[fesm2015/esm2015\] (https://github\.com/angular/angular\.git)'
+assertSucceeded "Expected 'ngcc' to log '- @angular/core [fesm2015/esm2015] (https://github.com/angular/angular.git)'."
 
 
 # Did it add the appropriate build markers?
@@ -69,14 +69,6 @@ assertSucceeded "Expected 'ngcc' to log 'Compiling'."
   # `module` is an alias of `fesm2015`
   cat node_modules/@angular/common/package.json | awk 'ORS=" "' | grep '"__processed_by_ivy_ngcc__":[^}]*"module": "'
   assertSucceeded "Expected 'ngcc' to add build marker for 'module' in '@angular/common'."
-
-# Did it replace the PRE_R3 markers correctly?
-  grep "= SWITCH_COMPILE_COMPONENT__POST_R3__" node_modules/@angular/core/fesm2015/core.js
-  assertSucceeded "Expected 'ngcc' to replace 'SWITCH_COMPILE_COMPONENT__PRE_R3__' in '@angular/core' (fesm2015)."
-
-  grep "= SWITCH_COMPILE_COMPONENT__POST_R3__" node_modules/@angular/core/bundles/core.umd.js
-  assertSucceeded "Expected 'ngcc' to replace 'SWITCH_COMPILE_COMPONENT__PRE_R3__' in '@angular/core' (main)."
-
 
 # Did it compile @angular/core/ApplicationModule correctly?
   grep "ApplicationModule.ɵmod = /\*@__PURE__\*/ ɵɵdefineNgModule" node_modules/@angular/core/fesm2015/core.js
@@ -209,7 +201,7 @@ ngcc --formats fesm2015
 assertFailed "Expected 'ngcc --formats fesm2015' to fail (since '--formats' is deprecated)."
 
 # Does it timeout if there is another ngcc process running
-LOCKFILE=node_modules/@angular/compiler-cli/bundles/ngcc/__ngcc_lock_file__
+LOCKFILE=node_modules/.ngcc_lock_file
 touch $LOCKFILE
 trap "[[ -f $LOCKFILE ]] && rm $LOCKFILE" EXIT
 ngcc
