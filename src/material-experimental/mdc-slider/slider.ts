@@ -706,6 +706,7 @@ export class MatSlider
 
   ngAfterViewInit() {
     if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      _validateThumbs(this._isRange(), this._getThumb(Thumb.START), this._getThumb(Thumb.END));
       _validateInputs(
         this._isRange(),
         this._getInputElement(Thumb.START),
@@ -1202,25 +1203,28 @@ class SliderAdapter implements MDCSliderAdapter {
   };
 }
 
-/**
- * Ensures that there is not an invalid configuration for the slider thumb inputs.
- */
+/** Ensures that there is not an invalid configuration for the slider thumb inputs. */
 function _validateInputs(
   isRange: boolean,
   startInputElement: HTMLInputElement,
   endInputElement: HTMLInputElement,
 ): void {
-  if (isRange) {
-    if (!startInputElement.hasAttribute('matSliderStartThumb')) {
-      _throwInvalidInputConfigurationError();
-    }
-    if (!endInputElement.hasAttribute('matSliderEndThumb')) {
-      _throwInvalidInputConfigurationError();
-    }
-  } else {
-    if (!endInputElement.hasAttribute('matSliderThumb')) {
-      _throwInvalidInputConfigurationError();
-    }
+  const startValid = !isRange || startInputElement.hasAttribute('matSliderStartThumb');
+  const endValid = endInputElement.hasAttribute(isRange ? 'matSliderEndThumb' : 'matSliderThumb');
+
+  if (!startValid || !endValid) {
+    _throwInvalidInputConfigurationError();
+  }
+}
+
+/** Validates that the slider has the correct set of thumbs. */
+function _validateThumbs(
+  isRange: boolean,
+  start: MatSliderVisualThumb | undefined,
+  end: MatSliderVisualThumb | undefined,
+): void {
+  if (!end && (!isRange || !start)) {
+    _throwInvalidInputConfigurationError();
   }
 }
 
