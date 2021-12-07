@@ -22,6 +22,12 @@ import {DeclarationNode} from '../../src/ngtsc/reflection';
 import {NgtscTestCompilerHost} from '../../src/ngtsc/testing';
 import {setWrapHostForTest} from '../../src/transformers/compiler_host';
 
+type TsConfigOptionsValue =
+    string|boolean|number|null|TsConfigOptionsValue[]|{[key: string]: TsConfigOptionsValue};
+type TsConfigOptions = {
+  [key: string]: TsConfigOptionsValue;
+};
+
 /**
  * Manages a temporary testing directory structure and environment for testing ngtsc by feeding it
  * TypeScript code.
@@ -185,9 +191,7 @@ export class NgtscTestEnvironment {
     }
   }
 
-  tsconfig(
-      extraOpts: {[key: string]: string|boolean|null} = {}, extraRootDirs?: string[],
-      files?: string[]): void {
+  tsconfig(extraOpts: TsConfigOptions = {}, extraRootDirs?: string[], files?: string[]): void {
     const tsconfig: {[key: string]: any} = {
       extends: './tsconfig-base.json',
       angularCompilerOptions: {...extraOpts, enableIvy: true},
