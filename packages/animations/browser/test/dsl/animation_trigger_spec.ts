@@ -16,7 +16,7 @@ import {makeTrigger} from '../shared';
 
 {
   describe('AnimationTrigger', () => {
-    // these tests are only mean't to be run within the DOM (for now)
+    // these tests are only meant to be run within the DOM (for now)
     if (isNode) return;
 
     let element: any;

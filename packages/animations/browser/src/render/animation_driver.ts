@@ -8,7 +8,7 @@
 import {AnimationPlayer, NoopAnimationPlayer} from '@angular/animations';
 import {Injectable} from '@angular/core';
 
-import {containsElement, invokeQuery, matchesElement, validateStyleProperty} from './shared';
+import {containsElement, invokeQuery, validateStyleProperty} from './shared';
 
 /**
  * @publicApi
@@ -19,8 +19,9 @@ export class NoopAnimationDriver implements AnimationDriver {
     return validateStyleProperty(prop);
   }
 
-  matchesElement(element: any, selector: string): boolean {
-    return matchesElement(element, selector);
+  matchesElement(_element: any, _selector: string): boolean {
+    // This method is deprecated and no longer in use so we return false.
+    return false;
   }
 
   containsElement(elm1: any, elm2: any): boolean {
@@ -51,6 +52,9 @@ export abstract class AnimationDriver {
 
   abstract validateStyleProperty(prop: string): boolean;
 
+  /**
+   * @deprecated No longer in use. Will be removed.
+   */
   abstract matchesElement(element: any, selector: string): boolean;
 
   abstract containsElement(elm1: any, elm2: any): boolean;
