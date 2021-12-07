@@ -75,7 +75,7 @@ export class OverlayOutsideClickDispatcher extends BaseOverlayDispatcher {
   /** Store pointerdown event target to track origin of click. */
   private _pointerDownListener = (event: PointerEvent) => {
     this._pointerDownEventTarget = _getEventTarget(event);
-  }
+  };
 
   /** Click event listener that will be attached to the body propagate phase. */
   private _clickListener = (event: MouseEvent) => {
@@ -86,8 +86,10 @@ export class OverlayOutsideClickDispatcher extends BaseOverlayDispatcher {
     // This is done by using the event target of the preceding pointerdown event.
     // Every click event caused by a pointer device has a preceding pointerdown
     // event, unless the click was programmatically triggered (e.g. in a unit test).
-    const origin = event.type === 'click' && this._pointerDownEventTarget
-      ? this._pointerDownEventTarget : target;
+    const origin =
+      event.type === 'click' && this._pointerDownEventTarget
+        ? this._pointerDownEventTarget
+        : target;
     // Reset the stored pointerdown event target, to avoid having it interfere
     // in subsequent events.
     this._pointerDownEventTarget = null;
@@ -110,8 +112,10 @@ export class OverlayOutsideClickDispatcher extends BaseOverlayDispatcher {
       // If it's a click inside the overlay, just break - we should do nothing
       // If it's an outside click (both origin and target of the click) dispatch the mouse event,
       // and proceed with the next overlay
-      if (overlayRef.overlayElement.contains(target as Node) ||
-          overlayRef.overlayElement.contains(origin as Node)) {
+      if (
+        overlayRef.overlayElement.contains(target as Node) ||
+        overlayRef.overlayElement.contains(origin as Node)
+      ) {
         break;
       }
 
