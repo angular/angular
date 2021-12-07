@@ -237,7 +237,7 @@ You can use one of these pre-built themes if you don't want to define a custom t
 |------------------------|----------------|----------------------------------|
 | `deeppurple-amber.css` | Light          | deep-purple, amber, red          |
 | `indigo-pink.css`      | Light          | indigo, pink, red                |
-| `pink-bluegray.css`    | Dark           | pink, bluegray, red              |
+| `pink-bluegrey.css`    | Dark           | pink, bluegrey, red              |
 | `purple-green.css`     | Dark           | purple, green, red               |
 
 These files include the CSS for every component in the library. To include only the CSS for a subset
