@@ -39,6 +39,9 @@ interface AnalyzedImport {
 /** Checks whether an analyzed import has the given import flag set. */
 const hasFlag = (data: AnalyzedImport, flag: ImportState) => (data.state & flag) !== 0;
 
+/** Parsed version of TypeScript that can be used for comparisons. */
+const PARSED_TS_VERSION = parseFloat(ts.versionMajorMinor);
+
 /**
  * Import manager that can be used to add or remove TypeScript imports within source
  * files. The manager ensures that multiple transformations are applied properly
@@ -346,7 +349,7 @@ export class ImportManager {
         if (importData.specifiers) {
           const namedBindings = importData.node.importClause!.namedBindings as ts.NamedImports;
           const importSpecifiers = importData.specifiers.map(s =>
-            ts.createImportSpecifier(s.propertyName, s.name),
+            createImportSpecifier(s.propertyName, s.name),
           );
           const updatedBindings = ts.updateNamedImports(namedBindings, importSpecifiers);
 
@@ -355,12 +358,14 @@ export class ImportManager {
           // update the named bindings to not re-print the whole import (which could
           // cause unnecessary formatting changes)
           if (hasFlag(importData, ImportState.ADDED)) {
-            const updatedImport = ts.updateImportDeclaration(
+            // TODO(crisbeto): needs to be cast to any until g3 is updated to TS 4.5.
+            const updatedImport = (ts.updateImportDeclaration as any)(
               importData.node,
               undefined,
               undefined,
               ts.createImportClause(undefined, updatedBindings),
               ts.createStringLiteral(importData.moduleName),
+              undefined,
             );
             const newImportText = this._printer.printNode(
               ts.EmitHint.Unspecified,
@@ -522,4 +527,15 @@ export class ImportManager {
     }
     return commentRanges[commentRanges.length - 1]!.end;
   }
+}
+
+// TODO(crisbeto): backwards-compatibility layer that allows us to support both TS 4.4 and 4.5.
+// Should be removed once we don't have to support 4.4 anymore.
+function createImportSpecifier(
+  propertyName: ts.Identifier | undefined,
+  name: ts.Identifier,
+): ts.ImportSpecifier {
+  return PARSED_TS_VERSION > 4.4
+    ? (ts.createImportSpecifier as any)(false, propertyName, name)
+    : (ts.createImportSpecifier as any)(propertyName, name);
 }

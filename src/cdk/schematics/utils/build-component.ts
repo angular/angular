@@ -27,7 +27,7 @@ import {InsertChange} from '@schematics/angular/utility/change';
 import {getWorkspace} from '@schematics/angular/utility/workspace';
 import {buildRelativePath, findModuleFromOptions} from '@schematics/angular/utility/find-module';
 import {parseName} from '@schematics/angular/utility/parse-name';
-import {validateHtmlSelector, validateName} from '@schematics/angular/utility/validation';
+import {validateHtmlSelector} from '@schematics/angular/utility/validation';
 import {ProjectType} from '@schematics/angular/utility/workspace-models';
 import {readFileSync, statSync} from 'fs';
 import {dirname, join, resolve} from 'path';
@@ -200,7 +200,6 @@ export function buildComponent(
     options.path = parsedPath.path;
     options.selector = options.selector || buildSelector(options, project.prefix);
 
-    validateName(options.name);
     validateHtmlSelector(options.selector!);
 
     // In case the specified style extension is not part of the supported CSS supersets,
