@@ -15,8 +15,6 @@ export interface Fruit {
   styleUrls: ['chips-input-example.css'],
 })
 export class ChipsInputExample {
-  selectable = true;
-  removable = true;
   addOnBlur = true;
   readonly separatorKeysCodes = [ENTER, COMMA] as const;
   fruits: Fruit[] = [{name: 'Lemon'}, {name: 'Lime'}, {name: 'Apple'}];

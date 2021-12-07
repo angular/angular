@@ -3,11 +3,9 @@
   <mat-chip-list #chipList aria-label="Fruit selection">
     <mat-chip
       *ngFor="let fruit of fruits"
-      [selectable]="selectable"
-      [removable]="removable"
       (removed)="remove(fruit)">
       {{fruit}}
-      <button matChipRemove *ngIf="removable">
+      <button matChipRemove>
         <mat-icon>cancel</mat-icon>
       </button>
     </mat-chip>

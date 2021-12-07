@@ -15,8 +15,6 @@ import {map, startWith} from 'rxjs/operators';
   styleUrls: ['chips-autocomplete-example.css'],
 })
 export class ChipsAutocompleteExample {
-  selectable = true;
-  removable = true;
   separatorKeysCodes: number[] = [ENTER, COMMA];
   fruitCtrl = new FormControl();
   filteredFruits: Observable<string[]>;
