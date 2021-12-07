@@ -22,7 +22,7 @@ export class MockAnimationDriver implements AnimationDriver {
     // (undocumented)
     static log: AnimationPlayer[];
     // (undocumented)
-    matchesElement(element: any, selector: string): boolean;
+    matchesElement(_element: any, _selector: string): boolean;
     // (undocumented)
     query(element: any, selector: string, multi: boolean): any[];
     // (undocumented)
@@ -67,7 +67,6 @@ export class MockAnimationPlayer extends NoopAnimationPlayer {
     // (undocumented)
     reset(): void;
 }
-
 
 // (No @packageDocumentation comment for this package)
 

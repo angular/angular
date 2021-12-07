@@ -149,8 +149,6 @@ export function parseTimelineCommand(command: string): [string, string] {
 }
 
 let _contains: (elm1: any, elm2: any) => boolean = (elm1: any, elm2: any) => false;
-let _matches: (element: any, selector: string) => boolean = (element: any, selector: string) =>
-    false;
 let _query: (element: any, selector: string, multi: boolean) => any[] =
     (element: any, selector: string, multi: boolean) => {
       return [];
@@ -173,21 +171,6 @@ if (_isNode || typeof Element !== 'undefined') {
       return false;
     };
   }
-
-  _matches = (() => {
-    if (_isNode || Element.prototype.matches) {
-      return (element: any, selector: string) => element.matches(selector);
-    } else {
-      const proto = Element.prototype as any;
-      const fn = proto.matchesSelector || proto.mozMatchesSelector || proto.msMatchesSelector ||
-          proto.oMatchesSelector || proto.webkitMatchesSelector;
-      if (fn) {
-        return (element: any, selector: string) => fn.apply(element, [selector]);
-      } else {
-        return _matches;
-      }
-    }
-  })();
 
   _query = (element: any, selector: string, multi: boolean): any[] => {
     let results: any[] = [];
@@ -246,7 +229,6 @@ export function getBodyNode(): any|null {
   return null;
 }
 
-export const matchesElement = _matches;
 export const containsElement = _contains;
 export const invokeQuery = _query;
 

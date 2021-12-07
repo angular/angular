@@ -7,7 +7,6 @@
  */
 import {animate, animateChild, AnimationPlayer, AUTO_STYLE, group, query, sequence, stagger, state, style, transition, trigger, ɵAnimationGroupPlayer as AnimationGroupPlayer} from '@angular/animations';
 import {AnimationDriver, ɵAnimationEngine} from '@angular/animations/browser';
-import {matchesElement} from '@angular/animations/browser/src/render/shared';
 import {TransitionAnimationPlayer} from '@angular/animations/browser/src/render/transition_animation_engine';
 import {ENTER_CLASSNAME, LEAVE_CLASSNAME} from '@angular/animations/browser/src/util';
 import {MockAnimationDriver, MockAnimationPlayer} from '@angular/animations/browser/testing';
@@ -19,7 +18,7 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {HostListener} from '../../src/metadata/directives';
 
 (function() {
-// these tests are only mean't to be run within the DOM (for now)
+// these tests are only meant to be run within the DOM (for now)
 if (isNode) return;
 
 describe('animation query tests', function() {
@@ -3052,7 +3051,7 @@ describe('animation query tests', function() {
              AnimationGroupPlayer;
          const childPlayer = groupPlayer.players.find(player => {
            if (player instanceof MockAnimationPlayer) {
-             return matchesElement(player.element, '.child');
+             return player.element.classList.contains('child');
            }
            return false;
          }) as MockAnimationPlayer;
