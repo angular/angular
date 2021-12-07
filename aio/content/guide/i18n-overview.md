@@ -29,7 +29,7 @@ A locale determines the formatting and parsing of the following details.
     </a>
     <a href="guide/i18n-example" class="docs-card" title="Internationalization example">
         <section>Internationalization example</section>
-        <p>Review an example fo Angular internationalization.</p>
+        <p>Review an example of Angular internationalization.</p>
         <p class="card-footer">Example Angular Internationalization application</p>
     </a>
 </div>
