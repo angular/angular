@@ -8,6 +8,7 @@
 
 import ts from 'typescript';
 
+import {DiagnosticCategoryLabel} from '../../../../../core/api';
 import {ErrorCode, ExtendedTemplateDiagnosticName, ngErrorCode} from '../../../../../diagnostics';
 import {absoluteFrom, getSourceFileOrError} from '../../../../../file_system';
 import {runInEachFileSystem} from '../../../../../file_system/testing';
@@ -109,6 +110,28 @@ runInEachFileSystem(() => {
       expect(diags[1].category).toBe(ts.DiagnosticCategory.Warning);
       expect(diags[1].code).toBe(ngErrorCode(ErrorCode.INVALID_BANANA_IN_BOX));
       expect(getSourceCodeForDiagnostic(diags[1])).toBe('([notARealThing2])="var1"');
+    });
+
+    it('should respect configured category', () => {
+      const fileName = absoluteFrom('/main.ts');
+      const {program, templateTypeChecker} = setup([{
+        fileName,
+        templates: {
+          'TestCmp': '<div ([notARealThing])="var1"> </div>',
+        },
+        source: 'export class TestCmp { var1: string = "text"; }'
+      }]);
+      const sf = getSourceFileOrError(program, fileName);
+      const component = getClass(sf, 'TestCmp');
+
+      const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
+          templateTypeChecker, program.getTypeChecker(), [invalidBananaInBoxFactory],
+          {extendedDiagnostics: {checks: {invalidBananaInBox: DiagnosticCategoryLabel.Error}}});
+      const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
+
+      expect(diags.length).toBe(1);
+      expect(diags[0].category).toBe(ts.DiagnosticCategory.Error);
+      expect(diags[0].code).toBe(ngErrorCode(ErrorCode.INVALID_BANANA_IN_BOX));
     });
   });
 });

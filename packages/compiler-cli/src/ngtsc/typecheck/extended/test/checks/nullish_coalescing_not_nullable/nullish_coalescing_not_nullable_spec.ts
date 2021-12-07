@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {DiagnosticCategoryLabel} from '@angular/compiler-cli/src/ngtsc/core/api';
 import ts from 'typescript';
 
 import {ErrorCode, ExtendedTemplateDiagnosticName, ngErrorCode} from '../../../../../diagnostics';
@@ -177,5 +178,36 @@ runInEachFileSystem(() => {
          const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
          expect(diags.length).toBe(0);
        });
+
+    it('should respect configured diagnostic category', () => {
+      const fileName = absoluteFrom('/main.ts');
+      const {program, templateTypeChecker} = setup([{
+        fileName,
+        templates: {
+          'TestCmp': `{{ var1 ?? 'foo' }}`,
+        },
+        source: 'export class TestCmp { var1: string = "text"; }'
+      }]);
+      const sf = getSourceFileOrError(program, fileName);
+      const component = getClass(sf, 'TestCmp');
+
+      const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
+          templateTypeChecker,
+          program.getTypeChecker(),
+          [nullishCoalescingNotNullableFactory],
+          {
+            extendedDiagnostics: {
+              checks: {
+                nullishCoalescingNotNullable: DiagnosticCategoryLabel.Error,
+              },
+            },
+          },
+      );
+      const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
+
+      expect(diags.length).toBe(1);
+      expect(diags[0].category).toBe(ts.DiagnosticCategory.Error);
+      expect(diags[0].code).toBe(ngErrorCode(ErrorCode.NULLISH_COALESCING_NOT_NULLABLE));
+    });
   });
 });

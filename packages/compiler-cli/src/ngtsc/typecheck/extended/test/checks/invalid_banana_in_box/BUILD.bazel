@@ -6,6 +6,7 @@ ts_library(
     srcs = ["invalid_banana_in_box_spec.ts"],
     deps = [
         "//packages/compiler",
+        "//packages/compiler-cli/src/ngtsc/core:api",
         "//packages/compiler-cli/src/ngtsc/diagnostics",
         "//packages/compiler-cli/src/ngtsc/file_system",
         "//packages/compiler-cli/src/ngtsc/file_system/testing",

@@ -123,5 +123,97 @@ runInEachFileSystem(() => {
       expect(diags[0].code).toBe(ngErrorCode(ErrorCode.NULLISH_COALESCING_NOT_NULLABLE));
       expect(getSourceCodeForDiagnostic(diags[0])).toBe('bar ?? "foo"');
     });
+
+    describe('handles diagnostic configuration', () => {
+      // Component definition which emits one warning.
+      const warningComponent = `
+        import {Component} from '@angular/core';
+
+        @Component({
+          selector: 'test-component',
+          // Invalid banana in box (should be \`[(foo)]="bar"\`).
+          template: '<div ([foo])="bar"></div>',
+        })
+        class TestComponent {
+          bar = 'test';
+        }
+      `;
+
+      it('by emitting unconfigured diagnostics as is', () => {
+        env.tsconfig({
+          strictTemplates: true,
+          _extendedTemplateDiagnostics: true,
+          extendedDiagnostics: {},  // No configured diagnostics.
+        });
+
+        env.write('test.ts', warningComponent);
+
+        const diagnostics = env.driveDiagnostics(0 /* expectedExitCode */);
+        expect(diagnostics.length).toBe(1);
+        expect(diagnostics[0]).toEqual(jasmine.objectContaining({
+          code: ngErrorCode(ErrorCode.INVALID_BANANA_IN_BOX),
+          category: ts.DiagnosticCategory.Warning,
+        }));
+      });
+
+      it('by emitting diagnostics configured as `warning`', () => {
+        env.tsconfig({
+          strictTemplates: true,
+          _extendedTemplateDiagnostics: true,
+          extendedDiagnostics: {
+            checks: {
+              invalidBananaInBox: 'warning',
+            },
+          },
+        });
+
+        env.write('test.ts', warningComponent);
+
+        const diagnostics = env.driveDiagnostics(0 /* expectedExitCode */);
+        expect(diagnostics.length).toBe(1);
+        expect(diagnostics[0]).toEqual(jasmine.objectContaining({
+          code: ngErrorCode(ErrorCode.INVALID_BANANA_IN_BOX),
+          category: ts.DiagnosticCategory.Warning,
+        }));
+      });
+
+      it('by promoting diagnostics configured as `error`', () => {
+        env.tsconfig({
+          strictTemplates: true,
+          _extendedTemplateDiagnostics: true,
+          extendedDiagnostics: {
+            checks: {
+              invalidBananaInBox: 'error',
+            },
+          },
+        });
+
+        env.write('test.ts', warningComponent);
+
+        const diagnostics = env.driveDiagnostics(1 /* expectedExitCode */);
+        expect(diagnostics.length).toBe(1);
+        expect(diagnostics[0]).toEqual(jasmine.objectContaining({
+          code: ngErrorCode(ErrorCode.INVALID_BANANA_IN_BOX),
+          category: ts.DiagnosticCategory.Error,
+        }));
+      });
+
+      it('by suppressing diagnostics configured as `suppress`', () => {
+        env.tsconfig({
+          strictTemplates: true,
+          _extendedTemplateDiagnostics: true,
+          extendedDiagnostics: {
+            checks: {
+              invalidBananaInBox: 'suppress',
+            },
+          },
+        });
+
+        env.write('test.ts', warningComponent);
+
+        const diagnostics = env.driveDiagnostics(0 /* expectedExitCode */);
+        expect(diagnostics).toEqual([]);
+      });
+    });
   });
 });

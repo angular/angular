@@ -24,8 +24,10 @@ class NullishCoalescingNotNullableCheck extends
     TemplateCheckWithVisitor<ErrorCode.NULLISH_COALESCING_NOT_NULLABLE> {
   override code = ErrorCode.NULLISH_COALESCING_NOT_NULLABLE as const;
 
-  override visitNode(ctx: TemplateContext, component: ts.ClassDeclaration, node: TmplAstNode|AST):
-      NgTemplateDiagnostic<ErrorCode.NULLISH_COALESCING_NOT_NULLABLE>[] {
+  override visitNode(
+      ctx: TemplateContext<ErrorCode.NULLISH_COALESCING_NOT_NULLABLE>,
+      component: ts.ClassDeclaration,
+      node: TmplAstNode|AST): NgTemplateDiagnostic<ErrorCode.NULLISH_COALESCING_NOT_NULLABLE>[] {
     if (!(node instanceof Binary) || node.operation !== '??') return [];
 
     const symbolLeft = ctx.templateTypeChecker.getSymbolOfNode(node.left, component);
@@ -44,8 +46,8 @@ class NullishCoalescingNotNullableCheck extends
     }
     const span =
         ctx.templateTypeChecker.getTemplateMappingAtShimLocation(symbol.shimLocation)!.span;
-    const diagnostic = ctx.templateTypeChecker.makeTemplateDiagnostic(
-        component, span, ts.DiagnosticCategory.Warning, ErrorCode.NULLISH_COALESCING_NOT_NULLABLE,
+    const diagnostic = ctx.makeTemplateDiagnostic(
+        span,
         `The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed.`);
     return [diagnostic];
   }
