@@ -14,7 +14,7 @@ export abstract class AnimationDriver {
     abstract computeStyle(element: any, prop: string, defaultValue?: string): string;
     // (undocumented)
     abstract containsElement(elm1: any, elm2: any): boolean;
-    // (undocumented)
+    // @deprecated (undocumented)
     abstract matchesElement(element: any, selector: string): boolean;
     // (undocumented)
     static NOOP: AnimationDriver;
@@ -23,7 +23,6 @@ export abstract class AnimationDriver {
     // (undocumented)
     abstract validateStyleProperty(prop: string): boolean;
 }
-
 
 // (No @packageDocumentation comment for this package)
 

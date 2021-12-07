@@ -836,7 +836,7 @@ export class TransitionAnimationEngine {
       this._onRemovalComplete(element, details.setForRemoval);
     }
 
-    if (this.driver.matchesElement(element, DISABLED_SELECTOR)) {
+    if (element.classList?.contains(DISABLED_CLASSNAME)) {
       this.markElementAsDisabled(element, false);
     }
 
@@ -1712,37 +1712,12 @@ function buildRootMap(roots: any[], nodes: any[]): Map<any, any[]> {
   return rootMap;
 }
 
-const CLASSES_CACHE_KEY = '$$classes';
-function containsClass(element: any, className: string): boolean {
-  if (element.classList) {
-    return element.classList.contains(className);
-  } else {
-    const classes = element[CLASSES_CACHE_KEY];
-    return classes && classes[className];
-  }
-}
-
 function addClass(element: any, className: string) {
-  if (element.classList) {
-    element.classList.add(className);
-  } else {
-    let classes: {[className: string]: boolean} = element[CLASSES_CACHE_KEY];
-    if (!classes) {
-      classes = element[CLASSES_CACHE_KEY] = {};
-    }
-    classes[className] = true;
-  }
+  element.classList?.add(className);
 }
 
 function removeClass(element: any, className: string) {
-  if (element.classList) {
-    element.classList.remove(className);
-  } else {
-    let classes: {[className: string]: boolean} = element[CLASSES_CACHE_KEY];
-    if (classes) {
-      delete classes[className];
-    }
-  }
+  element.classList?.remove(className);
 }
 
 function removeNodesAfterAnimationDone(

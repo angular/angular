@@ -15,7 +15,7 @@ import {browserDetection} from '@angular/platform-browser/testing/src/browser_ut
 import {TestBed} from '../../testing';
 
 (function() {
-// these tests are only mean't to be run within the DOM (for now)
+// these tests are only meant to be run within the DOM (for now)
 // Buggy in Chromium 39, see https://github.com/angular/angular/issues/15793
 if (isNode) return;
 

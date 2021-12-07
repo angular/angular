@@ -21,7 +21,7 @@ function makeEngine(body: any, driver?: AnimationDriver, normalizer?: AnimationS
       body, driver || defaultDriver, normalizer || new NoopAnimationStyleNormalizer());
 }
 
-// these tests are only mean't to be run within the DOM
+// these tests are only meant to be run within the DOM
 if (isNode) return;
 
 describe('TimelineAnimationEngine', () => {
