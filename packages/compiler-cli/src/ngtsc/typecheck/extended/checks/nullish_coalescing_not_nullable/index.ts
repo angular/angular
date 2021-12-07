@@ -9,6 +9,7 @@
 import {AST, Binary, TmplAstNode} from '@angular/compiler';
 import ts from 'typescript';
 
+import {NgCompilerOptions} from '../../../../core/api';
 import {ErrorCode, ExtendedTemplateDiagnosticName} from '../../../../diagnostics';
 import {NgTemplateDiagnostic, SymbolKind} from '../../../api';
 import {TemplateCheckFactory, TemplateCheckWithVisitor, TemplateContext} from '../../api';
@@ -55,5 +56,12 @@ export const factory: TemplateCheckFactory<
     ExtendedTemplateDiagnosticName.NULLISH_COALESCING_NOT_NULLABLE> = {
   code: ErrorCode.NULLISH_COALESCING_NOT_NULLABLE,
   name: ExtendedTemplateDiagnosticName.NULLISH_COALESCING_NOT_NULLABLE,
-  create: () => new NullishCoalescingNotNullableCheck(),
+  create: (options: NgCompilerOptions) => {
+    // Require `strictNullChecks` to be enabled.
+    if (options.strictNullChecks === false) {
+      return null;
+    }
+
+    return new NullishCoalescingNotNullableCheck();
+  },
 };

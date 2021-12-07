@@ -8,18 +8,24 @@
 
 import ts from 'typescript';
 
-import {ErrorCode} from '../../../diagnostics';
+import {NgCompilerOptions} from '../../../core/api';
+import {ErrorCode, ExtendedTemplateDiagnosticName} from '../../../diagnostics';
 import {TemplateDiagnostic, TemplateTypeChecker} from '../../api';
-import {ExtendedTemplateChecker, TemplateCheck, TemplateContext} from '../api';
+import {ExtendedTemplateChecker, TemplateCheck, TemplateCheckFactory, TemplateContext} from '../api';
 
 export class ExtendedTemplateCheckerImpl implements ExtendedTemplateChecker {
-  private ctx: TemplateContext;
+  private readonly ctx: TemplateContext;
+  private readonly templateChecks: TemplateCheck<ErrorCode>[];
 
   constructor(
       templateTypeChecker: TemplateTypeChecker, typeChecker: ts.TypeChecker,
-      private readonly templateChecks: TemplateCheck<ErrorCode>[]) {
+      templateCheckFactories:
+          readonly TemplateCheckFactory<ErrorCode, ExtendedTemplateDiagnosticName>[],
+      options: NgCompilerOptions) {
     this.ctx = {templateTypeChecker: templateTypeChecker, typeChecker: typeChecker} as
         TemplateContext;
+    this.templateChecks = templateCheckFactories.map((factory) => factory.create(options))
+                              .filter((check): check is TemplateCheck<ErrorCode> => check !== null);
   }
 
   getDiagnosticsForComponent(component: ts.ClassDeclaration): TemplateDiagnostic[] {
