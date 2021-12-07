@@ -871,168 +871,85 @@ export function keyframes(steps: AnimationStyleMetadata[]): AnimationKeyframesSe
 }
 
 /**
- * Declares an animation transition as a sequence of animation steps to run when a given
- * condition is satisfied. The condition is a Boolean expression or function that compares
- * the previous and current animation states, and returns true if this transition should occur.
- * When the state criteria of a defined transition are met, the associated animation is
- * triggered.
+ * Declares an animation transition which is played when a certain specified condition is met.
  *
- * @param stateChangeExpr A Boolean expression or function that compares the previous and current
- * animation states, and returns true if this transition should occur. Note that  "true" and "false"
- * match 1 and 0, respectively. An expression is evaluated each time a state change occurs in the
- * animation trigger element.
- * The animation steps run when the expression evaluates to true.
+ * @param stateChangeExpr A string with a specific format or a function that specifies when the
+ * animation transition should occur (see [State Change Expression](#state-change-expression)).
  *
- * - A state-change string takes the form "state1 => state2", where each side is a defined animation
- * state, or an asterisk (*) to refer to a dynamic start or end state.
- *   - The expression string can contain multiple comma-separated statements;
- * for example "state1 => state2, state3 => state4".
- *   - Special values `:enter` and `:leave` initiate a transition on the entry and exit states,
- * equivalent to  "void => *"  and "* => void".
- *   - Special values `:increment` and `:decrement` initiate a transition when a numeric value has
- * increased or decreased in value.
- * - A function is executed each time a state change occurs in the animation trigger element.
- * The animation steps run when the function returns true.
+ * @param steps One or more animation objects that represent the animation's instructions.
  *
- * @param steps One or more animation objects, as returned by the `animate()` or
- * `sequence()` function, that form a transformation from one state to another.
- * A sequence is used by default when you pass an array.
- * @param options An options object that can contain a delay value for the start of the animation,
- * and additional developer-defined parameters. Provided values for additional parameters are used
- * as defaults, and override values can be passed to the caller on invocation.
+ * @param options An options object that can be used to specify a delay for the animation or provide
+ * custom parameters for it.
+ *
  * @returns An object that encapsulates the transition data.
  *
  * @usageNotes
- * The template associated with a component binds an animation trigger to an element.
+ *
+ * ### State Change Expression
+ *
+ * The State Change Expression instructs Angular when to run the transition's animations, it can
+ *either be
+ *  - a string with a specific syntax
+ *  - or a function that compares the previous and current state (value of the expression bound to
+ *the element's trigger) and returns `true` if the transition should occur or `false` otherwise
+ *
+ * The string format can be:
+ *  - `fromState => toState`, which indicates that the transition's animations should occur then the
+ *expression bound to the trigger's element goes from `fromState` to `toState`
+ *  - `fromState <=> toState`, which indicates that the transition's animations should occur then
+ *the expression bound to the trigger's element goes from `fromState` to `toState` or vice versa
+ *  - `:enter`/`:leave`, which indicates that the transition's animations should occur when the
+ *element enters or exists the DOM
+ *  - `:increment`/`:decrement`, which indicates that the transition's animations should occur when
+ *the numerical expression bound to the trigger's element has increased in value or decreased
+ *  - a sequence of any of the above divided by commas, which indicates that transition's animations
+ *should occur whenever one of the state change expressions matches
+ *
+ * Also note that in such context:
+ *  - `void` can be used to indicate the absence of the element
+ *  - asterisks can be used as wildcards that match any state
+ *  - (as a consequence of the above, `void => *` is equivalent to `:enter` and `* => void` is
+ *equivalent to `:leave`)
+ *  - `true` and `false` also match expression values of `1` and `0` respectively (but do not match
+ *_truthy_ and _falsy_ values)
+ *
+ * <div class="alert is-helpful">
+ *
+ *  Be careful about entering end leaving elements as their transitions present a common
+ *  pitfall for developers.
+ *
+ *  Note that when an element with a trigger enters the DOM its `:enter` transition always
+ *  gets executed, but its `:leave` transition will not be executed if the element is removed
+ *  alongside its parent (as it will be removed "without warning" before its transition has
+ *  a chance to be executed, the only way that such transition can occur is if the element
+ *  is exiting the DOM on its own).
+ *
+ *
+ * </div>
+ *
+ * ### Animating to a Final State
+ *
+ * If the final step in a transition is a call to `animate()` that uses a timing value
+ * with no `style` data, that step is automatically considered the final animation arc,
+ * for the element to reach the final state, in such case Angular automatically adds or removes
+ * CSS styles to ensure that the element is in the correct final state.
+ *
+ *
+ * ### Usage Example
  *
  * ```HTML
- * <!-- somewhere inside of my-component-tpl.html -->
  * <div [@myAnimationTrigger]="myStatusExp">...</div>
  * ```
  *
- * All transitions are defined within an animation trigger,
- * along with named states that the transitions change to and from.
- *
  * ```typescript
  * trigger("myAnimationTrigger", [
- *  // define states
+ *  // states
  *  state("on", style({ background: "green" })),
  *  state("off", style({ background: "grey" })),
- *  ...]
- * ```
- *
- * Note that when you call the `sequence()` function within a `{@link animations/group group()}`
- * or a `transition()` call, execution does not continue to the next instruction
- * until each of the inner animation steps have completed.
- *
- * ### Syntax examples
- *
- * The following examples define transitions between the two defined states (and default states),
- * using various options:
- *
- * ```typescript
- * // Transition occurs when the state value
- * // bound to "myAnimationTrigger" changes from "on" to "off"
- * transition("on => off", animate(500))
- * // Run the same animation for both directions
- * transition("on <=> off", animate(500))
- * // Define multiple state-change pairs separated by commas
- * transition("on => off, off => void", animate(500))
- * ```
- *
- * ### Special values for state-change expressions
- *
- * - Catch-all state change for when an element is inserted into the page and the
- * destination state is unknown:
- *
- * ```typescript
- * transition("void => *", [
- *  style({ opacity: 0 }),
- *  animate(500)
- *  ])
- * ```
- *
- * - Capture a state change between any states:
- *
- *  `transition("* => *", animate("1s 0s"))`
- *
- * - Entry and exit transitions:
- *
- * ```typescript
- * transition(":enter", [
- *   style({ opacity: 0 }),
- *   animate(500, style({ opacity: 1 }))
- *   ]),
- * transition(":leave", [
- *   animate(500, style({ opacity: 0 }))
- *   ])
- * ```
- *
- * - Use `:increment` and `:decrement` to initiate transitions:
- *
- * ```typescript
- * transition(":increment", group([
- *  query(':enter', [
- *     style({ left: '100%' }),
- *     animate('0.5s ease-out', style('*'))
- *   ]),
- *  query(':leave', [
- *     animate('0.5s ease-out', style({ left: '-100%' }))
- *  ])
- * ]))
- *
- * transition(":decrement", group([
- *  query(':enter', [
- *     style({ left: '100%' }),
- *     animate('0.5s ease-out', style('*'))
- *   ]),
- *  query(':leave', [
- *     animate('0.5s ease-out', style({ left: '-100%' }))
- *  ])
- * ]))
- * ```
- *
- * ### State-change functions
- *
- * Here is an example of a `fromState` specified as a state-change function that invokes an
- * animation when true:
- *
- * ```typescript
- * transition((fromState, toState) =>
- *  {
- *   return fromState == "off" && toState == "on";
- *  },
- *  animate("1s 0s"))
- * ```
- *
- * ### Animating to the final state
- *
- * If the final step in a transition is a call to `animate()` that uses a timing value
- * with no style data, that step is automatically considered the final animation arc,
- * for the element to reach the final state. Angular automatically adds or removes
- * CSS styles to ensure that the element is in the correct final state.
- *
- * The following example defines a transition that starts by hiding the element,
- * then makes sure that it animates properly to whatever state is currently active for trigger:
- *
- * ```typescript
- * transition("void => *", [
- *   style({ opacity: 0 }),
- *   animate(500)
- *  ])
- * ```
- * ### Boolean value matching
- * If a trigger binding value is a Boolean, it can be matched using a transition expression
- * that compares true and false or 1 and 0. For example:
- *
- * ```
- * // in the template
- * <div [@openClose]="open ? true : false">...</div>
- * // in the component metadata
- * trigger('openClose', [
- *   state('true', style({ height: '*' })),
- *   state('false', style({ height: '0px' })),
- *   transition('false <=> true', animate(500))
+ *  // transition executed when myStatusExp goes from the "on" value to the "off" one
+ *  transition("on => off", animate(500)),
+ *  // transition executed when myStatusExp goes from/to the "on" value to/from the "off" one
+ *  transition("on <=> off", animate(500))
  * ])
  * ```
  *
