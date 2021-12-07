@@ -11,6 +11,22 @@ export interface BazelAndG3Options {
 }
 
 // @public
+export enum DiagnosticCategoryLabel {
+    Error = "error",
+    Suppress = "suppress",
+    Warning = "warning"
+}
+
+// @public
+export interface DiagnosticOptions {
+    extendedDiagnostics?: {
+        checks?: {
+            [Name in ExtendedTemplateDiagnosticName]?: DiagnosticCategoryLabel;
+        };
+    };
+}
+
+// @public
 export interface I18nOptions {
     enableI18nLegacyMessageIdFormat?: boolean;
     i18nInLocale?: string;
