@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ExtendedTemplateDiagnosticName} from '../../../../ngtsc/diagnostics';
+
 /**
  * Options supported by the legacy View Engine compiler, which are still consumed by the Angular Ivy
  * compiler for backwards compatibility.
@@ -256,6 +258,40 @@ export interface StrictTemplateOptions {
    * Defaults to `false` unless `fullTemplateTypeCheck` or `strictTemplates` are set.
    */
   strictLiteralTypes?: boolean;
+}
+
+/**
+ * A label referring to a `ts.DiagnosticCategory` or `'suppress'`, meaning the associated diagnostic
+ * should not be displayed at all.
+ *
+ * @publicApi
+ */
+export enum DiagnosticCategoryLabel {
+  /** Treat the diagnostic as a warning, don't fail the compilation. */
+  Warning = 'warning',
+
+  /** Treat the diagnostic as a hard error, fail the compilation. */
+  Error = 'error',
+
+  /** Ignore the diagnostic altogether. */
+  Suppress = 'suppress',
+}
+
+/**
+ * Options which control how diagnostics are emitted from the compiler.
+ *
+ * @publicApi
+ */
+export interface DiagnosticOptions {
+  /** Options which control how diagnostics are emitted from the compiler. */
+  extendedDiagnostics?: {
+    /**
+     * A map of each extended template diagnostic's name to its category. This can be expanded in
+     * the future with more information for each check or for additional diagnostics not part of the
+     * extended template diagnostics system.
+     */
+    checks?: {[Name in ExtendedTemplateDiagnosticName]?: DiagnosticCategoryLabel};
+  };
 }
 
 /**
