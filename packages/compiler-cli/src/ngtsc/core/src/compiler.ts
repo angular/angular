@@ -430,7 +430,7 @@ export class NgCompiler {
   getDiagnostics(): ts.Diagnostic[] {
     const diagnostics: ts.Diagnostic[] = [];
     diagnostics.push(...this.getNonTemplateDiagnostics(), ...this.getTemplateDiagnostics());
-    if (this.options._extendedTemplateDiagnostics) {
+    if (this.options.strictTemplates) {
       diagnostics.push(...this.getExtendedTemplateDiagnostics());
     }
     return this.addMessageTextDetails(diagnostics);

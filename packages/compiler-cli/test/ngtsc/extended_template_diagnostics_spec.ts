@@ -22,7 +22,7 @@ runInEachFileSystem(() => {
 
     beforeEach(() => {
       env = NgtscTestEnvironment.setup(testFiles);
-      env.tsconfig({_extendedTemplateDiagnostics: true, strictTemplates: true});
+      env.tsconfig({strictTemplates: true});
     });
 
     it('should produce invalid banana in box warning', () => {
@@ -65,23 +65,6 @@ runInEachFileSystem(() => {
       expect(diags[0].category).toBe(ts.DiagnosticCategory.Warning);
       expect(diags[0].code).toBe(ngErrorCode(ErrorCode.INVALID_BANANA_IN_BOX));
       expect(getSourceCodeForDiagnostic(diags[0])).toBe('([notARealThing])="bar"');
-    });
-
-    it('should not produce extended diagnostics if flag is disabled', () => {
-      env.tsconfig({_extendedTemplateDiagnostics: false});
-      env.write('test.ts', `
-              import {Component} from '@angular/core';
-              @Component({
-                selector: 'test',
-                template: '<div ([notARealThing])="bar"></div>',
-              })
-              class TestCmp {
-                bar: string = "text";
-              }
-            `);
-
-      const diags = env.driveDiagnostics();
-      expect(diags.length).toBe(0);
     });
 
     it('should throw error if _extendedTemplateDiagnostics option is enabled and strictTemplates disabled',
@@ -139,10 +122,31 @@ runInEachFileSystem(() => {
         }
       `;
 
+      it('by enabling extended template diagnostics when `strictTemplates` is enabled', () => {
+        env.tsconfig({strictTemplates: true});
+
+        env.write('test.ts', warningComponent);
+
+        const diagnostics = env.driveDiagnostics(0 /* expectedExitCode */);
+        expect(diagnostics.length).toBe(1);
+        expect(diagnostics[0]).toEqual(jasmine.objectContaining({
+          code: ngErrorCode(ErrorCode.INVALID_BANANA_IN_BOX),
+          category: ts.DiagnosticCategory.Warning,
+        }));
+      });
+
+      it('by disabling extended template diagnostics when `strictTemplates` is disabled', () => {
+        env.tsconfig({strictTemplates: false});
+
+        env.write('test.ts', warningComponent);
+
+        const diagnostics = env.driveDiagnostics(0 /* expectedExitCode */);
+        expect(diagnostics).toEqual([]);
+      });
+
       it('by emitting unconfigured diagnostics as is', () => {
         env.tsconfig({
           strictTemplates: true,
-          _extendedTemplateDiagnostics: true,
           extendedDiagnostics: {},  // No configured diagnostics.
         });
 
@@ -159,7 +163,6 @@ runInEachFileSystem(() => {
       it('by emitting diagnostics with the default category', () => {
         env.tsconfig({
           strictTemplates: true,
-          _extendedTemplateDiagnostics: true,
           extendedDiagnostics: {
             defaultCategory: 'error',
           },
@@ -178,7 +181,6 @@ runInEachFileSystem(() => {
       it('by emitting diagnostics configured as `warning`', () => {
         env.tsconfig({
           strictTemplates: true,
-          _extendedTemplateDiagnostics: true,
           extendedDiagnostics: {
             checks: {
               invalidBananaInBox: 'warning',
@@ -199,7 +201,6 @@ runInEachFileSystem(() => {
       it('by promoting diagnostics configured as `error`', () => {
         env.tsconfig({
           strictTemplates: true,
-          _extendedTemplateDiagnostics: true,
           extendedDiagnostics: {
             checks: {
               invalidBananaInBox: 'error',
@@ -220,7 +221,6 @@ runInEachFileSystem(() => {
       it('by suppressing diagnostics configured as `suppress`', () => {
         env.tsconfig({
           strictTemplates: true,
-          _extendedTemplateDiagnostics: true,
           extendedDiagnostics: {
             checks: {
               invalidBananaInBox: 'suppress',
