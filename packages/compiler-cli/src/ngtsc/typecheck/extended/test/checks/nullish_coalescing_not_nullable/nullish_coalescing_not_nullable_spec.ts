@@ -25,6 +25,15 @@ runInEachFileSystem(() => {
           .toBe(ExtendedTemplateDiagnosticName.NULLISH_COALESCING_NOT_NULLABLE);
     });
 
+    it('should return a check if `strictNullChecks` is enabled', () => {
+      expect(nullishCoalescingNotNullableFactory.create({strictNullChecks: true})).toBeDefined();
+      expect(nullishCoalescingNotNullableFactory.create({})).not.toBeNull();  // Defaults enabled.
+    });
+
+    it('should not return a check if `strictNullChecks` is disabled', () => {
+      expect(nullishCoalescingNotNullableFactory.create({strictNullChecks: false})).toBeNull();
+    });
+
     it('should produce nullish coalescing warning', () => {
       const fileName = absoluteFrom('/main.ts');
       const {program, templateTypeChecker} = setup([{
@@ -37,8 +46,8 @@ runInEachFileSystem(() => {
       const sf = getSourceFileOrError(program, fileName);
       const component = getClass(sf, 'TestCmp');
       const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
-          templateTypeChecker, program.getTypeChecker(),
-          [nullishCoalescingNotNullableFactory.create()]);
+          templateTypeChecker, program.getTypeChecker(), [nullishCoalescingNotNullableFactory],
+          {} /* options */);
       const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
       expect(diags.length).toBe(1);
       expect(diags[0].category).toBe(ts.DiagnosticCategory.Warning);
@@ -58,8 +67,8 @@ runInEachFileSystem(() => {
       const sf = getSourceFileOrError(program, fileName);
       const component = getClass(sf, 'TestCmp');
       const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
-          templateTypeChecker, program.getTypeChecker(),
-          [nullishCoalescingNotNullableFactory.create()]);
+          templateTypeChecker, program.getTypeChecker(), [nullishCoalescingNotNullableFactory],
+          {} /* options */);
       const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
       expect(diags.length).toBe(0);
     });
@@ -76,8 +85,8 @@ runInEachFileSystem(() => {
       const sf = getSourceFileOrError(program, fileName);
       const component = getClass(sf, 'TestCmp');
       const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
-          templateTypeChecker, program.getTypeChecker(),
-          [nullishCoalescingNotNullableFactory.create()]);
+          templateTypeChecker, program.getTypeChecker(), [nullishCoalescingNotNullableFactory],
+          {} /* options */);
       const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
       expect(diags.length).toBe(0);
     });
@@ -105,8 +114,8 @@ runInEachFileSystem(() => {
          const sf = getSourceFileOrError(program, fileName);
          const component = getClass(sf, 'TestCmp');
          const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
-             templateTypeChecker, program.getTypeChecker(),
-             [nullishCoalescingNotNullableFactory.create()]);
+             templateTypeChecker, program.getTypeChecker(), [nullishCoalescingNotNullableFactory],
+             {} /* options */);
          const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
          expect(diags.length).toBe(1);
          expect(diags[0].category).toBe(ts.DiagnosticCategory.Warning);
@@ -138,8 +147,8 @@ runInEachFileSystem(() => {
       const sf = getSourceFileOrError(program, fileName);
       const component = getClass(sf, 'TestCmp');
       const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
-          templateTypeChecker, program.getTypeChecker(),
-          [nullishCoalescingNotNullableFactory.create()]);
+          templateTypeChecker, program.getTypeChecker(), [nullishCoalescingNotNullableFactory],
+          {} /* options */);
       const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
       expect(diags.length).toBe(0);
     });
@@ -163,8 +172,8 @@ runInEachFileSystem(() => {
          const sf = getSourceFileOrError(program, fileName);
          const component = getClass(sf, 'TestCmp');
          const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
-             templateTypeChecker, program.getTypeChecker(),
-             [nullishCoalescingNotNullableFactory.create()]);
+             templateTypeChecker, program.getTypeChecker(), [nullishCoalescingNotNullableFactory],
+             {} /* options */);
          const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
          expect(diags.length).toBe(0);
        });

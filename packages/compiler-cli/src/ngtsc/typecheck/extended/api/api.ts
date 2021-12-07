@@ -9,6 +9,7 @@
 import {AST, ASTWithSource, RecursiveAstVisitor, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstBoundText, TmplAstContent, TmplAstElement, TmplAstIcu, TmplAstNode, TmplAstRecursiveVisitor, TmplAstReference, TmplAstTemplate, TmplAstText, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
 import ts from 'typescript';
 
+import {NgCompilerOptions} from '../../../core/api';
 import {ErrorCode, ExtendedTemplateDiagnosticName} from '../../../diagnostics';
 import {NgTemplateDiagnostic, TemplateTypeChecker} from '../../api';
 
@@ -49,7 +50,7 @@ export interface TemplateCheckFactory<
 > {
   code: Code;
   name: Name;
-  create(): TemplateCheck<Code>;
+  create(options: NgCompilerOptions): TemplateCheck<Code>|null;
 }
 
 /**

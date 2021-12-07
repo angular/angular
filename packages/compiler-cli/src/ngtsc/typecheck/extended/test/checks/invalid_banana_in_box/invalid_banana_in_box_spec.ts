@@ -36,7 +36,8 @@ runInEachFileSystem(() => {
       const sf = getSourceFileOrError(program, fileName);
       const component = getClass(sf, 'TestCmp');
       const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
-          templateTypeChecker, program.getTypeChecker(), [invalidBananaInBoxFactory.create()]);
+          templateTypeChecker, program.getTypeChecker(), [invalidBananaInBoxFactory],
+          {} /* options */);
       const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
       expect(diags.length).toBe(1);
       expect(diags[0].category).toBe(ts.DiagnosticCategory.Warning);
@@ -56,7 +57,8 @@ runInEachFileSystem(() => {
       const sf = getSourceFileOrError(program, fileName);
       const component = getClass(sf, 'TestCmp');
       const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
-          templateTypeChecker, program.getTypeChecker(), [invalidBananaInBoxFactory.create()]);
+          templateTypeChecker, program.getTypeChecker(), [invalidBananaInBoxFactory],
+          {} /* options */);
       const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
       expect(diags.length).toBe(0);
     });
@@ -74,7 +76,8 @@ runInEachFileSystem(() => {
          const sf = getSourceFileOrError(program, fileName);
          const component = getClass(sf, 'TestCmp');
          const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
-             templateTypeChecker, program.getTypeChecker(), [invalidBananaInBoxFactory.create()]);
+             templateTypeChecker, program.getTypeChecker(), [invalidBananaInBoxFactory],
+             {} /* options */);
          const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
          expect(diags.length).toBe(0);
        });
@@ -96,7 +99,8 @@ runInEachFileSystem(() => {
       const sf = getSourceFileOrError(program, fileName);
       const component = getClass(sf, 'TestCmp');
       const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
-          templateTypeChecker, program.getTypeChecker(), [invalidBananaInBoxFactory.create()]);
+          templateTypeChecker, program.getTypeChecker(), [invalidBananaInBoxFactory],
+          {} /* options */);
       const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
       expect(diags.length).toBe(2);
       expect(diags[0].category).toBe(ts.DiagnosticCategory.Warning);
