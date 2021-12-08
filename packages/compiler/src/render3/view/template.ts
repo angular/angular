@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BindingForm, BuiltinFunctionCall, convertActionBinding, convertPropertyBinding, convertUpdateArguments, LocalResolver} from '../../compiler_util/expression_converter';
+import {BuiltinFunctionCall, convertActionBinding, convertPropertyBinding, convertUpdateArguments, LocalResolver} from '../../compiler_util/expression_converter';
 import {ConstantPool} from '../../constant_pool';
 import * as core from '../../core';
 import {AST, AstMemoryEfficientTransformer, BindingPipe, BindingType, Call, ImplicitReceiver, Interpolation, LiteralArray, LiteralMap, LiteralPrimitive, ParsedEventType, PropertyRead} from '../../expression_parser/ast';
@@ -1261,7 +1261,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
   private convertPropertyBinding(value: AST): o.Expression {
     const convertedPropertyBinding = convertPropertyBinding(
-        this, this.getImplicitReceiverExpr(), value, this.bindingContext(), BindingForm.Expression,
+        this, this.getImplicitReceiverExpr(), value, this.bindingContext(),
         () => error('Unexpected interpolation'));
     const valExpr = convertedPropertyBinding.currValExpr;
     this._tempVariables.push(...convertedPropertyBinding.stmts);

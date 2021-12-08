@@ -100,20 +100,6 @@ export class ConvertPropertyBindingResult {
   constructor(public stmts: o.Statement[], public currValExpr: o.Expression) {}
 }
 
-export enum BindingForm {
-  // The general form of binding expression, supports all expressions.
-  General,
-
-  // Try to generate a simple binding (no temporaries or statements)
-  // otherwise generate a general binding
-  TrySimple,
-
-  // Inlines assignment of temporaries into the generated expression. The result may still
-  // have statements attached for declarations of temporary variables.
-  // This is the only relevant form for Ivy, the other forms are only used in ViewEngine.
-  Expression,
-}
-
 /**
  * Converts the given expression AST into an executable output AST, assuming the expression
  * is used in property binding. The expression has to be preprocessed via
@@ -121,7 +107,7 @@ export enum BindingForm {
  */
 export function convertPropertyBinding(
     localResolver: LocalResolver|null, implicitReceiver: o.Expression,
-    expressionWithoutBuiltins: cdAst.AST, bindingId: string, form: BindingForm,
+    expressionWithoutBuiltins: cdAst.AST, bindingId: string,
     interpolationFunction?: InterpolationFunction): ConvertPropertyBindingResult {
   if (!localResolver) {
     localResolver = new DefaultLocalResolver();
@@ -135,15 +121,7 @@ export function convertPropertyBinding(
     localResolver.notifyImplicitReceiverUse();
   }
 
-  if (visitor.temporaryCount === 0 && form == BindingForm.TrySimple) {
-    return new ConvertPropertyBindingResult([], outputExpr);
-  } else if (form === BindingForm.Expression) {
-    return new ConvertPropertyBindingResult(stmts, outputExpr);
-  }
-
-  const currValExpr = createCurrValueExpr(bindingId);
-  stmts.push(currValExpr.set(outputExpr).toDeclStmt(o.DYNAMIC_TYPE, [o.StmtModifier.Final]));
-  return new ConvertPropertyBindingResult(stmts, currValExpr);
+  return new ConvertPropertyBindingResult(stmts, outputExpr);
 }
 
 /**
@@ -904,10 +882,6 @@ class DefaultLocalResolver implements LocalResolver {
     }
     return null;
   }
-}
-
-function createCurrValueExpr(bindingId: string): o.ReadVarExpr {
-  return o.variable(`currVal_${bindingId}`);  // fix syntax highlighting: `
 }
 
 export class BuiltinFunctionCall extends cdAst.Call {
