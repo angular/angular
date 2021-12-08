@@ -69,14 +69,6 @@ export class BindingParser {
     return boundProps;
   }
 
-  createDirectiveHostPropertyAsts(
-      hostProperties: HostProperties, elementSelector: string,
-      sourceSpan: ParseSourceSpan): BoundElementProperty[]|null {
-    const boundProps = this.createBoundHostProperties(hostProperties, sourceSpan);
-    return boundProps &&
-        boundProps.map((prop) => this.createBoundElementProperty(elementSelector, prop));
-  }
-
   createDirectiveHostEventAsts(hostListeners: HostListeners, sourceSpan: ParseSourceSpan):
       ParsedEvent[]|null {
     const targetEvents: ParsedEvent[] = [];
