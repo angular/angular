@@ -1,0 +1,48 @@
+{
+  "name": "angular.io-example",
+  "version": "0.0.0",
+  "description": "Example project from an angular.io guide.",
+  "license": "MIT",
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build",
+    "watch": "ng build --watch --configuration development",
+    "test": "ng test",
+    "e2e": "ng e2e"
+  },
+  "private": true,
+  "dependencies": {
+    "@angular/animations": "~13.0.0-next.0",
+    "@angular/common": "~13.0.0-next.0",
+    "@angular/compiler": "~13.0.0-next.0",
+    "@angular/core": "~13.0.0-next.0",
+    "@angular/forms": "~13.0.0-next.0",
+    "@angular/platform-browser": "~13.0.0-next.0",
+    "@angular/platform-browser-dynamic": "~13.0.0-next.0",
+    "@angular/router": "~13.0.0-next.0",
+    "angular-in-memory-web-api": "~0.11.0",
+    "rxjs": "~7.4.0",
+    "tslib": "^2.3.0",
+    "zone.js": "~0.11.4"
+  },
+  "devDependencies": {
+    "@angular-devkit/build-angular": "~13.0.0-rc.3",
+    "@angular/cli": "~13.0.0-rc.3",
+    "@angular/compiler-cli": "~13.0.0-next.0",
+    "@types/jasmine": "~3.10.0",
+    "@types/node": "^12.11.1",
+    "copyfiles": "^2.4.1",
+    "jasmine-core": "~3.10.0",
+    "jasmine-marbles": "~0.8.3",
+    "jasmine-spec-reporter": "~7.0.0",
+    "karma": "~6.3.0",
+    "karma-chrome-launcher": "~3.1.0",
+    "karma-coverage": "~2.0.3",
+    "karma-jasmine": "~4.0.0",
+    "karma-jasmine-html-reporter": "~1.7.0",
+    "protractor": "~7.0.0",
+    "ts-node": "~10.1.0",
+    "typescript": "~4.5.2"
+  }
+}
