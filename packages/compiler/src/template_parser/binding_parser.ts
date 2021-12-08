@@ -217,9 +217,7 @@ export class BindingParser {
   parseLiteralAttr(
       name: string, value: string|null, sourceSpan: ParseSourceSpan, absoluteOffset: number,
       valueSpan: ParseSourceSpan|undefined, targetMatchableAttrs: string[][],
-      // TODO(atscott): keySpan is only optional here so VE template parser implementation does not
-      // have to change This should be required when VE is removed.
-      targetProps: ParsedProperty[], keySpan?: ParseSourceSpan) {
+      targetProps: ParsedProperty[], keySpan: ParseSourceSpan) {
     if (isAnimationLabel(name)) {
       name = name.substring(1);
       if (keySpan !== undefined) {
@@ -245,9 +243,7 @@ export class BindingParser {
   parsePropertyBinding(
       name: string, expression: string, isHost: boolean, sourceSpan: ParseSourceSpan,
       absoluteOffset: number, valueSpan: ParseSourceSpan|undefined,
-      // TODO(atscott): keySpan is only optional here so VE template parser implementation does not
-      // have to change This should be required when VE is removed.
-      targetMatchableAttrs: string[][], targetProps: ParsedProperty[], keySpan?: ParseSourceSpan) {
+      targetMatchableAttrs: string[][], targetProps: ParsedProperty[], keySpan: ParseSourceSpan) {
     if (name.length === 0) {
       this._reportError(`Property name is missing in binding`, sourceSpan);
     }
@@ -285,9 +281,7 @@ export class BindingParser {
   parsePropertyInterpolation(
       name: string, value: string, sourceSpan: ParseSourceSpan,
       valueSpan: ParseSourceSpan|undefined, targetMatchableAttrs: string[][],
-      // TODO(atscott): keySpan is only optional here so VE template parser implementation does not
-      // have to change This should be required when VE is removed.
-      targetProps: ParsedProperty[], keySpan?: ParseSourceSpan): boolean {
+      targetProps: ParsedProperty[], keySpan: ParseSourceSpan): boolean {
     const expr = this.parseInterpolation(value, valueSpan || sourceSpan);
     if (expr) {
       this._parsePropertyAst(
@@ -298,9 +292,9 @@ export class BindingParser {
   }
 
   private _parsePropertyAst(
-      name: string, ast: ASTWithSource, sourceSpan: ParseSourceSpan,
-      keySpan: ParseSourceSpan|undefined, valueSpan: ParseSourceSpan|undefined,
-      targetMatchableAttrs: string[][], targetProps: ParsedProperty[]) {
+      name: string, ast: ASTWithSource, sourceSpan: ParseSourceSpan, keySpan: ParseSourceSpan,
+      valueSpan: ParseSourceSpan|undefined, targetMatchableAttrs: string[][],
+      targetProps: ParsedProperty[]) {
     targetMatchableAttrs.push([name, ast.source!]);
     targetProps.push(
         new ParsedProperty(name, ast, ParsedPropertyType.DEFAULT, sourceSpan, keySpan, valueSpan));
@@ -308,7 +302,7 @@ export class BindingParser {
 
   private _parseAnimation(
       name: string, expression: string|null, sourceSpan: ParseSourceSpan, absoluteOffset: number,
-      keySpan: ParseSourceSpan|undefined, valueSpan: ParseSourceSpan|undefined,
+      keySpan: ParseSourceSpan, valueSpan: ParseSourceSpan|undefined,
       targetMatchableAttrs: string[][], targetProps: ParsedProperty[]) {
     if (name.length === 0) {
       this._reportError('Animation trigger is missing', sourceSpan);
@@ -408,7 +402,7 @@ export class BindingParser {
   // TODO: keySpan should be required but was made optional to avoid changing VE parser.
   parseEvent(
       name: string, expression: string, sourceSpan: ParseSourceSpan, handlerSpan: ParseSourceSpan,
-      targetMatchableAttrs: string[][], targetEvents: ParsedEvent[], keySpan?: ParseSourceSpan) {
+      targetMatchableAttrs: string[][], targetEvents: ParsedEvent[], keySpan: ParseSourceSpan) {
     if (name.length === 0) {
       this._reportError(`Event name is missing in binding`, sourceSpan);
     }
@@ -434,7 +428,7 @@ export class BindingParser {
 
   private _parseAnimationEvent(
       name: string, expression: string, sourceSpan: ParseSourceSpan, handlerSpan: ParseSourceSpan,
-      targetEvents: ParsedEvent[], keySpan?: ParseSourceSpan) {
+      targetEvents: ParsedEvent[], keySpan: ParseSourceSpan) {
     const matches = splitAtPeriod(name, [name, '']);
     const eventName = matches[0];
     const phase = matches[1].toLowerCase();
@@ -462,7 +456,7 @@ export class BindingParser {
 
   private _parseRegularEvent(
       name: string, expression: string, sourceSpan: ParseSourceSpan, handlerSpan: ParseSourceSpan,
-      targetMatchableAttrs: string[][], targetEvents: ParsedEvent[], keySpan?: ParseSourceSpan) {
+      targetMatchableAttrs: string[][], targetEvents: ParsedEvent[], keySpan: ParseSourceSpan) {
     // long format: 'target: eventName'
     const [target, eventName] = splitAtColon(name, [null!, name]);
     const ast = this._parseAction(expression, handlerSpan);
