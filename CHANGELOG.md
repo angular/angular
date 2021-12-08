@@ -1,3 +1,28 @@
+<a name="13.0.4"></a>
+# 13.0.4 "marble-mountain" (2021-12-08)
+### cdk
+| Commit | Type | Description |
+| -- | -- | -- |
+| [dddc933c5](https://github.com/angular/components/commit/dddc933c5847eb5ee4b1e5ce35aee6fbae320c0b) | fix | **drag-drop:** last item not returned at initial index when sorting is disabled ([#23934](https://github.com/angular/components/pull/23934)) |
+### material
+| Commit | Type | Description |
+| -- | -- | -- |
+| [8de380837](https://github.com/angular/components/commit/8de380837acbefd5aaee48aefa3f986a6d49b8bc) | fix | **datepicker:** hover styles not disabled on touch devices ([#23915](https://github.com/angular/components/pull/23915)) |
+### cdk-experimental
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e103a218e](https://github.com/angular/components/commit/e103a218e88220e42d64626463667674aacf1e6a) | fix | **column-resize:** Ensure resizable entity is not destroyed before applying min/max update ([#24007](https://github.com/angular/components/pull/24007)) |
+### material-experimental
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a90861a15](https://github.com/angular/components/commit/a90861a156183073ca9b0b845e1fa00668d7d6e8) | fix | **column-resize:** Update for MDC and spec changes ([#23908](https://github.com/angular/components/pull/23908)) |
+| [45b7b1a0b](https://github.com/angular/components/commit/45b7b1a0b4234a9a2b936df05c7926d08b334157) | fix | **mdc-checkbox:** reduce amount of emitted theme css ([#24004](https://github.com/angular/components/pull/24004)) |
+| [4671d877e](https://github.com/angular/components/commit/4671d877e87f2ebce820669c3046c8407012db3a) | fix | **mdc-slider:** throw error when thumb is missing ([#24061](https://github.com/angular/components/pull/24061)) |
+## Special Thanks
+Aristeidis Bampakos, Csaba Sandor, Ekkolon, Karl Seamon, Kristiyan Kostadinov, Nathaniel, Paul Gschwendtner and Robin Richtsfeld
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="13.1.0-next.3"></a>
 # 13.1.0-next.3 "plastic-animal" (2021-12-01)
 ### cdk
