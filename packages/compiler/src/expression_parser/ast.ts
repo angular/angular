@@ -838,9 +838,7 @@ export class ParsedProperty {
 
   constructor(
       public name: string, public expression: ASTWithSource, public type: ParsedPropertyType,
-      // TODO(FW-2095): `keySpan` should really be required but allows `undefined` so VE does
-      // not need to be updated. Make `keySpan` required when VE is removed.
-      public sourceSpan: ParseSourceSpan, readonly keySpan: ParseSourceSpan|undefined,
+      public sourceSpan: ParseSourceSpan, readonly keySpan: ParseSourceSpan,
       public valueSpan: ParseSourceSpan|undefined) {
     this.isLiteral = this.type === ParsedPropertyType.LITERAL_ATTR;
     this.isAnimation = this.type === ParsedPropertyType.ANIMATION;
@@ -866,8 +864,7 @@ export class ParsedEvent {
   constructor(
       public name: string, public targetOrPhase: string, public type: ParsedEventType,
       public handler: ASTWithSource, public sourceSpan: ParseSourceSpan,
-      // TODO(FW-2095): keySpan should be required but was made optional to avoid changing VE
-      public handlerSpan: ParseSourceSpan, readonly keySpan: ParseSourceSpan|undefined) {}
+      public handlerSpan: ParseSourceSpan, readonly keySpan: ParseSourceSpan) {}
 }
 
 /**
