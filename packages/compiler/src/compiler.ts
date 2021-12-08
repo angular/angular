@@ -36,7 +36,6 @@ export {core};
 
 export * from './version';
 export {CompilerConfig, preserveWhitespacesDefault} from './config';
-export * from './ast_path';
 export {Identifiers} from './identifiers';
 export * from './resource_loader';
 export {ConstantPool} from './constant_pool';
