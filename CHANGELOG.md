@@ -1,3 +1,18 @@
+<a name="13.1.0-rc.0"></a>
+# 13.1.0-rc.0 (2021-12-08)
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [13362972bb](https://github.com/angular/angular/commit/13362972bb5dae606889c06ff7718502057b6b9c) | perf | code size reduction of `ngFor` directive ([#44315](https://github.com/angular/angular/pull/44315)) |
+### ngcc
+| Commit | Type | Description |
+| -- | -- | -- |
+| [41265919aa](https://github.com/angular/angular/commit/41265919aa90415911169057ef016e2f9b78aafd) | fix | correctly resolve UMD dependencies ([#44381](https://github.com/angular/angular/pull/44381)) |
+## Special Thanks
+Alex Rickabaugh, Andrew Kushnir, Dylan Hunn, George Kalpakas, Jessica Janiuk, JoostK, Kristiyan Kostadinov, Markus Doggweiler, Paul Gschwendtner and dario-piotrowicz
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="13.1.0-next.3"></a>
 # 13.1.0-next.3 (2021-12-01)
 ## Deprecations
