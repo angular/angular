@@ -1,4 +1,5 @@
 {
+    "projectType": "multi-project-workspace",
     "useCommonBoilerplate": false,
     "overrideBoilerplate": [
         "angular.json"
