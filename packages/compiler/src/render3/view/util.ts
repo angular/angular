@@ -67,13 +67,6 @@ export function temporaryAllocator(statements: o.Statement[], name: string): () 
 }
 
 
-export function unsupported(this: void|Function, feature: string): never {
-  if (this) {
-    throw new Error(`Builder ${this.constructor.name} doesn't support ${feature} yet`);
-  }
-  throw new Error(`Feature ${feature} is not supported yet`);
-}
-
 export function invalid<T>(this: t.Visitor, arg: o.Expression|o.Statement|t.Node): never {
   throw new Error(
       `Invalid state: Visitor ${this.constructor.name} doesn't handle ${arg.constructor.name}`);
