@@ -445,8 +445,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
   }
 
   visitNonNullAssert(ast: cdAst.NonNullAssert, mode: _Mode): any {
-    return convertToStatementIfNeeded(
-        mode, o.assertNotNull(this._visit(ast.expression, _Mode.Expression)));
+    return convertToStatementIfNeeded(mode, this._visit(ast.expression, _Mode.Expression));
   }
 
   visitPropertyRead(ast: cdAst.PropertyRead, mode: _Mode): any {
@@ -544,10 +543,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
         throw new Error(`Invalid call to $any, expected 1 argument but received ${
             convertedArgs.length || 'none'}`);
       }
-      return convertToStatementIfNeeded(
-          mode,
-          (convertedArgs[0] as o.Expression)
-              .cast(o.DYNAMIC_TYPE, this.convertSourceSpan(ast.span)));
+      return convertToStatementIfNeeded(mode, convertedArgs[0] as o.Expression);
     }
 
     const call = this._visit(receiver, _Mode.Expression)

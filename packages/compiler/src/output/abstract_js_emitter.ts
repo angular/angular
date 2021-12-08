@@ -100,10 +100,6 @@ export abstract class AbstractJsEmitterVisitor extends AbstractEmitterVisitor {
     ctx.println(stmt, `;`);
     return null;
   }
-  override visitCastExpr(ast: o.CastExpr, ctx: EmitterVisitorContext): any {
-    ast.value.visitExpression(this, ctx);
-    return null;
-  }
   override visitTaggedTemplateExpr(ast: o.TaggedTemplateExpr, ctx: EmitterVisitorContext): any {
     // The following convoluted piece of code is effectively the downlevelled equivalent of
     // ```
