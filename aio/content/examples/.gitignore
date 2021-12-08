@@ -57,7 +57,7 @@ dist/
 !copy-dist-files.js
 !i18n/angular.json
 !multi-project-workspace/angular.json
-!multi-project-workspace/projects
+!multi-project-workspace/projects/**/*
 
 # AngularJS files
 !**/*.ajs.js
