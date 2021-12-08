@@ -29,63 +29,6 @@ export abstract class AbstractJsEmitterVisitor extends AbstractEmitterVisitor {
   constructor() {
     super(false);
   }
-  override visitDeclareClassStmt(stmt: o.ClassStmt, ctx: EmitterVisitorContext): any {
-    ctx.pushClass(stmt);
-    this._visitClassConstructor(stmt, ctx);
-
-    if (stmt.parent != null) {
-      ctx.print(stmt, `${stmt.name}.prototype = Object.create(`);
-      stmt.parent.visitExpression(this, ctx);
-      ctx.println(stmt, `.prototype);`);
-    }
-    stmt.getters.forEach((getter) => this._visitClassGetter(stmt, getter, ctx));
-    stmt.methods.forEach((method) => this._visitClassMethod(stmt, method, ctx));
-    ctx.popClass();
-    return null;
-  }
-
-  private _visitClassConstructor(stmt: o.ClassStmt, ctx: EmitterVisitorContext) {
-    ctx.print(stmt, `function ${stmt.name}(`);
-    if (stmt.constructorMethod != null) {
-      this._visitParams(stmt.constructorMethod.params, ctx);
-    }
-    ctx.println(stmt, `) {`);
-    ctx.incIndent();
-    if (stmt.constructorMethod != null) {
-      if (stmt.constructorMethod.body.length > 0) {
-        ctx.println(stmt, `var self = this;`);
-        this.visitAllStatements(stmt.constructorMethod.body, ctx);
-      }
-    }
-    ctx.decIndent();
-    ctx.println(stmt, `}`);
-  }
-
-  private _visitClassGetter(stmt: o.ClassStmt, getter: o.ClassGetter, ctx: EmitterVisitorContext) {
-    ctx.println(
-        stmt,
-        `Object.defineProperty(${stmt.name}.prototype, '${getter.name}', { get: function() {`);
-    ctx.incIndent();
-    if (getter.body.length > 0) {
-      ctx.println(stmt, `var self = this;`);
-      this.visitAllStatements(getter.body, ctx);
-    }
-    ctx.decIndent();
-    ctx.println(stmt, `}});`);
-  }
-
-  private _visitClassMethod(stmt: o.ClassStmt, method: o.ClassMethod, ctx: EmitterVisitorContext) {
-    ctx.print(stmt, `${stmt.name}.prototype.${method.name} = function(`);
-    this._visitParams(method.params, ctx);
-    ctx.println(stmt, `) {`);
-    ctx.incIndent();
-    if (method.body.length > 0) {
-      ctx.println(stmt, `var self = this;`);
-      this.visitAllStatements(method.body, ctx);
-    }
-    ctx.decIndent();
-    ctx.println(stmt, `};`);
-  }
 
   override visitWrappedNodeExpr(ast: o.WrappedNodeExpr<any>, ctx: EmitterVisitorContext): any {
     throw new Error('Cannot emit a WrappedNodeExpr in Javascript.');

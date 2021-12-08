@@ -92,10 +92,6 @@ export class ExpressionTranslatorVisitor<TStatement, TExpression> implements o.E
         stmt.leadingComments);
   }
 
-  visitDeclareClassStmt(_stmt: o.ClassStmt, _context: Context): never {
-    throw new Error('Method not implemented.');
-  }
-
   visitIfStmt(stmt: o.IfStmt, context: Context): TStatement {
     return this.attachComments(
         this.factory.createIfStatement(
