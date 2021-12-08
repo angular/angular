@@ -216,22 +216,4 @@ export abstract class AbstractJsEmitterVisitor extends AbstractEmitterVisitor {
   private _visitParams(params: o.FnParam[], ctx: EmitterVisitorContext): void {
     this.visitAllObjects(param => ctx.print(null, param.name), params, ctx, ',');
   }
-
-  override getBuiltinMethodName(method: o.BuiltinMethod): string {
-    let name: string;
-    switch (method) {
-      case o.BuiltinMethod.ConcatArray:
-        name = 'concat';
-        break;
-      case o.BuiltinMethod.SubscribeObservable:
-        name = 'subscribe';
-        break;
-      case o.BuiltinMethod.Bind:
-        name = 'bind';
-        break;
-      default:
-        throw new Error(`Unknown builtin method: ${method}`);
-    }
-    return name;
-  }
 }

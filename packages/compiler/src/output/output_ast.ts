@@ -415,12 +415,6 @@ export class WritePropExpr extends Expression {
   }
 }
 
-export enum BuiltinMethod {
-  ConcatArray,
-  SubscribeObservable,
-  Bind
-}
-
 export class InvokeFunctionExpr extends Expression {
   constructor(
       public fn: Expression, public args: Expression[], type?: Type|null,
