@@ -8,10 +8,10 @@
 
 import {PipeTransform} from '../change_detection/pipe_transform';
 import {setInjectImplementation} from '../di/inject_switch';
+import {RuntimeError, RuntimeErrorCode} from '../errors';
 
 import {getFactoryDef} from './definition_factory';
 import {setIncludeViewProviders} from './di';
-import {RuntimeError, RuntimeErrorCode} from './error_code';
 import {store, ɵɵdirectiveInject} from './instructions/all';
 import {PipeDef, PipeDefList} from './interfaces/definition';
 import {CONTEXT, DECLARATION_COMPONENT_VIEW, HEADER_OFFSET, LView, TVIEW} from './interfaces/view';
