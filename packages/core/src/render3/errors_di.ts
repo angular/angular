@@ -5,10 +5,11 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {InjectorType} from '../di/interface/defs';
+import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {stringify} from '../util/stringify';
 
-import {RuntimeError, RuntimeErrorCode} from './error_code';
 import {stringifyForError} from './util/stringify_utils';
 
 
