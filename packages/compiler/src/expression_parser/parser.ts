@@ -9,7 +9,7 @@
 import * as chars from '../chars';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../ml_parser/interpolation_config';
 
-import {AbsoluteSourceSpan, AST, AstVisitor, ASTWithSource, Binary, BindingPipe, Call, Chain, Conditional, EmptyExpr, ExpressionBinding, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralMapKey, LiteralPrimitive, NonNullAssert, ParserError, ParseSpan, PrefixNot, PropertyRead, PropertyWrite, Quote, RecursiveAstVisitor, SafeKeyedRead, SafePropertyRead, TemplateBinding, TemplateBindingIdentifier, ThisReceiver, Unary, VariableBinding} from './ast';
+import {AbsoluteSourceSpan, AST, ASTWithSource, Binary, BindingPipe, Call, Chain, Conditional, EmptyExpr, ExpressionBinding, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralMapKey, LiteralPrimitive, NonNullAssert, ParserError, ParseSpan, PrefixNot, PropertyRead, PropertyWrite, Quote, RecursiveAstVisitor, SafeKeyedRead, SafePropertyRead, TemplateBinding, TemplateBindingIdentifier, ThisReceiver, Unary, VariableBinding} from './ast';
 import {EOF, isIdentifier, Lexer, Token, TokenType} from './lexer';
 
 export interface InterpolationPiece {
@@ -34,8 +34,6 @@ export class Parser {
 
   constructor(private _lexer: Lexer) {}
 
-  simpleExpressionChecker = SimpleExpressionChecker;
-
   parseAction(
       input: string, location: string, absoluteOffset: number,
       interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG): ASTWithSource {
@@ -57,7 +55,7 @@ export class Parser {
   }
 
   private checkSimpleExpression(ast: AST): string[] {
-    const checker = new this.simpleExpressionChecker();
+    const checker = new SimpleExpressionChecker();
     ast.visit(checker);
     return checker.errors;
   }
@@ -364,10 +362,6 @@ export class Parser {
       escapeCount = char === '\\' ? escapeCount + 1 : 0;
     }
   }
-}
-
-export class IvyParser extends Parser {
-  override simpleExpressionChecker = IvySimpleExpressionChecker;
 }
 
 /** Describes a stateful context an expression parser is in. */
@@ -1303,70 +1297,7 @@ export class _ParseAST {
   }
 }
 
-class SimpleExpressionChecker implements AstVisitor {
-  errors: string[] = [];
-
-  visitImplicitReceiver(ast: ImplicitReceiver, context: any) {}
-
-  visitThisReceiver(ast: ThisReceiver, context: any) {}
-
-  visitInterpolation(ast: Interpolation, context: any) {}
-
-  visitLiteralPrimitive(ast: LiteralPrimitive, context: any) {}
-
-  visitPropertyRead(ast: PropertyRead, context: any) {}
-
-  visitPropertyWrite(ast: PropertyWrite, context: any) {}
-
-  visitSafePropertyRead(ast: SafePropertyRead, context: any) {}
-
-  visitCall(ast: Call, context: any) {}
-
-  visitLiteralArray(ast: LiteralArray, context: any) {
-    this.visitAll(ast.expressions, context);
-  }
-
-  visitLiteralMap(ast: LiteralMap, context: any) {
-    this.visitAll(ast.values, context);
-  }
-
-  visitUnary(ast: Unary, context: any) {}
-
-  visitBinary(ast: Binary, context: any) {}
-
-  visitPrefixNot(ast: PrefixNot, context: any) {}
-
-  visitNonNullAssert(ast: NonNullAssert, context: any) {}
-
-  visitConditional(ast: Conditional, context: any) {}
-
-  visitPipe(ast: BindingPipe, context: any) {
-    this.errors.push('pipes');
-  }
-
-  visitKeyedRead(ast: KeyedRead, context: any) {}
-
-  visitKeyedWrite(ast: KeyedWrite, context: any) {}
-
-  visitAll(asts: any[], context: any): any[] {
-    return asts.map(node => node.visit(this, context));
-  }
-
-  visitChain(ast: Chain, context: any) {}
-
-  visitQuote(ast: Quote, context: any) {}
-
-  visitSafeKeyedRead(ast: SafeKeyedRead, context: any) {}
-}
-
-/**
- * This class implements SimpleExpressionChecker used in View Engine and performs more strict checks
- * to make sure host bindings do not contain pipes. In View Engine, having pipes in host bindings is
- * not supported as well, but in some cases (like `!(value | async)`) the error is not triggered at
- * compile time. In order to preserve View Engine behavior, more strict checks are introduced for
- * Ivy mode only.
- */
-class IvySimpleExpressionChecker extends RecursiveAstVisitor implements SimpleExpressionChecker {
+class SimpleExpressionChecker extends RecursiveAstVisitor {
   errors: string[] = [];
 
   override visitPipe() {
