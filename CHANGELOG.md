@@ -396,6 +396,17 @@ As a result, the `SwUpdate#availalbe` observable is now redundant.
 ## Special Thanks
 Ahmed Ayed, Alan Agius, Alex Rickabaugh, Andrew Kushnir, Andrew Scott, Bjarki, Charles Lyding, Dmitrij Kuba, Doug Parker, Dylan Hunn, George Kalpakas, Jessica Janiuk, Jochen Kraushaar, Joe Martin (Crowdstaffing), Joey Perrott, Jon Rimmer, JoostK, Kristiyan Kostadinov, Maximilian Köller, Paul Gschwendtner, Pei Wang, Pete Bacon Darwin, Tomasz Domański, Willy Schott, anandtiwary, dario-piotrowicz, iRealNirmal, ivanwonder, krzysztof-grzybek, mgechev and vthinkxie
 
+<a name="12.2.15"></a>
+# 12.2.15 (2021-12-08)
+### ngcc
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b6554d75cd](https://github.com/angular/angular/commit/b6554d75cd3ac8a904820f7cd051d926c74460bf) | fix | correctly resolve UMD dependencies ([#44382](https://github.com/angular/angular/pull/44382)) |
+## Special Thanks
+George Kalpakas
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="12.2.14"></a>
 # 12.2.14 (2021-12-01)
 ### compiler
