@@ -7,6 +7,7 @@
  */
 
 import {ParseSourceSpan} from '../parse_util';
+
 import * as o from './output_ast';
 import {SourceMapGenerator} from './source_map';
 
@@ -15,10 +16,6 @@ const _LEGAL_IDENTIFIER_RE = /^[$A-Z_][0-9A-Z_$]*$/i;
 const _INDENT_WITH = '  ';
 export const CATCH_ERROR_VAR = o.variable('error', null, null);
 export const CATCH_STACK_VAR = o.variable('stack', null, null);
-
-export interface OutputEmitter {
-  emitStatements(genFilePath: string, stmts: o.Statement[], preamble?: string|null): string;
-}
 
 class _EmittedLine {
   partsLength = 0;
@@ -34,7 +31,6 @@ export class EmitterVisitorContext {
 
   private _lines: _EmittedLine[];
   private _classes: o.ClassStmt[] = [];
-  private _preambleLineCount = 0;
 
   constructor(private _indent: number) {
     this._lines = [new _EmittedLine(_indent)];
@@ -168,12 +164,8 @@ export class EmitterVisitorContext {
     return map;
   }
 
-  setPreambleLineCount(count: number) {
-    return this._preambleLineCount = count;
-  }
-
   spanOf(line: number, column: number): ParseSourceSpan|null {
-    const emittedLine = this._lines[line - this._preambleLineCount];
+    const emittedLine = this._lines[line];
     if (emittedLine) {
       let columnsLeft = column - _createIndent(emittedLine.indent).length;
       for (let partIndex = 0; partIndex < emittedLine.parts.length; partIndex++) {
@@ -319,8 +311,6 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
     }
     return null;
   }
-
-  abstract getBuiltinMethodName(method: o.BuiltinMethod): string;
 
   visitInvokeFunctionExpr(expr: o.InvokeFunctionExpr, ctx: EmitterVisitorContext): any {
     expr.fn.visitExpression(this, ctx);
