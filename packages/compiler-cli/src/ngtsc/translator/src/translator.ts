@@ -108,17 +108,6 @@ export class ExpressionTranslatorVisitor<TStatement, TExpression> implements o.E
         stmt.leadingComments);
   }
 
-  visitTryCatchStmt(_stmt: o.TryCatchStmt, _context: Context): never {
-    throw new Error('Method not implemented.');
-  }
-
-  visitThrowStmt(stmt: o.ThrowStmt, context: Context): TStatement {
-    return this.attachComments(
-        this.factory.createThrowStatement(
-            stmt.error.visitExpression(this, context.withExpressionMode)),
-        stmt.leadingComments);
-  }
-
   visitReadVarExpr(ast: o.ReadVarExpr, _context: Context): TExpression {
     const identifier = this.factory.createIdentifier(ast.name!);
     this.setSourceMapRange(identifier, ast.sourceSpan);

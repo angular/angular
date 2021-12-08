@@ -7,7 +7,7 @@
  */
 
 
-import {AbstractEmitterVisitor, CATCH_ERROR_VAR, CATCH_STACK_VAR, EmitterVisitorContext, escapeIdentifier} from './abstract_emitter';
+import {AbstractEmitterVisitor, EmitterVisitorContext, escapeIdentifier} from './abstract_emitter';
 import * as o from './output_ast';
 
 /**
@@ -91,17 +91,6 @@ export abstract class AbstractJsEmitterVisitor extends AbstractEmitterVisitor {
     throw new Error('Cannot emit a WrappedNodeExpr in Javascript.');
   }
 
-  override visitReadVarExpr(ast: o.ReadVarExpr, ctx: EmitterVisitorContext): string|null {
-    if (ast.builtin === o.BuiltinVar.This) {
-      ctx.print(ast, 'self');
-    } else if (ast.builtin === o.BuiltinVar.Super) {
-      throw new Error(
-          `'super' needs to be handled at a parent ast node, not at the variable level!`);
-    } else {
-      super.visitReadVarExpr(ast, ctx);
-    }
-    return null;
-  }
   override visitDeclareVarStmt(stmt: o.DeclareVarStmt, ctx: EmitterVisitorContext): any {
     ctx.print(stmt, `var ${stmt.name}`);
     if (stmt.value) {
@@ -113,22 +102,6 @@ export abstract class AbstractJsEmitterVisitor extends AbstractEmitterVisitor {
   }
   override visitCastExpr(ast: o.CastExpr, ctx: EmitterVisitorContext): any {
     ast.value.visitExpression(this, ctx);
-    return null;
-  }
-  override visitInvokeFunctionExpr(expr: o.InvokeFunctionExpr, ctx: EmitterVisitorContext): string
-      |null {
-    const fnExpr = expr.fn;
-    if (fnExpr instanceof o.ReadVarExpr && fnExpr.builtin === o.BuiltinVar.Super) {
-      ctx.currentClass!.parent!.visitExpression(this, ctx);
-      ctx.print(expr, `.call(this`);
-      if (expr.args.length > 0) {
-        ctx.print(expr, `, `);
-        this.visitAllExpressions(expr.args, ctx, ',');
-      }
-      ctx.print(expr, `)`);
-    } else {
-      super.visitInvokeFunctionExpr(expr, ctx);
-    }
     return null;
   }
   override visitTaggedTemplateExpr(ast: o.TaggedTemplateExpr, ctx: EmitterVisitorContext): any {
@@ -172,23 +145,6 @@ export abstract class AbstractJsEmitterVisitor extends AbstractEmitterVisitor {
     ctx.println(stmt, `}`);
     return null;
   }
-  override visitTryCatchStmt(stmt: o.TryCatchStmt, ctx: EmitterVisitorContext): any {
-    ctx.println(stmt, `try {`);
-    ctx.incIndent();
-    this.visitAllStatements(stmt.bodyStmts, ctx);
-    ctx.decIndent();
-    ctx.println(stmt, `} catch (${CATCH_ERROR_VAR.name}) {`);
-    ctx.incIndent();
-    const catchStmts =
-        [<o.Statement>CATCH_STACK_VAR.set(CATCH_ERROR_VAR.prop('stack')).toDeclStmt(null, [
-          o.StmtModifier.Final
-        ])].concat(stmt.catchStmts);
-    this.visitAllStatements(catchStmts, ctx);
-    ctx.decIndent();
-    ctx.println(stmt, `}`);
-    return null;
-  }
-
   override visitLocalizedString(ast: o.LocalizedString, ctx: EmitterVisitorContext): any {
     // The following convoluted piece of code is effectively the downlevelled equivalent of
     // ```

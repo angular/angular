@@ -14,8 +14,6 @@ import {SourceMapGenerator} from './source_map';
 const _SINGLE_QUOTE_ESCAPE_STRING_RE = /'|\\|\n|\r|\$/g;
 const _LEGAL_IDENTIFIER_RE = /^[$A-Z_][0-9A-Z_$]*$/i;
 const _INDENT_WITH = '  ';
-export const CATCH_ERROR_VAR = o.variable('error', null, null);
-export const CATCH_STACK_VAR = o.variable('stack', null, null);
 
 class _EmittedLine {
   partsLength = 0;
@@ -259,16 +257,6 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
     return null;
   }
 
-  abstract visitTryCatchStmt(stmt: o.TryCatchStmt, ctx: EmitterVisitorContext): any;
-
-  visitThrowStmt(stmt: o.ThrowStmt, ctx: EmitterVisitorContext): any {
-    this.printLeadingComments(stmt, ctx);
-    ctx.print(stmt, `throw `);
-    stmt.error.visitExpression(this, ctx);
-    ctx.println(stmt, `;`);
-    return null;
-  }
-
   abstract visitDeclareVarStmt(stmt: o.DeclareVarStmt, ctx: EmitterVisitorContext): any;
 
   visitWriteVarExpr(expr: o.WriteVarExpr, ctx: EmitterVisitorContext): any {
@@ -338,26 +326,7 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
     expr.expr.visitExpression(this, ctx);
   }
   visitReadVarExpr(ast: o.ReadVarExpr, ctx: EmitterVisitorContext): any {
-    let varName = ast.name!;
-    if (ast.builtin != null) {
-      switch (ast.builtin) {
-        case o.BuiltinVar.Super:
-          varName = 'super';
-          break;
-        case o.BuiltinVar.This:
-          varName = 'this';
-          break;
-        case o.BuiltinVar.CatchError:
-          varName = CATCH_ERROR_VAR.name!;
-          break;
-        case o.BuiltinVar.CatchStack:
-          varName = CATCH_STACK_VAR.name!;
-          break;
-        default:
-          throw new Error(`Unknown builtin variable ${ast.builtin}`);
-      }
-    }
-    ctx.print(ast, varName);
+    ctx.print(ast, ast.name);
     return null;
   }
   visitInstantiateExpr(ast: o.InstantiateExpr, ctx: EmitterVisitorContext): any {

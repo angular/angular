@@ -260,30 +260,13 @@ export abstract class Expression {
   }
 }
 
-export enum BuiltinVar {
-  This,
-  Super,
-  CatchError,
-  CatchStack
-}
-
 export class ReadVarExpr extends Expression {
-  public name: string|null;
-  public builtin: BuiltinVar|null;
-
-  constructor(name: string|BuiltinVar, type?: Type|null, sourceSpan?: ParseSourceSpan|null) {
+  constructor(public name: string, type?: Type|null, sourceSpan?: ParseSourceSpan|null) {
     super(type, sourceSpan);
-    if (typeof name === 'string') {
-      this.name = name;
-      this.builtin = null;
-    } else {
-      this.name = null;
-      this.builtin = name;
-    }
   }
 
   override isEquivalent(e: Expression): boolean {
-    return e instanceof ReadVarExpr && this.name === e.name && this.builtin === e.builtin;
+    return e instanceof ReadVarExpr && this.name === e.name;
   }
 
   override isConstant() {
@@ -295,9 +278,6 @@ export class ReadVarExpr extends Expression {
   }
 
   set(value: Expression): WriteVarExpr {
-    if (!this.name) {
-      throw new Error(`Built in variable ${this.builtin} can not be assigned to.`);
-    }
     return new WriteVarExpr(this.name, value, null, this.sourceSpan);
   }
 }
@@ -1007,10 +987,6 @@ export interface ExpressionVisitor {
   visitTypeofExpr(ast: TypeofExpr, context: any): any;
 }
 
-export const THIS_EXPR = new ReadVarExpr(BuiltinVar.This, null, null);
-export const SUPER_EXPR = new ReadVarExpr(BuiltinVar.Super, null, null);
-export const CATCH_ERROR_VAR = new ReadVarExpr(BuiltinVar.CatchError, null, null);
-export const CATCH_STACK_VAR = new ReadVarExpr(BuiltinVar.CatchStack, null, null);
 export const NULL_EXPR = new LiteralExpr(null, null, null);
 export const TYPED_NULL_EXPR = new LiteralExpr(null, INFERRED_TYPE, null);
 
@@ -1205,36 +1181,6 @@ export class IfStmt extends Statement {
   }
 }
 
-export class TryCatchStmt extends Statement {
-  constructor(
-      public bodyStmts: Statement[], public catchStmts: Statement[],
-      sourceSpan: ParseSourceSpan|null = null, leadingComments?: LeadingComment[]) {
-    super([], sourceSpan, leadingComments);
-  }
-  override isEquivalent(stmt: Statement): boolean {
-    return stmt instanceof TryCatchStmt && areAllEquivalent(this.bodyStmts, stmt.bodyStmts) &&
-        areAllEquivalent(this.catchStmts, stmt.catchStmts);
-  }
-  override visitStatement(visitor: StatementVisitor, context: any): any {
-    return visitor.visitTryCatchStmt(this, context);
-  }
-}
-
-
-export class ThrowStmt extends Statement {
-  constructor(
-      public error: Expression, sourceSpan: ParseSourceSpan|null = null,
-      leadingComments?: LeadingComment[]) {
-    super([], sourceSpan, leadingComments);
-  }
-  override isEquivalent(stmt: ThrowStmt): boolean {
-    return stmt instanceof TryCatchStmt && this.error.isEquivalent(stmt.error);
-  }
-  override visitStatement(visitor: StatementVisitor, context: any): any {
-    return visitor.visitThrowStmt(this, context);
-  }
-}
-
 export interface StatementVisitor {
   visitDeclareVarStmt(stmt: DeclareVarStmt, context: any): any;
   visitDeclareFunctionStmt(stmt: DeclareFunctionStmt, context: any): any;
@@ -1242,8 +1188,6 @@ export interface StatementVisitor {
   visitReturnStmt(stmt: ReturnStatement, context: any): any;
   visitDeclareClassStmt(stmt: ClassStmt, context: any): any;
   visitIfStmt(stmt: IfStmt, context: any): any;
-  visitTryCatchStmt(stmt: TryCatchStmt, context: any): any;
-  visitThrowStmt(stmt: ThrowStmt, context: any): any;
 }
 
 export class AstTransformer implements StatementVisitor, ExpressionVisitor {
@@ -1478,22 +1422,6 @@ export class AstTransformer implements StatementVisitor, ExpressionVisitor {
         context);
   }
 
-  visitTryCatchStmt(stmt: TryCatchStmt, context: any): any {
-    return this.transformStmt(
-        new TryCatchStmt(
-            this.visitAllStatements(stmt.bodyStmts, context),
-            this.visitAllStatements(stmt.catchStmts, context), stmt.sourceSpan,
-            stmt.leadingComments),
-        context);
-  }
-
-  visitThrowStmt(stmt: ThrowStmt, context: any): any {
-    return this.transformStmt(
-        new ThrowStmt(
-            stmt.error.visitExpression(this, context), stmt.sourceSpan, stmt.leadingComments),
-        context);
-  }
-
   visitAllStatements(stmts: Statement[], context: any): Statement[] {
     return stmts.map(stmt => stmt.visitStatement(this, context));
   }
@@ -1670,15 +1598,6 @@ export class RecursiveAstVisitor implements StatementVisitor, ExpressionVisitor 
     stmt.condition.visitExpression(this, context);
     this.visitAllStatements(stmt.trueCase, context);
     this.visitAllStatements(stmt.falseCase, context);
-    return stmt;
-  }
-  visitTryCatchStmt(stmt: TryCatchStmt, context: any): any {
-    this.visitAllStatements(stmt.bodyStmts, context);
-    this.visitAllStatements(stmt.catchStmts, context);
-    return stmt;
-  }
-  visitThrowStmt(stmt: ThrowStmt, context: any): any {
-    stmt.error.visitExpression(this, context);
     return stmt;
   }
   visitAllStatements(stmts: Statement[], context: any): void {
