@@ -6,20 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export function assertArrayOfStrings(identifier: string, value: any) {
-  if (value == null) {
-    return;
-  }
-  if (!Array.isArray(value)) {
-    throw new Error(`Expected '${identifier}' to be an array of strings.`);
-  }
-  for (let i = 0; i < value.length; i += 1) {
-    if (typeof value[i] !== 'string') {
-      throw new Error(`Expected '${identifier}' to be an array of strings.`);
-    }
-  }
-}
-
 const UNUSABLE_INTERPOLATION_REGEXPS = [
   /^\s*$/,        // empty
   /[<>]/,         // html tag
