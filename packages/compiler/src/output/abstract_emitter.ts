@@ -226,8 +226,6 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
     return null;
   }
 
-  abstract visitCastExpr(ast: o.CastExpr, context: any): any;
-
   abstract visitDeclareClassStmt(stmt: o.ClassStmt, ctx: EmitterVisitorContext): any;
 
   visitIfStmt(stmt: o.IfStmt, ctx: EmitterVisitorContext): any {
@@ -374,10 +372,6 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
   }
   visitNotExpr(ast: o.NotExpr, ctx: EmitterVisitorContext): any {
     ctx.print(ast, '!');
-    ast.condition.visitExpression(this, ctx);
-    return null;
-  }
-  visitAssertNotNullExpr(ast: o.AssertNotNull, ctx: EmitterVisitorContext): any {
     ast.condition.visitExpression(this, ctx);
     return null;
   }
