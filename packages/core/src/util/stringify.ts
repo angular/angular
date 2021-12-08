@@ -7,30 +7,34 @@
  */
 
 export function stringify(token: any): string {
-  if (typeof token === 'string') {
-    return token;
-  }
+  if (typeof ngDevMode === 'undefined' || ngDevMode) {
+    if (typeof token === 'string') {
+      return token;
+    }
 
-  if (Array.isArray(token)) {
-    return '[' + token.map(stringify).join(', ') + ']';
-  }
+    if (Array.isArray(token)) {
+      return '[' + token.map(stringify).join(', ') + ']';
+    }
 
-  if (token == null) {
+    if (token == null) {
+      return '' + token;
+    }
+
+    if (token.name) {
+      return `${token.name}`;
+    }
+
+    const res = token.toString();
+
+    if (res == null) {
+      return '' + res;
+    }
+
+    const newLineIndex = res.indexOf('\n');
+    return newLineIndex === -1 ? res : res.substring(0, newLineIndex);
+  } else {
     return '' + token;
   }
-
-  if (token.name) {
-    return `${token.name}`;
-  }
-
-  const res = token.toString();
-
-  if (res == null) {
-    return '' + res;
-  }
-
-  const newLineIndex = res.indexOf('\n');
-  return newLineIndex === -1 ? res : res.substring(0, newLineIndex);
 }
 
 /**
