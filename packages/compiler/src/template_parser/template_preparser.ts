@@ -20,7 +20,7 @@ const NG_NON_BINDABLE_ATTR = 'ngNonBindable';
 const NG_PROJECT_AS = 'ngProjectAs';
 
 export function preparseElement(ast: html.Element): PreparsedElement {
-  let selectAttr: string = null!;
+  let selectAttr: string|null = null;
   let hrefAttr: string = null!;
   let relAttr: string = null!;
   let nonBindable = false;
@@ -71,7 +71,7 @@ export class PreparsedElement {
 }
 
 
-function normalizeNgContentSelect(selectAttr: string): string {
+function normalizeNgContentSelect(selectAttr: string|null): string {
   if (selectAttr === null || selectAttr.length === 0) {
     return '*';
   }
