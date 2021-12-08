@@ -72,7 +72,7 @@ export function directiveNormalize(name: string): string {
 
 export function getTypeName(type: Type<any>): string {
   // Return the name of the type or the first line of its stringified version.
-  return (type as any).overriddenName || type.name || type.toString().split('\n')[0];
+  return type.name || type.toString().split('\n')[0];
 }
 
 export function getDowngradedModuleCount($injector: IInjectorService): number {
