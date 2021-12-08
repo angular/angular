@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BindingForm, convertPropertyBinding} from '../../compiler_util/expression_converter';
+import {convertPropertyBinding} from '../../compiler_util/expression_converter';
 import {ConstantPool} from '../../constant_pool';
 import * as core from '../../core';
 import {AST, ParsedEvent, ParsedEventType, ParsedProperty} from '../../expression_parser/ast';
@@ -646,7 +646,7 @@ function createHostBindingsFunction(
 
 function bindingFn(implicit: any, value: AST) {
   return convertPropertyBinding(
-      null, implicit, value, 'b', BindingForm.Expression, () => error('Unexpected interpolation'));
+      null, implicit, value, 'b', () => error('Unexpected interpolation'));
 }
 
 function convertStylingCall(
