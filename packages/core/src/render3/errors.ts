@@ -32,8 +32,6 @@ export function throwErrorIfNoChangesMode(
         ` It seems like the view has been created after its parent and its children have been dirty checked.` +
         ` Has it been created in a change detection hook?`;
   }
-  // TODO: include debug context, see `viewDebugError` function in
-  // `packages/core/src/view/errors.ts` for reference.
   throw new RuntimeError(RuntimeErrorCode.EXPRESSION_CHANGED_AFTER_CHECKED, msg);
 }
 
