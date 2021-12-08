@@ -633,6 +633,12 @@
     "name": "applyViewChange"
   },
   {
+    "name": "assertAllValuesPresent"
+  },
+  {
+    "name": "assertControlPresent"
+  },
+  {
     "name": "attachInjectFlag"
   },
   {
@@ -1005,6 +1011,9 @@
     "name": "getPromiseCtor"
   },
   {
+    "name": "getRawValue"
+  },
+  {
     "name": "getSelectedIndex"
   },
   {
@@ -1138,6 +1147,15 @@
   },
   {
     "name": "isEmptyInputValue"
+  },
+  {
+    "name": "isFormArray"
+  },
+  {
+    "name": "isFormControl"
+  },
+  {
+    "name": "isFormGroup"
   },
   {
     "name": "isForwardRef"
