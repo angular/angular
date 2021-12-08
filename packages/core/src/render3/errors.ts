@@ -6,7 +6,9 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {RuntimeError, RuntimeErrorCode} from './error_code';
+
+import {RuntimeError, RuntimeErrorCode} from '../errors';
+
 import {TNode} from './interfaces/node';
 import {LView, TVIEW} from './interfaces/view';
 import {INTERPOLATION_DELIMITER} from './util/misc_utils';

@@ -9,9 +9,9 @@
 import {forwardRef, Inject, Injectable, InjectionToken, Injector, Optional, Provider, ReflectiveInjector, ReflectiveKey, Self} from '@angular/core';
 import {ReflectiveInjector_} from '@angular/core/src/di/reflective_injector';
 import {ResolvedReflectiveProvider_} from '@angular/core/src/di/reflective_provider';
-import {getOriginalError} from '@angular/core/src/errors';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
+import {getOriginalError} from '../../src/util/errors';
 import {stringify} from '../../src/util/stringify';
 
 class Engine {}
