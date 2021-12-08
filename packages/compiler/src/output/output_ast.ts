@@ -248,9 +248,6 @@ export abstract class Expression {
     // We use the typed null to allow strictNullChecks to narrow types.
     return this.equals(TYPED_NULL_EXPR, sourceSpan);
   }
-  cast(type: Type, sourceSpan?: ParseSourceSpan|null): Expression {
-    return new CastExpr(this, type, sourceSpan);
-  }
   nullishCoalesce(rhs: Expression, sourceSpan?: ParseSourceSpan|null): BinaryOperatorExpr {
     return new BinaryOperatorExpr(BinaryOperator.NullishCoalesce, this, rhs, null, sourceSpan);
   }
@@ -722,43 +719,6 @@ export class NotExpr extends Expression {
   }
 }
 
-export class AssertNotNull extends Expression {
-  constructor(public condition: Expression, sourceSpan?: ParseSourceSpan|null) {
-    super(condition.type, sourceSpan);
-  }
-
-  override isEquivalent(e: Expression): boolean {
-    return e instanceof AssertNotNull && this.condition.isEquivalent(e.condition);
-  }
-
-  override isConstant() {
-    return false;
-  }
-
-  override visitExpression(visitor: ExpressionVisitor, context: any): any {
-    return visitor.visitAssertNotNullExpr(this, context);
-  }
-}
-
-export class CastExpr extends Expression {
-  constructor(public value: Expression, type?: Type|null, sourceSpan?: ParseSourceSpan|null) {
-    super(type, sourceSpan);
-  }
-
-  override isEquivalent(e: Expression): boolean {
-    return e instanceof CastExpr && this.value.isEquivalent(e.value);
-  }
-
-  override isConstant() {
-    return false;
-  }
-
-  override visitExpression(visitor: ExpressionVisitor, context: any): any {
-    return visitor.visitCastExpr(this, context);
-  }
-}
-
-
 export class FnParam {
   constructor(public name: string, public type: Type|null = null) {}
 
@@ -973,8 +933,6 @@ export interface ExpressionVisitor {
   visitExternalExpr(ast: ExternalExpr, context: any): any;
   visitConditionalExpr(ast: ConditionalExpr, context: any): any;
   visitNotExpr(ast: NotExpr, context: any): any;
-  visitAssertNotNullExpr(ast: AssertNotNull, context: any): any;
-  visitCastExpr(ast: CastExpr, context: any): any;
   visitFunctionExpr(ast: FunctionExpr, context: any): any;
   visitUnaryOperatorExpr(ast: UnaryOperatorExpr, context: any): any;
   visitBinaryOperatorExpr(ast: BinaryOperatorExpr, context: any): any;
@@ -1293,16 +1251,6 @@ export class AstTransformer implements StatementVisitor, ExpressionVisitor {
         new NotExpr(ast.condition.visitExpression(this, context), ast.sourceSpan), context);
   }
 
-  visitAssertNotNullExpr(ast: AssertNotNull, context: any): any {
-    return this.transformExpr(
-        new AssertNotNull(ast.condition.visitExpression(this, context), ast.sourceSpan), context);
-  }
-
-  visitCastExpr(ast: CastExpr, context: any): any {
-    return this.transformExpr(
-        new CastExpr(ast.value.visitExpression(this, context), ast.type, ast.sourceSpan), context);
-  }
-
   visitFunctionExpr(ast: FunctionExpr, context: any): any {
     return this.transformExpr(
         new FunctionExpr(
@@ -1513,14 +1461,6 @@ export class RecursiveAstVisitor implements StatementVisitor, ExpressionVisitor 
   }
   visitNotExpr(ast: NotExpr, context: any): any {
     ast.condition.visitExpression(this, context);
-    return this.visitExpression(ast, context);
-  }
-  visitAssertNotNullExpr(ast: AssertNotNull, context: any): any {
-    ast.condition.visitExpression(this, context);
-    return this.visitExpression(ast, context);
-  }
-  visitCastExpr(ast: CastExpr, context: any): any {
-    ast.value.visitExpression(this, context);
     return this.visitExpression(ast, context);
   }
   visitFunctionExpr(ast: FunctionExpr, context: any): any {
@@ -1745,10 +1685,6 @@ export function unary(
 
 export function not(expr: Expression, sourceSpan?: ParseSourceSpan|null): NotExpr {
   return new NotExpr(expr, sourceSpan);
-}
-
-export function assertNotNull(expr: Expression, sourceSpan?: ParseSourceSpan|null): AssertNotNull {
-  return new AssertNotNull(expr, sourceSpan);
 }
 
 export function fn(
