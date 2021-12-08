@@ -1058,70 +1058,6 @@ export class ReturnStatement extends Statement {
   }
 }
 
-export class AbstractClassPart {
-  constructor(public type: Type|null = null, public modifiers: StmtModifier[] = []) {}
-  hasModifier(modifier: StmtModifier): boolean {
-    return this.modifiers.indexOf(modifier) !== -1;
-  }
-}
-
-export class ClassField extends AbstractClassPart {
-  constructor(
-      public name: string, type?: Type|null, modifiers?: StmtModifier[],
-      public initializer?: Expression) {
-    super(type, modifiers);
-  }
-  isEquivalent(f: ClassField) {
-    return this.name === f.name;
-  }
-}
-
-
-export class ClassMethod extends AbstractClassPart {
-  constructor(
-      public name: string|null, public params: FnParam[], public body: Statement[],
-      type?: Type|null, modifiers?: StmtModifier[]) {
-    super(type, modifiers);
-  }
-  isEquivalent(m: ClassMethod) {
-    return this.name === m.name && areAllEquivalent(this.body, m.body);
-  }
-}
-
-
-export class ClassGetter extends AbstractClassPart {
-  constructor(
-      public name: string, public body: Statement[], type?: Type|null, modifiers?: StmtModifier[]) {
-    super(type, modifiers);
-  }
-  isEquivalent(m: ClassGetter) {
-    return this.name === m.name && areAllEquivalent(this.body, m.body);
-  }
-}
-
-
-export class ClassStmt extends Statement {
-  constructor(
-      public name: string, public parent: Expression|null, public fields: ClassField[],
-      public getters: ClassGetter[], public constructorMethod: ClassMethod,
-      public methods: ClassMethod[], modifiers?: StmtModifier[], sourceSpan?: ParseSourceSpan|null,
-      leadingComments?: LeadingComment[]) {
-    super(modifiers, sourceSpan, leadingComments);
-  }
-  override isEquivalent(stmt: Statement): boolean {
-    return stmt instanceof ClassStmt && this.name === stmt.name &&
-        nullSafeIsEquivalent(this.parent, stmt.parent) &&
-        areAllEquivalent(this.fields, stmt.fields) &&
-        areAllEquivalent(this.getters, stmt.getters) &&
-        this.constructorMethod.isEquivalent(stmt.constructorMethod) &&
-        areAllEquivalent(this.methods, stmt.methods);
-  }
-  override visitStatement(visitor: StatementVisitor, context: any): any {
-    return visitor.visitDeclareClassStmt(this, context);
-  }
-}
-
-
 export class IfStmt extends Statement {
   constructor(
       public condition: Expression, public trueCase: Statement[],
@@ -1144,7 +1080,6 @@ export interface StatementVisitor {
   visitDeclareFunctionStmt(stmt: DeclareFunctionStmt, context: any): any;
   visitExpressionStmt(stmt: ExpressionStatement, context: any): any;
   visitReturnStmt(stmt: ReturnStatement, context: any): any;
-  visitDeclareClassStmt(stmt: ClassStmt, context: any): any;
   visitIfStmt(stmt: IfStmt, context: any): any;
 }
 
@@ -1339,27 +1274,6 @@ export class AstTransformer implements StatementVisitor, ExpressionVisitor {
         context);
   }
 
-  visitDeclareClassStmt(stmt: ClassStmt, context: any): any {
-    const parent = stmt.parent!.visitExpression(this, context);
-    const getters = stmt.getters.map(
-        getter => new ClassGetter(
-            getter.name, this.visitAllStatements(getter.body, context), getter.type,
-            getter.modifiers));
-    const ctorMethod = stmt.constructorMethod &&
-        new ClassMethod(stmt.constructorMethod.name, stmt.constructorMethod.params,
-                        this.visitAllStatements(stmt.constructorMethod.body, context),
-                        stmt.constructorMethod.type, stmt.constructorMethod.modifiers);
-    const methods = stmt.methods.map(
-        method => new ClassMethod(
-            method.name, method.params, this.visitAllStatements(method.body, context), method.type,
-            method.modifiers));
-    return this.transformStmt(
-        new ClassStmt(
-            stmt.name, parent, stmt.fields, getters, ctorMethod, methods, stmt.modifiers,
-            stmt.sourceSpan),
-        context);
-  }
-
   visitIfStmt(stmt: IfStmt, context: any): any {
     return this.transformStmt(
         new IfStmt(
@@ -1525,15 +1439,6 @@ export class RecursiveAstVisitor implements StatementVisitor, ExpressionVisitor 
     stmt.value.visitExpression(this, context);
     return stmt;
   }
-  visitDeclareClassStmt(stmt: ClassStmt, context: any): any {
-    stmt.parent!.visitExpression(this, context);
-    stmt.getters.forEach(getter => this.visitAllStatements(getter.body, context));
-    if (stmt.constructorMethod) {
-      this.visitAllStatements(stmt.constructorMethod.body, context);
-    }
-    stmt.methods.forEach(method => this.visitAllStatements(method.body, context));
-    return stmt;
-  }
   visitIfStmt(stmt: IfStmt, context: any): any {
     stmt.condition.visitExpression(this, context);
     this.visitAllStatements(stmt.trueCase, context);
@@ -1555,10 +1460,6 @@ class _ReadVarVisitor extends RecursiveAstVisitor {
   varNames = new Set<string>();
   override visitDeclareFunctionStmt(stmt: DeclareFunctionStmt, context: any): any {
     // Don't descend into nested functions
-    return stmt;
-  }
-  override visitDeclareClassStmt(stmt: ClassStmt, context: any): any {
-    // Don't descend into nested classes
     return stmt;
   }
   override visitReadVarExpr(ast: ReadVarExpr, context: any): any {

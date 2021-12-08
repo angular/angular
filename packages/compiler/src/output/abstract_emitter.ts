@@ -28,7 +28,6 @@ export class EmitterVisitorContext {
   }
 
   private _lines: _EmittedLine[];
-  private _classes: o.ClassStmt[] = [];
 
   constructor(private _indent: number) {
     this._lines = [new _EmittedLine(_indent)];
@@ -83,18 +82,6 @@ export class EmitterVisitorContext {
     if (this.lineIsEmpty()) {
       this._currentLine.indent = this._indent;
     }
-  }
-
-  pushClass(clazz: o.ClassStmt) {
-    this._classes.push(clazz);
-  }
-
-  popClass(): o.ClassStmt {
-    return this._classes.pop()!;
-  }
-
-  get currentClass(): o.ClassStmt|null {
-    return this._classes.length > 0 ? this._classes[this._classes.length - 1] : null;
   }
 
   toSource(): string {
@@ -225,8 +212,6 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
     ctx.println(stmt, ';');
     return null;
   }
-
-  abstract visitDeclareClassStmt(stmt: o.ClassStmt, ctx: EmitterVisitorContext): any;
 
   visitIfStmt(stmt: o.IfStmt, ctx: EmitterVisitorContext): any {
     this.printLeadingComments(stmt, ctx);
