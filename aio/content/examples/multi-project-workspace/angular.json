@@ -23,8 +23,7 @@
               "projects/app2/src/assets"
             ],
             "styles": ["projects/app2/src/styles.css"],
-            "scripts": [],
-            "es5BrowserSupport": true
+            "scripts": []
           },
           "configurations": {
             "production": {
