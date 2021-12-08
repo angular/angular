@@ -8,8 +8,8 @@
 
 import {fakeAsync, tick} from '@angular/core/testing';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
-import {FormArray} from '@angular/forms/src/model';
 
+import {FormArray} from '@angular/forms/src/model';
 import {asyncValidator, asyncValidatorReturningObservable} from './util';
 
 (function() {
@@ -1467,25 +1467,6 @@ describe('FormControl', () => {
         c.markAsPending({emitEvent: false});
         expect(logger).toEqual([]);
       });
-    });
-  });
-
-  describe('can be extended', () => {
-    // We don't technically support extending Forms classes, but people do it anyway.
-    // We need to make sure that there is some way to extend them to avoid causing breakage.
-
-    class FCExt extends FormControl {
-      constructor(formState?: any|{
-        value?: any;
-        disabled?: boolean;
-      }, ...args: any) {
-        super(formState, ...args);
-      }
-    }
-
-    it('should perform basic FormControl operations', () => {
-      const nc = new FCExt({value: 'foo'});
-      nc.setValue('bar');
     });
   });
 });

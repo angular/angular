@@ -293,7 +293,8 @@ export class FormBuilder {
 }
 
 // @public
-export interface FormControl extends AbstractControl {
+export class FormControl extends AbstractControl {
+    constructor(formState?: any, validatorOrOpts?: ValidatorFn | ValidatorFn[] | AbstractControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null);
     patchValue(value: any, options?: {
         onlySelf?: boolean;
         emitEvent?: boolean;
@@ -312,15 +313,6 @@ export interface FormControl extends AbstractControl {
         emitModelToViewChange?: boolean;
         emitViewToModelChange?: boolean;
     }): void;
-}
-
-// @public (undocumented)
-export const FormControl: FormControlCtor;
-
-// @public
-export interface FormControlCtor {
-    new (): FormControl;
-    new (value: any, validatorOrOpts?: ValidatorFn | ValidatorFn[] | AbstractControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null): FormControl;
 }
 
 // @public
