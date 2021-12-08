@@ -1,3 +1,33 @@
+<a name="13.1.0-rc.0"></a>
+# 13.1.0-rc.0 "clay-car" (2021-12-08)
+### cdk
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e219008ca](https://github.com/angular/components/commit/e219008cad3b08eb0960084a13824cd553d5ae65) | fix | **drag-drop:** last item not returned at initial index when sorting is disabled ([#23934](https://github.com/angular/components/pull/23934)) |
+### material
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e7494314d](https://github.com/angular/components/commit/e7494314d96a216b2f0715dcc81b563af801f234) | feat | **core:** change ErrorStateMatcher to accept AbstractForm instead of FormControl ([#24012](https://github.com/angular/components/pull/24012)) |
+| [106b8a710](https://github.com/angular/components/commit/106b8a7101c33edeb5e4583768857cae10a748c7) | fix | **datepicker:** hover styles not disabled on touch devices ([#23915](https://github.com/angular/components/pull/23915)) |
+### cdk-experimental
+| Commit | Type | Description |
+| -- | -- | -- |
+| [35cdf7cda](https://github.com/angular/components/commit/35cdf7cdaa4fd68e15cb242fd749296c7fd5608f) | fix | **column-resize:** Ensure resizable entity is not destroyed before applying min/max update ([#24007](https://github.com/angular/components/pull/24007)) |
+### material-experimental
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2e40f7ce0](https://github.com/angular/components/commit/2e40f7ce0e41a889ac94b3db15cd76669412087e) | fix | **column-resize:** Update for MDC and spec changes ([#23908](https://github.com/angular/components/pull/23908)) |
+| [642a78940](https://github.com/angular/components/commit/642a7894066cce77994369b813f19b9eec1ee616) | fix | **mdc-checkbox:** reduce amount of emitted theme css ([#24004](https://github.com/angular/components/pull/24004)) |
+| [749edd8a9](https://github.com/angular/components/commit/749edd8a9f93cf9f3e19dfaabfad53a1129868a9) | fix | **mdc-slider:** throw error when thumb is missing ([#24061](https://github.com/angular/components/pull/24061)) |
+### material-luxon-adapter
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a52da04a8](https://github.com/angular/components/commit/a52da04a82f9394c832dfd0dfe9974858ecc761e) | feat | add option to set first day of week ([#24027](https://github.com/angular/components/pull/24027)) |
+## Special Thanks
+Aristeidis Bampakos, Csaba Sandor, Ekkolon, Jiří Balcar, Karl Seamon, Kristiyan Kostadinov, Lukas Taake, Nathaniel, Paul Gschwendtner, Robin Richtsfeld and Wagner Maciel
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="13.0.4"></a>
 # 13.0.4 "marble-mountain" (2021-12-08)
 ### cdk
