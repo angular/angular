@@ -22,49 +22,6 @@ export interface LocalResolver {
   maybeRestoreView(): void;
 }
 
-export class ConvertActionBindingResult {
-  /**
-   * Store statements which are render3 compatible.
-   */
-  render3Stmts: o.Statement[];
-  constructor(
-      /**
-       * Render2 compatible statements,
-       */
-      public stmts: o.Statement[],
-      /**
-       * Variable name used with render2 compatible statements.
-       */
-      public allowDefault: o.ReadVarExpr) {
-    /**
-     * This is bit of a hack. It converts statements which render2 expects to statements which are
-     * expected by render3.
-     *
-     * Example: `<div click="doSomething($event)">` will generate:
-     *
-     * Render3:
-     * ```
-     * const pd_b:any = ((<any>ctx.doSomething($event)) !== false);
-     * return pd_b;
-     * ```
-     *
-     * but render2 expects:
-     * ```
-     * return ctx.doSomething($event);
-     * ```
-     */
-    // TODO(misko): remove this hack once we no longer support ViewEngine.
-    this.render3Stmts = stmts.map((statement: o.Statement) => {
-      if (statement instanceof o.DeclareVarStmt && statement.name == allowDefault.name &&
-          statement.value instanceof o.BinaryOperatorExpr) {
-        const lhs = statement.value.lhs as o.CastExpr;
-        return new o.ReturnStatement(lhs.value);
-      }
-      return statement;
-    });
-  }
-}
-
 export type InterpolationFunction = (args: o.Expression[]) => o.Expression;
 
 /**
@@ -75,7 +32,7 @@ export function convertActionBinding(
     localResolver: LocalResolver|null, implicitReceiver: o.Expression, action: cdAst.AST,
     bindingId: string, interpolationFunction?: InterpolationFunction,
     baseSourceSpan?: ParseSourceSpan, implicitReceiverAccesses?: Set<string>,
-    globals?: Set<string>): ConvertActionBindingResult {
+    globals?: Set<string>): o.Statement[] {
   if (!localResolver) {
     localResolver = new DefaultLocalResolver(globals);
   }
@@ -114,20 +71,14 @@ export function convertActionBinding(
   }
 
   const lastIndex = actionStmts.length - 1;
-  let preventDefaultVar: o.ReadVarExpr = null!;
   if (lastIndex >= 0) {
     const lastStatement = actionStmts[lastIndex];
-    const returnExpr = convertStmtIntoExpression(lastStatement);
-    if (returnExpr) {
-      // Note: We need to cast the result of the method call to dynamic,
-      // as it might be a void method!
-      preventDefaultVar = createPreventDefaultVar(bindingId);
-      actionStmts[lastIndex] =
-          preventDefaultVar.set(returnExpr.cast(o.DYNAMIC_TYPE).notIdentical(o.literal(false)))
-              .toDeclStmt(null, [o.StmtModifier.Final]);
+    // Ensure that the value of the last expression statement is returned
+    if (lastStatement instanceof o.ExpressionStatement) {
+      actionStmts[lastIndex] = new o.ReturnStatement(lastStatement.expr);
     }
   }
-  return new ConvertActionBindingResult(actionStmts, preventDefaultVar);
+  return actionStmts;
 }
 
 export interface BuiltinConverter {
@@ -957,19 +908,6 @@ class DefaultLocalResolver implements LocalResolver {
 
 function createCurrValueExpr(bindingId: string): o.ReadVarExpr {
   return o.variable(`currVal_${bindingId}`);  // fix syntax highlighting: `
-}
-
-function createPreventDefaultVar(bindingId: string): o.ReadVarExpr {
-  return o.variable(`pd_${bindingId}`);
-}
-
-function convertStmtIntoExpression(stmt: o.Statement): o.Expression|null {
-  if (stmt instanceof o.ExpressionStatement) {
-    return stmt.expr;
-  } else if (stmt instanceof o.ReturnStatement) {
-    return stmt.value;
-  }
-  return null;
 }
 
 export class BuiltinFunctionCall extends cdAst.Call {

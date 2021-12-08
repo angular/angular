@@ -77,7 +77,7 @@ export function prepareEventListenerParameters(
   const implicitReceiverExpr = (scope === null || scope.bindingLevel === 0) ?
       o.variable(CONTEXT_NAME) :
       scope.getOrCreateSharedContextVar(0);
-  const bindingExpr = convertActionBinding(
+  const bindingStatements = convertActionBinding(
       scope, implicitReceiverExpr, handler, 'b', () => error('Unexpected interpolation'),
       eventAst.handlerSpan, implicitReceiverAccesses, EVENT_BINDING_SCOPE_GLOBALS);
   const statements = [];
@@ -87,7 +87,7 @@ export function prepareEventListenerParameters(
     statements.push(...scope.variableDeclarations());
     statements.unshift(...scope.restoreViewStatement());
   }
-  statements.push(...bindingExpr.render3Stmts);
+  statements.push(...bindingStatements);
 
   const eventName: string =
       type === ParsedEventType.Animation ? prepareSyntheticListenerName(name, phase!) : name;
