@@ -891,27 +891,63 @@ export function keyframes(steps: AnimationStyleMetadata[]): AnimationKeyframesSe
  *either be
  *  - a string with a specific syntax
  *  - or a function that compares the previous and current state (value of the expression bound to
- *the element's trigger) and returns `true` if the transition should occur or `false` otherwise
+ *    the element's trigger) and returns `true` if the transition should occur or `false` otherwise
  *
  * The string format can be:
  *  - `fromState => toState`, which indicates that the transition's animations should occur then the
- *expression bound to the trigger's element goes from `fromState` to `toState`
+ *    expression bound to the trigger's element goes from `fromState` to `toState`
+ *
+ *    _Example:_
+ *      ```typescript
+ *        transition('open => closed', animate('.5s ease-out', style({ height: 0 }) ))
+ *      ```
+ *
  *  - `fromState <=> toState`, which indicates that the transition's animations should occur then
- *the expression bound to the trigger's element goes from `fromState` to `toState` or vice versa
+ *    the expression bound to the trigger's element goes from `fromState` to `toState` or vice versa
+ *
+ *    _Example:_
+ *      ```typescript
+ *        transition('enabled <=> disabled', animate('1s cubic-bezier(0.8,0.3,0,1)'))
+ *      ```
+ *
  *  - `:enter`/`:leave`, which indicates that the transition's animations should occur when the
- *element enters or exists the DOM
+ *    element enters or exists the DOM
+ *
+ *    _Example:_
+ *      ```typescript
+ *        transition(':enter', [
+ *          style({ opacity: 0 }),
+ *          animate('500ms', style({ opacity: 1 }))
+ *        ])
+ *      ```
+ *
  *  - `:increment`/`:decrement`, which indicates that the transition's animations should occur when
- *the numerical expression bound to the trigger's element has increased in value or decreased
+ *    the numerical expression bound to the trigger's element has increased in value or decreased
+ *
+ *    _Example:_
+ *      ```typescript
+ *        transition(':increment', query('@counter', animateChild())),
+ *      ```
+ *
  *  - a sequence of any of the above divided by commas, which indicates that transition's animations
- *should occur whenever one of the state change expressions matches
+ *    should occur whenever one of the state change expressions matches
+ *
+ *    _Example:_
+ *      ```typescript
+ *        transition(':increment, * => enabled, :enter', animate('1s ease', keyframes([
+ *          style({ transform: 'scale(1)', offset: 0}),
+ *          style({ transform: 'scale(1.1)', offset: 0.7}),
+ *          style({ transform: 'scale(1)', offset: 1})
+ *        ]))),
+ *      ```
  *
  * Also note that in such context:
  *  - `void` can be used to indicate the absence of the element
  *  - asterisks can be used as wildcards that match any state
  *  - (as a consequence of the above, `void => *` is equivalent to `:enter` and `* => void` is
- *equivalent to `:leave`)
+ *    equivalent to `:leave`)
  *  - `true` and `false` also match expression values of `1` and `0` respectively (but do not match
- *_truthy_ and _falsy_ values)
+ *    _truthy_ and _falsy_ values)
  *
  * <div class="alert is-helpful">
  *
@@ -938,18 +974,23 @@ export function keyframes(steps: AnimationStyleMetadata[]): AnimationKeyframesSe
  * ### Usage Example
  *
  * ```HTML
- * <div [@myAnimationTrigger]="myStatusExp">...</div>
+ * <div [@myAnimationTrigger]="myStatusExp">
+ *  ...
+ * </div>
  * ```
  *
  * ```typescript
  * trigger("myAnimationTrigger", [
  *  // states
- *  state("on", style({ background: "green" })),
- *  state("off", style({ background: "grey" })),
- *  // transition executed when myStatusExp goes from the "on" value to the "off" one
- *  transition("on => off", animate(500)),
- *  // transition executed when myStatusExp goes from/to the "on" value to/from the "off" one
- *  transition("on <=> off", animate(500))
+ *  state("on", style({ backgroundColor: "green" })),
+ *  state("off", style({ backgroundColor: "grey" })),
+ *  // transition executed when myStatusExp goes from
+ *  // the "on" value to the "off" one, or from "open"
+ *  // to "closed"
+ *  transition("on => off, open => closed", animate(500)),
+ *  // transition executed when the myStatusExp value
+ *  // changes from/to any value to/from "error"
+ *  transition("* <=> error", query('.indicator', animateChild()))
  * ])
  * ```
  *
