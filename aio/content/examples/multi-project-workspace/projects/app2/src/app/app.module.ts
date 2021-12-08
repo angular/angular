@@ -7,7 +7,7 @@ import { View1Component } from './view1/view1.component';
 import { View2Component } from './view2/view2.component';
 import { NavComponent } from './nav/nav.component';
 
-const providers = [];
+const providers: any = [];
 @NgModule({
   declarations: [
     AppComponent,
@@ -26,7 +26,7 @@ export class AppModule { }
 
 @NgModule({})
 export class App2SharedModule{
-  static forRoot(): ModuleWithProviders {
+  static forRoot(): ModuleWithProviders<App2SharedModule> {
     return {
       ngModule: AppModule,
       providers: providers
