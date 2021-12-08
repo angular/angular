@@ -54,15 +54,17 @@ export function setCurrentInjector(injector: Injector|null|undefined): Injector|
 }
 
 export function injectInjectorOnly<T>(token: ProviderToken<T>): T;
-export function injectInjectorOnly<T>(token: ProviderToken<T>, flags?: InjectFlags): T|null;
-export function injectInjectorOnly<T>(token: ProviderToken<T>, flags = InjectFlags.Default): T|
-    null {
+export function injectInjectorOnly<T>(token: ProviderToken<T>, flags?: InternalInjectFlags): T|null;
+export function injectInjectorOnly<T>(
+    token: ProviderToken<T>, flags = InternalInjectFlags.Default): T|null {
   if (_currentInjector === undefined) {
     throw new Error(`inject() must be called from an injection context`);
   } else if (_currentInjector === null) {
     return injectRootLimpMode(token, undefined, flags);
   } else {
-    return _currentInjector.get(token, flags & InjectFlags.Optional ? null : undefined, flags);
+    return _currentInjector.get(
+        token, flags & InternalInjectFlags.Optional ? null : undefined,
+        flags as unknown as InjectFlags);
   }
 }
 
@@ -80,8 +82,8 @@ export function injectInjectorOnly<T>(token: ProviderToken<T>, flags = InjectFla
  * @publicApi This instruction has been emitted by ViewEngine for some time and is deployed to npm.
  */
 export function ɵɵinject<T>(token: ProviderToken<T>): T;
-export function ɵɵinject<T>(token: ProviderToken<T>, flags?: InjectFlags): T|null;
-export function ɵɵinject<T>(token: ProviderToken<T>, flags = InjectFlags.Default): T|null {
+export function ɵɵinject<T>(token: ProviderToken<T>, flags?: InternalInjectFlags): T|null;
+export function ɵɵinject<T>(token: ProviderToken<T>, flags = InternalInjectFlags.Default): T|null {
   return (getInjectImplementation() || injectInjectorOnly)(resolveForwardRef(token), flags);
 }
 
@@ -144,7 +146,7 @@ export function injectArgs(types: (ProviderToken<any>|any[])[]): any[] {
         throw new Error('Arguments array must have arguments.');
       }
       let type: Type<any>|undefined = undefined;
-      let flags: InjectFlags = InjectFlags.Default;
+      let flags: InternalInjectFlags = InternalInjectFlags.Default;
 
       for (let j = 0; j < arg.length; j++) {
         const meta = arg[j];

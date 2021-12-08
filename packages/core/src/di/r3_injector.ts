@@ -23,7 +23,7 @@ import {Injector} from './injector';
 import {catchInjectorError, injectArgs, NG_TEMP_TOKEN_PATH, setCurrentInjector, THROW_IF_NOT_FOUND, USE_VALUE, ɵɵinject} from './injector_compatibility';
 import {INJECTOR} from './injector_token';
 import {getInheritedInjectableDef, getInjectableDef, getInjectorDef, InjectorType, InjectorTypeWithProviders, ɵɵInjectableDeclaration} from './interface/defs';
-import {InjectFlags} from './interface/injector';
+import {InjectFlags, InternalInjectFlags} from './interface/injector';
 import {ClassProvider, ConstructorProvider, ExistingProvider, FactoryProvider, StaticClassProvider, StaticProvider, TypeProvider, ValueProvider} from './interface/provider';
 import {NullInjector} from './null_injector';
 import {ProviderToken} from './provider_token';
@@ -183,14 +183,14 @@ export class R3Injector {
 
   get<T>(
       token: ProviderToken<T>, notFoundValue: any = THROW_IF_NOT_FOUND,
-      flags = InjectFlags.Default): T {
+      flags: InjectFlags|InternalInjectFlags = InternalInjectFlags.Default): T {
     this.assertNotDestroyed();
     // Set the injection context.
     const previousInjector = setCurrentInjector(this);
     const previousInjectImplementation = setInjectImplementation(undefined);
     try {
       // Check for the SkipSelf flag.
-      if (!(flags & InjectFlags.SkipSelf)) {
+      if (!(flags & InternalInjectFlags.SkipSelf)) {
         // SkipSelf isn't set, check if the record belongs to this injector.
         let record: Record<T>|undefined|null = this.records.get(token);
         if (record === undefined) {
@@ -214,10 +214,11 @@ export class R3Injector {
 
       // Select the next injector based on the Self flag - if self is set, the next injector is
       // the NullInjector, otherwise it's the parent.
-      const nextInjector = !(flags & InjectFlags.Self) ? this.parent : getNullInjector();
+      const nextInjector = !(flags & InternalInjectFlags.Self) ? this.parent : getNullInjector();
       // Set the notFoundValue based on the Optional flag - if optional is set and notFoundValue
       // is undefined, the value is null, otherwise it's the notFoundValue.
-      notFoundValue = (flags & InjectFlags.Optional) && notFoundValue === THROW_IF_NOT_FOUND ?
+      notFoundValue =
+          (flags & InternalInjectFlags.Optional) && notFoundValue === THROW_IF_NOT_FOUND ?
           null :
           notFoundValue;
       return nextInjector.get(token, notFoundValue);

@@ -8,7 +8,7 @@
 
 import {Injector} from '../di/injector';
 import {INJECTOR} from '../di/injector_token';
-import {InjectFlags} from '../di/interface/injector';
+import {InjectFlags, InternalInjectFlags} from '../di/interface/injector';
 import {createInjectorWithoutInjectorInstances, R3Injector} from '../di/r3_injector';
 import {Type} from '../interface/type';
 import {ComponentFactoryResolver as viewEngine_ComponentFactoryResolver} from '../linker/component_factory_resolver';
@@ -78,7 +78,7 @@ export class NgModuleRef<T> extends viewEngine_NgModuleRef<T> implements Interna
   }
 
   get(token: any, notFoundValue: any = Injector.THROW_IF_NOT_FOUND,
-      injectFlags: InjectFlags = InjectFlags.Default): any {
+      injectFlags: InjectFlags|InternalInjectFlags = InternalInjectFlags.Default): any {
     if (token === Injector || token === viewEngine_NgModuleRef || token === INJECTOR) {
       return this;
     }

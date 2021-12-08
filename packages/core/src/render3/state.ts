@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectFlags} from '../di/interface/injector';
+import {InternalInjectFlags} from '../di/interface/injector';
 import {assertDefined, assertEqual, assertGreaterThanOrEqual, assertLessThan, assertNotEqual} from '../util/assert';
+
 import {assertLViewOrUndefined, assertTNodeForLView, assertTNodeForTView} from './assert';
 import {DirectiveDef} from './interfaces/definition';
 import {TNode, TNodeType} from './interfaces/node';
@@ -473,10 +474,10 @@ function getDeclarationTNode(lView: LView): TNode|null {
  *     - If `true` than this call must be fallowed by `leaveDI`
  *     - If `false` than this call failed and we should NOT call `leaveDI`
  */
-export function enterDI(lView: LView, tNode: TNode, flags: InjectFlags) {
+export function enterDI(lView: LView, tNode: TNode, flags: InternalInjectFlags) {
   ngDevMode && assertLViewOrUndefined(lView);
 
-  if (flags & InjectFlags.SkipSelf) {
+  if (flags & InternalInjectFlags.SkipSelf) {
     ngDevMode && assertTNodeForTView(tNode, lView[TVIEW]);
 
     let parentTNode = tNode as TNode | null;
@@ -485,7 +486,7 @@ export function enterDI(lView: LView, tNode: TNode, flags: InjectFlags) {
     while (true) {
       ngDevMode && assertDefined(parentTNode, 'Parent TNode should be defined');
       parentTNode = parentTNode!.parent as TNode | null;
-      if (parentTNode === null && !(flags & InjectFlags.Host)) {
+      if (parentTNode === null && !(flags & InternalInjectFlags.Host)) {
         parentTNode = getDeclarationTNode(parentLView);
         if (parentTNode === null) break;
 
