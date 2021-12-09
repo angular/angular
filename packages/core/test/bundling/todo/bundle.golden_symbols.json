@@ -300,12 +300,6 @@
     "name": "detachView"
   },
   {
-    "name": "detectChangesInRootView"
-  },
-  {
-    "name": "detectChangesInternal"
-  },
-  {
     "name": "diPublicInInjector"
   },
   {
@@ -552,9 +546,6 @@
     "name": "isDirectiveHost"
   },
   {
-    "name": "isInCheckNoChangesMode"
-  },
-  {
     "name": "isInlineTemplate"
   },
   {
@@ -757,9 +748,6 @@
   },
   {
     "name": "setInputsFromAttrs"
-  },
-  {
-    "name": "setIsInCheckNoChangesMode"
   },
   {
     "name": "setSelectedIndex"
