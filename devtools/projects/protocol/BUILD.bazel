@@ -12,19 +12,19 @@ exports_files([
 ])
 
 ts_config(
-    name = "tsconfig-lib",
+    name = "tsconfig_lib",
     src = "tsconfig.lib.json",
     deps = ["//:tsconfig.json"],
 )
 
 ts_config(
-    name = "tsconfig-spec",
+    name = "tsconfig_spec",
     src = "tsconfig.spec.json",
     deps = ["//:tsconfig.json"],
 )
 
 ts_project(
-    name = "protocol-ts",
+    name = "protocol_ts",
     srcs = glob(
         ["**/*.ts"],
         exclude = [
@@ -32,7 +32,7 @@ ts_project(
             "src/test.ts",
         ],
     ),
-    tsconfig = ":tsconfig-lib",
+    tsconfig = ":tsconfig_lib",
     deps = [
         "@npm//@angular/core",
         "@npm//@angular/platform-browser-dynamic",
@@ -43,7 +43,7 @@ ts_project(
 js_library(
     name = "protocol",
     package_name = "protocol",
-    deps = [":protocol-ts"],
+    deps = [":protocol_ts"],
 )
 
 ts_test_project(

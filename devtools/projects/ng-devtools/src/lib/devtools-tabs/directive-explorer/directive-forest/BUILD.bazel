@@ -4,7 +4,7 @@ load("//tools:angular_ts_project.bzl", "ng_ts_project")
 package(default_visibility = ["//visibility:public"])
 
 sass_binary(
-    name = "directive-forest-component-styles",
+    name = "directive_forest_component_styles",
     src = "directive-forest.component.scss",
 )
 
@@ -17,9 +17,9 @@ ng_ts_project(
     ],
     angular_assets = [
         "directive-forest.component.html",
-        ":directive-forest-component-styles",
+        ":directive_forest_component_styles",
     ],
-    tsconfig = "//projects/ng-devtools:tsconfig-lib",
+    tsconfig = "//projects/ng-devtools:tsconfig_lib",
     deps = [
         "//projects/ng-devtools/src/lib/devtools-tabs/diffing",
         "//projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/breadcrumbs",

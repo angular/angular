@@ -4,7 +4,7 @@ load("//tools:angular_ts_project.bzl", "ng_ts_project")
 package(default_visibility = ["//visibility:public"])
 
 sass_binary(
-    name = "filter-component-styles",
+    name = "filter_component_styles",
     src = "filter.component.scss",
 )
 
@@ -16,9 +16,9 @@ ng_ts_project(
     ],
     angular_assets = [
         "filter.component.html",
-        ":filter-component-styles",
+        ":filter_component_styles",
     ],
-    tsconfig = "//projects/ng-devtools:tsconfig-lib",
+    tsconfig = "//projects/ng-devtools:tsconfig_lib",
     deps = [
         "@npm//@angular/common",
         "@npm//@angular/core",

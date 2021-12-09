@@ -6,9 +6,9 @@ package(default_visibility = ["//visibility:public"])
 ts_project(
     name = "component-inspector",
     srcs = ["component-inspector.ts"],
-    tsconfig = "//projects/ng-devtools-backend:tsconfig-lib",
+    tsconfig = "//projects/ng-devtools-backend:tsconfig_lib",
     deps = [
-        "//projects/ng-devtools-backend/src/lib:component-tree",
+        "//projects/ng-devtools-backend/src/lib:component_tree",
         "//projects/ng-devtools-backend/src/lib:highlighter",
         "//projects/ng-devtools-backend/src/lib:interfaces",
         "//projects/ng-devtools-backend/src/lib/hooks",
@@ -18,17 +18,17 @@ ts_project(
 
 karma_web_test_suite(
     name = "test",
-    deps = [":test-lib"],
+    deps = [":test_lib"],
 )
 
 ts_test_project(
-    name = "test-lib",
+    name = "test_lib",
     srcs = [
         "component-inspector.spec.ts",
     ],
     deps = [
         ":component-inspector",
-        "//projects/ng-devtools-backend/src/lib:component-tree",
+        "//projects/ng-devtools-backend/src/lib:component_tree",
         "//projects/ng-devtools-backend/src/lib:highlighter",
         "//projects/ng-devtools-backend/src/lib:interfaces",
         "//projects/ng-devtools-backend/src/lib:utils",

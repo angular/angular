@@ -5,7 +5,7 @@ package(default_visibility = ["//visibility:public"])
 ng_ts_project(
     name = "src",
     srcs = ["public-api.ts"],
-    tsconfig = "//projects/ng-devtools:tsconfig-lib",
+    tsconfig = "//projects/ng-devtools:tsconfig_lib",
     deps = [
         "//projects/ng-devtools/src/lib",
         "//projects/ng-devtools/src/lib/application-environment",

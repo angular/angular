@@ -24,7 +24,7 @@ ng_ts_project(
         "profiler-import-dialog.component.html",
         ":profiler-styles",
     ],
-    tsconfig = "//projects/ng-devtools:tsconfig-lib",
+    tsconfig = "//projects/ng-devtools:tsconfig_lib",
     deps = [
         "//projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline",
         "//projects/ng-devtools/src/lib/vendor/chromium",

@@ -4,7 +4,7 @@ load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
 package(default_visibility = ["//visibility:public"])
 
 sass_binary(
-    name = "app-todo-component-styles",
+    name = "app_todo_component_styles",
     src = "app-todo.component.scss",
 )
 
@@ -18,7 +18,7 @@ ng_ts_project(
     angular_assets = [
         "app-todo.component.html",
         "dialog.component.html",
-        ":app-todo-component-styles",
+        ":app_todo_component_styles",
     ],
     deps = [
         "//src/app/demo-app/todo/about",

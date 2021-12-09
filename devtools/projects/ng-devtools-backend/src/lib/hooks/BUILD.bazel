@@ -11,9 +11,9 @@ ts_project(
             "identity-tracker.ts",
         ],
     ),
-    tsconfig = "//projects/ng-devtools-backend:tsconfig-lib",
+    tsconfig = "//projects/ng-devtools-backend:tsconfig_lib",
     deps = [
-        ":identity-tracker",
+        ":identity_tracker",
         "//projects/ng-devtools-backend/src/lib:highlighter",
         "//projects/ng-devtools-backend/src/lib:interfaces",
         "//projects/ng-devtools-backend/src/lib:utils",
@@ -23,11 +23,11 @@ ts_project(
 )
 
 ts_project(
-    name = "identity-tracker",
+    name = "identity_tracker",
     srcs = ["identity-tracker.ts"],
-    tsconfig = "//projects/ng-devtools-backend:tsconfig-lib",
+    tsconfig = "//projects/ng-devtools-backend:tsconfig_lib",
     deps = [
-        "//projects/ng-devtools-backend/src/lib:component-tree",
+        "//projects/ng-devtools-backend/src/lib:component_tree",
         "//projects/ng-devtools-backend/src/lib:interfaces",
         "//projects/protocol",
     ],

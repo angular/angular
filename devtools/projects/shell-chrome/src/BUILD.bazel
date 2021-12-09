@@ -9,7 +9,7 @@ load("//tools:typescript.bzl", "ts_project")
 package(default_visibility = ["//visibility:public"])
 
 sass_library(
-    name = "material-theming",
+    name = "material_theming",
     srcs = [
         "@npm//:node_modules/@angular/cdk/_index.scss",
         "@npm//:node_modules/@angular/cdk/a11y/_index.import.scss",
@@ -224,14 +224,14 @@ sass_library(
 )
 
 sass_binary(
-    name = "shell-chrome-styles",
+    name = "shell_chrome_styles",
     src = "styles.scss",
     sourcemap = False,
-    deps = [":material-theming"],
+    deps = [":material_theming"],
 )
 
 ts_project(
-    name = "devtools-ts",
+    name = "devtools_ts",
     srcs = [
         "devtools.ts",
     ],
@@ -242,7 +242,7 @@ ts_project(
 
 js_library(
     name = "devtools",
-    deps = [":devtools-ts"],
+    deps = [":devtools_ts"],
 )
 
 ng_ts_project(
@@ -261,7 +261,7 @@ ng_ts_project(
 )
 
 rollup_bundle(
-    name = "devtools-app-bundle-es2015",
+    name = "devtools_app_bundle_es2015",
     config_file = "rollup.config.js",
     entry_point = "main.ts",
     output_dir = True,
@@ -273,14 +273,14 @@ rollup_bundle(
 )
 
 terser_minified(
-    name = "devtools-app-bundle-es2015.min",
-    src = ":devtools-app-bundle-es2015",
+    name = "devtools_app_bundle_es2015.min",
+    src = ":devtools_app_bundle_es2015",
 )
 
 # Files that we serve in both development and production
 _ASSETS = [
     # This label references an output of the "styles" sass_binary above.
-    ":shell-chrome-styles",
+    ":shell_chrome_styles",
     ":manifest.json",
 
     # We load zone.js outside the bundle. That's because it's a "pollyfill"
@@ -304,7 +304,7 @@ html_insert_assets(
 )
 
 rollup_bundle(
-    name = "devtools-es2015",
+    name = "devtools_es2015",
     entry_point = "devtools.ts",
     format = "iife",
     deps = [
@@ -315,12 +315,12 @@ rollup_bundle(
 pkg_web(
     name = "prodapp",
     srcs = _ASSETS + [
-        ":devtools-es2015",
-        "//projects/shell-chrome/src/app:ng-validate-es2015",
-        "//projects/shell-chrome/src/app:background-es2015",
-        "//projects/shell-chrome/src/app:backend-es2015",
-        "//projects/shell-chrome/src/app:content-script-es2015",
-        ":devtools-app-bundle-es2015",
+        ":devtools_es2015",
+        "//projects/shell-chrome/src/app:ng_validate_es2015",
+        "//projects/shell-chrome/src/app:background_es2015",
+        "//projects/shell-chrome/src/app:backend_es2015",
+        "//projects/shell-chrome/src/app:content_script_es2015",
+        ":devtools_app_bundle_es2015",
         ":inject_scripts_for_prod",
         "//projects/shell-chrome/src/assets",
         "//projects/shell-chrome/src/popups",

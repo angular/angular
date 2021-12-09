@@ -4,7 +4,7 @@ load("@io_bazel_rules_sass//:defs.bzl", "multi_sass_binary", "sass_binary", "sas
 package(default_visibility = ["//visibility:public"])
 
 sass_library(
-    name = "todo-mvc",
+    name = "todo_mvc",
     srcs = [
         "@npm//:node_modules/todomvc-app-css/index.css",
         "@npm//:node_modules/todomvc-common/base.css",
@@ -12,15 +12,15 @@ sass_library(
 )
 
 sass_binary(
-    name = "demo-app-component-styles",
+    name = "demo_app_component_styles",
     src = "demo-app.component.scss",
     deps = [
-        ":todo-mvc",
+        ":todo_mvc",
     ],
 )
 
 multi_sass_binary(
-    name = "demo-app-styles",
+    name = "demo_app_styles",
     srcs = [
         "heavy.component.scss",
         "zippy.component.scss",
@@ -39,12 +39,12 @@ ng_ts_project(
         "demo-app.component.html",
         "heavy.component.html",
         "zippy.component.html",
-        ":demo-app-component-styles",
-        ":demo-app-styles",
+        ":demo_app_component_styles",
+        ":demo_app_styles",
     ],
     deps = [
         "//projects/ng-devtools-backend",
-        "//src:zone-unaware-iframe-message-bus",
+        "//src:zone-unaware-iframe_message_bus",
         "//src/app/demo-app/todo",
         "@npm//@angular/core",
         "@npm//@angular/elements",

@@ -6,7 +6,7 @@ load("//tools:defaults.bzl", "karma_web_test_suite")
 package(default_visibility = ["//visibility:public"])
 
 sass_binary(
-    name = "directive-explorer-component-styles",
+    name = "directive_explorer_component_styles",
     src = "directive-explorer.component.scss",
 )
 
@@ -18,9 +18,9 @@ ng_ts_project(
     ],
     angular_assets = [
         "directive-explorer.component.html",
-        ":directive-explorer-component-styles",
+        ":directive_explorer_component_styles",
     ],
-    tsconfig = "//projects/ng-devtools:tsconfig-lib",
+    tsconfig = "//projects/ng-devtools:tsconfig_lib",
     deps = [
         "//projects/ng-devtools/src/lib/application-operations",
         "//projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest",
@@ -41,7 +41,7 @@ ng_ts_project(
 )
 
 ts_test_project(
-    name = "directive-explorer-test",
+    name = "directive_explorer_test",
     srcs = ["directive-explorer.spec.ts"],
     deps = [
         ":directive-explorer",
@@ -55,6 +55,6 @@ ts_test_project(
 karma_web_test_suite(
     name = "test",
     deps = [
-        ":directive-explorer-test",
+        ":directive_explorer_test",
     ],
 )

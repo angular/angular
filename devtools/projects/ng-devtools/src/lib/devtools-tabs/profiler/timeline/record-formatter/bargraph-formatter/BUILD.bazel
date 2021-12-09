@@ -9,7 +9,7 @@ ts_project(
             "*.ts",
         ],
     ),
-    tsconfig = "//projects/ng-devtools:tsconfig-lib",
+    tsconfig = "//projects/ng-devtools:tsconfig_lib",
     deps = [
         "//projects/ng-devtools/src/lib:theme",
         "//projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter",

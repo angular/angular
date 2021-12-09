@@ -4,7 +4,7 @@ load("@io_bazel_rules_sass//:defs.bzl", "multi_sass_binary")
 package(default_visibility = ["//visibility:public"])
 
 multi_sass_binary(
-    name = "home-styles",
+    name = "home_styles",
     srcs = ["todo.component.scss"],
 )
 
@@ -23,7 +23,7 @@ ng_ts_project(
     angular_assets = [
         "todos.component.html",
         "todo.component.html",
-        ":home-styles",
+        ":home_styles",
     ],
     deps = [
         "@npm//@angular/common",

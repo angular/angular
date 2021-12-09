@@ -4,7 +4,7 @@ load("//tools:angular_ts_project.bzl", "ng_ts_project")
 package(default_visibility = ["//visibility:public"])
 
 multi_sass_binary(
-    name = "property-tab-styles",
+    name = "property_tab_styles",
     srcs = [
         "component-metadata.component.scss",
         "property-tab.component.scss",
@@ -24,9 +24,9 @@ ng_ts_project(
         "property-tab.component.html",
         "property-tab-header.component.html",
         "component-metadata.component.html",
-        ":property-tab-styles",
+        ":property_tab_styles",
     ],
-    tsconfig = "//projects/ng-devtools:tsconfig-lib",
+    tsconfig = "//projects/ng-devtools:tsconfig_lib",
     deps = [
         "//projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/index-forest",
         "//projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-resolver",

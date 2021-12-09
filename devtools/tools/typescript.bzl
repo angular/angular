@@ -12,7 +12,7 @@ def ts_project(name, tsconfig = "//:tsconfig.json", **kwargs):
         **kwargs
     )
 
-def ts_test_project(name, tsconfig = "//:tsconfig-spec", deps = [], **kwargs):
+def ts_test_project(name, tsconfig = "//:tsconfig_spec", deps = [], **kwargs):
     _ts_project(
         name = name,
         testonly = 1,

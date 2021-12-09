@@ -8,7 +8,7 @@ load("@build_bazel_rules_nodejs//:index.bzl", "pkg_web")
 package(default_visibility = ["//visibility:public"])
 
 sass_library(
-    name = "material-theming",
+    name = "material_theming",
     srcs = [
         "@npm//:node_modules/@angular/cdk/_index.scss",
         "@npm//:node_modules/@angular/cdk/a11y/_index.import.scss",
@@ -223,14 +223,14 @@ sass_library(
 )
 
 sass_binary(
-    name = "demo-styles",
+    name = "demo_styles",
     src = "styles.scss",
     sourcemap = False,
-    deps = [":material-theming"],
+    deps = [":material_theming"],
 )
 
 _ASSETS = [
-    "//src:demo-styles",
+    "//src:demo_styles",
     "@npm//:node_modules/zone.js/dist/zone.min.js",
 ]
 
@@ -243,11 +243,11 @@ html_insert_assets(
         "--roots=. $(RULEDIR)",
         "--assets",
     ] + ["$(execpath %s)" % s for s in _ASSETS] + [
-        "--scripts --module $(execpath :bundle-es2015)/index.dev.js",
+        "--scripts --module $(execpath :bundle_es2015)/index.dev.js",
     ],
     data = [
         "//src:_index.html",
-        ":bundle-es2015",
+        ":bundle_es2015",
     ] + _ASSETS,
 )
 
@@ -267,7 +267,7 @@ ng_ts_project(
 )
 
 ng_ts_project(
-    name = "demo-application-environment",
+    name = "demo_application_environment",
     srcs = ["demo-application-environment.ts"],
     deps = [
         "//projects/ng-devtools",
@@ -276,7 +276,7 @@ ng_ts_project(
 )
 
 ng_ts_project(
-    name = "demo-application-operations",
+    name = "demo_application_operations",
     srcs = ["demo-application-operations.ts"],
     deps = [
         "//projects/ng-devtools",
@@ -285,7 +285,7 @@ ng_ts_project(
 )
 
 ng_ts_project(
-    name = "iframe-message-bus",
+    name = "iframe_message_bus",
     srcs = ["iframe-message-bus.ts"],
     deps = [
         "//projects/protocol",
@@ -293,16 +293,16 @@ ng_ts_project(
 )
 
 ng_ts_project(
-    name = "zone-unaware-iframe-message-bus",
+    name = "zone-unaware-iframe_message_bus",
     srcs = ["zone-unaware-iframe-message-bus.ts"],
     deps = [
-        ":iframe-message-bus",
+        ":iframe_message_bus",
         "//projects/protocol",
     ],
 )
 
 rollup_bundle(
-    name = "bundle-es2015",
+    name = "bundle_es2015",
     config_file = "rollup.config.js",
     entry_points = {
         ":main.ts": "index.dev",
@@ -319,7 +319,7 @@ rollup_bundle(
 pkg_web(
     name = "devapp",
     srcs = _ASSETS + [
-        ":bundle-es2015",
+        ":bundle_es2015",
         ":inject_scripts_for_dev",
     ],
     substitutions = {"BUILD_SCM_COMMIT_SHA": "{BUILD_SCM_COMMIT_SHA}"},
