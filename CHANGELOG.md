@@ -1,30 +1,24 @@
-<a name="13.1.0-rc.0"></a>
-# 13.1.0-rc.0 "clay-car" (2021-12-08)
+<a name="13.1.0"></a>
+# 13.1.0 "granite-garden" (2021-12-08)
 ### cdk
 | Commit | Type | Description |
 | -- | -- | -- |
-| [e219008ca](https://github.com/angular/components/commit/e219008cad3b08eb0960084a13824cd553d5ae65) | fix | **drag-drop:** last item not returned at initial index when sorting is disabled ([#23934](https://github.com/angular/components/pull/23934)) |
+| [c381a6c5a](https://github.com/angular/components/commit/c381a6c5ae1bd0b25e91384bc8bf03198064aa2b) | feat | **bidi:** support `auto` direction value ([#23906](https://github.com/angular/components/pull/23906)) |
 ### material
 | Commit | Type | Description |
 | -- | -- | -- |
 | [e7494314d](https://github.com/angular/components/commit/e7494314d96a216b2f0715dcc81b563af801f234) | feat | **core:** change ErrorStateMatcher to accept AbstractForm instead of FormControl ([#24012](https://github.com/angular/components/pull/24012)) |
-| [106b8a710](https://github.com/angular/components/commit/106b8a7101c33edeb5e4583768857cae10a748c7) | fix | **datepicker:** hover styles not disabled on touch devices ([#23915](https://github.com/angular/components/pull/23915)) |
-### cdk-experimental
+| [1b6c93571](https://github.com/angular/components/commit/1b6c93571c4615deb929f7b0e72c3e42478a31ec) | fix | **table:** set class and role on no data row ([#23749](https://github.com/angular/components/pull/23749)) |
+### google-maps
 | Commit | Type | Description |
 | -- | -- | -- |
-| [35cdf7cda](https://github.com/angular/components/commit/35cdf7cdaa4fd68e15cb242fd749296c7fd5608f) | fix | **column-resize:** Ensure resizable entity is not destroyed before applying min/max update ([#24007](https://github.com/angular/components/pull/24007)) |
-### material-experimental
-| Commit | Type | Description |
-| -- | -- | -- |
-| [2e40f7ce0](https://github.com/angular/components/commit/2e40f7ce0e41a889ac94b3db15cd76669412087e) | fix | **column-resize:** Update for MDC and spec changes ([#23908](https://github.com/angular/components/pull/23908)) |
-| [642a78940](https://github.com/angular/components/commit/642a7894066cce77994369b813f19b9eec1ee616) | fix | **mdc-checkbox:** reduce amount of emitted theme css ([#24004](https://github.com/angular/components/pull/24004)) |
-| [749edd8a9](https://github.com/angular/components/commit/749edd8a9f93cf9f3e19dfaabfad53a1129868a9) | fix | **mdc-slider:** throw error when thumb is missing ([#24061](https://github.com/angular/components/pull/24061)) |
+| [7dbe9a428](https://github.com/angular/components/commit/7dbe9a42829a2e71cca3363e9a97ec0ea45be276) | feat | Getting google.maps.Map instance ([#23856](https://github.com/angular/components/pull/23856)) |
 ### material-luxon-adapter
 | Commit | Type | Description |
 | -- | -- | -- |
 | [a52da04a8](https://github.com/angular/components/commit/a52da04a82f9394c832dfd0dfe9974858ecc761e) | feat | add option to set first day of week ([#24027](https://github.com/angular/components/pull/24027)) |
 ## Special Thanks
-Aristeidis Bampakos, Csaba Sandor, Ekkolon, Jiří Balcar, Karl Seamon, Kristiyan Kostadinov, Lukas Taake, Nathaniel, Paul Gschwendtner, Robin Richtsfeld and Wagner Maciel
+Amy Sorto, Andrew Seguin, Jeremy Elbourn, Jiří Balcar, Kristiyan Kostadinov, Lukas Taake, Miles Malerba, Paul Gschwendtner, Umer Naeem, Wagner Maciel and Zach Arend
 
 <!-- CHANGELOG SPLIT MARKER -->
 
@@ -53,27 +47,6 @@ Aristeidis Bampakos, Csaba Sandor, Ekkolon, Karl Seamon, Kristiyan Kostadinov, N
 
 <!-- CHANGELOG SPLIT MARKER -->
 
-<a name="13.1.0-next.3"></a>
-# 13.1.0-next.3 "plastic-animal" (2021-12-01)
-### cdk
-| Commit | Type | Description |
-| -- | -- | -- |
-| [02908ceb5d](https://github.com/angular/components/commit/02908ceb5d86a619a60bdfe4d8fdc503ae726cb2) | fix | **drag-drop:** remove boundary error ([#23966](https://github.com/angular/components/pull/23966)) |
-| [39921f4338](https://github.com/angular/components/commit/39921f43382e3abc90c14fd8602d0cf371239fce) | perf | **a11y:** tree-shake warnings in production ([#23967](https://github.com/angular/components/pull/23967)) |
-### material
-| Commit | Type | Description |
-| -- | -- | -- |
-| [7bbe68d580](https://github.com/angular/components/commit/7bbe68d5807b5e620763845a44cd68049553a950) | perf | **bottom-sheet:** do not run change detection when focusing element ([#23965](https://github.com/angular/components/pull/23965)) |
-| [738e514ec9](https://github.com/angular/components/commit/738e514ec98f4175bdd23b9496ea7e8d33de1ee6) | perf | **core:** tree shake sanity checks ([#23969](https://github.com/angular/components/pull/23969)) |
-### multiple
-| Commit | Type | Description |
-| -- | -- | -- |
-| [a5fbf3a5fc](https://github.com/angular/components/commit/a5fbf3a5fc8b4776d5b11afbec2a1eeabe45cd40) | fix | some experimental components not cleaned up completely ([#23994](https://github.com/angular/components/pull/23994)) |
-## Special Thanks
-Andrew Seguin, Artur Androsovych, Kristiyan Kostadinov, Paul Gschwendtner and Ruslan Lekhman
-
-<!-- CHANGELOG SPLIT MARKER -->
-
 <a name="13.0.3"></a>
 # 13.0.3 "cerammic-almanac" (2021-12-01)
 ### cdk
@@ -92,32 +65,6 @@ Andrew Seguin, Artur Androsovych, Kristiyan Kostadinov, Paul Gschwendtner and Ru
 | [f05a9c655a](https://github.com/angular/components/commit/f05a9c655a7a5f2e61dbf899337f19785d212e3d) | fix | some experimental components not cleaned up completely ([#23994](https://github.com/angular/components/pull/23994)) |
 ## Special Thanks
 Artur Androsovych, Kristiyan Kostadinov, Paul Gschwendtner and Ruslan Lekhman
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="13.1.0-next.2"></a>
-# 13.1.0-next.2 "putty-pomelo" (2021-11-17)
-### cdk
-| Commit | Type | Description |
-| -- | -- | -- |
-| [c381a6c5ae](https://github.com/angular/components/commit/c381a6c5ae1bd0b25e91384bc8bf03198064aa2b) | feat | **bidi:** support `auto` direction value ([#23906](https://github.com/angular/components/pull/23906)) |
-| [b9cda574c9](https://github.com/angular/components/commit/b9cda574c9f9b127b7b018212556678e4fd573c2) | fix | **drag-drop:** handle not working when it has a child inside shadow DOM |
-| [48df9d6788](https://github.com/angular/components/commit/48df9d6788c2bc4e7622755284b4901447a568bb) | fix | **testing:** fake events not propagating through shadow DOM |
-### material
-| Commit | Type | Description |
-| -- | -- | -- |
-| [6f1a1b7520](https://github.com/angular/components/commit/6f1a1b75201a6eeacf9b02f4ba35672c1e9b66b7) | fix | **datepicker:** Add aria-current="date" to current date ([#23714](https://github.com/angular/components/pull/23714)) |
-| [8cdd3d7c76](https://github.com/angular/components/commit/8cdd3d7c763113ed03cf6b6889fb41f40f57dda9) | fix | **tabs:** pagination sometimes incorrectly shown after zoom ([#23759](https://github.com/angular/components/pull/23759)) |
-### material-experimental
-| Commit | Type | Description |
-| -- | -- | -- |
-| [edc2aa353f](https://github.com/angular/components/commit/edc2aa353fab2cbb32841431571542edfd5f6b60) | fix | **mdc-list:** don't override focus styles with hover ([#23840](https://github.com/angular/components/pull/23840)) |
-### multiple
-| Commit | Type | Description |
-| -- | -- | -- |
-| [4350552f5c](https://github.com/angular/components/commit/4350552f5c145182c8fc17586d8a826c40481b59) | perf | don't emit fallbacks for CSS variables in experimental components ([#23912](https://github.com/angular/components/pull/23912)) |
-## Special Thanks
-ByzantineFailure, Dario Piotrowicz, Jeremy Elbourn, Joey Perrott, Kristiyan Kostadinov, Miles Malerba and Paul Gschwendtner
 
 <!-- CHANGELOG SPLIT MARKER -->
 
@@ -143,33 +90,6 @@ ByzantineFailure, Dario Piotrowicz, Jeremy Elbourn, Joey Perrott, Kristiyan Kost
 | [e5c589d473](https://github.com/angular/components/commit/e5c589d47313da99a438e58e5154e314513b0ffa) | perf | don't emit fallbacks for CSS variables in experimental components ([#23912](https://github.com/angular/components/pull/23912)) |
 ## Special Thanks
 ByzantineFailure, Dario Piotrowicz, Jeremy Elbourn, Joey Perrott, Kristiyan Kostadinov, Miles Malerba and Paul Gschwendtner
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="13.1.0-next.1"></a>
-# 13.1.0-next.1 "tulle-turkey" (2021-11-11)
-### cdk
-| Commit | Type | Description |
-| -- | -- | -- |
-| [1267263a83](https://github.com/angular/components/commit/1267263a83d039a62011ac189cdf81b772a39310) | fix | **overlay:** remove Optional decorator in ConnectedOverlayPositionChange constructor ([#23735](https://github.com/angular/components/pull/23735)) |
-### material
-| Commit | Type | Description |
-| -- | -- | -- |
-| [2c637d3129](https://github.com/angular/components/commit/2c637d3129865d3e3e475fea3f1cd3353e06394f) | fix | **chips:** add selected indication in high contrast mode ([#23828](https://github.com/angular/components/pull/23828)) |
-| [72d2e5af89](https://github.com/angular/components/commit/72d2e5af89944fe30a11e7487c17ffc3ce863dc6) | fix | **chips:** Declare that MatChipInput.inputElement is always defined ([#23868](https://github.com/angular/components/pull/23868)) |
-| [ff7fd485d6](https://github.com/angular/components/commit/ff7fd485d61f1ac38df11ff49825d03db44eac54) | fix | **core:** test environment check not picking up jest ([#23722](https://github.com/angular/components/pull/23722)) |
-| [a6d41413cc](https://github.com/angular/components/commit/a6d41413cca4ce446c3eebc03318c880f3b8ef1a) | fix | **form-field:** update outline gap when prefix changes ([#23869](https://github.com/angular/components/pull/23869)) |
-| [b533e619ec](https://github.com/angular/components/commit/b533e619ec724ec76deffc67ff6cf923bb7d9c91) | fix | **slide-toggle:** remove tabindex from host node ([#23891](https://github.com/angular/components/pull/23891)) |
-### google-maps
-| Commit | Type | Description |
-| -- | -- | -- |
-| [7dbe9a4282](https://github.com/angular/components/commit/7dbe9a42829a2e71cca3363e9a97ec0ea45be276) | feat | Getting google.maps.Map instance ([#23856](https://github.com/angular/components/pull/23856)) |
-### multiple
-| Commit | Type | Description |
-| -- | -- | -- |
-| [8cb0f12924](https://github.com/angular/components/commit/8cb0f129243af31545f884668fdcd91f772272c4) | fix | update to angular v13.0.1 to emit proper partial compilation output ([#23951](https://github.com/angular/components/pull/23951)) |
-## Special Thanks
-Amy Sorto, Jeremy Elbourn, Joey Perrott, Kristiyan Kostadinov, Marco Marche, Miles Malerba, Paul Gschwendtner, Ruslan Lekhman and Umer Naeem
 
 <!-- CHANGELOG SPLIT MARKER -->
 
@@ -204,17 +124,6 @@ Jeremy Elbourn, Joey Perrott, Kristiyan Kostadinov, Marco Marche, Miles Malerba,
 | [a0cf5220f8](https://github.com/angular/components/commit/a0cf5220f8bad29c3ce979d25b96177cb79d390f) | fix | **core:** test environment check not picking up jest ([#23722](https://github.com/angular/components/pull/23722)) ([#23924](https://github.com/angular/components/pull/23924)) |
 ## Special Thanks
 Amy Sorto, Kristiyan Kostadinov, Paul Gschwendtner and Suguru Inatomi
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="13.1.0-next.0"></a>
-# 13.1.0-next.0 "tungsten-dodecahedron" (2021-11-03)
-### material
-| Commit | Type | Description |
-| -- | -- | -- |
-| [1b6c93571c](https://github.com/angular/components/commit/1b6c93571c4615deb929f7b0e72c3e42478a31ec) | fix | **table:** set class and role on no data row ([#23749](https://github.com/angular/components/pull/23749)) |
-## Special Thanks
-Amy Sorto, Andrew Seguin, Jeremy Elbourn, Kristiyan Kostadinov, Paul Gschwendtner, Wagner Maciel and Zach Arend
 
 <!-- CHANGELOG SPLIT MARKER -->
 
