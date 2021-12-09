@@ -1,7 +1,45 @@
 @use '../../material/core/theming/theming';
+@use '../../material/core/typography/typography';
 @use './option/option-theme';
 @use './option/optgroup-theme';
 @use './elevation';
+
+
+@mixin color($config-or-theme) {
+  $config: theming.get-color-config($config-or-theme);
+
+  @include option-theme.color($config);
+  @include optgroup-theme.color($config);
+
+  @if $config != null {
+    // Provides external CSS classes for each elevation value. Each CSS class is formatted as
+    // `mat-mdc-elevation-z$zValue` where `$zValue` corresponds to the z-space to which the
+    // element is elevated.
+    @for $zValue from 0 through 24 {
+      $selector: elevation.$prefix + $zValue;
+      // We need the `mat-mdc-elevation-specific`, because some MDC mixins
+      // come with elevation baked in and we don't have a way of removing it.
+      .#{$selector}, .mat-mdc-elevation-specific.#{$selector} {
+        @include elevation.private-theme-elevation($zValue, $config);
+      }
+    }
+  }
+}
+
+@mixin typography($config-or-theme) {
+  $config: typography.private-typography-to-2018-config(
+          theming.get-typography-config($config-or-theme));
+
+  @include option-theme.typography($config-or-theme);
+  @include optgroup-theme.typography($config-or-theme);
+}
+
+@mixin density($config-or-theme) {
+  $density-scale: theming.get-density-config($config-or-theme);
+
+  @include option-theme.density($density-scale);
+  @include optgroup-theme.density($density-scale);
+}
 
 // Mixin that renders all of the core styles that depend on the theme.
 @mixin theme($theme-or-color-config) {
@@ -12,22 +50,17 @@
   // the imported themes (such as `mat-ripple-theme`) should not report again.
   @include theming.private-check-duplicate-theme-styles($theme, 'mat-mdc-core') {
     $color: theming.get-color-config($theme);
-
-    @include option-theme.theme($theme);
-    @include optgroup-theme.theme($theme);
+    $density: theming.get-density-config($theme);
+    $typography: theming.get-typography-config($theme);
 
     @if $color != null {
-      // Provides external CSS classes for each elevation value. Each CSS class is formatted as
-      // `mat-mdc-elevation-z$zValue` where `$zValue` corresponds to the z-space to which the
-      // element is elevated.
-      @for $zValue from 0 through 24 {
-        $selector: elevation.$prefix + $zValue;
-        // We need the `mat-mdc-elevation-specific`, because some MDC mixins
-        // come with elevation baked in and we don't have a way of removing it.
-        .#{$selector}, .mat-mdc-elevation-specific.#{$selector} {
-          @include elevation.private-theme-elevation($zValue, $color);
-        }
-      }
+      @include color($color);
+    }
+    @if $density != null {
+      @include density($density);
+    }
+    @if $typography != null {
+      @include typography($typography);
     }
   }
 }
