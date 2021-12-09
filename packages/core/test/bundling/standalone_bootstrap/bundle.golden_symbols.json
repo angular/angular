@@ -462,12 +462,6 @@
     "name": "detachMovedView"
   },
   {
-    "name": "detectChangesInRootView"
-  },
-  {
-    "name": "detectChangesInternal"
-  },
-  {
     "name": "domRendererFactory3"
   },
   {
@@ -669,9 +663,6 @@
     "name": "isImportedNgModuleProviders"
   },
   {
-    "name": "isInCheckNoChangesMode"
-  },
-  {
     "name": "isLContainer"
   },
   {
@@ -847,9 +838,6 @@
   },
   {
     "name": "setInjectImplementation"
-  },
-  {
-    "name": "setIsInCheckNoChangesMode"
   },
   {
     "name": "setSelectedIndex"
