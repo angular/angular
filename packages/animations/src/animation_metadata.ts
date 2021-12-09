@@ -926,7 +926,7 @@ export function keyframes(steps: AnimationStyleMetadata[]): AnimationKeyframesSe
  *
  *    _Example:_
  *      ```typescript
- *        transition(':increment', query('@counter', animateChild())),
+ *        transition(':increment', query('@counter', animateChild()))
  *      ```
  *
  *  - a sequence of any of the above divided by commas, which indicates that transition's animations
@@ -971,28 +971,48 @@ export function keyframes(steps: AnimationStyleMetadata[]): AnimationKeyframesSe
  * CSS styles to ensure that the element is in the correct final state.
  *
  *
- * ### Usage Example
+ * ### Usage Examples
  *
- * ```HTML
- * <div [@myAnimationTrigger]="myStatusExp">
- *  ...
- * </div>
- * ```
+ *  - Transition animations applied based on
+ *    the trigger's expression value
  *
- * ```typescript
- * trigger("myAnimationTrigger", [
- *  // states
- *  state("on", style({ backgroundColor: "green" })),
- *  state("off", style({ backgroundColor: "grey" })),
- *  // transition executed when myStatusExp goes from
- *  // the "on" value to the "off" one, or from "open"
- *  // to "closed"
- *  transition("on => off, open => closed", animate(500)),
- *  // transition executed when the myStatusExp value
- *  // changes from/to any value to/from "error"
- *  transition("* <=> error", query('.indicator', animateChild()))
- * ])
- * ```
+ *   ```HTML
+ *   <div [@myAnimationTrigger]="myStatusExp">
+ *    ...
+ *   </div>
+ *   ```
+ *
+ *   ```typescript
+ *   trigger("myAnimationTrigger", [
+ *     ..., // states
+ *     transition("on => off, open => closed", animate(500)),
+ *     transition("* <=> error", query('.indicator', animateChild()))
+ *   ])
+ *   ```
+ *
+ *  - Transition animations applied based on custom logic dependent
+ *    on the trigger's expression value and provided parameters
+ *
+ *    ```HTML
+ *    <div [@myAnimationTrigger]="{
+ *     value: stepName,
+ *     params: { target: currentTarget }
+ *    }">
+ *     ...
+ *    </div>
+ *    ```
+ *
+ *    ```typescript
+ *    trigger("myAnimationTrigger", [
+ *      ..., // states
+ *      transition(
+ *        (fromState, toState, _element, params) =>
+ *          ['firststep', 'laststep'].includes(fromState.toLowerCase())
+ *          && toState === params?.['target'],
+ *        animate('1s')
+ *      )
+ *    ])
+ *    ```
  *
  * @publicApi
  **/
