@@ -1,3 +1,10 @@
+<a name="13.2.0-next.0"></a>
+# 13.2.0-next.0 (2021-12-09)
+
+There have been no changes since the previous `13.1.0` release.
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="13.1.0"></a>
 # 13.1.0 (2021-12-09)
 ## Deprecations
