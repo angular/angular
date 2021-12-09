@@ -243,9 +243,6 @@
     "name": "isCurrentTNodeParent"
   },
   {
-    "name": "isInCheckNoChangesMode"
-  },
-  {
     "name": "isInlineTemplate"
   },
   {
