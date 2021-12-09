@@ -8,7 +8,6 @@ ng_ts_project(
         "about.component.ts",
         "about.module.ts",
     ],
-    tsconfig = "//:tsconfig.json",
     deps = [
         "@npm//@angular/core",
         "@npm//@angular/router",

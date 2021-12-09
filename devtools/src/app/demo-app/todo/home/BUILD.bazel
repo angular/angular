@@ -25,7 +25,6 @@ ng_ts_project(
         "todo.component.html",
         ":home-styles",
     ],
-    tsconfig = "//:tsconfig.json",
     deps = [
         "@npm//@angular/common",
         "@npm//@angular/core",
