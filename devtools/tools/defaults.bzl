@@ -25,8 +25,6 @@ def karma_web_test_suite(name, **kwargs):
     if not hasattr(kwargs, "browsers"):
         kwargs["tags"] = ["native"] + kwargs.get("tags", [])
         kwargs["browsers"] = [
-            # Note: when changing the browser names here, also update the "yarn test"
-            # script to reflect the new browser names.
             "@npm//@angular/dev-infra-private/bazel/browsers/chromium:chromium",
 
             # todo(aleksanderbodurri): enable when firefox support is done
