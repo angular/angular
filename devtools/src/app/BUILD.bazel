@@ -18,7 +18,6 @@ ng_ts_project(
         "app.component.html",
         ":app-component-styles",
     ],
-    tsconfig = "//:tsconfig.json",
     deps = [
         "//projects/ng-devtools",
         "//src:demo-application-environment",

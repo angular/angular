@@ -254,7 +254,6 @@ html_insert_assets(
 ng_ts_project(
     name = "demo",
     srcs = ["main.ts"],
-    tsconfig = "//:tsconfig.json",
     deps = [
         "//src/app",
         "//src/environments",

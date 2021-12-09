@@ -7,7 +7,6 @@ ts_project(
     srcs = [
         "environment.ts",
     ],
-    tsconfig = "//:tsconfig.json",
     deps = [
         "@npm//@angular/platform-browser",
     ],

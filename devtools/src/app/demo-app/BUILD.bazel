@@ -42,7 +42,6 @@ ng_ts_project(
         ":demo-app-component-styles",
         ":demo-app-styles",
     ],
-    tsconfig = "//:tsconfig.json",
     deps = [
         "//projects/ng-devtools-backend",
         "//src:zone-unaware-iframe-message-bus",

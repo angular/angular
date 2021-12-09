@@ -20,7 +20,6 @@ ng_ts_project(
         "dialog.component.html",
         ":app-todo-component-styles",
     ],
-    tsconfig = "//:tsconfig.json",
     deps = [
         "//src/app/demo-app/todo/about",
         "//src/app/demo-app/todo/home",
