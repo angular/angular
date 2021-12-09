@@ -1,5 +1,6 @@
-import { Pipe, PipeTransform } from '@angular/core';
-import { Todo } from './todo';
+import {Pipe, PipeTransform} from '@angular/core';
+
+import {Todo} from './todo';
 
 export const enum TodoFilter {
   All = 'all',

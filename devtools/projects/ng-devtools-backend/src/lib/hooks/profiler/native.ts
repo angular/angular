@@ -1,8 +1,10 @@
-import { ɵProfilerEvent } from '@angular/core';
-import { getDirectiveHostElement } from '../../directive-forest';
-import { runOutsideAngular } from '../../utils';
-import { IdentityTracker, NodeArray } from '../identity-tracker';
-import { getLifeCycleName, Hooks, Profiler } from './shared';
+import {ɵProfilerEvent} from '@angular/core';
+
+import {getDirectiveHostElement} from '../../directive-forest';
+import {runOutsideAngular} from '../../utils';
+import {IdentityTracker, NodeArray} from '../identity-tracker';
+
+import {getLifeCycleName, Hooks, Profiler} from './shared';
 
 type ProfilerCallback = (event: ɵProfilerEvent, instanceOrLView: {}, hookOrListener: any) => void;
 
@@ -10,7 +12,7 @@ type ProfilerCallback = (event: ɵProfilerEvent, instanceOrLView: {}, hookOrList
 export class NgProfiler extends Profiler {
   private _tracker = IdentityTracker.getInstance();
   private _callbacks: ProfilerCallback[] = [];
-  private _lastDirectiveInstance: {} | null = null;
+  private _lastDirectiveInstance: {}|null = null;
 
   constructor(config: Partial<Hooks> = {}) {
     super(config);
@@ -26,9 +28,9 @@ export class NgProfiler extends Profiler {
 
   private _initialize(): void {
     const ng = (window as any).ng;
-    ng.ɵsetProfiler((event: ɵProfilerEvent, instanceOrLView: {}, hookOrListener: any) =>
-      this._callbacks.forEach((cb) => cb(event, instanceOrLView, hookOrListener))
-    );
+    ng.ɵsetProfiler(
+        (event: ɵProfilerEvent, instanceOrLView: {}, hookOrListener: any) =>
+            this._callbacks.forEach((cb) => cb(event, instanceOrLView, hookOrListener)));
   }
 
   private _setProfilerCallback(callback: ProfilerCallback): void {
@@ -41,7 +43,7 @@ export class NgProfiler extends Profiler {
 
   onIndexForest(newNodes: NodeArray, removedNodes: NodeArray): void {
     newNodes.forEach((node) => {
-      const { directive, isComponent } = node;
+      const {directive, isComponent} = node;
 
       const position = this._tracker.getDirectivePosition(directive);
       const id = this._tracker.getDirectiveId(directive);
@@ -49,7 +51,7 @@ export class NgProfiler extends Profiler {
     });
 
     removedNodes.forEach((node) => {
-      const { directive, isComponent } = node;
+      const {directive, isComponent} = node;
 
       const position = this._tracker.getDirectivePosition(directive);
       const id = this._tracker.getDirectiveId(directive);
@@ -94,11 +96,9 @@ export class NgProfiler extends Profiler {
     }
 
     this._onChangeDetectionStart(
-      this._lastDirectiveInstance,
-      getDirectiveHostElement(this._lastDirectiveInstance),
-      this._tracker.getDirectiveId(this._lastDirectiveInstance),
-      this._tracker.getDirectivePosition(this._lastDirectiveInstance)
-    );
+        this._lastDirectiveInstance, getDirectiveHostElement(this._lastDirectiveInstance),
+        this._tracker.getDirectiveId(this._lastDirectiveInstance),
+        this._tracker.getDirectivePosition(this._lastDirectiveInstance));
   }
 
   [ɵProfilerEvent.TemplateUpdateEnd](context: any, _hookOrListener: any): void {
@@ -111,11 +111,9 @@ export class NgProfiler extends Profiler {
     }
 
     this._onChangeDetectionEnd(
-      this._lastDirectiveInstance,
-      getDirectiveHostElement(this._lastDirectiveInstance),
-      this._tracker.getDirectiveId(this._lastDirectiveInstance),
-      this._tracker.getDirectivePosition(this._lastDirectiveInstance)
-    );
+        this._lastDirectiveInstance, getDirectiveHostElement(this._lastDirectiveInstance),
+        this._tracker.getDirectiveId(this._lastDirectiveInstance),
+        this._tracker.getDirectivePosition(this._lastDirectiveInstance));
   }
 
   [ɵProfilerEvent.LifecycleHookStart](directive: any, hook: any): void {

@@ -1,4 +1,4 @@
-import { arrayEquals } from 'shared-utils';
+import {arrayEquals} from 'shared-utils';
 
 describe('arrayEquals', () => {
   let a;

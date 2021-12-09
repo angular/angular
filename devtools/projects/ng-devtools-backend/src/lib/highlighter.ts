@@ -4,7 +4,7 @@ let overlayContent: HTMLElement;
 declare const ng: any;
 
 interface Type<T> extends Function {
-  new (...args: any[]): T;
+  new(...args: any[]): T;
 }
 
 export const DEV_TOOLS_HIGHLIGHT_NODE_ID = '____ngDevToolsHighlight';
@@ -34,25 +34,26 @@ function init(): void {
   overlay.appendChild(overlayContent);
 }
 
-export const findComponentAndHost = (el: Node | undefined): { component: any; host: HTMLElement | null } => {
-  if (!el) {
-    return { component: null, host: null };
-  }
-  while (el) {
-    const component = el instanceof HTMLElement && ng.getComponent(el);
-    if (component) {
-      return { component, host: el as HTMLElement };
-    }
-    if (!el.parentElement) {
-      break;
-    }
-    el = el.parentElement;
-  }
-  return { component: null, host: null };
-};
+export const findComponentAndHost =
+    (el: Node|undefined): {component: any; host: HTMLElement | null} => {
+      if (!el) {
+        return {component: null, host: null};
+      }
+      while (el) {
+        const component = el instanceof HTMLElement && ng.getComponent(el);
+        if (component) {
+          return {component, host: el as HTMLElement};
+        }
+        if (!el.parentElement) {
+          break;
+        }
+        el = el.parentElement;
+      }
+      return {component: null, host: null};
+    };
 
 // Todo(aleksanderbodurri): this should not be part of the highlighter, move this somewhere else
-export const getDirectiveName = (dir: Type<unknown> | undefined | null): string => {
+export const getDirectiveName = (dir: Type<unknown>|undefined|null): string => {
   if (dir) {
     return dir.constructor.name;
   }
@@ -93,10 +94,11 @@ export function inDoc(node: any): boolean {
   }
   const doc = node.ownerDocument.documentElement;
   const parent = node.parentNode;
-  return doc === node || doc === parent || !!(parent && parent.nodeType === 1 && doc.contains(parent));
+  return doc === node || doc === parent ||
+      !!(parent && parent.nodeType === 1 && doc.contains(parent));
 }
 
-export function getComponentRect(el: Node): DOMRect | ClientRect | undefined {
+export function getComponentRect(el: Node): DOMRect|ClientRect|undefined {
   if (!(el instanceof HTMLElement)) {
     return;
   }
@@ -114,16 +116,15 @@ interface OverlayDimensionsAndPosition {
 }
 
 function showOverlay(
-  { width = 0, height = 0, top = 0, left = 0 }: OverlayDimensionsAndPosition,
-  content: any[] = []
-): void {
+    {width = 0, height = 0, top = 0, left = 0}: OverlayDimensionsAndPosition,
+    content: any[] = []): void {
   overlay.style.width = ~~width + 'px';
   overlay.style.height = ~~height + 'px';
   overlay.style.top = ~~top + 'px';
   overlay.style.left = ~~left + 'px';
 
   while (overlayContent.children.length) {
-    const { children } = overlayContent;
+    const {children} = overlayContent;
     overlayContent.removeChild(children[children.length - 1]);
   }
 

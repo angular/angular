@@ -1,4 +1,4 @@
-import { RTreeStrategy } from './render-tree';
+import {RTreeStrategy} from './render-tree';
 
 describe('render tree extraction', () => {
   let treeStrategy: RTreeStrategy;
@@ -11,7 +11,7 @@ describe('render tree extraction', () => {
     componentMap = new Map();
 
     (window as any).ng = {
-      getDirectiveMetadata(): void {},
+      getDirectiveMetadata(): void{},
       getComponent(element: Element): any {
         return componentMap.get(element);
       },

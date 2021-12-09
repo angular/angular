@@ -1,11 +1,12 @@
-import { NgModule } from '@angular/core';
-import { RouterModule } from '@angular/router';
-import { TodosComponent } from './todos.component';
-import { TodoComponent } from './todo.component';
-import { TodosFilter } from './todos.pipe';
-import { TooltipDirective } from './/tooltip.directive';
-import { CommonModule } from '@angular/common';
-import { SamplePipe } from './sample.pipe';
+import {CommonModule} from '@angular/common';
+import {NgModule} from '@angular/core';
+import {RouterModule} from '@angular/router';
+
+import {TooltipDirective} from './/tooltip.directive';
+import {SamplePipe} from './sample.pipe';
+import {TodoComponent} from './todo.component';
+import {TodosComponent} from './todos.component';
+import {TodosFilter} from './todos.pipe';
 
 @NgModule({
   imports: [
@@ -21,4 +22,5 @@ import { SamplePipe } from './sample.pipe';
   declarations: [SamplePipe, TodosComponent, TodoComponent, TodosFilter, TooltipDirective],
   exports: [TodosComponent],
 })
-export class HomeModule {}
+export class HomeModule {
+}

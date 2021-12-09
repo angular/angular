@@ -1,11 +1,12 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { MessageBus, Events, ProfilerFrame } from 'protocol';
-import { FileApiService } from './file-api-service';
-import { MatDialog } from '@angular/material/dialog';
-import { ProfilerImportDialogComponent } from './profiler-import-dialog.component';
-import { Subject, Subscription } from 'rxjs';
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {MatDialog} from '@angular/material/dialog';
+import {Events, MessageBus, ProfilerFrame} from 'protocol';
+import {Subject, Subscription} from 'rxjs';
 
-type State = 'idle' | 'recording' | 'visualizing';
+import {FileApiService} from './file-api-service';
+import {ProfilerImportDialogComponent} from './profiler-import-dialog.component';
+
+type State = 'idle'|'recording'|'visualizing';
 
 const SUPPORTED_VERSIONS = [1];
 const PROFILER_VERSION = 1;
@@ -25,10 +26,8 @@ export class ProfilerComponent implements OnInit, OnDestroy {
   private _buffer: ProfilerFrame[] = [];
 
   constructor(
-    private _fileApiService: FileApiService,
-    private _messageBus: MessageBus<Events>,
-    public dialog: MatDialog
-  ) {}
+      private _fileApiService: FileApiService, private _messageBus: MessageBus<Events>,
+      public dialog: MatDialog) {}
 
   startRecording(): void {
     this.state = 'recording';
@@ -60,7 +59,7 @@ export class ProfilerComponent implements OnInit, OnDestroy {
         console.error(importedFile.error);
         this.dialog.open(ProfilerImportDialogComponent, {
           width: '600px',
-          data: { status: 'ERROR', errorMessage: importedFile.error },
+          data: {status: 'ERROR', errorMessage: importedFile.error},
         });
 
         return;
@@ -69,7 +68,11 @@ export class ProfilerComponent implements OnInit, OnDestroy {
       if (!SUPPORTED_VERSIONS.includes(importedFile.version)) {
         const processDataDialog = this.dialog.open(ProfilerImportDialogComponent, {
           width: '600px',
-          data: { importedVersion: importedFile.version, profilerVersion: PROFILER_VERSION, status: 'INVALID_VERSION' },
+          data: {
+            importedVersion: importedFile.version,
+            profilerVersion: PROFILER_VERSION,
+            status: 'INVALID_VERSION'
+          },
         });
 
         processDataDialog.afterClosed().subscribe((result) => {

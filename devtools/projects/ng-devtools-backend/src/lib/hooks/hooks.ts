@@ -1,7 +1,9 @@
-import { ComponentTreeNode } from '../interfaces';
-import { ElementPosition } from 'protocol';
-import { IdentityTracker, IndexedNode } from './identity-tracker';
-import { Profiler, selectProfilerStrategy } from './profiler';
+import {ElementPosition} from 'protocol';
+
+import {ComponentTreeNode} from '../interfaces';
+
+import {IdentityTracker, IndexedNode} from './identity-tracker';
+import {Profiler, selectProfilerStrategy} from './profiler';
 
 /**
  *  Class to hook into directive forest.
@@ -18,7 +20,7 @@ export class DirectiveForestHooks {
 
   profiler: Profiler = selectProfilerStrategy();
 
-  getDirectivePosition(dir: any): ElementPosition | undefined {
+  getDirectivePosition(dir: any): ElementPosition|undefined {
     const result = this._tracker.getDirectivePosition(dir);
     if (result === undefined) {
       console.warn('Unable to find position of', dir);
@@ -26,7 +28,7 @@ export class DirectiveForestHooks {
     return result;
   }
 
-  getDirectiveId(dir: any): number | undefined {
+  getDirectiveId(dir: any): number|undefined {
     const result = this._tracker.getDirectiveId(dir);
     if (result === undefined) {
       console.warn('Unable to find ID of', result);
@@ -47,7 +49,7 @@ export class DirectiveForestHooks {
   }
 
   indexForest(): void {
-    const { newNodes, removedNodes, indexedForest, directiveForest } = this._tracker.index();
+    const {newNodes, removedNodes, indexedForest, directiveForest} = this._tracker.index();
     this._indexedForest = indexedForest;
     this._forest = directiveForest;
     this.profiler.onIndexForest(newNodes, removedNodes);

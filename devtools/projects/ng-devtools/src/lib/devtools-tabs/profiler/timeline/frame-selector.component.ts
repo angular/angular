@@ -1,8 +1,10 @@
-import { Component, ElementRef, EventEmitter, Input, Output, ViewChild, OnDestroy, OnInit } from '@angular/core';
-import { GraphNode } from './record-formatter/record-formatter';
-import { Observable, Subscription } from 'rxjs';
-import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
-import { TabUpdate } from '../../tab-update/index';
+import {CdkVirtualScrollViewport} from '@angular/cdk/scrolling';
+import {Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild} from '@angular/core';
+import {Observable, Subscription} from 'rxjs';
+
+import {TabUpdate} from '../../tab-update/index';
+
+import {GraphNode} from './record-formatter/record-formatter';
 
 const ITEM_WIDTH = 30;
 
@@ -13,21 +15,21 @@ const ITEM_WIDTH = 30;
 })
 export class FrameSelectorComponent implements OnInit, OnDestroy {
   @ViewChild('barContainer') barContainer: ElementRef;
-  @Input() set graphData$(graphData: Observable<GraphNode[]>) {
+  @Input()
+  set graphData$(graphData: Observable<GraphNode[]>) {
     this._graphData$ = graphData;
-    this._graphDataSubscription = this._graphData$.subscribe((items) =>
-      setTimeout(() => {
-        this.frameCount = items.length;
-        this.viewport.scrollToIndex(items.length);
-      })
-    );
+    this._graphDataSubscription =
+        this._graphData$.subscribe((items) => setTimeout(() => {
+                                     this.frameCount = items.length;
+                                     this.viewport.scrollToIndex(items.length);
+                                   }));
   }
 
   get graphData$(): Observable<GraphNode[]> {
     return this._graphData$;
   }
 
-  @Output() selectFrames = new EventEmitter<{ indexes: number[] }>();
+  @Output() selectFrames = new EventEmitter<{indexes: number[]}>();
 
   @ViewChild(CdkVirtualScrollViewport) viewport: CdkVirtualScrollViewport;
 
@@ -36,7 +38,7 @@ export class FrameSelectorComponent implements OnInit, OnDestroy {
   selectedFrameIndexes = new Set<number>();
   frameCount: number;
 
-  private _viewportScrollState = { scrollLeft: 0, xCoordinate: 0, isDragScrolling: false };
+  private _viewportScrollState = {scrollLeft: 0, xCoordinate: 0, isDragScrolling: false};
 
   get itemWidth(): number {
     return ITEM_WIDTH;
@@ -80,7 +82,7 @@ export class FrameSelectorComponent implements OnInit, OnDestroy {
     const sortedIndexes = indexArray.sort((a, b) => a - b);
 
     const groups: number[][] = [];
-    let prev: number | null = null;
+    let prev: number|null = null;
 
     for (const index of sortedIndexes) {
       // First iteration: create initial group and set prev variable to the first index
@@ -100,38 +102,41 @@ export class FrameSelectorComponent implements OnInit, OnDestroy {
       prev = index;
     }
 
-    return groups
-      .filter((group) => group.length > 0)
-      .map((group) => (group.length === 1 ? group[0] + 1 : `${group[0] + 1}-${group[group.length - 1] + 1}`))
-      .join(', ');
+    return groups.filter((group) => group.length > 0)
+        .map(
+            (group) =>
+                (group.length === 1 ? group[0] + 1 :
+                                      `${group[0] + 1}-${group[group.length - 1] + 1}`))
+        .join(', ');
   }
 
   move(value: number): void {
     const newVal = this.startFrameIndex + value;
     this.selectedFrameIndexes = new Set([newVal]);
     if (newVal > -1 && newVal < this.frameCount) {
-      this._selectFrames({ indexes: this.selectedFrameIndexes });
+      this._selectFrames({indexes: this.selectedFrameIndexes});
     }
   }
 
-  private _selectFrames({ indexes }: { indexes: Set<number> }): void {
+  private _selectFrames({indexes}: {indexes: Set<number>}): void {
     const sortedIndexes = [...indexes].sort((a, b) => a - b);
     this.startFrameIndex = sortedIndexes[0];
     this.endFrameIndex = sortedIndexes[sortedIndexes.length - 1];
     this._ensureVisible(this.startFrameIndex);
-    this.selectFrames.emit({ indexes: sortedIndexes });
+    this.selectFrames.emit({indexes: sortedIndexes});
   }
 
   handleFrameSelection(idx: number, event: MouseEvent): void {
-    const { shiftKey, ctrlKey, metaKey } = event;
+    const {shiftKey, ctrlKey, metaKey} = event;
 
     if (shiftKey) {
       const [start, end] = [Math.min(this.startFrameIndex, idx), Math.max(this.endFrameIndex, idx)];
-      this.selectedFrameIndexes = new Set(Array.from(Array(end - start + 1), (_, index) => index + start));
+      this.selectedFrameIndexes =
+          new Set(Array.from(Array(end - start + 1), (_, index) => index + start));
     } else if (ctrlKey || metaKey) {
       if (this.selectedFrameIndexes.has(idx)) {
         if (this.selectedFrameIndexes.size === 1) {
-          return; // prevent deselection when only one frame is selected
+          return;  // prevent deselection when only one frame is selected
         }
 
         this.selectedFrameIndexes.delete(idx);
@@ -142,7 +147,7 @@ export class FrameSelectorComponent implements OnInit, OnDestroy {
       this.selectedFrameIndexes = new Set([idx]);
     }
 
-    this._selectFrames({ indexes: this.selectedFrameIndexes });
+    this._selectFrames({indexes: this.selectedFrameIndexes});
   }
 
   private _ensureVisible(index: number): void {
@@ -156,9 +161,9 @@ export class FrameSelectorComponent implements OnInit, OnDestroy {
     const right = left + scrollParent.offsetWidth;
     const itemLeft = index * this.itemWidth;
     if (itemLeft < left) {
-      scrollParent.scrollTo({ left: itemLeft });
+      scrollParent.scrollTo({left: itemLeft});
     } else if (right < itemLeft + this.itemWidth) {
-      scrollParent.scrollTo({ left: itemLeft - scrollParent.offsetWidth + this.itemWidth });
+      scrollParent.scrollTo({left: itemLeft - scrollParent.offsetWidth + this.itemWidth});
     }
   }
 
@@ -181,6 +186,7 @@ export class FrameSelectorComponent implements OnInit, OnDestroy {
 
     const dragScrollSpeed = 2;
     const dx = event.clientX - this._viewportScrollState.xCoordinate;
-    this.viewport.elementRef.nativeElement.scrollLeft = this._viewportScrollState.scrollLeft - dx * dragScrollSpeed;
+    this.viewport.elementRef.nativeElement.scrollLeft =
+        this._viewportScrollState.scrollLeft - dx * dragScrollSpeed;
   }
 }

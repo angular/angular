@@ -1,6 +1,7 @@
-import { Component, EventEmitter, Output, ChangeDetectorRef, OnInit, OnDestroy } from '@angular/core';
-import { Todo } from './todo';
-import { TodoFilter } from './todos.pipe';
+import {ChangeDetectorRef, Component, EventEmitter, OnDestroy, OnInit, Output} from '@angular/core';
+
+import {Todo} from './todo';
+import {TodoFilter} from './todos.pipe';
 
 const fib = (n: number) => {
   if (n === 1 || n === 2) {
@@ -68,7 +69,7 @@ export class TodosComponent implements OnInit, OnDestroy {
       completed: false,
       label: input.value,
     };
-    const result: Todo = { ...todo, id: Math.random().toString() };
+    const result: Todo = {...todo, id: Math.random().toString()};
     this.todos.push(result);
     input.value = '';
   }

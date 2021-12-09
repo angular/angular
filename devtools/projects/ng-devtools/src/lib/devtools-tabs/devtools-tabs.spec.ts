@@ -1,7 +1,9 @@
-import { DevToolsTabsComponent } from './devtools-tabs.component';
-import { ApplicationEnvironment } from '../application-environment/index';
-import { Events, MessageBus } from 'protocol';
-import { TabUpdate } from './tab-update/index';
+import {Events, MessageBus} from 'protocol';
+
+import {ApplicationEnvironment} from '../application-environment/index';
+
+import {DevToolsTabsComponent} from './devtools-tabs.component';
+import {TabUpdate} from './tab-update/index';
 
 describe('DevtoolsTabsComponent', () => {
   let messageBusMock: MessageBus<Events>;
@@ -15,11 +17,7 @@ describe('DevtoolsTabsComponent', () => {
     mockThemeService = {};
 
     comp = new DevToolsTabsComponent(
-      new TabUpdate(),
-      mockThemeService as any,
-      messageBusMock,
-      applicationEnvironmentMock
-    );
+        new TabUpdate(), mockThemeService as any, messageBusMock, applicationEnvironmentMock);
   });
 
   it('should create instance from class', () => {

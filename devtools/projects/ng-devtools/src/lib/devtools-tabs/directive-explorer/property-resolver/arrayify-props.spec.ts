@@ -1,5 +1,6 @@
-import { PropType } from 'protocol';
-import { arrayifyProps } from './arrayify-props';
+import {PropType} from 'protocol';
+
+import {arrayifyProps} from './arrayify-props';
 
 describe('arrayify', () => {
   it('should return an array from prop object', () => {

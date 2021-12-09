@@ -1,11 +1,7 @@
-import {
-  NESTED_FORMATTED_FLAMEGRAPH_RECORD,
-  NESTED_RECORD,
-  SIMPLE_FORMATTED_FLAMEGRAPH_RECORD,
-  SIMPLE_RECORD,
-} from '../record-formatter-spec-constants';
-import { FlamegraphFormatter, FlamegraphNode } from './flamegraph-formatter';
-import { AppEntry } from '../record-formatter';
+import {AppEntry} from '../record-formatter';
+import {NESTED_FORMATTED_FLAMEGRAPH_RECORD, NESTED_RECORD, SIMPLE_FORMATTED_FLAMEGRAPH_RECORD, SIMPLE_RECORD,} from '../record-formatter-spec-constants';
+
+import {FlamegraphFormatter, FlamegraphNode} from './flamegraph-formatter';
 
 const formatter = new FlamegraphFormatter();
 

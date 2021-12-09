@@ -1,6 +1,7 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { VisualizationMode } from './visualization-mode';
-import { ProfilerFrame } from 'protocol';
+import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {ProfilerFrame} from 'protocol';
+
+import {VisualizationMode} from './visualization-mode';
 
 @Component({
   selector: 'ng-timeline-controls',
@@ -8,7 +9,7 @@ import { ProfilerFrame } from 'protocol';
   styleUrls: ['./timeline-controls.component.scss'],
 })
 export class TimelineControlsComponent {
-  @Input() record: ProfilerFrame | undefined;
+  @Input() record: ProfilerFrame|undefined;
   @Input() estimatedFrameRate: number;
   @Input() visualizationMode: VisualizationMode;
   @Input() empty: boolean;

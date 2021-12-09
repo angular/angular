@@ -1,10 +1,9 @@
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import {CommonModule} from '@angular/common';
+import {NgModule} from '@angular/core';
+import {RouterModule} from '@angular/router';
+import {DevToolsModule as NgDevToolsModule} from 'ng-devtools';
 
-import { DevToolsModule as NgDevToolsModule } from 'ng-devtools';
-
-import { DevToolsComponent } from './devtools-app.component';
+import {DevToolsComponent} from './devtools-app.component';
 
 @NgModule({
   declarations: [DevToolsComponent],
@@ -20,4 +19,5 @@ import { DevToolsComponent } from './devtools-app.component';
     ]),
   ],
 })
-export class DevToolsModule {}
+export class DevToolsModule {
+}

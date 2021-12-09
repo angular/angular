@@ -1,4 +1,4 @@
-import { ComponentInspector } from './component-inspector';
+import {ComponentInspector} from './component-inspector';
 
 describe('ComponentInspector', () => {
   it('should create instance from class', () => {

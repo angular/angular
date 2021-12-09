@@ -1,35 +1,11 @@
 // tslint:disable
-import {
-  Component,
-  Input,
-  Output,
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Renderer2,
-  AfterViewInit,
-  OnDestroy,
-  ElementRef,
-  NgZone,
-  ViewChildren,
-  QueryList,
-  EventEmitter,
-} from '@angular/core';
-import { Observable, Subscriber, Subject } from 'rxjs';
-import { debounceTime } from 'rxjs/operators';
+import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, NgZone, OnDestroy, Output, QueryList, Renderer2, ViewChildren,} from '@angular/core';
+import {Observable, Subject, Subscriber} from 'rxjs';
+import {debounceTime} from 'rxjs/operators';
 
-import { IArea, IPoint, ISplitSnapshot, IAreaSnapshot, IOutputData, IOutputAreaSizes } from './interface';
-import { SplitAreaDirective } from './splitArea.directive';
-import {
-  getInputPositiveNumber,
-  getInputBoolean,
-  isUserSizesValid,
-  getAreaMinSize,
-  getAreaMaxSize,
-  getPointFromEvent,
-  getElementPixelSize,
-  getGutterSideAbsorptionCapacity,
-  updateAreaSize,
-} from './utils';
+import {IArea, IAreaSnapshot, IOutputAreaSizes, IOutputData, IPoint, ISplitSnapshot} from './interface';
+import {SplitAreaDirective} from './splitArea.directive';
+import {getAreaMaxSize, getAreaMinSize, getElementPixelSize, getGutterSideAbsorptionCapacity, getInputBoolean, getInputPositiveNumber, getPointFromEvent, isUserSizesValid, updateAreaSize,} from './utils';
 
 /**
  * angular-split
@@ -39,25 +15,29 @@ import {
  *  ___________________________________________________________________________________________
  * |       A       [g1]       B       [g2]       C       [g3]       D       [g4]       E       |
  * |-------------------------------------------------------------------------------------------|
- * |       20                 30                 20                 15                 15      | <-- [size]="x"
- * |               10px               10px               10px               10px               | <-- [gutterSize]="10"
- * |calc(20% - 8px)    calc(30% - 12px)   calc(20% - 8px)    calc(15% - 6px)    calc(15% - 6px)| <-- CSS flex-basis property (with flex-grow&shrink at 0)
- * |     152px              228px              152px              114px              114px     | <-- el.getBoundingClientRect().width
+ * |       20                 30                 20                 15                 15      | <--
+ * [size]="x" |               10px               10px               10px               10px | <--
+ * [gutterSize]="10" |calc(20% - 8px)    calc(30% - 12px)   calc(20% - 8px)    calc(15% - 6px)
+ * calc(15% - 6px)| <-- CSS flex-basis property (with flex-grow&shrink at 0) |     152px 228px 152px
+ * 114px              114px     | <-- el.getBoundingClientRect().width
  * |___________________________________________________________________________________________|
- *                                                                                 800px         <-- el.getBoundingClientRect().width
- *  flex-basis = calc( { area.size }% - { area.size/100 * nbGutter*gutterSize }px );
+ *                                                                                 800px         <--
+ * el.getBoundingClientRect().width flex-basis = calc( { area.size }% - { area.size/100 *
+ * nbGutter*gutterSize }px );
  *
  *
  *  PIXEL MODE ([unit]="'pixel'")
  *  ___________________________________________________________________________________________
  * |       A       [g1]       B       [g2]       C       [g3]       D       [g4]       E       |
  * |-------------------------------------------------------------------------------------------|
- * |      100                250                 *                 150                100      | <-- [size]="y"
- * |               10px               10px               10px               10px               | <-- [gutterSize]="10"
- * |   0 0 100px          0 0 250px           1 1 auto          0 0 150px          0 0 100px   | <-- CSS flex property (flex-grow/flex-shrink/flex-basis)
- * |     100px              250px              200px              150px              100px     | <-- el.getBoundingClientRect().width
+ * |      100                250                 *                 150                100      | <--
+ * [size]="y" |               10px               10px               10px               10px | <--
+ * [gutterSize]="10" |   0 0 100px          0 0 250px           1 1 auto          0 0 150px 0 0
+ * 100px   | <-- CSS flex property (flex-grow/flex-shrink/flex-basis) |     100px              250px
+ * 200px              150px              100px     | <-- el.getBoundingClientRect().width
  * |___________________________________________________________________________________________|
- *                                                                                 800px         <-- el.getBoundingClientRect().width
+ *                                                                                 800px         <--
+ * el.getBoundingClientRect().width
  *
  */
 
@@ -84,38 +64,40 @@ import {
     </ng-template>`,
 })
 export class SplitComponent implements AfterViewInit, OnDestroy {
-  private _direction: 'horizontal' | 'vertical' = 'horizontal';
+  private _direction: 'horizontal'|'vertical' = 'horizontal';
 
-  @Input() set direction(v: 'horizontal' | 'vertical') {
+  @Input()
+  set direction(v: 'horizontal'|'vertical') {
     this._direction = v === 'vertical' ? 'vertical' : 'horizontal';
 
     this.renderer.addClass(this.elRef.nativeElement, `as-${this._direction}`);
     this.renderer.removeClass(
-      this.elRef.nativeElement,
-      `as-${this._direction === 'vertical' ? 'horizontal' : 'vertical'}`
-    );
+        this.elRef.nativeElement,
+        `as-${this._direction === 'vertical' ? 'horizontal' : 'vertical'}`);
 
     this.build(false, false);
   }
 
-  get direction(): 'horizontal' | 'vertical' {
+  get direction(): 'horizontal'|'vertical' {
     return this._direction;
   }
 
   ////
 
-  private _unit: 'percent' | 'pixel' = 'percent';
+  private _unit: 'percent'|'pixel' = 'percent';
 
-  @Input() set unit(v: 'percent' | 'pixel') {
+  @Input()
+  set unit(v: 'percent'|'pixel') {
     this._unit = v === 'pixel' ? 'pixel' : 'percent';
 
     this.renderer.addClass(this.elRef.nativeElement, `as-${this._unit}`);
-    this.renderer.removeClass(this.elRef.nativeElement, `as-${this._unit === 'pixel' ? 'percent' : 'pixel'}`);
+    this.renderer.removeClass(
+        this.elRef.nativeElement, `as-${this._unit === 'pixel' ? 'percent' : 'pixel'}`);
 
     this.build(false, true);
   }
 
-  get unit(): 'percent' | 'pixel' {
+  get unit(): 'percent'|'pixel' {
     return this._unit;
   }
 
@@ -123,13 +105,14 @@ export class SplitComponent implements AfterViewInit, OnDestroy {
 
   private _gutterSize: number = 11;
 
-  @Input() set gutterSize(v: number | null) {
+  @Input()
+  set gutterSize(v: number|null) {
     this._gutterSize = getInputPositiveNumber(v, 11);
 
     this.build(false, false);
   }
 
-  get gutterSize(): number | null {
+  get gutterSize(): number|null {
     return this._gutterSize;
   }
 
@@ -137,7 +120,8 @@ export class SplitComponent implements AfterViewInit, OnDestroy {
 
   private _gutterStep: number = 1;
 
-  @Input() set gutterStep(v: number) {
+  @Input()
+  set gutterStep(v: number) {
     this._gutterStep = getInputPositiveNumber(v, 1);
   }
 
@@ -149,7 +133,8 @@ export class SplitComponent implements AfterViewInit, OnDestroy {
 
   private _restrictMove: boolean = false;
 
-  @Input() set restrictMove(v: boolean) {
+  @Input()
+  set restrictMove(v: boolean) {
     this._restrictMove = getInputBoolean(v);
   }
 
@@ -161,11 +146,14 @@ export class SplitComponent implements AfterViewInit, OnDestroy {
 
   private _useTransition: boolean = false;
 
-  @Input() set useTransition(v: boolean) {
+  @Input()
+  set useTransition(v: boolean) {
     this._useTransition = getInputBoolean(v);
 
-    if (this._useTransition) this.renderer.addClass(this.elRef.nativeElement, 'as-transition');
-    else this.renderer.removeClass(this.elRef.nativeElement, 'as-transition');
+    if (this._useTransition)
+      this.renderer.addClass(this.elRef.nativeElement, 'as-transition');
+    else
+      this.renderer.removeClass(this.elRef.nativeElement, 'as-transition');
   }
 
   get useTransition(): boolean {
@@ -176,11 +164,14 @@ export class SplitComponent implements AfterViewInit, OnDestroy {
 
   private _disabled: boolean = false;
 
-  @Input() set disabled(v: boolean) {
+  @Input()
+  set disabled(v: boolean) {
     this._disabled = getInputBoolean(v);
 
-    if (this._disabled) this.renderer.addClass(this.elRef.nativeElement, 'as-disabled');
-    else this.renderer.removeClass(this.elRef.nativeElement, 'as-disabled');
+    if (this._disabled)
+      this.renderer.addClass(this.elRef.nativeElement, 'as-disabled');
+    else
+      this.renderer.removeClass(this.elRef.nativeElement, 'as-disabled');
   }
 
   get disabled(): boolean {
@@ -189,15 +180,16 @@ export class SplitComponent implements AfterViewInit, OnDestroy {
 
   ////
 
-  private _dir: 'ltr' | 'rtl' = 'ltr';
+  private _dir: 'ltr'|'rtl' = 'ltr';
 
-  @Input() set dir(v: 'ltr' | 'rtl') {
+  @Input()
+  set dir(v: 'ltr'|'rtl') {
     this._dir = v === 'rtl' ? 'rtl' : 'ltr';
 
     this.renderer.setAttribute(this.elRef.nativeElement, 'dir', this._dir);
   }
 
-  get dir(): 'ltr' | 'rtl' {
+  get dir(): 'ltr'|'rtl' {
     return this._dir;
   }
 
@@ -205,7 +197,8 @@ export class SplitComponent implements AfterViewInit, OnDestroy {
 
   private _gutterDblClickDuration: number = 0;
 
-  @Input() set gutterDblClickDuration(v: number) {
+  @Input()
+  set gutterDblClickDuration(v: number) {
     this._gutterDblClickDuration = getInputPositiveNumber(v, 0);
   }
 
@@ -221,10 +214,10 @@ export class SplitComponent implements AfterViewInit, OnDestroy {
   @Output() gutterDblClick = new EventEmitter<IOutputData>(false);
 
   private transitionEndSubscriber: Subscriber<IOutputAreaSizes>;
-  @Output() get transitionEnd(): Observable<IOutputAreaSizes> {
-    return new Observable((subscriber) => (this.transitionEndSubscriber = subscriber)).pipe(
-      debounceTime<IOutputAreaSizes>(20)
-    );
+  @Output()
+  get transitionEnd(): Observable<IOutputAreaSizes> {
+    return new Observable((subscriber) => (this.transitionEndSubscriber = subscriber))
+        .pipe(debounceTime<IOutputAreaSizes>(20));
   }
 
   private dragProgressSubject: Subject<IOutputData> = new Subject();
@@ -234,9 +227,9 @@ export class SplitComponent implements AfterViewInit, OnDestroy {
 
   private isDragging: boolean = false;
   private dragListeners: Array<Function> = [];
-  private snapshot: ISplitSnapshot | null = null;
-  private startPoint: IPoint | null = null;
-  private endPoint: IPoint | null = null;
+  private snapshot: ISplitSnapshot|null = null;
+  private startPoint: IPoint|null = null;
+  private endPoint: IPoint|null = null;
 
   public readonly displayedAreas: Array<IArea> = [];
   private readonly hidedAreas: Array<IArea> = [];
@@ -244,11 +237,8 @@ export class SplitComponent implements AfterViewInit, OnDestroy {
   @ViewChildren('gutterEls') private gutterEls: QueryList<ElementRef>;
 
   constructor(
-    private ngZone: NgZone,
-    private elRef: ElementRef,
-    private cdRef: ChangeDetectorRef,
-    private renderer: Renderer2
-  ) {
+      private ngZone: NgZone, private elRef: ElementRef, private cdRef: ChangeDetectorRef,
+      private renderer: Renderer2) {
     // To force adding default class, could be override by user @Input() or not
     this.direction = this._direction;
   }
@@ -294,7 +284,8 @@ export class SplitComponent implements AfterViewInit, OnDestroy {
     }
   }
 
-  public updateArea(component: SplitAreaDirective, resetOrders: boolean, resetSizes: boolean): void {
+  public updateArea(component: SplitAreaDirective, resetOrders: boolean, resetSizes: boolean):
+      void {
     if (component.visible === true) {
       this.build(resetOrders, resetSizes);
     }
@@ -372,10 +363,8 @@ export class SplitComponent implements AfterViewInit, OnDestroy {
     // ¤ AREAS SIZE
 
     if (resetSizes === true) {
-      const useUserSizes = isUserSizesValid(
-        this.unit,
-        this.displayedAreas.map((a) => a.component.size)
-      );
+      const useUserSizes =
+          isUserSizesValid(this.unit, this.displayedAreas.map((a) => a.component.size));
 
       switch (this.unit) {
         case 'percent': {
@@ -455,12 +444,9 @@ export class SplitComponent implements AfterViewInit, OnDestroy {
 
         this.displayedAreas.forEach((area) => {
           area.component.setStyleFlex(
-            0,
-            0,
-            `calc( ${area.size}% - ${(<number>area.size / 100) * sumGutterSize}px )`,
-            area.minSize !== null && area.minSize === area.size ? true : false,
-            area.maxSize !== null && area.maxSize === area.size ? true : false
-          );
+              0, 0, `calc( ${area.size}% - ${(<number>area.size / 100) * sumGutterSize}px )`,
+              area.minSize !== null && area.minSize === area.size ? true : false,
+              area.maxSize !== null && area.maxSize === area.size ? true : false);
         });
       }
     }
@@ -485,25 +471,24 @@ export class SplitComponent implements AfterViewInit, OnDestroy {
           // Multiple areas > use each pixel basis
           else {
             area.component.setStyleFlex(
-              0,
-              0,
-              `${area.size}px`,
-              area.minSize !== null && area.minSize === area.size ? true : false,
-              area.maxSize !== null && area.maxSize === area.size ? true : false
-            );
+                0, 0, `${area.size}px`,
+                area.minSize !== null && area.minSize === area.size ? true : false,
+                area.maxSize !== null && area.maxSize === area.size ? true : false);
           }
         }
       });
     }
   }
 
-  _clickTimeout: number | null = null;
+  _clickTimeout: number|null = null;
 
-  public clickGutter(event: MouseEvent | TouchEvent, gutterNum: number): void {
+  public clickGutter(event: MouseEvent|TouchEvent, gutterNum: number): void {
     const tempPoint = getPointFromEvent(event);
 
-    // Be sure mouseup/touchend happened at same point as mousedown/touchstart to trigger click/dblclick
-    if (this.startPoint && this.startPoint.x === tempPoint!.x && this.startPoint.y === tempPoint!.y) {
+    // Be sure mouseup/touchend happened at same point as mousedown/touchstart to trigger
+    // click/dblclick
+    if (this.startPoint && this.startPoint.x === tempPoint!.x &&
+        this.startPoint.y === tempPoint!.y) {
       // If timeout in progress and new click > clearTimeout & dblClickEvent
       if (this._clickTimeout !== null) {
         window.clearTimeout(this._clickTimeout);
@@ -522,7 +507,7 @@ export class SplitComponent implements AfterViewInit, OnDestroy {
     }
   }
 
-  public startDragging(event: MouseEvent | TouchEvent, gutterOrder: number, gutterNum: number): void {
+  public startDragging(event: MouseEvent|TouchEvent, gutterOrder: number, gutterNum: number): void {
     event.preventDefault();
     event.stopPropagation();
 
@@ -534,7 +519,8 @@ export class SplitComponent implements AfterViewInit, OnDestroy {
     this.snapshot = {
       gutterNum,
       lastSteppedOffset: 0,
-      allAreasSizePixel: getElementPixelSize(this.elRef, this.direction) - this.getNbGutters() * this.gutterSize!,
+      allAreasSizePixel:
+          getElementPixelSize(this.elRef, this.direction) - this.getNbGutters() * this.gutterSize!,
       allInvolvedAreasSizePercent: 100,
       areasBeforeGutter: [],
       areasAfterGutter: [],
@@ -544,7 +530,8 @@ export class SplitComponent implements AfterViewInit, OnDestroy {
       const areaSnapshot: IAreaSnapshot = {
         area,
         sizePixelAtStart: getElementPixelSize(area.component.elRef, this.direction),
-        sizePercentAtStart: (this.unit === 'percent' ? area.size : -1) as number, // If pixel mode, anyway, will not be used.
+        sizePercentAtStart: (this.unit === 'percent' ? area.size : -1) as
+            number,  // If pixel mode, anyway, will not be used.
       };
 
       if (area.order < gutterOrder) {
@@ -555,7 +542,8 @@ export class SplitComponent implements AfterViewInit, OnDestroy {
         }
       } else if (area.order > gutterOrder) {
         if (this.restrictMove === true) {
-          if (this.snapshot!.areasAfterGutter.length === 0) this.snapshot!.areasAfterGutter = [areaSnapshot];
+          if (this.snapshot!.areasAfterGutter.length === 0)
+            this.snapshot!.areasAfterGutter = [areaSnapshot];
         } else {
           this.snapshot!.areasAfterGutter.push(areaSnapshot);
         }
@@ -567,29 +555,36 @@ export class SplitComponent implements AfterViewInit, OnDestroy {
       ...this.snapshot.areasAfterGutter,
     ].reduce((t, a) => t + a.sizePercentAtStart, 0);
 
-    if (this.snapshot.areasBeforeGutter.length === 0 || this.snapshot.areasAfterGutter.length === 0) {
+    if (this.snapshot.areasBeforeGutter.length === 0 ||
+        this.snapshot.areasAfterGutter.length === 0) {
       return;
     }
 
-    this.dragListeners.push(this.renderer.listen('document', 'mouseup', this.stopDragging.bind(this)));
-    this.dragListeners.push(this.renderer.listen('document', 'touchend', this.stopDragging.bind(this)));
-    this.dragListeners.push(this.renderer.listen('document', 'touchcancel', this.stopDragging.bind(this)));
+    this.dragListeners.push(
+        this.renderer.listen('document', 'mouseup', this.stopDragging.bind(this)));
+    this.dragListeners.push(
+        this.renderer.listen('document', 'touchend', this.stopDragging.bind(this)));
+    this.dragListeners.push(
+        this.renderer.listen('document', 'touchcancel', this.stopDragging.bind(this)));
 
     this.ngZone.runOutsideAngular(() => {
-      this.dragListeners.push(this.renderer.listen('document', 'mousemove', this.dragEvent.bind(this)));
-      this.dragListeners.push(this.renderer.listen('document', 'touchmove', this.dragEvent.bind(this)));
+      this.dragListeners.push(
+          this.renderer.listen('document', 'mousemove', this.dragEvent.bind(this)));
+      this.dragListeners.push(
+          this.renderer.listen('document', 'touchmove', this.dragEvent.bind(this)));
     });
 
     this.displayedAreas.forEach((area) => area.component.lockEvents());
 
     this.isDragging = true;
     this.renderer.addClass(this.elRef.nativeElement, 'as-dragging');
-    this.renderer.addClass(this.gutterEls.toArray()[this.snapshot.gutterNum - 1].nativeElement, 'as-dragged');
+    this.renderer.addClass(
+        this.gutterEls.toArray()[this.snapshot.gutterNum - 1].nativeElement, 'as-dragged');
 
     this.notify('start', this.snapshot.gutterNum);
   }
 
-  private dragEvent(event: MouseEvent | TouchEvent): void {
+  private dragEvent(event: MouseEvent|TouchEvent): void {
     event.preventDefault();
     event.stopPropagation();
 
@@ -609,8 +604,8 @@ export class SplitComponent implements AfterViewInit, OnDestroy {
 
     // Calculate steppedOffset
 
-    let offset =
-      this.direction === 'horizontal' ? this.startPoint!.x - this.endPoint.x : this.startPoint!.y - this.endPoint.y;
+    let offset = this.direction === 'horizontal' ? this.startPoint!.x - this.endPoint.x :
+                                                   this.startPoint!.y - this.endPoint.y;
     if (this.dir === 'rtl') {
       offset = -offset;
     }
@@ -625,71 +620,54 @@ export class SplitComponent implements AfterViewInit, OnDestroy {
     // Need to know if each gutter side areas could reacts to steppedOffset
 
     let areasBefore = getGutterSideAbsorptionCapacity(
-      this.unit,
-      this.snapshot!.areasBeforeGutter,
-      -steppedOffset,
-      this.snapshot!.allAreasSizePixel
-    );
+        this.unit, this.snapshot!.areasBeforeGutter, -steppedOffset,
+        this.snapshot!.allAreasSizePixel);
     let areasAfter = getGutterSideAbsorptionCapacity(
-      this.unit,
-      this.snapshot!.areasAfterGutter,
-      steppedOffset,
-      this.snapshot!.allAreasSizePixel
-    );
+        this.unit, this.snapshot!.areasAfterGutter, steppedOffset,
+        this.snapshot!.allAreasSizePixel);
 
     // Each gutter side areas can't absorb all offset
     if (areasBefore.remain !== 0 && areasAfter.remain !== 0) {
       if (Math.abs(areasBefore.remain) === Math.abs(areasAfter.remain)) {
       } else if (Math.abs(areasBefore.remain) > Math.abs(areasAfter.remain)) {
         areasAfter = getGutterSideAbsorptionCapacity(
-          this.unit,
-          this.snapshot!.areasAfterGutter,
-          steppedOffset + areasBefore.remain,
-          this.snapshot!.allAreasSizePixel
-        );
+            this.unit, this.snapshot!.areasAfterGutter, steppedOffset + areasBefore.remain,
+            this.snapshot!.allAreasSizePixel);
       } else {
         areasBefore = getGutterSideAbsorptionCapacity(
-          this.unit,
-          this.snapshot!.areasBeforeGutter,
-          -(steppedOffset - areasAfter.remain),
-          this.snapshot!.allAreasSizePixel
-        );
+            this.unit, this.snapshot!.areasBeforeGutter, -(steppedOffset - areasAfter.remain),
+            this.snapshot!.allAreasSizePixel);
       }
     }
-    // Areas before gutter can't absorbs all offset > need to recalculate sizes for areas after gutter.
+    // Areas before gutter can't absorbs all offset > need to recalculate sizes for areas after
+    // gutter.
     else if (areasBefore.remain !== 0) {
       areasAfter = getGutterSideAbsorptionCapacity(
-        this.unit,
-        this.snapshot!.areasAfterGutter,
-        steppedOffset + areasBefore.remain,
-        this.snapshot!.allAreasSizePixel
-      );
+          this.unit, this.snapshot!.areasAfterGutter, steppedOffset + areasBefore.remain,
+          this.snapshot!.allAreasSizePixel);
     }
-    // Areas after gutter can't absorbs all offset > need to recalculate sizes for areas before gutter.
+    // Areas after gutter can't absorbs all offset > need to recalculate sizes for areas before
+    // gutter.
     else if (areasAfter.remain !== 0) {
       areasBefore = getGutterSideAbsorptionCapacity(
-        this.unit,
-        this.snapshot!.areasBeforeGutter,
-        -(steppedOffset - areasAfter.remain),
-        this.snapshot!.allAreasSizePixel
-      );
+          this.unit, this.snapshot!.areasBeforeGutter, -(steppedOffset - areasAfter.remain),
+          this.snapshot!.allAreasSizePixel);
     }
 
     if (this.unit === 'percent') {
-      // Hack because of browser messing up with sizes using calc(X% - Ypx) -> el.getBoundingClientRect()
-      // If not there, playing with gutters makes total going down to 99.99875% then 99.99286%, 99.98986%,..
+      // Hack because of browser messing up with sizes using calc(X% - Ypx) ->
+      // el.getBoundingClientRect() If not there, playing with gutters makes total going down
+      // to 99.99875% then 99.99286%, 99.98986%,..
       const all = [...areasBefore.list, ...areasAfter.list];
       const areaToReset = all.find(
-        (a) =>
-          a.percentAfterAbsorption !== 0 &&
-          a.percentAfterAbsorption !== a.areaSnapshot.area.minSize &&
-          a.percentAfterAbsorption !== a.areaSnapshot.area.maxSize
-      );
+          (a) => a.percentAfterAbsorption !== 0 &&
+              a.percentAfterAbsorption !== a.areaSnapshot.area.minSize &&
+              a.percentAfterAbsorption !== a.areaSnapshot.area.maxSize);
 
       if (areaToReset) {
-        areaToReset.percentAfterAbsorption =
-          this.snapshot!.allInvolvedAreasSizePercent -
-          all.filter((a) => a !== areaToReset).reduce((total, a) => total + a.percentAfterAbsorption, 0);
+        areaToReset.percentAfterAbsorption = this.snapshot!.allInvolvedAreasSizePercent -
+            all.filter((a) => a !== areaToReset)
+                .reduce((total, a) => total + a.percentAfterAbsorption, 0);
       }
     }
 
@@ -724,12 +702,14 @@ export class SplitComponent implements AfterViewInit, OnDestroy {
     this.isDragging = false;
 
     // If moved from starting point, notify end
-    if (this.endPoint && (this.startPoint!.x !== this.endPoint.x || this.startPoint!.y !== this.endPoint.y)) {
+    if (this.endPoint &&
+        (this.startPoint!.x !== this.endPoint.x || this.startPoint!.y !== this.endPoint.y)) {
       this.notify('end', this.snapshot!.gutterNum);
     }
 
     this.renderer.removeClass(this.elRef.nativeElement, 'as-dragging');
-    this.renderer.removeClass(this.gutterEls.toArray()[this.snapshot!.gutterNum - 1].nativeElement, 'as-dragged');
+    this.renderer.removeClass(
+        this.gutterEls.toArray()[this.snapshot!.gutterNum - 1].nativeElement, 'as-dragged');
     this.snapshot = null;
 
     // Needed to let (click)="clickGutter(...)" event run and verify if mouse moved or not
@@ -741,24 +721,25 @@ export class SplitComponent implements AfterViewInit, OnDestroy {
     });
   }
 
-  public notify(type: 'start' | 'progress' | 'end' | 'click' | 'dblclick' | 'transitionEnd', gutterNum: number): void {
+  public notify(
+      type: 'start'|'progress'|'end'|'click'|'dblclick'|'transitionEnd', gutterNum: number): void {
     const sizes = this.getVisibleAreaSizes();
 
     if (type === 'start') {
-      this.dragStart.emit({ gutterNum, sizes });
+      this.dragStart.emit({gutterNum, sizes});
     } else if (type === 'end') {
-      this.dragEnd.emit({ gutterNum, sizes });
+      this.dragEnd.emit({gutterNum, sizes});
     } else if (type === 'click') {
-      this.gutterClick.emit({ gutterNum, sizes });
+      this.gutterClick.emit({gutterNum, sizes});
     } else if (type === 'dblclick') {
-      this.gutterDblClick.emit({ gutterNum, sizes });
+      this.gutterDblClick.emit({gutterNum, sizes});
     } else if (type === 'transitionEnd') {
       if (this.transitionEndSubscriber) {
         this.ngZone.run(() => this.transitionEndSubscriber.next(sizes));
       }
     } else if (type === 'progress') {
       // Stay outside zone to allow users do what they want about change detection mechanism.
-      this.dragProgressSubject.next({ gutterNum, sizes });
+      this.dragProgressSubject.next({gutterNum, sizes});
     }
   }
 

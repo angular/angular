@@ -1,17 +1,18 @@
-import { RecordFormatter } from '../record-formatter';
-import { ElementProfile, ProfilerFrame } from 'protocol';
-import { memo } from '../../../../../vendor/memo-decorator';
+import {ElementProfile, ProfilerFrame} from 'protocol';
+
+import {memo} from '../../../../../vendor/memo-decorator';
+import {RecordFormatter} from '../record-formatter';
 
 export interface TreeMapNode {
   id: string;
   value: number;
   size: number;
   children: TreeMapNode[];
-  original: ElementProfile | null;
+  original: ElementProfile|null;
 }
 
 export class TreeMapFormatter extends RecordFormatter<TreeMapNode> {
-  @memo({ cache: new WeakMap() })
+  @memo({cache: new WeakMap()})
   formatFrame(record: ProfilerFrame): TreeMapNode {
     const children: TreeMapNode[] = [];
     this.addFrame(children, record.directives);
@@ -27,7 +28,7 @@ export class TreeMapFormatter extends RecordFormatter<TreeMapNode> {
     };
   }
 
-  addFrame(nodes: TreeMapNode[], elements: ElementProfile[], prev: TreeMapNode | null = null): void {
+  addFrame(nodes: TreeMapNode[], elements: ElementProfile[], prev: TreeMapNode|null = null): void {
     elements.forEach((element) => {
       if (!element) {
         console.error('Unable to insert undefined element');

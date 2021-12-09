@@ -1,4 +1,4 @@
-import { Todo } from './todo';
+import {Todo} from './todo';
 
 export abstract class TodosService {
   getAll(): Promise<Todo[]> {
@@ -10,7 +10,7 @@ export abstract class TodosService {
   updateTodo(todo: Todo): Promise<Todo> {
     throw new Error('Not implemented');
   }
-  deleteTodo({ id }: { id: string }): Promise<void> {
+  deleteTodo({id}: {id: string}): Promise<void> {
     throw new Error('Not implemented');
   }
 }

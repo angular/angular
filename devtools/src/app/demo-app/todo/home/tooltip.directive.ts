@@ -1,4 +1,4 @@
-import { Directive, HostListener } from '@angular/core';
+import {Directive, HostListener} from '@angular/core';
 
 @Directive({
   selector: '[appTooltip]',

@@ -1,35 +1,15 @@
-import {
-  ChangeDetectorRef,
-  Component,
-  ElementRef,
-  EventEmitter,
-  Input,
-  NgZone,
-  OnDestroy,
-  OnInit,
-  Output,
-  ViewChild,
-} from '@angular/core';
-import {
-  MessageBus,
-  Events,
-  DevToolsNode,
-  ComponentExplorerViewQuery,
-  ComponentExplorerView,
-  ElementPosition,
-  PropertyQuery,
-  PropertyQueryTypes,
-  DirectivePosition,
-} from 'protocol';
-import { IndexedNode } from './directive-forest/index-forest';
-import { ApplicationOperations } from '../../application-operations/index';
-import { ElementPropertyResolver } from './property-resolver/element-property-resolver';
-import { FlatNode } from './directive-forest/component-data-source';
-import { FlatNode as PropertyFlatNode } from './property-resolver/element-property-resolver';
-import { DirectiveForestComponent } from './directive-forest/directive-forest.component';
-import { constructPathOfKeysToPropertyValue } from './property-resolver/directive-property-resolver';
-import { BreadcrumbsComponent } from './directive-forest/breadcrumbs/breadcrumbs.component';
-import { SplitComponent } from '../../../lib/vendor/angular-split/public_api';
+import {ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, NgZone, OnDestroy, OnInit, Output, ViewChild,} from '@angular/core';
+import {ComponentExplorerView, ComponentExplorerViewQuery, DevToolsNode, DirectivePosition, ElementPosition, Events, MessageBus, PropertyQuery, PropertyQueryTypes,} from 'protocol';
+
+import {SplitComponent} from '../../../lib/vendor/angular-split/public_api';
+import {ApplicationOperations} from '../../application-operations/index';
+
+import {BreadcrumbsComponent} from './directive-forest/breadcrumbs/breadcrumbs.component';
+import {FlatNode} from './directive-forest/component-data-source';
+import {DirectiveForestComponent} from './directive-forest/directive-forest.component';
+import {IndexedNode} from './directive-forest/index-forest';
+import {constructPathOfKeysToPropertyValue} from './property-resolver/directive-property-resolver';
+import {ElementPropertyResolver, FlatNode as PropertyFlatNode} from './property-resolver/element-property-resolver';
 
 const sameDirectives = (a: IndexedNode, b: IndexedNode) => {
   if ((a.component && !b.component) || (!a.component && b.component)) {
@@ -64,40 +44,36 @@ export class DirectiveExplorerComponent implements OnInit, OnDestroy {
 
   @ViewChild(DirectiveForestComponent) directiveForest: DirectiveForestComponent;
   @ViewChild(BreadcrumbsComponent) breadcrumbs: BreadcrumbsComponent;
-  @ViewChild(SplitComponent, { static: true, read: ElementRef }) splitElementRef: ElementRef;
-  @ViewChild('directiveForestSplitArea', { static: true, read: ElementRef }) directiveForestSplitArea: ElementRef;
+  @ViewChild(SplitComponent, {static: true, read: ElementRef}) splitElementRef: ElementRef;
+  @ViewChild('directiveForestSplitArea', {static: true, read: ElementRef})
+  directiveForestSplitArea: ElementRef;
 
-  currentSelectedElement: IndexedNode | null = null;
+  currentSelectedElement: IndexedNode|null = null;
   forest: DevToolsNode[];
-  splitDirection: 'horizontal' | 'vertical' = 'horizontal';
-  parents: FlatNode[] | null = null;
+  splitDirection: 'horizontal'|'vertical' = 'horizontal';
+  parents: FlatNode[]|null = null;
 
-  private _resizeObserver = new ResizeObserver((entries) =>
-    this._ngZone.run(() => {
-      const resizedEntry = entries[0];
+  private _resizeObserver = new ResizeObserver((entries) => this._ngZone.run(() => {
+    const resizedEntry = entries[0];
 
-      if (resizedEntry.target === this.splitElementRef.nativeElement) {
-        this.splitDirection = resizedEntry.contentRect.width <= 500 ? 'vertical' : 'horizontal';
-      }
+    if (resizedEntry.target === this.splitElementRef.nativeElement) {
+      this.splitDirection = resizedEntry.contentRect.width <= 500 ? 'vertical' : 'horizontal';
+    }
 
-      if (!this.breadcrumbs) {
-        return;
-      }
+    if (!this.breadcrumbs) {
+      return;
+    }
 
-      this.breadcrumbs.updateScrollButtonVisibility();
-    })
-  );
+    this.breadcrumbs.updateScrollButtonVisibility();
+  }));
 
-  private _clickedElement: IndexedNode | null = null;
+  private _clickedElement: IndexedNode|null = null;
   private _refreshRetryTimeout: any = null;
 
   constructor(
-    private _appOperations: ApplicationOperations,
-    private _messageBus: MessageBus<Events>,
-    private _propResolver: ElementPropertyResolver,
-    private _cdr: ChangeDetectorRef,
-    private _ngZone: NgZone
-  ) {}
+      private _appOperations: ApplicationOperations, private _messageBus: MessageBus<Events>,
+      private _propResolver: ElementPropertyResolver, private _cdr: ChangeDetectorRef,
+      private _ngZone: NgZone) {}
 
   ngOnInit(): void {
     this.subscribeToBackendEvents();
@@ -111,7 +87,7 @@ export class DirectiveExplorerComponent implements OnInit, OnDestroy {
     this._resizeObserver.unobserve(this.directiveForestSplitArea.nativeElement);
   }
 
-  handleNodeSelection(node: IndexedNode | null): void {
+  handleNodeSelection(node: IndexedNode|null): void {
     if (node) {
       // We want to guarantee that we're not reusing any of the previous properties.
       // That's possible if the user has selected an NgForOf and after that
@@ -141,7 +117,8 @@ export class DirectiveExplorerComponent implements OnInit, OnDestroy {
   }
 
   refresh(): void {
-    const success = this._messageBus.emit('getLatestComponentExplorerView', [this._constructViewQuery()]);
+    const success =
+        this._messageBus.emit('getLatestComponentExplorerView', [this._constructViewQuery()]);
     // If the event was not throttled, we no longer need to retry.
     if (success) {
       clearTimeout(this._refreshRetryTimeout);
@@ -176,7 +153,7 @@ export class DirectiveExplorerComponent implements OnInit, OnDestroy {
     this._messageBus.emit('removeHighlightOverlay');
   }
 
-  private _constructViewQuery(): ComponentExplorerViewQuery | undefined {
+  private _constructViewQuery(): ComponentExplorerViewQuery|undefined {
     if (!this._clickedElement) {
       return;
     }
@@ -191,11 +168,8 @@ export class DirectiveExplorerComponent implements OnInit, OnDestroy {
     // We check if we're dealing with the same instance (i.e., if we have the same
     // set of directives and component on it), if we do, we want to get the same
     // set of properties which are already expanded.
-    if (
-      !this._clickedElement ||
-      !this.currentSelectedElement ||
-      !sameDirectives(this._clickedElement, this.currentSelectedElement)
-    ) {
+    if (!this._clickedElement || !this.currentSelectedElement ||
+        !sameDirectives(this._clickedElement, this.currentSelectedElement)) {
       return {
         type: PropertyQueryTypes.All,
       };
@@ -218,12 +192,13 @@ export class DirectiveExplorerComponent implements OnInit, OnDestroy {
     this.directiveForest.handleSelect(node);
   }
 
-  handleSetParents(parents: FlatNode[] | null): void {
+  handleSetParents(parents: FlatNode[]|null): void {
     this.parents = parents;
     this._cdr.detectChanges();
   }
 
-  inspect({ node, directivePosition }: { node: PropertyFlatNode; directivePosition: DirectivePosition }): void {
+  inspect({node, directivePosition}:
+              {node: PropertyFlatNode; directivePosition: DirectivePosition}): void {
     const objectPath = constructPathOfKeysToPropertyValue(node.prop);
     this._appOperations.inspect(directivePosition, objectPath);
   }

@@ -36,7 +36,7 @@ export interface Node {
  * Paths are /-delimited ids.
  */
 export function treeify(data: Array<[string, number]>): Node {
-  const tree: Node = { size: 0 };
+  const tree: Node = {size: 0};
   for (const [path, size] of data) {
     const parts = path.replace(/\/$/, '').split('/');
     let t = tree;
@@ -45,7 +45,7 @@ export function treeify(data: Array<[string, number]>): Node {
       if (!t.children) t.children = [];
       let child = t.children.find((c) => c.id === id);
       if (!child) {
-        child = { id, size: 0 };
+        child = {id, size: 0};
         t.children.push(child);
       }
       if (parts.length === 0) {

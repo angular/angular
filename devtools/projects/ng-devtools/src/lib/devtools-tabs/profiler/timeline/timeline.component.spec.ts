@@ -1,4 +1,4 @@
-import { TimelineComponent } from './timeline.component';
+import {TimelineComponent} from './timeline.component';
 
 describe('TimelineComponent', () => {
   let comp: TimelineComponent;

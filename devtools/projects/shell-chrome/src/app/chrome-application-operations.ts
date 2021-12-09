@@ -1,16 +1,18 @@
-import { DirectivePosition, ElementPosition } from 'protocol';
-import { ApplicationOperations } from 'ng-devtools';
+import {ApplicationOperations} from 'ng-devtools';
+import {DirectivePosition, ElementPosition} from 'protocol';
 
 export class ChromeApplicationOperations extends ApplicationOperations {
   viewSource(position: ElementPosition): void {
     if (chrome.devtools) {
-      chrome.devtools.inspectedWindow.eval(`inspect(inspectedApplication.findConstructorByPosition('${position}'))`);
+      chrome.devtools.inspectedWindow.eval(
+          `inspect(inspectedApplication.findConstructorByPosition('${position}'))`);
     }
   }
 
   selectDomElement(position: ElementPosition): void {
     if (chrome.devtools) {
-      chrome.devtools.inspectedWindow.eval(`inspect(inspectedApplication.findDomElementByPosition('${position}'))`);
+      chrome.devtools.inspectedWindow.eval(
+          `inspect(inspectedApplication.findDomElementByPosition('${position}'))`);
     }
   }
 
@@ -21,8 +23,7 @@ export class ChromeApplicationOperations extends ApplicationOperations {
         objectPath,
       };
       chrome.devtools.inspectedWindow.eval(
-        `inspect(inspectedApplication.findPropertyByPosition('${JSON.stringify(args)}'))`
-      );
+          `inspect(inspectedApplication.findPropertyByPosition('${JSON.stringify(args)}'))`);
     }
   }
 }

@@ -1,5 +1,6 @@
-import { DirectiveProfile } from 'protocol';
-import { SelectedDirective } from './timeline-visualizer.component';
+import {DirectiveProfile} from 'protocol';
+
+import {SelectedDirective} from './timeline-visualizer.component';
 
 const ignore = /^([A-Z]|listener|\d|listener)/;
 
@@ -14,16 +15,13 @@ const formatOutput = (outputName: string) => {
     }
     output.push(parts[idx]);
   }
-  return output
-    .filter((el) => !!el)
-    .reverse()
-    .join('-');
+  return output.filter((el) => !!el).reverse().join('-');
 };
 
 export const formatDirectiveProfile = (nodes: DirectiveProfile[]) => {
   const graphData: SelectedDirective[] = [];
   nodes.forEach((node) => {
-    const { changeDetection } = node;
+    const {changeDetection} = node;
     if (changeDetection) {
       graphData.push({
         directive: node.name,

@@ -1,4 +1,4 @@
-import { ElementProfile, DirectiveProfile, ProfilerFrame } from 'protocol';
+import {DirectiveProfile, ElementProfile, ProfilerFrame} from 'protocol';
 
 export interface TimelineView<T> {
   timeline: AppEntry<T>[];
@@ -18,14 +18,13 @@ export interface GraphNode {
 
 export abstract class RecordFormatter<T> {
   abstract formatFrame(frame: ProfilerFrame): T;
-  abstract addFrame(nodes: T | T[], elements: ElementProfile[]): number | void;
+  abstract addFrame(nodes: T|T[], elements: ElementProfile[]): number|void;
 
   getLabel(element: ElementProfile): string {
-    const name = element.directives
-      .filter((d) => d.isComponent)
-      .map((c) => c.name)
-      .join(', ');
-    const attributes = [...new Set(element.directives.filter((d) => !d.isComponent).map((d) => d.name))].join(', ');
+    const name = element.directives.filter((d) => d.isComponent).map((c) => c.name).join(', ');
+    const attributes =
+        [...new Set(element.directives.filter((d) => !d.isComponent).map((d) => d.name))].join(
+            ', ');
     return attributes === '' ? name : `${name}[${attributes}]`;
   }
 

@@ -1,13 +1,14 @@
-import { Component, Input } from '@angular/core';
-import { VisualizationMode } from '../visualization-mode';
-import { ProfilerFrame } from 'protocol';
-import { BargraphNode } from '../record-formatter/bargraph-formatter';
-import { FlamegraphNode } from '../record-formatter/flamegraph-formatter';
+import {Component, Input} from '@angular/core';
+import {ProfilerFrame} from 'protocol';
+
+import {BargraphNode} from '../record-formatter/bargraph-formatter';
+import {FlamegraphNode} from '../record-formatter/flamegraph-formatter';
+import {VisualizationMode} from '../visualization-mode';
 
 export interface SelectedEntry {
-  entry: BargraphNode | FlamegraphNode;
+  entry: BargraphNode|FlamegraphNode;
   selectedDirectives: SelectedDirective[];
-  parentHierarchy?: { name: string }[];
+  parentHierarchy?: {name: string}[];
 }
 
 export interface SelectedDirective {
@@ -22,7 +23,8 @@ export interface SelectedDirective {
   styleUrls: ['./timeline-visualizer.component.scss'],
 })
 export class TimelineVisualizerComponent {
-  @Input() set visualizationMode(mode: VisualizationMode) {
+  @Input()
+  set visualizationMode(mode: VisualizationMode) {
     this._visualizationMode = mode;
     this.selectedEntry = null;
     this.selectedDirectives = [];
@@ -33,12 +35,12 @@ export class TimelineVisualizerComponent {
 
   cmpVisualizationModes = VisualizationMode;
 
-  selectedEntry: BargraphNode | FlamegraphNode | null = null;
+  selectedEntry: BargraphNode|FlamegraphNode|null = null;
   selectedDirectives: SelectedDirective[] = [];
-  parentHierarchy: { name: string }[] = [];
+  parentHierarchy: {name: string}[] = [];
   _visualizationMode: VisualizationMode;
 
-  handleNodeSelect({ entry, parentHierarchy, selectedDirectives }: SelectedEntry): void {
+  handleNodeSelect({entry, parentHierarchy, selectedDirectives}: SelectedEntry): void {
     this.selectedEntry = entry;
     this.selectedDirectives = selectedDirectives;
     this.parentHierarchy = parentHierarchy ?? [];

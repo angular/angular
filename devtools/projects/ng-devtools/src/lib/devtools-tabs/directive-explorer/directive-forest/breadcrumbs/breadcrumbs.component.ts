@@ -1,18 +1,8 @@
-import {
-  AfterViewInit,
-  Component,
-  ElementRef,
-  EventEmitter,
-  HostListener,
-  Input,
-  OnChanges,
-  OnInit,
-  Output,
-  ViewChild,
-} from '@angular/core';
-import { Subject } from 'rxjs';
-import { debounceTime } from 'rxjs/operators';
-import { FlatNode } from '../component-data-source';
+import {AfterViewInit, Component, ElementRef, EventEmitter, HostListener, Input, OnChanges, OnInit, Output, ViewChild,} from '@angular/core';
+import {Subject} from 'rxjs';
+import {debounceTime} from 'rxjs/operators';
+
+import {FlatNode} from '../component-data-source';
 
 @Component({
   selector: 'ng-breadcrumbs',
@@ -33,7 +23,8 @@ export class BreadcrumbsComponent implements OnInit, AfterViewInit, OnChanges {
   updateScrollButtonVisibility$ = new Subject<void>();
 
   ngOnInit(): void {
-    this.updateScrollButtonVisibility$.pipe(debounceTime(100)).subscribe(() => this.updateScrollButtonVisibility());
+    this.updateScrollButtonVisibility$.pipe(debounceTime(100))
+        .subscribe(() => this.updateScrollButtonVisibility());
   }
 
   ngAfterViewInit(): void {
@@ -55,7 +46,7 @@ export class BreadcrumbsComponent implements OnInit, AfterViewInit, OnChanges {
   }
 
   updateScrollButtonVisibility(): void {
-    const { clientWidth, scrollWidth, scrollLeft } = this.breadcrumbsScrollContent.nativeElement;
+    const {clientWidth, scrollWidth, scrollLeft} = this.breadcrumbsScrollContent.nativeElement;
     this.showScrollLeftButton = scrollLeft > 0;
     this.showScrollRightButton = scrollLeft + clientWidth < scrollWidth;
   }

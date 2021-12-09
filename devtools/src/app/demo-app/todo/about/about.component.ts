@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 
 @Component({
   selector: 'app-about',
@@ -9,4 +9,5 @@ import { Component } from '@angular/core';
     <a [routerLink]="">Home</a>
   `,
 })
-export class AboutComponent {}
+export class AboutComponent {
+}

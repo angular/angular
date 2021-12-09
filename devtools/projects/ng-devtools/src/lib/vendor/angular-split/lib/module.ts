@@ -1,8 +1,8 @@
 // tslint:disable
-import { NgModule, ModuleWithProviders } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {CommonModule} from '@angular/common';
+import {ModuleWithProviders, NgModule} from '@angular/core';
 
-import { SplitModule } from './component/split.module';
+import {SplitModule} from './component/split.module';
 
 @NgModule({
   imports: [CommonModule, SplitModule],

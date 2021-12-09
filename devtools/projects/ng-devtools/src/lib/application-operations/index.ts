@@ -1,4 +1,4 @@
-import { DirectivePosition, ElementPosition } from 'protocol';
+import {DirectivePosition, ElementPosition} from 'protocol';
 
 export abstract class ApplicationOperations {
   abstract viewSource(position: ElementPosition): void;

@@ -1,14 +1,14 @@
 const loadScripts = (urls: string[]) => {
   return urls
-    .map((url, idx) => {
-      return `
+      .map((url, idx) => {
+        return `
       const script${idx} = document.constructor.prototype.createElement.call(document, 'script');
       script${idx}.src = getScriptName("${url}");
       document.documentElement.appendChild(script${idx});
       script${idx}.parentNode.removeChild(script${idx});
     `;
-    })
-    .join('\n');
+      })
+      .join('\n');
 };
 
 let loaded = false;

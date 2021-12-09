@@ -1,5 +1,6 @@
-import { Component, ElementRef, EventEmitter, Input, Output, ViewChild, ViewEncapsulation } from '@angular/core';
-import { ZippyComponent } from './zippy.component';
+import {Component, ElementRef, EventEmitter, Input, Output, ViewChild, ViewEncapsulation} from '@angular/core';
+
+import {ZippyComponent} from './zippy.component';
 
 @Component({
   selector: 'app-demo-component',
@@ -17,7 +18,7 @@ export class DemoAppComponent {
   @Output() outputOne = new EventEmitter();
   @Output('output_two') outputTwo = new EventEmitter();
 
-  getTitle(): '► Click to expand' | '▼ Click to collapse' {
+  getTitle(): '► Click to expand'|'▼ Click to collapse' {
     if (!this.zippy || !this.zippy.visible) {
       return '► Click to expand';
     }

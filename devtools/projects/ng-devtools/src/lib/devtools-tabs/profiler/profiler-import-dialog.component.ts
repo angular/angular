@@ -1,11 +1,11 @@
-import { Component, Inject } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import {Component, Inject} from '@angular/core';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 
 interface DialogData {
   profilerVersion?: number;
   importedVersion?: number;
   errorMessage?: string;
-  status: 'ERROR' | 'INVALID_VERSION';
+  status: 'ERROR'|'INVALID_VERSION';
 }
 
 @Component({
@@ -15,7 +15,6 @@ interface DialogData {
 })
 export class ProfilerImportDialogComponent {
   constructor(
-    public dialogRef: MatDialogRef<ProfilerImportDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: DialogData
-  ) {}
+      public dialogRef: MatDialogRef<ProfilerImportDialogComponent>,
+      @Inject(MAT_DIALOG_DATA) public data: DialogData) {}
 }

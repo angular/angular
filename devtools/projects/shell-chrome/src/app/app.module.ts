@@ -1,10 +1,10 @@
-import { NgModule } from '@angular/core';
+import {NgModule} from '@angular/core';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {ApplicationEnvironment, ApplicationOperations, DevToolsModule} from 'ng-devtools';
 
-import { AppComponent } from './app.component';
-import { ApplicationEnvironment, ApplicationOperations, DevToolsModule } from 'ng-devtools';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { ChromeApplicationOperations } from './chrome-application-operations';
-import { ChromeApplicationEnvironment } from './chrome-application-environment';
+import {AppComponent} from './app.component';
+import {ChromeApplicationEnvironment} from './chrome-application-environment';
+import {ChromeApplicationOperations} from './chrome-application-operations';
 
 @NgModule({
   declarations: [AppComponent],
@@ -21,4 +21,5 @@ import { ChromeApplicationEnvironment } from './chrome-application-environment';
     },
   ],
 })
-export class AppModule {}
+export class AppModule {
+}

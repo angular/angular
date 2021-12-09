@@ -1,13 +1,15 @@
 /// <reference types="resize-observer-browser" />
-import { AfterViewInit, Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { Events, MessageBus, Route } from 'protocol';
-import { DirectiveExplorerComponent } from './directive-explorer/directive-explorer.component';
-import { ApplicationEnvironment } from '../application-environment/index';
-import { MatSlideToggleChange } from '@angular/material/slide-toggle';
-import { TabUpdate } from './tab-update/index';
-import { Theme, ThemeService } from '../theme-service';
-import { Subscription } from 'rxjs';
-import { MatTabNav } from '@angular/material/tabs';
+import {AfterViewInit, Component, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {MatSlideToggleChange} from '@angular/material/slide-toggle';
+import {MatTabNav} from '@angular/material/tabs';
+import {Events, MessageBus, Route} from 'protocol';
+import {Subscription} from 'rxjs';
+
+import {ApplicationEnvironment} from '../application-environment/index';
+import {Theme, ThemeService} from '../theme-service';
+
+import {DirectiveExplorerComponent} from './directive-explorer/directive-explorer.component';
+import {TabUpdate} from './tab-update/index';
 
 @Component({
   selector: 'ng-devtools-tabs',
@@ -15,11 +17,11 @@ import { MatTabNav } from '@angular/material/tabs';
   styleUrls: ['./devtools-tabs.component.scss'],
 })
 export class DevToolsTabsComponent implements OnInit, OnDestroy, AfterViewInit {
-  @Input() angularVersion: string | undefined = undefined;
+  @Input() angularVersion: string|undefined = undefined;
   @ViewChild(DirectiveExplorerComponent) directiveExplorer: DirectiveExplorerComponent;
-  @ViewChild('navBar', { static: true }) navbar: MatTabNav;
+  @ViewChild('navBar', {static: true}) navbar: MatTabNav;
 
-  activeTab: 'Components' | 'Profiler' | 'Router Tree' = 'Components';
+  activeTab: 'Components'|'Profiler'|'Router Tree' = 'Components';
 
   inspectorRunning = false;
   routerTreeEnabled = false;
@@ -31,14 +33,13 @@ export class DevToolsTabsComponent implements OnInit, OnDestroy, AfterViewInit {
   routes: Route[] = [];
 
   constructor(
-    public tabUpdate: TabUpdate,
-    public themeService: ThemeService,
-    private _messageBus: MessageBus<Events>,
-    private _applicationEnvironment: ApplicationEnvironment
-  ) {}
+      public tabUpdate: TabUpdate, public themeService: ThemeService,
+      private _messageBus: MessageBus<Events>,
+      private _applicationEnvironment: ApplicationEnvironment) {}
 
   ngOnInit(): void {
-    this._currentThemeSubscription = this.themeService.currentTheme.subscribe((theme) => (this.currentTheme = theme));
+    this._currentThemeSubscription =
+        this.themeService.currentTheme.subscribe((theme) => (this.currentTheme = theme));
 
     this._messageBus.on('updateRouterTree', (routes) => {
       this.routes = routes || [];
@@ -62,7 +63,7 @@ export class DevToolsTabsComponent implements OnInit, OnDestroy, AfterViewInit {
     return this._applicationEnvironment.environment.LATEST_SHA.slice(0, 8);
   }
 
-  changeTab(tab: 'Profiler' | 'Components' | 'Router Tree'): void {
+  changeTab(tab: 'Profiler'|'Components'|'Router Tree'): void {
     this.activeTab = tab;
     this.tabUpdate.notify();
     if (tab === 'Router Tree') {
@@ -90,6 +91,7 @@ export class DevToolsTabsComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   toggleTimingAPI(change: MatSlideToggleChange): void {
-    change.checked ? this._messageBus.emit('enableTimingAPI') : this._messageBus.emit('disableTimingAPI');
+    change.checked ? this._messageBus.emit('enableTimingAPI') :
+                     this._messageBus.emit('disableTimingAPI');
   }
 }
