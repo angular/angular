@@ -6,13 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export function getClosureSafeProperty<T>(objWithPropertyToExtract: T): string {
-  for (let key in objWithPropertyToExtract) {
-    if (objWithPropertyToExtract[key] === getClosureSafeProperty as any) {
-      return key;
-    }
+export function getClosureSafeProperty(
+    objWithPropertyToExtract: Record<string, typeof getClosureSafeProperty>): string {
+  const key = Object.keys(objWithPropertyToExtract)[0];
+  if ((typeof ngDevMode === 'undefined' || ngDevMode) &&
+      objWithPropertyToExtract[key] !== getClosureSafeProperty) {
+    throw Error('Could not find renamed property on target object.');
   }
-  throw Error('Could not find renamed property on target object.');
+  return key;
 }
 
 /**

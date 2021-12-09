@@ -15,8 +15,7 @@ import {resolveForwardRef} from './forward_ref';
 import {injectArgs, ɵɵinject} from './injector_compatibility';
 import {ClassSansProvider, ConstructorSansProvider, ExistingSansProvider, FactorySansProvider, StaticClassSansProvider, ValueProvider, ValueSansProvider} from './interface/provider';
 
-const USE_VALUE =
-    getClosureSafeProperty<ValueProvider>({provide: String, useValue: getClosureSafeProperty});
+const USE_VALUE = getClosureSafeProperty({useValue: getClosureSafeProperty});
 
 export function convertInjectableProviderToFactory(
     type: Type<any>,

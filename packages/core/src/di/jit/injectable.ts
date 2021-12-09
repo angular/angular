@@ -68,8 +68,7 @@ export function compileInjectable(type: Type<any>, meta?: Injectable): void {
 
 type UseClassProvider = Injectable&ClassSansProvider&{deps?: any[]};
 
-const USE_VALUE =
-    getClosureSafeProperty<ValueProvider>({provide: String, useValue: getClosureSafeProperty});
+const USE_VALUE = getClosureSafeProperty({useValue: getClosureSafeProperty});
 
 function isUseClassProvider(meta: Injectable): meta is UseClassProvider {
   return (meta as UseClassProvider).useClass !== undefined;

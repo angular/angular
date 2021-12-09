@@ -36,8 +36,7 @@ const NEW_LINE = /\n/gm;
 const NO_NEW_LINE = 'ɵ';
 export const SOURCE = '__source';
 
-export const USE_VALUE =
-    getClosureSafeProperty<ValueProvider>({provide: String, useValue: getClosureSafeProperty});
+export const USE_VALUE = getClosureSafeProperty({useValue: getClosureSafeProperty});
 
 /**
  * Current injector value used by `inject`.
