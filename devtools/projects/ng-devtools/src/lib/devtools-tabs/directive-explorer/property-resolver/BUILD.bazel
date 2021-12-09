@@ -14,7 +14,7 @@ ng_ts_project(
         "property-data-source.ts",
         "property-expanded-directive-properties.ts",
     ],
-    tsconfig = "//projects/ng-devtools:tsconfig-lib",
+    tsconfig = "//projects/ng-devtools:tsconfig_lib",
     deps = [
         "//projects/ng-devtools/src/lib/devtools-tabs/diffing",
         "//projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/index-forest",
@@ -28,7 +28,7 @@ ng_ts_project(
 )
 
 ts_test_project(
-    name = "property-resolver-test",
+    name = "property_resolver_test",
     srcs = [
         "arrayify-props.spec.ts",
         "directive-property-resolver.spec.ts",
@@ -46,7 +46,7 @@ ts_test_project(
 karma_web_test_suite(
     name = "test",
     deps = [
-        ":property-resolver-test",
+        ":property_resolver_test",
         "@npm//@angular/material",
     ],
 )

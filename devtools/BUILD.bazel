@@ -8,7 +8,7 @@ exports_files([
 ])
 
 ts_config(
-    name = "tsconfig-spec",
+    name = "tsconfig_spec",
     src = "tsconfig.spec.json",
     deps = [
         "//:tsconfig.json",

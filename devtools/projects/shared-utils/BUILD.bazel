@@ -6,19 +6,19 @@ load("//tools:defaults.bzl", "karma_web_test_suite")
 package(default_visibility = ["//visibility:public"])
 
 ts_config(
-    name = "tsconfig-lib",
+    name = "tsconfig_lib",
     src = "tsconfig.lib.json",
     deps = ["//:tsconfig.json"],
 )
 
 ts_config(
-    name = "tsconfig-spec",
+    name = "tsconfig_spec",
     src = "tsconfig.spec.json",
     deps = ["//:tsconfig.json"],
 )
 
 ts_project(
-    name = "shared-utils-ts",
+    name = "shared_utils_ts",
     srcs = glob(
         ["**/*.ts"],
         exclude = [
@@ -26,7 +26,7 @@ ts_project(
             "src/test.ts",
         ],
     ),
-    tsconfig = ":tsconfig-lib",
+    tsconfig = ":tsconfig_lib",
     deps = [
         "@npm//@angular/core",
         "@npm//@angular/platform-browser-dynamic",
@@ -37,11 +37,11 @@ ts_project(
 js_library(
     name = "shared-utils",
     package_name = "shared-utils",
-    deps = [":shared-utils-ts"],
+    deps = [":shared_utils_ts"],
 )
 
 ts_test_project(
-    name = "shared-utils-test",
+    name = "shared_utils_test",
     srcs = glob(["**/*.spec.ts"]),
     deps = [
         ":shared-utils",
@@ -54,6 +54,6 @@ ts_test_project(
 karma_web_test_suite(
     name = "test",
     deps = [
-        "//projects/shared-utils:shared-utils-test",
+        "//projects/shared-utils:shared_utils_test",
     ],
 )

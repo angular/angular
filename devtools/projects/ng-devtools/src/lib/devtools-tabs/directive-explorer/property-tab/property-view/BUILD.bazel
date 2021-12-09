@@ -4,7 +4,7 @@ load("//tools:angular_ts_project.bzl", "ng_ts_project")
 package(default_visibility = ["//visibility:public"])
 
 multi_sass_binary(
-    name = "property-view-styles",
+    name = "property_view_styles",
     srcs = [
         "property-editor.component.scss",
         "property-preview.component.scss",
@@ -36,9 +36,9 @@ ng_ts_project(
         "property-preview.component.html",
         "property-editor.component.html",
         "property-tab-body.component.html",
-        ":property-view-styles",
+        ":property_view_styles",
     ],
-    tsconfig = "//projects/ng-devtools:tsconfig-lib",
+    tsconfig = "//projects/ng-devtools:tsconfig_lib",
     deps = [
         "//projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/index-forest",
         "//projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-resolver",

@@ -20,18 +20,18 @@ html_insert_assets(
         "--roots=. $(RULEDIR)",
         "--assets",
     ] + ["$(execpath %s)" % s for s in _ASSETS] + [
-        "--scripts --module $(execpath :bundle-es2015)/index.js",
+        "--scripts --module $(execpath :bundle_es2015)/index.js",
     ],
     data = [
         "//projects/demo-no-zone/src:_index.html",
-        ":bundle-es2015",
+        ":bundle_es2015",
     ] + _ASSETS,
 )
 
 ng_ts_project(
     name = "src",
     srcs = ["main.ts"],
-    tsconfig = "//projects/demo-no-zone:tsconfig-app",
+    tsconfig = "//projects/demo-no-zone:tsconfig_app",
     deps = [
         "//projects/demo-no-zone/src/app",
         "@npm//@angular/common",
@@ -44,7 +44,7 @@ ng_ts_project(
 )
 
 rollup_bundle(
-    name = "bundle-es2015",
+    name = "bundle_es2015",
     config_file = "rollup.config.js",
     entry_points = {
         ":main.ts": "index",
@@ -60,7 +60,7 @@ rollup_bundle(
 pkg_web(
     name = "devapp",
     srcs = _ASSETS + [
-        ":bundle-es2015",
+        ":bundle_es2015",
         ":inject_scripts_for_dev",
     ],
     additional_root_paths = [],

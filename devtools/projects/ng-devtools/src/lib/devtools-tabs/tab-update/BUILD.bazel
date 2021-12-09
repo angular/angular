@@ -9,7 +9,7 @@ ts_project(
             "index.ts",
         ],
     ),
-    tsconfig = "//projects/ng-devtools:tsconfig-lib",
+    tsconfig = "//projects/ng-devtools:tsconfig_lib",
     deps = [
         "@npm//@types",
         "@npm//rxjs",

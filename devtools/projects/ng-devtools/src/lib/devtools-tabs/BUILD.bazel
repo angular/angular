@@ -6,7 +6,7 @@ load("//tools:defaults.bzl", "karma_web_test_suite")
 package(default_visibility = ["//visibility:public"])
 
 sass_binary(
-    name = "devtools-tabs-component-styles",
+    name = "devtools_tabs_component_styles",
     src = "devtools-tabs.component.scss",
 )
 
@@ -18,9 +18,9 @@ ng_ts_project(
     ],
     angular_assets = [
         "devtools-tabs.component.html",
-        ":devtools-tabs-component-styles",
+        ":devtools_tabs_component_styles",
     ],
-    tsconfig = "//projects/ng-devtools:tsconfig-lib",
+    tsconfig = "//projects/ng-devtools:tsconfig_lib",
     deps = [
         "//projects/ng-devtools/src/lib:theme",
         "//projects/ng-devtools/src/lib/application-environment",
@@ -38,7 +38,7 @@ ng_ts_project(
 )
 
 ts_test_project(
-    name = "devtools-tabs-test",
+    name = "devtools_tabs_test",
     srcs = ["devtools-tabs.spec.ts"],
     deps = [
         ":devtools-tabs",
@@ -51,6 +51,6 @@ ts_test_project(
 karma_web_test_suite(
     name = "test",
     deps = [
-        ":devtools-tabs-test",
+        ":devtools_tabs_test",
     ],
 )

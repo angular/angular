@@ -5,7 +5,7 @@ package(default_visibility = ["//visibility:public"])
 ng_ts_project(
     name = "angular-split",
     srcs = ["public_api.ts"],
-    tsconfig = "//projects/ng-devtools:tsconfig-lib",
+    tsconfig = "//projects/ng-devtools:tsconfig_lib",
     deps = [
         "//projects/ng-devtools/src/lib/vendor/angular-split/lib",
         "//projects/ng-devtools/src/lib/vendor/angular-split/lib/component:split",

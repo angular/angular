@@ -9,7 +9,7 @@ ts_project(
         include = ["*.ts"],
         exclude = ["*.spec.ts"],
     ),
-    tsconfig = "//projects/ng-devtools-backend:tsconfig-lib",
+    tsconfig = "//projects/ng-devtools-backend:tsconfig_lib",
     deps = [
         "//projects/ng-devtools-backend/src/lib:highlighter",
         "//projects/ng-devtools-backend/src/lib:interfaces",
@@ -22,12 +22,12 @@ ts_project(
 karma_web_test_suite(
     name = "test",
     deps = [
-        ":test-lib",
+        ":test_lib",
     ],
 )
 
 ts_test_project(
-    name = "test-lib",
+    name = "test_lib",
     srcs = [
         "render-tree.spec.ts",
     ],

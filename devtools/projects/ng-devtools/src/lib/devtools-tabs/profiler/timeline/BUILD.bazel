@@ -6,7 +6,7 @@ load("//tools:defaults.bzl", "karma_web_test_suite")
 package(default_visibility = ["//visibility:public"])
 
 multi_sass_binary(
-    name = "timeline-styles",
+    name = "timeline_styles",
     srcs = [
         "frame-selector.component.scss",
         "recording-dialog.component.scss",
@@ -16,7 +16,7 @@ multi_sass_binary(
 )
 
 sass_binary(
-    name = "recording-modal-styles",
+    name = "recording_modal_styles",
     src = "recording-modal.component.scss",
     include_paths = ["node_modules"],
 )
@@ -38,10 +38,10 @@ ng_ts_project(
         "recording-modal.component.html",
         "recording-dialog.component.html",
         "frame-selector.component.html",
-        ":timeline-styles",
-        ":recording-modal-styles",
+        ":timeline_styles",
+        ":recording_modal_styles",
     ],
-    tsconfig = "//projects/ng-devtools:tsconfig-lib",
+    tsconfig = "//projects/ng-devtools:tsconfig_lib",
     deps = [
         "//projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter",
         "//projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/recording-visualizer",
@@ -59,7 +59,7 @@ ng_ts_project(
 )
 
 ts_test_project(
-    name = "test-lib",
+    name = "test_lib",
     srcs = [
         "filter.spec.ts",
         "timeline.component.spec.ts",
@@ -72,6 +72,6 @@ ts_test_project(
 karma_web_test_suite(
     name = "test",
     deps = [
-        ":test-lib",
+        ":test_lib",
     ],
 )

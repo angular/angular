@@ -4,7 +4,7 @@ load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
 package(default_visibility = ["//visibility:public"])
 
 sass_binary(
-    name = "devtools-component-styles",
+    name = "devtools_component_styles",
     src = "devtools.component.scss",
 )
 
@@ -16,9 +16,9 @@ ng_ts_project(
     ),
     angular_assets = [
         "devtools.component.html",
-        ":devtools-component-styles",
+        ":devtools_component_styles",
     ],
-    tsconfig = "//projects/ng-devtools:tsconfig-lib",
+    tsconfig = "//projects/ng-devtools:tsconfig_lib",
     deps = [
         ":theme",
         "//projects/ng-devtools/src/lib/devtools-tabs",
@@ -40,7 +40,7 @@ ng_ts_project(
     srcs = glob(
         include = ["theme-service.ts"],
     ),
-    tsconfig = "//projects/ng-devtools:tsconfig-lib",
+    tsconfig = "//projects/ng-devtools:tsconfig_lib",
     deps = [
         "@npm//@angular/core",
         "@npm//@types",

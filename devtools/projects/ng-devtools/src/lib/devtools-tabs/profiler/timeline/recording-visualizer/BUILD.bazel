@@ -4,7 +4,7 @@ load("//tools:angular_ts_project.bzl", "ng_ts_project")
 package(default_visibility = ["//visibility:public"])
 
 multi_sass_binary(
-    name = "recording-visualizer-styles",
+    name = "recording_visualizer_styles",
     srcs = [
         "bar-chart.component.scss",
         "bargraph-visualizer.component.scss",
@@ -34,9 +34,9 @@ ng_ts_project(
         "bargraph-visualizer.component.html",
         "bar-chart.component.html",
         "execution-details.component.html",
-        ":recording-visualizer-styles",
+        ":recording_visualizer_styles",
     ],
-    tsconfig = "//projects/ng-devtools:tsconfig-lib",
+    tsconfig = "//projects/ng-devtools:tsconfig_lib",
     deps = [
         "//projects/ng-devtools/src/lib:theme",
         "//projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter/bargraph-formatter",

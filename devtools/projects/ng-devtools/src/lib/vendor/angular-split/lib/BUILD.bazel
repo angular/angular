@@ -4,7 +4,7 @@ load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
 package(default_visibility = ["//visibility:public"])
 
 sass_binary(
-    name = "split-component-styles",
+    name = "split_component_styles",
     src = "//projects/ng-devtools/src/lib/vendor/angular-split/lib/component:split.component.scss",
 )
 
@@ -16,7 +16,7 @@ ng_ts_project(
         ],
     ),
     angular_assets = [
-        ":split-component-styles",
+        ":split_component_styles",
     ],
     deps = [
         "//projects/ng-devtools/src/lib/vendor/angular-split/lib/component:split",

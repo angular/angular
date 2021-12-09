@@ -6,7 +6,7 @@ package(default_visibility = ["//visibility:public"])
 ts_project(
     name = "index-forest",
     srcs = ["index.ts"],
-    tsconfig = "//projects/ng-devtools:tsconfig-lib",
+    tsconfig = "//projects/ng-devtools:tsconfig_lib",
     deps = [
         "//projects/protocol",
         "@npm//@angular/material",
@@ -14,7 +14,7 @@ ts_project(
 )
 
 ts_test_project(
-    name = "index-forest-test",
+    name = "index_forest_test",
     srcs = glob(["**/*.spec.ts"]),
     deps = [
         ":index-forest",
@@ -24,6 +24,6 @@ ts_test_project(
 karma_web_test_suite(
     name = "test",
     deps = [
-        ":index-forest-test",
+        ":index_forest_test",
     ],
 )

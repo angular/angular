@@ -4,7 +4,7 @@ load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
 package(default_visibility = ["//visibility:public"])
 
 sass_binary(
-    name = "devtools-app-component-styles",
+    name = "devtools_app_component_styles",
     src = "devtools-app.component.scss",
 )
 
@@ -16,12 +16,12 @@ ng_ts_project(
     ],
     angular_assets = [
         "devtools-app.component.html",
-        ":devtools-app-component-styles",
+        ":devtools_app_component_styles",
     ],
     deps = [
         "//projects/ng-devtools",
         "//projects/protocol",
-        "//src:iframe-message-bus",
+        "//src:iframe_message_bus",
         "@npm//@angular/common",
         "@npm//@angular/core",
         "@npm//@angular/router",

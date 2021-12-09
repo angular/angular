@@ -5,15 +5,15 @@ load("//tools:typescript.bzl", "ts_project")
 package(default_visibility = ["//visibility:public"])
 
 ts_config(
-    name = "tsconfig-lib",
+    name = "tsconfig_lib",
     src = "tsconfig.lib.json",
     deps = ["//:tsconfig.json"],
 )
 
 ts_project(
-    name = "ng-devtools-backend-ts",
+    name = "ng_devtools_backend_ts",
     srcs = ["index.ts"],
-    tsconfig = ":tsconfig-lib",
+    tsconfig = ":tsconfig_lib",
     deps = [
         "//projects/ng-devtools-backend/src",
     ],
@@ -22,5 +22,5 @@ ts_project(
 js_library(
     name = "ng-devtools-backend",
     package_name = "ng-devtools-backend",
-    deps = [":ng-devtools-backend-ts"],
+    deps = [":ng_devtools_backend_ts"],
 )

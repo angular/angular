@@ -4,7 +4,7 @@ load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
 package(default_visibility = ["//:__subpackages__"])
 
 sass_binary(
-    name = "router-tree-styles",
+    name = "router_tree_styles",
     src = "router-tree.component.scss",
 )
 
@@ -16,9 +16,9 @@ ng_ts_project(
     ],
     angular_assets = [
         ":router-tree.component.html",
-        ":router-tree-styles",
+        ":router_tree_styles",
     ],
-    tsconfig = "//projects/ng-devtools:tsconfig-lib",
+    tsconfig = "//projects/ng-devtools:tsconfig_lib",
     deps = [
         "//projects/protocol",
         "@npm//@angular/common",

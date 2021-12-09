@@ -6,7 +6,7 @@ package(default_visibility = ["//visibility:public"])
 ts_project(
     name = "component-data-source",
     srcs = ["index.ts"],
-    tsconfig = "//projects/ng-devtools:tsconfig-lib",
+    tsconfig = "//projects/ng-devtools:tsconfig_lib",
     deps = [
         "//projects/ng-devtools/src/lib/devtools-tabs/diffing",
         "//projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/index-forest",
@@ -20,7 +20,7 @@ ts_project(
 )
 
 ts_test_project(
-    name = "component-data-source-test",
+    name = "component_data_source_test",
     srcs = glob(["**/*.spec.ts"]),
     deps = [
         ":component-data-source",
@@ -32,6 +32,6 @@ ts_test_project(
 karma_web_test_suite(
     name = "test",
     deps = [
-        ":component-data-source-test",
+        ":component_data_source_test",
     ],
 )

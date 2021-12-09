@@ -6,9 +6,9 @@ package(default_visibility = ["//visibility:public"])
 ts_project(
     name = "lib",
     srcs = ["index.ts"],
-    tsconfig = "//projects/ng-devtools-backend:tsconfig-lib",
+    tsconfig = "//projects/ng-devtools-backend:tsconfig_lib",
     deps = [
-        ":client-event-subscribers",
+        ":client_event_subscribers",
         "//projects/ng-devtools-backend/src/lib/component-inspector",
         "//projects/ng-devtools-backend/src/lib/directive-forest",
         "//projects/ng-devtools-backend/src/lib/hooks",
@@ -18,14 +18,14 @@ ts_project(
 )
 
 karma_web_test_suite(
-    name = "highlighter-test",
+    name = "highlighter_test",
     deps = [
-        ":highlighter-test-lib",
+        ":highlighter_test_lib",
     ],
 )
 
 ts_test_project(
-    name = "highlighter-test-lib",
+    name = "highlighter_test_lib",
     srcs = [
         "highlighter.spec.ts",
     ],
@@ -40,32 +40,32 @@ ts_test_project(
 ts_project(
     name = "highlighter",
     srcs = ["highlighter.ts"],
-    tsconfig = "//projects/ng-devtools-backend:tsconfig-lib",
+    tsconfig = "//projects/ng-devtools-backend:tsconfig_lib",
 )
 
 ts_project(
     name = "interfaces",
     srcs = ["interfaces.ts"],
-    tsconfig = "//projects/ng-devtools-backend:tsconfig-lib",
+    tsconfig = "//projects/ng-devtools-backend:tsconfig_lib",
     deps = [
         "//projects/protocol",
     ],
 )
 
 karma_web_test_suite(
-    name = "router-tree-test",
+    name = "router_tree_test",
     deps = [
-        ":router-tree-test-lib",
+        ":router_tree_test_lib",
     ],
 )
 
 ts_test_project(
-    name = "router-tree-test-lib",
+    name = "router_tree_test_lib",
     srcs = [
         "router-tree.spec.ts",
     ],
     deps = [
-        ":router-tree",
+        ":router_tree",
         "//projects/protocol",
         "@npm//@angular/core",
         "@npm//@angular/platform-browser-dynamic",
@@ -75,18 +75,18 @@ ts_test_project(
 )
 
 ts_project(
-    name = "router-tree",
+    name = "router_tree",
     srcs = ["router-tree.ts"],
-    tsconfig = "//projects/ng-devtools-backend:tsconfig-lib",
+    tsconfig = "//projects/ng-devtools-backend:tsconfig_lib",
     deps = [
         "//projects/protocol",
     ],
 )
 
 ts_project(
-    name = "set-console-reference",
+    name = "set_console_reference",
     srcs = ["set-console-reference.ts"],
-    tsconfig = "//projects/ng-devtools-backend:tsconfig-lib",
+    tsconfig = "//projects/ng-devtools-backend:tsconfig_lib",
     deps = [
         ":interfaces",
         "//projects/protocol",
@@ -97,25 +97,25 @@ ts_project(
 ts_project(
     name = "utils",
     srcs = ["utils.ts"],
-    tsconfig = "//projects/ng-devtools-backend:tsconfig-lib",
+    tsconfig = "//projects/ng-devtools-backend:tsconfig_lib",
 )
 
 ts_project(
     name = "version",
     srcs = ["version.ts"],
-    tsconfig = "//projects/ng-devtools-backend:tsconfig-lib",
+    tsconfig = "//projects/ng-devtools-backend:tsconfig_lib",
 )
 
 ts_project(
-    name = "client-event-subscribers",
+    name = "client_event_subscribers",
     srcs = ["client-event-subscribers.ts"],
-    tsconfig = "//projects/ng-devtools-backend:tsconfig-lib",
+    tsconfig = "//projects/ng-devtools-backend:tsconfig_lib",
     deps = [
-        ":angular-check",
-        ":component-tree",
+        ":angular_check",
+        ":component_tree",
         ":highlighter",
         ":interfaces",
-        ":set-console-reference",
+        ":set_console_reference",
         ":utils",
         "//projects/ng-devtools-backend/src/lib/component-inspector",
         "//projects/ng-devtools-backend/src/lib/hooks",
@@ -126,9 +126,9 @@ ts_project(
 )
 
 ts_project(
-    name = "component-tree",
+    name = "component_tree",
     srcs = ["component-tree.ts"],
-    tsconfig = "//projects/ng-devtools-backend:tsconfig-lib",
+    tsconfig = "//projects/ng-devtools-backend:tsconfig_lib",
     deps = [
         ":interfaces",
         "//projects/ng-devtools-backend/src/lib/directive-forest",
@@ -138,25 +138,25 @@ ts_project(
 )
 
 karma_web_test_suite(
-    name = "angular-check-test",
+    name = "angular_check_test",
     deps = [
-        ":angular-check-test-lib",
+        ":angular_check_test_lib",
     ],
 )
 
 ts_test_project(
-    name = "angular-check-test-lib",
+    name = "angular_check_test_lib",
     srcs = [
         "angular-check.spec.ts",
     ],
     deps = [
-        ":angular-check",
+        ":angular_check",
         "@npm//@types",
     ],
 )
 
 ts_project(
-    name = "angular-check",
+    name = "angular_check",
     srcs = ["angular-check.ts"],
-    tsconfig = "//projects/ng-devtools-backend:tsconfig-lib",
+    tsconfig = "//projects/ng-devtools-backend:tsconfig_lib",
 )

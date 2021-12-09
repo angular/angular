@@ -13,7 +13,7 @@ ts_project(
             "tree-map-formatter.spec.ts",
         ],
     ),
-    tsconfig = "//projects/ng-devtools:tsconfig-lib",
+    tsconfig = "//projects/ng-devtools:tsconfig_lib",
     deps = [
         "//projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter",
         "//projects/ng-devtools/src/lib/vendor/memo-decorator",
@@ -22,14 +22,14 @@ ts_project(
 )
 
 ts_test_project(
-    name = "test-lib",
+    name = "test_lib",
     srcs = [
         "tree-map-formatter.spec.ts",
     ],
     deps = [
         ":tree-map-formatter",
         "//projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter",
-        "//projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter:record-formatter-spec-constants",
+        "//projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter:record_formatter_spec_constants",
         "//projects/protocol",
     ],
 )
@@ -37,6 +37,6 @@ ts_test_project(
 karma_web_test_suite(
     name = "test",
     deps = [
-        ":test-lib",
+        ":test_lib",
     ],
 )
