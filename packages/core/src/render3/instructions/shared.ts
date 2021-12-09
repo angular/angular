@@ -360,7 +360,7 @@ export function refreshView<T>(
   enterView(lView);
   // Check no changes mode is a dev only mode used to verify that bindings have not changed
   // since they were assigned. We do not want to execute lifecycle hooks in that mode.
-  const isInCheckNoChangesPass = isInCheckNoChangesMode();
+  const isInCheckNoChangesPass = ngDevMode && isInCheckNoChangesMode();
   try {
     resetPreOrderHookFlags(lView);
 
@@ -481,7 +481,7 @@ export function refreshView<T>(
 export function renderComponentOrTemplate<T>(
     tView: TView, lView: LView, templateFn: ComponentTemplate<{}>|null, context: T) {
   const rendererFactory = lView[RENDERER_FACTORY];
-  const normalExecutionPath = !isInCheckNoChangesMode();
+  const normalExecutionPath = !ngDevMode || !isInCheckNoChangesMode();
   const creationModeIsActive = isCreationMode(lView);
   try {
     if (normalExecutionPath && !creationModeIsActive && rendererFactory.begin) {
@@ -507,7 +507,7 @@ function executeTemplate<T>(
     if (isUpdatePhase && lView.length > HEADER_OFFSET) {
       // When we're updating, inherently select 0 so we don't
       // have to generate that instruction for most update blocks.
-      selectIndexInternal(tView, lView, HEADER_OFFSET, isInCheckNoChangesMode());
+      selectIndexInternal(tView, lView, HEADER_OFFSET, !!ngDevMode && isInCheckNoChangesMode());
     }
 
     const preHookType =
