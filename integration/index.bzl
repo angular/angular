@@ -38,6 +38,7 @@ def _ng_integration_test(name, setup_chromium = False, **kwargs):
     use_view_engine_packages = kwargs.pop("use_view_engine_packages", [])
     toolchains = kwargs.pop("toolchains", [])
     environment = kwargs.pop("environment", {})
+    track_payload_size = kwargs.pop("track_payload_size", None)
     data = kwargs.pop("data", [])
 
     data += [
@@ -56,18 +57,16 @@ def _ng_integration_test(name, setup_chromium = False, **kwargs):
 
     # By default run `yarn install` followed by `yarn test` using the tools linked
     # into the integration tests (using the `tool_mappings` attribute).
-    commands = [
+    commands = kwargs.pop("commands", [
         "yarn install --cache-folder ./.yarn_local_cache",
         "yarn test",
-    ]
+    ])
 
-    command_type = kwargs.pop("commands", "default")
-
-    if command_type == "payload_size_tracking":
+    if track_payload_size:
         commands += [
             "yarn build",
             # TODO: Replace the track payload-size script with a RBE and Windows-compatible script.
-            "$(rootpath //:scripts/ci/track-payload-size.sh) %s dist/*.js true $${RUNFILES}/angular/$(rootpath //goldens:size-tracking/integration-payloads.json)" % name,
+            "$(rootpath //:scripts/ci/track-payload-size.sh) %s 'dist/*.js' true $${RUNFILES}/angular/$(rootpath //goldens:size-tracking/integration-payloads.json)" % track_payload_size,
         ]
         data += [
             "//goldens:size-tracking/integration-payloads.json",
