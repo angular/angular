@@ -992,6 +992,14 @@
     "bio": "GDE (Google Developer Expert) Angular and Web Technologies, GDG Salvador organizer, passionate about technology and active in communities with a focus on web development, including Angular, JavaScript, HTML5, CSS3, Workflow, web performance, security and Internet of things. Participates in events organization, speaker at conferences in Brazil and other countries and contributes to several open source projects.",
     "groups": ["GDE"]
   },
+  "yharaskrik": {
+    "name": "Jay Bell",
+    "picture": "jaybell.jpg",
+    "twitter": "jaycooperbell",
+    "website": "tech.trellis.org",
+    "bio": "Jay is the CTO and Co-Founder of a Social Enterprise in Canada that is using Angular and technology to empower global collective impact in the non-profit and charity industries. He is an avid contributor to Nx and loves Angular, NgRx and Nest. Jay loves to share knowledge he has learned from figuring out problems (complex or otherwise) so that others can solve them easier the next time.",
+    "groups": ["GDE"]
+  },
   "yjaaidi": {
     "name": "Younes Jaaidi",
     "picture": "younes.jpg",
