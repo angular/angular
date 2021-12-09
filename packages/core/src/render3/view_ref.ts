@@ -281,7 +281,9 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_Int
    * introduce other changes.
    */
   checkNoChanges(): void {
-    checkNoChangesInternal(this._lView[TVIEW], this._lView, this.context as unknown as {});
+    if (ngDevMode) {
+      checkNoChangesInternal(this._lView[TVIEW], this._lView, this.context as unknown as {});
+    }
   }
 
   attachToViewContainerRef() {
@@ -318,7 +320,9 @@ export class RootViewRef<T> extends ViewRef<T> {
   }
 
   override checkNoChanges(): void {
-    checkNoChangesInRootView(this._view);
+    if (ngDevMode) {
+      checkNoChangesInRootView(this._view);
+    }
   }
 
   override get context(): T {
