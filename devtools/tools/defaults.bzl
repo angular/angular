@@ -13,7 +13,6 @@ def karma_web_test_suite(name, **kwargs):
     web_test_args = {}
     test_deps = kwargs.get("deps", [])
 
-    kwargs["tags"] = ["partial-compilation-integration"] + kwargs.get("tags", [])
     kwargs["deps"] = ["%s_bundle" % name]
 
     spec_bundle(
