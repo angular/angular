@@ -993,12 +993,6 @@
     "name": "detachView"
   },
   {
-    "name": "detectChangesInRootView"
-  },
-  {
-    "name": "detectChangesInternal"
-  },
-  {
     "name": "diPublicInInjector"
   },
   {
@@ -1416,9 +1410,6 @@
     "name": "isImmediateMatch"
   },
   {
-    "name": "isInCheckNoChangesMode"
-  },
-  {
     "name": "isInlineTemplate"
   },
   {
@@ -1759,9 +1750,6 @@
   },
   {
     "name": "setInputsFromAttrs"
-  },
-  {
-    "name": "setIsInCheckNoChangesMode"
   },
   {
     "name": "setRouterState"
