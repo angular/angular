@@ -1,6 +1,6 @@
-import { MessageBus } from './message-bus';
-import { Events, Topic } from './messages';
-import { PriorityAwareMessageBus } from './priority-aware-message-bus';
+import {MessageBus} from './message-bus';
+import {Events, Topic} from './messages';
+import {PriorityAwareMessageBus} from './priority-aware-message-bus';
 
 class MockMessageBus extends MessageBus<Events> {
   cbs: any = {};

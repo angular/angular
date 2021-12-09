@@ -1,12 +1,12 @@
-import { LTreeStrategy } from './ltree';
-import { RTreeStrategy } from './render-tree';
+import {LTreeStrategy} from './ltree';
+import {RTreeStrategy} from './render-tree';
 
-export { getLViewFromDirectiveOrElementInstance, getDirectiveHostElement, METADATA_PROPERTY_NAME } from './ltree';
+export {getDirectiveHostElement, getLViewFromDirectiveOrElementInstance, METADATA_PROPERTY_NAME} from './ltree';
 
 // The order of the strategies matters. Lower indices have higher priority.
 const strategies = [new RTreeStrategy(), new LTreeStrategy()];
 
-let strategy: null | RTreeStrategy | LTreeStrategy = null;
+let strategy: null|RTreeStrategy|LTreeStrategy = null;
 
 const selectStrategy = (element: Element) => {
   for (const s of strategies) {

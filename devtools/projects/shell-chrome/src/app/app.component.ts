@@ -1,7 +1,8 @@
-import { Component, OnInit, ChangeDetectorRef, NgZone } from '@angular/core';
-import { injectScripts } from './inject';
-import { PriorityAwareMessageBus, MessageBus, Events } from 'protocol';
-import { ZoneAwareChromeMessageBus } from './zone-aware-chrome-message-bus';
+import {ChangeDetectorRef, Component, NgZone, OnInit} from '@angular/core';
+import {Events, MessageBus, PriorityAwareMessageBus} from 'protocol';
+
+import {injectScripts} from './inject';
+import {ZoneAwareChromeMessageBus} from './zone-aware-chrome-message-bus';
 
 @Component({
   selector: 'app-root',

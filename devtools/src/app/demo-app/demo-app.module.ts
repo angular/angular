@@ -1,12 +1,13 @@
-import { NgModule, Injector, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { DemoAppComponent } from './demo-app.component';
-import { RouterModule } from '@angular/router';
+import {CUSTOM_ELEMENTS_SCHEMA, Injector, NgModule} from '@angular/core';
+import {createCustomElement} from '@angular/elements';
+import {RouterModule} from '@angular/router';
+import {initializeMessageBus} from 'ng-devtools-backend';
 
-import { initializeMessageBus } from 'ng-devtools-backend';
-import { ZippyComponent } from './zippy.component';
-import { ZoneUnawareIFrameMessageBus } from '../../zone-unaware-iframe-message-bus';
-import { HeavyComponent } from './heavy.component';
-import { createCustomElement } from '@angular/elements';
+import {ZoneUnawareIFrameMessageBus} from '../../zone-unaware-iframe-message-bus';
+
+import {DemoAppComponent} from './demo-app.component';
+import {HeavyComponent} from './heavy.component';
+import {ZippyComponent} from './zippy.component';
 
 @NgModule({
   declarations: [DemoAppComponent, HeavyComponent],
@@ -29,11 +30,10 @@ import { createCustomElement } from '@angular/elements';
 })
 export class DemoAppModule {
   constructor(injector: Injector) {
-    const el = createCustomElement(ZippyComponent, { injector });
+    const el = createCustomElement(ZippyComponent, {injector});
     customElements.define('app-zippy', el as any);
   }
 }
 
-initializeMessageBus(
-  new ZoneUnawareIFrameMessageBus('angular-devtools-backend', 'angular-devtools', () => window.parent)
-);
+initializeMessageBus(new ZoneUnawareIFrameMessageBus(
+    'angular-devtools-backend', 'angular-devtools', () => window.parent));

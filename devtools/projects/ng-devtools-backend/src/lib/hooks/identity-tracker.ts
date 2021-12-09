@@ -1,9 +1,10 @@
-import { ComponentTreeNode, DirectiveInstanceType, ComponentInstanceType } from '../interfaces';
-import { ElementPosition, DevToolsNode } from 'protocol';
-import { buildDirectiveForest } from '../component-tree';
+import {DevToolsNode, ElementPosition} from 'protocol';
+
+import {buildDirectiveForest} from '../component-tree';
+import {ComponentInstanceType, ComponentTreeNode, DirectiveInstanceType} from '../interfaces';
 
 export declare interface Type<T> extends Function {
-  new (...args: any[]): T;
+  new(...args: any[]): T;
 }
 
 interface TreeNode {
@@ -13,8 +14,7 @@ interface TreeNode {
 }
 
 export type NodeArray = {
-  directive: any;
-  isComponent: boolean;
+  directive: any; isComponent: boolean;
 }[];
 
 export class IdentityTracker {
@@ -35,11 +35,11 @@ export class IdentityTracker {
     return IdentityTracker._instance;
   }
 
-  getDirectivePosition(dir: any): ElementPosition | undefined {
+  getDirectivePosition(dir: any): ElementPosition|undefined {
     return this._currentDirectivePosition.get(dir);
   }
 
-  getDirectiveId(dir: any): number | undefined {
+  getDirectiveId(dir: any): number|undefined {
     return this._currentDirectiveId.get(dir);
   }
 
@@ -48,9 +48,7 @@ export class IdentityTracker {
   }
 
   index(): {
-    newNodes: NodeArray;
-    removedNodes: NodeArray;
-    indexedForest: IndexedNode[];
+    newNodes: NodeArray; removedNodes: NodeArray; indexedForest: IndexedNode[];
     directiveForest: ComponentTreeNode[];
   } {
     const directiveForest = buildDirectiveForest();
@@ -61,22 +59,19 @@ export class IdentityTracker {
     indexedForest.forEach((root) => this._index(root, null, newNodes, allNodes));
     this._currentDirectiveId.forEach((_: number, dir: any) => {
       if (!allNodes.has(dir)) {
-        removedNodes.push({ directive: dir, isComponent: !!this.isComponent.get(dir) });
+        removedNodes.push({directive: dir, isComponent: !!this.isComponent.get(dir)});
         // We can't clean these up because during profiling
         // they might be requested for removed components
         // this._currentDirectiveId.delete(dir);
         // this._currentDirectivePosition.delete(dir);
       }
     });
-    return { newNodes, removedNodes, indexedForest, directiveForest };
+    return {newNodes, removedNodes, indexedForest, directiveForest};
   }
 
   private _index(
-    node: IndexedNode,
-    parent: TreeNode | null,
-    newNodes: { directive: any; isComponent: boolean }[],
-    allNodes: Set<any>
-  ): void {
+      node: IndexedNode, parent: TreeNode|null, newNodes: {directive: any; isComponent: boolean}[],
+      allNodes: Set<any>): void {
     if (node.component) {
       allNodes.add(node.component.instance);
       this.isComponent.set(node.component.instance, true);
@@ -93,7 +88,7 @@ export class IdentityTracker {
   private _indexNode(directive: any, position: ElementPosition, newNodes: NodeArray): void {
     this._currentDirectivePosition.set(directive, position);
     if (!this._currentDirectiveId.has(directive)) {
-      newNodes.push({ directive, isComponent: !!this.isComponent.get(directive) });
+      newNodes.push({directive, isComponent: !!this.isComponent.get(directive)});
       this._currentDirectiveId.set(directive, this._directiveIdCounter++);
     }
   }
@@ -110,21 +105,17 @@ export interface IndexedNode extends DevToolsNode<DirectiveInstanceType, Compone
 }
 
 const indexTree = <T extends DevToolsNode<DirectiveInstanceType, ComponentInstanceType>>(
-  node: T,
-  idx: number,
-  parentPosition: number[] = []
-): IndexedNode => {
+    node: T, idx: number, parentPosition: number[] = []): IndexedNode => {
   const position = parentPosition.concat([idx]);
   return {
     position,
     element: node.element,
     component: node.component,
-    directives: node.directives.map((d) => ({ position, ...d })),
+    directives: node.directives.map((d) => ({position, ...d})),
     children: node.children.map((n, i) => indexTree(n, i, position)),
     nativeElement: node.nativeElement,
   } as IndexedNode;
 };
 
 export const indexForest = <T extends DevToolsNode<DirectiveInstanceType, ComponentInstanceType>>(
-  forest: T[]
-): IndexedNode[] => forest.map((n, i) => indexTree(n, i));
+    forest: T[]): IndexedNode[] => forest.map((n, i) => indexTree(n, i));

@@ -1,9 +1,10 @@
-import { Component, ElementRef, Input, NgZone, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { TreeMapNode, TreeMapFormatter } from '../record-formatter/tree-map-formatter';
-import { ProfilerFrame } from 'protocol';
-import { Subject, Subscription } from 'rxjs';
-import { debounceTime } from 'rxjs/operators';
-import { render } from '../../../../vendor/webtreemap/treemap';
+import {Component, ElementRef, Input, NgZone, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {ProfilerFrame} from 'protocol';
+import {Subject, Subscription} from 'rxjs';
+import {debounceTime} from 'rxjs/operators';
+
+import {render} from '../../../../vendor/webtreemap/treemap';
+import {TreeMapFormatter, TreeMapNode} from '../record-formatter/tree-map-formatter';
 
 @Component({
   selector: 'ng-tree-map-visualizer',
@@ -13,7 +14,8 @@ import { render } from '../../../../vendor/webtreemap/treemap';
 export class TreeMapVisualizerComponent implements OnInit, OnDestroy {
   private _formatter = new TreeMapFormatter();
 
-  @Input() set frame(frame: ProfilerFrame) {
+  @Input()
+  set frame(frame: ProfilerFrame) {
     // first element in data is the Application node
     this.treeMapRecords = this._formatter.formatFrame(frame);
     if (this.tree) {
@@ -26,13 +28,15 @@ export class TreeMapVisualizerComponent implements OnInit, OnDestroy {
   private resize$ = new Subject<void>();
   private _throttledResizeSubscription: Subscription;
 
-  private _resizeObserver: ResizeObserver = new ResizeObserver(() => this._ngZone.run(() => this.resize$.next()));
+  private _resizeObserver: ResizeObserver =
+      new ResizeObserver(() => this._ngZone.run(() => this.resize$.next()));
   treeMapRecords: TreeMapNode;
 
-  @ViewChild('webTree', { static: true }) tree: ElementRef;
+  @ViewChild('webTree', {static: true}) tree: ElementRef;
 
   ngOnInit(): void {
-    this._throttledResizeSubscription = this.resize$.pipe(debounceTime(100)).subscribe(() => this._renderTree());
+    this._throttledResizeSubscription =
+        this.resize$.pipe(debounceTime(100)).subscribe(() => this._renderTree());
     this._resizeObserver.observe(this.tree.nativeElement);
   }
 

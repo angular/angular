@@ -1,11 +1,8 @@
-import {
-  getDirectiveHostElement,
-  getLViewFromDirectiveOrElementInstance,
-  METADATA_PROPERTY_NAME,
-} from '../../directive-forest';
-import { runOutsideAngular } from '../../utils';
-import { IdentityTracker, NodeArray } from '../identity-tracker';
-import { getLifeCycleName, Profiler } from './shared';
+import {getDirectiveHostElement, getLViewFromDirectiveOrElementInstance, METADATA_PROPERTY_NAME,} from '../../directive-forest';
+import {runOutsideAngular} from '../../utils';
+import {IdentityTracker, NodeArray} from '../identity-tracker';
+
+import {getLifeCycleName, Profiler} from './shared';
 
 const hookTViewProperties = [
   'preOrderHooks',
@@ -20,7 +17,10 @@ const hookTViewProperties = [
 // Only used in older Angular versions prior to the introduction of `getDirectiveMetadata`
 const componentMetadata = (instance: any) => instance?.constructor?.ɵcmp;
 
-/** Implementation of Profiler that uses monkey patching of directive templates and lifecycle methods to fire profiler hooks. */
+/**
+ * Implementation of Profiler that uses monkey patching of directive templates and lifecycle
+ * methods to fire profiler hooks.
+ */
 export class PatchingProfiler extends Profiler {
   private _patched = new Map<any, () => void>();
   private _undoLifecyclePatch: (() => void)[] = [];
@@ -74,7 +74,7 @@ export class PatchingProfiler extends Profiler {
     if (original.patched) {
       return;
     }
-    declarations.tView.template = function (_: any, component: any): void {
+    declarations.tView.template = function(_: any, component: any): void {
       if (!self._inChangeDetection) {
         self._inChangeDetection = true;
         runOutsideAngular(() => {
@@ -114,7 +114,7 @@ export class PatchingProfiler extends Profiler {
         }
         if (typeof el === 'function') {
           const self = this;
-          current[idx] = function (): any {
+          current[idx] = function(): any {
             // We currently don't want to notify the consumer
             // for execution of lifecycle hooks of services and pipes.
             // These two abstractions don't have `__ngContext__`, and

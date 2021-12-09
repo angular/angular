@@ -1,12 +1,14 @@
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatIconModule } from '@angular/material/icon';
-import { BreadcrumbsModule } from './breadcrumbs/breadcrumbs.module';
-import { FilterModule } from './filter/filter.module';
-import { ScrollingModule } from '@angular/cdk/scrolling';
-import { DirectiveForestComponent } from './directive-forest.component';
+import {ScrollingModule} from '@angular/cdk/scrolling';
+import {CommonModule} from '@angular/common';
+import {NgModule} from '@angular/core';
+import {MatButtonModule} from '@angular/material/button';
+import {MatCardModule} from '@angular/material/card';
+import {MatIconModule} from '@angular/material/icon';
+
+import {BreadcrumbsModule} from './breadcrumbs/breadcrumbs.module';
+import {DirectiveForestComponent} from './directive-forest.component';
+import {FilterModule} from './filter/filter.module';
+
 @NgModule({
   declarations: [DirectiveForestComponent],
   imports: [
@@ -20,4 +22,5 @@ import { DirectiveForestComponent } from './directive-forest.component';
   ],
   exports: [DirectiveForestComponent, BreadcrumbsModule],
 })
-export class DirectiveForestModule {}
+export class DirectiveForestModule {
+}

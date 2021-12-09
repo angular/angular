@@ -1,5 +1,6 @@
-import { ElementProfile, ProfilerFrame } from 'protocol';
-import { RecordFormatter } from './record-formatter';
+import {ElementProfile, ProfilerFrame} from 'protocol';
+
+import {RecordFormatter} from './record-formatter';
 
 class MockFormatter extends RecordFormatter<any> {
   addFrame(nodes: any[], elements: ElementProfile[]): void {
@@ -19,7 +20,13 @@ describe('getValue cases', () => {
   it('calculates value with  no lifecycle hooks', () => {
     element = {
       children: [],
-      directives: [{ changeDetection: 10, isElement: false, isComponent: true, lifecycle: {}, name: 'AppComponent' }],
+      directives: [{
+        changeDetection: 10,
+        isElement: false,
+        isComponent: true,
+        lifecycle: {},
+        name: 'AppComponent'
+      }],
     };
     expect(formatter.getValue(element)).toBe(10);
   });
@@ -28,7 +35,13 @@ describe('getValue cases', () => {
     element = {
       children: [],
       directives: [
-        { isComponent: false, isElement: false, name: 'NgForOf', lifecycle: { ngDoCheck: 5 }, changeDetection: 0 },
+        {
+          isComponent: false,
+          isElement: false,
+          name: 'NgForOf',
+          lifecycle: {ngDoCheck: 5},
+          changeDetection: 0
+        },
       ],
     };
     expect(formatter.getValue(element)).toBe(5);
@@ -38,7 +51,13 @@ describe('getValue cases', () => {
     element = {
       children: [],
       directives: [
-        { isComponent: false, isElement: false, name: 'NgForOf', lifecycle: { ngDoCheck: 5 }, changeDetection: 10 },
+        {
+          isComponent: false,
+          isElement: false,
+          name: 'NgForOf',
+          lifecycle: {ngDoCheck: 5},
+          changeDetection: 10
+        },
       ],
     };
     expect(formatter.getValue(element)).toBe(15);
@@ -52,7 +71,7 @@ describe('getValue cases', () => {
           isComponent: false,
           isElement: false,
           name: 'NgForOf',
-          lifecycle: { ngDoCheck: 5, ngAfterViewInit: 100 },
+          lifecycle: {ngDoCheck: 5, ngAfterViewInit: 100},
           changeDetection: 10,
         },
       ],
@@ -110,7 +129,14 @@ describe('getLabel cases', () => {
           outputs: {},
           changeDetection: 0,
         },
-        { changeDetection: 0, isElement: false, isComponent: true, lifecycle: {}, outputs: {}, name: 'TodoComponent' },
+        {
+          changeDetection: 0,
+          isElement: false,
+          isComponent: true,
+          lifecycle: {},
+          outputs: {},
+          name: 'TodoComponent'
+        },
       ],
     };
     expect(formatter.getLabel(element)).toBe('TodoComponent[TooltipDirective]');
@@ -136,7 +162,14 @@ describe('getLabel cases', () => {
           outputs: {},
           changeDetection: 0,
         },
-        { changeDetection: 0, isElement: false, isComponent: true, lifecycle: {}, outputs: {}, name: 'TodoComponent' },
+        {
+          changeDetection: 0,
+          isElement: false,
+          isComponent: true,
+          lifecycle: {},
+          outputs: {},
+          name: 'TodoComponent'
+        },
       ],
     };
     expect(formatter.getLabel(element)).toBe('TodoComponent[TooltipDirective, RandomDirective]');
@@ -147,7 +180,13 @@ describe('getDirectiveValue cases', () => {
   let directive;
 
   it('calculates value with  no lifecycle hooks', () => {
-    directive = { changeDetection: 10, isElement: false, isComponent: true, lifecycle: {}, name: 'AppComponent' };
+    directive = {
+      changeDetection: 10,
+      isElement: false,
+      isComponent: true,
+      lifecycle: {},
+      name: 'AppComponent'
+    };
     expect(formatter.getDirectiveValue(directive)).toBe(10);
   });
 
@@ -156,7 +195,7 @@ describe('getDirectiveValue cases', () => {
       isComponent: false,
       isElement: false,
       name: 'NgForOf',
-      lifecycle: { ngDoCheck: 5 },
+      lifecycle: {ngDoCheck: 5},
       changeDetection: 0,
     };
     expect(formatter.getDirectiveValue(directive)).toBe(5);
@@ -167,7 +206,7 @@ describe('getDirectiveValue cases', () => {
       isComponent: false,
       isElement: false,
       name: 'NgForOf',
-      lifecycle: { ngDoCheck: 5 },
+      lifecycle: {ngDoCheck: 5},
       changeDetection: 10,
     };
     expect(formatter.getDirectiveValue(directive)).toBe(15);
@@ -178,7 +217,7 @@ describe('getDirectiveValue cases', () => {
       isComponent: false,
       isElement: false,
       name: 'NgForOf',
-      lifecycle: { ngDoCheck: 5, ngAfterViewInit: 100 },
+      lifecycle: {ngDoCheck: 5, ngAfterViewInit: 100},
       changeDetection: 10,
     };
     expect(formatter.getDirectiveValue(directive)).toBe(115);

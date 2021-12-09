@@ -1,4 +1,4 @@
-import { createFilter, parseFilter } from './filter';
+import {createFilter, parseFilter} from './filter';
 
 describe('filtering', () => {
   describe('parsing', () => {
@@ -77,191 +77,163 @@ describe('filtering', () => {
   describe('filtering', () => {
     it('should filter results with a source query', () => {
       const filter = createFilter('source:click');
-      expect(
-        filter({
-          frame: {
-            directives: [],
-            duration: 10,
-            source: 'click',
-          },
-          style: {},
-          toolTip: '',
-        })
-      ).toBeTrue();
+      expect(filter({
+        frame: {
+          directives: [],
+          duration: 10,
+          source: 'click',
+        },
+        style: {},
+        toolTip: '',
+      })).toBeTrue();
 
-      expect(
-        filter({
-          frame: {
-            directives: [],
-            duration: 10,
-            source: 'mouseenter',
-          },
-          style: {},
-          toolTip: '',
-        })
-      ).toBeFalse();
+      expect(filter({
+        frame: {
+          directives: [],
+          duration: 10,
+          source: 'mouseenter',
+        },
+        style: {},
+        toolTip: '',
+      })).toBeFalse();
     });
 
     it('should filter results with a duration query', () => {
       const filter1 = createFilter('duration:>10ms');
-      expect(
-        filter1({
-          frame: {
-            directives: [],
-            duration: 10,
-            source: 'click',
-          },
-          style: {},
-          toolTip: '',
-        })
-      ).toBeFalse();
+      expect(filter1({
+        frame: {
+          directives: [],
+          duration: 10,
+          source: 'click',
+        },
+        style: {},
+        toolTip: '',
+      })).toBeFalse();
 
-      expect(
-        filter1({
-          frame: {
-            directives: [],
-            duration: 15,
-            source: 'mouseenter',
-          },
-          style: {},
-          toolTip: '',
-        })
-      ).toBeTrue();
+      expect(filter1({
+        frame: {
+          directives: [],
+          duration: 15,
+          source: 'mouseenter',
+        },
+        style: {},
+        toolTip: '',
+      })).toBeTrue();
 
       const filter2 = createFilter('duration:=10ms');
-      expect(
-        filter2({
-          frame: {
-            directives: [],
-            duration: 11,
-            source: 'mouseenter',
-          },
-          style: {},
-          toolTip: '',
-        })
-      ).toBeFalse();
-      expect(
-        filter2({
-          frame: {
-            directives: [],
-            duration: 10,
-            source: 'mouseenter',
-          },
-          style: {},
-          toolTip: '',
-        })
-      ).toBeTrue();
+      expect(filter2({
+        frame: {
+          directives: [],
+          duration: 11,
+          source: 'mouseenter',
+        },
+        style: {},
+        toolTip: '',
+      })).toBeFalse();
+      expect(filter2({
+        frame: {
+          directives: [],
+          duration: 10,
+          source: 'mouseenter',
+        },
+        style: {},
+        toolTip: '',
+      })).toBeTrue();
     });
 
     it('should work with composite selectors', () => {
       const filter = createFilter('duration:>10ms source: click');
-      expect(
-        filter({
-          frame: {
-            directives: [],
-            duration: 10,
-            source: 'click',
-          },
-          style: {},
-          toolTip: '',
-        })
-      ).toBeFalse();
+      expect(filter({
+        frame: {
+          directives: [],
+          duration: 10,
+          source: 'click',
+        },
+        style: {},
+        toolTip: '',
+      })).toBeFalse();
 
-      expect(
-        filter({
-          frame: {
-            directives: [],
-            duration: 15,
-            source: 'mouseenter',
-          },
-          style: {},
-          toolTip: '',
-        })
-      ).toBeFalse();
+      expect(filter({
+        frame: {
+          directives: [],
+          duration: 15,
+          source: 'mouseenter',
+        },
+        style: {},
+        toolTip: '',
+      })).toBeFalse();
 
-      expect(
-        filter({
-          frame: {
-            directives: [],
-            duration: 15,
-            source: 'click',
-          },
-          style: {},
-          toolTip: '',
-        })
-      ).toBeTrue();
+      expect(filter({
+        frame: {
+          directives: [],
+          duration: 15,
+          source: 'click',
+        },
+        style: {},
+        toolTip: '',
+      })).toBeTrue();
     });
 
     it('should work with invalid arguments', () => {
       const filter = createFilter('duration:>ms');
 
-      expect(
-        filter({
-          frame: {
-            directives: [],
-            duration: 15,
-            source: 'click',
-          },
-          style: {},
-          toolTip: '',
-        })
-      ).toBeTrue();
+      expect(filter({
+        frame: {
+          directives: [],
+          duration: 15,
+          source: 'click',
+        },
+        style: {},
+        toolTip: '',
+      })).toBeTrue();
     });
 
     it('should work with negation', () => {
       const filter = createFilter('!source:message');
 
-      expect(
-        filter({
-          frame: {
-            directives: [],
-            duration: 15,
-            source: 'message',
-          },
-          style: {},
-          toolTip: '',
-        })
-      ).toBeFalse();
+      expect(filter({
+        frame: {
+          directives: [],
+          duration: 15,
+          source: 'message',
+        },
+        style: {},
+        toolTip: '',
+      })).toBeFalse();
     });
 
     it('should work with negation and composite expressions', () => {
       const filter = createFilter('!duration:=15 !source:message source:click');
 
-      expect(
-        filter({
-          frame: {
-            directives: [],
-            duration: 15,
-            source: 'click',
-          },
-          style: {},
-          toolTip: '',
-        })
-      ).toBeFalse();
+      expect(filter({
+        frame: {
+          directives: [],
+          duration: 15,
+          source: 'click',
+        },
+        style: {},
+        toolTip: '',
+      })).toBeFalse();
 
-      expect(
-        filter({
-          frame: {
-            directives: [],
-            duration: 10,
-            source: 'message',
-          },
-          style: {},
-          toolTip: '',
-        })
-      ).toBeFalse();
+      expect(filter({
+        frame: {
+          directives: [],
+          duration: 10,
+          source: 'message',
+        },
+        style: {},
+        toolTip: '',
+      })).toBeFalse();
 
-      expect(
-        filter({
-          frame: {
-            directives: [],
-            duration: 14,
-            source: 'click',
-          },
-          style: {},
-          toolTip: '',
-        })
-      ).toBeTrue();
+      expect(filter({
+        frame: {
+          directives: [],
+          duration: 14,
+          source: 'click',
+        },
+        style: {},
+        toolTip: '',
+      })).toBeTrue();
     });
   });
 });

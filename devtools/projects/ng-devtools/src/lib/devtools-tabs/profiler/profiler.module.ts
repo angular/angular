@@ -1,16 +1,16 @@
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { MatSelectModule } from '@angular/material/select';
-import { MatDialogModule } from '@angular/material/dialog';
-import { FormsModule } from '@angular/forms';
+import {CommonModule} from '@angular/common';
+import {NgModule} from '@angular/core';
+import {FormsModule} from '@angular/forms';
+import {MatButtonModule} from '@angular/material/button';
+import {MatCardModule} from '@angular/material/card';
+import {MatDialogModule} from '@angular/material/dialog';
+import {MatIconModule} from '@angular/material/icon';
+import {MatSelectModule} from '@angular/material/select';
+import {MatTooltipModule} from '@angular/material/tooltip';
 
-import { ProfilerComponent } from './profiler.component';
-import { TimelineModule } from './timeline/timeline.module';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { ProfilerImportDialogComponent } from './profiler-import-dialog.component';
-import { MatIconModule } from '@angular/material/icon';
-import { MatTooltipModule } from '@angular/material/tooltip';
+import {ProfilerImportDialogComponent} from './profiler-import-dialog.component';
+import {ProfilerComponent} from './profiler.component';
+import {TimelineModule} from './timeline/timeline.module';
 
 @NgModule({
   declarations: [ProfilerComponent, ProfilerImportDialogComponent],
@@ -28,4 +28,5 @@ import { MatTooltipModule } from '@angular/material/tooltip';
   exports: [ProfilerComponent],
   entryComponents: [ProfilerImportDialogComponent],
 })
-export class ProfilerModule {}
+export class ProfilerModule {
+}

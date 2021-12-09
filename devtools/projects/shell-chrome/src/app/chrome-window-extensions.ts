@@ -1,8 +1,9 @@
-import { findNodeFromSerializedPosition } from 'ng-devtools-backend';
-import { buildDirectiveForest, queryDirectiveForest } from '../../../ng-devtools-backend/src/lib/component-tree';
+import {findNodeFromSerializedPosition} from 'ng-devtools-backend';
+
+import {buildDirectiveForest, queryDirectiveForest} from '../../../ng-devtools-backend/src/lib/component-tree';
 
 export const initializeExtendedWindowOperations = () => {
-  extendWindowOperations(window, { inspectedApplication: chromeWindowExtensions });
+  extendWindowOperations(window, {inspectedApplication: chromeWindowExtensions});
 };
 
 const extendWindowOperations = <T>(target, classImpl: T) => {
@@ -37,17 +38,16 @@ const chromeWindowExtensions = {
     return node.nativeElement;
   },
   findPropertyByPosition: (args): any => {
-    const { directivePosition, objectPath } = JSON.parse(args);
+    const {directivePosition, objectPath} = JSON.parse(args);
     const node = queryDirectiveForest(directivePosition.element, buildDirectiveForest());
     if (node === null) {
       console.error(`Cannot find element associated with node ${directivePosition}`);
       return undefined;
     }
 
-    const isDirective =
-      directivePosition.directive !== undefined &&
-      node.directives[directivePosition.directive] &&
-      typeof node.directives[directivePosition.directive] === 'object';
+    const isDirective = directivePosition.directive !== undefined &&
+        node.directives[directivePosition.directive] &&
+        typeof node.directives[directivePosition.directive] === 'object';
     if (isDirective) {
       return traverseDirective(node.directives[directivePosition.directive].instance, objectPath);
     }

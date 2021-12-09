@@ -1,6 +1,7 @@
-import { RecordFormatter } from '../record-formatter';
-import { ElementProfile, ProfilerFrame } from 'protocol';
-import { Theme } from '../../../../../theme-service';
+import {ElementProfile, ProfilerFrame} from 'protocol';
+
+import {Theme} from '../../../../../theme-service';
+import {RecordFormatter} from '../record-formatter';
 
 export interface FlamegraphNode {
   value: number;
@@ -29,14 +30,17 @@ export class FlamegraphFormatter extends RecordFormatter<FlamegraphNode> {
     };
 
     if (showChangeDetection) {
-      result.color = theme === 'dark-theme' ? CHANGE_DETECTION_COLOR_DARK : CHANGE_DETECTION_COLOR_LIGHT;
+      result.color =
+          theme === 'dark-theme' ? CHANGE_DETECTION_COLOR_DARK : CHANGE_DETECTION_COLOR_LIGHT;
     }
 
     this.addFrame(result.children, frame.directives, showChangeDetection, theme);
     return result;
   }
 
-  addFrame(nodes: FlamegraphNode[], elements: ElementProfile[], showChangeDetection?: boolean, theme?: Theme): number {
+  addFrame(
+      nodes: FlamegraphNode[], elements: ElementProfile[], showChangeDetection?: boolean,
+      theme?: Theme): number {
     let timeSpent = 0;
     elements.forEach((element) => {
       // Possibly undefined because of
@@ -56,7 +60,7 @@ export class FlamegraphFormatter extends RecordFormatter<FlamegraphNode> {
       };
       if (showChangeDetection) {
         const CHANGE_DETECTION_COLOR =
-          theme === 'dark-theme' ? CHANGE_DETECTION_COLOR_DARK : CHANGE_DETECTION_COLOR_LIGHT;
+            theme === 'dark-theme' ? CHANGE_DETECTION_COLOR_DARK : CHANGE_DETECTION_COLOR_LIGHT;
         node.color = changeDetected ? CHANGE_DETECTION_COLOR : NO_CHANGE_DETECTION_COLOR;
       }
       timeSpent += this.addFrame(node.children, element.children, showChangeDetection, theme);

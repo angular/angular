@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
-import { DialogComponent } from './dialog.component';
+import {Component} from '@angular/core';
+import {MatDialog} from '@angular/material/dialog';
+
+import {DialogComponent} from './dialog.component';
 
 @Component({
   selector: 'app-todo-demo',
@@ -16,7 +17,7 @@ export class AppTodoComponent {
   openDialog(): void {
     const dialogRef = this.dialog.open(DialogComponent, {
       width: '250px',
-      data: { name: this.name, animal: this.animal },
+      data: {name: this.name, animal: this.animal},
     });
 
     dialogRef.afterClosed().subscribe((result) => {

@@ -1,5 +1,5 @@
-import { Topic, Events } from './messages';
-import { MessageBus } from './message-bus';
+import {MessageBus} from './message-bus';
+import {Events, Topic} from './messages';
 
 type ThrottleTopicDuration = {
   [method in Topic]?: number;
@@ -43,13 +43,14 @@ export class PriorityAwareMessageBus extends MessageBus<Events> {
   private _throttled: ThrottledTopics = {};
   private _inProgress: TopicsInProgress = {};
 
-  constructor(private _bus: MessageBus<Events>, private _setTimeout: typeof setTimeout = setTimeout) {
+  constructor(
+      private _bus: MessageBus<Events>, private _setTimeout: typeof setTimeout = setTimeout) {
     super();
   }
 
   on<E extends Topic>(topic: E, cb: Events[E]): void {
     const self = this;
-    return this._bus.on(topic, function (): void {
+    return this._bus.on(topic, function(): void {
       cb.apply(this, arguments);
       self._afterMessage(topic);
     });
@@ -57,7 +58,7 @@ export class PriorityAwareMessageBus extends MessageBus<Events> {
 
   once<E extends Topic>(topic: E, cb: Events[E]): void {
     const self = this;
-    return this._bus.once(topic, function (): void {
+    return this._bus.once(topic, function(): void {
       cb.apply(this, arguments);
       self._afterMessage(topic);
     });

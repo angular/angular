@@ -1,11 +1,12 @@
-import { NgModule } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import {NgModule} from '@angular/core';
+import {NoopAnimationsModule} from '@angular/platform-browser/animations';
+import {RouterModule} from '@angular/router';
+import {ApplicationEnvironment, ApplicationOperations} from 'ng-devtools';
 
-import { AppComponent } from './app.component';
-import { DemoApplicationOperations } from '../demo-application-operations';
-import { ApplicationEnvironment, ApplicationOperations } from 'ng-devtools';
-import { DemoApplicationEnvironment } from '../demo-application-environment';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import {DemoApplicationEnvironment} from '../demo-application-environment';
+import {DemoApplicationOperations} from '../demo-application-operations';
+
+import {AppComponent} from './app.component';
 
 @NgModule({
   declarations: [AppComponent],
@@ -14,7 +15,8 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
     RouterModule.forRoot([
       {
         path: '',
-        loadChildren: () => import('./devtools-app/devtools-app.module').then((m) => m.DevToolsModule),
+        loadChildren: () =>
+            import('./devtools-app/devtools-app.module').then((m) => m.DevToolsModule),
         pathMatch: 'full',
       },
       {
@@ -35,4 +37,5 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
   ],
   bootstrap: [AppComponent],
 })
-export class AppModule {}
+export class AppModule {
+}

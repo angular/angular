@@ -1,8 +1,9 @@
-import { ComponentTreeNode, DirectiveInstanceType, ComponentInstanceType } from '../interfaces';
-import { isCustomElement } from '../utils';
-import { getDirectiveName } from '../highlighter';
-import { SemVerDSL } from 'semver-dsl';
-import { VERSION } from '../version';
+import {SemVerDSL} from 'semver-dsl';
+
+import {getDirectiveName} from '../highlighter';
+import {ComponentInstanceType, ComponentTreeNode, DirectiveInstanceType} from '../interfaces';
+import {isCustomElement} from '../utils';
+import {VERSION} from '../version';
 
 let HEADER_OFFSET = 19;
 
@@ -28,7 +29,7 @@ const isLView = (value: any): boolean => {
 };
 
 export const METADATA_PROPERTY_NAME = '__ngContext__';
-export const getLViewFromDirectiveOrElementInstance = (dir: any): null | {} => {
+export const getLViewFromDirectiveOrElementInstance = (dir: any): null|{} => {
   if (!dir) {
     return null;
   }
@@ -67,7 +68,7 @@ export class LTreeStrategy {
 
   private _getNode(lView: any, data: any, idx: number): ComponentTreeNode {
     const directives: DirectiveInstanceType[] = [];
-    let component: ComponentInstanceType | null = null;
+    let component: ComponentInstanceType|null = null;
     const tNode = data[idx];
     const node = lView[idx][ELEMENT];
     const element = (node.tagName || node.nodeName).toLowerCase();

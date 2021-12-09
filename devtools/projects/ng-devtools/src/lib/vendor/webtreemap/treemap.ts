@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Node } from './tree';
+import {Node} from './tree';
 
 const CSS_PREFIX = 'webtreemap-';
 const NODE_CSS_CLASS = CSS_PREFIX + 'node';
@@ -68,7 +68,7 @@ export interface Options {
  */
 function getNodeIndex(target: Element): number {
   let index = 0;
-  let node: Element | null = target;
+  let node: Element|null = target;
   while ((node = node.previousElementSibling)) {
     if (isDOMNode(node)) index++;
   }
@@ -82,12 +82,12 @@ function getNodeIndex(target: Element): number {
  */
 export function getAddress(el: Element): number[] {
   let address: number[] = [];
-  let n: Element | null = el;
+  let n: Element|null = el;
   while (n && isDOMNode(n)) {
     address.unshift(getNodeIndex(n));
     n = n.parentElement;
   }
-  address.shift(); // The first element will be the root, index 0.
+  address.shift();  // The first element will be the root, index 0.
   return address;
 }
 
@@ -107,16 +107,16 @@ function defaultOptions(options: Partial<Options>): Options {
     lowerBound: options.lowerBound === undefined ? 0.1 : options.lowerBound,
     applyMutations: options.applyMutations || (() => null),
     caption: options.caption || ((node: Node) => node.id || ''),
-    showNode:
-      options.showNode ||
-      ((node: Node, width: number, height: number): boolean => {
-        return width > 20 && height >= opts.padding[0];
-      }),
-    showChildren:
-      options.showChildren ||
-      ((node: Node, width: number, height: number): boolean => {
-        return width > 40 && height > 40;
-      }),
+    showNode: options.showNode ||
+        ((node: Node, width: number, height: number):
+             boolean => {
+               return width > 20 && height >= opts.padding[0];
+             }),
+    showChildren: options.showChildren ||
+        ((node: Node, width: number, height: number):
+             boolean => {
+               return width > 40 && height > 40;
+             }),
   };
   return opts;
 }
@@ -151,14 +151,14 @@ export class TreeMap {
    * Returns [end, sum], where end is one past the last rectangle and sum is the
    * 2-d sum of the rectangles' areas.
    */
-  private selectSpan(children: Node[], space: number, start: number): { end: number; sum: number } {
+  private selectSpan(children: Node[], space: number, start: number): {end: number; sum: number} {
     // Add rectangles one by one, stopping when aspect ratios begin to go
     // bad.  Result is [start,end) covering the best run for this span.
     // http://scholar.google.com/scholar?cluster=5972512107845615474
-    let smin = children[start].size; // Smallest seen child so far.
-    let smax = smin; // Largest child.
-    let sum = 0; // Sum of children in this span.
-    let lastScore = 0; // Best score yet found.
+    let smin = children[start].size;  // Smallest seen child so far.
+    let smax = smin;                  // Largest child.
+    let sum = 0;                      // Sum of children in this span.
+    let lastScore = 0;                // Best score yet found.
     let end = start;
     for (; end < children.length; end++) {
       const size = children[end].size;
@@ -188,9 +188,8 @@ export class TreeMap {
       // Take the larger of these two ratios as the measure of the
       // worst non-squarenesss.
       const score = Math.max(
-        (smax * space * space) / (nextSum * nextSum),
-        (nextSum * nextSum) / (smin * space * space)
-      );
+          (smax * space * space) / (nextSum * nextSum),
+          (nextSum * nextSum) / (smin * space * space));
       if (lastScore && score > lastScore) {
         // Including this additional rectangle produces worse squareness than
         // without it.  We're done.
@@ -199,7 +198,7 @@ export class TreeMap {
       lastScore = score;
       sum = nextSum;
     }
-    return { end, sum };
+    return {end, sum};
   }
 
   /** Creates and positions child DOM for a node. */
@@ -213,12 +212,9 @@ export class TreeMap {
     // parent) and create each box 1px larger than necessary (to make
     // adjoining borders overlap).
 
-    let x1 = -1,
-      y1 = -1,
-      x2 = width - 1,
-      y2 = height - 1;
+    let x1 = -1, y1 = -1, x2 = width - 1, y2 = height - 1;
 
-    const spacing = 0; // TODO: this.options.spacing;
+    const spacing = 0;  // TODO: this.options.spacing;
     const padding = this.options.padding;
     y1 += padding[0];
     if (padding[1]) {
@@ -232,12 +228,11 @@ export class TreeMap {
     let i: number = 0;
     if (this.options.showChildren(node, x2 - x1, y2 - y1)) {
       const scale = Math.sqrt(total / ((x2 - x1) * (y2 - y1)));
-      var x = x1,
-        y = y1;
-      children: for (let start = 0; start < children.length; ) {
+      var x = x1, y = y1;
+      children: for (let start = 0; start < children.length;) {
         x = x1;
         const space = scale * (x2 - x1);
-        const { end, sum } = this.selectSpan(children, space, start);
+        const {end, sum} = this.selectSpan(children, space, start);
         if (sum / total < this.options.lowerBound) break;
         const height = sum / space;
         const heightPx = Math.round(height / scale) + 1;
@@ -289,7 +284,7 @@ export class TreeMap {
     const width = container.offsetWidth;
     const height = container.offsetHeight;
     dom.onclick = (e) => {
-      let node: Element | null = e.target as Element;
+      let node: Element|null = e.target as Element;
       while (!isDOMNode(node)) {
         node = node.parentElement;
         if (!node) return;

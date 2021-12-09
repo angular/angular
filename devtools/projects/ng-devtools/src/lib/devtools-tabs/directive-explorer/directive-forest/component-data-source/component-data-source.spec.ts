@@ -1,6 +1,7 @@
-import { FlatTreeControl } from '@angular/cdk/tree';
-import { ComponentDataSource, FlatNode } from '.';
-import { DevToolsNode } from 'protocol';
+import {FlatTreeControl} from '@angular/cdk/tree';
+import {DevToolsNode} from 'protocol';
+
+import {ComponentDataSource, FlatNode} from '.';
 
 const tree1: DevToolsNode = {
   element: 'app',
@@ -174,10 +175,8 @@ const tree4: DevToolsNode = {
 
 describe('ComponentDataSource', () => {
   let dataSource: ComponentDataSource;
-  const treeControl = new FlatTreeControl<FlatNode>(
-    (node) => node.level,
-    (node) => node.expandable
-  );
+  const treeControl =
+      new FlatTreeControl<FlatNode>((node) => node.level, (node) => node.expandable);
 
   beforeEach(() => (dataSource = new ComponentDataSource(treeControl)));
 

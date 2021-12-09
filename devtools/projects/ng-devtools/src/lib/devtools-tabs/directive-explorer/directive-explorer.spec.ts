@@ -1,8 +1,10 @@
-import { DirectiveExplorerComponent } from './directive-explorer.component';
-import { PropertyQueryTypes } from 'protocol';
-import { IndexedNode } from './directive-forest/index-forest';
+import {PropertyQueryTypes} from 'protocol';
+
+import {DirectiveExplorerComponent} from './directive-explorer.component';
+import {IndexedNode} from './directive-forest/index-forest';
+
 import SpyObj = jasmine.SpyObj;
-import { ElementPropertyResolver } from './property-resolver/element-property-resolver';
+import {ElementPropertyResolver} from './property-resolver/element-property-resolver';
 
 describe('DirectiveExplorerComponent', () => {
   let messageBusMock: any;
@@ -12,17 +14,14 @@ describe('DirectiveExplorerComponent', () => {
   let ngZone: any;
 
   beforeEach(() => {
-    applicationOperationsSpy = jasmine.createSpyObj('_appOperations', ['viewSource', 'selectDomElement']);
+    applicationOperationsSpy =
+        jasmine.createSpyObj('_appOperations', ['viewSource', 'selectDomElement']);
     messageBusMock = jasmine.createSpyObj('messageBus', ['on', 'once', 'emit', 'destroy']);
     cdr = jasmine.createSpyObj('_cdr', ['detectChanges']);
     ngZone = jasmine.createSpyObj('_ngZone', ['run']);
     comp = new DirectiveExplorerComponent(
-      applicationOperationsSpy,
-      messageBusMock,
-      new ElementPropertyResolver(messageBusMock),
-      cdr,
-      ngZone
-    );
+        applicationOperationsSpy, messageBusMock, new ElementPropertyResolver(messageBusMock), cdr,
+        ngZone);
   });
 
   it('should create instance from class', () => {
@@ -32,7 +31,8 @@ describe('DirectiveExplorerComponent', () => {
   it('subscribe to backend events', () => {
     comp.subscribeToBackendEvents();
     expect(messageBusMock.on).toHaveBeenCalledTimes(2);
-    expect(messageBusMock.on).toHaveBeenCalledWith('latestComponentExplorerView', jasmine.any(Function));
+    expect(messageBusMock.on)
+        .toHaveBeenCalledWith('latestComponentExplorerView', jasmine.any(Function));
     expect(messageBusMock.on).toHaveBeenCalledWith('componentTreeDirty', jasmine.any(Function));
   });
 
@@ -44,18 +44,24 @@ describe('DirectiveExplorerComponent', () => {
 
     it('should emit getLatestComponentExplorerView event with null view query', () => {
       comp.refresh();
-      expect(messageBusMock.emit).toHaveBeenCalledWith('getLatestComponentExplorerView', [undefined]);
+      expect(messageBusMock.emit).toHaveBeenCalledWith('getLatestComponentExplorerView', [
+        undefined
+      ]);
     });
 
-    it('should emit getLatestComponentExplorerView event on refresh with view query no properties', () => {
-      const currentSelectedElement = jasmine.createSpyObj('currentSelectedElement', ['position', 'children']);
-      currentSelectedElement.position = [0];
-      currentSelectedElement.children = [];
-      comp.currentSelectedElement = currentSelectedElement;
-      comp.refresh();
-      expect(comp.currentSelectedElement).toBeTruthy();
-      expect(messageBusMock.emit).toHaveBeenCalledWith('getLatestComponentExplorerView', [undefined]);
-    });
+    it('should emit getLatestComponentExplorerView event on refresh with view query no properties',
+       () => {
+         const currentSelectedElement =
+             jasmine.createSpyObj('currentSelectedElement', ['position', 'children']);
+         currentSelectedElement.position = [0];
+         currentSelectedElement.children = [];
+         comp.currentSelectedElement = currentSelectedElement;
+         comp.refresh();
+         expect(comp.currentSelectedElement).toBeTruthy();
+         expect(messageBusMock.emit).toHaveBeenCalledWith('getLatestComponentExplorerView', [
+           undefined
+         ]);
+       });
   });
 
   describe('node selection event', () => {

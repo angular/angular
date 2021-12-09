@@ -1,5 +1,6 @@
-import { Descriptor, NestedProp, PropType } from 'protocol';
-import { FlatNode } from './element-property-resolver';
+import {Descriptor, NestedProp, PropType} from 'protocol';
+
+import {FlatNode} from './element-property-resolver';
 
 export const getExpandedDirectiveProperties = (data: FlatNode[]): NestedProp[] => {
   const getChildren = (prop: Descriptor) => {
@@ -14,7 +15,7 @@ export const getExpandedDirectiveProperties = (data: FlatNode[]): NestedProp[] =
     return [];
   };
 
-  const getExpandedProperties = (props: { [name: string]: Descriptor }) => {
+  const getExpandedProperties = (props: {[name: string]: Descriptor}) => {
     return Object.keys(props).map(name => {
       return {
         name,
@@ -23,7 +24,7 @@ export const getExpandedDirectiveProperties = (data: FlatNode[]): NestedProp[] =
     });
   };
 
-  const parents: { [name: string]: Descriptor } = {};
+  const parents: {[name: string]: Descriptor} = {};
 
   for (const node of data) {
     let prop = node.prop;

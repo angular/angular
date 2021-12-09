@@ -1,31 +1,26 @@
-import { FlatTreeControl } from '@angular/cdk/tree';
-import { PropType } from 'protocol';
-import { FlatNode } from './element-property-resolver';
-import { getTreeFlattener } from './flatten';
-import { PropertyDataSource } from './property-data-source';
+import {FlatTreeControl} from '@angular/cdk/tree';
+import {PropType} from 'protocol';
 
-const flatTreeControl = new FlatTreeControl<FlatNode>(
-  (node) => node.level,
-  (node) => node.expandable
-);
+import {FlatNode} from './element-property-resolver';
+import {getTreeFlattener} from './flatten';
+import {PropertyDataSource} from './property-data-source';
+
+const flatTreeControl =
+    new FlatTreeControl<FlatNode>((node) => node.level, (node) => node.expandable);
 
 describe('PropertyDataSource', () => {
   it('should detect changes in the collection', () => {
     const source = new PropertyDataSource(
-      {
-        foo: {
-          editable: true,
-          expandable: false,
-          preview: '42',
-          type: PropType.Number,
-          value: 42,
+        {
+          foo: {
+            editable: true,
+            expandable: false,
+            preview: '42',
+            type: PropType.Number,
+            value: 42,
+          },
         },
-      },
-      getTreeFlattener(),
-      flatTreeControl,
-      { element: [1, 2, 3] },
-      null as any
-    );
+        getTreeFlattener(), flatTreeControl, {element: [1, 2, 3]}, null as any);
 
     source.update({
       foo: {

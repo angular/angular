@@ -1,4 +1,4 @@
-import { MessageBus, Events, Parameters } from 'protocol';
+import {Events, MessageBus, Parameters} from 'protocol';
 
 interface ChromeMessage<T, K extends keyof T> {
   topic: K;

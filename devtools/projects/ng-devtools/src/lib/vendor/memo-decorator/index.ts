@@ -12,7 +12,7 @@ export interface Config {
 }
 
 function memoize(func: Function, resolver: Resolver, cache: MapLike) {
-  const memoized = function () {
+  const memoized = function() {
     const args = arguments;
     const key = resolver.apply(this, args);
     const cache = memoized.cache;
@@ -31,16 +31,15 @@ function memoize(func: Function, resolver: Resolver, cache: MapLike) {
 
 const defaultResolver: Resolver = (...args: any[]) => args[0];
 
-export const memo =
-  (config: Config = {}) =>
-  (_: any, __: string, descriptor: PropertyDescriptor): PropertyDescriptor => {
-    if (typeof descriptor.value !== 'function') {
-      throw new Error('Memoization can be applied only to methods');
-    }
+export const memo = (config: Config = {}) =>
+    (_: any, __: string, descriptor: PropertyDescriptor): PropertyDescriptor => {
+      if (typeof descriptor.value !== 'function') {
+        throw new Error('Memoization can be applied only to methods');
+      }
 
-    const resolver = config.resolver ?? defaultResolver;
-    const cache = config.cache ?? new Map();
+      const resolver = config.resolver ?? defaultResolver;
+      const cache = config.cache ?? new Map();
 
-    descriptor.value = memoize(descriptor.value, resolver, cache);
-    return descriptor;
-  };
+      descriptor.value = memoize(descriptor.value, resolver, cache);
+      return descriptor;
+    };

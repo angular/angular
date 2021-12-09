@@ -1,8 +1,8 @@
-import { NgProfiler } from './native';
-import { PatchingProfiler } from './polyfill';
-import { Profiler } from './shared';
+import {NgProfiler} from './native';
+import {PatchingProfiler} from './polyfill';
+import {Profiler} from './shared';
 
-export { Profiler, Hooks } from './shared';
+export {Hooks, Profiler} from './shared';
 
 /**
  * Factory method for creating profiler object.

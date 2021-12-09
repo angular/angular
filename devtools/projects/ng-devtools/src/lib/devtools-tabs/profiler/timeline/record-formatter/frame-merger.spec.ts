@@ -1,5 +1,6 @@
-import { mergeFrames } from './frame-merger';
-import { ProfilerFrame } from 'protocol';
+import {ProfilerFrame} from 'protocol';
+
+import {mergeFrames} from './frame-merger';
 
 describe('mergeFrames', () => {
   it('should work with empty frames', () => {

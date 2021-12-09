@@ -139,7 +139,11 @@
       "./modules/benchmarks_external/**/*",
       // Ignore zone.js directory
       // TODO(JiaLiPassion): add zone.js back later
-      "./packages/zone.js/**/*"
+      "./packages/zone.js/**/*",
+      "./devtools/node_modules/**/*",
+      "./devtools/dist/**/*",
+      "./devtools/bazel-bin/**/*",
+      "./devtools/bazel-out/**/*"
     ]
   }
 }

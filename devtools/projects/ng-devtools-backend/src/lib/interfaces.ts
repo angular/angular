@@ -1,4 +1,4 @@
-import { DevToolsNode } from 'protocol';
+import {DevToolsNode} from 'protocol';
 
 export interface DebuggingAPI {
   getComponent(node: Node): any;
@@ -16,6 +16,7 @@ export interface ComponentInstanceType {
   isElement: boolean;
 }
 
-export interface ComponentTreeNode extends DevToolsNode<DirectiveInstanceType, ComponentInstanceType> {
+export interface ComponentTreeNode extends
+    DevToolsNode<DirectiveInstanceType, ComponentInstanceType> {
   children: ComponentTreeNode[];
 }

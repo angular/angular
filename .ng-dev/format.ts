@@ -12,7 +12,6 @@ export const format: FormatConfig = {
   'clang-format': {
     'matchers': [
       '**/*.{js,ts}',
-      '!devtools/**',
       // TODO: burn down format failures and remove aio and integration exceptions.
       '!aio/**',
       '!integration/**',

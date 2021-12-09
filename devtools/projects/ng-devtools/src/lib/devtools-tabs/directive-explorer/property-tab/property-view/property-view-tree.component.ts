@@ -1,7 +1,8 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { PropertyDataSource } from '../../property-resolver/property-data-source';
-import { FlatNode } from '../../property-resolver/element-property-resolver';
-import { FlatTreeControl } from '@angular/cdk/tree';
+import {FlatTreeControl} from '@angular/cdk/tree';
+import {Component, EventEmitter, Input, Output} from '@angular/core';
+
+import {FlatNode} from '../../property-resolver/element-property-resolver';
+import {PropertyDataSource} from '../../property-resolver/property-data-source';
 
 @Component({
   selector: 'ng-property-view-tree',
@@ -25,7 +26,7 @@ export class PropertyViewTreeComponent {
   }
 
   expand(node: FlatNode): void {
-    const { prop } = node;
+    const {prop} = node;
     if (!prop.descriptor.expandable) {
       return;
     }

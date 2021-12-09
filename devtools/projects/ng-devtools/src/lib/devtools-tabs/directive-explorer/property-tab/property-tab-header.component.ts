@@ -1,5 +1,6 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
-import { IndexedNode } from '../directive-forest/index-forest';
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
+
+import {IndexedNode} from '../directive-forest/index-forest';
 
 @Component({
   templateUrl: './property-tab-header.component.html',
@@ -9,7 +10,7 @@ import { IndexedNode } from '../directive-forest/index-forest';
 })
 export class PropertyTabHeaderComponent {
   @Input() currentSelectedElement: IndexedNode;
-  @Input() currentDirectives: string[] | undefined;
+  @Input() currentDirectives: string[]|undefined;
   @Output() viewSource = new EventEmitter<void>();
 
   handleViewSource(event: MouseEvent): void {

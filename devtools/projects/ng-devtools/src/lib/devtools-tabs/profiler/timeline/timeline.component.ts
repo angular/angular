@@ -1,11 +1,12 @@
-import { Component, EventEmitter, Input, Output, OnDestroy } from '@angular/core';
-import { ProfilerFrame } from 'protocol';
-import { GraphNode } from './record-formatter/record-formatter';
-import { Observable, Subscription, BehaviorSubject } from 'rxjs';
-import { map, share } from 'rxjs/operators';
-import { mergeFrames } from './record-formatter/frame-merger';
-import { createFilter, Filter, noopFilter } from './filter';
-import { VisualizationMode } from './visualization-mode';
+import {Component, EventEmitter, Input, OnDestroy, Output} from '@angular/core';
+import {ProfilerFrame} from 'protocol';
+import {BehaviorSubject, Observable, Subscription} from 'rxjs';
+import {map, share} from 'rxjs/operators';
+
+import {createFilter, Filter, noopFilter} from './filter';
+import {mergeFrames} from './record-formatter/frame-merger';
+import {GraphNode} from './record-formatter/record-formatter';
+import {VisualizationMode} from './visualization-mode';
 
 const MAX_HEIGHT = 50;
 
@@ -15,7 +16,8 @@ const MAX_HEIGHT = 50;
   styleUrls: ['./timeline.component.scss'],
 })
 export class TimelineComponent implements OnDestroy {
-  @Input() set stream(data: Observable<ProfilerFrame[]>) {
+  @Input()
+  set stream(data: Observable<ProfilerFrame[]>) {
     if (this._subscription) {
       this._subscription.unsubscribe();
     }
@@ -34,7 +36,7 @@ export class TimelineComponent implements OnDestroy {
   @Output() exportProfile = new EventEmitter<void>();
   visualizationMode = VisualizationMode.BarGraph;
   changeDetection = false;
-  frame: ProfilerFrame | null = null;
+  frame: ProfilerFrame|null = null;
 
   private _filter: Filter = noopFilter;
   private _maxDuration = -Infinity;
@@ -44,13 +46,11 @@ export class TimelineComponent implements OnDestroy {
   private _graphDataSubject = new BehaviorSubject<GraphNode[]>([]);
   visualizing = false;
   graphData$ = this._graphDataSubject.pipe(
-    share(),
-    map((nodes) => {
-      return (this._filtered = nodes.filter((node) => this._filter(node)));
-    })
-  );
+      share(), map((nodes) => {
+        return (this._filtered = nodes.filter((node) => this._filter(node)));
+      }));
 
-  selectFrames({ indexes }: { indexes: number[] }): void {
+  selectFrames({indexes}: {indexes: number[]}): void {
     this.frame = mergeFrames(indexes.map((index) => this._filtered[index].frame));
   }
 
@@ -98,7 +98,9 @@ export class TimelineComponent implements OnDestroy {
       return;
     }
     const multiplicationFactor = parseFloat((MAX_HEIGHT / this._maxDuration).toFixed(2));
-    frames.forEach((frame) => this._graphDataSubject.value.push(this._getBarStyles(frame, multiplicationFactor)));
+    frames.forEach(
+        (frame) =>
+            this._graphDataSubject.value.push(this._getBarStyles(frame, multiplicationFactor)));
 
     // We need to pass a new reference, because the CDK virtual scroll
     // has OnPush strategy, so it doesn't update the UI otherwise.
@@ -107,7 +109,8 @@ export class TimelineComponent implements OnDestroy {
   }
 
   private _generateBars(): GraphNode[] {
-    const maxValue = this._allRecords.reduce((acc: number, frame: ProfilerFrame) => Math.max(acc, frame.duration), 0);
+    const maxValue = this._allRecords.reduce(
+        (acc: number, frame: ProfilerFrame) => Math.max(acc, frame.duration), 0);
     const multiplicationFactor = parseFloat((MAX_HEIGHT / maxValue).toFixed(2));
     this._maxDuration = Math.max(this._maxDuration, maxValue);
     return this._allRecords.map((r) => this._getBarStyles(r, multiplicationFactor));
@@ -119,13 +122,14 @@ export class TimelineComponent implements OnDestroy {
     const backgroundColor = this.getColorByFrameRate(this.estimateFrameRate(frame.duration));
 
     const style = {
-      'background-image': `-webkit-linear-gradient(bottom, ${backgroundColor} ${colorPercentage}%, transparent ${colorPercentage}%)`,
+      'background-image': `-webkit-linear-gradient(bottom, ${backgroundColor} ${
+          colorPercentage}%, transparent ${colorPercentage}%)`,
       cursor: 'pointer',
       'min-width': '25px',
       width: '25px',
       height: '50px',
     };
     const toolTip = `${frame.source} TimeSpent: ${frame.duration.toFixed(3)}ms`;
-    return { style, toolTip, frame };
+    return {style, toolTip, frame};
   }
 }

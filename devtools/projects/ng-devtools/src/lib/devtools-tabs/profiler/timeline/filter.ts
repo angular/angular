@@ -1,5 +1,6 @@
-import { ProfilerFrame } from 'protocol';
-import { GraphNode } from './record-formatter/record-formatter';
+import {ProfilerFrame} from 'protocol';
+
+import {GraphNode} from './record-formatter/record-formatter';
 
 export type Filter = (nodes: GraphNode) => boolean;
 
@@ -7,13 +8,13 @@ export const noopFilter = (_: GraphNode) => true;
 
 interface Query<Arguments = unknown> {
   readonly name: QueryType;
-  parseArguments(args: string[]): Arguments | undefined;
+  parseArguments(args: string[]): Arguments|undefined;
   apply(node: ProfilerFrame, args: Arguments): boolean;
 }
 
-type Operator = '>' | '<' | '=' | '<=' | '>=';
+type Operator = '>'|'<'|'='|'<='|'>=';
 
-const ops: { [operator in Operator]: (a: number, b: number) => boolean } = {
+const ops: {[operator in Operator]: (a: number, b: number) => boolean} = {
   '>'(a: number, b: number): boolean {
     return a > b;
   },
@@ -39,12 +40,12 @@ const enum QueryType {
   Source = 'source',
 }
 
-type QueryArguments = DurationArgument | SourceArgument;
+type QueryArguments = DurationArgument|SourceArgument;
 
 const operatorRe = /^(>=|<=|=|<|>|)/;
 class DurationQuery implements Query<DurationArgument> {
   readonly name = QueryType.Duration;
-  parseArguments([arg]: string[]): DurationArgument | undefined {
+  parseArguments([arg]: string[]): DurationArgument|undefined {
     arg = arg.trim();
     const operator = (arg.match(operatorRe) ?? [null])[0];
     if (!operator) {
@@ -73,14 +74,15 @@ class SourceQuery implements Query<SourceArgument> {
   }
 }
 
-const queryMap: { [query in QueryType]: Query } = [new DurationQuery(), new SourceQuery()].reduce((map, query) => {
-  map[query.name] = query;
-  return map;
-}, {} as { [query in QueryType]: Query });
+const queryMap: {[query in QueryType]: Query} =
+    [new DurationQuery(), new SourceQuery()].reduce((map, query) => {
+      map[query.name] = query;
+      return map;
+    }, {} as {[query in QueryType]: Query});
 
 const queryRe = new RegExp(`!?\s*(${QueryType.Duration}|${QueryType.Source})$`, 'g');
 
-type Predicate = true | false;
+type Predicate = true|false;
 type QueryAST = [Predicate, QueryType, QueryArguments];
 
 /**

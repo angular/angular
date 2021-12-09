@@ -1,22 +1,18 @@
-import { MatTreeFlattener } from '@angular/material/tree';
-import { Descriptor, PropType } from 'protocol';
-import { Observable } from 'rxjs';
-import { arrayifyProps } from './arrayify-props';
-import { FlatNode, Property } from './element-property-resolver';
+import {MatTreeFlattener} from '@angular/material/tree';
+import {Descriptor, PropType} from 'protocol';
+import {Observable} from 'rxjs';
+
+import {arrayifyProps} from './arrayify-props';
+import {FlatNode, Property} from './element-property-resolver';
 
 export const getTreeFlattener = () =>
-  new MatTreeFlattener(
-    (node: Property, level: number): FlatNode => {
+    new MatTreeFlattener((node: Property, level: number): FlatNode => {
       return {
         expandable: expandable(node.descriptor),
         prop: node,
         level,
       };
-    },
-    (node) => node.level,
-    (node) => node.expandable,
-    (node) => getChildren(node)
-  );
+    }, (node) => node.level, (node) => node.expandable, (node) => getChildren(node));
 
 export const expandable = (prop: Descriptor) => {
   if (!prop) {
@@ -28,12 +24,10 @@ export const expandable = (prop: Descriptor) => {
   return !(prop.type !== PropType.Object && prop.type !== PropType.Array);
 };
 
-const getChildren = (prop: Property): Property[] | undefined => {
+const getChildren = (prop: Property): Property[]|undefined => {
   const descriptor = prop.descriptor;
-  if (
-    (descriptor.type === PropType.Object || descriptor.type === PropType.Array) &&
-    !(descriptor.value instanceof Observable)
-  ) {
+  if ((descriptor.type === PropType.Object || descriptor.type === PropType.Array) &&
+      !(descriptor.value instanceof Observable)) {
     return arrayifyProps(descriptor.value || {}, prop);
   } else {
     console.error('Unexpected data type', descriptor, 'in property', prop);

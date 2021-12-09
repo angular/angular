@@ -1,4 +1,4 @@
-import { ViewEncapsulation } from '@angular/core';
+import {ViewEncapsulation} from '@angular/core';
 
 export interface DirectiveType {
   name: string;
@@ -14,7 +14,7 @@ export interface ComponentType {
 export interface DevToolsNode<DirType = DirectiveType, CmpType = ComponentType> {
   element: string;
   directives: DirType[];
-  component: CmpType | null;
+  component: CmpType|null;
   children: DevToolsNode<DirType, CmpType>[];
   nativeElement?: Node;
 }
@@ -48,14 +48,14 @@ export interface DirectivesProperties {
 }
 
 export interface DirectiveMetadata {
-  inputs: { [name: string]: string };
-  outputs: { [name: string]: string };
+  inputs: {[name: string]: string};
+  outputs: {[name: string]: string};
   encapsulation: ViewEncapsulation;
   onPush: boolean;
 }
 
 export interface Properties {
-  props: { [name: string]: Descriptor };
+  props: {[name: string]: Descriptor};
   metadata?: DirectiveMetadata;
 }
 
@@ -67,7 +67,7 @@ export interface DirectivePosition {
 }
 
 export interface NestedProp {
-  name: string | number;
+  name: string|number;
   children: NestedProp[];
 }
 
@@ -89,7 +89,7 @@ export interface SelectedPropertiesQuery {
   properties: ComponentExplorerViewProperties;
 }
 
-export type PropertyQuery = AllPropertiesQuery | SelectedPropertiesQuery;
+export type PropertyQuery = AllPropertiesQuery|SelectedPropertiesQuery;
 
 export interface ComponentExplorerViewQuery {
   selectedElement: ElementPosition;
@@ -144,9 +144,9 @@ export interface UpdatedStateData {
 
 export interface Route {
   name: string;
-  hash: string | null;
+  hash: string|null;
   path: string;
-  specificity: string | null;
+  specificity: string|null;
   handler: string;
   data: any;
   children?: Array<Route>;
@@ -159,7 +159,8 @@ export interface Events {
   handshake: () => void;
   shutdown: () => void;
   queryNgAvailability: () => void;
-  ngAvailability: (config: { version: string | undefined | boolean; devMode: boolean; ivy: boolean }) => void;
+  ngAvailability:
+      (config: {version: string|undefined|boolean; devMode: boolean; ivy: boolean}) => void;
 
   inspectorStart: () => void;
   inspectorEnd: () => void;
