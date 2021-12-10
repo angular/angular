@@ -146,6 +146,25 @@ export interface AbstractControlOptions {
   updateOn?: 'change'|'blur'|'submit';
 }
 
+/**
+ * Interface for options provided to a {@link FormControl}.
+ *
+ * This interface extends all options from {@link AbstractControlOptions}, plus some options
+ * unique to `FormControl`.
+ *
+ * @publicApi
+ */
+export interface FormControlOptions extends AbstractControlOptions {
+  /**
+   * @description
+   * Whether to use the initial value used to construct the FormControl as its default value as
+   * well. If this option is false or not provided, the default value of a FormControl is `null`.
+   * When a FormControl is {@link FormControl#reset} without an explicit value, its value reverts to
+   * its default value.
+   */
+  initialValueIsDefault?: boolean;
+}
+
 function isOptionsObj(validatorOrOpts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|
                       null): validatorOrOpts is AbstractControlOptions {
   return validatorOrOpts != null && !Array.isArray(validatorOrOpts) &&
@@ -1228,9 +1247,16 @@ export abstract class AbstractControl {
  * @publicApi
  */
 export class FormControl extends AbstractControl {
+  /**
+   * The default value of this FormControl, used whenever the control is reset without an explicit
+   * value. See {@link FormControlOptions#initialValueIsDefault} for more information on configuring
+   * a default value.
+   * @publicApi
+   */
+  public readonly defaultValue: any = null;
+
   /** @internal */
   _onChange: Array<Function> = [];
-
 
   /**
    * This field holds a pending value that has not yet been applied to the form's value.
@@ -1256,8 +1282,7 @@ export class FormControl extends AbstractControl {
    *
    */
   constructor(
-      formState: any = null,
-      validatorOrOpts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|null,
+      formState: any = null, validatorOrOpts?: ValidatorFn|ValidatorFn[]|FormControlOptions|null,
       asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null) {
     super(pickValidators(validatorOrOpts), pickAsyncValidators(asyncValidator, validatorOrOpts));
     this._applyFormState(formState);
@@ -1271,6 +1296,13 @@ export class FormControl extends AbstractControl {
       // to `true` to allow that during the control creation process.
       emitEvent: !!this.asyncValidator
     });
+    if (isOptionsObj(validatorOrOpts) && validatorOrOpts.initialValueIsDefault) {
+      if (this._isBoxedValue(formState)) {
+        this.defaultValue = formState.value;
+      } else {
+        this.defaultValue = formState;
+      }
+    }
   }
 
   /**
@@ -1329,8 +1361,23 @@ export class FormControl extends AbstractControl {
   }
 
   /**
-   * Resets the form control, marking it `pristine` and `untouched`, and setting
-   * the value to null.
+   * Resets the form control, marking it `pristine` and `untouched`, and resetting
+   * the value. The new value will be the provided value (if passed), `null`, or the initial value
+   * if `initialValueIsDefault` was set in the constructor via {@link FormControlOptions}.
+   *
+   * ```ts
+   * // By default, the control will reset to null.
+   * const dog = new FormControl('spot');
+   * dog.reset(); // dog.value is null
+   *
+   * // If this flag is set, the control will instead reset to the initial value.
+   * const cat = new FormControl('tabby', {initialValueIsDefault: true});
+   * cat.reset(); // cat.value is "tabby"
+   *
+   * // A value passed to reset always takes precedence.
+   * const fish = new FormControl('finn', {initialValueIsDefault: true});
+   * fish.reset('bubble'); // fish.value is "bubble"
+   * ```
    *
    * @param formState Resets the control with an initial value,
    * or an object that defines the initial value and disabled state.
@@ -1346,8 +1393,10 @@ export class FormControl extends AbstractControl {
    * When false, no events are emitted.
    *
    */
-  override reset(formState: any = null, options: {onlySelf?: boolean, emitEvent?: boolean} = {}):
-      void {
+  override reset(formState: any = this.defaultValue, options: {
+    onlySelf?: boolean,
+    emitEvent?: boolean
+  } = {}): void {
     this._applyFormState(formState);
     this.markAsPristine(options);
     this.markAsUntouched(options);
