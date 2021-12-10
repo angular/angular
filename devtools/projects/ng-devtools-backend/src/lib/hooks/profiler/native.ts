@@ -45,11 +45,11 @@ export class NgProfiler extends Profiler {
     this._callbacks.push(callback);
   }
 
-  destroy(): void {
+  override destroy(): void {
     this._tracker.destroy();
   }
 
-  onIndexForest(newNodes: NodeArray, removedNodes: NodeArray): void {
+  override onIndexForest(newNodes: NodeArray, removedNodes: NodeArray): void {
     newNodes.forEach((node) => {
       const {directive, isComponent} = node;
 

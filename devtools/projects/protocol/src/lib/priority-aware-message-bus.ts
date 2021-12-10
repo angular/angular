@@ -56,7 +56,7 @@ export class PriorityAwareMessageBus extends MessageBus<Events> {
     super();
   }
 
-  on<E extends Topic>(topic: E, cb: Events[E]): void {
+  override on<E extends Topic>(topic: E, cb: Events[E]): void {
     const self = this;
     return this._bus.on(topic, function(): void {
       cb.apply(this, arguments);
@@ -64,7 +64,7 @@ export class PriorityAwareMessageBus extends MessageBus<Events> {
     });
   }
 
-  once<E extends Topic>(topic: E, cb: Events[E]): void {
+  override once<E extends Topic>(topic: E, cb: Events[E]): void {
     const self = this;
     return this._bus.once(topic, function(): void {
       cb.apply(this, arguments);
@@ -72,7 +72,7 @@ export class PriorityAwareMessageBus extends MessageBus<Events> {
     });
   }
 
-  emit<E extends Topic>(topic: E, args?: Parameters<Events[E]>): boolean {
+  override emit<E extends Topic>(topic: E, args?: Parameters<Events[E]>): boolean {
     if (this._throttled[topic]) {
       return false;
     }
@@ -97,7 +97,7 @@ export class PriorityAwareMessageBus extends MessageBus<Events> {
     return this._bus.emit(topic, args);
   }
 
-  destroy(): void {
+  override destroy(): void {
     this._bus.destroy();
   }
 

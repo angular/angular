@@ -21,7 +21,7 @@ export interface TreeMapNode {
 
 export class TreeMapFormatter extends RecordFormatter<TreeMapNode> {
   @memo({cache: new WeakMap()})
-  formatFrame(record: ProfilerFrame): TreeMapNode {
+  override formatFrame(record: ProfilerFrame): TreeMapNode {
     const children: TreeMapNode[] = [];
     this.addFrame(children, record.directives);
     const size = children.reduce((accum, curr) => {
@@ -36,7 +36,8 @@ export class TreeMapFormatter extends RecordFormatter<TreeMapNode> {
     };
   }
 
-  addFrame(nodes: TreeMapNode[], elements: ElementProfile[], prev: TreeMapNode|null = null): void {
+  override addFrame(
+      nodes: TreeMapNode[], elements: ElementProfile[], prev: TreeMapNode|null = null): void {
     elements.forEach((element) => {
       if (!element) {
         console.error('Unable to insert undefined element');
