@@ -32,15 +32,16 @@ export abstract class MatInteractiveListBase<T extends MatListItemBase>
   }
 
   _handleClick(event: MouseEvent) {
-    // The `toggleCheckbox` parameter can always be `true` as it only has an effect if the list
-    // is recognized as checkbox selection list. For such lists, we would always want to toggle
-    // the checkbox on list item click. MDC added this parameter so that they can avoid dispatching
-    // a fake `change` event when the checkbox is directly clicked for the list item. We don't
-    // need this as we require such list item checkboxes to stop propagation of the change event.
+    // The `isCheckboxAlreadyUpdatedInAdapter` parameter can always be `false` as it only has an
+    // effect if the list is recognized as checkbox selection list. For such lists, we would
+    // always want to toggle the checkbox on list item click. MDC added this parameter so that
+    // they can avoid dispatching a fake `change` event when the checkbox is directly clicked
+    // for the list item. We don't need this as we do not have an underlying native checkbox
+    // that is reachable by users through interaction.
     // https://github.com/material-components/material-components-web/blob/08ca4d0ec5f359bc3a20bd2a302fa6b733b5e135/packages/mdc-list/component.ts#L308-L310
     this._foundation.handleClick(
       this._indexForElement(event.target as HTMLElement),
-      /* toggleCheckbox */ true,
+      /* isCheckboxAlreadyUpdatedInAdapter */ false,
     );
   }
 
@@ -217,6 +218,7 @@ export function getInteractiveListAdapter(
     isCheckboxCheckedAtIndex(index: number) {
       return false;
     },
+    notifySelectionChange() {},
     notifyAction() {},
   };
 }
