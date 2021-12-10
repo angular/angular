@@ -11,11 +11,11 @@ import {ElementProfile, ProfilerFrame} from 'protocol';
 import {RecordFormatter} from './record-formatter';
 
 class MockFormatter extends RecordFormatter<any> {
-  addFrame(nodes: any[], elements: ElementProfile[]): void {
+  override addFrame(nodes: any[], elements: ElementProfile[]): void {
     return;
   }
 
-  formatFrame(frame: ProfilerFrame): any {
+  override formatFrame(frame: ProfilerFrame): any {
     return;
   }
 }

@@ -12,16 +12,16 @@ import {PriorityAwareMessageBus} from './priority-aware-message-bus';
 
 class MockMessageBus extends MessageBus<Events> {
   cbs: any = {};
-  emit(_: Topic, __: any): boolean {
+  override emit(_: Topic, __: any): boolean {
     return true;
   }
-  on(topic: Topic, cb: any): void {
+  override on(topic: Topic, cb: any): void {
     this.cbs[topic] = cb;
   }
-  once(topic: Topic, cb: any): void {
+  override once(topic: Topic, cb: any): void {
     this.cbs[topic] = cb;
   }
-  destroy(): void {}
+  override destroy(): void {}
 }
 
 describe('PriorityAwareMessageBus', () => {

@@ -24,7 +24,8 @@ export interface FlamegraphNode {
 export const ROOT_LEVEL_ELEMENT_LABEL = 'Entire application';
 
 export class FlamegraphFormatter extends RecordFormatter<FlamegraphNode> {
-  formatFrame(frame: ProfilerFrame, showChangeDetection?: boolean, theme?: Theme): FlamegraphNode {
+  override formatFrame(frame: ProfilerFrame, showChangeDetection?: boolean, theme?: Theme):
+      FlamegraphNode {
     const result: FlamegraphNode = {
       value: 0,
       label: ROOT_LEVEL_ELEMENT_LABEL,
@@ -46,7 +47,7 @@ export class FlamegraphFormatter extends RecordFormatter<FlamegraphNode> {
     return result;
   }
 
-  addFrame(
+  override addFrame(
       nodes: FlamegraphNode[], elements: ElementProfile[], showChangeDetection?: boolean,
       theme?: Theme): number {
     let timeSpent = 0;

@@ -34,7 +34,7 @@ export class PatchingProfiler extends Profiler {
   private _undoLifecyclePatch: (() => void)[] = [];
   private _tracker = IdentityTracker.getInstance();
 
-  destroy(): void {
+  override destroy(): void {
     this._tracker.destroy();
 
     for (const [cmp, template] of this._patched) {
@@ -48,7 +48,7 @@ export class PatchingProfiler extends Profiler {
     this._undoLifecyclePatch = [];
   }
 
-  onIndexForest(newNodes: NodeArray, removedNodes: NodeArray): void {
+  override onIndexForest(newNodes: NodeArray, removedNodes: NodeArray): void {
     newNodes.forEach((node) => {
       this._observeLifecycle(node.directive, node.isComponent);
       this._observeComponent(node.directive);

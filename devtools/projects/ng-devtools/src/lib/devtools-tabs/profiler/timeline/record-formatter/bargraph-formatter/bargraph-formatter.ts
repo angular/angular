@@ -20,14 +20,14 @@ export interface BargraphNode {
 
 export class BarGraphFormatter extends RecordFormatter<BargraphNode[]> {
   @memo({cache: new WeakMap()})
-  formatFrame(frame: ProfilerFrame): BargraphNode[] {
+  override formatFrame(frame: ProfilerFrame): BargraphNode[] {
     const result: BargraphNode[] = [];
     this.addFrame(result, frame.directives);
     return result.filter((element) => element.value > 0).sort((a, b) => b.value - a.value);
   }
 
-  addFrame(nodes: BargraphNode[], elements: ElementProfile[], parents: ElementProfile[] = []):
-      number {
+  override addFrame(
+      nodes: BargraphNode[], elements: ElementProfile[], parents: ElementProfile[] = []): number {
     let timeSpent = 0;
     elements.forEach((element) => {
       // Possibly undefined because of
