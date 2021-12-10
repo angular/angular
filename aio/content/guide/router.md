@@ -141,7 +141,7 @@ To get information from a route:
     <code-example path="router/src/app/heroes/hero-detail/hero-detail.component.ts" region="activated-route" header="In the component class (excerpt)">
     </code-example>
 
-  1. Update the `ngOnInit()` method to access the `ActivatedRoute` and track the `id` parameter:
+  1. Update the `ngOnInit()` method to access the `ActivatedRoute` and track the `name` parameter:
 
       <code-example header="In the component (excerpt)">
         ngOnInit() {
