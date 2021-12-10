@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import {animate, style, transition, trigger} from '@angular/animations';
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Events, MessageBus} from 'protocol';

@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import {MatTreeFlattener} from '@angular/material/tree';
 import {Descriptor, PropType} from 'protocol';
 import {Observable} from 'rxjs';

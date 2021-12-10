@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import {AppEntry} from '../record-formatter';
 import {NESTED_FORMATTED_FLAMEGRAPH_RECORD, NESTED_RECORD, SIMPLE_FORMATTED_FLAMEGRAPH_RECORD, SIMPLE_RECORD,} from '../record-formatter-spec-constants';
 

@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 const prepareHeaderExpansionPanelForAssertions = (selector) => {
   cy.get('.tree-wrapper').find(selector).first().click({force: true});
   cy.get('.element-header .component-name').click();
@@ -13,13 +21,13 @@ describe('Viewing component metadata', () => {
         () => prepareHeaderExpansionPanelForAssertions(
             '.tree-node:contains("app-todo[TooltipDirective]")'));
 
-    it('should display view encapsulation',
-       () => {
-           cy.contains('.meta-data-container .mat-button:first', 'View Encapsulation: Emulated')});
+    it('should display view encapsulation', () => {
+      cy.contains('.meta-data-container .mat-button:first', 'View Encapsulation: Emulated');
+    });
 
-    it('should display change detection strategy',
-       () => {cy.contains(
-           '.meta-data-container .mat-button:last', 'Change Detection Strategy: OnPush')});
+    it('should display change detection strategy', () => {
+      cy.contains('.meta-data-container .mat-button:last', 'Change Detection Strategy: OnPush');
+    });
   });
 
   describe('viewing DemoAppComponent', () => {
@@ -27,12 +35,13 @@ describe('Viewing component metadata', () => {
         () =>
             prepareHeaderExpansionPanelForAssertions('.tree-node:contains("app-demo-component")'));
 
-    it('should display view encapsulation',
-       () => {cy.contains('.meta-data-container .mat-button:first', 'View Encapsulation: None')});
+    it('should display view encapsulation', () => {
+      cy.contains('.meta-data-container .mat-button:first', 'View Encapsulation: None');
+    });
 
-    it('should display change detection strategy',
-       () => {cy.contains(
-           '.meta-data-container .mat-button:last', 'Change Detection Strategy: Default')});
+    it('should display change detection strategy', () => {
+      cy.contains('.meta-data-container .mat-button:last', 'Change Detection Strategy: Default');
+    });
 
     it('should display correct set of inputs', () => {
       cy.contains('.cy-inputs', '@Inputs');

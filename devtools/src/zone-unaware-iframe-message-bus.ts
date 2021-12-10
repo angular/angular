@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import {Events, MessageBus, Parameters} from 'protocol';
 
 import {IFrameMessageBus} from './iframe-message-bus';

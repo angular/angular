@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 // works with arrays of string, numbers and booleans
 export const arrayEquals =
     (a: (string|number|boolean)[], b: (string|number|boolean)[]): boolean => {

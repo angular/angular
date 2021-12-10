@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import {ChromeMessageBus} from './chrome-message-bus';
 import {SamePageMessageBus} from './same-page-message-bus';
 
@@ -39,7 +47,9 @@ export const main = () => {
   });
 
   if (!backendInitialized) {
+    // tslint:disable-next-line:no-console
     console.log('Attempting initialization', new Date());
+
     const retry = () => {
       if (backendInitialized || backgroundDisconnected) {
         return;

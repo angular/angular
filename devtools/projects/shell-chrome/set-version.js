@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 const chalk = require('chalk');
 const {createInterface} = require('readline');
 const semver = require('semver');
@@ -8,7 +16,10 @@ const MANIFEST_PATH = join(__dirname, 'src/manifest.json');
 
 const manifest = JSON.parse(readFileSync(MANIFEST_PATH).toString());
 
+// tslint:disable-next-line:no-console
 console.log('Current version', chalk.yellow(manifest.version));
+
+// tslint:disable-next-line:no-console
 console.log('Current version name', chalk.yellow(manifest.version_name));
 
 const setVersion = (nextVersion) => {

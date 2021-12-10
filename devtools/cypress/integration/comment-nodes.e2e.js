@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 function showComments() {
   cy.get('#nav-buttons > button:nth-child(2)').click();
   cy.get('#mat-slide-toggle-3 > label > div').click();

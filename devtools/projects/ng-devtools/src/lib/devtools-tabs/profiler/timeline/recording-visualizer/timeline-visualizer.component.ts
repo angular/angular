@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import {Component, Input} from '@angular/core';
 import {ProfilerFrame} from 'protocol';
 
@@ -38,6 +46,8 @@ export class TimelineVisualizerComponent {
   selectedEntry: BargraphNode|FlamegraphNode|null = null;
   selectedDirectives: SelectedDirective[] = [];
   parentHierarchy: {name: string}[] = [];
+
+  /** @internal */
   _visualizationMode: VisualizationMode;
 
   handleNodeSelect({entry, parentHierarchy, selectedDirectives}: SelectedEntry): void {
