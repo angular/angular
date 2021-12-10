@@ -1,4 +1,15 @@
 <a name="12.2.15"></a>
+# 12.2.15 (2021-12-10)
+### ngcc
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b6554d75cd](https://github.com/angular/angular/commit/b6554d75cd3ac8a904820f7cd051d926c74460bf) | fix | correctly resolve UMD dependencies ([#44382](https://github.com/angular/angular/pull/44382)) |
+## Special Thanks
+Alex Rickabaugh and George Kalpakas
+
+<!-- CHANGELOG SPLIT MARKER -->
+
+<a name="12.2.15"></a>
 # 12.2.15 (2021-12-08)
 ### ngcc
 | Commit | Type | Description |
