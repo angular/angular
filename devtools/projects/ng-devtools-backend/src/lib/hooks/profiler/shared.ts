@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import {ElementPosition, LifecycleProfile} from 'protocol';
 import {Subject} from 'rxjs';
 
@@ -46,7 +54,9 @@ export interface Hooks {
  * detection events.
  */
 export abstract class Profiler {
+  /** @internal */
   protected _inChangeDetection = false;
+
   changeDetection$ = new Subject<void>();
 
   private _hooks: Partial<Hooks>[] = [];
@@ -67,6 +77,7 @@ export abstract class Profiler {
     this._hooks.splice(this._hooks.indexOf(config), 1);
   }
 
+  /** @internal */
   protected _onCreate(
       _: any, __: Node, id: number|undefined, ___: boolean,
       position: ElementPosition|undefined): void {
@@ -76,6 +87,7 @@ export abstract class Profiler {
     this._invokeCallback('onCreate', arguments);
   }
 
+  /** @internal */
   protected _onDestroy(
       _: any, __: Node, id: number|undefined, ___: boolean,
       position: ElementPosition|undefined): void {
@@ -85,6 +97,7 @@ export abstract class Profiler {
     this._invokeCallback('onDestroy', arguments);
   }
 
+  /** @internal */
   protected _onChangeDetectionStart(
       _: any, __: Node, id: number|undefined, position: ElementPosition|undefined): void {
     if (id === undefined || position === undefined) {
@@ -93,6 +106,7 @@ export abstract class Profiler {
     this._invokeCallback('onChangeDetectionStart', arguments);
   }
 
+  /** @internal */
   protected _onChangeDetectionEnd(
       _: any, __: Node, id: number|undefined, position: ElementPosition|undefined): void {
     if (id === undefined || position === undefined) {
@@ -101,6 +115,7 @@ export abstract class Profiler {
     this._invokeCallback('onChangeDetectionEnd', arguments);
   }
 
+  /** @internal */
   protected _onLifecycleHookStart(
       _: any, __: keyof LifecycleProfile|'unknown', ___: Node, id: number|undefined,
       ____: boolean): void {
@@ -110,6 +125,7 @@ export abstract class Profiler {
     this._invokeCallback('onLifecycleHookStart', arguments);
   }
 
+  /** @internal */
   protected _onLifecycleHookEnd(
       _: any, __: keyof LifecycleProfile|'unknown', ___: Node, id: number|undefined,
       ____: boolean): void {
@@ -119,6 +135,7 @@ export abstract class Profiler {
     this._invokeCallback('onLifecycleHookEnd', arguments);
   }
 
+  /** @internal */
   protected _onOutputStart(_: any, __: string, ___: Node, id: number|undefined, ____: boolean):
       void {
     if (id === undefined) {
@@ -127,6 +144,7 @@ export abstract class Profiler {
     this._invokeCallback('onOutputStart', arguments);
   }
 
+  /** @internal */
   protected _onOutputEnd(_: any, __: string, ___: Node, id: number|undefined, ____: boolean): void {
     if (id === undefined) {
       return;
@@ -134,6 +152,7 @@ export abstract class Profiler {
     this._invokeCallback('onOutputEnd', arguments);
   }
 
+  /** @internal */
   private _invokeCallback(name: keyof Hooks, args: IArguments): void {
     this._hooks.forEach((config) => {
       const cb = config[name];

@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 const loadScripts = (urls: string[]) => {
   return urls
       .map((url, idx) => {
@@ -35,6 +43,7 @@ export const injectScripts = (urls: string[], cb?: () => void) => {
   `;
   chrome.devtools.inspectedWindow.eval(script, (_, err) => {
     if (err) {
+      // tslint:disable-next-line:no-console
       console.log(err);
     }
     cb?.();

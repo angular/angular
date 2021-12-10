@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import {ChangeDetectorRef, Component, EventEmitter, OnDestroy, OnInit, Output} from '@angular/core';
 
 import {Todo} from './todo';
@@ -88,7 +96,9 @@ export class TodosComponent implements OnInit, OnDestroy {
     if (idx < 0) {
       return;
     }
+    // tslint:disable-next-line:no-console
     console.log('Deleting', idx);
+
     this.todos.splice(idx, 1);
   }
 }

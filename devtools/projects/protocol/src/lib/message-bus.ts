@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 export type Parameters<F> = F extends(...args: infer T) => any ? T : never;
 
 export abstract class MessageBus<T> {

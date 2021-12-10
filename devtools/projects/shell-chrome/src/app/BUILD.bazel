@@ -184,8 +184,8 @@ rollup_bundle(
         ],
     )
     for target_name, file_name, format in [
-        ("ng_validate", 'ng-validate.ts', "umd"),
-        ("background", 'background.ts', "umd"),
-        ("content_script", 'content-script.ts', "umd"),
+        ("ng_validate", "ng-validate.ts", "umd"),
+        ("background", "background.ts", "umd"),
+        ("content_script", "content-script.ts", "umd"),
     ]
 ]

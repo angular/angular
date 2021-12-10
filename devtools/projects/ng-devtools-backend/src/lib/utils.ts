@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 export const runOutsideAngular = (f: () => any): void => {
   const w = window as any;
   if (!w.Zone || !w.Zone.current) {

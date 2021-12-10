@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import {AngularDetection} from './ng-validate';
 
 // Electron does not expose browserAction object,
@@ -25,21 +33,32 @@ const ports: {
 chrome.runtime.onConnect.addListener((port) => {
   let tab: string|null = null;
   let name: string|null = null;
+  // tslint:disable-next-line:no-console
   console.log('Connection event in the background script');
+
   if (isNumeric(port.name)) {
     tab = port.name;
+
+    // tslint:disable-next-line:no-console
     console.log('Angular devtools connected, injecting the content script', port.name, ports[tab]);
+
     name = 'devtools';
     installContentScript(parseInt(port.name, 10));
   } else {
     if (!port.sender || !port.sender.tab) {
+      // tslint:disable-next-line:no-console
       console.error('Unable to access the port sender and sender tab');
+
       return;
     }
     if (port.sender.tab.id === undefined) {
+      // tslint:disable-next-line:no-console
       console.error('Sender tab id is undefined');
+
       return;
     }
+
+    // tslint:disable-next-line:no-console
     console.log('Content script connected', port.sender.tab.id);
     tab = port.sender.tab.id.toString();
     name = 'content-script';
@@ -47,7 +66,9 @@ chrome.runtime.onConnect.addListener((port) => {
 
   let portsTab = ports[tab];
   if (!portsTab) {
+    // tslint:disable-next-line:no-console
     console.log('Creating a tab port');
+
     portsTab = ports[tab] = {
       devtools: null,
       'content-script': null,
@@ -66,7 +87,9 @@ const isNumeric = (str: string): boolean => {
 };
 
 const installContentScript = (tabId: number) => {
+  // tslint:disable-next-line:no-console
   console.log('Installing the content-script');
+
   // We first inject the content-script and after that
   // invoke the global that it exposes.
   chrome.tabs.executeScript(tabId, {file: 'app/content-script-es2015.js'}, (result) => {
@@ -83,6 +106,8 @@ const doublePipe =
         console.warn('DevTools port is equal to null');
         return;
       }
+
+      // tslint:disable-next-line:no-console
       console.log('Creating two-way communication channel', Date.now(), ports);
 
       const onDevToolsMessage = (message: chrome.runtime.Port) => {
@@ -96,7 +121,9 @@ const doublePipe =
       contentScriptPort.onMessage.addListener(onContentScriptMessage);
 
       const shutdown = (source: string) => {
+        // tslint:disable-next-line:no-console
         console.log('Disconnecting', source);
+
         devtoolsPort.onMessage.removeListener(onDevToolsMessage);
         contentScriptPort.onMessage.removeListener(onContentScriptMessage);
         devtoolsPort.disconnect();

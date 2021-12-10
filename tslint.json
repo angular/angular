@@ -38,7 +38,8 @@
       true,
       {
         "match": "Copyright Google LLC",
-        "allow-single-line-comments": false
+        "allow-single-line-comments": false,
+        "default": "@license\nCopyright Google LLC All Rights Reserved.\n\nUse of this source code is governed by an MIT-style license that can be\nfound in the LICENSE file at https://angular.io/license"
       }
     ],
     "no-console": [
@@ -94,7 +95,8 @@
       true,
       {
         "match": "Copyright Google LLC",
-        "allow-single-line-comments": false
+        "allow-single-line-comments": false,
+        "default": "@license\nCopyright Google LLC All Rights Reserved.\n\nUse of this source code is governed by an MIT-style license that can be\nfound in the LICENSE file at https://angular.io/license"
       }
     ],
     "no-console": [
@@ -140,10 +142,11 @@
       // Ignore zone.js directory
       // TODO(JiaLiPassion): add zone.js back later
       "./packages/zone.js/**/*",
-      "./devtools/node_modules/**/*",
+
       "./devtools/dist/**/*",
       "./devtools/bazel-bin/**/*",
-      "./devtools/bazel-out/**/*"
+      "./devtools/bazel-out/**/*",
+      "./devtools/projects/ng-devtools/src/lib/vendor/**/*"
     ]
   }
 }
