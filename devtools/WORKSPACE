@@ -41,19 +41,13 @@ node_repositories(
     package_json = ["//:package.json"],
 )
 
-# Fetch sass rules for compiling sass files
+# sass rules
 http_archive(
     name = "io_bazel_rules_sass",
-    patch_args = ["-p1"],
-    patches = [
-        # Updates @bazel/work dep to 4.0.0 inside rules_sass so it is compatible
-        "//:io_bazel_rules_sass.patch",
-    ],
-    sha256 = "5313032124ff191eed68efcfbdc6ee9b5198093b2b80a8e640ea34feabbffc69",
-    strip_prefix = "rules_sass-1.34.0",
+    sha256 = "435efe759f1c8baffadc320ecc1830454da181fa790aa83bb4326f07e903a0f4",
+    strip_prefix = "rules_sass-1.41.0",
     urls = [
-        "https://github.com/bazelbuild/rules_sass/archive/1.34.0.zip",
-        "https://mirror.bazel.build/github.com/bazelbuild/rules_sass/archive/1.34.0.zip",
+        "https://github.com/bazelbuild/rules_sass/archive/1.41.0.zip",
     ],
 )
 
