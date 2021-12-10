@@ -9,7 +9,7 @@
     "ng": "ng",
     "start": "ng serve",
     "pretest": "ng version",
-    "test": "ng test && yarn e2e --configuration=ci && yarn e2e --configuration=ci-production"
+    "test": "ng build"
   },
   "private": true,
   "dependencies": {
