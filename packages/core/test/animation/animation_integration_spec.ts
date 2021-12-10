@@ -3008,17 +3008,24 @@ describe('animation tests', function() {
 
          const players = getLog();
          expect(players.length).toEqual(4);
-         const [, p1, p2, p3] = players;
 
-         p1.finish();
+         // players:
+         //  - _scp (skipped child player): player for the child animation
+         //  - pp1 (parent player 1): player for parent animation (from 0px to 100px)
+         //  - pcp (parent child player):
+         //     player for child animation executed by parent via query and animateChild
+         //  - pp2 (parent player 2): player for parent animation (from 100px to 0px)
+         const [_scp, pp1, pcp, pp2] = players;
+
+         pp1.finish();
          flushMicrotasks();
          expect(cmp.log).toEqual([]);
 
-         p2.finish();
+         pcp.finish();
          flushMicrotasks();
          expect(cmp.log).toEqual([]);
 
-         p3.finish();
+         pp2.finish();
          flushMicrotasks();
          expect(cmp.log).toEqual(['parent-done', 'child-done']);
        }));
@@ -3082,19 +3089,29 @@ describe('animation tests', function() {
          const players = getLog();
          expect(players.length).toEqual(13);
 
-         const [, , , , pA, pq1a, pq1b, pq1c, pq1d, pq2a, pq2b, pq2c, pq2d] = getLog();
-         pA.finish();
-         pq1a.finish();
-         pq1b.finish();
-         pq1c.finish();
-         pq1d.finish();
+         // players:
+         //  - _sc1p, _sc2p, _sc3p, _sc4p (skipped child n (1 to 4) players):
+         //     players for the children animations
+         //  - pp1 (parent player 1): player for parent animation (from opacity 0 to opacity 1)
+         //  - pc1p1, pc2p1, pc3p1, pc4p1 (parent child n (1 to 4) player 1):
+         //     players for children animations executed by parent via query and animate
+         //     (from opacity 0 to opacity 1)
+         //  - pc1p2, pc2p2, pc3p2, pc4p2 (parent child n (1 to 4) player 2):
+         //     players for children animations executed by parent via query and animateChild
+         const [_sc1p, _sc2p, _sc3p, _sc4p, pp1, pc1p1, pc2p1, pc3p1, pc4p1, pc1p2, pc2p2, pc3p2, pc4p2] =
+             getLog();
+         pp1.finish();
+         pc1p1.finish();
+         pc2p1.finish();
+         pc3p1.finish();
+         pc4p1.finish();
          flushMicrotasks();
 
          expect(cmp.log).toEqual([]);
-         pq2a.finish();
-         pq2b.finish();
-         pq2c.finish();
-         pq2d.finish();
+         pc1p2.finish();
+         pc2p2.finish();
+         pc3p2.finish();
+         pc4p2.finish();
          flushMicrotasks();
 
          expect(cmp.log).toEqual(['all-done', 'c-0-done', 'c-1-done', 'c-2-done', 'c-3-done']);
