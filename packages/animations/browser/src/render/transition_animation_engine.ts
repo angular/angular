@@ -759,6 +759,17 @@ export class TransitionAnimationEngine {
     this.collectedLeaveElements.push(element);
     element[REMOVAL_FLAG] =
         {namespaceId, setForRemoval: context, hasAnimation, removedBeforeQueried: false};
+
+    // if a form (or an element containing a form) is leaving and the user attempts
+    // to submit the form (for example by clicking on a submit button inside of it)
+    // we do not want the native submit event to cause a page refresh so we need
+    // to prevent the event's default behavior
+    // Note: this does not remove existing native listeners from the form element,
+    //       if present they will still be executed as well
+    const formChildElems = element.querySelectorAll('form');
+    for (let i = 0; i < formChildElems.length; i++) {
+      formChildElems[i].addEventListener('submit', (event: any) => event.preventDefault());
+    }
   }
 
   listen(
