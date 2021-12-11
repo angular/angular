@@ -8,15 +8,27 @@ See the <live-example name="template-syntax"></live-example> for a working examp
 
 </div>
 
+## Prerequisites
+
+* TBD
+
 ## SVG syntax example
 
-The following example shows the syntax for using an SVG as a template.
+The example shows the syntax for using an SVG as a template.
+
+1. Type the following:
 
 <code-example path="template-syntax/src/app/svg.component.ts" header="src/app/svg.component.ts"></code-example>
 
-To see property and event binding in action, add the following code to your `svg.component.svg` file:
+2. To see property and event binding in action, add the following code to your `svg.component.svg` file:
 
 <code-example path="template-syntax/src/app/svg.component.svg" header="src/app/svg.component.svg"></code-example>
 
 The example given uses a `click()` event binding and the property binding syntax
 (`[attr.fill]="fillColor"`).
+
+## What’s next
+
+* TBD
+
+@reviewed 2021-12-10
