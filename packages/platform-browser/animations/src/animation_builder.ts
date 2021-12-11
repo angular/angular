@@ -7,7 +7,7 @@
  */
 import {AnimationBuilder, AnimationFactory, AnimationMetadata, AnimationOptions, AnimationPlayer, sequence} from '@angular/animations';
 import {DOCUMENT} from '@angular/common';
-import {Inject, Injectable, RendererFactory2, RendererType2, ViewEncapsulation} from '@angular/core';
+import {Inject, Injectable, RendererFactory2, RendererType2, ViewEncapsulation, ɵInternalViewEncapsulation as InternalViewEncapsulation} from '@angular/core';
 
 import {AnimationRenderer} from './animation_renderer';
 
@@ -18,9 +18,12 @@ export class BrowserAnimationBuilder extends AnimationBuilder {
 
   constructor(rootRenderer: RendererFactory2, @Inject(DOCUMENT) doc: any) {
     super();
-    const typeData =
-        {id: '0', encapsulation: ViewEncapsulation.None, styles: [], data: {animation: []}} as
-        RendererType2;
+    const typeData = {
+      id: '0',
+      encapsulation: InternalViewEncapsulation.None as unknown as ViewEncapsulation,
+      styles: [],
+      data: {animation: []}
+    } as RendererType2;
     this._renderer = rootRenderer.createRenderer(doc.body, typeData) as AnimationRenderer;
   }
 

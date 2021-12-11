@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_ID, Inject, Injectable, Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2, ViewEncapsulation} from '@angular/core';
+import {APP_ID, Inject, Injectable, Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2, ViewEncapsulation, ɵInternalViewEncapsulation as InternalViewEncapsulation} from '@angular/core';
 
 import {EventManager} from './events/event_manager';
 import {DomSharedStylesHost} from './shared_styles_host';
@@ -92,7 +92,7 @@ export class DomRendererFactory2 implements RendererFactory2 {
       return this.defaultRenderer;
     }
     switch (type.encapsulation) {
-      case ViewEncapsulation.Emulated: {
+      case InternalViewEncapsulation.Emulated as unknown as ViewEncapsulation: {
         let renderer = this.rendererByCompId.get(type.id);
         if (!renderer) {
           renderer = new EmulatedEncapsulationDomRenderer2(
@@ -105,7 +105,7 @@ export class DomRendererFactory2 implements RendererFactory2 {
       // @ts-ignore TODO: Remove as part of FW-2290. TS complains about us dealing with an enum
       // value that is not known (but previously was the value for ViewEncapsulation.Native)
       case 1:
-      case ViewEncapsulation.ShadowDom:
+      case InternalViewEncapsulation.ShadowDom as unknown as ViewEncapsulation:
         // TODO(FW-2290): remove the `case 1:` fallback logic and the warning in v12.
         if ((typeof ngDevMode === 'undefined' || ngDevMode) &&
             // @ts-ignore TODO: Remove as part of FW-2290. TS complains about us dealing with an

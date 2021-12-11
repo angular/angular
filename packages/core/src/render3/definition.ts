@@ -10,7 +10,7 @@ import {ChangeDetectionStrategy} from '../change_detection/constants';
 import {Mutable, Type} from '../interface/type';
 import {NgModuleDef, NgModuleType} from '../metadata/ng_module_def';
 import {SchemaMetadata} from '../metadata/schema';
-import {ViewEncapsulation} from '../metadata/view';
+import {InternalViewEncapsulation, ViewEncapsulation} from '../metadata/view';
 import {noSideEffects} from '../util/closure';
 import {EMPTY_ARRAY, EMPTY_OBJ} from '../util/empty';
 import {initNgDevMode} from '../util/ng_dev_mode';
@@ -316,7 +316,8 @@ export function ɵɵdefineComponent<T>(componentDefinition: {
       viewQuery: componentDefinition.viewQuery || null,
       features: componentDefinition.features as DirectiveDefFeature[] || null,
       data: componentDefinition.data || {},
-      encapsulation: componentDefinition.encapsulation || ViewEncapsulation.Emulated,
+      encapsulation: componentDefinition.encapsulation ||
+          InternalViewEncapsulation.Emulated as unknown as ViewEncapsulation,
       id: 'c',
       styles: componentDefinition.styles || EMPTY_ARRAY,
       _: null,

@@ -10,7 +10,7 @@ import {ErrorHandler} from '../../error_handler';
 import {formatRuntimeError, RuntimeError, RuntimeErrorCode} from '../../errors';
 import {DoCheck, OnChanges, OnInit} from '../../interface/lifecycle_hooks';
 import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, SchemaMetadata} from '../../metadata/schema';
-import {ViewEncapsulation} from '../../metadata/view';
+import {InternalViewEncapsulation, ViewEncapsulation} from '../../metadata/view';
 import {validateAgainstEventAttributes, validateAgainstEventProperties} from '../../sanitization/sanitization';
 import {Sanitizer} from '../../sanitization/sanitizer';
 import {assertDefined, assertDomNode, assertEqual, assertGreaterThanOrEqual, assertIndexInRange, assertNotEqual, assertNotSame, assertSame, assertString} from '../../util/assert';
@@ -738,7 +738,8 @@ export function locateHostElement(
     encapsulation: ViewEncapsulation): RElement {
   if (isProceduralRenderer(renderer)) {
     // When using native Shadow DOM, do not clear host element to allow native slot projection
-    const preserveContent = encapsulation === ViewEncapsulation.ShadowDom;
+    const preserveContent =
+        encapsulation === InternalViewEncapsulation.ShadowDom as unknown as ViewEncapsulation;
     return renderer.selectRootElement(elementOrSelector, preserveContent);
   }
 

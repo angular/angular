@@ -48,3 +48,30 @@ export enum ViewEncapsulation {
    */
   ShadowDom = 3
 }
+
+export const enum InternalViewEncapsulation {
+  /**
+   * Emulates a native Shadow DOM encapsulation behavior by adding a specific attribute to the
+   * component's host element and applying the same attribute to all the CSS selectors provided
+   * via {@link Component#styles styles} or {@link Component#styleUrls styleUrls}.
+   *
+   * This is the default option.
+   */
+  Emulated = 0,
+
+  // Historically the 1 value was for `Native` encapsulation which has been removed as of v11.
+
+  /**
+   * Doesn't provide any sort of CSS style encapsulation, meaning that all the styles provided
+   * via {@link Component#styles styles} or {@link Component#styleUrls styleUrls} are applicable
+   * to any HTML element of the application regardless of their host Component.
+   */
+  None = 2,
+
+  /**
+   * Uses the browser's native Shadow DOM API to encapsulate CSS styles, meaning that it creates
+   * a ShadowRoot for the component's host element which is then used to encapsulate
+   * all the Component's styling.
+   */
+  ShadowDom = 3
+}

@@ -31,6 +31,7 @@ export {
   NgModuleDef as ɵNgModuleDef,
   NgModuleTransitiveScopes as ɵNgModuleTransitiveScopes,
 } from './metadata/ng_module_def';
+export {InternalViewEncapsulation as ɵInternalViewEncapsulation} from './metadata/view';
 export {
   getLContext as ɵgetLContext
 } from './render3/context_discovery';

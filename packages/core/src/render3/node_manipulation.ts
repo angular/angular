@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ViewEncapsulation} from '../metadata/view';
+import {InternalViewEncapsulation, ViewEncapsulation} from '../metadata/view';
 import {Renderer2} from '../render/api';
 import {RendererStyleFlags2} from '../render/api_flags';
 import {addToArray, removeFromArray} from '../util/array_utils';
@@ -592,8 +592,8 @@ export function getClosestRElement(tView: TView, tNode: TNode|null, lView: LView
       // Since the projection would then move it to its final destination. Note that we can't
       // make this assumption when using the Shadow DOM, because the native projection placeholders
       // (<content> or <slot>) have to be in place as elements are being inserted.
-      if (encapsulation === ViewEncapsulation.None ||
-          encapsulation === ViewEncapsulation.Emulated) {
+      if (encapsulation === InternalViewEncapsulation.None as unknown as ViewEncapsulation ||
+          encapsulation === InternalViewEncapsulation.Emulated as unknown as ViewEncapsulation) {
         return null;
       }
     }
