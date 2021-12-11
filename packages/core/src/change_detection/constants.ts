@@ -31,6 +31,22 @@ export enum ChangeDetectionStrategy {
   Default = 1,
 }
 
+export const enum InternalChangeDetectionStrategy {
+  /**
+   * Use the `CheckOnce` strategy, meaning that automatic change detection is deactivated
+   * until reactivated by setting the strategy to `Default` (`CheckAlways`).
+   * Change detection can still be explicitly invoked.
+   * This strategy applies to all child directives and cannot be overridden.
+   */
+  OnPush = 0,
+
+  /**
+   * Use the default `CheckAlways` strategy, in which change detection is automatic until
+   * explicitly deactivated.
+   */
+  Default = 1,
+}
+
 /**
  * Defines the possible states of the default change detector.
  * @see `ChangeDetectorRef`
@@ -83,5 +99,6 @@ export enum ChangeDetectorStatus {
 export function isDefaultChangeDetectionStrategy(changeDetectionStrategy: ChangeDetectionStrategy):
     boolean {
   return changeDetectionStrategy == null ||
-      changeDetectionStrategy === ChangeDetectionStrategy.Default;
+      changeDetectionStrategy ===
+      InternalChangeDetectionStrategy.Default as unknown as ChangeDetectionStrategy;
 }

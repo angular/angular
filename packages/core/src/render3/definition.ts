@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectionStrategy} from '../change_detection/constants';
+import {ChangeDetectionStrategy, InternalChangeDetectionStrategy} from '../change_detection/constants';
 import {Mutable, Type} from '../interface/type';
 import {NgModuleDef, NgModuleType} from '../metadata/ng_module_def';
 import {SchemaMetadata} from '../metadata/schema';
@@ -309,7 +309,8 @@ export function ɵɵdefineComponent<T>(componentDefinition: {
       inputs: null!,   // assigned in noSideEffects
       outputs: null!,  // assigned in noSideEffects
       exportAs: componentDefinition.exportAs || null,
-      onPush: componentDefinition.changeDetection === ChangeDetectionStrategy.OnPush,
+      onPush: componentDefinition.changeDetection ===
+          InternalChangeDetectionStrategy.OnPush as unknown as ChangeDetectionStrategy,
       directiveDefs: null!,  // assigned in noSideEffects
       pipeDefs: null!,       // assigned in noSideEffects
       selectors: componentDefinition.selectors || EMPTY_ARRAY,
