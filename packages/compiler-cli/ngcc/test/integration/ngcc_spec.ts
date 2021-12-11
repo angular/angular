@@ -24,7 +24,7 @@ import {Transformer} from '../../src/packages/transformer';
 import {DirectPackageJsonUpdater, PackageJsonUpdater} from '../../src/writing/package_json_updater';
 import {mockRequireResolveForLockfile} from '../helpers/utils';
 
-import {compileIntoApf, compileIntoFlatEs2015Package, compileIntoFlatEs5Package, loadNgccIntegrationTestFiles} from './util';
+import {loadNgccIntegrationTestFiles} from './util';
 
 const ANGULAR_CORE_IMPORT_REGEX = /import \* as ɵngcc\d+ from '@angular\/core';/;
 const testFiles = loadNgccIntegrationTestFiles();
@@ -237,22 +237,77 @@ runInEachFileSystem(() => {
 
     it('should generate correct metadata for decorated getter/setter properties', () => {
       setupAngularCoreEsm5();
-      compileIntoFlatEs5Package('test-package', {
-        '/index.ts': `
-          import {Directive, Input, NgModule} from '@angular/core';
-
-          @Directive({selector: '[foo]'})
-          export class FooDirective {
-            @Input() get bar() { return 'bar'; }
-            set bar(value: string) {}
-          }
-
-          @NgModule({
-            declarations: [FooDirective],
-          })
-          export class FooModule {}
-        `,
-      });
+      loadTestFiles([
+        {
+          name: _('/node_modules/test-package/index.d.ts'),
+          contents: `
+            export declare class FooDirective {
+                get bar(): string;
+                set bar(value: string);
+            }
+            export declare class FooModule {
+            }`,
+        },
+        {
+          name: _('/node_modules/test-package/index.js'),
+          contents: `
+            var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+                var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+                if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+                else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+                return c > 3 && r && Object.defineProperty(target, key, r), r;
+            };
+            var __metadata = (this && this.__metadata) || function (k, v) {
+                if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+            };
+            import { Directive, Input, NgModule } from '@angular/core';
+            var FooDirective = /** @class */ (function () {
+                function FooDirective() {
+                }
+                Object.defineProperty(FooDirective.prototype, "bar", {
+                    get: function () { return 'bar'; },
+                    set: function (value) { },
+                    enumerable: false,
+                    configurable: true
+                });
+                __decorate([
+                    Input(),
+                    __metadata("design:type", String),
+                    __metadata("design:paramtypes", [String])
+                ], FooDirective.prototype, "bar", null);
+                FooDirective = __decorate([
+                    Directive({ selector: '[foo]' })
+                ], FooDirective);
+                return FooDirective;
+            }());
+            export { FooDirective };
+            var FooModule = /** @class */ (function () {
+                function FooModule() {
+                }
+                FooModule = __decorate([
+                    NgModule({
+                        declarations: [FooDirective],
+                    })
+                ], FooModule);
+                return FooModule;
+            }());
+            export { FooModule };`,
+        },
+        {
+          name: _('/node_modules/test-package/index.metadata.json'),
+          contents: `{}`,
+        },
+        {
+          name: _('/node_modules/test-package/package.json'),
+          contents: `
+            {
+              "name": "test-package",
+              "version": "0.0.1",
+              "esm5": "./index.js",
+              "typings": "./index.d.ts"
+            }`,
+        },
+      ]);
 
       mainNgcc({
         basePath: '/node_modules',
@@ -275,27 +330,100 @@ runInEachFileSystem(() => {
              target} format (imported helpers)`,
          () => {
            setupAngularCoreEsm5();
-           compileIntoApf(
-               'test-package', {
-                 '/index.ts': `
-                  import {Directive, Input, NgModule} from '@angular/core';
-
-                  const a = { '[class.a]': 'true' };
-                  const b = { '[class.b]': 'true' };
-
-                  @Directive({
-                    selector: '[foo]',
-                    host: {...a, ...b, '[class.c]': 'false'}
-                  })
-                  export class FooDirective {}
-
-                  @NgModule({
-                    declarations: [FooDirective],
-                  })
-                  export class FooModule {}
-                `,
-               },
-               {importHelpers: true, noEmitHelpers: true});
+           loadTestFiles([
+             {
+               name: _('/node_modules/test-package/src/index.d.ts'),
+               contents: `
+                export declare class FooDirective {
+                }
+                export declare class FooModule {
+                }`,
+             },
+             {
+               name: _('/node_modules/test-package/esm2015/src/index.js'),
+               contents: `
+                import { __decorate } from "tslib";
+                import { Directive, NgModule } from '@angular/core';
+                const a = { '[class.a]': 'true' };
+                const b = { '[class.b]': 'true' };
+                let FooDirective = class FooDirective {
+                };
+                FooDirective = __decorate([
+                    Directive({
+                        selector: '[foo]',
+                        host: Object.assign(Object.assign(Object.assign({}, a), b), { '[class.c]': 'false' })
+                    })
+                ], FooDirective);
+                export { FooDirective };
+                let FooModule = class FooModule {
+                };
+                FooModule = __decorate([
+                    NgModule({
+                        declarations: [FooDirective],
+                    })
+                ], FooModule);
+                export { FooModule };`,
+             },
+             {
+               name: _('/node_modules/test-package/esm2015/index.js'),
+               contents: `export * from './src/index';`,
+             },
+             {
+               name: _('/node_modules/test-package/esm5/src/index.js'),
+               contents: `
+                import { __assign, __decorate } from "tslib";
+                import { Directive, NgModule } from '@angular/core';
+                var a = { '[class.a]': 'true' };
+                var b = { '[class.b]': 'true' };
+                var FooDirective = /** @class */ (function () {
+                    function FooDirective() {
+                    }
+                    FooDirective = __decorate([
+                        Directive({
+                            selector: '[foo]',
+                            host: __assign(__assign(__assign({}, a), b), { '[class.c]': 'false' })
+                        })
+                    ], FooDirective);
+                    return FooDirective;
+                }());
+                export { FooDirective };
+                var FooModule = /** @class */ (function () {
+                    function FooModule() {
+                    }
+                    FooModule = __decorate([
+                        NgModule({
+                            declarations: [FooDirective],
+                        })
+                    ], FooModule);
+                    return FooModule;
+                }());
+                export { FooModule };`,
+             },
+             {
+               name: _('/node_modules/test-package/esm5/index.js'),
+               contents: `export * from './src/index';`,
+             },
+             {
+               name: _('/node_modules/test-package/index.d.ts'),
+               contents: `export * from './src/index';`,
+             },
+             {
+               name: _('/node_modules/test-package/index.metadata.json'),
+               contents: `{}`,
+             },
+             {
+               name: _('/node_modules/test-package/package.json'),
+               contents: `
+                {
+                  "name": "test-package",
+                  "version": "0.0.1",
+                  "esm5": "./esm5/index.js",
+                  "esm2015": "./esm2015/index.js",
+                  "module": "./esm2015/index.js",
+                  "typings": "./index.d.ts"
+                }`,
+             },
+           ]);
 
            fs.writeFile(
                _('/node_modules/tslib/index.d.ts'),
@@ -316,27 +444,121 @@ runInEachFileSystem(() => {
              target} format (emitted helpers)`,
          () => {
            setupAngularCoreEsm5();
-           compileIntoApf(
-               'test-package', {
-                 '/index.ts': `
-                    import {Directive, Input, NgModule} from '@angular/core';
-
-                    const a = { '[class.a]': 'true' };
-                    const b = { '[class.b]': 'true' };
-
-                    @Directive({
-                      selector: '[foo]',
-                      host: {...a, ...b, '[class.c]': 'false'}
+           loadTestFiles([
+             {
+               name: _('/node_modules/test-package/src/index.d.ts'),
+               contents: `
+                export declare class FooDirective {
+                }
+                export declare class FooModule {
+                }`,
+             },
+             {
+               name: _('/node_modules/test-package/esm2015/src/index.js'),
+               contents: `
+                var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+                    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+                    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+                    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+                    return c > 3 && r && Object.defineProperty(target, key, r), r;
+                };
+                import { Directive, NgModule } from '@angular/core';
+                const a = { '[class.a]': 'true' };
+                const b = { '[class.b]': 'true' };
+                let FooDirective = class FooDirective {
+                };
+                FooDirective = __decorate([
+                    Directive({
+                        selector: '[foo]',
+                        host: Object.assign(Object.assign(Object.assign({}, a), b), { '[class.c]': 'false' })
                     })
-                    export class FooDirective {}
-
-                    @NgModule({
-                      declarations: [FooDirective],
+                ], FooDirective);
+                export { FooDirective };
+                let FooModule = class FooModule {
+                };
+                FooModule = __decorate([
+                    NgModule({
+                        declarations: [FooDirective],
                     })
-                    export class FooModule {}
-                  `,
-               },
-               {importHelpers: false, noEmitHelpers: false});
+                ], FooModule);
+                export { FooModule };`,
+             },
+             {
+               name: _('/node_modules/test-package/esm2015/index.js'),
+               contents: `export * from './src/index';`,
+             },
+             {
+               name: _('/node_modules/test-package/esm5/src/index.js'),
+               contents: `
+                var __assign = (this && this.__assign) || function () {
+                    __assign = Object.assign || function(t) {
+                        for (var s, i = 1, n = arguments.length; i < n; i++) {
+                            s = arguments[i];
+                            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                                t[p] = s[p];
+                        }
+                        return t;
+                    };
+                    return __assign.apply(this, arguments);
+                };
+                var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+                    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+                    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+                    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+                    return c > 3 && r && Object.defineProperty(target, key, r), r;
+                };
+                import { Directive, NgModule } from '@angular/core';
+                var a = { '[class.a]': 'true' };
+                var b = { '[class.b]': 'true' };
+                var FooDirective = /** @class */ (function () {
+                    function FooDirective() {
+                    }
+                    FooDirective = __decorate([
+                        Directive({
+                            selector: '[foo]',
+                            host: __assign(__assign(__assign({}, a), b), { '[class.c]': 'false' })
+                        })
+                    ], FooDirective);
+                    return FooDirective;
+                }());
+                export { FooDirective };
+                var FooModule = /** @class */ (function () {
+                    function FooModule() {
+                    }
+                    FooModule = __decorate([
+                        NgModule({
+                            declarations: [FooDirective],
+                        })
+                    ], FooModule);
+                    return FooModule;
+                }());
+                export { FooModule };`,
+             },
+             {
+               name: _('/node_modules/test-package/esm5/index.js'),
+               contents: `export * from './src/index';`,
+             },
+             {
+               name: _('/node_modules/test-package/index.d.ts'),
+               contents: `export * from './src/index';`,
+             },
+             {
+               name: _('/node_modules/test-package/index.metadata.json'),
+               contents: `{}`,
+             },
+             {
+               name: _('/node_modules/test-package/package.json'),
+               contents: `
+                {
+                  "name": "test-package",
+                  "version": "0.0.1",
+                  "esm5": "./esm5/index.js",
+                  "esm2015": "./esm2015/index.js",
+                  "module": "./esm2015/index.js",
+                  "typings": "./index.d.ts"
+                }`,
+             },
+           ]);
 
            mainNgcc({
              basePath: '/node_modules',
@@ -353,27 +575,100 @@ runInEachFileSystem(() => {
     it(`should be able to detect synthesized constructors in ES5 with downlevelIteration enabled (imported helpers)`,
        () => {
          setupAngularCoreEsm5();
-         compileIntoApf(
-             'test-package', {
-               '/index.ts': `
-                import {Injectable} from '@angular/core';
-
-                @Injectable()
-                export class Base {}
-
-                @Injectable()
-                export class SubClass extends Base {
-                  constructor() {
+         loadTestFiles([
+           {
+             name: _('/node_modules/test-package/src/index.d.ts'),
+             contents: `
+            export declare class Base {
+            }
+            export declare class SubClass extends Base {
+                constructor();
+            }`,
+           },
+           {
+             name: _('/node_modules/test-package/esm2015/src/index.js'),
+             contents: `
+            import { __decorate, __metadata } from "tslib";
+            import { Injectable } from '@angular/core';
+            let Base = class Base {
+            };
+            Base = __decorate([
+                Injectable()
+            ], Base);
+            export { Base };
+            let SubClass = class SubClass extends Base {
+                constructor() {
                     // Note: mimic the situation where TS is first emitted into ES2015, resulting
                     // in the spread super call below, and then downleveled into ES5 using the
                     // "downlevelIteration" option.
                     super(...arguments);
                     this.foo = 'bar';
-                  }
                 }
-              `,
-             },
-             {importHelpers: true, noEmitHelpers: true, downlevelIteration: true});
+            };
+            SubClass = __decorate([
+                Injectable(),
+                __metadata("design:paramtypes", [])
+            ], SubClass);
+            export { SubClass };`,
+           },
+           {
+             name: _('/node_modules/test-package/esm2015/index.js'),
+             contents: `export * from './src/index';`,
+           },
+           {
+             name: _('/node_modules/test-package/esm5/src/index.js'),
+             contents: `
+            import { __decorate, __extends, __metadata, __read, __spreadArray } from "tslib";
+            import { Injectable } from '@angular/core';
+            var Base = /** @class */ (function () {
+                function Base() {
+                }
+                Base = __decorate([
+                    Injectable()
+                ], Base);
+                return Base;
+            }());
+            export { Base };
+            var SubClass = /** @class */ (function (_super) {
+                __extends(SubClass, _super);
+                function SubClass() {
+                    var _this = _super.apply(this, __spreadArray([], __read(arguments))) || this;
+                    _this.foo = 'bar';
+                    return _this;
+                }
+                SubClass = __decorate([
+                    Injectable(),
+                    __metadata("design:paramtypes", [])
+                ], SubClass);
+                return SubClass;
+            }(Base));
+            export { SubClass };`,
+           },
+           {
+             name: _('/node_modules/test-package/esm5/index.js'),
+             contents: `export * from './src/index';`,
+           },
+           {
+             name: _('/node_modules/test-package/index.d.ts'),
+             contents: `export * from './src/index';`,
+           },
+           {
+             name: _('/node_modules/test-package/index.metadata.json'),
+             contents: `{}`,
+           },
+           {
+             name: _('/node_modules/test-package/package.json'),
+             contents: `
+            {
+              "name": "test-package",
+              "version": "0.0.1",
+              "esm5": "./esm5/index.js",
+              "esm2015": "./esm2015/index.js",
+              "module": "./esm2015/index.js",
+              "typings": "./index.d.ts"
+            }`,
+           },
+         ]);
 
          mainNgcc({
            basePath: '/node_modules',
@@ -382,8 +677,6 @@ runInEachFileSystem(() => {
          });
 
          const jsContents = fs.readFile(_(`/node_modules/test-package/esm5/src/index.js`));
-         // Verify that the ES5 bundle does contain the expected downleveling syntax.
-         expect(jsContents).toContain('__spreadArray([], __read(arguments), false)');
          expect(jsContents)
              .toContain(
                  'var ɵSubClass_BaseFactory; return function SubClass_Factory(t) { return (ɵSubClass_BaseFactory || (ɵSubClass_BaseFactory = ɵngcc0.ɵɵgetInheritedFactory(SubClass)))(t || SubClass); };');
@@ -392,27 +685,152 @@ runInEachFileSystem(() => {
     it(`should be able to detect synthesized constructors in ES5 with downlevelIteration enabled (emitted helpers)`,
        () => {
          setupAngularCoreEsm5();
-         compileIntoApf(
-             'test-package', {
-               '/index.ts': `
-                import {Injectable} from '@angular/core';
-
-                @Injectable()
-                export class Base {}
-
-                @Injectable()
-                export class SubClass extends Base {
-                  constructor() {
+         loadTestFiles([
+           {
+             name: _('/node_modules/test-package/src/index.d.ts'),
+             contents: `
+            export declare class Base {
+            }
+            export declare class SubClass extends Base {
+                constructor();
+            }`,
+           },
+           {
+             name: _('/node_modules/test-package/esm2015/src/index.js'),
+             contents: `
+            var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+                var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+                if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+                else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+                return c > 3 && r && Object.defineProperty(target, key, r), r;
+            };
+            var __metadata = (this && this.__metadata) || function (k, v) {
+                if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+            };
+            import { Injectable } from '@angular/core';
+            let Base = class Base {
+            };
+            Base = __decorate([
+                Injectable()
+            ], Base);
+            export { Base };
+            let SubClass = class SubClass extends Base {
+                constructor() {
                     // Note: mimic the situation where TS is first emitted into ES2015, resulting
                     // in the spread super call below, and then downleveled into ES5 using the
                     // "downlevelIteration" option.
                     super(...arguments);
                     this.foo = 'bar';
-                  }
                 }
-              `,
-             },
-             {importHelpers: false, noEmitHelpers: false, downlevelIteration: true});
+            };
+            SubClass = __decorate([
+                Injectable(),
+                __metadata("design:paramtypes", [])
+            ], SubClass);
+            export { SubClass };`,
+           },
+           {
+             name: _('/node_modules/test-package/esm2015/index.js'),
+             contents: `export * from './src/index';`,
+           },
+           {
+             name: _('/node_modules/test-package/esm5/src/index.js'),
+             contents: `
+            var __extends = (this && this.__extends) || (function () {
+                var extendStatics = function (d, b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+                        function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                    return extendStatics(d, b);
+                };
+                return function (d, b) {
+                    if (typeof b !== "function" && b !== null)
+                        throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+                    extendStatics(d, b);
+                    function __() { this.constructor = d; }
+                    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+                };
+            })();
+            var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+                var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+                if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+                else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+                return c > 3 && r && Object.defineProperty(target, key, r), r;
+            };
+            var __metadata = (this && this.__metadata) || function (k, v) {
+                if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+            };
+            var __read = (this && this.__read) || function (o, n) {
+                var m = typeof Symbol === "function" && o[Symbol.iterator];
+                if (!m) return o;
+                var i = m.call(o), r, ar = [], e;
+                try {
+                    while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
+                }
+                catch (error) { e = { error: error }; }
+                finally {
+                    try {
+                        if (r && !r.done && (m = i["return"])) m.call(i);
+                    }
+                    finally { if (e) throw e.error; }
+                }
+                return ar;
+            };
+            var __spreadArray = (this && this.__spreadArray) || function (to, from) {
+                for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
+                    to[j] = from[i];
+                return to;
+            };
+            import { Injectable } from '@angular/core';
+            var Base = /** @class */ (function () {
+                function Base() {
+                }
+                Base = __decorate([
+                    Injectable()
+                ], Base);
+                return Base;
+            }());
+            export { Base };
+            var SubClass = /** @class */ (function (_super) {
+                __extends(SubClass, _super);
+                function SubClass() {
+                    var _this = _super.apply(this, __spreadArray([], __read(arguments))) || this;
+                    _this.foo = 'bar';
+                    return _this;
+                }
+                SubClass = __decorate([
+                    Injectable(),
+                    __metadata("design:paramtypes", [])
+                ], SubClass);
+                return SubClass;
+            }(Base));
+            export { SubClass };`,
+           },
+           {
+             name: _('/node_modules/test-package/esm5/index.js'),
+             contents: `export * from './src/index';`,
+           },
+           {
+             name: _('/node_modules/test-package/index.d.ts'),
+             contents: `export * from './src/index';`,
+           },
+           {
+             name: _('/node_modules/test-package/index.metadata.json'),
+             contents: `{}`,
+           },
+           {
+             name: _('/node_modules/test-package/package.json'),
+             contents: `
+            {
+              "name": "test-package",
+              "version": "0.0.1",
+              "esm5": "./esm5/index.js",
+              "esm2015": "./esm2015/index.js",
+              "module": "./esm2015/index.js",
+              "typings": "./index.d.ts"
+            }`,
+           },
+         ]);
 
          mainNgcc({
            basePath: '/node_modules',
@@ -421,8 +839,6 @@ runInEachFileSystem(() => {
          });
 
          const jsContents = fs.readFile(_(`/node_modules/test-package/esm5/src/index.js`));
-         // Verify that the ES5 bundle does contain the expected downleveling syntax.
-         expect(jsContents).toContain('__spreadArray([], __read(arguments), false)');
          expect(jsContents)
              .toContain(
                  'var ɵSubClass_BaseFactory; return function SubClass_Factory(t) { return (ɵSubClass_BaseFactory || (ɵSubClass_BaseFactory = ɵngcc0.ɵɵgetInheritedFactory(SubClass)))(t || SubClass); };');
@@ -430,23 +846,64 @@ runInEachFileSystem(() => {
 
     it('should not add `const` in ES5 generated code', () => {
       setupAngularCoreEsm5();
-      compileIntoFlatEs5Package('test-package', {
-        '/index.ts': `
-          import {Directive, Input, NgModule} from '@angular/core';
-
-          @Directive({
-            selector: '[foo]',
-            host: {bar: ''},
-          })
-          export class FooDirective {
-          }
-
-          @NgModule({
-            declarations: [FooDirective],
-          })
-          export class FooModule {}
-        `,
-      });
+      loadTestFiles([
+        {
+          name: _('/node_modules/test-package/index.d.ts'),
+          contents: `
+            export declare class FooDirective {
+            }
+            export declare class FooModule {
+            }`,
+        },
+        {
+          name: _('/node_modules/test-package/index.js'),
+          contents: `
+            var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+                var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+                if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+                else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+                return c > 3 && r && Object.defineProperty(target, key, r), r;
+            };
+            import { Directive, NgModule } from '@angular/core';
+            var FooDirective = /** @class */ (function () {
+                function FooDirective() {
+                }
+                FooDirective = __decorate([
+                    Directive({
+                        selector: '[foo]',
+                        host: { bar: '' },
+                    })
+                ], FooDirective);
+                return FooDirective;
+            }());
+            export { FooDirective };
+            var FooModule = /** @class */ (function () {
+                function FooModule() {
+                }
+                FooModule = __decorate([
+                    NgModule({
+                        declarations: [FooDirective],
+                    })
+                ], FooModule);
+                return FooModule;
+            }());
+            export { FooModule };`,
+        },
+        {
+          name: _('/node_modules/test-package/index.metadata.json'),
+          contents: `{}`,
+        },
+        {
+          name: _('/node_modules/test-package/package.json'),
+          contents: `
+            {
+              "name": "test-package",
+              "version": "0.0.1",
+              "esm5": "./index.js",
+              "typings": "./index.d.ts"
+            }`,
+        },
+      ]);
 
       mainNgcc({
         basePath: '/node_modules',
@@ -459,56 +916,207 @@ runInEachFileSystem(() => {
     });
 
     it('should be able to reflect into external libraries', () => {
-      compileIntoApf('lib', {
-        '/index.ts': `
-          export * from './constants';
-          export * from './module';
-        `,
-        '/constants.ts': `
-          export const selectorA = '[selector-a]';
-
-          export class Selectors {
-            static readonly B = '[selector-b]';
-          }
-        `,
-        '/module.ts': `
-          import {NgModule, ModuleWithProviders} from '@angular/core';
-
-          @NgModule()
-          export class MyOtherModule {}
-
-          export class MyModule {
-            static forRoot(): ModuleWithProviders<MyOtherModule> {
-              return {ngModule: MyOtherModule};
+      loadTestFiles([
+        {
+          name: _('/node_modules/lib/src/index.d.ts'),
+          contents: `
+            export * from './constants';
+            export * from './module';`,
+        },
+        {
+          name: _('/node_modules/lib/esm2015/src/index.js'),
+          contents: `
+            export * from './constants';
+            export * from './module';`,
+        },
+        {
+          name: _('/node_modules/lib/src/constants.d.ts'),
+          contents: `
+            export declare const selectorA = "[selector-a]";
+            export declare class Selectors {
+                static readonly B = "[selector-b]";
+            }`,
+        },
+        {
+          name: _('/node_modules/lib/esm2015/src/constants.js'),
+          contents: `
+            export const selectorA = '[selector-a]';
+            export class Selectors {
             }
-          }
-        `
-      });
+            Selectors.B = '[selector-b]';`,
+        },
+        {
+          name: _('/node_modules/lib/src/module.d.ts'),
+          contents: `
+            import { ModuleWithProviders } from '@angular/core';
+            export declare class MyOtherModule {
+            }
+            export declare class MyModule {
+                static forRoot(): ModuleWithProviders<MyOtherModule>;
+            }`,
+        },
+        {
+          name: _('/node_modules/lib/esm2015/src/module.js'),
+          contents: `
+            var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+                var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+                if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+                else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+                return c > 3 && r && Object.defineProperty(target, key, r), r;
+            };
+            import { NgModule } from '@angular/core';
+            let MyOtherModule = class MyOtherModule {
+            };
+            MyOtherModule = __decorate([
+                NgModule()
+            ], MyOtherModule);
+            export { MyOtherModule };
+            export class MyModule {
+                static forRoot() {
+                    return { ngModule: MyOtherModule };
+                }
+            }`,
+        },
+        {
+          name: _('/node_modules/lib/esm2015/index.js'),
+          contents: `export * from './src/index';`,
+        },
+        {
+          name: _('/node_modules/lib/esm5/src/index.js'),
+          contents: `
+            export * from './constants';
+            export * from './module';`,
+        },
+        {
+          name: _('/node_modules/lib/esm5/src/constants.js'),
+          contents: `
+            export var selectorA = '[selector-a]';
+            var Selectors = /** @class */ (function () {
+                function Selectors() {
+                }
+                Selectors.B = '[selector-b]';
+                return Selectors;
+            }());
+            export { Selectors };`,
+        },
+        {
+          name: _('/node_modules/lib/esm5/src/module.js'),
+          contents: `
+            var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+                var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+                if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+                else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+                return c > 3 && r && Object.defineProperty(target, key, r), r;
+            };
+            import { NgModule } from '@angular/core';
+            var MyOtherModule = /** @class */ (function () {
+                function MyOtherModule() {
+                }
+                MyOtherModule = __decorate([
+                    NgModule()
+                ], MyOtherModule);
+                return MyOtherModule;
+            }());
+            export { MyOtherModule };
+            var MyModule = /** @class */ (function () {
+                function MyModule() {
+                }
+                MyModule.forRoot = function () {
+                    return { ngModule: MyOtherModule };
+                };
+                return MyModule;
+            }());
+            export { MyModule };`,
+        },
+        {
+          name: _('/node_modules/lib/esm5/index.js'),
+          contents: `export * from './src/index';`,
+        },
+        {
+          name: _('/node_modules/lib/index.d.ts'),
+          contents: `export * from './src/index';`,
+        },
+        {
+          name: _('/node_modules/lib/index.metadata.json'),
+          contents: `{}`,
+        },
+        {
+          name: _('/node_modules/lib/package.json'),
+          contents: `
+            {
+              "name": "lib",
+              "version": "0.0.1",
+              "esm5": "./esm5/index.js",
+              "esm2015": "./esm2015/index.js",
+              "module": "./esm2015/index.js",
+              "typings": "./index.d.ts"
+            }`,
+        },
+      ]);
 
-      compileIntoFlatEs2015Package('test-package', {
-        '/index.ts': `
-          import {Directive, Input, NgModule} from '@angular/core';
-          import * as lib from 'lib';
-
-          @Directive({
-            selector: lib.selectorA,
-          })
-          export class DirectiveA {
-          }
-
-          @Directive({
-            selector: lib.Selectors.B,
-          })
-          export class DirectiveB {
-          }
-
-          @NgModule({
-            imports: [lib.MyModule.forRoot()],
-            declarations: [DirectiveA, DirectiveB],
-          })
-          export class FooModule {}
-        `,
-      });
+      loadTestFiles([
+        {
+          name: _('/node_modules/test-package/index.d.ts'),
+          contents: `
+            export declare class DirectiveA {
+            }
+            export declare class DirectiveB {
+            }
+            export declare class FooModule {
+            }`,
+        },
+        {
+          name: _('/node_modules/test-package/index.js'),
+          contents: `
+            var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+                var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+                if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+                else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+                return c > 3 && r && Object.defineProperty(target, key, r), r;
+            };
+            import { Directive, NgModule } from '@angular/core';
+            import * as lib from 'lib';
+            let DirectiveA = class DirectiveA {
+            };
+            DirectiveA = __decorate([
+                Directive({
+                    selector: lib.selectorA,
+                })
+            ], DirectiveA);
+            export { DirectiveA };
+            let DirectiveB = class DirectiveB {
+            };
+            DirectiveB = __decorate([
+                Directive({
+                    selector: lib.Selectors.B,
+                })
+            ], DirectiveB);
+            export { DirectiveB };
+            let FooModule = class FooModule {
+            };
+            FooModule = __decorate([
+                NgModule({
+                    imports: [lib.MyModule.forRoot()],
+                    declarations: [DirectiveA, DirectiveB],
+                })
+            ], FooModule);
+            export { FooModule };`,
+        },
+        {
+          name: _('/node_modules/test-package/index.metadata.json'),
+          contents: `{}`,
+        },
+        {
+          name: _('/node_modules/test-package/package.json'),
+          contents: `
+            {
+              "name": "test-package",
+              "version": "0.0.1",
+              "esm2015": "./index.js",
+              "typings": "./index.d.ts"
+            }`,
+        },
+      ]);
 
       mainNgcc({
         basePath: '/node_modules',
@@ -523,31 +1131,132 @@ runInEachFileSystem(() => {
     });
 
     it('should be able to resolve enum values', () => {
-      compileIntoApf('test-package', {
-        '/index.ts': `
-          import {Component, NgModule} from '@angular/core';
-
-          export enum StringEnum {
-            ValueA = "a",
-            ValueB = "b",
-          }
-
-          export enum NumericEnum {
-            Value3 = 3,
-            Value4,
-          }
-
-          @Component({
-            template: \`\${StringEnum.ValueA} - \${StringEnum.ValueB} - \${NumericEnum.Value3} - \${NumericEnum.Value4}\`,
-          })
-          export class FooCmp {}
-
-          @NgModule({
-            declarations: [FooCmp],
-          })
-          export class FooModule {}
-        `,
-      });
+      loadTestFiles([
+        {
+          name: _('/node_modules/test-package/src/index.d.ts'),
+          contents: `
+            export declare enum StringEnum {
+                ValueA = "a",
+                ValueB = "b"
+            }
+            export declare enum NumericEnum {
+                Value3 = 3,
+                Value4 = 4
+            }
+            export declare class FooCmp {
+            }
+            export declare class FooModule {
+            }`,
+        },
+        {
+          name: _('/node_modules/test-package/esm2015/src/index.js'),
+          contents: `
+            var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+                var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+                if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+                else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+                return c > 3 && r && Object.defineProperty(target, key, r), r;
+            };
+            import { Component, NgModule } from '@angular/core';
+            export var StringEnum;
+            (function (StringEnum) {
+                StringEnum["ValueA"] = "a";
+                StringEnum["ValueB"] = "b";
+            })(StringEnum || (StringEnum = {}));
+            export var NumericEnum;
+            (function (NumericEnum) {
+                NumericEnum[NumericEnum["Value3"] = 3] = "Value3";
+                NumericEnum[NumericEnum["Value4"] = 4] = "Value4";
+            })(NumericEnum || (NumericEnum = {}));
+            let FooCmp = class FooCmp {
+            };
+            FooCmp = __decorate([
+                Component({
+                    template: \`\${StringEnum.ValueA} - \${StringEnum.ValueB} - \${NumericEnum.Value3} - \${NumericEnum.Value4}\`,
+                })
+            ], FooCmp);
+            export { FooCmp };
+            let FooModule = class FooModule {
+            };
+            FooModule = __decorate([
+                NgModule({
+                    declarations: [FooCmp],
+                })
+            ], FooModule);
+            export { FooModule };`,
+        },
+        {
+          name: _('/node_modules/test-package/esm2015/index.js'),
+          contents: `export * from './src/index';`,
+        },
+        {
+          name: _('/node_modules/test-package/esm5/src/index.js'),
+          contents: `
+            var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+                var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+                if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+                else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+                return c > 3 && r && Object.defineProperty(target, key, r), r;
+            };
+            import { Component, NgModule } from '@angular/core';
+            export var StringEnum;
+            (function (StringEnum) {
+                StringEnum["ValueA"] = "a";
+                StringEnum["ValueB"] = "b";
+            })(StringEnum || (StringEnum = {}));
+            export var NumericEnum;
+            (function (NumericEnum) {
+                NumericEnum[NumericEnum["Value3"] = 3] = "Value3";
+                NumericEnum[NumericEnum["Value4"] = 4] = "Value4";
+            })(NumericEnum || (NumericEnum = {}));
+            var FooCmp = /** @class */ (function () {
+                function FooCmp() {
+                }
+                FooCmp = __decorate([
+                    Component({
+                        template: StringEnum.ValueA + " - " + StringEnum.ValueB + " - " + NumericEnum.Value3 + " - " + NumericEnum.Value4,
+                    })
+                ], FooCmp);
+                return FooCmp;
+            }());
+            export { FooCmp };
+            var FooModule = /** @class */ (function () {
+                function FooModule() {
+                }
+                FooModule = __decorate([
+                    NgModule({
+                        declarations: [FooCmp],
+                    })
+                ], FooModule);
+                return FooModule;
+            }());
+            export { FooModule };`,
+        },
+        {
+          name: _('/node_modules/test-package/esm5/index.js'),
+          contents: `export * from './src/index';`,
+        },
+        {
+          name: _('/node_modules/test-package/index.d.ts'),
+          contents: `export * from './src/index';`,
+        },
+        {
+          name: _('/node_modules/test-package/index.metadata.json'),
+          contents: `{}`,
+        },
+        {
+          name: _('/node_modules/test-package/package.json'),
+          contents: `
+            {
+              "name": "test-package",
+              "version": "0.0.1",
+              "esm5": "./esm5/index.js",
+              "esm2015": "./esm2015/index.js",
+              "module": "./esm2015/index.js",
+              "typings": "./index.d.ts"
+            }`,
+        },
+      ]);
 
       mainNgcc({
         basePath: '/node_modules',
@@ -705,24 +1414,108 @@ runInEachFileSystem(() => {
            },
          ]);
 
-         compileIntoApf('test-package', {
-           '/index.ts': `
-          import {NgModule, Component} from '@angular/core';
-          import {selector} from 'external';
-
-          @Component({
-            selector,
-            template: ''
-          })
-          export class FooComponent {
-          }
-
-          @NgModule({
-            declarations: [FooComponent],
-          })
-          export class FooModule {}
-        `,
-         });
+         loadTestFiles([
+           {
+             name: _('/node_modules/test-package/src/index.d.ts'),
+             contents: `
+            export declare class FooComponent {
+            }
+            export declare class FooModule {
+            }`,
+           },
+           {
+             name: _('/node_modules/test-package/esm2015/src/index.js'),
+             contents: `
+            var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+                var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+                if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+                else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+                return c > 3 && r && Object.defineProperty(target, key, r), r;
+            };
+            import { NgModule, Component } from '@angular/core';
+            import { selector } from 'external';
+            let FooComponent = class FooComponent {
+            };
+            FooComponent = __decorate([
+                Component({
+                    selector,
+                    template: ''
+                })
+            ], FooComponent);
+            export { FooComponent };
+            let FooModule = class FooModule {
+            };
+            FooModule = __decorate([
+                NgModule({
+                    declarations: [FooComponent],
+                })
+            ], FooModule);
+            export { FooModule };`,
+           },
+           {
+             name: _('/node_modules/test-package/esm2015/index.js'),
+             contents: `export * from './src/index';`,
+           },
+           {
+             name: _('/node_modules/test-package/esm5/src/index.js'),
+             contents: `
+            var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+                var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+                if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+                else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+                return c > 3 && r && Object.defineProperty(target, key, r), r;
+            };
+            import { NgModule, Component } from '@angular/core';
+            import { selector } from 'external';
+            var FooComponent = /** @class */ (function () {
+                function FooComponent() {
+                }
+                FooComponent = __decorate([
+                    Component({
+                        selector: selector,
+                        template: ''
+                    })
+                ], FooComponent);
+                return FooComponent;
+            }());
+            export { FooComponent };
+            var FooModule = /** @class */ (function () {
+                function FooModule() {
+                }
+                FooModule = __decorate([
+                    NgModule({
+                        declarations: [FooComponent],
+                    })
+                ], FooModule);
+                return FooModule;
+            }());
+            export { FooModule };`,
+           },
+           {
+             name: _('/node_modules/test-package/esm5/index.js'),
+             contents: `export * from './src/index';`,
+           },
+           {
+             name: _('/node_modules/test-package/index.d.ts'),
+             contents: `export * from './src/index';`,
+           },
+           {
+             name: _('/node_modules/test-package/index.metadata.json'),
+             contents: `{}`,
+           },
+           {
+             name: _('/node_modules/test-package/package.json'),
+             contents: `
+            {
+              "name": "test-package",
+              "version": "0.0.1",
+              "esm5": "./esm5/index.js",
+              "esm2015": "./esm2015/index.js",
+              "module": "./esm2015/index.js",
+              "typings": "./index.d.ts"
+            }`,
+           },
+         ]);
 
          try {
            mainNgcc({
@@ -740,16 +1533,49 @@ runInEachFileSystem(() => {
        });
 
     it('should add ɵfac but not duplicate ɵprov properties on injectables', () => {
-      compileIntoFlatEs2015Package('test-package', {
-        '/index.ts': `
-        import {Injectable, ɵɵdefineInjectable} from '@angular/core';
-        export const TestClassToken = 'TestClassToken';
-        @Injectable({providedIn: 'module'})
-        export class TestClass {
-          static ɵprov = ɵɵdefineInjectable({ factory: () => {}, token: TestClassToken, providedIn: "module" });
-        }
-        `,
-      });
+      loadTestFiles([
+        {
+          name: _('/node_modules/test-package/index.d.ts'),
+          contents: `
+            export declare const TestClassToken = "TestClassToken";
+            export declare class TestClass {
+                static ɵprov: unknown;
+            }`,
+        },
+        {
+          name: _('/node_modules/test-package/index.js'),
+          contents: `
+            var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+                var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+                if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+                else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+                return c > 3 && r && Object.defineProperty(target, key, r), r;
+            };
+            import { Injectable, ɵɵdefineInjectable } from '@angular/core';
+            export const TestClassToken = 'TestClassToken';
+            let TestClass = class TestClass {
+            };
+            TestClass.ɵprov = ɵɵdefineInjectable({ factory: () => { }, token: TestClassToken, providedIn: "module" });
+            TestClass = __decorate([
+                Injectable({ providedIn: 'module' })
+            ], TestClass);
+            export { TestClass };`,
+        },
+        {
+          name: _('/node_modules/test-package/index.metadata.json'),
+          contents: `{}`,
+        },
+        {
+          name: _('/node_modules/test-package/package.json'),
+          contents: `
+            {
+              "name": "test-package",
+              "version": "0.0.1",
+              "esm2015": "./index.js",
+              "typings": "./index.d.ts"
+            }`,
+        },
+      ]);
 
       const before = fs.readFile(_(`/node_modules/test-package/index.js`));
       const originalProp = /ɵprov[^;]+/.exec(before)![0];
@@ -771,19 +1597,51 @@ runInEachFileSystem(() => {
 
     // This is necessary to ensure XPipeDef.fac is defined when delegated from injectable def
     it('should always generate factory def (fac) before injectable def (prov)', () => {
-      compileIntoFlatEs2015Package('test-package', {
-        '/index.ts': `
-        import {Injectable, Pipe, PipeTransform} from '@angular/core';
-
-        @Injectable()
-        @Pipe({
-          name: 'myTestPipe'
-        })
-        export class TestClass implements PipeTransform {
-          transform(value: any) { return value; }
-        }
-        `,
-      });
+      loadTestFiles([
+        {
+          name: _('/node_modules/test-package/index.d.ts'),
+          contents: `
+            import { PipeTransform } from '@angular/core';
+            export declare class TestClass implements PipeTransform {
+                transform(value: any): any;
+            }`,
+        },
+        {
+          name: _('/node_modules/test-package/index.js'),
+          contents: `
+            var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+                var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+                if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+                else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+                return c > 3 && r && Object.defineProperty(target, key, r), r;
+            };
+            import { Injectable, Pipe } from '@angular/core';
+            let TestClass = class TestClass {
+                transform(value) { return value; }
+            };
+            TestClass = __decorate([
+                Injectable(),
+                Pipe({
+                    name: 'myTestPipe'
+                })
+            ], TestClass);
+            export { TestClass };`,
+        },
+        {
+          name: _('/node_modules/test-package/index.metadata.json'),
+          contents: `{}`,
+        },
+        {
+          name: _('/node_modules/test-package/package.json'),
+          contents: `
+            {
+              "name": "test-package",
+              "version": "0.0.1",
+              "esm2015": "./index.js",
+              "typings": "./index.d.ts"
+            }`,
+        },
+      ]);
 
       mainNgcc({
         basePath: '/node_modules',
@@ -801,19 +1659,56 @@ runInEachFileSystem(() => {
 
     // https://github.com/angular/angular/issues/38883
     it('should recognize ChangeDetectorRef as special symbol for pipes', () => {
-      compileIntoFlatEs2015Package('test-package', {
-        '/index.ts': `
-        import {ChangeDetectorRef, Pipe, PipeTransform} from '@angular/core';
-
-        @Pipe({
-          name: 'myTestPipe'
-        })
-        export class TestClass implements PipeTransform {
-          constructor(cdr: ChangeDetectorRef) {}
-          transform(value: any) { return value; }
-        }
-        `,
-      });
+      loadTestFiles([
+        {
+          name: _('/node_modules/test-package/index.d.ts'),
+          contents: `
+            import { ChangeDetectorRef, PipeTransform } from '@angular/core';
+            export declare class TestClass implements PipeTransform {
+                constructor(cdr: ChangeDetectorRef);
+                transform(value: any): any;
+            }`,
+        },
+        {
+          name: _('/node_modules/test-package/index.js'),
+          contents: `
+            var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+                var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+                if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+                else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+                return c > 3 && r && Object.defineProperty(target, key, r), r;
+            };
+            var __metadata = (this && this.__metadata) || function (k, v) {
+                if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+            };
+            import { ChangeDetectorRef, Pipe } from '@angular/core';
+            let TestClass = class TestClass {
+                constructor(cdr) { }
+                transform(value) { return value; }
+            };
+            TestClass = __decorate([
+                Pipe({
+                    name: 'myTestPipe'
+                }),
+                __metadata("design:paramtypes", [ChangeDetectorRef])
+            ], TestClass);
+            export { TestClass };`,
+        },
+        {
+          name: _('/node_modules/test-package/index.metadata.json'),
+          contents: `{}`,
+        },
+        {
+          name: _('/node_modules/test-package/package.json'),
+          contents: `
+            {
+              "name": "test-package",
+              "version": "0.0.1",
+              "esm2015": "./index.js",
+              "typings": "./index.d.ts"
+            }`,
+        },
+      ]);
 
       mainNgcc({
         basePath: '/node_modules',
@@ -873,26 +1768,115 @@ runInEachFileSystem(() => {
 
     it('should add generic type for ModuleWithProviders and generate exports for private modules',
        () => {
-         compileIntoApf('test-package', {
-           '/index.ts': `
-              import {ModuleWithProviders} from '@angular/core';
-              import {InternalFooModule} from './internal';
-
-              export class FooModule {
-                static forRoot(): ModuleWithProviders {
-                  return {
-                    ngModule: InternalFooModule,
-                  };
+         loadTestFiles([
+           {
+             name: _('/node_modules/test-package/src/index.d.ts'),
+             contents: `
+            import { ModuleWithProviders } from '@angular/core';
+            export declare class FooModule {
+                static forRoot(): ModuleWithProviders;
+            }`,
+           },
+           {
+             name: _('/node_modules/test-package/esm2015/src/index.js'),
+             contents: `
+            import { InternalFooModule } from './internal';
+            export class FooModule {
+                static forRoot() {
+                    return {
+                        ngModule: InternalFooModule,
+                    };
                 }
-              }
-            `,
-           '/internal.ts': `
-              import {NgModule} from '@angular/core';
-
-              @NgModule()
-              export class InternalFooModule {}
-           `,
-         });
+            }`,
+           },
+           {
+             name: _('/node_modules/test-package/src/internal.d.ts'),
+             contents: `
+            export declare class InternalFooModule {
+            }`,
+           },
+           {
+             name: _('/node_modules/test-package/esm2015/src/internal.js'),
+             contents: `
+            var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+                var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+                if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+                else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+                return c > 3 && r && Object.defineProperty(target, key, r), r;
+            };
+            import { NgModule } from '@angular/core';
+            let InternalFooModule = class InternalFooModule {
+            };
+            InternalFooModule = __decorate([
+                NgModule()
+            ], InternalFooModule);
+            export { InternalFooModule };`,
+           },
+           {
+             name: _('/node_modules/test-package/esm2015/index.js'),
+             contents: `export * from './src/index';`,
+           },
+           {
+             name: _('/node_modules/test-package/esm5/src/index.js'),
+             contents: `
+            import { InternalFooModule } from './internal';
+            var FooModule = /** @class */ (function () {
+                function FooModule() {
+                }
+                FooModule.forRoot = function () {
+                    return {
+                        ngModule: InternalFooModule,
+                    };
+                };
+                return FooModule;
+            }());
+            export { FooModule };`,
+           },
+           {
+             name: _('/node_modules/test-package/esm5/src/internal.js'),
+             contents: `
+            var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+                var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+                if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+                else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+                return c > 3 && r && Object.defineProperty(target, key, r), r;
+            };
+            import { NgModule } from '@angular/core';
+            var InternalFooModule = /** @class */ (function () {
+                function InternalFooModule() {
+                }
+                InternalFooModule = __decorate([
+                    NgModule()
+                ], InternalFooModule);
+                return InternalFooModule;
+            }());
+            export { InternalFooModule };`,
+           },
+           {
+             name: _('/node_modules/test-package/esm5/index.js'),
+             contents: `export * from './src/index';`,
+           },
+           {
+             name: _('/node_modules/test-package/index.d.ts'),
+             contents: `export * from './src/index';`,
+           },
+           {
+             name: _('/node_modules/test-package/index.metadata.json'),
+             contents: `{}`,
+           },
+           {
+             name: _('/node_modules/test-package/package.json'),
+             contents: `
+            {
+              "name": "test-package",
+              "version": "0.0.1",
+              "esm5": "./esm5/index.js",
+              "esm2015": "./esm2015/index.js",
+              "module": "./esm2015/index.js",
+              "typings": "./index.d.ts"
+            }`,
+           },
+         ]);
 
          mainNgcc({
            basePath: '/node_modules',
@@ -921,23 +1905,64 @@ runInEachFileSystem(() => {
 
     it('should use `$localize` calls rather than tagged templates in ES5 generated code', () => {
       setupAngularCoreEsm5();
-      compileIntoFlatEs5Package('test-package', {
-        '/index.ts': `
-        import {Component, Input, NgModule} from '@angular/core';
-
-        @Component({
-          selector: '[foo]',
-          template: '<div i18n="some:\`description\`">A message</div>'
-        })
-        export class FooComponent {
-        }
-
-        @NgModule({
-          declarations: [FooComponent],
-        })
-        export class FooModule {}
-      `,
-      });
+      loadTestFiles([
+        {
+          name: _('/node_modules/test-package/index.d.ts'),
+          contents: `
+            export declare class FooComponent {
+            }
+            export declare class FooModule {
+            }`,
+        },
+        {
+          name: _('/node_modules/test-package/index.js'),
+          contents: `
+            var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+                var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+                if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+                else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+                return c > 3 && r && Object.defineProperty(target, key, r), r;
+            };
+            import { Component, NgModule } from '@angular/core';
+            var FooComponent = /** @class */ (function () {
+                function FooComponent() {
+                }
+                FooComponent = __decorate([
+                    Component({
+                        selector: '[foo]',
+                        template: '<div i18n="some:\`description\`">A message</div>'
+                    })
+                ], FooComponent);
+                return FooComponent;
+            }());
+            export { FooComponent };
+            var FooModule = /** @class */ (function () {
+                function FooModule() {
+                }
+                FooModule = __decorate([
+                    NgModule({
+                        declarations: [FooComponent],
+                    })
+                ], FooModule);
+                return FooModule;
+            }());
+            export { FooModule };`,
+        },
+        {
+          name: _('/node_modules/test-package/index.metadata.json'),
+          contents: `{}`,
+        },
+        {
+          name: _('/node_modules/test-package/package.json'),
+          contents: `
+            {
+              "name": "test-package",
+              "version": "0.0.1",
+              "esm5": "./index.js",
+              "typings": "./index.d.ts"
+            }`,
+        },
+      ]);
 
       mainNgcc({
         basePath: '/node_modules',
@@ -1207,15 +2232,45 @@ runInEachFileSystem(() => {
     });
 
     it('should clean up outdated artifacts', () => {
-      compileIntoFlatEs2015Package('test-package', {
-        'index.ts': `
-        import {Directive} from '@angular/core';
-
-        @Directive({selector: '[foo]'})
-        export class FooDirective {
-        }
-      `,
-      });
+      loadTestFiles([
+        {
+          name: _('/node_modules/test-package/index.d.ts'),
+          contents: `
+            export declare class FooDirective {
+            }`,
+        },
+        {
+          name: _('/node_modules/test-package/index.js'),
+          contents: `
+            var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+                var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+                if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+                else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+                return c > 3 && r && Object.defineProperty(target, key, r), r;
+            };
+            import { Directive } from '@angular/core';
+            let FooDirective = class FooDirective {
+            };
+            FooDirective = __decorate([
+                Directive({ selector: '[foo]' })
+            ], FooDirective);
+            export { FooDirective };`,
+        },
+        {
+          name: _('/node_modules/test-package/index.metadata.json'),
+          contents: `{}`,
+        },
+        {
+          name: _('/node_modules/test-package/package.json'),
+          contents: `
+            {
+              "name": "test-package",
+              "version": "0.0.1",
+              "esm2015": "./index.js",
+              "typings": "./index.d.ts"
+            }`,
+        },
+      ]);
       mainNgcc({
         basePath: '/node_modules',
         propertiesToConsider: ['esm2015'],
@@ -2241,24 +3296,62 @@ runInEachFileSystem(() => {
     describe('undecorated child class migration', () => {
       it('should generate a directive definition with CopyDefinitionFeature for an undecorated child directive',
          () => {
-           compileIntoFlatEs2015Package('test-package', {
-             '/index.ts': `
-              import {Directive, NgModule} from '@angular/core';
-
-              @Directive({
-                selector: '[base]',
-                exportAs: 'base1, base2',
-              })
-              export class BaseDir {}
-
-              export class DerivedDir extends BaseDir {}
-
-              @NgModule({
-                declarations: [DerivedDir],
-              })
-              export class Module {}
-            `,
-           });
+           loadTestFiles([
+             {
+               name: _('/node_modules/test-package/index.d.ts'),
+               contents: `
+            export declare class BaseDir {
+            }
+            export declare class DerivedDir extends BaseDir {
+            }
+            export declare class Module {
+            }`,
+             },
+             {
+               name: _('/node_modules/test-package/index.js'),
+               contents: `
+            var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+                var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+                if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+                else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+                return c > 3 && r && Object.defineProperty(target, key, r), r;
+            };
+            import { Directive, NgModule } from '@angular/core';
+            let BaseDir = class BaseDir {
+            };
+            BaseDir = __decorate([
+                Directive({
+                    selector: '[base]',
+                    exportAs: 'base1, base2',
+                })
+            ], BaseDir);
+            export { BaseDir };
+            export class DerivedDir extends BaseDir {
+            }
+            let Module = class Module {
+            };
+            Module = __decorate([
+                NgModule({
+                    declarations: [DerivedDir],
+                })
+            ], Module);
+            export { Module };`,
+             },
+             {
+               name: _('/node_modules/test-package/index.metadata.json'),
+               contents: `{}`,
+             },
+             {
+               name: _('/node_modules/test-package/package.json'),
+               contents: `
+            {
+              "name": "test-package",
+              "version": "0.0.1",
+              "esm2015": "./index.js",
+              "typings": "./index.d.ts"
+            }`,
+             },
+           ]);
 
            mainNgcc({
              basePath: '/node_modules',
@@ -2282,24 +3375,62 @@ runInEachFileSystem(() => {
 
       it('should generate a component definition with CopyDefinitionFeature for an undecorated child component',
          () => {
-           compileIntoFlatEs2015Package('test-package', {
-             '/index.ts': `
-           import {Component, NgModule} from '@angular/core';
-
-           @Component({
-             selector: '[base]',
-             template: '<span>This is the base template</span>',
-           })
-           export class BaseCmp {}
-
-           export class DerivedCmp extends BaseCmp {}
-
-           @NgModule({
-             declarations: [DerivedCmp],
-           })
-           export class Module {}
-         `,
-           });
+           loadTestFiles([
+             {
+               name: _('/node_modules/test-package/index.d.ts'),
+               contents: `
+            export declare class BaseCmp {
+            }
+            export declare class DerivedCmp extends BaseCmp {
+            }
+            export declare class Module {
+            }`,
+             },
+             {
+               name: _('/node_modules/test-package/index.js'),
+               contents: `
+            var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+                var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+                if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+                else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+                return c > 3 && r && Object.defineProperty(target, key, r), r;
+            };
+            import { Component, NgModule } from '@angular/core';
+            let BaseCmp = class BaseCmp {
+            };
+            BaseCmp = __decorate([
+                Component({
+                    selector: '[base]',
+                    template: '<span>This is the base template</span>',
+                })
+            ], BaseCmp);
+            export { BaseCmp };
+            export class DerivedCmp extends BaseCmp {
+            }
+            let Module = class Module {
+            };
+            Module = __decorate([
+                NgModule({
+                    declarations: [DerivedCmp],
+                })
+            ], Module);
+            export { Module };`,
+             },
+             {
+               name: _('/node_modules/test-package/index.metadata.json'),
+               contents: `{}`,
+             },
+             {
+               name: _('/node_modules/test-package/package.json'),
+               contents: `
+            {
+              "name": "test-package",
+              "version": "0.0.1",
+              "esm2015": "./index.js",
+              "typings": "./index.d.ts"
+            }`,
+             },
+           ]);
 
            mainNgcc({
              basePath: '/node_modules',
@@ -2322,27 +3453,69 @@ runInEachFileSystem(() => {
 
       it('should generate directive definitions with CopyDefinitionFeature for undecorated child directives in a long inheritance chain',
          () => {
-           compileIntoFlatEs2015Package('test-package', {
-             '/index.ts': `
-           import {Directive, NgModule} from '@angular/core';
-
-           @Directive({
-             selector: '[base]',
-           })
-           export class BaseDir {}
-
-           export class DerivedDir1 extends BaseDir {}
-
-           export class DerivedDir2 extends DerivedDir1 {}
-
-           export class DerivedDir3 extends DerivedDir2 {}
-
-           @NgModule({
-             declarations: [DerivedDir3],
-           })
-           export class Module {}
-         `,
-           });
+           loadTestFiles([
+             {
+               name: _('/node_modules/test-package/index.d.ts'),
+               contents: `
+            export declare class BaseDir {
+            }
+            export declare class DerivedDir1 extends BaseDir {
+            }
+            export declare class DerivedDir2 extends DerivedDir1 {
+            }
+            export declare class DerivedDir3 extends DerivedDir2 {
+            }
+            export declare class Module {
+            }`,
+             },
+             {
+               name: _('/node_modules/test-package/index.js'),
+               contents: `
+            var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+                var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+                if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+                else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+                return c > 3 && r && Object.defineProperty(target, key, r), r;
+            };
+            import { Directive, NgModule } from '@angular/core';
+            let BaseDir = class BaseDir {
+            };
+            BaseDir = __decorate([
+                Directive({
+                    selector: '[base]',
+                })
+            ], BaseDir);
+            export { BaseDir };
+            export class DerivedDir1 extends BaseDir {
+            }
+            export class DerivedDir2 extends DerivedDir1 {
+            }
+            export class DerivedDir3 extends DerivedDir2 {
+            }
+            let Module = class Module {
+            };
+            Module = __decorate([
+                NgModule({
+                    declarations: [DerivedDir3],
+                })
+            ], Module);
+            export { Module };`,
+             },
+             {
+               name: _('/node_modules/test-package/index.metadata.json'),
+               contents: `{}`,
+             },
+             {
+               name: _('/node_modules/test-package/package.json'),
+               contents: `
+            {
+              "name": "test-package",
+              "version": "0.0.1",
+              "esm2015": "./index.js",
+              "typings": "./index.d.ts"
+            }`,
+             },
+           ]);
 
            mainNgcc({
              basePath: '/node_modules',
@@ -2505,17 +3678,85 @@ runInEachFileSystem(() => {
 
     describe('legacy message ids', () => {
       it('should render legacy message ids when compiling i18n tags in component templates', () => {
-        compileIntoApf('test-package', {
-          '/index.ts': `
-           import {Component} from '@angular/core';
-
-           @Component({
-             selector: '[base]',
-             template: '<div i18n>Some message</div>'
-           })
-           export class AppComponent {}
-         `,
-        });
+        loadTestFiles([
+          {
+            name: _('/node_modules/test-package/src/index.d.ts'),
+            contents: `
+            export declare class AppComponent {
+            }`,
+          },
+          {
+            name: _('/node_modules/test-package/esm2015/src/index.js'),
+            contents: `
+            var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+                var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+                if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+                else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+                return c > 3 && r && Object.defineProperty(target, key, r), r;
+            };
+            import { Component } from '@angular/core';
+            let AppComponent = class AppComponent {
+            };
+            AppComponent = __decorate([
+                Component({
+                    selector: '[base]',
+                    template: '<div i18n>Some message</div>'
+                })
+            ], AppComponent);
+            export { AppComponent };`,
+          },
+          {
+            name: _('/node_modules/test-package/esm2015/index.js'),
+            contents: `export * from './src/index';`,
+          },
+          {
+            name: _('/node_modules/test-package/esm5/src/index.js'),
+            contents: `
+            var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+                var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+                if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+                else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+                return c > 3 && r && Object.defineProperty(target, key, r), r;
+            };
+            import { Component } from '@angular/core';
+            var AppComponent = /** @class */ (function () {
+                function AppComponent() {
+                }
+                AppComponent = __decorate([
+                    Component({
+                        selector: '[base]',
+                        template: '<div i18n>Some message</div>'
+                    })
+                ], AppComponent);
+                return AppComponent;
+            }());
+            export { AppComponent };`,
+          },
+          {
+            name: _('/node_modules/test-package/esm5/index.js'),
+            contents: `export * from './src/index';`,
+          },
+          {
+            name: _('/node_modules/test-package/index.d.ts'),
+            contents: `export * from './src/index';`,
+          },
+          {
+            name: _('/node_modules/test-package/index.metadata.json'),
+            contents: `{}`,
+          },
+          {
+            name: _('/node_modules/test-package/package.json'),
+            contents: `
+            {
+              "name": "test-package",
+              "version": "0.0.1",
+              "esm5": "./esm5/index.js",
+              "esm2015": "./esm2015/index.js",
+              "module": "./esm2015/index.js",
+              "typings": "./index.d.ts"
+            }`,
+          },
+        ]);
 
         mainNgcc({
           basePath: '/node_modules',
@@ -2532,17 +3773,85 @@ runInEachFileSystem(() => {
 
       it('should not render legacy message ids when compiling i18n tags in component templates if `enableI18nLegacyMessageIdFormat` is false',
          () => {
-           compileIntoApf('test-package', {
-             '/index.ts': `
-           import {Component} from '@angular/core';
-
-           @Component({
-             selector: '[base]',
-             template: '<div i18n>Some message</div>'
-           })
-           export class AppComponent {}
-         `,
-           });
+           loadTestFiles([
+             {
+               name: _('/node_modules/test-package/src/index.d.ts'),
+               contents: `
+            export declare class AppComponent {
+            }`,
+             },
+             {
+               name: _('/node_modules/test-package/esm2015/src/index.js'),
+               contents: `
+            var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+                var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+                if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+                else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+                return c > 3 && r && Object.defineProperty(target, key, r), r;
+            };
+            import { Component } from '@angular/core';
+            let AppComponent = class AppComponent {
+            };
+            AppComponent = __decorate([
+                Component({
+                    selector: '[base]',
+                    template: '<div i18n>Some message</div>'
+                })
+            ], AppComponent);
+            export { AppComponent };`,
+             },
+             {
+               name: _('/node_modules/test-package/esm2015/index.js'),
+               contents: `export * from './src/index';`,
+             },
+             {
+               name: _('/node_modules/test-package/esm5/src/index.js'),
+               contents: `
+            var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+                var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+                if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+                else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+                return c > 3 && r && Object.defineProperty(target, key, r), r;
+            };
+            import { Component } from '@angular/core';
+            var AppComponent = /** @class */ (function () {
+                function AppComponent() {
+                }
+                AppComponent = __decorate([
+                    Component({
+                        selector: '[base]',
+                        template: '<div i18n>Some message</div>'
+                    })
+                ], AppComponent);
+                return AppComponent;
+            }());
+            export { AppComponent };`,
+             },
+             {
+               name: _('/node_modules/test-package/esm5/index.js'),
+               contents: `export * from './src/index';`,
+             },
+             {
+               name: _('/node_modules/test-package/index.d.ts'),
+               contents: `export * from './src/index';`,
+             },
+             {
+               name: _('/node_modules/test-package/index.metadata.json'),
+               contents: `{}`,
+             },
+             {
+               name: _('/node_modules/test-package/package.json'),
+               contents: `
+            {
+              "name": "test-package",
+              "version": "0.0.1",
+              "esm5": "./esm5/index.js",
+              "esm2015": "./esm2015/index.js",
+              "module": "./esm2015/index.js",
+              "typings": "./index.d.ts"
+            }`,
+             },
+           ]);
 
            mainNgcc({
              basePath: '/node_modules',
