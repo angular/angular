@@ -313,12 +313,31 @@ class AstTranslator implements AstVisitor {
 
   visitCall(ast: Call): ts.Expression {
     const args = ast.args.map(expr => this.translate(expr));
-    const expr = wrapForDiagnostics(this.translate(ast.receiver));
+
+    let expr: ts.Expression;
+    const receiver = ast.receiver;
+
+    // For calls that have a property read as receiver, we have to special-case their emit to avoid
+    // inserting superfluous parenthesis as they prevent TypeScript from applying a narrowing effect
+    // if the method acts as a type guard.
+    if (receiver instanceof PropertyRead) {
+      const resolved = this.maybeResolve(receiver);
+      if (resolved !== null) {
+        expr = resolved;
+      } else {
+        const propertyReceiver = wrapForDiagnostics(this.translate(receiver.receiver));
+        expr = ts.createPropertyAccess(propertyReceiver, receiver.name);
+        addParseSpanInfo(expr, receiver.nameSpan);
+      }
+    } else {
+      expr = this.translate(receiver);
+    }
+
     let node: ts.Expression;
 
     // Safe property/keyed reads will produce a ternary whose value is nullable.
     // We have to generate a similar ternary around the call.
-    if (ast.receiver instanceof SafePropertyRead || ast.receiver instanceof SafeKeyedRead) {
+    if (receiver instanceof SafePropertyRead || receiver instanceof SafeKeyedRead) {
       if (this.config.strictSafeNavigationTypes) {
         // "a?.method(...)" becomes (null as any ? a!.method(...) : undefined)
         const call = ts.createCall(ts.createNonNullExpression(expr), undefined, args);

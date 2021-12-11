@@ -39,7 +39,7 @@ describe('type check blocks diagnostics', () => {
       const TEMPLATE = '{{ m({foo: a, bar: b}) }}';
       expect(tcbWithSpans(TEMPLATE))
           .toContain(
-              '((((ctx).m /*3,4*/) /*3,4*/)({ "foo": ((ctx).a /*11,12*/) /*11,12*/, "bar": ((ctx).b /*19,20*/) /*19,20*/ } /*5,21*/) /*3,22*/)');
+              '(ctx).m /*3,4*/({ "foo": ((ctx).a /*11,12*/) /*11,12*/, "bar": ((ctx).b /*19,20*/) /*19,20*/ } /*5,21*/) /*3,22*/');
     });
 
     it('should annotate literal map expressions with shorthand declarations', () => {
@@ -48,7 +48,7 @@ describe('type check blocks diagnostics', () => {
       const TEMPLATE = '{{ m({a, b}) }}';
       expect(tcbWithSpans(TEMPLATE))
           .toContain(
-              '((((ctx).m /*3,4*/) /*3,4*/)({ "a": ((ctx).a /*6,7*/) /*6,7*/, "b": ((ctx).b /*9,10*/) /*9,10*/ } /*5,11*/) /*3,12*/)');
+              '((ctx).m /*3,4*/({ "a": ((ctx).a /*6,7*/) /*6,7*/, "b": ((ctx).b /*9,10*/) /*9,10*/ } /*5,11*/) /*3,12*/)');
     });
 
     it('should annotate literal array expressions', () => {
@@ -76,21 +76,21 @@ describe('type check blocks diagnostics', () => {
       const TEMPLATE = `{{ method(a, b) }}`;
       expect(tcbWithSpans(TEMPLATE))
           .toContain(
-              '((((ctx).method /*3,9*/) /*3,9*/)(((ctx).a /*10,11*/) /*10,11*/, ((ctx).b /*13,14*/) /*13,14*/) /*3,15*/)');
+              '(ctx).method /*3,9*/(((ctx).a /*10,11*/) /*10,11*/, ((ctx).b /*13,14*/) /*13,14*/) /*3,15*/');
     });
 
     it('should annotate method calls of variables', () => {
       const TEMPLATE = `<ng-template let-method>{{ method(a, b) }}</ng-template>`;
       expect(tcbWithSpans(TEMPLATE))
           .toContain(
-              '((_t2 /*27,33*/)(((ctx).a /*34,35*/) /*34,35*/, ((ctx).b /*37,38*/) /*37,38*/) /*27,39*/)');
+              '_t2 /*27,33*/(((ctx).a /*34,35*/) /*34,35*/, ((ctx).b /*37,38*/) /*37,38*/) /*27,39*/');
     });
 
     it('should annotate function calls', () => {
       const TEMPLATE = `{{ method(a)(b, c) }}`;
       expect(tcbWithSpans(TEMPLATE))
           .toContain(
-              '(((((ctx).method /*3,9*/) /*3,9*/)(((ctx).a /*10,11*/) /*10,11*/) /*3,12*/)(((ctx).b /*13,14*/) /*13,14*/, ((ctx).c /*16,17*/) /*16,17*/) /*3,18*/)');
+              '(ctx).method /*3,9*/(((ctx).a /*10,11*/) /*10,11*/) /*3,12*/(((ctx).b /*13,14*/) /*13,14*/, ((ctx).c /*16,17*/) /*16,17*/) /*3,18*/');
     });
 
     it('should annotate property access', () => {
@@ -135,7 +135,7 @@ describe('type check blocks diagnostics', () => {
       const TEMPLATE = `{{ a?.method(b) }}`;
       expect(tcbWithSpans(TEMPLATE))
           .toContain(
-              '((null as any ? ((null as any ? (((ctx).a /*3,4*/) /*3,4*/)!.method /*6,12*/ : undefined) /*3,12*/)!(((ctx).b /*13,14*/) /*13,14*/) : undefined) /*3,15*/)');
+              '((null as any ? (null as any ? (((ctx).a /*3,4*/) /*3,4*/)!.method /*6,12*/ : undefined) /*3,12*/!(((ctx).b /*13,14*/) /*13,14*/) : undefined) /*3,15*/)');
     });
 
     it('should annotate safe keyed reads', () => {

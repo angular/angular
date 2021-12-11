@@ -120,6 +120,35 @@ export function angularAnimationsDts(): TestFile {
   };
 }
 
+export function ngIfDeclaration(): TestDeclaration {
+  return {
+    type: 'directive',
+    file: absoluteFrom('/ngif.d.ts'),
+    selector: '[ngIf]',
+    name: 'NgIf',
+    inputs: {ngIf: 'ngIf'},
+    ngTemplateGuards: [{type: 'binding', inputName: 'ngIf'}],
+    hasNgTemplateContextGuard: true,
+    isGeneric: true,
+  };
+}
+
+export function ngIfDts(): TestFile {
+  return {
+    name: absoluteFrom('/ngif.d.ts'),
+    contents: `
+    export declare class NgIf<T> {
+      ngIf: T;
+      static ngTemplateContextGuard<T>(dir: NgIf<T>, ctx: any): ctx is NgIfContext<Exclude<T, false|0|''|null|undefined>>
+    }
+
+    export declare class NgIfContext<T> {
+      $implicit: T;
+      ngIf: T;
+    }`,
+  };
+}
+
 export function ngForDeclaration(): TestDeclaration {
   return {
     type: 'directive',
