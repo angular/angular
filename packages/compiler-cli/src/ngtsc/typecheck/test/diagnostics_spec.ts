@@ -11,7 +11,7 @@ import ts from 'typescript';
 import {absoluteFrom, getSourceFileOrError} from '../../file_system';
 import {runInEachFileSystem, TestFile} from '../../file_system/testing';
 import {OptimizeFor, TypeCheckingConfig} from '../api';
-import {ngForDeclaration, ngForDts, setup, TestDeclaration} from '../testing';
+import {ngForDeclaration, ngForDts, ngIfDeclaration, ngIfDts, setup, TestDeclaration} from '../testing';
 
 runInEachFileSystem(() => {
   describe('template diagnostics', () => {
@@ -337,6 +337,17 @@ runInEachFileSystem(() => {
       expect(messages).toEqual([
         `TestComponent.html(1, 31): Argument of type '-2' is not assignable to parameter of type '1 | -1'.`,
       ]);
+    });
+
+    it('should support type-narrowing for methods with type guards', () => {
+      const messages = diagnose(
+          `<div *ngIf="hasSuccess()">{{ success }}</div>`, `
+          class TestComponent {
+            hasSuccess(): this is { success: boolean };
+          }`,
+          [ngIfDeclaration()], [ngIfDts()]);
+
+      expect(messages).toEqual([]);
     });
 
     describe('outputs', () => {
