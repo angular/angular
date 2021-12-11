@@ -11,6 +11,7 @@ ts_library(
         "//packages/core/schematics/migrations/entry-components",
         "//packages/core/schematics/migrations/router-link-empty-expression",
         "//packages/core/schematics/migrations/testbed-teardown",
+        "//packages/core/schematics/migrations/typed-forms",
         "//packages/core/schematics/utils",
         "@npm//@angular-devkit/core",
         "@npm//@angular-devkit/schematics",
