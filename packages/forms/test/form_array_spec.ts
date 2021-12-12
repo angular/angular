@@ -10,6 +10,7 @@ import {fakeAsync, tick} from '@angular/core/testing';
 import {AbstractControl, FormArray, FormControl, FormGroup, ValidationErrors, ValidatorFn} from '@angular/forms';
 import {Validators} from '@angular/forms/src/validators';
 import {of} from 'rxjs';
+
 import {asyncValidator} from './util';
 
 (function() {
@@ -137,7 +138,7 @@ describe('FormArray', () => {
          // becomes invalid.
          const validatorFn = (value: any) => value.controls.length > 0 ? {controls: true} : null;
          const asyncValidatorFn = (value: any) => of(validatorFn(value));
-         const arr = new FormArray([], validatorFn, asyncValidatorFn);
+         const arr: FormArray = new FormArray([], validatorFn, asyncValidatorFn);
          expect(arr.valid).toBe(true);
 
          arr.statusChanges.subscribe(() => logger.push('status change'));
@@ -178,7 +179,8 @@ describe('FormArray', () => {
 
     it('should work with nested form groups/arrays', () => {
       a = new FormArray([
-        new FormGroup({'c2': new FormControl('v2'), 'c3': new FormControl('v3')}),
+        new FormGroup(
+            {'c2': new FormControl('v2') as AbstractControl, 'c3': new FormControl('v3')}),
         new FormArray([new FormControl('v4'), new FormControl('v5')])
       ]);
       a.at(0).get('c3')!.disable();
@@ -191,7 +193,8 @@ describe('FormArray', () => {
   describe('markAllAsTouched', () => {
     it('should mark all descendants as touched', () => {
       const formArray: FormArray = new FormArray([
-        new FormControl('v1'), new FormControl('v2'), new FormGroup({'c1': new FormControl('v1')}),
+        new FormControl('v1') as AbstractControl, new FormControl('v2'),
+        new FormGroup({'c1': new FormControl('v1')}),
         new FormArray([new FormGroup({'c2': new FormControl('v2')})])
       ]);
 
@@ -306,7 +309,7 @@ describe('FormArray', () => {
     });
 
     it('should throw if no controls are set yet', () => {
-      const empty = new FormArray([]);
+      const empty: FormArray = new FormArray([]);
       expect(() => empty.setValue(['one']))
           .toThrowError(new RegExp(`no form controls registered with this array`));
     });
@@ -730,7 +733,7 @@ describe('FormArray', () => {
       const simpleValidator = (c: FormArray) =>
           c.controls[0].value != 'correct' ? {'broken': true} : null;
 
-      const c = new FormControl(null);
+      const c = new FormControl('');
       const g = new FormArray([c], simpleValidator as ValidatorFn);
 
       c.setValue('correct');
@@ -1174,7 +1177,7 @@ describe('FormArray', () => {
     });
 
     it('should keep empty, disabled arrays disabled when updating validity', () => {
-      const arr = new FormArray([]);
+      const arr: FormArray = new FormArray([]);
       expect(arr.status).toEqual('VALID');
 
       arr.disable();

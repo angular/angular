@@ -261,7 +261,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
 
       it('should strip named controls that are not found', () => {
         const fixture = initTest(NestedFormGroupNameComp, LoginIsEmptyValidator);
-        const form = new FormGroup({
+        const form: FormGroup = new FormGroup({
           'signin': new FormGroup({'login': new FormControl(''), 'password': new FormControl('')})
         });
         fixture.componentInstance.form = form;
@@ -311,7 +311,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
 
       describe('nested control rebinding', () => {
         it('should attach dir to control when leaf control changes', () => {
-          const form = new FormGroup({'login': new FormControl('oldValue')});
+          const form: FormGroup = new FormGroup({'login': new FormControl('oldValue')});
           const fixture = initTest(FormGroupComp);
           fixture.componentInstance.form = form;
           fixture.detectChanges();
@@ -336,7 +336,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
 
         it('should attach dirs to all child controls when group control changes', () => {
           const fixture = initTest(NestedFormGroupNameComp, LoginIsEmptyValidator);
-          const form = new FormGroup({
+          const form: FormGroup = new FormGroup({
             signin: new FormGroup(
                 {login: new FormControl('oldLogin'), password: new FormControl('oldPassword')})
           });
@@ -369,7 +369,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
         it('should attach dirs to all present child controls when array control changes', () => {
           const fixture = initTest(FormArrayComp);
           const cityArray = new FormArray([new FormControl('SF'), new FormControl('NY')]);
-          const form = new FormGroup({cities: cityArray});
+          const form: FormGroup = new FormGroup({cities: cityArray});
           fixture.componentInstance.form = form;
           fixture.componentInstance.cityArray = cityArray;
           fixture.detectChanges();
@@ -1458,7 +1458,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
           class App implements OnDestroy {
             private _subscription: Subscription;
 
-            form = new FormGroup({
+            form: FormGroup = new FormGroup({
               name: new FormControl('Frodo'),
               surname: new FormControl('Baggins'),
             });
@@ -1490,7 +1490,8 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
 
         it('should not emit valueChanges or statusChanges until blur', () => {
           const fixture = initTest(FormControlComp);
-          const control = new FormControl('', {validators: Validators.required, updateOn: 'blur'});
+          const control: FormControl =
+              new FormControl('', {validators: Validators.required, updateOn: 'blur'});
           fixture.componentInstance.control = control;
           fixture.detectChanges();
           const values: string[] = [];
@@ -1516,7 +1517,8 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
 
         it('should not emit valueChanges or statusChanges on blur if value unchanged', () => {
           const fixture = initTest(FormControlComp);
-          const control = new FormControl('', {validators: Validators.required, updateOn: 'blur'});
+          const control: FormControl =
+              new FormControl('', {validators: Validators.required, updateOn: 'blur'});
           fixture.componentInstance.control = control;
           fixture.detectChanges();
           const values: string[] = [];
@@ -1890,7 +1892,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
           fixture.componentInstance.form = formGroup;
           fixture.detectChanges();
 
-          const values: (string|{[key: string]: string})[] = [];
+          const values: any[] = [];
           const streams = merge(
               control.valueChanges, control.statusChanges, formGroup.valueChanges,
               formGroup.statusChanges);
@@ -5322,7 +5324,7 @@ class FormControlWithAsyncValidatorFn {
   `
 })
 class FormControlWithValidators {
-  form = new FormGroup({login: new FormControl('INITIAL')});
+  form: FormGroup = new FormGroup({login: new FormControl('INITIAL')});
 }
 
 @Component({
@@ -5353,7 +5355,7 @@ class MultipleFormControls {
   `
 })
 class NgForFormControlWithValidators {
-  form = new FormGroup({login: new FormControl('a')});
+  form: FormGroup = new FormGroup({login: new FormControl('a')});
   logins = ['a', 'b', 'c'];
 }
 

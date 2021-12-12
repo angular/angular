@@ -8,8 +8,8 @@
 
 import {fakeAsync, tick} from '@angular/core/testing';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
-
 import {FormArray} from '@angular/forms/src/model';
+
 import {asyncValidator, asyncValidatorReturningObservable} from './util';
 
 (function() {
@@ -59,7 +59,8 @@ describe('FormControl', () => {
     });
 
     it('should not treat objects as boxed values if they have more than two props', () => {
-      const c = new FormControl({value: '', disabled: true, test: 'test'}, null!, null!);
+      const c: FormControl =
+          new FormControl({value: '', disabled: true, test: 'test'} as any, null!, null!);
       expect(c.value).toEqual({value: '', disabled: true, test: 'test'});
       expect(c.disabled).toBe(false);
     });
@@ -175,7 +176,7 @@ describe('FormControl', () => {
     });
 
     it('should support single validator from options obj', () => {
-      const c = new FormControl(null, {validators: Validators.required});
+      const c: FormControl = new FormControl(null, {validators: Validators.required});
       expect(c.valid).toEqual(false);
       expect(c.errors).toEqual({required: true});
 
@@ -184,7 +185,8 @@ describe('FormControl', () => {
     });
 
     it('should support multiple validators from options obj', () => {
-      const c = new FormControl(null, {validators: [Validators.required, Validators.minLength(3)]});
+      const c: FormControl =
+          new FormControl(null, {validators: [Validators.required, Validators.minLength(3)]});
       expect(c.valid).toEqual(false);
       expect(c.errors).toEqual({required: true});
 
@@ -212,7 +214,7 @@ describe('FormControl', () => {
     });
 
     it('should set single validator', () => {
-      const c = new FormControl(null);
+      const c: FormControl = new FormControl(null);
       expect(c.valid).toEqual(true);
 
       c.setValidators(Validators.required);
