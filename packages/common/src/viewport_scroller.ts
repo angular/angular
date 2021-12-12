@@ -127,7 +127,11 @@ export class BrowserViewportScroller implements ViewportScroller {
       this.scrollToElement(elSelected);
       // After scrolling to the element, the spec dictates that we follow the focus steps for the
       // target. Rather than following the robust steps, simply attempt focus.
-      this.attemptFocus(elSelected);
+      //
+      // @see https://html.spec.whatwg.org/#get-the-focusable-area
+      // @see https://developer.mozilla.org/en-US/docs/Web/API/HTMLOrForeignElement/focus
+      // @see https://html.spec.whatwg.org/#focusable-area
+      elSelected.focus();
     }
   }
 
@@ -155,21 +159,6 @@ export class BrowserViewportScroller implements ViewportScroller {
     const top = rect.top + this.window.pageYOffset;
     const offset = this.offset();
     this.window.scrollTo(left - offset[0], top - offset[1]);
-  }
-
-  /**
-   * Calls `focus` on the `focusTarget` and returns `true` if the element was focused successfully.
-   *
-   * If `false`, further steps may be necessary to determine a valid substitute to be focused
-   * instead.
-   *
-   * @see https://html.spec.whatwg.org/#get-the-focusable-area
-   * @see https://developer.mozilla.org/en-US/docs/Web/API/HTMLOrForeignElement/focus
-   * @see https://html.spec.whatwg.org/#focusable-area
-   */
-  private attemptFocus(focusTarget: HTMLElement): boolean {
-    focusTarget.focus();
-    return this.document.activeElement === focusTarget;
   }
 
   /**
