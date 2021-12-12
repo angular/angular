@@ -55,6 +55,59 @@ describe('Form Builder', () => {
     expect(g.controls['login'].asyncValidator).toBe(asyncValidator);
   });
 
+  it('should create controls from FormStates', () => {
+    const c = b.control({value: 'one', disabled: false});
+    expect(c.value).toEqual('one');
+    c.reset();
+    expect(c.value).toEqual(null);
+  });
+
+  it('should work on a directly constructed FormBuilder object', () => {
+    const g = b.group({'login': 'some value'});
+    expect(g.controls['login'].value).toEqual('some value');
+  });
+
+  it('should create homogenous control arrays', () => {
+    const a = b.array(['one', 'two', 'three']);
+    expect(a.value).toEqual(['one', 'two', 'three']);
+  });
+
+  it('should create control arrays with FormStates and ControlConfigs', () => {
+    const a = b.array(['one', 'two', {value: 'three', disabled: false}]);
+    expect(a.value).toEqual(['one', 'two', 'three']);
+  });
+
+  it('should create control arrays with ControlConfigs', () => {
+    const a = b.array([['one', syncValidator, asyncValidator]]);
+    expect(a.value).toEqual(['one']);
+    expect(a.controls[0].validator).toBe(syncValidator);
+    expect(a.controls[0].asyncValidator).toBe(asyncValidator);
+  });
+
+  it('should create nested control arrays with ControlConfigs', () => {
+    const a = b.array(['one', ['two', syncValidator, asyncValidator]]);
+    expect(a.value).toEqual(['one', 'two']);
+    expect(a.controls[1].validator).toBe(syncValidator);
+    expect(a.controls[1].asyncValidator).toBe(asyncValidator);
+  });
+
+  it('should create control arrays with AbstractControls', () => {
+    const ctrl = b.control('one');
+    const a = b.array([ctrl], syncValidator, asyncValidator);
+    expect(a.value).toEqual(['one']);
+    expect(a.validator).toBe(syncValidator);
+    expect(a.asyncValidator).toBe(asyncValidator);
+  });
+
+  it('should create control arrays with mixed value representations', () => {
+    const a = b.array([
+      'one', ['two', syncValidator, asyncValidator], {value: 'three', disabled: false},
+      [{value: 'four', disabled: false}, syncValidator, asyncValidator], ['five'], b.control('six'),
+      b.control({value: 'seven', disabled: false})
+    ]);
+    expect(a.value).toEqual(['one', 'two', 'three', 'four', 'five', 'six', 'seven']);
+  });
+
   it('should support controls with no validators and whose form state is null', () => {
     const g = b.group({'login': b.control(null)});
     expect(g.controls['login'].value).toBeNull();
