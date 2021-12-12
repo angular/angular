@@ -22,8 +22,7 @@ export class WebAnimationsPlayer implements AnimationPlayer {
   private _finished = false;
   private _started = false;
   private _destroyed = false;
-  // TODO(issue/24571): remove '!'.
-  private _finalKeyframe!: {[key: string]: string|number};
+  private _finalKeyframe?: {[key: string]: string|number};
 
   // TODO(issue/24571): remove '!'.
   public readonly domPlayer!: DOMAnimation;
@@ -173,10 +172,13 @@ export class WebAnimationsPlayer implements AnimationPlayer {
   beforeDestroy() {
     const styles: {[key: string]: string|number} = {};
     if (this.hasStarted()) {
-      Object.keys(this._finalKeyframe).forEach(prop => {
+      // note: this code is invoked only when the `play` function was called prior to this
+      // (thus `hasStarted` returns true), this implies that the code that initializes
+      // `_finalKeyframe` has also been executed and the non-null assertion can be safely used here
+      const finalKeyframe = this._finalKeyframe!;
+      Object.keys(finalKeyframe).forEach(prop => {
         if (prop != 'offset') {
-          styles[prop] =
-              this._finished ? this._finalKeyframe[prop] : computeStyle(this.element, prop);
+          styles[prop] = this._finished ? finalKeyframe[prop] : computeStyle(this.element, prop);
         }
       });
     }
