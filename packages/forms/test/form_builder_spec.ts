@@ -107,7 +107,8 @@ describe('Form Builder', () => {
     const e = b.control(null);
     const f = b.control(undefined);
     const a = b.array(
-        ['one', ['two', syncValidator], c, b.array(['four']), e, f], syncValidator, asyncValidator);
+        ['one' as any, ['two', syncValidator], c, b.array(['four']), e, f], syncValidator,
+        asyncValidator);
 
     expect(a.value).toEqual(['one', 'two', 'three', ['four'], null, null]);
     expect(a.validator).toBe(syncValidator);
