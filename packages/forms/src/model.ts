@@ -1230,8 +1230,14 @@ export abstract class AbstractControl {
 export class FormControl extends AbstractControl {
   /** @internal */
   _onChange: Array<Function> = [];
-  /** @internal */
-  _pendingValue: boolean = false;
+
+
+  /**
+   * This field holds a pending value that has not yet been applied to the form's value.
+   * It is `any` because the value is untyped.
+   * @internal
+   */
+  _pendingValue: any;
 
   /** @internal */
   _pendingChange: boolean = false;
