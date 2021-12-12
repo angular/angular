@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {AnimateTimings, AnimationMetadata, AnimationMetadataType, AnimationOptions, sequence, ɵStyleData} from '@angular/animations';
+
 import {Ast as AnimationAst, AstVisitor as AnimationAstVisitor} from './dsl/animation_ast';
 import {AnimationDslVisitor} from './dsl/animation_dsl_visitor';
 import {isNode} from './render/shared';
@@ -16,8 +17,6 @@ export const SUBSTITUTION_EXPR_START = '{{';
 export const SUBSTITUTION_EXPR_END = '}}';
 export const ENTER_CLASSNAME = 'ng-enter';
 export const LEAVE_CLASSNAME = 'ng-leave';
-export const ENTER_SELECTOR = '.ng-enter';
-export const LEAVE_SELECTOR = '.ng-leave';
 export const NG_TRIGGER_CLASSNAME = 'ng-trigger';
 export const NG_TRIGGER_SELECTOR = '.ng-trigger';
 export const NG_ANIMATING_CLASSNAME = 'ng-animating';
