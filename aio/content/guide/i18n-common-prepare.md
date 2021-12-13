@@ -4,7 +4,7 @@ To prepare your project for translation, complete the following actions.
 
 *   Use the `i18n` attribute to mark text in component templates
 *   Use the `i18n-` attribute to mark attribute text strings in component templates
-*   Use the `$localize` tagged message string to mark test strings in component code
+*   Use the `$localize` tagged message string to mark text strings in component code
 
 ## Mark text in component template
 
@@ -489,4 +489,4 @@ The following code example shows nested clauses based on the `gender` and `minut
 
 <!-- end links -->
 
-@reviewed 2021-10-13
+@reviewed 2021-12-13
