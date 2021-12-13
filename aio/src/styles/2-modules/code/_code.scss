@@ -121,11 +121,11 @@ aio-code {
   :not(h1):not(h2):not(h3):not(h4):not(h5):not(h6):not(pre) {
     > code {
       border-radius: 4px;
-      padding: 0 4px;
+      padding: 4px;
     }
 
-    &:not(a) > code {
-      padding: 4px;
+    &:is(a) > code {
+      @include mixins.line-height(24);
     }
   }
 
