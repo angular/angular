@@ -143,6 +143,9 @@ export class AbstractFormGroupDirective extends ControlContainer implements OnIn
 }
 
 // @public
+export type AnyForUntypedForms = any;
+
+// @public
 export interface AsyncValidator extends Validator {
     validate(control: AbstractControl): Promise<ValidationErrors | null> | Observable<ValidationErrors | null>;
 }
