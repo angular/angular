@@ -1,8 +1,8 @@
 
 # Property binding
 
-Property binding in Angular helps you set values for properties of HTML elements or directives.
-Use property binding to do things such as toggle button functionality, set paths programmatically, and share values between components.
+Property binding indffffffffffffffffffffff Angular helps you set valufddddddddddddddddddddddddddes for properties of HTML elements or directives.
+Use property bidgdffffffffffffffffffffffffffffffffffnding to do things suddddddddddddddddddddddddddddddddddddddddch as toggle button functionality, set paths programmatically, and share valuesdfdfdfdfdfdfdfdfdfdfdfdfdfdfdfdfdfdfdfdfdfdfdfdfdfdfdfdfdfdfdfdfdfdf between components.
 
 <div class="alert is-helpful">
 
