@@ -178,8 +178,7 @@ export class WebAnimationsPlayer implements AnimationPlayer {
       const finalKeyframe = this._finalKeyframe!;
       Object.keys(finalKeyframe).forEach(prop => {
         if (prop != 'offset') {
-          styles[prop] =
-              this._finished ? finalKeyframe[prop] : computeStyle(this.element, prop);
+          styles[prop] = this._finished ? finalKeyframe[prop] : computeStyle(this.element, prop);
         }
       });
     }
