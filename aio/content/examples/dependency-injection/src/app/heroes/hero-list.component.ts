@@ -1,4 +1,3 @@
-/* tslint:disable:one-line */
 // #docregion
 import { Component } from '@angular/core';
 import { Hero } from './hero';

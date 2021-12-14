@@ -1,4 +1,3 @@
-// tslint:disable: variable-name
 describe('Phone', () => {
   let $httpBackend: angular.IHttpBackendService;
   let Phone: any;

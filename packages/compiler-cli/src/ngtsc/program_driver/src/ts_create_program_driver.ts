@@ -51,10 +51,7 @@ export class DelegatingCompilerHost implements
   resolveTypeReferenceDirectives = this.delegateMethod('resolveTypeReferenceDirectives');
   trace = this.delegateMethod('trace');
   useCaseSensitiveFileNames = this.delegateMethod('useCaseSensitiveFileNames');
-
-  // TODO(crisbeto): the cast to `any` is here since g3 is still on TS 4.4.
-  // Should be cleaned up when g3 has been updated.
-  getModuleResolutionCache = this.delegateMethod('getModuleResolutionCache' as any);
+  getModuleResolutionCache = this.delegateMethod('getModuleResolutionCache');
 }
 
 /**

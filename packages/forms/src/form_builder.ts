@@ -10,7 +10,7 @@ import {Injectable} from '@angular/core';
 
 import {AsyncValidatorFn, ValidatorFn} from './directives/validators';
 import {ReactiveFormsModule} from './form_providers';
-import {AbstractControl, AbstractControlOptions, FormArray, FormControl, FormGroup, FormHooks} from './model';
+import {AbstractControl, AbstractControlOptions, FormArray, FormControl, FormControlOptions, FormGroup, FormHooks} from './model';
 
 function isAbstractControlOptions(options: AbstractControlOptions|
                                   {[key: string]: any}): options is AbstractControlOptions {
@@ -127,7 +127,7 @@ export class FormBuilder {
    * </code-example>
    */
   control(
-      formState: any, validatorOrOpts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|null,
+      formState: any, validatorOrOpts?: ValidatorFn|ValidatorFn[]|FormControlOptions|null,
       asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null): FormControl {
     return new FormControl(formState, validatorOrOpts, asyncValidator);
   }

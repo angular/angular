@@ -276,7 +276,7 @@ export class FormArrayName extends ControlContainer implements OnInit, OnDestroy
 // @public
 export class FormBuilder {
     array(controlsConfig: any[], validatorOrOpts?: ValidatorFn | ValidatorFn[] | AbstractControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null): FormArray;
-    control(formState: any, validatorOrOpts?: ValidatorFn | ValidatorFn[] | AbstractControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null): FormControl;
+    control(formState: any, validatorOrOpts?: ValidatorFn | ValidatorFn[] | FormControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null): FormControl;
     group(controlsConfig: {
         [key: string]: any;
     }, options?: AbstractControlOptions | null): FormGroup;
@@ -294,7 +294,8 @@ export class FormBuilder {
 
 // @public
 export class FormControl extends AbstractControl {
-    constructor(formState?: any, validatorOrOpts?: ValidatorFn | ValidatorFn[] | AbstractControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null);
+    constructor(formState?: any, validatorOrOpts?: ValidatorFn | ValidatorFn[] | FormControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null);
+    readonly defaultValue: any;
     patchValue(value: any, options?: {
         onlySelf?: boolean;
         emitEvent?: boolean;
@@ -359,6 +360,11 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
     static ɵdir: i0.ɵɵDirectiveDeclaration<FormControlName, "[formControlName]", never, { "name": "formControlName"; "isDisabled": "disabled"; "model": "ngModel"; }, { "update": "ngModelChange"; }, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<FormControlName, [{ optional: true; host: true; skipSelf: true; }, { optional: true; self: true; }, { optional: true; self: true; }, { optional: true; self: true; }, { optional: true; }]>;
+}
+
+// @public
+export interface FormControlOptions extends AbstractControlOptions {
+    initialValueIsDefault?: boolean;
 }
 
 // @public

@@ -33,7 +33,7 @@ export class InjectorComponent {
   }
 
   get rodent() {
-    const rousDontExist = `R.O.U.S.'s? I don't think they exist!`;
+    const rousDontExist = "R.O.U.S.'s? I don't think they exist!";
     return this.injector.get(ROUS, rousDontExist);
   }
 }

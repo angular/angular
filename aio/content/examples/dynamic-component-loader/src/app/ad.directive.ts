@@ -1,4 +1,4 @@
-// tslint:disable: directive-selector
+/* eslint-disable @angular-eslint/directive-selector */
 // #docregion
 import { Directive, ViewContainerRef } from '@angular/core';
 

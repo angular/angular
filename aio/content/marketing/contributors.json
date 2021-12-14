@@ -28,7 +28,7 @@
     "picture": "daveshevitz.jpg",
     "bio": "Dave is a technical writer focused on creating a great documentation experience for Angular developers. When he isn't writing, he's toying with new technologies. His favorite motto is: 'What could possibly go wrong?'",
     "groups": ["Angular"],
-    "lead": "igorminar"
+    "lead": "jelbourn"
   },
   "ajitsinghkaler": {
     "name": "Ajit Singh",
@@ -42,7 +42,7 @@
     "groups": ["Angular"],
     "lead": "dgp1130",
     "picture": "alan-agius4.jpg",
-    "bio": "Angular CLI Member, Loves TypeScript, Build Tools, Food, Beer & Coffee :)"
+    "bio": "Angular CLI Member, Loves TypeScript, Build Tools, Food, Beer & Coffee :)"
   },
   "alisaduncan": {
     "name": "Alisa Duncan",
@@ -175,7 +175,6 @@
   },
   "cexbrayat": {
     "name": "Cédric Exbrayat",
-    "mentor": "petebacondarwin",
     "groups": ["Collaborators"],
     "picture": "cexbrayat.jpg",
     "bio": "Author of `Become a ninja with Angular (2+)` https://books.ninja-squad.com/angular - Angular trainer and @Ninja-Squad co-founder"
@@ -232,12 +231,6 @@
     "bio": "Kristiyan is a front-end developer, passionate open-source contributor and a core team member on Angular Material.",
     "groups": ["Angular"],
     "lead": "jelbourn"
-  },
-  "danieltre23": {
-    "name": "Daniel Trevino",
-    "picture": "danieltre23.jpg",
-    "bio": "Daniel is a Software Engineer Intern at Google, loves to learn new things, write code and listen to music.",
-    "groups": ["Angular"]
   },
   "danwahlin": {
     "name": "Dan Wahlin",
@@ -372,21 +365,7 @@
     "website": "https://github.com/gkalpak",
     "bio": "George is a Software Engineer with a passion for chess, robotics and automating stuff. He has a strong need to know how things work (so if you already know, he'd love to have a talk with you). He has been a member of the AngularJS team since 2014. When not doing geeky stuff, he is probably trying to convince his wife and kids to apply programming principles in real life. (Or is it the other way around?)",
     "groups": ["Angular"],
-    "lead": "igorminar"
-  },
-  "gregmagolan": {
-    "name": "Greg Magolan",
-    "groups": ["Angular"],
-    "lead": "dgp1130",
-    "picture": "gregmagolan.jpg",
-    "bio": "Building great software with Angular and Node.js."
-  },
-  "igorminar": {
-    "name": "Igor Minar",
-    "picture": "igor-minar.jpg",
-    "twitter": "IgorMinar",
-    "bio": "Igor is a software engineer at Google. He is a lead on the Angular project, practitioner of test driven development, open source enthusiast, hacker. In his free time, Igor enjoys spending time with his wife and two kids, doing outdoor activities (including but not limited to sports, gardening and building retaining walls).",
-    "groups": ["Angular"]
+    "lead": "jelbourn"
   },
   "jbedard": {
     "name": "Jason Bedard",
@@ -416,8 +395,7 @@
     "twitter": "jelbourn",
     "website": "https://plus.google.com/+JeremyElbourn/",
     "bio": "Angular Material Team Lead. FE Engineer @ Google specializing in AngularJS, component design, and the cleanest of code.",
-    "groups": ["Angular"],
-    "lead": "igorminar"
+    "groups": ["Angular"]
   },
   "jeremywilken": {
     "name": "Jeremy Wilken",
@@ -438,7 +416,7 @@
   "jiali": {
     "name": "Jia Li",
     "groups": ["Collaborators"],
-    "mentor": "igorminar",
+    "mentor": "jelbourn",
     "picture": "JiaLiPassion.jpg",
     "twitter": "Jialipassion",
     "website": "https://github.com/JiaLiPassion",
@@ -479,8 +457,7 @@
     "name": "Joey Perrott",
     "picture": "josephperrott.jpeg",
     "twitter": "joeyperrott",
-    "groups": ["Angular"],
-    "lead": "igorminar"
+    "groups": ["Angular"]
   },
   "josmar-crwdstffng": {
     "name": "Joe Martin",
@@ -717,15 +694,6 @@
     "website": "https://twitter.com/PascalPrecht",
     "bio": "Pascal is a software engineer, author and Google Developer Expert for the Angular team. He loves contributing to open source and is the creator of the popular angular-translate module. In his spare time he’s fiddling with EDM production.",
     "groups": ["GDE"]
-  },
-  "petebacondarwin": {
-    "name": "Pete Bacon Darwin",
-    "picture": "pete.jpg",
-    "twitter": "petebd",
-    "website": "https://www.bacondarwin.com/",
-    "bio": "AngularJS for JS Team Lead. Pete has been working on the core team since 2012 and became the team lead for the AngularJS for JS branch in November 2014. He has co-authored a book on AngularJS and regularly talks about and teaches Angular.",
-    "groups": ["Angular"],
-    "lead": "igorminar"
   },
   "phenomnomnominal": {
     "name": "Craig Spence",

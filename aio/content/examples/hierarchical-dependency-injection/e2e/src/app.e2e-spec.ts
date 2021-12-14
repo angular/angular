@@ -33,7 +33,7 @@ describe('Hierarchical dependency injection', () => {
       expect(await page.heroCardEl.isDisplayed()).toBe(true);
     });
 
-    it('hero tax-return should have first hero\'s name', async () => {
+    it("hero tax-return should have first hero's name", async () => {
       // Not `page.tax-returnNameInputEl.getAttribute('value')` although later that is essential
       expect(await page.taxReturnNameEl.getText()).toEqual(page.heroName);
     });

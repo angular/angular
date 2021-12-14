@@ -1,4 +1,3 @@
-/* tslint:disable: member-ordering forin */
 // #docplaster
 // #docregion
 import { Component, OnInit } from '@angular/core';

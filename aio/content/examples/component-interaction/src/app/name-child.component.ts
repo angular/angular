@@ -1,4 +1,3 @@
-// tslint:disable: variable-name
 // #docregion
 import { Component, Input } from '@angular/core';
 

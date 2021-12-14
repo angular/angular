@@ -33,7 +33,7 @@ describe('Dependency Injection Cookbook', () => {
       expect(await heroBios.isPresent()).toBe(true);
     });
 
-    it('should render Magma\'s description in Hero Bios', async () => {
+    it("should render Magma's description in Hero Bios", async () => {
       const magmaBioElem = element.all(by.css('app-hero-bio')).get(1);
       const magmaNameElem = magmaBioElem.element(by.css('h4'));
       const magmaDescElem = magmaBioElem.element(by.css('textarea'));
@@ -42,7 +42,7 @@ describe('Dependency Injection Cookbook', () => {
       expect(await magmaDescElem.getAttribute('value')).toBe('Hero of all trades');
     });
 
-    it('should render Magma\'s phone in Hero Bios and Contacts', async () => {
+    it("should render Magma's phone in Hero Bios and Contacts", async () => {
       const magmaPhone = element(by.cssContainingText('div', 'Phone #: 555-555-5555'));
       expect(await magmaPhone.isPresent()).toBe(true);
     });

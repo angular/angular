@@ -66,7 +66,7 @@ describe('Component Communication Cookbook Tests', () => {
       expect(await actual.logs.get(0).getText()).toBe(initialLog);
     });
 
-    it('should set expected values after clicking \'Minor\' twice', async () => {
+    it("should set expected values after clicking 'Minor' twice", async () => {
       const repoTag = element(by.tagName('app-version-parent'));
       const newMinorButton = repoTag.all(by.tagName('button')).get(0);
 
@@ -83,7 +83,7 @@ describe('Component Communication Cookbook Tests', () => {
       expect(await actual.logs.get(2).getText()).toBe(logAfter2Minor);
     });
 
-    it('should set expected values after clicking \'Major\' once', async () => {
+    it("should set expected values after clicking 'Major' once", async () => {
       const repoTag = element(by.tagName('app-version-parent'));
       const newMajorButton = repoTag.all(by.tagName('button')).get(1);
 

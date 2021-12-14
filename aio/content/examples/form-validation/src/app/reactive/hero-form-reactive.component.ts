@@ -1,4 +1,3 @@
-/* tslint:disable: member-ordering forin */
 // #docregion
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';

@@ -124,7 +124,7 @@ describe('WelcomeComponent', () => {
   });
   // #enddocregion tests
 
-  it('should inject the component\'s UserService instance',
+  it("should inject the component's UserService instance",
     inject([UserService], (service: UserService) => {
     expect(service).toBe(componentUserService);
   }));

@@ -3,7 +3,7 @@ import { Directive, Input, HostListener } from '@angular/core';
 // export for convenience.
 export { RouterLink} from '@angular/router';
 
-// tslint:disable: directive-class-suffix directive-selector
+/* eslint-disable @angular-eslint/directive-class-suffix, @angular-eslint/directive-selector */
 // #docregion router-link
 @Directive({
   selector: '[routerLink]'

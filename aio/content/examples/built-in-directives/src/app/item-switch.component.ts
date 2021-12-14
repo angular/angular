@@ -3,7 +3,7 @@ import { Item } from './item';
 
 @Component({
   selector: 'app-stout-item',
-  template: `I'm a little {{item.name}}, short and stout!`
+  template: "I'm a little {{item.name}}, short and stout!"
 })
 
 // #docregion input
@@ -15,7 +15,7 @@ export class StoutItemComponent {
 
 @Component({
   selector: 'app-best-item',
-  template: `This is the brightest {{item.name}} in town.`
+  template: 'This is the brightest {{item.name}} in town.'
 })
 export class BestItemComponent {
   @Input() item!: Item;
@@ -23,7 +23,7 @@ export class BestItemComponent {
 
 @Component({
   selector: 'app-device-item',
-  template: `Which is the slimmest {{item.name}}?`
+  template: 'Which is the slimmest {{item.name}}?'
 })
 export class DeviceItemComponent {
   @Input() item!: Item;
@@ -31,7 +31,7 @@ export class DeviceItemComponent {
 
 @Component({
   selector: 'app-lost-item',
-  template: `Has anyone seen my {{item.name}}?`
+  template: 'Has anyone seen my {{item.name}}?'
 })
 export class LostItemComponent {
   @Input() item!: Item;
@@ -39,7 +39,7 @@ export class LostItemComponent {
 
 @Component({
   selector: 'app-unknown-item',
-  template: `{{message}}`
+  template: '{{message}}'
 })
 export class UnknownItemComponent {
   @Input() item!: Item;

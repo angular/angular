@@ -40,7 +40,7 @@
     "test-pwa-score": "run-s \"~~audit-web-app {1} all:0,pwa:{2} {3}\" --",
     "test-pwa-score-localhost": "run-p --race \"~~light-server -s dist -p 4200 --quiet\" \"test-pwa-score http://localhost:4200 {1} {2}\" --",
     "example-e2e": "yarn example-check-local && node ./tools/examples/run-example-e2e.mjs",
-    "example-lint": "tslint --config \"content/examples/tslint.json\" \"content/examples/**/*.ts\" --exclude \"content/examples/styleguide/**/*.avoid.ts\"",
+    "example-lint": "eslint content/examples",
     "example-use-local": "node tools/ng-packages-installer overwrite ./tools/examples/shared --debug --force",
     "example-use-npm": "node tools/ng-packages-installer restore ./tools/examples/shared",
     "example-check-local": "node tools/ng-packages-installer check ./tools/examples/shared",
@@ -103,12 +103,12 @@
     "zone.js": "~0.11.4"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "13.0.4",
+    "@angular-devkit/build-angular": "^13.1.0",
     "@angular-eslint/builder": "^13.0.0",
     "@angular-eslint/eslint-plugin": "^13.0.0",
     "@angular-eslint/eslint-plugin-template": "^13.0.0",
     "@angular-eslint/template-parser": "^13.0.0",
-    "@angular/cli": "13.0.4",
+    "@angular/cli": "^13.1.0",
     "@angular/compiler-cli": "13.0.3",
     "@types/jasmine": "~3.10.0",
     "@types/lunr": "^2.3.3",

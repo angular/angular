@@ -1,4 +1,4 @@
-// tslint:disable: no-conflicting-lifecycle
+/* eslint-disable @angular-eslint/no-conflicting-lifecycle */
 // #docregion
 import {
   AfterContentChecked,
@@ -56,19 +56,19 @@ export class PeekABooComponent extends PeekABooDirective implements
 
   // Beware! Called frequently!
   // Called in every change detection cycle anywhere on the page
-  ngDoCheck() { this.logIt(`DoCheck`); }
+  ngDoCheck() { this.logIt('DoCheck'); }
 
-  ngAfterContentInit() { this.logIt(`AfterContentInit`);  }
-
-  // Beware! Called frequently!
-  // Called in every change detection cycle anywhere on the page
-  ngAfterContentChecked() { this.logIt(`AfterContentChecked`); }
-
-  ngAfterViewInit() { this.logIt(`AfterViewInit`); }
+  ngAfterContentInit() { this.logIt('AfterContentInit');  }
 
   // Beware! Called frequently!
   // Called in every change detection cycle anywhere on the page
-  ngAfterViewChecked() { this.logIt(`AfterViewChecked`); }
+  ngAfterContentChecked() { this.logIt('AfterContentChecked'); }
 
-  ngOnDestroy() { this.logIt(`OnDestroy`); }
+  ngAfterViewInit() { this.logIt('AfterViewInit'); }
+
+  // Beware! Called frequently!
+  // Called in every change detection cycle anywhere on the page
+  ngAfterViewChecked() { this.logIt('AfterViewChecked'); }
+
+  ngOnDestroy() { this.logIt('OnDestroy'); }
 }

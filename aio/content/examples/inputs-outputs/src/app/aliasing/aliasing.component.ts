@@ -1,15 +1,15 @@
-// tslint:disable: no-input-rename no-output-rename use-input-property-decorator use-output-property-decorator
+/* eslint-disable @angular-eslint/no-input-rename,
+                  @angular-eslint/no-inputs-metadata-property,
+                  @angular-eslint/no-output-rename,
+                  @angular-eslint/no-outputs-metadata-property */
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
   selector: 'app-aliasing',
   templateUrl: './aliasing.component.html',
   styleUrls: ['./aliasing.component.css'],
-  // tslint:disable: no-inputs-metadata-property no-outputs-metadata-property
   inputs: ['input1: saveForLaterItem'], // propertyName:alias
   outputs: ['outputEvent1: saveForLaterEvent']
-  // tslint:disable: no-inputs-metadata-property no-outputs-metadata-property
-
 })
 export class AliasingComponent {
 
@@ -30,8 +30,4 @@ export class AliasingComponent {
     this.outputEvent2.emit(this.input2);
   }
 
-
 }
-/* tslint:enable:use-input-property-decorator */
-/* tslint:enable:use-output-property-decorator */
-

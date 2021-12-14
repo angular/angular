@@ -1,4 +1,3 @@
-// tslint:disable: directive-selector
 // #docregion
 export const heroDetail = {
   bindings: {

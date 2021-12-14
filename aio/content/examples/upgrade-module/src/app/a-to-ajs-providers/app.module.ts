@@ -1,6 +1,6 @@
-declare var angular: angular.IAngularStatic;
+declare const angular: angular.IAngularStatic;
 import '@angular/compiler';
-import { NgModule } from '@angular/core';
+import { DoBootstrap, NgModule } from '@angular/core';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 import { BrowserModule } from '@angular/platform-browser';
 import { UpgradeModule } from '@angular/upgrade/static';
@@ -18,7 +18,7 @@ import { Heroes } from './heroes';
   ],
   providers: [ Heroes ]
 })
-export class AppModule {
+export class AppModule implements DoBootstrap {
   constructor(private upgrade: UpgradeModule) { }
   ngDoBootstrap() {
     this.upgrade.bootstrap(document.body, ['heroApp'], { strictDi: true });

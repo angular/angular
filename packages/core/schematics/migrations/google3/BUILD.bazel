@@ -8,6 +8,7 @@ ts_library(
     deps = [
         "//packages/core/schematics/migrations/entry-components",
         "//packages/core/schematics/migrations/testbed-teardown",
+        "//packages/core/schematics/migrations/typed-forms",
         "//packages/core/schematics/utils",
         "//packages/core/schematics/utils/tslint",
         "@npm//tslint",

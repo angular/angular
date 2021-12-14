@@ -1,5 +1,5 @@
 // TODO: Add unit tests for this file.
-// tslint:disable: no-output-native
+/* eslint-disable @angular-eslint/no-output-native */
 // #docregion
 import { Component, Output, OnInit, EventEmitter, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';

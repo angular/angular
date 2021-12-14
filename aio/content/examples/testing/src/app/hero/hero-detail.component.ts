@@ -1,4 +1,3 @@
-/* tslint:disable:member-ordering */
 // #docplaster
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';

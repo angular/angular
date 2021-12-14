@@ -24,7 +24,7 @@ describe('AppComponent (initial CLI version)', () => {
        const app = fixture.componentInstance;
        expect(app).toBeTruthy();
      }));
-  it(`should have as title 'app'`, waitForAsync(() => {
+  it("should have as title 'app'", waitForAsync(() => {
        const fixture = TestBed.createComponent(AppComponent);
        const app = fixture.componentInstance;
        expect(app.title).toEqual('app');
@@ -61,7 +61,7 @@ describe('AppComponent (initial CLI version - as it should be)', () => {
     expect(app).toBeDefined();
   });
 
-  it(`should have as title 'app'`, () => {
+  it("should have as title 'app'", () => {
     expect(app.title).toEqual('app');
   });
 

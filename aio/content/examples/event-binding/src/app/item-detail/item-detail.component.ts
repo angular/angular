@@ -1,4 +1,3 @@
-/* tslint:disable use-input-property-decorator use-output-property-decorator */
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 import { Item } from '../item';
