@@ -691,7 +691,7 @@ describe('MatSnackBar with parent MatSnackBar', () => {
   beforeEach(fakeAsync(() => {
     TestBed.configureTestingModule({
       imports: [MatSnackBarModule, CommonModule, NoopAnimationsModule],
-      declarations: [ComponentThatProvidesMatSnackBar],
+      declarations: [ComponentThatProvidesMatSnackBar, DirectiveWithViewContainer],
     }).compileComponents();
   }));
 
@@ -765,7 +765,7 @@ describe('MatSnackBar Positioning', () => {
   beforeEach(fakeAsync(() => {
     TestBed.configureTestingModule({
       imports: [MatSnackBarModule, CommonModule, NoopAnimationsModule],
-      declarations: [ComponentWithChildViewContainer],
+      declarations: [ComponentWithChildViewContainer, DirectiveWithViewContainer],
     }).compileComponents();
   }));
 
