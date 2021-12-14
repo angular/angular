@@ -9,10 +9,10 @@
       [ngTemplateOutlet]="iconOverrides[state]"
       [ngTemplateOutletContext]="_getIconContext()"></ng-container>
     <ng-container *ngSwitchDefault [ngSwitch]="state">
-      <span *ngSwitchCase="'number'">{{_getDefaultTextForState(state)}}</span>
+      <span aria-hidden="true" *ngSwitchCase="'number'">{{_getDefaultTextForState(state)}}</span>
       <span class="cdk-visually-hidden" *ngIf="state === 'done'">{{_intl.completedLabel}}</span>
       <span class="cdk-visually-hidden" *ngIf="state === 'edit'">{{_intl.editableLabel}}</span>
-      <mat-icon *ngSwitchDefault>{{_getDefaultTextForState(state)}}</mat-icon>
+      <mat-icon aria-hidden="true" *ngSwitchDefault>{{_getDefaultTextForState(state)}}</mat-icon>
     </ng-container>
   </div>
 </div>

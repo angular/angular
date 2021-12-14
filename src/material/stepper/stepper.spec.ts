@@ -444,6 +444,11 @@ describe('MatStepper', () => {
         stepHeaderNativeElements.every(element => element.querySelector('.mat-focus-indicator')),
       ).toBe(true);
     });
+
+    it('should hide the header icons from assistive technology', () => {
+      const icon = fixture.nativeElement.querySelector('.mat-step-icon span');
+      expect(icon.getAttribute('aria-hidden')).toBe('true');
+    });
   });
 
   describe('basic stepper when attempting to set the selected step too early', () => {
