@@ -108,13 +108,10 @@ export function replaceImport(
   return ts.updateNamedImports(node, [
     ...node.elements.filter(current => current !== existingImportNode),
     // Create a new import while trying to preserve the alias of the old one.
-    PARSED_TS_VERSION > 4.4 ?
-        // TODO(crisbeto): the function is cast to `any` here since g3 is still on TS 4.4.
-        // Should be cleaned up when g3 has been updated.
-        (ts.createImportSpecifier as any)(false, importPropertyName, importName) :
-        // TODO(crisbeto): backwards-compatibility layer for TS 4.4.
-        // Should be cleaned up when we drop support for it.
-        (ts.createImportSpecifier as any)(importPropertyName, importName)
+    PARSED_TS_VERSION > 4.4 ? ts.createImportSpecifier(false, importPropertyName, importName) :
+                              // TODO(crisbeto): backwards-compatibility layer for TS 4.4.
+                              // Should be cleaned up when we drop support for it.
+                              (ts.createImportSpecifier as any)(importPropertyName, importName)
   ]);
 }
 

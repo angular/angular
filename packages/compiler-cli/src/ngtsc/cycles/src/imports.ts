@@ -126,9 +126,7 @@ function isTypeOnlyImportClause(node: ts.ImportClause): boolean {
 
   // All the specifiers in the cause are type-only (e.g. `import {type a, type b} from '...'`).
   if (node.namedBindings !== undefined && ts.isNamedImports(node.namedBindings) &&
-      // TODO(crisbeto): the cast to `any` is here since g3 is still on TS 4.4.
-      // Should be cleaned up when g3 has been updated.
-      node.namedBindings.elements.every(specifier => (specifier as any).isTypeOnly)) {
+      node.namedBindings.elements.every(specifier => specifier.isTypeOnly)) {
     return true;
   }
 
