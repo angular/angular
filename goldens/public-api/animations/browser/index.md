@@ -7,9 +7,7 @@
 // @public (undocumented)
 export abstract class AnimationDriver {
     // (undocumented)
-    abstract animate(element: any, keyframes: {
-        [key: string]: string | number;
-    }[], duration: number, delay: number, easing?: string | null, previousPlayers?: any[], scrubberAccessRequested?: boolean): any;
+    abstract animate(element: any, keyframes: Array<Map<string, string | number>>, duration: number, delay: number, easing?: string | null, previousPlayers?: any[], scrubberAccessRequested?: boolean): any;
     // (undocumented)
     abstract computeStyle(element: any, prop: string, defaultValue?: string): string;
     // (undocumented)

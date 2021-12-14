@@ -63,7 +63,10 @@ describe('animation integration tests using web animations', function() {
     let webPlayer =
         (engine.players[0] as TransitionAnimationPlayer).getRealPlayer() as ɵWebAnimationsPlayer;
 
-    expect(webPlayer.keyframes).toEqual([{height: '0px', offset: 0}, {height: '100px', offset: 1}]);
+    expect(webPlayer.keyframes).toEqual([
+      new Map<string, string|number>([['height', '0px'], ['offset', 0]]),
+      new Map<string, string|number>([['height', '100px'], ['offset', 1]])
+    ]);
 
     webPlayer.finish();
 
@@ -77,7 +80,8 @@ describe('animation integration tests using web animations', function() {
           (engine.players[0] as TransitionAnimationPlayer).getRealPlayer() as ɵWebAnimationsPlayer;
 
       expect(webPlayer.keyframes).toEqual([
-        {height: '100px', offset: 0}, {height: '0px', offset: 1}
+        new Map<string, string|number>([['height', '100px'], ['offset', 0]]),
+        new Map<string, string|number>([['height', '0px'], ['offset', 1]])
       ]);
     }
   });
@@ -117,7 +121,8 @@ describe('animation integration tests using web animations', function() {
         (engine.players[0] as TransitionAnimationPlayer).getRealPlayer() as ɵWebAnimationsPlayer;
 
     expect(webPlayer.keyframes).toEqual([
-      {height: '100px', offset: 0}, {height: '120px', offset: 1}
+      new Map<string, string|number>([['height', '100px'], ['offset', 0]]),
+      new Map<string, string|number>([['height', '120px'], ['offset', 1]])
     ]);
   });
 
@@ -155,7 +160,10 @@ describe('animation integration tests using web animations', function() {
     let player = engine.players[0];
     let webPlayer = (player as TransitionAnimationPlayer).getRealPlayer() as ɵWebAnimationsPlayer;
 
-    expect(webPlayer.keyframes).toEqual([{height: '0px', offset: 0}, {height: '100px', offset: 1}]);
+    expect(webPlayer.keyframes).toEqual([
+      new Map<string, string|number>([['height', '0px'], ['offset', 0]]),
+      new Map<string, string|number>([['height', '100px'], ['offset', 1]])
+    ]);
 
     // we destroy the player because since it has started and is
     // at 0ms duration a height value of `0px` will be extracted
@@ -172,7 +180,8 @@ describe('animation integration tests using web animations', function() {
     webPlayer = (player as TransitionAnimationPlayer).getRealPlayer() as ɵWebAnimationsPlayer;
 
     expect(webPlayer.keyframes).toEqual([
-      {height: '100px', offset: 0}, {height: '80px', offset: 1}
+      new Map<string, string|number>([['height', '100px'], ['offset', 0]]),
+      new Map<string, string|number>([['height', '80px'], ['offset', 1]])
     ]);
   });
 
@@ -224,8 +233,8 @@ describe('animation integration tests using web animations', function() {
     let player = engine.players[0]!;
     let webPlayer = (player as TransitionAnimationPlayer).getRealPlayer() as ɵWebAnimationsPlayer;
     expect(webPlayer.keyframes).toEqual([
-      {height: '0px', offset: 0},
-      {height: '300px', offset: 1},
+      new Map<string, string|number>([['height', '0px'], ['offset', 0]]),
+      new Map<string, string|number>([['height', '300px'], ['offset', 1]]),
     ]);
     player.finish();
 
@@ -235,8 +244,8 @@ describe('animation integration tests using web animations', function() {
     player = engine.players[0]!;
     webPlayer = (player as TransitionAnimationPlayer).getRealPlayer() as ɵWebAnimationsPlayer;
     expect(webPlayer.keyframes).toEqual([
-      {height: '300px', offset: 0},
-      {height: '0px', offset: 1},
+      new Map<string, string|number>([['height', '300px'], ['offset', 0]]),
+      new Map<string, string|number>([['height', '0px'], ['offset', 1]]),
     ]);
   });
 
@@ -322,8 +331,8 @@ describe('animation integration tests using web animations', function() {
        for (i = 0; i < queriedPlayers.length; i++) {
          let player = queriedPlayers[i] as ɵWebAnimationsPlayer;
          expect(player.keyframes).toEqual([
-           {height: '0px', offset: 0},
-           {height: '50px', offset: 1},
+           new Map<string, string|number>([['height', '0px'], ['offset', 0]]),
+           new Map<string, string|number>([['height', '50px'], ['offset', 1]]),
          ]);
          player.finish();
        }
@@ -339,8 +348,8 @@ describe('animation integration tests using web animations', function() {
        for (i = 0; i < queriedPlayers.length; i++) {
          let player = queriedPlayers[i] as ɵWebAnimationsPlayer;
          expect(player.keyframes).toEqual([
-           {height: '50px', offset: 0},
-           {height: '0px', offset: 1},
+           new Map<string, string|number>([['height', '50px'], ['offset', 0]]),
+           new Map<string, string|number>([['height', '0px'], ['offset', 1]]),
          ]);
        }
      });
@@ -349,7 +358,7 @@ describe('animation integration tests using web animations', function() {
     @Component({
       selector: 'ani-cmp',
       template: `
-          <div [@myAnimation]="exp">...</div>
+          <div [@myAnimation]="exp" style="background-color: blue;">...</div>
         `,
       animations: [
         trigger(
@@ -379,18 +388,20 @@ describe('animation integration tests using web animations', function() {
     cmp.exp = 'a';
     fixture.detectChanges();
 
-    let player = engine.players[0]!;
-    let webPlayer = (player as TransitionAnimationPlayer).getRealPlayer() as ɵWebAnimationsPlayer;
-    webPlayer.setPosition(0.5);
+    const player1 = engine.players[0]!;
+    const webPlayer1 =
+        (player1 as TransitionAnimationPlayer).getRealPlayer() as ɵWebAnimationsPlayer;
+    webPlayer1.setPosition(0.5);
 
     cmp.exp = 'b';
     fixture.detectChanges();
 
-    player = engine.players[0]!;
-    webPlayer = (player as TransitionAnimationPlayer).getRealPlayer() as ɵWebAnimationsPlayer;
-    expect(approximate(parseFloat(webPlayer.keyframes[0]['width'] as string), 150))
+    const player2 = engine.players[0]!;
+    const webPlayer2 =
+        (player2 as TransitionAnimationPlayer).getRealPlayer() as ɵWebAnimationsPlayer;
+    expect(approximate(parseFloat(webPlayer2.keyframes[0].get('width') as string), 150))
         .toBeLessThan(0.05);
-    expect(approximate(parseFloat(webPlayer.keyframes[0]['height'] as string), 300))
+    expect(approximate(parseFloat(webPlayer2.keyframes[0].get('height') as string), 300))
         .toBeLessThan(0.05);
   });
 
@@ -456,8 +467,9 @@ describe('animation integration tests using web animations', function() {
        expect(players.length).toEqual(5);
        for (let i = 0; i < players.length; i++) {
          const p = players[i] as ɵWebAnimationsPlayer;
-         expect(approximate(parseFloat(p.keyframes[0]['width'] as string), 250)).toBeLessThan(0.05);
-         expect(approximate(parseFloat(p.keyframes[0]['height'] as string), 500))
+         expect(approximate(parseFloat(p.keyframes[0].get('width') as string), 250))
+             .toBeLessThan(0.05);
+         expect(approximate(parseFloat(p.keyframes[0].get('height') as string), 500))
              .toBeLessThan(0.05);
        }
      });

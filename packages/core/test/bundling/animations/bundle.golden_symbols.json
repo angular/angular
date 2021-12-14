@@ -6,10 +6,16 @@
     "name": "ANIMATION_MODULE_TYPE"
   },
   {
+    "name": "APPLICATION_MODULE_PROVIDERS"
+  },
+  {
     "name": "APP_BOOTSTRAP_LISTENER"
   },
   {
     "name": "APP_ID"
+  },
+  {
+    "name": "APP_ID_RANDOM_PROVIDER"
   },
   {
     "name": "APP_INITIALIZER"
@@ -117,6 +123,9 @@
     "name": "CommonModule"
   },
   {
+    "name": "Compiler"
+  },
+  {
     "name": "ComponentFactory"
   },
   {
@@ -141,7 +150,16 @@
     "name": "Console"
   },
   {
+    "name": "CssKeyframesDriver"
+  },
+  {
+    "name": "CssKeyframesPlayer"
+  },
+  {
     "name": "DASH_CASE_REGEXP"
+  },
+  {
+    "name": "DEFAULT_CURRENCY_CODE"
   },
   {
     "name": "DEFAULT_NOOP_PREVIOUS_NODE"
@@ -150,7 +168,7 @@
     "name": "DEFAULT_STATE_VALUE"
   },
   {
-    "name": "DIMENSIONAL_PROP_MAP"
+    "name": "DIMENSIONAL_PROP_SET"
   },
   {
     "name": "DOCUMENT"
@@ -160,6 +178,21 @@
   },
   {
     "name": "DefaultDomRenderer2"
+  },
+  {
+    "name": "DefaultIterableDiffer"
+  },
+  {
+    "name": "DefaultIterableDifferFactory"
+  },
+  {
+    "name": "DefaultKeyValueDiffer"
+  },
+  {
+    "name": "DefaultKeyValueDifferFactory"
+  },
+  {
+    "name": "DirectStylePlayer"
   },
   {
     "name": "DomEventsPlugin"
@@ -225,6 +258,9 @@
     "name": "INJECTOR_SCOPE"
   },
   {
+    "name": "Inject"
+  },
+  {
     "name": "InjectFlags"
   },
   {
@@ -237,16 +273,34 @@
     "name": "Injector"
   },
   {
+    "name": "IterableChangeRecord_"
+  },
+  {
+    "name": "IterableDiffers"
+  },
+  {
     "name": "KeyEventsPlugin"
   },
   {
+    "name": "KeyValueChangeRecord_"
+  },
+  {
+    "name": "KeyValueDiffers"
+  },
+  {
     "name": "LEAVE_TOKEN_REGEX"
+  },
+  {
+    "name": "LOCALE_DATA"
   },
   {
     "name": "LOCALE_ID2"
   },
   {
     "name": "LifecycleHooksFeature"
+  },
+  {
+    "name": "LocaleDataIndex"
   },
   {
     "name": "MODIFIER_KEYS"
@@ -321,6 +375,15 @@
     "name": "NULL_REMOVED_QUERIED_STATE"
   },
   {
+    "name": "NgLocaleLocalization"
+  },
+  {
+    "name": "NgLocalization"
+  },
+  {
+    "name": "NgModuleFactory2"
+  },
+  {
     "name": "NgModuleRef"
   },
   {
@@ -351,6 +414,9 @@
     "name": "Observable"
   },
   {
+    "name": "Optional"
+  },
+  {
     "name": "PARAM_REGEX"
   },
   {
@@ -361,6 +427,9 @@
   },
   {
     "name": "PlatformRef"
+  },
+  {
+    "name": "Plural"
   },
   {
     "name": "R3Injector"
@@ -385,6 +454,9 @@
   },
   {
     "name": "RuntimeError"
+  },
+  {
+    "name": "SCHEDULER"
   },
   {
     "name": "SELF_TOKEN_REGEX"
@@ -412,6 +484,9 @@
   },
   {
     "name": "SimpleOuterSubscriber"
+  },
+  {
+    "name": "SkipSelf"
   },
   {
     "name": "SpecialCasedStyles"
@@ -483,6 +558,9 @@
     "name": "_DOM"
   },
   {
+    "name": "_DuplicateMap"
+  },
+  {
     "name": "_IS_WEBKIT"
   },
   {
@@ -516,9 +594,6 @@
     "name": "_currentInjector"
   },
   {
-    "name": "_documentElement"
-  },
-  {
     "name": "_enable_super_gross_mode_that_will_cause_bad_things"
   },
   {
@@ -546,6 +621,9 @@
     "name": "_renderCompCount"
   },
   {
+    "name": "_symbolIterator"
+  },
+  {
     "name": "_testabilityGetter"
   },
   {
@@ -558,6 +636,9 @@
     "name": "addComponentLogic"
   },
   {
+    "name": "addRemoveAnimationEvent"
+  },
+  {
     "name": "addToViewTree"
   },
   {
@@ -565,6 +646,9 @@
   },
   {
     "name": "allocLFrame"
+  },
+  {
+    "name": "allowPreviousPlayerStylesMerge"
   },
   {
     "name": "animate"
@@ -585,10 +669,16 @@
     "name": "applyView"
   },
   {
+    "name": "attachInjectFlag"
+  },
+  {
     "name": "attachPatchData"
   },
   {
     "name": "autoRegisterModuleById"
+  },
+  {
+    "name": "balancePreviousStylesIntoKeyframes"
   },
   {
     "name": "balanceProperties"
@@ -633,9 +723,6 @@
     "name": "collectNativeNodes"
   },
   {
-    "name": "compileNgModuleFactory"
-  },
-  {
     "name": "computeStaticStyling"
   },
   {
@@ -655,6 +742,9 @@
   },
   {
     "name": "containsElement"
+  },
+  {
+    "name": "convertToMap"
   },
   {
     "name": "copyAnimationEvent"
@@ -709,6 +799,18 @@
   },
   {
     "name": "defaultErrorLogger"
+  },
+  {
+    "name": "defaultIterableDiffers"
+  },
+  {
+    "name": "defaultIterableDiffersFactory"
+  },
+  {
+    "name": "defaultKeyValueDiffers"
+  },
+  {
+    "name": "defaultKeyValueDiffersFactory"
   },
   {
     "name": "defaultScheduler"
@@ -771,6 +873,12 @@
     "name": "findAttrIndexInNode"
   },
   {
+    "name": "findIndexForAnimation"
+  },
+  {
+    "name": "findMatchingTokenIndex"
+  },
+  {
     "name": "flattenStyles"
   },
   {
@@ -784,6 +892,9 @@
   },
   {
     "name": "generatePropertyAliases"
+  },
+  {
+    "name": "getAnimationStyle"
   },
   {
     "name": "getBindingsEnabled"
@@ -813,6 +924,9 @@
     "name": "getDeclarationTNode"
   },
   {
+    "name": "getElementAnimateFn"
+  },
+  {
     "name": "getFactoryDef"
   },
   {
@@ -832,6 +946,9 @@
   },
   {
     "name": "getLViewParent"
+  },
+  {
+    "name": "getLocaleData"
   },
   {
     "name": "getNativeByTNode"
@@ -861,16 +978,13 @@
     "name": "getOrCreateTNode"
   },
   {
-    "name": "getOrSetAsInMap"
+    "name": "getOrSetDefaultValue"
   },
   {
     "name": "getOriginalError"
   },
   {
     "name": "getOwnDefinition"
-  },
-  {
-    "name": "getParentElement"
   },
   {
     "name": "getParentInjectorIndex"
@@ -885,6 +999,9 @@
     "name": "getPlatform"
   },
   {
+    "name": "getPreviousIndex"
+  },
+  {
     "name": "getProjectionNodes"
   },
   {
@@ -895,6 +1012,9 @@
   },
   {
     "name": "getStyleAttributeString"
+  },
+  {
+    "name": "getSymbolIterator"
   },
   {
     "name": "getSymbolIterator2"
@@ -912,6 +1032,9 @@
     "name": "hostReportError"
   },
   {
+    "name": "hypenatePropsKeys"
+  },
+  {
     "name": "icuContainerIterate"
   },
   {
@@ -925,9 +1048,6 @@
   },
   {
     "name": "initTNodeFlags"
-  },
-  {
-    "name": "inject"
   },
   {
     "name": "injectArgs"
@@ -952,9 +1072,6 @@
   },
   {
     "name": "interpolateParams"
-  },
-  {
-    "name": "invalidTimingValue"
   },
   {
     "name": "invertObject"
@@ -1005,10 +1122,16 @@
     "name": "isInlineTemplate"
   },
   {
+    "name": "isJsObject"
+  },
+  {
     "name": "isLContainer"
   },
   {
     "name": "isLView"
+  },
+  {
+    "name": "isListLikeIterable"
   },
   {
     "name": "isNode"
@@ -1020,13 +1143,7 @@
     "name": "isNodeMatchingSelectorList"
   },
   {
-    "name": "isNonAnimatableStyle"
-  },
-  {
     "name": "isObject"
-  },
-  {
-    "name": "isObject2"
   },
   {
     "name": "isPositive"
@@ -1056,6 +1173,9 @@
     "name": "iteratorToArray"
   },
   {
+    "name": "keyValDiff"
+  },
+  {
     "name": "leaveDI"
   },
   {
@@ -1068,6 +1188,9 @@
     "name": "listenOnPlayer"
   },
   {
+    "name": "locale_en_default"
+  },
+  {
     "name": "lookupTokenUsingModuleInjector"
   },
   {
@@ -1075,6 +1198,9 @@
   },
   {
     "name": "makeLambdaFromStates"
+  },
+  {
+    "name": "makeParamDecorator"
   },
   {
     "name": "makeRecord"
@@ -1134,6 +1260,9 @@
     "name": "normalizeKeyframes"
   },
   {
+    "name": "normalizeKeyframes2"
+  },
+  {
     "name": "notFoundValueOrThrow"
   },
   {
@@ -1152,6 +1281,9 @@
     "name": "optionsReducer"
   },
   {
+    "name": "packageNonAnimatableStyles"
+  },
+  {
     "name": "parseTimelineCommand"
   },
   {
@@ -1162,6 +1294,9 @@
   },
   {
     "name": "platformCore"
+  },
+  {
+    "name": "playPauseAnimation"
   },
   {
     "name": "promise"
@@ -1257,6 +1392,9 @@
     "name": "sequence"
   },
   {
+    "name": "setAnimationStyle"
+  },
+  {
     "name": "setBindingRootForHostBindings"
   },
   {
@@ -1329,7 +1467,13 @@
     "name": "toRefArray"
   },
   {
+    "name": "trackByIdentity"
+  },
+  {
     "name": "transition"
+  },
+  {
+    "name": "u"
   },
   {
     "name": "unwrapRNode"
@@ -1375,9 +1519,6 @@
   },
   {
     "name": "ɵɵelement"
-  },
-  {
-    "name": "ɵɵelementEnd"
   },
   {
     "name": "ɵɵelementStart"

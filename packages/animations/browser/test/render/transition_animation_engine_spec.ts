@@ -67,7 +67,10 @@ describe('TransitionAnimationEngine', () => {
       expect(engine.players.length).toEqual(1);
 
       const player = MockAnimationDriver.log.pop() as MockAnimationPlayer;
-      expect(player.keyframes).toEqual([{height: '0px', offset: 0}, {height: '100px', offset: 1}]);
+      expect(player.keyframes).toEqual([
+        new Map<string, string|number>([['height', '0px'], ['offset', 0]]),
+        new Map<string, string|number>([['height', '100px'], ['offset', 1]])
+      ]);
     });
 
     it('should not queue an animation if the property value has not changed at all', () => {
@@ -612,8 +615,8 @@ describe('TransitionAnimationEngine', () => {
 
          const player = MockAnimationDriver.log.pop() as MockAnimationPlayer;
          expect(player.keyframes).toEqual([
-           {'height-normalized': '100-normalized', offset: 0},
-           {'height-normalized': '0-normalized', offset: 1}
+           new Map<string, string|number>([['height-normalized', '100-normalized'], ['offset', 0]]),
+           new Map<string, string|number>([['height-normalized', '0-normalized'], ['offset', 1]])
          ]);
        });
 

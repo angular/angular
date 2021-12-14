@@ -21,8 +21,8 @@ import {WebAnimationsPlayer} from '../../../src/render/web_animations/web_animat
   describe('WebAnimationsPlayer tests', () => {
     it('should automatically pause the player when created and initialized', () => {
       const keyframes = [
-        {opacity: 0, offset: 0},
-        {opacity: 1, offset: 1},
+        new Map<string, string|number>([['opacity', 0], ['offset', 0]]),
+        new Map<string, string|number>([['opacity', 1], ['offset', 1]]),
       ];
 
       const player = new WebAnimationsPlayer(element, keyframes, {duration: 1000});
@@ -37,8 +37,8 @@ import {WebAnimationsPlayer} from '../../../src/render/web_animations/web_animat
 
     it('should not pause the player if created and started before initialized', () => {
       const keyframes = [
-        {opacity: 0, offset: 0},
-        {opacity: 1, offset: 1},
+        new Map<string, string|number>([['opacity', 0], ['offset', 0]]),
+        new Map<string, string|number>([['opacity', 1], ['offset', 1]]),
       ];
 
       const player = new WebAnimationsPlayer(element, keyframes, {duration: 1000});
