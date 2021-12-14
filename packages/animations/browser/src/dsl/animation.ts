@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AnimationMetadata, AnimationMetadataType, AnimationOptions, ɵStyleData} from '@angular/animations';
+import {AnimationMetadata, AnimationMetadataType, AnimationOptions, ɵStyleDataMap} from '@angular/animations';
 
 import {AnimationDriver} from '../render/animation_driver';
 import {ENTER_CLASSNAME, LEAVE_CLASSNAME, normalizeStyles} from '../util';
@@ -29,13 +29,13 @@ export class Animation {
   }
 
   buildTimelines(
-      element: any, startingStyles: ɵStyleData|ɵStyleData[],
-      destinationStyles: ɵStyleData|ɵStyleData[], options: AnimationOptions,
+      element: any, startingStyles: ɵStyleDataMap|Array<ɵStyleDataMap>,
+      destinationStyles: ɵStyleDataMap|Array<ɵStyleDataMap>, options: AnimationOptions,
       subInstructions?: ElementInstructionMap): AnimationTimelineInstruction[] {
     const start = Array.isArray(startingStyles) ? normalizeStyles(startingStyles) :
-                                                  <ɵStyleData>startingStyles;
+                                                  <ɵStyleDataMap>startingStyles;
     const dest = Array.isArray(destinationStyles) ? normalizeStyles(destinationStyles) :
-                                                    <ɵStyleData>destinationStyles;
+                                                    <ɵStyleDataMap>destinationStyles;
     const errors: any = [];
     subInstructions = subInstructions || new ElementInstructionMap();
     const result = buildAnimationTimelines(

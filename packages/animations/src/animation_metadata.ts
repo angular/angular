@@ -7,11 +7,16 @@
  */
 
 /**
- * Represents a set of CSS styles for use in an animation style.
+ * Represents a set of CSS styles for use in an animation style as a generic.
  */
 export interface ɵStyleData {
   [key: string]: string|number;
 }
+
+/**
+ * Represents a set of CSS styles for use in an animation style as a Map.
+ */
+export type ɵStyleDataMap = Map<string, string|number>;
 
 /**
  * Represents animation-step timing parameters for an animation step.

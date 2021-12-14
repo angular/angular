@@ -7,14 +7,12 @@
 import { AnimationDriver } from '@angular/animations/browser';
 import { AnimationPlayer } from '@angular/animations';
 import { NoopAnimationPlayer } from '@angular/animations';
-import { ɵStyleData } from '@angular/animations';
+import { ɵStyleDataMap } from '@angular/animations';
 
 // @public (undocumented)
 export class MockAnimationDriver implements AnimationDriver {
     // (undocumented)
-    animate(element: any, keyframes: {
-        [key: string]: string | number;
-    }[], duration: number, delay: number, easing: string, previousPlayers?: any[]): MockAnimationPlayer;
+    animate(element: any, keyframes: Array<ɵStyleDataMap>, duration: number, delay: number, easing: string, previousPlayers?: any[]): MockAnimationPlayer;
     // (undocumented)
     computeStyle(element: any, prop: string, defaultValue?: string): string;
     // (undocumented)
@@ -31,13 +29,11 @@ export class MockAnimationDriver implements AnimationDriver {
 
 // @public (undocumented)
 export class MockAnimationPlayer extends NoopAnimationPlayer {
-    constructor(element: any, keyframes: {
-        [key: string]: string | number;
-    }[], duration: number, delay: number, easing: string, previousPlayers: any[]);
+    constructor(element: any, keyframes: Array<ɵStyleDataMap>, duration: number, delay: number, easing: string, previousPlayers: any[]);
     // (undocumented)
     beforeDestroy(): void;
     // (undocumented)
-    currentSnapshot: ɵStyleData;
+    currentSnapshot: ɵStyleDataMap;
     // (undocumented)
     delay: number;
     // (undocumented)
@@ -53,17 +49,13 @@ export class MockAnimationPlayer extends NoopAnimationPlayer {
     // (undocumented)
     hasStarted(): boolean;
     // (undocumented)
-    keyframes: {
-        [key: string]: string | number;
-    }[];
+    keyframes: Array<ɵStyleDataMap>;
     // (undocumented)
     play(): void;
     // (undocumented)
     previousPlayers: any[];
     // (undocumented)
-    previousStyles: {
-        [key: string]: string | number;
-    };
+    previousStyles: ɵStyleDataMap;
     // (undocumented)
     reset(): void;
 }

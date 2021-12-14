@@ -58,7 +58,6 @@ interface AnimationEvent_2 {
     totalTime: number;
     triggerName: string;
 }
-
 export { AnimationEvent_2 as AnimationEvent }
 
 // @public
@@ -277,7 +276,6 @@ export function trigger(name: string, definitions: AnimationMetadata[]): Animati
 
 // @public
 export function useAnimation(animation: AnimationReferenceMetadata, options?: AnimationOptions | null): AnimationAnimateRefMetadata;
-
 
 // (No @packageDocumentation comment for this package)
 

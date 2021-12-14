@@ -142,15 +142,15 @@ describe('Animation Router Tests', function() {
 
        expect(p1.duration).toEqual(1000);
        expect(p1.keyframes).toEqual([
-         {offset: 0, width: '200px'},
-         {offset: 1, width: '0px'},
+         new Map<string, string|number>([['offset', 0], ['width', '200px']]),
+         new Map<string, string|number>([['offset', 1], ['width', '0px']]),
        ]);
 
        expect(p2.duration).toEqual(2000);
        expect(p2.keyframes).toEqual([
-         {offset: 0, opacity: '0'},
-         {offset: .5, opacity: '0'},
-         {offset: 1, opacity: '1'},
+         new Map<string, string|number>([['offset', 0], ['opacity', '0']]),
+         new Map<string, string|number>([['offset', .5], ['opacity', '0']]),
+         new Map<string, string|number>([['offset', 1], ['opacity', '1']]),
        ]);
      }));
 
@@ -248,14 +248,14 @@ describe('Animation Router Tests', function() {
        const [p1, p2] = players;
 
        expect(p1.keyframes).toEqual([
-         {offset: 0, opacity: '0'},
-         {offset: 1, opacity: '1'},
+         new Map<string, string|number>([['offset', 0], ['opacity', '0']]),
+         new Map<string, string|number>([['offset', 1], ['opacity', '1']]),
        ]);
 
        expect(p2.keyframes).toEqual([
-         {offset: 0, opacity: '0'},
-         {offset: .5, opacity: '0'},
-         {offset: 1, opacity: '1'},
+         new Map<string, string|number>([['offset', 0], ['opacity', '0']]),
+         new Map<string, string|number>([['offset', .5], ['opacity', '0']]),
+         new Map<string, string|number>([['offset', 1], ['opacity', '1']]),
        ]);
      }));
 
@@ -353,14 +353,14 @@ describe('Animation Router Tests', function() {
        const [p1, p2] = players;
 
        expect(p1.keyframes).toEqual([
-         {offset: 0, opacity: '1'},
-         {offset: 1, opacity: '0'},
+         new Map<string, string|number>([['offset', 0], ['opacity', '1']]),
+         new Map<string, string|number>([['offset', 1], ['opacity', '0']]),
        ]);
 
        expect(p2.keyframes).toEqual([
-         {offset: 0, opacity: '1'},
-         {offset: .5, opacity: '1'},
-         {offset: 1, opacity: '0'},
+         new Map<string, string|number>([['offset', 0], ['opacity', '1']]),
+         new Map<string, string|number>([['offset', .5], ['opacity', '1']]),
+         new Map<string, string|number>([['offset', 1], ['opacity', '0']]),
        ]);
      }));
 

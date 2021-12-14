@@ -37,7 +37,7 @@ export class NoopAnimationDriver implements AnimationDriver {
   }
 
   animate(
-      element: any, keyframes: {[key: string]: string|number}[], duration: number, delay: number,
+      element: any, keyframes: Array<Map<string, string|number>>, duration: number, delay: number,
       easing: string, previousPlayers: any[] = [],
       scrubberAccessRequested?: boolean): AnimationPlayer {
     return new NoopAnimationPlayer(duration, delay);
@@ -64,6 +64,6 @@ export abstract class AnimationDriver {
   abstract computeStyle(element: any, prop: string, defaultValue?: string): string;
 
   abstract animate(
-      element: any, keyframes: {[key: string]: string|number}[], duration: number, delay: number,
+      element: any, keyframes: Array<Map<string, string|number>>, duration: number, delay: number,
       easing?: string|null, previousPlayers?: any[], scrubberAccessRequested?: boolean): any;
 }

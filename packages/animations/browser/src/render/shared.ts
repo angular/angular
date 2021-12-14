@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AnimationEvent, AnimationPlayer, AUTO_STYLE, NoopAnimationPlayer, ɵAnimationGroupPlayer, ɵPRE_STYLE as PRE_STYLE, ɵStyleData} from '@angular/animations';
+import {AnimationEvent, AnimationPlayer, AUTO_STYLE, NoopAnimationPlayer, ɵAnimationGroupPlayer, ɵPRE_STYLE as PRE_STYLE, ɵStyleDataMap} from '@angular/animations';
 
 import {AnimationStyleNormalizer} from '../../src/dsl/style_normalization/animation_style_normalizer';
 import {AnimationDriver} from '../../src/render/animation_driver';
@@ -41,28 +41,28 @@ export function optimizeGroupPlayer(players: AnimationPlayer[]): AnimationPlayer
 
 export function normalizeKeyframes(
     driver: AnimationDriver, normalizer: AnimationStyleNormalizer, element: any,
-    keyframes: ɵStyleData[], preStyles: ɵStyleData = {},
-    postStyles: ɵStyleData = {}): ɵStyleData[] {
+    keyframes: Array<ɵStyleDataMap>, preStyles: ɵStyleDataMap = new Map(),
+    postStyles: ɵStyleDataMap = new Map()): Array<ɵStyleDataMap> {
   const errors: string[] = [];
-  const normalizedKeyframes: ɵStyleData[] = [];
+  const normalizedKeyframes: Array<ɵStyleDataMap> = [];
   let previousOffset = -1;
-  let previousKeyframe: ɵStyleData|null = null;
+  let previousKeyframe: ɵStyleDataMap|null = null;
   keyframes.forEach(kf => {
-    const offset = kf['offset'] as number;
+    const offset = kf.get('offset') as number;
     const isSameOffset = offset == previousOffset;
-    const normalizedKeyframe: ɵStyleData = (isSameOffset && previousKeyframe) || {};
-    Object.keys(kf).forEach(prop => {
+    const normalizedKeyframe: ɵStyleDataMap = (isSameOffset && previousKeyframe) || new Map();
+    kf.forEach((val, prop) => {
       let normalizedProp = prop;
-      let normalizedValue = kf[prop];
+      let normalizedValue = val;
       if (prop !== 'offset') {
         normalizedProp = normalizer.normalizePropertyName(normalizedProp, errors);
         switch (normalizedValue) {
           case PRE_STYLE:
-            normalizedValue = preStyles[prop];
+            normalizedValue = preStyles.get(prop)!;
             break;
 
           case AUTO_STYLE:
-            normalizedValue = postStyles[prop];
+            normalizedValue = postStyles.get(prop)!;
             break;
 
           default:
@@ -71,7 +71,7 @@ export function normalizeKeyframes(
             break;
         }
       }
-      normalizedKeyframe[normalizedProp] = normalizedValue;
+      normalizedKeyframe.set(normalizedProp, normalizedValue);
     });
     if (!isSameOffset) {
       normalizedKeyframes.push(normalizedKeyframe);
@@ -124,19 +124,10 @@ export function makeAnimationEvent(
   return {element, triggerName, fromState, toState, phaseName, totalTime, disabled: !!disabled};
 }
 
-export function getOrSetAsInMap(
-    map: Map<any, any>|{[key: string]: any}, key: any, defaultValue: any) {
-  let value: any;
-  if (map instanceof Map) {
-    value = map.get(key);
-    if (!value) {
-      map.set(key, value = defaultValue);
-    }
-  } else {
-    value = map[key];
-    if (!value) {
-      value = map[key] = defaultValue;
-    }
+export function getOrSetDefaultValue<T, V>(map: Map<T, V>, key: T, defaultValue: V) {
+  let value = map.get(key);
+  if (!value) {
+    map.set(key, value = defaultValue);
   }
   return value;
 }
@@ -217,11 +208,11 @@ export function getBodyNode(): any|null {
 export const containsElement = _contains;
 export const invokeQuery = _query;
 
-export function hypenatePropsObject(object: {[key: string]: any}): {[key: string]: any} {
-  const newObj: {[key: string]: any} = {};
-  Object.keys(object).forEach(prop => {
+export function hypenatePropsKeys(original: ɵStyleDataMap): ɵStyleDataMap {
+  const newMap: ɵStyleDataMap = new Map();
+  original.forEach((val, prop) => {
     const newProp = prop.replace(/([a-z])([A-Z])/g, '$1-$2');
-    newObj[newProp] = object[prop];
+    newMap.set(newProp, val);
   });
-  return newObj;
+  return newMap;
 }

@@ -62,7 +62,10 @@ describe('animation integration tests using css keyframe animations', function()
 
     expect(engine.players.length).toEqual(1);
     let player = getPlayer(engine) as CssKeyframesPlayer;
-    expect(player.keyframes).toEqual([{height: '0px', offset: 0}, {height: '100px', offset: 1}]);
+    expect(player.keyframes).toEqual([
+      new Map<string, string|number>([['height', '0px'], ['offset', 0]]),
+      new Map<string, string|number>([['height', '100px'], ['offset', 1]])
+    ]);
 
     player.finish();
     if (browserDetection.isOldChrome) return;
@@ -71,7 +74,10 @@ describe('animation integration tests using css keyframe animations', function()
     fixture.detectChanges();
 
     player = getPlayer(engine) as CssKeyframesPlayer;
-    expect(player.keyframes).toEqual([{height: '100px', offset: 0}, {height: '0px', offset: 1}]);
+    expect(player.keyframes).toEqual([
+      new Map<string, string|number>([['height', '100px'], ['offset', 0]]),
+      new Map<string, string|number>([['height', '0px'], ['offset', 1]])
+    ]);
   });
 
   it('should cleanup all existing @keyframe <style> objects after the animation has finished',

@@ -168,7 +168,7 @@
     "name": "DEFAULT_STATE_VALUE"
   },
   {
-    "name": "DIMENSIONAL_PROP_MAP"
+    "name": "DIMENSIONAL_PROP_SET"
   },
   {
     "name": "DOCUMENT"
@@ -744,6 +744,9 @@
     "name": "containsElement"
   },
   {
+    "name": "convertToMap"
+  },
+  {
     "name": "copyAnimationEvent"
   },
   {
@@ -975,7 +978,7 @@
     "name": "getOrCreateTNode"
   },
   {
-    "name": "getOrSetAsInMap"
+    "name": "getOrSetDefaultValue"
   },
   {
     "name": "getOriginalError"
@@ -1029,7 +1032,7 @@
     "name": "hostReportError"
   },
   {
-    "name": "hypenatePropsObject"
+    "name": "hypenatePropsKeys"
   },
   {
     "name": "icuContainerIterate"
@@ -1140,13 +1143,7 @@
     "name": "isNodeMatchingSelectorList"
   },
   {
-    "name": "isNonAnimatableStyle"
-  },
-  {
     "name": "isObject"
-  },
-  {
-    "name": "isObject2"
   },
   {
     "name": "isPositive"
@@ -1261,6 +1258,9 @@
   },
   {
     "name": "normalizeKeyframes"
+  },
+  {
+    "name": "normalizeKeyframes2"
   },
   {
     "name": "notFoundValueOrThrow"

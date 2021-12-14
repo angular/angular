@@ -5,10 +5,10 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AnimationOptions, ɵStyleData} from '@angular/animations';
+import {AnimationOptions, ɵStyleDataMap} from '@angular/animations';
 
 import {AnimationDriver} from '../render/animation_driver';
-import {getOrSetAsInMap} from '../render/shared';
+import {getOrSetDefaultValue} from '../render/shared';
 import {copyObj, interpolateParams, iteratorToArray} from '../util';
 
 import {StyleAst, TransitionAst} from './animation_ast';
@@ -23,17 +23,19 @@ const EMPTY_OBJECT = {};
 export class AnimationTransitionFactory {
   constructor(
       private _triggerName: string, public ast: TransitionAst,
-      private _stateStyles: {[stateName: string]: AnimationStateStyles}) {}
+      private _stateStyles: Map<string, AnimationStateStyles>) {}
 
   match(currentState: any, nextState: any, element: any, params: {[key: string]: any}): boolean {
     return oneOrMoreTransitionsMatch(this.ast.matchers, currentState, nextState, element, params);
   }
 
-  buildStyles(stateName: string, params: {[key: string]: any}, errors: string[]) {
-    const backupStateStyler = this._stateStyles['*'];
-    const stateStyler = this._stateStyles[stateName];
-    const backupStyles = backupStateStyler ? backupStateStyler.buildStyles(params, errors) : {};
-    return stateStyler ? stateStyler.buildStyles(params, errors) : backupStyles;
+  buildStyles(stateName: string|boolean|undefined, params: {[key: string]: any}, errors: string[]):
+      ɵStyleDataMap {
+    let styler = this._stateStyles.get('*');
+    if (stateName !== undefined) {
+      styler = this._stateStyles.get(stateName?.toString()) || styler;
+    }
+    return styler ? styler.buildStyles(params, errors) : new Map();
   }
 
   build(
@@ -50,12 +52,11 @@ export class AnimationTransitionFactory {
     const nextStateStyles = this.buildStyles(nextState, nextAnimationParams, errors);
 
     const queriedElements = new Set<any>();
-    const preStyleMap = new Map<any, {[prop: string]: boolean}>();
-    const postStyleMap = new Map<any, {[prop: string]: boolean}>();
+    const preStyleMap = new Map<any, Set<string>>();
+    const postStyleMap = new Map<any, Set<string>>();
     const isRemoval = nextState === 'void';
 
     const animationOptions = {params: {...transitionAnimationParams, ...nextAnimationParams}};
-
     const timelines = skipAstBuild ?
         [] :
         buildAnimationTimelines(
@@ -75,11 +76,11 @@ export class AnimationTransitionFactory {
 
     timelines.forEach(tl => {
       const elm = tl.element;
-      const preProps = getOrSetAsInMap(preStyleMap, elm, {});
-      tl.preStyleProps.forEach(prop => preProps[prop] = true);
+      const preProps = getOrSetDefaultValue(preStyleMap, elm, new Set<string>());
+      tl.preStyleProps.forEach(prop => preProps.add(prop));
 
-      const postProps = getOrSetAsInMap(postStyleMap, elm, {});
-      tl.postStyleProps.forEach(prop => postProps[prop] = true);
+      const postProps = getOrSetDefaultValue(postStyleMap, elm, new Set<string>());
+      tl.postStyleProps.forEach(prop => postProps.add(prop));
 
       if (elm !== element) {
         queriedElements.add(elm);
@@ -104,26 +105,24 @@ export class AnimationStateStyles {
       private styles: StyleAst, private defaultParams: {[key: string]: any},
       private normalizer: AnimationStyleNormalizer) {}
 
-  buildStyles(params: {[key: string]: any}, errors: string[]): ɵStyleData {
-    const finalStyles: ɵStyleData = {};
+  buildStyles(params: {[key: string]: any}, errors: string[]): ɵStyleDataMap {
+    const finalStyles: ɵStyleDataMap = new Map();
     const combinedParams = copyObj(this.defaultParams);
     Object.keys(params).forEach(key => {
       const value = params[key];
-      if (value != null) {
+      if (value !== null) {
         combinedParams[key] = value;
       }
     });
     this.styles.styles.forEach(value => {
       if (typeof value !== 'string') {
-        const styleObj = value as any;
-        Object.keys(styleObj).forEach(prop => {
-          let val = styleObj[prop];
-          if (val.length > 1) {
+        value.forEach((val, prop) => {
+          if (val) {
             val = interpolateParams(val, combinedParams, errors);
           }
           const normalizedProp = this.normalizer.normalizePropertyName(prop, errors);
           val = this.normalizer.normalizeStyleValue(prop, normalizedProp, val, errors);
-          finalStyles[normalizedProp] = val;
+          finalStyles.set(normalizedProp, val);
         });
       }
     });

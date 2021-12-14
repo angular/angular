@@ -5,9 +5,9 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AnimationPlayer, ɵStyleData} from '@angular/animations';
+import {AnimationPlayer, ɵStyleDataMap} from '@angular/animations';
 
-import {allowPreviousPlayerStylesMerge, balancePreviousStylesIntoKeyframes, copyStyles} from '../../util';
+import {allowPreviousPlayerStylesMerge, balancePreviousStylesIntoKeyframes, copyStyles, normalizeKeyframes} from '../../util';
 import {AnimationDriver} from '../animation_driver';
 import {CssKeyframesDriver} from '../css_keyframes/css_keyframes_driver';
 import {containsElement, invokeQuery, isBrowser, validateStyleProperty} from '../shared';
@@ -45,8 +45,9 @@ export class WebAnimationsDriver implements AnimationDriver {
   }
 
   animate(
-      element: any, keyframes: ɵStyleData[], duration: number, delay: number, easing: string,
-      previousPlayers: AnimationPlayer[] = [], scrubberAccessRequested?: boolean): AnimationPlayer {
+      element: any, keyframes: Array<Map<string, string|number>>, duration: number, delay: number,
+      easing: string, previousPlayers: AnimationPlayer[] = [],
+      scrubberAccessRequested?: boolean): AnimationPlayer {
     const useKeyframes = !scrubberAccessRequested && !this._isNativeImpl;
     if (useKeyframes) {
       return this._cssKeyframesDriver.animate(
@@ -61,21 +62,19 @@ export class WebAnimationsDriver implements AnimationDriver {
       playerOptions['easing'] = easing;
     }
 
-    const previousStyles: {[key: string]: any} = {};
+    const previousStyles: ɵStyleDataMap = new Map();
     const previousWebAnimationPlayers = <WebAnimationsPlayer[]>previousPlayers.filter(
         player => player instanceof WebAnimationsPlayer);
-
     if (allowPreviousPlayerStylesMerge(duration, delay)) {
       previousWebAnimationPlayers.forEach(player => {
-        let styles = player.currentSnapshot;
-        Object.keys(styles).forEach(prop => previousStyles[prop] = styles[prop]);
+        player.currentSnapshot.forEach((val, prop) => previousStyles.set(prop, val));
       });
     }
 
-    keyframes = keyframes.map(styles => copyStyles(styles, false));
-    keyframes = balancePreviousStylesIntoKeyframes(element, keyframes, previousStyles);
-    const specialStyles = packageNonAnimatableStyles(element, keyframes);
-    return new WebAnimationsPlayer(element, keyframes, playerOptions, specialStyles);
+    let _keyframes = normalizeKeyframes(keyframes).map(styles => copyStyles(styles));
+    _keyframes = balancePreviousStylesIntoKeyframes(element, _keyframes, previousStyles);
+    const specialStyles = packageNonAnimatableStyles(element, _keyframes);
+    return new WebAnimationsPlayer(element, _keyframes, playerOptions, specialStyles);
   }
 }
 
