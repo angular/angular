@@ -591,6 +591,17 @@ describe('v12 theming API migration', () => {
     ]);
   });
 
+  it('should not replace removed variables whose name overlaps with other variables', async () => {
+    writeLines(THEME_PATH, [
+      `@import '@angular/material/theming';`,
+      `$swift-ease-in-duration: 300ms !default`,
+    ]);
+
+    await runMigration();
+
+    expect(splitFile(THEME_PATH)).toEqual([`$swift-ease-in-duration: 300ms !default`]);
+  });
+
   it('should not replace assignments to removed variables', async () => {
     writeLines(THEME_PATH, [
       `@import '@angular/material/theming';`,

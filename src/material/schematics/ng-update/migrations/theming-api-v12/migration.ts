@@ -397,7 +397,7 @@ function replaceRemovedVariables(content: string, variables: Record<string, stri
   Object.keys(variables).forEach(variableName => {
     // Note that the pattern uses a negative lookahead to exclude
     // variable assignments, because they can't be migrated.
-    const regex = new RegExp(`\\$${escapeRegExp(variableName)}(?!\\s+:|:)`, 'g');
+    const regex = new RegExp(`\\$${escapeRegExp(variableName)}(?!\\s+:|[-_a-zA-Z0-9:])`, 'g');
     content = content.replace(regex, variables[variableName]);
   });
 
