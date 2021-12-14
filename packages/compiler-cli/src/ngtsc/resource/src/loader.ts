@@ -237,8 +237,6 @@ export class AdapterResourceLoader implements ResourceLoader {
  */
 function createLookupResolutionHost(adapter: NgCompilerAdapter):
     RequiredDelegations<ts.ModuleResolutionHost> {
-  // TODO(crisbeto): the cast to `any` is here since g3 is still on TS 4.4.
-  // Should be cleaned up when g3 has been updated.
   return {
     directoryExists(directoryName: string): boolean {
       if (directoryName.includes(RESOURCE_MARKER)) {
@@ -263,8 +261,8 @@ function createLookupResolutionHost(adapter: NgCompilerAdapter):
     getDirectories: adapter.getDirectories?.bind(adapter),
     realpath: adapter.realpath?.bind(adapter),
     trace: adapter.trace?.bind(adapter),
-    useCaseSensitiveFileNames: typeof (adapter as any).useCaseSensitiveFileNames === 'function' ?
-        (adapter as any).useCaseSensitiveFileNames.bind(adapter) :
-        (adapter as any).useCaseSensitiveFileNames
-  } as any;
+    useCaseSensitiveFileNames: typeof adapter.useCaseSensitiveFileNames === 'function' ?
+        adapter.useCaseSensitiveFileNames.bind(adapter) :
+        adapter.useCaseSensitiveFileNames
+  };
 }
