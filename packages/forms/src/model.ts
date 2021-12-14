@@ -1914,7 +1914,7 @@ export class FormGroup extends AbstractControl {
   /** @internal */
   _reduceValue() {
     return this._reduceChildren(
-        {}, (acc: {[k: string]: AbstractControl}, control: AbstractControl, name: string) => {
+        {}, (acc: {[k: string]: any}, control: AbstractControl, name: string): any => {
           if (control.enabled || this.disabled) {
             acc[name] = control.value;
           }
