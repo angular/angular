@@ -149,13 +149,9 @@ export class CdkColumnDef extends _CdkColumnDefBase implements CanStick {
     set name(name: string);
     // (undocumented)
     protected _name: string;
-    // (undocumented)
-    static ngAcceptInputType_sticky: BooleanInput;
-    // (undocumented)
-    static ngAcceptInputType_stickyEnd: BooleanInput;
     protected _setNameInput(value: string): void;
     get stickyEnd(): boolean;
-    set stickyEnd(v: boolean);
+    set stickyEnd(v: BooleanInput);
     // (undocumented)
     _stickyEnd: boolean;
     // (undocumented)
@@ -199,8 +195,6 @@ export class CdkFooterRow {
 export class CdkFooterRowDef extends _CdkFooterRowDefBase implements CanStick, OnChanges {
     constructor(template: TemplateRef<any>, _differs: IterableDiffers, _table?: any);
     // (undocumented)
-    static ngAcceptInputType_sticky: BooleanInput;
-    // (undocumented)
     ngOnChanges(changes: SimpleChanges): void;
     // (undocumented)
     _table?: any;
@@ -241,8 +235,6 @@ export class CdkHeaderRow {
 // @public
 export class CdkHeaderRowDef extends _CdkHeaderRowDefBase implements CanStick, OnChanges {
     constructor(template: TemplateRef<any>, _differs: IterableDiffers, _table?: any);
-    // (undocumented)
-    static ngAcceptInputType_sticky: BooleanInput;
     // (undocumented)
     ngOnChanges(changes: SimpleChanges): void;
     // (undocumented)
@@ -321,7 +313,7 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
     // (undocumented)
     protected readonly _elementRef: ElementRef;
     get fixedLayout(): boolean;
-    set fixedLayout(v: boolean);
+    set fixedLayout(v: BooleanInput);
     // (undocumented)
     _footerRowOutlet: FooterRowOutlet;
     _getRenderedRows(rowOutlet: RowOutlet): HTMLElement[];
@@ -330,14 +322,10 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
     _headerRowOutlet: HeaderRowOutlet;
     protected _isNativeHtmlTable: boolean;
     get multiTemplateDataRows(): boolean;
-    set multiTemplateDataRows(v: boolean);
+    set multiTemplateDataRows(v: BooleanInput);
     // (undocumented)
     _multiTemplateDataRows: boolean;
     protected needsPositionStickyOnElement: boolean;
-    // (undocumented)
-    static ngAcceptInputType_fixedLayout: BooleanInput;
-    // (undocumented)
-    static ngAcceptInputType_multiTemplateDataRows: BooleanInput;
     // (undocumented)
     ngAfterContentChecked(): void;
     // (undocumented)

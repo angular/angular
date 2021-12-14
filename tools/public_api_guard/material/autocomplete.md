@@ -92,7 +92,7 @@ export abstract class _MatAutocompleteBase extends _MatAutocompleteMixinBase imp
     ariaLabel: string;
     ariaLabelledby: string;
     get autoActiveFirstOption(): boolean;
-    set autoActiveFirstOption(value: boolean);
+    set autoActiveFirstOption(value: BooleanInput);
     set classList(value: string | string[]);
     // (undocumented)
     _classList: {
@@ -110,10 +110,6 @@ export abstract class _MatAutocompleteBase extends _MatAutocompleteMixinBase imp
     // (undocumented)
     _isOpen: boolean;
     _keyManager: ActiveDescendantKeyManager<_MatOptionBase>;
-    // (undocumented)
-    static ngAcceptInputType_autoActiveFirstOption: BooleanInput;
-    // (undocumented)
-    static ngAcceptInputType_disableRipple: BooleanInput;
     // (undocumented)
     ngAfterContentInit(): void;
     // (undocumented)
@@ -198,7 +194,7 @@ export abstract class _MatAutocompleteTriggerBase implements ControlValueAccesso
     autocomplete: _MatAutocompleteBase;
     autocompleteAttribute: string;
     get autocompleteDisabled(): boolean;
-    set autocompleteDisabled(value: boolean);
+    set autocompleteDisabled(value: BooleanInput);
     closePanel(): void;
     connectedTo: _MatAutocompleteOriginBase;
     // (undocumented)
@@ -207,8 +203,6 @@ export abstract class _MatAutocompleteTriggerBase implements ControlValueAccesso
     _handleInput(event: KeyboardEvent): void;
     // (undocumented)
     _handleKeydown(event: KeyboardEvent): void;
-    // (undocumented)
-    static ngAcceptInputType_autocompleteDisabled: BooleanInput;
     // (undocumented)
     ngAfterViewInit(): void;
     // (undocumented)

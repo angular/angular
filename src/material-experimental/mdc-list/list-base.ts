@@ -80,7 +80,7 @@ export abstract class MatListItemBase implements AfterContentInit, OnDestroy, Ri
   get disabled(): boolean {
     return this._disabled || (this._listBase && this._listBase.disabled);
   }
-  set disabled(value: boolean) {
+  set disabled(value: BooleanInput) {
     this._disabled = coerceBooleanProperty(value);
   }
   private _disabled = false;
@@ -191,9 +191,6 @@ export abstract class MatListItemBase implements AfterContentInit, OnDestroy, Ri
       );
     });
   }
-
-  static ngAcceptInputType_disabled: BooleanInput;
-  static ngAcceptInputType_disableRipple: BooleanInput;
 }
 
 @Directive({
@@ -211,7 +208,7 @@ export abstract class MatListBase {
   get disableRipple(): boolean {
     return this._disableRipple;
   }
-  set disableRipple(value: boolean) {
+  set disableRipple(value: BooleanInput) {
     this._disableRipple = coerceBooleanProperty(value);
   }
   private _disableRipple: boolean = false;
@@ -221,11 +218,8 @@ export abstract class MatListBase {
   get disabled(): boolean {
     return this._disabled;
   }
-  set disabled(value: boolean) {
+  set disabled(value: BooleanInput) {
     this._disabled = coerceBooleanProperty(value);
   }
   private _disabled = false;
-
-  static ngAcceptInputType_disabled: BooleanInput;
-  static ngAcceptInputType_disableRipple: BooleanInput;
 }

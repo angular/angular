@@ -33,12 +33,10 @@ export class CdkDragPreview<T = any> {
   get matchSize(): boolean {
     return this._matchSize;
   }
-  set matchSize(value: boolean) {
+  set matchSize(value: BooleanInput) {
     this._matchSize = coerceBooleanProperty(value);
   }
   private _matchSize = false;
 
   constructor(public templateRef: TemplateRef<T>) {}
-
-  static ngAcceptInputType_matchSize: BooleanInput;
 }

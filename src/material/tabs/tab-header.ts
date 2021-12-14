@@ -45,10 +45,10 @@ export abstract class _MatTabHeaderBase
 {
   /** Whether the ripple effect is disabled or not. */
   @Input()
-  get disableRipple() {
+  get disableRipple(): boolean {
     return this._disableRipple;
   }
-  set disableRipple(value: any) {
+  set disableRipple(value: BooleanInput) {
     this._disableRipple = coerceBooleanProperty(value);
   }
   private _disableRipple: boolean = false;
@@ -112,6 +112,4 @@ export class MatTabHeader extends _MatTabHeaderBase {
   ) {
     super(elementRef, changeDetectorRef, viewportRuler, dir, ngZone, platform, animationMode);
   }
-
-  static ngAcceptInputType_disableRipple: BooleanInput;
 }

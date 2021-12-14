@@ -123,7 +123,7 @@ export class MatSlideToggle implements ControlValueAccessor, AfterViewInit, OnDe
   get tabIndex(): number {
     return this._tabIndex;
   }
-  set tabIndex(value: number) {
+  set tabIndex(value: NumberInput) {
     this._tabIndex = coerceNumberProperty(value);
   }
   private _tabIndex: number;
@@ -145,7 +145,7 @@ export class MatSlideToggle implements ControlValueAccessor, AfterViewInit, OnDe
   get required(): boolean {
     return this._required;
   }
-  set required(value) {
+  set required(value: BooleanInput) {
     this._required = coerceBooleanProperty(value);
   }
 
@@ -154,7 +154,7 @@ export class MatSlideToggle implements ControlValueAccessor, AfterViewInit, OnDe
   get checked(): boolean {
     return this._checked;
   }
-  set checked(value) {
+  set checked(value: BooleanInput) {
     this._checked = coerceBooleanProperty(value);
 
     if (this._foundation) {
@@ -167,7 +167,7 @@ export class MatSlideToggle implements ControlValueAccessor, AfterViewInit, OnDe
   get disableRipple(): boolean {
     return this._disableRipple;
   }
-  set disableRipple(disableRipple: boolean) {
+  set disableRipple(disableRipple: BooleanInput) {
     this._disableRipple = coerceBooleanProperty(disableRipple);
   }
   private _disableRipple = false;
@@ -177,7 +177,7 @@ export class MatSlideToggle implements ControlValueAccessor, AfterViewInit, OnDe
   get disabled(): boolean {
     return this._disabled;
   }
-  set disabled(disabled) {
+  set disabled(disabled: BooleanInput) {
     this._disabled = coerceBooleanProperty(disabled);
 
     if (this._foundation) {
@@ -297,10 +297,4 @@ export class MatSlideToggle implements ControlValueAccessor, AfterViewInit, OnDe
     // `aria-labelledby`, because the button gets flagged as not having a label by tools like axe.
     return this.ariaLabel ? null : this._labelId;
   }
-
-  static ngAcceptInputType_tabIndex: NumberInput;
-  static ngAcceptInputType_required: BooleanInput;
-  static ngAcceptInputType_checked: BooleanInput;
-  static ngAcceptInputType_disableRipple: BooleanInput;
-  static ngAcceptInputType_disabled: BooleanInput;
 }

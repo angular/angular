@@ -206,7 +206,7 @@ export class CdkFixedSizeVirtualScroll implements OnChanges {
   get itemSize(): number {
     return this._itemSize;
   }
-  set itemSize(value: number) {
+  set itemSize(value: NumberInput) {
     this._itemSize = coerceNumberProperty(value);
   }
   _itemSize = 20;
@@ -219,7 +219,7 @@ export class CdkFixedSizeVirtualScroll implements OnChanges {
   get minBufferPx(): number {
     return this._minBufferPx;
   }
-  set minBufferPx(value: number) {
+  set minBufferPx(value: NumberInput) {
     this._minBufferPx = coerceNumberProperty(value);
   }
   _minBufferPx = 100;
@@ -231,7 +231,7 @@ export class CdkFixedSizeVirtualScroll implements OnChanges {
   get maxBufferPx(): number {
     return this._maxBufferPx;
   }
-  set maxBufferPx(value: number) {
+  set maxBufferPx(value: NumberInput) {
     this._maxBufferPx = coerceNumberProperty(value);
   }
   _maxBufferPx = 200;
@@ -246,8 +246,4 @@ export class CdkFixedSizeVirtualScroll implements OnChanges {
   ngOnChanges() {
     this._scrollStrategy.updateItemAndBufferSize(this.itemSize, this.minBufferPx, this.maxBufferPx);
   }
-
-  static ngAcceptInputType_itemSize: NumberInput;
-  static ngAcceptInputType_minBufferPx: NumberInput;
-  static ngAcceptInputType_maxBufferPx: NumberInput;
 }

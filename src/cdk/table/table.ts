@@ -425,7 +425,7 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
   get multiTemplateDataRows(): boolean {
     return this._multiTemplateDataRows;
   }
-  set multiTemplateDataRows(v: boolean) {
+  set multiTemplateDataRows(v: BooleanInput) {
     this._multiTemplateDataRows = coerceBooleanProperty(v);
 
     // In Ivy if this value is set via a static attribute (e.g. <table multiTemplateDataRows>),
@@ -445,7 +445,7 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
   get fixedLayout(): boolean {
     return this._fixedLayout;
   }
-  set fixedLayout(v: boolean) {
+  set fixedLayout(v: BooleanInput) {
     this._fixedLayout = coerceBooleanProperty(v);
 
     // Toggling `fixedLayout` may change column widths. Sticky column styles should be recalculated.
@@ -1314,9 +1314,6 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
 
     this._isShowingNoDataRow = shouldShow;
   }
-
-  static ngAcceptInputType_multiTemplateDataRows: BooleanInput;
-  static ngAcceptInputType_fixedLayout: BooleanInput;
 }
 
 /** Utility function that gets a merged list of the entries in an array and values of a Set. */

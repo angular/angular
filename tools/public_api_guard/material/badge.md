@@ -30,22 +30,16 @@ export class MatBadge extends _MatBadgeBase implements OnInit, OnDestroy, CanDis
     set description(newDescription: string);
     getBadgeElement(): HTMLElement | undefined;
     get hidden(): boolean;
-    set hidden(val: boolean);
+    set hidden(val: BooleanInput);
     _id: number;
     isAbove(): boolean;
     isAfter(): boolean;
-    // (undocumented)
-    static ngAcceptInputType_disabled: BooleanInput;
-    // (undocumented)
-    static ngAcceptInputType_hidden: BooleanInput;
-    // (undocumented)
-    static ngAcceptInputType_overlap: BooleanInput;
     // (undocumented)
     ngOnDestroy(): void;
     // (undocumented)
     ngOnInit(): void;
     get overlap(): boolean;
-    set overlap(val: boolean);
+    set overlap(val: BooleanInput);
     position: MatBadgePosition;
     size: MatBadgeSize;
     // (undocumented)

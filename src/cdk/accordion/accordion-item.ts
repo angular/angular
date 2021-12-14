@@ -63,7 +63,7 @@ export class CdkAccordionItem implements OnDestroy {
   get expanded(): boolean {
     return this._expanded;
   }
-  set expanded(expanded: boolean) {
+  set expanded(expanded: BooleanInput) {
     expanded = coerceBooleanProperty(expanded);
 
     // Only emit events and update the internal value if the value changes.
@@ -95,7 +95,7 @@ export class CdkAccordionItem implements OnDestroy {
   get disabled(): boolean {
     return this._disabled;
   }
-  set disabled(disabled: boolean) {
+  set disabled(disabled: BooleanInput) {
     this._disabled = coerceBooleanProperty(disabled);
   }
   private _disabled = false;
@@ -166,7 +166,4 @@ export class CdkAccordionItem implements OnDestroy {
       }
     });
   }
-
-  static ngAcceptInputType_expanded: BooleanInput;
-  static ngAcceptInputType_disabled: BooleanInput;
 }

@@ -44,7 +44,7 @@ export class MatInput extends _MatInputBase implements MatFormFieldControl<any>,
     controlType: string;
     protected _dirtyCheckNativeValue(): void;
     get disabled(): boolean;
-    set disabled(value: boolean);
+    set disabled(value: BooleanInput);
     // (undocumented)
     protected _disabled: boolean;
     // (undocumented)
@@ -68,14 +68,6 @@ export class MatInput extends _MatInputBase implements MatFormFieldControl<any>,
     // (undocumented)
     protected _neverEmptyInputTypes: string[];
     // (undocumented)
-    static ngAcceptInputType_disabled: BooleanInput;
-    // (undocumented)
-    static ngAcceptInputType_readonly: BooleanInput;
-    // (undocumented)
-    static ngAcceptInputType_required: BooleanInput;
-    // (undocumented)
-    static ngAcceptInputType_value: any;
-    // (undocumented)
     ngAfterViewInit(): void;
     // (undocumented)
     ngDoCheck(): void;
@@ -92,9 +84,9 @@ export class MatInput extends _MatInputBase implements MatFormFieldControl<any>,
     // (undocumented)
     protected _previousNativeValue: any;
     get readonly(): boolean;
-    set readonly(value: boolean);
+    set readonly(value: BooleanInput);
     get required(): boolean;
-    set required(value: boolean);
+    set required(value: BooleanInput);
     // (undocumented)
     protected _required: boolean | undefined;
     setDescribedByIds(ids: string[]): void;
@@ -109,7 +101,7 @@ export class MatInput extends _MatInputBase implements MatFormFieldControl<any>,
     userAriaDescribedBy: string;
     protected _validateType(): void;
     get value(): string;
-    set value(value: string);
+    set value(value: any);
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<MatInput, "input[matInput], textarea[matInput], select[matNativeControl],      input[matNativeControl], textarea[matNativeControl]", ["matInput"], { "disabled": "disabled"; "id": "id"; "placeholder": "placeholder"; "required": "required"; "type": "type"; "errorStateMatcher": "errorStateMatcher"; "userAriaDescribedBy": "aria-describedby"; "value": "value"; "readonly": "readonly"; }, {}, never>;
     // (undocumented)

@@ -57,34 +57,14 @@ export class MatSlider extends _MatSliderBase implements ControlValueAccessor, O
     };
     readonly input: EventEmitter<MatSliderChange>;
     get invert(): boolean;
-    set invert(value: boolean);
+    set invert(value: BooleanInput);
     _isActive: boolean;
     _isMinValue(): boolean;
     _isSliding: 'keyboard' | 'pointer' | null;
     get max(): number;
-    set max(v: number);
+    set max(v: NumberInput);
     get min(): number;
-    set min(v: number);
-    // (undocumented)
-    static ngAcceptInputType_disabled: BooleanInput;
-    // (undocumented)
-    static ngAcceptInputType_invert: BooleanInput;
-    // (undocumented)
-    static ngAcceptInputType_max: NumberInput;
-    // (undocumented)
-    static ngAcceptInputType_min: NumberInput;
-    // (undocumented)
-    static ngAcceptInputType_step: NumberInput;
-    // (undocumented)
-    static ngAcceptInputType_tabIndex: NumberInput;
-    // (undocumented)
-    static ngAcceptInputType_thumbLabel: BooleanInput;
-    // (undocumented)
-    static ngAcceptInputType_tickInterval: NumberInput;
-    // (undocumented)
-    static ngAcceptInputType_value: NumberInput;
-    // (undocumented)
-    static ngAcceptInputType_vertical: BooleanInput;
+    set min(v: NumberInput);
     // (undocumented)
     ngAfterViewInit(): void;
     // (undocumented)
@@ -107,17 +87,17 @@ export class MatSlider extends _MatSliderBase implements ControlValueAccessor, O
     _shouldInvertAxis(): boolean;
     _shouldInvertMouseCoords(): boolean;
     get step(): number;
-    set step(v: number);
+    set step(v: NumberInput);
     get thumbLabel(): boolean;
-    set thumbLabel(value: boolean);
+    set thumbLabel(value: BooleanInput);
     get tickInterval(): 'auto' | number;
-    set tickInterval(value: 'auto' | number);
+    set tickInterval(value: 'auto' | NumberInput);
     get value(): number;
-    set value(v: number);
+    set value(v: NumberInput);
     readonly valueChange: EventEmitter<number | null>;
     valueText: string;
     get vertical(): boolean;
-    set vertical(value: boolean);
+    set vertical(value: BooleanInput);
     writeValue(value: any): void;
     // (undocumented)
     static ɵcmp: i0.ɵɵComponentDeclaration<MatSlider, "mat-slider", ["matSlider"], { "disabled": "disabled"; "color": "color"; "tabIndex": "tabIndex"; "invert": "invert"; "max": "max"; "min": "min"; "step": "step"; "thumbLabel": "thumbLabel"; "tickInterval": "tickInterval"; "value": "value"; "displayWith": "displayWith"; "valueText": "valueText"; "vertical": "vertical"; }, { "change": "change"; "input": "input"; "valueChange": "valueChange"; }, never, never>;

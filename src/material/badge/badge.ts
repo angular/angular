@@ -79,7 +79,7 @@ export class MatBadge extends _MatBadgeBase implements OnInit, OnDestroy, CanDis
   get overlap(): boolean {
     return this._overlap;
   }
-  set overlap(val: boolean) {
+  set overlap(val: BooleanInput) {
     this._overlap = coerceBooleanProperty(val);
   }
   private _overlap: boolean = true;
@@ -118,7 +118,7 @@ export class MatBadge extends _MatBadgeBase implements OnInit, OnDestroy, CanDis
   get hidden(): boolean {
     return this._hidden;
   }
-  set hidden(val: boolean) {
+  set hidden(val: BooleanInput) {
     this._hidden = coerceBooleanProperty(val);
   }
   private _hidden: boolean;
@@ -272,8 +272,4 @@ export class MatBadge extends _MatBadgeBase implements OnInit, OnDestroy, CanDis
       }
     }
   }
-
-  static ngAcceptInputType_disabled: BooleanInput;
-  static ngAcceptInputType_hidden: BooleanInput;
-  static ngAcceptInputType_overlap: BooleanInput;
 }

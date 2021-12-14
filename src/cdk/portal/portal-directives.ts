@@ -98,7 +98,7 @@ export class CdkPortalOutlet extends BasePortalOutlet implements OnInit, OnDestr
     return this._attachedPortal;
   }
 
-  set portal(portal: Portal<any> | null) {
+  set portal(portal: Portal<any> | null | undefined | '') {
     // Ignore the cases where the `portal` is set to a falsy value before the lifecycle hooks have
     // run. This handles the cases where the user might do something like `<div cdkPortalOutlet>`
     // and attach a portal programmatically in the parent component. When Angular does the first CD
@@ -115,7 +115,7 @@ export class CdkPortalOutlet extends BasePortalOutlet implements OnInit, OnDestr
       super.attach(portal);
     }
 
-    this._attachedPortal = portal;
+    this._attachedPortal = portal || null;
   }
 
   /** Emits when a portal is attached to the outlet. */
@@ -237,8 +237,6 @@ export class CdkPortalOutlet extends BasePortalOutlet implements OnInit, OnDestr
         : nativeElement.parentNode!
     ) as HTMLElement;
   }
-
-  static ngAcceptInputType_portal: Portal<any> | null | undefined | '';
 }
 
 /**

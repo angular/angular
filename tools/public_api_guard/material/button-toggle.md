@@ -43,23 +43,13 @@ export class MatButtonToggle extends _MatButtonToggleBase implements OnInit, Aft
     buttonToggleGroup: MatButtonToggleGroup;
     readonly change: EventEmitter<MatButtonToggleChange>;
     get checked(): boolean;
-    set checked(value: boolean);
+    set checked(value: BooleanInput);
     get disabled(): boolean;
-    set disabled(value: boolean);
+    set disabled(value: BooleanInput);
     focus(options?: FocusOptions): void;
     id: string;
     _markForCheck(): void;
     name: string;
-    // (undocumented)
-    static ngAcceptInputType_checked: BooleanInput;
-    // (undocumented)
-    static ngAcceptInputType_disabled: BooleanInput;
-    // (undocumented)
-    static ngAcceptInputType_disableRipple: BooleanInput;
-    // (undocumented)
-    static ngAcceptInputType_multiple: BooleanInput;
-    // (undocumented)
-    static ngAcceptInputType_vertical: BooleanInput;
     // (undocumented)
     ngAfterViewInit(): void;
     // (undocumented)
@@ -100,20 +90,14 @@ export class MatButtonToggleGroup implements ControlValueAccessor, OnInit, After
     readonly change: EventEmitter<MatButtonToggleChange>;
     _controlValueAccessorChangeFn: (value: any) => void;
     get disabled(): boolean;
-    set disabled(value: boolean);
+    set disabled(value: BooleanInput);
     _emitChangeEvent(): void;
     _isPrechecked(toggle: MatButtonToggle): boolean;
     _isSelected(toggle: MatButtonToggle): boolean;
     get multiple(): boolean;
-    set multiple(value: boolean);
+    set multiple(value: BooleanInput);
     get name(): string;
     set name(value: string);
-    // (undocumented)
-    static ngAcceptInputType_disabled: BooleanInput;
-    // (undocumented)
-    static ngAcceptInputType_multiple: BooleanInput;
-    // (undocumented)
-    static ngAcceptInputType_vertical: BooleanInput;
     // (undocumented)
     ngAfterContentInit(): void;
     // (undocumented)
@@ -131,7 +115,7 @@ export class MatButtonToggleGroup implements ControlValueAccessor, OnInit, After
     set value(newValue: any);
     readonly valueChange: EventEmitter<any>;
     get vertical(): boolean;
-    set vertical(value: boolean);
+    set vertical(value: BooleanInput);
     writeValue(value: any): void;
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<MatButtonToggleGroup, "mat-button-toggle-group", ["matButtonToggleGroup"], { "appearance": "appearance"; "name": "name"; "vertical": "vertical"; "value": "value"; "multiple": "multiple"; "disabled": "disabled"; }, { "valueChange": "valueChange"; "change": "change"; }, ["_buttonToggles"]>;

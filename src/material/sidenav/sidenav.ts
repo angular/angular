@@ -81,7 +81,7 @@ export class MatSidenav extends MatDrawer {
   get fixedInViewport(): boolean {
     return this._fixedInViewport;
   }
-  set fixedInViewport(value) {
+  set fixedInViewport(value: BooleanInput) {
     this._fixedInViewport = coerceBooleanProperty(value);
   }
   private _fixedInViewport = false;
@@ -94,7 +94,7 @@ export class MatSidenav extends MatDrawer {
   get fixedTopGap(): number {
     return this._fixedTopGap;
   }
-  set fixedTopGap(value) {
+  set fixedTopGap(value: NumberInput) {
     this._fixedTopGap = coerceNumberProperty(value);
   }
   private _fixedTopGap = 0;
@@ -107,14 +107,10 @@ export class MatSidenav extends MatDrawer {
   get fixedBottomGap(): number {
     return this._fixedBottomGap;
   }
-  set fixedBottomGap(value) {
+  set fixedBottomGap(value: NumberInput) {
     this._fixedBottomGap = coerceNumberProperty(value);
   }
   private _fixedBottomGap = 0;
-
-  static ngAcceptInputType_fixedInViewport: BooleanInput;
-  static ngAcceptInputType_fixedTopGap: NumberInput;
-  static ngAcceptInputType_fixedBottomGap: NumberInput;
 }
 
 @Component({

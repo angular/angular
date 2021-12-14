@@ -152,7 +152,7 @@ export class MatInput
     }
     return this._disabled;
   }
-  set disabled(value: boolean) {
+  set disabled(value: BooleanInput) {
     this._disabled = coerceBooleanProperty(value);
 
     // Browsers may not fire the blur event if the input is disabled too quickly.
@@ -191,7 +191,7 @@ export class MatInput
   get required(): boolean {
     return this._required ?? this.ngControl?.control?.hasValidator(Validators.required) ?? false;
   }
-  set required(value: boolean) {
+  set required(value: BooleanInput) {
     this._required = coerceBooleanProperty(value);
   }
   protected _required: boolean | undefined;
@@ -231,7 +231,7 @@ export class MatInput
   get value(): string {
     return this._inputValueAccessor.value;
   }
-  set value(value: string) {
+  set value(value: any) {
     if (value !== this.value) {
       this._inputValueAccessor.value = value;
       this.stateChanges.next();
@@ -243,7 +243,7 @@ export class MatInput
   get readonly(): boolean {
     return this._readonly;
   }
-  set readonly(value: boolean) {
+  set readonly(value: BooleanInput) {
     this._readonly = coerceBooleanProperty(value);
   }
   private _readonly = false;
@@ -501,12 +501,4 @@ export class MatInput
     const element = this._elementRef.nativeElement as HTMLSelectElement;
     return this._isNativeSelect && (element.multiple || element.size > 1);
   }
-
-  static ngAcceptInputType_disabled: BooleanInput;
-  static ngAcceptInputType_readonly: BooleanInput;
-  static ngAcceptInputType_required: BooleanInput;
-
-  // Accept `any` to avoid conflicts with other directives on `<input>` that may
-  // accept different types.
-  static ngAcceptInputType_value: any;
 }

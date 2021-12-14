@@ -186,7 +186,7 @@ export class MatDrawer implements AfterContentInit, AfterContentChecked, OnDestr
   get disableClose(): boolean {
     return this._disableClose;
   }
-  set disableClose(value: boolean) {
+  set disableClose(value: BooleanInput) {
     this._disableClose = coerceBooleanProperty(value);
   }
   private _disableClose: boolean = false;
@@ -214,8 +214,8 @@ export class MatDrawer implements AfterContentInit, AfterContentChecked, OnDestr
     }
     return value;
   }
-  set autoFocus(value: AutoFocusTarget | string | boolean) {
-    if (value === 'true' || value === 'false') {
+  set autoFocus(value: AutoFocusTarget | string | BooleanInput) {
+    if (value === 'true' || value === 'false' || value == null) {
       value = coerceBooleanProperty(value);
     }
     this._autoFocus = value;
@@ -230,7 +230,7 @@ export class MatDrawer implements AfterContentInit, AfterContentChecked, OnDestr
   get opened(): boolean {
     return this._opened;
   }
-  set opened(value: boolean) {
+  set opened(value: BooleanInput) {
     this.toggle(coerceBooleanProperty(value));
   }
   private _opened: boolean = false;
@@ -561,10 +561,6 @@ export class MatDrawer implements AfterContentInit, AfterContentChecked, OnDestr
       this._focusTrap.enabled = this.opened && this.mode !== 'side';
     }
   }
-
-  static ngAcceptInputType_disableClose: BooleanInput;
-  static ngAcceptInputType_autoFocus: AutoFocusTarget | string | BooleanInput;
-  static ngAcceptInputType_opened: BooleanInput;
 }
 
 /**
@@ -628,7 +624,7 @@ export class MatDrawerContainer implements AfterContentInit, DoCheck, OnDestroy 
   get autosize(): boolean {
     return this._autosize;
   }
-  set autosize(value: boolean) {
+  set autosize(value: BooleanInput) {
     this._autosize = coerceBooleanProperty(value);
   }
   private _autosize: boolean;
@@ -639,14 +635,14 @@ export class MatDrawerContainer implements AfterContentInit, DoCheck, OnDestroy 
    * mode as well.
    */
   @Input()
-  get hasBackdrop() {
+  get hasBackdrop(): boolean {
     if (this._backdropOverride == null) {
       return !this._start || this._start.mode !== 'side' || !this._end || this._end.mode !== 'side';
     }
 
     return this._backdropOverride;
   }
-  set hasBackdrop(value: any) {
+  set hasBackdrop(value: BooleanInput) {
     this._backdropOverride = value == null ? null : coerceBooleanProperty(value);
   }
   _backdropOverride: boolean | null;
@@ -965,7 +961,4 @@ export class MatDrawerContainer implements AfterContentInit, DoCheck, OnDestroy 
   private _isDrawerOpen(drawer: MatDrawer | null): drawer is MatDrawer {
     return drawer != null && drawer.opened;
   }
-
-  static ngAcceptInputType_autosize: BooleanInput;
-  static ngAcceptInputType_hasBackdrop: BooleanInput;
 }

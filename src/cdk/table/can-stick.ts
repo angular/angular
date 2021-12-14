@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {coerceBooleanProperty} from '@angular/cdk/coercion';
+import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
 
 /** @docs-private */
 export type Constructor<T> = new (...args: any[]) => T;
@@ -46,7 +46,7 @@ export function mixinHasStickyInput<T extends Constructor<{}>>(base: T): CanStic
     get sticky(): boolean {
       return this._sticky;
     }
-    set sticky(v: boolean) {
+    set sticky(v: BooleanInput) {
       const prevValue = this._sticky;
       this._sticky = coerceBooleanProperty(v);
       this._hasStickyChanged = prevValue !== this._sticky;

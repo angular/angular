@@ -65,41 +65,29 @@ export abstract class _MatPaginatorBase<O extends {
     hasNextPage(): boolean;
     hasPreviousPage(): boolean;
     get hidePageSize(): boolean;
-    set hidePageSize(value: boolean);
+    set hidePageSize(value: BooleanInput);
     // (undocumented)
     _intl: MatPaginatorIntl;
     lastPage(): void;
     get length(): number;
-    set length(value: number);
+    set length(value: NumberInput);
     _nextButtonsDisabled(): boolean;
     nextPage(): void;
-    // (undocumented)
-    static ngAcceptInputType_disabled: BooleanInput;
-    // (undocumented)
-    static ngAcceptInputType_hidePageSize: BooleanInput;
-    // (undocumented)
-    static ngAcceptInputType_length: NumberInput;
-    // (undocumented)
-    static ngAcceptInputType_pageIndex: NumberInput;
-    // (undocumented)
-    static ngAcceptInputType_pageSize: NumberInput;
-    // (undocumented)
-    static ngAcceptInputType_showFirstLastButtons: BooleanInput;
     // (undocumented)
     ngOnDestroy(): void;
     // (undocumented)
     ngOnInit(): void;
     readonly page: EventEmitter<PageEvent>;
     get pageIndex(): number;
-    set pageIndex(value: number);
+    set pageIndex(value: NumberInput);
     get pageSize(): number;
-    set pageSize(value: number);
+    set pageSize(value: NumberInput);
     get pageSizeOptions(): number[];
     set pageSizeOptions(value: number[]);
     _previousButtonsDisabled(): boolean;
     previousPage(): void;
     get showFirstLastButtons(): boolean;
-    set showFirstLastButtons(value: boolean);
+    set showFirstLastButtons(value: BooleanInput);
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<_MatPaginatorBase<any>, never, never, { "color": "color"; "pageIndex": "pageIndex"; "length": "length"; "pageSize": "pageSize"; "pageSizeOptions": "pageSizeOptions"; "hidePageSize": "hidePageSize"; "showFirstLastButtons": "showFirstLastButtons"; }, { "page": "page"; }, never>;
     // (undocumented)

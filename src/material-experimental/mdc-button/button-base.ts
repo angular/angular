@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BooleanInput} from '@angular/cdk/coercion';
 import {Platform} from '@angular/cdk/platform';
 import {Directive, ElementRef, NgZone, ViewChild} from '@angular/core';
 import {
@@ -129,9 +128,6 @@ export class MatButtonBase
   _isRippleDisabled() {
     return this.disableRipple || this.disabled;
   }
-
-  static ngAcceptInputType_disabled: BooleanInput;
-  static ngAcceptInputType_disableRipple: BooleanInput;
 }
 
 /** Shared inputs by buttons using the `<a>` tag */

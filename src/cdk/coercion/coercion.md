@@ -25,7 +25,7 @@ class MyButton {
   // It also allows for a string to be passed like `<my-button disabled="true"></my-button>`.
   @Input()
   get disabled() { return this._disabled; }
-  set disabled(value: any) {
+  set disabled(value: BooleanInput) {
     this._disabled = coerceBooleanProperty(value);
   }
   private _disabled = false;
@@ -37,7 +37,7 @@ class MyButton {
   // parsed to a number.
   @Input()
   get greetDelay() { return this._greetDelay; }
-  set greetDelay(value: any) {
+  set greetDelay(value: NumberInput) {
     this._greetDelay = coerceNumberProperty(value, 0);
   }
   private _greetDelay = 0;
@@ -51,9 +51,5 @@ class MyButton {
   getElement(elementOrRef: ElementRef<HTMLElement> | HTMLElement): HTMLElement {
     return coerceElement(elementOrRef);
   }
-
-  // Required so that the template type checker can infer the type of the coerced inputs.
-  static ngAcceptInputType_disabled: BooleanInput;
-  static ngAcceptInputType_greetDelay: NumberInput;
 }
 ```

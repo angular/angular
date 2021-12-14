@@ -86,7 +86,7 @@ export class CdkColumnDef extends _CdkColumnDefBase implements CanStick {
   get stickyEnd(): boolean {
     return this._stickyEnd;
   }
-  set stickyEnd(v: boolean) {
+  set stickyEnd(v: BooleanInput) {
     const prevValue = this._stickyEnd;
     this._stickyEnd = coerceBooleanProperty(v);
     this._hasStickyChanged = prevValue !== this._stickyEnd;
@@ -145,9 +145,6 @@ export class CdkColumnDef extends _CdkColumnDefBase implements CanStick {
       this._updateColumnCssClassName();
     }
   }
-
-  static ngAcceptInputType_sticky: BooleanInput;
-  static ngAcceptInputType_stickyEnd: BooleanInput;
 }
 
 /** Base class for the cells. Adds a CSS classname that identifies the column it renders in. */

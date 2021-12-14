@@ -47,10 +47,6 @@ export class MatList extends _MatListBase implements CanDisable, CanDisableRippl
     // (undocumented)
     _getListType(): 'list' | 'action-list' | null;
     // (undocumented)
-    static ngAcceptInputType_disabled: BooleanInput;
-    // (undocumented)
-    static ngAcceptInputType_disableRipple: BooleanInput;
-    // (undocumented)
     ngOnChanges(): void;
     // (undocumented)
     ngOnDestroy(): void;
@@ -83,17 +79,13 @@ export class MatListItem extends _MatListItemMixinBase implements AfterContentIn
     // (undocumented)
     _avatar: MatListAvatarCssMatStyler;
     get disabled(): boolean;
-    set disabled(value: boolean);
+    set disabled(value: BooleanInput);
     _getHostElement(): HTMLElement;
     // (undocumented)
     _icon: MatListIconCssMatStyler;
     _isRippleDisabled(): boolean;
     // (undocumented)
     _lines: QueryList<MatLine>;
-    // (undocumented)
-    static ngAcceptInputType_disabled: BooleanInput;
-    // (undocumented)
-    static ngAcceptInputType_disableRipple: BooleanInput;
     // (undocumented)
     ngAfterContentInit(): void;
     // (undocumented)
@@ -123,8 +115,8 @@ export class MatListOption extends _MatListOptionBase implements AfterContentIni
     checkboxPosition: MatListOptionCheckboxPosition;
     get color(): ThemePalette;
     set color(newValue: ThemePalette);
-    get disabled(): any;
-    set disabled(value: any);
+    get disabled(): boolean;
+    set disabled(value: BooleanInput);
     focus(): void;
     _getHostElement(): HTMLElement;
     getLabel(): any;
@@ -136,16 +128,10 @@ export class MatListOption extends _MatListOptionBase implements AfterContentIni
     _handleFocus(): void;
     // (undocumented)
     _icon: MatListIconCssMatStyler;
-    _isRippleDisabled(): any;
+    _isRippleDisabled(): boolean;
     // (undocumented)
     _lines: QueryList<MatLine>;
     _markForCheck(): void;
-    // (undocumented)
-    static ngAcceptInputType_disabled: BooleanInput;
-    // (undocumented)
-    static ngAcceptInputType_disableRipple: BooleanInput;
-    // (undocumented)
-    static ngAcceptInputType_selected: BooleanInput;
     // (undocumented)
     ngAfterContentInit(): void;
     // (undocumented)
@@ -153,7 +139,7 @@ export class MatListOption extends _MatListOptionBase implements AfterContentIni
     // (undocumented)
     ngOnInit(): void;
     get selected(): boolean;
-    set selected(value: boolean);
+    set selected(value: BooleanInput);
     readonly selectedChange: EventEmitter<boolean>;
     selectionList: MatSelectionList;
     _setSelected(selected: boolean): boolean;
@@ -181,10 +167,6 @@ export class MatListSubheaderCssMatStyler {
 // @public (undocumented)
 export class MatNavList extends _MatListBase implements CanDisable, CanDisableRipple, OnChanges, OnDestroy {
     // (undocumented)
-    static ngAcceptInputType_disabled: BooleanInput;
-    // (undocumented)
-    static ngAcceptInputType_disableRipple: BooleanInput;
-    // (undocumented)
     ngOnChanges(): void;
     // (undocumented)
     ngOnDestroy(): void;
@@ -202,19 +184,13 @@ export class MatSelectionList extends _MatSelectionListBase implements CanDisabl
     compareWith: (o1: any, o2: any) => boolean;
     deselectAll(): MatListOption[];
     get disabled(): boolean;
-    set disabled(value: boolean);
+    set disabled(value: BooleanInput);
     _emitChangeEvent(options: MatListOption[]): void;
     focus(options?: FocusOptions): void;
     _keydown(event: KeyboardEvent): void;
     _keyManager: FocusKeyManager<MatListOption>;
     get multiple(): boolean;
-    set multiple(value: boolean);
-    // (undocumented)
-    static ngAcceptInputType_disabled: BooleanInput;
-    // (undocumented)
-    static ngAcceptInputType_disableRipple: BooleanInput;
-    // (undocumented)
-    static ngAcceptInputType_multiple: BooleanInput;
+    set multiple(value: BooleanInput);
     // (undocumented)
     ngAfterContentInit(): void;
     // (undocumented)

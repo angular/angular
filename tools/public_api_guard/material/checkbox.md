@@ -27,7 +27,6 @@ import * as i4 from '@angular/cdk/observers';
 import { InjectionToken } from '@angular/core';
 import { MatRipple } from '@angular/material/core';
 import { NgZone } from '@angular/core';
-import { NumberInput } from '@angular/cdk/coercion';
 import { OnDestroy } from '@angular/core';
 import { Provider } from '@angular/core';
 import { ThemePalette } from '@angular/material/core';
@@ -55,31 +54,21 @@ export class MatCheckbox extends _MatCheckboxBase implements ControlValueAccesso
     readonly change: EventEmitter<MatCheckboxChange>;
     get checked(): boolean;
     set checked(value: boolean);
-    get disabled(): any;
-    set disabled(value: any);
+    get disabled(): boolean;
+    set disabled(value: BooleanInput);
     focus(origin?: FocusOrigin, options?: FocusOptions): void;
     // (undocumented)
     _getAriaChecked(): 'true' | 'false' | 'mixed';
     id: string;
     get indeterminate(): boolean;
-    set indeterminate(value: boolean);
+    set indeterminate(value: BooleanInput);
     readonly indeterminateChange: EventEmitter<boolean>;
     _inputElement: ElementRef<HTMLInputElement>;
     get inputId(): string;
     // (undocumented)
-    _isRippleDisabled(): any;
+    _isRippleDisabled(): boolean;
     labelPosition: 'before' | 'after';
     name: string | null;
-    // (undocumented)
-    static ngAcceptInputType_disabled: BooleanInput;
-    // (undocumented)
-    static ngAcceptInputType_disableRipple: BooleanInput;
-    // (undocumented)
-    static ngAcceptInputType_indeterminate: BooleanInput;
-    // (undocumented)
-    static ngAcceptInputType_required: BooleanInput;
-    // (undocumented)
-    static ngAcceptInputType_tabIndex: NumberInput;
     // (undocumented)
     ngAfterViewChecked(): void;
     // (undocumented)
@@ -96,7 +85,7 @@ export class MatCheckbox extends _MatCheckboxBase implements ControlValueAccesso
     // (undocumented)
     registerOnTouched(fn: any): void;
     get required(): boolean;
-    set required(value: boolean);
+    set required(value: BooleanInput);
     ripple: MatRipple;
     // (undocumented)
     setDisabledState(isDisabled: boolean): void;

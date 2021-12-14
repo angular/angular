@@ -157,7 +157,7 @@ export class MatProgressSpinner extends _MatProgressSpinnerBase implements OnIni
   get diameter(): number {
     return this._diameter;
   }
-  set diameter(size: number) {
+  set diameter(size: NumberInput) {
     this._diameter = coerceNumberProperty(size);
     this._spinnerAnimationLabel = this._getSpinnerAnimationLabel();
 
@@ -172,7 +172,7 @@ export class MatProgressSpinner extends _MatProgressSpinnerBase implements OnIni
   get strokeWidth(): number {
     return this._strokeWidth || this.diameter / 10;
   }
-  set strokeWidth(value: number) {
+  set strokeWidth(value: NumberInput) {
     this._strokeWidth = coerceNumberProperty(value);
   }
 
@@ -184,7 +184,7 @@ export class MatProgressSpinner extends _MatProgressSpinnerBase implements OnIni
   get value(): number {
     return this.mode === 'determinate' ? this._value : 0;
   }
-  set value(newValue: number) {
+  set value(newValue: NumberInput) {
     this._value = Math.max(0, Math.min(100, coerceNumberProperty(newValue)));
   }
 
@@ -306,10 +306,6 @@ export class MatProgressSpinner extends _MatProgressSpinnerBase implements OnIni
     // which is not valid for a CSS animation-name.
     return this.diameter.toString().replace('.', '_');
   }
-
-  static ngAcceptInputType_diameter: NumberInput;
-  static ngAcceptInputType_strokeWidth: NumberInput;
-  static ngAcceptInputType_value: NumberInput;
 }
 
 /**

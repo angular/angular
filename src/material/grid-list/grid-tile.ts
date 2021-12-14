@@ -52,7 +52,7 @@ export class MatGridTile {
   get rowspan(): number {
     return this._rowspan;
   }
-  set rowspan(value: number) {
+  set rowspan(value: NumberInput) {
     this._rowspan = Math.round(coerceNumberProperty(value));
   }
 
@@ -61,7 +61,7 @@ export class MatGridTile {
   get colspan(): number {
     return this._colspan;
   }
-  set colspan(value: number) {
+  set colspan(value: NumberInput) {
     this._colspan = Math.round(coerceNumberProperty(value));
   }
 
@@ -72,9 +72,6 @@ export class MatGridTile {
   _setStyle(property: string, value: any): void {
     (this._element.nativeElement.style as any)[property] = value;
   }
-
-  static ngAcceptInputType_rowspan: NumberInput;
-  static ngAcceptInputType_colspan: NumberInput;
 }
 
 @Component({

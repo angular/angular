@@ -103,7 +103,7 @@ export class MatFormField extends _MatFormFieldBase implements AfterContentInit,
     // (undocumented)
     _hideControlPlaceholder(): boolean;
     get hideRequiredMarker(): boolean;
-    set hideRequiredMarker(value: boolean);
+    set hideRequiredMarker(value: BooleanInput);
     // (undocumented)
     _hintChildren: QueryList<MatHint>;
     get hintLabel(): string;
@@ -118,8 +118,6 @@ export class MatFormField extends _MatFormFieldBase implements AfterContentInit,
     _labelChildStatic: MatLabel;
     // (undocumented)
     readonly _labelId: string;
-    // (undocumented)
-    static ngAcceptInputType_hideRequiredMarker: BooleanInput;
     // (undocumented)
     ngAfterContentChecked(): void;
     // (undocumented)

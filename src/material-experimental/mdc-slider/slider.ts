@@ -305,7 +305,7 @@ export class MatSliderThumb implements AfterViewInit, ControlValueAccessor, OnIn
   get value(): number {
     return coerceNumberProperty(this._hostElement.getAttribute('value'));
   }
-  set value(v: number) {
+  set value(v: NumberInput) {
     const value = coerceNumberProperty(v);
 
     // If the foundation has already been initialized, we need to
@@ -524,8 +524,6 @@ export class MatSliderThumb implements AfterViewInit, ControlValueAccessor, OnIn
   private _initializeAriaValueText(): void {
     this._hostElement.setAttribute('aria-valuetext', this._slider.displayWith(this.value));
   }
-
-  static ngAcceptInputType_value: NumberInput;
 }
 
 // Boilerplate for applying mixins to MatSlider.
@@ -578,7 +576,7 @@ export class MatSlider
   get disabled(): boolean {
     return this._disabled;
   }
-  set disabled(v: boolean) {
+  set disabled(v: BooleanInput) {
     this._setDisabled(coerceBooleanProperty(v));
     this._updateInputsDisabledState();
   }
@@ -589,7 +587,7 @@ export class MatSlider
   get discrete(): boolean {
     return this._discrete;
   }
-  set discrete(v: boolean) {
+  set discrete(v: BooleanInput) {
     this._discrete = coerceBooleanProperty(v);
   }
   private _discrete: boolean = false;
@@ -599,7 +597,7 @@ export class MatSlider
   get showTickMarks(): boolean {
     return this._showTickMarks;
   }
-  set showTickMarks(v: boolean) {
+  set showTickMarks(v: BooleanInput) {
     this._showTickMarks = coerceBooleanProperty(v);
   }
   private _showTickMarks: boolean = false;
@@ -609,7 +607,7 @@ export class MatSlider
   get min(): number {
     return this._min;
   }
-  set min(v: number) {
+  set min(v: NumberInput) {
     this._min = coerceNumberProperty(v, this._min);
     this._reinitialize();
   }
@@ -620,7 +618,7 @@ export class MatSlider
   get max(): number {
     return this._max;
   }
-  set max(v: number) {
+  set max(v: NumberInput) {
     this._max = coerceNumberProperty(v, this._max);
     this._reinitialize();
   }
@@ -631,7 +629,7 @@ export class MatSlider
   get step(): number {
     return this._step;
   }
-  set step(v: number) {
+  set step(v: NumberInput) {
     this._step = coerceNumberProperty(v, this._step);
     this._reinitialize();
   }
@@ -901,14 +899,6 @@ export class MatSlider
   _isRippleDisabled(): boolean {
     return this.disabled || this.disableRipple || !!this._globalRippleOptions?.disabled;
   }
-
-  static ngAcceptInputType_disabled: BooleanInput;
-  static ngAcceptInputType_discrete: BooleanInput;
-  static ngAcceptInputType_showTickMarks: BooleanInput;
-  static ngAcceptInputType_min: NumberInput;
-  static ngAcceptInputType_max: NumberInput;
-  static ngAcceptInputType_step: NumberInput;
-  static ngAcceptInputType_disableRipple: BooleanInput;
 }
 
 /** The MDCSliderAdapter implementation. */

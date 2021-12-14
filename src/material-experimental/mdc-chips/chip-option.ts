@@ -83,7 +83,7 @@ export class MatChipOption extends MatChip implements AfterContentInit {
   get selectable(): boolean {
     return this._selectable && this.chipListSelectable;
   }
-  set selectable(value: boolean) {
+  set selectable(value: BooleanInput) {
     this._selectable = coerceBooleanProperty(value);
   }
   protected _selectable: boolean = true;
@@ -93,7 +93,7 @@ export class MatChipOption extends MatChip implements AfterContentInit {
   get selected(): boolean {
     return this._chipFoundation.isSelected();
   }
-  set selected(value: boolean) {
+  set selected(value: BooleanInput) {
     if (!this.selectable) {
       return;
     }
@@ -232,7 +232,4 @@ export class MatChipOption extends MatChip implements AfterContentInit {
         this._handleInteraction(event);
     }
   }
-
-  static ngAcceptInputType_selectable: BooleanInput;
-  static ngAcceptInputType_selected: BooleanInput;
 }

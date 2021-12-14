@@ -38,7 +38,7 @@ export class CdkDropListGroup<T> implements OnDestroy {
   get disabled(): boolean {
     return this._disabled;
   }
-  set disabled(value: boolean) {
+  set disabled(value: BooleanInput) {
     this._disabled = coerceBooleanProperty(value);
   }
   private _disabled = false;
@@ -46,6 +46,4 @@ export class CdkDropListGroup<T> implements OnDestroy {
   ngOnDestroy() {
     this._items.clear();
   }
-
-  static ngAcceptInputType_disabled: BooleanInput;
 }

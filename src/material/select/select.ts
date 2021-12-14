@@ -348,7 +348,7 @@ export abstract class _MatSelectBase<C>
   get required(): boolean {
     return this._required ?? this.ngControl?.control?.hasValidator(Validators.required) ?? false;
   }
-  set required(value: boolean) {
+  set required(value: BooleanInput) {
     this._required = coerceBooleanProperty(value);
     this.stateChanges.next();
   }
@@ -359,7 +359,7 @@ export abstract class _MatSelectBase<C>
   get multiple(): boolean {
     return this._multiple;
   }
-  set multiple(value: boolean) {
+  set multiple(value: BooleanInput) {
     if (this._selectionModel && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throw getMatSelectDynamicMultipleError();
     }
@@ -373,7 +373,7 @@ export abstract class _MatSelectBase<C>
   get disableOptionCentering(): boolean {
     return this._disableOptionCentering;
   }
-  set disableOptionCentering(value: boolean) {
+  set disableOptionCentering(value: BooleanInput) {
     this._disableOptionCentering = coerceBooleanProperty(value);
   }
   private _disableOptionCentering = this._defaultOptions?.disableOptionCentering ?? false;
@@ -429,7 +429,7 @@ export abstract class _MatSelectBase<C>
   get typeaheadDebounceInterval(): number {
     return this._typeaheadDebounceInterval;
   }
-  set typeaheadDebounceInterval(value: number) {
+  set typeaheadDebounceInterval(value: NumberInput) {
     this._typeaheadDebounceInterval = coerceNumberProperty(value);
   }
   private _typeaheadDebounceInterval: number;
@@ -1117,14 +1117,6 @@ export abstract class _MatSelectBase<C>
   get shouldLabelFloat(): boolean {
     return this._panelOpen || !this.empty || (this._focused && !!this._placeholder);
   }
-
-  static ngAcceptInputType_required: BooleanInput;
-  static ngAcceptInputType_multiple: BooleanInput;
-  static ngAcceptInputType_disableOptionCentering: BooleanInput;
-  static ngAcceptInputType_typeaheadDebounceInterval: NumberInput;
-  static ngAcceptInputType_disabled: BooleanInput;
-  static ngAcceptInputType_disableRipple: BooleanInput;
-  static ngAcceptInputType_tabIndex: NumberInput;
 }
 
 @Component({

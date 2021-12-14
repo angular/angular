@@ -359,7 +359,7 @@ abstract class MatDatepickerBase<C extends MatDatepickerControl<D>, S, D = Extra
     dateClass: MatCalendarCellClassFunction<D>;
     datepickerInput: C;
     get disabled(): boolean;
-    set disabled(value: boolean);
+    set disabled(value: BooleanInput);
     protected _forwardContentValues(instance: MatDatepickerContent<S, D>): void;
     // (undocumented)
     _getDateFilter(): DateFilterFn<D>;
@@ -368,20 +368,12 @@ abstract class MatDatepickerBase<C extends MatDatepickerControl<D>, S, D = Extra
     id: string;
     readonly monthSelected: EventEmitter<D>;
     // (undocumented)
-    static ngAcceptInputType_disabled: BooleanInput;
-    // (undocumented)
-    static ngAcceptInputType_opened: BooleanInput;
-    // (undocumented)
-    static ngAcceptInputType_restoreFocus: BooleanInput;
-    // (undocumented)
-    static ngAcceptInputType_touchUi: BooleanInput;
-    // (undocumented)
     ngOnChanges(changes: SimpleChanges): void;
     // (undocumented)
     ngOnDestroy(): void;
     open(): void;
     get opened(): boolean;
-    set opened(value: boolean);
+    set opened(value: BooleanInput);
     readonly openedStream: EventEmitter<void>;
     get panelClass(): string | string[];
     set panelClass(value: string | string[]);
@@ -389,7 +381,7 @@ abstract class MatDatepickerBase<C extends MatDatepickerControl<D>, S, D = Extra
     registerInput(input: C): MatDateSelectionModel<S, D>;
     removeActions(portal: TemplatePortal): void;
     get restoreFocus(): boolean;
-    set restoreFocus(value: boolean);
+    set restoreFocus(value: BooleanInput);
     select(date: D): void;
     _selectMonth(normalizedMonth: D): void;
     _selectYear(normalizedYear: D): void;
@@ -398,7 +390,7 @@ abstract class MatDatepickerBase<C extends MatDatepickerControl<D>, S, D = Extra
     startView: 'month' | 'year' | 'multi-year';
     readonly stateChanges: Subject<void>;
     get touchUi(): boolean;
-    set touchUi(value: boolean);
+    set touchUi(value: BooleanInput);
     readonly viewChanged: EventEmitter<MatCalendarView>;
     _viewChanged(view: MatCalendarView): void;
     xPosition: DatepickerDropdownPositionX;
@@ -573,12 +565,10 @@ export class MatDatepickerToggle<D> implements AfterContentInit, OnChanges, OnDe
     _customIcon: MatDatepickerToggleIcon;
     datepicker: MatDatepickerPanel<MatDatepickerControl<any>, D>;
     get disabled(): boolean;
-    set disabled(value: boolean);
+    set disabled(value: BooleanInput);
     disableRipple: boolean;
     // (undocumented)
     _intl: MatDatepickerIntl;
-    // (undocumented)
-    static ngAcceptInputType_disabled: BooleanInput;
     // (undocumented)
     ngAfterContentInit(): void;
     // (undocumented)
@@ -612,7 +602,7 @@ export class MatDateRangeInput<D> implements MatFormFieldControl<DateRange<D>>, 
     get dateFilter(): DateFilterFn<D>;
     set dateFilter(value: DateFilterFn<D>);
     get disabled(): boolean;
-    set disabled(value: boolean);
+    set disabled(value: BooleanInput);
     get empty(): boolean;
     // (undocumented)
     _endInput: MatEndDate<D>;
@@ -633,10 +623,6 @@ export class MatDateRangeInput<D> implements MatFormFieldControl<DateRange<D>>, 
     get min(): D | null;
     set min(value: D | null);
     // (undocumented)
-    static ngAcceptInputType_disabled: BooleanInput;
-    // (undocumented)
-    static ngAcceptInputType_required: BooleanInput;
-    // (undocumented)
     ngAfterContentInit(): void;
     ngControl: NgControl | null;
     // (undocumented)
@@ -649,7 +635,7 @@ export class MatDateRangeInput<D> implements MatFormFieldControl<DateRange<D>>, 
     get rangePicker(): MatDatepickerPanel<MatDatepickerControl<D>, DateRange<D>, D>;
     set rangePicker(rangePicker: MatDatepickerPanel<MatDatepickerControl<D>, DateRange<D>, D>);
     get required(): boolean;
-    set required(value: boolean);
+    set required(value: BooleanInput);
     separator: string;
     setDescribedByIds(ids: string[]): void;
     _shouldHidePlaceholders(): boolean;

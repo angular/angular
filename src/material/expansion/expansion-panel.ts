@@ -108,7 +108,7 @@ export class MatExpansionPanel
   get hideToggle(): boolean {
     return this._hideToggle || (this.accordion && this.accordion.hideToggle);
   }
-  set hideToggle(value: boolean) {
+  set hideToggle(value: BooleanInput) {
     this._hideToggle = coerceBooleanProperty(value);
   }
 
@@ -249,8 +249,6 @@ export class MatExpansionPanel
 
     return false;
   }
-
-  static ngAcceptInputType_hideToggle: BooleanInput;
 }
 
 /**

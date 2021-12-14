@@ -61,7 +61,7 @@ export class Example implements OnInit {
   get showLabel(): boolean {
     return this._showLabel;
   }
-  set showLabel(v: boolean) {
+  set showLabel(v: BooleanInput) {
     this._showLabel = coerceBooleanProperty(v);
   }
   _showLabel: boolean;
@@ -81,6 +81,4 @@ export class Example implements OnInit {
     this._viewContainerRef.createComponent(example.component, {injector: example.injector});
     this._changeDetectorRef.detectChanges();
   }
-
-  static ngAcceptInputType_showLabel: BooleanInput;
 }

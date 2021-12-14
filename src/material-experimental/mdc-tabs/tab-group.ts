@@ -65,7 +65,7 @@ export class MatTabGroup extends _MatTabGroupBase {
   get fitInkBarToContent(): boolean {
     return this._fitInkBarToContent;
   }
-  set fitInkBarToContent(v: boolean) {
+  set fitInkBarToContent(v: BooleanInput) {
     this._fitInkBarToContent = coerceBooleanProperty(v);
     this._changeDetectorRef.markForCheck();
   }
@@ -83,6 +83,4 @@ export class MatTabGroup extends _MatTabGroupBase {
         ? defaultConfig.fitInkBarToContent
         : false;
   }
-
-  static ngAcceptInputType_fitInkBarToContent: BooleanInput;
 }

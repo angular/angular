@@ -114,7 +114,7 @@ export class CdkDropList<T = any> implements OnDestroy {
   get disabled(): boolean {
     return this._disabled || (!!this._group && this._group.disabled);
   }
-  set disabled(value: boolean) {
+  set disabled(value: BooleanInput) {
     // Usually we sync the directive and ref state right before dragging starts, in order to have
     // a single point of failure and to avoid having to use setters for everything. `disabled` is
     // a special case, because it can prevent the `beforeStarted` event from firing, which can lock
@@ -125,7 +125,7 @@ export class CdkDropList<T = any> implements OnDestroy {
 
   /** Whether sorting within this drop list is disabled. */
   @Input('cdkDropListSortingDisabled')
-  sortingDisabled: boolean;
+  sortingDisabled: BooleanInput;
 
   /**
    * Function that is used to determine whether an item
@@ -140,11 +140,11 @@ export class CdkDropList<T = any> implements OnDestroy {
 
   /** Whether to auto-scroll the view when the user moves their pointer close to the edges. */
   @Input('cdkDropListAutoScrollDisabled')
-  autoScrollDisabled: boolean;
+  autoScrollDisabled: BooleanInput;
 
   /** Number of pixels to scroll for each frame when auto-scrolling an element. */
   @Input('cdkDropListAutoScrollStep')
-  autoScrollStep: number;
+  autoScrollStep: NumberInput;
 
   /** Emits when the user drops an item inside the container. */
   @Output('cdkDropListDropped')
@@ -394,9 +394,4 @@ export class CdkDropList<T = any> implements OnDestroy {
   private _syncItemsWithRef() {
     this._dropListRef.withItems(this.getSortedItems().map(item => item._dragRef));
   }
-
-  static ngAcceptInputType_disabled: BooleanInput;
-  static ngAcceptInputType_sortingDisabled: BooleanInput;
-  static ngAcceptInputType_autoScrollDisabled: BooleanInput;
-  static ngAcceptInputType_autoScrollStep: NumberInput;
 }

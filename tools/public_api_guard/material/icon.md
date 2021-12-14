@@ -68,9 +68,7 @@ export class MatIcon extends _MatIconBase implements OnInit, AfterViewChecked, C
     get fontSet(): string;
     set fontSet(value: string);
     get inline(): boolean;
-    set inline(inline: boolean);
-    // (undocumented)
-    static ngAcceptInputType_inline: BooleanInput;
+    set inline(inline: BooleanInput);
     // (undocumented)
     ngAfterViewChecked(): void;
     // (undocumented)

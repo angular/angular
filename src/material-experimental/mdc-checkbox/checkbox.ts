@@ -124,7 +124,7 @@ export class MatCheckbox
   get checked(): boolean {
     return this._checked;
   }
-  set checked(checked) {
+  set checked(checked: BooleanInput) {
     this._checked = coerceBooleanProperty(checked);
   }
   private _checked = false;
@@ -139,7 +139,7 @@ export class MatCheckbox
   get indeterminate(): boolean {
     return this._indeterminate;
   }
-  set indeterminate(indeterminate) {
+  set indeterminate(indeterminate: BooleanInput) {
     this._indeterminate = coerceBooleanProperty(indeterminate);
     this._syncIndeterminate(this._indeterminate);
   }
@@ -150,7 +150,7 @@ export class MatCheckbox
   get required(): boolean {
     return this._required;
   }
-  set required(required) {
+  set required(required: BooleanInput) {
     this._required = coerceBooleanProperty(required);
   }
   private _required = false;
@@ -160,7 +160,7 @@ export class MatCheckbox
   get disableRipple(): boolean {
     return this._disableRipple;
   }
-  set disableRipple(disableRipple: boolean) {
+  set disableRipple(disableRipple: BooleanInput) {
     this._disableRipple = coerceBooleanProperty(disableRipple);
   }
   private _disableRipple = false;
@@ -391,10 +391,4 @@ export class MatCheckbox
       nativeCheckbox.nativeElement.indeterminate = value;
     }
   }
-
-  static ngAcceptInputType_checked: BooleanInput;
-  static ngAcceptInputType_indeterminate: BooleanInput;
-  static ngAcceptInputType_disabled: BooleanInput;
-  static ngAcceptInputType_required: BooleanInput;
-  static ngAcceptInputType_disableRipple: BooleanInput;
 }

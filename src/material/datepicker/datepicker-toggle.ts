@@ -75,7 +75,7 @@ export class MatDatepickerToggle<D> implements AfterContentInit, OnChanges, OnDe
 
     return !!this._disabled;
   }
-  set disabled(value: boolean) {
+  set disabled(value: BooleanInput) {
     this._disabled = coerceBooleanProperty(value);
   }
   private _disabled: boolean;
@@ -137,6 +137,4 @@ export class MatDatepickerToggle<D> implements AfterContentInit, OnChanges, OnDe
       datepickerToggled,
     ).subscribe(() => this._changeDetectorRef.markForCheck());
   }
-
-  static ngAcceptInputType_disabled: BooleanInput;
 }

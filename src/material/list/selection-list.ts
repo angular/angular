@@ -171,10 +171,10 @@ export class MatListOption
 
   /** Whether the option is disabled. */
   @Input()
-  get disabled() {
+  get disabled(): boolean {
     return this._disabled || (this.selectionList && this.selectionList.disabled);
   }
-  set disabled(value: any) {
+  set disabled(value: BooleanInput) {
     const newValue = coerceBooleanProperty(value);
 
     if (newValue !== this._disabled) {
@@ -188,7 +188,7 @@ export class MatListOption
   get selected(): boolean {
     return this.selectionList.selectedOptions.isSelected(this);
   }
-  set selected(value: boolean) {
+  set selected(value: BooleanInput) {
     const isSelected = coerceBooleanProperty(value);
 
     if (isSelected !== this._selected) {
@@ -328,10 +328,6 @@ export class MatListOption
   _markForCheck() {
     this._changeDetector.markForCheck();
   }
-
-  static ngAcceptInputType_disabled: BooleanInput;
-  static ngAcceptInputType_selected: BooleanInput;
-  static ngAcceptInputType_disableRipple: BooleanInput;
 }
 
 /**
@@ -393,7 +389,7 @@ export class MatSelectionList
   get disabled(): boolean {
     return this._disabled;
   }
-  set disabled(value: boolean) {
+  set disabled(value: BooleanInput) {
     this._disabled = coerceBooleanProperty(value);
 
     // The `MatSelectionList` and `MatListOption` are using the `OnPush` change detection
@@ -409,7 +405,7 @@ export class MatSelectionList
   get multiple(): boolean {
     return this._multiple;
   }
-  set multiple(value: boolean) {
+  set multiple(value: BooleanInput) {
     const newValue = coerceBooleanProperty(value);
 
     if (newValue !== this._multiple) {
@@ -765,8 +761,4 @@ export class MatSelectionList
   private _updateTabIndex(): void {
     this._tabIndex = this.options.length === 0 ? -1 : 0;
   }
-
-  static ngAcceptInputType_disabled: BooleanInput;
-  static ngAcceptInputType_disableRipple: BooleanInput;
-  static ngAcceptInputType_multiple: BooleanInput;
 }

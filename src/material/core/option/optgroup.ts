@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BooleanInput} from '@angular/cdk/coercion';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -62,8 +61,6 @@ export class _MatOptgroupBase extends _MatOptgroupMixinBase implements CanDisabl
     super();
     this._inert = parent?.inertGroups ?? false;
   }
-
-  static ngAcceptInputType_disabled: BooleanInput;
 }
 
 /**

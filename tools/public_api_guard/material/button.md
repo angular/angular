@@ -6,7 +6,6 @@
 
 import { _AbstractConstructor } from '@angular/material/core';
 import { AfterViewInit } from '@angular/core';
-import { BooleanInput } from '@angular/cdk/coercion';
 import { CanColor } from '@angular/material/core';
 import { CanDisable } from '@angular/material/core';
 import { CanDisableRipple } from '@angular/material/core';
@@ -45,10 +44,6 @@ export class MatButton extends _MatButtonBase implements AfterViewInit, OnDestro
     // (undocumented)
     _isRippleDisabled(): boolean;
     readonly isRoundButton: boolean;
-    // (undocumented)
-    static ngAcceptInputType_disabled: BooleanInput;
-    // (undocumented)
-    static ngAcceptInputType_disableRipple: BooleanInput;
     // (undocumented)
     ngAfterViewInit(): void;
     // (undocumented)

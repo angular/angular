@@ -100,14 +100,7 @@
       // need a dedicated token.
       ["Directionality", "DateAdapter"]
     ],
-    "coercion-types": [true,
-      ["coerceBooleanProperty", "coerceCssPixelValue", "coerceNumberProperty"],
-      {
-        "CanDisable": ["disabled"],
-        "CanDisableRipple": ["disableRipple"],
-        "HasTabIndex": ["tabIndex"]
-      }
-    ],
+    "no-coercion-members": true,
     "no-host-decorator-in-concrete": [
       true,
       "HostBinding",

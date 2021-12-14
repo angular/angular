@@ -185,7 +185,7 @@ export class MatChipList
   get multiple(): boolean {
     return this._multiple;
   }
-  set multiple(value: boolean) {
+  set multiple(value: BooleanInput) {
     this._multiple = coerceBooleanProperty(value);
     this._syncChipsState();
   }
@@ -239,7 +239,7 @@ export class MatChipList
   get required(): boolean {
     return this._required ?? this.ngControl?.control?.hasValidator(Validators.required) ?? false;
   }
-  set required(value: boolean) {
+  set required(value: BooleanInput) {
     this._required = coerceBooleanProperty(value);
     this.stateChanges.next();
   }
@@ -288,7 +288,7 @@ export class MatChipList
   get disabled(): boolean {
     return this.ngControl ? !!this.ngControl.disabled : this._disabled;
   }
-  set disabled(value: boolean) {
+  set disabled(value: BooleanInput) {
     this._disabled = coerceBooleanProperty(value);
     this._syncChipsState();
   }
@@ -305,7 +305,7 @@ export class MatChipList
   get selectable(): boolean {
     return this._selectable;
   }
-  set selectable(value: boolean) {
+  set selectable(value: BooleanInput) {
     this._selectable = coerceBooleanProperty(value);
 
     if (this.chips) {
@@ -821,9 +821,4 @@ export class MatChipList
       });
     }
   }
-
-  static ngAcceptInputType_multiple: BooleanInput;
-  static ngAcceptInputType_required: BooleanInput;
-  static ngAcceptInputType_disabled: BooleanInput;
-  static ngAcceptInputType_selectable: BooleanInput;
 }

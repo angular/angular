@@ -26,7 +26,7 @@ export class CdkTreeNodeToggle<T, K = T> {
   get recursive(): boolean {
     return this._recursive;
   }
-  set recursive(value: boolean) {
+  set recursive(value: BooleanInput) {
     this._recursive = coerceBooleanProperty(value);
   }
   protected _recursive = false;
@@ -40,6 +40,4 @@ export class CdkTreeNodeToggle<T, K = T> {
 
     event.stopPropagation();
   }
-
-  static ngAcceptInputType_recursive: BooleanInput;
 }

@@ -84,7 +84,7 @@ export abstract class _MatTooltipBase<T extends _TooltipComponentBase> implement
     // (undocumented)
     protected _dir: Directionality;
     get disabled(): boolean;
-    set disabled(value: boolean);
+    set disabled(value: BooleanInput);
     _getOrigin(): {
         main: OriginConnectionPosition;
         fallback: OriginConnectionPosition;
@@ -94,16 +94,11 @@ export abstract class _MatTooltipBase<T extends _TooltipComponentBase> implement
         fallback: OverlayConnectionPosition;
     };
     hide(delay?: number): void;
-    hideDelay: number;
+    get hideDelay(): number;
+    set hideDelay(value: NumberInput);
     _isTooltipVisible(): boolean;
     get message(): string;
     set message(value: string);
-    // (undocumented)
-    static ngAcceptInputType_disabled: BooleanInput;
-    // (undocumented)
-    static ngAcceptInputType_hideDelay: NumberInput;
-    // (undocumented)
-    static ngAcceptInputType_showDelay: NumberInput;
     // (undocumented)
     ngAfterViewInit(): void;
     ngOnDestroy(): void;
@@ -112,7 +107,8 @@ export abstract class _MatTooltipBase<T extends _TooltipComponentBase> implement
     get position(): TooltipPosition;
     set position(value: TooltipPosition);
     show(delay?: number): void;
-    showDelay: number;
+    get showDelay(): number;
+    set showDelay(value: NumberInput);
     toggle(): void;
     get tooltipClass(): string | string[] | Set<string> | {
         [key: string]: any;

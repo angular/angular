@@ -26,7 +26,6 @@ import * as i6 from '@angular/material/core';
 import * as i7 from '@angular/cdk/accordion';
 import * as i8 from '@angular/cdk/portal';
 import { InjectionToken } from '@angular/core';
-import { NumberInput } from '@angular/cdk/coercion';
 import { OnChanges } from '@angular/core';
 import { OnDestroy } from '@angular/core';
 import { QueryList } from '@angular/core';
@@ -54,9 +53,7 @@ export class MatAccordion extends CdkAccordion implements MatAccordionBase, Afte
     _handleHeaderKeydown(event: KeyboardEvent): void;
     _headers: QueryList<MatExpansionPanelHeader>;
     get hideToggle(): boolean;
-    set hideToggle(show: boolean);
-    // (undocumented)
-    static ngAcceptInputType_hideToggle: BooleanInput;
+    set hideToggle(show: BooleanInput);
     // (undocumented)
     ngAfterContentInit(): void;
     // (undocumented)
@@ -115,11 +112,9 @@ export class MatExpansionPanel extends CdkAccordionItem implements AfterContentI
     _hasSpacing(): boolean;
     _headerId: string;
     get hideToggle(): boolean;
-    set hideToggle(value: boolean);
+    set hideToggle(value: BooleanInput);
     readonly _inputChanges: Subject<SimpleChanges>;
     _lazyContent: MatExpansionPanelContent;
-    // (undocumented)
-    static ngAcceptInputType_hideToggle: BooleanInput;
     // (undocumented)
     ngAfterContentInit(): void;
     // (undocumented)
@@ -186,8 +181,6 @@ export class MatExpansionPanelHeader extends _MatExpansionPanelHeaderMixinBase i
     _getTogglePosition(): MatAccordionTogglePosition;
     _isExpanded(): boolean;
     _keydown(event: KeyboardEvent): void;
-    // (undocumented)
-    static ngAcceptInputType_tabIndex: NumberInput;
     // (undocumented)
     ngAfterViewInit(): void;
     // (undocumented)

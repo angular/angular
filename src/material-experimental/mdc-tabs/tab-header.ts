@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BooleanInput} from '@angular/cdk/coercion';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -75,6 +74,4 @@ export class MatTabHeader extends _MatTabHeaderBase implements AfterContentInit 
     this._inkBar = new MatInkBar(this._items);
     super.ngAfterContentInit();
   }
-
-  static ngAcceptInputType_disableRipple: BooleanInput;
 }

@@ -48,7 +48,7 @@ export class CdkDragHandle implements OnDestroy {
   get disabled(): boolean {
     return this._disabled;
   }
-  set disabled(value: boolean) {
+  set disabled(value: BooleanInput) {
     this._disabled = coerceBooleanProperty(value);
     this._stateChanges.next(this);
   }
@@ -68,6 +68,4 @@ export class CdkDragHandle implements OnDestroy {
   ngOnDestroy() {
     this._stateChanges.complete();
   }
-
-  static ngAcceptInputType_disabled: BooleanInput;
 }

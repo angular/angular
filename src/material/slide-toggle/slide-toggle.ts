@@ -7,7 +7,7 @@
  */
 
 import {FocusMonitor, FocusOrigin} from '@angular/cdk/a11y';
-import {BooleanInput, coerceBooleanProperty, NumberInput} from '@angular/cdk/coercion';
+import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
 import {
   AfterContentInit,
   Attribute,
@@ -149,7 +149,7 @@ export class MatSlideToggle
   get required(): boolean {
     return this._required;
   }
-  set required(value) {
+  set required(value: BooleanInput) {
     this._required = coerceBooleanProperty(value);
   }
 
@@ -158,7 +158,7 @@ export class MatSlideToggle
   get checked(): boolean {
     return this._checked;
   }
-  set checked(value) {
+  set checked(value: BooleanInput) {
     this._checked = coerceBooleanProperty(value);
     this._changeDetectorRef.markForCheck();
   }
@@ -302,10 +302,4 @@ export class MatSlideToggle
     // we only trigger an explicit change detection for the slide-toggle view and its children.
     this._changeDetectorRef.detectChanges();
   }
-
-  static ngAcceptInputType_required: BooleanInput;
-  static ngAcceptInputType_checked: BooleanInput;
-  static ngAcceptInputType_disabled: BooleanInput;
-  static ngAcceptInputType_disableRipple: BooleanInput;
-  static ngAcceptInputType_tabIndex: NumberInput;
 }

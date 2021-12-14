@@ -29,34 +29,26 @@ export class CdkStep implements OnChanges {
     ariaLabel: string;
     ariaLabelledby: string;
     get completed(): boolean;
-    set completed(value: boolean);
+    set completed(value: BooleanInput);
     // (undocumented)
     _completedOverride: boolean | null;
     content: TemplateRef<any>;
     // (undocumented)
     _displayDefaultIndicatorType: boolean;
     get editable(): boolean;
-    set editable(value: boolean);
+    set editable(value: BooleanInput);
     errorMessage: string;
     get hasError(): boolean;
-    set hasError(value: boolean);
+    set hasError(value: BooleanInput);
     interacted: boolean;
     readonly interactedStream: EventEmitter<CdkStep>;
     label: string;
     // (undocumented)
     _markAsInteracted(): void;
     // (undocumented)
-    static ngAcceptInputType_completed: BooleanInput;
-    // (undocumented)
-    static ngAcceptInputType_editable: BooleanInput;
-    // (undocumented)
-    static ngAcceptInputType_hasError: BooleanInput;
-    // (undocumented)
-    static ngAcceptInputType_optional: BooleanInput;
-    // (undocumented)
     ngOnChanges(): void;
     get optional(): boolean;
-    set optional(value: boolean);
+    set optional(value: BooleanInput);
     reset(): void;
     select(): void;
     _showError(): boolean;
@@ -106,20 +98,8 @@ export class CdkStepper implements AfterContentInit, AfterViewInit, OnDestroy {
     _getStepLabelId(i: number): string;
     _groupId: number;
     get linear(): boolean;
-    set linear(value: boolean);
+    set linear(value: BooleanInput);
     next(): void;
-    // (undocumented)
-    static ngAcceptInputType_completed: BooleanInput;
-    // (undocumented)
-    static ngAcceptInputType_editable: BooleanInput;
-    // (undocumented)
-    static ngAcceptInputType_hasError: BooleanInput;
-    // (undocumented)
-    static ngAcceptInputType_linear: BooleanInput;
-    // (undocumented)
-    static ngAcceptInputType_optional: BooleanInput;
-    // (undocumented)
-    static ngAcceptInputType_selectedIndex: NumberInput;
     // (undocumented)
     ngAfterContentInit(): void;
     // (undocumented)
@@ -137,7 +117,7 @@ export class CdkStepper implements AfterContentInit, AfterViewInit, OnDestroy {
     get selected(): CdkStep | undefined;
     set selected(step: CdkStep | undefined);
     get selectedIndex(): number;
-    set selectedIndex(index: number);
+    set selectedIndex(index: NumberInput);
     readonly selectionChange: EventEmitter<StepperSelectionEvent>;
     _stateChanged(): void;
     _stepHeader: QueryList<CdkStepHeader>;

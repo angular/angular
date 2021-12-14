@@ -99,7 +99,7 @@ export class CdkVirtualScrollViewport extends CdkScrollable implements OnInit, O
   get appendOnly(): boolean {
     return this._appendOnly;
   }
-  set appendOnly(value: boolean) {
+  set appendOnly(value: BooleanInput) {
     this._appendOnly = coerceBooleanProperty(value);
   }
   private _appendOnly = false;
@@ -461,6 +461,4 @@ export class CdkVirtualScrollViewport extends CdkScrollable implements OnInit, O
     this._totalContentWidth =
       this.orientation === 'horizontal' ? `${this._totalContentSize}px` : '';
   }
-
-  static ngAcceptInputType_appendOnly: BooleanInput;
 }

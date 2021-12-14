@@ -185,46 +185,46 @@ export class CdkConnectedOverlay implements OnDestroy, OnChanges {
 
   /** Whether or not the overlay should attach a backdrop. */
   @Input('cdkConnectedOverlayHasBackdrop')
-  get hasBackdrop() {
+  get hasBackdrop(): boolean {
     return this._hasBackdrop;
   }
-  set hasBackdrop(value: any) {
+  set hasBackdrop(value: BooleanInput) {
     this._hasBackdrop = coerceBooleanProperty(value);
   }
 
   /** Whether or not the overlay should be locked when scrolling. */
   @Input('cdkConnectedOverlayLockPosition')
-  get lockPosition() {
+  get lockPosition(): boolean {
     return this._lockPosition;
   }
-  set lockPosition(value: any) {
+  set lockPosition(value: BooleanInput) {
     this._lockPosition = coerceBooleanProperty(value);
   }
 
   /** Whether the overlay's width and height can be constrained to fit within the viewport. */
   @Input('cdkConnectedOverlayFlexibleDimensions')
-  get flexibleDimensions() {
+  get flexibleDimensions(): boolean {
     return this._flexibleDimensions;
   }
-  set flexibleDimensions(value: boolean) {
+  set flexibleDimensions(value: BooleanInput) {
     this._flexibleDimensions = coerceBooleanProperty(value);
   }
 
   /** Whether the overlay can grow after the initial open when flexible positioning is turned on. */
   @Input('cdkConnectedOverlayGrowAfterOpen')
-  get growAfterOpen() {
+  get growAfterOpen(): boolean {
     return this._growAfterOpen;
   }
-  set growAfterOpen(value: boolean) {
+  set growAfterOpen(value: BooleanInput) {
     this._growAfterOpen = coerceBooleanProperty(value);
   }
 
   /** Whether the overlay can be pushed on-screen if none of the provided positions fit. */
   @Input('cdkConnectedOverlayPush')
-  get push() {
+  get push(): boolean {
     return this._push;
   }
-  set push(value: boolean) {
+  set push(value: BooleanInput) {
     this._push = coerceBooleanProperty(value);
   }
 
@@ -449,12 +449,6 @@ export class CdkConnectedOverlay implements OnDestroy, OnChanges {
     this._backdropSubscription.unsubscribe();
     this._positionSubscription.unsubscribe();
   }
-
-  static ngAcceptInputType_hasBackdrop: BooleanInput;
-  static ngAcceptInputType_lockPosition: BooleanInput;
-  static ngAcceptInputType_flexibleDimensions: BooleanInput;
-  static ngAcceptInputType_growAfterOpen: BooleanInput;
-  static ngAcceptInputType_push: BooleanInput;
 }
 
 /** @docs-private */

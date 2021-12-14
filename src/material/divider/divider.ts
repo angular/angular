@@ -30,7 +30,7 @@ export class MatDivider {
   get vertical(): boolean {
     return this._vertical;
   }
-  set vertical(value: boolean) {
+  set vertical(value: BooleanInput) {
     this._vertical = coerceBooleanProperty(value);
   }
   private _vertical: boolean = false;
@@ -40,11 +40,8 @@ export class MatDivider {
   get inset(): boolean {
     return this._inset;
   }
-  set inset(value: boolean) {
+  set inset(value: BooleanInput) {
     this._inset = coerceBooleanProperty(value);
   }
   private _inset: boolean = false;
-
-  static ngAcceptInputType_vertical: BooleanInput;
-  static ngAcceptInputType_inset: BooleanInput;
 }

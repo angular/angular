@@ -37,7 +37,7 @@ export class MatTabLabelWrapper
   get fitInkBarToContent(): boolean {
     return this._foundation.getFitToContent();
   }
-  set fitInkBarToContent(v: boolean) {
+  set fitInkBarToContent(v: BooleanInput) {
     this._foundation.setFitToContent(coerceBooleanProperty(v));
   }
 
@@ -54,6 +54,4 @@ export class MatTabLabelWrapper
   ngOnDestroy() {
     this._foundation.destroy();
   }
-
-  static ngAcceptInputType_fitInkBarToContent: BooleanInput;
 }

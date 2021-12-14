@@ -58,12 +58,8 @@ export class MatSort extends _MatSortBase implements CanDisable, HasInitialized,
     get direction(): SortDirection;
     set direction(direction: SortDirection);
     get disableClear(): boolean;
-    set disableClear(v: boolean);
+    set disableClear(v: BooleanInput);
     getNextSortDirection(sortable: MatSortable): SortDirection;
-    // (undocumented)
-    static ngAcceptInputType_disableClear: BooleanInput;
-    // (undocumented)
-    static ngAcceptInputType_disabled: BooleanInput;
     // (undocumented)
     ngOnChanges(): void;
     // (undocumented)
@@ -114,7 +110,7 @@ export class MatSortHeader extends _MatSortHeaderBase implements CanDisable, Mat
     // (undocumented)
     _columnDef: MatSortHeaderColumnDef;
     get disableClear(): boolean;
-    set disableClear(v: boolean);
+    set disableClear(v: BooleanInput);
     _disableViewStateAnimation: boolean;
     _getAriaSortAttribute(): "none" | "ascending" | "descending";
     _getArrowDirectionState(): string;
@@ -129,10 +125,6 @@ export class MatSortHeader extends _MatSortHeaderBase implements CanDisable, Mat
     // (undocumented)
     _isDisabled(): boolean;
     _isSorted(): boolean;
-    // (undocumented)
-    static ngAcceptInputType_disableClear: BooleanInput;
-    // (undocumented)
-    static ngAcceptInputType_disabled: BooleanInput;
     // (undocumented)
     ngAfterViewInit(): void;
     // (undocumented)

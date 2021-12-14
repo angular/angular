@@ -123,7 +123,7 @@ export class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDestroy {
   get disabled(): boolean {
     return this._disabled || (this.dropContainer && this.dropContainer.disabled);
   }
-  set disabled(value: boolean) {
+  set disabled(value: BooleanInput) {
     this._disabled = coerceBooleanProperty(value);
     this._dragRef.disabled = this._disabled;
   }
@@ -574,6 +574,4 @@ export class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDestroy {
         handleInstance.disabled ? dragRef.disableHandle(handle) : dragRef.enableHandle(handle);
       });
   }
-
-  static ngAcceptInputType_disabled: BooleanInput;
 }

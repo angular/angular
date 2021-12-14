@@ -54,7 +54,7 @@ export class CdkSelection<T> implements OnInit, AfterContentChecked, CollectionV
   get multiple(): boolean {
     return this._multiple;
   }
-  set multiple(multiple: boolean) {
+  set multiple(multiple: BooleanInput) {
     this._multiple = coerceBooleanProperty(multiple);
   }
   protected _multiple: boolean;
@@ -217,8 +217,6 @@ export class CdkSelection<T> implements OnInit, AfterContentChecked, CollectionV
   }
 
   selectAllState: SelectAllState = 'none';
-
-  static ngAcceptInputType_multiple: BooleanInput;
 }
 
 type SelectAllState = 'all' | 'none' | 'partial';

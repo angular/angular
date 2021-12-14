@@ -27,11 +27,9 @@ export class MatGridAvatarCssMatStyler {
 export class MatGridList implements MatGridListBase, OnInit, AfterContentChecked, TileStyleTarget {
     constructor(_element: ElementRef<HTMLElement>, _dir: Directionality);
     get cols(): number;
-    set cols(value: number);
+    set cols(value: NumberInput);
     get gutterSize(): string;
     set gutterSize(value: string);
-    // (undocumented)
-    static ngAcceptInputType_cols: NumberInput;
     ngAfterContentChecked(): void;
     // (undocumented)
     ngOnInit(): void;
@@ -59,17 +57,13 @@ export class MatGridListModule {
 export class MatGridTile {
     constructor(_element: ElementRef<HTMLElement>, _gridList?: MatGridListBase | undefined);
     get colspan(): number;
-    set colspan(value: number);
+    set colspan(value: NumberInput);
     // (undocumented)
     _colspan: number;
     // (undocumented)
     _gridList?: MatGridListBase | undefined;
-    // (undocumented)
-    static ngAcceptInputType_colspan: NumberInput;
-    // (undocumented)
-    static ngAcceptInputType_rowspan: NumberInput;
     get rowspan(): number;
-    set rowspan(value: number);
+    set rowspan(value: NumberInput);
     // (undocumented)
     _rowspan: number;
     _setStyle(property: string, value: any): void;

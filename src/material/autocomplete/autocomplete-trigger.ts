@@ -181,7 +181,7 @@ export abstract class _MatAutocompleteTriggerBase
   get autocompleteDisabled(): boolean {
     return this._autocompleteDisabled;
   }
-  set autocompleteDisabled(value: boolean) {
+  set autocompleteDisabled(value: BooleanInput) {
     this._autocompleteDisabled = coerceBooleanProperty(value);
   }
 
@@ -768,8 +768,6 @@ export abstract class _MatAutocompleteTriggerBase
       }
     }
   }
-
-  static ngAcceptInputType_autocompleteDisabled: BooleanInput;
 }
 
 @Directive({

@@ -23,9 +23,7 @@ export class CdkAccordion implements OnDestroy, OnChanges {
     closeAll(): void;
     readonly id: string;
     get multi(): boolean;
-    set multi(multi: boolean);
-    // (undocumented)
-    static ngAcceptInputType_multi: BooleanInput;
+    set multi(multi: BooleanInput);
     // (undocumented)
     ngOnChanges(changes: SimpleChanges): void;
     // (undocumented)
@@ -48,17 +46,13 @@ export class CdkAccordionItem implements OnDestroy {
     readonly closed: EventEmitter<void>;
     readonly destroyed: EventEmitter<void>;
     get disabled(): boolean;
-    set disabled(disabled: boolean);
+    set disabled(disabled: BooleanInput);
     get expanded(): boolean;
-    set expanded(expanded: boolean);
+    set expanded(expanded: BooleanInput);
     readonly expandedChange: EventEmitter<boolean>;
     // (undocumented)
     protected _expansionDispatcher: UniqueSelectionDispatcher;
     readonly id: string;
-    // (undocumented)
-    static ngAcceptInputType_disabled: BooleanInput;
-    // (undocumented)
-    static ngAcceptInputType_expanded: BooleanInput;
     ngOnDestroy(): void;
     open(): void;
     readonly opened: EventEmitter<void>;

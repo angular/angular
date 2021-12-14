@@ -73,7 +73,7 @@ export class MatTabNav extends _MatTabNavBase implements AfterContentInit {
   get fitInkBarToContent(): boolean {
     return this._fitInkBarToContent.value;
   }
-  set fitInkBarToContent(v: boolean) {
+  set fitInkBarToContent(v: BooleanInput) {
     this._fitInkBarToContent.next(coerceBooleanProperty(v));
     this._changeDetectorRef.markForCheck();
   }
@@ -112,9 +112,6 @@ export class MatTabNav extends _MatTabNavBase implements AfterContentInit {
     this._inkBar = new MatInkBar(this._items);
     super.ngAfterContentInit();
   }
-
-  static ngAcceptInputType_fitInkBarToContent: BooleanInput;
-  static ngAcceptInputType_disableRipple: BooleanInput;
 }
 
 /**

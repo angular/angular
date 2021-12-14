@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BooleanInput} from '@angular/cdk/coercion';
 import {Directive, ElementRef} from '@angular/core';
 import {CanDisable, mixinDisabled} from '@angular/material/core';
 
@@ -43,6 +42,4 @@ export class MatTabLabelWrapper extends _MatTabLabelWrapperBase implements CanDi
   getOffsetWidth(): number {
     return this.elementRef.nativeElement.offsetWidth;
   }
-
-  static ngAcceptInputType_disabled: BooleanInput;
 }

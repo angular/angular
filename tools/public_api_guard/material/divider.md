@@ -11,13 +11,9 @@ import * as i2 from '@angular/material/core';
 // @public (undocumented)
 export class MatDivider {
     get inset(): boolean;
-    set inset(value: boolean);
-    // (undocumented)
-    static ngAcceptInputType_inset: BooleanInput;
-    // (undocumented)
-    static ngAcceptInputType_vertical: BooleanInput;
+    set inset(value: BooleanInput);
     get vertical(): boolean;
-    set vertical(value: boolean);
+    set vertical(value: BooleanInput);
     // (undocumented)
     static ɵcmp: i0.ɵɵComponentDeclaration<MatDivider, "mat-divider", never, { "vertical": "vertical"; "inset": "inset"; }, {}, never, never>;
     // (undocumented)

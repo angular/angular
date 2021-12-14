@@ -143,7 +143,7 @@ export class MatIcon extends _MatIconBase implements OnInit, AfterViewChecked, C
   get inline(): boolean {
     return this._inline;
   }
-  set inline(inline: boolean) {
+  set inline(inline: BooleanInput) {
     this._inline = coerceBooleanProperty(inline);
   }
   private _inline: boolean = false;
@@ -448,6 +448,4 @@ export class MatIcon extends _MatIconBase implements OnInit, AfterViewChecked, C
         );
     }
   }
-
-  static ngAcceptInputType_inline: BooleanInput;
 }

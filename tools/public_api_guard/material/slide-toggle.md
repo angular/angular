@@ -23,7 +23,6 @@ import * as i0 from '@angular/core';
 import * as i3 from '@angular/material/core';
 import * as i4 from '@angular/cdk/observers';
 import { InjectionToken } from '@angular/core';
-import { NumberInput } from '@angular/cdk/coercion';
 import { OnDestroy } from '@angular/core';
 import { Provider } from '@angular/core';
 import { ThemePalette } from '@angular/material/core';
@@ -45,7 +44,7 @@ export class MatSlideToggle extends _MatSlideToggleBase implements OnDestroy, Af
     ariaLabelledby: string | null;
     readonly change: EventEmitter<MatSlideToggleChange>;
     get checked(): boolean;
-    set checked(value: boolean);
+    set checked(value: BooleanInput);
     // (undocumented)
     defaults: MatSlideToggleDefaultOptions;
     focus(options?: FocusOptions, origin?: FocusOrigin): void;
@@ -54,16 +53,6 @@ export class MatSlideToggle extends _MatSlideToggleBase implements OnDestroy, Af
     get inputId(): string;
     labelPosition: 'before' | 'after';
     name: string | null;
-    // (undocumented)
-    static ngAcceptInputType_checked: BooleanInput;
-    // (undocumented)
-    static ngAcceptInputType_disabled: BooleanInput;
-    // (undocumented)
-    static ngAcceptInputType_disableRipple: BooleanInput;
-    // (undocumented)
-    static ngAcceptInputType_required: BooleanInput;
-    // (undocumented)
-    static ngAcceptInputType_tabIndex: NumberInput;
     // (undocumented)
     ngAfterContentInit(): void;
     // (undocumented)
@@ -75,7 +64,7 @@ export class MatSlideToggle extends _MatSlideToggleBase implements OnDestroy, Af
     registerOnChange(fn: any): void;
     registerOnTouched(fn: any): void;
     get required(): boolean;
-    set required(value: boolean);
+    set required(value: BooleanInput);
     setDisabledState(isDisabled: boolean): void;
     _thumbBarEl: ElementRef;
     _thumbEl: ElementRef;

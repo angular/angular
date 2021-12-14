@@ -32,12 +32,10 @@ export class CdkRowSelection<T> {
   get index(): number | undefined {
     return this._index;
   }
-  set index(index: number | undefined) {
+  set index(index: NumberInput) {
     this._index = coerceNumberProperty(index);
   }
   protected _index?: number;
 
   constructor(readonly _selection: CdkSelection<T>) {}
-
-  static ngAcceptInputType_index: NumberInput;
 }

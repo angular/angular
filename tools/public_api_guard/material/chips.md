@@ -30,7 +30,6 @@ import { MatFormFieldControl } from '@angular/material/form-field';
 import { NgControl } from '@angular/forms';
 import { NgForm } from '@angular/forms';
 import { NgZone } from '@angular/core';
-import { NumberInput } from '@angular/cdk/coercion';
 import { Observable } from 'rxjs';
 import { OnChanges } from '@angular/core';
 import { OnDestroy } from '@angular/core';
@@ -71,7 +70,7 @@ export class MatChip extends _MatChipMixinBase implements FocusableOption, OnDes
     deselect(): void;
     readonly destroyed: EventEmitter<MatChipEvent>;
     get disabled(): boolean;
-    set disabled(value: boolean);
+    set disabled(value: BooleanInput);
     // (undocumented)
     protected _disabled: boolean;
     focus(): void;
@@ -79,23 +78,11 @@ export class MatChip extends _MatChipMixinBase implements FocusableOption, OnDes
     _handleKeydown(event: KeyboardEvent): void;
     _hasFocus: boolean;
     // (undocumented)
-    static ngAcceptInputType_disabled: BooleanInput;
-    // (undocumented)
-    static ngAcceptInputType_disableRipple: BooleanInput;
-    // (undocumented)
-    static ngAcceptInputType_removable: BooleanInput;
-    // (undocumented)
-    static ngAcceptInputType_selectable: BooleanInput;
-    // (undocumented)
-    static ngAcceptInputType_selected: BooleanInput;
-    // (undocumented)
-    static ngAcceptInputType_tabIndex: NumberInput;
-    // (undocumented)
     ngOnDestroy(): void;
     readonly _onBlur: Subject<MatChipEvent>;
     readonly _onFocus: Subject<MatChipEvent>;
     get removable(): boolean;
-    set removable(value: boolean);
+    set removable(value: BooleanInput);
     // (undocumented)
     protected _removable: boolean;
     remove(): void;
@@ -105,11 +92,11 @@ export class MatChip extends _MatChipMixinBase implements FocusableOption, OnDes
     get rippleDisabled(): boolean;
     select(): void;
     get selectable(): boolean;
-    set selectable(value: boolean);
+    set selectable(value: BooleanInput);
     // (undocumented)
     protected _selectable: boolean;
     get selected(): boolean;
-    set selected(value: boolean);
+    set selected(value: BooleanInput);
     // (undocumented)
     protected _selected: boolean;
     readonly selectionChange: EventEmitter<MatChipSelectionChange>;
@@ -143,7 +130,7 @@ export interface MatChipEvent {
 export class MatChipInput implements MatChipTextControl, OnChanges, OnDestroy, AfterContentInit {
     constructor(_elementRef: ElementRef<HTMLInputElement>, _defaultOptions: MatChipsDefaultOptions);
     get addOnBlur(): boolean;
-    set addOnBlur(value: boolean);
+    set addOnBlur(value: BooleanInput);
     // (undocumented)
     _addOnBlur: boolean;
     _blur(): void;
@@ -153,7 +140,7 @@ export class MatChipInput implements MatChipTextControl, OnChanges, OnDestroy, A
     _chipList: MatChipList;
     clear(): void;
     get disabled(): boolean;
-    set disabled(value: boolean);
+    set disabled(value: BooleanInput);
     // (undocumented)
     protected _elementRef: ElementRef<HTMLInputElement>;
     _emitChipEnd(event?: KeyboardEvent): void;
@@ -166,10 +153,6 @@ export class MatChipInput implements MatChipTextControl, OnChanges, OnDestroy, A
     readonly inputElement: HTMLInputElement;
     _keydown(event?: KeyboardEvent): void;
     _keyup(event: KeyboardEvent): void;
-    // (undocumented)
-    static ngAcceptInputType_addOnBlur: BooleanInput;
-    // (undocumented)
-    static ngAcceptInputType_disabled: BooleanInput;
     // (undocumented)
     ngAfterContentInit(): void;
     // (undocumented)
@@ -212,7 +195,7 @@ export class MatChipList extends _MatChipListBase implements MatFormFieldControl
     set compareWith(fn: (o1: any, o2: any) => boolean);
     readonly controlType: string;
     get disabled(): boolean;
-    set disabled(value: boolean);
+    set disabled(value: BooleanInput);
     // (undocumented)
     protected _disabled: boolean;
     // (undocumented)
@@ -227,15 +210,7 @@ export class MatChipList extends _MatChipListBase implements MatFormFieldControl
     _keyManager: FocusKeyManager<MatChip>;
     _markAsTouched(): void;
     get multiple(): boolean;
-    set multiple(value: boolean);
-    // (undocumented)
-    static ngAcceptInputType_disabled: BooleanInput;
-    // (undocumented)
-    static ngAcceptInputType_multiple: BooleanInput;
-    // (undocumented)
-    static ngAcceptInputType_required: BooleanInput;
-    // (undocumented)
-    static ngAcceptInputType_selectable: BooleanInput;
+    set multiple(value: BooleanInput);
     // (undocumented)
     ngAfterContentInit(): void;
     // (undocumented)
@@ -257,12 +232,12 @@ export class MatChipList extends _MatChipListBase implements MatFormFieldControl
     // (undocumented)
     registerOnTouched(fn: () => void): void;
     get required(): boolean;
-    set required(value: boolean);
+    set required(value: BooleanInput);
     // (undocumented)
     protected _required: boolean | undefined;
     get role(): string | null;
     get selectable(): boolean;
-    set selectable(value: boolean);
+    set selectable(value: BooleanInput);
     // (undocumented)
     protected _selectable: boolean;
     get selected(): MatChip[] | MatChip;

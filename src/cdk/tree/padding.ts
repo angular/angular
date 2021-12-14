@@ -38,7 +38,7 @@ export class CdkTreeNodePadding<T, K = T> implements OnDestroy {
   get level(): number {
     return this._level;
   }
-  set level(value: number) {
+  set level(value: NumberInput) {
     this._setLevelInput(value);
   }
   _level: number;
@@ -107,7 +107,7 @@ export class CdkTreeNodePadding<T, K = T> implements OnDestroy {
    * TS 4.0 doesn't allow properties to override accessors or vice-versa.
    * @docs-private
    */
-  protected _setLevelInput(value: number) {
+  protected _setLevelInput(value: NumberInput) {
     // Set to null as the fallback value so that _setPadding can fall back to the node level if the
     // consumer set the directive as `cdkTreeNodePadding=""`. We still want to take this value if
     // they set 0 explicitly.
@@ -135,6 +135,4 @@ export class CdkTreeNodePadding<T, K = T> implements OnDestroy {
     this._indent = coerceNumberProperty(value);
     this._setPadding();
   }
-
-  static ngAcceptInputType_level: NumberInput;
 }

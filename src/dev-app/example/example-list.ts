@@ -65,12 +65,10 @@ export class ExampleList {
   get expandAll(): boolean {
     return this._expandAll;
   }
-  set expandAll(v: boolean) {
+  set expandAll(v: BooleanInput) {
     this._expandAll = coerceBooleanProperty(v);
   }
   _expandAll: boolean;
 
   exampleComponents = EXAMPLE_COMPONENTS;
-
-  static ngAcceptInputType_expandAll: BooleanInput;
 }

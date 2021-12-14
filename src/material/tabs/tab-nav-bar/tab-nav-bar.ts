@@ -7,7 +7,7 @@
  */
 import {FocusableOption, FocusMonitor} from '@angular/cdk/a11y';
 import {Directionality} from '@angular/cdk/bidi';
-import {BooleanInput, coerceBooleanProperty, NumberInput} from '@angular/cdk/coercion';
+import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
 import {Platform} from '@angular/cdk/platform';
 import {ViewportRuler} from '@angular/cdk/scrolling';
 import {
@@ -81,10 +81,10 @@ export abstract class _MatTabNavBase
 
   /** Whether the ripple effect is disabled or not. */
   @Input()
-  get disableRipple() {
+  get disableRipple(): boolean {
     return this._disableRipple;
   }
-  set disableRipple(value: any) {
+  set disableRipple(value: BooleanInput) {
     this._disableRipple = coerceBooleanProperty(value);
   }
   private _disableRipple: boolean = false;
@@ -182,8 +182,6 @@ export class MatTabNav extends _MatTabNavBase {
   ) {
     super(elementRef, dir, ngZone, changeDetectorRef, viewportRuler, platform, animationMode);
   }
-
-  static ngAcceptInputType_disableRipple: BooleanInput;
 }
 
 // Boilerplate for applying mixins to MatTabLink.
@@ -210,11 +208,11 @@ export class _MatTabLinkBase
   get active(): boolean {
     return this._isActive;
   }
-  set active(value: boolean) {
+  set active(value: BooleanInput) {
     const newValue = coerceBooleanProperty(value);
 
     if (newValue !== this._isActive) {
-      this._isActive = value;
+      this._isActive = newValue;
       this._tabNavBar.updateActiveLink();
     }
   }
@@ -276,11 +274,6 @@ export class _MatTabLinkBase
     // have to update the focused index whenever the link receives focus.
     this._tabNavBar.focusIndex = this._tabNavBar._items.toArray().indexOf(this);
   }
-
-  static ngAcceptInputType_active: BooleanInput;
-  static ngAcceptInputType_disabled: BooleanInput;
-  static ngAcceptInputType_disableRipple: BooleanInput;
-  static ngAcceptInputType_tabIndex: NumberInput;
 }
 
 /**

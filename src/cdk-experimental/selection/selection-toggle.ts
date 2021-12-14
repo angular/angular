@@ -37,7 +37,7 @@ export class CdkSelectionToggle<T> implements OnDestroy, OnInit {
   get index(): number | undefined {
     return this._index;
   }
-  set index(index: number | undefined) {
+  set index(index: NumberInput) {
     this._index = coerceNumberProperty(index);
   }
   protected _index?: number;
@@ -96,6 +96,4 @@ export class CdkSelectionToggle<T> implements OnDestroy, OnInit {
   private _isSelected(): boolean {
     return this._selection.isSelected(this.value, this.index);
   }
-
-  static ngAcceptInputType_index: NumberInput;
 }

@@ -116,7 +116,7 @@ export abstract class _MatPaginatorBase<
   get pageIndex(): number {
     return this._pageIndex;
   }
-  set pageIndex(value: number) {
+  set pageIndex(value: NumberInput) {
     this._pageIndex = Math.max(coerceNumberProperty(value), 0);
     this._changeDetectorRef.markForCheck();
   }
@@ -127,7 +127,7 @@ export abstract class _MatPaginatorBase<
   get length(): number {
     return this._length;
   }
-  set length(value: number) {
+  set length(value: NumberInput) {
     this._length = coerceNumberProperty(value);
     this._changeDetectorRef.markForCheck();
   }
@@ -138,7 +138,7 @@ export abstract class _MatPaginatorBase<
   get pageSize(): number {
     return this._pageSize;
   }
-  set pageSize(value: number) {
+  set pageSize(value: NumberInput) {
     this._pageSize = Math.max(coerceNumberProperty(value), 0);
     this._updateDisplayedPageSizeOptions();
   }
@@ -160,7 +160,7 @@ export abstract class _MatPaginatorBase<
   get hidePageSize(): boolean {
     return this._hidePageSize;
   }
-  set hidePageSize(value: boolean) {
+  set hidePageSize(value: BooleanInput) {
     this._hidePageSize = coerceBooleanProperty(value);
   }
   private _hidePageSize = false;
@@ -170,7 +170,7 @@ export abstract class _MatPaginatorBase<
   get showFirstLastButtons(): boolean {
     return this._showFirstLastButtons;
   }
-  set showFirstLastButtons(value: boolean) {
+  set showFirstLastButtons(value: BooleanInput) {
     this._showFirstLastButtons = coerceBooleanProperty(value);
   }
   private _showFirstLastButtons = false;
@@ -227,7 +227,7 @@ export abstract class _MatPaginatorBase<
     }
 
     const previousPageIndex = this.pageIndex;
-    this.pageIndex++;
+    this.pageIndex = this.pageIndex + 1;
     this._emitPageEvent(previousPageIndex);
   }
 
@@ -238,7 +238,7 @@ export abstract class _MatPaginatorBase<
     }
 
     const previousPageIndex = this.pageIndex;
-    this.pageIndex--;
+    this.pageIndex = this.pageIndex - 1;
     this._emitPageEvent(previousPageIndex);
   }
 
@@ -350,13 +350,6 @@ export abstract class _MatPaginatorBase<
       length: this.length,
     });
   }
-
-  static ngAcceptInputType_pageIndex: NumberInput;
-  static ngAcceptInputType_length: NumberInput;
-  static ngAcceptInputType_pageSize: NumberInput;
-  static ngAcceptInputType_hidePageSize: BooleanInput;
-  static ngAcceptInputType_showFirstLastButtons: BooleanInput;
-  static ngAcceptInputType_disabled: BooleanInput;
 }
 
 /**

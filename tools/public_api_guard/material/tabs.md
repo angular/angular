@@ -108,8 +108,6 @@ export class MatTab extends _MatTabBase implements OnInit, CanDisable, OnChanges
     _implicitContent: TemplateRef<any>;
     isActive: boolean;
     // (undocumented)
-    static ngAcceptInputType_disabled: BooleanInput;
-    // (undocumented)
     ngOnChanges(changes: SimpleChanges): void;
     // (undocumented)
     ngOnDestroy(): void;
@@ -223,7 +221,7 @@ export abstract class _MatTabGroupBase extends _MatTabGroupMixinBase implements 
     abstract _allTabs: QueryList<MatTab>;
     readonly animationDone: EventEmitter<void>;
     get animationDuration(): string;
-    set animationDuration(value: string);
+    set animationDuration(value: NumberInput);
     // (undocumented)
     _animationMode?: string | undefined;
     get backgroundColor(): ThemePalette;
@@ -231,10 +229,10 @@ export abstract class _MatTabGroupBase extends _MatTabGroupMixinBase implements 
     // (undocumented)
     protected _changeDetectorRef: ChangeDetectorRef;
     get contentTabIndex(): number | null;
-    set contentTabIndex(value: number | null);
+    set contentTabIndex(value: NumberInput);
     disablePagination: boolean;
     get dynamicHeight(): boolean;
-    set dynamicHeight(value: boolean);
+    set dynamicHeight(value: BooleanInput);
     readonly focusChange: EventEmitter<MatTabChangeEvent>;
     // (undocumented)
     _focusChanged(index: number): void;
@@ -244,16 +242,6 @@ export abstract class _MatTabGroupBase extends _MatTabGroupMixinBase implements 
     _getTabLabelId(i: number): string;
     _handleClick(tab: MatTab, tabHeader: MatTabGroupBaseHeader, index: number): void;
     headerPosition: MatTabHeaderPosition;
-    // (undocumented)
-    static ngAcceptInputType_animationDuration: NumberInput;
-    // (undocumented)
-    static ngAcceptInputType_contentTabIndex: NumberInput;
-    // (undocumented)
-    static ngAcceptInputType_disableRipple: BooleanInput;
-    // (undocumented)
-    static ngAcceptInputType_dynamicHeight: BooleanInput;
-    // (undocumented)
-    static ngAcceptInputType_selectedIndex: NumberInput;
     ngAfterContentChecked(): void;
     // (undocumented)
     ngAfterContentInit(): void;
@@ -262,7 +250,7 @@ export abstract class _MatTabGroupBase extends _MatTabGroupMixinBase implements 
     realignInkBar(): void;
     _removeTabBodyWrapperHeight(): void;
     get selectedIndex(): number | null;
-    set selectedIndex(value: number | null);
+    set selectedIndex(value: NumberInput);
     readonly selectedIndexChange: EventEmitter<number>;
     readonly selectedTabChange: EventEmitter<MatTabChangeEvent>;
     _setTabBodyWrapperHeight(tabHeight: number): void;
@@ -288,8 +276,6 @@ export class MatTabHeader extends _MatTabHeaderBase {
     // (undocumented)
     _nextPaginator: ElementRef<HTMLElement>;
     // (undocumented)
-    static ngAcceptInputType_disableRipple: BooleanInput;
-    // (undocumented)
     _previousPaginator: ElementRef<HTMLElement>;
     // (undocumented)
     _tabList: ElementRef;
@@ -306,8 +292,8 @@ export class MatTabHeader extends _MatTabHeaderBase {
 // @public
 export abstract class _MatTabHeaderBase extends MatPaginatedTabHeader implements AfterContentChecked, AfterContentInit, AfterViewInit, OnDestroy {
     constructor(elementRef: ElementRef, changeDetectorRef: ChangeDetectorRef, viewportRuler: ViewportRuler, dir: Directionality, ngZone: NgZone, platform: Platform, animationMode?: string);
-    get disableRipple(): any;
-    set disableRipple(value: any);
+    get disableRipple(): boolean;
+    set disableRipple(value: BooleanInput);
     // (undocumented)
     protected _itemSelected(event: KeyboardEvent): void;
     // (undocumented)
@@ -341,8 +327,6 @@ export class MatTabLabelWrapper extends _MatTabLabelWrapperBase implements CanDi
     // (undocumented)
     getOffsetWidth(): number;
     // (undocumented)
-    static ngAcceptInputType_disabled: BooleanInput;
-    // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<MatTabLabelWrapper, "[matTabLabelWrapper]", never, { "disabled": "disabled"; }, {}, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatTabLabelWrapper, never>;
@@ -364,20 +348,12 @@ export class _MatTabLinkBase extends _MatTabLinkMixinBase implements AfterViewIn
     constructor(_tabNavBar: _MatTabNavBase,
     elementRef: ElementRef, globalRippleOptions: RippleGlobalOptions | null, tabIndex: string, _focusMonitor: FocusMonitor, animationMode?: string);
     get active(): boolean;
-    set active(value: boolean);
+    set active(value: BooleanInput);
     elementRef: ElementRef;
     focus(): void;
     // (undocumented)
     _handleFocus(): void;
     protected _isActive: boolean;
-    // (undocumented)
-    static ngAcceptInputType_active: BooleanInput;
-    // (undocumented)
-    static ngAcceptInputType_disabled: BooleanInput;
-    // (undocumented)
-    static ngAcceptInputType_disableRipple: BooleanInput;
-    // (undocumented)
-    static ngAcceptInputType_tabIndex: NumberInput;
     // (undocumented)
     ngAfterViewInit(): void;
     // (undocumented)
@@ -400,8 +376,6 @@ export class MatTabNav extends _MatTabNavBase {
     // (undocumented)
     _nextPaginator: ElementRef<HTMLElement>;
     // (undocumented)
-    static ngAcceptInputType_disableRipple: BooleanInput;
-    // (undocumented)
     _previousPaginator: ElementRef<HTMLElement>;
     // (undocumented)
     _tabList: ElementRef;
@@ -421,8 +395,8 @@ export abstract class _MatTabNavBase extends MatPaginatedTabHeader implements Af
     get backgroundColor(): ThemePalette;
     set backgroundColor(value: ThemePalette);
     color: ThemePalette;
-    get disableRipple(): any;
-    set disableRipple(value: any);
+    get disableRipple(): boolean;
+    set disableRipple(value: BooleanInput);
     abstract _items: QueryList<MatPaginatedTabHeaderItem & {
         active: boolean;
     }>;

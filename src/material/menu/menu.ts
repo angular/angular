@@ -198,7 +198,7 @@ export class _MatMenuBase
   get overlapTrigger(): boolean {
     return this._overlapTrigger;
   }
-  set overlapTrigger(value: boolean) {
+  set overlapTrigger(value: BooleanInput) {
     this._overlapTrigger = coerceBooleanProperty(value);
   }
   private _overlapTrigger: boolean = this._defaultOptions.overlapTrigger;
@@ -208,7 +208,7 @@ export class _MatMenuBase
   get hasBackdrop(): boolean | undefined {
     return this._hasBackdrop;
   }
-  set hasBackdrop(value: boolean | undefined) {
+  set hasBackdrop(value: BooleanInput) {
     this._hasBackdrop = coerceBooleanProperty(value);
   }
   private _hasBackdrop: boolean | undefined = this._defaultOptions.hasBackdrop;
@@ -495,9 +495,6 @@ export class _MatMenuBase
         this._directDescendantItems.notifyOnChanges();
       });
   }
-
-  static ngAcceptInputType_overlapTrigger: BooleanInput;
-  static ngAcceptInputType_hasBackdrop: BooleanInput;
 }
 
 /** @docs-public MatMenu */

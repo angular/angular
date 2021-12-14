@@ -62,13 +62,11 @@ export class CdkPortalOutlet extends BasePortalOutlet implements OnInit, OnDestr
     get attachedRef(): CdkPortalOutletAttachedRef;
     attachTemplatePortal<C>(portal: TemplatePortal<C>): EmbeddedViewRef<C>;
     // (undocumented)
-    static ngAcceptInputType_portal: Portal<any> | null | undefined | '';
-    // (undocumented)
     ngOnDestroy(): void;
     // (undocumented)
     ngOnInit(): void;
     get portal(): Portal<any> | null;
-    set portal(portal: Portal<any> | null);
+    set portal(portal: Portal<any> | null | undefined | '');
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<CdkPortalOutlet, "[cdkPortalOutlet]", ["cdkPortalOutlet"], { "portal": "cdkPortalOutlet"; }, { "attached": "attached"; }, never>;
     // (undocumented)

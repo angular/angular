@@ -128,7 +128,7 @@ export abstract class _MatSelectBase<C> extends _MatSelectMixinBase implements A
     abstract customTrigger: {};
     protected readonly _destroy: Subject<void>;
     get disableOptionCentering(): boolean;
-    set disableOptionCentering(value: boolean);
+    set disableOptionCentering(value: BooleanInput);
     get empty(): boolean;
     errorStateMatcher: ErrorStateMatcher;
     focus(options?: FocusOptions): void;
@@ -143,21 +143,7 @@ export abstract class _MatSelectBase<C> extends _MatSelectMixinBase implements A
     _isRtl(): boolean;
     _keyManager: ActiveDescendantKeyManager<MatOption>;
     get multiple(): boolean;
-    set multiple(value: boolean);
-    // (undocumented)
-    static ngAcceptInputType_disabled: BooleanInput;
-    // (undocumented)
-    static ngAcceptInputType_disableOptionCentering: BooleanInput;
-    // (undocumented)
-    static ngAcceptInputType_disableRipple: BooleanInput;
-    // (undocumented)
-    static ngAcceptInputType_multiple: BooleanInput;
-    // (undocumented)
-    static ngAcceptInputType_required: BooleanInput;
-    // (undocumented)
-    static ngAcceptInputType_tabIndex: NumberInput;
-    // (undocumented)
-    static ngAcceptInputType_typeaheadDebounceInterval: NumberInput;
+    set multiple(value: BooleanInput);
     // (undocumented)
     ngAfterContentInit(): void;
     // (undocumented)
@@ -202,7 +188,7 @@ export abstract class _MatSelectBase<C> extends _MatSelectMixinBase implements A
     registerOnChange(fn: (value: any) => void): void;
     registerOnTouched(fn: () => {}): void;
     get required(): boolean;
-    set required(value: boolean);
+    set required(value: BooleanInput);
     protected abstract _scrollOptionIntoView(index: number): void;
     _scrollStrategy: ScrollStrategy;
     get selected(): MatOption | MatOption[];
@@ -216,7 +202,7 @@ export abstract class _MatSelectBase<C> extends _MatSelectMixinBase implements A
     trigger: ElementRef;
     get triggerValue(): string;
     get typeaheadDebounceInterval(): number;
-    set typeaheadDebounceInterval(value: number);
+    set typeaheadDebounceInterval(value: NumberInput);
     get value(): any;
     set value(newValue: any);
     readonly valueChange: EventEmitter<any>;

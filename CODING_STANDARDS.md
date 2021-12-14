@@ -274,21 +274,13 @@ For example:
 ```ts
 @Input() disabled: boolean;
 get disabled(): boolean { return this._disabled; }
-set disabled(v: boolean) { this._disabled = coerceBooleanProperty(v); }
+set disabled(v: BooleanInput) { this._disabled = coerceBooleanProperty(v); }
 private _disabled = false;
-
-...
-
-static ngAcceptInputType_value: BooleanInput;
 ```
 The above code allows users to set `disabled` similar to how it can be set on native inputs:
 ```html
 <component disabled></component>
 ```
-Even though an empty string is technically what is being provided as the value of `disabled`,
-`ngAcceptInputType` allows the mismatched type to be provided and `coerceBooleanProperty`
-interprets the given value (an empty string) to the correct type & value, which in this case would
-be `true`.
 
 #### Expose native inputs
 Native inputs used in components should be exposed to developers through `ng-content`. This allows

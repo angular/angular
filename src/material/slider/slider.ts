@@ -170,7 +170,7 @@ export class MatSlider
   get invert(): boolean {
     return this._invert;
   }
-  set invert(value: boolean) {
+  set invert(value: BooleanInput) {
     this._invert = coerceBooleanProperty(value);
   }
   private _invert = false;
@@ -180,7 +180,7 @@ export class MatSlider
   get max(): number {
     return this._max;
   }
-  set max(v: number) {
+  set max(v: NumberInput) {
     this._max = coerceNumberProperty(v, this._max);
     this._percent = this._calculatePercentage(this._value);
 
@@ -194,7 +194,7 @@ export class MatSlider
   get min(): number {
     return this._min;
   }
-  set min(v: number) {
+  set min(v: NumberInput) {
     this._min = coerceNumberProperty(v, this._min);
     this._percent = this._calculatePercentage(this._value);
 
@@ -208,7 +208,7 @@ export class MatSlider
   get step(): number {
     return this._step;
   }
-  set step(v: number) {
+  set step(v: NumberInput) {
     this._step = coerceNumberProperty(v, this._step);
 
     if (this._step % 1 !== 0) {
@@ -225,7 +225,7 @@ export class MatSlider
   get thumbLabel(): boolean {
     return this._thumbLabel;
   }
-  set thumbLabel(value: boolean) {
+  set thumbLabel(value: BooleanInput) {
     this._thumbLabel = coerceBooleanProperty(value);
   }
   private _thumbLabel: boolean = false;
@@ -235,10 +235,10 @@ export class MatSlider
    * Ex: Tick interval of 4 with a step of 3 will draw a tick every 4 steps (every 12 values).
    */
   @Input()
-  get tickInterval() {
+  get tickInterval(): 'auto' | number {
     return this._tickInterval;
   }
-  set tickInterval(value: 'auto' | number) {
+  set tickInterval(value: 'auto' | NumberInput) {
     if (value === 'auto') {
       this._tickInterval = 'auto';
     } else if (typeof value === 'number' || typeof value === 'string') {
@@ -258,7 +258,7 @@ export class MatSlider
     }
     return this._value as number;
   }
-  set value(v: number) {
+  set value(v: NumberInput) {
     if (v !== this._value) {
       let value = coerceNumberProperty(v, 0);
 
@@ -292,7 +292,7 @@ export class MatSlider
   get vertical(): boolean {
     return this._vertical;
   }
-  set vertical(value: boolean) {
+  set vertical(value: BooleanInput) {
     this._vertical = coerceBooleanProperty(value);
   }
   private _vertical = false;
@@ -943,17 +943,6 @@ export class MatSlider
   setDisabledState(isDisabled: boolean) {
     this.disabled = isDisabled;
   }
-
-  static ngAcceptInputType_invert: BooleanInput;
-  static ngAcceptInputType_max: NumberInput;
-  static ngAcceptInputType_min: NumberInput;
-  static ngAcceptInputType_step: NumberInput;
-  static ngAcceptInputType_thumbLabel: BooleanInput;
-  static ngAcceptInputType_tickInterval: NumberInput;
-  static ngAcceptInputType_value: NumberInput;
-  static ngAcceptInputType_vertical: BooleanInput;
-  static ngAcceptInputType_disabled: BooleanInput;
-  static ngAcceptInputType_tabIndex: NumberInput;
 }
 
 /** Returns whether an event is a touch event. */

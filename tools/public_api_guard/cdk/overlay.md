@@ -68,26 +68,16 @@ export class CdkConnectedOverlay implements OnDestroy, OnChanges {
     get dir(): Direction;
     disableClose: boolean;
     get flexibleDimensions(): boolean;
-    set flexibleDimensions(value: boolean);
+    set flexibleDimensions(value: BooleanInput);
     get growAfterOpen(): boolean;
-    set growAfterOpen(value: boolean);
-    get hasBackdrop(): any;
-    set hasBackdrop(value: any);
+    set growAfterOpen(value: BooleanInput);
+    get hasBackdrop(): boolean;
+    set hasBackdrop(value: BooleanInput);
     height: number | string;
-    get lockPosition(): any;
-    set lockPosition(value: any);
+    get lockPosition(): boolean;
+    set lockPosition(value: BooleanInput);
     minHeight: number | string;
     minWidth: number | string;
-    // (undocumented)
-    static ngAcceptInputType_flexibleDimensions: BooleanInput;
-    // (undocumented)
-    static ngAcceptInputType_growAfterOpen: BooleanInput;
-    // (undocumented)
-    static ngAcceptInputType_hasBackdrop: BooleanInput;
-    // (undocumented)
-    static ngAcceptInputType_lockPosition: BooleanInput;
-    // (undocumented)
-    static ngAcceptInputType_push: BooleanInput;
     // (undocumented)
     ngOnChanges(changes: SimpleChanges): void;
     // (undocumented)
@@ -106,7 +96,7 @@ export class CdkConnectedOverlay implements OnDestroy, OnChanges {
     positions: ConnectedPosition[];
     positionStrategy: FlexibleConnectedPositionStrategy;
     get push(): boolean;
-    set push(value: boolean);
+    set push(value: BooleanInput);
     scrollStrategy: ScrollStrategy;
     transformOriginSelector: string;
     viewportMargin: number;

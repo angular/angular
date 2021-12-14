@@ -149,10 +149,10 @@ export class CdkObserveContent implements AfterContentInit, OnDestroy {
    * to disconnect the underlying MutationObserver until it is needed.
    */
   @Input('cdkObserveContentDisabled')
-  get disabled() {
+  get disabled(): boolean {
     return this._disabled;
   }
-  set disabled(value: any) {
+  set disabled(value: BooleanInput) {
     this._disabled = coerceBooleanProperty(value);
     this._disabled ? this._unsubscribe() : this._subscribe();
   }
@@ -163,7 +163,7 @@ export class CdkObserveContent implements AfterContentInit, OnDestroy {
   get debounce(): number {
     return this._debounce;
   }
-  set debounce(value: number) {
+  set debounce(value: NumberInput) {
     this._debounce = coerceNumberProperty(value);
     this._subscribe();
   }
@@ -205,9 +205,6 @@ export class CdkObserveContent implements AfterContentInit, OnDestroy {
   private _unsubscribe() {
     this._currentSubscription?.unsubscribe();
   }
-
-  static ngAcceptInputType_disabled: BooleanInput;
-  static ngAcceptInputType_debounce: NumberInput;
 }
 
 @NgModule({

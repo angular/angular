@@ -27,7 +27,7 @@ export class MatProgressSpinner extends _MatProgressSpinnerBase implements OnIni
     constructor(elementRef: ElementRef<HTMLElement>,
     _platform: Platform, _document: any, animationMode: string, defaults?: MatProgressSpinnerDefaultOptions);
     get diameter(): number;
-    set diameter(size: number);
+    set diameter(size: NumberInput);
     _getCircleRadius(): number;
     _getCircleStrokeWidth(): number;
     _getStrokeCircumference(): number;
@@ -35,19 +35,13 @@ export class MatProgressSpinner extends _MatProgressSpinnerBase implements OnIni
     _getViewBox(): string;
     mode: ProgressSpinnerMode;
     // (undocumented)
-    static ngAcceptInputType_diameter: NumberInput;
-    // (undocumented)
-    static ngAcceptInputType_strokeWidth: NumberInput;
-    // (undocumented)
-    static ngAcceptInputType_value: NumberInput;
-    // (undocumented)
     ngOnInit(): void;
     _noopAnimations: boolean;
     _spinnerAnimationLabel: string;
     get strokeWidth(): number;
-    set strokeWidth(value: number);
+    set strokeWidth(value: NumberInput);
     get value(): number;
-    set value(newValue: number);
+    set value(newValue: NumberInput);
     // (undocumented)
     static ɵcmp: i0.ɵɵComponentDeclaration<MatProgressSpinner, "mat-progress-spinner", ["matProgressSpinner"], { "color": "color"; "diameter": "diameter"; "strokeWidth": "strokeWidth"; "mode": "mode"; "value": "value"; }, {}, never, never>;
     // (undocumented)

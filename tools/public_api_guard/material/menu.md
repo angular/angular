@@ -116,16 +116,12 @@ export class _MatMenuBase implements AfterContentInit, MatMenuPanel<MatMenuItem>
     focusFirstItem(origin?: FocusOrigin): void;
     _handleKeydown(event: KeyboardEvent): void;
     get hasBackdrop(): boolean | undefined;
-    set hasBackdrop(value: boolean | undefined);
+    set hasBackdrop(value: BooleanInput);
     _hovered(): Observable<MatMenuItem>;
     _isAnimating: boolean;
     // @deprecated
     items: QueryList<MatMenuItem>;
     lazyContent: MatMenuContent;
-    // (undocumented)
-    static ngAcceptInputType_hasBackdrop: BooleanInput;
-    // (undocumented)
-    static ngAcceptInputType_overlapTrigger: BooleanInput;
     // (undocumented)
     ngAfterContentInit(): void;
     // (undocumented)
@@ -136,7 +132,7 @@ export class _MatMenuBase implements AfterContentInit, MatMenuPanel<MatMenuItem>
     // (undocumented)
     _onAnimationStart(event: AnimationEvent_2): void;
     get overlapTrigger(): boolean;
-    set overlapTrigger(value: boolean);
+    set overlapTrigger(value: BooleanInput);
     overlayPanelClass: string | string[];
     _panelAnimationState: 'void' | 'enter';
     set panelClass(classes: string);
@@ -207,10 +203,6 @@ export class MatMenuItem extends _MatMenuItemBase implements FocusableOption, Ca
     _handleMouseEnter(): void;
     _highlighted: boolean;
     readonly _hovered: Subject<MatMenuItem>;
-    // (undocumented)
-    static ngAcceptInputType_disabled: BooleanInput;
-    // (undocumented)
-    static ngAcceptInputType_disableRipple: BooleanInput;
     // (undocumented)
     ngAfterViewInit(): void;
     // (undocumented)

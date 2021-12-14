@@ -166,7 +166,7 @@ export class MatProgressBar
   get value(): number {
     return this._value;
   }
-  set value(v: number) {
+  set value(v: NumberInput) {
     this._value = clamp(coerceNumberProperty(v) || 0);
   }
   private _value: number = 0;
@@ -249,8 +249,6 @@ export class MatProgressBar
   ngOnDestroy() {
     this._animationEndSubscription.unsubscribe();
   }
-
-  static ngAcceptInputType_value: NumberInput;
 }
 
 /** Clamps a value to be between two numbers, by default 0 and 100. */

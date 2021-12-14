@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {NumberInput} from '@angular/cdk/coercion';
 import {CdkTreeNodePadding} from '@angular/cdk/tree';
 import {Directive, Input} from '@angular/core';
 
@@ -21,7 +22,7 @@ export class MatTreeNodePadding<T, K = T> extends CdkTreeNodePadding<T, K> {
   override get level(): number {
     return this._level;
   }
-  override set level(value: number) {
+  override set level(value: NumberInput) {
     this._setLevelInput(value);
   }
 
