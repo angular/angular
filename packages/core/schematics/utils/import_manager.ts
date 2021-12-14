@@ -265,14 +265,11 @@ export class ImportManager {
  * Backwards-compatible version of `ts.createImportSpecifier`
  * to handle a breaking change between 4.4 and 4.5.
  */
-export function createImportSpecifier(
-    propertyName: string|ts.Identifier|undefined, name: string|ts.Identifier,
+function createImportSpecifier(
+    propertyName: ts.Identifier|undefined, name: ts.Identifier,
     isTypeOnly = false): ts.ImportSpecifier {
-  return PARSED_TS_VERSION > 4.4 ?
-      // TODO(crisbeto): the function is cast to `any` here since g3 is still on TS 4.4.
-      // Should be cleaned up when g3 has been updated.
-      (ts.createImportSpecifier as any)(isTypeOnly, propertyName, name) :
-      // TODO(crisbeto): backwards-compatibility layer for TS 4.4.
-      // Should be cleaned up when we drop support for it.
-      (ts.createImportSpecifier as any)(propertyName, name);
+  return PARSED_TS_VERSION > 4.4 ? ts.createImportSpecifier(isTypeOnly, propertyName, name) :
+                                   // TODO(crisbeto): backwards-compatibility layer for TS 4.4.
+                                   // Should be cleaned up when we drop support for it.
+                                   (ts.createImportSpecifier as any)(propertyName, name);
 }
