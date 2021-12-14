@@ -5,11 +5,11 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AnimationPlayer, ɵStyleData} from '@angular/animations';
+import {AnimationPlayer, ɵStyleDataMap} from '@angular/animations';
 
-import {allowPreviousPlayerStylesMerge, balancePreviousStylesIntoKeyframes, computeStyle} from '../../util';
+import {allowPreviousPlayerStylesMerge, balancePreviousStylesIntoKeyframes, normalizeKeyframes} from '../../util';
 import {AnimationDriver} from '../animation_driver';
-import {containsElement, hypenatePropsObject, invokeQuery, validateStyleProperty} from '../shared';
+import {containsElement, hypenatePropsKeys, invokeQuery, validateStyleProperty} from '../shared';
 import {packageNonAnimatableStyles} from '../special_cased_styles';
 
 import {CssKeyframesPlayer} from './css_keyframes_player';
@@ -42,29 +42,25 @@ export class CssKeyframesDriver implements AnimationDriver {
     return (window.getComputedStyle(element) as any)[prop] as string;
   }
 
-  buildKeyframeElement(element: any, name: string, keyframes: {[key: string]: any}[]): any {
-    keyframes = keyframes.map(kf => hypenatePropsObject(kf));
+  buildKeyframeElement(element: any, name: string, keyframes: Array<ɵStyleDataMap>): any {
+    keyframes = keyframes.map(kf => hypenatePropsKeys(kf));
     let keyframeStr = `@keyframes ${name} {\n`;
     let tab = '';
     keyframes.forEach(kf => {
       tab = TAB_SPACE;
-      const offset = parseFloat(kf['offset']);
+      const offset = parseFloat(kf.get('offset') as string);
       keyframeStr += `${tab}${offset * 100}% {\n`;
       tab += TAB_SPACE;
-      Object.keys(kf).forEach(prop => {
-        const value = kf[prop];
-        switch (prop) {
-          case 'offset':
-            return;
-          case 'easing':
-            if (value) {
-              keyframeStr += `${tab}animation-timing-function: ${value};\n`;
-            }
-            return;
-          default:
-            keyframeStr += `${tab}${prop}: ${value};\n`;
-            return;
+      kf.forEach((value, prop) => {
+        if (prop === 'offset') return;
+        if (prop === 'easing') {
+          if (value) {
+            keyframeStr += `${tab}animation-timing-function: ${value};\n`;
+          }
+          return;
         }
+        keyframeStr += `${tab}${prop}: ${value};\n`;
+        return;
       });
       keyframeStr += `${tab}}\n`;
     });
@@ -76,26 +72,28 @@ export class CssKeyframesDriver implements AnimationDriver {
   }
 
   animate(
-      element: any, keyframes: ɵStyleData[], duration: number, delay: number, easing: string,
-      previousPlayers: AnimationPlayer[] = [], scrubberAccessRequested?: boolean): AnimationPlayer {
+      element: any, keyframes: Array<Map<string, string|number>>, duration: number, delay: number,
+      easing: string, previousPlayers: AnimationPlayer[] = [],
+      scrubberAccessRequested?: boolean): AnimationPlayer {
     if ((typeof ngDevMode === 'undefined' || ngDevMode) && scrubberAccessRequested) {
       notifyFaultyScrubber();
     }
 
+
     const previousCssKeyframePlayers = <CssKeyframesPlayer[]>previousPlayers.filter(
         player => player instanceof CssKeyframesPlayer);
 
-    const previousStyles: {[key: string]: any} = {};
+    const previousStyles: ɵStyleDataMap = new Map();
 
     if (allowPreviousPlayerStylesMerge(duration, delay)) {
       previousCssKeyframePlayers.forEach(player => {
-        let styles = player.currentSnapshot;
-        Object.keys(styles).forEach(prop => previousStyles[prop] = styles[prop]);
+        player.currentSnapshot.forEach((val, prop) => previousStyles.set(prop, val));
       });
     }
 
-    keyframes = balancePreviousStylesIntoKeyframes(element, keyframes, previousStyles);
-    const finalStyles = flattenKeyframesIntoStyles(keyframes);
+    const _keyframes =
+        balancePreviousStylesIntoKeyframes(element, normalizeKeyframes(keyframes), previousStyles);
+    const finalStyles = flattenKeyframesIntoStyles(_keyframes);
 
     // if there is no animation then there is no point in applying
     // styles and waiting for an event to get fired. This causes lag.
@@ -106,13 +104,13 @@ export class CssKeyframesDriver implements AnimationDriver {
     }
 
     const animationName = `${KEYFRAMES_NAME_PREFIX}${this._count++}`;
-    const kfElm = this.buildKeyframeElement(element, animationName, keyframes);
+    const kfElm = this.buildKeyframeElement(element, animationName, _keyframes);
     const nodeToAppendKfElm = findNodeToAppendKeyframeElement(element);
     nodeToAppendKfElm.appendChild(kfElm);
 
-    const specialStyles = packageNonAnimatableStyles(element, keyframes);
+    const specialStyles = packageNonAnimatableStyles(element, _keyframes);
     const player = new CssKeyframesPlayer(
-        element, keyframes, animationName, duration, delay, easing, finalStyles, specialStyles);
+        element, _keyframes, animationName, duration, delay, easing, finalStyles, specialStyles);
 
     player.onDestroy(() => removeElement(kfElm));
     return player;
@@ -127,15 +125,15 @@ function findNodeToAppendKeyframeElement(element: any): Node {
   return document.head;
 }
 
-function flattenKeyframesIntoStyles(keyframes: null|{[key: string]: any}|
-                                    {[key: string]: any}[]): {[key: string]: any} {
-  let flatKeyframes: {[key: string]: any} = {};
+function flattenKeyframesIntoStyles(keyframes: null|ɵStyleDataMap|
+                                    Array<ɵStyleDataMap>): ɵStyleDataMap {
+  let flatKeyframes: ɵStyleDataMap = new Map();
   if (keyframes) {
     const kfs = Array.isArray(keyframes) ? keyframes : [keyframes];
     kfs.forEach(kf => {
-      Object.keys(kf).forEach(prop => {
-        if (prop == 'offset' || prop == 'easing') return;
-        flatKeyframes[prop] = kf[prop];
+      kf.forEach((val, prop) => {
+        if (prop === 'offset' || prop === 'easing') return;
+        flatKeyframes.set(prop, val);
       });
     });
   }

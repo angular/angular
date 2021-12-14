@@ -172,8 +172,8 @@ describe('animation renderer factory', () => {
 
     const [player] = getAnimationLog();
     expect(player.keyframes).toEqual([
-      {opacity: '*', offset: 0},
-      {opacity: 1, offset: 1},
+      new Map<string, string|number>([['opacity', '*'], ['offset', 0]]),
+      new Map<string, string|number>([['opacity', 1], ['offset', 1]]),
     ]);
     player.finish();
 

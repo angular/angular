@@ -5,10 +5,10 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AnimateChildOptions, AnimateTimings, AnimationMetadataType, AnimationOptions, AnimationQueryOptions, AUTO_STYLE, ɵPRE_STYLE as PRE_STYLE, ɵStyleData} from '@angular/animations';
+import {AnimateChildOptions, AnimateTimings, AnimationMetadataType, AnimationOptions, AnimationQueryOptions, AUTO_STYLE, ɵPRE_STYLE as PRE_STYLE, ɵStyleDataMap} from '@angular/animations';
 
 import {AnimationDriver} from '../render/animation_driver';
-import {copyObj, copyStyles, interpolateParams, iteratorToArray, resolveTiming, resolveTimingValue, visitDslNode} from '../util';
+import {copyStyles, interpolateParams, iteratorToArray, resolveTiming, resolveTimingValue, visitDslNode} from '../util';
 
 import {AnimateAst, AnimateChildAst, AnimateRefAst, Ast, AstVisitor, DynamicTimingAst, GroupAst, KeyframesAst, QueryAst, ReferenceAst, SequenceAst, StaggerAst, StateAst, StyleAst, TimingAst, TransitionAst, TriggerAst} from './animation_ast';
 import {AnimationTimelineInstruction, createTimelineInstruction} from './animation_timeline_instruction';
@@ -42,7 +42,7 @@ const LEAVE_TOKEN_REGEX = new RegExp(LEAVE_TOKEN, 'g');
  * ```
  *
  * For this operation to cover the combination of animation verbs (style, animate, group, etc...) a
- * combination of prototypical inheritance, AST traversal and merge-sort-like algorithms are used.
+ * combination of AST traversal and merge-sort-like algorithms are used.
  *
  * [AST Traversal]
  * Each of the animation verbs, when executed, will return an string-map object representing what
@@ -88,17 +88,12 @@ const LEAVE_TOKEN_REGEX = new RegExp(LEAVE_TOKEN, 'g');
  * from all previous animation steps. Therefore when a keyframe is created it would also be missing
  * from all previous keyframes up until where it is first used. For the timeline keyframe generation
  * to properly fill in the style it will place the previous value (the value from the parent
- * timeline) or a default value of `*` into the backFill object. Given that each of the keyframe
- * styles is an object that prototypically inherits from the backFill object, this means that if a
- * value is added into the backFill then it will automatically propagate any missing values to all
- * keyframes. Therefore the missing `height` value will be properly filled into the already
- * processed keyframes.
+ * timeline) or a default value of `*` into the backFill map. The `copyStyles` method in util.ts
+ * handles propagating that backfill map to the styles object.
  *
  * When a sub-timeline is created it will have its own backFill property. This is done so that
  * styles present within the sub-timeline do not accidentally seep into the previous/future timeline
  * keyframes
- *
- * (For prototypically-inherited contents to be detected a `for(i in obj)` loop must be used.)
  *
  * [Validation]
  * The code in this file is not responsible for validation. That functionality happens with within
@@ -106,8 +101,8 @@ const LEAVE_TOKEN_REGEX = new RegExp(LEAVE_TOKEN, 'g');
  */
 export function buildAnimationTimelines(
     driver: AnimationDriver, rootElement: any, ast: Ast<AnimationMetadataType>,
-    enterClassName: string, leaveClassName: string, startingStyles: ɵStyleData = {},
-    finalStyles: ɵStyleData = {}, options: AnimationOptions,
+    enterClassName: string, leaveClassName: string, startingStyles: ɵStyleDataMap = new Map(),
+    finalStyles: ɵStyleDataMap = new Map(), options: AnimationOptions,
     subInstructions?: ElementInstructionMap,
     errors: string[] = []): AnimationTimelineInstruction[] {
   return new AnimationTimelineBuilderVisitor().buildKeyframes(
@@ -118,8 +113,9 @@ export function buildAnimationTimelines(
 export class AnimationTimelineBuilderVisitor implements AstVisitor {
   buildKeyframes(
       driver: AnimationDriver, rootElement: any, ast: Ast<AnimationMetadataType>,
-      enterClassName: string, leaveClassName: string, startingStyles: ɵStyleData,
-      finalStyles: ɵStyleData, options: AnimationOptions, subInstructions?: ElementInstructionMap,
+      enterClassName: string, leaveClassName: string, startingStyles: ɵStyleDataMap,
+      finalStyles: ɵStyleDataMap, options: AnimationOptions,
+      subInstructions?: ElementInstructionMap,
       errors: string[] = []): AnimationTimelineInstruction[] {
     subInstructions = subInstructions || new ElementInstructionMap();
     const context = new AnimationTimelineContext(
@@ -132,11 +128,11 @@ export class AnimationTimelineBuilderVisitor implements AstVisitor {
     // this checks to see if an actual animation happened
     const timelines = context.timelines.filter(timeline => timeline.containsAnimation());
 
-    if (Object.keys(finalStyles).length) {
-      // note: we just want to apply the final styles for the rootElement, so we do not
-      //       just apply the styles to the last timeline but the last timeline which
-      //       element is the root one (basically `*`-styles are replaced with the actual
-      //       state style values only for the root element)
+    // note: we just want to apply the final styles for the rootElement, so we do not
+    //       just apply the styles to the last timeline but the last timeline which
+    //       element is the root one (basically `*`-styles are replaced with the actual
+    //       state style values only for the root element)
+    if (timelines.length && finalStyles.size) {
       let lastRootTimeline: TimelineBuilder|undefined;
       for (let i = timelines.length - 1; i >= 0; i--) {
         const timeline = timelines[i];
@@ -149,7 +145,6 @@ export class AnimationTimelineBuilderVisitor implements AstVisitor {
         lastRootTimeline.setStyles([finalStyles], null, context.errors, options);
       }
     }
-
     return timelines.length ? timelines.map(timeline => timeline.buildKeyframes()) :
                               [createTimelineInstruction(rootElement, [], [], [], 0, 0, '', false)];
   }
@@ -318,7 +313,7 @@ export class AnimationTimelineBuilderVisitor implements AstVisitor {
 
     // this is a special case for when a style() call
     // directly follows  an animate() call (but not inside of an animate() call)
-    if (!timings && timeline.getCurrentStyleProperties().length) {
+    if (!timings && timeline.hasCurrentStyleProperties()) {
       timeline.forwardFrame();
     }
 
@@ -366,7 +361,7 @@ export class AnimationTimelineBuilderVisitor implements AstVisitor {
 
     if (delay &&
         (context.previousNode.type === AnimationMetadataType.Style ||
-         (startTime == 0 && context.currentTimeline.getCurrentStyleProperties().length))) {
+         (startTime == 0 && context.currentTimeline.hasCurrentStyleProperties()))) {
       context.currentTimeline.snapshotCurrentStyles();
       context.previousNode = DEFAULT_NOOP_PREVIOUS_NODE;
     }
@@ -600,29 +595,27 @@ export class AnimationTimelineContext {
   }
 }
 
-
 export class TimelineBuilder {
   public duration: number = 0;
   // TODO(issue/24571): remove '!'.
   public easing!: string|null;
-  private _previousKeyframe: ɵStyleData = {};
-  private _currentKeyframe: ɵStyleData = {};
-  private _keyframes = new Map<number, ɵStyleData>();
-  private _styleSummary: {[prop: string]: StyleAtTime} = {};
-  private _localTimelineStyles: ɵStyleData;
-  private _globalTimelineStyles: ɵStyleData;
-  private _pendingStyles: ɵStyleData = {};
-  private _backFill: ɵStyleData = {};
-  private _currentEmptyStepKeyframe: ɵStyleData|null = null;
+  private _previousKeyframe: ɵStyleDataMap = new Map();
+  private _currentKeyframe: ɵStyleDataMap = new Map();
+  private _keyframes = new Map<number, ɵStyleDataMap>();
+  private _styleSummary = new Map<string, StyleAtTime>();
+  private _localTimelineStyles: ɵStyleDataMap = new Map();
+  private _globalTimelineStyles: ɵStyleDataMap;
+  private _pendingStyles: ɵStyleDataMap = new Map();
+  private _backFill: ɵStyleDataMap = new Map();
+  private _currentEmptyStepKeyframe: ɵStyleDataMap|null = null;
 
   constructor(
       private _driver: AnimationDriver, public element: any, public startTime: number,
-      private _elementTimelineStylesLookup?: Map<any, ɵStyleData>) {
+      private _elementTimelineStylesLookup?: Map<any, ɵStyleDataMap>) {
     if (!this._elementTimelineStylesLookup) {
-      this._elementTimelineStylesLookup = new Map<any, ɵStyleData>();
+      this._elementTimelineStylesLookup = new Map<any, ɵStyleDataMap>();
     }
 
-    this._localTimelineStyles = Object.create(this._backFill, {});
     this._globalTimelineStyles = this._elementTimelineStylesLookup.get(element)!;
     if (!this._globalTimelineStyles) {
       this._globalTimelineStyles = this._localTimelineStyles;
@@ -636,14 +629,14 @@ export class TimelineBuilder {
       case 0:
         return false;
       case 1:
-        return this.getCurrentStyleProperties().length > 0;
+        return this.hasCurrentStyleProperties();
       default:
         return true;
     }
   }
 
-  getCurrentStyleProperties(): string[] {
-    return Object.keys(this._currentKeyframe);
+  hasCurrentStyleProperties(): boolean {
+    return this._currentKeyframe.size > 0;
   }
 
   get currentTime() {
@@ -655,7 +648,7 @@ export class TimelineBuilder {
     // and that style() step is the very first style() value in the animation
     // then we need to make a copy of the keyframe [0, copy, 1] so that the delay
     // properly applies the style() values to work with the stagger...
-    const hasPreStyleStep = this._keyframes.size == 1 && Object.keys(this._pendingStyles).length;
+    const hasPreStyleStep = this._keyframes.size === 1 && this._pendingStyles.size;
 
     if (this.duration || hasPreStyleStep) {
       this.forwardTime(this.currentTime + delay);
@@ -679,7 +672,7 @@ export class TimelineBuilder {
     }
     this._currentKeyframe = this._keyframes.get(this.duration)!;
     if (!this._currentKeyframe) {
-      this._currentKeyframe = Object.create(this._backFill, {});
+      this._currentKeyframe = new Map();
       this._keyframes.set(this.duration, this._currentKeyframe);
     }
   }
@@ -696,9 +689,9 @@ export class TimelineBuilder {
   }
 
   private _updateStyle(prop: string, value: string|number) {
-    this._localTimelineStyles[prop] = value;
-    this._globalTimelineStyles[prop] = value;
-    this._styleSummary[prop] = {time: this.currentTime, value};
+    this._localTimelineStyles.set(prop, value);
+    this._globalTimelineStyles.set(prop, value);
+    this._styleSummary.set(prop, {time: this.currentTime, value});
   }
 
   allowOnlyTimelineStyles() {
@@ -707,7 +700,7 @@ export class TimelineBuilder {
 
   applyEmptyStep(easing: string|null) {
     if (easing) {
-      this._previousKeyframe['easing'] = easing;
+      this._previousKeyframe.set('easing', easing);
     }
 
     // special case for animate(duration):
@@ -716,59 +709,51 @@ export class TimelineBuilder {
     // keyframe then they will override the overridden styles
     // We use `_globalTimelineStyles` here because there may be
     // styles in previous keyframes that are not present in this timeline
-    Object.keys(this._globalTimelineStyles).forEach(prop => {
-      this._backFill[prop] = this._globalTimelineStyles[prop] || AUTO_STYLE;
-      this._currentKeyframe[prop] = AUTO_STYLE;
-    });
+    for (let [prop, value] of this._globalTimelineStyles) {
+      this._backFill.set(prop, value || AUTO_STYLE);
+      this._currentKeyframe.set(prop, AUTO_STYLE);
+    }
     this._currentEmptyStepKeyframe = this._currentKeyframe;
   }
 
   setStyles(
-      input: (ɵStyleData|string)[], easing: string|null, errors: string[],
+      input: Array<(ɵStyleDataMap | string)>, easing: string|null, errors: string[],
       options?: AnimationOptions) {
     if (easing) {
-      this._previousKeyframe['easing'] = easing;
+      this._previousKeyframe.set('easing', easing);
     }
-
     const params = (options && options.params) || {};
     const styles = flattenStyles(input, this._globalTimelineStyles);
-    Object.keys(styles).forEach(prop => {
-      const val = interpolateParams(styles[prop], params, errors);
-      this._pendingStyles[prop] = val;
-      if (!this._localTimelineStyles.hasOwnProperty(prop)) {
-        this._backFill[prop] = this._globalTimelineStyles.hasOwnProperty(prop) ?
-            this._globalTimelineStyles[prop] :
-            AUTO_STYLE;
+    for (let [prop, value] of styles) {
+      const val = interpolateParams(value, params, errors);
+      this._pendingStyles.set(prop, val);
+      if (!this._localTimelineStyles.has(prop)) {
+        this._backFill.set(prop, this._globalTimelineStyles.get(prop) || AUTO_STYLE);
       }
       this._updateStyle(prop, val);
-    });
+    }
   }
 
   applyStylesToKeyframe() {
-    const styles = this._pendingStyles;
-    const props = Object.keys(styles);
-    if (props.length == 0) return;
+    if (this._pendingStyles.size == 0) return;
 
-    this._pendingStyles = {};
-
-    props.forEach(prop => {
-      const val = styles[prop];
-      this._currentKeyframe[prop] = val;
+    this._pendingStyles.forEach((val, prop) => {
+      this._currentKeyframe.set(prop, val);
     });
+    this._pendingStyles.clear();
 
-    Object.keys(this._localTimelineStyles).forEach(prop => {
-      if (!this._currentKeyframe.hasOwnProperty(prop)) {
-        this._currentKeyframe[prop] = this._localTimelineStyles[prop];
+    this._localTimelineStyles.forEach((val, prop) => {
+      if (!this._currentKeyframe.has(prop)) {
+        this._currentKeyframe.set(prop, val);
       }
     });
   }
 
   snapshotCurrentStyles() {
-    Object.keys(this._localTimelineStyles).forEach(prop => {
-      const val = this._localTimelineStyles[prop];
-      this._pendingStyles[prop] = val;
+    for (let [prop, val] of this._localTimelineStyles) {
+      this._pendingStyles.set(prop, val);
       this._updateStyle(prop, val);
-    });
+    }
   }
 
   getFinalKeyframe() {
@@ -784,9 +769,8 @@ export class TimelineBuilder {
   }
 
   mergeTimelineCollectedStyles(timeline: TimelineBuilder) {
-    Object.keys(timeline._styleSummary).forEach(prop => {
-      const details0 = this._styleSummary[prop];
-      const details1 = timeline._styleSummary[prop];
+    timeline._styleSummary.forEach((details1, prop) => {
+      const details0 = this._styleSummary.get(prop);
       if (!details0 || details1.time > details0.time) {
         this._updateStyle(prop, details1.value);
       }
@@ -799,19 +783,18 @@ export class TimelineBuilder {
     const postStyleProps = new Set<string>();
     const isEmpty = this._keyframes.size === 1 && this.duration === 0;
 
-    let finalKeyframes: ɵStyleData[] = [];
+    let finalKeyframes: Array<ɵStyleDataMap> = [];
     this._keyframes.forEach((keyframe, time) => {
-      const finalKeyframe = copyStyles(keyframe, true);
-      Object.keys(finalKeyframe).forEach(prop => {
-        const value = finalKeyframe[prop];
-        if (value == PRE_STYLE) {
+      const finalKeyframe = copyStyles(keyframe, new Map(), this._backFill);
+      finalKeyframe.forEach((value, prop) => {
+        if (value === PRE_STYLE) {
           preStyleProps.add(prop);
-        } else if (value == AUTO_STYLE) {
+        } else if (value === AUTO_STYLE) {
           postStyleProps.add(prop);
         }
       });
       if (!isEmpty) {
-        finalKeyframe['offset'] = time / this.duration;
+        finalKeyframe.set('offset', time / this.duration);
       }
       finalKeyframes.push(finalKeyframe);
     });
@@ -822,9 +805,9 @@ export class TimelineBuilder {
     // special case for a 0-second animation (which is designed just to place styles onscreen)
     if (isEmpty) {
       const kf0 = finalKeyframes[0];
-      const kf1 = copyObj(kf0);
-      kf0['offset'] = 0;
-      kf1['offset'] = 1;
+      const kf1 = new Map(kf0);
+      kf0.set('offset', 0);
+      kf1.set('offset', 1);
       finalKeyframes = [kf0, kf1];
     }
 
@@ -838,7 +821,7 @@ class SubTimelineBuilder extends TimelineBuilder {
   public timings: AnimateTimings;
 
   constructor(
-      driver: AnimationDriver, element: any, public keyframes: ɵStyleData[],
+      driver: AnimationDriver, element: any, public keyframes: Array<ɵStyleDataMap>,
       public preStyleProps: string[], public postStyleProps: string[], timings: AnimateTimings,
       private _stretchStartingKeyframe: boolean = false) {
     super(driver, element, timings.delay);
@@ -853,17 +836,17 @@ class SubTimelineBuilder extends TimelineBuilder {
     let keyframes = this.keyframes;
     let {delay, duration, easing} = this.timings;
     if (this._stretchStartingKeyframe && delay) {
-      const newKeyframes: ɵStyleData[] = [];
+      const newKeyframes: Array<ɵStyleDataMap> = [];
       const totalTime = duration + delay;
       const startingGap = delay / totalTime;
 
       // the original starting keyframe now starts once the delay is done
-      const newFirstKeyframe = copyStyles(keyframes[0], false);
-      newFirstKeyframe['offset'] = 0;
+      const newFirstKeyframe = copyStyles(keyframes[0]);
+      newFirstKeyframe.set('offset', 0);
       newKeyframes.push(newFirstKeyframe);
 
-      const oldFirstKeyframe = copyStyles(keyframes[0], false);
-      oldFirstKeyframe['offset'] = roundOffset(startingGap);
+      const oldFirstKeyframe = copyStyles(keyframes[0]);
+      oldFirstKeyframe.set('offset', roundOffset(startingGap));
       newKeyframes.push(oldFirstKeyframe);
 
       /*
@@ -884,10 +867,10 @@ class SubTimelineBuilder extends TimelineBuilder {
       // offsets between 1 ... n -1 are all warped by the keyframe stretch
       const limit = keyframes.length - 1;
       for (let i = 1; i <= limit; i++) {
-        let kf = copyStyles(keyframes[i], false);
-        const oldOffset = kf['offset'] as number;
+        let kf = copyStyles(keyframes[i]);
+        const oldOffset = kf.get('offset') as number;
         const timeAtKeyframe = delay + oldOffset * duration;
-        kf['offset'] = roundOffset(timeAtKeyframe / totalTime);
+        kf.set('offset', roundOffset(timeAtKeyframe / totalTime));
         newKeyframes.push(kf);
       }
 
@@ -910,17 +893,17 @@ function roundOffset(offset: number, decimalPoints = 3): number {
   return Math.round(offset * mult) / mult;
 }
 
-function flattenStyles(input: (ɵStyleData|string)[], allStyles: ɵStyleData) {
-  const styles: ɵStyleData = {};
-  let allProperties: string[];
+function flattenStyles(input: Array<(ɵStyleDataMap | string)>, allStyles: ɵStyleDataMap) {
+  const styles: ɵStyleDataMap = new Map();
+  let allProperties: string[]|IterableIterator<string>;
   input.forEach(token => {
     if (token === '*') {
-      allProperties = allProperties || Object.keys(allStyles);
-      allProperties.forEach(prop => {
-        styles[prop] = AUTO_STYLE;
-      });
+      allProperties = allProperties || allStyles.keys();
+      for (let prop of allProperties) {
+        styles.set(prop, AUTO_STYLE);
+      }
     } else {
-      copyStyles(token as ɵStyleData, false, styles);
+      copyStyles(token as ɵStyleDataMap, styles);
     }
   });
   return styles;

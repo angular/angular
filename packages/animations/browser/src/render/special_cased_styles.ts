@@ -5,6 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {ɵStyleDataMap} from '@angular/animations';
+
 import {eraseStyles, setStyles} from '../util';
 
 /**
@@ -19,15 +21,15 @@ import {eraseStyles, setStyles} from '../util';
  * @returns an instance of `SpecialCasedStyles` if any special styles are detected otherwise `null`
  */
 export function packageNonAnimatableStyles(
-    element: any, styles: {[key: string]: any}|{[key: string]: any}[]): SpecialCasedStyles|null {
-  let startStyles: {[key: string]: any}|null = null;
-  let endStyles: {[key: string]: any}|null = null;
+    element: any, styles: ɵStyleDataMap|Array<ɵStyleDataMap>): SpecialCasedStyles|null {
+  let startStyles: ɵStyleDataMap|null = null;
+  let endStyles: ɵStyleDataMap|null = null;
   if (Array.isArray(styles) && styles.length) {
     startStyles = filterNonAnimatableStyles(styles[0]);
     if (styles.length > 1) {
       endStyles = filterNonAnimatableStyles(styles[styles.length - 1]);
     }
-  } else if (styles) {
+  } else if (styles instanceof Map) {
     startStyles = filterNonAnimatableStyles(styles);
   }
 
@@ -44,17 +46,17 @@ export function packageNonAnimatableStyles(
  * `destroy()` is called then all styles will be removed.
  */
 export class SpecialCasedStyles {
-  static initialStylesByElement = (/* @__PURE__ */ new WeakMap<any, {[key: string]: any}>());
+  static initialStylesByElement = (/* @__PURE__ */ new WeakMap<any, ɵStyleDataMap>());
 
   private _state = SpecialCasedStylesState.Pending;
-  private _initialStyles!: {[key: string]: any};
+  private _initialStyles!: ɵStyleDataMap;
 
   constructor(
-      private _element: any, private _startStyles: {[key: string]: any}|null,
-      private _endStyles: {[key: string]: any}|null) {
+      private _element: any, private _startStyles: ɵStyleDataMap|null,
+      private _endStyles: ɵStyleDataMap|null) {
     let initialStyles = SpecialCasedStyles.initialStylesByElement.get(_element);
     if (!initialStyles) {
-      SpecialCasedStyles.initialStylesByElement.set(_element, initialStyles = {});
+      SpecialCasedStyles.initialStylesByElement.set(_element, initialStyles = new Map());
     }
     this._initialStyles = initialStyles;
   }
@@ -115,16 +117,14 @@ const enum SpecialCasedStylesState {
   Destroyed = 3,
 }
 
-function filterNonAnimatableStyles(styles: {[key: string]: any}) {
-  let result: {[key: string]: any}|null = null;
-  const props = Object.keys(styles);
-  for (let i = 0; i < props.length; i++) {
-    const prop = props[i];
+function filterNonAnimatableStyles(styles: ɵStyleDataMap): ɵStyleDataMap|null {
+  let result: ɵStyleDataMap|null = null;
+  styles.forEach((val, prop) => {
     if (isNonAnimatableStyle(prop)) {
-      result = result || {};
-      result[prop] = styles[prop];
+      result = result || new Map();
+      result.set(prop, val);
     }
-  }
+  });
   return result;
 }
 

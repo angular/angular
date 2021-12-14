@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {animate, animateChild, AnimationPlayer, AUTO_STYLE, group, query, sequence, stagger, state, style, transition, trigger, ɵAnimationGroupPlayer as AnimationGroupPlayer} from '@angular/animations';
-import {AnimationDriver, ɵAnimationEngine} from '@angular/animations/browser';
+import {AnimationDriver, ɵAnimationEngine, ɵnormalizeKeyframes as normalizeKeyframes} from '@angular/animations/browser';
 import {TransitionAnimationPlayer} from '@angular/animations/browser/src/render/transition_animation_engine';
 import {ENTER_CLASSNAME, LEAVE_CLASSNAME} from '@angular/animations/browser/src/util';
 import {MockAnimationDriver, MockAnimationPlayer} from '@angular/animations/browser/testing';
@@ -187,8 +187,8 @@ describe('animation query tests', function() {
       fixture.detectChanges();
 
       const expectedKeyframes = [
-        {backgroundColor: 'blue', offset: 0},
-        {backgroundColor: 'red', offset: 1},
+        new Map<string, string|number>([['backgroundColor', 'blue'], ['offset', 0]]),
+        new Map<string, string|number>([['backgroundColor', 'red'], ['offset', 1]]),
       ];
 
       players = getLog();
@@ -493,43 +493,43 @@ describe('animation query tests', function() {
           expect(p1.delay).toEqual(0);
           expect(p1.duration).toEqual(0);
           expect(p1.keyframes).toEqual([
-            {opacity: '0.01', offset: 0},
-            {opacity: '0.01', offset: 1},
+            new Map<string, string|number>([['opacity', '0.01'], ['offset', 0]]),
+            new Map<string, string|number>([['opacity', '0.01'], ['offset', 1]]),
           ]);
 
           expect(p2.delay).toEqual(0);
           expect(p2.duration).toEqual(0);
           expect(p2.keyframes).toEqual([
-            {opacity: '0.01', offset: 0},
-            {opacity: '0.01', offset: 1},
+            new Map<string, string|number>([['opacity', '0.01'], ['offset', 0]]),
+            new Map<string, string|number>([['opacity', '0.01'], ['offset', 1]]),
           ]);
 
           expect(p3.delay).toEqual(0);
           expect(p3.duration).toEqual(0);
           expect(p3.keyframes).toEqual([
-            {opacity: '0.01', offset: 0},
-            {opacity: '0.01', offset: 1},
+            new Map<string, string|number>([['opacity', '0.01'], ['offset', 0]]),
+            new Map<string, string|number>([['opacity', '0.01'], ['offset', 1]]),
           ]);
 
           expect(p4.delay).toEqual(0);
           expect(p4.duration).toEqual(1000);
           expect(p4.keyframes).toEqual([
-            {opacity: '0.01', offset: 0},
-            {opacity: '1', offset: 1},
+            new Map<string, string|number>([['opacity', '0.01'], ['offset', 0]]),
+            new Map<string, string|number>([['opacity', '1'], ['offset', 1]]),
           ]);
 
           expect(p5.delay).toEqual(1000);
           expect(p5.duration).toEqual(1000);
           expect(p5.keyframes).toEqual([
-            {opacity: '0.01', offset: 0},
-            {opacity: '1', offset: 1},
+            new Map<string, string|number>([['opacity', '0.01'], ['offset', 0]]),
+            new Map<string, string|number>([['opacity', '1'], ['offset', 1]]),
           ]);
 
           expect(p6.delay).toEqual(1500);
           expect(p6.duration).toEqual(1000);
           expect(p6.keyframes).toEqual([
-            {opacity: '0.01', offset: 0},
-            {opacity: '1', offset: 1},
+            new Map<string, string|number>([['opacity', '0.01'], ['offset', 0]]),
+            new Map<string, string|number>([['opacity', '1'], ['offset', 1]]),
           ]);
         });
 
@@ -565,11 +565,17 @@ describe('animation query tests', function() {
       const [p1, p2] = players;
       expect(p1.delay).toEqual(0);
       expect(p1.duration).toEqual(0);
-      expect(p1.keyframes).toEqual([{opacity: '0.5', offset: 0}, {opacity: '0.5', offset: 1}]);
+      expect(p1.keyframes).toEqual([
+        new Map<string, string|number>([['opacity', '0.5'], ['offset', 0]]),
+        new Map<string, string|number>([['opacity', '0.5'], ['offset', 1]])
+      ]);
 
       expect(p2.delay).toEqual(0);
       expect(p2.duration).toEqual(1000);
-      expect(p2.keyframes).toEqual([{opacity: '0.5', offset: 0}, {opacity: '1', offset: 1}]);
+      expect(p2.keyframes).toEqual([
+        new Map<string, string|number>([['opacity', '0.5'], ['offset', 0]]),
+        new Map<string, string|number>([['opacity', '1'], ['offset', 1]])
+      ]);
     });
 
     it('should properly apply stagger after various other steps within a query', () => {
@@ -680,12 +686,14 @@ describe('animation query tests', function() {
         const staggerDelay = 100 * i;
         const duration = 1000 + staggerDelay;
 
-        expect(kf[0]).toEqual({opacity: '0', offset: 0});
+        expect(kf[0]).toEqual(new Map<string, string|number>([['opacity', '0'], ['offset', 0]]));
         if (limit > 1) {
           const offsetAtStaggerDelay = staggerDelay / duration;
-          expect(kf[1]).toEqual({opacity: '0', offset: offsetAtStaggerDelay});
+          expect(kf[1]).toEqual(
+              new Map<string, string|number>([['opacity', '0'], ['offset', offsetAtStaggerDelay]]));
         }
-        expect(kf[limit]).toEqual({opacity: '1', offset: 1});
+        expect(kf[limit]).toEqual(
+            new Map<string, string|number>([['opacity', '1'], ['offset', 1]]));
         expect(player.duration).toEqual(duration);
       }
     });
@@ -785,7 +793,10 @@ describe('animation query tests', function() {
       expect(players.length).toEqual(2);
       const player = players[1];
 
-      expect(player.keyframes).toEqual([{height: '0px', offset: 0}, {height: '444px', offset: 1}]);
+      expect(player.keyframes).toEqual([
+        new Map<string, string|number>([['height', '0px'], ['offset', 0]]),
+        new Map<string, string|number>([['height', '444px'], ['offset', 1]])
+      ]);
       player.finish();
 
       expect(player.element.style.height).toEqual('444px');
@@ -838,7 +849,10 @@ describe('animation query tests', function() {
       expect(p3.element.innerText.trim()).toEqual('2');
 
       players.forEach(p => {
-        expect(p.keyframes).toEqual([{opacity: '0', offset: 0}, {opacity: '0.5', offset: 1}]);
+        expect(p.keyframes).toEqual([
+          new Map<string, string|number>([['opacity', '0'], ['offset', 0]]),
+          new Map<string, string|number>([['opacity', '0.5'], ['offset', 1]])
+        ]);
       });
     });
 
@@ -955,7 +969,10 @@ describe('animation query tests', function() {
       expect(p3.element.innerText.trim()).toEqual('0');
 
       players.forEach(p => {
-        expect(p.keyframes).toEqual([{opacity: '1', offset: 0}, {opacity: '0.5', offset: 1}]);
+        expect(p.keyframes).toEqual([
+          new Map<string, string|number>([['opacity', '1'], ['offset', 0]]),
+          new Map<string, string|number>([['opacity', '0.5'], ['offset', 1]])
+        ]);
       });
     });
 
@@ -1065,8 +1082,8 @@ describe('animation query tests', function() {
       for (let i = 0; i < 5; i++) {
         let player = players[i]!;
         expect(player.keyframes).toEqual([
-          {opacity: '0', offset: 0},
-          {opacity: '1', offset: 1},
+          new Map<string, string|number>([['opacity', '0'], ['offset', 0]]),
+          new Map<string, string|number>([['opacity', '1'], ['offset', 1]]),
         ]);
 
         let elm = player.element;
@@ -1085,8 +1102,8 @@ describe('animation query tests', function() {
       for (let i = 0; i < 5; i++) {
         let player = players[i]!;
         expect(player.keyframes).toEqual([
-          {opacity: '1', offset: 0},
-          {opacity: '0', offset: 1},
+          new Map<string, string|number>([['opacity', '1'], ['offset', 0]]),
+          new Map<string, string|number>([['opacity', '0'], ['offset', 1]]),
         ]);
 
         let elm = player.element;
@@ -1151,14 +1168,16 @@ describe('animation query tests', function() {
          const [p1, p2, p3, p4] = players;
 
          // p1 && p2 are the starting players for item3 and item4
-         expect(p1.previousStyles)
-             .toEqual({opacity: AUTO_STYLE, width: AUTO_STYLE, height: AUTO_STYLE});
-         expect(p2.previousStyles)
-             .toEqual({opacity: AUTO_STYLE, width: AUTO_STYLE, height: AUTO_STYLE});
+         expect(p1.previousStyles).toEqual(new Map([
+           ['opacity', AUTO_STYLE], ['width', AUTO_STYLE], ['height', AUTO_STYLE]
+         ]));
+         expect(p2.previousStyles).toEqual(new Map([
+           ['opacity', AUTO_STYLE], ['width', AUTO_STYLE], ['height', AUTO_STYLE]
+         ]));
 
          // p3 && p4 are the following players for item3 and item4
-         expect(p3.previousStyles).toEqual({});
-         expect(p4.previousStyles).toEqual({});
+         expect(p3.previousStyles).toEqual(new Map());
+         expect(p4.previousStyles).toEqual(new Map());
        });
 
     it('should not remove a parent container if its contents are queried into by an ancestor element',
@@ -1613,9 +1632,13 @@ describe('animation query tests', function() {
 
          players.forEach(p => {
            expect(p.keyframes).toEqual([
-             {opacity: '0', width: '0px', height: '0px', offset: 0},
-             {opacity: '1', width: '0px', height: '0px', offset: .5},
-             {opacity: AUTO_STYLE, width: AUTO_STYLE, height: '200px', offset: 1}
+             new Map<string, string|number>(
+                 [['opacity', '0'], ['width', '0px'], ['height', '0px'], ['offset', 0]]),
+             new Map<string, string|number>(
+                 [['opacity', '1'], ['width', '0px'], ['height', '0px'], ['offset', .5]]),
+             new Map<string, string|number>([
+               ['opacity', AUTO_STYLE], ['width', AUTO_STYLE], ['height', '200px'], ['offset', 1]
+             ])
            ]);
          });
        });
@@ -1879,13 +1902,18 @@ describe('animation query tests', function() {
       expect(pp.delay).toEqual(0);
       expect(pp.element).toEqual(elm1.nativeElement);
       expect(pp.duration).toEqual(1000);
-      expect(pp.keyframes).toEqual([{width: '0px', offset: 0}, {width: '100px', offset: 1}]);
+      expect(pp.keyframes).toEqual([
+        new Map<string, string|number>([['width', '0px'], ['offset', 0]]),
+        new Map<string, string|number>([['width', '100px'], ['offset', 1]])
+      ]);
 
       expect(pcp.delay).toEqual(0);
       expect(pcp.element).toEqual(elm2.nativeElement);
       expect(pcp.duration).toEqual(2000);
       expect(pcp.keyframes).toEqual([
-        {height: '0px', offset: 0}, {height: '0px', offset: .5}, {height: '100px', offset: 1}
+        new Map<string, string|number>([['height', '0px'], ['offset', 0]]),
+        new Map<string, string|number>([['height', '0px'], ['offset', .5]]),
+        new Map<string, string|number>([['height', '100px'], ['offset', 1]])
       ]);
     });
 
@@ -2415,8 +2443,8 @@ describe('animation query tests', function() {
 
          expect(pcp.element.classList.contains('inner-div')).toBeTruthy();
          expect(pcp.keyframes).toEqual([
-           {opacity: '0', offset: 0},
-           {opacity: '1', offset: 1},
+           new Map<string, string|number>([['opacity', '0'], ['offset', 0]]),
+           new Map<string, string|number>([['opacity', '1'], ['offset', 1]]),
          ]);
        });
 
@@ -2500,8 +2528,8 @@ describe('animation query tests', function() {
          expect(player.element.classList.contains('parent')).toBeTruthy();
          expect(realPlayer.element.classList.contains('inner-div')).toBeTruthy();
          expect(realPlayer.keyframes).toEqual([
-           {opacity: '0', offset: 0},
-           {opacity: '1', offset: 1},
+           new Map<string, string|number>([['opacity', '0'], ['offset', 0]]),
+           new Map<string, string|number>([['opacity', '1'], ['offset', 1]]),
          ]);
        });
 
@@ -3103,8 +3131,8 @@ describe('animation query tests', function() {
            return false;
          }) as MockAnimationPlayer;
 
-         const keyframes = childPlayer.keyframes.map(kf => {
-           delete kf['offset'];
+         const keyframes = normalizeKeyframes(childPlayer.keyframes).map(kf => {
+           kf.delete('offset');
            return kf;
          });
 
@@ -3204,7 +3232,9 @@ describe('animation query tests', function() {
          const [_sgcp, _psp, _pgcp1, _pp1, _pgcp2, pgcp3] = players;
 
          expect(pgcp3.keyframes).toEqual([
-           {offset: 0, width: '0px'}, {offset: .67, width: '0px'}, {offset: 1, width: '200px'}
+           new Map<string, string|number>([['offset', 0], ['width', '0px']]),
+           new Map<string, string|number>([['offset', .67], ['width', '0px']]),
+           new Map<string, string|number>([['offset', 1], ['width', '200px']]),
          ]);
        });
 
@@ -3445,12 +3475,8 @@ describe('animation query tests', function() {
 
          expect(pp2.element.classList.contains('parent')).toBeTruthy();
          const expectedKeyframes = [
-           {backgroundColor: 'red', offset: 0},
-           {
-             backgroundColor:
-                 'blue',  // note: this test's purpose is to make sure that this is not '*'
-             offset: 1
-           },
+           new Map<string, string|number>([['backgroundColor', 'red'], ['offset', 0]]),
+           new Map<string, string|number>([['backgroundColor', 'blue'], ['offset', 1]])
          ];
          expect(pp2.keyframes).toEqual(expectedKeyframes);
        });
@@ -3506,12 +3532,8 @@ describe('animation query tests', function() {
 
          expect(pp2.element.classList.contains('parent')).toBeTruthy();
          const expectedKeyframes = [
-           {backgroundColor: 'blue', offset: 0},
-           {
-             backgroundColor:
-                 'red',  // note: this test's purpose is to make sure that this is not '*'
-             offset: 1
-           },
+           new Map<string, string|number>([['backgroundColor', 'blue'], ['offset', 0]]),
+           new Map<string, string|number>([['backgroundColor', 'red'], ['offset', 1]]),
          ];
          expect(pp2.keyframes).toEqual(expectedKeyframes);
        });

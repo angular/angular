@@ -15,4 +15,4 @@ export {CssKeyframesPlayer as ɵCssKeyframesPlayer} from './render/css_keyframes
 export {containsElement as ɵcontainsElement, invokeQuery as ɵinvokeQuery, validateStyleProperty as ɵvalidateStyleProperty} from './render/shared';
 export {supportsWebAnimations as ɵsupportsWebAnimations, WebAnimationsDriver as ɵWebAnimationsDriver} from './render/web_animations/web_animations_driver';
 export {WebAnimationsPlayer as ɵWebAnimationsPlayer} from './render/web_animations/web_animations_player';
-export {allowPreviousPlayerStylesMerge as ɵallowPreviousPlayerStylesMerge} from './util';
+export {allowPreviousPlayerStylesMerge as ɵallowPreviousPlayerStylesMerge, normalizeKeyframes as ɵnormalizeKeyframes} from './util';

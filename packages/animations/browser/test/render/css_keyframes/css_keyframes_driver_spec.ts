@@ -24,9 +24,9 @@ describe('CssKeyframesDriver tests', () => {
       const elm = createElement();
       const animator = new CssKeyframesDriver();
       const kfElm = animator.buildKeyframeElement(elm, 'myKfAnim', [
-        {opacity: 0, width: '0px', offset: 0},
-        {opacity: 0.5, width: '100px', offset: 0.5},
-        {opacity: 1, width: '200px', offset: 1},
+        new Map<string, string|number>([['opacity', 0], ['width', '0px'], ['offset', 0]]),
+        new Map<string, string|number>([['opacity', 0.5], ['width', '100px'], ['offset', 0.5]]),
+        new Map<string, string|number>([['opacity', 1], ['width', '200px'], ['offset', 1]]),
       ]);
 
       const head = document.querySelector('head')!;
@@ -63,9 +63,9 @@ describe('CssKeyframesDriver tests', () => {
       const elm = createElement();
       const animator = new CssKeyframesDriver();
       const kfElm = animator.buildKeyframeElement(elm, 'myKfAnim', [
-        {width: '0px', offset: 0},
-        {width: '100px', offset: 0.5},
-        {width: '200px', offset: 1},
+        new Map<string, string|number>([['width', '0px'], ['offset', 0]]),
+        new Map<string, string|number>([['width', '100px'], ['offset', 0.5]]),
+        new Map<string, string|number>([['width', '200px'], ['offset', 1]]),
       ]);
 
       const head = document.querySelector('head')!;
@@ -90,8 +90,8 @@ describe('CssKeyframesDriver tests', () => {
       const player = animator.animate(
           elm,
           [
-            {width: '0px', offset: 0},
-            {width: '200px', offset: 1},
+            new Map<string, string|number>([['width', '0px'], ['offset', 0]]),
+            new Map<string, string|number>([['width', '200px'], ['offset', 1]]),
           ],
           1234, 0, 'ease-out');
 
@@ -114,8 +114,8 @@ describe('CssKeyframesDriver tests', () => {
          const player = <CssKeyframesPlayer>animator.animate(
              elm,
              [
-               {width: '0px', offset: 0},
-               {width: '200px', offset: 1},
+               new Map<string, string|number>([['width', '0px'], ['offset', 0]]),
+               new Map<string, string|number>([['width', '200px'], ['offset', 1]]),
              ],
              1234, 0, 'ease-out');
 
@@ -151,8 +151,8 @@ describe('CssKeyframesDriver tests', () => {
          const player = animator.animate(
              elm,
              [
-               {width: '0px', offset: 0},
-               {width: '200px', offset: 1},
+               new Map<string, string|number>([['width', '0px'], ['offset', 0]]),
+               new Map<string, string|number>([['width', '200px'], ['offset', 1]]),
              ],
              1234, 0, 'ease-out');
 
@@ -187,8 +187,8 @@ describe('CssKeyframesDriver tests', () => {
          const player = animator.animate(
              elm,
              [
-               {width: '0px', offset: 0},
-               {width: '200px', offset: 1},
+               new Map<string, string|number>([['width', '0px'], ['offset', 0]]),
+               new Map<string, string|number>([['width', '200px'], ['offset', 1]]),
              ],
              1234, 0, 'ease-out');
 
@@ -217,8 +217,8 @@ describe('CssKeyframesDriver tests', () => {
          const player = animator.animate(
              elm,
              [
-               {width: '0px', offset: 0},
-               {width: '200px', offset: 1},
+               new Map<string, string|number>([['width', '0px'], ['offset', 0]]),
+               new Map<string, string|number>([['width', '200px'], ['offset', 1]]),
              ],
              0, 0, 'ease-out');
          expect(player instanceof DirectStylePlayer).toBeTruthy();
@@ -232,8 +232,8 @@ describe('CssKeyframesDriver tests', () => {
          const player = animator.animate(
              elm,
              [
-               {width: '0px', offset: 0},
-               {width: '200px', offset: 1},
+               new Map<string, string|number>([['width', '0px'], ['offset', 0]]),
+               new Map<string, string|number>([['width', '200px'], ['offset', 1]]),
              ],
              1234, 0, 'ease-out');
 
@@ -252,19 +252,21 @@ describe('CssKeyframesDriver tests', () => {
       const player = <CssKeyframesPlayer>animator.animate(
           elm,
           [
-            {color: 'red', width: '111px', height: '111px', offset: 0},
-            {color: 'blue', height: '999px', width: '999px', offset: 1},
+            new Map<string, string|number>(
+                [['color', 'red'], ['width', '111px'], ['height', '111px'], ['offset', 0]]),
+            new Map<string, string|number>(
+                [['color', 'blue'], ['height', '999px'], ['width', '999px'], ['offset', 1]]),
           ],
           2000, 0, 'ease-out');
 
       player.play();
       player.finish();
       player.beforeDestroy!();
-      expect(player.currentSnapshot).toEqual({
-        width: '999px',
-        height: '999px',
-        color: 'blue',
-      });
+      expect(player.currentSnapshot).toEqual(new Map<string, string|number>([
+        ['width', '999px'],
+        ['height', '999px'],
+        ['color', 'blue'],
+      ]));
     });
 
     it('should return the intermediate styles when capture() is called in the middle of the animation',
@@ -276,8 +278,9 @@ describe('CssKeyframesDriver tests', () => {
          const player = <CssKeyframesPlayer>animator.animate(
              elm,
              [
-               {width: '0px', height: '0px', offset: 0},
-               {height: '100px', width: '100px', offset: 1},
+               new Map<string, string|number>([['width', '0px'], ['height', '0px'], ['offset', 0]]),
+               new Map<string, string|number>(
+                   [['height', '100px'], ['width', '100px'], ['offset', 1]]),
              ],
              2000, 0, 'ease-out');
 
@@ -285,8 +288,8 @@ describe('CssKeyframesDriver tests', () => {
          player.setPosition(0.5);
          player.beforeDestroy();
          const result = player.currentSnapshot;
-         expect(parseFloat(result['width'])).toBeGreaterThan(0);
-         expect(parseFloat(result['height'])).toBeGreaterThan(0);
+         expect(parseFloat(result.get('width') as string)).toBeGreaterThan(0);
+         expect(parseFloat(result.get('height') as string)).toBeGreaterThan(0);
        });
 
     it('should capture existing keyframe player styles in and merge in the styles into the follow up player\'s keyframes',
@@ -299,16 +302,18 @@ describe('CssKeyframesDriver tests', () => {
          const p1 = <CssKeyframesPlayer>animator.animate(
              elm,
              [
-               {width: '0px', lineHeight: '20px', offset: 0},
-               {width: '100px', lineHeight: '50px', offset: 1},
+               new Map<string, string|number>(
+                   [['width', '0px'], ['lineHeight', '20px'], ['offset', 0]]),
+               new Map<string, string|number>(
+                   [['width', '100px'], ['lineHeight', '50px'], ['offset', 1]]),
              ],
              2000, 0, 'ease-out');
 
          const p2 = <CssKeyframesPlayer>animator.animate(
              elm,
              [
-               {height: '100px', offset: 0},
-               {height: '300px', offset: 1},
+               new Map<string, string|number>([['height', '100px'], ['offset', 0]]),
+               new Map<string, string|number>([['height', '300px'], ['offset', 1]]),
              ],
              2000, 0, 'ease-out');
 
@@ -322,35 +327,37 @@ describe('CssKeyframesDriver tests', () => {
          const p3 = <CssKeyframesPlayer>animator.animate(
              elm,
              [
-               {height: '0px', width: '0px', offset: 0},
-               {height: '400px', width: '400px', offset: 0.5},
-               {height: '500px', width: '500px', offset: 1},
+               new Map<string, string|number>([['height', '0px'], ['width', '0px'], ['offset', 0]]),
+               new Map<string, string|number>(
+                   [['height', '400px'], ['width', '400px'], ['offset', 0.5]]),
+               new Map<string, string|number>(
+                   [['height', '500px'], ['width', '500px'], ['offset', 1]]),
              ],
              2000, 0, 'ease-out', [p1, p2]);
 
          p3.init();
          const [k1, k2, k3] = p3.keyframes;
 
-         const offset = k1.offset;
+         const offset = k1.get('offset');
          expect(offset).toEqual(0);
 
-         const width = parseInt(k1['width'] as string);
+         const width = parseInt(k1.get('width') as string);
          expect(width).toBeGreaterThan(0);
          expect(width).toBeLessThan(100);
 
-         const bWidth = parseInt(k1['lineHeight'] as string);
+         const bWidth = parseInt(k1.get('lineHeight') as string);
          expect(bWidth).toBeGreaterThan(20);
          expect(bWidth).toBeLessThan(50);
 
-         const height = parseFloat(k1['height'] as string);
+         const height = parseFloat(k1.get('height') as string);
          expect(height).toBeGreaterThan(100);
          expect(height).toBeLessThan(300);
 
          // since the lineHeight wasn't apart of the follow-up animation,
          // it's values were copied over into all the keyframes
          const b1 = bWidth;
-         const b2 = parseInt(k2['lineHeight'] as string);
-         const b3 = parseInt(k3['lineHeight'] as string);
+         const b2 = parseInt(k2.get('lineHeight') as string);
+         const b3 = parseInt(k3.get('lineHeight') as string);
          expect(b1).toEqual(b2);
          expect(b2).toEqual(b3);
 
@@ -358,10 +365,12 @@ describe('CssKeyframesDriver tests', () => {
          // and each browser has a different value based on precision...
          // therefore we can't assert it directly below (asserting it above
          // on the first keyframe was all that was needed since they are the same)
-         delete k2['lineHeight'];
-         delete k3['lineHeight'];
-         expect(k2).toEqual({width: '400px', height: '400px', offset: 0.5});
-         expect(k3).toEqual({width: '500px', height: '500px', offset: 1});
+         k2.delete('lineHeight');
+         k3.delete('lineHeight');
+         expect(k2).toEqual(new Map<string, string|number>(
+             [['width', '400px'], ['height', '400px'], ['offset', 0.5]]));
+         expect(k3).toEqual(new Map<string, string|number>(
+             [['width', '500px'], ['height', '500px'], ['offset', 1]]));
        });
 
     if (browserDetection.supportsShadowDom) {
@@ -378,8 +387,8 @@ describe('CssKeyframesDriver tests', () => {
            const player = animator.animate(
                elementToAnimate,
                [
-                 {width: '0px', offset: 0},
-                 {width: '200px', offset: 1},
+                 new Map<string, string|number>([['width', '0px'], ['offset', 0]]),
+                 new Map<string, string|number>([['width', '200px'], ['offset', 1]]),
                ],
                1234, 0, 'ease-out');
 

@@ -2449,7 +2449,6 @@ describe('acceptance integration tests', () => {
          const fixture = TestBed.createComponent(Cmp);
          fixture.detectChanges();
          completeAnimations();
-
          const comp = fixture.componentInstance;
          expect(comp.log).toEqual([
            'root',   // insertion of the inner-comp content

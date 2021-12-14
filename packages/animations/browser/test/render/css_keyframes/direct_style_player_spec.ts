@@ -19,7 +19,7 @@ describe('DirectStylePlayer tests', () => {
   it('should apply the styling to the given element when the animation starts and remove when destroyed',
      () => {
        const element = createElement();
-       const player = new DirectStylePlayer(element, {opacity: 0.5});
+       const player = new DirectStylePlayer(element, new Map([['opacity', 0.5]]));
 
        assertStyle(element, 'opacity', '');
 
@@ -35,7 +35,8 @@ describe('DirectStylePlayer tests', () => {
 
   it('should finish the animation after one tick', fakeAsync(() => {
        const element = createElement();
-       const player = new DirectStylePlayer(element, {opacity: 0.5});
+       const player =
+           new DirectStylePlayer(element, new Map<string, string|number>([['opacity', 0.5]]));
 
        let done = false;
        player.onDone(() => done = true);
@@ -54,7 +55,8 @@ describe('DirectStylePlayer tests', () => {
        element.style['width'] = '100px';
        element.style['height'] = '200px';
 
-       const player = new DirectStylePlayer(element, {width: '500px', opacity: 0.5});
+       const player = new DirectStylePlayer(
+           element, new Map<string, string|number>([['width', '500px'], ['opacity', 0.5]]));
 
        assertStyle(element, 'width', '100px');
        assertStyle(element, 'height', '200px');
