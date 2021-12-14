@@ -58,7 +58,7 @@ describe('Api pages', () => {
   });
 
   it('should not show a "Properties" section if there are only internal properties', async () => {
-    await page.navigateTo('api/forms/FormControl');
+    await page.navigateTo('api/forms/AsyncValidator');
     expect(await page.getSection('instance-properties').isPresent()).toBe(false);
   });
 
