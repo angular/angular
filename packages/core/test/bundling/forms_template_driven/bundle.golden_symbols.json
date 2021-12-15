@@ -93,16 +93,16 @@
     "name": "ComponentFactory"
   },
   {
-    "name": "ComponentFactory"
+    "name": "ComponentFactory2"
   },
   {
     "name": "ComponentFactoryResolver"
   },
   {
-    "name": "ComponentFactoryResolver"
+    "name": "ComponentFactoryResolver2"
   },
   {
-    "name": "ComponentRef"
+    "name": "ComponentRef2"
   },
   {
     "name": "ConnectableObservable"
@@ -126,7 +126,7 @@
     "name": "DOCUMENT"
   },
   {
-    "name": "DOCUMENT"
+    "name": "DOCUMENT2"
   },
   {
     "name": "DefaultDomRenderer2"
@@ -201,7 +201,7 @@
     "name": "FormsModule"
   },
   {
-    "name": "INJECTOR"
+    "name": "INJECTOR2"
   },
   {
     "name": "INJECTOR_SCOPE"
@@ -237,7 +237,7 @@
     "name": "LOCALE_DATA"
   },
   {
-    "name": "LOCALE_ID"
+    "name": "LOCALE_ID2"
   },
   {
     "name": "LifecycleHooksFeature"
@@ -262,9 +262,6 @@
   },
   {
     "name": "MergeMapSubscriber"
-  },
-  {
-    "name": "ModuleWithComponentFactories"
   },
   {
     "name": "NAMESPACE_URIS"
@@ -339,9 +336,6 @@
     "name": "NgForOf"
   },
   {
-    "name": "NgForOfContext"
-  },
-  {
     "name": "NgForm"
   },
   {
@@ -357,13 +351,13 @@
     "name": "NgModelGroup"
   },
   {
-    "name": "NgModuleFactory"
+    "name": "NgModuleFactory2"
   },
   {
     "name": "NgModuleRef"
   },
   {
-    "name": "NgModuleRef"
+    "name": "NgModuleRef2"
   },
   {
     "name": "NgOnChangesFeatureImpl"
@@ -376,9 +370,6 @@
   },
   {
     "name": "NodeInjectorFactory"
-  },
-  {
-    "name": "NoopNgZone"
   },
   {
     "name": "NullInjector"
@@ -465,9 +456,6 @@
     "name": "SharedStylesHost"
   },
   {
-    "name": "SimpleChange"
-  },
-  {
     "name": "SimpleInnerSubscriber"
   },
   {
@@ -525,9 +513,6 @@
     "name": "VE_ViewContainerRef"
   },
   {
-    "name": "Version"
-  },
-  {
     "name": "ViewContainerRef"
   },
   {
@@ -543,19 +528,10 @@
     "name": "_DOM"
   },
   {
-    "name": "_DuplicateItemRecordList"
-  },
-  {
     "name": "_DuplicateMap"
   },
   {
-    "name": "_NoopGetTestability"
-  },
-  {
     "name": "_NullComponentFactoryResolver"
-  },
-  {
-    "name": "__extends"
   },
   {
     "name": "__forward_ref__"
@@ -798,6 +774,9 @@
     "name": "empty"
   },
   {
+    "name": "empty2"
+  },
+  {
     "name": "enterDI"
   },
   {
@@ -820,9 +799,6 @@
   },
   {
     "name": "executeViewQueryFn"
-  },
-  {
-    "name": "extendStatics"
   },
   {
     "name": "extractDirectiveDef"
@@ -861,9 +837,6 @@
     "name": "from"
   },
   {
-    "name": "fromArray"
-  },
-  {
     "name": "generateInitialInputs"
   },
   {
@@ -871,6 +844,9 @@
   },
   {
     "name": "getBeforeNodeForView"
+  },
+  {
+    "name": "getBindingsEnabled"
   },
   {
     "name": "getClosureSafeProperty"
@@ -960,6 +936,9 @@
     "name": "getOrCreateTNode"
   },
   {
+    "name": "getOrCreateTViewCleanup"
+  },
+  {
     "name": "getOrCreateViewRefs"
   },
   {
@@ -1002,7 +981,7 @@
     "name": "getSymbolIterator"
   },
   {
-    "name": "getSymbolIterator"
+    "name": "getSymbolIterator2"
   },
   {
     "name": "getTNode"
@@ -1173,10 +1152,7 @@
     "name": "isPromise"
   },
   {
-    "name": "isPromise"
-  },
-  {
-    "name": "isScheduler"
+    "name": "isPromise2"
   },
   {
     "name": "isStylingMatch"
@@ -1215,7 +1191,7 @@
     "name": "leaveViewLight"
   },
   {
-    "name": "localeEn"
+    "name": "locale_en_default"
   },
   {
     "name": "lookupTokenUsingModuleInjector"
@@ -1338,9 +1314,6 @@
     "name": "pickValidators"
   },
   {
-    "name": "pipeFromArray"
-  },
-  {
     "name": "platformBrowser"
   },
   {
@@ -1428,7 +1401,7 @@
     "name": "resolvedPromise"
   },
   {
-    "name": "resolvedPromise"
+    "name": "resolvedPromise2"
   },
   {
     "name": "rxSubscriber"

@@ -18,9 +18,7 @@ let maxCol: number;
 let numberData: TableCell[][];
 let charData: TableCell[][];
 
-init();
-
-function init() {
+export function initTableUtils() {
   maxRow = getIntParameter('rows');
   maxCol = getIntParameter('cols');
   tableCreateCount = 0;

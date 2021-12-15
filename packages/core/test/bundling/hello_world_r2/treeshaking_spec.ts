@@ -7,6 +7,7 @@
  */
 
 import '@angular/compiler';
+
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -17,7 +18,7 @@ const PACKAGE = 'angular/packages/core/test/bundling/hello_world_r2';
 
 describe('treeshaking with uglify', () => {
   let content: string;
-  const contentPath = require.resolve(path.join(PACKAGE, 'bundle.min_debug.js'));
+  const contentPath = require.resolve(path.join(PACKAGE, 'bundle.debug.min.js'));
   beforeAll(() => {
     content = fs.readFileSync(contentPath, UTF8);
   });

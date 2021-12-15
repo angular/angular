@@ -30,4 +30,10 @@ export {NgTscPlugin} from './src/ngtsc/tsc_plugin';
 export {NgtscProgram} from './src/ngtsc/program';
 export {OptimizeFor} from './src/ngtsc/typecheck/api';
 
+// **Note**: Explicit named exports to make this file work with CJS/ESM interop without
+// needing to use a default import. NodeJS will expose named CJS exports as named ESM exports.
+// TODO(devversion): Remove these duplicate exports once devmode&prodmode is combined/ESM.
+export {ConsoleLogger, Logger, LogLevel} from './src/ngtsc/logging';
+export {NodeJSFileSystem} from './src/ngtsc/file_system';
+
 setFileSystem(new NodeJSFileSystem());

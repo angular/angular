@@ -6,12 +6,6 @@
     "name": "ChangeDetectionStrategy"
   },
   {
-    "name": "ComponentFactory"
-  },
-  {
-    "name": "ComponentRef"
-  },
-  {
     "name": "DefaultIterableDiffer"
   },
   {
@@ -25,9 +19,6 @@
   },
   {
     "name": "ElementRef"
-  },
-  {
-    "name": "ErrorHandler"
   },
   {
     "name": "InjectFlags"
@@ -75,16 +66,10 @@
     "name": "NgForOf"
   },
   {
-    "name": "NgForOfContext"
-  },
-  {
     "name": "NgIf"
   },
   {
     "name": "NgIfContext"
-  },
-  {
-    "name": "NgModuleRef"
   },
   {
     "name": "NodeInjector"
@@ -102,9 +87,6 @@
     "name": "R3ViewContainerRef"
   },
   {
-    "name": "RendererFactory2"
-  },
-  {
     "name": "RootViewRef"
   },
   {
@@ -112,9 +94,6 @@
   },
   {
     "name": "Sanitizer"
-  },
-  {
-    "name": "SimpleChange"
   },
   {
     "name": "SkipSelf"
@@ -153,9 +132,6 @@
     "name": "VE_ViewContainerRef"
   },
   {
-    "name": "Version"
-  },
-  {
     "name": "ViewContainerRef"
   },
   {
@@ -169,9 +145,6 @@
   },
   {
     "name": "_CLEAN_PROMISE"
-  },
-  {
-    "name": "_DuplicateItemRecordList"
   },
   {
     "name": "_DuplicateMap"
@@ -390,6 +363,9 @@
     "name": "getBeforeNodeForView"
   },
   {
+    "name": "getBindingsEnabled"
+  },
+  {
     "name": "getClosureSafeProperty"
   },
   {
@@ -454,6 +430,9 @@
   },
   {
     "name": "getOrCreateTNode"
+  },
+  {
+    "name": "getOrCreateTViewCleanup"
   },
   {
     "name": "getOrCreateViewRefs"
