@@ -27,19 +27,10 @@
     "name": "AbsoluteRedirect"
   },
   {
-    "name": "ActivateRoutes"
-  },
-  {
     "name": "ActivatedRoute"
   },
   {
     "name": "ActivatedRouteSnapshot"
-  },
-  {
-    "name": "ActivationEnd"
-  },
-  {
-    "name": "ActivationStart"
   },
   {
     "name": "AnonymousSubject"
@@ -52,9 +43,6 @@
   },
   {
     "name": "ApplicationRef"
-  },
-  {
-    "name": "ApplyRedirects"
   },
   {
     "name": "ArgumentOutOfRangeError"
@@ -111,16 +99,7 @@
     "name": "ChangeDetectorRef"
   },
   {
-    "name": "ChildActivationEnd"
-  },
-  {
-    "name": "ChildActivationStart"
-  },
-  {
     "name": "ChildrenOutletContexts"
-  },
-  {
-    "name": "CombineLatestOperator"
   },
   {
     "name": "CombineLatestSubscriber"
@@ -135,16 +114,16 @@
     "name": "ComponentFactory"
   },
   {
-    "name": "ComponentFactory"
+    "name": "ComponentFactory2"
   },
   {
     "name": "ComponentFactoryResolver"
   },
   {
-    "name": "ComponentFactoryResolver"
+    "name": "ComponentFactoryResolver2"
   },
   {
-    "name": "ComponentRef"
+    "name": "ComponentRef2"
   },
   {
     "name": "ConnectableObservable"
@@ -168,7 +147,7 @@
     "name": "DOCUMENT"
   },
   {
-    "name": "DOCUMENT"
+    "name": "DOCUMENT2"
   },
   {
     "name": "DefaultDomRenderer2"
@@ -190,12 +169,6 @@
   },
   {
     "name": "DefaultKeyValueDifferFactory"
-  },
-  {
-    "name": "DefaultRouteReuseStrategy"
-  },
-  {
-    "name": "DefaultUrlHandlingStrategy"
   },
   {
     "name": "DefaultUrlSerializer"
@@ -255,9 +228,6 @@
     "name": "FilterSubscriber"
   },
   {
-    "name": "FinallyOperator"
-  },
-  {
     "name": "FinallySubscriber"
   },
   {
@@ -273,7 +243,7 @@
     "name": "INITIAL_VALUE"
   },
   {
-    "name": "INJECTOR"
+    "name": "INJECTOR2"
   },
   {
     "name": "INJECTOR_SCOPE"
@@ -315,7 +285,7 @@
     "name": "LOCALE_DATA"
   },
   {
-    "name": "LOCALE_ID"
+    "name": "LOCALE_ID2"
   },
   {
     "name": "LOCATION_INITIALIZED"
@@ -361,9 +331,6 @@
   },
   {
     "name": "MergeMapSubscriber"
-  },
-  {
-    "name": "ModuleWithComponentFactories"
   },
   {
     "name": "NAMESPACE_URIS"
@@ -444,13 +411,13 @@
     "name": "NgModuleFactory"
   },
   {
-    "name": "NgModuleFactory"
+    "name": "NgModuleFactory2"
   },
   {
     "name": "NgModuleRef"
   },
   {
-    "name": "NgModuleRef"
+    "name": "NgModuleRef2"
   },
   {
     "name": "NgOnChangesFeatureImpl"
@@ -465,9 +432,6 @@
     "name": "NoMatch"
   },
   {
-    "name": "NoMatch"
-  },
-  {
     "name": "NoPreloading"
   },
   {
@@ -475,9 +439,6 @@
   },
   {
     "name": "NodeInjectorFactory"
-  },
-  {
-    "name": "NoopNgZone"
   },
   {
     "name": "NullInjector"
@@ -495,9 +456,6 @@
     "name": "OuterSubscriber"
   },
   {
-    "name": "OutletContext"
-  },
-  {
     "name": "OutletInjector"
   },
   {
@@ -505,9 +463,6 @@
   },
   {
     "name": "PLATFORM_INITIALIZER"
-  },
-  {
-    "name": "ParamsAsMap"
   },
   {
     "name": "PathLocationStrategy"
@@ -561,10 +516,7 @@
     "name": "ROUTES"
   },
   {
-    "name": "ROUTES"
-  },
-  {
-    "name": "Recognizer"
+    "name": "ROUTES2"
   },
   {
     "name": "RefCountOperator"
@@ -687,9 +639,6 @@
     "name": "SharedStylesHost"
   },
   {
-    "name": "SimpleChange"
-  },
-  {
     "name": "SimpleInnerSubscriber"
   },
   {
@@ -724,9 +673,6 @@
   },
   {
     "name": "TQueries_"
-  },
-  {
-    "name": "TQueryMetadata_"
   },
   {
     "name": "TQuery_"
@@ -798,9 +744,6 @@
     "name": "VE_ViewContainerRef"
   },
   {
-    "name": "Version"
-  },
-  {
     "name": "ViewContainerRef"
   },
   {
@@ -819,19 +762,10 @@
     "name": "_DOM"
   },
   {
-    "name": "_DuplicateItemRecordList"
-  },
-  {
     "name": "_DuplicateMap"
   },
   {
-    "name": "_NoopGetTestability"
-  },
-  {
     "name": "_NullComponentFactoryResolver"
-  },
-  {
-    "name": "__extends"
   },
   {
     "name": "__forward_ref__"
@@ -918,6 +852,9 @@
     "name": "applyProjectionRecursive"
   },
   {
+    "name": "applyRedirects2"
+  },
+  {
     "name": "applyToElementOrContainer"
   },
   {
@@ -978,9 +915,6 @@
     "name": "concat"
   },
   {
-    "name": "concatAll"
-  },
-  {
     "name": "concatMap"
   },
   {
@@ -1008,9 +942,6 @@
     "name": "convertToParamMap"
   },
   {
-    "name": "createBrowserPlatformLocation"
-  },
-  {
     "name": "createContainerRef"
   },
   {
@@ -1033,9 +964,6 @@
   },
   {
     "name": "createLView"
-  },
-  {
-    "name": "createLocation"
   },
   {
     "name": "createNewSegmentChildren"
@@ -1143,7 +1071,10 @@
     "name": "empty"
   },
   {
-    "name": "empty"
+    "name": "empty2"
+  },
+  {
+    "name": "empty3"
   },
   {
     "name": "emptyPathMatch"
@@ -1191,9 +1122,6 @@
     "name": "executeViewQueryFn"
   },
   {
-    "name": "extendStatics"
-  },
-  {
     "name": "extractDirectiveDef"
   },
   {
@@ -1218,7 +1146,7 @@
     "name": "flatten"
   },
   {
-    "name": "flatten"
+    "name": "flatten2"
   },
   {
     "name": "flattenStyles"
@@ -1252,6 +1180,9 @@
   },
   {
     "name": "getBeforeNodeForView"
+  },
+  {
+    "name": "getBindingsEnabled"
   },
   {
     "name": "getBootstrapListener"
@@ -1413,7 +1344,7 @@
     "name": "getSymbolIterator"
   },
   {
-    "name": "getSymbolIterator"
+    "name": "getSymbolIterator2"
   },
   {
     "name": "getTNode"
@@ -1539,7 +1470,7 @@
     "name": "isFunction"
   },
   {
-    "name": "isFunction"
+    "name": "isFunction2"
   },
   {
     "name": "isImmediateMatch"
@@ -1590,7 +1521,7 @@
     "name": "isPromise"
   },
   {
-    "name": "isPromise"
+    "name": "isPromise2"
   },
   {
     "name": "isScheduler"
@@ -1614,7 +1545,7 @@
     "name": "keyValDiff"
   },
   {
-    "name": "last"
+    "name": "last2"
   },
   {
     "name": "leaveDI"
@@ -1626,7 +1557,7 @@
     "name": "leaveViewLight"
   },
   {
-    "name": "localeEn"
+    "name": "locale_en_default"
   },
   {
     "name": "locateDirectiveOrProvider"
@@ -1722,7 +1653,7 @@
     "name": "noMatch"
   },
   {
-    "name": "noMatch"
+    "name": "noMatch2"
   },
   {
     "name": "noSideEffects"
@@ -1734,7 +1665,7 @@
     "name": "noop"
   },
   {
-    "name": "noop"
+    "name": "noop2"
   },
   {
     "name": "normalizeQueryParams"
@@ -1764,9 +1695,6 @@
     "name": "pathCompareMap"
   },
   {
-    "name": "pipeFromArray"
-  },
-  {
     "name": "platformBrowser"
   },
   {
@@ -1782,13 +1710,16 @@
     "name": "provideForRootGuard"
   },
   {
-    "name": "provideLocationStrategy"
+    "name": "provideLocationStrategy2"
   },
   {
     "name": "provideRoutes"
   },
   {
     "name": "readPatchedLView"
+  },
+  {
+    "name": "recognize2"
   },
   {
     "name": "refCount"
@@ -1944,7 +1875,7 @@
     "name": "stringify"
   },
   {
-    "name": "stringify"
+    "name": "stringify6"
   },
   {
     "name": "stringifyCSSSelector"

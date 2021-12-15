@@ -10,7 +10,7 @@ load("@npm//@bazel/typescript:index.bzl", _ts_config = "ts_config", _ts_library 
 load("@npm//@bazel/protractor:index.bzl", _protractor_web_test_suite = "protractor_web_test_suite")
 load("@npm//typescript:index.bzl", "tsc")
 load("//packages/bazel:index.bzl", _ng_module = "ng_module", _ng_package = "ng_package")
-load("@npm//@angular/dev-infra-private/bazel/benchmark/ng_rollup_bundle:ng_rollup_bundle.bzl", _ng_rollup_bundle = "ng_rollup_bundle")
+load("@npm//@angular/dev-infra-private/bazel/benchmark/app_bundling:index.bzl", _app_bundle = "app_bundle")
 load("//tools:ng_benchmark.bzl", _ng_benchmark = "ng_benchmark")
 load("@npm//@angular/dev-infra-private/bazel/api-golden:index.bzl", _api_golden_test = "api_golden_test", _api_golden_test_npm_package = "api_golden_test_npm_package")
 load("@npm//@angular/dev-infra-private/bazel:extract_js_module_output.bzl", "extract_js_module_output")
@@ -452,23 +452,11 @@ def jasmine_node_test(bootstrap = [], **kwargs):
         **kwargs
     )
 
-def ng_rollup_bundle(deps = [], **kwargs):
-    """Default values for ng_rollup_bundle"""
-    deps = deps + [
-        "@npm//tslib",
-        "@npm//reflect-metadata",
-    ]
-    _ng_rollup_bundle(
-        deps = deps,
-        **kwargs
-    )
+def app_bundle(**kwargs):
+    """Default values for app_bundle"""
+    _app_bundle(**kwargs)
 
-# TODO: Consider removing this rule in favor of `ng_rollup_bundle`. Most of the tests use
-# the benchmarking rule from dev-infra, but there are cases where we have a bad mix of
-# the rollup bundle rules here. i.e.
-#   - `@angular/language-service` uses the benchmarking rule for shipping to NPM.
-#   - `@angular/service-worker` uses the benchmarking rule for shipping the worker minified.
-#   - `zone.js` uses this rule (as the only consumer) for creating NPM package bundles.
+# TODO: Consider removing this rule in favor of `esbuild` for more consistent bundling.
 def rollup_bundle(name, testonly = False, sourcemap = "true", **kwargs):
     """A drop in replacement for the rules nodejs [legacy rollup_bundle].
 

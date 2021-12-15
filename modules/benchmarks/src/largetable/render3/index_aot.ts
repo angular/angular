@@ -8,6 +8,7 @@
 import {ɵrenderComponent as renderComponent} from '@angular/core';
 
 import {bindAction, profile} from '../../util';
+import {initTableUtils} from '../util';
 
 import {createDom, destroyDom, LargeTableComponent} from './table';
 
@@ -17,6 +18,9 @@ export function main() {
   let component: LargeTableComponent;
   if (typeof window !== 'undefined') {
     component = renderComponent<LargeTableComponent>(LargeTableComponent);
+
+    initTableUtils();
+
     bindAction('#createDom', () => createDom(component));
     bindAction('#destroyDom', () => destroyDom(component));
     bindAction('#updateDomProfile', profile(() => createDom(component), noop, 'update'));

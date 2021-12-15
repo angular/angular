@@ -10,7 +10,6 @@
 import '@angular/localize/init';
 
 import {computeMsgId} from '@angular/compiler';
-import {loadTranslations} from '@angular/localize';
 
 export const translations = {
   [computeMsgId('What needs to be done?', '')]: `Qu'y a-t-il à faire ?`,
@@ -28,5 +27,3 @@ export const translations = {
       'Démontrer la détection des changements sans zonejs',
   [computeMsgId('Demonstrate internationalization', '')]: `Démontrer l'internationalisation`
 };
-
-loadTranslations(translations);

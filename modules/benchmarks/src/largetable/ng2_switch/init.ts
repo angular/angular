@@ -9,7 +9,7 @@
 import {ApplicationRef, NgModuleRef} from '@angular/core';
 
 import {bindAction, profile} from '../../util';
-import {buildTable, emptyTable} from '../util';
+import {buildTable, emptyTable, initTableUtils} from '../util';
 
 import {AppModule, TableComponent} from './table';
 
@@ -31,8 +31,10 @@ export function init(moduleRef: NgModuleRef<AppModule>) {
 
   const injector = moduleRef.injector;
   appRef = injector.get(ApplicationRef);
-
   table = appRef.components[0].instance;
+
+  initTableUtils();
+
   bindAction('#destroyDom', destroyDom);
   bindAction('#createDom', createDom);
   bindAction('#updateDomProfile', profile(createDom, noop, 'update'));

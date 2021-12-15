@@ -6,7 +6,7 @@
     "name": "EMPTY_ARRAY"
   },
   {
-    "name": "INJECTOR"
+    "name": "INJECTOR2"
   },
   {
     "name": "INJECTOR_SCOPE"
@@ -42,9 +42,6 @@
     "name": "NULL_INJECTOR"
   },
   {
-    "name": "NullInjector"
-  },
-  {
     "name": "R3Injector"
   },
   {
@@ -67,6 +64,9 @@
   },
   {
     "name": "_injectImplementation"
+  },
+  {
+    "name": "createInjector"
   },
   {
     "name": "deepForEach"
@@ -97,6 +97,9 @@
   },
   {
     "name": "injectInjectorOnly"
+  },
+  {
+    "name": "injectRootLimpMode"
   },
   {
     "name": "injectableDefOrInjectorDefFactory"

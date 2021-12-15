@@ -7,15 +7,10 @@
  */
 
 import {ApplicationRef, NgModuleRef} from '@angular/core';
+
 import {bindAction, profile} from '../../util';
+
 import {StylingModule} from './styling';
-
-const empty = [];
-const items = [];
-for (let i = 0; i < 2000; i++) {
-  items.push(i);
-}
-
 
 export function init(moduleRef: NgModuleRef<StylingModule>) {
   const injector = moduleRef.injector;
@@ -24,6 +19,9 @@ export function init(moduleRef: NgModuleRef<StylingModule>) {
   const component = componentRef.instance;
   const componentHostEl = componentRef.location.nativeElement;
   const select = document.querySelector('#scenario-select')! as HTMLSelectElement;
+
+  const empty = [];
+  const items = [];
 
   function create(tplRefIdx: number) {
     component.tplRefIdx = tplRefIdx;
@@ -55,6 +53,10 @@ export function init(moduleRef: NgModuleRef<StylingModule>) {
         cl.add('external');
       }
     });
+  }
+
+  for (let i = 0; i < 2000; i++) {
+    items.push(i);
   }
 
   bindAction('#create', () => create(select.selectedIndex));
