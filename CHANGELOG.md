@@ -1,3 +1,20 @@
+<a name="13.1.1"></a>
+# 13.1.1 (2021-12-15)
+### animations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [bb1d4ff315](https://github.com/angular/angular/commit/bb1d4ff31592836b5268f1b42fc05823aff212aa) | fix | don't consume instructions for animateChild ([#44357](https://github.com/angular/angular/pull/44357)) |
+| [d8b6adb7bc](https://github.com/angular/angular/commit/d8b6adb7bcf1ed6edc01c61406d30c86b2385284) | fix | should not invoke disabled child animations ([#37724](https://github.com/angular/angular/pull/37724)) |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [bce108ab49](https://github.com/angular/angular/commit/bce108ab49f9a136faf5f80ffb95c76d7712437a) | fix | `_reduceValue` arrow function now has correct types. ([#44483](https://github.com/angular/angular/pull/44483)) |
+| [998c1e63fe](https://github.com/angular/angular/commit/998c1e63fee1029badaf43f39a4353043dc5edf8) | fix | I indroduced a minor error in a previous PR: pendingValue is a value not a boolean flag. ([#44450](https://github.com/angular/angular/pull/44450)) |
+## Special Thanks
+Aristeidis Bampakos, Dylan Hunn, George Kalpakas, JoostK, Kristiyan Kostadinov, Paul Gschwendtner, Spej, Yousaf Nawaz, dario-piotrowicz, faso-dev, jaybell and zuckjet
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="13.2.0-next.0"></a>
 # 13.2.0-next.0 (2021-12-09)
 
