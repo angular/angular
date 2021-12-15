@@ -16,7 +16,6 @@ export class WebAnimationsPlayer implements AnimationPlayer {
   private _onDestroyFns: Function[] = [];
   private _duration: number;
   private _delay: number;
-  private _initialized = false;
   private _finished = false;
   private _started = false;
   private _destroyed = false;
@@ -28,9 +27,8 @@ export class WebAnimationsPlayer implements AnimationPlayer {
   private _originalOnDoneFns: Function[] = [];
   private _originalOnStartFns: Function[] = [];
 
-  // using non-null assertion because it's re(set) by init();
-  public readonly domPlayer!: Animation;
-  public time = 0;
+  private _domPlayer: Animation | undefined;
+  private time = 0;
 
   public parentPlayer: AnimationPlayer | null = null;
   public currentSnapshot: ɵStyleDataMap = new Map();
@@ -54,36 +52,37 @@ export class WebAnimationsPlayer implements AnimationPlayer {
     }
   }
 
-  init(): void {
-    this._buildPlayer();
-    this._preparePlayerBeforeStart();
-  }
-
-  private _buildPlayer(): void {
-    if (this._initialized) return;
-    this._initialized = true;
-
-    const keyframes = this.keyframes;
-    // @ts-expect-error overwriting a readonly property
-    this.domPlayer = this._triggerWebAnimation(this.element, keyframes, this.options);
-    this._finalKeyframe = keyframes.length ? keyframes[keyframes.length - 1] : new Map();
-    const onFinish = () => this._onFinish();
-    this.domPlayer.addEventListener('finish', onFinish);
-    this.onDestroy(() => {
-      // We must remove the `finish` event listener once an animation has completed all its
-      // iterations. This action is necessary to prevent a memory leak since the listener captures
-      // `this`, creating a closure that prevents `this` from being garbage collected.
-      this.domPlayer.removeEventListener('finish', onFinish);
-    });
-  }
-
-  private _preparePlayerBeforeStart() {
+  init(): Animation {
+    const player = this._buildPlayer();
     // this is required so that the player doesn't start to animate right away
     if (this._delay) {
       this._resetDomPlayerState();
     } else {
-      this.domPlayer.pause();
+      player.pause();
     }
+
+    return player;
+  }
+
+  private _buildPlayer(): Animation {
+    if (this._domPlayer) return this._domPlayer;
+
+    const keyframes = this.keyframes;
+    const player = (this._domPlayer = this._triggerWebAnimation(
+      this.element,
+      keyframes,
+      this.options,
+    ));
+    this._finalKeyframe = keyframes.length ? keyframes[keyframes.length - 1] : new Map();
+    const onFinish = () => this._onFinish();
+    player.addEventListener('finish', onFinish);
+    this.onDestroy(() => {
+      // We must remove the `finish` event listener once an animation has completed all its
+      // iterations. This action is necessary to prevent a memory leak since the listener captures
+      // `this`, creating a closure that prevents `this` from being garbage collected.
+      player.removeEventListener('finish', onFinish);
+    });
+    return this._domPlayer;
   }
 
   private _convertKeyframesToObject(keyframes: Array<ɵStyleDataMap>): any[] {
@@ -118,30 +117,25 @@ export class WebAnimationsPlayer implements AnimationPlayer {
   }
 
   play(): void {
-    this._buildPlayer();
     if (!this.hasStarted()) {
       this._onStartFns.forEach((fn) => fn());
       this._onStartFns = [];
       this._started = true;
-      if (this._specialStyles) {
-        this._specialStyles.start();
-      }
+      this._specialStyles?.start();
     }
-    this.domPlayer.play();
+    this._buildPlayer().play();
   }
 
   pause(): void {
-    this.init();
-    this.domPlayer.pause();
+    const player = this.init();
+    player.pause();
   }
 
   finish(): void {
-    this.init();
-    if (this._specialStyles) {
-      this._specialStyles.finish();
-    }
+    this._specialStyles?.finish();
     this._onFinish();
-    this.domPlayer.finish();
+    const player = this.init();
+    player.finish();
   }
 
   reset(): void {
@@ -154,9 +148,7 @@ export class WebAnimationsPlayer implements AnimationPlayer {
   }
 
   private _resetDomPlayerState() {
-    if (this.domPlayer) {
-      this.domPlayer.cancel();
-    }
+    this._domPlayer?.cancel();
   }
 
   restart(): void {
@@ -182,15 +174,16 @@ export class WebAnimationsPlayer implements AnimationPlayer {
   }
 
   setPosition(p: number): void {
-    if (this.domPlayer === undefined) {
-      this.init();
-    }
-    this.domPlayer.currentTime = p * this.time;
+    const player = this._domPlayer ?? this.init();
+    player.currentTime = p * this.time;
   }
 
   getPosition(): number {
+    if ((typeof ngDevMode === 'undefined' || ngDevMode) && !this._domPlayer) {
+      throw new Error('DOM player is not defined.');
+    }
     // tsc is complaining with TS2362 without the conversion to number
-    return +(this.domPlayer.currentTime ?? 0) / this.time;
+    return +(this._domPlayer!.currentTime ?? 0) / this.time;
   }
 
   get totalTime(): number {
