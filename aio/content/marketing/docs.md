@@ -58,3 +58,8 @@ for information about submission guidelines.
 
 Our community values respectful, supportive communication.
 Please consult and adhere to the [Code of Conduct](https://github.com/angular/code-of-conduct/blob/master/CODE_OF_CONDUCT.md "Contributor code of conduct").
+
+### TC39 decorators proposal
+
+One last note-please if you enjoy angular, go and star repo with the [proposal-decorators
+](https://github.com/tc39/proposal-decorators). That's a way to show the TC39 members that you are actively using decorators and you want to have them in the language.
