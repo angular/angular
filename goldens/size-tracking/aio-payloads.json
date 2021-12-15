@@ -2,7 +2,7 @@
   "aio": {
     "master": {
       "uncompressed": {
-        "runtime": 4436,
+        "runtime": 4330,
         "main": 457054,
         "polyfills": 37123,
         "styles": 70149,
@@ -14,7 +14,7 @@
   "aio-local": {
     "master": {
       "uncompressed": {
-        "runtime": 4436,
+        "runtime": 4330,
         "main": 456498,
         "polyfills": 37271,
         "styles": 70149,

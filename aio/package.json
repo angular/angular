@@ -103,12 +103,12 @@
     "zone.js": "~0.11.4"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "13.0.4",
+    "@angular-devkit/build-angular": "^13.1.0",
     "@angular-eslint/builder": "^13.0.0",
     "@angular-eslint/eslint-plugin": "^13.0.0",
     "@angular-eslint/eslint-plugin-template": "^13.0.0",
     "@angular-eslint/template-parser": "^13.0.0",
-    "@angular/cli": "13.0.4",
+    "@angular/cli": "^13.1.0",
     "@angular/compiler-cli": "13.0.3",
     "@types/jasmine": "~3.10.0",
     "@types/lunr": "^2.3.3",
