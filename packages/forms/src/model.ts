@@ -171,6 +171,13 @@ function isOptionsObj(validatorOrOpts?: ValidatorFn|ValidatorFn[]|AbstractContro
       typeof validatorOrOpts === 'object';
 }
 
+export declare abstract class AbstractControlValue<T> {
+  /**
+   * The current value of the typed control.
+   */
+   public readonly value: T;
+}
+
 /**
  * This is the base class for `FormControl`, `FormGroup`, and `FormArray`.
  *
@@ -1573,7 +1580,7 @@ export class FormGroup extends AbstractControl {
    *
    */
   constructor(
-      public controls: {[key: string]: AbstractControl},
+      public controls: {[key: string]: AbstractControl|any},
       validatorOrOpts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|null,
       asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null) {
     super(pickValidators(validatorOrOpts), pickAsyncValidators(asyncValidator, validatorOrOpts));
