@@ -61,19 +61,65 @@ ls('node_modules/@types').filter(f => f.startsWith('babel__')).forEach(pkg => {
   }
 });
 
-log('\n# patch: use local version of @angular/* and zone.js in component_benchmark from @angular/dev-infra.-private');
-[['@npm//@angular/platform-browser', '@angular//packages/platform-browser'],
- ['@npm//@angular/core', '@angular//packages/core'],
- [
-   'load\\("@npm//@angular/bazel:index.bzl", "ng_module"\\)',
-   'load\("@angular//tools:defaults.bzl", "ng_module"\)'
- ],
- ['@npm//zone.js', '//packages/zone.js/bundles:zone.umd.js'],
+log('\n# patch: use local version of @angular/* and zone.js in Starlark files from @angular/dev-infra-private');
 
-].forEach(([matcher, replacement]) => {
-  sed('-i', matcher, replacement,
-      'node_modules/@angular/dev-infra-private/bazel/benchmark/component_benchmark/component_benchmark.bzl');
-});
+const ngDevPatches = new Map();
+const captureNgDevPatches = (files, patches) =>
+    patches.forEach(p => _captureNgDevPatch(p[0], p[1], files));
+const _captureNgDevPatch = (search, replace, files) => {
+  for (const fileName of files) {
+    const currentPatches = ngDevPatches.get(fileName) ?? [];
+    ngDevPatches.set(fileName, [...currentPatches, [search, replace]]);
+  }
+};
+
+// Patches for the component benchmark rule.
+captureNgDevPatches(
+    [
+      'node_modules/@angular/dev-infra-private/bazel/benchmark/component_benchmark/component_benchmark.bzl',
+    ],
+    [
+      ['@npm//@angular/platform-browser', '@angular//packages/platform-browser'],
+      ['@npm//@angular/core', '@angular//packages/core'],
+      ['@npm//:node_modules/zone.js/bundles/zone.umd.js', '//packages/zone.js/bundles:zone.umd.js'],
+      [
+        'load\\("@npm//@angular/bazel:index.bzl", "ng_module"\\)',
+        'load\("@angular//tools:defaults.bzl", "ng_module"\)'
+      ],
+    ]);
+
+// Patches for the app bundling
+captureNgDevPatches(
+    [
+      'node_modules/@angular/dev-infra-private/bazel/benchmark/app_bundling/index.bzl',
+      'node_modules/@angular/dev-infra-private/bazel/benchmark/app_bundling/esbuild.config-tmpl.mjs',
+    ],
+    [
+      // The app bundle config accesses the linker entry-point as well, so we need
+      // to request it as well.
+      [
+        '"@npm//@angular/compiler-cli"',
+        '"@angular//packages/compiler-cli", "@angular//packages/compiler-cli/linker/babel"'
+      ],
+      // When these entry-points are consumed from sources within Bazel, the package exports
+      // are not available and explicit imports (as per ECMAScript module) are needed.
+      // This can be removed when devmode&prodmode is combined/ESM is used everywhere.
+      [
+        `from '@angular/compiler-cli/linker/babel'`,
+        `from '@angular/compiler-cli/linker/babel/index.js'`
+      ],
+      [
+        `from '@angular/compiler-cli/private/tooling'`,
+        `from '@angular/compiler-cli/private/tooling.js'`
+      ],
+    ]);
+
+// Apply the captured patches for the `@angular/dev-infra-private` package.
+for (const [fileName, patches] of ngDevPatches.entries()) {
+  for (const patch of patches) {
+    sed('-i', patch[0], patch[1], fileName);
+  }
+}
 
 log('\n# patch: delete d.ts files referring to rxjs-compat');
 // more info in https://github.com/angular/angular/pull/33786
