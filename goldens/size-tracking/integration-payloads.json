@@ -15,7 +15,7 @@
         "main": "TODO(i): temporarily increase the payload size limit from 17597 - this needs to be investigate further what caused the increase.",
         "main": "Likely there is a missing PURE annotation https://github.com/angular/angular/pull/43344",
         "main": "Tracking issue: https://github.com/angular/angular/issues/43568",
-        "main": 20409,
+        "main": 19947,
         "polyfills": 37250
       }
     }
@@ -24,8 +24,8 @@
     "master": {
       "uncompressed": {
         "runtime": 1105,
-        "main": 144185,
-        "polyfills": 36939
+        "main": 143368,
+        "polyfills": 37248
       }
     }
   },
@@ -33,7 +33,7 @@
     "master": {
       "uncompressed": {
         "runtime": 929,
-        "main": 136770,
+        "main": 135931,
         "polyfills": 37933
       }
     }
@@ -41,10 +41,10 @@
   "cli-hello-world-lazy": {
     "master": {
       "uncompressed": {
-        "runtime": 2843,
-        "main": 230506,
-        "polyfills": 37064,
-        "src_app_lazy_lazy_module_ts": 795
+        "runtime": 2812,
+        "main": 230952,
+        "polyfills": 37244,
+        "src_app_lazy_lazy_module_ts": 796
       }
     }
   },

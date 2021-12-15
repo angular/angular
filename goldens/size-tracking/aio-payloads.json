@@ -3,11 +3,11 @@
     "master": {
       "uncompressed": {
         "runtime": 4330,
-        "main": 457054,
+        "main": 456437,
         "polyfills": 37123,
-        "styles": 70149,
-        "light-theme": 77369,
-        "dark-theme": 77549
+        "styles": 69863,
+        "light-theme": 77232,
+        "dark-theme": 77356
       }
     }
   },
@@ -15,11 +15,11 @@
     "master": {
       "uncompressed": {
         "runtime": 4330,
-        "main": 456498,
+        "main": 456457,
         "polyfills": 37271,
-        "styles": 70149,
-        "light-theme": 77369,
-        "dark-theme": 77549
+        "styles": 69863,
+        "light-theme": 77232,
+        "dark-theme": 77356
       }
     }
   }
