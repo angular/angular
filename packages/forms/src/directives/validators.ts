@@ -393,6 +393,7 @@ export class RequiredValidator extends AbstractValidatorDirective {
   /** @internal */
   override createValidator = (input: unknown): ValidatorFn => requiredValidator;
 
+  /** @nodoc */
   override enabled(): boolean {
     return this.required;
   }
