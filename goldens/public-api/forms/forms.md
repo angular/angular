@@ -695,9 +695,8 @@ export class ReactiveFormsModule {
 // @public
 export class RequiredValidator extends AbstractValidatorDirective {
     // (undocumented)
-    enabled(): boolean;
-    get required(): boolean;
-    set required(value: boolean | string);
+    enabled(input: boolean): boolean;
+    required: boolean | string;
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<RequiredValidator, ":not([type=checkbox])[required][formControlName],:not([type=checkbox])[required][formControl],:not([type=checkbox])[required][ngModel]", never, { "required": "required"; }, {}, never>;
     // (undocumented)

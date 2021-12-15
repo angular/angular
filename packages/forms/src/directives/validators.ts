@@ -367,35 +367,27 @@ export const CHECKBOX_REQUIRED_VALIDATOR: StaticProvider = {
   selector:
       ':not([type=checkbox])[required][formControlName],:not([type=checkbox])[required][formControl],:not([type=checkbox])[required][ngModel]',
   providers: [REQUIRED_VALIDATOR],
-  host: {'[attr.required]': 'enabled() ? "" : null'}
+  host: {'[attr.required]': '_enabled ? "" : null'}
 })
 export class RequiredValidator extends AbstractValidatorDirective {
-  private _required = false;
   /**
    * @description
    * Tracks changes to the required attribute bound to this directive.
    */
-  @Input()
-  get required(): boolean {
-    return this._required;
-  }
-
-  set required(value: boolean|string) {
-    this._required = toBoolean(value);
-  }
+  @Input() required!: boolean|string;
 
   /** @internal */
   override inputName = 'required';
 
   /** @internal */
-  override normalizeInput = (input: unknown) => input;
+  override normalizeInput = (input: unknown): boolean => toBoolean(input);
 
   /** @internal */
-  override createValidator = (input: unknown): ValidatorFn => requiredValidator;
+  override createValidator = (input: boolean): ValidatorFn => requiredValidator;
 
   /** @nodoc */
-  override enabled(): boolean {
-    return this.required;
+  override enabled(input: boolean): boolean {
+    return input;
   }
 }
 
@@ -425,7 +417,7 @@ export class RequiredValidator extends AbstractValidatorDirective {
   selector:
       'input[type=checkbox][required][formControlName],input[type=checkbox][required][formControl],input[type=checkbox][required][ngModel]',
   providers: [CHECKBOX_REQUIRED_VALIDATOR],
-  host: {'[attr.required]': 'enabled() ? "" : null'}
+  host: {'[attr.required]': '_enabled ? "" : null'}
 })
 export class CheckboxRequiredValidator extends RequiredValidator {
   /** @internal */
