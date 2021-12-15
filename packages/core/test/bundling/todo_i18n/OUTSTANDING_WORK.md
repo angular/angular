@@ -19,11 +19,6 @@
 ## Testing
 - [ ] Create a debug mode which would publish components into DOM for easier writing of tests.
 
-
-## Bazel
-
-- [ ] Have action verb on the `ng_rollup_bundle` to display source maps.
-
 # NOTES
 
 ## Killing hung `iblaze` server

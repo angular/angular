@@ -1,6 +1,6 @@
-package(default_visibility = ["//visibility:private"])
+load("//tools:defaults.bzl", "app_bundle", "jasmine_node_test", "ng_benchmark", "ts_library")
 
-load("//tools:defaults.bzl", "jasmine_node_test", "ng_benchmark", "ng_rollup_bundle", "ts_library")
+package(default_visibility = ["//visibility:private"])
 
 ts_library(
     name = "perf_lib",
@@ -22,9 +22,10 @@ jasmine_node_test(
     ],
 )
 
-ng_rollup_bundle(
+app_bundle(
     name = "class_binding_lib",
     entry_point = ":class_binding/index.ts",
+    external = ["perf_hooks"],
     deps = [
         ":perf_lib",
     ],
@@ -35,9 +36,10 @@ ng_benchmark(
     bundle = ":class_binding_lib",
 )
 
-ng_rollup_bundle(
+app_bundle(
     name = "directive_inputs_lib",
     entry_point = ":directive_inputs/index.ts",
+    external = ["perf_hooks"],
     deps = [
         ":perf_lib",
     ],
@@ -48,9 +50,10 @@ ng_benchmark(
     bundle = ":directive_inputs_lib",
 )
 
-ng_rollup_bundle(
+app_bundle(
     name = "directive_instantiate_lib",
     entry_point = ":directive_instantiate/index.ts",
+    external = ["perf_hooks"],
     deps = [
         ":perf_lib",
     ],
@@ -61,9 +64,10 @@ ng_benchmark(
     bundle = ":directive_instantiate_lib",
 )
 
-ng_rollup_bundle(
+app_bundle(
     name = "element_text_create_lib",
     entry_point = ":element_text_create/index.ts",
+    external = ["perf_hooks"],
     deps = [
         ":perf_lib",
     ],
@@ -74,9 +78,10 @@ ng_benchmark(
     bundle = ":element_text_create_lib",
 )
 
-ng_rollup_bundle(
+app_bundle(
     name = "interpolation_lib",
     entry_point = ":interpolation/index.ts",
+    external = ["perf_hooks"],
     deps = [
         ":perf_lib",
     ],
@@ -87,9 +92,10 @@ ng_benchmark(
     bundle = ":interpolation_lib",
 )
 
-ng_rollup_bundle(
+app_bundle(
     name = "listeners_lib",
     entry_point = ":listeners/index.ts",
+    external = ["perf_hooks"],
     deps = [
         ":perf_lib",
     ],
@@ -100,9 +106,10 @@ ng_benchmark(
     bundle = ":listeners_lib",
 )
 
-ng_rollup_bundle(
+app_bundle(
     name = "noop_change_detection_lib",
     entry_point = ":noop_change_detection/index.ts",
+    external = ["perf_hooks"],
     deps = [
         ":perf_lib",
     ],
@@ -113,9 +120,10 @@ ng_benchmark(
     bundle = ":noop_change_detection_lib",
 )
 
-ng_rollup_bundle(
+app_bundle(
     name = "ng_template_lib",
     entry_point = ":ng_template/index.ts",
+    external = ["perf_hooks"],
     deps = [
         ":perf_lib",
     ],
@@ -126,9 +134,10 @@ ng_benchmark(
     bundle = ":ng_template_lib",
 )
 
-ng_rollup_bundle(
+app_bundle(
     name = "property_binding_lib",
     entry_point = ":property_binding/index.ts",
+    external = ["perf_hooks"],
     deps = [
         ":perf_lib",
     ],
@@ -139,9 +148,10 @@ ng_benchmark(
     bundle = ":property_binding_lib",
 )
 
-ng_rollup_bundle(
+app_bundle(
     name = "property_binding_update_lib",
     entry_point = ":property_binding_update/index.ts",
+    external = ["perf_hooks"],
     deps = [
         ":perf_lib",
     ],
@@ -152,9 +162,10 @@ ng_benchmark(
     bundle = ":property_binding_update_lib",
 )
 
-ng_rollup_bundle(
+app_bundle(
     name = "style_binding_lib",
     entry_point = ":style_binding/index.ts",
+    external = ["perf_hooks"],
     deps = [
         ":perf_lib",
     ],
@@ -165,9 +176,10 @@ ng_benchmark(
     bundle = ":style_binding_lib",
 )
 
-ng_rollup_bundle(
+app_bundle(
     name = "style_and_class_bindings_lib",
     entry_point = ":style_and_class_bindings/index.ts",
+    external = ["perf_hooks"],
     deps = [
         ":perf_lib",
     ],
@@ -178,9 +190,10 @@ ng_benchmark(
     bundle = ":style_and_class_bindings_lib",
 )
 
-ng_rollup_bundle(
+app_bundle(
     name = "map_based_style_and_class_bindings_lib",
     entry_point = ":map_based_style_and_class_bindings/index.ts",
+    external = ["perf_hooks"],
     deps = [
         ":perf_lib",
     ],
@@ -191,9 +204,10 @@ ng_benchmark(
     bundle = ":map_based_style_and_class_bindings_lib",
 )
 
-ng_rollup_bundle(
+app_bundle(
     name = "duplicate_style_and_class_bindings_lib",
     entry_point = ":duplicate_style_and_class_bindings/index.ts",
+    external = ["perf_hooks"],
     deps = [
         ":perf_lib",
     ],
@@ -204,9 +218,10 @@ ng_benchmark(
     bundle = ":duplicate_style_and_class_bindings_lib",
 )
 
-ng_rollup_bundle(
+app_bundle(
     name = "duplicate_map_based_style_and_class_bindings_lib",
     entry_point = ":duplicate_map_based_style_and_class_bindings/index.ts",
+    external = ["perf_hooks"],
     deps = [
         ":perf_lib",
     ],
@@ -217,9 +232,10 @@ ng_benchmark(
     bundle = ":duplicate_map_based_style_and_class_bindings_lib",
 )
 
-ng_rollup_bundle(
+app_bundle(
     name = "host_binding_lib",
     entry_point = ":host_binding/index.ts",
+    external = ["perf_hooks"],
     deps = [
         ":perf_lib",
     ],
@@ -230,9 +246,10 @@ ng_benchmark(
     bundle = ":host_binding_lib",
 )
 
-ng_rollup_bundle(
+app_bundle(
     name = "i18n_lib",
     entry_point = ":i18n/index.ts",
+    external = ["perf_hooks"],
     deps = [
         ":perf_lib",
     ],
@@ -243,9 +260,10 @@ ng_benchmark(
     bundle = ":i18n_lib",
 )
 
-ng_rollup_bundle(
+app_bundle(
     name = "view_destroy_hook_lib",
     entry_point = ":view_destroy_hook/index.ts",
+    external = ["perf_hooks"],
     deps = [
         ":perf_lib",
     ],
@@ -256,9 +274,10 @@ ng_benchmark(
     bundle = ":view_destroy_hook_lib",
 )
 
-ng_rollup_bundle(
+app_bundle(
     name = "render_stringify_lib",
     entry_point = ":render_stringify/index.ts",
+    external = ["perf_hooks"],
     deps = [
         ":perf_lib",
     ],

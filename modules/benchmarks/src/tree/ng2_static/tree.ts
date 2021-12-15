@@ -38,7 +38,7 @@ export class RootTreeComponent {
   @Input() data: TreeNode = emptyTree;
 }
 
-function createModule(): any {
+export function createAppModule(): any {
   const components: any[] = [RootTreeComponent];
   for (let i = 0; i <= getMaxDepth(); i++) {
     components.push(createTreeComponent(i, i === getMaxDepth()));
@@ -54,5 +54,3 @@ function createModule(): any {
 
   return AppModule;
 }
-
-export const AppModule = createModule();

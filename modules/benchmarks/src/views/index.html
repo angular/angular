@@ -28,7 +28,7 @@
         }
         // zone.js must be loaded and processed before Angular bundle gets executed
         loadScript('/npm/node_modules/zone.js/bundles/zone.umd.js').then(function () {
-          loadScript(document.location.search.endsWith('debug') ? 'bundle.min_debug.js' : 'bundle.min.js');
+          loadScript(document.location.search.endsWith('debug') ? 'bundle.debug.min.js' : 'bundle.min.js');
         });
       }
     });
