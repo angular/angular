@@ -1,3 +1,19 @@
+<a name="13.2.0-next.1"></a>
+# 13.2.0-next.1 (2021-12-15)
+### animations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [38ddae1c2e](https://github.com/angular/angular/commit/38ddae1c2e0de87d5672fda30d4fbe567dab4123) | fix | don't consume instructions for animateChild ([#44357](https://github.com/angular/angular/pull/44357)) |
+| [bab7ed3541](https://github.com/angular/angular/commit/bab7ed35418173714509e06ba8b092aff28fff89) | fix | should not invoke disabled child animations ([#37724](https://github.com/angular/angular/pull/37724)) |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [72092ebd26](https://github.com/angular/angular/commit/72092ebd26d6670a7dd02f6db5515d2afd27c4d6) | feat | Allow a FormControl to use initial value as default. ([#44434](https://github.com/angular/angular/pull/44434)) |
+## Special Thanks
+Alex Rickabaugh, Aristeidis Bampakos, Dylan Hunn, JoostK, Kristiyan Kostadinov, Paul Gschwendtner, Spej, Yousaf Nawaz, dario-piotrowicz, faso-dev, jaybell and zuckjet
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="13.1.1"></a>
 # 13.1.1 (2021-12-15)
 ### animations
