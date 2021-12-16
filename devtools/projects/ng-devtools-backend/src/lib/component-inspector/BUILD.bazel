@@ -1,18 +1,17 @@
-load("//tools:typescript.bzl", "ts_project", "ts_test_project")
-load("//tools:defaults.bzl", "karma_web_test_suite")
+load("//devtools/tools:typescript.bzl", "ts_library", "ts_test_library")
+load("//devtools/tools:defaults.bzl", "karma_web_test_suite")
 
 package(default_visibility = ["//visibility:public"])
 
-ts_project(
+ts_library(
     name = "component-inspector",
     srcs = ["component-inspector.ts"],
-    tsconfig = "//projects/ng-devtools-backend:tsconfig_lib",
     deps = [
-        "//projects/ng-devtools-backend/src/lib:component_tree",
-        "//projects/ng-devtools-backend/src/lib:highlighter",
-        "//projects/ng-devtools-backend/src/lib:interfaces",
-        "//projects/ng-devtools-backend/src/lib/hooks",
-        "//projects/protocol",
+        "//devtools/projects/ng-devtools-backend/src/lib:component_tree",
+        "//devtools/projects/ng-devtools-backend/src/lib:highlighter",
+        "//devtools/projects/ng-devtools-backend/src/lib:interfaces",
+        "//devtools/projects/ng-devtools-backend/src/lib/hooks",
+        "//devtools/projects/protocol",
     ],
 )
 
@@ -21,20 +20,20 @@ karma_web_test_suite(
     deps = [":test_lib"],
 )
 
-ts_test_project(
+ts_test_library(
     name = "test_lib",
     srcs = [
         "component-inspector.spec.ts",
     ],
     deps = [
         ":component-inspector",
-        "//projects/ng-devtools-backend/src/lib:component_tree",
-        "//projects/ng-devtools-backend/src/lib:highlighter",
-        "//projects/ng-devtools-backend/src/lib:interfaces",
-        "//projects/ng-devtools-backend/src/lib:utils",
-        "//projects/ng-devtools-backend/src/lib/hooks",
-        "//projects/protocol",
-        "@npm//@angular/core",
+        "//devtools/projects/ng-devtools-backend/src/lib:component_tree",
+        "//devtools/projects/ng-devtools-backend/src/lib:highlighter",
+        "//devtools/projects/ng-devtools-backend/src/lib:interfaces",
+        "//devtools/projects/ng-devtools-backend/src/lib:utils",
+        "//devtools/projects/ng-devtools-backend/src/lib/hooks",
+        "//devtools/projects/protocol",
+        "//packages/core",
         "@npm//@types",
     ],
 )

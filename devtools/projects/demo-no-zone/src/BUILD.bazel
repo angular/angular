@@ -1,76 +1,62 @@
-load("@npm//html-insert-assets:index.bzl", "html_insert_assets")
-load("//tools:angular_ts_project.bzl", "ng_ts_project")
-load("@npm//@bazel/rollup:index.bzl", "rollup_bundle")
-load("@npm//history-server:index.bzl", "history_server")
+load("//devtools/tools:ng_module.bzl", "ng_module")
 load("@build_bazel_rules_nodejs//:index.bzl", "pkg_web")
+load("//tools:defaults.bzl", "esbuild")
+load("//devtools/tools/dev-server:index.bzl", "dev_server")
 
 package(default_visibility = ["//:__subpackages__"])
 
-_ASSETS = [
-    ":styles.css",
-    "@npm//:node_modules/zone.js/dist/zone.min.js",
-]
-
-html_insert_assets(
-    name = "inject_scripts_for_dev",
-    outs = ["index.html"],
-    args = [
-        "--html=$(execpath //projects/demo-no-zone/src:_index.html)",
-        "--out=$@",
-        "--roots=. $(RULEDIR)",
-        "--assets",
-    ] + ["$(execpath %s)" % s for s in _ASSETS] + [
-        "--scripts --module $(execpath :bundle_es2015)/index.js",
-    ],
-    data = [
-        "//projects/demo-no-zone/src:_index.html",
-        ":bundle_es2015",
-    ] + _ASSETS,
-)
-
-ng_ts_project(
+ng_module(
     name = "src",
     srcs = ["main.ts"],
-    tsconfig = "//projects/demo-no-zone:tsconfig_app",
     deps = [
-        "//projects/demo-no-zone/src/app",
-        "@npm//@angular/common",
-        "@npm//@angular/core",
-        "@npm//@angular/platform-browser",
-        "@npm//@angular/platform-browser-dynamic",
+        "//devtools/projects/demo-no-zone/src/app",
+        "//packages/common",
+        "//packages/core",
+        "//packages/platform-browser",
+        "//packages/platform-browser-dynamic",
         "@npm//@types",
         "@npm//rxjs",
     ],
 )
 
-rollup_bundle(
-    name = "bundle_es2015",
-    config_file = "rollup.config.js",
-    entry_points = {
-        ":main.ts": "index",
-    },
-    output_dir = True,
-    deps = [
-        ":src",
-        "@npm//@rollup/plugin-commonjs",
-        "@npm//@rollup/plugin-node-resolve",
+esbuild(
+    name = "bundle",
+    config = "//devtools/tools/esbuild:esbuild_config_esm",
+    entry_points = [":main.ts"],
+    platform = "browser",
+    splitting = False,
+    target = "es2016",
+    deps = [":src"],
+)
+
+exports_files([
+    "index.html",
+    "styles.css",
+])
+
+filegroup(
+    name = "dev_app_static_files",
+    srcs = [
+        ":index.html",
+        ":styles.css",
+        "//packages/zone.js/bundles:zone.umd.js",
     ],
 )
 
 pkg_web(
     name = "devapp",
-    srcs = _ASSETS + [
-        ":bundle_es2015",
-        ":inject_scripts_for_dev",
+    srcs = [
+        ":bundle",
+        ":dev_app_static_files",
     ],
-    additional_root_paths = [],
 )
 
-history_server(
+dev_server(
     name = "devserver",
-    data = [":devapp"],
-    templated_args = [
-        "-a $$(rlocation $(rootpath :devapp))",
-        "--port 4200",
+    srcs = [":dev_app_static_files"],
+    additional_root_paths = ["angular/devtools/projects/demo-no-zone/src/devapp"],
+    tags = ["manual"],
+    deps = [
+        ":devapp",
     ],
 )

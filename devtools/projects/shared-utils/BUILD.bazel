@@ -1,23 +1,10 @@
-load("@npm//@bazel/typescript:index.bzl", "ts_config")
 load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
-load("//tools:typescript.bzl", "ts_project", "ts_test_project")
-load("//tools:defaults.bzl", "karma_web_test_suite")
+load("//devtools/tools:typescript.bzl", "ts_library", "ts_test_library")
+load("//devtools/tools:defaults.bzl", "karma_web_test_suite")
 
 package(default_visibility = ["//visibility:public"])
 
-ts_config(
-    name = "tsconfig_lib",
-    src = "tsconfig.lib.json",
-    deps = ["//:tsconfig.json"],
-)
-
-ts_config(
-    name = "tsconfig_spec",
-    src = "tsconfig.spec.json",
-    deps = ["//:tsconfig.json"],
-)
-
-ts_project(
+ts_library(
     name = "shared_utils_ts",
     srcs = glob(
         ["**/*.ts"],
@@ -26,10 +13,9 @@ ts_project(
             "src/test.ts",
         ],
     ),
-    tsconfig = ":tsconfig_lib",
     deps = [
-        "@npm//@angular/core",
-        "@npm//@angular/platform-browser-dynamic",
+        "//packages/core",
+        "//packages/platform-browser-dynamic",
         "@npm//@types",
     ],
 )
@@ -40,13 +26,13 @@ js_library(
     deps = [":shared_utils_ts"],
 )
 
-ts_test_project(
+ts_test_library(
     name = "shared_utils_test",
     srcs = glob(["**/*.spec.ts"]),
     deps = [
         ":shared-utils",
-        "@npm//@angular/core",
-        "@npm//@angular/platform-browser-dynamic",
+        "//packages/core",
+        "//packages/platform-browser-dynamic",
         "@npm//@types",
     ],
 )
@@ -54,6 +40,6 @@ ts_test_project(
 karma_web_test_suite(
     name = "test",
     deps = [
-        "//projects/shared-utils:shared_utils_test",
+        "//devtools/projects/shared-utils:shared_utils_test",
     ],
 )

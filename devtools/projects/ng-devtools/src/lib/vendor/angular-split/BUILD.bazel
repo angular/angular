@@ -1,15 +1,14 @@
-load("//tools:angular_ts_project.bzl", "ng_ts_project")
+load("//devtools/tools:ng_module.bzl", "ng_module")
 
 package(default_visibility = ["//visibility:public"])
 
-ng_ts_project(
+ng_module(
     name = "angular-split",
     srcs = ["public_api.ts"],
-    tsconfig = "//projects/ng-devtools:tsconfig_lib",
     deps = [
-        "//projects/ng-devtools/src/lib/vendor/angular-split/lib",
-        "//projects/ng-devtools/src/lib/vendor/angular-split/lib/component:split",
-        "@npm//@angular/core",
+        "//devtools/projects/ng-devtools/src/lib/vendor/angular-split/lib",
+        "//devtools/projects/ng-devtools/src/lib/vendor/angular-split/lib/component:split",
+        "//packages/core",
         "@npm//@types",
         "@npm//rxjs",
     ],

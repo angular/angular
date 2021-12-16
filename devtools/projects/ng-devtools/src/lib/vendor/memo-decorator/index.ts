@@ -14,6 +14,7 @@ export interface Config {
 function memoize(func: Function, resolver: Resolver, cache: MapLike) {
   const memoized = function() {
     const args = arguments;
+    // @ts-ignore: ignore implicit any type
     const key = resolver.apply(this, args);
     const cache = memoized.cache;
 
@@ -21,6 +22,7 @@ function memoize(func: Function, resolver: Resolver, cache: MapLike) {
       return cache.get(key);
     }
 
+    // @ts-ignore: ignore implicit any type
     const result = func.apply(this, args);
     memoized.cache = cache.set(key, result) ?? cache;
     return result;

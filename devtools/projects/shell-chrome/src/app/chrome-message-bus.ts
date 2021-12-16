@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+/// <reference types="chrome"/>
+
 import {Events, MessageBus, Parameters} from 'protocol';
 
 interface ChromeMessage<T, K extends keyof T> {

@@ -1,18 +1,17 @@
-load("//tools:angular_ts_project.bzl", "ng_ts_project")
+load("//devtools/tools:ng_module.bzl", "ng_module")
 
 package(default_visibility = ["//visibility:public"])
 
-ng_ts_project(
+ng_module(
     name = "app",
     srcs = glob(
         include = ["*.ts"],
     ),
     angular_assets = ["app.component.html"],
-    tsconfig = "//projects/demo-no-zone:tsconfig_app",
     deps = [
-        "@npm//@angular/common",
-        "@npm//@angular/core",
-        "@npm//@angular/platform-browser",
+        "//packages/common",
+        "//packages/core",
+        "//packages/platform-browser",
         "@npm//rxjs",
     ],
 )

@@ -163,7 +163,7 @@ export class ComponentDataSource extends DataSource<FlatNode> {
     return {newItems, movedItems, removedItems};
   }
 
-  connect(collectionViewer: CollectionViewer): Observable<FlatNode[]> {
+  override connect(collectionViewer: CollectionViewer): Observable<FlatNode[]> {
     const changes = [
       collectionViewer.viewChange, this._treeControl.expansionModel.changed, this._flattenedData
     ];
@@ -174,5 +174,5 @@ export class ComponentDataSource extends DataSource<FlatNode> {
     }));
   }
 
-  disconnect(): void {}
+  override disconnect(): void {}
 }

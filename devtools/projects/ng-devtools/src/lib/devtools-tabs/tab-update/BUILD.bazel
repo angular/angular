@@ -1,15 +1,14 @@
-load("//tools:typescript.bzl", "ts_project")
+load("//devtools/tools:typescript.bzl", "ts_library")
 
 package(default_visibility = ["//visibility:public"])
 
-ts_project(
+ts_library(
     name = "tab-update",
     srcs = glob(
         include = [
             "index.ts",
         ],
     ),
-    tsconfig = "//projects/ng-devtools:tsconfig_lib",
     deps = [
         "@npm//@types",
         "@npm//rxjs",

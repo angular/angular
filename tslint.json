@@ -143,8 +143,6 @@
       // TODO(JiaLiPassion): add zone.js back later
       "./packages/zone.js/**/*",
 
-      "./devtools/dist/**/*",
-      "./devtools/bazel-bin/**/*",
       "./devtools/bazel-out/**/*",
       "./devtools/projects/ng-devtools/src/lib/vendor/**/*"
     ]

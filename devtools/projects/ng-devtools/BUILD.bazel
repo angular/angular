@@ -1,31 +1,23 @@
-load("//tools:angular_ts_project.bzl", "ng_ts_project")
-load("@npm//@bazel/typescript:index.bzl", "ts_config")
+load("//devtools/tools:ng_module.bzl", "ng_module")
 load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
 
 package(default_visibility = ["//visibility:public"])
 
 exports_files(["tsconfig.lib.json"])
 
-ts_config(
-    name = "tsconfig_lib",
-    src = "tsconfig.lib.json",
-    deps = ["//:tsconfig.json"],
-)
-
-ng_ts_project(
+ng_module(
     name = "ng_devtools_ts",
     srcs = ["index.ts"],
-    tsconfig = ":tsconfig_lib",
     deps = [
-        "//projects/ng-devtools/src",
-        "//projects/protocol",
-        "@npm//@angular/animations",
+        "//devtools/projects/ng-devtools/src",
+        "//devtools/projects/protocol",
+        "//packages/animations",
+        "//packages/common",
+        "//packages/core",
+        "//packages/forms",
+        "//packages/platform-browser-dynamic",
         "@npm//@angular/cdk",
-        "@npm//@angular/common",
-        "@npm//@angular/core",
-        "@npm//@angular/forms",
         "@npm//@angular/material",
-        "@npm//@angular/platform-browser-dynamic",
         "@npm//@types",
         "@npm//d3",
         "@npm//memo-decorator",

@@ -1,10 +1,9 @@
-load("@npm//@bazel/rollup:index.bzl", "rollup_bundle")
-load("@npm//@bazel/terser:index.bzl", "terser_minified")
 load("@io_bazel_rules_sass//:defs.bzl", "sass_binary", "sass_library")
 load("@build_bazel_rules_nodejs//:index.bzl", "js_library", "pkg_web")
-load("@npm//html-insert-assets:index.bzl", "html_insert_assets")
-load("//tools:angular_ts_project.bzl", "ng_ts_project")
-load("//tools:typescript.bzl", "ts_project")
+load("//devtools/tools:ng_module.bzl", "ng_module")
+load("//devtools/tools:typescript.bzl", "ts_library")
+load("//tools:defaults.bzl", "esbuild")
+load("//devtools/tools/esbuild:index.bzl", "LINKER_PROCESSED_FW_PACKAGES")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -230,7 +229,7 @@ sass_binary(
     deps = [":material_theming"],
 )
 
-ts_project(
+ts_library(
     name = "devtools_ts",
     srcs = [
         "devtools.ts",
@@ -245,87 +244,69 @@ js_library(
     deps = [":devtools_ts"],
 )
 
-ng_ts_project(
+ng_module(
     name = "src",
     srcs = [
         "main.ts",
-        "polyfills.ts",
     ],
     deps = [
-        "//projects/ng-devtools",
-        "//projects/shell-chrome/src/app",
-        "//projects/shell-chrome/src/environments:environment",
-        "@npm//@angular/core",
-        "@npm//@angular/platform-browser-dynamic",
+        "//devtools/projects/ng-devtools",
+        "//devtools/projects/shell-chrome/src/app",
+        "//devtools/projects/shell-chrome/src/environments:environment",
+        "//packages/common",
+        "//packages/common/http",
+        "//packages/core",
+        "//packages/platform-browser-dynamic",
     ],
 )
 
-rollup_bundle(
-    name = "devtools_app_bundle_es2015",
-    config_file = "rollup.config.js",
-    entry_point = "main.ts",
-    output_dir = True,
-    deps = [
-        ":src",
-        "@npm//@rollup/plugin-commonjs",
-        "@npm//@rollup/plugin-node-resolve",
-    ],
+esbuild(
+    name = "bundle",
+    config = "//devtools/tools/esbuild:esbuild_config_esm",
+    entry_points = [":main.ts"],
+    platform = "browser",
+    splitting = False,
+    target = "esnext",
+    deps = LINKER_PROCESSED_FW_PACKAGES + [":src"],
 )
 
-terser_minified(
-    name = "devtools_app_bundle_es2015.min",
-    src = ":devtools_app_bundle_es2015",
-)
-
-# Files that we serve in both development and production
-_ASSETS = [
-    # This label references an output of the "styles" sass_binary above.
-    ":shell_chrome_styles",
-    ":manifest.json",
-
-    # We load zone.js outside the bundle. That's because it's a "pollyfill"
-    # which speculates that such features might be available in a browser.
-    # Also it's tricky to configure dead code elimination to understand that
-    # zone.js is used, given that we don't have any import statement that
-    # imports from it.
-    "@npm//:node_modules/zone.js/dist/zone.min.js",
-]
-
-html_insert_assets(
-    name = "inject_scripts_for_prod",
-    outs = ["index.html"],
-    args = [
-        "--html=$(execpath //projects/shell-chrome/src:_index.html)",
-        "--out=$@",
-        "--roots=. $(RULEDIR)",
-        "--assets",
-    ] + ["$(execpath %s)" % s for s in _ASSETS],
-    data = ["//projects/shell-chrome/src:_index.html"] + _ASSETS,
-)
-
-rollup_bundle(
-    name = "devtools_es2015",
+esbuild(
+    name = "devtools_bundle",
+    config = "//devtools/tools/esbuild:esbuild_config_esm",
     entry_point = "devtools.ts",
     format = "iife",
-    deps = [
-        ":devtools",
+    platform = "browser",
+    splitting = False,
+    target = "esnext",
+    deps = [":devtools"],
+)
+
+exports_files(["index.html"])
+
+filegroup(
+    name = "prod_app_static_files",
+    srcs = [
+        ":index.html",
+        ":manifest.json",
+        ":shell_chrome_styles",
+        "//packages/zone.js/bundles:zone.umd.js",
     ],
 )
 
 pkg_web(
     name = "prodapp",
-    srcs = _ASSETS + [
-        ":devtools_es2015",
-        "//projects/shell-chrome/src/app:ng_validate_es2015",
-        "//projects/shell-chrome/src/app:background_es2015",
-        "//projects/shell-chrome/src/app:backend_es2015",
-        "//projects/shell-chrome/src/app:content_script_es2015",
-        ":devtools_app_bundle_es2015",
-        ":inject_scripts_for_prod",
-        "//projects/shell-chrome/src/assets",
-        "//projects/shell-chrome/src/popups",
-        "//projects/shell-chrome/src:devtools.html",
-        "//projects/ng-devtools/src/lib/images",
+    srcs = [
+        ":bundle",
+        ":devtools_bundle",
+        ":prod_app_static_files",
+        "//devtools/projects/ng-devtools/src/lib/images",
+        "//devtools/projects/shell-chrome/src:devtools.html",
+        "//devtools/projects/shell-chrome/src/app:backend_bundle",
+        "//devtools/projects/shell-chrome/src/app:background_bundle",
+        "//devtools/projects/shell-chrome/src/app:content_script_bundle",
+        "//devtools/projects/shell-chrome/src/app:ng_validate_bundle",
+        "//devtools/projects/shell-chrome/src/assets",
+        "//devtools/projects/shell-chrome/src/popups",
     ],
     additional_root_paths = [
         "projects/ng-devtools/src/lib",

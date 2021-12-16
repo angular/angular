@@ -1,8 +1,8 @@
-load("//tools:typescript.bzl", "ts_project")
+load("//devtools/tools:typescript.bzl", "ts_library")
 
 package(default_visibility = ["//:__subpackages__"])
 
-ts_project(
+ts_library(
     name = "memo-decorator",
     srcs = ["index.ts"],
 )

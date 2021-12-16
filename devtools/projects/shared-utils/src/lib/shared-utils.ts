@@ -23,5 +23,5 @@ export const arrayEquals =
           break;
         }
       }
-      return equal;
+      return equal ?? false;
     };

@@ -40,7 +40,7 @@ export function getInputPositiveNumber<T>(v: any, defaultValue: T): number|T {
 }
 
 export function isUserSizesValid(unit: 'percent'|'pixel', sizes: Array<number|null>): boolean|
-    undefined {
+    undefined|void {
   // All sizes have to be not null and total should be 100
   if (unit === 'percent') {
     const total = sizes.reduce((total, s) => (s !== null ? total! + s : total), 0);
@@ -106,7 +106,7 @@ export function getGutterSideAbsorptionCapacity(
 
 function getAreaAbsorptionCapacity(
     unit: 'percent'|'pixel', areaSnapshot: IAreaSnapshot, pixels: number,
-    allAreasSizePixel: number): IAreaAbsorptionCapacity|undefined {
+    allAreasSizePixel: number): IAreaAbsorptionCapacity|undefined|void {
   // No pain no gain
   if (pixels === 0) {
     return {
@@ -138,7 +138,7 @@ function getAreaAbsorptionCapacity(
 
 function getAreaAbsorptionCapacityPercent(
     areaSnapshot: IAreaSnapshot, pixels: number,
-    allAreasSizePixel: number): IAreaAbsorptionCapacity|undefined {
+    allAreasSizePixel: number): IAreaAbsorptionCapacity|undefined|void {
   const tempPixelSize = areaSnapshot.sizePixelAtStart + pixels;
   const tempPercentSize = (tempPixelSize / allAreasSizePixel) * 100;
 
@@ -198,7 +198,7 @@ function getAreaAbsorptionCapacityPercent(
 
 function getAreaAbsorptionCapacityPixel(
     areaSnapshot: IAreaSnapshot, pixels: number,
-    containerSizePixel: number): IAreaAbsorptionCapacity|undefined {
+    containerSizePixel: number): IAreaAbsorptionCapacity|undefined|void {
   const tempPixelSize = areaSnapshot.sizePixelAtStart + pixels;
 
   // ENLARGE AREA

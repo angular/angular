@@ -37,7 +37,7 @@ export class AppComponent implements OnInit {
       window.location.reload();
     });
 
-    injectScripts(['app/backend-es2015.js']);
+    injectScripts(['app/backend_bundle.js']);
     this._cd.detectChanges();
   }
 }

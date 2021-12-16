@@ -51,7 +51,7 @@ export class PropertyDataSource extends DataSource<FlatNode> {
     this._data.next(this.data);
   }
 
-  connect(collectionViewer: CollectionViewer): Observable<FlatNode[]> {
+  override connect(collectionViewer: CollectionViewer): Observable<FlatNode[]> {
     const changed = this._treeControl.expansionModel.changed;
     if (!changed) {
       throw new Error('Unable to subscribe to the expansion model change');
@@ -76,7 +76,7 @@ export class PropertyDataSource extends DataSource<FlatNode> {
     }));
   }
 
-  disconnect(): void {
+  override disconnect(): void {
     this._subscriptions.forEach((s) => s.unsubscribe());
     this._subscriptions = [];
   }

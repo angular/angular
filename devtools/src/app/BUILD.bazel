@@ -1,4 +1,4 @@
-load("//tools:angular_ts_project.bzl", "ng_ts_project")
+load("//devtools/tools:ng_module.bzl", "ng_module")
 load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
 
 package(default_visibility = ["//visibility:public"])
@@ -8,7 +8,7 @@ sass_binary(
     src = "app.component.scss",
 )
 
-ng_ts_project(
+ng_module(
     name = "app",
     srcs = [
         "app.component.ts",
@@ -19,13 +19,14 @@ ng_ts_project(
         ":app_component_styles",
     ],
     deps = [
-        "//projects/ng-devtools",
-        "//src:demo_application_environment",
-        "//src:demo_application_operations",
-        "//src/app/demo-app",
-        "//src/app/devtools-app",
-        "@npm//@angular/core",
-        "@npm//@angular/platform-browser",
-        "@npm//@angular/router",
+        "//devtools/projects/ng-devtools",
+        "//devtools/src:demo_application_environment",
+        "//devtools/src:demo_application_operations",
+        "//devtools/src/app/demo-app",
+        "//devtools/src/app/devtools-app",
+        "//packages/core",
+        "//packages/platform-browser",
+        "//packages/platform-browser/animations",
+        "//packages/router",
     ],
 )

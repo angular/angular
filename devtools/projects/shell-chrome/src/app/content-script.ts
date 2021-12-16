@@ -60,3 +60,6 @@ export const main = () => {
     retry();
   }
 };
+
+// expose to use as callback for chrome.tabs.executeScript in background.ts
+globalThis.main = main;

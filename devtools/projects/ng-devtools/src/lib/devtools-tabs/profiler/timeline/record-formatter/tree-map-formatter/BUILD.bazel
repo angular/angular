@@ -1,9 +1,9 @@
-load("//tools:typescript.bzl", "ts_project", "ts_test_project")
-load("//tools:defaults.bzl", "karma_web_test_suite")
+load("//devtools/tools:typescript.bzl", "ts_library", "ts_test_library")
+load("//devtools/tools:defaults.bzl", "karma_web_test_suite")
 
 package(default_visibility = ["//visibility:public"])
 
-ts_project(
+ts_library(
     name = "tree-map-formatter",
     srcs = glob(
         include = [
@@ -13,24 +13,23 @@ ts_project(
             "tree-map-formatter.spec.ts",
         ],
     ),
-    tsconfig = "//projects/ng-devtools:tsconfig_lib",
     deps = [
-        "//projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter",
-        "//projects/ng-devtools/src/lib/vendor/memo-decorator",
-        "//projects/protocol",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter",
+        "//devtools/projects/ng-devtools/src/lib/vendor/memo-decorator",
+        "//devtools/projects/protocol",
     ],
 )
 
-ts_test_project(
+ts_test_library(
     name = "test_lib",
     srcs = [
         "tree-map-formatter.spec.ts",
     ],
     deps = [
         ":tree-map-formatter",
-        "//projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter",
-        "//projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter:record_formatter_spec_constants",
-        "//projects/protocol",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter:record_formatter_spec_constants",
+        "//devtools/projects/protocol",
     ],
 )
 

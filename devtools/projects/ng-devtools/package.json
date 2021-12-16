@@ -1,9 +1,0 @@
-{
-  "name": "ng-devtools",
-  "version": "0.0.1",
-  "peerDependencies": {
-    "@angular/common": "^13.0.0",
-    "@angular/core": "^13.0.0",
-    "tslib": "^2.0.0"
-  }
-}
