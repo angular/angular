@@ -1,3 +1,14 @@
+<a name="13.2.0-next.0"></a>
+# 13.2.0-next.0 "pine-pepperoni" (2021-12-16)
+### material-experimental
+| Commit | Type | Description |
+| -- | -- | -- |
+| [723b77ad1f](https://github.com/angular/components/commit/723b77ad1fbff5c372202e8340011dcd1703ed20) | feat | **mdc-core:** add missing color, density, typography mixins ([#24063](https://github.com/angular/components/pull/24063)) |
+## Special Thanks
+Amy Sorto, Miles Malerba and Wagner Maciel
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="13.1.1"></a>
 # 13.1.1 "chiffon-cabbage" (2021-12-16)
 ### material
