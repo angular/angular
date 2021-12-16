@@ -3,7 +3,7 @@
     "baseUrl": ".",
     "declaration": false,
     "strict": true,
-    "module": "es2015",
+    "module": "es2020",
     "moduleResolution": "node",
     "strictNullChecks": true,
     "strictPropertyInitialization": true,
@@ -17,8 +17,8 @@
       "@angular/service-worker/config": ["../../../dist/packages/service-worker/config"]
     },
     "inlineSourceMap": true,
-    "lib": ["es2015"],
-    "target": "es5",
+    "lib": ["es2020"],
+    "target": "es2020",
     "typeRoots": [],
     "types": [
       "node"
