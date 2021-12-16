@@ -1,9 +1,1 @@
-load("@npm//@bazel/typescript:index.bzl", "ts_config")
-
 package(default_visibility = ["//visibility:public"])
-
-ts_config(
-    name = "tsconfig_app",
-    src = "tsconfig.app.json",
-    deps = ["//:tsconfig.json"],
-)

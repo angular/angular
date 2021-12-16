@@ -50,7 +50,7 @@ export const diff = <T>(differ: DefaultIterableDiffer<T>, a: T[], b: T[]):
           if (record.currentIndex === null) {
             return;
           }
-          a[record.currentIndex][prop] = b[record.currentIndex][prop];
+          (a[record.currentIndex] as any)[prop] = (b[record.currentIndex] as any)[prop];
         });
         if (!alreadySet[record.previousIndex]) {
           // tslint:disable-next-line: no-non-null-assertion

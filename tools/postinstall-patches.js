@@ -114,6 +114,23 @@ captureNgDevPatches(
       ],
     ]);
 
+// Patches for angular linker
+captureNgDevPatches(
+    [
+      'node_modules/@angular/dev-infra-private/shared-scripts/angular-linker/BUILD.bazel',
+      'node_modules/@angular/dev-infra-private/shared-scripts/angular-linker/esbuild-plugin.mjs',
+    ],
+    [
+      [
+        '"@npm//@angular/compiler-cli"',
+        '"@angular//packages/compiler-cli", "@angular//packages/compiler-cli/linker/babel"'
+      ],
+      [
+        `from '@angular/compiler-cli/linker/babel'`,
+        `from '@angular/compiler-cli/linker/babel/index.js'`
+      ],
+    ]);
+
 // Apply the captured patches for the `@angular/dev-infra-private` package.
 for (const [fileName, patches] of ngDevPatches.entries()) {
   for (const patch of patches) {

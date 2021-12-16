@@ -1,14 +1,14 @@
-load("//tools:angular_ts_project.bzl", "ng_ts_project")
-load("@io_bazel_rules_sass//:defs.bzl", "multi_sass_binary")
+load("//devtools/tools:ng_module.bzl", "ng_module")
+load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
 
 package(default_visibility = ["//visibility:public"])
 
-multi_sass_binary(
+sass_binary(
     name = "home_styles",
-    srcs = ["todo.component.scss"],
+    src = "todo.component.scss",
 )
 
-ng_ts_project(
+ng_module(
     name = "home",
     srcs = [
         "home.module.ts",
@@ -26,8 +26,8 @@ ng_ts_project(
         ":home_styles",
     ],
     deps = [
-        "@npm//@angular/common",
-        "@npm//@angular/core",
-        "@npm//@angular/router",
+        "//packages/common",
+        "//packages/core",
+        "//packages/router",
     ],
 )

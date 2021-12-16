@@ -14,6 +14,7 @@ load("@npm//@angular/dev-infra-private/bazel/benchmark/app_bundling:index.bzl", 
 load("//tools:ng_benchmark.bzl", _ng_benchmark = "ng_benchmark")
 load("@npm//@angular/dev-infra-private/bazel/api-golden:index.bzl", _api_golden_test = "api_golden_test", _api_golden_test_npm_package = "api_golden_test_npm_package")
 load("@npm//@angular/dev-infra-private/bazel:extract_js_module_output.bzl", "extract_js_module_output")
+load("@npm//@angular/dev-infra-private/bazel/esbuild:index.bzl", _esbuild = "esbuild", _esbuild_config = "esbuild_config")
 
 _DEFAULT_TSCONFIG_TEST = "//packages:tsconfig-test"
 _INTERNAL_NG_MODULE_API_EXTRACTOR = "//packages/bazel/src/api-extractor:api_extractor"
@@ -22,6 +23,9 @@ _INTERNAL_NG_MODULE_XI18N = "//packages/bazel/src/ngc-wrapped:xi18n"
 _INTERNAL_NG_PACKAGE_PACKAGER = "//packages/bazel/src/ng_package:packager"
 _INTERNAL_NG_PACKAGE_DEFAULT_ROLLUP_CONFIG_TMPL = "//packages/bazel/src/ng_package:rollup.config.js"
 _INTERNAL_NG_PACKAGE_DEFAULT_ROLLUP = "//packages/bazel/src/ng_package:rollup_for_ng_package"
+
+esbuild = _esbuild
+esbuild_config = _esbuild_config
 
 # Packages which are versioned together on npm
 ANGULAR_SCOPED_PACKAGES = ["@angular/%s" % p for p in [

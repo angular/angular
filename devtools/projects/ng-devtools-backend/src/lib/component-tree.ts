@@ -120,17 +120,22 @@ const getRootLViewsHelper = (element: Element, rootLViews = new Set<any>()): Set
 };
 
 const getRoots = () => {
-  const roots = Array.from(document.documentElement.querySelectorAll('[ng-version]'));
+  const roots =
+      Array.from(document.documentElement.querySelectorAll('[ng-version]')) as HTMLElement[];
+
   const isTopLevel = (element: HTMLElement) => {
     let parent: HTMLElement|null = element;
+
     while (parent?.parentElement) {
       parent = parent.parentElement;
       if (parent.hasAttribute('ng-version')) {
         return false;
       }
     }
+
     return true;
   };
+
   return roots.filter(isTopLevel);
 };
 

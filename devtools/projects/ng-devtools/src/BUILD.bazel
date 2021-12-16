@@ -1,14 +1,13 @@
-load("//tools:angular_ts_project.bzl", "ng_ts_project")
+load("//devtools/tools:ng_module.bzl", "ng_module")
 
 package(default_visibility = ["//visibility:public"])
 
-ng_ts_project(
+ng_module(
     name = "src",
     srcs = ["public-api.ts"],
-    tsconfig = "//projects/ng-devtools:tsconfig_lib",
     deps = [
-        "//projects/ng-devtools/src/lib",
-        "//projects/ng-devtools/src/lib/application-environment",
-        "//projects/ng-devtools/src/lib/application-operations",
+        "//devtools/projects/ng-devtools/src/lib",
+        "//devtools/projects/ng-devtools/src/lib/application-environment",
+        "//devtools/projects/ng-devtools/src/lib/application-operations",
     ],
 )

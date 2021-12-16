@@ -277,6 +277,7 @@ jobs:
           paths:
             - ./ng
             - ./bazel_repository_cache
+            - .cache/Cypress
 
   lint:
     executor: default-executor
@@ -312,7 +313,7 @@ jobs:
           # We need to explicitly specify the --symlink_prefix option because otherwise we would
           # not be able to easily find the output bin directory when uploading artifacts for size
           # measurements.
-          command: yarn test --symlink_prefix=dist/ -- //...
+          command: yarn test:ci
           no_output_timeout: 20m
         # Publish bundle artifacts which will be used to calculate the size change. **Note**: Make
         # sure that the size plugin from the Angular robot fetches the artifacts from this CircleCI
@@ -739,17 +740,14 @@ jobs:
       - custom_attach_workspace
       - init_environment
       - run:
-          name: Install DevTools dependencies
-          command: yarn --cwd devtools install --frozen-lockfile --non-interactive --cache-folder ~/.cache/yarn
-      - run:
           name: Run unit tests
-          command: yarn --cwd devtools test:ci
+          command: yarn devtools:test
       - run:
           name: Test production build
-          command: yarn --cwd devtools build:chrome:ci
+          command: yarn devtools:build:chrome
       - run:
           name: Run e2e tests
-          command: yarn --cwd devtools cy:ci
+          command: yarn devtools:e2e
 
 workflows:
   version: 2

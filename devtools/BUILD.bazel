@@ -11,6 +11,6 @@ ts_config(
     name = "tsconfig_spec",
     src = "tsconfig.spec.json",
     deps = [
-        "//:tsconfig.json",
+        "//devtools:tsconfig.json",
     ],
 )

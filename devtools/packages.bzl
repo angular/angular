@@ -1,5 +1,43 @@
+_CDK_ENTRY_POINTS = [
+    "scrolling",
+    "tree",
+    "keycodes",
+    "collections",
+    "overlay",
+    "table",
+    "text-field",
+    "accordion",
+    "drag-drop",
+    "a11y",
+    "platform",
+]
+
+_MATERIAL_ENTRY_POINTS = [
+    "dialog",
+    "menu",
+    "slide-toggle",
+    "grid-list",
+    "tree",
+    "expansion",
+    "checkbox",
+    "select",
+    "input",
+    "button",
+    "core",
+    "progress-bar",
+    "snack-bar",
+    "icon",
+    "progress-spinner",
+    "tabs",
+    "card",
+    "form-field",
+    "tooltip",
+    "toolbar",
+]
+
 ANGULAR_PACKAGES_CONFIG = [
-    ("@angular/platform-browser-dynamic", struct(entry_points = ["testing"])),
+    ("@angular/cdk", struct(entry_points = _CDK_ENTRY_POINTS)),
+    ("@angular/material", struct(entry_points = _MATERIAL_ENTRY_POINTS)),
 ]
 
 ANGULAR_PACKAGES = [

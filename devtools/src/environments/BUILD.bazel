@@ -1,13 +1,13 @@
-load("//tools:typescript.bzl", "ts_project")
+load("//devtools/tools:typescript.bzl", "ts_library")
 
 package(default_visibility = ["//visibility:public"])
 
-ts_project(
+ts_library(
     name = "environments",
     srcs = [
         "environment.ts",
     ],
     deps = [
-        "@npm//@angular/platform-browser",
+        "//packages/platform-browser",
     ],
 )

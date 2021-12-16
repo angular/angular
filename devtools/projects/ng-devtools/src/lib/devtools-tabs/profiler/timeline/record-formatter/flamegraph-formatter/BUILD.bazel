@@ -1,10 +1,10 @@
-load("//tools:angular_ts_project.bzl", "ng_ts_project")
-load("//tools:typescript.bzl", "ts_test_project")
-load("//tools:defaults.bzl", "karma_web_test_suite")
+load("//devtools/tools:ng_module.bzl", "ng_module")
+load("//devtools/tools:typescript.bzl", "ts_test_library")
+load("//devtools/tools:defaults.bzl", "karma_web_test_suite")
 
 package(default_visibility = ["//visibility:public"])
 
-ng_ts_project(
+ng_module(
     name = "flamegraph-formatter",
     srcs = glob(
         include = [
@@ -12,28 +12,27 @@ ng_ts_project(
         ],
         exclude = ["flamegraph-formatter.spec.ts"],
     ),
-    tsconfig = "//projects/ng-devtools:tsconfig_lib",
     deps = [
-        "//projects/ng-devtools/src/lib:theme",
-        "//projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter",
-        "//projects/protocol",
-        "@npm//@angular/core",
+        "//devtools/projects/ng-devtools/src/lib:theme",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter",
+        "//devtools/projects/protocol",
+        "//packages/core",
         "@npm//@types",
         "@npm//memo-decorator",
         "@npm//rxjs",
     ],
 )
 
-ts_test_project(
+ts_test_library(
     name = "test_lib",
     srcs = [
         "flamegraph-formatter.spec.ts",
     ],
     deps = [
         ":flamegraph-formatter",
-        "//projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter",
-        "//projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter:record_formatter_spec_constants",
-        "//projects/protocol",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter:record_formatter_spec_constants",
+        "//devtools/projects/protocol",
     ],
 )
 

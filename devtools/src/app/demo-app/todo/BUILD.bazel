@@ -1,4 +1,4 @@
-load("//tools:angular_ts_project.bzl", "ng_ts_project")
+load("//devtools/tools:ng_module.bzl", "ng_module")
 load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
 
 package(default_visibility = ["//visibility:public"])
@@ -8,7 +8,7 @@ sass_binary(
     src = "app-todo.component.scss",
 )
 
-ng_ts_project(
+ng_module(
     name = "todo",
     srcs = [
         "app.module.ts",
@@ -21,12 +21,12 @@ ng_ts_project(
         ":app_todo_component_styles",
     ],
     deps = [
-        "//src/app/demo-app/todo/about",
-        "//src/app/demo-app/todo/home",
-        "@npm//@angular/common",
-        "@npm//@angular/core",
-        "@npm//@angular/forms",
+        "//devtools/src/app/demo-app/todo/about",
+        "//devtools/src/app/demo-app/todo/home",
+        "//packages/common",
+        "//packages/core",
+        "//packages/forms",
+        "//packages/router",
         "@npm//@angular/material",
-        "@npm//@angular/router",
     ],
 )

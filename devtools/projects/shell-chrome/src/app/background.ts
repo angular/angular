@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+/// <reference types="chrome"/>
+
 import {AngularDetection} from './ng-validate';
 
 // Electron does not expose browserAction object,
@@ -92,9 +94,9 @@ const installContentScript = (tabId: number) => {
 
   // We first inject the content-script and after that
   // invoke the global that it exposes.
-  chrome.tabs.executeScript(tabId, {file: 'app/content-script-es2015.js'}, (result) => {
+  chrome.tabs.executeScript(tabId, {file: 'app/content_script_bundle.js'}, (result) => {
     chrome.tabs.executeScript(tabId, {
-      code: 'globalThis["content-script-out"].main()',
+      code: 'globalThis.main()',
     });
   });
 };

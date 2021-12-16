@@ -79,7 +79,17 @@ cldr_data_repository(
     },
 )
 
-local_repository(
-    name = "devtools",
-    path = "devtools",
+# sass rules
+http_archive(
+    name = "io_bazel_rules_sass",
+    sha256 = "435efe759f1c8baffadc320ecc1830454da181fa790aa83bb4326f07e903a0f4",
+    strip_prefix = "rules_sass-1.41.0",
+    urls = [
+        "https://github.com/bazelbuild/rules_sass/archive/1.41.0.zip",
+    ],
 )
+
+# Setup the rules_sass toolchain
+load("@io_bazel_rules_sass//sass:sass_repositories.bzl", "sass_repositories")
+
+sass_repositories()

@@ -1,4 +1,4 @@
-load("//tools:angular_ts_project.bzl", "ng_ts_project")
+load("//devtools/tools:ng_module.bzl", "ng_module")
 load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
 
 package(default_visibility = ["//visibility:public"])
@@ -8,7 +8,7 @@ sass_binary(
     src = "devtools.component.scss",
 )
 
-ng_ts_project(
+ng_module(
     name = "lib",
     srcs = glob(
         include = ["*.ts"],
@@ -18,31 +18,29 @@ ng_ts_project(
         "devtools.component.html",
         ":devtools_component_styles",
     ],
-    tsconfig = "//projects/ng-devtools:tsconfig_lib",
     deps = [
         ":theme",
-        "//projects/ng-devtools/src/lib/devtools-tabs",
-        "//projects/protocol",
-        "@npm//@angular/animations",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs",
+        "//devtools/projects/protocol",
+        "//packages/animations",
+        "//packages/common",
+        "//packages/core",
+        "//packages/forms",
+        "//packages/platform-browser-dynamic",
         "@npm//@angular/cdk",
-        "@npm//@angular/common",
-        "@npm//@angular/core",
-        "@npm//@angular/forms",
         "@npm//@angular/material",
-        "@npm//@angular/platform-browser-dynamic",
         "@npm//@types",
         "@npm//rxjs",
     ],
 )
 
-ng_ts_project(
+ng_module(
     name = "theme",
     srcs = glob(
         include = ["theme-service.ts"],
     ),
-    tsconfig = "//projects/ng-devtools:tsconfig_lib",
     deps = [
-        "@npm//@angular/core",
+        "//packages/core",
         "@npm//@types",
         "@npm//rxjs",
     ],

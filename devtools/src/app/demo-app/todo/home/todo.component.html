@@ -8,6 +8,6 @@
     class="edit"
     [value]="todo.label"
     [style.display]="editMode ? 'block' : 'none'"
-    (keydown.enter)="completeEdit($event.target.value)"
+    (keydown.enter)="completeEdit($any($event.target).value)"
   />
 </li>

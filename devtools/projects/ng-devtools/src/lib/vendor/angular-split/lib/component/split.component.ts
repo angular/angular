@@ -217,7 +217,7 @@ export class SplitComponent implements AfterViewInit, OnDestroy {
   @Output()
   get transitionEnd(): Observable<IOutputAreaSizes> {
     return new Observable((subscriber) => (this.transitionEndSubscriber = subscriber))
-        .pipe(debounceTime<IOutputAreaSizes>(20));
+        .pipe(debounceTime<any>(20));
   }
 
   private dragProgressSubject: Subject<IOutputData> = new Subject();
