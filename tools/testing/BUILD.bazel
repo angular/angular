@@ -57,6 +57,6 @@ jasmine_node_test(
 jasmine_node_test(
     name = "fail_bootstrap_test",
     srcs = ["fail.spec.js"],
-    bootstrap = ["//tools/testing:node_es5"],
+    bootstrap = ["//tools/testing:node_es2015"],
     expected_exit_code = 55,
 )
