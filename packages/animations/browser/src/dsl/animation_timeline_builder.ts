@@ -130,10 +130,22 @@ export class AnimationTimelineBuilderVisitor implements AstVisitor {
 
     // this checks to see if an actual animation happened
     const timelines = context.timelines.filter(timeline => timeline.containsAnimation());
-    if (timelines.length && Object.keys(finalStyles).length) {
-      const tl = timelines[timelines.length - 1];
-      if (!tl.allowOnlyTimelineStyles()) {
-        tl.setStyles([finalStyles], null, context.errors, options);
+
+    if (Object.keys(finalStyles).length) {
+      // note: we just want to apply the final styles for the rootElement, so we do not
+      //       just apply the styles to the last timeline but the last timeline which
+      //       element is the root one (basically `*`-styles are replaced with the actual
+      //       state style values only for the root element)
+      let lastRootTimeline: TimelineBuilder|undefined;
+      for (let i = timelines.length - 1; i >= 0; i--) {
+        const timeline = timelines[i];
+        if (timeline.element === rootElement) {
+          lastRootTimeline = timeline;
+          break;
+        }
+      }
+      if (lastRootTimeline && !lastRootTimeline.allowOnlyTimelineStyles()) {
+        lastRootTimeline.setStyles([finalStyles], null, context.errors, options);
       }
     }
 

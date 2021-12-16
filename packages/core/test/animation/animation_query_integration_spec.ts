@@ -3393,6 +3393,128 @@ describe('animation query tests', function() {
          children = fixture.debugElement.nativeElement.querySelectorAll('.child');
          expect(children.length).toEqual(0);
        }));
+
+    it('should correctly animate state styles of the root element applied via animate inside a group (independently of the order)',
+       () => {
+         @Component({
+        selector: 'cmp',
+        template: `
+          <div class="parent" [@parent]="exp">
+            <div class="child" *ngIf="exp"></div>
+          </div>
+        `,
+        animations: [
+          trigger('parent', [
+            state('true', style({ backgroundColor: 'red' })),
+            state('false', style({ backgroundColor: 'blue' })),
+            transition('true <=> false', [
+              group([
+                animate(500),
+                query(':leave', [
+                  animate(500, style({ opacity: 0 }))
+                ], { optional: true }),
+                query(':enter', [
+                  style({ opacity: 0 }),
+                  animate(500, style({ opacity: '*' }))
+                ], { optional: true }),
+              ])
+            ])
+          ])
+        ]
+      })
+      class Cmp {
+           public exp = true;
+         }
+
+         TestBed.configureTestingModule({declarations: [Cmp]});
+
+         const fixture = TestBed.createComponent(Cmp);
+         const cmp = fixture.componentInstance;
+         fixture.detectChanges();
+
+         cmp.exp = false;
+         fixture.detectChanges();
+
+         const players = getLog();
+         expect(players.length).toEqual(3);
+         // players:
+         //  - _pp1 (parent player 1): player for parent animation (from background red to red)
+         //  - pp2 (parent player 2): player for parent animation (from background red to blue)
+         //  - _cp (child player): player for child animation (from current opacity to 0)
+         const [_pp1, pp2, _cp] = players;
+
+         expect(pp2.element.classList.contains('parent')).toBeTruthy();
+         const expectedKeyframes = [
+           {backgroundColor: 'red', offset: 0},
+           {
+             backgroundColor:
+                 'blue',  // note: this test's purpose is to make sure that this is not '*'
+             offset: 1
+           },
+         ];
+         expect(pp2.keyframes).toEqual(expectedKeyframes);
+       });
+
+    it('should correctly animate state styles of the root element applied via animate inside a sequence (independently of the order)',
+       () => {
+         @Component({
+        selector: 'cmp',
+        template: `
+          <div class="parent" [@parent]="exp">
+            <div class="child" *ngIf="exp"></div>
+          </div>
+        `,
+        animations: [
+          trigger('parent', [
+            state('true', style({ backgroundColor: 'red' })),
+            state('false', style({ backgroundColor: 'blue' })),
+            transition('true <=> false', [
+              sequence([
+                query(':enter', [
+                  style({ opacity: 0 }),
+                  animate(500, style({ opacity: '*' }))
+                ], { optional: true }),
+                animate(500),
+                query(':leave', [
+                  animate(500, style({ opacity: 0 }))
+                ], { optional: true }),
+              ])
+            ])
+          ])
+        ]
+      })
+      class Cmp {
+           public exp = false;
+         }
+
+         TestBed.configureTestingModule({declarations: [Cmp]});
+
+         const fixture = TestBed.createComponent(Cmp);
+         const cmp = fixture.componentInstance;
+         fixture.detectChanges();
+
+         cmp.exp = true;
+         fixture.detectChanges();
+
+         const players = getLog();
+         expect(players.length).toEqual(3);
+         // players:
+         //  - _pp1 (parent player 1): player for parent animation (from background blue to blue)
+         //  - _cp (child player): player for child animation (from opacity 0 to *)
+         //  - pp2 (parent player 2): player for parent animation (from background blue to red)
+         const [_pp1, _cp, pp2] = players;
+
+         expect(pp2.element.classList.contains('parent')).toBeTruthy();
+         const expectedKeyframes = [
+           {backgroundColor: 'blue', offset: 0},
+           {
+             backgroundColor:
+                 'red',  // note: this test's purpose is to make sure that this is not '*'
+             offset: 1
+           },
+         ];
+         expect(pp2.keyframes).toEqual(expectedKeyframes);
+       });
   });
 
   describe('animation control flags', () => {
