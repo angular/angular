@@ -17,8 +17,8 @@ ts_library(
 jasmine_node_test(
     name = "ivy",
     bootstrap = [
-        "//packages/core/test/render3:domino_es5",
-        "//tools/testing:node_es5",
+        "//packages/core/test/render3:domino_es2015",
+        "//tools/testing:node_es2015",
     ],
     deps = [
         ":ivy_lib",

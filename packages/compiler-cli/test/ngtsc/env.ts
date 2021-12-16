@@ -64,11 +64,11 @@ export class NgtscTestEnvironment {
         "baseUrl": ".",
         "allowJs": true,
         "declaration": true,
-        "target": "es5",
+        "target": "es2015",
         "newLine": "lf",
         "module": "es2015",
         "moduleResolution": "node",
-        "lib": ["es6", "dom"],
+        "lib": ["es2015", "dom"],
         "typeRoots": ["node_modules/@types"]
       },
       "angularCompilerOptions": {

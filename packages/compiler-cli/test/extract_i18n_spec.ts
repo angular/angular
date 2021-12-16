@@ -10,6 +10,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 import {mainXi18n} from '../src/extract_i18n';
+
 import {setup} from './test_support';
 
 const EXPECTED_XMB = `<?xml version="1.0" encoding="UTF-8" ?>
@@ -222,10 +223,10 @@ describe('extract_i18n command line', () => {
         "rootDir": ".",
         "baseUrl": ".",
         "declaration": true,
-        "target": "es5",
+        "target": "es2015",
         "module": "es2015",
         "moduleResolution": "node",
-        "lib": ["es6", "dom"],
+        "lib": ["es2015", "dom"],
         "typeRoots": ["node_modules/@types"]
       }
     }`);

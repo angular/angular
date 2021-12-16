@@ -37,7 +37,7 @@ ts_library(
 
 jasmine_node_test(
     name = "acceptance",
-    bootstrap = ["//tools/testing:node_es5"],
+    bootstrap = ["//tools/testing:node_es2015"],
     deps = [
         ":acceptance_lib",
         "//packages/zone.js/lib:zone_d_ts",

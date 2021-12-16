@@ -27,7 +27,7 @@ ts_library(
 
 jasmine_node_test(
     name = "test",
-    bootstrap = ["//tools/testing:node_es5"],
+    bootstrap = ["//tools/testing:node_es2015"],
     deps = [
         ":test_lib",
     ],
