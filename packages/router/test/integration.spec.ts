@@ -4283,10 +4283,6 @@ describe('Integration', () => {
         return of(delayMs).pipe(delay(delayMs), mapTo(true));
       }
 
-      @NgModule({imports: [RouterModule.forChild([{path: '', component: BlankCmp}])]})
-      class LoadedModule {
-      }
-
       let log: string[];
 
       beforeEach(() => {
@@ -4338,10 +4334,14 @@ describe('Integration', () => {
            const router = TestBed.inject(Router);
 
            router.resetConfig([
-             {path: 'lazy', canLoad: ['guard1'], loadChildren: () => of(LoadedModule)},
+             {path: 'lazy', canLoad: ['guard1'], loadChildren: () => of(ModuleWithBlankCmpAsRoute)},
              {path: 'redirected', component: SimpleCmp},
              // canLoad should not run for this route because 'lazy' activates first
-             {path: '', canLoad: ['returnFalseAndNavigate'], loadChildren: () => of(LoadedModule)},
+             {
+               path: '',
+               canLoad: ['returnFalseAndNavigate'],
+               loadChildren: () => of(ModuleWithBlankCmpAsRoute)
+             },
            ]);
 
            router.navigateByUrl('/lazy');
@@ -4351,8 +4351,11 @@ describe('Integration', () => {
          }));
 
       it('should execute canLoad guards', fakeAsync(inject([Router], (router: Router) => {
-           router.resetConfig(
-               [{path: 'lazy', canLoad: ['guard1', 'guard2'], loadChildren: () => LoadedModule}]);
+           router.resetConfig([{
+             path: 'lazy',
+             canLoad: ['guard1', 'guard2'],
+             loadChildren: () => ModuleWithBlankCmpAsRoute
+           }]);
 
            router.navigateByUrl('/lazy');
            tick(5);
@@ -4367,7 +4370,7 @@ describe('Integration', () => {
              {
                path: 'lazy',
                canLoad: ['returnUrlTree', 'guard1', 'guard2'],
-               loadChildren: () => LoadedModule
+               loadChildren: () => ModuleWithBlankCmpAsRoute
              },
              {path: 'redirected', component: SimpleCmp}
            ]);
@@ -4383,7 +4386,11 @@ describe('Integration', () => {
       it('should redirect with UrlTree if UrlTree is lower priority',
          fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
            router.resetConfig([
-             {path: 'lazy', canLoad: ['guard1', 'returnUrlTree'], loadChildren: () => LoadedModule},
+             {
+               path: 'lazy',
+               canLoad: ['guard1', 'returnUrlTree'],
+               loadChildren: () => ModuleWithBlankCmpAsRoute
+             },
              {path: 'redirected', component: SimpleCmp}
            ]);
 
@@ -6287,6 +6294,10 @@ class CollectParamsCmp {
 
 @Component({selector: 'blank-cmp', template: ``})
 class BlankCmp {
+}
+
+@NgModule({imports: [RouterModule.forChild([{path: '', component: BlankCmp}])]})
+class ModuleWithBlankCmpAsRoute {
 }
 
 @Component({
