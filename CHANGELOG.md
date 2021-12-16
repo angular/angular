@@ -1,3 +1,16 @@
+<a name="13.1.1"></a>
+# 13.1.1 "chiffon-cabbage" (2021-12-16)
+### material
+| Commit | Type | Description |
+| -- | -- | -- |
+| [0629a2c1b3](https://github.com/angular/components/commit/0629a2c1b381dfe2cc86669d5d81609335a06add) | fix | **schematics:** don't replace variables contained within the names of other variables in theming API migration ([#24021](https://github.com/angular/components/pull/24021)) |
+| [6ce89aa0a5](https://github.com/angular/components/commit/6ce89aa0a54a6a94da8b2c119e68e08e75af6de4) | fix | **stepper:** assistive technology reading out stepper icon ([#24025](https://github.com/angular/components/pull/24025)) |
+| [655b41ab0f](https://github.com/angular/components/commit/655b41ab0f5d1d35f5a6a5e9c009f82688c3c21f) | fix | **tabs:** remove CSS content from chevron element ([#24091](https://github.com/angular/components/pull/24091)) |
+## Special Thanks
+Kristiyan Kostadinov and Paul Gschwendtner
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="13.1.0"></a>
 # 13.1.0 "granite-garden" (2021-12-08)
 ### cdk
