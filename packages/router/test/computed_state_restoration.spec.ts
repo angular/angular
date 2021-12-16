@@ -64,12 +64,6 @@ describe('`restoredState#ɵrouterPageId`', () => {
     }
   }
 
-  @NgModule(
-      {imports: [RouterModule.forChild([{path: '', component: SimpleCmp}])]},
-      )
-  class LoadedModule {
-  }
-
   let fixture: ComponentFixture<unknown>;
 
   beforeEach(fakeAsync(() => {
@@ -113,7 +107,7 @@ describe('`restoredState#ɵrouterPageId`', () => {
         path: 'throwing',
         component: ThrowingCmp,
       },
-      {path: 'loaded', loadChildren: () => of(LoadedModule), canLoad: ['alwaysFalse']}
+      {path: 'loaded', loadChildren: () => of(ModuleWithSimpleCmpAsRoute), canLoad: ['alwaysFalse']}
     ]);
     router.navigateByUrl('/first');
     advance(fixture);
@@ -464,6 +458,12 @@ function createRoot(router: Router, type: any): ComponentFixture<any> {
 
 @Component({selector: 'simple-cmp', template: `simple`})
 class SimpleCmp {
+}
+
+@NgModule(
+    {imports: [RouterModule.forChild([{path: '', component: SimpleCmp}])]},
+    )
+class ModuleWithSimpleCmpAsRoute {
 }
 
 @Component({selector: 'root-cmp', template: `<router-outlet></router-outlet>`})
