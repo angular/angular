@@ -4280,7 +4280,7 @@ import from `@angular/localize`. Previously it was `@angular/localize/run_time`.
 This should impact very few users and the user's that are impacted have a very easy upgrade path to switch to fetching the protractor_web_test_suite rule via the @bazel/protractor npm package.
 * **ivy:** This commit removes the public export of `hasBeenProcessed()`.
 
-This was exported to be availble to the CLI integration but was never
+This was exported to be available to the CLI integration but was never
 used. The change to the function signature is a breaking change in itself
 so we remove the function altogether to simplify and lower the public
 API surface going forward.
