@@ -71,7 +71,7 @@ export class NgModuleRef<T> extends viewEngine_NgModuleRef<T> implements Interna
                            stringify(ngModuleType)) as R3Injector;
 
     // We need to resolve the injector types separately from the injector creation, because
-    // the module might be trying to use this ref in its contructor for DI which will cause a
+    // the module might be trying to use this ref in its constructor for DI which will cause a
     // circular error that will eventually error out, because the injector isn't created yet.
     this._r3Injector._resolveInjectorDefTypes();
     this.instance = this.get(ngModuleType);

@@ -367,13 +367,13 @@ platform([WORKER_APP_PLATFORM_PROVIDERS])
 
 function initAppThread(zone: NgZone, bus: MyAwesomeMessageBus): void{
   /**
-   * Here you can do any initilization work that requires the app providers to be initialized.
+   * Here you can do any initialization work that requires the app providers to be initialized.
    * At a minimum, you must attach your bus to the zone and setup a DOM adapter.
    * Depending on your environment you may choose to do more work here.
   */
 }
 ```
-Notice how we use the `WORKER_RENDER_APPLICTION_COMMON` providers instead of the `WORKER_RENDER_APPLICATION` providers on the render thread.
+Notice how we use the `WORKER_RENDER_APPLICATION_COMMON` providers instead of the `WORKER_RENDER_APPLICATION` providers on the render thread.
 This is because the `WORKER_RENDER_APPLICATION` providers include an application initializer that starts a new WebWorker/Isolate.
 The `WORKER_RENDER_APPLICATION_COMMON` providers make no assumption about where your application code lives.
 However, we now need to provide our own app initializer. At the very least this initializer needs to call `initializeGenericWorkerRenderer`.
@@ -422,7 +422,7 @@ export class MyComponent {
 
     var arguments = [new FnArg(value, PRIMITIVE)];
     var methodInfo = new UiArguments("awesomeMethod", arguments);
-    broker.runOnService(methodInfo, PRIMTIVE).then((result: string) => {
+    broker.runOnService(methodInfo, PRIMITIVE).then((result: string) => {
       // result will be equal to the return value of doCoolThing(value) that ran on the UI.
     });
   }
