@@ -510,7 +510,12 @@ describe('property bindings', () => {
       const fixture = TestBed.createComponent(App);
       const myDir = fixture.debugElement.query(By.directive(MyDir)).injector.get(MyDir);
       const myDirB = fixture.debugElement.query(By.directive(MyDirB)).injector.get(MyDirB);
-      const [buttonEl, listboxEl] = fixture.nativeElement.children;
+      const fixtureElements = fixture.nativeElement.children;
+
+      // TODO: Use destructuring once Domino supports native ES2015, or when jsdom is used.
+      const buttonEl = fixtureElements[0];
+      const listboxEl = fixtureElements[1];
+
       fixture.detectChanges();
 
       expect(buttonEl.getAttribute('role')).toBe('button');
@@ -581,7 +586,11 @@ describe('property bindings', () => {
 
       expect(fixture.nativeElement.children.length).toBe(2);
 
-      const [comp1, comp2] = fixture.nativeElement.children;
+      const compElements = fixture.nativeElement.children;
+
+      // TODO: Use destructuring once Domino supports native ES2015, or when jsdom is used.
+      const comp1 = compElements[0];
+      const comp2 = compElements[1];
 
       expect(comp1.tagName).toBe('COMP');
       expect(comp2.tagName).toBe('COMP');
