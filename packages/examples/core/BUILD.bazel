@@ -81,5 +81,6 @@ jasmine_node_test(
     bootstrap = ["//tools/testing:node_es2015"],
     deps = [
         ":core_tests_lib",
+        "//packages/examples/core/di/ts/forward_ref:forward_ref_tests_lib",
     ],
 )
