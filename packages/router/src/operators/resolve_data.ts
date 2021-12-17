@@ -56,27 +56,31 @@ function runResolve(
 function resolveNode(
     resolve: ResolveData, futureARS: ActivatedRouteSnapshot, futureRSS: RouterStateSnapshot,
     moduleInjector: Injector): Observable<any> {
-  const keys = Object.keys(resolve);
+  const keys = getDataKeys(resolve);
   if (keys.length === 0) {
     return of({});
   }
-  const data: {[k: string]: any} = {};
+  const data: {[k: string|symbol]: any} = {};
   return from(keys).pipe(
       mergeMap(
-          (key: string) => getResolver(resolve[key], futureARS, futureRSS, moduleInjector)
-                               .pipe(tap((value: any) => {
-                                 data[key] = value;
-                               }))),
+          key => getResolver(resolve[key], futureARS, futureRSS, moduleInjector)
+                     .pipe(tap((value: any) => {
+                       data[key] = value;
+                     }))),
       takeLast(1),
       mergeMap(() => {
         // Ensure all resolvers returned values, otherwise don't emit any "next" and just complete
         // the chain which will cancel navigation
-        if (Object.keys(data).length === keys.length) {
+        if (getDataKeys(data).length === keys.length) {
           return of(data);
         }
         return EMPTY;
       }),
   );
+}
+
+function getDataKeys(obj: Object): Array<string|symbol> {
+  return [...Object.keys(obj), ...Object.getOwnPropertySymbols(obj)];
 }
 
 function getResolver(

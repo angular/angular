@@ -89,21 +89,21 @@ describe('`restoredState#ɵrouterPageId`', () => {
         component: SimpleCmp,
         canDeactivate: [MyCanDeactivateGuard],
         canActivate: [MyCanActivateGuard, ThrowingCanActivateGuard],
-        resolve: [MyResolve]
+        resolve: {x: MyResolve}
       },
       {
         path: 'second',
         component: SimpleCmp,
         canDeactivate: [MyCanDeactivateGuard],
         canActivate: [MyCanActivateGuard, ThrowingCanActivateGuard],
-        resolve: [MyResolve]
+        resolve: {x: MyResolve}
       },
       {
         path: 'third',
         component: SimpleCmp,
         canDeactivate: [MyCanDeactivateGuard],
         canActivate: [MyCanActivateGuard, ThrowingCanActivateGuard],
-        resolve: [MyResolve]
+        resolve: {x: MyResolve}
       },
       {
         path: 'unguarded',

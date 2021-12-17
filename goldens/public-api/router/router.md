@@ -165,7 +165,7 @@ export function convertToParamMap(params: Params): ParamMap;
 
 // @public
 export type Data = {
-    [name: string]: any;
+    [key: string | symbol]: any;
 };
 
 // @public
@@ -390,7 +390,7 @@ export interface Resolve<T> {
 
 // @public
 export type ResolveData = {
-    [name: string]: any;
+    [key: string | symbol]: any;
 };
 
 // @public
