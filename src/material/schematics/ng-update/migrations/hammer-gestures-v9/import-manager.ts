@@ -358,8 +358,7 @@ export class ImportManager {
           // update the named bindings to not re-print the whole import (which could
           // cause unnecessary formatting changes)
           if (hasFlag(importData, ImportState.ADDED)) {
-            // TODO(crisbeto): needs to be cast to any until g3 is updated to TS 4.5.
-            const updatedImport = (ts.updateImportDeclaration as any)(
+            const updatedImport = ts.updateImportDeclaration(
               importData.node,
               undefined,
               undefined,
@@ -536,6 +535,6 @@ function createImportSpecifier(
   name: ts.Identifier,
 ): ts.ImportSpecifier {
   return PARSED_TS_VERSION > 4.4
-    ? (ts.createImportSpecifier as any)(false, propertyName, name)
+    ? ts.createImportSpecifier(false, propertyName, name)
     : (ts.createImportSpecifier as any)(propertyName, name);
 }
