@@ -274,7 +274,7 @@ describe('MDC-based MatSlideToggle without forms', () => {
       testComponent.isRequired = false;
       fixture.detectChanges();
 
-      expect(buttonElement.getAttribute('aria-required')).toBe('false');
+      expect(buttonElement.getAttribute('aria-required')).toBe(null);
     });
 
     it('should focus on underlying element when focus() is called', fakeAsync(() => {

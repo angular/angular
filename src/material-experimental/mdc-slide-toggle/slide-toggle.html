@@ -13,7 +13,7 @@
     [attr.aria-label]="ariaLabel"
     [attr.aria-labelledby]="_getAriaLabelledBy()"
     [attr.aria-describedby]="ariaDescribedby"
-    [attr.aria-required]="required"
+    [attr.aria-required]="required || null"
     (click)="_handleClick($event)"
     #switch>
     <div class="mdc-switch__track"></div>
