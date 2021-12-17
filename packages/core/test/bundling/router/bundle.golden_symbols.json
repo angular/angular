@@ -555,6 +555,9 @@
     "name": "RouteExampleModule"
   },
   {
+    "name": "RouteTitle"
+  },
+  {
     "name": "Router"
   },
   {
@@ -709,6 +712,9 @@
   },
   {
     "name": "ThrowIfEmptySubscriber"
+  },
+  {
+    "name": "Title"
   },
   {
     "name": "Tree"
@@ -991,6 +997,9 @@
   },
   {
     "name": "createTemplateRef"
+  },
+  {
+    "name": "createTitle"
   },
   {
     "name": "deactivateRouteAndItsChildren"
@@ -1690,6 +1699,9 @@
   },
   {
     "name": "optionsReducer"
+  },
+  {
+    "name": "pageTitleInitializer"
   },
   {
     "name": "paramCompareMap"

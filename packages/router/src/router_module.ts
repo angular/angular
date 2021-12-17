@@ -16,6 +16,7 @@ import {RouterLink, RouterLinkWithHref} from './directives/router_link';
 import {RouterLinkActive} from './directives/router_link_active';
 import {RouterOutlet} from './directives/router_outlet';
 import {Event} from './events';
+import {pageTitleInitializer} from './page_title_strategy';
 import {RouteReuseStrategy} from './route_reuse_strategy';
 import {ErrorHandler, Router} from './router';
 import {ROUTES} from './router_config_loader';
@@ -146,6 +147,7 @@ export class RouterModule {
         },
         {provide: NgProbeToken, multi: true, useFactory: routerNgProbeToken},
         provideRouterInitializer(),
+        pageTitleInitializer,
       ],
     };
   }

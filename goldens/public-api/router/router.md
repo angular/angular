@@ -352,8 +352,10 @@ export class OutletContext {
 // @public
 export class PageTitleStrategy implements OnDestroy {
     constructor(title: Title, router: Router);
+    activate(): void;
+    getResolvedTitleForRoute(snapshot: ActivatedRouteSnapshot): any;
     // (undocumented)
-    getPageTitle(snapshot: RouterStateSnapshot): string | undefined;
+    getTitleForPage(snapshot: RouterStateSnapshot): string | undefined;
     // (undocumented)
     ngOnDestroy(): void;
     setTitle(title: string): void;
@@ -457,6 +459,7 @@ export interface Route {
     redirectTo?: string;
     resolve?: ResolveData;
     runGuardsAndResolvers?: RunGuardsAndResolvers;
+    title?: string | unknown;
 }
 
 // @public

@@ -12,6 +12,7 @@ import * as i1 from '@angular/router';
 import { Injector } from '@angular/core';
 import { Location as Location_2 } from '@angular/common';
 import { ModuleWithProviders } from '@angular/core';
+import { PageTitleStrategy } from '@angular/router';
 import { Route } from '@angular/router';
 import { Router } from '@angular/router';
 import { RouteReuseStrategy } from '@angular/router';
@@ -21,6 +22,7 @@ import { UrlSerializer } from '@angular/router';
 
 // @public
 export class RouterTestingModule {
+    constructor(pageTitle: PageTitleStrategy);
     // (undocumented)
     static withRoutes(routes: Routes, config?: ExtraOptions): ModuleWithProviders<RouterTestingModule>;
     // (undocumented)

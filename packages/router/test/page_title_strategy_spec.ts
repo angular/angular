@@ -9,32 +9,13 @@
 import {DOCUMENT} from '@angular/common';
 import {Component, Injectable, NgModule} from '@angular/core';
 import {fakeAsync, TestBed, tick} from '@angular/core/testing';
-import {Title} from '@angular/platform-browser';
 import {Router, RouterModule} from '@angular/router';
 import {RouterTestingModule} from '@angular/router/testing';
 
 import {PageTitleStrategy} from '../src';
 
 describe('page title strategy', () => {
-  it('does not set page title by default (so that the feature is non-breaking)', fakeAsync(() => {
-       TestBed.configureTestingModule({
-         imports: [
-           RouterTestingModule.withRoutes(
-               [{path: 'home', data: {pageTitle: 'My Application'}, component: BlankCmp}]),
-           TestModule,
-         ],
-       });
-       const router = TestBed.inject(Router);
-       const document = TestBed.inject(DOCUMENT);
-       document.title = 'before';
-
-       router.navigateByUrl('home');
-       tick();
-
-       expect(document.title).toBe('before');
-     }));
-
-  describe('BrowserPageTitleStrategy', () => {
+  describe('default PageTitleStrategy', () => {
     let router: Router;
     let document: Document;
 
@@ -51,16 +32,14 @@ describe('page title strategy', () => {
     });
 
     it('sets page title from data', fakeAsync(() => {
-         router.resetConfig(
-             [{path: 'home', data: {pageTitle: 'My Application'}, component: BlankCmp}]);
+         router.resetConfig([{path: 'home', title: 'My Application', component: BlankCmp}]);
          router.navigateByUrl('home');
          tick();
          expect(document.title).toBe('My Application');
        }));
 
     it('sets page title from resolved data', fakeAsync(() => {
-         router.resetConfig(
-             [{path: 'home', resolve: {pageTitle: TitleResolver}, component: BlankCmp}]);
+         router.resetConfig([{path: 'home', title: TitleResolver, component: BlankCmp}]);
          router.navigateByUrl('home');
          tick();
          expect(document.title).toBe('resolved title');
@@ -69,9 +48,9 @@ describe('page title strategy', () => {
     it('sets title with child routes', fakeAsync(() => {
          router.resetConfig([{
            path: 'home',
-           data: {pageTitle: 'My Application'},
+           title: 'My Application',
            children: [
-             {path: '', data: {pageTitle: 'child title'}, component: BlankCmp},
+             {path: '', title: 'child title', component: BlankCmp},
            ]
          }]);
          router.navigateByUrl('home');
@@ -83,18 +62,13 @@ describe('page title strategy', () => {
          router.resetConfig([
            {
              path: 'home',
-             data: {pageTitle: 'My Application'},
+             title: 'My Application',
              children: [
-               {path: '', data: {pageTitle: 'child title'}, component: BlankCmp},
-               {
-                 path: '',
-                 outlet: 'childaux',
-                 data: {pageTitle: 'child aux title'},
-                 component: BlankCmp
-               },
+               {path: '', title: 'child title', component: BlankCmp},
+               {path: '', outlet: 'childaux', title: 'child aux title', component: BlankCmp},
              ],
            },
-           {path: 'compose', component: BlankCmp, outlet: 'aux', data: {pageTile: 'compose'}}
+           {path: 'compose', component: BlankCmp, outlet: 'aux', title: 'compose'}
          ]);
          router.navigateByUrl('home(aux:compose)');
          tick();
@@ -106,18 +80,12 @@ describe('page title strategy', () => {
          router.resetConfig([
            {
              path: 'home',
-             data: {pageTitle: 'My Application'},
+             title: 'My Application',
              children: [
                {
                  path: '',
-                 // Must set pageTitle to `null` or it will inherit from parent if it doesn't have
-                 // its own value
-                 data: {pageTitle: null},
-                 children: [{
-                   path: '',
-                   resolve: {pageTitle: TitleResolver},
-                   component: BlankCmp,
-                 }]
+                 title: TitleResolver,
+                 component: BlankCmp,
                },
              ],
            },
@@ -125,6 +93,29 @@ describe('page title strategy', () => {
          router.navigateByUrl('home');
          tick();
          expect(document.title).toBe('resolved title');
+       }));
+
+    it('sets page title with paramsInheritanceStrategy=always with `null`', fakeAsync(() => {
+         router.paramsInheritanceStrategy = 'always';
+         router.resetConfig([
+           {
+             path: 'home',
+             title: 'My Application',
+             children: [
+               {
+                 path: '',
+                 // `null` prevents inheriting from parent if it doesn't have its own value.
+                 // The effect is still that the title is the parent value because of how the
+                 // traversal works in PageTitleStrategy
+                 title: null,
+                 component: BlankCmp,
+               },
+             ],
+           },
+         ]);
+         router.navigateByUrl('home');
+         tick();
+         expect(document.title).toBe('My Application');
        }));
   });
 
@@ -143,16 +134,16 @@ describe('page title strategy', () => {
              RouterTestingModule,
              TestModule,
            ],
+           providers: [{provide: PageTitleStrategy, useClass: TemplatePageTitleStrategy}]
          });
-         TestBed.inject(TemplatePageTitleStrategy);
          const router = TestBed.inject(Router);
          const document = TestBed.inject(DOCUMENT);
          router.resetConfig([
            {
              path: 'home',
-             data: {pageTitle: 'Home'},
+             title: 'Home',
              children: [
-               {path: '', data: {pageTitle: 'Child'}, component: BlankCmp},
+               {path: '', title: 'Child', component: BlankCmp},
              ],
            },
          ]);

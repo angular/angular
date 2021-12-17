@@ -9,7 +9,8 @@
 import {Location, LocationStrategy} from '@angular/common';
 import {MockLocationStrategy, SpyLocation} from '@angular/common/testing';
 import {Compiler, Injector, ModuleWithProviders, NgModule, Optional} from '@angular/core';
-import {ChildrenOutletContexts, ExtraOptions, NoPreloading, PreloadingStrategy, provideRoutes, Route, Router, ROUTER_CONFIGURATION, RouteReuseStrategy, RouterModule, ROUTES, Routes, UrlHandlingStrategy, UrlSerializer, ɵassignExtraOptionsToRouter as assignExtraOptionsToRouter, ɵflatten as flatten, ɵROUTER_PROVIDERS as ROUTER_PROVIDERS} from '@angular/router';
+import {ChildrenOutletContexts, ExtraOptions, NoPreloading, PageTitleStrategy, PreloadingStrategy, provideRoutes, Route, Router, ROUTER_CONFIGURATION, RouteReuseStrategy, RouterModule, ROUTES, Routes, UrlHandlingStrategy, UrlSerializer, ɵassignExtraOptionsToRouter as assignExtraOptionsToRouter, ɵflatten as flatten, ɵROUTER_PROVIDERS as ROUTER_PROVIDERS} from '@angular/router';
+
 import {EXTRA_ROUTER_TESTING_PROVIDERS} from './extra_router_testing_providers';
 
 function isUrlHandlingStrategy(opts: ExtraOptions|
@@ -98,6 +99,10 @@ export function setupTestingRouter(
   ]
 })
 export class RouterTestingModule {
+  constructor(pageTitle: PageTitleStrategy) {
+    pageTitle.activate();
+  }
+
   static withRoutes(routes: Routes, config?: ExtraOptions):
       ModuleWithProviders<RouterTestingModule> {
     return {

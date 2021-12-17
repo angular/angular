@@ -525,7 +525,7 @@ export class Router {
   onSameUrlNavigation: 'reload'|'ignore' = 'ignore';
 
   /**
-   * How to merge parameters, data, and resolved data from parent to child
+   * How to merge parameters, data, resolved data, and title from parent to child
    * routes. One of:
    *
    * - `'emptyOnly'` : Inherit parent parameters, data, and resolved data

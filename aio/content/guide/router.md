@@ -231,12 +231,14 @@ The one difference is that you place child routes in a `children` array within t
 ## Setting the page title
 
 Each page in your application should have a unique title so that they can be identified in the browser history.
-The `Router` sets the document's title using the `pageTitle` property in the route data when using the 
-`PageTitleStrategy`. All you need to do to enable this in your application is inject the `PageTitleStrategy`
-somewhere in your application. In this example, we inject `PageTitleStrategy` in the `AppRoutingModule` constructor:
+The `Router` sets the document's title using the `title` property from the `Route` config.
 
 <code-example path="router/src/app/app-routing.module.10.ts" region="page-title" header="AppRoutingModule (excerpt)">
 </code-example>
+
+Note that the `title` property follows the same rules as static route `data` and dynamic values that implement `Resolve`.
+This is also true for `paramsInheritanceStrategy`. The `title` property will be copied inherited in the same 
+manner was as data and resolved data.
 
 You can also provide a custom page title strategy by extending the `PageTitleStrategy`.
 <code-example path="router/src/app/app-routing.module.10.ts" region="custom-page-title" header="AppRoutingModule (excerpt)">
