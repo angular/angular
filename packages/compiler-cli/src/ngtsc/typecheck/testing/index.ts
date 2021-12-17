@@ -582,6 +582,7 @@ function prepareDeclarations(
       outputs: ClassPropertyMapping.fromMappedObject(decl.outputs || {}),
       queries: decl.queries || [],
       isStructural: false,
+      animationTriggerNames: null,
     };
     matcher.addSelectables(selector, meta);
   }
@@ -646,6 +647,7 @@ function makeScope(program: ts.Program, sf: ts.SourceFile, decls: TestDeclaratio
         isGeneric: decl.isGeneric ?? false,
         isPoisoned: false,
         isStructural: false,
+        animationTriggerNames: null,
       });
     } else if (decl.type === 'pipe') {
       scope.pipes.push({
