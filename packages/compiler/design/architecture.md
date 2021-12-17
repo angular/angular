@@ -117,7 +117,7 @@ the type declaration of the `ɵcmp` in the `.d.ts`.
 
 #### TypeScript architecture
 
-The overall architecure of TypeScript is:
+The overall architecture of TypeScript is:
 
                                                                     |------------|
                                |----------------------------------> | TypeScript |

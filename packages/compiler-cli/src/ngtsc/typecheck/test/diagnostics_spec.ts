@@ -210,7 +210,7 @@ runInEachFileSystem(() => {
     });
 
     it('does not repeat diagnostics for missing pipes in directive inputs', () => {
-      // The directive here is structured so that a type constructor is used, which resuts in each
+      // The directive here is structured so that a type constructor is used, which results in each
       // input binding being processed twice. This results in the 'uppercase' pipe being resolved
       // twice, and since it doesn't exist this operation will fail. The test is here to verify that
       // failing to resolve the pipe twice only produces a single diagnostic (no duplicates).

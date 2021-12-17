@@ -315,7 +315,7 @@ describe('directives', () => {
       @Directive({selector: '[test]'})
       class MyDir {
         constructor() {
-          logs.push('MyDir.contructor');
+          logs.push('MyDir.constructor');
         }
 
         @Input('test') myInput = '';
@@ -339,7 +339,7 @@ describe('directives', () => {
       const fixture = TestBed.createComponent(MyComp);
       fixture.detectChanges();
 
-      expect(logs).toEqual(['MyDir.contructor']);
+      expect(logs).toEqual(['MyDir.constructor']);
     });
   });
 
