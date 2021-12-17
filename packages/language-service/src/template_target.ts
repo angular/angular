@@ -370,8 +370,10 @@ class TemplateTargetVisitor implements t.Visitor {
   }
 
   visitBoundAttribute(attribute: t.BoundAttribute) {
-    const visitor = new ExpressionVisitor(this.position);
-    visitor.visit(attribute.value, this.path);
+    if (attribute.valueSpan !== undefined) {
+      const visitor = new ExpressionVisitor(this.position);
+      visitor.visit(attribute.value, this.path);
+    }
   }
 
   visitBoundEvent(event: t.BoundEvent) {
