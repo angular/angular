@@ -1,11 +1,6 @@
 // Karma configuration file, see link for more information
 // https://karma-runner.github.io/1.0/config/configuration-file.html
 
-// This code runs within Bazel where the environment does not have access to
-// the system Chrome browser. To workaround this we use Puppeteer to provide
-// a local version of Chromium that can run within Bazel.
-process.env.CHROME_BIN = require('puppeteer').executablePath();
-
 module.exports = function (config) {
   config.set({
     basePath: '',
@@ -34,12 +29,20 @@ module.exports = function (config) {
       subdir: '.',
       reporters: [{type: 'html'}, {type: 'text-summary'}],
     },
+    customLaunchers: {
+      ChromeHeadlessNoSandbox: {
+        base: 'ChromeHeadless',
+        flags: ['--no-sandbox'],
+      },
+    },
     reporters: ['progress', 'kjhtml'],
     port: 9876,
     colors: true,
     logLevel: config.LOG_INFO,
     autoWatch: true,
-    browsers: ['ChromeHeadless'],
+    // Chrome cannot run with sandbox enabled as this test already runs within
+    // the Bazel sandbox environment and the sandboxes would conflict otherwise.
+    browsers: ['ChromeHeadlessNoSandbox'],
     singleRun: false,
     restartOnFileChange: true,
   });

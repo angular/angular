@@ -329,20 +329,44 @@ def protractor_web_test_suite(name, deps, **kwargs):
         **kwargs
     )
 
-def node_integration_test(data = [], tool_mappings = {}, **kwargs):
+def node_integration_test(setup_chromium = False, node_repository = "nodejs", **kwargs):
     """Macro for defining an integration test with `node` and `yarn` being
-      declared as global tools."""
+      declared as global tools.
+
+      By default the default Node version of the workspace is being used."""
+
+    data = kwargs.pop("data", [])
+    toolchains = kwargs.pop("toolchains", [])
+    environment = kwargs.pop("environment", {})
+    tool_mappings = kwargs.pop("tool_mappings", {})
+
+    data += [
+        # The Yarn files also need to be part of the integration test as runfiles
+        # because the `yarn_bin` target is not a self-contained standalone binary.
+        "@%s//:yarn_files" % node_repository,
+    ]
+
+    # Setup Yarn and Node as tools in a way that allows for them to be overridden.
+    tool_mappings = dict({
+        "@%s//:yarn_bin" % node_repository: "yarn",
+        "@%s//:node_bin" % node_repository: "node",
+    }, **tool_mappings)
+
+    # If Chromium should be configured, add it to the runfiles and expose its binaries
+    # through test environment variables. The variables are auto-detected by e.g. Karma.
+    if setup_chromium:
+        data += ["@npm//@angular/dev-infra-private/bazel/browsers/chromium"]
+        toolchains += ["@npm//@angular/dev-infra-private/bazel/browsers/chromium:toolchain_alias"]
+        environment.update({
+            "CHROMEDRIVER_BIN": "$(CHROMEDRIVER)",
+            "CHROME_BIN": "$(CHROMIUM)",
+        })
 
     integration_test(
-        data = data + [
-            # The Yarn files also need to be part of the integration test as runfiles
-            # because the `yarn_bin` target is not a self-contained standalone binary.
-            "@nodejs//:yarn_files",
-        ],
-        tool_mappings = dict({
-            "@nodejs//:yarn_bin": "yarn",
-            "@nodejs//:node_bin": "node",
-        }, **tool_mappings),
+        data = data,
+        environment = environment,
+        toolchains = toolchains,
+        tool_mappings = tool_mappings,
         **kwargs
     )
 

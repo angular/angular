@@ -86,9 +86,18 @@ build:remote --auth_enabled=true
 # is provided by the shared dev-infra package and targets k8 remote containers.
 build:remote --crosstool_top=@npm//@angular/dev-infra-private/bazel/remote-execution/cpp:cc_toolchain_suite
 build:remote --extra_toolchains=@npm//@angular/dev-infra-private/bazel/remote-execution/cpp:cc_toolchain
-build:remote --extra_execution_platforms=@npm//@angular/dev-infra-private/bazel/remote-execution:platform
-build:remote --host_platform=@npm//@angular/dev-infra-private/bazel/remote-execution:platform
-build:remote --platforms=@npm//@angular/dev-infra-private/bazel/remote-execution:platform
+build:remote --extra_execution_platforms=@npm//@angular/dev-infra-private/bazel/remote-execution:platform_with_network
+build:remote --host_platform=@npm//@angular/dev-infra-private/bazel/remote-execution:platform_with_network
+build:remote --platforms=@npm//@angular/dev-infra-private/bazel/remote-execution:platform_with_network
+
+################################
+#  Sandbox settings            #
+################################
+
+# By default, network access should be disabled unless explicitly granted for certain targets
+# using the `requires-network` tag. https://docs.bazel.build/versions/main/be/common-definitions.html
+build --sandbox_default_allow_network=false
+test --sandbox_default_allow_network=false
 
 ################################
 # --config=build-results       #

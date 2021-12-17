@@ -23,12 +23,10 @@ node_integration_test(
         "yarn test",
     ],
     npm_packages = npmPackageMappings,
+    setup_chromium = True,
     tags = [
-        # Chromium cannot run in Sandbox. For this test, sandbox is disabled.
-        # Additionally, we need to disable RBE as this test relies on internet
-        # access for installing the NPM packages.
-        "no-sandbox",
-        "no-remote-exec",
+        # This test relies on `yarn` so there needs to be internet access.
+        "requires-network",
     ],
 )
 
@@ -41,21 +39,14 @@ node_integration_test(
         # See: https://github.com/yarnpkg/yarn/issues/2165.
         # TODO(devversion): determine if a solution/workaround could live in the test runner.
         "yarn install --cache-folder .yarn_cache_folder/",
-        "node --version",
-        "yarn node --version",
         "yarn ng add @angular/material",
         "yarn test",
     ],
+    node_repository = "node12_host",
     npm_packages = npmPackageMappings,
+    setup_chromium = True,
     tags = [
-        # Chromium cannot run in Sandbox. For this test, sandbox is disabled.
-        # Additionally, we need to disable RBE as this test relies on internet
-        # access for installing the NPM packages.
-        "no-sandbox",
-        "no-remote-exec",
+        # This test relies on `yarn` so there needs to be internet access.
+        "requires-network",
     ],
-    tool_mappings = {
-        "@node12_host//:yarn_bin": "yarn",
-        "@node12_host//:node_bin": "node",
-    },
 )
