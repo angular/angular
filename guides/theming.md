@@ -308,7 +308,7 @@ $dark-theme: mat.define-dark-theme((
 
 #### Multiple themes across separate files
 
-You can define multiple themes in seprate files by creating multiple theme files per
+You can define multiple themes in separate files by creating multiple theme files per
 [Defining a theme](#defining-a-theme), adding each of the files to the `styles` of your
 `angular.json`. However, you must additionally set the `inject` option for each of these files to
 `false` in order to prevent all the theme files from being loaded at the same time. When setting
