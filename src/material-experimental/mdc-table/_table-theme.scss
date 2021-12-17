@@ -1,7 +1,7 @@
 @use 'sass:map';
 @use '@material/theme/theme-color' as mdc-theme-color;
 @use '@material/data-table/data-table' as mdc-data-table;
-@use '@material/data-table/data-table-theme' as mdc-data-table-theme;
+@use '@material/data-table' as mdc-data-table-theme;
 @use '../mdc-helpers/mdc-helpers';
 @use '../../material/core/typography/typography';
 @use '../../material/core/theming/theming';

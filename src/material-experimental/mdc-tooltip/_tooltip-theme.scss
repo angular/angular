@@ -1,6 +1,6 @@
 @use 'sass:map';
 @use '@material/tooltip/tooltip';
-@use '@material/tooltip/tooltip-theme';
+@use '@material/tooltip' as tooltip-theme;
 @use '../mdc-helpers/mdc-helpers';
 @use '../../material/core/theming/theming';
 @use '../../material/core/theming/palette';
