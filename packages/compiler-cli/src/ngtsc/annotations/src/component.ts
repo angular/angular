@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {compileClassMetadata, compileComponentFromMetadata, compileDeclareClassMetadata, compileDeclareComponentFromMetadata, ConstantPool, CssSelector, DeclarationListEmitMode, DeclareComponentTemplateInfo, DEFAULT_INTERPOLATION_CONFIG, DomElementSchemaRegistry, Expression, ExternalExpr, FactoryTarget, InterpolationConfig, LexerRange, makeBindingParser, ParsedTemplate, ParseSourceFile, parseTemplate, R3ClassMetadata, R3ComponentMetadata, R3TargetBinder, R3UsedDirectiveMetadata, SelectorMatcher, Statement, TmplAstNode, ViewEncapsulation, WrappedNodeExpr} from '@angular/compiler';
+import {AnimationTriggerNames, compileClassMetadata, compileComponentFromMetadata, compileDeclareClassMetadata, compileDeclareComponentFromMetadata, ConstantPool, CssSelector, DeclarationListEmitMode, DeclareComponentTemplateInfo, DEFAULT_INTERPOLATION_CONFIG, DomElementSchemaRegistry, Expression, ExternalExpr, FactoryTarget, InterpolationConfig, LexerRange, makeBindingParser, ParsedTemplate, ParseSourceFile, parseTemplate, R3ClassMetadata, R3ComponentMetadata, R3TargetBinder, R3UsedDirectiveMetadata, SelectorMatcher, Statement, TmplAstNode, ViewEncapsulation, WrappedNodeExpr} from '@angular/compiler';
 import ts from 'typescript';
 
 import {Cycle, CycleAnalyzer, CycleHandlingStrategy} from '../../cycles';
@@ -17,7 +17,7 @@ import {DependencyTracker} from '../../incremental/api';
 import {extractSemanticTypeParameters, isArrayEqual, isReferenceEqual, SemanticDepGraphUpdater, SemanticReference, SemanticSymbol} from '../../incremental/semantic_graph';
 import {IndexingContext} from '../../indexer';
 import {ClassPropertyMapping, ComponentResources, DirectiveMeta, DirectiveTypeCheckMeta, extractDirectiveTypeCheckMeta, InjectableClassRegistry, MetadataReader, MetadataRegistry, MetaType, Resource, ResourceRegistry} from '../../metadata';
-import {EnumValue, PartialEvaluator, ResolvedValue} from '../../partial_evaluator';
+import {EnumValue, PartialEvaluator, ResolvedValue, ResolvedValueArray} from '../../partial_evaluator';
 import {PerfEvent, PerfRecorder} from '../../perf';
 import {ClassDeclaration, DeclarationNode, Decorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
 import {ComponentScopeReader, LocalModuleScopeRegistry, TypeCheckScopeRegistry} from '../../scope';
@@ -86,6 +86,7 @@ export interface ComponentAnalysisData {
   inlineStyles: string[]|null;
 
   isPoisoned: boolean;
+  animationTriggerNames: AnimationTriggerNames|null;
 }
 
 export type ComponentResolutionData = Pick<R3ComponentMetadata, ComponentMetadataResolvedFields>;
@@ -348,8 +349,16 @@ export class ComponentDecoratorHandler implements
         this._resolveEnumValue(component, 'changeDetection', 'ChangeDetectionStrategy');
 
     let animations: Expression|null = null;
+    let animationTriggerNames: AnimationTriggerNames|null = null;
     if (component.has('animations')) {
       animations = new WrappedNodeExpr(component.get('animations')!);
+      const animationsValue = this.evaluator.evaluate(component.get('animations')!);
+      if (Array.isArray(animationsValue)) {
+        animationTriggerNames = {includesDynamicAnimations: false, triggerNames: []};
+        collectAnimationNames(animationsValue, animationTriggerNames);
+      } else {
+        animationTriggerNames = {includesDynamicAnimations: true, triggerNames: []};
+      }
     }
 
     // Go through the root directories for this project, and select the one with the smallest
@@ -516,6 +525,7 @@ export class ComponentDecoratorHandler implements
           template: templateResource,
         },
         isPoisoned,
+        animationTriggerNames,
       },
       diagnostics,
     };
@@ -551,6 +561,7 @@ export class ComponentDecoratorHandler implements
       ...analysis.typeCheckMeta,
       isPoisoned: analysis.isPoisoned,
       isStructural: false,
+      animationTriggerNames: analysis.animationTriggerNames,
     });
 
     this.resourceRegistry.registerResources(analysis.resources, node);
@@ -1538,4 +1549,28 @@ function checkCustomElementSelectorForErrors(selector: string): string|null {
   }
 
   return null;
+}
+
+/**
+ * Collect the animation names from the static evaluation result.
+ * @param value the static evaluation result of the animations
+ * @param animationTriggerNames the animation names collected and whether some names could not be
+ *     statically evaluated.
+ */
+function collectAnimationNames(
+    value: ResolvedValueArray, animationTriggerNames: AnimationTriggerNames) {
+  for (const resolvedValue of value) {
+    if (resolvedValue instanceof Map) {
+      const name = resolvedValue.get('name');
+      if (typeof name === 'string') {
+        animationTriggerNames.triggerNames.push(name);
+      } else {
+        animationTriggerNames.includesDynamicAnimations = true;
+      }
+    } else if (Array.isArray(resolvedValue)) {
+      collectAnimationNames(resolvedValue, animationTriggerNames);
+    } else {
+      animationTriggerNames.includesDynamicAnimations = true;
+    }
+  }
 }
