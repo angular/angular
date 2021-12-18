@@ -54,7 +54,7 @@ Child `ModuleInjector`s are created when lazy loading other `@NgModules`.
 
 Provide services with the `providedIn` property of `@Injectable()` as follows:
 
-```ts
+<code-example>
 
 import { Injectable } from '@angular/core';
 
@@ -65,7 +65,7 @@ export class ItemService {
   name = 'telephone';
 }
 
-```
+</code-example>
 
 The `@Injectable()` decorator identifies a service class.
 The `providedIn` property configures a specific `ModuleInjector`,
