@@ -22,7 +22,7 @@ export class Rule extends Rules.TypedRule {
     const failures: RuleFailure[] = [];
 
     // If no relevant classes are imported, we can exit early.
-    if (controlClassImports.length === 0 && formBuilderImport !== null) return failures;
+    if (controlClassImports.length === 0 && formBuilderImport === null) return failures;
 
     // For each control class, migrate all of its uses.
     for (const importSpecifier of controlClassImports) {
@@ -39,9 +39,9 @@ export class Rule extends Rules.TypedRule {
     }
 
     // Add the any symbol used by the migrated calls.
-    if (getAnyImport(sourceFile) !== null) {
+    if (getAnyImport(sourceFile) === null) {
       const firstValidFormsImport =
-          [...controlClassImports, formBuilderImport].sort().filter(i => i)[0]!;
+          [...controlClassImports, formBuilderImport].sort().filter(i => i !== null)[0]!;
       failures.push(this.getImportFailure(firstValidFormsImport, sourceFile));
     }
 

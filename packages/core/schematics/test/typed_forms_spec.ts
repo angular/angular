@@ -14,9 +14,6 @@ import * as shx from 'shelljs';
 
 const anySymbolName = 'AnyForUntypedForms';
 
-// Tests disabled, as the migration is currently disabled in package.json.
-/*
-
 describe('Typed Forms migration', () => {
   let runner: SchematicTestRunner;
   let host: TempScopedNodeJsSyncHost;
@@ -255,8 +252,7 @@ describe('Typed Forms migration', () => {
     it('an integrated example', async () => {
       writeFile('/index.ts', `
            import { Component } from '@angular/core';
-           import { AbstractControl, FormArray, FormBuilder, FormControl as FC, FormGroup } from
-'@angular/forms';
+           import { AbstractControl, FormArray, FormBuilder, FormControl as FC, FormGroup } from '@angular/forms';
 
            @Component({template: ''})
            export class MyComponent {
@@ -276,13 +272,14 @@ describe('Typed Forms migration', () => {
          `);
       await runMigration();
       [`import { ${
-           anySymbolName}, AbstractControl, FormArray, FormBuilder, FormControl as FC, FormGroup }
-from '@angular/forms';`, `private _control = new FC<${anySymbolName}>(42)`, `private _group = new
-FormGroup<${anySymbolName}>({})`, `private _array = new FormArray<${anySymbolName}[]>([])`, `const
-fc2 = new FC<${anySymbolName}>(0)`, `const c = this.fb.control<${anySymbolName}>(42)`, `const g =
-this.fb.group<${anySymbolName}>({one: this.fb.control<${anySymbolName}>('')})`, `const a =
-this.fb.array<${anySymbolName}[]>([42])`] .forEach(t =>
-expect(tree.readContent('/index.ts')).toContain(t));
+           anySymbolName}, AbstractControl, FormArray, FormBuilder, FormControl as FC, FormGroup } from '@angular/forms';`,
+       `private _control = new FC<${anySymbolName}>(42)`,
+       `private _group = new FormGroup<${anySymbolName}>({})`,
+       `private _array = new FormArray<${anySymbolName}[]>([])`,
+       `const fc2 = new FC<${anySymbolName}>(0)`, `const c = this.fb.control<${anySymbolName}>(42)`,
+       `const g = this.fb.group<${anySymbolName}>({one: this.fb.control<${anySymbolName}>('')})`,
+       `const a = this.fb.array<${anySymbolName}[]>([42])`]
+          .forEach(t => expect(tree.readContent('/index.ts')).toContain(t));
     });
   });
 
@@ -294,5 +291,3 @@ expect(tree.readContent('/index.ts')).toContain(t));
     return runner.runSchematicAsync('migration-v14-typed-forms', {}, tree).toPromise();
   }
 });
-
-*/

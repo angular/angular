@@ -180,7 +180,7 @@ describe('FormArray', () => {
     it('should work with nested form groups/arrays', () => {
       a = new FormArray([
         new FormGroup(
-            {'c2': new FormControl('v2') as AbstractControl, 'c3': new FormControl('v3')}),
+            {'c2': new FormControl('v2') as AbstractControl, 'c3': new FormControl('v3') as any}),
         new FormArray([new FormControl('v4'), new FormControl('v5')])
       ]);
       a.at(0).get('c3')!.disable();
