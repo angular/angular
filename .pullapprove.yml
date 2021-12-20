@@ -65,7 +65,6 @@ version: 3
 
 availability:
   users_unavailable:
-    - atscott # OOO as of 2021-12-01
     - pkozlowski-opensource # OOO as of 2020-09-28
 
 # Meta field that goes unused by PullApprove to allow for defining aliases to be
