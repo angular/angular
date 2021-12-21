@@ -8,13 +8,11 @@
        placeholder="Search heroes">
 
 <ul class="heroes" [@filterAnimation]="heroesTotal">
-<!-- #enddocregion filter-animations -->
   <li *ngFor="let hero of heroes" class="hero">
     <div class="inner">
       <span class="badge">{{ hero.id }}</span>
       <span>{{ hero.name }}</span>
     </div>
   </li>
-<!-- #docregion filter-animations -->
 </ul>
 <!-- #enddocregion filter-animations -->
