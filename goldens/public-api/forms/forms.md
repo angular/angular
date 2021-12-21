@@ -203,10 +203,12 @@ export class DefaultValueAccessor extends BaseControlValueAccessor implements Co
 }
 
 // @public
-export class EmailValidator implements Validator {
-    set email(value: boolean | string);
-    registerOnValidatorChange(fn: () => void): void;
-    validate(control: AbstractControl): ValidationErrors | null;
+export class EmailValidator extends AbstractValidatorDirective {
+    email: boolean | string;
+
+    // (undocumented)
+    enabled(input: boolean): boolean;
+    
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<EmailValidator, "[email][formControlName],[email][formControl],[email][ngModel]", never, { "email": "email"; }, {}, never>;
     // (undocumented)

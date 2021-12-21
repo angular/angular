@@ -470,35 +470,26 @@ export const EMAIL_VALIDATOR: any = {
   selector: '[email][formControlName],[email][formControl],[email][ngModel]',
   providers: [EMAIL_VALIDATOR]
 })
-export class EmailValidator implements Validator {
-  private _enabled = false;
-  private _onChange?: () => void;
-
+export class EmailValidator extends AbstractValidatorDirective {
   /**
    * @description
    * Tracks changes to the email attribute bound to this directive.
    */
-  @Input()
-  set email(value: boolean|string) {
-    this._enabled = value === '' || value === true || value === 'true';
-    if (this._onChange) this._onChange();
-  }
+  @Input() email!: boolean|string;
 
-  /**
-   * Method that validates whether an email address is valid.
-   * Returns the validation result if enabled, otherwise null.
-   * @nodoc
-   */
-  validate(control: AbstractControl): ValidationErrors|null {
-    return this._enabled ? emailValidator(control) : null;
-  }
+  /** @internal */
+  override inputName = 'email';
 
-  /**
-   * Registers a callback function to call when the validator inputs change.
-   * @nodoc
-   */
-  registerOnValidatorChange(fn: () => void): void {
-    this._onChange = fn;
+  /** @internal */
+  override normalizeInput = (input: unknown): boolean =>
+      input === '' || input === true || input === 'true'
+
+  /** @internal */
+  override createValidator = (input: number): ValidatorFn => emailValidator;
+
+  /** @nodoc */
+  override enabled(input: boolean): boolean {
+    return input;
   }
 }
 
