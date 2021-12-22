@@ -218,7 +218,7 @@ describe('Animation Tests', () => {
   describe('Hero Groups Component', () => {
     beforeAll(async () => {
       await heroGroupsHref.click();
-      await sleepFor(300);
+      await sleepFor(400);
     });
 
     it('should attach a flyInOut trigger to the list of items', async () => {
