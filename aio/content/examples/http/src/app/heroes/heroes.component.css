@@ -9,21 +9,20 @@
 }
 
 .heroes li {
-  position: relative;
+  display: flex;
+  width: 100%;
 }
 
 .heroes li:hover {
   left: .1em;
 }
 
-.heroes a {
+.heroes button.delete {
   color: black;
   display: block;
   font-size: 1.2rem;
   background-color: #eee;
-  margin: .5em 0;
-  padding: .5em 0;
-  border-radius: 4px;
+  border-radius: 0 4px 4px 0;
 }
 
 .heroes a:hover {
@@ -40,8 +39,18 @@
   border-radius: 4px 0 0 4px;
 }
 
+.heroes button.edit {
+  flex: 1;
+  text-align: left;
+  padding: 0;
+  margin-right: 0;
+  display: flex;
+  align-items: center;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
 button.delete {
-  position: absolute;
   right: -8px;
   top: 5px;
   background-color: gray;
@@ -53,6 +62,4 @@ button.delete {
 .heroes input {
   max-width: 12rem;
   padding: .25rem;
-  position: absolute;
-  top: 8px;
 }

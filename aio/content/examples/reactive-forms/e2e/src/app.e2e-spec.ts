@@ -3,8 +3,8 @@ import { browser, element, by } from 'protractor';
 describe('Reactive forms', () => {
   const nameEditor = element(by.css('app-name-editor'));
   const profileEditor = element(by.css('app-profile-editor'));
-  const nameEditorLink = element(by.cssContainingText('app-root > nav > a', 'Name Editor'));
-  const profileEditorLink = element(by.cssContainingText('app-root > nav > a', 'Profile Editor'));
+  const nameEditorButton = element(by.cssContainingText('app-root > nav > button', 'Name Editor'));
+  const profileEditorButton = element(by.cssContainingText('app-root > nav > button', 'Profile Editor'));
 
   beforeAll(() => browser.get(''));
 
@@ -14,7 +14,7 @@ describe('Reactive forms', () => {
     const nameText = 'John Smith';
 
     beforeAll(async () => {
-      await nameEditorLink.click();
+      await nameEditorButton.click();
     });
 
     beforeEach(async () => {
@@ -66,12 +66,12 @@ describe('Reactive forms', () => {
     };
 
     beforeAll(async () => {
-      await profileEditorLink.click();
+      await profileEditorButton.click();
     });
 
     beforeEach(async () => {
       await browser.get('');
-      await profileEditorLink.click();
+      await profileEditorButton.click();
     });
 
     it('should be invalid by default', async () => {

@@ -5,6 +5,7 @@
   padding: 0;
   width: 15em;
 }
+
 .heroes li {
   position: relative;
   cursor: pointer;
@@ -64,10 +65,12 @@ button:hover {
 }
 
 button.delete {
-  position: relative;
-  left: 194px;
-  top: -32px;
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
   background-color: gray !important;
   color: white;
+  margin: 0;
 }
 

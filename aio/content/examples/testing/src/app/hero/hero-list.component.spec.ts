@@ -60,7 +60,7 @@ describe('HeroListComponent', () => {
 
        // In older browsers, such as IE, you might need a CustomEvent instead. See
        // https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent/CustomEvent#Polyfill
-       li.dispatchEvent(new Event('click'));
+       li.firstChild!.dispatchEvent(new Event('click'));
        tick();
        // `.toEqual` because selectedHero is clone of expectedHero; see FakeHeroService
        expect(comp.selectedHero).toEqual(expectedHero);
@@ -72,7 +72,7 @@ describe('HeroListComponent', () => {
 
        // In older browsers, such as IE, you might need a CustomEvent instead. See
        // https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent/CustomEvent#Polyfill
-       li.dispatchEvent(new Event('click'));
+       li.firstChild!.dispatchEvent(new Event('click'));
        tick();
 
        // should have navigated

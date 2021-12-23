@@ -3,8 +3,10 @@
 
 <p><em>Select a hero from the list to see details.</em></p>
 <ul>
-  <li *ngFor="let hero of heroes" (click)="selectHero(hero)">
-    {{hero.name}}
+  <li *ngFor="let hero of heroes">
+    <button (click)="selectHero(hero)">
+      {{hero.name}}
+    </button>
   </li>
 </ul>
 
