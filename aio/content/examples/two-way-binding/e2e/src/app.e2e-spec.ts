@@ -20,17 +20,17 @@ describe('Two-way binding e2e tests', () => {
     expect(await plus2Button.getText()).toBe('+');
   });
 
-  it('should change font size labels', async () => {
+  it('should change font size texts', async () => {
     await minusButton.click();
-    expect(await element.all(by.css('label')).get(0).getText()).toEqual('FontSize: 15px');
+    expect(await element.all(by.css('span')).get(0).getText()).toEqual('FontSize: 15px');
     expect(await element.all(by.css('input')).get(0).getAttribute('value')).toEqual('15');
 
     await plusButton.click();
-    expect(await element.all(by.css('label')).get(0).getText()).toEqual('FontSize: 16px');
+    expect(await element.all(by.css('span')).get(0).getText()).toEqual('FontSize: 16px');
     expect(await element.all(by.css('input')).get(0).getAttribute('value')).toEqual('16');
 
     await minus2Button.click();
-    expect(await element.all(by.css('label')).get(2).getText()).toEqual('FontSize: 15px');
+    expect(await element.all(by.css('span')).get(1).getText()).toEqual('FontSize: 15px');
   });
 
   it('should display De-sugared two-way binding', async () => {

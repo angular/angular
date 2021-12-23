@@ -184,7 +184,7 @@ export class ParentComponent { }
 
 @Component({
   selector: 'io-comp',
-  template: '<div class="hero" (click)="click()">Original {{hero.name}}</div>'
+  template: '<button class="hero" (click)="click()">Original {{hero.name}}</button>'
 })
 export class IoComponent {
   @Input() hero!: Hero;

@@ -176,8 +176,9 @@ describe('Universal', () => {
         expect(await button.getCssValue('padding')).toBe('5px 10px');
         expect(await button.getCssValue('border-radius')).toBe('4px');
         // Styles defined in heroes.component.css
-        expect(await button.getCssValue('left')).toBe('194px');
-        expect(await button.getCssValue('top')).toBe('-32px');
+        expect(await button.getCssValue('right')).toBe('0px');
+        expect(await button.getCssValue('top')).toBe('0px');
+        expect(await button.getCssValue('bottom')).toBe('0px');
       }
 
       const addButton = element(by.buttonText('add'));

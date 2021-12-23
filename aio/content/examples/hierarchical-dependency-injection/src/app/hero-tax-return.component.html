@@ -2,7 +2,7 @@
   <div class="msg" [class.canceled]="message==='Canceled'">{{message}}</div>
   <fieldset>
     <span  id=name>{{taxReturn.name}}</span>
-    <label id=tid>TID: {{taxReturn.tid}}</label>
+    <span id=tid>TID: {{taxReturn.tid}}</span>
   </fieldset>
   <fieldset>
     <label>
@@ -10,7 +10,7 @@
     </label>
   </fieldset>
   <fieldset>
-    <label>Tax: {{taxReturn.tax}}</label>
+    <span>Tax: {{taxReturn.tax}}</span>
   </fieldset>
   <fieldset>
     <button (click)="onSaved()">Save</button>

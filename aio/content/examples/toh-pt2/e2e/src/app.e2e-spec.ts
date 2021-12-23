@@ -66,7 +66,7 @@ function initialPageTests() {
 
 function selectHeroTests() {
   it(`selects ${targetHero.name} from hero list`, async () => {
-    const hero = element(by.cssContainingText('li span.badge', targetHero.id.toString()));
+    const hero = element(by.cssContainingText('button span.badge', targetHero.id.toString()));
     await hero.click();
     // Nothing specific to expect other than lack of exceptions.
   });
@@ -74,7 +74,7 @@ function selectHeroTests() {
   it(`has selected ${targetHero.name}`, async () => {
     const page = getPageElts();
     const expectedText = `${targetHero.id} ${targetHero.name}`;
-    expect(await page.selected.getText()).toBe(expectedText);
+    expect((await page.selected.getText()).replace('\n', ' ')).toBe(expectedText);
   });
 
   it('shows selected hero details', async () => {
@@ -101,7 +101,7 @@ function updateHeroTests() {
 
   it(`shows updated hero name in list`, async () => {
     const page = getPageElts();
-    const hero = Hero.fromString(await page.selected.getText());
+    const hero = Hero.fromString((await page.selected.getText()).replace('\n', ' '));
     const newName = targetHero.name + nameSuffix;
     expect(hero.id).toEqual(targetHero.id);
     expect(hero.name).toEqual(newName);
@@ -122,8 +122,8 @@ async function expectHeading(hLevel: number, expectedText: string): Promise<void
 
 function getPageElts() {
   return {
-    heroes: element.all(by.css('app-root li')),
-    selected: element(by.css('app-root li.selected')),
+    heroes: element.all(by.css('app-root li button')),
+    selected: element(by.css('app-root li button.selected')),
     heroDetail: element(by.css('app-root > div, app-root > app-heroes > div'))
   };
 }

@@ -4,13 +4,21 @@ ul {
 
 li {
   list-style-type: none;
-  padding: 1rem;
-  background-color: aliceblue;
   border: 1px solid #444;
   margin-bottom: .5rem;
+  display: flex;
 }
 
-li:hover {
+li button {
+  background-color: aliceblue;
+  flex: 1;
+  padding: 1rem;
+  margin: 0;
+  text-align: left;
+  border-radius: 0;
+}
+
+li button:hover, li button:active {
   background-color: #444;
   color: white;
   cursor: pointer;

@@ -56,11 +56,11 @@ describe('HeroListComponent', () => {
 
   it('should select hero on click', fakeAsync(() => {
        const expectedHero = HEROES[1];
-       const li = page.heroRows[1];
+       const btn = page.heroRows[1].querySelector('button');
 
        // In older browsers, such as IE, you might need a CustomEvent instead. See
        // https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent/CustomEvent#Polyfill
-       li.dispatchEvent(new Event('click'));
+       btn!.dispatchEvent(new Event('click'));
        tick();
        // `.toEqual` because selectedHero is clone of expectedHero; see FakeHeroService
        expect(comp.selectedHero).toEqual(expectedHero);
@@ -68,11 +68,11 @@ describe('HeroListComponent', () => {
 
   it('should navigate to selected hero detail on click', fakeAsync(() => {
        const expectedHero = HEROES[1];
-       const li = page.heroRows[1];
+       const btn = page.heroRows[1].querySelector('button');
 
        // In older browsers, such as IE, you might need a CustomEvent instead. See
        // https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent/CustomEvent#Polyfill
-       li.dispatchEvent(new Event('click'));
+       btn!.dispatchEvent(new Event('click'));
        tick();
 
        // should have navigated

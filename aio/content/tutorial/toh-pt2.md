@@ -117,15 +117,26 @@ and update the hero detail.
 
 ### Add a click event binding
 
-Add a click event binding to the `<li>` like this:
+Add a `<button>` with a click event binding in the `<li>` like this:
 
 <code-example path="toh-pt2/src/app/heroes/heroes.component.1.html" region="selectedHero-click" header="heroes.component.html (template excerpt)"></code-example>
 
 This is an example of Angular's [event binding](guide/event-binding) syntax.
 
-The parentheses around `click` tell Angular to listen for the `<li>` element's  `click` event.
-When the user clicks in the `<li>`, Angular executes the `onSelect(hero)` expression.
+The parentheses around `click` tell Angular to listen for the `<button>` element's `click` event.
+When the user clicks in the `<button>`, Angular executes the `onSelect(hero)` expression.
 
+<div class="callout is-helpful">
+
+  <header>Clickable elements</header>
+
+  Note that we added the click event binding on a new `<button>` element. While we could have added
+  the event binding on the `<li>` element directly, it is better for accessibility purposes to use
+  the native `<button>` element to handle clicks.
+
+  For more details on accessibility, see [Accessibility in Angular](guide/accessibility).
+
+</div>
 
 In the next section, define an `onSelect()` method in `HeroesComponent` to
 display the hero that was defined in the `*ngFor` expression.
@@ -207,7 +218,7 @@ To apply the `.selected` class to the `<li>` when the user clicks it, use class 
 Angular's [class binding](guide/attribute-binding#class-binding) can add and remove a CSS class conditionally.
 Add `[class.some-css-class]="some-condition"` to the element you want to style.
 
-Add the following `[class.selected]` binding to the `<li>` in the `HeroesComponent` template:
+Add the following `[class.selected]` binding to the `<button>` in the `HeroesComponent` template:
 
 <code-example path="toh-pt2/src/app/heroes/heroes.component.1.html" region="class-selected" header="heroes.component.html (toggle the 'selected' CSS class)"></code-example>
 
