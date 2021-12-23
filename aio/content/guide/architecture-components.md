@@ -89,13 +89,13 @@ This example from the `HeroListComponent` template uses three of these forms.
 
 <code-example path="architecture/src/app/hero-list.component.1.html" header="src/app/hero-list.component.html (binding)" region="binding"></code-example>
 
-* The `{{hero.name}}` [*interpolation*](guide/interpolation)
-displays the component's `hero.name` property value within the `<li>` element.
-
 * The `[hero]` [*property binding*](guide/property-binding) passes the value of
 `selectedHero` from the parent `HeroListComponent` to the `hero` property of the child `HeroDetailComponent`.
 
 * The `(click)` [*event binding*](guide/user-input#binding-to-user-input-events) calls the component's `selectHero` method when the user clicks a hero's name.
+
+* The `{{hero.name}}` [*interpolation*](guide/interpolation)
+displays the component's `hero.name` property value within the `<button>` element.
 
 Two-way data binding (used mainly in [template-driven forms](guide/forms))
 combines property and event binding in a single notation.

@@ -1,7 +1,8 @@
 <!--#docregion binding  -->
-<li>{{hero.name}}</li>
 <app-hero-detail [hero]="selectedHero"></app-hero-detail>
-<li (click)="selectHero(hero)"></li>
+<button (click)="selectHero(hero)">
+  {{hero.name}}
+</button>
 <!--#enddocregion binding -->
 
 <!--#docregion structural  -->

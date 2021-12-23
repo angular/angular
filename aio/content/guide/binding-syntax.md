@@ -237,7 +237,7 @@ The following table summarizes the targets for the different binding types.
       Directive&nbsp;property
     </td>
     <td>
-      <code>src</code>, <code>hero</code>, and <code>ngClass</code> in the following:
+      <code>alt</code>, <code>src</code>, <code>hero</code>, and <code>ngClass</code> in the following:
       <code-example path="template-syntax/src/app/app.component.html" region="property-binding-syntax-1"></code-example>
       <!-- For more information, see [Property Binding](guide/property-binding). -->
     </td>

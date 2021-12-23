@@ -13,12 +13,12 @@
         "plugin:@angular-eslint/template/recommended"
       ],
       "rules": {
-        "@angular-eslint/template/accessibility-alt-text": "off", // TODO: Fix the code violating this rule and enable it.
-        "@angular-eslint/template/accessibility-elements-content": "off", // TODO: Fix the code violating this rule and enable it.
-        "@angular-eslint/template/accessibility-label-has-associated-control": "off", // TODO: Fix the code violating this rule and enable it.
+        "@angular-eslint/template/accessibility-alt-text": "error",
+        "@angular-eslint/template/accessibility-elements-content": "error",
+        "@angular-eslint/template/accessibility-label-has-associated-control": "error",
         "@angular-eslint/template/accessibility-table-scope": "error",
         "@angular-eslint/template/accessibility-valid-aria": "error",
-        "@angular-eslint/template/click-events-have-key-events": "off", // TODO: Fix the code violating this rule and enable it.
+        "@angular-eslint/template/click-events-have-key-events": "error",
         "@angular-eslint/template/eqeqeq": "off",
         "@angular-eslint/template/mouse-events-have-key-events": "error",
         "@angular-eslint/template/no-autofocus": "error",

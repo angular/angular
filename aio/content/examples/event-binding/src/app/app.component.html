@@ -34,6 +34,9 @@
 
 
   <h4>Click to see event target class:</h4>
+
+<!-- eslint-disable @angular-eslint/template/click-events-have-key-events -->
+
 <div class="parent-div" (click)="onClickMe($event)" clickable>Click me (parent)
   <div class="child-div">Click me too! (child) </div>
 </div>
@@ -47,3 +50,5 @@
 <div (click)="onSave()" clickable>
   <button (click)="onSave()">Save with propagation</button>
 </div>
+
+<!-- eslint-enable @angular-eslint/template/click-events-have-key-events -->

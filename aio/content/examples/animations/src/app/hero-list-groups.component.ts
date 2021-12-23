@@ -19,12 +19,11 @@ import { Hero } from './hero';
   selector: 'app-hero-list-groups',
   template: `
     <ul class="heroes">
-      <li *ngFor="let hero of heroes"
-          [@flyInOut]="'in'" (click)="removeHero(hero.id)">
-          <div class="inner">
+      <li *ngFor="let hero of heroes" [@flyInOut]="'in'">
+          <button class="inner" (click)="removeHero(hero.id)">
             <span class="badge">{{ hero.id }}</span>
-            <span>{{ hero.name }}</span>
-          </div>
+            <span class="name">{{ hero.name }}</span>
+          </button>
       </li>
     </ul>
   `,
@@ -33,7 +32,7 @@ import { Hero } from './hero';
   animations: [
     trigger('flyInOut', [
       state('in', style({
-        width: 120,
+        width: '*',
         transform: 'translateX(0)', opacity: 1
       })),
       transition(':enter', [
@@ -41,7 +40,7 @@ import { Hero } from './hero';
         group([
           animate('0.3s 0.1s ease', style({
             transform: 'translateX(0)',
-            width: 120
+            width: '*'
           })),
           animate('0.3s ease', style({
             opacity: 1
