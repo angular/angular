@@ -101,8 +101,6 @@ export class Ng1HeroComponentWrapper extends UpgradeComponent {
     {provide: TextFormatter, useFactory: (i: any) => i.get('textFormatter'), deps: ['$injector']}
     // #enddocregion
   ],
-  // All components that are to be "downgraded" must be declared as `entryComponents`
-  entryComponents: [Ng2HeroesComponent],
   // We must import `UpgradeModule` to get access to the AngularJS core services
   imports: [BrowserModule, UpgradeModule]
 })

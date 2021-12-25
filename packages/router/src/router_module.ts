@@ -93,7 +93,6 @@ export function routerNgProbeToken() {
 @NgModule({
   declarations: ROUTER_DIRECTIVES,
   exports: ROUTER_DIRECTIVES,
-  entryComponents: [EmptyOutletComponent]
 })
 export class RouterModule {
   // Note: We are injecting the Router so it gets created eagerly...

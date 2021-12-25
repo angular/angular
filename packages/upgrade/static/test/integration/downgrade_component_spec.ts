@@ -111,11 +111,7 @@ withEachNg1Version(() => {
                                component: Ng2Component,
                              }));
 
-         @NgModule({
-           declarations: [Ng2Component],
-           entryComponents: [Ng2Component],
-           imports: [BrowserModule, UpgradeModule]
-         })
+         @NgModule({declarations: [Ng2Component], imports: [BrowserModule, UpgradeModule]})
          class Ng2Module {
            ngDoBootstrap() {}
          }
@@ -168,11 +164,7 @@ withEachNg1Version(() => {
                                component: Ng2Component,
                              }));
 
-         @NgModule({
-           declarations: [Ng2Component],
-           entryComponents: [Ng2Component],
-           imports: [BrowserModule, UpgradeModule]
-         })
+         @NgModule({declarations: [Ng2Component], imports: [BrowserModule, UpgradeModule]})
          class Ng2Module {
            ngDoBootstrap() {}
          }
@@ -219,11 +211,7 @@ withEachNg1Version(() => {
 
          ng1Module.directive('ng2', downgradeComponent({component: Ng2Component}));
 
-         @NgModule({
-           declarations: [Ng2Component],
-           entryComponents: [Ng2Component],
-           imports: [BrowserModule, UpgradeModule]
-         })
+         @NgModule({declarations: [Ng2Component], imports: [BrowserModule, UpgradeModule]})
          class Ng2Module {
            ngDoBootstrap() {}
          }
@@ -257,7 +245,6 @@ withEachNg1Version(() => {
          @NgModule({
            imports: [BrowserModule, UpgradeModule],
            declarations: [Ng2Component],
-           entryComponents: [Ng2Component]
          })
          class Ng2Module {
            ngDoBootstrap() {}
@@ -322,7 +309,6 @@ withEachNg1Version(() => {
          @NgModule({
            imports: [BrowserModule, UpgradeModule],
            declarations: [Ng2Component],
-           entryComponents: [Ng2Component]
          })
          class Ng2Module {
            ngDoBootstrap() {}
@@ -386,7 +372,6 @@ withEachNg1Version(() => {
          @NgModule({
            imports: [BrowserModule, UpgradeModule],
            declarations: [Ng2Component],
-           entryComponents: [Ng2Component]
          })
          class Ng2Module {
            ngDoBootstrap() {}
@@ -441,7 +426,6 @@ withEachNg1Version(() => {
          @NgModule({
            imports: [BrowserModule, UpgradeModule],
            declarations: [Ng2Component],
-           entryComponents: [Ng2Component]
          })
          class Ng2Module {
            ngDoBootstrap() {}
@@ -505,8 +489,7 @@ withEachNg1Version(() => {
 
          const element = html(`<div><ng2 ng-model="modelA"></ng2> | {{modelA}}</div>`);
 
-         @NgModule(
-             {declarations: [Ng2], entryComponents: [Ng2], imports: [BrowserModule, UpgradeModule]})
+         @NgModule({declarations: [Ng2], imports: [BrowserModule, UpgradeModule]})
          class Ng2Module {
            ngDoBootstrap() {}
          }
@@ -544,11 +527,7 @@ withEachNg1Version(() => {
            }
          }
 
-         @NgModule({
-           declarations: [Ng2Component],
-           entryComponents: [Ng2Component],
-           imports: [BrowserModule, UpgradeModule]
-         })
+         @NgModule({declarations: [Ng2Component], imports: [BrowserModule, UpgradeModule]})
          class Ng2Module {
            ngDoBootstrap() {}
          }
@@ -624,7 +603,6 @@ withEachNg1Version(() => {
          @NgModule({
            imports: [BrowserModule, UpgradeModule],
            declarations: [Ng1ComponentFacade, Ng2InnerComponent, Ng2OuterComponent],
-           entryComponents: [Ng2InnerComponent, Ng2OuterComponent],
          })
          class Ng2Module {
            ngDoBootstrap() {}
@@ -656,7 +634,6 @@ withEachNg1Version(() => {
 
          @NgModule({
            declarations: [Ng2Component],
-           entryComponents: [Ng2Component],
            imports: [BrowserModule, UpgradeModule],
          })
          class Ng2Module {
@@ -715,11 +692,7 @@ withEachNg1Version(() => {
          class Ng2Component {
          }
 
-         @NgModule({
-           declarations: [Ng2Component],
-           entryComponents: [Ng2Component],
-           imports: [BrowserModule, UpgradeModule]
-         })
+         @NgModule({declarations: [Ng2Component], imports: [BrowserModule, UpgradeModule]})
          class Ng2Module {
            ngDoBootstrap() {}
          }
@@ -761,11 +734,7 @@ withEachNg1Version(() => {
          class WorksComponent {
          }
 
-         @NgModule({
-           declarations: [WorksComponent],
-           entryComponents: [WorksComponent],
-           imports: [BrowserModule, UpgradeModule]
-         })
+         @NgModule({declarations: [WorksComponent], imports: [BrowserModule, UpgradeModule]})
          class Ng2Module {
            ngDoBootstrap() {}
          }
@@ -791,7 +760,6 @@ withEachNg1Version(() => {
 
          @NgModule({
            declarations: [RootComponent, WorksComponent],
-           entryComponents: [RootComponent],
            imports: [BrowserModule, UpgradeModule]
          })
          class Ng2Module {
@@ -820,7 +788,6 @@ withEachNg1Version(() => {
 
          @NgModule({
            declarations: [ParentComponent, ChildComponent],
-           entryComponents: [ParentComponent, ChildComponent],
            imports: [BrowserModule, UpgradeModule]
          })
          class Ng2Module {
@@ -850,7 +817,6 @@ withEachNg1Version(() => {
 
          @NgModule({
            declarations: [Ng2ComponentA, Ng2ComponentB],
-           entryComponents: [Ng2ComponentA, Ng2ComponentB],
            imports: [BrowserModule, UpgradeModule],
          })
          class Ng2Module {
@@ -880,7 +846,6 @@ withEachNg1Version(() => {
 
          @NgModule({
            declarations: [Ng2Component],
-           entryComponents: [Ng2Component],
            imports: [BrowserModule, UpgradeModule],
          })
          class Ng2Module {
@@ -894,7 +859,6 @@ withEachNg1Version(() => {
 
          @NgModule({
            declarations: [LazyLoadedComponent],
-           entryComponents: [LazyLoadedComponent],
          })
          class LazyLoadedModule {
          }
@@ -925,7 +889,6 @@ withEachNg1Version(() => {
 
          @NgModule({
            declarations: [Ng2Component],
-           entryComponents: [Ng2Component],
            imports: [BrowserModule, UpgradeModule],
          })
          class Ng2Module {

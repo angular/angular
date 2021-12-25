@@ -489,7 +489,6 @@ function advance(fixture: ComponentFixture<any>, millis?: number): void {
     RouterTestingModule.withRoutes([], {canceledNavigationResolution: 'computed'}), CommonModule
   ],
   exports: [SimpleCmp, RootCmp, ThrowingCmp],
-  entryComponents: [SimpleCmp, RootCmp, ThrowingCmp],
   declarations: [SimpleCmp, RootCmp, ThrowingCmp]
 })
 class TestModule {

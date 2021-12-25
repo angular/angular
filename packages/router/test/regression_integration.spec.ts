@@ -88,7 +88,6 @@ describe('Integration', () => {
          @NgModule({
            imports: [CommonModule, RouterTestingModule],
            declarations: [MyCmp, SimpleCmp],
-           entryComponents: [SimpleCmp],
          })
          class MyModule {
          }
