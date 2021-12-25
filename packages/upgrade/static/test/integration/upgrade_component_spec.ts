@@ -50,7 +50,6 @@ withEachNg1Version(() => {
            // Define `Ng2Module`
            @NgModule({
              declarations: [Ng1ComponentFacade, Ng2Component],
-             entryComponents: [Ng2Component],
              imports: [BrowserModule, UpgradeModule]
            })
            class Ng2Module {
@@ -90,7 +89,6 @@ withEachNg1Version(() => {
            // Define `Ng2Module`
            @NgModule({
              declarations: [Ng1ComponentFacade, Ng2Component],
-             entryComponents: [Ng2Component],
              imports: [BrowserModule, UpgradeModule]
            })
            class Ng2Module {
@@ -137,7 +135,6 @@ withEachNg1Version(() => {
            // Define `Ng2Module`
            @NgModule({
              declarations: [Ng1ComponentFacade, Ng2Component],
-             entryComponents: [Ng2Component],
              imports: [BrowserModule, UpgradeModule]
            })
            class Ng2Module {
@@ -181,7 +178,6 @@ withEachNg1Version(() => {
            // Define `Ng2Module`
            @NgModule({
              declarations: [Ng1ComponentFacade, Ng2Component],
-             entryComponents: [Ng2Component],
              imports: [BrowserModule, UpgradeModule]
            })
            class Ng2Module {
@@ -226,7 +222,6 @@ withEachNg1Version(() => {
            // Define `Ng2Module`
            @NgModule({
              declarations: [Ng1ComponentFacade, Ng2Component],
-             entryComponents: [Ng2Component],
              imports: [BrowserModule, UpgradeModule]
            })
            class Ng2Module {
@@ -277,7 +272,6 @@ withEachNg1Version(() => {
            // Define `Ng2Module`
            @NgModule({
              declarations: [Ng1ComponentFacade, Ng2Component],
-             entryComponents: [Ng2Component],
              imports: [BrowserModule, UpgradeModule]
            })
            class Ng2Module {
@@ -324,7 +318,6 @@ withEachNg1Version(() => {
             // Define `Ng2Module`
             @NgModule({
               declarations: [Ng1ComponentFacade, Ng2Component],
-              entryComponents: [Ng2Component],
               imports: [BrowserModule, UpgradeModule]
             })
             class Ng2Module {
@@ -375,7 +368,6 @@ withEachNg1Version(() => {
             // Define `Ng2Module`
             @NgModule({
               declarations: [Ng1ComponentFacade, Ng2Component],
-              entryComponents: [Ng2Component],
               imports: [BrowserModule, UpgradeModule]
             })
             class Ng2Module {
@@ -457,7 +449,6 @@ withEachNg1Version(() => {
                Ng1ComponentAFacade, Ng1ComponentBFacade, Ng1ComponentCFacade, Ng1ComponentDFacade,
                Ng2Component
              ],
-             entryComponents: [Ng2Component],
              imports: [BrowserModule, UpgradeModule],
              schemas: [NO_ERRORS_SCHEMA]
            })
@@ -522,7 +513,6 @@ withEachNg1Version(() => {
            // Define `Ng2Module`
            @NgModule({
              declarations: [Ng1ComponentFacade, Ng2Component],
-             entryComponents: [Ng2Component],
              imports: [BrowserModule, UpgradeModule]
            })
            class Ng2Module {
@@ -601,7 +591,6 @@ withEachNg1Version(() => {
            // Define `Ng2Module`
            @NgModule({
              declarations: [Ng1ComponentFacade, Ng2Component],
-             entryComponents: [Ng2Component],
              imports: [BrowserModule, UpgradeModule]
            })
            class Ng2Module {
@@ -684,7 +673,6 @@ withEachNg1Version(() => {
            // Define `Ng2Module`
            @NgModule({
              declarations: [Ng1ComponentFacade, Ng2Component],
-             entryComponents: [Ng2Component],
              imports: [BrowserModule, UpgradeModule]
            })
            class Ng2Module {
@@ -757,7 +745,6 @@ withEachNg1Version(() => {
            // Define `Ng2Module`
            @NgModule({
              declarations: [Ng1ComponentFacade, Ng2Component],
-             entryComponents: [Ng2Component],
              imports: [BrowserModule, UpgradeModule]
            })
            class Ng2Module {
@@ -854,7 +841,6 @@ withEachNg1Version(() => {
            // Define `Ng2Module`
            @NgModule({
              declarations: [Ng1ComponentFacade, Ng2Component],
-             entryComponents: [Ng2Component],
              imports: [BrowserModule, UpgradeModule]
            })
            class Ng2Module {
@@ -939,7 +925,6 @@ withEachNg1Version(() => {
            // Define `Ng2Module`
            @NgModule({
              declarations: [Ng1ComponentFacade, Ng2Component],
-             entryComponents: [Ng2Component],
              imports: [BrowserModule, UpgradeModule]
            })
            class Ng2Module {
@@ -1029,7 +1014,6 @@ withEachNg1Version(() => {
            // Define `Ng2Module`
            @NgModule({
              declarations: [Ng1ComponentFacade, Ng2Component],
-             entryComponents: [Ng2Component],
              imports: [BrowserModule, UpgradeModule]
            })
            class Ng2Module {
@@ -1099,7 +1083,6 @@ withEachNg1Version(() => {
            @NgModule({
              imports: [BrowserModule, UpgradeModule],
              declarations: [Ng1ComponentAFacade, Ng2ComponentX],
-             entryComponents: [Ng2ComponentX],
            })
            class Ng2Module {
              ngDoBootstrap() {}
@@ -1151,7 +1134,6 @@ withEachNg1Version(() => {
            @NgModule({
              imports: [BrowserModule, UpgradeModule],
              declarations: [Ng1ComponentFacade, Ng2Component],
-             entryComponents: [Ng2Component],
            })
            class Ng2Module {
              ngDoBootstrap() {}
@@ -1199,7 +1181,6 @@ withEachNg1Version(() => {
            @NgModule({
              imports: [BrowserModule, UpgradeModule],
              declarations: [Ng1ComponentAFacade, Ng2Component],
-             entryComponents: [Ng2Component],
            })
            class Ng2Module {
              ngDoBootstrap() {}
@@ -1247,7 +1228,6 @@ withEachNg1Version(() => {
            @NgModule({
              imports: [BrowserModule, UpgradeModule],
              declarations: [Ng1ComponentAFacade, Ng2Component],
-             entryComponents: [Ng2Component],
            })
            class Ng2Module {
              ngDoBootstrap() {}
@@ -1295,7 +1275,6 @@ withEachNg1Version(() => {
            @NgModule({
              imports: [BrowserModule, UpgradeModule],
              declarations: [Ng1ComponentAFacade, Ng2Component],
-             entryComponents: [Ng2Component],
            })
            class Ng2Module {
              ngDoBootstrap() {}
@@ -1345,7 +1324,6 @@ withEachNg1Version(() => {
            @NgModule({
              imports: [BrowserModule, UpgradeModule],
              declarations: [Ng1ComponentFacade, Ng2Component],
-             entryComponents: [Ng2Component],
            })
            class Ng2Module {
              ngDoBootstrap() {}
@@ -1411,7 +1389,6 @@ withEachNg1Version(() => {
            // Define `Ng2Module`
            @NgModule({
              declarations: [Ng1ComponentFacade, Ng2Component],
-             entryComponents: [Ng2Component],
              imports: [BrowserModule, UpgradeModule]
            })
            class Ng2Module {
@@ -1485,7 +1462,6 @@ withEachNg1Version(() => {
            // Define `Ng2Module`
            @NgModule({
              declarations: [Ng1ComponentAFacade, Ng1ComponentBFacade, Ng2Component],
-             entryComponents: [Ng2Component],
              imports: [BrowserModule, UpgradeModule],
              schemas: [NO_ERRORS_SCHEMA]
            })
@@ -1538,7 +1514,6 @@ withEachNg1Version(() => {
            // Define `Ng2Module`
            @NgModule({
              declarations: [Ng1ComponentFacade, Ng2Component],
-             entryComponents: [Ng2Component],
              imports: [BrowserModule, UpgradeModule]
            })
            class Ng2Module {
@@ -1591,7 +1566,6 @@ withEachNg1Version(() => {
            // Define `Ng2Module`
            @NgModule({
              declarations: [Ng1ComponentFacade, Ng2Component],
-             entryComponents: [Ng2Component],
              imports: [BrowserModule, UpgradeModule]
            })
            class Ng2Module {
@@ -1645,8 +1619,7 @@ withEachNg1Version(() => {
            // Define `Ng2Module`
            @NgModule({
              imports: [BrowserModule, UpgradeModule],
-             declarations: [Ng1ComponentFacade, Ng2Component],
-             entryComponents: [Ng2Component]
+             declarations: [Ng1ComponentFacade, Ng2Component]
            })
            class Ng2Module {
              ngDoBootstrap() {}
@@ -1703,7 +1676,6 @@ withEachNg1Version(() => {
              // Define `Ng2Module`
              @NgModule({
                declarations: [Ng1ComponentFacade, Ng2Component],
-               entryComponents: [Ng2Component],
                imports: [BrowserModule, UpgradeModule]
              })
              class Ng2Module {
@@ -1758,7 +1730,6 @@ withEachNg1Version(() => {
              // Define `Ng2Module`
              @NgModule({
                declarations: [Ng1ComponentAFacade, Ng2Component],
-               entryComponents: [Ng2Component],
                imports: [BrowserModule, UpgradeModule]
              })
              class Ng2Module {
@@ -1832,7 +1803,6 @@ withEachNg1Version(() => {
                  Ng1ComponentAFacade, Ng1ComponentBFacade, Ng1ComponentCFacade, Ng2ComponentA,
                  Ng2ComponentB, Ng2ComponentC
                ],
-               entryComponents: [Ng2ComponentA, Ng2ComponentB, Ng2ComponentC],
                imports: [BrowserModule, UpgradeModule]
              })
              class Ng2Module {
@@ -1896,7 +1866,6 @@ withEachNg1Version(() => {
              // Define `Ng2Module`
              @NgModule({
                declarations: [Ng1ComponentFacade, Ng2Component],
-               entryComponents: [Ng2Component],
                imports: [BrowserModule, UpgradeModule]
              })
              class Ng2Module {
@@ -1974,7 +1943,6 @@ withEachNg1Version(() => {
              // Define `Ng2Module`
              @NgModule({
                declarations: [Ng1ComponentBFacade, Ng1ComponentCFacade, Ng2Component],
-               entryComponents: [Ng2Component],
                imports: [BrowserModule, UpgradeModule]
              })
              class Ng2Module {
@@ -2043,7 +2011,6 @@ withEachNg1Version(() => {
              // Define `Ng2Module`
              @NgModule({
                declarations: [Ng1ComponentBFacade, Ng2Component],
-               entryComponents: [Ng2Component],
                imports: [BrowserModule, UpgradeModule]
              })
              class Ng2Module {
@@ -2102,7 +2069,6 @@ withEachNg1Version(() => {
              // Define `Ng2Module`
              @NgModule({
                declarations: [Ng1ComponentBFacade, Ng2Component],
-               entryComponents: [Ng2Component],
                imports: [BrowserModule, UpgradeModule]
              })
              class Ng2Module {
@@ -2170,7 +2136,6 @@ withEachNg1Version(() => {
              // Define `Ng2Module`
              @NgModule({
                declarations: [Ng1ComponentCFacade, Ng2Component],
-               entryComponents: [Ng2Component],
                imports: [BrowserModule, UpgradeModule]
              })
              class Ng2Module {
@@ -2234,7 +2199,6 @@ withEachNg1Version(() => {
            @NgModule({
              imports: [BrowserModule, UpgradeModule],
              declarations: [Ng1ComponentFacade, Ng2ComponentA, Ng2ComponentB],
-             entryComponents: [Ng2ComponentA]
            })
            class Ng2Module {
              ngDoBootstrap() {}
@@ -2301,7 +2265,6 @@ withEachNg1Version(() => {
            @NgModule({
              imports: [BrowserModule, UpgradeModule],
              declarations: [Ng1ComponentFacade, Ng2Component],
-             entryComponents: [Ng2Component]
            })
            class Ng2Module {
              ngDoBootstrap() {}
@@ -2369,7 +2332,6 @@ withEachNg1Version(() => {
            @NgModule({
              imports: [BrowserModule, UpgradeModule],
              declarations: [Ng1ComponentFacade, Ng2Component],
-             entryComponents: [Ng2Component],
              schemas: [NO_ERRORS_SCHEMA]
            })
            class Ng2Module {
@@ -2450,7 +2412,6 @@ withEachNg1Version(() => {
            @NgModule({
              imports: [BrowserModule, UpgradeModule],
              declarations: [Ng1ComponentFacade, Ng2Component],
-             entryComponents: [Ng2Component],
              schemas: [NO_ERRORS_SCHEMA]
            })
            class Ng2Module {
@@ -2529,7 +2490,6 @@ withEachNg1Version(() => {
            @NgModule({
              imports: [BrowserModule, UpgradeModule],
              declarations: [Ng1ComponentFacade, Ng2Component],
-             entryComponents: [Ng2Component],
              schemas: [NO_ERRORS_SCHEMA]
            })
            class Ng2Module {
@@ -2589,7 +2549,6 @@ withEachNg1Version(() => {
            @NgModule({
              imports: [BrowserModule, UpgradeModule],
              declarations: [Ng1ComponentFacade, Ng2Component],
-             entryComponents: [Ng2Component]
            })
            class Ng2Module {
              ngDoBootstrap() {}
@@ -2653,7 +2612,6 @@ withEachNg1Version(() => {
            @NgModule({
              imports: [BrowserModule, UpgradeModule],
              declarations: [Ng1ComponentFacade, Ng2Component],
-             entryComponents: [Ng2Component],
              schemas: [NO_ERRORS_SCHEMA]
            })
            class Ng2Module {
@@ -2757,7 +2715,6 @@ withEachNg1Version(() => {
            // Define `Ng2Module`
            @NgModule({
              declarations: [Ng1ComponentAFacade, Ng1ComponentBFacade, Ng2Component],
-             entryComponents: [Ng2Component],
              imports: [BrowserModule, UpgradeModule]
            })
            class Ng2Module {
@@ -2909,7 +2866,6 @@ withEachNg1Version(() => {
            // Define `Ng2Module`
            @NgModule({
              declarations: [Ng1ComponentAFacade, Ng1ComponentBFacade, Ng2Component],
-             entryComponents: [Ng2Component],
              imports: [BrowserModule, UpgradeModule]
            })
            class Ng2Module {
@@ -3043,7 +2999,6 @@ withEachNg1Version(() => {
            // Define `Ng2Module`
            @NgModule({
              declarations: [Ng1ComponentAFacade, Ng1ComponentBFacade, Ng2Component],
-             entryComponents: [Ng2Component],
              imports: [BrowserModule, UpgradeModule]
            })
            class Ng2Module {
@@ -3113,7 +3068,6 @@ withEachNg1Version(() => {
            // Define `Ng2Module`
            @NgModule({
              declarations: [Ng1ComponentAFacade, Ng1ComponentBFacade, Ng2Component],
-             entryComponents: [Ng2Component],
              imports: [BrowserModule, UpgradeModule]
            })
            class Ng2Module {
@@ -3184,7 +3138,6 @@ withEachNg1Version(() => {
            // Define `Ng2Module`
            @NgModule({
              declarations: [Ng1ComponentAFacade, Ng1ComponentBFacade, Ng2Component],
-             entryComponents: [Ng2Component],
              imports: [BrowserModule, UpgradeModule]
            })
            class Ng2Module {
@@ -3254,7 +3207,6 @@ withEachNg1Version(() => {
            // Define `Ng2Module`
            @NgModule({
              declarations: [Ng1ComponentAFacade, Ng1ComponentBFacade, Ng2Component],
-             entryComponents: [Ng2Component],
              imports: [BrowserModule, UpgradeModule]
            })
            class Ng2Module {
@@ -3324,7 +3276,6 @@ withEachNg1Version(() => {
            // Define `Ng2Module`
            @NgModule({
              declarations: [Ng1ComponentAFacade, Ng1ComponentBFacade, Ng2Component],
-             entryComponents: [Ng2Component],
              imports: [BrowserModule, UpgradeModule]
            })
            class Ng2Module {
@@ -3410,7 +3361,6 @@ withEachNg1Version(() => {
            // Define `Ng2Module`
            @NgModule({
              declarations: [Ng1ComponentAFacade, Ng1ComponentBFacade, Ng2Component],
-             entryComponents: [Ng2Component],
              imports: [BrowserModule, UpgradeModule]
            })
            class Ng2Module {
@@ -3496,7 +3446,6 @@ withEachNg1Version(() => {
            // Define `Ng2Module`
            @NgModule({
              declarations: [Ng1ComponentAFacade, Ng1ComponentBFacade, Ng2Component],
-             entryComponents: [Ng2Component],
              imports: [BrowserModule, UpgradeModule]
            })
            class Ng2Module {
@@ -3597,7 +3546,6 @@ withEachNg1Version(() => {
            // Define `Ng2Module`
            @NgModule({
              declarations: [Ng1ComponentAFacade, Ng1ComponentBFacade, Ng2Component],
-             entryComponents: [Ng2Component],
              imports: [BrowserModule, UpgradeModule]
            })
            class Ng2Module {
@@ -3682,7 +3630,6 @@ withEachNg1Version(() => {
            // Define `Ng2Module`
            @NgModule({
              declarations: [Ng1ComponentFacade, Ng2Component],
-             entryComponents: [Ng2Component],
              imports: [BrowserModule, UpgradeModule]
            })
            class Ng2Module {
@@ -3743,7 +3690,6 @@ withEachNg1Version(() => {
            // Define `Ng2Module`
            @NgModule({
              declarations: [Ng1ComponentFacade, Ng2ComponentA, Ng2ComponentB],
-             entryComponents: [Ng2ComponentA],
              imports: [BrowserModule, UpgradeModule]
            })
            class Ng2Module {
@@ -3809,7 +3755,6 @@ withEachNg1Version(() => {
            // Define `Ng2Module`
            @NgModule({
              declarations: [Ng1ComponentFacade, Ng2ComponentA, Ng2ComponentB],
-             entryComponents: [Ng2ComponentA],
              imports: [BrowserModule, UpgradeModule]
            })
            class Ng2Module {
@@ -3878,7 +3823,6 @@ withEachNg1Version(() => {
            // Define `Ng2Module`
            @NgModule({
              declarations: [Ng1ComponentFacade, Ng2ComponentA, Ng2ComponentB],
-             entryComponents: [Ng2ComponentA],
              imports: [BrowserModule, UpgradeModule]
            })
            class Ng2Module {
@@ -3949,7 +3893,6 @@ withEachNg1Version(() => {
            // Define `Ng2Module`
            @NgModule({
              declarations: [Ng1ComponentFacade, Ng2ComponentA, Ng2ComponentB],
-             entryComponents: [Ng2ComponentA],
              imports: [BrowserModule, UpgradeModule]
            })
            class Ng2Module {
@@ -4010,7 +3953,6 @@ withEachNg1Version(() => {
            @NgModule({
              imports: [BrowserModule, UpgradeModule],
              declarations: [Ng1ComponentFacade, Ng2Component],
-             entryComponents: [Ng2Component]
            })
            class Ng2Module {
              ngDoBootstrap() {}
@@ -4074,7 +4016,6 @@ withEachNg1Version(() => {
          // Define `Ng2Module`
          @NgModule({
            declarations: [Ng1ComponentFacade, Ng2ComponentA, Ng2ComponentB],
-           entryComponents: [Ng2ComponentA, Ng2ComponentB],
            imports: [BrowserModule, UpgradeModule],
            schemas: [NO_ERRORS_SCHEMA],
          })
@@ -4188,7 +4129,6 @@ withEachNg1Version(() => {
          // Define `Ng2Module`
          @NgModule({
            declarations: [Ng1ComponentXFacade, Ng2ComponentA, Ng2ComponentB],
-           entryComponents: [Ng2ComponentA, Ng2ComponentB],
            imports: [BrowserModule, UpgradeModule],
            schemas: [NO_ERRORS_SCHEMA],
          })
@@ -4338,7 +4278,6 @@ withEachNg1Version(() => {
          // Define `Ng2Module`
          @NgModule({
            declarations: [Ng1ComponentAFacade, Ng1ComponentBFacade, Ng2ComponentA, Ng2ComponentB],
-           entryComponents: [Ng2ComponentA, Ng2ComponentB],
            imports: [BrowserModule, UpgradeModule],
            schemas: [NO_ERRORS_SCHEMA],
          })

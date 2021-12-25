@@ -250,8 +250,7 @@ class TestComponent {
 @NgModule({
   imports: [CommonModule],
   declarations: [TestComponent, InjectedComponent, InjectedComponentAgain],
-  exports: [TestComponent, InjectedComponent, InjectedComponentAgain],
-  entryComponents: [InjectedComponent, InjectedComponentAgain]
+  exports: [TestComponent, InjectedComponent, InjectedComponentAgain]
 })
 export class TestModule {
 }
@@ -267,8 +266,7 @@ class Module2InjectedComponent2 {
 @NgModule({
   imports: [CommonModule],
   declarations: [Module2InjectedComponent, Module2InjectedComponent2],
-  exports: [Module2InjectedComponent, Module2InjectedComponent2],
-  entryComponents: [Module2InjectedComponent, Module2InjectedComponent2]
+  exports: [Module2InjectedComponent, Module2InjectedComponent2]
 })
 export class TestModule2 {
 }
@@ -280,8 +278,7 @@ class Module3InjectedComponent {
 @NgModule({
   imports: [CommonModule],
   declarations: [Module3InjectedComponent],
-  exports: [Module3InjectedComponent],
-  entryComponents: [Module3InjectedComponent]
+  exports: [Module3InjectedComponent]
 })
 export class TestModule3 {
 }
