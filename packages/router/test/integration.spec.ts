@@ -457,7 +457,6 @@ describe('Integration', () => {
 
       @NgModule({
         declarations: [Parent, NamedOutletHost, Child1, Child2, Child3],
-        entryComponents: [Parent, NamedOutletHost, Child1, Child2, Child3],
         imports: [RouterModule]
       })
       class TestModule {
@@ -642,7 +641,6 @@ describe('Integration', () => {
 
        @NgModule({
          declarations: [OnPushOutlet, NeedCdCmp],
-         entryComponents: [OnPushOutlet, NeedCdCmp],
          imports: [RouterModule],
        })
        class TestModule {
@@ -749,7 +747,7 @@ describe('Integration', () => {
          }
        }
 
-       @NgModule({declarations: [RecordLocationCmp], entryComponents: [RecordLocationCmp]})
+       @NgModule({declarations: [RecordLocationCmp]})
        class TestModule {
        }
 
@@ -5223,11 +5221,7 @@ describe('Integration', () => {
       class LoadedModule {
       }
 
-      @NgModule({
-        declarations: [EagerParentComponent],
-        entryComponents: [EagerParentComponent],
-        imports: [RouterModule]
-      })
+      @NgModule({declarations: [EagerParentComponent], imports: [RouterModule]})
       class TestModule {
       }
 
@@ -6475,37 +6469,6 @@ class LazyComponent {
 
 @NgModule({
   imports: [RouterTestingModule, CommonModule],
-  entryComponents: [
-    BlankCmp,
-    SimpleCmp,
-    TwoOutletsCmp,
-    TeamCmp,
-    UserCmp,
-    StringLinkCmp,
-    DummyLinkCmp,
-    AbsoluteLinkCmp,
-    AbsoluteSimpleLinkCmp,
-    RelativeLinkCmp,
-    DummyLinkWithParentCmp,
-    LinkWithQueryParamsAndFragment,
-    DivLinkWithState,
-    LinkWithState,
-    CollectParamsCmp,
-    QueryParamsAndFragmentCmp,
-    StringLinkButtonCmp,
-    WrapperCmp,
-    OutletInNgIf,
-    ComponentRecordingRoutePathAndUrl,
-    RouteCmp,
-    RootCmp,
-    RelativeLinkInIfCmp,
-    RootCmpWithTwoOutlets,
-    RootCmpWithNamedOutlet,
-    EmptyQueryParamsCmp,
-    ThrowingCmp,
-    ConditionalThrowingCmp,
-  ],
-
 
   exports: [
     BlankCmp,

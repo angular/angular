@@ -2500,7 +2500,6 @@ withEachNg1Version(() => {
              // Define `Ng2Module`
              @NgModule({
                declarations: [adapter.upgradeNg1Component('ng1'), Ng2ComponentA, Ng2ComponentB],
-               entryComponents: [Ng2ComponentA],
                imports: [BrowserModule]
              })
              class Ng2Module {
@@ -2568,7 +2567,6 @@ withEachNg1Version(() => {
              // Define `Ng2Module`
              @NgModule({
                declarations: [adapter.upgradeNg1Component('ng1'), Ng2ComponentA, Ng2ComponentB],
-               entryComponents: [Ng2ComponentA],
                imports: [BrowserModule]
              })
              class Ng2Module {
