@@ -6,8 +6,6 @@
 }
 
 .sidenav-content {
-  display: block;  // This is required for browsers that do not recognize `<main>` as a block
-                   // element (such as IE11).
   min-height: 100vh;
   padding: 80px 3rem 2rem;
   max-width: 50em;

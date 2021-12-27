@@ -103,10 +103,9 @@ export class DocViewerComponent implements OnDestroy {
       const toc = document.createElement('aio-toc');
       toc.className = 'embedded';
       titleEl.parentNode.insertBefore(toc, titleEl.nextSibling);
-    } else if (!needsToc && embeddedToc && embeddedToc.parentNode !== null) {
+    } else if (!needsToc && embeddedToc) {
       // Remove the embedded Toc if it's there and not needed.
-      // We cannot use ChildNode.remove() because of IE11
-      embeddedToc.parentNode.removeChild(embeddedToc);
+      embeddedToc.remove();
     }
 
     return () => {

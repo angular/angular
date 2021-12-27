@@ -24,8 +24,6 @@
   .feature-row {
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-around;  // This is required for browsers that do not support
-                                    // `space-evenly` (such as IE11).
     justify-content: space-evenly;
 
     @media (max-width: 1057px) {
