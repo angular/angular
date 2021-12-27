@@ -88,6 +88,16 @@ For each change:
 
 * If there are multiple elements entering or leaving the DOM, staggers each animation starting at the top of the page, with a 50-millisecond delay between each element.
 
+## Animating the items of a reordering list
+
+Although Angular animates correctly `*ngFor` list items out of the box, it will not be able to do so if their ordering changes. This is because it will lose track of which element is which, resulting in broken animations. The only way to help Angular keep track of such elements is by assigning a `TrackByFunction` to the `NgForOf` directive. This makes sure that Angular always knows which element is which, thus allowing it to apply the correct animations to the correct elements all the time.
+
+<div class="alert is-important">
+
+**Rule of Thumb:** If you need to animate the items of an `*ngFor` list and there is a possibility that the order of such items will change during runtime, always use a `TrackByFunction`.
+
+</div>
+
 ## Animation sequence summary
 
 Angular functions for animating multiple elements start with `query()` to find inner elements, for example gathering all images within a `<div>`. The remaining functions, `stagger()`, <code>[group](api/animations/group)()</code>, and `sequence()`, apply cascades or lets you control how multiple animation steps are applied.
