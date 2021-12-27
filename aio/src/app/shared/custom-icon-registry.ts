@@ -13,7 +13,7 @@ import { unwrapHtmlForSink } from 'safevalues';
  * the following attributes:
  *
  * * `xmlns="http://www.w3.org/2000/svg"`
- * * `focusable="false"` (disable IE11 default behavior to make SVGs focusable)
+ * * `focusable="false"` (the default)
  * * `height="100%"` (the default)
  * * `width="100%"` (the default)
  * * `preserveAspectRatio="xMidYMid meet"` (the default)
