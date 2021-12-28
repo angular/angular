@@ -8,7 +8,7 @@
 
 import {Injector} from '@angular/core';
 import {EMPTY, from, MonoTypeOperatorFunction, Observable, of} from 'rxjs';
-import {concatMap, map, mergeMap, takeLast, tap} from 'rxjs/operators';
+import {concatMap, map, mergeMap, take, takeLast, tap} from 'rxjs/operators';
 
 import {ResolveData} from '../models';
 import {NavigationTransition} from '../router';
@@ -80,9 +80,9 @@ function resolveNode(
   return from(keys).pipe(
       mergeMap(
           key => getResolver(resolve[key], futureARS, futureRSS, moduleInjector)
-                     .pipe(tap((value: any) => {
-                       data[key] = value;
-                     }))),
+                     .pipe(take(1), tap((value: any) => {
+                             data[key] = value;
+                           }))),
       takeLast(1),
       mergeMap(() => {
         // Ensure all resolvers returned values, otherwise don't emit any "next" and just complete

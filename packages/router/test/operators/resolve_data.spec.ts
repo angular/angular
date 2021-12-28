@@ -8,7 +8,7 @@
 
 import {Injector} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {EMPTY, of} from 'rxjs';
+import {EMPTY, interval, of} from 'rxjs';
 import {TestScheduler} from 'rxjs/testing';
 
 import {resolveData} from '../../src/operators/resolve_data';
@@ -23,6 +23,7 @@ describe('resolveData operator', () => {
         {provide: 'resolveTwo', useValue: (a: any, b: any) => of(2)},
         {provide: 'resolveFour', useValue: (a: any, b: any) => 4},
         {provide: 'resolveEmpty', useValue: (a: any, b: any) => EMPTY},
+        {provide: 'resolveInterval', useValue: (a: any, b: any) => interval()},
       ]
     });
   });
@@ -41,6 +42,20 @@ describe('resolveData operator', () => {
       const outputTransition = deepClone(transition);
       outputTransition.guards.canActivateChecks[0].route._resolvedData = {e1: 2};
       outputTransition.guards.canActivateChecks[1].route._resolvedData = {e2: 4};
+
+      expectObservable(source.pipe(resolveData('emptyOnly', injector))).toBe(expected, {
+        t: outputTransition
+      });
+    });
+  });
+
+  it('should take only the first emitted value of every resolver', () => {
+    testScheduler.run(({cold, expectObservable}) => {
+      const transition: any = createTransition({e1: 'resolveInterval'});
+      const source = cold('-(t|)', {t: deepClone(transition)});
+      const expected = '-(t|)';
+      const outputTransition = deepClone(transition);
+      outputTransition.guards.canActivateChecks[0].route._resolvedData = {e1: 0};
 
       expectObservable(source.pipe(resolveData('emptyOnly', injector))).toBe(expected, {
         t: outputTransition
