@@ -1921,9 +1921,9 @@ These are all asynchronous operations.
 Accordingly, a routing guard can return an `Observable<boolean>` or a `Promise<boolean>` and the
 router will wait for the observable to resolve to `true` or `false`.
 
-<div class="alert is-critical">
+<div class="alert is-helpful">
 
-**Note:** The observable provided to the `Router` must also complete. If the observable does not complete, the navigation does not continue.
+**Note:** The observable provided to the `Router` automatically completes after retrieving the first value.
 
 </div>
 
@@ -2414,9 +2414,6 @@ Inject the `CrisisService` and `Router` and implement the `resolve()` method.
 That method could return a `Promise`, an `Observable`, or a synchronous return value.
 
 The `CrisisService.getCrisis()` method returns an observable in order to prevent the route from loading until the data is fetched.
-The `Router` guards require an observable to `complete`, which means it has emitted all
-of its values.
-You use the `take` operator with an argument of `1` to ensure that the `Observable` completes after retrieving the first value from the Observable returned by the `getCrisis()` method.
 
 If it doesn't return a valid `Crisis`, then return an empty `Observable`, cancel the previous in-progress navigation to the `CrisisDetailComponent`, and navigate the user back to the `CrisisListComponent`.
 The updated resolver service looks like this:
