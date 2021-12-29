@@ -12,7 +12,7 @@ import ts from 'typescript';
 import {UnifiedModulesHost} from '../../core/api';
 import {ClassDeclaration, ReflectionHost} from '../../reflection';
 
-import {EmittedReference, ImportFlags, ReferenceEmitStrategy} from './emitter';
+import {EmittedReference, ImportFlags, ReferenceEmitKind, ReferenceEmitStrategy} from './emitter';
 import {Reference} from './references';
 
 
@@ -217,6 +217,10 @@ export class AliasStrategy implements ReferenceEmitStrategy {
       return null;
     }
 
-    return {expression: ref.alias, importedFile: 'unknown'};
+    return {
+      kind: ReferenceEmitKind.Success,
+      expression: ref.alias,
+      importedFile: 'unknown',
+    };
   }
 }
