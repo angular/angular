@@ -31,7 +31,13 @@ A best practice is to run your project locally before you deploy it. To run your
     ```sh
     cd angular-ynqttp
     ```
-    
+
+1. To download and install npm packages, use the following npm CLI command:
+
+    ```sh
+    npm install
+    ```
+
 1. Use the following CLI command to run your application locally:
 
     ```sh
