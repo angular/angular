@@ -26,8 +26,7 @@ A best practice is to run your project locally before you deploy it. To run your
       <img src="generated/images/guide/start/download-project.png" alt="Download the stackblitz project">
     </div>
 
-
-1. Unzip the archive change directory to the newly created project. For example:
+1. Unzip the archive and change directory to the newly created project. For example:
 
     ```sh
     cd angular-ynqttp
