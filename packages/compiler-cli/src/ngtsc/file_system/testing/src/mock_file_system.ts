@@ -284,9 +284,18 @@ export abstract class MockFileSystem implements FileSystem {
       if (current === undefined) {
         return {path, entity: null};
       }
-      if (segments.length > 0 && (!isFolder(current))) {
-        current = null;
-        break;
+      if (segments.length > 0) {
+        if (isFile(current)) {
+          // Reaching a file when there's still remaining segments means that the requested path
+          // does not actually exist.
+          current = null;
+          break;
+        }
+        if (isSymLink(current)) {
+          // Intermediate directories that are themselves symlinks should always be followed
+          // regardless of `followSymLinks`, as otherwise the remaining segments would not be found.
+          return this.findFromPath(resolve(current.path, ...segments), {followSymLinks});
+        }
       }
       if (isFile(current)) {
         break;
