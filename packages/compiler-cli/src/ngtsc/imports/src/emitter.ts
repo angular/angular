@@ -9,6 +9,7 @@ import {Expression, ExternalExpr, ExternalReference, WrappedNodeExpr} from '@ang
 import ts from 'typescript';
 
 import {UnifiedModulesHost} from '../../core/api';
+import {ErrorCode, FatalDiagnosticError, makeDiagnosticChain, makeRelatedInformation} from '../../diagnostics';
 import {absoluteFromSourceFile, dirname, LogicalFileSystem, LogicalProjectPath, relative, toRelativeImport} from '../../file_system';
 import {stripExtension} from '../../file_system/src/util';
 import {DeclarationNode, ReflectionHost} from '../../reflection';
@@ -62,11 +63,18 @@ export enum ImportFlags {
  */
 export type ImportedFile = ts.SourceFile|'unknown'|null;
 
+export const enum ReferenceEmitKind {
+  Success,
+  Failed,
+}
+
 /**
  * Represents the emitted expression of a `Reference` that is valid in the source file it was
  * emitted from.
  */
 export interface EmittedReference {
+  kind: ReferenceEmitKind.Success;
+
   /**
    * The expression that refers to `Reference`.
    */
@@ -79,6 +87,52 @@ export interface EmittedReference {
    * the exact source file that is being imported is not known to the emitter.
    */
   importedFile: ImportedFile;
+}
+
+/**
+ * Represents a failure to emit a `Reference` into a different source file.
+ */
+export interface FailedEmitResult {
+  kind: ReferenceEmitKind.Failed;
+
+  /**
+   * The reference that could not be emitted.
+   */
+  ref: Reference;
+
+  /**
+   * The source file into which the reference was requested to be emitted.
+   */
+  context: ts.SourceFile;
+
+  /**
+   * Describes why the reference could not be emitted. This may be shown in a diagnostic.
+   */
+  reason: string;
+}
+
+export type ReferenceEmitResult = EmittedReference|FailedEmitResult;
+
+/**
+ * Verifies that a reference was emitted successfully, or raises a `FatalDiagnosticError` otherwise.
+ * @param result The emit result that should have been successful.
+ * @param origin The node that is used to report the failure diagnostic.
+ * @param typeKind The kind of the symbol that the reference represents, e.g. 'component' or
+ *     'class'.
+ */
+export function assertSuccessfulReferenceEmit(
+    result: ReferenceEmitResult, origin: ts.Node,
+    typeKind: string): asserts result is EmittedReference {
+  if (result.kind === ReferenceEmitKind.Success) {
+    return;
+  }
+
+  const message = makeDiagnosticChain(
+      `Unable to import ${typeKind} ${nodeNameForError(result.ref.node)}.`,
+      [makeDiagnosticChain(result.reason)]);
+  throw new FatalDiagnosticError(
+      ErrorCode.IMPORT_GENERATION_FAILURE, origin, message,
+      [makeRelatedInformation(result.ref.node, `The ${typeKind} is declared here.`)]);
 }
 
 /**
@@ -104,7 +158,7 @@ export interface ReferenceEmitStrategy {
    * @returns an `EmittedReference` which refers to the `Reference`, or `null` if none can be
    *   generated
    */
-  emit(ref: Reference, context: ts.SourceFile, importFlags: ImportFlags): EmittedReference|null;
+  emit(ref: Reference, context: ts.SourceFile, importFlags: ImportFlags): ReferenceEmitResult|null;
 }
 
 /**
@@ -117,15 +171,20 @@ export class ReferenceEmitter {
   constructor(private strategies: ReferenceEmitStrategy[]) {}
 
   emit(ref: Reference, context: ts.SourceFile, importFlags: ImportFlags = ImportFlags.None):
-      EmittedReference {
+      ReferenceEmitResult {
     for (const strategy of this.strategies) {
       const emitted = strategy.emit(ref, context, importFlags);
       if (emitted !== null) {
         return emitted;
       }
     }
-    throw new Error(`Unable to write a reference to ${nodeNameForError(ref.node)} in ${
-        ref.node.getSourceFile().fileName} from ${context.fileName}`);
+
+    return {
+      kind: ReferenceEmitKind.Failed,
+      ref,
+      context,
+      reason: `Unable to write a reference to ${nodeNameForError(ref.node)}.`,
+    };
   }
 }
 
@@ -150,6 +209,7 @@ export class LocalIdentifierStrategy implements ReferenceEmitStrategy {
     // invalid emission of a free-standing `foo` identifier, rather than `exports.foo`.
     if (!isDeclaration(ref.node) && refSf === context) {
       return {
+        kind: ReferenceEmitKind.Success,
         expression: new WrappedNodeExpr(ref.node),
         importedFile: null,
       };
@@ -160,6 +220,7 @@ export class LocalIdentifierStrategy implements ReferenceEmitStrategy {
     const identifier = ref.getIdentityIn(context);
     if (identifier !== null) {
       return {
+        kind: ReferenceEmitKind.Success,
         expression: new WrappedNodeExpr(identifier),
         importedFile: null,
       };
@@ -176,12 +237,12 @@ interface ModuleExports {
   /**
    * The source file of the module.
    */
-  module: ts.SourceFile;
+  module: ts.SourceFile|null;
 
   /**
    * The map of declarations to their exported name.
    */
-  exportMap: Map<DeclarationNode, string>;
+  exportMap: Map<DeclarationNode, string>|null;
 }
 
 /**
@@ -198,13 +259,13 @@ export class AbsoluteModuleStrategy implements ReferenceEmitStrategy {
    * A cache of the exports of specific modules, because resolving a module to its exports is a
    * costly operation.
    */
-  private moduleExportsCache = new Map<string, ModuleExports|null>();
+  private moduleExportsCache = new Map<string, ModuleExports>();
 
   constructor(
       protected program: ts.Program, protected checker: ts.TypeChecker,
       protected moduleResolver: ModuleResolver, private reflectionHost: ReflectionHost) {}
 
-  emit(ref: Reference, context: ts.SourceFile, importFlags: ImportFlags): EmittedReference|null {
+  emit(ref: Reference, context: ts.SourceFile, importFlags: ImportFlags): ReferenceEmitResult|null {
     if (ref.bestGuessOwningModule === null) {
       // There is no module name available for this Reference, meaning it was arrived at via a
       // relative path.
@@ -221,38 +282,48 @@ export class AbsoluteModuleStrategy implements ReferenceEmitStrategy {
     // Try to find the exported name of the declaration, if one is available.
     const {specifier, resolutionContext} = ref.bestGuessOwningModule;
     const exports = this.getExportsOfModule(specifier, resolutionContext);
-    if (exports === null || !exports.exportMap.has(ref.node)) {
-      // TODO(alxhub): make this error a ts.Diagnostic pointing at whatever caused this import to be
-      // triggered.
-      throw new Error(`Symbol ${ref.debugName} declared in ${
-          getSourceFile(ref.node).fileName} is not exported from ${specifier} (import into ${
-          context.fileName})`);
+    if (exports.module === null) {
+      return {
+        kind: ReferenceEmitKind.Failed,
+        ref,
+        context,
+        reason: `The module '${specifier}' could not be found.`,
+      };
+    } else if (exports.exportMap === null || !exports.exportMap.has(ref.node)) {
+      return {
+        kind: ReferenceEmitKind.Failed,
+        ref,
+        context,
+        reason:
+            `The symbol is not exported from ${exports.module.fileName} (module '${specifier}').`,
+      };
     }
     const symbolName = exports.exportMap.get(ref.node)!;
 
     return {
+      kind: ReferenceEmitKind.Success,
       expression: new ExternalExpr(new ExternalReference(specifier, symbolName)),
       importedFile: exports.module,
     };
   }
 
-  private getExportsOfModule(moduleName: string, fromFile: string): ModuleExports|null {
+  private getExportsOfModule(moduleName: string, fromFile: string): ModuleExports {
     if (!this.moduleExportsCache.has(moduleName)) {
       this.moduleExportsCache.set(moduleName, this.enumerateExportsOfModule(moduleName, fromFile));
     }
     return this.moduleExportsCache.get(moduleName)!;
   }
 
-  protected enumerateExportsOfModule(specifier: string, fromFile: string): ModuleExports|null {
+  protected enumerateExportsOfModule(specifier: string, fromFile: string): ModuleExports {
     // First, resolve the module specifier to its entry point, and get the ts.Symbol for it.
     const entryPointFile = this.moduleResolver.resolveModule(specifier, fromFile);
     if (entryPointFile === null) {
-      return null;
+      return {module: null, exportMap: null};
     }
 
     const exports = this.reflectionHost.getExportsOfModule(entryPointFile);
     if (exports === null) {
-      return null;
+      return {module: entryPointFile, exportMap: null};
     }
     const exportMap = new Map<DeclarationNode, string>();
     for (const [name, declaration] of exports) {
@@ -284,7 +355,7 @@ export class AbsoluteModuleStrategy implements ReferenceEmitStrategy {
 export class LogicalProjectStrategy implements ReferenceEmitStrategy {
   constructor(private reflector: ReflectionHost, private logicalFs: LogicalFileSystem) {}
 
-  emit(ref: Reference, context: ts.SourceFile): EmittedReference|null {
+  emit(ref: Reference, context: ts.SourceFile): ReferenceEmitResult|null {
     const destSf = getSourceFile(ref.node);
 
     // Compute the relative path from the importing file to the file being imported. This is done
@@ -292,7 +363,14 @@ export class LogicalProjectStrategy implements ReferenceEmitStrategy {
     const destPath = this.logicalFs.logicalPathOfSf(destSf);
     if (destPath === null) {
       // The imported file is not within the logical project filesystem.
-      return null;
+      // Note: this error is analogous to `TS6059: File is not under 'rootDir'` that TypeScript
+      // reports.
+      return {
+        kind: ReferenceEmitKind.Failed,
+        ref,
+        context,
+        reason: `The file ${destSf.fileName} is outside of the configured 'rootDir'.`,
+      };
     }
 
     const originPath = this.logicalFs.logicalPathOfSf(context);
@@ -309,13 +387,19 @@ export class LogicalProjectStrategy implements ReferenceEmitStrategy {
     const name = findExportedNameOfNode(ref.node, destSf, this.reflector);
     if (name === null) {
       // The target declaration isn't exported from the file it's declared in. This is an issue!
-      return null;
+      return {
+        kind: ReferenceEmitKind.Failed,
+        ref,
+        context,
+        reason: `The symbol is not exported from ${destSf.fileName}.`,
+      };
     }
 
     // With both files expressed as LogicalProjectPaths, getting the module specifier as a relative
     // path is now straightforward.
     const moduleName = LogicalProjectPath.relativePathBetween(originPath, destPath);
     return {
+      kind: ReferenceEmitKind.Success,
       expression: new ExternalExpr({moduleName, name}),
       importedFile: destSf,
     };
@@ -331,14 +415,26 @@ export class LogicalProjectStrategy implements ReferenceEmitStrategy {
 export class RelativePathStrategy implements ReferenceEmitStrategy {
   constructor(private reflector: ReflectionHost) {}
 
-  emit(ref: Reference, context: ts.SourceFile): EmittedReference|null {
+  emit(ref: Reference, context: ts.SourceFile): ReferenceEmitResult|null {
     const destSf = getSourceFile(ref.node);
     const relativePath =
         relative(dirname(absoluteFromSourceFile(context)), absoluteFromSourceFile(destSf));
     const moduleName = toRelativeImport(stripExtension(relativePath));
 
     const name = findExportedNameOfNode(ref.node, destSf, this.reflector);
-    return {expression: new ExternalExpr({moduleName, name}), importedFile: destSf};
+    if (name === null) {
+      return {
+        kind: ReferenceEmitKind.Failed,
+        ref,
+        context,
+        reason: `The symbol is not exported from ${destSf.fileName}.`,
+      };
+    }
+    return {
+      kind: ReferenceEmitKind.Success,
+      expression: new ExternalExpr({moduleName, name}),
+      importedFile: destSf,
+    };
   }
 }
 
@@ -360,6 +456,7 @@ export class UnifiedModulesStrategy implements ReferenceEmitStrategy {
         this.unifiedModulesHost.fileNameToModuleName(destSf.fileName, context.fileName);
 
     return {
+      kind: ReferenceEmitKind.Success,
       expression: new ExternalExpr({moduleName, name}),
       importedFile: destSf,
     };
