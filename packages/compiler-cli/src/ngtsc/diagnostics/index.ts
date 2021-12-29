@@ -7,7 +7,7 @@
  */
 
 export {COMPILER_ERRORS_WITH_GUIDES} from './src/docs';
-export {FatalDiagnosticError, isFatalDiagnosticError, makeDiagnostic, makeRelatedInformation} from './src/error';
+export {FatalDiagnosticError, isFatalDiagnosticError, makeDiagnostic, makeDiagnosticChain, makeRelatedInformation} from './src/error';
 export {ErrorCode} from './src/error_code';
 export {ERROR_DETAILS_PAGE_BASE_URL} from './src/error_details_base_url';
 export {ngErrorCode, replaceTsWithNgInErrors} from './src/util';

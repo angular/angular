@@ -9,7 +9,7 @@
 import {ExpressionType, ExternalExpr, Type, WrappedNodeExpr} from '@angular/compiler';
 import ts from 'typescript';
 
-import {ImportFlags, Reference, ReferenceEmitter} from '../../imports';
+import {assertSuccessfulReferenceEmit, ImportFlags, Reference, ReferenceEmitter} from '../../imports';
 import {ClassDeclaration, ReflectionHost} from '../../reflection';
 import {ImportManager, translateExpression, translateType} from '../../translator';
 import {TypeCheckableDirectiveMeta, TypeCheckingConfig, TypeCtorMetadata} from '../api';
@@ -121,6 +121,7 @@ export class Environment {
     // in these cases as there is no strict dependency checking during the template type-checking
     // pass.
     const ngExpr = this.refEmitter.emit(ref, this.contextFile, ImportFlags.NoAliasing);
+    assertSuccessfulReferenceEmit(ngExpr, this.contextFile, 'class');
 
     // Use `translateExpression` to convert the `Expression` into a `ts.Expression`.
     return translateExpression(ngExpr.expression, this.importManager);
@@ -134,6 +135,7 @@ export class Environment {
   referenceType(ref: Reference): ts.TypeNode {
     const ngExpr = this.refEmitter.emit(
         ref, this.contextFile, ImportFlags.NoAliasing | ImportFlags.AllowTypeImports);
+    assertSuccessfulReferenceEmit(ngExpr, this.contextFile, 'symbol');
 
     // Create an `ExpressionType` from the `Expression` and translate it via `translateType`.
     // TODO(alxhub): support references to types with generic arguments in a clean way.

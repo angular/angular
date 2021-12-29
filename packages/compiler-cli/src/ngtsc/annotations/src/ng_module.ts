@@ -10,7 +10,7 @@ import {compileClassMetadata, compileDeclareClassMetadata, compileDeclareInjecto
 import ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError, makeDiagnostic, makeRelatedInformation} from '../../diagnostics';
-import {Reference, ReferenceEmitter} from '../../imports';
+import {assertSuccessfulReferenceEmit, Reference, ReferenceEmitter} from '../../imports';
 import {isArrayEqual, isReferenceEqual, isSymbolEqual, SemanticReference, SemanticSymbol} from '../../incremental/semantic_graph';
 import {InjectableClassRegistry, MetadataReader, MetadataRegistry} from '../../metadata';
 import {PartialEvaluator, ResolvedValue} from '../../partial_evaluator';
@@ -280,12 +280,19 @@ export class NgModuleDecoratorHandler implements
       typeContext = typeNode.getSourceFile();
     }
 
-    const bootstrap =
-        bootstrapRefs.map(bootstrap => this._toR3Reference(bootstrap, valueContext, typeContext));
-    const declarations =
-        declarationRefs.map(decl => this._toR3Reference(decl, valueContext, typeContext));
-    const imports = importRefs.map(imp => this._toR3Reference(imp, valueContext, typeContext));
-    const exports = exportRefs.map(exp => this._toR3Reference(exp, valueContext, typeContext));
+    const bootstrap = bootstrapRefs.map(
+        bootstrap => this._toR3Reference(
+            bootstrap.getOriginForDiagnostics(meta, node.name), bootstrap, valueContext,
+            typeContext));
+    const declarations = declarationRefs.map(
+        decl => this._toR3Reference(
+            decl.getOriginForDiagnostics(meta, node.name), decl, valueContext, typeContext));
+    const imports = importRefs.map(
+        imp => this._toR3Reference(
+            imp.getOriginForDiagnostics(meta, node.name), imp, valueContext, typeContext));
+    const exports = exportRefs.map(
+        exp => this._toR3Reference(
+            exp.getOriginForDiagnostics(meta, node.name), exp, valueContext, typeContext));
 
     const isForwardReference = (ref: R3Reference) =>
         isExpressionForwardReference(ref.value, node.name!, valueContext);
@@ -419,7 +426,9 @@ export class NgModuleDecoratorHandler implements
       const context = getSourceFile(node);
       for (const exportRef of analysis.exports) {
         if (isNgModule(exportRef.node, scope.compilation)) {
-          data.injectorImports.push(this.refEmitter.emit(exportRef, context).expression);
+          const type = this.refEmitter.emit(exportRef, context);
+          assertSuccessfulReferenceEmit(type, node, 'NgModule');
+          data.injectorImports.push(type.expression);
         }
       }
 
@@ -506,12 +515,21 @@ export class NgModuleDecoratorHandler implements
     for (const decl of declarations) {
       const remoteScope = this.scopeRegistry.getRemoteScope(decl.node);
       if (remoteScope !== null) {
-        const directives = remoteScope.directives.map(
-            directive => this.refEmitter.emit(directive, context).expression);
-        const pipes = remoteScope.pipes.map(pipe => this.refEmitter.emit(pipe, context).expression);
+        const directives = remoteScope.directives.map(directive => {
+          const type = this.refEmitter.emit(directive, context);
+          assertSuccessfulReferenceEmit(type, node, 'directive');
+          return type.expression;
+        });
+        const pipes = remoteScope.pipes.map(pipe => {
+          const type = this.refEmitter.emit(pipe, context);
+          assertSuccessfulReferenceEmit(type, node, 'pipe');
+          return type.expression;
+        });
         const directiveArray = new LiteralArrayExpr(directives);
         const pipesArray = new LiteralArrayExpr(pipes);
-        const declExpr = this.refEmitter.emit(decl, context).expression;
+        const componentType = this.refEmitter.emit(decl, context);
+        assertSuccessfulReferenceEmit(componentType, node, 'component');
+        const declExpr = componentType.expression;
         const setComponentScope = new ExternalExpr(R3Identifiers.setComponentScope);
         const callExpr =
             new InvokeFunctionExpr(setComponentScope, [declExpr, directiveArray, pipesArray]);
@@ -543,17 +561,17 @@ export class NgModuleDecoratorHandler implements
   }
 
   private _toR3Reference(
-      valueRef: Reference<ClassDeclaration>, valueContext: ts.SourceFile,
+      origin: ts.Node, valueRef: Reference<ClassDeclaration>, valueContext: ts.SourceFile,
       typeContext: ts.SourceFile): R3Reference {
     if (valueRef.hasOwningModuleGuess) {
-      return toR3Reference(valueRef, valueRef, valueContext, valueContext, this.refEmitter);
+      return toR3Reference(origin, valueRef, valueRef, valueContext, valueContext, this.refEmitter);
     } else {
       let typeRef = valueRef;
       let typeNode = this.reflector.getDtsDeclaration(typeRef.node);
       if (typeNode !== null && isNamedClassDeclaration(typeNode)) {
         typeRef = new Reference(typeNode);
       }
-      return toR3Reference(valueRef, typeRef, valueContext, typeContext, this.refEmitter);
+      return toR3Reference(origin, valueRef, typeRef, valueContext, typeContext, this.refEmitter);
     }
   }
 
