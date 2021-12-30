@@ -491,6 +491,35 @@ runInEachFileSystem(() => {
           `TestComponent.html(1, 19): Argument of type 'string | undefined' is not assignable to parameter of type 'string'.`
         ]);
       });
+
+      it('does not produce diagnostic for safe calls', () => {
+        const messages =
+            diagnose(`<div [class.is-hobbit]="person.getName?.() === 'Bilbo'"></div>`, `
+              export class TestComponent {
+                person: {
+                  getName?: () => string;
+                };
+              }`);
+
+        expect(messages).toEqual([]);
+      });
+
+      it('infers a safe call return value as undefined', () => {
+        const messages = diagnose(`<div (click)="log(person.getName?.())"></div>`, `
+          export class TestComponent {
+            person: {
+              getName?: () => string;
+            };
+
+            log(name: string) {
+              console.log(name);
+            }
+          }`);
+
+        expect(messages).toEqual([
+          `TestComponent.html(1, 19): Argument of type 'string | undefined' is not assignable to parameter of type 'string'.`
+        ]);
+      });
     });
 
     it('computes line and column offsets', () => {

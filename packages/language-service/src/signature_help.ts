@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Call} from '@angular/compiler';
+import {Call, SafeCall} from '@angular/compiler';
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import {getSourceFileOrError} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {SymbolKind} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
@@ -48,7 +48,7 @@ export function getSignatureHelp(
   // Additionally, extract the `Call` node for which signature help is being queried, as this
   // is needed to construct the correct span for the results later.
   let shimPosition: number;
-  let expr: Call;
+  let expr: Call|SafeCall;
   switch (targetInfo.context.kind) {
     case TargetNodeKind.RawExpression:
       // For normal expressions, just use the primary TCB position of the expression.
@@ -56,11 +56,11 @@ export function getSignatureHelp(
 
       // Walk up the parents of this expression and try to find a
       // `Call` for which signature information is being fetched.
-      let callExpr: Call|null = null;
+      let callExpr: Call|SafeCall|null = null;
       const parents = targetInfo.context.parents;
       for (let i = parents.length - 1; i >= 0; i--) {
         const parent = parents[i];
-        if (parent instanceof Call) {
+        if (parent instanceof Call || parent instanceof SafeCall) {
           callExpr = parent;
           break;
         }

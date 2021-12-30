@@ -79,6 +79,13 @@ describe('type check blocks diagnostics', () => {
               '(ctx).method /*3,9*/(((ctx).a /*10,11*/) /*10,11*/, ((ctx).b /*13,14*/) /*13,14*/) /*3,15*/');
     });
 
+    it('should annotate safe calls', () => {
+      const TEMPLATE = `{{ method?.(a, b) }}`;
+      expect(tcbWithSpans(TEMPLATE))
+          .toContain(
+              '((null as any ? (((ctx).method /*3,9*/) /*3,9*/)!(((ctx).a /*12,13*/) /*12,13*/, ((ctx).b /*15,16*/) /*15,16*/) : undefined) /*3,17*/)');
+    });
+
     it('should annotate method calls of variables', () => {
       const TEMPLATE = `<ng-template let-method>{{ method(a, b) }}</ng-template>`;
       expect(tcbWithSpans(TEMPLATE))
