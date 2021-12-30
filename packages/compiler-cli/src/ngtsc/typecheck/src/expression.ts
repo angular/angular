@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, AstVisitor, ASTWithSource, Binary, BindingPipe, Call, Chain, Conditional, EmptyExpr, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralPrimitive, NonNullAssert, PrefixNot, PropertyRead, PropertyWrite, Quote, SafeKeyedRead, SafePropertyRead, ThisReceiver, Unary} from '@angular/compiler';
+import {AST, AstVisitor, ASTWithSource, Binary, BindingPipe, Call, Chain, Conditional, EmptyExpr, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralPrimitive, NonNullAssert, PrefixNot, PropertyRead, PropertyWrite, Quote, SafeCall, SafeKeyedRead, SafePropertyRead, ThisReceiver, Unary} from '@angular/compiler';
 import ts from 'typescript';
 
 import {TypeCheckingConfig} from '../api';
@@ -337,24 +337,39 @@ class AstTranslator implements AstVisitor {
 
     // Safe property/keyed reads will produce a ternary whose value is nullable.
     // We have to generate a similar ternary around the call.
-    if (receiver instanceof SafePropertyRead || receiver instanceof SafeKeyedRead) {
-      if (this.config.strictSafeNavigationTypes) {
-        // "a?.method(...)" becomes (null as any ? a!.method(...) : undefined)
-        const call = ts.createCall(ts.createNonNullExpression(expr), undefined, args);
-        node = ts.createParen(ts.createConditional(NULL_AS_ANY, call, UNDEFINED));
-      } else if (VeSafeLhsInferenceBugDetector.veWillInferAnyFor(ast)) {
-        // "a?.method(...)" becomes (a as any).method(...)
-        node = ts.createCall(tsCastToAny(expr), undefined, args);
-      } else {
-        // "a?.method(...)" becomes (a!.method(...) as any)
-        node = tsCastToAny(ts.createCall(ts.createNonNullExpression(expr), undefined, args));
-      }
+    if (ast.receiver instanceof SafePropertyRead || ast.receiver instanceof SafeKeyedRead) {
+      node = this.convertToSafeCall(ast, expr, args);
     } else {
       node = ts.createCall(expr, undefined, args);
     }
 
     addParseSpanInfo(node, ast.sourceSpan);
     return node;
+  }
+
+  visitSafeCall(ast: SafeCall): ts.Expression {
+    const args = ast.args.map(expr => this.translate(expr));
+    const expr = wrapForDiagnostics(this.translate(ast.receiver));
+    const node = this.convertToSafeCall(ast, expr, args);
+    addParseSpanInfo(node, ast.sourceSpan);
+    return node;
+  }
+
+  private convertToSafeCall(ast: Call|SafeCall, expr: ts.Expression, args: ts.Expression[]):
+      ts.Expression {
+    if (this.config.strictSafeNavigationTypes) {
+      // "a?.method(...)" becomes (null as any ? a!.method(...) : undefined)
+      const call = ts.createCall(ts.createNonNullExpression(expr), undefined, args);
+      return ts.createParen(ts.createConditional(NULL_AS_ANY, call, UNDEFINED));
+    }
+
+    if (VeSafeLhsInferenceBugDetector.veWillInferAnyFor(ast)) {
+      // "a?.method(...)" becomes (a as any).method(...)
+      return ts.createCall(tsCastToAny(expr), undefined, args);
+    }
+
+    // "a?.method(...)" becomes (a!.method(...) as any)
+    return tsCastToAny(ts.createCall(ts.createNonNullExpression(expr), undefined, args));
   }
 }
 
@@ -374,7 +389,7 @@ class AstTranslator implements AstVisitor {
 class VeSafeLhsInferenceBugDetector implements AstVisitor {
   private static SINGLETON = new VeSafeLhsInferenceBugDetector();
 
-  static veWillInferAnyFor(ast: Call|SafePropertyRead|SafeKeyedRead) {
+  static veWillInferAnyFor(ast: Call|SafeCall|SafePropertyRead|SafeKeyedRead) {
     const visitor = VeSafeLhsInferenceBugDetector.SINGLETON;
     return ast instanceof Call ? ast.visit(visitor) : ast.receiver.visit(visitor);
   }
@@ -393,6 +408,9 @@ class VeSafeLhsInferenceBugDetector implements AstVisitor {
   }
   visitCall(ast: Call): boolean {
     return true;
+  }
+  visitSafeCall(ast: SafeCall): boolean {
+    return false;
   }
   visitImplicitReceiver(ast: ImplicitReceiver): boolean {
     return false;

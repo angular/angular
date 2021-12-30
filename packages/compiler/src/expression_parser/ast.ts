@@ -318,7 +318,7 @@ export class NonNullAssert extends AST {
 
 export class Call extends AST {
   constructor(
-      span: ParseSpan, sourceSpan: AbsoluteSourceSpan, public receiver: AST, public args: any[],
+      span: ParseSpan, sourceSpan: AbsoluteSourceSpan, public receiver: AST, public args: AST[],
       public argumentSpan: AbsoluteSourceSpan) {
     super(span, sourceSpan);
   }
@@ -326,6 +326,18 @@ export class Call extends AST {
     return visitor.visitCall(this, context);
   }
 }
+
+export class SafeCall extends AST {
+  constructor(
+      span: ParseSpan, sourceSpan: AbsoluteSourceSpan, public receiver: AST, public args: AST[],
+      public argumentSpan: AbsoluteSourceSpan) {
+    super(span, sourceSpan);
+  }
+  override visit(visitor: AstVisitor, context: any = null): any {
+    return visitor.visitSafeCall(this, context);
+  }
+}
+
 
 /**
  * Records the absolute position of a text span in a source file, where `start` and `end` are the
@@ -439,6 +451,7 @@ export interface AstVisitor {
   visitSafePropertyRead(ast: SafePropertyRead, context: any): any;
   visitSafeKeyedRead(ast: SafeKeyedRead, context: any): any;
   visitCall(ast: Call, context: any): any;
+  visitSafeCall(ast: SafeCall, context: any): any;
   visitASTWithSource?(ast: ASTWithSource, context: any): any;
   /**
    * This function is optionally defined to allow classes that implement this
@@ -517,6 +530,10 @@ export class RecursiveAstVisitor implements AstVisitor {
     this.visit(ast.key, context);
   }
   visitCall(ast: Call, context: any): any {
+    this.visit(ast.receiver, context);
+    this.visitAll(ast.args, context);
+  }
+  visitSafeCall(ast: SafeCall, context: any): any {
     this.visit(ast.receiver, context);
     this.visitAll(ast.args, context);
   }
@@ -618,6 +635,12 @@ export class AstTransformer implements AstVisitor {
 
   visitCall(ast: Call, context: any): AST {
     return new Call(
+        ast.span, ast.sourceSpan, ast.receiver.visit(this), this.visitAll(ast.args),
+        ast.argumentSpan);
+  }
+
+  visitSafeCall(ast: SafeCall, context: any): AST {
+    return new SafeCall(
         ast.span, ast.sourceSpan, ast.receiver.visit(this), this.visitAll(ast.args),
         ast.argumentSpan);
   }
@@ -812,6 +835,15 @@ export class AstMemoryEfficientTransformer implements AstVisitor {
     const args = this.visitAll(ast.args);
     if (receiver !== ast.receiver || args !== ast.args) {
       return new Call(ast.span, ast.sourceSpan, receiver, args, ast.argumentSpan);
+    }
+    return ast;
+  }
+
+  visitSafeCall(ast: SafeCall, context: any): AST {
+    const receiver = ast.receiver.visit(this);
+    const args = this.visitAll(ast.args);
+    if (receiver !== ast.receiver || args !== ast.args) {
+      return new SafeCall(ast.span, ast.sourceSpan, receiver, args, ast.argumentSpan);
     }
     return ast;
   }

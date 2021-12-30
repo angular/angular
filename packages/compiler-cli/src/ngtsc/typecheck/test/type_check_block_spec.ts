@@ -1002,7 +1002,7 @@ describe('type check blocks', () => {
     });
 
     describe('config.strictSafeNavigationTypes', () => {
-      const TEMPLATE = `{{a?.b}} {{a?.method()}} {{a?.[0]}}`;
+      const TEMPLATE = `{{a?.b}} {{a?.method()}} {{a?.[0]}} {{a.optionalMethod?.()}}`;
 
       it('should use undefined for safe navigation operations when enabled', () => {
         const block = tcb(TEMPLATE, DIRECTIVES);
@@ -1010,6 +1010,7 @@ describe('type check blocks', () => {
             '(null as any ? (null as any ? (((ctx).a))!.method : undefined)!() : undefined)');
         expect(block).toContain('(null as any ? (((ctx).a))!.b : undefined)');
         expect(block).toContain('(null as any ? (((ctx).a))![0] : undefined)');
+        expect(block).toContain('(null as any ? (((((ctx).a)).optionalMethod))!() : undefined)');
       });
       it('should use an \'any\' type for safe navigation operations when disabled', () => {
         const DISABLED_CONFIG:
@@ -1018,17 +1019,21 @@ describe('type check blocks', () => {
         expect(block).toContain('((((((ctx).a))!.method as any) as any)())');
         expect(block).toContain('((((ctx).a))!.b as any)');
         expect(block).toContain('(((((ctx).a))![0] as any)');
+        expect(block).toContain('((((((ctx).a)).optionalMethod))!() as any)');
       });
     });
 
     describe('config.strictSafeNavigationTypes (View Engine bug emulation)', () => {
-      const TEMPLATE = `{{a.method()?.b}} {{a()?.method()}} {{a.method()?.[0]}}`;
+      const TEMPLATE =
+          `{{a.method()?.b}} {{a()?.method()}} {{a.method()?.[0]}} {{a.method()?.otherMethod?.()}}`;
       it('should check the presence of a property/method on the receiver when enabled', () => {
         const block = tcb(TEMPLATE, DIRECTIVES);
         expect(block).toContain('(null as any ? ((((ctx).a)).method())!.b : undefined)');
         expect(block).toContain(
             '(null as any ? (null as any ? ((ctx).a())!.method : undefined)!() : undefined)');
         expect(block).toContain('(null as any ? ((((ctx).a)).method())![0] : undefined)');
+        expect(block).toContain(
+            '(null as any ? ((null as any ? ((((ctx).a)).method())!.otherMethod : undefined))!() : undefined)');
       });
       it('should not check the presence of a property/method on the receiver when disabled', () => {
         const DISABLED_CONFIG:
@@ -1037,6 +1042,7 @@ describe('type check blocks', () => {
         expect(block).toContain('(((((ctx).a)).method()) as any).b');
         expect(block).toContain('(((((ctx).a()) as any).method as any)())');
         expect(block).toContain('(((((ctx).a)).method()) as any)[0]');
+        expect(block).toContain('(((((((ctx).a)).method()) as any).otherMethod)!() as any)');
       });
     });
 

@@ -14,7 +14,6 @@ import {absoluteFrom, AbsoluteFsPath, getSourceFileOrError} from '../../file_sys
 import {runInEachFileSystem} from '../../file_system/testing';
 import {ClassDeclaration} from '../../reflection';
 import {DirectiveSymbol, DomBindingSymbol, ElementSymbol, ExpressionSymbol, InputBindingSymbol, OutputBindingSymbol, PipeSymbol, ReferenceSymbol, Symbol, SymbolKind, TemplateSymbol, TemplateTypeChecker, TypeCheckingConfig, VariableSymbol} from '../api';
-
 import {getClass, ngForDeclaration, ngForTypeCheckTarget, setup as baseTestSetup, TypeCheckingTarget} from '../testing';
 
 runInEachFileSystem(() => {
@@ -869,6 +868,26 @@ runInEachFileSystem(() => {
         // Note that the symbol returned is for the return value of the Call.
         expect(callSymbol.tsSymbol).toBeNull();
         expect(program.getTypeChecker().typeToString(callSymbol.tsType)).toBe('string');
+      });
+
+      it('should get a symbol for SafeCall expressions', () => {
+        const fileName = absoluteFrom('/main.ts');
+        const {templateTypeChecker, program} = setup([
+          {
+            fileName,
+            templates: {'Cmp': '<div [input]="toString?.(123)"></div>'},
+            source: `export class Cmp { toString?: (value: number) => string; }`
+          },
+        ]);
+        const sf = getSourceFileOrError(program, fileName);
+        const cmp = getClass(sf, 'Cmp');
+        const node = getAstElements(templateTypeChecker, cmp)[0];
+        const safeCallSymbol = templateTypeChecker.getSymbolOfNode(node.inputs[0].value, cmp)!;
+        assertExpressionSymbol(safeCallSymbol);
+        // Note that the symbol returned is for the return value of the SafeCall.
+        expect(safeCallSymbol.tsSymbol).toBeNull();
+        expect(program.getTypeChecker().typeToString(safeCallSymbol.tsType))
+            .toBe('string | undefined');
       });
     });
 

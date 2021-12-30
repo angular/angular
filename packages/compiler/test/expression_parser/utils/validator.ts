@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, Binary, BindingPipe, Call, Chain, Conditional, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralPrimitive, ParseSpan, PrefixNot, PropertyRead, PropertyWrite, Quote, RecursiveAstVisitor, SafeKeyedRead, SafePropertyRead, Unary} from '../../../src/expression_parser/ast';
+import {AST, Binary, BindingPipe, Call, Chain, Conditional, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralPrimitive, ParseSpan, PrefixNot, PropertyRead, PropertyWrite, Quote, RecursiveAstVisitor, SafeCall, SafeKeyedRead, SafePropertyRead, Unary} from '../../../src/expression_parser/ast';
 
 import {unparse} from './unparser';
 
@@ -108,6 +108,10 @@ class ASTValidator extends RecursiveAstVisitor {
 
   override visitCall(ast: Call, context: any): any {
     this.validate(ast, () => super.visitCall(ast, context));
+  }
+
+  override visitSafeCall(ast: SafeCall, context: any): any {
+    this.validate(ast, () => super.visitSafeCall(ast, context));
   }
 }
 
