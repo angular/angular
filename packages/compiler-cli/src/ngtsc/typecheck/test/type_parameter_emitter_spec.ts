@@ -7,44 +7,61 @@
  */
 import ts from 'typescript';
 
-import {absoluteFrom} from '../../file_system';
+import {absoluteFrom, LogicalFileSystem} from '../../file_system';
 import {runInEachFileSystem, TestFile} from '../../file_system/testing';
+import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, ReferenceEmitter} from '../../imports';
 import {isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
 import {getDeclaration, makeProgram} from '../../testing';
+import {Environment} from '../src/environment';
+import {TypeCheckFile} from '../src/type_check_file';
 import {TypeParameterEmitter} from '../src/type_parameter_emitter';
-
-import {angularCoreDts} from '../testing';
+import {ALL_ENABLED_CONFIG, angularCoreDts} from '../testing';
 
 
 runInEachFileSystem(() => {
   describe('type parameter emitter', () => {
     function createEmitter(source: string, additionalFiles: TestFile[] = []) {
       const files: TestFile[] = [
-        angularCoreDts(), {name: absoluteFrom('/main.ts'), contents: source}, ...additionalFiles
+        angularCoreDts(),
+        {name: absoluteFrom('/app/main.ts'), contents: source},
+        ...additionalFiles,
       ];
-      const {program} = makeProgram(files, undefined, undefined, false);
+      const {program, host} = makeProgram(files, undefined, undefined, false);
       const checker = program.getTypeChecker();
       const reflector = new TypeScriptReflectionHost(checker);
 
-      const TestClass =
-          getDeclaration(program, absoluteFrom('/main.ts'), 'TestClass', isNamedClassDeclaration);
+      const TestClass = getDeclaration(
+          program, absoluteFrom('/app/main.ts'), 'TestClass', isNamedClassDeclaration);
 
-      return new TypeParameterEmitter(TestClass.typeParameters, reflector);
+      const moduleResolver = new ModuleResolver(
+          program, program.getCompilerOptions(), host, /* moduleResolutionCache */ null);
+      const refEmitter = new ReferenceEmitter([
+        new LocalIdentifierStrategy(),
+        new AbsoluteModuleStrategy(program, checker, moduleResolver, reflector),
+        new LogicalProjectStrategy(reflector, new LogicalFileSystem([absoluteFrom('/app')], host)),
+      ]);
+
+      const env = new TypeCheckFile(
+          absoluteFrom('/app/main.ngtypecheck.ts'), ALL_ENABLED_CONFIG, refEmitter, reflector,
+          host);
+      const emitter = new TypeParameterEmitter(TestClass.typeParameters, reflector);
+      return {emitter, env};
     }
 
-    function emit(emitter: TypeParameterEmitter) {
-      const canEmit = emitter.canEmit();
-      const emitted = emitter.emit(ref => {
-        const typeName = ts.createQualifiedName(ts.createIdentifier('test'), ref.debugName!);
-        return ts.createTypeReferenceNode(typeName, /* typeArguments */ undefined);
-      });
+    function emit({emitter, env}: {emitter: TypeParameterEmitter; env: Environment}) {
+      const canEmit = emitter.canEmit(ref => env.canReferenceType(ref));
 
-      if (emitted === undefined) {
-        return canEmit ? '' : null;
+      let emitted: ts.TypeParameterDeclaration[]|undefined;
+      try {
+        emitted = emitter.emit(ref => env.referenceType(ref));
+        expect(canEmit).toBe(true);
+      } catch (e) {
+        expect(canEmit).toBe(false);
+        throw e;
       }
 
-      if (!canEmit) {
-        fail('canEmit must be true when emitting succeeds');
+      if (emitted === undefined) {
+        return '';
       }
 
       const printer = ts.createPrinter({newLine: ts.NewLineKind.LineFeed});
@@ -104,7 +121,6 @@ runInEachFileSystem(() => {
     it('cannot emit import types', () => {
       const emitter = createEmitter(`export class TestClass<T extends import('module')> {}`);
 
-      expect(emitter.canEmit()).toBe(false);
       expect(() => emit(emitter)).toThrowError('Unable to emit import type');
     });
 
@@ -114,8 +130,7 @@ runInEachFileSystem(() => {
 
           export class TestClass<T extends NgIterable<any>> {}`);
 
-      expect(emitter.canEmit()).toBe(true);
-      expect(emit(emitter)).toEqual('<T extends test.NgIterable<any>>');
+      expect(emit(emitter)).toEqual('<T extends i0.NgIterable<any>>');
     });
 
     it('can emit references into external modules using qualified name', () => {
@@ -124,8 +139,7 @@ runInEachFileSystem(() => {
 
           export class TestClass<T extends ng.NgIterable<any>> {}`);
 
-      expect(emitter.canEmit()).toBe(true);
-      expect(emit(emitter)).toEqual('<T extends test.NgIterable<any>>');
+      expect(emit(emitter)).toEqual('<T extends i0.NgIterable<any>>');
     });
 
     it('can emit references to other type parameters', () => {
@@ -134,8 +148,7 @@ runInEachFileSystem(() => {
 
           export class TestClass<T, U extends NgIterable<T>> {}`);
 
-      expect(emitter.canEmit()).toBe(true);
-      expect(emit(emitter)).toEqual('<T, U extends test.NgIterable<T>>');
+      expect(emit(emitter)).toEqual('<T, U extends i0.NgIterable<T>>');
     });
 
     it('can emit references to local, exported declarations', () => {
@@ -144,8 +157,7 @@ runInEachFileSystem(() => {
           export {Local};
           export class TestClass<T extends Local> {}`);
 
-      expect(emitter.canEmit()).toBe(true);
-      expect(emit(emitter)).toEqual('<T extends test.Local>');
+      expect(emit(emitter)).toEqual('<T extends i0.Local>');
     });
 
     it('cannot emit references to non-exported local declarations', () => {
@@ -153,8 +165,7 @@ runInEachFileSystem(() => {
           class Local {};
           export class TestClass<T extends Local> {}`);
 
-      expect(emitter.canEmit()).toBe(false);
-      expect(() => emit(emitter)).toThrowError('Unable to emit an unresolved reference');
+      expect(() => emit(emitter)).toThrow();
     });
 
     it('cannot emit references to local declarations as nested type arguments', () => {
@@ -164,8 +175,7 @@ runInEachFileSystem(() => {
           class Local {};
           export class TestClass<T extends NgIterable<Local>> {}`);
 
-      expect(emitter.canEmit()).toBe(false);
-      expect(() => emit(emitter)).toThrowError('Unable to emit an unresolved reference');
+      expect(() => emit(emitter)).toThrow();
     });
 
     it('can emit references into external modules within array types', () => {
@@ -174,8 +184,7 @@ runInEachFileSystem(() => {
 
           export class TestClass<T extends NgIterable[]> {}`);
 
-      expect(emitter.canEmit()).toBe(true);
-      expect(emit(emitter)).toEqual('<T extends test.NgIterable[]>');
+      expect(emit(emitter)).toEqual('<T extends i0.NgIterable[]>');
     });
 
     it('cannot emit references to local declarations within array types', () => {
@@ -183,13 +192,12 @@ runInEachFileSystem(() => {
           class Local {};
           export class TestClass<T extends Local[]> {}`);
 
-      expect(emitter.canEmit()).toBe(false);
-      expect(() => emit(emitter)).toThrowError('Unable to emit an unresolved reference');
+      expect(() => emit(emitter)).toThrow();
     });
 
     it('can emit references into relative files', () => {
       const additionalFiles: TestFile[] = [{
-        name: absoluteFrom('/internal.ts'),
+        name: absoluteFrom('/app/internal.ts'),
         contents: `export class Internal {}`,
       }];
       const emitter = createEmitter(
@@ -199,13 +207,36 @@ runInEachFileSystem(() => {
           export class TestClass<T extends Internal> {}`,
           additionalFiles);
 
-      expect(emitter.canEmit()).toBe(true);
-      expect(emit(emitter)).toEqual('<T extends test.Internal>');
+      expect(emit(emitter)).toEqual('<T extends i0.Internal>');
+    });
+
+    it('cannot emit references into relative files that are outside of rootDirs', () => {
+      const additionalFiles: TestFile[] = [{
+        name: absoluteFrom('/internal.ts'),
+        contents: `export class Internal {}`,
+      }];
+      const emitter = createEmitter(
+          `
+          import {Internal} from '../internal';
+
+          export class TestClass<T extends Internal> {}`,
+          additionalFiles);
+
+      expect(() => emit(emitter)).toThrow();
+    });
+
+    it('cannot emit unresolved references', () => {
+      const emitter = createEmitter(`
+          import {Internal} from 'unresolved';
+
+          export class TestClass<T extends Internal> {}`);
+
+      expect(() => emit(emitter)).toThrow();
     });
 
     it('can emit references to exported classes imported using a namespace import', () => {
       const additionalFiles: TestFile[] = [{
-        name: absoluteFrom('/internal.ts'),
+        name: absoluteFrom('/app/internal.ts'),
         contents: `export class Internal {}`,
       }];
       const emitter = createEmitter(
@@ -215,13 +246,12 @@ runInEachFileSystem(() => {
         export class TestClass<T extends ns.Internal> {}`,
           additionalFiles);
 
-      expect(emitter.canEmit()).toBe(true);
-      expect(emit(emitter)).toEqual('<T extends test.Internal>');
+      expect(emit(emitter)).toEqual('<T extends i0.Internal>');
     });
 
     it('cannot emit references to local classes exported within a namespace', () => {
       const additionalFiles: TestFile[] = [{
-        name: absoluteFrom('/ns.ts'),
+        name: absoluteFrom('/app/ns.ts'),
         contents: `
           export namespace ns {
             export class Nested {}
@@ -235,8 +265,7 @@ runInEachFileSystem(() => {
           export class TestClass<T extends ns.Nested> {}`,
           additionalFiles);
 
-      expect(emitter.canEmit()).toBe(false);
-      expect(() => emit(emitter)).toThrowError('Unable to emit an unresolved reference');
+      expect(() => emit(emitter)).toThrow();
     });
 
     it('cannot emit references to external classes exported within a namespace', () => {
@@ -255,8 +284,7 @@ runInEachFileSystem(() => {
           export class TestClass<T extends ns.Nested> {}`,
           additionalFiles);
 
-      expect(emitter.canEmit()).toBe(false);
-      expect(() => emit(emitter)).toThrowError('Unable to emit an unresolved reference');
+      expect(() => emit(emitter)).toThrow();
     });
 
     it('can emit references to interfaces', () => {
@@ -271,8 +299,7 @@ runInEachFileSystem(() => {
           export class TestClass<T extends MyInterface> {}`,
           additionalFiles);
 
-      expect(emitter.canEmit()).toBe(true);
-      expect(emit(emitter)).toEqual('<T extends test.MyInterface>');
+      expect(emit(emitter)).toEqual('<T extends i0.MyInterface>');
     });
 
     it('can emit references to enums', () => {
@@ -287,8 +314,7 @@ runInEachFileSystem(() => {
           export class TestClass<T extends MyEnum> {}`,
           additionalFiles);
 
-      expect(emitter.canEmit()).toBe(true);
-      expect(emit(emitter)).toEqual('<T extends test.MyEnum>');
+      expect(emit(emitter)).toEqual('<T extends i0.MyEnum>');
     });
 
     it('can emit references to type aliases', () => {
@@ -303,8 +329,7 @@ runInEachFileSystem(() => {
           export class TestClass<T extends MyType> {}`,
           additionalFiles);
 
-      expect(emitter.canEmit()).toBe(true);
-      expect(emit(emitter)).toEqual('<T extends test.MyType>');
+      expect(emit(emitter)).toEqual('<T extends i0.MyType>');
     });
 
     it('transforms generic type parameter defaults', () => {
@@ -319,8 +344,7 @@ runInEachFileSystem(() => {
           export class TestClass<T extends MyType = MyType> {}`,
           additionalFiles);
 
-      expect(emitter.canEmit()).toBe(true);
-      expect(emit(emitter)).toEqual('<T extends test.MyType = test.MyType>');
+      expect(emit(emitter)).toEqual('<T extends i0.MyType = i0.MyType>');
     });
 
     it('cannot emit when a type parameter default cannot be emitted', () => {
@@ -329,8 +353,7 @@ runInEachFileSystem(() => {
 
           export class TestClass<T extends object = Local> {}`);
 
-      expect(emitter.canEmit()).toBe(false);
-      expect(() => emit(emitter)).toThrowError('Unable to emit an unresolved reference');
+      expect(() => emit(emitter)).toThrow();
     });
   });
 });

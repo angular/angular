@@ -11,7 +11,7 @@ import ts from 'typescript';
 
 import {Reference} from '../../imports';
 import {ClassPropertyName} from '../../metadata';
-import {ClassDeclaration, ReflectionHost} from '../../reflection';
+import {ClassDeclaration} from '../../reflection';
 import {TemplateId, TypeCheckableDirectiveMeta, TypeCheckBlockMetadata} from '../api';
 
 import {addExpressionIdentifier, ExpressionIdentifier, markIgnoreDiagnostics} from './comments';
@@ -1509,7 +1509,7 @@ class Scope {
         // `TcbNonDirectiveTypeOp`.
         directiveOp = new TcbNonGenericDirectiveTypeOp(this.tcb, this, node, dir);
       } else if (
-          !requiresInlineTypeCtor(dirRef.node, host) ||
+          !requiresInlineTypeCtor(dirRef.node, host, this.tcb.env) ||
           this.tcb.env.config.useInlineTypeConstructors) {
         // For generic directives, we use a type constructor to infer types. If a directive requires
         // an inline type constructor, then inlining must be available to use the

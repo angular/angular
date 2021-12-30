@@ -10,17 +10,13 @@ import ts from 'typescript';
 
 import {ClassDeclaration, ReflectionHost} from '../../reflection';
 import {TypeCtorMetadata} from '../api';
-import {checkIfGenericTypeBoundsAreContextFree} from './tcb_util';
 
+import {checkIfGenericTypeBoundsCanBeEmitted, ReferenceEmitEnvironment} from './tcb_util';
 import {tsCreateTypeQueryForCoercedInput} from './ts_util';
 
 export function generateTypeCtorDeclarationFn(
     node: ClassDeclaration<ts.ClassDeclaration>, meta: TypeCtorMetadata, nodeTypeRef: ts.EntityName,
-    typeParams: ts.TypeParameterDeclaration[]|undefined, reflector: ReflectionHost): ts.Statement {
-  if (requiresInlineTypeCtor(node, reflector)) {
-    throw new Error(`${node.name.text} requires an inline type constructor`);
-  }
-
+    typeParams: ts.TypeParameterDeclaration[]|undefined): ts.Statement {
   const rawTypeArgs = typeParams !== undefined ? generateGenericArgs(typeParams) : undefined;
   const rawType = ts.createTypeReferenceNode(nodeTypeRef, rawTypeArgs);
 
@@ -190,10 +186,11 @@ function generateGenericArgs(params: ReadonlyArray<ts.TypeParameterDeclaration>)
 }
 
 export function requiresInlineTypeCtor(
-    node: ClassDeclaration<ts.ClassDeclaration>, host: ReflectionHost): boolean {
+    node: ClassDeclaration<ts.ClassDeclaration>, host: ReflectionHost,
+    env: ReferenceEmitEnvironment): boolean {
   // The class requires an inline type constructor if it has generic type bounds that can not be
-  // emitted into a different context.
-  return !checkIfGenericTypeBoundsAreContextFree(node, host);
+  // emitted into the provided type-check environment.
+  return !checkIfGenericTypeBoundsCanBeEmitted(node, host, env);
 }
 
 /**
