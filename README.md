@@ -156,4 +156,4 @@ Join the conversation and help the community.
 [gitter]: https://gitter.im/angular/angular
 [stackoverflow]: https://stackoverflow.com/questions/tagged/angular
 [youtube]: https://youtube.com/angular
-[meetup]: https://www.meetup.com/find/?keywords=angular"
+[meetup]: https://www.meetup.com/find/?keywords=angular
