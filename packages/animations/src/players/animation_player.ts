@@ -9,8 +9,10 @@ import {scheduleMicroTask} from '../util';
 
 /**
  * Provides programmatic control of a reusable animation sequence,
- * built using the `build()` method of `AnimationBuilder`. The `build()` method
- * returns a factory, whose `create()` method instantiates and initializes this interface.
+ * built using the <code>[AnimationBuilder.build](api/animations/AnimationBuilder#build)()</code>
+ * method which returns an `AnimationFactory`, whose
+ * <code>[create](api/animations/AnimationFactory#create)()</code> method instantiates and
+ * initializes this interface.
  *
  * @see `AnimationBuilder`
  * @see `AnimationFactory`

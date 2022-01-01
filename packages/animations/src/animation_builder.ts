@@ -21,8 +21,8 @@ import {AnimationPlayer} from './players/animation_player';
  * Apps do not typically need to create their own animation players, but if you
  * do need to, follow these steps:
  *
- * 1. Use the `build()` method to create a programmatic animation using the
- * `animate()` function. The method returns an `AnimationFactory` instance.
+ * 1. Use the <code>[AnimationBuilder.build](api/animations/AnimationBuilder#build)()</code> method
+ * to create a programmatic animation. The method returns an `AnimationFactory` instance.
  *
  * 2. Use the factory object to create an `AnimationPlayer` and attach it to a DOM element.
  *
@@ -65,16 +65,19 @@ export abstract class AnimationBuilder {
 }
 
 /**
- * A factory object returned from the `AnimationBuilder`.`build()` method.
+ * A factory object returned from the
+ * <code>[AnimationBuilder.build](api/animations/AnimationBuilder#build)()</code>
+ * method.
  *
  * @publicApi
  */
 export abstract class AnimationFactory {
   /**
    * Creates an `AnimationPlayer` instance for the reusable animation defined by
-   * the `AnimationBuilder`.`build()` method that created this factory.
-   * Attaches the new player a DOM element.
-   * @param element The DOM element to which to attach the animation.
+   * the <code>[AnimationBuilder.build](api/animations/AnimationBuilder#build)()</code>
+   * method that created this factory and attaches the new player a DOM element.
+   *
+   * @param element The DOM element to which to attach the player.
    * @param options A set of options that can include a time delay and
    * additional developer-defined parameters.
    */
