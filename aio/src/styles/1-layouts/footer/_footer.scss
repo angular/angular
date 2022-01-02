@@ -73,8 +73,8 @@ footer {
 
       ul {
         list-style-position: inside;
-        padding: 0px;
-        margin: 0px;
+        padding: 0;
+        margin: 0;
 
         li {
           list-style-type: none;
@@ -92,11 +92,14 @@ footer {
       }
 
       @media (max-width: 25rem) {
-        grid-template-columns: 1fr;
-
         .footer-block {
-          margin-left: 0;
+          margin-left: 5px;
+          margin-right: 5px;
         }
+      }
+
+      @media (max-width: 20rem) {
+        grid-template-columns: 1fr;
       }
     }
   }
