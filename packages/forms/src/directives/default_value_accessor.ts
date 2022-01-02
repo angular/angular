@@ -7,9 +7,21 @@
  */
 
 import {ɵgetDOM as getDOM} from '@angular/common';
-import {Directive, ElementRef, forwardRef, Inject, InjectionToken, Optional, Renderer2} from '@angular/core';
+import {
+  Directive,
+  ElementRef,
+  forwardRef,
+  Inject,
+  InjectionToken,
+  Optional,
+  Renderer2
+} from '@angular/core';
 
-import {BaseControlValueAccessor, ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
+import {
+  BaseControlValueAccessor,
+  ControlValueAccessor,
+  NG_VALUE_ACCESSOR
+} from './control_value_accessor';
 
 export const DEFAULT_VALUE_ACCESSOR: any = {
   provide: NG_VALUE_ACCESSOR,
@@ -71,7 +83,7 @@ export const COMPOSITION_BUFFER_MODE = new InjectionToken<boolean>('CompositionE
  */
 @Directive({
   selector:
-      'input:not([type=checkbox])[formControlName],textarea[formControlName],input:not([type=checkbox])[formControl],textarea[formControl],input:not([type=checkbox])[ngModel],textarea[ngModel],[ngDefaultControl]',
+    'input:not([type=checkbox])[formControlName],textarea[formControlName],input:not([type=checkbox])[formControl],textarea[formControl],input:not([type=checkbox])[ngModel],textarea[ngModel],[ngDefaultControl]',
   // TODO: vsavkin replace the above selector with the one below it once
   // https://github.com/angular/angular/issues/3011 is implemented
   // selector: '[ngModel],[formControl],[formControlName]',
@@ -83,13 +95,18 @@ export const COMPOSITION_BUFFER_MODE = new InjectionToken<boolean>('CompositionE
   },
   providers: [DEFAULT_VALUE_ACCESSOR]
 })
-export class DefaultValueAccessor extends BaseControlValueAccessor implements ControlValueAccessor {
+export class DefaultValueAccessor
+  extends BaseControlValueAccessor<string>
+  implements ControlValueAccessor<string>
+{
   /** Whether the user is creating a composition string (IME events). */
   private _composing = false;
 
   constructor(
-      renderer: Renderer2, elementRef: ElementRef,
-      @Optional() @Inject(COMPOSITION_BUFFER_MODE) private _compositionMode: boolean) {
+    renderer: Renderer2,
+    elementRef: ElementRef,
+    @Optional() @Inject(COMPOSITION_BUFFER_MODE) private _compositionMode: boolean
+  ) {
     super(renderer, elementRef);
     if (this._compositionMode == null) {
       this._compositionMode = !_isAndroid();
@@ -100,13 +117,13 @@ export class DefaultValueAccessor extends BaseControlValueAccessor implements Co
    * Sets the "value" property on the input element.
    * @nodoc
    */
-  writeValue(value: any): void {
+  writeValue(value: string): void {
     const normalizedValue = value == null ? '' : value;
     this.setProperty('value', normalizedValue);
   }
 
   /** @internal */
-  _handleInput(value: any): void {
+  _handleInput(value: string): void {
     if (!this._compositionMode || (this._compositionMode && !this._composing)) {
       this.onChange(value);
     }
@@ -118,7 +135,7 @@ export class DefaultValueAccessor extends BaseControlValueAccessor implements Co
   }
 
   /** @internal */
-  _compositionEnd(value: any): void {
+  _compositionEnd(value: string): void {
     this._composing = false;
     this._compositionMode && this.onChange(value);
   }

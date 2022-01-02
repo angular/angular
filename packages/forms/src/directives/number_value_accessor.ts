@@ -6,9 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, ElementRef, forwardRef, Renderer2} from '@angular/core';
+import {Directive, forwardRef} from '@angular/core';
 
-import {BuiltInControlValueAccessor, ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
+import {
+  BuiltInControlValueAccessor,
+  ControlValueAccessor,
+  NG_VALUE_ACCESSOR
+} from './control_value_accessor';
 
 export const NUMBER_VALUE_ACCESSOR: any = {
   provide: NG_VALUE_ACCESSOR,
@@ -42,12 +46,14 @@ export const NUMBER_VALUE_ACCESSOR: any = {
  */
 @Directive({
   selector:
-      'input[type=number][formControlName],input[type=number][formControl],input[type=number][ngModel]',
+    'input[type=number][formControlName],input[type=number][formControl],input[type=number][ngModel]',
   host: {'(input)': 'onChange($event.target.value)', '(blur)': 'onTouched()'},
   providers: [NUMBER_VALUE_ACCESSOR]
 })
-export class NumberValueAccessor extends BuiltInControlValueAccessor implements
-    ControlValueAccessor {
+export class NumberValueAccessor
+  extends BuiltInControlValueAccessor<number>
+  implements ControlValueAccessor
+{
   /**
    * Sets the "value" property on the input element.
    * @nodoc
@@ -62,9 +68,9 @@ export class NumberValueAccessor extends BuiltInControlValueAccessor implements
    * Registers a function called when the control value changes.
    * @nodoc
    */
-  override registerOnChange(fn: (_: number|null) => void): void {
+  override registerOnChange(fn: (_: number | null) => void): void {
     this.onChange = (value) => {
-      fn(value == '' ? null : parseFloat(value));
+      fn(isNaN(value) ? null : value);
     };
   }
 }

@@ -6,14 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, ElementRef, forwardRef, Renderer2} from '@angular/core';
+import {Directive, forwardRef} from '@angular/core';
 
-import {BuiltInControlValueAccessor, ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
+import {
+  BuiltInControlValueAccessor,
+  ControlValueAccessor,
+  NG_VALUE_ACCESSOR
+} from './control_value_accessor';
 
 export const CHECKBOX_VALUE_ACCESSOR: any = {
   provide: NG_VALUE_ACCESSOR,
   useExisting: forwardRef(() => CheckboxControlValueAccessor),
-  multi: true,
+  multi: true
 };
 
 /**
@@ -41,12 +45,14 @@ export const CHECKBOX_VALUE_ACCESSOR: any = {
  */
 @Directive({
   selector:
-      'input[type=checkbox][formControlName],input[type=checkbox][formControl],input[type=checkbox][ngModel]',
+    'input[type=checkbox][formControlName],input[type=checkbox][formControl],input[type=checkbox][ngModel]',
   host: {'(change)': 'onChange($event.target.checked)', '(blur)': 'onTouched()'},
   providers: [CHECKBOX_VALUE_ACCESSOR]
 })
-export class CheckboxControlValueAccessor extends BuiltInControlValueAccessor implements
-    ControlValueAccessor {
+export class CheckboxControlValueAccessor
+  extends BuiltInControlValueAccessor<boolean>
+  implements ControlValueAccessor<boolean>
+{
   /**
    * Sets the "checked" property on the input element.
    * @nodoc

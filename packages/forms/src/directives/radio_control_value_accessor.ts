@@ -6,9 +6,24 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, ElementRef, forwardRef, Injectable, Injector, Input, NgModule, OnDestroy, OnInit, Renderer2} from '@angular/core';
+import {
+  Directive,
+  ElementRef,
+  forwardRef,
+  Injectable,
+  Injector,
+  Input,
+  NgModule,
+  OnDestroy,
+  OnInit,
+  Renderer2
+} from '@angular/core';
 
-import {BuiltInControlValueAccessor, ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
+import {
+  BuiltInControlValueAccessor,
+  ControlValueAccessor,
+  NG_VALUE_ACCESSOR
+} from './control_value_accessor';
 import {NgControl} from './ng_control';
 
 export const RADIO_VALUE_ACCESSOR: any = {
@@ -31,8 +46,7 @@ function throwNameError() {
  * `forwardRef` logic.
  */
 @NgModule()
-export class RadioControlRegistryModule {
-}
+export class RadioControlRegistryModule {}
 
 /**
  * @description
@@ -76,11 +90,13 @@ export class RadioControlRegistry {
   }
 
   private _isSameGroup(
-      controlPair: [NgControl, RadioControlValueAccessor],
-      accessor: RadioControlValueAccessor): boolean {
+    controlPair: [NgControl, RadioControlValueAccessor],
+    accessor: RadioControlValueAccessor
+  ): boolean {
     if (!controlPair[0].control) return false;
-    return controlPair[0]._parent === accessor._control._parent &&
-        controlPair[1].name === accessor.name;
+    return (
+      controlPair[0]._parent === accessor._control._parent && controlPair[1].name === accessor.name
+    );
   }
 }
 
@@ -106,12 +122,14 @@ export class RadioControlRegistry {
  */
 @Directive({
   selector:
-      'input[type=radio][formControlName],input[type=radio][formControl],input[type=radio][ngModel]',
+    'input[type=radio][formControlName],input[type=radio][formControl],input[type=radio][ngModel]',
   host: {'(change)': 'onChange()', '(blur)': 'onTouched()'},
   providers: [RADIO_VALUE_ACCESSOR]
 })
-export class RadioControlValueAccessor extends BuiltInControlValueAccessor implements
-    ControlValueAccessor, OnDestroy, OnInit {
+export class RadioControlValueAccessor
+  extends BuiltInControlValueAccessor<boolean>
+  implements ControlValueAccessor, OnDestroy, OnInit
+{
   /** @internal */
   // TODO(issue/24571): remove '!'.
   _state!: boolean;
@@ -150,11 +168,14 @@ export class RadioControlValueAccessor extends BuiltInControlValueAccessor imple
    * @description
    * Tracks the value of the radio input element
    */
-  @Input() value: any;
+  @Input() value!: boolean;
 
   constructor(
-      renderer: Renderer2, elementRef: ElementRef, private _registry: RadioControlRegistry,
-      private _injector: Injector) {
+    renderer: Renderer2,
+    elementRef: ElementRef,
+    private _registry: RadioControlRegistry,
+    private _injector: Injector
+  ) {
     super(renderer, elementRef);
   }
 
@@ -174,7 +195,7 @@ export class RadioControlValueAccessor extends BuiltInControlValueAccessor imple
    * Sets the "checked" property value on the radio input element.
    * @nodoc
    */
-  writeValue(value: any): void {
+  writeValue(value: boolean): void {
     this._state = value === this.value;
     this.setProperty('checked', this._state);
   }
@@ -183,7 +204,7 @@ export class RadioControlValueAccessor extends BuiltInControlValueAccessor imple
    * Registers a function called when the control value changes.
    * @nodoc
    */
-  override registerOnChange(fn: (_: any) => {}): void {
+  override registerOnChange(fn: (_: boolean) => void): void {
     this._fn = fn;
     this.onChange = () => {
       fn(this.value);
@@ -196,13 +217,17 @@ export class RadioControlValueAccessor extends BuiltInControlValueAccessor imple
    *
    * @param value
    */
-  fireUncheck(value: any): void {
+  fireUncheck(value: boolean): void {
     this.writeValue(value);
   }
 
   private _checkName(): void {
-    if (this.name && this.formControlName && this.name !== this.formControlName &&
-        (typeof ngDevMode === 'undefined' || ngDevMode)) {
+    if (
+      this.name &&
+      this.formControlName &&
+      this.name !== this.formControlName &&
+      (typeof ngDevMode === 'undefined' || ngDevMode)
+    ) {
       throwNameError();
     }
     if (!this.name && this.formControlName) this.name = this.formControlName;
