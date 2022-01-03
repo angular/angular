@@ -139,7 +139,7 @@ export function getHtmlTagDefinition(tagName: string): HtmlTagDefinition {
           {contentType: TagContentType.ESCAPABLE_RAW_TEXT, ignoreFirstLf: true}),
     };
   }
-  // We have to make both a case-sensitive and a case-insesitive lookup, because
+  // We have to make both a case-sensitive and a case-insensitive lookup, because
   // HTML tag names are case insensitive, whereas some SVG tags are case sensitive.
   return TAG_DEFINITIONS[tagName] ?? TAG_DEFINITIONS[tagName.toLowerCase()] ??
       _DEFAULT_TAG_DEFINITION;
