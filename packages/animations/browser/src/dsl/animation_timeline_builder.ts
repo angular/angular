@@ -89,7 +89,7 @@ const LEAVE_TOKEN_REGEX = new RegExp(LEAVE_TOKEN, 'g');
  * from all previous keyframes up until where it is first used. For the timeline keyframe generation
  * to properly fill in the style it will place the previous value (the value from the parent
  * timeline) or a default value of `*` into the backFill object. Given that each of the keyframe
- * styles are objects that prototypically inherits from the backFill object, this means that if a
+ * styles is an object that prototypically inherits from the backFill object, this means that if a
  * value is added into the backFill then it will automatically propagate any missing values to all
  * keyframes. Therefore the missing `height` value will be properly filled into the already
  * processed keyframes.
