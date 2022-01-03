@@ -20,7 +20,7 @@ footer {
     }
 
     .footer-block {
-      margin: 0;
+      margin: 0 0.3rem;
     }
 
     a {
@@ -93,8 +93,8 @@ footer {
 
       @media (max-width: 25rem) {
         .footer-block {
-          margin-left: 5px;
-          margin-right: 5px;
+          margin-left: 0.3rem;
+          margin-right: 0.3rem;
         }
       }
 
