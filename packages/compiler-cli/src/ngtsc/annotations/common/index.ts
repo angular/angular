@@ -11,6 +11,7 @@ export * from './src/di';
 export * from './src/diagnostics';
 export * from './src/evaluation';
 export * from './src/factory';
+export * from './src/injectable_registry';
 export * from './src/metadata';
 export * from './src/references_registry';
 export * from './src/schema';

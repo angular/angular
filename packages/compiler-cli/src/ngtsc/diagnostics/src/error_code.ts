@@ -86,6 +86,12 @@ export enum ErrorCode {
    */
   HOST_DIRECTIVE_COMPONENT = 2015,
 
+  /**
+   * Raised when a type with Angular decorator inherits its constructor from a base class
+   * which has a constructor that is incompatible with Angular DI.
+   */
+  INJECTABLE_INHERITS_INVALID_CONSTRUCTOR = 2016,
+
   SYMBOL_NOT_EXPORTED = 3001,
   /**
    * Raised when a relationship between directives and/or pipes would cause a cyclic import to be
