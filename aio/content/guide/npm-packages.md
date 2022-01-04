@@ -35,7 +35,7 @@ The `package.json` is organized into two groups of packages:
 <div class="alert is-helpful">
 
 **Library developers:** By default, the CLI command [`ng generate library`](cli/generate) creates a `package.json` for the new library. That `package.json` is used when publishing the library to npm.
-For more information, see the CLI wiki page [Library Support](https://github.com/angular/angular-cli/wiki/stories-create-library).
+For more information, see the CLI wiki page [Library Support](guide/creating-libraries).
 </div>
 
 
