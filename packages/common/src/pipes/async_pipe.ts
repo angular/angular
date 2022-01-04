@@ -7,7 +7,7 @@
  */
 
 import {ChangeDetectorRef, EventEmitter, OnDestroy, Pipe, PipeTransform, ɵisPromise, ɵisSubscribable} from '@angular/core';
-import {Observable, Subscribable, Unsubscribable} from 'rxjs';
+import {BehaviorSubject, Observable, Subscribable, Unsubscribable} from 'rxjs';
 
 import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
 
@@ -100,6 +100,7 @@ export class AsyncPipe implements OnDestroy, PipeTransform {
   // TypeScript has a hard time matching Observable to Subscribable, for more information
   // see https://github.com/microsoft/TypeScript/issues/43643
 
+  transform<T>(obj: BehaviorSubject<T>): T;
   transform<T>(obj: Observable<T>|Subscribable<T>|Promise<T>): T|null;
   transform<T>(obj: null|undefined): null;
   transform<T>(obj: Observable<T>|Subscribable<T>|Promise<T>|null|undefined): T|null;
