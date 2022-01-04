@@ -7,7 +7,7 @@
  */
 
 import {ChangeDetectorRef, Component, destroyPlatform, EventEmitter, forwardRef, Input, NgModule, NgModuleFactory, NgZone, NO_ERRORS_SCHEMA, OnChanges, OnDestroy, Output, SimpleChange, SimpleChanges, Testability} from '@angular/core';
-import {fakeAsync, flushMicrotasks, tick, waitForAsync} from '@angular/core/testing';
+import {fakeAsync, flushMicrotasks, TestBed, tick, waitForAsync} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
@@ -182,6 +182,7 @@ withEachNg1Version(() => {
 
     describe('bootstrap errors', () => {
       let adapter: UpgradeAdapter;
+      let zone: NgZone;
 
       beforeEach(() => {
         angular.module_('ng1', []);
@@ -200,6 +201,7 @@ withEachNg1Version(() => {
         class Ng2Module {
         }
 
+        zone = TestBed.inject(NgZone);
         adapter = new UpgradeAdapter(Ng2Module);
       });
 
@@ -208,8 +210,12 @@ withEachNg1Version(() => {
            spyOn(console, 'error');
 
            expect(() => {
-             adapter.bootstrap(html('<ng2></ng2>'), ['ng1']).ready(resolveSpy);
-             flushMicrotasks();
+             // Needs to be run inside the `NgZone` in order
+             // for the promises to be flushed correctly.
+             zone.run(() => {
+               adapter.bootstrap(html('<ng2></ng2>'), ['ng1']).ready(resolveSpy);
+               flushMicrotasks();
+             });
            }).toThrowError();
            expect(resolveSpy).not.toHaveBeenCalled();
          }));
@@ -217,8 +223,12 @@ withEachNg1Version(() => {
       it('should output an error message to the console and re-throw', fakeAsync(() => {
            const consoleErrorSpy: jasmine.Spy = spyOn(console, 'error');
            expect(() => {
-             adapter.bootstrap(html('<ng2></ng2>'), ['ng1']);
-             flushMicrotasks();
+             // Needs to be run inside the `NgZone` in order
+             // for the promises to be flushed correctly.
+             zone.run(() => {
+               adapter.bootstrap(html('<ng2></ng2>'), ['ng1']);
+               flushMicrotasks();
+             });
            }).toThrowError();
            const args: any[] = consoleErrorSpy.calls.mostRecent().args;
            expect(consoleErrorSpy).toHaveBeenCalled();
