@@ -60,13 +60,11 @@ export class CodeTabsComponent implements OnInit, AfterViewInit {
     const codeExamples = Array.from(contentElem.querySelectorAll('code-pane'));
 
     // Remove DOM nodes that are no longer needed.
-    contentElem.innerHTML = '' as unknown as TrustedHTML as unknown as string;
+    contentElem.textContent = '';
 
     for (const tabContent of codeExamples) {
       this.tabs.push(this.getTabInfo(tabContent));
     }
-
-    contentElem.textContent = '';
   }
 
   ngAfterViewInit() {
