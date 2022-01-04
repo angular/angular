@@ -525,6 +525,11 @@
             "desc": "Taiga UI is fully-treeshakable Angular UI Kit consisting of multiple base libraries and several add-ons. We have 130+ components, 100+ directives, dozens of tokens, utils and tools. They are easily customizable and well engineered.",
             "title": "Taiga UI",
             "url": "https://taiga-ui.dev"
+          },
+          "coreui-angular": {
+            "desc": "Open Source UI Components library for creating modern, beautiful, and responsive applications in half the time with high-performing and easy-to-customize UI components.",
+            "title": "CoreUI for Angular",
+            "url": "https://coreui.io/angular"
           }
         }
       }
