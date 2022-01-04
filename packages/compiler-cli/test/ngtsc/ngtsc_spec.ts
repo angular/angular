@@ -2732,6 +2732,234 @@ function allTests(os: string) {
              expect(jsContents)
                  .toMatch(/function Test_Factory\(t\) { i0\.ɵɵinvalidFactory\(\)/ms);
            });
+
+        it('should not give a compile-time error if an invalid @Injectable without providedIn is an abstract class',
+           () => {
+             env.tsconfig({strictInjectionParameters: true});
+             env.write('test.ts', `
+               import {Injectable} from '@angular/core';
+
+               @Injectable()
+               export abstract class Test {
+                 constructor(private notInjectable: string) {}
+               }
+             `);
+
+             env.driveMain();
+             const jsContents = env.getContents('test.js');
+             expect(jsContents)
+                 .toMatch(/function Test_Factory\(t\) { i0\.ɵɵinvalidFactory\(\)/ms);
+           });
+
+        it('should not give a compile-time error if an invalid @Injectable with providedIn is an abstract class',
+           () => {
+             env.tsconfig({strictInjectionParameters: true});
+             env.write('test.ts', `
+               import {Injectable} from '@angular/core';
+
+               @Injectable({
+                 providedIn: 'root',
+               })
+               export abstract class Test {
+                 constructor(private notInjectable: string) {}
+               }
+             `);
+
+             env.driveMain();
+             const jsContents = env.getContents('test.js');
+             expect(jsContents)
+                 .toMatch(/function Test_Factory\(t\) { i0\.ɵɵinvalidFactory\(\)/ms);
+           });
+
+        it('should give a compile-time error when a derived Directive inherits an invalid constructor', () => {
+          env.tsconfig({strictInjectionParameters: true});
+          env.write('test.ts', `
+               import {Directive} from '@angular/core';
+
+               @Directive()
+               export abstract class ParentDir {
+                 constructor(private notInjectable: string) {}
+               }
+
+               @Directive()
+               export abstract class AbstractMiddleDir extends ParentDir {}
+
+               @Directive()
+               export class ConcreteMiddleDir extends AbstractMiddleDir {}
+
+               @Directive()
+               export class ConcreteDirWithoutCtor extends ConcreteMiddleDir {}
+
+               @Directive()
+               export class ConcreteDirWithCtor extends ConcreteMiddleDir {
+                 constructor() {
+                   super('correct');
+                 }
+               }
+
+               @Directive()
+               export class ConcreteDerivedDirWithoutCtor extends ConcreteDirWithCtor {}
+             `);
+
+          const diags = env.driveDiagnostics();
+          expect(diags.length).toBe(2);
+          expect(diags[0].code)
+              .toBe(ngErrorCode(ErrorCode.INJECTABLE_INHERITS_INVALID_CONSTRUCTOR));
+          expect(diags[0].messageText)
+              .toEqual(
+                  `The directive ConcreteMiddleDir inherits its constructor from ParentDir, but the latter has ` +
+                  `a constructor parameter that is not compatible with dependency injection. Either add an explicit ` +
+                  `constructor to ConcreteMiddleDir or change ParentDir's constructor to use parameters that are ` +
+                  `valid for DI.`);
+          expect(getDiagnosticSourceCode(diags[0])).toBe('ConcreteMiddleDir');
+
+          expect(diags[1].code)
+              .toBe(ngErrorCode(ErrorCode.INJECTABLE_INHERITS_INVALID_CONSTRUCTOR));
+          expect(diags[1].messageText)
+              .toEqual(
+                  `The directive ConcreteDirWithoutCtor inherits its constructor from ParentDir, but the latter ` +
+                  `has a constructor parameter that is not compatible with dependency injection. Either add an ` +
+                  `explicit constructor to ConcreteDirWithoutCtor or change ParentDir's constructor to use ` +
+                  `parameters that are valid for DI.`);
+          expect(getDiagnosticSourceCode(diags[1])).toBe('ConcreteDirWithoutCtor');
+        });
+
+        it('should give a compile-time error when a derived Injectable inherits an invalid constructor', () => {
+          env.tsconfig({strictInjectionParameters: true});
+          env.write('test.ts', `
+               import {Injectable} from '@angular/core';
+
+               @Injectable()
+               export abstract class ParentService {
+                 constructor(private notInjectable: string) {}
+               }
+
+               @Injectable()
+               export abstract class AbstractMiddleService extends ParentService {}
+
+               @Injectable()
+               export class ConcreteMiddleService extends AbstractMiddleService {}
+
+               @Injectable()
+               export class ConcreteServiceWithoutCtor extends ConcreteMiddleService {}
+
+               @Injectable()
+               export class ConcreteServiceWithCtor extends ConcreteMiddleService {
+                 constructor() {
+                   super('correct');
+                 }
+               }
+
+               @Injectable()
+               export class ConcreteDerivedServiceWithoutCtor extends ConcreteServiceWithCtor {}
+
+               @Injectable({ providedIn: 'root' })
+               export class ProvidedInRootService extends ParentService {}
+
+               @Injectable({ providedIn: 'root', useFactory: () => null })
+               export class UseFactoryService extends ParentService {}
+
+               @Injectable({ providedIn: 'root', useValue: null })
+               export class UseValueService extends ParentService {}
+
+               @Injectable({ providedIn: 'root', useClass: ConcreteServiceWithCtor })
+               export class UseClassService extends ParentService {}
+
+               @Injectable({ providedIn: 'root', useExisting: ConcreteServiceWithCtor })
+               export class UseExistingService extends ParentService {}
+             `);
+
+          const diags = env.driveDiagnostics();
+          expect(diags.length).toBe(3);
+          expect(diags[0].code)
+              .toBe(ngErrorCode(ErrorCode.INJECTABLE_INHERITS_INVALID_CONSTRUCTOR));
+          expect(diags[0].messageText)
+              .toEqual(
+                  `The injectable ConcreteMiddleService inherits its constructor from ParentService, but the ` +
+                  `latter has a constructor parameter that is not compatible with dependency injection. Either add ` +
+                  `an explicit constructor to ConcreteMiddleService or change ParentService's constructor to use ` +
+                  `parameters that are valid for DI.`);
+          expect(getDiagnosticSourceCode(diags[0])).toBe('ConcreteMiddleService');
+
+          expect(diags[1].code)
+              .toBe(ngErrorCode(ErrorCode.INJECTABLE_INHERITS_INVALID_CONSTRUCTOR));
+          expect(diags[1].messageText)
+              .toEqual(
+                  `The injectable ConcreteServiceWithoutCtor inherits its constructor from ParentService, but the ` +
+                  `latter has a constructor parameter that is not compatible with dependency injection. Either add ` +
+                  `an explicit constructor to ConcreteServiceWithoutCtor or change ParentService's constructor to ` +
+                  `use parameters that are valid for DI.`);
+          expect(getDiagnosticSourceCode(diags[1])).toBe('ConcreteServiceWithoutCtor');
+
+          expect(diags[2].code)
+              .toBe(ngErrorCode(ErrorCode.INJECTABLE_INHERITS_INVALID_CONSTRUCTOR));
+          expect(diags[2].messageText)
+              .toEqual(
+                  `The injectable ProvidedInRootService inherits its constructor from ParentService, but the ` +
+                  `latter has a constructor parameter that is not compatible with dependency injection. Either add ` +
+                  `an explicit constructor to ProvidedInRootService or change ParentService's constructor to use ` +
+                  `parameters that are valid for DI.`);
+          expect(getDiagnosticSourceCode(diags[2])).toBe('ProvidedInRootService');
+        });
+
+        it('should give a compile-time error when a derived Directive inherits from a non-decorated class', () => {
+          env.tsconfig({strictInjectionParameters: true});
+          env.write('test.ts', `
+               import {Directive} from '@angular/core';
+
+               export abstract class ParentClass {
+                 constructor(private notInjectable: string) {}
+               }
+
+               @Directive()
+               export abstract class AbstractMiddleDir extends ParentClass {}
+
+               @Directive()
+               export class ConcreteMiddleDir extends AbstractMiddleDir {}
+
+               @Directive()
+               export class ConcreteDirWithoutCtor extends ConcreteMiddleDir {}
+
+               @Directive()
+               export class ConcreteDirWithCtor extends ConcreteMiddleDir {
+                 constructor() {
+                   super('correct');
+                 }
+               }
+
+               @Directive()
+               export class ConcreteDerivedDirWithoutCtor extends ConcreteDirWithCtor {}
+             `);
+
+          const diags = env.driveDiagnostics();
+          expect(diags.length).toBe(3);
+          expect(diags[0].code).toBe(ngErrorCode(ErrorCode.DIRECTIVE_INHERITS_UNDECORATED_CTOR));
+          expect(diags[0].messageText)
+              .toEqual(
+                  `The directive AbstractMiddleDir inherits its constructor from ParentClass, but the latter ` +
+                  `does not have an Angular decorator of its own. Dependency injection will not be able to resolve ` +
+                  `the parameters of ParentClass's constructor. Either add a @Directive decorator to ParentClass, ` +
+                  `or add an explicit constructor to AbstractMiddleDir.`);
+          expect(getDiagnosticSourceCode(diags[0])).toBe('AbstractMiddleDir');
+
+          expect(diags[1].code).toBe(ngErrorCode(ErrorCode.DIRECTIVE_INHERITS_UNDECORATED_CTOR));
+          expect(diags[1].messageText)
+              .toEqual(
+                  `The directive ConcreteMiddleDir inherits its constructor from ParentClass, but the latter ` +
+                  `does not have an Angular decorator of its own. Dependency injection will not be able to resolve ` +
+                  `the parameters of ParentClass's constructor. Either add a @Directive decorator to ParentClass, or ` +
+                  `add an explicit constructor to ConcreteMiddleDir.`);
+          expect(getDiagnosticSourceCode(diags[1])).toBe('ConcreteMiddleDir');
+
+          expect(diags[2].code).toBe(ngErrorCode(ErrorCode.DIRECTIVE_INHERITS_UNDECORATED_CTOR));
+          expect(diags[2].messageText)
+              .toEqual(
+                  `The directive ConcreteDirWithoutCtor inherits its constructor from ParentClass, but the latter ` +
+                  `does not have an Angular decorator of its own. Dependency injection will not be able to resolve ` +
+                  `the parameters of ParentClass's constructor. Either add a @Directive decorator to ParentClass, ` +
+                  `or add an explicit constructor to ConcreteDirWithoutCtor.`);
+          expect(getDiagnosticSourceCode(diags[2])).toBe('ConcreteDirWithoutCtor');
+        });
       });
 
       describe('with strictInjectionParameters = false', () => {
@@ -2768,6 +2996,148 @@ function allTests(os: string) {
              expect(jsContents)
                  .toContain('Test.ɵfac = function Test_Factory(t) { i0.ɵɵinvalidFactory()');
            });
+
+        it('should compile when a derived Directive inherits an invalid constructor', () => {
+          env.tsconfig({strictInjectionParameters: false});
+          env.write('test.ts', `
+               import {Directive} from '@angular/core';
+
+               @Directive()
+               export abstract class ParentDir {
+                 constructor(private notInjectable: string) {}
+               }
+
+               @Directive()
+               export abstract class AbstractMiddleDir extends ParentDir {}
+
+               @Directive()
+               export class ConcreteMiddleDir extends AbstractMiddleDir {}
+
+               @Directive()
+               export class ConcreteDirWithoutCtor extends ConcreteMiddleDir {}
+
+               @Directive()
+               export class ConcreteDirWithCtor extends ConcreteMiddleDir {
+                 constructor() {
+                   super('correct');
+                 }
+               }
+
+               @Directive()
+               export class ConcreteDerivedDirWithoutCtor extends ConcreteDirWithCtor {}
+             `);
+
+          env.driveMain();
+        });
+
+        it('should compile when a derived Injectable inherits an invalid constructor', () => {
+          env.tsconfig({strictInjectionParameters: false});
+          env.write('test.ts', `
+               import {Injectable} from '@angular/core';
+
+               @Injectable()
+               export abstract class ParentService {
+                 constructor(private notInjectable: string) {}
+               }
+
+               @Injectable()
+               export abstract class AbstractMiddleService extends ParentService {}
+
+               @Injectable()
+               export class ConcreteMiddleService extends AbstractMiddleService {}
+
+               @Injectable()
+               export class ConcreteServiceWithoutCtor extends ConcreteMiddleService {}
+
+               @Injectable()
+               export class ConcreteServiceWithCtor extends ConcreteMiddleService {
+                 constructor() {
+                   super('correct');
+                 }
+               }
+
+               @Injectable()
+               export class ConcreteDerivedServiceWithoutCtor extends ConcreteServiceWithCtor {}
+
+               @Injectable({ providedIn: 'root' })
+               export class ProvidedInRootService extends ParentService {}
+
+               @Injectable({ providedIn: 'root', useFactory: () => null })
+               export class UseFactoryService extends ParentService {}
+
+               @Injectable({ providedIn: 'root', useValue: null })
+               export class UseValueService extends ParentService {}
+
+               @Injectable({ providedIn: 'root', useClass: ConcreteServiceWithCtor })
+               export class UseClassService extends ParentService {}
+
+               @Injectable({ providedIn: 'root', useExisting: ConcreteServiceWithCtor })
+               export class UseExistingService extends ParentService {}
+             `);
+
+          env.driveMain();
+        });
+
+        it('should give a compile-time error when a derived Directive inherits from a non-decorated class', () => {
+          // Errors for undecorated base classes should always be reported, even under
+          // `strictInjectionParameters`.
+          env.tsconfig({strictInjectionParameters: false});
+          env.write('test.ts', `
+               import {Directive} from '@angular/core';
+
+               export abstract class ParentClass {
+                 constructor(private notInjectable: string) {}
+               }
+
+               @Directive()
+               export abstract class AbstractMiddleDir extends ParentClass {}
+
+               @Directive()
+               export class ConcreteMiddleDir extends AbstractMiddleDir {}
+
+               @Directive()
+               export class ConcreteDirWithoutCtor extends ConcreteMiddleDir {}
+
+               @Directive()
+               export class ConcreteDirWithCtor extends ConcreteMiddleDir {
+                 constructor() {
+                   super('correct');
+                 }
+               }
+
+               @Directive()
+               export class ConcreteDerivedDirWithoutCtor extends ConcreteDirWithCtor {}
+             `);
+
+          const diags = env.driveDiagnostics();
+          expect(diags.length).toBe(3);
+          expect(diags[0].code).toBe(ngErrorCode(ErrorCode.DIRECTIVE_INHERITS_UNDECORATED_CTOR));
+          expect(diags[0].messageText)
+              .toEqual(
+                  `The directive AbstractMiddleDir inherits its constructor from ParentClass, but the latter ` +
+                  `does not have an Angular decorator of its own. Dependency injection will not be able to resolve ` +
+                  `the parameters of ParentClass's constructor. Either add a @Directive decorator to ParentClass, ` +
+                  `or add an explicit constructor to AbstractMiddleDir.`);
+          expect(getDiagnosticSourceCode(diags[0])).toBe('AbstractMiddleDir');
+
+          expect(diags[1].code).toBe(ngErrorCode(ErrorCode.DIRECTIVE_INHERITS_UNDECORATED_CTOR));
+          expect(diags[1].messageText)
+              .toEqual(
+                  `The directive ConcreteMiddleDir inherits its constructor from ParentClass, but the latter ` +
+                  `does not have an Angular decorator of its own. Dependency injection will not be able to resolve ` +
+                  `the parameters of ParentClass's constructor. Either add a @Directive decorator to ParentClass, ` +
+                  `or add an explicit constructor to ConcreteMiddleDir.`);
+          expect(getDiagnosticSourceCode(diags[1])).toBe('ConcreteMiddleDir');
+
+          expect(diags[2].code).toBe(ngErrorCode(ErrorCode.DIRECTIVE_INHERITS_UNDECORATED_CTOR));
+          expect(diags[2].messageText)
+              .toEqual(
+                  `The directive ConcreteDirWithoutCtor inherits its constructor from ParentClass, but the latter ` +
+                  `does not have an Angular decorator of its own. Dependency injection will not be able to resolve ` +
+                  `the parameters of ParentClass's constructor. Either add a @Directive decorator to ParentClass, ` +
+                  `or add an explicit constructor to ConcreteDirWithoutCtor.`);
+          expect(getDiagnosticSourceCode(diags[2])).toBe('ConcreteDirWithoutCtor');
+        });
       });
     });
 
