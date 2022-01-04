@@ -11,13 +11,13 @@ import ts from 'typescript';
 
 import {Reference, ReferenceEmitter} from '../../../imports';
 import {extractSemanticTypeParameters, SemanticDepGraphUpdater} from '../../../incremental/semantic_graph';
-import {ClassPropertyMapping, DirectiveTypeCheckMeta, extractDirectiveTypeCheckMeta, HostDirectiveMeta, InjectableClassRegistry, MatchSource, MetadataReader, MetadataRegistry, MetaKind} from '../../../metadata';
+import {ClassPropertyMapping, DirectiveTypeCheckMeta, extractDirectiveTypeCheckMeta, HostDirectiveMeta, MatchSource, MetadataReader, MetadataRegistry, MetaKind} from '../../../metadata';
 import {PartialEvaluator} from '../../../partial_evaluator';
 import {PerfEvent, PerfRecorder} from '../../../perf';
 import {ClassDeclaration, ClassMember, ClassMemberKind, Decorator, ReflectionHost} from '../../../reflection';
 import {LocalModuleScopeRegistry} from '../../../scope';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerFlags, HandlerPrecedence, ResolveResult} from '../../../transform';
-import {compileDeclareFactory, compileNgFactoryDefField, compileResults, extractClassMetadata, findAngularDecorator, getDirectiveDiagnostics, getProviderDiagnostics, getUndecoratedClassWithAngularFeaturesDiagnostic, isAngularDecorator, readBaseClass, resolveProvidersRequiringFactory, toFactoryMetadata, validateHostDirectives} from '../../common';
+import {compileDeclareFactory, compileNgFactoryDefField, compileResults, extractClassMetadata, findAngularDecorator, getDirectiveDiagnostics, getProviderDiagnostics, getUndecoratedClassWithAngularFeaturesDiagnostic, InjectableClassRegistry, isAngularDecorator, readBaseClass, resolveProvidersRequiringFactory, toFactoryMetadata, validateHostDirectives} from '../../common';
 
 import {extractDirectiveMetadata} from './shared';
 import {DirectiveSymbol} from './symbol';
@@ -53,6 +53,7 @@ export class DirectiveDecoratorHandler implements
       private metaRegistry: MetadataRegistry, private scopeRegistry: LocalModuleScopeRegistry,
       private metaReader: MetadataReader, private injectableRegistry: InjectableClassRegistry,
       private refEmitter: ReferenceEmitter, private isCore: boolean,
+      private strictCtorDeps: boolean,
       private semanticDepGraphUpdater: SemanticDepGraphUpdater|null,
       private annotateForClosureCompiler: boolean,
       private compileUndecoratedClassesWithAngularFeatures: boolean, private perf: PerfRecorder) {}
@@ -161,7 +162,9 @@ export class DirectiveDecoratorHandler implements
       decorator: analysis.decorator,
     });
 
-    this.injectableRegistry.registerInjectable(node);
+    this.injectableRegistry.registerInjectable(node, {
+      ctorDeps: analysis.meta.deps,
+    });
   }
 
   resolve(node: ClassDeclaration, analysis: DirectiveHandlerData, symbol: DirectiveSymbol):
@@ -180,7 +183,8 @@ export class DirectiveDecoratorHandler implements
     }
 
     const directiveDiagnostics = getDirectiveDiagnostics(
-        node, this.metaReader, this.evaluator, this.reflector, this.scopeRegistry, 'Directive');
+        node, this.injectableRegistry, this.evaluator, this.reflector, this.scopeRegistry,
+        this.strictCtorDeps, 'Directive');
     if (directiveDiagnostics !== null) {
       diagnostics.push(...directiveDiagnostics);
     }

@@ -5,10 +5,11 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {InjectableClassRegistry} from '../../annotations/common';
 import {ErrorCode, FatalDiagnosticError, ngErrorCode} from '../../diagnostics';
 import {absoluteFrom} from '../../file_system';
 import {runInEachFileSystem} from '../../file_system/testing';
-import {InjectableClassRegistry} from '../../metadata';
+import {PartialEvaluator} from '../../partial_evaluator';
 import {NOOP_PERF_RECORDER} from '../../perf';
 import {isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
 import {getDeclaration, makeProgram} from '../../testing';
@@ -67,9 +68,10 @@ function setupHandler(errorOnDuplicateProv: boolean) {
   ]);
   const checker = program.getTypeChecker();
   const reflectionHost = new TypeScriptReflectionHost(checker);
-  const injectableRegistry = new InjectableClassRegistry(reflectionHost);
+  const injectableRegistry = new InjectableClassRegistry(reflectionHost, /* isCore */ false);
+  const evaluator = new PartialEvaluator(reflectionHost, checker, null);
   const handler = new InjectableDecoratorHandler(
-      reflectionHost, /* isCore */ false,
+      reflectionHost, evaluator, /* isCore */ false,
       /* strictCtorDeps */ false, injectableRegistry, NOOP_PERF_RECORDER, errorOnDuplicateProv);
   const TestClass = getDeclaration(program, ENTRY_FILE, 'TestClass', isNamedClassDeclaration);
   const ɵprov = reflectionHost.getMembersOfClass(TestClass).find(member => member.name === 'ɵprov');
