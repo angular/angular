@@ -12,13 +12,13 @@ import ts from 'typescript';
 import {absoluteFrom} from '../../../file_system';
 import {runInEachFileSystem} from '../../../file_system/testing';
 import {LocalIdentifierStrategy, ReferenceEmitter} from '../../../imports';
-import {CompoundMetadataReader, DtsMetadataReader, InjectableClassRegistry, LocalMetadataRegistry} from '../../../metadata';
+import {CompoundMetadataReader, DtsMetadataReader, LocalMetadataRegistry} from '../../../metadata';
 import {PartialEvaluator} from '../../../partial_evaluator';
 import {NOOP_PERF_RECORDER} from '../../../perf';
 import {isNamedClassDeclaration, TypeScriptReflectionHost} from '../../../reflection';
 import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from '../../../scope';
 import {getDeclaration, makeProgram} from '../../../testing';
-import {NoopReferencesRegistry} from '../../common';
+import {InjectableClassRegistry, NoopReferencesRegistry} from '../../common';
 import {NgModuleDecoratorHandler} from '../src/handler';
 
 runInEachFileSystem(() => {
@@ -67,7 +67,7 @@ runInEachFileSystem(() => {
           metaRegistry, metaReader, new MetadataDtsModuleScopeResolver(dtsReader, null),
           new ReferenceEmitter([]), null);
       const refEmitter = new ReferenceEmitter([new LocalIdentifierStrategy()]);
-      const injectableRegistry = new InjectableClassRegistry(reflectionHost);
+      const injectableRegistry = new InjectableClassRegistry(reflectionHost, /* isCore */ false);
 
       const handler = new NgModuleDecoratorHandler(
           reflectionHost, evaluator, metaReader, metaRegistry, scopeRegistry, referencesRegistry,

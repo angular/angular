@@ -10,12 +10,13 @@ import ts from 'typescript';
 
 import {ParsedConfiguration} from '../../..';
 import {ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecoratorHandler, NgModuleDecoratorHandler, PipeDecoratorHandler, ReferencesRegistry, ResourceLoader} from '../../../src/ngtsc/annotations';
+import {InjectableClassRegistry} from '../../../src/ngtsc/annotations/common';
 import {CycleAnalyzer, CycleHandlingStrategy, ImportGraph} from '../../../src/ngtsc/cycles';
 import {isFatalDiagnosticError} from '../../../src/ngtsc/diagnostics';
 import {absoluteFromSourceFile, LogicalFileSystem, ReadonlyFileSystem} from '../../../src/ngtsc/file_system';
 import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, PrivateExportAliasingHost, Reexport, ReferenceEmitter} from '../../../src/ngtsc/imports';
 import {SemanticSymbol} from '../../../src/ngtsc/incremental/semantic_graph';
-import {CompoundMetadataReader, CompoundMetadataRegistry, DtsMetadataReader, InjectableClassRegistry, LocalMetadataRegistry, ResourceRegistry} from '../../../src/ngtsc/metadata';
+import {CompoundMetadataReader, CompoundMetadataRegistry, DtsMetadataReader, LocalMetadataRegistry, ResourceRegistry} from '../../../src/ngtsc/metadata';
 import {PartialEvaluator} from '../../../src/ngtsc/partial_evaluator';
 import {NOOP_PERF_RECORDER} from '../../../src/ngtsc/perf';
 import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver, TypeCheckScopeRegistry} from '../../../src/ngtsc/scope';
@@ -97,14 +98,15 @@ export class DecorationAnalyzer {
       new PartialEvaluator(this.reflectionHost, this.typeChecker, /* dependencyTracker */ null);
   importGraph = new ImportGraph(this.typeChecker, NOOP_PERF_RECORDER);
   cycleAnalyzer = new CycleAnalyzer(this.importGraph);
-  injectableRegistry = new InjectableClassRegistry(this.reflectionHost);
+  injectableRegistry = new InjectableClassRegistry(this.reflectionHost, this.isCore);
   typeCheckScopeRegistry = new TypeCheckScopeRegistry(this.scopeRegistry, this.fullMetaReader);
   handlers: DecoratorHandler<unknown, unknown, SemanticSymbol|null, unknown>[] = [
     new ComponentDecoratorHandler(
         this.reflectionHost, this.evaluator, this.fullRegistry, this.fullMetaReader,
         this.scopeRegistry, this.dtsModuleScopeResolver, this.scopeRegistry,
-        this.typeCheckScopeRegistry, new ResourceRegistry(), this.isCore, this.resourceManager,
-        this.rootDirs, !!this.compilerOptions.preserveWhitespaces,
+        this.typeCheckScopeRegistry, new ResourceRegistry(), this.isCore,
+        /* strictCtorDeps */ false, this.resourceManager, this.rootDirs,
+        !!this.compilerOptions.preserveWhitespaces,
         /* i18nUseExternalIds */ true, this.bundle.enableI18nLegacyMessageIdFormat,
         /* usePoisonedData */ false,
         /* i18nNormalizeLineEndingsInICUs */ false, this.moduleResolver, this.cycleAnalyzer,
@@ -117,7 +119,7 @@ export class DecorationAnalyzer {
     // clang-format off
     new DirectiveDecoratorHandler(
         this.reflectionHost, this.evaluator, this.fullRegistry, this.scopeRegistry,
-        this.fullMetaReader, this.injectableRegistry, this.isCore,
+        this.fullMetaReader, this.injectableRegistry, this.isCore, /* strictCtorDeps */ false,
         /* semanticDepGraphUpdater */ null,
         !!this.compilerOptions.annotateForClosureCompiler,
         // In ngcc we want to compile undecorated classes with Angular features. As of
@@ -134,7 +136,7 @@ export class DecorationAnalyzer {
         this.reflectionHost, this.evaluator, this.metaRegistry, this.scopeRegistry,
         this.injectableRegistry, this.isCore, NOOP_PERF_RECORDER),
     new InjectableDecoratorHandler(
-        this.reflectionHost, this.isCore,
+        this.reflectionHost, this.evaluator, this.isCore,
         /* strictCtorDeps */ false, this.injectableRegistry, NOOP_PERF_RECORDER,
         /* errorOnDuplicateProv */ false),
     new NgModuleDecoratorHandler(

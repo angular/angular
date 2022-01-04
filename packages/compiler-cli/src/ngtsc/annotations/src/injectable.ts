@@ -9,12 +9,13 @@
 import {compileClassMetadata, CompileClassMetadataFn, compileDeclareClassMetadata, compileDeclareInjectableFromMetadata, compileInjectable, createMayBeForwardRefExpression, FactoryTarget, ForwardRefHandling, LiteralExpr, MaybeForwardRefExpression, R3ClassMetadata, R3CompiledExpression, R3DependencyMetadata, R3InjectableMetadata, WrappedNodeExpr} from '@angular/compiler';
 import ts from 'typescript';
 
+import {InjectableClassRegistry, isAbstractClassDeclaration} from '../../annotations/common';
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
-import {InjectableClassRegistry} from '../../metadata';
+import {PartialEvaluator} from '../../partial_evaluator';
 import {PerfEvent, PerfRecorder} from '../../perf';
 import {ClassDeclaration, Decorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
-import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from '../../transform';
-import {compileDeclareFactory, CompileFactoryFn, compileNgFactoryDefField, extractClassMetadata, findAngularDecorator, getConstructorDependencies, getValidConstructorDependencies, isAngularCore, toFactoryMetadata, tryUnwrapForwardRef, unwrapConstructorDependencies, validateConstructorDependencies, wrapTypeReference} from '../common';
+import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence, ResolveResult} from '../../transform';
+import {checkInheritanceOfInjectable, compileDeclareFactory, CompileFactoryFn, compileNgFactoryDefField, extractClassMetadata, findAngularDecorator, getConstructorDependencies, getValidConstructorDependencies, isAngularCore, toFactoryMetadata, tryUnwrapForwardRef, unwrapConstructorDependencies, validateConstructorDependencies, wrapTypeReference,} from '../common';
 
 export interface InjectableHandlerData {
   meta: R3InjectableMetadata;
@@ -29,7 +30,8 @@ export interface InjectableHandlerData {
 export class InjectableDecoratorHandler implements
     DecoratorHandler<Decorator, InjectableHandlerData, null, unknown> {
   constructor(
-      private reflector: ReflectionHost, private isCore: boolean, private strictCtorDeps: boolean,
+      private reflector: ReflectionHost, private evaluator: PartialEvaluator,
+      private isCore: boolean, private strictCtorDeps: boolean,
       private injectableRegistry: InjectableClassRegistry, private perf: PerfRecorder,
       /**
        * What to do if the injectable already contains a ɵprov property.
@@ -83,8 +85,26 @@ export class InjectableDecoratorHandler implements
     return null;
   }
 
-  register(node: ClassDeclaration): void {
-    this.injectableRegistry.registerInjectable(node);
+  register(node: ClassDeclaration, analysis: InjectableHandlerData): void {
+    this.injectableRegistry.registerInjectable(node, {
+      ctorDeps: analysis.ctorDeps,
+    });
+  }
+
+  resolve(node: ClassDeclaration, analysis: Readonly<InjectableHandlerData>, symbol: null):
+      ResolveResult<unknown> {
+    if (requiresValidCtor(analysis.meta)) {
+      const diagnostic = checkInheritanceOfInjectable(
+          node, this.injectableRegistry, this.reflector, this.evaluator, this.strictCtorDeps,
+          'Injectable');
+      if (diagnostic !== null) {
+        return {
+          diagnostics: [diagnostic],
+        };
+      }
+    }
+
+    return {};
   }
 
   compileFull(node: ClassDeclaration, analysis: Readonly<InjectableHandlerData>): CompileResult[] {
@@ -244,7 +264,7 @@ function extractInjectableCtorDeps(
     // To deal with this, @Injectable() without an argument is more lenient, and if the
     // constructor signature does not work for DI then a factory definition (ɵfac) that throws is
     // generated.
-    if (strictCtorDeps) {
+    if (strictCtorDeps && !isAbstractClassDeclaration(clazz)) {
       ctorDeps = getValidConstructorDependencies(clazz, reflector, isCore);
     } else {
       ctorDeps =
@@ -255,9 +275,9 @@ function extractInjectableCtorDeps(
   } else if (decorator.args.length === 1) {
     const rawCtorDeps = getConstructorDependencies(clazz, reflector, isCore);
 
-    if (strictCtorDeps && meta.useValue === undefined && meta.useExisting === undefined &&
-        meta.useClass === undefined && meta.useFactory === undefined) {
-      // Since use* was not provided, validate the deps according to strictCtorDeps.
+    if (strictCtorDeps && !isAbstractClassDeclaration(clazz) && requiresValidCtor(meta)) {
+      // Since use* was not provided for a concrete class, validate the deps according to
+      // strictCtorDeps.
       ctorDeps = validateConstructorDependencies(clazz, rawCtorDeps);
     } else {
       ctorDeps = unwrapConstructorDependencies(rawCtorDeps);
@@ -265,6 +285,11 @@ function extractInjectableCtorDeps(
   }
 
   return ctorDeps;
+}
+
+function requiresValidCtor(meta: R3InjectableMetadata): boolean {
+  return meta.useValue === undefined && meta.useExisting === undefined &&
+      meta.useClass === undefined && meta.useFactory === undefined;
 }
 
 function getDep(dep: ts.Expression, reflector: ReflectionHost): R3DependencyMetadata {

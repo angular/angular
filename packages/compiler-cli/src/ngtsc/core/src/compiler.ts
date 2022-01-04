@@ -9,6 +9,7 @@
 import ts from 'typescript';
 
 import {ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecoratorHandler, NgModuleDecoratorHandler, NoopReferencesRegistry, PipeDecoratorHandler, ReferencesRegistry} from '../../annotations';
+import {InjectableClassRegistry} from '../../annotations/common';
 import {CycleAnalyzer, CycleHandlingStrategy, ImportGraph} from '../../cycles';
 import {COMPILER_ERRORS_WITH_GUIDES, ERROR_DETAILS_PAGE_BASE_URL, ErrorCode, ngErrorCode} from '../../diagnostics';
 import {checkForPrivateExports, ReferenceGraph} from '../../entry_point';
@@ -17,7 +18,7 @@ import {AbsoluteModuleStrategy, AliasingHost, AliasStrategy, DefaultImportTracke
 import {IncrementalBuildStrategy, IncrementalCompilation, IncrementalState} from '../../incremental';
 import {SemanticSymbol} from '../../incremental/semantic_graph';
 import {generateAnalysis, IndexedComponent, IndexingContext} from '../../indexer';
-import {ComponentResources, CompoundMetadataReader, CompoundMetadataRegistry, DirectiveMeta, DtsMetadataReader, InjectableClassRegistry, LocalMetadataRegistry, MetadataReader, PipeMeta, ResourceRegistry} from '../../metadata';
+import {ComponentResources, CompoundMetadataReader, CompoundMetadataRegistry, DirectiveMeta, DtsMetadataReader, LocalMetadataRegistry, MetadataReader, PipeMeta, ResourceRegistry} from '../../metadata';
 import {PartialEvaluator} from '../../partial_evaluator';
 import {ActivePerfRecorder, DelegatingPerfRecorder, PerfCheckpoint, PerfEvent, PerfPhase} from '../../perf';
 import {FileUpdate, ProgramDriver, UpdateMode} from '../../program_driver';
@@ -958,6 +959,8 @@ export class NgCompiler {
       aliasingHost = new UnifiedModulesAliasingHost(this.adapter.unifiedModulesHost);
     }
 
+    const isCore = isAngularCorePackage(this.inputProgram);
+
     const evaluator =
         new PartialEvaluator(reflector, checker, this.incrementalCompilation.depGraph);
     const dtsReader = new DtsMetadataReader(checker, reflector);
@@ -973,7 +976,7 @@ export class NgCompiler {
         new CompoundComponentScopeReader([ngModuleScopeRegistry, standaloneScopeReader]);
     const semanticDepGraphUpdater = this.incrementalCompilation.semanticDepGraphUpdater;
     const metaRegistry = new CompoundMetadataRegistry([localMetaRegistry, ngModuleScopeRegistry]);
-    const injectableRegistry = new InjectableClassRegistry(reflector);
+    const injectableRegistry = new InjectableClassRegistry(reflector, isCore);
 
     const typeCheckScopeRegistry = new TypeCheckScopeRegistry(scopeReader, metaReader);
 
@@ -992,8 +995,6 @@ export class NgCompiler {
 
     const dtsTransforms = new DtsTransformRegistry();
 
-    const isCore = isAngularCorePackage(this.inputProgram);
-
     const resourceRegistry = new ResourceRegistry();
 
     // Note: If this compilation builds `@angular/core`, we always build in full compilation
@@ -1010,11 +1011,13 @@ export class NgCompiler {
         CycleHandlingStrategy.UseRemoteScoping :
         CycleHandlingStrategy.Error;
 
+    const strictCtorDeps = this.options.strictInjectionParameters || false;
+
     // Set up the IvyCompilation, which manages state for the Ivy transformer.
     const handlers: DecoratorHandler<unknown, unknown, SemanticSymbol|null, unknown>[] = [
       new ComponentDecoratorHandler(
           reflector, evaluator, metaRegistry, metaReader, scopeReader, depScopeReader,
-          ngModuleScopeRegistry, typeCheckScopeRegistry, resourceRegistry, isCore,
+          ngModuleScopeRegistry, typeCheckScopeRegistry, resourceRegistry, isCore, strictCtorDeps,
           this.resourceManager, this.adapter.rootDirs, this.options.preserveWhitespaces || false,
           this.options.i18nUseExternalIds !== false,
           this.options.enableI18nLegacyMessageIdFormat !== false, this.usePoisonedData,
@@ -1028,7 +1031,7 @@ export class NgCompiler {
       // clang-format off
         new DirectiveDecoratorHandler(
             reflector, evaluator, metaRegistry, ngModuleScopeRegistry, metaReader,
-            injectableRegistry, isCore, semanticDepGraphUpdater,
+            injectableRegistry, isCore, strictCtorDeps, semanticDepGraphUpdater,
           this.closureCompilerEnabled, /** compileUndecoratedClassesWithAngularFeatures */ false,
           this.delegatingPerfRecorder,
         ) as Readonly<DecoratorHandler<unknown, unknown, SemanticSymbol | null,unknown>>,
@@ -1039,7 +1042,7 @@ export class NgCompiler {
           reflector, evaluator, metaRegistry, ngModuleScopeRegistry, injectableRegistry, isCore,
           this.delegatingPerfRecorder),
       new InjectableDecoratorHandler(
-          reflector, isCore, this.options.strictInjectionParameters || false, injectableRegistry,
+          reflector, evaluator, isCore, strictCtorDeps, injectableRegistry,
           this.delegatingPerfRecorder),
       new NgModuleDecoratorHandler(
           reflector, evaluator, metaReader, metaRegistry, ngModuleScopeRegistry, referencesRegistry,

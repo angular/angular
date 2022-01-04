@@ -14,13 +14,13 @@ import {ErrorCode, FatalDiagnosticError} from '../../../diagnostics';
 import {absoluteFrom} from '../../../file_system';
 import {runInEachFileSystem} from '../../../file_system/testing';
 import {ModuleResolver, Reference, ReferenceEmitter} from '../../../imports';
-import {CompoundMetadataReader, DtsMetadataReader, InjectableClassRegistry, LocalMetadataRegistry, ResourceRegistry} from '../../../metadata';
+import {CompoundMetadataReader, DtsMetadataReader, LocalMetadataRegistry, ResourceRegistry} from '../../../metadata';
 import {PartialEvaluator} from '../../../partial_evaluator';
 import {NOOP_PERF_RECORDER} from '../../../perf';
 import {isNamedClassDeclaration, TypeScriptReflectionHost} from '../../../reflection';
 import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver, TypeCheckScopeRegistry} from '../../../scope';
 import {getDeclaration, makeProgram} from '../../../testing';
-import {ResourceLoader, ResourceLoaderContext} from '../../common';
+import {InjectableClassRegistry, ResourceLoader, ResourceLoaderContext} from '../../common';
 import {ComponentDecoratorHandler} from '../src/handler';
 
 export class StubResourceLoader implements ResourceLoader {
@@ -55,7 +55,7 @@ function setup(program: ts.Program, options: ts.CompilerOptions, host: ts.Compil
   const scopeRegistry = new LocalModuleScopeRegistry(
       metaRegistry, metaReader, dtsResolver, new ReferenceEmitter([]), null);
   const refEmitter = new ReferenceEmitter([]);
-  const injectableRegistry = new InjectableClassRegistry(reflectionHost);
+  const injectableRegistry = new InjectableClassRegistry(reflectionHost, /* isCore */ false);
   const resourceRegistry = new ResourceRegistry();
   const typeCheckScopeRegistry = new TypeCheckScopeRegistry(scopeRegistry, metaReader);
   const resourceLoader = new StubResourceLoader();
@@ -71,6 +71,7 @@ function setup(program: ts.Program, options: ts.CompilerOptions, host: ts.Compil
       typeCheckScopeRegistry,
       resourceRegistry,
       /* isCore */ false,
+      /* strictCtorDeps */ false,
       resourceLoader,
       /* rootDirs */['/'],
       /* defaultPreserveWhitespaces */ false,
