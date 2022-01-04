@@ -25,6 +25,15 @@ describe('ViewContainerRef', () => {
         .replace(/\sng-reflect-\S*="[^"]*"/g, '');
   }
 
+  /**
+   * Helper method to retrieve the text content of the given element. This method also strips all
+   * leading and trailing whitespace and removes all newlines. This makes element content
+   * comparisons easier and less verbose.
+   */
+  function getElementText(element: Element): string {
+    return element.textContent!.trim().replace(/\r?\n/g, ' ');
+  }
+
   beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [
@@ -1480,7 +1489,7 @@ describe('ViewContainerRef', () => {
 
           fixture.detectChanges();
 
-          expect(fixture.nativeElement.parentNode.textContent.trim())
+          expect(getElementText(fixture.nativeElement.parentNode))
               .toContain(
                   '[Child Component B] ' +
                   '[Projectable Node] ' +
