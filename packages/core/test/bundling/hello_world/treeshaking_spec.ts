@@ -7,6 +7,7 @@
  */
 
 import '@angular/compiler';
+
 import {withBody} from '@angular/private/testing';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -18,7 +19,7 @@ const PACKAGE = 'angular/packages/core/test/bundling/hello_world';
 
 describe('treeshaking with uglify', () => {
   let content: string;
-  const contentPath = require.resolve(path.join(PACKAGE, 'bundle.min_debug.js'));
+  const contentPath = require.resolve(path.join(PACKAGE, 'bundle.debug.min.js'));
   beforeAll(() => {
     content = fs.readFileSync(contentPath, UTF8);
   });
@@ -45,7 +46,7 @@ describe('treeshaking with uglify', () => {
 
     it('should render hello world when debug minified',
        withBody('<hello-world></hello-world>', () => {
-         require(path.join(PACKAGE, 'bundle.min_debug.js'));
+         require(path.join(PACKAGE, 'bundle.debug.min.js'));
          expect(document.body.textContent).toEqual('Hello World!');
        }));
 

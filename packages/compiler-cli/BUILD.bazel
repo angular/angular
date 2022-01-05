@@ -153,6 +153,16 @@ api_golden_test(
 )
 
 api_golden_test(
+    name = "extended_template_diagnostic_name_api",
+    data = [
+        ":npm_package",
+        "//goldens:public-api",
+    ],
+    entry_point = "angular/packages/compiler-cli/npm_package/src/ngtsc/diagnostics/src/extended_template_diagnostic_name.d.ts",
+    golden = "angular/goldens/public-api/compiler-cli/extended_template_diagnostic_name.md",
+)
+
+api_golden_test(
     name = "compiler_options_api",
     data = [
         ":npm_package",

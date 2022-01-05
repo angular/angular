@@ -47,4 +47,20 @@ export {AbstractControl, AbstractControlOptions, FormArray, FormControl, FormCon
 export {NG_ASYNC_VALIDATORS, NG_VALIDATORS, Validators} from './validators';
 export {VERSION} from './version';
 
+/**
+ * `AnyForUntypedForms` is an alias for `any` used as part of the typed forms
+ * migration.
+ *
+ * `AnyForUntypedForms` was inserted into your code automatically as part of a migration. To
+ * continue opting out of strong types, simply replace it with `any`. To opt-in to typed forms,
+ * remove
+ * `<AnyForUntypedForms>` from your call site.
+ *
+ * This symbol is currently unused. Please do not use it. These docs will be updated when this
+ * symbol is in use.
+ *
+ * @publicApi
+ */
+export type AnyForUntypedForms = any;
+
 export * from './form_providers';

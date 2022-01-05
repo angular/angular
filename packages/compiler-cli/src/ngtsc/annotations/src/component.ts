@@ -6,18 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {compileClassMetadata, compileComponentFromMetadata, compileDeclareClassMetadata, compileDeclareComponentFromMetadata, ConstantPool, CssSelector, DeclarationListEmitMode, DeclareComponentTemplateInfo, DEFAULT_INTERPOLATION_CONFIG, DomElementSchemaRegistry, Expression, ExternalExpr, FactoryTarget, InterpolationConfig, LexerRange, makeBindingParser, ParsedTemplate, ParseSourceFile, parseTemplate, R3ClassMetadata, R3ComponentMetadata, R3TargetBinder, R3UsedDirectiveMetadata, SelectorMatcher, Statement, TmplAstNode, ViewEncapsulation, WrappedNodeExpr} from '@angular/compiler';
+import {AnimationTriggerNames, compileClassMetadata, compileComponentFromMetadata, compileDeclareClassMetadata, compileDeclareComponentFromMetadata, ConstantPool, CssSelector, DeclarationListEmitMode, DeclareComponentTemplateInfo, DEFAULT_INTERPOLATION_CONFIG, DomElementSchemaRegistry, Expression, ExternalExpr, FactoryTarget, InterpolationConfig, LexerRange, makeBindingParser, ParsedTemplate, ParseSourceFile, parseTemplate, R3ClassMetadata, R3ComponentMetadata, R3TargetBinder, R3UsedDirectiveMetadata, SelectorMatcher, Statement, TmplAstNode, ViewEncapsulation, WrappedNodeExpr} from '@angular/compiler';
 import ts from 'typescript';
 
 import {Cycle, CycleAnalyzer, CycleHandlingStrategy} from '../../cycles';
 import {ErrorCode, FatalDiagnosticError, makeDiagnostic, makeRelatedInformation} from '../../diagnostics';
 import {absoluteFrom, relative} from '../../file_system';
-import {ImportedFile, ModuleResolver, Reference, ReferenceEmitter} from '../../imports';
+import {assertSuccessfulReferenceEmit, ImportedFile, ModuleResolver, Reference, ReferenceEmitter} from '../../imports';
 import {DependencyTracker} from '../../incremental/api';
 import {extractSemanticTypeParameters, isArrayEqual, isReferenceEqual, SemanticDepGraphUpdater, SemanticReference, SemanticSymbol} from '../../incremental/semantic_graph';
 import {IndexingContext} from '../../indexer';
 import {ClassPropertyMapping, ComponentResources, DirectiveMeta, DirectiveTypeCheckMeta, extractDirectiveTypeCheckMeta, InjectableClassRegistry, MetadataReader, MetadataRegistry, MetaType, Resource, ResourceRegistry} from '../../metadata';
-import {EnumValue, PartialEvaluator, ResolvedValue} from '../../partial_evaluator';
+import {EnumValue, PartialEvaluator, ResolvedValue, ResolvedValueArray} from '../../partial_evaluator';
 import {PerfEvent, PerfRecorder} from '../../perf';
 import {ClassDeclaration, DeclarationNode, Decorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
 import {ComponentScopeReader, LocalModuleScopeRegistry, TypeCheckScopeRegistry} from '../../scope';
@@ -86,6 +86,7 @@ export interface ComponentAnalysisData {
   inlineStyles: string[]|null;
 
   isPoisoned: boolean;
+  animationTriggerNames: AnimationTriggerNames|null;
 }
 
 export type ComponentResolutionData = Pick<R3ComponentMetadata, ComponentMetadataResolvedFields>;
@@ -348,8 +349,12 @@ export class ComponentDecoratorHandler implements
         this._resolveEnumValue(component, 'changeDetection', 'ChangeDetectionStrategy');
 
     let animations: Expression|null = null;
+    let animationTriggerNames: AnimationTriggerNames|null = null;
     if (component.has('animations')) {
       animations = new WrappedNodeExpr(component.get('animations')!);
+      const animationsValue = this.evaluator.evaluate(component.get('animations')!);
+      animationTriggerNames = {includesDynamicAnimations: false, staticTriggerNames: []};
+      collectAnimationNames(animationsValue, animationTriggerNames);
     }
 
     // Go through the root directories for this project, and select the one with the smallest
@@ -516,6 +521,7 @@ export class ComponentDecoratorHandler implements
           template: templateResource,
         },
         isPoisoned,
+        animationTriggerNames,
       },
       diagnostics,
     };
@@ -551,6 +557,7 @@ export class ComponentDecoratorHandler implements
       ...analysis.typeCheckMeta,
       isPoisoned: analysis.isPoisoned,
       isStructural: false,
+      animationTriggerNames: analysis.animationTriggerNames,
     });
 
     this.resourceRegistry.registerResources(analysis.resources, node);
@@ -690,6 +697,8 @@ export class ComponentDecoratorHandler implements
           R3UsedDirectiveMetadata&{ref: Reference<ClassDeclaration>, importedFile: ImportedFile};
       const usedDirectives: UsedDirective[] = bound.getUsedDirectives().map(directive => {
         const type = this.refEmitter.emit(directive.ref, context);
+        assertSuccessfulReferenceEmit(
+            type, node.name, directive.isComponent ? 'component' : 'directive');
         return {
           ref: directive.ref,
           type: type.expression,
@@ -715,6 +724,7 @@ export class ComponentDecoratorHandler implements
         }
         const pipe = pipes.get(pipeName)!;
         const type = this.refEmitter.emit(pipe, context);
+        assertSuccessfulReferenceEmit(type, node.name, 'pipe');
         usedPipes.push({
           ref: pipe,
           pipeName,
@@ -1535,4 +1545,27 @@ function checkCustomElementSelectorForErrors(selector: string): string|null {
   }
 
   return null;
+}
+
+/**
+ * Collect the animation names from the static evaluation result.
+ * @param value the static evaluation result of the animations
+ * @param animationTriggerNames the animation names collected and whether some names could not be
+ *     statically evaluated.
+ */
+function collectAnimationNames(value: ResolvedValue, animationTriggerNames: AnimationTriggerNames) {
+  if (value instanceof Map) {
+    const name = value.get('name');
+    if (typeof name === 'string') {
+      animationTriggerNames.staticTriggerNames.push(name);
+    } else {
+      animationTriggerNames.includesDynamicAnimations = true;
+    }
+  } else if (Array.isArray(value)) {
+    for (const resolvedValue of value) {
+      collectAnimationNames(resolvedValue, animationTriggerNames);
+    }
+  } else {
+    animationTriggerNames.includesDynamicAnimations = true;
+  }
 }

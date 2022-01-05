@@ -44,7 +44,6 @@ export class Ng2AComponent {
 
 @NgModule({
   declarations: [Ng2AComponent],
-  entryComponents: [Ng2AComponent],
 })
 export class Ng2AModule {
   ngDoBootstrap() {}
@@ -62,7 +61,6 @@ export class Ng2BComponent {
 
 @NgModule({
   declarations: [Ng2BComponent],
-  entryComponents: [Ng2BComponent],
 })
 export class Ng2BModule {
   ngDoBootstrap() {}
@@ -81,7 +79,6 @@ export class Ng2CComponent {
 @NgModule({
   imports: [BrowserModule],
   declarations: [Ng2CComponent],
-  entryComponents: [Ng2CComponent],
 })
 export class Ng2CModule {
   ngDoBootstrap() {}

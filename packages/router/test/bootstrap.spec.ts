@@ -264,7 +264,6 @@ describe('bootstrap', () => {
        @NgModule({
          imports: [BrowserModule, RouterModule.forRoot([], {useHash: true})],
          declarations: [SecondRootCmp, RootCmp],
-         entryComponents: [SecondRootCmp],
          bootstrap: [RootCmp],
          providers: testProviders,
          schemas: [CUSTOM_ELEMENTS_SCHEMA]
@@ -290,7 +289,6 @@ describe('bootstrap', () => {
        @NgModule({
          imports: [BrowserModule, RouterModule.forRoot([], {useHash: true})],
          declarations: [SecondRootCmp, RootCmp],
-         entryComponents: [SecondRootCmp],
          bootstrap: [RootCmp],
          providers: testProviders,
          schemas: [CUSTOM_ELEMENTS_SCHEMA]

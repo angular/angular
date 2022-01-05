@@ -6,9 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import '@angular/core/test/bundling/util/src/reflect_metadata';
-import './translations';
+
 import {CommonModule} from '@angular/common';
 import {Component, Injectable, NgModule, ViewEncapsulation, ɵmarkDirty as markDirty, ɵrenderComponent as renderComponent} from '@angular/core';
+import {loadTranslations} from '@angular/localize';
+
+import {translations} from './translations';
 
 class Todo {
   editing: boolean;
@@ -193,4 +196,5 @@ class ToDoAppComponent {
 class ToDoAppModule {
 }
 
+loadTranslations(translations);
 renderComponent(ToDoAppComponent);

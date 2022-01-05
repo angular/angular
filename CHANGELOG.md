@@ -1,3 +1,68 @@
+<a name="13.2.0-next.2"></a>
+# 13.2.0-next.2 (2022-01-12)
+### animations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [8ba43a1a1e](https://github.com/angular/angular/commit/8ba43a1a1ea811ad25d6af4384e1cce5a53b0baf) | fix | retain triggers values for moved tracked list items ([#44578](https://github.com/angular/angular/pull/44578)) |
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a4ab6d6b72](https://github.com/angular/angular/commit/a4ab6d6b72fe891f232d2446f8b7c454a82a5ba0) | feat | add support for safe calls in templates ([#44580](https://github.com/angular/angular/pull/44580)) |
+| [b8ed03b5ad](https://github.com/angular/angular/commit/b8ed03b5ad91a2dd62d600240e9056a360b89b90) | fix | correct spans when parsing bindings with comments ([#44678](https://github.com/angular/angular/pull/44678)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [73424def13](https://github.com/angular/angular/commit/73424def130ae1d72036142f6f2d7bce63858c9e) | feat | provide the animations for `DirectiveMeta` ([#44630](https://github.com/angular/angular/pull/44630)) |
+| [1a9121826e](https://github.com/angular/angular/commit/1a9121826ea94d98d0603d65628d4b4b08f2f70b) | fix | enable narrowing of using type guard methods ([#44447](https://github.com/angular/angular/pull/44447)) |
+| [f8af49eb75](https://github.com/angular/angular/commit/f8af49eb751cabab76c6c7327f377a163f841dc4) | fix | fix crash during type-checking of library builds ([#44587](https://github.com/angular/angular/pull/44587)) |
+| [f83fb3a5f9](https://github.com/angular/angular/commit/f83fb3a5f9b146cb5025517950100e98895304ed) | fix | handle property reads of `ThisReceiver` in the indexer ([#44678](https://github.com/angular/angular/pull/44678)) |
+| [eeaabe7fbf](https://github.com/angular/angular/commit/eeaabe7fbf7a1cf057c6b740609886415e4037eb) | fix | incorrectly interpreting $any calls with a property read ([#44657](https://github.com/angular/angular/pull/44657)) |
+| [92b23f4851](https://github.com/angular/angular/commit/92b23f48519a1adb460a431c356bcd9917fb059d) | fix | properly index <svg> elements ([#44678](https://github.com/angular/angular/pull/44678)) |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [5ae1030462](https://github.com/angular/angular/commit/5ae1030462a97bda8357415cbfcd34301dfa6499) | feat | Add an unused symbol `AnyForUntypedForms`. ([#44467](https://github.com/angular/angular/pull/44467)) |
+| [f7aa937cac](https://github.com/angular/angular/commit/f7aa937cac0ad315e1012770aa1da97476aced54) | fix | Make some minor fixups for forward-compatibility with typed forms. ([#44540](https://github.com/angular/angular/pull/44540)) |
+### language-service
+| Commit | Type | Description |
+| -- | -- | -- |
+| [af2a1317cb](https://github.com/angular/angular/commit/af2a1317cbfba985233f510bbe9e49016968307c) | feat | support completions for animation ([#44630](https://github.com/angular/angular/pull/44630)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [5a4ddfd4f5](https://github.com/angular/angular/commit/5a4ddfd4f5e17bb4209528cefc3f0674298ab6e8) | feat | Allow symbol keys for `Route` `data` and `resolve` properties ([#44519](https://github.com/angular/angular/pull/44519)) |
+## Special Thanks
+Abdurrahman Abu-Hijleh, Adam Plumer, Alex Rickabaugh, AlirezaEbrahimkhani, Andrew Kushnir, Andrew Scott, Borja Paz Rodríguez, Chihab Otmani, Chris Mancini, Dario Piotrowicz, Doug Parker, Dylan Hunn, George Kalpakas, Joey Perrott, JoostK, Kristiyan Kostadinov, Kyoz, Patrick Prakash, Paul Gschwendtner, Serhey Dolgushev, Yousaf Nawaz, Yuchao Wu, alkavats1, dario-piotrowicz, huangqing, ivanwonder, shejialuo, twerske, wszgrcy and zuckjet
+
+<!-- CHANGELOG SPLIT MARKER -->
+
+<a name="13.1.2"></a>
+# 13.1.2 (2022-01-12)
+### animations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [abc217b28e](https://github.com/angular/angular/commit/abc217b28e43431e730c448235ab2e9801133768) | fix | retain triggers values for moved tracked list items ([#44578](https://github.com/angular/angular/pull/44578)) |
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [59eef29a6c](https://github.com/angular/angular/commit/59eef29a6c5d568ca80595cd7018e21ad406c85d) | fix | correct spans when parsing bindings with comments ([#44678](https://github.com/angular/angular/pull/44678)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [08049fa23f](https://github.com/angular/angular/commit/08049fa23f1fb751137a54b7460e90662abec476) | fix | enable narrowing of using type guard methods ([#44447](https://github.com/angular/angular/pull/44447)) |
+| [a26afce68c](https://github.com/angular/angular/commit/a26afce68c8270b66afa93567f952930523ebc7b) | fix | fix crash during type-checking of library builds ([#44587](https://github.com/angular/angular/pull/44587)) |
+| [1e918b6f31](https://github.com/angular/angular/commit/1e918b6f312e7c99f0eef02d5d093164d2e1e7ed) | fix | handle property reads of `ThisReceiver` in the indexer ([#44678](https://github.com/angular/angular/pull/44678)) |
+| [63c8e56a3a](https://github.com/angular/angular/commit/63c8e56a3a2566eca1b00751e0f05d188db95e34) | fix | incorrectly interpreting $any calls with a property read ([#44657](https://github.com/angular/angular/pull/44657)) |
+| [60fb27f12d](https://github.com/angular/angular/commit/60fb27f12ddf3e3cea1faa685c34ad98535340d0) | fix | properly index <svg> elements ([#44678](https://github.com/angular/angular/pull/44678)) |
+### language-service
+| Commit | Type | Description |
+| -- | -- | -- |
+| [f5addee488](https://github.com/angular/angular/commit/f5addee4889d992e96ab31a2e4439f5085e6f5eb) | fix | revert the test files for Ivy ([#44528](https://github.com/angular/angular/pull/44528)) |
+## Special Thanks
+Abdurrahman Abu-Hijleh, Adam Plumer, Alex Rickabaugh, AlirezaEbrahimkhani, Andrew Kushnir, Andrew Scott, Borja Paz Rodríguez, Chihab Otmani, Chris Mancini, Dario Piotrowicz, Doug Parker, George Kalpakas, Joey Perrott, JoostK, Kristiyan Kostadinov, Kyoz, Patrick Prakash, Paul Gschwendtner, Serhey Dolgushev, Yousaf Nawaz, Yuchao Wu, alkavats1, dario-piotrowicz, huangqing, ivanwonder, shejialuo, twerske, wszgrcy and zuckjet
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="13.2.0-next.1"></a>
 # 13.2.0-next.1 (2021-12-15)
 ### animations
@@ -395,6 +460,31 @@ As a result, the `SwUpdate#availalbe` observable is now redundant.
 | [0dc45446fe](https://github.com/angular/angular/commit/0dc45446fe487febaefaf68a928c5a249880f2f3) | feat | expose more version update events ([#43668](https://github.com/angular/angular/pull/43668)) |
 ## Special Thanks
 Ahmed Ayed, Alan Agius, Alex Rickabaugh, Andrew Kushnir, Andrew Scott, Bjarki, Charles Lyding, Dmitrij Kuba, Doug Parker, Dylan Hunn, George Kalpakas, Jessica Janiuk, Jochen Kraushaar, Joe Martin (Crowdstaffing), Joey Perrott, Jon Rimmer, JoostK, Kristiyan Kostadinov, Maximilian Köller, Paul Gschwendtner, Pei Wang, Pete Bacon Darwin, Tomasz Domański, Willy Schott, anandtiwary, dario-piotrowicz, iRealNirmal, ivanwonder, krzysztof-grzybek, mgechev and vthinkxie
+
+<a name="12.2.15"></a>
+# 12.2.15 (2021-12-08)
+### ngcc
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b6554d75cd](https://github.com/angular/angular/commit/b6554d75cd3ac8a904820f7cd051d926c74460bf) | fix | correctly resolve UMD dependencies ([#44382](https://github.com/angular/angular/pull/44382)) |
+## Special Thanks
+George Kalpakas
+
+<!-- CHANGELOG SPLIT MARKER -->
+
+<a name="12.2.14"></a>
+# 12.2.14 (2021-12-01)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e3db0385b6](https://github.com/angular/angular/commit/e3db0385b6ae18f35b16d5a7fcbfac49ef729330) | fix | ensure that partially compiled queries can handle forward references ([#44124](https://github.com/angular/angular/pull/44124)) |
+### ngcc
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a8be244113](https://github.com/angular/angular/commit/a8be244113d68865da9ec732291d7b79e26a0f1f) | fix | correctly report error when collecting dependencies of UMD module ([#44245](https://github.com/angular/angular/pull/44245)) |
+| [fc072935ee](https://github.com/angular/angular/commit/fc072935ee0bcfc5b228ee81ba4261ee8f7b1756) | fix | support the UMD wrapper function format emitted by Webpack ([#44245](https://github.com/angular/angular/pull/44245)) |
+## Special Thanks
+George Kalpakas, Pete Bacon Darwin and iRealNirmal
 
 <!-- CHANGELOG SPLIT MARKER -->
 
@@ -4255,7 +4345,7 @@ import from `@angular/localize`. Previously it was `@angular/localize/run_time`.
 This should impact very few users and the user's that are impacted have a very easy upgrade path to switch to fetching the protractor_web_test_suite rule via the @bazel/protractor npm package.
 * **ivy:** This commit removes the public export of `hasBeenProcessed()`.
 
-This was exported to be availble to the CLI integration but was never
+This was exported to be available to the CLI integration but was never
 used. The change to the function signature is a breaking change in itself
 so we remove the function altogether to simplify and lower the public
 API surface going forward.

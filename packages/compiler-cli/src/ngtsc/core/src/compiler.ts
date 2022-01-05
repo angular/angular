@@ -28,13 +28,11 @@ import {generatedFactoryTransform} from '../../shims';
 import {aliasTransformFactory, CompilationMode, declarationTransformFactory, DecoratorHandler, DtsTransformRegistry, ivyTransformFactory, TraitCompiler} from '../../transform';
 import {TemplateTypeCheckerImpl} from '../../typecheck';
 import {OptimizeFor, TemplateTypeChecker, TypeCheckingConfig} from '../../typecheck/api';
-import {ExtendedTemplateCheckerImpl} from '../../typecheck/extended';
-import {ExtendedTemplateChecker, TemplateCheck} from '../../typecheck/extended/api';
-import {InvalidBananaInBoxCheck} from '../../typecheck/extended/checks/invalid_banana_in_box';
-import {NullishCoalescingNotNullableCheck} from '../../typecheck/extended/checks/nullish_coalescing_not_nullable';
+import {ALL_DIAGNOSTIC_FACTORIES, ExtendedTemplateCheckerImpl} from '../../typecheck/extended';
+import {ExtendedTemplateChecker} from '../../typecheck/extended/api';
 import {getSourceFileOrNull, isDtsPath, toUnredirectedSourceFile} from '../../util/src/typescript';
 import {Xi18nContext} from '../../xi18n';
-import {NgCompilerAdapter, NgCompilerOptions} from '../api';
+import {DiagnosticCategoryLabel, NgCompilerAdapter, NgCompilerOptions} from '../api';
 
 /**
  * State information about a compilation which is only generated once some data is requested from
@@ -324,11 +322,8 @@ export class NgCompiler {
           'The \'_extendedTemplateDiagnostics\' option requires \'strictTemplates\' to also be enabled.');
     }
 
-    this.constructionDiagnostics.push(...this.adapter.constructionDiagnostics);
-    const incompatibleTypeCheckOptionsDiagnostic = verifyCompatibleTypeCheckOptions(this.options);
-    if (incompatibleTypeCheckOptionsDiagnostic !== null) {
-      this.constructionDiagnostics.push(incompatibleTypeCheckOptionsDiagnostic);
-    }
+    this.constructionDiagnostics.push(
+        ...this.adapter.constructionDiagnostics, ...verifyCompatibleTypeCheckOptions(this.options));
 
     this.currentProgram = inputProgram;
     this.closureCompilerEnabled = !!this.options.annotateForClosureCompiler;
@@ -1067,12 +1062,8 @@ export class NgCompiler {
         reflector, this.adapter, this.incrementalCompilation, scopeRegistry, typeCheckScopeRegistry,
         this.delegatingPerfRecorder);
 
-    const templateChecks: TemplateCheck<ErrorCode>[] = [new InvalidBananaInBoxCheck()];
-    if (this.options.strictNullChecks) {
-      templateChecks.push(new NullishCoalescingNotNullableCheck());
-    }
-    const extendedTemplateChecker =
-        new ExtendedTemplateCheckerImpl(templateTypeChecker, checker, templateChecks);
+    const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
+        templateTypeChecker, checker, ALL_DIAGNOSTIC_FACTORIES, this.options);
 
     return {
       isCore,
@@ -1141,16 +1132,15 @@ function getR3SymbolsFile(program: ts.Program): ts.SourceFile|null {
  * "fullTemplateTypeCheck", it is required that the latter is not explicitly disabled if the
  * former is enabled.
  */
-function verifyCompatibleTypeCheckOptions(options: NgCompilerOptions): ts.Diagnostic|null {
+function*
+    verifyCompatibleTypeCheckOptions(options: NgCompilerOptions):
+        Generator<ts.Diagnostic, void, void> {
   if (options.fullTemplateTypeCheck === false && options.strictTemplates === true) {
-    return {
+    yield makeConfigDiagnostic({
       category: ts.DiagnosticCategory.Error,
-      code: ngErrorCode(ErrorCode.CONFIG_STRICT_TEMPLATES_IMPLIES_FULL_TEMPLATE_TYPECHECK),
-      file: undefined,
-      start: undefined,
-      length: undefined,
-      messageText:
-          `Angular compiler option "strictTemplates" is enabled, however "fullTemplateTypeCheck" is disabled.
+      code: ErrorCode.CONFIG_STRICT_TEMPLATES_IMPLIES_FULL_TEMPLATE_TYPECHECK,
+      messageText: `
+Angular compiler option "strictTemplates" is enabled, however "fullTemplateTypeCheck" is disabled.
 
 Having the "strictTemplates" flag enabled implies that "fullTemplateTypeCheck" is also enabled, so
 the latter can not be explicitly disabled.
@@ -1160,11 +1150,88 @@ One of the following actions is required:
 2. Remove "strictTemplates" or set it to 'false'.
 
 More information about the template type checking compiler options can be found in the documentation:
-https://v9.angular.io/guide/template-typecheck#template-type-checking`,
-    };
+https://angular.io/guide/template-typecheck
+      `.trim(),
+    });
   }
 
-  return null;
+  if (options.extendedDiagnostics && options.strictTemplates === false) {
+    yield makeConfigDiagnostic({
+      category: ts.DiagnosticCategory.Error,
+      code: ErrorCode.CONFIG_EXTENDED_DIAGNOSTICS_IMPLIES_STRICT_TEMPLATES,
+      messageText: `
+Angular compiler option "extendedDiagnostics" is configured, however "strictTemplates" is disabled.
+
+Using "extendedDiagnostics" requires that "strictTemplates" is also enabled.
+
+One of the following actions is required:
+1. Remove "strictTemplates: false" to enable it.
+2. Remove "extendedDiagnostics" configuration to disable them.
+      `.trim(),
+    });
+  }
+
+  const allowedCategoryLabels = Array.from(Object.values(DiagnosticCategoryLabel)) as string[];
+  const defaultCategory = options.extendedDiagnostics?.defaultCategory;
+  if (defaultCategory && !allowedCategoryLabels.includes(defaultCategory)) {
+    yield makeConfigDiagnostic({
+      category: ts.DiagnosticCategory.Error,
+      code: ErrorCode.CONFIG_EXTENDED_DIAGNOSTICS_UNKNOWN_CATEGORY_LABEL,
+      messageText: `
+Angular compiler option "extendedDiagnostics.defaultCategory" has an unknown diagnostic category: "${
+                       defaultCategory}".
+
+Allowed diagnostic categories are:
+${allowedCategoryLabels.join('\n')}
+      `.trim(),
+    });
+  }
+
+  const allExtendedDiagnosticNames =
+      ALL_DIAGNOSTIC_FACTORIES.map((factory) => factory.name) as string[];
+  for (const [checkName, category] of Object.entries(options.extendedDiagnostics?.checks ?? {})) {
+    if (!allExtendedDiagnosticNames.includes(checkName)) {
+      yield makeConfigDiagnostic({
+        category: ts.DiagnosticCategory.Error,
+        code: ErrorCode.CONFIG_EXTENDED_DIAGNOSTICS_UNKNOWN_CHECK,
+        messageText: `
+Angular compiler option "extendedDiagnostics.checks" has an unknown check: "${checkName}".
+
+Allowed check names are:
+${allExtendedDiagnosticNames.join('\n')}
+        `.trim(),
+      });
+    }
+
+    if (!allowedCategoryLabels.includes(category)) {
+      yield makeConfigDiagnostic({
+        category: ts.DiagnosticCategory.Error,
+        code: ErrorCode.CONFIG_EXTENDED_DIAGNOSTICS_UNKNOWN_CATEGORY_LABEL,
+        messageText: `
+Angular compiler option "extendedDiagnostics.checks['${
+                         checkName}']" has an unknown diagnostic category: "${category}".
+
+Allowed diagnostic categories are:
+${allowedCategoryLabels.join('\n')}
+        `.trim(),
+      });
+    }
+  }
+}
+
+function makeConfigDiagnostic({category, code, messageText}: {
+  category: ts.DiagnosticCategory,
+  code: ErrorCode,
+  messageText: string,
+}): ts.Diagnostic {
+  return {
+    category,
+    code: ngErrorCode(code),
+    file: undefined,
+    start: undefined,
+    length: undefined,
+    messageText,
+  };
 }
 
 class ReferenceGraphAdapter implements ReferencesRegistry {

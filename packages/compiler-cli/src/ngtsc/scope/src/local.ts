@@ -10,7 +10,7 @@ import {ExternalExpr, SchemaMetadata} from '@angular/compiler';
 import ts from 'typescript';
 
 import {ErrorCode, makeDiagnostic, makeRelatedInformation} from '../../diagnostics';
-import {AliasingHost, Reexport, Reference, ReferenceEmitter} from '../../imports';
+import {AliasingHost, assertSuccessfulReferenceEmit, Reexport, Reference, ReferenceEmitter} from '../../imports';
 import {DirectiveMeta, MetadataReader, MetadataRegistry, NgModuleMeta, PipeMeta} from '../../metadata';
 import {ClassDeclaration, DeclarationNode} from '../../reflection';
 import {identifierOfNode, nodeNameForError} from '../../util/src/typescript';
@@ -511,8 +511,9 @@ export class LocalModuleScopeRegistry implements MetadataRegistry, ComponentScop
             asAlias: exportName,
           });
         } else {
-          const expr =
-              this.refEmitter.emit(exportRef.cloneWithNoIdentifiers(), sourceFile).expression;
+          const emittedRef = this.refEmitter.emit(exportRef.cloneWithNoIdentifiers(), sourceFile);
+          assertSuccessfulReferenceEmit(emittedRef, ngModuleRef.node.name, 'class');
+          const expr = emittedRef.expression;
           if (!(expr instanceof ExternalExpr) || expr.value.moduleName === null ||
               expr.value.name === null) {
             throw new Error('Expected ExternalExpr');

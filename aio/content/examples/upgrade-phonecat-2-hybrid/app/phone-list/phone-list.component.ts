@@ -1,5 +1,5 @@
 // #docregion downgrade-component
-declare var angular: angular.IAngularStatic;
+declare const angular: angular.IAngularStatic;
 import { downgradeComponent } from '@angular/upgrade/static';
 
 // #enddocregion downgrade-component

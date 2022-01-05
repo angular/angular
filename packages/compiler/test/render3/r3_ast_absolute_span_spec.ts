@@ -7,10 +7,23 @@
  */
 
 import {AbsoluteSourceSpan} from '@angular/compiler';
+
 import {humanizeExpressionSource} from './util/expression';
 import {parseR3 as parse} from './view/util';
 
 describe('expression AST absolute source spans', () => {
+  it('should handle comment in interpolation', () => {
+    expect(humanizeExpressionSource(parse('{{foo // comment}}', {preserveWhitespaces: true}).nodes))
+        .toContain(['foo', new AbsoluteSourceSpan(2, 5)]);
+  });
+
+  it('should handle comment in an action binding', () => {
+    expect(humanizeExpressionSource(parse('<button (click)="foo = true // comment">Save</button>', {
+                                      preserveWhitespaces: true
+                                    }).nodes))
+        .toContain(['foo = true', new AbsoluteSourceSpan(17, 27)]);
+  });
+
   // TODO(ayazhafiz): duplicate this test without `preserveWhitespaces` once whitespace rewriting is
   // moved to post-R3AST generation.
   it('should provide absolute offsets with arbitrary whitespace', () => {

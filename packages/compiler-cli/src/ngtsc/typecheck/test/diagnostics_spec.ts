@@ -11,7 +11,7 @@ import ts from 'typescript';
 import {absoluteFrom, getSourceFileOrError} from '../../file_system';
 import {runInEachFileSystem, TestFile} from '../../file_system/testing';
 import {OptimizeFor, TypeCheckingConfig} from '../api';
-import {ngForDeclaration, ngForDts, setup, TestDeclaration} from '../testing';
+import {ngForDeclaration, ngForDts, ngIfDeclaration, ngIfDts, setup, TestDeclaration} from '../testing';
 
 runInEachFileSystem(() => {
   describe('template diagnostics', () => {
@@ -210,7 +210,7 @@ runInEachFileSystem(() => {
     });
 
     it('does not repeat diagnostics for missing pipes in directive inputs', () => {
-      // The directive here is structured so that a type constructor is used, which resuts in each
+      // The directive here is structured so that a type constructor is used, which results in each
       // input binding being processed twice. This results in the 'uppercase' pipe being resolved
       // twice, and since it doesn't exist this operation will fail. The test is here to verify that
       // failing to resolve the pipe twice only produces a single diagnostic (no duplicates).
@@ -337,6 +337,17 @@ runInEachFileSystem(() => {
       expect(messages).toEqual([
         `TestComponent.html(1, 31): Argument of type '-2' is not assignable to parameter of type '1 | -1'.`,
       ]);
+    });
+
+    it('should support type-narrowing for methods with type guards', () => {
+      const messages = diagnose(
+          `<div *ngIf="hasSuccess()">{{ success }}</div>`, `
+          class TestComponent {
+            hasSuccess(): this is { success: boolean };
+          }`,
+          [ngIfDeclaration()], [ngIfDts()]);
+
+      expect(messages).toEqual([]);
     });
 
     describe('outputs', () => {
@@ -473,6 +484,35 @@ runInEachFileSystem(() => {
 
             log(color: string) {
               console.log(color);
+            }
+          }`);
+
+        expect(messages).toEqual([
+          `TestComponent.html(1, 19): Argument of type 'string | undefined' is not assignable to parameter of type 'string'.`
+        ]);
+      });
+
+      it('does not produce diagnostic for safe calls', () => {
+        const messages =
+            diagnose(`<div [class.is-hobbit]="person.getName?.() === 'Bilbo'"></div>`, `
+              export class TestComponent {
+                person: {
+                  getName?: () => string;
+                };
+              }`);
+
+        expect(messages).toEqual([]);
+      });
+
+      it('infers a safe call return value as undefined', () => {
+        const messages = diagnose(`<div (click)="log(person.getName?.())"></div>`, `
+          export class TestComponent {
+            person: {
+              getName?: () => string;
+            };
+
+            log(name: string) {
+              console.log(name);
             }
           }`);
 

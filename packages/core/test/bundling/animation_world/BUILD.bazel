@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "ng_module", "ng_rollup_bundle", "ts_devserver")
+load("//tools:defaults.bzl", "app_bundle", "ng_module", "ts_devserver")
 load("@npm//http-server:index.bzl", "http_server")
 
 package(default_visibility = ["//visibility:public"])
@@ -14,7 +14,7 @@ ng_module(
     ],
 )
 
-ng_rollup_bundle(
+app_bundle(
     name = "bundle",
     entry_point = ":index.ts",
     deps = [
@@ -51,7 +51,7 @@ http_server(
         "animation_world.css",
         "base.css",
         "index.html",
+        ":bundle.debug.min.js",
         ":bundle.min.js",
-        ":bundle.min_debug.js",
     ],
 )

@@ -26,7 +26,6 @@ import {compileComponentFromMetadata, compileDirectiveFromMetadata, ParsedHostBi
 import {makeBindingParser, parseTemplate} from './render3/view/template';
 import {ResourceLoader} from './resource_loader';
 import {DomElementSchemaRegistry} from './schema/dom_element_schema_registry';
-import {resolveForwardRef} from './util';
 
 export class CompilerFacadeImpl implements CompilerFacade {
   FactoryTarget = FactoryTarget as any;

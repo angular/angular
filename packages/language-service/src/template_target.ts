@@ -93,7 +93,7 @@ export interface RawExpression {
  */
 export interface CallExpressionInArgContext {
   kind: TargetNodeKind.CallExpressionInArgContext;
-  node: e.Call;
+  node: e.Call|e.SafeCall;
 }
 
 /**
@@ -184,7 +184,8 @@ export function getTargetAtPosition(template: t.Node[], position: number): Templ
 
   // Given the candidate node, determine the full targeted context.
   let nodeInContext: TargetContext;
-  if (candidate instanceof e.Call && isWithin(position, candidate.argumentSpan)) {
+  if ((candidate instanceof e.Call || candidate instanceof e.SafeCall) &&
+      isWithin(position, candidate.argumentSpan)) {
     nodeInContext = {
       kind: TargetNodeKind.CallExpressionInArgContext,
       node: candidate,
@@ -370,8 +371,10 @@ class TemplateTargetVisitor implements t.Visitor {
   }
 
   visitBoundAttribute(attribute: t.BoundAttribute) {
-    const visitor = new ExpressionVisitor(this.position);
-    visitor.visit(attribute.value, this.path);
+    if (attribute.valueSpan !== undefined) {
+      const visitor = new ExpressionVisitor(this.position);
+      visitor.visit(attribute.value, this.path);
+    }
   }
 
   visitBoundEvent(event: t.BoundEvent) {

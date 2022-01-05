@@ -19,7 +19,7 @@ import {NgtscTestEnvironment} from './env';
 
 const trim = (input: string): string => input.replace(/\s+/g, ' ').trim();
 
-const varRegExp = (name: string): RegExp => new RegExp(`var \\w+ = \\[\"${name}\"\\];`);
+const varRegExp = (name: string): RegExp => new RegExp(`const \\w+ = \\[\"${name}\"\\];`);
 
 const viewQueryRegExp = (predicate: string, flags: number, ref?: string): RegExp => {
   const maybeRef = ref ? `, ${ref}` : ``;
@@ -162,8 +162,7 @@ function allTests(os: string) {
 
       const jsContents = env.getContents('test.js');
       expect(jsContents).toContain('Service.ɵprov =');
-      expect(jsContents)
-          .toContain('factory: function () { return (function () { return new Service(); })(); }');
+      expect(jsContents).toContain('factory: function () { return (() => new Service())(); }');
       expect(jsContents).toContain('Service_Factory(t) { return new (t || Service)(); }');
       expect(jsContents).toContain(', providedIn: \'root\' });');
       expect(jsContents).not.toContain('__decorate');
@@ -190,10 +189,9 @@ function allTests(os: string) {
 
       const jsContents = env.getContents('test.js');
       expect(jsContents).toContain('Service.ɵprov =');
-      expect(jsContents).toContain('factory: function Service_Factory(t) { var r = null; if (t) {');
+      expect(jsContents).toContain('factory: function Service_Factory(t) { let r = null; if (t) {');
       expect(jsContents).toContain('return new (t || Service)(i0.ɵɵinject(Dep));');
-      expect(jsContents)
-          .toContain('r = (function (dep) { return new Service(dep); })(i0.ɵɵinject(Dep));');
+      expect(jsContents).toContain('r = ((dep) => new Service(dep))(i0.ɵɵinject(Dep));');
       expect(jsContents).toContain('return r; }, providedIn: \'root\' });');
       expect(jsContents).not.toContain('__decorate');
       const dtsContents = env.getContents('test.d.ts');
@@ -224,10 +222,9 @@ function allTests(os: string) {
          const jsContents = env.getContents('test.js');
          expect(jsContents).toContain('Service.ɵprov =');
          expect(jsContents)
-             .toContain('factory: function Service_Factory(t) { var r = null; if (t) {');
+             .toContain('factory: function Service_Factory(t) { let r = null; if (t) {');
          expect(jsContents).toContain('return new (t || Service)(i0.ɵɵinject(Dep));');
-         expect(jsContents)
-             .toContain('r = (function (dep) { return new Service(dep); })(i0.ɵɵinject(Dep, 10));');
+         expect(jsContents).toContain('r = ((dep) => new Service(dep))(i0.ɵɵinject(Dep, 10));');
          expect(jsContents).toContain(`return r; }, providedIn: 'root' });`);
          expect(jsContents).not.toContain('__decorate');
          const dtsContents = env.getContents('test.d.ts');
@@ -612,11 +609,11 @@ function allTests(os: string) {
             expect(trim(jsContents)).toContain(trim(`
               [{
                   provide: 'token-a',
-                  useFactory: (function (service) {
+                  useFactory: ((service) => {
                       return (/**
                       * @return {?}
                       */
-                      function () { return service.id; });
+                      () => service.id);
                   })
               }, {
                   provide: 'token-b',
@@ -624,9 +621,7 @@ function allTests(os: string) {
                       return (/**
                       * @return {?}
                       */
-                      function () {
-                          return service.id;
-                      });
+                      function () { return service.id; });
                   })
               }]
             `));
@@ -1392,7 +1387,7 @@ function allTests(os: string) {
       expect(jsContents)
           .toContain(
               `TestModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({ ` +
-              `providers: [{ provide: Token, useFactory: function () { return new Token(); } }], ` +
+              `providers: [{ provide: Token, useFactory: () => new Token() }], ` +
               `imports: [[OtherModule]] });`);
 
       const dtsContents = env.getContents('test.d.ts');
@@ -1439,7 +1434,7 @@ function allTests(os: string) {
       expect(jsContents)
           .toContain(
               `TestModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({ ` +
-              `providers: [{ provide: Token, useFactory: function (dep) { return new Token(dep); }, deps: [Dep] }], ` +
+              `providers: [{ provide: Token, useFactory: (dep) => new Token(dep), deps: [Dep] }], ` +
               `imports: [[OtherModule]] });`);
 
       const dtsContents = env.getContents('test.d.ts');
@@ -3783,7 +3778,7 @@ function allTests(os: string) {
       const jsContents = env.getContents('test.js');
       expect(jsContents)
           .toContain(
-              '":\\u241F5dbba0a3da8dff890e20cf76eb075d58900fbcd3\\u241F8321000940098097247:Some text"');
+              '`:\u241F5dbba0a3da8dff890e20cf76eb075d58900fbcd3\u241F8321000940098097247:Some text`');
     });
 
     it('should render custom id and legacy ids if `enableI18nLegacyMessageIdFormat` is not false',
@@ -3800,7 +3795,7 @@ function allTests(os: string) {
          const jsContents = env.getContents('test.js');
          expect(jsContents)
              .toContain(
-                 ':@@custom\\u241F5dbba0a3da8dff890e20cf76eb075d58900fbcd3\\u241F8321000940098097247:Some text');
+                 ':@@custom\u241F5dbba0a3da8dff890e20cf76eb075d58900fbcd3\u241F8321000940098097247:Some text');
        });
 
     it('should not render legacy ids when `enableI18nLegacyMessageIdFormat` is set to false',
@@ -3835,10 +3830,10 @@ function allTests(os: string) {
       const jsContents = env.getContents('test.js');
       expect(jsContents)
           .toContain(
-              ':\\u241F720ba589d043a0497ac721ff972f41db0c919efb\\u241F3221232817843005870:{VAR_PLURAL, plural, 10 {ten} other {other}}');
+              ':\u241F720ba589d043a0497ac721ff972f41db0c919efb\u241F3221232817843005870:{VAR_PLURAL, plural, 10 {ten} other {other}}');
       expect(jsContents)
           .toContain(
-              ':@@custom\\u241Fdcb6170595f5d548a3d00937e87d11858f51ad04\\u241F7419139165339437596:Some text');
+              ':@@custom\u241Fdcb6170595f5d548a3d00937e87d11858f51ad04\u241F7419139165339437596:Some text');
     });
 
     it('@Component\'s `interpolation` should override default interpolation config', () => {
@@ -4034,14 +4029,14 @@ function allTests(os: string) {
       expect(factoryContents).toContain(`import { NotAModule, TestModule } from './test';`);
       expect(factoryContents)
           .toContain(
-              'export var TestModuleNgFactory = i0.\u0275noSideEffects(function () { ' +
+              'export const TestModuleNgFactory = i0.\u0275noSideEffects(function () { ' +
               'return new i0.\u0275NgModuleFactory(TestModule); });');
       expect(factoryContents).not.toContain(`NotAModuleNgFactory`);
       expect(factoryContents).not.toContain('\u0275NonEmptyModule');
 
       const emptyFactory = env.getContents('empty.ngfactory.js');
       expect(emptyFactory).toContain(`import * as i0 from '@angular/core';`);
-      expect(emptyFactory).toContain(`export var \u0275NonEmptyModule = true;`);
+      expect(emptyFactory).toContain(`export const \u0275NonEmptyModule = true;`);
     });
 
     describe('ngfactory shims', () => {
@@ -4179,7 +4174,7 @@ function allTests(os: string) {
             .toBe(
                 'import * as i0 from "./r3_symbols";\n' +
                 'import { TestModule } from \'./test\';\n' +
-                'export var TestModuleNgFactory = i0.\u0275noSideEffects(function () {' +
+                'export const TestModuleNgFactory = i0.\u0275noSideEffects(function () {' +
                 ' return new i0.NgModuleFactory(TestModule); });\n');
       });
 
@@ -4200,7 +4195,7 @@ function allTests(os: string) {
         // Should **not** contain noSideEffects(), because the module is lazy loaded.
         const factoryContents = env.getContents('test.ngfactory.js');
         expect(factoryContents)
-            .toContain('export var TestModuleNgFactory = new i0.ɵNgModuleFactory(TestModule);');
+            .toContain('export const TestModuleNgFactory = new i0.ɵNgModuleFactory(TestModule);');
       });
 
       describe('file-level comments', () => {
@@ -4265,7 +4260,7 @@ function allTests(os: string) {
         env.driveMain();
 
         const summaryContents = env.getContents('test.ngsummary.js');
-        expect(summaryContents).toEqual(`export var TestModuleNgSummary = null;\n`);
+        expect(summaryContents).toEqual(`export const TestModuleNgSummary = null;\n`);
       });
 
       it('should generate a summary stub for classes exported via exports', () => {
@@ -4281,7 +4276,7 @@ function allTests(os: string) {
         env.driveMain();
 
         const summaryContents = env.getContents('test.ngsummary.js');
-        expect(summaryContents).toEqual(`export var NotDirectlyExportedNgSummary = null;\n`);
+        expect(summaryContents).toEqual(`export const NotDirectlyExportedNgSummary = null;\n`);
       });
 
       it('it should generate empty export when there are no other summary symbols, to ensure the output is a valid ES module',
@@ -4294,7 +4289,7 @@ function allTests(os: string) {
 
            const emptySummary = env.getContents('empty.ngsummary.js');
            // The empty export ensures this js file is still an ES module.
-           expect(emptySummary).toEqual(`export var \u0275empty = null;\n`);
+           expect(emptySummary).toEqual(`export const \u0275empty = null;\n`);
          });
     });
 
@@ -4343,7 +4338,7 @@ function allTests(os: string) {
           .toContain('function Base_Factory(t) { return new (t || Base)(i0.ɵɵinject(Dep)); }');
       expect(jsContents)
           .toContain(
-              'function () { var ɵChild_BaseFactory; return function Child_Factory(t) { return (ɵChild_BaseFactory || (ɵChild_BaseFactory = i0.ɵɵgetInheritedFactory(Child)))(t || Child); }; }();');
+              'function () { let ɵChild_BaseFactory; return function Child_Factory(t) { return (ɵChild_BaseFactory || (ɵChild_BaseFactory = i0.ɵɵgetInheritedFactory(Child)))(t || Child); }; }();');
       expect(jsContents)
           .toContain('function GrandChild_Factory(t) { return new (t || GrandChild)(); }');
     });
@@ -4369,7 +4364,7 @@ function allTests(os: string) {
       const jsContents = env.getContents('test.js');
       expect(jsContents)
           .toContain(
-              '/*@__PURE__*/ function () { var ɵDir_BaseFactory; return function Dir_Factory(t) { return (ɵDir_BaseFactory || (ɵDir_BaseFactory = i0.ɵɵgetInheritedFactory(Dir)))(t || Dir); }; }();');
+              '/*@__PURE__*/ function () { let ɵDir_BaseFactory; return function Dir_Factory(t) { return (ɵDir_BaseFactory || (ɵDir_BaseFactory = i0.ɵɵgetInheritedFactory(Dir)))(t || Dir); }; }();');
     });
 
     it('should wrap "directives" in component metadata in a closure when forward references are present',

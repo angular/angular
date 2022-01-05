@@ -39,9 +39,6 @@
     "name": "RuntimeError"
   },
   {
-    "name": "SimpleChange"
-  },
-  {
     "name": "ViewEncapsulation"
   },
   {
@@ -70,6 +67,9 @@
   },
   {
     "name": "allocLFrame"
+  },
+  {
+    "name": "appendChild"
   },
   {
     "name": "attachPatchData"
@@ -150,6 +150,9 @@
     "name": "getNextLContainer"
   },
   {
+    "name": "getNodeInjectable"
+  },
+  {
     "name": "getOrCreateTNode"
   },
   {
@@ -163,9 +166,6 @@
   },
   {
     "name": "insertBloom"
-  },
-  {
-    "name": "instantiateRootComponent"
   },
   {
     "name": "instructionState"
@@ -250,8 +250,5 @@
   },
   {
     "name": "ɵɵdefineComponent"
-  },
-  {
-    "name": "ɵɵtext"
   }
 ]

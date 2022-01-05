@@ -572,7 +572,7 @@ For example, the `OnInit` interface has a hook method named `ngOnInit`.
 
 Angular calls these hook methods in the following order:
 
-* `ngOnChanges`: When an [input](#input)/[output](#output) binding value changes.
+* `ngOnChanges`: When an [input](#input) binding value changes.
 * `ngOnInit`: After the first `ngOnChanges`.
 * `ngDoCheck`: Developer's custom change detection.
 * `ngAfterContentInit`: After component content initialized.

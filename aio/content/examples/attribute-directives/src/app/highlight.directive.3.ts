@@ -13,9 +13,11 @@ export class HighlightDirective {
   @Input() appHighlight = '';
   // #enddocregion input
 
+  // #docregion mouse-enter
   @HostListener('mouseenter') onMouseEnter() {
     this.highlight(this.appHighlight || 'red');
   }
+  // #enddocregion mouse-enter
 
   @HostListener('mouseleave') onMouseLeave() {
     this.highlight('');

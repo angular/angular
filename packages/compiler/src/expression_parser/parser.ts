@@ -9,7 +9,7 @@
 import * as chars from '../chars';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../ml_parser/interpolation_config';
 
-import {AbsoluteSourceSpan, AST, AstVisitor, ASTWithSource, Binary, BindingPipe, Call, Chain, Conditional, EmptyExpr, ExpressionBinding, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralMapKey, LiteralPrimitive, NonNullAssert, ParserError, ParseSpan, PrefixNot, PropertyRead, PropertyWrite, Quote, RecursiveAstVisitor, SafeKeyedRead, SafePropertyRead, TemplateBinding, TemplateBindingIdentifier, ThisReceiver, Unary, VariableBinding} from './ast';
+import {AbsoluteSourceSpan, AST, ASTWithSource, Binary, BindingPipe, Call, Chain, Conditional, EmptyExpr, ExpressionBinding, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralMapKey, LiteralPrimitive, NonNullAssert, ParserError, ParseSpan, PrefixNot, PropertyRead, PropertyWrite, Quote, RecursiveAstVisitor, SafeCall, SafeKeyedRead, SafePropertyRead, TemplateBinding, TemplateBindingIdentifier, ThisReceiver, Unary, VariableBinding} from './ast';
 import {EOF, isIdentifier, Lexer, Token, TokenType} from './lexer';
 
 export interface InterpolationPiece {
@@ -34,18 +34,16 @@ export class Parser {
 
   constructor(private _lexer: Lexer) {}
 
-  simpleExpressionChecker = SimpleExpressionChecker;
-
   parseAction(
       input: string, location: string, absoluteOffset: number,
       interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG): ASTWithSource {
     this._checkNoInterpolation(input, location, interpolationConfig);
     const sourceToLex = this._stripComments(input);
-    const tokens = this._lexer.tokenize(this._stripComments(input));
-    const ast = new _ParseAST(
-                    input, location, absoluteOffset, tokens, sourceToLex.length, true, this.errors,
-                    input.length - sourceToLex.length)
-                    .parseChain();
+    const tokens = this._lexer.tokenize(sourceToLex);
+    const ast =
+        new _ParseAST(
+            input, location, absoluteOffset, tokens, sourceToLex.length, true, this.errors, 0)
+            .parseChain();
     return new ASTWithSource(ast, input, location, absoluteOffset, this.errors);
   }
 
@@ -57,7 +55,7 @@ export class Parser {
   }
 
   private checkSimpleExpression(ast: AST): string[] {
-    const checker = new this.simpleExpressionChecker();
+    const checker = new SimpleExpressionChecker();
     ast.visit(checker);
     return checker.errors;
   }
@@ -93,8 +91,7 @@ export class Parser {
     const sourceToLex = this._stripComments(input);
     const tokens = this._lexer.tokenize(sourceToLex);
     return new _ParseAST(
-               input, location, absoluteOffset, tokens, sourceToLex.length, false, this.errors,
-               input.length - sourceToLex.length)
+               input, location, absoluteOffset, tokens, sourceToLex.length, false, this.errors, 0)
         .parseChain();
   }
 
@@ -164,7 +161,7 @@ export class Parser {
       const tokens = this._lexer.tokenize(sourceToLex);
       const ast = new _ParseAST(
                       input, location, absoluteOffset, tokens, sourceToLex.length, false,
-                      this.errors, offsets[i] + (expressionText.length - sourceToLex.length))
+                      this.errors, offsets[i])
                       .parseChain();
       expressionNodes.push(ast);
     }
@@ -364,10 +361,6 @@ export class Parser {
       escapeCount = char === '\\' ? escapeCount + 1 : 0;
     }
   }
-}
-
-export class IvyParser extends Parser {
-  override simpleExpressionChecker = IvySimpleExpressionChecker;
 }
 
 /** Describes a stateful context an expression parser is in. */
@@ -819,23 +812,19 @@ export class _ParseAST {
     let result = this.parsePrimary();
     while (true) {
       if (this.consumeOptionalCharacter(chars.$PERIOD)) {
-        result = this.parseAccessMemberOrCall(result, start, false);
-
+        result = this.parseAccessMember(result, start, false);
       } else if (this.consumeOptionalOperator('?.')) {
-        result = this.consumeOptionalCharacter(chars.$LBRACKET) ?
-            this.parseKeyedReadOrWrite(result, start, true) :
-            this.parseAccessMemberOrCall(result, start, true);
+        if (this.consumeOptionalCharacter(chars.$LPAREN)) {
+          result = this.parseCall(result, start, true);
+        } else {
+          result = this.consumeOptionalCharacter(chars.$LBRACKET) ?
+              this.parseKeyedReadOrWrite(result, start, true) :
+              this.parseAccessMember(result, start, true);
+        }
       } else if (this.consumeOptionalCharacter(chars.$LBRACKET)) {
         result = this.parseKeyedReadOrWrite(result, start, false);
       } else if (this.consumeOptionalCharacter(chars.$LPAREN)) {
-        const argumentStart = this.inputIndex;
-        this.rparensExpected++;
-        const args = this.parseCallArguments();
-        const argumentSpan =
-            this.span(argumentStart, this.inputIndex).toAbsolute(this.absoluteOffset);
-        this.rparensExpected--;
-        this.expectCharacter(chars.$RPAREN);
-        result = new Call(this.span(start), this.sourceSpan(start), result, args, argumentSpan);
+        result = this.parseCall(result, start, false);
       } else if (this.consumeOptionalOperator('!')) {
         result = new NonNullAssert(this.span(start), this.sourceSpan(start), result);
 
@@ -884,9 +873,8 @@ export class _ParseAST {
       return this.parseLiteralMap();
 
     } else if (this.next.isIdentifier()) {
-      return this.parseAccessMemberOrCall(
+      return this.parseAccessMember(
           new ImplicitReceiver(this.span(start), this.sourceSpan(start)), start, false);
-
     } else if (this.next.isNumber()) {
       const value = this.next.toNumber();
       this.advance();
@@ -955,7 +943,7 @@ export class _ParseAST {
     return new LiteralMap(this.span(start), this.sourceSpan(start), keys, values);
   }
 
-  parseAccessMemberOrCall(readReceiver: AST, start: number, isSafe: boolean): AST {
+  parseAccessMember(readReceiver: AST, start: number, isSafe: boolean): AST {
     const nameStart = this.inputIndex;
     const id = this.withContext(ParseContextFlags.Writable, () => {
       const id = this.expectIdentifierOrKeyword() ?? '';
@@ -991,20 +979,20 @@ export class _ParseAST {
       }
     }
 
-    if (this.consumeOptionalCharacter(chars.$LPAREN)) {
-      const argumentStart = this.inputIndex;
-      this.rparensExpected++;
-      const args = this.parseCallArguments();
-      const argumentSpan =
-          this.span(argumentStart, this.inputIndex).toAbsolute(this.absoluteOffset);
-      this.expectCharacter(chars.$RPAREN);
-      this.rparensExpected--;
-      const span = this.span(start);
-      const sourceSpan = this.sourceSpan(start);
-      return new Call(span, sourceSpan, receiver, args, argumentSpan);
-    }
-
     return receiver;
+  }
+
+  parseCall(receiver: AST, start: number, isSafe: boolean): AST {
+    const argumentStart = this.inputIndex;
+    this.rparensExpected++;
+    const args = this.parseCallArguments();
+    const argumentSpan = this.span(argumentStart, this.inputIndex).toAbsolute(this.absoluteOffset);
+    this.expectCharacter(chars.$RPAREN);
+    this.rparensExpected--;
+    const span = this.span(start);
+    const sourceSpan = this.sourceSpan(start);
+    return isSafe ? new SafeCall(span, sourceSpan, receiver, args, argumentSpan) :
+                    new Call(span, sourceSpan, receiver, args, argumentSpan);
   }
 
   parseCallArguments(): BindingPipe[] {
@@ -1303,70 +1291,7 @@ export class _ParseAST {
   }
 }
 
-class SimpleExpressionChecker implements AstVisitor {
-  errors: string[] = [];
-
-  visitImplicitReceiver(ast: ImplicitReceiver, context: any) {}
-
-  visitThisReceiver(ast: ThisReceiver, context: any) {}
-
-  visitInterpolation(ast: Interpolation, context: any) {}
-
-  visitLiteralPrimitive(ast: LiteralPrimitive, context: any) {}
-
-  visitPropertyRead(ast: PropertyRead, context: any) {}
-
-  visitPropertyWrite(ast: PropertyWrite, context: any) {}
-
-  visitSafePropertyRead(ast: SafePropertyRead, context: any) {}
-
-  visitCall(ast: Call, context: any) {}
-
-  visitLiteralArray(ast: LiteralArray, context: any) {
-    this.visitAll(ast.expressions, context);
-  }
-
-  visitLiteralMap(ast: LiteralMap, context: any) {
-    this.visitAll(ast.values, context);
-  }
-
-  visitUnary(ast: Unary, context: any) {}
-
-  visitBinary(ast: Binary, context: any) {}
-
-  visitPrefixNot(ast: PrefixNot, context: any) {}
-
-  visitNonNullAssert(ast: NonNullAssert, context: any) {}
-
-  visitConditional(ast: Conditional, context: any) {}
-
-  visitPipe(ast: BindingPipe, context: any) {
-    this.errors.push('pipes');
-  }
-
-  visitKeyedRead(ast: KeyedRead, context: any) {}
-
-  visitKeyedWrite(ast: KeyedWrite, context: any) {}
-
-  visitAll(asts: any[], context: any): any[] {
-    return asts.map(node => node.visit(this, context));
-  }
-
-  visitChain(ast: Chain, context: any) {}
-
-  visitQuote(ast: Quote, context: any) {}
-
-  visitSafeKeyedRead(ast: SafeKeyedRead, context: any) {}
-}
-
-/**
- * This class implements SimpleExpressionChecker used in View Engine and performs more strict checks
- * to make sure host bindings do not contain pipes. In View Engine, having pipes in host bindings is
- * not supported as well, but in some cases (like `!(value | async)`) the error is not triggered at
- * compile time. In order to preserve View Engine behavior, more strict checks are introduced for
- * Ivy mode only.
- */
-class IvySimpleExpressionChecker extends RecursiveAstVisitor implements SimpleExpressionChecker {
+class SimpleExpressionChecker extends RecursiveAstVisitor {
   errors: string[] = [];
 
   override visitPipe() {

@@ -14,7 +14,7 @@ export interface Schema {
   /**
    * Will this project use $localize at runtime?
    *
-   * If true then the dependency is included in the `dependencies` section of packge.json, rather
+   * If true then the dependency is included in the `dependencies` section of package.json, rather
    * than `devDependencies`.
    */
   useAtRuntime?: boolean;

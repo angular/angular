@@ -1195,7 +1195,7 @@ First, import the `BrowserAnimationsModule` and add it to the `imports` array:
 <code-example path="router/src/app/app.module.ts" header="src/app/app.module.ts (animations-module)" region="animations-module"></code-example>
 
 Next, add a `data` object to the routes for `HeroListComponent` and `HeroDetailComponent`.
-Transitions are based on `states` and you use the `animation` data from the route to provide a named animation `state` for the transitions.
+Transitions are based on `states` and you use the `animation` data from the route to provide a named animation [`state`](api/animations/state) for the transitions.
 
 <code-example path="router/src/app/heroes/heroes-routing.module.2.ts" header="src/app/heroes/heroes-routing.module.ts (animation data)"></code-example>
 

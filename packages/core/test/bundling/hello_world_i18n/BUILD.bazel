@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "ng_module", "ng_rollup_bundle")
+load("//tools:defaults.bzl", "app_bundle", "ng_module")
 load("@npm//http-server:index.bzl", "http_server")
 
 package(default_visibility = ["//visibility:public"])
@@ -16,10 +16,9 @@ ng_module(
     ],
 )
 
-ng_rollup_bundle(
+app_bundle(
     name = "bundle",
     entry_point = ":index.ts",
-    tags = [],
     deps = [
         ":hello_world_i18n",
         "//packages/core",
@@ -31,8 +30,8 @@ http_server(
     name = "prodserver",
     data = [
         "index.html",
+        ":bundle.debug.min.js",
         ":bundle.min.js",
-        ":bundle.min_debug.js",
     ],
     tags = [],
 )

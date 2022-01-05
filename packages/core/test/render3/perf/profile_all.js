@@ -30,7 +30,7 @@ const profileTests =
 // build tests
 shell.exec(
     `yarn bazel build ` +
-    profileTests.map((name) => `//packages/core/test/render3/perf:${name}_lib.min_debug.js`)
+    profileTests.map((name) => `//packages/core/test/render3/perf:${name}_lib.debug.min.js`)
         .join(' '));
 
 // profile tests
@@ -60,7 +60,7 @@ if (readPath) {
 profileTests.forEach((name) => {
   // tslint:disable-next-line:no-console
   console.log('----------------', name, '----------------');
-  const log = shell.exec(`node dist/bin/packages/core/test/render3/perf/${name}_lib.min_debug.js`);
+  const log = shell.exec(`node dist/bin/packages/core/test/render3/perf/${name}_lib.debug.min.js`);
   if (log.code != 0) throw new Error(log);
   const matches = log.stdout.match(/: ([\d\.]+) (.s)/);
   const runTime = times[name] || (times[name] = {name: name});

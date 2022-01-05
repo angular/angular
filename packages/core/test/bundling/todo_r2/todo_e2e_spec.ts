@@ -7,6 +7,7 @@
  */
 
 import '@angular/compiler';
+
 import {ɵwhenRendered as whenRendered} from '@angular/core';
 import {withBody} from '@angular/private/testing';
 import * as path from 'path';
@@ -15,7 +16,7 @@ const UTF8 = {
   encoding: 'utf-8'
 };
 const PACKAGE = 'angular/packages/core/test/bundling/todo_r2';
-const BUNDLES = ['bundle.js', 'bundle.min_debug.js', 'bundle.min.js'];
+const BUNDLES = ['bundle.js', 'bundle.debug.min.js', 'bundle.min.js'];
 
 describe('functional test for todo', () => {
   BUNDLES.forEach(bundle => {

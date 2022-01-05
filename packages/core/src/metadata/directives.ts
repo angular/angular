@@ -509,7 +509,7 @@ export interface Component extends Directive {
 
   /**
    * One or more animation `trigger()` calls, containing
-   * `state()` and `transition()` definitions.
+   * [`state()`](api/animations/state) and `transition()` definitions.
    * See the [Animations guide](/guide/animations) and animations API documentation.
    *
    */
@@ -868,7 +868,7 @@ export interface HostListener {
  *   @HostListener('click', ['$event.target'])
  *   onClick(btn) {
  *     console.log('button', btn, 'number of clicks:', this.numberOfClicks++);
- *  }
+ *   }
  * }
  *
  * @Component({

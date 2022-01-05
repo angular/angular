@@ -4,7 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 // #docregion downgrade-injectable
-declare var angular: angular.IAngularStatic;
+declare const angular: angular.IAngularStatic;
 import { downgradeInjectable } from '@angular/upgrade/static';
 // #enddocregion downgrade-injectable
 

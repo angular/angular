@@ -275,6 +275,10 @@ def _ngc_tsconfig(ctx, files, srcs, **kwargs):
     if not is_devmode:
         # Note: Keep in sync with the `prodmode_target` for `ts_library` in `tools/defaults.bzl`
         tsconfig["compilerOptions"]["target"] = "es2020"
+    else:
+        # For devmode output, we use ES2015 to match with what `ts_library` produces by default.
+        # https://github.com/bazelbuild/rules_nodejs/blob/9b36274dba34204625579463e3da054a9f42cb47/packages/typescript/internal/build_defs.bzl#L83.
+        tsconfig["compilerOptions"]["target"] = "es2015"
 
     return tsconfig
 

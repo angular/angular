@@ -4,6 +4,7 @@ package(default_visibility = ["//visibility:public"])
 
 exports_files([
     "tsconfig.json",
+    "postinstall-patches.js",
     "jasmine-seed-generator.js",
 ])
 

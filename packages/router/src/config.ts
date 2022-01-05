@@ -73,7 +73,7 @@ export type UrlMatcher = (segments: UrlSegment[], group: UrlSegmentGroup, route:
  * @publicApi
  */
 export type Data = {
-  [name: string]: any
+  [key: string|symbol]: any
 };
 
 /**
@@ -85,7 +85,7 @@ export type Data = {
  * @publicApi
  */
 export type ResolveData = {
-  [name: string]: any
+  [key: string|symbol]: any
 };
 
 /**

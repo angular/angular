@@ -145,14 +145,6 @@ export class TypeTranslatorVisitor implements o.ExpressionVisitor, o.TypeVisitor
     throw new Error('Method not implemented.');
   }
 
-  visitAssertNotNullExpr(ast: o.AssertNotNull, context: Context) {
-    throw new Error('Method not implemented.');
-  }
-
-  visitCastExpr(ast: o.CastExpr, context: Context) {
-    throw new Error('Method not implemented.');
-  }
-
   visitFunctionExpr(ast: o.FunctionExpr, context: Context) {
     throw new Error('Method not implemented.');
   }

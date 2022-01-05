@@ -7,9 +7,13 @@ ts_library(
     ),
     visibility = ["//packages/compiler-cli/src/ngtsc:__subpackages__"],
     deps = [
+        "//packages/compiler",
+        "//packages/compiler-cli/src/ngtsc/core:api",
         "//packages/compiler-cli/src/ngtsc/diagnostics",
         "//packages/compiler-cli/src/ngtsc/typecheck/api",
         "//packages/compiler-cli/src/ngtsc/typecheck/extended/api",
+        "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/invalid_banana_in_box",
+        "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/nullish_coalescing_not_nullable",
         "@npm//typescript",
     ],
 )

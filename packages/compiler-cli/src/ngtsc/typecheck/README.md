@@ -502,7 +502,7 @@ export class MyDir<T extends string> {
 }
 ```
 
-In order to properly infer and check the type of this directve, the type constructor must include the generic bounds:
+In order to properly infer and check the type of this directive, the type constructor must include the generic bounds:
 
 ```typescript
 declare function ctor1<T extends string>(inputs: {value?: T}): MyDir<T>;

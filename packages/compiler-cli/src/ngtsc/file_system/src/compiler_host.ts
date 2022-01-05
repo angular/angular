@@ -74,4 +74,8 @@ export class NgtscCompilerHost implements ts.CompilerHost {
     }
     return this.fs.readFile(absPath);
   }
+
+  realpath(path: string): string {
+    return this.fs.realpath(this.fs.resolve(path));
+  }
 }

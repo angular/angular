@@ -287,7 +287,6 @@ if (browserDetection.supportsCustomElements) {
     @NgModule({
       imports: [BrowserModule],
       declarations: [TestComponent],
-      entryComponents: [TestComponent],
     })
     class TestModule implements DoBootstrap {
       ngDoBootstrap() {}

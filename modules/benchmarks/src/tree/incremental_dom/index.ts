@@ -7,7 +7,8 @@
  */
 
 import {bindAction, profile} from '../../util';
-import {buildTree, emptyTree} from '../util';
+import {buildTree, emptyTree, initTreeUtils} from '../util';
+
 import {TreeComponent} from './tree';
 
 let tree: TreeComponent;
@@ -24,6 +25,8 @@ function noop() {}
 
 function init() {
   tree = new TreeComponent(document.querySelector('tree'));
+
+  initTreeUtils();
 
   bindAction('#destroyDom', destroyDom);
   bindAction('#createDom', createDom);
