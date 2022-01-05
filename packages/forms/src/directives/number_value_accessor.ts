@@ -46,7 +46,7 @@ export const NUMBER_VALUE_ACCESSOR: any = {
   host: {'(input)': 'onChange($event.target.value)', '(blur)': 'onTouched()'},
   providers: [NUMBER_VALUE_ACCESSOR]
 })
-export class NumberValueAccessor extends BuiltInControlValueAccessor implements
+export class NumberValueAccessor extends BuiltInControlValueAccessor<number> implements
     ControlValueAccessor {
   /**
    * Sets the "value" property on the input element.
@@ -62,9 +62,9 @@ export class NumberValueAccessor extends BuiltInControlValueAccessor implements
    * Registers a function called when the control value changes.
    * @nodoc
    */
-  override registerOnChange(fn: (_: number|null) => void): void {
+  override registerOnChange(fn: (_: number | null) => void): void {
     this.onChange = (value) => {
-      fn(value == '' ? null : parseFloat(value));
+      fn(isNaN(value) ? null : value);
     };
   }
 }

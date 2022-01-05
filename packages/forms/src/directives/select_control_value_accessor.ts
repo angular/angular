@@ -88,7 +88,7 @@ function _extractId(valueString: string): string {
   host: {'(change)': 'onChange($event.target.value)', '(blur)': 'onTouched()'},
   providers: [SELECT_VALUE_ACCESSOR]
 })
-export class SelectControlValueAccessor extends BuiltInControlValueAccessor implements
+export class SelectControlValueAccessor extends BuiltInControlValueAccessor<any> implements
     ControlValueAccessor {
   /** @nodoc */
   value: any;

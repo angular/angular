@@ -110,7 +110,7 @@ export class RadioControlRegistry {
   host: {'(change)': 'onChange()', '(blur)': 'onTouched()'},
   providers: [RADIO_VALUE_ACCESSOR]
 })
-export class RadioControlValueAccessor extends BuiltInControlValueAccessor implements
+export class RadioControlValueAccessor extends BuiltInControlValueAccessor<boolean> implements
     ControlValueAccessor, OnDestroy, OnInit {
   /** @internal */
   // TODO(issue/24571): remove '!'.
@@ -150,7 +150,7 @@ export class RadioControlValueAccessor extends BuiltInControlValueAccessor imple
    * @description
    * Tracks the value of the radio input element
    */
-  @Input() value: any;
+  @Input() value!: boolean;
 
   constructor(
       renderer: Renderer2, elementRef: ElementRef, private _registry: RadioControlRegistry,
@@ -174,7 +174,7 @@ export class RadioControlValueAccessor extends BuiltInControlValueAccessor imple
    * Sets the "checked" property value on the radio input element.
    * @nodoc
    */
-  writeValue(value: any): void {
+  writeValue(value: boolean): void {
     this._state = value === this.value;
     this.setProperty('checked', this._state);
   }
@@ -183,7 +183,7 @@ export class RadioControlValueAccessor extends BuiltInControlValueAccessor imple
    * Registers a function called when the control value changes.
    * @nodoc
    */
-  override registerOnChange(fn: (_: any) => {}): void {
+  override registerOnChange(fn: (_: boolean) => void): void {
     this._fn = fn;
     this.onChange = () => {
       fn(this.value);
@@ -196,7 +196,7 @@ export class RadioControlValueAccessor extends BuiltInControlValueAccessor imple
    *
    * @param value
    */
-  fireUncheck(value: any): void {
+  fireUncheck(value: boolean): void {
     this.writeValue(value);
   }
 

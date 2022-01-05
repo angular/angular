@@ -83,7 +83,7 @@ export const COMPOSITION_BUFFER_MODE = new InjectionToken<boolean>('CompositionE
   },
   providers: [DEFAULT_VALUE_ACCESSOR]
 })
-export class DefaultValueAccessor extends BaseControlValueAccessor implements ControlValueAccessor {
+export class DefaultValueAccessor extends BaseControlValueAccessor<string> implements ControlValueAccessor<string> {
   /** Whether the user is creating a composition string (IME events). */
   private _composing = false;
 
@@ -100,13 +100,13 @@ export class DefaultValueAccessor extends BaseControlValueAccessor implements Co
    * Sets the "value" property on the input element.
    * @nodoc
    */
-  writeValue(value: any): void {
+  writeValue(value: string): void {
     const normalizedValue = value == null ? '' : value;
     this.setProperty('value', normalizedValue);
   }
 
   /** @internal */
-  _handleInput(value: any): void {
+  _handleInput(value: string): void {
     if (!this._compositionMode || (this._compositionMode && !this._composing)) {
       this.onChange(value);
     }
@@ -118,7 +118,7 @@ export class DefaultValueAccessor extends BaseControlValueAccessor implements Co
   }
 
   /** @internal */
-  _compositionEnd(value: any): void {
+  _compositionEnd(value: string): void {
     this._composing = false;
     this._compositionMode && this.onChange(value);
   }

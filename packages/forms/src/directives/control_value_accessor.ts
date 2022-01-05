@@ -20,7 +20,7 @@ import {Directive, ElementRef, InjectionToken, Renderer2} from '@angular/core';
  *
  * @publicApi
  */
-export interface ControlValueAccessor {
+export interface ControlValueAccessor<T = any> {
   /**
    * @description
    * Writes a new value to the element.
@@ -34,14 +34,14 @@ export interface ControlValueAccessor {
    * The following example writes a value to the native DOM element.
    *
    * ```ts
-   * writeValue(value: any): void {
+   * writeValue(value: T): void {
    *   this._renderer.setProperty(this._elementRef.nativeElement, 'value', value);
    * }
    * ```
    *
    * @param obj The new value for the element
    */
-  writeValue(obj: any): void;
+  writeValue(obj: T): void;
 
   /**
    * @description
@@ -60,7 +60,7 @@ export interface ControlValueAccessor {
    * The following example stores the provided function as an internal method.
    *
    * ```ts
-   * registerOnChange(fn: (_: any) => void): void {
+   * registerOnChange(fn: (val: T|null) => void): void {
    *   this._onChange = fn;
    * }
    * ```
@@ -76,7 +76,7 @@ export interface ControlValueAccessor {
    *
    * @param fn The callback function to register
    */
-  registerOnChange(fn: any): void;
+  registerOnChange(fn: (val: T|null) => void): void;
 
   /**
    * @description
@@ -93,7 +93,7 @@ export interface ControlValueAccessor {
    * The following example stores the provided function as an internal method.
    *
    * ```ts
-   * registerOnTouched(fn: any): void {
+   * registerOnTouched(fn: () => void) : void {
    *   this._onTouched = fn;
    * }
    * ```
@@ -109,7 +109,7 @@ export interface ControlValueAccessor {
    *
    * @param fn The callback function to register
    */
-  registerOnTouched(fn: any): void;
+  registerOnTouched(fn: () => void): void;
 
   /**
    * @description
@@ -139,13 +139,13 @@ export interface ControlValueAccessor {
  * applications code.
  */
 @Directive()
-export class BaseControlValueAccessor {
+export class BaseControlValueAccessor<T> {
   /**
    * The registered callback function called when a change or input event occurs on the input
    * element.
    * @nodoc
    */
-  onChange = (_: any) => {};
+  onChange = (_: T) => {};
 
   /**
    * The registered callback function called when a blur event occurs on the input element.
@@ -176,7 +176,7 @@ export class BaseControlValueAccessor {
    * Registers a function called when the control value changes.
    * @nodoc
    */
-  registerOnChange(fn: (_: any) => {}): void {
+  registerOnChange(fn: (_: T|null) => void): void {
     this.onChange = fn;
   }
 
@@ -199,7 +199,7 @@ export class BaseControlValueAccessor {
  * applications code.
  */
 @Directive()
-export class BuiltInControlValueAccessor extends BaseControlValueAccessor {
+export class BuiltInControlValueAccessor<T> extends BaseControlValueAccessor<T> {
 }
 
 /**

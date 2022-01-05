@@ -81,7 +81,7 @@ abstract class HTMLCollection {
   host: {'(change)': 'onChange($event.target)', '(blur)': 'onTouched()'},
   providers: [SELECT_MULTIPLE_VALUE_ACCESSOR]
 })
-export class SelectMultipleControlValueAccessor extends BuiltInControlValueAccessor implements
+export class SelectMultipleControlValueAccessor extends BuiltInControlValueAccessor<any> implements
     ControlValueAccessor {
   /**
    * The current value.
