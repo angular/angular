@@ -42,6 +42,10 @@ describe('FormArray', () => {
       a.removeAt(1);
 
       expect(a.controls).toEqual([c1, c3]);
+
+      a.removeAt(-1);
+      
+      expect(a.controls).toEqual([c1]);
     });
 
     it('should support clearing', () => {
@@ -65,6 +69,10 @@ describe('FormArray', () => {
       a.insert(1, c2);
 
       expect(a.controls).toEqual([c1, c2, c3]);
+
+      a.insert(-1, c2);
+
+      expect(a.controls).toEqual([c1, c2, c3, c2]);
     });
 
     it('should not emit events when calling `FormArray.push` with `emitEvent: false`', () => {
