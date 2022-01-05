@@ -4,6 +4,7 @@
 
 ```ts
 
+import { BehaviorSubject } from 'rxjs';
 import { ChangeDetectorRef } from '@angular/core';
 import { DoCheck } from '@angular/core';
 import { ElementRef } from '@angular/core';
@@ -36,6 +37,8 @@ export class AsyncPipe implements OnDestroy, PipeTransform {
     constructor(_ref: ChangeDetectorRef);
     // (undocumented)
     ngOnDestroy(): void;
+    // (undocumented)
+    transform<T>(obj: BehaviorSubject<T>): T;
     // (undocumented)
     transform<T>(obj: Observable<T> | Subscribable<T> | Promise<T>): T | null;
     // (undocumented)
