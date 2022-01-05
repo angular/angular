@@ -9,7 +9,7 @@
 import {AsyncPipe, ɵgetDOM as getDOM} from '@angular/common';
 import {ChangeDetectorRef, EventEmitter} from '@angular/core';
 import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
-import {Subscribable, Unsubscribable} from 'rxjs';
+import {BehaviorSubject, Subscribable, Unsubscribable} from 'rxjs';
 
 {
   describe('AsyncPipe', () => {
@@ -133,6 +133,16 @@ import {Subscribable, Unsubscribable} from 'rxjs';
         const emitter = new EventEmitter<{name: 'T'}>();
         // The following line will fail to compile if the type cannot be inferred.
         const name = pipe.transform(emitter)?.name;
+      });
+    });
+
+    describe('BehaviorSubject', () => {
+      it('should use the BehaviorSubject overload and not return null', () => {
+        const ref = getChangeDetectorRefSpy();
+        const pipe = new AsyncPipe(ref);
+        const behaviorSubject = new BehaviorSubject<number>(1);
+        // The following line will only compile using the BehaviorSubject overload.
+        const value: number = pipe.transform(behaviorSubject);
       });
     });
 
