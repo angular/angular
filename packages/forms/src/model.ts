@@ -2068,10 +2068,11 @@ export class FormArray extends AbstractControl {
   /**
    * Get the `AbstractControl` at the given `index` in the array.
    *
-   * @param index Index in the array to retrieve the control
+   * @param index Index in the array to retrieve the control. Negative integers count back from the
+   *     last item in the array.
    */
   at(index: number): AbstractControl {
-    return this.controls[index];
+    return this.controls[index + (index >= 0 ? 0 : this.controls.length)];
   }
 
   /**
