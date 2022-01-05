@@ -11,7 +11,9 @@ export class HighlightDirective {
   @Input() defaultColor = '';
   // #enddocregion defaultColor
 
+  // #docregion highlightColor
   @Input('appHighlight') highlightColor = '';
+  // #enddocregion highlightColor
 
   // #docregion mouse-enter
   @HostListener('mouseenter') onMouseEnter() {
