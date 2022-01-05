@@ -2050,9 +2050,11 @@ export class FormArray extends AbstractControl {
   /**
    * Get the `AbstractControl` at the given `index` in the array.
    *
-   * @param index Index in the array to retrieve the control
+   * @param index Index in the array to retrieve the control. Negative integers count back from the
+   *     last item in the array.
    */
   at(index: number): AbstractControl {
+    index = this._adjustIndex(index);
     return this.controls[index];
   }
 
@@ -2076,7 +2078,8 @@ export class FormArray extends AbstractControl {
   /**
    * Insert a new `AbstractControl` at the given `index` in the array.
    *
-   * @param index Index in the array to insert the control
+   * @param index Index in the array to insert the control. Negative integers count back from the
+   *     last item in the array.
    * @param control Form control to be inserted
    * @param options Specifies whether this FormArray instance should emit events after a new
    *     control is inserted.
@@ -2085,6 +2088,7 @@ export class FormArray extends AbstractControl {
    * inserted. When false, no events are emitted.
    */
   insert(index: number, control: AbstractControl, options: {emitEvent?: boolean} = {}): void {
+    index = this._adjustIndex(index);
     this.controls.splice(index, 0, control);
 
     this._registerControl(control);
@@ -2094,7 +2098,8 @@ export class FormArray extends AbstractControl {
   /**
    * Remove the control at the given `index` in the array.
    *
-   * @param index Index in the array to remove the control
+   * @param index Index in the array to remove the control. Negative integers count back from the
+   *     last item in the array.
    * @param options Specifies whether this FormArray instance should emit events after a
    *     control is removed.
    * * `emitEvent`: When true or not supplied (the default), both the `statusChanges` and
@@ -2102,6 +2107,7 @@ export class FormArray extends AbstractControl {
    * removed. When false, no events are emitted.
    */
   removeAt(index: number, options: {emitEvent?: boolean} = {}): void {
+    index = this._adjustIndex(index);
     if (this.controls[index]) this.controls[index]._registerOnCollectionChange(() => {});
     this.controls.splice(index, 1);
     this.updateValueAndValidity({emitEvent: options.emitEvent});
@@ -2110,7 +2116,8 @@ export class FormArray extends AbstractControl {
   /**
    * Replace an existing control.
    *
-   * @param index Index in the array to replace the control
+   * @param index Index in the array to replace the control. Negative integers count back from the
+   *     last item in the array.
    * @param control The `AbstractControl` control to replace the existing control
    * @param options Specifies whether this FormArray instance should emit events after an
    *     existing control is replaced with a new one.
@@ -2119,6 +2126,7 @@ export class FormArray extends AbstractControl {
    * replaced with a new one. When false, no events are emitted.
    */
   setControl(index: number, control: AbstractControl, options: {emitEvent?: boolean} = {}): void {
+    index = this._adjustIndex(index);
     if (this.controls[index]) this.controls[index]._registerOnCollectionChange(() => {});
     this.controls.splice(index, 1);
 
@@ -2405,5 +2413,13 @@ export class FormArray extends AbstractControl {
   private _registerControl(control: AbstractControl) {
     control.setParent(this);
     control._registerOnCollectionChange(this._onCollectionChange);
+  }
+
+  /**
+   * Converts negative indices to a corresponding positive number that represents a position of
+   * an element in an array.
+   */
+  private _adjustIndex(index: number): number {
+    return index >= 0 ? index : index + this.length;
   }
 }

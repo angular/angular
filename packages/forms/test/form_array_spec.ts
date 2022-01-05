@@ -17,7 +17,8 @@ import {asyncValidator} from './util';
 describe('FormArray', () => {
   describe('adding/removing', () => {
     let a: FormArray;
-    let c1: FormControl, c2: FormControl, c3: FormControl;
+    let c1: FormControl, c2: FormControl, c3: FormControl, c4: FormControl, c5: FormControl,
+        c6: FormControl;
     let logger: string[];
 
     beforeEach(() => {
@@ -25,6 +26,8 @@ describe('FormArray', () => {
       c1 = new FormControl(1);
       c2 = new FormControl(2);
       c3 = new FormControl(3);
+      c4 = new FormControl(4);
+      c5 = new FormControl(5);
       logger = [];
     });
 
@@ -42,6 +45,19 @@ describe('FormArray', () => {
       a.removeAt(1);
 
       expect(a.controls).toEqual([c1, c3]);
+
+      a.removeAt(-1);
+      
+      expect(a.controls).toEqual([c1]);
+
+      // Check that using out of bounds index is a noop
+      a.removeAt(a.length);
+
+      expect(a.controls).toEqual([c1]);
+
+      a.removeAt(-a.length);
+
+      expect(a.controls).toEqual([c1]);
     });
 
     it('should support clearing', () => {
@@ -65,6 +81,19 @@ describe('FormArray', () => {
       a.insert(1, c2);
 
       expect(a.controls).toEqual([c1, c2, c3]);
+
+      a.insert(-1, c4);
+
+      expect(a.controls).toEqual([c1, c2, c3, c4]);
+
+      // Check that using out of bounds index appends the control
+      a.insert(a.length, c5);
+
+      expect(a.controls).toEqual([c1, c2, c3, c4, c5]);
+
+      a.insert(-a.length, c6);
+
+      expect(a.controls).toEqual([c1, c2, c3, c4, c5, c6]);
     });
 
     it('should not emit events when calling `FormArray.push` with `emitEvent: false`', () => {
@@ -159,6 +188,19 @@ describe('FormArray', () => {
 
       a.push(new FormControl(5), {emitEvent: false});
       expect(logger).toEqual([]);
+    });
+  });
+
+  describe('at()', () => {
+    it('should support retrieving an element at specified index', () => {
+      const c1 = new FormControl(1);
+      const c2 = new FormControl(2);
+      const a = new FormArray([c1, c2]);
+
+      expect(a.at(1)).toEqual(c1);
+      expect(a.at(-1)).toEqual(c2);
+      expect(a.at(a.length)).toBeUndefined();
+      expect(a.at(-a.length)).toBeUndefined();
     });
   });
 
@@ -1334,6 +1376,25 @@ describe('FormArray', () => {
 
         expect(a.controls[0]).toEqual(c2);
         expect(a.value).toEqual(['new!']);
+        expect(a.valid).toBe(false);
+
+        a.setControl(-1, c);
+
+        expect(a.controls[0]).toEqual(c);
+        expect(a.value).toEqual(['one']);
+        expect(a.valid).toBe(true);
+
+        // Check that using out of bounds index appends the control
+        a.setControl(a.length, c2);
+
+        expect(a.controls[a.length - 1]).toEqual(c2);
+        expect(a.value).toEqual(['one', 'new!']);
+        expect(a.valid).toBe(false);
+
+        a.setControl(-a.length, c);
+
+        expect(a.controls[a.length - 1]).toEqual(c);
+        expect(a.value).toEqual(['one', 'new!', 'one']);
         expect(a.valid).toBe(false);
       });
 
