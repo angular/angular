@@ -19,7 +19,7 @@ For an example, see the [Angular Material][AngularMaterialMain] documentation.
 
 ### Library typings
 
-Typicaly, library packages include typings in `.d.ts` files; see examples in `node_modules/@angular/material`.
+Typically, library packages include typings in `.d.ts` files; see examples in `node_modules/@angular/material`.
 If the package of your library does not include typings and your IDE complains, you might need to install the `@types/<lib_name>` package with the library.
 
 For example, suppose you have a library named `d3`:
@@ -126,13 +126,13 @@ For example, to use the [Bootstrap 4][GetbootstrapDocs40GettingStartedIntroducti
 After you import a library using the "scripts" array, do **not** import it using an import statement in your TypeScript code.
 The following code snippet is an example import statement.
 
-<code-example format="typscript" language="typescript">
+<code-example format="typescript" language="typescript">
 
 import * as $ from 'jquery';
 
 </code-example>
 
-If you inport it using import statements, you have two different copies of the library: one imported as a global library, and one imported as a module.
+If you import it using import statements, you have two different copies of the library: one imported as a global library, and one imported as a module.
 This is especially bad for libraries with plugins, like JQuery, because each copy includes different plugins.
 
 Instead, run the `npm install @types/jquery` Angular CLI command to download typings for your library and then follow the library installation steps.
@@ -200,4 +200,4 @@ If you do not add the interface for the script-defined extension, your IDE shows
 
 <!-- end links -->
 
-@reviewed 2021-11-01
+@reviewed 2022-01-05
