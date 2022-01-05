@@ -123,7 +123,7 @@ export class TypeParameterEmitter {
 
     if (!ts.isTypeReferenceNode(typeNode)) {
       throw new Error(
-          `Expected TypeReferenceNode for emitted reference, got ${ts.SyntaxKind[typeNode.kind]}`);
+          `Expected TypeReferenceNode for emitted reference, got ${ts.SyntaxKind[typeNode.kind]}.`);
     }
     return typeNode;
   }
