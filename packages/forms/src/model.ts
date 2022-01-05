@@ -2073,7 +2073,7 @@ export class FormArray extends AbstractControl {
    */
   at(index: number): AbstractControl {
     index += index >= 0 ? 0 : this.length();
-    return this.controls[index)];
+    return this.controls[index];
   }
 
   /**
