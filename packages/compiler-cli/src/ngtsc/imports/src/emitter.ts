@@ -101,7 +101,7 @@ export interface FailedEmitResult {
   ref: Reference;
 
   /**
-   * The source file into which the reference was requested to be emitted
+   * The source file into which the reference was requested to be emitted.
    */
   context: ts.SourceFile;
 
@@ -131,8 +131,8 @@ export function assertSuccessfulReferenceEmit(
       `Unable to import ${typeKind} ${nodeNameForError(result.ref.node)}.`,
       [makeDiagnosticChain(result.reason)]);
   throw new FatalDiagnosticError(
-      ErrorCode.IMPORT_FAILURE, origin, message,
-      [makeRelatedInformation(result.ref.node, `The ${typeKind} is declared here`)]);
+      ErrorCode.IMPORT_GENERATION_FAILURE, origin, message,
+      [makeRelatedInformation(result.ref.node, `The ${typeKind} is declared here.`)]);
 }
 
 /**
