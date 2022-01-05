@@ -54,7 +54,7 @@ describe('FormArray', () => {
       expect(a.controls).toEqual([c1, c3]);
 
       a.removeAt(-1);
-      
+
       expect(a.controls).toEqual([c1]);
 
       a.removeAt(a.length);
