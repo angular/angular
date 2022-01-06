@@ -104,8 +104,12 @@ export class MatSliderVisualThumb implements AfterViewInit, OnDestroy {
   /** The MatRipple for this slider thumb. */
   @ViewChild(MatRipple) private readonly _ripple: MatRipple;
 
-  /** The slider thumb knob */
+  /** The slider thumb knob. */
   @ViewChild('knob') _knob: ElementRef<HTMLElement>;
+
+  /** The slider thumb value indicator container. */
+  @ViewChild('valueIndicatorContainer')
+  _valueIndicatorContainer: ElementRef<HTMLElement>;
 
   /** The slider input corresponding to this slider thumb. */
   private _sliderInput: MatSliderThumb;
@@ -260,6 +264,14 @@ export class MatSliderVisualThumb implements AfterViewInit, OnDestroy {
   /** Gets the native HTML element of the slider thumb knob. */
   _getKnob(): HTMLElement {
     return this._knob.nativeElement;
+  }
+
+  /**
+   * Gets the native HTML element of the slider thumb value indicator
+   * container.
+   */
+  _getValueIndicatorContainer(): HTMLElement {
+    return this._valueIndicatorContainer.nativeElement;
   }
 }
 
@@ -869,6 +881,14 @@ export class MatSlider
   }
 
   /**
+   * Gets the slider value indicator container HTML element of the given thumb
+   * position.
+   */
+  _getValueIndicatorContainerElement(thumbPosition: Thumb): HTMLElement {
+    return this._getThumb(thumbPosition)._getValueIndicatorContainer();
+  }
+
+  /**
    * Sets the value indicator text of the given thumb position using the given value.
    *
    * Uses the `displayWith` function if one has been provided. Otherwise, it just uses the
@@ -1065,6 +1085,10 @@ class SliderAdapter implements MDCSliderAdapter {
   };
   getBoundingClientRect = (): ClientRect => {
     return this._delegate._elementRef.nativeElement.getBoundingClientRect();
+  };
+  getValueIndicatorContainerWidth = (thumbPosition: Thumb): number => {
+    return this._delegate._getValueIndicatorContainerElement(thumbPosition).getBoundingClientRect()
+      .width;
   };
   isRTL = (): boolean => {
     return this._delegate._isRTL();
