@@ -100,7 +100,13 @@ export class CdkTextareaAutosize implements AfterViewInit, DoCheck, OnDestroy {
   }
   set placeholder(value: string) {
     this._cachedPlaceholderHeight = undefined;
-    this._textareaElement.placeholder = value;
+
+    if (value) {
+      this._textareaElement.setAttribute('placeholder', value);
+    } else {
+      this._textareaElement.removeAttribute('placeholder');
+    }
+
     this._cacheTextareaPlaceholderHeight();
   }
 
