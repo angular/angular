@@ -96,6 +96,9 @@ export class TestbedHarnessEnvironment extends HarnessEnvironment<Element> {
   /** The options for this environment. */
   private _options: TestbedHarnessEnvironmentOptions;
 
+  /** Environment stabilization callback passed to the created test elements. */
+  private _stabilizeCallback: () => Promise<void>;
+
   protected constructor(
     rawRootElement: Element,
     private _fixture: ComponentFixture<unknown>,
@@ -104,6 +107,7 @@ export class TestbedHarnessEnvironment extends HarnessEnvironment<Element> {
     super(rawRootElement);
     this._options = {...defaultEnvironmentOptions, ...options};
     this._taskState = TaskStateZoneInterceptor.setup();
+    this._stabilizeCallback = () => this.forceStabilize();
     installAutoChangeDetectionStatusHandler(_fixture);
     _fixture.componentRef.onDestroy(() => {
       uninstallAutoChangeDetectionStatusHandler(_fixture);
@@ -198,7 +202,7 @@ export class TestbedHarnessEnvironment extends HarnessEnvironment<Element> {
 
   /** Creates a `TestElement` from a raw element. */
   protected createTestElement(element: Element): TestElement {
-    return new UnitTestElement(element, () => this.forceStabilize());
+    return new UnitTestElement(element, this._stabilizeCallback);
   }
 
   /** Creates a `HarnessLoader` rooted at the given raw element. */

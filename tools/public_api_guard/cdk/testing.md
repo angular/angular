@@ -117,7 +117,8 @@ export abstract class HarnessEnvironment<E> implements HarnessLoader, LocatorFac
     // (undocumented)
     protected rawRootElement: E;
     // (undocumented)
-    rootElement: TestElement;
+    get rootElement(): TestElement;
+    set rootElement(element: TestElement);
     // (undocumented)
     rootHarnessLoader(): Promise<HarnessLoader>;
     // (undocumented)

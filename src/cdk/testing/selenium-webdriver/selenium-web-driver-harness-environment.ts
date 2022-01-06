@@ -74,12 +74,16 @@ export class SeleniumWebDriverHarnessEnvironment extends HarnessEnvironment<
   /** The options for this environment. */
   private _options: WebDriverHarnessEnvironmentOptions;
 
+  /** Environment stabilization callback passed to the created test elements. */
+  private _stabilizeCallback: () => Promise<void>;
+
   protected constructor(
     rawRootElement: () => webdriver.WebElement,
     options?: WebDriverHarnessEnvironmentOptions,
   ) {
     super(rawRootElement);
     this._options = {...defaultEnvironmentOptions, ...options};
+    this._stabilizeCallback = () => this.forceStabilize();
   }
 
   /** Gets the ElementFinder corresponding to the given TestElement. */
@@ -123,7 +127,7 @@ export class SeleniumWebDriverHarnessEnvironment extends HarnessEnvironment<
 
   /** Creates a `TestElement` from a raw element. */
   protected createTestElement(element: () => webdriver.WebElement): TestElement {
-    return new SeleniumWebDriverElement(element, () => this.forceStabilize());
+    return new SeleniumWebDriverElement(element, this._stabilizeCallback);
   }
 
   /** Creates a `HarnessLoader` rooted at the given raw element. */

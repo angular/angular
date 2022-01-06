@@ -45,11 +45,16 @@ type ParsedQueries<T extends ComponentHarness> = {
  */
 export abstract class HarnessEnvironment<E> implements HarnessLoader, LocatorFactory {
   // Implemented as part of the `LocatorFactory` interface.
-  rootElement: TestElement;
-
-  protected constructor(protected rawRootElement: E) {
-    this.rootElement = this.createTestElement(rawRootElement);
+  get rootElement(): TestElement {
+    this._rootElement = this._rootElement || this.createTestElement(this.rawRootElement);
+    return this._rootElement;
   }
+  set rootElement(element: TestElement) {
+    this._rootElement = element;
+  }
+  private _rootElement: TestElement | undefined;
+
+  protected constructor(protected rawRootElement: E) {}
 
   // Implemented as part of the `LocatorFactory` interface.
   documentRootLocatorFactory(): LocatorFactory {
