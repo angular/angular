@@ -6,7 +6,10 @@ filegroup(
     name = "mdc-theming",
     srcs = [
         ":all_themes",
+        ":deeppurple_amber_prebuilt",
         ":indigo_pink_prebuilt",
+        ":pink_bluegrey_prebuilt",
+        ":purple_green_prebuilt",
     ],
 )
 
@@ -46,6 +49,42 @@ sass_library(
 sass_binary(
     name = "indigo_pink_prebuilt",
     src = "prebuilt/indigo-pink.scss",
+    include_paths = [
+        "external/npm/node_modules",
+    ],
+    deps = [
+        ":all_themes",
+        "//src/material-experimental/mdc-typography:all_typography",
+    ],
+)
+
+sass_binary(
+    name = "deeppurple_amber_prebuilt",
+    src = "prebuilt/deeppurple-amber.scss",
+    include_paths = [
+        "external/npm/node_modules",
+    ],
+    deps = [
+        ":all_themes",
+        "//src/material-experimental/mdc-typography:all_typography",
+    ],
+)
+
+sass_binary(
+    name = "pink_bluegrey_prebuilt",
+    src = "prebuilt/pink-bluegrey.scss",
+    include_paths = [
+        "external/npm/node_modules",
+    ],
+    deps = [
+        ":all_themes",
+        "//src/material-experimental/mdc-typography:all_typography",
+    ],
+)
+
+sass_binary(
+    name = "purple_green_prebuilt",
+    src = "prebuilt/purple-green.scss",
     include_paths = [
         "external/npm/node_modules",
     ],
