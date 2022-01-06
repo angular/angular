@@ -49,3 +49,12 @@ ts_library(
     name = "dev_mode_types",
     srcs = ["dev-mode-types.d.ts"],
 )
+
+ts_config(
+    name = "tsec_config",
+    src = "tsconfig-tsec.json",
+    deps = [
+        ":bazel-tsconfig-build.json",
+        "//goldens:tsec-exemption.json",
+    ],
+)

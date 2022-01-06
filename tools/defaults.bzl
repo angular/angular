@@ -12,6 +12,7 @@ load("@npm//@bazel/jasmine:index.bzl", _jasmine_node_test = "jasmine_node_test")
 load("@npm//@bazel/concatjs:index.bzl", _karma_web_test = "karma_web_test", _karma_web_test_suite = "karma_web_test_suite")
 load("@npm//@bazel/protractor:index.bzl", _protractor_web_test_suite = "protractor_web_test_suite")
 load("@npm//@bazel/typescript:index.bzl", _ts_library = "ts_library")
+load("@npm//tsec:index.bzl", _tsec_test = "tsec_test")
 load("//:packages.bzl", "NO_STAMP_NPM_PACKAGE_SUBSTITUTIONS", "NPM_PACKAGE_SUBSTITUTIONS")
 load("//:pkg-externals.bzl", "PKG_EXTERNALS")
 load("//tools/markdown-to-html:index.bzl", _markdown_to_html = "markdown_to_html")
@@ -30,6 +31,17 @@ markdown_to_html = _markdown_to_html
 integration_test = _integration_test
 esbuild = _esbuild
 esbuild_config = _esbuild_config
+
+def _make_tsec_test(target):
+    package_name = native.package_name()
+    if not package_name.startswith("src/components-examples") and \
+       not package_name.endswith("/testing") and \
+       not package_name.endswith("/schematics"):
+        _tsec_test(
+            name = target + "_tsec_test",
+            target = target,
+            tsconfig = "//src:tsec_config",
+        )
 
 def _compute_module_name(testonly):
     current_pkg = native.package_name()
@@ -109,6 +121,9 @@ def ts_library(
         **kwargs
     )
 
+    if module_name and not testonly:
+        _make_tsec_test(kwargs["name"])
+
 def ng_module(
         deps = [],
         srcs = [],
@@ -146,6 +161,9 @@ def ng_module(
         testonly = testonly,
         **kwargs
     )
+
+    if module_name and not testonly:
+        _make_tsec_test(kwargs["name"])
 
 def ng_package(name, data = [], deps = [], externals = PKG_EXTERNALS, readme_md = None, visibility = None, **kwargs):
     # If no readme file has been specified explicitly, use the default readme for
