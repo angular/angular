@@ -1160,7 +1160,7 @@ One of the following actions is required:
 2. Remove "strictTemplates" or set it to 'false'.
 
 More information about the template type checking compiler options can be found in the documentation:
-https://v9.angular.io/guide/template-typecheck#template-type-checking`,
+https://angular.io/guide/template-typecheck`,
     };
   }
 
