@@ -129,6 +129,12 @@
             "logo": "",
             "title": "NativeScript",
             "url": "https://docs.nativescript.org/angular/start/introduction"
+          },
+          "angular-miniprogram": {
+            "desc": "MiniProgram Platform for Angular.",
+            "logo": "",
+            "title": "MiniProgram",
+            "url": "https://github.com/wszgrcy/angular-miniprogram"
           }
         }
       },
