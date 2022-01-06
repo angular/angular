@@ -120,6 +120,10 @@ This section guides you through adding radio buttons to bind your color choice t
 
   <code-example path="attribute-directives/src/app/app.component.ts" header="src/app/app.component.ts (class)" region="class"></code-example>
 
+1. In `highlight.directive.ts`, revise `onMouseEnter` method so that it first tries to highlight with `appHighlight` and falls back to `red` if `appHighlight` is `undefined`.
+
+  <code-example path="attribute-directives/src/app/highlight.directive.3.ts" header="src/app/highlight.directive.ts (mouse-enter)" region="mouse-enter"></code-example>
+
 1. Serve your application to verify that the user can choose the color with the radio buttons.
 
   <div class="lightbox">
@@ -136,7 +140,7 @@ This section guides you through configuring your application so the developer ca
 
   <code-example path="attribute-directives/src/app/highlight.directive.ts" header="src/app/highlight.directive.ts (defaultColor)" region="defaultColor"></code-example>
 
-1. Revise the directive's `onMouseEnter` so that it first tries to highlight with the `highlightColor`, then with the `defaultColor`, and falls back to `red` if both properties are `undefined`.
+1. Revise the directive's `onMouseEnter` so that it first tries to highlight with the `appHighlight`, then with the `defaultColor`, and falls back to `red` if both properties are `undefined`.
 
   <code-example path="attribute-directives/src/app/highlight.directive.ts" header="src/app/highlight.directive.ts (mouse-enter)" region="mouse-enter"></code-example>
 
