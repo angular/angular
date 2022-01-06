@@ -144,6 +144,14 @@ import {BehaviorSubject, Subscribable, Unsubscribable} from 'rxjs';
         // The following line will only compile using the BehaviorSubject overload.
         const value: number = pipe.transform(behaviorSubject);
       });
+
+      it('should return the stored value', () => {
+        const ref = getChangeDetectorRefSpy();
+        const pipe = new AsyncPipe(ref);
+        const behaviorSubject = new BehaviorSubject<number>(1);
+        const value = pipe.transform(behaviorSubject);
+        expect(value).toBe(1);
+      });
     });
 
     describe('Promise', () => {
