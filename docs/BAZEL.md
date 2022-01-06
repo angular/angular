@@ -3,7 +3,7 @@
 Note: this doc is for developing Angular, it is _not_ public
 documentation for building an Angular application with Bazel.
 
-The Bazel build tool (http://bazel.build) provides fast, reliable
+The Bazel build tool (https://bazel.build) provides fast, reliable
 incremental builds. We plan to migrate Angular's build scripts to
 Bazel.
 
