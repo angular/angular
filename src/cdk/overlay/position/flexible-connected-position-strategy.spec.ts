@@ -164,6 +164,46 @@ describe('FlexibleConnectedPositionStrategy', () => {
     originElement.remove();
   });
 
+  it('should calculate position with simulated zoom in Safari', () => {
+    let containerElement = overlayContainer.getContainerElement();
+    spyOn(containerElement, 'getBoundingClientRect').and.returnValue({
+      top: -200,
+      bottom: 900,
+      left: -200,
+      right: 100,
+      width: 100,
+      height: 100,
+    } as DOMRect);
+
+    const originElement = createPositionedBlockElement();
+    document.body.appendChild(originElement);
+
+    // Position the element so it would have enough space to fit.
+    originElement.style.top = '200px';
+    originElement.style.left = '70px';
+
+    attachOverlay({
+      positionStrategy: overlay
+        .position()
+        .flexibleConnectedTo(originElement)
+        .withFlexibleDimensions(false)
+        .withPush(false)
+        .withPositions([
+          {
+            originX: 'start',
+            originY: 'top',
+            overlayX: 'start',
+            overlayY: 'top',
+          },
+        ]),
+    });
+
+    expect(getComputedStyle(overlayRef.overlayElement).left).toBe('270px');
+    expect(getComputedStyle(overlayRef.overlayElement).top).toBe('400px');
+
+    originElement.remove();
+  });
+
   it('should clean up after itself when disposed', () => {
     const origin = document.createElement('div');
     const positionStrategy = overlay
