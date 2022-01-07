@@ -374,7 +374,7 @@ export function translate(
     missingTranslation: DiagnosticHandlingStrategy): [TemplateStringsArray, readonly any[]] {
   try {
     return ɵtranslate(translations, messageParts, substitutions);
-  } catch (e) {
+  } catch (e: any) {
     if (ɵisMissingTranslationError(e)) {
       diagnostics.add(missingTranslation, e.message);
       // Return the parsed message because this will have the meta blocks stripped

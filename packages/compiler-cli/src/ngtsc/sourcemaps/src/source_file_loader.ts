@@ -111,7 +111,7 @@ export class SourceFileLoader {
       return new SourceFile(sourcePath, contents, sourceMapInfo, sources, this.fs);
     } catch (e) {
       this.logger.warn(
-          `Unable to fully load ${sourcePath} for source-map flattening: ${e.message}`);
+          `Unable to fully load ${sourcePath} for source-map flattening: ${(e as Error).message}`);
       return null;
     } finally {
       // We are finished with this recursion so revert the paths being tracked
@@ -166,8 +166,8 @@ export class SourceFileLoader {
           origin: ContentOrigin.FileSystem,
         };
       } catch (e) {
-        this.logger.warn(
-            `Unable to fully load ${sourcePath} for source-map flattening: ${e.message}`);
+        this.logger.warn(`Unable to fully load ${sourcePath} for source-map flattening: ${
+            (e as Error).message}`);
         return null;
       }
     }

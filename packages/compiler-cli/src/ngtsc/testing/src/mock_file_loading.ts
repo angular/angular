@@ -12,6 +12,7 @@ import {resolve} from 'path';
 
 import {AbsoluteFsPath, FileSystem, getFileSystem} from '../../file_system';
 import {Folder, MockFileSystemPosix, TestFile} from '../../file_system/testing';
+
 import {getAngularPackagesFromRunfiles, resolveNpmTreeArtifact} from './runfile_helpers';
 
 export function loadTestFiles(files: TestFile[]) {
@@ -132,7 +133,7 @@ export function loadTestDirectory(
         fs.writeFile(targetPath, readFileSync(srcPath, 'utf-8'));
       }
     } catch (e) {
-      console.warn(`Failed to add ${srcPath} to the mock file-system: ${e.message}`);
+      console.warn(`Failed to add ${srcPath} to the mock file-system: ${(e as Error).message}`);
     }
   });
 }

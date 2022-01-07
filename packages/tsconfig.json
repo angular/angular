@@ -17,7 +17,6 @@
     "outDir": "../dist/all/@angular",
     "noImplicitAny": true,
     "noImplicitOverride": true,
-    "useUnknownInCatchVariables": false,
     "noFallthroughCasesInSwitch": true,
     "paths": {
       "selenium-webdriver": [

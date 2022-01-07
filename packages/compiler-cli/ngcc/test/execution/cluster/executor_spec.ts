@@ -86,7 +86,7 @@ runInEachFileSystem(() => {
         try {
           await executor.execute(analyzeEntryPointsSpy, createCompilerFnSpy);
         } catch (e) {
-          error = e.message;
+          error = (e as Error).message;
         }
         expect(analyzeEntryPointsSpy).toHaveBeenCalledWith();
         expect(createCompilerFnSpy).not.toHaveBeenCalled();
@@ -101,7 +101,7 @@ runInEachFileSystem(() => {
         try {
           await executor.execute(anyFn, anyFn);
         } catch (e) {
-          error = e.message;
+          error = (e as Error).message;
         }
         expect(error).toEqual('master runner error');
         expect(lockFileLog).toEqual(['write()', 'remove()']);
@@ -121,7 +121,7 @@ runInEachFileSystem(() => {
         try {
           await executor.execute(anyFn, anyFn);
         } catch (e) {
-          error = e.message;
+          error = (e as Error).message;
         }
         expect(error).toEqual('LockFile.write() error');
         expect(masterRunSpy).not.toHaveBeenCalled();
@@ -141,7 +141,7 @@ runInEachFileSystem(() => {
         try {
           await executor.execute(anyFn, anyFn);
         } catch (e) {
-          error = e.message;
+          error = (e as Error).message;
         }
         expect(error).toEqual('LockFile.remove() error');
         expect(lockFileLog).toEqual(['write()', 'remove()']);

@@ -44,7 +44,7 @@ runInEachFileSystem(() => {
                throw new Error('ERROR');
              });
            } catch (e) {
-             error = e.message;
+             error = (e as Error).message;
            }
            expect(error).toEqual('ERROR');
            expect(log).toEqual(['write()', 'fn()', 'remove()']);

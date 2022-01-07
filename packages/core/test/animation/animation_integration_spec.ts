@@ -3843,7 +3843,7 @@ describe('animation tests', function() {
        try {
          fixture.detectChanges();
        } catch (e) {
-         errorMsg = e.message;
+         errorMsg = (e as Error).message;
        }
 
        expect(errorMsg).toMatch(/@foo has failed due to:/);

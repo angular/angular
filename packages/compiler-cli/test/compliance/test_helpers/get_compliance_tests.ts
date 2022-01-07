@@ -59,8 +59,8 @@ function loadTestCasesFile(
   try {
     return JSON.parse(fs.readFile(testCasesPath)) as {cases: TestCaseJson | TestCaseJson[]};
   } catch (e) {
-    throw new Error(
-        `Failed to load test-cases at "${fs.relative(basePath, testCasesPath)}":\n ${e.message}`);
+    throw new Error(`Failed to load test-cases at "${fs.relative(basePath, testCasesPath)}":\n ${
+        (e as Error).message}`);
   }
 }
 

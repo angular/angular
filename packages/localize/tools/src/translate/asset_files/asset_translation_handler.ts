@@ -42,7 +42,7 @@ export class AssetTranslationHandler implements TranslationHandler {
       this.fs.ensureDir(this.fs.dirname(outputPath));
       this.fs.writeFile(outputPath, contents);
     } catch (e) {
-      diagnostics.error(e.message);
+      diagnostics.error((e as Error).message);
     }
   }
 }

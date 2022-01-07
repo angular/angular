@@ -2,7 +2,7 @@ import * as XRegExp from 'xregexp';
 
 // The `XRegExp` typings are not accurate.
 interface XRegExp extends RegExp {
-  xregexp: { captureNames?: string[] };
+  xregexp: {captureNames?: string[]};
 }
 
 export class FirebaseRedirectSource {
@@ -22,34 +22,36 @@ export class FirebaseRedirectSource {
   static fromGlobPattern(glob: string): FirebaseRedirectSource {
     const dot = /\./g;
     const star = /\*/g;
-    const doubleStar = /(^|\/)\*\*($|\/)/g;           // e.g. a/**/b or **/b or a/** but not a**b
-    const modifiedPatterns = /(.)\(([^)]+)\)/g;       // e.g. `@(a|b)
-    const restParam = /(\/?):([A-Za-z]+)\*/g;            // e.g. `:rest*`
-    const namedParam = /(\/?):([A-Za-z]+)/g;             // e.g. `:api`
+    const doubleStar = /(^|\/)\*\*($|\/)/g;             // e.g. a/**/b or **/b or a/** but not a**b
+    const modifiedPatterns = /(.)\(([^)]+)\)/g;         // e.g. `@(a|b)
+    const restParam = /(\/?):([A-Za-z]+)\*/g;           // e.g. `:rest*`
+    const namedParam = /(\/?):([A-Za-z]+)/g;            // e.g. `:api`
     const possiblyEmptyInitialSegments = /^\.🐷\//g;  // e.g. `**/a` can also match `a`
     const possiblyEmptySegments = /\/\.🐷\//g;        // e.g. `a/**/b` can also match `a/b`
     const willBeStar = /🐷/g;                         // e.g. `a**b` not matched by previous rule
 
     try {
       const restNamedGroups: string[] = [];
-      const pattern = glob
-          .replace(dot, '\\.')
-          .replace(modifiedPatterns, replaceModifiedPattern)
-          .replace(restParam, (_, leadingSlash, groupName) => {
-            // capture the rest of the string
-            restNamedGroups.push(groupName);
-            return `(?:${leadingSlash}(?<${groupName}>.🐷))?`;
-          })
-          .replace(namedParam, '$1(?<$2>[^/]+)')
-          .replace(doubleStar, '$1.🐷$2')                 // use the pig to avoid replacing ** in next rule
-          .replace(star, '[^/]*')                         // match a single segment
-          .replace(possiblyEmptyInitialSegments, '(?:.*)')// deal with **/ special cases
-          .replace(possiblyEmptySegments, '(?:/|/.*/)')   // deal with /**/ special cases
-          .replace(willBeStar, '*');                      // other ** matches
+      const pattern =
+          glob.replace(dot, '\\.')
+              .replace(modifiedPatterns, replaceModifiedPattern)
+              .replace(
+                  restParam,
+                  (_, leadingSlash, groupName) => {
+                    // capture the rest of the string
+                    restNamedGroups.push(groupName);
+                    return `(?:${leadingSlash}(?<${groupName}>.🐷))?`;
+                  })
+              .replace(namedParam, '$1(?<$2>[^/]+)')
+              .replace(doubleStar, '$1.🐷$2')  // use the pig to avoid replacing ** in next rule
+              .replace(star, '[^/]*')         // match a single segment
+              .replace(possiblyEmptyInitialSegments, '(?:.*)')  // deal with **/ special cases
+              .replace(possiblyEmptySegments, '(?:/|/.*/)')     // deal with /**/ special cases
+              .replace(willBeStar, '*');                        // other ** matches
 
       return new FirebaseRedirectSource(`^${pattern}$`, restNamedGroups);
     } catch (err) {
-      throw new Error(`Error in FirebaseRedirectSource: "${glob}" - ${err.message}`);
+      throw new Error(`Error in FirebaseRedirectSource: "${glob}" - ${(err as Error).message}`);
     }
   }
 
@@ -72,7 +74,7 @@ export class FirebaseRedirectSource {
       // capture groups.
       return new FirebaseRedirectSource(regex.replace(/(\(\?)P(<[^>]+>)/g, '$1$2'));
     } catch (err) {
-      throw new Error(`Error in FirebaseRedirectSource: "${regex}" - ${err.message}`);
+      throw new Error(`Error in FirebaseRedirectSource: "${regex}" - ${(err as Error).message}`);
     }
   }
 
@@ -80,14 +82,14 @@ export class FirebaseRedirectSource {
     return XRegExp.test(url, this.regex);
   }
 
-  match(url: string): { [key: string]: string } | undefined {
+  match(url: string): {[key: string]: string}|undefined {
     const match = XRegExp.exec(url, this.regex) as ReturnType<typeof XRegExp.exec>;
 
     if (!match) {
       return undefined;
     }
 
-    const result: { [key: string]: string } = {};
+    const result: {[key: string]: string} = {};
     const names = this.regex.xregexp.captureNames || [];
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     names.forEach(name => result[name] = match.groups![name]);

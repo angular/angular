@@ -1285,7 +1285,7 @@ export class Router {
     try {
       urlTree = this.urlSerializer.parse(url);
     } catch (e) {
-      urlTree = this.malformedUriErrorHandler(e, this.urlSerializer, url);
+      urlTree = this.malformedUriErrorHandler(e as URIError, this.urlSerializer, url);
     }
     return urlTree;
   }

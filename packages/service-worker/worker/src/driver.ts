@@ -142,7 +142,7 @@ export class Driver implements Debuggable, UpdateSource {
             await this.cleanupOldSwCaches();
           } catch (err) {
             // Nothing to do - cleanup failed. Just log it.
-            this.debugger.log(err, 'cleanupOldSwCaches @ activate: cleanup-old-sw-caches');
+            this.debugger.log(err as Error, 'cleanupOldSwCaches @ activate: cleanup-old-sw-caches');
           }
         });
       })());
@@ -409,7 +409,7 @@ export class Driver implements Debuggable, UpdateSource {
     } catch (e) {
       client.postMessage({
         ...response,
-        error: e.toString(),
+        error: (e as Error).toString(),
       });
     }
   }
@@ -479,7 +479,7 @@ export class Driver implements Debuggable, UpdateSource {
           // Handle the request. First try the AppVersion. If that doesn't work, fall back on the
           // network.
           res = await appVersion.handleFetch(event.request, event);
-        } catch (err) {
+        } catch (err: any) {
           if (err.isUnrecoverableState) {
             await this.notifyClientsAboutUnrecoverableState(appVersion, err.message);
           }
@@ -632,7 +632,7 @@ export class Driver implements Debuggable, UpdateSource {
         // it fails, then full initialization was attempted and failed.
         await this.scheduleInitialization(this.versions.get(hash)!);
       } catch (err) {
-        this.debugger.log(err, `initialize: schedule init of ${hash}`);
+        this.debugger.log(err as Error, `initialize: schedule init of ${hash}`);
         return false;
       }
     }));
@@ -781,7 +781,7 @@ export class Driver implements Debuggable, UpdateSource {
     const initialize = async () => {
       try {
         await appVersion.initializeFully();
-      } catch (err) {
+      } catch (err: any) {
         this.debugger.log(err, `initializeFully for ${appVersion.manifestHash}`);
         await this.versionFailed(appVersion, err);
       }
@@ -887,7 +887,7 @@ export class Driver implements Debuggable, UpdateSource {
 
       return true;
     } catch (err) {
-      this.debugger.log(err, `Error occurred while updating to manifest ${hash}`);
+      this.debugger.log(err as Error, `Error occurred while updating to manifest ${hash}`);
 
       this.state = DriverReadyState.EXISTING_CLIENTS_ONLY;
       this.stateMessage = `Degraded due to failed initialization: ${errorToString(err)}`;
@@ -966,7 +966,7 @@ export class Driver implements Debuggable, UpdateSource {
     } catch (err) {
       // Oh well? Not much that can be done here. These caches will be removed on the next attempt
       // or when the SW revs its format version, which happens from time to time.
-      this.debugger.log(err, 'cleanupCaches');
+      this.debugger.log(err as Error, 'cleanupCaches');
     }
   }
 
@@ -1167,7 +1167,7 @@ export class Driver implements Debuggable, UpdateSource {
     try {
       return await this.scope.fetch(req);
     } catch (err) {
-      this.debugger.log(err, `Driver.fetch(${req.url})`);
+      this.debugger.log(err as Error, `Driver.fetch(${req.url})`);
       return this.adapter.newResponse(null, {
         status: 504,
         statusText: 'Gateway Timeout',

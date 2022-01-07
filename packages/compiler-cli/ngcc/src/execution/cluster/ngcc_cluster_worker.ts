@@ -40,7 +40,7 @@ import {startWorker} from './worker';
     await startWorker(logger, createCompileFn);
     process.exitCode = 0;
   } catch (e) {
-    console.error(e.stack || e.message);
+    console.error((e as Error).stack || (e as Error).message);
     process.exit(1);
   }
 })();

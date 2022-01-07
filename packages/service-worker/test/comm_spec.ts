@@ -213,7 +213,7 @@ import {MockPushManager, MockPushSubscription, MockServiceWorkerContainer, MockS
             await push.unsubscribe();
             throw new Error('`unsubscribe()` should fail');
           } catch (err) {
-            expect(err.message).toBe('Not subscribed to push notifications.');
+            expect((err as Error).message).toBe('Not subscribed to push notifications.');
           }
         });
 
@@ -234,7 +234,7 @@ import {MockPushManager, MockPushSubscription, MockServiceWorkerContainer, MockS
             await push.unsubscribe();
             throw new Error('`unsubscribe()` should fail');
           } catch (err) {
-            expect(err.message).toBe('foo');
+            expect((err as Error).message).toBe('foo');
           }
         });
 
@@ -246,7 +246,7 @@ import {MockPushManager, MockPushSubscription, MockServiceWorkerContainer, MockS
             await push.unsubscribe();
             throw new Error('`unsubscribe()` should fail');
           } catch (err) {
-            expect(err.message).toBe('Unsubscribe failed!');
+            expect((err as Error).message).toBe('Unsubscribe failed!');
           }
         });
 

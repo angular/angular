@@ -636,7 +636,7 @@ describe('TransitionAnimationEngine', () => {
       try {
         engine.flush();
       } catch (e) {
-        errorMessage = e.toString();
+        errorMessage = (e as Error).toString();
       }
 
       expect(errorMessage).toMatch(/Unable to animate due to the following errors:/);

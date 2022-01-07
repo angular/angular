@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {absoluteFrom, AbsoluteFsPath, FileSystem, PathSegment} from '@angular/compiler-cli/private/localize';
-import {parseSync, transformFromAstSync, types as t} from '../../babel_core';
 
+import {parseSync, transformFromAstSync, types as t} from '../../babel_core';
 import {Diagnostics} from '../../diagnostics';
 import {TranslatePluginOptions} from '../../source_file_utils';
 import {OutputPathFn} from '../output_path';
@@ -103,7 +103,7 @@ export class SourceFileTranslationHandler implements TranslationHandler {
       this.fs.ensureDir(this.fs.dirname(outputPath));
       this.fs.writeFile(outputPath, contents);
     } catch (e) {
-      diagnostics.error(e.message);
+      diagnostics.error((e as Error).message);
     }
   }
 }

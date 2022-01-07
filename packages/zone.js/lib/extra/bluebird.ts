@@ -73,7 +73,7 @@ Zone.__load_patch('bluebird', (global: any, Zone: ZoneType, api: _ZonePrivate) =
           e.isHandledByZone = true;
           throw e;
         });
-      } catch (err) {
+      } catch (err: any) {
         err.isHandledByZone = false;
         api.onUnhandledError(err);
       }

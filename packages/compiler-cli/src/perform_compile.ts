@@ -133,7 +133,7 @@ export function readConfiguration(
   } catch (e) {
     const errors: ts.Diagnostic[] = [{
       category: ts.DiagnosticCategory.Error,
-      messageText: e.stack,
+      messageText: (e as Error).stack ?? (e as Error).message,
       file: undefined,
       start: undefined,
       length: undefined,
@@ -267,7 +267,7 @@ export function performCompilation({
     program = undefined;
     allDiagnostics.push({
       category: ts.DiagnosticCategory.Error,
-      messageText: e.stack,
+      messageText: (e as Error).stack ?? (e as Error).message,
       code: api.UNKNOWN_ERROR_CODE,
       file: undefined,
       start: undefined,

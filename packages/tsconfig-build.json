@@ -11,14 +11,16 @@
     "noImplicitOverride": true,
     "strictNullChecks": true,
     "esModuleInterop": true,
-    "useUnknownInCatchVariables": false,
     "strict": true,
     "strictPropertyInitialization": true,
     "noFallthroughCasesInSwitch": true,
     "moduleResolution": "node",
     "module": "es2020",
     "target": "es2020",
-    "lib": ["es2020", "dom"],
+    "lib": [
+      "es2020",
+      "dom"
+    ],
     "skipLibCheck": true,
     // don't auto-discover @types/node, it results in a ///<reference in the .d.ts output
     "types": [],
