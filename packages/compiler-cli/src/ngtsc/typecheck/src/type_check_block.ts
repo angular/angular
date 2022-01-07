@@ -1728,11 +1728,12 @@ class TcbExpressionTranslator {
       return result;
     } else if (
         ast instanceof Call &&
-        (ast.receiver instanceof PropertyRead || ast.receiver instanceof SafePropertyRead) &&
-        !(ast.receiver.receiver instanceof ThisReceiver)) {
+        (ast.receiver instanceof PropertyRead || ast.receiver instanceof SafePropertyRead)) {
       // Resolve the special `$any(expr)` syntax to insert a cast of the argument to type `any`.
       // `$any(expr)` -> `expr as any`
-      if (ast.receiver.name === '$any' && ast.args.length === 1) {
+      if (ast.receiver.receiver instanceof ImplicitReceiver &&
+          !(ast.receiver.receiver instanceof ThisReceiver) && ast.receiver.name === '$any' &&
+          ast.args.length === 1) {
         const expr = this.translate(ast.args[0]);
         const exprAsAny =
             ts.createAsExpression(expr, ts.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword));
