@@ -14,7 +14,6 @@
     "noFallthroughCasesInSwitch": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "useUnknownInCatchVariables": false,
     "sourceMap": true,
     "declaration": false,
     "downlevelIteration": true,

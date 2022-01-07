@@ -123,7 +123,7 @@ export function patchEventTarget(
     let error;
     try {
       task.invoke(task, target, [event]);
-    } catch (err) {
+    } catch (err: any) {
       error = err;
     }
     const options = task.options;

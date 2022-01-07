@@ -1,15 +1,13 @@
-import { Component, ElementRef, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
-import { Title, Meta } from '@angular/platform-browser';
-
-import { asapScheduler, Observable, of, timer } from 'rxjs';
-import { catchError, observeOn, switchMap, takeUntil, tap } from 'rxjs/operators';
-import { EMPTY_HTML, unwrapHtmlForSink } from 'safevalues';
-
-import { DocumentContents, FILE_NOT_FOUND_ID, FETCHING_ERROR_ID } from 'app/documents/document.service';
-import { Logger } from 'app/shared/logger.service';
-import { TocService } from 'app/shared/toc.service';
-import { ElementsLoader } from 'app/custom-elements/elements-loader';
-import { fromInnerHTML } from 'app/shared/security';
+import {Component, ElementRef, EventEmitter, Input, OnDestroy, Output} from '@angular/core';
+import {Meta, Title} from '@angular/platform-browser';
+import {ElementsLoader} from 'app/custom-elements/elements-loader';
+import {DocumentContents, FETCHING_ERROR_ID, FILE_NOT_FOUND_ID} from 'app/documents/document.service';
+import {Logger} from 'app/shared/logger.service';
+import {fromInnerHTML} from 'app/shared/security';
+import {TocService} from 'app/shared/toc.service';
+import {asapScheduler, Observable, of, timer} from 'rxjs';
+import {catchError, observeOn, switchMap, takeUntil, tap} from 'rxjs/operators';
+import {EMPTY_HTML, unwrapHtmlForSink} from 'safevalues';
 
 
 // Constants
@@ -17,7 +15,8 @@ export const NO_ANIMATIONS = 'no-animations';
 
 // Initialization prevents flicker once pre-rendering is on
 const initialDocViewerElement = document.querySelector('aio-doc-viewer');
-const initialDocViewerContent = initialDocViewerElement ? fromInnerHTML(initialDocViewerElement) : EMPTY_HTML;
+const initialDocViewerContent =
+    initialDocViewerElement ? fromInnerHTML(initialDocViewerElement) : EMPTY_HTML;
 
 @Component({
   selector: 'aio-doc-viewer',
@@ -61,15 +60,13 @@ export class DocViewerComponent implements OnDestroy {
   @Output() docRendered = new EventEmitter<void>();
 
   constructor(
-    elementRef: ElementRef,
-    private logger: Logger,
-    private titleService: Title,
-    private metaService: Meta,
-    private tocService: TocService,
-    private elementsLoader: ElementsLoader) {
+      elementRef: ElementRef, private logger: Logger, private titleService: Title,
+      private metaService: Meta, private tocService: TocService,
+      private elementsLoader: ElementsLoader) {
     this.hostElement = elementRef.nativeElement;
 
-    // Security: the initialDocViewerContent comes from the prerendered DOM and is considered to be secure
+    // Security: the initialDocViewerContent comes from the prerendered DOM and is considered to be
+    // secure
     this.hostElement.innerHTML = unwrapHtmlForSink(initialDocViewerContent);
 
     if (this.hostElement.firstElementChild) {
@@ -81,7 +78,7 @@ export class DocViewerComponent implements OnDestroy {
             observeOn(asapScheduler),
             switchMap(newDoc => this.render(newDoc)),
             takeUntil(this.onDestroy$),
-        )
+            )
         .subscribe();
   }
 
@@ -151,7 +148,8 @@ export class DocViewerComponent implements OnDestroy {
         tap(() => this.docRendered.emit()),
         catchError(err => {
           const errorMessage = `${(err instanceof Error) ? err.stack : err}`;
-          this.logger.error(new Error(`[DocViewer] Error preparing document '${doc.id}': ${errorMessage}`));
+          this.logger.error(
+              new Error(`[DocViewer] Error preparing document '${doc.id}': ${errorMessage}`));
           this.nextViewContainer.textContent = '';
           this.setNoIndex(true);
 
@@ -172,7 +170,7 @@ export class DocViewerComponent implements OnDestroy {
    */
   private setNoIndex(val: boolean) {
     if (val) {
-      this.metaService.addTag({ name: 'robots', content: 'noindex' });
+      this.metaService.addTag({name: 'robots', content: 'noindex'});
     } else {
       this.metaService.removeTag('name="robots"');
     }
@@ -207,29 +205,33 @@ export class DocViewerComponent implements OnDestroy {
 
     // Some properties are not assignable and thus cannot be animated.
     // Example methods, readonly and CSS properties:
-    // "length", "parentRule", "getPropertyPriority", "getPropertyValue", "item", "removeProperty", "setProperty"
+    // "length", "parentRule", "getPropertyPriority", "getPropertyValue", "item", "removeProperty",
+    // "setProperty"
     type StringValueCSSStyleDeclaration = Exclude<
-      {
-        [K in keyof CSSStyleDeclaration]: CSSStyleDeclaration[K] extends string ? K : never;
-      }[keyof CSSStyleDeclaration],
-      number
-    >;
+        {[K in keyof CSSStyleDeclaration]:
+             CSSStyleDeclaration[K] extends string ? K : never;}[keyof CSSStyleDeclaration],
+        number>;
     const animateProp =
-        (elem: HTMLElement, prop: StringValueCSSStyleDeclaration, from: string, to: string, duration = 200) => {
+        (elem: HTMLElement, prop: StringValueCSSStyleDeclaration, from: string, to: string,
+         duration = 200) => {
           const animationsDisabled = this.hostElement.classList.contains(NO_ANIMATIONS);
           elem.style.transition = '';
-          return animationsDisabled
-              ? this.void$.pipe(tap(() => elem.style[prop] = to))
-              : this.void$.pipe(
-                    // In order to ensure that the `from` value will be applied immediately (i.e.
-                    // without transition) and that the `to` value will be affected by the
-                    // `transition` style, we need to ensure an animation frame has passed between
-                    // setting each style.
-                    switchMap(() => raf$), tap(() => elem.style[prop] = from),
-                    switchMap(() => raf$), tap(() => elem.style.transition = `all ${duration}ms ease-in-out`),
-                    switchMap(() => raf$), tap(() => elem.style[prop] = to),
-                    switchMap(() => timer(getActualDuration(elem))), switchMap(() => this.void$),
-                );
+          return animationsDisabled ?
+              this.void$.pipe(tap(() => elem.style[prop] = to)) :
+              this.void$.pipe(
+                  // In order to ensure that the `from` value will be applied immediately (i.e.
+                  // without transition) and that the `to` value will be affected by the
+                  // `transition` style, we need to ensure an animation frame has passed between
+                  // setting each style.
+                  switchMap(() => raf$),
+                  tap(() => elem.style[prop] = from),
+                  switchMap(() => raf$),
+                  tap(() => elem.style.transition = `all ${duration}ms ease-in-out`),
+                  switchMap(() => raf$),
+                  tap(() => elem.style[prop] = to),
+                  switchMap(() => timer(getActualDuration(elem))),
+                  switchMap(() => this.void$),
+              );
         };
 
     const animateLeave = (elem: HTMLElement) => animateProp(elem, 'opacity', '1', '0.1');
@@ -241,7 +243,8 @@ export class DocViewerComponent implements OnDestroy {
       done$ = done$.pipe(
           // Remove the current view from the viewer.
           switchMap(() => animateLeave(this.currViewContainer)),
-          tap(() => (this.currViewContainer.parentElement as HTMLElement).removeChild(this.currViewContainer)),
+          tap(() => (this.currViewContainer.parentElement as HTMLElement)
+                        .removeChild(this.currViewContainer)),
           tap(() => this.docRemoved.emit()),
       );
     }
@@ -304,7 +307,8 @@ async function printSwDebugInfo(): Promise<void> {
       }
       console.log(await res.text());
     } catch (err) {
-      console.log(`Failed to retrieve debug info from '/ngsw/state': ${err.message || err}`);
+      console.log(
+          `Failed to retrieve debug info from '/ngsw/state': ${(err as Error).message || err}`);
     }
   }
 
@@ -319,25 +323,25 @@ async function printSwDebugInfo(): Promise<void> {
     }
   }
 
-  async function getCacheEntries(
-      name: string, includeValues: boolean,
-      ignoredKeys: string[] = []): Promise<{key: string, value?: unknown}[]> {
+  async function getCacheEntries(name: string, includeValues: boolean, ignoredKeys: string[] = []):
+      Promise<{key: string, value?: unknown}[]> {
     const ignoredUrls = new Set(ignoredKeys.map(key => new Request(key).url));
 
     const cache = await caches.open(name);
     const keys = (await cache.keys()).map(req => req.url).filter(url => !ignoredUrls.has(url));
-    const entries = await Promise.all(keys.map(async key => ({
-      key,
-      value: !includeValues ? undefined : await (await cache.match(key))?.json(),
-    })));
+    const entries = await Promise.all(
+        keys.map(async key => ({
+                   key,
+                   value: !includeValues ? undefined : await (await cache.match(key))?.json(),
+                 })));
 
     return entries;
   }
 
   function printCacheEntries(name: string, entries: {key: string, value?: unknown}[]): void {
-    const entriesStr = entries
-        .map(({key, value}) => `  - ${key}${!value ? '' : `: ${JSON.stringify(value)}`}`)
-        .join('\n');
+    const entriesStr =
+        entries.map(({key, value}) => `  - ${key}${!value ? '' : `: ${JSON.stringify(value)}`}`)
+            .join('\n');
 
     console.log(`\nCache: ${name} (${entries.length} entries)\n${entriesStr}`);
   }

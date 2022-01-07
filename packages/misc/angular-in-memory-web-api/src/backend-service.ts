@@ -320,7 +320,7 @@ export abstract class BackendService {
       try {
         resOptions = resOptionsFactory();
       } catch (error) {
-        const err = error.message || error;
+        const err = (error as Error).message || error;
         resOptions = this.createErrorResponseOptions('', STATUS.INTERNAL_SERVER_ERROR, `${err}`);
       }
 
@@ -550,7 +550,7 @@ export abstract class BackendService {
       const resourceUrl = urlRoot + apiBase + collectionName + '/';
       return {apiBase, collectionName, id, query, resourceUrl};
     } catch (err) {
-      const msg = `unable to parse url '${url}'; original error: ${err.message}`;
+      const msg = `unable to parse url '${url}'; original error: ${(err as Error).message}`;
       throw new Error(msg);
     }
   }
@@ -565,7 +565,7 @@ export abstract class BackendService {
       try {
         item.id = id || this.genId(collection, collectionName);
       } catch (err) {
-        const emsg: string = err.message || '';
+        const emsg: string = (err as Error).message || '';
         if (/id type is non-numeric/.test(emsg)) {
           return this.createErrorResponseOptions(url, STATUS.UNPROCESSABLE_ENTRY, emsg);
         } else {
@@ -597,7 +597,7 @@ export abstract class BackendService {
     } else {
       collection[existingIx] = item;
       return this.config.post204 ? {headers, status: STATUS.NO_CONTENT} :  // successful; no content
-          {headers, body, status: STATUS.OK};  // successful; return entity
+                                   {headers, body, status: STATUS.OK};  // successful; return entity
     }
   }
 
@@ -621,7 +621,7 @@ export abstract class BackendService {
     if (existingIx > -1) {
       collection[existingIx] = item;
       return this.config.put204 ? {headers, status: STATUS.NO_CONTENT} :  // successful; no content
-          {headers, body, status: STATUS.OK};  // successful; return entity
+                                  {headers, body, status: STATUS.OK};  // successful; return entity
     } else if (this.config.put404) {
       // item to update not found; use POST to create new item for this id.
       return this.createErrorResponseOptions(
@@ -651,9 +651,9 @@ export abstract class BackendService {
   protected resetDb(reqInfo?: RequestInfo): Observable<boolean> {
     this.dbReadySubject && this.dbReadySubject.next(false);
     const db = this.inMemDbService.createDb(reqInfo);
-    const db$ = db instanceof Observable ?
-        db :
-        typeof (db as any).then === 'function' ? from(db as Promise<any>) : of(db);
+    const db$ = db instanceof Observable       ? db :
+        typeof (db as any).then === 'function' ? from(db as Promise<any>) :
+                                                 of(db);
     db$.pipe(first()).subscribe((d: {}) => {
       this.db = d;
       this.dbReadySubject && this.dbReadySubject.next(true);

@@ -185,8 +185,9 @@ describe('Zone', function() {
       try {
         zone.cancelTask(task);
       } catch (e) {
-        expect(e.message).toContain(
-            'macroTask \'test\': can not transition to \'canceling\', expecting state \'scheduled\' or \'running\', was \'notScheduled\'.');
+        expect((e as Error).message)
+            .toContain(
+                'macroTask \'test\': can not transition to \'canceling\', expecting state \'scheduled\' or \'running\', was \'notScheduled\'.');
       }
     });
 

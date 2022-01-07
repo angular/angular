@@ -222,7 +222,7 @@ export class R3Injector {
           null :
           notFoundValue;
       return nextInjector.get(token, notFoundValue);
-    } catch (e) {
+    } catch (e: any) {
       if (e.name === 'NullInjectorError') {
         const path: any[] = e[NG_TEMP_TOKEN_PATH] = e[NG_TEMP_TOKEN_PATH] || [];
         path.unshift(stringify(token));

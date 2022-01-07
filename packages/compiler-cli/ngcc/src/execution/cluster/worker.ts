@@ -40,7 +40,7 @@ export async function startWorker(logger: Logger, createCompileFn: CreateCompile
           throw new Error(
               `[Worker #${cluster.worker.id}] Invalid message received: ${JSON.stringify(msg)}`);
       }
-    } catch (err) {
+    } catch (err: any) {
       switch (err && err.code) {
         case 'ENOMEM':
           // Not being able to allocate enough memory is not necessarily a problem with processing

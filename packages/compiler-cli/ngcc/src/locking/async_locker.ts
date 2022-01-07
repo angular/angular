@@ -49,7 +49,7 @@ export class AsyncLocker {
     for (let attempts = 0; attempts < this.retryAttempts; attempts++) {
       try {
         return this.lockFile.write();
-      } catch (e) {
+      } catch (e: any) {
         if (e.code !== 'EEXIST') {
           throw e;
         }

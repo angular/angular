@@ -300,7 +300,7 @@ describe(`injector`, () => {
     try {
       injector.get(Car);
       throw 'Must throw';
-    } catch (e) {
+    } catch (e: any) {
       expect(e.message).toContain(
           `Error during instantiation of Engine! (${stringify(Car)} -> Engine)`);
       expect(getOriginalError(e) instanceof Error).toBeTruthy();

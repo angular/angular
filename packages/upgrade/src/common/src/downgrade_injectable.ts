@@ -7,6 +7,7 @@
  */
 
 import {Injector} from '@angular/core';
+
 import {IInjectorService} from './angular1';
 import {$INJECTOR, INJECTOR_KEY} from './constants';
 import {getTypeName, isFunction, validateInjectionKey} from './util';
@@ -83,7 +84,7 @@ export function downgradeInjectable(token: any, downgradedModule: string = ''): 
       const injector: Injector = $injector.get(injectorKey);
       return injector.get(token);
     } catch (err) {
-      throw new Error(`Error while ${attemptedAction}: ${err.message || err}`);
+      throw new Error(`Error while ${attemptedAction}: ${(err as Error).message || err}`);
     }
   };
   (factory as any)['$inject'] = [$INJECTOR];
