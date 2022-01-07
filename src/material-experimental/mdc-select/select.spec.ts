@@ -2237,9 +2237,8 @@ describe('MDC-based MatSelect', () => {
           dispatchKeyboardEvent(host, 'keydown', DOWN_ARROW);
         }
 
-        // <top padding> + <option index * height> - <panel height> = 8 + 16 * 48 - 256 = 520
-        // <top padding> + <option index * height> - <panel height> = 8 + 16 * 48 - 256 = 520
-        expect(panel.scrollTop).withContext('Expected scroll to be at the 16th option.').toBe(520);
+        // <top padding> + <option index * height> - <panel height> = 8 + 16 * 48 - 275 = 501
+        expect(panel.scrollTop).withContext('Expected scroll to be at the 16th option.').toBe(501);
       }));
 
       it('should scroll up to the active option', fakeAsync(() => {
@@ -2252,7 +2251,6 @@ describe('MDC-based MatSelect', () => {
           dispatchKeyboardEvent(host, 'keydown', UP_ARROW);
         }
 
-        // <top padding> + <option index * height> = 8 + 9 * 48 = 440
         // <top padding> + <option index * height> = 8 + 9 * 48 = 440
         expect(panel.scrollTop).withContext('Expected scroll to be at the 9th option.').toBe(440);
       }));
@@ -2277,12 +2275,8 @@ describe('MDC-based MatSelect', () => {
         // Note that we press down 5 times, but it will skip
         // 3 options because the second group is disabled.
         // <top padding> + <(option index + group labels) * height> - <panel height> =
-        //    8 + (9 + 3) * 48 - 256 = 328
-        // Note that we press down 5 times, but it will skip
-        // 3 options because the second group is disabled.
-        // <top padding> + <(option index + group labels) * height> - <panel height> =
-        //    8 + (9 + 3) * 48 - 256 = 328
-        expect(panel.scrollTop).withContext('Expected scroll to be at the 9th option.').toBe(328);
+        //    8 + (9 + 3) * 48 - 275 = 309
+        expect(panel.scrollTop).withContext('Expected scroll to be at the 9th option.').toBe(309);
       }));
 
       it('should scroll to the top when pressing HOME', fakeAsync(() => {
@@ -2299,7 +2293,6 @@ describe('MDC-based MatSelect', () => {
         fixture.detectChanges();
 
         // 8px is the top padding of the panel.
-        // 8px is the top padding of the panel.
         expect(panel.scrollTop).withContext('Expected panel to be scrolled to the top').toBe(8);
       }));
 
@@ -2308,12 +2301,10 @@ describe('MDC-based MatSelect', () => {
         fixture.detectChanges();
 
         // <top padding> + <option amount> * <option height> - <panel height> =
-        //    8 + 30 * 48 - 256 = 1192
-        // <top padding> + <option amount> * <option height> - <panel height> =
-        //    8 + 30 * 48 - 256 = 1192
+        //    8 + 30 * 48 - 275 = 1173
         expect(panel.scrollTop)
           .withContext('Expected panel to be scrolled to the bottom')
-          .toBe(1192);
+          .toBe(1173);
       }));
 
       it('should scroll to the active option when typing', fakeAsync(() => {
@@ -2325,9 +2316,8 @@ describe('MDC-based MatSelect', () => {
         }
         flush();
 
-        // <top padding> + <option index * height> - <panel height> = 8 + 16 * 48 - 256 = 520
-        // <top padding> + <option index * height> - <panel height> = 8 + 16 * 48 - 256 = 520
-        expect(panel.scrollTop).withContext('Expected scroll to be at the 16th option.').toBe(520);
+        // <top padding> + <option index * height> - <panel height> = 8 + 16 * 48 - 275 = 501
+        expect(panel.scrollTop).withContext('Expected scroll to be at the 16th option.').toBe(501);
       }));
 
       it('should scroll to top when going to first option in top group', fakeAsync(() => {
