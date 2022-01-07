@@ -92,11 +92,17 @@ export function runTabNavBarHarnessTests(
     expect(await links[1].isActive()).toBe(true);
     expect(await links[2].isActive()).toBe(false);
   });
+
+  it('should be able to get the associated tab panel', async () => {
+    const navBar = await loader.getHarness(tabNavBarHarness);
+    const navPanel = await navBar.getPanel();
+    expect(await navPanel.getTextContent()).toBe('Tab content');
+  });
 }
 
 @Component({
   template: `
-    <nav mat-tab-nav-bar>
+    <nav mat-tab-nav-bar [tabPanel]="tabPanel">
       <a href="#" (click)="select(0, $event)" [active]="activeLink === 0" matTabLink>First</a>
       <a href="#" (click)="select(1, $event)" [active]="activeLink === 1" matTabLink>Second</a>
       <a
@@ -106,6 +112,9 @@ export function runTabNavBarHarnessTests(
         [disabled]="isDisabled"
         matTabLink>Third</a>
     </nav>
+    <mat-tab-nav-panel #tabPanel id="tab-panel">
+      Tab content
+    </mat-tab-nav-panel>
   `,
 })
 class TabNavBarHarnessTest {

@@ -56,6 +56,7 @@ import {takeUntil} from 'rxjs/operators';
   templateUrl: 'tab-nav-bar.html',
   styleUrls: ['tab-nav-bar.css'],
   host: {
+    '[attr.role]': '_getRole()',
     'class': 'mat-mdc-tab-nav-bar mat-mdc-tab-header',
     '[class.mat-mdc-tab-header-pagination-controls-enabled]': '_showPaginationControls',
     '[class.mat-mdc-tab-header-rtl]': "_getLayoutDirection() == 'rtl'",
@@ -127,12 +128,17 @@ export class MatTabNav extends _MatTabNavBase implements AfterContentInit {
   styleUrls: ['tab-link.css'],
   host: {
     'class': 'mdc-tab mat-mdc-tab-link mat-mdc-focus-indicator',
-    '[attr.aria-current]': 'active ? "page" : null',
+    '[attr.aria-controls]': '_getAriaControls()',
+    '[attr.aria-current]': '_getAriaCurrent()',
     '[attr.aria-disabled]': 'disabled',
-    '[attr.tabIndex]': 'tabIndex',
+    '[attr.aria-selected]': '_getAriaSelected()',
+    '[attr.id]': 'id',
+    '[attr.tabIndex]': '_getTabIndex()',
+    '[attr.role]': '_getRole()',
     '[class.mat-mdc-tab-disabled]': 'disabled',
     '[class.mdc-tab--active]': 'active',
     '(focus)': '_handleFocus()',
+    '(keydown)': '_handleKeydown($event)',
   },
 })
 export class MatTabLink extends _MatTabLinkBase implements MatInkBarItem, OnInit, OnDestroy {
@@ -166,4 +172,31 @@ export class MatTabLink extends _MatTabLinkBase implements MatInkBarItem, OnInit
     super.ngOnDestroy();
     this._foundation.destroy();
   }
+}
+
+// Increasing integer for generating unique ids for tab nav components.
+let nextUniqueId = 0;
+
+/**
+ * Tab panel component associated with MatTabNav.
+ */
+@Component({
+  selector: 'mat-tab-nav-panel',
+  exportAs: 'matTabNavPanel',
+  template: '<ng-content></ng-content>',
+  host: {
+    '[attr.aria-labelledby]': '_activeTabId',
+    '[attr.id]': 'id',
+    'class': 'mat-mdc-tab-nav-panel',
+    'role': 'tabpanel',
+  },
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class MatTabNavPanel {
+  /** Unique id for the tab panel. */
+  @Input() id = `mat-tab-nav-panel-${nextUniqueId++}`;
+
+  /** Id of the active tab in the nav bar. */
+  _activeTabId?: string;
 }

@@ -352,7 +352,20 @@ export class _MatTabLinkBase extends _MatTabLinkMixinBase implements AfterViewIn
     elementRef: ElementRef;
     focus(): void;
     // (undocumented)
+    _getAriaControls(): string | null;
+    // (undocumented)
+    _getAriaCurrent(): string | null;
+    // (undocumented)
+    _getAriaSelected(): string | null;
+    // (undocumented)
+    _getRole(): string | null;
+    // (undocumented)
+    _getTabIndex(): number;
+    // (undocumented)
     _handleFocus(): void;
+    // (undocumented)
+    _handleKeydown(event: KeyboardEvent): void;
+    id: string;
     protected _isActive: boolean;
     // (undocumented)
     ngAfterViewInit(): void;
@@ -361,7 +374,7 @@ export class _MatTabLinkBase extends _MatTabLinkMixinBase implements AfterViewIn
     rippleConfig: RippleConfig & RippleGlobalOptions;
     get rippleDisabled(): boolean;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<_MatTabLinkBase, never, never, { "active": "active"; }, {}, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<_MatTabLinkBase, never, never, { "active": "active"; "id": "id"; }, {}, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<_MatTabLinkBase, [null, null, { optional: true; }, { attribute: "tabindex"; }, null, { optional: true; }]>;
 }
@@ -397,18 +410,32 @@ export abstract class _MatTabNavBase extends MatPaginatedTabHeader implements Af
     color: ThemePalette;
     get disableRipple(): boolean;
     set disableRipple(value: BooleanInput);
+    // (undocumented)
+    _getRole(): string | null;
     abstract _items: QueryList<MatPaginatedTabHeaderItem & {
         active: boolean;
+        id: string;
     }>;
     // (undocumented)
     protected _itemSelected(): void;
     // (undocumented)
     ngAfterContentInit(): void;
+    tabPanel?: MatTabNavPanel;
     updateActiveLink(): void;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<_MatTabNavBase, never, never, { "backgroundColor": "backgroundColor"; "disableRipple": "disableRipple"; "color": "color"; }, {}, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<_MatTabNavBase, never, never, { "backgroundColor": "backgroundColor"; "disableRipple": "disableRipple"; "color": "color"; "tabPanel": "tabPanel"; }, {}, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<_MatTabNavBase, [null, { optional: true; }, null, null, null, null, { optional: true; }]>;
+}
+
+// @public
+export class MatTabNavPanel {
+    _activeTabId?: string;
+    id: string;
+    // (undocumented)
+    static ɵcmp: i0.ɵɵComponentDeclaration<MatTabNavPanel, "mat-tab-nav-panel", ["matTabNavPanel"], { "id": "id"; }, {}, never, ["*"]>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatTabNavPanel, never>;
 }
 
 // @public
@@ -432,7 +459,7 @@ export class MatTabsModule {
     // (undocumented)
     static ɵinj: i0.ɵɵInjectorDeclaration<MatTabsModule>;
     // (undocumented)
-    static ɵmod: i0.ɵɵNgModuleDeclaration<MatTabsModule, [typeof i1.MatTabGroup, typeof i2.MatTabLabel, typeof i3.MatTab, typeof i4.MatInkBar, typeof i5.MatTabLabelWrapper, typeof i6.MatTabNav, typeof i6.MatTabLink, typeof i7.MatTabBody, typeof i7.MatTabBodyPortal, typeof i8.MatTabHeader, typeof i9.MatTabContent], [typeof i10.CommonModule, typeof i11.MatCommonModule, typeof i12.PortalModule, typeof i11.MatRippleModule, typeof i13.ObserversModule, typeof i14.A11yModule], [typeof i11.MatCommonModule, typeof i1.MatTabGroup, typeof i2.MatTabLabel, typeof i3.MatTab, typeof i6.MatTabNav, typeof i6.MatTabLink, typeof i9.MatTabContent]>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<MatTabsModule, [typeof i1.MatTabGroup, typeof i2.MatTabLabel, typeof i3.MatTab, typeof i4.MatInkBar, typeof i5.MatTabLabelWrapper, typeof i6.MatTabNav, typeof i6.MatTabNavPanel, typeof i6.MatTabLink, typeof i7.MatTabBody, typeof i7.MatTabBodyPortal, typeof i8.MatTabHeader, typeof i9.MatTabContent], [typeof i10.CommonModule, typeof i11.MatCommonModule, typeof i12.PortalModule, typeof i11.MatRippleModule, typeof i13.ObserversModule, typeof i14.A11yModule], [typeof i11.MatCommonModule, typeof i1.MatTabGroup, typeof i2.MatTabLabel, typeof i3.MatTab, typeof i6.MatTabNav, typeof i6.MatTabNavPanel, typeof i6.MatTabLink, typeof i9.MatTabContent]>;
 }
 
 // @public

@@ -19,7 +19,7 @@ import {MatTabLabelWrapper} from './tab-label-wrapper';
 import {MatTab} from './tab';
 import {MatTabHeader} from './tab-header';
 import {MatTabGroup} from './tab-group';
-import {MatTabNav, MatTabLink} from './tab-nav-bar/tab-nav-bar';
+import {MatTabNav, MatTabNavPanel, MatTabLink} from './tab-nav-bar/tab-nav-bar';
 
 @NgModule({
   imports: [
@@ -37,6 +37,7 @@ import {MatTabNav, MatTabLink} from './tab-nav-bar/tab-nav-bar';
     MatTab,
     MatTabGroup,
     MatTabNav,
+    MatTabNavPanel,
     MatTabLink,
   ],
   declarations: [
@@ -45,6 +46,7 @@ import {MatTabNav, MatTabLink} from './tab-nav-bar/tab-nav-bar';
     MatTab,
     MatTabGroup,
     MatTabNav,
+    MatTabNavPanel,
     MatTabLink,
 
     // Private directives, should not be exported.

@@ -15,7 +15,7 @@ export {MatTab} from './tab';
 export {MatInkBar} from './ink-bar';
 export {MatTabHeader} from './tab-header';
 export {MatTabGroup} from './tab-group';
-export {MatTabNav, MatTabLink} from './tab-nav-bar/tab-nav-bar';
+export {MatTabNav, MatTabNavPanel, MatTabLink} from './tab-nav-bar/tab-nav-bar';
 
 export {
   MatTabBodyPositionState,

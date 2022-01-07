@@ -27,3 +27,6 @@ export interface TabLinkHarnessFilters extends BaseHarnessFilters {
 
 /** A set of criteria that can be used to filter a list of `MatTabNavBarHarness` instances. */
 export interface TabNavBarHarnessFilters extends BaseHarnessFilters {}
+
+/** A set of criteria that can be used to filter a list of `MatTabNavBarHarness` instances. */
+export interface TabNavPanelHarnessFilters extends BaseHarnessFilters {}

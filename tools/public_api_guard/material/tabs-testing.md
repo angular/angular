@@ -49,6 +49,7 @@ export class MatTabNavBarHarness extends ComponentHarness {
     clickLink(filter?: TabLinkHarnessFilters): Promise<void>;
     getActiveLink(): Promise<MatTabLinkHarness>;
     getLinks(filter?: TabLinkHarnessFilters): Promise<MatTabLinkHarness[]>;
+    getPanel(): Promise<MatTabNavPanelHarness>;
     static hostSelector: string;
     static with(options?: TabNavBarHarnessFilters): HarnessPredicate<MatTabNavBarHarness>;
 }
@@ -70,6 +71,10 @@ export interface TabLinkHarnessFilters extends BaseHarnessFilters {
 
 // @public
 export interface TabNavBarHarnessFilters extends BaseHarnessFilters {
+}
+
+// @public
+export interface TabNavPanelHarnessFilters extends BaseHarnessFilters {
 }
 
 // (No @packageDocumentation comment for this package)

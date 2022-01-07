@@ -7,8 +7,13 @@
  */
 
 import {ComponentHarness, HarnessPredicate, parallel} from '@angular/cdk/testing';
-import {TabNavBarHarnessFilters, TabLinkHarnessFilters} from './tab-harness-filters';
+import {
+  TabNavBarHarnessFilters,
+  TabNavPanelHarnessFilters,
+  TabLinkHarnessFilters,
+} from './tab-harness-filters';
 import {MatTabLinkHarness} from './tab-link-harness';
+import {MatTabNavPanelHarness} from './tab-nav-panel-harness';
 
 /** Harness for interacting with a standard mat-tab-nav-bar in tests. */
 export class MatTabNavBarHarness extends ComponentHarness {
@@ -56,5 +61,18 @@ export class MatTabNavBarHarness extends ComponentHarness {
       throw Error(`Cannot find mat-tab-link matching filter ${JSON.stringify(filter)}`);
     }
     await tabs[0].click();
+  }
+
+  /** Gets the panel associated with the nav bar. */
+  async getPanel(): Promise<MatTabNavPanelHarness> {
+    const link = await this.getActiveLink();
+    const host = await link.host();
+    const panelId = await host.getAttribute('aria-controls');
+    if (!panelId) {
+      throw Error('No panel is controlled by the nav bar.');
+    }
+
+    const filter: TabNavPanelHarnessFilters = {selector: `#${panelId}`};
+    return await this.documentRootLocatorFactory().locatorFor(MatTabNavPanelHarness.with(filter))();
   }
 }
