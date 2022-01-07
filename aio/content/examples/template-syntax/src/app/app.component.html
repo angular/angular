@@ -221,10 +221,14 @@ button</button>
 
 <app-hero-detail prefix="You are my" [hero]="currentHero"></app-hero-detail>
 
-<!-- eslint-disable @angular-eslint/template/accessibility-alt-text -->
-<p><img src="{{heroImageUrl}}"> is the <i>interpolated</i> image.</p>
-<p><img [src]="heroImageUrl"> is the <i>property bound</i> image.</p>
-<!-- eslint-enable @angular-eslint/template/accessibility-alt-text -->
+<p>
+  <img src="{{heroImageUrl}}" alt="interpolated image of {{currentHero.name}}">
+  is the <i>interpolated</i> image.
+</p>
+<p>
+  <img [src]="heroImageUrl" [alt]="'property bounded image of ' + currentHero.name">
+  is the <i>property bound</i> image.
+</p>
 
 <p><span>"{{title}}" is the <i>interpolated</i> title.</span></p>
 <p>"<span [innerHTML]="title"></span>" is the <i>property bound</i> title.</p>
