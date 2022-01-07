@@ -26,15 +26,6 @@ $row-horizontal-padding: 24px;
     border-style: solid;
     align-items: center;
     box-sizing: border-box;
-
-    // Workaround for https://goo.gl/pFmjJD in IE 11. Adds a pseudo
-    // element that will stretch the row the correct height. See:
-    // https://connect.microsoft.com/IE/feedback/details/802625
-    &::after {
-      display: inline-block;
-      min-height: inherit;
-      content: '';
-    }
   }
 
   mat-cell, mat-header-cell, mat-footer-cell {
