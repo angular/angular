@@ -350,16 +350,6 @@ const XSSI_PREFIX = ')]}\'\n';
       });
     });
     describe('corrects for quirks', () => {
-      it('by normalizing 1223 status to 204', done => {
-        backend.handle(TEST_POST).pipe(toArray()).subscribe(events => {
-          expect(events.length).toBe(2);
-          expect(events[1].type).toBe(HttpEventType.Response);
-          const response = events[1] as HttpResponse<string>;
-          expect(response.status).toBe(HttpStatusCode.NoContent);
-          done();
-        });
-        factory.mock.mockFlush(1223, 'IE Special Status', 'Test');
-      });
       it('by normalizing 0 status to 200 if a body is present', done => {
         backend.handle(TEST_POST).pipe(toArray()).subscribe(events => {
           expect(events.length).toBe(2);
