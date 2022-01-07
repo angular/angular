@@ -28,6 +28,16 @@ describe('FormArray', () => {
       logger = [];
     });
 
+    it('should support retrieving at an index', () => {
+      a.push(c1);
+      a.push(c2);
+      a.push(c3);
+
+      expect(a.at(1)).toEqual(c2);
+      expect(a.at(-1)).toEqual(c3);
+      expect(a.at(a.length)).toBeUndefined();
+    });
+
     it('should support pushing', () => {
       a.push(c1);
       expect(a.length).toEqual(1);
@@ -45,6 +55,10 @@ describe('FormArray', () => {
 
       a.removeAt(-1);
       
+      expect(a.controls).toEqual([c1]);
+
+      a.removeAt(a.length);
+
       expect(a.controls).toEqual([c1]);
     });
 
@@ -73,6 +87,10 @@ describe('FormArray', () => {
       a.insert(-1, c2);
 
       expect(a.controls).toEqual([c1, c2, c3, c2]);
+
+      a.insert(a.length, c3);
+
+      expect(a.controls).toEqual([c1, c2, c3, c2, c3]);
     });
 
     it('should not emit events when calling `FormArray.push` with `emitEvent: false`', () => {
@@ -1343,6 +1361,12 @@ describe('FormArray', () => {
         expect(a.controls[0]).toEqual(c2);
         expect(a.value).toEqual(['new!']);
         expect(a.valid).toBe(false);
+
+        a.setControl(-1, c);
+
+        expect(a.controls[0]).toEqual(c);
+        expect(a.value).toEqual(['one']);
+        expect(a.valid).toBe(true);
       });
 
       it('should add control if control did not exist before', () => {
