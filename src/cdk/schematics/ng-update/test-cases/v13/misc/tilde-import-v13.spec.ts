@@ -124,4 +124,26 @@ describe('v13 tilde import migration', () => {
       `@include mat-core();`,
     ]);
   });
+
+  it('should remove remove .scss file extension', async () => {
+    writeLines(TEST_PATH, [
+      `@use '~@angular/material.scss' as mat;`,
+      `@import '~@angular/material/theming.scss';`,
+      `@import '~@angular/cdk/overlay-prebuilt.css';`,
+
+      `@include mat.button-theme();`,
+      `@include mat-core();`,
+    ]);
+
+    await runMigration();
+
+    expect(splitFile(TEST_PATH)).toEqual([
+      `@use '@angular/material' as mat;`,
+      `@import '@angular/material/theming';`,
+      `@import '@angular/cdk/overlay-prebuilt.css';`,
+
+      `@include mat.button-theme();`,
+      `@include mat-core();`,
+    ]);
+  });
 });

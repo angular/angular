@@ -21,10 +21,11 @@ export class TildeImportMigration extends DevkitMigration<null> {
     if (extension === '.scss' || extension === '.css') {
       const content = stylesheet.content;
       const migratedContent = content.replace(
-        /@(?:import|use) +['"]~@angular\/.*['"].*;?/g,
-        match => {
-          const index = match.indexOf('~@angular');
-          return match.slice(0, index) + match.slice(index + 1);
+        /@(?:import|use) +['"](~@angular\/.*)['"].*;?/g,
+        (match, importPath) => {
+          const index = match.indexOf(importPath);
+          const newImportPath = importPath.replace(/^~|\.scss$/g, '');
+          return match.slice(0, index) + newImportPath + match.slice(index + importPath.length);
         },
       );
 
