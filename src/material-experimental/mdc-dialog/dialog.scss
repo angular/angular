@@ -1,7 +1,6 @@
 @use '@material/dialog' as mdc-dialog;
 @use '../mdc-helpers/mdc-helpers';
 @use './mdc-dialog-structure-overrides';
-@use '../../cdk/a11y';
 
 // Dialog content max height. This has been copied from the standard dialog
 // and is needed to make the dialog content scrollable.
@@ -17,10 +16,6 @@ $mat-dialog-button-horizontal-margin: 8px !default;
 // The dialog container is focusable. We remove the default outline shown in browsers.
 .mat-mdc-dialog-container {
   outline: 0;
-
-  @include a11y.high-contrast(active, off) {
-    outline: solid 1px;
-  }
 }
 
 // MDC sets the display behavior for title and actions, but not for content. Since we support
