@@ -4,6 +4,7 @@
 @use '@material/theme/theme-color' as mdc-theme-color;
 @use '@material/theme/theme';
 @use 'sass:map';
+@use 'sass:color';
 @use '../mdc-helpers/mdc-helpers';
 @use '../../material/core/typography/typography';
 @use '../../material/core/theming/theming';
@@ -12,15 +13,34 @@
 
 // Mixin that includes the checkbox theme styles with a given palette.
 // By default, the MDC checkbox always uses the `secondary` palette.
-@mixin private-checkbox-styles-with-color($color) {
-  @include mdc-checkbox-theme.theme-deprecated(
-    (
-      checkmark-color: mdc-theme-color.prop-value(on-#{$color}),
-      container-checked-color: $color,
-      container-disabled-color: rgba(mdc-theme-color.prop-value(on-surface), 0.38),
-      outline-color: rgba(mdc-theme-color.prop-value(on-surface), 0.54),
-    )
-  );
+@mixin private-checkbox-styles-with-color($color, $mdcColor) {
+  $on-surface: mdc-theme-color.prop-value(on-surface);
+  $border-color: rgba($on-surface, color.opacity(mdc-checkbox-theme.$border-color));
+  $disabled-color: rgba($on-surface, color.opacity(mdc-checkbox-theme.$disabled-color));
+
+  @include mdc-checkbox-theme.theme((
+    selected-checkmark-color: mdc-theme-color.prop-value(on-#{$mdcColor}),
+
+    selected-focus-icon-color: $color,
+    selected-hover-icon-color: $color,
+    selected-hover-state-layer-color: $color,
+    selected-icon-color: $color,
+    selected-pressed-icon-color: $color,
+    unselected-focus-icon-color: $color,
+    unselected-hover-icon-color: $color,
+
+    selected-focus-state-layer-color: $on-surface,
+    selected-pressed-state-layer-color: $on-surface,
+    unselected-focus-state-layer-color: $on-surface,
+    unselected-hover-state-layer-color: $on-surface,
+    unselected-pressed-state-layer-color: $on-surface,
+
+    disabled-selected-icon-color: $disabled-color,
+    disabled-unselected-icon-color: $disabled-color,
+
+    unselected-icon-color: $border-color,
+    unselected-pressed-icon-color: $border-color,
+  ));
 }
 
 // Apply ripple colors to the MatRipple element and the MDC ripple element when the
@@ -47,21 +67,7 @@
   $accent: theming.get-color-from-palette(map.get($config, accent));
   $warn: theming.get-color-from-palette(map.get($config, warn));
 
-  // Save original values of MDC global variables. We need to save these so we can restore the
-  // variables to their original values and prevent unintended side effects from using this mixin.
-  $orig-border-color: mdc-checkbox-theme.$border-color;
-  $orig-disabled-color: mdc-checkbox-theme.$disabled-color;
-
   @include mdc-helpers.mat-using-mdc-theme($config) {
-    mdc-checkbox-theme.$border-color: rgba(
-      mdc-theme-color.prop-value(on-surface),
-      0.54
-    );
-    mdc-checkbox-theme.$disabled-color: rgba(
-      mdc-theme-color.prop-value(on-surface),
-      0.26
-    );
-
     .mat-mdc-checkbox {
       @include mdc-form-field.core-styles($query: mdc-helpers.$mat-theme-styles-query);
       @include ripple-theme.color((
@@ -78,25 +84,21 @@
       // class for accent and warn style, and applying the appropriate overrides below. Since we
       // don't use MDC's ripple, we also need to set the color for our replacement ripple.
       &.mat-primary {
-        @include private-checkbox-styles-with-color(primary);
+        @include private-checkbox-styles-with-color($primary, primary);
         @include _selected-ripple-colors($primary, primary);
       }
 
       &.mat-accent {
-        @include private-checkbox-styles-with-color(secondary);
+        @include private-checkbox-styles-with-color($accent, secondary);
         @include _selected-ripple-colors($accent, secondary);
       }
 
       &.mat-warn {
-        @include private-checkbox-styles-with-color(error);
+        @include private-checkbox-styles-with-color($warn, error);
         @include _selected-ripple-colors($warn, error);
       }
     }
   }
-
-  // Restore original values of MDC global variables.
-  mdc-checkbox-theme.$border-color: $orig-border-color;
-  mdc-checkbox-theme.$disabled-color: $orig-disabled-color;
 }
 
 @mixin typography($config-or-theme) {

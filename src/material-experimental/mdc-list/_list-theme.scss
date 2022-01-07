@@ -1,3 +1,4 @@
+@use 'sass:map';
 @use '@material/list/evolution-mixins' as mdc-list;
 @use './interactive-list-theme';
 @use './list-option-theme';
@@ -11,6 +12,9 @@
 
 @mixin color($config-or-theme) {
   $config: theming.get-color-config($config-or-theme);
+  $primary: theming.get-color-from-palette(map.get($config, primary));
+  $accent: theming.get-color-from-palette(map.get($config, accent));
+  $warn: theming.get-color-from-palette(map.get($config, warn));
 
   // MDC's state styles are tied in with their ripple. Since we don't use the MDC
   // ripple, we need to add the hover, focus and selected states manually.
@@ -20,13 +24,13 @@
     @include mdc-list.without-ripple($query: mdc-helpers.$mat-theme-styles-query);
 
     .mat-mdc-list-option {
-      @include list-option-theme.private-list-option-color-override(primary);
+      @include list-option-theme.private-list-option-color-override($primary, primary);
     }
     .mat-mdc-list-option.mat-accent {
-      @include list-option-theme.private-list-option-color-override(secondary);
+      @include list-option-theme.private-list-option-color-override($accent, secondary);
     }
     .mat-mdc-list-option.mat-warn {
-      @include list-option-theme.private-list-option-color-override(error);
+      @include list-option-theme.private-list-option-color-override($warn, error);
     }
   }
 }

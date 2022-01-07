@@ -6,9 +6,9 @@
 // Mixin that overrides the selected item and checkbox colors for list options. By
 // default, the MDC list uses the `primary` color for list items. The MDC checkbox
 // inside list options by default uses the `primary` color too.
-@mixin private-list-option-color-override($color) {
+@mixin private-list-option-color-override($color, $mdcColor) {
   & .mdc-list-item__start, & .mdc-list-item__end {
-    @include checkbox-theme.private-checkbox-styles-with-color($color);
+    @include checkbox-theme.private-checkbox-styles-with-color($color, $mdcColor);
   }
 }
 

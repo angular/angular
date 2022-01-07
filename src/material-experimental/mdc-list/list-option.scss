@@ -1,5 +1,6 @@
 @use '@material/checkbox' as mdc-checkbox;
 @use '@material/list/evolution-variables' as mdc-list-variables;
+@use '@material/checkbox/checkbox-theme' as mdc-checkbox-theme;
 @use '../mdc-helpers/mdc-helpers';
 @use '../../cdk/a11y';
 @use './list-option-trailing-avatar-compat';
@@ -16,6 +17,14 @@
 
   &:not(._mat-animation-noopable) {
     @include mdc-checkbox.without-ripple($query: animation);
+  }
+
+  // We can't use the MDC checkbox here directly, because this checkbox is purely
+  // decorative and including the MDC one will bring in unnecessary JS.
+  .mdc-checkbox {
+    // MDC theme styles also include structural styles so we have to include the theme at least
+    // once here. The values will be overwritten by our own theme file afterwards.
+    @include mdc-checkbox-theme.theme-styles(mdc-checkbox-theme.$light-theme);
   }
 
   // The internal checkbox is purely decorative, but because it's an `input`, the user can still
