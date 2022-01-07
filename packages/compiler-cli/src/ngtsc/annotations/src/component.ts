@@ -12,7 +12,7 @@ import ts from 'typescript';
 import {Cycle, CycleAnalyzer, CycleHandlingStrategy} from '../../cycles';
 import {ErrorCode, FatalDiagnosticError, makeDiagnostic, makeRelatedInformation} from '../../diagnostics';
 import {absoluteFrom, relative} from '../../file_system';
-import {ImportedFile, ModuleResolver, Reference, ReferenceEmitter} from '../../imports';
+import {assertSuccessfulReferenceEmit, ImportedFile, ModuleResolver, Reference, ReferenceEmitter} from '../../imports';
 import {DependencyTracker} from '../../incremental/api';
 import {extractSemanticTypeParameters, isArrayEqual, isReferenceEqual, SemanticDepGraphUpdater, SemanticReference, SemanticSymbol} from '../../incremental/semantic_graph';
 import {IndexingContext} from '../../indexer';
@@ -690,6 +690,8 @@ export class ComponentDecoratorHandler implements
           R3UsedDirectiveMetadata&{ref: Reference<ClassDeclaration>, importedFile: ImportedFile};
       const usedDirectives: UsedDirective[] = bound.getUsedDirectives().map(directive => {
         const type = this.refEmitter.emit(directive.ref, context);
+        assertSuccessfulReferenceEmit(
+            type, node.name, directive.isComponent ? 'component' : 'directive');
         return {
           ref: directive.ref,
           type: type.expression,
@@ -715,6 +717,7 @@ export class ComponentDecoratorHandler implements
         }
         const pipe = pipes.get(pipeName)!;
         const type = this.refEmitter.emit(pipe, context);
+        assertSuccessfulReferenceEmit(type, node.name, 'pipe');
         usedPipes.push({
           ref: pipe,
           pipeName,

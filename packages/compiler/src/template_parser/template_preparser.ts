@@ -20,9 +20,9 @@ const NG_NON_BINDABLE_ATTR = 'ngNonBindable';
 const NG_PROJECT_AS = 'ngProjectAs';
 
 export function preparseElement(ast: html.Element): PreparsedElement {
-  let selectAttr: string = null!;
-  let hrefAttr: string = null!;
-  let relAttr: string = null!;
+  let selectAttr: string|null = null;
+  let hrefAttr: string|null = null;
+  let relAttr: string|null = null;
   let nonBindable = false;
   let projectAs = '';
   ast.attrs.forEach(attr => {
@@ -66,12 +66,12 @@ export enum PreparsedElementType {
 
 export class PreparsedElement {
   constructor(
-      public type: PreparsedElementType, public selectAttr: string, public hrefAttr: string,
+      public type: PreparsedElementType, public selectAttr: string, public hrefAttr: string|null,
       public nonBindable: boolean, public projectAs: string) {}
 }
 
 
-function normalizeNgContentSelect(selectAttr: string): string {
+function normalizeNgContentSelect(selectAttr: string|null): string {
   if (selectAttr === null || selectAttr.length === 0) {
     return '*';
   }

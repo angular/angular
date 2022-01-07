@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "jasmine_node_test", "ng_module", "ng_rollup_bundle", "ts_library")
+load("//tools:defaults.bzl", "app_bundle", "jasmine_node_test", "ng_module", "ts_library")
 load("//tools/symbol-extractor:index.bzl", "js_expected_symbol_test")
 load("@npm//http-server:index.bzl", "http_server")
 
@@ -15,7 +15,7 @@ ng_module(
     ],
 )
 
-ng_rollup_bundle(
+app_bundle(
     name = "bundle",
     entry_point = ":index.ts",
     deps = [
@@ -40,17 +40,17 @@ ts_library(
 jasmine_node_test(
     name = "test",
     data = [
+        ":bundle.debug.min.js",
         ":bundle.js",
         ":bundle.min.js",
         ":bundle.min.js.br",
-        ":bundle.min_debug.js",
     ],
     deps = [":test_lib"],
 )
 
 js_expected_symbol_test(
     name = "symbol_test",
-    src = ":bundle.min_debug.js",
+    src = ":bundle.debug.min.js",
     golden = ":bundle.golden_symbols.json",
 )
 
@@ -58,7 +58,7 @@ http_server(
     name = "devserver",
     data = [
         "index.html",
+        ":bundle.debug.min.js",
         ":bundle.min.js",
-        ":bundle.min_debug.js",
     ],
 )

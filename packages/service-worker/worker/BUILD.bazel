@@ -1,4 +1,5 @@
-load("//tools:defaults.bzl", "ng_rollup_bundle", "ts_library")
+load("@npm//@bazel/esbuild:index.bzl", "esbuild")
+load("//tools:defaults.bzl", "ts_library")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -22,9 +23,18 @@ ts_library(
     deps = [":worker"],
 )
 
-ng_rollup_bundle(
+esbuild(
     name = "ngsw_worker",
+    args = {
+        "resolveExtensions": [".mjs"],
+    },
     entry_point = ":main.ts",
+    format = "iife",
+    platform = "browser",
+    # All the browsers supported by Angular support `ES2017`, so we can ship the worker bundle with
+    # target of `ES2017`. Technically even ES2020 can work since the worker does not use any of the
+    # features that are unavailable in some supported browsers. This is risky though, so we keep ES2017.
+    target = "es2017",
     deps = [
         ":main",
     ],

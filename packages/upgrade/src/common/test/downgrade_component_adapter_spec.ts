@@ -7,6 +7,7 @@
  */
 import {Compiler, Component, ComponentFactory, Injector, NgModule, TestabilityRegistry} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
+
 import * as angular from '../src/angular1';
 import {DowngradeComponentAdapter, groupNodesBySelector} from '../src/downgrade_component_adapter';
 
@@ -154,7 +155,6 @@ withEachNg1Version(() => {
         @NgModule({
           providers: [{provide: 'hello', useValue: 'component'}],
           declarations: [NewComponent],
-          entryComponents: [NewComponent],
         })
         class NewModule {
         }

@@ -13,9 +13,6 @@ import {Configuration, Linter} from 'tslint';
 
 const anySymbolName = 'AnyForUntypedForms';
 
-// Tests disabled, as the migration is currently disabled in package.json.
-/*
-
 describe('Google3 typedForms TSLint rule', () => {
   const rulesDirectory = dirname(require.resolve('../../migrations/google3/typedFormsRule'));
 
@@ -91,8 +88,7 @@ describe('Google3 typedForms TSLint rule', () => {
   it('should migrate a complete example', () => {
     writeFile('/index.ts', `
       import { Component } from '@angular/core';
-      import { AbstractControl, FormArray, FormBuilder, FormControl as FC, FormGroup } from
-'@angular/forms';
+      import { AbstractControl, FormArray, FormBuilder, FormControl as FC, FormGroup } from '@angular/forms';
 
       @Component({template: ''})
       export class MyComponent {
@@ -114,13 +110,13 @@ describe('Google3 typedForms TSLint rule', () => {
     const linter = runTSLint(true);
 
     [`import { ${
-         anySymbolName}, AbstractControl, FormArray, FormBuilder, FormControl as FC, FormGroup }
-from '@angular/forms';`, `private _control = new FC<${anySymbolName}>(42)`, `private _group = new
-FormGroup<${anySymbolName}>({})`, `private _array = new FormArray<${anySymbolName}[]>([])`, `const
-fc2 = new FC<${anySymbolName}>(0)`, `const c = this.fb.control<${anySymbolName}>(42)`, `const g =
-this.fb.group<${anySymbolName}>({one: this.fb.control<${anySymbolName}>('')})`, `const a =
-this.fb.array<${anySymbolName}[]>([42])`] .forEach(t => expect(getFile(`/index.ts`)).toContain(t));
+         anySymbolName}, AbstractControl, FormArray, FormBuilder, FormControl as FC, FormGroup } from '@angular/forms';`,
+     `private _control = new FC<${anySymbolName}>(42)`,
+     `private _group = new FormGroup<${anySymbolName}>({})`,
+     `private _array = new FormArray<${anySymbolName}[]>([])`,
+     `const fc2 = new FC<${anySymbolName}>(0)`, `const c = this.fb.control<${anySymbolName}>(42)`,
+     `const g = this.fb.group<${anySymbolName}>({one: this.fb.control<${anySymbolName}>('')})`,
+     `const a = this.fb.array<${anySymbolName}[]>([42])`]
+        .forEach(t => expect(getFile(`/index.ts`)).toContain(t));
   });
 });
-
-*/

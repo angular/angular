@@ -44,7 +44,6 @@ export class Ng2AService {
   imports: [BrowserModule],
   providers: [Ng2AService],
   declarations: [Ng1AComponentFacade, Ng2AComponent],
-  entryComponents: [Ng2AComponent],
 })
 export class Ng2AModule {
   ngDoBootstrap() {}
@@ -62,7 +61,6 @@ export class Ng2BComponent {
 @NgModule({
   imports: [BrowserModule],
   declarations: [Ng2BComponent],
-  entryComponents: [Ng2BComponent],
 })
 export class Ng2BModule {
   ngDoBootstrap() {}

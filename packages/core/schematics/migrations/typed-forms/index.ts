@@ -43,7 +43,7 @@ function runTypedFormsMigration(tree: Tree, tsconfigPath: string, basePath: stri
     const formBuilderImport = getFormBuilderImport(sourceFile);
 
     // If no relevant classes are imported, we can exit early.
-    if (controlClassImports.length === 0 && formBuilderImport !== null) return;
+    if (controlClassImports.length === 0 && formBuilderImport === null) return;
 
     const update = tree.beginUpdate(relative(basePath, sourceFile.fileName));
 
@@ -62,7 +62,7 @@ function runTypedFormsMigration(tree: Tree, tsconfigPath: string, basePath: stri
     }
 
     // Add the any symbol used by the migrated calls.
-    if (getAnyImport(sourceFile) !== null) {
+    if (getAnyImport(sourceFile) === null) {
       const firstValidFormsImport =
           [...controlClassImports, formBuilderImport].sort().filter(i => i !== null)[0]!;
       insertAnyImport(update, firstValidFormsImport);

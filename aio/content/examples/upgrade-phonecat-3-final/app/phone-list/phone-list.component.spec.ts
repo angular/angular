@@ -33,7 +33,7 @@ describe('PhoneList', () => {
         .configureTestingModule({
           declarations: [PhoneListComponent],
           providers: [
-            {provide: ActivatedRoute, useValue: new ActivatedRouteMock({params: {'phoneId': 1}})},
+            {provide: ActivatedRoute, useValue: new ActivatedRouteMock({params: {phoneId: 1}})},
             {provide: Location, useClass: SpyLocation},
             {provide: Phone, useClass: MockPhone},
           ],
@@ -49,7 +49,7 @@ describe('PhoneList', () => {
 
   it('should create "phones" model with 2 phones fetched from xhr', () => {
     fixture.detectChanges();
-    let compiled = fixture.debugElement.nativeElement;
+    const compiled = fixture.debugElement.nativeElement;
     expect(compiled.querySelectorAll('.phone-list-item').length).toBe(2);
     expect(compiled.querySelector('.phone-list-item:nth-child(1)').textContent)
         .toContain('Motorola DROID');
@@ -59,7 +59,7 @@ describe('PhoneList', () => {
 
   xit('should set the default value of orderProp model', () => {
     fixture.detectChanges();
-    let compiled = fixture.debugElement.nativeElement;
+    const compiled = fixture.debugElement.nativeElement;
     expect(compiled.querySelector('select option:last-child').selected).toBe(true);
   });
 });

@@ -54,7 +54,7 @@ export interface IsActiveMatchOptions {
    */
   paths: 'exact'|'subset';
   /**
-   * - 'exact'`: indicates that the `UrlTree` fragments must be equal.
+   * - `'exact'`: indicates that the `UrlTree` fragments must be equal.
    * - `'ignored'`: the fragments will not be compared when determining if a
    * `UrlTree` is active.
    */

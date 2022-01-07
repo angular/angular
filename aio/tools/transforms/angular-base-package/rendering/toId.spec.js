@@ -8,7 +8,7 @@ describe('toId filter', function() {
   it('should be called "toId"', function() { expect(filter.name).toEqual('toId'); });
 
   it('should convert a string to make it appropriate for use as an HTML id', function() {
-    expect(filter.process('This is a big string with €bad#characaters¢\nAnd even NewLines'))
-        .toEqual('This-is-a-big-string-with--bad-characaters--And-even-NewLines');
+    expect(filter.process('This is a big string with €bad#characters¢\nAnd even NewLines'))
+        .toEqual('This-is-a-big-string-with--bad-characters--And-even-NewLines');
   });
 });

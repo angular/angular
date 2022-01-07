@@ -7,18 +7,13 @@
  */
 
 import {ParseSourceSpan} from '../parse_util';
+
 import * as o from './output_ast';
 import {SourceMapGenerator} from './source_map';
 
 const _SINGLE_QUOTE_ESCAPE_STRING_RE = /'|\\|\n|\r|\$/g;
 const _LEGAL_IDENTIFIER_RE = /^[$A-Z_][0-9A-Z_$]*$/i;
 const _INDENT_WITH = '  ';
-export const CATCH_ERROR_VAR = o.variable('error', null, null);
-export const CATCH_STACK_VAR = o.variable('stack', null, null);
-
-export interface OutputEmitter {
-  emitStatements(genFilePath: string, stmts: o.Statement[], preamble?: string|null): string;
-}
 
 class _EmittedLine {
   partsLength = 0;
@@ -33,8 +28,6 @@ export class EmitterVisitorContext {
   }
 
   private _lines: _EmittedLine[];
-  private _classes: o.ClassStmt[] = [];
-  private _preambleLineCount = 0;
 
   constructor(private _indent: number) {
     this._lines = [new _EmittedLine(_indent)];
@@ -89,18 +82,6 @@ export class EmitterVisitorContext {
     if (this.lineIsEmpty()) {
       this._currentLine.indent = this._indent;
     }
-  }
-
-  pushClass(clazz: o.ClassStmt) {
-    this._classes.push(clazz);
-  }
-
-  popClass(): o.ClassStmt {
-    return this._classes.pop()!;
-  }
-
-  get currentClass(): o.ClassStmt|null {
-    return this._classes.length > 0 ? this._classes[this._classes.length - 1] : null;
   }
 
   toSource(): string {
@@ -168,12 +149,8 @@ export class EmitterVisitorContext {
     return map;
   }
 
-  setPreambleLineCount(count: number) {
-    return this._preambleLineCount = count;
-  }
-
   spanOf(line: number, column: number): ParseSourceSpan|null {
-    const emittedLine = this._lines[line - this._preambleLineCount];
+    const emittedLine = this._lines[line];
     if (emittedLine) {
       let columnsLeft = column - _createIndent(emittedLine.indent).length;
       for (let partIndex = 0; partIndex < emittedLine.parts.length; partIndex++) {
@@ -236,10 +213,6 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
     return null;
   }
 
-  abstract visitCastExpr(ast: o.CastExpr, context: any): any;
-
-  abstract visitDeclareClassStmt(stmt: o.ClassStmt, ctx: EmitterVisitorContext): any;
-
   visitIfStmt(stmt: o.IfStmt, ctx: EmitterVisitorContext): any {
     this.printLeadingComments(stmt, ctx);
     ctx.print(stmt, `if (`);
@@ -264,16 +237,6 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
       }
     }
     ctx.println(stmt, `}`);
-    return null;
-  }
-
-  abstract visitTryCatchStmt(stmt: o.TryCatchStmt, ctx: EmitterVisitorContext): any;
-
-  visitThrowStmt(stmt: o.ThrowStmt, ctx: EmitterVisitorContext): any {
-    this.printLeadingComments(stmt, ctx);
-    ctx.print(stmt, `throw `);
-    stmt.error.visitExpression(this, ctx);
-    ctx.println(stmt, `;`);
     return null;
   }
 
@@ -320,8 +283,6 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
     return null;
   }
 
-  abstract getBuiltinMethodName(method: o.BuiltinMethod): string;
-
   visitInvokeFunctionExpr(expr: o.InvokeFunctionExpr, ctx: EmitterVisitorContext): any {
     expr.fn.visitExpression(this, ctx);
     ctx.print(expr, `(`);
@@ -348,26 +309,7 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
     expr.expr.visitExpression(this, ctx);
   }
   visitReadVarExpr(ast: o.ReadVarExpr, ctx: EmitterVisitorContext): any {
-    let varName = ast.name!;
-    if (ast.builtin != null) {
-      switch (ast.builtin) {
-        case o.BuiltinVar.Super:
-          varName = 'super';
-          break;
-        case o.BuiltinVar.This:
-          varName = 'this';
-          break;
-        case o.BuiltinVar.CatchError:
-          varName = CATCH_ERROR_VAR.name!;
-          break;
-        case o.BuiltinVar.CatchStack:
-          varName = CATCH_STACK_VAR.name!;
-          break;
-        default:
-          throw new Error(`Unknown builtin variable ${ast.builtin}`);
-      }
-    }
-    ctx.print(ast, varName);
+    ctx.print(ast, ast.name);
     return null;
   }
   visitInstantiateExpr(ast: o.InstantiateExpr, ctx: EmitterVisitorContext): any {
@@ -415,10 +357,6 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
   }
   visitNotExpr(ast: o.NotExpr, ctx: EmitterVisitorContext): any {
     ctx.print(ast, '!');
-    ast.condition.visitExpression(this, ctx);
-    return null;
-  }
-  visitAssertNotNullExpr(ast: o.AssertNotNull, ctx: EmitterVisitorContext): any {
     ast.condition.visitExpression(this, ctx);
     return null;
   }

@@ -104,7 +104,7 @@ using `yarn link` build a local project with the created artifacts.
 
 This can be done by running:
 ```sh
-yarn ng-dev build-and-link <path-to-local-project-root>
+yarn ng-dev misc build-and-link <path-to-local-project-root>
 ```
 
 ## Formatting your source code

@@ -10,7 +10,7 @@ const {green, red} = require('chalk');
 const fetch = require('node-fetch');
 const {join} = require('path');
 
-/** The full path to the contributons.json fie. */
+/** The full path to the contributors.json file. */
 const contributorsFilePath = join(__dirname, '../content/marketing/contributors.json');
 
 

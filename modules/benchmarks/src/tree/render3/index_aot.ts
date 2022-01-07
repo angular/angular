@@ -9,6 +9,7 @@
 import {ɵrenderComponent as renderComponent} from '@angular/core';
 
 import {bindAction, profile} from '../../util';
+import {initTreeUtils} from '../util';
 
 import {createDom, destroyDom, detectChanges, TreeComponent} from './tree';
 
@@ -18,6 +19,9 @@ export function main() {
   let component: TreeComponent;
   if (typeof window !== 'undefined') {
     component = renderComponent(TreeComponent);
+
+    initTreeUtils();
+
     bindAction('#createDom', () => createDom(component));
     bindAction('#destroyDom', () => destroyDom(component));
     bindAction('#detectChanges', () => detectChanges(component));

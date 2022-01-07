@@ -114,9 +114,8 @@ Version | Status | Released     | Active Ends  | LTS Ends
 ^13.0.0 | Active | Nov 04, 2021 | May 04, 2022 | May 04, 2023
 ^12.0.0 | LTS    | May 12, 2021 | Nov 12, 2021 | Nov 12, 2022
 ^11.0.0 | LTS    | Nov 11, 2020 | May 11, 2021 | May 11, 2022
-^10.0.0 | LTS    | Jun 24, 2020 | Dec 24, 2020 | Dec 24, 2021
 
-Angular versions v4, v5, v6, v7, v8, and v9 are no longer under support.
+Angular versions v2 to v10 are no longer under support.
 
 ### LTS fixes
 

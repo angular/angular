@@ -145,7 +145,7 @@ class SlotEventsComponent {
 const testElements =
     [DefaultSlotComponent, NamedSlotComponent, NamedSlotsComponent, SlotEventsComponent];
 
-@NgModule({imports: [BrowserModule], declarations: testElements, entryComponents: testElements})
+@NgModule({imports: [BrowserModule], declarations: testElements})
 class TestModule {
   ngDoBootstrap() {}
 }

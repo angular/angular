@@ -25,7 +25,7 @@ if (bazel_version_file) {
 const banner = `'use strict';
 /**
  * @license Angular v${version}
- * (c) 2010-2021 Google LLC. https://angular.io/
+ * (c) 2010-2022 Google LLC. https://angular.io/
  * License: MIT
  */`;
 

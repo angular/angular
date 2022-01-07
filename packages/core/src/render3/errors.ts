@@ -6,7 +6,9 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {RuntimeError, RuntimeErrorCode} from './error_code';
+
+import {RuntimeError, RuntimeErrorCode} from '../errors';
+
 import {TNode} from './interfaces/node';
 import {LView, TVIEW} from './interfaces/view';
 import {INTERPOLATION_DELIMITER} from './util/misc_utils';
@@ -32,8 +34,6 @@ export function throwErrorIfNoChangesMode(
         ` It seems like the view has been created after its parent and its children have been dirty checked.` +
         ` Has it been created in a change detection hook?`;
   }
-  // TODO: include debug context, see `viewDebugError` function in
-  // `packages/core/src/view/errors.ts` for reference.
   throw new RuntimeError(RuntimeErrorCode.EXPRESSION_CHANGED_AFTER_CHECKED, msg);
 }
 

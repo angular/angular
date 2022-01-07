@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "ng_rollup_bundle", "ts_library")
+load("//tools:defaults.bzl", "app_bundle", "ts_library")
 load("//tools/size-tracking:index.bzl", "js_size_tracking_test")
 
 package(default_visibility = ["//visibility:public"])
@@ -12,7 +12,7 @@ ts_library(
     ],
 )
 
-ng_rollup_bundle(
+app_bundle(
     name = "bundle",
     entry_point = ":index.ts",
     deps = [

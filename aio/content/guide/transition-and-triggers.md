@@ -7,7 +7,7 @@ This chapter also explores multiple animation triggers, animation callbacks, and
 
 ## Predefined states and wildcard matching
 
-In Angular, transition states can be defined explicitly through the `state()` function, or using the predefined `*` (wildcard) and `void` states.
+In Angular, transition states can be defined explicitly through the <code>[state](api/animations/state)()</code> function, or using the predefined `*` (wildcard) and `void` states.
 
 ### Wildcard state
 
@@ -119,7 +119,7 @@ In the component file, the `:enter` transition sets an initial opacity of 0, and
 <code-example path="animations/src/app/insert-remove.component.ts" header="src/app/insert-remove.component.ts" region="enter-leave-trigger" language="typescript">
 </code-example>
 
-Note that this example doesn't need to use `state()`.
+Note that this example doesn't need to use <code>[state](api/animations/state)()</code>.
 
 ## :increment and :decrement in transitions
 

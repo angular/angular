@@ -42,6 +42,16 @@ export function makeDiagnostic(
   };
 }
 
+export function makeDiagnosticChain(
+    messageText: string, next?: ts.DiagnosticMessageChain[]): ts.DiagnosticMessageChain {
+  return {
+    category: ts.DiagnosticCategory.Message,
+    code: 0,
+    messageText,
+    next,
+  };
+}
+
 export function makeRelatedInformation(
     node: ts.Node, messageText: string): ts.DiagnosticRelatedInformation {
   node = ts.getOriginalNode(node);

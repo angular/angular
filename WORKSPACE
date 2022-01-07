@@ -40,6 +40,9 @@ load("//integration:npm_package_archives.bzl", "npm_package_archives")
 
 yarn_install(
     name = "npm",
+    # Note that we add the postinstall script here so that the dependencies are re-installed
+    # when the postinstall patches are modified.
+    data = ["//tools:postinstall-patches.js"],
     manual_build_file_contents = npm_package_archives(),
     package_json = "//:package.json",
     yarn_lock = "//:yarn.lock",

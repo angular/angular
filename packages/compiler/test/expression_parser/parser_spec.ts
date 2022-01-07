@@ -8,9 +8,8 @@
 
 import {AbsoluteSourceSpan, ASTWithSource, BindingPipe, Call, EmptyExpr, Interpolation, ParserError, TemplateBinding, VariableBinding} from '@angular/compiler/src/expression_parser/ast';
 import {Lexer} from '@angular/compiler/src/expression_parser/lexer';
-import {IvyParser, Parser, SplitInterpolation} from '@angular/compiler/src/expression_parser/parser';
+import {Parser, SplitInterpolation} from '@angular/compiler/src/expression_parser/parser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-
 
 import {unparse, unparseWithSpan} from './utils/unparser';
 import {validate} from './utils/validator';
@@ -1070,66 +1069,64 @@ describe('parser', () => {
       expectError(validate(parseSimpleBinding('a = b')), 'Bindings cannot contain assignments');
     });
 
-    describe('Ivy-only validations', () => {
-      it('should throw if a pipe is used inside a conditional', () => {
-        expectError(
-            validate(parseSimpleBindingIvy('(hasId | myPipe) ? "my-id" : ""')),
-            'Host binding expression cannot contain pipes');
-      });
+    it('should throw if a pipe is used inside a conditional', () => {
+      expectError(
+          validate(parseSimpleBinding('(hasId | myPipe) ? "my-id" : ""')),
+          'Host binding expression cannot contain pipes');
+    });
 
-      it('should throw if a pipe is used inside a call', () => {
-        expectError(
-            validate(parseSimpleBindingIvy('getId(true, id | myPipe)')),
-            'Host binding expression cannot contain pipes');
-      });
+    it('should throw if a pipe is used inside a call', () => {
+      expectError(
+          validate(parseSimpleBinding('getId(true, id | myPipe)')),
+          'Host binding expression cannot contain pipes');
+    });
 
-      it('should throw if a pipe is used inside a call to a property access', () => {
-        expectError(
-            validate(parseSimpleBindingIvy('idService.getId(true, id | myPipe)')),
-            'Host binding expression cannot contain pipes');
-      });
+    it('should throw if a pipe is used inside a call to a property access', () => {
+      expectError(
+          validate(parseSimpleBinding('idService.getId(true, id | myPipe)')),
+          'Host binding expression cannot contain pipes');
+    });
 
-      it('should throw if a pipe is used inside a call to a safe property access', () => {
-        expectError(
-            validate(parseSimpleBindingIvy('idService?.getId(true, id | myPipe)')),
-            'Host binding expression cannot contain pipes');
-      });
+    it('should throw if a pipe is used inside a call to a safe property access', () => {
+      expectError(
+          validate(parseSimpleBinding('idService?.getId(true, id | myPipe)')),
+          'Host binding expression cannot contain pipes');
+    });
 
-      it('should throw if a pipe is used inside a property access', () => {
-        expectError(
-            validate(parseSimpleBindingIvy('a[id | myPipe]')),
-            'Host binding expression cannot contain pipes');
-      });
+    it('should throw if a pipe is used inside a property access', () => {
+      expectError(
+          validate(parseSimpleBinding('a[id | myPipe]')),
+          'Host binding expression cannot contain pipes');
+    });
 
-      it('should throw if a pipe is used inside a keyed read expression', () => {
-        expectError(
-            validate(parseSimpleBindingIvy('a[id | myPipe].b')),
-            'Host binding expression cannot contain pipes');
-      });
+    it('should throw if a pipe is used inside a keyed read expression', () => {
+      expectError(
+          validate(parseSimpleBinding('a[id | myPipe].b')),
+          'Host binding expression cannot contain pipes');
+    });
 
-      it('should throw if a pipe is used inside a safe property read', () => {
-        expectError(
-            validate(parseSimpleBindingIvy('(id | myPipe)?.id')),
-            'Host binding expression cannot contain pipes');
-      });
+    it('should throw if a pipe is used inside a safe property read', () => {
+      expectError(
+          validate(parseSimpleBinding('(id | myPipe)?.id')),
+          'Host binding expression cannot contain pipes');
+    });
 
-      it('should throw if a pipe is used inside a non-null assertion', () => {
-        expectError(
-            validate(parseSimpleBindingIvy('[id | myPipe]!')),
-            'Host binding expression cannot contain pipes');
-      });
+    it('should throw if a pipe is used inside a non-null assertion', () => {
+      expectError(
+          validate(parseSimpleBinding('[id | myPipe]!')),
+          'Host binding expression cannot contain pipes');
+    });
 
-      it('should throw if a pipe is used inside a prefix not expression', () => {
-        expectError(
-            validate(parseSimpleBindingIvy('!(id | myPipe)')),
-            'Host binding expression cannot contain pipes');
-      });
+    it('should throw if a pipe is used inside a prefix not expression', () => {
+      expectError(
+          validate(parseSimpleBinding('!(id | myPipe)')),
+          'Host binding expression cannot contain pipes');
+    });
 
-      it('should throw if a pipe is used inside a binary expression', () => {
-        expectError(
-            validate(parseSimpleBindingIvy('(id | myPipe) === true')),
-            'Host binding expression cannot contain pipes');
-      });
+    it('should throw if a pipe is used inside a binary expression', () => {
+      expectError(
+          validate(parseSimpleBinding('(id | myPipe) === true')),
+          'Host binding expression cannot contain pipes');
     });
   });
 
@@ -1169,10 +1166,6 @@ describe('parser', () => {
 
 function createParser() {
   return new Parser(new Lexer());
-}
-
-function createIvyParser() {
-  return new IvyParser(new Lexer());
 }
 
 function parseAction(text: string, location: any = null, offset: number = 0): ASTWithSource {
@@ -1216,11 +1209,6 @@ function splitInterpolation(text: string, location: any = null): SplitInterpolat
 
 function parseSimpleBinding(text: string, location: any = null, offset: number = 0): ASTWithSource {
   return createParser().parseSimpleBinding(text, location, offset);
-}
-
-function parseSimpleBindingIvy(
-    text: string, location: any = null, offset: number = 0): ASTWithSource {
-  return createIvyParser().parseSimpleBinding(text, location, offset);
 }
 
 function checkInterpolation(exp: string, expected?: string) {
