@@ -20,8 +20,9 @@ describe('getCompilerFacade', () => {
         getCompilerFacade({usage: JitCompilerUsage.Decorator, kind: 'directive', type: TestClass});
         fail('Error expected as compiler facade is not available');
       } catch (e) {
-        expect(e.message).toEqual(
-            `The directive 'TestClass' needs to be compiled using the JIT compiler, but '@angular/compiler' is not available.
+        expect((e as Error).message)
+            .toEqual(
+                `The directive 'TestClass' needs to be compiled using the JIT compiler, but '@angular/compiler' is not available.
 
 JIT compilation is discouraged for production use-cases! Consider using AOT mode instead.
 Alternatively, the JIT compiler should be loaded by bootstrapping using '@angular/platform-browser-dynamic' or '@angular/platform-server',
@@ -35,8 +36,9 @@ or manually provide the compiler with 'import "@angular/compiler";' before boots
             {usage: JitCompilerUsage.PartialDeclaration, kind: 'directive', type: TestClass});
         fail('Error expected as compiler facade is not available');
       } catch (e) {
-        expect(e.message).toEqual(
-            `The directive 'TestClass' needs to be compiled using the JIT compiler, but '@angular/compiler' is not available.
+        expect((e as Error).message)
+            .toEqual(
+                `The directive 'TestClass' needs to be compiled using the JIT compiler, but '@angular/compiler' is not available.
 
 The directive is part of a library that has been partially compiled.
 However, the Angular Linker has not processed the library such that JIT compilation is used as fallback.

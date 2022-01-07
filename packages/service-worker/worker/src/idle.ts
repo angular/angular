@@ -73,7 +73,7 @@ export class IdleScheduler {
         try {
           await task.run();
         } catch (err) {
-          this.debug.log(err, `while running idle task ${task.desc}`);
+          this.debug.log(err as Error, `while running idle task ${task.desc}`);
         }
       }, Promise.resolve());
     }

@@ -280,7 +280,7 @@ describe('XMLHttpRequest', function() {
       expect(req.responseType).toBe('document');
     } catch (e) {
       // Android browser: using this setter throws, this should be preserved
-      expect(e.message).toBe('INVALID_STATE_ERR: DOM Exception 11');
+      expect((e as Error).message).toBe('INVALID_STATE_ERR: DOM Exception 11');
     }
   });
 

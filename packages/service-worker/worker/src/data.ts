@@ -284,7 +284,8 @@ export class DataGroup {
     } catch (err) {
       // Writing lru cache table failed. This could be a result of a full storage.
       // Continue serving clients as usual.
-      this.debugHandler.log(err, `DataGroup(${this.config.name}@${this.config.version}).syncLru()`);
+      this.debugHandler.log(
+          err as Error, `DataGroup(${this.config.name}@${this.config.version}).syncLru()`);
       // TODO: Better detect/handle full storage; e.g. using
       // [navigator.storage](https://developer.mozilla.org/en-US/docs/Web/API/NavigatorStorage/storage).
     }
@@ -465,7 +466,7 @@ export class DataGroup {
         // Saving the API response failed. This could be a result of a full storage.
         // Since this data is cached lazily and temporarily, continue serving clients as usual.
         this.debugHandler.log(
-            err,
+            err as Error,
             `DataGroup(${this.config.name}@${this.config.version}).safeCacheResponse(${
                 req.url}, status: ${res.status})`);
 

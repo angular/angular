@@ -10,14 +10,17 @@
     "outDir": "../../../dist/all/@angular/service-worker/cli-custom",
     "noImplicitAny": true,
     "noImplicitOverride": true,
-    "useUnknownInCatchVariables": false,
     "noFallthroughCasesInSwitch": true,
     "rootDir": ".",
     "paths": {
-      "@angular/service-worker/config": ["../../../dist/packages/service-worker/config"]
+      "@angular/service-worker/config": [
+        "../../../dist/packages/service-worker/config"
+      ]
     },
     "inlineSourceMap": true,
-    "lib": ["es2020"],
+    "lib": [
+      "es2020"
+    ],
     "target": "es2020",
     "typeRoots": [],
     "types": [

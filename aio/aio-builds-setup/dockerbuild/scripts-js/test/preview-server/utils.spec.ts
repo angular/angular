@@ -1,4 +1,5 @@
 import * as express from 'express';
+
 import {PreviewServerError} from '../../lib/preview-server/preview-error';
 import {respondWithError, throwRequestError} from '../../lib/preview-server/utils';
 
@@ -37,11 +38,12 @@ describe('preview-server/utils', () => {
           originalUrl: 'some.domain.com/path',
         } as express.Request;
         throwRequestError(505, 'ERROR MESSAGE', request);
-      } catch (error) {
+      } catch (error: any) {
         caught = true;
         expect(error).toBeInstanceOf(PreviewServerError);
         expect(error.status).toEqual(505);
-        expect(error.message).toEqual(`ERROR MESSAGE in request: POST some.domain.com/path "The request body"`);
+        expect(error.message)
+            .toEqual(`ERROR MESSAGE in request: POST some.domain.com/path "The request body"`);
       }
       expect(caught).toEqual(true);
     });

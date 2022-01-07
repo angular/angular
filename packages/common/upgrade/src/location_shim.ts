@@ -360,7 +360,7 @@ export class $locationShim {
       try {
         fn(url, state, oldUrl, oldState);
       } catch (e) {
-        err(e);
+        err(e as Error);
       }
     });
   }

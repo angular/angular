@@ -92,7 +92,7 @@ export function createEs2015LinkerPlugin({fileSystem, logger, ...options}: Linke
           call.replaceWith(replacement);
         } catch (e) {
           const node = isFatalLinkerError(e) ? e.node as t.Node : call.node;
-          throw buildCodeFrameError(call.hub.file, e.message, node);
+          throw buildCodeFrameError(call.hub.file, (e as Error).message, node);
         }
       }
     }

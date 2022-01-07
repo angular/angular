@@ -1380,7 +1380,7 @@ const Zone: ZoneType = (function(global: any) {
           try {
             task.zone.runTask(task, null, null);
           } catch (error) {
-            _api.onUnhandledError(error);
+            _api.onUnhandledError(error as Error);
           }
         }
       }

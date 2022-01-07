@@ -142,7 +142,7 @@ export function setupBazelTo(tmpDirPath: string) {
     const rxjsSource = resolveNpmTreeArtifact('rxjs', 'index.js');
     const rxjsDest = path.join(nodeModulesPath, 'rxjs');
     fs.symlinkSync(rxjsSource, rxjsDest, 'junction');
-  } catch (e) {
+  } catch (e: any) {
     if (e.code !== 'MODULE_NOT_FOUND') throw e;
   }
 }

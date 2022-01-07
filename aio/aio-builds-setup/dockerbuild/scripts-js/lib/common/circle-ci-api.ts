@@ -1,5 +1,6 @@
 // Imports
 import fetch from 'node-fetch';
+
 import {assertNotMissingOrEmpty} from './utils';
 
 // Constants
@@ -22,8 +23,8 @@ export interface BuildInfo {
   username: string;
   build_num: number;
   has_artifacts: boolean;
-  outcome: string; // e.g. 'success'
-  vcs_revision: string; // HEAD SHA
+  outcome: string;       // e.g. 'success'
+  vcs_revision: string;  // HEAD SHA
   // there are other fields but they are not used in this code
 }
 
@@ -31,19 +32,19 @@ export interface BuildInfo {
  * A Helper that can interact with the CircleCI API.
  */
 export class CircleCiApi {
-
   private tokenParam = `circle-token=${this.circleCiToken}`;
 
   /**
    * Construct a helper that can interact with the CircleCI REST API.
-   * @param githubOrg The Github organisation whose repos we want to access in CircleCI (e.g. angular).
+   * @param githubOrg The Github organisation whose repos we want to access in CircleCI (e.g.
+   *     angular).
    * @param githubRepo The Github repo whose builds we want to access in CircleCI (e.g. angular).
    * @param circleCiToken The CircleCI API access token (secret).
    */
   constructor(
-    private githubOrg: string,
-    private githubRepo: string,
-    private circleCiToken: string,
+      private githubOrg: string,
+      private githubRepo: string,
+      private circleCiToken: string,
   ) {
     assertNotMissingOrEmpty('githubOrg', githubOrg);
     assertNotMissingOrEmpty('githubRepo', githubRepo);
@@ -64,7 +65,7 @@ export class CircleCiApi {
       }
       return response.json();
     } catch (error) {
-        throw new Error(`CircleCI build info request failed (${error.message})`);
+      throw new Error(`CircleCI build info request failed (${(error as Error).message})`);
     }
   }
 
@@ -84,7 +85,7 @@ export class CircleCiApi {
       }
       return artifact.url;
     } catch (error) {
-      throw new Error(`CircleCI artifact URL request failed (${error.message})`);
+      throw new Error(`CircleCI artifact URL request failed (${(error as Error).message})`);
     }
   }
 }

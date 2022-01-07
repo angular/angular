@@ -415,7 +415,8 @@ export class NgccConfiguration {
       try {
         return this.evalSrcFile(configFilePath);
       } catch (e) {
-        throw new Error(`Invalid project configuration file at "${configFilePath}": ` + e.message);
+        throw new Error(
+            `Invalid project configuration file at "${configFilePath}": ` + (e as Error).message);
       }
     } else {
       return {packages: {}};
@@ -433,7 +434,8 @@ export class NgccConfiguration {
           versionRange: version || '*',
         };
       } catch (e) {
-        throw new Error(`Invalid package configuration file at "${configFilePath}": ` + e.message);
+        throw new Error(
+            `Invalid package configuration file at "${configFilePath}": ` + (e as Error).message);
       }
     } else {
       return null;

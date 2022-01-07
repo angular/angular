@@ -77,7 +77,7 @@ let supportSetErrorStack = true;
 export function isSupportSetErrorStack() {
   try {
     throw new Error('test');
-  } catch (err) {
+  } catch (err: any) {
     try {
       err.stack = 'new stack';
       supportSetErrorStack = err.stack === 'new stack';

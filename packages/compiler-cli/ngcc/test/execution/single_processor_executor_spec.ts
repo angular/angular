@@ -65,7 +65,7 @@ describe('SingleProcessExecutor', () => {
       try {
         executor.execute(errorFn, createCompileFn);
       } catch (e) {
-        error = e.message;
+        error = (e as Error).message;
       }
       expect(error).toEqual('analyze error');
       expect(lockFileLog).toEqual(['write()', 'remove()']);
@@ -79,7 +79,7 @@ describe('SingleProcessExecutor', () => {
       try {
         executor.execute(oneTask, createErrorCompileFn);
       } catch (e) {
-        error = e.message;
+        error = (e as Error).message;
       }
       expect(error).toEqual('compile error');
       expect(lockFileLog).toEqual(['write()', 'remove()']);
@@ -100,7 +100,7 @@ describe('SingleProcessExecutor', () => {
       try {
         executor.execute(analyzeFn, anyFn);
       } catch (e) {
-        error = e.message;
+        error = (e as Error).message;
       }
       expect(error).toEqual('LockFile.write() error');
       expect(lockFileLog).toEqual(['write()']);
@@ -118,7 +118,7 @@ describe('SingleProcessExecutor', () => {
       try {
         executor.execute(noTasks, anyFn);
       } catch (e) {
-        error = e.message;
+        error = (e as Error).message;
       }
       expect(error).toEqual('LockFile.remove() error');
       expect(lockFileLog).toEqual(['write()', 'remove()']);

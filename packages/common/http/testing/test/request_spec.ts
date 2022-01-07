@@ -39,7 +39,7 @@ describe('HttpClient TestRequest', () => {
       mock.expectOne('/some-url').flush(null);
       fail();
     } catch (error) {
-      expect(error.message)
+      expect((error as Error).message)
           .toBe(
               'Expected one matching request for criteria "Match URL: /some-url", found none.' +
               ' Requests received are: GET /some-other-url.');
@@ -61,7 +61,7 @@ describe('HttpClient TestRequest', () => {
       mock.expectOne('/some-url?query=world').flush(null);
       fail();
     } catch (error) {
-      expect(error.message)
+      expect((error as Error).message)
           .toBe(
               'Expected one matching request for criteria "Match URL: /some-url?query=world", found none.' +
               ' Requests received are: GET /some-url?query=hello.');
@@ -85,7 +85,7 @@ describe('HttpClient TestRequest', () => {
       mock.expectOne('/some-url').flush(null);
       fail();
     } catch (error) {
-      expect(error.message)
+      expect((error as Error).message)
           .toBe(
               'Expected one matching request for criteria "Match URL: /some-url", found none.' +
               ' Requests received are: GET /some-other-url?query=world, POST /and-another-url.');

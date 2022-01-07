@@ -57,7 +57,7 @@ export class HttpClientBackendService extends BackendService implements HttpBack
       return this.handleRequest(req);
 
     } catch (error) {
-      const err = error.message || error;
+      const err = (error as Error).message || error;
       const resOptions =
           this.createErrorResponseOptions(req.url, STATUS.INTERNAL_SERVER_ERROR, `${err}`);
       return this.createResponse$(() => resOptions);
@@ -93,7 +93,7 @@ export class HttpClientBackendService extends BackendService implements HttpBack
   protected override createPassThruBackend() {
     try {
       return new HttpXhrBackend(this.xhrFactory);
-    } catch (ex) {
+    } catch (ex: any) {
       ex.message = 'Cannot create passThru404 backend; ' + (ex.message || '');
       throw ex;
     }

@@ -30,7 +30,7 @@ function getStacktraceWithCaughtError(): Error {
   try {
     throw getStacktraceWithUncaughtError();
   } catch (err) {
-    return err;
+    return err as Error;
   }
 }
 

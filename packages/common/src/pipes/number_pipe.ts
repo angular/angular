@@ -7,6 +7,7 @@
  */
 
 import {DEFAULT_CURRENCY_CODE, Inject, LOCALE_ID, Pipe, PipeTransform} from '@angular/core';
+
 import {formatCurrency, formatNumber, formatPercent} from '../i18n/format_number';
 import {getCurrencySymbol} from '../i18n/locale_data_api';
 
@@ -100,7 +101,7 @@ export class DecimalPipe implements PipeTransform {
       const num = strToNumber(value);
       return formatNumber(num, locale, digitsInfo);
     } catch (error) {
-      throw invalidPipeArgumentError(DecimalPipe, error.message);
+      throw invalidPipeArgumentError(DecimalPipe, (error as Error).message);
     }
   }
 }
@@ -156,7 +157,7 @@ export class PercentPipe implements PipeTransform {
       const num = strToNumber(value);
       return formatPercent(num, locale, digitsInfo);
     } catch (error) {
-      throw invalidPipeArgumentError(PercentPipe, error.message);
+      throw invalidPipeArgumentError(PercentPipe, (error as Error).message);
     }
   }
 }
@@ -281,7 +282,7 @@ export class CurrencyPipe implements PipeTransform {
       const num = strToNumber(value);
       return formatCurrency(num, locale, currency, currencyCode, digitsInfo);
     } catch (error) {
-      throw invalidPipeArgumentError(CurrencyPipe, error.message);
+      throw invalidPipeArgumentError(CurrencyPipe, (error as Error).message);
     }
   }
 }

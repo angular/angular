@@ -1,4 +1,5 @@
 import {basename, resolve as resolvePath} from 'path';
+
 import {SHORT_SHA_LEN} from './constants';
 
 /**
@@ -17,7 +18,8 @@ export function computeShortSha(sha: string) {
  * @param artifactPath The path to the artifact on CircleCI.
  * @returns The fully resolved location for the specified downloaded artifact.
  */
-export function computeArtifactDownloadPath(downloadsDir: string, pr: number, sha: string, artifactPath: string) {
+export function computeArtifactDownloadPath(
+    downloadsDir: string, pr: number, sha: string, artifactPath: string) {
   return resolvePath(downloadsDir, `${pr}-${computeShortSha(sha)}-${basename(artifactPath)}`);
 }
 
@@ -48,7 +50,7 @@ export function assert(value: boolean, message: string) {
  * @param name The name of the parameter.
  * @param value The value of the parameter.
  */
-export const assertNotMissingOrEmpty = (name: string, value: string | null | undefined) => {
+export const assertNotMissingOrEmpty = (name: string, value: string|null|undefined) => {
   assert(!!value, `Missing or empty required parameter '${name}'!`);
 };
 
@@ -64,9 +66,9 @@ export const getEnvVar = (name: string, isOptional = false): string => {
 
   if (!isOptional && !value) {
     try {
-     throw new Error(`ERROR: Missing required environment variable '${name}'!`);
+      throw new Error(`ERROR: Missing required environment variable '${name}'!`);
     } catch (error) {
-      console.error(error.stack);
+      console.error((error as Error).stack);
       process.exit(1);
     }
   }
@@ -76,7 +78,8 @@ export const getEnvVar = (name: string, isOptional = false): string => {
 
 /**
  * A basic logger implementation.
- * Delegates to `console`, but prepends each message with the current date and specified scope (i.e caller).
+ * Delegates to `console`, but prepends each message with the current date and specified scope (i.e
+ * caller).
  */
 export class Logger {
   private padding = ' '.repeat(20 - this.scope.length);
@@ -87,12 +90,20 @@ export class Logger {
    */
   constructor(private scope: string) {}
 
-  public error(...args: any[]) { this.callMethod('error', args); }
-  public info(...args: any[]) { this.callMethod('info', args); }
-  public log(...args: any[]) { this.callMethod('log', args); }
-  public warn(...args: any[]) { this.callMethod('warn', args); }
+  public error(...args: any[]) {
+    this.callMethod('error', args);
+  }
+  public info(...args: any[]) {
+    this.callMethod('info', args);
+  }
+  public log(...args: any[]) {
+    this.callMethod('log', args);
+  }
+  public warn(...args: any[]) {
+    this.callMethod('warn', args);
+  }
 
-  private callMethod(method: 'error' | 'info' | 'log' | 'warn', args: any[]) {
+  private callMethod(method: 'error'|'info'|'log'|'warn', args: any[]) {
     console[method](`[${new Date()}]`, `${this.scope}:${this.padding}`, ...args);
   }
 }

@@ -39,7 +39,7 @@ export class SyncLocker {
   protected create(): void {
     try {
       this.lockFile.write();
-    } catch (e) {
+    } catch (e: any) {
       if (e.code !== 'EEXIST') {
         throw e;
       }

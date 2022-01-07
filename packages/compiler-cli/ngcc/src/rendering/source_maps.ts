@@ -64,7 +64,7 @@ export function renderSourceAndMap(
     ];
   } catch (e) {
     logger.error(`Error when flattening the source-map "${sourceMapPath}" for "${
-        sourceFilePath}": ${e.toString()}`);
+        sourceFilePath}": ${(e as Error).toString()}`);
     return [
       {path: sourceFilePath, contents: generatedContent},
       {path: sourceMapPath, contents: mapHelpers.fromObject(generatedMap).toJSON()},
