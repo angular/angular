@@ -31,6 +31,8 @@ node_modules
 /.vs
 *.swo
 *.swp
+.vimrc
+.nvimrc
 
 # misc
 .DS_Store
