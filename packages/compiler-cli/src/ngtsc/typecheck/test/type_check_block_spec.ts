@@ -618,6 +618,12 @@ describe('type check blocks', () => {
     expect(block).toContain('((((ctx).foo)).$any(((ctx).a)))');
   });
 
+  it('should handle $any accessed through a property read', () => {
+    const TEMPLATE = `{{foo.$any(a)}}`;
+    const block = tcb(TEMPLATE);
+    expect(block).toContain('((((((ctx).foo)).$any))(((ctx).a)))');
+  });
+
   describe('experimental DOM checking via lib.dom.d.ts', () => {
     it('should translate unclaimed bindings to their property equivalent', () => {
       const TEMPLATE = `<label [for]="'test'"></label>`;
