@@ -60,6 +60,10 @@ describe('FormArray', () => {
       a.removeAt(a.length);
 
       expect(a.controls).toEqual([c1]);
+
+      a.removeAt(a.length);
+
+      expect(a.controls).toEqual([c1]);
     });
 
     it('should support clearing', () => {
