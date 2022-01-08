@@ -353,12 +353,8 @@ export class ComponentDecoratorHandler implements
     if (component.has('animations')) {
       animations = new WrappedNodeExpr(component.get('animations')!);
       const animationsValue = this.evaluator.evaluate(component.get('animations')!);
-      if (Array.isArray(animationsValue)) {
-        animationTriggerNames = {includesDynamicAnimations: false, triggerNames: []};
-        collectAnimationNames(animationsValue, animationTriggerNames);
-      } else {
-        animationTriggerNames = {includesDynamicAnimations: true, triggerNames: []};
-      }
+      animationTriggerNames = {includesDynamicAnimations: false, staticTriggerNames: []};
+      collectAnimationNames(animationsValue, animationTriggerNames);
     }
 
     // Go through the root directories for this project, and select the one with the smallest
@@ -1557,20 +1553,19 @@ function checkCustomElementSelectorForErrors(selector: string): string|null {
  * @param animationTriggerNames the animation names collected and whether some names could not be
  *     statically evaluated.
  */
-function collectAnimationNames(
-    value: ResolvedValueArray, animationTriggerNames: AnimationTriggerNames) {
-  for (const resolvedValue of value) {
-    if (resolvedValue instanceof Map) {
-      const name = resolvedValue.get('name');
-      if (typeof name === 'string') {
-        animationTriggerNames.triggerNames.push(name);
-      } else {
-        animationTriggerNames.includesDynamicAnimations = true;
-      }
-    } else if (Array.isArray(resolvedValue)) {
-      collectAnimationNames(resolvedValue, animationTriggerNames);
+function collectAnimationNames(value: ResolvedValue, animationTriggerNames: AnimationTriggerNames) {
+  if (value instanceof Map) {
+    const name = value.get('name');
+    if (typeof name === 'string') {
+      animationTriggerNames.staticTriggerNames.push(name);
     } else {
       animationTriggerNames.includesDynamicAnimations = true;
     }
+  } else if (Array.isArray(value)) {
+    for (const resolvedValue of value) {
+      collectAnimationNames(resolvedValue, animationTriggerNames);
+    }
+  } else {
+    animationTriggerNames.includesDynamicAnimations = true;
   }
 }

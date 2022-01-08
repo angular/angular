@@ -42,7 +42,7 @@ export interface InputOutputPropertySet {
  */
 export interface AnimationTriggerNames {
   includesDynamicAnimations: boolean;
-  triggerNames: string[];
+  staticTriggerNames: string[];
 }
 
 /**

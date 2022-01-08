@@ -434,7 +434,7 @@ runInEachFileSystem(() => {
       const {analysis} = handler.analyze(TestCmp, detected.metadata);
       handler.register(TestCmp, analysis!);
       const meta = metaRegistry.getDirectiveMetadata(new Reference(TestCmp));
-      expect(meta?.animationTriggerNames?.triggerNames).toEqual([
+      expect(meta?.animationTriggerNames?.staticTriggerNames).toEqual([
         'animationName', 'nestedAnimationName'
       ]);
       expect(meta?.animationTriggerNames?.includesDynamicAnimations).toBeFalse();
@@ -477,7 +477,7 @@ runInEachFileSystem(() => {
       const {analysis} = handler.analyze(TestCmp, detected.metadata);
       handler.register(TestCmp, analysis!);
       const meta = metaRegistry.getDirectiveMetadata(new Reference(TestCmp));
-      expect(meta?.animationTriggerNames?.triggerNames).toEqual(['animationName']);
+      expect(meta?.animationTriggerNames?.staticTriggerNames).toEqual(['animationName']);
       expect(meta?.animationTriggerNames?.includesDynamicAnimations).toBeTrue();
     });
 
@@ -516,7 +516,7 @@ runInEachFileSystem(() => {
       handler.register(TestCmp, analysis!);
       const meta = metaRegistry.getDirectiveMetadata(new Reference(TestCmp));
       expect(meta?.animationTriggerNames?.includesDynamicAnimations).toBeTrue();
-      expect(meta?.animationTriggerNames?.triggerNames.length).toBe(0);
+      expect(meta?.animationTriggerNames?.staticTriggerNames.length).toBe(0);
     });
   });
 
