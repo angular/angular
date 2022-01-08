@@ -703,6 +703,19 @@ describe('completions', () => {
           expectReplacementText(completions, templateFile.contents, 'my');
         });
 
+        it('should return animation names when the property binding animation name is empty',
+           () => {
+             const {templateFile} =
+                 setup(`<input [@]>`, '', {}, ANIMATION_TRIGGER_FUNCTION, ANIMATION_METADATA);
+             templateFile.moveCursorToText('[@¦]');
+
+             const completions = templateFile.getCompletionsAtPosition();
+             expectContain(
+                 completions,
+                 unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.ATTRIBUTE),
+                 ['animationName']);
+           });
+
         it('should return the special animation control binding called @.disabled ', () => {
           const {templateFile} =
               setup(`<input [@.dis]>`, '', {}, ANIMATION_TRIGGER_FUNCTION, ANIMATION_METADATA);
@@ -727,6 +740,17 @@ describe('completions', () => {
           expectReplacementText(completions, templateFile.contents, 'my');
         });
 
+        it('should return animation names when the event binding animation name is empty', () => {
+          const {templateFile} =
+              setup(`<input (@)>`, '', {}, ANIMATION_TRIGGER_FUNCTION, ANIMATION_METADATA);
+          templateFile.moveCursorToText('(@¦)');
+
+          const completions = templateFile.getCompletionsAtPosition();
+          expectContain(
+              completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.EVENT),
+              ['animationName']);
+        });
+
         it('should return the animation phase for the event binding', () => {
           const {templateFile} =
               setup(`<input (@my.do)>`, '', {}, ANIMATION_TRIGGER_FUNCTION, ANIMATION_METADATA);
@@ -738,6 +762,18 @@ describe('completions', () => {
               ['done']);
           expectReplacementText(completions, templateFile.contents, 'do');
         });
+
+        it('should return the animation phase when the event binding animation phase is empty',
+           () => {
+             const {templateFile} =
+                 setup(`<input (@my.)>`, '', {}, ANIMATION_TRIGGER_FUNCTION, ANIMATION_METADATA);
+             templateFile.moveCursorToText('(@my.¦)');
+
+             const completions = templateFile.getCompletionsAtPosition();
+             expectContain(
+                 completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.EVENT),
+                 ['done']);
+           });
       });
 
       it('should return input completions for a partial attribute', () => {

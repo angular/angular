@@ -38,6 +38,8 @@ export enum CompletionNodeContext {
   TwoWayBinding,
 }
 
+const ANIMATION_PHASES = ['start', 'done'];
+
 /**
  * Performs autocompletion operations on a given node in the template.
  *
@@ -72,7 +74,7 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
     } else if (this.isElementTagCompletion()) {
       return this.getElementTagCompletion();
     } else if (this.isElementAttributeCompletion()) {
-      if (this.isAnimationCompletions()) {
+      if (this.isAnimationCompletion()) {
         return this.getAnimationCompletions();
       } else {
         return this.getElementAttributeCompletions(options);
@@ -537,7 +539,7 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
     return directive?.tsSymbol;
   }
 
-  private isAnimationCompletions(): this is ElementAnimationCompletionBuilder {
+  private isAnimationCompletion(): this is ElementAnimationCompletionBuilder {
     return (this.node instanceof TmplAstBoundAttribute &&
             this.node.type === BindingType.Animation) ||
         (this.node instanceof TmplAstBoundEvent && this.node.type === ParsedEventType.Animation);
@@ -548,11 +550,36 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
     if (this.node instanceof TmplAstBoundAttribute) {
       const animations = this.compiler.getTemplateTypeChecker()
                              .getDirectiveMetadata(this.component)
-                             ?.animationTriggerNames?.triggerNames;
+                             ?.animationTriggerNames?.staticTriggerNames;
       const replacementSpan = makeReplacementSpanFromParseSourceSpan(this.node.keySpan);
-      if (animations) {
-        const entries = buildAnimationCompletionEntries(
-            [...animations, '.disabled'], replacementSpan, DisplayInfoKind.ATTRIBUTE);
+
+      if (animations === undefined) {
+        return undefined;
+      }
+
+      const entries = buildAnimationCompletionEntries(
+          [...animations, '.disabled'], replacementSpan, DisplayInfoKind.ATTRIBUTE);
+      return {
+        entries,
+        isGlobalCompletion: false,
+        isMemberCompletion: false,
+        isNewIdentifierLocation: true,
+      };
+    } else {
+      const animationNameSpan = buildAnimationNameSpan(this.node);
+      const phaseSpan = buildAnimationPhaseSpan(this.node);
+      if (isWithin(this.position, animationNameSpan)) {
+        const animations = this.compiler.getTemplateTypeChecker()
+                               .getDirectiveMetadata(this.component)
+                               ?.animationTriggerNames?.staticTriggerNames;
+        const replacementSpan = makeReplacementSpanFromParseSourceSpan(animationNameSpan);
+
+        if (animations === undefined) {
+          return undefined;
+        }
+
+        const entries =
+            buildAnimationCompletionEntries(animations, replacementSpan, DisplayInfoKind.EVENT);
         return {
           entries,
           isGlobalCompletion: false,
@@ -560,29 +587,10 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
           isNewIdentifierLocation: true,
         };
       }
-    } else {
-      const animationNameSpan = buildAnimationNameSpan(this.node);
-      const phaseSpan = buildAnimationPhaseSpan(this.node);
-      if (isWithin(this.position, animationNameSpan)) {
-        const animations = this.compiler.getTemplateTypeChecker()
-                               .getDirectiveMetadata(this.component)
-                               ?.animationTriggerNames?.triggerNames;
-        const replacementSpan = makeReplacementSpanFromParseSourceSpan(animationNameSpan);
-        if (animations) {
-          const entries =
-              buildAnimationCompletionEntries(animations, replacementSpan, DisplayInfoKind.EVENT);
-          return {
-            entries,
-            isGlobalCompletion: false,
-            isMemberCompletion: false,
-            isNewIdentifierLocation: true,
-          };
-        }
-      }
       if (phaseSpan !== null && isWithin(this.position, phaseSpan)) {
         const replacementSpan = makeReplacementSpanFromParseSourceSpan(phaseSpan);
         const entries = buildAnimationCompletionEntries(
-            ['start', 'done'], replacementSpan, DisplayInfoKind.EVENT);
+            ANIMATION_PHASES, replacementSpan, DisplayInfoKind.EVENT);
         return {
           entries,
           isGlobalCompletion: false,
