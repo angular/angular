@@ -7,6 +7,8 @@
 // @public
 export const enum RuntimeErrorCode {
     // (undocumented)
+    INVALID_PIPE_ARGUMENT = 2100,
+    // (undocumented)
     PARENT_NG_SWITCH_NOT_FOUND = 2000
 }
 
