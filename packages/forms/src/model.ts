@@ -2072,8 +2072,8 @@ export class FormArray extends AbstractControl {
    *     last item in the array.
    */
   at(index: number): AbstractControl {
-    index += index >= 0 ? 0 : this.length();
-    return this.controls[index];
+    const adjustedIdx = this._adjustIndex(index);
+    return this.controls[adjustedIdx];
   }
 
   /**
@@ -2106,8 +2106,8 @@ export class FormArray extends AbstractControl {
    * inserted. When false, no events are emitted.
    */
   insert(index: number, control: AbstractControl, options: {emitEvent?: boolean} = {}): void {
-    index += index >= 0 ? 0 : this.length();
-    this.controls.splice(index, 0, control);
+    const adjustedIdx = this._adjustIndex(index);
+    this.controls.splice(adjustedIdx, 0, control);
 
     this._registerControl(control);
     this.updateValueAndValidity({emitEvent: options.emitEvent});
@@ -2125,9 +2125,9 @@ export class FormArray extends AbstractControl {
    * removed. When false, no events are emitted.
    */
   removeAt(index: number, options: {emitEvent?: boolean} = {}): void {
-    index += index >= 0 ? 0 : this.length();
-    if (this.controls[index]) this.controls[index]._registerOnCollectionChange(() => {});
-    this.controls.splice(index, 1);
+    const adjustedIdx = this._adjustIndex(index);
+    if (this.controls[adjustedIdx]) this.controls[adjustedIdx]._registerOnCollectionChange(() => {});
+    this.controls.splice(adjustedIdx, 1);
     this.updateValueAndValidity({emitEvent: options.emitEvent});
   }
 
@@ -2144,12 +2144,12 @@ export class FormArray extends AbstractControl {
    * replaced with a new one. When false, no events are emitted.
    */
   setControl(index: number, control: AbstractControl, options: {emitEvent?: boolean} = {}): void {
-    index += index >= 0 ? 0 : this.length();
-    if (this.controls[index]) this.controls[index]._registerOnCollectionChange(() => {});
-    this.controls.splice(index, 1);
+    const adjustedIdx = this._adjustIndex(index);
+    if (this.controls[adjustedIdx]) this.controls[adjustedIdx]._registerOnCollectionChange(() => {});
+    this.controls.splice(adjustedIdx, 1);
 
     if (control) {
-      this.controls.splice(index, 0, control);
+      this.controls.splice(adjustedIdx, 0, control);
       this._registerControl(control);
     }
 
@@ -2407,5 +2407,9 @@ export class FormArray extends AbstractControl {
   private _registerControl(control: AbstractControl) {
     control.setParent(this);
     control._registerOnCollectionChange(this._onCollectionChange);
+  }
+
+  private _adjustIndex(index: number): number {
+    return index >= 0 ? index : index + this.length;
   }
 }
