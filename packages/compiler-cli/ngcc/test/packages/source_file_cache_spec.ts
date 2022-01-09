@@ -167,21 +167,21 @@ runInEachFileSystem(() => {
       });
 
       it('should prefer source files cached in SharedFileCache', () => {
-        const cache1 = new EntryPointFileCache(fs, sharedFileCache);
+        const cache1 = new EntryPointFileCache(fs, sharedFileCache, sourceText => sourceText);
         const libEs5_1 = cache1.getCachedSourceFile(
             '/node_modules/typescript/lib/lib.es5.d.ts', ts.ScriptTarget.ESNext)!;
         expect(libEs5_1).not.toBeUndefined();
         expect(libEs5_1.text).toContain('Array');
         expect(libEs5_1.languageVersion).toBe(ts.ScriptTarget.ES2015);
 
-        const cache2 = new EntryPointFileCache(fs, sharedFileCache);
+        const cache2 = new EntryPointFileCache(fs, sharedFileCache, sourceText => sourceText);
         const libEs5_2 = cache2.getCachedSourceFile(
             '/node_modules/typescript/lib/lib.es5.d.ts', ts.ScriptTarget.ESNext)!;
         expect(libEs5_1).toBe(libEs5_2);
       });
 
       it('should cache source files that are not default library files', () => {
-        const cache = new EntryPointFileCache(fs, sharedFileCache);
+        const cache = new EntryPointFileCache(fs, sharedFileCache, sourceText => sourceText);
         const index = cache.getCachedSourceFile('/index.ts', ts.ScriptTarget.ESNext)!;
         expect(index).not.toBeUndefined();
         expect(index.text).toContain('index');
@@ -200,8 +200,8 @@ runInEachFileSystem(() => {
       });
 
       it('should not share non-library files across multiple cache instances', () => {
-        const cache1 = new EntryPointFileCache(fs, sharedFileCache);
-        const cache2 = new EntryPointFileCache(fs, sharedFileCache);
+        const cache1 = new EntryPointFileCache(fs, sharedFileCache, sourceText => sourceText);
+        const cache2 = new EntryPointFileCache(fs, sharedFileCache, sourceText => sourceText);
 
         const index1 = cache1.getCachedSourceFile('/index.ts', ts.ScriptTarget.ESNext)!;
         const index2 = cache2.getCachedSourceFile('/index.ts', ts.ScriptTarget.ESNext)!;
@@ -209,14 +209,22 @@ runInEachFileSystem(() => {
       });
 
       it('should return undefined if the file does not exist', () => {
-        const cache = new EntryPointFileCache(fs, sharedFileCache);
+        const cache = new EntryPointFileCache(fs, sharedFileCache, sourceText => sourceText);
         expect(cache.getCachedSourceFile('/nonexistent.ts', ts.ScriptTarget.ESNext))
             .toBeUndefined();
       });
 
       it('should return undefined if the path is a directory', () => {
-        const cache = new EntryPointFileCache(fs, sharedFileCache);
+        const cache = new EntryPointFileCache(fs, sharedFileCache, sourceText => sourceText);
         expect(cache.getCachedSourceFile('/node_modules', ts.ScriptTarget.ESNext)).toBeUndefined();
+      });
+
+      it('should apply the source text transform', () => {
+        const cache = new EntryPointFileCache(
+            fs, sharedFileCache, sourceText => sourceText.replace('main', 'replaced'));
+        const main = cache.getCachedSourceFile('/main.ts', ts.ScriptTarget.ESNext)!;
+        expect(main).not.toBeUndefined();
+        expect(main.text).toBe(`export const replaced = true;`);
       });
     });
   });
