@@ -6,7 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import ts from 'typescript';
+
 import {AbsoluteFsPath, ReadonlyFileSystem} from '../../../src/ngtsc/file_system';
+
+import {adjustElementAccessExports} from './adjust_cjs_umd_exports';
 
 /**
  * A cache that holds on to source files that can be shared for processing all entry-points in a
@@ -147,7 +150,9 @@ function isFile(
 export class EntryPointFileCache {
   private readonly sfCache = new Map<AbsoluteFsPath, ts.SourceFile>();
 
-  constructor(private fs: ReadonlyFileSystem, private sharedFileCache: SharedFileCache) {}
+  constructor(
+      private fs: ReadonlyFileSystem, private sharedFileCache: SharedFileCache,
+      private processSourceText: (sourceText: string) => string) {}
 
   /**
    * Returns and caches a parsed `ts.SourceFile` for the provided `fileName`. If the `fileName` is
@@ -172,7 +177,8 @@ export class EntryPointFileCache {
     if (content === undefined) {
       return undefined;
     }
-    const sf = ts.createSourceFile(fileName, content, languageVersion);
+    const processed = this.processSourceText(content);
+    const sf = ts.createSourceFile(fileName, processed, languageVersion);
     this.sfCache.set(absPath, sf);
     return sf;
   }

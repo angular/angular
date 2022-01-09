@@ -6,9 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import ts from 'typescript';
+
 import {AbsoluteFsPath, FileSystem, ReadonlyFileSystem} from '../../../src/ngtsc/file_system';
 import {DtsProcessing} from '../execution/tasks/api';
 import {PathMappings} from '../path_mappings';
+
+import {adjustElementAccessExports} from './adjust_cjs_umd_exports';
 import {BundleProgram, makeBundleProgram} from './bundle_program';
 import {EntryPoint, EntryPointFormat} from './entry_point';
 import {NgccDtsCompilerHost, NgccSourcesCompilerHost} from './ngcc_compiler_host';
@@ -28,6 +31,20 @@ export interface EntryPointBundle {
   dts: BundleProgram|null;
   dtsProcessing: DtsProcessing;
   enableI18nLegacyMessageIdFormat: boolean;
+}
+
+/**
+ * When processing UMD or CommonJS bundles the source text is preprocessed to transform export
+ * declarations using element access expressions into property access expressions, as otherwise ngcc
+ * would not recognize these export declarations. See `adjustElementAccessExports` for more
+ * information.
+ */
+function createSourceTextProcessor(format: EntryPointFormat): (sourceText: string) => string {
+  if (format === 'umd' || format === 'commonjs') {
+    return adjustElementAccessExports;
+  } else {
+    return sourceText => sourceText;
+  }
 }
 
 /**
@@ -56,7 +73,8 @@ export function makeEntryPointBundle(
   const rootDir = entryPoint.packagePath;
   const options: ts
       .CompilerOptions = {allowJs: true, maxNodeModuleJsDepth: Infinity, rootDir, ...pathMappings};
-  const entryPointCache = new EntryPointFileCache(fs, sharedFileCache);
+  const processSourceText = createSourceTextProcessor(format);
+  const entryPointCache = new EntryPointFileCache(fs, sharedFileCache, processSourceText);
   const dtsHost = new NgccDtsCompilerHost(fs, options, entryPointCache, moduleResolutionCache);
   const srcHost = new NgccSourcesCompilerHost(
       fs, options, entryPointCache, moduleResolutionCache, entryPoint.packagePath);
