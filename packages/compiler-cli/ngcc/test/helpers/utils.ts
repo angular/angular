@@ -73,7 +73,8 @@ export function makeTestBundleProgram(
   const options: ts.CompilerOptions =
       {allowJs: true, maxNodeModuleJsDepth: Infinity, checkJs: false, rootDir, rootDirs: [rootDir]};
   const moduleResolutionCache = createModuleResolutionCache(fs);
-  const entryPointFileCache = new EntryPointFileCache(fs, new SharedFileCache(fs));
+  const entryPointFileCache =
+      new EntryPointFileCache(fs, new SharedFileCache(fs), sourceText => sourceText);
   const host =
       new NgccSourcesCompilerHost(fs, options, entryPointFileCache, moduleResolutionCache, rootDir);
   return makeBundleProgram(
