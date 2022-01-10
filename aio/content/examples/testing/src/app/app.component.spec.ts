@@ -121,7 +121,9 @@ function tests() {
 
   // #docregion tests
   it('can get RouterLinks from template', () => {
-    expect(routerLinks.length).toBe(3, 'should have 3 routerLinks');
+    expect(routerLinks.length)
+      .withContext('should have 3 routerLinks')
+      .toBe(3);
     expect(routerLinks[0].linkParams).toBe('/dashboard');
     expect(routerLinks[1].linkParams).toBe('/heroes');
     expect(routerLinks[2].linkParams).toBe('/about');
@@ -131,7 +133,9 @@ function tests() {
     const heroesLinkDe = linkDes[1];    // heroes link DebugElement
     const heroesLink = routerLinks[1];  // heroes link directive
 
-    expect(heroesLink.navigatedTo).toBeNull('should not have navigated yet');
+    expect(heroesLink.navigatedTo)
+      .withContext('should not have navigated yet')
+      .toBeNull();
 
     heroesLinkDe.triggerEventHandler('click', null);
     fixture.detectChanges();
