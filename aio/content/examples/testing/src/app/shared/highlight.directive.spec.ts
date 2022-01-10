@@ -56,7 +56,9 @@ describe('HighlightDirective', () => {
   it('should bind <input> background to value color', () => {
     // easier to work with nativeElement
     const input = des[2].nativeElement as HTMLInputElement;
-    expect(input.style.backgroundColor).toBe('cyan', 'initial backgroundColor');
+    expect(input.style.backgroundColor)
+      .withContext('initial backgroundColor')
+      .toBe('cyan');
 
     input.value = 'green';
 
@@ -66,7 +68,9 @@ describe('HighlightDirective', () => {
     input.dispatchEvent(new Event('input'));
     fixture.detectChanges();
 
-    expect(input.style.backgroundColor).toBe('green', 'changed backgroundColor');
+    expect(input.style.backgroundColor)
+      .withContext('changed backgroundColor')
+      .toBe('green');
   });
 
 

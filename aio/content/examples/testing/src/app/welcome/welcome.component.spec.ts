@@ -105,8 +105,12 @@ describe('WelcomeComponent', () => {
   it('should welcome the user', () => {
     fixture.detectChanges();
     const content = el.textContent;
-    expect(content).toContain('Welcome', '"Welcome ..."');
-    expect(content).toContain('Test User', 'expected name');
+    expect(content)
+      .withContext('"Welcome ..."')
+      .toContain('Welcome');
+    expect(content)
+      .withContext('expected name')
+      .toContain('Test User');
   });
 
   it('should welcome "Bubba"', () => {
@@ -119,8 +123,12 @@ describe('WelcomeComponent', () => {
     userService.isLoggedIn = false; // welcome message hasn't been shown yet
     fixture.detectChanges();
     const content = el.textContent;
-    expect(content).not.toContain('Welcome', 'not welcomed');
-    expect(content).toMatch(/log in/i, '"log in"');
+    expect(content)
+      .withContext('not welcomed')
+      .not.toContain('Welcome');
+    expect(content)
+      .withContext('"log in"')
+      .toMatch(/log in/i);
   });
   // #enddocregion tests
 
