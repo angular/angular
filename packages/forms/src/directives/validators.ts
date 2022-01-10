@@ -482,7 +482,10 @@ export class EmailValidator extends AbstractValidatorDirective {
 
   /** @internal */
   override normalizeInput = (input: unknown): boolean =>
-      input === '' || input === true || input === 'true';
+      // Avoid TSLint requirement to omit semicolon, see
+      // https://github.com/palantir/tslint/issues/1476
+      // tslint:disable-next-line:semicolon
+      (input === '' || input === true || input === 'true');
 
   /** @internal */
   override createValidator = (input: number): ValidatorFn => emailValidator;
