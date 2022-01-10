@@ -98,7 +98,7 @@ export function createInjectorWithoutInjectorInstances(
   return new R3Injector(defType, additionalProviders, parent || getNullInjector(), name);
 }
 
-export class R3Injector {
+export class R3Injector implements Injector {
   /**
    * Map of tokens to records which contain the instances of those tokens.
    * - `null` value implies that we don't have the record. Used by tree-shakable injectors
@@ -416,7 +416,7 @@ export class R3Injector {
       record.value = CIRCULAR;
       record.value = record.factory!();
     }
-    if (typeof record.value === 'object' && record.value && hasOnDestroy(record.value)) {
+    if (hasOnDestroy(record.value)) {
       this.onDestroy.add(record.value);
     }
     return record.value as T;
