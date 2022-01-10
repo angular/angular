@@ -424,14 +424,7 @@ describe('MDC-based MatSelectionList without forms', () => {
       expect(listOptions.every(option => option.componentInstance.selected)).toBe(false);
     });
 
-    // This is temporarily disabled as the MDC list does not emit a proper event when
-    // items are interactively toggled with e.g. `CTRL + A`.
-    // TODO(devversion): look more into this. MDC does not expose an `onChange` adapter
-    // function. Authors are required to emit a change event on checkbox/radio change, but
-    // that is not an viable option for us since we also allow for programmatic selection updates.
-    // https://github.com/material-components/material-components-web/blob/a986df922b6b4c1ef5c59925107281d1d40287a8/packages/mdc-list/component.ts#L300-L308.
-    // tslint:disable-next-line:ban
-    xit('should dispatch the selectionChange event when selecting via ctrl + a', () => {
+    it('should dispatch the selectionChange event when selecting via ctrl + a', () => {
       const spy = spyOn(fixture.componentInstance, 'onSelectionChange');
       listOptions.forEach(option => (option.componentInstance.disabled = false));
       fixture.detectChanges();

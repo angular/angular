@@ -398,8 +398,8 @@ function getSelectionListAdapter(list: MatSelectionList): MDCListAdapter {
 
       baseAdapter.setAttributeForElementIndex(index, attribute, value);
     },
-    notifyAction(index: number): void {
-      list._emitChangeEvent([list._itemsArr[index]]);
+    notifySelectionChange(changedIndices: number[]): void {
+      list._emitChangeEvent(changedIndices.map(index => list._itemsArr[index]));
     },
   };
 }
