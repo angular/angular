@@ -40,6 +40,7 @@ import {
   IterableChangeRecord,
   IterableDiffer,
   IterableDiffers,
+  NgZone,
   OnDestroy,
   OnInit,
   Optional,
@@ -60,7 +61,7 @@ import {
   Subject,
   Subscription,
 } from 'rxjs';
-import {takeUntil} from 'rxjs/operators';
+import {take, takeUntil} from 'rxjs/operators';
 import {CdkColumnDef} from './cell';
 import {_CoalescedStyleScheduler, _COALESCED_STYLE_SCHEDULER} from './coalesced-style-scheduler';
 import {
@@ -525,6 +526,12 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
     @SkipSelf()
     @Inject(STICKY_POSITIONING_LISTENER)
     protected readonly _stickyPositioningListener: StickyPositioningListener,
+    /**
+     * @deprecated `_ngZone` parameter to become required.
+     * @breaking-change 14.0.0
+     */
+    @Optional()
+    protected readonly _ngZone: NgZone,
   ) {
     if (!role) {
       this._elementRef.nativeElement.setAttribute('role', 'table');
@@ -666,7 +673,16 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
     });
 
     this._updateNoDataRow();
-    this.updateStickyColumnStyles();
+
+    // Allow the new row data to render before measuring it.
+    // @breaking-change 14.0.0 Remove undefined check once _ngZone is required.
+    if (this._ngZone && NgZone.isInAngularZone()) {
+      this._ngZone.onStable.pipe(take(1), takeUntil(this._onDestroy)).subscribe(() => {
+        this.updateStickyColumnStyles();
+      });
+    } else {
+      this.updateStickyColumnStyles();
+    }
 
     this.contentChanged.next();
   }

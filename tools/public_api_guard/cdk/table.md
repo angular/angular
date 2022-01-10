@@ -289,7 +289,8 @@ export class CdkRowDef<T> extends BaseRowDef {
 // @public
 export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDestroy, OnInit {
     constructor(_differs: IterableDiffers, _changeDetectorRef: ChangeDetectorRef, _elementRef: ElementRef, role: string, _dir: Directionality, _document: any, _platform: Platform, _viewRepeater: _ViewRepeater<T, RenderRow<T>, RowContext<T>>, _coalescedStyleScheduler: _CoalescedStyleScheduler, _viewportRuler: ViewportRuler,
-    _stickyPositioningListener: StickyPositioningListener);
+    _stickyPositioningListener: StickyPositioningListener,
+    _ngZone: NgZone);
     addColumnDef(columnDef: CdkColumnDef): void;
     addFooterRowDef(footerRowDef: CdkFooterRowDef): void;
     addHeaderRowDef(headerRowDef: CdkHeaderRowDef): void;
@@ -332,6 +333,8 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
     ngOnDestroy(): void;
     // (undocumented)
     ngOnInit(): void;
+    // @deprecated (undocumented)
+    protected readonly _ngZone: NgZone;
     _noDataRow: CdkNoDataRow;
     // (undocumented)
     _noDataRowOutlet: NoDataRowOutlet;
@@ -360,7 +363,7 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
     // (undocumented)
     static ɵcmp: i0.ɵɵComponentDeclaration<CdkTable<any>, "cdk-table, table[cdk-table]", ["cdkTable"], { "trackBy": "trackBy"; "dataSource": "dataSource"; "multiTemplateDataRows": "multiTemplateDataRows"; "fixedLayout": "fixedLayout"; }, { "contentChanged": "contentChanged"; }, ["_noDataRow", "_contentColumnDefs", "_contentRowDefs", "_contentHeaderRowDefs", "_contentFooterRowDefs"], ["caption", "colgroup, col"]>;
     // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<CdkTable<any>, [null, null, null, { attribute: "role"; }, { optional: true; }, null, null, null, null, null, { optional: true; skipSelf: true; }]>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<CdkTable<any>, [null, null, null, { attribute: "role"; }, { optional: true; }, null, null, null, null, null, { optional: true; skipSelf: true; }, { optional: true; }]>;
 }
 
 // @public (undocumented)
