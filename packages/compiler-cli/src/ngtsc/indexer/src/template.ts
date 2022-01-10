@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {AST, ASTWithSource, BoundTarget, ImplicitReceiver, ParseSourceSpan, PropertyRead, PropertyWrite, RecursiveAstVisitor, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstBoundText, TmplAstElement, TmplAstNode, TmplAstRecursiveVisitor, TmplAstReference, TmplAstTemplate, TmplAstVariable} from '@angular/compiler';
+
 import {AbsoluteSourceSpan, AttributeIdentifier, ElementIdentifier, IdentifierKind, MethodIdentifier, PropertyIdentifier, ReferenceIdentifier, TemplateNodeIdentifier, TopLevelIdentifier, VariableIdentifier} from './api';
 import {ComponentMeta} from './context';
 
@@ -93,7 +94,14 @@ class ExpressionVisitor extends RecursiveAstVisitor {
     }
 
     // The source span of the requested AST starts at a location that is offset from the expression.
-    const identifierStart = ast.sourceSpan.start - this.absoluteOffset;
+    let identifierStart = ast.sourceSpan.start - this.absoluteOffset;
+
+    if (ast instanceof PropertyRead || ast instanceof PropertyWrite) {
+      // For `PropertyRead` and `PropertyWrite`, the identifier starts at the `nameSpan`, not
+      // necessarily the `sourceSpan`.
+      identifierStart = ast.nameSpan.start - this.absoluteOffset;
+    }
+
     if (!this.expressionStr.substring(identifierStart).startsWith(ast.name)) {
       throw new Error(`Impossible state: "${ast.name}" not found in "${
           this.expressionStr}" at location ${identifierStart}`);
