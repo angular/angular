@@ -21,6 +21,20 @@ function bind(template: string) {
 
 runInEachFileSystem(() => {
   describe('getTemplateIdentifiers', () => {
+    it('should handle svg elements', () => {
+      const template = '<svg></svg>';
+      const refs = getTemplateIdentifiers(bind(template));
+
+      const [ref] = Array.from(refs);
+      expect(ref).toEqual({
+        kind: IdentifierKind.Element,
+        name: 'svg',
+        span: new AbsoluteSourceSpan(1, 4),
+        usedDirectives: new Set(),
+        attributes: new Set(),
+      });
+    });
+
     it('should handle comments in interpolations', () => {
       const template = '{{foo // comment}}';
       const refs = getTemplateIdentifiers(bind(template));
