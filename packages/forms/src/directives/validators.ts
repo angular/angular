@@ -482,7 +482,7 @@ export class EmailValidator extends AbstractValidatorDirective {
 
   /** @internal */
   override normalizeInput = (input: unknown): boolean =>
-      input === '' || input === true || input === 'true'
+      input === '' || input === true || input === 'true';
 
   /** @internal */
   override createValidator = (input: number): ValidatorFn => emailValidator;
