@@ -74,9 +74,11 @@ describe('demo (no TestBed):', () => {
       masterService = new MasterService(valueServiceSpy);
 
       expect(masterService.getValue())
-        .toBe(stubValue, 'service returned stub value');
+        .withContext('service returned stub value')
+        .toBe(stubValue);
       expect(valueServiceSpy.getValue.calls.count())
-        .toBe(1, 'spy method was called once');
+        .withContext('spy method was called once')
+        .toBe(1);
       expect(valueServiceSpy.getValue.calls.mostRecent().returnValue)
         .toBe(stubValue);
     });
@@ -90,9 +92,11 @@ describe('demo (no TestBed):', () => {
       const { masterService, stubValue, valueServiceSpy } = setup();
       // #enddocregion no-before-each-setup-call
       expect(masterService.getValue())
-        .toBe(stubValue, 'service returned stub value');
+        .withContext('service returned stub value')
+        .toBe(stubValue);
       expect(valueServiceSpy.getValue.calls.count())
-        .toBe(1, 'spy method was called once');
+        .withContext('spy method was called once')
+        .toBe(1);
       expect(valueServiceSpy.getValue.calls.mostRecent().returnValue)
         .toBe(stubValue);
     });
@@ -131,18 +135,28 @@ describe('demo (no TestBed):', () => {
   describe('LightswitchComp', () => {
     it('#clicked() should toggle #isOn', () => {
       const comp = new LightswitchComponent();
-      expect(comp.isOn).toBe(false, 'off at first');
+      expect(comp.isOn)
+        .withContext('off at first')
+        .toBe(false);
       comp.clicked();
-      expect(comp.isOn).toBe(true, 'on after click');
+      expect(comp.isOn)
+        .withContext('on after click')
+        .toBe(true);
       comp.clicked();
-      expect(comp.isOn).toBe(false, 'off after second click');
+      expect(comp.isOn)
+        .withContext('off after second click')
+        .toBe(false);
     });
 
     it('#clicked() should set #message to "is on"', () => {
       const comp = new LightswitchComponent();
-      expect(comp.message).toMatch(/is off/i, 'off at first');
+      expect(comp.message)
+        .withContext('off at first')
+        .toMatch(/is off/i);
       comp.clicked();
-      expect(comp.message).toMatch(/is on/i, 'on after clicked');
+      expect(comp.message)
+        .withContext('on after clicked')
+        .toMatch(/is on/i);
     });
   });
   // #enddocregion Lightswitch

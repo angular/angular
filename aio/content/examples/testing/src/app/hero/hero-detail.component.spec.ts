@@ -87,7 +87,9 @@ function overrideSetup() {
   });
 
   it('should have called `getHero`', () => {
-    expect(hdsSpy.getHero.calls.count()).toBe(1, 'getHero called once');
+    expect(hdsSpy.getHero.calls.count())
+      .withContext('getHero called once')
+      .toBe(1, 'getHero called once');
   });
 
   it("should display stub hero's name", () => {
@@ -104,15 +106,25 @@ function overrideSetup() {
        // https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent/CustomEvent#Polyfill
        page.nameInput.dispatchEvent(new Event('input')); // tell Angular
 
-       expect(component.hero.name).toBe(newName, 'component hero has new name');
-       expect(hdsSpy.testHero.name).toBe(origName, 'service hero unchanged before save');
+       expect(component.hero.name)
+        .withContext('component hero has new name')
+        .toBe(newName);
+       expect(hdsSpy.testHero.name)
+        .withContext('service hero unchanged before save')
+        .toBe(origName);
 
        click(page.saveBtn);
-       expect(hdsSpy.saveHero.calls.count()).toBe(1, 'saveHero called once');
+       expect(hdsSpy.saveHero.calls.count())
+        .withContext('saveHero called once')
+        .toBe(1);
 
        tick();  // wait for async save to complete
-       expect(hdsSpy.testHero.name).toBe(newName, 'service hero has new name after save');
-       expect(page.navigateSpy.calls.any()).toBe(true, 'router.navigate called');
+       expect(hdsSpy.testHero.name)
+        .withContext('service hero has new name after save')
+        .toBe(newName);
+       expect(page.navigateSpy.calls.any())
+        .withContext('router.navigate called')
+        .toBe(true);
      }));
   // #enddocregion override-tests
 
@@ -122,7 +134,9 @@ function overrideSetup() {
        // use `fixture.debugElement.injector` to get service from component
        const componentService = fixture.debugElement.injector.get(HeroDetailService);
 
-       expect(fixtureService).not.toBe(componentService, 'service injected from fixture');
+       expect(fixtureService)
+        .withContext('service injected from fixture')
+        .not.toBe(componentService);
      }));
 }
 
@@ -170,7 +184,9 @@ function heroModuleSetup() {
 
     it('should navigate when click cancel', () => {
       click(page.cancelBtn);
-      expect(page.navigateSpy.calls.any()).toBe(true, 'router.navigate called');
+      expect(page.navigateSpy.calls.any())
+        .withContext('router.navigate called')
+        .toBe(true);
     });
 
     it('should save when click save but not navigate immediately', () => {
@@ -180,14 +196,20 @@ function heroModuleSetup() {
       const saveSpy = spyOn(hds, 'saveHero').and.callThrough();
 
       click(page.saveBtn);
-      expect(saveSpy.calls.any()).toBe(true, 'HeroDetailService.save called');
-      expect(page.navigateSpy.calls.any()).toBe(false, 'router.navigate not called');
+      expect(saveSpy.calls.any())
+        .withContext('HeroDetailService.save called')
+        .toBe(true);
+      expect(page.navigateSpy.calls.any())
+        .withContext('router.navigate not called')
+        .toBe(false);
     });
 
     it('should navigate when click save and save resolves', fakeAsync(() => {
          click(page.saveBtn);
          tick();  // wait for async save to complete
-         expect(page.navigateSpy.calls.any()).toBe(true, 'router.navigate called');
+         expect(page.navigateSpy.calls.any())
+          .withContext('router.navigate called')
+          .toBe(true);
        }));
 
     // #docregion title-case-pipe
@@ -240,8 +262,12 @@ function heroModuleSetup() {
     });
 
     it('should try to navigate back to hero list', () => {
-      expect(page.gotoListSpy.calls.any()).toBe(true, 'comp.gotoList called');
-      expect(page.navigateSpy.calls.any()).toBe(true, 'router.navigate called');
+      expect(page.gotoListSpy.calls.any())
+        .withContext('comp.gotoList called')
+        .toBe(true);
+      expect(page.navigateSpy.calls.any())
+        .withContext('router.navigate called')
+        .toBe(true);
     });
   });
   // #enddocregion route-bad-id
@@ -258,7 +284,9 @@ function heroModuleSetup() {
 
     // get `HeroDetailService` with component's own injector
     service = fixture.debugElement.injector.get(HeroDetailService);
-    expect(service).toBeDefined('debugElement.injector');
+    expect(service)
+      .withContext('debugElement.injector')
+      .toBeDefined();
   });
 }
 

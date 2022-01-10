@@ -11,7 +11,9 @@ describe('Angular async helper', () => {
     });
 
     afterEach(() => {
-      expect(actuallyDone).toBe(true, 'actuallyDone should be true');
+      expect(actuallyDone)
+        .withContext('actuallyDone should be true')
+        .toBe(true);
     });
 
     it('should run normal test', () => {
@@ -59,17 +61,24 @@ describe('Angular async helper', () => {
     // Use done. Can also use async or fakeAsync.
     it('should run async test with successful delayed Observable', (done: DoneFn) => {
       const source = of(true).pipe(delay(10));
-      source.subscribe(val => actuallyDone = true, err => fail(err), done);
+      source.subscribe({
+        next: val => actuallyDone = true,
+        error: err => fail(err),
+        complete: done});
     });
 
     it('should run async test with successful delayed Observable', waitForAsync(() => {
          const source = of(true).pipe(delay(10));
-         source.subscribe(val => actuallyDone = true, err => fail(err));
+         source.subscribe({
+           next: val => actuallyDone = true,
+           error: err => fail(err)});
        }));
 
     it('should run async test with successful delayed Observable', fakeAsync(() => {
          const source = of(true).pipe(delay(10));
-         source.subscribe(val => actuallyDone = true, err => fail(err));
+         source.subscribe({
+           next: val => actuallyDone = true,
+           error: err => fail(err)});
 
          tick(10);
        }));
