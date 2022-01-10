@@ -21,6 +21,19 @@ function bind(template: string) {
 
 runInEachFileSystem(() => {
   describe('getTemplateIdentifiers', () => {
+    it('should handle comments in interpolations', () => {
+      const template = '{{foo // comment}}';
+      const refs = getTemplateIdentifiers(bind(template));
+
+      const [ref] = Array.from(refs);
+      expect(ref).toEqual({
+        name: 'foo',
+        kind: IdentifierKind.Property,
+        span: new AbsoluteSourceSpan(2, 5),
+        target: null,
+      });
+    });
+
     it('should generate nothing in empty template', () => {
       const template = '';
       const refs = getTemplateIdentifiers(bind(template));
