@@ -36,7 +36,6 @@ export {core};
 
 export * from './version';
 export {CompilerConfig, preserveWhitespacesDefault} from './config';
-export {Identifiers} from './identifiers';
 export * from './resource_loader';
 export {ConstantPool} from './constant_pool';
 export {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from './ml_parser/interpolation_config';

@@ -631,8 +631,7 @@ function createHostBindingsFunction(
 }
 
 function bindingFn(implicit: any, value: AST) {
-  return convertPropertyBinding(
-      null, implicit, value, 'b', () => error('Unexpected interpolation'));
+  return convertPropertyBinding(null, implicit, value, 'b');
 }
 
 function convertStylingCall(
