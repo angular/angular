@@ -7,7 +7,6 @@
  */
 
 import * as cdAst from '../expression_parser/ast';
-import {Identifiers} from '../identifiers';
 import * as o from '../output/output_ast';
 import {ParseSourceSpan} from '../parse_util';
 
@@ -22,16 +21,13 @@ export interface LocalResolver {
   maybeRestoreView(): void;
 }
 
-export type InterpolationFunction = (args: o.Expression[]) => o.Expression;
-
 /**
  * Converts the given expression AST into an executable output AST, assuming the expression is
  * used in an action binding (e.g. an event handler).
  */
 export function convertActionBinding(
     localResolver: LocalResolver|null, implicitReceiver: o.Expression, action: cdAst.AST,
-    bindingId: string, interpolationFunction?: InterpolationFunction,
-    baseSourceSpan?: ParseSourceSpan, implicitReceiverAccesses?: Set<string>,
+    bindingId: string, baseSourceSpan?: ParseSourceSpan, implicitReceiverAccesses?: Set<string>,
     globals?: Set<string>): o.Statement[] {
   if (!localResolver) {
     localResolver = new DefaultLocalResolver(globals);
@@ -60,7 +56,7 @@ export function convertActionBinding(
       action);
 
   const visitor = new _AstToIrVisitor(
-      localResolver, implicitReceiver, bindingId, interpolationFunction, baseSourceSpan,
+      localResolver, implicitReceiver, bindingId, /* supportsInterpolation */ false, baseSourceSpan,
       implicitReceiverAccesses);
   const actionStmts: o.Statement[] = [];
   flattenStatements(actionWithoutBuiltins.visit(visitor, _Mode.Statement), actionStmts);
@@ -107,13 +103,12 @@ export class ConvertPropertyBindingResult {
  */
 export function convertPropertyBinding(
     localResolver: LocalResolver|null, implicitReceiver: o.Expression,
-    expressionWithoutBuiltins: cdAst.AST, bindingId: string,
-    interpolationFunction?: InterpolationFunction): ConvertPropertyBindingResult {
+    expressionWithoutBuiltins: cdAst.AST, bindingId: string): ConvertPropertyBindingResult {
   if (!localResolver) {
     localResolver = new DefaultLocalResolver();
   }
-  const visitor =
-      new _AstToIrVisitor(localResolver, implicitReceiver, bindingId, interpolationFunction);
+  const visitor = new _AstToIrVisitor(
+      localResolver, implicitReceiver, bindingId, /* supportsInterpolation */ false);
   const outputExpr: o.Expression = expressionWithoutBuiltins.visit(visitor, _Mode.Expression);
   const stmts: o.Statement[] = getStatementsFromVisitor(visitor, bindingId);
 
@@ -142,33 +137,17 @@ export function convertPropertyBinding(
  */
 export function convertUpdateArguments(
     localResolver: LocalResolver, contextVariableExpression: o.Expression,
-    expressionWithArgumentsToExtract: cdAst.AST, bindingId: string) {
-  const visitor =
-      new _AstToIrVisitor(localResolver, contextVariableExpression, bindingId, undefined);
-  const outputExpr: o.InvokeFunctionExpr =
-      expressionWithArgumentsToExtract.visit(visitor, _Mode.Expression);
+    expressionWithArgumentsToExtract: cdAst.Interpolation, bindingId: string) {
+  const visitor = new _AstToIrVisitor(
+      localResolver, contextVariableExpression, bindingId, /* supportsInterpolation */ true);
+  const outputExpr = visitor.visitInterpolation(expressionWithArgumentsToExtract, _Mode.Expression);
 
   if (visitor.usesImplicitReceiver) {
     localResolver.notifyImplicitReceiverUse();
   }
 
   const stmts = getStatementsFromVisitor(visitor, bindingId);
-
-  // Removing the first argument, because it was a length for ViewEngine, not Ivy.
-  let args = outputExpr.args.slice(1);
-  if (expressionWithArgumentsToExtract instanceof cdAst.Interpolation) {
-    // If we're dealing with an interpolation of 1 value with an empty prefix and suffix, reduce the
-    // args returned to just the value, because we're going to pass it to a special instruction.
-    const strings = expressionWithArgumentsToExtract.strings;
-    if (args.length === 3 && strings[0] === '' && strings[1] === '') {
-      // Single argument interpolate instructions.
-      args = [args[1]];
-    } else if (args.length >= 19) {
-      // 19 or more arguments must be passed to the `interpolateV`-style instructions, which accept
-      // an array of arguments
-      args = [o.literalArr(args)];
-    }
-  }
+  const args = outputExpr.args;
   return {stmts, args};
 }
 
@@ -258,7 +237,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
 
   constructor(
       private _localResolver: LocalResolver, private _implicitReceiver: o.Expression,
-      private bindingId: string, private interpolationFunction: InterpolationFunction|undefined,
+      private bindingId: string, private supportsInterpolation: boolean,
       private baseSourceSpan?: ParseSourceSpan, private implicitReceiverAccesses?: Set<string>) {}
 
   visitUnary(ast: cdAst.Unary, mode: _Mode): any {
@@ -371,23 +350,32 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
     return this.visitImplicitReceiver(ast, mode);
   }
 
-  visitInterpolation(ast: cdAst.Interpolation, mode: _Mode): any {
+  visitInterpolation(ast: cdAst.Interpolation, mode: _Mode): InterpolationExpression {
+    if (!this.supportsInterpolation) {
+      throw new Error('Unexpected interpolation');
+    }
+
     ensureExpressionMode(mode, ast);
-    const args = [o.literal(ast.expressions.length)];
+    let args: o.Expression[] = [];
     for (let i = 0; i < ast.strings.length - 1; i++) {
       args.push(o.literal(ast.strings[i]));
       args.push(this._visit(ast.expressions[i], _Mode.Expression));
     }
     args.push(o.literal(ast.strings[ast.strings.length - 1]));
 
-    if (this.interpolationFunction) {
-      return this.interpolationFunction(args);
+    // If we're dealing with an interpolation of 1 value with an empty prefix and suffix, reduce the
+    // args returned to just the value, because we're going to pass it to a special instruction.
+    const strings = ast.strings;
+    if (strings.length === 2 && strings[0] === '' && strings[1] === '') {
+      // Single argument interpolate instructions.
+      args = [args[1]];
+    } else if (ast.expressions.length >= 9) {
+      // 9 or more arguments must be passed to the `interpolateV`-style instructions, which accept
+      // an array of arguments
+      args = [o.literalArr(args)];
     }
-    return ast.expressions.length <= 9 ?
-        o.importExpr(Identifiers.inlineInterpolate).callFn(args) :
-        o.importExpr(Identifiers.interpolate).callFn([
-          args[0], o.literalArr(args.slice(1), undefined, this.convertSourceSpan(ast.span))
-        ]);
+
+    return new InterpolationExpression(args);
   }
 
   visitKeyedRead(ast: cdAst.KeyedRead, mode: _Mode): any {
@@ -872,6 +860,20 @@ function flattenStatements(arg: any, output: o.Statement[]) {
   } else {
     output.push(arg);
   }
+}
+
+function unsupported(): never {
+  throw new Error('Unsupported operation');
+}
+
+class InterpolationExpression extends o.Expression {
+  constructor(public args: o.Expression[]) {
+    super(null, null);
+  }
+
+  override isConstant = unsupported;
+  override isEquivalent = unsupported;
+  override visitExpression = unsupported;
 }
 
 class DefaultLocalResolver implements LocalResolver {

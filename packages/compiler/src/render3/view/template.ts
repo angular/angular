@@ -78,8 +78,8 @@ export function prepareEventListenerParameters(
       o.variable(CONTEXT_NAME) :
       scope.getOrCreateSharedContextVar(0);
   const bindingStatements = convertActionBinding(
-      scope, implicitReceiverExpr, handler, 'b', () => error('Unexpected interpolation'),
-      eventAst.handlerSpan, implicitReceiverAccesses, EVENT_BINDING_SCOPE_GLOBALS);
+      scope, implicitReceiverExpr, handler, 'b', eventAst.handlerSpan, implicitReceiverAccesses,
+      EVENT_BINDING_SCOPE_GLOBALS);
   const statements = [];
   if (scope) {
     // `variableDeclarations` needs to run first, because
@@ -576,7 +576,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
    */
   private interpolatedUpdateInstruction(
       instruction: o.ExternalReference, elementIndex: number, attrName: string,
-      input: t.BoundAttribute, value: any, params: any[]) {
+      input: t.BoundAttribute, value: Interpolation, params: any[]) {
     this.updateInstructionWithAdvance(
         elementIndex, input.sourceSpan, instruction,
         () => [o.literal(attrName), ...this.getUpdateInstructionArguments(value), ...params]);
@@ -1246,9 +1246,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   }
 
   private convertPropertyBinding(value: AST): o.Expression {
-    const convertedPropertyBinding = convertPropertyBinding(
-        this, this.getImplicitReceiverExpr(), value, this.bindingContext(),
-        () => error('Unexpected interpolation'));
+    const convertedPropertyBinding =
+        convertPropertyBinding(this, this.getImplicitReceiverExpr(), value, this.bindingContext());
     const valExpr = convertedPropertyBinding.currValExpr;
     this._tempVariables.push(...convertedPropertyBinding.stmts);
     return valExpr;
@@ -1260,7 +1259,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
    * while visiting the arguments.
    * @param value The original expression we will be resolving an arguments list from.
    */
-  private getUpdateInstructionArguments(value: AST): o.Expression[] {
+  private getUpdateInstructionArguments(value: Interpolation): o.Expression[] {
     const {args, stmts} =
         convertUpdateArguments(this, this.getImplicitReceiverExpr(), value, this.bindingContext());
 
