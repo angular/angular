@@ -232,7 +232,15 @@ class TemplateVisitor extends TmplAstRecursiveVisitor {
       name = node.tagName;
       kind = IdentifierKind.Template;
     } else {
-      name = node.name;
+      // Namespaced elements have a particular format for `node.name` that needs to be handled.
+      // For example, an `<svg>` element has a `node.name` of `':svg:svg'`.
+
+      // TODO(alxhub): properly handle namespaced elements
+      if (node.name.startsWith(':')) {
+        name = node.name.split(':').pop()!;
+      } else {
+        name = node.name;
+      }
       kind = IdentifierKind.Element;
     }
     const sourceSpan = node.startSourceSpan;
