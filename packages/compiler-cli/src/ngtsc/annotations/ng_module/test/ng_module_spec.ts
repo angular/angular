@@ -61,8 +61,8 @@ runInEachFileSystem(() => {
       const evaluator = new PartialEvaluator(reflectionHost, checker, /* dependencyTracker */ null);
       const referencesRegistry = new NoopReferencesRegistry();
       const metaRegistry = new LocalMetadataRegistry();
-      const metaReader = new CompoundMetadataReader([metaRegistry]);
       const dtsReader = new DtsMetadataReader(checker, reflectionHost);
+      const metaReader = new CompoundMetadataReader([metaRegistry, dtsReader]);
       const scopeRegistry = new LocalModuleScopeRegistry(
           metaRegistry, new MetadataDtsModuleScopeResolver(dtsReader, null),
           new ReferenceEmitter([]), null);

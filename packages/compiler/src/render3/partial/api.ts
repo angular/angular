@@ -113,6 +113,11 @@ export interface R3DeclareDirectiveMetadata extends R3PartialDeclaration {
    * Whether the directive implements the `ngOnChanges` hook. Defaults to false.
    */
   usesOnChanges?: boolean;
+
+  /**
+   * Whether the directive is standalone. Defaults to false.
+   */
+  isStandalone?: boolean;
 }
 
 /**
@@ -337,6 +342,13 @@ export interface R3DeclarePipeMetadata extends R3PartialDeclaration {
    * Default: true.
    */
   pure?: boolean;
+
+  /**
+   * Whether the pipe is standalone.
+   *
+   * Default: false.
+   */
+  isStandalone?: boolean;
 }
 
 

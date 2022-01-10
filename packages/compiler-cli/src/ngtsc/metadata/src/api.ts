@@ -126,6 +126,11 @@ export interface DirectiveMeta extends T2DirectiveMeta, DirectiveTypeCheckMeta {
    * Whether the directive is likely a structural directive (injects `TemplateRef`).
    */
   isStructural: boolean;
+
+  /**
+   * Whether the directive is a standalone entity.
+   */
+  isStandalone: boolean;
 }
 
 /**
@@ -155,6 +160,7 @@ export interface PipeMeta {
   ref: Reference<ClassDeclaration>;
   name: string;
   nameExpr: ts.Expression|null;
+  isStandalone: boolean;
 }
 
 /**

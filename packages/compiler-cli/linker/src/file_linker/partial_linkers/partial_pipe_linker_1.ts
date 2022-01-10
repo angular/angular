@@ -41,6 +41,7 @@ export function toR3PipeMeta<TExpression>(metaObj: AstObject<R3DeclarePipeMetada
   }
 
   const pure = metaObj.has('pure') ? metaObj.getBoolean('pure') : true;
+  const isStandalone = metaObj.has('isStandalone') ? metaObj.getBoolean('isStandalone') : false;
 
   return {
     name: typeName,
@@ -50,5 +51,6 @@ export function toR3PipeMeta<TExpression>(metaObj: AstObject<R3DeclarePipeMetada
     deps: null,
     pipeName: metaObj.getString('name'),
     pure,
+    isStandalone,
   };
 }

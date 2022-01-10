@@ -119,6 +119,7 @@ export interface R3PipeMetadataFacade {
   type: Type;
   pipeName: string;
   pure: boolean;
+  isStandalone: boolean;
 }
 
 export interface R3InjectableMetadataFacade {
@@ -165,6 +166,7 @@ export interface R3DirectiveMetadataFacade {
   exportAs: string[]|null;
   providers: Provider[]|null;
   viewQueries: R3QueryMetadataFacade[];
+  isStandalone: boolean;
 }
 
 export interface R3ComponentMetadataFacade extends R3DirectiveMetadataFacade {
@@ -198,6 +200,7 @@ export interface R3DeclareDirectiveFacade {
   exportAs?: string[];
   usesInheritance?: boolean;
   usesOnChanges?: boolean;
+  isStandalone?: boolean;
 }
 
 export interface R3DeclareComponentFacade extends R3DeclareDirectiveFacade {
@@ -304,6 +307,7 @@ export interface R3DeclarePipeFacade {
   type: Type;
   name: string;
   pure?: boolean;
+  isStandalone?: boolean;
 }
 
 export interface ParseSourceSpan {

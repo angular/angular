@@ -256,7 +256,10 @@ export function directiveMetadata(type: Type<any>, metadata: Directive): R3Direc
     usesInheritance: !extendsDirectlyFromObject(type),
     exportAs: extractExportAs(metadata.exportAs),
     providers: metadata.providers || null,
-    viewQueries: extractQueriesMetadata(type, propMetadata, isViewQuery)
+    viewQueries: extractQueriesMetadata(type, propMetadata, isViewQuery),
+    // TODO(alxhub): pass through the standalone flag from the directive metadata once standalone
+    // functionality is fully rolled out.
+    isStandalone: false,
   };
 }
 

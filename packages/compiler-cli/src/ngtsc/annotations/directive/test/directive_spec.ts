@@ -11,7 +11,7 @@ import ts from 'typescript';
 import {absoluteFrom} from '../../../file_system';
 import {runInEachFileSystem} from '../../../file_system/testing';
 import {ReferenceEmitter} from '../../../imports';
-import {DtsMetadataReader, InjectableClassRegistry, LocalMetadataRegistry} from '../../../metadata';
+import {CompoundMetadataReader, DtsMetadataReader, InjectableClassRegistry, LocalMetadataRegistry} from '../../../metadata';
 import {PartialEvaluator} from '../../../partial_evaluator';
 import {NOOP_PERF_RECORDER} from '../../../perf';
 import {ClassDeclaration, isNamedClassDeclaration, TypeScriptReflectionHost} from '../../../reflection';

@@ -101,9 +101,9 @@ export class DecorationAnalyzer {
   handlers: DecoratorHandler<unknown, unknown, SemanticSymbol|null, unknown>[] = [
     new ComponentDecoratorHandler(
         this.reflectionHost, this.evaluator, this.fullRegistry, this.fullMetaReader,
-        this.scopeRegistry, this.scopeRegistry, this.typeCheckScopeRegistry, new ResourceRegistry(),
-        this.isCore, this.resourceManager, this.rootDirs,
-        !!this.compilerOptions.preserveWhitespaces,
+        this.scopeRegistry, this.dtsModuleScopeResolver, this.scopeRegistry,
+        this.typeCheckScopeRegistry, new ResourceRegistry(), this.isCore, this.resourceManager,
+        this.rootDirs, !!this.compilerOptions.preserveWhitespaces,
         /* i18nUseExternalIds */ true, this.bundle.enableI18nLegacyMessageIdFormat,
         /* usePoisonedData */ false,
         /* i18nNormalizeLineEndingsInICUs */ false, this.moduleResolver, this.cycleAnalyzer,
