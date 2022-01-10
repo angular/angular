@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {compileClassMetadata, compileDeclareClassMetadata, compileDeclareInjectorFromMetadata, compileDeclareNgModuleFromMetadata, compileInjector, compileNgModule, CUSTOM_ELEMENTS_SCHEMA, Expression, ExternalExpr, FactoryTarget, Identifiers as R3, InvokeFunctionExpr, LiteralArrayExpr, LiteralExpr, NO_ERRORS_SCHEMA, R3ClassMetadata, R3CompiledExpression, R3FactoryMetadata, R3Identifiers, R3InjectorMetadata, R3NgModuleMetadata, R3Reference, SchemaMetadata, Statement, STRING_TYPE, WrappedNodeExpr} from '@angular/compiler';
+import {compileClassMetadata, compileDeclareClassMetadata, compileDeclareInjectorFromMetadata, compileDeclareNgModuleFromMetadata, compileInjector, compileNgModule, CUSTOM_ELEMENTS_SCHEMA, Expression, ExternalExpr, FactoryTarget, InvokeFunctionExpr, LiteralArrayExpr, NO_ERRORS_SCHEMA, R3ClassMetadata, R3CompiledExpression, R3FactoryMetadata, R3Identifiers, R3InjectorMetadata, R3NgModuleMetadata, R3Reference, SchemaMetadata, Statement, WrappedNodeExpr} from '@angular/compiler';
 import ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError, makeDiagnostic, makeRelatedInformation} from '../../diagnostics';
