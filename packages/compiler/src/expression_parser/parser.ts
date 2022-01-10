@@ -39,11 +39,11 @@ export class Parser {
       interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG): ASTWithSource {
     this._checkNoInterpolation(input, location, interpolationConfig);
     const sourceToLex = this._stripComments(input);
-    const tokens = this._lexer.tokenize(this._stripComments(input));
-    const ast = new _ParseAST(
-                    input, location, absoluteOffset, tokens, sourceToLex.length, true, this.errors,
-                    input.length - sourceToLex.length)
-                    .parseChain();
+    const tokens = this._lexer.tokenize(sourceToLex);
+    const ast =
+        new _ParseAST(
+            input, location, absoluteOffset, tokens, sourceToLex.length, true, this.errors, 0)
+            .parseChain();
     return new ASTWithSource(ast, input, location, absoluteOffset, this.errors);
   }
 
@@ -91,8 +91,7 @@ export class Parser {
     const sourceToLex = this._stripComments(input);
     const tokens = this._lexer.tokenize(sourceToLex);
     return new _ParseAST(
-               input, location, absoluteOffset, tokens, sourceToLex.length, false, this.errors,
-               input.length - sourceToLex.length)
+               input, location, absoluteOffset, tokens, sourceToLex.length, false, this.errors, 0)
         .parseChain();
   }
 
@@ -162,7 +161,7 @@ export class Parser {
       const tokens = this._lexer.tokenize(sourceToLex);
       const ast = new _ParseAST(
                       input, location, absoluteOffset, tokens, sourceToLex.length, false,
-                      this.errors, offsets[i] + (expressionText.length - sourceToLex.length))
+                      this.errors, offsets[i])
                       .parseChain();
       expressionNodes.push(ast);
     }
