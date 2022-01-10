@@ -28,6 +28,10 @@
     pointer-events: none;
     border: $border-width $border-style transparent;
     border-radius: $border-radius;
+
+    .cdk-high-contrast-active & {
+      display: none;
+    }
   }
 
   // By default, all focus indicators are flush with the bounding box of their
