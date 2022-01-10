@@ -169,6 +169,16 @@ export function extractDirectiveMetadata(
               dep.token.value.moduleName === '@angular/core' &&
               dep.token.value.name === 'TemplateRef');
 
+  let isStandalone = false;
+  if (directive.has('standalone')) {
+    const expr = directive.get('standalone')!;
+    const resolved = evaluator.evaluate(expr);
+    if (typeof resolved !== 'boolean') {
+      throw createValueHasWrongTypeError(expr, resolved, `standalone flag must be a boolean`);
+    }
+    isStandalone = resolved;
+  }
+
   // Detect if the component inherits from another class
   const usesInheritance = reflector.hasBaseClass(clazz);
   const type = wrapTypeReference(reflector, clazz);
@@ -196,7 +206,8 @@ export function extractDirectiveMetadata(
     typeSourceSpan: createSourceSpan(clazz.name),
     usesInheritance,
     exportAs,
-    providers
+    providers,
+    isStandalone,
   };
   return {
     decorator: directive,

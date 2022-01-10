@@ -65,6 +65,11 @@ export interface ComponentAnalysisData {
 
   isPoisoned: boolean;
   animationTriggerNames: AnimationTriggerNames|null;
+
+  imports: {
+    resolved: Reference<ClassDeclaration>[],
+    raw: ts.Expression,
+  }|null;
 }
 
 export type ComponentResolutionData = Pick<R3ComponentMetadata, ComponentMetadataResolvedFields>;

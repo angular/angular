@@ -107,6 +107,7 @@ export class DtsMetadataReader implements MetadataReader {
       isPoisoned: false,
       isStructural,
       animationTriggerNames: null,
+      isStandalone: false,  // TODO: read this from the compiled metadata.
     };
   }
 
@@ -136,6 +137,7 @@ export class DtsMetadataReader implements MetadataReader {
       ref,
       name,
       nameExpr: null,
+      isStandalone: false,  // TODO
     };
   }
 }

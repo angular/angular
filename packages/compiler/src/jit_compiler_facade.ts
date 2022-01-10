@@ -44,6 +44,7 @@ export class CompilerFacadeImpl implements CompilerFacade {
       deps: null,
       pipeName: facade.pipeName,
       pure: facade.pure,
+      isStandalone: facade.isStandalone,
     };
     const res = compilePipeFromMetadata(metadata);
     return this.jitExpression(res.expression, angularCoreEnv, sourceMapUrl, []);
@@ -379,6 +380,7 @@ function convertDeclareDirectiveFacadeToMetadata(
     deps: null,
     typeArgumentCount: 0,
     fullInheritance: false,
+    isStandalone: declaration.isStandalone ?? false,
   };
 }
 
@@ -609,6 +611,7 @@ function convertDeclarePipeFacadeToMetadata(declaration: R3DeclarePipeFacade): R
     pipeName: declaration.name,
     deps: null,
     pure: declaration.pure ?? true,
+    isStandalone: declaration.isStandalone ?? false,
   };
 }
 

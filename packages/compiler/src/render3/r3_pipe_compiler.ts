@@ -50,6 +50,11 @@ export interface R3PipeMetadata {
    * Whether the pipe is marked as pure.
    */
   pure: boolean;
+
+  /**
+   * Whether the pipe is standalone.
+   */
+  isStandalone: boolean;
 }
 
 export function compilePipeFromMetadata(metadata: R3PipeMetadata): R3CompiledExpression {

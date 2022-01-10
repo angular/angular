@@ -428,12 +428,36 @@ export class NgModuleDecoratorHandler implements
       }
 
       for (const decl of analysis.declarations) {
-        const metadata = this.metaReader.getDirectiveMetadata(decl);
+        const dirMeta = this.metaReader.getDirectiveMetadata(decl);
+        if (dirMeta !== null) {
+          const refType = dirMeta.isComponent ? 'Component' : 'Directive';
 
-        if (metadata !== null && metadata.selector === null) {
-          throw new FatalDiagnosticError(
-              ErrorCode.DIRECTIVE_MISSING_SELECTOR, decl.node,
-              `Directive ${decl.node.name.text} has no selector, please add it!`);
+          if (dirMeta.selector === null) {
+            throw new FatalDiagnosticError(
+                ErrorCode.DIRECTIVE_MISSING_SELECTOR, decl.node,
+                `${refType} ${decl.node.name.text} has no selector, please add it!`);
+          }
+
+          if (dirMeta.isStandalone) {
+            diagnostics.push(makeDiagnostic(
+                ErrorCode.NGMODULE_DECLARATION_IS_STANDALONE,
+                decl.getOriginForDiagnostics(analysis.rawDeclarations!),
+                `${refType} ${
+                    decl.node.name
+                        .text} is standalone, and cannot be declared in an NgModule. Did you mean to import it instead?`));
+          }
+
+          continue;
+        }
+
+        const pipeMeta = this.metaReader.getPipeMetadata(decl);
+        if (pipeMeta !== null && pipeMeta.isStandalone) {
+          diagnostics.push(makeDiagnostic(
+              ErrorCode.NGMODULE_DECLARATION_IS_STANDALONE,
+              decl.getOriginForDiagnostics(analysis.rawDeclarations!),
+              `Pipe ${
+                  decl.node.name
+                      .text} is standalone, and cannot be declared in an NgModule. Did you mean to import it instead?`));
         }
       }
     }
