@@ -170,11 +170,15 @@ class Page {
 }
 
 function expectPathToBe(path: string, expectationFailOutput?: any) {
-  expect(location.path()).toEqual(path, expectationFailOutput || 'location.path()');
+  expect(location.path())
+  .withContext(expectationFailOutput || 'location.path()')
+  .toEqual(path);
 }
 
 function expectElementOf(type: Type<any>): any {
   const el = fixture.debugElement.query(By.directive(type));
-  expect(el).toBeTruthy('expected an element for ' + type.name);
+  expect(el)
+    .withContext(`expected an element for ${type.name}`)
+    .toBeTruthy();
   return el;
 }

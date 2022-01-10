@@ -36,13 +36,19 @@ describe('HeroDetailComponent - no TestBed', () => {
 
   it('should navigate when click cancel', () => {
     comp.cancel();
-    expect(router.navigate.calls.any()).toBe(true, 'router.navigate called');
+    expect(router.navigate.calls.any())
+      .withContext('router.navigate called')
+      .toBe(true);
   });
 
   it('should save when click save', () => {
     comp.save();
-    expect(hds.saveHero.calls.any()).toBe(true, 'HeroDetailService.save called');
-    expect(router.navigate.calls.any()).toBe(false, 'router.navigate not called yet');
+    expect(hds.saveHero.calls.any())
+      .withContext('HeroDetailService.save called')
+      .toBe(true);
+    expect(router.navigate.calls.any())
+      .withContext('router.navigate not called yet')
+      .toBe(false);
   });
 
   it('should navigate when click save resolves', (done: DoneFn) => {
@@ -50,7 +56,9 @@ describe('HeroDetailComponent - no TestBed', () => {
     // waits for async save to complete before navigating
     hds.saveHero.calls.first().returnValue
     .subscribe(() => {
-      expect(router.navigate.calls.any()).toBe(true, 'router.navigate called');
+      expect(router.navigate.calls.any())
+        .withContext('router.navigate called')
+        .toBe(true);
       done();
     });
   });

@@ -1,5 +1,5 @@
 // #docplaster
-import { async, fakeAsync, ComponentFixture, TestBed, tick } from '@angular/core/testing';
+import { fakeAsync, ComponentFixture, TestBed, tick } from '@angular/core/testing';
 
 // #docregion import-marbles
 import { cold, getTestScheduler } from 'jasmine-marbles';
@@ -51,7 +51,9 @@ describe('TwainComponent (marbles)', () => {
     getQuoteSpy.and.returnValue( q$ );
 
     fixture.detectChanges(); // ngOnInit()
-    expect(quoteEl.textContent).toBe('...', 'should show placeholder');
+    expect(quoteEl.textContent)
+      .withContext('should show placeholder')
+      .toBe('...');
 
     // #docregion test-scheduler-flush
     getTestScheduler().flush(); // flush the observables
@@ -59,8 +61,12 @@ describe('TwainComponent (marbles)', () => {
 
     fixture.detectChanges(); // update view
 
-    expect(quoteEl.textContent).toBe(testQuote, 'should show quote');
-    expect(errorMessage()).toBeNull('should not show error');
+    expect(quoteEl.textContent)
+      .withContext('should show quote')
+      .toBe(testQuote);
+    expect(errorMessage())
+      .withContext('should not show error')
+      .toBeNull();
   });
   // #enddocregion get-quote-test
 
@@ -74,14 +80,20 @@ describe('TwainComponent (marbles)', () => {
     getQuoteSpy.and.returnValue( q$ );
 
     fixture.detectChanges(); // ngOnInit()
-    expect(quoteEl.textContent).toBe('...', 'should show placeholder');
+    expect(quoteEl.textContent)
+      .withContext('should show placeholder')
+      .toBe('...');
 
     getTestScheduler().flush(); // flush the observables
     tick();                     // component shows error after a setTimeout()
     fixture.detectChanges();    // update error message
 
-    expect(errorMessage()).toMatch(/test failure/, 'should display error');
-    expect(quoteEl.textContent).toBe('...', 'should show placeholder');
+    expect(errorMessage())
+      .withContext('should display error')
+      .toMatch(/test failure/);
+    expect(quoteEl.textContent)
+      .withContext('should show placeholder')
+      .toBe('...');
   }));
   // #enddocregion error-test
 });

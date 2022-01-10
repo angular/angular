@@ -87,13 +87,17 @@ function compileAndCreate() {
 function tests(heroClick: () => void) {
 
   it('should NOT have heroes before ngOnInit', () => {
-    expect(comp.heroes.length).toBe(0, 'should not have heroes before ngOnInit');
+    expect(comp.heroes.length)
+      .withContext('should not have heroes before ngOnInit')
+      .toBe(0);
   });
 
   it('should NOT have heroes immediately after ngOnInit', () => {
     fixture.detectChanges();  // runs initial lifecycle hooks
 
-    expect(comp.heroes.length).toBe(0, 'should not have heroes until service promise resolves');
+    expect(comp.heroes.length)
+      .withContext('should not have heroes until service promise resolves')
+      .toBe(0);
   });
 
   describe('after get dashboard heroes', () => {
@@ -109,14 +113,17 @@ function tests(heroClick: () => void) {
 
     it('should HAVE heroes', () => {
       expect(comp.heroes.length)
-          .toBeGreaterThan(0, 'should have heroes after service promise resolves');
+        .withContext('should have heroes after service promise resolves')
+        .toBeGreaterThan(0);
     });
 
     it('should DISPLAY heroes', () => {
       // Find and examine the displayed heroes
       // Look for them in the DOM by css class
       const heroes = fixture.nativeElement.querySelectorAll('dashboard-hero');
-      expect(heroes.length).toBe(4, 'should display 4 heroes');
+      expect(heroes.length)
+        .withContext('should display 4 heroes')
+        .toBe(4);
     });
 
     // #docregion navigate-test
@@ -129,7 +136,9 @@ function tests(heroClick: () => void) {
 
       // expecting to navigate to id of the component's first hero
       const id = comp.heroes[0].id;
-      expect(navArgs).toBe('/heroes/' + id, 'should nav to HeroDetail for first hero');
+      expect(navArgs)
+        .withContext('should nav to HeroDetail for first hero')
+        .toBe('/heroes/' + id);
     });
     // #enddocregion navigate-test
   });
