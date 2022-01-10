@@ -50,9 +50,9 @@ function setup(program: ts.Program, options: ts.CompilerOptions, host: ts.Compil
   const cycleAnalyzer = new CycleAnalyzer(importGraph);
   const metaRegistry = new LocalMetadataRegistry();
   const dtsReader = new DtsMetadataReader(checker, reflectionHost);
-  const scopeRegistry = new LocalModuleScopeRegistry(
-      metaRegistry, new MetadataDtsModuleScopeResolver(dtsReader, null), new ReferenceEmitter([]),
-      null);
+  const dtsResolver = new MetadataDtsModuleScopeResolver(dtsReader, null);
+  const scopeRegistry =
+      new LocalModuleScopeRegistry(metaRegistry, dtsResolver, new ReferenceEmitter([]), null);
   const metaReader = new CompoundMetadataReader([metaRegistry, dtsReader]);
   const refEmitter = new ReferenceEmitter([]);
   const injectableRegistry = new InjectableClassRegistry(reflectionHost);
@@ -66,6 +66,7 @@ function setup(program: ts.Program, options: ts.CompilerOptions, host: ts.Compil
       metaRegistry,
       metaReader,
       scopeRegistry,
+      dtsResolver,
       scopeRegistry,
       typeCheckScopeRegistry,
       resourceRegistry,

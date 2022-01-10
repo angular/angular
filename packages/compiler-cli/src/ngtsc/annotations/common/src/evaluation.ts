@@ -9,8 +9,9 @@
 import ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../../diagnostics';
+import {Reference} from '../../../imports';
 import {EnumValue, PartialEvaluator, ResolvedValue} from '../../../partial_evaluator';
-import {Decorator} from '../../../reflection';
+import {ClassDeclaration, Decorator, ValueUnavailableKind} from '../../../reflection';
 
 import {createValueHasWrongTypeError} from './diagnostics';
 import {isAngularCoreReference, unwrapExpression} from './util';
@@ -37,6 +38,16 @@ export function resolveEnumValue(
 /** Determines if the result of an evaluation is a string array. */
 export function isStringArray(resolvedValue: ResolvedValue): resolvedValue is string[] {
   return Array.isArray(resolvedValue) && resolvedValue.every(elem => typeof elem === 'string');
+}
+
+export function isClassReferenceArray(resolvedValue: ResolvedValue):
+    resolvedValue is Reference<ClassDeclaration>[] {
+  return Array.isArray(resolvedValue) &&
+      resolvedValue.every(elem => elem instanceof Reference && ts.isClassDeclaration(elem.node));
+}
+
+export function isArray(value: ResolvedValue): value is Array<ResolvedValue> {
+  return Array.isArray(value);
 }
 
 export function resolveLiteral(

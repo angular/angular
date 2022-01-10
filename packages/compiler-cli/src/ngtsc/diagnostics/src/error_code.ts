@@ -56,6 +56,22 @@ export enum ErrorCode {
    */
   COMPONENT_INVALID_SHADOW_DOM_SELECTOR = 2009,
 
+  /**
+   * Raised when a component has `imports` but is not marked as `standalone: true`.
+   */
+  COMPONENT_NOT_STANDALONE = 2010,
+
+  /**
+   * Raised when a type in the `imports` of a component is a directive or pipe, but is not
+   * standalone.
+   */
+  COMPONENT_IMPORT_NOT_STANDALONE = 2011,
+
+  /**
+   * Raised when a type in the `imports` of a component is not a directive, pipe, or NgModule.
+   */
+  COMPONENT_UNKNOWN_IMPORT = 2012,
+
   SYMBOL_NOT_EXPORTED = 3001,
   SYMBOL_EXPORTED_UNDER_DIFFERENT_NAME = 3002,
   /**
@@ -123,6 +139,11 @@ export enum ErrorCode {
    * Raised when a directive/pipe is part of the declarations of two or more NgModules.
    */
   NGMODULE_DECLARATION_NOT_UNIQUE = 6007,
+
+  /**
+   * Raised when a standalone directive/pipe is part of the declarations of an NgModule.
+   */
+  NGMODULE_DECLARATION_IS_STANDALONE = 6008,
 
   /**
    * Not actually raised by the compiler, but reserved for documentation of a View Engine error when

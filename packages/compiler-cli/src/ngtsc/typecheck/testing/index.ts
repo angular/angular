@@ -648,6 +648,7 @@ function makeScope(program: ts.Program, sf: ts.SourceFile, decls: TestDeclaratio
         isPoisoned: false,
         isStructural: false,
         animationTriggerNames: null,
+        isStandalone: false,
       });
     } else if (decl.type === 'pipe') {
       scope.pipes.push({
@@ -655,6 +656,7 @@ function makeScope(program: ts.Program, sf: ts.SourceFile, decls: TestDeclaratio
         ref: new Reference(declClass),
         name: decl.pipeName,
         nameExpr: null,
+        isStandalone: false,
       });
     }
   }

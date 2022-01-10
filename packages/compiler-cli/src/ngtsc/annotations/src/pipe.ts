@@ -119,6 +119,16 @@ export class PipeDecoratorHandler implements
       pure = pureValue;
     }
 
+    let isStandalone = false;
+    if (pipe.has('standalone')) {
+      const expr = pipe.get('standalone')!;
+      const resolved = this.evaluator.evaluate(expr);
+      if (typeof resolved !== 'boolean') {
+        throw createValueHasWrongTypeError(expr, resolved, `standalone flag must be a boolean`);
+      }
+      isStandalone = resolved;
+    }
+
     return {
       analysis: {
         meta: {
@@ -129,6 +139,7 @@ export class PipeDecoratorHandler implements
           pipeName,
           deps: getValidConstructorDependencies(clazz, this.reflector, this.isCore),
           pure,
+          isStandalone,
         },
         classMetadata: extractClassMetadata(clazz, this.reflector, this.isCore),
         pipeNameExpr,
@@ -142,8 +153,13 @@ export class PipeDecoratorHandler implements
 
   register(node: ClassDeclaration, analysis: Readonly<PipeHandlerData>): void {
     const ref = new Reference(node);
-    this.metaRegistry.registerPipeMetadata(
-        {type: MetaType.Pipe, ref, name: analysis.meta.pipeName, nameExpr: analysis.pipeNameExpr});
+    this.metaRegistry.registerPipeMetadata({
+      type: MetaType.Pipe,
+      ref,
+      name: analysis.meta.pipeName,
+      nameExpr: analysis.pipeNameExpr,
+      isStandalone: analysis.meta.isStandalone,
+    });
 
     this.injectableRegistry.registerInjectable(node);
   }

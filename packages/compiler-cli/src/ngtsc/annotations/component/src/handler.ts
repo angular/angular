@@ -20,7 +20,7 @@ import {DirectiveMeta, extractDirectiveTypeCheckMeta, InjectableClassRegistry, M
 import {PartialEvaluator} from '../../../partial_evaluator';
 import {PerfEvent, PerfRecorder} from '../../../perf';
 import {ClassDeclaration, DeclarationNode, Decorator, ReflectionHost, reflectObjectLiteral} from '../../../reflection';
-import {ComponentScopeReader, LocalModuleScopeRegistry, TypeCheckScopeRegistry} from '../../../scope';
+import {ComponentScopeReader, DtsModuleScopeResolver, LocalModuleScopeRegistry, TypeCheckScopeRegistry} from '../../../scope';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerFlags, HandlerPrecedence, ResolveResult} from '../../../transform';
 import {TypeCheckContext} from '../../../typecheck/api';
 import {ExtendedTemplateChecker} from '../../../typecheck/extended/api';
@@ -35,7 +35,7 @@ import {ComponentAnalysisData, ComponentResolutionData} from './metadata';
 import {_extractTemplateStyleUrls, extractComponentStyleUrls, extractStyleResources, extractTemplate, makeResourceNotFoundError, ParsedTemplateWithSource, parseTemplateDeclaration, preloadAndParseTemplate, ResourceTypeForDiagnostics, StyleUrlMeta, transformDecoratorToInlineResources} from './resources';
 import {scopeTemplate} from './scope';
 import {ComponentSymbol} from './symbol';
-import {collectAnimationNames} from './util';
+import {collectAnimationNames, validateAndFlattenComponentImports} from './util';
 
 const EMPTY_MAP = new Map<string, Expression>();
 const EMPTY_ARRAY: any[] = [];
@@ -48,7 +48,8 @@ export class ComponentDecoratorHandler implements
   constructor(
       private reflector: ReflectionHost, private evaluator: PartialEvaluator,
       private metaRegistry: MetadataRegistry, private metaReader: MetadataReader,
-      private scopeReader: ComponentScopeReader, private scopeRegistry: LocalModuleScopeRegistry,
+      private scopeReader: ComponentScopeReader, private dtsScopeReader: DtsModuleScopeResolver,
+      private scopeRegistry: LocalModuleScopeRegistry,
       private typeCheckScopeRegistry: TypeCheckScopeRegistry,
       private resourceRegistry: ResourceRegistry, private isCore: boolean,
       private resourceLoader: ResourceLoader, private rootDirs: ReadonlyArray<string>,
@@ -248,6 +249,38 @@ export class ComponentDecoratorHandler implements
           component.get('providers')!, this.reflector, this.evaluator);
     }
 
+    let imports: {
+      resolved: Reference<ClassDeclaration>[],
+      raw: ts.Expression,
+    }|null = null;
+
+    if (component.has('imports') && !metadata.isStandalone) {
+      if (diagnostics === undefined) {
+        diagnostics = [];
+      }
+      diagnostics.push(makeDiagnostic(
+          ErrorCode.COMPONENT_NOT_STANDALONE, component.get('imports')!,
+          `'imports' is only valid on a component that is standalone.`));
+    } else if (component.has('imports')) {
+      const expr = component.get('imports')!;
+      const imported = this.evaluator.evaluate(expr);
+      const {imports: flattened, diagnostics: importDiagnostics} =
+          validateAndFlattenComponentImports(imported, expr);
+
+      imports = {
+        resolved: flattened,
+        raw: expr,
+      };
+
+      if (importDiagnostics.length > 0) {
+        isPoisoned = true;
+        if (diagnostics === undefined) {
+          diagnostics = [];
+        }
+        diagnostics.push(...importDiagnostics);
+      }
+    }
+
     // Parse the template.
     // If a preanalyze phase was executed, the template may already exist in parsed form, so check
     // the preanalyzeTemplateCache.
@@ -388,6 +421,7 @@ export class ComponentDecoratorHandler implements
         },
         isPoisoned,
         animationTriggerNames,
+        imports,
       },
       diagnostics,
     };
@@ -423,6 +457,7 @@ export class ComponentDecoratorHandler implements
       ...analysis.typeCheckMeta,
       isPoisoned: analysis.isPoisoned,
       isStructural: false,
+      isStandalone: analysis.meta.isStandalone,
       animationTriggerNames: analysis.animationTriggerNames,
     });
 
@@ -511,9 +546,16 @@ export class ComponentDecoratorHandler implements
       pipes: EMPTY_MAP,
       declarationListEmitMode: DeclarationListEmitMode.Direct,
     };
-    const scope = scopeTemplate(this.scopeReader, node, this.usePoisonedData);
+    const diagnostics: ts.Diagnostic[] = [];
+
+    const scope = scopeTemplate(
+        this.scopeReader, this.dtsScopeReader, this.scopeRegistry, this.metaReader, node, analysis,
+        this.usePoisonedData);
+
 
     if (scope !== null) {
+      diagnostics.push(...scope.diagnostics);
+
       // Replace the empty components and directives from the analyze() step with a fully expanded
       // scope. This is possible now because during resolve() the whole compilation unit has been
       // fully analyzed.
@@ -659,7 +701,7 @@ export class ComponentDecoratorHandler implements
           // If a semantic graph is being tracked, record the fact that this component is remotely
           // scoped with the declaring NgModule symbol as the NgModule's emit becomes dependent on
           // the directive/pipe usages of this component.
-          if (this.semanticDepGraphUpdater !== null) {
+          if (this.semanticDepGraphUpdater !== null && scope.ngModule !== null) {
             const moduleSymbol = this.semanticDepGraphUpdater.getSymbol(scope.ngModule);
             if (!(moduleSymbol instanceof NgModuleSymbol)) {
               throw new Error(
@@ -687,8 +729,6 @@ export class ComponentDecoratorHandler implements
         }
       }
     }
-
-    const diagnostics: ts.Diagnostic[] = [];
 
     if (analysis.providersRequiringFactory !== null &&
         analysis.meta.providers instanceof WrappedNodeExpr) {
