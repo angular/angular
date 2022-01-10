@@ -185,6 +185,21 @@ export abstract class _MatMenuTriggerBase implements AfterContentInit, OnDestroy
   // tslint:disable-next-line:no-output-on-prefix
   @Output() readonly onMenuClose: EventEmitter<void> = this.menuClosed;
 
+  /**
+   * @deprecated `focusMonitor` will become a required parameter.
+   * @breaking-change 8.0.0
+   */
+  constructor(
+    overlay: Overlay,
+    element: ElementRef<HTMLElement>,
+    viewContainerRef: ViewContainerRef,
+    scrollStrategy: any,
+    parentMenu: MatMenuPanel,
+    menuItemInstance: MatMenuItem,
+    dir: Directionality,
+    focusMonitor?: FocusMonitor | null,
+  );
+
   constructor(
     private _overlay: Overlay,
     private _element: ElementRef<HTMLElement>,
@@ -195,9 +210,7 @@ export abstract class _MatMenuTriggerBase implements AfterContentInit, OnDestroy
     // tslint:disable-next-line: lightweight-tokens
     @Optional() @Self() private _menuItemInstance: MatMenuItem,
     @Optional() private _dir: Directionality,
-    // TODO(crisbeto): make the _focusMonitor required when doing breaking changes.
-    // @breaking-change 8.0.0
-    private _focusMonitor?: FocusMonitor,
+    private _focusMonitor: FocusMonitor | null,
   ) {
     this._scrollStrategy = scrollStrategy;
     this._parentMaterialMenu = parentMenu instanceof _MatMenuBase ? parentMenu : undefined;

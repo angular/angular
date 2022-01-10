@@ -75,27 +75,28 @@ export class MatMenuItem
   /** Whether the menu item acts as a trigger for a sub-menu. */
   _triggersSubmenu: boolean = false;
 
+  /**
+   * @deprecated `document` parameter to be removed, `changeDetectorRef` and
+   * `focusMonitor` to become required.
+   * @breaking-change 12.0.0
+   */
+  constructor(
+    elementRef: ElementRef<HTMLElement>,
+    document?: any,
+    focusMonitor?: FocusMonitor,
+    parentMenu?: MatMenuPanel<MatMenuItem>,
+    changeDetectorRef?: ChangeDetectorRef,
+  );
+
   constructor(
     private _elementRef: ElementRef<HTMLElement>,
-    /**
-     * @deprecated `_document` parameter is no longer being used and will be removed.
-     * @breaking-change 12.0.0
-     */
     @Inject(DOCUMENT) _document?: any,
     private _focusMonitor?: FocusMonitor,
     @Inject(MAT_MENU_PANEL) @Optional() public _parentMenu?: MatMenuPanel<MatMenuItem>,
-    /**
-     * @deprecated `_changeDetectorRef` to become a required parameter.
-     * @breaking-change 14.0.0
-     */
     private _changeDetectorRef?: ChangeDetectorRef,
   ) {
-    // @breaking-change 8.0.0 make `_focusMonitor` and `document` required params.
     super();
-
-    if (_parentMenu && _parentMenu.addItem) {
-      _parentMenu.addItem(this);
-    }
+    _parentMenu?.addItem?.(this);
   }
 
   /** Focuses the menu item. */
@@ -171,7 +172,7 @@ export class MatMenuItem
     // We need to mark this for check for the case where the content is coming from a
     // `matMenuContent` whose change detection tree is at the declaration position,
     // not the insertion position. See #23175.
-    // @breaking-change 14.0.0 Remove null check for `_changeDetectorRef`.
+    // @breaking-change 12.0.0 Remove null check for `_changeDetectorRef`.
     this._highlighted = isHighlighted;
     this._changeDetectorRef?.markForCheck();
   }
