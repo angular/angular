@@ -437,7 +437,7 @@ def ng_web_test_suite(deps = [], static_css = [], exclude_init_script = False, *
                     cssElement.type = "text/css"; \
                     cssElement.innerHTML = "'"$$css_content"'"; \
                     document.head.appendChild(cssElement);'
-         echo $$js_template > $@
+         echo "$$js_template" > $@
       """ % css_label,
         )
 
