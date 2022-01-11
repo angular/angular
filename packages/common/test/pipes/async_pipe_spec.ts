@@ -8,7 +8,6 @@
 
 import {AsyncPipe, ɵgetDOM as getDOM} from '@angular/common';
 import {ChangeDetectorRef, EventEmitter} from '@angular/core';
-import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
 import {Subscribable, Unsubscribable} from 'rxjs';
 
 {
@@ -144,7 +143,7 @@ import {Subscribable, Unsubscribable} from 'rxjs';
       let promise: Promise<any>;
       let ref: any;
       // adds longer timers for passing tests in IE
-      const timer = (getDOM() && browserDetection.isIE) ? 50 : 10;
+      const timer = 10;
 
       beforeEach(() => {
         promise = new Promise((res, rej) => {
