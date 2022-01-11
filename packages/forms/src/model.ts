@@ -2072,8 +2072,8 @@ export class FormArray extends AbstractControl {
    *     last item in the array.
    */
   at(index: number): AbstractControl {
-    const adjustedIdx = this._adjustIndex(index);
-    return this.controls[adjustedIdx];
+    index = this._adjustIndex(index);
+    return this.controls[index];
   }
 
   /**
@@ -2106,8 +2106,8 @@ export class FormArray extends AbstractControl {
    * inserted. When false, no events are emitted.
    */
   insert(index: number, control: AbstractControl, options: {emitEvent?: boolean} = {}): void {
-    const adjustedIdx = this._adjustIndex(index);
-    this.controls.splice(adjustedIdx, 0, control);
+    index = this._adjustIndex(index);
+    this.controls.splice(index, 0, control);
 
     this._registerControl(control);
     this.updateValueAndValidity({emitEvent: options.emitEvent});
@@ -2125,9 +2125,9 @@ export class FormArray extends AbstractControl {
    * removed. When false, no events are emitted.
    */
   removeAt(index: number, options: {emitEvent?: boolean} = {}): void {
-    const adjustedIdx = this._adjustIndex(index);
-    if (this.controls[adjustedIdx]) this.controls[adjustedIdx]._registerOnCollectionChange(() => {});
-    this.controls.splice(adjustedIdx, 1);
+    index = this._adjustIndex(index);
+    if (this.controls[index]) this.controls[index]._registerOnCollectionChange(() => {});
+    this.controls.splice(index, 1);
     this.updateValueAndValidity({emitEvent: options.emitEvent});
   }
 
@@ -2144,12 +2144,12 @@ export class FormArray extends AbstractControl {
    * replaced with a new one. When false, no events are emitted.
    */
   setControl(index: number, control: AbstractControl, options: {emitEvent?: boolean} = {}): void {
-    const adjustedIdx = this._adjustIndex(index);
-    if (this.controls[adjustedIdx]) this.controls[adjustedIdx]._registerOnCollectionChange(() => {});
-    this.controls.splice(adjustedIdx, 1);
+    index = this._adjustIndex(index);
+    if (this.controls[index]) this.controls[index]._registerOnCollectionChange(() => {});
+    this.controls.splice(index, 1);
 
     if (control) {
-      this.controls.splice(adjustedIdx, 0, control);
+      this.controls.splice(index, 0, control);
       this._registerControl(control);
     }
 
