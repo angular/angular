@@ -51,6 +51,12 @@ function createPackage(changedFile) {
     console.log('Building errors docs');
     return require('./errors-package').createPackage();
   }
+
+  const diagnosticsMatch = /^aio\/content\/extended-diagnostics\/([^.]+)\.md/.exec(changedFile);
+  if (diagnosticsMatch) {
+    console.log('Building extended diagnostics docs');
+    return require('./extended-diagnostics-package').createPackage();
+  }
 }
 
 module.exports = {
