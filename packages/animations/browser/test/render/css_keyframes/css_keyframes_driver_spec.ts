@@ -6,14 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {fakeAsync, flushMicrotasks} from '@angular/core/testing';
-
 import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
 
 import {CssKeyframesDriver} from '../../../src/render/css_keyframes/css_keyframes_driver';
 import {CssKeyframesPlayer} from '../../../src/render/css_keyframes/css_keyframes_player';
 import {DirectStylePlayer} from '../../../src/render/css_keyframes/direct_style_player';
 
-import {assertElementExistsInDom, createElement, findKeyframeDefinition, forceReflow, makeAnimationEvent, supportsAnimationEventCreation} from './shared';
+import {assertElementExistsInDom, createElement, findKeyframeDefinition, forceReflow, makeAnimationEvent} from './shared';
 
 const CSS_KEYFRAME_RULE_TYPE = 7;
 
@@ -108,9 +107,6 @@ describe('CssKeyframesDriver tests', () => {
 
     it('should animate until the `animationend` method is emitted, but still retain the <style> method and the element animation details',
        fakeAsync(() => {
-         // IE11 cannot create an instanceof AnimationEvent
-         if (!supportsAnimationEventCreation()) return;
-
          const elm = createElement();
          const animator = new CssKeyframesDriver();
 
@@ -295,10 +291,6 @@ describe('CssKeyframesDriver tests', () => {
 
     it('should capture existing keyframe player styles in and merge in the styles into the follow up player\'s keyframes',
        () => {
-         // IE cannot modify the position of an animation...
-         // note that this feature is only for testing purposes
-         if (browserDetection.isIE) return;
-
          const elm = createElement();
          elm.style.border = '1px solid black';
          document.body.appendChild(elm);  // this is required so GCS works

@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {ElementAnimationStyleHandler, getAnimationStyle} from '../../../src/render/css_keyframes/element_animation_style_handler';
-import {computeStyle} from '../../../src/util';
-import {assertStyle, createElement, makeAnimationEvent, supportsAnimationEventCreation} from './shared';
+
+import {assertStyle, createElement, makeAnimationEvent} from './shared';
 
 const EMPTY_FN = () => {};
 {
@@ -194,9 +194,6 @@ const EMPTY_FN = () => {};
     });
 
     it('should fire the onDone method when the matching animationend event is emitted', () => {
-      // IE11 cannot create an instanceof AnimationEvent
-      if (!supportsAnimationEventCreation()) return;
-
       const element = createElement();
       document.body.appendChild(element);
 
