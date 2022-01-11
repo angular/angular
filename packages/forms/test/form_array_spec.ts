@@ -30,17 +30,6 @@ describe('FormArray', () => {
       logger = [];
     });
 
-    it('should support retrieving an element at specified index', () => {
-      a.push(c1);
-      a.push(c2);
-      a.push(c3);
-
-      expect(a.at(1)).toEqual(c2);
-      expect(a.at(-1)).toEqual(c3);
-      expect(a.at(a.length)).toBeUndefined();
-      expect(a.at(-a.length)).toBeUndefined();
-    });
-
     it('should support pushing', () => {
       a.push(c1);
       expect(a.length).toEqual(1);
@@ -197,6 +186,19 @@ describe('FormArray', () => {
 
       a.push(new FormControl(5), {emitEvent: false});
       expect(logger).toEqual([]);
+    });
+  });
+
+  describe('at()', () => {
+    it('should support retrieving an element at specified index', () => {
+      const c1 = new FormControl(1);
+      const c2 = new FormControl(2);
+      const a = new FormArray([c1, c2]);
+
+      expect(a.at(1)).toEqual(c1);
+      expect(a.at(-1)).toEqual(c2);
+      expect(a.at(a.length)).toBeUndefined();
+      expect(a.at(-a.length)).toBeUndefined();
     });
   });
 
