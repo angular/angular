@@ -173,26 +173,11 @@ if (_isNode || typeof Element !== 'undefined') {
   }
 
   _query = (element: any, selector: string, multi: boolean): any[] => {
-    let results: any[] = [];
     if (multi) {
-      // DO NOT REFACTOR TO USE SPREAD SYNTAX.
-      // For element queries that return sufficiently large NodeList objects,
-      // using spread syntax to populate the results array causes a RangeError
-      // due to the call stack limit being reached. `Array.from` can not be used
-      // as well, since NodeList is not iterable in IE 11, see
-      // https://developer.mozilla.org/en-US/docs/Web/API/NodeList
-      // More info is available in #38551.
-      const elems = element.querySelectorAll(selector);
-      for (let i = 0; i < elems.length; i++) {
-        results.push(elems[i]);
-      }
-    } else {
-      const elm = element.querySelector(selector);
-      if (elm) {
-        results.push(elm);
-      }
+      return Array.from(element.querySelectorAll(selector));
     }
-    return results;
+    const elem = element.querySelector(selector);
+    return elem ? [elem] : [];
   };
 }
 
