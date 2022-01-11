@@ -42,7 +42,7 @@
   .mat-mdc-unelevated-button .mat-mdc-focus-indicator::before,
   .mat-mdc-raised-button .mat-mdc-focus-indicator::before,
   .mdc-fab .mat-mdc-focus-indicator::before,
-  .mat-mdc-focus-indicator.mdc-chip::before {
+  .mat-mdc-chip-action-label .mat-mdc-focus-indicator::before {
     margin: -($border-width + 2px);
   }
 
@@ -50,9 +50,14 @@
     margin: -($border-width + 3px);
   }
 
-  .mat-mdc-focus-indicator.mat-mdc-chip-remove::before,
-  .mat-mdc-focus-indicator.mat-mdc-chip-row-focusable-text-content::before {
+  .mat-mdc-focus-indicator.mat-mdc-chip-remove::before {
     margin: -$border-width;
+  }
+
+  // MDC sets a padding a on the button which stretches out the focus indicator.
+  .mat-mdc-focus-indicator.mat-mdc-chip-remove::before {
+    left: 8px;
+    right: 8px;
   }
 
   .mat-mdc-focus-indicator.mat-mdc-tab::before,
@@ -77,6 +82,9 @@
   .mdc-checkbox__native-control:focus ~ .mat-mdc-focus-indicator::before,
   .mat-mdc-slide-toggle-focused .mat-mdc-focus-indicator::before,
   .mat-mdc-radio-button.cdk-focused .mat-mdc-focus-indicator::before,
+
+  // In the chips the individual actions have focus so we target a different element.
+  .mat-mdc-chip-action:focus .mat-mdc-focus-indicator::before,
 
   // For buttons and list items, render the focus indicator when the parent
   // button or list item is focused.

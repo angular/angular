@@ -1,16 +1,37 @@
-<span class="mdc-chip__ripple"></span>
-
 <span matRipple class="mat-mdc-chip-ripple"
      [matRippleDisabled]="_isRippleDisabled()"
      [matRippleCentered]="_isRippleCentered"
      [matRippleTrigger]="_elementRef.nativeElement"></span>
+<span class="mat-mdc-chip-focus-overlay"></span>
 
-<ng-content select="mat-chip-avatar, [matChipAvatar]"></ng-content>
-<div class="mdc-chip__checkmark" *ngIf="_chipListMultiple">
-  <svg class="mdc-chip__checkmark-svg" viewBox="-2 -3 30 30" focusable="false">
-    <path class="mdc-chip__checkmark-path" fill="none" stroke="black"
-          d="M1.73,12.91 8.1,19.28 22.79,4.59"/>
-  </svg>
-</div>
-<div class="mdc-chip__text"><ng-content></ng-content></div>
-<ng-content select="mat-chip-trailing-icon,[matChipRemove],[matChipTrailingIcon]"></ng-content>
+<span class="mdc-evolution-chip__cell mdc-evolution-chip__cell--primary">
+  <button
+    matChipAction
+    [tabIndex]="tabIndex"
+    [disabled]="disabled"
+    [attr.aria-selected]="ariaSelected"
+    [attr.aria-label]="ariaLabel"
+    role="option"
+    (blur)="_blur()"
+    (focus)="focus()">
+    <span class="mdc-evolution-chip__graphic mat-mdc-chip-graphic" *ngIf="_hasLeadingGraphic()">
+      <ng-content select="mat-chip-avatar, [matChipAvatar]"></ng-content>
+      <span class="mdc-evolution-chip__checkmark">
+        <svg class="mdc-evolution-chip__checkmark-svg" viewBox="-2 -3 30 30" focusable="false">
+          <path class="mdc-evolution-chip__checkmark-path"
+                fill="none" stroke="currentColor" d="M1.73,12.91 8.1,19.28 22.79,4.59" />
+        </svg>
+      </span>
+    </span>
+    <span class="mdc-evolution-chip__text-label mat-mdc-chip-action-label">
+      <ng-content></ng-content>
+      <span class="mat-mdc-chip-primary-focus-indicator mat-mdc-focus-indicator"></span>
+    </span>
+  </button>
+</span>
+
+<span
+  class="mdc-evolution-chip__cell mdc-evolution-chip__cell--trailing"
+  *ngIf="_hasTrailingIcon()">
+  <ng-content select="mat-chip-trailing-icon,[matChipRemove],[matChipTrailingIcon]"></ng-content>
+</span>

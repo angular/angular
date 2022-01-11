@@ -3,7 +3,7 @@ import {COMMA, ENTER, TAB} from '@angular/cdk/keycodes';
 import {PlatformModule} from '@angular/cdk/platform';
 import {dispatchKeyboardEvent} from '../../cdk/testing/private';
 import {Component, DebugElement, ViewChild} from '@angular/core';
-import {waitForAsync, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
+import {waitForAsync, ComponentFixture, fakeAsync, TestBed, flush} from '@angular/core/testing';
 import {MatFormFieldModule} from '@angular/material-experimental/mdc-form-field';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
@@ -114,38 +114,18 @@ describe('MDC-based MatChipInput', () => {
 
       expect(gridElement.getAttribute('tabindex')).toBe('0');
 
-      dispatchKeyboardEvent(inputNativeElement, 'keydown', TAB);
+      dispatchKeyboardEvent(gridElement, 'keydown', TAB);
       fixture.detectChanges();
 
       expect(gridElement.getAttribute('tabindex'))
         .withContext('Expected tabIndex to be set to -1 temporarily.')
         .toBe('-1');
 
-      tick();
+      flush();
       fixture.detectChanges();
 
       expect(gridElement.getAttribute('tabindex'))
         .withContext('Expected tabIndex to be reset back to 0')
-        .toBe('0');
-    }));
-
-    it('should not allow focus to escape when tabbing backwards', fakeAsync(() => {
-      const gridElement: HTMLElement = fixture.nativeElement.querySelector('mat-chip-grid');
-
-      expect(gridElement.getAttribute('tabindex')).toBe('0');
-
-      dispatchKeyboardEvent(inputNativeElement, 'keydown', TAB, undefined, {shift: true});
-      fixture.detectChanges();
-
-      expect(gridElement.getAttribute('tabindex'))
-        .withContext('Expected tabindex to remain 0')
-        .toBe('0');
-
-      tick();
-      fixture.detectChanges();
-
-      expect(gridElement.getAttribute('tabindex'))
-        .withContext('Expected tabindex to remain 0')
         .toBe('0');
     }));
 

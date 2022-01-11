@@ -17,7 +17,10 @@ ng_module(
             "**/*.spec.ts",
         ],
     ),
-    assets = [":chips_scss"] + glob(["**/*.html"]),
+    assets = [
+        ":chip_scss",
+        ":chip_set_scss",
+    ] + glob(["**/*.html"]),
     deps = [
         "//src:dev_mode_types",
         "//src/material-experimental/mdc-core",
@@ -40,8 +43,21 @@ sass_library(
 )
 
 sass_binary(
-    name = "chips_scss",
-    src = "chips.scss",
+    name = "chip_scss",
+    src = "chip.scss",
+    include_paths = [
+        "external/npm/node_modules",
+    ],
+    deps = [
+        "//src/material-experimental/mdc-helpers:mdc_helpers_scss_lib",
+        "//src/material-experimental/mdc-helpers:mdc_scss_deps_lib",
+        "//src/material/core:core_scss_lib",
+    ],
+)
+
+sass_binary(
+    name = "chip_set_scss",
+    src = "chip-set.scss",
     include_paths = [
         "external/npm/node_modules",
     ],

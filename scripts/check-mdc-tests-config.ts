@@ -36,6 +36,12 @@ export const config = {
 
       // This test checks something that isn't supported in the MDC form field.
       'should propagate the dynamic `placeholder` value to the form field',
+
+      // Disabled, because the MDC-based chip input doesn't deal with focus escaping anymore.
+      'should not allow focus to escape when tabbing backwards',
+
+      // Disabled, because preventing the default action isn't required.
+      'should prevent the default click action when the chip is disabled',
     ],
     'mdc-dialog': [
       // These tests are verifying implementation details that are not relevant for MDC.

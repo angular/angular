@@ -1,31 +1,37 @@
-<ng-container *ngIf="!_isEditing()">
-  <span class="mdc-chip__ripple"></span>
-
+<ng-container *ngIf="!_isEditing">
   <span matRipple class="mat-mdc-chip-ripple"
        [matRippleDisabled]="_isRippleDisabled()"
        [matRippleCentered]="_isRippleCentered"
        [matRippleTrigger]="_elementRef.nativeElement"></span>
+  <span class="mat-mdc-chip-focus-overlay"></span>
 </ng-container>
 
-<div class="mat-mdc-chip-content">
-  <div role="gridcell">
-    <div #chipContent tabindex="-1"
-         class="mat-mdc-chip-row-focusable-text-content mat-mdc-focus-indicator mdc-chip__primary-action"
-         [attr.role]="editable ? 'button' : null">
-      <ng-content select="mat-chip-avatar, [matChipAvatar]"></ng-content>
-      <span class="mdc-chip__text"><ng-content></ng-content></span>
-      <ng-content select="mat-chip-trailing-icon,[matChipTrailingIcon]"></ng-content>
-    </div>
-  </div>
-  <div role="gridcell" *ngIf="removeIcon" class="mat-mdc-chip-remove-icon">
-    <ng-content select="[matChipRemove]"></ng-content>
-  </div>
-</div>
 
-<div *ngIf="_isEditing()" role="gridcell" class="mat-mdc-chip-edit-input-container">
-  <ng-content *ngIf="contentEditInput; else defaultMatChipEditInput"
-              select="[matChipEditInput]"></ng-content>
-  <ng-template #defaultMatChipEditInput>
-    <span matChipEditInput></span>
-  </ng-template>
-</div>
+<span class="mdc-evolution-chip__cell mdc-evolution-chip__cell--primary" role="gridcell">
+  <button
+    matChipAction
+    [tabIndex]="tabIndex"
+    [disabled]="disabled"
+    [attr.aria-label]="ariaLabel">
+    <span class="mdc-evolution-chip__graphic mat-mdc-chip-graphic" *ngIf="leadingIcon">
+      <ng-content select="mat-chip-avatar, [matChipAvatar]"></ng-content>
+    </span>
+    <span class="mdc-evolution-chip__text-label mat-mdc-chip-action-label" [ngSwitch]="_isEditing">
+      <ng-container *ngSwitchCase="false"><ng-content></ng-content></ng-container>
+
+      <ng-container *ngSwitchCase="true">
+        <ng-content *ngIf="contentEditInput; else defaultMatChipEditInput"
+                    select="[matChipEditInput]"></ng-content>
+        <ng-template #defaultMatChipEditInput><span matChipEditInput></span></ng-template>
+      </ng-container>
+
+      <span class="mat-mdc-chip-primary-focus-indicator mat-mdc-focus-indicator"></span>
+    </span>
+  </button>
+</span>
+
+<span
+  class="mdc-evolution-chip__cell mdc-evolution-chip__cell--trailing"
+  *ngIf="_hasTrailingIcon()">
+  <ng-content select="mat-chip-trailing-icon,[matChipRemove],[matChipTrailingIcon]"></ng-content>
+</span>

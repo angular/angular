@@ -1,6 +1,11 @@
 import {Directionality} from '@angular/cdk/bidi';
-import {BACKSPACE, DELETE, RIGHT_ARROW, ENTER} from '@angular/cdk/keycodes';
-import {createKeyboardEvent, dispatchEvent, dispatchFakeEvent} from '../../cdk/testing/private';
+import {BACKSPACE, DELETE, ENTER} from '@angular/cdk/keycodes';
+import {
+  createKeyboardEvent,
+  dispatchEvent,
+  dispatchFakeEvent,
+  dispatchKeyboardEvent,
+} from '../../cdk/testing/private';
 import {Component, DebugElement, ElementRef, ViewChild} from '@angular/core';
 import {waitForAsync, ComponentFixture, TestBed, flush, fakeAsync} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
@@ -10,7 +15,6 @@ import {
   MatChipEditInput,
   MatChipEvent,
   MatChipGrid,
-  MatChipRemove,
   MatChipRow,
   MatChipsModule,
 } from './index';
@@ -20,7 +24,6 @@ describe('MDC-based Row Chips', () => {
   let chipDebugElement: DebugElement;
   let chipNativeElement: HTMLElement;
   let chipInstance: MatChipRow;
-  let removeIconInstance: MatChipRemove;
 
   let dir = 'ltr';
 
@@ -55,9 +58,6 @@ describe('MDC-based Row Chips', () => {
       chipNativeElement = chipDebugElement.nativeElement;
       chipInstance = chipDebugElement.injector.get<MatChipRow>(MatChipRow);
       testComponent = fixture.debugElement.componentInstance;
-
-      const removeIconDebugElement = fixture.debugElement.query(By.directive(MatChipRemove))!;
-      removeIconInstance = removeIconDebugElement.injector.get<MatChipRemove>(MatChipRemove);
     });
 
     describe('basic behaviors', () => {
@@ -134,17 +134,6 @@ describe('MDC-based Row Chips', () => {
 
           expect(testComponent.chipRemove).toHaveBeenCalled();
         });
-
-        it('arrow key navigation does not emit the (removed) event', () => {
-          const ARROW_KEY_EVENT = createKeyboardEvent('keydown', RIGHT_ARROW);
-
-          spyOn(testComponent, 'chipRemove');
-
-          removeIconInstance.interaction.next(ARROW_KEY_EVENT);
-          fixture.detectChanges();
-
-          expect(testComponent.chipRemove).not.toHaveBeenCalled();
-        });
       });
 
       describe('when removable is false', () => {
@@ -178,12 +167,16 @@ describe('MDC-based Row Chips', () => {
       });
 
       it('should update the aria-label for disabled chips', () => {
-        expect(chipNativeElement.getAttribute('aria-disabled')).toBe('false');
+        const primaryActionElement = chipNativeElement.querySelector(
+          '.mdc-evolution-chip__action--primary',
+        )!;
+
+        expect(primaryActionElement.getAttribute('aria-disabled')).toBe('false');
 
         testComponent.disabled = true;
         fixture.detectChanges();
 
-        expect(chipNativeElement.getAttribute('aria-disabled')).toBe('true');
+        expect(primaryActionElement.getAttribute('aria-disabled')).toBe('true');
       });
 
       describe('focus management', () => {
@@ -191,7 +184,7 @@ describe('MDC-based Row Chips', () => {
           dispatchFakeEvent(chipNativeElement, 'mousedown');
           fixture.detectChanges();
 
-          expect(document.activeElement).toHaveClass('mat-mdc-chip-row-focusable-text-content');
+          expect(document.activeElement).toHaveClass('mdc-evolution-chip__action--primary');
         });
 
         it('emits focus only once for multiple focus() calls', () => {
@@ -215,46 +208,46 @@ describe('MDC-based Row Chips', () => {
         fixture.detectChanges();
       });
 
-      it('should apply the mdc-chip--editable class', () => {
-        expect(chipNativeElement.classList).toContain('mdc-chip--editable');
-      });
-
       it('should begin editing on double click', () => {
+        expect(chipNativeElement.querySelector('.mat-chip-edit-input')).toBeFalsy();
         dispatchFakeEvent(chipNativeElement, 'dblclick');
-        expect(chipNativeElement.classList).toContain('mdc-chip--editing');
+        fixture.detectChanges();
+        expect(chipNativeElement.querySelector('.mat-chip-edit-input')).toBeTruthy();
       });
 
       it('should begin editing on ENTER', () => {
-        chipInstance.focus();
-        const primaryActionElement = chipNativeElement.querySelector('.mdc-chip__primary-action')!;
-        const enterEvent = createKeyboardEvent('keydown', ENTER, 'Enter');
-        dispatchEvent(primaryActionElement, enterEvent);
-        expect(chipNativeElement.classList).toContain('mdc-chip--editing');
+        expect(chipNativeElement.querySelector('.mat-chip-edit-input')).toBeFalsy();
+        dispatchKeyboardEvent(chipNativeElement, 'keydown', ENTER);
+        fixture.detectChanges();
+        expect(chipNativeElement.querySelector('.mat-chip-edit-input')).toBeTruthy();
       });
     });
 
     describe('editing behavior', () => {
       let editInputInstance: MatChipEditInput;
-      let chipContentElement: HTMLElement;
+      let primaryAction: HTMLElement;
 
-      beforeEach(() => {
+      beforeEach(fakeAsync(() => {
         testComponent.editable = true;
         fixture.detectChanges();
         dispatchFakeEvent(chipNativeElement, 'dblclick');
-        spyOn(testComponent, 'chipEdit');
         fixture.detectChanges();
+        flush();
 
+        spyOn(testComponent, 'chipEdit');
         const editInputDebugElement = fixture.debugElement.query(By.directive(MatChipEditInput))!;
         editInputInstance = editInputDebugElement.injector.get<MatChipEditInput>(MatChipEditInput);
-
-        const chipContentSelector = '.mat-mdc-chip-row-focusable-text-content';
-        chipContentElement = chipNativeElement.querySelector(chipContentSelector) as HTMLElement;
-      });
+        primaryAction = chipNativeElement.querySelector('.mdc-evolution-chip__action--primary')!;
+      }));
 
       function keyDownOnPrimaryAction(keyCode: number, key: string) {
-        const primaryActionElement = chipNativeElement.querySelector('.mdc-chip__primary-action')!;
         const keyDownEvent = createKeyboardEvent('keydown', keyCode, key);
-        dispatchEvent(primaryActionElement, keyDownEvent);
+        dispatchEvent(primaryAction, keyDownEvent);
+        fixture.detectChanges();
+      }
+
+      function getEditInput(): HTMLElement {
+        return chipNativeElement.querySelector('.mat-chip-edit-input')!;
       }
 
       it('should not delete the chip on DELETE or BACKSPACE', () => {
@@ -264,33 +257,27 @@ describe('MDC-based Row Chips', () => {
         expect(testComponent.chipDestroy).not.toHaveBeenCalled();
       });
 
-      it('should ignore mousedown events', () => {
-        spyOn(testComponent, 'chipFocus');
-        dispatchFakeEvent(chipNativeElement, 'mousedown');
-        expect(testComponent.chipFocus).not.toHaveBeenCalled();
-      });
-
       it('should stop editing on focusout', fakeAsync(() => {
-        const primaryActionElement = chipNativeElement.querySelector('.mdc-chip__primary-action')!;
-        dispatchFakeEvent(primaryActionElement, 'focusout', true);
+        dispatchFakeEvent(primaryAction, 'focusout', true);
         flush();
-        expect(chipNativeElement.classList).not.toContain('mdc-chip--editing');
         expect(testComponent.chipEdit).toHaveBeenCalled();
       }));
 
-      it('should stop editing on ENTER', () => {
-        keyDownOnPrimaryAction(ENTER, 'Enter');
-        expect(chipNativeElement.classList).not.toContain('mdc-chip--editing');
+      it('should stop editing on ENTER', fakeAsync(() => {
+        dispatchKeyboardEvent(getEditInput(), 'keydown', ENTER);
+        fixture.detectChanges();
+        flush();
         expect(testComponent.chipEdit).toHaveBeenCalled();
-      });
+      }));
 
-      it('should emit the new chip value when editing completes', () => {
+      it('should emit the new chip value when editing completes', fakeAsync(() => {
         const chipValue = 'chip value';
         editInputInstance.setValue(chipValue);
-        keyDownOnPrimaryAction(ENTER, 'Enter');
+        dispatchKeyboardEvent(getEditInput(), 'keydown', ENTER);
+        flush();
         const expectedValue = jasmine.objectContaining({value: chipValue});
         expect(testComponent.chipEdit).toHaveBeenCalledWith(expectedValue);
-      });
+      }));
 
       it('should use the projected edit input if provided', () => {
         expect(editInputInstance.getNativeElement()).toHaveClass('projected-edit-input');
@@ -308,28 +295,33 @@ describe('MDC-based Row Chips', () => {
         expect(editInputNoProject.getNativeElement()).not.toHaveClass('projected-edit-input');
       });
 
-      it('should focus the chip content if the edit input has focus on completion', () => {
+      it('should focus the chip content if the edit input has focus on completion', fakeAsync(() => {
         const chipValue = 'chip value';
         editInputInstance.setValue(chipValue);
-        keyDownOnPrimaryAction(ENTER, 'Enter');
-        expect(document.activeElement).toBe(chipContentElement);
-      });
+        dispatchKeyboardEvent(getEditInput(), 'keydown', ENTER);
+        fixture.detectChanges();
+        flush();
+        expect(document.activeElement).toBe(primaryAction);
+      }));
 
-      it('should focus the chip content if the body has focus on completion', () => {
+      it('should focus the chip content if the body has focus on completion', fakeAsync(() => {
         const chipValue = 'chip value';
         editInputInstance.setValue(chipValue);
         (document.activeElement as HTMLElement).blur();
-        keyDownOnPrimaryAction(ENTER, 'Enter');
-        expect(document.activeElement).toBe(chipContentElement);
-      });
+        dispatchKeyboardEvent(getEditInput(), 'keydown', ENTER);
+        fixture.detectChanges();
+        flush();
+        expect(document.activeElement).toBe(primaryAction);
+      }));
 
-      it('should not change focus if another element has focus on completion', () => {
+      it('should not change focus if another element has focus on completion', fakeAsync(() => {
         const chipValue = 'chip value';
         editInputInstance.setValue(chipValue);
         testComponent.chipInput.nativeElement.focus();
         keyDownOnPrimaryAction(ENTER, 'Enter');
-        expect(document.activeElement).not.toBe(chipContentElement);
-      });
+        flush();
+        expect(document.activeElement).not.toBe(primaryAction);
+      }));
     });
   });
 });
@@ -340,7 +332,7 @@ describe('MDC-based Row Chips', () => {
       <div *ngIf="shouldShow">
         <mat-chip-row [removable]="removable"
                  [color]="color" [disabled]="disabled" [editable]="editable"
-                 (focus)="chipFocus($event)" (destroyed)="chipDestroy($event)"
+                 (destroyed)="chipDestroy($event)"
                  (removed)="chipRemove($event)" (edited)="chipEdit($event)">
           {{name}}
           <button matChipRemove>x</button>
@@ -361,7 +353,6 @@ class SingleChip {
   editable: boolean = false;
   useCustomEditInput: boolean = true;
 
-  chipFocus: (event?: MatChipEvent) => void = () => {};
   chipDestroy: (event?: MatChipEvent) => void = () => {};
   chipRemove: (event?: MatChipEvent) => void = () => {};
   chipEdit: (event?: MatChipEditedEvent) => void = () => {};

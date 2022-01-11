@@ -24,15 +24,25 @@ describe('MatChipRowHarness', () => {
     const harnesses = await loader.getAllHarnesses(MatChipRowHarness);
     expect(harnesses.length).toBe(2);
   });
+
+  it('should get whether the chip is editable', async () => {
+    const harness = await loader.getHarness(MatChipRowHarness);
+    expect(await harness.isEditable()).toBe(false);
+
+    fixture.componentInstance.editable = true;
+    expect(await harness.isEditable()).toBe(true);
+  });
 });
 
 @Component({
   template: `
     <mat-chip-grid #grid>
-      <mat-basic-chip-row> Basic Chip Row </mat-basic-chip-row>
-      <mat-chip-row> Chip Row </mat-chip-row>
+      <mat-basic-chip-row [editable]="editable"> Basic Chip Row </mat-basic-chip-row>
+      <mat-chip-row [editable]="editable"> Chip Row </mat-chip-row>
       <input [matChipInputFor]="grid" />
     </mat-chip-grid>
   `,
 })
-class ChipRowHarnessTest {}
+class ChipRowHarnessTest {
+  editable = false;
+}

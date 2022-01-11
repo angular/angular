@@ -16,7 +16,7 @@ import {DOCUMENT} from '@angular/common';
 @Directive({
   selector: 'span[matChipEditInput]',
   host: {
-    'class': 'mdc-chip__primary-action mat-chip-edit-input',
+    'class': 'mat-chip-edit-input',
     'role': 'textbox',
     'tabindex': '-1',
     'contenteditable': 'true',

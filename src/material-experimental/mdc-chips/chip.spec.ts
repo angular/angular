@@ -58,19 +58,12 @@ describe('MDC-based MatChip', () => {
       expect(chip.getAttribute('tabindex')).toBe('3');
     });
 
-    it('should be able to set a static tabindex', () => {
-      fixture = TestBed.createComponent(BasicChipWithStaticTabindex);
-      fixture.detectChanges();
-
-      const chip = fixture.nativeElement.querySelector('mat-basic-chip');
-      expect(chip.getAttribute('tabindex')).toBe('3');
-    });
-
     it('should be able to set a dynamic tabindex', () => {
       fixture = TestBed.createComponent(BasicChipWithBoundTabindex);
       fixture.detectChanges();
 
       const chip = fixture.nativeElement.querySelector('mat-basic-chip');
+
       expect(chip.getAttribute('tabindex')).toBe('12');
 
       fixture.componentInstance.tabindex = 15;
@@ -93,6 +86,7 @@ describe('MDC-based MatChip', () => {
 
   describe('MatChip', () => {
     let testComponent: SingleChip;
+    let primaryAction: HTMLElement;
 
     beforeEach(() => {
       fixture = TestBed.createComponent(SingleChip);
@@ -104,6 +98,7 @@ describe('MDC-based MatChip', () => {
       chipRippleDebugElement = chipDebugElement.query(By.directive(MatRipple))!;
       chipRippleInstance = chipRippleDebugElement.injector.get<MatRipple>(MatRipple);
       testComponent = fixture.debugElement.componentInstance;
+      primaryAction = chipNativeElement.querySelector('.mdc-evolution-chip__action--primary')!;
     });
 
     it('adds the `mat-chip` class', () => {
@@ -169,17 +164,10 @@ describe('MDC-based MatChip', () => {
         .toBe(true);
     });
 
-    it('should update the aria-label for disabled chips', () => {
-      expect(chipNativeElement.getAttribute('aria-disabled')).toBe('false');
-
+    it('should make disabled chips non-focusable', () => {
       testComponent.disabled = true;
       fixture.detectChanges();
-
-      expect(chipNativeElement.getAttribute('aria-disabled')).toBe('true');
-    });
-
-    it('should make disabled chips non-focusable', () => {
-      expect(chipNativeElement.getAttribute('tabindex')).toBeFalsy();
+      expect(primaryAction.hasAttribute('tabindex')).toBe(false);
     });
 
     it('should return the chip text if value is undefined', () => {
@@ -236,12 +224,12 @@ class SingleChip {
 class BasicChip {}
 
 @Component({
-  template: `<mat-basic-chip tabindex="3">Hello</mat-basic-chip>`,
+  template: `<mat-basic-chip role="button" tabindex="3">Hello</mat-basic-chip>`,
 })
 class BasicChipWithStaticTabindex {}
 
 @Component({
-  template: `<mat-basic-chip [tabIndex]="tabindex">Hello</mat-basic-chip>`,
+  template: `<mat-basic-chip role="button" [tabIndex]="tabindex">Hello</mat-basic-chip>`,
 })
 class BasicChipWithBoundTabindex {
   tabindex = 12;

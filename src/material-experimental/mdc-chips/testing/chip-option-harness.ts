@@ -56,6 +56,6 @@ export class MatChipOptionHarness extends MatChipHarness {
 
   /** Toggles the selected state of the given chip. */
   async toggle(): Promise<void> {
-    return (await this.host()).sendKeys(' ');
+    return (await this._primaryAction()).click();
   }
 }

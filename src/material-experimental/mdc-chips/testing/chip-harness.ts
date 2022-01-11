@@ -17,6 +17,8 @@ import {MatChipRemoveHarness} from './chip-remove-harness';
 
 /** Harness for interacting with a mat-chip in tests. */
 export class MatChipHarness extends ContentContainerComponentHarness {
+  protected _primaryAction = this.locatorFor('.mdc-evolution-chip__action--primary');
+
   static hostSelector = '.mat-mdc-basic-chip, .mat-mdc-chip';
 
   /**
