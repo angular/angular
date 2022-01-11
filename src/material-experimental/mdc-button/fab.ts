@@ -142,7 +142,7 @@ export class MatMiniFabButton extends MatButtonBase {
   selector: `a[mat-fab]`,
   templateUrl: 'button.html',
   styleUrls: ['fab.css'],
-  inputs: [...MAT_BUTTON_INPUTS, 'extended'],
+  inputs: [...MAT_ANCHOR_INPUTS, 'extended'],
   host: {
     ...MAT_ANCHOR_HOST,
     '[class.mdc-fab--extended]': 'extended',
