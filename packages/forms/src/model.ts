@@ -2409,6 +2409,10 @@ export class FormArray extends AbstractControl {
     control._registerOnCollectionChange(this._onCollectionChange);
   }
 
+  /**
+   * Converts negative indices to a corresponding positive number that represents a position of
+   * an element in an array.
+   */
   private _adjustIndex(index: number): number {
     return index >= 0 ? index : index + this.length;
   }
