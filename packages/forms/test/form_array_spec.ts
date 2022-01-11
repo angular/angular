@@ -17,7 +17,7 @@ import {asyncValidator} from './util';
 describe('FormArray', () => {
   describe('adding/removing', () => {
     let a: FormArray;
-    let c1: FormControl, c2: FormControl, c3: FormControl;
+    let c1: FormControl, c2: FormControl, c3: FormControl, c4: FormControl, c5: FormControl;
     let logger: string[];
 
     beforeEach(() => {
@@ -25,10 +25,12 @@ describe('FormArray', () => {
       c1 = new FormControl(1);
       c2 = new FormControl(2);
       c3 = new FormControl(3);
+      c4 = new FormControl(4);
+      c5 = new FormControl(5);
       logger = [];
     });
 
-    it('should support retrieving at an index', () => {
+    it('should support retrieving an element at specified index', () => {
       a.push(c1);
       a.push(c2);
       a.push(c3);
@@ -36,6 +38,7 @@ describe('FormArray', () => {
       expect(a.at(1)).toEqual(c2);
       expect(a.at(-1)).toEqual(c3);
       expect(a.at(a.length)).toBeUndefined();
+      expect(a.at(-a.length)).toBeUndefined();
     });
 
     it('should support pushing', () => {
@@ -57,7 +60,12 @@ describe('FormArray', () => {
       
       expect(a.controls).toEqual([c1]);
 
+      // Check that using out of bounds index is a noop
       a.removeAt(a.length);
+
+      expect(a.controls).toEqual([c1]);
+
+      a.removeAt(-a.length);
 
       expect(a.controls).toEqual([c1]);
     });
@@ -84,13 +92,13 @@ describe('FormArray', () => {
 
       expect(a.controls).toEqual([c1, c2, c3]);
 
-      a.insert(-1, c2);
+      a.insert(-1, c4);
 
-      expect(a.controls).toEqual([c1, c2, c3, c2]);
+      expect(a.controls).toEqual([c1, c2, c3, c4]);
 
-      a.insert(a.length, c3);
+      a.insert(a.length, c5);
 
-      expect(a.controls).toEqual([c1, c2, c3, c2, c3]);
+      expect(a.controls).toEqual([c1, c2, c3, c4, c5]);
     });
 
     it('should not emit events when calling `FormArray.push` with `emitEvent: false`', () => {
