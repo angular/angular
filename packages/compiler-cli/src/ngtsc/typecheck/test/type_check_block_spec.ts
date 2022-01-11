@@ -1033,7 +1033,7 @@ describe('type check blocks', () => {
             '(null as any ? (null as any ? ((ctx).a())!.method : undefined)!() : undefined)');
         expect(block).toContain('(null as any ? ((((ctx).a)).method())![0] : undefined)');
         expect(block).toContain(
-            '(null as any ? ((null as any ? ((((((ctx).a)).method))())!.otherMethod : undefined))!() : undefined)');
+            '(null as any ? ((null as any ? ((((ctx).a)).method())!.otherMethod : undefined))!() : undefined)');
       });
       it('should not check the presence of a property/method on the receiver when disabled', () => {
         const DISABLED_CONFIG:
@@ -1042,7 +1042,7 @@ describe('type check blocks', () => {
         expect(block).toContain('(((((ctx).a)).method()) as any).b');
         expect(block).toContain('(((((ctx).a()) as any).method as any)())');
         expect(block).toContain('(((((ctx).a)).method()) as any)[0]');
-        expect(block).toContain('(((((((((ctx).a)).method))()) as any).otherMethod)!() as any)');
+        expect(block).toContain('(((((((ctx).a)).method()) as any).otherMethod)!() as any)');
       });
     });
 

@@ -874,10 +874,8 @@ export class _ParseAST {
       return this.parseLiteralMap();
 
     } else if (this.next.isIdentifier()) {
-      const receiver = new ImplicitReceiver(this.span(start), this.sourceSpan(start));
-      return this.consumeOptionalCharacter(chars.$LPAREN) ?
-          this.parseCall(receiver, start, false) :
-          this.parseAccessMember(receiver, start, false);
+      return this.parseAccessMember(
+          new ImplicitReceiver(this.span(start), this.sourceSpan(start)), start, false);
     } else if (this.next.isNumber()) {
       const value = this.next.toNumber();
       this.advance();

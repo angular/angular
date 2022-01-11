@@ -97,7 +97,6 @@ const NG_FOR_DIR = {
      })
      export class NgFor {
        constructor(ref: TemplateRef<any>) {}
- 
        ngForOf!: any;
      }
    `
@@ -349,16 +348,6 @@ describe('completions', () => {
     it('should return completions in a safe method call context', () => {
       const {templateFile} = setup(`{{name?.f()}}`, `name!: {first: string; full(): string;};`);
       templateFile.moveCursorToText('{{name?.f¦()}}');
-      const completions = templateFile.getCompletionsAtPosition();
-      expectAll(completions, {
-        first: ts.ScriptElementKind.memberVariableElement,
-        full: ts.ScriptElementKind.memberFunctionElement,
-      });
-    });
-
-    it('should return completions in an empty safe method call context', () => {
-      const {templateFile} = setup(`{{name?.()}}`, `name!: {first: string; full(): string;};`);
-      templateFile.moveCursorToText('{{name?.¦()}}');
       const completions = templateFile.getCompletionsAtPosition();
       expectAll(completions, {
         first: ts.ScriptElementKind.memberVariableElement,
@@ -1284,7 +1273,7 @@ function setup(
   const project = env.addProject('test', {
     'test.ts': `
          import {Component, Directive, NgModule, Pipe, TemplateRef} from '@angular/core';
- 
+
          ${functionDeclarations}
 
          @Component({
@@ -1295,9 +1284,9 @@ function setup(
          export class AppCmp {
            ${classContents}
          }
- 
+
          ${otherDirectiveClassDecls}
- 
+
          @NgModule({
            declarations: [${decls.join(', ')}],
          })
@@ -1320,7 +1309,7 @@ function setupInlineTemplate(
   const project = env.addProject('test', {
     'test.ts': `
          import {Component, Directive, NgModule, Pipe, TemplateRef} from '@angular/core';
- 
+
          @Component({
            template: '${template}',
            selector: 'app-cmp',
@@ -1328,9 +1317,9 @@ function setupInlineTemplate(
          export class AppCmp {
            ${classContents}
          }
- 
+
          ${otherDirectiveClassDecls}
- 
+
          @NgModule({
            declarations: [${decls.join(', ')}],
          })

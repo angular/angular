@@ -318,7 +318,7 @@ export class NonNullAssert extends AST {
 
 export class Call extends AST {
   constructor(
-      span: ParseSpan, sourceSpan: AbsoluteSourceSpan, public receiver: AST, public args: any[],
+      span: ParseSpan, sourceSpan: AbsoluteSourceSpan, public receiver: AST, public args: AST[],
       public argumentSpan: AbsoluteSourceSpan) {
     super(span, sourceSpan);
   }
@@ -329,7 +329,7 @@ export class Call extends AST {
 
 export class SafeCall extends AST {
   constructor(
-      span: ParseSpan, sourceSpan: AbsoluteSourceSpan, public receiver: AST, public args: any[],
+      span: ParseSpan, sourceSpan: AbsoluteSourceSpan, public receiver: AST, public args: AST[],
       public argumentSpan: AbsoluteSourceSpan) {
     super(span, sourceSpan);
   }

@@ -410,7 +410,7 @@ class VeSafeLhsInferenceBugDetector implements AstVisitor {
     return true;
   }
   visitSafeCall(ast: SafeCall): boolean {
-    return true;
+    return false;
   }
   visitImplicitReceiver(ast: ImplicitReceiver): boolean {
     return false;
