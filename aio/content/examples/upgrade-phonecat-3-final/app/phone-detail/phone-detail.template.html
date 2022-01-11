@@ -1,9 +1,9 @@
 <!-- #docregion -->
 <div *ngIf="phone">
   <div class="phone-images">
-    <img [src]="img" class="phone"
+    <img [src]="img" class="phone" [alt]="'phone' + index"
         [ngClass]="{'selected': img === mainImageUrl}"
-        *ngFor="let img of phone.images" />
+        *ngFor="let img of phone.images; let index = index" />
   </div>
 
   <h1>{{phone.name}}</h1>
@@ -11,8 +11,9 @@
   <p>{{phone.description}}</p>
 
   <ul class="phone-thumbs">
-    <li *ngFor="let img of phone.images">
-      <img [src]="img" (click)="setImage(img)" />
+    <li *ngFor="let img of phone.images let index = index">
+      <!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events -->
+      <img [src]="img" [alt]="'phone thumb' + index" (click)="setImage(img)" />
     </li>
   </ul>
 

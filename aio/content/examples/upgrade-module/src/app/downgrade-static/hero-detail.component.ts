@@ -5,7 +5,7 @@ import { Component } from '@angular/core';
   selector: 'hero-detail',
   template: `
     <h2>Windstorm details!</h2>
-    <div><label>id: </label>1</div>
+    <div>id: 1</div>
   `
 })
 export class HeroDetailComponent { }

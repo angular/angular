@@ -6,7 +6,7 @@ import { Hero } from '../hero';
   selector: 'hero-detail',
   template: `
     <h2>{{hero.name}} details!</h2>
-    <div><label>id: </label>{{hero.id}}</div>
+    <div>id: {{hero.id}}</div>
     <button (click)="onDelete()">Delete</button>
   `
 })
