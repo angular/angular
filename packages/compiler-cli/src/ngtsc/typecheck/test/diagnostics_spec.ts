@@ -11,7 +11,7 @@ import ts from 'typescript';
 import {absoluteFrom, getSourceFileOrError} from '../../file_system';
 import {runInEachFileSystem, TestFile} from '../../file_system/testing';
 import {OptimizeFor, TypeCheckingConfig} from '../api';
-import {ngForDeclaration, ngForDts, setup, TestDeclaration} from '../testing';
+import {ngForDeclaration, ngForDts, ngIfDeclaration, ngIfDts, setup, TestDeclaration} from '../testing';
 
 runInEachFileSystem(() => {
   describe('template diagnostics', () => {
@@ -339,6 +339,17 @@ runInEachFileSystem(() => {
       ]);
     });
 
+    it('should support type-narrowing for methods with type guards', () => {
+      const messages = diagnose(
+          `<div *ngIf="hasSuccess()">{{ success }}</div>`, `
+          class TestComponent {
+            hasSuccess(): this is { success: boolean };
+          }`,
+          [ngIfDeclaration()], [ngIfDts()]);
+
+      expect(messages).toEqual([]);
+    });
+
     describe('outputs', () => {
       it('should produce a diagnostic for directive outputs', () => {
         const messages = diagnose(
@@ -473,6 +484,35 @@ runInEachFileSystem(() => {
 
             log(color: string) {
               console.log(color);
+            }
+          }`);
+
+        expect(messages).toEqual([
+          `TestComponent.html(1, 19): Argument of type 'string | undefined' is not assignable to parameter of type 'string'.`
+        ]);
+      });
+
+      it('does not produce diagnostic for safe calls', () => {
+        const messages =
+            diagnose(`<div [class.is-hobbit]="person.getName?.() === 'Bilbo'"></div>`, `
+              export class TestComponent {
+                person: {
+                  getName?: () => string;
+                };
+              }`);
+
+        expect(messages).toEqual([]);
+      });
+
+      it('infers a safe call return value as undefined', () => {
+        const messages = diagnose(`<div (click)="log(person.getName?.())"></div>`, `
+          export class TestComponent {
+            person: {
+              getName?: () => string;
+            };
+
+            log(name: string) {
+              console.log(name);
             }
           }`);
 

@@ -9,7 +9,7 @@
 import * as chars from '../chars';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../ml_parser/interpolation_config';
 
-import {AbsoluteSourceSpan, AST, ASTWithSource, Binary, BindingPipe, Call, Chain, Conditional, EmptyExpr, ExpressionBinding, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralMapKey, LiteralPrimitive, NonNullAssert, ParserError, ParseSpan, PrefixNot, PropertyRead, PropertyWrite, Quote, RecursiveAstVisitor, SafeKeyedRead, SafePropertyRead, TemplateBinding, TemplateBindingIdentifier, ThisReceiver, Unary, VariableBinding} from './ast';
+import {AbsoluteSourceSpan, AST, ASTWithSource, Binary, BindingPipe, Call, Chain, Conditional, EmptyExpr, ExpressionBinding, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralMapKey, LiteralPrimitive, NonNullAssert, ParserError, ParseSpan, PrefixNot, PropertyRead, PropertyWrite, Quote, RecursiveAstVisitor, SafeCall, SafeKeyedRead, SafePropertyRead, TemplateBinding, TemplateBindingIdentifier, ThisReceiver, Unary, VariableBinding} from './ast';
 import {EOF, isIdentifier, Lexer, Token, TokenType} from './lexer';
 
 export interface InterpolationPiece {
@@ -39,11 +39,11 @@ export class Parser {
       interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG): ASTWithSource {
     this._checkNoInterpolation(input, location, interpolationConfig);
     const sourceToLex = this._stripComments(input);
-    const tokens = this._lexer.tokenize(this._stripComments(input));
-    const ast = new _ParseAST(
-                    input, location, absoluteOffset, tokens, sourceToLex.length, true, this.errors,
-                    input.length - sourceToLex.length)
-                    .parseChain();
+    const tokens = this._lexer.tokenize(sourceToLex);
+    const ast =
+        new _ParseAST(
+            input, location, absoluteOffset, tokens, sourceToLex.length, true, this.errors, 0)
+            .parseChain();
     return new ASTWithSource(ast, input, location, absoluteOffset, this.errors);
   }
 
@@ -91,8 +91,7 @@ export class Parser {
     const sourceToLex = this._stripComments(input);
     const tokens = this._lexer.tokenize(sourceToLex);
     return new _ParseAST(
-               input, location, absoluteOffset, tokens, sourceToLex.length, false, this.errors,
-               input.length - sourceToLex.length)
+               input, location, absoluteOffset, tokens, sourceToLex.length, false, this.errors, 0)
         .parseChain();
   }
 
@@ -162,7 +161,7 @@ export class Parser {
       const tokens = this._lexer.tokenize(sourceToLex);
       const ast = new _ParseAST(
                       input, location, absoluteOffset, tokens, sourceToLex.length, false,
-                      this.errors, offsets[i] + (expressionText.length - sourceToLex.length))
+                      this.errors, offsets[i])
                       .parseChain();
       expressionNodes.push(ast);
     }
@@ -813,23 +812,19 @@ export class _ParseAST {
     let result = this.parsePrimary();
     while (true) {
       if (this.consumeOptionalCharacter(chars.$PERIOD)) {
-        result = this.parseAccessMemberOrCall(result, start, false);
-
+        result = this.parseAccessMember(result, start, false);
       } else if (this.consumeOptionalOperator('?.')) {
-        result = this.consumeOptionalCharacter(chars.$LBRACKET) ?
-            this.parseKeyedReadOrWrite(result, start, true) :
-            this.parseAccessMemberOrCall(result, start, true);
+        if (this.consumeOptionalCharacter(chars.$LPAREN)) {
+          result = this.parseCall(result, start, true);
+        } else {
+          result = this.consumeOptionalCharacter(chars.$LBRACKET) ?
+              this.parseKeyedReadOrWrite(result, start, true) :
+              this.parseAccessMember(result, start, true);
+        }
       } else if (this.consumeOptionalCharacter(chars.$LBRACKET)) {
         result = this.parseKeyedReadOrWrite(result, start, false);
       } else if (this.consumeOptionalCharacter(chars.$LPAREN)) {
-        const argumentStart = this.inputIndex;
-        this.rparensExpected++;
-        const args = this.parseCallArguments();
-        const argumentSpan =
-            this.span(argumentStart, this.inputIndex).toAbsolute(this.absoluteOffset);
-        this.rparensExpected--;
-        this.expectCharacter(chars.$RPAREN);
-        result = new Call(this.span(start), this.sourceSpan(start), result, args, argumentSpan);
+        result = this.parseCall(result, start, false);
       } else if (this.consumeOptionalOperator('!')) {
         result = new NonNullAssert(this.span(start), this.sourceSpan(start), result);
 
@@ -878,9 +873,8 @@ export class _ParseAST {
       return this.parseLiteralMap();
 
     } else if (this.next.isIdentifier()) {
-      return this.parseAccessMemberOrCall(
+      return this.parseAccessMember(
           new ImplicitReceiver(this.span(start), this.sourceSpan(start)), start, false);
-
     } else if (this.next.isNumber()) {
       const value = this.next.toNumber();
       this.advance();
@@ -949,7 +943,7 @@ export class _ParseAST {
     return new LiteralMap(this.span(start), this.sourceSpan(start), keys, values);
   }
 
-  parseAccessMemberOrCall(readReceiver: AST, start: number, isSafe: boolean): AST {
+  parseAccessMember(readReceiver: AST, start: number, isSafe: boolean): AST {
     const nameStart = this.inputIndex;
     const id = this.withContext(ParseContextFlags.Writable, () => {
       const id = this.expectIdentifierOrKeyword() ?? '';
@@ -985,20 +979,20 @@ export class _ParseAST {
       }
     }
 
-    if (this.consumeOptionalCharacter(chars.$LPAREN)) {
-      const argumentStart = this.inputIndex;
-      this.rparensExpected++;
-      const args = this.parseCallArguments();
-      const argumentSpan =
-          this.span(argumentStart, this.inputIndex).toAbsolute(this.absoluteOffset);
-      this.expectCharacter(chars.$RPAREN);
-      this.rparensExpected--;
-      const span = this.span(start);
-      const sourceSpan = this.sourceSpan(start);
-      return new Call(span, sourceSpan, receiver, args, argumentSpan);
-    }
-
     return receiver;
+  }
+
+  parseCall(receiver: AST, start: number, isSafe: boolean): AST {
+    const argumentStart = this.inputIndex;
+    this.rparensExpected++;
+    const args = this.parseCallArguments();
+    const argumentSpan = this.span(argumentStart, this.inputIndex).toAbsolute(this.absoluteOffset);
+    this.expectCharacter(chars.$RPAREN);
+    this.rparensExpected--;
+    const span = this.span(start);
+    const sourceSpan = this.sourceSpan(start);
+    return isSafe ? new SafeCall(span, sourceSpan, receiver, args, argumentSpan) :
+                    new Call(span, sourceSpan, receiver, args, argumentSpan);
   }
 
   parseCallArguments(): BindingPipe[] {

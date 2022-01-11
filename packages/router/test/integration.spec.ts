@@ -2332,6 +2332,20 @@ describe('Integration', () => {
            expect(log).toEqual(['resolver2', 'resolver1']);
          })));
     });
+
+    it('can resolve symbol keys', fakeAsync(() => {
+         const router = TestBed.inject(Router);
+         const fixture = createRoot(router, RootCmp);
+         const symbolKey = Symbol('key');
+
+         router.resetConfig(
+             [{path: 'simple', component: SimpleCmp, resolve: {[symbolKey]: 'resolveFour'}}]);
+
+         router.navigateByUrl('/simple');
+         advance(fixture);
+
+         expect(router.routerState.root.snapshot.firstChild!.data[symbolKey]).toEqual(4);
+       }));
   });
 
   describe('router links', () => {

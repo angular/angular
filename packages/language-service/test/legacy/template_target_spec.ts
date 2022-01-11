@@ -558,6 +558,15 @@ describe('getTargetAtPosition for expression AST', () => {
     expect(node).toBeInstanceOf(e.Call);
   });
 
+  it('should locate safe call', () => {
+    const {errors, nodes, position} = parse(`{{ title.toString?.(¦) }}`);
+    expect(errors).toBe(null);
+    const {context} = getTargetAtPosition(nodes, position)!;
+    const {node} = context as SingleNodeTarget;
+    expect(isExpressionNode(node!)).toBe(true);
+    expect(node).toBeInstanceOf(e.SafeCall);
+  });
+
   it('should identify when in the argument position in a no-arg method call', () => {
     const {errors, nodes, position} = parse(`{{ title.toString(¦) }}`);
     expect(errors).toBe(null);

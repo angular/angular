@@ -34,6 +34,23 @@
           "failureMessage": "Incorrect template"
         }
       ]
+    },
+    {
+      "description": "should handle safe calls inside templates",
+      "inputFiles": [
+        "safe_call.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "safe_call_template.js",
+              "generated": "safe_call.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
     }
   ]
 }

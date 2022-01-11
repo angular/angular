@@ -9,9 +9,10 @@
 import {AST, Binary, TmplAstNode} from '@angular/compiler';
 import ts from 'typescript';
 
-import {ErrorCode} from '../../../../diagnostics';
+import {NgCompilerOptions} from '../../../../core/api';
+import {ErrorCode, ExtendedTemplateDiagnosticName} from '../../../../diagnostics';
 import {NgTemplateDiagnostic, SymbolKind} from '../../../api';
-import {TemplateCheckWithVisitor, TemplateContext} from '../../api';
+import {TemplateCheckFactory, TemplateCheckWithVisitor, TemplateContext} from '../../api';
 
 /**
  * Ensures the left side of a nullish coalescing operation is nullable.
@@ -19,12 +20,14 @@ import {TemplateCheckWithVisitor, TemplateContext} from '../../api';
  * This check should only be use if `strictNullChecks` is enabled,
  * otherwise it would produce inaccurate results.
  */
-export class NullishCoalescingNotNullableCheck extends
+class NullishCoalescingNotNullableCheck extends
     TemplateCheckWithVisitor<ErrorCode.NULLISH_COALESCING_NOT_NULLABLE> {
   override code = ErrorCode.NULLISH_COALESCING_NOT_NULLABLE as const;
 
-  override visitNode(ctx: TemplateContext, component: ts.ClassDeclaration, node: TmplAstNode|AST):
-      NgTemplateDiagnostic<ErrorCode.NULLISH_COALESCING_NOT_NULLABLE>[] {
+  override visitNode(
+      ctx: TemplateContext<ErrorCode.NULLISH_COALESCING_NOT_NULLABLE>,
+      component: ts.ClassDeclaration,
+      node: TmplAstNode|AST): NgTemplateDiagnostic<ErrorCode.NULLISH_COALESCING_NOT_NULLABLE>[] {
     if (!(node instanceof Binary) || node.operation !== '??') return [];
 
     const symbolLeft = ctx.templateTypeChecker.getSymbolOfNode(node.left, component);
@@ -43,9 +46,24 @@ export class NullishCoalescingNotNullableCheck extends
     }
     const span =
         ctx.templateTypeChecker.getTemplateMappingAtShimLocation(symbol.shimLocation)!.span;
-    const diagnostic = ctx.templateTypeChecker.makeTemplateDiagnostic(
-        component, span, ts.DiagnosticCategory.Warning, ErrorCode.NULLISH_COALESCING_NOT_NULLABLE,
+    const diagnostic = ctx.makeTemplateDiagnostic(
+        span,
         `The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed.`);
     return [diagnostic];
   }
 }
+
+export const factory: TemplateCheckFactory<
+    ErrorCode.NULLISH_COALESCING_NOT_NULLABLE,
+    ExtendedTemplateDiagnosticName.NULLISH_COALESCING_NOT_NULLABLE> = {
+  code: ErrorCode.NULLISH_COALESCING_NOT_NULLABLE,
+  name: ExtendedTemplateDiagnosticName.NULLISH_COALESCING_NOT_NULLABLE,
+  create: (options: NgCompilerOptions) => {
+    // Require `strictNullChecks` to be enabled.
+    if (options.strictNullChecks === false) {
+      return null;
+    }
+
+    return new NullishCoalescingNotNullableCheck();
+  },
+};
