@@ -45,6 +45,12 @@ function createPackage(changedFile) {
     console.log('Building API docs for', packageName);
     return require('./api-package').createPackage(packageName);
   }
+
+  const errorsMatch = /^aio\/content\/error\/([^.]+)\.md/.exec(changedFile);
+  if (errorsMatch) {
+    console.log('Building errors docs');
+    return require('./errors-package').createPackage();
+  }
 }
 
 module.exports = {
