@@ -1426,8 +1426,8 @@ describe('integration tests', function() {
       try {
         TestBed.createComponent(ComponentWithoutView);
       } catch (e) {
-        expect(e.message).toContain(
-            `No template specified for component ${stringify(ComponentWithoutView)}`);
+        expect((e as Error).message)
+            .toContain(`No template specified for component ${stringify(ComponentWithoutView)}`);
       }
     });
   });

@@ -1525,10 +1525,11 @@ runInEachFileSystem(() => {
            });
            fail('should have thrown');
          } catch (e) {
-           expect(e.message).toContain(
-               'Failed to compile entry-point test-package (`esm2015` as esm2015) due to compilation errors:');
-           expect(e.message).toContain('NG1010');
-           expect(e.message).toContain('selector must be a string');
+           expect((e as Error).message)
+               .toContain(
+                   'Failed to compile entry-point test-package (`esm2015` as esm2015) due to compilation errors:');
+           expect((e as Error).message).toContain('NG1010');
+           expect((e as Error).message).toContain('selector must be a string');
          }
        });
 
@@ -2827,10 +2828,11 @@ runInEachFileSystem(() => {
              });
              fail('should have thrown');
            } catch (e) {
-             expect(e.message).toContain(
-                 'Failed to compile entry-point fatal-error (`es2015` as esm2015) due to compilation errors:');
-             expect(e.message).toContain('NG2001');
-             expect(e.message).toContain('component is missing a template');
+             expect((e as Error).message)
+                 .toContain(
+                     'Failed to compile entry-point fatal-error (`es2015` as esm2015) due to compilation errors:');
+             expect((e as Error).message).toContain('NG2001');
+             expect((e as Error).message).toContain('component is missing a template');
            }
          });
 

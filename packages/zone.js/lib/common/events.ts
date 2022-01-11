@@ -120,7 +120,7 @@ export function patchEventTarget(
     // need to try/catch error here, otherwise, the error in one event listener
     // will break the executions of the other event listeners. Also error will
     // not remove the event listener when `once` options is true.
-    let error;
+    let error: any;
     try {
       task.invoke(task, target, [event]);
     } catch (err) {

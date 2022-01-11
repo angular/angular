@@ -95,7 +95,8 @@ export class EntryPointManifest {
       return entryPoints;
     } catch (e) {
       this.logger.warn(
-          `Unable to read the entry-point manifest for ${basePath}:\n`, e.stack || e.toString());
+          `Unable to read the entry-point manifest for ${basePath}:\n`,
+          (e as Error).stack || (e as Error).toString());
       return null;
     }
   }

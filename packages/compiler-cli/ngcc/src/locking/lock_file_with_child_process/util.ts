@@ -26,7 +26,7 @@ export function removeLockFile(
       logger.debug(
           `PIDs do not match (${pid} and ${lockFilePid}), so not removing ${lockFilePath}.`);
     }
-  } catch (e) {
+  } catch (e: any) {
     if (e.code === 'ENOENT') {
       logger.debug(`The lock-file at ${lockFilePath} was already removed.`);
       // File already removed so quietly exit

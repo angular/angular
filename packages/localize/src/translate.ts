@@ -93,7 +93,7 @@ export function translate(messageParts: TemplateStringsArray, substitutions: rea
   try {
     return _translate($localize.TRANSLATIONS, messageParts, substitutions);
   } catch (e) {
-    console.warn(e.message);
+    console.warn((e as Error).message);
     return [messageParts, substitutions];
   }
 }

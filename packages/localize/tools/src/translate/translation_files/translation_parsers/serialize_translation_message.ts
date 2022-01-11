@@ -27,6 +27,6 @@ export function serializeTranslationMessage(element: Element, config: MessageSer
     const translation = serializer.serialize(rootNodes);
     return {translation, parseErrors, serializeErrors: []};
   } catch (e) {
-    return {translation: null, parseErrors, serializeErrors: [e]};
+    return {translation: null, parseErrors, serializeErrors: [e as ParseError]};
   }
 }

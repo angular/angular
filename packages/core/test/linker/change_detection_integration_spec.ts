@@ -748,7 +748,7 @@ describe(`ChangeDetection`, () => {
            try {
              ctx.detectChanges(false);
            } catch (e) {
-             expect(e.message).toBe('Boom!');
+             expect((e as Error).message).toBe('Boom!');
              errored = true;
            }
            expect(errored).toBe(true);
@@ -760,7 +760,7 @@ describe(`ChangeDetection`, () => {
            try {
              ctx.detectChanges(false);
            } catch (e) {
-             expect(e.message).toBe('Boom!');
+             expect((e as Error).message).toBe('Boom!');
              throw new Error('Second detectChanges() should not have called ngOnInit.');
            }
            expect(directiveLog.filter(['ngOnInit'])).toEqual([]);

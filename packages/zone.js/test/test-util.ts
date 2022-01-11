@@ -79,8 +79,8 @@ export function isSupportSetErrorStack() {
     throw new Error('test');
   } catch (err) {
     try {
-      err.stack = 'new stack';
-      supportSetErrorStack = err.stack === 'new stack';
+      (err as Error).stack = 'new stack';
+      supportSetErrorStack = (err as Error).stack === 'new stack';
     } catch (error) {
       supportSetErrorStack = false;
     }

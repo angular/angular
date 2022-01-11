@@ -383,7 +383,7 @@ export function translate(
         substitutions
       ];
     } else {
-      diagnostics.error(e.message);
+      diagnostics.error((e as Error).message);
       return [messageParts, substitutions];
     }
   }

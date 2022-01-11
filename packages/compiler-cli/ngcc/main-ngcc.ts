@@ -21,7 +21,7 @@ const options = parseCommandLineOptions(process.argv.slice(2));
       options.logger.debug(`Run ngcc in ${duration}s.`);
     }
     process.exitCode = 0;
-  } catch (e) {
+  } catch (e: any) {
     console.error(e.stack || e.message);
     process.exit(typeof e.code === 'number' ? e.code : 1);
   }
