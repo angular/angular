@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {camelToDashCase, createCustomEvent, isElement, isFunction, kebabToCamelCase, matchesSelector, scheduler, strictEquals} from '../src/utils';
+import {camelToDashCase, isElement, isFunction, kebabToCamelCase, matchesSelector, scheduler, strictEquals} from '../src/utils';
 
 describe('utils', () => {
   describe('scheduler', () => {
@@ -86,20 +86,6 @@ describe('utils', () => {
 
     it('should keep existing dashes', () => {
       expect(camelToDashCase('fooBar-baz-Qux')).toBe('foo-bar-baz--qux');
-    });
-  });
-
-  describe('createCustomEvent()', () => {
-    it('should create a custom event (with appropriate properties)', () => {
-      const value = {bar: 'baz'};
-      const event = createCustomEvent(document, 'foo', value);
-
-      expect(event).toEqual(jasmine.any(CustomEvent));
-      expect(event).toEqual(jasmine.any(Event));
-      expect(event.type).toBe('foo');
-      expect(event.bubbles).toBe(false);
-      expect(event.cancelable).toBe(false);
-      expect(event.detail).toEqual(value);
     });
   });
 
