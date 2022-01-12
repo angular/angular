@@ -80,3 +80,24 @@
     -webkit-line-clamp: 2;
   }
 }
+
+// MDC doesn't account for button being used as a list item. We override some of
+// the default button styles here so that they look right when used as a list
+// item.
+mat-action-list button {
+  background: none;
+  color: inherit;
+  border: none;
+  font: inherit;
+  outline: inherit;
+  -webkit-tap-highlight-color: transparent;
+  text-align: left;
+
+  [dir='rtl'] & {
+    text-align: right;
+  }
+
+  &::-moz-focus-inner {
+    border: 0;
+  }
+}
