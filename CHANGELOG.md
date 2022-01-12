@@ -1,3 +1,41 @@
+<a name="13.2.0-next.2"></a>
+# 13.2.0-next.2 (2022-01-12)
+### animations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [8ba43a1a1e](https://github.com/angular/angular/commit/8ba43a1a1ea811ad25d6af4384e1cce5a53b0baf) | fix | retain triggers values for moved tracked list items ([#44578](https://github.com/angular/angular/pull/44578)) |
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a4ab6d6b72](https://github.com/angular/angular/commit/a4ab6d6b72fe891f232d2446f8b7c454a82a5ba0) | feat | add support for safe calls in templates ([#44580](https://github.com/angular/angular/pull/44580)) |
+| [b8ed03b5ad](https://github.com/angular/angular/commit/b8ed03b5ad91a2dd62d600240e9056a360b89b90) | fix | correct spans when parsing bindings with comments ([#44678](https://github.com/angular/angular/pull/44678)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [73424def13](https://github.com/angular/angular/commit/73424def130ae1d72036142f6f2d7bce63858c9e) | feat | provide the animations for `DirectiveMeta` ([#44630](https://github.com/angular/angular/pull/44630)) |
+| [1a9121826e](https://github.com/angular/angular/commit/1a9121826ea94d98d0603d65628d4b4b08f2f70b) | fix | enable narrowing of using type guard methods ([#44447](https://github.com/angular/angular/pull/44447)) |
+| [f8af49eb75](https://github.com/angular/angular/commit/f8af49eb751cabab76c6c7327f377a163f841dc4) | fix | fix crash during type-checking of library builds ([#44587](https://github.com/angular/angular/pull/44587)) |
+| [f83fb3a5f9](https://github.com/angular/angular/commit/f83fb3a5f9b146cb5025517950100e98895304ed) | fix | handle property reads of `ThisReceiver` in the indexer ([#44678](https://github.com/angular/angular/pull/44678)) |
+| [eeaabe7fbf](https://github.com/angular/angular/commit/eeaabe7fbf7a1cf057c6b740609886415e4037eb) | fix | incorrectly interpreting $any calls with a property read ([#44657](https://github.com/angular/angular/pull/44657)) |
+| [92b23f4851](https://github.com/angular/angular/commit/92b23f48519a1adb460a431c356bcd9917fb059d) | fix | properly index <svg> elements ([#44678](https://github.com/angular/angular/pull/44678)) |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [5ae1030462](https://github.com/angular/angular/commit/5ae1030462a97bda8357415cbfcd34301dfa6499) | feat | Add an unused symbol `AnyForUntypedForms`. ([#44467](https://github.com/angular/angular/pull/44467)) |
+| [f7aa937cac](https://github.com/angular/angular/commit/f7aa937cac0ad315e1012770aa1da97476aced54) | fix | Make some minor fixups for forward-compatibility with typed forms. ([#44540](https://github.com/angular/angular/pull/44540)) |
+### language-service
+| Commit | Type | Description |
+| -- | -- | -- |
+| [af2a1317cb](https://github.com/angular/angular/commit/af2a1317cbfba985233f510bbe9e49016968307c) | feat | support completions for animation ([#44630](https://github.com/angular/angular/pull/44630)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [5a4ddfd4f5](https://github.com/angular/angular/commit/5a4ddfd4f5e17bb4209528cefc3f0674298ab6e8) | feat | Allow symbol keys for `Route` `data` and `resolve` properties ([#44519](https://github.com/angular/angular/pull/44519)) |
+## Special Thanks
+Abdurrahman Abu-Hijleh, Adam Plumer, Alex Rickabaugh, AlirezaEbrahimkhani, Andrew Kushnir, Andrew Scott, Borja Paz Rodríguez, Chihab Otmani, Chris Mancini, Dario Piotrowicz, Doug Parker, Dylan Hunn, George Kalpakas, Joey Perrott, JoostK, Kristiyan Kostadinov, Kyoz, Patrick Prakash, Paul Gschwendtner, Serhey Dolgushev, Yousaf Nawaz, Yuchao Wu, alkavats1, dario-piotrowicz, huangqing, ivanwonder, shejialuo, twerske, wszgrcy and zuckjet
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="13.1.2"></a>
 # 13.1.2 (2022-01-12)
 ### animations
