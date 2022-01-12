@@ -49,10 +49,6 @@ describe('FormArray', () => {
 
       expect(a.controls).toEqual([c1]);
 
-      a.removeAt(a.length);
-
-      expect(a.controls).toEqual([c1]);
-
       // Check that using out of bounds index is a noop
       a.removeAt(a.length);
 
