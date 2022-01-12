@@ -551,6 +551,10 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
     return convertToStatementIfNeeded(mode, call);
   }
 
+  visitSafeCall(ast: cdAst.SafeCall, mode: _Mode): any {
+    return this.convertSafeAccess(ast, this.leftMostSafeNode(ast), mode);
+  }
+
   private _visit(ast: cdAst.AST, mode: _Mode): any {
     const result = this._resultMap.get(ast);
     if (result) return result;
@@ -558,7 +562,8 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
   }
 
   private convertSafeAccess(
-      ast: cdAst.AST, leftMostSafe: cdAst.SafePropertyRead|cdAst.SafeKeyedRead, mode: _Mode): any {
+      ast: cdAst.AST, leftMostSafe: cdAst.SafePropertyRead|cdAst.SafeKeyedRead|cdAst.SafeCall,
+      mode: _Mode): any {
     // If the expression contains a safe access node on the left it needs to be converted to
     // an expression that guards the access to the member by checking the receiver for blank. As
     // execution proceeds from left to right, the left most part of the expression must be guarded
@@ -615,7 +620,13 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
 
     // Convert the ast to an unguarded access to the receiver's member. The map will substitute
     // leftMostNode with its unguarded version in the call to `this.visit()`.
-    if (leftMostSafe instanceof cdAst.SafeKeyedRead) {
+    if (leftMostSafe instanceof cdAst.SafeCall) {
+      this._nodeMap.set(
+          leftMostSafe,
+          new cdAst.Call(
+              leftMostSafe.span, leftMostSafe.sourceSpan, leftMostSafe.receiver, leftMostSafe.args,
+              leftMostSafe.argumentSpan));
+    } else if (leftMostSafe instanceof cdAst.SafeKeyedRead) {
       this._nodeMap.set(
           leftMostSafe,
           new cdAst.KeyedRead(
@@ -688,6 +699,9 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
       },
       visitCall(ast: cdAst.Call) {
         return visit(this, ast.receiver);
+      },
+      visitSafeCall(ast: cdAst.SafeCall) {
+        return visit(this, ast.receiver) || ast;
       },
       visitImplicitReceiver(ast: cdAst.ImplicitReceiver) {
         return null;
@@ -764,6 +778,9 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
         return visit(this, ast.condition) || visit(this, ast.trueExp) || visit(this, ast.falseExp);
       },
       visitCall(ast: cdAst.Call) {
+        return true;
+      },
+      visitSafeCall(ast: cdAst.SafeCall) {
         return true;
       },
       visitImplicitReceiver(ast: cdAst.ImplicitReceiver) {

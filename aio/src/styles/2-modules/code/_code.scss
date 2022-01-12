@@ -101,8 +101,6 @@ aio-code {
       top: -7px;
       right: -19px;
       padding: 0;
-      overflow: visible; // This is required for the button to be displayed correctly in IE11.
-
       background-color: transparent;
       border: none;
       cursor: pointer;

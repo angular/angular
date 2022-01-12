@@ -29,11 +29,7 @@ withEachNg1Version(() => {
          class AppComponent {
          }
 
-         @NgModule({
-           declarations: [AppComponent],
-           entryComponents: [AppComponent],
-           imports: [BrowserModule, UpgradeModule]
-         })
+         @NgModule({declarations: [AppComponent], imports: [BrowserModule, UpgradeModule]})
          class Ng2Module {
            ngDoBootstrap() {}
          }
@@ -108,7 +104,6 @@ withEachNg1Version(() => {
 
          @NgModule({
            declarations: [Ng1aComponent, Ng1bComponent, Ng2Component],
-           entryComponents: [Ng2Component],
            imports: [BrowserModule, UpgradeModule]
          })
          class Ng2Module {
@@ -171,7 +166,6 @@ withEachNg1Version(() => {
 
          @NgModule({
            declarations: [AppComponent, ChildComponent],
-           entryComponents: [AppComponent],
            imports: [BrowserModule, UpgradeModule]
          })
          class Ng2Module {

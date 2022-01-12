@@ -6,7 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, DoCheck, Host, Input, Optional, TemplateRef, ViewContainerRef, ɵRuntimeError as RuntimeError, ɵRuntimeErrorCode as RuntimeErrorCode} from '@angular/core';
+import {Directive, DoCheck, Host, Input, Optional, TemplateRef, ViewContainerRef, ɵRuntimeError as RuntimeError} from '@angular/core';
+
+import {RuntimeErrorCode} from '../errors';
 
 export class SwitchView {
   private _created = false;
@@ -243,7 +245,7 @@ export class NgSwitchDefault {
 
 function throwNgSwitchProviderNotFoundError(attrName: string, directiveName: string): never {
   throw new RuntimeError(
-      RuntimeErrorCode.TEMPLATE_STRUCTURE_ERROR,
+      RuntimeErrorCode.PARENT_NG_SWITCH_NOT_FOUND,
       `An element with the "${attrName}" attribute ` +
           `(matching the "${
               directiveName}" directive) must be located inside an element with the "ngSwitch" attribute ` +

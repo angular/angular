@@ -37,7 +37,6 @@ withEachNg1Version(() => {
 
            @NgModule({
              declarations: [Ng2ComponentA],
-             entryComponents: [Ng2ComponentA],
              imports: [BrowserModule],
            })
            class Ng2ModuleA {
@@ -46,7 +45,6 @@ withEachNg1Version(() => {
 
            @NgModule({
              declarations: [Ng2ComponentB],
-             entryComponents: [Ng2ComponentB],
              imports: [BrowserModule],
            })
            class Ng2ModuleB {
@@ -92,7 +90,6 @@ withEachNg1Version(() => {
 
            @NgModule({
              declarations: [Ng2ComponentA],
-             entryComponents: [Ng2ComponentA],
              imports: [BrowserModule],
            })
            class Ng2ModuleA {
@@ -101,7 +98,6 @@ withEachNg1Version(() => {
 
            @NgModule({
              declarations: [Ng2ComponentB],
-             entryComponents: [Ng2ComponentB],
              imports: [BrowserModule],
            })
            class Ng2ModuleB {
@@ -153,7 +149,6 @@ withEachNg1Version(() => {
 
            @NgModule({
              declarations: [Ng1ComponentA, Ng2ComponentA],
-             entryComponents: [Ng2ComponentA],
              imports: [BrowserModule],
            })
            class Ng2ModuleA {
@@ -162,7 +157,6 @@ withEachNg1Version(() => {
 
            @NgModule({
              declarations: [Ng2ComponentB],
-             entryComponents: [Ng2ComponentB],
              imports: [BrowserModule],
            })
            class Ng2ModuleB {
@@ -229,7 +223,6 @@ withEachNg1Version(() => {
 
            @NgModule({
              declarations: [Ng2ComponentA],
-             entryComponents: [Ng2ComponentA],
              imports: [BrowserModule],
            })
            class Ng2ModuleA {
@@ -238,7 +231,6 @@ withEachNg1Version(() => {
 
            @NgModule({
              declarations: [Ng2ComponentB],
-             entryComponents: [Ng2ComponentB],
              imports: [BrowserModule],
            })
            class Ng2ModuleB {
@@ -308,14 +300,12 @@ withEachNg1Version(() => {
 
            @NgModule({
              declarations: [Ng2ComponentA],
-             entryComponents: [Ng2ComponentA],
            })
            class Ng2ModuleA {
            }
 
            @NgModule({
              declarations: [Ng2ComponentB],
-             entryComponents: [Ng2ComponentB],
            })
            class Ng2ModuleB {
            }
@@ -418,7 +408,6 @@ withEachNg1Version(() => {
 
            @NgModule({
              declarations: [Ng2ComponentA, Ng2ComponentB],
-             entryComponents: [Ng2ComponentA, Ng2ComponentB],
              imports: [BrowserModule],
              providers: [
                {provide: 'FOO', useValue: 'Mod-foo'},
@@ -507,7 +496,6 @@ withEachNg1Version(() => {
 
            @NgModule({
              declarations: [Ng2ComponentA],
-             entryComponents: [Ng2ComponentA],
              imports: [BrowserModule],
              providers: [
                {provide: 'FOO', useValue: 'ModA-foo'},
@@ -522,7 +510,6 @@ withEachNg1Version(() => {
 
            @NgModule({
              declarations: [Ng2ComponentB],
-             entryComponents: [Ng2ComponentB],
              imports: [BrowserModule],
              providers: [
                {provide: 'FOO', useValue: 'ModB-foo'},
@@ -608,7 +595,6 @@ withEachNg1Version(() => {
 
            @NgModule({
              declarations: [Ng2AComponent, Ng2BComponent],
-             entryComponents: [Ng2AComponent],
              imports: [BrowserModule],
            })
            class Ng2Module {
@@ -667,7 +653,6 @@ withEachNg1Version(() => {
 
            @NgModule({
              declarations: [Ng2Component],
-             entryComponents: [Ng2Component],
              imports: [BrowserModule],
              providers: [
                Ng2Service,
@@ -721,7 +706,6 @@ withEachNg1Version(() => {
 
            @NgModule({
              declarations: [Ng2Component],
-             entryComponents: [Ng2Component],
              imports: [BrowserModule],
            })
            class Ng2Module {
@@ -758,7 +742,6 @@ withEachNg1Version(() => {
 
            @NgModule({
              declarations: [Ng2Component],
-             entryComponents: [Ng2Component],
              imports: [BrowserModule],
            })
            class Ng2Module {
@@ -800,7 +783,6 @@ withEachNg1Version(() => {
 
            @NgModule({
              declarations: [Ng2Component],
-             entryComponents: [Ng2Component],
              imports: [BrowserModule],
            })
            class Ng2Module {
@@ -874,7 +856,6 @@ withEachNg1Version(() => {
 
            @NgModule({
              declarations: [TestComponent, WrapperComponent],
-             entryComponents: [TestComponent, WrapperComponent],
              imports: [BrowserModule],
            })
            class Ng2Module {
@@ -925,7 +906,6 @@ withEachNg1Version(() => {
 
            @NgModule({
              declarations: [Ng2Component],
-             entryComponents: [Ng2Component],
              imports: [BrowserModule],
            })
            class Ng2Module {
@@ -977,7 +957,6 @@ withEachNg1Version(() => {
 
            @NgModule({
              declarations: [TestComponent, WrapperComponent],
-             entryComponents: [TestComponent, WrapperComponent],
              imports: [BrowserModule],
            })
            class Ng2Module {
@@ -1064,7 +1043,6 @@ withEachNg1Version(() => {
 
            @NgModule({
              declarations: [Ng2Component],
-             entryComponents: [Ng2Component],
              imports: [BrowserModule],
            })
            class Ng2Module {
@@ -1207,7 +1185,6 @@ withEachNg1Version(() => {
 
            @NgModule({
              declarations: [Ng2Component],
-             entryComponents: [Ng2Component],
              imports: [BrowserModule],
            })
            class Ng2Module {
@@ -1254,7 +1231,6 @@ withEachNg1Version(() => {
 
            @NgModule({
              declarations: [Ng2Component],
-             entryComponents: [Ng2Component],
              imports: [BrowserModule],
            })
            class Ng2Module {
@@ -1321,7 +1297,6 @@ withEachNg1Version(() => {
 
            @NgModule({
              declarations: [Ng2Component],
-             entryComponents: [Ng2Component],
              imports: [BrowserModule],
            })
            class Ng2Module {
@@ -1381,7 +1356,6 @@ withEachNg1Version(() => {
 
            @NgModule({
              declarations: [Ng2Component],
-             entryComponents: [Ng2Component],
              imports: [BrowserModule],
            })
            class Ng2Module {
@@ -1414,7 +1388,6 @@ withEachNg1Version(() => {
 
            @NgModule({
              declarations: [Ng2Component],
-             entryComponents: [Ng2Component],
              imports: [BrowserModule],
            })
            class Ng2Module {
@@ -1493,7 +1466,6 @@ withEachNg1Version(() => {
 
           @NgModule({
             declarations: [Ng2ComponentA],
-            entryComponents: [Ng2ComponentA],
             imports: [BrowserModule],
           })
           class Ng2ModuleA {
@@ -1502,7 +1474,6 @@ withEachNg1Version(() => {
 
           @NgModule({
             declarations: [Ng2ComponentB],
-            entryComponents: [Ng2ComponentB],
             imports: [BrowserModule],
           })
           class Ng2ModuleB {

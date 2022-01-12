@@ -10,12 +10,12 @@
     "baseUrl": ".",
     "declaration": true,
     "experimentalDecorators": true,
-    "lib": ["es6", "dom"],
+    "lib": ["es2015", "dom"],
     "moduleResolution": "node",
     "noImplicitAny": true,
     "outDir": "../node_modules/flat_module",
     "rootDir": "",
-    "target": "es5",
+    "target": "es2015",
     "typeRoots": ["../node_modules/@types"]
  },
 

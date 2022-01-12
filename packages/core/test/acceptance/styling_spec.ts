@@ -60,8 +60,8 @@ describe('styling', () => {
 
       TestBed.configureTestingModule({declarations: [Cmp]});
       const fixture = TestBed.createComponent(Cmp);
+      const staticDiv = fixture.nativeElement.querySelectorAll('div')[0];
 
-      const [staticDiv] = fixture.nativeElement.querySelectorAll('div');
       expect(getSortedClassName(staticDiv)).toEqual('STATIC');
       expect(getSortedStyle(staticDiv)).toEqual('color: blue;');
     });
@@ -335,7 +335,12 @@ describe('styling', () => {
     const fixture = TestBed.createComponent(Cmp);
     fixture.detectChanges();
 
-    const [div1, div2] = fixture.nativeElement.querySelectorAll('div');
+    const divs = fixture.nativeElement.querySelectorAll('div');
+
+    // TODO: Use destructuring once Domino supports native ES2015, or when jsdom is used.
+    const div1 = divs[0];
+    const div2 = divs[1];
+
     // Static value `class="s1"` is always written to the DOM.
     expect(div1.className).toEqual('s1');
     expect(div1.getAttribute('shadow-class')).toEqual('s1 d1');
@@ -367,7 +372,12 @@ describe('styling', () => {
     const fixture = TestBed.createComponent(Cmp);
     fixture.detectChanges();
 
-    const [divStatic, divBinding] = fixture.nativeElement.querySelectorAll('div');
+    const divs = fixture.nativeElement.querySelectorAll('div');
+
+    // TODO: Use destructuring once Domino supports native ES2015, or when jsdom is used.
+    const divStatic = divs[0];
+    const divBinding = divs[1];
+
     expectClass(divStatic).toEqual({'DIRECTIVE': true, 's1': true});
     expect(divStatic.getAttribute('shadow-class')).toEqual('s1');
 
@@ -398,7 +408,12 @@ describe('styling', () => {
     const fixture = TestBed.createComponent(Cmp);
     fixture.detectChanges();
 
-    const [divStatic, divBinding] = fixture.nativeElement.querySelectorAll('div');
+    const divs = fixture.nativeElement.querySelectorAll('div');
+
+    // TODO: Use destructuring once Domino supports native ES2015, or when jsdom is used.
+    const divStatic = divs[0];
+    const divBinding = divs[1];
+
     expectStyle(divStatic).toEqual({'color': 'red', 'width': '1px'});
     expect(divStatic.getAttribute('shadow-style')).toEqual('width: 1px;');
 
@@ -2451,11 +2466,10 @@ describe('styling', () => {
 
     const items = fixture.nativeElement.querySelectorAll('.item');
     expect(items.length).toEqual(4);
-    const [a, b, c, d] = items;
-    expect(a.style.height).toEqual('0px');
-    expect(b.style.height).toEqual('100px');
-    expect(c.style.height).toEqual('200px');
-    expect(d.style.height).toEqual('300px');
+    expect(items[0].style.height).toEqual('0px');
+    expect(items[1].style.height).toEqual('100px');
+    expect(items[2].style.height).toEqual('200px');
+    expect(items[3].style.height).toEqual('300px');
 
     const section = fixture.nativeElement.querySelector('section');
     const p = fixture.nativeElement.querySelector('p');
@@ -3342,7 +3356,11 @@ describe('styling', () => {
     const fixture = TestBed.createComponent(MyComp);
     fixture.detectChanges();
 
-    const [div1, div2] = fixture.nativeElement.querySelectorAll('div') as HTMLDivElement[];
+    const divs = fixture.nativeElement.querySelectorAll('div') as HTMLDivElement[];
+
+    // TODO: Use destructuring once Domino supports native ES2015, or when jsdom is used.
+    const div1 = divs[0];
+    const div2 = divs[1];
 
     expect(div1.className).toBe('');
     expect(div2.className).toBe('');

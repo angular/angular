@@ -182,7 +182,7 @@ ts_library(
 
 jasmine_node_test(
     name = "test_node",
-    bootstrap = [":node_entry_point_es5"],
+    bootstrap = [":node_entry_point_es2015"],
     deps = [
         ":test_node_lib",
     ],
@@ -190,7 +190,7 @@ jasmine_node_test(
 
 jasmine_node_test(
     name = "test_node_no_jasmine_clock",
-    bootstrap = [":node_entry_point_no_patch_clock_es5"],
+    bootstrap = [":node_entry_point_no_patch_clock_es2015"],
     deps = [
         ":test_node_lib",
     ],
@@ -198,7 +198,7 @@ jasmine_node_test(
 
 jasmine_node_test(
     name = "test_node_bluebird",
-    bootstrap = [":node_bluebird_entry_point_es5"],
+    bootstrap = [":node_bluebird_entry_point_es2015"],
     deps = [
         ":bluebird_spec",
     ],
@@ -206,12 +206,12 @@ jasmine_node_test(
 
 jasmine_node_test(
     name = "test_node_error_disable_policy",
-    bootstrap = [":node_error_disable_policy_entry_point_es5"],
+    bootstrap = [":node_error_disable_policy_entry_point_es2015"],
 )
 
 jasmine_node_test(
     name = "test_node_error_lazy_policy",
-    bootstrap = [":node_error_lazy_policy_entry_point_es5"],
+    bootstrap = [":node_error_lazy_policy_entry_point_es2015"],
 )
 
 ts_library(

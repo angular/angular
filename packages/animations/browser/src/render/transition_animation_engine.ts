@@ -65,6 +65,7 @@ export interface ElementAnimationState {
   hasAnimation: boolean;
   namespaceId: string;
   removedBeforeQueried: boolean;
+  previousTriggersValues?: Map<string, string>;
 }
 
 export class StateValue {
@@ -344,9 +345,11 @@ export class AnimationTransitionNamespace {
       element: any, context: any, destroyAfterComplete?: boolean,
       defaultToFallback?: boolean): boolean {
     const triggerStates = this._engine.statesByElement.get(element);
+    const previousTriggersValues = new Map<string, string>();
     if (triggerStates) {
       const players: TransitionAnimationPlayer[] = [];
       Object.keys(triggerStates).forEach(triggerName => {
+        previousTriggersValues.set(triggerName, triggerStates[triggerName].value);
         // this check is here in the event that an element is removed
         // twice (both on the host level and the component level)
         if (this._triggers[triggerName]) {
@@ -358,7 +361,7 @@ export class AnimationTransitionNamespace {
       });
 
       if (players.length) {
-        this._engine.markElementAsRemoved(this.id, element, true, context);
+        this._engine.markElementAsRemoved(this.id, element, true, context, previousTriggersValues);
         if (destroyAfterComplete) {
           optimizeGroupPlayer(players).onDone(() => this._engine.processLeaveNode(element));
         }
@@ -755,10 +758,17 @@ export class TransitionAnimationEngine {
     }
   }
 
-  markElementAsRemoved(namespaceId: string, element: any, hasAnimation?: boolean, context?: any) {
+  markElementAsRemoved(
+      namespaceId: string, element: any, hasAnimation?: boolean, context?: any,
+      previousTriggersValues?: Map<string, string>) {
     this.collectedLeaveElements.push(element);
-    element[REMOVAL_FLAG] =
-        {namespaceId, setForRemoval: context, hasAnimation, removedBeforeQueried: false};
+    element[REMOVAL_FLAG] = {
+      namespaceId,
+      setForRemoval: context,
+      hasAnimation,
+      removedBeforeQueried: false,
+      previousTriggersValues
+    };
   }
 
   listen(
@@ -991,8 +1001,21 @@ export class TransitionAnimationEngine {
 
         if (this.collectedEnterElements.length) {
           const details = element[REMOVAL_FLAG] as ElementAnimationState;
-          // move animations are currently not supported...
+          // animations for move operations (elements being removed and reinserted,
+          // e.g. when the order of an *ngFor list changes) are currently not supported
           if (details && details.setForMove) {
+            if (details.previousTriggersValues &&
+                details.previousTriggersValues.has(entry.triggerName)) {
+              const previousValue = details.previousTriggersValues.get(entry.triggerName) as string;
+
+              // we need to restore the previous trigger value since the element has
+              // only been moved and hasn't actually left the DOM
+              const triggersWithStates = this.statesByElement.get(entry.element);
+              if (triggersWithStates && triggersWithStates[entry.triggerName]) {
+                triggersWithStates[entry.triggerName].value = previousValue;
+              }
+            }
+
             player.destroy();
             return;
           }

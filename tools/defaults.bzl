@@ -123,6 +123,7 @@ def ts_library(name, tsconfig = None, testonly = False, deps = [], module_name =
         # For prodmode, the target is set to `ES2020`. `@bazel/typecript` sets `ES2015` by
         # default. Note that this should be in sync with the `ng_module` tsconfig generation.
         # https://github.com/bazelbuild/rules_nodejs/blob/901df3868e3ceda177d3ed181205e8456a5592ea/third_party/github.com/bazelbuild/rules_typescript/internal/common/tsconfig.bzl#L195
+        # https://github.com/bazelbuild/rules_nodejs/blob/9b36274dba34204625579463e3da054a9f42cb47/packages/typescript/internal/build_defs.bzl#L85.
         prodmode_target = "es2020",
         # `module_name` is used for AMD module names within emitted JavaScript files.
         module_name = module_name,
@@ -132,14 +133,18 @@ def ts_library(name, tsconfig = None, testonly = False, deps = [], module_name =
         **kwargs
     )
 
-    # Select the es5 .js output of the ts_library for use in downstream boostrap targets
-    # with `output_group = "es5_sources"`. This exposes an internal detail of ts_library
-    # that is not ideal.
-    # TODO(gregmagolan): clean this up by using tsc() in these cases rather than ts_library
+    # The `ts_library` targets by default only expose the type definitions as `DefaultInfo`.
+    # This is an auto-generated target that can be used to access the plain ES2015 devmode output.
+    # TODO(devversion): Should be renamed once we have devmode & prodmode combined.
     native.filegroup(
-        name = "%s_es5" % name,
+        # Note: When changing the suffix of this target, update the `jasmine_node_test` bootstrap
+        # logic which has special logic for resolving such targets.
+        name = "%s_es2015" % name,
         srcs = [":%s" % name],
         testonly = testonly,
+        # Note: Ironically this is named `es5_sources` but it refers to the devmode output.
+        # This is just an artifact of many iterations in `@bazel/typescript`. This is being
+        # solved together with us combining devmode & prodmode.
         output_group = "es5_sources",
     )
 
@@ -404,15 +409,15 @@ def jasmine_node_test(bootstrap = [], **kwargs):
                  file.
 
                  The label is automatically added to the deps of jasmine_node_test.
-                 If the label ends in `_es5` which by convention selects the es5 outputs
-                 of a ts_library rule, then corresponding ts_library target sans `_es5`
+                 If the label ends in `_es2015` which by convention selects the es2015 outputs
+                 of a ts_library rule, then corresponding ts_library target sans `_es2015`
                  is also added to the deps of jasmine_node_test.
 
                  For example with,
 
                  jasmine_node_test(
                      name = "test",
-                     bootstrap = ["//tools/testing:node_es5"],
+                     bootstrap = ["//tools/testing:node_es2015"],
                      deps = [":test_lib"],
                  )
 
@@ -438,12 +443,12 @@ def jasmine_node_test(bootstrap = [], **kwargs):
     for label in bootstrap:
         deps += [label]
         templated_args += ["--node_options=--require=$$(rlocation $(rootpath %s))" % label]
-        if label.endswith("_es5"):
+        if label.endswith("_es2015"):
             # If this label is a filegroup derived from a ts_library then automatically
-            # add the ts_library target (which is the label sans `_es5`) to deps so we pull
+            # add the ts_library target (which is the label sans `_es2015`) to deps so we pull
             # in all of its transitive deps. This removes the need for duplicate deps on the
             # target and makes the usage of this rule less verbose.
-            deps += [label[:-4]]
+            deps += [label[:-len("_es2015")]]
 
     _jasmine_node_test(
         deps = deps,

@@ -141,7 +141,7 @@ export function i18nStartFirstCreatePass(
 }
 
 /**
- * Allocate space in i18n Range add create OpCode instruction to crete a text or comment node.
+ * Allocate space in i18n Range add create OpCode instruction to create a text or comment node.
  *
  * @param tView Current `TView` needed to allocate space in i18n range.
  * @param rootTNode Root `TNode` of the i18n block. This node determines if the new TNode will be

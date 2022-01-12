@@ -1974,6 +1974,59 @@ describe('acceptance integration tests', () => {
     expect(content).toContain(`<span title="Your last name is unknown">`);
   });
 
+  it('should handle safe keyed reads inside templates', () => {
+    @Component({
+      template: `
+        <span [title]="'Your last name is ' + (person.getLastName?.() ?? 'unknown')">
+          Hello, {{ person.getName?.() }}!
+          You are a Balrog: {{ person.getSpecies?.()?.()?.()?.()?.() || 'unknown' }}
+        </span>
+      `
+    })
+    class App {
+      person: {
+        getName: () => string,
+        getLastName?: () => string,
+        getSpecies?: () => () => () => () => () => string,
+      } = {getName: () => 'Bilbo'};
+    }
+
+    TestBed.configureTestingModule({declarations: [App]});
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+    const content = fixture.nativeElement.innerHTML;
+
+    expect(content).toContain('Hello, Bilbo!');
+    expect(content).toContain('You are a Balrog: unknown');
+    expect(content).toContain(`<span title="Your last name is unknown">`);
+  });
+
+  it('should not invoke safe calls more times than plain calls', () => {
+    const returnValue = () => () => () => () => 'hi';
+    let plainCalls = 0;
+    let safeCalls = 0;
+
+    @Component({template: `{{ safe?.()?.()?.()?.()?.() }} {{ plain()()()()() }}`})
+    class App {
+      plain() {
+        plainCalls++;
+        return returnValue;
+      }
+
+      safe() {
+        safeCalls++;
+        return returnValue;
+      }
+    }
+
+    TestBed.configureTestingModule({declarations: [App]});
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(safeCalls).toBeGreaterThan(0);
+    expect(safeCalls).toBe(plainCalls);
+  });
+
   it('should handle nullish coalescing inside host bindings', () => {
     const logs: string[] = [];
 

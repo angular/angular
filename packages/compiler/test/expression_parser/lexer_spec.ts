@@ -256,6 +256,24 @@ function expectErrorToken(token: Token, index: any, end: number, message: string
         expectCharacterToken(tokens[13], 16, 17, ')');
       });
 
+      it('should tokenize safe function invocation', () => {
+        const tokens: Token[] = lex('a?.()');
+        expectIdentifierToken(tokens[0], 0, 1, 'a');
+        expectOperatorToken(tokens[1], 1, 3, '?.');
+        expectCharacterToken(tokens[2], 3, 4, '(');
+        expectCharacterToken(tokens[3], 4, 5, ')');
+      });
+
+      it('should tokenize a safe method invocations', () => {
+        const tokens: Token[] = lex('a.method?.()');
+        expectIdentifierToken(tokens[0], 0, 1, 'a');
+        expectCharacterToken(tokens[1], 1, 2, '.');
+        expectIdentifierToken(tokens[2], 2, 8, 'method');
+        expectOperatorToken(tokens[3], 8, 10, '?.');
+        expectCharacterToken(tokens[4], 10, 11, '(');
+        expectCharacterToken(tokens[5], 11, 12, ')');
+      });
+
       it('should tokenize number', () => {
         expectNumberToken(lex('0.5')[0], 0, 3, 0.5);
       });

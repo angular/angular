@@ -99,6 +99,15 @@ abstract class AbstractValidatorDirective implements Validator, OnChanges {
   private _onChange!: () => void;
 
   /**
+   * A flag that tracks whether this validator is enabled.
+   *
+   * Marking it `internal` (vs `protected`), so that this flag can be used in host bindings of
+   * directive classes that extend this base class.
+   * @internal
+   */
+  _enabled?: boolean;
+
+  /**
    * Name of an input that matches directive selector attribute (e.g. `minlength` for
    * `MinLengthDirective`). An input with a given name might contain configuration information (like
    * `minlength='10'`) or a flag that indicates whether validator should be enabled (like
@@ -129,7 +138,8 @@ abstract class AbstractValidatorDirective implements Validator, OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     if (this.inputName in changes) {
       const input = this.normalizeInput(changes[this.inputName].currentValue);
-      this._validator = this.enabled() ? this.createValidator(input) : nullValidator;
+      this._enabled = this.enabled(input);
+      this._validator = this._enabled ? this.createValidator(input) : nullValidator;
       if (this._onChange) {
         this._onChange();
       }
@@ -148,14 +158,13 @@ abstract class AbstractValidatorDirective implements Validator, OnChanges {
 
   /**
    * @description
-   * Determines whether this validator is active or not. Base class implementation
-   * checks whether an input is defined (if the value is different from `null` and `undefined`).
-   * Validator classes that extend this base class can override this function with the logic
-   * specific to a particular validator directive.
+   * Determines whether this validator should be active or not based on an input.
+   * Base class implementation checks whether an input is defined (if the value is different from
+   * `null` and `undefined`). Validator classes that extend this base class can override this
+   * function with the logic specific to a particular validator directive.
    */
-  enabled(): boolean {
-    const inputValue = (this as unknown as {[key: string]: unknown})[this.inputName];
-    return inputValue != null /* both `null` and `undefined` */;
+  enabled(input: unknown): boolean {
+    return input != null /* both `null` and `undefined` */;
   }
 }
 
@@ -194,7 +203,7 @@ export const MAX_VALIDATOR: StaticProvider = {
   selector:
       'input[type=number][max][formControlName],input[type=number][max][formControl],input[type=number][max][ngModel]',
   providers: [MAX_VALIDATOR],
-  host: {'[attr.max]': 'enabled() ? max : null'}
+  host: {'[attr.max]': '_enabled ? max : null'}
 })
 export class MaxValidator extends AbstractValidatorDirective {
   /**
@@ -245,7 +254,7 @@ export const MIN_VALIDATOR: StaticProvider = {
   selector:
       'input[type=number][min][formControlName],input[type=number][min][formControl],input[type=number][min][ngModel]',
   providers: [MIN_VALIDATOR],
-  host: {'[attr.min]': 'enabled() ? min : null'}
+  host: {'[attr.min]': '_enabled ? min : null'}
 })
 export class MinValidator extends AbstractValidatorDirective {
   /**
@@ -549,7 +558,7 @@ export const MIN_LENGTH_VALIDATOR: any = {
 @Directive({
   selector: '[minlength][formControlName],[minlength][formControl],[minlength][ngModel]',
   providers: [MIN_LENGTH_VALIDATOR],
-  host: {'[attr.minlength]': 'enabled() ? minlength : null'}
+  host: {'[attr.minlength]': '_enabled ? minlength : null'}
 })
 export class MinLengthValidator extends AbstractValidatorDirective {
   /**
@@ -602,7 +611,7 @@ export const MAX_LENGTH_VALIDATOR: any = {
 @Directive({
   selector: '[maxlength][formControlName],[maxlength][formControl],[maxlength][ngModel]',
   providers: [MAX_LENGTH_VALIDATOR],
-  host: {'[attr.maxlength]': 'enabled() ? maxlength : null'}
+  host: {'[attr.maxlength]': '_enabled ? maxlength : null'}
 })
 export class MaxLengthValidator extends AbstractValidatorDirective {
   /**

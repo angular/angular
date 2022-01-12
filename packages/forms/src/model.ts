@@ -6,12 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {EventEmitter} from '@angular/core';
+import {EventEmitter, ɵRuntimeError as RuntimeError} from '@angular/core';
 import {Observable} from 'rxjs';
 
+import {missingControlError, missingControlValueError, noControlsError} from './directives/reactive_errors';
 import {removeListItem} from './directives/shared';
 import {AsyncValidatorFn, ValidationErrors, ValidatorFn} from './directives/validators';
-import {addValidators, composeAsyncValidators, composeValidators, hasValidator, makeValidatorsArray, removeValidators, toObservable} from './validators';
+import {RuntimeErrorCode} from './errors';
+import {addValidators, composeAsyncValidators, composeValidators, hasValidator, removeValidators, toObservable} from './validators';
+
+const NG_DEV_MODE = typeof ngDevMode === 'undefined' || !!ngDevMode;
 
 /**
  * Reports that a FormControl is valid, meaning that no errors exist in the input value.
@@ -74,11 +78,11 @@ function _find(control: AbstractControl, path: Array<string|number>|string, deli
   // https://bugs.chromium.org/p/chromium/issues/detail?id=1049982
   let controlToFind: AbstractControl|null = control;
   path.forEach((name: string|number) => {
-    if (controlToFind instanceof FormGroup) {
+    if (isFormGroup(controlToFind)) {
       controlToFind = controlToFind.controls.hasOwnProperty(name as string) ?
           controlToFind.controls[name] :
           null;
-    } else if (controlToFind instanceof FormArray) {
+    } else if (isFormArray(controlToFind)) {
       controlToFind = controlToFind.at(<number>name) || null;
     } else {
       controlToFind = null;
@@ -169,6 +173,42 @@ function isOptionsObj(validatorOrOpts?: ValidatorFn|ValidatorFn[]|AbstractContro
                       null): validatorOrOpts is AbstractControlOptions {
   return validatorOrOpts != null && !Array.isArray(validatorOrOpts) &&
       typeof validatorOrOpts === 'object';
+}
+
+export const isFormControl = (control: unknown): control is FormControl =>
+    control instanceof FormControl;
+
+export const isFormGroup = (control: unknown): control is FormGroup => control instanceof FormGroup;
+
+export const isFormArray = (control: unknown): control is FormArray => control instanceof FormArray;
+
+function getRawValue(control: AbstractControl): any {
+  return isFormControl(control) ? control.value : (control as FormGroup | FormArray).getRawValue();
+}
+
+function assertControlPresent(parent: FormGroup|FormArray, key: string|number): void {
+  const isGroup = isFormGroup(parent);
+  const controls = parent.controls as {[key: string|number]: unknown};
+  const collection = isGroup ? Object.keys(controls) : controls;
+  if (!collection.length) {
+    throw new RuntimeError(
+        RuntimeErrorCode.NO_CONTROLS, NG_DEV_MODE ? noControlsError(isGroup) : '');
+  }
+  if (!controls[key]) {
+    throw new RuntimeError(
+        RuntimeErrorCode.MISSING_CONTROL, NG_DEV_MODE ? missingControlError(isGroup, key) : '');
+  }
+}
+
+function assertAllValuesPresent(control: FormGroup|FormArray, value: any): void {
+  const isGroup = isFormGroup(control);
+  control._forEachChild((_: unknown, key: string|number) => {
+    if (value[key] === undefined) {
+      throw new RuntimeError(
+          RuntimeErrorCode.MISSING_CONTROL_VALUE,
+          NG_DEV_MODE ? missingControlValueError(isGroup, key) : '');
+    }
+  });
 }
 
 /**
@@ -1718,9 +1758,9 @@ export class FormGroup extends AbstractControl {
    */
   override setValue(
       value: {[key: string]: any}, options: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
-    this._checkAllValuesPresent(value);
+    assertAllValuesPresent(this, value);
     Object.keys(value).forEach(name => {
-      this._throwIfControlMissing(name);
+      assertControlPresent(this, name);
       this.controls[name].setValue(value[name], {onlySelf: true, emitEvent: options.emitEvent});
     });
     this.updateValueAndValidity(options);
@@ -1849,7 +1889,7 @@ export class FormGroup extends AbstractControl {
   getRawValue(): any {
     return this._reduceChildren(
         {}, (acc: {[k: string]: AbstractControl}, control: AbstractControl, name: string) => {
-          acc[name] = control instanceof FormControl ? control.value : (<any>control).getRawValue();
+          acc[name] = getRawValue(control);
           return acc;
         });
   }
@@ -1861,19 +1901,6 @@ export class FormGroup extends AbstractControl {
     });
     if (subtreeUpdated) this.updateValueAndValidity({onlySelf: true});
     return subtreeUpdated;
-  }
-
-  /** @internal */
-  _throwIfControlMissing(name: string): void {
-    if (!Object.keys(this.controls).length) {
-      throw new Error(`
-        There are no form controls registered with this group yet. If you're using ngModel,
-        you may want to check next tick (e.g. use setTimeout).
-      `);
-    }
-    if (!this.controls[name]) {
-      throw new Error(`Cannot find form control with name: ${name}.`);
-    }
   }
 
   /** @internal */
@@ -1939,15 +1966,6 @@ export class FormGroup extends AbstractControl {
       }
     }
     return Object.keys(this.controls).length > 0 || this.disabled;
-  }
-
-  /** @internal */
-  _checkAllValuesPresent(value: any): void {
-    this._forEachChild((control: AbstractControl, name: string) => {
-      if (value[name] === undefined) {
-        throw new Error(`Must supply a value for form control with name: '${name}'.`);
-      }
-    });
   }
 }
 
@@ -2050,9 +2068,11 @@ export class FormArray extends AbstractControl {
   /**
    * Get the `AbstractControl` at the given `index` in the array.
    *
-   * @param index Index in the array to retrieve the control
+   * @param index Index in the array to retrieve the control. Negative integers count back from the
+   *     last item in the array.
    */
   at(index: number): AbstractControl {
+    index = this._adjustIndex(index);
     return this.controls[index];
   }
 
@@ -2076,7 +2096,8 @@ export class FormArray extends AbstractControl {
   /**
    * Insert a new `AbstractControl` at the given `index` in the array.
    *
-   * @param index Index in the array to insert the control
+   * @param index Index in the array to insert the control. Negative integers count back from the
+   *     last item in the array.
    * @param control Form control to be inserted
    * @param options Specifies whether this FormArray instance should emit events after a new
    *     control is inserted.
@@ -2085,6 +2106,7 @@ export class FormArray extends AbstractControl {
    * inserted. When false, no events are emitted.
    */
   insert(index: number, control: AbstractControl, options: {emitEvent?: boolean} = {}): void {
+    index = this._adjustIndex(index);
     this.controls.splice(index, 0, control);
 
     this._registerControl(control);
@@ -2094,7 +2116,8 @@ export class FormArray extends AbstractControl {
   /**
    * Remove the control at the given `index` in the array.
    *
-   * @param index Index in the array to remove the control
+   * @param index Index in the array to remove the control. Negative integers count back from the
+   *     last item in the array.
    * @param options Specifies whether this FormArray instance should emit events after a
    *     control is removed.
    * * `emitEvent`: When true or not supplied (the default), both the `statusChanges` and
@@ -2102,6 +2125,7 @@ export class FormArray extends AbstractControl {
    * removed. When false, no events are emitted.
    */
   removeAt(index: number, options: {emitEvent?: boolean} = {}): void {
+    index = this._adjustIndex(index);
     if (this.controls[index]) this.controls[index]._registerOnCollectionChange(() => {});
     this.controls.splice(index, 1);
     this.updateValueAndValidity({emitEvent: options.emitEvent});
@@ -2110,7 +2134,8 @@ export class FormArray extends AbstractControl {
   /**
    * Replace an existing control.
    *
-   * @param index Index in the array to replace the control
+   * @param index Index in the array to replace the control. Negative integers count back from the
+   *     last item in the array.
    * @param control The `AbstractControl` control to replace the existing control
    * @param options Specifies whether this FormArray instance should emit events after an
    *     existing control is replaced with a new one.
@@ -2119,6 +2144,7 @@ export class FormArray extends AbstractControl {
    * replaced with a new one. When false, no events are emitted.
    */
   setControl(index: number, control: AbstractControl, options: {emitEvent?: boolean} = {}): void {
+    index = this._adjustIndex(index);
     if (this.controls[index]) this.controls[index]._registerOnCollectionChange(() => {});
     this.controls.splice(index, 1);
 
@@ -2174,9 +2200,9 @@ export class FormArray extends AbstractControl {
    * updateValueAndValidity} method.
    */
   override setValue(value: any[], options: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
-    this._checkAllValuesPresent(value);
+    assertAllValuesPresent(this, value);
     value.forEach((newValue: any, index: number) => {
-      this._throwIfControlMissing(index);
+      assertControlPresent(this, index);
       this.at(index).setValue(newValue, {onlySelf: true, emitEvent: options.emitEvent});
     });
     this.updateValueAndValidity(options);
@@ -2291,9 +2317,7 @@ export class FormArray extends AbstractControl {
    * For enabled controls only, the `value` property is the best way to get the value of the array.
    */
   getRawValue(): any[] {
-    return this.controls.map((control: AbstractControl) => {
-      return control instanceof FormControl ? control.value : (<any>control).getRawValue();
-    });
+    return this.controls.map((control: AbstractControl) => getRawValue(control));
   }
 
   /**
@@ -2349,19 +2373,6 @@ export class FormArray extends AbstractControl {
   }
 
   /** @internal */
-  _throwIfControlMissing(index: number): void {
-    if (!this.controls.length) {
-      throw new Error(`
-        There are no form controls registered with this array yet. If you're using ngModel,
-        you may want to check next tick (e.g. use setTimeout).
-      `);
-    }
-    if (!this.at(index)) {
-      throw new Error(`Cannot find form control at index ${index}`);
-    }
-  }
-
-  /** @internal */
   override _forEachChild(cb: (c: AbstractControl, index: number) => void): void {
     this.controls.forEach((control: AbstractControl, index: number) => {
       cb(control, index);
@@ -2386,15 +2397,6 @@ export class FormArray extends AbstractControl {
   }
 
   /** @internal */
-  _checkAllValuesPresent(value: any): void {
-    this._forEachChild((control: AbstractControl, i: number) => {
-      if (value[i] === undefined) {
-        throw new Error(`Must supply a value for form control at index: ${i}.`);
-      }
-    });
-  }
-
-  /** @internal */
   override _allControlsDisabled(): boolean {
     for (const control of this.controls) {
       if (control.enabled) return false;
@@ -2405,5 +2407,13 @@ export class FormArray extends AbstractControl {
   private _registerControl(control: AbstractControl) {
     control.setParent(this);
     control._registerOnCollectionChange(this._onCollectionChange);
+  }
+
+  /**
+   * Converts negative indices to a corresponding positive number that represents a position of
+   * an element in an array.
+   */
+  private _adjustIndex(index: number): number {
+    return index >= 0 ? index : index + this.length;
   }
 }

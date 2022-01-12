@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, BindingPipe, BindingType, BoundTarget, Call, DYNAMIC_TYPE, ImplicitReceiver, ParsedEventType, ParseSourceSpan, PropertyRead, PropertyWrite, SafePropertyRead, SchemaMetadata, ThisReceiver, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstBoundText, TmplAstElement, TmplAstIcu, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
+import {AST, BindingPipe, BindingType, BoundTarget, Call, DYNAMIC_TYPE, ImplicitReceiver, ParsedEventType, ParseSourceSpan, PropertyRead, PropertyWrite, SafeCall, SafePropertyRead, SchemaMetadata, ThisReceiver, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstBoundText, TmplAstElement, TmplAstIcu, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
 import ts from 'typescript';
 
 import {Reference} from '../../imports';
 import {ClassPropertyName} from '../../metadata';
-import {ClassDeclaration, ReflectionHost} from '../../reflection';
+import {ClassDeclaration} from '../../reflection';
 import {TemplateId, TypeCheckableDirectiveMeta, TypeCheckBlockMetadata} from '../api';
 
 import {addExpressionIdentifier, ExpressionIdentifier, markIgnoreDiagnostics} from './comments';
@@ -1509,7 +1509,7 @@ class Scope {
         // `TcbNonDirectiveTypeOp`.
         directiveOp = new TcbNonGenericDirectiveTypeOp(this.tcb, this, node, dir);
       } else if (
-          !requiresInlineTypeCtor(dirRef.node, host) ||
+          !requiresInlineTypeCtor(dirRef.node, host, this.tcb.env) ||
           this.tcb.env.config.useInlineTypeConstructors) {
         // For generic directives, we use a type constructor to infer types. If a directive requires
         // an inline type constructor, then inlining must be available to use the
@@ -1727,12 +1727,13 @@ class TcbExpressionTranslator {
       addParseSpanInfo(result, ast.sourceSpan);
       return result;
     } else if (
-        ast instanceof Call &&
-        (ast.receiver instanceof PropertyRead || ast.receiver instanceof SafePropertyRead) &&
-        !(ast.receiver.receiver instanceof ThisReceiver)) {
+        (ast instanceof Call || ast instanceof SafeCall) &&
+        (ast.receiver instanceof PropertyRead || ast.receiver instanceof SafePropertyRead)) {
       // Resolve the special `$any(expr)` syntax to insert a cast of the argument to type `any`.
       // `$any(expr)` -> `expr as any`
-      if (ast.receiver.name === '$any' && ast.args.length === 1) {
+      if (ast.receiver.receiver instanceof ImplicitReceiver &&
+          !(ast.receiver.receiver instanceof ThisReceiver) && ast.receiver.name === '$any' &&
+          ast.args.length === 1) {
         const expr = this.translate(ast.args[0]);
         const exprAsAny =
             ts.createAsExpression(expr, ts.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword));

@@ -7,7 +7,7 @@ import { TaxRateService } from './tax-rate.service';
   selector:    'app-sales-tax',
   template: `
     <h2>Sales Tax Calculator</h2>
-    <p><i>Enter a number and press enter to calculate tax.</i></p>
+    <p><em>Enter a number and press enter to calculate tax.</em></p>
     <label for="amount-input">Amount: </label>
     <input type="text" id="amount-input" #amountBox (change)="0">
     <div *ngIf="amountBox.value">

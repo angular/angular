@@ -684,27 +684,6 @@ describe('di', () => {
          expect(cmp.componentInstance.testB.a).toBeNull();
        });
 
-    it('should throw if directives try to inject each other', () => {
-      @Directive({selector: '[dirB]'})
-      class DirectiveB {
-        constructor(@Inject(forwardRef(() => DirectiveA)) siblingDir: DirectiveA) {}
-      }
-
-      @Directive({selector: '[dirA]'})
-      class DirectiveA {
-        constructor(siblingDir: DirectiveB) {}
-      }
-
-      @Component({template: '<div dirA dirB></div>'})
-      class MyComp {
-      }
-
-      TestBed.configureTestingModule({declarations: [DirectiveA, DirectiveB, MyComp]});
-      expect(() => TestBed.createComponent(MyComp))
-          .toThrowError(
-              'NG0200: Circular dependency in DI detected for DirectiveA. Find more at https://angular.io/errors/NG0200');
-    });
-
     it('should throw if directive tries to inject itself', () => {
       @Directive({selector: '[dirA]'})
       class DirectiveA {
@@ -1781,31 +1760,6 @@ describe('di', () => {
           expect(dirString.s).toBe('Foo');
         });
 
-        it('should find host component on the host itself', () => {
-          @Directive({selector: '[dirComp]'})
-          class DirectiveComp {
-            constructor(@Inject(forwardRef(() => MyComp)) @Host() public comp: MyComp) {}
-          }
-
-          @Component({selector: 'my-comp', template: '<div dirComp></div>'})
-          class MyComp {
-            @ViewChild(DirectiveComp) dirComp!: DirectiveComp;
-          }
-
-          @Component({template: '<my-comp></my-comp>'})
-          class MyApp {
-            @ViewChild(MyComp) myComp!: MyComp;
-          }
-
-          TestBed.configureTestingModule({declarations: [DirectiveComp, MyComp, MyApp]});
-          const fixture = TestBed.createComponent(MyApp);
-          fixture.detectChanges();
-
-          const myComp = fixture.componentInstance.myComp;
-          const dirComp = myComp.dirComp;
-          expect(dirComp.comp).toBe(myComp);
-        });
-
         it('should not find providers on the host itself', () => {
           @Component({
             selector: 'my-comp',
@@ -1882,17 +1836,17 @@ describe('di', () => {
         });
 
         it('should not find component above the host', () => {
+          @Component({template: '<my-comp></my-comp>'})
+          class MyApp {
+          }
+
           @Directive({selector: '[dirComp]'})
           class DirectiveComp {
-            constructor(@Inject(forwardRef(() => MyApp)) @Host() public comp: MyApp) {}
+            constructor(@Host() public comp: MyApp) {}
           }
 
           @Component({selector: 'my-comp', template: '<div dirComp></div>'})
           class MyComp {
-          }
-
-          @Component({template: '<my-comp></my-comp>'})
-          class MyApp {
           }
 
           TestBed.configureTestingModule({declarations: [DirectiveComp, MyComp, MyApp]});

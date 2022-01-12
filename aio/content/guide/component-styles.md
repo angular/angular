@@ -23,39 +23,41 @@ Usually you give it one string, as in the following example:
 
 <code-example path="component-styles/src/app/hero-app.component.ts" header="src/app/hero-app.component.ts"></code-example>
 
-## Style scope
+## Component styling best practices
 
-<div class="alert is-critical">
+<div class="alert is-helpful">
 
-The styles specified in `@Component` metadata _apply only within the template of that component_.
+   See [View Encapsulation](guide/view-encapsulation) for information on how Angular scopes styles to specific components.
 
 </div>
 
-They are _not inherited_ by any components nested within the template nor by any content projected into the component.
+You should consider the styles of a component to be private implementation details for that component. When consuming a common component, you should not override the component's styles any more than you should access the private members of a TypeScript class. While Angular's default style encapsulation prevents component styles from affecting other components, global styles affect all components on the page. This includes `::ng-deep`, which promotes a component style to a global style.
 
-In this example, the `h1` style applies only to the `HeroAppComponent`,
-not to the nested `HeroMainComponent` nor to `<h1>` tags anywhere else in the application.
+### Authoring a component to support customization
 
-This scoping restriction is a ***styling modularity feature***.
+As component author, you can explicitly design a component to accept customization in one of four different ways.
 
-* Use the CSS class names and selectors that make the most sense in the context of each component.
+#### 1. Use CSS Custom Properties (recommended)
 
+You can define a supported customization API for your component by defining its styles with CSS Custom Properties, alternatively known as CSS Variables. Anyone using your component can consume this API by defining values for these properties, customizing the final appearance of the component on the rendered page.
 
-* Class names and selectors are local to the component and don't collide with
-  classes and selectors used elsewhere in the application.
+While this requires defining a custom property for each customization point, it creates a clear API contract that works in all style encapsulation modes.
 
+#### 2. Declare global CSS with @mixin
 
-* Changes to styles elsewhere in the application don't affect the component's styles.
+While Angular's emulated style encapsulation prevents styles from escaping a component, it does not prevent global CSS from affecting the entire page. While component consumers should avoid directly overwriting the CSS internals of a component, you can offer a supported customization API via a CSS preprocessor like Sass.
 
+For example, a component may offer one or more supported mixins to customize various aspects of the component's appearance. While this approach uses global styles in it’s implementation, it allows the component author to keep the mixins up to date with changes to the component's private DOM structure and CSS classes.
 
-* Co-locate the CSS code of each component with the TypeScript and HTML code of the component,
-  which leads to a neat and tidy project structure.
+#### 3. Customize with CSS ::part
 
+If your component uses [Shadow DOM](https://developer.mozilla.org/docs/Web/Web_Components/Using_shadow_DOM), you can apply the `part` attribute to specify elements in your component's template. This allows consumers of the component to author arbitrary styles targeting those specific elements with [the `::part` pseudo-element](https://developer.mozilla.org/docs/Web/CSS/::part).
 
-* Change or remove component CSS code without searching through the
-  whole application to find where else the code is used.
+While this lets you limit the elements within your template that consumers can customize, it does not limit which CSS properties are customizable. 
 
-{@a special-selectors}
+#### 4. Provide a TypeScript API
+
+You can define a TypeScript API for customizing styles, using template bindings to update CSS classes and styles. This is not recommended because the additional JavaScript cost of this style API incurs far more performance cost than CSS.
 
 ## Special selectors
 
@@ -255,7 +257,7 @@ See the [Styles configuration guide](guide/workspace-config#styles-and-scripts-c
 ### Non-CSS style files
 
 If you're building with the CLI,
-you can write style files in [sass](https://sass-lang.com/), or [less](http://lesscss.org/), and specify those files in the `@Component.styleUrls` metadata with the appropriate extensions (`.scss`, `.less`) as in the following example:
+you can write style files in [sass](https://sass-lang.com/), or [less](https://lesscss.org/), and specify those files in the `@Component.styleUrls` metadata with the appropriate extensions (`.scss`, `.less`) as in the following example:
 
 <code-example>
 @Component({

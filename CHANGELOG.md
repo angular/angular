@@ -396,6 +396,31 @@ As a result, the `SwUpdate#availalbe` observable is now redundant.
 ## Special Thanks
 Ahmed Ayed, Alan Agius, Alex Rickabaugh, Andrew Kushnir, Andrew Scott, Bjarki, Charles Lyding, Dmitrij Kuba, Doug Parker, Dylan Hunn, George Kalpakas, Jessica Janiuk, Jochen Kraushaar, Joe Martin (Crowdstaffing), Joey Perrott, Jon Rimmer, JoostK, Kristiyan Kostadinov, Maximilian Köller, Paul Gschwendtner, Pei Wang, Pete Bacon Darwin, Tomasz Domański, Willy Schott, anandtiwary, dario-piotrowicz, iRealNirmal, ivanwonder, krzysztof-grzybek, mgechev and vthinkxie
 
+<a name="12.2.15"></a>
+# 12.2.15 (2021-12-08)
+### ngcc
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b6554d75cd](https://github.com/angular/angular/commit/b6554d75cd3ac8a904820f7cd051d926c74460bf) | fix | correctly resolve UMD dependencies ([#44382](https://github.com/angular/angular/pull/44382)) |
+## Special Thanks
+George Kalpakas
+
+<!-- CHANGELOG SPLIT MARKER -->
+
+<a name="12.2.14"></a>
+# 12.2.14 (2021-12-01)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e3db0385b6](https://github.com/angular/angular/commit/e3db0385b6ae18f35b16d5a7fcbfac49ef729330) | fix | ensure that partially compiled queries can handle forward references ([#44124](https://github.com/angular/angular/pull/44124)) |
+### ngcc
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a8be244113](https://github.com/angular/angular/commit/a8be244113d68865da9ec732291d7b79e26a0f1f) | fix | correctly report error when collecting dependencies of UMD module ([#44245](https://github.com/angular/angular/pull/44245)) |
+| [fc072935ee](https://github.com/angular/angular/commit/fc072935ee0bcfc5b228ee81ba4261ee8f7b1756) | fix | support the UMD wrapper function format emitted by Webpack ([#44245](https://github.com/angular/angular/pull/44245)) |
+## Special Thanks
+George Kalpakas, Pete Bacon Darwin and iRealNirmal
+
 <!-- CHANGELOG SPLIT MARKER -->
 
 <a name="12.2.13"></a>
@@ -4255,7 +4280,7 @@ import from `@angular/localize`. Previously it was `@angular/localize/run_time`.
 This should impact very few users and the user's that are impacted have a very easy upgrade path to switch to fetching the protractor_web_test_suite rule via the @bazel/protractor npm package.
 * **ivy:** This commit removes the public export of `hasBeenProcessed()`.
 
-This was exported to be availble to the CLI integration but was never
+This was exported to be available to the CLI integration but was never
 used. The change to the function signature is a breaking change in itself
 so we remove the function altogether to simplify and lower the public
 API surface going forward.

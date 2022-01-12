@@ -8,6 +8,7 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "module": "es2020",
+    "target": "es2020",
     "strict": true,
     "moduleResolution": "node",
     "esModuleInterop": true,
@@ -43,7 +44,6 @@
     ],
     "skipDefaultLibCheck": true,
     "skipLibCheck": true,
-    "target": "es2020",
     "types": [
       "angular"
     ]

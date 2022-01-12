@@ -76,7 +76,6 @@ export class AppComponent {
     AppComponent, NgComponentOutletSimpleExample, NgComponentOutletCompleteExample, HelloWorld,
     CompleteComponent
   ],
-  entryComponents: [HelloWorld, CompleteComponent]
 })
 export class AppModule {
 }

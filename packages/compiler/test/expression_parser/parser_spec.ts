@@ -50,6 +50,8 @@ describe('parser', () => {
       checkAction('true!');
       checkAction('a!.b');
       checkAction('a!!!!.b');
+      checkAction('a!()');
+      checkAction('a.b!()');
     });
 
     it('should parse multiplicative expressions', () => {
@@ -221,6 +223,15 @@ describe('parser', () => {
         expect(ast.args[1]).toBeAnInstanceOf(EmptyExpr);
         const sourceSpan = (ast.args[1] as EmptyExpr).sourceSpan;
         expect([sourceSpan.start, sourceSpan.end]).toEqual([5, 6]);
+      });
+
+      it('should parse safe calls', () => {
+        checkAction('fn?.()');
+        checkAction('add?.(1, 2)');
+        checkAction('a.add?.(1, 2)');
+        checkAction('a?.add?.(1, 2)');
+        checkAction('fn?.().add?.(1, 2)');
+        checkAction('fn?.()?.(1, 2)');
       });
     });
 

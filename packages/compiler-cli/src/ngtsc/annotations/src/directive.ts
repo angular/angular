@@ -268,6 +268,7 @@ export class DirectiveDecoratorHandler implements
       ...analysis.typeCheckMeta,
       isPoisoned: analysis.isPoisoned,
       isStructural: analysis.isStructural,
+      animationTriggerNames: null,
     });
 
     this.injectableRegistry.registerInjectable(node);

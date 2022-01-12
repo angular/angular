@@ -114,8 +114,6 @@ class ShadowSlotsComponent {
 @NgModule({
   imports: [BrowserModule],
   declarations: [ShadowComponent, ShadowSlotComponent, ShadowSlotsComponent, StyledShadowComponent],
-  entryComponents:
-      [ShadowComponent, ShadowSlotComponent, ShadowSlotsComponent, StyledShadowComponent],
 })
 class TestModule {
   ngDoBootstrap() {}
