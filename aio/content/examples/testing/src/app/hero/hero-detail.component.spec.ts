@@ -102,8 +102,6 @@ function overrideSetup() {
 
        page.nameInput.value = newName;
 
-       // In older browsers, such as IE, you might need a CustomEvent instead. See
-       // https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent/CustomEvent#Polyfill
        page.nameInput.dispatchEvent(new Event('input')); // tell Angular
 
        expect(component.hero.name)
@@ -223,8 +221,6 @@ function heroModuleSetup() {
       nameInput.value = 'quick BROWN  fOx';
 
       // Dispatch a DOM event so that Angular learns of input value change.
-      // In older browsers, such as IE, you might need a CustomEvent instead. See
-      // https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent/CustomEvent#Polyfill
       nameInput.dispatchEvent(new Event('input'));
 
       // Tell Angular to update the display binding through the title pipe
