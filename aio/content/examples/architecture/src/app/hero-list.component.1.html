@@ -1,8 +1,8 @@
 <!--#docregion binding  -->
-<li>{{hero.name}}</li>
 <app-hero-detail [hero]="selectedHero"></app-hero-detail>
-<!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events -->
-<li (click)="selectHero(hero)"></li>
+<button (click)="selectHero(hero)">
+  {{hero.name}}
+</button>
 <!--#enddocregion binding -->
 
 <!--#docregion structural  -->
