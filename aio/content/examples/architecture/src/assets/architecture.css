@@ -15,6 +15,7 @@ li button {
   padding: 1rem;
   margin: 0;
   text-align: left;
+  border-radius: 0;
 }
 
 li button:hover, li button:active {
