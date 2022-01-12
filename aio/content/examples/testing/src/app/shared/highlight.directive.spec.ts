@@ -63,8 +63,6 @@ describe('HighlightDirective', () => {
     input.value = 'green';
 
     // Dispatch a DOM event so that Angular responds to the input value change.
-    // In older browsers, such as IE, you might need a CustomEvent instead. See
-    // https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent/CustomEvent#Polyfill
     input.dispatchEvent(new Event('input'));
     fixture.detectChanges();
 

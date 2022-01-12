@@ -288,8 +288,6 @@ describe('demo (with TestBed):', () => {
 
         // Dispatch a DOM event so that Angular learns of input value change.
         // then wait while ngModel pushes input.box value to comp.name
-        // In older browsers, such as IE, you might need a CustomEvent instead. See
-        // https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent/CustomEvent#Polyfill
         input.dispatchEvent(new Event('input'));
         return fixture.whenStable();
       })
@@ -332,8 +330,6 @@ describe('demo (with TestBed):', () => {
 
       // Dispatch a DOM event so that Angular learns of input value change.
       // then wait a tick while ngModel pushes input.box value to comp.name
-      // In older browsers, such as IE, you might need a CustomEvent instead. See
-      // https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent/CustomEvent#Polyfill
       input.dispatchEvent(new Event('input'));
       tick();
       expect(comp.name)
@@ -358,8 +354,6 @@ describe('demo (with TestBed):', () => {
       // Dispatch a DOM event so that Angular learns of input value change.
       // then wait a tick while ngModel pushes input.box value to comp.text
       // and Angular updates the output span
-      // In older browsers, such as IE, you might need a CustomEvent instead. See
-      // https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent/CustomEvent#Polyfill
       input.dispatchEvent(new Event('input'));
       tick();
       fixture.detectChanges();

@@ -58,8 +58,6 @@ describe('HeroListComponent', () => {
        const expectedHero = HEROES[1];
        const btn = page.heroRows[1].querySelector('button');
 
-       // In older browsers, such as IE, you might need a CustomEvent instead. See
-       // https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent/CustomEvent#Polyfill
        btn!.dispatchEvent(new Event('click'));
        tick();
        // `.toEqual` because selectedHero is clone of expectedHero; see FakeHeroService
@@ -70,8 +68,6 @@ describe('HeroListComponent', () => {
        const expectedHero = HEROES[1];
        const btn = page.heroRows[1].querySelector('button');
 
-       // In older browsers, such as IE, you might need a CustomEvent instead. See
-       // https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent/CustomEvent#Polyfill
        btn!.dispatchEvent(new Event('click'));
        tick();
 
