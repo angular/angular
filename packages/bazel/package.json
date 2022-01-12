@@ -23,7 +23,7 @@
   },
   "dependencies": {
     "@microsoft/api-extractor": "7.19.4",
-    "shelljs": "0.8.4",
+    "shelljs": "^0.8.5",
     "tsickle": "^0.38.0",
     "tslib": "^2.3.0"
   },
