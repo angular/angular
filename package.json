@@ -208,7 +208,7 @@
     "selenium-webdriver": "^3.6.0",
     "semver": "^7.3.4",
     "send": "^0.17.1",
-    "shelljs": "^0.8.3",
+    "shelljs": "^0.8.5",
     "stylelint": "^14.0.1",
     "terser": "^5.9.0",
     "ts-node": "^10.2.1",
