@@ -1,3 +1,38 @@
+<a name="13.1.2"></a>
+# 13.1.2 "rubber-road" (2022-01-12)
+### cdk
+| Commit | Type | Description |
+| -- | -- | -- |
+| [37898c3c1](https://github.com/angular/components/commit/37898c3c1e1919487b21a5fe4b3c3a94c906aba8) | fix | **overlay:** fix positioning when zooming in Safari ([#24160](https://github.com/angular/components/pull/24160)) |
+| [af1882311](https://github.com/angular/components/commit/af18823115c6958fe69b20496af47cfaee46c765) | fix | **schematics:** remove file extensions in tilde migration ([#24169](https://github.com/angular/components/pull/24169)) |
+| [db5d8cea2](https://github.com/angular/components/commit/db5d8cea2bed25a61c3865aae41b9ecd8945508f) | fix | **table:** Measure column width for sticky columns after new data has rendered. ([#23885](https://github.com/angular/components/pull/23885)) |
+| [7705cae78](https://github.com/angular/components/commit/7705cae785803dd17fab47774ef305a1c39f074d) | fix | **text-field:** handle undefined placeholder ([#24159](https://github.com/angular/components/pull/24159)) |
+### material
+| Commit | Type | Description |
+| -- | -- | -- |
+| [69753d711](https://github.com/angular/components/commit/69753d71133f8297036fe0773bb759c7e2e02716) | fix | **core:** disable strong focus indicators in high contrast mode ([#24120](https://github.com/angular/components/pull/24120)) |
+| [0631976ca](https://github.com/angular/components/commit/0631976ca79513807902e240f4378a17fa884c7b) | fix | **core:** move pseudo-checkbox module to same directory ([#24132](https://github.com/angular/components/pull/24132)) |
+| [c6f7b9468](https://github.com/angular/components/commit/c6f7b946888568a36c56d2db7dd708fd82b08c85) | fix | **datepicker:** fix duplicate nav stop with Voiceover ([#24085](https://github.com/angular/components/pull/24085)) |
+| [2ca59f8a6](https://github.com/angular/components/commit/2ca59f8a6a8028bd42759d9e1de803bdaeca034a) | fix | **stepper:** icon not centered in header if direction changes ([#24131](https://github.com/angular/components/pull/24131)) |
+### material-experimental
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a7d97d618](https://github.com/angular/components/commit/a7d97d618f9104367775d304a81d04db55e33071) | fix | **mdc-button:** incorrect metadata for fab anchor ([#24179](https://github.com/angular/components/pull/24179)) |
+| [ae9f3d5f5](https://github.com/angular/components/commit/ae9f3d5f5119c3c24e5d6d0efad64a298cb1719c) | fix | **mdc-checkbox:** switch to non-deprecated styles ([#23218](https://github.com/angular/components/pull/23218)) |
+| [2f668888f](https://github.com/angular/components/commit/2f668888fefa9ed68f872b2f9a49af95b17e54b6) | fix | **mdc-dialog:** remove extra outline in high contrast mode ([#24140](https://github.com/angular/components/pull/24140)) |
+| [12f427cdc](https://github.com/angular/components/commit/12f427cdca4e436ee55a6adcc0ece2f77d53db22) | fix | **mdc-list:** export missing harness symbols ([#24175](https://github.com/angular/components/pull/24175)) |
+| [eb508be13](https://github.com/angular/components/commit/eb508be1365d21140ebbd56d57bb454d38681bf8) | fix | **mdc-select:** change max height to show scrollability ([#24129](https://github.com/angular/components/pull/24129)) |
+| [997589dd8](https://github.com/angular/components/commit/997589dd8dee5ab21e711caa07e2275c77e4b6b3) | fix | **mdc-slide-toggle:** remove aria-required rather than setting to false ([#24105](https://github.com/angular/components/pull/24105)) |
+| [be21308bb](https://github.com/angular/components/commit/be21308bbffe7dd5764ea01a34de887720b6efcd) | fix | **mdc-slider:** keep value indicator within bounds ([#24167](https://github.com/angular/components/pull/24167)) |
+### multiple
+| Commit | Type | Description |
+| -- | -- | -- |
+| [32f33c6dc](https://github.com/angular/components/commit/32f33c6dcc850c8e7b8623af06107601e70f1ae7) | fix | correct tooltip and table MDC style import paths ([#24077](https://github.com/angular/components/pull/24077)) |
+## Special Thanks
+Andrew Seguin, Jeremy Elbourn, Jeri Peier, Karl Seamon, Kristiyan Kostadinov, Lukas Spirig, Miles Malerba, Paul Gschwendtner, Pei Wang, Wagner Maciel, Zach Arend and batnyu
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="13.2.0-next.0"></a>
 # 13.2.0-next.0 "pine-pepperoni" (2021-12-16)
 ### material-experimental
