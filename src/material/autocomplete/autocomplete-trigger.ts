@@ -47,7 +47,7 @@ import {
 } from '@angular/material/core';
 import {MAT_FORM_FIELD, MatFormField} from '@angular/material/form-field';
 import {defer, fromEvent, merge, Observable, of as observableOf, Subject, Subscription} from 'rxjs';
-import {delay, filter, map, switchMap, take, tap} from 'rxjs/operators';
+import {delay, filter, map, switchMap, take, tap, startWith} from 'rxjs/operators';
 
 import {
   _MatAutocompleteBase,
@@ -309,10 +309,15 @@ export abstract class _MatAutocompleteTriggerBase
     );
   }
 
-  /** Stream of autocomplete option selections. */
+  /** Stream of changes to the selection state of the autocomplete options. */
   readonly optionSelections: Observable<MatOptionSelectionChange> = defer(() => {
-    if (this.autocomplete && this.autocomplete.options) {
-      return merge(...this.autocomplete.options.map(option => option.onSelectionChange));
+    const options = this.autocomplete ? this.autocomplete.options : null;
+
+    if (options) {
+      return options.changes.pipe(
+        startWith(options),
+        switchMap(() => merge(...options.map(option => option.onSelectionChange)))
+      );
     }
 
     // If there are any subscribers before `ngAfterViewInit`, the `autocomplete` will be undefined.
@@ -360,7 +365,7 @@ export abstract class _MatAutocompleteTriggerBase
 
   // Implemented as part of ControlValueAccessor.
   writeValue(value: any): void {
-    Promise.resolve(null).then(() => this._setTriggerValue(value));
+    Promise.resolve().then(() => this._setTriggerValue(value));
   }
 
   // Implemented as part of ControlValueAccessor.

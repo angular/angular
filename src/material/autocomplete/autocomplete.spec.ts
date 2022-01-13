@@ -2265,6 +2265,34 @@ describe('MatAutocomplete', () => {
       subscription!.unsubscribe();
     }));
 
+    it('should emit to `optionSelections` if the list of options changes', fakeAsync(() => {
+      const spy = jasmine.createSpy('option selection spy');
+      const subscription = fixture.componentInstance.trigger.optionSelections.subscribe(spy);
+      const openAndSelectFirstOption = () => {
+        fixture.detectChanges();
+        fixture.componentInstance.trigger.openPanel();
+        fixture.detectChanges();
+        zone.simulateZoneExit();
+        (overlayContainerElement.querySelector('mat-option') as HTMLElement).click();
+        fixture.detectChanges();
+        zone.simulateZoneExit();
+      };
+
+      fixture.componentInstance.states = [{code: 'OR', name: 'Oregon'}];
+      fixture.detectChanges();
+
+      openAndSelectFirstOption();
+      expect(spy).toHaveBeenCalledTimes(1);
+
+      fixture.componentInstance.states = [{code: 'WV', name: 'West Virginia'}];
+      fixture.detectChanges();
+
+      openAndSelectFirstOption();
+      expect(spy).toHaveBeenCalledTimes(2);
+
+      subscription!.unsubscribe();
+    }));
+
     it('should reposition the panel when the amount of options changes', fakeAsync(() => {
       const formField = fixture.debugElement.query(By.css('.mat-form-field'))!.nativeElement;
       const inputReference = formField.querySelector('.mat-form-field-flex');
