@@ -28,7 +28,7 @@ import {
   coerceNumberProperty,
   NumberInput,
 } from '@angular/cdk/coercion';
-import {ScrollDispatcher} from '@angular/cdk/scrolling';
+import {ScrollDispatcher, CdkScrollable} from '@angular/cdk/scrolling';
 
 @Component({
   selector: 'mat-sidenav-content',
@@ -40,6 +40,10 @@ import {ScrollDispatcher} from '@angular/cdk/scrolling';
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
+  providers: [{
+    provide: CdkScrollable,
+    useExisting: MatSidenavContent,
+  }]
 })
 export class MatSidenavContent extends MatDrawerContent {
   constructor(

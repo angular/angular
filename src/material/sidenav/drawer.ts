@@ -103,6 +103,10 @@ export function MAT_DRAWER_DEFAULT_AUTOSIZE_FACTORY(): boolean {
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
+  providers: [{
+    provide: CdkScrollable,
+    useExisting: MatDrawerContent,
+  }]
 })
 export class MatDrawerContent extends CdkScrollable implements AfterContentInit {
   constructor(
