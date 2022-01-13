@@ -64,8 +64,16 @@ export enum ErrorCode {
    */
   IMPORT_CYCLE_DETECTED = 3003,
 
+  /**
+   * Raised when the compiler is unable to generate an import statement for a reference.
+   */
+  IMPORT_GENERATION_FAILURE = 3004,
+
   CONFIG_FLAT_MODULE_NO_INDEX = 4001,
   CONFIG_STRICT_TEMPLATES_IMPLIES_FULL_TEMPLATE_TYPECHECK = 4002,
+  CONFIG_EXTENDED_DIAGNOSTICS_IMPLIES_STRICT_TEMPLATES = 4003,
+  CONFIG_EXTENDED_DIAGNOSTICS_UNKNOWN_CATEGORY_LABEL = 4004,
+  CONFIG_EXTENDED_DIAGNOSTICS_UNKNOWN_CHECK = 4005,
 
   /**
    * Raised when a host expression has a parse error, such as a host listener or host binding

@@ -10,7 +10,7 @@ import {Expression, ExternalExpr, FactoryTarget, LiteralExpr, ParseLocation, Par
 import ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError, makeDiagnostic, makeRelatedInformation} from '../../diagnostics';
-import {ImportFlags, Reference, ReferenceEmitter} from '../../imports';
+import {assertSuccessfulReferenceEmit, ImportFlags, Reference, ReferenceEmitter} from '../../imports';
 import {attachDefaultImportDeclaration} from '../../imports/src/default';
 import {ForeignFunctionResolver, PartialEvaluator} from '../../partial_evaluator';
 import {ClassDeclaration, CtorParameter, Decorator, Import, ImportedTypeValueReference, isNamedClassDeclaration, LocalTypeValueReference, ReflectionHost, TypeValueReference, TypeValueReferenceKind, UnavailableValue, ValueUnavailableKind} from '../../reflection';
@@ -257,13 +257,18 @@ function createUnsuitableInjectionTokenError(
 }
 
 export function toR3Reference(
-    valueRef: Reference, typeRef: Reference, valueContext: ts.SourceFile,
+    origin: ts.Node, valueRef: Reference, typeRef: Reference, valueContext: ts.SourceFile,
     typeContext: ts.SourceFile, refEmitter: ReferenceEmitter): R3Reference {
+  const emittedValueRef = refEmitter.emit(valueRef, valueContext);
+  assertSuccessfulReferenceEmit(emittedValueRef, origin, 'class');
+
+  const emittedTypeRef = refEmitter.emit(
+      typeRef, typeContext, ImportFlags.ForceNewImport | ImportFlags.AllowTypeImports);
+  assertSuccessfulReferenceEmit(emittedTypeRef, origin, 'class');
+
   return {
-    value: refEmitter.emit(valueRef, valueContext).expression,
-    type: refEmitter
-              .emit(typeRef, typeContext, ImportFlags.ForceNewImport | ImportFlags.AllowTypeImports)
-              .expression,
+    value: emittedValueRef.expression,
+    type: emittedTypeRef.expression,
   };
 }
 

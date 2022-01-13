@@ -129,6 +129,12 @@
             "logo": "",
             "title": "NativeScript",
             "url": "https://docs.nativescript.org/angular/start/introduction"
+          },
+          "angular-miniprogram": {
+            "desc": "MiniProgram Platform for Angular.",
+            "logo": "",
+            "title": "MiniProgram",
+            "url": "https://github.com/wszgrcy/angular-miniprogram"
           }
         }
       },
@@ -753,6 +759,11 @@
             "desc": "Customized in-person instructor-led Angular training for private groups and public online instructor-led Angular classes.",
             "title": "Webucator",
             "url": "https://www.webucator.com/webdev-training/angular-training"
+          },
+          "decoded-frontend": {
+            "desc": "YouTube Channel about Angular & Web Development",
+            "title": "Decoded Frontend",
+            "url": "https://www.youtube.com/DecodedFrontend"
           },
           "-acceleb": {
             "desc": "Customized, Instructor-Led Angular Training",

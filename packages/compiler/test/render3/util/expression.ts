@@ -7,6 +7,7 @@
  */
 
 import {AbsoluteSourceSpan} from '@angular/compiler';
+
 import * as e from '../../../src/expression_parser/ast';
 import * as t from '../../../src/render3/r3_ast';
 import {unparse} from '../../expression_parser/utils/unparser';
@@ -109,6 +110,10 @@ class ExpressionSourceHumanizer extends e.RecursiveAstVisitor implements t.Visit
   override visitCall(ast: e.Call) {
     this.recordAst(ast);
     super.visitCall(ast, null);
+  }
+  override visitSafeCall(ast: e.SafeCall) {
+    this.recordAst(ast);
+    super.visitSafeCall(ast, null);
   }
 
   visitTemplate(ast: t.Template) {

@@ -64,12 +64,6 @@ describe('`restoredState#ɵrouterPageId`', () => {
     }
   }
 
-  @NgModule(
-      {imports: [RouterModule.forChild([{path: '', component: SimpleCmp}])]},
-      )
-  class LoadedModule {
-  }
-
   let fixture: ComponentFixture<unknown>;
 
   beforeEach(fakeAsync(() => {
@@ -89,21 +83,21 @@ describe('`restoredState#ɵrouterPageId`', () => {
         component: SimpleCmp,
         canDeactivate: [MyCanDeactivateGuard],
         canActivate: [MyCanActivateGuard, ThrowingCanActivateGuard],
-        resolve: [MyResolve]
+        resolve: {x: MyResolve}
       },
       {
         path: 'second',
         component: SimpleCmp,
         canDeactivate: [MyCanDeactivateGuard],
         canActivate: [MyCanActivateGuard, ThrowingCanActivateGuard],
-        resolve: [MyResolve]
+        resolve: {x: MyResolve}
       },
       {
         path: 'third',
         component: SimpleCmp,
         canDeactivate: [MyCanDeactivateGuard],
         canActivate: [MyCanActivateGuard, ThrowingCanActivateGuard],
-        resolve: [MyResolve]
+        resolve: {x: MyResolve}
       },
       {
         path: 'unguarded',
@@ -113,7 +107,7 @@ describe('`restoredState#ɵrouterPageId`', () => {
         path: 'throwing',
         component: ThrowingCmp,
       },
-      {path: 'loaded', loadChildren: () => of(LoadedModule), canLoad: ['alwaysFalse']}
+      {path: 'loaded', loadChildren: () => of(ModuleWithSimpleCmpAsRoute), canLoad: ['alwaysFalse']}
     ]);
     router.navigateByUrl('/first');
     advance(fixture);
@@ -466,6 +460,12 @@ function createRoot(router: Router, type: any): ComponentFixture<any> {
 class SimpleCmp {
 }
 
+@NgModule(
+    {imports: [RouterModule.forChild([{path: '', component: SimpleCmp}])]},
+    )
+class ModuleWithSimpleCmpAsRoute {
+}
+
 @Component({selector: 'root-cmp', template: `<router-outlet></router-outlet>`})
 class RootCmp {
 }
@@ -489,7 +489,6 @@ function advance(fixture: ComponentFixture<any>, millis?: number): void {
     RouterTestingModule.withRoutes([], {canceledNavigationResolution: 'computed'}), CommonModule
   ],
   exports: [SimpleCmp, RootCmp, ThrowingCmp],
-  entryComponents: [SimpleCmp, RootCmp, ThrowingCmp],
   declarations: [SimpleCmp, RootCmp, ThrowingCmp]
 })
 class TestModule {

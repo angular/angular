@@ -6,16 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, ASTWithSource, BindingPipe, Call, EmptyExpr, ImplicitReceiver, LiteralPrimitive, ParseSourceSpan, PropertyRead, PropertyWrite, SafePropertyRead, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstElement, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstText, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
+import {AST, ASTWithSource, BindingPipe, BindingType, Call, EmptyExpr, ImplicitReceiver, LiteralPrimitive, ParsedEventType, ParseSourceSpan, PropertyRead, PropertyWrite, SafePropertyRead, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstElement, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstText, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import {CompletionKind, DirectiveInScope, SymbolKind, TemplateDeclarationSymbol} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import {BoundEvent, TextAttribute} from '@angular/compiler/src/render3/r3_ast';
 import ts from 'typescript';
 
-import {addAttributeCompletionEntries, AttributeCompletionKind, buildAttributeCompletionTable, getAttributeCompletionSymbol} from './attribute_completions';
+import {addAttributeCompletionEntries, AttributeCompletionKind, buildAnimationCompletionEntries, buildAttributeCompletionTable, getAttributeCompletionSymbol} from './attribute_completions';
 import {DisplayInfo, DisplayInfoKind, getDirectiveDisplayInfo, getSymbolDisplayInfo, getTsSymbolDisplayInfo, unsafeCastDisplayInfoKindToScriptElementKind} from './display_parts';
 import {TargetContext, TargetNodeKind, TemplateTarget} from './template_target';
-import {filterAliasImports, isBoundEventWithSyntheticHandler} from './utils';
+import {filterAliasImports, isBoundEventWithSyntheticHandler, isWithin} from './utils';
 
 type PropertyExpressionCompletionBuilder =
     CompletionBuilder<PropertyRead|PropertyWrite|EmptyExpr|SafePropertyRead|TmplAstBoundEvent>;
@@ -27,6 +27,8 @@ type PipeCompletionBuilder = CompletionBuilder<BindingPipe>;
 
 type LiteralCompletionBuilder = CompletionBuilder<LiteralPrimitive|TextAttribute>;
 
+type ElementAnimationCompletionBuilder = CompletionBuilder<TmplAstBoundAttribute|TmplAstBoundEvent>;
+
 export enum CompletionNodeContext {
   None,
   ElementTag,
@@ -35,6 +37,8 @@ export enum CompletionNodeContext {
   EventValue,
   TwoWayBinding,
 }
+
+const ANIMATION_PHASES = ['start', 'done'];
 
 /**
  * Performs autocompletion operations on a given node in the template.
@@ -70,7 +74,11 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
     } else if (this.isElementTagCompletion()) {
       return this.getElementTagCompletion();
     } else if (this.isElementAttributeCompletion()) {
-      return this.getElementAttributeCompletions(options);
+      if (this.isAnimationCompletion()) {
+        return this.getAnimationCompletions();
+      } else {
+        return this.getElementAttributeCompletions(options);
+      }
     } else if (this.isPipeCompletion()) {
       return this.getPipeCompletions();
     } else if (this.isLiteralCompletion()) {
@@ -531,6 +539,68 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
     return directive?.tsSymbol;
   }
 
+  private isAnimationCompletion(): this is ElementAnimationCompletionBuilder {
+    return (this.node instanceof TmplAstBoundAttribute &&
+            this.node.type === BindingType.Animation) ||
+        (this.node instanceof TmplAstBoundEvent && this.node.type === ParsedEventType.Animation);
+  }
+
+  private getAnimationCompletions(this: ElementAnimationCompletionBuilder):
+      ts.WithMetadata<ts.CompletionInfo>|undefined {
+    if (this.node instanceof TmplAstBoundAttribute) {
+      const animations = this.compiler.getTemplateTypeChecker()
+                             .getDirectiveMetadata(this.component)
+                             ?.animationTriggerNames?.staticTriggerNames;
+      const replacementSpan = makeReplacementSpanFromParseSourceSpan(this.node.keySpan);
+
+      if (animations === undefined) {
+        return undefined;
+      }
+
+      const entries = buildAnimationCompletionEntries(
+          [...animations, '.disabled'], replacementSpan, DisplayInfoKind.ATTRIBUTE);
+      return {
+        entries,
+        isGlobalCompletion: false,
+        isMemberCompletion: false,
+        isNewIdentifierLocation: true,
+      };
+    } else {
+      const animationNameSpan = buildAnimationNameSpan(this.node);
+      const phaseSpan = buildAnimationPhaseSpan(this.node);
+      if (isWithin(this.position, animationNameSpan)) {
+        const animations = this.compiler.getTemplateTypeChecker()
+                               .getDirectiveMetadata(this.component)
+                               ?.animationTriggerNames?.staticTriggerNames;
+        const replacementSpan = makeReplacementSpanFromParseSourceSpan(animationNameSpan);
+
+        if (animations === undefined) {
+          return undefined;
+        }
+
+        const entries =
+            buildAnimationCompletionEntries(animations, replacementSpan, DisplayInfoKind.EVENT);
+        return {
+          entries,
+          isGlobalCompletion: false,
+          isMemberCompletion: false,
+          isNewIdentifierLocation: true,
+        };
+      }
+      if (phaseSpan !== null && isWithin(this.position, phaseSpan)) {
+        const replacementSpan = makeReplacementSpanFromParseSourceSpan(phaseSpan);
+        const entries = buildAnimationCompletionEntries(
+            ANIMATION_PHASES, replacementSpan, DisplayInfoKind.EVENT);
+        return {
+          entries,
+          isGlobalCompletion: false,
+          isMemberCompletion: false,
+          isNewIdentifierLocation: true,
+        };
+      }
+    }
+  }
+
   private isElementAttributeCompletion(): this is ElementAttributeCompletionBuilder {
     return (this.nodeContext === CompletionNodeContext.ElementAttributeKey ||
             this.nodeContext === CompletionNodeContext.TwoWayBinding) &&
@@ -883,4 +953,15 @@ function nodeContextFromTarget(target: TargetContext): CompletionNodeContext {
       // No special context is available.
       return CompletionNodeContext.None;
   }
+}
+
+function buildAnimationNameSpan(node: TmplAstBoundEvent): ParseSourceSpan {
+  return new ParseSourceSpan(node.keySpan.start, node.keySpan.start.moveBy(node.name.length));
+}
+
+function buildAnimationPhaseSpan(node: TmplAstBoundEvent): ParseSourceSpan|null {
+  if (node.phase !== null) {
+    return new ParseSourceSpan(node.keySpan.end.moveBy(-node.phase.length), node.keySpan.end);
+  }
+  return null;
 }

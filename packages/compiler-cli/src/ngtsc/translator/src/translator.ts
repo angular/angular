@@ -60,9 +60,9 @@ export class ExpressionTranslatorVisitor<TStatement, TExpression> implements o.E
   }
 
   visitDeclareVarStmt(stmt: o.DeclareVarStmt, context: Context): TStatement {
-    const varType = this.downlevelVariableDeclarations ?
-        'var' :
-        stmt.hasModifier(o.StmtModifier.Final) ? 'const' : 'let';
+    const varType = this.downlevelVariableDeclarations ? 'var' :
+        stmt.hasModifier(o.StmtModifier.Final)         ? 'const' :
+                                                         'let';
     return this.attachComments(
         this.factory.createVariableDeclaration(
             stmt.name, stmt.value?.visitExpression(this, context.withExpressionMode), varType),
@@ -92,10 +92,6 @@ export class ExpressionTranslatorVisitor<TStatement, TExpression> implements o.E
         stmt.leadingComments);
   }
 
-  visitDeclareClassStmt(_stmt: o.ClassStmt, _context: Context): never {
-    throw new Error('Method not implemented.');
-  }
-
   visitIfStmt(stmt: o.IfStmt, context: Context): TStatement {
     return this.attachComments(
         this.factory.createIfStatement(
@@ -105,17 +101,6 @@ export class ExpressionTranslatorVisitor<TStatement, TExpression> implements o.E
             stmt.falseCase.length > 0 ? this.factory.createBlock(this.visitStatements(
                                             stmt.falseCase, context.withStatementMode)) :
                                         null),
-        stmt.leadingComments);
-  }
-
-  visitTryCatchStmt(_stmt: o.TryCatchStmt, _context: Context): never {
-    throw new Error('Method not implemented.');
-  }
-
-  visitThrowStmt(stmt: o.ThrowStmt, context: Context): TStatement {
-    return this.attachComments(
-        this.factory.createThrowStatement(
-            stmt.error.visitExpression(this, context.withExpressionMode)),
         stmt.leadingComments);
   }
 
@@ -314,14 +299,6 @@ export class ExpressionTranslatorVisitor<TStatement, TExpression> implements o.E
 
   visitNotExpr(ast: o.NotExpr, context: Context): TExpression {
     return this.factory.createUnaryExpression('!', ast.condition.visitExpression(this, context));
-  }
-
-  visitAssertNotNullExpr(ast: o.AssertNotNull, context: Context): TExpression {
-    return ast.condition.visitExpression(this, context);
-  }
-
-  visitCastExpr(ast: o.CastExpr, context: Context): TExpression {
-    return ast.value.visitExpression(this, context);
   }
 
   visitFunctionExpr(ast: o.FunctionExpr, context: Context): TExpression {

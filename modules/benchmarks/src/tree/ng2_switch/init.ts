@@ -9,7 +9,7 @@
 import {ApplicationRef, NgModuleRef} from '@angular/core';
 
 import {bindAction, profile} from '../../util';
-import {buildTree, emptyTree} from '../util';
+import {buildTree, emptyTree, initTreeUtils} from '../util';
 
 import {AppModule, TreeComponent} from './tree';
 
@@ -31,8 +31,10 @@ export function init(moduleRef: NgModuleRef<AppModule>) {
 
   const injector = moduleRef.injector;
   appRef = injector.get(ApplicationRef);
-
   tree = appRef.components[0].instance;
+
+  initTreeUtils();
+
   bindAction('#destroyDom', destroyDom);
   bindAction('#createDom', createDom);
   bindAction('#updateDomProfile', profile(createDom, noop, 'update'));

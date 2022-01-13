@@ -11,11 +11,11 @@ export class HighlightDirective {
   @Input() defaultColor = '';
   // #enddocregion defaultColor
 
-  @Input('appHighlight') highlightColor = '';
+  @Input() appHighlight = '';
 
   // #docregion mouse-enter
   @HostListener('mouseenter') onMouseEnter() {
-    this.highlight(this.highlightColor || this.defaultColor || 'red');
+    this.highlight(this.appHighlight || this.defaultColor || 'red');
   }
   // #enddocregion mouse-enter
 

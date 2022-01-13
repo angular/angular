@@ -14,7 +14,7 @@ ts_library(
 
 jasmine_node_test(
     name = "expression_parser",
-    bootstrap = ["//tools/testing:node_es5"],
+    bootstrap = ["//tools/testing:node_es2015"],
     deps = [
         ":expression_parser_lib",
     ],

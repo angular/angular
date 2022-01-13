@@ -3348,6 +3348,51 @@ describe('animation query tests', function() {
       expect(pp.element.classList.contains('container')).toBeTruthy();
       expect(pcp.element.classList.contains('item')).toBeTruthy();
     });
+
+    it('should correctly remove a leaving element queried/animated by a parent queried via animateChild',
+       fakeAsync(() => {
+         @Component({
+           selector: 'cmp',
+           template: `
+            <div class="grand-parent" [@grandParentAnimation]="childPresent">
+              <div class="parent" [@parentAnimation]="childPresent">
+              <div *ngIf="childPresent" class="child"></div>
+              </div>
+            </div>
+          `,
+           animations: [
+             trigger(
+                 'grandParentAnimation',
+                 [transition('true <=> false', query('@parentAnimation', animateChild()))]),
+             trigger(
+                 'parentAnimation',
+                 [transition(
+                     'true => false', query(':leave.child', animate('.2s', style({opacity: 0}))))])
+           ]
+         })
+         class Cmp {
+           public childPresent = true;
+         }
+
+         TestBed.configureTestingModule({declarations: [Cmp]});
+
+         const engine = TestBed.inject(ɵAnimationEngine);
+         const fixture = TestBed.createComponent(Cmp);
+         const cmp = fixture.componentInstance;
+         fixture.detectChanges();
+
+         let children = fixture.debugElement.nativeElement.querySelectorAll('.child');
+         expect(children.length).toEqual(1);
+
+         cmp.childPresent = false;
+         fixture.detectChanges();
+         flushMicrotasks();
+
+         engine.players.forEach(player => player.finish());
+
+         children = fixture.debugElement.nativeElement.querySelectorAll('.child');
+         expect(children.length).toEqual(0);
+       }));
   });
 
   describe('animation control flags', () => {

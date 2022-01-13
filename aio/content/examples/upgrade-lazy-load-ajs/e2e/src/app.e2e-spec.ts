@@ -52,7 +52,11 @@ describe('Lazy Loading AngularJS Tests', () => {
     }
 
     // Wait for the AngularJS bundle to download and initialize
-    await browser.wait(ExpectedConditions.presenceOf(element(by.css('app-root app-angular-js'))), 5000, 'AngularJS app');
+    await browser.wait(
+      ExpectedConditions.presenceOf(element(by.css('app-root app-angular-js'))),
+      5000,
+      'AngularJS app'
+    );
 
     // Run the protractor pre-bootstrap logic and resumeBootstrap
     // Based on https://github.com/angular/protractor/blob/5.3.0/lib/browser.ts#L950-L969

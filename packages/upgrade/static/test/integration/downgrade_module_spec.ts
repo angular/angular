@@ -10,7 +10,6 @@ import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, 
 import {fakeAsync, tick, waitForAsync} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
-import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
 import {downgradeComponent, downgradeModule, UpgradeComponent} from '@angular/upgrade/static';
 
 import * as angular from '../../../src/common/src/angular1';
@@ -37,7 +36,6 @@ withEachNg1Version(() => {
 
            @NgModule({
              declarations: [Ng2ComponentA],
-             entryComponents: [Ng2ComponentA],
              imports: [BrowserModule],
            })
            class Ng2ModuleA {
@@ -46,7 +44,6 @@ withEachNg1Version(() => {
 
            @NgModule({
              declarations: [Ng2ComponentB],
-             entryComponents: [Ng2ComponentB],
              imports: [BrowserModule],
            })
            class Ng2ModuleB {
@@ -92,7 +89,6 @@ withEachNg1Version(() => {
 
            @NgModule({
              declarations: [Ng2ComponentA],
-             entryComponents: [Ng2ComponentA],
              imports: [BrowserModule],
            })
            class Ng2ModuleA {
@@ -101,7 +97,6 @@ withEachNg1Version(() => {
 
            @NgModule({
              declarations: [Ng2ComponentB],
-             entryComponents: [Ng2ComponentB],
              imports: [BrowserModule],
            })
            class Ng2ModuleB {
@@ -153,7 +148,6 @@ withEachNg1Version(() => {
 
            @NgModule({
              declarations: [Ng1ComponentA, Ng2ComponentA],
-             entryComponents: [Ng2ComponentA],
              imports: [BrowserModule],
            })
            class Ng2ModuleA {
@@ -162,7 +156,6 @@ withEachNg1Version(() => {
 
            @NgModule({
              declarations: [Ng2ComponentB],
-             entryComponents: [Ng2ComponentB],
              imports: [BrowserModule],
            })
            class Ng2ModuleB {
@@ -229,7 +222,6 @@ withEachNg1Version(() => {
 
            @NgModule({
              declarations: [Ng2ComponentA],
-             entryComponents: [Ng2ComponentA],
              imports: [BrowserModule],
            })
            class Ng2ModuleA {
@@ -238,7 +230,6 @@ withEachNg1Version(() => {
 
            @NgModule({
              declarations: [Ng2ComponentB],
-             entryComponents: [Ng2ComponentB],
              imports: [BrowserModule],
            })
            class Ng2ModuleB {
@@ -308,14 +299,12 @@ withEachNg1Version(() => {
 
            @NgModule({
              declarations: [Ng2ComponentA],
-             entryComponents: [Ng2ComponentA],
            })
            class Ng2ModuleA {
            }
 
            @NgModule({
              declarations: [Ng2ComponentB],
-             entryComponents: [Ng2ComponentB],
            })
            class Ng2ModuleB {
            }
@@ -418,7 +407,6 @@ withEachNg1Version(() => {
 
            @NgModule({
              declarations: [Ng2ComponentA, Ng2ComponentB],
-             entryComponents: [Ng2ComponentA, Ng2ComponentB],
              imports: [BrowserModule],
              providers: [
                {provide: 'FOO', useValue: 'Mod-foo'},
@@ -507,7 +495,6 @@ withEachNg1Version(() => {
 
            @NgModule({
              declarations: [Ng2ComponentA],
-             entryComponents: [Ng2ComponentA],
              imports: [BrowserModule],
              providers: [
                {provide: 'FOO', useValue: 'ModA-foo'},
@@ -522,7 +509,6 @@ withEachNg1Version(() => {
 
            @NgModule({
              declarations: [Ng2ComponentB],
-             entryComponents: [Ng2ComponentB],
              imports: [BrowserModule],
              providers: [
                {provide: 'FOO', useValue: 'ModB-foo'},
@@ -608,7 +594,6 @@ withEachNg1Version(() => {
 
            @NgModule({
              declarations: [Ng2AComponent, Ng2BComponent],
-             entryComponents: [Ng2AComponent],
              imports: [BrowserModule],
            })
            class Ng2Module {
@@ -667,7 +652,6 @@ withEachNg1Version(() => {
 
            @NgModule({
              declarations: [Ng2Component],
-             entryComponents: [Ng2Component],
              imports: [BrowserModule],
              providers: [
                Ng2Service,
@@ -721,7 +705,6 @@ withEachNg1Version(() => {
 
            @NgModule({
              declarations: [Ng2Component],
-             entryComponents: [Ng2Component],
              imports: [BrowserModule],
            })
            class Ng2Module {
@@ -758,7 +741,6 @@ withEachNg1Version(() => {
 
            @NgModule({
              declarations: [Ng2Component],
-             entryComponents: [Ng2Component],
              imports: [BrowserModule],
            })
            class Ng2Module {
@@ -800,7 +782,6 @@ withEachNg1Version(() => {
 
            @NgModule({
              declarations: [Ng2Component],
-             entryComponents: [Ng2Component],
              imports: [BrowserModule],
            })
            class Ng2Module {
@@ -874,7 +855,6 @@ withEachNg1Version(() => {
 
            @NgModule({
              declarations: [TestComponent, WrapperComponent],
-             entryComponents: [TestComponent, WrapperComponent],
              imports: [BrowserModule],
            })
            class Ng2Module {
@@ -925,7 +905,6 @@ withEachNg1Version(() => {
 
            @NgModule({
              declarations: [Ng2Component],
-             entryComponents: [Ng2Component],
              imports: [BrowserModule],
            })
            class Ng2Module {
@@ -977,7 +956,6 @@ withEachNg1Version(() => {
 
            @NgModule({
              declarations: [TestComponent, WrapperComponent],
-             entryComponents: [TestComponent, WrapperComponent],
              imports: [BrowserModule],
            })
            class Ng2Module {
@@ -1064,7 +1042,6 @@ withEachNg1Version(() => {
 
            @NgModule({
              declarations: [Ng2Component],
-             entryComponents: [Ng2Component],
              imports: [BrowserModule],
            })
            class Ng2Module {
@@ -1207,7 +1184,6 @@ withEachNg1Version(() => {
 
            @NgModule({
              declarations: [Ng2Component],
-             entryComponents: [Ng2Component],
              imports: [BrowserModule],
            })
            class Ng2Module {
@@ -1254,7 +1230,6 @@ withEachNg1Version(() => {
 
            @NgModule({
              declarations: [Ng2Component],
-             entryComponents: [Ng2Component],
              imports: [BrowserModule],
            })
            class Ng2Module {
@@ -1321,7 +1296,6 @@ withEachNg1Version(() => {
 
            @NgModule({
              declarations: [Ng2Component],
-             entryComponents: [Ng2Component],
              imports: [BrowserModule],
            })
            class Ng2Module {
@@ -1335,7 +1309,6 @@ withEachNg1Version(() => {
              ngDoBootstrap() {}
            }
 
-           const tickDelay = browserDetection.isIE ? 100 : 0;
            const bootstrapFn = (extraProviders: StaticProvider[]) =>
                platformBrowserDynamic(extraProviders).bootstrapModule(Ng2Module);
            const lazyModuleName = downgradeModule<Ng2Module>(bootstrapFn);
@@ -1349,8 +1322,8 @@ withEachNg1Version(() => {
            const $rootScope = $injector.get($ROOT_SCOPE) as angular.IRootScopeService;
 
            $rootScope.$apply('showNg2 = true');
-           tick(tickDelay);  // Wait for the module to be bootstrapped and `$evalAsync()` to
-                             // propagate inputs.
+           tick(0);  // Wait for the module to be bootstrapped and `$evalAsync()` to
+                     // propagate inputs.
 
            const injector = ($injector.get(LAZY_MODULE_REF) as LazyModuleRef).injector!;
            const injectorGet = injector.get;
@@ -1365,7 +1338,7 @@ withEachNg1Version(() => {
            expect(element.textContent).toBe('');
 
            $rootScope.$apply('showNg2 = true');
-           tick(tickDelay);  // Wait for `$evalAsync()` to propagate inputs.
+           tick(0);  // Wait for `$evalAsync()` to propagate inputs.
            expect(element.textContent).toBe('Count: 2 | In the zone: true');
 
            $rootScope.$destroy();
@@ -1381,7 +1354,6 @@ withEachNg1Version(() => {
 
            @NgModule({
              declarations: [Ng2Component],
-             entryComponents: [Ng2Component],
              imports: [BrowserModule],
            })
            class Ng2Module {
@@ -1414,7 +1386,6 @@ withEachNg1Version(() => {
 
            @NgModule({
              declarations: [Ng2Component],
-             entryComponents: [Ng2Component],
              imports: [BrowserModule],
            })
            class Ng2Module {
@@ -1493,7 +1464,6 @@ withEachNg1Version(() => {
 
           @NgModule({
             declarations: [Ng2ComponentA],
-            entryComponents: [Ng2ComponentA],
             imports: [BrowserModule],
           })
           class Ng2ModuleA {
@@ -1502,7 +1472,6 @@ withEachNg1Version(() => {
 
           @NgModule({
             declarations: [Ng2ComponentB],
-            entryComponents: [Ng2ComponentB],
             imports: [BrowserModule],
           })
           class Ng2ModuleB {

@@ -31,8 +31,6 @@
     "importHelpers": true
   },
   "bazelOptions": {
-    "suppressTsconfigOverrideWarnings": true,
-    // TODO(devversion): Switch devmode target to ES2020 or combine devmode with prodmode.
-    "devmodeTargetOverride": "es5"
+    "suppressTsconfigOverrideWarnings": true
   }
 }

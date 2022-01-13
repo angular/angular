@@ -6,9 +6,6 @@
     "name": "ChangeDetectionStrategy"
   },
   {
-    "name": "DepComponent"
-  },
-  {
     "name": "EMPTY_ARRAY"
   },
   {
@@ -16,9 +13,6 @@
   },
   {
     "name": "InjectFlags"
-  },
-  {
-    "name": "Module"
   },
   {
     "name": "NG_COMP_DEF"
@@ -43,9 +37,6 @@
   },
   {
     "name": "RuntimeError"
-  },
-  {
-    "name": "SimpleChange"
   },
   {
     "name": "TriggerComponent"
@@ -91,9 +82,6 @@
   },
   {
     "name": "attachPatchData"
-  },
-  {
-    "name": "autoRegisterModuleById"
   },
   {
     "name": "callHook"
@@ -160,6 +148,9 @@
   },
   {
     "name": "generatePropertyAliases"
+  },
+  {
+    "name": "getBindingsEnabled"
   },
   {
     "name": "getClosureSafeProperty"
@@ -297,9 +288,6 @@
     "name": "ngOnChangesSetInput"
   },
   {
-    "name": "noSideEffects"
-  },
-  {
     "name": "refreshComponent"
   },
   {
@@ -373,12 +361,6 @@
   },
   {
     "name": "ɵɵdefineComponent"
-  },
-  {
-    "name": "ɵɵdefineInjector"
-  },
-  {
-    "name": "ɵɵdefineNgModule"
   },
   {
     "name": "ɵɵelementStart"

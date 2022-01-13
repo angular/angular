@@ -22,49 +22,6 @@ export interface LocalResolver {
   maybeRestoreView(): void;
 }
 
-export class ConvertActionBindingResult {
-  /**
-   * Store statements which are render3 compatible.
-   */
-  render3Stmts: o.Statement[];
-  constructor(
-      /**
-       * Render2 compatible statements,
-       */
-      public stmts: o.Statement[],
-      /**
-       * Variable name used with render2 compatible statements.
-       */
-      public allowDefault: o.ReadVarExpr) {
-    /**
-     * This is bit of a hack. It converts statements which render2 expects to statements which are
-     * expected by render3.
-     *
-     * Example: `<div click="doSomething($event)">` will generate:
-     *
-     * Render3:
-     * ```
-     * const pd_b:any = ((<any>ctx.doSomething($event)) !== false);
-     * return pd_b;
-     * ```
-     *
-     * but render2 expects:
-     * ```
-     * return ctx.doSomething($event);
-     * ```
-     */
-    // TODO(misko): remove this hack once we no longer support ViewEngine.
-    this.render3Stmts = stmts.map((statement: o.Statement) => {
-      if (statement instanceof o.DeclareVarStmt && statement.name == allowDefault.name &&
-          statement.value instanceof o.BinaryOperatorExpr) {
-        const lhs = statement.value.lhs as o.CastExpr;
-        return new o.ReturnStatement(lhs.value);
-      }
-      return statement;
-    });
-  }
-}
-
 export type InterpolationFunction = (args: o.Expression[]) => o.Expression;
 
 /**
@@ -75,7 +32,7 @@ export function convertActionBinding(
     localResolver: LocalResolver|null, implicitReceiver: o.Expression, action: cdAst.AST,
     bindingId: string, interpolationFunction?: InterpolationFunction,
     baseSourceSpan?: ParseSourceSpan, implicitReceiverAccesses?: Set<string>,
-    globals?: Set<string>): ConvertActionBindingResult {
+    globals?: Set<string>): o.Statement[] {
   if (!localResolver) {
     localResolver = new DefaultLocalResolver(globals);
   }
@@ -114,20 +71,14 @@ export function convertActionBinding(
   }
 
   const lastIndex = actionStmts.length - 1;
-  let preventDefaultVar: o.ReadVarExpr = null!;
   if (lastIndex >= 0) {
     const lastStatement = actionStmts[lastIndex];
-    const returnExpr = convertStmtIntoExpression(lastStatement);
-    if (returnExpr) {
-      // Note: We need to cast the result of the method call to dynamic,
-      // as it might be a void method!
-      preventDefaultVar = createPreventDefaultVar(bindingId);
-      actionStmts[lastIndex] =
-          preventDefaultVar.set(returnExpr.cast(o.DYNAMIC_TYPE).notIdentical(o.literal(false)))
-              .toDeclStmt(null, [o.StmtModifier.Final]);
+    // Ensure that the value of the last expression statement is returned
+    if (lastStatement instanceof o.ExpressionStatement) {
+      actionStmts[lastIndex] = new o.ReturnStatement(lastStatement.expr);
     }
   }
-  return new ConvertActionBindingResult(actionStmts, preventDefaultVar);
+  return actionStmts;
 }
 
 export interface BuiltinConverter {
@@ -149,20 +100,6 @@ export class ConvertPropertyBindingResult {
   constructor(public stmts: o.Statement[], public currValExpr: o.Expression) {}
 }
 
-export enum BindingForm {
-  // The general form of binding expression, supports all expressions.
-  General,
-
-  // Try to generate a simple binding (no temporaries or statements)
-  // otherwise generate a general binding
-  TrySimple,
-
-  // Inlines assignment of temporaries into the generated expression. The result may still
-  // have statements attached for declarations of temporary variables.
-  // This is the only relevant form for Ivy, the other forms are only used in ViewEngine.
-  Expression,
-}
-
 /**
  * Converts the given expression AST into an executable output AST, assuming the expression
  * is used in property binding. The expression has to be preprocessed via
@@ -170,7 +107,7 @@ export enum BindingForm {
  */
 export function convertPropertyBinding(
     localResolver: LocalResolver|null, implicitReceiver: o.Expression,
-    expressionWithoutBuiltins: cdAst.AST, bindingId: string, form: BindingForm,
+    expressionWithoutBuiltins: cdAst.AST, bindingId: string,
     interpolationFunction?: InterpolationFunction): ConvertPropertyBindingResult {
   if (!localResolver) {
     localResolver = new DefaultLocalResolver();
@@ -184,15 +121,7 @@ export function convertPropertyBinding(
     localResolver.notifyImplicitReceiverUse();
   }
 
-  if (visitor.temporaryCount === 0 && form == BindingForm.TrySimple) {
-    return new ConvertPropertyBindingResult([], outputExpr);
-  } else if (form === BindingForm.Expression) {
-    return new ConvertPropertyBindingResult(stmts, outputExpr);
-  }
-
-  const currValExpr = createCurrValueExpr(bindingId);
-  stmts.push(currValExpr.set(outputExpr).toDeclStmt(o.DYNAMIC_TYPE, [o.StmtModifier.Final]));
-  return new ConvertPropertyBindingResult(stmts, currValExpr);
+  return new ConvertPropertyBindingResult(stmts, outputExpr);
 }
 
 /**
@@ -516,8 +445,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
   }
 
   visitNonNullAssert(ast: cdAst.NonNullAssert, mode: _Mode): any {
-    return convertToStatementIfNeeded(
-        mode, o.assertNotNull(this._visit(ast.expression, _Mode.Expression)));
+    return convertToStatementIfNeeded(mode, this._visit(ast.expression, _Mode.Expression));
   }
 
   visitPropertyRead(ast: cdAst.PropertyRead, mode: _Mode): any {
@@ -615,15 +543,16 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
         throw new Error(`Invalid call to $any, expected 1 argument but received ${
             convertedArgs.length || 'none'}`);
       }
-      return convertToStatementIfNeeded(
-          mode,
-          (convertedArgs[0] as o.Expression)
-              .cast(o.DYNAMIC_TYPE, this.convertSourceSpan(ast.span)));
+      return convertToStatementIfNeeded(mode, convertedArgs[0] as o.Expression);
     }
 
     const call = this._visit(receiver, _Mode.Expression)
                      .callFn(convertedArgs, this.convertSourceSpan(ast.span));
     return convertToStatementIfNeeded(mode, call);
+  }
+
+  visitSafeCall(ast: cdAst.SafeCall, mode: _Mode): any {
+    return this.convertSafeAccess(ast, this.leftMostSafeNode(ast), mode);
   }
 
   private _visit(ast: cdAst.AST, mode: _Mode): any {
@@ -633,7 +562,8 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
   }
 
   private convertSafeAccess(
-      ast: cdAst.AST, leftMostSafe: cdAst.SafePropertyRead|cdAst.SafeKeyedRead, mode: _Mode): any {
+      ast: cdAst.AST, leftMostSafe: cdAst.SafePropertyRead|cdAst.SafeKeyedRead|cdAst.SafeCall,
+      mode: _Mode): any {
     // If the expression contains a safe access node on the left it needs to be converted to
     // an expression that guards the access to the member by checking the receiver for blank. As
     // execution proceeds from left to right, the left most part of the expression must be guarded
@@ -690,7 +620,13 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
 
     // Convert the ast to an unguarded access to the receiver's member. The map will substitute
     // leftMostNode with its unguarded version in the call to `this.visit()`.
-    if (leftMostSafe instanceof cdAst.SafeKeyedRead) {
+    if (leftMostSafe instanceof cdAst.SafeCall) {
+      this._nodeMap.set(
+          leftMostSafe,
+          new cdAst.Call(
+              leftMostSafe.span, leftMostSafe.sourceSpan, leftMostSafe.receiver, leftMostSafe.args,
+              leftMostSafe.argumentSpan));
+    } else if (leftMostSafe instanceof cdAst.SafeKeyedRead) {
       this._nodeMap.set(
           leftMostSafe,
           new cdAst.KeyedRead(
@@ -763,6 +699,9 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
       },
       visitCall(ast: cdAst.Call) {
         return visit(this, ast.receiver);
+      },
+      visitSafeCall(ast: cdAst.SafeCall) {
+        return visit(this, ast.receiver) || ast;
       },
       visitImplicitReceiver(ast: cdAst.ImplicitReceiver) {
         return null;
@@ -839,6 +778,9 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
         return visit(this, ast.condition) || visit(this, ast.trueExp) || visit(this, ast.falseExp);
       },
       visitCall(ast: cdAst.Call) {
+        return true;
+      },
+      visitSafeCall(ast: cdAst.SafeCall) {
         return true;
       },
       visitImplicitReceiver(ast: cdAst.ImplicitReceiver) {
@@ -953,23 +895,6 @@ class DefaultLocalResolver implements LocalResolver {
     }
     return null;
   }
-}
-
-function createCurrValueExpr(bindingId: string): o.ReadVarExpr {
-  return o.variable(`currVal_${bindingId}`);  // fix syntax highlighting: `
-}
-
-function createPreventDefaultVar(bindingId: string): o.ReadVarExpr {
-  return o.variable(`pd_${bindingId}`);
-}
-
-function convertStmtIntoExpression(stmt: o.Statement): o.Expression|null {
-  if (stmt instanceof o.ExpressionStatement) {
-    return stmt.expr;
-  } else if (stmt instanceof o.ReturnStatement) {
-    return stmt.value;
-  }
-  return null;
 }
 
 export class BuiltinFunctionCall extends cdAst.Call {

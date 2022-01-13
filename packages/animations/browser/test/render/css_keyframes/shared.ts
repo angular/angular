@@ -18,16 +18,6 @@ export function makeAnimationEvent(
   return e;
 }
 
-export function supportsAnimationEventCreation() {
-  let supported = false;
-  try {
-    makeAnimationEvent('end', 'test', 0);
-    supported = true;
-  } catch {
-  }
-  return supported;
-}
-
 export function findKeyframeDefinition(sheet: any): any|null {
   return sheet.cssRules[0] || null;
 }

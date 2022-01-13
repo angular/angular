@@ -101,8 +101,6 @@ aio-code {
       top: -7px;
       right: -19px;
       padding: 0;
-      overflow: visible; // This is required for the button to be displayed correctly in IE11.
-
       background-color: transparent;
       border: none;
       cursor: pointer;
@@ -121,11 +119,11 @@ aio-code {
   :not(h1):not(h2):not(h3):not(h4):not(h5):not(h6):not(pre) {
     > code {
       border-radius: 4px;
-      padding: 0 4px;
+      padding: 4px;
     }
 
-    &:not(a) > code {
-      padding: 4px;
+    &:is(a) > code {
+      @include mixins.line-height(24);
     }
   }
 

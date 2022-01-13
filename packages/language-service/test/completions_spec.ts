@@ -97,7 +97,6 @@ const NG_FOR_DIR = {
      })
      export class NgFor {
        constructor(ref: TemplateRef<any>) {}
- 
        ngForOf!: any;
      }
    `
@@ -140,6 +139,14 @@ const UNION_TYPE_PIPE = {
      }
     `
 };
+
+const ANIMATION_TRIGGER_FUNCTION = `
+function trigger(name: string) {
+  return {name};
+}
+`;
+
+const ANIMATION_METADATA = `animations: [trigger('animationName')],`;
 
 describe('completions', () => {
   beforeEach(() => {
@@ -341,16 +348,6 @@ describe('completions', () => {
     it('should return completions in a safe method call context', () => {
       const {templateFile} = setup(`{{name?.f()}}`, `name!: {first: string; full(): string;};`);
       templateFile.moveCursorToText('{{name?.f¦()}}');
-      const completions = templateFile.getCompletionsAtPosition();
-      expectAll(completions, {
-        first: ts.ScriptElementKind.memberVariableElement,
-        full: ts.ScriptElementKind.memberFunctionElement,
-      });
-    });
-
-    it('should return completions in an empty safe method call context', () => {
-      const {templateFile} = setup(`{{name?.()}}`, `name!: {first: string; full(): string;};`);
-      templateFile.moveCursorToText('{{name?.¦()}}');
       const completions = templateFile.getCompletionsAtPosition();
       expectAll(completions, {
         first: ts.ScriptElementKind.memberVariableElement,
@@ -680,6 +677,92 @@ describe('completions', () => {
               completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.ATTRIBUTE),
               ['myInput']);
         });
+      });
+
+      describe('animations', () => {
+        it('should return animation names for the property binding', () => {
+          const {templateFile} =
+              setup(`<input [@my]>`, '', {}, ANIMATION_TRIGGER_FUNCTION, ANIMATION_METADATA);
+          templateFile.moveCursorToText('[@my¦]');
+
+          const completions = templateFile.getCompletionsAtPosition();
+          expectContain(
+              completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.ATTRIBUTE),
+              ['animationName']);
+          expectReplacementText(completions, templateFile.contents, 'my');
+        });
+
+        it('should return animation names when the property binding animation name is empty',
+           () => {
+             const {templateFile} =
+                 setup(`<input [@]>`, '', {}, ANIMATION_TRIGGER_FUNCTION, ANIMATION_METADATA);
+             templateFile.moveCursorToText('[@¦]');
+
+             const completions = templateFile.getCompletionsAtPosition();
+             expectContain(
+                 completions,
+                 unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.ATTRIBUTE),
+                 ['animationName']);
+           });
+
+        it('should return the special animation control binding called @.disabled ', () => {
+          const {templateFile} =
+              setup(`<input [@.dis]>`, '', {}, ANIMATION_TRIGGER_FUNCTION, ANIMATION_METADATA);
+          templateFile.moveCursorToText('[@.dis¦]');
+
+          const completions = templateFile.getCompletionsAtPosition();
+          expectContain(
+              completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.ATTRIBUTE),
+              ['.disabled']);
+          expectReplacementText(completions, templateFile.contents, '.dis');
+        });
+
+        it('should return animation names for the event binding', () => {
+          const {templateFile} =
+              setup(`<input (@my)>`, '', {}, ANIMATION_TRIGGER_FUNCTION, ANIMATION_METADATA);
+          templateFile.moveCursorToText('(@my¦)');
+
+          const completions = templateFile.getCompletionsAtPosition();
+          expectContain(
+              completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.EVENT),
+              ['animationName']);
+          expectReplacementText(completions, templateFile.contents, 'my');
+        });
+
+        it('should return animation names when the event binding animation name is empty', () => {
+          const {templateFile} =
+              setup(`<input (@)>`, '', {}, ANIMATION_TRIGGER_FUNCTION, ANIMATION_METADATA);
+          templateFile.moveCursorToText('(@¦)');
+
+          const completions = templateFile.getCompletionsAtPosition();
+          expectContain(
+              completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.EVENT),
+              ['animationName']);
+        });
+
+        it('should return the animation phase for the event binding', () => {
+          const {templateFile} =
+              setup(`<input (@my.do)>`, '', {}, ANIMATION_TRIGGER_FUNCTION, ANIMATION_METADATA);
+          templateFile.moveCursorToText('(@my.do¦)');
+
+          const completions = templateFile.getCompletionsAtPosition();
+          expectContain(
+              completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.EVENT),
+              ['done']);
+          expectReplacementText(completions, templateFile.contents, 'do');
+        });
+
+        it('should return the animation phase when the event binding animation phase is empty',
+           () => {
+             const {templateFile} =
+                 setup(`<input (@my.)>`, '', {}, ANIMATION_TRIGGER_FUNCTION, ANIMATION_METADATA);
+             templateFile.moveCursorToText('(@my.¦)');
+
+             const completions = templateFile.getCompletionsAtPosition();
+             expectContain(
+                 completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.EVENT),
+                 ['done']);
+           });
       });
 
       it('should return input completions for a partial attribute', () => {
@@ -1178,7 +1261,8 @@ function toText(displayParts?: ts.SymbolDisplayPart[]): string {
 }
 
 function setup(
-    template: string, classContents: string, otherDeclarations: {[name: string]: string} = {}): {
+    template: string, classContents: string, otherDeclarations: {[name: string]: string} = {},
+    functionDeclarations: string = '', componentMetadata: string = ''): {
   templateFile: OpenBuffer,
 } {
   const decls = ['AppCmp', ...Object.keys(otherDeclarations)];
@@ -1189,17 +1273,20 @@ function setup(
   const project = env.addProject('test', {
     'test.ts': `
          import {Component, Directive, NgModule, Pipe, TemplateRef} from '@angular/core';
- 
+
+         ${functionDeclarations}
+
          @Component({
            templateUrl: './test.html',
            selector: 'app-cmp',
+           ${componentMetadata}
          })
          export class AppCmp {
            ${classContents}
          }
- 
+
          ${otherDirectiveClassDecls}
- 
+
          @NgModule({
            declarations: [${decls.join(', ')}],
          })
@@ -1222,7 +1309,7 @@ function setupInlineTemplate(
   const project = env.addProject('test', {
     'test.ts': `
          import {Component, Directive, NgModule, Pipe, TemplateRef} from '@angular/core';
- 
+
          @Component({
            template: '${template}',
            selector: 'app-cmp',
@@ -1230,9 +1317,9 @@ function setupInlineTemplate(
          export class AppCmp {
            ${classContents}
          }
- 
+
          ${otherDirectiveClassDecls}
- 
+
          @NgModule({
            declarations: [${decls.join(', ')}],
          })

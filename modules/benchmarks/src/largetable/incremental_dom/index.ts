@@ -7,7 +7,8 @@
  */
 
 import {bindAction, profile} from '../../util';
-import {buildTable, emptyTable} from '../util';
+import {buildTable, emptyTable, initTableUtils} from '../util';
+
 import {TableComponent} from './table';
 
 let table: TableComponent;
@@ -24,6 +25,8 @@ function noop() {}
 
 function init() {
   table = new TableComponent(document.querySelector('largetable'));
+
+  initTableUtils();
 
   bindAction('#destroyDom', destroyDom);
   bindAction('#createDom', createDom);

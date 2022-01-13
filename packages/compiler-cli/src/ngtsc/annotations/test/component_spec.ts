@@ -13,7 +13,7 @@ import {CycleAnalyzer, CycleHandlingStrategy, ImportGraph} from '../../cycles';
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {absoluteFrom} from '../../file_system';
 import {runInEachFileSystem} from '../../file_system/testing';
-import {ModuleResolver, ReferenceEmitter} from '../../imports';
+import {ModuleResolver, Reference, ReferenceEmitter} from '../../imports';
 import {CompoundMetadataReader, DtsMetadataReader, InjectableClassRegistry, LocalMetadataRegistry, ResourceRegistry} from '../../metadata';
 import {PartialEvaluator} from '../../partial_evaluator';
 import {NOOP_PERF_RECORDER} from '../../perf';
@@ -87,7 +87,7 @@ function setup(program: ts.Program, options: ts.CompilerOptions, host: ts.Compil
       /* annotateForClosureCompiler */ false,
       NOOP_PERF_RECORDER,
   );
-  return {reflectionHost, handler, resourceLoader};
+  return {reflectionHost, handler, resourceLoader, metaRegistry};
 }
 
 runInEachFileSystem(() => {
@@ -399,6 +399,124 @@ runInEachFileSystem(() => {
       await handler.preanalyze(TestCmp, detected.metadata);
 
       expect(() => handler.analyze(TestCmp, detected.metadata)).not.toThrow();
+    });
+
+    it('should evaluate the name of animations', () => {
+      const {program, options, host} = makeProgram([
+        {
+          name: _('/node_modules/@angular/core/index.d.ts'),
+          contents: 'export const Component: any;',
+        },
+        {
+          name: _('/entry.ts'),
+          contents: `
+          import {Component} from '@angular/core';
+          function trigger(name) {
+            return {name};
+          }
+          @Component({
+            template: '',
+            animations: [
+              trigger('animationName'),
+              [trigger('nestedAnimationName')],
+            ],
+          })
+          class TestCmp {}
+      `
+        },
+      ]);
+      const {reflectionHost, handler, metaRegistry} = setup(program, options, host);
+      const TestCmp = getDeclaration(program, _('/entry.ts'), 'TestCmp', isNamedClassDeclaration);
+      const detected = handler.detect(TestCmp, reflectionHost.getDecoratorsOfDeclaration(TestCmp));
+      if (detected === undefined) {
+        return fail('Failed to recognize @Component');
+      }
+      const {analysis} = handler.analyze(TestCmp, detected.metadata);
+      handler.register(TestCmp, analysis!);
+      const meta = metaRegistry.getDirectiveMetadata(new Reference(TestCmp));
+      expect(meta?.animationTriggerNames?.staticTriggerNames).toEqual([
+        'animationName', 'nestedAnimationName'
+      ]);
+      expect(meta?.animationTriggerNames?.includesDynamicAnimations).toBeFalse();
+    });
+
+    it('should tell if the animations include a dynamic value', () => {
+      const {program, options, host} = makeProgram([
+        {
+          name: _('/node_modules/@angular/core/index.d.ts'),
+          contents: 'export const Component: any;',
+        },
+        {
+          name: _('/entry.ts'),
+          contents: `
+          import {Component} from '@angular/core';
+          function trigger(name) {
+            return {name};
+          }
+          function buildComplexAnimations() {
+            const name = 'complex';
+            return [trigger(name)];
+          }
+          @Component({
+            template: '',
+            animations: [
+              trigger('animationName'),
+              buildComplexAnimations(),
+            ],
+          })
+          class TestCmp {}
+      `
+        },
+      ]);
+      const {reflectionHost, handler, metaRegistry} = setup(program, options, host);
+      const TestCmp = getDeclaration(program, _('/entry.ts'), 'TestCmp', isNamedClassDeclaration);
+      const detected = handler.detect(TestCmp, reflectionHost.getDecoratorsOfDeclaration(TestCmp));
+      if (detected === undefined) {
+        return fail('Failed to recognize @Component');
+      }
+      const {analysis} = handler.analyze(TestCmp, detected.metadata);
+      handler.register(TestCmp, analysis!);
+      const meta = metaRegistry.getDirectiveMetadata(new Reference(TestCmp));
+      expect(meta?.animationTriggerNames?.staticTriggerNames).toEqual(['animationName']);
+      expect(meta?.animationTriggerNames?.includesDynamicAnimations).toBeTrue();
+    });
+
+    it('should treat complex animations expressions as dynamic', () => {
+      const {program, options, host} = makeProgram([
+        {
+          name: _('/node_modules/@angular/core/index.d.ts'),
+          contents: 'export const Component: any;',
+        },
+        {
+          name: _('/entry.ts'),
+          contents: `
+          import {Component} from '@angular/core';
+          function trigger(name) {
+            return {name};
+          }
+          function buildComplexAnimations() {
+            const name = 'complex';
+            return [trigger(name)];
+          }
+          @Component({
+            template: '',
+            animations: buildComplexAnimations(),
+          })
+          class TestCmp {}
+      `
+        },
+      ]);
+      const {reflectionHost, handler, metaRegistry} = setup(program, options, host);
+      const TestCmp = getDeclaration(program, _('/entry.ts'), 'TestCmp', isNamedClassDeclaration);
+      const detected = handler.detect(TestCmp, reflectionHost.getDecoratorsOfDeclaration(TestCmp));
+      if (detected === undefined) {
+        return fail('Failed to recognize @Component');
+      }
+      const {analysis} = handler.analyze(TestCmp, detected.metadata);
+      handler.register(TestCmp, analysis!);
+      const meta = metaRegistry.getDirectiveMetadata(new Reference(TestCmp));
+      expect(meta?.animationTriggerNames?.includesDynamicAnimations).toBeTrue();
+      expect(meta?.animationTriggerNames?.staticTriggerNames.length).toBe(0);
     });
   });
 

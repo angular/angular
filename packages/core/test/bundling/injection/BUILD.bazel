@@ -1,5 +1,5 @@
 load("//tools/symbol-extractor:index.bzl", "js_expected_symbol_test")
-load("//tools:defaults.bzl", "jasmine_node_test", "ng_rollup_bundle", "ts_library")
+load("//tools:defaults.bzl", "app_bundle", "jasmine_node_test", "ts_library")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -14,7 +14,7 @@ ts_library(
     ],
 )
 
-ng_rollup_bundle(
+app_bundle(
     name = "bundle",
     entry_point = ":index.ts",
     deps = [
@@ -44,6 +44,6 @@ jasmine_node_test(
 
 js_expected_symbol_test(
     name = "symbol_test",
-    src = ":bundle.min_debug.js",
+    src = ":bundle.debug.min.js",
     golden = ":bundle.golden_symbols.json",
 )

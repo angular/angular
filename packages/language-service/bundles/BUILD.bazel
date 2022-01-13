@@ -1,27 +1,14 @@
-load("@npm//@angular/dev-infra-private/bazel/benchmark/ng_rollup_bundle:ng_rollup_bundle.bzl", "ng_rollup_bundle")
+load("@npm//@bazel/rollup:index.bzl", "rollup_bundle")
 
-ng_rollup_bundle(
+rollup_bundle(
     name = "language-service",
-    build_optimizer = False,
+    config_file = "rollup.config.js",
     entry_point = "//packages/language-service/src:ts_plugin.ts",
     format = "amd",
-    globals = {
-        "os": "os",
-        "fs": "fs",
-        "path": "path",
-        "typescript": "ts",
-        "typescript/lib/tsserverlibrary": "tss",
-    },
-    license_banner = ":banner",
+    silent = True,
     visibility = ["//packages/language-service:__pkg__"],
     deps = [
         "//packages/language-service/src",
+        "@npm//@rollup/plugin-node-resolve",
     ],
-)
-
-genrule(
-    name = "banner",
-    srcs = ["banner.js"],
-    outs = ["banner.txt"],
-    cmd = "cp $< $@",
 )

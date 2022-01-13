@@ -182,7 +182,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 
            expect(() => createTestComponent(template))
                .toThrowError(
-                   'NG0305: An element with the "ngSwitchCase" attribute (matching the "NgSwitchCase" directive) must be located inside an element with the "ngSwitch" attribute (matching "NgSwitch" directive)');
+                   'NG02000: An element with the "ngSwitchCase" attribute (matching the "NgSwitchCase" directive) must be located inside an element with the "ngSwitch" attribute (matching "NgSwitch" directive)');
          }));
 
       it('should throw error when ngSwitchDefault is used outside of ngSwitch', waitForAsync(() => {
@@ -191,7 +191,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 
            expect(() => createTestComponent(template))
                .toThrowError(
-                   'NG0305: An element with the "ngSwitchDefault" attribute (matching the "NgSwitchDefault" directive) must be located inside an element with the "ngSwitch" attribute (matching "NgSwitch" directive)');
+                   'NG02000: An element with the "ngSwitchDefault" attribute (matching the "NgSwitchDefault" directive) must be located inside an element with the "ngSwitch" attribute (matching "NgSwitch" directive)');
          }));
 
       it('should support nested NgSwitch on ng-container with ngTemplateOutlet', () => {

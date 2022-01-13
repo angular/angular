@@ -170,24 +170,6 @@ export function r3JitTypeSourceSpan(
       new ParseLocation(sourceFile, -1, -1, -1), new ParseLocation(sourceFile, -1, -1, -1));
 }
 
-export function syntaxError(msg: string, parseErrors?: ParseError[]): Error {
-  const error = Error(msg);
-  (error as any)[ERROR_SYNTAX_ERROR] = true;
-  if (parseErrors) (error as any)[ERROR_PARSE_ERRORS] = parseErrors;
-  return error;
-}
-
-const ERROR_SYNTAX_ERROR = 'ngSyntaxError';
-const ERROR_PARSE_ERRORS = 'ngParseErrors';
-
-export function isSyntaxError(error: Error): boolean {
-  return (error as any)[ERROR_SYNTAX_ERROR];
-}
-
-export function getParseErrors(error: Error): ParseError[] {
-  return (error as any)[ERROR_PARSE_ERRORS] || [];
-}
-
 let _anonymousTypeIndex = 0;
 
 export function identifierName(compileIdentifier: CompileIdentifierMetadata|null|undefined): string|

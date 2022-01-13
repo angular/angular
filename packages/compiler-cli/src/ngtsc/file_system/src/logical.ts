@@ -7,7 +7,7 @@
  */
 import ts from 'typescript';
 
-import {absoluteFrom, dirname, isLocalRelativePath, relative, resolve, toRelativeImport} from './helpers';
+import {absoluteFromSourceFile, dirname, isLocalRelativePath, relative, resolve, toRelativeImport} from './helpers';
 import {AbsoluteFsPath, BrandedPath, PathSegment} from './types';
 import {stripExtension} from './util';
 
@@ -73,7 +73,7 @@ export class LogicalFileSystem {
    * `logicalPathOfFile(absoluteFromSourceFile(sf))`.
    */
   logicalPathOfSf(sf: ts.SourceFile): LogicalProjectPath|null {
-    return this.logicalPathOfFile(absoluteFrom(sf.fileName));
+    return this.logicalPathOfFile(absoluteFromSourceFile(sf));
   }
 
   /**

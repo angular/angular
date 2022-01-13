@@ -5,9 +5,10 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-const performance = typeof require === 'undefined' ?  //
-    window.performance :                              // We are in browser
-    require('perf_hooks').performance;                // We are in node
+
+const performance = typeof global === 'undefined' ?  //
+    window.performance :                             // We are in browser
+    require('perf_hooks').performance;               // We are in node
 
 // Higher number here makes it more likely that we are more sure of the result.
 const MIN_SAMPLE_COUNT_NO_IMPROVEMENT = 500;

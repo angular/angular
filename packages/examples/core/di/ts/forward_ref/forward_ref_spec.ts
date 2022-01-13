@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {forwardRef, Inject, Injector, resolveForwardRef} from '@angular/core';
+import {forwardRef, Inject, Injectable, Injector, resolveForwardRef} from '@angular/core';
 
 {
   describe('forwardRef examples', () => {
@@ -21,6 +21,7 @@ import {forwardRef, Inject, Injector, resolveForwardRef} from '@angular/core';
 
     it('can be used to inject a class defined later', () => {
       // #docregion forward_ref
+      @Injectable()
       class Door {
         lock: Lock;
 

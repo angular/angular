@@ -28,6 +28,7 @@ describe('FormArray', () => {
       c3 = new FormControl(3);
       c4 = new FormControl(4);
       c5 = new FormControl(5);
+      c6 = new FormControl(6);
       logger = [];
     });
 
@@ -47,7 +48,7 @@ describe('FormArray', () => {
       expect(a.controls).toEqual([c1, c3]);
 
       a.removeAt(-1);
-      
+
       expect(a.controls).toEqual([c1]);
 
       // Check that using out of bounds index is a noop
@@ -335,19 +336,19 @@ describe('FormArray', () => {
 
     it('should throw if fields are missing from supplied value (subset)', () => {
       expect(() => a.setValue([, 'two']))
-          .toThrowError(new RegExp(`Must supply a value for form control at index: 0`));
+          .toThrowError(new RegExp(`NG01002: Must supply a value for form control at index: 0`));
     });
 
     it('should throw if a value is provided for a missing control (superset)', () => {
       expect(() => a.setValue([
         'one', 'two', 'three'
-      ])).toThrowError(new RegExp(`Cannot find form control at index 2`));
+      ])).toThrowError(new RegExp(`NG01001: Cannot find form control at index: 2`));
     });
 
     it('should throw if a value is not provided for a disabled control', () => {
       c2.disable();
       expect(() => a.setValue(['one']))
-          .toThrowError(new RegExp(`Must supply a value for form control at index: 1`));
+          .toThrowError(new RegExp(`NG01002: Must supply a value for form control at index: 1`));
     });
 
     it('should throw if no controls are set yet', () => {

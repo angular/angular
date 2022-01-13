@@ -49,11 +49,8 @@ withEachNg1Version(() => {
          }
 
          // This module represents the Angular pieces of the application
-         @NgModule({
-           declarations: [Ng1Component, Ng2Component],
-           entryComponents: [Ng2Component],
-           imports: [BrowserModule, UpgradeModule]
-         })
+         @NgModule(
+             {declarations: [Ng1Component, Ng2Component], imports: [BrowserModule, UpgradeModule]})
          class Ng2Module {
            ngDoBootstrap() { /* this is a placeholder to stop the bootstrapper from
                                 complaining */

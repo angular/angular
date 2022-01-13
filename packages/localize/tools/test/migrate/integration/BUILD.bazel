@@ -28,7 +28,7 @@ copy_to_bin(
 
 jasmine_node_test(
     name = "integration",
-    bootstrap = ["//tools/testing:node_no_angular_es5"],
+    bootstrap = ["//tools/testing:node_no_angular_es2015"],
     data = [
         ":test_files",
     ],

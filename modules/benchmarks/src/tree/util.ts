@@ -35,9 +35,7 @@ export function getMaxDepth() {
   return maxDepth;
 }
 
-init();
-
-function init() {
+export function initTreeUtils() {
   maxDepth = getIntParameter('depth');
   treeCreateCount = 0;
   numberData = _buildTree(0, numberValues);

@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "ng_module", "ng_rollup_bundle", "ts_devserver", "ts_library")
+load("//tools:defaults.bzl", "app_bundle", "ng_module", "ts_devserver", "ts_library")
 load("@npm//@angular/dev-infra-private/bazel/benchmark/component_benchmark:benchmark_test.bzl", "benchmark_test")
 
 package(default_visibility = ["//modules/benchmarks:__subpackages__"])
@@ -31,7 +31,7 @@ ts_library(
     ],
 )
 
-ng_rollup_bundle(
+app_bundle(
     name = "bundle",
     entry_point = ":index_aot.ts",
     deps = [
@@ -45,7 +45,7 @@ ts_devserver(
     bootstrap = ["//packages/zone.js/bundles:zone.umd.js"],
     port = 4200,
     static_files = ["index.html"],
-    deps = [":bundle.min_debug.js"],
+    deps = [":bundle.debug.min.js"],
 )
 
 ts_devserver(

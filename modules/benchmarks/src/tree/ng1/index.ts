@@ -7,7 +7,7 @@
  */
 
 import {bindAction, profile} from '../../util';
-import {buildTree, emptyTree} from '../util';
+import {buildTree, emptyTree, initTreeUtils} from '../util';
 
 import {addTreeToModule} from './tree';
 
@@ -41,6 +41,8 @@ function init() {
           $rootScope.initData = buildTree();
         });
       }
+
+      initTreeUtils();
 
       bindAction('#destroyDom', destroyDom);
       bindAction('#createDom', createDom);

@@ -6,20 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import ts from 'typescript';
-import {Reference} from '../../imports';
 
 /**
- * A resolved type reference can either be a `Reference`, the original `ts.TypeReferenceNode` itself
- * or null. A value of null indicates that no reference could be resolved or that the reference can
- * not be emitted.
+ * A type reference resolver function is responsible for translating a type reference from the
+ * origin source file into a type reference that is valid in the desired source file. If the type
+ * cannot be translated to the desired source file, then null can be returned.
  */
-export type ResolvedTypeReference = Reference|ts.TypeReferenceNode|null;
-
-/**
- * A type reference resolver function is responsible for finding the declaration of the type
- * reference and verifying whether it can be emitted.
- */
-export type TypeReferenceResolver = (type: ts.TypeReferenceNode) => ResolvedTypeReference;
+export type TypeReferenceTranslator = (type: ts.TypeReferenceNode) => ts.TypeReferenceNode|null;
 
 /**
  * A marker to indicate that a type reference is ineligible for emitting. This needs to be truthy
@@ -38,7 +31,8 @@ const INELIGIBLE: INELIGIBLE = {} as INELIGIBLE;
  * function returns false, then using the `TypeEmitter` should not be attempted as it is known to
  * fail.
  */
-export function canEmitType(type: ts.TypeNode, resolver: TypeReferenceResolver): boolean {
+export function canEmitType(
+    type: ts.TypeNode, canEmit: (type: ts.TypeReferenceNode) => boolean): boolean {
   return canEmitTypeWorker(type);
 
   function canEmitTypeWorker(type: ts.TypeNode): boolean {
@@ -69,16 +63,8 @@ export function canEmitType(type: ts.TypeNode, resolver: TypeReferenceResolver):
   }
 
   function canEmitTypeReference(type: ts.TypeReferenceNode): boolean {
-    const reference = resolver(type);
-
-    // If the type could not be resolved, it can not be emitted.
-    if (reference === null) {
+    if (!canEmit(type)) {
       return false;
-    }
-
-    // If the type is a reference, consider the type to be eligible for emitting.
-    if (reference instanceof Reference) {
-      return true;
     }
 
     // The type can be emitted if either it does not have any type arguments, or all of them can be
@@ -117,21 +103,7 @@ export function canEmitType(type: ts.TypeNode, resolver: TypeReferenceResolver):
  * referring to the namespace import that was created.
  */
 export class TypeEmitter {
-  /**
-   * Resolver function that computes a `Reference` corresponding with a `ts.TypeReferenceNode`.
-   */
-  private resolver: TypeReferenceResolver;
-
-  /**
-   * Given a `Reference`, this function is responsible for the actual emitting work. It should
-   * produce a `ts.TypeNode` that is valid within the desired context.
-   */
-  private emitReference: (ref: Reference) => ts.TypeNode;
-
-  constructor(resolver: TypeReferenceResolver, emitReference: (ref: Reference) => ts.TypeNode) {
-    this.resolver = resolver;
-    this.emitReference = emitReference;
-  }
+  constructor(private translator: TypeReferenceTranslator) {}
 
   emitType(type: ts.TypeNode): ts.TypeNode {
     const typeReferenceTransformer: ts.TransformerFactory<ts.TypeNode> = context => {
@@ -163,8 +135,8 @@ export class TypeEmitter {
 
   private emitTypeReference(type: ts.TypeReferenceNode): ts.TypeNode {
     // Determine the reference that the type corresponds with.
-    const reference = this.resolver(type);
-    if (reference === null) {
+    const translatedType = this.translator(type);
+    if (translatedType === null) {
       throw new Error('Unable to emit an unresolved reference');
     }
 
@@ -174,18 +146,6 @@ export class TypeEmitter {
       typeArguments = ts.createNodeArray(type.typeArguments.map(typeArg => this.emitType(typeArg)));
     }
 
-    // Emit the type name.
-    let typeName = type.typeName;
-    if (reference instanceof Reference) {
-      const emittedType = this.emitReference(reference);
-      if (!ts.isTypeReferenceNode(emittedType)) {
-        throw new Error(`Expected TypeReferenceNode for emitted reference, got ${
-            ts.SyntaxKind[emittedType.kind]}`);
-      }
-
-      typeName = emittedType.typeName;
-    }
-
-    return ts.updateTypeReferenceNode(type, typeName, typeArguments);
+    return ts.updateTypeReferenceNode(type, translatedType.typeName, typeArguments);
   }
 }

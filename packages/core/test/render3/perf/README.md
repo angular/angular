@@ -1,19 +1,19 @@
 ### Build
 
 ```
-yarn bazel build //packages/core/test/render3/perf:${BENCHMARK}_lib.min_debug.js
+yarn bazel build //packages/core/test/render3/perf:${BENCHMARK}_lib.debug.min.js
 ```
 
 ### Run 
 
 ```
-node dist/bin/packages/core/test/render3/perf/${BENCHMARK}_lib.min_debug.js
+node dist/bin/packages/core/test/render3/perf/${BENCHMARK}_lib.debug.min.js
 ```
 
 ### Profile
 
 ```
-node --no-turbo-inlining --inspect-brk dist/bin/packages/core/test/render3/perf/${BENCHMARK}_lib.min_debug.js
+node --no-turbo-inlining --inspect-brk dist/bin/packages/core/test/render3/perf/${BENCHMARK}_lib.debug.min.js
 ```
 
 then connect with a debugger (the `--inspect-brk` option will make sure that benchmark execution doesn't start until a debugger is connected and the code execution is manually resumed). 
@@ -24,7 +24,7 @@ The actual benchmark code has calls that will start (`console.profile`) and stop
 
 ```
 yarn add deoptigate
-yarn deoptigate dist/bin/packages/core/test/render3/perf/${BENCHMARK}_lib.min_debug.js
+yarn deoptigate dist/bin/packages/core/test/render3/perf/${BENCHMARK}_lib.debug.min.js
 ```
 
 ### Run All
@@ -83,4 +83,4 @@ To debug
 - Follow the directions in `profile_in_browser.html`
 OR
 - `yarn bazel build //packages/core/test/render3/perf:noop_change_detection`
-- `node --inspect-brk bazel-out/darwin-fastbuild/bin/packages/core/test/render3/perf/noop_change_detection.min_debug.js`
+- `node --inspect-brk bazel-out/darwin-fastbuild/bin/packages/core/test/render3/perf/noop_change_detection.debug.min.js`

@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BindingForm, BuiltinFunctionCall, convertActionBinding, convertPropertyBinding, convertUpdateArguments, LocalResolver} from '../../compiler_util/expression_converter';
+import {BuiltinFunctionCall, convertActionBinding, convertPropertyBinding, convertUpdateArguments, LocalResolver} from '../../compiler_util/expression_converter';
 import {ConstantPool} from '../../constant_pool';
 import * as core from '../../core';
 import {AST, AstMemoryEfficientTransformer, BindingPipe, BindingType, Call, ImplicitReceiver, Interpolation, LiteralArray, LiteralMap, LiteralPrimitive, ParsedEventType, PropertyRead} from '../../expression_parser/ast';
 import {Lexer} from '../../expression_parser/lexer';
-import {IvyParser} from '../../expression_parser/parser';
+import {Parser} from '../../expression_parser/parser';
 import * as i18n from '../../i18n/i18n_ast';
 import * as html from '../../ml_parser/ast';
 import {HtmlParser} from '../../ml_parser/html_parser';
@@ -38,7 +38,7 @@ import {createLocalizeStatements} from './i18n/localize_utils';
 import {I18nMetaVisitor} from './i18n/meta';
 import {assembleBoundTextPlaceholders, assembleI18nBoundString, declareI18nVariable, getTranslationConstPrefix, hasI18nMeta, I18N_ICU_MAPPING_PREFIX, i18nFormatPlaceholderNames, icuFromI18nMessage, isI18nRootNode, isSingleI18nIcu, placeholdersToParams, TRANSLATION_VAR_PREFIX, wrapI18nPlaceholder} from './i18n/util';
 import {StylingBuilder, StylingInstruction} from './styling_builder';
-import {asLiteral, chainedInstruction, CONTEXT_NAME, getAttrsForDirectiveMatching, getInterpolationArgsLength, IMPLICIT_REFERENCE, invalid, NON_BINDABLE_ATTR, REFERENCE_PREFIX, RENDER_FLAGS, RESTORED_VIEW_CONTEXT_NAME, trimTrailingNulls, unsupported} from './util';
+import {asLiteral, chainedInstruction, CONTEXT_NAME, getAttrsForDirectiveMatching, getInterpolationArgsLength, IMPLICIT_REFERENCE, invalid, NON_BINDABLE_ATTR, REFERENCE_PREFIX, RENDER_FLAGS, RESTORED_VIEW_CONTEXT_NAME, trimTrailingNulls} from './util';
 
 
 
@@ -77,7 +77,7 @@ export function prepareEventListenerParameters(
   const implicitReceiverExpr = (scope === null || scope.bindingLevel === 0) ?
       o.variable(CONTEXT_NAME) :
       scope.getOrCreateSharedContextVar(0);
-  const bindingExpr = convertActionBinding(
+  const bindingStatements = convertActionBinding(
       scope, implicitReceiverExpr, handler, 'b', () => error('Unexpected interpolation'),
       eventAst.handlerSpan, implicitReceiverAccesses, EVENT_BINDING_SCOPE_GLOBALS);
   const statements = [];
@@ -87,7 +87,7 @@ export function prepareEventListenerParameters(
     statements.push(...scope.variableDeclarations());
     statements.unshift(...scope.restoreViewStatement());
   }
-  statements.push(...bindingExpr.render3Stmts);
+  statements.push(...bindingStatements);
 
   const eventName: string =
       type === ParsedEventType.Animation ? prepareSyntheticListenerName(name, phase!) : name;
@@ -171,7 +171,6 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
    */
   private _bindingScope: BindingScope;
   private _valueConverter: ValueConverter;
-  private _unsupported = unsupported;
 
   // i18n context local to this template
   private i18n: I18nContext|null = null;
@@ -1261,7 +1260,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
   private convertPropertyBinding(value: AST): o.Expression {
     const convertedPropertyBinding = convertPropertyBinding(
-        this, this.getImplicitReceiverExpr(), value, this.bindingContext(), BindingForm.Expression,
+        this, this.getImplicitReceiverExpr(), value, this.bindingContext(),
         () => error('Unexpected interpolation'));
     const valExpr = convertedPropertyBinding.currValExpr;
     this._tempVariables.push(...convertedPropertyBinding.stmts);
@@ -2225,7 +2224,7 @@ const elementRegistry = new DomElementSchemaRegistry();
  */
 export function makeBindingParser(
     interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG): BindingParser {
-  return new BindingParser(new IvyParser(new Lexer()), interpolationConfig, elementRegistry, []);
+  return new BindingParser(new Parser(new Lexer()), interpolationConfig, elementRegistry, []);
 }
 
 export function resolveSanitizationFn(context: core.SecurityContext, isAttribute?: boolean) {

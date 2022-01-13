@@ -146,13 +146,6 @@ export class JitEmitterVisitor extends AbstractJsEmitterVisitor {
     return super.visitDeclareFunctionStmt(stmt, ctx);
   }
 
-  override visitDeclareClassStmt(stmt: o.ClassStmt, ctx: EmitterVisitorContext): any {
-    if (stmt.hasModifier(o.StmtModifier.Exported)) {
-      this._evalExportedVars.push(stmt.name);
-    }
-    return super.visitDeclareClassStmt(stmt, ctx);
-  }
-
   private _emitReferenceToExternal(ast: o.Expression, value: any, ctx: EmitterVisitorContext):
       void {
     let id = this._evalArgValues.indexOf(value);

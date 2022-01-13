@@ -7,6 +7,7 @@
  */
 
 import ts from 'typescript';
+
 import {ReflectionHost} from '../../reflection';
 import {isNamedDeclaration} from '../../util/src/typescript';
 
@@ -36,32 +37,5 @@ export function findExportedNameOfNode(
 
     foundExportName = exportName;
   }
-
-  if (foundExportName === null) {
-    throw new Error(
-        `Failed to find exported name of node (${target.getText()}) in '${file.fileName}'.`);
-  }
   return foundExportName;
-}
-
-/**
- * Check whether a given `ts.Symbol` represents a declaration of a given node.
- *
- * This is not quite as trivial as just checking the declarations, as some nodes are
- * `ts.ExportSpecifier`s and need to be unwrapped.
- */
-function symbolDeclaresNode(sym: ts.Symbol, node: ts.Node, checker: ts.TypeChecker): boolean {
-  if (sym.declarations === undefined) {
-    return false;
-  }
-
-  return sym.declarations.some(decl => {
-    if (ts.isExportSpecifier(decl)) {
-      const exportedSymbol = checker.getExportSpecifierLocalTargetSymbol(decl);
-      if (exportedSymbol !== undefined) {
-        return symbolDeclaresNode(exportedSymbol, node, checker);
-      }
-    }
-    return decl === node;
-  });
 }

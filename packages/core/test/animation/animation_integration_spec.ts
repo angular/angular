@@ -1644,6 +1644,70 @@ describe('animation tests', function() {
          }
        });
 
+    it('should keep/restore the trigger value when there are move operations (with *ngFor + trackBy)',
+       fakeAsync(() => {
+         @Component({
+           selector: 'ani-cmp',
+           template: `
+          <div *ngFor="let item of items, trackBy: trackItem"
+               @myAnimation (@myAnimation.start)="cb($event)">
+            item{{ item }}
+          </div>
+        `,
+           animations: [trigger('myAnimation', [])]
+         })
+         class Cmp {
+           public items: number[] = [];
+
+           log: string[] = [];
+           cb(event: AnimationEvent) {
+             this.log.push(
+                 `[${event.element.innerText.trim()}] ${event.fromState} => ${event.toState}`);
+           }
+
+           trackItem(_index: number, item: number) {
+             return item.toString();
+           }
+           addItem() {
+             this.items.push(this.items.length);
+           }
+           removeItem() {
+             this.items.pop();
+           }
+           reverseItems() {
+             this.items = this.items.reverse();
+           }
+         }
+
+         TestBed.configureTestingModule({declarations: [Cmp]});
+
+         const engine = TestBed.inject(ɵAnimationEngine);
+         const fixture = TestBed.createComponent(Cmp);
+         const cmp = fixture.componentInstance;
+         fixture.detectChanges();
+
+         const completeAnimations = () => {
+           fixture.detectChanges();
+           flushMicrotasks();
+           engine.players.forEach(player => player.finish());
+         };
+
+         cmp.log = [];
+         [0, 1, 2].forEach(() => cmp.addItem());
+         completeAnimations();
+         expect(cmp.log).toEqual(
+             ['[item0] void => null', '[item1] void => null', '[item2] void => null']);
+
+         cmp.reverseItems();
+         completeAnimations();
+
+         cmp.log = [];
+         [0, 1, 2].forEach(() => cmp.removeItem());
+         completeAnimations();
+         expect(cmp.log).toEqual(
+             ['[item2] null => void', '[item1] null => void', '[item0] null => void']);
+       }));
+
     it('should animate removals of nodes to the `void` state for each animation trigger, but treat all auto styles as pre styles',
        () => {
          @Component({

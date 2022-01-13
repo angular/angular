@@ -20,13 +20,6 @@ const CONSTANT_PREFIX = '_c';
  */
 const UNKNOWN_VALUE_KEY = o.variable('<unknown>');
 
-export const enum DefinitionKind {
-  Injector,
-  Directive,
-  Component,
-  Pipe
-}
-
 /**
  * Context to use when producing a key.
  *
@@ -94,10 +87,6 @@ export class ConstantPool {
   statements: o.Statement[] = [];
   private literals = new Map<string, FixupExpression>();
   private literalFactories = new Map<string, o.Expression>();
-  private injectorDefinitions = new Map<any, FixupExpression>();
-  private directiveDefinitions = new Map<any, FixupExpression>();
-  private componentDefinitions = new Map<any, FixupExpression>();
-  private pipeDefinitions = new Map<any, FixupExpression>();
 
   private nextNameIndex = 0;
 
@@ -160,27 +149,6 @@ export class ConstantPool {
     return fixup;
   }
 
-  getDefinition(type: any, kind: DefinitionKind, ctx: OutputContext, forceShared: boolean = false):
-      o.Expression {
-    const definitions = this.definitionsOf(kind);
-    let fixup = definitions.get(type);
-    let newValue = false;
-    if (!fixup) {
-      const property = this.propertyNameOf(kind);
-      fixup = new FixupExpression(ctx.importExpr(type).prop(property));
-      definitions.set(type, fixup);
-      newValue = true;
-    }
-
-    if ((!newValue && !fixup.shared) || (newValue && forceShared)) {
-      const name = this.freshName();
-      this.statements.push(
-          o.variable(name).set(fixup.resolved).toDeclStmt(o.INFERRED_TYPE, [o.StmtModifier.Final]));
-      fixup.fixup(o.variable(name));
-    }
-    return fixup;
-  }
-
   getLiteralFactory(literal: o.LiteralArrayExpr|o.LiteralMapExpr):
       {literalFactory: o.Expression, literalFactoryArguments: o.Expression[]} {
     // Create a pure function that builds an array of a mix of constant and variable expressions
@@ -240,32 +208,6 @@ export class ConstantPool {
     return `${prefix}${this.nextNameIndex++}`;
   }
 
-  private definitionsOf(kind: DefinitionKind): Map<any, FixupExpression> {
-    switch (kind) {
-      case DefinitionKind.Component:
-        return this.componentDefinitions;
-      case DefinitionKind.Directive:
-        return this.directiveDefinitions;
-      case DefinitionKind.Injector:
-        return this.injectorDefinitions;
-      case DefinitionKind.Pipe:
-        return this.pipeDefinitions;
-    }
-  }
-
-  public propertyNameOf(kind: DefinitionKind): string {
-    switch (kind) {
-      case DefinitionKind.Component:
-        return 'ɵcmp';
-      case DefinitionKind.Directive:
-        return 'ɵdir';
-      case DefinitionKind.Injector:
-        return 'ɵinj';
-      case DefinitionKind.Pipe:
-        return 'ɵpipe';
-    }
-  }
-
   private freshName(): string {
     return this.uniqueName(CONSTANT_PREFIX);
   }
@@ -273,13 +215,6 @@ export class ConstantPool {
   private keyOf(expression: o.Expression) {
     return expression.visitExpression(new KeyVisitor(), KEY_CONTEXT);
   }
-}
-
-export interface OutputContext {
-  genFilePath: string;
-  statements: o.Statement[];
-  constantPool: ConstantPool;
-  importExpr(reference: any, typeParams?: o.Type[]|null, useSummaries?: boolean): o.Expression;
 }
 
 /**
