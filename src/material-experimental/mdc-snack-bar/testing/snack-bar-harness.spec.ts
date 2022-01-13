@@ -12,7 +12,7 @@ import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {Component, TemplateRef, ViewChild} from '@angular/core';
 
 describe('MDC-based MatSnackBarHarness', () => {
-  runHarnessTests(MatSnackBarModule, MatSnackBar, MatSnackBarHarness as any);
+  runHarnessTests(MatSnackBarModule, MatSnackBar as any, MatSnackBarHarness as any);
 });
 
 describe('MDC-based MatSnackBarHarness (MDC only behavior)', () => {

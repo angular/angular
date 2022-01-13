@@ -8,12 +8,12 @@
 
 import {Directionality} from '@angular/cdk/bidi';
 import {Component, TemplateRef, ViewChild, ViewEncapsulation} from '@angular/core';
-import {MatSnackBar} from '@angular/material-experimental/mdc-snack-bar';
 import {
+  MatSnackBar,
   MatSnackBarConfig,
   MatSnackBarHorizontalPosition,
   MatSnackBarVerticalPosition,
-} from '@angular/material/snack-bar';
+} from '@angular/material-experimental/mdc-snack-bar';
 
 @Component({
   selector: 'mdc-snack-bar-demo',

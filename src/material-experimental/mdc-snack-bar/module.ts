@@ -13,7 +13,7 @@ import {NgModule} from '@angular/core';
 import {MatButtonModule} from '@angular/material-experimental/mdc-button';
 import {MatCommonModule} from '@angular/material-experimental/mdc-core';
 
-import {MatSimpleSnackBar} from './simple-snack-bar';
+import {SimpleSnackBar} from './simple-snack-bar';
 import {MatSnackBarContainer} from './snack-bar-container';
 import {MatSnackBarAction, MatSnackBarActions, MatSnackBarLabel} from './snack-bar-content';
 
@@ -27,7 +27,7 @@ import {MatSnackBarAction, MatSnackBarActions, MatSnackBarLabel} from './snack-b
     MatSnackBarAction,
   ],
   declarations: [
-    MatSimpleSnackBar,
+    SimpleSnackBar,
     MatSnackBarContainer,
     MatSnackBarLabel,
     MatSnackBarActions,

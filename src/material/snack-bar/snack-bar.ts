@@ -44,11 +44,8 @@ export function MAT_SNACK_BAR_DEFAULT_OPTIONS_FACTORY(): MatSnackBarConfig {
   return new MatSnackBarConfig();
 }
 
-/**
- * Service to dispatch Material Design snack bar messages.
- */
-@Injectable({providedIn: MatSnackBarModule})
-export class MatSnackBar implements OnDestroy {
+@Injectable()
+export abstract class _MatSnackBarBase implements OnDestroy {
   /**
    * Reference to the current snack bar in the view *at this level* (in the Angular injector tree).
    * If there is a parent snack-bar service, all operations should delegate to that parent
@@ -57,13 +54,13 @@ export class MatSnackBar implements OnDestroy {
   private _snackBarRefAtThisLevel: MatSnackBarRef<any> | null = null;
 
   /** The component that should be rendered as the snack bar's simple component. */
-  protected simpleSnackBarComponent: Type<TextOnlySnackBar> = SimpleSnackBar;
+  protected abstract simpleSnackBarComponent: Type<TextOnlySnackBar>;
 
   /** The container component that attaches the provided template or component. */
-  protected snackBarContainerComponent: Type<_SnackBarContainer> = MatSnackBarContainer;
+  protected abstract snackBarContainerComponent: Type<_SnackBarContainer>;
 
   /** The CSS class to apply for handset mode. */
-  protected handsetCssClass = 'mat-snack-bar-handset';
+  protected abstract handsetCssClass: string;
 
   /** Reference to the currently opened snackbar at *any* level. */
   get _openedSnackBarRef(): MatSnackBarRef<any> | null {
@@ -84,7 +81,7 @@ export class MatSnackBar implements OnDestroy {
     private _live: LiveAnnouncer,
     private _injector: Injector,
     private _breakpointObserver: BreakpointObserver,
-    @Optional() @SkipSelf() private _parentSnackBar: MatSnackBar,
+    @Optional() @SkipSelf() private _parentSnackBar: _MatSnackBarBase,
     @Inject(MAT_SNACK_BAR_DEFAULT_OPTIONS) private _defaultConfig: MatSnackBarConfig,
   ) {}
 
@@ -309,5 +306,26 @@ export class MatSnackBar implements OnDestroy {
         {provide: MAT_SNACK_BAR_DATA, useValue: config.data},
       ],
     });
+  }
+}
+
+/**
+ * Service to dispatch Material Design snack bar messages.
+ */
+@Injectable({providedIn: MatSnackBarModule})
+export class MatSnackBar extends _MatSnackBarBase {
+  protected simpleSnackBarComponent = SimpleSnackBar;
+  protected snackBarContainerComponent = MatSnackBarContainer;
+  protected handsetCssClass = 'mat-snack-bar-handset';
+
+  constructor(
+    overlay: Overlay,
+    live: LiveAnnouncer,
+    injector: Injector,
+    breakpointObserver: BreakpointObserver,
+    @Optional() @SkipSelf() parentSnackBar: MatSnackBar,
+    @Inject(MAT_SNACK_BAR_DEFAULT_OPTIONS) defaultConfig: MatSnackBarConfig,
+  ) {
+    super(overlay, live, injector, breakpointObserver, parentSnackBar, defaultConfig);
   }
 }

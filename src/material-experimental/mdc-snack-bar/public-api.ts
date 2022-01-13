@@ -16,7 +16,6 @@ export {
   MatSnackBarConfig,
   MatSnackBarDismiss,
   MatSnackBarRef,
-  SimpleSnackBar,
   MAT_SNACK_BAR_DATA,
   MAT_SNACK_BAR_DEFAULT_OPTIONS,
   MAT_SNACK_BAR_DEFAULT_OPTIONS_FACTORY,

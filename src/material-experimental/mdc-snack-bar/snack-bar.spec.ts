@@ -14,7 +14,7 @@ import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {
   MAT_SNACK_BAR_DATA,
   MAT_SNACK_BAR_DEFAULT_OPTIONS,
-  MatSimpleSnackBar,
+  SimpleSnackBar,
   MatSnackBar,
   MatSnackBarConfig,
   MatSnackBarContainer,
@@ -239,7 +239,7 @@ describe('MatSnackBar', () => {
 
     viewContainerFixture.detectChanges();
 
-    expect(snackBarRef.instance instanceof MatSimpleSnackBar)
+    expect(snackBarRef.instance instanceof SimpleSnackBar)
       .withContext('Expected the snack bar content component to be SimpleSnackBar')
       .toBe(true);
     expect(snackBarRef.instance.snackBarRef)
@@ -266,7 +266,7 @@ describe('MatSnackBar', () => {
 
     viewContainerFixture.detectChanges();
 
-    expect(snackBarRef.instance instanceof MatSimpleSnackBar)
+    expect(snackBarRef.instance instanceof SimpleSnackBar)
       .withContext('Expected the snack bar content component to be SimpleSnackBar')
       .toBe(true);
     expect(snackBarRef.instance.snackBarRef)
