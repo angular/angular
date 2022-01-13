@@ -112,16 +112,19 @@
 
 @mixin density($config-or-theme) {
   $density-scale: theming.get-density-config($config-or-theme);
-  .mat-mdc-checkbox .mdc-checkbox {
-    @include mdc-checkbox-theme.density(
-      $density-scale,
-      $query: mdc-helpers.$mat-base-styles-query
-    );
-  }
 
-  @if ($density-scale == -2 or $density-scale == 'minimum') {
-    .mat-mdc-checkbox-touch-target {
-      display: none;
+  @include mdc-helpers.disable-fallback-declarations {
+    .mat-mdc-checkbox .mdc-checkbox {
+      @include mdc-checkbox-theme.density(
+        $density-scale,
+        $query: mdc-helpers.$mat-base-styles-query
+      );
+    }
+
+    @if ($density-scale == -2 or $density-scale == 'minimum') {
+      .mat-mdc-checkbox-touch-target {
+        display: none;
+      }
     }
   }
 }
