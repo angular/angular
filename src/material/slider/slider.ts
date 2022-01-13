@@ -672,13 +672,19 @@ export class MatSlider
         const oldValue = this.value;
         this._isSliding = 'pointer';
         this._lastPointerEvent = event;
-        event.preventDefault();
         this._focusHostElement();
         this._onMouseenter(); // Simulate mouseenter in case this is a mobile device.
         this._bindGlobalEvents(event);
         this._focusHostElement();
         this._updateValueFromPosition(pointerPosition);
         this._valueOnSlideStart = oldValue;
+
+        // Despite the fact that we explicitly bind active events, in some cases the browser
+        // still dispatches non-cancelable events which cause this call to throw an error.
+        // There doesn't appear to be a good way of avoiding them. See #23820.
+        if (event.cancelable) {
+          event.preventDefault();
+        }
 
         // Emit a change and input event if the value changed.
         if (oldValue != this.value) {

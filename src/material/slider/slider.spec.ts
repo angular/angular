@@ -18,7 +18,8 @@ import {
   dispatchKeyboardEvent,
   dispatchMouseEvent,
   createKeyboardEvent,
-} from '../../cdk/testing/private';
+  createTouchEvent,
+} from '@angular/cdk/testing/private';
 import {Component, DebugElement, Type, ViewChild} from '@angular/core';
 import {ComponentFixture, fakeAsync, flush, TestBed} from '@angular/core/testing';
 import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
@@ -241,6 +242,17 @@ describe('MatSlider', () => {
 
     it('should have a focus indicator', () => {
       expect(sliderNativeElement.classList.contains('mat-focus-indicator')).toBe(true);
+    });
+
+    it('should not try to preventDefault on a non-cancelable event', () => {
+      const event = createTouchEvent('touchstart');
+      const spy = spyOn(event, 'preventDefault');
+      Object.defineProperty(event, 'cancelable', {value: false});
+
+      dispatchEvent(sliderNativeElement, event);
+      fixture.detectChanges();
+
+      expect(spy).not.toHaveBeenCalled();
     });
   });
 
