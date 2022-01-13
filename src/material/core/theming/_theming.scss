@@ -20,6 +20,17 @@ $_emitted-color: () !default;
 $_emitted-typography: () !default;
 $_emitted-density: () !default;
 
+/// Extracts a color from a palette or throws an error if it doesn't exist.
+/// @param {Map} $palette The palette from which to extract a color.
+/// @param {String | Number} $hue The hue for which to get the color.
+@function _get-color-from-palette($palette, $hue) {
+  @if map.has-key($palette, $hue) {
+    @return map.get($palette, $hue);
+  }
+
+  @error 'Hue "' + $hue + '" does not exist in palette. Available hues are: ' + map.keys($palette);
+}
+
 /// For a given hue in a palette, return the contrast color from the map of contrast palettes.
 /// @param {Map} $palette The palette from which to extract a color.
 /// @param {String | Number} $hue The hue for which to get a contrast color.
@@ -40,10 +51,10 @@ $_emitted-density: () !default;
 @function define-palette($base-palette, $default: 500, $lighter: 100, $darker: 700,
   $text: $default) {
   $result: map.merge($base-palette, (
-    default: map.get($base-palette, $default),
-    lighter: map.get($base-palette, $lighter),
-    darker: map.get($base-palette, $darker),
-    text: map.get($base-palette, $text),
+    default: _get-color-from-palette($base-palette, $default),
+    lighter: _get-color-from-palette($base-palette, $lighter),
+    darker: _get-color-from-palette($base-palette, $darker),
+    text: _get-color-from-palette($base-palette, $text),
 
     default-contrast: get-contrast-color-from-palette($base-palette, $default),
     lighter-contrast: get-contrast-color-from-palette($base-palette, $lighter),
