@@ -14,6 +14,7 @@
     "start": "yarn check-env && ng serve",
     "prebuild": "yarn setup",
     "build": "yarn ~~build",
+    "build:bazel": "bazelisk build //aio:build",
     "prebuild-local": "yarn setup-local",
     "build-local": "yarn ~~build",
     "prebuild-local-ci": "yarn setup-local-ci",
@@ -21,6 +22,7 @@
     "extract-cli-command-docs": "node tools/transforms/cli-docs-package/extract-cli-commands.js a517160a2",
     "lint": "yarn check-env && yarn docs-lint && ng lint && yarn example-lint && yarn tools-lint && yarn security-lint",
     "test": "yarn check-env && ng test",
+    "test:bazel": "bazelisk test //aio:test",
     "pree2e": "yarn check-env && yarn update-webdriver",
     "e2e": "ng e2e --no-webdriver-update",
     "presetup": "yarn --cwd .. install && yarn install --frozen-lockfile && yarn ~~check-env && yarn ~~clean-generated && yarn boilerplate:remove",
@@ -103,6 +105,7 @@
     "zone.js": "~0.11.4"
   },
   "devDependencies": {
+    "@angular-devkit/architect-cli": "0.1302.5",
     "@angular-devkit/build-angular": "13.2.5",
     "@angular-eslint/builder": "^13.0.0",
     "@angular-eslint/eslint-plugin": "^13.0.0",
@@ -110,6 +113,7 @@
     "@angular-eslint/template-parser": "^13.0.0",
     "@angular/cli": "13.2.5",
     "@angular/compiler-cli": "13.2.4",
+    "@bazel/bazelisk": "^1.7.5",
     "@types/jasmine": "~3.10.0",
     "@types/lunr": "^2.3.3",
     "@types/node": "^12.7.9",
