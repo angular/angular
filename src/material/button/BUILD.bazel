@@ -52,6 +52,7 @@ ng_test_library(
     ),
     deps = [
         ":button",
+        "//src/cdk/testing/private",
         "//src/material/core",
         "@npm//@angular/platform-browser",
     ],

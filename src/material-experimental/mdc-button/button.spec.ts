@@ -1,8 +1,9 @@
 import {waitForAsync, ComponentFixture, TestBed} from '@angular/core/testing';
-import {Component, DebugElement} from '@angular/core';
+import {ApplicationRef, Component, DebugElement} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {MatButtonModule, MatButton, MatFabDefaultOptions, MAT_FAB_DEFAULT_OPTIONS} from './index';
 import {MatRipple, ThemePalette} from '@angular/material-experimental/mdc-core';
+import {createMouseEvent, dispatchEvent} from '@angular/cdk/testing/private';
 
 describe('MDC-based MatButton', () => {
   beforeEach(
@@ -228,6 +229,28 @@ describe('MDC-based MatButton', () => {
       expect(buttonElement.getAttribute('tabIndex'))
         .withContext('Expected custom tabindex to be overwritten when disabled.')
         .toBe('-1');
+    });
+
+    describe('change detection behavior', () => {
+      it('should not run change detection for disabled anchor but should prevent the default behavior and stop event propagation', () => {
+        const appRef = TestBed.inject(ApplicationRef);
+        const fixture = TestBed.createComponent(TestApp);
+        fixture.componentInstance.isDisabled = true;
+        fixture.detectChanges();
+        const anchorElement = fixture.debugElement.query(By.css('a'))!.nativeElement;
+
+        spyOn(appRef, 'tick');
+
+        const event = createMouseEvent('click');
+        spyOn(event, 'preventDefault').and.callThrough();
+        spyOn(event, 'stopImmediatePropagation').and.callThrough();
+
+        dispatchEvent(anchorElement, event);
+
+        expect(appRef.tick).not.toHaveBeenCalled();
+        expect(event.preventDefault).toHaveBeenCalled();
+        expect(event.stopImmediatePropagation).toHaveBeenCalled();
+      });
     });
   });
 

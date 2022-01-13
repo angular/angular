@@ -18,6 +18,7 @@ import {
   Inject,
   Input,
   AfterViewInit,
+  NgZone,
 } from '@angular/core';
 import {
   CanColor,
@@ -164,7 +165,6 @@ export class MatButton
     '[attr.tabindex]': 'disabled ? -1 : (tabIndex || 0)',
     '[attr.disabled]': 'disabled || null',
     '[attr.aria-disabled]': 'disabled.toString()',
-    '(click)': '_haltDisabledEvents($event)',
     '[class._mat-animation-noopable]': '_animationMode === "NoopAnimations"',
     '[class.mat-button-disabled]': 'disabled',
     'class': 'mat-focus-indicator',
@@ -175,7 +175,7 @@ export class MatButton
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MatAnchor extends MatButton {
+export class MatAnchor extends MatButton implements AfterViewInit, OnDestroy {
   /** Tabindex of the button. */
   @Input() tabIndex: number;
 
@@ -183,15 +183,35 @@ export class MatAnchor extends MatButton {
     focusMonitor: FocusMonitor,
     elementRef: ElementRef,
     @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode: string,
+    /** @breaking-change 14.0.0 _ngZone will be required. */
+    @Optional() private _ngZone?: NgZone,
   ) {
     super(elementRef, focusMonitor, animationMode);
   }
 
-  _haltDisabledEvents(event: Event) {
+  override ngAfterViewInit(): void {
+    super.ngAfterViewInit();
+
+    /** @breaking-change 14.0.0 _ngZone will be required. */
+    if (this._ngZone) {
+      this._ngZone.runOutsideAngular(() => {
+        this._elementRef.nativeElement.addEventListener('click', this._haltDisabledEvents);
+      });
+    } else {
+      this._elementRef.nativeElement.addEventListener('click', this._haltDisabledEvents);
+    }
+  }
+
+  override ngOnDestroy(): void {
+    super.ngOnDestroy();
+    this._elementRef.nativeElement.removeEventListener('click', this._haltDisabledEvents);
+  }
+
+  _haltDisabledEvents = (event: Event): void => {
     // A disabled button shouldn't apply any actions
     if (this.disabled) {
       event.preventDefault();
       event.stopImmediatePropagation();
     }
-  }
+  };
 }

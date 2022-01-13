@@ -102,6 +102,7 @@ ng_test_library(
     deps = [
         ":mdc-button",
         "//src/cdk/platform",
+        "//src/cdk/testing/private",
         "//src/material-experimental/mdc-core",
         "//src/material/button",
         "@npm//@angular/platform-browser",

@@ -7,7 +7,7 @@
  */
 
 import {Platform} from '@angular/cdk/platform';
-import {Directive, ElementRef, NgZone, ViewChild} from '@angular/core';
+import {Directive, ElementRef, NgZone, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {
   CanColor,
   CanDisable,
@@ -155,23 +155,29 @@ export const MAT_ANCHOR_HOST = {
 /**
  * Anchor button base.
  */
-@Directive({
-  host: {
-    '(click)': '_haltDisabledEvents($event)',
-  },
-})
-export class MatAnchorBase extends MatButtonBase {
+@Directive()
+export class MatAnchorBase extends MatButtonBase implements OnInit, OnDestroy {
   tabIndex: number;
 
   constructor(elementRef: ElementRef, platform: Platform, ngZone: NgZone, animationMode?: string) {
     super(elementRef, platform, ngZone, animationMode);
   }
 
-  _haltDisabledEvents(event: Event) {
+  ngOnInit(): void {
+    this._ngZone.runOutsideAngular(() => {
+      this._elementRef.nativeElement.addEventListener('click', this._haltDisabledEvents);
+    });
+  }
+
+  ngOnDestroy(): void {
+    this._elementRef.nativeElement.removeEventListener('click', this._haltDisabledEvents);
+  }
+
+  _haltDisabledEvents = (event: Event): void => {
     // A disabled button shouldn't apply any actions
     if (this.disabled) {
       event.preventDefault();
       event.stopImmediatePropagation();
     }
-  }
+  };
 }
