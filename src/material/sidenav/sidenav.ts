@@ -40,10 +40,12 @@ import {ScrollDispatcher, CdkScrollable} from '@angular/cdk/scrolling';
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
-  providers: [{
-    provide: CdkScrollable,
-    useExisting: MatSidenavContent,
-  }]
+  providers: [
+    {
+      provide: CdkScrollable,
+      useExisting: MatSidenavContent,
+    },
+  ],
 })
 export class MatSidenavContent extends MatDrawerContent {
   constructor(
