@@ -130,16 +130,10 @@ When the user clicks in the `<button>`, Angular executes the `onSelect(hero)` ex
 
 <header>Clickable Elements</header>
 
-  In order to add a click event binding we've added a `<button>` element to our `<li>`, note that this
-  is not the only option, and we could have just as easily added the click event binding directly to the
-  `<li>` element.
-
-  We can add the click event binding to any possible element, but this is generally not advised as doing
-  so hinders assistive technologies and prevents automatic keyboard behaviors (e.g. the click being emitted
-  also when the user presses the enter key).
-
-  These problems can still be overcome by adding additional event bindings and ARIA attributes, but by using
-  `<button>` elements we get all the desired behaviors for free.
+  Note that we added the click event binding on a new `<button>` element. While we could have added
+  the event binding on the `<li>` element directly, it is better for accessibility purposes to use
+  the native `<button>` element to handle clicks.
+  For more details on accessibility, see [Accessibility in Angular](guide/accessibility).
 
 </div>
 
