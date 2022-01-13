@@ -51,7 +51,7 @@
     "@angular/platform-browser-dynamic-12": "npm:@angular/platform-browser-dynamic@12.2.13",
     "@angular/platform-server-12": "npm:@angular/platform-server@12.2.13",
     "@angular/router-12": "npm:@angular/router@12.2.13",
-    "@babel/cli": "7.16.7",
+    "@babel/cli": "7.16.8",
     "@babel/core": "7.8.6",
     "@babel/generator": "7.8.6",
     "@babel/parser": "7.9.4",
@@ -206,6 +206,6 @@
     "@babel/traverse": "7.8.6",
     "@babel/types": "7.8.6",
     "**/https-proxy-agent": "5.0.0",
-    "**/saucelabs": "7.1.2"
+    "**/saucelabs": "7.1.3"
   }
 }
