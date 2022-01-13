@@ -962,6 +962,7 @@ describe('MatSlider', () => {
     let sliderNativeElement: HTMLElement;
     let testComponent: SliderWithChangeHandler;
     let sliderInstance: MatSlider;
+    let trackFillElement: HTMLElement;
 
     beforeEach(() => {
       fixture = createComponent(SliderWithChangeHandler);
@@ -974,6 +975,7 @@ describe('MatSlider', () => {
       sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider))!;
       sliderNativeElement = sliderDebugElement.nativeElement;
       sliderInstance = sliderDebugElement.injector.get<MatSlider>(MatSlider);
+      trackFillElement = sliderNativeElement.querySelector('.mat-slider-track-fill') as HTMLElement;
     });
 
     it('should increment slider by 1 on up arrow pressed', () => {
@@ -1026,6 +1028,21 @@ describe('MatSlider', () => {
       expect(testComponent.onInput).toHaveBeenCalledTimes(1);
       expect(testComponent.onChange).toHaveBeenCalledTimes(1);
       expect(sliderInstance.value).toBe(99);
+    });
+
+    it('should decrement from max when interacting after out-of-bounds value is assigned', () => {
+      sliderInstance.max = 100;
+      sliderInstance.value = 200;
+      fixture.detectChanges();
+
+      expect(sliderInstance.value).toBe(200);
+      expect(trackFillElement.style.transform).toContain('scale3d(1, 1, 1)');
+
+      dispatchKeyboardEvent(sliderNativeElement, 'keydown', LEFT_ARROW);
+      fixture.detectChanges();
+
+      expect(sliderInstance.value).toBe(99);
+      expect(trackFillElement.style.transform).toContain('scale3d(0.99, 1, 1)');
     });
 
     it('should increment slider by 10 on page up pressed', () => {
