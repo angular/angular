@@ -100,7 +100,7 @@ Although Angular animates correctly `*ngFor` list items out of the box, it will 
 
 ## Animation sequence summary
 
-Angular functions for animating multiple elements start with `query()` to find inner elements, for example gathering all images within a `<div>`. The remaining functions, `stagger()`, <code>[group](api/animations/group)()</code>, and `sequence()`, apply cascades or lets you control how multiple animation steps are applied.
+Angular functions for animating multiple elements start with `query()` to find inner elements; for example, gathering all images within a `<div>`. The remaining functions, `stagger()`, <code>[group](api/animations/group)()</code>, and `sequence()`, apply cascades or lets you control how multiple animation steps are applied.
 
 ## More on Angular animations
 
