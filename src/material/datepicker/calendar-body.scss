@@ -208,8 +208,12 @@ $calendar-range-end-body-cell-size:
 
   .cdk-keyboard-focused .mat-calendar-body-active,
   .cdk-program-focused .mat-calendar-body-active {
-    & > .mat-calendar-body-cell-content:not(.mat-calendar-body-selected) {
+    & > .mat-calendar-body-cell-content {
       outline: dotted 2px;
+
+      &.mat-calendar-body-selected {
+        outline: solid 3px;
+      }
     }
   }
 
