@@ -17,7 +17,8 @@ import {asyncValidator} from './util';
 describe('FormArray', () => {
   describe('adding/removing', () => {
     let a: FormArray;
-    let c1: FormControl, c2: FormControl, c3: FormControl, c4: FormControl, c5: FormControl;
+    let c1: FormControl, c2: FormControl, c3: FormControl, c4: FormControl, c5: FormControl,
+        c6: FormControl;
     let logger: string[];
 
     beforeEach(() => {
@@ -85,9 +86,14 @@ describe('FormArray', () => {
 
       expect(a.controls).toEqual([c1, c2, c3, c4]);
 
+      // Check that using out of bounds index appends the control
       a.insert(a.length, c5);
 
       expect(a.controls).toEqual([c1, c2, c3, c4, c5]);
+
+      a.insert(-a.length, c6);
+
+      expect(a.controls).toEqual([c1, c2, c3, c4, c5, c6]);
     });
 
     it('should not emit events when calling `FormArray.push` with `emitEvent: false`', () => {
@@ -1377,6 +1383,19 @@ describe('FormArray', () => {
         expect(a.controls[0]).toEqual(c);
         expect(a.value).toEqual(['one']);
         expect(a.valid).toBe(true);
+
+        // Check that using out of bounds index appends the control
+        a.setControl(a.length, c2);
+
+        expect(a.controls[a.length - 1]).toEqual(c2);
+        expect(a.value).toEqual(['one', 'new!']);
+        expect(a.valid).toBe(false);
+
+        a.setControl(-a.length, c);
+
+        expect(a.controls[a.length - 1]).toEqual(c);
+        expect(a.value).toEqual(['one', 'new!', 'one']);
+        expect(a.valid).toBe(false);
       });
 
       it('should add control if control did not exist before', () => {
