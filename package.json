@@ -25,7 +25,7 @@
     "postinstall": "node scripts/webdriver-manager-update.js && node --preserve-symlinks --preserve-symlinks-main ./tools/postinstall-patches.js",
     "prepare": "husky install",
     "test": "bazelisk test",
-    "test:ci": "bazelisk test -- //... -//devtools/...",
+    "test:ci": "bazelisk test -- //... -//devtools/... -//aio/...",
     "test-tsec": "bazelisk test //... --build_tag_filters=tsec --test_tag_filters=tsec",
     "lint": "yarn -s tslint && yarn -s ng-dev format changed --check",
     "tslint": "tslint -c tslint.json --project tsconfig-tslint.json",
