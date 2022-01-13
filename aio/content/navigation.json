@@ -415,8 +415,8 @@
                 },
                 {
                   "url": "guide/i18n-common-prepare",
-                  "title": "Prepare templates for translations",
-                  "tooltip": "Prepare content for translation"
+                  "title": "Prepare component for translation",
+                  "tooltip": "Prepare component for translation"
                 },
                 {
                   "url": "guide/i18n-common-translation-files",
