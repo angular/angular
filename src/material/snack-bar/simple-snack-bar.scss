@@ -30,3 +30,8 @@ $button-vertical-margin: -(math.div($button-height - $line-height, 2));
     margin-right: $button-horizontal-margin;
   }
 }
+
+.mat-simple-snack-bar-content {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
