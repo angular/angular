@@ -314,10 +314,6 @@ export abstract class _MatTooltipBase<T extends _TooltipComponentBase>
         this._updatePosition(this._overlayRef);
       }
     });
-
-    _ngZone.runOutsideAngular(() => {
-      _elementRef.nativeElement.addEventListener('keydown', this._handleKeydown);
-    });
   }
 
   ngAfterViewInit() {
@@ -352,7 +348,6 @@ export abstract class _MatTooltipBase<T extends _TooltipComponentBase>
     }
 
     // Clean up the event listeners set in the constructor
-    nativeElement.removeEventListener('keydown', this._handleKeydown);
     this._passiveListeners.forEach(([event, listener]) => {
       nativeElement.removeEventListener(event, listener, passiveListenerOptions);
     });
@@ -408,18 +403,6 @@ export abstract class _MatTooltipBase<T extends _TooltipComponentBase>
     return !!this._tooltipInstance && this._tooltipInstance.isVisible();
   }
 
-  /**
-   * Handles the keydown events on the host element.
-   * Needs to be an arrow function so that we can use it in addEventListener.
-   */
-  private _handleKeydown = (event: KeyboardEvent) => {
-    if (this._isTooltipVisible() && event.keyCode === ESCAPE && !hasModifierKey(event)) {
-      event.preventDefault();
-      event.stopPropagation();
-      this._ngZone.run(() => this.hide(0));
-    }
-  };
-
   /** Create the overlay config and position strategy */
   private _createOverlay(): OverlayRef {
     if (this._overlayRef) {
@@ -469,6 +452,17 @@ export abstract class _MatTooltipBase<T extends _TooltipComponentBase>
       .outsidePointerEvents()
       .pipe(takeUntil(this._destroyed))
       .subscribe(() => this._tooltipInstance?._handleBodyInteraction());
+
+    this._overlayRef
+      .keydownEvents()
+      .pipe(takeUntil(this._destroyed))
+      .subscribe(event => {
+        if (this._isTooltipVisible() && event.keyCode === ESCAPE && !hasModifierKey(event)) {
+          event.preventDefault();
+          event.stopPropagation();
+          this._ngZone.run(() => this.hide(0));
+        }
+      });
 
     return this._overlayRef;
   }
