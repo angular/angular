@@ -168,7 +168,7 @@ export class MapInfoWindow implements OnInit, OnDestroy {
    * Opens the MapInfoWindow using the provided anchor. If the anchor is not set,
    * then the position property of the options input is used instead.
    */
-  open(anchor?: MapAnchorPoint) {
+  open(anchor?: MapAnchorPoint, shouldFocus?: boolean) {
     this._assertInitialized();
     const anchorObject = anchor ? anchor.getAnchor() : undefined;
 
@@ -178,7 +178,13 @@ export class MapInfoWindow implements OnInit, OnDestroy {
     // case where the window doesn't have an anchor, but is placed at a particular position.
     if (this.infoWindow.get('anchor') !== anchorObject || !anchorObject) {
       this._elementRef.nativeElement.style.display = '';
-      this.infoWindow.open(this._googleMap.googleMap, anchorObject);
+
+      // The config is cast to `any`, because the internal typings are out of date.
+      this.infoWindow.open({
+        map: this._googleMap.googleMap,
+        anchor: anchorObject,
+        shouldFocus,
+      } as any);
     }
   }
 

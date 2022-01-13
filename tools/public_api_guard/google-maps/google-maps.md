@@ -329,7 +329,7 @@ export class MapInfoWindow implements OnInit, OnDestroy {
     ngOnDestroy(): void;
     // (undocumented)
     ngOnInit(): void;
-    open(anchor?: MapAnchorPoint): void;
+    open(anchor?: MapAnchorPoint, shouldFocus?: boolean): void;
     // (undocumented)
     set options(options: google.maps.InfoWindowOptions);
     // (undocumented)

@@ -148,7 +148,7 @@ export function createInfoWindowSpy(
     'get',
   ]);
   infoWindowSpy.addListener.and.returnValue({remove: () => {}});
-  infoWindowSpy.open.and.callFake((_map: any, target: any) => (anchor = target));
+  infoWindowSpy.open.and.callFake((config: any) => (anchor = config.anchor));
   infoWindowSpy.close.and.callFake(() => (anchor = null));
   infoWindowSpy.get.and.callFake((key: string) => (key === 'anchor' ? anchor : null));
   return infoWindowSpy;

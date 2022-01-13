@@ -129,7 +129,13 @@ describe('MapInfoWindow', () => {
     expect(infoWindowSpy.close).toHaveBeenCalled();
 
     infoWindowComponent.open(fakeMarkerComponent);
-    expect(infoWindowSpy.open).toHaveBeenCalledWith(mapSpy, fakeMarker);
+    expect(infoWindowSpy.open).toHaveBeenCalledWith(
+      jasmine.objectContaining({
+        map: mapSpy,
+        anchor: fakeMarker,
+        shouldFocus: undefined,
+      }),
+    );
   });
 
   it('should not try to reopen info window multiple times for the same marker', () => {
@@ -223,6 +229,29 @@ describe('MapInfoWindow', () => {
 
     infoWindowComponent.open();
     expect(infoWindowSpy.open).toHaveBeenCalledTimes(1);
+  });
+
+  it('should allow for the focus behavior to be changed when opening the info window', () => {
+    const fakeMarker = {} as unknown as google.maps.Marker;
+    const fakeMarkerComponent = {
+      marker: fakeMarker,
+      getAnchor: () => fakeMarker,
+    } as unknown as MapMarker;
+    const infoWindowSpy = createInfoWindowSpy({});
+    createInfoWindowConstructorSpy(infoWindowSpy).and.callThrough();
+
+    const fixture = TestBed.createComponent(TestApp);
+    const infoWindowComponent = fixture.debugElement
+      .query(By.directive(MapInfoWindow))!
+      .injector.get<MapInfoWindow>(MapInfoWindow);
+    fixture.detectChanges();
+
+    infoWindowComponent.open(fakeMarkerComponent, false);
+    expect(infoWindowSpy.open).toHaveBeenCalledWith(
+      jasmine.objectContaining({
+        shouldFocus: false,
+      }),
+    );
   });
 });
 
