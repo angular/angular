@@ -32,7 +32,7 @@
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
-            "ngswConfigPath": "src/generated/ngsw-config.json",
+            "ngswConfigPath": "ngsw-config.json",
             "tsConfig": "tsconfig.app.json",
             "webWorkerTsConfig": "tsconfig.worker.json",
             "optimization": {
@@ -53,10 +53,7 @@
               {
                 "input": "src/generated",
                 "output": "generated",
-                "glob": "**",
-                "ignore": [
-                  "ngsw-config.json"
-                ]
+                "glob": "**"
               }
             ],
             "styles": [
