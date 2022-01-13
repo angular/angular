@@ -8,16 +8,11 @@
 
 import {HighContrastModeDetector} from '@angular/cdk/a11y';
 import {BidiModule} from '@angular/cdk/bidi';
-import {Inject, InjectionToken, NgModule, Optional, Version} from '@angular/core';
+import {Inject, InjectionToken, NgModule, Optional} from '@angular/core';
 import {VERSION as CDK_VERSION} from '@angular/cdk';
 import {DOCUMENT} from '@angular/common';
 import {_isTestEnvironment} from '@angular/cdk/platform';
-
-// Private version constant to circumvent test/build issues,
-// i.e. avoid core to depend on the @angular/material primary entry-point
-// Can be removed once the Material primary entry-point no longer
-// re-exports all secondary entry-points
-const VERSION = new Version('0.0.0-PLACEHOLDER');
+import {VERSION} from '../version';
 
 /** @docs-private */
 export function MATERIAL_SANITY_CHECKS_FACTORY(): SanityChecks {
