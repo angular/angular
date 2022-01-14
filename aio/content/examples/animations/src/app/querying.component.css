@@ -1,0 +1,31 @@
+section {
+  border: 1px solid black;
+  overflow: hidden;
+}
+
+section > * {
+  margin: 1rem;
+}
+
+.hero {
+  display: flex;
+  align-items: center;
+  border-radius: 4px;
+  color: black;
+  background-color: #DDD;
+}
+
+.hero .badge {
+  display: inline-block;
+  font-size: small;
+  color: white;
+  padding: 0.5rem;
+  background-color: #3d5157;
+  margin-right: .8em;
+  border-radius: 4px 0 0 4px;
+  align-self: stretch;
+}
+
+.hero .name {
+  height: min-content;
+}

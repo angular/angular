@@ -20,6 +20,7 @@ import { HeroListAutoComponent } from './hero-list-auto.component';
 import { HomeComponent } from './home.component';
 import { AboutComponent } from './about.component';
 import { InsertRemoveComponent } from './insert-remove.component';
+import { QueryingComponent } from './querying.component';
 
 
 @NgModule({
@@ -69,6 +70,11 @@ import { InsertRemoveComponent } from './insert-remove.component';
         data: { animation: 'insertRemovePage' }
       },
       {
+        path: 'querying',
+        component: QueryingComponent,
+        data: { animation: 'queryingPage' }
+      },
+      {
         path: 'home',
         component: HomeComponent,
         data: { animation: 'HomePage' }
@@ -98,6 +104,7 @@ import { InsertRemoveComponent } from './insert-remove.component';
     HeroListAutoComponent,
     HomeComponent,
     InsertRemoveComponent,
+    QueryingComponent,
     AboutComponent
   ],
   bootstrap: [AppComponent]

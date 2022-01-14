@@ -34,10 +34,14 @@ The first argument of `query()` is a [css selector](https://developer.mozilla.or
  - `@*`/`@triggerName` for elements with any or a specific trigger
  - `:self` the animating element itself
 
-<div class="alert is-helpful">
+<div class="callout is-helpful">
 
-  **Note:** Not all child elements are actually considered as entering/leaving, this can at times be counterintuitive and
-  confusing, please see the [query api docs](/api/animations/query#entering-and-leaving-elements) for more information.
+  <header>Entering and Leaving Elements</header>
+
+  Not all child elements are actually considered as entering/leaving, this can at times be counterintuitive and confusing, please see the [query api docs](/api/animations/query#entering-and-leaving-elements) for more information.
+
+
+  You can also see an illustration of this in the animations live example (introduced in the animations [introduction section](/guide/animations#about-this-guide)) under the Querying tab.
 
 </div>
 
