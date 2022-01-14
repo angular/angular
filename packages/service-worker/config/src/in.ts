@@ -56,6 +56,7 @@ export interface DataGroup {
     maxSize: number; maxAge: Duration;
     timeout?: Duration;
     strategy?: 'freshness' | 'performance';
+    cacheOpaqueResponses?: boolean;
   };
   cacheQueryOptions?: Pick<CacheQueryOptions, 'ignoreSearch'>;
 }

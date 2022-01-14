@@ -339,6 +339,10 @@ export class DataGroup {
 
   private async handleFetchWithPerformance(req: Request, event: ExtendableEvent, lru: LruList):
       Promise<Response|null> {
+    // The 'performance' strategy prioritizes cached response. Prefer to avoid caching opaque
+    // responses to avoid caching an error response.
+    const okToCacheOpaque = this.config.cacheOpaqueResponses ?? false;
+
     let res: Response|null|undefined = null;
 
     // Check the cache first. If the resource exists there (and is not expired), the cached
@@ -348,7 +352,7 @@ export class DataGroup {
       res = fromCache.res;
       // Check the age of the resource.
       if (this.config.refreshAheadMs !== undefined && fromCache.age >= this.config.refreshAheadMs) {
-        event.waitUntil(this.safeCacheResponse(req, this.safeFetch(req), lru));
+        event.waitUntil(this.safeCacheResponse(req, this.safeFetch(req), lru, okToCacheOpaque));
       }
     }
 
@@ -367,10 +371,10 @@ export class DataGroup {
       res = this.adapter.newResponse(null, {status: 504, statusText: 'Gateway Timeout'});
 
       // Cache the network response eventually.
-      event.waitUntil(this.safeCacheResponse(req, networkFetch, lru));
+      event.waitUntil(this.safeCacheResponse(req, networkFetch, lru, okToCacheOpaque));
     } else {
       // The request completed in time, so cache it inline with the response flow.
-      await this.safeCacheResponse(req, res, lru);
+      await this.safeCacheResponse(req, res, lru, okToCacheOpaque);
     }
 
     return res;
@@ -378,6 +382,10 @@ export class DataGroup {
 
   private async handleFetchWithFreshness(req: Request, event: ExtendableEvent, lru: LruList):
       Promise<Response|null> {
+    // The 'freshness' strategy prioritizes responses from the network. Therefore, it is OK to cache
+    // an opaque response, even if it is an error response.
+    const okToCacheOpaque = this.config.cacheOpaqueResponses ?? true;
+
     // Start with a network fetch.
     const [timeoutFetch, networkFetch] = this.networkFetchWithTimeout(req);
     let res: Response|null|undefined;
@@ -392,14 +400,14 @@ export class DataGroup {
 
     // If the network fetch times out or errors, fall back on the cache.
     if (res === undefined) {
-      event.waitUntil(this.safeCacheResponse(req, networkFetch, lru, true));
+      event.waitUntil(this.safeCacheResponse(req, networkFetch, lru, okToCacheOpaque));
 
       // Ignore the age, the network response will be cached anyway due to the
       // behavior of freshness.
       const fromCache = await this.loadFromCache(req, lru);
       res = (fromCache !== null) ? fromCache.res : null;
     } else {
-      await this.safeCacheResponse(req, res, lru, true);
+      await this.safeCacheResponse(req, res, lru, okToCacheOpaque);
     }
 
     // Either the network fetch didn't time out, or the cache yielded a usable response.

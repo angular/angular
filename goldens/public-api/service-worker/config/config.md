@@ -45,6 +45,7 @@ export interface DataGroup {
         maxAge: Duration;
         timeout?: Duration;
         strategy?: 'freshness' | 'performance';
+        cacheOpaqueResponses?: boolean;
     };
     // (undocumented)
     cacheQueryOptions?: Pick<CacheQueryOptions, 'ignoreSearch'>;
@@ -78,13 +79,11 @@ class Generator_2 {
     readonly fs: Filesystem;
     // (undocumented)
     process(config: Config): Promise<Object>;
-    }
-
+}
 export { Generator_2 as Generator }
 
 // @public (undocumented)
 export type Glob = string;
-
 
 // (No @packageDocumentation comment for this package)
 
