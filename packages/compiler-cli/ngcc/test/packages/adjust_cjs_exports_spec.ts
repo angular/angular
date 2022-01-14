@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {adjustElementAccessExports} from '../../src/packages/adjust_cjs_exports';
+import {adjustElementAccessExports} from '../../src/packages/adjust_cjs_umd_exports';
 
 describe('adjustElementAccessExports', () => {
   it('should replace exports using element access syntax', () => {

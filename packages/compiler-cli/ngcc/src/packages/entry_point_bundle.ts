@@ -11,7 +11,7 @@ import {AbsoluteFsPath, FileSystem, ReadonlyFileSystem} from '../../../src/ngtsc
 import {DtsProcessing} from '../execution/tasks/api';
 import {PathMappings} from '../path_mappings';
 
-import {adjustElementAccessExports} from './adjust_cjs_exports';
+import {adjustElementAccessExports} from './adjust_cjs_umd_exports';
 import {BundleProgram, makeBundleProgram} from './bundle_program';
 import {EntryPoint, EntryPointFormat} from './entry_point';
 import {NgccDtsCompilerHost, NgccSourcesCompilerHost} from './ngcc_compiler_host';

@@ -9,7 +9,7 @@ import ts from 'typescript';
 
 import {AbsoluteFsPath, ReadonlyFileSystem} from '../../../src/ngtsc/file_system';
 
-import {adjustElementAccessExports} from './adjust_cjs_exports';
+import {adjustElementAccessExports} from './adjust_cjs_umd_exports';
 
 /**
  * A cache that holds on to source files that can be shared for processing all entry-points in a
