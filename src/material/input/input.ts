@@ -78,6 +78,7 @@ const _MatInputBase = mixinErrorState(
     '[attr.data-placeholder]': 'placeholder',
     '[disabled]': 'disabled',
     '[required]': 'required',
+    '[attr.name]': 'name || null',
     '[attr.readonly]': 'readonly && !_isNativeSelect || null',
     '[class.mat-native-select-inline]': '_isInlineSelect()',
     // Only mark the input as invalid for assistive technology if it has a value since the
@@ -182,6 +183,12 @@ export class MatInput
    * @docs-private
    */
   @Input() placeholder: string;
+
+  /**
+   * Name of the input.
+   * @docs-private
+   */
+  @Input() name: string;
 
   /**
    * Implemented as part of MatFormFieldControl.
