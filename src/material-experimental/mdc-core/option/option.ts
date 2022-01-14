@@ -48,7 +48,7 @@ import {MatOptgroup} from './optgroup';
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MatOption extends _MatOptionBase {
+export class MatOption<T = any> extends _MatOptionBase<T> {
   constructor(
     element: ElementRef<HTMLElement>,
     changeDetectorRef: ChangeDetectorRef,

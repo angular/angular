@@ -266,16 +266,16 @@ export class _MatOptgroupBase extends _MatOptgroupMixinBase implements CanDisabl
 }
 
 // @public
-export class MatOption extends _MatOptionBase {
+export class MatOption<T = any> extends _MatOptionBase<T> {
     constructor(element: ElementRef<HTMLElement>, changeDetectorRef: ChangeDetectorRef, parent: MatOptionParentComponent, group: MatOptgroup);
     // (undocumented)
-    static ɵcmp: i0.ɵɵComponentDeclaration<MatOption, "mat-option", ["matOption"], {}, {}, never, ["*"]>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MatOption<any>, "mat-option", ["matOption"], {}, {}, never, ["*"]>;
     // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<MatOption, [null, null, { optional: true; }, { optional: true; }]>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatOption<any>, [null, null, { optional: true; }, { optional: true; }]>;
 }
 
 // @public (undocumented)
-export class _MatOptionBase implements FocusableOption, AfterViewChecked, OnDestroy {
+export class _MatOptionBase<T = any> implements FocusableOption, AfterViewChecked, OnDestroy {
     constructor(_element: ElementRef<HTMLElement>, _changeDetectorRef: ChangeDetectorRef, _parent: MatOptionParentComponent, group: _MatOptgroupBase);
     get active(): boolean;
     deselect(): void;
@@ -296,19 +296,19 @@ export class _MatOptionBase implements FocusableOption, AfterViewChecked, OnDest
     ngAfterViewChecked(): void;
     // (undocumented)
     ngOnDestroy(): void;
-    readonly onSelectionChange: EventEmitter<MatOptionSelectionChange>;
+    readonly onSelectionChange: EventEmitter<MatOptionSelectionChange<T>>;
     select(): void;
     get selected(): boolean;
     _selectViaInteraction(): void;
     setActiveStyles(): void;
     setInactiveStyles(): void;
     readonly _stateChanges: Subject<void>;
-    value: any;
+    value: T;
     get viewValue(): string;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<_MatOptionBase, never, never, { "value": "value"; "id": "id"; "disabled": "disabled"; }, { "onSelectionChange": "onSelectionChange"; }, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<_MatOptionBase<any>, never, never, { "value": "value"; "id": "id"; "disabled": "disabled"; }, { "onSelectionChange": "onSelectionChange"; }, never>;
     // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<_MatOptionBase, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<_MatOptionBase<any>, never>;
 }
 
 // @public (undocumented)
@@ -332,12 +332,12 @@ export interface MatOptionParentComponent {
 }
 
 // @public
-export class MatOptionSelectionChange {
+export class MatOptionSelectionChange<T = any> {
     constructor(
-    source: _MatOptionBase,
+    source: _MatOptionBase<T>,
     isUserInput?: boolean);
     isUserInput: boolean;
-    source: _MatOptionBase;
+    source: _MatOptionBase<T>;
 }
 
 // @public
