@@ -1081,6 +1081,26 @@ describe('MatAutocomplete', () => {
         .toBe(false);
     });
 
+    it('should not interfere with the ENTER key when pressing a modifier', fakeAsync(() => {
+      const trigger = fixture.componentInstance.trigger;
+
+      expect(input.value).toBeFalsy('Expected input to start off blank.');
+      expect(trigger.panelOpen).toBe(true, 'Expected panel to start off open.');
+
+      fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
+      flush();
+      fixture.detectChanges();
+
+      Object.defineProperty(ENTER_EVENT, 'altKey', {get: () => true});
+      fixture.componentInstance.trigger._handleKeydown(ENTER_EVENT);
+      fixture.detectChanges();
+
+      expect(trigger.panelOpen).toBe(true, 'Expected panel to remain open.');
+      expect(input.value).toBeFalsy('Expected input to remain blank.');
+      expect(ENTER_EVENT.defaultPrevented)
+          .toBe(false, 'Expected the default ENTER action not to have been prevented.');
+    }));
+
     it('should fill the text field, not select an option, when SPACE is entered', () => {
       typeInElement(input, 'New');
       fixture.detectChanges();

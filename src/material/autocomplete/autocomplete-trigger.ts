@@ -394,7 +394,7 @@ export abstract class _MatAutocompleteTriggerBase
       event.preventDefault();
     }
 
-    if (this.activeOption && keyCode === ENTER && this.panelOpen) {
+    if (this.activeOption && keyCode === ENTER && this.panelOpen && !hasModifierKey(event)) {
       this.activeOption._selectViaInteraction();
       this._resetActiveItem();
       event.preventDefault();
