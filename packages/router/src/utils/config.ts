@@ -112,13 +112,6 @@ function getFullPath(parentPath: string, currentRoute: Route): string {
 }
 
 /**
- * A private symbol used to store the value of `Route.title` inside the `Route.data` if it is a
- * static string or `Route.resolve` if anything else. This allows us to reuse the existing route
- * data/resolvers to support the title feature without new instrumentation in the `Router` pipeline.
- */
-export const RouteTitle = Symbol('RouteTitle');
-
-/**
  * Makes a copy of the config and adds any default required properties.
  */
 export function standardizeConfig(r: Route): Route {
@@ -127,16 +120,6 @@ export function standardizeConfig(r: Route): Route {
   if (!c.component && (children || c.loadChildren) && (c.outlet && c.outlet !== PRIMARY_OUTLET)) {
     c.component = EmptyOutletComponent;
   }
-  if (c.title !== undefined) {
-    if (typeof c.title === 'string' || c.title === null) {
-      c.data = c.data ?? {};
-      c.data[RouteTitle] = c.title;
-    } else {
-      c.resolve = c.resolve ?? {};
-      c.resolve[RouteTitle] = c.title;
-    }
-  }
-
   return c;
 }
 

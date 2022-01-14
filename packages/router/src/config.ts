@@ -369,7 +369,9 @@ export type RunGuardsAndResolvers =
  */
 export interface Route {
   /**
-   * Used to define a page title for the route.
+   * Used to define a page title for the route. This can be a static string or an `Injectable` that
+   * implements `Resolve`.
+   *
    * @see `PageTitleStrategy`
    */
   title?: string|unknown;

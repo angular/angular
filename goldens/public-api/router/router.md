@@ -170,6 +170,18 @@ export type Data = {
 };
 
 // @public
+export class DefaultTitleStrategy extends TitleStrategy {
+    constructor(title: Title);
+    // (undocumented)
+    readonly title: Title;
+    updateTitle(snapshot: RouterStateSnapshot): void;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<DefaultTitleStrategy, never>;
+    // (undocumented)
+    static ɵprov: i0.ɵɵInjectableDeclaration<DefaultTitleStrategy>;
+}
+
+// @public
 export class DefaultUrlSerializer implements UrlSerializer {
     parse(url: string): UrlTree;
     serialize(tree: UrlTree): string;
@@ -350,24 +362,6 @@ export class OutletContext {
 }
 
 // @public
-export class PageTitleStrategy implements OnDestroy {
-    constructor(title: Title, router: Router);
-    activate(): void;
-    getResolvedTitleForRoute(snapshot: ActivatedRouteSnapshot): any;
-    // (undocumented)
-    getTitleForPage(snapshot: RouterStateSnapshot): string | undefined;
-    // (undocumented)
-    ngOnDestroy(): void;
-    setTitle(title: string): void;
-    // (undocumented)
-    protected readonly title: Title;
-    // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<PageTitleStrategy, never>;
-    // (undocumented)
-    static ɵprov: i0.ɵɵInjectableDeclaration<PageTitleStrategy>;
-}
-
-// @public
 export interface ParamMap {
     get(name: string): string | null;
     getAll(name: string): string[];
@@ -512,6 +506,7 @@ export class Router {
     readonly routerState: RouterState;
     serializeUrl(url: UrlTree): string;
     setUpLocationChangeListener(): void;
+    titleStrategy?: TitleStrategy;
     get url(): string;
     urlHandlingStrategy: UrlHandlingStrategy;
     urlUpdateStrategy: 'deferred' | 'eager';
@@ -759,6 +754,14 @@ export class Scroll {
     readonly routerEvent: NavigationEnd;
     // (undocumented)
     toString(): string;
+}
+
+// @public
+export abstract class TitleStrategy {
+    // (undocumented)
+    buildTitle(snapshot: RouterStateSnapshot): string | undefined;
+    getResolvedTitleForRoute(snapshot: ActivatedRouteSnapshot): any;
+    abstract updateTitle(snapshot: RouterStateSnapshot): void;
 }
 
 // @public

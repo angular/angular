@@ -171,6 +171,9 @@
     "name": "DefaultKeyValueDifferFactory"
   },
   {
+    "name": "DefaultTitleStrategy"
+  },
+  {
     "name": "DefaultUrlSerializer"
   },
   {
@@ -717,6 +720,9 @@
     "name": "Title"
   },
   {
+    "name": "TitleStrategy"
+  },
+  {
     "name": "Tree"
   },
   {
@@ -997,9 +1003,6 @@
   },
   {
     "name": "createTemplateRef"
-  },
-  {
-    "name": "createTitle"
   },
   {
     "name": "deactivateRouteAndItsChildren"
@@ -1699,9 +1702,6 @@
   },
   {
     "name": "optionsReducer"
-  },
-  {
-    "name": "pageTitleInitializer"
   },
   {
     "name": "paramCompareMap"

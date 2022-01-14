@@ -9,7 +9,7 @@
 import {Location, LocationStrategy} from '@angular/common';
 import {MockLocationStrategy, SpyLocation} from '@angular/common/testing';
 import {Compiler, Injector, ModuleWithProviders, NgModule, Optional} from '@angular/core';
-import {ChildrenOutletContexts, ExtraOptions, NoPreloading, PageTitleStrategy, PreloadingStrategy, provideRoutes, Route, Router, ROUTER_CONFIGURATION, RouteReuseStrategy, RouterModule, ROUTES, Routes, UrlHandlingStrategy, UrlSerializer, ɵassignExtraOptionsToRouter as assignExtraOptionsToRouter, ɵflatten as flatten, ɵROUTER_PROVIDERS as ROUTER_PROVIDERS} from '@angular/router';
+import {ChildrenOutletContexts, DefaultTitleStrategy, ExtraOptions, NoPreloading, PreloadingStrategy, provideRoutes, Route, Router, ROUTER_CONFIGURATION, RouteReuseStrategy, RouterModule, ROUTES, Routes, TitleStrategy, UrlHandlingStrategy, UrlSerializer, ɵassignExtraOptionsToRouter as assignExtraOptionsToRouter, ɵflatten as flatten, ɵROUTER_PROVIDERS as ROUTER_PROVIDERS} from '@angular/router';
 
 import {EXTRA_ROUTER_TESTING_PROVIDERS} from './extra_router_testing_providers';
 
@@ -29,7 +29,8 @@ export function setupTestingRouter(
     urlSerializer: UrlSerializer, contexts: ChildrenOutletContexts, location: Location,
     compiler: Compiler, injector: Injector, routes: Route[][],
     opts?: ExtraOptions|UrlHandlingStrategy, urlHandlingStrategy?: UrlHandlingStrategy,
-    routeReuseStrategy?: RouteReuseStrategy) {
+    routeReuseStrategy?: RouteReuseStrategy, defaultTitleStrategy?: DefaultTitleStrategy,
+    titleStrategy?: TitleStrategy) {
   const router =
       new Router(null!, urlSerializer, contexts, location, injector, compiler, flatten(routes));
   if (opts) {
@@ -49,6 +50,8 @@ export function setupTestingRouter(
   if (routeReuseStrategy) {
     router.routeReuseStrategy = routeReuseStrategy;
   }
+
+  router.titleStrategy = titleStrategy ?? defaultTitleStrategy;
 
   return router;
 }
@@ -89,9 +92,17 @@ export function setupTestingRouter(
       provide: Router,
       useFactory: setupTestingRouter,
       deps: [
-        UrlSerializer, ChildrenOutletContexts, Location, Compiler, Injector, ROUTES,
-        ROUTER_CONFIGURATION, [UrlHandlingStrategy, new Optional()],
-        [RouteReuseStrategy, new Optional()]
+        UrlSerializer,
+        ChildrenOutletContexts,
+        Location,
+        Compiler,
+        Injector,
+        ROUTES,
+        ROUTER_CONFIGURATION,
+        [UrlHandlingStrategy, new Optional()],
+        [RouteReuseStrategy, new Optional()],
+        [DefaultTitleStrategy, new Optional()],
+        [TitleStrategy, new Optional()],
       ]
     },
     {provide: PreloadingStrategy, useExisting: NoPreloading},
@@ -99,10 +110,6 @@ export function setupTestingRouter(
   ]
 })
 export class RouterTestingModule {
-  constructor(pageTitle: PageTitleStrategy) {
-    pageTitle.activate();
-  }
-
   static withRoutes(routes: Routes, config?: ExtraOptions):
       ModuleWithProviders<RouterTestingModule> {
     return {

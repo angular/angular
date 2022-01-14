@@ -237,10 +237,8 @@ The `Router` sets the document's title using the `title` property from the `Rout
 </code-example>
 
 Note that the `title` property follows the same rules as static route `data` and dynamic values that implement `Resolve`.
-This is also true for `paramsInheritanceStrategy`. The `title` property will be copied inherited in the same 
-manner was as data and resolved data.
 
-You can also provide a custom page title strategy by extending the `PageTitleStrategy`.
+You can also provide a custom title strategy by extending the `TitleStrategy`.
 <code-example path="router/src/app/app-routing.module.10.ts" region="custom-page-title" header="AppRoutingModule (excerpt)">
 </code-example>
 

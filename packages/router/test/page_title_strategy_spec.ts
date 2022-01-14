@@ -7,15 +7,13 @@
  */
 
 import {DOCUMENT} from '@angular/common';
-import {Component, Injectable, NgModule} from '@angular/core';
+import {Component, Inject, Injectable, NgModule} from '@angular/core';
 import {fakeAsync, TestBed, tick} from '@angular/core/testing';
-import {Router, RouterModule} from '@angular/router';
+import {Router, RouterModule, RouterStateSnapshot, TitleStrategy} from '@angular/router';
 import {RouterTestingModule} from '@angular/router/testing';
 
-import {PageTitleStrategy} from '../src';
-
-describe('page title strategy', () => {
-  describe('default PageTitleStrategy', () => {
+describe('title strategy', () => {
+  describe('DefaultTitleStrategy', () => {
     let router: Router;
     let document: Document;
 
@@ -28,7 +26,6 @@ describe('page title strategy', () => {
       });
       router = TestBed.inject(Router);
       document = TestBed.inject(DOCUMENT);
-      TestBed.inject(PageTitleStrategy);
     });
 
     it('sets page title from data', fakeAsync(() => {
@@ -122,10 +119,15 @@ describe('page title strategy', () => {
   describe('custom strategies', () => {
     it('overriding the setTitle method', fakeAsync(() => {
          @Injectable({providedIn: 'root'})
-         class TemplatePageTitleStrategy extends PageTitleStrategy {
+         class TemplatePageTitleStrategy extends TitleStrategy {
+           constructor(@Inject(DOCUMENT) private readonly document: Document) {
+             super();
+           }
+
            // Example of how setTitle could implement a template for the title
-           override setTitle(title: string) {
-             this.title.setTitle(`My Application | ${title}`);
+           override updateTitle(state: RouterStateSnapshot) {
+             const title = this.buildTitle(state);
+             this.document.title = `My Application | ${title}`;
            }
          }
 
@@ -134,7 +136,7 @@ describe('page title strategy', () => {
              RouterTestingModule,
              TestModule,
            ],
-           providers: [{provide: PageTitleStrategy, useClass: TemplatePageTitleStrategy}]
+           providers: [{provide: TitleStrategy, useClass: TemplatePageTitleStrategy}]
          });
          const router = TestBed.inject(Router);
          const document = TestBed.inject(DOCUMENT);

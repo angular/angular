@@ -16,6 +16,13 @@ import {ActivatedRouteSnapshot, inheritedParamsDataResolve, RouterStateSnapshot}
 import {wrapIntoObservable} from '../utils/collection';
 import {getToken} from '../utils/preactivation';
 
+/**
+ * A private symbol used to store the value of `Route.title` inside the `Route.data` if it is a
+ * static string or `Route.resolve` if anything else. This allows us to reuse the existing route
+ * data/resolvers to support the title feature without new instrumentation in the `Router` pipeline.
+ */
+export const RouteTitle = Symbol('RouteTitle');
+
 export function resolveData(
     paramsInheritanceStrategy: 'emptyOnly'|'always',
     moduleInjector: Injector): MonoTypeOperatorFunction<NavigationTransition> {
@@ -41,12 +48,21 @@ export function resolveData(
 function runResolve(
     futureARS: ActivatedRouteSnapshot, futureRSS: RouterStateSnapshot,
     paramsInheritanceStrategy: 'emptyOnly'|'always', moduleInjector: Injector) {
+  const config = futureARS.routeConfig;
   const resolve = futureARS._resolve;
+  const data = {...futureARS.data};
+  if (config?.title !== undefined) {
+    if (typeof config.title === 'string' || config.title === null) {
+      data[RouteTitle] = config.title;
+    } else {
+      resolve[RouteTitle] = config.title;
+    }
+  }
   return resolveNode(resolve, futureARS, futureRSS, moduleInjector)
       .pipe(map((resolvedData: any) => {
         futureARS._resolvedData = resolvedData;
         futureARS.data = {
-          ...futureARS.data,
+          ...data,
           ...inheritedParamsDataResolve(futureARS, paramsInheritanceStrategy).resolve
         };
         return null;

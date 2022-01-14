@@ -6,23 +6,23 @@
 
 import { ChildrenOutletContexts } from '@angular/router';
 import { Compiler } from '@angular/core';
+import { DefaultTitleStrategy } from '@angular/router';
 import { ExtraOptions } from '@angular/router';
 import * as i0 from '@angular/core';
 import * as i1 from '@angular/router';
 import { Injector } from '@angular/core';
 import { Location as Location_2 } from '@angular/common';
 import { ModuleWithProviders } from '@angular/core';
-import { PageTitleStrategy } from '@angular/router';
 import { Route } from '@angular/router';
 import { Router } from '@angular/router';
 import { RouteReuseStrategy } from '@angular/router';
 import { Routes } from '@angular/router';
+import { TitleStrategy } from '@angular/router';
 import { UrlHandlingStrategy } from '@angular/router';
 import { UrlSerializer } from '@angular/router';
 
 // @public
 export class RouterTestingModule {
-    constructor(pageTitle: PageTitleStrategy);
     // (undocumented)
     static withRoutes(routes: Routes, config?: ExtraOptions): ModuleWithProviders<RouterTestingModule>;
     // (undocumented)
@@ -34,7 +34,7 @@ export class RouterTestingModule {
 }
 
 // @public
-export function setupTestingRouter(urlSerializer: UrlSerializer, contexts: ChildrenOutletContexts, location: Location_2, compiler: Compiler, injector: Injector, routes: Route[][], opts?: ExtraOptions | UrlHandlingStrategy, urlHandlingStrategy?: UrlHandlingStrategy, routeReuseStrategy?: RouteReuseStrategy): Router;
+export function setupTestingRouter(urlSerializer: UrlSerializer, contexts: ChildrenOutletContexts, location: Location_2, compiler: Compiler, injector: Injector, routes: Route[][], opts?: ExtraOptions | UrlHandlingStrategy, urlHandlingStrategy?: UrlHandlingStrategy, routeReuseStrategy?: RouteReuseStrategy, defaultTitleStrategy?: DefaultTitleStrategy, titleStrategy?: TitleStrategy): Router;
 
 // (No @packageDocumentation comment for this package)
 
