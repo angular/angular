@@ -106,6 +106,7 @@ describe('Generator', () => {
         maxAge: 259200000,
         timeoutMs: 60000,
         version: 1,
+        cacheOpaqueResponses: undefined,
         cacheQueryOptions: {ignoreVary: true}
       }],
       navigationUrls: [
@@ -282,7 +283,173 @@ describe('Generator', () => {
     }
   });
 
-  it('generates a correct config with cacheQueryOptions', async () => {
+  it('generates a correct config with `cacheOpaqueResponses`', async () => {
+    const fs = new MockFilesystem({
+      '/index.html': 'This is a test',
+    });
+    const gen = new Generator(fs, '/');
+    const config = await gen.process({
+      index: '/index.html',
+      dataGroups: [
+        {
+          name: 'freshness-undefined',
+          urls: ['/api/1/**'],
+          cacheConfig: {
+            maxAge: '3d',
+            maxSize: 100,
+            strategy: 'freshness',
+          },
+        },
+        {
+          name: 'freshness-false',
+          urls: ['/api/2/**'],
+          cacheConfig: {
+            cacheOpaqueResponses: false,
+            maxAge: '3d',
+            maxSize: 100,
+            strategy: 'freshness',
+          },
+        },
+        {
+          name: 'freshness-true',
+          urls: ['/api/3/**'],
+          cacheConfig: {
+            cacheOpaqueResponses: true,
+            maxAge: '3d',
+            maxSize: 100,
+            strategy: 'freshness',
+          },
+        },
+        {
+          name: 'performance-undefined',
+          urls: ['/api/4/**'],
+          cacheConfig: {
+            maxAge: '3d',
+            maxSize: 100,
+            strategy: 'performance',
+          },
+        },
+        {
+          name: 'performance-false',
+          urls: ['/api/5/**'],
+          cacheConfig: {
+            cacheOpaqueResponses: false,
+            maxAge: '3d',
+            maxSize: 100,
+            strategy: 'performance',
+          },
+        },
+        {
+          name: 'performance-true',
+          urls: ['/api/6/**'],
+          cacheConfig: {
+            cacheOpaqueResponses: true,
+            maxAge: '3d',
+            maxSize: 100,
+            strategy: 'performance',
+          },
+        },
+      ],
+    });
+
+    expect(config).toEqual({
+      configVersion: 1,
+      appData: undefined,
+      timestamp: 1234567890123,
+      index: '/index.html',
+      assetGroups: [],
+      dataGroups: [
+        {
+          name: 'freshness-undefined',
+          patterns: [
+            '\\/api\\/1\\/.*',
+          ],
+          strategy: 'freshness',
+          maxSize: 100,
+          maxAge: 259200000,
+          timeoutMs: undefined,
+          version: 1,
+          cacheOpaqueResponses: undefined,
+          cacheQueryOptions: {ignoreVary: true},
+        },
+        {
+          name: 'freshness-false',
+          patterns: [
+            '\\/api\\/2\\/.*',
+          ],
+          strategy: 'freshness',
+          maxSize: 100,
+          maxAge: 259200000,
+          timeoutMs: undefined,
+          version: 1,
+          cacheOpaqueResponses: false,
+          cacheQueryOptions: {ignoreVary: true},
+        },
+        {
+          name: 'freshness-true',
+          patterns: [
+            '\\/api\\/3\\/.*',
+          ],
+          strategy: 'freshness',
+          maxSize: 100,
+          maxAge: 259200000,
+          timeoutMs: undefined,
+          version: 1,
+          cacheOpaqueResponses: true,
+          cacheQueryOptions: {ignoreVary: true},
+        },
+        {
+          name: 'performance-undefined',
+          patterns: [
+            '\\/api\\/4\\/.*',
+          ],
+          strategy: 'performance',
+          maxSize: 100,
+          maxAge: 259200000,
+          timeoutMs: undefined,
+          version: 1,
+          cacheOpaqueResponses: undefined,
+          cacheQueryOptions: {ignoreVary: true},
+        },
+        {
+          name: 'performance-false',
+          patterns: [
+            '\\/api\\/5\\/.*',
+          ],
+          strategy: 'performance',
+          maxSize: 100,
+          maxAge: 259200000,
+          timeoutMs: undefined,
+          version: 1,
+          cacheOpaqueResponses: false,
+          cacheQueryOptions: {ignoreVary: true},
+        },
+        {
+          name: 'performance-true',
+          patterns: [
+            '\\/api\\/6\\/.*',
+          ],
+          strategy: 'performance',
+          maxSize: 100,
+          maxAge: 259200000,
+          timeoutMs: undefined,
+          version: 1,
+          cacheOpaqueResponses: true,
+          cacheQueryOptions: {ignoreVary: true},
+        },
+      ],
+      navigationUrls: [
+        {positive: true, regex: '^\\/.*$'},
+        {positive: false, regex: '^\\/(?:.+\\/)?[^/]*\\.[^/]*$'},
+        {positive: false, regex: '^\\/(?:.+\\/)?[^/]*__[^/]*$'},
+        {positive: false, regex: '^\\/(?:.+\\/)?[^/]*__[^/]*\\/.*$'},
+      ],
+      navigationRequestStrategy: 'performance',
+      hashTable: {},
+    });
+  });
+
+  it('generates a correct config with `cacheQueryOptions`', async () => {
     const fs = new MockFilesystem({
       '/index.html': 'This is a test',
       '/main.js': 'This is a JS file',
@@ -339,6 +506,7 @@ describe('Generator', () => {
         maxAge: 259200000,
         timeoutMs: 60000,
         version: 1,
+        cacheOpaqueResponses: undefined,
         cacheQueryOptions: {ignoreSearch: false, ignoreVary: true}
       }],
       navigationUrls: [

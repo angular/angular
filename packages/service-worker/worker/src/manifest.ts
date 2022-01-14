@@ -37,9 +37,10 @@ export interface DataGroupConfig {
   strategy: 'freshness'|'performance';
   patterns: string[];
   maxSize: number;
+  maxAge: number;
   timeoutMs?: number;
   refreshAheadMs?: number;
-  maxAge: number;
+  cacheOpaqueResponses?: boolean;
   cacheQueryOptions?: CacheQueryOptions;
 }
 
