@@ -247,6 +247,28 @@ This essentially does the following:
 
 </div>
 
+<div class="callout is-important">
+
+  <header>Note on opaque responses</header>
+
+  [Opaque responses][opaque-response] are handled differently depending on the used strategy:
+  Data-groups with the `freshness` strategy cache such responses normally.
+  Data-groups with the `performance` strategy, however, do not cache opaque responses.
+
+  In case you are not familiar, an opaque response is a special type of response returned when requesting a resource that is on a different origin which doesn't return CORS headers.
+  One of the characteristics of an opaque response is that the service worker is not allowed to read its status, meaning it can't check if the request was successful or not.
+  See [Introduction to fetch()][response-types] for more details.
+
+  For data-groups with the `freshness` strategy, it doesn't matter if the service worker caches an error response.
+  The data will be requested anew every time, only falling back to the cached response when offline or on a slow network.
+
+  For data-groups with the `performance` strategy on the other hand, caching an error response would be quite problematic.
+  The service worker would continue to serve the error response until `maxAge` expired, even if the error was due to a temporary network or server issue.
+
+  If you are not able to implement CORS&mdash;for example, if you don't control the origin&mdash;prefer using the `freshness` strategy for resources that result in opaque responses.
+
+</div>
+
 ### `cacheQueryOptions`
 
 See [assetGroups](#assetgroups) for details.
@@ -321,3 +343,7 @@ The `freshness` strategy usually results in more requests sent to the server, wh
 It is recommended that you use the default performance strategy whenever possible.
 
 </div>
+
+
+[opaque-response]: https://fetch.spec.whatwg.org/#concept-filtered-response-opaque
+[response-types]: https://developers.google.com/web/updates/2015/03/introduction-to-fetch#response_types
