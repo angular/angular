@@ -171,7 +171,7 @@ export class MockResponse extends MockBody implements Response {
       init: ResponseInit&{type?: ResponseType, redirected?: boolean, url?: string} = {}) {
     super(typeof body === 'string' ? body : null);
     this.status = (init.status !== undefined) ? init.status : 200;
-    this.statusText = init.statusText || 'OK';
+    this.statusText = (init.statusText !== undefined) ? init.statusText : 'OK';
     const headers = init.headers as {[key: string]: string};
     if (headers !== undefined) {
       if (headers instanceof MockHeaders) {
@@ -197,7 +197,13 @@ export class MockResponse extends MockBody implements Response {
     if (this.bodyUsed) {
       throw 'Body already consumed';
     }
-    return new MockResponse(
-        this._body, {status: this.status, statusText: this.statusText, headers: this.headers});
+    return new MockResponse(this._body, {
+      status: this.status,
+      statusText: this.statusText,
+      headers: this.headers,
+      type: this.type,
+      redirected: this.redirected,
+      url: this.url,
+    });
   }
 }

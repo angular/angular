@@ -362,6 +362,7 @@ describe('Driver', () => {
     server.assertSawRequestFor('/foo.txt');
     server.assertSawRequestFor('/bar.txt');
     server.assertSawRequestFor('/redirected.txt');
+    server.assertSawRequestFor('/redirect-target.txt');
     expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
     expect(await makeRequest(scope, '/bar.txt')).toEqual('this is bar');
     server.assertNoOtherRequests();
@@ -374,6 +375,7 @@ describe('Driver', () => {
     server.assertSawRequestFor('/foo.txt');
     server.assertSawRequestFor('/bar.txt');
     server.assertSawRequestFor('/redirected.txt');
+    server.assertSawRequestFor('/redirect-target.txt');
     expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
     expect(await makeRequest(scope, '/bar.txt')).toEqual('this is bar');
     server.assertNoOtherRequests();
@@ -391,6 +393,7 @@ describe('Driver', () => {
     server.assertSawRequestFor('/foo.txt');
     server.assertSawRequestFor('/bar.txt');
     server.assertSawRequestFor('/redirected.txt');
+    server.assertSawRequestFor('/redirect-target.txt');
 
     // Once initialized, cached resources are served without network requests.
     expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
@@ -411,6 +414,7 @@ describe('Driver', () => {
     server.assertSawRequestFor('/foo.txt');
     server.assertSawRequestFor('/bar.txt');
     server.assertSawRequestFor('/redirected.txt');
+    server.assertSawRequestFor('/redirect-target.txt');
 
     // Once initialized, pushed messages are handled without re-initializing.
     await scope.handleMessage({action: 'bar'}, 'someClient');
@@ -476,6 +480,7 @@ describe('Driver', () => {
     serverUpdate.assertSawRequestFor('/ngsw.json');
     serverUpdate.assertSawRequestFor('/foo.txt');
     serverUpdate.assertSawRequestFor('/redirected.txt');
+    serverUpdate.assertSawRequestFor('/redirect-target.txt');
     serverUpdate.assertNoOtherRequests();
 
     expect(client.messages).toEqual([
@@ -577,6 +582,7 @@ describe('Driver', () => {
     serverUpdate.assertSawRequestFor('/ngsw.json');
     serverUpdate.assertSawRequestFor('/foo.txt');
     serverUpdate.assertSawRequestFor('/redirected.txt');
+    serverUpdate.assertSawRequestFor('/redirect-target.txt');
     serverUpdate.assertNoOtherRequests();
   });
 
