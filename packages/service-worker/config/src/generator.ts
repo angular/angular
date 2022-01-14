@@ -94,6 +94,7 @@ export class Generator {
         maxSize: group.cacheConfig.maxSize,
         maxAge: parseDurationToMs(group.cacheConfig.maxAge),
         timeoutMs: group.cacheConfig.timeout && parseDurationToMs(group.cacheConfig.timeout),
+        cacheOpaqueResponses: group.cacheConfig.cacheOpaqueResponses,
         cacheQueryOptions: buildCacheQueryOptions(group.cacheQueryOptions),
         version: group.version !== undefined ? group.version : 1,
       };
