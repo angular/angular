@@ -128,11 +128,12 @@ When the user clicks in the `<button>`, Angular executes the `onSelect(hero)` ex
 
 <div class="callout is-helpful">
 
-<header>Clickable Elements</header>
+  <header>Clickable elements</header>
 
   Note that we added the click event binding on a new `<button>` element. While we could have added
   the event binding on the `<li>` element directly, it is better for accessibility purposes to use
   the native `<button>` element to handle clicks.
+
   For more details on accessibility, see [Accessibility in Angular](guide/accessibility).
 
 </div>
