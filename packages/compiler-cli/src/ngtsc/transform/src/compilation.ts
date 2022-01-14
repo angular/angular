@@ -15,6 +15,7 @@ import {SemanticDepGraphUpdater, SemanticSymbol} from '../../incremental/semanti
 import {IndexingContext} from '../../indexer';
 import {PerfEvent, PerfRecorder} from '../../perf';
 import {ClassDeclaration, DeclarationNode, Decorator, isNamedClassDeclaration, ReflectionHost} from '../../reflection';
+import {isShim} from '../../shims';
 import {ProgramTypeCheckAdapter, TypeCheckContext} from '../../typecheck/api';
 import {ExtendedTemplateChecker} from '../../typecheck/extended/api';
 import {getSourceFile, isExported} from '../../util/src/typescript';
@@ -118,7 +119,7 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
   private analyze(sf: ts.SourceFile, preanalyze: true): Promise<void>|undefined;
   private analyze(sf: ts.SourceFile, preanalyze: boolean): Promise<void>|undefined {
     // We shouldn't analyze declaration files.
-    if (sf.isDeclarationFile) {
+    if (sf.isDeclarationFile || isShim(sf)) {
       return undefined;
     }
 
@@ -152,6 +153,13 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
     };
 
     visit(sf);
+
+    if (!this.fileToClasses.has(sf)) {
+      // If no traits were detected in the source file we record the source file itself to not have
+      // any traits, such that analysis of the source file can be skipped during incremental
+      // rebuilds.
+      this.filesWithoutTraits.add(sf);
+    }
 
     if (preanalyze && promises.length > 0) {
       return Promise.all(promises).then(() => undefined as void);
