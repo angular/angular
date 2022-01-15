@@ -42,7 +42,8 @@ import {MatInkBar} from './ink-bar';
   inputs: ['selectedIndex'],
   outputs: ['selectFocusedIndex', 'indexFocused'],
   encapsulation: ViewEncapsulation.None,
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  // tslint:disable-next-line:validate-decorators
+  changeDetection: ChangeDetectionStrategy.Default,
   host: {
     'class': 'mat-mdc-tab-header',
     '[class.mat-mdc-tab-header-pagination-controls-enabled]': '_showPaginationControls',

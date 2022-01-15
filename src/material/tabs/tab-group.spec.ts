@@ -1,6 +1,6 @@
 import {LEFT_ARROW} from '@angular/cdk/keycodes';
 import {dispatchFakeEvent, dispatchKeyboardEvent} from '../../cdk/testing/private';
-import {Component, OnInit, QueryList, ViewChild, ViewChildren} from '@angular/core';
+import {Component, DebugElement, OnInit, QueryList, ViewChild, ViewChildren} from '@angular/core';
 import {
   waitForAsync,
   ComponentFixture,
@@ -40,6 +40,7 @@ describe('MatTabGroup', () => {
         TabGroupWithIndirectDescendantTabs,
         TabGroupWithSpaceAbove,
         NestedTabGroupWithLabel,
+        TabsWithClassesTestApp,
       ],
     });
 
@@ -419,11 +420,16 @@ describe('MatTabGroup', () => {
 
       expect(tab.getAttribute('aria-label')).toBe('Fruit');
       expect(tab.hasAttribute('aria-labelledby')).toBe(false);
+
+      fixture.componentInstance.ariaLabel = 'Veggie';
+      fixture.detectChanges();
+      expect(tab.getAttribute('aria-label')).toBe('Veggie');
     });
   });
 
   describe('disable tabs', () => {
     let fixture: ComponentFixture<DisabledTabsTestApp>;
+
     beforeEach(() => {
       fixture = TestBed.createComponent(DisabledTabsTestApp);
     });
@@ -779,6 +785,62 @@ describe('MatTabGroup', () => {
     }));
   });
 
+  describe('tabs with custom css classes', () => {
+    let fixture: ComponentFixture<TabsWithClassesTestApp>;
+    let labelElements: DebugElement[];
+    let bodyElements: DebugElement[];
+
+    beforeEach(() => {
+      fixture = TestBed.createComponent(TabsWithClassesTestApp);
+      fixture.detectChanges();
+      labelElements = fixture.debugElement.queryAll(By.css('.mat-tab-label'));
+      bodyElements = fixture.debugElement.queryAll(By.css('mat-tab-body'));
+    });
+
+    it('should apply label/body classes', () => {
+      expect(labelElements[1].nativeElement.classList).toContain('hardcoded-label-class');
+      expect(bodyElements[1].nativeElement.classList).toContain('hardcoded-body-class');
+    });
+
+    it('should set classes as strings dynamically', () => {
+      expect(labelElements[0].nativeElement.classList).not.toContain('custom-label-class');
+      expect(bodyElements[0].nativeElement.classList).not.toContain('custom-body-class');
+
+      fixture.componentInstance.labelClassList = 'custom-label-class';
+      fixture.componentInstance.bodyClassList = 'custom-body-class';
+      fixture.detectChanges();
+
+      expect(labelElements[0].nativeElement.classList).toContain('custom-label-class');
+      expect(bodyElements[0].nativeElement.classList).toContain('custom-body-class');
+
+      delete fixture.componentInstance.labelClassList;
+      delete fixture.componentInstance.bodyClassList;
+      fixture.detectChanges();
+
+      expect(labelElements[0].nativeElement.classList).not.toContain('custom-label-class');
+      expect(bodyElements[0].nativeElement.classList).not.toContain('custom-body-class');
+    });
+
+    it('should set classes as strings array dynamically', () => {
+      expect(labelElements[0].nativeElement.classList).not.toContain('custom-label-class');
+      expect(bodyElements[0].nativeElement.classList).not.toContain('custom-body-class');
+
+      fixture.componentInstance.labelClassList = ['custom-label-class'];
+      fixture.componentInstance.bodyClassList = ['custom-body-class'];
+      fixture.detectChanges();
+
+      expect(labelElements[0].nativeElement.classList).toContain('custom-label-class');
+      expect(bodyElements[0].nativeElement.classList).toContain('custom-body-class');
+
+      delete fixture.componentInstance.labelClassList;
+      delete fixture.componentInstance.bodyClassList;
+      fixture.detectChanges();
+
+      expect(labelElements[0].nativeElement.classList).not.toContain('custom-label-class');
+      expect(bodyElements[0].nativeElement.classList).not.toContain('custom-body-class');
+    });
+  });
+
   /**
    * Checks that the `selectedIndex` has been updated; checks that the label and body have their
    * respective `active` classes
@@ -960,7 +1022,6 @@ class BindedTabsTestApp {
 }
 
 @Component({
-  selector: 'test-app',
   template: `
     <mat-tab-group class="tab-group">
       <mat-tab>
@@ -1026,7 +1087,6 @@ class TabGroupWithSimpleApi {
 }
 
 @Component({
-  selector: 'nested-tabs',
   template: `
     <mat-tab-group>
       <mat-tab label="One">Tab one content</mat-tab>
@@ -1045,7 +1105,6 @@ class NestedTabs {
 }
 
 @Component({
-  selector: 'template-tabs',
   template: `
     <mat-tab-group>
       <mat-tab label="One">
@@ -1149,3 +1208,21 @@ class TabGroupWithSpaceAbove {
   `,
 })
 class NestedTabGroupWithLabel {}
+
+@Component({
+  template: `
+    <mat-tab-group class="tab-group">
+      <mat-tab label="Tab One" [labelClass]="labelClassList" [bodyClass]="bodyClassList">
+        Tab one content
+      </mat-tab>
+      <mat-tab label="Tab Two" labelClass="hardcoded-label-class"
+               bodyClass="hardcoded-body-class">
+        Tab two content
+      </mat-tab>
+    </mat-tab-group>
+  `,
+})
+class TabsWithClassesTestApp {
+  labelClassList?: string | string[];
+  bodyClassList?: string | string[];
+}

@@ -25,7 +25,8 @@ import {MatTabLabel} from './tab-label';
   // that creating the extra class will generate more code than just duplicating the template.
   templateUrl: 'tab.html',
   inputs: ['disabled'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  // tslint:disable-next-line:validate-decorators
+  changeDetection: ChangeDetectionStrategy.Default,
   encapsulation: ViewEncapsulation.None,
   exportAs: 'matTab',
   providers: [{provide: MAT_TAB, useExisting: MatTab}],

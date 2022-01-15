@@ -15,10 +15,11 @@
        [attr.aria-posinset]="i + 1"
        [attr.aria-setsize]="_tabs.length"
        [attr.aria-controls]="_getTabContentId(i)"
-       [attr.aria-selected]="selectedIndex == i"
+       [attr.aria-selected]="selectedIndex === i"
        [attr.aria-label]="tab.ariaLabel || null"
        [attr.aria-labelledby]="(!tab.ariaLabel && tab.ariaLabelledby) ? tab.ariaLabelledby : null"
-       [class.mdc-tab--active]="selectedIndex == i"
+       [class.mdc-tab--active]="selectedIndex === i"
+       [ngClass]="tab.labelClass"
        [disabled]="tab.disabled"
        [fitInkBarToContent]="fitInkBarToContent"
        (click)="_handleClick(tab, tabHeader, i)"
@@ -36,12 +37,12 @@
     <span class="mdc-tab__content">
       <span class="mdc-tab__text-label">
         <!-- If there is a label template, use it. -->
-        <ng-template [ngIf]="tab.templateLabel">
+        <ng-template [ngIf]="tab.templateLabel" [ngIfElse]="tabTextLabel">
           <ng-template [cdkPortalOutlet]="tab.templateLabel"></ng-template>
         </ng-template>
 
         <!-- If there is not a label template, fall back to the text label. -->
-        <ng-template [ngIf]="!tab.templateLabel">{{tab.textLabel}}</ng-template>
+        <ng-template #tabTextLabel>{{tab.textLabel}}</ng-template>
       </span>
     </span>
   </div>
@@ -57,6 +58,7 @@
                [attr.tabindex]="(contentTabIndex != null && selectedIndex === i) ? contentTabIndex : null"
                [attr.aria-labelledby]="_getTabLabelId(i)"
                [class.mat-mdc-tab-body-active]="selectedIndex === i"
+               [ngClass]="tab.bodyClass"
                [content]="tab.content!"
                [position]="tab.position!"
                [origin]="tab.origin"

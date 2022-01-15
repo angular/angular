@@ -101,12 +101,14 @@ export class MatTab extends _MatTabBase implements OnInit, CanDisable, OnChanges
     constructor(_viewContainerRef: ViewContainerRef, _closestTabGroup: any);
     ariaLabel: string;
     ariaLabelledby: string;
+    bodyClass: string | string[];
     // (undocumented)
     _closestTabGroup: any;
     get content(): TemplatePortal | null;
     _explicitContent: TemplateRef<any>;
     _implicitContent: TemplateRef<any>;
     isActive: boolean;
+    labelClass: string | string[];
     // (undocumented)
     ngOnChanges(changes: SimpleChanges): void;
     // (undocumented)
@@ -123,7 +125,7 @@ export class MatTab extends _MatTabBase implements OnInit, CanDisable, OnChanges
     protected _templateLabel: MatTabLabel;
     textLabel: string;
     // (undocumented)
-    static ɵcmp: i0.ɵɵComponentDeclaration<MatTab, "mat-tab", ["matTab"], { "disabled": "disabled"; "textLabel": "label"; "ariaLabel": "aria-label"; "ariaLabelledby": "aria-labelledby"; }, {}, ["templateLabel", "_explicitContent"], ["*"]>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MatTab, "mat-tab", ["matTab"], { "disabled": "disabled"; "textLabel": "label"; "ariaLabel": "aria-label"; "ariaLabelledby": "aria-labelledby"; "labelClass": "labelClass"; "bodyClass": "bodyClass"; }, {}, ["templateLabel", "_explicitContent"], ["*"]>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatTab, [null, { optional: true; }]>;
 }

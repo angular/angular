@@ -81,6 +81,18 @@ export class MatTab extends _MatTabBase implements OnInit, CanDisable, OnChanges
    */
   @Input('aria-labelledby') ariaLabelledby: string;
 
+  /**
+   * Classes to be passed to the tab label inside the mat-tab-header container.
+   * Supports string and string array values, same as `ngClass`.
+   */
+  @Input() labelClass: string | string[];
+
+  /**
+   * Classes to be passed to the tab mat-tab-body container.
+   * Supports string and string array values, same as `ngClass`.
+   */
+  @Input() bodyClass: string | string[];
+
   /** Portal that will be the hosted content of the tab */
   private _contentPortal: TemplatePortal | null = null;
 

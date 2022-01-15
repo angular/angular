@@ -66,7 +66,8 @@ import {takeUntil} from 'rxjs/operators';
     '[class._mat-animation-noopable]': '_animationMode === "NoopAnimations"',
   },
   encapsulation: ViewEncapsulation.None,
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  // tslint:disable-next-line:validate-decorators
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class MatTabNav extends _MatTabNavBase implements AfterContentInit {
   /** Whether the ink bar should fit its width to the size of the tab label content. */
