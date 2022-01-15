@@ -26,7 +26,6 @@ $_default-circumference: variables.$pi * $_default-radius * 2;
   circle {
     @include private.private-animation-noop();
     fill: transparent;
-    transform-origin: center;
     transition: stroke-dashoffset 225ms linear;
 
     @include a11y.high-contrast(active, off) {

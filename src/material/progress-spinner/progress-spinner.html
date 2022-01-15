@@ -14,7 +14,8 @@
   preserveAspectRatio="xMidYMid meet"
   focusable="false"
   [ngSwitch]="mode === 'indeterminate'"
-  aria-hidden="true">
+  aria-hidden="true"
+  #svg>
 
   <!--
     Technically we can reuse the same `circle` element, however Safari has an issue that breaks
@@ -31,7 +32,8 @@
     [style.animation-name]="'mat-progress-spinner-stroke-rotate-' + _spinnerAnimationLabel"
     [style.stroke-dashoffset.px]="_getStrokeDashOffset()"
     [style.stroke-dasharray.px]="_getStrokeCircumference()"
-    [style.stroke-width.%]="_getCircleStrokeWidth()"></circle>
+    [style.stroke-width.%]="_getCircleStrokeWidth()"
+    [style.transform-origin]="_getCircleTransformOrigin(svg)"></circle>
 
   <circle
     *ngSwitchCase="false"
@@ -40,5 +42,6 @@
     [attr.r]="_getCircleRadius()"
     [style.stroke-dashoffset.px]="_getStrokeDashOffset()"
     [style.stroke-dasharray.px]="_getStrokeCircumference()"
-    [style.stroke-width.%]="_getCircleStrokeWidth()"></circle>
+    [style.stroke-width.%]="_getCircleStrokeWidth()"
+    [style.transform-origin]="_getCircleTransformOrigin(svg)"></circle>
 </svg>

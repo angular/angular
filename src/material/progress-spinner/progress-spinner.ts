@@ -8,6 +8,7 @@
 
 import {coerceNumberProperty, NumberInput} from '@angular/cdk/coercion';
 import {Platform, _getShadowRoot} from '@angular/cdk/platform';
+import {ViewportRuler} from '@angular/cdk/scrolling';
 import {DOCUMENT} from '@angular/common';
 import {
   ChangeDetectionStrategy,
@@ -19,9 +20,13 @@ import {
   Optional,
   ViewEncapsulation,
   OnInit,
+  ChangeDetectorRef,
+  OnDestroy,
+  NgZone,
 } from '@angular/core';
 import {CanColor, mixinColor} from '@angular/material/core';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
+import {Subscription} from 'rxjs';
 
 /** Possible mode for a progress spinner. */
 export type ProgressSpinnerMode = 'determinate' | 'indeterminate';
@@ -126,10 +131,14 @@ const INDETERMINATE_ANIMATION_TEMPLATE = `
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class MatProgressSpinner extends _MatProgressSpinnerBase implements OnInit, CanColor {
+export class MatProgressSpinner
+  extends _MatProgressSpinnerBase
+  implements OnInit, OnDestroy, CanColor
+{
   private _diameter = BASE_SIZE;
   private _value = 0;
   private _strokeWidth: number;
+  private _resizeSubscription = Subscription.EMPTY;
 
   /**
    * Element to which we should add the generated style tags for the indeterminate animation.
@@ -190,15 +199,19 @@ export class MatProgressSpinner extends _MatProgressSpinnerBase implements OnIni
 
   constructor(
     elementRef: ElementRef<HTMLElement>,
-    /**
-     * @deprecated `_platform` parameter no longer being used.
-     * @breaking-change 14.0.0
-     */
     _platform: Platform,
     @Optional() @Inject(DOCUMENT) private _document: any,
     @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode: string,
     @Inject(MAT_PROGRESS_SPINNER_DEFAULT_OPTIONS)
     defaults?: MatProgressSpinnerDefaultOptions,
+    /**
+     * @deprecated `changeDetectorRef`, `viewportRuler` and `ngZone`
+     * parameters to become required.
+     * @breaking-change 14.0.0
+     */
+    changeDetectorRef?: ChangeDetectorRef,
+    viewportRuler?: ViewportRuler,
+    ngZone?: NgZone,
   ) {
     super(elementRef);
 
@@ -223,6 +236,22 @@ export class MatProgressSpinner extends _MatProgressSpinnerBase implements OnIni
         this.strokeWidth = defaults.strokeWidth;
       }
     }
+
+    // Safari has an issue where the circle isn't positioned correctly when the page has a
+    // different zoom level from the default. This handler triggers a recalculation of the
+    // `transform-origin` when the page zoom level changes.
+    // See `_getCircleTransformOrigin` for more info.
+    // @breaking-change 14.0.0 Remove null checks for `_changeDetectorRef`,
+    // `viewportRuler` and `ngZone`.
+    if (_platform.isBrowser && _platform.SAFARI && viewportRuler && changeDetectorRef && ngZone) {
+      this._resizeSubscription = viewportRuler.change(150).subscribe(() => {
+        // When the window is resize while the spinner is in `indeterminate` mode, we
+        // have to mark for check so the transform origin of the circle can be recomputed.
+        if (this.mode === 'indeterminate') {
+          ngZone.run(() => changeDetectorRef.markForCheck());
+        }
+      });
+    }
   }
 
   ngOnInit() {
@@ -234,6 +263,10 @@ export class MatProgressSpinner extends _MatProgressSpinnerBase implements OnIni
     this._styleRoot = _getShadowRoot(element) || this._document.head;
     this._attachStyleNode();
     element.classList.add('mat-progress-spinner-indeterminate-animation');
+  }
+
+  ngOnDestroy() {
+    this._resizeSubscription.unsubscribe();
   }
 
   /** The radius of the spinner, adjusted for stroke width. */
@@ -264,6 +297,16 @@ export class MatProgressSpinner extends _MatProgressSpinnerBase implements OnIni
   /** Stroke width of the circle in percent. */
   _getCircleStrokeWidth() {
     return (this.strokeWidth / this.diameter) * 100;
+  }
+
+  /** Gets the `transform-origin` for the inner circle element. */
+  _getCircleTransformOrigin(svg: HTMLElement): string {
+    // Safari has an issue where the `transform-origin` doesn't work as expected when the page
+    // has a different zoom level from the default. The problem appears to be that a zoom
+    // is applied on the `svg` node itself. We can work around it by calculating the origin
+    // based on the zoom level. On all other browsers the `currentScale` appears to always be 1.
+    const scale = ((svg as unknown as SVGSVGElement).currentScale ?? 1) * 50;
+    return `${scale}% ${scale}%`;
   }
 
   /** Dynamically generates a style tag containing the correct animation for this diameter. */
@@ -338,8 +381,25 @@ export class MatSpinner extends MatProgressSpinner {
     @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode: string,
     @Inject(MAT_PROGRESS_SPINNER_DEFAULT_OPTIONS)
     defaults?: MatProgressSpinnerDefaultOptions,
+    /**
+     * @deprecated `changeDetectorRef`, `viewportRuler` and `ngZone`
+     * parameters to become required.
+     * @breaking-change 14.0.0
+     */
+    changeDetectorRef?: ChangeDetectorRef,
+    viewportRuler?: ViewportRuler,
+    ngZone?: NgZone,
   ) {
-    super(elementRef, platform, document, animationMode, defaults);
+    super(
+      elementRef,
+      platform,
+      document,
+      animationMode,
+      defaults,
+      changeDetectorRef,
+      viewportRuler,
+      ngZone,
+    );
     this.mode = 'indeterminate';
   }
 }
