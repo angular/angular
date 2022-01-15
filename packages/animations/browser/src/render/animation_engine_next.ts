@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {AnimationMetadata, AnimationPlayer, AnimationTriggerMetadata} from '@angular/animations';
+
 import {TriggerAst} from '../dsl/animation_ast';
 import {buildAnimationAst} from '../dsl/animation_ast_builder';
 import {AnimationTrigger, buildTrigger} from '../dsl/animation_trigger';
@@ -41,7 +42,7 @@ export class AnimationEngine {
     const cacheKey = componentId + '-' + name;
     let trigger = this._triggerCache[cacheKey];
     if (!trigger) {
-      const errors: any[] = [];
+      const errors: string[] = [];
       const ast =
           buildAnimationAst(this._driver, metadata as AnimationMetadata, errors) as TriggerAst;
       if (errors.length) {

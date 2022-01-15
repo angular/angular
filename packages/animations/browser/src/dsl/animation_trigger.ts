@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {AnimationMetadataType, ɵStyleData} from '@angular/animations';
+
 import {SequenceAst, TransitionAst, TriggerAst} from './animation_ast';
 import {AnimationStateStyles, AnimationTransitionFactory} from './animation_transition_factory';
 import {AnimationStyleNormalizer} from './style_normalization/animation_style_normalizer';
@@ -50,7 +51,7 @@ export class AnimationTrigger {
     return entry || null;
   }
 
-  matchStyles(currentState: any, params: {[key: string]: any}, errors: any[]): ɵStyleData {
+  matchStyles(currentState: any, params: {[key: string]: any}, errors: string[]): ɵStyleData {
     return this.fallbackTransition.buildStyles(currentState, params, errors);
   }
 }

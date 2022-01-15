@@ -6,7 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {ɵStyleData} from '@angular/animations';
+
 import {AnimationEngineInstruction, AnimationTransitionInstructionType} from '../render/animation_engine_instruction';
+
 import {AnimationTimelineInstruction} from './animation_timeline_instruction';
 
 export interface AnimationTransitionInstruction extends AnimationEngineInstruction {
@@ -22,7 +24,7 @@ export interface AnimationTransitionInstruction extends AnimationEngineInstructi
   preStyleProps: Map<any, {[prop: string]: boolean}>;
   postStyleProps: Map<any, {[prop: string]: boolean}>;
   totalTime: number;
-  errors?: any[];
+  errors?: string[];
 }
 
 export function createTransitionInstruction(
@@ -31,7 +33,7 @@ export function createTransitionInstruction(
     timelines: AnimationTimelineInstruction[], queriedElements: any[],
     preStyleProps: Map<any, {[prop: string]: boolean}>,
     postStyleProps: Map<any, {[prop: string]: boolean}>, totalTime: number,
-    errors?: any[]): AnimationTransitionInstruction {
+    errors?: string[]): AnimationTransitionInstruction {
   return {
     type: AnimationTransitionInstructionType.TransitionAnimation,
     element,

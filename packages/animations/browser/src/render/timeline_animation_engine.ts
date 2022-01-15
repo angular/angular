@@ -30,7 +30,7 @@ export class TimelineAnimationEngine {
       private _normalizer: AnimationStyleNormalizer) {}
 
   register(id: string, metadata: AnimationMetadata|AnimationMetadata[]) {
-    const errors: any[] = [];
+    const errors: string[] = [];
     const ast = buildAnimationAst(this._driver, metadata, errors);
     if (errors.length) {
       throw new Error(
@@ -50,7 +50,7 @@ export class TimelineAnimationEngine {
   }
 
   create(id: string, element: any, options: AnimationOptions = {}): AnimationPlayer {
-    const errors: any[] = [];
+    const errors: string[] = [];
     const ast = this._animations[id];
     let instructions: AnimationTimelineInstruction[];
 

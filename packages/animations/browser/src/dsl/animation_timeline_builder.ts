@@ -108,7 +108,8 @@ export function buildAnimationTimelines(
     driver: AnimationDriver, rootElement: any, ast: Ast<AnimationMetadataType>,
     enterClassName: string, leaveClassName: string, startingStyles: ɵStyleData = {},
     finalStyles: ɵStyleData = {}, options: AnimationOptions,
-    subInstructions?: ElementInstructionMap, errors: any[] = []): AnimationTimelineInstruction[] {
+    subInstructions?: ElementInstructionMap,
+    errors: string[] = []): AnimationTimelineInstruction[] {
   return new AnimationTimelineBuilderVisitor().buildKeyframes(
       driver, rootElement, ast, enterClassName, leaveClassName, startingStyles, finalStyles,
       options, subInstructions, errors);
@@ -119,7 +120,7 @@ export class AnimationTimelineBuilderVisitor implements AstVisitor {
       driver: AnimationDriver, rootElement: any, ast: Ast<AnimationMetadataType>,
       enterClassName: string, leaveClassName: string, startingStyles: ɵStyleData,
       finalStyles: ɵStyleData, options: AnimationOptions, subInstructions?: ElementInstructionMap,
-      errors: any[] = []): AnimationTimelineInstruction[] {
+      errors: string[] = []): AnimationTimelineInstruction[] {
     subInstructions = subInstructions || new ElementInstructionMap();
     const context = new AnimationTimelineContext(
         driver, rootElement, subInstructions, enterClassName, leaveClassName, errors, []);
@@ -466,7 +467,7 @@ export class AnimationTimelineContext {
   constructor(
       private _driver: AnimationDriver, public element: any,
       public subInstructions: ElementInstructionMap, private _enterClassName: string,
-      private _leaveClassName: string, public errors: any[], public timelines: TimelineBuilder[],
+      private _leaveClassName: string, public errors: string[], public timelines: TimelineBuilder[],
       initialTimeline?: TimelineBuilder) {
     this.currentTimeline = initialTimeline || new TimelineBuilder(this._driver, element, 0);
     timelines.push(this.currentTimeline);
@@ -574,7 +575,7 @@ export class AnimationTimelineContext {
 
   invokeQuery(
       selector: string, originalSelector: string, limit: number, includeSelf: boolean,
-      optional: boolean, errors: any[]): any[] {
+      optional: boolean, errors: string[]): any[] {
     let results: any[] = [];
     if (includeSelf) {
       results.push(this.element);
@@ -723,7 +724,7 @@ export class TimelineBuilder {
   }
 
   setStyles(
-      input: (ɵStyleData|string)[], easing: string|null, errors: any[],
+      input: (ɵStyleData|string)[], easing: string|null, errors: string[],
       options?: AnimationOptions) {
     if (easing) {
       this._previousKeyframe['easing'] = easing;

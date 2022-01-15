@@ -19,7 +19,7 @@ import {ElementInstructionMap} from './element_instruction_map';
 export class Animation {
   private _animationAst: Ast<AnimationMetadataType>;
   constructor(private _driver: AnimationDriver, input: AnimationMetadata|AnimationMetadata[]) {
-    const errors: any[] = [];
+    const errors: string[] = [];
     const ast = buildAnimationAst(_driver, input, errors);
     if (errors.length) {
       const errorMessage = `animation validation failed:\n${errors.join('\n')}`;
