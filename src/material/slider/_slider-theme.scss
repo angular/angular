@@ -52,16 +52,18 @@
     background-color: $mat-slider-off-color;
   }
 
-  .mat-primary {
-    @include _inner-content-theme($primary);
-  }
+  .mat-slider {
+    &.mat-primary {
+      @include _inner-content-theme($primary);
+    }
 
-  .mat-accent {
-    @include _inner-content-theme($accent);
-  }
+    &.mat-accent {
+      @include _inner-content-theme($accent);
+    }
 
-  .mat-warn {
-    @include _inner-content-theme($warn);
+    &.mat-warn {
+      @include _inner-content-theme($warn);
+    }
   }
 
   .mat-slider:hover,
@@ -71,7 +73,7 @@
     }
   }
 
-  .mat-slider-disabled {
+  .mat-slider.mat-slider-disabled {
     .mat-slider-track-background,
     .mat-slider-track-fill,
     .mat-slider-thumb {
@@ -85,7 +87,7 @@
     }
   }
 
-  .mat-slider-min-value {
+  .mat-slider.mat-slider-min-value {
     .mat-slider-focus-ring {
       $opacity: 0.12;
       $color: theming.get-color-from-palette($foreground, base, $opacity);
