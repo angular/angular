@@ -224,7 +224,7 @@ export class AnimationTransitionNamespace {
       // this means that despite the value not changing, some inner params
       // have changed which means that the animation final styles need to be applied
       if (!objEquals(fromState.params, toState.params)) {
-        const errors: any[] = [];
+        const errors: string[] = [];
         const fromStyles = trigger.matchStyles(fromState.value, fromState.params, errors);
         const toStyles = trigger.matchStyles(toState.value, toState.params, errors);
         if (errors.length) {

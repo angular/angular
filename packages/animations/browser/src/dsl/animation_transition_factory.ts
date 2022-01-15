@@ -29,7 +29,7 @@ export class AnimationTransitionFactory {
     return oneOrMoreTransitionsMatch(this.ast.matchers, currentState, nextState, element, params);
   }
 
-  buildStyles(stateName: string, params: {[key: string]: any}, errors: any[]) {
+  buildStyles(stateName: string, params: {[key: string]: any}, errors: string[]) {
     const backupStateStyler = this._stateStyles['*'];
     const stateStyler = this._stateStyles[stateName];
     const backupStyles = backupStateStyler ? backupStateStyler.buildStyles(params, errors) : {};
@@ -41,7 +41,7 @@ export class AnimationTransitionFactory {
       enterClassName: string, leaveClassName: string, currentOptions?: AnimationOptions,
       nextOptions?: AnimationOptions, subInstructions?: ElementInstructionMap,
       skipAstBuild?: boolean): AnimationTransitionInstruction {
-    const errors: any[] = [];
+    const errors: string[] = [];
 
     const transitionAnimationParams = this.ast.options && this.ast.options.params || EMPTY_OBJECT;
     const currentAnimationParams = currentOptions && currentOptions.params || EMPTY_OBJECT;

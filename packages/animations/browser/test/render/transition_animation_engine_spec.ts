@@ -730,7 +730,7 @@ class ExactCssValueNormalizer extends AnimationStyleNormalizer {
 function registerTrigger(
     element: any, engine: TransitionAnimationEngine, metadata: AnimationTriggerMetadata,
     id: string = DEFAULT_NAMESPACE_ID) {
-  const errors: any[] = [];
+  const errors: string[] = [];
   const driver = new MockAnimationDriver();
   const name = metadata.name;
   const ast = buildAnimationAst(driver, metadata as AnimationMetadata, errors) as TriggerAst;
