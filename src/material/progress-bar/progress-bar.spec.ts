@@ -218,6 +218,41 @@ describe('MatProgressBar', () => {
         expect(progressElement.componentInstance.mode).toBe('buffer');
         expect(progressElement.componentInstance.color).toBe('warn');
       });
+
+      it('should update the DOM transform when the value has changed', () => {
+        const fixture = createComponent(BasicProgressBar);
+        fixture.detectChanges();
+
+        const progressElement = fixture.debugElement.query(By.css('mat-progress-bar'))!;
+        const progressComponent = progressElement.componentInstance;
+        const primaryBar = progressElement.nativeElement.querySelector('.mat-progress-bar-primary');
+
+        expect(primaryBar.style.transform).toBe('scale3d(0, 1, 1)');
+
+        progressComponent.value = 40;
+        fixture.detectChanges();
+
+        expect(primaryBar.style.transform).toBe('scale3d(0.4, 1, 1)');
+      });
+
+      it('should update the DOM transform when the bufferValue has changed', () => {
+        const fixture = createComponent(BasicProgressBar);
+        fixture.detectChanges();
+
+        const progressElement = fixture.debugElement.query(By.css('mat-progress-bar'))!;
+        const progressComponent = progressElement.componentInstance;
+        const bufferBar = progressElement.nativeElement.querySelector('.mat-progress-bar-buffer');
+
+        progressComponent.mode = 'buffer';
+        fixture.detectChanges();
+
+        expect(bufferBar.style.transform).toBeFalsy();
+
+        progressComponent.bufferValue = 40;
+        fixture.detectChanges();
+
+        expect(bufferBar.style.transform).toBe('scale3d(0.4, 1, 1)');
+      });
     });
 
     describe('animation trigger on determinate setting', () => {

@@ -23,6 +23,7 @@ import {
   Output,
   ViewChild,
   ViewEncapsulation,
+  ChangeDetectorRef,
 } from '@angular/core';
 import {CanColor, mixinColor, ThemePalette} from '@angular/material/core';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
@@ -135,16 +136,20 @@ export class MatProgressBar
     @Optional()
     @Inject(MAT_PROGRESS_BAR_DEFAULT_OPTIONS)
     defaults?: MatProgressBarDefaultOptions,
+    /**
+     * @deprecated `_changeDetectorRef` parameter to be made required.
+     * @breaking-change 11.0.0
+     */
+    private _changeDetectorRef?: ChangeDetectorRef,
   ) {
     super(elementRef);
 
     // We need to prefix the SVG reference with the current path, otherwise they won't work
     // in Safari if the page has a `<base>` tag. Note that we need quotes inside the `url()`,
-
-    // because named route URLs can contain parentheses (see #12338). Also we don't use since
-    // we can't tell the difference between whether
-    // the consumer is using the hash location strategy or not, because `Location` normalizes
-    // both `/#/foo/bar` and `/foo/bar` to the same thing.
+    // because named route URLs can contain parentheses (see #12338). Also we don't use `Location`
+    // since we can't tell the difference between whether the consumer is using the hash location
+    // strategy or not, because `Location` normalizes both `/#/foo/bar` and `/foo/bar` to
+    // the same thing.
     const path = location ? location.getPathname().split('#')[0] : '';
     this._rectangleFillValue = `url('${path}#${this.progressbarId}')`;
     this._isNoopAnimation = _animationMode === 'NoopAnimations';
@@ -168,6 +173,9 @@ export class MatProgressBar
   }
   set value(v: NumberInput) {
     this._value = clamp(coerceNumberProperty(v) || 0);
+
+    // @breaking-change 11.0.0 Remove null check for _changeDetectorRef.
+    this._changeDetectorRef?.markForCheck();
   }
   private _value: number = 0;
 
@@ -178,6 +186,9 @@ export class MatProgressBar
   }
   set bufferValue(v: number) {
     this._bufferValue = clamp(v || 0);
+
+    // @breaking-change 11.0.0 Remove null check for _changeDetectorRef.
+    this._changeDetectorRef?.markForCheck();
   }
   private _bufferValue: number = 0;
 

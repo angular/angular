@@ -7,6 +7,7 @@
 import { _AbstractConstructor } from '@angular/material/core';
 import { AfterViewInit } from '@angular/core';
 import { CanColor } from '@angular/material/core';
+import { ChangeDetectorRef } from '@angular/core';
 import { _Constructor } from '@angular/material/core';
 import { ElementRef } from '@angular/core';
 import { EventEmitter } from '@angular/core';
@@ -31,7 +32,8 @@ export function MAT_PROGRESS_BAR_LOCATION_FACTORY(): MatProgressBarLocation;
 // @public
 export class MatProgressBar extends _MatProgressBarBase implements CanColor, AfterViewInit, OnDestroy {
     constructor(elementRef: ElementRef, _ngZone: NgZone, _animationMode?: string | undefined,
-    location?: MatProgressBarLocation, defaults?: MatProgressBarDefaultOptions);
+    location?: MatProgressBarLocation, defaults?: MatProgressBarDefaultOptions,
+    _changeDetectorRef?: ChangeDetectorRef | undefined);
     readonly animationEnd: EventEmitter<ProgressAnimationEnd>;
     // (undocumented)
     _animationMode?: string | undefined;
@@ -58,7 +60,7 @@ export class MatProgressBar extends _MatProgressBarBase implements CanColor, Aft
     // (undocumented)
     static ɵcmp: i0.ɵɵComponentDeclaration<MatProgressBar, "mat-progress-bar", ["matProgressBar"], { "color": "color"; "value": "value"; "bufferValue": "bufferValue"; "mode": "mode"; }, { "animationEnd": "animationEnd"; }, never, never>;
     // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<MatProgressBar, [null, null, { optional: true; }, { optional: true; }, { optional: true; }]>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatProgressBar, [null, null, { optional: true; }, { optional: true; }, { optional: true; }, null]>;
 }
 
 // @public
