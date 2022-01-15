@@ -41,7 +41,7 @@ function _convertTimeValueToMS(value: number, unit: string): number {
 }
 
 export function resolveTiming(
-    timings: string|number|AnimateTimings, errors: any[], allowNegativeValues?: boolean) {
+    timings: string|number|AnimateTimings, errors: string[], allowNegativeValues?: boolean) {
   return timings.hasOwnProperty('duration') ?
       <AnimateTimings>timings :
       parseTimeExpression(<string|number>timings, errors, allowNegativeValues);
@@ -197,7 +197,7 @@ export function normalizeAnimationEntry(steps: AnimationMetadata|
 }
 
 export function validateStyleParams(
-    value: string|number, options: AnimationOptions, errors: any[]) {
+    value: string|number, options: AnimationOptions, errors: string[]) {
   const params = options.params || {};
   const matches = extractStyleParams(value);
   if (matches.length) {
@@ -225,7 +225,7 @@ export function extractStyleParams(value: string|number): string[] {
 }
 
 export function interpolateParams(
-    value: string|number, params: {[name: string]: any}, errors: any[]): string|number {
+    value: string|number, params: {[name: string]: any}, errors: string[]): string|number {
   const original = value.toString();
   const str = original.replace(PARAM_REGEX, (_, varName) => {
     let localVal = params[varName];

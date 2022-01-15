@@ -17,7 +17,7 @@ import {MockAnimationDriver} from '../testing/src/mock_animation_driver';
 export function makeTrigger(
     name: string, steps: any, skipErrors: boolean = false): AnimationTrigger {
   const driver = new MockAnimationDriver();
-  const errors: any[] = [];
+  const errors: string[] = [];
   const triggerData = trigger(name, steps);
   const triggerAst = buildAnimationAst(driver, triggerData, errors) as TriggerAst;
   if (!skipErrors && errors.length) {

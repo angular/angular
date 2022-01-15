@@ -56,7 +56,7 @@ const SELF_TOKEN_REGEX = new RegExp(`\s*${SELF_TOKEN}\s*,?`, 'g');
  */
 export function buildAnimationAst(
     driver: AnimationDriver, metadata: AnimationMetadata|AnimationMetadata[],
-    errors: any[]): Ast<AnimationMetadataType> {
+    errors: string[]): Ast<AnimationMetadataType> {
   return new AnimationAstBuilderVisitor(driver).build(metadata, errors);
 }
 
@@ -65,7 +65,7 @@ const ROOT_SELECTOR = '';
 export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
   constructor(private _driver: AnimationDriver) {}
 
-  build(metadata: AnimationMetadata|AnimationMetadata[], errors: any[]):
+  build(metadata: AnimationMetadata|AnimationMetadata[], errors: string[]):
       Ast<AnimationMetadataType> {
     const context = new AnimationAstBuilderContext(errors);
     this._resetContextStyleTimingState(context);
@@ -515,7 +515,7 @@ export class AnimationAstBuilderContext {
   public currentTime: number = 0;
   public collectedStyles: {[selectorName: string]: {[propName: string]: StyleTimeTuple}} = {};
   public options: AnimationOptions|null = null;
-  constructor(public errors: any[]) {}
+  constructor(public errors: string[]) {}
 }
 
 function consumeOffset(styles: ɵStyleData|string|(ɵStyleData | string)[]): number|null {
@@ -543,7 +543,7 @@ function isObject(value: any): boolean {
   return !Array.isArray(value) && typeof value == 'object';
 }
 
-function constructTimingAst(value: string|number|AnimateTimings, errors: any[]) {
+function constructTimingAst(value: string|number|AnimateTimings, errors: string[]) {
   let timings: AnimateTimings|null = null;
   if (value.hasOwnProperty('duration')) {
     timings = value as AnimateTimings;
