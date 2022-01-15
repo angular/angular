@@ -260,6 +260,7 @@ export abstract class _MatTabGroupBase extends _MatTabGroupMixinBase implements 
     // (undocumented)
     abstract _tabHeader: MatTabGroupBaseHeader;
     _tabs: QueryList<MatTab>;
+    updatePagination(): void;
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<_MatTabGroupBase, never, never, { "dynamicHeight": "dynamicHeight"; "selectedIndex": "selectedIndex"; "headerPosition": "headerPosition"; "animationDuration": "animationDuration"; "contentTabIndex": "contentTabIndex"; "disablePagination": "disablePagination"; "backgroundColor": "backgroundColor"; }, { "selectedIndexChange": "selectedIndexChange"; "focusChange": "focusChange"; "animationDone": "animationDone"; "selectedTabChange": "selectedTabChange"; }, never>;
     // (undocumented)

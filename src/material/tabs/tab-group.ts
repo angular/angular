@@ -71,7 +71,8 @@ const _MatTabGroupMixinBase = mixinColor(
 );
 
 interface MatTabGroupBaseHeader {
-  _alignInkBarToSelectedTab: () => void;
+  _alignInkBarToSelectedTab(): void;
+  updatePagination(): void;
   focusIndex: number;
 }
 
@@ -324,6 +325,19 @@ export abstract class _MatTabGroupBase
   realignInkBar() {
     if (this._tabHeader) {
       this._tabHeader._alignInkBarToSelectedTab();
+    }
+  }
+
+  /**
+   * Recalculates the tab group's pagination dimensions.
+   *
+   * WARNING: Calling this method can be very costly in terms of performance. It should be called
+   * as infrequently as possible from outside of the Tabs component as it causes a reflow of the
+   * page.
+   */
+  updatePagination() {
+    if (this._tabHeader) {
+      this._tabHeader.updatePagination();
     }
   }
 
