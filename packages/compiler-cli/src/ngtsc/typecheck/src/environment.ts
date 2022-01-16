@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ExpressionType, ExternalExpr, Type, WrappedNodeExpr} from '@angular/compiler';
+import {ExpressionType, ExternalExpr, Type, TypeModifier} from '@angular/compiler';
 import ts from 'typescript';
 
 import {assertSuccessfulReferenceEmit, ImportFlags, Reference, ReferenceEmitKind, ReferenceEmitter} from '../../imports';
@@ -163,7 +163,8 @@ export class Environment implements ReferenceEmitEnvironment {
   referenceExternalType(moduleName: string, name: string, typeParams?: Type[]): ts.TypeNode {
     const external = new ExternalExpr({moduleName, name});
     return translateType(
-        new ExpressionType(external, [/* modifiers */], typeParams), this.importManager);
+        new ExpressionType(external, /* modifiers */ TypeModifier.None, typeParams),
+        this.importManager);
   }
 
   getPreludeStatements(): ts.Statement[] {

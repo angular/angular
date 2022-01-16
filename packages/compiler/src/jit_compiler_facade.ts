@@ -271,7 +271,7 @@ export class CompilerFacadeImpl implements CompilerFacade {
     // declaration of $def which is set to the expression being compiled.
     const statements: Statement[] = [
       ...preStatements,
-      new DeclareVarStmt('$def', def, undefined, [StmtModifier.Exported]),
+      new DeclareVarStmt('$def', def, undefined, StmtModifier.Exported),
     ];
 
     const res = this.jitEvaluator.evaluateStatements(

@@ -142,7 +142,7 @@ export class ConstantPool {
         usage = o.variable(name);
       }
 
-      this.statements.push(definition.toDeclStmt(o.INFERRED_TYPE, [o.StmtModifier.Final]));
+      this.statements.push(definition.toDeclStmt(o.INFERRED_TYPE, o.StmtModifier.Final));
       fixup.fixup(usage);
     }
 
@@ -187,10 +187,9 @@ export class ConstantPool {
       const pureFunctionDeclaration =
           o.fn(parameters, [new o.ReturnStatement(resultMap(resultExpressions))], o.INFERRED_TYPE);
       const name = this.freshName();
-      this.statements.push(
-          o.variable(name).set(pureFunctionDeclaration).toDeclStmt(o.INFERRED_TYPE, [
-            o.StmtModifier.Final
-          ]));
+      this.statements.push(o.variable(name)
+                               .set(pureFunctionDeclaration)
+                               .toDeclStmt(o.INFERRED_TYPE, o.StmtModifier.Final));
       literalFactory = o.variable(name);
       this.literalFactories.set(key, literalFactory);
     }
