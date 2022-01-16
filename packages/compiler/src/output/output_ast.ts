@@ -13,15 +13,16 @@ import {I18nMeta} from '../render3/view/i18n/meta';
 
 //// Types
 export enum TypeModifier {
-  Const
+  None = 0,
+  Const = 1 << 0,
 }
 
 export abstract class Type {
-  constructor(public modifiers: TypeModifier[] = []) {}
+  constructor(public modifiers: TypeModifier = TypeModifier.None) {}
   abstract visitType(visitor: TypeVisitor, context: any): any;
 
   hasModifier(modifier: TypeModifier): boolean {
-    return this.modifiers.indexOf(modifier) !== -1;
+    return (this.modifiers & modifier) !== 0;
   }
 }
 
@@ -37,7 +38,7 @@ export enum BuiltinTypeName {
 }
 
 export class BuiltinType extends Type {
-  constructor(public name: BuiltinTypeName, modifiers?: TypeModifier[]) {
+  constructor(public name: BuiltinTypeName, modifiers?: TypeModifier) {
     super(modifiers);
   }
   override visitType(visitor: TypeVisitor, context: any): any {
@@ -47,7 +48,7 @@ export class BuiltinType extends Type {
 
 export class ExpressionType extends Type {
   constructor(
-      public value: Expression, modifiers?: TypeModifier[], public typeParams: Type[]|null = null) {
+      public value: Expression, modifiers?: TypeModifier, public typeParams: Type[]|null = null) {
     super(modifiers);
   }
   override visitType(visitor: TypeVisitor, context: any): any {
@@ -57,7 +58,7 @@ export class ExpressionType extends Type {
 
 
 export class ArrayType extends Type {
-  constructor(public of: Type, modifiers?: TypeModifier[]) {
+  constructor(public of: Type, modifiers?: TypeModifier) {
     super(modifiers);
   }
   override visitType(visitor: TypeVisitor, context: any): any {
@@ -68,7 +69,7 @@ export class ArrayType extends Type {
 
 export class MapType extends Type {
   public valueType: Type|null;
-  constructor(valueType: Type|null|undefined, modifiers?: TypeModifier[]) {
+  constructor(valueType: Type|null|undefined, modifiers?: TypeModifier) {
     super(modifiers);
     this.valueType = valueType || null;
   }
@@ -335,12 +336,12 @@ export class WriteVarExpr extends Expression {
     return visitor.visitWriteVarExpr(this, context);
   }
 
-  toDeclStmt(type?: Type|null, modifiers?: StmtModifier[]): DeclareVarStmt {
+  toDeclStmt(type?: Type|null, modifiers?: StmtModifier): DeclareVarStmt {
     return new DeclareVarStmt(this.name, this.value, type, modifiers, this.sourceSpan);
   }
 
   toConstDecl(): DeclareVarStmt {
-    return this.toDeclStmt(INFERRED_TYPE, [StmtModifier.Final]);
+    return this.toDeclStmt(INFERRED_TYPE, StmtModifier.Final);
   }
 }
 
@@ -748,7 +749,7 @@ export class FunctionExpr extends Expression {
     return visitor.visitFunctionExpr(this, context);
   }
 
-  toDeclStmt(name: string, modifiers?: StmtModifier[]): DeclareFunctionStmt {
+  toDeclStmt(name: string, modifiers?: StmtModifier): DeclareFunctionStmt {
     return new DeclareFunctionStmt(
         name, this.params, this.statements, this.type, modifiers, this.sourceSpan);
   }
@@ -950,10 +951,11 @@ export const TYPED_NULL_EXPR = new LiteralExpr(null, INFERRED_TYPE, null);
 
 //// Statements
 export enum StmtModifier {
-  Final,
-  Private,
-  Exported,
-  Static,
+  None = 0,
+  Final = 1 << 0,
+  Private = 1 << 1,
+  Exported = 1 << 2,
+  Static = 1 << 3,
 }
 
 export class LeadingComment {
@@ -973,8 +975,8 @@ export class JSDocComment extends LeadingComment {
 
 export abstract class Statement {
   constructor(
-      public modifiers: StmtModifier[] = [], public sourceSpan: ParseSourceSpan|null = null,
-      public leadingComments?: LeadingComment[]) {}
+      public modifiers: StmtModifier = StmtModifier.None,
+      public sourceSpan: ParseSourceSpan|null = null, public leadingComments?: LeadingComment[]) {}
   /**
    * Calculates whether this statement produces the same value as the given statement.
    * Note: We don't check Types nor ParseSourceSpans nor function arguments.
@@ -984,7 +986,7 @@ export abstract class Statement {
   abstract visitStatement(visitor: StatementVisitor, context: any): any;
 
   hasModifier(modifier: StmtModifier): boolean {
-    return this.modifiers.indexOf(modifier) !== -1;
+    return (this.modifiers & modifier) !== 0;
   }
 
   addLeadingComment(leadingComment: LeadingComment): void {
@@ -997,7 +999,7 @@ export abstract class Statement {
 export class DeclareVarStmt extends Statement {
   public type: Type|null;
   constructor(
-      public name: string, public value?: Expression, type?: Type|null, modifiers?: StmtModifier[],
+      public name: string, public value?: Expression, type?: Type|null, modifiers?: StmtModifier,
       sourceSpan?: ParseSourceSpan|null, leadingComments?: LeadingComment[]) {
     super(modifiers, sourceSpan, leadingComments);
     this.type = type || (value && value.type) || null;
@@ -1015,7 +1017,7 @@ export class DeclareFunctionStmt extends Statement {
   public type: Type|null;
   constructor(
       public name: string, public params: FnParam[], public statements: Statement[],
-      type?: Type|null, modifiers?: StmtModifier[], sourceSpan?: ParseSourceSpan|null,
+      type?: Type|null, modifiers?: StmtModifier, sourceSpan?: ParseSourceSpan|null,
       leadingComments?: LeadingComment[]) {
     super(modifiers, sourceSpan, leadingComments);
     this.type = type || null;
@@ -1033,7 +1035,7 @@ export class ExpressionStatement extends Statement {
   constructor(
       public expr: Expression, sourceSpan?: ParseSourceSpan|null,
       leadingComments?: LeadingComment[]) {
-    super([], sourceSpan, leadingComments);
+    super(StmtModifier.None, sourceSpan, leadingComments);
   }
   override isEquivalent(stmt: Statement): boolean {
     return stmt instanceof ExpressionStatement && this.expr.isEquivalent(stmt.expr);
@@ -1048,7 +1050,7 @@ export class ReturnStatement extends Statement {
   constructor(
       public value: Expression, sourceSpan: ParseSourceSpan|null = null,
       leadingComments?: LeadingComment[]) {
-    super([], sourceSpan, leadingComments);
+    super(StmtModifier.None, sourceSpan, leadingComments);
   }
   override isEquivalent(stmt: Statement): boolean {
     return stmt instanceof ReturnStatement && this.value.isEquivalent(stmt.value);
@@ -1063,7 +1065,7 @@ export class IfStmt extends Statement {
       public condition: Expression, public trueCase: Statement[],
       public falseCase: Statement[] = [], sourceSpan?: ParseSourceSpan|null,
       leadingComments?: LeadingComment[]) {
-    super([], sourceSpan, leadingComments);
+    super(StmtModifier.None, sourceSpan, leadingComments);
   }
   override isEquivalent(stmt: Statement): boolean {
     return stmt instanceof IfStmt && this.condition.isEquivalent(stmt.condition) &&
@@ -1264,13 +1266,13 @@ export function importExpr(
 }
 
 export function importType(
-    id: ExternalReference, typeParams?: Type[]|null,
-    typeModifiers?: TypeModifier[]): ExpressionType|null {
+    id: ExternalReference, typeParams?: Type[]|null, typeModifiers?: TypeModifier): ExpressionType|
+    null {
   return id != null ? expressionType(importExpr(id, typeParams, null), typeModifiers) : null;
 }
 
 export function expressionType(
-    expr: Expression, typeModifiers?: TypeModifier[], typeParams?: Type[]|null): ExpressionType {
+    expr: Expression, typeModifiers?: TypeModifier, typeParams?: Type[]|null): ExpressionType {
   return new ExpressionType(expr, typeModifiers, typeParams);
 }
 
