@@ -1,5 +1,7 @@
 load("//tools:defaults.bzl", "jasmine_node_test", "karma_web_test_suite", "ts_library")
 load("//tools/circular_dependency_test:index.bzl", "circular_dependency_test")
+load("@npm//@babel/cli:index.bzl", "babel")
+load("@npm//typescript:index.bzl", "tsc")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -32,6 +34,64 @@ genrule(
     tools = ["@npm//typescript/bin:tsc"],
 )
 
+tsc(
+    name = "istanbul_inheritance_fixture_es2015",
+    testonly = True,
+    outs = ["reflection/istanbul_inheritance_fixture_es2015.js"],
+    args = [
+        "--target es2015",
+        "--module umd",
+        "--outDir $(@D)",
+        "--skipLibCheck",
+        "$(execpath reflection/istanbul_inheritance_fixture_es2015.ts)",
+    ],
+    data = ["reflection/istanbul_inheritance_fixture_es2015.ts"],
+)
+
+babel(
+    name = "istanbul_inheritance_fixture_es2015_instrumented",
+    testonly = True,
+    outs = ["reflection/istanbul_inheritance_fixture_es2015.instrumented.js"],
+    args = [
+        "$(execpath :istanbul_inheritance_fixture_es2015)",
+        "--plugins istanbul",
+        "--out-file $@",
+    ],
+    data = [
+        ":istanbul_inheritance_fixture_es2015",
+        "@npm//babel-plugin-istanbul",
+    ],
+)
+
+tsc(
+    name = "istanbul_inheritance_fixture_es5",
+    testonly = True,
+    outs = ["reflection/istanbul_inheritance_fixture_es5.js"],
+    args = [
+        "--target es5",
+        "--module umd",
+        "--outDir $(@D)",
+        "--skipLibCheck",
+        "$(execpath reflection/istanbul_inheritance_fixture_es5.ts)",
+    ],
+    data = ["reflection/istanbul_inheritance_fixture_es5.ts"],
+)
+
+babel(
+    name = "istanbul_inheritance_fixture_es5_instrumented",
+    testonly = True,
+    outs = ["reflection/istanbul_inheritance_fixture_es5.instrumented.js"],
+    args = [
+        "$(execpath :istanbul_inheritance_fixture_es5)",
+        "--plugins istanbul",
+        "--out-file $@",
+    ],
+    data = [
+        ":istanbul_inheritance_fixture_es5",
+        "@npm//babel-plugin-istanbul",
+    ],
+)
+
 UTILS = [
     "linker/source_map_util.ts",
 ]
@@ -55,6 +115,8 @@ ts_library(
         exclude = UTILS + [
             "**/*_node_only_spec.ts",
             "reflection/es2015_inheritance_fixture.ts",
+            "reflection/istanbul_inheritance_fixture_es2015.ts",
+            "reflection/istanbul_inheritance_fixture_es5.ts",
         ],
     ),
     # Visible to //:saucelabs_unit_tests_poc target
@@ -111,6 +173,8 @@ jasmine_node_test(
     bootstrap = ["//tools/testing:node_es2015"],
     data = [
         ":downleveled_es5_fixture",
+        ":istanbul_inheritance_fixture_es2015_instrumented",
+        ":istanbul_inheritance_fixture_es5_instrumented",
     ],
     shard_count = 4,
     deps = [
@@ -126,7 +190,11 @@ jasmine_node_test(
 
 karma_web_test_suite(
     name = "test_web",
-    runtime_deps = [":downleveled_es5_fixture"],
+    runtime_deps = [
+        ":downleveled_es5_fixture",
+        ":istanbul_inheritance_fixture_es2015_instrumented",
+        ":istanbul_inheritance_fixture_es5_instrumented",
+    ],
     deps = [
         ":test_lib",
     ],

@@ -299,12 +299,31 @@ class TestObj {
         ctor(`class Bar extends Foo {constructor(){}}`);
         ctor(`class Bar extends Foo { constructor ( ) {} }`);
         ctor(`class Bar extends Foo { other(){}; constructor(){} }`);
+        ctor(`class Bar extends Foo { constructor(){} a(){super(...arguments)} }`);
 
         noCtor(`class extends Foo{}`);
         noCtor(`class extends Foo {}`);
         noCtor(`class Bar extends Foo {}`);
         noCtor(`class $Bar1_ extends $Fo0_ {}`);
         noCtor(`class Bar extends Foo { other(){} }`);
+      });
+
+      it('should support istanbul instrumented constructors in ES2015', () => {
+        const {ChildNoCtor, ChildNoCtorPrivateProps, ChildWithCtor} =
+            require('./istanbul_inheritance_fixture_es2015.instrumented');
+
+        expect(isDelegateCtor(ChildNoCtor.toString())).toBe(true);
+        expect(isDelegateCtor(ChildNoCtorPrivateProps.toString())).toBe(true);
+        expect(isDelegateCtor(ChildWithCtor.toString())).toBe(false);
+      });
+
+      it('should support istanbul instrumented constructors in ES5', () => {
+        const {ChildNoCtor, ChildNoCtorPrivateProps, ChildWithCtor} =
+            require('./istanbul_inheritance_fixture_es5.instrumented');
+
+        expect(isDelegateCtor(ChildNoCtor.toString())).toBe(true);
+        expect(isDelegateCtor(ChildNoCtorPrivateProps.toString())).toBe(true);
+        expect(isDelegateCtor(ChildWithCtor.toString())).toBe(false);
       });
     });
 
