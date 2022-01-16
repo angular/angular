@@ -12,7 +12,7 @@ import * as core from '../../core';
 import {AST, ParsedEvent, ParsedEventType, ParsedProperty} from '../../expression_parser/ast';
 import * as o from '../../output/output_ast';
 import {ParseError, ParseSourceSpan, sanitizeIdentifier} from '../../parse_util';
-import {CssSelector, SelectorMatcher} from '../../selector';
+import {CssSelector} from '../../selector';
 import {ShadowCss} from '../../shadow_css';
 import {BindingParser} from '../../template_parser/binding_parser';
 import {error} from '../../util';
@@ -152,30 +152,16 @@ export function compileComponentFromMetadata(
     }
   }
 
-  // Generate the CSS matcher that recognize directive
-  let directiveMatcher: SelectorMatcher|null = null;
-
-  if (meta.directives.length > 0) {
-    const matcher = new SelectorMatcher();
-    for (const {selector, type} of meta.directives) {
-      matcher.addSelectables(CssSelector.parse(selector), type);
-    }
-    directiveMatcher = matcher;
-  }
-
   // e.g. `template: function MyComponent_Template(_ctx, _cm) {...}`
   const templateTypeName = meta.name;
   const templateName = templateTypeName ? `${templateTypeName}_Template` : null;
 
-  const directivesUsed = new Set<o.Expression>();
-  const pipesUsed = new Set<o.Expression>();
   const changeDetection = meta.changeDetection;
 
   const template = meta.template;
   const templateBuilder = new TemplateDefinitionBuilder(
       constantPool, BindingScope.createRootScope(), 0, templateTypeName, null, null, templateName,
-      directiveMatcher, directivesUsed, meta.pipes, pipesUsed, R3.namespaceHTML,
-      meta.relativeContextFilePath, meta.i18nUseExternalIds);
+      R3.namespaceHTML, meta.relativeContextFilePath, meta.i18nUseExternalIds);
 
   const templateFunctionExpression = templateBuilder.buildTemplateFunction(template.nodes, []);
 
@@ -210,15 +196,15 @@ export function compileComponentFromMetadata(
   definitionMap.set('template', templateFunctionExpression);
 
   // e.g. `directives: [MyDirective]`
-  if (directivesUsed.size) {
-    const directivesList = o.literalArr(Array.from(directivesUsed));
+  if (meta.directives.length > 0) {
+    const directivesList = o.literalArr(meta.directives.map(dir => dir.type));
     const directivesExpr = compileDeclarationList(directivesList, meta.declarationListEmitMode);
     definitionMap.set('directives', directivesExpr);
   }
 
   // e.g. `pipes: [MyPipe]`
-  if (pipesUsed.size) {
-    const pipesList = o.literalArr(Array.from(pipesUsed));
+  if (meta.pipes.size > 0) {
+    const pipesList = o.literalArr(Array.from(meta.pipes.values()));
     const pipesExpr = compileDeclarationList(pipesList, meta.declarationListEmitMode);
     definitionMap.set('pipes', pipesExpr);
   }
