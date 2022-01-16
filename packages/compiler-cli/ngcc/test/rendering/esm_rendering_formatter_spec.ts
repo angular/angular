@@ -628,9 +628,9 @@ export { D };
         it('should transpile code to ES2015', () => {
           const {renderer, sourceFile, importManager} = setup([PROGRAM]);
 
-          const stmt1 = new DeclareVarStmt('foo', new LiteralExpr(42), null, [StmtModifier.Final]);
+          const stmt1 = new DeclareVarStmt('foo', new LiteralExpr(42), null, StmtModifier.Final);
           const stmt2 = new DeclareVarStmt('bar', new LiteralExpr(true));
-          const stmt3 = new DeclareVarStmt('baz', new LiteralExpr('qux'), undefined, []);
+          const stmt3 = new DeclareVarStmt('baz', new LiteralExpr('qux'));
 
           expect(renderer.printStatement(stmt1, sourceFile, importManager)).toBe('const foo = 42;');
           expect(renderer.printStatement(stmt2, sourceFile, importManager)).toBe('let bar = true;');
