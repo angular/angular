@@ -24,7 +24,7 @@ import * as o from '../../output/output_ast';
 import {ParseError, ParseSourceSpan, sanitizeIdentifier} from '../../parse_util';
 import {DomElementSchemaRegistry} from '../../schema/dom_element_schema_registry';
 import {isTrustedTypesSink} from '../../schema/trusted_types_sinks';
-import {CssSelector, SelectorMatcher} from '../../selector';
+import {CssSelector} from '../../selector';
 import {BindingParser} from '../../template_parser/binding_parser';
 import {error, partitionArray} from '../../util';
 import * as t from '../r3_ast';
@@ -38,7 +38,7 @@ import {createLocalizeStatements} from './i18n/localize_utils';
 import {I18nMetaVisitor} from './i18n/meta';
 import {assembleBoundTextPlaceholders, assembleI18nBoundString, declareI18nVariable, getTranslationConstPrefix, hasI18nMeta, I18N_ICU_MAPPING_PREFIX, i18nFormatPlaceholderNames, icuFromI18nMessage, isI18nRootNode, isSingleI18nIcu, placeholdersToParams, TRANSLATION_VAR_PREFIX, wrapI18nPlaceholder} from './i18n/util';
 import {StylingBuilder, StylingInstruction} from './styling_builder';
-import {asLiteral, chainedInstruction, CONTEXT_NAME, getAttrsForDirectiveMatching, getInterpolationArgsLength, IMPLICIT_REFERENCE, invalid, NON_BINDABLE_ATTR, REFERENCE_PREFIX, RENDER_FLAGS, RESTORED_VIEW_CONTEXT_NAME, trimTrailingNulls} from './util';
+import {asLiteral, chainedInstruction, CONTEXT_NAME, getInterpolationArgsLength, IMPLICIT_REFERENCE, invalid, NON_BINDABLE_ATTR, REFERENCE_PREFIX, RENDER_FLAGS, RESTORED_VIEW_CONTEXT_NAME, trimTrailingNulls} from './util';
 
 
 
@@ -200,8 +200,6 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       private constantPool: ConstantPool, parentBindingScope: BindingScope, private level = 0,
       private contextName: string|null, private i18nContext: I18nContext|null,
       private templateIndex: number|null, private templateName: string|null,
-      private directiveMatcher: SelectorMatcher|null, private directives: Set<o.Expression>,
-      private pipeTypeByName: Map<string, o.Expression>, private pipes: Set<o.Expression>,
       private _namespace: o.ExternalReference, relativeContextFilePath: string,
       private i18nUseExternalIds: boolean,
       private _constants: ComponentDefConsts = createComponentDefConsts()) {
@@ -215,10 +213,6 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
         constantPool, () => this.allocateDataSlot(),
         (numSlots: number) => this.allocatePureFunctionSlots(numSlots),
         (name, localName, slot, value: o.Expression) => {
-          const pipeType = pipeTypeByName.get(name);
-          if (pipeType) {
-            this.pipes.add(pipeType);
-          }
           this._bindingScope.set(this.level, localName, value);
           this.creationInstruction(null, R3.pipe, [o.literal(slot), o.literal(name)]);
         });
@@ -638,9 +632,6 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       }
     }
 
-    // Match directives on non i18n attributes
-    this.matchDirectives(element.name, element);
-
     // Regular element or ng-container creation mode
     const parameters: o.Expression[] = [o.literal(elementIndex)];
     if (!isNgContainer) {
@@ -891,9 +882,6 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       o.literal(tagNameWithoutNamespace),
     ];
 
-    // find directives matching on a given <ng-template> node
-    this.matchDirectives(NG_TEMPLATE_TAG_NAME, template);
-
     // prepare attributes parameter (including attributes used for directive matching)
     const attrsExprs: o.Expression[] = this.getAttributeExpressions(
         NG_TEMPLATE_TAG_NAME, template.attributes, template.inputs, template.outputs,
@@ -910,9 +898,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     // Create the template function
     const templateVisitor = new TemplateDefinitionBuilder(
         this.constantPool, this._bindingScope, this.level + 1, contextName, this.i18n,
-        templateIndex, templateName, this.directiveMatcher, this.directives, this.pipeTypeByName,
-        this.pipes, this._namespace, this.fileBasedI18nSuffix, this.i18nUseExternalIds,
-        this._constants);
+        templateIndex, templateName, this._namespace, this.fileBasedI18nSuffix,
+        this.i18nUseExternalIds, this._constants);
 
     // Nested templates must not be visited until after their parent templates have completed
     // processing, so they are queued here until after the initial pass. Otherwise, we wouldn't
@@ -1279,15 +1266,6 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
     this._tempVariables.push(...stmts);
     return args;
-  }
-
-  private matchDirectives(elementName: string, elOrTpl: t.Element|t.Template) {
-    if (this.directiveMatcher) {
-      const selector = createCssSelector(elementName, getAttrsForDirectiveMatching(elOrTpl));
-      this.directiveMatcher.match(selector, (cssSelector, staticType) => {
-        this.directives.add(staticType);
-      });
-    }
   }
 
   /**
