@@ -37,7 +37,7 @@
       ],
       "parserOptions": {
         "createDefaultProgram": false,
-        "project": "content/examples/tsconfig.eslint.json"
+        "project": "tsconfig.eslint.json"
       },
       "rules": {
         "@typescript-eslint/ban-types": "error",
