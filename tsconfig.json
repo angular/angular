@@ -11,6 +11,7 @@
     "noFallthroughCasesInSwitch": true,
     "noUnusedLocals": false,
     "strictNullChecks": true,
+    "useUnknownInCatchVariables": true,
     "noImplicitOverride": true,
     "noImplicitReturns": true,
     "strictFunctionTypes": true,

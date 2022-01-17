@@ -43,7 +43,7 @@ export async function getWorkspaceConfigGracefully(
     return await readJsonWorkspace(path, {
       readFile: async filePath => tree.read(filePath)!.toString(),
     } as WorkspaceHost);
-  } catch (e) {
+  } catch {
     return null;
   }
 }

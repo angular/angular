@@ -15,6 +15,7 @@
     "noImplicitReturns": true,
     "strictFunctionTypes": true,
     "noImplicitOverride": true,
+    "useUnknownInCatchVariables": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitAny": true,
     "noImplicitThis": true,

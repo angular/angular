@@ -6,6 +6,7 @@
     "moduleResolution": "node",
     "esModuleInterop": true,
     "strictNullChecks": true,
+    "useUnknownInCatchVariables": true,
     "noImplicitReturns": true,
     "strictFunctionTypes": true,
     "noImplicitThis": true,
