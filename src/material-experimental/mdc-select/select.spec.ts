@@ -3093,6 +3093,15 @@ describe('MDC-based MatSelect', () => {
 
       expect(trigger.textContent).not.toContain('Pizza');
     }));
+
+    it('should sync up the form control value with the component value', fakeAsync(() => {
+      const fixture = TestBed.createComponent(BasicSelectOnPushPreselected);
+      fixture.detectChanges();
+      flush();
+
+      expect(fixture.componentInstance.control.value).toBe('pizza-1');
+      expect(fixture.componentInstance.select.value).toBe('pizza-1');
+    }));
   });
 
   describe('with custom trigger', () => {
@@ -4439,6 +4448,7 @@ class BasicSelectOnPush {
   `,
 })
 class BasicSelectOnPushPreselected {
+  @ViewChild(MatSelect) select: MatSelect;
   foods: any[] = [
     {value: 'steak-0', viewValue: 'Steak'},
     {value: 'pizza-1', viewValue: 'Pizza'},
