@@ -310,11 +310,11 @@ This function, and all asynchronous operations in that function, trigger change 
 export class AppComponent implements OnInit {
   constructor(private ngZone: NgZone) {}
   ngOnInit() {
-    // New async API is not handled by Zone, so you need to
-    // use ngZone.run() to make the asynchronous operation in the Angular zone
-    // and trigger change detection automatically.
-    this.ngZone.run(() => {
-      someNewAsyncAPI(() => {
+    // New async API is not handled by Zone, so you need to use ngZone.run()
+    // to make the asynchronous operation callback in the Angular zone and
+    // trigger change detection automatically.
+    someNewAsyncAPI(() => {
+      this.ngZone.run(() => {
         // update the data of the component
       });
     });
