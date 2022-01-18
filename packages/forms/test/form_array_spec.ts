@@ -17,7 +17,8 @@ import {asyncValidator} from './util';
 describe('FormArray', () => {
   describe('adding/removing', () => {
     let a: FormArray;
-    let c1: FormControl, c2: FormControl, c3: FormControl;
+    let c1: FormControl, c2: FormControl, c3: FormControl, c4: FormControl, c5: FormControl,
+        c6: FormControl;
     let logger: string[];
 
     beforeEach(() => {
@@ -25,6 +26,8 @@ describe('FormArray', () => {
       c1 = new FormControl(1);
       c2 = new FormControl(2);
       c3 = new FormControl(3);
+      c4 = new FormControl(4);
+      c5 = new FormControl(5);
       logger = [];
     });
 
@@ -34,14 +37,44 @@ describe('FormArray', () => {
       expect(a.controls).toEqual([c1]);
     });
 
-    it('should support removing', () => {
+    it('should support removing with a positive index', () => {
       a.push(c1);
       a.push(c2);
       a.push(c3);
 
       a.removeAt(1);
-
+      expect(a.length).toBe(2);
       expect(a.controls).toEqual([c1, c3]);
+    });
+
+    it('should not remove with a positive out of bounds index', () => {
+      a.push(c1);
+      a.push(c2);
+      a.push(c3);
+
+      a.removeAt(a.length);
+      expect(a.length).toBe(3);
+      expect(a.controls).toEqual([c1, c2, c3]);
+    });
+
+    it('should support removing with a negative index', () => {
+      a.push(c1);
+      a.push(c2);
+      a.push(c3);
+
+      a.removeAt(-2);
+      expect(a.length).toBe(2);
+      expect(a.controls).toEqual([c1, c3]);
+    });
+
+    it('should remove the first item with a negative out of bounds index', () => {
+      a.push(c1);
+      a.push(c2);
+      a.push(c3);
+
+      a.removeAt(-4);
+      expect(a.length).toBe(2);
+      expect(a.controls).toEqual([c2, c3]);
     });
 
     it('should support clearing', () => {
@@ -50,11 +83,9 @@ describe('FormArray', () => {
       a.push(c3);
 
       a.clear();
-
       expect(a.controls).toEqual([]);
 
       a.clear();
-
       expect(a.controls).toEqual([]);
     });
 
@@ -67,6 +98,22 @@ describe('FormArray', () => {
       expect(a.controls).toEqual([c1, c2, c3]);
     });
 
+    it('should support inserting with negative indices', () => {
+      a.push(c1);
+      a.push(c2);
+      a.push(c3);
+
+      a.insert(-1, c4);
+      expect(a.controls).toEqual([c1, c2, c3, c4]);
+
+      // Check that using out of bounds index appends the control
+      a.insert(a.length, c5);
+      expect(a.controls).toEqual([c1, c2, c3, c4, c5]);
+
+      a.insert(-a.length, c6);
+      expect(a.controls).toEqual([c1, c2, c3, c4, c5, c6]);
+    });
+
     it('should not emit events when calling `FormArray.push` with `emitEvent: false`', () => {
       a.valueChanges.subscribe(() => logger.push('value change'));
       a.statusChanges.subscribe(() => logger.push('status change'));
@@ -76,6 +123,19 @@ describe('FormArray', () => {
       expect(a.length).toEqual(1);
       expect(a.controls).toEqual([c1]);
       expect(logger).toEqual([]);
+    });
+
+    describe('at()', () => {
+      it('should support retrieving an element at specified index', () => {
+        const a = new FormArray([c1, c2]);
+
+        expect(a.length).toBe(2);
+        expect(a.at(0)).toEqual(c1);
+        expect(a.at(1)).toEqual(c2);
+        expect(a.at(-1)).toEqual(c2);
+        expect(a.at(a.length)).toBeUndefined();
+        expect(a.at(-a.length - 1)).toBeUndefined();
+      });
     });
 
     it('should not emit events when calling `FormArray.removeAt` with `emitEvent: false`', () => {
@@ -1329,12 +1389,65 @@ describe('FormArray', () => {
       });
 
       it('should replace existing control with new control', () => {
-        const c2 = new FormControl('new!', Validators.minLength(10));
         a.setControl(0, c2);
 
+        expect(a.length).toBe(1);
         expect(a.controls[0]).toEqual(c2);
-        expect(a.value).toEqual(['new!']);
-        expect(a.valid).toBe(false);
+        expect(a.value).toEqual([c2.value]);
+
+        a.setControl(-1, c);
+
+        expect(a.controls.length).toBe(1);
+        expect(a.controls[0]).toEqual(c);
+        expect(a.value).toEqual([c.value]);
+      });
+
+      it('should append a new control when a positive out-of-bounds index is provided', () => {
+        const c3 = new FormControl(3);
+
+        a.setControl(0, c);
+        a.setControl(1, c2);
+        expect(a.length).toBe(2);
+
+        a.setControl(a.length, c3);
+        expect(a.length).toBe(3);
+        expect(a.value).toEqual([c.value, c2.value, c3.value]);
+      });
+
+      it('should replace a control when counting backwards with negative indices', () => {
+        const c3 = new FormControl(3);
+
+        a.setControl(0, c);
+        a.setControl(1, c2);
+        expect(a.length).toBe(2);
+
+        a.setControl(-1, c3);
+        expect(a.length).toBe(2);
+        expect(a.value).toEqual([c.value, c3.value]);
+      });
+
+      it('should replace the first control with negative out of bounds indices', () => {
+        const c3 = new FormControl(3);
+
+        a.setControl(0, c);
+        a.setControl(1, c2);
+        expect(a.length).toBe(2);
+
+        a.setControl(-3, c3);
+        expect(a.length).toBe(2);
+        expect(a.value).toEqual([c3.value, c2.value]);
+      });
+
+      it('should replace the first control with very negative out of bounds indices', () => {
+        const c3 = new FormControl(3);
+
+        a.setControl(0, c);
+        a.setControl(1, c2);
+        expect(a.length).toBe(2);
+
+        a.setControl(-5, c3);
+        expect(a.length).toBe(2);
+        expect(a.value).toEqual([c3.value, c2.value]);
       });
 
       it('should add control if control did not exist before', () => {
