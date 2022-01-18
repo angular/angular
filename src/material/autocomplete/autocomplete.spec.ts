@@ -1097,8 +1097,10 @@ describe('MatAutocomplete', () => {
 
       expect(trigger.panelOpen).toBe(true, 'Expected panel to remain open.');
       expect(input.value).toBeFalsy('Expected input to remain blank.');
-      expect(ENTER_EVENT.defaultPrevented)
-          .toBe(false, 'Expected the default ENTER action not to have been prevented.');
+      expect(ENTER_EVENT.defaultPrevented).toBe(
+        false,
+        'Expected the default ENTER action not to have been prevented.',
+      );
     }));
 
     it('should fill the text field, not select an option, when SPACE is entered', () => {
@@ -2882,8 +2884,9 @@ describe('MatAutocomplete', () => {
     zone.simulateZoneExit();
     fixture.detectChanges();
 
-    const options =
-        overlayContainerElement.querySelectorAll('mat-option') as NodeListOf<HTMLElement>;
+    const options = overlayContainerElement.querySelectorAll(
+      'mat-option',
+    ) as NodeListOf<HTMLElement>;
     spyOn(input, 'focus').and.callFake(() => events.push('focus'));
     fixture.componentInstance.optionSelected.and.callFake(() => events.push('select'));
 

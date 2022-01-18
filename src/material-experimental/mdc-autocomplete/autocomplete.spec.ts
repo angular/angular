@@ -1101,8 +1101,10 @@ describe('MDC-based MatAutocomplete', () => {
 
       expect(trigger.panelOpen).toBe(true, 'Expected panel to remain open.');
       expect(input.value).toBeFalsy('Expected input to remain blank.');
-      expect(ENTER_EVENT.defaultPrevented)
-          .toBe(false, 'Expected the default ENTER action not to have been prevented.');
+      expect(ENTER_EVENT.defaultPrevented).toBe(
+        false,
+        'Expected the default ENTER action not to have been prevented.',
+      );
     }));
 
     it('should fill the text field, not select an option, when SPACE is entered', () => {
@@ -2866,6 +2868,29 @@ describe('MDC-based MatAutocomplete', () => {
 
     expect(event.source).toBe(fixture.componentInstance.autocomplete);
     expect(event.option.value).toBe('Washington');
+  }));
+
+  it('should refocus the input after the selection event is emitted', fakeAsync(() => {
+    const events: string[] = [];
+    const fixture = createComponent(AutocompleteWithSelectEvent);
+    fixture.detectChanges();
+    const input = fixture.nativeElement.querySelector('input');
+
+    fixture.componentInstance.trigger.openPanel();
+    zone.simulateZoneExit();
+    fixture.detectChanges();
+
+    const options = overlayContainerElement.querySelectorAll(
+      'mat-option',
+    ) as NodeListOf<HTMLElement>;
+    spyOn(input, 'focus').and.callFake(() => events.push('focus'));
+    fixture.componentInstance.optionSelected.and.callFake(() => events.push('select'));
+
+    options[1].click();
+    tick();
+    fixture.detectChanges();
+
+    expect(events).toEqual(['select', 'focus']);
   }));
 
   it('should emit an event when a newly-added option is selected', fakeAsync(() => {

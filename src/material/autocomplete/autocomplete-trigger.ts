@@ -316,7 +316,7 @@ export abstract class _MatAutocompleteTriggerBase
     if (options) {
       return options.changes.pipe(
         startWith(options),
-        switchMap(() => merge(...options.map(option => option.onSelectionChange)))
+        switchMap(() => merge(...options.map(option => option.onSelectionChange))),
       );
     }
 
