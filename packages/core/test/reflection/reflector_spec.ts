@@ -292,6 +292,51 @@ class TestObj {
         expect(isDelegateCtor(ChildWithCtorComplexBase)).toBe(false);
       });
 
+      it('should deal with coverage instrumentation statements', () => {
+        // The Istanbul coverage tool augments code with additional statements to capture coverage
+        // information, and this test verifies that those do not interfere with our ability to
+        // detect delegate constructors.
+        const Es2015ClassNoCtor = `class TestService extends Parent {
+          constructor() {
+            cov_8nt6qq5zt().f[2]++;
+            cov_8nt6qq5zt().s[6]++;
+            super(...arguments);
+            cov_8nt6qq5zt().s[7]++;
+            this.foo = 'bar';
+          }
+        }`;
+        const Es2015ClassWithCtor = `class TestService extends Parent {
+          constructor() {
+            cov_8nt6qq5zt().f[2]++;
+            cov_8nt6qq5zt().s[6]++;
+            super();
+            cov_8nt6qq5zt().s[7]++;
+            this.foo = 'bar';
+          }
+        }`;
+        const Es5ClassNoCtor = `function TestService() {
+          cov_8nt6qq5zt().f[4]++;
+          var _this = (cov_8nt6qq5zt().s[8]++, (cov_8nt6qq5zt().b[0][0]++, _super !== null) && (cov_8nt6qq5zt().b[0][1]++, _super.apply(this, arguments)) || (cov_8nt6qq5zt().b[0][2]++, this));
+          cov_8nt6qq5zt().s[9]++;
+          _this.foo = 'bar';
+          cov_8nt6qq5zt().s[10]++;
+          return _this;
+        }`;
+        const Es5ClassWithCtor = `function TestService() {
+          cov_8nt6qq5zt().f[4]++;
+          var _this = _super.call();
+          cov_8nt6qq5zt().s[9]++;
+          _this.foo = 'bar';
+          cov_8nt6qq5zt().s[10]++;
+          return _this;
+        }`;
+
+        expect(isDelegateCtor(Es2015ClassNoCtor)).toBe(true);
+        expect(isDelegateCtor(Es2015ClassWithCtor)).toBe(false);
+        expect(isDelegateCtor(Es5ClassNoCtor)).toBe(true);
+        expect(isDelegateCtor(Es5ClassWithCtor)).toBe(false);
+      });
+
       it('should properly handle all class forms', () => {
         const ctor = (str: string) => expect(isDelegateCtor(str)).toBe(false);
         const noCtor = (str: string) => expect(isDelegateCtor(str)).toBe(true);
@@ -306,24 +351,6 @@ class TestObj {
         noCtor(`class Bar extends Foo {}`);
         noCtor(`class $Bar1_ extends $Fo0_ {}`);
         noCtor(`class Bar extends Foo { other(){} }`);
-      });
-
-      it('should support istanbul instrumented constructors in ES2015', () => {
-        const {ChildNoCtor, ChildNoCtorPrivateProps, ChildWithCtor} =
-            require('./istanbul_inheritance_fixture_es2015.instrumented');
-
-        expect(isDelegateCtor(ChildNoCtor.toString())).toBe(true);
-        expect(isDelegateCtor(ChildNoCtorPrivateProps.toString())).toBe(true);
-        expect(isDelegateCtor(ChildWithCtor.toString())).toBe(false);
-      });
-
-      it('should support istanbul instrumented constructors in ES5', () => {
-        const {ChildNoCtor, ChildNoCtorPrivateProps, ChildWithCtor} =
-            require('./istanbul_inheritance_fixture_es5.instrumented');
-
-        expect(isDelegateCtor(ChildNoCtor.toString())).toBe(true);
-        expect(isDelegateCtor(ChildNoCtorPrivateProps.toString())).toBe(true);
-        expect(isDelegateCtor(ChildWithCtor.toString())).toBe(false);
       });
     });
 
