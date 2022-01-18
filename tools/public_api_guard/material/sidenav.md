@@ -6,6 +6,7 @@
 
 import { AfterContentChecked } from '@angular/core';
 import { AfterContentInit } from '@angular/core';
+import { AfterViewInit } from '@angular/core';
 import { AnimationEvent as AnimationEvent_2 } from '@angular/animations';
 import { AnimationTriggerMetadata } from '@angular/animations';
 import { BooleanInput } from '@angular/cdk/coercion';
@@ -48,7 +49,7 @@ export const MAT_DRAWER_DEFAULT_AUTOSIZE: InjectionToken<boolean>;
 export function MAT_DRAWER_DEFAULT_AUTOSIZE_FACTORY(): boolean;
 
 // @public
-export class MatDrawer implements AfterContentInit, AfterContentChecked, OnDestroy {
+export class MatDrawer implements AfterViewInit, AfterContentChecked, OnDestroy {
     constructor(_elementRef: ElementRef<HTMLElement>, _focusTrapFactory: FocusTrapFactory, _focusMonitor: FocusMonitor, _platform: Platform, _ngZone: NgZone, _interactivityChecker: InteractivityChecker, _doc: any, _container?: MatDrawerContainer | undefined);
     readonly _animationEnd: Subject<AnimationEvent_2>;
     readonly _animationStarted: Subject<AnimationEvent_2>;
@@ -61,6 +62,7 @@ export class MatDrawer implements AfterContentInit, AfterContentChecked, OnDestr
     _closeViaBackdropClick(): Promise<MatDrawerToggleResult>;
     // (undocumented)
     _container?: MatDrawerContainer | undefined;
+    _content: ElementRef<HTMLElement>;
     get disableClose(): boolean;
     set disableClose(value: BooleanInput);
     // (undocumented)
@@ -71,7 +73,7 @@ export class MatDrawer implements AfterContentInit, AfterContentChecked, OnDestr
     // (undocumented)
     ngAfterContentChecked(): void;
     // (undocumented)
-    ngAfterContentInit(): void;
+    ngAfterViewInit(): void;
     // (undocumented)
     ngOnDestroy(): void;
     readonly onPositionChanged: EventEmitter<void>;
