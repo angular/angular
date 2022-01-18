@@ -84,7 +84,7 @@ Command syntax is shown as follows:
     Arguments are not prefixed.
     For example:
     <code-example language="bash">
-        ng build my-app -c production
+        ng build my-app -c --configuration=production
     </code-example>
 
 * Typically, the name of a generated artifact can be given as an argument to the command or specified with the --name option.
