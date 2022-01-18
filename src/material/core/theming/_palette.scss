@@ -705,7 +705,7 @@ $dark-theme-background-palette: (
   selected-disabled-button: map.get($grey-palette, 800),
   disabled-button-toggle: black,
   unselected-chip: map.get($grey-palette, 700),
-  disabled-list-option: black,
+  disabled-list-option: rgba(white, 0.12),
   tooltip: map.get($grey-palette, 700),
 );
 

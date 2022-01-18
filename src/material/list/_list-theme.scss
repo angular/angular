@@ -22,10 +22,11 @@
     .mat-subheader {
       color: theming.get-color-from-palette($foreground, secondary-text);
     }
-  }
 
-  .mat-list-item-disabled {
-    background-color: theming.get-color-from-palette($background, disabled-list-option);
+    .mat-list-item-disabled {
+      background-color: theming.get-color-from-palette($background, disabled-list-option);
+      color: theming.get-color-from-palette($foreground, disabled-text);
+    }
   }
 
   .mat-list-option,
