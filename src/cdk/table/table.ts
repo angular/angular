@@ -531,7 +531,7 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
      * @breaking-change 14.0.0
      */
     @Optional()
-    protected readonly _ngZone: NgZone,
+    protected readonly _ngZone?: NgZone,
   ) {
     if (!role) {
       this._elementRef.nativeElement.setAttribute('role', 'table');
