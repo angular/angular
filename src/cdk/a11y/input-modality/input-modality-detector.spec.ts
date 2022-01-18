@@ -133,12 +133,23 @@ describe('InputModalityDetector', () => {
     expect(emitted).toEqual(['keyboard', 'mouse', 'touch', 'keyboard']);
   });
 
-  it('should detect fake screen reader mouse events as keyboard input modality', () => {
+  it('should detect fake screen reader mouse events as keyboard input modality on Chrome', () => {
     setupTest();
 
     // Create a fake screen-reader mouse event.
     const event = createMouseEvent('mousedown');
     Object.defineProperties(event, {offsetX: {get: () => 0}, offsetY: {get: () => 0}});
+    dispatchEvent(document, event);
+
+    expect(detector.mostRecentModality).toBe('keyboard');
+  });
+
+  it('should detect fake screen reader mouse events as keyboard input modality on Firefox', () => {
+    setupTest();
+
+    // Create a fake screen-reader mouse event.
+    const event = createMouseEvent('mousedown');
+    Object.defineProperties(event, {buttons: {get: () => 0}});
     dispatchEvent(document, event);
 
     expect(detector.mostRecentModality).toBe('keyboard');

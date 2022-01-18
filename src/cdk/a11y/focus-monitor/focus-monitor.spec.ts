@@ -161,7 +161,7 @@ describe('FocusMonitor', () => {
     expect(changeHandler).toHaveBeenCalledWith('program');
   }));
 
-  it('should detect fake mousedown from a screen reader', fakeAsync(() => {
+  it('should detect fake mousedown from a screen reader on Chrome', fakeAsync(() => {
     // Simulate focus via a fake mousedown from a screen reader.
     dispatchMouseEvent(buttonElement, 'mousedown');
     const event = createMouseEvent('mousedown');
@@ -181,6 +181,26 @@ describe('FocusMonitor', () => {
     expect(buttonElement.classList.contains('cdk-keyboard-focused'))
       .withContext('button should have cdk-keyboard-focused class')
       .toBe(true);
+    expect(changeHandler).toHaveBeenCalledWith('keyboard');
+  }));
+
+  it('should detect fake mousedown from a screen reader on Firefox', fakeAsync(() => {
+    // Simulate focus via a fake mousedown from a screen reader.
+    dispatchMouseEvent(buttonElement, 'mousedown');
+    const event = createMouseEvent('mousedown');
+    Object.defineProperties(event, {buttons: {get: () => 0}});
+    dispatchEvent(buttonElement, event);
+
+    buttonElement.focus();
+    fixture.detectChanges();
+    flush();
+
+    expect(buttonElement.classList.length)
+      .withContext('button should have exactly 2 focus classes').toBe(2);
+    expect(buttonElement.classList.contains('cdk-focused'))
+      .withContext('button should have cdk-focused class').toBe(true);
+    expect(buttonElement.classList.contains('cdk-keyboard-focused'))
+      .withContext('button should have cdk-keyboard-focused class').toBe(true);
     expect(changeHandler).toHaveBeenCalledWith('keyboard');
   }));
 
