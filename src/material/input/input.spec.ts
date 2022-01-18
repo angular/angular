@@ -1761,6 +1761,34 @@ describe('MatInput with appearance', () => {
     expect(parseInt(outlineStart.style.width || '0')).toBeGreaterThan(0);
     expect(parseInt(outlineGap.style.width || '0')).toBeGreaterThan(0);
   }));
+
+  it('should recalculate the outline gap when the label changes to empty after init', fakeAsync(() => {
+    fixture.destroy();
+    TestBed.resetTestingModule();
+
+    const outlineFixture = createComponent(MatInputWithAppearanceAndLabel);
+
+    outlineFixture.componentInstance.appearance = 'outline';
+    outlineFixture.detectChanges();
+    flush();
+    outlineFixture.detectChanges();
+
+    const wrapperElement = outlineFixture.nativeElement;
+    const outlineStart = wrapperElement.querySelector('.mat-form-field-outline-start');
+    const outlineGap = wrapperElement.querySelector('.mat-form-field-outline-gap');
+
+    expect(parseInt(outlineStart.style.width)).toBeGreaterThan(0);
+    expect(parseInt(outlineGap.style.width)).toBeGreaterThan(0);
+
+    outlineFixture.componentInstance.labelContent = '';
+    outlineFixture.detectChanges();
+
+    outlineFixture.componentInstance.formField.updateOutlineGap();
+    outlineFixture.detectChanges();
+
+    expect(parseInt(outlineStart.style.width)).toBe(0);
+    expect(parseInt(outlineGap.style.width)).toBe(0);
+  }));
 });
 
 describe('MatFormField default options', () => {

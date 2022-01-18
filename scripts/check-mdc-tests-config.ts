@@ -81,6 +81,7 @@ export const config = {
       'should update the outline gap if the direction changes',
       'should update the outline gap correctly if the direction changes multiple times',
       'should calculate the outline gaps inside the shadow DOM',
+      'should recalculate the outline gap when the label changes to empty after init',
       'should be legacy appearance if no default options provided',
       'should be legacy appearance if empty default options provided',
     ],
