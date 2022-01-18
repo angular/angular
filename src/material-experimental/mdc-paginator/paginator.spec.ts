@@ -511,6 +511,13 @@ describe('MDC-based MatPaginator', () => {
     const hostElement = fixture.nativeElement.querySelector('mat-paginator');
     expect(hostElement.getAttribute('role')).toBe('group');
   });
+
+  it('should handle the page size options input being passed in as readonly array', () => {
+    const fixture = createComponent(MatPaginatorWithReadonlyOptions);
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.paginator._displayedPageSizeOptions).toEqual([5, 10, 25, 100]);
+  });
 });
 
 function getPreviousButton(fixture: ComponentFixture<any>) {
@@ -599,4 +606,15 @@ class MatPaginatorWithoutOptionsApp {
 })
 class MatPaginatorWithStringValues {
   @ViewChild(MatPaginator) paginator: MatPaginator;
+}
+
+@Component({
+  template: `
+    <mat-paginator [pageSizeOptions]="pageSizeOptions">
+    </mat-paginator>
+  `,
+})
+class MatPaginatorWithReadonlyOptions {
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+  pageSizeOptions: readonly number[] = [5, 10, 25, 100];
 }

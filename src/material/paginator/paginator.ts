@@ -149,7 +149,7 @@ export abstract class _MatPaginatorBase<
   get pageSizeOptions(): number[] {
     return this._pageSizeOptions;
   }
-  set pageSizeOptions(value: number[]) {
+  set pageSizeOptions(value: number[] | readonly number[]) {
     this._pageSizeOptions = (value || []).map(p => coerceNumberProperty(p));
     this._updateDisplayedPageSizeOptions();
   }

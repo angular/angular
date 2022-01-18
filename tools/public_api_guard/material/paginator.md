@@ -83,7 +83,7 @@ export abstract class _MatPaginatorBase<O extends {
     get pageSize(): number;
     set pageSize(value: NumberInput);
     get pageSizeOptions(): number[];
-    set pageSizeOptions(value: number[]);
+    set pageSizeOptions(value: number[] | readonly number[]);
     _previousButtonsDisabled(): boolean;
     previousPage(): void;
     get showFirstLastButtons(): boolean;
