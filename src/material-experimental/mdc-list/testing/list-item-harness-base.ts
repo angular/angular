@@ -129,6 +129,11 @@ export abstract class MatListItemHarnessBase extends ContentContainerComponentHa
     return (await this._primaryText()).text();
   }
 
+  /** Whether the list item is disabled. */
+  async isDisabled(): Promise<boolean> {
+    return (await this.host()).hasClass('mdc-list-item--disabled');
+  }
+
   /**
    * Gets the secondary line text of the list item. Null if the list item
    * does not have a secondary line.

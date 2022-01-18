@@ -30,8 +30,9 @@ function runBaseListFunctionalityTests<
     BaseListItemHarnessFilters
   >,
   I extends MatListItemHarnessBase,
+  F extends {disableThirdItem: boolean},
 >(
-  testComponentFn: () => Type<{}>,
+  testComponentFn: () => Type<F>,
   listHarness: ComponentHarnessConstructor<L> & {
     with: (config?: BaseHarnessFilters) => HarnessPredicate<L>;
   },
@@ -40,7 +41,7 @@ function runBaseListFunctionalityTests<
   describe('base list functionality', () => {
     let simpleListHarness: L;
     let emptyListHarness: L;
-    let fixture: ComponentFixture<{}>;
+    let fixture: ComponentFixture<F>;
 
     beforeEach(async () => {
       const testComponent = testComponentFn();
@@ -292,6 +293,14 @@ function runBaseListFunctionalityTests<
       const loader = await items[1].getChildLoader(MatListItemSection.CONTENT);
       await expectAsync(loader.getHarness(TestItemContentHarness)).toBeResolved();
     });
+
+    it('should check disabled state of items', async () => {
+      fixture.componentInstance.disableThirdItem = true;
+      const items = await simpleListHarness.getItems();
+      expect(items.length).toBe(5);
+      expect(await items[0].isDisabled()).toBe(false);
+      expect(await items[2].isDisabled()).toBe(true);
+    });
   });
 }
 
@@ -488,14 +497,6 @@ describe('MatSelectionListHarness', () => {
       await items[0].deselect();
       expect(await items[0].isSelected()).toBe(false);
     });
-
-    it('should check disabled state of options', async () => {
-      fixture.componentInstance.disableItem3 = true;
-      const items = await harness.getItems();
-      expect(items.length).toBe(5);
-      expect(await items[0].isDisabled()).toBe(false);
-      expect(await items[2].isDisabled()).toBe(true);
-    });
   });
 });
 
@@ -513,7 +514,7 @@ describe('MatSelectionListHarness', () => {
         <a mat-list-item>
           <span class="test-item-content">Item 2</span>
         </a>
-        <button mat-list-item>Item 3</button>
+        <button mat-list-item [disabled]="disableThirdItem">Item 3</button>
         <div matSubheader>Section 2</div>
         <mat-divider></mat-divider>
         <mat-list-item lines="3">
@@ -531,7 +532,9 @@ describe('MatSelectionListHarness', () => {
       <mat-list class="test-empty"></mat-list>
   `,
 })
-class ListHarnessTest {}
+class ListHarnessTest {
+  disableThirdItem = false;
+}
 
 @Component({
   template: `
@@ -547,7 +550,10 @@ class ListHarnessTest {}
         <a mat-list-item (click)="lastClicked = 'Item 2'">
           <span class="test-item-content">Item 2</span>
         </a>
-        <button mat-list-item (click)="lastClicked = 'Item 3'">Item 3</button>
+        <button
+          mat-list-item
+          (click)="lastClicked = 'Item 3'"
+          [disabled]="disableThirdItem">Item 3</button>
         <div matSubheader>Section 2</div>
         <mat-divider></mat-divider>
         <button mat-list-item lines="3">
@@ -567,6 +573,7 @@ class ListHarnessTest {}
 })
 class ActionListHarnessTest {
   lastClicked: string;
+  disableThirdItem = false;
 }
 
 @Component({
@@ -583,7 +590,11 @@ class ActionListHarnessTest {
         <a mat-list-item href (click)="onClick($event, 'Item 2')">
           <span class="test-item-content">Item 2</span>
         </a>
-        <a mat-list-item href="/somestuff" (click)="onClick($event, 'Item 3')">Item 3</a>
+        <a
+          mat-list-item
+          href="/somestuff"
+          (click)="onClick($event, 'Item 3')"
+          [disabled]="disableThirdItem">Item 3</a>
         <div matSubheader>Section 2</div>
         <mat-divider></mat-divider>
         <a mat-list-item lines="3">
@@ -603,6 +614,7 @@ class ActionListHarnessTest {
 })
 class NavListHarnessTest {
   lastClicked: string;
+  disableThirdItem = false;
 
   onClick(event: Event, value: string) {
     event.preventDefault();
@@ -624,7 +636,7 @@ class NavListHarnessTest {
       <mat-list-option>
         <span class="test-item-content">Item 2</span>
       </mat-list-option>
-      <mat-list-option [disabled]="disableItem3">Item 3</mat-list-option>
+      <mat-list-option [disabled]="disableThirdItem">Item 3</mat-list-option>
       <div matSubheader>Section 2</div>
       <mat-divider></mat-divider>
       <mat-list-option lines="3">
@@ -643,7 +655,7 @@ class NavListHarnessTest {
   `,
 })
 class SelectionListHarnessTest {
-  disableItem3 = false;
+  disableThirdItem = false;
 }
 
 class TestItemContentHarness extends ComponentHarness {

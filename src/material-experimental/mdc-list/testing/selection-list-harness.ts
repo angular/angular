@@ -105,11 +105,6 @@ export class MatListOptionHarness extends MatListItemHarnessBase {
     return (await (await this.host()).getAttribute('aria-selected')) === 'true';
   }
 
-  /** Whether the list option is disabled. */
-  async isDisabled(): Promise<boolean> {
-    return (await (await this.host()).getAttribute('aria-disabled')) === 'true';
-  }
-
   /** Focuses the list option. */
   async focus(): Promise<void> {
     return (await this.host()).focus();

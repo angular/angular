@@ -92,6 +92,11 @@ export abstract class MatListItemHarnessBase extends ContentContainerComponentHa
     return !!(await this._icon());
   }
 
+  /** Whether this list option is disabled. */
+  async isDisabled(): Promise<boolean> {
+    return (await this.host()).hasClass('mat-list-item-disabled');
+  }
+
   /**
    * Gets a `HarnessLoader` used to get harnesses within the list item's content.
    * @deprecated Use `getChildLoader(MatListItemSection.CONTENT)` or `getHarness` instead.
