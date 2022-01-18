@@ -2058,7 +2058,7 @@ describe('MDC-based MatMenu', () => {
         .toBe(true);
     }));
 
-    it('should restore focus to a nested trigger when navgating via the keyboard', fakeAsync(() => {
+    it('should restore focus to a nested trigger when navigating via the keyboard', fakeAsync(() => {
       compileTestComponent();
       instance.rootTriggerEl.nativeElement.click();
       fixture.detectChanges();

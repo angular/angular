@@ -96,7 +96,7 @@ between content within a single page.
 elements as the "tabs". You should use this component when you want your cross-page navigation to
 look like a tabbed interface. As a rule of thumb, you should consider `MatTabNavBar` if changing
 tabs would change the browser URL. For all navigation, including with `MatTabNavBar`, always move
-browser focus to an element at the beginning of the content to which the user is navgating.
+browser focus to an element at the beginning of the content to which the user is navigating.
 Furthermore, consider placing your `<router-outlet>` inside of a
 [landmark region](https://www.w3.org/TR/wai-aria-1.1/#dfn-landmark) appropriate to the page.
 
