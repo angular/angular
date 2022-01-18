@@ -44,7 +44,7 @@ export const formGroupNameProvider: any = {
  *
  * ### Access the group by name
  *
- * The following example uses the {@link AbstractControl#get get} method to access the
+ * The following example uses the `AbstractControl.get` method to access the
  * associated `FormGroup`
  *
  * ```ts
@@ -53,7 +53,7 @@ export const formGroupNameProvider: any = {
  *
  * ### Access individual controls in the group
  *
- * The following example uses the {@link AbstractControl#get get} method to access
+ * The following example uses the `AbstractControl.get` method to access
  * individual controls within the group using dot syntax.
  *
  * ```ts
