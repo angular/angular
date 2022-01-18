@@ -73,6 +73,14 @@ $header-size: 40px !default;
 .mat-card-image {
   width: calc(100% + #{$padding * 2});
   margin: 0 (-$padding) 16px (-$padding);
+
+  // The following properties are to handle `mat-card-image` on a `picture` element.
+  display: block;
+  overflow: hidden;
+
+  img {
+    width: 100%;
+  }
 }
 
 .mat-card-footer {
