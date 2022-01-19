@@ -1176,7 +1176,6 @@ describe('MDC-based MatMenu', () => {
       fixture.detectChanges();
       tick(500);
       fixture.detectChanges();
-      tick();
 
       expect(fixture.componentInstance.items.length).toBe(0);
     }));
@@ -1202,7 +1201,6 @@ describe('MDC-based MatMenu', () => {
         .toBe(true);
       tick(500);
       fixture.detectChanges();
-      tick();
 
       expect(trigger.menuOpen).withContext('Expected menu to be closed').toBe(false);
     }));

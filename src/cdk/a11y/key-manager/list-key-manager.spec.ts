@@ -82,28 +82,15 @@ describe('Key managers', () => {
       spyOn(keyManager, 'setActiveItem').and.callThrough();
     });
 
-    it('should maintain the active item if the amount of items changes', fakeAsync(() => {
+    it('should maintain the active item if the amount of items changes', () => {
       expect(keyManager.activeItemIndex).toBe(0);
       expect(keyManager.activeItem!.getLabel()).toBe('one');
       itemList.reset([new FakeFocusable('zero'), ...itemList.toArray()]);
       itemList.notifyOnChanges();
-      tick();
 
       expect(keyManager.activeItemIndex).toBe(1);
       expect(keyManager.activeItem!.getLabel()).toBe('one');
-    }));
-
-    it('should keep the active item in sync if the active item is removed', fakeAsync(() => {
-      expect(keyManager.activeItemIndex).toBe(0);
-      expect(keyManager.activeItem!.getLabel()).toBe('one');
-
-      itemList.reset(itemList.toArray().slice(1));
-      itemList.notifyOnChanges();
-      tick();
-
-      expect(keyManager.activeItemIndex).toBe(0);
-      expect(keyManager.activeItem!.getLabel()).toBe('two');
-    }));
+    });
 
     it('should start off the activeItem as null', () => {
       expect(new ListKeyManager([]).activeItem).toBeNull();
