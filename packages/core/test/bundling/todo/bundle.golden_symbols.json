@@ -3,6 +3,9 @@
     "name": "CLEAN_PROMISE"
   },
   {
+    "name": "ChainedInjector"
+  },
+  {
     "name": "ChangeDetectionStrategy"
   },
   {

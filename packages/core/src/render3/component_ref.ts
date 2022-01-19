@@ -9,8 +9,6 @@
 import {ChangeDetectorRef as ViewEngine_ChangeDetectorRef} from '../change_detection/change_detector_ref';
 import {InjectionToken} from '../di/injection_token';
 import {Injector} from '../di/injector';
-import {InjectFlags} from '../di/interface/injector';
-import {ProviderToken} from '../di/provider_token';
 import {Type} from '../interface/type';
 import {ComponentFactory as viewEngine_ComponentFactory, ComponentRef as viewEngine_ComponentRef} from '../linker/component_factory';
 import {ComponentFactoryResolver as viewEngine_ComponentFactoryResolver} from '../linker/component_factory_resolver';
@@ -19,8 +17,9 @@ import {NgModuleRef as viewEngine_NgModuleRef} from '../linker/ng_module_factory
 import {RendererFactory2} from '../render/api';
 import {Sanitizer} from '../sanitization/sanitizer';
 import {VERSION} from '../version';
-import {NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR} from '../view/provider_flags';
+
 import {assertComponentType} from './assert';
+import {ChainedInjector} from './chained_injector';
 import {createRootComponent, createRootComponentView, createRootContext, LifecycleHooksFeature} from './component';
 import {getComponentDef} from './definition';
 import {NodeInjector} from './di';
@@ -79,26 +78,6 @@ export const SCHEDULER = new InjectionToken<((fn: () => void) => void)>('SCHEDUL
   factory: () => defaultScheduler,
 });
 
-function createChainedInjector(rootViewInjector: Injector, moduleInjector: Injector): Injector {
-  return {
-    get: <T>(token: ProviderToken<T>, notFoundValue?: T, flags?: InjectFlags): T => {
-      const value = rootViewInjector.get(token, NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR as T, flags);
-
-      if (value !== NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR ||
-          notFoundValue === NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR) {
-        // Return the value from the root element injector when
-        // - it provides it
-        //   (value !== NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR)
-        // - the module injector should not be checked
-        //   (notFoundValue === NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR)
-        return value;
-      }
-
-      return moduleInjector.get(token, notFoundValue, flags);
-    }
-  };
-}
-
 /**
  * Render3 implementation of {@link viewEngine_ComponentFactory}.
  */
@@ -135,11 +114,11 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
       ngModule?: viewEngine_NgModuleRef<any>|undefined): viewEngine_ComponentRef<T> {
     ngModule = ngModule || this.ngModule;
 
-    const rootViewInjector =
-        ngModule ? createChainedInjector(injector, ngModule.injector) : injector;
+    const rootViewInjector = ngModule ? new ChainedInjector(injector, ngModule.injector) : injector;
 
     const rendererFactory =
-        rootViewInjector.get(RendererFactory2, domRendererFactory3) as RendererFactory3;
+        rootViewInjector.get(RendererFactory2, domRendererFactory3 as RendererFactory2) as
+        RendererFactory3;
     const sanitizer = rootViewInjector.get(Sanitizer, null);
 
     const hostRenderer = rendererFactory.createRenderer(null, this.componentDef);
