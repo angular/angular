@@ -1,3 +1,68 @@
+<a name="13.2.0-rc.0"></a>
+# 13.2.0-rc.0 "metal-penguin" (2022-01-19)
+### cdk
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e61c2fa18c](https://github.com/angular/components/commit/e61c2fa18cd855b8fafa0ef279de67d6ea33d8bc) | fix | **a11y:** activeItem out of date if active index is removed from ListKeyManager ([#14471](https://github.com/angular/components/pull/14471)) |
+| [33a07d2051](https://github.com/angular/components/commit/33a07d2051fa8d229c56a9a28515efbc7a70bfd0) | fix | **a11y:** not detecting fake mousedown on firefox ([#23493](https://github.com/angular/components/pull/23493)) |
+| [6c48d14446](https://github.com/angular/components/commit/6c48d14446e2742879426c6daf738c2dbc71dee2) | fix | **table:** revert breaking change of CdkTable constructor ([#24202](https://github.com/angular/components/pull/24202)) |
+### material
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b9a3908fcf](https://github.com/angular/components/commit/b9a3908fcf1abb3c1d11c888581e193768960b35) | feat | **tabs:** add API to update the pagination ([#23288](https://github.com/angular/components/pull/23288)) |
+| [f10d245cca](https://github.com/angular/components/commit/f10d245cca22930e6d88aad03ede12f50f96746f) | feat | **tabs:** label & body classes ([#23691](https://github.com/angular/components/pull/23691)) |
+| [91afe3df94](https://github.com/angular/components/commit/91afe3df94826f25ffbc272ca52084b77c10aa98) | fix | **autocomplete:** don't handle enter events with modifier keys ([#14717](https://github.com/angular/components/pull/14717)) |
+| [3fd6f0e188](https://github.com/angular/components/commit/3fd6f0e188eb84dc1bf23cb8c5f6ba0a88f1b553) | fix | **autocomplete:** optionSelections not emitting when the list of options changes ([#14813](https://github.com/angular/components/pull/14813)) |
+| [267b03a9a3](https://github.com/angular/components/commit/267b03a9a355fcded6f77588d53726a3e59ab735) | fix | **card:** handle picture element as mat-card-image ([#23678](https://github.com/angular/components/pull/23678)) |
+| [74099a0f4a](https://github.com/angular/components/commit/74099a0f4a8beb769be7d2f80e432719fa2b9d14) | fix | **core:** make MatOption generic ([#20242](https://github.com/angular/components/pull/20242)) |
+| [65bc9feedc](https://github.com/angular/components/commit/65bc9feedcb223a62d92b2b799392cbb9238a6b7) | fix | **core:** throw error if hue does not exist ([#23612](https://github.com/angular/components/pull/23612)) |
+| [66c9e4ef36](https://github.com/angular/components/commit/66c9e4ef36b89579c4a0bc54c24f47e659301929) | fix | **datepicker:** add focus indication to calendar selected date in high contrast mode ([#22889](https://github.com/angular/components/pull/22889)) |
+| [d3123f90a2](https://github.com/angular/components/commit/d3123f90a26216eef60c07bfb65e9d1a7375a4fd) | fix | **form-field:** outline gap not recalculated when switching to empty label ([#23949](https://github.com/angular/components/pull/23949)) |
+| [1926b1973d](https://github.com/angular/components/commit/1926b1973d5edaf14e5bdfbe93938f13f82132a6) | fix | **input:** inconsistently reading name from input with ngModel ([#19233](https://github.com/angular/components/pull/19233)) |
+| [c55524a8eb](https://github.com/angular/components/commit/c55524a8eb89e211559f5488559d8a25761b295c) | fix | **list:** add isDisabled to all list item harnesses ([#24212](https://github.com/angular/components/pull/24212)) |
+| [350ab4d87e](https://github.com/angular/components/commit/350ab4d87eddc534cbae6ab7d2933fd773e7f965) | fix | **list:** fix up disabled list item styles ([#18881](https://github.com/angular/components/pull/18881)) |
+| [864b8ae1f3](https://github.com/angular/components/commit/864b8ae1f3c006c72cdc0f694cdaedcd6bdff7c7) | fix | **menu:** not interrupting keyboard events to other overlays ([#23310](https://github.com/angular/components/pull/23310)) |
+| [772176a6c3](https://github.com/angular/components/commit/772176a6c34097f9976b63b8233256cbd0f8bd38) | fix | **paginator:** allow readonly options ([#24054](https://github.com/angular/components/pull/24054)) |
+| [652f1e3d30](https://github.com/angular/components/commit/652f1e3d30089cd28f0d00e3c9d57ef41d177446) | fix | **progress-bar:** unable to change value through property setter ([#19025](https://github.com/angular/components/pull/19025)) |
+| [653e46bda3](https://github.com/angular/components/commit/653e46bda332157c1ec0c92913ce462e48b905f4) | fix | **progress-spinner:** animation not working on some zoom levels in Safari ([#23674](https://github.com/angular/components/pull/23674)) |
+| [c489f37376](https://github.com/angular/components/commit/c489f37376961a5a6262d40d226025d9dfd605cf) | fix | **sidenav:** end position sidenav tab order not matching visual order ([#18101](https://github.com/angular/components/pull/18101)) |
+| [78db0d4ba2](https://github.com/angular/components/commit/78db0d4ba2c8e13fb78a6337148457da23bdbe30) | fix | **slider:** avoid error on some touchstart events ([#23823](https://github.com/angular/components/pull/23823)) |
+| [aa32621a3c](https://github.com/angular/components/commit/aa32621a3c3af9cb83d775de0a89d24faf892be2) | fix | **slider:** first keypress ignored if out-of-bounds value is assigned ([#23827](https://github.com/angular/components/pull/23827)) |
+| [b851456193](https://github.com/angular/components/commit/b851456193eab8d0cae0cfed6d7097a525b4542b) | fix | **slider:** incorrectly inheriting color when nested inside component with theme ([#21334](https://github.com/angular/components/pull/21334)) |
+| [0bc45cab42](https://github.com/angular/components/commit/0bc45cab425ca27db028850645278de9715c4c54) | fix | **snack-bar:** handle long single-line content ([#24135](https://github.com/angular/components/pull/24135)) |
+| [e2a0b9e941](https://github.com/angular/components/commit/e2a0b9e941580e83081251889f671a572d62f245) | fix | **table:** better handling of invalid data ([#18953](https://github.com/angular/components/pull/18953)) |
+| [08aed715f3](https://github.com/angular/components/commit/08aed715f344d2d925aeac86973644ba182464dc) | fix | **tooltip:** not closing if escape is pressed while trigger isn't focused ([#14434](https://github.com/angular/components/pull/14434)) |
+| [41f0244302](https://github.com/angular/components/commit/41f024430222ea68e28946548cda6c10ec86b4aa) | perf | **button:** do not run change detection when the anchor is clicked ([#23992](https://github.com/angular/components/pull/23992)) |
+### google-maps
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e6359cdc67](https://github.com/angular/components/commit/e6359cdc67617be940201dd9fc5660d2997e20c3) | feat | allow for info window focus behavior to be customized ([#23831](https://github.com/angular/components/pull/23831)) |
+### material-experimental
+| Commit | Type | Description |
+| -- | -- | -- |
+| [177d9040f6](https://github.com/angular/components/commit/177d9040f6def752f3f4ab5908a85630c57fc32b) | fix | **mdc-checkbox:** emitting fallback values for density CSS variables ([#24184](https://github.com/angular/components/pull/24184)) |
+| [ffc1de4f73](https://github.com/angular/components/commit/ffc1de4f737efc86a85e8797ac7dde7141febfd3) | fix | **mdc-snack-bar:** avoid hard reference to base components and align API ([#21425](https://github.com/angular/components/pull/21425)) |
+### autocomplete
+| Commit | Type | Description |
+| -- | -- | -- |
+| [7409bd615f](https://github.com/angular/components/commit/7409bd615f63a0a5d2c2ccee9ce278b0cce6bb69) | fix | restore focus after emitting option selected event ([#18707](https://github.com/angular/components/pull/18707)) |
+### select
+| Commit | Type | Description |
+| -- | -- | -- |
+| [99c6112191](https://github.com/angular/components/commit/99c611219181b8014a6ed4c585939eda9a97f7f5) | fix | component value not in sync with control value on init ([#18443](https://github.com/angular/components/pull/18443)) |
+### sidenav
+| Commit | Type | Description |
+| -- | -- | -- |
+| [61c39b2c3a](https://github.com/angular/components/commit/61c39b2c3a3b63ddab6c1a3d216dde23bf1e0f77) | fix | implicit content element being registered twice with scroll dispatcher ([#13973](https://github.com/angular/components/pull/13973)) |
+### table
+| Commit | Type | Description |
+| -- | -- | -- |
+| [caf979a1de](https://github.com/angular/components/commit/caf979a1defe2c2085887beb2dfce7bc68d6366a) | fix | not clearing some internal references on destroy ([#16051](https://github.com/angular/components/pull/16051)) |
+## Special Thanks
+Andrew Seguin, Artur Androsovych, Jeri Peier, Joey Perrott, Kristiyan Kostadinov, Paul Gschwendtner and Ruslan Lekhman
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="13.1.3"></a>
 # 13.1.3 "plastic-koala" (2022-01-19)
 ### cdk
