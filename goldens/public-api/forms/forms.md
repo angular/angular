@@ -297,42 +297,28 @@ export class FormBuilder {
     static ɵprov: i0.ɵɵInjectableDeclaration<FormBuilder>;
 }
 
-// @public (undocumented)
-export interface FormControl extends AbstractControl {
-    // (undocumented)
+// @public
+export class FormControl extends AbstractControl {
+    constructor(formState?: any, validatorOrOpts?: ValidatorFn | ValidatorFn[] | FormControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null);
     readonly defaultValue: any;
-    // (undocumented)
     patchValue(value: any, options?: {
         onlySelf?: boolean;
         emitEvent?: boolean;
         emitModelToViewChange?: boolean;
         emitViewToModelChange?: boolean;
     }): void;
-    // (undocumented)
     registerOnChange(fn: Function): void;
-    // (undocumented)
     registerOnDisabledChange(fn: (isDisabled: boolean) => void): void;
-    // (undocumented)
     reset(formState?: any, options?: {
         onlySelf?: boolean;
         emitEvent?: boolean;
     }): void;
-    // (undocumented)
     setValue(value: any, options?: {
         onlySelf?: boolean;
         emitEvent?: boolean;
         emitModelToViewChange?: boolean;
         emitViewToModelChange?: boolean;
     }): void;
-}
-
-// @public
-export const FormControl: FormControlCtor;
-
-// @public
-export interface FormControlCtor {
-    new (): FormControl;
-    new (value: any, validatorOrOpts?: ValidatorFn | ValidatorFn[] | FormControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null): FormControl;
 }
 
 // @public
@@ -356,30 +342,6 @@ export class FormControlDirective extends NgControl implements OnChanges, OnDest
     static ɵdir: i0.ɵɵDirectiveDeclaration<FormControlDirective, "[formControl]", ["ngForm"], { "form": "formControl"; "isDisabled": "disabled"; "model": "ngModel"; }, { "update": "ngModelChange"; }, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<FormControlDirective, [{ optional: true; self: true; }, { optional: true; self: true; }, { optional: true; self: true; }, { optional: true; }]>;
-}
-
-// @public
-export class FormControlImpl extends AbstractControl {
-    constructor(formState?: any, validatorOrOpts?: ValidatorFn | ValidatorFn[] | FormControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null);
-    readonly defaultValue: any;
-    patchValue(value: any, options?: {
-        onlySelf?: boolean;
-        emitEvent?: boolean;
-        emitModelToViewChange?: boolean;
-        emitViewToModelChange?: boolean;
-    }): void;
-    registerOnChange(fn: Function): void;
-    registerOnDisabledChange(fn: (isDisabled: boolean) => void): void;
-    reset(formState?: any, options?: {
-        onlySelf?: boolean;
-        emitEvent?: boolean;
-    }): void;
-    setValue(value: any, options?: {
-        onlySelf?: boolean;
-        emitEvent?: boolean;
-        emitModelToViewChange?: boolean;
-        emitViewToModelChange?: boolean;
-    }): void;
 }
 
 // @public
