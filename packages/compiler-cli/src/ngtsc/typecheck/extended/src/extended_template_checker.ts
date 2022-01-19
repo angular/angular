@@ -86,7 +86,7 @@ export class ExtendedTemplateCheckerImpl implements ExtendedTemplateChecker {
 }
 
 /**
- * Converts a `DiagnosticCategoryLabel` to its equivalent `ts.DiagnosticCategory` or `undefined` if
+ * Converts a `DiagnosticCategoryLabel` to its equivalent `ts.DiagnosticCategory` or `null` if
  * the label is `DiagnosticCategoryLabel.Suppress`.
  */
 function diagnosticLabelToCategory(label: DiagnosticCategoryLabel): ts.DiagnosticCategory|null {
