@@ -31,7 +31,8 @@ describe('EventsComponent', () => {
   describe('ngOnInit()', () => {
     beforeEach(() => {
       jasmine.clock().install();
-      jasmine.clock().mockDate(new Date(2020, 5, 15, 23, 59, 59));
+      // End of day on June 15
+      jasmine.clock().mockDate(new Date(Date.parse('2020-06-16') - 1));
       component.ngOnInit();
     });
 
