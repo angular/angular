@@ -51,7 +51,7 @@ interface LazyCompilationState {
   refEmitter: ReferenceEmitter;
   templateTypeChecker: TemplateTypeChecker;
   resourceRegistry: ResourceRegistry;
-  extendedTemplateChecker: ExtendedTemplateChecker;
+  extendedTemplateChecker: ExtendedTemplateChecker|null;
 }
 
 
@@ -460,8 +460,9 @@ export class NgCompiler {
     const ttc = compilation.templateTypeChecker;
     const diagnostics: ts.Diagnostic[] = [];
     diagnostics.push(...ttc.getDiagnosticsForComponent(component));
-    if (this.options.strictTemplates) {
-      const extendedTemplateChecker = compilation.extendedTemplateChecker;
+
+    const extendedTemplateChecker = compilation.extendedTemplateChecker;
+    if (this.options.strictTemplates && extendedTemplateChecker) {
       diagnostics.push(...extendedTemplateChecker.getDiagnosticsForComponent(component));
     }
     return this.addMessageTextDetails(diagnostics);
@@ -886,6 +887,10 @@ export class NgCompiler {
     const diagnostics: ts.Diagnostic[] = [];
     const compilation = this.ensureAnalyzed();
     const extendedTemplateChecker = compilation.extendedTemplateChecker;
+    if (!extendedTemplateChecker) {
+      return [];
+    }
+
     if (sf !== undefined) {
       return compilation.traitCompiler.extendedTemplateCheck(sf, extendedTemplateChecker);
     }
@@ -1062,8 +1067,11 @@ export class NgCompiler {
         reflector, this.adapter, this.incrementalCompilation, scopeRegistry, typeCheckScopeRegistry,
         this.delegatingPerfRecorder);
 
-    const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
-        templateTypeChecker, checker, ALL_DIAGNOSTIC_FACTORIES, this.options);
+    // Only construct the extended template checker if the configuration is valid and usable.
+    const extendedTemplateChecker = this.constructionDiagnostics.length === 0 ?
+        new ExtendedTemplateCheckerImpl(
+            templateTypeChecker, checker, ALL_DIAGNOSTIC_FACTORIES, this.options) :
+        null;
 
     return {
       isCore,

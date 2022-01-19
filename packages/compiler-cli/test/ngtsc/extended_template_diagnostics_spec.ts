@@ -233,6 +233,24 @@ runInEachFileSystem(() => {
         const diagnostics = env.driveDiagnostics(0 /* expectedExitCode */);
         expect(diagnostics).toEqual([]);
       });
+
+      it('by throwing an error when given a bad category', () => {
+        env.tsconfig({
+          strictTemplates: true,
+          extendedDiagnostics: {
+            defaultCategory: 'not-a-category',
+          },
+        });
+
+        env.write('test.ts', warningComponent);
+
+        const diagnostics = env.driveDiagnostics(1 /* expectedExitCode */);
+        expect(diagnostics.length).toBe(1);
+        expect(diagnostics[0]).toEqual(jasmine.objectContaining({
+          code: ngErrorCode(ErrorCode.CONFIG_EXTENDED_DIAGNOSTICS_UNKNOWN_CATEGORY_LABEL),
+          category: ts.DiagnosticCategory.Error,
+        }));
+      });
     });
   });
 });
