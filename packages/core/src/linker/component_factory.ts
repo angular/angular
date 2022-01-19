@@ -75,6 +75,9 @@ export abstract class ComponentRef<C> {
  * @see [Dynamic Components](guide/dynamic-component-loader)
  *
  * @publicApi
+ *
+ * @deprecated Angular no longer requires Component factories. Please use other APIs where
+ *     Component class can be used directly.
  */
 export abstract class ComponentFactory<C> {
   /**

@@ -44,6 +44,9 @@ class _NullComponentFactoryResolver implements ComponentFactoryResolver {
  * does **not** require resolving component factory: component class can be used directly.
  *
  * @publicApi
+ *
+ * @deprecated Angular no longer requires Component factories. Please use other APIs where
+ *     Component class can be used directly.
  */
 export abstract class ComponentFactoryResolver {
   static NULL: ComponentFactoryResolver = (/* @__PURE__ */ new _NullComponentFactoryResolver());

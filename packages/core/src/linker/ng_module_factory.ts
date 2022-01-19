@@ -30,6 +30,9 @@ export abstract class NgModuleRef<T> {
    * Note: since v13, dynamic component creation via
    * [`ViewContainerRef.createComponent`](api/core/ViewContainerRef#createComponent)
    * does **not** require resolving component factory: component class can be used directly.
+   *
+   * @deprecated Angular no longer requires Component factories. Please use other APIs where
+   *     Component class can be used directly.
    */
   abstract get componentFactoryResolver(): ComponentFactoryResolver;
 
