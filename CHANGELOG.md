@@ -1,3 +1,22 @@
+<a name="13.1.3"></a>
+# 13.1.3 (2022-01-19)
+### animations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [af0a152a2c](https://github.com/angular/angular/commit/af0a152a2cd5fc5c9d8d8581bde811be102b210a) | fix | apply setStyles to only rootTimelines ([#44515](https://github.com/angular/angular/pull/44515)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [626f3f230b](https://github.com/angular/angular/commit/626f3f230ba7e272ee324ed3a1c5650e156d1d6f) | perf | reduce analysis work during incremental rebuilds ([#44731](https://github.com/angular/angular/pull/44731)) |
+### ngcc
+| Commit | Type | Description |
+| -- | -- | -- |
+| [f9ca4d8499](https://github.com/angular/angular/commit/f9ca4d849950b2d1e8a7629deab520a0e6db2dac) | fix | support element accesses for export declarations ([#44669](https://github.com/angular/angular/pull/44669)) |
+## Special Thanks
+Alan Agius, Andrew Kushnir, AnkitSharma-007, Daniel Díaz, Dmytro Mezhenskyi, Jessica Janiuk, Joey Perrott, JoostK, Ramesh Thiruchelvam, dario-piotrowicz, iRealNirmal and Łukasz Holeczek
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="13.2.0-next.2"></a>
 # 13.2.0-next.2 (2022-01-12)
 ### animations
