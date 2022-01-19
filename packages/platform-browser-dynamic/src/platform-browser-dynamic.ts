@@ -19,6 +19,10 @@ export {JitCompilerFactory} from './compiler_factory';
 
 /**
  * @publicApi
+ *
+ * @deprecated This was previously necessary in some cases to test AOT-compiled components with View
+ *     Engine, but is no longer since Ivy.
+
  */
 export const RESOURCE_CACHE_PROVIDER: Provider[] =
     [{provide: ResourceLoader, useClass: CachedResourceLoader, deps: []}];

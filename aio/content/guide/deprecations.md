@@ -52,6 +52,7 @@ v13 -> v16
 | `@angular/core`                     | [`ComponentFactory`](#core)                                                                                 | <!--v13--> v16        |
 | `@angular/core`                     | [`ComponentFactoryResolver`](#core)                                                                                 | <!--v13--> v16        |
 | `@angular/platform-browser-dynamic` | [`JitCompilerFactory`](#platform-browser-dynamic)                                                          | <!--v13--> v16        |
+| `@angular/platform-browser-dynamic` | [`RESOURCE_CACHE_PROVIDER`](#platform-browser-dynamic)                                                          | <!--v13--> v16        |
 | `@angular/forms`                    | [`ngModel` with reactive forms](#ngmodel-reactive)                                                         | <!--v6--> v11         |
 | `@angular/upgrade`                  | [`@angular/upgrade`](#upgrade)                                                                             | <!--v8--> v11         |
 | `@angular/upgrade`                  | [`getAngularLib`](#upgrade-static)                                                                         | <!--v8--> v11         |
@@ -147,6 +148,7 @@ This section contains a complete list all of the currently-deprecated APIs, with
 | API                                                                     | Replacement | Deprecation announced | Notes                                                                                                                             |
 | :---------------------------------------------------------------------- | :---------- | :-------------------- | :-------------------------------------------------------------------------------------------------------------------------------- |
 | [`JitCompilerFactory`](api/platform-browser-dynamic/JitCompilerFactory) | none        | v13                   | This symbol is no longer necessary. See [JIT API changes due to ViewEngine deprecation](#jit-api-changes) for additional context. |
+| [`RESOURCE_CACHE_PROVIDER`](api/platform-browser-dynamic/RESOURCE_CACHE_PROVIDER) | none        | v13                   | This was previously necessary in some cases to test AOT-compiled components with View Engine, but is no longer since Ivy. |
 
 {@a platform-server}
 

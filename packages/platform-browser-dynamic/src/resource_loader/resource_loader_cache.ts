@@ -17,6 +17,9 @@ import {ɵglobal as global} from '@angular/core';
  * via a separate mechanism.
  *
  * @publicApi
+ *
+ * @deprecated This was previously necessary in some cases to test AOT-compiled components with View
+ *     Engine, but is no longer since Ivy.
  */
 export class CachedResourceLoader extends ResourceLoader {
   private _cache: {[url: string]: string};
