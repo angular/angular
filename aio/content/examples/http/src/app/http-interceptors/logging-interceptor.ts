@@ -19,12 +19,12 @@ export class LoggingInterceptor implements HttpInterceptor {
     // extend server response observable with logging
     return next.handle(req)
       .pipe(
-        tap(
+        tap({
           // Succeeds when there is a response; ignore other events
-          event => ok = event instanceof HttpResponse ? 'succeeded' : '',
+          next: (event) => (ok = event instanceof HttpResponse ? 'succeeded' : ''),
           // Operation failed; error is an HttpErrorResponse
-          error => ok = 'failed'
-        ),
+          error: (error) => (ok = 'failed')
+        }),
         // Log when response observable either completes or errors
         finalize(() => {
           const elapsed = Date.now() - started;

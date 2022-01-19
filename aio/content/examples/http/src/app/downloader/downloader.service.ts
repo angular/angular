@@ -19,8 +19,10 @@ export class DownloaderService {
     return this.http.get(filename, {responseType: 'text'})
       .pipe(
         tap( // Log the result or error
-          data => this.log(filename, data),
-          error => this.logError(filename, error)
+        {
+          next: (data) => this.log(filename, data),
+          error: (error) => this.logError(filename, error)
+        }
         )
       );
   }
