@@ -70,8 +70,11 @@ export class ListKeyManager<T extends ListKeyManagerOption> {
           const itemArray = newItems.toArray();
           const newIndex = itemArray.indexOf(this._activeItem);
 
-          if (newIndex > -1 && newIndex !== this._activeItemIndex) {
-            this._activeItemIndex = newIndex;
+          if (newIndex !== this._activeItemIndex) {
+            // Timeout is required to avoid "changed after checked" errors.
+            setTimeout(() => {
+              this.updateActiveItem(newIndex > -1 ? newIndex : this._activeItemIndex);
+            }, 0);
           }
         }
       });
