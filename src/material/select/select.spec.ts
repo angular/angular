@@ -3184,7 +3184,6 @@ describe('MatSelect', () => {
       expect(fixture.componentInstance.control.value).toBe('pizza-1');
       expect(fixture.componentInstance.select.value).toBe('pizza-1');
     }));
-
   });
 
   describe('with custom trigger', () => {

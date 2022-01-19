@@ -196,11 +196,14 @@ describe('FocusMonitor', () => {
     flush();
 
     expect(buttonElement.classList.length)
-      .withContext('button should have exactly 2 focus classes').toBe(2);
+      .withContext('button should have exactly 2 focus classes')
+      .toBe(2);
     expect(buttonElement.classList.contains('cdk-focused'))
-      .withContext('button should have cdk-focused class').toBe(true);
+      .withContext('button should have cdk-focused class')
+      .toBe(true);
     expect(buttonElement.classList.contains('cdk-keyboard-focused'))
-      .withContext('button should have cdk-keyboard-focused class').toBe(true);
+      .withContext('button should have cdk-keyboard-focused class')
+      .toBe(true);
     expect(changeHandler).toHaveBeenCalledWith('keyboard');
   }));
 

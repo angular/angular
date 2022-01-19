@@ -1084,8 +1084,8 @@ describe('MatAutocomplete', () => {
     it('should not interfere with the ENTER key when pressing a modifier', fakeAsync(() => {
       const trigger = fixture.componentInstance.trigger;
 
-      expect(input.value).toBeFalsy('Expected input to start off blank.');
-      expect(trigger.panelOpen).toBe(true, 'Expected panel to start off open.');
+      expect(input.value).withContext('Expected input to start off blank.').toBeFalsy();
+      expect(trigger.panelOpen).withContext('Expected panel to start off open.').toBe(true);
 
       fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
       flush();
@@ -1095,12 +1095,11 @@ describe('MatAutocomplete', () => {
       fixture.componentInstance.trigger._handleKeydown(ENTER_EVENT);
       fixture.detectChanges();
 
-      expect(trigger.panelOpen).toBe(true, 'Expected panel to remain open.');
-      expect(input.value).toBeFalsy('Expected input to remain blank.');
-      expect(ENTER_EVENT.defaultPrevented).toBe(
-        false,
-        'Expected the default ENTER action not to have been prevented.',
-      );
+      expect(trigger.panelOpen).withContext('Expected panel to remain open.').toBe(true);
+      expect(input.value).withContext('Expected input to remain blank.').toBeFalsy();
+      expect(ENTER_EVENT.defaultPrevented)
+        .withContext('Expected the default ENTER action not to have been prevented.')
+        .toBe(false);
     }));
 
     it('should fill the text field, not select an option, when SPACE is entered', () => {
