@@ -194,7 +194,7 @@ export interface ComponentDecorator {
     new (obj: Component): Component;
 }
 
-// @public
+// @public @deprecated
 export abstract class ComponentFactory<C> {
     abstract get componentType(): Type<any>;
     abstract create(injector: Injector, projectableNodes?: any[][], rootSelectorOrNode?: string | any, ngModule?: NgModuleRef<any>): ComponentRef<C>;
@@ -210,7 +210,7 @@ export abstract class ComponentFactory<C> {
     abstract get selector(): string;
 }
 
-// @public
+// @public @deprecated
 export abstract class ComponentFactoryResolver {
     // (undocumented)
     static NULL: ComponentFactoryResolver;
@@ -839,6 +839,7 @@ export abstract class NgModuleFactory<T> {
 
 // @public
 export abstract class NgModuleRef<T> {
+    // @deprecated
     abstract get componentFactoryResolver(): ComponentFactoryResolver;
     abstract destroy(): void;
     abstract get injector(): Injector;
