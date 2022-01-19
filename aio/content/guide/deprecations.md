@@ -51,6 +51,7 @@ v13 -> v16
 | `@angular/core`                     | [`NgModuleFactory`](#core)                                                                                 | <!--v13--> v16        |
 | `@angular/core`                     | [`ComponentFactory`](#core)                                                                                 | <!--v13--> v16        |
 | `@angular/core`                     | [`ComponentFactoryResolver`](#core)                                                                                 | <!--v13--> v16        |
+| `@angular/core`                     | [`CompilerOptions.useJit and CompilerOptions.missingTranslation config options`](#core)                                                                                 | <!--v13--> v16        |
 | `@angular/platform-browser-dynamic` | [`JitCompilerFactory`](#platform-browser-dynamic)                                                          | <!--v13--> v16        |
 | `@angular/platform-browser-dynamic` | [`RESOURCE_CACHE_PROVIDER`](#platform-browser-dynamic)                                                          | <!--v13--> v16        |
 | `@angular/forms`                    | [`ngModel` with reactive forms](#ngmodel-reactive)                                                         | <!--v6--> v11         |
@@ -129,6 +130,7 @@ This section contains a complete list all of the currently-deprecated APIs, with
 | [Factory-based signature of `ViewContainerRef.createComponent`](api/core/ViewContainerRef#createComponent) | [Type-based signature of `ViewContainerRef.createComponent`](api/core/ViewContainerRef#createComponent)                                                           | v13                   | Angular no longer requires component factories to dynamically create components. Use different signature of the `createComponent` method, which allows passing Component class directly.                                                                                                           |
 | [`ComponentFactory`](api/core/ComponentFactory)                                                              | Use non-factory based framework APIs. | v13                   | Since Ivy, Component factories are not required. Angular provides other APIs where Component classes can be used directly.|
 | [`ComponentFactoryResolver`](api/core/ComponentFactoryResolver)                                                              | Use non-factory based framework APIs. | v13                  | Since Ivy, Component factories are not required, thus there is no need to resolve them.|
+| [`CompilerOptions.useJit and CompilerOptions.missingTranslation config options`](api/core/CompilerOptions)                                                              | none | v13                  | Since Ivy, those config options are unused, passing them has no effect.|
 
 {@a testing}
 
