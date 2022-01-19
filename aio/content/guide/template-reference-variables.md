@@ -46,7 +46,7 @@ In most cases, Angular sets the template variable's value to the element on whic
 In the previous example, `phone` refers to the phone number `<input>`.
 The button's click handler passes the `<input>` value to the component's `callPhone()` method.
 
-The `NgForm` directive demonstrates getting a reference to a different value by reference a directive's `exportAs` name.
+The `NgForm` directive demonstrates getting a reference to a different value by referencing a directive's `exportAs` name.
 In the following example, the template variable, `itemForm`, appears three times separated by HTML.
 
 <code-example path="template-reference-variables/src/app/app.component.html" region="ngForm" header="src/app/hero-form.component.html"></code-example>
