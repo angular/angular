@@ -446,7 +446,7 @@ export class NgCompiler {
     diagnostics.push(
         ...this.getNonTemplateDiagnostics().filter(diag => diag.file === file),
         ...this.getTemplateDiagnosticsForFile(file, optimizeFor));
-    if (this.options._extendedTemplateDiagnostics) {
+    if (this.options.strictTemplates) {
       diagnostics.push(...this.getExtendedTemplateDiagnostics(file));
     }
     return this.addMessageTextDetails(diagnostics);
@@ -460,7 +460,7 @@ export class NgCompiler {
     const ttc = compilation.templateTypeChecker;
     const diagnostics: ts.Diagnostic[] = [];
     diagnostics.push(...ttc.getDiagnosticsForComponent(component));
-    if (this.options._extendedTemplateDiagnostics) {
+    if (this.options.strictTemplates) {
       const extendedTemplateChecker = compilation.extendedTemplateChecker;
       diagnostics.push(...extendedTemplateChecker.getDiagnosticsForComponent(component));
     }
