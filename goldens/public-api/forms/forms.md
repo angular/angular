@@ -157,8 +157,8 @@ export interface AsyncValidatorFn {
 }
 
 // @public
-export class CheckboxControlValueAccessor extends BuiltInControlValueAccessor implements ControlValueAccessor {
-    writeValue(value: any): void;
+export class CheckboxControlValueAccessor extends BuiltInControlValueAccessor<boolean> implements ControlValueAccessor {
+    writeValue(value: boolean): void;
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<CheckboxControlValueAccessor, "input[type=checkbox][formControlName],input[type=checkbox][formControl],input[type=checkbox][ngModel]", never, {}, {}, never>;
     // (undocumented)
@@ -185,17 +185,17 @@ export abstract class ControlContainer extends AbstractControlDirective {
 }
 
 // @public
-export interface ControlValueAccessor {
-    registerOnChange(fn: any): void;
-    registerOnTouched(fn: any): void;
+export interface ControlValueAccessor<T = any> {
+    registerOnChange(fn: (val: T | null) => void): void;
+    registerOnTouched(fn: () => void): void;
     setDisabledState?(isDisabled: boolean): void;
-    writeValue(obj: any): void;
+    writeValue(obj: T): void;
 }
 
 // @public
-export class DefaultValueAccessor extends BaseControlValueAccessor implements ControlValueAccessor {
+export class DefaultValueAccessor extends BaseControlValueAccessor<string> implements ControlValueAccessor<string> {
     constructor(renderer: Renderer2, elementRef: ElementRef, _compositionMode: boolean);
-    writeValue(value: any): void;
+    writeValue(value: string): void;
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<DefaultValueAccessor, "input:not([type=checkbox])[formControlName],textarea[formControlName],input:not([type=checkbox])[formControl],textarea[formControl],input:not([type=checkbox])[ngModel],textarea[ngModel],[ngDefaultControl]", never, {}, {}, never>;
     // (undocumented)
@@ -205,10 +205,8 @@ export class DefaultValueAccessor extends BaseControlValueAccessor implements Co
 // @public
 export class EmailValidator extends AbstractValidatorDirective {
     email: boolean | string;
-
     // (undocumented)
     enabled(input: boolean): boolean;
-    
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<EmailValidator, "[email][formControlName],[email][formControl],[email][ngModel]", never, { "email": "email"; }, {}, never>;
     // (undocumented)
@@ -510,7 +508,7 @@ export const NG_ASYNC_VALIDATORS: InjectionToken<(Function | Validator)[]>;
 export const NG_VALIDATORS: InjectionToken<(Function | Validator)[]>;
 
 // @public
-export const NG_VALUE_ACCESSOR: InjectionToken<readonly ControlValueAccessor[]>;
+export const NG_VALUE_ACCESSOR: InjectionToken<readonly ControlValueAccessor<any>[]>;
 
 // @public
 export abstract class NgControl extends AbstractControlDirective {
@@ -628,7 +626,7 @@ export class NgSelectOption implements OnDestroy {
 }
 
 // @public
-export class NumberValueAccessor extends BuiltInControlValueAccessor implements ControlValueAccessor {
+export class NumberValueAccessor extends BuiltInControlValueAccessor<number> implements ControlValueAccessor {
     registerOnChange(fn: (_: number | null) => void): void;
     writeValue(value: number): void;
     // (undocumented)
@@ -651,9 +649,9 @@ export class PatternValidator implements Validator, OnChanges {
 }
 
 // @public
-export class RadioControlValueAccessor extends BuiltInControlValueAccessor implements ControlValueAccessor, OnDestroy, OnInit {
+export class RadioControlValueAccessor extends BuiltInControlValueAccessor<boolean> implements ControlValueAccessor, OnDestroy, OnInit {
     constructor(renderer: Renderer2, elementRef: ElementRef, _registry: RadioControlRegistry, _injector: Injector);
-    fireUncheck(value: any): void;
+    fireUncheck(value: boolean): void;
     formControlName: string;
     name: string;
     // (undocumented)
@@ -661,9 +659,9 @@ export class RadioControlValueAccessor extends BuiltInControlValueAccessor imple
     // (undocumented)
     ngOnInit(): void;
     onChange: () => void;
-    registerOnChange(fn: (_: any) => {}): void;
-    value: any;
-    writeValue(value: any): void;
+    registerOnChange(fn: (_: boolean) => void): void;
+    value: boolean;
+    writeValue(value: boolean): void;
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<RadioControlValueAccessor, "input[type=radio][formControlName],input[type=radio][formControl],input[type=radio][ngModel]", never, { "name": "name"; "formControlName": "formControlName"; "value": "value"; }, {}, never>;
     // (undocumented)
@@ -671,7 +669,7 @@ export class RadioControlValueAccessor extends BuiltInControlValueAccessor imple
 }
 
 // @public
-export class RangeValueAccessor extends BuiltInControlValueAccessor implements ControlValueAccessor {
+export class RangeValueAccessor extends BuiltInControlValueAccessor<number> implements ControlValueAccessor {
     registerOnChange(fn: (_: number | null) => void): void;
     writeValue(value: any): void;
     // (undocumented)
@@ -706,7 +704,7 @@ export class RequiredValidator implements Validator {
 }
 
 // @public
-export class SelectControlValueAccessor extends BuiltInControlValueAccessor implements ControlValueAccessor {
+export class SelectControlValueAccessor extends BuiltInControlValueAccessor<any> implements ControlValueAccessor {
     set compareWith(fn: (o1: any, o2: any) => boolean);
     registerOnChange(fn: (value: any) => any): void;
     // (undocumented)
@@ -719,7 +717,7 @@ export class SelectControlValueAccessor extends BuiltInControlValueAccessor impl
 }
 
 // @public
-export class SelectMultipleControlValueAccessor extends BuiltInControlValueAccessor implements ControlValueAccessor {
+export class SelectMultipleControlValueAccessor extends BuiltInControlValueAccessor<any> implements ControlValueAccessor {
     set compareWith(fn: (o1: any, o2: any) => boolean);
     registerOnChange(fn: (value: any) => any): void;
     value: any;

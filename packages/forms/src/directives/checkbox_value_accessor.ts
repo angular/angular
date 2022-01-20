@@ -45,13 +45,13 @@ export const CHECKBOX_VALUE_ACCESSOR: any = {
   host: {'(change)': 'onChange($event.target.checked)', '(blur)': 'onTouched()'},
   providers: [CHECKBOX_VALUE_ACCESSOR]
 })
-export class CheckboxControlValueAccessor extends BuiltInControlValueAccessor implements
+export class CheckboxControlValueAccessor extends BuiltInControlValueAccessor<boolean> implements
     ControlValueAccessor {
   /**
    * Sets the "checked" property on the input element.
    * @nodoc
    */
-  writeValue(value: any): void {
+  writeValue(value: boolean): void {
     this.setProperty('checked', value);
   }
 }

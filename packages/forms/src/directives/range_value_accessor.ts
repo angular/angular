@@ -66,7 +66,12 @@ export class RangeValueAccessor extends BuiltInControlValueAccessor<number> impl
    */
   override registerOnChange(fn: (_: number|null) => void): void {
     this.onChange = (value) => {
-      fn(isNaN(value) ? null : value);
+      if (value == null) {
+        return fn(null);
+      }
+
+      const valueAsString = value.toString();
+      fn(valueAsString == '' ? null : parseFloat(valueAsString));
     };
   }
 }

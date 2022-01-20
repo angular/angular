@@ -54,7 +54,7 @@ export class NumberValueAccessor extends BuiltInControlValueAccessor<number> imp
    */
   writeValue(value: number): void {
     // The value needs to be normalized for IE9, otherwise it is set to 'null' when null
-    const normalizedValue = value == null ? '' : value;
+    const normalizedValue = value == null ? '' : +value;
     this.setProperty('value', normalizedValue);
   }
 
@@ -62,9 +62,14 @@ export class NumberValueAccessor extends BuiltInControlValueAccessor<number> imp
    * Registers a function called when the control value changes.
    * @nodoc
    */
-  override registerOnChange(fn: (_: number | null) => void): void {
+  override registerOnChange(fn: (_: number|null) => void): void {
     this.onChange = (value) => {
-      fn(isNaN(value) ? null : value);
+      if (value == null) {
+        return fn(null);
+      }
+
+      const valueAsString = value.toString();
+      fn(valueAsString == '' ? null : parseFloat(valueAsString));
     };
   }
 }

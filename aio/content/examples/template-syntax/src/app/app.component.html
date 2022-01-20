@@ -542,7 +542,7 @@ without NgModel
 <p>Pick your favorite hero</p>
 <div>
   <label *ngFor="let h of heroes">
-    <input type="radio" name="heroes" [(ngModel)]="currentHero" [value]="h">{{h.name}}
+    <input type="radio" name="heroes" [(ngModel)]="currentHero" [value]="!!h">{{h.name}}
   </label>
 </div>
 
