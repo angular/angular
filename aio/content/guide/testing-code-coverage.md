@@ -30,6 +30,12 @@ If you want to create code-coverage reports every time you test, set the followi
   }
 ```
 
+<div class="alert is-important">
+
+Although they are still run by tests, only files within the `sourceRoot` directory (which defaults to `src`) are included in code coverage reports.
+
+</div>
+
 ## Code coverage enforcement
 
 The code coverage percentages let you estimate how much of your code is tested.
