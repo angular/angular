@@ -193,7 +193,11 @@ class SVGServerModule {
 
 @Component({
   selector: 'app',
-  template: `<div [@myAnimation]="state">{{text}}</div>`,
+  template: `
+  <div [@myAnimation]="state">
+    <svg *ngIf="true"></svg>
+    {{text}}
+  </div>`,
   animations: [trigger(
       'myAnimation',
       [
