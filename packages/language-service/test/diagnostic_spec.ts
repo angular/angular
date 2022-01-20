@@ -384,7 +384,7 @@ describe('getSemanticDiagnostics', () => {
     expect(diags[0].category).toEqual(ts.DiagnosticCategory.Warning);
   });
 
-  it('should not produce invalid banana in box warning without the required flags', () => {
+  it('should not produce invalid banana in box warning without `strictTemplates`', () => {
     const files = {
       'app.ts': `
         import {Component} from '@angular/core';
@@ -397,7 +397,9 @@ describe('getSemanticDiagnostics', () => {
         }
     `
     };
-    const project = createModuleAndProjectWithDeclarations(env, 'test', files);
+    const project = createModuleAndProjectWithDeclarations(env, 'test', files, {
+      strictTemplates: false,
+    });
 
     const diags = project.getDiagnosticsForFile('app.ts');
     expect(diags.length).toEqual(0);
@@ -426,7 +428,7 @@ describe('getSemanticDiagnostics', () => {
     expect(diags[0].category).toEqual(ts.DiagnosticCategory.Warning);
   });
 
-  it('should not produce invalid banana in box warning in external html file without the required flags',
+  it('should not produce invalid banana in box warning in external html file without `strictTemplates`',
      () => {
        const files = {
          'app.ts': `
@@ -441,7 +443,9 @@ describe('getSemanticDiagnostics', () => {
     `,
          'app.html': `<div ([foo])="bar"></div>`
        };
-       const project = createModuleAndProjectWithDeclarations(env, 'test', files);
+       const project = createModuleAndProjectWithDeclarations(env, 'test', files, {
+         strictTemplates: false,
+       });
 
        const diags = project.getDiagnosticsForFile('app.html');
        expect(diags.length).toEqual(0);
