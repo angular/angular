@@ -25,6 +25,7 @@ import {isProceduralRenderer, ProceduralRenderer3, Renderer3, unusedValueExportT
 import {RComment, RElement, RNode, RText} from './interfaces/renderer_dom';
 import {isLContainer, isLView} from './interfaces/type_checks';
 import {CHILD_HEAD, CLEANUP, DECLARATION_COMPONENT_VIEW, DECLARATION_LCONTAINER, DestroyHookData, FLAGS, HookData, HookFn, HOST, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, T_HOST, TVIEW, TView, TViewType, unusedValueExportToPlacateAjd as unused5} from './interfaces/view';
+import {getNamespaceUri} from './namespaces';
 import {assertTNodeType} from './node_assert';
 import {profiler, ProfilerEvent} from './profiler';
 import {getLViewParent} from './util/view_traversal_utils';
@@ -132,8 +133,9 @@ export function createElementNode(
   if (isProceduralRenderer(renderer)) {
     return renderer.createElement(name, namespace);
   } else {
-    return namespace === null ? renderer.createElement(name) :
-                                renderer.createElementNS(namespace, name);
+    const namespaceUri = namespace !== null ? getNamespaceUri(namespace) : null;
+    return namespaceUri === null ? renderer.createElement(name) :
+                                   renderer.createElementNS(namespaceUri, name);
   }
 }
 
