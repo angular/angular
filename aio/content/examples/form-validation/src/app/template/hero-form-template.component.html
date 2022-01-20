@@ -35,14 +35,15 @@
 
         <div class="form-group">
           <label for="alterEgo">Alter Ego</label>
-          <input type="text"
+        <!-- #docregion alterEgo-input -->
+        <input type="text"
                  id="alterEgo"
                  name="alterEgo"
                  #alterEgo="ngModel"
                  [(ngModel)]="hero.alterEgo"
                  [ngModelOptions]="{ updateOn: 'blur' }"
                  appUniqueAlterEgo>
-
+          <!-- #enddocregion alterEgo-input -->
           <div *ngIf="alterEgo.pending">Validating...</div>
           <div *ngIf="alterEgo.invalid" class="alert alter-ego-errors">
             <div *ngIf="alterEgo.errors?.['uniqueAlterEgo']">
