@@ -38,8 +38,7 @@
     "check-tooling-setup": "yarn tsc --project .ng-dev/tsconfig.json",
     "devtools:devserver": "ibazel run //devtools/src:devserver",
     "devtools:build:chrome": "bazelisk build --config snapshot //devtools/projects/shell-chrome/src:prodapp",
-    "devtools:test": "bazelisk test --config snapshot //devtools/...",
-    "devtools:e2e": "start-server-and-test devtools:devserver http-get://localhost:4200 'cypress run --config-file=devtools/cypress.json'"
+    "devtools:test": "bazelisk test --config snapshot //devtools/..."
   },
   "// 1": "dependencies are used locally and by bazel",
   "dependencies": {
@@ -121,8 +120,6 @@
     "chokidar": "^3.5.1",
     "convert-source-map": "^1.5.1",
     "core-js-bundle": "^3.10.2",
-    "cypress": "8.7.0",
-    "cypress-iframe": "^1.0.1",
     "d3": "^5.7.0",
     "dependency-graph": "^0.11.0",
     "diff": "^5.0.0",
