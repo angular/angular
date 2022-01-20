@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {compileClassMetadata, compileDeclareClassMetadata, compileDeclarePipeFromMetadata, compilePipeFromMetadata, FactoryTarget, R3ClassMetadata, R3PipeMetadata, Statement, WrappedNodeExpr} from '@angular/compiler';
+import {compileClassMetadata, compileDeclareClassMetadata, compileDeclarePipeFromMetadata, compilePipeFromMetadata, FactoryTarget, R3ClassMetadata, R3PipeMetadata, WrappedNodeExpr} from '@angular/compiler';
 import ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
@@ -18,11 +18,7 @@ import {PerfEvent, PerfRecorder} from '../../perf';
 import {ClassDeclaration, Decorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
 import {LocalModuleScopeRegistry} from '../../scope';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence, ResolveResult} from '../../transform';
-
-import {createValueHasWrongTypeError} from './diagnostics';
-import {compileDeclareFactory, compileNgFactoryDefField} from './factory';
-import {extractClassMetadata} from './metadata';
-import {compileResults, findAngularDecorator, getValidConstructorDependencies, makeDuplicateDeclarationError, toFactoryMetadata, unwrapExpression, wrapTypeReference} from './util';
+import {compileDeclareFactory, compileNgFactoryDefField, compileResults, createValueHasWrongTypeError, extractClassMetadata, findAngularDecorator, getValidConstructorDependencies, makeDuplicateDeclarationError, toFactoryMetadata, unwrapExpression, wrapTypeReference} from '../common';
 
 export interface PipeHandlerData {
   meta: R3PipeMetadata;

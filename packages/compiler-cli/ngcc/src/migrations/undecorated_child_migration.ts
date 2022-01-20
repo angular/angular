@@ -8,7 +8,7 @@
 
 import ts from 'typescript';
 
-import {readBaseClass} from '../../../src/ngtsc/annotations/src/util';
+import {readBaseClass} from '../../../src/ngtsc/annotations/common';
 import {Reference} from '../../../src/ngtsc/imports';
 import {ClassDeclaration} from '../../../src/ngtsc/reflection';
 import {HandlerFlags} from '../../../src/ngtsc/transform';
