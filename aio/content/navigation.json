@@ -1056,6 +1056,17 @@
           ]
         },
         {
+          "title": "Extended Diagnostic Reference",
+          "tooltip": "Details of extended diagnostics that can be emitted by the Angular compiler",
+          "children": [
+            {
+              "url": "extended-diagnostics",
+              "title": "Extended Diagnostics Overview",
+              "tooltip": "Overview of extended diagnostics, what they are, and how to configure them."
+            }
+          ]
+        },
+        {
           "title": "Example applications",
           "tooltip": "List of all of the example applications in the Angular documentation.",
           "url": "guide/example-apps-list"
