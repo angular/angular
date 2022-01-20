@@ -285,6 +285,7 @@ These are very similar to their synchronous counterparts, with the following dif
 * The `validate()` functions must return a Promise or an observable,
 * The observable returned must be finite, meaning it must complete at some point.
 To convert an infinite observable into a finite one, pipe the observable through a filtering operator such as `first`, `last`, `take`, or `takeUntil`.
+* In template-driven forms, register your validator directive with the `NG_ASYNC_VALIDATORS` provider instead of `NG_VALIDATORS`.
 
 Asynchronous validation happens after the synchronous validation, and is performed only if the synchronous validation is successful.
 This check lets forms avoid potentially expensive async validation processes (such as an HTTP request) if the more basic validation methods have already found invalid input.
