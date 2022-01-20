@@ -10,7 +10,7 @@ import {animate, AnimationBuilder, state, style, transition, trigger} from '@ang
 import {DOCUMENT, isPlatformServer, PlatformLocation, ɵgetDOM as getDOM} from '@angular/common';
 import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
 import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
-import {ApplicationRef, CompilerFactory, Component, destroyPlatform, getPlatform, HostListener, Inject, Injectable, Input, NgModule, NgZone, PLATFORM_ID, PlatformRef, ViewEncapsulation} from '@angular/core';
+import {ApplicationRef, CompilerFactory, Component, destroyPlatform, getPlatform, HostBinding, HostListener, Inject, Injectable, Input, NgModule, NgZone, OnInit, PLATFORM_ID, PlatformRef, ViewEncapsulation} from '@angular/core';
 import {inject, waitForAsync} from '@angular/core/testing';
 import {BrowserModule, makeStateKey, Title, TransferState} from '@angular/platform-browser';
 import {BEFORE_APP_SERIALIZED, INITIAL_CONFIG, platformDynamicServer, PlatformState, renderModule, renderModuleFactory, ServerModule, ServerTransferStateModule} from '@angular/platform-server';
@@ -20,11 +20,16 @@ import {first} from 'rxjs/operators';
 @Component({selector: 'app', template: `Works!`})
 class MyServerApp {
 }
+@NgModule({
+  declarations: [MyServerApp],
+  exports: [MyServerApp],
+})
+export class MyServerAppModule {
+}
 
 @NgModule({
   bootstrap: [MyServerApp],
-  declarations: [MyServerApp],
-  imports: [ServerModule],
+  imports: [MyServerAppModule, ServerModule],
 })
 class ExampleModule {
 }
@@ -73,8 +78,8 @@ function asyncRejectRenderHook() {
 
 @NgModule({
   bootstrap: [MyServerApp],
-  declarations: [MyServerApp],
-  imports: [BrowserModule.withServerTransition({appId: 'render-hook'}), ServerModule],
+  imports:
+      [MyServerAppModule, BrowserModule.withServerTransition({appId: 'render-hook'}), ServerModule],
   providers: [
     {provide: BEFORE_APP_SERIALIZED, useFactory: getTitleRenderHook, multi: true, deps: [DOCUMENT]},
   ]
@@ -84,8 +89,8 @@ class RenderHookModule {
 
 @NgModule({
   bootstrap: [MyServerApp],
-  declarations: [MyServerApp],
-  imports: [BrowserModule.withServerTransition({appId: 'render-hook'}), ServerModule],
+  imports:
+      [MyServerAppModule, BrowserModule.withServerTransition({appId: 'render-hook'}), ServerModule],
   providers: [
     {provide: BEFORE_APP_SERIALIZED, useFactory: getTitleRenderHook, multi: true, deps: [DOCUMENT]},
     {provide: BEFORE_APP_SERIALIZED, useValue: exceptionRenderHook, multi: true},
@@ -97,8 +102,8 @@ class MultiRenderHookModule {
 
 @NgModule({
   bootstrap: [MyServerApp],
-  declarations: [MyServerApp],
-  imports: [BrowserModule.withServerTransition({appId: 'render-hook'}), ServerModule],
+  imports:
+      [MyServerAppModule, BrowserModule.withServerTransition({appId: 'render-hook'}), ServerModule],
   providers: [
     {
       provide: BEFORE_APP_SERIALIZED,
@@ -112,8 +117,8 @@ class AsyncRenderHookModule {
 }
 @NgModule({
   bootstrap: [MyServerApp],
-  declarations: [MyServerApp],
-  imports: [BrowserModule.withServerTransition({appId: 'render-hook'}), ServerModule],
+  imports:
+      [MyServerAppModule, BrowserModule.withServerTransition({appId: 'render-hook'}), ServerModule],
   providers: [
     {provide: BEFORE_APP_SERIALIZED, useFactory: getMetaRenderHook, multi: true, deps: [DOCUMENT]},
     {
@@ -235,8 +240,7 @@ class ExampleStylesModule {
 
 @NgModule({
   bootstrap: [MyServerApp],
-  declarations: [MyServerApp],
-  imports: [ServerModule, HttpClientModule, HttpClientTestingModule],
+  imports: [MyServerAppModule, ServerModule, HttpClientModule, HttpClientTestingModule],
 })
 export class HttpClientExampleModule {
 }
@@ -252,8 +256,7 @@ export class MyHttpInterceptor implements HttpInterceptor {
 
 @NgModule({
   bootstrap: [MyServerApp],
-  declarations: [MyServerApp],
-  imports: [ServerModule, HttpClientModule, HttpClientTestingModule],
+  imports: [MyServerAppModule, ServerModule, HttpClientModule, HttpClientTestingModule],
   providers: [
     {provide: HTTP_INTERCEPTORS, multi: true, useClass: MyHttpInterceptor},
   ],
