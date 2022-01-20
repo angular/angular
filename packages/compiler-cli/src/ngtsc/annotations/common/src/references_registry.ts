@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Reference} from '../../imports';
-import {DeclarationNode} from '../../reflection';
+import {Reference} from '../../../imports';
+import {DeclarationNode} from '../../../reflection';
 
 /**
  * Implement this interface if you want DecoratorHandlers to register

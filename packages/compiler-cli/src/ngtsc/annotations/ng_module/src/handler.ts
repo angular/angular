@@ -9,23 +9,18 @@
 import {compileClassMetadata, compileDeclareClassMetadata, compileDeclareInjectorFromMetadata, compileDeclareNgModuleFromMetadata, compileInjector, compileNgModule, CUSTOM_ELEMENTS_SCHEMA, Expression, ExternalExpr, FactoryTarget, InvokeFunctionExpr, LiteralArrayExpr, NO_ERRORS_SCHEMA, R3ClassMetadata, R3CompiledExpression, R3FactoryMetadata, R3Identifiers, R3InjectorMetadata, R3NgModuleMetadata, R3Reference, SchemaMetadata, Statement, WrappedNodeExpr} from '@angular/compiler';
 import ts from 'typescript';
 
-import {ErrorCode, FatalDiagnosticError, makeDiagnostic, makeRelatedInformation} from '../../diagnostics';
-import {assertSuccessfulReferenceEmit, Reference, ReferenceEmitter} from '../../imports';
-import {isArrayEqual, isReferenceEqual, isSymbolEqual, SemanticReference, SemanticSymbol} from '../../incremental/semantic_graph';
-import {InjectableClassRegistry, MetadataReader, MetadataRegistry} from '../../metadata';
-import {PartialEvaluator, ResolvedValue} from '../../partial_evaluator';
-import {PerfEvent, PerfRecorder} from '../../perf';
-import {ClassDeclaration, Decorator, isNamedClassDeclaration, ReflectionHost, reflectObjectLiteral, typeNodeToValueExpr} from '../../reflection';
-import {LocalModuleScopeRegistry, ScopeData} from '../../scope';
-import {FactoryTracker} from '../../shims/api';
-import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence, ResolveResult} from '../../transform';
-import {getSourceFile} from '../../util/src/typescript';
-
-import {createValueHasWrongTypeError, getProviderDiagnostics} from './diagnostics';
-import {compileDeclareFactory, compileNgFactoryDefField} from './factory';
-import {extractClassMetadata} from './metadata';
-import {ReferencesRegistry} from './references_registry';
-import {combineResolvers, findAngularDecorator, forwardRefResolver, getValidConstructorDependencies, isExpressionForwardReference, resolveProvidersRequiringFactory, toR3Reference, unwrapExpression, wrapFunctionExpressionsInParens, wrapTypeReference} from './util';
+import {ErrorCode, FatalDiagnosticError, makeDiagnostic, makeRelatedInformation} from '../../../diagnostics';
+import {assertSuccessfulReferenceEmit, Reference, ReferenceEmitter} from '../../../imports';
+import {isArrayEqual, isReferenceEqual, isSymbolEqual, SemanticReference, SemanticSymbol} from '../../../incremental/semantic_graph';
+import {InjectableClassRegistry, MetadataReader, MetadataRegistry} from '../../../metadata';
+import {PartialEvaluator, ResolvedValue} from '../../../partial_evaluator';
+import {PerfEvent, PerfRecorder} from '../../../perf';
+import {ClassDeclaration, Decorator, isNamedClassDeclaration, ReflectionHost, reflectObjectLiteral, typeNodeToValueExpr} from '../../../reflection';
+import {LocalModuleScopeRegistry, ScopeData} from '../../../scope';
+import {FactoryTracker} from '../../../shims/api';
+import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence, ResolveResult} from '../../../transform';
+import {getSourceFile} from '../../../util/src/typescript';
+import {combineResolvers, compileDeclareFactory, compileNgFactoryDefField, createValueHasWrongTypeError, extractClassMetadata, findAngularDecorator, forwardRefResolver, getProviderDiagnostics, getValidConstructorDependencies, isExpressionForwardReference, ReferencesRegistry, resolveProvidersRequiringFactory, toR3Reference, unwrapExpression, wrapFunctionExpressionsInParens, wrapTypeReference} from '../../common';
 
 export interface NgModuleAnalysis {
   mod: R3NgModuleMetadata;
