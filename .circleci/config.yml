@@ -277,7 +277,6 @@ jobs:
           paths:
             - ./ng
             - ./bazel_repository_cache
-            - .cache/Cypress
 
   lint:
     executor: default-executor
@@ -745,9 +744,6 @@ jobs:
       - run:
           name: Test production build
           command: yarn devtools:build:chrome
-      - run:
-          name: Run e2e tests
-          command: yarn devtools:e2e
 
 workflows:
   version: 2
