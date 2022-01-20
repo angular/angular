@@ -24,14 +24,16 @@ import {ComponentScopeReader, LocalModuleScopeRegistry, TypeCheckScopeRegistry} 
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerFlags, HandlerPrecedence, ResolveResult} from '../../../transform';
 import {TypeCheckContext} from '../../../typecheck/api';
 import {ExtendedTemplateChecker} from '../../../typecheck/extended/api';
+import {getSourceFile} from '../../../util/src/typescript';
 import {Xi18nContext} from '../../../xi18n';
 import {compileDeclareFactory, compileNgFactoryDefField, compileResults, extractClassMetadata, findAngularDecorator, getDirectiveDiagnostics, getProviderDiagnostics, isExpressionForwardReference, readBaseClass, resolveEnumValue, resolveImportedFile, resolveLiteral, resolveProvidersRequiringFactory, ResourceLoader, toFactoryMetadata, wrapFunctionExpressionsInParens} from '../../common';
 import {extractDirectiveMetadata, parseFieldArrayValue} from '../../directive';
 import {NgModuleSymbol} from '../../ng_module';
 
 import {checkCustomElementSelectorForErrors, makeCyclicImportInfo} from './diagnostics';
-import {ComponentAnalysisData, ComponentResolutionData,} from './metadata';
+import {ComponentAnalysisData, ComponentResolutionData} from './metadata';
 import {_extractTemplateStyleUrls, extractComponentStyleUrls, extractStyleResources, extractTemplate, makeResourceNotFoundError, ParsedTemplateWithSource, parseTemplateDeclaration, preloadAndParseTemplate, ResourceTypeForDiagnostics, StyleUrlMeta, transformDecoratorToInlineResources} from './resources';
+import {scopeTemplate} from './scope';
 import {ComponentSymbol} from './symbol';
 import {collectAnimationNames} from './util';
 
@@ -501,19 +503,17 @@ export class ComponentDecoratorHandler implements
       return {};
     }
 
-    const context = node.getSourceFile();
-    // Check whether this component was registered with an NgModule. If so, it should be compiled
-    // under that module's compilation scope.
-    const scope = this.scopeReader.getScopeForComponent(node);
-    let metadata = analysis.meta as Readonly<R3ComponentMetadata>;
+    const context = getSourceFile(node);
+    const metadata = analysis.meta as Readonly<R3ComponentMetadata>;
 
     const data: ComponentResolutionData = {
       directives: EMPTY_ARRAY,
       pipes: EMPTY_MAP,
       declarationListEmitMode: DeclarationListEmitMode.Direct,
     };
+    const scope = scopeTemplate(this.scopeReader, node, this.usePoisonedData);
 
-    if (scope !== null && (!scope.compilation.isPoisoned || this.usePoisonedData)) {
+    if (scope !== null) {
       // Replace the empty components and directives from the analyze() step with a fully expanded
       // scope. This is possible now because during resolve() the whole compilation unit has been
       // fully analyzed.
@@ -534,20 +534,19 @@ export class ComponentDecoratorHandler implements
       // is an alternative implementation of template matching which is used for template
       // type-checking and will eventually replace matching in the TemplateDefinitionBuilder.
 
-
       // Set up the R3TargetBinder, as well as a 'directives' array and a 'pipes' map that are
       // later fed to the TemplateDefinitionBuilder. First, a SelectorMatcher is constructed to
       // match directives that are in scope.
       type MatchedDirective = DirectiveMeta&{selector: string};
       const matcher = new SelectorMatcher<MatchedDirective>();
 
-      for (const dir of scope.compilation.directives) {
+      for (const dir of scope.directives) {
         if (dir.selector !== null) {
           matcher.addSelectables(CssSelector.parse(dir.selector), dir as MatchedDirective);
         }
       }
       const pipes = new Map<string, Reference<ClassDeclaration>>();
-      for (const pipe of scope.compilation.pipes) {
+      for (const pipe of scope.pipes) {
         pipes.set(pipe.name, pipe.ref);
       }
 
@@ -739,7 +738,8 @@ export class ComponentDecoratorHandler implements
     }
 
     // Update any external stylesheets and rebuild the combined 'styles' list.
-    // TODO(alxhub): write tests for styles when the primary compiler uses the updateResources path
+    // TODO(alxhub): write tests for styles when the primary compiler uses the updateResources
+    // path
     let styles: string[] = [];
     if (analysis.styleUrls !== null) {
       for (const styleUrl of analysis.styleUrls) {
