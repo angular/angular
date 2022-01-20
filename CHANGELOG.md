@@ -1,3 +1,49 @@
+<a name="13.2.0-rc.0"></a>
+# 13.2.0-rc.0 (2022-01-19)
+## Deprecations
+### 
+- The `CachedResourceLoader` and `RESOURCE_CACHE_PROVIDER` symbols were previously necessary in some cases to test AOT-compiled components with View Engine, but they are no longer needed since Ivy.
+
+- The `ComponentFactory` and `ComponentFactoryResolver` classes are deprecated. Since Ivy, there is no need to resolve Component factories. Please use other APIs where you Component classes can be used directly (without resolving their factories).
+
+- Since Ivy, the CompilerOptions.useJit and CompilerOptions.missingTranslation config options are unused, passing them has no effect.
+
+- tap operator subscribe signature is deprecated
+
+Instead of passing separate callback arguments, use an observer argument. Signatures taking separate callback arguments will be removed in v8. Details: https://rxjs.dev/deprecations/subscribe-arguments
+### 
+| Commit | Type | Description |
+| -- | -- | -- |
+| [9c11183e74](https://github.com/angular/angular/commit/9c11183e74980b12c3c5712df174e90af6f19027) | docs | deprecate `CachedResourceLoader` and `RESOURCE_CACHE_PROVIDER` symbols ([#44749](https://github.com/angular/angular/pull/44749)) |
+| [9f12e7fea4](https://github.com/angular/angular/commit/9f12e7fea434c6d33e1155994e2c228d51520744) | docs | deprecate `ComponentFactory` and `ComponentFactoryResolver` symbols ([#44749](https://github.com/angular/angular/pull/44749)) |
+| [4e95a316ce](https://github.com/angular/angular/commit/4e95a316cef35a771cd8168e3a744eb6bd7f1615) | docs | deprecate unused config options from the `CompilerOptions` interface ([#44749](https://github.com/angular/angular/pull/44749)) |
+| [34d2292323](https://github.com/angular/angular/commit/34d2292323a5b5c0751a5f2a3c85ccfe4427bfb5) | docs | update deprecated form of the tap operator in http example ([#44738](https://github.com/angular/angular/pull/44738)) |
+### animations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [adc487fb75](https://github.com/angular/angular/commit/adc487fb75f835440c345db2e297b31a6e6aed12) | fix | apply setStyles to only rootTimelines ([#44515](https://github.com/angular/angular/pull/44515)) |
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [ed21f5c753](https://github.com/angular/angular/commit/ed21f5c75378e1ce717ee3d76d28c8c994209de1) | feat | add injector input to ngTemplateOutlet ([#44761](https://github.com/angular/angular/pull/44761)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [fa835b5a29](https://github.com/angular/angular/commit/fa835b5a297087087eac2750b662096ed5492cb6) | feat | enable extended diagnostics by default ([#44712](https://github.com/angular/angular/pull/44712)) |
+| [5efebf87be](https://github.com/angular/angular/commit/5efebf87be0955220f07c706cb83efba45532cd0) | perf | reduce analysis work during incremental rebuilds ([#44731](https://github.com/angular/angular/pull/44731)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b49ffcd50e](https://github.com/angular/angular/commit/b49ffcd50e46ca7907ee2049f6cade8e080f5980) | feat | allow for injector to be specified when creating an embedded view ([#44666](https://github.com/angular/angular/pull/44666)) |
+### ngcc
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b66e479cdb](https://github.com/angular/angular/commit/b66e479cdb1e474a29ff676f10a5fcc3d7eae799) | fix | support element accesses for export declarations ([#44669](https://github.com/angular/angular/pull/44669)) |
+## Special Thanks
+Alan Agius, Andrew Kushnir, AnkitSharma-007, Daniel Díaz, Derek Cormier, Dmytro Mezhenskyi, Doug Parker, Dylan Hunn, Jessica Janiuk, Joey Perrott, JoostK, Kristiyan Kostadinov, Ramesh Thiruchelvam, Yousaf Nawaz, dario-piotrowicz, iRealNirmal, shejialuo and Łukasz Holeczek
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="13.1.3"></a>
 # 13.1.3 (2022-01-19)
 ### animations
