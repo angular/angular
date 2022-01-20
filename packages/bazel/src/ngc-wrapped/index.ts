@@ -410,7 +410,7 @@ export function compile({
   const hasError = diagnostics.some((diag) => diag.category === ts.DiagnosticCategory.Error);
   if (!hasError) {
     if (bazelOpts.tsickleGenerateExterns) {
-      externs += tsickle.getGeneratedExterns(tsickleEmitResult.externs);
+      externs += tsickle.getGeneratedExterns(tsickleEmitResult.externs, compilerOpts.rootDir!);
     }
     if (bazelOpts.manifest) {
       const manifest = constructManifest(tsickleEmitResult.modulesManifest, bazelHost);
