@@ -43,8 +43,7 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatIconButton extends MatButtonBase {
-  // Set the ripple to be centered for icon buttons
-  override _isRippleCentered = true;
+  override _isIconButton = true;
 
   constructor(
     elementRef: ElementRef,
@@ -72,8 +71,7 @@ export class MatIconButton extends MatButtonBase {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatIconAnchor extends MatAnchorBase {
-  // Set the ripple to be centered for icon buttons
-  override _isRippleCentered = true;
+  override _isIconButton = true;
 
   constructor(
     elementRef: ElementRef,

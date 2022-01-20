@@ -1,15 +1,48 @@
 @use '@material/fab' as mdc-fab;
+@use '@material/elevation/elevation-theme' as mdc-elevation-theme;
 @use '../../material/core/style/private';
 @use '../mdc-helpers/mdc-helpers';
-@use 'button-base';
+@use './button-base';
 
-@include mdc-fab.without-ripple($query: mdc-helpers.$mat-base-styles-query);
+@include mdc-helpers.disable-fallback-declarations {
+  @include mdc-fab.without-ripple($query: mdc-helpers.$mat-base-styles-query);
+}
 
 .mat-mdc-fab, .mat-mdc-mini-fab {
   @include button-base.mat-private-button-interactive();
-  @include button-base.mat-private-button-disabled();
   @include button-base.mat-private-button-touch-target(true);
   @include private.private-animation-noop();
+
+  @include mdc-helpers.disable-fallback-declarations {
+    // Theme configuration is copied over from MDC, because it isn't exported
+    @include mdc-fab.theme-styles(button-base.mat-private-button-remove-ripple((
+      container-color: transparent,
+      container-shape: mdc-fab.$shape-radius,
+      icon-color: inherit,
+    )));
+
+    // TODO(crisbeto): the elevation can be controlled using `container-elevation` in `theme-styles`
+    // however when it is passed in, MDC throws an error that `container-shadow-color` isn't
+    // passed in. When `container-shadow-color` is passed in, MDC throws another error, because
+    // the produced value isn't valid CSS. Eventually we should switch to it once it's fixed.
+    @include mdc-elevation-theme.elevation(6);
+
+    &:hover, &:focus {
+      @include mdc-elevation-theme.elevation(8);
+    }
+
+    &:active, &:focus:active {
+      @include mdc-elevation-theme.elevation(12);
+    }
+
+    @include button-base.mat-private-button-disabled {
+      @include mdc-elevation-theme.elevation(0);
+    }
+  }
+
+  // TODO(crisbeto): `theme-styles` doesn't allow for the color to be controlled. Define a custom
+  // variable for now so we have something to target.
+  color: var(--mat-mdc-fab-color, inherit);
 
   // Prevent the button from shrinking since it's always supposed to be a circle.
   flex-shrink: 0;

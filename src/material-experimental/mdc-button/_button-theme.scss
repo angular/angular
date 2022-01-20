@@ -1,146 +1,181 @@
+@use 'sass:map';
 @use '@material/button/button' as mdc-button;
 @use '@material/button/button-theme' as mdc-button-theme;
-@use '@material/ripple/ripple-theme' as mdc-ripple-theme;
+@use '@material/button/button-text-theme' as mdc-button-text-theme;
+@use '@material/button/button-filled-theme' as mdc-button-filled-theme;
+@use '@material/button/button-protected-theme' as mdc-button-protected-theme;
+@use '@material/button/button-outlined-theme' as mdc-button-outlined-theme;
 @use '@material/theme/theme-color' as mdc-theme-color;
-@use '@material/theme/theme' as mdc-theme;
-@use '@material/elevation/elevation-theme' as mdc-elevation-theme;
-@use '../../material/core/ripple/ripple-theme';
 @use '../../material/core/typography/typography';
 @use '../mdc-helpers/mdc-helpers';
 @use '../../material/core/theming/theming';
 @use './button-theme-private';
 
+@mixin _button-variant($color) {
+  @include mdc-button-text-theme.theme((
+    label-text-color: $color,
+  ));
+}
+
+@mixin _unelevated-button-variant($foreground, $background) {
+  @include mdc-button-filled-theme.theme((
+    container-color: $background,
+    label-text-color: $foreground,
+  ));
+}
+
+@mixin _raised-button-variant($foreground, $background) {
+  @include mdc-button-protected-theme.theme((
+    container-color: $background,
+    label-text-color: $foreground,
+  ));
+}
+
+@mixin _outlined-button-variant($color) {
+  @include mdc-button-outlined-theme.theme((
+    label-text-color: $color,
+    outline-color: $color,
+  ));
+}
+
 @mixin color($config-or-theme) {
   $config: theming.get-color-config($config-or-theme);
   @include mdc-helpers.mat-using-mdc-theme($config) {
-    // Add state interactions for hover, focus, press, active. Colors are changed based on
-    // the mixin mdc-states-base-color
-    .mat-mdc-button, .mat-mdc-raised-button, .mat-mdc-unelevated-button, .mat-mdc-outlined-button {
-      @include mdc-ripple-theme.states(
-        $query: mdc-helpers.$mat-theme-styles-query,
-        $ripple-target: button-theme-private.$button-state-target);
-    }
+    $is-dark: map.get($config, is-dark);
+    $on-surface: mdc-theme-color.prop-value(on-surface);
+    $surface: mdc-theme-color.prop-value(surface);
+    $disabled-ink-color: rgba($on-surface, if($is-dark, 0.5, 0.38));
+    $disabled-container-color: rgba($on-surface, 0.12);
+    $primary: mdc-theme-color.prop-value(primary);
+    $on-primary: mdc-theme-color.prop-value(on-primary);
+    $secondary: mdc-theme-color.prop-value(secondary);
+    $on-secondary: mdc-theme-color.prop-value(on-secondary);
+    $error: mdc-theme-color.prop-value(error);
+    $on-error: mdc-theme-color.prop-value(on-error);
 
-    .mat-mdc-button, .mat-mdc-outlined-button {
+    .mat-mdc-button {
       &.mat-unthemed {
-        @include mdc-button-theme.ink-color(mdc-theme-color.$on-surface,
-          $query: mdc-helpers.$mat-theme-styles-query);
+        @include _button-variant($on-surface);
       }
 
       &.mat-primary {
-        @include mdc-button-theme.ink-color(primary, $query: mdc-helpers.$mat-theme-styles-query);
-        @include mdc-ripple-theme.states-base-color(primary,
-          $query: mdc-helpers.$mat-theme-styles-query,
-          $ripple-target: button-theme-private.$button-state-target);
-        @include button-theme-private.ripple-ink-color(primary);
+        @include _button-variant($primary);
       }
 
       &.mat-accent {
-        @include mdc-button-theme.ink-color(secondary, $query: mdc-helpers.$mat-theme-styles-query);
-        @include mdc-ripple-theme.states-base-color(secondary,
-          $query: mdc-helpers.$mat-theme-styles-query,
-          $ripple-target: button-theme-private.$button-state-target);
-        @include button-theme-private.ripple-ink-color(secondary);
+        @include _button-variant($secondary);
       }
 
       &.mat-warn {
-        @include mdc-button-theme.ink-color(error, $query: mdc-helpers.$mat-theme-styles-query);
-        @include mdc-ripple-theme.states-base-color(error,
-          $query: mdc-helpers.$mat-theme-styles-query,
-          $ripple-target: button-theme-private.$button-state-target);
-        @include button-theme-private.ripple-ink-color(error);
-      }
-    }
-
-    .mat-mdc-raised-button,
-    .mat-mdc-unelevated-button {
-      &.mat-unthemed {
-        @include mdc-button-theme.container-fill-color(mdc-theme-color.$surface,
-          $query: mdc-helpers.$mat-theme-styles-query);
-        @include mdc-button-theme.ink-color(mdc-theme-color.$on-surface,
-          $query: mdc-helpers.$mat-theme-styles-query);
-        @include mdc-ripple-theme.states-base-color(mdc-theme-color.$on-surface,
-          $query: mdc-helpers.$mat-theme-styles-query,
-          $ripple-target: button-theme-private.$button-state-target);
-      }
-
-      &.mat-primary {
-        @include mdc-button-theme.container-fill-color(primary,
-          $query: mdc-helpers.$mat-theme-styles-query);
-        @include mdc-button-theme.ink-color(on-primary,
-          $query: mdc-helpers.$mat-theme-styles-query);
-        @include mdc-ripple-theme.states-base-color(on-primary,
-          $query: mdc-helpers.$mat-theme-styles-query,
-          $ripple-target: button-theme-private.$button-state-target);
-        @include button-theme-private.ripple-ink-color(on-primary);
-      }
-
-      &.mat-accent {
-        @include mdc-button-theme.container-fill-color(secondary,
-          $query: mdc-helpers.$mat-theme-styles-query);
-        @include mdc-button-theme.ink-color(on-secondary,
-          $query: mdc-helpers.$mat-theme-styles-query);
-        @include mdc-ripple-theme.states-base-color(on-secondary,
-          $query: mdc-helpers.$mat-theme-styles-query,
-          $ripple-target: button-theme-private.$button-state-target);
-        @include button-theme-private.ripple-ink-color(on-secondary);
-      }
-
-      &.mat-warn {
-        @include mdc-button-theme.container-fill-color(error,
-          $query: mdc-helpers.$mat-theme-styles-query);
-        @include mdc-button-theme.ink-color(on-error, $query: mdc-helpers.$mat-theme-styles-query);
-        @include mdc-ripple-theme.states-base-color(on-error,
-          $query: mdc-helpers.$mat-theme-styles-query,
-          $ripple-target: button-theme-private.$button-state-target);
-        @include button-theme-private.ripple-ink-color(on-error);
+        @include _button-variant($error);
       }
 
       @include button-theme-private.apply-disabled-style() {
-        @include button-theme-private.apply-disabled-background();
+        @include mdc-button-text-theme.theme((
+          // We need to pass both the disabled and enabled values, because the enabled
+          // ones apply to anchors while the disabled ones are for buttons.
+          disabled-label-text-color: $disabled-ink-color,
+          label-text-color: $disabled-ink-color
+        ));
+      }
+    }
+
+    .mat-mdc-unelevated-button {
+      &.mat-unthemed {
+        @include _unelevated-button-variant($on-surface, $surface);
+      }
+
+      &.mat-primary {
+        @include _unelevated-button-variant($on-primary, $primary);
+      }
+
+      &.mat-accent {
+        @include _unelevated-button-variant($on-secondary, $secondary);
+      }
+
+      &.mat-warn {
+        @include _unelevated-button-variant($on-error, $error);
+      }
+
+      @include button-theme-private.apply-disabled-style() {
+        @include mdc-button-filled-theme.theme((
+          // We need to pass both the disabled and enabled values, because the enabled
+          // ones apply to anchors while the disabled ones are for buttons.
+          disabled-container-color: $disabled-container-color,
+          disabled-label-text-color: $disabled-ink-color,
+          container-color: $disabled-container-color,
+          label-text-color: $disabled-ink-color,
+        ));
+      }
+    }
+
+    .mat-mdc-raised-button {
+      &.mat-unthemed {
+        @include _raised-button-variant($on-surface, $surface);
+      }
+
+      &.mat-primary {
+        @include _raised-button-variant($on-primary, $primary);
+      }
+
+      &.mat-accent {
+        @include _raised-button-variant($on-secondary, $secondary);
+      }
+
+      &.mat-warn {
+        @include _raised-button-variant($on-error, $error);
+      }
+
+      @include button-theme-private.apply-disabled-style() {
+        @include mdc-button-protected-theme.theme((
+          // We need to pass both the disabled and enabled values, because the enabled
+          // ones apply to anchors while the disabled ones are for buttons.
+          disabled-container-color: $disabled-container-color,
+          disabled-label-text-color: $disabled-ink-color,
+          container-color: $disabled-container-color,
+          label-text-color: $disabled-ink-color,
+          container-elevation: 0,
+        ));
       }
     }
 
     .mat-mdc-outlined-button {
       &.mat-unthemed {
-        @include mdc-button-theme.outline-color(mdc-theme-color.$on-surface,
-          $query: mdc-helpers.$mat-theme-styles-query);
+        @include _outlined-button-variant($on-surface);
       }
 
       &.mat-primary {
-        @include mdc-button-theme.outline-color(primary,
-          $query: mdc-helpers.$mat-theme-styles-query);
+        @include _outlined-button-variant($primary);
       }
 
       &.mat-accent {
-        @include mdc-button-theme.outline-color(secondary,
-          $query: mdc-helpers.$mat-theme-styles-query);
+        @include _outlined-button-variant($secondary);
       }
 
       &.mat-warn {
-        @include mdc-button-theme.outline-color(error,
-          $query: mdc-helpers.$mat-theme-styles-query);
+        @include _outlined-button-variant($error);
       }
 
       @include button-theme-private.apply-disabled-style() {
-        @include mdc-theme.prop(border-color,
-            mdc-theme-color.ink-color-for-fill_(disabled, mdc-theme-color.$background));
+        @include mdc-button-outlined-theme.theme((
+          // We need to pass both the disabled and enabled values, because the enabled
+          // ones apply to anchors while the disabled ones are for buttons.
+          label-text-color: $disabled-ink-color,
+          outline-color: $disabled-ink-color,
+          disabled-label-text-color: $disabled-ink-color,
+          disabled-outline-color: $disabled-ink-color,
+        ));
       }
     }
 
-    .mat-mdc-raised-button {
-      @include button-theme-private.apply-disabled-style() {
-        @include mdc-elevation-theme.elevation(0, $query: mdc-helpers.$mat-theme-styles-query);
-      }
+    // Ripple colors
+    .mat-mdc-button, .mat-mdc-outlined-button {
+      @include button-theme-private.ripple-theme-styles($config, false);
     }
 
-    .mat-mdc-button, .mat-mdc-raised-button, .mat-mdc-unelevated-button, .mat-mdc-outlined-button {
-      @include button-theme-private.apply-disabled-style() {
-        @include button-theme-private.apply-disabled-color();
-      }
+    .mat-mdc-raised-button, .mat-mdc-unelevated-button {
+      @include button-theme-private.ripple-theme-styles($config, true);
     }
-
-    @include mdc-button.without-ripple($query: mdc-helpers.$mat-theme-styles-query);
   }
 }
 

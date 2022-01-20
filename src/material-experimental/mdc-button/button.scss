@@ -1,10 +1,55 @@
+@use 'sass:map';
 @use '@material/button/button' as mdc-button;
+@use '@material/button/button-base' as mdc-button-base;
 @use '@material/button/variables' as mdc-button-variables;
+@use '@material/button/button-text-theme' as mdc-button-text-theme;
+@use '@material/button/button-filled-theme' as mdc-button-filled-theme;
+@use '@material/button/button-protected-theme' as mdc-button-protected-theme;
+@use '@material/button/button-outlined-theme' as mdc-button-outlined-theme;
 @use '../../material/core/style/private';
 @use '../mdc-helpers/mdc-helpers';
 @use 'button-base';
 
-@include mdc-button.without-ripple($query: mdc-helpers.$mat-base-styles-query);
+@include mdc-helpers.disable-fallback-declarations {
+  @include mdc-button.static-styles-without-ripple($query: mdc-helpers.$mat-base-styles-query);
+
+  // Keys to exclude from the MDC theme config, allowing us to drop styles we don't need.
+  $override-keys: button-base.mat-private-button-remove-ripple((
+    label-text-font: null,
+    label-text-size: null,
+    label-text-tracking: null,
+    label-text-transform: null,
+    label-text-weight: null,
+    with-icon-icon-size: null,
+    label-text-color: inherit,
+  ));
+
+  // Note that we don't include a feature query, because this mixins declare
+  // all the "slots" for CSS variables that will be defined in the theme.
+  .mat-mdc-button {
+    @include mdc-button-text-theme.theme-styles(
+      map.merge(mdc-button-text-theme.$light-theme, $override-keys));
+  }
+
+  .mat-mdc-unelevated-button {
+    @include mdc-button-filled-theme.theme-styles(
+      map.merge(map.merge(mdc-button-filled-theme.$light-theme, $override-keys), (
+        container-color: transparent,
+      )));
+  }
+
+  .mat-mdc-raised-button {
+    @include mdc-button-protected-theme.theme-styles(
+      map.merge(map.merge(mdc-button-protected-theme.$light-theme, $override-keys), (
+        container-color: transparent,
+      )));
+  }
+
+  .mat-mdc-outlined-button {
+    @include mdc-button-outlined-theme.theme-styles(
+      map.merge(mdc-button-outlined-theme.$light-theme, $override-keys));
+  }
+}
 
 .mat-mdc-button,
 .mat-mdc-unelevated-button,
@@ -24,10 +69,10 @@
 // mixins will style the icons appropriately.
 .mat-mdc-button {
   .mat-icon {
-    @include mdc-button.icon();
+    @include mdc-button-base.icon();
   }
   .mdc-button__label + .mat-icon {
-    @include mdc-button.icon-trailing();
+    @include mdc-button-base.icon-trailing();
   }
 }
 
@@ -36,12 +81,12 @@
 .mat-mdc-outlined-button {
   // Icons inside contained buttons have different styles due to increased button padding
   .mat-icon {
-    @include mdc-button.icon();
-    @include mdc-button.icon-contained();
+    @include mdc-button-base.icon();
+    @include mdc-button-base.icon-contained();
   }
 
   .mdc-button__label + .mat-icon {
-    @include mdc-button.icon-contained-trailing();
+    @include mdc-button-base.icon-contained-trailing();
   }
 }
 

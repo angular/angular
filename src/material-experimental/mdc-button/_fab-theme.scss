@@ -1,68 +1,62 @@
+@use 'sass:map';
 @use '@material/fab/fab' as mdc-fab;
 @use '@material/fab/fab-theme' as mdc-fab-theme;
-@use '@material/ripple/ripple-theme' as mdc-ripple-theme;
-@use '@material/elevation/elevation-theme' as mdc-elevation-theme;
 @use '@material/theme/theme-color' as mdc-theme-color;
 @use '../mdc-helpers/mdc-helpers';
 @use '../../material/core/theming/theming';
 @use '../../material/core/typography/typography';
 @use './button-theme-private';
 
+@mixin _fab-variant($foreground, $background) {
+  @include mdc-fab-theme.theme((
+    container-color: $background,
+    icon-color: $foreground,
+  ));
+
+  --mat-mdc-fab-color: #{$foreground};
+}
+
 @mixin color($config-or-theme) {
   $config: theming.get-color-config($config-or-theme);
   @include mdc-helpers.mat-using-mdc-theme($config) {
+    $on-surface: mdc-theme-color.prop-value(on-surface);
+    $is-dark: map.get($config, is-dark);
+
     .mat-mdc-fab, .mat-mdc-mini-fab {
-      @include mdc-ripple-theme.states(
-          $query: mdc-helpers.$mat-theme-styles-query,
-          $ripple-target: button-theme-private.$fab-state-target);
+      @include button-theme-private.ripple-theme-styles($config, true);
 
       &.mat-unthemed {
-        @include mdc-ripple-theme.states-base-color(mdc-theme-color.$on-surface,
-          $query: mdc-helpers.$mat-theme-styles-query,
-          $ripple-target: button-theme-private.$fab-state-target);
-        @include mdc-fab-theme.container-color(mdc-theme-color.$on-surface,
-          $query: mdc-helpers.$mat-theme-styles-query);
-        @include mdc-fab-theme.ink-color(mdc-theme-color.$on-surface,
-          $query: mdc-helpers.$mat-theme-styles-query);
+        @include _fab-variant($on-surface, mdc-theme-color.prop-value(surface));
       }
 
       &.mat-primary {
-        @include mdc-ripple-theme.states-base-color(on-primary,
-          $query: mdc-helpers.$mat-theme-styles-query,
-          $ripple-target: button-theme-private.$fab-state-target);
-        @include mdc-fab-theme.container-color(primary,
-          $query: mdc-helpers.$mat-theme-styles-query);
-        @include mdc-fab-theme.ink-color(on-primary, $query: mdc-helpers.$mat-theme-styles-query);
-        @include button-theme-private.ripple-ink-color(on-primary);
+        @include _fab-variant(
+          mdc-theme-color.prop-value(on-primary),
+          mdc-theme-color.prop-value(primary)
+        );
       }
 
       &.mat-accent {
-        @include mdc-ripple-theme.states-base-color(on-secondary,
-          $query: mdc-helpers.$mat-theme-styles-query,
-          $ripple-target: button-theme-private.$fab-state-target);
-        @include mdc-fab-theme.container-color(secondary,
-          $query: mdc-helpers.$mat-theme-styles-query);
-        @include mdc-fab-theme.ink-color(on-secondary, $query: mdc-helpers.$mat-theme-styles-query);
-        @include button-theme-private.ripple-ink-color(on-secondary);
+        @include _fab-variant(
+          mdc-theme-color.prop-value(on-secondary),
+          mdc-theme-color.prop-value(secondary)
+        );
       }
 
       &.mat-warn {
-        @include mdc-ripple-theme.states-base-color(on-error,
-          $query: mdc-helpers.$mat-theme-styles-query,
-          $ripple-target: button-theme-private.$fab-state-target);
-        @include mdc-fab-theme.container-color(error, $query: mdc-helpers.$mat-theme-styles-query);
-        @include mdc-fab-theme.ink-color(on-error, $query: mdc-helpers.$mat-theme-styles-query);
-        @include button-theme-private.ripple-ink-color(on-error);
+        @include _fab-variant(
+          mdc-theme-color.prop-value(on-error),
+          mdc-theme-color.prop-value(error)
+        );
       }
 
       @include button-theme-private.apply-disabled-style() {
-        @include button-theme-private.apply-disabled-color();
-        @include button-theme-private.apply-disabled-background();
-        @include mdc-elevation-theme.elevation(0, $query: mdc-helpers.$mat-theme-styles-query);
+        @include _fab-variant(
+          rgba($on-surface, if(map.get($config, is-dark), 0.5, 0.38)),
+          rgba($on-surface, 0.12)
+        );
       }
     }
-
-    @include mdc-fab.without-ripple($query: mdc-helpers.$mat-theme-styles-query);
   }
 }
 
