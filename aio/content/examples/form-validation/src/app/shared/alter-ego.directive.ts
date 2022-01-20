@@ -10,8 +10,19 @@ import { HeroesService } from './heroes.service';
 import { Observable, of } from 'rxjs';
 
 // #docregion async-validator
-@Injectable({ providedIn: 'root' })
-export class UniqueAlterEgoValidator implements AsyncValidator {
+// #docregion async-validator-directive
+@Directive({
+  selector: '[appUniqueAlterEgo]',
+  providers: [
+    {
+      provide: NG_ASYNC_VALIDATORS,
+      useExisting: forwardRef(() => UniqueAlterEgoValidator),
+      multi: true
+    }
+  ]
+})
+// #enddocregion async-validator-directive
+export class UniqueAlterEgoValidatorDirective implements AsyncValidator {
   constructor(private heroesService: HeroesService) {}
 
   validate(
@@ -24,21 +35,3 @@ export class UniqueAlterEgoValidator implements AsyncValidator {
   }
 }
 // #enddocregion async-validator
-
-@Directive({
-  selector: '[appUniqueAlterEgo]',
-  providers: [
-    {
-      provide: NG_ASYNC_VALIDATORS,
-      useExisting: forwardRef(() => UniqueAlterEgoValidator),
-      multi: true
-    }
-  ]
-})
-export class UniqueAlterEgoValidatorDirective {
-  constructor(private validator: UniqueAlterEgoValidator) {}
-
-  validate(control: AbstractControl) {
-    this.validator.validate(control);
-  }
-}

@@ -25,10 +25,12 @@ export class HeroFormReactiveComponent implements OnInit {
         Validators.minLength(4),
         forbiddenNameValidator(/bob/i)
       ]),
+      // #docregion async-validator
       alterEgo: new FormControl(this.hero.alterEgo, {
         asyncValidators: [this.alterEgoValidator.validate.bind(this.alterEgoValidator)],
         updateOn: 'blur'
       }),
+      // #enddocregion async-validator
       power: new FormControl(this.hero.power, Validators.required)
     });
   }
