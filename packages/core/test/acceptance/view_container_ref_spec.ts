@@ -197,10 +197,6 @@ describe('ViewContainerRef', () => {
             declarations: [TestComp, SvgComp, MathMLComp],
             providers: [
               {provide: DOCUMENT, useFactory: _document, deps: []},
-              // TODO(FW-811): switch back to default server renderer (i.e. remove the line below)
-              // once it starts to support Ivy namespace format (URIs) correctly. For now, use
-              // `DomRenderer` that supports Ivy namespace format.
-              {provide: RendererFactory2, useClass: DomRendererFactory2}
             ],
           });
           const fixture = TestBed.createComponent(TestComp);

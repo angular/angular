@@ -72,8 +72,6 @@ class DefaultServerRenderer2 implements Renderer2 {
   createElement(name: string, namespace?: string, debugInfo?: any): any {
     if (namespace) {
       const doc = this.document || getDOM().getDefaultDocument();
-      // TODO(FW-811): Ivy may cause issues here because it's passing around
-      // full URIs for namespaces, therefore this lookup will fail.
       return doc.createElementNS(NAMESPACE_URIS[namespace], name);
     }
 
@@ -131,8 +129,6 @@ class DefaultServerRenderer2 implements Renderer2 {
 
   setAttribute(el: any, name: string, value: string, namespace?: string): void {
     if (namespace) {
-      // TODO(FW-811): Ivy may cause issues here because it's passing around
-      // full URIs for namespaces, therefore this lookup will fail.
       el.setAttributeNS(NAMESPACE_URIS[namespace], namespace + ':' + name, value);
     } else {
       el.setAttribute(name, value);
@@ -141,8 +137,6 @@ class DefaultServerRenderer2 implements Renderer2 {
 
   removeAttribute(el: any, name: string, namespace?: string): void {
     if (namespace) {
-      // TODO(FW-811): Ivy may cause issues here because it's passing around
-      // full URIs for namespaces, therefore this lookup will fail.
       el.removeAttributeNS(NAMESPACE_URIS[namespace], name);
     } else {
       el.removeAttribute(name);
