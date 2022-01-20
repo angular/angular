@@ -1271,6 +1271,7 @@ groups:
           'docs/NAMING.md',
           'aio/content/guide/angular-package-format.md',
           'aio/content/errors/*.md',
+          'aio/content/extended-diagnostics/*.md',
           'aio/content/guide/glossary.md',
           'aio/content/guide/styleguide.md',
           'aio/content/examples/errors/**',
