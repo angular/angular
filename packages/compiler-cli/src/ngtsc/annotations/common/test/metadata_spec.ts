@@ -8,12 +8,12 @@
 import {compileClassMetadata} from '@angular/compiler';
 import ts from 'typescript';
 
-import {absoluteFrom, getSourceFileOrError} from '../../file_system';
-import {runInEachFileSystem, TestFile} from '../../file_system/testing';
-import {NoopImportRewriter} from '../../imports';
-import {TypeScriptReflectionHost} from '../../reflection';
-import {getDeclaration, makeProgram} from '../../testing';
-import {ImportManager, translateStatement} from '../../translator';
+import {absoluteFrom, getSourceFileOrError} from '../../../file_system';
+import {runInEachFileSystem, TestFile} from '../../../file_system/testing';
+import {NoopImportRewriter} from '../../../imports';
+import {TypeScriptReflectionHost} from '../../../reflection';
+import {getDeclaration, makeProgram} from '../../../testing';
+import {ImportManager, translateStatement} from '../../../translator';
 import {extractClassMetadata} from '../src/metadata';
 
 runInEachFileSystem(() => {

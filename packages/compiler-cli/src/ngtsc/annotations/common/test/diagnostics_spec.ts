@@ -8,11 +8,11 @@
 
 import ts from 'typescript';
 
-import {absoluteFrom as _, getSourceFileOrError} from '../../file_system';
-import {runInEachFileSystem, TestFile} from '../../file_system/testing';
-import {PartialEvaluator} from '../../partial_evaluator';
-import {TypeScriptReflectionHost} from '../../reflection';
-import {getDeclaration, makeProgram} from '../../testing';
+import {absoluteFrom as _, getSourceFileOrError} from '../../../file_system';
+import {runInEachFileSystem, TestFile} from '../../../file_system/testing';
+import {PartialEvaluator} from '../../../partial_evaluator';
+import {TypeScriptReflectionHost} from '../../../reflection';
+import {getDeclaration, makeProgram} from '../../../testing';
 import {createValueHasWrongTypeError} from '../src/diagnostics';
 
 runInEachFileSystem(() => {

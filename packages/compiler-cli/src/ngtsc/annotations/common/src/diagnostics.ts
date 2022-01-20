@@ -8,15 +8,46 @@
 
 import ts from 'typescript';
 
-import {ErrorCode, FatalDiagnosticError, makeDiagnostic, makeRelatedInformation} from '../../diagnostics';
-import {Reference} from '../../imports';
-import {InjectableClassRegistry, MetadataReader} from '../../metadata';
-import {describeResolvedType, DynamicValue, PartialEvaluator, ResolvedValue, traceDynamicValue} from '../../partial_evaluator';
-import {ClassDeclaration, ReflectionHost} from '../../reflection';
-import {LocalModuleScopeRegistry} from '../../scope';
-import {identifierOfNode} from '../../util/src/typescript';
+import {ErrorCode, FatalDiagnosticError, makeDiagnostic, makeRelatedInformation} from '../../../diagnostics';
+import {Reference} from '../../../imports';
+import {InjectableClassRegistry, MetadataReader} from '../../../metadata';
+import {describeResolvedType, DynamicValue, PartialEvaluator, ResolvedValue, traceDynamicValue} from '../../../partial_evaluator';
+import {ClassDeclaration, ReflectionHost} from '../../../reflection';
+import {DeclarationData, LocalModuleScopeRegistry} from '../../../scope';
+import {identifierOfNode} from '../../../util/src/typescript';
 
-import {makeDuplicateDeclarationError, readBaseClass} from './util';
+import {readBaseClass} from './util';
+
+
+/**
+ * Create a `ts.Diagnostic` which indicates the given class is part of the declarations of two or
+ * more NgModules.
+ *
+ * The resulting `ts.Diagnostic` will have a context entry for each NgModule showing the point where
+ * the directive/pipe exists in its `declarations` (if possible).
+ */
+export function makeDuplicateDeclarationError(
+    node: ClassDeclaration, data: DeclarationData[], kind: string): ts.Diagnostic {
+  const context: ts.DiagnosticRelatedInformation[] = [];
+  for (const decl of data) {
+    if (decl.rawDeclarations === null) {
+      continue;
+    }
+    // Try to find the reference to the declaration within the declarations array, to hang the
+    // error there. If it can't be found, fall back on using the NgModule's name.
+    const contextNode = decl.ref.getOriginForDiagnostics(decl.rawDeclarations, decl.ngModule.name);
+    context.push(makeRelatedInformation(
+        contextNode,
+        `'${node.name.text}' is listed in the declarations of the NgModule '${
+            decl.ngModule.name.text}'.`));
+  }
+
+  // Finally, produce the diagnostic.
+  return makeDiagnostic(
+      ErrorCode.NGMODULE_DECLARATION_NOT_UNIQUE, node.name,
+      `The ${kind} '${node.name.text}' is declared by more than one NgModule.`, context);
+}
+
 
 /**
  * Creates a `FatalDiagnosticError` for a node that did not evaluate to the expected type. The
