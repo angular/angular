@@ -21,7 +21,7 @@ const latest = () => {
 
 SemVerDSL(VERSION).gte('10.0.0-next.4', latest);
 
-// In g3 everyone has version 0.0.0, using HEAD from master.
+// In g3 everyone has version 0.0.0, using the currently synced commits in the g3 codebase.
 SemVerDSL(VERSION).eq('0.0.0', latest);
 
 const TYPE = 1;
