@@ -11,7 +11,7 @@ import {RuntimeError, RuntimeErrorCode} from '../src/errors';
 describe('RuntimeError utils', () => {
   it('should format the error message correctly', () => {
     // Error with a guide, but without an error message.
-    let errorInstance = new RuntimeError(RuntimeErrorCode.EXPORT_NOT_FOUND, '');
+    let errorInstance = new RuntimeError<RuntimeErrorCode>(RuntimeErrorCode.EXPORT_NOT_FOUND, '');
     expect(errorInstance.toString())
         .toBe('Error: NG0301. Find more at https://angular.io/errors/NG0301');
 

@@ -5,11 +5,11 @@
 ```ts
 
 // @public
-export function formatRuntimeError<T = RuntimeErrorCode>(code: T, message: string): string;
+export function formatRuntimeError<T extends number = RuntimeErrorCode>(code: T, message: null | false | string): string;
 
-// @public (undocumented)
-export class RuntimeError<T = RuntimeErrorCode> extends Error {
-    constructor(code: T, message: string);
+// @public
+export class RuntimeError<T extends number = RuntimeErrorCode> extends Error {
+    constructor(code: T, message: null | false | string);
     // (undocumented)
     code: T;
 }
