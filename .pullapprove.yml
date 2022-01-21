@@ -1218,11 +1218,11 @@ groups:
           ])
     reviewers:
       users:
+        - aleksanderbodurri
+        - devversion
+        - josephperrott
         - mgechev
         - twerske
-        - josephperrott
-        - devversion
-        - aleksanderbodurri
 
   # =========================================================
   #  Dev-infra
