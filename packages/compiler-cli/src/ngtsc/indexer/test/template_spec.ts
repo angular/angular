@@ -889,5 +889,26 @@ runInEachFileSystem(() => {
         }
       ]));
     });
+
+    it('should handle interpolations in attributes, preceded by HTML entity', () => {
+      const template = `<img src="&nbsp;{{foo}}" />`;
+      const refs = getTemplateIdentifiers(bind(template));
+
+      expect(Array.from(refs)).toEqual([
+        {
+          kind: IdentifierKind.Element,
+          name: 'img',
+          span: new AbsoluteSourceSpan(1, 4),
+          usedDirectives: new Set(),
+          attributes: new Set(),
+        },
+        {
+          kind: IdentifierKind.Property,
+          name: 'foo',
+          span: new AbsoluteSourceSpan(18, 21),
+          target: null,
+        }
+      ]);
+    });
   });
 });

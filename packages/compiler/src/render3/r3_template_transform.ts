@@ -11,6 +11,7 @@ import * as i18n from '../i18n/i18n_ast';
 import * as html from '../ml_parser/ast';
 import {replaceNgsp} from '../ml_parser/html_whitespaces';
 import {isNgTemplate} from '../ml_parser/tags';
+import {InterpolatedAttributeToken, InterpolatedTextToken} from '../ml_parser/tokens';
 import {ParseError, ParseErrorLevel, ParseSourceSpan} from '../parse_util';
 import {isStyleUrlResolvable} from '../style_url_resolver';
 import {BindingParser} from '../template_parser/binding_parser';
@@ -255,7 +256,7 @@ class HtmlAstToIvyAst implements html.Visitor {
   }
 
   visitText(text: html.Text): t.Node {
-    return this._visitTextWithInterpolation(text.value, text.sourceSpan, text.i18n);
+    return this._visitTextWithInterpolation(text.value, text.sourceSpan, text.tokens, text.i18n);
   }
 
   visitExpansion(expansion: html.Expansion): t.Icu|null {
@@ -288,7 +289,7 @@ class HtmlAstToIvyAst implements html.Visitor {
 
         vars[formattedKey] = new t.BoundText(ast, value.sourceSpan);
       } else {
-        placeholders[key] = this._visitTextWithInterpolation(value.text, value.sourceSpan);
+        placeholders[key] = this._visitTextWithInterpolation(value.text, value.sourceSpan, null);
       }
     });
     return new t.Icu(vars, placeholders, expansion.sourceSpan, message);
@@ -443,14 +444,17 @@ class HtmlAstToIvyAst implements html.Visitor {
     // No explicit binding found.
     const keySpan = createKeySpan(srcSpan, '' /* prefix */, name);
     const hasBinding = this.bindingParser.parsePropertyInterpolation(
-        name, value, srcSpan, attribute.valueSpan, matchableAttributes, parsedProperties, keySpan);
+        name, value, srcSpan, attribute.valueSpan, matchableAttributes, parsedProperties, keySpan,
+        attribute.valueTokens ?? null);
     return hasBinding;
   }
 
   private _visitTextWithInterpolation(
-      value: string, sourceSpan: ParseSourceSpan, i18n?: i18n.I18nMeta): t.Text|t.BoundText {
+      value: string, sourceSpan: ParseSourceSpan,
+      interpolatedTokens: InterpolatedAttributeToken[]|InterpolatedTextToken[]|null,
+      i18n?: i18n.I18nMeta): t.Text|t.BoundText {
     const valueNoNgsp = replaceNgsp(value);
-    const expr = this.bindingParser.parseInterpolation(valueNoNgsp, sourceSpan);
+    const expr = this.bindingParser.parseInterpolation(valueNoNgsp, sourceSpan, interpolatedTokens);
     return expr ? new t.BoundText(expr, sourceSpan, i18n) : new t.Text(valueNoNgsp, sourceSpan);
   }
 

@@ -52,8 +52,8 @@ describe('I18nContext', () => {
 
     // binding collection checks
     expect(ctx.bindings.size).toBe(0);
-    ctx.appendBinding(expressionParser.parseInterpolation('{{ valueA }}', '', 0) as AST);
-    ctx.appendBinding(expressionParser.parseInterpolation('{{ valueB }}', '', 0) as AST);
+    ctx.appendBinding(expressionParser.parseInterpolation('{{ valueA }}', '', 0, null) as AST);
+    ctx.appendBinding(expressionParser.parseInterpolation('{{ valueB }}', '', 0, null) as AST);
     expect(ctx.bindings.size).toBe(2);
   });
 
@@ -80,7 +80,7 @@ describe('I18nContext', () => {
 
     // set data for root ctx
     ctx.appendBoundText(i18nOf(boundTextA));
-    ctx.appendBinding(expressionParser.parseInterpolation('{{ valueA }}', '', 0) as AST);
+    ctx.appendBinding(expressionParser.parseInterpolation('{{ valueA }}', '', 0, null) as AST);
     ctx.appendElement(i18nOf(elementA), 0);
     ctx.appendTemplate(i18nOf(templateA), 1);
     ctx.appendElement(i18nOf(elementA), 0, true);
@@ -96,11 +96,11 @@ describe('I18nContext', () => {
     // set data for child context
     childCtx.appendElement(i18nOf(elementB), 0);
     childCtx.appendBoundText(i18nOf(boundTextB));
-    childCtx.appendBinding(expressionParser.parseInterpolation('{{ valueB }}', '', 0) as AST);
+    childCtx.appendBinding(expressionParser.parseInterpolation('{{ valueB }}', '', 0, null) as AST);
     childCtx.appendElement(i18nOf(elementC), 1);
     childCtx.appendElement(i18nOf(elementC), 1, true);
     childCtx.appendBoundText(i18nOf(boundTextC));
-    childCtx.appendBinding(expressionParser.parseInterpolation('{{ valueC }}', '', 0) as AST);
+    childCtx.appendBinding(expressionParser.parseInterpolation('{{ valueC }}', '', 0, null) as AST);
     childCtx.appendElement(i18nOf(elementB), 0, true);
 
     expect(childCtx.bindings.size).toBe(2);
