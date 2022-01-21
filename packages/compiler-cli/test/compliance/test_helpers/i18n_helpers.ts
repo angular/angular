@@ -107,10 +107,10 @@ function i18nMsgInsertLocalizePlaceholders(message: string, placeholders: Placeh
  * Generate a string that represents expected Closure metadata output comment.
  */
 function i18nMsgClosureMeta(meta?: Meta): string {
-  if (!meta || !(meta.desc || meta.meaning)) return '';
+  if (!meta) return '';
   return `
     /**
-     ${meta.desc ? '* @desc ' + meta.desc : ''}
+     * ${meta.desc ? '@desc ' + meta.desc : '@suppress {msgDescriptions}'}
      ${meta.meaning ? '* @meaning ' + meta.meaning : ''}
      */
   `;
