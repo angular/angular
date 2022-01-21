@@ -1340,6 +1340,7 @@ export const enum JSDocTagName {
   Desc = 'desc',
   Id = 'id',
   Meaning = 'meaning',
+  Suppress = 'suppress',
 }
 
 /*

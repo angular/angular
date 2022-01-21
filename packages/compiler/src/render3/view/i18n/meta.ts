@@ -180,8 +180,9 @@ export class I18nMetaVisitor implements html.Visitor {
    * @returns the parsed metadata.
    */
   private _parseMetadata(meta: string|i18n.I18nMeta): I18nMeta {
-    return typeof meta === 'string' ? parseI18nMeta(meta) :
-                                      meta instanceof i18n.Message ? meta : {};
+    return typeof meta === 'string'  ? parseI18nMeta(meta) :
+        meta instanceof i18n.Message ? meta :
+                                       {};
   }
 
   /**
@@ -207,9 +208,9 @@ export class I18nMetaVisitor implements html.Visitor {
       // `packages/compiler/src/render3/view/template.ts`).
       // In that case we want to reuse the legacy message generated in the 1st pass (see
       // `setI18nRefs()`).
-      const previousMessage = meta instanceof i18n.Message ?
-          meta :
-          meta instanceof i18n.IcuPlaceholder ? meta.previousMessage : undefined;
+      const previousMessage = meta instanceof i18n.Message ? meta :
+          meta instanceof i18n.IcuPlaceholder              ? meta.previousMessage :
+                                                             undefined;
       message.legacyIds = previousMessage ? previousMessage.legacyIds : [];
     }
   }
@@ -255,13 +256,16 @@ export function parseI18nMeta(meta: string = ''): I18nMeta {
 
 // Converts i18n meta information for a message (id, description, meaning)
 // to a JsDoc statement formatted as expected by the Closure compiler.
-export function i18nMetaToJSDoc(meta: I18nMeta): o.JSDocComment|null {
+export function i18nMetaToJSDoc(meta: I18nMeta): o.JSDocComment {
   const tags: o.JSDocTag[] = [];
   if (meta.description) {
     tags.push({tagName: o.JSDocTagName.Desc, text: meta.description});
+  } else {
+    // Suppress the JSCompiler warning that a `@desc` was not given for this message.
+    tags.push({tagName: o.JSDocTagName.Suppress, text: '{msgDescriptions}'});
   }
   if (meta.meaning) {
     tags.push({tagName: o.JSDocTagName.Meaning, text: meta.meaning});
   }
-  return tags.length == 0 ? null : o.jsDocComment(tags);
+  return o.jsDocComment(tags);
 }

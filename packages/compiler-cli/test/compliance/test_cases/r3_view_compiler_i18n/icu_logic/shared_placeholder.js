@@ -18,6 +18,9 @@ consts: function() {
   // NOTE: Keeping raw content here to illustrate the difference in placeholders generated for goog.getMsg and $localize calls (see last i18n block).
   let $I18N_1$;
   if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
+      /**
+       * @suppress {msgDescriptions}
+       */
       const $MSG_APP_SPEC_TS_1$ = goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
       $I18N_1$ = $MSG_APP_SPEC_TS_1$;
   }
@@ -30,6 +33,9 @@ consts: function() {
 
   let $I18N_2$;
   if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
+      /**
+       * @suppress {msgDescriptions}
+       */
       const $MSG_APP_SPEC_TS_2$ = goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
       $I18N_2$ = $MSG_APP_SPEC_TS_2$;
   }
@@ -42,6 +48,9 @@ consts: function() {
 
   let $I18N_4$;
   if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
+      /**
+       * @suppress {msgDescriptions}
+       */
       const $MSG_APP_SPEC_TS__4$ = goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
       $I18N_4$ = $MSG_APP_SPEC_TS__4$;
   }
@@ -54,6 +63,9 @@ consts: function() {
 
   let $I18N_0$;
   if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
+      /**
+       * @suppress {msgDescriptions}
+       */
       const $MSG_APP_SPEC_TS_0$ = goog.getMsg(" {$icu} {$startTagDiv} {$icu} {$closeTagDiv}{$startTagDiv_1} {$icu} {$closeTagDiv}", {
         "startTagDiv": "\uFFFD#2\uFFFD",
         "closeTagDiv": "[\uFFFD/#2\uFFFD|\uFFFD/#1:1\uFFFD\uFFFD/*3:1\uFFFD]",
