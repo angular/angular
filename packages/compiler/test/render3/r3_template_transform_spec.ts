@@ -9,6 +9,7 @@
 import {BindingType} from '../../src/expression_parser/ast';
 import * as t from '../../src/render3/r3_ast';
 import {unparse} from '../expression_parser/utils/unparser';
+
 import {parseR3 as parse} from './view/util';
 
 
@@ -270,6 +271,18 @@ describe('R3 template transform', () => {
         ['Element', ':svg:svg'],
         ['Template'],
       ]);
+    });
+
+    it('should support <ng-template> with structural directive', () => {
+      expectFromHtml('<ng-template *ngIf="true"></ng-template>').toEqual([
+        ['Template'],
+        ['BoundAttribute', 0, 'ngIf', 'true'],
+        ['Template'],
+      ]);
+      const res = parse('<ng-template *ngIf="true"></ng-template>', {ignoreError: false});
+      expect((res.nodes[0] as t.Template).tagName).toEqual(null);
+      expect(((res.nodes[0] as t.Template).children[0] as t.Template).tagName)
+          .toEqual('ng-template');
     });
 
     it('should support reference via #...', () => {
