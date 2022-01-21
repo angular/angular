@@ -13,13 +13,13 @@
 <img [src]="logo" i18n-title title="Angular logo" alt="Angular logo"/>
 <!--#enddocregion i18n-title-translate-->
 <br>
-<button (click)="inc(1)">+</button> <button (click)="inc(-1)">-</button>
+<button type="button" (click)="inc(1)">+</button> <button type="button" (click)="inc(-1)">-</button>
 <!--#docregion i18n-plural-->
 <span i18n>Updated {minutes, plural, =0 {just now} =1 {one minute ago} other {{{minutes}} minutes ago}}</span>
 <!--#enddocregion i18n-plural-->
 ({{minutes}})
 <br><br>
-<button (click)="male()">&#9794;</button> <button (click)="female()">&#9792;</button> <button (click)="other()">&#9895;</button>
+<button type="button" (click)="male()">&#9794;</button> <button type="button" (click)="female()">&#9792;</button> <button type="button" (click)="other()">&#9895;</button>
 <!--#docregion i18n-select-->
 <span i18n>The author is {gender, select, male {male} female {female} other {other}}</span>
 <!--#enddocregion i18n-select-->

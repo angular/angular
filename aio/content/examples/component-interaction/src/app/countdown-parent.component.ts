@@ -14,8 +14,8 @@ import { CountdownTimerComponent } from './countdown-timer.component';
   selector: 'app-countdown-parent-lv',
   template: `
     <h3>Countdown to Liftoff (via local variable)</h3>
-    <button (click)="timer.start()">Start</button>
-    <button (click)="timer.stop()">Stop</button>
+    <button type="button" (click)="timer.start()">Start</button>
+    <button type="button" (click)="timer.stop()">Stop</button>
     <div class="seconds">{{timer.seconds}}</div>
     <app-countdown-timer #timer></app-countdown-timer>
   `,
@@ -30,8 +30,8 @@ export class CountdownLocalVarParentComponent { }
   selector: 'app-countdown-parent-vc',
   template: `
     <h3>Countdown to Liftoff (via ViewChild)</h3>
-    <button (click)="start()">Start</button>
-    <button (click)="stop()">Stop</button>
+    <button type="button" (click)="start()">Start</button>
+    <button type="button" (click)="stop()">Stop</button>
     <div class="seconds">{{ seconds() }}</div>
     <app-countdown-timer></app-countdown-timer>
   `,

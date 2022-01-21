@@ -9,7 +9,7 @@ import { map, take } from 'rxjs/operators';
   template: `
     <h2>Async Hero Message and AsyncPipe</h2>
     <p>Message: {{ message$ | async }}</p>
-    <button (click)="resend()">Resend</button>`,
+    <button type="button" (click)="resend()">Resend</button>`,
 })
 export class HeroAsyncMessageComponent {
   message$: Observable<string>;

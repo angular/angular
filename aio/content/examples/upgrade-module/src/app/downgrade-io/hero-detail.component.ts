@@ -7,7 +7,7 @@ import { Hero } from '../hero';
   template: `
     <h2>{{hero.name}} details!</h2>
     <div>id: {{hero.id}}</div>
-    <button (click)="onDelete()">Delete</button>
+    <button type="button" (click)="onDelete()">Delete</button>
   `
 })
 export class HeroDetailComponent {

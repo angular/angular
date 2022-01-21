@@ -1,4 +1,4 @@
-<button (click)="toggle()">Toggle Open/Close</button>
+<button type="button" (click)="toggle()">Toggle Open/Close</button>
 
 <div [@openClose]="isOpen ? 'open' : 'closed'"
   (@openClose.start)="onAnimationEvent($event)"

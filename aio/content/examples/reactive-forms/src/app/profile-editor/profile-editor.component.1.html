@@ -29,7 +29,7 @@
 
   <div formArrayName="aliases">
     <h2>Aliases</h2>
-    <button (click)="addAlias()">+ Add another alias</button>
+    <button type="button" (click)="addAlias()">+ Add another alias</button>
 
     <div *ngFor="let address of aliases.controls; let i=index">
       <!-- The repeated alias template -->
@@ -44,5 +44,5 @@
 <p>Form Value: {{ profileForm.value | json }}</p>
 
 <!-- #docregion patch-value -->
-<button (click)="updateProfile()">Update Profile</button>
+<button type="button" (click)="updateProfile()">Update Profile</button>
 <!-- #enddocregion patch-value -->

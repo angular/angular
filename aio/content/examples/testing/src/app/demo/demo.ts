@@ -95,7 +95,7 @@ export class BankAccountParentComponent {
 @Component({
   selector: 'lightswitch-comp',
   template: `
-    <button (click)="clicked()">Click me!</button>
+    <button type="button" (click)="clicked()">Click me!</button>
     <span>{{message}}</span>`
 })
 export class LightswitchComponent {
@@ -184,7 +184,7 @@ export class ParentComponent { }
 
 @Component({
   selector: 'io-comp',
-  template: '<button class="hero" (click)="click()">Original {{hero.name}}</button>'
+  template: '<button type="button" class="hero" (click)="click()">Original {{hero.name}}</button>'
 })
 export class IoComponent {
   @Input() hero!: Hero;
@@ -325,7 +325,7 @@ export class MyIfChildComponent implements OnInit, OnChanges, OnDestroy {
     <label>Parent value:
       <input [(ngModel)]="parentValue">
     </label>
-    <button (click)="clicked()">{{toggleLabel}} Child</button><br>
+    <button type="button" (click)="clicked()">{{toggleLabel}} Child</button><br>
     <div *ngIf="showChild"
          style="margin: 4px; padding: 4px; background-color: aliceblue;">
       <my-if-child-1  [(value)]="parentValue"></my-if-child-1>

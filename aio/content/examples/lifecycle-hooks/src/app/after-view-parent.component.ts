@@ -11,7 +11,7 @@ import { LoggerService } from './logger.service';
 
   <div class="info">
     <h3>AfterView Logs</h3>
-    <button (click)="reset()">Reset</button>
+    <button type="button" (click)="reset()">Reset</button>
     <div *ngFor="let msg of logger.logs" class="log">{{msg}}</div>
   </div>
   `,

@@ -52,7 +52,7 @@
 
 <h4>*ngIf with a &lt;ng-container&gt;</h4>
 
-<button (click)="hero = hero ? null : heroes[0]">Toggle hero</button>
+<button type="button" (click)="hero = hero ? null : heroes[0]">Toggle hero</button>
 
 <!-- #docregion ngif-ngcontainer -->
 <p>
@@ -179,6 +179,7 @@
   The condition is currently
   <span [ngClass]="{ 'a': !condition, 'b': condition, 'unless': true }">{{condition}}</span>.
   <button
+    type="button"
     (click)="condition = !condition"
     [ngClass] = "{ 'a': condition, 'b': !condition }" >
     Toggle condition to {{condition ? 'false' : 'true'}}

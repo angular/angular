@@ -38,11 +38,11 @@
 <p></p>
 <div>
   <!-- #docregion event-binding -->
-  <button (click)="toggleImage()">
+  <button type="button" (click)="toggleImage()">
   <!-- #enddocregion event-binding -->
   Image Toggle #1</button>
   <!-- #docregion event-binding -->
-  <button (click)="toggleImage($event)">
+  <button type="button" (click)="toggleImage($event)">
   <!-- #enddocregion event-binding -->
   Image Toggle #2</button>
   <p>Image toggle event type was {{eventType}}</p>

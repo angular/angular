@@ -6,7 +6,7 @@ import { Component } from '@angular/core';
     selector: 'hello-world-template',
     template: `
         <h2>Hello World Template</h2>
-        <button (click)="onEditClick()">Make text editable!</button>
+        <button type="button" (click)="onEditClick()">Make text editable!</button>
         <p [contentEditable]="canEdit">{{ message }}</p>
         `
   })

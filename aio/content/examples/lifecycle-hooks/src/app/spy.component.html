@@ -3,8 +3,8 @@
 
   <label for="hero-name">Hero name: </label>
   <input type="text" id="hero-name" [(ngModel)]="newName" (keyup.enter)="addHero()">
-  <button (click)="addHero()">Add Hero</button>
-  <button (click)="reset()">Reset Heroes</button>
+  <button type="button" (click)="addHero()">Add Hero</button>
+  <button type="button" (click)="reset()">Reset Heroes</button>
 
   <div class="info">
     <!-- #docregion template -->
