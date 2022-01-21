@@ -157,6 +157,45 @@ describe('expression AST absolute source spans', () => {
             ['2', new AbsoluteSourceSpan(11, 12)],
           ]));
     });
+
+    it('should handle HTML entity before interpolation', () => {
+      expect(humanizeExpressionSource(parse('&nbsp;{{abc}}').nodes))
+          .toEqual(jasmine.arrayContaining([
+            ['abc', new AbsoluteSourceSpan(8, 11)],
+          ]));
+    });
+
+    it('should handle many HTML entities and many interpolations', () => {
+      expect(humanizeExpressionSource(parse('&quot;{{abc}}&quot;{{def}}&nbsp;{{ghi}}').nodes))
+          .toEqual(jasmine.arrayContaining([
+            ['abc', new AbsoluteSourceSpan(8, 11)],
+            ['def', new AbsoluteSourceSpan(21, 24)],
+            ['ghi', new AbsoluteSourceSpan(34, 37)],
+          ]));
+    });
+
+    it('should handle interpolation in attribute', () => {
+      expect(humanizeExpressionSource(parse('<div class="{{abc}}"><div>').nodes))
+          .toEqual(jasmine.arrayContaining([
+            ['abc', new AbsoluteSourceSpan(14, 17)],
+          ]));
+    });
+
+    it('should handle interpolation preceded by HTML entity in attribute', () => {
+      expect(humanizeExpressionSource(parse('<div class="&nbsp;{{abc}}"><div>').nodes))
+          .toEqual(jasmine.arrayContaining([
+            ['abc', new AbsoluteSourceSpan(20, 23)],
+          ]));
+    });
+
+    it('should handle many interpolation with HTML entities in attribute', () => {
+      expect(humanizeExpressionSource(
+                 parse('<div class="&quot;{{abc}}&quot;&nbsp;{{def}}"><div>').nodes))
+          .toEqual(jasmine.arrayContaining([
+            ['abc', new AbsoluteSourceSpan(20, 23)],
+            ['def', new AbsoluteSourceSpan(39, 42)],
+          ]));
+    });
   });
 
   describe('keyed read', () => {

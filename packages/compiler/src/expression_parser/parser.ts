@@ -8,6 +8,7 @@
 
 import * as chars from '../chars';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../ml_parser/interpolation_config';
+import {InterpolatedAttributeToken, InterpolatedTextToken, TokenType as MlParserTokenType} from '../ml_parser/tokens';
 
 import {AbsoluteSourceSpan, AST, ASTWithSource, Binary, BindingPipe, Call, Chain, Conditional, EmptyExpr, ExpressionBinding, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralMapKey, LiteralPrimitive, NonNullAssert, ParserError, ParseSpan, PrefixNot, PropertyRead, PropertyWrite, RecursiveAstVisitor, SafeCall, SafeKeyedRead, SafePropertyRead, TemplateBinding, TemplateBindingIdentifier, ThisReceiver, Unary, VariableBinding} from './ast';
 import {EOF, Lexer, Token, TokenType} from './lexer';
@@ -147,9 +148,10 @@ export class Parser {
 
   parseInterpolation(
       input: string, location: string, absoluteOffset: number,
+      interpolatedTokens: InterpolatedAttributeToken[]|InterpolatedTextToken[]|null,
       interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG): ASTWithSource|null {
     const {strings, expressions, offsets} =
-        this.splitInterpolation(input, location, interpolationConfig);
+        this.splitInterpolation(input, location, interpolatedTokens, interpolationConfig);
     if (expressions.length === 0) return null;
 
     const expressionNodes: AST[] = [];
@@ -203,10 +205,13 @@ export class Parser {
    */
   splitInterpolation(
       input: string, location: string,
+      interpolatedTokens: InterpolatedAttributeToken[]|InterpolatedTextToken[]|null,
       interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG): SplitInterpolation {
     const strings: InterpolationPiece[] = [];
     const expressions: InterpolationPiece[] = [];
     const offsets: number[] = [];
+    const inputToTemplateIndexMap =
+        interpolatedTokens ? getIndexMapForOriginalTemplate(interpolatedTokens) : null;
     let i = 0;
     let atInterpolation = false;
     let extendLastString = false;
@@ -244,7 +249,9 @@ export class Parser {
               `at column ${i} in`, location);
         }
         expressions.push({text, start: fullStart, end: fullEnd});
-        offsets.push(exprStart);
+        const startInOriginalTemplate = inputToTemplateIndexMap?.get(fullStart) ?? fullStart;
+        const offset = startInOriginalTemplate + interpStart.length;
+        offsets.push(offset);
 
         i = fullEnd;
         atInterpolation = false;
@@ -1313,4 +1320,39 @@ class SimpleExpressionChecker extends RecursiveAstVisitor {
   override visitPipe() {
     this.errors.push('pipes');
   }
+}
+/**
+ * Computes the real offset in the original template for indexes in an interpolation.
+ *
+ * Because templates can have encoded HTML entities and the input passed to the parser at this stage
+ * of the compiler is the _decoded_ value, we need to compute the real offset using the original
+ * encoded values in the interpolated tokens. Note that this is only a special case handling for
+ * `MlParserTokenType.ENCODED_ENTITY` token types. All other interpolated tokens are expected to
+ * have parts which exactly match the input string for parsing the interpolation.
+ *
+ * @param interpolatedTokens The tokens for the interpolated value.
+ *
+ * @returns A map of index locations in the decoded template to indexes in the original template
+ */
+function getIndexMapForOriginalTemplate(interpolatedTokens: InterpolatedAttributeToken[]|
+                                        InterpolatedTextToken[]): Map<number, number> {
+  let offsetMap = new Map<number, number>();
+  let consumedInOriginalTemplate = 0;
+  let consumedInInput = 0;
+  let tokenIndex = 0;
+  while (tokenIndex < interpolatedTokens.length) {
+    const currentToken = interpolatedTokens[tokenIndex];
+    if (currentToken.type === MlParserTokenType.ENCODED_ENTITY) {
+      const [decoded, encoded] = currentToken.parts;
+      consumedInOriginalTemplate += encoded.length;
+      consumedInInput += decoded.length;
+    } else {
+      const lengthOfParts = currentToken.parts.reduce((sum, current) => sum + current.length, 0);
+      consumedInInput += lengthOfParts;
+      consumedInOriginalTemplate += lengthOfParts;
+    }
+    offsetMap.set(consumedInInput, consumedInOriginalTemplate);
+    tokenIndex++;
+  }
+  return offsetMap;
 }

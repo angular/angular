@@ -11,6 +11,7 @@ import {AbsoluteSourceSpan, ASTWithSource, BindingPipe, BindingType, BoundElemen
 import {Parser} from '../expression_parser/parser';
 import {InterpolationConfig} from '../ml_parser/interpolation_config';
 import {mergeNsAndName} from '../ml_parser/tags';
+import {InterpolatedAttributeToken, InterpolatedTextToken} from '../ml_parser/tokens';
 import {ParseError, ParseErrorLevel, ParseLocation, ParseSourceSpan} from '../parse_util';
 import {ElementSchemaRegistry} from '../schema/element_schema_registry';
 import {CssSelector} from '../selector';
@@ -95,13 +96,16 @@ export class BindingParser {
     return targetEvents;
   }
 
-  parseInterpolation(value: string, sourceSpan: ParseSourceSpan): ASTWithSource {
+  parseInterpolation(
+      value: string, sourceSpan: ParseSourceSpan,
+      interpolatedTokens: InterpolatedAttributeToken[]|InterpolatedTextToken[]|
+      null): ASTWithSource {
     const sourceInfo = sourceSpan.start.toString();
     const absoluteOffset = sourceSpan.fullStart.offset;
 
     try {
       const ast = this._exprParser.parseInterpolation(
-          value, sourceInfo, absoluteOffset, this._interpolationConfig)!;
+          value, sourceInfo, absoluteOffset, interpolatedTokens, this._interpolationConfig)!;
       if (ast) this._reportExpressionParserErrors(ast.errors, sourceSpan);
       return ast;
     } catch (e) {
@@ -275,8 +279,9 @@ export class BindingParser {
   parsePropertyInterpolation(
       name: string, value: string, sourceSpan: ParseSourceSpan,
       valueSpan: ParseSourceSpan|undefined, targetMatchableAttrs: string[][],
-      targetProps: ParsedProperty[], keySpan: ParseSourceSpan): boolean {
-    const expr = this.parseInterpolation(value, valueSpan || sourceSpan);
+      targetProps: ParsedProperty[], keySpan: ParseSourceSpan,
+      interpolatedTokens: InterpolatedAttributeToken[]|InterpolatedTextToken[]|null): boolean {
+    const expr = this.parseInterpolation(value, valueSpan || sourceSpan, interpolatedTokens);
     if (expr) {
       this._parsePropertyAst(
           name, expr, sourceSpan, keySpan, valueSpan, targetMatchableAttrs, targetProps);
