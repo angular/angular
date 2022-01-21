@@ -119,11 +119,23 @@ export class Element implements Node {
 
 export class Template implements Node {
   constructor(
-      public tagName: string, public attributes: TextAttribute[], public inputs: BoundAttribute[],
-      public outputs: BoundEvent[], public templateAttrs: (BoundAttribute|TextAttribute)[],
-      public children: Node[], public references: Reference[], public variables: Variable[],
-      public sourceSpan: ParseSourceSpan, public startSourceSpan: ParseSourceSpan,
-      public endSourceSpan: ParseSourceSpan|null, public i18n?: I18nMeta) {}
+      // tagName is the name of the container element, if applicable.
+      // `null` is a special case for when there is a structural directive on an `ng-template` so
+      // the renderer can differentiate between the synthetic template and the one written in the
+      // file.
+      public tagName: string|null,
+      public attributes: TextAttribute[],
+      public inputs: BoundAttribute[],
+      public outputs: BoundEvent[],
+      public templateAttrs: (BoundAttribute|TextAttribute)[],
+      public children: Node[],
+      public references: Reference[],
+      public variables: Variable[],
+      public sourceSpan: ParseSourceSpan,
+      public startSourceSpan: ParseSourceSpan,
+      public endSourceSpan: ParseSourceSpan|null,
+      public i18n?: I18nMeta,
+  ) {}
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitTemplate(this);
   }

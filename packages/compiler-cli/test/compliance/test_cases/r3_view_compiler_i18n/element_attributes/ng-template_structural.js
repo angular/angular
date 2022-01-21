@@ -19,7 +19,7 @@ consts: function() {
 },
 template: function MyComponent_Template(rf, ctx) {
   if (rf & 1) {
-    $r3$.ɵɵtemplate(0, MyComponent_0_Template, 1, 0, undefined, 0);
+    $r3$.ɵɵtemplate(0, MyComponent_0_Template, 1, 0, null, 0);
   }
   if (rf & 2) {
     $r3$.ɵɵproperty("ngIf", ctx.visible);
