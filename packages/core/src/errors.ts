@@ -65,14 +65,33 @@ export const enum RuntimeErrorCode {
   UNSAFE_VALUE_IN_SCRIPT = 905
 }
 
+/**
+ * Class that represents a runtime error.
+ * Formats and outputs the error message in a consistent way.
+ *
+ * Example:
+ * ```
+ *  throw new RuntimeError(
+ *    RuntimeErrorCode.INJECTOR_ALREADY_DESTROYED,
+ *    ngDevMode && 'Injector has already been destroyed.');
+ * ```
+ *
+ * Note: the `message` argument contains a descriptive error message as a string in development
+ * mode (when the `ngDevMode` is defined). In production mode (after tree-shaking pass), the
+ * `message` argument becomes `false`, thus we account for it in the typings and the runtime logic.
+ */
 export class RuntimeError<T = RuntimeErrorCode> extends Error {
-  constructor(public code: T, message: string) {
+  constructor(public code: T, message: null|false|string) {
     super(formatRuntimeError<T>(code, message));
   }
 }
 
-/** Called to format a runtime error */
-export function formatRuntimeError<T = RuntimeErrorCode>(code: T, message: string): string {
+/**
+ * Called to format a runtime error.
+ * See additional info on the `message` argument type in the `RuntimeError` class description.
+ */
+export function formatRuntimeError<T = RuntimeErrorCode>(
+    code: T, message: null|false|string): string {
   const codeAsNumber = code as unknown as number;
   // Error code might be a negative number, which is a special marker that instructs the logic to
   // generate a link to the error details page on angular.io.

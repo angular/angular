@@ -1417,7 +1417,8 @@ function cacheMatchingLocalNames(
       const index = exportsMap[localRefs[i + 1]];
       if (index == null)
         throw new RuntimeError(
-            RuntimeErrorCode.EXPORT_NOT_FOUND, `Export of name '${localRefs[i + 1]}' not found!`);
+            RuntimeErrorCode.EXPORT_NOT_FOUND,
+            ngDevMode && `Export of name '${localRefs[i + 1]}' not found!`);
       localNames.push(localRefs[i], index);
     }
   }
