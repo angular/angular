@@ -17,6 +17,17 @@ describe('expression AST absolute source spans', () => {
         .toContain(['foo', new AbsoluteSourceSpan(2, 5)]);
   });
 
+  it('should handle whitespace in interpolation', () => {
+    expect(humanizeExpressionSource(parse('{{  foo  }}', {preserveWhitespaces: true}).nodes))
+        .toContain(['foo', new AbsoluteSourceSpan(4, 7)]);
+  });
+
+  it('should handle whitespace and comment in interpolation', () => {
+    expect(humanizeExpressionSource(
+               parse('{{  foo // comment  }}', {preserveWhitespaces: true}).nodes))
+        .toContain(['foo', new AbsoluteSourceSpan(4, 7)]);
+  });
+
   it('should handle comment in an action binding', () => {
     expect(humanizeExpressionSource(parse('<button (click)="foo = true // comment">Save</button>', {
                                       preserveWhitespaces: true

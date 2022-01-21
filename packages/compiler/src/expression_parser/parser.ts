@@ -41,9 +41,7 @@ export class Parser {
     const sourceToLex = this._stripComments(input);
     const tokens = this._lexer.tokenize(sourceToLex);
     const ast =
-        new _ParseAST(
-            input, location, absoluteOffset, tokens, sourceToLex.length, true, this.errors, 0)
-            .parseChain();
+        new _ParseAST(input, location, absoluteOffset, tokens, true, this.errors, 0).parseChain();
     return new ASTWithSource(ast, input, location, absoluteOffset, this.errors);
   }
 
@@ -90,8 +88,7 @@ export class Parser {
     this._checkNoInterpolation(input, location, interpolationConfig);
     const sourceToLex = this._stripComments(input);
     const tokens = this._lexer.tokenize(sourceToLex);
-    return new _ParseAST(
-               input, location, absoluteOffset, tokens, sourceToLex.length, false, this.errors, 0)
+    return new _ParseAST(input, location, absoluteOffset, tokens, false, this.errors, 0)
         .parseChain();
   }
 
@@ -138,8 +135,8 @@ export class Parser {
       absoluteValueOffset: number): TemplateBindingParseResult {
     const tokens = this._lexer.tokenize(templateValue);
     const parser = new _ParseAST(
-        templateValue, templateUrl, absoluteValueOffset, tokens, templateValue.length,
-        false /* parseAction */, this.errors, 0 /* relative offset */);
+        templateValue, templateUrl, absoluteValueOffset, tokens, false /* parseAction */,
+        this.errors, 0 /* relative offset */);
     return parser.parseTemplateBindings({
       source: templateKey,
       span: new AbsoluteSourceSpan(absoluteKeyOffset, absoluteKeyOffset + templateKey.length),
@@ -159,10 +156,9 @@ export class Parser {
       const expressionText = expressions[i].text;
       const sourceToLex = this._stripComments(expressionText);
       const tokens = this._lexer.tokenize(sourceToLex);
-      const ast = new _ParseAST(
-                      input, location, absoluteOffset, tokens, sourceToLex.length, false,
-                      this.errors, offsets[i])
-                      .parseChain();
+      const ast =
+          new _ParseAST(input, location, absoluteOffset, tokens, false, this.errors, offsets[i])
+              .parseChain();
       expressionNodes.push(ast);
     }
 
@@ -180,7 +176,7 @@ export class Parser {
     const sourceToLex = this._stripComments(expression);
     const tokens = this._lexer.tokenize(sourceToLex);
     const ast = new _ParseAST(
-                    expression, location, absoluteOffset, tokens, sourceToLex.length,
+                    expression, location, absoluteOffset, tokens,
                     /* parseAction */ false, this.errors, 0)
                     .parseChain();
     const strings = ['', ''];  // The prefix and suffix strings are both empty
@@ -275,7 +271,7 @@ export class Parser {
 
   private _stripComments(input: string): string {
     const i = this._commentStart(input);
-    return i != null ? input.substring(0, i).trim() : input;
+    return i != null ? input.substring(0, i) : input;
   }
 
   private _commentStart(input: string): number|null {
@@ -392,8 +388,8 @@ export class _ParseAST {
 
   constructor(
       public input: string, public location: string, public absoluteOffset: number,
-      public tokens: Token[], public inputLength: number, public parseAction: boolean,
-      private errors: ParserError[], private offset: number) {}
+      public tokens: Token[], public parseAction: boolean, private errors: ParserError[],
+      private offset: number) {}
 
   peek(offset: number): Token {
     const i = this.index + offset;
@@ -429,7 +425,7 @@ export class _ParseAST {
     // No tokens have been processed yet; return the next token's start or the length of the input
     // if there is no token.
     if (this.tokens.length === 0) {
-      return this.inputLength + this.offset;
+      return this.input.length + this.offset;
     }
     return this.next.index + this.offset;
   }
@@ -587,7 +583,7 @@ export class _ParseAST {
     if (exprs.length == 0) {
       // We have no expressions so create an empty expression that spans the entire input length
       const artificialStart = this.offset;
-      const artificialEnd = this.offset + this.inputLength;
+      const artificialEnd = this.offset + this.input.length;
       return new EmptyExpr(
           this.span(artificialStart, artificialEnd),
           this.sourceSpan(artificialStart, artificialEnd));
@@ -623,7 +619,7 @@ export class _ParseAST {
           //
           // Therefore, we push the end of the `ParseSpan` for this pipe all the way up to the
           // beginning of the next token, or until the end of input if the next token is EOF.
-          fullSpanEnd = this.next.index !== -1 ? this.next.index : this.inputLength + this.offset;
+          fullSpanEnd = this.next.index !== -1 ? this.next.index : this.input.length + this.offset;
 
           // The `nameSpan` for an empty pipe name is zero-length at the end of any whitespace
           // beyond the pipe character.
