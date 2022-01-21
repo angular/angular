@@ -68,22 +68,18 @@ Like so:
 ```html
 <!-- ... -->
 
-<ng-container [ngTemplateOutlet]="importantTextTemplate"
-              [ngTemplateOutletContext]="{ $implicit: relevantInfo }">
+<ng-container *ngTemplateOutlet="tmpl; context: {$implicit: 'Hello'}">
 </ng-container>
 
 <!-- ... -->
 
-<ng-container [ngTemplateOutlet]="importantTextTemplate"
-              [ngTemplateOutletContext]="{ $implicit: urgentAnnouncement }">
+<ng-container *ngTemplateOutlet="tmpl; context: {$implicit: 'World'}">
 </ng-container>
 
 <!-- ... -->
 
-<ng-template #importantTextTemplate let-importantText>
-  <span class="important-text">
-    {{ importantText | uppercase }}
-  </span>
+<ng-template #tmpl let-text>
+  <h1>{{ text }}</h1>
 </ng-template>
 ```
 
