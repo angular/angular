@@ -183,7 +183,7 @@ function toAttributeCssSelector(attribute: t.TextAttribute|t.BoundAttribute|t.Bo
 }
 
 function getNodeName(node: t.Template|t.Element): string {
-  return node instanceof t.Template ? node.tagName : node.name;
+  return node instanceof t.Template ? (node.tagName ?? 'ng-template') : node.name;
 }
 
 /**
