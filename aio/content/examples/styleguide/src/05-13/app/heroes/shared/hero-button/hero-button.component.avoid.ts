@@ -4,7 +4,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
   selector: 'toh-hero-button',
-  template: `<button>{{label}}</button>`
+  template: `<button type="button">{{label}}</button>`
 })
 export class HeroButtonComponent {
   // Pointless aliases

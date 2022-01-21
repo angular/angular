@@ -5,7 +5,7 @@ import { Component, EventEmitter } from '@angular/core';
 
 @Component({
   selector: 'toh-hero-button',
-  template: `<button></button>`,
+  template: `<button type="button"></button>`,
   inputs: [
     'label'
   ],

@@ -2,13 +2,13 @@
 
 <div class="group">
   <h3>Target event</h3>
-  <button (click)="onSave($event)">Save</button>
+  <button type="button" (click)="onSave($event)">Save</button>
 
-  <button on-click="onSave($event)">on-click Save</button>
+  <button type="button" on-enter="onSave()">on-click Save</button>
 
   <!-- #docregion custom-directive -->
   <h4>myClick is an event on the custom ClickDirective:</h4>
-  <button (myClick)="clickMessage=$event" clickable>click with myClick</button>
+  <button type="button" (myClick)="clickMessage=$event" clickable>click with myClick</button>
   {{clickMessage}}
   <!-- #enddocregion custom-directive -->
 
@@ -43,12 +43,12 @@
 
 <h3>Saves only once:</h3>
 <div (click)="onSave()" clickable>
-  <button (click)="onSave($event)">Save, no propagation</button>
+  <button type="button" (click)="onSave($event)">Save, no propagation</button>
 </div>
 
 <h3>Saves twice:</h3>
 <div (click)="onSave()" clickable>
-  <button (click)="onSave()">Save with propagation</button>
+  <button type="button" (click)="onSave()">Save with propagation</button>
 </div>
 
 <!-- eslint-enable @angular-eslint/template/click-events-have-key-events -->

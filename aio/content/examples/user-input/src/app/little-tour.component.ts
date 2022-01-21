@@ -9,7 +9,7 @@ import { Component } from '@angular/core';
       (keyup.enter)="addHero(newHero.value)"
       (blur)="addHero(newHero.value); newHero.value='' ">
 
-    <button (click)="addHero(newHero.value)">Add</button>
+    <button type="button" (click)="addHero(newHero.value)">Add</button>
 
     <ul><li *ngFor="let hero of heroes">{{hero}}</li></ul>
   `

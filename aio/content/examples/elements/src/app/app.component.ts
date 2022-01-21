@@ -7,8 +7,8 @@ import { PopupComponent } from './popup.component';
   selector: 'app-root',
   template: `
     <input #input value="Message">
-    <button (click)="popup.showAsComponent(input.value)">Show as component</button>
-    <button (click)="popup.showAsElement(input.value)">Show as element</button>
+    <button type="button" (click)="popup.showAsComponent(input.value)">Show as component</button>
+    <button type="button" (click)="popup.showAsElement(input.value)">Show as element</button>
   `,
 })
 export class AppComponent {

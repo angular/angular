@@ -5,7 +5,7 @@ import { Component } from '@angular/core';
 
 @Component({
   selector: 'toh-hero-button',
-  template: `<button>OK<button>`
+  template: `<button type="button">OK</button>`
 })
 export class HeroButtonComponent {
   onInit() { // misspelled

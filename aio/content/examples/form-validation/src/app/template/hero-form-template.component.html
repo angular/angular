@@ -82,7 +82,7 @@
 
     <div class="submitted-message" *ngIf="heroForm.submitted">
       <p>You've submitted your hero, {{ heroForm.value.name }}!</p>
-      <button (click)="heroForm.resetForm({})">Add new hero</button>
+      <button type="button" (click)="heroForm.resetForm({})">Add new hero</button>
     </div>
   </form>
 </div>

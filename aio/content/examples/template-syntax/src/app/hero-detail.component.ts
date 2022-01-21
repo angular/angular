@@ -14,7 +14,7 @@ import { Hero } from './hero';
     <span [style.text-decoration]="lineThrough">
       {{prefix}} {{hero.name}}
     </span>
-    <button (click)="delete()">Delete</button>
+    <button type="button" (click)="delete()">Delete</button>
   </div>`
 })
 export class HeroDetailComponent {
@@ -46,7 +46,7 @@ export class HeroDetailComponent {
     <div>Web: <a href="{{hero.url}}" target="_blank">{{hero.url}}</a></div>
     <div>Rate/hr: {{hero.rate | currency:'EUR'}}</div>
     <br clear="all">
-    <button (click)="delete()">Delete</button>
+    <button type="button" (click)="delete()">Delete</button>
   </div>
   `,
   styles: [`

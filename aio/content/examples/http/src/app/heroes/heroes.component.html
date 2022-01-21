@@ -4,17 +4,17 @@
   <input type="text" #heroName id="hero-name">
 
   <!-- (click) passes input value to add() and then clears the input -->
-  <button (click)="add(heroName.value); heroName.value=''">
+  <button type="button" (click)="add(heroName.value); heroName.value=''">
     Add hero
   </button>
-  <button (click)="search(heroName.value)">
+  <button type="button" (click)="search(heroName.value)">
     Search
   </button>
 </div>
 
 <ul class="heroes">
   <li *ngFor="let hero of heroes">
-    <button class="edit" (click)="edit(hero)">
+    <button type="button" class="edit" (click)="edit(hero)">
       <span class="badge">{{ hero.id || -1 }}</span>
       <span *ngIf="hero!==editHero">{{hero.name}}</span>
       <input type="text"
@@ -23,7 +23,7 @@
              (blur)="update()"
              (keyup.enter)="update()">
     </button>
-    <button class="delete" title="delete hero"
+    <button type="button" class="delete" title="delete hero"
     (click)="delete(hero)">x</button>
   </li>
 </ul>

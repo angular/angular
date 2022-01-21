@@ -6,7 +6,7 @@ import { Component } from '@angular/core';
   // #docregion template
   template: `
     <p>The hero's birthday is {{ birthday | date:format }}</p>
-    <button (click)="toggleFormat()">Toggle Format</button>
+    <button type="button" (click)="toggleFormat()">Toggle Format</button>
   `
   // #enddocregion template
 })

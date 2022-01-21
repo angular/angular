@@ -27,7 +27,7 @@
   <!-- #docregion formarrayname -->
   <div formArrayName="aliases">
     <h2>Aliases</h2>
-    <button (click)="addAlias()" type="button">+ Add another alias</button>
+    <button type="button" (click)="addAlias()" type="button">+ Add another alias</button>
 
     <div *ngFor="let alias of aliases.controls; let i=index">
       <!-- The repeated alias template -->
@@ -52,4 +52,4 @@
 <p>Form Status: {{ profileForm.status }}</p>
 <!-- #enddocregion display-status -->
 
-<button (click)="updateProfile()">Update Profile</button>
+<button type="button" (click)="updateProfile()">Update Profile</button>

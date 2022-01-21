@@ -12,7 +12,7 @@ import { Hero } from './hero';
       }
     </style>
     <h3>Controls</h3>
-    <button (click)="activate()">Activate</button>
+    <button type="button" (click)="activate()">Activate</button>
   `
 })
 // #enddocregion inlinestyles

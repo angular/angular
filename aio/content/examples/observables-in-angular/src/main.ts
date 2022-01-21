@@ -11,7 +11,7 @@ import { Observable } from 'rxjs';
   selector: 'app-zippy',
   template: `
     <div class="zippy">
-      <button (click)="toggle()">Toggle</button>
+      <button type="button" (click)="toggle()">Toggle</button>
       <div [hidden]="!visible">
         <ng-content></ng-content>
       </div>
