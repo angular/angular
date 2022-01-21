@@ -12532,10 +12532,10 @@ rollup@~1.11.3:
     "@types/node" "^11.13.9"
     acorn "^6.1.1"
 
-rollup@~2.63.0:
-  version "2.63.0"
-  resolved "https://registry.yarnpkg.com/rollup/-/rollup-2.63.0.tgz#fe2f7fec2133f3fab9e022b9ac245628d817c6bb"
-  integrity sha512-nps0idjmD+NXl6OREfyYXMn/dar3WGcyKn+KBzPdaLecub3x/LrId0wUcthcr8oZUAcZAR8NKcfGGFlNgGL1kQ==
+rollup@~2.65.0:
+  version "2.65.0"
+  resolved "https://registry.yarnpkg.com/rollup/-/rollup-2.65.0.tgz#936ed140ac28f87aff22c6ac950b3d0303fadc3b"
+  integrity sha512-ohZVYrhtVMTqqeqH26sngfMiyGDg6gCUReOsoflXvYpzUkDHp8sVG8F9FQxjs72OfnLWpXP2nNNqQ9I0vkRovA==
   optionalDependencies:
     fsevents "~2.3.2"
 
