@@ -55,9 +55,9 @@
       theming.get-typography-config($config-or-theme));
 
   @include mdc-helpers.mat-using-mdc-typography($config) {
-    // MDC uses the `subtitle1` level for list items, but the spec shows `body1` as the correct
-    // level. Class is repeated for increased specificity.
-    .mat-mdc-option .mdc-list-item__primary-text {
+    // MDC uses the `subtitle1` level for list items, but
+    // the spec shows `body1` as the correct level.
+    .mat-mdc-option {
       @include mdc-typography.typography(body1, $query: mdc-helpers.$mat-typography-styles-query);
     }
   }

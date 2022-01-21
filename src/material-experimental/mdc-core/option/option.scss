@@ -66,10 +66,21 @@
     pointer-events: none;
   }
 
-    // Needs to be overwritten explicitly, because the style can
+  // Needs to be overwritten explicitly, because the style can
   // leak in from the list and cause the text to truncate.
   .mdc-list-item__primary-text {
     white-space: normal;
+
+    // MDC assigns the typography to this element, rather than the option itself, which will break
+    // existing overrides. Set all of the typography-related properties to `inherit` so that any
+    // styles set on the host can propagate down.
+    font-size: inherit;
+    font-weight: inherit;
+    letter-spacing: inherit;
+    line-height: inherit;
+    font-family: inherit;
+    text-decoration: inherit;
+    text-transform: inherit;
   }
 }
 
