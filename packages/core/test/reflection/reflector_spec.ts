@@ -9,7 +9,6 @@
 import {Reflector} from '@angular/core/src/reflection/reflection';
 import {isDelegateCtor, ReflectionCapabilities} from '@angular/core/src/reflection/reflection_capabilities';
 import {makeDecorator, makeParamDecorator, makePropDecorator} from '@angular/core/src/util/decorators';
-import {global} from '@angular/core/src/util/global';
 
 interface ClassDecoratorFactory {
   (data: ClassDecorator): any;
@@ -244,6 +243,17 @@ class TestObj {
         expect(isDelegateCtor(ChildNoCtor)).toBe(true);
         expect(isDelegateCtor(ChildNoCtorPrivateProps)).toBe(true);
         expect(isDelegateCtor(ChildWithCtor)).toBe(false);
+      });
+
+      it('should support instrumented ES2015 extended classes', () => {
+        // These classes are ES2015 instrumented classes by istanbuljs
+        const ChildWithCtorIntsrumented =
+            'class ChildWithCtor extends Parent{constructor(){cov_1wm1ham9dl().s[2]++;cov_1wm1ham9dl().s[1]++;super()cov_1wm1ham9dl().s[1]++;}}';
+        const ChildNoCtorPrivatePropsInstrumented =
+            'class ChildNoCtorPrivateProps extends Parent{constructor(){cov_1wm1ham9dl().s[1]++;cov_1wm1ham9dl().s[2]++;super(...arguments);cov_1wm1ham9dl().s[1]++;this.x=10}}';
+
+        expect(isDelegateCtor(ChildNoCtorPrivatePropsInstrumented)).toBe(true);
+        expect(isDelegateCtor(ChildWithCtorIntsrumented)).toBe(false);
       });
 
       it('should support ES2015 classes when minified', () => {
