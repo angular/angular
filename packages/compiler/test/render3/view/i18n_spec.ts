@@ -16,7 +16,7 @@ import {I18nContext} from '../../../src/render3/view/i18n/context';
 import {serializeI18nMessageForGetMsg} from '../../../src/render3/view/i18n/get_msg_utils';
 import {serializeIcuNode} from '../../../src/render3/view/i18n/icu_serializer';
 import {serializeI18nMessageForLocalize} from '../../../src/render3/view/i18n/localize_utils';
-import {I18nMeta, parseI18nMeta} from '../../../src/render3/view/i18n/meta';
+import {I18nMeta, i18nMetaToJSDoc, parseI18nMeta} from '../../../src/render3/view/i18n/meta';
 import {formatI18nPlaceholderName} from '../../../src/render3/view/i18n/util';
 import {LEADING_TRIVIA_CHARS} from '../../../src/render3/view/template';
 
@@ -326,11 +326,36 @@ describe('Utils', () => {
           .toEqual(
               {cooked: ':abc::message', raw: ':abc::message', range: jasmine.any(ParseSourceSpan)});
     });
-
-    function meta(customId?: string, meaning?: string, description?: string): I18nMeta {
-      return {customId, meaning, description};
-    }
   });
+
+  describe('jsdoc generation', () => {
+    it('generates with description', () => {
+      const docComment = i18nMetaToJSDoc(meta('', '', 'desc'));
+
+      expect(docComment.tags.length).toBe(1);
+      expect(docComment.tags[0]).toEqual({tagName: o.JSDocTagName.Desc, text: 'desc'});
+    });
+
+    it('generates with no description suppressed', () => {
+      const docComment = i18nMetaToJSDoc(meta('', '', ''));
+
+      expect(docComment.tags.length).toBe(1);
+      expect(docComment.tags[0]).toEqual({
+        tagName: o.JSDocTagName.Suppress,
+        text: '{msgDescriptions}',
+      });
+    });
+
+    it('generates with description and meaning', () => {
+      const docComment = i18nMetaToJSDoc(meta('', 'meaning', ''));
+
+      expect(docComment.tags).toContain({tagName: o.JSDocTagName.Meaning, text: 'meaning'});
+    });
+  });
+
+  function meta(customId?: string, meaning?: string, description?: string): I18nMeta {
+    return {customId, meaning, description};
+  }
 });
 
 describe('serializeI18nMessageForGetMsg', () => {

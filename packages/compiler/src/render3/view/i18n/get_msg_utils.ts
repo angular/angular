@@ -32,10 +32,7 @@ export function createGoogleGetMsgStatements(
   // const MSG_... = goog.getMsg(..);
   // I18N_X = MSG_...;
   const googGetMsgStmt = closureVar.set(o.variable(GOOG_GET_MSG).callFn(args)).toConstDecl();
-  const metaComment = i18nMetaToJSDoc(message);
-  if (metaComment !== null) {
-    googGetMsgStmt.addLeadingComment(metaComment);
-  }
+  googGetMsgStmt.addLeadingComment(i18nMetaToJSDoc(message));
   const i18nAssignmentStmt = new o.ExpressionStatement(variable.set(closureVar));
   return [googGetMsgStmt, i18nAssignmentStmt];
 }

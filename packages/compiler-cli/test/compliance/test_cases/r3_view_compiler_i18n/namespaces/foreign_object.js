@@ -2,6 +2,9 @@
 consts: function() {
   let $I18N_0$;
   if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
+    /**
+     * @suppress {msgDescriptions}
+     */
     const $MSG_EXTERNAL_7128002169381370313$$APP_SPEC_TS_1$ = goog.getMsg("{$startTagXhtmlDiv} Count: {$startTagXhtmlSpan}5{$closeTagXhtmlSpan}{$closeTagXhtmlDiv}", {
       "startTagXhtmlDiv": "\uFFFD#3\uFFFD",
       "startTagXhtmlSpan": "\uFFFD#4\uFFFD",
