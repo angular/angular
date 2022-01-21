@@ -341,7 +341,9 @@ In reactive forms, add an async validator by passing the function directly to th
 
 ### Adding async validators to template-driven forms
 
-To use an async validator in template-driven forms, register it with the `NG_ASYNC_VALIDATORS` provider.
+To use an async validator in template-driven forms, create a new directive and register the `NG_ASYNC_VALIDATORS` provider on it.
+
+In the example below, the directive injects the `UniqueAlterEgoValidator` class that contains the actual validation logic and invokes it in the `validate` function, triggered by Angular when validation should happen.
 
 <code-example path="form-validation/src/app/shared/alter-ego.directive.ts" region="async-validator-directive"></code-example>
 
