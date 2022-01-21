@@ -229,7 +229,7 @@ class TemplateVisitor extends TmplAstRecursiveVisitor {
     let name: string;
     let kind: IdentifierKind.Element|IdentifierKind.Template;
     if (node instanceof TmplAstTemplate) {
-      name = node.tagName;
+      name = node.tagName ?? 'ng-template';
       kind = IdentifierKind.Template;
     } else {
       name = node.name;

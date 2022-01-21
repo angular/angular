@@ -75,6 +75,20 @@ runInEachFileSystem(() => {
       });
     });
 
+    it('works when structural directives are on templates', () => {
+      const template = '<ng-template *ngIf="true">';
+      const refs = getTemplateIdentifiers(bind(template));
+
+      const [ref] = Array.from(refs);
+      expect(ref).toEqual({
+        kind: IdentifierKind.Template,
+        name: 'ng-template',
+        span: new AbsoluteSourceSpan(1, 12),
+        usedDirectives: new Set(),
+        attributes: new Set(),
+      });
+    });
+
     it('should generate nothing in empty template', () => {
       const template = '';
       const refs = getTemplateIdentifiers(bind(template));

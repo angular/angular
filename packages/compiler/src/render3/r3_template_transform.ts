@@ -186,7 +186,7 @@ class HtmlAstToIvyAst implements html.Visitor {
     const children: t.Node[] =
         html.visitAll(preparsedElement.nonBindable ? NON_BINDABLE_VISITOR : this, element.children);
 
-    let parsedElement: t.Node|undefined;
+    let parsedElement: t.Content|t.Template|t.Element|undefined;
     if (preparsedElement.type === PreparsedElementType.NG_CONTENT) {
       // `<ng-content>`
       if (element.children &&
@@ -235,13 +235,12 @@ class HtmlAstToIvyAst implements html.Visitor {
       // the wrapping template to prevent unnecessary i18n instructions from being generated. The
       // necessary i18n meta information will be extracted from child elements.
       const i18n = isTemplateElement && isI18nRootElement ? undefined : element.i18n;
+      const name = parsedElement instanceof t.Template ? null : parsedElement.name;
 
-      // TODO(pk): test for this case
       parsedElement = new t.Template(
-          (parsedElement as t.Element | t.Content).name, hoistedAttrs.attributes,
-          hoistedAttrs.inputs, hoistedAttrs.outputs, templateAttrs, [parsedElement],
-          [/* no references */], templateVariables, element.sourceSpan, element.startSourceSpan,
-          element.endSourceSpan, i18n);
+          name, hoistedAttrs.attributes, hoistedAttrs.inputs, hoistedAttrs.outputs, templateAttrs,
+          [parsedElement], [/* no references */], templateVariables, element.sourceSpan,
+          element.startSourceSpan, element.endSourceSpan, i18n);
     }
     if (isI18nRootElement) {
       this.inI18nBlock = false;
