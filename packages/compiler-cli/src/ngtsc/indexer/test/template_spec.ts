@@ -62,6 +62,19 @@ runInEachFileSystem(() => {
       });
     });
 
+    it('should handle whitespace and comments in interpolations', () => {
+      const template = '{{   foo // comment   }}';
+      const refs = getTemplateIdentifiers(bind(template));
+
+      const [ref] = Array.from(refs);
+      expect(ref).toEqual({
+        name: 'foo',
+        kind: IdentifierKind.Property,
+        span: new AbsoluteSourceSpan(5, 8),
+        target: null,
+      });
+    });
+
     it('should generate nothing in empty template', () => {
       const template = '';
       const refs = getTemplateIdentifiers(bind(template));
