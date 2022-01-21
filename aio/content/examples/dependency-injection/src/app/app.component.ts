@@ -13,7 +13,7 @@ import { UserService } from './user.service';
     <h2>User</h2>
     <p id="user">
       {{userInfo}}
-      <button (click)="nextUser()">Next User</button>
+      <button type="button" (click)="nextUser()">Next User</button>
     <p>
     <app-heroes id="authorized" *ngIf="isAuthorized"></app-heroes>
     <app-heroes id="unauthorized" *ngIf="!isAuthorized"></app-heroes>

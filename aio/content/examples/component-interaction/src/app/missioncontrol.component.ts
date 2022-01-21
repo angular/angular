@@ -7,7 +7,7 @@ import { MissionService } from './mission.service';
   selector: 'app-mission-control',
   template: `
     <h2>Mission Control</h2>
-    <button (click)="announce()">Announce mission</button>
+    <button type="button" (click)="announce()">Announce mission</button>
 
     <app-astronaut
       *ngFor="let astronaut of astronauts"

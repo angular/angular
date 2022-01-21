@@ -4,7 +4,7 @@ import { Component, OnInit } from '@angular/core';
 // #docregion example
 @Component({
   selector: 'toh-hero-button',
-  template: `<button>OK</button>`
+  template: `<button type="button">OK</button>`
 })
 export class HeroButtonComponent implements OnInit {
   ngOnInit() {

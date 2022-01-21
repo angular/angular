@@ -1,6 +1,6 @@
 /* FOR DOCS ... MUST MATCH ClickMeComponent template
 // #docregion click-me-button
-  <button (click)="onClickMe()">Click me!</button>
+  <button type="button" (click)="onClickMe()">Click me!</button>
 // #enddocregion click-me-button
 */
 
@@ -11,7 +11,7 @@ import { Component } from '@angular/core';
 @Component({
   selector: 'app-click-me',
   template: `
-    <button (click)="onClickMe()">Click me!</button>
+    <button type="button" (click)="onClickMe()">Click me!</button>
     {{clickMessage}}`
 })
 export class ClickMeComponent {

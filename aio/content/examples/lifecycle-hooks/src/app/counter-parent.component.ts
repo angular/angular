@@ -7,8 +7,8 @@ import { LoggerService } from './logger.service';
   template: `
   <h2>Counter Spy</h2>
 
-  <button (click)="updateCounter()">Update counter</button>
-  <button (click)="reset()">Reset Counter</button>
+  <button type="button" (click)="updateCounter()">Update counter</button>
+  <button type="button" (click)="reset()">Reset Counter</button>
 
   <app-counter [counter]="value"></app-counter>
 

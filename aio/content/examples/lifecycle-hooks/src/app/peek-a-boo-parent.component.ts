@@ -10,10 +10,10 @@ import { LoggerService } from './logger.service';
   <div class="parent">
     <h2>Peek-A-Boo</h2>
 
-    <button (click)="toggleChild()">
+    <button type="button" (click)="toggleChild()">
       {{hasChild ? 'Destroy' : 'Create'}} PeekABooComponent
     </button>
-    <button (click)="updateHero()" [hidden]="!hasChild">Update Hero</button>
+    <button type="button" (click)="updateHero()" [hidden]="!hasChild">Update Hero</button>
 
     <div class="info">
       <peek-a-boo *ngIf="hasChild" [name]="heroName"></peek-a-boo>

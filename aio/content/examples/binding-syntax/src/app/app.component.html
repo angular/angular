@@ -7,7 +7,7 @@
     <h2>Button disabled state bound to isUnchanged property</h2>
     <!-- #docregion disabled-button -->
     <!-- Bind button disabled state to `isUnchanged` property -->
-    <button [disabled]="isUnchanged">Save</button>
+    <button type="button" [disabled]="isUnchanged">Save</button>
     <!-- #enddocregion disabled-button -->
   </div>
 
@@ -20,11 +20,11 @@
     <label>HTML Attribute Initializes to "Sarah":
     <input type="text" value="Sarah" #bindingInput></label>
     <div>
-    <button (click)="getHTMLAttributeValue()">Get HTML attribute value</button> Won't change.
+    <button type="button" (click)="getHTMLAttributeValue()">Get HTML attribute value</button> Won't change.
     </div>
 
     <div>
-        <button (click)="getDOMPropertyValue()">Get DOM property value</button> Changeable. Angular works with these.
+        <button type="button" (click)="getDOMPropertyValue()">Get DOM property value</button> Changeable. Angular works with these.
     </div>
 
     <p>2. Change the name in the input and click the buttons again.</p>
@@ -36,10 +36,10 @@
     <h3>Disabled property vs. attribute</h3>
     <p>Use the inspector to see the Test Button work and its disabled property toggle.</p>
     <div>
-    <button id="testButton" (click)="working()">Test Button</button>
+    <button type="button" id="testButton" (click)="working()">Test Button</button>
     </div>
     <div>
-    <button (click)="toggleDisabled()">Toggle disabled property for Test Button</button>
+    <button type="button" (click)="toggleDisabled()">Toggle disabled property for Test Button</button>
   </div>
 
 </div>

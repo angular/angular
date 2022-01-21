@@ -3,7 +3,7 @@
 <ul class="heroes">
   <!-- #docregion li -->
   <li *ngFor="let hero of heroes">
-    <button [class.selected]="hero === selectedHero" (click)="onSelect(hero)">
+    <button [class.selected]="hero === selectedHero" type="button" (click)="onSelect(hero)">
       <span class="badge">{{hero.id}}</span>
       <span class="name">{{hero.name}}</span>
     </button>

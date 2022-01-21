@@ -85,14 +85,14 @@
 <p>Component statement context ( (click)="onSave() )
 <div class="context">
   <!-- #docregion context-component-statement -->
-  <button (click)="deleteHero()">Delete hero</button>
+  <button type="button" (click)="deleteHero()">Delete hero</button>
   <!-- #enddocregion context-component-statement -->
 </div>
 
 <p>Template $event statement context</p>
 <div class="context">
   <!-- #docregion context-var-statement -->
-  <button (click)="onSave($event)">Save</button>
+  <button type="button" (click)="onSave($event)">Save</button>
   <!-- #enddocregion context-var-statement -->
 </div>
 
@@ -100,7 +100,7 @@
 <!-- template hides the following; plenty of examples later -->
 <div class="context">
   <!-- #docregion context-var-statement -->
-  <button *ngFor="let hero of heroes" (click)="deleteHero(hero)">{{hero.name}}</button>
+  <button type="button" *ngFor="let hero of heroes" (click)="deleteHero(hero)">{{hero.name}}</button>
   <!-- #enddocregion context-var-statement -->
 </div>
 
@@ -120,7 +120,7 @@
 <!-- Public Domain terms of use: https://wpclipart.com/terms.html -->
 <div class="special">Mental Model</div>
 <img [alt]="hero.name" src="assets/images/hero.png">
-<button disabled>Save</button>
+<button type="button" disabled>Save</button>
 <br><br>
 
 <div>
@@ -133,7 +133,7 @@
 
 <div>
   <!-- Bind button disabled state to `isUnchanged` property -->
-  <button [disabled]="isUnchanged">Save</button>
+  <button type="button" [disabled]="isUnchanged">Save</button>
 </div>
 <br><br>
 
@@ -147,7 +147,7 @@
 <br><br>
 
 <!-- #docregion event-binding-syntax-1 -->
-<button (click)="onSave()">Save</button>
+<button type="button" (click)="onSave()">Save</button>
 <app-hero-detail (deleteRequest)="deleteHero()"></app-hero-detail>
 <div (myClick)="clicked=$event" clickable>click me</div>
 <!-- #enddocregion event-binding-syntax-1 -->
@@ -164,7 +164,7 @@
 <br><br>
 
 <!-- #docregion attribute-binding-syntax-1 -->
-<button [attr.aria-label]="help">help</button>
+<button type="button" [attr.aria-label]="help">help</button>
 <!-- #enddocregion attribute-binding-syntax-1 -->
 <br><br>
 
@@ -174,7 +174,7 @@
 <br><br>
 
 <!-- #docregion style-binding-syntax-1 -->
-<button [style.color]="isSpecial ? 'red' : 'green'">
+<button type="button" [style.color]="isSpecial ? 'red' : 'green'">
 <!-- #enddocregion style-binding-syntax-1 -->
 button</button>
 
@@ -198,13 +198,13 @@ button</button>
 <hr><h2 id="buttons">Buttons</h2>
 
 <button>Enabled (but does nothing)</button>
-<button disabled>Disabled</button>
-<button disabled=false>Still disabled</button>
+<button type="button" disabled>Disabled</button>
+<button type="button" disabled=false>Still disabled</button>
 <br><br>
-<button disabled>disabled by attribute</button>
-<button [disabled]="isUnchanged">disabled by property binding</button>
+<button type="button" disabled>disabled by attribute</button>
+<button type="button" [disabled]="isUnchanged">disabled by property binding</button>
 <br><br>
-<button [disabled]="!canSave" (click)="onSave($event)">Enabled Save</button>
+<button type="button" [disabled]="!canSave" (click)="onSave($event)">Enabled Save</button>
 
 <a class="to-toc" href="#toc">top</a>
 
@@ -212,7 +212,7 @@ button</button>
 <hr><h2 id="property-binding">Property Binding</h2>
 
 <img [alt]="hero.name" [src]="heroImageUrl">
-<button [disabled]="isUnchanged">Cancel is disabled</button>
+<button type="button" [disabled]="isUnchanged">Cancel is disabled</button>
 <div [ngClass]="classes">[ngClass] binding to the classes property</div>
 <app-hero-detail [hero]="currentHero"></app-hero-detail>
 
@@ -259,18 +259,18 @@ button</button>
 
 <br>
 <!-- create and set an aria attribute for assistive technology -->
-<button [attr.aria-label]="actionName">{{actionName}} with Aria</button>
+<button type="button" [attr.aria-label]="actionName">{{actionName}} with Aria</button>
 <br><br>
 
 <!-- The following effects are not discussed in the chapter -->
 <div>
   <!-- any use of [attr.disabled] creates the disabled attribute -->
-  <button [attr.disabled]="isUnchanged">Disabled</button>
+  <button type="button" [attr.disabled]="isUnchanged">Disabled</button>
 
-  <button [attr.disabled]="!isUnchanged">Disabled as well</button>
+  <button type="button" [attr.disabled]="!isUnchanged">Disabled as well</button>
 
   <!-- we'd have to remove it with property binding -->
-  <button disabled [disabled]="false">Enabled (but inert)</button>
+  <button type="button" disabled [disabled]="false">Enabled (but inert)</button>
 </div>
 
 <a class="to-toc" href="#toc">top</a>
@@ -297,18 +297,18 @@ button</button>
 <!--style binding -->
 <hr><h2 id="style-binding">Style Binding</h2>
 
-<button [style.color]="isSpecial ? 'red': 'green'">Red</button>
-<button [style.background-color]="canSave ? 'cyan': 'grey'" >Save</button>
+<button type="button" [style.color]="isSpecial ? 'red': 'green'">Red</button>
+<button type="button" [style.background-color]="canSave ? 'cyan': 'grey'" >Save</button>
 
-<button [style.font-size.em]="isSpecial ? 3 : 1" >Big</button>
-<button [style.font-size.%]="!isSpecial ? 150 : 50" >Small</button>
+<button type="button" [style.font-size.em]="isSpecial ? 3 : 1" >Big</button>
+<button type="button" [style.font-size.%]="!isSpecial ? 150 : 50" >Small</button>
 
 <a class="to-toc" href="#toc">top</a>
 
 <!-- event binding -->
 <hr><h2 id="event-binding">Event Binding</h2>
 
-<button (click)="onSave()">Save</button>
+<button type="button" (click)="onSave()">Save</button>
 
 <div>
 <!-- `myClick` is an event on the custom `ClickDirective` -->
@@ -334,12 +334,12 @@ button</button>
 
 <!-- Will save only once -->
 <div (click)="onSave()" clickable>
-  <button (click)="onSave($event)">Save, no propagation</button>
+  <button type="button" (click)="onSave($event)">Save, no propagation</button>
 </div>
 
 <!-- Will save twice -->
 <div (click)="onSave()" clickable>
-  <button (click)="onSave()">Save w/ propagation</button>
+  <button type="button" (click)="onSave()">Save w/ propagation</button>
 </div>
 
 <!-- eslint-enable @angular-eslint/template/click-events-have-key-events -->
@@ -396,7 +396,7 @@ without NgModel
 <label>saveable   <input type="checkbox" [(ngModel)]="canSave"></label> |
 <label>modified:  <input type="checkbox" [value]="!isUnchanged" (change)="isUnchanged=!isUnchanged"></label> |
 <label>special:   <input type="checkbox" [(ngModel)]="isSpecial"></label>
-<button (click)="setCurrentClasses()">Refresh currentClasses</button>
+<button type="button" (click)="setCurrentClasses()">Refresh currentClasses</button>
 <br><br>
 <div [ngClass]="currentClasses">
   This div should be {{ canSave ? "": "not"}} saveable,
@@ -429,7 +429,7 @@ without NgModel
 <label>italic: <input type="checkbox" [(ngModel)]="canSave"></label> |
 <label>normal: <input type="checkbox" [(ngModel)]="isUnchanged"></label> |
 <label>xlarge: <input type="checkbox" [(ngModel)]="isSpecial"></label>
-<button (click)="setCurrentStyles()">Refresh currentStyles</button>
+<button type="button" (click)="setCurrentStyles()">Refresh currentStyles</button>
 <br><br>
 <div [ngStyle]="currentStyles">
   This div should be {{ canSave ? "italic": "plain"}},
@@ -498,9 +498,9 @@ without NgModel
 <a class="to-toc" href="#toc">top</a>
 
 <h4 id="ngFor-trackBy">*ngFor trackBy</h4>
-<button (click)="resetHeroes()">Reset heroes</button>
-<button (click)="changeIds()">Change ids</button>
-<button (click)="clearTrackByCounts()">Clear counts</button>
+<button type="button" (click)="resetHeroes()">Reset heroes</button>
+<button type="button" (click)="changeIds()">Change ids</button>
+<button type="button" (click)="clearTrackByCounts()">Clear counts</button>
 
 <p><i>without</i> trackBy</p>
 <div class="box">
@@ -574,10 +574,10 @@ without NgModel
 <!-- lots of other elements -->
 
 <!-- phone refers to the input element; pass its `value` to an event handler -->
-<button (click)="callPhone(phone.value)">Call</button>
+<button type="button" (click)="callPhone(phone.value)">Call</button>
 
 <!-- btn refers to the button element; show its disabled state -->
-<button #btn disabled [innerHTML]="'disabled by attribute: '+btn.disabled"></button>
+<button type="button" #btn disabled [innerHTML]="'disabled by attribute: '+btn.disabled"></button>
 
 <h4>Example Form</h4>
 <app-hero-form [hero]="currentHero"></app-hero-form>
@@ -588,7 +588,7 @@ without NgModel
 <hr><h2 id="inputs-and-outputs">Inputs and Outputs</h2>
 
 <img alt="icon" [src]="iconUrl"/>
-<button (click)="onSave()">Save</button>
+<button type="button" (click)="onSave()">Save</button>
 
 <app-hero-detail [hero]="currentHero" (deleteRequest)="deleteHero($event)">
 </app-hero-detail>
@@ -699,7 +699,7 @@ The null hero's name is {{nullHero && nullHero.name}}
 <p>
   The name of the Color.Red enum is {{Color[Color.Red]}}.<br>
   The current color is {{Color[color]}} and its number is {{color}}.<br>
-  <button [style.color]="Color[color]" (click)="colorToggle()">Enum Toggle</button>
+  <button type="button" [style.color]="Color[color]" (click)="colorToggle()">Enum Toggle</button>
 </p>
 
 <a class="to-toc" href="#toc">top</a>

@@ -12,9 +12,9 @@ import { Title } from '@angular/platform-browser';
     </p>
 
     <ul>
-      <li><button (click)="setTitle('Good morning!')">Good morning</button></li>
-      <li><button (click)="setTitle('Good afternoon!')">Good afternoon</button></li>
-      <li><button (click)="setTitle('Good evening!')">Good evening</button></li>
+      <li><button type="button" (click)="setTitle('Good morning!')">Good morning</button></li>
+      <li><button type="button" (click)="setTitle('Good afternoon!')">Good afternoon</button></li>
+      <li><button type="button" (click)="setTitle('Good evening!')">Good evening</button></li>
     </ul>
   `,
 })

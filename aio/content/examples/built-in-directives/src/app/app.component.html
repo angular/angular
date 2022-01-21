@@ -50,7 +50,7 @@
     <label for="special">special: <input type="checkbox" [(ngModel)]="isSpecial" id="special"></label>
 </li>
 </ul>
-<button (click)="setCurrentClasses()">Refresh currentClasses</button>
+<button type="button" (click)="setCurrentClasses()">Refresh currentClasses</button>
 
 <div [ngClass]="currentClasses">
   This div should be {{ canSave ? "": "not"}} saveable,
@@ -86,7 +86,7 @@
 <label>italic: <input type="checkbox" [(ngModel)]="canSave"></label> |
 <label>normal: <input type="checkbox" [(ngModel)]="isUnchanged"></label> |
 <label>xlarge: <input type="checkbox" [(ngModel)]="isSpecial"></label>
-<button (click)="setCurrentStyles()">Refresh currentStyles</button>
+<button type="button" (click)="setCurrentStyles()">Refresh currentStyles</button>
 <br><br>
 <div [ngStyle]="currentStyles">
   This div should be {{ canSave ? "italic": "plain"}},
@@ -102,7 +102,7 @@
   <app-item-detail *ngIf="isActive" [item]="item"></app-item-detail>
   <!-- #enddocregion NgIf-1 -->
 
-  <button (click)="isActiveToggle()">Toggle app-item-detail</button>
+  <button type="button" (click)="isActiveToggle()">Toggle app-item-detail</button>
 </div>
 <p>If currentCustomer isn't null, say hello to Laura:</p>
 <!-- #docregion NgIf-2 -->
@@ -112,7 +112,7 @@
 <!-- #docregion NgIf-2b -->
 <div *ngIf="nullCustomer">Hello, <span>{{nullCustomer}}</span></div>
 <!-- #enddocregion NgIf-2b -->
-<button (click)="giveNullCustomerValue()">Give nullCustomer a value</button>
+<button type="button" (click)="giveNullCustomerValue()">Give nullCustomer a value</button>
 
 
 <h4>NgIf binding with template (no *)</h4>
@@ -163,9 +163,9 @@
 </div>
 
 <h4 id="ngFor-trackBy">*ngFor trackBy</h4>
-<button (click)="resetList()">Reset items</button>
-<button (click)="changeIds()">Change ids</button>
-<button (click)="clearTrackByCounts()">Clear counts</button>
+<button type="button" (click)="resetList()">Reset items</button>
+<button type="button" (click)="changeIds()">Change ids</button>
+<button type="button" (click)="clearTrackByCounts()">Clear counts</button>
 
 <p><i>without</i> trackBy</p>
 <div class="box">

@@ -8,10 +8,10 @@ import { BROWSER_STORAGE, BrowserStorageService } from './storage.service';
     Open the inspector to see the local/session storage keys:
 
     <h3>Session Storage</h3>
-    <button (click)="setSession()">Set Session Storage</button>
+    <button type="button" (click)="setSession()">Set Session Storage</button>
 
     <h3>Local Storage</h3>
-    <button (click)="setLocal()">Set Local Storage</button>
+    <button type="button" (click)="setLocal()">Set Local Storage</button>
   `,
   providers: [
     BrowserStorageService,
