@@ -16,7 +16,7 @@ import { Observable, of } from 'rxjs';
   providers: [
     {
       provide: NG_ASYNC_VALIDATORS,
-      useExisting: forwardRef(() => UniqueAlterEgoValidator),
+      useExisting: forwardRef(() => UniqueAlterEgoValidatorDirective),
       multi: true
     }
   ]
@@ -26,9 +26,9 @@ export class UniqueAlterEgoValidatorDirective implements AsyncValidator {
   constructor(private heroesService: HeroesService) {}
 
   validate(
-    ctrl: AbstractControl
-  ): Promise<ValidationErrors | null> | Observable<ValidationErrors | null> {
-    return this.heroesService.isAlterEgoTaken(ctrl.value).pipe(
+    control: AbstractControl
+  ): Observable<ValidationErrors | null> {
+    return this.heroesService.isAlterEgoTaken(control.value).pipe(
       map(isTaken => (isTaken ? { uniqueAlterEgo: true } : null)),
       catchError(() => of(null))
     );
