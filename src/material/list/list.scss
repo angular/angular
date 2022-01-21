@@ -66,6 +66,7 @@ $item-inset-divider-offset: 72px;
   }
 
   .mat-list-item-ripple {
+    display: block;
     @include layout-common.fill;
 
     // Disable pointer events for the ripple container because the container will overlay the
