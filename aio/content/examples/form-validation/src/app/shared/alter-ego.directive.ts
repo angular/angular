@@ -37,15 +37,12 @@ export class UniqueAlterEgoValidator implements AsyncValidator {
   ]
 })
 export class UniqueAlterEgoValidatorDirective implements AsyncValidator {
-  constructor(private heroesService: HeroesService) {}
+  constructor(private validator: UniqueAlterEgoValidator) {}
 
   validate(
     control: AbstractControl
   ): Observable<ValidationErrors | null> {
-    return this.heroesService.isAlterEgoTaken(control.value).pipe(
-      map(isTaken => (isTaken ? { uniqueAlterEgo: true } : null)),
-      catchError(() => of(null))
-    );
+    this.validator.validate(control);
   }
 }
 // #enddocregion async-validator-directive
