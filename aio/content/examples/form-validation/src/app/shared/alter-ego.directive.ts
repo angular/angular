@@ -42,7 +42,7 @@ export class UniqueAlterEgoValidatorDirective implements AsyncValidator {
   validate(
     control: AbstractControl
   ): Observable<ValidationErrors | null> {
-    this.validator.validate(control);
+    return this.validator.validate(control);
   }
 }
 // #enddocregion async-validator-directive
