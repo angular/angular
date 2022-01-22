@@ -24,8 +24,8 @@ export class HeroFormReactiveComponent implements OnInit {
       asyncValidators: [this.alterEgoValidator.validate.bind(this.alterEgoValidator)],
       updateOn: 'blur'
     });
-    alterEgoControl.setValue(this.hero.alterEgo);
     // #enddocregion async-validator-usage
+     alterEgoControl.setValue(this.hero.alterEgo);
 
     this.heroForm = new FormGroup({
       name: new FormControl(this.hero.name, [
