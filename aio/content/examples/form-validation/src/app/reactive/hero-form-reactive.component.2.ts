@@ -43,7 +43,7 @@ export class HeroFormReactiveComponent implements OnInit {
   get power() { return this.heroForm.get('power'); }
 
   get alterEgo() { return this.heroForm.get('alterEgo'); }
-  
+
   // #docregion async-validator-inject
   constructor(private alterEgoValidator: UniqueAlterEgoValidator) {}
   // #enddocregion async-validator-inject
