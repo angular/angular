@@ -335,9 +335,15 @@ The `pending` flag is set to `false`, and the form validity is updated.
 
 ### Adding async validators to reactive forms
 
-In reactive forms, add an async validator by passing the function directly to the `FormControl`.
+To use an async validator in reactive forms, begin by injecting the validator into the constructor of the component class.
 
-<code-example path="form-validation/src/app/reactive/hero-form-reactive.component.2.ts" region="async-validator"></code-example>
+<code-example path="form-validation/src/app/reactive/hero-form-reactive.component.2.ts" region="async-validator-inject"></code-example>
+
+Then, pass the validator function directly to the `FormControl` to apply it. 
+
+In the following example, the `validate` function of `UniqueAlterEgoValidator` is applied to `alterEgoControl` by passing it to the control's `asyncValidators` option and binding it to the instance of `UniqueAlterEgoValidator` that was injected into `HeroFormReactiveComponent`. The value of `asyncValidators` can be either a single async validator function, or an array of functions.
+
+<code-example path="form-validation/src/app/reactive/hero-form-reactive.component.2.ts" region="async-validator-usage"></code-example>
 
 ### Adding async validators to template-driven forms
 
