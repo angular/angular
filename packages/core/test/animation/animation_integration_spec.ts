@@ -3885,6 +3885,66 @@ describe('animation tests', function() {
     }).not.toThrowError();
   });
 
+  it('should add the transition provided delay to all the transition\'s timelines', () => {
+    @Component({
+      selector: 'cmp',
+      template: `
+       <div @parent *ngIf="exp">
+         <div @child *ngIf="exp"></div>
+       </div>
+     `,
+      animations: [
+        trigger('parent', [transition(
+                              ':enter',
+                              [
+                                style({background: 'red'}),
+                                group(
+                                    [
+                                      animate('1s 3s ease', style({background: 'green'})),
+                                      query('@child', animateChild())
+                                    ],
+                                    {delay: 111}),
+                              ],
+                              {delay: '2s'})]),
+        trigger('child', [transition(
+                             ':enter',
+                             [
+                               style({color: 'white'}),
+                               animate('2s 3s ease', style({color: 'black'})),
+                             ],
+                             {delay: 222})]),
+      ]
+    })
+    class Cmp {
+      exp: boolean = false;
+    }
+
+    TestBed.configureTestingModule({declarations: [Cmp]});
+
+    const engine = TestBed.inject(ɵAnimationEngine);
+    const fixture = TestBed.createComponent(Cmp);
+    const cmp = fixture.componentInstance;
+    cmp.exp = true;
+
+    fixture.detectChanges();
+    engine.flush();
+
+    const players = getLog();
+    expect(players.length).toEqual(4);
+    // players:
+    //  - scp (skipped child player): player for the child animation
+    //  - pp1 (parent player 1): player for parent animation (from background red to red)
+    //  - pp2 (parent player 2): player for parent animation (from background red to green)
+    //  - pcp (parent child player):
+    //     player for child animation executed by parent via query and animateChild
+    const [scp, pp1, pp2, pcp] = players;
+    expect(scp.delay).toEqual(222);
+    expect(pp1.delay).toEqual(2000);
+    expect(pp2.delay).toEqual(2111);     // 2000 + 111
+    expect(pcp.delay).toEqual(0);        // all the delays are included in the child animation
+    expect(pcp.duration).toEqual(7333);  // 2s + 3s + 2000 + 111 + 222
+  });
+
   describe('errors for not using the animation module', () => {
     beforeEach(() => {
       TestBed.configureTestingModule({
