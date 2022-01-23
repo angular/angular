@@ -9,7 +9,7 @@ import {AnimationOptions, ɵStyleDataMap} from '@angular/animations';
 
 import {AnimationDriver} from '../render/animation_driver';
 import {getOrSetDefaultValue} from '../render/shared';
-import {copyObj, interpolateParams, iteratorToArray} from '../util';
+import {copyObj, interpolateParams, iteratorToArray, resolveTimingValue} from '../util';
 
 import {StyleAst, TransitionAst} from './animation_ast';
 import {buildAnimationTimelines} from './animation_timeline_builder';
@@ -56,7 +56,11 @@ export class AnimationTransitionFactory {
     const postStyleMap = new Map<any, Set<string>>();
     const isRemoval = nextState === 'void';
 
-    const animationOptions = {params: {...transitionAnimationParams, ...nextAnimationParams}};
+    const animationOptions: AnimationOptions = {
+      params: {...transitionAnimationParams, ...nextAnimationParams},
+      delay: this.ast.options?.delay,
+    };
+
     const timelines = skipAstBuild ?
         [] :
         buildAnimationTimelines(
