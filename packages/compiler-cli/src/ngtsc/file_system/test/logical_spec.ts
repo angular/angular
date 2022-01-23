@@ -57,6 +57,8 @@ runInEachFileSystem(() => {
         const fs = new LogicalFileSystem([_('/Test')], host);
         expect(fs.logicalPathOfFile(_('/Test/foo/Foo.ts')))
             .toEqual('/foo/Foo' as LogicalProjectPath);
+        expect(fs.logicalPathOfFile(_('/Test/foo/foo.ts')))
+            .toEqual('/foo/foo' as LogicalProjectPath);
         expect(fs.logicalPathOfFile(_('/Test/bar/bAR.ts')))
             .toEqual('/bar/bAR' as LogicalProjectPath);
       });
