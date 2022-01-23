@@ -55,6 +55,7 @@
   display: flex;
   flex-grow: 1;
   margin-right: 16px;
+  align-items: center;
 
   [dir='rtl'] & {
     margin-right: 0;
