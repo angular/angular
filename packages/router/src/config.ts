@@ -384,7 +384,7 @@ export interface Route {
    * matches a given path and stops when there is a config match. Importantly there must still be a
    * config match for each segment of the URL. For example, '/team/11/user' matches the prefix
    * 'team/:id' if one of the route's children matches the segment 'user'. That is, the URL
-   * '/team/11/user` matches the config
+   * '/team/11/user' matches the config
    * `{path: 'team/:id', children: [{path: ':user', component: User}]}`
    * but does not match when there are no children as in `{path: 'team/:id', component: Team}`.
    *
