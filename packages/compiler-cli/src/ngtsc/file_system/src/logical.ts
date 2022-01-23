@@ -83,9 +83,9 @@ export class LogicalFileSystem {
    * of the TS project's root directories.
    */
   logicalPathOfFile(physicalFile: AbsoluteFsPath): LogicalProjectPath|null {
-    const canonicalFilePath =
-        this.compilerHost.getCanonicalFileName(physicalFile) as AbsoluteFsPath;
-    if (!this.cache.has(canonicalFilePath)) {
+    if (!this.cache.has(physicalFile)) {
+      const canonicalFilePath =
+          this.compilerHost.getCanonicalFileName(physicalFile) as AbsoluteFsPath;
       let logicalFile: LogicalProjectPath|null = null;
       for (let i = 0; i < this.rootDirs.length; i++) {
         const rootDir = this.rootDirs[i];
@@ -102,9 +102,9 @@ export class LogicalFileSystem {
           }
         }
       }
-      this.cache.set(canonicalFilePath, logicalFile);
+      this.cache.set(physicalFile, logicalFile);
     }
-    return this.cache.get(canonicalFilePath)!;
+    return this.cache.get(physicalFile)!;
   }
 
   private createLogicalProjectPath(file: AbsoluteFsPath, rootDir: AbsoluteFsPath):
