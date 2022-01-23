@@ -26,6 +26,7 @@ export interface AnimationTransitionInstruction extends AnimationEngineInstructi
   postStyleProps: Map<any, Set<string>>;
   totalTime: number;
   errors?: string[];
+  delay?: number;
 }
 
 export function createTransitionInstruction(
