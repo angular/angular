@@ -50,6 +50,20 @@ export enum ImportFlags {
    * type-only declarations as used in e.g. template type-checking.
    */
   AllowTypeImports = 0x04,
+
+  /**
+   * Indicates that importing from a declaration file using a relative import path is allowed.
+   *
+   * The generated imports should normally use module specifiers that are valid for use in
+   * production code, where arbitrary relative imports into e.g. node_modules are not allowed. For
+   * template type-checking code it is however acceptable to use relative imports, as such files are
+   * never emitted to JS code.
+   *
+   * Non-declaration files have to be contained within a configured `rootDir` so using relative
+   * paths may not be possible for those, hence this flag only applies when importing from a
+   * declaration file.
+   */
+  AllowRelativeDtsImports = 0x08,
 }
 
 /**
@@ -353,16 +367,24 @@ export class AbsoluteModuleStrategy implements ReferenceEmitStrategy {
  * Instead, `LogicalProjectPath`s are used.
  */
 export class LogicalProjectStrategy implements ReferenceEmitStrategy {
+  private relativePathStrategy = new RelativePathStrategy(this.reflector);
+
   constructor(private reflector: ReflectionHost, private logicalFs: LogicalFileSystem) {}
 
-  emit(ref: Reference, context: ts.SourceFile): ReferenceEmitResult|null {
+  emit(ref: Reference, context: ts.SourceFile, importFlags: ImportFlags): ReferenceEmitResult|null {
     const destSf = getSourceFile(ref.node);
 
     // Compute the relative path from the importing file to the file being imported. This is done
     // as a logical path computation, because the two files might be in different rootDirs.
     const destPath = this.logicalFs.logicalPathOfSf(destSf);
     if (destPath === null) {
-      // The imported file is not within the logical project filesystem.
+      // The imported file is not within the logical project filesystem. An import into a
+      // declaration file is exempt from `TS6059: File is not under 'rootDir'` so we choose to allow
+      // using a filesystem relative path as fallback, if allowed per the provided import flags.
+      if (destSf.isDeclarationFile && importFlags & ImportFlags.AllowRelativeDtsImports) {
+        return this.relativePathStrategy.emit(ref, context);
+      }
+
       // Note: this error is analogous to `TS6059: File is not under 'rootDir'` that TypeScript
       // reports.
       return {

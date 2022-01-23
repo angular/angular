@@ -210,7 +210,7 @@ runInEachFileSystem(() => {
       expect(emit(emitter)).toEqual('<T extends i0.Internal>');
     });
 
-    it('cannot emit references into relative files that are outside of rootDirs', () => {
+    it('cannot emit references into relative source files that are outside of rootDirs', () => {
       const additionalFiles: TestFile[] = [{
         name: absoluteFrom('/internal.ts'),
         contents: `export class Internal {}`,
@@ -222,7 +222,26 @@ runInEachFileSystem(() => {
           export class TestClass<T extends Internal> {}`,
           additionalFiles);
 
+      // The `internal.ts` source file is outside `rootDir` and importing from it would trigger
+      // TS6059, so this emit should fail.
       expect(() => emit(emitter)).toThrow();
+    });
+
+    it('can emit references into relative declaration files that are outside of rootDirs', () => {
+      const additionalFiles: TestFile[] = [{
+        name: absoluteFrom('/internal.d.ts'),
+        contents: `export class Internal {}`,
+      }];
+      const emitter = createEmitter(
+          `
+          import {Internal} from '../internal';
+
+          export class TestClass<T extends Internal> {}`,
+          additionalFiles);
+
+      // The `internal.d.ts` is outside `rootDir` but declaration files do not trigger TS6059, so we
+      // allow such an import to be created.
+      expect(emit(emitter)).toEqual('<T extends i0.Internal>');
     });
 
     it('cannot emit unresolved references', () => {
