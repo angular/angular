@@ -50,7 +50,7 @@ To get the most out of these developer guides, you should review the following t
   </a>
   <a href="guide/service-worker-intro" class="docs-card" title="Angular service worker developer guide">
     <section>Service Workers and PWA</section>
-    <p>Learn about how to us a service worker to create a progressive web application.</p>
+    <p>Learn about how to use a service worker to create a progressive web application.</p>
     <p class="card-footer">Service workers and PWA</p>
   </a>
   <a href="guide/web-worker" class="docs-card" title="Web Workers">
