@@ -9,7 +9,7 @@ import {AnimationOptions, ɵStyleDataMap} from '@angular/animations';
 
 import {AnimationDriver} from '../render/animation_driver';
 import {getOrSetDefaultValue} from '../render/shared';
-import {copyObj, interpolateParams, iteratorToArray} from '../util';
+import {copyObj, interpolateParams, iteratorToArray, resolveTimingValue} from '../util';
 
 import {StyleAst, TransitionAst} from './animation_ast';
 import {buildAnimationTimelines} from './animation_timeline_builder';
@@ -74,7 +74,10 @@ export class AnimationTransitionFactory {
           nextStateStyles, [], [], preStyleMap, postStyleMap, totalTime, errors);
     }
 
+    const transitionDelay = this.ast.options?.delay ? resolveTimingValue(this.ast.options.delay) : 0;
+
     timelines.forEach(tl => {
+      tl.delay += transitionDelay;
       const elm = tl.element;
       const preProps = getOrSetDefaultValue(preStyleMap, elm, new Set<string>());
       tl.preStyleProps.forEach(prop => preProps.add(prop));

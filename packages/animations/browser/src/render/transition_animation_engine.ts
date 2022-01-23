@@ -13,7 +13,7 @@ import {AnimationTransitionInstruction} from '../dsl/animation_transition_instru
 import {AnimationTrigger} from '../dsl/animation_trigger';
 import {ElementInstructionMap} from '../dsl/element_instruction_map';
 import {AnimationStyleNormalizer} from '../dsl/style_normalization/animation_style_normalizer';
-import {copyObj, ENTER_CLASSNAME, eraseStyles, LEAVE_CLASSNAME, NG_ANIMATING_CLASSNAME, NG_ANIMATING_SELECTOR, NG_TRIGGER_CLASSNAME, NG_TRIGGER_SELECTOR, resolveTimingValue, setStyles} from '../util';
+import {copyObj, ENTER_CLASSNAME, eraseStyles, LEAVE_CLASSNAME, NG_ANIMATING_CLASSNAME, NG_ANIMATING_SELECTOR, NG_TRIGGER_CLASSNAME, NG_TRIGGER_SELECTOR, setStyles} from '../util';
 
 import {AnimationDriver} from './animation_driver';
 import {getOrSetDefaultValue, listenOnPlayer, makeAnimationEvent, normalizeKeyframes, optimizeGroupPlayer} from './shared';
@@ -1062,14 +1062,6 @@ export class TransitionAnimationEngine {
             timelines.push(tl);
           }
         });
-
-        if (entry.transition.ast.options?.delay) {
-          const transitionDelay = resolveTimingValue(entry.transition.ast.options.delay);
-          instruction.timelines.forEach(tl => {
-            tl.delay += transitionDelay;
-          });
-        }
-
         instruction.timelines = timelines;
 
         subTimelines.append(element, instruction.timelines);
