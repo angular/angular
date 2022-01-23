@@ -3940,10 +3940,9 @@ describe('animation tests', function() {
     const [scp, pp1, pp2, pcp] = players;
     expect(scp.delay).toEqual(222);
     expect(pp1.delay).toEqual(2000);
-    expect(pp2.delay).toEqual(2111);  // 2000 + 111
-    expect(pcp.delay).toEqual(
-        2000);  // 2000 (the 111 and 222 are in the child animation, see below)
-    expect(pcp.duration).toEqual(5333);  // 2s + 3s + 111 + 222
+    expect(pp2.delay).toEqual(2111);     // 2000 + 111
+    expect(pcp.delay).toEqual(0);        // all the delays are included in the child animation
+    expect(pcp.duration).toEqual(7333);  // 2s + 3s + 2000 + 111 + 222
   });
 
   describe('errors for not using the animation module', () => {

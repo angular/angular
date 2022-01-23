@@ -121,6 +121,8 @@ export class AnimationTimelineBuilderVisitor implements AstVisitor {
     const context = new AnimationTimelineContext(
         driver, rootElement, subInstructions, enterClassName, leaveClassName, errors, []);
     context.options = options;
+    const delay = options.delay ? resolveTimingValue(options.delay) : 0;
+    context.currentTimeline.delayNextStep(delay);
     context.currentTimeline.setStyles([startingStyles], null, context.errors, options);
 
     visitDslNode(this, ast, context);
@@ -146,7 +148,7 @@ export class AnimationTimelineBuilderVisitor implements AstVisitor {
       }
     }
     return timelines.length ? timelines.map(timeline => timeline.buildKeyframes()) :
-                              [createTimelineInstruction(rootElement, [], [], [], 0, 0, '', false)];
+                              [createTimelineInstruction(rootElement, [], [], [], 0, delay, '', false)];
   }
 
   visitTrigger(ast: TriggerAst, context: AnimationTimelineContext): any {

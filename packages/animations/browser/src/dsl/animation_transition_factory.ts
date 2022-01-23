@@ -56,7 +56,11 @@ export class AnimationTransitionFactory {
     const postStyleMap = new Map<any, Set<string>>();
     const isRemoval = nextState === 'void';
 
-    const animationOptions = {params: {...transitionAnimationParams, ...nextAnimationParams}};
+    const animationOptions: AnimationOptions = {
+      params: {...transitionAnimationParams, ...nextAnimationParams},
+      delay: this.ast.options?.delay,
+    };
+
     const timelines = skipAstBuild ?
         [] :
         buildAnimationTimelines(
@@ -74,10 +78,7 @@ export class AnimationTransitionFactory {
           nextStateStyles, [], [], preStyleMap, postStyleMap, totalTime, errors);
     }
 
-    const transitionDelay = this.ast.options?.delay ? resolveTimingValue(this.ast.options.delay) : 0;
-
     timelines.forEach(tl => {
-      tl.delay += transitionDelay;
       const elm = tl.element;
       const preProps = getOrSetDefaultValue(preStyleMap, elm, new Set<string>());
       tl.preStyleProps.forEach(prop => preProps.add(prop));
