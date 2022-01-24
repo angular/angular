@@ -1238,7 +1238,7 @@ export type StaticProvider = ValueProvider | ExistingProvider | StaticClassProvi
 
 // @public
 export abstract class TemplateRef<C> {
-    abstract createEmbeddedView(context: C, injector?: Injector): EmbeddedViewRef<C>;
+    abstract createEmbeddedView(context: C): EmbeddedViewRef<C>;
     abstract readonly elementRef: ElementRef;
 }
 
@@ -1384,10 +1384,6 @@ export abstract class ViewContainerRef {
     }): ComponentRef<C>;
     // @deprecated
     abstract createComponent<C>(componentFactory: ComponentFactory<C>, index?: number, injector?: Injector, projectableNodes?: any[][], ngModuleRef?: NgModuleRef<any>): ComponentRef<C>;
-    abstract createEmbeddedView<C>(templateRef: TemplateRef<C>, context?: C, options?: {
-        index?: number;
-        injector?: Injector;
-    }): EmbeddedViewRef<C>;
     abstract createEmbeddedView<C>(templateRef: TemplateRef<C>, context?: C, index?: number): EmbeddedViewRef<C>;
     abstract detach(index?: number): ViewRef | null;
     abstract get element(): ElementRef;

@@ -6,12 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector} from '../di/injector';
 import {assertLContainer} from '../render3/assert';
-import {ChainedInjector} from '../render3/chained_injector';
 import {createLView, renderView} from '../render3/instructions/shared';
 import {TContainerNode, TNode, TNodeType} from '../render3/interfaces/node';
-import {DECLARATION_LCONTAINER, INJECTOR, LView, LViewFlags, QUERIES, TView} from '../render3/interfaces/view';
+import {DECLARATION_LCONTAINER, LView, LViewFlags, QUERIES, TView} from '../render3/interfaces/view';
 import {getCurrentTNode, getLView} from '../render3/state';
 import {ViewRef as R3_ViewRef} from '../render3/view_ref';
 import {assertDefined} from '../util/assert';
@@ -57,10 +55,9 @@ export abstract class TemplateRef<C> {
    * and attaches it to the view container.
    * @param context The data-binding context of the embedded view, as declared
    * in the `<ng-template>` usage.
-   * @param injector Injector to be used within the embedded view.
    * @returns The new embedded view object.
    */
-  abstract createEmbeddedView(context: C, injector?: Injector): EmbeddedViewRef<C>;
+  abstract createEmbeddedView(context: C): EmbeddedViewRef<C>;
 
   /**
    * @internal
@@ -80,12 +77,11 @@ const R3TemplateRef = class TemplateRef<T> extends ViewEngineTemplateRef<T> {
     super();
   }
 
-  override createEmbeddedView(context: T, injector?: Injector): EmbeddedViewRef<T> {
+  override createEmbeddedView(context: T): EmbeddedViewRef<T> {
     const embeddedTView = this._declarationTContainer.tViews as TView;
     const embeddedLView = createLView(
         this._declarationLView, embeddedTView, context, LViewFlags.CheckAlways, null,
-        embeddedTView.declTNode, null, null, null,
-        createEmbeddedViewInjector(injector, this._declarationLView[INJECTOR]));
+        embeddedTView.declTNode, null, null, null, null);
 
     const declarationLContainer = this._declarationLView[this._declarationTContainer.index];
     ngDevMode && assertLContainer(declarationLContainer);
@@ -101,18 +97,6 @@ const R3TemplateRef = class TemplateRef<T> extends ViewEngineTemplateRef<T> {
     return new R3_ViewRef<T>(embeddedLView);
   }
 };
-
-function createEmbeddedViewInjector(
-    embeddedViewInjector: Injector|undefined, declarationViewInjector: Injector|null): Injector|
-    null {
-  if (!embeddedViewInjector) {
-    return null;
-  }
-
-  return declarationViewInjector ?
-      new ChainedInjector(embeddedViewInjector, declarationViewInjector) :
-      embeddedViewInjector;
-}
 
 /**
  * Creates a TemplateRef given a node.
