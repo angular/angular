@@ -153,7 +153,8 @@ export class NgZone {
   }
 
   static isInAngularZone(): boolean {
-    return Zone.current.get('isAngularZone') === true;
+    // Zone needs to be checked, because this method might be called even when NoopNgZone is used.
+    return typeof Zone !== 'undefined' && Zone.current.get('isAngularZone') === true;
   }
 
   static assertInAngularZone(): void {
