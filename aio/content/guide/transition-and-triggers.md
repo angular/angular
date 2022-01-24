@@ -105,7 +105,7 @@ The `:enter` transition runs when any `*ngIf` or `*ngFor` views are placed on th
 
 <div class="alert is-important">
 
-**Note:** The above sentence is correct but not entirely accurate, entering/leaving behaviors can sometime be confusing, as a rule of thumb consider that any element being added to the DOM by Angular passes via the `:enter` transition, but only elements being directly removed from the DOM by Angular pass via the `:leave` transition (e.g. if an element's view is removed from the DOM because its parent is being removed from the DOM or the app's route has changed then the element will not pass via the `:leave` transition).
+  **Note:** Entering/leaving behaviors can sometime be confusing. As a rule of thumb consider that any element being added to the DOM by Angular passes via the `:enter` transition, but only elements being directly removed from the DOM by Angular pass via the `:leave` transition (e.g. an element's view is removed from the DOM because its parent is being removed from the DOM or the app's route has changed, then the element will not pass via the `:leave` transition).
 
 </div>
 
