@@ -12,6 +12,7 @@ yarn bazel run //packages/core/test/bundling/forms:symbol_test.accept
 yarn bazel run //packages/core/test/bundling/hello_world:symbol_test.accept
 yarn bazel run //packages/core/test/bundling/router:symbol_test.accept
 yarn bazel run //packages/core/test/bundling/todo:symbol_test.accept
+yarn bazel run //packages/core/test/bundling/animations:symbol_test.accept
 ```
 
 ## Running all symbol tests
