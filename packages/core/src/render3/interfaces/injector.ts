@@ -48,7 +48,7 @@ import {LView, TData} from './view';
  * index + 7: cumulative bloom filter
  * index + 8: cumulative bloom filter
  * index + TNODE: TNode associated with this `NodeInjector`
- *                `const tNode = tView.data[index + NodeInjectorOffset.TNODE]`
+ *                `canst tNode = tView.data[index + NodeInjectorOffset.TNODE]`
  * ```
  */
 export const enum NodeInjectorOffset {
