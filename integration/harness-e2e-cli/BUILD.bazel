@@ -1,0 +1,30 @@
+load("@bazel_skylib//lib:dicts.bzl", "dicts")
+load("//tools:integration.bzl", "CLI_PROJECT_MAPPINGS")
+load("//tools:defaults.bzl", "node_integration_test")
+
+npmPackageMappings = dicts.add(
+    CLI_PROJECT_MAPPINGS,
+    {
+        "//src/cdk:npm_package_archive": "@angular/cdk",
+        "//src/material:npm_package_archive": "@angular/material",
+    },
+)
+
+node_integration_test(
+    name = "test",
+    srcs = glob(["**/*"]),
+    commands = [
+        # Note: We use a cache folder within the integration test as otherwise
+        # the NPM package mapped archive would be cached in the system.
+        # See: https://github.com/yarnpkg/yarn/issues/2165.
+        # TODO(devversion): determine if a solution/workaround could live in the test runner.
+        "yarn install --cache-folder .yarn_cache_folder/",
+        "yarn e2e",
+    ],
+    npm_packages = npmPackageMappings,
+    setup_chromium = True,
+    tags = [
+        # This test relies on `yarn` so there needs to be internet access.
+        "requires-network",
+    ],
+)
