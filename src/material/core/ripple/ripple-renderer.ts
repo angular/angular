@@ -138,7 +138,9 @@ export class RippleRenderer implements EventListenerObject {
     // ripple elements. This is critical because then the `scale` would not animate properly.
     enforceStyleRecalculation(ripple);
 
-    ripple.style.transform = 'scale(1)';
+    // We use a 3d transform here in order to avoid an issue in Safari where
+    // the ripples aren't clipped when inside the shadow DOM (see #24028).
+    ripple.style.transform = 'scale3d(1, 1, 1)';
 
     // Exposed reference to the ripple that will be returned.
     const rippleRef = new RippleRef(this, ripple, config);

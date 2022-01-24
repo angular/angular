@@ -30,7 +30,10 @@
     pointer-events: none;
 
     transition: opacity, transform 0ms cubic-bezier(0, 0, 0.2, 1);
-    transform: scale(0);
+
+    // We use a 3d transform here in order to avoid an issue in Safari where
+    // the ripples aren't clipped when inside the shadow DOM (see #24028).
+    transform: scale3d(0, 0, 0);
 
     // In high contrast mode the ripple is opaque, causing it to obstruct the content.
     @include a11y.high-contrast(active, off) {
