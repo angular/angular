@@ -87,6 +87,9 @@
 .mat-mdc-form-field-icon-suffix {
   & > .mat-icon {
     padding: 12px;
+    // It's common for apps to apply `box-sizing: border-box`
+    // globally which will break the alignment.
+    box-sizing: content-box;
   }
 }
 
