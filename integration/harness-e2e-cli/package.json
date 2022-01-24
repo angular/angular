@@ -6,7 +6,10 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "run-e2e-specs": "node --loader ts-node/esm node_modules/jasmine/bin/jasmine --config=e2e/jasmine.json",
+    "wait-and-run-e2e": "wait-on http://localhost:4200 && yarn run-e2e-specs",
+    "e2e": "concurrently -s first -k 'ng serve' 'yarn wait-and-run-e2e'"
   },
   "private": true,
   "dependencies": {
