@@ -7,7 +7,9 @@
  */
 
 import {ParseSourceFile} from '@angular/compiler';
+
 import {DeclarationNode} from '../../reflection';
+
 import {IndexedComponent} from './api';
 import {IndexingContext} from './context';
 import {getTemplateIdentifiers} from './template';
@@ -20,6 +22,7 @@ import {getTemplateIdentifiers} from './template';
  */
 export function generateAnalysis(context: IndexingContext): Map<DeclarationNode, IndexedComponent> {
   const analysis = new Map<DeclarationNode, IndexedComponent>();
+  const analysisErrors: Error[] = [];
 
   context.components.forEach(({declaration, selector, boundTemplate, templateMeta}) => {
     const name = declaration.name.getText();
@@ -43,12 +46,14 @@ export function generateAnalysis(context: IndexingContext): Map<DeclarationNode,
       templateFile = templateMeta.file;
     }
 
+    const {identifiers, errors} = getTemplateIdentifiers(boundTemplate);
+    analysisErrors.push(...errors);
     analysis.set(declaration, {
       name,
       selector,
       file: componentFile,
       template: {
-        identifiers: getTemplateIdentifiers(boundTemplate),
+        identifiers,
         usedComponents,
         isInline: templateMeta.isInline,
         file: templateFile,

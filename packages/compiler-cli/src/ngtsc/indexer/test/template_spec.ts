@@ -6,9 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {BoundTarget} from '@angular/compiler';
+
 import {AbsoluteSourceSpan, AttributeIdentifier, ElementIdentifier, IdentifierKind, ReferenceIdentifier, TemplateNodeIdentifier, TopLevelIdentifier, VariableIdentifier} from '..';
 import {runInEachFileSystem} from '../../file_system/testing';
-import {getTemplateIdentifiers} from '../src/template';
+import {ComponentMeta} from '../src/context';
+import {getTemplateIdentifiers as getTemplateIdentifiersAndErrors} from '../src/template';
 
 import * as util from './util';
 
@@ -17,6 +20,10 @@ function bind(template: string) {
     preserveWhitespaces: true,
     leadingTriviaChars: [],
   });
+}
+
+function getTemplateIdentifiers(boundTemplate: BoundTarget<ComponentMeta>) {
+  return getTemplateIdentifiersAndErrors(boundTemplate).identifiers;
 }
 
 runInEachFileSystem(() => {

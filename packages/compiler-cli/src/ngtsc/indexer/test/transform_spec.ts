@@ -6,11 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {BoundTarget, ParseSourceFile} from '@angular/compiler';
+
 import {runInEachFileSystem} from '../../file_system/testing';
 import {ClassDeclaration} from '../../reflection';
 import {ComponentMeta, IndexingContext} from '../src/context';
 import {getTemplateIdentifiers} from '../src/template';
 import {generateAnalysis} from '../src/transform';
+
 import * as util from './util';
 
 /**
@@ -47,7 +49,8 @@ runInEachFileSystem(() => {
         selector: 'c-selector',
         file: new ParseSourceFile('class C {}', decl.getSourceFile().fileName),
         template: {
-          identifiers: getTemplateIdentifiers(util.getBoundTemplate('<div>{{foo}}</div>')),
+          identifiers:
+              getTemplateIdentifiers(util.getBoundTemplate('<div>{{foo}}</div>')).identifiers,
           usedComponents: new Set(),
           isInline: false,
           file: new ParseSourceFile('<div>{{foo}}</div>', decl.getSourceFile().fileName),
