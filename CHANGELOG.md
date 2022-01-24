@@ -1,3 +1,23 @@
+<a name="13.2.0-rc.1"></a>
+# 13.2.0-rc.1 (2022-01-24)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [ed67a074ce](https://github.com/angular/angular/commit/ed67a074ceed6440bf7f638512a20bbd3be8cbd4) | fix | properly compile DI factories when coverage reporting is enabled ([#44732](https://github.com/angular/angular/pull/44732)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [100091ebf0](https://github.com/angular/angular/commit/100091ebf0ad480e94b5db4f183f9bfcfe8b8274) | fix | remove leftover `_extendedTemplateDiagnostics` requirements ([#44777](https://github.com/angular/angular/pull/44777)) |
+| [d2ae96f742](https://github.com/angular/angular/commit/d2ae96f742c82daa6c4d4b8afd3b0959fb9b89d1) | fix | skip `ExtendedTemplateCheckerImpl` construction if there were configuration errors ([#44778](https://github.com/angular/angular/pull/44778)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [5626b34264](https://github.com/angular/angular/commit/5626b34264d8893fece74d30db4920a685f3b17f) | fix | consistently use namespace short name rather than URI ([#44766](https://github.com/angular/angular/pull/44766)) |
+## Special Thanks
+Andrew Scott, Doug Parker, Douglas Parker, JoostK, Martin Probst, Oleg Postoev and Stephanie Tuerk
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="13.2.0-rc.0"></a>
 # 13.2.0-rc.0 (2022-01-19)
 ## Deprecations
