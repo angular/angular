@@ -78,9 +78,6 @@
     "name": "COMPOSITION_BUFFER_MODE"
   },
   {
-    "name": "ChainedInjector"
-  },
-  {
     "name": "ChangeDetectionStrategy"
   },
   {

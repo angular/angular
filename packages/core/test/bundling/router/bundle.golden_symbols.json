@@ -93,9 +93,6 @@
     "name": "CatchSubscriber"
   },
   {
-    "name": "ChainedInjector"
-  },
-  {
     "name": "ChangeDetectionStrategy"
   },
   {
