@@ -416,6 +416,81 @@
 </mat-card>
 
 <mat-card class="demo-card demo-basic">
+  <mat-toolbar color="primary">Dynamic Subscript Sizing</mat-toolbar>
+  <mat-card-content>
+    <p>
+      One validation
+      <mat-form-field appearance="fill" [color]="color" subscriptSizing="dynamic">
+        <mat-label>Fill appearance</mat-label>
+        <input matInput [(ngModel)]="fillAppearance" required>
+        <mat-error>This field is required</mat-error>
+      </mat-form-field>
+    </p>
+
+    <p>
+      One very long validation that wraps
+      <mat-form-field appearance="fill" [color]="color" subscriptSizing="dynamic"
+          style="width: 212px">
+        <mat-label>Fill appearance</mat-label>
+        <input matInput [(ngModel)]="fillAppearance" required>
+        <mat-error>This field is extremely, very much, absolutely positively required so do not forget it!</mat-error>
+      </mat-form-field>
+    </p>
+
+    <p>
+      One hint and one validation
+      <mat-form-field appearance="fill" [color]="color" subscriptSizing="dynamic">
+        <mat-label>Fill appearance</mat-label>
+        <input matInput [(ngModel)]="fillAppearance" required>
+        <mat-error>This field is required</mat-error>
+        <mat-hint>Please type something here</mat-hint>
+      </mat-form-field>
+    </p>
+
+    <p>
+      Multiple errors
+      <mat-form-field appearance="fill" [color]="color" subscriptSizing="dynamic">
+        <mat-label>Fill appearance</mat-label>
+        <input matInput [(ngModel)]="fillAppearance" required>
+        <mat-error>AAA</mat-error>
+        <mat-error>BBB</mat-error>
+        <mat-error>CCC</mat-error>
+      </mat-form-field>
+    </p>
+
+    <p>
+      Multiple hints
+      <mat-form-field appearance="fill" [color]="color" subscriptSizing="dynamic">
+        <mat-label>Fill appearance</mat-label>
+        <input matInput>
+        <mat-hint>aaa</mat-hint>
+        <mat-hint>bbb</mat-hint>
+        <mat-hint>ccc</mat-hint>
+      </mat-form-field>
+    </p>
+
+    <p>
+      Multiple hints with differing alignment
+      <mat-form-field appearance="fill" [color]="color" subscriptSizing="dynamic">
+        <mat-label>Fill appearance</mat-label>
+        <input matInput>
+        <mat-hint>aaa</mat-hint>
+        <mat-hint align="end">bbb</mat-hint>
+        <mat-hint align="end">ccc</mat-hint>
+      </mat-form-field>
+    </p>
+
+    <p>
+      No hints or errors
+      <mat-form-field appearance="fill" [color]="color" subscriptSizing="dynamic">
+        <mat-label>Fill appearance</mat-label>
+        <input matInput>
+      </mat-form-field>
+    </p>
+  </mat-card-content>
+</mat-card>
+
+<mat-card class="demo-card demo-basic">
   <mat-toolbar color="primary">Number Inputs</mat-toolbar>
   <mat-card-content>
     <table width="100%">

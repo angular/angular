@@ -61,6 +61,9 @@ export type FloatLabelType = 'always' | 'auto';
 /** Possible appearance styles for the form field. */
 export type MatFormFieldAppearance = 'fill' | 'outline';
 
+/** Behaviors for how the subscript height is set. */
+export type SubscriptSizing = 'fixed' | 'dynamic';
+
 /**
  * Represents the default options for the form field that can be configured
  * using the `MAT_FORM_FIELD_DEFAULT_OPTIONS` injection token.
@@ -69,6 +72,7 @@ export interface MatFormFieldDefaultOptions {
   appearance?: MatFormFieldAppearance;
   hideRequiredMarker?: boolean;
   floatLabel?: FloatLabelType;
+  subscriptSizing?: SubscriptSizing;
 }
 
 /**
@@ -86,6 +90,9 @@ const DEFAULT_APPEARANCE: MatFormFieldAppearance = 'fill';
 
 /** Default appearance used by the form-field. */
 const DEFAULT_FLOAT_LABEL: FloatLabelType = 'auto';
+
+/** Default way that the suffix element height is set. */
+const DEFAULT_SUBSCRIPT_SIZING: SubscriptSizing = 'fixed';
 
 /**
  * Default transform for docked floating labels in a MDC text-field. This value has been
@@ -205,6 +212,20 @@ export class MatFormField
     }
   }
   private _appearance: MatFormFieldAppearance = DEFAULT_APPEARANCE;
+
+  /**
+   * Whether the form field should reserve space for one line of hint/error text (default)
+   * or to have the spacing grow from 0px as needed based on the size of the hint/error content.
+   * Note that when using dynamic sizing, layout shifts will occur when hint/error text changes.
+   */
+  @Input()
+  get subscriptSizing(): SubscriptSizing {
+    return this._subscriptSizing || this._defaults?.subscriptSizing || DEFAULT_SUBSCRIPT_SIZING;
+  }
+  set subscriptSizing(value: SubscriptSizing) {
+    this._subscriptSizing = value || this._defaults?.subscriptSizing || DEFAULT_SUBSCRIPT_SIZING;
+  }
+  private _subscriptSizing: SubscriptSizing = DEFAULT_SUBSCRIPT_SIZING;
 
   /** Text for the form field hint. */
   @Input()

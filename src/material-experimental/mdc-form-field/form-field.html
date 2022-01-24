@@ -71,6 +71,7 @@
 </div>
 
 <div class="mat-mdc-form-field-subscript-wrapper mat-mdc-form-field-bottom-align"
+     [class.mat-mdc-form-field-subscript-dynamic-size]="subscriptSizing === 'dynamic'"
      [ngSwitch]="_getDisplayedMessages()">
   <div class="mat-mdc-form-field-error-wrapper" *ngSwitchCase="'error'"
        [@transitionMessages]="_subscriptAnimationState">

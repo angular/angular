@@ -32,6 +32,7 @@ import {
   MatFormField,
   MatFormFieldAppearance,
   MatFormFieldModule,
+  SubscriptSizing,
 } from '@angular/material-experimental/mdc-form-field';
 import {MatIconModule} from '@angular/material/icon';
 import {By} from '@angular/platform-browser';
@@ -1406,6 +1407,47 @@ describe('MatFormField default options', () => {
     expect(fixture.componentInstance.formField.hideRequiredMarker).toBe(true);
     expect(fixture.componentInstance.formField.appearance).toBe('outline');
   });
+
+  it('defaults subscriptSizing to false', () => {
+    const fixture = createComponent(MatInputWithSubscriptSizing);
+    fixture.detectChanges();
+
+    const subscriptElement = fixture.nativeElement.querySelector(
+      '.mat-mdc-form-field-subscript-wrapper',
+    );
+
+    expect(fixture.componentInstance.formField.subscriptSizing).toBe('fixed');
+    expect(subscriptElement.classList.contains('mat-mdc-form-field-subscript-dynamic-size')).toBe(
+      false,
+    );
+
+    fixture.componentInstance.sizing = 'dynamic';
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.formField.subscriptSizing).toBe('dynamic');
+    expect(subscriptElement.classList.contains('mat-mdc-form-field-subscript-dynamic-size')).toBe(
+      true,
+    );
+  });
+
+  it('changes the default value of subscriptSizing', () => {
+    const fixture = createComponent(MatInputWithSubscriptSizing, [
+      {
+        provide: MAT_FORM_FIELD_DEFAULT_OPTIONS,
+        useValue: {
+          subscriptSizing: 'dynamic',
+        },
+      },
+    ]);
+
+    fixture.detectChanges();
+    expect(fixture.componentInstance.formField.subscriptSizing).toBe('dynamic');
+    expect(
+      fixture.nativeElement
+        .querySelector('.mat-mdc-form-field-subscript-wrapper')
+        .classList.contains('mat-mdc-form-field-subscript-dynamic-size'),
+    ).toBe(true);
+  });
 });
 
 function configureTestingModule(
@@ -1813,6 +1855,19 @@ class MatInputWithLabelAndPlaceholder {
 class MatInputWithAppearance {
   @ViewChild(MatFormField) formField: MatFormField;
   appearance: MatFormFieldAppearance;
+}
+
+@Component({
+  template: `
+    <mat-form-field [subscriptSizing]="sizing">
+      <mat-label>My Label</mat-label>
+      <input matInput placeholder="Placeholder" required>
+    </mat-form-field>
+  `,
+})
+class MatInputWithSubscriptSizing {
+  @ViewChild(MatFormField) formField: MatFormField;
+  sizing: SubscriptSizing;
 }
 
 @Component({

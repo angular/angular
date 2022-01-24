@@ -23,10 +23,21 @@
     padding: 0 mdc-textfield-variables.$padding-horizontal;
   }
 
+  .mat-mdc-form-field-subscript-dynamic-size {
+    .mat-mdc-form-field-hint-wrapper,
+    .mat-mdc-form-field-error-wrapper {
+      position: static;
+    }
+  }
+
   .mat-mdc-form-field-bottom-align::before {
     content: '';
     display: inline-block;
     height: 16px;
+  }
+
+  .mat-mdc-form-field-bottom-align.mat-mdc-form-field-subscript-dynamic-size::before {
+    content: unset;
   }
 
   .mat-mdc-form-field-hint-end {
