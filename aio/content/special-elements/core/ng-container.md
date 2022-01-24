@@ -11,9 +11,9 @@ It can for example enable us to use structural directives without breaking styli
 
 ### With `*NgIf`s
 
-One common use case of `<ng-container>` is alongside the `*ngIf` structural directive, by using the special element we can produce very clean templates easy to understand and work with.
+One common use case of `<ng-container>` is alongside the `*ngIf` structural directive. By using the special element we can produce very clean templates easy to understand and work with.
 
-For example we may want to have a number of elements shown conditionally but they do not need to be all under the same root element, that can be easily done by wrapping them in such a block:
+For example, we may want to have a number of elements shown conditionally but they do not need to be all under the same root element. That can be easily done by wrapping them in such a block:
 ```html
   <ng-container *ngIf="condition">
     ...
@@ -32,9 +32,9 @@ This can also be augmented with the an else statement alongside an `<ng-template
 
 
 ### Combination of multiple structural directives
-Multiple structural directives cannot be used on the same element, so if you need to take advantage of more than one structural directive it is advised to use an `<ng-container>` per structural directive.
+Multiple structural directives cannot be used on the same element; if you need to take advantage of more than one structural directive, it is advised to use an `<ng-container>` per structural directive.
 
-The most common scenario is with `*ngIf` and `*ngFor`, for example let imagine that we have a list of items but each item needs to be displayed only if a certain condition is true. We could be tempted to try something like:
+The most common scenario is with `*ngIf` and `*ngFor`. For example, let's imagine that we have a list of items but each item needs to be displayed only if a certain condition is true. We could be tempted to try something like:
 ```html
 <ul>
   <li *ngFor="let item of items" *ngIf="item.isValid">
@@ -43,7 +43,7 @@ The most common scenario is with `*ngIf` and `*ngFor`, for example let imagine t
 </ul>
 ```
 
-As we said that would not work, so what we can do is to simply move one of the structural directives to an `<ng-container>` element which would then wrap the other one, like so:
+As we said that would not work, what we can do is to simply move one of the structural directives to an `<ng-container>` element, which would then wrap the other one, like so:
 ```html
 <ul>
   <ng-container *ngFor="let item of items">
@@ -58,10 +58,9 @@ This would work as intended without introducing any new unnecessary elements in 
 
 ### Use alongside ngTemplateOutlet
 
-The `NgTemplateOutlet` directive can be applied to any element but most of the time it's applied
-to `<ng-container>` ones since by combining the two we get a very clear and easy to follow HTML and DOM structure in which no extra elements are necessary present and template views are instantiated where requested.
+The `NgTemplateOutlet` directive can be applied to any element but most of the time it's applied to `<ng-container>` ones. By combining the two, we get a very clear and easy to follow HTML and DOM structure in which no extra elements are necessary and template views are instantiated where requested.
 
-Let's for example imagine a situation in which we have a large HTML in which a small portion needs to be repeated in different places. A simple solution is to define an `<ng-template>` containing our repeating HTML and render that where necessary by using `<ng-container>` alongside an `NgTemplateOutlet`.
+For example, imagine a situation in which we have a large HTML, in which a small portion needs to be repeated in different places. A simple solution is to define an `<ng-template>` containing our repeating HTML and render that where necessary by using `<ng-container>` alongside an `NgTemplateOutlet`.
 
 Like so:
 
