@@ -1,0 +1,28 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "automerge": false,
+  "baseBranches": ["master"],
+  "enabledManagers": ["npm", "bazel", "github-actions"],
+  "labels": ["target: patch", "merge safe"],
+  "lockFileMaintenance": {
+    "enabled": true
+  },
+  "pinDigests": true,
+  "prHourlyLimit": 2,
+  "rebaseWhen": "behind-base-branch",
+  "semanticCommits": "enabled",
+  "semanticCommitScope": "",
+  "semanticCommitType": "build",
+  "separateMajorMinor": false,
+  "packageRules": [
+    {
+      "matchPackagePatterns": ["*"],
+      "enabled": false
+    },
+    {
+      "matchPackageNames": ["@angular/dev-infra-private", "angular/dev-infra"],
+      "groupName": "angular shared dev-infra code",
+      "enabled": true
+    }
+  ]
+}
