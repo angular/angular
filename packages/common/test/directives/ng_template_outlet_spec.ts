@@ -7,7 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {Component, ContentChildren, Directive, Inject, Injectable, InjectionToken, Injector, NO_ERRORS_SCHEMA, OnDestroy, QueryList, TemplateRef} from '@angular/core';
+import {Component, ContentChildren, Directive, Injectable, NO_ERRORS_SCHEMA, OnDestroy, QueryList, TemplateRef} from '@angular/core';
 import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
@@ -29,13 +29,7 @@ describe('NgTemplateOutlet', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [
-        TestComponent,
-        CaptureTplRefs,
-        DestroyableCmpt,
-        MultiContextComponent,
-        InjectValueComponent,
-      ],
+      declarations: [TestComponent, CaptureTplRefs, DestroyableCmpt, MultiContextComponent],
       imports: [CommonModule],
       providers: [DestroyedSpyService]
     });
@@ -268,18 +262,7 @@ describe('NgTemplateOutlet', () => {
     expect(componentInstance.context1).toEqual({name: 'two'});
     expect(componentInstance.context2).toEqual({name: 'one'});
   });
-
-  it('should be able to specify an injector', waitForAsync(() => {
-       const template = `<ng-template #tpl><inject-value></inject-value></ng-template>` +
-           `<ng-container *ngTemplateOutlet="tpl; injector: injector"></ng-container>`;
-       fixture = createTestComponent(template);
-       fixture.componentInstance.injector =
-           Injector.create({providers: [{provide: templateToken, useValue: 'world'}]});
-       detectChangesAndExpectText('Hello world');
-     }));
 });
-
-const templateToken = new InjectionToken<string>('templateToken');
 
 @Injectable()
 class DestroyedSpyService {
@@ -307,15 +290,6 @@ class TestComponent {
   currentTplRef!: TemplateRef<any>;
   context: any = {foo: 'bar'};
   value = 'bar';
-  injector: Injector|null = null;
-}
-
-@Component({
-  selector: 'inject-value',
-  template: 'Hello {{tokenValue}}',
-})
-class InjectValueComponent {
-  constructor(@Inject(templateToken) public tokenValue: string) {}
 }
 
 @Component({
