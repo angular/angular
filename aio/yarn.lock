@@ -4363,10 +4363,10 @@ devtools-protocol@0.0.901419:
   resolved "https://registry.yarnpkg.com/devtools-protocol/-/devtools-protocol-0.0.901419.tgz#79b5459c48fe7e1c5563c02bd72f8fec3e0cebcd"
   integrity sha512-4INMPwNm9XRpBukhNbF7OB6fNTTCaI8pzy/fXg0xQzAy5h3zL1P8xT3QazgKqBrb/hAYwIBizqDBZ7GtJE74QQ==
 
-dgeni-packages@^0.29.2:
-  version "0.29.2"
-  resolved "https://registry.yarnpkg.com/dgeni-packages/-/dgeni-packages-0.29.2.tgz#3b4af98156e50a850ca26a48c55d6d608b454ae5"
-  integrity sha512-vUR4OqSVqzbH4hTdIc7WWynTJ92XQXfdtgLoIFa9cfYRElWSTWkNsUa5+MWM/oNChusfNkFoIyRrNgNHvliWIw==
+dgeni-packages@^0.29.3:
+  version "0.29.3"
+  resolved "https://registry.yarnpkg.com/dgeni-packages/-/dgeni-packages-0.29.3.tgz#02bb3bc9ba86d54f2c2310cbbb6d528ee6f34dce"
+  integrity sha512-642D3colBTvUynV1QHb0fHbNMVf0drnAgIYCJjHigGhoy+o1gYxGY5o318CqF4DqH6G9XZ5QB4bq3ou0ugUCtg==
   dependencies:
     canonical-path "^1.0.0"
     catharsis "^0.8.1"
@@ -4388,7 +4388,7 @@ dgeni-packages@^0.29.2:
     semver "^5.2.0"
     source-map-support "^0.4.15"
     spdx-license-list "^2.1.0"
-    typescript "~3.2.2"
+    typescript "~4.5.4"
     urlencode "^1.1.0"
 
 dgeni@^0.4.14:
@@ -11945,15 +11945,15 @@ typedarray@^0.0.6:
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
-typescript@~3.2.2:
-  version "3.2.4"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.2.4.tgz#c585cb952912263d915b462726ce244ba510ef3d"
-  integrity sha512-0RNDbSdEokBeEAkgNbxJ+BLwSManFy9TeXz8uW+48j/xhEXv1ePME60olyzw2XzUqUBNAYFeJadIqAgNqIACwg==
-
 typescript@~4.5.2:
   version "4.5.2"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.5.2.tgz#8ac1fba9f52256fdb06fb89e4122fa6a346c2998"
   integrity sha512-5BlMof9H1yGt0P8/WF+wPNw6GfctgGjXp5hkblpyT+8rkASSmkUKMXrxR0Xg8ThVCi/JnHQiKXeBaEwCeQwMFw==
+
+typescript@~4.5.4:
+  version "4.5.5"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.5.5.tgz#d8c953832d28924a9e3d37c73d729c846c5896f3"
+  integrity sha512-TCTIul70LyWe6IJWT8QSYeA54WQe8EjQFU4wY52Fasj5UKx88LNYKCgBEHcOMOrFF1rKGbD8v/xcNWVUq9SymA==
 
 ua-parser-js@^0.7.30:
   version "0.7.31"
