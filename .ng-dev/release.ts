@@ -90,7 +90,8 @@ export const release: ReleaseConfig = {
     },
   },
   publishRegistry: 'https://wombat-dressing-room.appspot.com',
-  npmPackages: releasePackages.map(pkg => `@angular/${pkg}`),
+  representativeNpmPackage: '@angular/cdk',
+  npmPackages: releasePackages.map(pkg => ({name: `@angular/${pkg}`})),
   buildPackages: async () => {
     // The `performNpmReleaseBuild` function is loaded at runtime as loading of the
     // script results in an invocation of Bazel for any `yarn ng-dev` command.
