@@ -212,6 +212,8 @@ export class Parser {
     const strings: InterpolationPiece[] = [];
     const expressions: InterpolationPiece[] = [];
     const offsets: number[] = [];
+    const inputToTemplateIndexMap =
+        interpolatedTokens ? getIndexMapForOriginalTemplate(interpolatedTokens) : null;
     let i = 0;
     let atInterpolation = false;
     let extendLastString = false;
@@ -249,9 +251,8 @@ export class Parser {
               `at column ${i} in`, location);
         }
         expressions.push({text, start: fullStart, end: fullEnd});
-        const offset = interpolatedTokens ?
-            computeOffsetInOriginalTemplate(fullStart, interpolatedTokens) + interpStart.length :
-            exprStart;
+        const startInOriginalTemplate = inputToTemplateIndexMap?.get(fullStart) ?? fullStart;
+        const offset = startInOriginalTemplate + interpStart.length;
         offsets.push(offset);
 
         i = fullEnd;
@@ -1305,7 +1306,7 @@ class SimpleExpressionChecker extends RecursiveAstVisitor {
   }
 }
 /**
- * Computes the real offset in the original template for a given input index in an interpolation.
+ * Computes the real offset in the original template for indexes in an interpolation.
  *
  * Because templates can have encoded HTML entities and the input passed to the parser at this stage
  * of the compiler is the _decoded_ value, we need to compute the real offset using the original
@@ -1313,18 +1314,17 @@ class SimpleExpressionChecker extends RecursiveAstVisitor {
  * `MlParserTokenType.ENCODED_ENTITY` token types. All other interpolated tokens are expected to
  * have parts which exactly match the input string for parsing the interpolation.
  *
- * @param exprStart The start of the expression being processed. This start location is the
- *     _decoded_ template input to the prase interpolation.
  * @param interpolatedTokens The tokens for the interpolated value.
- * @returns
+ *
+ * @returns A map of index locations in the decoded template to indexes in the original template
  */
-function computeOffsetInOriginalTemplate(
-    exprStart: number,
-    interpolatedTokens: InterpolatedAttributeToken[]|InterpolatedTextToken[]): number {
+function getIndexMapForOriginalTemplate(interpolatedTokens: InterpolatedAttributeToken[]|
+                                        InterpolatedTextToken[]): Map<number, number> {
+  let offsetMap = new Map<number, number>();
   let consumedInOriginalTemplate = 0;
   let consumedInInput = 0;
   let tokenIndex = 0;
-  while (consumedInInput < exprStart && tokenIndex < interpolatedTokens.length) {
+  while (tokenIndex < interpolatedTokens.length) {
     const currentToken = interpolatedTokens[tokenIndex];
     if (currentToken.type === MlParserTokenType.ENCODED_ENTITY) {
       const [decoded, encoded] = currentToken.parts;
@@ -1335,7 +1335,8 @@ function computeOffsetInOriginalTemplate(
       consumedInInput += lengthOfParts;
       consumedInOriginalTemplate += lengthOfParts;
     }
+    offsetMap.set(consumedInInput, consumedInOriginalTemplate);
     tokenIndex++;
   }
-  return consumedInOriginalTemplate;
+  return offsetMap;
 }
