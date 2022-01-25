@@ -1,3 +1,4 @@
+@use 'sass:map';
 @use '@material/radio/radio' as mdc-radio;
 @use '@material/radio/radio-theme' as mdc-radio-theme;
 @use '@material/form-field' as mdc-form-field;
@@ -7,22 +8,31 @@
 @use '../../material/core/style/layout-common';
 
 @include mdc-helpers.disable-fallback-declarations {
-  @include mdc-radio.without-ripple($query: mdc-helpers.$mat-base-styles-without-animation-query);
+  @include mdc-radio.static-styles($query: mdc-helpers.$mat-base-styles-query);
   @include mdc-form-field.core-styles($query: mdc-helpers.$mat-base-styles-query);
 }
 
 .mat-mdc-radio-button {
-  &:not(._mat-animation-noopable) {
-    @include mdc-helpers.disable-fallback-declarations {
-      @include mdc-radio.without-ripple($query: animation);
-    }
-  }
-
   .mdc-radio {
     // MDC theme styles also include structural styles so we have to include the theme at least
     // once here. The values will be overwritten by our own theme file afterwards.
     @include mdc-helpers.disable-fallback-declarations {
-      @include mdc-radio-theme.theme-styles(mdc-radio-theme.$light-theme);
+      @include mdc-radio-theme.theme-styles(map.merge(mdc-radio-theme.$light-theme, (
+        // Exclude the styles we don't need.
+        selected-focus-state-layer-color: null,
+        selected-focus-state-layer-opacity: null,
+        selected-hover-state-layer-color: null,
+        selected-hover-state-layer-opacity: null,
+        selected-pressed-state-layer-color: null,
+        selected-pressed-state-layer-opacity: null,
+        unselected-focus-icon-color: null,
+        unselected-focus-state-layer-color: null,
+        unselected-focus-state-layer-opacity: null,
+        unselected-hover-state-layer-color: null,
+        unselected-hover-state-layer-opacity: null,
+        unselected-pressed-state-layer-color: null,
+        unselected-pressed-state-layer-opacity: null,
+      )));
     }
   }
 
@@ -33,8 +43,17 @@
     pointer-events: none;
     border-radius: 50%;
 
-    .mat-ripple-element:not(.mat-radio-persistent-ripple) {
+    .mat-ripple-element {
       opacity: mdc-radio-theme.$ripple-opacity;
+    }
+  }
+
+  &._mat-animation-noopable {
+    .mdc-radio__background::before,
+    .mdc-radio__outer-circle,
+    .mdc-radio__inner-circle {
+      // Needs to be `!important`, because MDC's selectors are really specific.
+      transition: none !important;
     }
   }
 }

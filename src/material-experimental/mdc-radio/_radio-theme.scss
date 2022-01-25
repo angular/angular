@@ -10,12 +10,9 @@
 @mixin _color-palette($color-palette) {
   @include mdc-radio-theme.theme((
     selected-focus-icon-color: $color-palette,
-    selected-focus-state-layer-color: $color-palette,
     selected-hover-icon-color: $color-palette,
-    selected-hover-state-layer-color: $color-palette,
     selected-icon-color: $color-palette,
     selected-pressed-icon-color: $color-palette,
-    selected-pressed-state-layer-color: $color-palette,
   ));
 
   // TODO(crisbeto): this should be included by MDC's `theme-styles`, but it isn't currently.
@@ -39,12 +36,9 @@
         disabled-selected-icon-color: mdc-theme-color.$on-surface,
         disabled-unselected-icon-color: mdc-theme-color.$on-surface,
         unselected-focus-icon-color: $on-surface,
-        unselected-focus-state-layer-color: $on-surface,
         unselected-hover-icon-color: $on-surface,
-        unselected-hover-state-layer-color: $on-surface,
         unselected-icon-color: $on-surface,
         unselected-pressed-icon-color: $on-surface,
-        unselected-pressed-state-layer-color: $on-surface,
       ));
 
       &.mat-primary {
