@@ -1,4 +1,4 @@
-@use '@material/checkbox' as mdc-checkbox;
+@use '@material/checkbox/checkbox' as mdc-checkbox;
 @use '@material/checkbox/checkbox-theme' as mdc-checkbox-theme;
 @use '@material/form-field' as mdc-form-field;
 @use '@material/ripple' as mdc-ripple;
@@ -9,8 +9,10 @@
 @use '../../material/core/style/layout-common';
 @use '../../material/core/style/vendor-prefixes';
 
-@include mdc-checkbox.without-ripple($query: mdc-helpers.$mat-base-styles-query);
-@include mdc-form-field.core-styles($query: mdc-helpers.$mat-base-styles-query);
+@include mdc-helpers.disable-fallback-declarations {
+  @include mdc-checkbox.static-styles($query: mdc-helpers.$mat-base-styles-query);
+  @include mdc-form-field.core-styles($query: mdc-helpers.$mat-base-styles-query);
+}
 
 // Apply base styles to the MDC ripple to adjust appearance for state changes (hover, focus, press)
 @mixin _ripple-base-styles() {
@@ -27,7 +29,23 @@
   .mdc-checkbox {
     // MDC theme styles also include structural styles so we have to include the theme at least
     // once here. The values will be overwritten by our own theme file afterwards.
-    @include mdc-checkbox-theme.theme-styles(mdc-checkbox-theme.$light-theme);
+    @include mdc-helpers.disable-fallback-declarations {
+      @include mdc-checkbox-theme.theme-styles(map.merge(mdc-checkbox-theme.$light-theme, (
+        // Exclude all of the ripple-related styles.
+        selected-focus-state-layer-color: null,
+        selected-focus-state-layer-opacity: null,
+        selected-hover-state-layer-color: null,
+        selected-hover-state-layer-opacity: null,
+        selected-pressed-state-layer-color: null,
+        selected-pressed-state-layer-opacity: null,
+        unselected-focus-state-layer-color: null,
+        unselected-focus-state-layer-opacity: null,
+        unselected-hover-state-layer-color: null,
+        unselected-hover-state-layer-opacity: null,
+        unselected-pressed-state-layer-color: null,
+        unselected-pressed-state-layer-opacity: null,
+      )));
+    }
 
     // The MDC checkbox styles related to the hover state are intertwined with the MDC ripple
     // styles. We currently don't use the MDC ripple due to size concerns, therefore we need to

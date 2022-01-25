@@ -25,7 +25,6 @@ ng_module(
         "//src/material-experimental/mdc-core",
         "//src/material/checkbox",
         "@npm//@angular/animations",
-        "@npm//@angular/common",
         "@npm//@angular/core",
         "@npm//@angular/forms",
         "@npm//@material/checkbox",

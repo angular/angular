@@ -13,27 +13,20 @@
 
 // Mixin that includes the checkbox theme styles with a given palette.
 // By default, the MDC checkbox always uses the `secondary` palette.
-@mixin private-checkbox-styles-with-color($color, $mdcColor) {
+@mixin private-checkbox-styles-with-color($color, $mdc-color) {
   $on-surface: mdc-theme-color.prop-value(on-surface);
   $border-color: rgba($on-surface, color.opacity(mdc-checkbox-theme.$border-color));
   $disabled-color: rgba($on-surface, color.opacity(mdc-checkbox-theme.$disabled-color));
 
   @include mdc-checkbox-theme.theme((
-    selected-checkmark-color: mdc-theme-color.prop-value(on-#{$mdcColor}),
+    selected-checkmark-color: mdc-theme-color.prop-value(on-#{$mdc-color}),
 
     selected-focus-icon-color: $color,
     selected-hover-icon-color: $color,
-    selected-hover-state-layer-color: $color,
     selected-icon-color: $color,
     selected-pressed-icon-color: $color,
     unselected-focus-icon-color: $color,
     unselected-hover-icon-color: $color,
-
-    selected-focus-state-layer-color: $on-surface,
-    selected-pressed-state-layer-color: $on-surface,
-    unselected-focus-state-layer-color: $on-surface,
-    unselected-hover-state-layer-color: $on-surface,
-    unselected-pressed-state-layer-color: $on-surface,
 
     disabled-selected-icon-color: $disabled-color,
     disabled-unselected-icon-color: $disabled-color,
@@ -45,12 +38,12 @@
 
 // Apply ripple colors to the MatRipple element and the MDC ripple element when the
 // checkbox is selected.
-@mixin _selected-ripple-colors($theme, $mdcColor) {
+@mixin _selected-ripple-colors($theme, $mdc-color) {
   .mdc-checkbox--selected ~ {
     .mat-mdc-checkbox-ripple {
       @include ripple-theme.color((
           foreground: (
-              base: mdc-theme-color.prop-value($mdcColor)
+              base: mdc-theme-color.prop-value($mdc-color)
           ),
       ));
     }

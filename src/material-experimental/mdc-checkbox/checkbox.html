@@ -5,7 +5,7 @@
     <div class="mat-mdc-checkbox-touch-target" (click)="_onClick()"></div>
     <input #nativeCheckbox
            type="checkbox"
-           [ngClass]="_classes"
+           class="mdc-checkbox__native-control"
            [attr.aria-checked]="_getAriaChecked()"
            [attr.aria-label]="ariaLabel || null"
            [attr.aria-labelledby]="ariaLabelledby"
