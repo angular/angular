@@ -54,6 +54,8 @@ describe('LocalModuleScopeRegistry', () => {
       exports: [Dir1, Pipe1],
       schemas: [],
       rawDeclarations: null,
+      rawImports: null,
+      rawExports: null,
     });
 
     const scope = scopeRegistry.getScopeOfModule(Module.node) as LocalModuleScope;
@@ -71,6 +73,8 @@ describe('LocalModuleScopeRegistry', () => {
       exports: [],
       schemas: [],
       rawDeclarations: null,
+      rawImports: null,
+      rawExports: null,
     });
     metaRegistry.registerNgModuleMetadata({
       ref: new Reference(ModuleB.node),
@@ -79,6 +83,8 @@ describe('LocalModuleScopeRegistry', () => {
       imports: [],
       schemas: [],
       rawDeclarations: null,
+      rawImports: null,
+      rawExports: null,
     });
     metaRegistry.registerNgModuleMetadata({
       ref: new Reference(ModuleC.node),
@@ -87,6 +93,8 @@ describe('LocalModuleScopeRegistry', () => {
       imports: [],
       schemas: [],
       rawDeclarations: null,
+      rawImports: null,
+      rawExports: null,
     });
 
     const scopeA = scopeRegistry.getScopeOfModule(ModuleA.node) as LocalModuleScope;
@@ -104,6 +112,8 @@ describe('LocalModuleScopeRegistry', () => {
       declarations: [],
       schemas: [],
       rawDeclarations: null,
+      rawImports: null,
+      rawExports: null,
     });
     metaRegistry.registerNgModuleMetadata({
       ref: new Reference(ModuleB.node),
@@ -112,6 +122,8 @@ describe('LocalModuleScopeRegistry', () => {
       imports: [],
       schemas: [],
       rawDeclarations: null,
+      rawImports: null,
+      rawExports: null,
     });
 
     const scopeA = scopeRegistry.getScopeOfModule(ModuleA.node) as LocalModuleScope;
@@ -129,6 +141,8 @@ describe('LocalModuleScopeRegistry', () => {
       exports: [DirA, DirA, DirB, ModuleB],
       schemas: [],
       rawDeclarations: null,
+      rawImports: null,
+      rawExports: null,
     });
     metaRegistry.registerNgModuleMetadata({
       ref: new Reference(ModuleB.node),
@@ -137,6 +151,8 @@ describe('LocalModuleScopeRegistry', () => {
       exports: [DirB],
       schemas: [],
       rawDeclarations: null,
+      rawImports: null,
+      rawExports: null,
     });
     metaRegistry.registerNgModuleMetadata({
       ref: new Reference(ModuleC.node),
@@ -145,6 +161,8 @@ describe('LocalModuleScopeRegistry', () => {
       exports: [ModuleB],
       schemas: [],
       rawDeclarations: null,
+      rawImports: null,
+      rawExports: null,
     });
 
     const scope = scopeRegistry.getScopeOfModule(ModuleA.node) as LocalModuleScope;
@@ -169,6 +187,8 @@ describe('LocalModuleScopeRegistry', () => {
       declarations: [DirInModule],
       schemas: [],
       rawDeclarations: null,
+      rawImports: null,
+      rawExports: null,
     });
 
     const scope = scopeRegistry.getScopeOfModule(Module.node) as LocalModuleScope;
@@ -185,6 +205,8 @@ describe('LocalModuleScopeRegistry', () => {
       declarations: [],
       schemas: [],
       rawDeclarations: null,
+      rawImports: null,
+      rawExports: null,
     });
     metaRegistry.registerNgModuleMetadata({
       ref: new Reference(ModuleB.node),
@@ -193,6 +215,8 @@ describe('LocalModuleScopeRegistry', () => {
       imports: [],
       schemas: [],
       rawDeclarations: null,
+      rawImports: null,
+      rawExports: null,
     });
 
     const scopeA = scopeRegistry.getScopeOfModule(ModuleA.node) as LocalModuleScope;
@@ -209,6 +233,8 @@ describe('LocalModuleScopeRegistry', () => {
       declarations: [],
       schemas: [],
       rawDeclarations: null,
+      rawImports: null,
+      rawExports: null,
     });
     metaRegistry.registerNgModuleMetadata({
       ref: new Reference(ModuleB.node),
@@ -217,6 +243,8 @@ describe('LocalModuleScopeRegistry', () => {
       imports: [],
       schemas: [],
       rawDeclarations: null,
+      rawImports: null,
+      rawExports: null,
     });
 
     expect(scopeRegistry.getScopeOfModule(ModuleA.node)!.compilation.isPoisoned).toBeTrue();

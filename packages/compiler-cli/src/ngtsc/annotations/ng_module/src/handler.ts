@@ -31,7 +31,9 @@ export interface NgModuleAnalysis {
   rawDeclarations: ts.Expression|null;
   schemas: SchemaMetadata[];
   imports: Reference<ClassDeclaration>[];
+  rawImports: ts.Expression|null;
   exports: Reference<ClassDeclaration>[];
+  rawExports: ts.Expression|null;
   id: Expression|null;
   factorySymbolName: string;
   providersRequiringFactory: Set<Reference<ClassDeclaration>>|null;
@@ -211,14 +213,16 @@ export class NgModuleDecoratorHandler implements
     }
 
     let importRefs: Reference<ClassDeclaration>[] = [];
+    let rawImports: ts.Expression|null = null;
     if (ngModule.has('imports')) {
-      const rawImports = ngModule.get('imports')!;
+      rawImports = ngModule.get('imports')!;
       const importsMeta = this.evaluator.evaluate(rawImports, moduleResolvers);
       importRefs = this.resolveTypeList(rawImports, importsMeta, name, 'imports');
     }
     let exportRefs: Reference<ClassDeclaration>[] = [];
+    let rawExports: ts.Expression|null = null;
     if (ngModule.has('exports')) {
-      const rawExports = ngModule.get('exports')!;
+      rawExports = ngModule.get('exports')!;
       const exportsMeta = this.evaluator.evaluate(rawExports, moduleResolvers);
       exportRefs = this.resolveTypeList(rawExports, exportsMeta, name, 'exports');
       this.referencesRegistry.add(node, ...exportRefs);
@@ -371,7 +375,9 @@ export class NgModuleDecoratorHandler implements
         declarations: declarationRefs,
         rawDeclarations,
         imports: importRefs,
+        rawImports,
         exports: exportRefs,
+        rawExports,
         providers: rawProviders,
         providersRequiringFactory: rawProviders ?
             resolveProvidersRequiringFactory(rawProviders, this.reflector, this.evaluator) :
@@ -398,6 +404,8 @@ export class NgModuleDecoratorHandler implements
       imports: analysis.imports,
       exports: analysis.exports,
       rawDeclarations: analysis.rawDeclarations,
+      rawImports: analysis.rawImports,
+      rawExports: analysis.rawExports,
     });
 
     if (this.factoryTracker !== null) {
