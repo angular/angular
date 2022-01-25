@@ -27,9 +27,9 @@ already updated to version `X + 1`, the lazy loading operation will fail.
 
 The version identifier of the application is determined by the contents of all
 resources, and it changes if any of them change. In practice, the version
-is determined by the contents of the `ngsw.json` file, which includes
+is determined by the contents of the `ngsw-config.json` file, which includes
 hashes for all known content. If any of the cached files change, the file's
-hash will change in `ngsw.json`, causing the Angular service worker to
+hash will change in `ngsw-config.json`, causing the Angular service worker to
 treat the active set of files as a new version.
 
 With the versioning behavior of the Angular service worker, an application
@@ -38,7 +38,7 @@ server can ensure that the Angular application always has a consistent set of fi
 #### Update checks
 
 Every time the user opens or refreshes the application, the Angular service worker
-checks for updates to the application by looking for updates to the `ngsw.json` manifest. If
+checks for updates to the application by looking for updates to the `ngsw-config.json` manifest. If
 an update is found, it is downloaded and cached automatically, and will be served
 the next time the application is loaded.
 
@@ -69,7 +69,7 @@ Hash mismatches can occur for a variety of reasons:
 
 * Caching layers in between the origin server and the end user could serve stale content.
 * A non-atomic deployment could result in the Angular service worker having visibility of partially updated content.
-* Errors during the build process could result in updated resources without `ngsw.json` being updated. The reverse could also happen resulting in an updated `ngsw.json` without updated resources.
+* Errors during the build process could result in updated resources without `ngsw-config.json` being updated. The reverse could also happen resulting in an updated `ngsw-config.json` without updated resources.
 
 #### Unhashed content
 
