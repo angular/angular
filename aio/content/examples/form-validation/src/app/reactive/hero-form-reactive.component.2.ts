@@ -26,7 +26,7 @@ export class HeroFormReactiveComponent implements OnInit {
       updateOn: 'blur'
     });
     // #enddocregion async-validator-usage
-     alterEgoControl.setValue(this.hero.alterEgo);
+    alterEgoControl.setValue(this.hero.alterEgo);
 
     this.heroForm = new FormGroup({
       name: new FormControl(this.hero.name, [
