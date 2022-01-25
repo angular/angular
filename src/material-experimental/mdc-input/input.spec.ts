@@ -1430,8 +1430,27 @@ describe('MatFormField default options', () => {
     );
   });
 
-  it('changes the default value of subscriptSizing', () => {
+  it('changes the default value of subscriptSizing (undefined input)', () => {
     const fixture = createComponent(MatInputWithSubscriptSizing, [
+      {
+        provide: MAT_FORM_FIELD_DEFAULT_OPTIONS,
+        useValue: {
+          subscriptSizing: 'dynamic',
+        },
+      },
+    ]);
+
+    fixture.detectChanges();
+    expect(fixture.componentInstance.formField.subscriptSizing).toBe('dynamic');
+    expect(
+      fixture.nativeElement
+        .querySelector('.mat-mdc-form-field-subscript-wrapper')
+        .classList.contains('mat-mdc-form-field-subscript-dynamic-size'),
+    ).toBe(true);
+  });
+
+  it('changes the default value of subscriptSizing (no input)', () => {
+    const fixture = createComponent(MatInputWithAppearance, [
       {
         provide: MAT_FORM_FIELD_DEFAULT_OPTIONS,
         useValue: {

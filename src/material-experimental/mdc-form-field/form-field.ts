@@ -91,7 +91,7 @@ const DEFAULT_APPEARANCE: MatFormFieldAppearance = 'fill';
 /** Default appearance used by the form-field. */
 const DEFAULT_FLOAT_LABEL: FloatLabelType = 'auto';
 
-/** Default way that the suffix element height is set. */
+/** Default way that the subscript element height is set. */
 const DEFAULT_SUBSCRIPT_SIZING: SubscriptSizing = 'fixed';
 
 /**
@@ -225,7 +225,7 @@ export class MatFormField
   set subscriptSizing(value: SubscriptSizing) {
     this._subscriptSizing = value || this._defaults?.subscriptSizing || DEFAULT_SUBSCRIPT_SIZING;
   }
-  private _subscriptSizing: SubscriptSizing = DEFAULT_SUBSCRIPT_SIZING;
+  private _subscriptSizing: SubscriptSizing | null = null;
 
   /** Text for the form field hint. */
   @Input()
