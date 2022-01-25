@@ -46,7 +46,7 @@ describe('insert/remove', () => {
        fixture.detectChanges();
        expect(fixture.nativeElement).toHaveText('');
 
-       fixture.componentInstance.cmpRef = null;
+       fixture.componentInstance.cmpRef = undefined;
        fixture.componentInstance.currentComponent = InjectedComponent;
 
        fixture.detectChanges();
@@ -111,7 +111,7 @@ describe('insert/remove', () => {
        let fixture = TestBed.createComponent(TestComponent);
 
        // We are accessing a ViewChild (ngComponentOutlet) before change detection has run
-       fixture.componentInstance.cmpRef = null;
+       fixture.componentInstance.cmpRef = undefined;
        fixture.componentInstance.currentComponent = InjectedComponent;
        fixture.detectChanges();
        let cmpRef: ComponentRef<InjectedComponent> = fixture.componentInstance.cmpRef!;
@@ -144,25 +144,54 @@ describe('insert/remove', () => {
        expect(fixture.nativeElement).toHaveText('projected foo');
      }));
 
-  it('should resolve components from other modules, if supplied', waitForAsync(() => {
+  it('should resolve components from other modules, if supplied as an NgModuleFactory',
+     waitForAsync(() => {
        const compiler = TestBed.inject(Compiler);
        let fixture = TestBed.createComponent(TestComponent);
 
        fixture.detectChanges();
        expect(fixture.nativeElement).toHaveText('');
 
-       fixture.componentInstance.module = compiler.compileModuleSync(TestModule2);
+       fixture.componentInstance.ngModuleFactory = compiler.compileModuleSync(TestModule2);
        fixture.componentInstance.currentComponent = Module2InjectedComponent;
 
        fixture.detectChanges();
        expect(fixture.nativeElement).toHaveText('baz');
      }));
 
-  it('should clean up moduleRef, if supplied', waitForAsync(() => {
-       let destroyed = false;
+  it('should resolve components from other modules, if supplied as an NgModule class reference',
+     waitForAsync(() => {
+       let fixture = TestBed.createComponent(TestComponent);
+
+       fixture.detectChanges();
+       expect(fixture.nativeElement).toHaveText('');
+
+       fixture.componentInstance.ngModule = TestModule2;
+       fixture.componentInstance.currentComponent = Module2InjectedComponent;
+
+       fixture.detectChanges();
+       expect(fixture.nativeElement).toHaveText('baz');
+     }));
+
+
+  it('should clean up moduleRef, if supplied as an NgModuleFactory', waitForAsync(() => {
        const compiler = TestBed.inject(Compiler);
        const fixture = TestBed.createComponent(TestComponent);
-       fixture.componentInstance.module = compiler.compileModuleSync(TestModule2);
+       fixture.componentInstance.ngModuleFactory = compiler.compileModuleSync(TestModule2);
+       fixture.componentInstance.currentComponent = Module2InjectedComponent;
+       fixture.detectChanges();
+
+       const moduleRef = fixture.componentInstance.ngComponentOutlet['_moduleRef']!;
+       spyOn(moduleRef, 'destroy').and.callThrough();
+
+       expect(moduleRef.destroy).not.toHaveBeenCalled();
+       fixture.destroy();
+       expect(moduleRef.destroy).toHaveBeenCalled();
+     }));
+
+  it('should clean up moduleRef, if supplied as an NgModule class reference', waitForAsync(() => {
+       const fixture = TestBed.createComponent(TestComponent);
+       fixture.componentInstance.ngModule = TestModule2;
        fixture.componentInstance.currentComponent = Module2InjectedComponent;
        fixture.detectChanges();
 
@@ -178,7 +207,7 @@ describe('insert/remove', () => {
        const compiler = TestBed.inject(Compiler);
        const fixture = TestBed.createComponent(TestComponent);
 
-       fixture.componentInstance.module = compiler.compileModuleSync(TestModule2);
+       fixture.componentInstance.ngModuleFactory = compiler.compileModuleSync(TestModule2);
        fixture.componentInstance.currentComponent = Module2InjectedComponent;
        fixture.detectChanges();
        expect(fixture.nativeElement).toHaveText('baz');
@@ -191,16 +220,31 @@ describe('insert/remove', () => {
        expect(moduleRef).toBe(fixture.componentInstance.ngComponentOutlet['_moduleRef']);
      }));
 
-  it('should re-create moduleRef when changed', waitForAsync(() => {
+  it('should re-create moduleRef when changed (NgModuleFactory)', waitForAsync(() => {
        const compiler = TestBed.inject(Compiler);
        const fixture = TestBed.createComponent(TestComponent);
-       fixture.componentInstance.module = compiler.compileModuleSync(TestModule2);
+       fixture.componentInstance.ngModuleFactory = compiler.compileModuleSync(TestModule2);
        fixture.componentInstance.currentComponent = Module2InjectedComponent;
        fixture.detectChanges();
 
        expect(fixture.nativeElement).toHaveText('baz');
 
-       fixture.componentInstance.module = compiler.compileModuleSync(TestModule3);
+       fixture.componentInstance.ngModuleFactory = compiler.compileModuleSync(TestModule3);
+       fixture.componentInstance.currentComponent = Module3InjectedComponent;
+       fixture.detectChanges();
+
+       expect(fixture.nativeElement).toHaveText('bat');
+     }));
+
+  it('should re-create moduleRef when changed (NgModule class reference)', waitForAsync(() => {
+       const fixture = TestBed.createComponent(TestComponent);
+       fixture.componentInstance.ngModule = TestModule2;
+       fixture.componentInstance.currentComponent = Module2InjectedComponent;
+       fixture.detectChanges();
+
+       expect(fixture.nativeElement).toHaveText('baz');
+
+       fixture.componentInstance.ngModule = TestModule3;
        fixture.componentInstance.currentComponent = Module3InjectedComponent;
        fixture.detectChanges();
 
@@ -219,23 +263,25 @@ class InjectedComponent {
 class InjectedComponentAgain {
 }
 
-const TEST_CMP_TEMPLATE =
-    `<ng-template *ngComponentOutlet="currentComponent; injector: injector; content: projectables; ngModuleFactory: module;"></ng-template>`;
+const TEST_CMP_TEMPLATE = `<ng-template *ngComponentOutlet="
+      currentComponent;
+      injector: injector;
+      content: projectables;
+      ngModule: ngModule;
+      ngModuleFactory: ngModuleFactory;
+    "></ng-template>`;
 @Component({selector: 'test-cmp', template: TEST_CMP_TEMPLATE})
 class TestComponent {
-  // TODO(issue/24571): remove '!'.
-  currentComponent!: Type<any>|null;
-  // TODO(issue/24571): remove '!'.
-  injector!: Injector;
-  // TODO(issue/24571): remove '!'.
-  projectables!: any[][];
-  // TODO(issue/24571): remove '!'.
-  module!: NgModuleFactory<any>;
+  currentComponent: Type<unknown>|null = null;
+  injector?: Injector;
+  projectables?: any[][];
+  ngModule?: Type<unknown>;
+  ngModuleFactory?: NgModuleFactory<unknown>;
 
-  get cmpRef(): ComponentRef<any>|null {
+  get cmpRef(): ComponentRef<any>|undefined {
     return this.ngComponentOutlet['_componentRef'];
   }
-  set cmpRef(value: ComponentRef<any>|null) {
+  set cmpRef(value: ComponentRef<any>|undefined) {
     this.ngComponentOutlet['_componentRef'] = value;
   }
 

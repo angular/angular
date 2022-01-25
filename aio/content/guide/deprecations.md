@@ -31,12 +31,14 @@ v10 - v13
 v11 - v14
 v12 - v15
 v13 -> v16
+v14 -> v17
 -->
 
 | Area                                | API or Feature                                                                                             | May be removed in     |
 | :---------------------------------- | :--------------------------------------------------------------------------------------------------------- | :-------------------- |
 | `@angular/common`                   | [`ReflectiveInjector`](#reflectiveinjector)                                                                | <!--v8--> v11         |
 | `@angular/common`                   | [`CurrencyPipe` - `DEFAULT_CURRENCY_CODE`](api/common/CurrencyPipe#currency-code-deprecation)              | <!--v9--> v11         |
+| `@angular/common`                   | [`NgComponentOutlet.ngComponentOutletNgModuleFactory`](#common)              | <!--v14--> v17         |
 | `@angular/common/http`              | [`XhrFactory`](api/common/http/XhrFactory)                                                                 | <!--v12--> v15        |
 | `@angular/common/http/testing`      | [`TestRequest` accepting `ErrorEvent` for error simulation](#testrequest-errorevent)                       | <!--v13--> v16        |
 | `@angular/core`                     | [`DefaultIterableDiffer`](#core)                                                                           | <!--v7--> v11         |
@@ -97,6 +99,7 @@ This section contains a complete list all of the currently-deprecated APIs, with
 | API                                                                                           | Replacement                                         | Deprecation announced | Notes                                                                                                     |
 | :-------------------------------------------------------------------------------------------- | :-------------------------------------------------- | :-------------------- | :-------------------------------------------------------------------------------------------------------- |
 | [`CurrencyPipe` - `DEFAULT_CURRENCY_CODE`](api/common/CurrencyPipe#currency-code-deprecation) | `{provide: DEFAULT_CURRENCY_CODE, useValue: 'USD'}` | v9                    | From v11 the default code will be extracted from the locale data given by `LOCALE_ID`, rather than `USD`. |
+| [`NgComponentOutlet.ngComponentOutletNgModuleFactory`](api/common/NgComponentOutlet) | `NgComponentOutlet.ngComponentOutletNgModule` | v14                    | Use the `ngComponentOutletNgModule` input instead. This input doesn't require resolving NgModule factory.  |
 
 {@a common-http}
 
