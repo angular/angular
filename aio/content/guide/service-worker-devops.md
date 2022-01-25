@@ -30,7 +30,14 @@ resources, and it changes if any of them change. In practice, the version
 is determined by the contents of the `ngsw.json` file, which includes
 hashes for all known content. If any of the cached files change, the file's
 hash will change in `ngsw.json`, causing the Angular service worker to
-treat the active set of files as a new version.
+treat the active set of files as a new version. 
+
+<div class="alert is-helpful">
+
+`ngsw.json` is the manifest file that is generated at 
+build time based on `ngsw-config.json`. 
+
+</div>
 
 With the versioning behavior of the Angular service worker, an application
 server can ensure that the Angular application always has a consistent set of files.
