@@ -294,6 +294,13 @@ export class TestBedRender3 implements TestBed {
 
   configureTestingModule(moduleDef: TestModuleMetadata): void {
     this.assertNotInstantiated('R3TestBed.configureTestingModule', 'configure the test module');
+
+    // Trigger module scoping queue flush before executing other TestBed operations in a test.
+    // This is needed for the first test invocation to ensure that globally declared modules have
+    // their components scoped properly. See the `checkGlobalCompilationFinished` function
+    // description for additional info.
+    this.checkGlobalCompilationFinished();
+
     // Always re-assign the teardown options, even if they're undefined.
     // This ensures that we don't carry the options between tests.
     this._instanceTeardownOptions = moduleDef.teardown;
