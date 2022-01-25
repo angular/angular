@@ -1,5 +1,5 @@
 <label [attr.for]="inputId" class="mat-slide-toggle-label" #label>
-  <div #toggleBar class="mat-slide-toggle-bar"
+  <span #toggleBar class="mat-slide-toggle-bar"
        [class.mat-slide-toggle-bar-no-side-margin]="!labelContent.textContent || !labelContent.textContent.trim()">
 
     <input #input class="mat-slide-toggle-input cdk-visually-hidden" type="checkbox"
@@ -10,27 +10,27 @@
            [checked]="checked"
            [disabled]="disabled"
            [attr.name]="name"
-           [attr.aria-checked]="checked.toString()"
+           [attr.aria-checked]="checked"
            [attr.aria-label]="ariaLabel"
            [attr.aria-labelledby]="ariaLabelledby"
            [attr.aria-describedby]="ariaDescribedby"
            (change)="_onChangeEvent($event)"
            (click)="_onInputClick($event)">
 
-    <div class="mat-slide-toggle-thumb-container" #thumbContainer>
-      <div class="mat-slide-toggle-thumb"></div>
-      <div class="mat-slide-toggle-ripple mat-focus-indicator" mat-ripple
+    <span class="mat-slide-toggle-thumb-container" #thumbContainer>
+      <span class="mat-slide-toggle-thumb"></span>
+      <span class="mat-slide-toggle-ripple mat-focus-indicator" mat-ripple
            [matRippleTrigger]="label"
            [matRippleDisabled]="disableRipple || disabled"
            [matRippleCentered]="true"
            [matRippleRadius]="20"
            [matRippleAnimation]="{enterDuration: _noopAnimations ? 0 : 150}">
 
-        <div class="mat-ripple-element mat-slide-toggle-persistent-ripple"></div>
-      </div>
-    </div>
+        <span class="mat-ripple-element mat-slide-toggle-persistent-ripple"></span>
+      </span>
+    </span>
 
-  </div>
+  </span>
 
   <span class="mat-slide-toggle-content" #labelContent (cdkObserveContent)="_onLabelTextChange()">
     <!-- Add an invisible span so JAWS can read the label -->

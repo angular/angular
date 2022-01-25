@@ -121,6 +121,7 @@ $bar-track-width: $bar-width - $thumb-size;
   height: $thumb-size;
   width: $thumb-size;
   border-radius: 50%;
+  display: block;
 }
 
 // Horizontal bar for the slide-toggle.
