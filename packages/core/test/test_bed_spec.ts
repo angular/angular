@@ -123,6 +123,51 @@ export class HelloWorldModule {
 }
 
 describe('TestBed', () => {
+  // This test is extracted to an individual `describe` block to avoid any extra TestBed
+  // initialization logic that happens in the `beforeEach` functions in other `describe` sections.
+  it('should apply scopes correctly for components in the lazy-loaded module', () => {
+    // Reset TestBed to the initial state, emulating an invocation of a first test.
+    // Check `TestBed.checkGlobalCompilationFinished` for additional info.
+    (getTestBed() as any)._globalCompilationChecked = false;
+
+    @Component({
+      selector: 'root',
+      template: '<div dirA></div>',
+    })
+    class Root {
+    }
+    @Directive({
+      selector: '[dirA]',
+      host: {'title': 'Test title'},
+    })
+    class DirA {
+    }
+
+    // Note: this module is not directly reference in the test intentionally.
+    // Its presence triggers a side-effect of patching correct scopes on the declared components.
+    @NgModule({
+      declarations: [Root, DirA],
+    })
+    class Module {
+    }
+
+    TestBed.configureTestingModule({});
+    // Trigger TestBed initialization.
+    TestBed.inject(Injector);
+
+    // Emulate the end of a test (trigger module scoping queue flush).
+    TestBed.resetTestingModule();
+
+    // Emulate a lazy-loading scenario by creating a component
+    // without importing a module into a TestBed testing module.
+    TestBed.configureTestingModule({});
+    const fixture = TestBed.createComponent(Root);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.firstChild.getAttribute('title')).toEqual('Test title');
+  });
+});
+
+describe('TestBed', () => {
   beforeEach(() => {
     getTestBed().resetTestingModule();
     TestBed.configureTestingModule({imports: [HelloWorldModule]});
