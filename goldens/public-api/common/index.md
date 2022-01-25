@@ -412,17 +412,19 @@ export class NgComponentOutlet implements OnChanges, OnDestroy {
     // (undocumented)
     ngComponentOutlet: Type<any>;
     // (undocumented)
-    ngComponentOutletContent: any[][];
+    ngComponentOutletContent?: any[][];
     // (undocumented)
-    ngComponentOutletInjector: Injector;
+    ngComponentOutletInjector?: Injector;
     // (undocumented)
-    ngComponentOutletNgModuleFactory: NgModuleFactory<any>;
+    ngComponentOutletNgModule?: Type<any>;
+    // @deprecated (undocumented)
+    ngComponentOutletNgModuleFactory?: NgModuleFactory<any>;
     // (undocumented)
     ngOnChanges(changes: SimpleChanges): void;
     // (undocumented)
     ngOnDestroy(): void;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<NgComponentOutlet, "[ngComponentOutlet]", never, { "ngComponentOutlet": "ngComponentOutlet"; "ngComponentOutletInjector": "ngComponentOutletInjector"; "ngComponentOutletContent": "ngComponentOutletContent"; "ngComponentOutletNgModuleFactory": "ngComponentOutletNgModuleFactory"; }, {}, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<NgComponentOutlet, "[ngComponentOutlet]", never, { "ngComponentOutlet": "ngComponentOutlet"; "ngComponentOutletInjector": "ngComponentOutletInjector"; "ngComponentOutletContent": "ngComponentOutletContent"; "ngComponentOutletNgModule": "ngComponentOutletNgModule"; "ngComponentOutletNgModuleFactory": "ngComponentOutletNgModuleFactory"; }, {}, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<NgComponentOutlet, never>;
 }
