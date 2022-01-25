@@ -57,6 +57,15 @@
       }
     }
   },
+  "animations": {
+    "master": {
+      "uncompressed": {
+        "runtime": 1073,
+        "main": 179008,
+        "polyfills": 37242
+      }
+    }
+  },
   "hello_world__closure": {
     "master": {
       "uncompressed": {
