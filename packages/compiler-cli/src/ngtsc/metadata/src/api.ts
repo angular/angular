@@ -14,7 +14,6 @@ import {ClassDeclaration} from '../../reflection';
 
 import {ClassPropertyMapping, ClassPropertyName} from './property_mapping';
 
-
 /**
  * Metadata collected for an `NgModule`.
  */
@@ -32,6 +31,22 @@ export interface NgModuleMeta {
    * because the module came from a .d.ts file).
    */
   rawDeclarations: ts.Expression|null;
+
+  /**
+   * The raw `ts.Expression` which gave rise to `imports`, if one exists.
+   *
+   * If this is `null`, then either no imports exist, or no expression was available (likely
+   * because the module came from a .d.ts file).
+   */
+  rawImports: ts.Expression|null;
+
+  /**
+   * The raw `ts.Expression` which gave rise to `exports`, if one exists.
+   *
+   * If this is `null`, then either no exports exist, or no expression was available (likely
+   * because the module came from a .d.ts file).
+   */
+  rawExports: ts.Expression|null;
 }
 
 /**

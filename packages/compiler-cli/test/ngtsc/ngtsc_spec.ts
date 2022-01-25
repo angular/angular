@@ -5291,7 +5291,10 @@ function allTests(os: string) {
       function verifyThrownError(errorCode: ErrorCode, errorMessage: string) {
         const errors = env.driveDiagnostics();
         expect(errors.length).toBe(1);
-        const {code, messageText} = errors[0];
+        let {code, messageText} = errors[0];
+        if (errors[0].relatedInformation !== undefined) {
+          messageText += errors[0].relatedInformation.map(info => info.messageText).join('\n');
+        }
         expect(code).toBe(ngErrorCode(errorCode));
         expect(trim(messageText as string)).toContain(errorMessage);
       }
