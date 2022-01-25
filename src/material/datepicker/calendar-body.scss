@@ -1,4 +1,5 @@
 @use 'sass:math';
+@use '../core/style/button-common';
 @use '../../cdk/a11y';
 
 $calendar-body-label-padding-start: 5% !default;
@@ -31,13 +32,24 @@ $calendar-range-end-body-cell-size:
   padding-right: $calendar-body-label-side-padding;
 }
 
-.mat-calendar-body-cell {
+.mat-calendar-body-cell-container {
   position: relative;
   height: 0;
   line-height: 0;
+}
+
+.mat-calendar-body-cell {
+  @include button-common.reset();
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: none;
   text-align: center;
   outline: none;
-  cursor: pointer;
+  font-family: inherit;
+  margin: 0;
 }
 
 // We use ::before to apply a background to the body cell, because we need to apply a border

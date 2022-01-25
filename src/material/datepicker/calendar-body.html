@@ -26,40 +26,51 @@
       [style.paddingBottom]="_cellPadding">
     {{_firstRowOffset >= labelMinRequiredCells ? label : ''}}
   </td>
-  <td *ngFor="let item of row; let colIndex = index"
-      role="gridcell"
-      class="mat-calendar-body-cell"
-      [ngClass]="item.cssClasses"
-      [tabindex]="_isActiveCell(rowIndex, colIndex) ? 0 : -1"
-      [attr.data-mat-row]="rowIndex"
-      [attr.data-mat-col]="colIndex"
-      [class.mat-calendar-body-disabled]="!item.enabled"
-      [class.mat-calendar-body-active]="_isActiveCell(rowIndex, colIndex)"
-      [class.mat-calendar-body-range-start]="_isRangeStart(item.compareValue)"
-      [class.mat-calendar-body-range-end]="_isRangeEnd(item.compareValue)"
-      [class.mat-calendar-body-in-range]="_isInRange(item.compareValue)"
-      [class.mat-calendar-body-comparison-bridge-start]="_isComparisonBridgeStart(item.compareValue, rowIndex, colIndex)"
-      [class.mat-calendar-body-comparison-bridge-end]="_isComparisonBridgeEnd(item.compareValue, rowIndex, colIndex)"
-      [class.mat-calendar-body-comparison-start]="_isComparisonStart(item.compareValue)"
-      [class.mat-calendar-body-comparison-end]="_isComparisonEnd(item.compareValue)"
-      [class.mat-calendar-body-in-comparison-range]="_isInComparisonRange(item.compareValue)"
-      [class.mat-calendar-body-preview-start]="_isPreviewStart(item.compareValue)"
-      [class.mat-calendar-body-preview-end]="_isPreviewEnd(item.compareValue)"
-      [class.mat-calendar-body-in-preview]="_isInPreview(item.compareValue)"
-      [attr.aria-label]="item.ariaLabel"
-      [attr.aria-disabled]="!item.enabled || null"
-      [attr.aria-selected]="_isSelected(item.compareValue)"
-      [attr.aria-current]="todayValue === item.compareValue ? 'date' : null"
-      (click)="_cellClicked(item, $event)"
-      [style.width]="_cellWidth"
-      [style.paddingTop]="_cellPadding"
-      [style.paddingBottom]="_cellPadding">
-      <div class="mat-calendar-body-cell-content mat-focus-indicator"
-        [class.mat-calendar-body-selected]="_isSelected(item.compareValue)"
-        [class.mat-calendar-body-comparison-identical]="_isComparisonIdentical(item.compareValue)"
-        [class.mat-calendar-body-today]="todayValue === item.compareValue">
-        {{item.displayValue}}
-      </div>
-      <div class="mat-calendar-body-cell-preview" aria-hidden="true"></div>
+  <!--
+    Each gridcell in the calendar contains a button, which signals to assistive technology that the
+    cell is interactable, as well as the selection state via `aria-pressed`. See #23476 for
+    background.
+  -->
+  <td
+    *ngFor="let item of row; let colIndex = index"
+    role="gridcell"
+    class="mat-calendar-body-cell-container"
+    [style.width]="_cellWidth"
+    [style.paddingTop]="_cellPadding"
+    [style.paddingBottom]="_cellPadding"
+    [attr.data-mat-row]="rowIndex"
+    [attr.data-mat-col]="colIndex"
+  >
+    <button
+        type="button"
+        class="mat-calendar-body-cell"
+        [ngClass]="item.cssClasses"
+        [tabindex]="_isActiveCell(rowIndex, colIndex) ? 0 : -1"
+        [class.mat-calendar-body-disabled]="!item.enabled"
+        [class.mat-calendar-body-active]="_isActiveCell(rowIndex, colIndex)"
+        [class.mat-calendar-body-range-start]="_isRangeStart(item.compareValue)"
+        [class.mat-calendar-body-range-end]="_isRangeEnd(item.compareValue)"
+        [class.mat-calendar-body-in-range]="_isInRange(item.compareValue)"
+        [class.mat-calendar-body-comparison-bridge-start]="_isComparisonBridgeStart(item.compareValue, rowIndex, colIndex)"
+        [class.mat-calendar-body-comparison-bridge-end]="_isComparisonBridgeEnd(item.compareValue, rowIndex, colIndex)"
+        [class.mat-calendar-body-comparison-start]="_isComparisonStart(item.compareValue)"
+        [class.mat-calendar-body-comparison-end]="_isComparisonEnd(item.compareValue)"
+        [class.mat-calendar-body-in-comparison-range]="_isInComparisonRange(item.compareValue)"
+        [class.mat-calendar-body-preview-start]="_isPreviewStart(item.compareValue)"
+        [class.mat-calendar-body-preview-end]="_isPreviewEnd(item.compareValue)"
+        [class.mat-calendar-body-in-preview]="_isInPreview(item.compareValue)"
+        [attr.aria-label]="item.ariaLabel"
+        [attr.aria-disabled]="!item.enabled || null"
+        [attr.aria-pressed]="_isSelected(item.compareValue)"
+        [attr.aria-current]="todayValue === item.compareValue ? 'date' : null"
+        (click)="_cellClicked(item, $event)">
+        <div class="mat-calendar-body-cell-content mat-focus-indicator"
+          [class.mat-calendar-body-selected]="_isSelected(item.compareValue)"
+          [class.mat-calendar-body-comparison-identical]="_isComparisonIdentical(item.compareValue)"
+          [class.mat-calendar-body-today]="todayValue === item.compareValue">
+          {{item.displayValue}}
+        </div>
+        <div class="mat-calendar-body-cell-preview" aria-hidden="true"></div>
+    </button>
   </td>
 </tr>

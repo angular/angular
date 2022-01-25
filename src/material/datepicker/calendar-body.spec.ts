@@ -92,15 +92,13 @@ describe('MatCalendarBody', () => {
       expect(selectedCell.innerHTML.trim()).toBe('4');
     });
 
-    it('should set aria-selected correctly', () => {
-      const selectedCells = cellEls.filter(c => c.getAttribute('aria-selected') === 'true');
-      const deselectedCells = cellEls.filter(c => c.getAttribute('aria-selected') === 'false');
+    it('should set aria-pressed correctly', () => {
+      const pressedCells = cellEls.filter(c => c.getAttribute('aria-pressed') === 'true');
+      const depressedCells = cellEls.filter(c => c.getAttribute('aria-pressed') === 'false');
 
-      expect(selectedCells.length)
-        .withContext('Expected one cell to be marked as selected.')
-        .toBe(1);
-      expect(deselectedCells.length)
-        .withContext('Expected remaining cells to be marked as deselected.')
+      expect(pressedCells.length).withContext('Expected one cell to be marked as pressed.').toBe(1);
+      expect(depressedCells.length)
+        .withContext('Expected remaining cells to be marked as not pressed.')
         .toBe(cellEls.length - 1);
     });
 
