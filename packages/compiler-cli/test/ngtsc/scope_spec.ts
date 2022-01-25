@@ -187,10 +187,9 @@ runInEachFileSystem(() => {
         `);
           const [error] = env.driveDiagnostics();
           expect(error).not.toBeUndefined();
-          expect(error.messageText).toContain('IsAModule');
-          expect(error.messageText).toContain('NgModule.imports');
           expect(error.code).toEqual(ngErrorCode(ErrorCode.NGMODULE_INVALID_IMPORT));
-          expect(diagnosticToNode(error, ts.isIdentifier).text).toEqual('NotAModule');
+          expect(diagnosticToNode(error, ts.isIdentifier).parent.parent.getText())
+              .toEqual('imports: [NotAModule]');
         });
 
         it('should produce an error when a non-class is imported from a .d.ts dependency', () => {
@@ -250,10 +249,9 @@ runInEachFileSystem(() => {
         `);
           const [error] = env.driveDiagnostics();
           expect(error).not.toBeUndefined();
-          expect(error.messageText).toContain('IsAModule');
-          expect(error.messageText).toContain('NgModule.exports');
           expect(error.code).toEqual(ngErrorCode(ErrorCode.NGMODULE_INVALID_EXPORT));
-          expect(diagnosticToNode(error, ts.isIdentifier).text).toEqual('NotAModule');
+          expect(diagnosticToNode(error, ts.isIdentifier).parent.parent.getText())
+              .toEqual('exports: [NotAModule]');
         });
 
         it('should produce a transitive error when an invalid NgModule is exported', () => {
@@ -277,9 +275,9 @@ runInEachFileSystem(() => {
           if (error === undefined) {
             return fail('Expected to find a diagnostic referencing InvalidModule');
           }
-          expect(error.messageText).toContain('IsAModule');
-          expect(error.messageText).toContain('NgModule.exports');
           expect(error.code).toEqual(ngErrorCode(ErrorCode.NGMODULE_INVALID_EXPORT));
+          expect(diagnosticToNode(error, ts.isIdentifier).parent.parent.getText())
+              .toEqual('exports: [InvalidModule]');
         });
       });
 
@@ -296,10 +294,9 @@ runInEachFileSystem(() => {
         `);
           const [error] = env.driveDiagnostics();
           expect(error).not.toBeUndefined();
-          expect(error.messageText).toContain('IsAModule');
-          expect(error.messageText).toContain('NgModule.exports');
           expect(error.code).toEqual(ngErrorCode(ErrorCode.NGMODULE_INVALID_REEXPORT));
-          expect(diagnosticToNode(error, ts.isIdentifier).text).toEqual('Dir');
+          expect(diagnosticToNode(error, ts.isIdentifier).parent.parent.getText())
+              .toEqual('exports: [Dir]');
         });
       });
 
