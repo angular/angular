@@ -509,7 +509,6 @@ export function setup(targets: TypeCheckingTarget[], overrides: {
               // probably a declaration used in one of them. Return an empty scope.
               const emptyScope: ScopeData = {
                 directives: [],
-                ngModules: [],
                 pipes: [],
                 isPoisoned: false,
               };
@@ -611,7 +610,6 @@ export function getClass(sf: ts.SourceFile, name: string): ClassDeclaration<ts.C
  */
 function makeScope(program: ts.Program, sf: ts.SourceFile, decls: TestDeclaration[]): ScopeData {
   const scope: ScopeData = {
-    ngModules: [],
     directives: [],
     pipes: [],
     isPoisoned: false,

@@ -26,11 +26,6 @@ export interface ScopeData {
   pipes: PipeMeta[];
 
   /**
-   * NgModules which contributed to the scope of the module.
-   */
-  ngModules: ClassDeclaration[];
-
-  /**
    * Whether some module or component in this scope contains errors and is thus semantically
    * unreliable.
    */
