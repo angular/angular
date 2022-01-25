@@ -127,7 +127,7 @@ To add the `@angular/elements` package to your workspace, run the following comm
 
 <code-example language="sh">
 
-npm install @angular/elements --save
+ng add @angular/elements
 
 </code-example>
 
