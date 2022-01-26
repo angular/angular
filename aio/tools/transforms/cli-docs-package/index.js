@@ -50,7 +50,7 @@ module.exports =
 
           const cliPackage = require(resolve(CLI_SOURCE_PATH, 'package.json'));
           const repoUrlParts = cliPackage.repository.url.replace(/\.git$/, '').split('/');
-          const version = `v${semver.clean(cliPackage.version)}`;
+          const version = semver.clean(cliPackage.version);
           const repo = repoUrlParts.pop();
           const owner = repoUrlParts.pop();
           const cliVersionInfo = {gitRepoInfo: {owner, repo}, currentVersion: {raw: version}};
