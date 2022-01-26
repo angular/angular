@@ -14,4 +14,8 @@ cd ${COMPONENTS_REPO_TMP_DIR}
 ./scripts/circleci/setup_bazel_binary.sh
 
 # Now actually run the tests.
-bazel test --build_tag_filters=-docs-package,-e2e,-browser:firefox-local --test_tag_filters=-e2e,-browser:firefox-local -- src/...
+bazel test \
+  --build_tag_filters=-docs-package,-e2e,-browser:firefox-local \
+  --test_tag_filters=-e2e,-browser:firefox-local \
+  --build_tests_only \
+  -- src/...
