@@ -19,11 +19,6 @@
       "version": "14.0.0-beta",
       "description": "As of Angular version 13, `entryComponents` are no longer necessary.",
       "factory": "./migrations/entry-components/index"
-    },
-    "migration-v14-typed-forms": {
-      "version": "9999.0.0",
-      "description": "Experimental migration that adds <any>s for Typed Forms.",
-      "factory": "./migrations/typed-forms/index"
     }
   }
 }
