@@ -1,3 +1,18 @@
+<a name="14.0.0-next.0"></a>
+# 14.0.0-next.0 (2022-01-26)
+### language-service
+| Commit | Type | Description |
+| -- | -- | -- |
+| [9d4af65e34](https://github.com/angular/angular/commit/9d4af65e343e41b48cb9afd12c2b61d8ca61a9ac) | feat | Provide plugin to delegate rename requests to Angular ([#44696](https://github.com/angular/angular/pull/44696)) |
+### service-worker
+| Commit | Type | Description |
+| -- | -- | -- |
+| [ec0a0e0669](https://github.com/angular/angular/commit/ec0a0e0669ef5d2f524fbf9a540eb2b306b2e24a) | feat | add `cacheOpaqueResponses` option for data-groups ([#44723](https://github.com/angular/angular/pull/44723)) |
+## Special Thanks
+Andrew Kushnir, Dylan Hunn, George Kalpakas, JiaLiPassion, Joey Perrott and ivanwonder
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="13.2.0"></a>
 # 13.2.0 (2022-01-26)
 ## Deprecations
