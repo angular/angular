@@ -45,6 +45,6 @@ use the theme's primary color. This can be changed to `'accent'` or `'warn'`.
 
 `MatProgressBar` implements the ARIA `role="progressbar"` pattern. By default, the progress bar
 sets `aria-valuemin` to `0` and `aria-valuemax` to `100`. Avoid changing these values, as this may
-cause incompatiblity with some assitive technology.
+cause incompatiblity with some assistive technology.
 
 Always provide an accessible label via `aria-label` or `aria-labelledby` for each progress bar.
