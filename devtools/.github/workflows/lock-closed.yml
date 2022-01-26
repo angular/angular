@@ -5,15 +5,11 @@ on:
     # Run at 16:00 every day
     - cron: '0 16 * * *'
 
-# Declare default permissions as read only.
-permissions:
-  contents: read
-
 jobs:
   lock_closed:
     if: github.repository == 'angular/angular'
     runs-on: ubuntu-latest
     steps:
-      - uses: angular/dev-infra/github-actions/lock-closed@129a5ccbcc73d7ca960d8c166d7400bf2e94cd3d
+      - uses: angular/dev-infra/github-actions/lock-closed@8298e121c51960857ef39abc16b743775ff6be68
         with:
           lock-bot-key: ${{ secrets.LOCK_BOT_PRIVATE_KEY }}
