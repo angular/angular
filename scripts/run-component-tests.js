@@ -17,7 +17,7 @@
  *   --no-watch | Watch mode is enabled by default. This flag opts-out to standard Bazel.
  */
 
-const minimist = require('minimist');
+const yargs = require('yargs');
 const shelljs = require('shelljs');
 const chalk = require('chalk');
 const path = require('path');
@@ -35,15 +35,25 @@ shelljs.set('-e');
 shelljs.cd(projectDir);
 
 // Extracts the supported command line options.
-const {
-  _: components,
-  local,
-  firefox,
-  watch,
-} = minimist(args, {
-  boolean: ['local', 'firefox', 'watch'],
-  default: {watch: true},
-});
+const {components, local, firefox, watch} = yargs(args)
+  .command('* <components..>', 'Run tests for specified components', args =>
+    args.positional('components', {type: 'array'}),
+  )
+  .option('local', {
+    type: 'boolean',
+    description: 'Whether test should run in local mode. You can manually connect a browser then.',
+  })
+  .option('firefox', {
+    type: 'boolean',
+    description: 'Whether browser tests should run within Firefox.',
+  })
+  .option('watch', {
+    type: 'boolean',
+    default: true,
+    description: 'Whether tests should be re-run automatically upon changes.',
+  })
+  .strict()
+  .parseSync();
 
 // Whether tests for all components should be run.
 const all = components.length === 1 && components[0] === 'all';

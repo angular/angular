@@ -12,17 +12,15 @@
 const {join} = require('path');
 const {rm, mkdir, test, ls, set, exec, cd} = require('shelljs');
 const {red, green} = require('chalk');
-const minimist = require('minimist');
+const yargs = require('yargs');
 
 const projectDir = join(__dirname, '../');
 const archivesDir = 'dist/release-archives';
 const releasesDir = 'dist/releases';
-let {suffix} = minimist(process.argv.slice(2), {string: ['suffix']});
-
-if (!suffix) {
-  console.error(red('No suffix specified. Pass one with --suffix <text>'));
-  process.exit(1);
-}
+const {suffix} = yargs(process.argv.slice(2))
+  .option('suffix', {type: 'string', demandOption: true})
+  .strict()
+  .parseSync();
 
 // Fail if any ShellJS command fails.
 set('-e');
