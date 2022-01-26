@@ -21,22 +21,13 @@ Andrew Kushnir, Dylan Hunn, George Kalpakas, JiaLiPassion, Joey Perrott and ivan
 
 - The `ComponentFactory` and `ComponentFactoryResolver` classes are deprecated. Since Ivy, there is no need to resolve Component factories. Please use other APIs where you Component classes can be used directly (without resolving their factories).
 
-- Since Ivy, the CompilerOptions.useJit and CompilerOptions.missingTranslation config options are unused, passing them has no effect.
-
-- tap operator subscribe signature is deprecated
-
-Instead of passing separate callback arguments, use an observer argument. Signatures taking separate callback arguments will be removed in v8. Details: https://rxjs.dev/deprecations/subscribe-arguments
+- Since Ivy, the `CompilerOptions.useJit` and `CompilerOptions.missingTranslation` config options are unused, passing them has no effect.
 ### 
 | Commit | Type | Description |
 | -- | -- | -- |
 | [9c11183e74](https://github.com/angular/angular/commit/9c11183e74980b12c3c5712df174e90af6f19027) | docs | deprecate `CachedResourceLoader` and `RESOURCE_CACHE_PROVIDER` symbols ([#44749](https://github.com/angular/angular/pull/44749)) |
 | [9f12e7fea4](https://github.com/angular/angular/commit/9f12e7fea434c6d33e1155994e2c228d51520744) | docs | deprecate `ComponentFactory` and `ComponentFactoryResolver` symbols ([#44749](https://github.com/angular/angular/pull/44749)) |
 | [4e95a316ce](https://github.com/angular/angular/commit/4e95a316cef35a771cd8168e3a744eb6bd7f1615) | docs | deprecate unused config options from the `CompilerOptions` interface ([#44749](https://github.com/angular/angular/pull/44749)) |
-| [34d2292323](https://github.com/angular/angular/commit/34d2292323a5b5c0751a5f2a3c85ccfe4427bfb5) | docs | update deprecated form of the tap operator in http example ([#44738](https://github.com/angular/angular/pull/44738)) |
-### common
-| Commit | Type | Description |
-| -- | -- | -- |
-| [ed21f5c753](https://github.com/angular/angular/commit/ed21f5c75378e1ce717ee3d76d28c8c994209de1) | feat | add injector input to ngTemplateOutlet ([#44761](https://github.com/angular/angular/pull/44761)) |
 ### compiler
 | Commit | Type | Description |
 | -- | -- | -- |
@@ -55,14 +46,11 @@ Instead of passing separate callback arguments, use an observer argument. Signat
 ### core
 | Commit | Type | Description |
 | -- | -- | -- |
-| [9921b2ca35](https://github.com/angular/angular/commit/9921b2ca35f774c2d80317aeeaabf02a6942daa6) | feat | Add a migration for typed forms. ([#44449](https://github.com/angular/angular/pull/44449)) |
-| [b49ffcd50e](https://github.com/angular/angular/commit/b49ffcd50e46ca7907ee2049f6cade8e080f5980) | feat | allow for injector to be specified when creating an embedded view ([#44666](https://github.com/angular/angular/pull/44666)) |
 | [5626b34264](https://github.com/angular/angular/commit/5626b34264d8893fece74d30db4920a685f3b17f) | fix | consistently use namespace short name rather than URI ([#44766](https://github.com/angular/angular/pull/44766)) |
 | [94bfcdd9de](https://github.com/angular/angular/commit/94bfcdd9de234f7189daaa06a6c179d9697bef8d) | fix | error if NgZone.isInAngularZone is called with a noop zone ([#44800](https://github.com/angular/angular/pull/44800)) |
 ### forms
 | Commit | Type | Description |
 | -- | -- | -- |
-| [5ae1030462](https://github.com/angular/angular/commit/5ae1030462a97bda8357415cbfcd34301dfa6499) | feat | Add an unused symbol `AnyForUntypedForms`. ([#44467](https://github.com/angular/angular/pull/44467)) |
 | [72092ebd26](https://github.com/angular/angular/commit/72092ebd26d6670a7dd02f6db5515d2afd27c4d6) | feat | Allow a FormControl to use initial value as default. ([#44434](https://github.com/angular/angular/pull/44434)) |
 | [f7aa937cac](https://github.com/angular/angular/commit/f7aa937cac0ad315e1012770aa1da97476aced54) | fix | Make some minor fixups for forward-compatibility with typed forms. ([#44540](https://github.com/angular/angular/pull/44540)) |
 ### language-service
