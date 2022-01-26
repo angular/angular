@@ -1,5 +1,4 @@
-load("//tools/dev-server:index.bzl", "dev_server")
-load("//tools:defaults.bzl", "devmode_esbuild", "esbuild_config", "ng_module", "sass_binary")
+load("//tools:defaults.bzl", "devmode_esbuild", "esbuild_config", "http_server", "ng_module", "sass_binary")
 load("//src/components-examples:config.bzl", "ALL_EXAMPLES")
 load("//tools/angular:index.bzl", "LINKER_PROCESSED_FW_PACKAGES")
 
@@ -119,8 +118,8 @@ devmode_esbuild(
     ],
 )
 
-dev_server(
-    name = "devserver",
+http_server(
+    name = "server",
     testonly = True,
     srcs = devserverIndexHtmlDependencies,
     additional_root_paths = [

@@ -78,8 +78,18 @@ export HUSKY=0
 ```
 
 ### Injecting variables into the dev app
-Variables can be injected into the dev app by creating the `src/dev-app/variables.json` file.
-They'll be made available under the `window.DEV_APP_VARIABLES` object. The file isn't checked into
-Git and it can be used to pass private configuration like API keys. Variables currently being used:
+
+A set of environment variables is made available within the dev-app. Such variables
+will be injected into the dev-app, so that e.g. API keys can be used for development
+without requiring secrets to be committed. 
+
+The following variables are currently used in the dev-app:
 
 * `GOOGLE_MAPS_KEY` - Optional key for the Google Maps API.
+
+For example, you can store a personal development Google Maps API key for the
+dev-app within your `.bashrc` or `.zshrc` file.
+
+```bash
+export GOOGLE_MAPS_KEY=<api-key>
+```

@@ -7,6 +7,7 @@ load("@npm//@angular/bazel:index.bzl", _ng_module = "ng_module", _ng_package = "
 load("@npm//@angular/dev-infra-private/bazel/integration:index.bzl", _integration_test = "integration_test")
 load("@npm//@angular/dev-infra-private/bazel/esbuild:index.bzl", _esbuild = "esbuild", _esbuild_config = "esbuild_config")
 load("@npm//@angular/dev-infra-private/bazel/spec-bundling:index.bzl", _spec_bundle = "spec_bundle")
+load("@npm//@angular/dev-infra-private/bazel/http-server:index.bzl", _http_server = "http_server")
 load("@npm//@angular/dev-infra-private/bazel:extract_js_module_output.bzl", "extract_js_module_output")
 load("@npm//@bazel/jasmine:index.bzl", _jasmine_node_test = "jasmine_node_test")
 load("@npm//@bazel/concatjs:index.bzl", _karma_web_test = "karma_web_test", _karma_web_test_suite = "karma_web_test_suite")
@@ -31,6 +32,7 @@ markdown_to_html = _markdown_to_html
 integration_test = _integration_test
 esbuild = _esbuild
 esbuild_config = _esbuild_config
+http_server = _http_server
 
 def _make_tsec_test(target):
     package_name = native.package_name()

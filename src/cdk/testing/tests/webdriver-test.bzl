@@ -26,7 +26,7 @@ def webdriver_test(name, deps, tags = [], **kwargs):
 
     server_test(
         name = "%s_chromium" % name,
-        server = "//src/e2e-app:devserver",
+        server = "//src/e2e-app:server",
         test = ":%s_chromium_web_test" % name,
         tags = tags + ["e2e"],
     )
