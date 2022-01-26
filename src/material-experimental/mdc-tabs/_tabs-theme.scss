@@ -4,7 +4,7 @@
 @use '@material/tab-indicator' as mdc-tab-indicator;
 @use '@material/tab-indicator/tab-indicator-theme' as mdc-tab-indicator-theme;
 @use '@material/tab' as mdc-tab;
-@use '@material/tab/tab-theme' as mdc-tab-theme;
+@use '@material/tab/mixins' as mdc-tab-mixins;
 @use '@material/tab-bar' as mdc-tab-bar;
 @use '../mdc-helpers/mdc-helpers';
 @use '../../material/core/typography/typography';
@@ -18,39 +18,9 @@
 
   @include mdc-helpers.mat-using-mdc-theme($config) {
     .mat-mdc-tab, .mat-mdc-tab-link {
-      $surface: mdc-theme-color.$surface;
-      $on-surface: rgba(mdc-theme-color.$on-surface, 0.6);
-
-      // TODO(crisbeto): these styles should actually be set through the `theme` mixin while the
-      // `theme-styles` are included in the `tab` mixin inside `_tabs-common.scss`. Currently
-      // they are not, because `theme-styles` outputs the token values directly, rather than
-      // generating CSS variables.
-      @include mdc-tab-theme.primary-navigation-tab-theme-styles(map.merge(
-          mdc-tab-theme.$primary-light-theme,
-          (
-            container-color: $surface,
-            inactive-focus-state-layer-color: $on-surface,
-            inactive-hover-state-layer-color: $on-surface,
-            inactive-pressed-state-layer-color: $on-surface,
-            with-icon-inactive-focus-icon-color: $on-surface,
-            with-icon-inactive-hover-icon-color: $on-surface,
-            with-icon-inactive-icon-color: $on-surface,
-            with-icon-inactive-pressed-icon-color: $on-surface,
-            with-label-text-inactive-focus-label-text-color: $on-surface,
-            with-label-text-inactive-hover-label-text-color: $on-surface,
-            with-label-text-inactive-label-text-color: $on-surface,
-            with-label-text-inactive-pressed-label-text-color: $on-surface,
-
-            // TODO(crisbeto): MDC's styles are set up so that the icon size is set through a
-            // `font-size` at the root of the tab while the text size of the tab is set on
-            // `.mdc-tab__text-label` which overrides the one from the root. The problem is that
-            // the `$light-theme` is looking for a `subhead2` level which doesn't exist in MDC's
-            // code which in turn causes no text label styles to be emitted and for the icon size
-            // to be applied to the entire tab. Since we don't support icons inside the tab
-            // anyway, we can temporarily work around it by preventing MDC from emitting icon
-            // styles. The correct label typography will be applied by our theme instead.
-            with-icon-icon-size: null
-          )));
+      &:not(.mat-mdc-tab-disabled) {
+        @include mdc-tab-mixins.text-label-color(rgba(mdc-theme-color.$on-surface, 0.6));
+      }
 
       // MDC seems to include a background color on tabs which only stands out on dark themes.
       // Disable for now for backwards compatibility. These styles are inside the theme in order
@@ -125,27 +95,10 @@
 
 @mixin _palette-styles($color) {
   .mat-mdc-tab, .mat-mdc-tab-link {
-    // TODO(crisbeto): these styles should actually be set through the `theme` mixin while the
-    // `theme-styles` are included in the `tab` mixin inside `_tabs-common.scss`. Currently
-    // they are not, because `theme-styles` outputs the token values directly, rather than
-    // generating CSS variables.
-    @include mdc-tab-theme.primary-navigation-tab-theme-styles((
-      active-focus-state-layer-color: $color,
-      active-hover-state-layer-color: $color,
-      active-pressed-state-layer-color: $color,
-      with-icon-active-focus-icon-color: $color,
-      with-icon-active-hover-icon-color: $color,
-      with-icon-active-icon-color: $color,
-      with-icon-active-pressed-icon-color: $color,
-      with-label-text-active-focus-label-text-color: $color,
-      with-label-text-active-hover-label-text-color: $color,
-      with-label-text-active-label-text-color: $color,
-      with-label-text-active-pressed-label-text-color: $color,
-    ));
-
-    @include mdc-tab-indicator-theme.theme-styles((
-      active-indicator-color: $color
-    ));
+    &:not(.mat-mdc-tab-disabled) {
+      @include mdc-tab-mixins.active-text-label-color($color);
+      @include mdc-tab-indicator-theme.theme-styles((active-indicator-color: $color));
+    }
   }
 
   .mdc-tab__ripple::before,

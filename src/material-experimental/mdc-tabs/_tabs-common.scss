@@ -11,7 +11,7 @@ $mat-tab-animation-duration: 500ms !default;
 // Combines the various structural styles we need for the tab group and tab nav bar.
 @mixin structural-styles {
   @include mdc-helpers.disable-fallback-declarations {
-    @include mdc-tab.without-ripple($query: mdc-helpers.$mat-base-styles-query);
+    @include mdc-tab.static-styles($query: mdc-helpers.$mat-base-styles-query);
     @include mdc-tab-indicator.core-styles($query: mdc-helpers.$mat-base-styles-query);
   }
 
@@ -49,6 +49,13 @@ $mat-tab-animation-duration: 500ms !default;
     bottom: 0;
     opacity: 0;
     pointer-events: none;
+  }
+
+  // Required for `fitInkBarToContent` to work. This used to be included with MDC's `without-ripple`
+  // mixin, but that no longer appears to be the case with `static-styles`. Since the latter is
+  // ~10kb smaller, we include this one extra style ourselves.
+  .mdc-tab__content {
+    @include mdc-tab-indicator.surface;
   }
 
   // We need to handle the hover and focus indication ourselves, because we don't use MDC's ripple.
