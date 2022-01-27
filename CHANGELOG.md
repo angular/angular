@@ -1,3 +1,14 @@
+<a name="12.2.16"></a>
+# 12.2.16 (2022-01-27)
+### ngcc
+| Commit | Type | Description |
+| -- | -- | -- |
+| [460befd693](https://github.com/angular/angular/commit/460befd693d1eca69213211011113c5bb02e11b6) | fix | support element accesses for export declarations ([#44824](https://github.com/angular/angular/pull/44824)) |
+## Special Thanks
+Andrew Kushnir and JoostK
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="12.2.15"></a>
 # 12.2.15 (2021-12-10)
 ### ngcc
