@@ -27,6 +27,7 @@ const QUERY_1_2 = [
                 children: [
                   {
                     name: 'two',
+                    children: [],
                   },
                 ],
               },
