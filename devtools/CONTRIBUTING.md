@@ -63,7 +63,7 @@ You can file new issues by filling out our [new issue form](https://github.com/r
 
 Before you submit your Pull Request (PR) consider the following guidelines:
 
-- Search [GitHub](https://github.com/rangle/angular-devtools/pulls) for an open or closed PR
+- Search [GitHub](https://github.com/angular/angular) for an open or closed PR
   that relates to your submission. You don't want to duplicate effort.
 - [Fork](https://docs.github.com/en/github/getting-started-with-github/fork-a-repo) the rangle/angular-devtools repo.
 - In your forked repository, make your changes in a new git branch:
@@ -224,6 +224,6 @@ reference GitHub issues that this commit **Closes**.
 
 A detailed explanation can be found in this [document][commit-message-format].
 
-[github]: https://github.com/rangle/angular-devtools
+[github]: https://github.com/angular/angular
 [gitter]: https://gitter.im/angular/angular
 [stackoverflow]: http://stackoverflow.com/questions/tagged/angular-devtools
