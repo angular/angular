@@ -161,10 +161,9 @@ export abstract class _MatTabBodyBase implements OnInit, OnDestroy {
     abstract _portalHost: CdkPortalOutlet;
     set position(position: number);
     _position: MatTabBodyPositionState;
-    preserveContent: boolean;
     readonly _translateTabComplete: Subject<AnimationEvent_2>;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<_MatTabBodyBase, never, never, { "_content": "content"; "origin": "origin"; "animationDuration": "animationDuration"; "preserveContent": "preserveContent"; "position": "position"; }, { "_onCentering": "_onCentering"; "_beforeCentering": "_beforeCentering"; "_afterLeavingCenter": "_afterLeavingCenter"; "_onCentered": "_onCentered"; }, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<_MatTabBodyBase, never, never, { "_content": "content"; "origin": "origin"; "animationDuration": "animationDuration"; "position": "position"; }, { "_onCentering": "_onCentering"; "_beforeCentering": "_beforeCentering"; "_afterLeavingCenter": "_afterLeavingCenter"; "_onCentered": "_onCentered"; }, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<_MatTabBodyBase, [null, { optional: true; }, null]>;
 }
@@ -250,7 +249,6 @@ export abstract class _MatTabGroupBase extends _MatTabGroupMixinBase implements 
     ngAfterContentInit(): void;
     // (undocumented)
     ngOnDestroy(): void;
-    preserveContent: boolean;
     realignInkBar(): void;
     _removeTabBodyWrapperHeight(): void;
     get selectedIndex(): number | null;
@@ -266,7 +264,7 @@ export abstract class _MatTabGroupBase extends _MatTabGroupMixinBase implements 
     _tabs: QueryList<MatTab>;
     updatePagination(): void;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<_MatTabGroupBase, never, never, { "dynamicHeight": "dynamicHeight"; "selectedIndex": "selectedIndex"; "headerPosition": "headerPosition"; "animationDuration": "animationDuration"; "contentTabIndex": "contentTabIndex"; "disablePagination": "disablePagination"; "preserveContent": "preserveContent"; "backgroundColor": "backgroundColor"; }, { "selectedIndexChange": "selectedIndexChange"; "focusChange": "focusChange"; "animationDone": "animationDone"; "selectedTabChange": "selectedTabChange"; }, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<_MatTabGroupBase, never, never, { "dynamicHeight": "dynamicHeight"; "selectedIndex": "selectedIndex"; "headerPosition": "headerPosition"; "animationDuration": "animationDuration"; "contentTabIndex": "contentTabIndex"; "disablePagination": "disablePagination"; "backgroundColor": "backgroundColor"; }, { "selectedIndexChange": "selectedIndexChange"; "focusChange": "focusChange"; "animationDone": "animationDone"; "selectedTabChange": "selectedTabChange"; }, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<_MatTabGroupBase, [null, null, { optional: true; }, { optional: true; }]>;
 }
@@ -455,7 +453,6 @@ export interface MatTabsConfig {
     disablePagination?: boolean;
     dynamicHeight?: boolean;
     fitInkBarToContent?: boolean;
-    preserveContent?: boolean;
 }
 
 // @public (undocumented)
