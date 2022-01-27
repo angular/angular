@@ -1361,5 +1361,170 @@ describe('FormArray', () => {
       });
     });
   });
+
+  describe('out of bounds positive indices', () => {
+    let c1: FormControl = new FormControl(1);
+    let c2: FormControl = new FormControl(2);
+    let c3: FormControl = new FormControl(3);
+    let c4: FormControl = new FormControl(4);
+    let c99: FormControl = new FormControl(99);
+
+    let fa: FormArray;
+
+    beforeEach(() => {
+      fa = new FormArray([c1, c2, c3, c4]);
+    });
+
+    // This spec checks the behavior is identical to `Array.prototype.at(index)`
+    it('should work with at', () => {
+      expect(fa.at(4)).toBeUndefined();
+    });
+
+    // This spec checks the behavior is identical to `Array.prototype.splice(index, 1, ...)`
+    it('should work with setControl', () => {
+      fa.setControl(4, c99);
+      expect(fa.value).toEqual([1, 2, 3, 4, 99]);
+    });
+
+    // This spec checks the behavior is identical to `Array.prototype.splice(index, 1)`
+    it('should work with removeAt', () => {
+      fa.removeAt(4);
+      expect(fa.value).toEqual([1, 2, 3, 4]);
+    });
+
+    // This spec checks the behavior is identical to `Array.prototype.splice(index, 0, ...)`
+    it('should work with insert', () => {
+      fa.insert(4, c99);
+      expect(fa.value).toEqual([1, 2, 3, 4, 99]);
+    });
+  });
+
+  describe('negative indices', () => {
+    let c1: FormControl = new FormControl(1);
+    let c2: FormControl = new FormControl(2);
+    let c3: FormControl = new FormControl(3);
+    let c4: FormControl = new FormControl(4);
+    let c99: FormControl = new FormControl(99);
+
+    let fa: FormArray;
+
+    beforeEach(() => {
+      fa = new FormArray([c1, c2, c3, c4]);
+    });
+
+    // This spec checks the behavior is identical to `Array.prototype.at(index)`
+    describe('should work with at', () => {
+      it('wrapping from the back between [-length, 0)', () => {
+        expect(fa.at(-1)).toBe(c4);
+        expect(fa.at(-2)).toBe(c3);
+        expect(fa.at(-3)).toBe(c2);
+        expect(fa.at(-4)).toBe(c1);
+      });
+
+      it('becoming undefined when less than -length', () => {
+        expect(fa.at(-5)).toBeUndefined();
+        expect(fa.at(-10)).toBeUndefined();
+      });
+    });
+
+    // This spec checks the behavior is identical to `Array.prototype.splice(index, 1, ...)`
+    describe('should work with setControl', () => {
+      describe('wrapping from the back between [-length, 0)', () => {
+        it('at -1', () => {
+          fa.setControl(-1, c99);
+          expect(fa.value).toEqual([1, 2, 3, 99]);
+        });
+        it('at -2', () => {
+          fa.setControl(-2, c99);
+          expect(fa.value).toEqual([1, 2, 99, 4]);
+        });
+        it('at -3', () => {
+          fa.setControl(-3, c99);
+          expect(fa.value).toEqual([1, 99, 3, 4]);
+        });
+        it('at -4', () => {
+          fa.setControl(-4, c99);
+          expect(fa.value).toEqual([99, 2, 3, 4]);
+        });
+      });
+
+      describe('replacing the first item when less than -length', () => {
+        it('at -5', () => {
+          fa.setControl(-5, c99);
+          expect(fa.value).toEqual([99, 2, 3, 4]);
+        });
+        it('at -10', () => {
+          fa.setControl(-10, c99);
+          expect(fa.value).toEqual([99, 2, 3, 4]);
+        });
+      });
+    });
+
+    // This spec checks the behavior is identical to `Array.prototype.splice(index, 1)`
+    describe('should work with removeAt', () => {
+      describe('wrapping from the back between [-length, 0)', () => {
+        it('at -1', () => {
+          fa.removeAt(-1);
+          expect(fa.value).toEqual([1, 2, 3]);
+        });
+        it('at -2', () => {
+          fa.removeAt(-2);
+          expect(fa.value).toEqual([1, 2, 4]);
+        });
+        it('at -3', () => {
+          fa.removeAt(-3);
+          expect(fa.value).toEqual([1, 3, 4]);
+        });
+        it('at -4', () => {
+          fa.removeAt(-4);
+          expect(fa.value).toEqual([2, 3, 4]);
+        });
+      });
+
+      describe('removing the first item when less than -length', () => {
+        it('at -5', () => {
+          fa.removeAt(-5);
+          expect(fa.value).toEqual([2, 3, 4]);
+        });
+        it('at -10', () => {
+          fa.removeAt(-10);
+          expect(fa.value).toEqual([2, 3, 4]);
+        });
+      });
+    });
+
+    // This spec checks the behavior is identical to `Array.prototype.splice(index, 0, ...)`
+    describe('should work with insert', () => {
+      describe('wrapping from the back between [-length, 0)', () => {
+        it('at -1', () => {
+          fa.insert(-1, c99);
+          expect(fa.value).toEqual([1, 2, 3, 99, 4]);
+        });
+        it('at -2', () => {
+          fa.insert(-2, c99);
+          expect(fa.value).toEqual([1, 2, 99, 3, 4]);
+        });
+        it('at -3', () => {
+          fa.insert(-3, c99);
+          expect(fa.value).toEqual([1, 99, 2, 3, 4]);
+        });
+        it('at -4', () => {
+          fa.insert(-4, c99);
+          expect(fa.value).toEqual([99, 1, 2, 3, 4]);
+        });
+      });
+
+      describe('prepending when less than -length', () => {
+        it('at -5', () => {
+          fa.insert(-5, c99);
+          expect(fa.value).toEqual([99, 1, 2, 3, 4]);
+        });
+        it('at -10', () => {
+          fa.insert(-10, c99);
+          expect(fa.value).toEqual([99, 1, 2, 3, 4]);
+        });
+      });
+    });
+  });
 });
 })();
