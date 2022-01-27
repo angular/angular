@@ -74,6 +74,42 @@ runInEachFileSystem(() => {
       expect(diags.length).toBe(0);
     });
 
+    it('should not produce nullish coalescing warning for the any type', () => {
+      const fileName = absoluteFrom('/main.ts');
+      const {program, templateTypeChecker} = setup([{
+        fileName,
+        templates: {
+          'TestCmp': `{{ var1 ?? 'foo' }}`,
+        },
+        source: 'export class TestCmp { var1: any; }'
+      }]);
+      const sf = getSourceFileOrError(program, fileName);
+      const component = getClass(sf, 'TestCmp');
+      const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
+          templateTypeChecker, program.getTypeChecker(), [nullishCoalescingNotNullableFactory],
+          {} /* options */);
+      const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
+      expect(diags.length).toBe(0);
+    });
+
+    it('should not produce nullish coalescing warning for the unknown type', () => {
+      const fileName = absoluteFrom('/main.ts');
+      const {program, templateTypeChecker} = setup([{
+        fileName,
+        templates: {
+          'TestCmp': `{{ var1 ?? 'foo' }}`,
+        },
+        source: 'export class TestCmp { var1: unknown; }'
+      }]);
+      const sf = getSourceFileOrError(program, fileName);
+      const component = getClass(sf, 'TestCmp');
+      const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
+          templateTypeChecker, program.getTypeChecker(), [nullishCoalescingNotNullableFactory],
+          {} /* options */);
+      const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
+      expect(diags.length).toBe(0);
+    });
+
     it('should not produce nullish coalescing warning for a type that includes undefined', () => {
       const fileName = absoluteFrom('/main.ts');
       const {program, templateTypeChecker} = setup([{
@@ -165,7 +201,7 @@ runInEachFileSystem(() => {
              },
              source: `
                export class TestCmp {
-                 func: (): string | null => null;
+                 func = (): string | null => null;
                }
              `,
            },
