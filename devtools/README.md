@@ -36,10 +36,10 @@ Angular DevTools supports Angular v9 and above, with Ivy enabled.
 To setup your local development environment for Angular DevTools, perform the following steps:
 
 ```bash
-git clone git://github.com/rangle/angular-devtools
-cd angular-devtools
+git clone git://github.com/angular/angular
+cd angular
 yarn
-yarn start
+yarn run devtools:devserver
 ```
 
 ### Build and Install on Chrome locally
