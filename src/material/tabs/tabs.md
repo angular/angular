@@ -84,6 +84,15 @@ duration can be configured globally using the `MAT_TABS_CONFIG` injection token.
                "file": "tab-group-animations-example.html",
                "region": "slow-animation-duration"}) -->
 
+### Keeping the tab content inside the DOM while it's off-screen
+By default the `<mat-tab-group>` will remove the content of off-screen tabs from the DOM until they
+come into the view. This is optimal for most cases since it keeps the DOM size smaller, but it
+isn't great for others like when a tab has an `<audio>` or `<video>` element, because the content
+will be re-initialized whenever the user navigates to the tab. If you want to keep the content of
+off-screen tabs in the DOM, you can set the `preserveContent` input to `true`.
+
+<!-- example(tab-group-preserve-content) -->
+
 ### Accessibility
 `MatTabGroup` and `MatTabNavBar` implement different interaction patterns for different use-cases.
 You should choose the component that works best for your application.

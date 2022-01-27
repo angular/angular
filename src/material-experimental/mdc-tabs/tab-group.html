@@ -63,6 +63,7 @@
                [position]="tab.position!"
                [origin]="tab.origin"
                [animationDuration]="animationDuration"
+               [preserveContent]="preserveContent"
                (_onCentered)="_removeTabBodyWrapperHeight()"
                (_onCentering)="_setTabBodyWrapperHeight($event)">
   </mat-tab-body>

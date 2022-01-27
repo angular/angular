@@ -666,6 +666,56 @@ describe('MDC-based MatTabGroup', () => {
 
       expect(tabGroupNode.classList).toContain('mat-mdc-tab-group-inverted-header');
     });
+
+    it('should be able to opt into keeping the inactive tab content in the DOM', fakeAsync(() => {
+      fixture.componentInstance.preserveContent = true;
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent).toContain('Pizza, fries');
+      expect(fixture.nativeElement.textContent).not.toContain('Peanuts');
+
+      tabGroup.selectedIndex = 3;
+      fixture.detectChanges();
+      tick();
+
+      expect(fixture.nativeElement.textContent).toContain('Pizza, fries');
+      expect(fixture.nativeElement.textContent).toContain('Peanuts');
+    }));
+
+    it('should visibly hide the content of inactive tabs', fakeAsync(() => {
+      const contentElements: HTMLElement[] = Array.from(
+        fixture.nativeElement.querySelectorAll('.mat-mdc-tab-body-content'),
+      );
+
+      expect(contentElements.map(element => element.style.visibility)).toEqual([
+        '',
+        'hidden',
+        'hidden',
+        'hidden',
+      ]);
+
+      tabGroup.selectedIndex = 2;
+      fixture.detectChanges();
+      tick();
+
+      expect(contentElements.map(element => element.style.visibility)).toEqual([
+        'hidden',
+        'hidden',
+        '',
+        'hidden',
+      ]);
+
+      tabGroup.selectedIndex = 1;
+      fixture.detectChanges();
+      tick();
+
+      expect(contentElements.map(element => element.style.visibility)).toEqual([
+        'hidden',
+        '',
+        'hidden',
+        'hidden',
+      ]);
+    }));
   });
 
   describe('lazy loaded tabs', () => {
@@ -1126,7 +1176,7 @@ class AsyncTabsTestApp implements OnInit {
 
 @Component({
   template: `
-  <mat-tab-group>
+  <mat-tab-group [preserveContent]="preserveContent">
     <mat-tab label="Junk food"> Pizza, fries </mat-tab>
     <mat-tab label="Vegetables"> Broccoli, spinach </mat-tab>
     <mat-tab [label]="otherLabel"> {{otherContent}} </mat-tab>
@@ -1135,6 +1185,7 @@ class AsyncTabsTestApp implements OnInit {
   `,
 })
 class TabGroupWithSimpleApi {
+  preserveContent = false;
   otherLabel = 'Fruit';
   otherContent = 'Apples, grapes';
   @ViewChild('legumes') legumes: any;
