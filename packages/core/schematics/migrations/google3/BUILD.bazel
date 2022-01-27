@@ -7,7 +7,6 @@ ts_library(
     visibility = ["//packages/core/schematics/test/google3:__pkg__"],
     deps = [
         "//packages/core/schematics/migrations/entry-components",
-        "//packages/core/schematics/migrations/testbed-teardown",
         "//packages/core/schematics/migrations/typed-forms",
         "//packages/core/schematics/utils",
         "//packages/core/schematics/utils/tslint",

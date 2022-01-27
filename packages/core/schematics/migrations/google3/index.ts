@@ -6,5 +6,4 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export {Rule as TestbedTeardownRule} from './testbedTeardownRule';
 export {Rule as WaitForAsyncRule} from './waitForAsyncRule';
