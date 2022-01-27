@@ -21,6 +21,21 @@ function isUrlHandlingStrategy(opts: ExtraOptions|
 }
 
 /**
+ * Router setup factory function used for testing. Only used internally to keep the factory that's
+ * marked as publicApi cleaner (i.e. not having _both_ `TitleStrategy` and `DefaultTitleStrategy`).
+ */
+export function setupTestingRouterInternal(
+    urlSerializer: UrlSerializer, contexts: ChildrenOutletContexts, location: Location,
+    compiler: Compiler, injector: Injector, routes: Route[][],
+    opts?: ExtraOptions|UrlHandlingStrategy, urlHandlingStrategy?: UrlHandlingStrategy,
+    routeReuseStrategy?: RouteReuseStrategy, defaultTitleStrategy?: DefaultTitleStrategy,
+    titleStrategy?: TitleStrategy) {
+  return setupTestingRouter(
+      urlSerializer, contexts, location, compiler, injector, routes, opts, urlHandlingStrategy,
+      routeReuseStrategy, titleStrategy ?? defaultTitleStrategy);
+}
+
+/**
  * Router setup factory function used for testing.
  *
  * @publicApi
@@ -29,8 +44,7 @@ export function setupTestingRouter(
     urlSerializer: UrlSerializer, contexts: ChildrenOutletContexts, location: Location,
     compiler: Compiler, injector: Injector, routes: Route[][],
     opts?: ExtraOptions|UrlHandlingStrategy, urlHandlingStrategy?: UrlHandlingStrategy,
-    routeReuseStrategy?: RouteReuseStrategy, defaultTitleStrategy?: DefaultTitleStrategy,
-    titleStrategy?: TitleStrategy) {
+    routeReuseStrategy?: RouteReuseStrategy, titleStrategy?: TitleStrategy) {
   const router =
       new Router(null!, urlSerializer, contexts, location, injector, compiler, flatten(routes));
   if (opts) {
@@ -51,7 +65,7 @@ export function setupTestingRouter(
     router.routeReuseStrategy = routeReuseStrategy;
   }
 
-  router.titleStrategy = titleStrategy ?? defaultTitleStrategy;
+  router.titleStrategy = titleStrategy;
 
   return router;
 }
@@ -90,7 +104,7 @@ export function setupTestingRouter(
     {provide: LocationStrategy, useClass: MockLocationStrategy},
     {
       provide: Router,
-      useFactory: setupTestingRouter,
+      useFactory: setupTestingRouterInternal,
       deps: [
         UrlSerializer,
         ChildrenOutletContexts,
