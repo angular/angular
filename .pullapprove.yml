@@ -200,6 +200,22 @@ groups:
         - zarend # Zach Arend
 
   # =========================================================
+  #  Renovate PRs
+  #
+  #  All renovate PRs will be assigned to the current
+  #  caretakers for review.
+  # =========================================================
+  renovate-changes:
+    <<: *defaults
+    conditions:
+      - *can-be-global-approved
+      - *can-be-global-docs-approved
+      - author in ["renovate[bot]"]
+    reviewers:
+      teams:
+        - angular-caretaker
+
+  # =========================================================
   #  Framework: Animations
   # =========================================================
   fw-animations:
