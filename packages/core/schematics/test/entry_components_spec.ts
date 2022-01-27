@@ -173,7 +173,7 @@ describe('entryComponents migration', () => {
   }
 
   function runMigration() {
-    return runner.runSchematicAsync('migration-v13.1-entry-components', {}, tree).toPromise();
+    return runner.runSchematicAsync('migration-entry-components', {}, tree).toPromise();
   }
 
   function stripWhitespace(contents: string) {
