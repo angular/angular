@@ -62,7 +62,12 @@ const typeToDescriptorPreview: Formatter<string> = {
   [PropType.Object]: (prop: any) => (getKeys(prop).length > 0 ? '{...}' : '{}'),
   [PropType.Symbol]: (_: any) => 'Symbol()',
   [PropType.Undefined]: (_: any) => 'undefined',
-  [PropType.Date]: (_: any) => 'Date()',
+  [PropType.Date]: (prop: any) => {
+    if (prop instanceof Date) {
+      return `Date(${new Date(prop).toISOString()})`;
+    }
+    return prop;
+  },
   [PropType.Unknown]: (_: any) => 'unknown',
 };
 
@@ -87,7 +92,7 @@ const shallowPropTypeToTreeMetaData = {
     expandable: false,
   },
   [PropType.Date]: {
-    editable: true,
+    editable: false,
     expandable: false,
   },
   [PropType.Null]: {
