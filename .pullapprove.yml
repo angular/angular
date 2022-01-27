@@ -69,23 +69,10 @@ availability:
 # Meta field that goes unused by PullApprove to allow for defining aliases to be
 # used throughout the config.
 meta:
-  # The following groups have no file based conditions and will be initially `active` on all PRs
-  # - `global-approvers`
-  # - `global-docs-approvers`
-  # - `required-minimum-review`
-  #
-  # By checking the number of active/pending/rejected groups when these are excluded, we can determine
-  # if any other groups are matched.
-  #
   # Note: Because all inactive groups start as pending, we are only checking pending and rejected active groups.
-  #
-  # Also note that the ordering of groups matters in this file. The only groups visible to the current
-  # one are those that appear above it.
-  no-groups-above-this-pending: &no-groups-above-this-pending len(groups.active.pending.exclude("required-minimum-review").exclude("global-approvers").exclude("global-docs-approvers")) == 0
-  no-groups-above-this-rejected: &no-groups-above-this-rejected len(groups.active.rejected.exclude("required-minimum-review").exclude("global-approvers").exclude("global-docs-approvers")) == 0
+  no-groups-above-this-pending: &no-groups-above-this-pending len(groups.active.pending.exclude("required-minimum-review")) == 0
+  no-groups-above-this-rejected: &no-groups-above-this-rejected len(groups.active.rejected.exclude("required-minimum-review")) == 0
 
-  can-be-global-approved: &can-be-global-approved '"global-approvers" not in groups.approved'
-  can-be-global-docs-approved: &can-be-global-docs-approved '"global-docs-approvers" not in groups.approved'
   defaults: &defaults
     reviews:
       # Authors provide their approval implicitly, this approval allows for a reviewer
@@ -117,88 +104,20 @@ overrides:
   - if: len(groups.active.exclude("required-minimum-review").exclude("global-*")) == 0 and len(groups.approved.include("global-*")) == 0
     status: failure
     explanation: 'At least one group must match this PR. Please update an existing review group, or create a new group.'
+  # If any global dev-infra approval is given the status should be passing.
+  - if: len(groups.approved.include("global-dev-infra-approvers")) == 1
+    status: success
+    explanation: 'Passing as globally approved by dev-infra'
+  # If any global docs approval is given the status should be passing.
+  - if: len(groups.approved.include("global-docs-approvers")) == 1
+    status: success
+    explanation: 'Passing as globally approved by docs'
+  # If any global approval is given the status should be passing.
+  - if: len(groups.approved.include("global-approvers")) == 1
+    status: success
+    explanation: 'Passing as globally approved by global approvers'
 
 groups:
-  # =========================================================
-  #  Global Approvers
-  #
-  # All reviews performed for global approvals require using
-  # the `Reviewed-for:` specifier to set the approval
-  # specificity as documented at:
-  # https://docs.pullapprove.com/reviewed-for/
-  # =========================================================
-  global-approvers:
-    type: optional
-    reviewers:
-      teams:
-        - framework-global-approvers
-    reviews:
-      request: 0
-      required: 1
-      reviewed_for: required
-
-  # =========================================================
-  #  Global Approvers For Docs
-  #
-  # All reviews performed for global docs approvals require
-  # using the `Reviewed-for:` specifier to set the approval
-  # specificity as documented at:
-  # https://docs.pullapprove.com/reviewed-for/
-  # =========================================================
-  global-docs-approvers:
-    type: optional
-    reviewers:
-      teams:
-        - framework-global-approvers-for-docs-only-changes
-    reviews:
-      request: 0
-      required: 1
-      reviewed_for: required
-
-  # =========================================================
-  # Require review on all PRs
-  #
-  # All PRs require at least one review.  This rule will not
-  # request any reviewers, however will require that at least
-  # one review is provided before the group is satisfied.
-  # =========================================================
-  required-minimum-review:
-    conditions:
-      - *can-be-global-approved
-      - *can-be-global-docs-approved
-    reviews:
-      request: 0 # Do not request any reviews from the reviewer group
-      required: 1 # Require that all PRs have approval from at least one of the users in the group
-      author_value: 0 # The author of the PR cannot provide an approval for themself
-      reviewed_for: ignored # All reviews apply to this group whether noted via Reviewed-for or not
-    reviewers:
-      users:
-        - alan-agius4 # Alan Agius
-        - aleksanderbodurri # Aleksander Bodurri
-        - alxhub # Alex Rickabaugh
-        - AndrewKushnir # Andrew Kushnir
-        - andrewseguin # Andrew Seguin
-        - atscott # Andrew Scott
-        - clydin # Charles Lyding
-        - crisbeto # Kristiyan Kostadinov
-        - devversion # Paul Gschwendtner
-        - dgp1130 # Doug Parker
-        - dylhunn # Dylan Hunn
-        - filipesilva # Filipe Silva
-        - gkalpak # Georgios Kalpakas
-        - jelbourn # Jeremy Elbourn
-        - jessicajaniuk # Jessica Janiuk
-        - JiaLiPassion # Jia Li
-        - JoostK # Joost Koehoorn
-        - josephperrott # Joey Perrott
-        - MarkTechson # Mark Thompson (Techson)
-        - mgechev # Minko Gechev
-        - mmalerba # Miles Malerba
-        - pkozlowski-opensource # Pawel Kozlowski
-        - Splaktar # Michael Prentice
-        - twerske # Emma Twersky
-        - zarend # Zach Arend
-
   # =========================================================
   #  Renovate PRs
   #
@@ -208,8 +127,6 @@ groups:
   renovate-changes:
     <<: *defaults
     conditions:
-      - *can-be-global-approved
-      - *can-be-global-docs-approved
       - author in ["renovate[bot]"]
     reviewers:
       teams:
@@ -221,8 +138,6 @@ groups:
   fw-animations:
     <<: *defaults
     conditions:
-      - *can-be-global-approved
-      - *can-be-global-docs-approved
       - >
         contains_any_globs(files, [
           'packages/animations/**',
@@ -248,8 +163,6 @@ groups:
   fw-compiler:
     <<: *defaults
     conditions:
-      - *can-be-global-approved
-      - *can-be-global-docs-approved
       - >
         contains_any_globs(files.exclude('packages/compiler-cli/ngcc/**'), [
           'packages/compiler/**',
@@ -274,8 +187,6 @@ groups:
   fw-ngcc:
     <<: *defaults
     conditions:
-      - *can-be-global-approved
-      - *can-be-global-docs-approved
       - files.include('packages/compiler-cli/ngcc/**')
     reviewers:
       users:
@@ -289,8 +200,6 @@ groups:
   fw-migrations:
     <<: *defaults
     conditions:
-      - *can-be-global-approved
-      - *can-be-global-docs-approved
       - files.include("packages/core/schematics/**")
     reviewers:
       users:
@@ -305,8 +214,6 @@ groups:
   fw-core:
     <<: *defaults
     conditions:
-      - *can-be-global-approved
-      - *can-be-global-docs-approved
       - >
         contains_any_globs(files.exclude("packages/core/schematics/**"), [
           'packages/core/**',
@@ -450,8 +357,6 @@ groups:
   fw-common:
     <<: *defaults
     conditions:
-      - *can-be-global-approved
-      - *can-be-global-docs-approved
       - >
         contains_any_globs(files.exclude("packages/core/schematics/**").exclude("packages/common/http/**"), [
           'packages/common/**',
@@ -472,8 +377,6 @@ groups:
   fw-http:
     <<: *defaults
     conditions:
-      - *can-be-global-approved
-      - *can-be-global-docs-approved
       - >
         contains_any_globs(files, [
           'packages/common/http/**',
@@ -497,8 +400,6 @@ groups:
   fw-elements:
     <<: *defaults
     conditions:
-      - *can-be-global-approved
-      - *can-be-global-docs-approved
       - >
         contains_any_globs(files, [
           'packages/elements/**',
@@ -523,8 +424,6 @@ groups:
   fw-forms:
     <<: *defaults
     conditions:
-      - *can-be-global-approved
-      - *can-be-global-docs-approved
       - >
         contains_any_globs(files, [
           'packages/forms/**',
@@ -556,8 +455,6 @@ groups:
   fw-i18n:
     <<: *defaults
     conditions:
-      - *can-be-global-approved
-      - *can-be-global-docs-approved
       - >
         contains_any_globs(files, [
           'packages/core/src/i18n/**',
@@ -601,8 +498,6 @@ groups:
   fw-platform-server:
     <<: *defaults
     conditions:
-      - *can-be-global-approved
-      - *can-be-global-docs-approved
       - >
         contains_any_globs(files, [
           'packages/platform-server/**',
@@ -626,8 +521,6 @@ groups:
   fw-router:
     <<: *defaults
     conditions:
-      - *can-be-global-approved
-      - *can-be-global-docs-approved
       - >
         contains_any_globs(files, [
           'packages/router/**',
@@ -654,8 +547,6 @@ groups:
   fw-service-worker:
     <<: *defaults
     conditions:
-      - *can-be-global-approved
-      - *can-be-global-docs-approved
       - >
         contains_any_globs(files, [
           'packages/service-worker/**',
@@ -681,8 +572,6 @@ groups:
   fw-upgrade:
     <<: *defaults
     conditions:
-      - *can-be-global-approved
-      - *can-be-global-docs-approved
       - >
         contains_any_globs(files, [
           'packages/upgrade/**',
@@ -712,8 +601,6 @@ groups:
   fw-testing:
     <<: *defaults
     conditions:
-      - *can-be-global-approved
-      - *can-be-global-docs-approved
       - >
         contains_any_globs(files.exclude('packages/compiler-cli/**').exclude('packages/language-service/**').exclude('packages/service-worker/**'), [
           'packages/**/testing/**',
@@ -744,7 +631,6 @@ groups:
   fw-benchmarks:
     <<: *defaults
     conditions:
-      - *can-be-global-approved
       - >
         contains_any_globs(files, [
           'modules/benchmarks/**'
@@ -764,7 +650,6 @@ groups:
   fw-playground:
     <<: *defaults
     conditions:
-      - *can-be-global-approved
       - >
         contains_any_globs(files, [
           'modules/playground/**'
@@ -784,8 +669,6 @@ groups:
   fw-security:
     <<: *defaults
     conditions:
-      - *can-be-global-approved
-      - *can-be-global-docs-approved
       - >
         contains_any_globs(files, [
           'packages/core/src/sanitization/**',
@@ -816,8 +699,6 @@ groups:
   bazel:
     <<: *defaults
     conditions:
-      - *can-be-global-approved
-      - *can-be-global-docs-approved
       - >
         contains_any_globs(files, [
           'packages/bazel/**',
@@ -833,8 +714,6 @@ groups:
   language-service:
     <<: *defaults
     conditions:
-      - *can-be-global-approved
-      - *can-be-global-docs-approved
       - >
         contains_any_globs(files, [
           'packages/language-service/**',
@@ -852,8 +731,6 @@ groups:
   zone-js:
     <<: *defaults
     conditions:
-      - *can-be-global-approved
-      - *can-be-global-docs-approved
       - >
         contains_any_globs(files, [
           'packages/zone.js/**',
@@ -868,8 +745,6 @@ groups:
   # =========================================================
   in-memory-web-api:
     conditions:
-      - *can-be-global-approved
-      - *can-be-global-docs-approved
       - >
         contains_any_globs(files, [
           'packages/misc/angular-in-memory-web-api/**',
@@ -890,8 +765,6 @@ groups:
   benchpress:
     <<: *defaults
     conditions:
-      - *can-be-global-approved
-      - *can-be-global-docs-approved
       - >
         contains_any_globs(files, [
           'packages/benchpress/**'
@@ -907,7 +780,6 @@ groups:
   integration-tests:
     <<: *defaults
     conditions:
-      - *can-be-global-approved
       - >
         contains_any_globs(files, [
           'integration/**'
@@ -928,8 +800,6 @@ groups:
   docs-contributors:
     <<: *defaults
     conditions:
-      - *can-be-global-approved
-      - *can-be-global-docs-approved
       - >
         contains_any_globs(files, [
           'aio/content/marketing/contributors.json',
@@ -947,8 +817,6 @@ groups:
   docs-getting-started-and-tutorial:
     <<: *defaults
     conditions:
-      - *can-be-global-approved
-      - *can-be-global-docs-approved
       - >
         contains_any_globs(files, [
           'aio/content/guide/setup-local.md',
@@ -980,8 +848,6 @@ groups:
   docs-marketing:
     <<: *defaults
     conditions:
-      - *can-be-global-approved
-      - *can-be-global-docs-approved
       - >
         contains_any_globs(files.exclude("aio/content/marketing/contributors.json"), [
           'aio/content/guide/roadmap.md',
@@ -1003,8 +869,6 @@ groups:
   docs-observables:
     <<: *defaults
     conditions:
-      - *can-be-global-approved
-      - *can-be-global-docs-approved
       - >
         contains_any_globs(files, [
           'aio/content/guide/observables.md',
@@ -1030,8 +894,6 @@ groups:
   docs-packaging-and-releasing:
     <<: *defaults
     conditions:
-      - *can-be-global-approved
-      - *can-be-global-docs-approved
       - >
         contains_any_globs(files, [
           'docs/PUBLIC_API.md',
@@ -1065,8 +927,6 @@ groups:
   docs-devtools:
     <<: *defaults
     conditions:
-      - *can-be-global-approved
-      - *can-be-global-docs-approved
       - >
         contains_any_globs(files, [
           'aio/content/guide/devtools.md',
@@ -1086,8 +946,6 @@ groups:
   # =========================================================
   tooling-cli-shared-api:
     conditions:
-      - *can-be-global-approved
-      - *can-be-global-docs-approved
       - >
         contains_any_globs(files, [
           'packages/compiler-cli/private/tooling.ts',
@@ -1109,8 +967,6 @@ groups:
   docs-cli:
     <<: *defaults
     conditions:
-      - *can-be-global-approved
-      - *can-be-global-docs-approved
       - >
         contains_any_globs(files, [
           'aio/content/cli/**',
@@ -1144,8 +1000,6 @@ groups:
   docs-libraries:
     <<: *defaults
     conditions:
-      - *can-be-global-approved
-      - *can-be-global-docs-approved
       - >
         contains_any_globs(files, [
           'aio/content/examples/angular-linker-plugin/webpack.config.mjs',
@@ -1166,8 +1020,6 @@ groups:
   docs-schematics:
     <<: *defaults
     conditions:
-      - *can-be-global-approved
-      - *can-be-global-docs-approved
       - >
         contains_any_globs(files, [
           'aio/content/guide/schematics.md',
@@ -1188,8 +1040,6 @@ groups:
   docs-infra:
     <<: *defaults
     conditions:
-      - *can-be-global-approved
-      - *can-be-global-docs-approved
       - >
         contains_any_globs(files, [
           'aio/*',
@@ -1223,8 +1073,6 @@ groups:
   devtools:
     <<: *defaults
     conditions:
-      - *can-be-global-approved
-      - *can-be-global-docs-approved
       - >
         contains_any_globs(files, [
           'devtools/**',
@@ -1243,7 +1091,6 @@ groups:
   dev-infra:
     <<: *defaults
     conditions:
-      - *can-be-global-approved
       - >
         contains_any_globs(files, [
           '*',
@@ -1297,7 +1144,6 @@ groups:
     conditions:
       - *no-groups-above-this-pending
       - *no-groups-above-this-rejected
-      - *can-be-global-approved
       - >
         contains_any_globs(files.exclude("goldens/public-api/manage.js"), [
           'goldens/public-api/**',
@@ -1333,7 +1179,6 @@ groups:
     conditions:
       - *no-groups-above-this-pending
       - *no-groups-above-this-rejected
-      - *can-be-global-approved
       - >
         contains_any_globs(files, [
           'goldens/size-tracking/**'
@@ -1360,7 +1205,6 @@ groups:
     conditions:
       - *no-groups-above-this-pending
       - *no-groups-above-this-rejected
-      - *can-be-global-approved
       - >
         contains_any_globs(files, [
           'goldens/circular-deps/packages.json'
@@ -1385,7 +1229,6 @@ groups:
   code-ownership:
     <<: *defaults
     conditions:
-      - *can-be-global-approved
       - >
         contains_any_globs(files, [
           '.pullapprove.yml'
@@ -1398,3 +1241,106 @@ groups:
         - dgp1130
         - jelbourn
         - josephperrott
+
+  ####################################################################################
+  # Override managed result groups
+  #
+  # Groups which are only used to determine the value of an override are managed at
+  # the bottom of the list as they will set a status on the PR directly, they
+  # therefore can always be process last without concern.
+  ####################################################################################
+
+  # =========================================================
+  # Global Approvers
+  #
+  # All reviews performed for global approvals require using
+  # the `Reviewed-for:` specifier to set the approval
+  # specificity as documented at:
+  # https://docs.pullapprove.com/reviewed-for/
+  # =========================================================
+  global-approvers:
+    type: optional
+    reviewers:
+      teams:
+        - framework-global-approvers
+    reviews:
+      request: 0
+      required: 1
+      reviewed_for: required
+
+  # =========================================================
+  # Global Approvers For Docs
+  #
+  # All reviews performed for global docs approvals require
+  # using the `Reviewed-for:` specifier to set the approval
+  # specificity as documented at:
+  # https://docs.pullapprove.com/reviewed-for/
+  # =========================================================
+  global-docs-approvers:
+    type: optional
+    reviewers:
+      teams:
+        - framework-global-approvers-for-docs-only-changes
+    reviews:
+      request: 0
+      required: 1
+      reviewed_for: required
+
+  # =========================================================
+  # Global Approvers For Dev-Infra changes
+  #
+  # All reviews performed for global dev-infra approvals
+  # require using the `Reviewed-for:` specifier to set the
+  # approval specificity as documented at:
+  # https://docs.pullapprove.com/reviewed-for/
+  # =========================================================
+  global-dev-infra-approvers:
+    type: optional
+    reviewers:
+      teams:
+        - dev-infra-framework
+    reviews:
+      request: 0
+      required: 1
+      reviewed_for: required
+
+  # =========================================================
+  # Require review on all PRs
+  #
+  # All PRs require at least one review.  This rule will not
+  # request any reviewers, however will require that at least
+  # one review is provided before the group is satisfied.
+  # =========================================================
+  required-minimum-review:
+    reviews:
+      request: 0 # Do not request any reviews from the reviewer group
+      required: 1 # Require that all PRs have approval from at least one of the users in the group
+      author_value: 0 # The author of the PR cannot provide an approval for themself
+      reviewed_for: ignored # All reviews apply to this group whether noted via Reviewed-for or not
+    reviewers:
+      users:
+        - alan-agius4 # Alan Agius
+        - aleksanderbodurri # Aleksander Bodurri
+        - alxhub # Alex Rickabaugh
+        - AndrewKushnir # Andrew Kushnir
+        - andrewseguin # Andrew Seguin
+        - atscott # Andrew Scott
+        - clydin # Charles Lyding
+        - crisbeto # Kristiyan Kostadinov
+        - devversion # Paul Gschwendtner
+        - dgp1130 # Doug Parker
+        - dylhunn # Dylan Hunn
+        - filipesilva # Filipe Silva
+        - gkalpak # Georgios Kalpakas
+        - jelbourn # Jeremy Elbourn
+        - jessicajaniuk # Jessica Janiuk
+        - JiaLiPassion # Jia Li
+        - JoostK # Joost Koehoorn
+        - josephperrott # Joey Perrott
+        - MarkTechson # Mark Thompson (Techson)
+        - mgechev # Minko Gechev
+        - mmalerba # Miles Malerba
+        - pkozlowski-opensource # Pawel Kozlowski
+        - Splaktar # Michael Prentice
+        - twerske # Emma Twersky
+        - zarend # Zach Arend
