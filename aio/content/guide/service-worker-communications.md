@@ -10,22 +10,26 @@ A basic understanding of the following:
 
 ## `SwUpdate` service
 
-The `SwUpdate` service gives you access to events that indicate when the service worker discovers an available update for your application or when it activates such an update&mdash;meaning it is now serving content from that update to your application.
+The `SwUpdate` service gives you access to events that indicate when the service worker discovers and installs an available update for your application.
 
-The `SwUpdate` service supports four separate operations:
-* Getting notified of *available* updates. These are new versions of the application to be loaded if the page is refreshed.
-* Getting notified of update *activation*. This is when the service worker starts serving a new version of the application immediately.
+The `SwUpdate` service supports three separate operations:
+* Getting notified when an updated version is *detected* on the server, *installed and ready* to be used locally or when an *installation fails*.
 * Asking the service worker to check the server for new updates.
 * Asking the service worker to activate the latest version of the application for the current tab.
 
-### Available and activated updates
+### Version updates
 
-The two update events, `available` and `activated`, are `Observable` properties of `SwUpdate`:
+The `versionUpdates` is an `Observable` property of `SwUpdate` and emits three event types:
+* `VersionDetectedEvent` is emitted when the service worker has detected a new version of the app on the server and is about to start downloading it.
+* `VersionReadyEvent` is emitted when a new version of the app is available to be activated by clients.
+  It may be used to notify the user of an available update or prompt them to refresh the page.
+* `VersionInstallationFailedEvent` is emitted when the installation of a new version failed.
+  It may be used for logging/monitoring purposes.
+
 
 <code-example path="service-worker-getting-started/src/app/log-update.service.ts" header="log-update.service.ts" region="sw-update"></code-example>
 
 
-Use these events to notify the user of a pending update or to refresh their pages when the code they are running is out of date.
 
 ### Checking for updates
 
