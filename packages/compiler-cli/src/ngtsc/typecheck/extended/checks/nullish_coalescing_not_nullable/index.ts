@@ -66,7 +66,9 @@ export const factory: TemplateCheckFactory<
   name: ExtendedTemplateDiagnosticName.NULLISH_COALESCING_NOT_NULLABLE,
   create: (options: NgCompilerOptions) => {
     // Require `strictNullChecks` to be enabled.
-    if (options.strictNullChecks === false) {
+    const strictNullChecks =
+        options.strictNullChecks === undefined ? !!options.strict : !!options.strictNullChecks;
+    if (!strictNullChecks) {
       return null;
     }
 
