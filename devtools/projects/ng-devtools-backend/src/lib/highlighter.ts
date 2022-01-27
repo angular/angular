@@ -131,10 +131,7 @@ function showOverlay(
   overlay.style.top = ~~top + 'px';
   overlay.style.left = ~~left + 'px';
 
-  while (overlayContent.children.length) {
-    const {children} = overlayContent;
-    overlayContent.removeChild(children[children.length - 1]);
-  }
+  overlayContent.replaceChildren();
 
   content.forEach((child) => overlayContent.appendChild(child));
 
