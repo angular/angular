@@ -8,6 +8,7 @@
 @use '../mdc-helpers/mdc-helpers';
 @use '../../material/core/style/layout-common';
 @use '../../material/core/style/vendor-prefixes';
+@use './checkbox-private';
 
 @include mdc-helpers.disable-fallback-declarations {
   @include mdc-checkbox.static-styles($query: mdc-helpers.$mat-base-styles-query);
@@ -30,21 +31,7 @@
     // MDC theme styles also include structural styles so we have to include the theme at least
     // once here. The values will be overwritten by our own theme file afterwards.
     @include mdc-helpers.disable-fallback-declarations {
-      @include mdc-checkbox-theme.theme-styles(map.merge(mdc-checkbox-theme.$light-theme, (
-        // Exclude all of the ripple-related styles.
-        selected-focus-state-layer-color: null,
-        selected-focus-state-layer-opacity: null,
-        selected-hover-state-layer-color: null,
-        selected-hover-state-layer-opacity: null,
-        selected-pressed-state-layer-color: null,
-        selected-pressed-state-layer-opacity: null,
-        unselected-focus-state-layer-color: null,
-        unselected-focus-state-layer-opacity: null,
-        unselected-hover-state-layer-color: null,
-        unselected-hover-state-layer-opacity: null,
-        unselected-pressed-state-layer-color: null,
-        unselected-pressed-state-layer-opacity: null,
-      )));
+      @include mdc-checkbox-theme.theme-styles(checkbox-private.$private-checkbox-theme-config);
     }
 
     // The MDC checkbox styles related to the hover state are intertwined with the MDC ripple

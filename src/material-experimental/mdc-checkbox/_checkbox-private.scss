@@ -1,0 +1,46 @@
+@use 'sass:map';
+@use 'sass:color';
+@use '@material/checkbox/checkbox-theme' as mdc-checkbox-theme;
+@use '@material/theme/theme-color' as mdc-theme-color;
+
+// Configuration used to define the theme-related CSS variables.
+$private-checkbox-theme-config: map.merge(mdc-checkbox-theme.$light-theme, (
+  // Exclude all of the ripple-related styles.
+  selected-focus-state-layer-color: null,
+  selected-focus-state-layer-opacity: null,
+  selected-hover-state-layer-color: null,
+  selected-hover-state-layer-opacity: null,
+  selected-pressed-state-layer-color: null,
+  selected-pressed-state-layer-opacity: null,
+  unselected-focus-state-layer-color: null,
+  unselected-focus-state-layer-opacity: null,
+  unselected-hover-state-layer-color: null,
+  unselected-hover-state-layer-opacity: null,
+  unselected-pressed-state-layer-color: null,
+  unselected-pressed-state-layer-opacity: null,
+));
+
+// Mixin that includes the checkbox theme styles with a given palette.
+// By default, the MDC checkbox always uses the `secondary` palette.
+@mixin private-checkbox-styles-with-color($color, $mdc-color) {
+  $on-surface: mdc-theme-color.prop-value(on-surface);
+  $border-color: rgba($on-surface, color.opacity(mdc-checkbox-theme.$border-color));
+  $disabled-color: rgba($on-surface, color.opacity(mdc-checkbox-theme.$disabled-color));
+
+  @include mdc-checkbox-theme.theme((
+    selected-checkmark-color: mdc-theme-color.prop-value(on-#{$mdc-color}),
+
+    selected-focus-icon-color: $color,
+    selected-hover-icon-color: $color,
+    selected-icon-color: $color,
+    selected-pressed-icon-color: $color,
+    unselected-focus-icon-color: $color,
+    unselected-hover-icon-color: $color,
+
+    disabled-selected-icon-color: $disabled-color,
+    disabled-unselected-icon-color: $disabled-color,
+
+    unselected-icon-color: $border-color,
+    unselected-pressed-icon-color: $border-color,
+  ));
+}

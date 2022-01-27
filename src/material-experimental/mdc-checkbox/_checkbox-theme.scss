@@ -9,32 +9,7 @@
 @use '../../material/core/typography/typography';
 @use '../../material/core/theming/theming';
 @use '../../material/core/ripple/ripple-theme';
-
-
-// Mixin that includes the checkbox theme styles with a given palette.
-// By default, the MDC checkbox always uses the `secondary` palette.
-@mixin private-checkbox-styles-with-color($color, $mdc-color) {
-  $on-surface: mdc-theme-color.prop-value(on-surface);
-  $border-color: rgba($on-surface, color.opacity(mdc-checkbox-theme.$border-color));
-  $disabled-color: rgba($on-surface, color.opacity(mdc-checkbox-theme.$disabled-color));
-
-  @include mdc-checkbox-theme.theme((
-    selected-checkmark-color: mdc-theme-color.prop-value(on-#{$mdc-color}),
-
-    selected-focus-icon-color: $color,
-    selected-hover-icon-color: $color,
-    selected-icon-color: $color,
-    selected-pressed-icon-color: $color,
-    unselected-focus-icon-color: $color,
-    unselected-hover-icon-color: $color,
-
-    disabled-selected-icon-color: $disabled-color,
-    disabled-unselected-icon-color: $disabled-color,
-
-    unselected-icon-color: $border-color,
-    unselected-pressed-icon-color: $border-color,
-  ));
-}
+@use './checkbox-private';
 
 // Apply ripple colors to the MatRipple element and the MDC ripple element when the
 // checkbox is selected.
@@ -77,17 +52,17 @@
       // class for accent and warn style, and applying the appropriate overrides below. Since we
       // don't use MDC's ripple, we also need to set the color for our replacement ripple.
       &.mat-primary {
-        @include private-checkbox-styles-with-color($primary, primary);
+        @include checkbox-private.private-checkbox-styles-with-color($primary, primary);
         @include _selected-ripple-colors($primary, primary);
       }
 
       &.mat-accent {
-        @include private-checkbox-styles-with-color($accent, secondary);
+        @include checkbox-private.private-checkbox-styles-with-color($accent, secondary);
         @include _selected-ripple-colors($accent, secondary);
       }
 
       &.mat-warn {
-        @include private-checkbox-styles-with-color($warn, error);
+        @include checkbox-private.private-checkbox-styles-with-color($warn, error);
         @include _selected-ripple-colors($warn, error);
       }
     }

@@ -2,7 +2,9 @@
 @use '../mdc-helpers/mdc-helpers';
 @use '../../material/core/style/layout-common';
 
-@include mdc-list.without-ripple($query: mdc-helpers.$mat-base-styles-query);
+@include mdc-helpers.disable-fallback-declarations {
+  @include mdc-list.without-ripple($query: mdc-helpers.$mat-base-styles-query);
+}
 
 // MDC expects the list element to be a `<ul>`, since we use `<mat-list>` instead we need to
 // explicitly set `display: block`

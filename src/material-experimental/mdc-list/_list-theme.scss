@@ -16,11 +16,10 @@
   $accent: theming.get-color-from-palette(map.get($config, accent));
   $warn: theming.get-color-from-palette(map.get($config, warn));
 
-  // MDC's state styles are tied in with their ripple. Since we don't use the MDC
-  // ripple, we need to add the hover, focus and selected states manually.
-  @include interactive-list-theme.private-interactive-list-item-state-colors($config);
-
   @include mdc-helpers.mat-using-mdc-theme($config) {
+    // MDC's state styles are tied in with their ripple. Since we don't use the MDC
+    // ripple, we need to add the hover, focus and selected states manually.
+    @include interactive-list-theme.private-interactive-list-item-state-colors($config);
     @include mdc-list.without-ripple($query: mdc-helpers.$mat-theme-styles-query);
 
     .mat-mdc-list-option {
@@ -38,13 +37,15 @@
 @mixin density($config-or-theme) {
   $density-scale: theming.get-density-config($config-or-theme);
 
-  .mat-mdc-list-item {
-    @include mdc-list.one-line-item-density($density-scale);
-    @include mdc-list.two-line-item-density($density-scale);
-    @include mdc-list.three-line-item-density($density-scale);
-  }
+  @include mdc-helpers.disable-fallback-declarations {
+    .mat-mdc-list-item {
+      @include mdc-list.one-line-item-density($density-scale);
+      @include mdc-list.two-line-item-density($density-scale);
+      @include mdc-list.three-line-item-density($density-scale);
+    }
 
-  @include list-option-theme.private-list-option-density-styles($density-scale);
+    @include list-option-theme.private-list-option-density-styles($density-scale);
+  }
 }
 
 @mixin typography($config-or-theme) {
