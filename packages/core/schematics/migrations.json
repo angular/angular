@@ -1,21 +1,6 @@
 {
   "schematics": {
-    "migration-v13-router-link-empty-expression": {
-      "version": "13.0.0-beta",
-      "description": "Migrates `[routerLink]=\"\"` in templates to `[routerLink]=\"[]\"` because these links are likely intended to route to the current page with updated fragment/query params.",
-      "factory": "./migrations/router-link-empty-expression/index"
-    },
-    "migration-v13-testbed-teardown": {
-      "version": "13.0.0-beta",
-      "description": "In Angular version 13, the `teardown` flag in `TestBed` will be enabled by default. This migration automatically opts out existing apps from the new teardown behavior.",
-      "factory": "./migrations/testbed-teardown/index"
-    },
-    "migration-v13.1-entry-components": {
-      "version": "13.1.0-beta",
-      "description": "As of Angular version 13, `entryComponents` are no longer necessary.",
-      "factory": "./migrations/entry-components/index"
-    },
-    "migration-v14-entry-components": {
+    "migration-entry-components": {
       "version": "14.0.0-beta",
       "description": "As of Angular version 13, `entryComponents` are no longer necessary.",
       "factory": "./migrations/entry-components/index"
