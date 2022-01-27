@@ -46,7 +46,7 @@ To use reactive form controls, import `ReactiveFormsModule` from the `@angular/f
 
 <code-example path="reactive-forms/src/app/app.module.ts" region="imports" header="src/app/app.module.ts (excerpt)"></code-example>
 
-**Generate a new `FormControl`**
+**Generate a new `Component`**
 
 Use the [CLI command](cli "Using the Angular command-line interface.") `ng generate` to generate a component in your project to host the control.
 
