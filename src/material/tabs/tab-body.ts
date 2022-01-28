@@ -93,7 +93,9 @@ export class MatTabBodyPortal extends CdkPortalOutlet implements OnInit, OnDestr
       });
 
     this._leavingSub = this._host._afterLeavingCenter.subscribe(() => {
-      this.detach();
+      if (!this._host.preserveContent) {
+        this.detach();
+      }
     });
   }
 
@@ -148,6 +150,9 @@ export abstract class _MatTabBodyBase implements OnInit, OnDestroy {
   // anyway to prevent the animations module from throwing an error if the body is used on its own.
   /** Duration for the tab's animation. */
   @Input() animationDuration: string = '500ms';
+
+  /** Whether the tab's content should be kept in the DOM while it's off-screen. */
+  @Input() preserveContent: boolean = false;
 
   /** The shifted index position of the tab body, where zero represents the active center tab. */
   @Input()

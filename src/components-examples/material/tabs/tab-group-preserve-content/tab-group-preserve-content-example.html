@@ -1,0 +1,14 @@
+<p>Start the video in the first tab and navigate to the second one to see how it keeps playing.</p>
+
+<mat-tab-group [preserveContent]="true">
+  <mat-tab label="First">
+    <iframe
+      width="560"
+      height="315"
+      src="https://www.youtube.com/embed/B-lipaiZII8"
+      frameborder="0"
+      allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+      allowfullscreen></iframe>
+  </mat-tab>
+  <mat-tab label="Second">Note how the video from the previous tab is still playing.</mat-tab>
+</mat-tab-group>

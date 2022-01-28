@@ -29,6 +29,13 @@ export interface MatTabsConfig {
 
   /** `tabindex` to be set on the inner element that wraps the tab content. */
   contentTabIndex?: number;
+
+  /**
+   * By default tabs remove their content from the DOM while it's off-screen.
+   * Setting this to `true` will keep it in the DOM which will prevent elements
+   * like iframes and videos from reloading next time it comes back into the view.
+   */
+  preserveContent?: boolean;
 }
 
 /** Injection token that can be used to provide the default options the tabs module. */
