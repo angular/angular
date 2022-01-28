@@ -460,7 +460,7 @@ export class NgModuleDecoratorHandler implements
 
   compileFull(
       node: ClassDeclaration,
-      {inj, mod, fac, classMetadata, declarations}: Readonly<NgModuleAnalysis>,
+      {inj, mod, fac, classMetadata, declarations, id}: Readonly<NgModuleAnalysis>,
       {injectorImports}: Readonly<NgModuleResolution>): CompileResult[] {
     const factoryFn = compileNgFactoryDefField(fac);
     const ngInjectorDef = compileInjector(this.mergeInjectorImports(inj, injectorImports));
@@ -469,6 +469,10 @@ export class NgModuleDecoratorHandler implements
     const metadata = classMetadata !== null ? compileClassMetadata(classMetadata) : null;
     this.insertMetadataStatement(statements, metadata);
     this.appendRemoteScopingStatements(statements, node, declarations);
+    if (id !== null) {
+      const registerNgModuleType = new ExternalExpr(R3Identifiers.registerNgModuleType);
+      statements.push(registerNgModuleType.callFn([new WrappedNodeExpr(node.name)]).toStmt());
+    }
 
     return this.compileNgModule(factoryFn, ngInjectorDef, ngModuleDef);
   }

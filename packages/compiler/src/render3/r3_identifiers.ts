@@ -242,6 +242,8 @@ export class Identifiers {
   static declareComponent: o.ExternalReference = {name: 'ɵɵngDeclareComponent', moduleName: CORE};
 
   static setComponentScope: o.ExternalReference = {name: 'ɵɵsetComponentScope', moduleName: CORE};
+  static registerNgModuleType:
+      o.ExternalReference = {name: 'ɵregisterNgModuleType', moduleName: CORE};
 
   static ChangeDetectionStrategy: o.ExternalReference = {
     name: 'ChangeDetectionStrategy',
