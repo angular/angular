@@ -450,6 +450,26 @@ describe('MatSlider', () => {
         expect(sliderInstance.percent).toBe(1);
       },
     );
+    it('should properly update ticks when max value changed to 0', () => {
+      testComponent.min = 0;
+      testComponent.max = 100;
+      fixture.detectChanges();
+
+      dispatchMouseenterEvent(sliderNativeElement);
+      fixture.detectChanges();
+
+      expect(ticksElement.style.backgroundSize).toBe('6% 2px');
+      expect(ticksElement.style.transform).toContain('translateX(3%)');
+
+      testComponent.max = 0;
+      fixture.detectChanges();
+
+      dispatchMouseenterEvent(sliderNativeElement);
+      fixture.detectChanges();
+
+      expect(ticksElement.style.backgroundSize).toBe('0% 2px');
+      expect(ticksElement.style.transform).toContain('translateX(0%)');
+    });
   });
 
   describe('slider with set value', () => {

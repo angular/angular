@@ -860,15 +860,17 @@ export class MatSlider
       return;
     }
 
+    let tickIntervalPercent: number;
     if (this.tickInterval == 'auto') {
       let trackSize = this.vertical ? this._sliderDimensions.height : this._sliderDimensions.width;
       let pixelsPerStep = (trackSize * this.step) / (this.max - this.min);
       let stepsPerTick = Math.ceil(MIN_AUTO_TICK_SEPARATION / pixelsPerStep);
       let pixelsPerTick = stepsPerTick * this.step;
-      this._tickIntervalPercent = pixelsPerTick / trackSize;
+      tickIntervalPercent = pixelsPerTick / trackSize;
     } else {
-      this._tickIntervalPercent = (this.tickInterval * this.step) / (this.max - this.min);
+      tickIntervalPercent = (this.tickInterval * this.step) / (this.max - this.min);
     }
+    this._tickIntervalPercent = isSafeNumber(tickIntervalPercent) ? tickIntervalPercent : 0;
   }
 
   /** Creates a slider change object from the specified value. */
@@ -883,7 +885,8 @@ export class MatSlider
 
   /** Calculates the percentage of the slider that a value is. */
   private _calculatePercentage(value: number | null) {
-    return ((value || 0) - this.min) / (this.max - this.min);
+    const percentage = ((value || 0) - this.min) / (this.max - this.min);
+    return isSafeNumber(percentage) ? percentage : 0;
   }
 
   /** Calculates the value a percentage of the slider corresponds to. */
@@ -952,6 +955,11 @@ export class MatSlider
   setDisabledState(isDisabled: boolean) {
     this.disabled = isDisabled;
   }
+}
+
+/** Checks if number is safe for calculation */
+function isSafeNumber(value: number) {
+  return !isNaN(value) && isFinite(value);
 }
 
 /** Returns whether an event is a touch event. */
