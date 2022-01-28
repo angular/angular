@@ -21,7 +21,13 @@ const packagesDir = join(__dirname, '../src');
  * Globs that matches directories which should never be considered
  * as entry-points.
  */
-const excludeGlobs = ['cdk/testing/private', '*/schematics/**'];
+const excludeGlobs = [
+  'cdk/testing/private',
+  '*/schematics/**',
+  // The protractor testing entry-point is no longer publicly available,
+  // but exists in the repository until it can be removed in g3.
+  'cdk/testing/protractor',
+];
 
 /** List of detected entry-points which are not properly configured. */
 const nonConfigured = [];
