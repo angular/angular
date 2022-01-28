@@ -638,12 +638,8 @@ export class NumberValueAccessor extends BuiltInControlValueAccessor implements 
 }
 
 // @public
-export class PatternValidator implements Validator, OnChanges {
-    // (undocumented)
-    ngOnChanges(changes: SimpleChanges): void;
+export class PatternValidator extends AbstractValidatorDirective {
     pattern: string | RegExp;
-    registerOnValidatorChange(fn: () => void): void;
-    validate(control: AbstractControl): ValidationErrors | null;
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<PatternValidator, "[pattern][formControlName],[pattern][formControl],[pattern][ngModel]", never, { "pattern": "pattern"; }, {}, never>;
     // (undocumented)

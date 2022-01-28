@@ -638,12 +638,9 @@ export const PATTERN_VALIDATOR: any = {
 @Directive({
   selector: '[pattern][formControlName],[pattern][formControl],[pattern][ngModel]',
   providers: [PATTERN_VALIDATOR],
-  host: {'[attr.pattern]': 'pattern ? pattern : null'}
+  host: {'[attr.pattern]': '_enabled ? pattern : null'}
 })
-export class PatternValidator implements Validator, OnChanges {
-  private _validator: ValidatorFn = nullValidator;
-  private _onChange?: () => void;
-
+export class PatternValidator extends AbstractValidatorDirective {
   /**
    * @description
    * Tracks changes to the pattern bound to this directive.
@@ -651,31 +648,12 @@ export class PatternValidator implements Validator, OnChanges {
   @Input()
   pattern!: string|RegExp;  // This input is always defined, since the name matches selector.
 
-  /** @nodoc */
-  ngOnChanges(changes: SimpleChanges): void {
-    if ('pattern' in changes) {
-      this._createValidator();
-      if (this._onChange) this._onChange();
-    }
-  }
+  /** @internal */
+  override inputName = 'pattern';
 
-  /**
-   * Method that validates whether the value matches the pattern requirement.
-   * @nodoc
-   */
-  validate(control: AbstractControl): ValidationErrors|null {
-    return this._validator(control);
-  }
+  /** @internal */
+  override normalizeInput = (input: string|RegExp): string|RegExp => input;
 
-  /**
-   * Registers a callback function to call when the validator inputs change.
-   * @nodoc
-   */
-  registerOnValidatorChange(fn: () => void): void {
-    this._onChange = fn;
-  }
-
-  private _createValidator(): void {
-    this._validator = patternValidator(this.pattern);
-  }
+  /** @internal */
+  override createValidator = (input: string|RegExp): ValidatorFn => patternValidator(input);
 }
