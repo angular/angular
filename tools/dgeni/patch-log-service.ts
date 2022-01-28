@@ -21,6 +21,6 @@ export function patchLogService(log: any) {
       return;
     }
 
-    _warnFn.apply(this, [message]);
+    _warnFn.apply(log, [message]);
   };
 }

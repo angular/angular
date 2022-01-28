@@ -63,7 +63,7 @@ apiDocsPackage.processor(new AsyncFunctionsProcessor());
 
 // Configure the log level of the API docs dgeni package.
 apiDocsPackage.config(function (log: any) {
-  return (log.level = 'warning');
+  return (log.level = 'warn');
 });
 
 // Configure the processor for reading files from the file system.
@@ -105,7 +105,7 @@ apiDocsPackage.config(function (parseTagsProcessor: any) {
 
 apiDocsPackage.config(function (checkAnchorLinksProcessor: any) {
   // This ensures that Dgeni will fail if we generate links that don't follow this format.
-  checkAnchorLinksProcessor.ignoredLinks.push(/(components|cdk)\/[\w-]+\/api#\w+/);
+  checkAnchorLinksProcessor.ignoredLinks.push(/(components|cdk)\/[\w-]+(\/testing)?\/api#\w+/);
 });
 
 // Configure the processor for understanding TypeScript.
