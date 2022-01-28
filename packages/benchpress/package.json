@@ -1,6 +1,6 @@
 {
   "name": "@angular/benchpress",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Benchpress - a framework for e2e performance tests",
   "main": "index.js",
   "typings": "./index.d.ts",
