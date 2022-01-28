@@ -43,7 +43,7 @@ function runTypedFormsMigration(tree: Tree, tsconfigPath: string, basePath: stri
     const formBuilderImport = getFormBuilderImport(sourceFile);
 
     // If no relevant classes are imported, we can exit early.
-    if (controlClassImports.length === 0 && formBuilderImport === null) return;
+    if (controlClassImports.length === 0 && formBuilderImport === null) continue;
 
     const update = tree.beginUpdate(relative(basePath, sourceFile.fileName));
 
