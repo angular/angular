@@ -1,6 +1,7 @@
 <div
   cdkTrapFocus
   class="mat-datepicker-content-container"
+  [class.mat-datepicker-content-container-with-custom-header]="datepicker.calendarHeaderComponent"
   [class.mat-datepicker-content-container-with-actions]="_actionsPortal">
   <mat-calendar
     [id]="datepicker.id"

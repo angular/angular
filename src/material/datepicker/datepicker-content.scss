@@ -31,6 +31,13 @@ $touch-max-height: 788px;
     height: $non-touch-calendar-height;
   }
 
+  // Override mat-calendar's height when custom header is provided
+  // Height should be auto, when the custom header is provided.
+  // This will prevent the content from overflowing.
+  .mat-datepicker-content-container-with-custom-header .mat-calendar {
+    height: auto;
+  }
+
   // Note that this selector doesn't technically have to be nested, but we want the slightly
   // higher specificity, or it can be overridden based on the CSS insertion order (see #21043).
   .mat-datepicker-close-button {
