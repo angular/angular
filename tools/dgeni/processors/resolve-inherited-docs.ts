@@ -44,6 +44,14 @@ export class ResolveInheritedDocs implements Processor {
         if (!isInheritanceCreatedDoc(apiDoc)) {
           return;
         }
+        // If this is an external document not part of our sources, we will not add it to the
+        // Dgeni API doc pipeline. Docs would be filtered regardless, but adding them to the
+        // pipeline could cause e.g. the JSDoc parser to complain about tags/annotations which
+        // are not known/relevant to our API docs. e.g. Framework uses `@nodoc` or `@usageNotes`.
+        if (apiDoc.fileInfo.projectRelativePath.startsWith('../')) {
+          return;
+        }
+
         // Add the member docs for the inherited doc to the Dgeni doc collection.
         this._getContainingMemberDocs(apiDoc).forEach(d => newDocs.add(d));
         // Add the class-like export doc to the Dgeni doc collection.

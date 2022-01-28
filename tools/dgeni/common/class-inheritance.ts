@@ -8,7 +8,9 @@ import * as ts from 'typescript';
 import {MemberDoc} from 'dgeni-packages/typescript/api-doc-types/MemberDoc';
 
 /** Type describing class like documents which have been created through inheritance. */
-export type InheritanceCreatedClassLikeDoc = ClassLikeExportDoc & {_inheritanceCreated?: true};
+export type InheritanceCreatedClassLikeDoc = ClassLikeExportDoc & {
+  _inheritanceCreated?: true;
+};
 
 /** Whether the given API doc has been created through inheritance. */
 export function isInheritanceCreatedDoc(doc: ApiDoc): doc is ClassLikeExportDoc {

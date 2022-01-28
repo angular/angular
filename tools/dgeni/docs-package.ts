@@ -95,6 +95,11 @@ apiDocsPackage.config(function (parseTagsProcessor: any) {
     {name: 'docs-public'},
     {name: 'docs-primary-export'},
     {name: 'breaking-change'},
+    // Adds support for the `tsdoc` `@template` annotation/tag.
+    // https://www.typescriptlang.org/docs/handbook/jsdoc-supported-types.html#template.
+    {name: 'template', multi: true},
+    //  JSDoc annotations/tags which are not supported by default.
+    {name: 'throws', multi: true},
   ]);
 });
 
