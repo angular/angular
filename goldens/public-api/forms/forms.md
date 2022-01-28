@@ -204,10 +204,8 @@ export class DefaultValueAccessor extends BaseControlValueAccessor implements Co
 // @public
 export class EmailValidator extends AbstractValidatorDirective {
     email: boolean | string;
-
     // (undocumented)
     enabled(input: boolean): boolean;
-    
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<EmailValidator, "[email][formControlName],[email][formControl],[email][ngModel]", never, { "email": "email"; }, {}, never>;
     // (undocumented)
@@ -637,12 +635,8 @@ export class NumberValueAccessor extends BuiltInControlValueAccessor implements 
 }
 
 // @public
-export class PatternValidator implements Validator, OnChanges {
-    // (undocumented)
-    ngOnChanges(changes: SimpleChanges): void;
+export class PatternValidator extends AbstractValidatorDirective {
     pattern: string | RegExp;
-    registerOnValidatorChange(fn: () => void): void;
-    validate(control: AbstractControl): ValidationErrors | null;
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<PatternValidator, "[pattern][formControlName],[pattern][formControl],[pattern][ngModel]", never, { "pattern": "pattern"; }, {}, never>;
     // (undocumented)
