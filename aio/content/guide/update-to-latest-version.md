@@ -132,9 +132,11 @@ For information about the deprecation and removal practices of Angular, see [Ang
 [GithubAngularAngularPull43642]: https://github.com/angular/angular/pull/43642 "feat(core): drop support for TypeScript 4.2 and 4.3 #43642 | angular/angular | GitHub"
 [GithubAngularAngularPull43668]: https://github.com/angular/angular/pull/43668 "feat(service-worker): improve ergonomics of the SwUpdate APIs #43668 | angular/angular | GitHub"
 [GithubAngularAngularPull43740]: https://github.com/angular/angular/pull/43740 "feat(bazel): expose esm2020 and es2020 conditions in APF package exports #43740 | angular/angular | GitHub"
+[GithubAngularAngularPull43791]: https://github.com/angular/angular/pull/43791 "fix(router): reuse route strategy fix #43791 | angular/angular | GitHub"
 
 [GithubAngularAngularCliIssues21545]: https://github.com/angular/angular-cli/issues/21545 "[RFC] Persistent build cache by default #21545 | angular/angular-cli | GitHub"
 [GithubAngularAngularCliIssues22159]: https://github.com/angular/angular-cli/issues/22159 "Script imports are modules by default #22159 | angular/angular-cli | GitHub"
+[GithubAngularAngularIssues20114]: https://github.com/angular/angular/issues/20114 "RouteReuseStrategy impossible to store/retrieve siblings AND ALSO a non-sibling #20114 | angular/angular | GitHub"
 
 <!-- end links -->
 
