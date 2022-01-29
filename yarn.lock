@@ -2520,15 +2520,7 @@
   resolved "https://registry.yarnpkg.com/@types/semver/-/semver-7.3.9.tgz#152c6c20a7688c30b967ec1841d31ace569863fc"
   integrity sha512-L/TMpyURfBkf+o/526Zb6kd/tchUP3iBDEPjqjb+U2MAJhVRxxrmr2fwpe08E7QsV7YLcpq0tUaQ9O9x97ZIxQ==
 
-"@types/send@^0.14.5":
-  version "0.14.7"
-  resolved "https://registry.yarnpkg.com/@types/send/-/send-0.14.7.tgz#ee6224edd5a593d7f553235f350569accb56a4af"
-  integrity sha512-WCUMbzWW1sTEZX31cRMcBxflUXX/JmAYejhjxXtrLGn+vd/yyFjHh/F9FIigAEjE2LauhfH94BT7NJj9Ru2Wlg==
-  dependencies:
-    "@types/mime" "^1"
-    "@types/node" "*"
-
-"@types/send@^0.17.1":
+"@types/send@^0.17.0", "@types/send@^0.17.1":
   version "0.17.1"
   resolved "https://registry.yarnpkg.com/@types/send/-/send-0.17.1.tgz#ed4932b8a2a805f1fe362a70f4e62d0ac994e301"
   integrity sha512-Cwo8LE/0rnvX7kIIa3QHCkcuF21c05Ayb0ZfxPiv0W8VRiZiNW/WuRupHKpqqGVGf7SUA44QSOUKaEd9lIrd/Q==
