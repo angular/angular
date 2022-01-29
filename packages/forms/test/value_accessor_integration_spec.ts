@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, EventEmitter, Input, Output, Type, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Directive, EventEmitter, Input, Output, Type, ViewChild} from '@angular/core';
 import {ComponentFixture, fakeAsync, TestBed, tick, waitForAsync} from '@angular/core/testing';
 import {AbstractControl, ControlValueAccessor, FormControl, FormGroup, FormsModule, NG_VALIDATORS, NG_VALUE_ACCESSOR, NgControl, NgForm, NgModel, ReactiveFormsModule, Validators} from '@angular/forms';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
@@ -1097,6 +1097,66 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
                  expect(fixture.componentInstance.name).toEqual('Carson');
                });
              });
+           }));
+      });
+
+      describe('`ngModel` value accessor inside an OnPush component', () => {
+        it('should run change detection and update the value', fakeAsync(async () => {
+             @Component({
+               selector: 'parent',
+               template: '<child [ngModel]="value"></child>',
+               changeDetection: ChangeDetectionStrategy.OnPush,
+             })
+             class Parent {
+               value!: string;
+
+               constructor(private ref: ChangeDetectorRef) {}
+
+               setTimeoutAndChangeValue(): void {
+                 setTimeout(() => {
+                   this.value = 'Carson';
+                   this.ref.detectChanges();
+                 }, 50);
+               }
+             }
+
+             @Component({
+               selector: 'child',
+               template: 'Value: {{ value }}',
+               providers: [{provide: NG_VALUE_ACCESSOR, useExisting: Child, multi: true}]
+             })
+             class Child implements ControlValueAccessor {
+               value!: string;
+
+               writeValue(value: string): void {
+                 this.value = value;
+               }
+
+               registerOnChange(): void {}
+
+               registerOnTouched(): void {}
+             }
+
+             const fixture = initTest(Parent, Child);
+             fixture.componentInstance.value = 'Nancy';
+             fixture.detectChanges();
+
+             await fixture.whenStable();
+             fixture.detectChanges();
+             await fixture.whenStable();
+
+             const child = fixture.debugElement.query(By.css('child'));
+             // Let's ensure that the initial value has been set, because previously
+             // it wasn't set inside an `OnPush` component.
+             expect(child.nativeElement.innerHTML).toEqual('Value: Nancy');
+
+             fixture.componentInstance.setTimeoutAndChangeValue();
+             tick(50);
+
+             fixture.detectChanges();
+             await fixture.whenStable();
+
+             expect(child.nativeElement.innerHTML).toEqual('Value: Carson');
            }));
       });
     });

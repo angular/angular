@@ -84,6 +84,9 @@
     "name": "ChangeDetectionStrategy"
   },
   {
+    "name": "ChangeDetectorRef"
+  },
+  {
     "name": "CheckboxControlValueAccessor"
   },
   {
@@ -1054,6 +1057,9 @@
   },
   {
     "name": "injectArgs"
+  },
+  {
+    "name": "injectChangeDetectorRef"
   },
   {
     "name": "injectElementRef"
