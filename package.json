@@ -185,7 +185,7 @@
     "@types/cldrjs": "^0.4.22",
     "@types/cli-progress": "^3.4.2",
     "@types/minimist": "^1.2.0",
-    "@types/send": "^0.14.5",
+    "@types/send": "^0.17.0",
     "@yarnpkg/lockfile": "^1.1.0",
     "browser-sync": "2.26.13",
     "check-side-effects": "0.0.23",
