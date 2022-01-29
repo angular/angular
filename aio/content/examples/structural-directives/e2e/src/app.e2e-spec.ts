@@ -27,11 +27,6 @@ describe('Structural Directives', () => {
     expect(await paragraph.get(0).getText()).not.toContain('I waved');
   });
 
-  it('should have only one "Hip!" (the other is erased)', async () => {
-    const paragraph = element.all(by.cssContainingText('p', 'Hip!'));
-    expect(await paragraph.count()).toEqual(1);
-  });
-
   it('appUnless should show 3 paragraph (A)s and (B)s at the start', async () => {
     const paragraph = element.all(by.css('p.unless'));
     expect(await paragraph.count()).toEqual(3);
