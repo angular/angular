@@ -3,7 +3,8 @@
 table {
   margin: 24px 0px;
   border-radius: 2px;
-  display: block;
+  display: inline-block;
+  max-width: 100%;
   overflow-x: auto;
 
   &.is-full-width {
