@@ -7,6 +7,7 @@ ts_library(
     srcs = glob(["*.ts"]),
     deps = [
         "//packages/compiler-cli/src/ngtsc/annotations",
+        "//packages/compiler-cli/src/ngtsc/downlevel_decorators",
         "//packages/compiler-cli/src/ngtsc/file_system",
         "//packages/compiler-cli/src/ngtsc/imports",
         "//packages/compiler-cli/src/ngtsc/logging",
@@ -15,7 +16,6 @@ ts_library(
         "//packages/compiler-cli/src/ngtsc/reflection",
         "//packages/compiler-cli/src/ngtsc/sourcemaps",
         "//packages/compiler-cli/src/ngtsc/typecheck/api",
-        "//packages/compiler-cli/src/transformers/downlevel_decorators_transform",
         "@npm//typescript",
     ],
 )
