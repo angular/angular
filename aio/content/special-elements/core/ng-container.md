@@ -67,6 +67,8 @@ As we said that would not work, what we can do is to simply move one of the stru
 
 This would work as intended without introducing any new unnecessary elements in the DOM.
 
+For more information see [one structural directive per element](guide/structural-directives#one-per-element).
+
 ### Use alongside ngTemplateOutlet
 
 The `NgTemplateOutlet` directive can be applied to any element but most of the time it's applied to `<ng-container>` ones. By combining the two, we get a very clear and easy to follow HTML and DOM structure in which no extra elements are necessary and template views are instantiated where requested.

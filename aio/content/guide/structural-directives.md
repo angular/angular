@@ -1,6 +1,10 @@
-# Writing structural directives
+# Structural directives
 
-This topic demonstrates how to create a structural directive and provides conceptual information on how directives work, how Angular interprets shorthand, and how to add template guard properties to catch template type errors.
+This guide is about structural directives and provides conceptual information on how such directives work, how Angular interprets their shorthand syntax, and how to add template guard properties to catch template type errors.
+
+Structural directives are directives which change the DOM layout by adding and removing DOM element.
+
+Angular provides a set of built-in structural directives (such as `NgIf`, `NgFor`, `NgSwitch` and others) which are commonly used in all Angular projects. For more information see [Built-in directives](guide/built-in-directives).
 
 <div class="alert is-helpful">
 
@@ -8,10 +12,81 @@ For the example application that this page describes, see the <live-example name
 
 </div>
 
-For more information on Angular's built-in structural directives, such as `NgIf`, `NgForOf`, and `NgSwitch`, see [Built-in directives](guide/built-in-directives).
+<a id="shorthand"></a>
+<a id="asterisk"></a>
+
+## Structural directive shorthand
+
+When structural directives are applied they generally are prefixed by an asterisk, `*`,  such as `*ngIf`. This convention is shorthand that Angular interprets and converts into a longer form.
+Angular transforms the asterisk in front of a structural directive into an `<ng-template>` that surrounds the host element and its descendants.
+
+For example, let's take the following code which uses an `*ngIf` to displays the hero's name if `hero` exists:
+
+<code-example path="structural-directives/src/app/app.component.html" header="src/app/app.component.html (asterisk)" region="asterisk"></code-example>
+
+Angular creates an `<ng-template>` element and applies the `*ngIf` directive onto it where it becomes a property binding in square brackets, `[ngIf]`. The rest of the `<div>`, including its class attribute, is then moved inside the `<ng-template>`:
+
+<code-example path="structural-directives/src/app/app.component.html" header="src/app/app.component.html (ngif-template)" region="ngif-template"></code-example>
+
+Note that Angular does not actually create a real `<ng-template>` element, but instead only renders the `<div>` element.
+
+```html
+<div _ngcontent-c0>Mr. Nice</div>
+
+```
+
+The following example compares the shorthand use of the asterisk in `*ngFor` with the longhand `<ng-template>` form:
+
+<code-example path="structural-directives/src/app/app.component.html" header="src/app/app.component.html (inside-ngfor)" region="inside-ngfor"></code-example>
+
+Here, everything related to the `ngFor` structural directive is moved to the `<ng-template>`.
+All other bindings and attributes on the element apply to the `<div>` element within the `<ng-template>`.
+Other modifiers on the host element, in addition to the `ngFor` string, remain in place as the element moves inside the `<ng-template>`.
+In this example, the `[class.odd]="odd"` stays on the `<div>`.
+
+The `let` keyword declares a template input variable that you can reference within the template.
+The input variables in this example are `hero`, `i`, and `odd`.
+The parser translates `let hero`, `let i`, and `let odd` into variables named `let-hero`, `let-i`, and `let-odd`.
+The `let-i` and `let-odd` variables become `let i=index` and `let odd=odd`.
+Angular sets `i` and `odd` to the current value of the context's `index` and `odd` properties.
+
+The parser applies PascalCase to all directives and prefixes them with the directive's attribute name, such as ngFor.
+For example, the `ngFor` input properties, `of` and `trackBy`, map to `ngForOf` and `ngForTrackBy`.
+
+As the `NgFor` directive loops through the list, it sets and resets properties of its own context object.
+These properties can include, but aren't limited to, `index`, `odd`, and a special property
+named `$implicit`.
+
+Angular sets `let-hero` to the value of the context's `$implicit` property, which `NgFor` has initialized with the hero for the current iteration.
+
+For more information, see the [NgFor API](api/common/NgForOf "API: NgFor") and [NgForOf API](api/common/NgForOf) documentation.
+
+<div class="alert is-helpful">
+
+  Note that Angular's `<ng-template>` element defines a template that doesn't render anything by default, if you just wrap elements in an `<ng-template>` without applying a structural directive those elements will not be rendered.
+
+  For more information, see the [ng-template API](api/core/ng-template) documentation.
+
+</div>
+
+
+<a id="one-per-element"></a>
+## One structural directive per element
+
+It's a quite common use-case to repeat a block of HTML but only when a particular condition is true. An intuitive way to do that is to put both an `*ngFor` and an `*ngIf` on the same element. However, since both `*ngFor` and `*ngIf` are structural directives, this would be treated as an error by the compiler. You may apply only one _structural_ directive to an element.
+
+The reason is simplicity. Structural directives can do complex things with the host element and its descendants.
+
+When two directives lay claim to the same host element, which one should take precedence?
+
+Which should go first, the `NgIf` or the `NgFor`? Can the `NgIf` cancel the effect of the `NgFor`?
+If so (and it seems like it should be so), how should Angular generalize the ability to cancel for other structural directives?
+
+There are no easy answers to these questions. Prohibiting multiple structural directives makes them moot.
+There's an easy solution for this use case: put the `*ngIf` on a container element that wraps the `*ngFor` element. One or both elements can be an `<ng-container>` so that no extra DOM elements are generated.
+
 
 <a id="unless"></a>
-
 ## Creating a structural directive
 
 This section guides you through creating an `UnlessDirective` and how to set `condition` values.
@@ -85,76 +160,6 @@ To verify that the directive works, click the button to change the value of `con
 <div class="lightbox">
 
 <img alt="UnlessDirective in action" src="generated/images/guide/structural-directives/unless-anim.gif">
-
-</div>
-
-<a id="shorthand"></a>
-<a id="asterisk"></a>
-
-## Structural directive shorthand
-
-The asterisk, `*`,  syntax on a structural directive, such as `*ngIf`, is shorthand that Angular interprets into a longer form.
-Angular transforms the asterisk in front of a structural directive into an `<ng-template>` that surrounds the host element and its descendants.
-
-The following is an example of `*ngIf` that displays the hero's name if `hero` exists:
-
-<code-example header="src/app/app.component.html (asterisk)" path="structural-directives/src/app/app.component.html" region="asterisk"></code-example>
-
-The `*ngIf` directive moves to the `<ng-template>` where it becomes a property binding in square brackets, `[ngIf]`.
-The rest of the `<div>`, including its class attribute, moves inside the `<ng-template>`.
-
-<code-example header="src/app/app.component.html (ngif-template)" path="structural-directives/src/app/app.component.html" region="ngif-template"></code-example>
-
-Angular does not create a real `<ng-template>` element, instead rendering only the `<div>` and a comment node placeholder to the DOM.
-
-<code-example format="html" language="html">
-
-&lt;!--bindings={
-  "ng-reflect-ng-if": "[object Object]"
-}--&gt;
-&lt;div _ngcontent-c0&gt;Mr. Nice&lt;/div&gt;
-
-</code-example>
-
-The following example compares the shorthand use of the asterisk in `*ngFor` with the longhand `<ng-template>` form:
-
-<code-example header="src/app/app.component.html (inside-ngfor)" path="structural-directives/src/app/app.component.html" region="inside-ngfor"></code-example>
-
-Here, everything related to the `ngFor` structural directive applies to the `<ng-template>`.
-All other bindings and attributes on the element apply to the `<div>` element within the `<ng-template>`.
-Other modifiers on the host element, in addition to the `ngFor` string, remain in place as the element moves inside the `<ng-template>`.
-In this example, the `[class.odd]="odd"` stays on the `<div>`.
-
-The `let` keyword declares a template input variable that you can reference within the template.
-The input variables in this example are `hero`, `i`, and `odd`.
-The parser translates `let hero`, `let i`, and `let odd` into variables named `let-hero`, `let-i`, and `let-odd`.
-The `let-i` and `let-odd` variables become `let i=index` and `let odd=odd`.
-Angular sets `i` and `odd` to the current value of the context's `index` and `odd` properties.
-
-The parser applies PascalCase to all directives and prefixes them with the directive's attribute name, such as ngFor.
-For example, the `ngFor` input properties, `of` and `trackBy`, map to `ngForOf` and `ngForTrackBy`.
-As the `NgFor` directive loops through the list, it sets and resets properties of its own context object.
-These properties can include, but aren't limited to, `index`, `odd`, and a special property named `$implicit`.
-
-Angular sets `let-hero` to the value of the context's `$implicit` property, which `NgFor` has initialized with the hero for the current iteration.
-
-For more information, see the [NgFor API](api/common/NgForOf "API: NgFor") and [NgForOf API](api/common/NgForOf) documentation.
-
-### Creating template fragments with `<ng-template>`
-
-Angular's `<ng-template>` element defines a template that doesn't render anything by default.
-With `<ng-template>`, you can render the content manually for full control over how the content displays.
-
-If there is no structural directive and you wrap some elements in an `<ng-template>`, those elements disappear.
-In the following example, Angular does not render the middle "Hip!" in the phrase "Hip! Hip! Hooray!" because of the surrounding `<ng-template>`.
-
-<code-example header="src/app/app.component.html (template-tag)" path="structural-directives/src/app/app.component.html" region="template-tag"></code-example>
-
-<div class="lightbox">
-
-<img alt="template tag rendering" src="generated/images/guide/structural-directives/template-rendering.png">
-
-</div>
 
 ## Structural directive syntax reference
 
@@ -281,7 +286,9 @@ The following snippet shows an example of such a function.
 export class ExampleDirective {
     // Make sure the template checker knows the type of the context with which the
     // template of this directive will be rendered
-    static ngTemplateContextGuard(dir: ExampleDirective, ctx: unknown): ctx is ExampleContext { return true; };
+    static ngTemplateContextGuard(
+      dir: ExampleDirective, ctx: unknown
+    ): ctx is ExampleContext { return true; };
 
     // &hellip;
 }
