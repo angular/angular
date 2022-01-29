@@ -110,15 +110,20 @@
 
 <p class="code">&lt;div *ngFor="let hero of heroes; let i=index; let odd=odd; trackBy: trackById" [class.odd]="odd"&gt;</p>
 <!--#docregion inside-ngfor -->
-<div *ngFor="let hero of heroes; let i=index; let odd=odd; trackBy: trackById" [class.odd]="odd">
+<div
+  *ngFor="let hero of heroes; let i=index; let odd=odd; trackBy: trackById"
+  [class.odd]="odd">
   ({{i}}) {{hero.name}}
 </div>
 
 <!--#enddocregion inside-ngfor -->
 <p class="code">&lt;ng-template ngFor let-hero [ngForOf]="heroes" let-i="index" let-odd="odd" [ngForTrackBy]="trackById"/&gt;</p>
 <!--#docregion inside-ngfor -->
-<ng-template ngFor let-hero [ngForOf]="heroes" let-i="index" let-odd="odd" [ngForTrackBy]="trackById">
-  <div [class.odd]="odd">({{i}}) {{hero.name}}</div>
+<ng-template ngFor let-hero [ngForOf]="heroes"
+  let-i="index" let-odd="odd" [ngForTrackBy]="trackById">
+  <div [class.odd]="odd">
+    ({{i}}) {{hero.name}}
+  </div>
 </ng-template>
 <!--#enddocregion inside-ngfor -->
 
@@ -162,16 +167,6 @@
 
 <hr>
 
-<h2>&lt;ng-template&gt;</h2>
-<!-- #docregion template-tag -->
-<p>Hip!</p>
-<ng-template>
-  <p>Hip!</p>
-</ng-template>
-<p>Hooray!</p>
-<!-- #enddocregion template-tag -->
-
-<hr>
 
 <h2 id="appUnless">UnlessDirective</h2>
 <!-- #docregion toggle-info -->

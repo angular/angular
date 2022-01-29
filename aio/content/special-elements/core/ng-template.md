@@ -2,6 +2,21 @@ Angular's `<ng-template>` element defines a template that is not rendered by def
 
 With `<ng-template>`, you can define template content that is only being rendered by Angular when you, whether directly or indirectly, specifically instruct it to do so, allowing you to have full control over how and when the content is displayed.
 
+<div class="alter is-helpful">
+
+  Note that if you wrap content inside an `<ng-template>` without instructing Angular to render it, such content will not appear on a page. For example, see the following HTML code, when handling it Angular won't render the middle "Hip!" in the phrase "Hip! Hip! Hooray!" because of the surrounding `<ng-template>`.
+
+  ```html
+    <p>Hip!</p>
+    <ng-template>
+      <p>Hip!</p>
+    </ng-template>
+    <p>Hooray!</p>
+  ```
+
+</div>
+
+
 @usageNotes
 
 ### Structural Directives
