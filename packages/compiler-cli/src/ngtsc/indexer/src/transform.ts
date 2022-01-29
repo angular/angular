@@ -22,7 +22,6 @@ import {getTemplateIdentifiers} from './template';
  */
 export function generateAnalysis(context: IndexingContext): Map<DeclarationNode, IndexedComponent> {
   const analysis = new Map<DeclarationNode, IndexedComponent>();
-  const analysisErrors: Error[] = [];
 
   context.components.forEach(({declaration, selector, boundTemplate, templateMeta}) => {
     const name = declaration.name.getText();
@@ -47,7 +46,6 @@ export function generateAnalysis(context: IndexingContext): Map<DeclarationNode,
     }
 
     const {identifiers, errors} = getTemplateIdentifiers(boundTemplate);
-    analysisErrors.push(...errors);
     analysis.set(declaration, {
       name,
       selector,
@@ -58,6 +56,7 @@ export function generateAnalysis(context: IndexingContext): Map<DeclarationNode,
         isInline: templateMeta.isInline,
         file: templateFile,
       },
+      errors,
     });
   });
 

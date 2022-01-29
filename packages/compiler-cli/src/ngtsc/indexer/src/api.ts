@@ -7,6 +7,7 @@
  */
 
 import {ParseSourceFile} from '@angular/compiler';
+
 import {ClassDeclaration, DeclarationNode} from '../../reflection';
 
 /**
@@ -135,4 +136,5 @@ export interface IndexedComponent {
     isInline: boolean,
     file: ParseSourceFile;
   };
+  errors: Error[];
 }
