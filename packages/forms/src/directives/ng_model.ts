@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, EventEmitter, forwardRef, Host, Inject, Input, OnChanges, OnDestroy, Optional, Output, Self, SimpleChanges} from '@angular/core';
+import {ChangeDetectorRef, Directive, EventEmitter, forwardRef, Host, Inject, Input, OnChanges, OnDestroy, Optional, Output, Self, SimpleChanges} from '@angular/core';
 
 import {FormControl, FormHooks} from '../model';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../validators';
@@ -208,7 +208,8 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
       @Optional() @Self() @Inject(NG_VALIDATORS) validators: (Validator|ValidatorFn)[],
       @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) asyncValidators:
           (AsyncValidator|AsyncValidatorFn)[],
-      @Optional() @Self() @Inject(NG_VALUE_ACCESSOR) valueAccessors: ControlValueAccessor[]) {
+      @Optional() @Self() @Inject(NG_VALUE_ACCESSOR) valueAccessors: ControlValueAccessor[],
+      @Optional() @Inject(ChangeDetectorRef) private _changeDetectorRef?: ChangeDetectorRef|null) {
     super();
     this._parent = parent;
     this._setValidators(validators);
@@ -313,6 +314,7 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
   private _updateValue(value: any): void {
     resolvedPromise.then(() => {
       this.control.setValue(value, {emitViewToModelChange: false});
+      this._changeDetectorRef?.markForCheck();
     });
   }
 
@@ -327,6 +329,8 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
       } else if (!isDisabled && this.control.disabled) {
         this.control.enable();
       }
+
+      this._changeDetectorRef?.markForCheck();
     });
   }
 }
