@@ -54,7 +54,8 @@ runInEachFileSystem(() => {
           usedComponents: new Set(),
           isInline: false,
           file: new ParseSourceFile('<div>{{foo}}</div>', decl.getSourceFile().fileName),
-        }
+        },
+        errors: [],
       });
     });
 
