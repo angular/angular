@@ -12,7 +12,6 @@ $notificationHeight: 56px;
 aio-notification {
   display: flex;
   position: relative;
-  align-items: center;
   width: 100%;
   height: $notificationHeight;
   justify-content: center;
@@ -23,20 +22,21 @@ aio-notification {
   }
 
   .close-button {
-    position: absolute;
-    top: 0;
-    right: 0;
     width: $notificationHeight;
     height: $notificationHeight;
   }
 
   .content {
-    max-width: calc(100% - #{$notificationHeight});
+    width: calc(100% - #{$notificationHeight});
     text-transform: none;
     padding: 0;
 
     > * {
+      align-items: center;
       display: flex;
+      height: 100%;
+      justify-content: center;
+      width: 100%;
     }
 
     .icon {
