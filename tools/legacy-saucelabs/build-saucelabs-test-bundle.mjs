@@ -55,6 +55,10 @@ async function main() {
     outfile: outFile,
     sourcemap: true,
     plugins: [esbuildResolvePlugin],
+    // There are places in the framework where e.g. `window.URL` is leveraged if available,
+    // but with a fallback to the NodeJS `url` module. ESBuild should not error/attempt to
+    // resolve such as the imports for these will not execute in the browser.
+    external: [`${legacyOutputDir}/platform-server/*`, 'url'],
     stdin: {contents: specEntryPointFile, resolveDir: projectDir},
   });
 
@@ -92,6 +96,7 @@ async function findSpecFiles() {
       `!${legacyOutputDir}/elements/schematics/**`,
       `!${legacyOutputDir}/examples/**/e2e_test/*`,
       `!${legacyOutputDir}/language-service/**`,
+      `!${legacyOutputDir}/platform-server/**`,
       `!${legacyOutputDir}/localize/**/test/**`,
       `!${legacyOutputDir}/localize/schematics/**`,
       `!${legacyOutputDir}/router/**/test/**`,
