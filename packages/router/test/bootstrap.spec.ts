@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_BASE_HREF, DOCUMENT, ɵgetDOM as getDOM} from '@angular/common';
+import {APP_BASE_HREF, DOCUMENT, Location, ɵgetDOM as getDOM} from '@angular/common';
 import {ApplicationRef, Component, CUSTOM_ELEMENTS_SCHEMA, destroyPlatform, NgModule} from '@angular/core';
 import {inject} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
@@ -406,6 +406,51 @@ describe('bootstrap', () => {
     expect(window.removeEventListener).toHaveBeenCalledWith('popstate', jasmine.any(Function));
     expect(window.removeEventListener).toHaveBeenCalledWith('hashchange', jasmine.any(Function));
   });
+
+  it('should unregister a URL change listener and unsubscribe from URL changes when the root view is removed',
+     async () => {
+       const changeListener = jasmine.createSpy('changeListener');
+
+       @Component({template: 'second simple'})
+       class SecondSimpleCmp {
+       }
+
+       @NgModule({
+         imports: [
+           BrowserModule,
+           RouterModule.forRoot(
+               [{path: 'a', component: SimpleCmp}, {path: 'b', component: SecondSimpleCmp}],
+               {initialNavigation: 'enabled'})
+         ],
+         declarations: [RootCmp, SimpleCmp, SecondSimpleCmp],
+         bootstrap: [RootCmp],
+         providers: testProviders
+       })
+       class TestModule {
+       }
+
+       const ngModuleRef = await platformBrowserDynamic().bootstrapModule(TestModule);
+       const router = ngModuleRef.injector.get(Router);
+       const location = ngModuleRef.injector.get(Location);
+
+       const removeUrlChangeFn = location.onUrlChange(changeListener);
+
+       await router.navigateByUrl('/a');
+       expect(changeListener).toHaveBeenCalledTimes(1);
+
+       removeUrlChangeFn();
+       await router.navigateByUrl('/b');
+       expect(changeListener).toHaveBeenCalledTimes(1);
+
+       location.onUrlChange((url: string, state: unknown) => {});
+
+       ngModuleRef.destroy();
+
+       // Let's ensure that URL change listeners are unregistered when the root view is removed,
+       // tho the last returned `onUrlChange` function hasn't been invoked.
+       expect((location as any)._urlChangeListeners.length).toEqual(0);
+       expect((location as any)._urlChangeSubscription.closed).toEqual(true);
+     });
 
   it('can schedule a navigation from the NavigationEnd event #37460', async (done) => {
     @NgModule({

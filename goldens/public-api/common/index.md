@@ -308,7 +308,7 @@ export class KeyValuePipe implements PipeTransform {
 }
 
 // @public
-class Location_2 {
+class Location_2 implements OnDestroy {
     constructor(platformStrategy: LocationStrategy, platformLocation: PlatformLocation);
     back(): void;
     forward(): void;
@@ -317,9 +317,11 @@ class Location_2 {
     historyGo(relativePosition?: number): void;
     isCurrentPathEqualTo(path: string, query?: string): boolean;
     static joinWithSlash: (start: string, end: string) => string;
+    // (undocumented)
+    ngOnDestroy(): void;
     normalize(url: string): string;
     static normalizeQueryParams: (params: string) => string;
-    onUrlChange(fn: (url: string, state: unknown) => void): void;
+    onUrlChange(fn: (url: string, state: unknown) => void): VoidFunction;
     path(includeHash?: boolean): string;
     prepareExternalUrl(url: string): string;
     replaceState(path: string, query?: string, state?: any): void;
