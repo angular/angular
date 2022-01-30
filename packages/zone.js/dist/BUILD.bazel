@@ -1,6 +1,7 @@
-package(default_visibility = ["//visibility:public"])
-
+load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
 load("//packages/zone.js/dist:tools.bzl", "copy_es2015_to_dist", "copy_es5_to_dist")
+
+package(default_visibility = ["//visibility:public"])
 
 copy_es2015_to_dist()
 
@@ -32,6 +33,13 @@ genrule(
     srcs = ["//packages/zone.js/lib:zone_d_ts"],
     outs = ["zone.js.d.ts"],
     cmd = "cp $< $@",
+)
+
+js_library(
+    name = "zone",
+    srcs = [":zone.js"],
+    package_name = "zone.js/dist",
+    visibility = ["//modules/benchmarks:__subpackages__"],
 )
 
 filegroup(
