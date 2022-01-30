@@ -47,8 +47,7 @@ aio-notification {
     }
 
     .message {
-      overflow: hidden;
-      text-overflow: ellipsis;
+      overflow: auto;
       margin-right: 10px;
     }
 
