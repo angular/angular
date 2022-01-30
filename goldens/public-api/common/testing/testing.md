@@ -120,9 +120,11 @@ export class SpyLocation implements Location_2 {
     // (undocumented)
     isCurrentPathEqualTo(path: string, query?: string): boolean;
     // (undocumented)
+    ngOnDestroy(): void;
+    // (undocumented)
     normalize(url: string): string;
     // (undocumented)
-    onUrlChange(fn: (url: string, state: unknown) => void): void;
+    onUrlChange(fn: (url: string, state: unknown) => void): VoidFunction;
     // (undocumented)
     path(): string;
     // (undocumented)

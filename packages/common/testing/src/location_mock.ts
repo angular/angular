@@ -33,7 +33,12 @@ export class SpyLocation implements Location {
   /** @internal */
   _urlChangeListeners: ((url: string, state: unknown) => void)[] = [];
   /** @internal */
-  _urlChangeSubscription?: SubscriptionLike;
+  _urlChangeSubscription: SubscriptionLike|null = null;
+
+  ngOnDestroy(): void {
+    this._urlChangeSubscription?.unsubscribe();
+    this._urlChangeListeners = [];
+  }
 
   setInitialPath(url: string) {
     this._history[this._historyIndex].path = url;
@@ -138,7 +143,7 @@ export class SpyLocation implements Location {
     }
   }
 
-  onUrlChange(fn: (url: string, state: unknown) => void) {
+  onUrlChange(fn: (url: string, state: unknown) => void): VoidFunction {
     this._urlChangeListeners.push(fn);
 
     if (!this._urlChangeSubscription) {
@@ -146,6 +151,16 @@ export class SpyLocation implements Location {
         this._notifyUrlChangeListeners(v.url, v.state);
       });
     }
+
+    return () => {
+      const fnIndex = this._urlChangeListeners.indexOf(fn);
+      this._urlChangeListeners.splice(fnIndex, 1);
+
+      if (this._urlChangeListeners.length === 0) {
+        this._urlChangeSubscription?.unsubscribe();
+        this._urlChangeSubscription = null;
+      }
+    };
   }
 
   /** @internal */

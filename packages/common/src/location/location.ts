@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {EventEmitter, Injectable, ɵɵinject} from '@angular/core';
+import {EventEmitter, Injectable, OnDestroy, ɵɵinject} from '@angular/core';
 import {SubscriptionLike} from 'rxjs';
+
 import {LocationStrategy} from './location_strategy';
 import {PlatformLocation} from './platform_location';
 import {joinWithSlash, normalizeQueryParams, stripTrailingSlash} from './util';
@@ -53,7 +54,7 @@ export interface PopStateEvent {
   // See #23917
   useFactory: createLocation,
 })
-export class Location {
+export class Location implements OnDestroy {
   /** @internal */
   _subject: EventEmitter<any> = new EventEmitter();
   /** @internal */
@@ -65,7 +66,7 @@ export class Location {
   /** @internal */
   _urlChangeListeners: ((url: string, state: unknown) => void)[] = [];
   /** @internal */
-  _urlChangeSubscription?: SubscriptionLike;
+  _urlChangeSubscription: SubscriptionLike|null = null;
 
   constructor(platformStrategy: LocationStrategy, platformLocation: PlatformLocation) {
     this._platformStrategy = platformStrategy;
@@ -80,6 +81,12 @@ export class Location {
         'type': ev.type,
       });
     });
+  }
+
+  /** @nodoc */
+  ngOnDestroy(): void {
+    this._urlChangeSubscription?.unsubscribe();
+    this._urlChangeListeners = [];
   }
 
   /**
@@ -209,8 +216,9 @@ export class Location {
    * framework that are not detectible through "popstate" or "hashchange" events.
    *
    * @param fn The change handler function, which take a URL and a location history state.
+   * @returns A function that, when executed, unregisters a URL change listener.
    */
-  onUrlChange(fn: (url: string, state: unknown) => void) {
+  onUrlChange(fn: (url: string, state: unknown) => void): VoidFunction {
     this._urlChangeListeners.push(fn);
 
     if (!this._urlChangeSubscription) {
@@ -218,6 +226,16 @@ export class Location {
         this._notifyUrlChangeListeners(v.url, v.state);
       });
     }
+
+    return () => {
+      const fnIndex = this._urlChangeListeners.indexOf(fn);
+      this._urlChangeListeners.splice(fnIndex, 1);
+
+      if (this._urlChangeListeners.length === 0) {
+        this._urlChangeSubscription?.unsubscribe();
+        this._urlChangeSubscription = null;
+      }
+    };
   }
 
   /** @internal */
