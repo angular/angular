@@ -81,7 +81,7 @@ captureNgDevPatches(
     [
       ['@npm//@angular/platform-browser', '@angular//packages/platform-browser'],
       ['@npm//@angular/core', '@angular//packages/core'],
-      ['@npm//:node_modules/zone.js/bundles/zone.umd.js', '//packages/zone.js/bundles:zone.umd.js'],
+      ['@npm//zone.js', '//packages/zone.js/dist:zone'],
       [
         'load\\("@npm//@angular/bazel:index.bzl", "ng_module"\\)',
         'load\("@angular//tools:defaults.bzl", "ng_module"\)'
