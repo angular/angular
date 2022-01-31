@@ -102,17 +102,17 @@ The following steps demonstrate a typical implementation of conditional content 
 
 1. In the template where you want to project content, wrap the projected content in an `<ng-template>` element, such as:
 
-      <code-example path="content-projection/src/app/app.component.html" region="ng-template">
+      <code-example path="content-projection/src/app/app.component.html" header="content-projection/src/app/app.component.html"  region="ng-template">
       </code-example>
 
    The `<ng-template>` element defines a block of content that a component can render based on its own logic. A component can get a reference to this template content, or `TemplateRef`, by using either the `@ContentChild` or `@ContentChildren` decorators. The preceding example creates a custom directive, `appExampleZippyContent`, as an API to mark the `<ng-template>` for the component's content. With the `TemplateRef`, the component can render the referenced content by using either the `ngTemplateOutlet` directive, or with the `ViewContainerRef` method `createEmbeddedView()`.
 
-1. [Create an attribute directive](guide/attribute-directives#building-an-attribute-directive) with a selector that matches the custom attribute for your template. In this directive, inject a TemplateRef instance.
+1. [Create an attribute directive](guide/attribute-directives#building-an-attribute-directive) with a selector that matches the custom attribute for your template. In this directive, inject a `TemplateRef` instance.
 
    <code-example path="content-projection/src/app/app.component.ts" header="content-projection/src/app/app.component.ts" region="zippycontentdirective">
    </code-example>
 
-   In the previous step, you added an `<ng-template>` element with a custom attribute, `appExampleZippyDirective`. This code provides the logic that Angular will use when it encounters that custom attribute. In this case, that logic instructs Angular to instantiate a template reference.
+   In the previous step, you added an `<ng-template>` element with a custom attribute, `appExampleZippyContent`. This code provides the logic that Angular will use when it encounters that custom attribute. In this case, that logic instructs Angular to instantiate a template reference.
 
 1. In the component you want to project content into, use `@ContentChild` to get the template of the projected content.
 
@@ -123,7 +123,7 @@ The following steps demonstrate a typical implementation of conditional content 
 
    <div class="alert is-helpful">
 
-   In the case of multi-slot content projection, use `@ContentChildren` to get a QueryList of projected elements.
+   In the case of multi-slot content projection, use `@ContentChildren` to get a `QueryList` of projected elements.
 
    </div>
 
