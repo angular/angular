@@ -147,8 +147,9 @@ export class AnimationTimelineBuilderVisitor implements AstVisitor {
         lastRootTimeline.setStyles([finalStyles], null, context.errors, options);
       }
     }
-    return timelines.length ? timelines.map(timeline => timeline.buildKeyframes()) :
-                              [createTimelineInstruction(rootElement, [], [], [], 0, delay, '', false)];
+    return timelines.length ?
+        timelines.map(timeline => timeline.buildKeyframes()) :
+        [createTimelineInstruction(rootElement, [], [], [], 0, delay, '', false)];
   }
 
   visitTrigger(ast: TriggerAst, context: AnimationTimelineContext): any {
