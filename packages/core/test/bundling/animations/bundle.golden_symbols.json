@@ -150,12 +150,6 @@
     "name": "Console"
   },
   {
-    "name": "CssKeyframesDriver"
-  },
-  {
-    "name": "CssKeyframesPlayer"
-  },
-  {
     "name": "DASH_CASE_REGEXP"
   },
   {
@@ -190,9 +184,6 @@
   },
   {
     "name": "DefaultKeyValueDifferFactory"
-  },
-  {
-    "name": "DirectStylePlayer"
   },
   {
     "name": "DomEventsPlugin"
@@ -636,9 +627,6 @@
     "name": "addComponentLogic"
   },
   {
-    "name": "addRemoveAnimationEvent"
-  },
-  {
     "name": "addToViewTree"
   },
   {
@@ -646,9 +634,6 @@
   },
   {
     "name": "allocLFrame"
-  },
-  {
-    "name": "allowPreviousPlayerStylesMerge"
   },
   {
     "name": "animate"
@@ -676,9 +661,6 @@
   },
   {
     "name": "autoRegisterModuleById"
-  },
-  {
-    "name": "balancePreviousStylesIntoKeyframes"
   },
   {
     "name": "balanceProperties"
@@ -873,12 +855,6 @@
     "name": "findAttrIndexInNode"
   },
   {
-    "name": "findIndexForAnimation"
-  },
-  {
-    "name": "findMatchingTokenIndex"
-  },
-  {
     "name": "flattenStyles"
   },
   {
@@ -892,9 +868,6 @@
   },
   {
     "name": "generatePropertyAliases"
-  },
-  {
-    "name": "getAnimationStyle"
   },
   {
     "name": "getBindingsEnabled"
@@ -922,9 +895,6 @@
   },
   {
     "name": "getDeclarationTNode"
-  },
-  {
-    "name": "getElementAnimateFn"
   },
   {
     "name": "getFactoryDef"
@@ -1030,9 +1000,6 @@
   },
   {
     "name": "hostReportError"
-  },
-  {
-    "name": "hypenatePropsKeys"
   },
   {
     "name": "icuContainerIterate"
@@ -1260,9 +1227,6 @@
     "name": "normalizeKeyframes"
   },
   {
-    "name": "normalizeKeyframes2"
-  },
-  {
     "name": "notFoundValueOrThrow"
   },
   {
@@ -1281,9 +1245,6 @@
     "name": "optionsReducer"
   },
   {
-    "name": "packageNonAnimatableStyles"
-  },
-  {
     "name": "parseTimelineCommand"
   },
   {
@@ -1294,9 +1255,6 @@
   },
   {
     "name": "platformCore"
-  },
-  {
-    "name": "playPauseAnimation"
   },
   {
     "name": "promise"
@@ -1390,9 +1348,6 @@
   },
   {
     "name": "sequence"
-  },
-  {
-    "name": "setAnimationStyle"
   },
   {
     "name": "setBindingRootForHostBindings"

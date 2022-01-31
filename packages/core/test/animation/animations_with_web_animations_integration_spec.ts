@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {animate, query, state, style, transition, trigger} from '@angular/animations';
-import {AnimationDriver, ɵAnimationEngine, ɵsupportsWebAnimations, ɵWebAnimationsDriver, ɵWebAnimationsPlayer} from '@angular/animations/browser';
+import {AnimationDriver, ɵAnimationEngine, ɵWebAnimationsDriver, ɵWebAnimationsPlayer} from '@angular/animations/browser';
 import {TransitionAnimationPlayer} from '@angular/animations/browser/src/render/transition_animation_engine';
 import {AnimationGroupPlayer} from '@angular/animations/src/players/animation_group_player';
 import {Component, ViewChild} from '@angular/core';
@@ -17,7 +17,7 @@ import {browserDetection} from '@angular/platform-browser/testing/src/browser_ut
 (function() {
 // these tests are only meant to be run within the DOM (for now)
 // Buggy in Chromium 39, see https://github.com/angular/angular/issues/15793
-if (isNode || !ɵsupportsWebAnimations()) return;
+if (isNode) return;
 
 describe('animation integration tests using web animations', function() {
   beforeEach(() => {
