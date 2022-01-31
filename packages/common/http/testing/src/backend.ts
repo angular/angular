@@ -95,13 +95,7 @@ export class HttpClientTestingBackend implements HttpBackend, HttpTestingControl
       let message = `Expected one matching request for criteria "${description}", found none.`;
       if (this.open.length > 0) {
         // Show the methods and URLs of open requests in the error, for convenience.
-        const requests = this.open
-                             .map(testReq => {
-                               const url = testReq.request.urlWithParams;
-                               const method = testReq.request.method;
-                               return `${method} ${url}`;
-                             })
-                             .join(', ');
+        const requests = this.open.map(describeRequest).join(', ');
         message += ` Requests received are: ${requests}.`;
       }
       throw new Error(message);
@@ -135,12 +129,7 @@ export class HttpClientTestingBackend implements HttpBackend, HttpTestingControl
     }
     if (open.length > 0) {
       // Show the methods and URLs of open requests in the error, for convenience.
-      const requests = open.map(testReq => {
-                             const url = testReq.request.urlWithParams.split('?')[0];
-                             const method = testReq.request.method;
-                             return `${method} ${url}`;
-                           })
-                           .join(', ');
+      const requests = open.map(describeRequest).join(', ');
       throw new Error(`Expected no open requests, found ${open.length}: ${requests}`);
     }
   }
@@ -157,4 +146,10 @@ export class HttpClientTestingBackend implements HttpBackend, HttpTestingControl
       return `Match by function: ${matcher.name}`;
     }
   }
+}
+
+function describeRequest(testRequest: TestRequest): string {
+  const url = testRequest.request.urlWithParams;
+  const method = testRequest.request.method;
+  return `${method} ${url}`;
 }
