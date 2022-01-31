@@ -287,8 +287,8 @@
             "url": "https://github.com/chrisguttandin/angular-prerender"
           },
           "nx": {
-            "desc": "Nx (Nrwl Extensions for Angular) is an open source toolkit built on top of Angular CLI to help enterprise teams develop Angular at scale.",
-            "title": "Nx",
+            "desc": "Nx is an open source build system featuring a lot of monorepo features that help enterprise teams develop Angular at scale.",
+            "title": "Nx - Smart, Fast and Extensible Build System",
             "logo": "https://nrwl.io/assets/nx-logo.png",
             "url": "https://nrwl.io/nx"
           },
