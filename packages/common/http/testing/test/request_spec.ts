@@ -91,4 +91,22 @@ describe('HttpClient TestRequest', () => {
               ' Requests received are: GET /some-other-url?query=world, POST /and-another-url.');
     }
   });
+
+  it('throws if there are open requests when verify is called', () => {
+    const mock = new HttpClientTestingBackend();
+    const client = new HttpClient(mock);
+
+    client.get('/some-other-url?query=world').subscribe();
+    client.post('/and-another-url', {}).subscribe();
+
+    try {
+      mock.verify();
+      fail();
+    } catch (error) {
+      expect(error.message)
+          .toBe(
+              'Expected no open requests, found 2:' +
+              ' GET /some-other-url?query=world, POST /and-another-url');
+    }
+  });
 });
