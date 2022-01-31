@@ -37,8 +37,8 @@ genrule(
 
 js_library(
     name = "zone",
-    srcs = [":zone.js"],
     package_name = "zone.js/dist",
+    srcs = [":zone.js"],
     visibility = ["//modules/benchmarks:__subpackages__"],
 )
 
