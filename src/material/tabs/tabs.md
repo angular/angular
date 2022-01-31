@@ -46,9 +46,10 @@ provides a tab-like UI for navigating between routes.
                "file": "tab-nav-bar-basic-example.html",
                "region": "mat-tab-nav"}) -->
 
-The `tab-nav-bar` is not tied to any particular router; it works with normal `<a>` elements and uses
-the `active` property to determine which tab is currently active. The corresponding
-`<router-outlet>` can be placed anywhere in the view.
+The `mat-tab-nav-bar` is not tied to any particular router; it works with normal `<a>` elements and
+uses the `active` property to determine which tab is currently active. The corresponding
+`<router-outlet>` must be wrapped in an `<mat-tab-nav-panel>` component and should typically be
+placed relatively close to the `mat-tab-nav-bar` (see [Accessibility](#accessibility)).
 
 ### Lazy Loading
 By default, the tab contents are eagerly loaded. Eagerly loaded tabs
@@ -94,23 +95,14 @@ off-screen tabs in the DOM, you can set the `preserveContent` input to `true`.
 <!-- example(tab-group-preserve-content) -->
 
 ### Accessibility
-`MatTabGroup` and `MatTabNavBar` implement different interaction patterns for different use-cases.
-You should choose the component that works best for your application.
+`MatTabGroup` and `MatTabNavBar` both implement the
+[ARIA Tabs design pattern](https://www.w3.org/TR/wai-aria-practices-1.1/#tabpanel). Both components
+compose `tablist`, `tab`, and `tabpanel` elements with handling for keyboard inputs and focus
+management.
 
-`MatTabGroup` combines `tablist`, `tab`, and `tabpanel` into a single component with
-handling for keyboard inputs and focus management. You should use this component for switching
-between content within a single page. 
-
-`MatTabNavBar`, implements a navigation interaction pattern by using a `<nav>` element with anchor
-elements as the "tabs". You should use this component when you want your cross-page navigation to
-look like a tabbed interface. As a rule of thumb, you should consider `MatTabNavBar` if changing
-tabs would change the browser URL. For all navigation, including with `MatTabNavBar`, always move
-browser focus to an element at the beginning of the content to which the user is navigating.
-Furthermore, consider placing your `<router-outlet>` inside of a
-[landmark region](https://www.w3.org/TR/wai-aria-1.1/#dfn-landmark) appropriate to the page.
-
-Avoid mixing both `MatTabGroup` and `MatTabNavBar` in your application. The inconsistent interaction
-patterns applied between the components may confuse users.
+When using `MatTabNavBar`, you should place the `<mat-tab-nav-panel>` component relatively close to
+if not immediately adjacent to the `<nav mat-tab-nav-bar>` component so that it's easy for screen
+reader users to identify the association.
 
 #### Labels
 

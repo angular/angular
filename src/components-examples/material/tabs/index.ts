@@ -21,7 +21,6 @@ import {TabGroupPreserveContentExample} from './tab-group-preserve-content/tab-g
 import {TabGroupStretchedExample} from './tab-group-stretched/tab-group-stretched-example';
 import {TabGroupThemeExample} from './tab-group-theme/tab-group-theme-example';
 import {TabNavBarBasicExample} from './tab-nav-bar-basic/tab-nav-bar-basic-example';
-import {TabNavBarWithPanelExample} from './tab-nav-bar-with-panel/tab-nav-bar-with-panel-example';
 
 export {
   TabGroupAlignExample,
@@ -37,7 +36,6 @@ export {
   TabGroupStretchedExample,
   TabGroupThemeExample,
   TabNavBarBasicExample,
-  TabNavBarWithPanelExample,
   TabGroupPreserveContentExample,
 };
 
@@ -55,7 +53,6 @@ const EXAMPLES = [
   TabGroupStretchedExample,
   TabGroupThemeExample,
   TabNavBarBasicExample,
-  TabNavBarWithPanelExample,
   TabGroupPreserveContentExample,
 ];
 
