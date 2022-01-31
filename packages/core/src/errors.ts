@@ -80,7 +80,7 @@ export const enum RuntimeErrorCode {
  * mode (when the `ngDevMode` is defined). In production mode (after tree-shaking pass), the
  * `message` argument becomes `false`, thus we account for it in the typings and the runtime logic.
  */
-export class RuntimeError<T = RuntimeErrorCode> extends Error {
+export class RuntimeError<T extends number = RuntimeErrorCode> extends Error {
   constructor(public code: T, message: null|false|string) {
     super(formatRuntimeError<T>(code, message));
   }
@@ -90,16 +90,15 @@ export class RuntimeError<T = RuntimeErrorCode> extends Error {
  * Called to format a runtime error.
  * See additional info on the `message` argument type in the `RuntimeError` class description.
  */
-export function formatRuntimeError<T = RuntimeErrorCode>(
+export function formatRuntimeError<T extends number = RuntimeErrorCode>(
     code: T, message: null|false|string): string {
-  const codeAsNumber = code as unknown as number;
   // Error code might be a negative number, which is a special marker that instructs the logic to
   // generate a link to the error details page on angular.io.
-  const fullCode = `NG0${Math.abs(codeAsNumber)}`;
+  const fullCode = `NG0${Math.abs(code)}`;
 
   let errorMessage = `${fullCode}${message ? ': ' + message : ''}`;
 
-  if (ngDevMode && codeAsNumber < 0) {
+  if (ngDevMode && code < 0) {
     errorMessage = `${errorMessage}. Find more at ${ERROR_DETAILS_PAGE_BASE_URL}/${fullCode}`;
   }
   return errorMessage;
