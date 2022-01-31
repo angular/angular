@@ -8,7 +8,8 @@
  */
 
 // tslint:disable:no-console
-const {exec} = require('shelljs');
+import shelljs from 'shelljs';
+const {exec} = shelljs;
 
 process.stdout.write('Gathering all partial golden update targets');
 const queryCommand =
