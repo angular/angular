@@ -45,7 +45,6 @@ esbuild(
         "tsickle",
         "@babel/core",
         "reflect-metadata",
-        "canonical-path",
         "chokidar",
         "convert-source-map",
         "dependency-graph",

@@ -35,7 +35,6 @@ ts_library(
         "@npm//@types/node",
         "@npm//@types/semver",
         "@npm//@types/yargs",
-        "@npm//canonical-path",
         "@npm//dependency-graph",
         "@npm//magic-string",
         "@npm//semver",
