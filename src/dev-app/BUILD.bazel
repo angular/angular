@@ -157,7 +157,6 @@ filegroup(
         ":theme",
         ":variables",
         "//src/dev-app/icon:icon_demo_assets",
-        "@npm//:node_modules/core-js-bundle/index.js",
         "@npm//:node_modules/moment/min/moment-with-locales.min.js",
         "@npm//:node_modules/rxjs/bundles/rxjs.umd.min.js",
         "@npm//:node_modules/zone.js/dist/zone.js",

@@ -30,8 +30,7 @@ module.exports = config => {
       },
     ],
     files: [
-      {pattern: 'node_modules/core-js-bundle/minified.js', included: true, watched: false},
-      {pattern: 'node_modules/core-js-bundle/minified.js.map', included: false, watched: false},
+      {pattern: 'node_modules/reflect-metadata/Reflect.js', included: true, watched: false},
       {pattern: 'node_modules/zone.js/dist/zone.min.js', included: true, watched: false},
       {pattern: 'node_modules/zone.js/dist/proxy.min.js', included: true, watched: false},
       {pattern: 'node_modules/zone.js/dist/sync-test.js', included: true, watched: false},

@@ -7,7 +7,6 @@ package(default_visibility = ["//visibility:public"])
 # List of dependencies that are referenced in the `index.html` file.
 devserverIndexHtmlDependencies = [
     "@npm//zone.js",
-    "@npm//core-js-bundle",
     "@npm//kagekiri",
     "@npm//material-components-web",
     "//src/material/prebuilt-themes:indigo-pink",
