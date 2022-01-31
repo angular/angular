@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {NgForOfContext} from '@angular/common';
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, NgModule, TemplateRef, ViewChild} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 
@@ -19,7 +20,7 @@ import {newArray} from '../util';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class InsertionComponent {
-  @Input() template !: TemplateRef<{}>;
+  @Input() template!: TemplateRef<NgForOfContext<any, any[]>>;
   views: any[] = [];
   @Input()
   set viewCount(n: number) {
