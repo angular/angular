@@ -10,8 +10,8 @@ import * as chars from '../chars';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../ml_parser/interpolation_config';
 import {InterpolatedAttributeToken, InterpolatedTextToken, TokenType as MlParserTokenType} from '../ml_parser/tokens';
 
-import {AbsoluteSourceSpan, AST, ASTWithSource, Binary, BindingPipe, Call, Chain, Conditional, EmptyExpr, ExpressionBinding, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralMapKey, LiteralPrimitive, NonNullAssert, ParserError, ParseSpan, PrefixNot, PropertyRead, PropertyWrite, Quote, RecursiveAstVisitor, SafeCall, SafeKeyedRead, SafePropertyRead, TemplateBinding, TemplateBindingIdentifier, ThisReceiver, Unary, VariableBinding} from './ast';
-import {EOF, isIdentifier, Lexer, Token, TokenType} from './lexer';
+import {AbsoluteSourceSpan, AST, ASTWithSource, Binary, BindingPipe, Call, Chain, Conditional, EmptyExpr, ExpressionBinding, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralMapKey, LiteralPrimitive, NonNullAssert, ParserError, ParseSpan, PrefixNot, PropertyRead, PropertyWrite, RecursiveAstVisitor, SafeCall, SafeKeyedRead, SafePropertyRead, TemplateBinding, TemplateBindingIdentifier, ThisReceiver, Unary, VariableBinding} from './ast';
+import {EOF, Lexer, Token, TokenType} from './lexer';
 
 export interface InterpolationPiece {
   text: string;
@@ -100,31 +100,11 @@ export class Parser {
   private _parseBindingAst(
       input: string, location: string, absoluteOffset: number,
       interpolationConfig: InterpolationConfig): AST {
-    // Quotes expressions use 3rd-party expression language. We don't want to use
-    // our lexer or parser for that, so we check for that ahead of time.
-    const quote = this._parseQuote(input, location, absoluteOffset);
-
-    if (quote != null) {
-      return quote;
-    }
-
     this._checkNoInterpolation(input, location, interpolationConfig);
     const sourceToLex = this._stripComments(input);
     const tokens = this._lexer.tokenize(sourceToLex);
     return new _ParseAST(input, location, absoluteOffset, tokens, ParseFlags.None, this.errors, 0)
         .parseChain();
-  }
-
-  private _parseQuote(input: string|null, location: string, absoluteOffset: number): AST|null {
-    if (input == null) return null;
-    const prefixSeparatorIndex = input.indexOf(':');
-    if (prefixSeparatorIndex == -1) return null;
-    const prefix = input.substring(0, prefixSeparatorIndex).trim();
-    if (!isIdentifier(prefix)) return null;
-    const uninterpretedExpression = input.substring(prefixSeparatorIndex + 1);
-    const span = new ParseSpan(0, input.length);
-    return new Quote(
-        span, span.toAbsolute(absoluteOffset), prefix, uninterpretedExpression, location);
   }
 
   /**
