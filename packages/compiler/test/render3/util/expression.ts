@@ -99,10 +99,6 @@ class ExpressionSourceHumanizer extends e.RecursiveAstVisitor implements t.Visit
     this.recordAst(ast);
     super.visitSafePropertyRead(ast, null);
   }
-  override visitQuote(ast: e.Quote) {
-    this.recordAst(ast);
-    super.visitQuote(ast, null);
-  }
   override visitSafeKeyedRead(ast: e.SafeKeyedRead) {
     this.recordAst(ast);
     super.visitSafeKeyedRead(ast, null);

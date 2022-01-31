@@ -46,33 +46,6 @@ export abstract class ASTWithName extends AST {
   }
 }
 
-/**
- * Represents a quoted expression of the form:
- *
- * quote = prefix `:` uninterpretedExpression
- * prefix = identifier
- * uninterpretedExpression = arbitrary string
- *
- * A quoted expression is meant to be pre-processed by an AST transformer that
- * converts it into another AST that no longer contains quoted expressions.
- * It is meant to allow third-party developers to extend Angular template
- * expression language. The `uninterpretedExpression` part of the quote is
- * therefore not interpreted by the Angular's own expression parser.
- */
-export class Quote extends AST {
-  constructor(
-      span: ParseSpan, sourceSpan: AbsoluteSourceSpan, public prefix: string,
-      public uninterpretedExpression: string, public location: any) {
-    super(span, sourceSpan);
-  }
-  override visit(visitor: AstVisitor, context: any = null): any {
-    return visitor.visitQuote(this, context);
-  }
-  override toString(): string {
-    return 'Quote';
-  }
-}
-
 export class EmptyExpr extends AST {
   override visit(visitor: AstVisitor, context: any = null) {
     // do nothing
@@ -447,7 +420,6 @@ export interface AstVisitor {
   visitNonNullAssert(ast: NonNullAssert, context: any): any;
   visitPropertyRead(ast: PropertyRead, context: any): any;
   visitPropertyWrite(ast: PropertyWrite, context: any): any;
-  visitQuote(ast: Quote, context: any): any;
   visitSafePropertyRead(ast: SafePropertyRead, context: any): any;
   visitSafeKeyedRead(ast: SafeKeyedRead, context: any): any;
   visitCall(ast: Call, context: any): any;
@@ -537,7 +509,6 @@ export class RecursiveAstVisitor implements AstVisitor {
     this.visit(ast.receiver, context);
     this.visitAll(ast.args, context);
   }
-  visitQuote(ast: Quote, context: any): any {}
   // This is not part of the AstVisitor interface, just a helper method
   visitAll(asts: AST[], context: any): any {
     for (const ast of asts) {
@@ -655,11 +626,6 @@ export class AstTransformer implements AstVisitor {
 
   visitChain(ast: Chain, context: any): AST {
     return new Chain(ast.span, ast.sourceSpan, this.visitAll(ast.expressions));
-  }
-
-  visitQuote(ast: Quote, context: any): AST {
-    return new Quote(
-        ast.span, ast.sourceSpan, ast.prefix, ast.uninterpretedExpression, ast.location);
   }
 
   visitSafeKeyedRead(ast: SafeKeyedRead, context: any): AST {
@@ -845,10 +811,6 @@ export class AstMemoryEfficientTransformer implements AstVisitor {
     if (receiver !== ast.receiver || args !== ast.args) {
       return new SafeCall(ast.span, ast.sourceSpan, receiver, args, ast.argumentSpan);
     }
-    return ast;
-  }
-
-  visitQuote(ast: Quote, context: any): AST {
     return ast;
   }
 
