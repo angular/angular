@@ -344,12 +344,6 @@ describe('expression AST absolute source spans', () => {
     });
   });
 
-  it('should provide absolute offsets of a quote', () => {
-    expect(humanizeExpressionSource(parse('<div [prop]="a:b"></div>').nodes)).toContain([
-      'a:b', new AbsoluteSourceSpan(13, 16)
-    ]);
-  });
-
   describe('absolute offsets for template expressions', () => {
     it('should work for simple cases', () => {
       expect(

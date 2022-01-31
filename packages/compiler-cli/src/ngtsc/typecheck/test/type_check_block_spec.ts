@@ -56,11 +56,6 @@ describe('type check blocks', () => {
         .toContain('(((((ctx).a)) ?? (((ctx).b))) + ((((ctx).c)) ?? (((ctx).e))))');
   });
 
-  it('should handle quote expressions as any type', () => {
-    const TEMPLATE = `<span [quote]="sql:expression"></span>`;
-    expect(tcb(TEMPLATE)).toContain('null as any');
-  });
-
   it('should handle attribute values for directive inputs', () => {
     const TEMPLATE = `<div dir inputA="value"></div>`;
     const DIRECTIVES: TestDeclaration[] = [{

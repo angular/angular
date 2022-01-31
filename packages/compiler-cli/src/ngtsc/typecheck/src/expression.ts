@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, AstVisitor, ASTWithSource, Binary, BindingPipe, Call, Chain, Conditional, EmptyExpr, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralPrimitive, NonNullAssert, PrefixNot, PropertyRead, PropertyWrite, Quote, SafeCall, SafeKeyedRead, SafePropertyRead, ThisReceiver, Unary} from '@angular/compiler';
+import {AST, AstVisitor, ASTWithSource, Binary, BindingPipe, Call, Chain, Conditional, EmptyExpr, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralPrimitive, NonNullAssert, PrefixNot, PropertyRead, PropertyWrite, SafeCall, SafeKeyedRead, SafePropertyRead, ThisReceiver, Unary} from '@angular/compiler';
 import ts from 'typescript';
 
 import {TypeCheckingConfig} from '../api';
@@ -252,10 +252,6 @@ class AstTranslator implements AstVisitor {
     return node;
   }
 
-  visitQuote(ast: Quote): ts.Expression {
-    return NULL_AS_ANY;
-  }
-
   visitSafePropertyRead(ast: SafePropertyRead): ts.Expression {
     let node: ts.Expression;
     const receiver = wrapForDiagnostics(this.translate(ast.receiver));
@@ -449,9 +445,6 @@ class VeSafeLhsInferenceBugDetector implements AstVisitor {
     return false;
   }
   visitPropertyWrite(ast: PropertyWrite): boolean {
-    return false;
-  }
-  visitQuote(ast: Quote): boolean {
     return false;
   }
   visitSafePropertyRead(ast: SafePropertyRead): boolean {

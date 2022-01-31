@@ -518,11 +518,6 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
     return asts.map(ast => this._visit(ast, mode));
   }
 
-  visitQuote(ast: cdAst.Quote, mode: _Mode): any {
-    throw new Error(`Quotes are not supported for evaluation!
-        Statement: ${ast.uninterpretedExpression} located at ${ast.location}`);
-  }
-
   visitCall(ast: cdAst.Call, mode: _Mode): any {
     const leftMostSafe = this.leftMostSafeNode(ast);
     if (leftMostSafe) {
@@ -742,9 +737,6 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
       visitPropertyWrite(ast: cdAst.PropertyWrite) {
         return null;
       },
-      visitQuote(ast: cdAst.Quote) {
-        return null;
-      },
       visitSafePropertyRead(ast: cdAst.SafePropertyRead) {
         return visit(this, ast.receiver) || ast;
       },
@@ -820,9 +812,6 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
         return false;
       },
       visitPropertyWrite(ast: cdAst.PropertyWrite) {
-        return false;
-      },
-      visitQuote(ast: cdAst.Quote) {
         return false;
       },
       visitSafePropertyRead(ast: cdAst.SafePropertyRead) {
