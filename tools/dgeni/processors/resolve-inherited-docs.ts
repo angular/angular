@@ -20,6 +20,9 @@ export function resolveInheritedDocs(exportSymbolsToDocsMap: Map<ts.Symbol, Clas
  * processed by other standard processors in the Dgeni pipeline. This is helpful as
  * API documents for inheritance are created manually if not exported, and we'd want
  * such docs to be processed by the Dgeni JSDoc processor for example.
+ *
+ * Note that we also want to include external API docs (e.g. from the node modules)
+ * since members from those can also be merged with public-facing API docs.
  */
 export class ResolveInheritedDocs implements Processor {
   $runBefore = ['docs-private-filter', 'parsing-tags'];
@@ -44,14 +47,6 @@ export class ResolveInheritedDocs implements Processor {
         if (!isInheritanceCreatedDoc(apiDoc)) {
           return;
         }
-        // If this is an external document not part of our sources, we will not add it to the
-        // Dgeni API doc pipeline. Docs would be filtered regardless, but adding them to the
-        // pipeline could cause e.g. the JSDoc parser to complain about tags/annotations which
-        // are not known/relevant to our API docs. e.g. Framework uses `@nodoc` or `@usageNotes`.
-        if (apiDoc.fileInfo.projectRelativePath.startsWith('../')) {
-          return;
-        }
-
         // Add the member docs for the inherited doc to the Dgeni doc collection.
         this._getContainingMemberDocs(apiDoc).forEach(d => newDocs.add(d));
         // Add the class-like export doc to the Dgeni doc collection.
