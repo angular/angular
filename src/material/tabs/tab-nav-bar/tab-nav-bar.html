@@ -1,13 +1,17 @@
-<div class="mat-tab-header-pagination mat-tab-header-pagination-before mat-elevation-z4"
+<button class="mat-tab-header-pagination mat-tab-header-pagination-before mat-elevation-z4"
      #previousPaginator
      aria-hidden="true"
-     mat-ripple [matRippleDisabled]="_disableScrollBefore || disableRipple"
+     type="button"
+     mat-ripple
+     tabindex="-1"
+     [matRippleDisabled]="_disableScrollBefore || disableRipple"
      [class.mat-tab-header-pagination-disabled]="_disableScrollBefore"
+     [disabled]="_disableScrollBefore || null"
      (click)="_handlePaginatorClick('before')"
      (mousedown)="_handlePaginatorPress('before', $event)"
      (touchend)="_stopInterval()">
   <div class="mat-tab-header-pagination-chevron"></div>
-</div>
+</button>
 
 <div class="mat-tab-link-container" #tabListContainer (keydown)="_handleKeydown($event)">
   <div
@@ -22,13 +26,17 @@
   </div>
 </div>
 
-<div class="mat-tab-header-pagination mat-tab-header-pagination-after mat-elevation-z4"
+<button class="mat-tab-header-pagination mat-tab-header-pagination-after mat-elevation-z4"
      #nextPaginator
      aria-hidden="true"
-     mat-ripple [matRippleDisabled]="_disableScrollAfter || disableRipple"
+     type="button"
+     mat-ripple
+     [matRippleDisabled]="_disableScrollAfter || disableRipple"
      [class.mat-tab-header-pagination-disabled]="_disableScrollAfter"
+     [disabled]="_disableScrollAfter || null"
+     tabindex="-1"
      (mousedown)="_handlePaginatorPress('after', $event)"
      (click)="_handlePaginatorClick('after')"
      (touchend)="_stopInterval()">
   <div class="mat-tab-header-pagination-chevron"></div>
-</div>
+</button>

@@ -95,6 +95,15 @@ $tab-animation-duration: 500ms !default;
     z-index: 2;
     -webkit-tap-highlight-color: transparent;
     touch-action: none;
+    box-sizing: content-box;
+    background: none;
+    border: none;
+    outline: 0;
+    padding: 0;
+
+    &::-moz-focus-inner {
+      border: 0;
+    }
 
     .mat-tab-header-pagination-controls-enabled & {
       display: flex;
