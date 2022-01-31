@@ -1,5 +1,5 @@
 import {A11yModule, CDK_DESCRIBEDBY_HOST_ATTRIBUTE} from '../index';
-import {AriaDescriber, MESSAGES_CONTAINER_ID} from './aria-describer';
+import {AriaDescriber} from './aria-describer';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {Component, ElementRef, ViewChild, Provider} from '@angular/core';
 
@@ -209,16 +209,28 @@ describe('AriaDescriber', () => {
     expect(() => ariaDescriber.describe(node, 'This looks like an element')).not.toThrow();
   });
 
-  it('should clear any pre-existing containers', () => {
+  it('should clear any pre-existing containers coming in from the server', () => {
     createFixture();
     const extraContainer = document.createElement('div');
-    extraContainer.id = MESSAGES_CONTAINER_ID;
+    extraContainer.classList.add('cdk-describedby-message-container');
+    extraContainer.setAttribute('platform', 'server');
     document.body.appendChild(extraContainer);
 
     ariaDescriber.describe(component.element1, 'Hello');
 
-    // Use `querySelectorAll` with an attribute since `getElementById` will stop at the first match.
-    expect(document.querySelectorAll(`[id='${MESSAGES_CONTAINER_ID}']`).length).toBe(1);
+    expect(document.querySelectorAll('.cdk-describedby-message-container').length).toBe(1);
+    extraContainer.remove();
+  });
+
+  it('should not clear any pre-existing containers coming from the browser', () => {
+    createFixture();
+    const extraContainer = document.createElement('div');
+    extraContainer.classList.add('cdk-describedby-message-container');
+    document.body.appendChild(extraContainer);
+
+    ariaDescriber.describe(component.element1, 'Hello');
+
+    expect(document.querySelectorAll('.cdk-describedby-message-container').length).toBe(2);
     extraContainer.remove();
   });
 
@@ -337,7 +349,7 @@ describe('AriaDescriber', () => {
 });
 
 function getMessagesContainer() {
-  return document.querySelector(`#${MESSAGES_CONTAINER_ID}`)!;
+  return document.querySelector('.cdk-describedby-message-container')!;
 }
 
 function getMessageElements(): Element[] | null {
