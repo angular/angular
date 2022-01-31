@@ -27,7 +27,8 @@ const defaultEnvironmentOptions: ProtractorHarnessEnvironmentOptions = {
 
 /**
  * A `HarnessEnvironment` implementation for Protractor.
- * @deprecated
+ * @deprecated As of v13.0.0, this environment no longer works, as it is not
+ * compatible with the new [Angular Package Format](https://angular.io/guide/angular-package-format).
  * @breaking-change 13.0.0
  */
 export class ProtractorHarnessEnvironment extends HarnessEnvironment<ElementFinder> {
