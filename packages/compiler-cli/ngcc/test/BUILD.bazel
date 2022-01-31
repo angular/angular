@@ -106,7 +106,6 @@ jasmine_node_test(
     ],
     deps = [
         ":integration_lib",
-        "@npm//canonical-path",
         "@npm//convert-source-map",
     ],
 )
