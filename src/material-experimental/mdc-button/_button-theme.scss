@@ -34,7 +34,6 @@
 @mixin _outlined-button-variant($color) {
   @include mdc-button-outlined-theme.theme((
     label-text-color: $color,
-    outline-color: $color,
   ));
 }
 
@@ -140,6 +139,10 @@
     }
 
     .mat-mdc-outlined-button {
+      @include mdc-button-outlined-theme.theme((
+        outline-color: rgba(mdc-theme-color.prop-value(on-surface), 0.12)
+      ));
+
       &.mat-unthemed {
         @include _outlined-button-variant($on-surface);
       }
@@ -161,9 +164,9 @@
           // We need to pass both the disabled and enabled values, because the enabled
           // ones apply to anchors while the disabled ones are for buttons.
           label-text-color: $disabled-ink-color,
-          outline-color: $disabled-ink-color,
           disabled-label-text-color: $disabled-ink-color,
-          disabled-outline-color: $disabled-ink-color,
+          outline-color: rgba($on-surface, 0.12),
+          disabled-outline-color: rgba($on-surface, 0.12),
         ));
       }
     }
