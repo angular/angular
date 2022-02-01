@@ -103,7 +103,7 @@ describe('HttpClient TestRequest', () => {
       mock.verify();
       fail();
     } catch (error) {
-      expect(error.message)
+      expect((error as any).message)
           .toBe(
               'Expected no open requests, found 2:' +
               ' GET /some-other-url?query=world, POST /and-another-url');
