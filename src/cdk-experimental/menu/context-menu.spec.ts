@@ -39,7 +39,7 @@ describe('CdkContextMenuTrigger', () => {
 
     /** Get the context in which the context menu should trigger. */
     function getMenuContext() {
-      return fixture.componentInstance.trigger.nativeElement;
+      return fixture.componentInstance.triggerElement.nativeElement;
     }
 
     /** Open up the context menu and run change detection. */
@@ -68,6 +68,29 @@ describe('CdkContextMenuTrigger', () => {
       openContextMenu();
 
       fixture.nativeElement.querySelector('#other').click();
+      fixture.detectChanges();
+
+      expect(getContextMenu()).not.toBeDefined();
+    });
+
+    it('should not close the menu on first auxclick after opening via contextmenu event', () => {
+      openContextMenu();
+
+      fixture.nativeElement.querySelector('#other').dispatchEvent(new MouseEvent('auxclick'));
+      fixture.detectChanges();
+
+      expect(getContextMenu()).toBeDefined();
+
+      fixture.nativeElement.querySelector('#other').dispatchEvent(new MouseEvent('auxclick'));
+      fixture.detectChanges();
+
+      expect(getContextMenu()).not.toBeDefined();
+    });
+
+    it('should close the menu on first auxclick after opening programmatically', () => {
+      fixture.componentInstance.trigger.open({x: 0, y: 0});
+
+      fixture.nativeElement.querySelector('#other').dispatchEvent(new MouseEvent('auxclick'));
       fixture.detectChanges();
 
       expect(getContextMenu()).not.toBeDefined();
@@ -397,7 +420,8 @@ describe('CdkContextMenuTrigger', () => {
   `,
 })
 class SimpleContextMenu {
-  @ViewChild(CdkContextMenuTrigger, {read: ElementRef}) trigger: ElementRef<HTMLElement>;
+  @ViewChild(CdkContextMenuTrigger) trigger: CdkContextMenuTrigger;
+  @ViewChild(CdkContextMenuTrigger, {read: ElementRef}) triggerElement: ElementRef<HTMLElement>;
   @ViewChild(CdkMenu) menu?: CdkMenu;
   @ViewChild(CdkMenu, {read: ElementRef}) nativeMenu?: ElementRef<HTMLElement>;
 
