@@ -12,10 +12,9 @@ import {FileLinker, isFatalLinkerError, LinkerEnvironment} from '../../../linker
 
 import {BabelAstFactory} from './ast/babel_ast_factory';
 import {BabelAstHost} from './ast/babel_ast_host';
-import {PluginObj, types as t} from './babel_core';
+import {BabelFile, PluginObj, types as t} from './babel_core';
 import {BabelDeclarationScope, ConstantScopePath} from './babel_declaration_scope';
 import {LinkerPluginOptions} from './linker_plugin_options';
-
 
 /**
  * Create a Babel plugin that visits the program, identifying and linking partial declarations.
@@ -38,7 +37,7 @@ export function createEs2015LinkerPlugin({fileSystem, logger, ...options}: Linke
           assertNull(fileLinker);
           // Babel can be configured with a `filename` or `relativeFilename` (or both, or neither) -
           // possibly relative to the optional `cwd` path.
-          const file: BabelFile = path.hub.file;
+          const file = path.hub.file;
           const filename = file.opts.filename ?? file.opts.filenameRelative;
           if (!filename) {
             throw new Error(
@@ -105,17 +104,18 @@ export function createEs2015LinkerPlugin({fileSystem, logger, ...options}: Linke
  * The actual insertion strategy depends upon the type of the `path`.
  */
 function insertStatements(path: ConstantScopePath, statements: t.Statement[]): void {
-  if (path.isFunction()) {
-    insertIntoFunction(path, statements);
-  } else if (path.isProgram()) {
+  if (path.isProgram()) {
     insertIntoProgram(path, statements);
+  } else {
+    insertIntoFunction(path, statements);
   }
 }
 
 /**
  * Insert the `statements` at the top of the body of the `fn` function.
  */
-function insertIntoFunction(fn: NodePath<t.Function>, statements: t.Statement[]): void {
+function insertIntoFunction(
+    fn: NodePath<t.FunctionExpression|t.FunctionDeclaration>, statements: t.Statement[]): void {
   const body = fn.get('body');
   body.unshiftContainer('body', statements);
 }
@@ -178,19 +178,4 @@ function buildCodeFrameError(file: BabelFile, message: string, node: t.Node): st
   const filename = file.opts.filename || '(unknown file)';
   const error = file.buildCodeFrameError(node, message);
   return `${filename}: ${error.message}`;
-}
-
-/**
- * This interface is making up for the fact that the Babel typings for `NodePath.hub.file` are
- * lacking.
- */
-interface BabelFile {
-  code: string;
-  opts: {
-    filename?: string,
-    filenameRelative?: string,
-    cwd?: string,
-  };
-
-  buildCodeFrameError(node: t.Node, message: string): Error;
 }

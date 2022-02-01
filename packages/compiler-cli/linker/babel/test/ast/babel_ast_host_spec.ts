@@ -327,7 +327,7 @@ describe('BabelAstHost', () => {
   describe('getRange()', () => {
     it('should extract the range from the expression', () => {
       const file = parse('// preamble\nx = \'moo\';');
-      const stmt = file.program.body[0];
+      const stmt = file.program.body[0] as t.Statement;
       assertExpressionStatement(stmt);
       assertAssignmentExpression(stmt.expression);
       expect(host.getRange(stmt.expression.right))
