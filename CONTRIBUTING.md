@@ -310,7 +310,7 @@ There are currently a few exceptions to the "use package name" rule:
 
 * `ve`: used for changes specific to ViewEngine (legacy compiler/renderer).
 
-* `devtools`: used for changes in the browser extension
+* `devtools`: used for changes in the [browser extension](./devtools/README.md).
 
 * none/empty string: useful for `test` and `refactor` changes that are done across all packages (e.g. `test: add missing unit tests`) and for docs changes that are not related to a specific package (e.g. `docs: fix typo in tutorial`).
 
