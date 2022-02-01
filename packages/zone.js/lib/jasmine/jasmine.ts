@@ -192,9 +192,7 @@ Zone.__load_patch('jasmine', (global: any, Zone: ZoneType, api: _ZonePrivate) =>
   function runInTestZone(
       testBody: Function, applyThis: any, queueRunner: QueueRunner, done?: Function) {
     const isClockInstalled = !!(jasmine as any)[symbol('clockInstalled')];
-    const testProxyZoneSpec = queueRunner.testProxyZoneSpec!;
     const testProxyZone = queueRunner.testProxyZone!;
-    let lastDelegate;
     if (isClockInstalled && enableAutoFakeAsyncWhenClockPatched) {
       // auto run a fakeAsync
       const fakeAsyncModule = (Zone as any)[Zone.__symbol__('fakeAsyncTest')];
@@ -203,7 +201,9 @@ Zone.__load_patch('jasmine', (global: any, Zone: ZoneType, api: _ZonePrivate) =>
       }
     }
     if (done) {
-      return testProxyZone.run(testBody, applyThis, [done]);
+      // `done` should only be called once, otherwise Jasmine will log a
+      // deprecation warning which will eventually turn into an error.
+      return testProxyZone.run(testBody, applyThis, [callOnce(done)]);
     } else {
       return testProxyZone.run(testBody, applyThis);
     }
@@ -343,4 +343,18 @@ Zone.__load_patch('jasmine', (global: any, Zone: ZoneType, api: _ZonePrivate) =>
     };
     return ZoneQueueRunner;
   })(QueueRunner);
+
+  /** Wraps a function so it is only invoked once. */
+  function callOnce(fn: Function) {
+    let wasCalled = false;
+    let returnValue: unknown;
+
+    return function(this: unknown) {
+      if (!wasCalled) {
+        wasCalled = true;
+        returnValue = fn.apply(this, arguments);
+      }
+      return returnValue;
+    }
+  }
 });
