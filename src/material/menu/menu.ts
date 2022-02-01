@@ -109,7 +109,7 @@ export class _MatMenuBase
   @ContentChildren(MatMenuItem, {descendants: true}) _allItems: QueryList<MatMenuItem>;
 
   /** Only the direct descendant menu items. */
-  private _directDescendantItems = new QueryList<MatMenuItem>();
+  _directDescendantItems = new QueryList<MatMenuItem>();
 
   /** Subscription to tab events on the menu panel */
   private _tabSubscription = Subscription.EMPTY;

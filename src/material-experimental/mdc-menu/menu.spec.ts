@@ -41,7 +41,7 @@ import {
   MockNgZone,
 } from '../../cdk/testing/private';
 import {Subject} from 'rxjs';
-import {ScrollDispatcher} from '@angular/cdk/scrolling';
+import {ScrollDispatcher, ViewportRuler} from '@angular/cdk/scrolling';
 import {FocusMonitor} from '@angular/cdk/a11y';
 import {
   MAT_MENU_SCROLL_STRATEGY,
@@ -57,6 +57,7 @@ const MENU_PANEL_TOP_PADDING = 8;
 describe('MDC-based MatMenu', () => {
   let overlayContainerElement: HTMLElement;
   let focusMonitor: FocusMonitor;
+  let viewportRuler: ViewportRuler;
 
   function createComponent<T>(
     component: Type<T>,
@@ -71,6 +72,7 @@ describe('MDC-based MatMenu', () => {
 
     overlayContainerElement = TestBed.inject(OverlayContainer).getContainerElement();
     focusMonitor = TestBed.inject(FocusMonitor);
+    viewportRuler = TestBed.inject(ViewportRuler);
     const fixture = TestBed.createComponent<T>(component);
     window.scroll(0, 0);
     return fixture;
@@ -1141,6 +1143,28 @@ describe('MDC-based MatMenu', () => {
     expect(panel.classList).toContain('mat-menu-below');
     expect(panel.classList).toContain('mat-menu-after');
   }));
+
+  it('should keep the panel in the viewport when more items are added while open', () => {
+    const fixture = createComponent(SimpleMenu, [], [FakeIcon]);
+    fixture.detectChanges();
+
+    const triggerEl = fixture.componentInstance.triggerEl.nativeElement;
+    triggerEl.style.position = 'absolute';
+    triggerEl.style.left = '200px';
+    triggerEl.style.bottom = '300px';
+    triggerEl.click();
+    fixture.detectChanges();
+
+    const panel = overlayContainerElement.querySelector('.mat-mdc-menu-panel')!;
+    const viewportHeight = viewportRuler.getViewportSize().height;
+    let panelRect = panel.getBoundingClientRect();
+    expect(Math.floor(panelRect.bottom)).toBeLessThan(viewportHeight);
+
+    fixture.componentInstance.extraItems = new Array(50).fill('Hello there');
+    fixture.detectChanges();
+    panelRect = panel.getBoundingClientRect();
+    expect(Math.floor(panelRect.bottom)).toBe(viewportHeight);
+  });
 
   describe('lazy rendering', () => {
     it('should be able to render the menu content lazily', fakeAsync(() => {

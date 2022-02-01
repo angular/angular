@@ -110,6 +110,7 @@ export class _MatMenuBase implements AfterContentInit, MatMenuPanel<MatMenuItem>
     // @deprecated
     readonly close: EventEmitter<MenuCloseReason>;
     readonly closed: EventEmitter<MenuCloseReason>;
+    _directDescendantItems: QueryList<MatMenuItem>;
     direction: Direction;
     // (undocumented)
     protected _elevationPrefix: string;

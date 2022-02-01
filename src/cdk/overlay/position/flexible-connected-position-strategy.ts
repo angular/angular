@@ -360,16 +360,22 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
    * allows one to re-align the panel without changing the orientation of the panel.
    */
   reapplyLastPosition(): void {
-    if (!this._isDisposed && (!this._platform || this._platform.isBrowser)) {
+    if (this._isDisposed || !this._platform.isBrowser) {
+      return;
+    }
+
+    const lastPosition = this._lastPosition;
+
+    if (lastPosition) {
       this._originRect = this._getOriginRect();
       this._overlayRect = this._pane.getBoundingClientRect();
       this._viewportRect = this._getNarrowedViewportRect();
       this._containerRect = this._overlayContainer.getContainerElement().getBoundingClientRect();
 
-      const lastPosition = this._lastPosition || this._preferredPositions[0];
       const originPoint = this._getOriginPoint(this._originRect, this._containerRect, lastPosition);
-
       this._applyPosition(lastPosition, originPoint);
+    } else {
+      this.apply();
     }
   }
 

@@ -278,8 +278,9 @@ export abstract class _MatMenuTriggerBase implements AfterContentInit, OnDestroy
 
     const overlayRef = this._createOverlay();
     const overlayConfig = overlayRef.getConfig();
+    const positionStrategy = overlayConfig.positionStrategy as FlexibleConnectedPositionStrategy;
 
-    this._setPosition(overlayConfig.positionStrategy as FlexibleConnectedPositionStrategy);
+    this._setPosition(positionStrategy);
     overlayConfig.hasBackdrop =
       this.menu.hasBackdrop == null ? !this.triggersSubmenu() : this.menu.hasBackdrop;
     overlayRef.attach(this._getPortal());
@@ -293,6 +294,12 @@ export abstract class _MatMenuTriggerBase implements AfterContentInit, OnDestroy
 
     if (this.menu instanceof _MatMenuBase) {
       this.menu._startAnimation();
+      this.menu._directDescendantItems.changes.pipe(takeUntil(this.menu.close)).subscribe(() => {
+        // Re-adjust the position without locking when the amount of items
+        // changes so that the overlay is allowed to pick a new optimal position.
+        positionStrategy.withLockedPosition(false).reapplyLastPosition();
+        positionStrategy.withLockedPosition(true);
+      });
     }
   }
 
