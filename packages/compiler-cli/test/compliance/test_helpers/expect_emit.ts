@@ -13,7 +13,7 @@ const COMMENT_END = /\*\//;
 const OPERATOR =
     /!|\?|%|\*|\/|\^|&&?|\|\|?|\(|\)|\{|\}|\[|\]|:|;|<=?|>=?|={1,3}|!==?|=>|\+\+?|--?|@|,|\.|\.\.\.|\\`|\\'/;
 const STRING = /'(\\'|[^'])*'|"(\\"|[^"])*"/;
-const INLINE_BACKTICK_STRING = /`(([\s\S]*?)(\$\{[^}]*?\})?)*?[^\\]`/;
+const INLINE_BACKTICK_STRING = /`(?:[\s\S]|(?:\$\{[^}]*?\}))*?[^\\]`/;
 const SINGLE_BACKTICK_STRING = new RegExp('^' + INLINE_BACKTICK_STRING.source);
 const BACKTICK_INTERPOLATION = /(\$\{[^}]*\})/;
 const NUMBER = /\d+/;

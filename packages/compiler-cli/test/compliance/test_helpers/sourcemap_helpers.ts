@@ -80,8 +80,11 @@ function extractMappings(
     fs: ReadonlyFileSystem, expected: string): {expected: string, mappings: SegmentMapping[]} {
   const mappings: SegmentMapping[] = [];
   // capture and remove source mapping info
+  // Any newline at the end of an expectation line is removed, as a mapping expectation for a
+  // segment within a template literal would otherwise force a newline to be matched in the template
+  // literal.
   expected = expected.replace(
-      /^(.*?) \/\/ SOURCE: "([^"]*?)" "(.*?)"$/gm,
+      /^(.*?) \/\/ SOURCE: "([^"]*?)" "(.*?)"(?:\n|$)/gm,
       (_, rawGenerated: string, rawSourceUrl: string, rawSource: string) => {
         // Since segments need to appear on a single line in the expected file, any newlines in the
         // segment being checked must be escaped in the expected file and then unescaped here before

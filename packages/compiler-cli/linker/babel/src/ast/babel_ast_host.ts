@@ -73,7 +73,7 @@ export class BabelAstHost implements AstHost<t.Expression> {
       assert(property.value, t.isExpression, 'an expression');
       assert(property.key, isPropertyName, 'a property name');
       const key = t.isIdentifier(property.key) ? property.key.name : property.key.value;
-      result.set(key, property.value);
+      result.set(`${key}`, property.value);
     }
     return result;
   }
@@ -99,7 +99,9 @@ export class BabelAstHost implements AstHost<t.Expression> {
     }
     const stmt = fn.body.body[0];
     assert(stmt, t.isReturnStatement, 'a function body with a single return statement');
-    if (stmt.argument === null) {
+
+    // Babel declares `argument` as optional and nullable, so we account for both scenarios.
+    if (stmt.argument === null || stmt.argument === undefined) {
       throw new FatalLinkerError(stmt, 'Unsupported syntax, expected function to return a value.');
     }
 

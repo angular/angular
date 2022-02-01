@@ -215,7 +215,9 @@ export function unwrapMessagePartsFromTemplateLiteral(
 export function unwrapExpressionsFromTemplateLiteral(
     quasi: NodePath<t.TemplateLiteral>,
     fs: PathManipulation = getFileSystem()): [t.Expression[], (ɵSourceLocation | undefined)[]] {
-  return [quasi.node.expressions, quasi.get('expressions').map(e => getLocation(fs, e))];
+  return [
+    quasi.node.expressions as t.Expression[], quasi.get('expressions').map(e => getLocation(fs, e))
+  ];
 }
 
 /**
@@ -446,11 +448,11 @@ export function serializeLocationPosition(location: ɵSourceLocation): string {
 function getFileFromPath(fs: PathManipulation, path: NodePath|undefined): AbsoluteFsPath|null {
   const opts = path?.hub.file.opts;
   const filename = opts?.filename;
-  if (!filename) {
+  if (!filename || !opts.cwd) {
     return null;
   }
   const relativePath = fs.relative(opts.cwd, filename);
-  const root = opts.generatorOpts.sourceRoot ?? opts.cwd;
+  const root = opts.generatorOpts?.sourceRoot ?? opts.cwd;
   const absPath = fs.resolve(root, relativePath);
   return absPath;
 }
