@@ -375,8 +375,8 @@ describe('getSemanticDiagnostics', () => {
         }
     `
     };
-    const project = createModuleAndProjectWithDeclarations(
-        env, 'test', files, {strictTemplates: true, _extendedTemplateDiagnostics: true});
+    const project =
+        createModuleAndProjectWithDeclarations(env, 'test', files, {strictTemplates: true});
 
     const diags = project.getDiagnosticsForFile('app.ts');
     expect(diags.length).toEqual(1);
@@ -419,8 +419,8 @@ describe('getSemanticDiagnostics', () => {
     `,
       'app.html': `<div ([foo])="bar"></div>`
     };
-    const project = createModuleAndProjectWithDeclarations(
-        env, 'test', files, {strictTemplates: true, _extendedTemplateDiagnostics: true});
+    const project =
+        createModuleAndProjectWithDeclarations(env, 'test', files, {strictTemplates: true});
 
     const diags = project.getDiagnosticsForFile('app.html');
     expect(diags.length).toEqual(1);
