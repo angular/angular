@@ -67,27 +67,6 @@ runInEachFileSystem(() => {
       expect(getSourceCodeForDiagnostic(diags[0])).toBe('([notARealThing])="bar"');
     });
 
-    it('should throw error if _extendedTemplateDiagnostics option is enabled and strictTemplates disabled',
-       () => {
-         env.tsconfig({_extendedTemplateDiagnostics: true, strictTemplates: false});
-         env.write('test.ts', `
-              import {Component} from '@angular/core';
-              @Component({
-                selector: 'test',
-                template: '<div ([notARealThing])="bar"></div>',
-              })
-              class TestCmp {
-                bar: string = "text";
-              }
-            `);
-
-         const diags = env.driveDiagnostics();
-         expect(diags.length).toBe(1);
-         expect(diags[0].messageText)
-             .toMatch(
-                 /Error: The '_extendedTemplateDiagnostics' option requires 'strictTemplates' to also be enabled./);
-       });
-
     it(`should produce nullish coalescing not nullable warning`, () => {
       env.write('test.ts', `
               import {Component} from '@angular/core';

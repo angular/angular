@@ -7634,10 +7634,7 @@ function allTests(os: string) {
        });
 
     it('passes the build when only warnings are emitted', () => {
-      env.tsconfig({
-        strictTemplates: true,
-        _extendedTemplateDiagnostics: true,
-      });
+      env.tsconfig({strictTemplates: true});
 
       env.write('test.ts', `
         import {Component} from '@angular/core';

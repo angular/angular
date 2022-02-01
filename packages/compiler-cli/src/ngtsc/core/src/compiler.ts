@@ -316,12 +316,6 @@ export class NgCompiler {
       readonly usePoisonedData: boolean,
       private livePerfRecorder: ActivePerfRecorder,
   ) {
-    if (this.options._extendedTemplateDiagnostics === true &&
-        this.options.strictTemplates === false) {
-      throw new Error(
-          'The \'_extendedTemplateDiagnostics\' option requires \'strictTemplates\' to also be enabled.');
-    }
-
     this.constructionDiagnostics.push(
         ...this.adapter.constructionDiagnostics, ...verifyCompatibleTypeCheckOptions(this.options));
 
