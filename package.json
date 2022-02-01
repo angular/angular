@@ -201,7 +201,7 @@
     "requirejs": "^2.3.6",
     "rollup": "^2.66.1",
     "rollup-plugin-sourcemaps": "^0.6.3",
-    "sass": "^1.49.0",
+    "sass": "^1.49.4",
     "selenium-webdriver": "^3.6.0",
     "semver": "^7.3.5",
     "send": "^0.17.2",
