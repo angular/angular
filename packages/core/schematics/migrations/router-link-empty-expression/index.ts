@@ -53,7 +53,7 @@ export default function(): Rule {
       compilerModule = await loadEsmModule<typeof import('@angular/compiler')>('@angular/compiler');
     } catch (e) {
       throw new SchematicsException(
-          `Unable to load the '@angular/compiler' package. Details: ${e.message}`);
+          `Unable to load the '@angular/compiler' package. Details: ${(e as Error).message}`);
     }
 
     for (const tsconfigPath of [...buildPaths, ...testPaths]) {
