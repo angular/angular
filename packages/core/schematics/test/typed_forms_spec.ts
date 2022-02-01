@@ -122,7 +122,7 @@ describe('Typed Forms migration', () => {
          `);
       await runMigration();
       expect(tree.readContent('/index.ts'))
-          .toContain(`const fa = new FormArray<${anySymbolName}[]>([null]);`);
+          .toContain(`const fa = new FormArray<${anySymbolName}>([null]);`);
     });
 
     it('for FormControl with a qualified import', async () => {
@@ -150,7 +150,7 @@ describe('Typed Forms migration', () => {
          `);
       await runMigration();
       expect(tree.readContent('/index.ts'))
-          .toContain(`const fa = new FA<${anySymbolName}[]>([null]);`);
+          .toContain(`const fa = new FA<${anySymbolName}>([null]);`);
     });
 
     it('but not for controls that already have type arguments', async () => {
@@ -218,9 +218,9 @@ describe('Typed Forms migration', () => {
            }
          `);
       await runMigration();
-      expect(tree.readContent('/index.ts')).toContain(`fb.array<${anySymbolName}[]>([0]);`);
+      expect(tree.readContent('/index.ts')).toContain(`fb.array<${anySymbolName}>([0]);`);
       expect(tree.readContent('/index.ts'))
-          .toContain(`const fd = new FormBuilder().array<${anySymbolName}[]>([0])`);
+          .toContain(`const fd = new FormBuilder().array<${anySymbolName}>([0])`);
     });
   });
 
@@ -275,10 +275,10 @@ describe('Typed Forms migration', () => {
            anySymbolName}, AbstractControl, FormArray, FormBuilder, FormControl as FC, FormGroup } from '@angular/forms';`,
        `private _control = new FC<${anySymbolName}>(42)`,
        `private _group = new FormGroup<${anySymbolName}>({})`,
-       `private _array = new FormArray<${anySymbolName}[]>([])`,
+       `private _array = new FormArray<${anySymbolName}>([])`,
        `const fc2 = new FC<${anySymbolName}>(0)`, `const c = this.fb.control<${anySymbolName}>(42)`,
        `const g = this.fb.group<${anySymbolName}>({one: this.fb.control<${anySymbolName}>('')})`,
-       `const a = this.fb.array<${anySymbolName}[]>([42])`]
+       `const a = this.fb.array<${anySymbolName}>([42])`]
           .forEach(t => expect(tree.readContent('/index.ts')).toContain(t));
     });
   });

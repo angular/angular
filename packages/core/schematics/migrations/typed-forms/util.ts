@@ -37,11 +37,7 @@ export function findControlClassUsages(
     sourceFile: ts.SourceFile, typeChecker: ts.TypeChecker,
     importSpecifier: ts.ImportSpecifier|null): MigratableNode[] {
   if (importSpecifier === null) return [];
-  let generic = `<${anySymbolName}>`;
-  if (importSpecifier.name.getText() === 'FormArray' ||
-      importSpecifier.propertyName?.getText() === 'FormArray') {
-    generic = `<${anySymbolName}[]>`;
-  }
+  const generic = `<${anySymbolName}>`;
   const usages: MigratableNode[] = [];
   const visitNode = (node: ts.Node) => {
     // Look for a `new` expression with no type arguments which references an import we care about:
@@ -66,8 +62,7 @@ export function findFormBuilderCalls(
     if (ts.isCallExpression(node) && !node.typeArguments &&
         ts.isPropertyAccessExpression(node.expression) && ts.isIdentifier(node.expression.name) &&
         builderMethodNames.includes(node.expression.name.text)) {
-      const generic =
-          node.expression.name.text === 'array' ? `<${anySymbolName}[]>` : `<${anySymbolName}>`;
+      const generic = `<${anySymbolName}>`;
       // Check whether the type of the object on which the function is called refers to the
       // provided import.
       if (isReferenceToImport(typeChecker, node.expression.expression, importSpecifier)) {
