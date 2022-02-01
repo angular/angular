@@ -17,4 +17,4 @@ export * from './table-directives';
 
 // Private to Angular Components
 export {CELL_SELECTOR as _CELL_SELECTOR} from './constants';
-export {closest as _closest, matches as _matches} from './polyfill';
+export {closest as _closest} from './polyfill';

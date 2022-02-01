@@ -10,7 +10,7 @@ import {AfterViewInit, Directive, ElementRef, NgZone, OnDestroy} from '@angular/
 import {fromEvent, merge, Subject} from 'rxjs';
 import {filter, map, mapTo, pairwise, startWith, take, takeUntil} from 'rxjs/operators';
 
-import {_closest, _matches} from '@angular/cdk-experimental/popover-edit';
+import {_closest} from '@angular/cdk-experimental/popover-edit';
 
 import {ColumnResizeNotifier, ColumnResizeNotifierSource} from './column-resize-notifier';
 import {HEADER_CELL_SELECTOR, RESIZE_OVERLAY_SELECTOR} from './selectors';
@@ -80,11 +80,7 @@ export abstract class ColumnResize implements AfterViewInit, OnDestroy {
         .subscribe(this.eventDispatcher.headerCellHovered);
       fromEvent<MouseEvent>(element, 'mouseleave')
         .pipe(
-          filter(
-            event =>
-              !!event.relatedTarget &&
-              !_matches(event.relatedTarget as Element, RESIZE_OVERLAY_SELECTOR),
-          ),
+          filter(event => !!(event.relatedTarget as Element)?.matches(RESIZE_OVERLAY_SELECTOR)),
           mapTo(null),
           takeUntil(this.destroyed),
         )
