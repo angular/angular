@@ -1,7 +1,13 @@
 // #docplaster
-import {Injectable, NgModule,} from '@angular/core';
+import {Injectable, NgModule} from '@angular/core';
 import {Title} from '@angular/platform-browser';
-import {RouterModule, RouterStateSnapshot, Routes, TitleStrategy} from '@angular/router';  // CLI imports router
+import {
+  Resolve,
+  RouterModule,
+  RouterStateSnapshot,
+  Routes,
+  TitleStrategy,
+} from '@angular/router';  // CLI imports router
 
 // #docregion page-title
 const routes: Routes = [
@@ -25,7 +31,7 @@ const routes: Routes = [
 ];
 
 @Injectable({providedIn: 'root'})
-export class ResolvedChildATitle {
+export class ResolvedChildATitle implements Resolve<string> {
   resolve() {
     return Promise.resolve('child a');
   }
