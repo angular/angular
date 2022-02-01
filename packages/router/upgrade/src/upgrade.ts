@@ -76,8 +76,9 @@ export function setUpLocationSync(ngUpgrade: UpgradeModule, urlType: 'path'|'has
   ngUpgrade.$injector.get('$rootScope')
       .$on(
           '$locationChangeStart',
-          (event: any, newUrl: string, oldUrl: string, newState?: RestoredState,
-           oldState?: RestoredState) => {
+          (event: any, newUrl: string, oldUrl: string,
+           newState?: {[k: string]: unknown}|RestoredState,
+           oldState?: {[k: string]: unknown}|RestoredState) => {
             // Navigations coming from Angular router have a navigationId state
             // property. Don't trigger Angular router navigation again if it is
             // caused by a URL change from the current Angular router
