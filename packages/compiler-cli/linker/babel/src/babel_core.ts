@@ -48,6 +48,7 @@ if (_babelDefault !== undefined) {
 }
 
 export import types = _typesNamespace;
+export type BabelFile = _babelNamespace.BabelFile;
 export type PluginObj = _babelNamespace.PluginObj;
 export type ConfigAPI = _babelNamespace.ConfigAPI;
 export type NodePath<T = _babelNamespace.Node> = _babelNamespace.NodePath<T>;
