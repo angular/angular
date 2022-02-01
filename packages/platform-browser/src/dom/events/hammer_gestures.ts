@@ -195,7 +195,7 @@ export class HammerGesturesPlugin extends EventManagerPlugin {
     // If Hammer is not present but a loader is specified, we defer adding the event listener
     // until Hammer is loaded.
     if (!(window as any).Hammer && this.loader) {
-      this._loaderPromise = this._loaderPromise || this.loader();
+      this._loaderPromise = this._loaderPromise || zone.runOutsideAngular(() => this.loader!());
       // This `addEventListener` method returns a function to remove the added listener.
       // Until Hammer is loaded, the returned function needs to *cancel* the registration rather
       // than remove anything.
@@ -204,32 +204,34 @@ export class HammerGesturesPlugin extends EventManagerPlugin {
         cancelRegistration = true;
       };
 
-      this._loaderPromise
-          .then(() => {
-            // If Hammer isn't actually loaded when the custom loader resolves, give up.
-            if (!(window as any).Hammer) {
-              if (typeof ngDevMode === 'undefined' || ngDevMode) {
-                this.console.warn(
-                    `The custom HAMMER_LOADER completed, but Hammer.JS is not present.`);
-              }
-              deregister = () => {};
-              return;
-            }
+      zone.runOutsideAngular(
+          () => this._loaderPromise!
+                    .then(() => {
+                      // If Hammer isn't actually loaded when the custom loader resolves, give up.
+                      if (!(window as any).Hammer) {
+                        if (typeof ngDevMode === 'undefined' || ngDevMode) {
+                          this.console.warn(
+                              `The custom HAMMER_LOADER completed, but Hammer.JS is not present.`);
+                        }
+                        deregister = () => {};
+                        return;
+                      }
 
-            if (!cancelRegistration) {
-              // Now that Hammer is loaded and the listener is being loaded for real,
-              // the deregistration function changes from canceling registration to removal.
-              deregister = this.addEventListener(element, eventName, handler);
-            }
-          })
-          .catch(() => {
-            if (typeof ngDevMode === 'undefined' || ngDevMode) {
-              this.console.warn(
-                  `The "${eventName}" event cannot be bound because the custom ` +
-                  `Hammer.JS loader failed.`);
-            }
-            deregister = () => {};
-          });
+                      if (!cancelRegistration) {
+                        // Now that Hammer is loaded and the listener is being loaded for real,
+                        // the deregistration function changes from canceling registration to
+                        // removal.
+                        deregister = this.addEventListener(element, eventName, handler);
+                      }
+                    })
+                    .catch(() => {
+                      if (typeof ngDevMode === 'undefined' || ngDevMode) {
+                        this.console.warn(
+                            `The "${eventName}" event cannot be bound because the custom ` +
+                            `Hammer.JS loader failed.`);
+                      }
+                      deregister = () => {};
+                    }));
 
       // Return a function that *executes* `deregister` (and not `deregister` itself) so that we
       // can change the behavior of `deregister` once the listener is added. Using a closure in
