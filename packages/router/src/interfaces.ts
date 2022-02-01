@@ -302,7 +302,7 @@ export type CanDeactivateFn<T> =
  *   resolve(
  *     route: ActivatedRouteSnapshot,
  *     state: RouterStateSnapshot
- *   ): Observable<any>|Promise<any>|any {
+ *   ): Observable<Hero>|Promise<Hero>|Hero {
  *     return this.service.getHero(route.paramMap.get('id'));
  *   }
  * }
