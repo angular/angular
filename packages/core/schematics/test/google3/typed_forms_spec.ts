@@ -113,10 +113,10 @@ describe('Google3 typedForms TSLint rule', () => {
          anySymbolName}, AbstractControl, FormArray, FormBuilder, FormControl as FC, FormGroup } from '@angular/forms';`,
      `private _control = new FC<${anySymbolName}>(42)`,
      `private _group = new FormGroup<${anySymbolName}>({})`,
-     `private _array = new FormArray<${anySymbolName}[]>([])`,
+     `private _array = new FormArray<${anySymbolName}>([])`,
      `const fc2 = new FC<${anySymbolName}>(0)`, `const c = this.fb.control<${anySymbolName}>(42)`,
      `const g = this.fb.group<${anySymbolName}>({one: this.fb.control<${anySymbolName}>('')})`,
-     `const a = this.fb.array<${anySymbolName}[]>([42])`]
+     `const a = this.fb.array<${anySymbolName}>([42])`]
         .forEach(t => expect(getFile(`/index.ts`)).toContain(t));
   });
 });
