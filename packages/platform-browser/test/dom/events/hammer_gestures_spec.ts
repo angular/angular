@@ -5,8 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {NgZone} from '@angular/core';
-import {fakeAsync, inject, tick} from '@angular/core/testing';
+import {ApplicationRef, NgZone} from '@angular/core';
+import {fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
 import {EventManager} from '@angular/platform-browser';
 import {HammerGestureConfig, HammerGesturesPlugin,} from '@angular/platform-browser/src/dom/events/hammer_gestures';
 
@@ -67,6 +67,7 @@ import {HammerGestureConfig, HammerGesturesPlugin,} from '@angular/platform-brow
       }));
 
       let loaderCalled = 0;
+      let loaderIsCalledInAngularZone: boolean|null = null;
 
       beforeEach(() => {
         originalHammerGlobal = (window as any).Hammer;
@@ -79,6 +80,7 @@ import {HammerGestureConfig, HammerGesturesPlugin,} from '@angular/platform-brow
 
         loader = () => {
           loaderCalled++;
+          loaderIsCalledInAngularZone = NgZone.isInAngularZone();
           return new Promise((resolve, reject) => {
             resolveLoader = resolve;
             failLoader = reject;
@@ -168,6 +170,23 @@ import {HammerGestureConfig, HammerGesturesPlugin,} from '@angular/platform-brow
            expect(fakeConsole.warn)
                .toHaveBeenCalledWith(
                    `The custom HAMMER_LOADER completed, but Hammer.JS is not present.`);
+         }));
+
+      it('should call the loader outside of the Angular zone', fakeAsync(() => {
+           const ngZone = TestBed.inject(NgZone);
+           // Unit tests are being run in a ProxyZone, thus `addEventListener` is called within the
+           // ProxyZone. In real apps, `addEventListener` is called within the Angular zone; we
+           // mimic that behaviour by entering the Angular zone.
+           ngZone.run(() => plugin.addEventListener(someElement, 'swipe', () => {}));
+
+           const appRef = TestBed.inject(ApplicationRef);
+           spyOn(appRef, 'tick');
+
+           resolveLoader();
+           tick();
+
+           expect(appRef.tick).not.toHaveBeenCalled();
+           expect(loaderIsCalledInAngularZone).toEqual(false);
          }));
     });
   });
