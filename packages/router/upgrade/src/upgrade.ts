@@ -84,8 +84,8 @@ export function setUpLocationSync(ngUpgrade: UpgradeModule, urlType: 'path'|'has
             // navigation.
             const currentNavigationId = router.getCurrentNavigation()?.id;
             const newStateNavigationId = newState?.navigationId;
-            if (newStateNavigationId !== undefined ||
-                Number(newStateNavigationId) === currentNavigationId) {
+            if (newStateNavigationId !== undefined &&
+                newStateNavigationId === currentNavigationId) {
               return;
             }
 
