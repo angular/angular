@@ -228,7 +228,6 @@ def _ngc_tsconfig(ctx, files, srcs, **kwargs):
         "generateNgSummaryShims": True if generate_ve_shims else False,
         "fullTemplateTypeCheck": ctx.attr.type_check,
         "strictTemplates": ctx.attr.strict_templates,
-        "_extendedTemplateDiagnostics": ctx.attr.experimental_extended_template_diagnostics,
         "compilationMode": compilation_mode,
         # In Google3 we still want to use the symbol factory re-exports in order to
         # not break existing apps inside Google. Unlike Bazel, Google3 does not only
