@@ -1,3 +1,34 @@
+<a name="13.2.1"></a>
+# 13.2.1 (2022-02-02)
+### animations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [4644886aaf](https://github.com/angular/angular/commit/4644886aaf96c9da513cc7a2c2568254a11c8a4b) | perf | remove no longer needed CssKeyframes classes ([#44903](https://github.com/angular/angular/pull/44903)) ([#44919](https://github.com/angular/angular/pull/44919)) |
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b4e4617807](https://github.com/angular/angular/commit/b4e4617807a8ef97b6423e6debfe504f86aa506c) | fix | include query parameters for open HTTP requests in `verify` ([#44917](https://github.com/angular/angular/pull/44917)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [0778e6f7d7](https://github.com/angular/angular/commit/0778e6f7d79080124c240122acd9ff5ffffc74f5) | fix | accept nullish coalescing operator for any and unknown types ([#44862](https://github.com/angular/angular/pull/44862)) |
+| [07185f4ed1](https://github.com/angular/angular/commit/07185f4ed1ac7071af62a65d8a5391ca28b03205) | fix | enable nullish coalescing check only with `strictNullChecks` ([#44862](https://github.com/angular/angular/pull/44862)) |
+| [4a5ad1793f](https://github.com/angular/angular/commit/4a5ad1793f91ef5375146b4ead9929c8a939746e) | fix | ensure casing of logical paths is preserved ([#44798](https://github.com/angular/angular/pull/44798)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [7ec482d9c2](https://github.com/angular/angular/commit/7ec482d9c2292d6370f7a2da9addf2abb8bb21bb) | fix | Add back support for namespace URIs in createElement of dom renderer ([#44914](https://github.com/angular/angular/pull/44914)) |
+| [250dc40a46](https://github.com/angular/angular/commit/250dc40a46797446bf3328a58b9b1a4d8057b1d6) | fix | flush delayed scoping queue while setting up TestBed ([#44814](https://github.com/angular/angular/pull/44814)) |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [1aebbf8714](https://github.com/angular/angular/commit/1aebbf8714b9cd3c3b5844065c5b64240c05b37d) | fix | ensure OnPush ancestors are marked dirty when the promise resolves ([#44886](https://github.com/angular/angular/pull/44886)) |
+| [6b7fffcbeb](https://github.com/angular/angular/commit/6b7fffcbeb08ce77aef1d83de354ca7266600c6f) | fix | Update the typed forms migration schematic to find all files. ([#44881](https://github.com/angular/angular/pull/44881)) |
+## Special Thanks
+Alan, Andrew Kushnir, Andrew Scott, Aristeidis Bampakos, Arjen, Daniel Díaz, David Shevitz, Doug Parker, Dylan Hunn, Esteban Gehring, George Kalpakas, Jessica Janiuk, JoostK, Juri Strumpflohner, Lee Robinson, Maarten Tibau, Paul Gschwendtner, Theodore Brown, arturovt, dario-piotrowicz, fru2, markostanimirovic and mgechev
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.0.0-next.0"></a>
 # 14.0.0-next.0 (2022-01-26)
 ### language-service
