@@ -64,7 +64,7 @@ runInEachFileSystem(() => {
       const dtsReader = new DtsMetadataReader(checker, reflectionHost);
       const metaReader = new CompoundMetadataReader([metaRegistry, dtsReader]);
       const scopeRegistry = new LocalModuleScopeRegistry(
-          metaRegistry, new MetadataDtsModuleScopeResolver(dtsReader, null),
+          metaRegistry, metaReader, new MetadataDtsModuleScopeResolver(dtsReader, null),
           new ReferenceEmitter([]), null);
       const refEmitter = new ReferenceEmitter([new LocalIdentifierStrategy()]);
       const injectableRegistry = new InjectableClassRegistry(reflectionHost);

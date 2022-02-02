@@ -90,7 +90,8 @@ export class DecorationAnalyzer {
   dtsModuleScopeResolver =
       new MetadataDtsModuleScopeResolver(this.dtsMetaReader, this.aliasingHost);
   scopeRegistry = new LocalModuleScopeRegistry(
-      this.metaRegistry, this.dtsModuleScopeResolver, this.refEmitter, this.aliasingHost);
+      this.metaRegistry, this.fullMetaReader, this.dtsModuleScopeResolver, this.refEmitter,
+      this.aliasingHost);
   fullRegistry = new CompoundMetadataRegistry([this.metaRegistry, this.scopeRegistry]);
   evaluator =
       new PartialEvaluator(this.reflectionHost, this.typeChecker, /* dependencyTracker */ null);
