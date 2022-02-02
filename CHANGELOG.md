@@ -1,3 +1,34 @@
+<a name="13.2.1"></a>
+# 13.2.1 "vinyl-viola" (2022-02-02)
+### cdk
+| Commit | Type | Description |
+| -- | -- | -- |
+| [70d1634e70](https://github.com/angular/components/commit/70d1634e70d3fd61669b7d9680560615b478b87d) | fix | **a11y:** allow for multiple browser-generated description containers ([#23507](https://github.com/angular/components/pull/23507)) |
+### material
+| Commit | Type | Description |
+| -- | -- | -- |
+| [d8ddfb04ca](https://github.com/angular/components/commit/d8ddfb04ca8a8622059d0dc01a2a43bd3123fb7f) | fix | **datepicker:** content overflowing when large custom header is provided ([#24255](https://github.com/angular/components/pull/24255)) |
+| [d7fe423a3e](https://github.com/angular/components/commit/d7fe423a3e3f209757792edd5a21a24629850661) | fix | **menu:** adjust overlay size when amount of items changes ([#21457](https://github.com/angular/components/pull/21457)) |
+| [974d330dc8](https://github.com/angular/components/commit/974d330dc8f6601e121f6b7a5f1b480b310f16c5) | fix | **slider:** Ticks updated wrongly if the max property 0 ([#24218](https://github.com/angular/components/pull/24218)) |
+| [a634505190](https://github.com/angular/components/commit/a63450519060850faf83b768fa8af6c77da094cf) | fix | **tabs:** use buttons for paginator ([#14640](https://github.com/angular/components/pull/14640)) |
+### cdk-experimental
+| Commit | Type | Description |
+| -- | -- | -- |
+| [7aff50a6d8](https://github.com/angular/components/commit/7aff50a6d83748fa4d4aff7028dc80aa9ba25441) | fix | **menu:** keep context menus open when mouse is released ([#24308](https://github.com/angular/components/pull/24308)) |
+### material-experimental
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c02c43a2b9](https://github.com/angular/components/commit/c02c43a2b960ce8d23c39167e7bab79bec71d689) | fix | **mdc-button:** align outline color with spec ([#24249](https://github.com/angular/components/pull/24249)) |
+| [5d7d6ea107](https://github.com/angular/components/commit/5d7d6ea1072facfec3be819cdb629f17610f0e46) | perf | **mdc-list:** reduce bundle size ([#24291](https://github.com/angular/components/pull/24291)) |
+### multiple
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b32d8d1624](https://github.com/angular/components/commit/b32d8d16244babdb57f4fad07ed3ccf1615f8c6f) | perf | Remove IE 11 cruft from table, column-resize, and popover-edit. ([#23900](https://github.com/angular/components/pull/23900)) |
+## Special Thanks
+Dmytro Mezhenskyi, Joey Perrott, Karl Seamon, Kristiyan Kostadinov, Miles Malerba, Paul Gschwendtner, Zach Arend and ram
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.0.0-next.0"></a>
 # 14.0.0-next.0 "moss-mansion" (2022-01-26)
 ### material
