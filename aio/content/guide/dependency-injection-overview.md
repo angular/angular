@@ -24,12 +24,12 @@ See the <live-example></live-example> for a working example containing the code 
 
 Before creating dependency injection, you should be familiar with the following:
 
-[Tour of Heroes app and tutorial](turotial)
+[Tour of Heroes app and tutorial](tutorial)
 
 ## Learn about Angular Dependency Injection
 
 <div class="card-container">
-  <a href="guide/dependency-injection-intro" class="docs-card" title="Understanding Dependency Injection">
+  <a href="guide/dependency-injection" class="docs-card" title="Understanding Dependency Injection">
     <section>Understanding Dependency Injection</section>
     <p>Learn how dependency injection works in Angular.</p>
     <p class="card-footer">Introduction to Dependency Injection</p>

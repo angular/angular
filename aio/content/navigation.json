@@ -277,14 +277,44 @@
           "tooltip": "Dependency Injection: creating and injecting services",
           "children": [
             {
+              "url": "guide/dependency-injection-overview",
+              "title": "Dependency injection in Angular",
+              "tooltip": "Dependency injection is a design pattern in which a class requests dependencies from external sources."
+            },          
+            {
               "url": "guide/dependency-injection",
-              "title": "Angular Dependency Injection",
+              "title": "Understanding Dependency Injection",
               "tooltip": "Angular's dependency injection system creates and delivers dependent services to Angular-created classes."
             },
             {
+              "url": "guide/creating-injectable-service",
+              "title": "Creating an injectable service",
+              "tooltip": "Example of creating an injectable service."
+            },
+            {
+              "url": "guide/inject-service-in-component",
+              "title": "Injecting services",
+              "tooltip": "Injecting services results in making them visible to a component."
+            },
+            {
+              "url": "guide/inject-service-in-service",
+              "title": "Injecting services in other services",
+              "tooltip": "When a service depends on another service, follow the same pattern as injecting into a component."
+            },
+            {
               "url": "guide/dependency-injection-providers",
-              "title": "DI Providers",
-              "tooltip": "More about the different kinds of providers."
+              "title": "Defining Dependency providers",
+              "tooltip": "A provider factory function is a plain function that Angular can call to create a dependency."
+            },
+            {
+              "url": "guide/inject-object",
+              "title": "Injecting an object",
+              "tooltip": "Example of injecting an object."
+            },
+            {
+              "url": "guide/hierarchical-dependency-injection",
+              "title": "Hierarchical injectors",
+              "tooltip": "Hierarchical dependency injection enables you to share dependencies between different parts of the application only when and if you need to."
             }
           ]
         }

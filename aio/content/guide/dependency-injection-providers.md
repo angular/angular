@@ -1,6 +1,6 @@
 # Defining Dependency providers
 
-In order for Angular to know how to create a dependency, it needs a provider factory function. A provider factory function is a plain function that Angular can call in order to create a dependency. By configuring providers, you can make services available to the parts of your application that need them.
+In order for Angular to know how to create a dependency, it needs a provider factory function. A provider factory function is a plain function that Angular can call to create a dependency. By configuring providers, you can make services available to the parts of your application that need them.
 
 A dependency [provider](guide/glossary#provider) configures an injector with a [DI token](guide/glossary#di-token), which that injector uses to provide the runtime version of a dependency value.
 

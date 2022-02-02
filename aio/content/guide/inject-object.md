@@ -27,13 +27,7 @@ To provide and inject the configuration object, specify the object in the `@NgMo
 
 ## Using an `InjectionToken` object
 
-Define and use an `InjectionToken` object zzfor choosing Define and use an `InjectionToken` object zzfor choosing a provider token for non-class dependencies.
-Define and use an `InjectionToken` object zzfor choosing a provider token for non-class dependencies.
-Define and use an `InjectionToken` object zzfor choosing a provider token for non-class dependencies.
-Define and use an `InjectionToken` object zzfor choosing a provider token for non-class dependencies.
-Define and use an `InjectionToken` object zzfor choosing a provider token for non-class dependencies.
-a provider token for non-class dependencies.
-The following example defines a token, `APP_CONFIG` of the type `InjectionToken`.
+Define and use an `InjectionToken` object for choosing a provider token for non-class dependencies. The following example defines a token, `APP_CONFIG` of the type `InjectionToken`.
 
 <code-example path="dependency-injection/src/app/app.config.ts" region="token" header="src/app/app.config.ts"></code-example>
 
@@ -88,7 +82,7 @@ You inject both `Logger` and `UserService` into the factory provider so the inje
 
 * The `useFactory` field specifies that the provider is a factory function whose implementation is `heroServiceFactory`.
 
-* The `deps` property is an array of [provider tokens](#token).
+* The `deps` property is an array of [provider tokens](dependency-injection-providers#Specifying a provider token).
 The `Logger` and `UserService` classes serve as tokens for their own class providers.
 The injector resolves these tokens and injects the corresponding services into the matching `heroServiceFactory` factory function parameters.
 
