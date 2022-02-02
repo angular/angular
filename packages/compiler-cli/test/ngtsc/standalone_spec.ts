@@ -6,9 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import ts from 'typescript';
+
 import {ErrorCode, ngErrorCode} from '../../src/ngtsc/diagnostics';
 import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
-import {getSourceCodeForDiagnostic, loadStandardTestFiles} from '../../src/ngtsc/testing';
+import {diagnosticToNode, getSourceCodeForDiagnostic, loadStandardTestFiles} from '../../src/ngtsc/testing';
 
 import {NgtscTestEnvironment} from './env';
 
@@ -245,24 +247,154 @@ runInEachFileSystem(() => {
 
       it('should not allow a standalone pipe to be declared in an NgModule', () => {
         env.write('test.ts', `
-              import {Pipe, NgModule} from '@angular/core';
-        
-              @Pipe({
-                name: 'test',
-                standalone: true,
-              })
-              export class TestPipe {}
-      
-              @NgModule({
-                declarations: [TestPipe],
-              })
-              export class TestModule {}
-            `);
+          import {Pipe, NgModule} from '@angular/core';
+    
+          @Pipe({
+            name: 'test',
+            standalone: true,
+          })
+          export class TestPipe {}
+  
+          @NgModule({
+            declarations: [TestPipe],
+          })
+          export class TestModule {}
+        `);
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
         expect(diags[0].code).toBe(ngErrorCode(ErrorCode.NGMODULE_DECLARATION_IS_STANDALONE));
         expect(diags[0].messageText).toContain('Pipe TestPipe is standalone');
         expect(getSourceCodeForDiagnostic(diags[0])).toEqual('TestPipe');
+      });
+
+      it('should allow a standalone component to be imported by an NgModule', () => {
+        env.write('test.ts', `
+          import {Component, NgModule} from '@angular/core';
+        
+          @Component({
+            selector: 'st-cmp',
+            standalone: true,
+            template: 'Test',
+          })
+          export class StandaloneCmp {}
+        
+          @Component({
+            selector: 'test-cmp',
+            template: '<st-cmp></st-cmp>',
+          })
+          export class TestCmp {}
+        
+          @NgModule({
+            declarations: [TestCmp],
+            imports: [StandaloneCmp],
+          })
+          export class TestModule {}
+        `);
+        env.driveMain();
+        expect(env.getContents('test.js')).toContain('directives: [StandaloneCmp]');
+      });
+
+      it('should allow a standalone directive to be imported by an NgModule', () => {
+        env.write('test.ts', `
+          import {Component, Directive, NgModule} from '@angular/core';
+        
+          @Directive({
+            selector: '[st-dir]',
+            standalone: true,
+          })
+          export class StandaloneDir {}
+        
+          @Component({
+            selector: 'test-cmp',
+            template: '<div st-dir></div>',
+          })
+          export class TestCmp {}
+        
+          @NgModule({
+            declarations: [TestCmp],
+            imports: [StandaloneDir],
+          })
+          export class TestModule {}
+        `);
+        env.driveMain();
+        expect(env.getContents('test.js')).toContain('directives: [StandaloneDir]');
+      });
+
+      it('should allow a standalone pipe to be imported by an NgModule', () => {
+        env.write('test.ts', `
+          import {Component, Pipe, NgModule} from '@angular/core';
+        
+          @Pipe({
+            name: 'stpipe',
+            standalone: true,
+          })
+          export class StandalonePipe {
+            transform(value: any): any {
+              return value;
+            }
+          }
+        
+          @Component({
+            selector: 'test-cmp',
+            template: '{{data | stpipe}}',
+          })
+          export class TestCmp {
+            data = 'test';
+          }
+        
+          @NgModule({
+            declarations: [TestCmp],
+            imports: [StandalonePipe],
+          })
+          export class TestModule {}
+        `);
+        env.driveMain();
+        expect(env.getContents('test.js')).toContain('pipes: [StandalonePipe]');
+      });
+
+      it('should error when a standalone entity is exported by an NgModule without importing it first',
+         () => {
+           env.write('test.ts', `
+          import {Component, Directive, NgModule} from '@angular/core';
+
+          @Directive({
+            selector: '[dir]',
+            standalone: true,
+          })
+          export class TestDir {}
+
+          @NgModule({
+            exports: [TestDir],
+          })
+          export class TestModule {}
+        `);
+           const diags = env.driveDiagnostics();
+           expect(diags.length).toBe(1);
+           expect(diags[0].code).toBe(ngErrorCode(ErrorCode.NGMODULE_INVALID_REEXPORT));
+           expect(diags[0].messageText).toContain('it must be imported first');
+           expect(diagnosticToNode(diags[0], ts.isIdentifier).parent.parent.getText())
+               .toEqual('exports: [TestDir]');
+         });
+
+      it('should error when a non-standalone entity is imported into an NgModule', () => {
+        env.write('test.ts', `
+          import {Component, Directive, NgModule} from '@angular/core';
+      
+          @Directive({
+            selector: '[dir]',
+          })
+          export class TestDir {}
+      
+          @NgModule({
+            imports: [TestDir],
+          })
+          export class TestModule {}
+        `);
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toContain('is not standalone');
+        expect(diagnosticToNode(diags[0], ts.isIdentifier).parent.parent.getText())
+            .toEqual('imports: [TestDir]');
       });
     });
   });

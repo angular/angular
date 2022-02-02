@@ -10,8 +10,7 @@ import ts from 'typescript';
 
 import {ErrorCode, ngErrorCode} from '../../src/ngtsc/diagnostics';
 import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
-import {loadStandardTestFiles} from '../../src/ngtsc/testing';
-import {getTokenAtPosition} from '../../src/ngtsc/util/src/typescript';
+import {diagnosticToNode, loadStandardTestFiles} from '../../src/ngtsc/testing';
 
 import {NgtscTestEnvironment} from './env';
 
@@ -382,18 +381,6 @@ runInEachFileSystem(() => {
       });
     });
   });
-
-  function diagnosticToNode<T extends ts.Node>(
-      diagnostic: ts.Diagnostic|ts.DiagnosticRelatedInformation,
-      guard: (node: ts.Node) => node is T): T {
-    const diag = diagnostic as ts.Diagnostic | ts.DiagnosticRelatedInformation;
-    if (diag.file === undefined) {
-      throw new Error(`Expected ts.Diagnostic to have a file source`);
-    }
-    const node = getTokenAtPosition(diag.file, diag.start!);
-    expect(guard(node)).toBe(true);
-    return node as T;
-  }
 });
 
 function findContainingClass(node: ts.Node): ts.ClassDeclaration {

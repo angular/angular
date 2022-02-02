@@ -13,7 +13,7 @@ import {Reference} from '../../imports';
 import {DirectiveMeta, flattenInheritedDirectiveMetadata, MetadataReader} from '../../metadata';
 import {ClassDeclaration} from '../../reflection';
 
-import {ComponentScopeReader} from './component_scope';
+import {ComponentScopeReader} from './api';
 
 /**
  * The scope that is used for type-check code generation of a component template.

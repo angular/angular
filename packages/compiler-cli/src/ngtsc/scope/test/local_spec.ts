@@ -11,9 +11,9 @@ import ts from 'typescript';
 import {Reference, ReferenceEmitter} from '../../imports';
 import {ClassPropertyMapping, CompoundMetadataRegistry, DirectiveMeta, DtsMetadataReader, LocalMetadataRegistry, MetadataRegistry, MetaType, PipeMeta} from '../../metadata';
 import {ClassDeclaration} from '../../reflection';
-import {ScopeData} from '../src/api';
+import {LocalModuleScope, ScopeData} from '../src/api';
 import {DtsModuleScopeResolver} from '../src/dependency';
-import {LocalModuleScope, LocalModuleScopeRegistry} from '../src/local';
+import {LocalModuleScopeRegistry} from '../src/local';
 
 function registerFakeRefs(registry: MetadataRegistry):
     {[name: string]: Reference<ClassDeclaration>} {
@@ -40,7 +40,7 @@ describe('LocalModuleScopeRegistry', () => {
   beforeEach(() => {
     const localRegistry = new LocalMetadataRegistry();
     scopeRegistry = new LocalModuleScopeRegistry(
-        localRegistry, new MockDtsModuleScopeResolver(), refEmitter, null);
+        localRegistry, localRegistry, new MockDtsModuleScopeResolver(), refEmitter, null);
     metaRegistry = new CompoundMetadataRegistry([localRegistry, scopeRegistry]);
   });
 
