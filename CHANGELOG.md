@@ -1,3 +1,371 @@
+<a name="14.0.0-next.1"></a>
+# 14.0.0-next.1 (2022-02-02)
+## Deprecations
+### common
+- The `ngModuleFactory` input of the `NgComponentOutlet` directive is deprecated in favor of a newly added `ngModule` input. The `ngModule` input accepts references to the NgModule class directly, without the need to resolve module factory first.
+### animations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [7a81481fb2](https://github.com/angular/angular/commit/7a81481fb29e94b550db7ad68270eccf26bb2743) | perf | Remove generic objects in favor of Maps ([#44482](https://github.com/angular/angular/pull/44482)) |
+| [6642e3c8fd](https://github.com/angular/angular/commit/6642e3c8fd7d3b5ed22710667b2c41a46f14eda8) | perf | remove no longer needed CssKeyframes classes ([#44903](https://github.com/angular/angular/pull/44903)) |
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c89cf63059](https://github.com/angular/angular/commit/c89cf63059370bba43717483e3d9627499dfe815) | feat | support NgModule as an input to the NgComponentOutlet ([#44815](https://github.com/angular/angular/pull/44815)) |
+| [a2cbffc06f](https://github.com/angular/angular/commit/a2cbffc06f25ea1cb8f1c8aef658f7c213621a07) | fix | include query parameters for open HTTP requests in `verify` ([#44917](https://github.com/angular/angular/pull/44917)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [73c97aea9e](https://github.com/angular/angular/commit/73c97aea9e4a1cb94199272384d5e912d3b0ccd0) | fix | accept nullish coalescing operator for any and unknown types ([#44862](https://github.com/angular/angular/pull/44862)) |
+| [366e424a73](https://github.com/angular/angular/commit/366e424a7382cdbd72f5d1c3460fe2992fb72941) | fix | enable nullish coalescing check only with `strictNullChecks` ([#44862](https://github.com/angular/angular/pull/44862)) |
+| [d82c957a26](https://github.com/angular/angular/commit/d82c957a260f4e4a341e7036355a764a5e98d3ca) | fix | ensure casing of logical paths is preserved ([#44798](https://github.com/angular/angular/pull/44798)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [5686f68fde](https://github.com/angular/angular/commit/5686f68fde514a7daf760aacc1fe52a7cb80b3af) | fix | Add back support for namespace URIs in createElement of dom renderer ([#44914](https://github.com/angular/angular/pull/44914)) |
+| [39c614c438](https://github.com/angular/angular/commit/39c614c4389fb48c8fc5a51329e9169a0139c4aa) | fix | flush delayed scoping queue while setting up TestBed ([#44814](https://github.com/angular/angular/pull/44814)) |
+### devtools
+| Commit | Type | Description |
+| -- | -- | -- |
+| [ddeacebd7b](https://github.com/angular/angular/commit/ddeacebd7b24f9b88a618bb9f315cb1fd589039f) | feat | add a demo pipe with ngOnDestroy |
+| [06c184aa48](https://github.com/angular/angular/commit/06c184aa484c16202ac4d042d7ff2a6cf05b0fa5) | feat | add animations in the bar chart |
+| [8f8268ff1e](https://github.com/angular/angular/commit/8f8268ff1e8ded88c0ed29d5dae62034d4516b77) | feat | add dark mode styling to flame graph rectangle strokes |
+| [fd711e51d7](https://github.com/angular/angular/commit/fd711e51d7ddf6dab8958c6bdca9373cefce5a4e) | feat | add demo app which does not use zones |
+| [1cb3967670](https://github.com/angular/angular/commit/1cb3967670e9657f75a05457249f236a641ab4da) | feat | add detected application angular version to top right next to tabs (rangle/angular-devtools[#4](https://github.com/angular/angular/pull/4)) |
+| [691e495b6b](https://github.com/angular/angular/commit/691e495b6bb841cd1acae8aea02eaf29dc839975) | feat | add duration field to the ProfilerFrame |
+| [7ea441719f](https://github.com/angular/angular/commit/7ea441719f38ed460ee95c9bb3d0c0d2f43a95bc) | feat | add extra information to popups |
+| [ff99b9bb03](https://github.com/angular/angular/commit/ff99b9bb033b2bfac04251851bec752b6adac19e) | feat | add filtering functionality in the profiler |
+| [f848ef8d1b](https://github.com/angular/angular/commit/f848ef8d1bcf78626fdca6d50407d1949c28cf4d) | feat | add functionality for visualizing change detection |
+| [4b9031263f](https://github.com/angular/angular/commit/4b9031263fc7dcff67bc8727842afcdff49f3685) | feat | add ivy check |
+| [38afb5c90b](https://github.com/angular/angular/commit/38afb5c90b6255ba150d4849558b5cd6d77207f7) | feat | Add margin to tree nodes so that they are not stacked on each other directly |
+| [f91590a509](https://github.com/angular/angular/commit/f91590a509afc9620b268a8372df86c8ae2a538c) | feat | add MIT license (rangle/angular-devtools[#65](https://github.com/angular/angular/pull/65)) |
+| [25016b8810](https://github.com/angular/angular/commit/25016b881070e14f023e4c0fe69bda0c595c7f14) | feat | add multiple frame selection pointers |
+| [a42eee68cc](https://github.com/angular/angular/commit/a42eee68cc4c20e52975ecf26cb68fc6d408a90a) | feat | add opening instructions |
+| [b1d0f0a7d4](https://github.com/angular/angular/commit/b1d0f0a7d4daae10867f531267e9afa743095df9) | feat | add overflow-x auto to breadcrumbs tab |
+| [a5a942b732](https://github.com/angular/angular/commit/a5a942b732b332bc3f846add7fa6f225bad2532d) | feat | add selection of multiple frames with shift |
+| [becdcca64a](https://github.com/angular/angular/commit/becdcca64a438f873ea1c51d10c96a734726c152) | feat | add support for Angular elements |
+| [8c68a645c2](https://github.com/angular/angular/commit/8c68a645c27d26a6c46629e80e5214f6a1353aa1) | feat | add tooltip in bar chart |
+| [016a1e54d7](https://github.com/angular/angular/commit/016a1e54d7328f83c73f6e218e22929b2d0c59f0) | feat | add top-level element to allow zoom out with multi roots |
+| [dceb8d304c](https://github.com/angular/angular/commit/dceb8d304c892a81027fd42b284ca80d8c6d758b) | feat | add versioning to import/export functionality |
+| [e4784bc3b0](https://github.com/angular/angular/commit/e4784bc3b079149b8e718de0e70b732c0afcac9e) | feat | add view source button to properties view tab (rangle/angular-devtools[#42](https://github.com/angular/angular/pull/42)) |
+| [059ef511d0](https://github.com/angular/angular/commit/059ef511d02a1b75494fac63768f6b99b514d0a2) | feat | added cypress to run e2e tests (rangle/angular-devtools[#45](https://github.com/angular/angular/pull/45)) |
+| [a20b4ea5c7](https://github.com/angular/angular/commit/a20b4ea5c7a8a76a598e85f7e382b79742538a9b) | feat | added prettier for formatting code on pre-commit (rangle/angular-devtools[#50](https://github.com/angular/angular/pull/50)) |
+| [75cb030a84](https://github.com/angular/angular/commit/75cb030a840a1ad4fb0ff1a131b463318cf2fee6) | feat | adding bar chart for timeline |
+| [2b3acd6a06](https://github.com/angular/angular/commit/2b3acd6a0681679e2e9b2e5207187c1487799250) | feat | adding bar graph details section |
+| [556997abab](https://github.com/angular/angular/commit/556997abab3e4041f97189d90c238bc8a4597a37) | feat | adding bargraph formatter |
+| [637c6de204](https://github.com/angular/angular/commit/637c6de20440bcc5ea5f4c396027f1ae24368257) | feat | adding bargraph visualization to timeline |
+| [2b48785931](https://github.com/angular/angular/commit/2b48785931895a4d1d43ada8089501a2d2104d06) | feat | adding bargraph visualizer |
+| [f06aedc28c](https://github.com/angular/angular/commit/f06aedc28c2542aef0010a8ff09dfce65aea5063) | feat | adding icon popups displaying app status (rangle/angular-devtools[#70](https://github.com/angular/angular/pull/70)) |
+| [9872baa24f](https://github.com/angular/angular/commit/9872baa24fc9bc7735324ef274081c3ffc2529d8) | feat | adding info popup (rangle/angular-devtools[#739](https://github.com/angular/angular/pull/739)) |
+| [4add5238dd](https://github.com/angular/angular/commit/4add5238dded9c4b5649908176476c93d52f8362) | feat | adding material toolbar |
+| [4320221815](https://github.com/angular/angular/commit/432022181562439e34d574cd321992b7e4d2db65) | feat | adding parent hierarchy list view |
+| [c6fd1895c5](https://github.com/angular/angular/commit/c6fd1895c5d47318998a6d33655b69251c33fb0d) | feat | adding parent hierarchy to bar graph formater |
+| [aaae3c4796](https://github.com/angular/angular/commit/aaae3c47968e209973053305668fda67c79e69db) | feat | Adding parent nodes for selected component (rangle/angular-devtools[#34](https://github.com/angular/angular/pull/34)) |
+| [0b991bdc0f](https://github.com/angular/angular/commit/0b991bdc0f10c1aad11c805bca0da5eb49d5e226) | feat | adding piechart for profiler |
+| [f28dae22ec](https://github.com/angular/angular/commit/f28dae22ec20092a3fa6e181e3a47229c3cd8596) | feat | adding router tree |
+| [15d43c787d](https://github.com/angular/angular/commit/15d43c787d19cb150e897a50e3d331e181ea22c9) | feat | adding theme service |
+| [f6f06365c0](https://github.com/angular/angular/commit/f6f06365c01f42ba520efb6d2aa5ac7aeb7d4ee5) | feat | adding theme toggle button |
+| [ee7bc547d1](https://github.com/angular/angular/commit/ee7bc547d1784b76f8f605195e818988da344efb) | feat | adding tooltips for icons |
+| [b552687298](https://github.com/angular/angular/commit/b552687298dec0be7d8038ddf80044b40c22616a) | feat | Allow ctrl/meta click to select/deselect multiple frames |
+| [dbcf91bbe0](https://github.com/angular/angular/commit/dbcf91bbe080ccad6f7940c0e77b155b9137ce25) | feat | allow user to click on component properties of type HTMLElement to inspect the element in the browser |
+| [67a89a02d6](https://github.com/angular/angular/commit/67a89a02d63b963305b3a36530831058404744fa) | feat | allow user to click on function properties to inspect that function in the chrome devtools (rangle/angular-devtools[#234](https://github.com/angular/angular/pull/234)) |
+| [29db8d5a8b](https://github.com/angular/angular/commit/29db8d5a8bcf070f08083791a0ddbae05ba57401) | feat | allow user to edit props |
+| [285b5dbe91](https://github.com/angular/angular/commit/285b5dbe91329a35ff49bdaf95087bfaf1f28212) | feat | allow user to view change detection strategy and view encapsulation of a component in the property explorer (rangle/angular-devtools[#257](https://github.com/angular/angular/pull/257)) |
+| [60a4e56a95](https://github.com/angular/angular/commit/60a4e56a95cfb6584c7d0ad2054ee35fec24649e) | feat | apply style to console reference keys displayed on nodes |
+| [6ddac7c051](https://github.com/angular/angular/commit/6ddac7c051f40bb38ca34b4ff7340e89e7c61cd1) | feat | Applying consistent styling |
+| [c1366d460d](https://github.com/angular/angular/commit/c1366d460d0180656924bd4724d203ca29f12d13) | feat | change background colour to align with chrome devtools |
+| [ffe86bb739](https://github.com/angular/angular/commit/ffe86bb739ef3c98b083f83fca0e3135d04de5a9) | feat | change flamegraph component input to have it be responsive by default |
+| [6a6af6615a](https://github.com/angular/angular/commit/6a6af6615a85dffa5a772d2678e6ed51ea41582a) | feat | change trimComponents name; always include nativeElement in buildDirectiveForest |
+| [363f7954c4](https://github.com/angular/angular/commit/363f7954c4b5216e9c03529dceb81f6cb462dedf) | feat | clicking on element with component inspector enabled will select that component in the directive explorer |
+| [74eb888efe](https://github.com/angular/angular/commit/74eb888efea8ce4a5a1395f9b41574889df6e8fd) | feat | create ConsoleReferenceNode interface to fix typing issues in selected-component.ts |
+| [9500ec6617](https://github.com/angular/angular/commit/9500ec6617a394cea761b7cf9cfa0857085a6a30) | feat | create copy to clipboard button for properties view wrapper (rangle/angular-devtools[#38](https://github.com/angular/angular/pull/38)) |
+| [26fb1f4d4b](https://github.com/angular/angular/commit/26fb1f4d4be31b3fad772b5a4903a767e59cd8c5) | feat | create message bus event for component selection |
+| [2b1c7fb568](https://github.com/angular/angular/commit/2b1c7fb568210353122e2b91e0fa7a21039468f2) | feat | create scroll buttons for breadcrumb feature |
+| [2d34a209a6](https://github.com/angular/angular/commit/2d34a209a6efa2cefe82bc6d678caccbb0500be0) | feat | create seperate property data sources for inputs/outputs/state |
+| [9bdaa57a74](https://github.com/angular/angular/commit/9bdaa57a74879cb1db00613ddd2c200ff5b65618) | feat | create shared-utils project library to house functions and classes that can be used by any other project |
+| [18214a9b99](https://github.com/angular/angular/commit/18214a9b99c54e47b91905ec071698b71e848d0a) | feat | create webtree graph formatter and pass the formatted data through to the web tree graph visualizer |
+| [015d98e2c0](https://github.com/angular/angular/commit/015d98e2c0451373a881a248e5d16bbf7793e578) | feat | decrease width of split pane to match the rest of the application |
+| [dba943a4e2](https://github.com/angular/angular/commit/dba943a4e21a5af21bf8abfd53f93afe8f4cb91b) | feat | detect directives added to non-elements |
+| [73dff6f002](https://github.com/angular/angular/commit/73dff6f002db87eb44954ea8a1ec9146084be0f0) | feat | disable devtools for production applications |
+| [a7ea578507](https://github.com/angular/angular/commit/a7ea57850758513b723835bccef014df7a063ee6) | feat | display latest commit SHA in application (rangle/angular-devtools[#243](https://github.com/angular/angular/pull/243)) |
+| [ecfc03a2d2](https://github.com/angular/angular/commit/ecfc03a2d2095f827736ae1e63809ebe85eb5540) | feat | don't show comment nodes by default |
+| [b411ec64ed](https://github.com/angular/angular/commit/b411ec64edef93833f15d28411654ecb42f029a1) | feat | expand node ancestors on component inspection |
+| [f46e9c9d76](https://github.com/angular/angular/commit/f46e9c9d7636bd90071e9b0b5f802d632e6cfdb3) | feat | fix component styling for tooltip; add overflow  to tree wrapper; truncate long tree labels |
+| [9344cb7dfc](https://github.com/angular/angular/commit/9344cb7dfcb33569ccac58686b11a476965417fd) | feat | focus search input when icon is clicked |
+| [8d00e44d9b](https://github.com/angular/angular/commit/8d00e44d9b803733ea6896d9cb97a546c0c6214d) | feat | hide router tree if router config isn't found |
+| [a8a17df3af](https://github.com/angular/angular/commit/a8a17df3af43fbd9522650ba09417e642d3d6585) | feat | highlight element when hovering the breadcrumbs |
+| [07344cd4b3](https://github.com/angular/angular/commit/07344cd4b39849eb17f331fe089176515efa9441) | feat | implement "force refresh" when the user presses the refresh button |
+| [dd71a52466](https://github.com/angular/angular/commit/dd71a524662c2d5078ef403e1700880b2e2e55a1) | feat | Implement basic configuration UI and use it to toggle Timing API |
+| [1d55622f3a](https://github.com/angular/angular/commit/1d55622f3a66209661bbb4d384378160831a3cfd) | feat | implement component selection functionality for $ng0 - $ng4 similarly to how chrome devtools does with html elements |
+| [da690ca84a](https://github.com/angular/angular/commit/da690ca84afadd7536143390f6df492eaafec9fc) | feat | Implement Component/Directive Search (rangle/angular-devtools[#25](https://github.com/angular/angular/pull/25)) |
+| [3b0f52a131](https://github.com/angular/angular/commit/3b0f52a131923af9b537d036c0607019a54faf11) | feat | implement dark mode styling for loading screen |
+| [6f338f7066](https://github.com/angular/angular/commit/6f338f7066ae340deecedb1643a7047d38b7221b) | feat | implement drag to scroll functionality to improve frame navigation (rangle/angular-devtools[#716](https://github.com/angular/angular/pull/716)) |
+| [605214c59d](https://github.com/angular/angular/commit/605214c59dcc68acba0b3efc6c33adba0c2df543) | feat | implement import/export json functionality for profiler |
+| [8ea84d5776](https://github.com/angular/angular/commit/8ea84d577642bea4f379cd2d2cff6fe0f207681c) | feat | implement input/output/state preview functionality with the reworked property explorer |
+| [21454e07a8](https://github.com/angular/angular/commit/21454e07a8b07bf3788a243173723356f1c72615) | feat | implement invisible gutter technique from chrome devtools |
+| [d0a1773175](https://github.com/angular/angular/commit/d0a17731758175e26774fb6e152116fbf824b8bd) | feat | implement material expansion panel with drag functionality for each property tree |
+| [9d9518e67e](https://github.com/angular/angular/commit/9d9518e67e81f11ae364117c11b7ef4d68d4053c) | feat | implement negation in the filtering query language |
+| [ff45fbd075](https://github.com/angular/angular/commit/ff45fbd075ba89bf573cab5deda95731371e8344) | feat | implement output profiling |
+| [534809cf85](https://github.com/angular/angular/commit/534809cf856243e74b85af4231903fdf84f63782) | feat | implement profiler with new framework APIs |
+| [b7b99b8532](https://github.com/angular/angular/commit/b7b99b8532394bba7e27b7f5704ef4baa83afa7c) | feat | implement proper diffing in the explorer |
+| [059da5d908](https://github.com/angular/angular/commit/059da5d90832078e704ecac89684b3abaa979fbd) | feat | implement reload message bus event that calls window.location.reload inside of the dev tools |
+| [9be250dd62](https://github.com/angular/angular/commit/9be250dd62e8f965b5f95e80c244657b615c851e) | feat | Implement selected component shortcut similar to Augury to select the component host |
+| [78b3d39810](https://github.com/angular/angular/commit/78b3d39810c5f84a3759360e93bc1564486601db) | feat | implement split pane so that user can resize properties view tab (rangle/angular-devtools[#60](https://github.com/angular/angular/pull/60)) |
+| [07cd82a10c](https://github.com/angular/angular/commit/07cd82a10c86f5bbf9dba4e629905f11e19660f2) | feat | implement time travel player functionality (rangle/angular-devtools[#46](https://github.com/angular/angular/pull/46)) |
+| [967bd3cf8e](https://github.com/angular/angular/commit/967bd3cf8eebfbfc9302cd1b687b6500ad0c3b5e) | feat | improve output formatting |
+| [83f41800cf](https://github.com/angular/angular/commit/83f41800cf639c3b496e709f8ec764e474807829) | feat | increase gutter width to 2.5px |
+| [b5e95ce468](https://github.com/angular/angular/commit/b5e95ce468d290dbc7b5b807c48fe3f465e4504c) | feat | inform user that devtools has limited functionality in production mode |
+| [6c71658dc0](https://github.com/angular/angular/commit/6c71658dc0a21df29744fa9041e70017bd846652) | feat | install webtree graph library |
+| [a00c19f101](https://github.com/angular/angular/commit/a00c19f1010792a0ddc73c0c437e5a5052567aac) | feat | introduce directive records |
+| [ac2cd3757b](https://github.com/angular/angular/commit/ac2cd3757b64b0e8a213c2f0ea4e6accc741f596) | feat | introduce streamed visualization of the profiling data |
+| [df5857ddc2](https://github.com/angular/angular/commit/df5857ddc27c107f208f704f9e6be3810e63ee42) | feat | introduce timing API support |
+| [0579e98a1c](https://github.com/angular/angular/commit/0579e98a1ce5a29dc2d3b9b3bee421129253539e) | feat | introduce virtual scrolling in directive explorer |
+| [758d0a82fe](https://github.com/angular/angular/commit/758d0a82fe19a41e38cff797d72f5af615aada2a) | feat | keep unique index for all components and directives |
+| [8d319dd486](https://github.com/angular/angular/commit/8d319dd48622f4e40b55d3beba70e6a7de811035) | feat | make devtools fail elegantly for view engine apps |
+| [a73f575d6d](https://github.com/angular/angular/commit/a73f575d6d6c9a6dac9ce8975bfc1ca64e6ff51a) | feat | make tab menu action button icons smaller |
+| [ee7d8e58c6](https://github.com/angular/angular/commit/ee7d8e58c613a04ba3891025e9bb3f9a8fb81602) | feat | making small frames clickable |
+| [3d9ac47d12](https://github.com/angular/angular/commit/3d9ac47d127946dce478b7bb11b5586fcef3ece3) | feat | merge frames in the range |
+| [957034bf93](https://github.com/angular/angular/commit/957034bf93c9be0128d62078c22649cde20e63de) | feat | migrate devtools and demo app to scss for styling |
+| [21eb190f74](https://github.com/angular/angular/commit/21eb190f74bbbe426115dfbf1631c139a01cd13f) | feat | move highlighter placement - no more overlap (rangle/angular-devtools[#451](https://github.com/angular/angular/pull/451)) |
+| [7b4e830d88](https://github.com/angular/angular/commit/7b4e830d882b456ea8157ed4c0fccb639ca04b04) | feat | new icon & active status |
+| [8b9181724b](https://github.com/angular/angular/commit/8b9181724bcf9d5d9aa77bda03e2d1214673221d) | feat | only show console reference for the currently selected element to reduce noise |
+| [a6148608c3](https://github.com/angular/angular/commit/a6148608c33614331ae9fb4b960824ec3086c657) | feat | open expansion panels by default; apply styling to expansion header |
+| [54c14c251a](https://github.com/angular/angular/commit/54c14c251aa17a346b1651b7e4827982dd5c702c) | feat | optionally show change detection duration only when run |
+| [6d0c4093c2](https://github.com/angular/angular/commit/6d0c4093c2425aa9fcfee07b234b5cd588fcc022) | feat | pass each datasource through to it's own material tree component |
+| [f8bb080157](https://github.com/angular/angular/commit/f8bb0801578f498ca531873516d778007a1544d3) | feat | pass input/output data through from application to devtools UI |
+| [c44f00b78e](https://github.com/angular/angular/commit/c44f00b78e361697f32a558ef4f3773ae42ad3f9) | feat | patch life cycle hooks |
+| [502ab94003](https://github.com/angular/angular/commit/502ab940033cb8b0dcb638bf378175fa34bb71d3) | feat | remove timeout and add new loading/error state message (rangle/angular-devtools[#291](https://github.com/angular/angular/pull/291)) |
+| [07632cf7bc](https://github.com/angular/angular/commit/07632cf7bca0760a30b2ef8e08fb6ff54a798440) | feat | renaming app component to app todo component (rangle/angular-devtools[#195](https://github.com/angular/angular/pull/195)) |
+| [b3a948eca3](https://github.com/angular/angular/commit/b3a948eca35fdf617b667c0bc265b2daf35b0293) | feat | renaming timeline graph options |
+| [4ea0d91dc5](https://github.com/angular/angular/commit/4ea0d91dc5d2d1bc11cabc5b5a81bf02d09c1b4a) | feat | reorient split pane when screen width goes under 500 px |
+| [a5beefb477](https://github.com/angular/angular/commit/a5beefb477f5b4fd09cacd0194f00fc2d3396650) | feat | rerender tree on resize to keep tree within view |
+| [5b3ecb3ea2](https://github.com/angular/angular/commit/5b3ecb3ea2b3aa82794a444f46896efaac4e589d) | feat | scroll profiler frame info tab independently of active visualizer |
+| [3e05c31979](https://github.com/angular/angular/commit/3e05c3197980c7e61e4e3c82ebd1a84b12c4c785) | feat | select dom element on double click of node (rangle/angular-devtools[#51](https://github.com/angular/angular/pull/51)) |
+| [be7a0c25cb](https://github.com/angular/angular/commit/be7a0c25cb09a331e9a246809dfc98d404b5021e) | feat | set showNode option to show most nodes in the treegraph (rangle/angular-devtools[#219](https://github.com/angular/angular/pull/219)) |
+| [2bfb96d5bb](https://github.com/angular/angular/commit/2bfb96d5bb07bd859ea445ba98e2336789bced24) | feat | setting bar graph as default option |
+| [f2998980f3](https://github.com/angular/angular/commit/f2998980f375c0166da0283aafc4ec552af909ee) | feat | show frame drop in the timeline (rangle/angular-devtools[#62](https://github.com/angular/angular/pull/62)) |
+| [a25cd0ed15](https://github.com/angular/angular/commit/a25cd0ed151b78f5a46c27e00762f78f29b15198) | feat | show the console reference key on each selected element |
+| [342ea4ebd7](https://github.com/angular/angular/commit/342ea4ebd734ef17b10506cdfad9589a871de7dc) | feat | show timeline bars color dependant on the framerate |
+| [0b24fe08f5](https://github.com/angular/angular/commit/0b24fe08f56791104cc00acdf465339fba5fec62) | feat | simplify component styling for tabs component |
+| [7dc1a35a62](https://github.com/angular/angular/commit/7dc1a35a62f0beb90593e70d5faf6b307fd94d2b) | feat | sort directive properties by name |
+| [e7db0d3f78](https://github.com/angular/angular/commit/e7db0d3f78643c451a3751b21d12b79cb79691ce) | feat | split apart visualizing views; create new components for each visualizer component |
+| [a93cfdca81](https://github.com/angular/angular/commit/a93cfdca813b8ed0c86816e4ac53fea27a5aae7c) | feat | support trusted types for script injection |
+| [a3ac38041f](https://github.com/angular/angular/commit/a3ac38041fe9b002f71f1c8bc11c522f9560bb59) | feat | synchronizing highlight between source application and component in presentation tree (rangle/angular-devtools[#35](https://github.com/angular/angular/pull/35)) |
+| [c29c041ec8](https://github.com/angular/angular/commit/c29c041ec8131cbf408e9062b45cc479236df1d9) | feat | themeing breadcrums |
+| [d638f9b172](https://github.com/angular/angular/commit/d638f9b1726cdb114b50a4264c699fdcc0f81ee3) | feat | update to latest flamegraph |
+| [b4dc6f7bea](https://github.com/angular/angular/commit/b4dc6f7bea8c6f82e670edd23c60f86013425278) | feat | updating bargraph formatter |
+| [53da6bb0a8](https://github.com/angular/angular/commit/53da6bb0a8a09bc4bce14497c39914b4488a937a) | feat | updating record formatter to get directive values |
+| [b5d30d1c19](https://github.com/angular/angular/commit/b5d30d1c1941449755b9e916ca7007240561125b) | feat | updating to karma-coverage |
+| [8c9645849a](https://github.com/angular/angular/commit/8c9645849a63f77e958a7e54596408800dfc1242) | feat | updating to karma-coverage and setting clear context to true |
+| [337be9bd63](https://github.com/angular/angular/commit/337be9bd63a0e3f015483e1dc64f435d48aad0dc) | feat | use flamechart with a better layout |
+| [86cb107fee](https://github.com/angular/angular/commit/86cb107fee3a307478f51fc9b5ce166aeb3948d8) | feat | use flamegraph in timeline and aggregated view |
+| [e23c81e2b5](https://github.com/angular/angular/commit/e23c81e2b5435ef6ffe4aa9ef8f60e553b0225a8) | feat | use flamegraph in timeline and aggregated view |
+| [cff17715d4](https://github.com/angular/angular/commit/cff17715d42ca9901636b93b0db38047cf8c359d) | feat | use tag names |
+| [57418c13f5](https://github.com/angular/angular/commit/57418c13f521a26dfd1a21abb2b53abbf7a7a6f0) | feat | use the user preferred color scheme |
+| [2749398650](https://github.com/angular/angular/commit/274939865036d43a72f3e17b4a55ed6d120dee48) | feat | use window object instead of getWindow method for setting a console reference |
+| [86242b10bf](https://github.com/angular/angular/commit/86242b10bf6de57bb8905041b427e98ff0b9c1c9) | feat | wrap entire row in div and bind click event to the div (rangle/angular-devtools[#2](https://github.com/angular/angular/pull/2)) |
+| [249d4cf237](https://github.com/angular/angular/commit/249d4cf23731a7df3b2de8a8ee2652dcdbad8e61) | fix | add back css that removed after a rebase |
+| [64942d3ed9](https://github.com/angular/angular/commit/64942d3ed94e5d9be0b06fb74b53a4328f0eec99) | fix | add d3 and semver dsl umd modules to karma tests for ng-devtools and ng-devtools-backend |
+| [3d19ebf3a1](https://github.com/angular/angular/commit/3d19ebf3a1b1b036b67b87b9c5ffbe6931785184) | fix | added more padding to treegraph |
+| [b305c85004](https://github.com/angular/angular/commit/b305c850040d03eecb6b74743fc889f8ececb19a) | fix | adding coverage reportor to gitignore |
+| [d28e601bd4](https://github.com/angular/angular/commit/d28e601bd43ed67f2b1b336145f894f8e665cc2b) | fix | align theme to other Chrome DevTools |
+| [bcfd7b97d6](https://github.com/angular/angular/commit/bcfd7b97d6f0c1cc29a5645cab668f49c8566ee3) | fix | align with latest changes and keep consistent frame tree |
+| [880d1d0ed4](https://github.com/angular/angular/commit/880d1d0ed4d7e299eb673f0342b2e2d85fe87cbe) | fix | alignment issue in idle profiler |
+| [a665e305ea](https://github.com/angular/angular/commit/a665e305ea4b48ffc1115d259609739bddf8095e) | fix | allow arrow key events to fire when focusing on an input |
+| [a20821be38](https://github.com/angular/angular/commit/a20821be38266933652e5ebc2b02b866f986dfc1) | fix | allow deleting property when editing |
+| [de5c669ebe](https://github.com/angular/angular/commit/de5c669ebe19b3b3a719cbd383abf280039e50cd) | fix | breadcrumb algorithm when there is no parent available |
+| [5c0031d944](https://github.com/angular/angular/commit/5c0031d9441e7b43440f5dfb74797a6ed81a6f80) | fix | broken virtual scroll layout on resize |
+| [774e662b11](https://github.com/angular/angular/commit/774e662b11c7033930724fb541f0a025b7f62773) | fix | bump up the split pane gutter size for the profiler split pane and hide the icon |
+| [b55c9c8786](https://github.com/angular/angular/commit/b55c9c8786001f20ed845b4fd46ed1c3156c5189) | fix | bump webpack version and fix breaking change |
+| [cb4e86c016](https://github.com/angular/angular/commit/cb4e86c016d973cc3919dd2afb41b91a607a0871) | fix | call change tab helper when tab changes as a result of the inspector being selected |
+| [4120c551e8](https://github.com/angular/angular/commit/4120c551e851ff2789231b7565813428ba107d89) | fix | catch selection edge cases for selecting the same node and selecting a node already in the array |
+| [c87d30eca5](https://github.com/angular/angular/commit/c87d30eca57968001e2669491e012af755169642) | fix | change colors (rangle/angular-devtools[#453](https://github.com/angular/angular/pull/453)) |
+| [2e8fe67864](https://github.com/angular/angular/commit/2e8fe67864b7426e1ba48cd6fe60b52ca24ff3a4) | fix | change the isIvy detection |
+| [87aaa4933c](https://github.com/angular/angular/commit/87aaa4933ca074f7d746b704bd3198c6bb991eab) | fix | check if node.children is undefined before trying to convert it into an array (ex. node is a text node) |
+| [2025717a13](https://github.com/angular/angular/commit/2025717a130c1f484db0daa6dfbd5c6981d7e0d0) | fix | check if node.nativeelement is an instance of an HTMLElement before calling ng.getComponent on it (rangle/angular-devtools[#93](https://github.com/angular/angular/pull/93)) |
+| [8c92af6905](https://github.com/angular/angular/commit/8c92af690526d65cda82fd3ce8994fe1727d3da8) | fix | color and font sizes and other visuals |
+| [5fe0d80d0c](https://github.com/angular/angular/commit/5fe0d80d0c2dff356dbedefa6b101c10d8c930fa) | fix | compatibility issues with google3 |
+| [288ecfd994](https://github.com/angular/angular/commit/288ecfd994f33d1085bd7571a4a4ff5b4d51854b) | fix | consider change detection completed after a microtask |
+| [8c9336d1a2](https://github.com/angular/angular/commit/8c9336d1a22cfcad7651577292a38b5765e2f259) | fix | consistent console reference hint styles with chrome devtools |
+| [284300abdb](https://github.com/angular/angular/commit/284300abdb900cc992d95d152c6d0d086c5c330e) | fix | consistent styles across shell dev and chrome |
+| [df680a9113](https://github.com/angular/angular/commit/df680a91134e0640a0dff921ecc16cbc4a186448) | fix | contrast on labels and links (rangle/angular-devtools[#708](https://github.com/angular/angular/pull/708)) |
+| [544d82fcc3](https://github.com/angular/angular/commit/544d82fcc3c94d65d230f5c25c85004c3a80dcda) | fix | debounce dirty notifications and ignore vendorChunk (rangle/angular-devtools[#264](https://github.com/angular/angular/pull/264)) |
+| [e19dc3efb4](https://github.com/angular/angular/commit/e19dc3efb451f3e103989e700039647fb727a7f7) | fix | delayed angular detection with app_initializer (rangle/angular-devtools[#827](https://github.com/angular/angular/pull/827)) |
+| [08af1134e9](https://github.com/angular/angular/commit/08af1134e997c93da9008328d42e1162aa8df713) | fix | disable animations when running e2e testing to fix flaky tests |
+| [99125308a4](https://github.com/angular/angular/commit/99125308a460f32135bd8a309cf57b492b27701d) | fix | disable critical css inlining because of csp |
+| [e85d65d26a](https://github.com/angular/angular/commit/e85d65d26aa49465c31b0f66f61b5dfe8753fa87) | fix | disable router tree tab |
+| [50488f9380](https://github.com/angular/angular/commit/50488f93807ed5174d3ed1021da7b032620c9c67) | fix | distinguish between items with and without children |
+| [42ecb7a0d5](https://github.com/angular/angular/commit/42ecb7a0d5627c49e7e5461effcee17069a0eb75) | fix | do not attempt to initialize devtools if not ivy |
+| [b010784b21](https://github.com/angular/angular/commit/b010784b2145012262f89f51c2d414c7fed0c271) | fix | do not expand HTML Comments and preserve state for selected nodes |
+| [23bc10cf7e](https://github.com/angular/angular/commit/23bc10cf7eaddb48bf4507662601c629ac480553) | fix | do not highlight nodes during initial rendering |
+| [2a1f6e9464](https://github.com/angular/angular/commit/2a1f6e9464e197a9f0e1d4f2dfd598a57dcd49c8) | fix | do not refresh the ui unless there are updates |
+| [8728f6f578](https://github.com/angular/angular/commit/8728f6f5789debe9664db4d5b1e7aff0cdab4b0f) | fix | doc links icon (rangle/angular-devtools[#742](https://github.com/angular/angular/pull/742)) |
+| [d60bdfc207](https://github.com/angular/angular/commit/d60bdfc2076c55a50a4d314f06037f1333605b9a) | fix | don't access service prop unnecessarily |
+| [54533bc037](https://github.com/angular/angular/commit/54533bc037192a74565696fa7517adc8241e67ee) | fix | don't collide with the default runtime function (rangle/angular-devtools[#6](https://github.com/angular/angular/pull/6)) |
+| [63c86c100f](https://github.com/angular/angular/commit/63c86c100fda1383bd829232c10794090e564e46) | fix | dont leak `once` subscriptions |
+| [657c74151f](https://github.com/angular/angular/commit/657c74151fba3cab8c15ca9329083de030cf57fe) | fix | dont leak flat and indexed nodes |
+| [97f88712e6](https://github.com/angular/angular/commit/97f88712e635df54627d62f220b5e9544e9b76dd) | fix | drag and drop when selecting input; fix: console warning on update state error (rangle/angular-devtools[#205](https://github.com/angular/angular/pull/205)) |
+| [7c0d6c06e4](https://github.com/angular/angular/commit/7c0d6c06e43c377abf67559b7dd1d9acc0cd6bb8) | fix | enable the profiler even without zone available |
+| [d4fc65504b](https://github.com/angular/angular/commit/d4fc65504be4b7b416bc7d2e43421facbfeee7b2) | fix | ensure compatibility with angular v10.0.0+ |
+| [50723bf1db](https://github.com/angular/angular/commit/50723bf1db7c88b1341c62654bf9ec21bc4cf589) | fix | ensure that the dark mode toggle button reflects the current theme on load |
+| [a0ba7f7762](https://github.com/angular/angular/commit/a0ba7f7762c03965eebba0fea32f13cb6350aa07) | fix | fix all remaining component tab color issues (rangle/angular-devtools[#458](https://github.com/angular/angular/pull/458)) |
+| [9c4c18b8ef](https://github.com/angular/angular/commit/9c4c18b8ef6f9b763ff2be1a779b77599b8f3308) | fix | fix bug in component tree observer that prevented nested added nodes from having their ids set properly |
+| [92679792e0](https://github.com/angular/angular/commit/92679792e05fbdc7e48a5e0031d747a598d7fc3a) | fix | fix case where the state of the change detection checkbox in the flamegraph is lost when the component is destroyed |
+| [2b5c40ee6d](https://github.com/angular/angular/commit/2b5c40ee6d6a26ef81ab8a6f174db3392fbc7d82) | fix | fix constrast on navigation tabs; make light mode icons the same colour as the text (rangle/angular-devtools[#667](https://github.com/angular/angular/pull/667)) |
+| [0649cc485d](https://github.com/angular/angular/commit/0649cc485d19a71e37e261650b04310b6acebf57) | fix | fix edge case where only one item is profiled and where no items are profiled |
+| [f5cad86902](https://github.com/angular/angular/commit/f5cad869020c565762341dffa384377ce0c8079e) | fix | fix ExpressionChangedAfterItHasBeenCheckedError by manually triggering change detection when parents are set in directive explorer |
+| [8d81155052](https://github.com/angular/angular/commit/8d81155052b5d3518121f025242e230b4abf3de9) | fix | fix initialization of non-supported applications (rangle/angular-devtools[#43](https://github.com/angular/angular/pull/43)) |
+| [1fc39d9332](https://github.com/angular/angular/commit/1fc39d933233dbb1e67f4aedd3308b129686a054) | fix | fix issue that prevented booleans from being parsed properly |
+| [eb3a1c2971](https://github.com/angular/angular/commit/eb3a1c2971129108b42de79358713c4a260169bf) | fix | fix issue where last node would be hidden behind breadcrumbs |
+| [8a5fbf5963](https://github.com/angular/angular/commit/8a5fbf5963e2d1d01e2bdaf1296c3021a5dfe94e) | fix | fix issues in message bus and watch |
+| [dd977f4b26](https://github.com/angular/angular/commit/dd977f4b26df83bf09b90dc2fec7f51c8f8d92df) | fix | fix regression that broke assignment of selected node to `$ng0` variable (rangle/angular-devtools[#89](https://github.com/angular/angular/pull/89)) |
+| [5eba00abe5](https://github.com/angular/angular/commit/5eba00abe55954c432e94681a9dc72311f2a34e2) | fix | fix regression that broke node expansion (rangle/angular-devtools[#88](https://github.com/angular/angular/pull/88)) |
+| [a8ba83cd30](https://github.com/angular/angular/commit/a8ba83cd305b6cccf3254d243f188a96dbfdc403) | fix | fix tests and leave todo related to possible typing refactor |
+| [984dfc6db1](https://github.com/angular/angular/commit/984dfc6db16a59daa24231d883adda8743dabb1c) | fix | fix typo in file names (rangle/angular-devtools[#91](https://github.com/angular/angular/pull/91)) |
+| [2aaa03a50d](https://github.com/angular/angular/commit/2aaa03a50d1346b17e7b201942417f8e279cd6b0) | fix | fixed height for controls on flame graph and save button (rangle/angular-devtools[#470](https://github.com/angular/angular/pull/470)) |
+| [f7ade259fe](https://github.com/angular/angular/commit/f7ade259fe6814d11912972571f37665fa17dba1) | fix | fixing code review comments |
+| [21a50b10be](https://github.com/angular/angular/commit/21a50b10be04d6d923f4bf17632791a056da2f5f) | fix | fixing the bar graph height issue |
+| [5f5307e610](https://github.com/angular/angular/commit/5f5307e6100c9417ca89f8a5a605237070214fc4) | fix | flicker properties when update selected node |
+| [6dd50832a9](https://github.com/angular/angular/commit/6dd50832a9d2fc14934afa4554ab6aff2419e009) | fix | frame colors indicate framerate good vs. bad |
+| [a7f6562158](https://github.com/angular/angular/commit/a7f656215833df41c5637b1cca95abc495d6680d) | fix | get all the property names including getters |
+| [1871c34743](https://github.com/angular/angular/commit/1871c34743684223691327cdab36007a070b115f) | fix | get ng debug object whenever it is required through a function to prevent an issue where it would be set to undefined on page refresh |
+| [b46b296255](https://github.com/angular/angular/commit/b46b296255d1b252ad34f6e041ed4e94ab235130) | fix | get proper change detection trigger |
+| [6d86bbc11b](https://github.com/angular/angular/commit/6d86bbc11ba2598d0b8ac6276cd493c349dad070) | fix | get the lifecycle hook name using a more robust approach |
+| [fc5801b225](https://github.com/angular/angular/commit/fc5801b225df254d5db77dc47c3d15a6518692d7) | fix | get the lview from the instance context |
+| [5eed92e91c](https://github.com/angular/angular/commit/5eed92e91c8370faaaf0c30b8bad9dc80886933c) | fix | give breadcrumb container a z-index higher than 1 to prevent an issue where scrolling on the x-axis may inadvertently scroll the properties view tab |
+| [41cb658e10](https://github.com/angular/angular/commit/41cb658e10e1af17791a65e3304ba17d85f62916) | fix | handle corner cases when a component aims to replace an existing one |
+| [199745fd6c](https://github.com/angular/angular/commit/199745fd6ce9cb07a22e2d5f8a4cef930f7b619c) | fix | handle lifecycle hooks of only components & directives |
+| [ff78c66ae9](https://github.com/angular/angular/commit/ff78c66ae917c1cf02a83b30aae375860119710a) | fix | handle ngFor and ngIf contexts in the profiler |
+| [d41dedb85b](https://github.com/angular/angular/commit/d41dedb85b809f67907dd2ee153d92b589553a40) | fix | highlighter should only show the hovered component's name ([#44863](https://github.com/angular/angular/pull/44863)) |
+| [ae6acce53e](https://github.com/angular/angular/commit/ae6acce53e45fc413d8b76c343a14b80aba31220) | fix | highlighting of newly added nodes |
+| [3d3d67fd00](https://github.com/angular/angular/commit/3d3d67fd002132f39f04f15c8197751db46de38b) | fix | implement shutdown event to prevent memory leak when reopening devtools (rangle/angular-devtools[#53](https://github.com/angular/angular/pull/53)) |
+| [5d1e60dc9d](https://github.com/angular/angular/commit/5d1e60dc9d5f2792c2be4a1c79f1c4569cc00e2d) | fix | improve dark mode styles when no ivy detected |
+| [df32c6e11e](https://github.com/angular/angular/commit/df32c6e11e33d4bedd43b2f350022f5cc32c05b1) | fix | improve the styles in the meta popup |
+| [0763305d0d](https://github.com/angular/angular/commit/0763305d0d9c082d763bd4975749de056c238b84) | fix | incorrect input names |
+| [4eeaab5d5e](https://github.com/angular/angular/commit/4eeaab5d5e9fe1d3d9d75ead81607f4b9a05e38c) | fix | increase the width of the filter |
+| [a30d2a5653](https://github.com/angular/angular/commit/a30d2a565375a21b6df3ff89c4c6c4ccee1e896b) | fix | index new nodes before firing callbacks to fix issue where some callbacks rely on the newly indexed nodes |
+| [4fc8a075c0](https://github.com/angular/angular/commit/4fc8a075c0c8f96607d592111100f39231463818) | fix | initialization and popup logic |
+| [85e01af432](https://github.com/angular/angular/commit/85e01af4327697dbb1ae5caf05e5b65f6cfebb3e) | fix | layout when visualizing the profiling data |
+| [1665bda6cc](https://github.com/angular/angular/commit/1665bda6ccddbad60244d2ddd10cd3d30b94a0a7) | fix | links to docs in property view tab |
+| [0169295122](https://github.com/angular/angular/commit/016929512243f80fc51c6efe4acb905a1685541c) | fix | linting errors to prevent ci failing (rangle/angular-devtools[#469](https://github.com/angular/angular/pull/469)) |
+| [ffb46bdc3c](https://github.com/angular/angular/commit/ffb46bdc3c0bcfeb746f36f03347a417c6d15290) | fix | lview parsing when trying to get data from an option |
+| [9510a1c38e](https://github.com/angular/angular/commit/9510a1c38e5e83761af368f8ecc6c87b04471448) | fix | make edit functionality compatible with new getDirectiveForest api |
+| [ec66218c28](https://github.com/angular/angular/commit/ec66218c28f68e97fd9f632dbeec0cfc3f9a161c) | fix | make flamegraph scrollable |
+| [36f5c2e0c0](https://github.com/angular/angular/commit/36f5c2e0c0108c652e3000ee82db8764f30401fa) | fix | make sure we are not reference dependant |
+| [e74dc9e70d](https://github.com/angular/angular/commit/e74dc9e70d7ccb170d5155b3dc0ff34ef9a66dc0) | fix | make sure we dont access position of an undefined parent |
+| [f454498274](https://github.com/angular/angular/commit/f454498274c003cb08caf1a1ea7e283bcd89f048) | fix | make sure we dont fail on null elements |
+| [b455eb158e](https://github.com/angular/angular/commit/b455eb158e21d9ee7a3960601b91cfa1a12e6081) | fix | make sure we invoke getComponent with an element |
+| [dfc4437afd](https://github.com/angular/angular/commit/dfc4437afdc04e970ed617a31487ec788cb5daf5) | fix | make sure we update the property explorer on state change (rangle/angular-devtools[#821](https://github.com/angular/angular/pull/821)) |
+| [23f8945f2f](https://github.com/angular/angular/commit/23f8945f2fd16ccff354f1390943fe7c6f16ff01) | fix | make the bar chart scrollable |
+| [30978b3718](https://github.com/angular/angular/commit/30978b3718d4c425b25ad6eed069a534a2e7a1e3) | fix | names of the tiles in the profiler graph |
+| [a5955930dd](https://github.com/angular/angular/commit/a5955930dde81434fecfcb3cd3eacc8c2514bf4b) | fix | node selection with collapsed nodes |
+| [212e4026f8](https://github.com/angular/angular/commit/212e4026f83de81ad967f995151fbbbf0449e06a) | fix | nowrap for the material tree items |
+| [e24b476624](https://github.com/angular/angular/commit/e24b4766244bff91be8bf6f114b2ad742a7d0698) | fix | pass in root element ng context as an LView instead of as a context object |
+| [820ec85ea4](https://github.com/angular/angular/commit/820ec85ea4bc923934db702016fa557ad1f67cc5) | fix | pass property updates to the correct data sources |
+| [f8bd3fccd7](https://github.com/angular/angular/commit/f8bd3fccd7fc1d9b5f01336ce351234387cf2171) | fix | preserve proper nesting in flattened node lists |
+| [6422b60568](https://github.com/angular/angular/commit/6422b6056830faa93922ecb9393481e0780579cb) | fix | preserve the expansion status of moved items |
+| [19ce8a6e9e](https://github.com/angular/angular/commit/19ce8a6e9e6df1a584cbb0b99000366075afb5dc) | fix | prevent circular dependency between directive-property-resolver and property-data-source |
+| [e1691b2ab5](https://github.com/angular/angular/commit/e1691b2ab5ed79b8ced3e20c70896997ed2bc96f) | fix | prevent default behaviour before calculating new scroll position to fix bug when traversing directive forest with arrow keys (rangle/angular-devtools[#213](https://github.com/angular/angular/pull/213)) |
+| [ded6796efb](https://github.com/angular/angular/commit/ded6796efb96c34a976c2243b8a82ab7ffd3fc69) | fix | prevent directive forest hooks from being initiated in production applications |
+| [e20347090a](https://github.com/angular/angular/commit/e20347090aaeb5555951e205fd6029535c28b795) | fix | prevent link in property view body from closing panel header when clicked (rangle/angular-devtools[#714](https://github.com/angular/angular/pull/714)) |
+| [509abcf39b](https://github.com/angular/angular/commit/509abcf39b3c7bb782bc1a1e1427dceb6067d679) | fix | prevent mat button css from leaking out of property view header (rangle/angular-devtools[#856](https://github.com/angular/angular/pull/856)) |
+| [b3fcc8b408](https://github.com/angular/angular/commit/b3fcc8b4082bf1e3f05145fa5d4f0f0a2e20fb14) | fix | prevent ng-deep component styling from leaking to child components |
+| [632a12579b](https://github.com/angular/angular/commit/632a12579bc2567e69b8520e30e1f3bc5a7c0282) | fix | prevent node overwriting |
+| [b127cdc211](https://github.com/angular/angular/commit/b127cdc211fe7a73b831a3f1561e0e90ab36181a) | fix | prevent race condition between getting nested props and refresh |
+| [f93b53bb89](https://github.com/angular/angular/commit/f93b53bb89d739e4d147aff1f44b163f4773cf2b) | fix | proper alignment of non-expandable props |
+| [570adcf2f5](https://github.com/angular/angular/commit/570adcf2f5ace15dacc4b8dadceaca7f9cc53c22) | fix | proper calculation of the lifecycle hook duration |
+| [ee0c245b44](https://github.com/angular/angular/commit/ee0c245b4452603fb801f86b77b0b3eef5ee8ec2) | fix | proper dev mode detection when app compiled with closure |
+| [b2a537a41b](https://github.com/angular/angular/commit/b2a537a41b35e3a007954027c18265936637b7a5) | fix | proper diffing and expansion of new items |
+| [79f145dc77](https://github.com/angular/angular/commit/79f145dc7705b4a2d5389634bdc18fcc2911feb7) | fix | proper diffing with unique ids |
+| [a8088ac68f](https://github.com/angular/angular/commit/a8088ac68fd5a67a4796330828be693bc16223ea) | fix | proper timing for operations |
+| [6154f8dfdf](https://github.com/angular/angular/commit/6154f8dfdf22bf1711ba246ccab80db5df8fcd44) | fix | proper tracking without overwriting previous refs |
+| [60cc2d8fc0](https://github.com/angular/angular/commit/60cc2d8fc01d986eed8ca56a8aaaf16afb90563e) | fix | proper typings in shell-chrome for strictNullChecks |
+| [a4b748de75](https://github.com/angular/angular/commit/a4b748de7562b49135b7e9037feb7e47d6501143) | fix | properly emit shutdown event on cleanup and call change detector ref to update ui into loading state |
+| [681feff8d0](https://github.com/angular/angular/commit/681feff8d0b8d743f128a29a3fa02b71df19480a) | fix | recognize app after reopening devtools |
+| [48c140038b](https://github.com/angular/angular/commit/48c140038b7ae043a442626ffdf97a8a6e59073c) | fix | refresh & reinitialize on navigation |
+| [5c5345fdd4](https://github.com/angular/angular/commit/5c5345fdd4325bff70b6c1fcace75640f1aaeae3) | fix | remove forgotten markers causing slowdown |
+| [b350bfc838](https://github.com/angular/angular/commit/b350bfc8380fa76cc5d2309c3d10021ec712e970) | fix | remove jumping when adding nodes |
+| [21ccdc1c62](https://github.com/angular/angular/commit/21ccdc1c6220e844017874847301c6ef31fd25d7) | fix | remove obsolete hover css that is causing contrast issues in dark mode and set the header height to match the new search filter height for consistency |
+| [9ad12dd3c6](https://github.com/angular/angular/commit/9ad12dd3c686c849674dd99ada5c9b7b00b37333) | fix | remove redundant scrollbar |
+| [8a8b911586](https://github.com/angular/angular/commit/8a8b91158678437179fa56f1884054af9a5f2056) | fix | remove relative positioning from profiler content; makes split pane gutter full height for profile details |
+| [e55a24cf30](https://github.com/angular/angular/commit/e55a24cf300df584341d59e1bec1ed58bbf620e7) | fix | remove runOutsideAngular wrapper on mouse move event |
+| [1181e4cadc](https://github.com/angular/angular/commit/1181e4cadc3de3de66c75a5e7606e4837b50c788) | fix | remove tree node highlight when a component is selected from the highlighter |
+| [50fbbbcb8f](https://github.com/angular/angular/commit/50fbbbcb8f30088cd3c05055d6b05b4b134971ef) | fix | remove tree wrapper height css to let the height default to how many nodes are being displayed (rangle/angular-devtools[#244](https://github.com/angular/angular/pull/244)) |
+| [db82118f66](https://github.com/angular/angular/commit/db82118f66cdd5484f4eda7b6db09939d6478801) | fix | remove useless scrollbar from the demo app |
+| [da0ce975f8](https://github.com/angular/angular/commit/da0ce975f856b22f587f565f1abdca485d13a0d4) | fix | rename state to properties (rangle/angular-devtools[#682](https://github.com/angular/angular/pull/682)) |
+| [7575fc9167](https://github.com/angular/angular/commit/7575fc91671c96ac3262ff5e585c20af8c1234c6) | fix | renaming master to main |
+| [0f4dd494f3](https://github.com/angular/angular/commit/0f4dd494f3b21630242bee1e65992b4e881dcf31) | fix | reselect node if it changes position after change detection |
+| [6a87b79190](https://github.com/angular/angular/commit/6a87b7919020182efa7cd39a8af9e09b931b4e71) | fix | reset the timeline component when discarding a recording |
+| [ab221badb4](https://github.com/angular/angular/commit/ab221badb459d8119b2fe555a074e7e42d37953b) | fix | resize dark mode and cursor |
+| [6727d7e229](https://github.com/angular/angular/commit/6727d7e22935b945613d6d9efe87d2659f1a3505) | fix | set a min width for the property view split tab to prevents styling issues when tab is too small |
+| [0e10241b5c](https://github.com/angular/angular/commit/0e10241b5ce6e0b7d94359fc681b8a388a5bec4e) | fix | set extension icon and popup only on DevTools background message |
+| [13af13cc5d](https://github.com/angular/angular/commit/13af13cc5d178c93c920573302b9d2edcb7eec18) | fix | set more accurate search label |
+| [d40cefb5d2](https://github.com/angular/angular/commit/d40cefb5d25161c5f10a9bb9e45606c7150e5bc6) | fix | set production flag to false in dev environment |
+| [5ef4bca194](https://github.com/angular/angular/commit/5ef4bca1945980801f63ed38e47a27dcf4885c28) | fix | set proper directive item and explorer height |
+| [7a59606aaa](https://github.com/angular/angular/commit/7a59606aaa8091b4f3b331dc1fa2e46d4252e95f) | fix | set proper height of the tree nodes |
+| [cf682b59b5](https://github.com/angular/angular/commit/cf682b59b548a4e53c1cb73d0348cb668cc8a9f3) | fix | set proper icon sizes |
+| [5fa1c35579](https://github.com/angular/angular/commit/5fa1c355791432203da5a0c4fba755acfdd2260d) | fix | set proper types of the props in the clipboard copy feature |
+| [e032e043cb](https://github.com/angular/angular/commit/e032e043cb6cf906a8501b75c9cd1b05c0e2db72) | fix | setting default page for extension |
+| [b04649dacb](https://github.com/angular/angular/commit/b04649dacb665e5c9ffc1194507f34274d4b5e5e) | fix | setting min width for input editor and allowing for rendering space |
+| [3f0a2d3120](https://github.com/angular/angular/commit/3f0a2d3120a23d25ab465d930f68d215ef3d113e) | fix | show date type property value in preview ([#44864](https://github.com/angular/angular/pull/44864)) |
+| [82a8d5c0aa](https://github.com/angular/angular/commit/82a8d5c0aaefe52f5f198386e5f212fd5a974337) | fix | show elements nested in app elements |
+| [17eea0549b](https://github.com/angular/angular/commit/17eea0549b96e01f5b37601b5f915986eeee9564) | fix | show new items using a class |
+| [815d697efe](https://github.com/angular/angular/commit/815d697efe6266bae51ec042c1d8611ef104944e) | fix | show not-angular popup for non-angular apps |
+| [8a286f1a07](https://github.com/angular/angular/commit/8a286f1a073d5130f4b55222b3d7d16c21fb275c) | fix | show proper lifecycle hook names |
+| [dc345956ce](https://github.com/angular/angular/commit/dc345956ceef5652e127736f02febd085e6b07e8) | fix | show properly dynamically inserted content with DOM APIs (rangle/angular-devtools[#828](https://github.com/angular/angular/pull/828)) |
+| [3340caf648](https://github.com/angular/angular/commit/3340caf648e5eef3cf3b0586635a96cb0a1c81c3) | fix | show report for replaced nodes in the same tile and get lifecycle hook name |
+| [5bf180afb8](https://github.com/angular/angular/commit/5bf180afb89b9a11fe8dd7bbbd7b5ca827d2719d) | fix | skip node if there is no associated TViewData (rangle/angular-devtools[#804](https://github.com/angular/angular/pull/804)) |
+| [67faf7710c](https://github.com/angular/angular/commit/67faf7710cc7c56434badb13fdd0340ef1995e7d) | fix | small improvements to Properties Details view  (rangle/angular-devtools[#455](https://github.com/angular/angular/pull/455)) |
+| [37dea7ccd7](https://github.com/angular/angular/commit/37dea7ccd73fe766bc3f24a723cac4eac0018f68) | fix | sort array indexes in ascending order |
+| [edcaa8c89f](https://github.com/angular/angular/commit/edcaa8c89f92d5f8b5a8bb939e50c45247e4aec2) | fix | stop filter input from scrolling with the component forest (rangle/angular-devtools[#87](https://github.com/angular/angular/pull/87)) |
+| [3633be9875](https://github.com/angular/angular/commit/3633be9875ab9e3a9085c62627025456929f2828) | fix | Style Changes to Profiler, general color scheme, controls & responsiveness (rangle/angular-devtools[#468](https://github.com/angular/angular/pull/468)) |
+| [db94717ecb](https://github.com/angular/angular/commit/db94717ecbead4765c065e5913d9cd8450620786) | fix | style of editor input |
+| [0aa64aa490](https://github.com/angular/angular/commit/0aa64aa490fb84c89654f59530391b788565a044) | fix | Support Electron (rangle/angular-devtools[#849](https://github.com/angular/angular/pull/849)) |
+| [f08eaabb25](https://github.com/angular/angular/commit/f08eaabb2589e6e4218901e1969110cc0186853e) | fix | theming of profiler tab |
+| [d66fe32c14](https://github.com/angular/angular/commit/d66fe32c143380aaca1ea4cd524a23f8dcfb1367) | fix | time label on profiler |
+| [be814408c8](https://github.com/angular/angular/commit/be814408c8ce60948342191d8a5f6597616d0a46) | fix | treemap hover colors highlight selection |
+| [4dec3fb3e6](https://github.com/angular/angular/commit/4dec3fb3e609d9d55a7d2ef3df933df5736268a8) | fix | ui flicker bug (rangle/angular-devtools[#49](https://github.com/angular/angular/pull/49)) |
+| [db449b531d](https://github.com/angular/angular/commit/db449b531de77d13ff0148a3ae4a90a2d25d23de) | fix | unsubscribe from file upload Subscription instead of Subject |
+| [e6bec2430a](https://github.com/angular/angular/commit/e6bec2430a31991dfe09d99fcdb2c29f7008c496) | fix | update the prod mode detection to also consider VE apps |
+| [1b97432960](https://github.com/angular/angular/commit/1b97432960a59218b40427f3d494818540889ac7) | fix | update typing of differ objects to fit the new contract of TrackByFunction (rangle/angular-devtools[#862](https://github.com/angular/angular/pull/862)) |
+| [c5445440bf](https://github.com/angular/angular/commit/c5445440bf99e9ef4126e6212442ffed13e99221) | fix | updating page design |
+| [3b8833cfec](https://github.com/angular/angular/commit/3b8833cfec5f0e681f21ef9300b1c5a0d2894957) | fix | use cascading view child/children to fix regression caused by refactor (rangle/angular-devtools[#92](https://github.com/angular/angular/pull/92)) |
+| [614919fd61](https://github.com/angular/angular/commit/614919fd61f282c1aa847fbc91fe6754bbb20d75) | fix | use the aio docs link rather than github |
+| [f9a5069e94](https://github.com/angular/angular/commit/f9a5069e94724ccfa0d0e643d7a0ed03208e142b) | fix | use theming in chrome extension |
+| [c3e8311298](https://github.com/angular/angular/commit/c3e83112980a2a05d417a636f56bc98d12e6fe3f) | fix | use visible gutter size in calculation for split area flex basis' (rangle/angular-devtools[#857](https://github.com/angular/angular/pull/857)) |
+| [e5d1fcbc96](https://github.com/angular/angular/commit/e5d1fcbc96f2636793e04cf0e8cd302d10151c8e) | fix | wait 500ms before checking the tree for a new node |
+| [fcfc9ebdc1](https://github.com/angular/angular/commit/fcfc9ebdc1a11d75e147bc067f742d183bcc534b) | fix | webtree sizing (rangle/angular-devtools[#203](https://github.com/angular/angular/pull/203)) |
+| [85f2212796](https://github.com/angular/angular/commit/85f22127968346bcdaf7efb40177ed31388811d0) | fix | wrong label in the profiler |
+| [d95806ef57](https://github.com/angular/angular/commit/d95806ef57b2a917e7b0e1e2ff00fcc10f6a6d07) | perf | cache timeline frames so that the timetraveler doesn't have to process the same frame multiple times |
+| [18457f02f5](https://github.com/angular/angular/commit/18457f02f54a26a1132688b26895c8225bd8aaf1) | perf | disable flame graph animations |
+| [7851fb2348](https://github.com/angular/angular/commit/7851fb23480865cb75e228c6eae447556e2e73ee) | perf | do not index on mutation of inspector |
+| [b3b0879053](https://github.com/angular/angular/commit/b3b0879053f59420a0abbc928d4d6f0a44bedf76) | perf | don't reformat the same record multiple times |
+| [20398cfa52](https://github.com/angular/angular/commit/20398cfa5217e488f8f9a0e88144146ecb954e45) | perf | faster bar chart formatting |
+| [ca0910e59c](https://github.com/angular/angular/commit/ca0910e59c9d75a4e3719fabe85057146bd8a5fa) | perf | prevent directive forest from building twice every time a node is selected in the directive explorer |
+| [1a00837b0c](https://github.com/angular/angular/commit/1a00837b0c46c1bf61db8f56185701c7c59f4ad3) | perf | prevent highlighter from rebuilding the directive forest every time a node is hovered over in the directive forest |
+| [a4a06eea18](https://github.com/angular/angular/commit/a4a06eea1834ac56469fdc4163b157cb99dcdd75) | perf | stream records incrementally so that they do not get sent all at once |
+| [8a90f5b8b4](https://github.com/angular/angular/commit/8a90f5b8b445aa2afaf8700ed707b5cd8cef7c7a) | perf | switch to on push change detection to optimize profiler; rename variable for readability; null coalesce profileRecords to fix bug when profile profiles no changes (rangle/angular-devtools[#3](https://github.com/angular/angular/pull/3)) |
+| [29b9021113](https://github.com/angular/angular/commit/29b90211135971a239978fbda2c0d59dfc647115) | perf | use WeakMap to reduce memory usage when memoizing |
+### devtools tabs
+| Commit | Type | Description |
+| -- | -- | -- |
+| [6c284ef32e](https://github.com/angular/angular/commit/6c284ef32e53a8dabbc368b9cf69f1b6f1a377b7) | fix | stop scroll occuring at tabs level |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [f490c2de4e](https://github.com/angular/angular/commit/f490c2de4e1ada26e62e35c0d70cb90e55297658) | feat | support negative indices in FormArray methods. ([#44848](https://github.com/angular/angular/pull/44848)) |
+| [889de8276d](https://github.com/angular/angular/commit/889de8276d77eed3b65f8c2032f2f5c3c4ac9139) | fix | ensure OnPush ancestors are marked dirty when the promise resolves ([#44886](https://github.com/angular/angular/pull/44886)) |
+| [deb9531a31](https://github.com/angular/angular/commit/deb9531a31274fbedcbf468a33d80481328c55ce) | fix | Update the typed forms migration schematic to find all files. ([#44881](https://github.com/angular/angular/pull/44881)) |
+| [cae1e44608](https://github.com/angular/angular/commit/cae1e44608227ac80682401190c6d28ef39b3269) | fix | Update the typed forms migration to use FormArray<T> instead of FormArray<T[]>. ([#44933](https://github.com/angular/angular/pull/44933)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [910de8bc33](https://github.com/angular/angular/commit/910de8bc3379b1452c0bc23a866b5108d6d94e55) | feat | Add `Route.title` with a configurable `TitleStrategy` ([#43307](https://github.com/angular/angular/pull/43307)) |
+## Special Thanks
+Alan, Alan Agius, AleksanderBodurri, Amir Rustamzadeh, Andrew Kushnir, Andrew Scott, Aristeidis Bampakos, Arjen, Daan De Smedt, Daniel Díaz, David Shevitz, Doug Parker, Dylan Hunn, Emma Twersky, Esteban Gehring, George Kalpakas, Jessica Janiuk, JimMorrison723, JoostK, Juri Strumpflohner, Lee Robinson, Maarten Tibau, Mark Whitfeld, Minko Gechev, Paul Gschwendtner, Ricardo Mattiazzi Baumgartner, Sumit Arora, Theodore Brown, arturovt, dario-piotrowicz, fru2, kamikopi, markostanimirovic, markwhitfeld, mgechev, renovate[bot] and twerske
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="13.2.1"></a>
 # 13.2.1 (2022-02-02)
 ### animations
