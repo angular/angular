@@ -1218,7 +1218,8 @@ groups:
           ])
     reviewers:
       users:
-        - aleksanderbodurri
+        # Temporarily removed while correcting membership and review assignment config.
+        # - aleksanderbodurri
         - devversion
         - josephperrott
         - mgechev
