@@ -308,11 +308,33 @@ export class LocalModuleScopeRegistry implements MetadataRegistry, ComponentScop
       const directive = this.localReader.getDirectiveMetadata(decl);
       const pipe = this.localReader.getPipeMetadata(decl);
       if (directive !== null) {
+        if (directive.isStandalone) {
+          const refType = directive.isComponent ? 'Component' : 'Directive';
+          diagnostics.push(makeDiagnostic(
+              ErrorCode.NGMODULE_DECLARATION_IS_STANDALONE,
+              decl.getOriginForDiagnostics(ngModule.rawDeclarations!),
+              `${refType} ${
+                  decl.node.name
+                      .text} is standalone, and cannot be declared in an NgModule. Did you mean to import it instead?`));
+          isPoisoned = true;
+          continue;
+        }
+
         compilationDirectives.set(decl.node, {...directive, ref: decl});
         if (directive.isPoisoned) {
           isPoisoned = true;
         }
       } else if (pipe !== null) {
+        if (pipe.isStandalone) {
+          diagnostics.push(makeDiagnostic(
+              ErrorCode.NGMODULE_DECLARATION_IS_STANDALONE,
+              decl.getOriginForDiagnostics(ngModule.rawDeclarations!),
+              `Pipe ${
+                  decl.node.name
+                      .text} is standalone, and cannot be declared in an NgModule. Did you mean to import it instead?`));
+          isPoisoned = true;
+          continue;
+        }
         compilationPipes.set(decl.node, {...pipe, ref: decl});
       } else {
         const errorNode = decl.getOriginForDiagnostics(ngModule.rawDeclarations!);
