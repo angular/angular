@@ -165,8 +165,8 @@ runInEachFileSystem(() => {
     const metaReader = new LocalMetadataRegistry();
     const dtsReader = new DtsMetadataReader(checker, reflectionHost);
     const scopeRegistry = new LocalModuleScopeRegistry(
-        metaReader, new MetadataDtsModuleScopeResolver(dtsReader, null), new ReferenceEmitter([]),
-        null);
+        metaReader, new CompoundMetadataReader([metaReader, dtsReader]),
+        new MetadataDtsModuleScopeResolver(dtsReader, null), new ReferenceEmitter([]), null);
     const injectableRegistry = new InjectableClassRegistry(reflectionHost);
     const handler = new DirectiveDecoratorHandler(
         reflectionHost, evaluator, scopeRegistry, scopeRegistry, metaReader, injectableRegistry,

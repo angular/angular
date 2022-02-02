@@ -8,11 +8,9 @@
 
 import ts from 'typescript';
 
-import {ErrorCode, makeDiagnostic, makeRelatedInformation} from '../../../diagnostics';
-import {Reference} from '../../../imports';
 import {DirectiveMeta, MetadataReader, PipeMeta} from '../../../metadata';
 import {ClassDeclaration} from '../../../reflection';
-import {ComponentScopeReader, DtsModuleScopeResolver, ExportScope, LocalModuleScopeRegistry} from '../../../scope';
+import {ComponentScopeReader, DtsModuleScopeResolver, ExportScope, LocalModuleScopeRegistry, makeNotStandaloneDiagnostic} from '../../../scope';
 
 import {ComponentAnalysisData} from './metadata';
 
@@ -147,44 +145,4 @@ export function scopeTemplate(
       diagnostics: [],
     };
   }
-}
-
-function makeNotStandaloneDiagnostic(
-    scopeReader: ComponentScopeReader, ref: Reference<ClassDeclaration>, rawExpr: ts.Expression,
-    kind: 'component'|'directive'|'pipe'): ts.Diagnostic {
-  const scope = scopeReader.getScopeForComponent(ref.node);
-
-  let relatedInformation: ts.DiagnosticRelatedInformation[]|undefined = undefined;
-  if (scope !== null) {
-    // The directive/pipe in question is declared in an NgModule. Check if it's also exported.
-    const isExported = scope.exported.directives.some(exp => exp.ref.node === ref.node) ||
-        scope.exported.pipes.some(exp => exp.ref.node);
-    if (isExported) {
-      relatedInformation = [makeRelatedInformation(
-          scope.ngModule.name,
-          `It can be imported using its NgModule '${scope.ngModule.name.text}' instead.`)];
-    } else {
-      relatedInformation = [makeRelatedInformation(
-          scope.ngModule.name,
-          `It's declared in the NgModule '${
-              scope.ngModule.name.text}', but is not exported. Consider exporting it.`)];
-    }
-  } else {
-    // TODO(alxhub): the above case handles directives/pipes in NgModules that are declared in the
-    // current compilation, but not those imported from .d.ts dependencies. We could likely scan the
-    // program here and find NgModules to suggest, to improve the error in that case.
-  }
-  let extraText: string = '';
-  if (relatedInformation === undefined) {
-    // If no contextual pointers can be provided to suggest a specific remedy, then at least tell
-    // the user broadly what they need to do.
-    extraText = ' It must be imported via an NgModule.';
-  }
-  return makeDiagnostic(
-      ErrorCode.COMPONENT_IMPORT_NOT_STANDALONE, ref.getOriginForDiagnostics(rawExpr),
-      `The ${kind} '${
-          ref.node.name
-              .text}' appears in 'imports', but is not standalone and cannot be imported directly.${
-          extraText}`,
-      relatedInformation);
 }

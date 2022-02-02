@@ -6,7 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Reference} from '../../imports';
+import {SchemaMetadata} from '@angular/compiler';
+
+import {Reexport, Reference} from '../../imports';
 import {DirectiveMeta, PipeMeta} from '../../metadata';
 import {ClassDeclaration} from '../../reflection';
 
@@ -57,4 +59,27 @@ export interface RemoteScope {
    * Those pipes used by the component that requires this scope to be set remotely.
    */
   pipes: Reference[];
+}
+
+
+export interface LocalModuleScope extends ExportScope {
+  ngModule: ClassDeclaration;
+  compilation: ScopeData;
+  reexports: Reexport[]|null;
+  schemas: SchemaMetadata[];
+}
+
+/**
+ * Read information about the compilation scope of components.
+ */
+export interface ComponentScopeReader {
+  getScopeForComponent(clazz: ClassDeclaration): LocalModuleScope|null;
+
+  /**
+   * Get the `RemoteScope` required for this component, if any.
+   *
+   * If the component requires remote scoping, then retrieve the directives/pipes registered for
+   * that component. If remote scoping is not required (the common case), returns `null`.
+   */
+  getRemoteScope(clazz: ClassDeclaration): RemoteScope|null;
 }
