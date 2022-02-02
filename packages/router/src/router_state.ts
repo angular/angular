@@ -10,7 +10,7 @@ import {Type} from '@angular/core';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 
-import {Data, ResolveData, Route} from './config';
+import {Data, ResolveData, Route} from './models';
 import {convertToParamMap, ParamMap, Params, PRIMARY_OUTLET} from './shared';
 import {equalSegments, UrlSegment, UrlSegmentGroup, UrlTree} from './url_tree';
 import {shallowEqual, shallowEqualArrays} from './utils/collection';

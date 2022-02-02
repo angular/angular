@@ -7,12 +7,11 @@
  */
 
 
-export {Data, LoadChildren, LoadChildrenCallback, QueryParamsHandling, ResolveData, Route, Routes, RunGuardsAndResolvers, UrlMatcher, UrlMatchResult} from './config';
 export {RouterLink, RouterLinkWithHref} from './directives/router_link';
 export {RouterLinkActive} from './directives/router_link_active';
 export {RouterOutlet, RouterOutletContract} from './directives/router_outlet';
 export {ActivationEnd, ActivationStart, ChildActivationEnd, ChildActivationStart, Event, GuardsCheckEnd, GuardsCheckStart, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, RouterEvent, RoutesRecognized, Scroll} from './events';
-export {CanActivate, CanActivateChild, CanDeactivate, CanLoad, Resolve} from './interfaces';
+export {CanActivate, CanActivateChild, CanDeactivate, CanLoad, Data, LoadChildren, LoadChildrenCallback, QueryParamsHandling, Resolve, ResolveData, Route, Routes, RunGuardsAndResolvers, UrlMatcher, UrlMatchResult} from './models';
 export {DefaultTitleStrategy, TitleStrategy} from './page_title_strategy';
 export {BaseRouteReuseStrategy, DetachedRouteHandle, RouteReuseStrategy} from './route_reuse_strategy';
 export {Navigation, NavigationBehaviorOptions, NavigationExtras, Router, UrlCreationOptions} from './router';

@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Routes} from '../src/config';
 import {createRouterState} from '../src/create_router_state';
+import {Routes} from '../src/models';
 import {recognize} from '../src/recognize';
 import {DefaultRouteReuseStrategy} from '../src/route_reuse_strategy';
 import {ActivatedRoute, advanceActivatedRoute, createEmptyState, RouterState, RouterStateSnapshot} from '../src/router_state';

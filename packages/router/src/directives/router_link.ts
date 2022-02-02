@@ -10,8 +10,8 @@ import {LocationStrategy} from '@angular/common';
 import {Attribute, Directive, ElementRef, HostBinding, HostListener, Input, OnChanges, OnDestroy, Renderer2, SimpleChanges} from '@angular/core';
 import {Subject, Subscription} from 'rxjs';
 
-import {QueryParamsHandling} from '../config';
 import {Event, NavigationEnd} from '../events';
+import {QueryParamsHandling} from '../models';
 import {Router} from '../router';
 import {ActivatedRoute} from '../router_state';
 import {Params} from '../shared';

@@ -274,17 +274,17 @@
     "packages/forms/src/validators.ts"
   ],
   [
-    "packages/router/src/config.ts",
+    "packages/router/src/directives/router_outlet.ts",
+    "packages/router/src/router_outlet_context.ts"
+  ],
+  [
+    "packages/router/src/models.ts",
     "packages/router/src/router_state.ts"
   ],
   [
-    "packages/router/src/config.ts",
+    "packages/router/src/models.ts",
     "packages/router/src/router_state.ts",
     "packages/router/src/shared.ts"
-  ],
-  [
-    "packages/router/src/directives/router_outlet.ts",
-    "packages/router/src/router_outlet_context.ts"
   ],
   [
     "packages/router/src/operators/activate_routes.ts",

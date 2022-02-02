@@ -14,7 +14,7 @@ import {Observable, of} from 'rxjs';
 import {delay, tap} from 'rxjs/operators';
 
 import {applyRedirects} from '../src/apply_redirects';
-import {LoadedRouterConfig, Route, Routes} from '../src/config';
+import {LoadedRouterConfig, Route, Routes} from '../src/models';
 import {DefaultUrlSerializer, equalSegments, UrlSegment, UrlSegmentGroup, UrlTree} from '../src/url_tree';
 
 describe('applyRedirects', () => {
