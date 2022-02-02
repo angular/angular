@@ -9,8 +9,8 @@
 import {MonoTypeOperatorFunction} from 'rxjs';
 import {map} from 'rxjs/operators';
 
-import {LoadedRouterConfig} from '../config';
 import {ActivationEnd, ChildActivationEnd, Event} from '../events';
+import {LoadedRouterConfig} from '../models';
 import {DetachedRouteHandleInternal, RouteReuseStrategy} from '../route_reuse_strategy';
 import {NavigationTransition} from '../router';
 import {ChildrenOutletContexts} from '../router_outlet_context';

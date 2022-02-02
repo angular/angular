@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CanActivate, CanActivateChild, CanDeactivate, CanLoad} from '../interfaces';
+import {CanActivate, CanActivateChild, CanDeactivate, CanLoad} from '../models';
 import {UrlTree} from '../url_tree';
 
 /**
