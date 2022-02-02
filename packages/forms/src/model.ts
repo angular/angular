@@ -11,7 +11,7 @@ import {Observable} from 'rxjs';
 
 import {missingControlError, missingControlValueError, noControlsError} from './directives/reactive_errors';
 import {removeListItem} from './directives/shared';
-import {AsyncValidatorFn, ValidationErrors, ValidatorFn} from './directives/validators';
+import {AsyncValidatorFn, ValidationErrors, ValidatorFn, ValidationControls} from './directives/validators';
 import {RuntimeErrorCode} from './errors';
 import {addValidators, composeAsyncValidators, composeValidators, hasValidator, removeValidators, toObservable} from './validators';
 
@@ -182,7 +182,7 @@ export const isFormGroup = (control: unknown): control is FormGroup => control i
 
 export const isFormArray = (control: unknown): control is FormArray => control instanceof FormArray;
 
-function getRawValue(control: AbstractControl): any {
+function getRawValue(control: AbstractControl): ValidationControls|any {
   return isFormControl(control) ? control.value : (control as FormGroup | FormArray).getRawValue();
 }
 
@@ -1970,9 +1970,9 @@ export class FormGroup extends AbstractControl {
    * The `value` property is the best way to get the value of the group, because
    * it excludes disabled controls in the `FormGroup`.
    */
-  getRawValue(): any {
+  getRawValue(): ValidationControls {
     return this._reduceChildren(
-        {}, (acc: {[k: string]: AbstractControl}, control: AbstractControl, name: string) => {
+        {}, (acc: ValidationControls, control: AbstractControl, name: string) => {
           acc[name] = getRawValue(control);
           return acc;
         });
@@ -2410,7 +2410,7 @@ export class FormArray extends AbstractControl {
    * Reports all values regardless of disabled status.
    * For enabled controls only, the `value` property is the best way to get the value of the array.
    */
-  getRawValue(): any[] {
+  getRawValue(): ValidationControls[] {
     return this.controls.map((control: AbstractControl) => getRawValue(control));
   }
 

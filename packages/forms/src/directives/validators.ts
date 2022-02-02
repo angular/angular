@@ -54,6 +54,14 @@ export type ValidationErrors = {
 
 /**
  * @description
+ * The aggregate type of the `FormGroup`, including any disabled controls.
+ */
+ export type ValidationControls = {
+  [key: string]: AbstractControl
+}
+
+/**
+ * @description
  * An interface implemented by classes that perform synchronous validation.
  *
  * @usageNotes
