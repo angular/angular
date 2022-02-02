@@ -10,8 +10,7 @@ import {Injector, NgModuleRef} from '@angular/core';
 import {EmptyError, from, Observable, Observer, of} from 'rxjs';
 import {catchError, concatMap, first, last, map, mergeMap, scan, tap} from 'rxjs/operators';
 
-import {LoadedRouterConfig, Route, Routes} from './config';
-import {CanLoadFn} from './interfaces';
+import {CanLoadFn, LoadedRouterConfig, Route, Routes} from './models';
 import {prioritizedGuardValue} from './operators/prioritized_guard_value';
 import {RouterConfigLoader} from './router_config_loader';
 import {navigationCancelingError, Params, PRIMARY_OUTLET} from './shared';

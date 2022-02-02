@@ -11,8 +11,8 @@ import {inject, TestBed} from '@angular/core/testing';
 import {RouterTestingModule} from '@angular/router/testing';
 import {of} from 'rxjs';
 
-import {Routes} from '../src/config';
 import {ChildActivationStart} from '../src/events';
+import {Routes} from '../src/models';
 import {checkGuards as checkGuardsOperator} from '../src/operators/check_guards';
 import {resolveData as resolveDataOperator} from '../src/operators/resolve_data';
 import {NavigationTransition, Router} from '../src/router';

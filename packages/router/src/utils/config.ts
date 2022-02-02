@@ -7,7 +7,7 @@
  */
 
 import {EmptyOutletComponent} from '../components/empty_outlet';
-import {Route, Routes} from '../config';
+import {Route, Routes} from '../models';
 import {PRIMARY_OUTLET} from '../shared';
 
 export function validateConfig(config: Routes, parentPath: string = ''): void {

@@ -10,7 +10,7 @@ import {Compiler, InjectFlags, InjectionToken, Injector, NgModuleFactory} from '
 import {ConnectableObservable, from, Observable, of, Subject} from 'rxjs';
 import {catchError, map, mergeMap, refCount, tap} from 'rxjs/operators';
 
-import {LoadChildren, LoadedRouterConfig, Route} from './config';
+import {LoadChildren, LoadedRouterConfig, Route} from './models';
 import {flatten, wrapIntoObservable} from './utils/collection';
 import {standardizeConfig} from './utils/config';
 

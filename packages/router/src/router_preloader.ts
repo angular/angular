@@ -10,8 +10,8 @@ import {Compiler, Injectable, Injector, NgModuleRef, OnDestroy} from '@angular/c
 import {from, Observable, of, Subscription} from 'rxjs';
 import {catchError, concatMap, filter, map, mergeAll, mergeMap} from 'rxjs/operators';
 
-import {LoadedRouterConfig, Route, Routes} from './config';
 import {Event, NavigationEnd, RouteConfigLoadEnd, RouteConfigLoadStart} from './events';
+import {LoadedRouterConfig, Route, Routes} from './models';
 import {Router} from './router';
 import {RouterConfigLoader} from './router_config_loader';
 

@@ -10,7 +10,7 @@ import {Injector} from '@angular/core';
 import {EMPTY, from, MonoTypeOperatorFunction, Observable, of} from 'rxjs';
 import {concatMap, map, mergeMap, takeLast, tap} from 'rxjs/operators';
 
-import {ResolveData} from '../config';
+import {ResolveData} from '../models';
 import {NavigationTransition} from '../router';
 import {ActivatedRouteSnapshot, inheritedParamsDataResolve, RouterStateSnapshot} from '../router_state';
 import {wrapIntoObservable} from '../utils/collection';

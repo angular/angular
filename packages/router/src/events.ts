@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Route} from './config';
+import {Route} from './models';
 import {ActivatedRouteSnapshot, RouterStateSnapshot} from './router_state';
 
 /**

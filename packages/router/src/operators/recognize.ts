@@ -10,7 +10,7 @@ import {Type} from '@angular/core';
 import {MonoTypeOperatorFunction} from 'rxjs';
 import {map, mergeMap} from 'rxjs/operators';
 
-import {Route} from '../config';
+import {Route} from '../models';
 import {recognize as recognizeFn} from '../recognize';
 import {NavigationTransition} from '../router';
 import {UrlTree} from '../url_tree';

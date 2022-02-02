@@ -8,7 +8,7 @@
 
 import {Injector} from '@angular/core';
 
-import {LoadedRouterConfig, RunGuardsAndResolvers} from '../config';
+import {LoadedRouterConfig, RunGuardsAndResolvers} from '../models';
 import {ChildrenOutletContexts, OutletContext} from '../router_outlet_context';
 import {ActivatedRouteSnapshot, equalParamsAndUrlSegments, RouterStateSnapshot} from '../router_state';
 import {equalPath} from '../url_tree';

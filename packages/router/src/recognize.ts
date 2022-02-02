@@ -9,7 +9,7 @@
 import {Type} from '@angular/core';
 import {Observable, Observer, of} from 'rxjs';
 
-import {Data, ResolveData, Route, Routes} from './config';
+import {Data, ResolveData, Route, Routes} from './models';
 import {ActivatedRouteSnapshot, inheritedParamsDataResolve, ParamsInheritanceStrategy, RouterStateSnapshot} from './router_state';
 import {PRIMARY_OUTLET} from './shared';
 import {UrlSegment, UrlSegmentGroup, UrlTree} from './url_tree';
