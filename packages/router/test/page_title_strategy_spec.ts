@@ -91,29 +91,6 @@ describe('title strategy', () => {
          tick();
          expect(document.title).toBe('resolved title');
        }));
-
-    it('sets page title with paramsInheritanceStrategy=always with `null`', fakeAsync(() => {
-         router.paramsInheritanceStrategy = 'always';
-         router.resetConfig([
-           {
-             path: 'home',
-             title: 'My Application',
-             children: [
-               {
-                 path: '',
-                 // `null` prevents inheriting from parent if it doesn't have its own value.
-                 // The effect is still that the title is the parent value because of how the
-                 // traversal works in PageTitleStrategy
-                 title: null,
-                 component: BlankCmp,
-               },
-             ],
-           },
-         ]);
-         router.navigateByUrl('home');
-         tick();
-         expect(document.title).toBe('My Application');
-       }));
   });
 
   describe('custom strategies', () => {

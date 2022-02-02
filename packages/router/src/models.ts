@@ -374,7 +374,7 @@ export interface Route {
    *
    * @see `PageTitleStrategy`
    */
-  title?: string|unknown;
+  title?: string|Type<Resolve<string>>;
 
   /**
    * The path to match against. Cannot be used together with a custom `matcher` function.
