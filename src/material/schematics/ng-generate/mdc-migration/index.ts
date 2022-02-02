@@ -10,7 +10,9 @@ import {Rule, SchematicContext, Tree} from '@angular-devkit/schematics';
 import {Schema} from './schema';
 import {DevkitFileSystem, UpdateProject, findStylesheetFiles} from '@angular/cdk/schematics';
 import {ThemingStylesMigration} from './rules/theming-styles';
+import {MIGRATORS} from './rules';
 import {dirname} from 'path';
+import {StyleMigrator} from './rules/style-migrator';
 
 /** Groups of components that must be migrated together. */
 const migrationGroups = [
@@ -59,6 +61,13 @@ export default function (options: Schema): Rule {
   console.log('Migrating:', [...componentsToMigrate]);
   console.log('Directory:', migrationDir);
 
+  const migrators: StyleMigrator[] = [];
+  for (let i = 0; i < MIGRATORS.length; i++) {
+    if (componentsToMigrate.has(MIGRATORS[i].component)) {
+      migrators.push(MIGRATORS[i]);
+    }
+  }
+
   return (tree: Tree, context: SchematicContext) => {
     const fileSystem = new DevkitFileSystem(tree);
     const program = UpdateProject.createProgramFromTsconfig(
@@ -71,7 +80,7 @@ export default function (options: Schema): Rule {
     const {hasFailures} = project.migrate(
       [ThemingStylesMigration],
       null,
-      null,
+      migrators,
       additionalStylesheetPaths,
     );
 

@@ -17,6 +17,8 @@ ts_library(
         "//src/cdk/schematics",
         "@npm//@angular-devkit/schematics",
         "@npm//@types/node",
+        "@npm//postcss",
+        "@npm//postcss-scss",
     ],
 )
 
