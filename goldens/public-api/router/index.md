@@ -453,7 +453,7 @@ export interface Route {
     redirectTo?: string;
     resolve?: ResolveData;
     runGuardsAndResolvers?: RunGuardsAndResolvers;
-    title?: string | unknown;
+    title?: string | Type<Resolve<string>>;
 }
 
 // @public
