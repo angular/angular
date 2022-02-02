@@ -1,7 +1,7 @@
 name: Lock closed inactive issues
 
 on:
-  schedule:
+  schedule:[![DevInfra](https://github.com/angular/angular/actions/workflows/dev-infra.yml/badge.svg)](https://github.com/angular/angular/actions/workflows/dev-infra.yml)
     # Run at 16:00 every day
     - cron: '0 16 * * *'
 
