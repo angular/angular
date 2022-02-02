@@ -283,22 +283,25 @@ esbuild(
 
 exports_files(["index.html"])
 
-filegroup(
-    name = "prod_app_static_files",
+[filegroup(
+    name = "prod_app_static_files_" + build_target,
     srcs = [
         ":index.html",
-        ":manifest.json",
+        "//devtools/projects/shell-chrome/src/manifest/manifest.%s.json" % build_target,
         ":shell_chrome_styles",
         "//packages/zone.js/bundles:zone.umd.js",
     ],
-)
+) for build_target in [
+    "chrome",
+    "firefox",
+]]
 
-pkg_web(
-    name = "prodapp",
+[pkg_web(
+    name = "prodapp_" + build_target,
     srcs = [
         ":bundle",
         ":devtools_bundle",
-        ":prod_app_static_files",
+        ":prod_app_static_files_%s" % build_target,
         "//devtools/projects/ng-devtools/src/lib/images",
         "//devtools/projects/shell-chrome/src:devtools.html",
         "//devtools/projects/shell-chrome/src/app:backend_bundle",
@@ -306,10 +309,14 @@ pkg_web(
         "//devtools/projects/shell-chrome/src/app:content_script_bundle",
         "//devtools/projects/shell-chrome/src/app:ng_validate_bundle",
         "//devtools/projects/shell-chrome/src/assets",
+        "//devtools/projects/shell-chrome/src/manifest",
         "//devtools/projects/shell-chrome/src/popups",
     ],
     additional_root_paths = [
         "projects/ng-devtools/src/lib",
     ],
     substitutions = {"BUILD_SCM_COMMIT_SHA": "{BUILD_SCM_COMMIT_SHA}"},
-)
+) for build_target in [
+    "chrome",
+    "firefox",
+]]
