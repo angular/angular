@@ -460,26 +460,7 @@ export class NgModuleDecoratorHandler implements
                 `${refType} ${decl.node.name.text} has no selector, please add it!`);
           }
 
-          if (dirMeta.isStandalone) {
-            diagnostics.push(makeDiagnostic(
-                ErrorCode.NGMODULE_DECLARATION_IS_STANDALONE,
-                decl.getOriginForDiagnostics(analysis.rawDeclarations!),
-                `${refType} ${
-                    decl.node.name
-                        .text} is standalone, and cannot be declared in an NgModule. Did you mean to import it instead?`));
-          }
-
           continue;
-        }
-
-        const pipeMeta = this.metaReader.getPipeMetadata(decl);
-        if (pipeMeta !== null && pipeMeta.isStandalone) {
-          diagnostics.push(makeDiagnostic(
-              ErrorCode.NGMODULE_DECLARATION_IS_STANDALONE,
-              decl.getOriginForDiagnostics(analysis.rawDeclarations!),
-              `Pipe ${
-                  decl.node.name
-                      .text} is standalone, and cannot be declared in an NgModule. Did you mean to import it instead?`));
         }
       }
     }
