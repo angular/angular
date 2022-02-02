@@ -1,3 +1,40 @@
+<a name="14.0.0-next.1"></a>
+# 14.0.0-next.1 "denim-dinosaur" (2022-02-02)
+## Breaking Changes
+### cdk
+- The deprecated `angular/cdk/testing/protractor` entry-point has been removed.
+### material-experimental
+| Commit | Type | Description |
+| -- | -- | -- |
+| [f0f9cbecf5](https://github.com/angular/components/commit/f0f9cbecf5afb7dff226a0a79df727f439324f85) | fix | **mdc-button:** align outline color with spec ([#24249](https://github.com/angular/components/pull/24249)) |
+| [5a0002739a](https://github.com/angular/components/commit/5a0002739a720c7480cb284b55f168f404046dc2) | perf | **mdc-list:** reduce bundle size ([#24291](https://github.com/angular/components/pull/24291)) |
+### cdk-experimental
+| Commit | Type | Description |
+| -- | -- | -- |
+| [75cda48da1](https://github.com/angular/components/commit/75cda48da100335f875ad6ba87db25ab01d0e972) | fix | **menu:** keep context menus open when mouse is released ([#24308](https://github.com/angular/components/pull/24308)) |
+### material
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c3188c84ef](https://github.com/angular/components/commit/c3188c84ef140f0f9e3366516d9004b46ed8da71) | feat | **tabs:** add the ability to keep content inside the DOM while off-screen ([#20393](https://github.com/angular/components/pull/20393)) |
+| [cad0872208](https://github.com/angular/components/commit/cad087220848b2cd2c252520bac26a42d8b279aa) | feat | **tabs:** add the ability to keep content inside the DOM while off-screen ([#24299](https://github.com/angular/components/pull/24299)) |
+| [1933225833](https://github.com/angular/components/commit/1933225833a17d1c4246ca2afe5dac6b0ecc4060) | fix | **datepicker:** content overflowing when large custom header is provided ([#24255](https://github.com/angular/components/pull/24255)) |
+| [a74d92e33d](https://github.com/angular/components/commit/a74d92e33df365558eaf54661db32de379d68885) | fix | **menu:** adjust overlay size when amount of items changes ([#21457](https://github.com/angular/components/pull/21457)) |
+| [c1f25bcdbe](https://github.com/angular/components/commit/c1f25bcdbea56556ee27d4153fd44dc3a95567fe) | fix | **slider:** Ticks updated wrongly if the max property 0 ([#24218](https://github.com/angular/components/pull/24218)) |
+| [e8919bcf4b](https://github.com/angular/components/commit/e8919bcf4b614fde6f6614fcaaf799b97f9702b5) | fix | **tabs:** use buttons for paginator ([#14640](https://github.com/angular/components/pull/14640)) |
+### cdk
+| Commit | Type | Description |
+| -- | -- | -- |
+| [781a45a2b6](https://github.com/angular/components/commit/781a45a2b6e7bd0ea38e7023fc4f492b02a0014f) | fix | **a11y:** allow for multiple browser-generated description containers ([#23507](https://github.com/angular/components/pull/23507)) |
+| [2575b00808](https://github.com/angular/components/commit/2575b008083f4736ed48877604b0165c03bd9175) | refactor | **testing:** remove deprecated protractor harness environment ([#24304](https://github.com/angular/components/pull/24304)) |
+### multiple
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c46ece07b3](https://github.com/angular/components/commit/c46ece07b348bad43e54fbad9d10e4fb9aab367f) | perf | Remove IE 11 cruft from table, column-resize, and popover-edit. ([#23900](https://github.com/angular/components/pull/23900)) |
+## Special Thanks
+Amy Sorto, Dmytro Mezhenskyi, Joey Perrott, Karl Seamon, Kristiyan Kostadinov, Miles Malerba, Paul Gschwendtner, Zach Arend, Zack Elliott and ram
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="13.2.1"></a>
 # 13.2.1 "vinyl-viola" (2022-02-02)
 ### cdk
