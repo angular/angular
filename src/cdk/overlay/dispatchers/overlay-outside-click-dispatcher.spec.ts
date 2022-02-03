@@ -1,12 +1,11 @@
 import {TestBed, inject, fakeAsync} from '@angular/core/testing';
-import {ApplicationRef, Component} from '@angular/core';
+import {Component} from '@angular/core';
 import {dispatchFakeEvent, dispatchMouseEvent} from '../../testing/private';
 import {OverlayModule, Overlay} from '../index';
 import {OverlayOutsideClickDispatcher} from './overlay-outside-click-dispatcher';
 import {ComponentPortal} from '@angular/cdk/portal';
 
 describe('OverlayOutsideClickDispatcher', () => {
-  let appRef: ApplicationRef;
   let outsideClickDispatcher: OverlayOutsideClickDispatcher;
   let overlay: Overlay;
 
@@ -17,9 +16,8 @@ describe('OverlayOutsideClickDispatcher', () => {
     });
 
     inject(
-      [ApplicationRef, OverlayOutsideClickDispatcher, Overlay],
-      (ar: ApplicationRef, ocd: OverlayOutsideClickDispatcher, o: Overlay) => {
-        appRef = ar;
+      [OverlayOutsideClickDispatcher, Overlay],
+      (ocd: OverlayOutsideClickDispatcher, o: Overlay) => {
         outsideClickDispatcher = ocd;
         overlay = o;
       },
@@ -338,70 +336,6 @@ describe('OverlayOutsideClickDispatcher', () => {
       thirdOverlayRef.dispose();
     }),
   );
-
-  describe('change detection behavior', () => {
-    it('should not run change detection if there is no portal attached to the overlay', () => {
-      spyOn(appRef, 'tick');
-      const overlayRef = overlay.create();
-      outsideClickDispatcher.add(overlayRef);
-
-      const context = document.createElement('div');
-      document.body.appendChild(context);
-
-      overlayRef.outsidePointerEvents().subscribe();
-      dispatchMouseEvent(context, 'click');
-
-      expect(appRef.tick).toHaveBeenCalledTimes(0);
-    });
-
-    it('should not run change detection if the click was made outside the overlay but there are no `outsidePointerEvents` observers', () => {
-      spyOn(appRef, 'tick');
-      const portal = new ComponentPortal(TestComponent);
-      const overlayRef = overlay.create();
-      overlayRef.attach(portal);
-      outsideClickDispatcher.add(overlayRef);
-
-      const context = document.createElement('div');
-      document.body.appendChild(context);
-
-      dispatchMouseEvent(context, 'click');
-
-      expect(appRef.tick).toHaveBeenCalledTimes(0);
-    });
-
-    it('should not run change detection if the click was made inside the overlay and there are `outsidePointerEvents` observers', () => {
-      spyOn(appRef, 'tick');
-      const portal = new ComponentPortal(TestComponent);
-      const overlayRef = overlay.create();
-      overlayRef.attach(portal);
-      outsideClickDispatcher.add(overlayRef);
-
-      overlayRef.outsidePointerEvents().subscribe();
-      dispatchMouseEvent(overlayRef.overlayElement, 'click');
-
-      expect(appRef.tick).toHaveBeenCalledTimes(0);
-    });
-
-    it('should run change detection if the click was made outside the overlay and there are `outsidePointerEvents` observers', () => {
-      spyOn(appRef, 'tick');
-      const portal = new ComponentPortal(TestComponent);
-      const overlayRef = overlay.create();
-      overlayRef.attach(portal);
-      outsideClickDispatcher.add(overlayRef);
-
-      const context = document.createElement('div');
-      document.body.appendChild(context);
-
-      expect(appRef.tick).toHaveBeenCalledTimes(0);
-      dispatchMouseEvent(context, 'click');
-      expect(appRef.tick).toHaveBeenCalledTimes(0);
-
-      overlayRef.outsidePointerEvents().subscribe();
-
-      dispatchMouseEvent(context, 'click');
-      expect(appRef.tick).toHaveBeenCalledTimes(1);
-    });
-  });
 });
 
 @Component({
