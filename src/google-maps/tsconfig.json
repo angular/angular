@@ -5,12 +5,7 @@
     "rootDir": "..",
     "baseUrl": ".",
     "paths": {},
-    "types": [
-      "jasmine"
-    ]
+    "types": ["jasmine"]
   },
-  "include": [
-    "./**/*.ts",
-    "../dev-mode-types.d.ts"
-  ]
+  "include": ["./**/*.ts", "../dev-mode-types.d.ts"]
 }

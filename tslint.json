@@ -1,28 +1,17 @@
 {
-  "extends": [
-    "rxjs-tslint-rules"
-  ],
+  "extends": ["rxjs-tslint-rules"],
   "rulesDirectory": [
     "./tools/tslint-rules/",
     "node_modules/vrsource-tslint-rules/rules",
     "node_modules/codelyzer"
   ],
   "rules": {
-    "ban-types": [
-      true,
-      [
-        "ReadonlyArray<.+>",
-        "Use 'readonly T[]' instead."
-      ]
-    ],
+    "ban-types": [true, ["ReadonlyArray<.+>", "Use 'readonly T[]' instead."]],
     // Disable this flag because of SHA tslint#48b0c597f9257712c7d1f04b55ed0aa60e333f6a
     // TSLint now shows warnings if types for properties are inferred. This rule needs to be
     // disabled because all properties need to have explicit types set to work for Dgeni.
     "no-inferrable-types": false,
-    "comment-format": [
-      true,
-      "check-space"
-    ],
+    "comment-format": [true, "check-space"],
     "eofline": true,
     "no-construct": true,
     "prefer-literal": [true, "object"],
@@ -56,7 +45,10 @@
       {"name": ["Object", "assign"], "message": "Use the spread operator instead."},
       {"name": ["*", "asObservable"], "message": "Cast to Observable type instead."},
       {"name": ["*", "removeChild"], "message": "Use `remove` instead instead."},
-      {"name": ["isDevMode"], "message": "Use `typeof ngDevMode === 'undefined' || ngDevMode` instead"}
+      {
+        "name": ["isDevMode"],
+        "message": "Use `typeof ngDevMode === 'undefined' || ngDevMode` instead"
+      }
     ],
     // Avoids inconsistent linebreak styles in source files. Forces developers to use LF linebreaks.
     "linebreak-style": [true, "LF"],
@@ -101,47 +93,50 @@
       ["Directionality", "DateAdapter"]
     ],
     "no-coercion-members": true,
-    "no-host-decorator-in-concrete": [
+    "no-host-decorator-in-concrete": [true, "HostBinding", "HostListener"],
+    "member-naming": [
       true,
-      "HostBinding",
-      "HostListener"
-    ],
-    "member-naming": [true, {
-      "private": "^_"
-    }],
-    "symbol-naming": [true, "^_?[A-Z][a-zA-Z0-9]*$"],
-    "validate-decorators": [true, {
-      "Component": {
-        "argument": 0,
-        "properties": {
-          "!host": "\\[class\\]",
-          "!preserveWhitespaces": ".*",
-          "!styles": ".*",
-          "!moduleId": ".*",
-          "changeDetection": "\\.OnPush$",
-          "encapsulation": "\\.None$"
-        }
-      },
-      "Directive": {
-        "argument": 0,
-        "properties": {
-          "!host": "\\[class\\]"
-        }
-      },
-      "NgModule": {
-        "argument": 0,
-        "properties": {
-          "*": "^(?!\\s*$).+"
-        }
-      },
-      "ContentChildren": {
-        "argument": 1,
-        "required": true,
-        "properties": {
-          "descendants": "^(true|false)$"
-        }
+      {
+        "private": "^_"
       }
-    }, "src/!(e2e-app|components-examples|universal-app|dev-app)/**/!(*.spec).ts"],
+    ],
+    "symbol-naming": [true, "^_?[A-Z][a-zA-Z0-9]*$"],
+    "validate-decorators": [
+      true,
+      {
+        "Component": {
+          "argument": 0,
+          "properties": {
+            "!host": "\\[class\\]",
+            "!preserveWhitespaces": ".*",
+            "!styles": ".*",
+            "!moduleId": ".*",
+            "changeDetection": "\\.OnPush$",
+            "encapsulation": "\\.None$"
+          }
+        },
+        "Directive": {
+          "argument": 0,
+          "properties": {
+            "!host": "\\[class\\]"
+          }
+        },
+        "NgModule": {
+          "argument": 0,
+          "properties": {
+            "*": "^(?!\\s*$).+"
+          }
+        },
+        "ContentChildren": {
+          "argument": 1,
+          "required": true,
+          "properties": {
+            "descendants": "^(true|false)$"
+          }
+        }
+      },
+      "src/!(e2e-app|components-examples|universal-app|dev-app)/**/!(*.spec).ts"
+    ],
     "require-license-banner": [
       true,
       "src/!(e2e-app|components-examples|universal-app)/**/!(*.spec).ts",
@@ -154,12 +149,15 @@
       "!src/cdk/testing/+(private|tests)/**/*",
       "!src/google-maps/testing/**/*"
     ],
-    "file-name-casing": [true, {
-      // Exclude custom lint rule files since they have to always be camel-cased and end
-      // with "Rule".
-      "\\w+Rule.ts": "camel-case",
-      ".*": "kebab-case"
-    }],
+    "file-name-casing": [
+      true,
+      {
+        // Exclude custom lint rule files since they have to always be camel-cased and end
+        // with "Rule".
+        "\\w+Rule.ts": "camel-case",
+        ".*": "kebab-case"
+      }
+    ],
     "no-unescaped-html-tag": true,
     // Ensures that all rxjs imports come only from `rxjs` and `rxjs/operators`. Also ensures
     // that no AST utils from `@schematics/angular` are imported. These should be vendored.

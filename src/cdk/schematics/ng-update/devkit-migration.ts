@@ -42,5 +42,6 @@ export abstract class DevkitMigration<Data> extends Migration<Data, DevkitContex
   ): PostMigrationAction;
 }
 
-export type DevkitMigrationCtor<Data> = Constructor<DevkitMigration<Data>> &
-  {[m in keyof typeof DevkitMigration]: typeof DevkitMigration[m]};
+export type DevkitMigrationCtor<Data> = Constructor<DevkitMigration<Data>> & {
+  [m in keyof typeof DevkitMigration]: typeof DevkitMigration[m];
+};

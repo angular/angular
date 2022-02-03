@@ -73,7 +73,7 @@
     "@angular/bazel": "13.2.0",
     "@angular/cli": "13.2.0",
     "@angular/compiler-cli": "13.2.0",
-    "@angular/dev-infra-private": "https://github.com/angular/dev-infra-private-builds.git#2b0196f6ebf6de2e62836e962b9f42007e6cf5d6",
+    "@angular/dev-infra-private": "https://github.com/angular/dev-infra-private-builds.git#f589cd87f196e09a775d8be25a0f83672f78fc99",
     "@angular/localize": "13.2.0",
     "@angular/platform-browser-dynamic": "13.2.0",
     "@angular/platform-server": "13.2.0",

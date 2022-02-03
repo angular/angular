@@ -4,12 +4,12 @@
     "**/.git/subtree-cache/**": true,
     "**/node_modules/**": true,
     "**/bazel-out/**": true,
-    "**/dist/**": true,
+    "**/dist/**": true
   },
   "search.exclude": {
     "**/node_modules": true,
     "**/bazel-out": true,
-    "**/dist": true,
+    "**/dist": true
   },
   "git.ignoreLimitWarning": true,
   "[javascript]": {

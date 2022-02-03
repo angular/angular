@@ -17,29 +17,54 @@
     "./tools/stylelint/no-unused-import.ts"
   ],
   "rules": {
-    "material/no-prefixes": [true, {
-      "browsers": ["last 2 versions", "not dead", "not and_qq > 0", "not OperaMini all", "not ie > 0", "not edge < 78"],
-      "filePattern": "**/!(*-example.css)"
-    }],
+    "material/no-prefixes": [
+      true,
+      {
+        "browsers": [
+          "last 2 versions",
+          "not dead",
+          "not and_qq > 0",
+          "not OperaMini all",
+          "not ie > 0",
+          "not edge < 78"
+        ],
+        "filePattern": "**/!(*-example.css)"
+      }
+    ],
     "material/theme-mixin-api": true,
     "material/selector-no-deep": true,
     "material/no-nested-mixin": true,
     "material/no-unused-import": true,
-    "material/single-line-comment-only": [true, {
-      "filePattern": "\\.scss$"
-    }],
-    "material/no-import": [true, {
-      "exclude": "\\.import\\.scss$"
-    }],
-    "material/no-ampersand-beyond-selector-start": [true, {
-      "filePattern": "-theme\\.scss$"
-    }],
-    "material/no-concrete-rules": [true, {
-      "filePattern": "^_.*\\.scss$"
-    }],
-    "material/no-top-level-ampersand-in-mixin": [true, {
-      "filePattern": "-theme\\.scss$"
-    }],
+    "material/single-line-comment-only": [
+      true,
+      {
+        "filePattern": "\\.scss$"
+      }
+    ],
+    "material/no-import": [
+      true,
+      {
+        "exclude": "\\.import\\.scss$"
+      }
+    ],
+    "material/no-ampersand-beyond-selector-start": [
+      true,
+      {
+        "filePattern": "-theme\\.scss$"
+      }
+    ],
+    "material/no-concrete-rules": [
+      true,
+      {
+        "filePattern": "^_.*\\.scss$"
+      }
+    ],
+    "material/no-top-level-ampersand-in-mixin": [
+      true,
+      {
+        "filePattern": "-theme\\.scss$"
+      }
+    ],
 
     "color-hex-case": "lower",
     "color-no-invalid-hex": true,
@@ -71,9 +96,12 @@
     "property-case": "lower",
     "no-duplicate-at-import-rules": true,
 
-    "declaration-block-no-duplicate-properties": [true, {
-      "ignore": ["consecutive-duplicates-with-different-values"]
-    }],
+    "declaration-block-no-duplicate-properties": [
+      true,
+      {
+        "ignore": ["consecutive-duplicates-with-different-values"]
+      }
+    ],
     "declaration-block-trailing-semicolon": "always",
     "declaration-block-single-line-max-declarations": 1,
     "declaration-block-semicolon-space-before": "never",
@@ -105,12 +133,18 @@
     "selector-max-id": 0,
     "no-missing-end-of-source-newline": true,
     "no-eol-whitespace": true,
-    "max-line-length": [100, {
-      "ignorePattern": "/https?://.*/"
-    }],
+    "max-line-length": [
+      100,
+      {
+        "ignorePattern": "/https?://.*/"
+      }
+    ],
     "linebreaks": "unix",
-    "selector-class-pattern": ["^_?(mat-|cdk-|example-|demo-|ng-|mdc-|map-|test-)", {
-      "resolveNestedSelectors": true
-    }]
+    "selector-class-pattern": [
+      "^_?(mat-|cdk-|example-|demo-|ng-|mdc-|map-|test-)",
+      {
+        "resolveNestedSelectors": true
+      }
+    ]
   }
 }

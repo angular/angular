@@ -14,8 +14,6 @@
     "noFallthroughCasesInSwitch": true,
     "noImplicitOverride": true,
     "target": "es2020",
-    "types": [
-      "node"
-    ]
+    "types": ["node"]
   }
 }

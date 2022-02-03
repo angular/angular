@@ -3,29 +3,14 @@
     "src/cdk-experimental/dialog/dialog-config.ts",
     "src/cdk-experimental/dialog/dialog-container.ts"
   ],
-  [
-    "src/cdk/drag-drop/directives/drag.ts",
-    "src/cdk/drag-drop/directives/drop-list.ts"
-  ],
-  [
-    "src/cdk/drag-drop/directives/drag.ts",
-    "src/cdk/drag-drop/drag-events.ts"
-  ],
+  ["src/cdk/drag-drop/directives/drag.ts", "src/cdk/drag-drop/directives/drop-list.ts"],
+  ["src/cdk/drag-drop/directives/drag.ts", "src/cdk/drag-drop/drag-events.ts"],
   [
     "src/cdk/drag-drop/directives/drag.ts",
     "src/cdk/drag-drop/drag-events.ts",
     "src/cdk/drag-drop/directives/drop-list.ts"
   ],
-  [
-    "src/cdk/drag-drop/drag-ref.ts",
-    "src/cdk/drag-drop/drop-list-ref.ts"
-  ],
-  [
-    "src/cdk/scrolling/scroll-dispatcher.ts",
-    "src/cdk/scrolling/scrollable.ts"
-  ],
-  [
-    "src/cdk/scrolling/virtual-scroll-strategy.ts",
-    "src/cdk/scrolling/virtual-scroll-viewport.ts"
-  ]
+  ["src/cdk/drag-drop/drag-ref.ts", "src/cdk/drag-drop/drop-list-ref.ts"],
+  ["src/cdk/scrolling/scroll-dispatcher.ts", "src/cdk/scrolling/scrollable.ts"],
+  ["src/cdk/scrolling/virtual-scroll-strategy.ts", "src/cdk/scrolling/virtual-scroll-viewport.ts"]
 ]

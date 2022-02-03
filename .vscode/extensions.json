@@ -3,8 +3,5 @@
   // Extension identifier format: ${publisher}.${name}. Example: vscode.csharp
 
   // List of extensions which should be recommended for users of this workspace.
-  "recommendations": [
-    "ms-vscode.vscode-typescript-tslint-plugin",
-    "esbenp.prettier-vscode"
-  ]
+  "recommendations": ["ms-vscode.vscode-typescript-tslint-plugin", "esbenp.prettier-vscode"]
 }

@@ -20,10 +20,7 @@
     "sourceMap": true,
     "declaration": true,
     "target": "es6",
-    "types": [
-      "jasmine",
-      "node"
-    ],
+    "types": ["jasmine", "node"],
     "baseUrl": ".",
     "paths": {
       "@angular/cdk/schematics": ["../../cdk/schematics"]

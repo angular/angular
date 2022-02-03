@@ -22,12 +22,24 @@
     ".": {
       "sass": "./_index.scss"
     },
-    "./a11y-prebuilt.css": {"style": "./a11y-prebuilt.css"},
-    "./a11y-prebuilt": {"style": "./a11y-prebuilt.css"},
-    "./overlay-prebuilt.css": {"style": "./overlay-prebuilt.css"},
-    "./overlay-prebuilt": {"style": "./overlay-prebuilt.css"},
-    "./text-field-prebuilt.css": {"style": "./text-field-prebuilt.css"},
-    "./text-field-prebuilt": {"style": "./text-field-prebuilt.css"},
+    "./a11y-prebuilt.css": {
+      "style": "./a11y-prebuilt.css"
+    },
+    "./a11y-prebuilt": {
+      "style": "./a11y-prebuilt.css"
+    },
+    "./overlay-prebuilt.css": {
+      "style": "./overlay-prebuilt.css"
+    },
+    "./overlay-prebuilt": {
+      "style": "./overlay-prebuilt.css"
+    },
+    "./text-field-prebuilt.css": {
+      "style": "./text-field-prebuilt.css"
+    },
+    "./text-field-prebuilt": {
+      "style": "./text-field-prebuilt.css"
+    },
     "./schematics": {
       "default": "./schematics/index.js"
     }

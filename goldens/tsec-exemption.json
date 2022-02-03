@@ -1,10 +1,6 @@
 {
-  "ban-trustedtypes-createpolicy": [
-    "../src/material/icon/trusted-types.ts"
-  ],
-  "ban-element-innerhtml-assignments": [
-    "../src/material/icon/icon-registry.ts"
-  ],
+  "ban-trustedtypes-createpolicy": ["../src/material/icon/trusted-types.ts"],
+  "ban-element-innerhtml-assignments": ["../src/material/icon/icon-registry.ts"],
   "ban-element-setattribute": [
     "../src/cdk/a11y/aria-describer/aria-reference.ts",
     "../src/material-experimental/mdc-checkbox/checkbox.ts",

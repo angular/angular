@@ -39,7 +39,7 @@
     }
   },
   "angularCompilerOptions": {
-    "strictTemplates": true,
+    "strictTemplates": true
   },
   "include": [
     "src/**/*.ts",

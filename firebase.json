@@ -18,8 +18,6 @@
         ]
       }
     ],
-    "ignore": [
-      "firebase.json"
-    ]
+    "ignore": ["firebase.json"]
   }
 }

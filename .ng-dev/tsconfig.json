@@ -6,5 +6,5 @@
     "noEmit": true,
     "skipLibCheck": true,
     "types": []
-  },
+  }
 }
