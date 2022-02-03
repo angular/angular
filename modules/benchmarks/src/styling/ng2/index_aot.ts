@@ -10,7 +10,7 @@ import {enableProdMode} from '@angular/core';
 import {platformBrowser} from '@angular/platform-browser';
 
 import {init} from './init';
-import {StylingModuleNgFactory} from './styling.ngfactory';
+import {StylingModule} from './styling';
 
 enableProdMode();
-platformBrowser().bootstrapModuleFactory(StylingModuleNgFactory).then(init);
+platformBrowser().bootstrapModule(StylingModule).then(init);

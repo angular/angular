@@ -6,7 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BasicComp} from './basic';
-import {MainModuleNgFactory} from './module.ngfactory';
+import {createNgModuleRef} from '@angular/core';
 
-MainModuleNgFactory.create(null).instance.appRef.bootstrap(BasicComp);
+import {BasicComp} from './basic';
+import {MainModule} from './module';
+
+const ngModuleRef = createNgModuleRef(MainModule);
+ngModuleRef.instance.appRef.bootstrap(BasicComp);
