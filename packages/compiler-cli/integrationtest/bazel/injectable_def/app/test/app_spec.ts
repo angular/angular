@@ -8,18 +8,18 @@
 
 import {Component, Injectable, INJECTOR, NgModule} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {renderModuleFactory} from '@angular/platform-server';
-import {BasicAppModuleNgFactory} from 'app_built/src/basic.ngfactory';
-import {DepAppModuleNgFactory} from 'app_built/src/dep.ngfactory';
-import {HierarchyAppModuleNgFactory} from 'app_built/src/hierarchy.ngfactory';
-import {RootAppModuleNgFactory} from 'app_built/src/root.ngfactory';
-import {SelfAppModuleNgFactory} from 'app_built/src/self.ngfactory';
-import {StringAppModuleNgFactory} from 'app_built/src/string.ngfactory';
-import {TokenAppModuleNgFactory} from 'app_built/src/token.ngfactory';
+import {renderModule} from '@angular/platform-server';
+import {BasicAppModule} from 'app_built/src/basic';
+import {DepAppModule} from 'app_built/src/dep';
+import {HierarchyAppModule} from 'app_built/src/hierarchy';
+import {RootAppModule} from 'app_built/src/root';
+import {SelfAppModule} from 'app_built/src/self';
+import {StringAppModule} from 'app_built/src/string';
+import {TokenAppModule} from 'app_built/src/token';
 
 describe('ngInjectableDef Bazel Integration', () => {
   it('works in AOT', done => {
-    renderModuleFactory(BasicAppModuleNgFactory, {
+    renderModule(BasicAppModule, {
       document: '<id-app></id-app>',
       url: '/',
     }).then(html => {
@@ -29,7 +29,7 @@ describe('ngInjectableDef Bazel Integration', () => {
   });
 
   it('@Self() works in component hierarchies', done => {
-    renderModuleFactory(HierarchyAppModuleNgFactory, {
+    renderModule(HierarchyAppModule, {
       document: '<hierarchy-app></hierarchy-app>',
       url: '/',
     }).then(html => {
@@ -39,7 +39,7 @@ describe('ngInjectableDef Bazel Integration', () => {
   });
 
   it('@Optional() Self() resolves to @Injectable() scoped service', done => {
-    renderModuleFactory(SelfAppModuleNgFactory, {
+    renderModule(SelfAppModule, {
       document: '<self-app></self-app>',
       url: '/',
     }).then(html => {
@@ -49,7 +49,7 @@ describe('ngInjectableDef Bazel Integration', () => {
   });
 
   it('InjectionToken ngInjectableDef works', done => {
-    renderModuleFactory(TokenAppModuleNgFactory, {
+    renderModule(TokenAppModule, {
       document: '<token-app></token-app>',
       url: '/',
     }).then(html => {
@@ -59,7 +59,7 @@ describe('ngInjectableDef Bazel Integration', () => {
   });
 
   it('APP_ROOT_SCOPE works', done => {
-    renderModuleFactory(RootAppModuleNgFactory, {
+    renderModule(RootAppModule, {
       document: '<root-app></root-app>',
       url: '/',
     }).then(html => {
@@ -69,7 +69,7 @@ describe('ngInjectableDef Bazel Integration', () => {
   });
 
   it('can inject dependencies', done => {
-    renderModuleFactory(DepAppModuleNgFactory, {
+    renderModule(DepAppModule, {
       document: '<dep-app></dep-app>',
       url: '/',
     }).then(html => {
@@ -79,7 +79,7 @@ describe('ngInjectableDef Bazel Integration', () => {
   });
 
   it('string tokens work', done => {
-    renderModuleFactory(StringAppModuleNgFactory, {
+    renderModule(StringAppModule, {
       document: '<string-app></string-app>',
       url: '/',
     }).then(html => {

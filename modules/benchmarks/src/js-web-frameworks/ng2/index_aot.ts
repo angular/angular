@@ -10,7 +10,7 @@ import {enableProdMode} from '@angular/core';
 import {platformBrowser} from '@angular/platform-browser';
 
 import {init} from './init';
-import {JsWebFrameworksModuleNgFactory} from './rows.ngfactory';
+import {JsWebFrameworksModule} from './rows';
 
 enableProdMode();
-platformBrowser().bootstrapModuleFactory(JsWebFrameworksModuleNgFactory).then(init);
+platformBrowser().bootstrapModule(JsWebFrameworksModule).then(init);

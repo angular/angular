@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Injectable, NgModule, Optional, Self} from '@angular/core';
+import {Component, NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {ServerModule} from '@angular/platform-server';
 import {RouterModule} from '@angular/router';
 
-import {LazyModuleNgFactory} from './root_lazy.ngfactory';
+import {LazyModule} from './root_lazy';
 
 @Component({
   selector: 'root-app',
@@ -21,8 +21,8 @@ export class AppComponent {
 }
 
 export function children(): any {
-  console.error('children', LazyModuleNgFactory);
-  return LazyModuleNgFactory;
+  console.error('children', LazyModule);
+  return LazyModule;
 }
 
 
