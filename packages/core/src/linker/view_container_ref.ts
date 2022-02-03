@@ -337,11 +337,31 @@ const R3ViewContainerRef = class ViewContainerRef extends VE_ViewContainerRef {
         componentFactoryOrType as ComponentFactory<C>:
         new R3ComponentFactory(getComponentDef(componentFactoryOrType)!);
     const contextInjector = injector || this.parentInjector;
-    if (!ngModuleRef && (componentFactory as any).ngModule == null && contextInjector) {
-      // DO NOT REFACTOR. The code here used to have a `value || undefined` expression
-      // which seems to cause internal google apps to fail. This is documented in the
-      // following internal bug issue: go/b/142967802
-      const result = contextInjector.get(NgModuleRef, null);
+
+    // If an `NgModuleRef` is not provided explicitly, try retrieving it from the DI tree.
+    if (!ngModuleRef && (componentFactory as any).ngModule == null) {
+      // For the `ComponentFactory` case, entering this logic is very unlikely, since we expect that
+      // an instance of a `ComponentFactory`, resolved via `ComponentFactoryResolver` would have an
+      // `ngModule` field. This is possible in some test scenarios and potentially in some JIT-based
+      // use-cases. For the `ComponentFactory` case we preserve backwards-compatibility and try
+      // using a provided injector first, then fall back to the parent injector of this
+      // `ViewContainerRef` instance.
+      //
+      // For the factory-less case, it's critical to establish a connection with the module
+      // injector tree (by retrieving an instance of an `NgModuleRef` and accessing its injector),
+      // so that a component can use DI tokens provided in MgModules. For this reason, we can not
+      // rely on the provided injector, since it might be detached from the DI tree (for example, if
+      // it was created via `Injector.create` without specifying a parent injector, or if an
+      // injector is retrieved from an `NgModuleRef` created via `createNgModuleRef` using an
+      // NgModule outside of a module tree). Instead, we always use `ViewContainerRef`'s parent
+      // injector, which is normally connected to the DI tree, which includes module injector
+      // subtree.
+      const _injector = isComponentFactory ? contextInjector : this.parentInjector;
+
+      // DO NOT REFACTOR. The code here used to have a `injector.get(NgModuleRef, null) ||
+      // undefined` expression which seems to cause internal google apps to fail. This is documented
+      // in the following internal bug issue: go/b/142967802
+      const result = _injector.get(NgModuleRef, null);
       if (result) {
         ngModuleRef = result;
       }

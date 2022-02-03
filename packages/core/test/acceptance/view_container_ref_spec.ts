@@ -8,7 +8,8 @@
 
 import {CommonModule, DOCUMENT} from '@angular/common';
 import {computeMsgId} from '@angular/compiler';
-import {Compiler, Component, ComponentFactoryResolver, Directive, DoCheck, ElementRef, EmbeddedViewRef, ErrorHandler, InjectionToken, Injector, Input, NgModule, NgModuleRef, NO_ERRORS_SCHEMA, OnDestroy, OnInit, Pipe, PipeTransform, QueryList, RendererFactory2, RendererType2, Sanitizer, TemplateRef, ViewChild, ViewChildren, ViewContainerRef, ɵsetDocument} from '@angular/core';
+import {Compiler, Component, ComponentFactoryResolver, Directive, DoCheck, ElementRef, EmbeddedViewRef, ErrorHandler, InjectionToken, Injector, Input, NgModule, NgModuleRef, NO_ERRORS_SCHEMA, OnDestroy, OnInit, Pipe, PipeTransform, QueryList, Renderer2, RendererFactory2, RendererType2, Sanitizer, TemplateRef, ViewChild, ViewChildren, ViewContainerRef, ɵsetDocument} from '@angular/core';
+import {isProceduralRenderer} from '@angular/core/src/render3/interfaces/renderer';
 import {ngDevModeResetPerfCounters} from '@angular/core/src/util/ng_dev_mode';
 import {ComponentFixture, TestBed, TestComponentRenderer} from '@angular/core/testing';
 import {clearTranslations, loadTranslations} from '@angular/localize';
@@ -1411,7 +1412,7 @@ describe('ViewContainerRef', () => {
         `,
       })
       class ChildB {
-        constructor(private injector: Injector) {}
+        constructor(private injector: Injector, public renderer: Renderer2) {}
         get tokenA() {
           return this.injector.get(TOKEN_A);
         }
@@ -1424,19 +1425,19 @@ describe('ViewContainerRef', () => {
         selector: 'app',
         template: '',
         providers: [
-          {provide: TOKEN_B, useValue: '[TokenValueB]'},
+          {provide: TOKEN_B, useValue: '[TokenB - Value]'},
         ]
       })
       class App {
         constructor(
             public viewContainerRef: ViewContainerRef, public ngModuleRef: NgModuleRef<unknown>,
-            public injector: Injector) {}
+            public injector: Injector, public cfr: ComponentFactoryResolver) {}
       }
 
       @NgModule({
         declarations: [App, ChildA, ChildB],
         providers: [
-          {provide: TOKEN_A, useValue: '[TokenValueA]'},
+          {provide: TOKEN_A, useValue: '[TokenA - Value]'},
         ]
       })
       class AppModule {
@@ -1452,6 +1453,48 @@ describe('ViewContainerRef', () => {
       it('should be able to create a component when Type is provided', () => {
         fixture.componentInstance.viewContainerRef.createComponent(ChildA);
         expect(fixture.nativeElement.parentNode.textContent).toContain('[Child Component A]');
+      });
+
+      it('should maintain connection with module injector when custom injector is provided', () => {
+        const comp = fixture.componentInstance;
+        const customInjector = Injector.create({
+          providers: [
+            {provide: TOKEN_B, useValue: '[TokenB - CustomValue]'},
+          ]
+        });
+
+        // Use factory-less way of creating a component.
+        const factorylessChildB =
+            comp.viewContainerRef.createComponent(ChildB, {injector: customInjector});
+        fixture.detectChanges();
+
+        // Custom injector provides only `TOKEN_B`,
+        // so `TOKEN_A` should be retrieved from the module injector.
+        expect(getElementText(fixture.nativeElement.parentNode))
+            .toContain('[TokenA - Value] [TokenB - CustomValue]');
+
+        // Verify that the dynamically-created component uses correct instance of a renderer.
+        // Ivy runtime code switches over to Renderer3 (document) if an instance of the Renderer2 is
+        // not found, which can happen when the module injector subtree is not in the DI tree.
+        // See https://github.com/angular/angular/issues/44897.
+        expect(isProceduralRenderer(factorylessChildB.instance.renderer)).toBe(true);
+
+        // Use factory-based API to compare the output with the factory-less one.
+        const childBFactory = comp.cfr.resolveComponentFactory(ChildB);
+        const factoryBasedChildB = comp.viewContainerRef.createComponent(
+            childBFactory, undefined, customInjector /* injector */);
+        fixture.detectChanges();
+
+        // Custom injector provides only `TOKEN_B`,
+        // so `TOKEN_A` should be retrieved from the module injector
+        expect(getElementText(fixture.nativeElement.parentNode))
+            .toContain('[TokenA - Value] [TokenB - CustomValue]');
+
+        // Verify that the dynamically-created component uses correct instance of a renderer.
+        // Ivy runtime code switches over to Renderer3 (document) if an instance of the Renderer2 is
+        // not found, which can happen when the module injector subtree is not in the DI tree.
+        // See https://github.com/angular/angular/issues/44897.
+        expect(isProceduralRenderer(factoryBasedChildB.instance.renderer)).toBe(true);
       });
 
       it('should throw if class without @Component decorator is used as Component type', () => {
@@ -1489,8 +1532,8 @@ describe('ViewContainerRef', () => {
               .toContain(
                   '[Child Component B] ' +
                   '[Projectable Node] ' +
-                  '[TokenValueA] ' +
-                  '[TokenValueB] ' +
+                  '[TokenA - Value] ' +
+                  '[TokenB - Value] ' +
                   '[Child Component A]');
         });
       });
