@@ -7,7 +7,7 @@
  */
 
 import {DOCUMENT} from '@angular/common';
-import {Inject, Injectable} from '@angular/core';
+import {Inject, Injectable, NgZone, Optional} from '@angular/core';
 import {OverlayReference} from '../overlay-reference';
 import {BaseOverlayDispatcher} from './base-overlay-dispatcher';
 
@@ -18,7 +18,11 @@ import {BaseOverlayDispatcher} from './base-overlay-dispatcher';
  */
 @Injectable({providedIn: 'root'})
 export class OverlayKeyboardDispatcher extends BaseOverlayDispatcher {
-  constructor(@Inject(DOCUMENT) document: any) {
+  constructor(
+    @Inject(DOCUMENT) document: any,
+    /** @breaking-change 14.0.0 _ngZone will be required. */
+    @Optional() private _ngZone?: NgZone,
+  ) {
     super(document);
   }
 
@@ -28,7 +32,14 @@ export class OverlayKeyboardDispatcher extends BaseOverlayDispatcher {
 
     // Lazily start dispatcher once first overlay is added
     if (!this._isAttached) {
-      this._document.body.addEventListener('keydown', this._keydownListener);
+      /** @breaking-change 14.0.0 _ngZone will be required. */
+      if (this._ngZone) {
+        this._ngZone.runOutsideAngular(() =>
+          this._document.body.addEventListener('keydown', this._keydownListener),
+        );
+      } else {
+        this._document.body.addEventListener('keydown', this._keydownListener);
+      }
       this._isAttached = true;
     }
   }
@@ -53,7 +64,13 @@ export class OverlayKeyboardDispatcher extends BaseOverlayDispatcher {
       // because we don't want overlays that don't handle keyboard events to block the ones below
       // them that do.
       if (overlays[i]._keydownEvents.observers.length > 0) {
-        overlays[i]._keydownEvents.next(event);
+        const keydownEvents = overlays[i]._keydownEvents;
+        /** @breaking-change 14.0.0 _ngZone will be required. */
+        if (this._ngZone) {
+          this._ngZone.run(() => keydownEvents.next(event));
+        } else {
+          keydownEvents.next(event);
+        }
         break;
       }
     }

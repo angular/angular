@@ -317,11 +317,12 @@ export class OverlayContainer implements OnDestroy {
 
 // @public
 export class OverlayKeyboardDispatcher extends BaseOverlayDispatcher {
-    constructor(document: any);
+    constructor(document: any,
+    _ngZone?: NgZone | undefined);
     add(overlayRef: OverlayReference): void;
     protected detach(): void;
     // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<OverlayKeyboardDispatcher, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<OverlayKeyboardDispatcher, [null, { optional: true; }]>;
     // (undocumented)
     static ɵprov: i0.ɵɵInjectableDeclaration<OverlayKeyboardDispatcher>;
 }
@@ -338,11 +339,12 @@ export class OverlayModule {
 
 // @public
 export class OverlayOutsideClickDispatcher extends BaseOverlayDispatcher {
-    constructor(document: any, _platform: Platform);
+    constructor(document: any, _platform: Platform,
+    _ngZone?: NgZone | undefined);
     add(overlayRef: OverlayReference): void;
     protected detach(): void;
     // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<OverlayOutsideClickDispatcher, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<OverlayOutsideClickDispatcher, [null, null, { optional: true; }]>;
     // (undocumented)
     static ɵprov: i0.ɵɵInjectableDeclaration<OverlayOutsideClickDispatcher>;
 }
