@@ -577,7 +577,7 @@ Most interceptors inspect the request on the way in and forward the (perhaps alt
 
 ```javascript
 export abstract class HttpHandler {
-  abstract handle(req: HttpRequest<any>): Observable<HttpEvent<any>>;
+  abstract handle(req: HttpRequest<any>): Observable<HttpEvent<any>;
 }
 ```
 
