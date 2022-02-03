@@ -22,6 +22,15 @@
   .mat-mdc-tab-group.mat-mdc-tab-group-dynamic-height &.mat-mdc-tab-body-active {
     overflow-y: hidden;
   }
+}
+
+.mat-mdc-tab-body-content {
+  height: 100%;
+  overflow: auto;
+
+  .mat-mdc-tab-group-dynamic-height & {
+    overflow: hidden;
+  }
 
   // Usually the `visibility: hidden` added by the animation is enough to prevent focus from
   // entering the collapsed content, but children with their own `visibility` can override it.
@@ -32,14 +41,5 @@
   // the previous one has finished.
   &[style*='visibility: hidden'] {
     display: none;
-  }
-}
-
-.mat-mdc-tab-body-content {
-  height: 100%;
-  overflow: auto;
-
-  .mat-mdc-tab-group-dynamic-height & {
-    overflow: hidden;
   }
 }
