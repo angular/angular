@@ -1,34 +1,52 @@
-load("@bazel_skylib//lib:dicts.bzl", "dicts")
-load("//tools:integration.bzl", "CLI_PROJECT_MAPPINGS")
-load("//tools:defaults.bzl", "node_integration_test")
+load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary")
+load("//tools:defaults.bzl", "ts_library")
+load(":migration-test.bzl", "migration_test")
 
-npmPackageMappings = dicts.add(
-    CLI_PROJECT_MAPPINGS,
-    {
-        "//src/cdk:npm_package_archive": "@angular/cdk",
-        "//src/material:npm_package_archive": "@angular/material",
-        "//src/material-experimental:npm_package_archive": "@angular/material-experimental",
-    },
+ts_library(
+    name = "verify_golden_lib",
+    srcs = ["verify-golden.ts"],
+    # TODO(ESM): remove this once the Bazel NodeJS rules can handle ESM with `nodejs_binary`.
+    devmode_module = "commonjs",
+    deps = [
+        "@npm//@types/node",
+    ],
 )
 
-node_integration_test(
+nodejs_binary(
+    name = "verify_golden",
+    data = [":verify_golden_lib"],
+    entry_point = ":verify-golden.ts",
+    templated_args = ["--bazel_patch_module_resolver"],
+)
+
+filegroup(
+    name = "test_project",
+    srcs = glob([
+        "sample-project/**/*",
+    ]),
+)
+
+filegroup(
+    name = "golden_project",
+    srcs = glob([
+        "golden/**/*",
+    ]),
+)
+
+migration_test(
     name = "test",
-    srcs = glob(["**/*"]),
-    commands = [
-        # Note: We use a cache folder within the integration test as otherwise
-        # the NPM package mapped archive would be cached in the system.
-        # See: https://github.com/yarnpkg/yarn/issues/2165.
-        # TODO(devversion): determine if a solution/workaround could live in the test runner.
-        "yarn install --cache-folder .yarn_cache_folder/",
-        "yarn ng generate @angular/material:mdc-migration -c all --tsconfig tsconfig.app.json",
-        "yarn test",
-    ],
-    npm_packages = npmPackageMappings,
-    tags = [
-        # Chromium cannot run in Sandbox. For this test, sandbox is disabled.
-        # Additionally, we need to disable RBE as this test relies on internet
-        # access for installing the NPM packages.
-        "no-sandbox",
-        "no-remote-exec",
-    ],
+    srcs = glob([
+        "golden/**/*",
+        "sample-project/**/*",
+    ]),
+    approve = False,
+)
+
+migration_test(
+    name = "test.approve",
+    srcs = glob([
+        "golden/**/*",
+        "sample-project/**/*",
+    ]),
+    approve = True,
 )

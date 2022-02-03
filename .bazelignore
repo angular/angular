@@ -20,3 +20,7 @@ integration/yarn-pnp-compat/node_modules
 
 integration/mdc-migration/.angular
 integration/mdc-migration/node_modules
+integration/mdc-migration/golden/.angular
+integration/mdc-migration/golden/node_modules
+integration/mdc-migration/sample-project/.angular
+integration/mdc-migration/sample-project/node_modules
