@@ -95,7 +95,7 @@ See the <live-example noDownload></live-example> to try out these components you
 
 The first example shows a component that has `ViewEncapsulation.None`. This component colors its template elements red.
 
-<code-example path="view-encapsulation/src/app/no-encapsulation.component.ts" header="src/app/no-encapsulation.component.ts"></code-example>>
+<code-example path="view-encapsulation/src/app/no-encapsulation.component.ts" header="src/app/no-encapsulation.component.ts"></code-example>
 
 Angular adds the styles for this component as global styles to the `<head>` of the document.
 
@@ -107,7 +107,7 @@ As already mentioned Angular also adds the styles to all shadow DOM hosts. There
 
 The second example shows a component that has `ViewEncapsulation.Emulated`. This component colors its template elements green.
 
-<code-example path="view-encapsulation/src/app/emulated-encapsulation.component.ts" header="src/app/emulated-encapsulation.component.ts"></code-example>>
+<code-example path="view-encapsulation/src/app/emulated-encapsulation.component.ts" header="src/app/emulated-encapsulation.component.ts"></code-example>
 
 Similar to `ViewEncapsulation.None`, Angular adds the styles for this component to the `<head>` of the document, but with "scoped" styles.
 
@@ -122,7 +122,7 @@ In this example, the `EmulatedEncapsulationComponent` contains a `NoEncapsulatio
 
 The third example shows a component that has `ViewEncapsulation.ShadowDom`. This component colors its template elements blue.
 
-<code-example path="view-encapsulation/src/app/shadow-dom-encapsulation.component.ts" header="src/app/shadow-dom-encapsulation.component.ts"></code-example>>
+<code-example path="view-encapsulation/src/app/shadow-dom-encapsulation.component.ts" header="src/app/shadow-dom-encapsulation.component.ts"></code-example>
 
 Angular adds styles for this component only to the shadow DOM host, so they are not visible outside the shadow DOM.
 
