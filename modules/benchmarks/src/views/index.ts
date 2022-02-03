@@ -8,7 +8,7 @@
 import {enableProdMode} from '@angular/core';
 import {platformBrowser} from '@angular/platform-browser';
 
-import {ViewsBenchmarkModuleNgFactory} from './views-benchmark.ngfactory';
+import {ViewsBenchmarkModule} from './views-benchmark';
 
 enableProdMode();
-platformBrowser().bootstrapModuleFactory(ViewsBenchmarkModuleNgFactory);
+platformBrowser().bootstrapModule(ViewsBenchmarkModule);

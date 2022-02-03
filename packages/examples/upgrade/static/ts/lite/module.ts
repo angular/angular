@@ -10,15 +10,13 @@
 import {Component, Directive, ElementRef, EventEmitter, Inject, Injectable, Injector, Input, NgModule, Output, StaticProvider} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 // #docregion basic-how-to
-// Alternatively, we could import and use an `NgModuleFactory` instead:
-// import {MyLazyAngularModuleNgFactory} from './my-lazy-angular-module.ngfactory';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 // #enddocregion
 /* tslint:disable: no-duplicate-imports */
-import {UpgradeComponent} from '@angular/upgrade/static';
-import {downgradeComponent} from '@angular/upgrade/static';
 // #docregion basic-how-to
-import {downgradeModule} from '@angular/upgrade/static';
+import {downgradeComponent, downgradeModule, UpgradeComponent} from '@angular/upgrade/static';
+
+
 // #enddocregion
 /* tslint:enable: no-duplicate-imports */
 
