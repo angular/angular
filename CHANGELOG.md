@@ -126,10 +126,6 @@ Andrew Kushnir, Dylan Hunn, George Kalpakas, JiaLiPassion, Joey Perrott and ivan
 | -- | -- | -- |
 | [72092ebd26](https://github.com/angular/angular/commit/72092ebd26d6670a7dd02f6db5515d2afd27c4d6) | feat | Allow a FormControl to use initial value as default. ([#44434](https://github.com/angular/angular/pull/44434)) |
 | [f7aa937cac](https://github.com/angular/angular/commit/f7aa937cac0ad315e1012770aa1da97476aced54) | fix | Make some minor fixups for forward-compatibility with typed forms. ([#44540](https://github.com/angular/angular/pull/44540)) |
-### language-service
-| Commit | Type | Description |
-| -- | -- | -- |
-| [af2a1317cb](https://github.com/angular/angular/commit/af2a1317cbfba985233f510bbe9e49016968307c) | feat | support completions for animation ([#44630](https://github.com/angular/angular/pull/44630)) |
 ### router
 | Commit | Type | Description |
 | -- | -- | -- |
