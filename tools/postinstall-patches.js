@@ -68,7 +68,8 @@ const captureNgDevPatches = (files, patches) =>
     patches.forEach(p => _captureNgDevPatch(p[0], p[1], files));
 const _captureNgDevPatch = (search, replace, files) => {
   for (const fileName of files) {
-    const currentPatches = ngDevPatches.get(fileName) ?? [];
+    const patches = ngDevPatches.get(fileName);
+    const currentPatches = (patches !== null && patches !== undefined) ? patches : [];
     ngDevPatches.set(fileName, [...currentPatches, [search, replace]]);
   }
 };
