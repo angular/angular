@@ -189,6 +189,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@angular/cdk@npm:^13.2.1":
+  version: 13.2.1
+  resolution: "@angular/cdk@npm:13.2.1"
+  dependencies:
+    parse5: ^5.0.0
+    tslib: ^2.3.0
+  peerDependencies:
+    "@angular/common": ^13.0.0 || ^14.0.0-0
+    "@angular/core": ^13.0.0 || ^14.0.0-0
+    rxjs: ^6.5.3 || ^7.4.0
+  dependenciesMeta:
+    parse5:
+      optional: true
+  checksum: 70409167b83587f51e5af1fe8c8a14b54e0b00bcf001b737f03622ccb12580656d5cd571c801d37dc86827c0e5419d71adab11be691647f9a172b436530fc925
+  languageName: node
+  linkType: hard
+
 "@angular/cli@npm:~13.2.0":
   version: 13.2.2
   resolution: "@angular/cli@npm:13.2.2"
@@ -287,6 +304,23 @@ __metadata:
     "@angular/platform-browser": 13.2.1
     rxjs: ^6.5.3 || ^7.4.0
   checksum: ae6092d6f42b4814bc561ccd8a8dc936528dfd90d5f56795c3e3aa5ced253893f0eed0ef886e4fb0913055cb8c624b56b7ed859e3b23f8173bf03a534f4eed6e
+  languageName: node
+  linkType: hard
+
+"@angular/material@npm:^13.2.1":
+  version: 13.2.1
+  resolution: "@angular/material@npm:13.2.1"
+  dependencies:
+    tslib: ^2.3.0
+  peerDependencies:
+    "@angular/animations": ^13.0.0 || ^14.0.0-0
+    "@angular/cdk": 13.2.1
+    "@angular/common": ^13.0.0 || ^14.0.0-0
+    "@angular/core": ^13.0.0 || ^14.0.0-0
+    "@angular/forms": ^13.0.0 || ^14.0.0-0
+    "@angular/platform-browser": ^13.0.0 || ^14.0.0-0
+    rxjs: ^6.5.3 || ^7.4.0
+  checksum: dde43669f0f287fa55c3ab31791b5e5e318ee8f006eb59859409047b6d2a64e0afb5611ed0168b225f2129ad42fc23ebecb49f765d3a17a3d6c10aabdbfa590a
   languageName: node
   linkType: hard
 
@@ -6289,6 +6323,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"parse5@npm:^5.0.0":
+  version: 5.1.1
+  resolution: "parse5@npm:5.1.1"
+  checksum: 613a714af4c1101d1cb9f7cece2558e35b9ae8a0c03518223a4a1e35494624d9a9ad5fad4c13eab66a0e0adccd9aa3d522fc8f5f9cc19789e0579f3fa0bdfc65
+  languageName: node
+  linkType: hard
+
 "parse5@npm:^6.0.1":
   version: 6.0.1
   resolution: "parse5@npm:6.0.1"
@@ -8504,12 +8545,14 @@ __metadata:
   dependencies:
     "@angular-devkit/build-angular": ~13.2.0
     "@angular/animations": ~13.2.0
+    "@angular/cdk": ^13.2.1
     "@angular/cli": ~13.2.0
     "@angular/common": ~13.2.0
     "@angular/compiler": ~13.2.0
     "@angular/compiler-cli": ~13.2.0
     "@angular/core": ~13.2.0
     "@angular/forms": ~13.2.0
+    "@angular/material": ^13.2.1
     "@angular/platform-browser": ~13.2.0
     "@angular/platform-browser-dynamic": ~13.2.0
     "@angular/router": ~13.2.0

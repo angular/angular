@@ -1,1 +1,21 @@
-/* You can add global styles to this file, and also import other style files */
+@use '@angular/material' as mat;
+@use '@angular/material-experimental' as experimental;
+
+$primary: mat.define-palette(mat.$blue-palette);
+$accent: mat.define-palette(mat.$grey-palette);
+$theme: mat.define-light-theme($primary, $accent);
+
+@include mat.core($theme);
+
+@include mat.all-component-themes($theme);
+@include experimental.all-mdc-component-themes($theme);
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, 'Helvetica Neue', sans-serif;
+}
