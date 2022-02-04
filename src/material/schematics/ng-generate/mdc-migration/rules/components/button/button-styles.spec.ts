@@ -1,6 +1,6 @@
 import {createTestApp, patchDevkitTreeToExposeTypeScript} from '@angular/cdk/schematics/testing';
 import {SchematicTestRunner, UnitTestTree} from '@angular-devkit/schematics/testing';
-import {Schema} from '../schema';
+import {Schema} from '../../../schema';
 import {runfiles} from '@bazel/runfiles';
 
 describe('button styles', () => {
@@ -42,8 +42,8 @@ describe('button styles', () => {
         @include mat.mdc-button-typography($theme);
         @include mat.mdc-fab-theme($theme);
         @include mat.mdc-fab-typography($theme);
-        @include mat.mdc-icon-theme($theme);
-        @include mat.mdc-icon-typography($theme);
+        @include mat.mdc-icon-button-theme($theme);
+        @include mat.mdc-icon-button-typography($theme);
       `,
       );
     });
@@ -62,8 +62,8 @@ describe('button styles', () => {
         @include arbitrary.mdc-button-typography($theme);
         @include arbitrary.mdc-fab-theme($theme);
         @include arbitrary.mdc-fab-typography($theme);
-        @include arbitrary.mdc-icon-theme($theme);
-        @include arbitrary.mdc-icon-typography($theme);
+        @include arbitrary.mdc-icon-button-theme($theme);
+        @include arbitrary.mdc-icon-button-typography($theme);
       `,
       );
     });
@@ -85,14 +85,14 @@ describe('button styles', () => {
         @include mat.mdc-button-typography($light-theme);
         @include mat.mdc-fab-theme($light-theme);
         @include mat.mdc-fab-typography($light-theme);
-        @include mat.mdc-icon-theme($light-theme);
-        @include mat.mdc-icon-typography($light-theme);
+        @include mat.mdc-icon-button-theme($light-theme);
+        @include mat.mdc-icon-button-typography($light-theme);
         @include mat.mdc-button-theme($dark-theme);
         @include mat.mdc-button-typography($dark-theme);
         @include mat.mdc-fab-theme($dark-theme);
         @include mat.mdc-fab-typography($dark-theme);
-        @include mat.mdc-icon-theme($dark-theme);
-        @include mat.mdc-icon-typography($dark-theme);
+        @include mat.mdc-icon-button-theme($dark-theme);
+        @include mat.mdc-icon-button-typography($dark-theme);
       `,
       );
     });
@@ -117,8 +117,8 @@ describe('button styles', () => {
         @include mat.mdc-button-typography($theme);
         @include mat.mdc-fab-theme($theme);
         @include mat.mdc-fab-typography($theme);
-        @include mat.mdc-icon-theme($theme);
-        @include mat.mdc-icon-typography($theme);
+        @include mat.mdc-icon-button-theme($theme);
+        @include mat.mdc-icon-button-typography($theme);
 
 
       `,

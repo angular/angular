@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ClassNameChange, StyleMigrator} from './style-migrator';
+import {ClassNameChange, StyleMigrator} from '../../style-migrator';
 
 export class ButtonStylesMigrator extends StyleMigrator {
   component = 'button';
@@ -19,8 +19,8 @@ export class ButtonStylesMigrator extends StyleMigrator {
         'mdc-button-typography',
         'mdc-fab-theme',
         'mdc-fab-typography',
-        'mdc-icon-theme',
-        'mdc-icon-typography',
+        'mdc-icon-button-theme',
+        'mdc-icon-button-typography',
       ],
     },
   ];
