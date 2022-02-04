@@ -42,6 +42,7 @@ export abstract class MatInteractiveListBase<T extends MatListItemBase>
     this._foundation.handleClick(
       this._indexForElement(event.target as HTMLElement),
       /* isCheckboxAlreadyUpdatedInAdapter */ false,
+      event,
     );
   }
 
