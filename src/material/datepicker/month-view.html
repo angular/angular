@@ -1,11 +1,8 @@
 <table class="mat-calendar-table" role="grid">
   <thead class="mat-calendar-table-header">
     <tr>
-      <!-- For the day-of-the-week column header, we use an `<abbr>` element because VoiceOver
-           ignores the `aria-label`. ChromeVox, however, does not read the full name
-           for the `<abbr>`, so we still set `aria-label` on the header element. -->
       <th scope="col" *ngFor="let day of _weekdays" [attr.aria-label]="day.long">
-        <abbr class="mat-calendar-abbr" [attr.title]="day.long">{{day.narrow}}</abbr>
+        {{day.narrow}}
       </th>
     </tr>
     <tr><th aria-hidden="true" class="mat-calendar-table-header-divider" colspan="7"></th></tr>
