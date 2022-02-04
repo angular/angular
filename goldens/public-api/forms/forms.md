@@ -21,7 +21,7 @@ import { SimpleChanges } from '@angular/core';
 import { Version } from '@angular/core';
 
 // @public
-export abstract class AbstractControl {
+export abstract class AbstractControl<ValueT = any, RawValueT extends ValueT = ValueT> {
     constructor(validators: ValidatorFn | ValidatorFn[] | null, asyncValidators: AsyncValidatorFn | AsyncValidatorFn[] | null);
     addAsyncValidators(validators: AsyncValidatorFn | AsyncValidatorFn[]): void;
     addValidators(validators: ValidatorFn | ValidatorFn[]): void;
@@ -225,7 +225,7 @@ export interface Form {
 }
 
 // @public
-export class FormArray extends AbstractControl {
+export class FormArray<ElemT = any> extends AbstractControl {
     constructor(controls: AbstractControl[], validatorOrOpts?: ValidatorFn | ValidatorFn[] | AbstractControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null);
     at(index: number): AbstractControl;
     clear(options?: {
@@ -278,9 +278,9 @@ export class FormArrayName extends ControlContainer implements OnInit, OnDestroy
 
 // @public
 export class FormBuilder {
-    array(controlsConfig: any[], validatorOrOpts?: ValidatorFn | ValidatorFn[] | AbstractControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null): FormArray;
-    control(formState: any, validatorOrOpts?: ValidatorFn | ValidatorFn[] | FormControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null): FormControl;
-    group(controlsConfig: {
+    array<T = any>(controlsConfig: any[], validatorOrOpts?: ValidatorFn | ValidatorFn[] | AbstractControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null): FormArray;
+    control<T = any>(formState: any, validatorOrOpts?: ValidatorFn | ValidatorFn[] | FormControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null): FormControl;
+    group<T extends any = any>(controlsConfig: {
         [key: string]: any;
     }, options?: AbstractControlOptions | null): FormGroup;
     // @deprecated
@@ -296,7 +296,7 @@ export class FormBuilder {
 }
 
 // @public
-export interface FormControl extends AbstractControl {
+export interface FormControl<ValueT = any> extends AbstractControl<ValueT> {
     readonly defaultValue: any;
     patchValue(value: any, options?: {
         onlySelf?: boolean;
@@ -376,7 +376,7 @@ export interface FormControlOptions extends AbstractControlOptions {
 export type FormControlStatus = 'VALID' | 'INVALID' | 'PENDING' | 'DISABLED';
 
 // @public
-export class FormGroup extends AbstractControl {
+export class FormGroup<CtrlT = any> extends AbstractControl {
     constructor(controls: {
         [key: string]: AbstractControl;
     }, validatorOrOpts?: ValidatorFn | ValidatorFn[] | AbstractControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null);

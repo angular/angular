@@ -47,7 +47,7 @@ export class FormBuilder {
    * * `updateOn`: The event upon which the control should be updated (options: 'change' | 'blur' |
    * submit')
    */
-  group(
+  group<T extends any = any>(
       controlsConfig: {[key: string]: any},
       options?: AbstractControlOptions|null,
       ): FormGroup;
@@ -126,7 +126,7 @@ export class FormBuilder {
    * <code-example path="forms/ts/formBuilder/form_builder_example.ts" region="disabled-control">
    * </code-example>
    */
-  control(
+  control<T = any>(
       formState: any, validatorOrOpts?: ValidatorFn|ValidatorFn[]|FormControlOptions|null,
       asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null): FormControl {
     return new FormControl(formState, validatorOrOpts, asyncValidator);
@@ -146,7 +146,7 @@ export class FormBuilder {
    * @param asyncValidator A single async validator or array of async validator
    * functions.
    */
-  array(
+  array<T = any>(
       controlsConfig: any[],
       validatorOrOpts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|null,
       asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null): FormArray {

@@ -225,7 +225,7 @@ function assertAllValuesPresent(control: FormGroup|FormArray, value: any): void 
  *
  * @publicApi
  */
-export abstract class AbstractControl {
+export abstract class AbstractControl<ValueT = any, RawValueT extends ValueT = ValueT> {
   /** @internal */
   _pendingDirty = false;
 
@@ -1287,7 +1287,7 @@ export abstract class AbstractControl {
  * console.log(control.status); // 'DISABLED'
  * ```
  */
-export interface FormControl extends AbstractControl {
+export interface FormControl<ValueT = any> extends AbstractControl<ValueT> {
   /**
    * The default value of this FormControl, used whenever the control is reset without an explicit
    * value. See {@link FormControlOptions#initialValueIsDefault} for more information on configuring
@@ -1441,7 +1441,7 @@ export interface FormControl extends AbstractControl {
   _syncPendingControls(): boolean;
 }
 
-type FormControlInterface = FormControl;
+type FormControlInterface<ValueT> = FormControl<ValueT>;
 
 /**
  * Various available constructors for `FormControl`.
@@ -1480,7 +1480,8 @@ export interface ɵFormControlCtor {
 }
 
 export const FormControl: ɵFormControlCtor =
-    (class FormControl extends AbstractControl implements FormControlInterface {
+    (class FormControl<ValueT = any> extends AbstractControl<
+         ValueT> implements FormControlInterface<ValueT> {
       /** @publicApi */
       public readonly defaultValue: any = null;
 
@@ -1682,7 +1683,7 @@ export const FormControl: ɵFormControlCtor =
  *
  * @publicApi
  */
-export class FormGroup extends AbstractControl {
+export class FormGroup<CtrlT = any> extends AbstractControl {
   /**
    * Creates a new `FormGroup` instance.
    *
@@ -2117,7 +2118,7 @@ export class FormGroup extends AbstractControl {
  *
  * @publicApi
  */
-export class FormArray extends AbstractControl {
+export class FormArray<ElemT = any> extends AbstractControl {
   /**
    * Creates a new `FormArray` instance.
    *
