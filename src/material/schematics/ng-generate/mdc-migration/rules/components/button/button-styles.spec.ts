@@ -1,6 +1,6 @@
 import {createTestApp, patchDevkitTreeToExposeTypeScript} from '@angular/cdk/schematics/testing';
 import {SchematicTestRunner, UnitTestTree} from '@angular-devkit/schematics/testing';
-import {createNewTestRunner, migrateComponent, THEME_FILE} from '../util';
+import {createNewTestRunner, migrateComponent, THEME_FILE} from '../test-setup-helper';
 
 describe('button styles', () => {
   let runner: SchematicTestRunner;

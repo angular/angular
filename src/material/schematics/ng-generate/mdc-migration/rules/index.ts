@@ -7,6 +7,10 @@
  */
 
 import {ButtonStylesMigrator} from './components/button/button-styles';
+import {CheckboxStylesMigrator} from './components/checkbox/checkbox-styles';
 import {StyleMigrator} from './style-migrator';
 
-export const MIGRATORS: StyleMigrator[] = [new ButtonStylesMigrator()];
+export const MIGRATORS: StyleMigrator[] = [
+  new ButtonStylesMigrator(),
+  new CheckboxStylesMigrator(),
+];

@@ -11,12 +11,11 @@ ts_library(
     name = "mdc_migration_lib",
     srcs = glob(
         ["**/*.ts"],
-        exclude = ["**/*.spec.ts"],
+        exclude = ["**/*.spec.ts"] + ["rules/components/test-setup-helper.ts"],
     ),
     deps = [
         "//src/cdk/schematics",
         "@npm//@angular-devkit/schematics",
-        "@npm//@bazel/runfiles",
         "@npm//@types/node",
         "@npm//postcss",
         "@npm//postcss-scss",
@@ -51,12 +50,13 @@ pkg_npm(
 ts_library(
     name = "unit_tests_lib",
     testonly = True,
-    srcs = glob(["**/*.spec.ts"]),
+    srcs = glob(["**/*.spec.ts"] + ["rules/components/test-setup-helper.ts"]),
     deps = [
         ":mdc_migration_lib",
         "//src/cdk/schematics/testing",
         "@npm//@angular-devkit/core",
         "@npm//@angular-devkit/schematics",
+        "@npm//@bazel/runfiles",
         "@npm//@types/jasmine",
         "@npm//@types/node",
     ],
