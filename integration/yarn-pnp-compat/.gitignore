@@ -37,6 +37,15 @@ yarn-error.log
 testem.log
 /typings
 
+# Yarn PnP Zero installs disabled.
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
 # System files
 .DS_Store
 Thumbs.db

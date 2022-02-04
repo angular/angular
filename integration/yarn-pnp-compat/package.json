@@ -35,5 +35,6 @@
     "karma-jasmine": "~4.0.0",
     "karma-jasmine-html-reporter": "~1.7.0",
     "typescript": "~4.5.2"
-  }
+  },
+  "packageManager": "yarn@3.2.0-rc.11"
 }
