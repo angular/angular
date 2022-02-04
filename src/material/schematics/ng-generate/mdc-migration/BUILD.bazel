@@ -16,6 +16,7 @@ ts_library(
     deps = [
         "//src/cdk/schematics",
         "@npm//@angular-devkit/schematics",
+        "@npm//@bazel/runfiles",
         "@npm//@types/node",
         "@npm//postcss",
         "@npm//postcss-scss",
@@ -56,7 +57,6 @@ ts_library(
         "//src/cdk/schematics/testing",
         "@npm//@angular-devkit/core",
         "@npm//@angular-devkit/schematics",
-        "@npm//@bazel/runfiles",
         "@npm//@types/jasmine",
         "@npm//@types/node",
     ],

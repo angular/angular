@@ -1,31 +1,21 @@
 import {createTestApp, patchDevkitTreeToExposeTypeScript} from '@angular/cdk/schematics/testing';
 import {SchematicTestRunner, UnitTestTree} from '@angular-devkit/schematics/testing';
-import {Schema} from '../../../schema';
-import {runfiles} from '@bazel/runfiles';
+import {createNewTestRunner, migrateComponent, THEME_FILE} from '../util';
 
 describe('button styles', () => {
   let runner: SchematicTestRunner;
   let cliAppTree: UnitTestTree;
-  const tsconfig = '/projects/material/tsconfig.app.json';
-  const themeFile = '/projects/material/src/theme.scss';
 
   async function runMigrationTest(oldFileContent: string, newFileContent: string) {
-    cliAppTree.create(themeFile, oldFileContent);
-    const tree = await migrate({tsconfig, components: ['button']});
-    expect(tree.readContent(themeFile)).toBe(newFileContent);
+    cliAppTree.create(THEME_FILE, oldFileContent);
+    const tree = await migrateComponent('button', runner, cliAppTree);
+    expect(tree.readContent(THEME_FILE)).toBe(newFileContent);
   }
 
   beforeEach(async () => {
-    runner = new SchematicTestRunner(
-      '@angular/material',
-      runfiles.resolveWorkspaceRelative('src/material/schematics/collection.json'),
-    );
+    runner = createNewTestRunner();
     cliAppTree = patchDevkitTreeToExposeTypeScript(await createTestApp(runner));
   });
-
-  async function migrate(options: Schema): Promise<UnitTestTree> {
-    return await runner.runSchematicAsync('mdcMigration', options, cliAppTree).toPromise();
-  }
 
   describe('mixin migrations', () => {
     it('should replace the old theme with the new ones', async () => {
