@@ -14,9 +14,11 @@
     "./tools/stylelint/theme-mixin-api.ts",
     "./tools/stylelint/no-import.ts",
     "./tools/stylelint/single-line-comment-only.ts",
-    "./tools/stylelint/no-unused-import.ts"
+    "./tools/stylelint/no-unused-import.ts",
+    "./tools/stylelint/cross-package-import-validation.ts"
   ],
   "rules": {
+    "material/cross-package-import-validation": [true],
     "material/no-prefixes": [
       true,
       {

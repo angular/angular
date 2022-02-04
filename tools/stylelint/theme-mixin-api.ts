@@ -1,6 +1,6 @@
 import {createPlugin, utils} from 'stylelint';
 import {basename} from 'path';
-import {AtRule, atRule, decl, Declaration, Node} from 'postcss';
+import {AtRule, Declaration, Node} from 'postcss';
 
 /** Name of this stylelint rule. */
 const ruleName = 'material/theme-mixin-api';
@@ -67,8 +67,12 @@ const plugin = createPlugin(ruleName, (isEnabled: boolean, _options, context) =>
       }
 
       const themePropName = `$theme`;
-      const legacyColorExtractExpr = `theming.private-legacy-get-theme($theme-or-color-config)`;
-      const duplicateStylesCheckExpr = `theming.private-check-duplicate-theme-styles(${themePropName}, '${componentName}')`;
+      const legacyColorExtractExpr = anyPattern(
+        `<..>.private-legacy-get-theme($theme-or-color-config)`,
+      );
+      const duplicateStylesCheckExpr = anyPattern(
+        `<..>.private-check-duplicate-theme-styles(${themePropName}, '${componentName}')`,
+      );
 
       let legacyConfigDecl: Declaration | null = null;
       let duplicateStylesCheck: AtRule | null = null;
@@ -78,13 +82,13 @@ const plugin = createPlugin(ruleName, (isEnabled: boolean, _options, context) =>
       if (node.nodes) {
         for (let i = 0; i < node.nodes.length; i++) {
           const childNode = node.nodes[i];
-          if (childNode.type === 'decl' && childNode.value === legacyColorExtractExpr) {
+          if (childNode.type === 'decl' && legacyColorExtractExpr.test(childNode.value)) {
             legacyConfigDecl = childNode;
             isLegacyConfigRetrievalFirstStatement = i === 0;
           } else if (
             childNode.type === 'atrule' &&
             childNode.name === 'include' &&
-            childNode.params === duplicateStylesCheckExpr
+            duplicateStylesCheckExpr.test(childNode.params)
           ) {
             duplicateStylesCheck = childNode;
           } else if (childNode.type !== 'comment') {
@@ -94,18 +98,13 @@ const plugin = createPlugin(ruleName, (isEnabled: boolean, _options, context) =>
       }
 
       if (!legacyConfigDecl) {
-        if (context.fix) {
-          legacyConfigDecl = decl({prop: themePropName, value: legacyColorExtractExpr});
-          node.insertBefore(0, legacyConfigDecl);
-        } else {
-          reportError(
-            node,
-            `Legacy color API is not handled. Consumers could pass in a ` +
-              `color configuration directly to the theme mixin. For backwards compatibility, ` +
-              `use the following declaration to retrieve the theme object: ` +
-              `${themePropName}: ${legacyColorExtractExpr}`,
-          );
-        }
+        reportError(
+          node,
+          `Legacy color API is not handled. Consumers could pass in a ` +
+            `color configuration directly to the theme mixin. For backwards compatibility, ` +
+            `use the following declaration to retrieve the theme object: ` +
+            `${themePropName}: ${legacyColorExtractExpr}`,
+        );
       } else if (legacyConfigDecl.prop !== themePropName) {
         reportError(
           legacyConfigDecl,
@@ -114,16 +113,11 @@ const plugin = createPlugin(ruleName, (isEnabled: boolean, _options, context) =>
       }
 
       if (!duplicateStylesCheck) {
-        if (context.fix) {
-          duplicateStylesCheck = atRule({name: 'include', params: duplicateStylesCheckExpr});
-          node.insertBefore(1, duplicateStylesCheck);
-        } else {
-          reportError(
-            node,
-            `Missing check for duplicative theme styles. Please include the ` +
-              `duplicate styles check mixin: ${duplicateStylesCheckExpr}`,
-          );
-        }
+        reportError(
+          node,
+          `Missing check for duplicative theme styles. Please include the ` +
+            `duplicate styles check mixin: ${duplicateStylesCheckExpr}`,
+        );
       }
 
       if (hasNodesOutsideDuplicationCheck) {
@@ -157,12 +151,16 @@ const plugin = createPlugin(ruleName, (isEnabled: boolean, _options, context) =>
       const expectedValues =
         type === 'typography'
           ? [
-              'typography.private-typography-to-2014-config(' +
-                'theming.get-typography-config($config-or-theme))',
-              'typography.private-typography-to-2018-config(' +
-                'theming.get-typography-config($config-or-theme))',
+              anyPattern(
+                '<..>.private-typography-to-2014-config(' +
+                  '<..>.get-typography-config($config-or-theme))',
+              ),
+              anyPattern(
+                '<..>.private-typography-to-2018-config(' +
+                  '<..>.get-typography-config($config-or-theme))',
+              ),
             ]
-          : [`theming.get-${type}-config($config-or-theme)`];
+          : [anyPattern(`<..>.get-${type}-config($config-or-theme)`)];
       let configExtractionNode: Declaration | null = null;
       let nonCommentNodeCount = 0;
 
@@ -174,7 +172,7 @@ const plugin = createPlugin(ruleName, (isEnabled: boolean, _options, context) =>
 
           if (
             currentNode.type === 'decl' &&
-            expectedValues.includes(stripNewlinesAndIndentation(currentNode.value))
+            expectedValues.some(v => v.test(stripNewlinesAndIndentation(currentNode.value)))
           ) {
             configExtractionNode = currentNode;
             break;
@@ -183,18 +181,12 @@ const plugin = createPlugin(ruleName, (isEnabled: boolean, _options, context) =>
       }
 
       if (!configExtractionNode && nonCommentNodeCount > 0) {
-        if (context.fix) {
-          node.insertBefore(0, {prop: expectedProperty, value: expectedValues[0]});
-        } else {
-          reportError(
-            node,
-            `Config is not extracted. Consumers could pass a theme object. ` +
-              `Extract the configuration by using one of the following:` +
-              expectedValues
-                .map(expectedValue => `${expectedProperty}: ${expectedValue}`)
-                .join('\n'),
-          );
-        }
+        reportError(
+          node,
+          `Config is not extracted. Consumers could pass a theme object. ` +
+            `Extract the configuration by using one of the following:` +
+            expectedValues.map(expectedValue => `${expectedProperty}: ${expectedValue}`).join('\n'),
+        );
       } else if (configExtractionNode && configExtractionNode.prop !== expectedProperty) {
         reportError(
           configExtractionNode,
@@ -206,7 +198,7 @@ const plugin = createPlugin(ruleName, (isEnabled: boolean, _options, context) =>
     function reportError(node: Node, message: string) {
       // We need these `as any` casts, because Stylelint uses an older version
       // of the postcss typings that don't match up with our anymore.
-      utils.report({result: result as any, ruleName, node: node as any, message});
+      utils.report({result: result as any, ruleName, node: node, message});
     }
   };
 });
@@ -233,6 +225,27 @@ function getComponentNameFromPath(filePath: string): string | null {
 /** Strips newlines from a string and any whitespace immediately after it. */
 function stripNewlinesAndIndentation(value: string): string {
   return value.replace(/(\r|\n)\s+/g, '');
+}
+
+/**
+ * Template string function that converts a pattern to a regular expression
+ * that can be used for assertions.
+ *
+ * The `<..>` character sequency is a placeholder that will allow for arbitrary
+ * content.
+ */
+function anyPattern(pattern): RegExp {
+  const regex = new RegExp(
+    `^${sanitizeForRegularExpression(pattern).replace(/<\\.\\.>/g, '.*?')}$`,
+  );
+  // Preserve the original expression/pattern for better failure messages.
+  regex.toString = () => pattern;
+  return regex;
+}
+
+/** Sanitizes a given string so that it can be used as literal in a RegExp. */
+function sanitizeForRegularExpression(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
 export default plugin;
