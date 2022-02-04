@@ -6,18 +6,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector} from '@angular/core';
-import {concat, defer, from, MonoTypeOperatorFunction, Observable, of} from 'rxjs';
-import {concatMap, first, map, mergeMap} from 'rxjs/operators';
+import {EnvironmentInjector, Injector} from '@angular/core';
+import {concat, defer, from, MonoTypeOperatorFunction, Observable, of, OperatorFunction, pipe} from 'rxjs';
+import {concatMap, first, map, mergeMap, tap} from 'rxjs/operators';
 
 import {ActivationStart, ChildActivationStart, Event} from '../events';
-import {CanActivateChildFn, CanActivateFn, CanDeactivateFn} from '../models';
+import {CanActivateChildFn, CanActivateFn, CanDeactivateFn, CanLoadFn, Route} from '../models';
 import {NavigationTransition} from '../router';
 import {ActivatedRouteSnapshot, RouterStateSnapshot} from '../router_state';
-import {UrlTree} from '../url_tree';
+import {navigationCancelingError} from '../shared';
+import {UrlSegment, UrlSerializer, UrlTree} from '../url_tree';
 import {wrapIntoObservable} from '../utils/collection';
 import {CanActivate, CanDeactivate, getCanActivateChild, getToken} from '../utils/preactivation';
-import {isBoolean, isCanActivate, isCanActivateChild, isCanDeactivate, isFunction} from '../utils/type_guards';
+import {isBoolean, isCanActivate, isCanActivateChild, isCanDeactivate, isCanLoad, isFunction, isUrlTree} from '../utils/type_guards';
 
 import {prioritizedGuardValue} from './prioritized_guard_value';
 
@@ -175,4 +176,48 @@ function runCanDeactivate(
     return observable.pipe(first());
   });
   return of(canDeactivateObservables).pipe(prioritizedGuardValue());
+}
+
+
+export function runCanLoadGuards(
+    injector: EnvironmentInjector, route: Route, segments: UrlSegment[],
+    urlSerializer: UrlSerializer): Observable<boolean> {
+  const canLoad = route.canLoad;
+  if (canLoad === undefined || canLoad.length === 0) {
+    return of(true);
+  }
+
+  const canLoadObservables = canLoad.map((injectionToken: any) => {
+    const guard = injector.get(injectionToken);
+    let guardVal;
+    if (isCanLoad(guard)) {
+      guardVal = guard.canLoad(route, segments);
+    } else if (isFunction<CanLoadFn>(guard)) {
+      guardVal = guard(route, segments);
+    } else {
+      throw new Error('Invalid CanLoad guard');
+    }
+    return wrapIntoObservable(guardVal);
+  });
+
+  return of(canLoadObservables)
+      .pipe(
+          prioritizedGuardValue(),
+          redirectIfUrlTree(urlSerializer),
+      );
+}
+
+function redirectIfUrlTree(urlSerializer: UrlSerializer):
+    OperatorFunction<UrlTree|boolean, boolean> {
+  return pipe(
+      tap((result: UrlTree|boolean) => {
+        if (!isUrlTree(result)) return;
+
+        const error: Error&{url?: UrlTree} =
+            navigationCancelingError(`Redirecting to "${urlSerializer.serialize(result)}"`);
+        error.url = result;
+        throw error;
+      }),
+      map(result => result === true),
+  );
 }
