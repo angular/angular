@@ -11,6 +11,7 @@ import {EmptyError, from, Observable, of, throwError} from 'rxjs';
 import {catchError, concatMap, first, last, map, mergeMap, scan, tap} from 'rxjs/operators';
 
 import {CanLoadFn, LoadedRouterConfig, Route, Routes} from './models';
+import {runCanLoadGuards} from './operators/check_guards';
 import {prioritizedGuardValue} from './operators/prioritized_guard_value';
 import {RouterConfigLoader} from './router_config_loader';
 import {navigationCancelingError, Params, PRIMARY_OUTLET} from './shared';
@@ -335,7 +336,7 @@ class ApplyRedirects {
         return of({routes: route._loadedRoutes, injector: route._loadedInjector});
       }
 
-      return this.runCanLoadGuards(injector, route, segments)
+      return runCanLoadGuards(injector, route, segments, this.urlSerializer)
           .pipe(mergeMap((shouldLoadResult: boolean) => {
             if (shouldLoadResult) {
               return this.configLoader.loadChildren(injector, route)
@@ -349,39 +350,6 @@ class ApplyRedirects {
     }
 
     return of({routes: [], injector});
-  }
-
-  private runCanLoadGuards(injector: EnvironmentInjector, route: Route, segments: UrlSegment[]):
-      Observable<boolean> {
-    const canLoad = route.canLoad;
-    if (!canLoad || canLoad.length === 0) return of(true);
-
-    const canLoadObservables = canLoad.map((injectionToken: any) => {
-      const guard = injector.get(injectionToken);
-      let guardVal;
-      if (isCanLoad(guard)) {
-        guardVal = guard.canLoad(route, segments);
-      } else if (isFunction<CanLoadFn>(guard)) {
-        guardVal = guard(route, segments);
-      } else {
-        throw new Error('Invalid CanLoad guard');
-      }
-      return wrapIntoObservable(guardVal);
-    });
-
-    return of(canLoadObservables)
-        .pipe(
-            prioritizedGuardValue(),
-            tap((result: UrlTree|boolean) => {
-              if (!isUrlTree(result)) return;
-
-              const error: Error&{url?: UrlTree} = navigationCancelingError(
-                  `Redirecting to "${this.urlSerializer.serialize(result)}"`);
-              error.url = result;
-              throw error;
-            }),
-            map(result => result === true),
-        );
   }
 
   private lineralizeSegments(route: Route, urlTree: UrlTree): Observable<UrlSegment[]> {
