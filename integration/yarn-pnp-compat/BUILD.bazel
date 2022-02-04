@@ -1,0 +1,25 @@
+load("//tools:defaults.bzl", "node_integration_test")
+
+node_integration_test(
+    name = "test",
+    srcs = glob(["**/*"]),
+    commands = [
+        "yarn install --no-immutable",
+        "yarn build",
+    ],
+    environment = {
+        # Yarn berry needs a temporary directory that is writeable in the sandbox.
+        # We acquire a temporary directory for it.
+        "HOME": "<TMP>",
+        # Set `CI` to silence `yarn berry` and make the output readable.
+        "CI": "true",
+    },
+    npm_packages = {
+        "//src/cdk:npm_package_archive": "@angular/cdk",
+        "//src/material:npm_package_archive": "@angular/material",
+    },
+    tags = [
+        # This test relies on `yarn` so there needs to be internet access.
+        "requires-network",
+    ],
+)
