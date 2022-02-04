@@ -39,6 +39,7 @@ pkg_tar(
     name = "{label_name}",
     srcs = ["//{name}:{last_segment}__all_files"],
     extension = "tar.gz",
+    package_dir = "package/",
     strip_prefix = "/external/npm/node_modules/{name}",
     tags = ["manual"],
 )""".format(name = pkg, label_name = label_name, last_segment = last_segment)

@@ -213,6 +213,7 @@ def ng_package(name, data = [], deps = [], externals = PKG_EXTERNALS, readme_md 
         srcs = [":%s" % name],
         extension = "tar.gz",
         strip_prefix = "./%s" % name,
+        package_dir = "package/",
         # Target should not build on CI unless it is explicitly requested.
         tags = ["manual"],
         visibility = visibility,
@@ -244,6 +245,7 @@ def pkg_npm(name, visibility = None, **kwargs):
     pkg_tar(
         name = name + "_archive",
         srcs = [":%s" % name],
+        package_dir = "package/",
         extension = "tar.gz",
         strip_prefix = "./%s" % name,
         # Target should not build on CI unless it is explicitly requested.
