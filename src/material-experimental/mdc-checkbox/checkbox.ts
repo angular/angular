@@ -80,6 +80,9 @@ const _MatCheckboxBase = mixinColor(
     '[class._mat-animation-noopable]': `_animationMode === 'NoopAnimations'`,
     '[class.mdc-checkbox--disabled]': 'disabled',
     '[id]': 'id',
+    // Add classes that users can use to more easily target disabled or checked checkboxes.
+    '[class.mat-mdc-checkbox-disabled]': 'disabled',
+    '[class.mat-mdc-checkbox-checked]': 'checked',
   },
   providers: [MAT_CHECKBOX_CONTROL_VALUE_ACCESSOR],
   exportAs: 'matCheckbox',
