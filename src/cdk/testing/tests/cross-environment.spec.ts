@@ -89,9 +89,27 @@ export function crossEnvironmentSpecs(
       }
     });
 
+    it('should get first matching component for optional harness', async () => {
+      const harness = await loader.getHarnessOrNull(SubComponentHarness);
+      expect(harness).not.toBeNull();
+      expect(await (await harness!.title()).text()).toBe('List of test tools');
+    });
+
+    it('should get null if no matching component found for optional harness', async () => {
+      const countersLoader = await loader.getChildLoader('.counters');
+      const harness = await countersLoader.getHarnessOrNull(SubComponentHarness);
+      expect(harness).toBeNull();
+    });
+
     it('should get all matching components for all harnesses', async () => {
       const harnesses = await loader.getAllHarnesses(SubComponentHarness);
       expect(harnesses.length).toBe(4);
+    });
+
+    it('should check if harness is found', async () => {
+      const countersLoader = await loader.getChildLoader('.counters');
+      expect(await loader.hasHarness(SubComponentHarness)).toBe(true);
+      expect(await countersLoader.hasHarness(SubComponentHarness)).toBe(false);
     });
   });
 

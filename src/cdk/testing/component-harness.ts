@@ -97,12 +97,30 @@ export interface HarnessLoader {
   getHarness<T extends ComponentHarness>(query: HarnessQuery<T>): Promise<T>;
 
   /**
+   * Searches for an instance of the component corresponding to the given harness type under the
+   * `HarnessLoader`'s root element, and returns a `ComponentHarness` for that instance. If multiple
+   * matching components are found, a harness for the first one is returned. If no matching
+   * component is found, null is returned.
+   * @param query A query for a harness to create
+   * @return An instance of the given harness type (or null if not found).
+   */
+  getHarnessOrNull<T extends ComponentHarness>(query: HarnessQuery<T>): Promise<T | null>;
+
+  /**
    * Searches for all instances of the component corresponding to the given harness type under the
    * `HarnessLoader`'s root element, and returns a list `ComponentHarness` for each instance.
    * @param query A query for a harness to create
    * @return A list instances of the given harness type.
    */
   getAllHarnesses<T extends ComponentHarness>(query: HarnessQuery<T>): Promise<T[]>;
+
+  /**
+   * Searches for an instance of the component corresponding to the given harness type under the
+   * `HarnessLoader`'s root element, and returns a boolean indicating if any were found.
+   * @param query A query for a harness to create
+   * @return A boolean indicating if an instance was found.
+   */
+  hasHarness<T extends ComponentHarness>(query: HarnessQuery<T>): Promise<boolean>;
 }
 
 /**
@@ -403,8 +421,16 @@ export abstract class ContentContainerComponentHarness<S extends string = string
     return (await this.getRootHarnessLoader()).getHarness(query);
   }
 
+  async getHarnessOrNull<T extends ComponentHarness>(query: HarnessQuery<T>): Promise<T | null> {
+    return (await this.getRootHarnessLoader()).getHarnessOrNull(query);
+  }
+
   async getAllHarnesses<T extends ComponentHarness>(query: HarnessQuery<T>): Promise<T[]> {
     return (await this.getRootHarnessLoader()).getAllHarnesses(query);
+  }
+
+  async hasHarness<T extends ComponentHarness>(query: HarnessQuery<T>): Promise<boolean> {
+    return (await this.getRootHarnessLoader()).hasHarness(query);
   }
 
   /**

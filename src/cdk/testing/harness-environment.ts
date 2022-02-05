@@ -118,8 +118,18 @@ export abstract class HarnessEnvironment<E> implements HarnessLoader, LocatorFac
   }
 
   // Implemented as part of the `HarnessLoader` interface.
+  getHarnessOrNull<T extends ComponentHarness>(query: HarnessQuery<T>): Promise<T | null> {
+    return this.locatorForOptional(query)();
+  }
+
+  // Implemented as part of the `HarnessLoader` interface.
   getAllHarnesses<T extends ComponentHarness>(query: HarnessQuery<T>): Promise<T[]> {
     return this.locatorForAll(query)();
+  }
+
+  // Implemented as part of the `HarnessLoader` interface.
+  async hasHarness<T extends ComponentHarness>(query: HarnessQuery<T>): Promise<boolean> {
+    return (await this.locatorForOptional(query)()) !== null;
   }
 
   // Implemented as part of the `HarnessLoader` interface.

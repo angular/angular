@@ -56,7 +56,11 @@ export abstract class ContentContainerComponentHarness<S extends string = string
     getChildLoader(selector: S): Promise<HarnessLoader>;
     // (undocumented)
     getHarness<T extends ComponentHarness>(query: HarnessQuery<T>): Promise<T>;
+    // (undocumented)
+    getHarnessOrNull<T extends ComponentHarness>(query: HarnessQuery<T>): Promise<T | null>;
     protected getRootHarnessLoader(): Promise<HarnessLoader>;
+    // (undocumented)
+    hasHarness<T extends ComponentHarness>(query: HarnessQuery<T>): Promise<boolean>;
 }
 
 // @public
@@ -103,11 +107,15 @@ export abstract class HarnessEnvironment<E> implements HarnessLoader, LocatorFac
     // (undocumented)
     getHarness<T extends ComponentHarness>(query: HarnessQuery<T>): Promise<T>;
     // (undocumented)
+    getHarnessOrNull<T extends ComponentHarness>(query: HarnessQuery<T>): Promise<T | null>;
+    // (undocumented)
     harnessLoaderFor(selector: string): Promise<HarnessLoader>;
     // (undocumented)
     harnessLoaderForAll(selector: string): Promise<HarnessLoader[]>;
     // (undocumented)
     harnessLoaderForOptional(selector: string): Promise<HarnessLoader | null>;
+    // (undocumented)
+    hasHarness<T extends ComponentHarness>(query: HarnessQuery<T>): Promise<boolean>;
     // (undocumented)
     locatorFor<T extends (HarnessQuery<any> | string)[]>(...queries: T): AsyncFactoryFn<LocatorFnResult<T>>;
     // (undocumented)
@@ -131,6 +139,8 @@ export interface HarnessLoader {
     getAllHarnesses<T extends ComponentHarness>(query: HarnessQuery<T>): Promise<T[]>;
     getChildLoader(selector: string): Promise<HarnessLoader>;
     getHarness<T extends ComponentHarness>(query: HarnessQuery<T>): Promise<T>;
+    getHarnessOrNull<T extends ComponentHarness>(query: HarnessQuery<T>): Promise<T | null>;
+    hasHarness<T extends ComponentHarness>(query: HarnessQuery<T>): Promise<boolean>;
 }
 
 // @public
