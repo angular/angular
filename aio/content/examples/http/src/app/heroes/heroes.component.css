@@ -63,3 +63,8 @@ button.delete {
   max-width: 12rem;
   padding: .25rem;
 }
+
+.selected {
+  font-weight: 600;
+  font-style: italic;
+}
