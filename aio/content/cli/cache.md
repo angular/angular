@@ -69,7 +69,7 @@ rm -rf .angular/cache
 To clear the cache on Windows:
 
 ```bash
-rmdir /s /q .angular/cache
+rmdir /s /q .angular\cache
 ```
 
 For more information, see [rm command](https://man7.org/linux/man-pages/man1/rm.1.html) and [rmdir command](https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/rmdir).
