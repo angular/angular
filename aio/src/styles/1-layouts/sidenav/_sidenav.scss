@@ -101,7 +101,6 @@ aio-nav-menu {
 
     .heading-children {
       &.expanded {
-        visibility: visible;
         opacity: 1;
         padding-left: 0;
         max-height: 4000px; // Arbitrary max-height. Can increase if needed. Must have measurement to transition height.
