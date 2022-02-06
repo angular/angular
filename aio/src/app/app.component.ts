@@ -102,6 +102,8 @@ export class AppComponent implements OnInit {
   searchElements: QueryList<ElementRef>;
   @ViewChild(SearchBoxComponent, { static: true })
   searchBox: SearchBoxComponent;
+  @ViewChild('searchResultsView', { read: ElementRef })
+  searchResultsView: ElementRef;
 
   @ViewChild(MatSidenav, { static: true })
   sidenav: MatSidenav;
@@ -109,6 +111,10 @@ export class AppComponent implements OnInit {
   @ViewChild(NotificationComponent, { static: true })
   notification: NotificationComponent;
   notificationAnimating = false;
+
+  @ViewChild('appToolbar', { read: ElementRef }) toolbar: ElementRef;
+
+  @ViewChildren('themeToggle, externalIcons', { read: ElementRef }) toolbarIcons: QueryList<ElementRef>;
 
   constructor(
     public deployment: Deployment,
@@ -273,10 +279,41 @@ export class AppComponent implements OnInit {
     }
   }
 
+  @HostListener('focusin', ['$event.target'])
+  onFocus(eventTarget: HTMLElement) {
+    // Implement a focus trap starting at the input search and ending after the search results
+    if (this.showSearchResults) {
+      const insideFocusLoop = [
+        ...this.toolbarIcons,
+        ...this.searchElements
+      ].some(element => element.nativeElement.contains(eventTarget));
+      const insideToolbar = this.toolbar.nativeElement.contains(eventTarget);
+      if (!insideFocusLoop) {
+        if (!insideToolbar) {
+          // the user is focusing forward at the last search result element,
+          // loop it back to the search input
+          this.focusSearchBox();
+        } else {
+          // the user is focusing backward from the search input,
+          // loop it back to the last search result item
+          const anchors: HTMLAnchorElement[] = Array.from(
+            this.searchResultsView.nativeElement.querySelectorAll('a.search-result-item'),
+          );
+          if (anchors.length) {
+            anchors[anchors.length - 1].focus();
+          }
+        }
+      }
+    }
+  }
+
   @HostListener('click', ['$event.target', '$event.button', '$event.ctrlKey', '$event.metaKey', '$event.altKey'])
   onClick(eventTarget: HTMLElement, button: number, ctrlKey: boolean, metaKey: boolean, altKey: boolean): boolean {
     // Hide the search results if we clicked outside both the "search box" and the "search results"
-    if (!this.searchElements.some(element => element.nativeElement.contains(eventTarget))) {
+    if (
+      this.showSearchResults &&
+      !this.searchElements.some(element => element.nativeElement.contains(eventTarget))
+    ) {
       this.hideSearchResults();
     }
 
@@ -419,7 +456,12 @@ export class AppComponent implements OnInit {
     }
   }
 
-  doSearch(query: string) {
+  doSearch(query: string, fromFocus = false) {
+    if (this.showSearchResults && fromFocus) {
+      // the results where already being displayed so there is no
+      // need to perform the search until the input actually changes
+      return;
+    }
     this.searchResults = this.searchService.search(query);
     this.showSearchResults = !!query;
   }
