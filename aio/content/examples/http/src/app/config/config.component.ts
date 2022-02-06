@@ -69,7 +69,7 @@ export class ConfigComponent {
   }
 // #enddocregion showConfigResponse
   makeError() {
-    this.configService.makeIntentionalError().subscribe(null, error => this.error = error );
+    this.configService.makeIntentionalError().subscribe(null, error => this.error = error.message );
   }
 
   getType(val: any): string {
