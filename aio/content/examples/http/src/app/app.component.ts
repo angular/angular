@@ -2,7 +2,8 @@ import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-root',
-  templateUrl: './app.component.html'
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
 })
 export class AppComponent {
   showHeroes = true;
@@ -16,4 +17,4 @@ export class AppComponent {
   toggleDownloader() { this.showDownloader = !this.showDownloader; }
   toggleUploader() { this.showUploader = !this.showUploader; }
   toggleSearch() { this.showSearch = !this.showSearch; }
- }
+}
