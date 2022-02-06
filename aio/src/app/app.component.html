@@ -9,7 +9,7 @@
 </div>
 
 <header>
-  <mat-toolbar color="primary" class="app-toolbar no-print" [class.transitioning]="isTransitioning">
+  <mat-toolbar #appToolbar color="primary" class="app-toolbar no-print" [class.transitioning]="isTransitioning">
     <mat-toolbar-row class="notification-container">
       <aio-notification notificationId="war-ukraine" expirationDate="null" [dismissOnContentClick]="false" (dismissed)="notificationDismissed()">
         <a class="link" target="_blank" rel="noopener" href="https://www.google.org/ukraine-relief/">
@@ -33,9 +33,9 @@
         <img *ngSwitchDefault src="assets/images/logos/angular/shield-large.svg" width="37" height="40" title="Home" alt="Home">
       </a>
       <aio-top-menu *ngIf="showTopMenu" [nodes]="topMenuNodes" [currentNode]="currentNodes?.TopBar"></aio-top-menu>
-      <aio-search-box class="search-container" #searchBox (onSearch)="doSearch($event)" (onFocus)="doSearch($event)"></aio-search-box>
-      <aio-theme-toggle></aio-theme-toggle>
-      <div class="toolbar-external-icons-container">
+      <aio-search-box class="search-container" #searchBox (onSearch)="doSearch($event)" (onFocus)="doSearch($event, true)"></aio-search-box>
+      <aio-theme-toggle #themeToggle></aio-theme-toggle>
+      <div #externalIcons class="toolbar-external-icons-container">
         <a mat-icon-button href="https://twitter.com/angular" title="Twitter" aria-label="Angular on twitter">
           <mat-icon svgIcon="logos:twitter"></mat-icon>
         </a>
