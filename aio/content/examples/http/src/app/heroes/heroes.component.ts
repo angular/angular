@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 
 import { Hero } from './hero';
 import { HeroesService } from './heroes.service';
@@ -12,8 +12,16 @@ import { HeroesService } from './heroes.service';
 export class HeroesComponent implements OnInit {
   heroes: Hero[] = [];
   editHero: Hero | undefined; // the hero currently being edited
+  heroName = '';
 
   constructor(private heroesService: HeroesService) {}
+
+  @ViewChild('heroEditInput')
+  set heroEditInput(element: ElementRef<HTMLInputElement>) {
+    if (element) {
+      element.nativeElement.focus();
+    }
+  }
 
   ngOnInit() {
     this.getHeroes();
@@ -55,8 +63,9 @@ export class HeroesComponent implements OnInit {
     */
   }
 
-  edit(hero: Hero) {
-    this.editHero = hero;
+  edit(heroName: string) {
+    this.update(heroName);
+    this.editHero = undefined;
   }
 
   search(searchTerm: string) {
@@ -65,13 +74,15 @@ export class HeroesComponent implements OnInit {
       this.heroesService
         .searchHeroes(searchTerm)
         .subscribe(heroes => (this.heroes = heroes));
+    } else {
+      this.getHeroes();
     }
   }
 
-  update() {
-    if (this.editHero) {
+  update(heroName: string) {
+    if (heroName && this.editHero && this.editHero.name !== heroName) {
       this.heroesService
-        .updateHero(this.editHero)
+        .updateHero({...this.editHero, name: heroName})
         .subscribe(hero => {
         // replace the hero in the heroes list with update from server
         const ix = hero ? this.heroes.findIndex(h => h.id === hero.id) : -1;

@@ -1,29 +1,29 @@
 <h2>Heroes</h2>
 <div class="search">
   <label for="hero-name">Hero name: </label>
-  <input type="text" #heroName id="hero-name">
+  <input type="text" [(ngModel)]="heroName" id="hero-name">
 
-  <!-- (click) passes input value to add() and then clears the input -->
-  <button type="button" (click)="add(heroName.value); heroName.value=''">
-    Add hero
-  </button>
-  <button type="button" (click)="search(heroName.value)">
+  <button type="button" [disabled]="!heroName"
+    (click)="add(heroName)">Add hero</button>
+  <button type="button" (click)="search(heroName)">
     Search
   </button>
 </div>
 
 <ul class="heroes">
   <li *ngFor="let hero of heroes">
-    <button type="button" class="edit" (click)="edit(hero)">
-      <span class="badge">{{ hero.id || -1 }}</span>
-      <span *ngIf="hero!==editHero">{{hero.name}}</span>
-      <input type="text"
-             *ngIf="hero===editHero"
-             [(ngModel)]="hero.name"
-             (blur)="update()"
-             (keyup.enter)="update()">
+    <span class="badge">{{ hero.id || -1 }}</span>
+    <span *ngIf="hero!==editHero; else editInput" class="name">{{hero.name}}</span>
+    <ng-template #editInput>
+      <input #heroEditInput type="text" class="name" [value]="editHero!.name" (blur)="edit(heroEditInput.value)" (keydown.enter)="edit(heroEditInput.value)"/>
+    </ng-template>
+    <button *ngIf="hero!==editHero" type="button" class="edit" title="edit hero"
+      (click)="editHero = hero">
+      Edit
     </button>
     <button type="button" class="delete" title="delete hero"
-    (click)="delete(hero)">x</button>
+      (click)="delete(hero)">
+      Delete
+    </button>
   </li>
 </ul>

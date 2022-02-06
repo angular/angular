@@ -9,57 +9,71 @@
 }
 
 .heroes li {
-  display: flex;
-  width: 100%;
-}
-
-.heroes li:hover {
-  left: .1em;
-}
-
-.heroes button.delete {
-  color: black;
-  display: block;
-  font-size: 1.2rem;
+  display: grid;
+  grid-template-columns: min-content max-content 1fr max-content max-content;
+  grid-template-areas: "badge name . edit delete";
+  margin: 1rem 0;
+  align-items: center;
   background-color: #eee;
-  border-radius: 0 4px 4px 0;
+  border-radius: 4px;
 }
 
-.heroes a:hover {
-  color: #2c3a41;
-  background-color: #e6e6e6;
+.heroes li .badge {
+  grid-area: badge;
+}
+
+.heroes li .name {
+  grid-area: name;
+}
+
+.heroes li button {
+  margin: 0.3rem;
+  padding: 0.3rem 0.8rem;
+}
+
+.heroes li button.edit {
+  grid-area: edit;
+}
+
+.heroes li button.delete {
+  grid-area: delete;
+}
+
+.heroes li button:hover, .heros li button:focus {
+  color: #eee;
+  background-color: #000;
 }
 
 .heroes .badge {
-  padding: .5em .6em;
+  padding: 0.5rem 0.6rem;
   color: white;
   background-color: #435B60;
-  min-width: 16px;
-  margin-right: .8em;
+  margin-right: 0.8rem;
   border-radius: 4px 0 0 4px;
-}
-
-.heroes button.edit {
-  flex: 1;
-  text-align: left;
-  padding: 0;
-  margin-right: 0;
+  align-self: stretch;
   display: flex;
   align-items: center;
-  border-top-right-radius: 0;
-  border-bottom-right-radius: 0;
-}
-
-button.delete {
-  right: -8px;
-  top: 5px;
-  background-color: gray;
-  color: white;
-  padding: 5px 8px;
-  width: 2em;
 }
 
 .heroes input {
   max-width: 12rem;
   padding: .25rem;
+}
+
+@media (max-width: 550px) {
+  .heroes li {
+    grid-template-columns: min-content 1fr 1fr;
+    grid-template-rows: 2rem max-content;
+    grid-template-areas:
+      "badge name name"
+      "badge edit delete";
+  }
+
+  .heroes li .name {
+    margin-top: 0.3rem;
+  }
+
+  .heroes li button {
+    justify-self: center;
+  }
 }
