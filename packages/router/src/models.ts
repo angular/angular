@@ -769,8 +769,8 @@ export type CanDeactivateFn<T> =
  *
  * Interface that classes can implement to be a data provider.
  * A data provider class can be used with the router to resolve data during navigation.
- * The interface defines a `resolve()` method that is invoked when the navigation starts.
- * The router waits for the data to be resolved before the route is finally activated.
+ * The interface defines a `resolve()` method that is invoked right after the `ResolveStart`
+ * router event. The router waits for the data to be resolved before the route is finally activated.
  *
  * The following example implements a `resolve()` method that retrieves the data
  * needed to activate the requested route.
