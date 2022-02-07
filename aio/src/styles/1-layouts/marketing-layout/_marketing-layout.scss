@@ -171,12 +171,8 @@ section#intro {
 
 // ANGULAR LINE
 
-.home-row .card-wrapper {
-  width: 70%
-}
-
 .home-row .card {
-  @include mixins.card(100%);
+  @include mixins.card(70%);
   display: flex;
   flex-direction: row;
   align-items: center;
