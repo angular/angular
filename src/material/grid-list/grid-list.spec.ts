@@ -1,34 +1,19 @@
-import {TestBed, ComponentFixture, inject} from '@angular/core/testing';
+import {TestBed, ComponentFixture} from '@angular/core/testing';
 import {Component, DebugElement, Type, ViewChild} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {MatGridList, MatGridListModule} from './index';
 import {MatGridTile, MatGridTileText} from './grid-tile';
 import {Directionality} from '@angular/cdk/bidi';
-import {Platform} from '@angular/cdk/platform';
 
 describe('MatGridList', () => {
-  let disableComputedStyleTests = false;
-
   function createComponent<T>(componentType: Type<T>): ComponentFixture<T> {
     TestBed.configureTestingModule({
       imports: [MatGridListModule],
       declarations: [componentType],
     }).compileComponents();
 
-    const fixture = TestBed.createComponent<T>(componentType);
-
-    inject([Platform], (platform: Platform) => {
-      // IE and Edge aren't consistent in the values that they return from `getComputedStyle`.
-      // In some cases they return the computed values, and in others the passed-in ones. We use
-      // this flag to disable the tests that depend on `getComputedStyle` in order to avoid flakes.
-      // TODO: we can re-enable them when we start testing against the Chromium-based Edge.
-      disableComputedStyleTests = platform.EDGE || platform.TRIDENT;
-    })();
-
-    return fixture;
+    return TestBed.createComponent<T>(componentType);
   }
-
-  afterEach(() => (disableComputedStyleTests = false));
 
   it('should throw error if cols is not defined', () => {
     const fixture = createComponent(GridListWithoutCols);
@@ -86,10 +71,6 @@ describe('MatGridList', () => {
   it('should default to 1:1 row height if undefined ', () => {
     const fixture = createComponent(GridListWithUnspecifiedRowHeight);
 
-    if (disableComputedStyleTests) {
-      return;
-    }
-
     fixture.detectChanges();
     const tile = fixture.debugElement.query(By.directive(MatGridTile))!;
     const inlineStyles = tile.nativeElement.style;
@@ -102,10 +83,6 @@ describe('MatGridList', () => {
 
   it('should use a ratio row height if passed in', () => {
     const fixture = createComponent(GirdListWithRowHeightRatio);
-
-    if (disableComputedStyleTests) {
-      return;
-    }
 
     fixture.componentInstance.rowHeight = '4:1';
     fixture.detectChanges();
@@ -128,10 +105,6 @@ describe('MatGridList', () => {
   it('should divide row height evenly in "fit" mode', () => {
     const fixture = createComponent(GridListWithFitRowHeightMode);
 
-    if (disableComputedStyleTests) {
-      return;
-    }
-
     fixture.componentInstance.totalHeight = '300px';
     fixture.detectChanges();
     const tile = fixture.debugElement.query(By.directive(MatGridTile))!;
@@ -149,10 +122,6 @@ describe('MatGridList', () => {
   it('should use the fixed row height if passed in', () => {
     const fixture = createComponent(GridListWithFixedRowHeightMode);
 
-    if (disableComputedStyleTests) {
-      return;
-    }
-
     fixture.componentInstance.rowHeight = '100px';
     fixture.detectChanges();
 
@@ -168,10 +137,6 @@ describe('MatGridList', () => {
   it('should default to pixels if row height units are missing', () => {
     const fixture = createComponent(GridListWithUnitlessFixedRowHeight);
 
-    if (disableComputedStyleTests) {
-      return;
-    }
-
     fixture.detectChanges();
     const tile = fixture.debugElement.query(By.directive(MatGridTile))!;
     expect(getDimension(tile, 'height')).toBe(100);
@@ -179,10 +144,6 @@ describe('MatGridList', () => {
 
   it('should default gutter size to 1px', () => {
     const fixture = createComponent(GridListWithUnspecifiedGutterSize);
-
-    if (disableComputedStyleTests) {
-      return;
-    }
 
     fixture.detectChanges();
     const tiles = fixture.debugElement.queryAll(By.css('mat-grid-tile'));
@@ -199,10 +160,6 @@ describe('MatGridList', () => {
   it('should be able to set the gutter size to zero', () => {
     const fixture = createComponent(GridListWithUnspecifiedGutterSize);
     const gridList = fixture.debugElement.query(By.directive(MatGridList))!;
-
-    if (disableComputedStyleTests) {
-      return;
-    }
 
     gridList.componentInstance.gutterSize = 0;
     fixture.detectChanges();
@@ -221,10 +178,6 @@ describe('MatGridList', () => {
   it('should lay out the tiles correctly for a nested grid list', () => {
     const fixture = createComponent(NestedGridList);
 
-    if (disableComputedStyleTests) {
-      return;
-    }
-
     fixture.detectChanges();
     const innerTiles = fixture.debugElement.queryAll(
       By.css('mat-grid-tile mat-grid-list mat-grid-tile'),
@@ -237,10 +190,6 @@ describe('MatGridList', () => {
 
   it('should set the gutter size if passed', () => {
     const fixture = createComponent(GridListWithGutterSize);
-
-    if (disableComputedStyleTests) {
-      return;
-    }
 
     fixture.detectChanges();
     const tiles = fixture.debugElement.queryAll(By.css('mat-grid-tile'));
@@ -256,10 +205,6 @@ describe('MatGridList', () => {
 
   it('should use pixels if gutter units are missing', () => {
     const fixture = createComponent(GridListWithUnitlessGutterSize);
-
-    if (disableComputedStyleTests) {
-      return;
-    }
 
     fixture.detectChanges();
     const tiles = fixture.debugElement.queryAll(By.css('mat-grid-tile'));
@@ -277,10 +222,6 @@ describe('MatGridList', () => {
     const fixture = createComponent(GridListWithUnspecifiedGutterSize);
     const gridList = fixture.debugElement.query(By.directive(MatGridList))!;
 
-    if (disableComputedStyleTests) {
-      return;
-    }
-
     gridList.componentInstance.gutterSize = '10%';
     fixture.detectChanges();
 
@@ -292,10 +233,6 @@ describe('MatGridList', () => {
 
   it('should set the correct list height in ratio mode', () => {
     const fixture = createComponent(GridListWithRatioHeightAndMulipleRows);
-
-    if (disableComputedStyleTests) {
-      return;
-    }
 
     fixture.detectChanges();
     const list = fixture.debugElement.query(By.directive(MatGridList))!;
@@ -309,10 +246,6 @@ describe('MatGridList', () => {
   it('should set the correct list height in fixed mode', () => {
     const fixture = createComponent(GridListWithFixRowHeightAndMultipleRows);
 
-    if (disableComputedStyleTests) {
-      return;
-    }
-
     fixture.detectChanges();
     const list = fixture.debugElement.query(By.directive(MatGridList))!;
     expect(getDimension(list, 'height')).toBe(201);
@@ -320,10 +253,6 @@ describe('MatGridList', () => {
 
   it('should allow adjustment of tile colspan', () => {
     const fixture = createComponent(GridListWithColspanBinding);
-
-    if (disableComputedStyleTests) {
-      return;
-    }
 
     fixture.componentInstance.colspan = 2;
     fixture.detectChanges();
@@ -339,10 +268,6 @@ describe('MatGridList', () => {
   it('should allow adjustment of tile rowspan', () => {
     const fixture = createComponent(GridListWithRowspanBinding);
 
-    if (disableComputedStyleTests) {
-      return;
-    }
-
     fixture.componentInstance.rowspan = 2;
     fixture.detectChanges();
 
@@ -356,10 +281,6 @@ describe('MatGridList', () => {
 
   it('should lay out tiles correctly for a complex layout', () => {
     const fixture = createComponent(GridListWithComplexLayout);
-
-    if (disableComputedStyleTests) {
-      return;
-    }
 
     fixture.componentInstance.tiles = [
       {cols: 3, rows: 1},
@@ -395,10 +316,6 @@ describe('MatGridList', () => {
   it('should lay out tiles correctly', () => {
     const fixture = createComponent(GridListWithLayout);
 
-    if (disableComputedStyleTests) {
-      return;
-    }
-
     fixture.detectChanges();
     const tiles = fixture.debugElement.queryAll(By.css('mat-grid-tile'));
 
@@ -430,10 +347,6 @@ describe('MatGridList', () => {
 
   it('should lay out tiles correctly when single cell to be placed at the beginning', () => {
     const fixture = createComponent(GridListWithSingleCellAtBeginning);
-
-    if (disableComputedStyleTests) {
-      return;
-    }
 
     fixture.detectChanges();
     const tiles = fixture.debugElement.queryAll(By.css('mat-grid-tile'));
@@ -497,10 +410,6 @@ describe('MatGridList', () => {
   it('should reset the old styles when switching to a new tile styler', () => {
     const fixture = createComponent(GirdListWithRowHeightRatio);
 
-    if (disableComputedStyleTests) {
-      return;
-    }
-
     fixture.componentInstance.rowHeight = '4:1';
     fixture.detectChanges();
 
@@ -561,10 +470,6 @@ describe('MatGridList', () => {
 
   it('should lay out the tiles if they are not direct descendants of the list', () => {
     const fixture = createComponent(GridListWithIndirectTileDescendants);
-
-    if (disableComputedStyleTests) {
-      return;
-    }
 
     fixture.detectChanges();
     const tile = fixture.debugElement.query(By.directive(MatGridTile))!;

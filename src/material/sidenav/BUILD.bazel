@@ -25,7 +25,6 @@ ng_module(
         "//src/cdk/bidi",
         "//src/cdk/coercion",
         "//src/cdk/keycodes",
-        "//src/cdk/platform",
         "//src/cdk/scrolling",
         "//src/material/core",
         "@npm//@angular/animations",

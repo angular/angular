@@ -93,7 +93,7 @@ export function runHarnessTests(
     // cancel dispatched click events on disabled buttons. We skip this check on Edge and Firefox.
     // See: https://bugzilla.mozilla.org/show_bug.cgi?id=1582570 and:
     // https://stackoverflow.com/questions/32377026/disabled-button-is-clickable-on-edge-browser
-    if (platform.EDGE || platform.FIREFOX) {
+    if (platform.FIREFOX) {
       return;
     }
 

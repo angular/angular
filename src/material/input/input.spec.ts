@@ -1,4 +1,4 @@
-import {Platform, PlatformModule, _supportsShadowDom} from '@angular/cdk/platform';
+import {getSupportedInputTypes, _supportsShadowDom} from '@angular/cdk/platform';
 import {
   createFakeEvent,
   dispatchFakeEvent,
@@ -77,23 +77,20 @@ describe('MatInput without forms', () => {
 
   it('should not be treated as empty if type is date', fakeAsync(() => {
     const fixture = createComponent(MatInputDateTestController);
-    const platform = TestBed.inject(Platform);
     fixture.detectChanges();
 
-    if (!(platform.TRIDENT || (platform.SAFARI && !platform.IOS))) {
+    if (getSupportedInputTypes().has('date')) {
       const el = fixture.debugElement.query(By.css('label'))!.nativeElement;
       expect(el).not.toBeNull();
       expect(el.classList.contains('mat-form-field-empty')).toBe(false);
     }
   }));
 
-  // Safari Desktop and IE don't support type="date" and fallback to type="text".
-  it('should be treated as empty if type is date in Safari Desktop or IE', fakeAsync(() => {
+  it('should be treated as empty if type is date on unsupported browser', fakeAsync(() => {
     const fixture = createComponent(MatInputDateTestController);
-    const platform = TestBed.inject(Platform);
     fixture.detectChanges();
 
-    if (platform.TRIDENT || (platform.SAFARI && !platform.IOS)) {
+    if (!getSupportedInputTypes().has('date')) {
       const el = fixture.debugElement.query(By.css('label'))!.nativeElement;
       expect(el).not.toBeNull();
       expect(el.classList.contains('mat-form-field-empty')).toBe(true);
@@ -1862,7 +1859,6 @@ function createComponent<T>(
       MatFormFieldModule,
       MatInputModule,
       BrowserAnimationsModule,
-      PlatformModule,
       ReactiveFormsModule,
       ...imports,
     ],

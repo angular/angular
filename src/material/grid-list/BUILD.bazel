@@ -49,7 +49,6 @@ ng_test_library(
     deps = [
         ":grid-list",
         "//src/cdk/bidi",
-        "//src/cdk/platform",
         "@npm//@angular/platform-browser",
     ],
 )

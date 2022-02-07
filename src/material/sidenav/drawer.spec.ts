@@ -6,7 +6,6 @@ import {
   TestBed,
   discardPeriodicTasks,
   flush,
-  inject,
 } from '@angular/core/testing';
 import {Component, ElementRef, ViewChild} from '@angular/core';
 import {By} from '@angular/platform-browser';
@@ -14,7 +13,6 @@ import {BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-b
 import {MatDrawer, MatSidenavModule, MatDrawerContainer} from './index';
 import {Direction} from '@angular/cdk/bidi';
 import {A11yModule} from '@angular/cdk/a11y';
-import {PlatformModule, Platform} from '@angular/cdk/platform';
 import {ESCAPE} from '@angular/cdk/keycodes';
 import {dispatchKeyboardEvent, createKeyboardEvent, dispatchEvent} from '../../cdk/testing/private';
 import {CdkScrollable} from '@angular/cdk/scrolling';
@@ -24,7 +22,7 @@ describe('MatDrawer', () => {
   beforeEach(
     waitForAsync(() => {
       TestBed.configureTestingModule({
-        imports: [MatSidenavModule, A11yModule, PlatformModule, NoopAnimationsModule, CommonModule],
+        imports: [MatSidenavModule, A11yModule, NoopAnimationsModule, CommonModule],
         declarations: [
           BasicTestApp,
           DrawerContainerNoDrawerTestApp,
@@ -805,7 +803,7 @@ describe('MatDrawerContainer', () => {
   beforeEach(
     waitForAsync(() => {
       TestBed.configureTestingModule({
-        imports: [MatSidenavModule, A11yModule, PlatformModule, NoopAnimationsModule],
+        imports: [MatSidenavModule, A11yModule, NoopAnimationsModule],
         declarations: [
           DrawerContainerTwoDrawerTestApp,
           DrawerDelayed,
@@ -944,42 +942,28 @@ describe('MatDrawerContainer', () => {
     expect(container.classList).not.toContain('mat-drawer-transition');
   }));
 
-  it('should recalculate the margin if a drawer changes size while open in autosize mode', fakeAsync(
-    inject([Platform], (platform: Platform) => {
-      const fixture = TestBed.createComponent(AutosizeDrawer);
+  it('should recalculate the margin if a drawer changes size while open in autosize mode', fakeAsync(() => {
+    const fixture = TestBed.createComponent(AutosizeDrawer);
 
-      fixture.detectChanges();
-      fixture.componentInstance.drawer.open();
-      fixture.detectChanges();
-      tick();
-      fixture.detectChanges();
+    fixture.detectChanges();
+    fixture.componentInstance.drawer.open();
+    fixture.detectChanges();
+    tick();
+    fixture.detectChanges();
 
-      // IE and Edge are flaky in when they update the styles.
-      // For them we fall back to checking whether the proper method was called.
-      const isFlaky = platform.EDGE || platform.TRIDENT;
-      const contentEl = fixture.debugElement.nativeElement.querySelector('.mat-drawer-content');
-      const initialMargin = parseInt(contentEl.style.marginLeft);
+    const contentEl = fixture.debugElement.nativeElement.querySelector('.mat-drawer-content');
+    const initialMargin = parseInt(contentEl.style.marginLeft);
 
-      if (isFlaky) {
-        spyOn(fixture.componentInstance.drawerContainer, 'updateContentMargins');
-      } else {
-        expect(initialMargin).toBeGreaterThan(0);
-      }
+    expect(initialMargin).toBeGreaterThan(0);
 
-      fixture.componentInstance.fillerWidth = 200;
-      fixture.detectChanges();
-      tick(10);
-      fixture.detectChanges();
+    fixture.componentInstance.fillerWidth = 200;
+    fixture.detectChanges();
+    tick(10);
+    fixture.detectChanges();
 
-      if (isFlaky) {
-        expect(fixture.componentInstance.drawerContainer.updateContentMargins).toHaveBeenCalled();
-      } else {
-        expect(parseInt(contentEl.style.marginLeft)).toBeGreaterThan(initialMargin);
-      }
-
-      discardPeriodicTasks();
-    }),
-  ));
+    expect(parseInt(contentEl.style.marginLeft)).toBeGreaterThan(initialMargin);
+    discardPeriodicTasks();
+  }));
 
   it('should not set a style property if it would be zero', fakeAsync(() => {
     const fixture = TestBed.createComponent(AutosizeDrawer);

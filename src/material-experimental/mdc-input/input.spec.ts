@@ -1,4 +1,3 @@
-import {Platform, PlatformModule} from '@angular/cdk/platform';
 import {dispatchFakeEvent, wrappedErrorMessage} from '../../cdk/testing/private';
 import {
   ChangeDetectionStrategy,
@@ -38,6 +37,7 @@ import {MatIconModule} from '@angular/material/icon';
 import {By} from '@angular/platform-browser';
 import {BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {MAT_INPUT_VALUE_ACCESSOR, MatInput, MatInputModule} from './index';
+import {getSupportedInputTypes} from '@angular/cdk/platform';
 
 describe('MatMdcInput without forms', () => {
   it('should default to floating labels', fakeAsync(() => {
@@ -69,10 +69,9 @@ describe('MatMdcInput without forms', () => {
 
   it('should not be treated as empty if type is date', fakeAsync(() => {
     const fixture = createComponent(MatInputDateTestController);
-    const platform = TestBed.inject(Platform);
     fixture.detectChanges();
 
-    if (!(platform.TRIDENT || (platform.SAFARI && !platform.IOS))) {
+    if (getSupportedInputTypes().has('date')) {
       const formField = fixture.debugElement.query(By.directive(MatFormField))!
         .componentInstance as MatFormField;
       expect(formField).toBeTruthy();
@@ -80,13 +79,11 @@ describe('MatMdcInput without forms', () => {
     }
   }));
 
-  // Safari Desktop and IE don't support type="date" and fallback to type="text".
-  it('should be treated as empty if type is date in Safari Desktop or IE', fakeAsync(() => {
+  it('should be treated as empty if type is date on unsupported browser', fakeAsync(() => {
     const fixture = createComponent(MatInputDateTestController);
-    const platform = TestBed.inject(Platform);
     fixture.detectChanges();
 
-    if (platform.TRIDENT || (platform.SAFARI && !platform.IOS)) {
+    if (!getSupportedInputTypes().has('date')) {
       const formField = fixture.debugElement.query(By.directive(MatFormField))!
         .componentInstance as MatFormField;
       expect(formField).toBeTruthy();
@@ -1486,7 +1483,6 @@ function configureTestingModule(
       MatIconModule,
       MatInputModule,
       animations ? BrowserAnimationsModule : NoopAnimationsModule,
-      PlatformModule,
       ReactiveFormsModule,
       ...imports,
     ],

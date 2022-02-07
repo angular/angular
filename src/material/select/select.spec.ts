@@ -13,7 +13,6 @@ import {
   ESCAPE,
 } from '@angular/cdk/keycodes';
 import {OverlayContainer} from '@angular/cdk/overlay';
-import {Platform} from '@angular/cdk/platform';
 import {ScrollDispatcher, ViewportRuler} from '@angular/cdk/scrolling';
 import {
   createKeyboardEvent,
@@ -78,7 +77,6 @@ describe('MatSelect', () => {
   let dir: {value: 'ltr' | 'rtl'; change: Observable<string>};
   let scrolledSubject = new Subject();
   let viewportRuler: ViewportRuler;
-  let platform: Platform;
 
   /**
    * Configures the test module for MatSelect with the given declarations. This is broken out so
@@ -109,9 +107,8 @@ describe('MatSelect', () => {
       ],
     }).compileComponents();
 
-    inject([OverlayContainer, Platform], (oc: OverlayContainer, p: Platform) => {
+    inject([OverlayContainer], (oc: OverlayContainer) => {
       overlayContainerElement = oc.getContainerElement();
-      platform = p;
     })();
   }
 
@@ -3890,12 +3887,6 @@ describe('MatSelect', () => {
       }));
 
       it('should account for preceding label groups when aligning the option', fakeAsync(() => {
-        // Test is off-by-one on edge for some reason, but verified that it looks correct through
-        // manual testing.
-        if (platform.EDGE) {
-          return;
-        }
-
         fixture.destroy();
 
         const groupFixture = TestBed.createComponent(SelectWithGroups);
@@ -3933,12 +3924,6 @@ describe('MatSelect', () => {
       }));
 
       it('should account for indirect preceding label groups when aligning the option', fakeAsync(() => {
-        // Test is off-by-one on edge for some reason, but verified that it looks correct through
-        // manual testing.
-        if (platform.EDGE) {
-          return;
-        }
-
         fixture.destroy();
 
         const groupFixture = TestBed.createComponent(SelectWithIndirectDescendantGroups);
@@ -4642,20 +4627,9 @@ describe('MatSelect', () => {
         const option = overlayContainerElement.querySelector('.cdk-overlay-pane mat-option');
         const optionTop = option ? option.getBoundingClientRect().top : 0;
 
-        // There appears to be a small rounding error on IE, so we verify that the value is close,
-        // not exact.
-        if (platform.TRIDENT) {
-          const difference = Math.abs(
-            optionTop + (menuItemHeight - triggerHeight) / 2 - triggerTop,
-          );
-          expect(difference)
-            .withContext('Expected trigger to align with the first option.')
-            .toBeLessThan(0.1);
-        } else {
-          expect(Math.floor(optionTop + (menuItemHeight - triggerHeight) / 2))
-            .withContext('Expected trigger to align with the first option.')
-            .toBe(Math.floor(triggerTop));
-        }
+        expect(Math.floor(optionTop + (menuItemHeight - triggerHeight) / 2))
+          .withContext('Expected trigger to align with the first option.')
+          .toBe(Math.floor(triggerTop));
       }));
 
       it('should not adjust if option centering is disabled any option under a group is selected', fakeAsync(() => {
