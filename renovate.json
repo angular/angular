@@ -14,9 +14,7 @@
   "semanticCommitScope": "",
   "semanticCommitType": "build",
   "separateMajorMinor": false,
-  "ignorePaths": [
-    "integration/**"
-  ],
+  "ignorePaths": ["integration/**"],
   "packageRules": [
     {
       "matchPackagePatterns": ["*"],
@@ -26,6 +24,12 @@
       "matchPackageNames": ["@angular/dev-infra-private", "angular/dev-infra"],
       "groupName": "angular shared dev-infra code",
       "enabled": true
+    },
+    {
+      "matchPaths": [".github/workflows/scorecard.yml"],
+      "matchPackagePatterns": ["*"],
+      "groupName": "scorecard action dependencies",
+      "groupSlug": "scorecard-action"
     }
   ]
 }
