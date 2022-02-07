@@ -50,6 +50,77 @@ export const NON_BINDABLE_ATTR = 'ngNonBindable';
 /** Name for the variable keeping track of the context returned by `ɵɵrestoreView`. */
 export const RESTORED_VIEW_CONTEXT_NAME = 'restoredCtx';
 
+/** Instructions that support chaining. */
+const CHAINABLE_INSTRUCTIONS = new Set([
+  R3.i18nExp,
+  R3.listener,
+  R3.classProp,
+  R3.syntheticHostListener,
+  R3.hostProperty,
+  R3.syntheticHostProperty,
+  R3.property,
+  R3.propertyInterpolate1,
+  R3.propertyInterpolate2,
+  R3.propertyInterpolate3,
+  R3.propertyInterpolate4,
+  R3.propertyInterpolate5,
+  R3.propertyInterpolate6,
+  R3.propertyInterpolate7,
+  R3.propertyInterpolate8,
+  R3.propertyInterpolateV,
+  R3.attribute,
+  R3.attributeInterpolate1,
+  R3.attributeInterpolate2,
+  R3.attributeInterpolate3,
+  R3.attributeInterpolate4,
+  R3.attributeInterpolate5,
+  R3.attributeInterpolate6,
+  R3.attributeInterpolate7,
+  R3.attributeInterpolate8,
+  R3.attributeInterpolateV,
+  R3.styleProp,
+  R3.stylePropInterpolate1,
+  R3.stylePropInterpolate2,
+  R3.stylePropInterpolate3,
+  R3.stylePropInterpolate4,
+  R3.stylePropInterpolate5,
+  R3.stylePropInterpolate6,
+  R3.stylePropInterpolate7,
+  R3.stylePropInterpolate8,
+  R3.stylePropInterpolateV,
+  R3.textInterpolate,
+  R3.textInterpolate1,
+  R3.textInterpolate2,
+  R3.textInterpolate3,
+  R3.textInterpolate4,
+  R3.textInterpolate5,
+  R3.textInterpolate6,
+  R3.textInterpolate7,
+  R3.textInterpolate8,
+  R3.textInterpolateV,
+]);
+
+/**
+ * Possible types that can be used to generate the parameters of an instruction call.
+ * If the parameters are a function, the function will be invoked at the time the instruction
+ * is generated.
+ */
+export type InstructionParams = (o.Expression|o.Expression[])|(() => (o.Expression|o.Expression[]));
+
+/** Necessary information to generate a call to an instruction function. */
+export interface Instruction {
+  span: ParseSourceSpan|null;
+  reference: o.ExternalReference;
+  paramsOrFn?: InstructionParams;
+}
+
+/** Generates a call to a single instruction. */
+export function invokeInstruction(
+    span: ParseSourceSpan|null, reference: o.ExternalReference,
+    params: o.Expression[]): o.Expression {
+  return o.importExpr(reference, null, span).callFn(params, span);
+}
+
 /**
  * Creates an allocator for a temporary variable.
  *
@@ -207,23 +278,6 @@ export function getAttrsForDirectiveMatching(elOrTpl: t.Element|
   return attributesMap;
 }
 
-/** Returns a call expression to a chained instruction, e.g. `property(params[0])(params[1])`. */
-export function chainedInstruction(
-    reference: o.ExternalReference, calls: o.Expression[][], span?: ParseSourceSpan|null) {
-  let expression = o.importExpr(reference, null, span) as o.Expression;
-
-  if (calls.length > 0) {
-    for (let i = 0; i < calls.length; i++) {
-      expression = expression.callFn(calls[i], span);
-    }
-  } else {
-    // Add a blank invocation, in case the `calls` array is empty.
-    expression = expression.callFn([], span);
-  }
-
-  return expression;
-}
-
 /**
  * Gets the number of arguments expected to be passed to a generated instruction in the case of
  * interpolation instructions.
@@ -239,4 +293,43 @@ export function getInterpolationArgsLength(interpolation: Interpolation) {
   } else {
     return expressions.length + strings.length;
   }
+}
+
+/**
+ * Generates the final instruction call statements based on the passed in configuration.
+ * Will try to chain instructions as much as possible, if chaining is supported.
+ */
+export function getInstructionStatements(instructions: Instruction[]): o.Statement[] {
+  const statements: o.Statement[] = [];
+  let pendingExpression: o.Expression|null = null;
+  let pendingExpressionType: o.ExternalReference|null = null;
+
+  for (const current of instructions) {
+    const resolvedParams =
+        (typeof current.paramsOrFn === 'function' ? current.paramsOrFn() : current.paramsOrFn) ??
+        [];
+    const params = Array.isArray(resolvedParams) ? resolvedParams : [resolvedParams];
+
+    // If the current instruction is the same as the previous one
+    // and it can be chained, add another call to the chain.
+    if (pendingExpressionType === current.reference &&
+        CHAINABLE_INSTRUCTIONS.has(pendingExpressionType)) {
+      // We'll always have a pending expression when there's a pending expression type.
+      pendingExpression = pendingExpression!.callFn(params, pendingExpression!.sourceSpan);
+    } else {
+      if (pendingExpression !== null) {
+        statements.push(pendingExpression.toStmt());
+      }
+      pendingExpression = invokeInstruction(current.span, current.reference, params);
+      pendingExpressionType = current.reference;
+    }
+  }
+
+  // Since the current instruction adds the previous one to the statements,
+  // we may be left with the final one at the end that is still pending.
+  if (pendingExpression !== null) {
+    statements.push(pendingExpression.toStmt());
+  }
+
+  return statements;
 }
