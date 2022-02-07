@@ -23,7 +23,7 @@ import {prepareSyntheticListenerFunctionName, prepareSyntheticPropertyName, R3Co
 import {DeclarationListEmitMode, R3ComponentMetadata, R3DirectiveMetadata, R3HostMetadata, R3QueryMetadata} from './api';
 import {MIN_STYLING_BINDING_SLOTS_REQUIRED, StylingBuilder, StylingInstructionCall} from './styling_builder';
 import {BindingScope, makeBindingParser, prepareEventListenerParameters, renderFlagCheckIfStmt, resolveSanitizationFn, TemplateDefinitionBuilder, ValueConverter} from './template';
-import {asLiteral, chainedInstruction, conditionallyCreateMapObjectLiteral, CONTEXT_NAME, DefinitionMap, getQueryPredicate, RENDER_FLAGS, TEMPORARY_NAME, temporaryAllocator} from './util';
+import {asLiteral, conditionallyCreateMapObjectLiteral, CONTEXT_NAME, DefinitionMap, getInstructionStatements, getQueryPredicate, Instruction, RENDER_FLAGS, TEMPORARY_NAME, temporaryAllocator} from './util';
 
 
 // This regex matches any binding names that contain the "attr." prefix, e.g. "attr.required"
@@ -468,8 +468,9 @@ function createHostBindingsFunction(
     styleBuilder.registerClassAttr(classAttr);
   }
 
-  const createStatements: o.Statement[] = [];
-  const updateStatements: o.Statement[] = [];
+  const createInstructions: Instruction[] = [];
+  const updateInstructions: Instruction[] = [];
+  const updateVariables: o.Statement[] = [];
 
   const hostBindingSourceSpan = typeSourceSpan;
 
@@ -477,8 +478,7 @@ function createHostBindingsFunction(
   const eventBindings = bindingParser.createDirectiveHostEventAsts(
       hostBindingsMetadata.listeners, hostBindingSourceSpan);
   if (eventBindings && eventBindings.length) {
-    const listeners = createHostListeners(eventBindings, name);
-    createStatements.push(...listeners);
+    createInstructions.push(...createHostListeners(eventBindings, name));
   }
 
   // Calculate the host property bindings
@@ -522,7 +522,8 @@ function createHostBindingsFunction(
   const propertyBindings: o.Expression[][] = [];
   const attributeBindings: o.Expression[][] = [];
   const syntheticHostBindings: o.Expression[][] = [];
-  allOtherBindings.forEach((binding: ParsedProperty) => {
+
+  for (const binding of allOtherBindings) {
     // resolve literal arrays and literal objects
     const value = binding.expression.visit(getValueConverter());
     const bindingExpr = bindingFn(bindingContext, value);
@@ -552,7 +553,7 @@ function createHostBindingsFunction(
       instructionParams.push(sanitizerFn);
     }
 
-    updateStatements.push(...bindingExpr.stmts);
+    updateVariables.push(...bindingExpr.stmts);
 
     if (instruction === R3.hostProperty) {
       propertyBindings.push(instructionParams);
@@ -561,21 +562,21 @@ function createHostBindingsFunction(
     } else if (instruction === R3.syntheticHostProperty) {
       syntheticHostBindings.push(instructionParams);
     } else {
-      updateStatements.push(o.importExpr(instruction).callFn(instructionParams).toStmt());
+      updateInstructions.push({reference: instruction, paramsOrFn: instructionParams, span: null});
     }
-  });
-
-  if (propertyBindings.length > 0) {
-    updateStatements.push(chainedInstruction(R3.hostProperty, propertyBindings).toStmt());
   }
 
-  if (attributeBindings.length > 0) {
-    updateStatements.push(chainedInstruction(R3.attribute, attributeBindings).toStmt());
+  for (const bindingParams of propertyBindings) {
+    updateInstructions.push({reference: R3.hostProperty, paramsOrFn: bindingParams, span: null});
   }
 
-  if (syntheticHostBindings.length > 0) {
-    updateStatements.push(
-        chainedInstruction(R3.syntheticHostProperty, syntheticHostBindings).toStmt());
+  for (const bindingParams of attributeBindings) {
+    updateInstructions.push({reference: R3.attribute, paramsOrFn: bindingParams, span: null});
+  }
+
+  for (const bindingParams of syntheticHostBindings) {
+    updateInstructions.push(
+        {reference: R3.syntheticHostProperty, paramsOrFn: bindingParams, span: null});
   }
 
   // since we're dealing with directives/components and both have hostBinding
@@ -593,18 +594,17 @@ function createHostBindingsFunction(
     // the update block of a component/directive templateFn/hostBindingsFn so that the bindings
     // are evaluated and updated for the element.
     styleBuilder.buildUpdateLevelInstructions(getValueConverter()).forEach(instruction => {
-      if (instruction.calls.length > 0) {
-        const calls: o.Expression[][] = [];
+      for (const call of instruction.calls) {
+        // we subtract a value of `1` here because the binding slot was already allocated
+        // at the top of this method when all the input bindings were counted.
+        totalHostVarsCount +=
+            Math.max(call.allocateBindingSlots - MIN_STYLING_BINDING_SLOTS_REQUIRED, 0);
 
-        instruction.calls.forEach(call => {
-          // we subtract a value of `1` here because the binding slot was already allocated
-          // at the top of this method when all the input bindings were counted.
-          totalHostVarsCount +=
-              Math.max(call.allocateBindingSlots - MIN_STYLING_BINDING_SLOTS_REQUIRED, 0);
-          calls.push(convertStylingCall(call, bindingContext, bindingFn));
+        updateInstructions.push({
+          reference: instruction.reference,
+          paramsOrFn: convertStylingCall(call, bindingContext, bindingFn),
+          span: null
         });
-
-        updateStatements.push(chainedInstruction(instruction.reference, calls).toStmt());
       }
     });
   }
@@ -613,14 +613,17 @@ function createHostBindingsFunction(
     definitionMap.set('hostVars', o.literal(totalHostVarsCount));
   }
 
-  if (createStatements.length > 0 || updateStatements.length > 0) {
+  if (createInstructions.length > 0 || updateInstructions.length > 0) {
     const hostBindingsFnName = name ? `${name}_HostBindings` : null;
     const statements: o.Statement[] = [];
-    if (createStatements.length > 0) {
-      statements.push(renderFlagCheckIfStmt(core.RenderFlags.Create, createStatements));
+    if (createInstructions.length > 0) {
+      statements.push(renderFlagCheckIfStmt(
+          core.RenderFlags.Create, getInstructionStatements(createInstructions)));
     }
-    if (updateStatements.length > 0) {
-      statements.push(renderFlagCheckIfStmt(core.RenderFlags.Update, updateStatements));
+    if (updateInstructions.length > 0) {
+      statements.push(renderFlagCheckIfStmt(
+          core.RenderFlags.Update,
+          updateVariables.concat(getInstructionStatements(updateInstructions))));
     }
     return o.fn(
         [new o.FnParam(RENDER_FLAGS, o.NUMBER_TYPE), new o.FnParam(CONTEXT_NAME, null)], statements,
@@ -664,12 +667,12 @@ function getBindingNameAndInstruction(binding: ParsedProperty):
   return {bindingName, instruction, isAttribute: !!attrMatches};
 }
 
-function createHostListeners(eventBindings: ParsedEvent[], name?: string): o.Statement[] {
-  const listeners: o.Expression[][] = [];
-  const syntheticListeners: o.Expression[][] = [];
-  const instructions: o.Statement[] = [];
+function createHostListeners(eventBindings: ParsedEvent[], name?: string): Instruction[] {
+  const listenerParams: o.Expression[][] = [];
+  const syntheticListenerParams: o.Expression[][] = [];
+  const instructions: Instruction[] = [];
 
-  eventBindings.forEach(binding => {
+  for (const binding of eventBindings) {
     let bindingName = binding.name && sanitizeIdentifier(binding.name);
     const bindingFnName = binding.type === ParsedEventType.Animation ?
         prepareSyntheticListenerFunctionName(bindingName, binding.targetOrPhase) :
@@ -678,18 +681,18 @@ function createHostListeners(eventBindings: ParsedEvent[], name?: string): o.Sta
     const params = prepareEventListenerParameters(BoundEvent.fromParsedEvent(binding), handlerName);
 
     if (binding.type == ParsedEventType.Animation) {
-      syntheticListeners.push(params);
+      syntheticListenerParams.push(params);
     } else {
-      listeners.push(params);
+      listenerParams.push(params);
     }
-  });
-
-  if (syntheticListeners.length > 0) {
-    instructions.push(chainedInstruction(R3.syntheticHostListener, syntheticListeners).toStmt());
   }
 
-  if (listeners.length > 0) {
-    instructions.push(chainedInstruction(R3.listener, listeners).toStmt());
+  for (const params of syntheticListenerParams) {
+    instructions.push({reference: R3.syntheticHostListener, paramsOrFn: params, span: null});
+  }
+
+  for (const params of listenerParams) {
+    instructions.push({reference: R3.listener, paramsOrFn: params, span: null});
   }
 
   return instructions;
