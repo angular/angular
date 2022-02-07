@@ -1,5 +1,8 @@
 <div
   cdkTrapFocus
+  role="dialog"
+  [attr.aria-modal]="true"
+  [attr.aria-labelledby]="_dialogLabelId ?? undefined"
   class="mat-datepicker-content-container"
   [class.mat-datepicker-content-container-with-custom-header]="datepicker.calendarHeaderComponent"
   [class.mat-datepicker-content-container-with-actions]="_actionsPortal">

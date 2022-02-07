@@ -433,6 +433,7 @@ export class MatDatepickerContent<S, D = ExtractDateTypeFromSelection<S>> extend
     comparisonEnd: D | null;
     comparisonStart: D | null;
     datepicker: MatDatepickerBase<any, S, D>;
+    _dialogLabelId: string | null;
     // (undocumented)
     _getSelected(): D | DateRange<D> | null;
     // (undocumented)

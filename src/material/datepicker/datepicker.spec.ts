@@ -236,7 +236,7 @@ describe('MatDatepicker', () => {
         fixture.detectChanges();
         flush();
 
-        const popup = document.querySelector('.cdk-overlay-pane')!;
+        const popup = document.querySelector('.mat-datepicker-content-container')!;
         expect(popup).toBeTruthy();
         expect(popup.getAttribute('role')).toBe('dialog');
       }));
@@ -254,7 +254,9 @@ describe('MatDatepicker', () => {
           fixture.detectChanges();
           flush();
 
-          const popup = document.querySelector('.cdk-overlay-pane')!;
+          const popup = document.querySelector(
+            '.cdk-overlay-pane .mat-datepicker-content-container',
+          )!;
           expect(popup).toBeTruthy();
           expect(popup.getAttribute('aria-labelledby')).toBe('test-label');
         }),
@@ -1405,7 +1407,9 @@ describe('MatDatepicker', () => {
         fixture.detectChanges();
         flush();
 
-        const popup = document.querySelector('.cdk-overlay-pane')!;
+        const popup = document.querySelector(
+          '.cdk-overlay-pane .mat-datepicker-content-container',
+        )!;
         expect(popup).toBeTruthy();
         expect(popup.getAttribute('aria-labelledby')).toBe(label.getAttribute('id'));
       }));

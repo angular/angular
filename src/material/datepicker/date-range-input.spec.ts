@@ -208,7 +208,7 @@ describe('MatDateRangeInput', () => {
     fixture.detectChanges();
     tick();
 
-    const popup = document.querySelector('.cdk-overlay-pane')!;
+    const popup = document.querySelector('.cdk-overlay-pane .mat-datepicker-content-container')!;
     expect(popup).toBeTruthy();
     expect(popup.getAttribute('aria-labelledby')).toBe(label.getAttribute('id'));
   }));
