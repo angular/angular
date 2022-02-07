@@ -92,6 +92,12 @@
       "groupName": "all non-major dependencies",
       "groupSlug": "all-minor-patch",
       "schedule": ["after 1am on Thursday"]
+    },
+    {
+      "matchPaths": [".github/workflows/scorecard.yml"],
+      "matchPackagePatterns": ["*"],
+      "groupName": "scorecard action dependencies",
+      "groupSlug": "scorecard-action"
     }
   ]
 }
