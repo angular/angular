@@ -1006,6 +1006,39 @@ describe('CdkVirtualScrollViewport', () => {
 
       expect(viewport.getRenderedRange()).toEqual({start: 0, end: 200});
     }));
+
+    it('rendered offset should always start at 0', fakeAsync(() => {
+      finishInit(fixture);
+      triggerScroll(viewport, testComponent.itemSize + 5);
+      fixture.detectChanges();
+      flush();
+
+      expect(viewport.getOffsetToRenderedContentStart())
+        .withContext('should have 0px offset as we are using appendOnly')
+        .toBe(0);
+    }));
+
+    it('should set content offset to bottom of content', fakeAsync(() => {
+      finishInit(fixture);
+      const contentSize = viewport.measureRenderedContentSize();
+
+      expect(contentSize).toBeGreaterThan(0);
+
+      viewport.setRenderedContentOffset(contentSize + 10, 'to-end');
+      fixture.detectChanges();
+      flush();
+
+      expect(viewport.getOffsetToRenderedContentStart()).toBe(0);
+    }));
+
+    it('should set content offset to top of content', fakeAsync(() => {
+      finishInit(fixture);
+      viewport.setRenderedContentOffset(10, 'to-start');
+      fixture.detectChanges();
+      flush();
+
+      expect(viewport.getOffsetToRenderedContentStart()).toBe(0);
+    }));
   });
 });
 
