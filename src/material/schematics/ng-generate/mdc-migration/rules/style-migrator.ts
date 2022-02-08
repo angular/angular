@@ -8,6 +8,8 @@
 
 import * as postcss from 'postcss';
 
+const END_OF_SELECTOR_REGEX = '(?!-)';
+
 /** The changes to a class names. */
 export interface ClassNameChange {
   /** The legacy class name. */
@@ -36,6 +38,9 @@ export abstract class StyleMigrator {
 
   /** The old mixins and their replacements. */
   abstract mixinChanges: MixinChange[];
+
+  /** The prefix of classes that are specific to the old components */
+  abstract deprecatedPrefix: string;
 
   /**
    * Returns whether the given at-include at-rule is a use of a legacy mixin for this component.
@@ -91,7 +96,11 @@ export abstract class StyleMigrator {
    * @returns `true` if the given Rule uses a legacy selector of this component.
    */
   isLegacySelector(rule: postcss.Rule): boolean {
-    return this.classChanges.some(change => rule.selector.includes(change.old));
+    // Since a legacy class can also have the deprecated prefix, we also
+    // check that a match isn't actually a longer deprecated class.
+    return this.classChanges.some(
+      change => rule.selector.match(change.old + END_OF_SELECTOR_REGEX) !== null,
+    );
   }
 
   /**
@@ -102,9 +111,42 @@ export abstract class StyleMigrator {
   replaceLegacySelector(rule: postcss.Rule): void {
     for (let i = 0; i < this.classChanges.length; i++) {
       const change = this.classChanges[i];
-      if (rule.selector.includes(change.old)) {
+      if (rule.selector.match(change.old + END_OF_SELECTOR_REGEX)) {
         rule.selector = rule.selector.replace(change.old, change.new);
       }
     }
+  }
+
+  /**
+   * Returns whether the given postcss rule uses a potentially deprecated
+   * selector of the old component.
+   *
+   * @param rule a postcss rule.
+   * @returns `true` if the given Rule uses a selector with the deprecated prefix.
+   */
+  isDeprecatedSelector(rule: postcss.Rule): boolean {
+    return rule.selector.includes(this.deprecatedPrefix);
+  }
+
+  /**
+   * Adds comment before declaration that says the following rule may not apply
+   * in the MDC version for that component
+   *
+   * @param rule a postcss rule.
+   */
+  addDeprecatedSelectorComment(rule: postcss.Rule): void {
+    let comment = postcss.comment({
+      text:
+        'TODO: The following rule targets internal classes of ' +
+        this.component +
+        ' that may no longer apply for the MDC version.',
+    });
+    // We need to manually adjust the indentation and add new lines between the
+    // comment and declaration
+    const indentation = rule.raws.before?.split('\n').pop();
+    comment.raws.before = '\n' + indentation;
+    // Since node is parsed and not a copy, will always have a parent node
+    rule.parent!.insertBefore(rule, comment);
+    rule.raws.before = '\n\n' + indentation;
   }
 }

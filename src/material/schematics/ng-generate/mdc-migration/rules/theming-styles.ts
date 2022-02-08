@@ -46,10 +46,20 @@ export class ThemingStylesMigration extends Migration<StyleMigrator[], Schematic
   }
 
   ruleHandler(rule: postcss.Rule) {
+    let isLegacySelector;
+    let isDeprecatedSelector;
+
     const migrator = this.upgradeData.find(m => {
-      return m.isLegacySelector(rule);
+      isLegacySelector = m.isLegacySelector(rule);
+      isDeprecatedSelector = m.isDeprecatedSelector(rule);
+      return isLegacySelector || isDeprecatedSelector;
     });
-    migrator?.replaceLegacySelector(rule);
+
+    if (isLegacySelector) {
+      migrator?.replaceLegacySelector(rule);
+    } else if (isDeprecatedSelector) {
+      migrator?.addDeprecatedSelectorComment(rule);
+    }
   }
 }
 

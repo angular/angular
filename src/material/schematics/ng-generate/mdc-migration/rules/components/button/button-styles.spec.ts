@@ -138,7 +138,7 @@ describe('button styles', () => {
         .mat-button {
           padding: 50px;
         }
-        .mat-button-base {
+        .mat-raised-button {
           padding: 25px;
         }
       `,
@@ -146,7 +146,7 @@ describe('button styles', () => {
         .mat-mdc-button {
           padding: 50px;
         }
-        .mat-mdc-button-base {
+        .mat-mdc-raised-button {
           padding: 25px;
         }
       `,
@@ -179,6 +179,74 @@ describe('button styles', () => {
         .some-class,
         .mat-mdc-button,
         .another-class { padding: 50px; }
+      `,
+      );
+    });
+
+    it('should add comment for potentially deprecated selector', async () => {
+      await runMigrationTest(
+        `
+        .mat-button-focus-overlay {
+          background-color: transparent;
+        }
+      `,
+        `
+        /* TODO: The following rule targets internal classes of button that may no longer apply for the MDC version. */
+
+        .mat-button-focus-overlay {
+          background-color: transparent;
+        }
+      `,
+      );
+    });
+
+    it('should not add comment for legacy selector that also starts with deprecated prefix', async () => {
+      await runMigrationTest(
+        `
+        .mat-button-base {
+          padding: 12px;
+        }
+      `,
+        `
+        .mat-mdc-button-base {
+          padding: 12px;
+        }
+      `,
+      );
+    });
+
+    it('should add comment for potentially deprecated multi-line selector', async () => {
+      await runMigrationTest(
+        `
+        .some-class
+        .mat-button-focus-overlay {
+          background-color: transparent;
+        }
+      `,
+        `
+        /* TODO: The following rule targets internal classes of button that may no longer apply for the MDC version. */
+
+        .some-class
+        .mat-button-focus-overlay {
+          background-color: transparent;
+        }
+      `,
+      );
+    });
+
+    it('should update the legacy mat-button class and add comment for potentially deprecated selector', async () => {
+      await runMigrationTest(
+        `
+        .mat-fab.some-class, .mat-button-focus-overlay {
+          background-color: transparent;
+        }
+      `,
+        `
+        /* TODO: The following rule targets internal classes of button that may no longer apply for the MDC version. */
+
+        .mat-mdc-fab.some-class, .mat-button-focus-overlay {
+          background-color: transparent;
+        }
       `,
       );
     });

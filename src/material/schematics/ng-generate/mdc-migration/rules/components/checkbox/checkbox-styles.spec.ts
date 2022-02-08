@@ -111,5 +111,58 @@ describe('checkbox styles', () => {
       `,
       );
     });
+
+    it('should add comment for potentially deprecated selector', async () => {
+      await runMigrationTest(
+        `
+        .mat-checkbox-label {
+          font-size: 16px;
+        }
+      `,
+        `
+        /* TODO: The following rule targets internal classes of checkbox that may no longer apply for the MDC version. */
+
+        .mat-checkbox-label {
+          font-size: 16px;
+        }
+      `,
+      );
+    });
+
+    it('should add comment for potentially deprecated multi-line selector', async () => {
+      await runMigrationTest(
+        `
+        .some-class
+        .mat-checkbox-label {
+          font-size: 16px;
+        }
+      `,
+        `
+        /* TODO: The following rule targets internal classes of checkbox that may no longer apply for the MDC version. */
+
+        .some-class
+        .mat-checkbox-label {
+          font-size: 16px;
+        }
+      `,
+      );
+    });
+
+    it('should update the legacy mat-checkbox class and add comment for potentially deprecated selector', async () => {
+      await runMigrationTest(
+        `
+        .mat-checkbox.some-class, .mat-checkbox-label {
+          background-color: transparent;
+        }
+      `,
+        `
+        /* TODO: The following rule targets internal classes of checkbox that may no longer apply for the MDC version. */
+
+        .mat-mdc-checkbox.some-class, .mat-checkbox-label {
+          background-color: transparent;
+        }
+      `,
+      );
+    });
   });
 });
