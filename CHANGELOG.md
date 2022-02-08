@@ -3,14 +3,15 @@
 ## Breaking Changes
 
 ### forms
-- Forms [email] input coercion: forms [email] input value will be considered as true if it is defined with any value rather than false and 'false'. Objects with a length key set to zero will no longer validate as empty. This is technically a breaking change, since objects with a key `length` and value `0` will no longer validate as empty. This is a very minor change, and any reliance on this behavior is probably a bug anyway.
+- Forms [email] input coercion: forms [email] input value will be considered as true if it is defined with any value rather than false and 'false'.
+- Objects with a length key set to zero will no longer validate as empty. This is technically a breaking change, since objects with a key `length` and value `0` will no longer validate as empty. This is a very minor change, and any reliance on this behavior is probably a bug anyway.
 ### platform-browser
 - This change may cause a breaking change in unit tests that are implicitly depending on a specific number and sequence of change detections in order for their assertions to pass.
 - This tightens parameter types of `TransferState` usage, and is a minor breaking change which may reveal existing problematic calls. This may break invalid calls to `TransferState` methods.
 ### router
 - The type of `initialUrl` is set to `string|UrlTree` but in reality,
 the `Router` only sets it to a value that will always be `UrlTree`. 
-initialUrl` is documented as "The target URL passed into the
+`initialUrl` is documented as "The target URL passed into the
 `Router#navigateByUrl()` call before navigation" but the value
 actually gets set to something completely different. It's set to the
 current internal `UrlTree` of the Router at the time navigation
