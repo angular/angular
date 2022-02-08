@@ -304,7 +304,7 @@ describe('OverlayOutsideClickDispatcher', () => {
   });
 
   it(
-    'should not throw an error when when closing out related components via the ' +
+    'should not throw an error when closing out related components via the ' +
       'outsidePointerEvents emitter on background click',
     fakeAsync(() => {
       const firstOverlayRef = overlay.create();

@@ -11,7 +11,7 @@
   // This is a fallback that completely hides the content when the element becomes hidden.
   // Note that we can't do this in the animation definition, because the style gets recomputed too
   // late, breaking the animation because Angular didn't have time to figure out the target height.
-  // This can also be achieved with JS, but it has issues when when starting an animation before
+  // This can also be achieved with JS, but it has issues when starting an animation before
   // the previous one has finished.
   &[style*='visibility: hidden'] {
     display: none;
