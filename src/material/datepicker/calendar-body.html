@@ -63,8 +63,7 @@
         [attr.aria-disabled]="!item.enabled || null"
         [attr.aria-pressed]="_isSelected(item.compareValue)"
         [attr.aria-current]="todayValue === item.compareValue ? 'date' : null"
-        (click)="_cellClicked(item, $event)"
-        (focus)="_emitActiveDateChange(item, $event)">
+        (click)="_cellClicked(item, $event)">
         <div class="mat-calendar-body-cell-content mat-focus-indicator"
           [class.mat-calendar-body-selected]="_isSelected(item.compareValue)"
           [class.mat-calendar-body-comparison-identical]="_isComparisonIdentical(item.compareValue)"

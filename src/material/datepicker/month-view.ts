@@ -230,7 +230,9 @@ export class MatMonthView<D> implements AfterContentInit, OnChanges, OnDestroy {
   /** Handles when a new date is selected. */
   _dateSelected(event: MatCalendarUserEvent<number>) {
     const date = event.value;
-    const selectedDate = this._getDateFromDayOfMonth(date);
+    const selectedYear = this._dateAdapter.getYear(this.activeDate);
+    const selectedMonth = this._dateAdapter.getMonth(this.activeDate);
+    const selectedDate = this._dateAdapter.createDate(selectedYear, selectedMonth, date);
     let rangeStartDate: number | null;
     let rangeEndDate: number | null;
 
@@ -248,26 +250,6 @@ export class MatMonthView<D> implements AfterContentInit, OnChanges, OnDestroy {
     this._userSelection.emit({value: selectedDate, event: event.event});
     this._previewStart = this._previewEnd = null;
     this._changeDetectorRef.markForCheck();
-  }
-
-  /**
-   * Takes the index of a calendar body cell wrapped in in an event as argument. For the date that
-   * corresponds to the given cell, set `activeDate` to that date and fire `activeDateChange` with
-   * that date.
-   *
-   * This fucntion is used to match each component's model of the active date with the calendar
-   * body cell that was focused. It updates its value of `activeDate` synchronously and updates the
-   * parent's value asynchonously via the `activeDateChange` event. The child component receives an
-   * updated value asynchronously via the `activeCell` Input.
-   */
-  _updateActiveDate(event: MatCalendarUserEvent<number>) {
-    const month = event.value;
-    const oldActiveDate = this._activeDate;
-    this.activeDate = this._getDateFromDayOfMonth(month);
-
-    if (this._dateAdapter.compareDate(oldActiveDate, this.activeDate)) {
-      this.activeDateChange.emit(this._activeDate);
-    }
   }
 
   /** Handles keydown events on the calendar body when calendar is in month view. */
@@ -345,10 +327,9 @@ export class MatMonthView<D> implements AfterContentInit, OnChanges, OnDestroy {
 
     if (this._dateAdapter.compareDate(oldActiveDate, this.activeDate)) {
       this.activeDateChange.emit(this.activeDate);
-
-      this._focusActiveCellAfterViewChecked();
     }
 
+    this._focusActiveCell();
     // Prevent unexpected default actions such as form submission.
     event.preventDefault();
   }
@@ -395,11 +376,6 @@ export class MatMonthView<D> implements AfterContentInit, OnChanges, OnDestroy {
     this._matCalendarBody._focusActiveCell(movePreview);
   }
 
-  /** Focuses the active cell after change detection has run and the microtask queue is empty. */
-  _focusActiveCellAfterViewChecked() {
-    this._matCalendarBody._scheduleFocusActiveCellAfterViewChecked();
-  }
-
   /** Called when the user has activated a new cell and the preview needs to be updated. */
   _previewChanged({event, value: cell}: MatCalendarUserEvent<MatCalendarCell<D> | null>) {
     if (this._rangeStrategy) {
@@ -420,18 +396,6 @@ export class MatMonthView<D> implements AfterContentInit, OnChanges, OnDestroy {
       // to throw a "changed after checked" error when updating the preview state.
       this._changeDetectorRef.detectChanges();
     }
-  }
-
-  /**
-   * Takes a day of the month and returns a new date in the same month and year as the currently
-   *  active date. The returned date will have the same day of the month as the argument date.
-   */
-  private _getDateFromDayOfMonth(dayOfMonth: number): D {
-    return this._dateAdapter.createDate(
-      this._dateAdapter.getYear(this.activeDate),
-      this._dateAdapter.getMonth(this.activeDate),
-      dayOfMonth,
-    );
   }
 
   /** Initializes the weekdays. */

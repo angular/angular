@@ -179,37 +179,23 @@ export class MatYearView<D> implements AfterContentInit, OnDestroy {
   /** Handles when a new month is selected. */
   _monthSelected(event: MatCalendarUserEvent<number>) {
     const month = event.value;
-
-    const selectedMonth = this._dateAdapter.createDate(
+    const normalizedDate = this._dateAdapter.createDate(
       this._dateAdapter.getYear(this.activeDate),
       month,
       1,
     );
-    this.monthSelected.emit(selectedMonth);
 
-    const selectedDate = this._getDateFromMonth(month);
-    this.selectedChange.emit(selectedDate);
-  }
+    this.monthSelected.emit(normalizedDate);
 
-  /**
-   * Takes the index of a calendar body cell wrapped in in an event as argument. For the date that
-   * corresponds to the given cell, set `activeDate` to that date and fire `activeDateChange` with
-   * that date.
-   *
-   * This fucntion is used to match each component's model of the active date with the calendar
-   * body cell that was focused. It updates its value of `activeDate` synchronously and updates the
-   * parent's value asynchonously via the `activeDateChange` event. The child component receives an
-   * updated value asynchronously via the `activeCell` Input.
-   */
-  _updateActiveDate(event: MatCalendarUserEvent<number>) {
-    const month = event.value;
-    const oldActiveDate = this._activeDate;
+    const daysInMonth = this._dateAdapter.getNumDaysInMonth(normalizedDate);
 
-    this.activeDate = this._getDateFromMonth(month);
-
-    if (this._dateAdapter.compareDate(oldActiveDate, this.activeDate)) {
-      this.activeDateChange.emit(this.activeDate);
-    }
+    this.selectedChange.emit(
+      this._dateAdapter.createDate(
+        this._dateAdapter.getYear(this.activeDate),
+        month,
+        Math.min(this._dateAdapter.getDate(this.activeDate), daysInMonth),
+      ),
+    );
   }
 
   /** Handles keydown events on the calendar body when calendar is in year view. */
@@ -273,9 +259,9 @@ export class MatYearView<D> implements AfterContentInit, OnDestroy {
 
     if (this._dateAdapter.compareDate(oldActiveDate, this.activeDate)) {
       this.activeDateChange.emit(this.activeDate);
-      this._focusActiveCellAfterViewChecked();
     }
 
+    this._focusActiveCell();
     // Prevent unexpected default actions such as form submission.
     event.preventDefault();
   }
@@ -312,11 +298,6 @@ export class MatYearView<D> implements AfterContentInit, OnDestroy {
     this._matCalendarBody._focusActiveCell();
   }
 
-  /** Schedules the matCalendarBody to focus the active cell after change detection has run */
-  _focusActiveCellAfterViewChecked() {
-    this._matCalendarBody._scheduleFocusActiveCellAfterViewChecked();
-  }
-
   /**
    * Gets the month in this year that the given Date falls on.
    * Returns null if the given Date is in another year.
@@ -325,26 +306,6 @@ export class MatYearView<D> implements AfterContentInit, OnDestroy {
     return date && this._dateAdapter.getYear(date) == this._dateAdapter.getYear(this.activeDate)
       ? this._dateAdapter.getMonth(date)
       : null;
-  }
-
-  /**
-   * Takes a month and returns a new date in the same day and year as the currently active date.
-   *  The returned date will have the same month as the argument date.
-   */
-  private _getDateFromMonth(month: number) {
-    const normalizedDate = this._dateAdapter.createDate(
-      this._dateAdapter.getYear(this.activeDate),
-      month,
-      1,
-    );
-
-    const daysInMonth = this._dateAdapter.getNumDaysInMonth(normalizedDate);
-
-    return this._dateAdapter.createDate(
-      this._dateAdapter.getYear(this.activeDate),
-      month,
-      Math.min(this._dateAdapter.getDate(this.activeDate), daysInMonth),
-    );
   }
 
   /** Creates an MatCalendarCell for the given month. */

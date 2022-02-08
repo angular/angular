@@ -204,31 +204,18 @@ export class MatMultiYearView<D> implements AfterContentInit, OnDestroy {
   /** Handles when a new year is selected. */
   _yearSelected(event: MatCalendarUserEvent<number>) {
     const year = event.value;
-    const selectedYear = this._dateAdapter.createDate(year, 0, 1);
-    const selectedDate = this._getDateFromYear(year);
-
-    this.yearSelected.emit(selectedYear);
-    this.selectedChange.emit(selectedDate);
-  }
-
-  /**
-   * Takes the index of a calendar body cell wrapped in in an event as argument. For the date that
-   * corresponds to the given cell, set `activeDate` to that date and fire `activeDateChange` with
-   * that date.
-   *
-   * This fucntion is used to match each component's model of the active date with the calendar
-   * body cell that was focused. It updates its value of `activeDate` synchronously and updates the
-   * parent's value asynchonously via the `activeDateChange` event. The child component receives an
-   * updated value asynchronously via the `activeCell` Input.
-   */
-  _updateActiveDate(event: MatCalendarUserEvent<number>) {
-    const year = event.value;
-    const oldActiveDate = this._activeDate;
-
-    this.activeDate = this._getDateFromYear(year);
-    if (this._dateAdapter.compareDate(oldActiveDate, this.activeDate)) {
-      this.activeDateChange.emit(this.activeDate);
-    }
+    this.yearSelected.emit(this._dateAdapter.createDate(year, 0, 1));
+    let month = this._dateAdapter.getMonth(this.activeDate);
+    let daysInMonth = this._dateAdapter.getNumDaysInMonth(
+      this._dateAdapter.createDate(year, month, 1),
+    );
+    this.selectedChange.emit(
+      this._dateAdapter.createDate(
+        year,
+        month,
+        Math.min(this._dateAdapter.getDate(this.activeDate), daysInMonth),
+      ),
+    );
   }
 
   /** Handles keydown events on the calendar body when calendar is in multi-year view. */
@@ -291,7 +278,7 @@ export class MatMultiYearView<D> implements AfterContentInit, OnDestroy {
       this.activeDateChange.emit(this.activeDate);
     }
 
-    this._focusActiveCellAfterViewChecked();
+    this._focusActiveCell();
     // Prevent unexpected default actions such as form submission.
     event.preventDefault();
   }
@@ -314,28 +301,6 @@ export class MatMultiYearView<D> implements AfterContentInit, OnDestroy {
   /** Focuses the active cell after the microtask queue is empty. */
   _focusActiveCell() {
     this._matCalendarBody._focusActiveCell();
-  }
-
-  /** Focuses the active cell after change detection has run and the microtask queue is empty. */
-  _focusActiveCellAfterViewChecked() {
-    this._matCalendarBody._scheduleFocusActiveCellAfterViewChecked();
-  }
-
-  /**
-   * Takes a year and returns a new date on the same day and month as the currently active date
-   *  The returned date will have the same year as the argument date.
-   */
-  private _getDateFromYear(year: number) {
-    const activeMonth = this._dateAdapter.getMonth(this.activeDate);
-    const daysInMonth = this._dateAdapter.getNumDaysInMonth(
-      this._dateAdapter.createDate(year, activeMonth, 1),
-    );
-    const normalizedDate = this._dateAdapter.createDate(
-      year,
-      activeMonth,
-      Math.min(this._dateAdapter.getDate(this.activeDate), daysInMonth),
-    );
-    return normalizedDate;
   }
 
   /** Creates an MatCalendarCell for the given year. */

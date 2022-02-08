@@ -13,7 +13,7 @@ import {dispatchFakeEvent, dispatchKeyboardEvent} from '../../cdk/testing/privat
 import {Component, ViewChild} from '@angular/core';
 import {waitForAsync, ComponentFixture, TestBed} from '@angular/core/testing';
 import {MatNativeDateModule} from '@angular/material/core';
-import {JAN, MAR} from '../testing';
+import {JAN} from '../testing';
 import {By} from '@angular/platform-browser';
 import {MatCalendarBody} from './calendar-body';
 import {MatMultiYearView, yearsPerPage, yearsPerRow} from './multi-year-view';
@@ -215,34 +215,6 @@ describe('MatMultiYearView', () => {
           fixture.detectChanges();
 
           expect(calendarInstance.date).toEqual(new Date(2017 + yearsPerPage * 2, JAN, 1));
-        });
-
-        it('should go to the year that is focused', () => {
-          fixture.componentInstance.date = new Date(2017, MAR, 5);
-          fixture.detectChanges();
-          expect(calendarInstance.date).toEqual(new Date(2017, MAR, 5));
-
-          const year2022Cell = fixture.debugElement.nativeElement.querySelector(
-            '[data-mat-row="1"][data-mat-col="2"] button',
-          ) as HTMLElement;
-
-          dispatchFakeEvent(year2022Cell, 'focus');
-          fixture.detectChanges();
-
-          expect(calendarInstance.date).toEqual(new Date(2022, MAR, 5));
-        });
-
-        it('should not call `.focus()` when the active date is focused', () => {
-          const year2017Cell = fixture.debugElement.nativeElement.querySelector(
-            '[data-mat-row="0"][data-mat-col="1"] button',
-          ) as HTMLElement;
-          const focusSpy = (year2017Cell.focus = jasmine.createSpy('cellFocused'));
-
-          dispatchFakeEvent(year2017Cell, 'focus');
-          fixture.detectChanges();
-
-          expect(calendarInstance.date).toEqual(new Date(2017, JAN, 1));
-          expect(focusSpy).not.toHaveBeenCalled();
         });
       });
     });
