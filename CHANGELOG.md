@@ -1,3 +1,26 @@
+<a name="13.2.2"></a>
+# 13.2.2 (2022-02-08)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [37af6abb49](https://github.com/angular/angular/commit/37af6abb495a351052389cb095bfbea0260f46c5) | fix | allow banana-in-a-box bindings to end with non-null assertion ([#37809](https://github.com/angular/angular/pull/37809)) |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b75e90f809](https://github.com/angular/angular/commit/b75e90f8096394eeef85fa7e667889b7b59a35ed) | fix | incorrectly keeping track of ngModel with ngFor inside a form ([#40459](https://github.com/angular/angular/pull/40459)) |
+### http
+| Commit | Type | Description |
+| -- | -- | -- |
+| [3fae6637e7](https://github.com/angular/angular/commit/3fae6637e7d379a9dd1862555ec7e586f80be4c9) | perf | remove IE special status handling ([#44354](https://github.com/angular/angular/pull/44354)) |
+### upgrade
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b9aab0c87b](https://github.com/angular/angular/commit/b9aab0c87bcccb61167e92c1e910630afad67648) | fix | Do not trigger duplicate navigation events from Angular Router ([#43441](https://github.com/angular/angular/pull/43441)) |
+## Special Thanks
+Alan Agius, Alan Cohen, Andrew Kushnir, Andrew Scott, Daniel Díaz, Dario Piotrowicz, Doug Parker, Jayson Acosta, Joey Perrott, JoostK, Kristiyan Kostadinov, Olivier Capuozzo, Ramzan, Shai Reznik, TANMAY SRIVASTAVA, dario-piotrowicz, iRealNirmal, jhonyeduardo, mgechev and zuckjet
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.0.0-next.2"></a>
 # 14.0.0-next.2 (2022-02-07)
 ## Breaking Changes
