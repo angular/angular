@@ -11,7 +11,7 @@ import {attachPatchData} from '../context_discovery';
 import {registerPostOrderHooks} from '../hooks';
 import {TAttributes, TElementContainerNode, TNodeType} from '../interfaces/node';
 import {isContentQueryHost, isDirectiveHost} from '../interfaces/type_checks';
-import {HEADER_OFFSET, LView, RENDERER, T_HOST, TView} from '../interfaces/view';
+import {HEADER_OFFSET, LView, RENDERER, TView} from '../interfaces/view';
 import {assertTNodeType} from '../node_assert';
 import {appendChild} from '../node_manipulation';
 import {getBindingIndex, getCurrentTNode, getLView, getTView, isCurrentTNodeParent, setCurrentTNode, setCurrentTNodeAsNotParent} from '../state';
@@ -52,6 +52,7 @@ function elementContainerStartFirstCreatePass(
  * @param index Index of the element in the LView array
  * @param attrsIndex Index of the container attributes in the `consts` array.
  * @param localRefsIndex Index of the container's local references in the `consts` array.
+ * @returns This function returns itself so that it may be chained.
  *
  * Even if this instruction accepts a set of attributes no actual attribute values are propagated to
  * the DOM (as a comment node can't have attributes). Attributes are here only for directive
@@ -60,7 +61,8 @@ function elementContainerStartFirstCreatePass(
  * @codeGenApi
  */
 export function ɵɵelementContainerStart(
-    index: number, attrsIndex?: number|null, localRefsIndex?: number): void {
+    index: number, attrsIndex?: number|null,
+    localRefsIndex?: number): typeof ɵɵelementContainerStart {
   const lView = getLView();
   const tView = getTView();
   const adjustedIndex = index + HEADER_OFFSET;
@@ -91,14 +93,17 @@ export function ɵɵelementContainerStart(
   if (localRefsIndex != null) {
     saveResolvedLocalsInData(lView, tNode);
   }
+
+  return ɵɵelementContainerStart;
 }
 
 /**
  * Mark the end of the <ng-container>.
+ * @returns This function returns itself so that it may be chained.
  *
  * @codeGenApi
  */
-export function ɵɵelementContainerEnd(): void {
+export function ɵɵelementContainerEnd(): typeof ɵɵelementContainerEnd {
   let currentTNode = getCurrentTNode()!;
   const tView = getTView();
   if (isCurrentTNodeParent()) {
@@ -117,6 +122,7 @@ export function ɵɵelementContainerEnd(): void {
       tView.queries!.elementEnd(currentTNode);
     }
   }
+  return ɵɵelementContainerEnd;
 }
 
 /**
@@ -126,11 +132,13 @@ export function ɵɵelementContainerEnd(): void {
  * @param index Index of the element in the LView array
  * @param attrsIndex Index of the container attributes in the `consts` array.
  * @param localRefsIndex Index of the container's local references in the `consts` array.
+ * @returns This function returns itself so that it may be chained.
  *
  * @codeGenApi
  */
 export function ɵɵelementContainer(
-    index: number, attrsIndex?: number|null, localRefsIndex?: number): void {
+    index: number, attrsIndex?: number|null, localRefsIndex?: number): typeof ɵɵelementContainer {
   ɵɵelementContainerStart(index, attrsIndex, localRefsIndex);
   ɵɵelementContainerEnd();
+  return ɵɵelementContainer;
 }

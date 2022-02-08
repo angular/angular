@@ -1,11 +1,9 @@
 function MyComponent_div_0_Template(rf, ctx) {
   if (rf & 1) {
-    $r3$.ɵɵelementStart(0, "div");
-    $r3$.ɵɵelementStart(1, "div", 1);
+    $r3$.ɵɵelementStart(0, "div")(1, "div", 1);
     $r3$.ɵɵpipe(2, "uppercase");
     $r3$.ɵɵi18nAttributes(3, 2);
-    $r3$.ɵɵelementEnd();
-    $r3$.ɵɵelementEnd();
+    $r3$.ɵɵelementEnd()();
   }
   if (rf & 2) {
     const $outer_r1$ = ctx.$implicit;

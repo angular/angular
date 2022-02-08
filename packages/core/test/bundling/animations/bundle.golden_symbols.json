@@ -1479,6 +1479,9 @@
     "name": "ɵɵelement"
   },
   {
+    "name": "ɵɵelementEnd"
+  },
+  {
     "name": "ɵɵelementStart"
   },
   {

@@ -18,11 +18,9 @@ template: function MyComponent_Template(rf, ctx) {
     $r3$.ɵɵelementStart(3, "div");
     $r3$.ɵɵi18nStart(4, 1);
     $r3$.ɵɵpipe(5, "uppercase");
-    $r3$.ɵɵelementStart(6, "div");
-    $r3$.ɵɵelementStart(7, "div");
+    $r3$.ɵɵelementStart(6, "div")(7, "div");
     $r3$.ɵɵelement(8, "span");
-    $r3$.ɵɵelementEnd();
-    $r3$.ɵɵelementEnd();
+    $r3$.ɵɵelementEnd()();
     $r3$.ɵɵi18nEnd();
     $r3$.ɵɵelementEnd();
   }

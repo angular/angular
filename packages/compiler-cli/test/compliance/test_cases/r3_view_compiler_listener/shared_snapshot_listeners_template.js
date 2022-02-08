@@ -1,8 +1,7 @@
 function MyComponent_div_0_Template(rf, ctx) {
   if (rf & 1) {
     const $s$ = $r3$.ɵɵgetCurrentView();
-    $r3$.ɵɵelementStart(0, "div");
-    $r3$.ɵɵelementStart(1, "div", 1);
+    $r3$.ɵɵelementStart(0, "div")(1, "div", 1);
     $r3$.ɵɵlistener("click", function MyComponent_div_0_Template_div_click_1_listener() {
       $r3$.ɵɵrestoreView($s$);
       const $comp$ = $r3$.ɵɵnextContext();
@@ -15,8 +14,7 @@ function MyComponent_div_0_Template(rf, ctx) {
       const $comp2$ = $r3$.ɵɵnextContext();
       return $comp2$.onClick2($comp2$.bar);
     });
-    $r3$.ɵɵelementEnd();
-    $r3$.ɵɵelementEnd();
+    $r3$.ɵɵelementEnd()();
   }
 }
 // ...
