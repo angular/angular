@@ -1,7 +1,6 @@
 template: function MyApp_Template(rf, ctx) {
   if (rf & 1) {
-    i0.ɵɵelement(0, "div", 0);
-    i0.ɵɵelement(1, "span", 0);
+    i0.ɵɵelement(0, "div", 0)(1, "span", 0);
   }
   if (rf & 2) {
     let $tmp_0_0$;

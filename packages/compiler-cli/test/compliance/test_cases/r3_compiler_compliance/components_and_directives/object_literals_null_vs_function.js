@@ -9,8 +9,7 @@ MyApp.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
   consts: [[__AttributeMarker.Bindings__, "dir"]],
   template:  function MyApp_Template(rf, ctx) {
     if (rf & 1) {
-      $r3$.ɵɵelement(0, "div", 0);
-      $r3$.ɵɵelement(1, "div", 0);
+      $r3$.ɵɵelement(0, "div", 0)(1, "div", 0);
     }
     if (rf & 2) {
       $r3$.ɵɵproperty("dir", $r3$.ɵɵpureFunction0(2, $c0$));

@@ -63,6 +63,7 @@ function elementStartFirstCreatePass(
  * @param name Name of the DOM Node
  * @param attrsIndex Index of the element's attributes in the `consts` array.
  * @param localRefsIndex Index of the element's local references in the `consts` array.
+ * @returns This function returns itself so that it may be chained.
  *
  * Attributes and localRefs are passed as an array of strings where elements with an even index
  * hold an attribute name and elements with an odd index hold an attribute value, ex.:
@@ -71,7 +72,8 @@ function elementStartFirstCreatePass(
  * @codeGenApi
  */
 export function ɵɵelementStart(
-    index: number, name: string, attrsIndex?: number|null, localRefsIndex?: number): void {
+    index: number, name: string, attrsIndex?: number|null,
+    localRefsIndex?: number): typeof ɵɵelementStart {
   const lView = getLView();
   const tView = getTView();
   const adjustedIndex = HEADER_OFFSET + index;
@@ -125,14 +127,16 @@ export function ɵɵelementStart(
   if (localRefsIndex !== null) {
     saveResolvedLocalsInData(lView, tNode);
   }
+  return ɵɵelementStart;
 }
 
 /**
  * Mark the end of the element.
+ * @returns This function returns itself so that it may be chained.
  *
  * @codeGenApi
  */
-export function ɵɵelementEnd(): void {
+export function ɵɵelementEnd(): typeof ɵɵelementEnd {
   let currentTNode = getCurrentTNode()!;
   ngDevMode && assertDefined(currentTNode, 'No parent node to close.');
   if (isCurrentTNodeParent()) {
@@ -164,6 +168,7 @@ export function ɵɵelementEnd(): void {
   if (tNode.stylesWithoutHost != null && hasStyleInput(tNode)) {
     setDirectiveInputsWhichShadowsStyling(tView, tNode, getLView(), tNode.stylesWithoutHost, false);
   }
+  return ɵɵelementEnd;
 }
 
 /**
@@ -173,13 +178,16 @@ export function ɵɵelementEnd(): void {
  * @param name Name of the DOM Node
  * @param attrsIndex Index of the element's attributes in the `consts` array.
  * @param localRefsIndex Index of the element's local references in the `consts` array.
+ * @returns This function returns itself so that it may be chained.
  *
  * @codeGenApi
  */
 export function ɵɵelement(
-    index: number, name: string, attrsIndex?: number|null, localRefsIndex?: number): void {
+    index: number, name: string, attrsIndex?: number|null,
+    localRefsIndex?: number): typeof ɵɵelement {
   ɵɵelementStart(index, name, attrsIndex, localRefsIndex);
   ɵɵelementEnd();
+  return ɵɵelement;
 }
 
 function logUnknownElementError(

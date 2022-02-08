@@ -9,7 +9,6 @@ consts: [["title", "Hello", 1, "my-app"], ["cx", "20", "cy", "30", "r", "50"]],
         $r3$.ɵɵnamespaceHTML();
         $r3$.ɵɵelementStart(3, "p");
         $r3$.ɵɵtext(4, "test");
-        $r3$.ɵɵelementEnd();
-        $r3$.ɵɵelementEnd();
+        $r3$.ɵɵelementEnd()();
       }
     }

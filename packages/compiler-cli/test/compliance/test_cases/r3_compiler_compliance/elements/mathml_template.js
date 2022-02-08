@@ -10,7 +10,6 @@ template: function MyComponent_Template(rf, ctx) {
     $r3$.ɵɵnamespaceHTML();
     $r3$.ɵɵelementStart(3, "p");
     $r3$.ɵɵtext(4, "test");
-    $r3$.ɵɵelementEnd();
-    $r3$.ɵɵelementEnd();
+    $r3$.ɵɵelementEnd()();
   }
 }
