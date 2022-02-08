@@ -86,6 +86,7 @@ export class NgComponentOutlet implements OnChanges, OnDestroy {
 
   constructor(private _viewContainerRef: ViewContainerRef) {}
 
+  /** @nodoc */
   ngOnChanges(changes: SimpleChanges) {
     const {
       _viewContainerRef: viewContainerRef,
@@ -119,6 +120,7 @@ export class NgComponentOutlet implements OnChanges, OnDestroy {
     }
   }
 
+  /** @nodoc */
   ngOnDestroy() {
     if (this._moduleRef) this._moduleRef.destroy();
   }

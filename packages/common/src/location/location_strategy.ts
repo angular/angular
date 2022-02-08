@@ -7,7 +7,9 @@
  */
 
 import {Inject, Injectable, InjectionToken, OnDestroy, Optional, ɵɵinject} from '@angular/core';
+
 import {DOCUMENT} from '../dom_tokens';
+
 import {LocationChangeListener, PlatformLocation} from './platform_location';
 import {joinWithSlash, normalizeQueryParams} from './util';
 
@@ -129,6 +131,7 @@ export class PathLocationStrategy extends LocationStrategy implements OnDestroy 
     this._baseHref = href;
   }
 
+  /** @nodoc */
   ngOnDestroy(): void {
     while (this._removeListenerFns.length) {
       this._removeListenerFns.pop()!();
