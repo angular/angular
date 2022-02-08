@@ -7,6 +7,7 @@
  */
 import {AnimationMetadata, AnimationMetadataType, AnimationOptions, ɵStyleDataMap} from '@angular/animations';
 
+import {buildingFailed, validationFailed} from '../error_helpers';
 import {AnimationDriver} from '../render/animation_driver';
 import {ENTER_CLASSNAME, LEAVE_CLASSNAME, normalizeStyles} from '../util';
 
@@ -19,11 +20,10 @@ import {ElementInstructionMap} from './element_instruction_map';
 export class Animation {
   private _animationAst: Ast<AnimationMetadataType>;
   constructor(private _driver: AnimationDriver, input: AnimationMetadata|AnimationMetadata[]) {
-    const errors: string[] = [];
+    const errors: Error[] = [];
     const ast = buildAnimationAst(_driver, input, errors);
     if (errors.length) {
-      const errorMessage = `animation validation failed:\n${errors.join('\n')}`;
-      throw new Error(errorMessage);
+      throw validationFailed(errors);
     }
     this._animationAst = ast;
   }
@@ -42,8 +42,7 @@ export class Animation {
         this._driver, element, this._animationAst, ENTER_CLASSNAME, LEAVE_CLASSNAME, start, dest,
         options, subInstructions, errors);
     if (errors.length) {
-      const errorMessage = `animation building failed:\n${errors.join('\n')}`;
-      throw new Error(errorMessage);
+      throw buildingFailed(errors);
     }
     return result;
   }

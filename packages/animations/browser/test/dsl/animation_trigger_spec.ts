@@ -33,7 +33,7 @@ import {makeTrigger} from '../shared';
       it('should group errors together for an animation trigger', () => {
         expect(() => {
           makeTrigger('myTrigger', [transition('12345', animate(3333))]);
-        }).toThrowError(/Animation parsing for the myTrigger trigger have failed/);
+        }).toThrowError(/NG03403: Animation parsing for the myTrigger trigger have failed/);
       });
 
       it('should throw an error when a transition within a trigger contains an invalid expression',
@@ -42,13 +42,13 @@ import {makeTrigger} from '../shared';
              makeTrigger('name', [transition('somethingThatIsWrong', animate(3333))]);
            })
                .toThrowError(
-                   /- The provided transition expression "somethingThatIsWrong" is not supported/);
+                   /- NG03015: The provided transition expression "somethingThatIsWrong" is not supported/);
          });
 
       it('should throw an error if an animation alias is used that is not yet supported', () => {
         expect(() => {
           makeTrigger('name', [transition(':angular', animate(3333))]);
-        }).toThrowError(/- The transition alias value ":angular" is not supported/);
+        }).toThrowError(/- NG03016: The transition alias value ":angular" is not supported/);
       });
     });
 

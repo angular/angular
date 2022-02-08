@@ -1115,7 +1115,7 @@ function invokeAnimationSequence(
 
 function validateAndThrowAnimationSequence(steps: AnimationMetadata|AnimationMetadata[]) {
   const driver = new MockAnimationDriver();
-  const errors: string[] = [];
+  const errors: Error[] = [];
   const ast = buildAnimationAst(driver, steps, errors);
   if (errors.length) {
     throw new Error(errors.join('\n'));

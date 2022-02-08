@@ -9,6 +9,7 @@ import {AnimateTimings, AnimationMetadata, AnimationMetadataType, AnimationOptio
 
 import {Ast as AnimationAst, AstVisitor as AnimationAstVisitor} from './dsl/animation_ast';
 import {AnimationDslVisitor} from './dsl/animation_dsl_visitor';
+import {invalidNodeType, invalidParamValue, invalidStyleParams, invalidTimingValue, negativeDelayValue, negativeStepValue} from './error_helpers';
 import {isNode} from './render/shared';
 
 export const ONE_SECOND = 1000;
@@ -41,14 +42,14 @@ function _convertTimeValueToMS(value: number, unit: string): number {
 }
 
 export function resolveTiming(
-    timings: string|number|AnimateTimings, errors: string[], allowNegativeValues?: boolean) {
+    timings: string|number|AnimateTimings, errors: Error[], allowNegativeValues?: boolean) {
   return timings.hasOwnProperty('duration') ?
       <AnimateTimings>timings :
       parseTimeExpression(<string|number>timings, errors, allowNegativeValues);
 }
 
 function parseTimeExpression(
-    exp: string|number, errors: string[], allowNegativeValues?: boolean): AnimateTimings {
+    exp: string|number, errors: Error[], allowNegativeValues?: boolean): AnimateTimings {
   const regex = /^(-?[\.\d]+)(m?s)(?:\s+(-?[\.\d]+)(m?s))?(?:\s+([-a-z]+(?:\(.+?\))?))?$/i;
   let duration: number;
   let delay: number = 0;
@@ -56,7 +57,7 @@ function parseTimeExpression(
   if (typeof exp === 'string') {
     const matches = exp.match(regex);
     if (matches === null) {
-      errors.push(`The provided timing value "${exp}" is invalid.`);
+      errors.push(invalidTimingValue(exp));
       return {duration: 0, delay: 0, easing: ''};
     }
 
@@ -79,15 +80,15 @@ function parseTimeExpression(
     let containsErrors = false;
     let startIndex = errors.length;
     if (duration < 0) {
-      errors.push(`Duration values below 0 are not allowed for this animation step.`);
+      errors.push(negativeStepValue());
       containsErrors = true;
     }
     if (delay < 0) {
-      errors.push(`Delay values below 0 are not allowed for this animation step.`);
+      errors.push(negativeDelayValue());
       containsErrors = true;
     }
     if (containsErrors) {
-      errors.splice(startIndex, 0, `The provided timing value "${exp}" is invalid.`);
+      errors.splice(startIndex, 0, invalidTimingValue(exp));
     }
   }
 
@@ -216,14 +217,13 @@ export function normalizeAnimationEntry(steps: AnimationMetadata|
 }
 
 export function validateStyleParams(
-    value: string|number|null|undefined, options: AnimationOptions, errors: string[]) {
+    value: string|number|null|undefined, options: AnimationOptions, errors: Error[]) {
   const params = options.params || {};
   const matches = extractStyleParams(value);
   if (matches.length) {
     matches.forEach(varName => {
       if (!params.hasOwnProperty(varName)) {
-        errors.push(
-            `Unable to resolve the local animation param ${varName} in the given list of values`);
+        errors.push(invalidStyleParams(varName));
       }
     });
   }
@@ -244,13 +244,13 @@ export function extractStyleParams(value: string|number|null|undefined): string[
 }
 
 export function interpolateParams(
-    value: string|number, params: {[name: string]: any}, errors: string[]): string|number {
+    value: string|number, params: {[name: string]: any}, errors: Error[]): string|number {
   const original = value.toString();
   const str = original.replace(PARAM_REGEX, (_, varName) => {
     let localVal = params[varName];
     // this means that the value was never overridden by the data passed in by the user
     if (!params.hasOwnProperty(varName)) {
-      errors.push(`Please provide a value for the animation param ${varName}`);
+      errors.push(invalidParamValue(varName));
       localVal = '';
     }
     return localVal.toString();
@@ -338,7 +338,7 @@ export function visitDslNode(visitor: any, node: any, context: any): any {
     case AnimationMetadataType.Stagger:
       return visitor.visitStagger(node, context);
     default:
-      throw new Error(`Unable to resolve animation metadata node #${node.type}`);
+      throw invalidNodeType(node.type);
   }
 }
 

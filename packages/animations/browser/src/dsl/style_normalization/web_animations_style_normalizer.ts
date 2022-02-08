@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {invalidCssUnitValue} from '../../error_helpers';
 import {dashCaseToCamelCase} from '../../util';
 
 import {AnimationStyleNormalizer} from './animation_style_normalizer';
@@ -42,13 +43,13 @@ const DIMENSIONAL_PROP_SET = new Set([
 ]);
 
 export class WebAnimationsStyleNormalizer extends AnimationStyleNormalizer {
-  override normalizePropertyName(propertyName: string, errors: string[]): string {
+  override normalizePropertyName(propertyName: string, errors: Error[]): string {
     return dashCaseToCamelCase(propertyName);
   }
 
   override normalizeStyleValue(
       userProvidedProperty: string, normalizedProperty: string, value: string|number,
-      errors: string[]): string {
+      errors: Error[]): string {
     let unit: string = '';
     const strVal = value.toString().trim();
 
@@ -58,7 +59,7 @@ export class WebAnimationsStyleNormalizer extends AnimationStyleNormalizer {
       } else {
         const valAndSuffixMatch = value.match(/^[+-]?[\d\.]+([a-z]*)$/);
         if (valAndSuffixMatch && valAndSuffixMatch[1].length == 0) {
-          errors.push(`Please provide a CSS unit value for ${userProvidedProperty}:${value}`);
+          errors.push(invalidCssUnitValue(userProvidedProperty, value));
         }
       }
     }

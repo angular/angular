@@ -29,7 +29,7 @@ export class AnimationTransitionFactory {
     return oneOrMoreTransitionsMatch(this.ast.matchers, currentState, nextState, element, params);
   }
 
-  buildStyles(stateName: string|boolean|undefined, params: {[key: string]: any}, errors: string[]):
+  buildStyles(stateName: string|boolean|undefined, params: {[key: string]: any}, errors: Error[]):
       ɵStyleDataMap {
     let styler = this._stateStyles.get('*');
     if (stateName !== undefined) {
@@ -43,7 +43,7 @@ export class AnimationTransitionFactory {
       enterClassName: string, leaveClassName: string, currentOptions?: AnimationOptions,
       nextOptions?: AnimationOptions, subInstructions?: ElementInstructionMap,
       skipAstBuild?: boolean): AnimationTransitionInstruction {
-    const errors: string[] = [];
+    const errors: Error[] = [];
 
     const transitionAnimationParams = this.ast.options && this.ast.options.params || EMPTY_OBJECT;
     const currentAnimationParams = currentOptions && currentOptions.params || EMPTY_OBJECT;
@@ -109,7 +109,7 @@ export class AnimationStateStyles {
       private styles: StyleAst, private defaultParams: {[key: string]: any},
       private normalizer: AnimationStyleNormalizer) {}
 
-  buildStyles(params: {[key: string]: any}, errors: string[]): ɵStyleDataMap {
+  buildStyles(params: {[key: string]: any}, errors: Error[]): ɵStyleDataMap {
     const finalStyles: ɵStyleDataMap = new Map();
     const combinedParams = copyObj(this.defaultParams);
     Object.keys(params).forEach(key => {
