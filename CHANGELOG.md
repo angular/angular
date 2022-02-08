@@ -1,3 +1,84 @@
+<a name="14.0.0-next.2"></a>
+# 14.0.0-next.2 (2022-02-07)
+## Breaking Changes
+### core
+- Forms [email] input coercion
+
+Forms [email] input value will be considered as true if it is defined with any value rather
+than false and 'false'.
+### forms
+- objects with a length key set to zero will no longer validate as empty.
+
+This is technically a breaking change, since objects with a key `length` and value `0` will no longer validate as empty. This is a very minor change, and any reliance on this behavior is probably a bug anyway.
+### platform-browser
+- This change may cause a breaking change in unit tests that are implicitly depending on a specific
+number and sequence of change detections in order for their assertions to pass.
+
+- This may break invalid calls to `TransferState` methods.
+
+This tightens parameter types of `TransferState` usage, and is a minor breaking change which may reveal existing problematic calls.
+### router
+- * The type of `initialUrl` is set to `string|UrlTree` but in reality,
+  the `Router` only sets it to a value that will always be `UrlTree`
+* `initialUrl` is documented as "The target URL passed into the
+  `Router#navigateByUrl()` call before navigation" but the value
+  actually gets set to something completely different. It's set to the
+  current internal `UrlTree` of the Router at the time navigation
+  occurs.
+
+With this change, there is no exact replacement for the old value of
+`initialUrl` because it was enver intended to be exposed.
+`Router.url` is likely the best replacement for this.
+In more specific use-cases, tracking the `finalUrl` between successful
+navigations can also be used as a replacement.
+### animations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e46b379204](https://github.com/angular/angular/commit/e46b37920438d84bff895498c0a102dd1ffba178) | fix | implement missing transition delay ([#44799](https://github.com/angular/angular/pull/44799)) |
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [38c03a2035](https://github.com/angular/angular/commit/38c03a20358db3f8621c023b98e627cd385731c0) | feat | support years greater than 9999 ([#43622](https://github.com/angular/angular/pull/43622)) |
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [db6cf7e7c1](https://github.com/angular/angular/commit/db6cf7e7c168f9a25550d7fa53840c08b50b889c) | fix | allow banana-in-a-box bindings to end with non-null assertion ([#37809](https://github.com/angular/angular/pull/37809)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [0072eb48ba](https://github.com/angular/angular/commit/0072eb48ba1c6f549703988b7fd7ba3e09058048) | feat | initial implementation of standalone components ([#44812](https://github.com/angular/angular/pull/44812)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [d5719c2e0f](https://github.com/angular/angular/commit/d5719c2e0fb237be71d658444bbfe2410e05086a) | fix | input coercion ([#42803](https://github.com/angular/angular/pull/42803)) |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [8dd3f82f94](https://github.com/angular/angular/commit/8dd3f82f946bae86dc6c678d8694ab73d915bbfa) | fix | Correct empty validator to handle objects with a property `length: 0`. ([#33729](https://github.com/angular/angular/pull/33729)) |
+| [ebf2fc5224](https://github.com/angular/angular/commit/ebf2fc5224c9debfd839087c9d1d21fb49577d37) | fix | incorrectly keeping track of ngModel with ngFor inside a form ([#40459](https://github.com/angular/angular/pull/40459)) |
+### http
+| Commit | Type | Description |
+| -- | -- | -- |
+| [28393031b1](https://github.com/angular/angular/commit/28393031b10f4dbefab7587c19641e49cb820785) | perf | remove IE special status handling ([#44354](https://github.com/angular/angular/pull/44354)) |
+### platform-browser
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a01bcb8e7e](https://github.com/angular/angular/commit/a01bcb8e7eaf63ac9466a78dd4d15228241da900) | fix | do not run change detection when loading Hammer ([#44921](https://github.com/angular/angular/pull/44921)) |
+| [b32647dc68](https://github.com/angular/angular/commit/b32647dc68b055da0c49c86d6e7e2a7d2ec5954a) | fix | Make transfer state key typesafe. ([#23020](https://github.com/angular/angular/pull/23020)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [791bd31424](https://github.com/angular/angular/commit/791bd3142432ed7caf14a68a6e434b27004e634b) | feat | set stricter type for Route.title ([#44939](https://github.com/angular/angular/pull/44939)) |
+| [64f837d2c0](https://github.com/angular/angular/commit/64f837d2c0fbcf722d32b35a87e87220bfe61f65) | fix | Update `Navigation#initialUrl` to match documentation and reality ([#43863](https://github.com/angular/angular/pull/43863)) |
+### upgrade
+| Commit | Type | Description |
+| -- | -- | -- |
+| [202a1a5631](https://github.com/angular/angular/commit/202a1a56314af4ddb99c476f974536a10e390319) | fix | Do not trigger duplicate navigation events from Angular Router ([#43441](https://github.com/angular/angular/pull/43441)) |
+## Special Thanks
+Alan Agius, Alex Rickabaugh, Andrew Kushnir, Andrew Scott, Daniel Díaz, Dario Piotrowicz, Doug Parker, Jayson Acosta, Joey Perrott, JoostK, Kristiyan Kostadinov, Olivier Capuozzo, Payam Shahidi, Pusztai Tibor, Ramzan, Ruslan Lekhman, Sergej Grilborzer, Shai Reznik, TANMAY SRIVASTAVA, arturovt, dario-piotrowicz, iRealNirmal, jhonyeduardo, markostanimirovic, mgechev and zuckjet
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.0.0-next.1"></a>
 # 14.0.0-next.1 (2022-02-02)
 ## Deprecations
