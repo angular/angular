@@ -51,6 +51,7 @@ export class NgTemplateOutlet implements OnChanges {
 
   constructor(private _viewContainerRef: ViewContainerRef) {}
 
+  /** @nodoc */
   ngOnChanges(changes: SimpleChanges) {
     if (changes['ngTemplateOutlet']) {
       const viewContainerRef = this._viewContainerRef;

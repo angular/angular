@@ -46,6 +46,7 @@ export class HashLocationStrategy extends LocationStrategy implements OnDestroy 
     }
   }
 
+  /** @nodoc */
   ngOnDestroy(): void {
     while (this._removeListenerFns.length) {
       this._removeListenerFns.pop()!();
