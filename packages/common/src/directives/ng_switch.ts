@@ -210,6 +210,7 @@ export class NgSwitchCase implements DoCheck {
 
   /**
    * Performs case matching. For internal use only.
+   * @nodoc
    */
   ngDoCheck() {
     this._view.enforceState(this.ngSwitch._matchCase(this.ngSwitchCase));

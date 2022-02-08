@@ -201,6 +201,7 @@ export class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCh
 
   /**
    * Applies the changes when needed.
+   * @nodoc
    */
   ngDoCheck(): void {
     if (this._ngForOfDirty) {
