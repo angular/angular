@@ -25,7 +25,7 @@ export interface AnimationTransitionInstruction extends AnimationEngineInstructi
   preStyleProps: Map<any, Set<string>>;
   postStyleProps: Map<any, Set<string>>;
   totalTime: number;
-  errors?: string[];
+  errors?: Error[];
 }
 
 export function createTransitionInstruction(
@@ -33,7 +33,7 @@ export function createTransitionInstruction(
     isRemovalTransition: boolean, fromStyles: ɵStyleDataMap, toStyles: ɵStyleDataMap,
     timelines: AnimationTimelineInstruction[], queriedElements: any[],
     preStyleProps: Map<any, Set<string>>, postStyleProps: Map<any, Set<string>>, totalTime: number,
-    errors?: string[]): AnimationTransitionInstruction {
+    errors?: Error[]): AnimationTransitionInstruction {
   return {
     type: AnimationTransitionInstructionType.TransitionAnimation,
     element,

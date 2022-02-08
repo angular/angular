@@ -1041,6 +1041,9 @@
     "name": "interpolateParams"
   },
   {
+    "name": "invalidTimingValue"
+  },
+  {
     "name": "invertObject"
   },
   {

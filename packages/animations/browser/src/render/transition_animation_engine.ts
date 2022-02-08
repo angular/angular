@@ -13,6 +13,7 @@ import {AnimationTransitionInstruction} from '../dsl/animation_transition_instru
 import {AnimationTrigger} from '../dsl/animation_trigger';
 import {ElementInstructionMap} from '../dsl/element_instruction_map';
 import {AnimationStyleNormalizer} from '../dsl/style_normalization/animation_style_normalizer';
+import {missingEvent, missingTrigger, transitionFailed, triggerTransitionsFailed, unregisteredTrigger, unsupportedTriggerEvent} from '../error_helpers';
 import {copyObj, ENTER_CLASSNAME, eraseStyles, LEAVE_CLASSNAME, NG_ANIMATING_CLASSNAME, NG_ANIMATING_SELECTOR, NG_TRIGGER_CLASSNAME, NG_TRIGGER_SELECTOR, setStyles} from '../util';
 
 import {AnimationDriver} from './animation_driver';
@@ -126,18 +127,15 @@ export class AnimationTransitionNamespace {
 
   listen(element: any, name: string, phase: string, callback: (event: any) => boolean): () => any {
     if (!this._triggers.has(name)) {
-      throw new Error(`Unable to listen on the animation trigger event "${
-          phase}" because the animation trigger "${name}" doesn\'t exist!`);
+      throw missingTrigger(phase, name);
     }
 
     if (phase == null || phase.length == 0) {
-      throw new Error(`Unable to listen on the animation trigger "${
-          name}" because the provided event is undefined!`);
+      throw missingEvent(name);
     }
 
     if (!isTriggerEventValid(phase)) {
-      throw new Error(`The provided animation trigger event "${phase}" for the animation trigger "${
-          name}" is not supported!`);
+      throw unsupportedTriggerEvent(phase, name);
     }
 
     const listeners = getOrSetDefaultValue(this._elementListeners, element, []);
@@ -182,7 +180,7 @@ export class AnimationTransitionNamespace {
   private _getTrigger(name: string) {
     const trigger = this._triggers.get(name);
     if (!trigger) {
-      throw new Error(`The provided animation trigger "${name}" has not been registered!`);
+      throw unregisteredTrigger(name);
     }
     return trigger;
   }
@@ -224,7 +222,7 @@ export class AnimationTransitionNamespace {
       // this means that despite the value not changing, some inner params
       // have changed which means that the animation final styles need to be applied
       if (!objEquals(fromState.params, toState.params)) {
-        const errors: string[] = [];
+        const errors: Error[] = [];
         const fromStyles = trigger.matchStyles(fromState.value, fromState.params, errors);
         const toStyles = trigger.matchStyles(toState.value, toState.params, errors);
         if (errors.length) {
@@ -905,10 +903,8 @@ export class TransitionAnimationEngine {
     }
   }
 
-  reportError(errors: string[]) {
-    throw new Error(
-        `Unable to process animations due to the following failed trigger transitions\n ${
-            errors.join('\n')}`);
+  reportError(errors: Error[]) {
+    throw triggerTransitionsFailed(errors);
   }
 
   private _flushAnimations(cleanupFns: Function[], microtaskId: number):
@@ -1094,10 +1090,9 @@ export class TransitionAnimationEngine {
     }
 
     if (erroneousTransitions.length) {
-      const errors: string[] = [];
+      const errors: Error[] = [];
       erroneousTransitions.forEach(instruction => {
-        errors.push(`@${instruction.triggerName} has failed due to:\n`);
-        instruction.errors!.forEach(error => errors.push(`- ${error}\n`));
+        errors.push(transitionFailed(instruction.triggerName, instruction.errors!));
       });
 
       allPlayers.forEach(player => player.destroy());

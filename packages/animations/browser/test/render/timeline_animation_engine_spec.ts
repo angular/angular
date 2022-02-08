@@ -112,13 +112,13 @@ class SuffixNormalizer extends AnimationStyleNormalizer {
     super();
   }
 
-  override normalizePropertyName(propertyName: string, errors: string[]): string {
+  override normalizePropertyName(propertyName: string, errors: Error[]): string {
     return propertyName + this._suffix;
   }
 
   override normalizeStyleValue(
       userProvidedProperty: string, normalizedProperty: string, value: string|number,
-      errors: string[]): string {
+      errors: Error[]): string {
     return value + this._suffix;
   }
 }
