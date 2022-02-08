@@ -428,6 +428,10 @@ export const EMAIL_VALIDATOR: any = {
  * A directive that adds the `email` validator to controls marked with the
  * `email` attribute. The directive is provided with the `NG_VALIDATORS` multi-provider list.
  *
+ * The email validation is based on the WHATWG HTML specification with some enhancements to
+ * incorporate more RFC rules. More information can be found on the [Validators.email
+ * page](api/forms/Validators#email).
+ *
  * @see [Form Validation](guide/form-validation)
  *
  * @usageNotes
