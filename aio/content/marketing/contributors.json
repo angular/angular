@@ -23,13 +23,6 @@
     "bio": "Muhammad Ahsan Ayaz is Software Architect at Modus Create. He is absolutely passionate about Angular and Web Technologies. Uses Angular daily and talks about it everywhere. Runs NodeSchool Karachi and is a co-organizer of NgPakistan",
     "groups": ["GDE"]
   },
-  "aikidave": {
-    "name": "Dave Shevitz",
-    "picture": "daveshevitz.jpg",
-    "bio": "Dave is a technical writer focused on creating a great documentation experience for Angular developers. When he isn't writing, he's toying with new technologies. His favorite motto is: 'What could possibly go wrong?'",
-    "groups": ["Angular"],
-    "lead": "jelbourn"
-  },
   "ajitsinghkaler": {
     "name": "Ajit Singh",
     "groups": ["Collaborators"],
@@ -472,7 +465,7 @@
     "picture": "josephmmartin.jpg",
     "bio": "Joe is a technical writer working on the Angular docs.",
     "groups": ["Angular"],
-    "lead": "aikidave"
+    "lead": "mgechev"
   },
   "jschwarty": {
     "name": "Justin Schwartzenberger",
@@ -856,7 +849,7 @@
     "picture": "teriglover.png",
     "bio": "Teri is a technical editor working on the Angular docs team.",
     "groups": ["Angular"],
-    "lead": "aikidave"
+    "lead": "mgechev"
   },
   "thekiba": {
     "name": "Andrew Grekov",
@@ -870,7 +863,7 @@
     "name": "Tiffany Davis",
     "bio": "Tiffany is an editor working on Angular documentation.",
     "groups": ["Angular"],
-    "lead": "aikidave"
+    "lead": "mgechev"
   },
   "toddmotto": {
     "name": "Todd Motto",
