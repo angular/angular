@@ -1,13 +1,11 @@
 function MyComponent_div_2_Template(rf, ctx) {
   if (rf & 1) {
-    $r3$.ɵɵelementStart(0, "div");
-    $r3$.ɵɵelementStart(1, "div");
+    $r3$.ɵɵelementStart(0, "div")(1, "div");
     $r3$.ɵɵi18nStart(2, 1);
     $r3$.ɵɵelement(3, "div");
     $r3$.ɵɵpipe(4, "uppercase");
     $r3$.ɵɵi18nEnd();
-    $r3$.ɵɵelementEnd();
-    $r3$.ɵɵelementEnd();
+    $r3$.ɵɵelementEnd()();
   }
   if (rf & 2) {
     const $ctx_r0$ = $r3$.ɵɵnextContext();

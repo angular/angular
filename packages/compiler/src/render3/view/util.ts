@@ -52,6 +52,12 @@ export const RESTORED_VIEW_CONTEXT_NAME = 'restoredCtx';
 
 /** Instructions that support chaining. */
 const CHAINABLE_INSTRUCTIONS = new Set([
+  R3.element,
+  R3.elementStart,
+  R3.elementEnd,
+  R3.elementContainer,
+  R3.elementContainerStart,
+  R3.elementContainerEnd,
   R3.i18nExp,
   R3.listener,
   R3.classProp,

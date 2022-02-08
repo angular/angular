@@ -16,12 +16,10 @@ function MyComponent_div_2_div_4_Template(rf, ctx) {
 function MyComponent_div_2_Template(rf, ctx) {
   if (rf & 1) {
     $r3$.ɵɵi18nStart(0, 0, 1);
-    $r3$.ɵɵelementStart(1, "div");
-    $r3$.ɵɵelementStart(2, "div");
+    $r3$.ɵɵelementStart(1, "div")(2, "div");
     $r3$.ɵɵpipe(3, "uppercase");
     $r3$.ɵɵtemplate(4, MyComponent_div_2_div_4_Template, 3, 2, "div", 1);
-    $r3$.ɵɵelementEnd();
-    $r3$.ɵɵelementEnd();
+    $r3$.ɵɵelementEnd()();
     $r3$.ɵɵi18nEnd();
   }
   if (rf & 2) {

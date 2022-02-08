@@ -6,11 +6,7 @@ consts: [
 ],
 template: function MyComponent_Template(rf, ctx) {
   if (rf & 1) {
-    $r3$.ɵɵelement(0, "embed", 0);
-    $r3$.ɵɵelement(1, "iframe", 1);
-    $r3$.ɵɵelement(2, "object", 2);
-    $r3$.ɵɵelement(3, "embed", 0);
-    $r3$.ɵɵelement(4, "img", 3);
+    $r3$.ɵɵelement(0, "embed", 0)(1, "iframe", 1)(2, "object", 2)(3, "embed", 0)(4, "img", 3);
   }
   …
 }

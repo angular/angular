@@ -121,7 +121,7 @@ describe('jit source mapping', () => {
          }));
 
       it('should report di errors with multiple elements and directives', fakeAsync(() => {
-           const template = `<div someDir></div><div someDir="throw"></div>`;
+           const template = `<div someDir></div>|<div someDir="throw"></div>`;
 
            @Component({...templateDecorator(template)})
            class MyComp {
@@ -146,7 +146,7 @@ describe('jit source mapping', () => {
            // The error should be logged from the 2nd-element
            expect(jitEvaluator.getSourcePositionForStack(error.stack, generatedUrl)).toEqual({
              line: 1,
-             column: 19,
+             column: 20,
              source: ngUrl,
            });
          }));
