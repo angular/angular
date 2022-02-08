@@ -12,7 +12,6 @@ import {buildAnimationAst} from '../dsl/animation_ast_builder';
 import {AnimationTrigger, buildTrigger} from '../dsl/animation_trigger';
 import {AnimationStyleNormalizer} from '../dsl/style_normalization/animation_style_normalizer';
 import {triggerBuildFailed} from '../error_helpers';
-import {warnTriggerBuild} from '../warning_helpers';
 
 import {AnimationDriver} from './animation_driver';
 import {parseTimelineCommand} from './shared';
@@ -45,14 +44,10 @@ export class AnimationEngine {
     let trigger = this._triggerCache[cacheKey];
     if (!trigger) {
       const errors: Error[] = [];
-      const warnings: string[] = [];
-      const ast = buildAnimationAst(
-                      this._driver, metadata as AnimationMetadata, errors, warnings) as TriggerAst;
+      const ast =
+          buildAnimationAst(this._driver, metadata as AnimationMetadata, errors) as TriggerAst;
       if (errors.length) {
         throw triggerBuildFailed(name, errors);
-      }
-      if (warnings.length) {
-        warnTriggerBuild(name, warnings);
       }
       trigger = buildTrigger(name, ast, this._normalizer);
       this._triggerCache[cacheKey] = trigger;

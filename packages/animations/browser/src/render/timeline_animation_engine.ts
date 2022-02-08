@@ -13,6 +13,7 @@ import {buildAnimationTimelines} from '../dsl/animation_timeline_builder';
 import {AnimationTimelineInstruction} from '../dsl/animation_timeline_instruction';
 import {ElementInstructionMap} from '../dsl/element_instruction_map';
 import {AnimationStyleNormalizer} from '../dsl/style_normalization/animation_style_normalizer';
+import {createAnimationFailed, missingOrDestroyedAnimation, missingPlayer, registerFailed} from '../error_helpers';
 import {ENTER_CLASSNAME, LEAVE_CLASSNAME} from '../util';
 
 import {AnimationDriver} from './animation_driver';
@@ -30,11 +31,10 @@ export class TimelineAnimationEngine {
       private _normalizer: AnimationStyleNormalizer) {}
 
   register(id: string, metadata: AnimationMetadata|AnimationMetadata[]) {
-    const errors: string[] = [];
+    const errors: Error[] = [];
     const ast = buildAnimationAst(this._driver, metadata, errors);
     if (errors.length) {
-      throw new Error(
-          `Unable to build the animation due to the following errors: ${errors.join('\n')}`);
+      throw registerFailed(errors);
     } else {
       this._animations.set(id, ast);
     }
@@ -50,7 +50,7 @@ export class TimelineAnimationEngine {
   }
 
   create(id: string, element: any, options: AnimationOptions = {}): AnimationPlayer {
-    const errors: string[] = [];
+    const errors: Error[] = [];
     const ast = this._animations.get(id);
     let instructions: AnimationTimelineInstruction[];
 
@@ -66,13 +66,12 @@ export class TimelineAnimationEngine {
         inst.postStyleProps.forEach(prop => styles.set(prop, null));
       });
     } else {
-      errors.push('The requested animation doesn\'t exist or has already been destroyed');
+      errors.push(missingOrDestroyedAnimation());
       instructions = [];
     }
 
     if (errors.length) {
-      throw new Error(
-          `Unable to create the animation due to the following errors: ${errors.join('\n')}`);
+      throw createAnimationFailed(errors);
     }
 
     autoStylesMap.forEach((styles, element) => {
@@ -106,7 +105,7 @@ export class TimelineAnimationEngine {
   private _getPlayer(id: string): AnimationPlayer {
     const player = this._playersById.get(id);
     if (!player) {
-      throw new Error(`Unable to find the timeline player referenced by ${id}`);
+      throw missingPlayer(id);
     }
     return player;
   }

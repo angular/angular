@@ -10,7 +10,6 @@ import {AnimationMetadata, AnimationMetadataType, AnimationOptions, ɵStyleDataM
 import {buildingFailed, validationFailed} from '../error_helpers';
 import {AnimationDriver} from '../render/animation_driver';
 import {ENTER_CLASSNAME, LEAVE_CLASSNAME, normalizeStyles} from '../util';
-import {warnValidation} from '../warning_helpers';
 
 import {Ast} from './animation_ast';
 import {buildAnimationAst} from './animation_ast_builder';
@@ -22,13 +21,9 @@ export class Animation {
   private _animationAst: Ast<AnimationMetadataType>;
   constructor(private _driver: AnimationDriver, input: AnimationMetadata|AnimationMetadata[]) {
     const errors: Error[] = [];
-    const warnings: string[] = [];
-    const ast = buildAnimationAst(_driver, input, errors, warnings);
+    const ast = buildAnimationAst(_driver, input, errors);
     if (errors.length) {
       throw validationFailed(errors);
-    }
-    if (warnings.length) {
-      warnValidation(warnings);
     }
     this._animationAst = ast;
   }
