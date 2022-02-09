@@ -140,15 +140,15 @@ next to their corresponding helper files.
 One of the best ways to keep your project bug-free is through a test suite, but you might forget to run tests all the time.
 Continuous integration (CI) servers let you set up your project repository so that your tests run on every commit and pull request.
 
-There are paid CI services like Circle CI and Travis CI, and you can also host your own for free using Jenkins and others.
-Although Circle CI and Travis CI are paid services, they are provided free for open source projects.
+There are paid CI services like CircleCI and Travis CI, and you can also host your own for free using Jenkins and others.
+Although CircleCI and Travis CI are paid services, they are provided free for open source projects.
 You can create a public project on GitHub and add these services without paying.
-Contributions to the Angular repository are automatically run through a whole suite of Circle CI tests.
+Contributions to the Angular repository are automatically run through a whole suite of CircleCI tests.
 
-This article explains how to configure your project to run Circle CI and Travis CI, and also update your test configuration to be able to run tests in the Chrome browser in either environment.
+This article explains how to configure your project to run CircleCI and Travis CI, and also update your test configuration to be able to run tests in the Chrome browser in either environment.
 
 
-### Configure project for Circle CI
+### Configure project for CircleCI
 
 Step 1: Create a folder called `.circleci` at the project root.
 
@@ -178,10 +178,10 @@ The double dash (`--`) is needed to pass arguments into the `npm` script.
 
 Step 3: Commit your changes and push them to your repository.
 
-Step 4: [Sign up for Circle CI](https://circleci.com/docs/2.0/first-steps/) and [add your project](https://circleci.com/add-projects).
+Step 4: [Sign up for CircleCI](https://circleci.com/docs/2.0/first-steps/) and [add your project](https://app.circleci.com/projects/).
 Your project should start building.
 
-* Learn more about Circle CI from [Circle CI documentation](https://circleci.com/docs/2.0/).
+* Learn more about CircleCI from [CircleCI documentation](https://circleci.com/docs/2.0/).
 
 ### Configure project for Travis CI
 
