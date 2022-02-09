@@ -13,6 +13,7 @@ class AsyncTestZoneSpec implements ZoneSpec {
   _pendingMacroTasks: boolean = false;
   _alreadyErrored: boolean = false;
   _isSync: boolean = false;
+  entryFunction: Function|null = null;
   runZone = Zone.current;
   unresolvedChainedPromiseCount = 0;
 
@@ -108,13 +109,25 @@ class AsyncTestZoneSpec implements ZoneSpec {
   onInvoke(
       parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone, delegate: Function,
       applyThis: any, applyArgs?: any[], source?: string): any {
-    let previousTaskCounts: any = null;
+    if (!this.entryFunction) {
+      this.entryFunction = delegate;
+    }
     try {
       this._isSync = true;
       return parentZoneDelegate.invoke(targetZone, delegate, applyThis, applyArgs, source);
     } finally {
       const afterTaskCounts: any = (parentZoneDelegate as any)._taskCounts;
-      if (this._isSync) {
+      // We need to check the delegate is the same as entryFunction or not.
+      // Consider the following case.
+      //
+      // asyncTestZone.run(() => { // Here the delegate will be the entryFunction
+      //   Zone.current.run(() => { // Here the delegate will not be the entryFunction
+      //   });
+      // });
+      //
+      // We only want to check whether there are async tasks scheduled
+      // for the entry function.
+      if (this._isSync && this.entryFunction === delegate) {
         this._finishCallbackIfDone();
       }
     }
@@ -133,6 +146,21 @@ class AsyncTestZoneSpec implements ZoneSpec {
 
   onHasTask(delegate: ZoneDelegate, current: Zone, target: Zone, hasTaskState: HasTaskState) {
     delegate.hasTask(target, hasTaskState);
+    // We should only trigger finishCallback when the target zone is the AsyncTestZone
+    // Consider the following cases.
+    //
+    // const childZone = asyncTestZone.fork({
+    //   name: 'child',
+    //   onHasTask: ...
+    // });
+    //
+    // So we have nested zones declared the onHasTask hook, in this case,
+    // the onHasTask will be triggered twice, and cause the finishCallbackIfDone()
+    // is also be invoked twice. So we need to only trigger the finishCallbackIfDone()
+    // when the current zone is the same as the target zone.
+    if (current !== target) {
+      return;
+    }
     if (hasTaskState.change == 'microTask') {
       this._pendingMicroTasks = hasTaskState.microTask;
       this._finishCallbackIfDone();
