@@ -265,8 +265,20 @@ export class NgModuleDecoratorHandler implements
       }
     }
 
-    const id: Expression|null =
-        ngModule.has('id') ? new WrappedNodeExpr(ngModule.get('id')!) : null;
+    let id: Expression|null = null;
+    if (ngModule.has('id')) {
+      const idExpr = ngModule.get('id')!;
+      if (!isModuleIdExpression(idExpr)) {
+        id = new WrappedNodeExpr(idExpr);
+      } else {
+        const diag = makeDiagnostic(
+            ErrorCode.WARN_NGMODULE_ID_UNNECESSARY, idExpr,
+            `Using 'module.id' for NgModule.id is a common anti-pattern that is ignored by the Angular compiler.`);
+        diag.category = ts.DiagnosticCategory.Warning;
+        diagnostics.push(diag);
+      }
+    }
+
     const valueContext = node.getSourceFile();
 
     let typeContext = valueContext;
@@ -349,6 +361,7 @@ export class NgModuleDecoratorHandler implements
     };
 
     return {
+      diagnostics: diagnostics.length > 0 ? diagnostics : undefined,
       analysis: {
         id,
         schemas,
@@ -738,4 +751,12 @@ export class NgModuleDecoratorHandler implements
 function isNgModule(node: ClassDeclaration, compilation: ScopeData): boolean {
   return !compilation.directives.some(directive => directive.ref.node === node) &&
       !compilation.pipes.some(pipe => pipe.ref.node === node);
+}
+
+/**
+ * Checks whether the given `ts.Expression` is the expression `module.id`.
+ */
+function isModuleIdExpression(expr: ts.Expression): boolean {
+  return ts.isPropertyAccessExpression(expr) && ts.isIdentifier(expr.expression) &&
+      expr.expression.text === 'module' && expr.name.text === 'id';
 }
