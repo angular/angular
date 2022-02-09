@@ -1,3 +1,33 @@
+<a name="14.0.0-next.2"></a>
+# 14.0.0-next.2 "ferrous-squirrel" (2022-02-09)
+## Breaking Changes
+### material
+- `MatChipInputEvent.chipInput` is now a required property.
+### material-experimental
+| Commit | Type | Description |
+| -- | -- | -- |
+| [3523adf71](https://github.com/angular/components/commit/3523adf71eca4c29b8c8cff1bf90c6f1d15d88ca) | fix | **mdc-checkbox:** add missing classes for checked ([#24350](https://github.com/angular/components/pull/24350)) |
+| [02d6e7d77](https://github.com/angular/components/commit/02d6e7d77ae77feae7d52c929b0dff74f6624c1a) | fix | **mdc-tabs:** CSS applied to wrong element when preserveContent is enabled ([#24346](https://github.com/angular/components/pull/24346)) |
+### material
+| Commit | Type | Description |
+| -- | -- | -- |
+| [d67dad6b1](https://github.com/angular/components/commit/d67dad6b1b77692a15762bcbdbd5e9ea94f1a34e) | fix | **chips:** Make `MatChipInputEvent.chipInput` required. ([#23692](https://github.com/angular/components/pull/23692)) |
+| [1c9173196](https://github.com/angular/components/commit/1c917319642822881532be91c699122976bf10c3) | fix | **datepicker:** fix improper focus trapping with VoiceOver and ChromeVox ([#24300](https://github.com/angular/components/pull/24300)) |
+| [7a6549fb1](https://github.com/angular/components/commit/7a6549fb11a108f351aa4bf2a3686a75bdbc642c) | fix | **datepicker:** remove abbr from day of week header ([#24106](https://github.com/angular/components/pull/24106)) |
+### cdk
+| Commit | Type | Description |
+| -- | -- | -- |
+| [64606fa65](https://github.com/angular/components/commit/64606fa65bd0d307a87d8a64b7db0da90105102c) | feat | **testing:** add methods `getOptionalHarness` and `hasHarness` ([#24355](https://github.com/angular/components/pull/24355)) |
+| [5221b79d5](https://github.com/angular/components/commit/5221b79d57c92a75f8e3f5b4cf66bd93814a5d54) | fix | **scrolling:** fix scrolling in appendOnly mode ([#24153](https://github.com/angular/components/pull/24153)) |
+### material-experiental
+| Commit | Type | Description |
+| -- | -- | -- |
+| [dd59b4a10](https://github.com/angular/components/commit/dd59b4a10cb30639fc00039f76d920cb60fa3020) | fix | **mdc-list:** update material-components-web to pick up multi-select list keyboard support ([#24354](https://github.com/angular/components/pull/24354)) |
+## Special Thanks
+Alan Agius, Artur Androsovych, Chabbey François, Joey Perrott, Kristiyan Kostadinov, Miles Malerba, Paul Gschwendtner, Zach Arend and renovate[bot]
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="13.2.2"></a>
 # 13.2.2 "enamel-eagle" (2022-02-09)
 ### cdk
