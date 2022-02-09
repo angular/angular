@@ -15,7 +15,8 @@ import {createRouterState} from './create_router_state';
 import {createUrlTree} from './create_url_tree';
 import {RuntimeErrorCode} from './errors';
 import {Event, GuardsCheckEnd, GuardsCheckStart, NavigationCancel, NavigationCancellationCode, NavigationEnd, NavigationError, NavigationStart, NavigationTrigger, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, RoutesRecognized} from './events';
-import {QueryParamsHandling, Route, Routes} from './models';
+import {NavigationBehaviorOptions, QueryParamsHandling, Route, Routes} from './models';
+import {isNavigationCancelingError, isRedirectingNavigationCancelingError, redirectingNavigationError} from './navigation_canceling_error';
 import {activateRoutes} from './operators/activate_routes';
 import {applyRedirects} from './operators/apply_redirects';
 import {checkGuards} from './operators/check_guards';
@@ -27,12 +28,11 @@ import {DefaultRouteReuseStrategy, RouteReuseStrategy} from './route_reuse_strat
 import {RouterConfigLoader} from './router_config_loader';
 import {ChildrenOutletContexts} from './router_outlet_context';
 import {ActivatedRoute, ActivatedRouteSnapshot, createEmptyState, RouterState, RouterStateSnapshot} from './router_state';
-import {isNavigationCancelingError, navigationCancelingError, Params, REDIRECTING_CANCELLATION_REASON} from './shared';
+import {Params} from './shared';
 import {DefaultUrlHandlingStrategy, UrlHandlingStrategy} from './url_handling_strategy';
-import {containsTree, createEmptyUrlTree, IsActiveMatchOptions, UrlSerializer, UrlTree} from './url_tree';
+import {containsTree, createEmptyUrlTree, IsActiveMatchOptions, isUrlTree, UrlSerializer, UrlTree} from './url_tree';
 import {standardizeConfig, validateConfig} from './utils/config';
 import {Checks, getAllRouteGuards} from './utils/preactivation';
-import {isUrlTree} from './utils/type_guards';
 
 
 const NG_DEV_MODE = typeof ngDevMode === 'undefined' || !!ngDevMode;
@@ -143,58 +143,6 @@ export interface UrlCreationOptions {
    * ```
    */
   preserveFragment?: boolean;
-}
-
-/**
- * @description
- *
- * Options that modify the `Router` navigation strategy.
- * Supply an object containing any of these properties to a `Router` navigation function to
- * control how the navigation should be handled.
- *
- * @see [Router.navigate() method](api/router/Router#navigate)
- * @see [Router.navigateByUrl() method](api/router/Router#navigatebyurl)
- * @see [Routing and Navigation guide](guide/router)
- *
- * @publicApi
- */
-export interface NavigationBehaviorOptions {
-  /**
-   * When true, navigates without pushing a new state into history.
-   *
-   * ```
-   * // Navigate silently to /view
-   * this.router.navigate(['/view'], { skipLocationChange: true });
-   * ```
-   */
-  skipLocationChange?: boolean;
-
-  /**
-   * When true, navigates while replacing the current state in history.
-   *
-   * ```
-   * // Navigate to /view
-   * this.router.navigate(['/view'], { replaceUrl: true });
-   * ```
-   */
-  replaceUrl?: boolean;
-
-  /**
-   * Developer-defined state that can be passed to any navigation.
-   * Access this value through the `Navigation.extras` object
-   * returned from the [Router.getCurrentNavigation()
-   * method](api/router/Router#getcurrentnavigation) while a navigation is executing.
-   *
-   * After a navigation completes, the router writes an object containing this
-   * value together with a `navigationId` to `history.state`.
-   * The value is written when `location.go()` or `location.replaceState()`
-   * is called before activating this route.
-   *
-   * Note that `history.state` does not pass an object equality test because
-   * the router adds the `navigationId` on each navigation.
-   *
-   */
-  state?: {[k: string]: any};
 }
 
 /**
@@ -761,11 +709,7 @@ export class Router {
                      checkGuards(this.ngModule.injector, (evt: Event) => this.triggerEvent(evt)),
                      tap(t => {
                        if (isUrlTree(t.guardsResult)) {
-                         throw navigationCancelingError(
-                             NG_DEV_MODE &&
-                                 REDIRECTING_CANCELLATION_REASON +
-                                     `"${this.serializeUrl(t.guardsResult)}"`,
-                             NavigationCancellationCode.Redirect, t.guardsResult);
+                         throw redirectingNavigationError(this.urlSerializer, t.guardsResult);
                        }
 
                        const guardsEnd = new GuardsCheckEnd(
@@ -929,8 +873,7 @@ export class Router {
                        /* This error type is issued during Redirect, and is handled as a
                         * cancellation rather than an error. */
                        if (isNavigationCancelingError(e)) {
-                         const redirecting = isUrlTree(e.url);
-                         if (!redirecting) {
+                         if (!isRedirectingNavigationCancelingError(e)) {
                            // Set property only if we're not redirecting. If we landed on a page and
                            // redirect to `/` route, the new navigation is going to see the `/`
                            // isn't a change from the default currentUrlTree and won't navigate.
@@ -946,7 +889,7 @@ export class Router {
 
                          // When redirecting, we need to delay resolving the navigation
                          // promise and push it to the redirect navigation
-                         if (!isUrlTree(e.url)) {
+                         if (!isRedirectingNavigationCancelingError(e)) {
                            t.resolve(false);
                          } else {
                            const mergedTree =

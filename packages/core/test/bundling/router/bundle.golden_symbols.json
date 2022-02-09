@@ -1473,6 +1473,9 @@
     "name": "isNameOnlyAttributeMarker"
   },
   {
+    "name": "isNavigationCancelingError"
+  },
+  {
     "name": "isNodeMatchingSelector"
   },
   {
@@ -1492,6 +1495,9 @@
   },
   {
     "name": "isPromise2"
+  },
+  {
+    "name": "isRedirectingNavigationCancelingError"
   },
   {
     "name": "isScheduler"
@@ -1696,6 +1702,9 @@
   },
   {
     "name": "redirectIfUrlTree"
+  },
+  {
+    "name": "redirectingNavigationError"
   },
   {
     "name": "refCount"

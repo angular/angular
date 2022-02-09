@@ -779,3 +779,7 @@ function mergeTrivialChildren(s: UrlSegmentGroup): UrlSegmentGroup {
 
   return s;
 }
+
+export function isUrlTree(v: any): v is UrlTree {
+  return v instanceof UrlTree;
+}

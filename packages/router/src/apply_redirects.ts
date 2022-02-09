@@ -13,9 +13,10 @@ import {catchError, concatMap, first, last, map, mergeMap, scan, switchMap, tap}
 import {RuntimeErrorCode} from './errors';
 import {NavigationCancellationCode} from './events';
 import {LoadedRouterConfig, Route, Routes} from './models';
+import {navigationCancelingError} from './navigation_canceling_error';
 import {runCanLoadGuards} from './operators/check_guards';
 import {RouterConfigLoader} from './router_config_loader';
-import {navigationCancelingError, Params, PRIMARY_OUTLET} from './shared';
+import {Params, PRIMARY_OUTLET} from './shared';
 import {createRoot, squashSegmentGroup, UrlSegment, UrlSegmentGroup, UrlSerializer, UrlTree} from './url_tree';
 import {forEach} from './utils/collection';
 import {getOrCreateRouteInjectorIfNeeded, getOutlet, sortByMatchingOutlets} from './utils/config';
