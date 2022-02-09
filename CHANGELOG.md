@@ -1,3 +1,27 @@
+<a name="13.2.2"></a>
+# 13.2.2 "enamel-eagle" (2022-02-09)
+### cdk
+| Commit | Type | Description |
+| -- | -- | -- |
+| [4b6e83274](https://github.com/angular/components/commit/4b6e83274b45053523b21cbb075b2c0d0de63690) | fix | **scrolling:** fix scrolling in appendOnly mode ([#24153](https://github.com/angular/components/pull/24153)) |
+### material
+| Commit | Type | Description |
+| -- | -- | -- |
+| [f5199eeeb](https://github.com/angular/components/commit/f5199eeeba2b8665500d62665253adefe492d3bf) | fix | **datepicker:** fix improper focus trapping with VoiceOver and ChromeVox ([#24300](https://github.com/angular/components/pull/24300)) |
+| [a72bcbe50](https://github.com/angular/components/commit/a72bcbe503377e6e14862eed3c619302201dfb12) | fix | **datepicker:** remove abbr from day of week header ([#24106](https://github.com/angular/components/pull/24106)) |
+### material-experimental
+| Commit | Type | Description |
+| -- | -- | -- |
+| [3bbcb444f](https://github.com/angular/components/commit/3bbcb444faca12b6f6741a3c8b3f47bd54dda89e) | fix | **mdc-checkbox:** add missing classes for checked ([#24350](https://github.com/angular/components/pull/24350)) |
+### material-experiental
+| Commit | Type | Description |
+| -- | -- | -- |
+| [70bec6054](https://github.com/angular/components/commit/70bec605400eed85d439c15e0cc902522260d03b) | fix | **mdc-list:** update material-components-web to pick up multi-select list keyboard support ([#24354](https://github.com/angular/components/pull/24354)) |
+## Special Thanks
+Alan Agius, Artur Androsovych, Chabbey François, Joey Perrott, Kristiyan Kostadinov, Miles Malerba, Paul Gschwendtner, Zach Arend and renovate[bot]
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.0.0-next.1"></a>
 # 14.0.0-next.1 "denim-dinosaur" (2022-02-02)
 ## Breaking Changes
