@@ -1233,7 +1233,7 @@ function allTests(os: string) {
       expect(jsContents).toContain(`i0.ɵɵdefineNgModule({ type: TestModule, id: 'test' })`);
     });
 
-    it('should emit the id when the module\'s id is defined as `module.id`', () => {
+    it('should warn when an NgModule id is defined as module.id, and not emit it', () => {
       env.write('index.d.ts', `
          declare const module = {id: string};
        `);
@@ -1244,10 +1244,16 @@ function allTests(os: string) {
          export class TestModule {}
        `);
 
-      env.driveMain();
+      const diags = env.driveDiagnostics();
 
       const jsContents = env.getContents('test.js');
-      expect(jsContents).toContain('i0.ɵɵdefineNgModule({ type: TestModule, id: module.id })');
+      expect(jsContents).toContain('i0.ɵɵdefineNgModule({ type: TestModule })');
+      expect(jsContents).not.toContain('i0.ɵɵregisterNgModuleType');
+
+      expect(diags.length).toEqual(1);
+      expect(diags[0].category).toEqual(ts.DiagnosticCategory.Warning);
+      expect(diags[0].code).toEqual(ngErrorCode(ErrorCode.WARN_NGMODULE_ID_UNNECESSARY));
+      expect(getDiagnosticSourceCode(diags[0])).toEqual('module.id');
     });
 
     it('should emit a side-effectful registration call when an @NgModule has an id', () => {

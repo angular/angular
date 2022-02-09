@@ -146,6 +146,13 @@ export enum ErrorCode {
   NGMODULE_DECLARATION_IS_STANDALONE = 6008,
 
   /**
+   * Indicates that an NgModule is declared with `id: module.id`. This is an anti-pattern that is
+   * disabled explicitly in the compiler, that was originally based on a misunderstanding of
+   * `NgModule.id`.
+   */
+  WARN_NGMODULE_ID_UNNECESSARY = 6100,
+
+  /**
    * Not actually raised by the compiler, but reserved for documentation of a View Engine error when
    * a View Engine build depends on an Ivy-compiled NgModule.
    */
