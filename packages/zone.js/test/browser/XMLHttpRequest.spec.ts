@@ -336,14 +336,16 @@ describe('XMLHttpRequest', function() {
          const req = new XMLHttpRequest();
          req.open('get', '/', true);
          req.send();
-         req.addEventListener('readystatechange', function(ev) {
+         const listener = function(ev: any) {
            if (req.readyState >= 2) {
              expect(() => {
                req.abort();
              }).not.toThrow();
+             req.removeEventListener('readystatechange', listener);
              done();
            }
-         });
+         };
+         req.addEventListener('readystatechange', listener);
        });
      });
 

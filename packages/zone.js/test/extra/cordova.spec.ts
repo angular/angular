@@ -19,7 +19,6 @@ describe('cordova test', () => {
       cordova.exec(
           () => {
             expect(Zone.current.name).toEqual('cordova');
-            done();
           },
           () => {
             fail('should not fail');
