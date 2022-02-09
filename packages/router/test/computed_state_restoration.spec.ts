@@ -14,7 +14,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {CanActivate, CanDeactivate, Resolve, Router, RouterModule, UrlTree} from '@angular/router';
 import {EMPTY, Observable, of} from 'rxjs';
 
-import {isUrlTree} from '../src/utils/type_guards';
+import {isUrlTree} from '../src/url_tree';
 import {RouterTestingModule} from '../testing';
 
 describe('`restoredState#ɵrouterPageId`', () => {

@@ -9,8 +9,7 @@
 import {combineLatest, Observable, OperatorFunction} from 'rxjs';
 import {filter, map, scan, startWith, switchMap, take} from 'rxjs/operators';
 
-import {UrlTree} from '../url_tree';
-import {isUrlTree} from '../utils/type_guards';
+import {isUrlTree, UrlTree} from '../url_tree';
 
 const INITIAL_VALUE = Symbol('INITIAL_VALUE');
 declare type INTERIM_VALUES = typeof INITIAL_VALUE | boolean | UrlTree;

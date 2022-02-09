@@ -1139,3 +1139,56 @@ export interface CanLoad {
 
 export type CanLoadFn = (route: Route, segments: UrlSegment[]) =>
     Observable<boolean|UrlTree>|Promise<boolean|UrlTree>|boolean|UrlTree;
+
+
+/**
+ * @description
+ *
+ * Options that modify the `Router` navigation strategy.
+ * Supply an object containing any of these properties to a `Router` navigation function to
+ * control how the navigation should be handled.
+ *
+ * @see [Router.navigate() method](api/router/Router#navigate)
+ * @see [Router.navigateByUrl() method](api/router/Router#navigatebyurl)
+ * @see [Routing and Navigation guide](guide/router)
+ *
+ * @publicApi
+ */
+export interface NavigationBehaviorOptions {
+  /**
+   * When true, navigates without pushing a new state into history.
+   *
+   * ```
+   * // Navigate silently to /view
+   * this.router.navigate(['/view'], { skipLocationChange: true });
+   * ```
+   */
+  skipLocationChange?: boolean;
+
+  /**
+   * When true, navigates while replacing the current state in history.
+   *
+   * ```
+   * // Navigate to /view
+   * this.router.navigate(['/view'], { replaceUrl: true });
+   * ```
+   */
+  replaceUrl?: boolean;
+
+  /**
+   * Developer-defined state that can be passed to any navigation.
+   * Access this value through the `Navigation.extras` object
+   * returned from the [Router.getCurrentNavigation()
+   * method](api/router/Router#getcurrentnavigation) while a navigation is executing.
+   *
+   * After a navigation completes, the router writes an object containing this
+   * value together with a `navigationId` to `history.state`.
+   * The value is written when `location.go()` or `location.replaceState()`
+   * is called before activating this route.
+   *
+   * Note that `history.state` does not pass an object equality test because
+   * the router adds the `navigationId` on each navigation.
+   *
+   */
+  state?: {[k: string]: any};
+}

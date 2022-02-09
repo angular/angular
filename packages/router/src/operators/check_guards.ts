@@ -10,15 +10,15 @@ import {EnvironmentInjector, Injector} from '@angular/core';
 import {concat, defer, from, MonoTypeOperatorFunction, Observable, of, OperatorFunction, pipe} from 'rxjs';
 import {concatMap, first, map, mergeMap, tap} from 'rxjs/operators';
 
-import {ActivationStart, ChildActivationStart, Event, NavigationCancellationCode} from '../events';
+import {ActivationStart, ChildActivationStart, Event} from '../events';
 import {CanLoad, CanLoadFn, CanMatch, CanMatchFn, Route} from '../models';
+import {redirectingNavigationError} from '../navigation_canceling_error';
 import {NavigationTransition} from '../router';
 import {ActivatedRouteSnapshot, RouterStateSnapshot} from '../router_state';
-import {navigationCancelingError, REDIRECTING_CANCELLATION_REASON} from '../shared';
-import {UrlSegment, UrlSerializer, UrlTree} from '../url_tree';
+import {isUrlTree, UrlSegment, UrlSerializer, UrlTree} from '../url_tree';
 import {wrapIntoObservable} from '../utils/collection';
 import {CanActivate, CanDeactivate, getCanActivateChild, getToken} from '../utils/preactivation';
-import {isBoolean, isCanActivate, isCanActivateChild, isCanDeactivate, isCanLoad, isCanMatch, isFunction, isUrlTree} from '../utils/type_guards';
+import {isBoolean, isCanActivate, isCanActivateChild, isCanDeactivate, isCanLoad, isCanMatch} from '../utils/type_guards';
 
 import {prioritizedGuardValue} from './prioritized_guard_value';
 
@@ -188,10 +188,7 @@ function redirectIfUrlTree(urlSerializer: UrlSerializer):
       tap((result: UrlTree|boolean) => {
         if (!isUrlTree(result)) return;
 
-        const error: Error&{url?: UrlTree} = navigationCancelingError(
-            REDIRECTING_CANCELLATION_REASON + urlSerializer.serialize(result),
-            NavigationCancellationCode.Redirect, result);
-        throw error;
+        throw redirectingNavigationError(urlSerializer, result);
       }),
       map(result => result === true),
   );

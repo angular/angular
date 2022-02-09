@@ -7,7 +7,8 @@
  */
 
 import {CanActivate, CanActivateChild, CanDeactivate, CanLoad, CanMatch} from '../models';
-import {UrlTree} from '../url_tree';
+import {NAVIGATION_CANCELING_ERROR, NavigationCancelingError, RedirectingNavigationCancelingError} from '../navigation_canceling_error';
+import {isUrlTree} from '../url_tree';
 
 /**
  * Simple function check, but generic so type inference will flow. Example:
@@ -30,10 +31,6 @@ export function isBoolean(v: any): v is boolean {
   return typeof v === 'boolean';
 }
 
-export function isUrlTree(v: any): v is UrlTree {
-  return v instanceof UrlTree;
-}
-
 export function isCanLoad(guard: any): guard is CanLoad {
   return guard && isFunction<CanLoad>(guard.canLoad);
 }
@@ -51,4 +48,14 @@ export function isCanDeactivate<T>(guard: any): guard is CanDeactivate<T> {
 }
 export function isCanMatch(guard: any): guard is CanMatch {
   return guard && isFunction<CanMatch>(guard.canMatch);
+}
+
+export function isRedirectingNavigationCancelingError(
+    error: unknown|
+    RedirectingNavigationCancelingError): error is RedirectingNavigationCancelingError {
+  return isNavigationCancelingError(error) && isUrlTree((error as any).url);
+}
+
+export function isNavigationCancelingError(error: unknown): error is NavigationCancelingError {
+  return error && (error as any)[NAVIGATION_CANCELING_ERROR];
 }
