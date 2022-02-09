@@ -2907,6 +2907,7 @@ describe('Zone', function() {
 
               expect(entries.length).toBe(1);
               expect(entries[0].target).toBe(div);
+              observer.disconnect();
               done();
             });
 
