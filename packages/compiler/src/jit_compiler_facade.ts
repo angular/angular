@@ -18,7 +18,7 @@ import {ParseError, ParseSourceSpan, r3JitTypeSourceSpan} from './parse_util';
 import {compileFactoryFunction, FactoryTarget, R3DependencyMetadata} from './render3/r3_factory';
 import {compileInjector, R3InjectorMetadata} from './render3/r3_injector_compiler';
 import {R3JitReflector} from './render3/r3_jit';
-import {compileNgModule, compileNgModuleDeclarationExpression, R3NgModuleMetadata} from './render3/r3_module_compiler';
+import {compileNgModule, compileNgModuleDeclarationExpression, R3NgModuleMetadata, R3SelectorScopeMode} from './render3/r3_module_compiler';
 import {compilePipeFromMetadata, R3PipeMetadata} from './render3/r3_pipe_compiler';
 import {createMayBeForwardRefExpression, ForwardRefHandling, getSafePropertyAccessString, MaybeForwardRefExpression, wrapReference} from './render3/util';
 import {DeclarationListEmitMode, R3ComponentMetadata, R3DirectiveMetadata, R3HostMetadata, R3QueryMetadata, R3UsedDirectiveMetadata} from './render3/view/api';
@@ -133,7 +133,7 @@ export class CompilerFacadeImpl implements CompilerFacade {
       declarations: facade.declarations.map(wrapReference),
       imports: facade.imports.map(wrapReference),
       exports: facade.exports.map(wrapReference),
-      emitInline: true,
+      selectorScopeMode: R3SelectorScopeMode.Inline,
       containsForwardDecls: false,
       schemas: facade.schemas ? facade.schemas.map(wrapReference) : null,
       id: facade.id ? new WrappedNodeExpr(facade.id) : null,
