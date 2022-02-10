@@ -28,10 +28,10 @@ export class ConfigComponent {
   showConfig() {
     this.configService.getConfig()
   // #enddocregion v1, v2
-      .subscribe(
-        (data: Config) => this.config = { ...data }, // success path
-        error => this.error = error // error path
-      );
+      .subscribe({
+        next: (data: Config) => this.config = { ...data }, // success path
+        error: error => this.error = error, // error path
+      });
   }
 
   showConfig_v1() {
@@ -69,7 +69,7 @@ export class ConfigComponent {
   }
 // #enddocregion showConfigResponse
   makeError() {
-    this.configService.makeIntentionalError().subscribe(null, error => this.error = error.message );
+    this.configService.makeIntentionalError().subscribe({ error: error => this.error = error.message });
   }
 
   getType(val: any): string {
