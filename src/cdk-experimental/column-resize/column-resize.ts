@@ -80,7 +80,11 @@ export abstract class ColumnResize implements AfterViewInit, OnDestroy {
         .subscribe(this.eventDispatcher.headerCellHovered);
       fromEvent<MouseEvent>(element, 'mouseleave')
         .pipe(
-          filter(event => !!(event.relatedTarget as Element)?.matches(RESIZE_OVERLAY_SELECTOR)),
+          filter(
+            event =>
+              !!event.relatedTarget &&
+              !(event.relatedTarget as Element).matches(RESIZE_OVERLAY_SELECTOR),
+          ),
           mapTo(null),
           takeUntil(this.destroyed),
         )
