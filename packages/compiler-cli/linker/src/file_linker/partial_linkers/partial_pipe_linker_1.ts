@@ -10,7 +10,7 @@ import {compilePipeFromMetadata, ConstantPool, outputAst as o, R3DeclarePipeMeta
 import {AstObject} from '../../ast/ast_value';
 import {FatalLinkerError} from '../../fatal_linker_error';
 
-import {PartialLinker} from './partial_linker';
+import {LinkedDefinition, PartialLinker} from './partial_linker';
 import {wrapReference} from './util';
 
 /**
@@ -21,10 +21,9 @@ export class PartialPipeLinkerVersion1<TExpression> implements PartialLinker<TEx
 
   linkPartialDeclaration(
       constantPool: ConstantPool,
-      metaObj: AstObject<R3PartialDeclaration, TExpression>): o.Expression {
+      metaObj: AstObject<R3PartialDeclaration, TExpression>): LinkedDefinition {
     const meta = toR3PipeMeta(metaObj);
-    const def = compilePipeFromMetadata(meta);
-    return def.expression;
+    return compilePipeFromMetadata(meta);
   }
 }
 

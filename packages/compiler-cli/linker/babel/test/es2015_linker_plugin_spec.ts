@@ -266,7 +266,10 @@ describe('createEs2015LinkerPlugin()', () => {
                                 .callFn([])
                                 .toStmt());
 
-                        return o.literal('REPLACEMENT');
+                        return {
+                          expression: o.literal('REPLACEMENT'),
+                          statements: [],
+                        };
                       }) as typeof PartialDirectiveLinkerVersion1.prototype.linkPartialDeclaration);
 
     const isPartialDeclarationSpy =
@@ -313,7 +316,10 @@ function spyOnLinkPartialDeclarationWithConstants(replacement: o.Expression) {
                       // We have to add the constant twice or it will not create a shared statement
                       constantPool.getConstLiteral(constArray);
                       constantPool.getConstLiteral(constArray);
-                      return replacement;
+                      return {
+                        expression: replacement,
+                        statements: [],
+                      };
                     }) as typeof PartialDirectiveLinkerVersion1.prototype.linkPartialDeclaration);
 }
 
