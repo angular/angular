@@ -598,7 +598,7 @@ describe('DocViewerComponent', () => {
         beforeEach(() => docViewerEl.classList[animationsEnabled ? 'remove' : 'add'](NO_ANIMATIONS));
 
         it('should return an observable', done => {
-          docViewer.swapViews().subscribe(done, done.fail);
+          docViewer.swapViews().subscribe({ next: done, error: done.fail });
         });
 
         it('should swap the views', async () => {

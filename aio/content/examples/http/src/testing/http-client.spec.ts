@@ -121,13 +121,13 @@ describe('HttpClient testing', () => {
   it('can test for 404 error', () => {
     const emsg = 'deliberate 404 error';
 
-    httpClient.get<Data[]>(testUrl).subscribe(
-      data => fail('should have failed with the 404 error'),
-      (error: HttpErrorResponse) => {
+    httpClient.get<Data[]>(testUrl).subscribe({
+      next: () => fail('should have failed with the 404 error'),
+      error: (error: HttpErrorResponse) => {
         expect(error.status).toEqual(404, 'status');
         expect(error.error).toEqual(emsg, 'message');
-      }
-    );
+      },
+    });
 
     const req = httpTestingController.expectOne(testUrl);
 
@@ -142,13 +142,13 @@ describe('HttpClient testing', () => {
     // at network level. e.g. Connection timeout, DNS error, offline, etc.
     const mockError = new ProgressEvent('error');
 
-    httpClient.get<Data[]>(testUrl).subscribe(
-      data => fail('should have failed with the network error'),
-      (error: HttpErrorResponse) => {
+    httpClient.get<Data[]>(testUrl).subscribe({
+      next: () => fail('should have failed with the network error'),
+      error: (error: HttpErrorResponse) => {
         expect(error.error).toBe(mockError);
         done();
-      }
-    );
+      },
+    });
 
     const req = httpTestingController.expectOne(testUrl);
 

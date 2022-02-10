@@ -53,10 +53,10 @@ describe('HeroesService', () => {
 
     it('should return expected heroes (called once)', () => {
 
-      heroService.getHeroes().subscribe(
-        heroes => expect(heroes).toEqual(expectedHeroes, 'should return expected heroes'),
-        fail
-      );
+      heroService.getHeroes().subscribe({
+        next: heroes => expect(heroes).toEqual(expectedHeroes, 'should return expected heroes'),
+        error: fail,
+      });
 
       // HeroService should have made one request to GET heroes from expected URL
       const req = httpTestingController.expectOne(heroService.heroesUrl);
@@ -68,10 +68,10 @@ describe('HeroesService', () => {
 
     it('should be OK returning no heroes', () => {
 
-      heroService.getHeroes().subscribe(
-        heroes => expect(heroes.length).toEqual(0, 'should have empty heroes array'),
-        fail
-      );
+      heroService.getHeroes().subscribe({
+        next: heroes => expect(heroes.length).toEqual(0, 'should have empty heroes array'),
+        error: fail,
+      });
 
       const req = httpTestingController.expectOne(heroService.heroesUrl);
       req.flush([]); // Respond with no heroes
@@ -80,10 +80,10 @@ describe('HeroesService', () => {
     // This service reports the error but finds a way to let the app keep going.
     it('should turn 404 into an empty heroes result', () => {
 
-      heroService.getHeroes().subscribe(
-        heroes => expect(heroes.length).toEqual(0, 'should return empty heroes array'),
-        fail
-      );
+      heroService.getHeroes().subscribe({
+        next: heroes => expect(heroes.length).toEqual(0, 'should return empty heroes array'),
+        error: fail,
+      });
 
       const req = httpTestingController.expectOne(heroService.heroesUrl);
 
@@ -96,10 +96,10 @@ describe('HeroesService', () => {
 
       heroService.getHeroes().subscribe();
       heroService.getHeroes().subscribe();
-      heroService.getHeroes().subscribe(
-        heroes => expect(heroes).toEqual(expectedHeroes, 'should return expected heroes'),
-        fail
-      );
+      heroService.getHeroes().subscribe({
+        next: heroes => expect(heroes).toEqual(expectedHeroes, 'should return expected heroes'),
+        error: fail,
+      });
 
       const requests = httpTestingController.match(heroService.heroesUrl);
       expect(requests.length).toEqual(3, 'calls to getHeroes()');
@@ -119,10 +119,10 @@ describe('HeroesService', () => {
 
       const updateHero: Hero = { id: 1, name: 'A' };
 
-      heroService.updateHero(updateHero).subscribe(
-        data => expect(data).toEqual(updateHero, 'should return the hero'),
-        fail
-      );
+      heroService.updateHero(updateHero).subscribe({
+        next: data => expect(data).toEqual(updateHero, 'should return the hero'),
+        error: fail,
+      });
 
       // HeroService should have made one request to PUT hero
       const req = httpTestingController.expectOne(heroService.heroesUrl);
@@ -139,10 +139,10 @@ describe('HeroesService', () => {
     it('should turn 404 error into return of the update hero', () => {
       const updateHero: Hero = { id: 1, name: 'A' };
 
-      heroService.updateHero(updateHero).subscribe(
-        data => expect(data).toEqual(updateHero, 'should return the update hero'),
-        fail
-      );
+      heroService.updateHero(updateHero).subscribe({
+        next: data => expect(data).toEqual(updateHero, 'should return the update hero'),
+        error: fail,
+      });
 
       const req = httpTestingController.expectOne(heroService.heroesUrl);
 
