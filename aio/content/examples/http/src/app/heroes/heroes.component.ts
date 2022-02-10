@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 
 import { Hero } from './hero';
 import { HeroesService } from './heroes.service';
@@ -14,9 +14,10 @@ export class HeroesComponent implements OnInit {
   editHero: Hero | undefined; // the hero currently being edited
   heroName = '';
 
-  constructor(private heroesService: HeroesService) {}
+  constructor(private heroesService: HeroesService, private changeDetectorRef: ChangeDetectorRef) {}
 
   @ViewChild('heroNameInput') heroNameInput!: ElementRef;
+  @ViewChildren('heroEditInput') heroEditInput!: QueryList<ElementRef>;
 
   ngOnInit() {
     this.getHeroes();
@@ -54,9 +55,6 @@ export class HeroesComponent implements OnInit {
   }
 
   delete(hero: Hero): void {
-    if (hero === this.editHero) {
-      this.updateSelectedHeroForEditing(hero);
-    }
     this.heroes = this.heroes.filter(h => h !== hero);
     // #docregion delete-hero-subscribe
     this.heroesService
@@ -73,17 +71,14 @@ export class HeroesComponent implements OnInit {
 
   edit(heroName: string) {
     this.update(heroName);
+    this.editHero = undefined;
   }
 
-  updateSelectedHeroForEditing(hero: Hero) {
-    if(hero === this.editHero) {
-      this.editHero = undefined;
-      this.heroName = '';
-    } else {
-      this.editHero = hero;
-      this.heroName = hero.name;
-      this.heroNameInput.nativeElement.focus();
-    }
+  selectHeroForEditing(hero: Hero) {
+    this.editHero = hero;
+    this.changeDetectorRef.detectChanges();
+    this.heroEditInput.get(0)!.nativeElement.value = hero.name;
+    this.heroEditInput.get(0)!.nativeElement.focus();
   }
 
   search(searchTerm: string) {
@@ -98,7 +93,7 @@ export class HeroesComponent implements OnInit {
   }
 
   update(heroName: string) {
-    if (this.editHero) {
+    if (this.editHero && this.editHero.name !== heroName) {
       this.heroesService
         .updateHero({...this.editHero, name: heroName})
         .subscribe(hero => {

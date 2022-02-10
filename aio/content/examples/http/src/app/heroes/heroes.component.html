@@ -1,26 +1,29 @@
 <h2>Heroes</h2>
 <div class="search">
   <label for="hero-name">Hero name: </label>
-  <input type="text" #heroNameInput [(ngModel)]="heroName" id="hero-name">
+  <input type="text" [(ngModel)]="heroName" id="hero-name">
 
   <button type="button" [disabled]="!heroName"
-    (click)="addOrEditHero(heroName)">
-    {{ !editHero ? 'Add' : 'Edit selected' + ' hero' }}
-  </button>
-  <button type="button" [disabled]="editHero" (click)="search(heroName)">
+    (click)="add(heroName)">Add hero</button>
+  <button type="button" (click)="search(heroName)">
     Search
   </button>
 </div>
 
 <ul class="heroes">
   <li *ngFor="let hero of heroes">
-    <button type="button" class="edit" [class.selected]="hero===editHero" (click)="updateSelectedHeroForEditing(hero)">
-      <span class="badge">{{ hero.id || -1 }}</span>
-      <span>{{hero.name}}</span>
+    <span class="badge">{{ hero.id || -1 }}</span>
+    <span *ngIf="hero!==editHero; else editInput" class="name">{{hero.name}}</span>
+    <ng-template #editInput>
+      <input #heroEditInput type="text" class="name" (blur)="edit(heroEditInput.value)" (keydown.enter)="edit(heroEditInput.value)"/>
+    </ng-template>
+    <button *ngIf="hero!==editHero" type="button" class="edit" title="edit hero"
+      (click)="selectHeroForEditing(hero)">
+      Edit
     </button>
     <button type="button" class="delete" title="delete hero"
       (click)="delete(hero)">
-      x
+      Delete
     </button>
   </li>
 </ul>
