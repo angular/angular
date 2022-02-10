@@ -10,7 +10,7 @@ import {compileInjectable, ConstantPool, createMayBeForwardRefExpression, Forwar
 import {AstObject} from '../../ast/ast_value';
 import {FatalLinkerError} from '../../fatal_linker_error';
 
-import {PartialLinker} from './partial_linker';
+import {LinkedDefinition, PartialLinker} from './partial_linker';
 import {extractForwardRef, getDependency, wrapReference} from './util';
 
 /**
@@ -19,10 +19,9 @@ import {extractForwardRef, getDependency, wrapReference} from './util';
 export class PartialInjectableLinkerVersion1<TExpression> implements PartialLinker<TExpression> {
   linkPartialDeclaration(
       constantPool: ConstantPool,
-      metaObj: AstObject<R3PartialDeclaration, TExpression>): o.Expression {
+      metaObj: AstObject<R3PartialDeclaration, TExpression>): LinkedDefinition {
     const meta = toR3InjectableMeta(metaObj);
-    const def = compileInjectable(meta, /* resolveForwardRefs */ false);
-    return def.expression;
+    return compileInjectable(meta, /* resolveForwardRefs */ false);
   }
 }
 

@@ -9,7 +9,7 @@ import {compileClassMetadata, ConstantPool, outputAst as o, R3ClassMetadata, R3D
 
 import {AstObject} from '../../ast/ast_value';
 
-import {PartialLinker} from './partial_linker';
+import {LinkedDefinition, PartialLinker} from './partial_linker';
 
 /**
  * A `PartialLinker` that is designed to process `ɵɵngDeclareClassMetadata()` call expressions.
@@ -17,9 +17,12 @@ import {PartialLinker} from './partial_linker';
 export class PartialClassMetadataLinkerVersion1<TExpression> implements PartialLinker<TExpression> {
   linkPartialDeclaration(
       constantPool: ConstantPool,
-      metaObj: AstObject<R3PartialDeclaration, TExpression>): o.Expression {
+      metaObj: AstObject<R3PartialDeclaration, TExpression>): LinkedDefinition {
     const meta = toR3ClassMetadata(metaObj);
-    return compileClassMetadata(meta);
+    return {
+      expression: compileClassMetadata(meta),
+      statements: [],
+    };
   }
 }
 

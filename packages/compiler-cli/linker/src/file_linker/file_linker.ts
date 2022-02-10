@@ -6,11 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {R3PartialDeclaration} from '@angular/compiler';
+
 import {AbsoluteFsPath} from '../../../src/ngtsc/file_system';
 import {AstObject} from '../ast/ast_value';
+
 import {DeclarationScope} from './declaration_scope';
 import {EmitScope} from './emit_scopes/emit_scope';
-import {IifeEmitScope} from './emit_scopes/iife_emit_scope';
+import {LocalEmitScope} from './emit_scopes/local_emit_scope';
 import {LinkerEnvironment} from './linker_environment';
 import {createLinkerMap, PartialLinkerSelector} from './partial_linkers/partial_linker_selector';
 
@@ -91,13 +93,15 @@ export class FileLinker<TConstantScope, TStatement, TExpression> {
     const constantScope = declarationScope.getConstantScopeRef(ngImport);
     if (constantScope === null) {
       // There is no constant scope so we will emit extra statements into the definition IIFE.
-      return new IifeEmitScope(
+      return new LocalEmitScope(
           ngImport, this.linkerEnvironment.translator, this.linkerEnvironment.factory);
     }
 
     if (!this.emitScopes.has(constantScope)) {
       this.emitScopes.set(
-          constantScope, new EmitScope(ngImport, this.linkerEnvironment.translator));
+          constantScope,
+          new EmitScope(
+              ngImport, this.linkerEnvironment.translator, this.linkerEnvironment.factory));
     }
     return this.emitScopes.get(constantScope)!;
   }

@@ -9,7 +9,7 @@ import {compileNgModule, ConstantPool, outputAst as o, R3DeclareNgModuleMetadata
 
 import {AstObject, AstValue} from '../../ast/ast_value';
 
-import {PartialLinker} from './partial_linker';
+import {LinkedDefinition, PartialLinker} from './partial_linker';
 import {wrapReference} from './util';
 
 /**
@@ -25,10 +25,9 @@ export class PartialNgModuleLinkerVersion1<TExpression> implements PartialLinker
 
   linkPartialDeclaration(
       constantPool: ConstantPool,
-      metaObj: AstObject<R3PartialDeclaration, TExpression>): o.Expression {
+      metaObj: AstObject<R3PartialDeclaration, TExpression>): LinkedDefinition {
     const meta = toR3NgModuleMeta(metaObj, this.emitInline);
-    const def = compileNgModule(meta);
-    return def.expression;
+    return compileNgModule(meta);
   }
 }
 

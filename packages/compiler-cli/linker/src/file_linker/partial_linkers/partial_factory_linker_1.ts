@@ -10,7 +10,7 @@ import {compileFactoryFunction, ConstantPool, FactoryTarget, outputAst as o, R3D
 import {AstObject} from '../../ast/ast_value';
 import {FatalLinkerError} from '../../fatal_linker_error';
 
-import {PartialLinker} from './partial_linker';
+import {LinkedDefinition, PartialLinker} from './partial_linker';
 import {getDependency, parseEnum, wrapReference} from './util';
 
 /**
@@ -19,10 +19,9 @@ import {getDependency, parseEnum, wrapReference} from './util';
 export class PartialFactoryLinkerVersion1<TExpression> implements PartialLinker<TExpression> {
   linkPartialDeclaration(
       constantPool: ConstantPool,
-      metaObj: AstObject<R3PartialDeclaration, TExpression>): o.Expression {
+      metaObj: AstObject<R3PartialDeclaration, TExpression>): LinkedDefinition {
     const meta = toR3FactoryMeta(metaObj);
-    const def = compileFactoryFunction(meta);
-    return def.expression;
+    return compileFactoryFunction(meta);
   }
 }
 
