@@ -142,4 +142,4 @@ With this configuration, the view of '<app-item-detail>' uses the value of 'lamp
 
 * [Property binding best practices](guide/property-binding-best-practices)
 
-@reviewed 2021-12-10
+@reviewed 2022-02-10
