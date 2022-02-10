@@ -14,7 +14,7 @@ import {FatalLinkerError} from '../../fatal_linker_error';
 import {GetSourceFileFn} from '../get_source_file';
 
 import {toR3DirectiveMeta} from './partial_directive_linker_1';
-import {PartialLinker} from './partial_linker';
+import {LinkedDefinition, PartialLinker} from './partial_linker';
 import {extractForwardRef} from './util';
 
 /**
@@ -28,10 +28,9 @@ export class PartialComponentLinkerVersion1<TStatement, TExpression> implements
 
   linkPartialDeclaration(
       constantPool: ConstantPool,
-      metaObj: AstObject<R3PartialDeclaration, TExpression>): o.Expression {
+      metaObj: AstObject<R3PartialDeclaration, TExpression>): LinkedDefinition {
     const meta = this.toR3ComponentMeta(metaObj);
-    const def = compileComponentFromMetadata(meta, constantPool, makeBindingParser());
-    return def.expression;
+    return compileComponentFromMetadata(meta, constantPool, makeBindingParser());
   }
 
   /**
