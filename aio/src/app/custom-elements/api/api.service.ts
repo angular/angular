@@ -77,13 +77,13 @@ export class ApiService implements OnDestroy {
         takeUntil(this.onDestroy),
         tap(() => this.logger.log(`Got API sections from ${url}`)),
       )
-      .subscribe(
-        sections => this.sectionsSubject.next(sections),
-        (err: HttpErrorResponse) => {
+      .subscribe({
+        next: sections => this.sectionsSubject.next(sections),
+        error: (err: HttpErrorResponse) => {
           // TODO: handle error
           this.logger.error(err);
           throw err; // rethrow for now.
-        }
-      );
+        },
+      });
   }
 }

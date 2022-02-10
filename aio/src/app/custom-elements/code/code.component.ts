@@ -129,7 +129,10 @@ export class CodeComponent implements OnChanges {
     }
 
     ((this.language === 'none' ? skipPrettify : prettifyCode) as Observable<unknown>)
-        .subscribe(() => this.codeFormatted.emit(), () => { /* ignore failure to format */ });
+        .subscribe({
+          next: () => this.codeFormatted.emit(),
+          error: () => { /* ignore failure to format */ },
+        });
   }
 
   /** Sets the message showing that the code could not be found. */

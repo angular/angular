@@ -78,11 +78,11 @@ describe('ElementsLoader', () => {
       `;
 
       const log: any[] = [];
-      elementsLoader.loadContainedCustomElements(hostEl).subscribe(
-        v => log.push(`emitted: ${v}`),
-        e => log.push(`errored: ${e}`),
-        () => log.push('completed'),
-      );
+      elementsLoader.loadContainedCustomElements(hostEl).subscribe({
+        next: v => log.push(`emitted: ${v}`),
+        error: e => log.push(`errored: ${e}`),
+        complete: () => log.push('completed'),
+      });
 
       flushMicrotasks();
       expect(log).toEqual([]);
@@ -106,11 +106,11 @@ describe('ElementsLoader', () => {
       `;
 
       const log: any[] = [];
-      elementsLoader.loadContainedCustomElements(hostEl).subscribe(
-        v => log.push(`emitted: ${v}`),
-        e => log.push(`errored: ${e}`),
-        () => log.push('completed'),
-      );
+      elementsLoader.loadContainedCustomElements(hostEl).subscribe({
+        next: v => log.push(`emitted: ${v}`),
+        error: e => log.push(`errored: ${e}`),
+        complete: () => log.push('completed'),
+      });
 
       flushMicrotasks();
       expect(log).toEqual([]);
