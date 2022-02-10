@@ -185,4 +185,4 @@ The template input variable `hero` in `let hero` is distinct from the template v
 
 * TBD
 
-@reviewed 2021-11-29
+@reviewed 2022-02-10
