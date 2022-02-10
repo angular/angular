@@ -36,6 +36,10 @@ export const ZONE_SYMBOL_REMOVE_EVENT_LISTENER = Zone.__symbol__(REMOVE_EVENT_LI
 export const TRUE_STR = 'true';
 /** false string const */
 export const FALSE_STR = 'false';
+/** capture string const */
+export const CAPTURE_STR = 'capture';
+/** passive string const */
+export const PASSVE_STR = 'passive';
 /** Zone symbol prefix string const. */
 export const ZONE_SYMBOL_PREFIX = Zone.__symbol__('');
 

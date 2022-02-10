@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {CAPTURE_STR, PASSVE_STR} from '../common/utils';
+
 export function eventTargetPatch(_global: any, api: _ZonePrivate) {
   if ((Zone as any)[api.symbol('patchEventTarget')]) {
     // EventTarget is already patched.
@@ -16,13 +18,19 @@ export function eventTargetPatch(_global: any, api: _ZonePrivate) {
   //  predefine all __zone_symbol__ + eventName + true/false string
   for (let i = 0; i < eventNames.length; i++) {
     const eventName = eventNames[i];
-    const falseEventName = eventName + FALSE_STR;
-    const trueEventName = eventName + TRUE_STR;
-    const symbol = ZONE_SYMBOL_PREFIX + falseEventName;
-    const symbolCapture = ZONE_SYMBOL_PREFIX + trueEventName;
+    const falseCaptureFalsePassiveName = `${FALSE_STR}${CAPTURE_STR}${FALSE_STR}${PASSVE_STR}`;
+    const falseCaptureTruePassiveName = `${FALSE_STR}${CAPTURE_STR}${TRUE_STR}${PASSVE_STR}`;
+    const trueCaptureFalsePassiveName = `${TRUE_STR}${CAPTURE_STR}${FALSE_STR}${PASSVE_STR}`;
+    const trueCaptureTruePassiveName = `${TRUE_STR}${CAPTURE_STR}${TRUE_STR}${PASSVE_STR}`;
     zoneSymbolEventNames[eventName] = {};
-    zoneSymbolEventNames[eventName][FALSE_STR] = symbol;
-    zoneSymbolEventNames[eventName][TRUE_STR] = symbolCapture;
+    zoneSymbolEventNames[eventName][falseCaptureFalsePassiveName] =
+        `${ZONE_SYMBOL_PREFIX}${eventName}${falseCaptureFalsePassiveName}`;
+    zoneSymbolEventNames[eventName][falseCaptureTruePassiveName] =
+        `${ZONE_SYMBOL_PREFIX}${eventName}${falseCaptureTruePassiveName}`;
+    zoneSymbolEventNames[eventName][trueCaptureFalsePassiveName] =
+        `${ZONE_SYMBOL_PREFIX}${eventName}${trueCaptureFalsePassiveName}`;
+    zoneSymbolEventNames[eventName][trueCaptureTruePassiveName] =
+        `${ZONE_SYMBOL_PREFIX}${eventName}${trueCaptureTruePassiveName}`;
   }
 
   const EVENT_TARGET = _global['EventTarget'];

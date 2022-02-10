@@ -10,7 +10,7 @@
  * @suppress {missingRequire}
  */
 
-import {ADD_EVENT_LISTENER_STR, attachOriginToPatched, FALSE_STR, isNode, ObjectGetPrototypeOf, REMOVE_EVENT_LISTENER_STR, TRUE_STR, ZONE_SYMBOL_PREFIX, zoneSymbol} from './utils';
+import {ADD_EVENT_LISTENER_STR, attachOriginToPatched, CAPTURE_STR, FALSE_STR, isNode, ObjectGetPrototypeOf, PASSVE_STR, REMOVE_EVENT_LISTENER_STR, TRUE_STR, ZONE_SYMBOL_PREFIX, zoneSymbol} from './utils';
 
 
 /** @internal **/
@@ -137,7 +137,8 @@ export function patchEventTarget(
     return error;
   };
 
-  function globalCallback(context: unknown, event: Event, isCapture: boolean) {
+  function globalCallback(
+      context: unknown, event: Event, options: boolean|AddEventListenerOptions) {
     // https://github.com/angular/zone.js/issues/911, in IE, sometimes
     // event will be undefined, so we need to use window.event
     event = event || _global.event;
@@ -147,7 +148,23 @@ export function patchEventTarget(
     // event.target is needed for Samsung TV and SourceBuffer
     // || global is needed https://github.com/angular/zone.js/issues/190
     const target: any = context || event.target || _global;
-    const tasks = target[zoneSymbolEventNames[event.type][isCapture ? TRUE_STR : FALSE_STR]];
+
+    let props;
+    if (typeof options === 'boolean') {
+      if (options) {
+        props = `${TRUE_STR}${CAPTURE_STR}${FALSE_STR}${PASSVE_STR}`;
+      } else {
+        props = `${FALSE_STR}${CAPTURE_STR}${FALSE_STR}${PASSVE_STR}`;
+      }
+    } else {
+      if (options.capture) {
+        props = `${TRUE_STR}${CAPTURE_STR}${TRUE_STR}${PASSVE_STR}`;
+      } else {
+        props = `${FALSE_STR}${CAPTURE_STR}${TRUE_STR}${PASSVE_STR}`;
+      }
+    }
+
+    const tasks = target[zoneSymbolEventNames[event.type][props]];
     if (tasks) {
       const errors = [];
       // invoke all tasks which attached to current target with given event.type and capture = false
@@ -183,14 +200,28 @@ export function patchEventTarget(
     }
   }
 
-  // global shared zoneAwareCallback to handle all event callback with capture = false
+  // global shared zoneAwareCallback to handle all event callback with capture = false and passive =
+  // false
   const globalZoneAwareCallback = function(this: unknown, event: Event) {
     return globalCallback(this, event, false);
   };
 
-  // global shared zoneAwareCallback to handle all event callback with capture = true
+  // global shared zoneAwareCallback to handle all event callback with capture = false and passive =
+  // true
+  const globalZoneAwarePassiveCallback = function(this: unknown, event: Event) {
+    return globalCallback(this, event, {passive: true});
+  };
+
+  // global shared zoneAwareCallback to handle all event callback with capture = true and passive  =
+  // false
   const globalZoneAwareCaptureCallback = function(this: unknown, event: Event) {
     return globalCallback(this, event, true);
+  };
+
+  // global shared zoneAwareCallback to handle all event callback with capture = true and passive =
+  // true
+  const globalZoneAwareCapturePassiveCallback = function(this: unknown, event: Event) {
+    return globalCallback(this, event, {capture: true, passive: true});
   };
 
   function patchEventTargetMethods(obj: any, patchOptions?: PatchEventTargetOptions) {
@@ -283,10 +314,22 @@ export function patchEventTarget(
       if (taskData.isExisting) {
         return;
       }
+      let callback;
+      if (taskData.capture) {
+        if (taskData.options && taskData.options.passive) {
+          callback = globalZoneAwareCapturePassiveCallback;
+        } else {
+          callback = globalZoneAwareCaptureCallback;
+        }
+      } else {
+        if (taskData.options && taskData.options.passive) {
+          callback = globalZoneAwarePassiveCallback;
+        } else {
+          callback = globalZoneAwareCallback;
+        }
+      }
       return nativeAddEventListener.call(
-          taskData.target, taskData.eventName,
-          taskData.capture ? globalZoneAwareCaptureCallback : globalZoneAwareCallback,
-          taskData.options);
+          taskData.target, taskData.eventName, callback, taskData.options);
     };
 
     const customCancelGlobal = function(task: any) {
@@ -410,14 +453,30 @@ export function patchEventTarget(
 
         const capture = !options ? false : typeof options === 'boolean' ? true : options.capture;
         const once = options && typeof options === 'object' ? options.once : false;
-
+        const passiveEnabled =
+            passiveSupported && options && typeof options === 'object' ? options.passive : false;
         const zone = Zone.current;
         let symbolEventNames = zoneSymbolEventNames[eventName];
         if (!symbolEventNames) {
           prepareEventNames(eventName, eventNameToString);
           symbolEventNames = zoneSymbolEventNames[eventName];
         }
-        const symbolEventName = symbolEventNames[capture ? TRUE_STR : FALSE_STR];
+
+        let props;
+        if (capture) {
+          if (passiveEnabled) {
+            props = `${TRUE_STR}${CAPTURE_STR}${TRUE_STR}${PASSVE_STR}`;
+          } else {
+            props = `${TRUE_STR}${CAPTURE_STR}${FALSE_STR}${PASSVE_STR}`
+          }
+        } else {
+          if (passiveEnabled) {
+            props = `${FALSE_STR}${CAPTURE_STR}${TRUE_STR}${PASSVE_STR}`;
+          } else {
+            props = `${FALSE_STR}${CAPTURE_STR}${FALSE_STR}${PASSVE_STR}`;
+          }
+        }
+        const symbolEventName = symbolEventNames[props];
         let existingTasks = target[symbolEventName];
         let isExisting = false;
         if (existingTasks) {
