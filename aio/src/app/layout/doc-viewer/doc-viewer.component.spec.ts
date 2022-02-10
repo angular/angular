@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Meta, Title } from '@angular/platform-browser';
 
-import { Observable, asapScheduler, of } from 'rxjs';
+import { Observable, asapScheduler, of, lastValueFrom } from 'rxjs';
 import { EMPTY_HTML, htmlEscape } from 'safevalues';
 import { htmlFromStringKnownToSatisfyTypeContract } from 'safevalues/unsafe/reviewed';
 
@@ -302,7 +302,7 @@ describe('DocViewerComponent', () => {
     let loadElementsSpy: jasmine.Spy;
 
     const doRender = (contents: TrustedHTML | null, id = 'foo') =>
-      docViewer.render({contents, id}).toPromise();
+      lastValueFrom(docViewer.render({contents, id}));
 
     beforeEach(() => {
       const elementsLoader = TestBed.inject(ElementsLoader) as Partial<ElementsLoader> as MockElementsLoader;
@@ -578,7 +578,7 @@ describe('DocViewerComponent', () => {
     let oldCurrViewContainer: HTMLElement;
     let oldNextViewContainer: HTMLElement;
 
-    const doSwapViews = (cb?: () => void) => docViewer.swapViews(cb).toPromise();
+    const doSwapViews = (cb?: () => void) => lastValueFrom(docViewer.swapViews(cb));
 
     beforeEach(() => {
       oldCurrViewContainer = docViewer.currViewContainer;
