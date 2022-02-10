@@ -31,4 +31,4 @@ The example given uses a `click()` event binding and the property binding syntax
 
 * TBD
 
-@reviewed 2021-12-10
+@reviewed 2022-02-10
