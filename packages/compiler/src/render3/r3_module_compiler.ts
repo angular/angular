@@ -152,6 +152,7 @@ interface R3NgModuleDefMap {
  */
 export function compileNgModule(meta: R3NgModuleMetadata): R3CompiledExpression {
   const {
+    adjacentType,
     internalType,
     bootstrap,
     declarations,
@@ -205,6 +206,10 @@ export function compileNgModule(meta: R3NgModuleMetadata): R3CompiledExpression 
 
   if (id !== null) {
     definitionMap.set('id', id);
+
+    // Generate a side-effectful call to register this NgModule by its id, as per the semantics of
+    // NgModule ids.
+    statements.push(o.importExpr(R3.registerNgModuleType).callFn([adjacentType, id]).toStmt());
   }
 
   const expression =

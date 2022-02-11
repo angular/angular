@@ -26,7 +26,10 @@ export {
   NG_PROV_DEF as ɵNG_PROV_DEF,
 } from './di/interface/defs';
 export {createInjector as ɵcreateInjector} from './di/r3_injector';
-export { registerNgModuleType as ɵregisterNgModuleType } from './linker/ng_module_factory_registration';
+export {
+  registerNgModuleType as ɵɵregisterNgModuleType,
+  setAllowDuplicateNgModuleIdsForTest as ɵsetAllowDuplicateNgModuleIdsForTest,
+} from './linker/ng_module_registration';
 export {
   NgModuleDef as ɵNgModuleDef,
   NgModuleTransitiveScopes as ɵNgModuleTransitiveScopes,

@@ -906,9 +906,6 @@
     "name": "getNextLContainer"
   },
   {
-    "name": "getNgModuleDef"
-  },
-  {
     "name": "getNodeInjectable"
   },
   {
@@ -1227,9 +1224,6 @@
     "name": "maybeUnwrapEmpty"
   },
   {
-    "name": "maybeUnwrapFn"
-  },
-  {
     "name": "maybeWrapInNotSelector"
   },
   {
@@ -1249,9 +1243,6 @@
   },
   {
     "name": "mergeValidators"
-  },
-  {
-    "name": "modules"
   },
   {
     "name": "multiFactoryAdd"

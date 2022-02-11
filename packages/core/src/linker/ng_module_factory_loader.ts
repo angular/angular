@@ -7,11 +7,10 @@
  */
 
 import {Type} from '../interface/type';
-import {NgModuleType} from '../metadata/ng_module_def';
 import {NgModuleFactory as R3NgModuleFactory} from '../render3/ng_module_ref';
 
 import {NgModuleFactory} from './ng_module_factory';
-import {getRegisteredNgModuleType} from './ng_module_factory_registration';
+import {getRegisteredNgModuleType} from './ng_module_registration';
 
 /**
  * Returns the NgModuleFactory with the given id (specified using [@NgModule.id
@@ -21,7 +20,7 @@ import {getRegisteredNgModuleType} from './ng_module_factory_registration';
  * @deprecated Use `getNgModuleById` instead.
  */
 export function getModuleFactory(id: string): NgModuleFactory<any> {
-  const type = getRegisteredNgModuleType(id) as NgModuleType | null;
+  const type = getRegisteredNgModuleType(id);
   if (!type) throw noModuleError(id);
   return new R3NgModuleFactory(type);
 }
@@ -33,7 +32,7 @@ export function getModuleFactory(id: string): NgModuleFactory<any> {
  * @publicApi
  */
 export function getNgModuleById<T>(id: string): Type<T> {
-  const type = getRegisteredNgModuleType<NgModuleType>(id);
+  const type = getRegisteredNgModuleType(id);
   if (!type) throw noModuleError(id);
   return type;
 }
