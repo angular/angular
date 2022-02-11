@@ -18,6 +18,8 @@ export class MockAnimationDriver implements AnimationDriver {
     // (undocumented)
     containsElement(elm1: any, elm2: any): boolean;
     // (undocumented)
+    getParentElement(element: unknown): unknown;
+    // (undocumented)
     static log: AnimationPlayer[];
     // (undocumented)
     matchesElement(_element: any, _selector: string): boolean;

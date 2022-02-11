@@ -143,6 +143,15 @@ let _query: (element: any, selector: string, multi: boolean) => any[] =
     (element: any, selector: string, multi: boolean) => {
       return [];
     };
+let _documentElement: unknown|null = null;
+
+export function getParentElement(element: any): unknown|null {
+  const parent = element.parentNode || element.host;  // consider host to support shadow DOM
+  if (parent === _documentElement) {
+    return null;
+  }
+  return parent;
+}
 
 // Define utility methods for browsers and platform-server(domino) where Element
 // and utility methods exist.
@@ -151,12 +160,15 @@ if (_isNode || typeof Element !== 'undefined') {
   if (!isBrowser()) {
     _contains = (elm1, elm2) => elm1.contains(elm2);
   } else {
+    // Read the document element in an IIFE that's been marked pure to avoid a top-level property
+    // read that may prevent tree-shaking.
+    _documentElement = /* @__PURE__ */ (() => document.documentElement)();
     _contains = (elm1, elm2) => {
-      while (elm2 && elm2 !== document.documentElement) {
+      while (elm2) {
         if (elm2 === elm1) {
           return true;
         }
-        elm2 = elm2.parentNode || elm2.host;  // consider host to support shadow DOM
+        elm2 = getParentElement(elm2);
       }
       return false;
     };
