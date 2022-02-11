@@ -555,6 +555,9 @@
     "name": "_currentInjector"
   },
   {
+    "name": "_documentElement"
+  },
+  {
     "name": "_enable_super_gross_mode_that_will_cause_bad_things"
   },
   {
@@ -910,6 +913,9 @@
   },
   {
     "name": "getOwnDefinition"
+  },
+  {
+    "name": "getParentElement"
   },
   {
     "name": "getParentInjectorIndex"

@@ -9,7 +9,7 @@ import {AnimationPlayer, ɵStyleDataMap} from '@angular/animations';
 
 import {allowPreviousPlayerStylesMerge, balancePreviousStylesIntoKeyframes, copyStyles, normalizeKeyframes} from '../../util';
 import {AnimationDriver} from '../animation_driver';
-import {containsElement, invokeQuery, isBrowser, validateStyleProperty} from '../shared';
+import {containsElement, getParentElement, invokeQuery, validateStyleProperty} from '../shared';
 import {packageNonAnimatableStyles} from '../special_cased_styles';
 
 import {WebAnimationsPlayer} from './web_animations_player';
@@ -26,6 +26,10 @@ export class WebAnimationsDriver implements AnimationDriver {
 
   containsElement(elm1: any, elm2: any): boolean {
     return containsElement(elm1, elm2);
+  }
+
+  getParentElement(element: unknown): unknown {
+    return getParentElement(element);
   }
 
   query(element: any, selector: string, multi: boolean): any[] {

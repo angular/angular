@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {AnimationPlayer, AUTO_STYLE, NoopAnimationPlayer, ɵStyleDataMap} from '@angular/animations';
-import {AnimationDriver, ɵallowPreviousPlayerStylesMerge as allowPreviousPlayerStylesMerge, ɵcontainsElement as containsElement, ɵinvokeQuery as invokeQuery, ɵnormalizeKeyframes as normalizeKeyframes, ɵvalidateStyleProperty as validateStyleProperty} from '@angular/animations/browser';
+import {AnimationDriver, ɵallowPreviousPlayerStylesMerge as allowPreviousPlayerStylesMerge, ɵcontainsElement as containsElement, ɵgetParentElement as getParentElement, ɵinvokeQuery as invokeQuery, ɵnormalizeKeyframes as normalizeKeyframes, ɵvalidateStyleProperty as validateStyleProperty,} from '@angular/animations/browser';
 
 /**
  * @publicApi
@@ -24,6 +24,10 @@ export class MockAnimationDriver implements AnimationDriver {
 
   containsElement(elm1: any, elm2: any): boolean {
     return containsElement(elm1, elm2);
+  }
+
+  getParentElement(element: unknown): unknown {
+    return getParentElement(element);
   }
 
   query(element: any, selector: string, multi: boolean): any[] {
