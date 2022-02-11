@@ -7,7 +7,6 @@
  */
 
 import {BidiModule} from '@angular/cdk/bidi';
-import {PlatformModule} from '@angular/cdk/platform';
 import {NgModule} from '@angular/core';
 import {CdkFixedSizeVirtualScroll} from './fixed-size-virtual-scroll';
 import {CdkScrollable} from './scrollable';
@@ -24,7 +23,7 @@ export class CdkScrollableModule {}
  * @docs-primary-export
  */
 @NgModule({
-  imports: [BidiModule, PlatformModule, CdkScrollableModule],
+  imports: [BidiModule, CdkScrollableModule],
   exports: [
     BidiModule,
     CdkScrollableModule,

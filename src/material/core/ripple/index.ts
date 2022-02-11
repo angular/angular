@@ -7,7 +7,6 @@
  */
 
 import {NgModule} from '@angular/core';
-import {PlatformModule} from '@angular/cdk/platform';
 import {MatCommonModule} from '../common-behaviors/common-module';
 import {MatRipple} from './ripple';
 
@@ -16,7 +15,7 @@ export * from './ripple-ref';
 export * from './ripple-renderer';
 
 @NgModule({
-  imports: [MatCommonModule, PlatformModule],
+  imports: [MatCommonModule],
   exports: [MatRipple, MatCommonModule],
   declarations: [MatRipple],
 })

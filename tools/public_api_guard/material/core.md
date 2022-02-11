@@ -19,7 +19,6 @@ import { FormGroupDirective } from '@angular/forms';
 import { HighContrastModeDetector } from '@angular/cdk/a11y';
 import * as i0 from '@angular/core';
 import * as i1 from '@angular/cdk/bidi';
-import * as i1_2 from '@angular/cdk/platform';
 import * as i4 from '@angular/common';
 import { InjectionToken } from '@angular/core';
 import { NgControl } from '@angular/forms';
@@ -232,7 +231,7 @@ export class MatLineModule {
     // (undocumented)
     static ɵinj: i0.ɵɵInjectorDeclaration<MatLineModule>;
     // (undocumented)
-    static ɵmod: i0.ɵɵNgModuleDeclaration<MatLineModule, [typeof MatLine], [typeof i1_3.MatCommonModule], [typeof MatLine, typeof i1_3.MatCommonModule]>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<MatLineModule, [typeof MatLine], [typeof i1_2.MatCommonModule], [typeof MatLine, typeof i1_2.MatCommonModule]>;
 }
 
 // @public (undocumented)
@@ -318,7 +317,7 @@ export class MatOptionModule {
     // (undocumented)
     static ɵinj: i0.ɵɵInjectorDeclaration<MatOptionModule>;
     // (undocumented)
-    static ɵmod: i0.ɵɵNgModuleDeclaration<MatOptionModule, [typeof i1_4.MatOption, typeof i2.MatOptgroup], [typeof i3.MatRippleModule, typeof i4.CommonModule, typeof i1_3.MatCommonModule, typeof i6.MatPseudoCheckboxModule], [typeof i1_4.MatOption, typeof i2.MatOptgroup]>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<MatOptionModule, [typeof i1_3.MatOption, typeof i2.MatOptgroup], [typeof i3.MatRippleModule, typeof i4.CommonModule, typeof i1_2.MatCommonModule, typeof i6.MatPseudoCheckboxModule], [typeof i1_3.MatOption, typeof i2.MatOptgroup]>;
 }
 
 // @public
@@ -360,7 +359,7 @@ export class MatPseudoCheckboxModule {
     // (undocumented)
     static ɵinj: i0.ɵɵInjectorDeclaration<MatPseudoCheckboxModule>;
     // (undocumented)
-    static ɵmod: i0.ɵɵNgModuleDeclaration<MatPseudoCheckboxModule, [typeof i1_6.MatPseudoCheckbox], [typeof i1_3.MatCommonModule], [typeof i1_6.MatPseudoCheckbox]>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<MatPseudoCheckboxModule, [typeof i1_5.MatPseudoCheckbox], [typeof i1_2.MatCommonModule], [typeof i1_5.MatPseudoCheckbox]>;
 }
 
 // @public
@@ -401,7 +400,7 @@ export class MatRippleModule {
     // (undocumented)
     static ɵinj: i0.ɵɵInjectorDeclaration<MatRippleModule>;
     // (undocumented)
-    static ɵmod: i0.ɵɵNgModuleDeclaration<MatRippleModule, [typeof i1_5.MatRipple], [typeof i1_3.MatCommonModule, typeof i1_2.PlatformModule], [typeof i1_5.MatRipple, typeof i1_3.MatCommonModule]>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<MatRippleModule, [typeof i1_4.MatRipple], [typeof i1_2.MatCommonModule], [typeof i1_4.MatRipple, typeof i1_2.MatCommonModule]>;
 }
 
 // @public
@@ -486,7 +485,7 @@ export class NativeDateModule {
     // (undocumented)
     static ɵinj: i0.ɵɵInjectorDeclaration<NativeDateModule>;
     // (undocumented)
-    static ɵmod: i0.ɵɵNgModuleDeclaration<NativeDateModule, never, [typeof i1_2.PlatformModule], never>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<NativeDateModule, never, never, never>;
 }
 
 // @public

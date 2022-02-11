@@ -7,7 +7,6 @@
  */
 
 import {ObserversModule} from '@angular/cdk/observers';
-import {PlatformModule} from '@angular/cdk/platform';
 import {NgModule} from '@angular/core';
 import {CdkMonitorFocus} from './focus-monitor/focus-monitor';
 import {CdkTrapFocus} from './focus-trap/focus-trap';
@@ -15,7 +14,7 @@ import {HighContrastModeDetector} from './high-contrast-mode/high-contrast-mode-
 import {CdkAriaLive} from './live-announcer/live-announcer';
 
 @NgModule({
-  imports: [PlatformModule, ObserversModule],
+  imports: [ObserversModule],
   declarations: [CdkAriaLive, CdkTrapFocus, CdkMonitorFocus],
   exports: [CdkAriaLive, CdkTrapFocus, CdkMonitorFocus],
 })
