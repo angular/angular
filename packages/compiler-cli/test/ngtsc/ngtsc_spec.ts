@@ -1250,6 +1250,20 @@ function allTests(os: string) {
       expect(jsContents).toContain('i0.ɵɵdefineNgModule({ type: TestModule, id: module.id })');
     });
 
+    it('should emit a side-effectful registration call when an @NgModule has an id', () => {
+      env.write('test.ts', `
+        import {NgModule} from '@angular/core';
+
+        @NgModule({id: 'test'})
+        export class TestModule {}
+    `);
+
+      env.driveMain();
+
+      const jsContents = env.getContents('test.js');
+      expect(jsContents).toContain(`i0.ɵɵregisterNgModuleType(TestModule, 'test')`);
+    });
+
     it('should filter out directives and pipes from module exports in the injector def', () => {
       env.write('test.ts', `
       import {NgModule} from '@angular/core';
@@ -4176,26 +4190,6 @@ function allTests(os: string) {
                 'import { TestModule } from \'./test\';\n' +
                 'export const TestModuleNgFactory = i0.\u0275noSideEffects(function () {' +
                 ' return new i0.NgModuleFactory(TestModule); });\n');
-      });
-
-      it('should generate side effectful NgModuleFactory constructor when lazy loaded', () => {
-        env.tsconfig({'allowEmptyCodegenFiles': true});
-
-        env.write('test.ts', `
-          import {NgModule} from '@angular/core';
-
-          @NgModule({
-            id: 'test', // ID to use for lazy loading.
-          })
-          export class TestModule {}
-        `);
-
-        env.driveMain();
-
-        // Should **not** contain noSideEffects(), because the module is lazy loaded.
-        const factoryContents = env.getContents('test.ngfactory.js');
-        expect(factoryContents)
-            .toContain('export const TestModuleNgFactory = new i0.ɵNgModuleFactory(TestModule);');
       });
 
       describe('file-level comments', () => {

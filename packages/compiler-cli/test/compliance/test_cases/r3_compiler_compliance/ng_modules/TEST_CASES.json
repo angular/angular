@@ -2,17 +2,37 @@
   "$schema": "../../test_case_schema.json",
   "cases": [
     {
-      "description": "should define a basic NgModule",
+      "description": "should define a basic NgModule (linked)",
       "inputFiles": [
-        "basic.ts"
+        "basic_linked.ts"
       ],
       "expectations": [
         {
           "failureMessage": "Invalid NgModule/Injector definition",
           "files": [
-            "basic.js"
+            "basic_linked.js"
           ]
         }
+      ],
+      "compilationModeFilter": [
+        "linked compile"
+      ]
+    },
+    {
+      "description": "should define a basic NgModule (full)",
+      "inputFiles": [
+        "basic_full.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Invalid NgModule/Injector definition",
+          "files": [
+            "basic_full.js"
+          ]
+        }
+      ],
+      "compilationModeFilter": [
+        "full compile"
       ]
     },
     {

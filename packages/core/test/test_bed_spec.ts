@@ -11,6 +11,7 @@ import {getTestBed, TestBed} from '@angular/core/testing/src/test_bed';
 import {By} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
+import {getNgModuleById} from '../public_api';
 import {TestBedRender3} from '../testing/src/r3_test_bed';
 import {TEARDOWN_TESTING_MODULE_ON_DESTROY_DEFAULT} from '../testing/src/test_bed_common';
 
@@ -270,6 +271,21 @@ describe('TestBed', () => {
 
     const greetingByDirective = hello.debugElement.query(By.directive(GreetingCmp));
     expect(greetingByDirective.componentInstance).toBeAnInstanceOf(GreetingCmp);
+  });
+
+  it('should allow duplicate NgModule registrations with the same id', () => {
+    const id = 'registered';
+    @NgModule({id})
+    class ModuleA {
+    }
+
+    expect(getNgModuleById(id)).toBe(ModuleA);
+
+    // This would ordinarily error, if not in a test scenario.
+    @NgModule({id})
+    class ModuleB {
+    }
+    expect(getNgModuleById(id)).toBe(ModuleB);
   });
 
   it('allow to override a template', () => {

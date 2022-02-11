@@ -11,6 +11,7 @@ import {resolveForwardRef} from '../../di/forward_ref';
 import {NG_INJ_DEF} from '../../di/interface/defs';
 import {reflectDependencies} from '../../di/jit/util';
 import {Type} from '../../interface/type';
+import {registerNgModuleType} from '../../linker/ng_module_registration';
 import {Component} from '../../metadata/directives';
 import {ModuleWithProviders, NgModule} from '../../metadata/ng_module';
 import {NgModuleDef, NgModuleTransitiveScopes, NgModuleType} from '../../metadata/ng_module_def';
@@ -24,6 +25,7 @@ import {maybeUnwrapFn} from '../util/misc_utils';
 import {stringifyForError} from '../util/stringify_utils';
 
 import {angularCoreEnv} from './environment';
+import {patchModuleCompilation} from './module_patch';
 
 interface ModuleQueueItem {
   moduleType: Type<any>;
@@ -83,7 +85,11 @@ function isResolvedDeclaration(declaration: any[]|Type<any>): boolean {
  * This function automatically gets called when a class has a `@NgModule` decorator.
  */
 export function compileNgModule(moduleType: Type<any>, ngModule: NgModule = {}): void {
+  patchModuleCompilation();
   compileNgModuleDefs(moduleType as NgModuleType, ngModule);
+  if (ngModule.id !== undefined) {
+    registerNgModuleType(moduleType as NgModuleType, ngModule.id);
+  }
 
   // Because we don't know if all declarations have resolved yet at the moment the
   // NgModule decorator is executing, we're enqueueing the setting of module scope
