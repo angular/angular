@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import ts from 'typescript';
+
 import {AbsoluteFsPath} from '../file_system';
 
 /**
@@ -71,5 +72,4 @@ export interface FactoryInfo {
 
 export interface ModuleInfo {
   name: string;
-  hasId: boolean;
 }

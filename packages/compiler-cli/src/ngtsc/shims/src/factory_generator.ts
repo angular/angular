@@ -186,22 +186,12 @@ function transformFactorySourceFile(
         const match = STRIP_NG_FACTORY.exec(decl.name.text);
         const module = match ? moduleSymbols.get(match[1]) : null;
         if (module) {
-          // If the module can be tree shaken, then the factory should be wrapped in a
-          // `noSideEffects()` call which tells Closure to treat the expression as pure, allowing
-          // it to be removed if the result is not used.
-          //
-          // `NgModule`s with an `id` property will be lazy loaded. Google-internal lazy loading
-          // infra relies on a side effect from the `new NgModuleFactory()` call, which registers
-          // the module globally. Because of this, we **cannot** tree shake any module which has
-          // an `id` property. Doing so would cause lazy loaded modules to never be registered.
-          const moduleIsTreeShakable = !module.hasId;
-          const newStmt = !moduleIsTreeShakable ?
-              stmt :
-              updateInitializers(
-                  stmt,
-                  (init) => init ? wrapInNoSideEffects(init) : undefined,
-              );
-          transformedStatements.push(newStmt);
+          // The factory should be wrapped in a `noSideEffects()` call which tells Closure to treat
+          // the expression as pure, allowing it to be removed if the result is not used.
+          transformedStatements.push(updateInitializers(
+              stmt,
+              (init) => init ? wrapInNoSideEffects(init) : undefined,
+              ));
         }
       } else {
         // Leave the statement alone, as it can't be understood.

@@ -13,8 +13,6 @@ import {createInjectorWithoutInjectorInstances, R3Injector} from '../di/r3_injec
 import {Type} from '../interface/type';
 import {ComponentFactoryResolver as viewEngine_ComponentFactoryResolver} from '../linker/component_factory_resolver';
 import {InternalNgModuleRef, NgModuleFactory as viewEngine_NgModuleFactory, NgModuleRef as viewEngine_NgModuleRef} from '../linker/ng_module_factory';
-import {registerNgModuleType} from '../linker/ng_module_factory_registration';
-import {NgModuleType} from '../metadata/ng_module_def';
 import {assertDefined} from '../util/assert';
 import {stringify} from '../util/stringify';
 
@@ -101,34 +99,6 @@ export class NgModuleRef<T> extends viewEngine_NgModuleRef<T> implements Interna
 export class NgModuleFactory<T> extends viewEngine_NgModuleFactory<T> {
   constructor(public moduleType: Type<T>) {
     super();
-
-    const ngModuleDef = getNgModuleDef(moduleType);
-    if (ngModuleDef !== null) {
-      // Register the NgModule with Angular's module registry. The location (and hence timing) of
-      // this call is critical to ensure this works correctly (modules get registered when expected)
-      // without bloating bundles (modules are registered when otherwise not referenced).
-      //
-      // In View Engine, registration occurs in the .ngfactory.js file as a side effect. This has
-      // several practical consequences:
-      //
-      // - If an .ngfactory file is not imported from, the module won't be registered (and can be
-      //   tree shaken).
-      // - If an .ngfactory file is imported from, the module will be registered even if an instance
-      //   is not actually created (via `create` below).
-      // - Since an .ngfactory file in View Engine references the .ngfactory files of the NgModule's
-      //   imports,
-      //
-      // In Ivy, things are a bit different. .ngfactory files still exist for compatibility, but are
-      // not a required API to use - there are other ways to obtain an NgModuleFactory for a given
-      // NgModule. Thus, relying on a side effect in the .ngfactory file is not sufficient. Instead,
-      // the side effect of registration is added here, in the constructor of NgModuleFactory,
-      // ensuring no matter how a factory is created, the module is registered correctly.
-      //
-      // An alternative would be to include the registration side effect inline following the actual
-      // NgModule definition. This also has the correct timing, but breaks tree-shaking - modules
-      // will be registered and retained even if they're otherwise never referenced.
-      registerNgModuleType(moduleType as NgModuleType);
-    }
   }
 
   override create(parentInjector: Injector|null): viewEngine_NgModuleRef<T> {

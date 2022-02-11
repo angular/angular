@@ -14,7 +14,7 @@ import {ComponentFixture, inject} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 import {InternalNgModuleRef, NgModuleFactory} from '../../src/linker/ng_module_factory';
-import {clearModulesForTest} from '../../src/linker/ng_module_factory_registration';
+import {clearModulesForTest, setAllowDuplicateNgModuleIdsForTest} from '../../src/linker/ng_module_registration';
 import {stringify} from '../../src/util/stringify';
 
 class Engine {}
@@ -278,6 +278,9 @@ describe('NgModule', () => {
     });
 
     it('should throw when registering a duplicate module', () => {
+      // TestBed disables the error that's being tested here, so temporarily re-enable it.
+      setAllowDuplicateNgModuleIdsForTest(false);
+
       @NgModule({id: token})
       class SomeModule {
       }
@@ -288,39 +291,25 @@ describe('NgModule', () => {
         }
         createModule(SomeOtherModule);
       }).toThrowError(/Duplicate module registered/);
-    });
 
-    it('should not throw immediately if two modules have the same id', () => {
-      expect(() => {
-        @NgModule({id: 'some-module'})
-        class ModuleA {
-        }
-
-        @NgModule({id: 'some-module'})
-        class ModuleB {
-        }
-      }).not.toThrow();
+      // Re-disable the error.
+      setAllowDuplicateNgModuleIdsForTest(true);
     });
 
     it('should register a module even if not importing the .ngfactory file or calling create()',
        () => {
+         @NgModule({id: 'child'})
          class ChildModule {
-           static ɵmod = defineNgModule({
-             type: ChildModule,
-             id: 'child',
-           });
          }
 
+         @NgModule({
+           id: 'test',
+           imports: [ChildModule],
+         })
          class Module {
-           static ɵmod = defineNgModule({
-             type: Module,
-             id: 'test',
-             imports: [ChildModule],
-           });
          }
 
          // Verify that we can retrieve NgModule factory by id.
-         createModuleFactory(ChildModule);
          expect(getModuleFactory('child')).toBeAnInstanceOf(NgModuleFactory);
 
          // Verify that we can also retrieve NgModule class by id.

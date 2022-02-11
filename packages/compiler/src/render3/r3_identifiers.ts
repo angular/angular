@@ -292,6 +292,9 @@ export class Identifiers {
   static defineNgModule: o.ExternalReference = {name: 'ɵɵdefineNgModule', moduleName: CORE};
   static declareNgModule: o.ExternalReference = {name: 'ɵɵngDeclareNgModule', moduleName: CORE};
   static setNgModuleScope: o.ExternalReference = {name: 'ɵɵsetNgModuleScope', moduleName: CORE};
+  static registerNgModuleType:
+      o.ExternalReference = {name: 'ɵɵregisterNgModuleType', moduleName: CORE};
+
 
   static PipeDeclaration: o.ExternalReference = {name: 'ɵɵPipeDeclaration', moduleName: CORE};
 
