@@ -15,7 +15,7 @@ It also lists `@angular/localize` as a dependency in your app's `package.json` t
 
 ```json
 
-"dependencies": {
+"devDependencies": {
   ...
   "@angular/localize": "...",
   ...
