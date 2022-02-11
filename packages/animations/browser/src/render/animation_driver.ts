@@ -8,7 +8,7 @@
 import {AnimationPlayer, NoopAnimationPlayer} from '@angular/animations';
 import {Injectable} from '@angular/core';
 
-import {containsElement, invokeQuery, validateStyleProperty} from './shared';
+import {containsElement, getParentElement, invokeQuery, validateStyleProperty} from './shared';
 
 /**
  * @publicApi
@@ -26,6 +26,10 @@ export class NoopAnimationDriver implements AnimationDriver {
 
   containsElement(elm1: any, elm2: any): boolean {
     return containsElement(elm1, elm2);
+  }
+
+  getParentElement(element: unknown): unknown {
+    return getParentElement(element);
   }
 
   query(element: any, selector: string, multi: boolean): any[] {
@@ -58,6 +62,15 @@ export abstract class AnimationDriver {
   abstract matchesElement(element: any, selector: string): boolean;
 
   abstract containsElement(elm1: any, elm2: any): boolean;
+
+  /**
+   * Obtains the parent element, if any. `null` is returned if the element does not have a parent.
+   *
+   * This method is optional to avoid a breaking change where implementors of this interface would
+   * be required to implement this method. This method is to become required in a major version of
+   * Angular.
+   */
+  abstract getParentElement?(element: unknown): unknown;
 
   abstract query(element: any, selector: string, multi: boolean): any[];
 

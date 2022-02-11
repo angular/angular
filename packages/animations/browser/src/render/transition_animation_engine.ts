@@ -589,25 +589,51 @@ export class TransitionAnimationEngine {
   }
 
   private _balanceNamespaceList(ns: AnimationTransitionNamespace, hostElement: any) {
-    const limit = this._namespaceList.length - 1;
+    const namespaceList = this._namespaceList;
+    const namespacesByHostElement = this.namespacesByHostElement;
+    const limit = namespaceList.length - 1;
     if (limit >= 0) {
       let found = false;
-      for (let i = limit; i >= 0; i--) {
-        const nextNamespace = this._namespaceList[i];
-        if (this.driver.containsElement(nextNamespace.hostElement, hostElement)) {
-          this._namespaceList.splice(i + 1, 0, ns);
-          found = true;
-          break;
+      if (this.driver.getParentElement !== undefined) {
+        // Fast path for when the driver implements `getParentElement`, which allows us to find the
+        // closest ancestor with an existing namespace that we can then insert `ns` after, without
+        // having to inspect all existing namespaces.
+        let ancestor = this.driver.getParentElement(hostElement);
+        while (ancestor) {
+          const ancestorNs = namespacesByHostElement.get(ancestor);
+          if (ancestorNs) {
+            // An animation namespace has been registered for this ancestor, so we insert `ns`
+            // right after it to establish top-down ordering of animation namespaces.
+            const index = namespaceList.indexOf(ancestorNs);
+            namespaceList.splice(index + 1, 0, ns);
+            found = true;
+            break;
+          }
+          ancestor = this.driver.getParentElement(ancestor);
+        }
+      } else {
+        // Slow path for backwards compatibility if the driver does not implement
+        // `getParentElement`, to be removed once `getParentElement` is a required method.
+        for (let i = limit; i >= 0; i--) {
+          const nextNamespace = namespaceList[i];
+          if (this.driver.containsElement(nextNamespace.hostElement, hostElement)) {
+            namespaceList.splice(i + 1, 0, ns);
+            found = true;
+            break;
+          }
         }
       }
       if (!found) {
-        this._namespaceList.splice(0, 0, ns);
+        // No namespace exists that is an ancestor of `ns`, so `ns` is inserted at the front to
+        // ensure that any existing descendants are ordered after `ns`, retaining the desired
+        // top-down ordering.
+        namespaceList.unshift(ns);
       }
     } else {
-      this._namespaceList.push(ns);
+      namespaceList.push(ns);
     }
 
-    this.namespacesByHostElement.set(hostElement, ns);
+    namespacesByHostElement.set(hostElement, ns);
     return ns;
   }
 
