@@ -56,12 +56,13 @@ $button-margin: 8px !default;
   // Pull the actions down to avoid their padding stacking with the dialog's padding.
   margin-bottom: -$padding;
 
-  &[align='end'] {
-    justify-content: flex-end;
-  }
-
-  &[align='center'] {
+  // .mat-dialog-actions-align-{center|end} are set by directive input "align"
+  // [align='center'] and [align='right'] are kept for backwards compability
+  &.mat-dialog-actions-align-center, &[align='center'] {
     justify-content: center;
+  }
+  &.mat-dialog-actions-align-end, &[align='end'] {
+    justify-content: flex-end;
   }
 
   .mat-button-base + .mat-button-base,

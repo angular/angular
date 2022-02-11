@@ -29,12 +29,13 @@ $mat-dialog-button-horizontal-margin: 8px !default;
   // aligns actions at the end of the container.
   justify-content: start;
 
-  &[align='end'] {
-    justify-content: flex-end;
-  }
-
-  &[align='center'] {
+  // .mat-mdc-dialog-actions-align-{center|end} are set by directive input "align"
+  // [align='center'] and [align='right'] are kept for backwards compability
+  &.mat-mdc-dialog-actions-align-center, &[align='center'] {
     justify-content: center;
+  }
+  &.mat-mdc-dialog-actions-align-end, &[align='end'] {
+    justify-content: flex-end;
   }
 
   // MDC applies horizontal margin to buttons that have an explicit `mdc-dialog__button`

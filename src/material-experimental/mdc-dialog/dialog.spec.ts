@@ -1670,6 +1670,17 @@ describe('MDC-based MatDialog', () => {
           .withContext('Expected the aria-labelledby to match the title id.')
           .toBe(title.id);
       }));
+
+      it('should add correct css class according to given [align] input in [mat-dialog-actions]', () => {
+        let actions = overlayContainerElement.querySelector('mat-dialog-actions')!;
+
+        expect(actions)
+          .withContext('Expected action buttons to not have class align-center')
+          .not.toHaveClass('mat-mdc-dialog-actions-align-center');
+        expect(actions)
+          .withContext('Expected action buttons to have class align-end')
+          .toHaveClass('mat-mdc-dialog-actions-align-end');
+      });
     }
   });
 
@@ -2072,7 +2083,7 @@ class PizzaMsg {
   template: `
     <h1 mat-dialog-title>This is the title</h1>
     <mat-dialog-content>Lorem ipsum dolor sit amet.</mat-dialog-content>
-    <mat-dialog-actions>
+    <mat-dialog-actions align="end">
       <button mat-dialog-close>Close</button>
       <button class="close-with-true" [mat-dialog-close]="true">Close and return true</button>
       <button
@@ -2091,7 +2102,7 @@ class ContentElementDialog {}
     <ng-template>
       <h1 mat-dialog-title>This is the title</h1>
       <mat-dialog-content>Lorem ipsum dolor sit amet.</mat-dialog-content>
-      <mat-dialog-actions>
+      <mat-dialog-actions align="end">
         <button mat-dialog-close>Close</button>
         <button class="close-with-true" [mat-dialog-close]="true">Close and return true</button>
         <button

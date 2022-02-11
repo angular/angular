@@ -96,8 +96,9 @@ export class MatDialog extends _MatDialogBase<MatDialogContainer> {
 
 // @public
 export class MatDialogActions {
+    align?: 'start' | 'center' | 'end';
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<MatDialogActions, "[mat-dialog-actions], mat-dialog-actions, [matDialogActions]", never, {}, {}, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MatDialogActions, "[mat-dialog-actions], mat-dialog-actions, [matDialogActions]", never, { "align": "align"; }, {}, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatDialogActions, never>;
 }

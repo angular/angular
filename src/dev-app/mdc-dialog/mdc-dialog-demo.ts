@@ -29,7 +29,7 @@ export class DialogDemo {
   dialogRef: MatDialogRef<JazzDialog> | null;
   lastAfterClosedResult: string;
   lastBeforeCloseResult: string;
-  actionsAlignment: string;
+  actionsAlignment: 'start' | 'center' | 'end';
   config = {
     disableClose: false,
     panelClass: 'custom-overlay-pane-class',
@@ -173,7 +173,7 @@ export class JazzDialog {
       </p>
     </mat-dialog-content>
 
-    <mat-dialog-actions [attr.align]="actionsAlignment">
+    <mat-dialog-actions [align]="actionsAlignment">
       <button
         mat-raised-button
         color="primary"
@@ -194,7 +194,7 @@ export class JazzDialog {
   `,
 })
 export class ContentElementDialog {
-  actionsAlignment: string;
+  actionsAlignment: 'start' | 'center' | 'end';
 
   constructor(public dialog: MatDialog) {}
 
