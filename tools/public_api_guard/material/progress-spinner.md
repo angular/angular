@@ -18,6 +18,7 @@ import { NumberInput } from '@angular/cdk/coercion';
 import { OnDestroy } from '@angular/core';
 import { OnInit } from '@angular/core';
 import { Platform } from '@angular/cdk/platform';
+import { ThemePalette } from '@angular/material/core';
 import { ViewportRuler } from '@angular/cdk/scrolling';
 
 // @public
@@ -57,6 +58,7 @@ export class MatProgressSpinner extends _MatProgressSpinnerBase implements OnIni
 
 // @public
 export interface MatProgressSpinnerDefaultOptions {
+    color?: ThemePalette;
     diameter?: number;
     _forceAnimations?: boolean;
     strokeWidth?: number;

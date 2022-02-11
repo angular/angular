@@ -24,7 +24,7 @@ import {
   OnDestroy,
   NgZone,
 } from '@angular/core';
-import {CanColor, mixinColor} from '@angular/material/core';
+import {CanColor, mixinColor, ThemePalette} from '@angular/material/core';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 import {Subscription} from 'rxjs';
 
@@ -54,6 +54,8 @@ const _MatProgressSpinnerBase = mixinColor(
 
 /** Default `mat-progress-spinner` options that can be overridden. */
 export interface MatProgressSpinnerDefaultOptions {
+  /** Default color of the spinner. */
+  color?: ThemePalette;
   /** Diameter of the spinner. */
   diameter?: number;
   /** Width of the spinner's stroke. */
@@ -228,6 +230,10 @@ export class MatProgressSpinner
       animationMode === 'NoopAnimations' && !!defaults && !defaults._forceAnimations;
 
     if (defaults) {
+      if (defaults.color) {
+        this.color = this.defaultColor = defaults.color;
+      }
+
       if (defaults.diameter) {
         this.diameter = defaults.diameter;
       }

@@ -407,6 +407,28 @@ describe('MatProgressSpinner', () => {
     expect(progressElement.componentInstance.strokeWidth).toBe(7);
   });
 
+  it('should be able to set a default color', () => {
+    TestBed.resetTestingModule()
+      .configureTestingModule({
+        imports: [MatProgressSpinnerModule],
+        declarations: [BasicProgressSpinner],
+        providers: [
+          {
+            provide: MAT_PROGRESS_SPINNER_DEFAULT_OPTIONS,
+            useValue: {color: 'warn'},
+          },
+        ],
+      })
+      .compileComponents();
+
+    const fixture = TestBed.createComponent(BasicProgressSpinner);
+    fixture.detectChanges();
+
+    const progressElement = fixture.debugElement.query(By.css('mat-progress-spinner'))!;
+    expect(progressElement.componentInstance.color).toBe('warn');
+    expect(progressElement.nativeElement.classList).toContain('mat-warn');
+  });
+
   it('should set `aria-valuenow` to the current value in determinate mode', () => {
     const fixture = TestBed.createComponent(ProgressSpinnerWithValueAndBoundMode);
     const progressElement = fixture.debugElement.query(By.css('mat-progress-spinner'))!;
