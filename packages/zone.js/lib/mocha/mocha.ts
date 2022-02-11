@@ -40,12 +40,12 @@ Zone.__load_patch('mocha', (global: any, Zone: ZoneType) => {
   const suiteZone = rootZone.fork(new ProxyZoneSpec());
 
   const mochaOriginal = {
-    after: Mocha.after,
-    afterEach: Mocha.afterEach,
-    before: Mocha.before,
-    beforeEach: Mocha.beforeEach,
-    describe: Mocha.describe,
-    it: Mocha.it
+    after: global.after,
+    afterEach: global.afterEach,
+    before: global.before,
+    beforeEach: global.beforeEach,
+    describe: global.describe,
+    it: global.it
   };
 
   function modifyArguments(args: IArguments, syncTest: Function, asyncTest?: Function): any[] {
@@ -111,43 +111,43 @@ Zone.__load_patch('mocha', (global: any, Zone: ZoneType) => {
     return modifyArguments(args, syncTest, asyncTest);
   }
 
-  global.describe = global.suite = Mocha.describe = function() {
+  global.describe = global.suite = function() {
     return mochaOriginal.describe.apply(this, wrapDescribeInZone(arguments));
   };
 
-  global.xdescribe = global.suite.skip = Mocha.describe.skip = function() {
+  global.xdescribe = global.suite.skip = function() {
     return mochaOriginal.describe.skip.apply(this, wrapDescribeInZone(arguments));
   };
 
-  global.describe.only = global.suite.only = Mocha.describe.only = function() {
+  global.describe.only = global.suite.only = function() {
     return mochaOriginal.describe.only.apply(this, wrapDescribeInZone(arguments));
   };
 
-  global.it = global.specify = global.test = Mocha.it = function() {
+  global.it = global.specify = global.test = function() {
     return mochaOriginal.it.apply(this, wrapTestInZone(arguments));
   };
 
-  global.xit = global.xspecify = Mocha.it.skip = function() {
+  global.xit = global.xspecify = function() {
     return mochaOriginal.it.skip.apply(this, wrapTestInZone(arguments));
   };
 
-  global.it.only = global.test.only = Mocha.it.only = function() {
+  global.it.only = global.test.only = function() {
     return mochaOriginal.it.only.apply(this, wrapTestInZone(arguments));
   };
 
-  global.after = global.suiteTeardown = Mocha.after = function() {
+  global.after = global.suiteTeardown = function() {
     return mochaOriginal.after.apply(this, wrapSuiteInZone(arguments));
   };
 
-  global.afterEach = global.teardown = Mocha.afterEach = function() {
+  global.afterEach = global.teardown = function() {
     return mochaOriginal.afterEach.apply(this, wrapTestInZone(arguments));
   };
 
-  global.before = global.suiteSetup = Mocha.before = function() {
+  global.before = global.suiteSetup = function() {
     return mochaOriginal.before.apply(this, wrapSuiteInZone(arguments));
   };
 
-  global.beforeEach = global.setup = Mocha.beforeEach = function() {
+  global.beforeEach = global.setup = function() {
     return mochaOriginal.beforeEach.apply(this, wrapTestInZone(arguments));
   };
 
