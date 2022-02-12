@@ -39,6 +39,11 @@ export function propertyPatch() {
     Object.keys(props).forEach(function(prop) {
       Object.defineProperty(obj, prop, props[prop]);
     });
+    Object.getOwnPropertySymbols &&
+      Object.getOwnPropertySymbols(props).forEach((sym: symbol) => {
+        // tslint:disable-next-line:no-any
+        Object.defineProperty(obj, sym, (props as any)[sym]);
+      });
     return obj;
   };
 
