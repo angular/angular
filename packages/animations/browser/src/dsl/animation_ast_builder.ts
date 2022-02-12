@@ -11,6 +11,7 @@ import {invalidDefinition, invalidKeyframes, invalidOffset, invalidParallelAnima
 import {AnimationDriver} from '../render/animation_driver';
 import {getOrSetDefaultValue} from '../render/shared';
 import {convertToMap, copyObj, extractStyleParams, iteratorToArray, NG_ANIMATING_SELECTOR, NG_TRIGGER_SELECTOR, normalizeAnimationEntry, resolveTiming, SUBSTITUTION_EXPR_START, validateStyleParams, visitDslNode} from '../util';
+import {pushUnrecognizedPropertiesWarning} from '../warning_helpers';
 
 import {AnimateAst, AnimateChildAst, AnimateRefAst, Ast, DynamicTimingAst, GroupAst, KeyframesAst, QueryAst, ReferenceAst, SequenceAst, StaggerAst, StateAst, StyleAst, TimingAst, TransitionAst, TriggerAst} from './animation_ast';
 import {AnimationDslVisitor} from './animation_dsl_visitor';
@@ -56,9 +57,9 @@ const SELF_TOKEN_REGEX = new RegExp(`\s*${SELF_TOKEN}\s*,?`, 'g');
  * Otherwise an error will be thrown.
  */
 export function buildAnimationAst(
-    driver: AnimationDriver, metadata: AnimationMetadata|AnimationMetadata[],
-    errors: Error[]): Ast<AnimationMetadataType> {
-  return new AnimationAstBuilderVisitor(driver).build(metadata, errors);
+    driver: AnimationDriver, metadata: AnimationMetadata|AnimationMetadata[], errors: Error[],
+    warnings: string[]): Ast<AnimationMetadataType> {
+  return new AnimationAstBuilderVisitor(driver).build(metadata, errors, warnings);
 }
 
 const ROOT_SELECTOR = '';
@@ -66,12 +67,20 @@ const ROOT_SELECTOR = '';
 export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
   constructor(private _driver: AnimationDriver) {}
 
-  build(metadata: AnimationMetadata|AnimationMetadata[], errors: Error[]):
+  build(metadata: AnimationMetadata|AnimationMetadata[], errors: Error[], warnings: string[]):
       Ast<AnimationMetadataType> {
     const context = new AnimationAstBuilderContext(errors);
     this._resetContextStyleTimingState(context);
-    return <Ast<AnimationMetadataType>>visitDslNode(
-        this, normalizeAnimationEntry(metadata), context);
+    const ast =
+        <Ast<AnimationMetadataType>>visitDslNode(this, normalizeAnimationEntry(metadata), context);
+
+    if (context.unsupportedCSSPropertiesFound.size) {
+      pushUnrecognizedPropertiesWarning(
+          warnings,
+          [...context.unsupportedCSSPropertiesFound.keys()],
+      );
+    }
+    return ast;
   }
 
   private _resetContextStyleTimingState(context: AnimationAstBuilderContext) {
@@ -297,7 +306,8 @@ export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
 
       tuple.forEach((value, prop) => {
         if (!this._driver.validateStyleProperty(prop)) {
-          context.errors.push(invalidProperty(prop));
+          tuple.delete(prop);
+          context.unsupportedCSSPropertiesFound.add(prop);
           return;
         }
 
@@ -503,6 +513,7 @@ export class AnimationAstBuilderContext {
   public currentTime: number = 0;
   public collectedStyles = new Map<string, Map<string, StyleTimeTuple>>();
   public options: AnimationOptions|null = null;
+  public unsupportedCSSPropertiesFound: Set<string> = new Set<string>();
   constructor(public errors: Error[]) {}
 }
 
