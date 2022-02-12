@@ -35,14 +35,15 @@ export function propertyPatch() {
     return _tryDefineProperty(obj, prop, desc, originalConfigurableFlag);
   };
 
-  Object.defineProperties = function(obj, props) {
+  Object.defineProperties = function<T>(obj: T, props: PropertyDescriptorMap&ThisType<any>&{
+    [s: symbol]: PropertyDescriptor;
+  }): T {
     Object.keys(props).forEach(function(prop) {
       Object.defineProperty(obj, prop, props[prop]);
     });
     if (Object.getOwnPropertySymbols) {
       for (const sym of Object.getOwnPropertySymbols(props)) {
-        // tslint:disable-next-line:no-any
-        Object.defineProperty(obj, sym, (props as any)[sym]);
+        Object.defineProperty(obj, sym, props[sym]);
       }
     }
     return obj;
