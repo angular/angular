@@ -40,10 +40,10 @@ export function propertyPatch() {
       Object.defineProperty(obj, prop, props[prop]);
     });
     Object.getOwnPropertySymbols &&
-      Object.getOwnPropertySymbols(props).forEach((sym: symbol) => {
-        // tslint:disable-next-line:no-any
-        Object.defineProperty(obj, sym, (props as any)[sym]);
-      });
+        Object.getOwnPropertySymbols(props).forEach((sym: symbol) => {
+          // tslint:disable-next-line:no-any
+          Object.defineProperty(obj, sym, (props as any)[sym]);
+        });
     return obj;
   };
 
