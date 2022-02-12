@@ -599,6 +599,121 @@ describe(
         });
       });
 
+      describe('Promise.any', () => {
+        const any = (Promise as any).any;
+        it('undefined parameters', (done: DoneFn) => {
+          any().then(
+              () => {
+                fail('should not get a resolved promise.');
+              },
+              (err: any) => {
+                expect(err.message).toEqual('All promises were rejected');
+                expect(err.errors).toEqual([]);
+                done();
+              });
+        });
+        it('invalid iterable', (done: DoneFn) => {
+          const invalidIterable: any = {};
+          invalidIterable[Symbol.iterator] = () => 2;
+          any(invalidIterable)
+              .then(
+                  () => {
+                    fail('should not get a resolved promise.');
+                  },
+                  (err: any) => {
+                    expect(err.message).toEqual('All promises were rejected');
+                    expect(err.errors).toEqual([]);
+                    done();
+                  });
+        });
+        it('empty parameters', (done: DoneFn) => {
+          any([]).then(
+              () => {
+                fail('should not get a resolved promise.');
+              },
+              (err: any) => {
+                expect(err.message).toEqual('All promises were rejected');
+                expect(err.errors).toEqual([]);
+                done();
+              });
+        });
+        it('non promises parameters', (done: DoneFn) => {
+          any([1, 'test'])
+              .then(
+                  (v: any) => {
+                    expect(v).toBe(1);
+                    done();
+                  },
+                  (err: any) => {
+                    fail('should not get a rejected promise.');
+                  });
+        });
+        it('mixed parameters, non promise first', (done: DoneFn) => {
+          any([1, Promise.resolve(2)])
+              .then(
+                  (v: any) => {
+                    expect(v).toBe(1);
+                    done();
+                  },
+                  (err: any) => {
+                    fail('should not get a rejected promise.');
+                  });
+        });
+        it('mixed parameters, promise first', (done: DoneFn) => {
+          any([Promise.resolve(1), 2])
+              .then(
+                  (v: any) => {
+                    expect(v).toBe(1);
+                    done();
+                  },
+                  (err: any) => {
+                    fail('should not get a rejected promise.');
+                  });
+        });
+        it('all ok promises', (done: DoneFn) => {
+          any([Promise.resolve(1), Promise.resolve(2)])
+              .then(
+                  (v: any) => {
+                    expect(v).toBe(1);
+                    done();
+                  },
+                  (err: any) => {
+                    fail('should not get a rejected promise.');
+                  });
+        });
+        it('all promises, first rejected', (done: DoneFn) => {
+          any([Promise.reject('error'), Promise.resolve(2)])
+              .then(
+                  (v: any) => {
+                    expect(v).toBe(2);
+                    done();
+                  },
+                  (err: any) => {
+                    fail('should not get a rejected promise.');
+                  });
+        });
+        it('all promises, second rejected', (done: DoneFn) => {
+          any([Promise.resolve(1), Promise.reject('error')])
+              .then(
+                  (v: any) => {
+                    expect(v).toBe(1);
+                    done();
+                  },
+                  (err: any) => {
+                    fail('should not get a rejected promise.');
+                  });
+        });
+        it('all rejected promises', (done: DoneFn) => {
+          any([
+            Promise.reject('error1'), Promise.reject('error2')
+          ]).then((v: any) => {fail('should not get a resolved promise.')}, (err: any) => {
+            expect(err.message).toEqual('All promises were rejected');
+            expect(err.errors).toEqual(['error1', 'error2']);
+            done();
+          });
+        });
+      });
+
       describe('Promise.allSettled', () => {
         const yes = function makeFulfilledResult(value: any) {
           return {status: 'fulfilled', value: value};

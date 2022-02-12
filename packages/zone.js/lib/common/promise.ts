@@ -254,7 +254,8 @@ Zone.__load_patch('ZoneAwarePromise', (global: any, Zone: ZoneType, api: _ZonePr
     const promiseState = (promise as any)[symbolState];
     const delegate = promiseState ?
         (typeof onFulfilled === 'function') ? onFulfilled : forwardResolution :
-        (typeof onRejected === 'function') ? onRejected : forwardRejection;
+        (typeof onRejected === 'function') ? onRejected :
+                                             forwardRejection;
     zone.scheduleMicroTask(source, () => {
       try {
         const parentPromiseValue = (promise as any)[symbolValue];
@@ -283,6 +284,8 @@ Zone.__load_patch('ZoneAwarePromise', (global: any, Zone: ZoneType, api: _ZonePr
 
   const noop = function() {};
 
+  const AggregateError = global.AggregateError;
+
   class ZoneAwarePromise<R> implements Promise<R> {
     static toString() {
       return ZONE_AWARE_PROMISE_TO_STRING;
@@ -295,6 +298,47 @@ Zone.__load_patch('ZoneAwarePromise', (global: any, Zone: ZoneType, api: _ZonePr
     static reject<U>(error: U): Promise<U> {
       return resolvePromise(<ZoneAwarePromise<U>>new this(null as any), REJECTED, error);
     }
+
+    static any<T>(values: Iterable<PromiseLike<T>>): Promise<T> {
+      if (!values || typeof values[Symbol.iterator] !== 'function') {
+        return Promise.reject(new AggregateError([], 'All promises were rejected'));
+      }
+      const promises: Promise<PromiseLike<T>>[] = [];
+      let count = 0;
+      try {
+        for (let v of values) {
+          count++;
+          promises.push(ZoneAwarePromise.resolve(v));
+        }
+      } catch (err) {
+        return Promise.reject(new AggregateError([], 'All promises were rejected'));
+      }
+      if (count === 0) {
+        return Promise.reject(new AggregateError([], 'All promises were rejected'));
+      }
+      let finished = false;
+      const errors: any[] = [];
+      return new ZoneAwarePromise((resolve, reject) => {
+        for (let i = 0; i < promises.length; i++) {
+          promises[i].then(
+              v => {
+                if (finished) {
+                  return;
+                }
+                finished = true;
+                resolve(v);
+              },
+              err => {
+                errors.push(err);
+                count--;
+                if (count === 0) {
+                  finished = true;
+                  reject(new AggregateError(errors, 'All promises were rejected'));
+                }
+              });
+        }
+      });
+    };
 
     static race<R>(values: PromiseLike<any>[]): Promise<R> {
       let resolve: (v: any) => void;
