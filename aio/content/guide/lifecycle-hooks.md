@@ -391,14 +391,14 @@ that log messages to the parent using an injected `LoggerService`.
 
 Apply the spy to any built-in or component element, and see that it is initialized and destroyed
 at the same time as that element.
-Here it is attached to the repeated hero `<div>`:
+Here it is attached to the repeated hero `<p>`:
 
 <code-example path="lifecycle-hooks/src/app/spy.component.html" region="template" header="src/app/spy.component.html"></code-example>
 
-Each spy's creation and destruction marks the appearance and disappearance of the attached hero `<div>` with an entry in the *Hook Log*. Adding a hero results in a new hero `<div>`. The spy's `ngOnInit()` logs that event.
+Each spy's creation and destruction marks the appearance and disappearance of the attached hero `<p>` with an entry in the *Hook Log*. Adding a hero results in a new hero `<p>`. The spy's `ngOnInit()` logs that event.
 
 The *Reset* button clears the `heroes` list.
-Angular removes all hero `<div>` elements from the DOM and destroys their spy directives at the same time.
+Angular removes all hero `<p>` elements from the DOM and destroys their spy directives at the same time.
 The spy's `ngOnDestroy()` method reports its last moments.
 
 {@a counter}
