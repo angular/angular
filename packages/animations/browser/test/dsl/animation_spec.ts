@@ -218,15 +218,27 @@ function createDiv() {
                    /state\("panfinal", ...\) must define default values for all the following style substitutions: greyColor/);
          });
 
-      it('should throw an error if an invalid CSS property is used in the animation', () => {
+      it('should provide a warning if an invalid CSS property is used in the animation', () => {
         const steps = [animate(1000, style({abc: '500px'}))];
 
-        expect(() => {
-          validateAndThrowAnimationSequence(steps);
-        })
-            .toThrowError(
-                /The provided animation property "abc" is not a supported CSS property for animations/);
+        expect(getValidationWarningsForAnimationSequence(steps)).toEqual([
+          'The provided CSS properties are not recognized properties supported for animations: abc'
+        ]);
       });
+
+      it('should provide a warning if multiple invalid CSS properties are used in the animation',
+         () => {
+           const steps = [
+             state('state', style({
+                     '123': '100px',
+                   })),
+             style({abc: '200px'}), animate(1000, style({xyz: '300px'}))
+           ];
+
+           expect(getValidationWarningsForAnimationSequence(steps)).toEqual([
+             'The provided CSS properties are not recognized properties supported for animations: 123, abc, xyz'
+           ]);
+         });
 
       it('should allow a vendor-prefixed property to be used in an animation sequence without throwing an error',
          () => {
@@ -1116,10 +1128,18 @@ function invokeAnimationSequence(
 function validateAndThrowAnimationSequence(steps: AnimationMetadata|AnimationMetadata[]) {
   const driver = new MockAnimationDriver();
   const errors: Error[] = [];
-  const ast = buildAnimationAst(driver, steps, errors);
+  const ast = buildAnimationAst(driver, steps, errors, []);
   if (errors.length) {
     throw new Error(errors.join('\n'));
   }
+}
+
+function getValidationWarningsForAnimationSequence(steps: AnimationMetadata|
+                                                   AnimationMetadata[]): string[] {
+  const driver = new MockAnimationDriver();
+  const warnings: string[] = [];
+  buildAnimationAst(driver, steps, [], warnings);
+  return warnings;
 }
 
 function buildParams(params: {[name: string]: any}): AnimationOptions {
