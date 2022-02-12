@@ -15,6 +15,7 @@ import {ElementInstructionMap} from '../dsl/element_instruction_map';
 import {AnimationStyleNormalizer} from '../dsl/style_normalization/animation_style_normalizer';
 import {createAnimationFailed, missingOrDestroyedAnimation, missingPlayer, registerFailed} from '../error_helpers';
 import {ENTER_CLASSNAME, LEAVE_CLASSNAME} from '../util';
+import {warnRegister} from '../warning_helpers';
 
 import {AnimationDriver} from './animation_driver';
 import {getOrSetDefaultValue, listenOnPlayer, makeAnimationEvent, normalizeKeyframes, optimizeGroupPlayer} from './shared';
@@ -32,10 +33,14 @@ export class TimelineAnimationEngine {
 
   register(id: string, metadata: AnimationMetadata|AnimationMetadata[]) {
     const errors: Error[] = [];
-    const ast = buildAnimationAst(this._driver, metadata, errors);
+    const warnings: string[] = [];
+    const ast = buildAnimationAst(this._driver, metadata, errors, warnings);
     if (errors.length) {
       throw registerFailed(errors);
     } else {
+      if (warnings.length) {
+        warnRegister(warnings);
+      }
       this._animations.set(id, ast);
     }
   }

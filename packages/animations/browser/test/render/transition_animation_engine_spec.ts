@@ -735,9 +735,11 @@ function registerTrigger(
     element: any, engine: TransitionAnimationEngine, metadata: AnimationTriggerMetadata,
     id: string = DEFAULT_NAMESPACE_ID) {
   const errors: Error[] = [];
+  const warnings: string[] = [];
   const driver = new MockAnimationDriver();
   const name = metadata.name;
-  const ast = buildAnimationAst(driver, metadata as AnimationMetadata, errors) as TriggerAst;
+  const ast =
+      buildAnimationAst(driver, metadata as AnimationMetadata, errors, warnings) as TriggerAst;
   if (errors.length) {
   }
   const trigger = buildTrigger(name, ast, new NoopAnimationStyleNormalizer());
