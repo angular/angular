@@ -4,7 +4,7 @@ With `<ng-template>`, you can define template content that is only being rendere
 
 <div class="alter is-helpful">
 
-  Note that if you simply wrap content inside an `<ng-template>` without instructing Angular to render it, such content will simply not appear in your application. As you can see in the following example, Angular does not render the middle "Hip!" in the phrase "Hip! Hip! Hooray!" because of the surrounding `<ng-template>`.
+  Note that if you wrap content inside an `<ng-template>` without instructing Angular to render it, such content will not appear on a page. For example, see the following HTML code, when handling it Angular won't render the middle "Hip!" in the phrase "Hip! Hip! Hooray!" because of the surrounding `<ng-template>`.
 
   ```html
     <p>Hip!</p>

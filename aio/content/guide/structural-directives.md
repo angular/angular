@@ -12,7 +12,7 @@ For the example application that this page describes, see the <live-example name
 
 Structural directives are directives which change the DOM layout by adding and removing DOM element.
 
-Angular offers a set of built-in structural directives which are widely used in all Angular projects, for more information see [Built-in directives](guide/built-in-directives).
+Angular provides a set of built-in structural directives (such as `NgIf`, `NgFor`, `NgSwitch` and others) which are commonly used in all Angular projects, for more information see [Built-in directives](guide/built-in-directives).
 
 
 <a id="shorthand"></a>
@@ -27,16 +27,13 @@ Let's for example take the following code which uses an `*ngIf` to displays the 
 
 <code-example path="structural-directives/src/app/app.component.html" header="src/app/app.component.html (asterisk)" region="asterisk"></code-example>
 
-What Angular does in this case is creating an `<ng-template>` element and moving the `*ngIf` directive onto it where it becomes a property binding in square brackets, `[ngIf]`. The rest of the `<div>`, including its class attribute, is then moved inside the `<ng-template>`:
+Angular creates an `<ng-template>` element and applies the `*ngIf` directive onto it where it becomes a property binding in square brackets, `[ngIf]`. The rest of the `<div>`, including its class attribute, is then moved inside the `<ng-template>`:
 
 <code-example path="structural-directives/src/app/app.component.html" header="src/app/app.component.html (ngif-template)" region="ngif-template"></code-example>
 
-Note that Angular does not actually create a real `<ng-template>` element, but instead only renders the `<div>` and adds a comment node placeholder to the DOM.
+Note that Angular does not actually create a real `<ng-template>` element, but instead only renders the `<div>` element.
 
 ```html
-<!--bindings={
-  "ng-reflect-ng-if": "[object Object]"
-}-->
 <div _ngcontent-c0>Mr. Nice</div>
 
 ```
@@ -69,7 +66,7 @@ For more information, see the [NgFor API](api/common/NgForOf "API: NgFor") and [
 
 <div class="alert is-helpful">
 
-  Note that Angular's `<ng-template>` element defines a template that doesn't render anything by default, if you simply wrap elements in an `<ng-template>` without applying a structural directive those elements will simply disappear.
+  Note that Angular's `<ng-template>` element defines a template that doesn't render anything by default, if you just wrap elements in an `<ng-template>` without applying a structural directive those elements will not be rendered.
 
   For more information, see the [ng-template API](api/core/ng-template) documentation.
 
@@ -79,12 +76,12 @@ For more information, see the [NgFor API](api/common/NgForOf "API: NgFor") and [
 <a id="one-per-element"></a>
 ## One structural directive per element
 
-Someday you'll want to repeat a block of HTML but only when a particular condition is true.
-You'll _try_ to put both an `*ngFor` and an `*ngIf` on the same host element.
-Angular won't let you. You may apply only one _structural_ directive to an element.
+It's a quite common use-case to repeat a block of HTML but only when a particular condition is true. An intuitive way to do that is to put both an `*ngFor` and an `*ngIf` on the same element. However, since both `*ngFor` and `*ngIf` are structural directives, this would be treated as an error by the compiler. You may apply only one _structural_ directive to an element.
 
 The reason is simplicity. Structural directives can do complex things with the host element and its descendants.
+
 When two directives lay claim to the same host element, which one should take precedence?
+
 Which should go first, the `NgIf` or the `NgFor`? Can the `NgIf` cancel the effect of the `NgFor`?
 If so (and it seems like it should be so), how should Angular generalize the ability to cancel for other structural directives?
 
