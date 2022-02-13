@@ -52,6 +52,7 @@ mat-toolbar.app-toolbar {
       // Hamburger hidden by default on large screens.
       // (Will be shown per doc.)
       margin: $hamburgerHiddenMargin;
+      visibility: hidden;
     }
 
     @media (max-width: 480px) {
