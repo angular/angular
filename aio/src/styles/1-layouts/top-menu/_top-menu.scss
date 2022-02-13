@@ -34,6 +34,7 @@ mat-toolbar.app-toolbar {
       .hamburger {
         // Hamburger shown on non-marketing pages even on large screens.
         margin: $hamburgerShownMargin;
+        visibility: visible;
       }
     }
   }
@@ -52,6 +53,7 @@ mat-toolbar.app-toolbar {
       // Hamburger hidden by default on large screens.
       // (Will be shown per doc.)
       margin: $hamburgerHiddenMargin;
+      visibility: hidden;
     }
 
     @media (max-width: 480px) {
