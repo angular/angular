@@ -14,10 +14,14 @@ export class HeroesComponent implements OnInit {
   editHero: Hero | undefined; // the hero currently being edited
   heroName = '';
 
-  constructor(private heroesService: HeroesService, private changeDetectorRef: ChangeDetectorRef) {}
+  constructor(private heroesService: HeroesService) {}
 
-  @ViewChild('heroNameInput') heroNameInput!: ElementRef;
-  @ViewChildren('heroEditInput') heroEditInput!: QueryList<ElementRef>;
+  @ViewChild('heroEditInput')
+  set input(element: ElementRef<HTMLInputElement>) {
+    if (element) {
+      element.nativeElement.focus();
+    }
+  }
 
   ngOnInit() {
     this.getHeroes();
@@ -26,16 +30,6 @@ export class HeroesComponent implements OnInit {
   getHeroes(): void {
     this.heroesService.getHeroes()
       .subscribe(heroes => (this.heroes = heroes));
-  }
-
-  addOrEditHero(name: string): void {
-    if (this.editHero) {
-      this.edit(name);
-    } else {
-      this.add(name);
-    }
-    this.heroName = '';
-    this.editHero = undefined;
   }
 
   add(name: string): void {
@@ -76,9 +70,6 @@ export class HeroesComponent implements OnInit {
 
   selectHeroForEditing(hero: Hero) {
     this.editHero = hero;
-    this.changeDetectorRef.detectChanges();
-    this.heroEditInput.get(0)!.nativeElement.value = hero.name;
-    this.heroEditInput.get(0)!.nativeElement.focus();
   }
 
   search(searchTerm: string) {
@@ -93,7 +84,7 @@ export class HeroesComponent implements OnInit {
   }
 
   update(heroName: string) {
-    if (this.editHero && this.editHero.name !== heroName) {
+    if (heroName && this.editHero && this.editHero.name !== heroName) {
       this.heroesService
         .updateHero({...this.editHero, name: heroName})
         .subscribe(hero => {

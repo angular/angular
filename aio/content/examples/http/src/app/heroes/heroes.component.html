@@ -15,7 +15,7 @@
     <span class="badge">{{ hero.id || -1 }}</span>
     <span *ngIf="hero!==editHero; else editInput" class="name">{{hero.name}}</span>
     <ng-template #editInput>
-      <input #heroEditInput type="text" class="name" (blur)="edit(heroEditInput.value)" (keydown.enter)="edit(heroEditInput.value)"/>
+      <input #heroEditInput type="text" class="name" [value]="editHero!.name" (blur)="edit(heroEditInput.value)" (keydown.enter)="edit(heroEditInput.value)"/>
     </ng-template>
     <button *ngIf="hero!==editHero" type="button" class="edit" title="edit hero"
       (click)="selectHeroForEditing(hero)">
