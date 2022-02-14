@@ -621,16 +621,3 @@ function getStructuralAttributes(meta: TypeCheckableDirectiveMeta): string[] {
 
   return structuralAttributes;
 }
-
-export function buildAnimationCompletionEntries(
-    animations: string[], replacementSpan: ts.TextSpan,
-    kind: DisplayInfoKind): ts.CompletionEntry[] {
-  return animations.map(animation => {
-    return {
-      kind: unsafeCastDisplayInfoKindToScriptElementKind(kind),
-      name: animation,
-      sortText: animation,
-      replacementSpan,
-    };
-  });
-}
