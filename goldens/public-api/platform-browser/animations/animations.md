@@ -4,13 +4,12 @@
 
 ```ts
 
+import { ANIMATION_MODULE_TYPE } from '@angular/core';
 import * as i0 from '@angular/core';
 import * as i1 from '@angular/platform-browser';
-import { InjectionToken } from '@angular/core';
 import { ModuleWithProviders } from '@angular/core';
 
-// @public (undocumented)
-export const ANIMATION_MODULE_TYPE: InjectionToken<"NoopAnimations" | "BrowserAnimations">;
+export { ANIMATION_MODULE_TYPE }
 
 // @public
 export class BrowserAnimationsModule {

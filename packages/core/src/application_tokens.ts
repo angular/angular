@@ -72,3 +72,15 @@ export const APP_BOOTSTRAP_LISTENER =
  * @publicApi
  */
 export const PACKAGE_ROOT_URL = new InjectionToken<string>('Application Packages Root URL');
+
+// We keep this token here, rather than the animations package, so that modules that only care
+// about which animations module is loaded (e.g. the CDK) can retrieve it without having to
+// include extra dependencies. See #44970 for more context.
+
+/**
+ * A [DI token](guide/glossary#di-token "DI token definition") that indicates which animations
+ * module has been loaded.
+ * @publicApi
+ */
+export const ANIMATION_MODULE_TYPE =
+    new InjectionToken<'NoopAnimations'|'BrowserAnimations'>('AnimationModuleType');
