@@ -51,7 +51,7 @@ export class AnimationTrigger {
     return entry || null;
   }
 
-  matchStyles(currentState: any, params: {[key: string]: any}, errors: string[]): ɵStyleData {
+  matchStyles(currentState: any, params: {[key: string]: any}, errors: Error[]): ɵStyleData {
     return this.fallbackTransition.buildStyles(currentState, params, errors);
   }
 }

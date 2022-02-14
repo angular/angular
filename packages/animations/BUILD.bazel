@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "api_golden_test_npm_package", "ng_module", "ng_package")
+load("//tools:defaults.bzl", "api_golden_test", "api_golden_test_npm_package", "ng_module", "ng_package")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -47,4 +47,15 @@ api_golden_test_npm_package(
     ],
     golden_dir = "angular/goldens/public-api/animations",
     npm_package = "angular/packages/animations/npm_package",
+)
+
+api_golden_test(
+    name = "animations_errors",
+    data = [
+        "//goldens:public-api",
+        "//packages/animations",
+        "//packages/animations/browser",
+    ],
+    entry_point = "angular/packages/animations/browser/src/errors.d.ts",
+    golden = "angular/goldens/public-api/animations/errors.md",
 )

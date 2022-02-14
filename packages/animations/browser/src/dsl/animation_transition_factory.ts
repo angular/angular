@@ -29,7 +29,7 @@ export class AnimationTransitionFactory {
     return oneOrMoreTransitionsMatch(this.ast.matchers, currentState, nextState, element, params);
   }
 
-  buildStyles(stateName: string, params: {[key: string]: any}, errors: string[]) {
+  buildStyles(stateName: string, params: {[key: string]: any}, errors: Error[]) {
     const backupStateStyler = this._stateStyles['*'];
     const stateStyler = this._stateStyles[stateName];
     const backupStyles = backupStateStyler ? backupStateStyler.buildStyles(params, errors) : {};
@@ -41,7 +41,7 @@ export class AnimationTransitionFactory {
       enterClassName: string, leaveClassName: string, currentOptions?: AnimationOptions,
       nextOptions?: AnimationOptions, subInstructions?: ElementInstructionMap,
       skipAstBuild?: boolean): AnimationTransitionInstruction {
-    const errors: string[] = [];
+    const errors: Error[] = [];
 
     const transitionAnimationParams = this.ast.options && this.ast.options.params || EMPTY_OBJECT;
     const currentAnimationParams = currentOptions && currentOptions.params || EMPTY_OBJECT;
@@ -104,7 +104,7 @@ export class AnimationStateStyles {
       private styles: StyleAst, private defaultParams: {[key: string]: any},
       private normalizer: AnimationStyleNormalizer) {}
 
-  buildStyles(params: {[key: string]: any}, errors: string[]): ɵStyleData {
+  buildStyles(params: {[key: string]: any}, errors: Error[]): ɵStyleData {
     const finalStyles: ɵStyleData = {};
     const combinedParams = copyObj(this.defaultParams);
     Object.keys(params).forEach(key => {

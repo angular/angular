@@ -10,23 +10,23 @@
  * @publicApi
  */
 export abstract class AnimationStyleNormalizer {
-  abstract normalizePropertyName(propertyName: string, errors: string[]): string;
+  abstract normalizePropertyName(propertyName: string, errors: Error[]): string;
   abstract normalizeStyleValue(
       userProvidedProperty: string, normalizedProperty: string, value: string|number,
-      errors: string[]): string;
+      errors: Error[]): string;
 }
 
 /**
  * @publicApi
  */
 export class NoopAnimationStyleNormalizer {
-  normalizePropertyName(propertyName: string, errors: string[]): string {
+  normalizePropertyName(propertyName: string, errors: Error[]): string {
     return propertyName;
   }
 
   normalizeStyleValue(
       userProvidedProperty: string, normalizedProperty: string, value: string|number,
-      errors: string[]): string {
+      errors: Error[]): string {
     return <any>value;
   }
 }
