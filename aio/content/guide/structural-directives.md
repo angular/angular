@@ -1,6 +1,6 @@
 # Structural directives
 
-This guides talks about structural directives and provides conceptual information on how such directives work, how Angular interprets their shorthand syntax, and how to add template guard properties to catch template type errors.
+This guide is about structural directives and provides conceptual information on how such directives work, how Angular interprets their shorthand syntax, and how to add template guard properties to catch template type errors.
 
 <div class="alert is-helpful">
 
@@ -12,7 +12,7 @@ For the example application that this page describes, see the <live-example name
 
 Structural directives are directives which change the DOM layout by adding and removing DOM element.
 
-Angular provides a set of built-in structural directives (such as `NgIf`, `NgFor`, `NgSwitch` and others) which are commonly used in all Angular projects, for more information see [Built-in directives](guide/built-in-directives).
+Angular provides a set of built-in structural directives (such as `NgIf`, `NgFor`, `NgSwitch` and others) which are commonly used in all Angular projects. For more information see [Built-in directives](guide/built-in-directives).
 
 
 <a id="shorthand"></a>
@@ -20,10 +20,10 @@ Angular provides a set of built-in structural directives (such as `NgIf`, `NgFor
 
 ## Structural directive shorthand
 
-When structural directives are applied they generally are prefixed by an asterisk, `*`,  such as `*ngIf`, such convention is shorthand that Angular interprets and converts into a longer form.
-Substantially Angular transforms the asterisk in front of a structural directive into an `<ng-template>` that surrounds the host element and its descendants.
+When structural directives are applied they generally are prefixed by an asterisk, `*`,  such as `*ngIf`. This convention is shorthand that Angular interprets and converts into a longer form.
+Angular transforms the asterisk in front of a structural directive into an `<ng-template>` that surrounds the host element and its descendants.
 
-Let's for example take the following code which uses an `*ngIf` to displays the hero's name if `hero` exists:
+For example, let's take the following code which uses an `*ngIf` to displays the hero's name if `hero` exists:
 
 <code-example path="structural-directives/src/app/app.component.html" header="src/app/app.component.html (asterisk)" region="asterisk"></code-example>
 
