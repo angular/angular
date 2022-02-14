@@ -8,9 +8,11 @@
 
 import {ButtonStylesMigrator} from './components/button/button-styles';
 import {CheckboxStylesMigrator} from './components/checkbox/checkbox-styles';
+import {ProgressBarStylesMigrator} from './components/progress-bar/progress-bar-styles';
 import {StyleMigrator} from './style-migrator';
 
 export const MIGRATORS: StyleMigrator[] = [
   new ButtonStylesMigrator(),
   new CheckboxStylesMigrator(),
+  new ProgressBarStylesMigrator(),
 ];
