@@ -1326,6 +1326,29 @@ describe('MatMenu', () => {
       expect(panel.classList).not.toContain('mat-menu-above');
     }));
 
+    it('should update the position classes if the window is resized', fakeAsync(() => {
+      trigger.style.position = 'fixed';
+      trigger.style.top = '300px';
+      fixture.componentInstance.yPosition = 'above';
+      fixture.componentInstance.trigger.openMenu();
+      fixture.detectChanges();
+      tick(500);
+
+      const panel = overlayContainerElement.querySelector('.mat-menu-panel') as HTMLElement;
+
+      expect(panel.classList).toContain('mat-menu-above');
+      expect(panel.classList).not.toContain('mat-menu-below');
+
+      trigger.style.top = '0';
+      dispatchFakeEvent(window, 'resize');
+      fixture.detectChanges();
+      tick(500);
+      fixture.detectChanges();
+
+      expect(panel.classList).not.toContain('mat-menu-above');
+      expect(panel.classList).toContain('mat-menu-below');
+    }));
+
     it('should be able to update the position after the first open', fakeAsync(() => {
       trigger.style.position = 'fixed';
       trigger.style.top = '200px';

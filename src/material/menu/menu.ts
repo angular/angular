@@ -37,6 +37,7 @@ import {
   ViewChild,
   ViewEncapsulation,
   OnInit,
+  ChangeDetectorRef,
 } from '@angular/core';
 import {merge, Observable, Subject, Subscription} from 'rxjs';
 import {startWith, switchMap, take} from 'rxjs/operators';
@@ -272,6 +273,8 @@ export class _MatMenuBase
     private _elementRef: ElementRef<HTMLElement>,
     private _ngZone: NgZone,
     @Inject(MAT_MENU_DEFAULT_OPTIONS) private _defaultOptions: MatMenuDefaultOptions,
+    // @breaking-change 15.0.0 `_changeDetectorRef` to become a required parameter.
+    private _changeDetectorRef?: ChangeDetectorRef,
   ) {}
 
   ngOnInit() {
@@ -452,6 +455,9 @@ export class _MatMenuBase
     classes['mat-menu-after'] = posX === 'after';
     classes['mat-menu-above'] = posY === 'above';
     classes['mat-menu-below'] = posY === 'below';
+
+    // @breaking-change 15.0.0 Remove null check for `_changeDetectorRef`.
+    this._changeDetectorRef?.markForCheck();
   }
 
   /** Starts the enter animation. */
@@ -522,11 +528,22 @@ export class MatMenu extends _MatMenuBase {
   protected override _elevationPrefix = 'mat-elevation-z';
   protected override _baseElevation = 4;
 
+  /**
+   * @deprecated `changeDetectorRef` parameter will become a required parameter.
+   * @breaking-change 15.0.0
+   */
+  constructor(
+    elementRef: ElementRef<HTMLElement>,
+    ngZone: NgZone,
+    defaultOptions: MatMenuDefaultOptions,
+  );
+
   constructor(
     elementRef: ElementRef<HTMLElement>,
     ngZone: NgZone,
     @Inject(MAT_MENU_DEFAULT_OPTIONS) defaultOptions: MatMenuDefaultOptions,
+    changeDetectorRef?: ChangeDetectorRef,
   ) {
-    super(elementRef, ngZone, defaultOptions);
+    super(elementRef, ngZone, defaultOptions, changeDetectorRef);
   }
 }

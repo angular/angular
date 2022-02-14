@@ -9,6 +9,7 @@
 import {Overlay, ScrollStrategy} from '@angular/cdk/overlay';
 import {
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   ElementRef,
   Inject,
@@ -56,11 +57,22 @@ export class MatMenu extends _MatMenuBase {
   protected override _elevationPrefix = 'mat-mdc-elevation-z';
   protected override _baseElevation = 8;
 
+  /*
+   * @deprecated `changeDetectorRef` parameter will become a required parameter.
+   * @breaking-change 15.0.0
+   */
+  constructor(
+    elementRef: ElementRef<HTMLElement>,
+    ngZone: NgZone,
+    defaultOptions: MatMenuDefaultOptions,
+  );
+
   constructor(
     _elementRef: ElementRef<HTMLElement>,
     _ngZone: NgZone,
     @Inject(MAT_MENU_DEFAULT_OPTIONS) _defaultOptions: MatMenuDefaultOptions,
+    changeDetectorRef?: ChangeDetectorRef,
   ) {
-    super(_elementRef, _ngZone, _defaultOptions);
+    super(_elementRef, _ngZone, _defaultOptions, changeDetectorRef);
   }
 }

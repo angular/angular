@@ -71,6 +71,7 @@ const MAT_MENU_SCROLL_STRATEGY_FACTORY_PROVIDER: {
 
 // @public
 export class MatMenu extends _MatMenuBase {
+    // @deprecated
     constructor(elementRef: ElementRef<HTMLElement>, ngZone: NgZone, defaultOptions: MatMenuDefaultOptions);
     // (undocumented)
     protected _baseElevation: number;
@@ -90,7 +91,7 @@ export const matMenuAnimations: {
 
 // @public
 export class _MatMenuBase implements AfterContentInit, MatMenuPanel<MatMenuItem>, OnInit, OnDestroy {
-    constructor(_elementRef: ElementRef<HTMLElement>, _ngZone: NgZone, _defaultOptions: MatMenuDefaultOptions);
+    constructor(_elementRef: ElementRef<HTMLElement>, _ngZone: NgZone, _defaultOptions: MatMenuDefaultOptions, _changeDetectorRef?: ChangeDetectorRef | undefined);
     // (undocumented)
     addItem(_item: MatMenuItem): void;
     _allItems: QueryList<MatMenuItem>;
@@ -282,6 +283,8 @@ export class MatMenuTrigger extends _MatMenuTriggerBase {
 export abstract class _MatMenuTriggerBase implements AfterContentInit, OnDestroy {
     // @deprecated
     constructor(overlay: Overlay, element: ElementRef<HTMLElement>, viewContainerRef: ViewContainerRef, scrollStrategy: any, parentMenu: MatMenuPanel, menuItemInstance: MatMenuItem, dir: Directionality, focusMonitor?: FocusMonitor | null);
+    // @deprecated
+    constructor(overlay: Overlay, element: ElementRef<HTMLElement>, viewContainerRef: ViewContainerRef, scrollStrategy: any, parentMenu: MatMenuPanel, menuItemInstance: MatMenuItem, dir: Directionality, focusMonitor: FocusMonitor);
     closeMenu(): void;
     // @deprecated (undocumented)
     get _deprecatedMatMenuTriggerFor(): MatMenuPanel;
@@ -315,7 +318,7 @@ export abstract class _MatMenuTriggerBase implements AfterContentInit, OnDestroy
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<_MatMenuTriggerBase, never, never, { "_deprecatedMatMenuTriggerFor": "mat-menu-trigger-for"; "menu": "matMenuTriggerFor"; "menuData": "matMenuTriggerData"; "restoreFocus": "matMenuTriggerRestoreFocus"; }, { "menuOpened": "menuOpened"; "onMenuOpen": "onMenuOpen"; "menuClosed": "menuClosed"; "onMenuClose": "onMenuClose"; }, never>;
     // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<_MatMenuTriggerBase, [null, null, null, null, { optional: true; }, { optional: true; self: true; }, { optional: true; }, null]>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<_MatMenuTriggerBase, [null, null, null, null, { optional: true; }, { optional: true; self: true; }, { optional: true; }, null, null]>;
 }
 
 // @public

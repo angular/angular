@@ -32,6 +32,7 @@ import {
   Inject,
   InjectionToken,
   Input,
+  NgZone,
   OnDestroy,
   Optional,
   Output,
@@ -200,6 +201,21 @@ export abstract class _MatMenuTriggerBase implements AfterContentInit, OnDestroy
     focusMonitor?: FocusMonitor | null,
   );
 
+  /**
+   * @deprecated `ngZone` will become a required parameter.
+   * @breaking-change 15.0.0
+   */
+  constructor(
+    overlay: Overlay,
+    element: ElementRef<HTMLElement>,
+    viewContainerRef: ViewContainerRef,
+    scrollStrategy: any,
+    parentMenu: MatMenuPanel,
+    menuItemInstance: MatMenuItem,
+    dir: Directionality,
+    focusMonitor: FocusMonitor,
+  );
+
   constructor(
     private _overlay: Overlay,
     private _element: ElementRef<HTMLElement>,
@@ -211,6 +227,7 @@ export abstract class _MatMenuTriggerBase implements AfterContentInit, OnDestroy
     @Optional() @Self() private _menuItemInstance: MatMenuItem,
     @Optional() private _dir: Directionality,
     private _focusMonitor: FocusMonitor | null,
+    private _ngZone?: NgZone,
   ) {
     this._scrollStrategy = scrollStrategy;
     this._parentMaterialMenu = parentMenu instanceof _MatMenuBase ? parentMenu : undefined;
@@ -472,7 +489,14 @@ export abstract class _MatMenuTriggerBase implements AfterContentInit, OnDestroy
         const posX: MenuPositionX = change.connectionPair.overlayX === 'start' ? 'after' : 'before';
         const posY: MenuPositionY = change.connectionPair.overlayY === 'top' ? 'below' : 'above';
 
-        this.menu.setPositionClasses!(posX, posY);
+        // @breaking-change 15.0.0 Remove null check for `ngZone`.
+        // `positionChanges` fires outside of the `ngZone` and `setPositionClasses` might be
+        // updating something in the view so we need to bring it back in.
+        if (this._ngZone) {
+          this._ngZone.run(() => this.menu.setPositionClasses!(posX, posY));
+        } else {
+          this.menu.setPositionClasses!(posX, posY);
+        }
       });
     }
   }
