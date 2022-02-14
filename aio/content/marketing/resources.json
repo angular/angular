@@ -637,6 +637,11 @@
             "title": "Angular Projects - Second Edition",
             "desc": "Build modern web apps by exploring Angular with 10 different projects and cutting-edge technologies",
             "url": "https://www.packtpub.com/product/angular-projects-second-edition/9781800205260"
+          },
+          "rangle-angular-training-book": {
+            "title": "Rangle’s Angular Training Book",
+            "desc": "It's free book, drawn from years of collective experience and aligned with the best practices of modern software development. The book will cover the most important Angular topics, from getting started with the Angular toolchain to writing Angular applications in a scalable and maintainable manner.",
+            "url": "https://angular-training-guide.rangle.io/"
           }
         }
       },
