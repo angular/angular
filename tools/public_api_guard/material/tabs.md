@@ -233,7 +233,8 @@ export abstract class _MatTabGroupBase extends _MatTabGroupMixinBase implements 
     protected _changeDetectorRef: ChangeDetectorRef;
     get contentTabIndex(): number | null;
     set contentTabIndex(value: NumberInput);
-    disablePagination: boolean;
+    get disablePagination(): boolean;
+    set disablePagination(value: BooleanInput);
     get dynamicHeight(): boolean;
     set dynamicHeight(value: BooleanInput);
     readonly focusChange: EventEmitter<MatTabChangeEvent>;
@@ -250,7 +251,8 @@ export abstract class _MatTabGroupBase extends _MatTabGroupMixinBase implements 
     ngAfterContentInit(): void;
     // (undocumented)
     ngOnDestroy(): void;
-    preserveContent: boolean;
+    get preserveContent(): boolean;
+    set preserveContent(value: BooleanInput);
     realignInkBar(): void;
     _removeTabBodyWrapperHeight(): void;
     get selectedIndex(): number | null;

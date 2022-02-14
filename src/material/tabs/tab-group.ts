@@ -116,7 +116,7 @@ export abstract class _MatTabGroupBase
   set dynamicHeight(value: BooleanInput) {
     this._dynamicHeight = coerceBooleanProperty(value);
   }
-  private _dynamicHeight: boolean;
+  private _dynamicHeight: boolean = false;
 
   /** The index of the active tab. */
   @Input()
@@ -161,7 +161,13 @@ export abstract class _MatTabGroupBase
    * layout recalculations if it's known that pagination won't be required.
    */
   @Input()
-  disablePagination: boolean;
+  get disablePagination(): boolean {
+    return this._disablePagination;
+  }
+  set disablePagination(value: BooleanInput) {
+    this._disablePagination = coerceBooleanProperty(value);
+  }
+  private _disablePagination: boolean = false;
 
   /**
    * By default tabs remove their content from the DOM while it's off-screen.
@@ -169,7 +175,13 @@ export abstract class _MatTabGroupBase
    * like iframes and videos from reloading next time it comes back into the view.
    */
   @Input()
-  preserveContent: boolean;
+  get preserveContent(): boolean {
+    return this._preserveContent;
+  }
+  set preserveContent(value: BooleanInput) {
+    this._preserveContent = coerceBooleanProperty(value);
+  }
+  private _preserveContent: boolean = false;
 
   /** Background color of the tab group. */
   @Input()

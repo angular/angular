@@ -22,7 +22,12 @@ import {
   Input,
 } from '@angular/core';
 import {Direction, Directionality} from '@angular/cdk/bidi';
-import {coerceNumberProperty, NumberInput} from '@angular/cdk/coercion';
+import {
+  BooleanInput,
+  coerceBooleanProperty,
+  coerceNumberProperty,
+  NumberInput,
+} from '@angular/cdk/coercion';
 import {ViewportRuler} from '@angular/cdk/scrolling';
 import {FocusKeyManager, FocusableOption} from '@angular/cdk/a11y';
 import {ENTER, SPACE, hasModifierKey} from '@angular/cdk/keycodes';
@@ -121,7 +126,13 @@ export abstract class MatPaginatedTabHeader
    * layout recalculations if it's known that pagination won't be required.
    */
   @Input()
-  disablePagination: boolean = false;
+  get disablePagination(): boolean {
+    return this._disablePagination;
+  }
+  set disablePagination(value: BooleanInput) {
+    this._disablePagination = coerceBooleanProperty(value);
+  }
+  private _disablePagination: boolean = false;
 
   /** The index of the active tab. */
   get selectedIndex(): number {
