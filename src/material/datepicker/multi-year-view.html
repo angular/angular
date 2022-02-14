@@ -11,6 +11,7 @@
          [cellAspectRatio]="4 / 7"
          [activeCell]="_getActiveCell()"
          (selectedValueChange)="_yearSelected($event)"
+         (activeDateChange)="_updateActiveDate($event)"
          (keyup)="_handleCalendarBodyKeyup($event)"
          (keydown)="_handleCalendarBodyKeydown($event)">
   </tbody>

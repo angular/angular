@@ -520,6 +520,30 @@ describe('MatMonthView', () => {
               );
             },
           );
+
+          it('should go to month that is focused', () => {
+            const jan11Cell = fixture.debugElement.nativeElement.querySelector(
+              '[data-mat-row="1"][data-mat-col="3"] button',
+            ) as HTMLElement;
+
+            dispatchFakeEvent(jan11Cell, 'focus');
+            fixture.detectChanges();
+
+            expect(calendarInstance.date).toEqual(new Date(2017, JAN, 11));
+          });
+
+          it('should not call `.focus()` when the active date is focused', () => {
+            const jan5Cell = fixture.debugElement.nativeElement.querySelector(
+              '[data-mat-row="0"][data-mat-col="4"] button',
+            ) as HTMLElement;
+            const focusSpy = (jan5Cell.focus = jasmine.createSpy('cellFocused'));
+
+            dispatchFakeEvent(jan5Cell, 'focus');
+            fixture.detectChanges();
+
+            expect(calendarInstance.date).toEqual(new Date(2017, JAN, 5));
+            expect(focusSpy).not.toHaveBeenCalled();
+          });
         });
       });
     });

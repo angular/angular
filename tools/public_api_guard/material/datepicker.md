@@ -197,15 +197,19 @@ export class MatCalendar<D> implements AfterContentInit, AfterViewChecked, OnDes
 }
 
 // @public
-export class MatCalendarBody implements OnChanges, OnDestroy {
+export class MatCalendarBody implements OnChanges, OnDestroy, AfterViewChecked {
     constructor(_elementRef: ElementRef<HTMLElement>, _ngZone: NgZone);
     activeCell: number;
+    // (undocumented)
+    readonly activeDateChange: EventEmitter<MatCalendarUserEvent<number>>;
     cellAspectRatio: number;
     _cellClicked(cell: MatCalendarCell, event: MouseEvent): void;
     _cellPadding: string;
     _cellWidth: string;
     comparisonEnd: number | null;
     comparisonStart: number | null;
+    // (undocumented)
+    _emitActiveDateChange(cell: MatCalendarCell, event: FocusEvent): void;
     endValue: number;
     _firstRowOffset: number;
     _focusActiveCell(movePreview?: boolean): void;
@@ -227,6 +231,8 @@ export class MatCalendarBody implements OnChanges, OnDestroy {
     label: string;
     labelMinRequiredCells: number;
     // (undocumented)
+    ngAfterViewChecked(): void;
+    // (undocumented)
     ngOnChanges(changes: SimpleChanges): void;
     // (undocumented)
     ngOnDestroy(): void;
@@ -235,11 +241,12 @@ export class MatCalendarBody implements OnChanges, OnDestroy {
     previewEnd: number | null;
     previewStart: number | null;
     rows: MatCalendarCell[][];
+    _scheduleFocusActiveCellAfterViewChecked(): void;
     readonly selectedValueChange: EventEmitter<MatCalendarUserEvent<number>>;
     startValue: number;
     todayValue: number;
     // (undocumented)
-    static ɵcmp: i0.ɵɵComponentDeclaration<MatCalendarBody, "[mat-calendar-body]", ["matCalendarBody"], { "label": "label"; "rows": "rows"; "todayValue": "todayValue"; "startValue": "startValue"; "endValue": "endValue"; "labelMinRequiredCells": "labelMinRequiredCells"; "numCols": "numCols"; "activeCell": "activeCell"; "isRange": "isRange"; "cellAspectRatio": "cellAspectRatio"; "comparisonStart": "comparisonStart"; "comparisonEnd": "comparisonEnd"; "previewStart": "previewStart"; "previewEnd": "previewEnd"; }, { "selectedValueChange": "selectedValueChange"; "previewChange": "previewChange"; }, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MatCalendarBody, "[mat-calendar-body]", ["matCalendarBody"], { "label": "label"; "rows": "rows"; "todayValue": "todayValue"; "startValue": "startValue"; "endValue": "endValue"; "labelMinRequiredCells": "labelMinRequiredCells"; "numCols": "numCols"; "activeCell": "activeCell"; "isRange": "isRange"; "cellAspectRatio": "cellAspectRatio"; "comparisonStart": "comparisonStart"; "comparisonEnd": "comparisonEnd"; "previewStart": "previewStart"; "previewEnd": "previewEnd"; }, { "selectedValueChange": "selectedValueChange"; "previewChange": "previewChange"; "activeDateChange": "activeDateChange"; }, never, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatCalendarBody, never>;
 }
@@ -765,6 +772,7 @@ export class MatMonthView<D> implements AfterContentInit, OnChanges, OnDestroy {
     _dateSelected(event: MatCalendarUserEvent<number>): void;
     _firstWeekOffset: number;
     _focusActiveCell(movePreview?: boolean): void;
+    _focusActiveCellAfterViewChecked(): void;
     _handleCalendarBodyKeydown(event: KeyboardEvent): void;
     _handleCalendarBodyKeyup(event: KeyboardEvent): void;
     _init(): void;
@@ -790,6 +798,7 @@ export class MatMonthView<D> implements AfterContentInit, OnChanges, OnDestroy {
     set selected(value: DateRange<D> | D | null);
     readonly selectedChange: EventEmitter<D | null>;
     _todayDate: number | null;
+    _updateActiveDate(event: MatCalendarUserEvent<number>): void;
     readonly _userSelection: EventEmitter<MatCalendarUserEvent<D | null>>;
     _weekdays: {
         long: string;
@@ -813,6 +822,7 @@ export class MatMultiYearView<D> implements AfterContentInit, OnDestroy {
     dateClass: MatCalendarCellClassFunction<D>;
     dateFilter: (date: D) => boolean;
     _focusActiveCell(): void;
+    _focusActiveCellAfterViewChecked(): void;
     // (undocumented)
     _getActiveCell(): number;
     _handleCalendarBodyKeydown(event: KeyboardEvent): void;
@@ -832,6 +842,7 @@ export class MatMultiYearView<D> implements AfterContentInit, OnDestroy {
     readonly selectedChange: EventEmitter<D>;
     _selectedYear: number | null;
     _todayYear: number;
+    _updateActiveDate(event: MatCalendarUserEvent<number>): void;
     _years: MatCalendarCell[][];
     readonly yearSelected: EventEmitter<D>;
     _yearSelected(event: MatCalendarUserEvent<number>): void;
@@ -900,6 +911,7 @@ export class MatYearView<D> implements AfterContentInit, OnDestroy {
     dateClass: MatCalendarCellClassFunction<D>;
     dateFilter: (date: D) => boolean;
     _focusActiveCell(): void;
+    _focusActiveCellAfterViewChecked(): void;
     _handleCalendarBodyKeydown(event: KeyboardEvent): void;
     _handleCalendarBodyKeyup(event: KeyboardEvent): void;
     _init(): void;
@@ -920,6 +932,7 @@ export class MatYearView<D> implements AfterContentInit, OnDestroy {
     readonly selectedChange: EventEmitter<D>;
     _selectedMonth: number | null;
     _todayMonth: number | null;
+    _updateActiveDate(event: MatCalendarUserEvent<number>): void;
     _yearLabel: string;
     // (undocumented)
     static ɵcmp: i0.ɵɵComponentDeclaration<MatYearView<any>, "mat-year-view", ["matYearView"], { "activeDate": "activeDate"; "selected": "selected"; "minDate": "minDate"; "maxDate": "maxDate"; "dateFilter": "dateFilter"; "dateClass": "dateClass"; }, { "selectedChange": "selectedChange"; "monthSelected": "monthSelected"; "activeDateChange": "activeDateChange"; }, never, never>;

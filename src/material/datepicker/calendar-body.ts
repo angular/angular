@@ -18,6 +18,7 @@ import {
   OnChanges,
   SimpleChanges,
   OnDestroy,
+  AfterViewChecked,
 } from '@angular/core';
 import {take} from 'rxjs/operators';
 
@@ -67,12 +68,17 @@ export interface MatCalendarUserEvent<D> {
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MatCalendarBody implements OnChanges, OnDestroy {
+export class MatCalendarBody implements OnChanges, OnDestroy, AfterViewChecked {
   /**
    * Used to skip the next focus event when rendering the preview range.
    * We need a flag like this, because some browsers fire focus events asynchronously.
    */
   private _skipNextFocus: boolean;
+
+  /**
+   * Used to focus the active cell after change detection has run.
+   */
+  private _focusActiveCellAfterViewChecked = false;
 
   /** The label for the table. (e.g. "Jan 2017"). */
   @Input() label: string;
@@ -97,6 +103,13 @@ export class MatCalendarBody implements OnChanges, OnDestroy {
 
   /** The cell number of the active cell in the table. */
   @Input() activeCell: number = 0;
+
+  ngAfterViewChecked() {
+    if (this._focusActiveCellAfterViewChecked) {
+      this._focusActiveCell();
+      this._focusActiveCellAfterViewChecked = false;
+    }
+  }
 
   /** Whether a range is being selected. */
   @Input() isRange: boolean = false;
@@ -127,6 +140,8 @@ export class MatCalendarBody implements OnChanges, OnDestroy {
     MatCalendarUserEvent<MatCalendarCell | null>
   >();
 
+  @Output() readonly activeDateChange = new EventEmitter<MatCalendarUserEvent<number>>();
+
   /** The number of blank cells to put at the beginning for the first row. */
   _firstRowOffset: number;
 
@@ -150,6 +165,12 @@ export class MatCalendarBody implements OnChanges, OnDestroy {
   _cellClicked(cell: MatCalendarCell, event: MouseEvent): void {
     if (cell.enabled) {
       this.selectedValueChange.emit({value: cell.value, event});
+    }
+  }
+
+  _emitActiveDateChange(cell: MatCalendarCell, event: FocusEvent): void {
+    if (cell.enabled) {
+      this.activeDateChange.emit({value: cell.value, event});
     }
   }
 
@@ -212,6 +233,11 @@ export class MatCalendarBody implements OnChanges, OnDestroy {
         }
       });
     });
+  }
+
+  /** Focuses the active cell after change detection has run and the microtask queue is empty. */
+  _scheduleFocusActiveCellAfterViewChecked() {
+    this._focusActiveCellAfterViewChecked = true;
   }
 
   /** Gets whether a value is the start of the main range. */
