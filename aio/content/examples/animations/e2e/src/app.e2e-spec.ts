@@ -8,6 +8,7 @@ import * as auto from './auto.po';
 import * as filterStagger from './filter-stagger.po';
 import * as heroGroups from './hero-groups';
 import { getLinkById, sleepFor } from './util';
+import { getComponentSection, getToggleButton } from './querying.po';
 
 describe('Animation Tests', () => {
   const openCloseHref = getLinkById('open-close');
@@ -17,6 +18,7 @@ describe('Animation Tests', () => {
   const autoHref = getLinkById('auto');
   const filterHref = getLinkById('heroes');
   const heroGroupsHref = getLinkById('hero-groups');
+  const queryingHref = getLinkById('querying');
 
   beforeAll(() => browser.get(''));
 
@@ -218,7 +220,7 @@ describe('Animation Tests', () => {
   describe('Hero Groups Component', () => {
     beforeAll(async () => {
       await heroGroupsHref.click();
-      await sleepFor(300);
+      await sleepFor(400);
     });
 
     it('should attach a flyInOut trigger to the list of items', async () => {
@@ -241,5 +243,50 @@ describe('Animation Tests', () => {
       await hero.click();
       await browser.wait(async () => await heroesList.count() < total, 2000);
     });
+  });
+
+  describe('Querying Component', () => {
+    const queryingAnimationDuration = 2500;
+
+    beforeAll(async () => {
+      await queryingHref.click();
+      await sleepFor(queryingAnimationDuration);
+    });
+
+    it('should toggle the section', async () => {
+      const toggleButton = getToggleButton();
+      const section = getComponentSection();
+
+      expect(await section.isPresent()).toBe(true);
+
+      // toggling off
+      await toggleButton.click();
+      await sleepFor(queryingAnimationDuration);
+      expect(await section.isPresent()).toBe(false);
+
+      // toggling on
+      await toggleButton.click();
+      await sleepFor(queryingAnimationDuration);
+      expect(await section.isPresent()).toBe(true);
+      await sleepFor(queryingAnimationDuration);
+    });
+
+    it(`should disable the button for the animation's duration`, async () => {
+      const toggleButton = getToggleButton();
+      expect(await toggleButton.isEnabled()).toBe(true);
+
+      // toggling off
+      await toggleButton.click();
+      expect(await toggleButton.isEnabled()).toBe(false);
+      await sleepFor(queryingAnimationDuration);
+      expect(await toggleButton.isEnabled()).toBe(true);
+
+      // toggling on
+      await toggleButton.click();
+      expect(await toggleButton.isEnabled()).toBe(false);
+      await sleepFor(queryingAnimationDuration);
+      expect(await toggleButton.isEnabled()).toBe(true);
+    });
+
   });
 });
