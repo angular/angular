@@ -255,9 +255,6 @@
     "name": "InjectFlags"
   },
   {
-    "name": "InjectableAnimationEngine"
-  },
-  {
     "name": "InjectionToken"
   },
   {

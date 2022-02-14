@@ -38,6 +38,9 @@ export interface AfterViewInit {
 export const ANALYZE_FOR_ENTRY_COMPONENTS: InjectionToken<any>;
 
 // @public
+export const ANIMATION_MODULE_TYPE: InjectionToken<"NoopAnimations" | "BrowserAnimations">;
+
+// @public
 export const APP_BOOTSTRAP_LISTENER: InjectionToken<((compRef: ComponentRef<any>) => void)[]>;
 
 // @public
