@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AnimationTriggerNames, compileClassMetadata, compileComponentFromMetadata, compileDeclareClassMetadata, compileDeclareComponentFromMetadata, ConstantPool, CssSelector, DeclarationListEmitMode, DeclareComponentTemplateInfo, DEFAULT_INTERPOLATION_CONFIG, DomElementSchemaRegistry, Expression, FactoryTarget, makeBindingParser, R3ComponentMetadata, R3TargetBinder, R3UsedDirectiveMetadata, SelectorMatcher, ViewEncapsulation, WrappedNodeExpr} from '@angular/compiler';
+import {compileClassMetadata, compileComponentFromMetadata, compileDeclareClassMetadata, compileDeclareComponentFromMetadata, ConstantPool, CssSelector, DeclarationListEmitMode, DeclareComponentTemplateInfo, DEFAULT_INTERPOLATION_CONFIG, DomElementSchemaRegistry, Expression, FactoryTarget, makeBindingParser, R3ComponentMetadata, R3TargetBinder, R3UsedDirectiveMetadata, SelectorMatcher, ViewEncapsulation, WrappedNodeExpr} from '@angular/compiler';
 import ts from 'typescript';
 
 import {Cycle, CycleAnalyzer, CycleHandlingStrategy} from '../../../cycles';
@@ -35,7 +35,7 @@ import {ComponentAnalysisData, ComponentResolutionData} from './metadata';
 import {_extractTemplateStyleUrls, extractComponentStyleUrls, extractStyleResources, extractTemplate, makeResourceNotFoundError, ParsedTemplateWithSource, parseTemplateDeclaration, preloadAndParseTemplate, ResourceTypeForDiagnostics, StyleUrlMeta, transformDecoratorToInlineResources} from './resources';
 import {scopeTemplate} from './scope';
 import {ComponentSymbol} from './symbol';
-import {collectAnimationNames, validateAndFlattenComponentImports} from './util';
+import {validateAndFlattenComponentImports} from './util';
 
 const EMPTY_MAP = new Map<string, Expression>();
 const EMPTY_ARRAY: any[] = [];
@@ -208,12 +208,8 @@ export class ComponentDecoratorHandler implements
         resolveEnumValue(this.evaluator, component, 'changeDetection', 'ChangeDetectionStrategy');
 
     let animations: Expression|null = null;
-    let animationTriggerNames: AnimationTriggerNames|null = null;
     if (component.has('animations')) {
       animations = new WrappedNodeExpr(component.get('animations')!);
-      const animationsValue = this.evaluator.evaluate(component.get('animations')!);
-      animationTriggerNames = {includesDynamicAnimations: false, staticTriggerNames: []};
-      collectAnimationNames(animationsValue, animationTriggerNames);
     }
 
     // Go through the root directories for this project, and select the one with the smallest
@@ -420,7 +416,6 @@ export class ComponentDecoratorHandler implements
           template: templateResource,
         },
         isPoisoned,
-        animationTriggerNames,
         imports,
       },
       diagnostics,
@@ -458,7 +453,6 @@ export class ComponentDecoratorHandler implements
       isPoisoned: analysis.isPoisoned,
       isStructural: false,
       isStandalone: analysis.meta.isStandalone,
-      animationTriggerNames: analysis.animationTriggerNames,
     });
 
     this.resourceRegistry.registerResources(analysis.resources, node);

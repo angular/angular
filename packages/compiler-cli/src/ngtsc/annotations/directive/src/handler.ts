@@ -140,7 +140,6 @@ export class DirectiveDecoratorHandler implements
       ...analysis.typeCheckMeta,
       isPoisoned: analysis.isPoisoned,
       isStructural: analysis.isStructural,
-      animationTriggerNames: null,
       isStandalone: analysis.meta.isStandalone,
     });
 

@@ -55,7 +55,6 @@ export function getBoundTemplate(
       outputs: ClassPropertyMapping.fromMappedObject({}),
       exportAs: null,
       isStructural: false,
-      animationTriggerNames: null,
     });
   });
   const binder = new R3TargetBinder(matcher);
