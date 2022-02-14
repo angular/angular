@@ -169,7 +169,7 @@ describe('Animation Tests', () => {
   describe('Auto Calculation Component', () => {
     beforeAll(async () => {
       await autoHref.click();
-      await sleepFor(0);
+      await sleepFor(300);
     });
 
     it('should attach a shrinkOut trigger to the list of items', async () => {
