@@ -1,4 +1,4 @@
-import {browser, by, element, ExpectedConditions, Key, protractor} from 'protractor';
+import {browser, by, element, ExpectedConditions, Key} from 'protractor';
 import {
   expectAlignedWith,
   expectFocusOn,
@@ -135,7 +135,8 @@ describe('MDC-based menu', () => {
       await pressKeys(Key.TAB, Key.ENTER);
       await expectToExist(menuSelector);
 
-      await pressKeys(protractor.Key.chord(Key.SHIFT, Key.TAB));
+      // Press SHIFT+TAB, but make sure to release SHIFT again.
+      await pressKeys(Key.SHIFT, Key.TAB, Key.SHIFT);
       await expectToExist(menuSelector, false);
     });
 
@@ -149,13 +150,14 @@ describe('MDC-based menu', () => {
     });
 
     it('should focus before and after trigger when tabbing past items', async () => {
-      let shiftTab = protractor.Key.chord(Key.SHIFT, Key.TAB);
+      // Press SHIFT+TAB, but make sure to release SHIFT again.
+      let shiftTab = [Key.SHIFT, Key.TAB, Key.SHIFT];
 
       await pressKeys(Key.ENTER, Key.TAB);
       await expectFocusOn(page.triggerTwo());
 
       // navigate back to trigger
-      await pressKeys(shiftTab, Key.ENTER, shiftTab);
+      await pressKeys(...shiftTab, Key.ENTER, ...shiftTab);
       await expectFocusOn(page.start());
     });
   });
