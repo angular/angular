@@ -11,7 +11,17 @@ Zone.__load_patch('electron', (global: any, Zone: ZoneType, api: _ZonePrivate) =
       return delegate && delegate.apply(self, api.bindArguments(args, source));
     });
   }
-  const {desktopCapturer, shell, CallbacksRegistry, ipcRenderer} = require('electron');
+  let {desktopCapturer, shell, CallbacksRegistry, ipcRenderer} = require('electron');
+  if (!CallbacksRegistry) {
+    try {
+      // Try to load CallbacksRegistry class from @electron/remote src
+      // since from electron 14+, the CallbacksRegistry is moved to @electron/remote
+      // pacakge and not exported to outside, so this is a hack to patch CallbacksRegistry.
+      CallbacksRegistry =
+          require('@electron/remote/dist/src/renderer/callbacks-registry').CallbacksRegistry;
+    } catch (err) {
+    }
+  }
   // patch api in renderer process directly
   // desktopCapturer
   if (desktopCapturer) {
