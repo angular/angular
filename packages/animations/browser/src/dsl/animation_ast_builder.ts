@@ -7,6 +7,7 @@
  */
 import {AnimateTimings, AnimationAnimateChildMetadata, AnimationAnimateMetadata, AnimationAnimateRefMetadata, AnimationGroupMetadata, AnimationKeyframesSequenceMetadata, AnimationMetadata, AnimationMetadataType, AnimationOptions, AnimationQueryMetadata, AnimationQueryOptions, AnimationReferenceMetadata, AnimationSequenceMetadata, AnimationStaggerMetadata, AnimationStateMetadata, AnimationStyleMetadata, AnimationTransitionMetadata, AnimationTriggerMetadata, AUTO_STYLE, style, ɵStyleData} from '@angular/animations';
 
+import {invalidDefinition, invalidKeyframes, invalidOffset, invalidParallelAnimation, invalidProperty, invalidStagger, invalidState, invalidStyleValue, invalidTrigger, keyframeOffsetsOutOfOrder, keyframesMissingOffsets} from '../error_helpers';
 import {AnimationDriver} from '../render/animation_driver';
 import {getOrSetAsInMap} from '../render/shared';
 import {copyObj, extractStyleParams, iteratorToArray, NG_ANIMATING_SELECTOR, NG_TRIGGER_SELECTOR, normalizeAnimationEntry, resolveTiming, SUBSTITUTION_EXPR_START, validateStyleParams, visitDslNode} from '../util';
@@ -56,7 +57,7 @@ const SELF_TOKEN_REGEX = new RegExp(`\s*${SELF_TOKEN}\s*,?`, 'g');
  */
 export function buildAnimationAst(
     driver: AnimationDriver, metadata: AnimationMetadata|AnimationMetadata[],
-    errors: string[]): Ast<AnimationMetadataType> {
+    errors: Error[]): Ast<AnimationMetadataType> {
   return new AnimationAstBuilderVisitor(driver).build(metadata, errors);
 }
 
@@ -65,7 +66,7 @@ const ROOT_SELECTOR = '';
 export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
   constructor(private _driver: AnimationDriver) {}
 
-  build(metadata: AnimationMetadata|AnimationMetadata[], errors: string[]):
+  build(metadata: AnimationMetadata|AnimationMetadata[], errors: Error[]):
       Ast<AnimationMetadataType> {
     const context = new AnimationAstBuilderContext(errors);
     this._resetContextStyleTimingState(context);
@@ -87,8 +88,7 @@ export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
     const states: StateAst[] = [];
     const transitions: TransitionAst[] = [];
     if (metadata.name.charAt(0) == '@') {
-      context.errors.push(
-          'animation triggers cannot be prefixed with an `@` sign (e.g. trigger(\'@foo\', [...]))');
+      context.errors.push(invalidTrigger());
     }
 
     metadata.definitions.forEach(def => {
@@ -107,8 +107,7 @@ export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
         depCount += transition.depCount;
         transitions.push(transition);
       } else {
-        context.errors.push(
-            'only state() and transition() definitions can sit inside of a trigger()');
+        context.errors.push(invalidDefinition());
       }
     });
 
@@ -143,10 +142,7 @@ export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
       });
       if (missingSubs.size) {
         const missingSubsArr = iteratorToArray(missingSubs.values());
-        context.errors.push(`state("${
-            metadata
-                .name}", ...) must define default values for all the following style substitutions: ${
-            missingSubsArr.join(', ')}`);
+        context.errors.push(invalidState(metadata.name, missingSubsArr));
       }
     }
 
@@ -252,7 +248,7 @@ export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
           if (styleTuple == AUTO_STYLE) {
             styles.push(styleTuple);
           } else {
-            context.errors.push(`The provided style string value ${styleTuple} is not allowed.`);
+            context.errors.push(invalidStyleValue(styleTuple));
           }
         } else {
           styles.push(styleTuple);
@@ -307,8 +303,7 @@ export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
 
       Object.keys(tuple).forEach(prop => {
         if (!this._driver.validateStyleProperty(prop)) {
-          context.errors.push(`The provided animation property "${
-              prop}" is not a supported CSS property for animations`);
+          context.errors.push(invalidProperty(prop));
           return;
         }
 
@@ -318,11 +313,8 @@ export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
         if (collectedEntry) {
           if (startTime != endTime && startTime >= collectedEntry.startTime &&
               endTime <= collectedEntry.endTime) {
-            context.errors.push(`The CSS property "${prop}" that exists between the times of "${
-                collectedEntry.startTime}ms" and "${
-                collectedEntry
-                    .endTime}ms" is also being animated in a parallel animation between the times of "${
-                startTime}ms" and "${endTime}ms"`);
+            context.errors.push(invalidParallelAnimation(
+                prop, collectedEntry.startTime, collectedEntry.endTime, startTime, endTime));
             updateCollectedStyle = false;
           }
 
@@ -347,7 +339,7 @@ export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
       KeyframesAst {
     const ast: KeyframesAst = {type: AnimationMetadataType.Keyframes, styles: [], options: null};
     if (!context.currentAnimateTimings) {
-      context.errors.push(`keyframes() must be placed inside of a call to animate()`);
+      context.errors.push(invalidKeyframes());
       return ast;
     }
 
@@ -376,17 +368,17 @@ export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
     });
 
     if (keyframesOutOfRange) {
-      context.errors.push(`Please ensure that all keyframe offsets are between 0 and 1`);
+      context.errors.push(invalidOffset());
     }
 
     if (offsetsOutOfOrder) {
-      context.errors.push(`Please ensure that all keyframe offsets are in order`);
+      context.errors.push(keyframeOffsetsOutOfOrder());
     }
 
     const length = metadata.steps.length;
     let generatedOffset = 0;
     if (totalKeyframesWithOffsets > 0 && totalKeyframesWithOffsets < length) {
-      context.errors.push(`Not all style() steps within the declared keyframes() contain offsets`);
+      context.errors.push(keyframesMissingOffsets());
     } else if (totalKeyframesWithOffsets == 0) {
       generatedOffset = MAX_KEYFRAME_OFFSET / (length - 1);
     }
@@ -466,7 +458,7 @@ export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
   visitStagger(metadata: AnimationStaggerMetadata, context: AnimationAstBuilderContext):
       StaggerAst {
     if (!context.currentQuery) {
-      context.errors.push(`stagger() can only be used inside of query()`);
+      context.errors.push(invalidStagger());
     }
     const timings = metadata.timings === 'full' ?
         {duration: 0, delay: 0, easing: 'full'} :
@@ -515,7 +507,7 @@ export class AnimationAstBuilderContext {
   public currentTime: number = 0;
   public collectedStyles: {[selectorName: string]: {[propName: string]: StyleTimeTuple}} = {};
   public options: AnimationOptions|null = null;
-  constructor(public errors: string[]) {}
+  constructor(public errors: Error[]) {}
 }
 
 function consumeOffset(styles: ɵStyleData|string|(ɵStyleData | string)[]): number|null {
@@ -543,7 +535,7 @@ function isObject(value: any): boolean {
   return !Array.isArray(value) && typeof value == 'object';
 }
 
-function constructTimingAst(value: string|number|AnimateTimings, errors: string[]) {
+function constructTimingAst(value: string|number|AnimateTimings, errors: Error[]) {
   let timings: AnimateTimings|null = null;
   if (value.hasOwnProperty('duration')) {
     timings = value as AnimateTimings;

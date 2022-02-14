@@ -7,6 +7,7 @@
  */
 import {AnimateChildOptions, AnimateTimings, AnimationMetadataType, AnimationOptions, AnimationQueryOptions, AUTO_STYLE, ɵPRE_STYLE as PRE_STYLE, ɵStyleData} from '@angular/animations';
 
+import {invalidQuery} from '../error_helpers';
 import {AnimationDriver} from '../render/animation_driver';
 import {copyObj, copyStyles, interpolateParams, iteratorToArray, resolveTiming, resolveTimingValue, visitDslNode} from '../util';
 
@@ -108,8 +109,7 @@ export function buildAnimationTimelines(
     driver: AnimationDriver, rootElement: any, ast: Ast<AnimationMetadataType>,
     enterClassName: string, leaveClassName: string, startingStyles: ɵStyleData = {},
     finalStyles: ɵStyleData = {}, options: AnimationOptions,
-    subInstructions?: ElementInstructionMap,
-    errors: string[] = []): AnimationTimelineInstruction[] {
+    subInstructions?: ElementInstructionMap, errors: Error[] = []): AnimationTimelineInstruction[] {
   return new AnimationTimelineBuilderVisitor().buildKeyframes(
       driver, rootElement, ast, enterClassName, leaveClassName, startingStyles, finalStyles,
       options, subInstructions, errors);
@@ -120,7 +120,7 @@ export class AnimationTimelineBuilderVisitor implements AstVisitor {
       driver: AnimationDriver, rootElement: any, ast: Ast<AnimationMetadataType>,
       enterClassName: string, leaveClassName: string, startingStyles: ɵStyleData,
       finalStyles: ɵStyleData, options: AnimationOptions, subInstructions?: ElementInstructionMap,
-      errors: string[] = []): AnimationTimelineInstruction[] {
+      errors: Error[] = []): AnimationTimelineInstruction[] {
     subInstructions = subInstructions || new ElementInstructionMap();
     const context = new AnimationTimelineContext(
         driver, rootElement, subInstructions, enterClassName, leaveClassName, errors, []);
@@ -467,7 +467,7 @@ export class AnimationTimelineContext {
   constructor(
       private _driver: AnimationDriver, public element: any,
       public subInstructions: ElementInstructionMap, private _enterClassName: string,
-      private _leaveClassName: string, public errors: string[], public timelines: TimelineBuilder[],
+      private _leaveClassName: string, public errors: Error[], public timelines: TimelineBuilder[],
       initialTimeline?: TimelineBuilder) {
     this.currentTimeline = initialTimeline || new TimelineBuilder(this._driver, element, 0);
     timelines.push(this.currentTimeline);
@@ -575,7 +575,7 @@ export class AnimationTimelineContext {
 
   invokeQuery(
       selector: string, originalSelector: string, limit: number, includeSelf: boolean,
-      optional: boolean, errors: string[]): any[] {
+      optional: boolean, errors: Error[]): any[] {
     let results: any[] = [];
     if (includeSelf) {
       results.push(this.element);
@@ -593,8 +593,7 @@ export class AnimationTimelineContext {
     }
 
     if (!optional && results.length == 0) {
-      errors.push(`\`query("${originalSelector}")\` returned zero elements. (Use \`query("${
-          originalSelector}", { optional: true })\` if you wish to allow this.)`);
+      errors.push(invalidQuery(originalSelector));
     }
     return results;
   }
@@ -724,7 +723,7 @@ export class TimelineBuilder {
   }
 
   setStyles(
-      input: (ɵStyleData|string)[], easing: string|null, errors: string[],
+      input: (ɵStyleData|string)[], easing: string|null, errors: Error[],
       options?: AnimationOptions) {
     if (easing) {
       this._previousKeyframe['easing'] = easing;

@@ -23,7 +23,7 @@ import {WebAnimationsStyleNormalizer} from '../../../src/dsl/style_normalization
 
     describe('normalizeStyleValue', () => {
       function normalize(prop: string, val: string|number): string {
-        const errors: string[] = [];
+        const errors: Error[] = [];
         const result = normalizer.normalizeStyleValue(prop, prop, val, errors);
         if (errors.length) {
           throw new Error(errors.join('\n'));

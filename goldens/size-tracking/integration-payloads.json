@@ -60,8 +60,8 @@
   "animations": {
     "master": {
       "uncompressed": {
-        "runtime": 1073,
-        "main": 172602,
+        "runtime": 1070,
+        "main": 171374,
         "polyfills": 37242
       }
     }
