@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {formatRuntimeError, RuntimeErrorCode} from '../../errors';
+import {formatRuntimeError, RuntimeError, RuntimeErrorCode} from '../../errors';
 import {assertDefined, assertEqual, assertIndexInRange} from '../../util/assert';
 import {assertFirstCreatePass, assertHasParent} from '../assert';
 import {attachPatchData} from '../context_discovery';
@@ -226,7 +226,7 @@ function logUnknownElementError(
         message +=
             `2. To allow any element add 'NO_ERRORS_SCHEMA' to the '@NgModule.schemas' of this component.`;
       }
-      console.error(formatRuntimeError(RuntimeErrorCode.UNKNOWN_ELEMENT, message));
+      throw new RuntimeError(RuntimeErrorCode.UNKNOWN_ELEMENT, message);
     }
   }
 }

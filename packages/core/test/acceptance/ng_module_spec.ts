@@ -199,30 +199,30 @@ describe('NgModule', () => {
       }).not.toThrow();
     });
 
-    it('should log an error about unknown element without CUSTOM_ELEMENTS_SCHEMA for element with dash in tag name',
+    it('should throw an error about unknown element without CUSTOM_ELEMENTS_SCHEMA for element with dash in tag name',
        () => {
          @Component({template: `<custom-el></custom-el>`})
          class MyComp {
          }
 
-         const spy = spyOn(console, 'error');
          TestBed.configureTestingModule({declarations: [MyComp]});
-         const fixture = TestBed.createComponent(MyComp);
-         fixture.detectChanges();
-         expect(spy.calls.mostRecent().args[0]).toMatch(/'custom-el' is not a known element/);
+         expect(() => {
+          const fixture = TestBed.createComponent(MyComp);
+          fixture.detectChanges();
+         }).toThrowError(/NG0304: 'custom-el' is not a known element/g);
        });
 
-    it('should log an error about unknown element without CUSTOM_ELEMENTS_SCHEMA for element without dash in tag name',
+    it('should throw an error about unknown element without CUSTOM_ELEMENTS_SCHEMA for element without dash in tag name',
        () => {
          @Component({template: `<custom></custom>`})
          class MyComp {
          }
 
-         const spy = spyOn(console, 'error');
          TestBed.configureTestingModule({declarations: [MyComp]});
-         const fixture = TestBed.createComponent(MyComp);
-         fixture.detectChanges();
-         expect(spy.calls.mostRecent().args[0]).toMatch(/'custom' is not a known element/);
+         expect(() => {
+          const fixture = TestBed.createComponent(MyComp);
+          fixture.detectChanges();
+         }).toThrowError(/NG0304: 'custom' is not a known element/g);
        });
 
     it('should report unknown property bindings on ng-content', () => {
