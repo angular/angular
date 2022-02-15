@@ -42,10 +42,10 @@ export {NgSelectOption, SelectControlValueAccessor} from './directives/select_co
 export {SelectMultipleControlValueAccessor, ɵNgSelectMultipleOption} from './directives/select_multiple_control_value_accessor';
 export {AsyncValidator, AsyncValidatorFn, CheckboxRequiredValidator, EmailValidator, MaxLengthValidator, MaxValidator, MinLengthValidator, MinValidator, PatternValidator, RequiredValidator, ValidationErrors, Validator, ValidatorFn} from './directives/validators';
 export {FormBuilder, UntypedFormBuilder} from './form_builder';
-export {AbstractControl, AbstractControlOptions, FormControlStatus} from './model/abstract_model';
+export {AbstractControl, AbstractControlOptions, FormControlStatus, ɵGetProperty, ɵRawValue, ɵTypedOrUntyped, ɵValue} from './model/abstract_model';
 export {FormArray, UntypedFormArray} from './model/form_array';
-export {FormControl, FormControlOptions, UntypedFormControl, ɵFormControlCtor} from './model/form_control';
-export {FormGroup, UntypedFormGroup} from './model/form_group';
+export {FormControl, FormControlOptions, FormControlState, UntypedFormControl, ɵFormControlCtor} from './model/form_control';
+export {FormGroup, UntypedFormGroup, ɵFormGroupRawValue, ɵFormGroupValue} from './model/form_group';
 export {NG_ASYNC_VALIDATORS, NG_VALIDATORS, Validators} from './validators';
 export {VERSION} from './version';
 
