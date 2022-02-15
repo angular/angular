@@ -2375,5 +2375,33 @@ describe('FormGroup', () => {
       });
     });
   });
+
+  describe('can be extended', () => {
+    it('by a group with string keys', () => {
+      abstract class StringKeyGroup extends FormGroup {
+        override registerControl(name: string, value: AbstractControl): AbstractControl {
+          return new FormControl('');
+        }
+      }
+    });
+
+    it('by a group with generic keys', () => {
+      abstract class SpecialGroup<T extends {[key: string]: AbstractControl}> extends FormGroup {
+        override registerControl<K extends keyof T>(
+            name: K, value: AbstractControl): AbstractControl {
+          return new FormControl('');
+        }
+      }
+    });
+
+    it('by a group with unconstrained generic keys', () => {
+      abstract class SpecialGroup<T> extends FormGroup {
+        override registerControl<K extends keyof T>(
+            name: K, value: AbstractControl): AbstractControl {
+          return new FormControl('');
+        }
+      }
+    });
+  });
 });
 })();
