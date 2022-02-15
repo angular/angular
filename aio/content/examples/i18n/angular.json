@@ -44,13 +44,8 @@
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.app.json",
-            "assets": [
-              "src/favicon.ico",
-              "src/assets"
-            ],
-            "styles": [
-              "src/styles.css"
-            ],
+            "assets": ["src/favicon.ico", "src/assets"],
+            "styles": ["src/styles.css"],
             "scripts": [],
             // #docregion missing-translation-error
             "i18nMissingTranslation": "error"
@@ -82,6 +77,7 @@
               "outputHashing": "all"
             },
             "development": {
+              "localize": false,
               "buildOptimizer": false,
               "optimization": false,
               "vendorChunk": true,
@@ -91,9 +87,7 @@
             },
             // #docregion build-single-locale, build-production-french
             "fr": {
-              "localize": [
-                "fr"
-              ]
+              "localize": ["fr"]
             }
           },
           // #enddocregion build-single-locale, build-production-french
@@ -113,7 +107,7 @@
             },
             // #docregion build-single-locale, build-production-french
             "fr": {
-              "browserTarget": "angular.io-example:build:fr"
+              "browserTarget": "angular.io-example:build:development,fr"
             }
           },
           // #enddocregion build-single-locale, build-production-french
@@ -134,13 +128,8 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.spec.json",
             "karmaConfig": "karma.conf.js",
-            "assets": [
-              "src/favicon.ico",
-              "src/assets"
-            ],
-            "styles": [
-              "src/styles.css"
-            ],
+            "assets": ["src/favicon.ico", "src/assets"],
+            "styles": ["src/styles.css"],
             "scripts": []
           }
         },
