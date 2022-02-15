@@ -42,24 +42,8 @@ export {NgSelectOption, SelectControlValueAccessor} from './directives/select_co
 export {SelectMultipleControlValueAccessor, ɵNgSelectMultipleOption} from './directives/select_multiple_control_value_accessor';
 export {AsyncValidator, AsyncValidatorFn, CheckboxRequiredValidator, EmailValidator, MaxLengthValidator, MaxValidator, MinLengthValidator, MinValidator, PatternValidator, RequiredValidator, ValidationErrors, Validator, ValidatorFn} from './directives/validators';
 export {FormBuilder} from './form_builder';
-export {AbstractControl, AbstractControlOptions, FormArray, FormControl, FormControlOptions, FormControlStatus, FormGroup, ɵFormControlCtor} from './model';
+export {AbstractControl, AbstractControlOptions, FormArray, FormControl, FormControlOptions, FormControlStatus, FormGroup, UntypedFormArray, UntypedFormControl, UntypedFormGroup, ɵFormControlCtor} from './model';
 export {NG_ASYNC_VALIDATORS, NG_VALIDATORS, Validators} from './validators';
 export {VERSION} from './version';
-
-/**
- * `AnyForUntypedForms` is an alias for `any` used as part of the typed forms
- * migration.
- *
- * `AnyForUntypedForms` was inserted into your code automatically as part of a migration. To
- * continue opting out of strong types, simply replace it with `any`. To opt-in to typed forms,
- * remove
- * `<AnyForUntypedForms>` from your call site.
- *
- * This symbol is currently unused. Please do not use it. These docs will be updated when this
- * symbol is in use.
- *
- * @publicApi
- */
-export type AnyForUntypedForms = any;
 
 export * from './form_providers';

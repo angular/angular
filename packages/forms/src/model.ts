@@ -1610,6 +1610,18 @@ export const FormControl: ɵFormControlCtor =
       }
     });
 
+interface UntypedFormControlCtor {
+  new(formState: any, validatorOrOpts?: ValidatorFn|ValidatorFn[]|FormControlOptions|null,
+      asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null): UntypedFormControl;
+}
+
+export type UntypedFormControl = FormControl;
+
+/**
+ * This will be used in a future version of Angular to support typed forms. Do not use it.
+ */
+export const UntypedFormControl: UntypedFormControlCtor = FormControl;
+
 /**
  * Tracks the value and validity state of a group of `FormControl` instances.
  *
@@ -2052,6 +2064,19 @@ export class FormGroup extends AbstractControl {
     return Object.keys(this.controls).length > 0 || this.disabled;
   }
 }
+
+interface UntypedFormGroupCtor {
+  new(controls: {[key: string]: AbstractControl},
+      validatorOrOpts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|null,
+      asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null): UntypedFormGroup;
+}
+
+export type UntypedFormGroup = FormGroup;
+
+/**
+ * This will be used in a future version of Angular to support typed forms. Do not use it.
+ */
+export const UntypedFormGroup: UntypedFormGroupCtor = FormGroup;
 
 /**
  * Tracks the value and validity state of an array of `FormControl`,
@@ -2512,3 +2537,16 @@ export class FormArray extends AbstractControl {
     control._registerOnCollectionChange(this._onCollectionChange);
   }
 }
+
+interface UntypedFormArrayCtor {
+  new(controls: AbstractControl[],
+      validatorOrOpts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|null,
+      asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null): UntypedFormArray;
+}
+
+export type UntypedFormArray = FormArray;
+
+/**
+ * This will be used in a future version of Angular to support typed forms. Do not use it.
+ */
+export const UntypedFormArray: UntypedFormArrayCtor = FormArray;
