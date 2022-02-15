@@ -144,9 +144,6 @@ export class AbstractFormGroupDirective extends ControlContainer implements OnIn
 }
 
 // @public
-export type AnyForUntypedForms = any;
-
-// @public
 export interface AsyncValidator extends Validator {
     validate(control: AbstractControl): Promise<ValidationErrors | null> | Observable<ValidationErrors | null>;
 }
@@ -724,6 +721,47 @@ export class SelectMultipleControlValueAccessor extends BuiltInControlValueAcces
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<SelectMultipleControlValueAccessor, never>;
 }
+
+// @public (undocumented)
+export type UntypedFormArray = FormArray;
+
+// @public
+export const UntypedFormArray: UntypedFormArrayCtor;
+
+// @public
+export class UntypedFormBuilder {
+    constructor();
+    // (undocumented)
+    array(controlsConfig: any[], validatorOrOpts?: ValidatorFn | ValidatorFn[] | AbstractControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null): FormArray;
+    // (undocumented)
+    control(formState: any, validatorOrOpts?: ValidatorFn | ValidatorFn[] | FormControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null): FormControl;
+    // (undocumented)
+    group(controlsConfig: {
+        [key: string]: any;
+    }, options?: AbstractControlOptions | null): FormGroup;
+    // (undocumented)
+    group(controlsConfig: {
+        [key: string]: any;
+    }, options: {
+        [key: string]: any;
+    }): FormGroup;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<UntypedFormBuilder, never>;
+    // (undocumented)
+    static ɵprov: i0.ɵɵInjectableDeclaration<UntypedFormBuilder>;
+}
+
+// @public (undocumented)
+export type UntypedFormControl = FormControl;
+
+// @public
+export const UntypedFormControl: UntypedFormControlCtor;
+
+// @public (undocumented)
+export type UntypedFormGroup = FormGroup;
+
+// @public
+export const UntypedFormGroup: UntypedFormGroupCtor;
 
 // @public
 export type ValidationErrors = {

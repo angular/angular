@@ -179,3 +179,41 @@ export class FormBuilder {
     }
   }
 }
+
+/**
+ * This will be used in a future version of Angular to support typed forms. Do not use it.
+ */
+@Injectable({providedIn: ReactiveFormsModule})
+export class UntypedFormBuilder {
+  private _typedBuilder: FormBuilder;
+
+  constructor() {
+    this._typedBuilder = new FormBuilder();
+  }
+
+  group(
+      controlsConfig: {[key: string]: any},
+      options?: AbstractControlOptions|null,
+      ): FormGroup;
+  group(
+      controlsConfig: {[key: string]: any},
+      options: {[key: string]: any},
+      ): FormGroup;
+  group(
+      controlsConfig: {[key: string]: any},
+      options: AbstractControlOptions|{[key: string]: any}|null = null):
+      FormGroup{return this._typedBuilder.group(controlsConfig, options)}
+
+  control(
+      formState: any, validatorOrOpts?: ValidatorFn|ValidatorFn[]|FormControlOptions|null,
+      asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null): FormControl {
+    return this._typedBuilder.control(formState, validatorOrOpts, asyncValidator);
+  }
+
+  array(
+      controlsConfig: any[],
+      validatorOrOpts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|null,
+      asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null): FormArray {
+    return this._typedBuilder.array(controlsConfig, validatorOrOpts, asyncValidator);
+  }
+}
