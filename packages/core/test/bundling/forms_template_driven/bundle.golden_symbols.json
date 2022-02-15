@@ -144,12 +144,6 @@
     "name": "DefaultIterableDifferFactory"
   },
   {
-    "name": "DefaultKeyValueDiffer"
-  },
-  {
-    "name": "DefaultKeyValueDifferFactory"
-  },
-  {
     "name": "DefaultValueAccessor"
   },
   {
@@ -232,12 +226,6 @@
   },
   {
     "name": "KeyEventsPlugin"
-  },
-  {
-    "name": "KeyValueChangeRecord_"
-  },
-  {
-    "name": "KeyValueDiffers"
   },
   {
     "name": "LOCALE_DATA"
@@ -750,16 +738,7 @@
     "name": "defaultErrorLogger"
   },
   {
-    "name": "defaultIterableDiffers"
-  },
-  {
     "name": "defaultIterableDiffersFactory"
-  },
-  {
-    "name": "defaultKeyValueDiffers"
-  },
-  {
-    "name": "defaultKeyValueDiffersFactory"
   },
   {
     "name": "defaultScheduler"
@@ -1137,9 +1116,6 @@
     "name": "isInlineTemplate"
   },
   {
-    "name": "isJsObject"
-  },
-  {
     "name": "isLContainer"
   },
   {
@@ -1192,9 +1168,6 @@
   },
   {
     "name": "iterator"
-  },
-  {
-    "name": "keyValDiff"
   },
   {
     "name": "keyValueArrayGet"

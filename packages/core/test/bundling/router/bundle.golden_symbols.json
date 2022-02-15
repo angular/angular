@@ -159,18 +159,6 @@
     "name": "DefaultIfEmptySubscriber"
   },
   {
-    "name": "DefaultIterableDiffer"
-  },
-  {
-    "name": "DefaultIterableDifferFactory"
-  },
-  {
-    "name": "DefaultKeyValueDiffer"
-  },
-  {
-    "name": "DefaultKeyValueDifferFactory"
-  },
-  {
     "name": "DefaultTitleStrategy"
   },
   {
@@ -270,19 +258,7 @@
     "name": "ItemComponent"
   },
   {
-    "name": "IterableChangeRecord_"
-  },
-  {
-    "name": "IterableDiffers"
-  },
-  {
     "name": "KeyEventsPlugin"
-  },
-  {
-    "name": "KeyValueChangeRecord_"
-  },
-  {
-    "name": "KeyValueDiffers"
   },
   {
     "name": "LOCALE_DATA"
@@ -774,9 +750,6 @@
     "name": "_DOM"
   },
   {
-    "name": "_DuplicateMap"
-  },
-  {
     "name": "_NullComponentFactoryResolver"
   },
   {
@@ -1030,18 +1003,6 @@
   },
   {
     "name": "defaultIfEmpty"
-  },
-  {
-    "name": "defaultIterableDiffers"
-  },
-  {
-    "name": "defaultIterableDiffersFactory"
-  },
-  {
-    "name": "defaultKeyValueDiffers"
-  },
-  {
-    "name": "defaultKeyValueDiffersFactory"
   },
   {
     "name": "defaultMalformedUriErrorHandler"
@@ -1332,9 +1293,6 @@
     "name": "getPlatform"
   },
   {
-    "name": "getPreviousIndex"
-  },
-  {
     "name": "getProjectionNodes"
   },
   {
@@ -1497,16 +1455,10 @@
     "name": "isInlineTemplate"
   },
   {
-    "name": "isJsObject"
-  },
-  {
     "name": "isLContainer"
   },
   {
     "name": "isLView"
-  },
-  {
-    "name": "isListLikeIterable"
   },
   {
     "name": "isMatrixParams"
@@ -1555,9 +1507,6 @@
   },
   {
     "name": "joinWithSlash"
-  },
-  {
-    "name": "keyValDiff"
   },
   {
     "name": "last2"
@@ -1942,9 +1891,6 @@
   },
   {
     "name": "toRefArray"
-  },
-  {
-    "name": "trackByIdentity"
   },
   {
     "name": "tree"
