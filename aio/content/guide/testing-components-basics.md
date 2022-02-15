@@ -11,7 +11,7 @@ the DOM as described by its template.
 
 The Angular `TestBed` facilitates this kind of testing as you'll see in the following sections.
 But in many cases, _testing the component class alone_, without DOM involvement,
-can validate much of the component's behavior in an straightforward, more obvious way.
+can validate much of the component's behavior in a straightforward, more obvious way.
 
 <div class="alert is-helpful">
 
