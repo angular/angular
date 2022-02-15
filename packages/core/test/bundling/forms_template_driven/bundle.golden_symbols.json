@@ -1059,6 +1059,9 @@
     "name": "isDirectiveHost"
   },
   {
+    "name": "isFormControlState"
+  },
+  {
     "name": "isForwardRef"
   },
   {
