@@ -225,11 +225,6 @@ export const DEV_APP_ROUTES: Routes = [
       import('./mdc-select/mdc-select-demo-module').then(m => m.MdcSelectDemoModule),
   },
   {
-    path: 'mdc-sidenav',
-    loadChildren: () =>
-      import('./mdc-sidenav/mdc-sidenav-demo-module').then(m => m.MdcSidenavDemoModule),
-  },
-  {
     path: 'mdc-snack-bar',
     loadChildren: () =>
       import('./mdc-snack-bar/mdc-snack-bar-demo-module').then(m => m.MdcSnackBarDemoModule),

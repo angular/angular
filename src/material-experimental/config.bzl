@@ -32,7 +32,6 @@ entryPoints = [
     "mdc-radio/testing",
     "mdc-select",
     "mdc-select/testing",
-    "mdc-sidenav",
     "mdc-slide-toggle",
     "mdc-slide-toggle/testing",
     "mdc-slider",

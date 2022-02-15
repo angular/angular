@@ -59,7 +59,6 @@ export const commitMessage: CommitMessageConfig = {
     'material-experimental/mdc-progress-spinner',
     'material-experimental/mdc-radio',
     'material-experimental/mdc-select',
-    'material-experimental/mdc-sidenav',
     'material-experimental/mdc-slide-toggle',
     'material-experimental/mdc-slider',
     'material-experimental/mdc-snack-bar',

@@ -102,7 +102,6 @@ export class DevAppLayout {
     {name: 'MDC Tabs', route: '/mdc-tabs'},
     {name: 'MDC Tooltip', route: '/mdc-tooltip'},
     {name: 'MDC Select', route: '/mdc-select'},
-    {name: 'MDC Sidenav', route: '/mdc-sidenav'},
     {name: 'MDC Slide Toggle', route: '/mdc-slide-toggle'},
     {name: 'MDC Slider', route: '/mdc-slider'},
     {name: 'MDC Snack Bar', route: '/mdc-snack-bar'},

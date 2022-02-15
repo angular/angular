@@ -1,6 +1,5 @@
 export const config = {
-  // The MDC sidenav hasn't been implemented yet.
-  skippedPackages: ['mdc-sidenav'],
+  skippedPackages: [] as string[],
   // We have to export some underscored symbols so that they can be used with MDC.
   // Exclude them from this check since they aren't part of the public API.
   skippedSymbols: [/^_/],

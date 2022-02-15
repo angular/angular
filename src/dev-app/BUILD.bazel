@@ -63,7 +63,6 @@ ng_module(
         "//src/dev-app/mdc-progress-spinner",
         "//src/dev-app/mdc-radio",
         "//src/dev-app/mdc-select",
-        "//src/dev-app/mdc-sidenav",
         "//src/dev-app/mdc-slide-toggle",
         "//src/dev-app/mdc-slider",
         "//src/dev-app/mdc-snack-bar",
