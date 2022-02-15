@@ -241,7 +241,7 @@ describe('MatMultiYearView', () => {
           dispatchFakeEvent(year2017Cell, 'focus');
           fixture.detectChanges();
 
-          expect(calendarInstance.date).toEqual(new Date(2017, JAN, 1));
+          expect(calendarInstance.date).toEqual(new Date(2017, JAN, 3));
           expect(focusSpy).not.toHaveBeenCalled();
         });
       });
