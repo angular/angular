@@ -174,18 +174,6 @@
     "name": "DefaultDomRenderer2"
   },
   {
-    "name": "DefaultIterableDiffer"
-  },
-  {
-    "name": "DefaultIterableDifferFactory"
-  },
-  {
-    "name": "DefaultKeyValueDiffer"
-  },
-  {
-    "name": "DefaultKeyValueDifferFactory"
-  },
-  {
     "name": "DomEventsPlugin"
   },
   {
@@ -261,19 +249,7 @@
     "name": "Injector"
   },
   {
-    "name": "IterableChangeRecord_"
-  },
-  {
-    "name": "IterableDiffers"
-  },
-  {
     "name": "KeyEventsPlugin"
-  },
-  {
-    "name": "KeyValueChangeRecord_"
-  },
-  {
-    "name": "KeyValueDiffers"
   },
   {
     "name": "LEAVE_TOKEN_REGEX"
@@ -546,9 +522,6 @@
     "name": "_DOM"
   },
   {
-    "name": "_DuplicateMap"
-  },
-  {
     "name": "_IS_WEBKIT"
   },
   {
@@ -607,9 +580,6 @@
   },
   {
     "name": "_renderCompCount"
-  },
-  {
-    "name": "_symbolIterator"
   },
   {
     "name": "_testabilityGetter"
@@ -778,18 +748,6 @@
   },
   {
     "name": "defaultErrorLogger"
-  },
-  {
-    "name": "defaultIterableDiffers"
-  },
-  {
-    "name": "defaultIterableDiffersFactory"
-  },
-  {
-    "name": "defaultKeyValueDiffers"
-  },
-  {
-    "name": "defaultKeyValueDiffersFactory"
   },
   {
     "name": "defaultScheduler"
@@ -966,9 +924,6 @@
     "name": "getPlatform"
   },
   {
-    "name": "getPreviousIndex"
-  },
-  {
     "name": "getProjectionNodes"
   },
   {
@@ -979,9 +934,6 @@
   },
   {
     "name": "getStyleAttributeString"
-  },
-  {
-    "name": "getSymbolIterator"
   },
   {
     "name": "getSymbolIterator2"
@@ -1089,16 +1041,10 @@
     "name": "isInlineTemplate"
   },
   {
-    "name": "isJsObject"
-  },
-  {
     "name": "isLContainer"
   },
   {
     "name": "isLView"
-  },
-  {
-    "name": "isListLikeIterable"
   },
   {
     "name": "isNode"
@@ -1138,9 +1084,6 @@
   },
   {
     "name": "iteratorToArray"
-  },
-  {
-    "name": "keyValDiff"
   },
   {
     "name": "leaveDI"
@@ -1420,9 +1363,6 @@
   },
   {
     "name": "toRefArray"
-  },
-  {
-    "name": "trackByIdentity"
   },
   {
     "name": "transition"

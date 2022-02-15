@@ -3,10 +3,16 @@
     "name": "ALLOW_MULTIPLE_PLATFORMS"
   },
   {
+    "name": "APPLICATION_MODULE_PROVIDERS"
+  },
+  {
     "name": "APP_BOOTSTRAP_LISTENER"
   },
   {
     "name": "APP_ID"
+  },
+  {
+    "name": "APP_ID_RANDOM_PROVIDER"
   },
   {
     "name": "APP_INITIALIZER"
@@ -87,6 +93,9 @@
     "name": "CommonModule"
   },
   {
+    "name": "Compiler"
+  },
+  {
     "name": "ComponentFactory"
   },
   {
@@ -112,6 +121,9 @@
   },
   {
     "name": "ControlContainer"
+  },
+  {
+    "name": "DEFAULT_CURRENCY_CODE"
   },
   {
     "name": "DEFAULT_VALUE_ACCESSOR"
@@ -195,6 +207,9 @@
     "name": "INJECTOR_SCOPE"
   },
   {
+    "name": "Inject"
+  },
+  {
     "name": "InjectFlags"
   },
   {
@@ -213,10 +228,16 @@
     "name": "KeyEventsPlugin"
   },
   {
+    "name": "LOCALE_DATA"
+  },
+  {
     "name": "LOCALE_ID2"
   },
   {
     "name": "LifecycleHooksFeature"
+  },
+  {
+    "name": "LocaleDataIndex"
   },
   {
     "name": "MODIFIER_KEYS"
@@ -312,6 +333,12 @@
     "name": "NgForm"
   },
   {
+    "name": "NgLocaleLocalization"
+  },
+  {
+    "name": "NgLocalization"
+  },
+  {
     "name": "NgModel"
   },
   {
@@ -360,6 +387,9 @@
     "name": "PlatformRef"
   },
   {
+    "name": "Plural"
+  },
+  {
     "name": "R3Injector"
   },
   {
@@ -400,6 +430,9 @@
   },
   {
     "name": "RuntimeError"
+  },
+  {
+    "name": "SCHEDULER"
   },
   {
     "name": "SERVER_TRANSITION_PROVIDERS"
@@ -861,6 +894,9 @@
     "name": "getLViewParent"
   },
   {
+    "name": "getLocaleData"
+  },
+  {
     "name": "getNativeByTNode"
   },
   {
@@ -1000,9 +1036,6 @@
   },
   {
     "name": "initTNodeFlags"
-  },
-  {
-    "name": "inject"
   },
   {
     "name": "injectArgs"
@@ -1153,6 +1186,9 @@
   },
   {
     "name": "leaveViewLight"
+  },
+  {
+    "name": "locale_en_default"
   },
   {
     "name": "lookupTokenUsingModuleInjector"
@@ -1480,6 +1516,9 @@
   },
   {
     "name": "trackByIdentity"
+  },
+  {
+    "name": "u"
   },
   {
     "name": "unwrapRNode"
