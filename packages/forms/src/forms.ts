@@ -45,7 +45,7 @@ export {FormBuilder, UntypedFormBuilder} from './form_builder';
 export {AbstractControl, AbstractControlOptions, FormControlStatus} from './model/abstract_model';
 export {FormArray, UntypedFormArray} from './model/form_array';
 export {FormControl, FormControlOptions, UntypedFormControl, ɵFormControlCtor} from './model/form_control';
-export {FormGroup, UntypedFormGroup} from './model/form_group';
+export {FormGroup, FormGroupRawValue, FormGroupValue, FormRecord, UntypedFormGroup} from './model/form_group';
 export {NG_ASYNC_VALIDATORS, NG_VALIDATORS, Validators} from './validators';
 export {VERSION} from './version';
 

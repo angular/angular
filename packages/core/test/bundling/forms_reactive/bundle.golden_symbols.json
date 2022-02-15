@@ -1098,7 +1098,7 @@
     "name": "isEmptyInputValue"
   },
   {
-    "name": "isFormControl"
+    "name": "isFormState"
   },
   {
     "name": "isForwardRef"
@@ -1356,7 +1356,7 @@
     "name": "removeFromArray"
   },
   {
-    "name": "removeListItem"
+    "name": "removeListItem2"
   },
   {
     "name": "removeStyle"

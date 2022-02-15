@@ -12,7 +12,15 @@ import {removeListItem} from '../util';
 import {AbstractControl, AbstractControlOptions, isOptionsObj, pickAsyncValidators, pickValidators} from './abstract_model';
 
 /**
- * Interface for options provided to a {@link FormControl}.
+ * FormState is a boxed form value. It is an object with a `value` key and a `disabled` key.
+ */
+export interface FormState<T> {
+  value: T;
+  disabled: boolean;
+}
+
+/**
+ * Interface for options provided to a `FormControl`.
  *
  * This interface extends all options from {@link AbstractControlOptions}, plus some options
  * unique to `FormControl`.
@@ -22,7 +30,7 @@ import {AbstractControl, AbstractControlOptions, isOptionsObj, pickAsyncValidato
 export interface FormControlOptions extends AbstractControlOptions {
   /**
    * @description
-   * Whether to use the initial value used to construct the {@link FormControl} as its default value
+   * Whether to use the initial value used to construct the `FormControl` as its default value
    * as well. If this option is false or not provided, the default value of a FormControl is `null`.
    * When a FormControl is reset without an explicit value, its value reverts to
    * its default value.
@@ -129,13 +137,13 @@ export interface FormControlOptions extends AbstractControlOptions {
  * console.log(control.status); // 'DISABLED'
  * ```
  */
-export interface FormControl extends AbstractControl {
+export interface FormControl<TValue = any> extends AbstractControl<TValue> {
   /**
    * The default value of this FormControl, used whenever the control is reset without an explicit
    * value. See {@link FormControlOptions#initialValueIsDefault} for more information on configuring
    * a default value.
    */
-  readonly defaultValue: any;
+  readonly defaultValue: TValue;
 
   /** @internal */
   _onChange: Function[];
@@ -145,7 +153,7 @@ export interface FormControl extends AbstractControl {
    * It is `any` because the value is untyped.
    * @internal
    */
-  _pendingValue: any;
+  _pendingValue: TValue;
 
   /** @internal */
   _pendingChange: boolean;
@@ -173,7 +181,7 @@ export interface FormControl extends AbstractControl {
    * event to update the model.
    *
    */
-  setValue(value: any, options?: {
+  setValue(value: TValue, options?: {
     onlySelf?: boolean,
     emitEvent?: boolean,
     emitModelToViewChange?: boolean,
@@ -189,7 +197,7 @@ export interface FormControl extends AbstractControl {
    *
    * @see `setValue` for options
    */
-  patchValue(value: any, options?: {
+  patchValue(value: TValue, options?: {
     onlySelf?: boolean,
     emitEvent?: boolean,
     emitModelToViewChange?: boolean,
@@ -229,7 +237,13 @@ export interface FormControl extends AbstractControl {
    * When false, no events are emitted.
    *
    */
-  reset(formState?: any, options?: {onlySelf?: boolean, emitEvent?: boolean}): void;
+  reset(formState?: TValue|FormState<TValue>, options?: {onlySelf?: boolean, emitEvent?: boolean}):
+      void;
+
+  /**
+   * For a simple FormControl, the raw value is equivalent to the value.
+   */
+  getRawValue(): TValue;
 
   /**
    * @internal
@@ -283,7 +297,7 @@ export interface FormControl extends AbstractControl {
   _syncPendingControls(): boolean;
 }
 
-type FormControlInterface = FormControl;
+type FormControlInterface<TValue = any> = FormControl<TValue>;
 
 /**
  * Various available constructors for `FormControl`.
@@ -297,7 +311,7 @@ export interface ɵFormControlCtor {
   /**
    * Construct a FormControl with no initial value or validators.
    */
-  new(): FormControl;
+  new(): FormControl<any>;
 
   /**
    * Creates a new `FormControl` instance.
@@ -309,34 +323,44 @@ export interface ɵFormControlCtor {
    * such functions, or a `FormControlOptions` object that contains validation functions
    * and a validation trigger.
    *
-   * @param asyncValidator A single async validator or array of async validator functions.
+   * @param asyncValidator A single async validator or array of async validator functions
    */
-  new(formState: any, validatorOrOpts?: ValidatorFn|ValidatorFn[]|FormControlOptions|null,
-      asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null): FormControl;
+  new<T = any>(value: FormState<T>|T, opts: FormControlOptions&{initialValueIsDefault: true}):
+      FormControl<T>;
+  new<T = any>(
+      value: FormState<T>|T, validatorOrOpts?: ValidatorFn|ValidatorFn[]|FormControlOptions|null,
+      asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null): FormControl<T|null>;
 
   /**
    * The presence of an explicit `prototype` property provides backwards-compatibility for apps that
    * manually inspect the prototype chain.
    */
-  prototype: FormControl;
+  prototype: FormControl<any>;
+}
+
+function isFormState<T>(formState: unknown): formState is FormState<T> {
+  return typeof formState === 'object' && formState !== null &&
+      Object.keys(formState).length === 2 && 'value' in formState && 'disabled' in formState;
 }
 
 export const FormControl: ɵFormControlCtor =
-    (class FormControl extends AbstractControl implements FormControlInterface {
+    (class FormControl<TValue = any> extends AbstractControl<
+         TValue> implements FormControlInterface<TValue> {
       /** @publicApi */
-      public readonly defaultValue: any = null;
+      public readonly defaultValue: TValue = null as unknown as TValue;
 
       /** @internal */
-      _onChange: Function[] = [];
+      _onChange: Array<Function> = [];
 
       /** @internal */
-      _pendingValue: any;
+      _pendingValue!: TValue;
 
       /** @internal */
       _pendingChange: boolean = false;
 
       constructor(
-          formState: any = null,
+          // formState and defaultValue will only be null if T is nullable
+          formState: FormState<TValue>|TValue = null as unknown as TValue,
           validatorOrOpts?: ValidatorFn|ValidatorFn[]|FormControlOptions|null,
           asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null) {
         super(
@@ -353,21 +377,21 @@ export const FormControl: ɵFormControlCtor =
           emitEvent: !!this.asyncValidator
         });
         if (isOptionsObj(validatorOrOpts) && validatorOrOpts.initialValueIsDefault) {
-          if (this._isBoxedValue(formState)) {
-            (this.defaultValue as any) = formState.value;
+          if (isFormState(formState)) {
+            this.defaultValue = formState.value;
           } else {
-            (this.defaultValue as any) = formState;
+            this.defaultValue = formState;
           }
         }
       }
 
-      override setValue(value: any, options: {
+      override setValue(value: TValue, options: {
         onlySelf?: boolean,
         emitEvent?: boolean,
         emitModelToViewChange?: boolean,
         emitViewToModelChange?: boolean
       } = {}): void {
-        (this as {value: any}).value = this._pendingValue = value;
+        (this as {value: TValue}).value = this._pendingValue = value;
         if (this._onChange.length && options.emitModelToViewChange !== false) {
           this._onChange.forEach(
               (changeFn) => changeFn(this.value, options.emitViewToModelChange !== false));
@@ -375,7 +399,7 @@ export const FormControl: ɵFormControlCtor =
         this.updateValueAndValidity(options);
       }
 
-      override patchValue(value: any, options: {
+      override patchValue(value: TValue, options: {
         onlySelf?: boolean,
         emitEvent?: boolean,
         emitModelToViewChange?: boolean,
@@ -385,9 +409,9 @@ export const FormControl: ɵFormControlCtor =
       }
 
       override reset(
-          formState: any = this.defaultValue,
+          formState: TValue|FormState<TValue> = this.defaultValue,
           options: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
-        this._applyFormState(formState);
+        this._applyFormState(formState as FormState<TValue>| TValue);
         this.markAsPristine(options);
         this.markAsUntouched(options);
         this.setValue(this.value, options);
@@ -441,13 +465,13 @@ export const FormControl: ɵFormControlCtor =
         return false;
       }
 
-      private _applyFormState(formState: any) {
-        if (this._isBoxedValue(formState)) {
-          (this as {value: any}).value = this._pendingValue = formState.value;
+      private _applyFormState(formState: FormState<TValue>|TValue) {
+        if (isFormState(formState)) {
+          (this as {value: TValue}).value = this._pendingValue = formState.value;
           formState.disabled ? this.disable({onlySelf: true, emitEvent: false}) :
                                this.enable({onlySelf: true, emitEvent: false});
         } else {
-          (this as {value: any}).value = this._pendingValue = formState;
+          (this as {value: TValue}).value = this._pendingValue = formState;
         }
       }
     });
@@ -462,7 +486,7 @@ interface UntypedFormControlCtor {
    * The presence of an explicit `prototype` property provides backwards-compatibility for apps that
    * manually inspect the prototype chain.
    */
-  prototype: FormControl;
+  prototype: FormControl<any>;
 }
 
 /**
@@ -470,7 +494,7 @@ interface UntypedFormControlCtor {
  * Note: this is used for migration purposes only. Please avoid using it directly in your code and
  * prefer `FormControl` instead, unless you have been migrated to it automatically.
  */
-export type UntypedFormControl = FormControl;
+export type UntypedFormControl = FormControl<any>;
 
 export const UntypedFormControl: UntypedFormControlCtor = FormControl;
 
