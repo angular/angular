@@ -7,7 +7,6 @@
  */
 
 import {ChangeDetectorRef as ViewEngine_ChangeDetectorRef} from '../change_detection/change_detector_ref';
-import {InjectionToken} from '../di/injection_token';
 import {Injector} from '../di/injector';
 import {InjectFlags} from '../di/interface/injector';
 import {ProviderToken} from '../di/provider_token';
@@ -36,7 +35,6 @@ import {createElementNode, writeDirectClass} from './node_manipulation';
 import {extractAttrsAndClassesFromSelector, stringifyCSSSelectorList} from './node_selector_matcher';
 import {enterView, leaveView} from './state';
 import {setUpAttributes} from './util/attrs_utils';
-import {defaultScheduler} from './util/misc_utils';
 import {getTNode} from './util/view_utils';
 import {RootViewRef, ViewRef} from './view_ref';
 
@@ -70,15 +68,6 @@ function getNamespace(elementName: string): string|null {
   const name = elementName.toLowerCase();
   return name === 'svg' ? SVG_NAMESPACE : (name === 'math' ? MATH_ML_NAMESPACE : null);
 }
-
-/**
- * A change detection scheduler token for {@link RootContext}. This token is the default value used
- * for the default `RootContext` found in the {@link ROOT_CONTEXT} token.
- */
-export const SCHEDULER = new InjectionToken<((fn: () => void) => void)>('SCHEDULER_TOKEN', {
-  providedIn: 'root',
-  factory: () => defaultScheduler,
-});
 
 function createChainedInjector(rootViewInjector: Injector, moduleInjector: Injector): Injector {
   return {

@@ -17,7 +17,6 @@ import {DEFAULT_CURRENCY_CODE, LOCALE_ID} from './i18n/tokens';
 import {ComponentFactoryResolver} from './linker';
 import {Compiler} from './linker/compiler';
 import {NgModule} from './metadata';
-import {SCHEDULER} from './render3/component_ref';
 import {NgZone} from './zone';
 
 declare const $localize: {locale?: string};
@@ -62,7 +61,6 @@ export const APPLICATION_MODULE_PROVIDERS: StaticProvider[] = [
     useClass: ApplicationRef,
     deps: [NgZone, Injector, ErrorHandler, ComponentFactoryResolver, ApplicationInitStatus]
   },
-  {provide: SCHEDULER, deps: [NgZone], useFactory: zoneSchedulerFactory},
   {
     provide: ApplicationInitStatus,
     useClass: ApplicationInitStatus,
@@ -77,27 +75,6 @@ export const APPLICATION_MODULE_PROVIDERS: StaticProvider[] = [
   },
   {provide: DEFAULT_CURRENCY_CODE, useValue: USD_CURRENCY_CODE},
 ];
-
-/**
- * Schedule work at next available slot.
- *
- * In Ivy this is just `requestAnimationFrame`. For compatibility reasons when bootstrapped
- * using `platformRef.bootstrap` we need to use `NgZone.onStable` as the scheduling mechanism.
- * This overrides the scheduling mechanism in Ivy to `NgZone.onStable`.
- *
- * @param ngZone NgZone to use for scheduling.
- */
-export function zoneSchedulerFactory(ngZone: NgZone): (fn: () => void) => void {
-  let queue: (() => void)[] = [];
-  ngZone.onStable.subscribe(() => {
-    while (queue.length) {
-      queue.pop()!();
-    }
-  });
-  return function(fn: () => void) {
-    queue.push(fn);
-  };
-}
 
 /**
  * Configures the root injector for an app with
