@@ -18,22 +18,22 @@ import {addValidators, composeAsyncValidators, composeValidators, hasValidator, 
 const NG_DEV_MODE = typeof ngDevMode === 'undefined' || !!ngDevMode;
 
 /**
- * Constant indicating that a control is valid, meaning that no errors exist in the input value.
+ * Reports that a control is valid, meaning that no errors exist in the input value.
  *
  * @see `status`
  */
 export const VALID = 'VALID';
 
 /**
- * Constant indicating that a control is invalid, meaning that an error exists in the input value.
+ * Reports that a control is invalid, meaning that an error exists in the input value.
  *
  * @see `status`
  */
 export const INVALID = 'INVALID';
 
 /**
- * Constant indicating that a control is pending, meaning that that async validation is occurring
- * and errors are not yet available for the input value.
+ * Reports that a control is pending, meaning that that async validation is occurring and
+ * errors are not yet available for the input value.
  *
  * @see `markAsPending`
  * @see `status`
@@ -41,7 +41,7 @@ export const INVALID = 'INVALID';
 export const PENDING = 'PENDING';
 
 /**
- * Constant indicating that a control is disabled, meaning that the control is exempt from ancestor
+ * Reports that a control is disabled, meaning that the control is exempt from ancestor
  * calculations of validity or value.
  *
  * @see `markAsDisabled`
@@ -53,13 +53,13 @@ export const DISABLED = 'DISABLED';
  * A form can have several different statuses. Each
  * possible status is returned as a string literal.
  *
- * * **VALID**: Reports that a FormControl is valid, meaning that no errors exist in the input
+ * * **VALID**: Reports that a control is valid, meaning that no errors exist in the input
  * value.
- * * **INVALID**: Reports that a FormControl is invalid, meaning that an error exists in the input
+ * * **INVALID**: Reports that a control is invalid, meaning that an error exists in the input
  * value.
- * * **PENDING**: Reports that a FormControl is pending, meaning that that async validation is
+ * * **PENDING**: Reports that a control is pending, meaning that that async validation is
  * occurring and errors are not yet available for the input value.
- * * **DISABLED**: Reports that a FormControl is
+ * * **DISABLED**: Reports that a control is
  * disabled, meaning that the control is exempt from ancestor calculations of validity or value.
  *
  * @publicApi
@@ -145,14 +145,109 @@ export function assertControlPresent(parent: any, isGroup: boolean, key: string|
 }
 
 export function assertAllValuesPresent(control: any, isGroup: boolean, value: any): void {
-  control._forEachChild(((_: unknown, key: string|number) => {
-                          if (value[key] === undefined) {
-                            throw new RuntimeError(
-                                RuntimeErrorCode.MISSING_CONTROL_VALUE,
-                                NG_DEV_MODE ? missingControlValueError(isGroup, key) : '');
-                          }
-                        }) as any);
+  control._forEachChild((_: unknown, key: string|number) => {
+    if (value[key] === undefined) {
+      throw new RuntimeError(
+          RuntimeErrorCode.MISSING_CONTROL_VALUE,
+          NG_DEV_MODE ? missingControlValueError(isGroup, key) : '');
+    }
+  });
 }
+
+// IsAny checks if T is `any`, by checking a condition that couldn't possibly be true otherwise.
+export type ɵIsAny<T, Y, N> = 0 extends(1&T) ? Y : N;
+
+/**
+ * `TypedOrUntyped` allows one of two different types to be selected, depending on whether the Forms
+ * class it's applied to is typed or not.
+ *
+ * This is for internal Angular usage to support typed forms; do not directly use it.
+ */
+export type ɵTypedOrUntyped<T, Typed, Untyped> = ɵIsAny<T, Untyped, Typed>;
+
+/**
+ * Value gives the type of `.value` in an `AbstractControl`.
+ *
+ * For internal use only.
+ */
+export type ɵValue<T extends AbstractControl|undefined> =
+    T extends AbstractControl<any, any>? T['value'] : never;
+
+/**
+ * RawValue gives the type of `.getRawValue()` in an `AbstractControl`.
+ *
+ * For internal use only.
+ */
+export type ɵRawValue<T extends AbstractControl|undefined> = T extends AbstractControl<any, any>?
+    (T['setValue'] extends((v: infer R) => void) ? R : never) :
+    never;
+
+// Disable clang-format to produce clearer formatting for these multiline types.
+// clang-format off
+ 
+/**
+* Tokenize splits a string literal S by a delimeter D.
+*/
+export type ɵTokenize<S extends string, D extends string> =
+    string extends S ? string[] : /* S must be a literal */
+                      S extends `${infer T}${D}${infer U}` ? [T, ...ɵTokenize<U, D>] :
+                      [S] /* Base case */
+    ;
+
+/**
+* CoerceStrArrToNumArr accepts an array of strings, and converts any numeric string to a number.
+*/
+export type ɵCoerceStrArrToNumArr<S> =
+    // Extract the head of the array.                                       
+    S extends [infer Head, ...infer Tail] ?
+    // Using a template literal type, coerce the head to `number` if possible.
+    // Then, recurse on the tail.
+    Head extends `${number}` ?
+      [number, ...ɵCoerceStrArrToNumArr<Tail>] :
+      [Head, ...ɵCoerceStrArrToNumArr<Tail>] :
+    [];
+
+/**
+* Navigate takes a type T and an array K, and returns the type of T[K[0]][K[1]][K[2]]...
+*/
+export type ɵNavigate<T, K extends(Array<string|number>)> = 
+    T extends object ? /* T must be indexable (object or array) */
+    (K extends [infer Head, ...infer Tail] ? /* Split K into head and tail */
+        (Head extends keyof T ? /* head(K) must index T */
+              (Tail extends(string|number)[] ? /* tail(K) must be an array */
+              [] extends Tail ? T[Head] : /* base case: K can be split, but Tail is empty */
+                  (ɵNavigate<T[Head], Tail>) /* explore T[head(K)] by tail(K) */ :
+              any) /* tail(K) was not an array, give up */ :
+              never) /* head(K) does not index T, give up */ :
+        any) /* K cannot be split, give up */ :
+    any /* T is not indexable, give up */
+    ;
+
+/**
+ * ɵWriteable removes readonly from all keys.
+ */
+export type ɵWriteable<T> = {
+  -readonly[P in keyof T]: T[P]
+};
+
+/**
+ * GetProperty takes a type T and some property names or indices K.
+ * If K is a dot-separated string, it is tokenized into an array before proceeding.
+ * Then, the type of the nested property at K is computed: T[K[0]][K[1]][K[2]]...
+ * This works with both objects, which are indexed by property name, and arrays, which are indexed
+ * numerically.
+ *
+ * For internal use only.
+ */
+export type ɵGetProperty<T, K> =
+    // K is a string
+    K extends string ? ɵGetProperty<T, ɵCoerceStrArrToNumArr<ɵTokenize<K, '.'>>> : 
+    // Is is an array
+    ɵWriteable<K> extends Array<string|number> ? ɵNavigate<T, ɵWriteable<K>> :
+    // Fall through permissively if we can't calculate the type of K.
+    any;
+
+// clang-format on
 
 /**
  * This is the base class for `FormControl`, `FormGroup`, and `FormArray`.
@@ -162,13 +257,16 @@ export function assertAllValuesPresent(control: any, isGroup: boolean, value: an
  * that are shared between all sub-classes, like `value`, `valid`, and `dirty`. It shouldn't be
  * instantiated directly.
  *
+ * The first type parameter TValue represents the value type of the control (`control.value`).
+ * The optional type parameter TRawValue  represents the raw value type (`control.getRawValue()`).
+ *
  * @see [Forms Guide](/guide/forms)
  * @see [Reactive Forms Guide](/guide/reactive-forms)
  * @see [Dynamic Forms Guide](/guide/dynamic-form)
  *
  * @publicApi
  */
-export abstract class AbstractControl {
+export abstract class AbstractControl<TValue = any, TRawValue extends TValue = TValue> {
   /** @internal */
   _pendingDirty = false;
 
@@ -239,7 +337,7 @@ export abstract class AbstractControl {
    * * For a `FormArray`, the values of enabled controls as an array.
    *
    */
-  public readonly value: any;
+  public readonly value!: TValue;
 
   /**
    * Initialize the AbstractControl instance.
@@ -412,7 +510,7 @@ export abstract class AbstractControl {
    * the UI or programmatically. It also emits an event each time you call enable() or disable()
    * without passing along {emitEvent: false} as a function argument.
    */
-  public readonly valueChanges!: Observable<any>;
+  public readonly valueChanges!: Observable<TValue>;
 
   /**
    * A multicasting observable that emits an event every time the validation `status` of the control
@@ -737,7 +835,7 @@ export abstract class AbstractControl {
     this._updateValue();
 
     if (opts.emitEvent !== false) {
-      (this.valueChanges as EventEmitter<any>).emit(this.value);
+      (this.valueChanges as EventEmitter<TValue>).emit(this.value);
       (this.statusChanges as EventEmitter<FormControlStatus>).emit(this.status);
     }
 
@@ -779,7 +877,7 @@ export abstract class AbstractControl {
   }
 
   private _updateAncestors(
-      opts: {onlySelf?: boolean, emitEvent?: boolean, skipPristineCheck?: boolean}) {
+      opts: {onlySelf?: boolean, emitEvent?: boolean, skipPristineCheck?: boolean}): void {
     if (this._parent && !opts.onlySelf) {
       this._parent.updateValueAndValidity(opts);
       if (!opts.skipPristineCheck) {
@@ -790,26 +888,28 @@ export abstract class AbstractControl {
   }
 
   /**
-   * @param parent Sets the parent of the control
+   * Sets the parent of the control
+   *
+   * @param parent The new parent.
    */
-  setParent(parent: FormGroup|FormArray): void {
+  setParent(parent: FormGroup|FormArray|null): void {
     this._parent = parent;
   }
 
   /**
    * Sets the value of the control. Abstract method (implemented in sub-classes).
    */
-  abstract setValue(value: any, options?: Object): void;
+  abstract setValue(value: TRawValue, options?: Object): void;
 
   /**
    * Patches the value of the control. Abstract method (implemented in sub-classes).
    */
-  abstract patchValue(value: any, options?: Object): void;
+  abstract patchValue(value: TValue, options?: Object): void;
 
   /**
    * Resets the control. Abstract method (implemented in sub-classes).
    */
-  abstract reset(value?: any, options?: Object): void;
+  abstract reset(value?: TValue, options?: Object): void;
 
   /**
    * The raw value of this control. For most control implementations, the raw value will include
@@ -848,7 +948,7 @@ export abstract class AbstractControl {
     }
 
     if (opts.emitEvent !== false) {
-      (this.valueChanges as EventEmitter<any>).emit(this.value);
+      (this.valueChanges as EventEmitter<TValue>).emit(this.value);
       (this.statusChanges as EventEmitter<FormControlStatus>).emit(this.status);
     }
 
@@ -858,7 +958,7 @@ export abstract class AbstractControl {
   }
 
   /** @internal */
-  _updateTreeValidity(opts: {emitEvent?: boolean} = {emitEvent: true}) {
+  _updateTreeValidity(opts: {emitEvent?: boolean} = {emitEvent: true}): void {
     this._forEachChild((ctrl: AbstractControl) => ctrl._updateTreeValidity(opts));
     this.updateValueAndValidity({onlySelf: true, emitEvent: opts.emitEvent});
   }
@@ -924,8 +1024,27 @@ export abstract class AbstractControl {
   /**
    * Retrieves a child control given the control's name or path.
    *
+   * This signature for get supports strings and `const` arrays (`.get(['foo', 'bar'] as const)`).
+   */
+  get<P extends string|(readonly(string|number)[])>(path: P):
+      AbstractControl<ɵGetProperty<TRawValue, P>>|null;
+
+  /**
+   * Retrieves a child control given the control's name or path.
+   *
+   * This signature for `get` supports non-const (mutable) arrays. Inferred type
+   * information will not be as robust, so prefer to pass a `readonly` array if possible.
+   */
+  get<P extends string|Array<string|number>>(path: P):
+      AbstractControl<ɵGetProperty<TRawValue, P>>|null;
+
+  /**
+   * Retrieves a child control given the control's name or path.
+   *
    * @param path A dot-delimited string or array of string/number values that define the path to the
-   * control.
+   * control. If a string is provided, passing it as a string literal will result in improved type
+   * information. Likewise, if an array is provided, passing it `as const` will cause improved type
+   * information to be available.
    *
    * @usageNotes
    * ### Retrieve a nested control
@@ -936,7 +1055,7 @@ export abstract class AbstractControl {
    *
    * -OR-
    *
-   * * `this.form.get(['person', 'name']);`
+   * * `this.form.get(['person', 'name'] as const);` // `as const` gives improved typings
    *
    * ### Retrieve a control in a FormArray
    *
@@ -949,11 +1068,13 @@ export abstract class AbstractControl {
    *
    * * `this.form.get(['items', 0, 'price']);`
    */
-  get(path: Array<string|number>|string): AbstractControl|null {
-    if (path == null) return null;
-    if (!Array.isArray(path)) path = path.split('.');
-    if (path.length === 0) return null;
-    return path.reduce(
+  get<P extends string|((string | number)[])>(path: P):
+      AbstractControl<ɵGetProperty<TRawValue, P>>|null {
+    let currPath: Array<string|number>|string = path;
+    if (currPath == null) return null;
+    if (!Array.isArray(currPath)) currPath = currPath.split('.');
+    if (currPath.length === 0) return null;
+    return currPath.reduce(
         (control: AbstractControl|null, name) => control && control._find(name), this);
   }
 
@@ -1051,7 +1172,7 @@ export abstract class AbstractControl {
 
   /** @internal */
   _initObservables() {
-    (this as {valueChanges: Observable<any>}).valueChanges = new EventEmitter();
+    (this as {valueChanges: Observable<TValue>}).valueChanges = new EventEmitter();
     (this as {statusChanges: Observable<FormControlStatus>}).statusChanges = new EventEmitter();
   }
 
@@ -1114,12 +1235,6 @@ export abstract class AbstractControl {
 
   /** @internal */
   _onDisabledChange: Array<(isDisabled: boolean) => void> = [];
-
-  /** @internal */
-  _isBoxedValue(formState: any): boolean {
-    return typeof formState === 'object' && formState !== null &&
-        Object.keys(formState).length === 2 && 'value' in formState && 'disabled' in formState;
-  }
 
   /** @internal */
   _registerOnCollectionChange(fn: () => void): void {
