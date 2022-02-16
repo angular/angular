@@ -1,29 +1,6 @@
-# Template statements
+# Understanding template statements
 
-Template statements are methods or properties that you can use in your HTML to respond to user events.
-With template statements, your application can engage users through actions such as displaying dynamic content or submitting forms.
-
-<div class="alert is-helpful">
-
-See the <live-example name="template-syntax">Template syntax</live-example> for
-the syntax and code snippets in this guide.
-
-</div>
-
-In the following example, the template statement `deleteHero()` appears in quotes to the right of the `=`&nbsp;symbol as in `(event)="statement"`.
-
-<code-example path="template-syntax/src/app/app.component.html" region="context-component-statement" header="src/app/app.component.html"></code-example>
-
-When the user clicks the **Delete hero** button, Angular calls the `deleteHero()` method in the component class.
-
-Use template statements with elements, components, or directives in response to events.
-
-<div class="alert is-helpful">
-
-Responding to events is an aspect of Angular's [unidirectional data flow](guide/glossary#unidirectional-data-flow).
-You can change anything in your application during a single event loop.
-
-</div>
+Template statements are methods or properties that you can use in your HTML to respond to user events.  With template statements, your application can engage users through actions such as displaying dynamic content or submitting forms.
 
 ## Syntax
 
@@ -43,7 +20,7 @@ The following JavaScript and template expression syntax is not allowed:
 
 Statements have a context&mdash;a particular part of the application to which the statement belongs.
 
-Statements can refer only to what's in the statement context, which is typically the component instance.
+Statements can refer only to what's in the statement context, which is typically the component instance.                                                               
 For example, `deleteHero()` of `(click)="deleteHero()"` is a method of the component in the following snippet.
 
 <code-example path="template-syntax/src/app/app.component.html" region="context-component-statement" header="src/app/app.component.html"></code-example>
@@ -70,3 +47,5 @@ In the preceding `deleteHero(hero)`, the `hero` is the template input variable, 
   The context of a template statement can be the component class instance or the template.
   Because of this, template statements cannot refer to anything in the global namespace such as `window` or `document`.
   For example, template statements can't call `console.log()` or `Math.max()`.
+
+@reviewed 2022-02-15
