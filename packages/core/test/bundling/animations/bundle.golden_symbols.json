@@ -123,9 +123,6 @@
     "name": "CommonModule"
   },
   {
-    "name": "Compiler"
-  },
-  {
     "name": "ComponentFactory"
   },
   {
@@ -348,9 +345,6 @@
     "name": "NgLocalization"
   },
   {
-    "name": "NgModuleFactory2"
-  },
-  {
     "name": "NgModuleRef"
   },
   {
@@ -421,9 +415,6 @@
   },
   {
     "name": "RuntimeError"
-  },
-  {
-    "name": "SCHEDULER"
   },
   {
     "name": "SELF_TOKEN_REGEX"
@@ -676,6 +667,9 @@
   },
   {
     "name": "collectNativeNodes"
+  },
+  {
+    "name": "compileNgModuleFactory"
   },
   {
     "name": "computeStaticStyling"

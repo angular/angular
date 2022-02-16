@@ -579,9 +579,6 @@
     "name": "SAFE_URL_PATTERN"
   },
   {
-    "name": "SCHEDULER"
-  },
-  {
     "name": "SEGMENT_RE"
   },
   {

@@ -6,18 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_INITIALIZER, ApplicationInitStatus} from './application_init';
 import {ApplicationRef} from './application_ref';
 import {APP_ID_RANDOM_PROVIDER} from './application_tokens';
-import {Injector, StaticProvider} from './di';
+import {StaticProvider} from './di';
 import {Inject, Optional, SkipSelf} from './di/metadata';
-import {ErrorHandler} from './error_handler';
 import {DEFAULT_LOCALE_ID, USD_CURRENCY_CODE} from './i18n/localization';
 import {DEFAULT_CURRENCY_CODE, LOCALE_ID} from './i18n/tokens';
-import {ComponentFactoryResolver} from './linker';
-import {Compiler} from './linker/compiler';
 import {NgModule} from './metadata';
-import {NgZone} from './zone';
 
 declare const $localize: {locale?: string};
 
@@ -56,17 +51,6 @@ export function getGlobalLocale(): string {
  * that is used to configure the root injector for bootstrapping.
  */
 export const APPLICATION_MODULE_PROVIDERS: StaticProvider[] = [
-  {
-    provide: ApplicationRef,
-    useClass: ApplicationRef,
-    deps: [NgZone, Injector, ErrorHandler, ComponentFactoryResolver, ApplicationInitStatus]
-  },
-  {
-    provide: ApplicationInitStatus,
-    useClass: ApplicationInitStatus,
-    deps: [[new Optional(), APP_INITIALIZER]]
-  },
-  {provide: Compiler, useClass: Compiler, deps: []},
   APP_ID_RANDOM_PROVIDER,
   {
     provide: LOCALE_ID,

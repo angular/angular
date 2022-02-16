@@ -52,7 +52,7 @@ export class ModuleWithComponentFactories<T> {
  * See [JIT API changes due to ViewEngine deprecation](guide/deprecations#jit-api-changes) for
  * additional context.
  */
-@Injectable()
+@Injectable({providedIn: 'root'})
 export class Compiler {
   /**
    * Compiles the given NgModule and all of its components. All templates of the components listed
