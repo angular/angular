@@ -11,16 +11,21 @@ const bzlConfigPath = join(__dirname, '../../packages.bzl');
 /**
  * Ensures that the Angular version placeholder has been correctly updated to support
  * given Angular versions. The following rules apply:
- *   `N.x.x` requires Angular `^N.0.0 || (N+1).0.0-0`
- *   `N.0.0-x` requires Angular `^N.0.0-0 || (N+1).0.0-0`
+ *
+ *   `N.x.x` requires Angular `^N.0.0 || (N+1).0.0`
+ *   `N.0.0-x` requires Angular `^N.0.0-0 || (N+1).0.0`
+ *
+ * The rationale is that we want to satisfy peer dependencies if we are publishing
+ * pre-releases for a major while Angular framework cuts pre-releases as well. e.g.
+ * Angular CDK v14.0.0-rc.1 should also work with `@angular/core@v14.0.0-rc.1`.
  */
 export async function assertValidFrameworkPeerDependency(newVersion: SemVer) {
   const currentVersionRange = _extractAngularVersionPlaceholderOrThrow();
   const isMajorWithPrerelease =
     newVersion.minor === 0 && newVersion.patch === 0 && !!newVersion.prerelease[0];
   const requiredRange = isMajorWithPrerelease
-    ? `^${newVersion.major}.0.0-0 || ^${newVersion.major + 1}.0.0-0`
-    : `^${newVersion.major}.0.0 || ^${newVersion.major + 1}.0.0-0`;
+    ? `^${newVersion.major}.0.0-0 || ^${newVersion.major + 1}.0.0`
+    : `^${newVersion.major}.0.0 || ^${newVersion.major + 1}.0.0`;
 
   if (requiredRange !== currentVersionRange) {
     error(
