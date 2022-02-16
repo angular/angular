@@ -4,6 +4,7 @@
 @use './list-option-theme';
 @use '../mdc-helpers/mdc-helpers';
 @use '../../material/core/typography/typography';
+@use '../../material/core/typography/typography-utils';
 @use '../../material/core/theming/theming';
 
 
@@ -54,6 +55,14 @@
   @include mdc-helpers.mat-using-mdc-typography($config) {
     @include mdc-list.without-ripple($query: mdc-helpers.$mat-typography-styles-query);
     @include list-option-theme.private-list-option-typography-styles();
+  }
+
+  // According to the public spec this should be subtitle-1.
+  // However, body-1 and subtitle-1 are nearly identical in the public spec,
+  // and the Google-specific spec states that it should be body-1.
+  // For consistency, we use body-1 for both public and Google internal.
+  .mat-mdc-list-item .mdc-list-item__primary-text {
+    @include typography-utils.typography-level($config, body-1);
   }
 }
 
