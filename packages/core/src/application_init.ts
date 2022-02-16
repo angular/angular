@@ -92,7 +92,7 @@ export const APP_INITIALIZER =
  *
  * @publicApi
  */
-@Injectable()
+@Injectable({providedIn: 'root'})
 export class ApplicationInitStatus {
   private resolve = noop;
   private reject = noop;
