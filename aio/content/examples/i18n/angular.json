@@ -20,10 +20,12 @@
       "i18n": {
         "sourceLocale": "en-US",
         "locales": {
-          "fr": "src/locale/messages.fr.xlf",
-          // #enddocregion locale-config
-          "baseHref": ""
-          // #docregion locale-config
+          "fr": {
+            "translation": "src/locale/messages.fr.xlf",
+            // #enddocregion locale-config
+            "baseHref": ""
+            // #docregion locale-config
+          }
         }
       },
       // #docregion build-production-french
