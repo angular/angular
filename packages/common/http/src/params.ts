@@ -100,7 +100,6 @@ const STANDARD_ENCODING_REPLACEMENTS: {[x: string]: string} = {
   '24': '$',
   '2C': ',',
   '3B': ';',
-  '2B': '+',
   '3D': '=',
   '3F': '?',
   '2F': '/',
