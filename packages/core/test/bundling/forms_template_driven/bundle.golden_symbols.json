@@ -3,16 +3,10 @@
     "name": "ALLOW_MULTIPLE_PLATFORMS"
   },
   {
-    "name": "APPLICATION_MODULE_PROVIDERS"
-  },
-  {
     "name": "APP_BOOTSTRAP_LISTENER"
   },
   {
     "name": "APP_ID"
-  },
-  {
-    "name": "APP_ID_RANDOM_PROVIDER"
   },
   {
     "name": "APP_INITIALIZER"
@@ -120,9 +114,6 @@
     "name": "ControlContainer"
   },
   {
-    "name": "DEFAULT_CURRENCY_CODE"
-  },
-  {
     "name": "DEFAULT_VALUE_ACCESSOR"
   },
   {
@@ -202,9 +193,6 @@
   },
   {
     "name": "INJECTOR_SCOPE"
-  },
-  {
-    "name": "Inject"
   },
   {
     "name": "InjectFlags"
@@ -1033,6 +1021,9 @@
   },
   {
     "name": "initTNodeFlags"
+  },
+  {
+    "name": "inject"
   },
   {
     "name": "injectArgs"

@@ -6,16 +6,10 @@
     "name": "ANIMATION_MODULE_TYPE"
   },
   {
-    "name": "APPLICATION_MODULE_PROVIDERS"
-  },
-  {
     "name": "APP_BOOTSTRAP_LISTENER"
   },
   {
     "name": "APP_ID"
-  },
-  {
-    "name": "APP_ID_RANDOM_PROVIDER"
   },
   {
     "name": "APP_INITIALIZER"
@@ -150,9 +144,6 @@
     "name": "DASH_CASE_REGEXP"
   },
   {
-    "name": "DEFAULT_CURRENCY_CODE"
-  },
-  {
     "name": "DEFAULT_NOOP_PREVIOUS_NODE"
   },
   {
@@ -232,9 +223,6 @@
   },
   {
     "name": "INJECTOR_SCOPE"
-  },
-  {
-    "name": "Inject"
   },
   {
     "name": "InjectFlags"
@@ -372,9 +360,6 @@
     "name": "Observable"
   },
   {
-    "name": "Optional"
-  },
-  {
     "name": "PARAM_REGEX"
   },
   {
@@ -439,9 +424,6 @@
   },
   {
     "name": "SimpleOuterSubscriber"
-  },
-  {
-    "name": "SkipSelf"
   },
   {
     "name": "SpecialCasedStyles"
@@ -616,9 +598,6 @@
   },
   {
     "name": "applyView"
-  },
-  {
-    "name": "attachInjectFlag"
   },
   {
     "name": "attachPatchData"
@@ -969,6 +948,9 @@
     "name": "initTNodeFlags"
   },
   {
+    "name": "inject"
+  },
+  {
     "name": "injectArgs"
   },
   {
@@ -1111,9 +1093,6 @@
   },
   {
     "name": "makeLambdaFromStates"
-  },
-  {
-    "name": "makeParamDecorator"
   },
   {
     "name": "makeRecord"
