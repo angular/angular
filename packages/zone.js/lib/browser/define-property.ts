@@ -35,12 +35,27 @@ export function propertyPatch() {
     return _tryDefineProperty(obj, prop, desc, originalConfigurableFlag);
   };
 
-  Object.defineProperties = function(obj, props) {
+  Object.defineProperties = function<T>(obj: T, props: PropertyDescriptorMap&ThisType<any>&{
+    [s: symbol]: PropertyDescriptor;
+  }): T {
     Object.keys(props).forEach(function(prop) {
       Object.defineProperty(obj, prop, props[prop]);
     });
+    for (const sym of Object.getOwnPropertySymbols(props)) {
+      const desc = Object.getOwnPropertyDescriptor(props, sym);
+      // Since `Object.getOwnPropertySymbols` returns *all* symbols,
+      // including non-enumberable ones, retrieve property descriptor and check
+      // enumerability there. Proceed with the rewrite only when a property is
+      // enumberable to make the logic consistent with the way regular
+      // properties are retrieved (via `Object.keys`, which respects
+      // `enumerable: false` flag). More information:
+      // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Enumerability_and_ownership_of_properties#retrieval
+      if (desc?.enumerable) {
+        Object.defineProperty(obj, sym, props[sym]);
+      }
+    }
     return obj;
-  };
+  }
 
   Object.create = <any>function(proto: any, propertiesObject: any) {
     if (typeof propertiesObject === 'object' && !Object.isFrozen(propertiesObject)) {
@@ -92,8 +107,8 @@ function _tryDefineProperty(obj: any, prop: string, desc: any, originalConfigura
     return _defineProperty(obj, prop, desc);
   } catch (error) {
     if (desc.configurable) {
-      // In case of errors, when the configurable flag was likely set by rewriteDescriptor(), let's
-      // retry with the original flag value
+      // In case of errors, when the configurable flag was likely set by rewriteDescriptor(),
+      // let's retry with the original flag value
       if (typeof originalConfigurableFlag == 'undefined') {
         delete desc.configurable;
       } else {
