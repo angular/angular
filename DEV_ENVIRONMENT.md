@@ -22,6 +22,9 @@ To run unit tests, run `yarn test <target>`. The `target` can be either a short 
 To run the e2e tests, run `yarn e2e`.
 To run lint, run `yarn lint`.
 
+You can debug unit tests by running `yarn test` with the `--debug` option. This will allow you to
+manually connect a browser to the Karma server.
+
 ### Getting Packages from Build Artifacts
 Each CI run for a Pull Request stores the built Angular packages as
 [build artifacts](https://circleci.com/docs/2.0/artifacts). The artifacts are not guaranteed to be
