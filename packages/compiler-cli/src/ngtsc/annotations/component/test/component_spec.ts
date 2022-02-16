@@ -409,12 +409,15 @@ runInEachFileSystem(() => {
           contents: 'export const Component: any;',
         },
         {
+          name: _('/node_modules/@angular/animations/index.d.ts'),
+          contents: 'export declare function trigger(name: any): any',
+        },
+        {
           name: _('/entry.ts'),
           contents: `
           import {Component} from '@angular/core';
-          function trigger(name) {
-            return {name};
-          }
+          import {trigger} from '@angular/animations';
+
           @Component({
             template: '',
             animations: [
@@ -448,12 +451,15 @@ runInEachFileSystem(() => {
           contents: 'export const Component: any;',
         },
         {
+          name: _('/node_modules/@angular/animations/index.d.ts'),
+          contents: 'export declare function trigger(name: any): any',
+        },
+        {
           name: _('/entry.ts'),
           contents: `
           import {Component} from '@angular/core';
-          function trigger(name) {
-            return {name};
-          }
+          import {trigger} from '@angular/animations';
+
           function buildComplexAnimations() {
             const name = 'complex';
             return [trigger(name)];
@@ -489,12 +495,15 @@ runInEachFileSystem(() => {
           contents: 'export const Component: any;',
         },
         {
+          name: _('/node_modules/@angular/animations/index.d.ts'),
+          contents: 'export declare function trigger(name: any): any',
+        },
+        {
           name: _('/entry.ts'),
           contents: `
           import {Component} from '@angular/core';
-          function trigger(name) {
-            return {name};
-          }
+          import {trigger} from '@angular/animations';
+
           function buildComplexAnimations() {
             const name = 'complex';
             return [trigger(name)];
