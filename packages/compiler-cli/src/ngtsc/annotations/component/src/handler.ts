@@ -35,7 +35,7 @@ import {ComponentAnalysisData, ComponentResolutionData} from './metadata';
 import {_extractTemplateStyleUrls, extractComponentStyleUrls, extractStyleResources, extractTemplate, makeResourceNotFoundError, ParsedTemplateWithSource, parseTemplateDeclaration, preloadAndParseTemplate, ResourceTypeForDiagnostics, StyleUrlMeta, transformDecoratorToInlineResources} from './resources';
 import {scopeTemplate} from './scope';
 import {ComponentSymbol} from './symbol';
-import {collectAnimationNames, validateAndFlattenComponentImports} from './util';
+import {animationTriggerResolver, collectAnimationNames, validateAndFlattenComponentImports} from './util';
 
 const EMPTY_MAP = new Map<string, Expression>();
 const EMPTY_ARRAY: any[] = [];
@@ -210,8 +210,10 @@ export class ComponentDecoratorHandler implements
     let animations: Expression|null = null;
     let animationTriggerNames: AnimationTriggerNames|null = null;
     if (component.has('animations')) {
-      animations = new WrappedNodeExpr(component.get('animations')!);
-      const animationsValue = this.evaluator.evaluate(component.get('animations')!);
+      const animationExpression = component.get('animations')!;
+      animations = new WrappedNodeExpr(animationExpression);
+      const animationsValue =
+          this.evaluator.evaluate(animationExpression, animationTriggerResolver);
       animationTriggerNames = {includesDynamicAnimations: false, staticTriggerNames: []};
       collectAnimationNames(animationsValue, animationTriggerNames);
     }

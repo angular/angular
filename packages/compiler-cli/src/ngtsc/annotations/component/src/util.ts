@@ -10,7 +10,7 @@ import {AnimationTriggerNames} from '@angular/compiler';
 import ts from 'typescript';
 
 import {Reference} from '../../../imports';
-import {ResolvedValue} from '../../../partial_evaluator';
+import {ForeignFunctionResolver, ResolvedValue} from '../../../partial_evaluator';
 import {ClassDeclaration, isNamedClassDeclaration} from '../../../reflection';
 import {createValueHasWrongTypeError} from '../../common';
 
@@ -37,6 +37,28 @@ export function collectAnimationNames(
     animationTriggerNames.includesDynamicAnimations = true;
   }
 }
+
+export function isAngularAnimationsReference(reference: Reference, symbolName: string): boolean {
+  return reference.ownedByModuleGuess === '@angular/animations' &&
+      reference.debugName === symbolName;
+}
+
+export const animationTriggerResolver: ForeignFunctionResolver = (ref, args) => {
+  const animationTriggerMethodName = 'trigger';
+  if (!isAngularAnimationsReference(ref, animationTriggerMethodName)) {
+    return null;
+  }
+  const triggerNameExpression = args[0];
+  if (!triggerNameExpression) {
+    return null;
+  }
+  const factory = ts.factory;
+  return factory.createObjectLiteralExpression(
+      [
+        factory.createPropertyAssignment(factory.createIdentifier('name'), triggerNameExpression),
+      ],
+      true);
+};
 
 export function validateAndFlattenComponentImports(imports: ResolvedValue, expr: ts.Expression): {
   imports: Reference<ClassDeclaration>[],
