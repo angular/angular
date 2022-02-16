@@ -93,9 +93,6 @@
     "name": "CommonModule"
   },
   {
-    "name": "Compiler"
-  },
-  {
     "name": "ComponentFactory"
   },
   {
@@ -430,9 +427,6 @@
   },
   {
     "name": "RuntimeError"
-  },
-  {
-    "name": "SCHEDULER"
   },
   {
     "name": "SERVER_TRANSITION_PROVIDERS"
