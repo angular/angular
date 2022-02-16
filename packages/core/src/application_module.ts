@@ -7,70 +7,16 @@
  */
 
 import {ApplicationRef} from './application_ref';
-import {APP_ID_RANDOM_PROVIDER} from './application_tokens';
-import {StaticProvider} from './di';
-import {Inject, Optional, SkipSelf} from './di/metadata';
-import {DEFAULT_LOCALE_ID, USD_CURRENCY_CODE} from './i18n/localization';
-import {DEFAULT_CURRENCY_CODE, LOCALE_ID} from './i18n/tokens';
 import {NgModule} from './metadata';
 
-declare const $localize: {locale?: string};
-
-export function _localeFactory(locale?: string): string {
-  return locale || getGlobalLocale();
-}
 /**
- * Work out the locale from the potential global properties.
- *
- * * Closure Compiler: use `goog.getLocale()`.
- * * Ivy enabled: use `$localize.locale`
- */
-export function getGlobalLocale(): string {
-  if (typeof ngI18nClosureMode !== 'undefined' && ngI18nClosureMode &&
-      typeof goog !== 'undefined' && goog.getLocale() !== 'en') {
-    // * The default `goog.getLocale()` value is `en`, while Angular used `en-US`.
-    // * In order to preserve backwards compatibility, we use Angular default value over
-    //   Closure Compiler's one.
-    return goog.getLocale();
-  } else {
-    // KEEP `typeof $localize !== 'undefined' && $localize.locale` IN SYNC WITH THE LOCALIZE
-    // COMPILE-TIME INLINER.
-    //
-    // * During compile time inlining of translations the expression will be replaced
-    //   with a string literal that is the current locale. Other forms of this expression are not
-    //   guaranteed to be replaced.
-    //
-    // * During runtime translation evaluation, the developer is required to set `$localize.locale`
-    //   if required, or just to provide their own `LOCALE_ID` provider.
-    return (typeof $localize !== 'undefined' && $localize.locale) || DEFAULT_LOCALE_ID;
-  }
-}
-
-/**
- * A built-in [dependency injection token](guide/glossary#di-token)
- * that is used to configure the root injector for bootstrapping.
- */
-export const APPLICATION_MODULE_PROVIDERS: StaticProvider[] = [
-  APP_ID_RANDOM_PROVIDER,
-  {
-    provide: LOCALE_ID,
-    useFactory: _localeFactory,
-    deps: [[new Inject(LOCALE_ID), new Optional(), new SkipSelf()]]
-  },
-  {provide: DEFAULT_CURRENCY_CODE, useValue: USD_CURRENCY_CODE},
-];
-
-/**
- * Configures the root injector for an app with
- * providers of `@angular/core` dependencies that `ApplicationRef` needs
- * to bootstrap components.
- *
  * Re-exported by `BrowserModule`, which is included automatically in the root
- * `AppModule` when you create a new app with the CLI `new` command.
+ * `AppModule` when you create a new app with the CLI `new` command. Eagerly injects
+ * `ApplicationRef` to instantiate it.
  *
  * @publicApi
  */
-@NgModule({providers: APPLICATION_MODULE_PROVIDERS})
+@NgModule()
 export class ApplicationModule {
   // Inject ApplicationRef to make it eager...
   constructor(appRef: ApplicationRef) {}
