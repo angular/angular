@@ -1,16 +1,16 @@
 # Building dynamic forms
 
-Many forms, such as questionaires, can be very similar to one another in format and intent.
+Many forms, such as questionnaires, can be very similar to one another in format and intent.
 To make it faster and easier to generate different versions of such a form,
 you can create a *dynamic form template* based on metadata that describes the business object model.
 Then, use the template to generate new forms automatically, according to changes in the data model.
 
 The technique is particularly useful when you have a type of form whose content must
 change frequently to meet rapidly changing business and regulatory requirements.
-A typical use case is a questionaire. You might need to get input from users in different contexts.
+A typical use case is a questionnaire. You might need to get input from users in different contexts.
 The format and style of the forms a user sees should remain constant, while the actual questions you need to ask vary with the context.
 
-In this tutorial you will build a dynamic form that presents a basic questionaire.
+In this tutorial you will build a dynamic form that presents a basic questionnaire.
 You build an online application for heroes seeking employment.
 The agency is constantly tinkering with the application process, but by using the dynamic form
 you can create the new forms on the fly without changing the application code.
@@ -199,7 +199,7 @@ The following figure shows the final form.
 
 * **Different types of forms and control collection**
 
-   This tutorial shows how to build a questionaire, which is just one kind of dynamic form.
+   This tutorial shows how to build a questionnaire, which is just one kind of dynamic form.
    The example uses `FormGroup` to collect a set of controls.
    For an example of a different type of dynamic form, see the section [Creating dynamic forms](guide/reactive-forms#creating-dynamic-forms "Create dynamic forms with arrays") in the Reactive Forms guide.
    That example also shows how to use `FormArray` instead of `FormGroup` to collect a set of controls.
