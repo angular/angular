@@ -17,7 +17,7 @@ export class HeroesComponent implements OnInit {
   constructor(private heroesService: HeroesService) {}
 
   @ViewChild('heroEditInput')
-  set input(element: ElementRef<HTMLInputElement>) {
+  set heroEditInput(element: ElementRef<HTMLInputElement>) {
     if (element) {
       element.nativeElement.focus();
     }
@@ -66,10 +66,6 @@ export class HeroesComponent implements OnInit {
   edit(heroName: string) {
     this.update(heroName);
     this.editHero = undefined;
-  }
-
-  selectHeroForEditing(hero: Hero) {
-    this.editHero = hero;
   }
 
   search(searchTerm: string) {

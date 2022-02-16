@@ -18,7 +18,7 @@
       <input #heroEditInput type="text" class="name" [value]="editHero!.name" (blur)="edit(heroEditInput.value)" (keydown.enter)="edit(heroEditInput.value)"/>
     </ng-template>
     <button *ngIf="hero!==editHero" type="button" class="edit" title="edit hero"
-      (click)="selectHeroForEditing(hero)">
+      (click)="editHero = hero">
       Edit
     </button>
     <button type="button" class="delete" title="delete hero"
