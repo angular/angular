@@ -1,3 +1,24 @@
+<a name="14.0.0-next.3"></a>
+# 14.0.0-next.3 "sapphire-sneakers" (2022-02-16)
+### material
+| Commit | Type | Description |
+| -- | -- | -- |
+| [06e65c6b5](https://github.com/angular/components/commit/06e65c6b5d1f7886653d280e97a87c8af57c30e8) | feat | **chips:** update chip-list describedby to match input ([#24292](https://github.com/angular/components/pull/24292)) |
+| [ca1aaae7e](https://github.com/angular/components/commit/ca1aaae7e2a700442e8c651468cb07d63397bbd2) | feat | **progress-spinner:** add color to default options ([#24356](https://github.com/angular/components/pull/24356)) |
+| [5603d9b7f](https://github.com/angular/components/commit/5603d9b7f1f9f3987d7a5a98e95156b47e293881) | fix | **datepicker:** fix failing unit test in multiyear view ([#24418](https://github.com/angular/components/pull/24418)) |
+| [15774a923](https://github.com/angular/components/commit/15774a9235f933a61b9db86b682977b70fe69ec8) | fix | **datepicker:** update active date on focusing a cell ([#24384](https://github.com/angular/components/pull/24384)) |
+| [599d1b445](https://github.com/angular/components/commit/599d1b445f21fad2cec6a95bec824a409d55bb80) | fix | **dialog:** Use `align` as `@Input()` in `MatDialogActions` ([#24328](https://github.com/angular/components/pull/24328)) |
+| [f868e33a5](https://github.com/angular/components/commit/f868e33a5a13f32ffad6e3ee50460e3ca1b7f82b) | fix | **menu:** position classes not update when window is resized ([#24385](https://github.com/angular/components/pull/24385)) |
+| [e917541cb](https://github.com/angular/components/commit/e917541cb53f492bf75e31d8376132e0aba4ea58) | fix | **tabs:** allow coercing of booleans for all inputs ([#24377](https://github.com/angular/components/pull/24377)) |
+### cdk-experimental
+| Commit | Type | Description |
+| -- | -- | -- |
+| [d8ff80a44](https://github.com/angular/components/commit/d8ff80a4436139de61a78020fbcc1316c5374a0d) | fix | **column-resize:** Fix bug in hover logic introduced by IE cleanup ([#24396](https://github.com/angular/components/pull/24396)) |
+## Special Thanks
+Jean-Philippe, Jeri Peier, Karl Seamon, Kristiyan Kostadinov, Paul Gschwendtner, Robin (Robert) Thomas, Ruslan Lekhman, Wagner Maciel, Zach Arend and Zack Elliott
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="13.2.3"></a>
 # 13.2.3 "platinum-pen" (2022-02-16)
 ### material
