@@ -363,9 +363,10 @@
   dependencies:
     tslib "^2.3.0"
 
-"@angular/dev-infra-private@https://github.com/angular/dev-infra-private-builds.git#a76bd7a592cd6be1498a1bce0eb86b8aa8ee89dc":
-  version "0.0.0-a3ad969facdad942bbb0a6a75100fe25f9243b26"
-  resolved "https://github.com/angular/dev-infra-private-builds.git#a76bd7a592cd6be1498a1bce0eb86b8aa8ee89dc"
+"@angular/dev-infra-private@https://github.com/angular/dev-infra-private-builds.git#dc4d9e0b6665d27176c3d2a74a60679d79b51e62":
+  version "0.0.0-bf9a7738fa2662db196bc022f39c08c9417f3538"
+  uid dc4d9e0b6665d27176c3d2a74a60679d79b51e62
+  resolved "https://github.com/angular/dev-infra-private-builds.git#dc4d9e0b6665d27176c3d2a74a60679d79b51e62"
   dependencies:
     "@actions/core" "^1.4.0"
     "@actions/github" "^5.0.0"
@@ -405,7 +406,7 @@
     husky "^7.0.1"
     inquirer "^8.0.0"
     jasmine "^3.7.0"
-    minimatch "^4.0.0"
+    minimatch "^5.0.0"
     multimatch "^5.0.0"
     nock "^13.0.3"
     node-fetch "^2.6.1"
@@ -4575,6 +4576,13 @@ brace-expansion@^1.1.7:
   dependencies:
     balanced-match "^1.0.0"
     concat-map "0.0.1"
+
+brace-expansion@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/brace-expansion/-/brace-expansion-2.0.1.tgz#1edc459e0f0c548486ecf9fc99f2221364b9a0ae"
+  integrity sha512-XnAIvQ8eM+kC6aULx6wuQiwVsnzsi9d3WxzV3FpWTGA19F621kwdbsAcFKXgKUHZWsy+mY6iL1sHTxWEFCytDA==
+  dependencies:
+    balanced-match "^1.0.0"
 
 braces@^3.0.1, braces@^3.0.2, braces@~3.0.2:
   version "3.0.2"
@@ -11028,12 +11036,12 @@ minimatch@3.0.4:
   dependencies:
     brace-expansion "^1.1.7"
 
-minimatch@^4.0.0:
-  version "4.1.1"
-  resolved "https://registry.yarnpkg.com/minimatch/-/minimatch-4.1.1.tgz#88d8172f2e1babcc3e249538b1a46970dfea1300"
-  integrity sha512-9ObkVPP8aM2KWHw1RMAaOoEzHjcqzE1dmEQHAOq9ySRhvVMru1VKqniUs/g6Us4KSwXKk0+uLko6caynDcWEWQ==
+minimatch@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/minimatch/-/minimatch-5.0.0.tgz#281d8402aaaeed18a9e8406ad99c46a19206c6ef"
+  integrity sha512-EU+GCVjXD00yOUf1TwAHVP7v3fBD3A8RkkPYsWWKGWesxM/572sL53wJQnHxquHlRhYUV36wHkqrN8cdikKc2g==
   dependencies:
-    brace-expansion "^1.1.7"
+    brace-expansion "^2.0.1"
 
 minimist-options@4.1.0:
   version "4.1.0"
