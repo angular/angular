@@ -594,34 +594,20 @@ export class TransitionAnimationEngine {
     const limit = namespaceList.length - 1;
     if (limit >= 0) {
       let found = false;
-      if (this.driver.getParentElement !== undefined) {
-        // Fast path for when the driver implements `getParentElement`, which allows us to find the
-        // closest ancestor with an existing namespace that we can then insert `ns` after, without
-        // having to inspect all existing namespaces.
-        let ancestor = this.driver.getParentElement(hostElement);
-        while (ancestor) {
-          const ancestorNs = namespacesByHostElement.get(ancestor);
-          if (ancestorNs) {
-            // An animation namespace has been registered for this ancestor, so we insert `ns`
-            // right after it to establish top-down ordering of animation namespaces.
-            const index = namespaceList.indexOf(ancestorNs);
-            namespaceList.splice(index + 1, 0, ns);
-            found = true;
-            break;
-          }
-          ancestor = this.driver.getParentElement(ancestor);
+      // Find the closest ancestor with an existing namespace so we can then insert `ns` after it,
+      // establishing a top-down ordering of namespaces in `this._namespaceList`.
+      let ancestor = this.driver.getParentElement(hostElement);
+      while (ancestor) {
+        const ancestorNs = namespacesByHostElement.get(ancestor);
+        if (ancestorNs) {
+          // An animation namespace has been registered for this ancestor, so we insert `ns`
+          // right after it to establish top-down ordering of animation namespaces.
+          const index = namespaceList.indexOf(ancestorNs);
+          namespaceList.splice(index + 1, 0, ns);
+          found = true;
+          break;
         }
-      } else {
-        // Slow path for backwards compatibility if the driver does not implement
-        // `getParentElement`, to be removed once `getParentElement` is a required method.
-        for (let i = limit; i >= 0; i--) {
-          const nextNamespace = namespaceList[i];
-          if (this.driver.containsElement(nextNamespace.hostElement, hostElement)) {
-            namespaceList.splice(i + 1, 0, ns);
-            found = true;
-            break;
-          }
-        }
+        ancestor = this.driver.getParentElement(ancestor);
       }
       if (!found) {
         // No namespace exists that is an ancestor of `ns`, so `ns` is inserted at the front to
