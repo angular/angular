@@ -12,7 +12,7 @@ export abstract class AnimationDriver {
     abstract computeStyle(element: any, prop: string, defaultValue?: string): string;
     // (undocumented)
     abstract containsElement(elm1: any, elm2: any): boolean;
-    abstract getParentElement?(element: unknown): unknown;
+    abstract getParentElement(element: unknown): unknown;
     // @deprecated (undocumented)
     abstract matchesElement(element: any, selector: string): boolean;
     // (undocumented)

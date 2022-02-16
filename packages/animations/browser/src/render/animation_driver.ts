@@ -65,12 +65,8 @@ export abstract class AnimationDriver {
 
   /**
    * Obtains the parent element, if any. `null` is returned if the element does not have a parent.
-   *
-   * This method is optional to avoid a breaking change where implementors of this interface would
-   * be required to implement this method. This method is to become required in a major version of
-   * Angular.
    */
-  abstract getParentElement?(element: unknown): unknown;
+  abstract getParentElement(element: unknown): unknown;
 
   abstract query(element: any, selector: string, multi: boolean): any[];
 
