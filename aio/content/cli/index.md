@@ -66,7 +66,7 @@ A single workspace configuration file, `angular.json`, is created at the top lev
 This is where you can set per-project defaults for CLI command options, and specify configurations to use when the CLI builds a project for different targets.
 
 The [ng config](cli/config) command lets you set and retrieve configuration values from the command line, or you can edit the `angular.json` file directly.
-Note that option names in the configuration file must use [camelCase](guide/glossary#case-types), while option names supplied to commands can use either camelCase or dash-case.
+Note that option names in the configuration file must use [camelCase](guide/glossary#case-types), while option names supplied to commands must be dash-case.
 
 * See more about [Workspace Configuration](guide/workspace-config).
 
