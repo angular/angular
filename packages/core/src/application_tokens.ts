@@ -21,7 +21,10 @@ import {ComponentRef} from './linker/component_factory';
  *
  * @publicApi
  */
-export const APP_ID = new InjectionToken<string>('AppId');
+export const APP_ID = new InjectionToken<string>('AppId', {
+  providedIn: 'root',
+  factory: _appIdRandomProviderFactory,
+});
 
 export function _appIdRandomProviderFactory() {
   return `${_randomChar()}${_randomChar()}${_randomChar()}`;
