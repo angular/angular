@@ -1190,7 +1190,7 @@ Call `request.flush()` with an error message, as seen in the following example.
   region="404">
 </code-example>
 
-Alternatively, call `request.error()` with an `ErrorEvent`.
+Alternatively, call `request.error()` with a `ProgressEvent`.
 
 <code-example
   path="http/src/testing/http-client.spec.ts"
