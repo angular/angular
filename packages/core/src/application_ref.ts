@@ -564,7 +564,7 @@ function optionsReducer<T extends Object>(dst: any, objs: T|T[]): T {
  *
  * @publicApi
  */
-@Injectable()
+@Injectable({providedIn: 'root'})
 export class ApplicationRef {
   /** @internal */
   private _bootstrapListeners: ((compRef: ComponentRef<any>) => void)[] = [];
