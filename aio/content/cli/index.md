@@ -69,7 +69,6 @@ The [ng config](cli/config) command lets you set and retrieve configuration valu
 Note that option names in the configuration file must use [camelCase](guide/glossary#case-types), while option names supplied to commands can use either camelCase or dash-case.
 
 * See more about [Workspace Configuration](guide/workspace-config).
-* See the [complete schema](https://github.com/angular/angular-cli/wiki/angular-workspace) for `angular.json`.
 
 ## CLI command-language syntax
 
