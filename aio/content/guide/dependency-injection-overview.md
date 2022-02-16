@@ -49,14 +49,19 @@ Before creating dependency injection, you should be familiar with the following:
     <p>Describes how to inject services in other services.</p>
     <p class="card-footer">Injecting services in other services</p>
   </a>
-  <a href="guide/inject-object" class="docs-card" title="Injecting an object">
-    <section>Injecting an object</section>
-    <p>Describes how to inject an object.</p>
-    <p class="card-footer">Injecting an object</p>
+  <a href="guide/dependency-injection-providers"" class="docs-card" title="Defining Dependency providers">
+    <section>Defining Dependency providers</section>
+    <p>By configuring providers, you can make services available to the parts of your application that need them.</p>
+    <p class="card-footer">Defining Dependency providers</p>
   </a>
   <a href="guide/inject-object" class="docs-card" title="Injecting an object">
     <section>Injecting an object</section>
     <p>Describes how to inject an object.</p>
     <p class="card-footer">Injecting an object</p>
+  </a>
+  <a href="guide/hierarchical-dependency-injection" class="docs-card" title="Hierarchical injectors">
+    <section>Hierarchical injectors</section>
+    <p>DHierarchical dependency injection enables you to share dependencies between different parts of the application only when and if you need to.</p>
+    <p class="card-footer">Hierarchical injectors</p>
   </a>
 </div>
