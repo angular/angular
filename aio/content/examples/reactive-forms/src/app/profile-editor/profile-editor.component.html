@@ -27,7 +27,7 @@
   <!-- #docregion formarrayname -->
   <div formArrayName="aliases">
     <h2>Aliases</h2>
-    <button type="button" (click)="addAlias()" type="button">+ Add another alias</button>
+    <button type="button" (click)="addAlias()">+ Add another alias</button>
 
     <div *ngFor="let alias of aliases.controls; let i=index">
       <!-- The repeated alias template -->
