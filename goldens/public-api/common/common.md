@@ -507,6 +507,10 @@ export class NgLocaleLocalization extends NgLocalization {
 export abstract class NgLocalization {
     // (undocumented)
     abstract getPluralCategory(value: any, locale?: string): string;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<NgLocalization, never>;
+    // (undocumented)
+    static ɵprov: i0.ɵɵInjectableDeclaration<NgLocalization>;
 }
 
 // @public
