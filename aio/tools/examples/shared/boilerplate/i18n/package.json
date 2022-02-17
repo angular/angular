@@ -8,7 +8,6 @@
     "start": "ng serve",
     "start:fr": "ng serve --configuration=fr",
     "build": "ng build",
-    "build:fr": "ng build --configuration=production-fr",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "e2e": "ng e2e",
