@@ -222,16 +222,10 @@
     "name": "KeyEventsPlugin"
   },
   {
-    "name": "LOCALE_DATA"
-  },
-  {
     "name": "LOCALE_ID2"
   },
   {
     "name": "LifecycleHooksFeature"
-  },
-  {
-    "name": "LocaleDataIndex"
   },
   {
     "name": "MODIFIER_KEYS"
@@ -327,12 +321,6 @@
     "name": "NgForOf"
   },
   {
-    "name": "NgLocaleLocalization"
-  },
-  {
-    "name": "NgLocalization"
-  },
-  {
     "name": "NgModuleFactory2"
   },
   {
@@ -373,9 +361,6 @@
   },
   {
     "name": "PlatformRef"
-  },
-  {
-    "name": "Plural"
   },
   {
     "name": "R3Injector"
@@ -903,9 +888,6 @@
     "name": "getLViewParent"
   },
   {
-    "name": "getLocaleData"
-  },
-  {
     "name": "getNativeByTNode"
   },
   {
@@ -1204,9 +1186,6 @@
   },
   {
     "name": "leaveViewLight"
-  },
-  {
-    "name": "locale_en_default"
   },
   {
     "name": "lookupTokenUsingModuleInjector"
@@ -1516,9 +1495,6 @@
   },
   {
     "name": "trackByIdentity"
-  },
-  {
-    "name": "u"
   },
   {
     "name": "unwrapRNode"

@@ -10,14 +10,17 @@ import {Inject, Injectable, LOCALE_ID} from '@angular/core';
 
 import {getLocalePluralCase, Plural} from './locale_data_api';
 
-
 /**
  * @publicApi
  */
+@Injectable({
+  providedIn: 'root',
+  useFactory: (locale: string) => new NgLocaleLocalization(locale),
+  deps: [LOCALE_ID],
+})
 export abstract class NgLocalization {
   abstract getPluralCategory(value: any, locale?: string): string;
 }
-
 
 /**
  * Returns the plural category for a given value.
