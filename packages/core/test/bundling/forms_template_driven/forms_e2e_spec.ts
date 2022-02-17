@@ -8,7 +8,6 @@
 
 import '@angular/compiler';
 
-import {ɵwhenRendered as whenRendered} from '@angular/core';
 import {withBody} from '@angular/private/testing';
 import * as path from 'path';
 
@@ -19,8 +18,8 @@ describe('functional test for forms', () => {
   BUNDLES.forEach((bundle) => {
     describe(`using ${bundle} bundle`, () => {
       it('should render template form', withBody('<app-root></app-root>', async () => {
-           require(path.join(PACKAGE, bundle));
-           await (window as any).waitForApp;
+           const {bootstrapApp, whenRendered} = require(path.join(PACKAGE, bundle));
+           await bootstrapApp();
 
            // Template forms
            const templateFormsComponent = (window as any).templateFormsComponent;

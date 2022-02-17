@@ -10,10 +10,13 @@ import '../util/ng_dev_mode';
 import {assertDefined, assertDomNode} from '../util/assert';
 import {EMPTY_ARRAY} from '../util/empty';
 
+import {assertLView} from './assert';
 import {LContext} from './interfaces/context';
+import {getLViewById} from './interfaces/lview_tracking';
 import {TNode, TNodeFlags} from './interfaces/node';
 import {RElement, RNode} from './interfaces/renderer_dom';
-import {CONTEXT, HEADER_OFFSET, HOST, LView, TVIEW} from './interfaces/view';
+import {isLView} from './interfaces/type_checks';
+import {CONTEXT, HEADER_OFFSET, HOST, ID, LView, TVIEW} from './interfaces/view';
 import {getComponentLViewByIndex, unwrapRNode} from './util/view_utils';
 
 
@@ -43,7 +46,7 @@ export function getLContext(target: any): LContext|null {
   if (mpValue) {
     // only when it's an array is it considered an LView instance
     // ... otherwise it's an already constructed LContext instance
-    if (Array.isArray(mpValue)) {
+    if (isLView(mpValue)) {
       const lView: LView = mpValue!;
       let nodeIndex: number;
       let component: any = undefined;
@@ -105,12 +108,7 @@ export function getLContext(target: any): LContext|null {
     while (parent = parent.parentNode) {
       const parentContext = readPatchedData(parent);
       if (parentContext) {
-        let lView: LView|null;
-        if (Array.isArray(parentContext)) {
-          lView = parentContext as LView;
-        } else {
-          lView = parentContext.lView;
-        }
+        const lView = Array.isArray(parentContext) ? parentContext as LView : parentContext.lView;
 
         // the edge of the app was also reached here through another means
         // (maybe because the DOM was changed manually).
@@ -136,14 +134,7 @@ export function getLContext(target: any): LContext|null {
  * Creates an empty instance of a `LContext` context
  */
 function createLContext(lView: LView, nodeIndex: number, native: RNode): LContext {
-  return {
-    lView,
-    nodeIndex,
-    native,
-    component: undefined,
-    directives: undefined,
-    localRefs: undefined,
-  };
+  return new LContext(lView[ID], nodeIndex, native);
 }
 
 /**
@@ -153,21 +144,24 @@ function createLContext(lView: LView, nodeIndex: number, native: RNode): LContex
  * @returns The component's view
  */
 export function getComponentViewByInstance(componentInstance: {}): LView {
-  let lView = readPatchedData(componentInstance);
-  let view: LView;
+  let patchedData = readPatchedData(componentInstance);
+  let lView: LView;
 
-  if (Array.isArray(lView)) {
-    const nodeIndex = findViaComponent(lView, componentInstance);
-    view = getComponentLViewByIndex(nodeIndex, lView);
-    const context = createLContext(lView, nodeIndex, view[HOST] as RElement);
+  if (isLView(patchedData)) {
+    const contextLView: LView = patchedData;
+    const nodeIndex = findViaComponent(contextLView, componentInstance);
+    lView = getComponentLViewByIndex(nodeIndex, contextLView);
+    const context = createLContext(contextLView, nodeIndex, lView[HOST] as RElement);
     context.component = componentInstance;
     attachPatchData(componentInstance, context);
     attachPatchData(context.native, context);
   } else {
-    const context = lView as any as LContext;
-    view = getComponentLViewByIndex(context.nodeIndex, context.lView);
+    const context = patchedData as unknown as LContext;
+    const contextLView = context.lView!;
+    ngDevMode && assertLView(contextLView);
+    lView = getComponentLViewByIndex(context.nodeIndex, contextLView);
   }
-  return view;
+  return lView;
 }
 
 /**
@@ -181,7 +175,10 @@ const MONKEY_PATCH_KEY_NAME = '__ngContext__';
  */
 export function attachPatchData(target: any, data: LView|LContext) {
   ngDevMode && assertDefined(target, 'Target expected');
-  target[MONKEY_PATCH_KEY_NAME] = data;
+  // Only attach the ID of the view in order to avoid memory leaks (see #41047). We only do this
+  // for `LView`, because we have control over when an `LView` is created and destroyed, whereas
+  // we can't know when to remove an `LContext`.
+  target[MONKEY_PATCH_KEY_NAME] = isLView(data) ? data[ID] : data;
 }
 
 /**
@@ -190,13 +187,14 @@ export function attachPatchData(target: any, data: LView|LContext) {
  */
 export function readPatchedData(target: any): LView|LContext|null {
   ngDevMode && assertDefined(target, 'Target expected');
-  return target[MONKEY_PATCH_KEY_NAME] || null;
+  const data = target[MONKEY_PATCH_KEY_NAME];
+  return (typeof data === 'number') ? getLViewById(data) : data || null;
 }
 
 export function readPatchedLView(target: any): LView|null {
   const value = readPatchedData(target);
   if (value) {
-    return Array.isArray(value) ? value : (value as LContext).lView;
+    return isLView(value) ? value : value.lView;
   }
   return null;
 }
