@@ -1,3 +1,22 @@
+<a name="13.2.3"></a>
+# 13.2.3 (2022-02-16)
+### animations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [0050b01b62](https://github.com/angular/angular/commit/0050b01b62adf8e0021c1878edb696c339c5e1bc) | perf | made errors in the animations package tree shakeable ([#45079](https://github.com/angular/angular/pull/45079)) |
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [09f0254bdd](https://github.com/angular/angular/commit/09f0254bddbe10bb9e265c8aee7d3c911e479e0e) | perf | chain element start/end instructions ([#44994](https://github.com/angular/angular/pull/44994)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [92cf9fbebe](https://github.com/angular/angular/commit/92cf9fbebed75ddc0eb598e57556b4fbe8c24009) | fix | `ViewContainerRef.createComponent` should consult module injector when custom one is provided ([#44966](https://github.com/angular/angular/pull/44966)) |
+## Special Thanks
+AlirezaEbrahimkhani, Amer Yousuf, Andrew Kushnir, Aristeidis Bampakos, Dario Piotrowicz, Esteban Gehring, Jessica Janiuk, JiaLiPassion, Kristiyan Kostadinov, Mina Hosseini Moghadam, Patrick Cameron, Srdjan Milic, Yousaf Nawaz, dario-piotrowicz, markostanimirovic, mgechev and zuckjet
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="13.2.2"></a>
 # 13.2.2 (2022-02-08)
 ### compiler
