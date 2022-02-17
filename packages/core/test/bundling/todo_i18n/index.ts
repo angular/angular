@@ -8,7 +8,7 @@
 import '@angular/core/test/bundling/util/src/reflect_metadata';
 
 import {CommonModule} from '@angular/common';
-import {Component, Injectable, NgModule, ViewEncapsulation, ɵmarkDirty as markDirty, ɵrenderComponent as renderComponent} from '@angular/core';
+import {Component, Injectable, NgModule, ViewEncapsulation, ɵmarkDirty as markDirty, ɵrenderComponent as renderComponent, ɵwhenRendered as whenRendered} from '@angular/core';
 import {loadTranslations} from '@angular/localize';
 
 import {translations} from './translations';
@@ -130,7 +130,9 @@ class TodoStore {
 class ToDoAppComponent {
   newTodoText = '';
 
-  constructor(public todoStore: TodoStore) {}
+  constructor(public todoStore: TodoStore) {
+    (window as any).todoAppComponent = this;
+  }
 
   cancelEditingTodo(todo: Todo) {
     todo.editing = false;
@@ -198,3 +200,8 @@ class ToDoAppModule {
 
 loadTranslations(translations);
 renderComponent(ToDoAppComponent);
+
+// This bundle includes `@angular/core` within it which means that the test asserting
+// against it will load a different core bundle. These symbols are exposed so that they
+// can interact with the correct `@angular/core` instance.
+module.exports = {whenRendered};

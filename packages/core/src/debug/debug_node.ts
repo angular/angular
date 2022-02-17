@@ -131,9 +131,10 @@ export class DebugElement extends DebugNode {
    * The element tag name, if it is an element.
    */
   get name(): string {
-    const context = getLContext(this.nativeNode);
-    if (context !== null) {
-      const lView = context.lView;
+    const context = getLContext(this.nativeNode)!;
+    const lView = context ? context.lView : null;
+
+    if (lView !== null) {
       const tData = lView[TVIEW].data;
       const tNode = tData[context.nodeIndex] as TNode;
       return tNode.value!;
@@ -154,13 +155,14 @@ export class DebugElement extends DebugNode {
    *  - input property bindings (e.g. `[myCustomInput]="value"`)
    *  - attribute bindings (e.g. `[attr.role]="menu"`)
    */
-  get properties(): {[key: string]: any} {
-    const context = getLContext(this.nativeNode);
-    if (context === null) {
+  get properties(): {[key: string]: any;} {
+    const context = getLContext(this.nativeNode)!;
+    const lView = context ? context.lView : null;
+
+    if (lView === null) {
       return {};
     }
 
-    const lView = context.lView;
     const tData = lView[TVIEW].data;
     const tNode = tData[context.nodeIndex] as TNode;
 
@@ -184,12 +186,13 @@ export class DebugElement extends DebugNode {
       return attributes;
     }
 
-    const context = getLContext(element);
-    if (context === null) {
+    const context = getLContext(element)!;
+    const lView = context ? context.lView : null;
+
+    if (lView === null) {
       return {};
     }
 
-    const lView = context.lView;
     const tNodeAttrs = (lView[TVIEW].data[context.nodeIndex] as TNode).attrs;
     const lowercaseTNodeAttrs: string[] = [];
 
@@ -420,11 +423,12 @@ function _queryAll(
 function _queryAll(
     parentElement: DebugElement, predicate: Predicate<DebugElement>|Predicate<DebugNode>,
     matches: DebugElement[]|DebugNode[], elementsOnly: boolean) {
-  const context = getLContext(parentElement.nativeNode);
-  if (context !== null) {
-    const parentTNode = context.lView[TVIEW].data[context.nodeIndex] as TNode;
+  const context = getLContext(parentElement.nativeNode)!;
+  const lView = context ? context.lView : null;
+  if (lView !== null) {
+    const parentTNode = lView[TVIEW].data[context.nodeIndex] as TNode;
     _queryNodeChildren(
-        parentTNode, context.lView, predicate, matches, elementsOnly, parentElement.nativeNode);
+        parentTNode, lView, predicate, matches, elementsOnly, parentElement.nativeNode);
   } else {
     // If the context is null, then `parentElement` was either created with Renderer2 or native DOM
     // APIs.

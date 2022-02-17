@@ -8,8 +8,6 @@
 
 import '@angular/compiler';
 
-import {ɵwhenRendered as whenRendered} from '@angular/core';
-import {getComponent} from '@angular/core/src/render3';
 import {withBody} from '@angular/private/testing';
 import * as path from 'path';
 
@@ -20,13 +18,12 @@ describe('functional test for todo', () => {
   BUNDLES.forEach(bundle => {
     describe(bundle, () => {
       it('should render todo', withBody('<todo-app></todo-app>', async () => {
-           require(path.join(PACKAGE, bundle));
-           const toDoAppComponent = getComponent(document.querySelector('todo-app')!);
+           const {whenRendered} = require(path.join(PACKAGE, bundle));
            expect(document.body.textContent).toContain('todos');
            expect(document.body.textContent).toContain('Demonstrate Components');
            expect(document.body.textContent).toContain('4 items left');
            document.querySelector('button')!.click();
-           await whenRendered(toDoAppComponent);
+           await whenRendered((window as any).todoAppComponent);
            expect(document.body.textContent).toContain('3 items left');
          }));
     });

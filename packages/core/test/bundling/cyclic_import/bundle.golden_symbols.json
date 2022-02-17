@@ -39,6 +39,9 @@
     "name": "RuntimeError"
   },
   {
+    "name": "TRACKED_LVIEWS"
+  },
+  {
     "name": "TriggerComponent"
   },
   {
@@ -249,6 +252,9 @@
     "name": "isInlineTemplate"
   },
   {
+    "name": "isLView"
+  },
+  {
     "name": "isNodeMatchingSelector"
   },
   {
@@ -346,6 +352,9 @@
   },
   {
     "name": "setUpAttributes"
+  },
+  {
+    "name": "uniqueIdCounter"
   },
   {
     "name": "updateTransplantedViewCount"

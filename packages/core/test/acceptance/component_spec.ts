@@ -91,6 +91,31 @@ describe('component', () => {
        expect(fixture.nativeElement.textContent.trim()).toBe('hello');
      });
 
+  it('should not throw when calling `detectChanges` on the ChangeDetectorRef of a destroyed view',
+     () => {
+       @Component({template: 'hello'})
+       class HelloComponent {
+       }
+
+       @Component({template: `<div #insertionPoint></div>`})
+       class App {
+         @ViewChild('insertionPoint', {read: ViewContainerRef}) viewContainerRef!: ViewContainerRef;
+       }
+
+       TestBed.configureTestingModule({declarations: [App, HelloComponent]});
+       const fixture = TestBed.createComponent(App);
+       fixture.detectChanges();
+
+       const componentRef =
+           fixture.componentInstance.viewContainerRef.createComponent(HelloComponent);
+       fixture.detectChanges();
+
+       expect(() => {
+         componentRef.destroy();
+         componentRef.changeDetectorRef.detectChanges();
+       }).not.toThrow();
+     });
+
   // TODO: add tests with Native once tests run in real browser (domino doesn't support shadow root)
   describe('encapsulation', () => {
     @Component({

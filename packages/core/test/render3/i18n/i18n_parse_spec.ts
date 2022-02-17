@@ -12,6 +12,7 @@ import {i18nStartFirstCreatePass} from '@angular/core/src/render3/i18n/i18n_pars
 import {getTIcu} from '@angular/core/src/render3/i18n/i18n_util';
 import {I18nUpdateOpCodes, IcuType, TI18n} from '@angular/core/src/render3/interfaces/i18n';
 import {HEADER_OFFSET, HOST} from '@angular/core/src/render3/interfaces/view';
+
 import {matchTI18n, matchTIcu} from '../matchers';
 import {matchDebug} from '../utils';
 import {ViewFixture} from '../view_fixture';
@@ -39,16 +40,16 @@ describe('i18n_parse', () => {
       //     TData                  | LView
       // ---------------------------+-------------------------------
       //                     ----- DECL -----
-      // 20: TI18n                  |
+      // 21: TI18n                  |
       //                     ----- VARS -----
-      // 21: Binding for ICU        |
+      // 22: Binding for ICU        |
       //                   ----- EXPANDO -----
-      // 22: null                   | #text(before|)
-      // 23: TIcu                   | <!-- ICU 20:0 -->
-      // 24: null                   | currently selected ICU case
-      // 25: null                   | #text(caseA)
-      // 26: null                   | #text(otherCase)
-      // 27: null                   | #text(|after)
+      // 23: null                   | #text(before|)
+      // 24: TIcu                   | <!-- ICU 20:0 -->
+      // 25: null                   | currently selected ICU case
+      // 26: null                   | #text(caseA)
+      // 27: null                   | #text(otherCase)
+      // 28: null                   | #text(|after)
       const tI18n = toT18n(`before|{
           �0�, select,
             A {caseA}
@@ -152,21 +153,21 @@ describe('i18n_parse', () => {
       //     TData                  | LView
       // ---------------------------+-------------------------------
       //                     ----- DECL -----
-      // 20: TI18n                  |
+      // 21: TI18n                  |
       //                     ----- VARS -----
-      // 21: Binding for parent ICU |
-      // 22: Binding for child ICU  |
+      // 22: Binding for parent ICU |
       // 23: Binding for child ICU  |
+      // 24: Binding for child ICU  |
       //                   ----- EXPANDO -----
-      // 24: TIcu (parent)          | <!-- ICU 20:0 -->
-      // 25: null                   | currently selected ICU case
-      // 26: null                   | #text( parentA )
-      // 27: TIcu (child)           | <!-- nested ICU 0 -->
-      // 28:     null               |     currently selected ICU case
-      // 29:     null               |     #text(nested0)
-      // 30:     null               |     #text({{�2�}})
-      // 31: null                   | #text( )
-      // 32: null                   | #text( parentOther )
+      // 25: TIcu (parent)          | <!-- ICU 20:0 -->
+      // 26: null                   | currently selected ICU case
+      // 27: null                   | #text( parentA )
+      // 28: TIcu (child)           | <!-- nested ICU 0 -->
+      // 29:     null               |     currently selected ICU case
+      // 30:     null               |     #text(nested0)
+      // 31:     null               |     #text({{�2�}})
+      // 32: null                   | #text( )
+      // 33: null                   | #text( parentOther )
       const tI18n = toT18n(`{
           �0�, select,
             A {parentA {�1�, select, 0 {nested0} other {�2�}}!}
