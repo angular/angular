@@ -142,7 +142,7 @@ export function tick(
  */
 export function flush(maxTurns?: number): number {
   if (fakeAsyncTestModule) {
-    return fakeAsyncTestModule.flush(maxTurns);
+    return fakeAsyncTestModule.flush(maxTurns, true);
   }
   throw new Error(fakeAsyncTestModuleNotLoadedErrorMessage);
 }

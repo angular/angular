@@ -552,7 +552,7 @@ describe('FakeAsyncTestZoneSpec', () => {
       });
     });
 
-    it('should advance intervals', () => {
+    it('should advance intervals with flushPerioid true', () => {
       fakeAsyncTestZone.run(() => {
         let x = false;
         let y = false;
@@ -568,16 +568,16 @@ describe('FakeAsyncTestZoneSpec', () => {
           z++;
         }, 10);
 
-        let elapsed = testZoneSpec.flush();
+        let elapsed = testZoneSpec.flush(20, true);
 
-        expect(elapsed).toEqual(141);
+        expect(elapsed).toEqual(150);
         expect(x).toBe(true);
         expect(y).toBe(true);
-        expect(z).toEqual(14);
+        expect(z).toEqual(15);
       });
     });
 
-    it('should not wait for intervals', () => {
+    it('should wait for intervals', () => {
       fakeAsyncTestZone.run(() => {
         let z = 0;
 
@@ -585,10 +585,10 @@ describe('FakeAsyncTestZoneSpec', () => {
           z++;
         }, 10);
 
-        let elapsed = testZoneSpec.flush();
+        let elapsed = testZoneSpec.flush(20, true);
 
-        expect(elapsed).toEqual(0);
-        expect(z).toEqual(0);
+        expect(elapsed).toEqual(10);
+        expect(z).toEqual(1);
       });
     });
 
@@ -609,9 +609,11 @@ describe('FakeAsyncTestZoneSpec', () => {
           Promise.resolve(null).then((_) => log.push('pt microtask'));
         }, 10);
 
-        testZoneSpec.flush();
-        expect(log).toEqual(
-            ['microtask', 'periodic timer', 'pt microtask', 'timer', 't microtask']);
+        testZoneSpec.flush(20, true);
+        expect(log).toEqual([
+          'microtask', 'periodic timer', 'pt microtask', 'timer', 't microtask', 'periodic timer',
+          'pt microtask'
+        ]);
       });
     });
 
@@ -668,7 +670,7 @@ describe('FakeAsyncTestZoneSpec', () => {
               'flush failed after reaching the limit of 10 tasks. Does your code use a polling timeout?');
     });
 
-    it('can flush periodic timers if flushPeriodic is true', () => {
+    it('can flush periodic timers', () => {
       fakeAsyncTestZone.run(() => {
         let x = 0;
 
@@ -683,7 +685,7 @@ describe('FakeAsyncTestZoneSpec', () => {
       });
     });
 
-    it('can flush multiple periodic timers if flushPeriodic is true', () => {
+    it('can flush multiple periodic timers with flushPeriodic true', () => {
       fakeAsyncTestZone.run(() => {
         let x = 0;
         let y = 0;
@@ -704,7 +706,7 @@ describe('FakeAsyncTestZoneSpec', () => {
       });
     });
 
-    it('can flush till the last periodic task is processed', () => {
+    it('can flush till the last periodic task is processed when flushPerioid is true', () => {
       fakeAsyncTestZone.run(() => {
         let x = 0;
         let y = 0;
@@ -785,23 +787,13 @@ describe('FakeAsyncTestZoneSpec', () => {
                      expect(ran).toEqual(false);
                    });
                  });
-                 it('is not flushed when flushPeriodic is false', () => {
+                 it('is flushed', () => {
                    let ran = false;
                    fakeAsyncTestZone.run(() => {
                      requestAnimationFrame(() => {
                        ran = true;
                      });
-                     testZoneSpec.flush(20);
-                     expect(ran).toEqual(false);
-                   });
-                 });
-                 it('is flushed when flushPeriodic is true', () => {
-                   let ran = false;
-                   fakeAsyncTestZone.run(() => {
-                     requestAnimationFrame(() => {
-                       ran = true;
-                     });
-                     const elapsed = testZoneSpec.flush(20, true);
+                     const elapsed = testZoneSpec.flush(20);
                      expect(elapsed).toEqual(16);
                      expect(ran).toEqual(true);
                    });
@@ -816,10 +808,8 @@ describe('FakeAsyncTestZoneSpec', () => {
                          timestamp1 = ts1;
                        });
                      });
-                     const elapsed = testZoneSpec.flush(20, true);
-                     const elapsed1 = testZoneSpec.flush(20, true);
-                     expect(elapsed).toEqual(16);
-                     expect(elapsed1).toEqual(16);
+                     const elapsed = testZoneSpec.flush(20);
+                     expect(elapsed).toEqual(32);
                      expect(timestamp).toEqual(16);
                      expect(timestamp1).toEqual(32);
                    });
@@ -1587,11 +1577,11 @@ const {fakeAsync, tick, discardPeriodicTasks, flush, flushMicrotasks} = fakeAsyn
              ran = true;
            }, 35);
 
-           let elapsed = flush();
+           let elapsed = flush(20, true);
 
-           expect(count).toEqual(3);
+           expect(count).toEqual(4);
            expect(ran).toEqual(true);
-           expect(elapsed).toEqual(35);
+           expect(elapsed).toEqual(40);
 
            discardPeriodicTasks();
          }));
