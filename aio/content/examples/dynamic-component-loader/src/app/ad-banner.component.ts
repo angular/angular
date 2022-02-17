@@ -1,5 +1,5 @@
 // #docregion
-import { Component, Input, OnDestroy, AfterViewInit, ViewChild } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 
 import { AdDirective } from './ad.directive';
 import { AdItem } from './ad-item';
@@ -17,7 +17,7 @@ import { AdComponent } from './ad.component';
   // #enddocregion ad-host
 })
 // #docregion class
-export class AdBannerComponent implements AfterViewInit, OnDestroy {
+export class AdBannerComponent implements OnInit, OnDestroy {
   @Input() ads: AdItem[] = [];
 
   currentAdIndex = -1;
@@ -25,7 +25,7 @@ export class AdBannerComponent implements AfterViewInit, OnDestroy {
   @ViewChild(AdDirective, {static: true}) adHost!: AdDirective;
   interval: number|undefined;
 
-  ngAfterViewInit() {
+  ngOnInit(): void {
     this.loadComponent();
     this.getAds();
   }
