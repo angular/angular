@@ -4,11 +4,20 @@
   $focus-indicator-width: 3px;
   $focus-indicator-style: dashed;
 
-  // The outline of the `fill` appearance is achieved through a background color
-  // which won't be visible in high contrast mode. Add an outline to replace it.
-  .mat-form-field-appearance-fill .mat-mdc-text-field-wrapper {
-    @include a11y.high-contrast(active, off) {
-      outline: solid 1px;
+  .mat-form-field-appearance-fill {
+    // The outline of the `fill` appearance is achieved through a background color
+    // which won't be visible in high contrast mode. Add an outline to replace it.
+    .mat-mdc-text-field-wrapper {
+      @include a11y.high-contrast(active, off) {
+        outline: solid 1px;
+      }
+    }
+
+    // Use GreyText for the disabled outline color which will account for the user's configuration.
+    &.mat-form-field-disabled .mat-mdc-text-field-wrapper {
+      @include a11y.high-contrast(active, off) {
+        outline-color: GrayText;
+      }
     }
   }
 

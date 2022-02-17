@@ -63,6 +63,7 @@ $legacy-underline-height: 1px !default;
     @include a11y.high-contrast(active, off) {
       border-top-style: dotted;
       border-top-width: 2px;
+      border-top-color: GrayText;
     }
   }
 

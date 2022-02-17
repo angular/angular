@@ -138,6 +138,12 @@ $outline-subscript-padding: math.div($outline-side-padding, $outline-subscript-f
     padding: 0 $outline-subscript-padding;
   }
 
+  &.mat-form-field-disabled .mat-form-field-outline {
+    @include a11y.high-contrast(active, off) {
+      color: GrayText;
+    }
+  }
+
   &._mat-animation-noopable {
     &:not(.mat-form-field-disabled) .mat-form-field-flex:hover ~ .mat-form-field-outline,
     .mat-form-field-outline,

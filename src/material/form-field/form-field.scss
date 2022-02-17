@@ -112,6 +112,12 @@ $default-infix-width: 180px !default;
     left: auto;
     right: 0;
   }
+
+  .mat-form-field-disabled & {
+    @include a11y.high-contrast(active, off) {
+      color: GrayText;
+    }
+  }
 }
 
 .mat-form-field-empty.mat-form-field-label,

@@ -77,6 +77,10 @@ $scale: 0.75 !default;
       // On Chromium browsers the `currentColor` blends in with the
       // background for SVGs so we have to fall back to `CanvasText`.
       fill: CanvasText;
+
+      .mat-mdc-select-disabled & {
+        fill: GrayText;
+      }
     }
   }
 }

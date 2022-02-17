@@ -32,6 +32,12 @@ $fill-subscript-padding: math.div($fill-side-padding, $fill-subscript-font-scale
     }
   }
 
+  &.mat-form-field-disabled .mat-form-field-flex {
+    @include a11y.high-contrast(active, off) {
+      outline-color: GrayText;
+    }
+  }
+
   &.mat-focused .mat-form-field-flex {
     @include a11y.high-contrast(active, off) {
       outline: dashed 3px;
