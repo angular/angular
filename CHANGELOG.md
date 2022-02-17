@@ -1,3 +1,29 @@
+<a name="14.0.0-next.3"></a>
+# 14.0.0-next.3 (2022-02-17)
+### animations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [5c7c56bc85](https://github.com/angular/angular/commit/5c7c56bc859b195bf6710f6c1479d9e18dde35b1) | perf | improve algorithm to balance animation namespaces ([#45057](https://github.com/angular/angular/pull/45057)) |
+| [4c778cdb28](https://github.com/angular/angular/commit/4c778cdb28de128c6ddecd2fd6cb6257d675500b) | perf | made errors in the animations package tree shakeable ([#45004](https://github.com/angular/angular/pull/45004)) |
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [bedb257afc](https://github.com/angular/angular/commit/bedb257afc1ca12eb221536ea44ade960e62cda0) | fix | cleanup URL change listeners when the root view is removed ([#44901](https://github.com/angular/angular/pull/44901)) |
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [1b91e1049e](https://github.com/angular/angular/commit/1b91e1049eedfb96febd9f6cc45fb7c0e1f154a7) | perf | chain element start/end instructions ([#44994](https://github.com/angular/angular/pull/44994)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e461f716d4](https://github.com/angular/angular/commit/e461f716d4b736829d53de26ba6dddb58f476746) | feat | move ANIMATION_MODULE_TYPE injection token into core ([#44970](https://github.com/angular/angular/pull/44970)) |
+| [822439fddd](https://github.com/angular/angular/commit/822439fdddfca316ac826569042efab460e67b50) | fix | `ViewContainerRef.createComponent` should consult module injector when custom one is provided ([#44966](https://github.com/angular/angular/pull/44966)) |
+| [45d98e7ca5](https://github.com/angular/angular/commit/45d98e7ca5accf918e2602cbc17805e11e18896b) | perf | make `IterableDiffers` and `KeyValueDiffers` tree-shakable ([#45094](https://github.com/angular/angular/pull/45094)) |
+## Special Thanks
+Alan Cohen, AlirezaEbrahimkhani, Amer Yousuf, Andrew Kushnir, Aristeidis Bampakos, Dario Piotrowicz, Dylan Hunn, Esteban Gehring, George Kalpakas, Jessica Janiuk, JiaLiPassion, Joey Perrott, JoostK, Kristiyan Kostadinov, Mina Hosseini Moghadam, Patrick Cameron, Srdjan Milic, Yousaf Nawaz, arturovt, dario-piotrowicz, markostanimirovic, mgechev and zuckjet
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="13.2.3"></a>
 # 13.2.3 (2022-02-16)
 ### animations
