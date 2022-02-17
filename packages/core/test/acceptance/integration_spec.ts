@@ -11,7 +11,11 @@ import {MockAnimationDriver, MockAnimationPlayer} from '@angular/animations/brow
 import {CommonModule} from '@angular/common';
 import {Component, ContentChild, Directive, ElementRef, EventEmitter, HostBinding, HostListener, Input, NgModule, OnInit, Output, Pipe, QueryList, TemplateRef, ViewChild, ViewChildren, ViewContainerRef} from '@angular/core';
 import {Inject} from '@angular/core/src/di';
-import {TVIEW} from '@angular/core/src/render3/interfaces/view';
+import {readPatchedLView} from '@angular/core/src/render3/context_discovery';
+import {LContainer} from '@angular/core/src/render3/interfaces/container';
+import {getLViewById} from '@angular/core/src/render3/interfaces/lview_tracking';
+import {isLView} from '@angular/core/src/render3/interfaces/type_checks';
+import {ID, LView, PARENT, TVIEW} from '@angular/core/src/render3/interfaces/view';
 import {getLView} from '@angular/core/src/render3/state';
 import {ngDevModeResetPerfCounters} from '@angular/core/src/util/ng_dev_mode';
 import {fakeAsync, flushMicrotasks, TestBed} from '@angular/core/testing';
@@ -2194,6 +2198,42 @@ describe('acceptance integration tests', () => {
     expect(fixture.nativeElement.textContent).toContain('Hello, Penelope!');
     expect(log).toEqual(['getConfig(showTitle)', 'person.getName(false)']);
     log.length = 0;
+  });
+
+  it('should remove child LView from the registry when the root view is destroyed', () => {
+    @Component({template: '<child></child>'})
+    class App {
+    }
+
+    @Component({selector: 'child', template: '<grand-child></grand-child>'})
+    class Child {
+    }
+
+    @Component({selector: 'grand-child', template: ''})
+    class GrandChild {
+    }
+
+    TestBed.configureTestingModule({declarations: [App, Child, GrandChild]});
+    const fixture = TestBed.createComponent(App);
+    const grandChild = fixture.debugElement.query(By.directive(GrandChild)).componentInstance;
+    fixture.detectChanges();
+    const leafLView = readPatchedLView(grandChild)!;
+    const lViewIds: number[] = [];
+    let current: LView|LContainer|null = leafLView;
+
+    while (current) {
+      isLView(current) && lViewIds.push(current[ID]);
+      current = current[PARENT];
+    }
+
+    // We expect 3 views: `GrandChild`, `Child` and `App`.
+    expect(lViewIds).toEqual([leafLView[ID], leafLView[ID] - 1, leafLView[ID] - 2]);
+    expect(lViewIds.every(id => getLViewById(id) !== null)).toBe(true);
+
+    fixture.destroy();
+
+    // Expect all 3 views to be removed from the registry once the root is destroyed.
+    expect(lViewIds.map(getLViewById)).toEqual([null, null, null]);
   });
 
   describe('tView.firstUpdatePass', () => {

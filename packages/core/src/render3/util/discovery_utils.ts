@@ -11,7 +11,7 @@ import {Injector} from '../../di/injector';
 import {ViewEncapsulation} from '../../metadata/view';
 import {assertEqual} from '../../util/assert';
 import {assertLView} from '../assert';
-import {discoverLocalRefs, getComponentAtNodeIndex, getDirectivesAtNodeIndex, getLContext} from '../context_discovery';
+import {discoverLocalRefs, getComponentAtNodeIndex, getDirectivesAtNodeIndex, getLContext, readPatchedLView} from '../context_discovery';
 import {getComponentDef, getDirectiveDef} from '../definition';
 import {NodeInjector} from '../di';
 import {buildDebugNode} from '../instructions/lview_debug';
@@ -20,6 +20,7 @@ import {DirectiveDef} from '../interfaces/definition';
 import {TElementNode, TNode, TNodeProviderIndexes} from '../interfaces/node';
 import {isLView} from '../interfaces/type_checks';
 import {CLEANUP, CONTEXT, DebugNode, FLAGS, LView, LViewFlags, T_HOST, TVIEW, TViewType} from '../interfaces/view';
+
 import {stringifyForError} from './stringify_utils';
 import {getLViewParent, getRootContext} from './view_traversal_utils';
 import {getTNode, unwrapRNode} from './view_utils';
@@ -54,12 +55,16 @@ import {getTNode, unwrapRNode} from './view_utils';
  * @globalApi ng
  */
 export function getComponent<T>(element: Element): T|null {
-  assertDomElement(element);
+  ngDevMode && assertDomElement(element);
   const context = getLContext(element);
   if (context === null) return null;
 
   if (context.component === undefined) {
-    context.component = getComponentAtNodeIndex(context.nodeIndex, context.lView);
+    const lView = context.lView;
+    if (lView === null) {
+      return null;
+    }
+    context.component = getComponentAtNodeIndex(context.nodeIndex, lView);
   }
 
   return context.component as T;
@@ -80,8 +85,9 @@ export function getComponent<T>(element: Element): T|null {
  */
 export function getContext<T>(element: Element): T|null {
   assertDomElement(element);
-  const context = getLContext(element);
-  return context === null ? null : context.lView[CONTEXT] as T;
+  const context = getLContext(element)!;
+  const lView = context ? context.lView : null;
+  return lView === null ? null : lView[CONTEXT] as T;
 }
 
 /**
@@ -100,12 +106,11 @@ export function getContext<T>(element: Element): T|null {
  * @globalApi ng
  */
 export function getOwningComponent<T>(elementOrDir: Element|{}): T|null {
-  const context = getLContext(elementOrDir);
-  if (context === null) return null;
+  const context = getLContext(elementOrDir)!;
+  let lView = context ? context.lView : null;
+  if (lView === null) return null;
 
-  let lView = context.lView;
   let parent: LView|null;
-  ngDevMode && assertLView(lView);
   while (lView[TVIEW].type === TViewType.Embedded && (parent = getLViewParent(lView)!)) {
     lView = parent;
   }
@@ -124,7 +129,8 @@ export function getOwningComponent<T>(elementOrDir: Element|{}): T|null {
  * @globalApi ng
  */
 export function getRootComponents(elementOrDir: Element|{}): {}[] {
-  return [...getRootContext(elementOrDir).components];
+  const lView = readPatchedLView(elementOrDir);
+  return lView !== null ? [...getRootContext(lView).components] : [];
 }
 
 /**
@@ -138,11 +144,12 @@ export function getRootComponents(elementOrDir: Element|{}): {}[] {
  * @globalApi ng
  */
 export function getInjector(elementOrDir: Element|{}): Injector {
-  const context = getLContext(elementOrDir);
-  if (context === null) return Injector.NULL;
+  const context = getLContext(elementOrDir)!;
+  const lView = context ? context.lView : null;
+  if (lView === null) return Injector.NULL;
 
-  const tNode = context.lView[TVIEW].data[context.nodeIndex] as TElementNode;
-  return new NodeInjector(tNode, context.lView);
+  const tNode = lView[TVIEW].data[context.nodeIndex] as TElementNode;
+  return new NodeInjector(tNode, lView);
 }
 
 /**
@@ -151,9 +158,9 @@ export function getInjector(elementOrDir: Element|{}): Injector {
  * @param element Element for which the injection tokens should be retrieved.
  */
 export function getInjectionTokens(element: Element): any[] {
-  const context = getLContext(element);
-  if (context === null) return [];
-  const lView = context.lView;
+  const context = getLContext(element)!;
+  const lView = context ? context.lView : null;
+  if (lView === null) return [];
   const tView = lView[TVIEW];
   const tNode = tView.data[context.nodeIndex] as TNode;
   const providerTokens: any[] = [];
@@ -204,12 +211,12 @@ export function getDirectives(node: Node): {}[] {
     return [];
   }
 
-  const context = getLContext(node);
-  if (context === null) {
+  const context = getLContext(node)!;
+  const lView = context ? context.lView : null;
+  if (lView === null) {
     return [];
   }
 
-  const lView = context.lView;
   const tView = lView[TVIEW];
   const nodeIndex = context.nodeIndex;
   if (!tView?.data[nodeIndex]) {
@@ -301,7 +308,11 @@ export function getLocalRefs(target: {}): {[key: string]: any} {
   if (context === null) return {};
 
   if (context.localRefs === undefined) {
-    context.localRefs = discoverLocalRefs(context.lView, context.nodeIndex);
+    const lView = context.lView;
+    if (lView === null) {
+      return {};
+    }
+    context.localRefs = discoverLocalRefs(lView, context.nodeIndex);
   }
 
   return context.localRefs || {};
@@ -389,11 +400,11 @@ export interface Listener {
  * @globalApi ng
  */
 export function getListeners(element: Element): Listener[] {
-  assertDomElement(element);
+  ngDevMode && assertDomElement(element);
   const lContext = getLContext(element);
-  if (lContext === null) return [];
+  const lView = lContext === null ? null : lContext.lView;
+  if (lView === null) return [];
 
-  const lView = lContext.lView;
   const tView = lView[TVIEW];
   const lCleanup = lView[CLEANUP];
   const tCleanup = tView.cleanup;
@@ -447,12 +458,13 @@ export function getDebugNode(element: Element): DebugNode|null {
     throw new Error('Expecting instance of DOM Element');
   }
 
-  const lContext = getLContext(element);
-  if (lContext === null) {
+  const lContext = getLContext(element)!;
+  const lView = lContext ? lContext.lView : null;
+
+  if (lView === null) {
     return null;
   }
 
-  const lView = lContext.lView;
   const nodeIndex = lContext.nodeIndex;
   if (nodeIndex !== -1) {
     const valueInLView = lView[nodeIndex];
@@ -479,7 +491,8 @@ export function getDebugNode(element: Element): DebugNode|null {
 export function getComponentLView(target: any): LView {
   const lContext = getLContext(target)!;
   const nodeIndx = lContext.nodeIndex;
-  const lView = lContext.lView;
+  const lView = lContext.lView!;
+  ngDevMode && assertLView(lView);
   const componentLView = lView[nodeIndx];
   ngDevMode && assertLView(componentLView);
   return componentLView;

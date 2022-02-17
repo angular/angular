@@ -44,7 +44,7 @@ describe('ngDevMode debug', () => {
 
       TestBed.configureTestingModule({declarations: [MyApp], imports: [CommonModule]});
       const fixture = TestBed.createComponent(MyApp);
-      const rootLView = getLContext(fixture.nativeElement)!.lView;
+      const rootLView = getLContext(fixture.nativeElement)!.lView!;
       expect(rootLView.constructor.name)
           .toEqual(targetSupportsArraySubclassing ? 'LRootView' : 'Array');
 
@@ -55,7 +55,7 @@ describe('ngDevMode debug', () => {
       const element: HTMLElement = fixture.nativeElement;
       fixture.detectChanges();
       const li = element.querySelector('li')!;
-      const embeddedLView = getLContext(li)!.lView;
+      const embeddedLView = getLContext(li)!.lView!;
       expect(embeddedLView.constructor.name)
           .toEqual(targetSupportsArraySubclassing ? 'LEmbeddedView' : 'Array');
     });
@@ -76,7 +76,7 @@ describe('ngDevMode debug', () => {
 
           TestBed.configureTestingModule({declarations: [MyApp], imports: [CommonModule]});
           const fixture = TestBed.createComponent(MyApp);
-          const rootLView = getLContext(fixture.nativeElement)!.lView;
+          const rootLView = getLContext(fixture.nativeElement)!.lView!;
           expect(rootLView.constructor.name)
               .toEqual(targetSupportsArraySubclassing ? 'LRootView' : 'Array');
 
@@ -86,7 +86,7 @@ describe('ngDevMode debug', () => {
           const element: HTMLElement = fixture.nativeElement;
           fixture.detectChanges();
           const li = element.querySelector('li')!;
-          const embeddedLView = getLContext(li)!.lView;
+          const embeddedLView = getLContext(li)!.lView!;
           expect(embeddedLView.constructor.name).toEqual('LEmbeddedView_MyApp_li_1');
         });
   });

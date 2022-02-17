@@ -99,6 +99,9 @@
     "name": "SkipSelf"
   },
   {
+    "name": "TRACKED_LVIEWS"
+  },
+  {
     "name": "TemplateRef"
   },
   {
@@ -375,6 +378,9 @@
     "name": "getComponentLViewByIndex"
   },
   {
+    "name": "getComponentViewByInstance"
+  },
+  {
     "name": "getConstant"
   },
   {
@@ -397,6 +403,9 @@
   },
   {
     "name": "getLView"
+  },
+  {
+    "name": "getLViewById"
   },
   {
     "name": "getLViewParent"
@@ -790,6 +799,9 @@
   },
   {
     "name": "trackByIdentity"
+  },
+  {
+    "name": "uniqueIdCounter"
   },
   {
     "name": "unwrapRNode"
