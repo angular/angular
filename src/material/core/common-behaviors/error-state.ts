@@ -13,8 +13,6 @@ import {AbstractConstructor, Constructor} from './constructor';
 
 /** @docs-private */
 export interface CanUpdateErrorState {
-  /** Emits whenever the component state changes. */
-  readonly stateChanges: Subject<void>;
   /** Updates the error state based on the provided error state matcher. */
   updateErrorState(): void;
   /** Whether the component is in an error state. */
@@ -31,7 +29,12 @@ export interface HasErrorState {
   _parentFormGroup: FormGroupDirective;
   _parentForm: NgForm;
   _defaultErrorStateMatcher: ErrorStateMatcher;
+
+  // These properties are defined as per the `MatFormFieldControl` interface. Since
+  // this mixin is commonly used with custom form-field controls, we respect the
+  // properties (also with the public name they need according to `MatFormFieldControl`).
   ngControl: NgControl;
+  stateChanges: Subject<void>;
 }
 
 /**
@@ -45,13 +48,6 @@ export function mixinErrorState<T extends Constructor<HasErrorState>>(
   base: T,
 ): CanUpdateErrorStateCtor & T {
   return class extends base {
-    // This class member exists as an interop with `MatFormFieldControl` which expects
-    // a public `stateChanges` observable to emit whenever the form field should be updated.
-    // The description is not specifically mentioning the error state, as classes using this
-    // mixin can/should emit an event in other cases too.
-    /** Emits whenever the component state changes. */
-    readonly stateChanges = new Subject<void>();
-
     /** Whether the component is in an error state. */
     errorState: boolean = false;
 

@@ -77,7 +77,6 @@ export interface CanDisableRipple {
 export interface CanUpdateErrorState {
     errorState: boolean;
     errorStateMatcher: ErrorStateMatcher;
-    readonly stateChanges: Subject<void>;
     updateErrorState(): void;
 }
 
