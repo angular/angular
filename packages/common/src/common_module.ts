@@ -7,9 +7,10 @@
  */
 
 import {NgModule} from '@angular/core';
+
 import {COMMON_DIRECTIVES} from './directives/index';
-import {NgLocaleLocalization, NgLocalization} from './i18n/localization';
 import {COMMON_PIPES} from './pipes/index';
+
 
 
 // Note: This does not contain the location providers,
@@ -30,9 +31,6 @@ import {COMMON_PIPES} from './pipes/index';
 @NgModule({
   declarations: [COMMON_DIRECTIVES, COMMON_PIPES],
   exports: [COMMON_DIRECTIVES, COMMON_PIPES],
-  providers: [
-    {provide: NgLocalization, useClass: NgLocaleLocalization},
-  ],
 })
 export class CommonModule {
 }

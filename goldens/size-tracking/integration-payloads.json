@@ -3,7 +3,7 @@
     "master": {
       "uncompressed": {
         "runtime": 1083,
-        "main": 126218,
+        "main": 124282,
         "polyfills": 37226
       }
     }
@@ -24,7 +24,7 @@
     "master": {
       "uncompressed": {
         "runtime": 1105,
-        "main": 131882,
+        "main": 131270,
         "polyfills": 37248
       }
     }
@@ -33,7 +33,7 @@
     "master": {
       "uncompressed": {
         "runtime": 929,
-        "main": 124544,
+        "main": 123958,
         "polyfills": 37933
       }
     }
@@ -42,7 +42,7 @@
     "master": {
       "uncompressed": {
         "runtime": 2835,
-        "main": 231381,
+        "main": 230780,
         "polyfills": 37244,
         "src_app_lazy_lazy_module_ts": 795
       }
@@ -52,7 +52,7 @@
     "master": {
       "uncompressed": {
         "runtime": 1063,
-        "main": 158556,
+        "main": 155607,
         "polyfills": 36975
       }
     }
@@ -61,7 +61,7 @@
     "master": {
       "uncompressed": {
         "runtime": 1070,
-        "main": 158300,
+        "main": 155563,
         "polyfills": 37242
       }
     }
