@@ -3,8 +3,11 @@
 @use '../mdc-helpers/mdc-helpers';
 @use '../../material/table/table-flex-styles';
 
-@include mdc-data-table.core-styles($query: mdc-helpers.$mat-base-styles-without-animation-query);
-@include table-flex-styles.private-table-flex-styles();
+@include mdc-helpers.disable-fallback-declarations {
+  @include mdc-data-table.table-styles(
+    $query: mdc-helpers.$mat-base-styles-without-animation-query);
+  @include table-flex-styles.private-table-flex-styles();
+}
 
 .mat-mdc-table-sticky {
   // Note that the table can either set this class or an inline style to make something sticky.
