@@ -2,7 +2,7 @@
 // #docregion
 import { Component } from '@angular/core';
 // #docregion animation-imports
-import { RouterOutlet } from '@angular/router';
+import { ChildrenOutletContexts } from '@angular/router';
 import { slideInAnimation } from './animations';
 
 @Component({
@@ -14,8 +14,10 @@ import { slideInAnimation } from './animations';
 // #enddocregion animation-imports
 // #docregion function-binding
 export class AppComponent {
-  getAnimationData(outlet: RouterOutlet) {
-    return outlet?.activatedRouteData?.['animation'];
+  constructor(private contexts: ChildrenOutletContexts) {}
+
+  getAnimationData() {
+      return this.contexts.getContext('primary')?.route?.snapshot?.data?.['animation'];
   }
 }
 // #enddocregion function-binding

@@ -59,15 +59,15 @@ In addition to `path` and `component`, the `data` property of each route defines
 
 After configuring the routes, add a `<router-outlet>` inside the root `AppComponent` template. The `<router-outlet>` directive tells the Angular router where to render the views when matched with a route.
 
-The `<router-outlet>` directive holds the custom data set for the currently active route which can be accessed via the directive's `activatedRouteData` property, we can use such data to animate our routing transitions.
+The `ChildrenOutletContexts` holds information about outlets and activated routes. We can use the `data` property of each `Route` to animate our routing transitions.
 
 <code-example path="animations/src/app/app.component.html" header="src/app/app.component.html" region="route-animations-outlet"></code-example>
 
 `AppComponent` defines a method that can detect when a view changes. The method assigns an animation state value to the animation trigger (`@routeAnimation`) based on the route configuration `data` property value. Here's an example of an `AppComponent` method that detects when a route change happens.
 
-<code-example path="animations/src/app/app.component.ts" header="src/app/app.component.ts" region="prepare-router-outlet" language="typescript"></code-example>
+<code-example path="animations/src/app/app.component.ts" header="src/app/app.component.ts" region="get-route-animations-data" language="typescript"></code-example>
 
-Here, the `prepareRoute()` method takes the value of the outlet directive (established through `#outlet="outlet"`) and returns a string value representing the state of the animation based on the custom data of the current active route. Use this data to control which transition to execute for each route.
+Here, the `getRouteAnimationData()` method takes the value of the outlet and returns a string which represents the state of the animation based on the custom data of the current active route. Use this data to control which transition to execute for each route.
 
 ## Animation definition
 
