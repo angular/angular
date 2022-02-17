@@ -21,7 +21,7 @@
 </nav>
 
 <!-- #docregion route-animations-outlet -->
-<div [@routeAnimations]="prepareRoute(outlet)">
-  <router-outlet #outlet="outlet"></router-outlet>
+<div [@routeAnimations]="getRouteAnimationData()">
+  <router-outlet></router-outlet>
 </div>
 <!-- #enddocregion route-animations-outlet -->

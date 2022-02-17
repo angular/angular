@@ -11,7 +11,7 @@ import {
 } from '@angular/animations';
 
 // #enddocregion imports
-import { RouterOutlet } from '@angular/router';
+import { ChildrenOutletContexts, RouterOutlet } from '@angular/router';
 import { slideInAnimation } from './animations';
 
 // #docregion decorator, toggle-app-animations, define
@@ -35,8 +35,10 @@ export class AppComponent {
 // #enddocregion toggle-app-animations
 
 // #docregion prepare-router-outlet
-  prepareRoute(outlet: RouterOutlet) {
-    return outlet?.activatedRouteData?.['animation'];
+  constructor(private contexts: ChildrenOutletContexts) {}
+
+  getRouteAnimationData() {
+    return this.contexts.getContext('primary')?.route?.snapshot?.data?.['animation'];
   }
 
 // #enddocregion prepare-router-outlet

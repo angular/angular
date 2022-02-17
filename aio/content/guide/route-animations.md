@@ -59,7 +59,7 @@ In addition to `path` and `component`, the `data` property of each route defines
 
 After configuring the routes, add a `<router-outlet>` inside the root `AppComponent` template. The `<router-outlet>` directive tells the Angular router where to render the views when matched with a route.
 
-The `<router-outlet>` directive holds the custom data set for the currently active route which can be accessed via the directive's `activatedRouteData` property, we can use such data to animate our routing transitions.
+The `<router-outlet>` directive holds the custom data set for the currently active route which can be accessed via the route's `activatedRouteData` property, we can use such data to animate our routing transitions.
 
 <code-example path="animations/src/app/app.component.html" header="src/app/app.component.html" region="route-animations-outlet"></code-example>
 
@@ -67,7 +67,26 @@ The `<router-outlet>` directive holds the custom data set for the currently acti
 
 <code-example path="animations/src/app/app.component.ts" header="src/app/app.component.ts" region="prepare-router-outlet" language="typescript"></code-example>
 
-Here, the `prepareRoute()` method takes the value of the outlet directive (established through `#outlet="outlet"`) and returns a string value representing the state of the animation based on the custom data of the current active route. Use this data to control which transition to execute for each route.
+Here, the `prepareRoute()` method takes the value of the outlet) and returns a string value representing the state of the animation based on the custom data of the current active route. Use this data to control which transition to execute for each route.
+
+<div class="alert is-helpful">
+
+  The `router-outlet` directive holds a `activatedRouteData` property which can be accessed by assigning a template variable to the directive and using that to access the directive's data.
+
+  Like so for example:
+  ```html
+    <div [@routeAnimations]="prepareRoute(outlet)">
+      <router-outlet #outlet="outlet"></router-outlet>
+    </div>
+  ```
+  ```typescript
+    prepareRoute(outlet: RouterOutlet) {
+      return outlet?.activatedRouteData?.['animation'];
+    }
+  ```
+
+  That is not however the correct way to access the outlet's data since, it is accessing the outlet before it is defined (as in, the `outlet` usage is before the `outlet` definition in the template), this is called __backward reference__ and can cause various issues since it is not supported by Angular.
+</div>
 
 ## Animation definition
 
