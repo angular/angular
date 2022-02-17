@@ -252,9 +252,6 @@
     "name": "KeyEventsPlugin"
   },
   {
-    "name": "LOCALE_DATA"
-  },
-  {
     "name": "LOCALE_ID2"
   },
   {
@@ -274,9 +271,6 @@
   },
   {
     "name": "LoadedRouterConfig"
-  },
-  {
-    "name": "LocaleDataIndex"
   },
   {
     "name": "Location"
@@ -372,12 +366,6 @@
     "name": "NavigationStart"
   },
   {
-    "name": "NgLocaleLocalization"
-  },
-  {
-    "name": "NgLocalization"
-  },
-  {
     "name": "NgModuleFactory"
   },
   {
@@ -442,9 +430,6 @@
   },
   {
     "name": "PlatformRef"
-  },
-  {
-    "name": "Plural"
   },
   {
     "name": "Position"
@@ -1224,9 +1209,6 @@
     "name": "getLViewParent"
   },
   {
-    "name": "getLocaleData"
-  },
-  {
     "name": "getNativeByTNode"
   },
   {
@@ -1519,9 +1501,6 @@
   },
   {
     "name": "leaveViewLight"
-  },
-  {
-    "name": "locale_en_default"
   },
   {
     "name": "locateDirectiveOrProvider"
@@ -1894,9 +1873,6 @@
   },
   {
     "name": "tree"
-  },
-  {
-    "name": "u"
   },
   {
     "name": "uniqueIdCounter"
