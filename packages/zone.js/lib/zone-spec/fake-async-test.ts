@@ -515,6 +515,10 @@ class FakeAsyncTestZoneSpec implements ZoneSpec {
     }
   }
 
+  tickRAF(doTick?: (elapsed: number) => void) {
+    this.tick(16, doTick);
+  }
+
   flushMicrotasks(): void {
     FakeAsyncTestZoneSpec.assertInZone();
     const flushErrors = () => {

@@ -764,6 +764,17 @@ describe('FakeAsyncTestZoneSpec', () => {
                      expect(ran).toEqual(true);
                    });
                  });
+                 it('should schedule a requestAnimationFrame with tickRAF', () => {
+                   fakeAsyncTestZone.run(() => {
+                     let ran = false;
+                     requestAnimationFrame(() => {
+                       ran = true;
+                     });
+
+                     testZoneSpec.tickRAF();
+                     expect(ran).toEqual(true);
+                   });
+                 });
                  it('does not count as a pending timer', () => {
                    fakeAsyncTestZone.run(() => {
                      requestAnimationFrame(() => {});
@@ -798,6 +809,16 @@ describe('FakeAsyncTestZoneSpec', () => {
                      expect(ran).toEqual(true);
                    });
                  });
+                 it('is ticked by tickRAF()', () => {
+                   let ran = false;
+                   fakeAsyncTestZone.run(() => {
+                     requestAnimationFrame(() => {
+                       ran = true;
+                     });
+                     testZoneSpec.tickRAF();
+                     expect(ran).toEqual(true);
+                   });
+                 });
                  it('should pass timestamp as parameter', () => {
                    let timestamp = 0;
                    let timestamp1 = 0;
@@ -811,6 +832,23 @@ describe('FakeAsyncTestZoneSpec', () => {
                      const elapsed = testZoneSpec.flush(20);
                      expect(elapsed).toEqual(32);
                      expect(timestamp).toEqual(16);
+                     expect(timestamp1).toEqual(32);
+                   });
+                 });
+                 it('should pass timestamp as parameter with tickRAF()', () => {
+                   let timestamp = 0;
+                   let timestamp1 = 0;
+                   fakeAsyncTestZone.run(() => {
+                     requestAnimationFrame((ts) => {
+                       timestamp = ts;
+                       requestAnimationFrame(ts1 => {
+                         timestamp1 = ts1;
+                       });
+                     });
+                     testZoneSpec.tickRAF();
+                     expect(timestamp).toEqual(16);
+                     expect(timestamp1).toEqual(0);
+                     testZoneSpec.tickRAF();
                      expect(timestamp1).toEqual(32);
                    });
                  });
