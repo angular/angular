@@ -240,16 +240,10 @@
     "name": "LEAVE_TOKEN_REGEX"
   },
   {
-    "name": "LOCALE_DATA"
-  },
-  {
     "name": "LOCALE_ID2"
   },
   {
     "name": "LifecycleHooksFeature"
-  },
-  {
-    "name": "LocaleDataIndex"
   },
   {
     "name": "MODIFIER_KEYS"
@@ -324,12 +318,6 @@
     "name": "NULL_REMOVED_QUERIED_STATE"
   },
   {
-    "name": "NgLocaleLocalization"
-  },
-  {
-    "name": "NgLocalization"
-  },
-  {
     "name": "NgModuleRef"
   },
   {
@@ -370,9 +358,6 @@
   },
   {
     "name": "PlatformRef"
-  },
-  {
-    "name": "Plural"
   },
   {
     "name": "R3Injector"
@@ -852,9 +837,6 @@
     "name": "getLViewParent"
   },
   {
-    "name": "getLocaleData"
-  },
-  {
     "name": "getNativeByTNode"
   },
   {
@@ -1081,9 +1063,6 @@
   },
   {
     "name": "listenOnPlayer"
-  },
-  {
-    "name": "locale_en_default"
   },
   {
     "name": "lookupTokenUsingModuleInjector"
@@ -1348,9 +1327,6 @@
   },
   {
     "name": "transition"
-  },
-  {
-    "name": "u"
   },
   {
     "name": "uniqueIdCounter"
