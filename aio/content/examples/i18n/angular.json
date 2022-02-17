@@ -77,16 +77,7 @@
               "outputHashing": "all"
             },
             "development": {
-              "localize": ["en-US"],
-              "buildOptimizer": false,
-              "optimization": false,
-              "vendorChunk": true,
-              "extractLicenses": false,
-              "sourceMap": true,
-              "namedChunks": true
-            },
-            "development:fr": {
-              "localize": ["fr"],
+              "localize": false,
               "buildOptimizer": false,
               "optimization": false,
               "vendorChunk": true,
@@ -116,7 +107,7 @@
             },
             // #docregion build-single-locale, build-production-french
             "fr": {
-              "browserTarget": "angular.io-example:build:development:fr"
+              "browserTarget": "angular.io-example:build:development,fr"
             }
           },
           // #enddocregion build-single-locale, build-production-french
