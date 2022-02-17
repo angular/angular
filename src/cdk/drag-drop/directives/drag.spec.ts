@@ -259,6 +259,18 @@ describe('CdkDrag', () => {
 
         expect(dragElement.style.transform).toBeFalsy();
       }));
+
+      it('should prevent the default dragstart action', fakeAsync(() => {
+        const fixture = createComponent(StandaloneDraggable);
+        fixture.detectChanges();
+        const event = dispatchFakeEvent(
+          fixture.componentInstance.dragElement.nativeElement,
+          'dragstart',
+        );
+        fixture.detectChanges();
+
+        expect(event.defaultPrevented).toBe(true);
+      }));
     });
 
     describe('touch dragging', () => {
@@ -2952,6 +2964,9 @@ describe('CdkDrag', () => {
       expect(placeholder.textContent!.trim())
         .withContext('Expected placeholder content to match element')
         .toContain('One');
+      expect(placeholder.style.pointerEvents)
+        .withContext('Expected pointer events to be disabled on placeholder')
+        .toBe('none');
 
       dispatchMouseEvent(document, 'mouseup');
       fixture.detectChanges();
