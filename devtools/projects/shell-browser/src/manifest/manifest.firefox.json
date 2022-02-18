@@ -11,24 +11,16 @@
     "128": "assets/icon128.png"
   },
   "browser_action": {
-    "default_icon": {
-      "16": "assets/icon16.png",
-      "48": "assets/icon48.png",
-      "128": "assets/icon128.png"
-    },
-    "default_popup": "popups/not-angular.html",
-    "browser_style": true
+    "default_popup": "popups/not-angular.html"
   },
   "devtools_page": "devtools.html",
   "web_accessible_resources": [
-    "backend.js",
-    "runtime.js",
+    "app/backend_bundle.js",
     "devtools.html"
   ],
   "background": {
     "scripts": [
-      "background.js",
-      "runtime.js"
+      "app/background_bundle.js"
     ]
   },
   "permissions": [
@@ -37,24 +29,13 @@
     "https://*/*",
     "file:///*"
   ],
-  "content_scripts": [
-    {
-      "matches": [
-        "<all_urls>"
-      ],
-      "js": [
-        "runtime.js"
-      ],
-      "run_at": "document_start"
-    },
-    {
-      "matches": [
-        "<all_urls>"
-      ],
-      "js": [
-        "ng-validate.js"
-      ],
-      "run_at": "document_idle"
-    }
-  ]
+  "content_scripts": [{
+    "matches": [
+      "<all_urls>"
+    ],
+    "js": [
+      "app/ng_validate_bundle.js"
+    ],
+    "run_at": "document_idle"
+  }]
 }
