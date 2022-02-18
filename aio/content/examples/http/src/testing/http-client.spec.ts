@@ -97,13 +97,13 @@ describe('HttpClient testing', () => {
 
     // Make three requests in a row
     httpClient.get<Data[]>(testUrl)
-      .subscribe(d => expect(d.length).toEqual(0, 'should have no data'));
+      .subscribe(d => expect(d.length).withContext('should have no data').toEqual(0));
 
     httpClient.get<Data[]>(testUrl)
-      .subscribe(d => expect(d).toEqual([testData[0]], 'should be one element array'));
+      .subscribe(d => expect(d).withContext('should be one element array').toEqual([testData[0]]));
 
     httpClient.get<Data[]>(testUrl)
-      .subscribe(d => expect(d).toEqual(testData, 'should be expected data'));
+      .subscribe(d => expect(d).withContext('should be expected data').toEqual(testData));
 
     // #docregion multi-request
     // get all pending requests that match the given URL
@@ -124,8 +124,8 @@ describe('HttpClient testing', () => {
     httpClient.get<Data[]>(testUrl).subscribe({
       next: () => fail('should have failed with the 404 error'),
       error: (error: HttpErrorResponse) => {
-        expect(error.status).toEqual(404, 'status');
-        expect(error.error).toEqual(emsg, 'message');
+        expect(error.status).withContext('status').toEqual(404);
+        expect(error.error).withContext('message').toEqual(emsg);
       },
     });
 
