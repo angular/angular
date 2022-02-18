@@ -40,7 +40,6 @@ export class AppComponent {
   getRouteAnimationData() {
     return this.contexts.getContext('primary')?.route?.snapshot?.data?.['animation'];
   }
-
 // #enddocregion get-route-animations-data
 
   toggleAnimations() {
