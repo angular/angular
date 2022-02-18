@@ -46,7 +46,7 @@ import {_supportsShadowDom} from '@angular/cdk/platform';
 import {merge, Observable, Subject} from 'rxjs';
 import {map, take} from 'rxjs/operators';
 import {MatStepHeader, MatStepperModule} from './index';
-import {MatHorizontalStepper, MatStep, MatStepper, MatVerticalStepper} from './stepper';
+import {MatStep, MatStepper} from './stepper';
 import {MatStepperNext, MatStepperPrevious} from './stepper-button';
 import {MatStepperIntl} from './stepper-intl';
 import {MatFormFieldModule} from '@angular/material/form-field';
@@ -979,13 +979,6 @@ describe('MatStepper', () => {
   });
 
   describe('vertical stepper', () => {
-    it('should be able to use the legacy classes in queries', () => {
-      const fixture = createComponent(SimpleMatVerticalStepperApp);
-      fixture.detectChanges();
-
-      expect(fixture.componentInstance.legacyTokenStepper).toBeTruthy();
-    });
-
     it('should set the aria-orientation to "vertical"', () => {
       const fixture = createComponent(SimpleMatVerticalStepperApp);
       fixture.detectChanges();
@@ -1090,13 +1083,6 @@ describe('MatStepper', () => {
   });
 
   describe('horizontal stepper', () => {
-    it('should be able to use the legacy classes in queries', () => {
-      const fixture = createComponent(SimpleMatHorizontalStepperApp);
-      fixture.detectChanges();
-
-      expect(fixture.componentInstance.legacyTokenStepper).toBeTruthy();
-    });
-
     it('should set the aria-orientation to "horizontal"', () => {
       const fixture = createComponent(SimpleMatHorizontalStepperApp);
       fixture.detectChanges();
@@ -1857,7 +1843,6 @@ class MatHorizontalStepperWithErrorsApp implements OnInit {
   `,
 })
 class SimpleMatHorizontalStepperApp {
-  @ViewChild(MatHorizontalStepper) legacyTokenStepper: MatHorizontalStepper;
   inputLabel = 'Step 3';
   disableRipple = false;
   stepperTheme: ThemePalette;
@@ -1894,7 +1879,6 @@ class SimpleMatHorizontalStepperApp {
   `,
 })
 class SimpleMatVerticalStepperApp {
-  @ViewChild(MatVerticalStepper) legacyTokenStepper: MatVerticalStepper;
   inputLabel = 'Step 3';
   showStepTwo = true;
   disableRipple = false;

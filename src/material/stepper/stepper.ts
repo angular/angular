@@ -22,7 +22,6 @@ import {
   Component,
   ContentChild,
   ContentChildren,
-  Directive,
   ElementRef,
   EventEmitter,
   forwardRef,
@@ -39,7 +38,6 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import {FormControl, FormGroupDirective, NgForm} from '@angular/forms';
-import {DOCUMENT} from '@angular/common';
 import {ErrorStateMatcher, ThemePalette} from '@angular/material/core';
 import {TemplatePortal} from '@angular/cdk/portal';
 import {Subject, Subscription} from 'rxjs';
@@ -120,36 +118,6 @@ export class MatStep extends CdkStep implements ErrorStateMatcher, AfterContentI
   }
 }
 
-/**
- * Proxies the public APIs from `MatStepper` to the deprecated `MatHorizontalStepper` and
- * `MatVerticalStepper`.
- * @deprecated Use `MatStepper` instead.
- * @breaking-change 13.0.0
- * @docs-private
- */
-@Directive()
-abstract class _MatProxyStepperBase extends CdkStepper {
-  override readonly steps: QueryList<MatStep>;
-  readonly animationDone: EventEmitter<void>;
-  disableRipple: boolean;
-  color: ThemePalette;
-  labelPosition: 'bottom' | 'end';
-}
-
-/**
- * @deprecated Use `MatStepper` instead.
- * @breaking-change 13.0.0
- */
-@Directive({selector: 'mat-horizontal-stepper'})
-export class MatHorizontalStepper extends _MatProxyStepperBase {}
-
-/**
- * @deprecated Use `MatStepper` instead.
- * @breaking-change 13.0.0
- */
-@Directive({selector: 'mat-vertical-stepper'})
-export class MatVerticalStepper extends _MatProxyStepperBase {}
-
 @Component({
   selector: 'mat-stepper, mat-vertical-stepper, mat-horizontal-stepper, [matStepper]',
   exportAs: 'matStepper, matVerticalStepper, matHorizontalStepper',
@@ -170,11 +138,7 @@ export class MatVerticalStepper extends _MatProxyStepperBase {}
     matStepperAnimations.horizontalStepTransition,
     matStepperAnimations.verticalStepTransition,
   ],
-  providers: [
-    {provide: CdkStepper, useExisting: MatStepper},
-    {provide: MatHorizontalStepper, useExisting: MatStepper},
-    {provide: MatVerticalStepper, useExisting: MatStepper},
-  ],
+  providers: [{provide: CdkStepper, useExisting: MatStepper}],
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -217,9 +181,8 @@ export class MatStepper extends CdkStepper implements AfterContentInit {
     @Optional() dir: Directionality,
     changeDetectorRef: ChangeDetectorRef,
     elementRef: ElementRef<HTMLElement>,
-    @Inject(DOCUMENT) _document: any,
   ) {
-    super(dir, changeDetectorRef, elementRef, _document);
+    super(dir, changeDetectorRef, elementRef);
     const nodeName = elementRef.nativeElement.nodeName.toLowerCase();
     this.orientation = nodeName === 'mat-vertical-stepper' ? 'vertical' : 'horizontal';
   }

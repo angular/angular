@@ -15,7 +15,6 @@ import {
   NumberInput,
 } from '@angular/cdk/coercion';
 import {ENTER, hasModifierKey, SPACE} from '@angular/cdk/keycodes';
-import {DOCUMENT} from '@angular/common';
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
@@ -338,22 +337,12 @@ export class CdkStepper implements AfterContentInit, AfterViewInit, OnDestroy {
       this._keyManager.withVerticalOrientation(value === 'vertical');
     }
   }
-
-  /**
-   * @deprecated To be turned into a private property. Use `orientation` instead.
-   * @breaking-change 13.0.0
-   */
-  protected _orientation: StepperOrientation = 'horizontal';
+  private _orientation: StepperOrientation = 'horizontal';
 
   constructor(
     @Optional() private _dir: Directionality,
     private _changeDetectorRef: ChangeDetectorRef,
     private _elementRef: ElementRef<HTMLElement>,
-    /**
-     * @deprecated No longer in use, to be removed.
-     * @breaking-change 13.0.0
-     */
-    @Inject(DOCUMENT) _document: any,
   ) {
     this._groupId = nextId++;
   }

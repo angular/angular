@@ -88,8 +88,7 @@ export class CdkStepLabel {
 
 // @public (undocumented)
 export class CdkStepper implements AfterContentInit, AfterViewInit, OnDestroy {
-    constructor(_dir: Directionality, _changeDetectorRef: ChangeDetectorRef, _elementRef: ElementRef<HTMLElement>,
-    _document: any);
+    constructor(_dir: Directionality, _changeDetectorRef: ChangeDetectorRef, _elementRef: ElementRef<HTMLElement>);
     protected readonly _destroyed: Subject<void>;
     _getAnimationDirection(index: number): StepContentPositionState;
     _getFocusIndex(): number | null;
@@ -110,8 +109,6 @@ export class CdkStepper implements AfterContentInit, AfterViewInit, OnDestroy {
     _onKeydown(event: KeyboardEvent): void;
     get orientation(): StepperOrientation;
     set orientation(value: StepperOrientation);
-    // @deprecated (undocumented)
-    protected _orientation: StepperOrientation;
     previous(): void;
     reset(): void;
     get selected(): CdkStep | undefined;
@@ -126,7 +123,7 @@ export class CdkStepper implements AfterContentInit, AfterViewInit, OnDestroy {
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<CdkStepper, "[cdkStepper]", ["cdkStepper"], { "linear": "linear"; "selectedIndex": "selectedIndex"; "selected": "selected"; "orientation": "orientation"; }, { "selectionChange": "selectionChange"; }, ["_steps", "_stepHeader"]>;
     // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<CdkStepper, [{ optional: true; }, null, null, null]>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<CdkStepper, [{ optional: true; }, null, null]>;
 }
 
 // @public (undocumented)
