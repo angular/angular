@@ -109,8 +109,8 @@ class IvyTransformationVisitor extends Visitor {
       const exprNode = translateExpression(field.initializer, this.importManager, translateOptions);
 
       // Create a static property declaration for the new field.
-      const property = ts.createProperty(
-          undefined, [ts.createToken(ts.SyntaxKind.StaticKeyword)], field.name, undefined,
+      const property = ts.factory.createPropertyDeclaration(
+          undefined, [ts.factory.createToken(ts.SyntaxKind.StaticKeyword)], field.name, undefined,
           undefined, exprNode);
 
       if (this.isClosureCompilerEnabled) {
@@ -130,7 +130,7 @@ class IvyTransformationVisitor extends Visitor {
     }
 
     // Replace the class declaration with an updated version.
-    node = ts.updateClassDeclaration(
+    node = ts.factory.updateClassDeclaration(
         node,
         // Remove the decorator which triggered this compilation, leaving the others alone.
         maybeFilterDecorator(node.decorators, this.compilation.decoratorsFor(node)), node.modifiers,
@@ -191,7 +191,7 @@ class IvyTransformationVisitor extends Visitor {
     }
 
     // Create a new `NodeArray` with the filtered decorators that sourcemaps back to the original.
-    const array = ts.createNodeArray(filtered);
+    const array = ts.factory.createNodeArray(filtered);
     (array.pos as number) = node.decorators.pos;
     (array.end as number) = node.decorators.end;
     return array;
@@ -206,40 +206,40 @@ class IvyTransformationVisitor extends Visitor {
   private _stripAngularDecorators<T extends ts.Node>(node: T): T {
     if (ts.isParameter(node)) {
       // Strip decorators from parameters (probably of the constructor).
-      node = ts.updateParameter(
+      node = ts.factory.updateParameterDeclaration(
                  node, this._nonCoreDecoratorsOnly(node), node.modifiers, node.dotDotDotToken,
                  node.name, node.questionToken, node.type, node.initializer) as T &
           ts.ParameterDeclaration;
     } else if (ts.isMethodDeclaration(node) && node.decorators !== undefined) {
       // Strip decorators of methods.
-      node = ts.updateMethod(
+      node = ts.factory.updateMethodDeclaration(
                  node, this._nonCoreDecoratorsOnly(node), node.modifiers, node.asteriskToken,
                  node.name, node.questionToken, node.typeParameters, node.parameters, node.type,
                  node.body) as T &
           ts.MethodDeclaration;
     } else if (ts.isPropertyDeclaration(node) && node.decorators !== undefined) {
       // Strip decorators of properties.
-      node = ts.updateProperty(
+      node = ts.factory.updatePropertyDeclaration(
                  node, this._nonCoreDecoratorsOnly(node), node.modifiers, node.name,
                  node.questionToken, node.type, node.initializer) as T &
           ts.PropertyDeclaration;
     } else if (ts.isGetAccessor(node)) {
       // Strip decorators of getters.
-      node = ts.updateGetAccessor(
+      node = ts.factory.updateGetAccessorDeclaration(
                  node, this._nonCoreDecoratorsOnly(node), node.modifiers, node.name,
                  node.parameters, node.type, node.body) as T &
           ts.GetAccessorDeclaration;
     } else if (ts.isSetAccessor(node)) {
       // Strip decorators of setters.
-      node = ts.updateSetAccessor(
+      node = ts.factory.updateSetAccessorDeclaration(
                  node, this._nonCoreDecoratorsOnly(node), node.modifiers, node.name,
                  node.parameters, node.body) as T &
           ts.SetAccessorDeclaration;
     } else if (ts.isConstructorDeclaration(node)) {
       // For constructors, strip decorators of the parameters.
       const parameters = node.parameters.map(param => this._stripAngularDecorators(param));
-      node =
-          ts.updateConstructor(node, node.decorators, node.modifiers, parameters, node.body) as T &
+      node = ts.factory.updateConstructorDeclaration(
+                 node, node.decorators, node.modifiers, parameters, node.body) as T &
           ts.ConstructorDeclaration;
     }
     return node;
@@ -364,7 +364,7 @@ function maybeFilterDecorator(
   if (filtered.length === 0) {
     return undefined;
   }
-  return ts.createNodeArray(filtered);
+  return ts.factory.createNodeArray(filtered);
 }
 
 function isFromAngularCore(decorator: Decorator): boolean {

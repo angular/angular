@@ -23,16 +23,16 @@ export class TypeTranslatorVisitor implements o.ExpressionVisitor, o.TypeVisitor
   visitBuiltinType(type: o.BuiltinType, context: Context): ts.KeywordTypeNode {
     switch (type.name) {
       case o.BuiltinTypeName.Bool:
-        return ts.createKeywordTypeNode(ts.SyntaxKind.BooleanKeyword);
+        return ts.factory.createKeywordTypeNode(ts.SyntaxKind.BooleanKeyword);
       case o.BuiltinTypeName.Dynamic:
-        return ts.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword);
+        return ts.factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword);
       case o.BuiltinTypeName.Int:
       case o.BuiltinTypeName.Number:
-        return ts.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword);
+        return ts.factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword);
       case o.BuiltinTypeName.String:
-        return ts.createKeywordTypeNode(ts.SyntaxKind.StringKeyword);
+        return ts.factory.createKeywordTypeNode(ts.SyntaxKind.StringKeyword);
       case o.BuiltinTypeName.None:
-        return ts.createKeywordTypeNode(ts.SyntaxKind.NeverKeyword);
+        return ts.factory.createKeywordTypeNode(ts.SyntaxKind.NeverKeyword);
       default:
         throw new Error(`Unsupported builtin type: ${o.BuiltinTypeName[type.name]}`);
     }
@@ -53,29 +53,30 @@ export class TypeTranslatorVisitor implements o.ExpressionVisitor, o.TypeVisitor
     }
 
     const typeArgs = type.typeParams.map(param => this.translateType(param, context));
-    return ts.createTypeReferenceNode(typeNode.typeName, typeArgs);
+    return ts.factory.createTypeReferenceNode(typeNode.typeName, typeArgs);
   }
 
   visitArrayType(type: o.ArrayType, context: Context): ts.ArrayTypeNode {
-    return ts.createArrayTypeNode(this.translateType(type.of, context));
+    return ts.factory.createArrayTypeNode(this.translateType(type.of, context));
   }
 
   visitMapType(type: o.MapType, context: Context): ts.TypeLiteralNode {
-    const parameter = ts.createParameter(
+    const parameter = ts.factory.createParameterDeclaration(
         undefined, undefined, undefined, 'key', undefined,
-        ts.createKeywordTypeNode(ts.SyntaxKind.StringKeyword));
+        ts.factory.createKeywordTypeNode(ts.SyntaxKind.StringKeyword));
     const typeArgs = type.valueType !== null ?
         this.translateType(type.valueType, context) :
-        ts.createKeywordTypeNode(ts.SyntaxKind.UnknownKeyword);
-    const indexSignature = ts.createIndexSignature(undefined, undefined, [parameter], typeArgs);
-    return ts.createTypeLiteralNode([indexSignature]);
+        ts.factory.createKeywordTypeNode(ts.SyntaxKind.UnknownKeyword);
+    const indexSignature =
+        ts.factory.createIndexSignature(undefined, undefined, [parameter], typeArgs);
+    return ts.factory.createTypeLiteralNode([indexSignature]);
   }
 
   visitReadVarExpr(ast: o.ReadVarExpr, context: Context): ts.TypeQueryNode {
     if (ast.name === null) {
       throw new Error(`ReadVarExpr with no variable name in type`);
     }
-    return ts.createTypeQueryNode(ts.createIdentifier(ast.name));
+    return ts.factory.createTypeQueryNode(ts.factory.createIdentifier(ast.name));
   }
 
   visitWriteVarExpr(expr: o.WriteVarExpr, context: Context): never {
@@ -104,15 +105,16 @@ export class TypeTranslatorVisitor implements o.ExpressionVisitor, o.TypeVisitor
 
   visitLiteralExpr(ast: o.LiteralExpr, context: Context): ts.TypeNode {
     if (ast.value === null) {
-      return ts.createLiteralTypeNode(ts.createNull());
+      return ts.factory.createLiteralTypeNode(ts.factory.createNull());
     } else if (ast.value === undefined) {
-      return ts.createKeywordTypeNode(ts.SyntaxKind.UndefinedKeyword);
+      return ts.factory.createKeywordTypeNode(ts.SyntaxKind.UndefinedKeyword);
     } else if (typeof ast.value === 'boolean') {
-      return ts.createLiteralTypeNode(ts.createLiteral(ast.value));
+      return ts.factory.createLiteralTypeNode(
+          ast.value ? ts.factory.createTrue() : ts.factory.createFalse());
     } else if (typeof ast.value === 'number') {
-      return ts.createLiteralTypeNode(ts.createLiteral(ast.value));
+      return ts.factory.createLiteralTypeNode(ts.factory.createNumericLiteral(ast.value));
     } else {
-      return ts.createLiteralTypeNode(ts.createLiteral(ast.value));
+      return ts.factory.createLiteralTypeNode(ts.factory.createStringLiteral(ast.value));
     }
   }
 
@@ -126,15 +128,15 @@ export class TypeTranslatorVisitor implements o.ExpressionVisitor, o.TypeVisitor
     }
     const {moduleImport, symbol} =
         this.imports.generateNamedImport(ast.value.moduleName, ast.value.name);
-    const symbolIdentifier = ts.createIdentifier(symbol);
+    const symbolIdentifier = ts.factory.createIdentifier(symbol);
 
-    const typeName =
-        moduleImport ? ts.createQualifiedName(moduleImport, symbolIdentifier) : symbolIdentifier;
+    const typeName = moduleImport ? ts.factory.createQualifiedName(moduleImport, symbolIdentifier) :
+                                    symbolIdentifier;
 
     const typeArguments = ast.typeParams !== null ?
         ast.typeParams.map(type => this.translateType(type, context)) :
         undefined;
-    return ts.createTypeReferenceNode(typeName, typeArguments);
+    return ts.factory.createTypeReferenceNode(typeName, typeArguments);
   }
 
   visitConditionalExpr(ast: o.ConditionalExpr, context: Context) {
@@ -167,21 +169,20 @@ export class TypeTranslatorVisitor implements o.ExpressionVisitor, o.TypeVisitor
 
   visitLiteralArrayExpr(ast: o.LiteralArrayExpr, context: Context): ts.TupleTypeNode {
     const values = ast.entries.map(expr => this.translateExpression(expr, context));
-    return ts.createTupleTypeNode(values);
+    return ts.factory.createTupleTypeNode(values);
   }
 
   visitLiteralMapExpr(ast: o.LiteralMapExpr, context: Context): ts.TypeLiteralNode {
     const entries = ast.entries.map(entry => {
       const {key, quoted} = entry;
       const type = this.translateExpression(entry.value, context);
-      return ts.createPropertySignature(
+      return ts.factory.createPropertySignature(
           /* modifiers */ undefined,
-          /* name */ quoted ? ts.createStringLiteral(key) : key,
+          /* name */ quoted ? ts.factory.createStringLiteral(key) : key,
           /* questionToken */ undefined,
-          /* type */ type,
-          /* initializer */ undefined);
+          /* type */ type);
     });
-    return ts.createTypeLiteralNode(entries);
+    return ts.factory.createTypeLiteralNode(entries);
   }
 
   visitCommaExpr(ast: o.CommaExpr, context: Context) {
@@ -191,11 +192,11 @@ export class TypeTranslatorVisitor implements o.ExpressionVisitor, o.TypeVisitor
   visitWrappedNodeExpr(ast: o.WrappedNodeExpr<any>, context: Context): ts.TypeNode {
     const node: ts.Node = ast.node;
     if (ts.isEntityName(node)) {
-      return ts.createTypeReferenceNode(node, /* typeArguments */ undefined);
+      return ts.factory.createTypeReferenceNode(node, /* typeArguments */ undefined);
     } else if (ts.isTypeNode(node)) {
       return node;
     } else if (ts.isLiteralExpression(node)) {
-      return ts.createLiteralTypeNode(node);
+      return ts.factory.createLiteralTypeNode(node);
     } else {
       throw new Error(
           `Unsupported WrappedNodeExpr in TypeTranslatorVisitor: ${ts.SyntaxKind[node.kind]}`);
@@ -208,7 +209,7 @@ export class TypeTranslatorVisitor implements o.ExpressionVisitor, o.TypeVisitor
       throw new Error(`The target of a typeof expression must be a type reference, but it was
           ${ts.SyntaxKind[typeNode.kind]}`);
     }
-    return ts.createTypeQueryNode(typeNode.typeName);
+    return ts.factory.createTypeQueryNode(typeNode.typeName);
   }
 
   private translateType(type: o.Type, context: Context): ts.TypeNode {

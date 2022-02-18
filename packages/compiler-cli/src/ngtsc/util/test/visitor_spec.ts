@@ -27,10 +27,11 @@ class TestAstVisitor extends Visitor {
       return {
         node,
         before: [
-          ts.createVariableStatement(
+          ts.factory.createVariableStatement(
               undefined,
               [
-                ts.createVariableDeclaration(`${name}_id`, undefined, idStatic.initializer),
+                ts.factory.createVariableDeclaration(
+                    `${name}_id`, undefined, undefined, idStatic.initializer),
               ]),
         ],
       };

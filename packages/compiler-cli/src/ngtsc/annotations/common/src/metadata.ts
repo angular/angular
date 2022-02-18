@@ -50,7 +50,8 @@ export function extractClassMetadata(
   if (ngClassDecorators.length === 0) {
     return null;
   }
-  const metaDecorators = new WrappedNodeExpr(ts.createArrayLiteral(ngClassDecorators));
+  const metaDecorators =
+      new WrappedNodeExpr(ts.factory.createArrayLiteralExpression(ngClassDecorators));
 
   // Convert the constructor parameters to metadata, passing null if none are present.
   let metaCtorParameters: Expression|null = null;
@@ -79,7 +80,8 @@ export function extractClassMetadata(
   const decoratedMembers = classMembers.map(
       member => classMemberToMetadata(member.nameNode ?? member.name, member.decorators!, isCore));
   if (decoratedMembers.length > 0) {
-    metaPropDecorators = new WrappedNodeExpr(ts.createObjectLiteral(decoratedMembers));
+    metaPropDecorators =
+        new WrappedNodeExpr(ts.factory.createObjectLiteralExpression(decoratedMembers));
   }
 
   return {
@@ -108,7 +110,7 @@ function ctorParameterToMetadata(param: CtorParameter, isCore: boolean): Express
   if (param.decorators !== null) {
     const ngDecorators = param.decorators.filter(dec => isAngularDecorator(dec, isCore))
                              .map((decorator: Decorator) => decoratorToMetadata(decorator));
-    const value = new WrappedNodeExpr(ts.createArrayLiteral(ngDecorators));
+    const value = new WrappedNodeExpr(ts.factory.createArrayLiteralExpression(ngDecorators));
     mapEntries.push({key: 'decorators', value, quoted: false});
   }
   return literalMap(mapEntries);
@@ -121,8 +123,8 @@ function classMemberToMetadata(
     name: ts.PropertyName|string, decorators: Decorator[], isCore: boolean): ts.PropertyAssignment {
   const ngDecorators = decorators.filter(dec => isAngularDecorator(dec, isCore))
                            .map((decorator: Decorator) => decoratorToMetadata(decorator));
-  const decoratorMeta = ts.createArrayLiteral(ngDecorators);
-  return ts.createPropertyAssignment(name, decoratorMeta);
+  const decoratorMeta = ts.factory.createArrayLiteralExpression(ngDecorators);
+  return ts.factory.createPropertyAssignment(name, decoratorMeta);
 }
 
 /**
@@ -135,7 +137,7 @@ function decoratorToMetadata(
   }
   // Decorators have a type.
   const properties: ts.ObjectLiteralElementLike[] = [
-    ts.createPropertyAssignment('type', ts.getMutableClone(decorator.identifier)),
+    ts.factory.createPropertyAssignment('type', ts.getMutableClone(decorator.identifier)),
   ];
   // Sometimes they have arguments.
   if (decorator.args !== null && decorator.args.length > 0) {
@@ -143,9 +145,10 @@ function decoratorToMetadata(
       const expr = ts.getMutableClone(arg);
       return wrapFunctionsInParens ? wrapFunctionExpressionsInParens(expr) : expr;
     });
-    properties.push(ts.createPropertyAssignment('args', ts.createArrayLiteral(args)));
+    properties.push(
+        ts.factory.createPropertyAssignment('args', ts.factory.createArrayLiteralExpression(args)));
   }
-  return ts.createObjectLiteral(properties, true);
+  return ts.factory.createObjectLiteralExpression(properties, true);
 }
 
 /**
@@ -166,7 +169,7 @@ function removeIdentifierReferences<T extends ts.Node>(node: T, name: string): T
   const result = ts.transform(
       node, [context => root => ts.visitNode(root, function walk(current: ts.Node): ts.Node {
         return ts.isIdentifier(current) && current.text === name ?
-            ts.createIdentifier(current.text) :
+            ts.factory.createIdentifier(current.text) :
             ts.visitEachChild(current, walk, context);
       })]);
 

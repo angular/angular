@@ -226,7 +226,7 @@ const parensWrapperTransformerFactory: ts.TransformerFactory<ts.Expression> =
       const visitor: ts.Visitor = (node: ts.Node): ts.Node => {
         const visited = ts.visitEachChild(node, visitor, context);
         if (ts.isArrowFunction(visited) || ts.isFunctionExpression(visited)) {
-          return ts.createParen(visited);
+          return ts.factory.createParenthesizedExpression(visited);
         }
         return visited;
       };

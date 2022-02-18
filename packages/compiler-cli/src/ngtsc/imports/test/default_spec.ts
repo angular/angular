@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import ts from 'typescript';
+
 import {absoluteFrom} from '../../file_system';
 import {runInEachFileSystem} from '../../file_system/testing';
 import {getDeclaration, makeProgram} from '../../testing';
@@ -88,10 +89,10 @@ runInEachFileSystem(() => {
     return (context: ts.TransformationContext) => {
       return (sf: ts.SourceFile) => {
         if (id.getSourceFile().fileName === sf.fileName) {
-          return ts.updateSourceFileNode(sf, [
+          return ts.factory.updateSourceFile(sf, [
             ...sf.statements,
-            ts.createVariableStatement(undefined, ts.createVariableDeclarationList([
-              ts.createVariableDeclaration('ref', undefined, id),
+            ts.factory.createVariableStatement(undefined, ts.factory.createVariableDeclarationList([
+              ts.factory.createVariableDeclaration('ref', undefined, undefined, id),
             ]))
           ]);
         }
