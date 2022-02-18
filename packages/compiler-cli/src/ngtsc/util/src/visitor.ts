@@ -121,7 +121,7 @@ export abstract class Visitor {
         this._after.delete(stmt);
       }
     });
-    clone.statements = ts.createNodeArray(newStatements, node.statements.hasTrailingComma);
+    clone.statements = ts.factory.createNodeArray(newStatements, node.statements.hasTrailingComma);
     return clone;
   }
 }

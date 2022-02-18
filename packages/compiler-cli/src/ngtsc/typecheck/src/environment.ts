@@ -64,7 +64,7 @@ export class Environment implements ReferenceEmitEnvironment {
       // The constructor has already been created inline, we just need to construct a reference to
       // it.
       const ref = this.reference(dirRef);
-      const typeCtorExpr = ts.createPropertyAccess(ref, 'ngTypeCtor');
+      const typeCtorExpr = ts.factory.createPropertyAccessExpression(ref, 'ngTypeCtor');
       this.typeCtors.set(node, typeCtorExpr);
       return typeCtorExpr;
     } else {
@@ -87,7 +87,7 @@ export class Environment implements ReferenceEmitEnvironment {
       const typeParams = this.emitTypeParameters(node);
       const typeCtor = generateTypeCtorDeclarationFn(node, meta, nodeTypeRef.typeName, typeParams);
       this.typeCtorStatements.push(typeCtor);
-      const fnId = ts.createIdentifier(fnName);
+      const fnId = ts.factory.createIdentifier(fnName);
       this.typeCtors.set(node, fnId);
       return fnId;
     }
@@ -102,7 +102,7 @@ export class Environment implements ReferenceEmitEnvironment {
     }
 
     const pipeType = this.referenceType(ref);
-    const pipeInstId = ts.createIdentifier(`_pipe${this.nextIds.pipeInst++}`);
+    const pipeInstId = ts.factory.createIdentifier(`_pipe${this.nextIds.pipeInst++}`);
 
     this.pipeInstStatements.push(tsDeclareVariable(pipeInstId, pipeType));
     this.pipeInsts.set(ref.node, pipeInstId);

@@ -19,15 +19,16 @@ export function addImports(
     extraStatements: ts.Statement[] = []): ts.SourceFile {
   // Generate the import statements to prepend.
   const addedImports = importManager.getAllImports(sf.fileName).map(i => {
-    const qualifier = ts.createIdentifier(i.qualifier.text);
-    const importClause = ts.createImportClause(
+    const qualifier = ts.factory.createIdentifier(i.qualifier.text);
+    const importClause = ts.factory.createImportClause(
+        /* isTypeOnly */ false,
         /* name */ undefined,
-        /* namedBindings */ ts.createNamespaceImport(qualifier));
-    const decl = ts.createImportDeclaration(
+        /* namedBindings */ ts.factory.createNamespaceImport(qualifier));
+    const decl = ts.factory.createImportDeclaration(
         /* decorators */ undefined,
         /* modifiers */ undefined,
         /* importClause */ importClause,
-        /* moduleSpecifier */ ts.createLiteral(i.specifier));
+        /* moduleSpecifier */ ts.factory.createStringLiteral(i.specifier));
 
     // Set the qualifier's original TS node to the `ts.ImportDeclaration`. This allows downstream
     // transforms such as tsickle to properly process references to this import.
@@ -51,8 +52,8 @@ export function addImports(
     // If we prepend imports, we also prepend NotEmittedStatement to use it as an anchor
     // for @fileoverview Closure annotation. If there is no @fileoverview annotations, this
     // statement would be a noop.
-    const fileoverviewAnchorStmt = ts.createNotEmittedStatement(sf);
-    return ts.updateSourceFileNode(sf, ts.createNodeArray([
+    const fileoverviewAnchorStmt = ts.factory.createNotEmittedStatement(sf);
+    return ts.factory.updateSourceFile(sf, ts.factory.createNodeArray([
       fileoverviewAnchorStmt, ...existingImports, ...addedImports, ...extraStatements, ...body
     ]));
   }

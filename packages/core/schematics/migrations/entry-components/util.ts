@@ -29,7 +29,7 @@ export function migrateEntryComponentsUsages(
                 property.name.text === 'entryComponents');
 
         if (entryComponentsProp) {
-          const replacementNode = ts.updateObjectLiteral(
+          const replacementNode = ts.factory.updateObjectLiteralExpression(
               literal, literal.properties.filter(prop => prop !== entryComponentsProp));
 
           results.push({

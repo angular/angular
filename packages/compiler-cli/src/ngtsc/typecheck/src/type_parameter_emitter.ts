@@ -73,7 +73,7 @@ export class TypeParameterEmitter {
       const defaultType =
           typeParam.default !== undefined ? emitter.emitType(typeParam.default) : undefined;
 
-      return ts.updateTypeParameterDeclaration(
+      return ts.factory.updateTypeParameterDeclaration(
           /* node */ typeParam,
           /* name */ typeParam.name,
           /* constraint */ constraint,

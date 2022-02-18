@@ -143,9 +143,10 @@ export class TypeEmitter {
     // Emit the type arguments, if any.
     let typeArguments: ts.NodeArray<ts.TypeNode>|undefined = undefined;
     if (type.typeArguments !== undefined) {
-      typeArguments = ts.createNodeArray(type.typeArguments.map(typeArg => this.emitType(typeArg)));
+      typeArguments =
+          ts.factory.createNodeArray(type.typeArguments.map(typeArg => this.emitType(typeArg)));
     }
 
-    return ts.updateTypeReferenceNode(type, translatedType.typeName, typeArguments);
+    return ts.factory.updateTypeReferenceNode(type, translatedType.typeName, typeArguments);
   }
 }

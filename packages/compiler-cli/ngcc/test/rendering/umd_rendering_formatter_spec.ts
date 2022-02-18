@@ -199,8 +199,8 @@ exports.BadIife = BadIife;
             renderer.addImports(
                 output,
                 [
-                  {specifier: '@angular/core', qualifier: ts.createIdentifier('i0')},
-                  {specifier: '@angular/common', qualifier: ts.createIdentifier('i1')}
+                  {specifier: '@angular/core', qualifier: ts.factory.createIdentifier('i0')},
+                  {specifier: '@angular/common', qualifier: ts.factory.createIdentifier('i1')}
                 ],
                 file);
             expect(output.toString())
@@ -222,8 +222,8 @@ exports.BadIife = BadIife;
               renderer.addImports(
                   output,
                   [
-                    {specifier: '@angular/core', qualifier: ts.createIdentifier('i0')},
-                    {specifier: '@angular/common', qualifier: ts.createIdentifier('i1')}
+                    {specifier: '@angular/core', qualifier: ts.factory.createIdentifier('i0')},
+                    {specifier: '@angular/common', qualifier: ts.factory.createIdentifier('i1')}
                   ],
                   file);
               expect(output.toString())
@@ -241,8 +241,8 @@ exports.BadIife = BadIife;
             renderer.addImports(
                 output,
                 [
-                  {specifier: '@angular/core', qualifier: ts.createIdentifier('i0')},
-                  {specifier: '@angular/common', qualifier: ts.createIdentifier('i1')}
+                  {specifier: '@angular/core', qualifier: ts.factory.createIdentifier('i0')},
+                  {specifier: '@angular/common', qualifier: ts.factory.createIdentifier('i1')}
                 ],
                 file);
             expect(output.toString())
@@ -262,8 +262,8 @@ exports.BadIife = BadIife;
             renderer.addImports(
                 output,
                 [
-                  {specifier: '@angular/core', qualifier: ts.createIdentifier('i0')},
-                  {specifier: '@angular/common', qualifier: ts.createIdentifier('i1')}
+                  {specifier: '@angular/core', qualifier: ts.factory.createIdentifier('i0')},
+                  {specifier: '@angular/common', qualifier: ts.factory.createIdentifier('i1')}
                 ],
                 file);
             expect(output.toString())
@@ -281,12 +281,15 @@ exports.BadIife = BadIife;
             renderer.addImports(
                 output,
                 [
-                  {specifier: '@ngrx/store', qualifier: ts.createIdentifier('i0')}, {
+                  {specifier: '@ngrx/store', qualifier: ts.factory.createIdentifier('i0')}, {
                     specifier: '@angular/platform-browser-dynamic',
-                    qualifier: ts.createIdentifier('i1')
+                    qualifier: ts.factory.createIdentifier('i1')
                   },
-                  {specifier: '@angular/common/testing', qualifier: ts.createIdentifier('i2')},
-                  {specifier: '@angular-foo/package', qualifier: ts.createIdentifier('i3')}
+                  {
+                    specifier: '@angular/common/testing',
+                    qualifier: ts.factory.createIdentifier('i2')
+                  },
+                  {specifier: '@angular-foo/package', qualifier: ts.factory.createIdentifier('i3')}
                 ],
                 file);
             expect(output.toString())
@@ -311,8 +314,8 @@ exports.BadIife = BadIife;
                  renderer.addImports(
                      output,
                      [
-                       {specifier: '@angular/core', qualifier: ts.createIdentifier('i0')},
-                       {specifier: '@angular/common', qualifier: ts.createIdentifier('i1')}
+                       {specifier: '@angular/core', qualifier: ts.factory.createIdentifier('i0')},
+                       {specifier: '@angular/common', qualifier: ts.factory.createIdentifier('i1')}
                      ],
                      file);
                  expect(output.toString())
@@ -330,8 +333,8 @@ exports.BadIife = BadIife;
                renderer.addImports(
                    output,
                    [
-                     {specifier: '@angular/core', qualifier: ts.createIdentifier('i0')},
-                     {specifier: '@angular/common', qualifier: ts.createIdentifier('i1')}
+                     {specifier: '@angular/core', qualifier: ts.factory.createIdentifier('i0')},
+                     {specifier: '@angular/common', qualifier: ts.factory.createIdentifier('i1')}
                    ],
                    file);
                expect(output.toString())
@@ -361,8 +364,8 @@ exports.BadIife = BadIife;
             renderer.addImports(
                 output,
                 [
-                  {specifier: '@angular/core', qualifier: ts.createIdentifier('i0')},
-                  {specifier: '@angular/common', qualifier: ts.createIdentifier('i1')}
+                  {specifier: '@angular/core', qualifier: ts.factory.createIdentifier('i0')},
+                  {specifier: '@angular/common', qualifier: ts.factory.createIdentifier('i1')}
                 ],
                 file);
             const outputSrc = output.toString();
@@ -425,8 +428,8 @@ exports.BadIife = BadIife;
             renderer.addImports(
                 output,
                 [
-                  {specifier: '@angular/core', qualifier: ts.createIdentifier('i0')},
-                  {specifier: '@angular/common', qualifier: ts.createIdentifier('i1')}
+                  {specifier: '@angular/core', qualifier: ts.factory.createIdentifier('i0')},
+                  {specifier: '@angular/common', qualifier: ts.factory.createIdentifier('i1')}
                 ],
                 file);
             const outputSrc = output.toString();

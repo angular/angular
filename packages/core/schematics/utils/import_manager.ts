@@ -93,16 +93,16 @@ export class ImportManager {
         // In case a "Type" symbol is imported, we can't use namespace imports
         // because these only export symbols available at runtime (no types)
         if (ts.isNamespaceImport(namedBindings) && !typeImport) {
-          return ts.createPropertyAccess(
-              ts.createIdentifier(namedBindings.name.text),
-              ts.createIdentifier(symbolName || 'default'));
+          return ts.factory.createPropertyAccessExpression(
+              ts.factory.createIdentifier(namedBindings.name.text),
+              ts.factory.createIdentifier(symbolName || 'default'));
         } else if (ts.isNamedImports(namedBindings) && symbolName) {
           const existingElement = namedBindings.elements.find(
               e =>
                   e.propertyName ? e.propertyName.text === symbolName : e.name.text === symbolName);
 
           if (existingElement) {
-            return ts.createIdentifier(existingElement.name.text);
+            return ts.factory.createIdentifier(existingElement.name.text);
           }
 
           // In case the symbol could not be found in an existing import, we
@@ -111,12 +111,12 @@ export class ImportManager {
           existingImport = statement;
         }
       } else if (statement.importClause.name && !symbolName) {
-        return ts.createIdentifier(statement.importClause.name.text);
+        return ts.factory.createIdentifier(statement.importClause.name.text);
       }
     }
 
     if (existingImport) {
-      const propertyIdentifier = ts.createIdentifier(symbolName!);
+      const propertyIdentifier = ts.factory.createIdentifier(symbolName!);
       const generatedUniqueIdentifier = this._getUniqueIdentifier(sourceFile, symbolName!);
       const needsGeneratedUniqueName = generatedUniqueIdentifier.text !== symbolName;
       const importName = needsGeneratedUniqueName ? generatedUniqueIdentifier : propertyIdentifier;
@@ -144,23 +144,23 @@ export class ImportManager {
     let newImport: ts.ImportDeclaration|null = null;
 
     if (symbolName) {
-      const propertyIdentifier = ts.createIdentifier(symbolName);
+      const propertyIdentifier = ts.factory.createIdentifier(symbolName);
       const generatedUniqueIdentifier = this._getUniqueIdentifier(sourceFile, symbolName);
       const needsGeneratedUniqueName = generatedUniqueIdentifier.text !== symbolName;
       identifier = needsGeneratedUniqueName ? generatedUniqueIdentifier : propertyIdentifier;
 
-      newImport = ts.createImportDeclaration(
+      newImport = ts.factory.createImportDeclaration(
           undefined, undefined,
-          ts.createImportClause(
-              undefined,
-              ts.createNamedImports([createImportSpecifier(
+          ts.factory.createImportClause(
+              false, undefined,
+              ts.factory.createNamedImports([createImportSpecifier(
                   needsGeneratedUniqueName ? propertyIdentifier : undefined, identifier)])),
-          ts.createStringLiteral(moduleName));
+          ts.factory.createStringLiteral(moduleName));
     } else {
       identifier = this._getUniqueIdentifier(sourceFile, 'defaultExport');
-      newImport = ts.createImportDeclaration(
-          undefined, undefined, ts.createImportClause(identifier, undefined),
-          ts.createStringLiteral(moduleName));
+      newImport = ts.factory.createImportDeclaration(
+          undefined, undefined, ts.factory.createImportClause(false, identifier, undefined),
+          ts.factory.createStringLiteral(moduleName));
     }
 
     const newImportText = this.printer.printNode(ts.EmitHint.Unspecified, newImport, sourceFile);
@@ -189,7 +189,7 @@ export class ImportManager {
       const sourceFile = importDecl.getSourceFile();
       const recorder = this.getUpdateRecorder(sourceFile);
       const namedBindings = importDecl.importClause!.namedBindings as ts.NamedImports;
-      const newNamedBindings = ts.updateNamedImports(
+      const newNamedBindings = ts.factory.updateNamedImports(
           namedBindings,
           namedBindings.elements.concat(expressions.map(
               ({propertyName, importName}) => createImportSpecifier(propertyName, importName))));
@@ -204,7 +204,7 @@ export class ImportManager {
   private _getUniqueIdentifier(sourceFile: ts.SourceFile, baseName: string): ts.Identifier {
     if (this.isUniqueIdentifierName(sourceFile, baseName)) {
       this._recordUsedIdentifier(sourceFile, baseName);
-      return ts.createIdentifier(baseName);
+      return ts.factory.createIdentifier(baseName);
     }
 
     let name = null;
@@ -214,7 +214,7 @@ export class ImportManager {
     } while (!this.isUniqueIdentifierName(sourceFile, name));
 
     this._recordUsedIdentifier(sourceFile, name!);
-    return ts.createIdentifier(name!);
+    return ts.factory.createIdentifier(name!);
   }
 
   /**
@@ -268,8 +268,9 @@ export class ImportManager {
 function createImportSpecifier(
     propertyName: ts.Identifier|undefined, name: ts.Identifier,
     isTypeOnly = false): ts.ImportSpecifier {
-  return PARSED_TS_VERSION > 4.4 ? ts.createImportSpecifier(isTypeOnly, propertyName, name) :
-                                   // TODO(crisbeto): backwards-compatibility layer for TS 4.4.
-                                   // Should be cleaned up when we drop support for it.
-                                   (ts.createImportSpecifier as any)(propertyName, name);
+  return PARSED_TS_VERSION > 4.4 ?
+      ts.factory.createImportSpecifier(isTypeOnly, propertyName, name) :
+      // TODO(crisbeto): backwards-compatibility layer for TS 4.4.
+      // Should be cleaned up when we drop support for it.
+      (ts.createImportSpecifier as any)(propertyName, name);
 }

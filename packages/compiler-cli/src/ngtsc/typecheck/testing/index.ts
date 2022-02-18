@@ -668,11 +668,13 @@ class FakeEnvironment /* implements Environment */ {
   constructor(readonly config: TypeCheckingConfig) {}
 
   typeCtorFor(dir: TypeCheckableDirectiveMeta): ts.Expression {
-    return ts.createPropertyAccess(ts.createIdentifier(dir.name), 'ngTypeCtor');
+    return ts.factory.createPropertyAccessExpression(
+        ts.factory.createIdentifier(dir.name), 'ngTypeCtor');
   }
 
   pipeInst(ref: Reference<ClassDeclaration<ts.ClassDeclaration>>): ts.Expression {
-    return ts.createParen(ts.createAsExpression(ts.createNull(), this.referenceType(ref)));
+    return ts.factory.createParenthesizedExpression(
+        ts.factory.createAsExpression(ts.factory.createNull(), this.referenceType(ref)));
   }
 
   reference(ref: Reference<ClassDeclaration<ts.ClassDeclaration>>): ts.Expression {
@@ -680,20 +682,20 @@ class FakeEnvironment /* implements Environment */ {
   }
 
   referenceType(ref: Reference<ClassDeclaration<ts.ClassDeclaration>>): ts.TypeNode {
-    return ts.createTypeReferenceNode(ref.node.name, /* typeArguments */ undefined);
+    return ts.factory.createTypeReferenceNode(ref.node.name, /* typeArguments */ undefined);
   }
 
   referenceExternalType(moduleName: string, name: string, typeParams?: Type[]): ts.TypeNode {
     const typeArgs: ts.TypeNode[] = [];
     if (typeParams !== undefined) {
       for (let i = 0; i < typeParams.length; i++) {
-        typeArgs.push(ts.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword));
+        typeArgs.push(ts.factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword));
       }
     }
 
-    const ns = ts.createIdentifier(moduleName.replace('@angular/', ''));
-    const qName = ts.createQualifiedName(ns, name);
-    return ts.createTypeReferenceNode(qName, typeArgs.length > 0 ? typeArgs : undefined);
+    const ns = ts.factory.createIdentifier(moduleName.replace('@angular/', ''));
+    const qName = ts.factory.createQualifiedName(ns, name);
+    return ts.factory.createTypeReferenceNode(qName, typeArgs.length > 0 ? typeArgs : undefined);
   }
 
   getPreludeStatements(): ts.Statement[] {

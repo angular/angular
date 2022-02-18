@@ -1153,8 +1153,14 @@ runInEachFileSystem(() => {
       const declaration = super.getDeclarationOfIdentifier(id);
       if (declaration !== null && isConcreteDeclaration(declaration)) {
         const enumMembers = [
-          {name: ts.createStringLiteral('ValueA'), initializer: ts.createStringLiteral('a')},
-          {name: ts.createStringLiteral('ValueB'), initializer: ts.createStringLiteral('b')},
+          {
+            name: ts.factory.createStringLiteral('ValueA'),
+            initializer: ts.factory.createStringLiteral('a')
+          },
+          {
+            name: ts.factory.createStringLiteral('ValueB'),
+            initializer: ts.factory.createStringLiteral('b')
+          },
         ];
         declaration.identity = {kind: SpecialDeclarationKind.DownleveledEnum, enumMembers};
       }

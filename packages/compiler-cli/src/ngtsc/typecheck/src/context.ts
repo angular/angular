@@ -524,7 +524,7 @@ class InlineTcbOp implements Op {
   execute(im: ImportManager, sf: ts.SourceFile, refEmitter: ReferenceEmitter, printer: ts.Printer):
       string {
     const env = new Environment(this.config, im, refEmitter, this.reflector, sf);
-    const fnName = ts.createIdentifier(`_tcb_${this.ref.node.pos}`);
+    const fnName = ts.factory.createIdentifier(`_tcb_${this.ref.node.pos}`);
 
     // Inline TCBs should copy any generic type parameter nodes directly, as the TCB code is inlined
     // into the class in a context where that will always be legal.

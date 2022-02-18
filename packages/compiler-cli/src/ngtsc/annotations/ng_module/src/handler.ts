@@ -160,7 +160,7 @@ export class NgModuleDecoratorHandler implements
     // @NgModule can be invoked without arguments. In case it is, pretend as if a blank object
     // literal was specified. This simplifies the code below.
     const meta = decorator.args.length === 1 ? unwrapExpression(decorator.args[0]) :
-                                               ts.createObjectLiteral([]);
+                                               ts.factory.createObjectLiteralExpression([]);
 
     if (!ts.isObjectLiteralExpression(meta)) {
       throw new FatalDiagnosticError(
