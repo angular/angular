@@ -65,7 +65,7 @@ The `ChildrenOutletContexts` holds information about outlets and activated route
 
 `AppComponent` defines a method that can detect when a view changes. The method assigns an animation state value to the animation trigger (`@routeAnimation`) based on the route configuration `data` property value. Here's an example of an `AppComponent` method that detects when a route change happens.
 
-<code-example path="animations/src/app/app.component.ts" header="src/app/app.component.ts" region="prepare-router-outlet" language="typescript"></code-example>
+<code-example path="animations/src/app/app.component.ts" header="src/app/app.component.ts" region="get-route-animations-data" language="typescript"></code-example>
 
 Here, the `getRouteAnimationData()` method takes the value of the outlet and returns a string which represents the state of the animation based on the custom data of the current active route. Use this data to control which transition to execute for each route.
 

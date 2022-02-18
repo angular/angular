@@ -34,14 +34,14 @@ export class AppComponent {
   public animationsDisabled = false;
 // #enddocregion toggle-app-animations
 
-// #docregion prepare-router-outlet
+// #docregion get-route-animations-data
   constructor(private contexts: ChildrenOutletContexts) {}
 
   getRouteAnimationData() {
     return this.contexts.getContext('primary')?.route?.snapshot?.data?.['animation'];
   }
 
-// #enddocregion prepare-router-outlet
+// #enddocregion get-route-animations-data
 
   toggleAnimations() {
     this.animationsDisabled = !this.animationsDisabled;
