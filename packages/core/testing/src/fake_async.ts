@@ -130,8 +130,20 @@ export function tick(
 }
 
 /**
- * Flushes any pending microtasks and simulates the asynchronous passage of time for the timers in
- * the `fakeAsync` zone by
+ * Simulates the render tick in the `fakeAsync` zone
+ * to trigger requestAnimationFrame callbacks.
+ *
+ * @publicApi
+ */
+export function tickRAF(): void {
+  if (fakeAsyncTestModule) {
+    return fakeAsyncTestModule.tickRAF();
+  }
+  throw new Error(fakeAsyncTestModuleNotLoadedErrorMessage);
+}
+
+/**
+ * Simulates the asynchronous passage of time for the timers in the `fakeAsync` zone by
  * draining the macrotask queue until it is empty.
  *
  * @param maxTurns The maximum number of times the scheduler attempts to clear its queue before

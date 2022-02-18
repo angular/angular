@@ -240,6 +240,9 @@ export function tick(millis?: number, tickOptions?: {
 }): void;
 
 // @public
+export function tickRAF(): void;
+
+// @public
 export function waitForAsync(fn: Function): (done: any) => any;
 
 // @public (undocumented)

@@ -833,6 +833,14 @@ Zone.__load_patch('fakeasync', (global: any, Zone: ZoneType, api: _ZonePrivate) 
   }
 
   /**
+   * Simulates render tick to trigger requestAnimationFrame callbacks.
+   */
+
+  function tickRAF(): void {
+    _getFakeAsyncZoneSpec().tickRAF();
+  }
+
+  /**
    * Simulates the asynchronous passage of time for the timers in the fakeAsync zone by
    * draining the macrotask queue until it is empty. The returned value is the milliseconds
    * of time that would have been elapsed.
@@ -866,5 +874,5 @@ Zone.__load_patch('fakeasync', (global: any, Zone: ZoneType, api: _ZonePrivate) 
     _getFakeAsyncZoneSpec().flushMicrotasks();
   }
   (Zone as any)[api.symbol('fakeAsyncTest')] =
-      {resetFakeAsyncZone, flushMicrotasks, discardPeriodicTasks, tick, flush, fakeAsync};
+      {resetFakeAsyncZone, flushMicrotasks, discardPeriodicTasks, tick, tickRAF, flush, fakeAsync};
 }, true);
