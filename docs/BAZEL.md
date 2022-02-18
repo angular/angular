@@ -105,7 +105,7 @@ Apple+Shift+D on Mac) and click on the green play icon next to the configuration
 
 ### Debugging a Karma Test
 
-- Run test: `yarn bazel run packages/core/test:test_web_chromium` or `yarn bazel run packages/core/test:test_web_firefox`
+- Run test: `yarn bazel run packages/core/test:test_web_debug` (any `karma_web_test_suite` target has a `_debug` target)
 - Open any browser at: [http://localhost:9876/debug.html](http://localhost:9876/debug.html)
 - Open the browser's DevTools to debug the tests (after, for example, having focused on specific tests via `fit` and/or `fdescribe` or having added `debugger` statements in them)
 
@@ -274,7 +274,7 @@ e.g: `yarn bazel test packages/core/test/bundling/forms:symbol_test`
 #### mkdir missing
 If you see the following error::
 ```
- 
+
 ERROR: An error occurred during the fetch of repository 'npm':
    Traceback (most recent call last):
         File "C:/users/anusername/_bazel_anusername/idexbm2i/external/build_bazel_rules_nodejs/internal/npm_install/npm_install.bzl", line 618, column 15, in _yarn_install_impl
@@ -286,7 +286,7 @@ Error in fail: mkdir -p _ failed:
 ```
 The `msys64` library and associated tools (like `mkdir`) are required to build Angular.
 
-Make sure you have `C:\msys64\usr\bin` in the "system" `PATH` rather than the "user" `PATH`. 
+Make sure you have `C:\msys64\usr\bin` in the "system" `PATH` rather than the "user" `PATH`.
 
 After that, a `git clean -xfd`, `yarn`, and `node scripts\build\build-packages-dist.js` should resolve this issue.
 
