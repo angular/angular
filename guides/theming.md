@@ -315,6 +315,14 @@ You can define multiple themes in separate files by creating multiple theme file
 this property to `false`, your application becomes responsible for manually loading the desired
 file. The approach for this loading depends on your application.
 
+### Application background color
+
+By default, Angular Material does not apply any styles to your DOM outside
+of its own components. If you want to set your application's background color
+to match the components' theme, you can either:
+1. Put your application's main content inside `mat-sidenav-container`, assuming you're using `MatSidenav`, or
+2. Apply the `mat-app-background` CSS class to your main content root element (typically `body`).
+
 ### Scoping style customizations
 
 You can use Angular Material's Sass mixins to customize component styles within a specific scope
