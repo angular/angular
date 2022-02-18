@@ -24,7 +24,13 @@ import {
 } from '@angular/core';
 import {CanDisable, mixinDisabled} from '@angular/material/core';
 import {merge, Subscription} from 'rxjs';
-import {MatSort, MatSortable} from './sort';
+import {
+  MAT_SORT_DEFAULT_OPTIONS,
+  MatSort,
+  MatSortable,
+  MatSortDefaultOptions,
+  SortHeaderArrowPosition,
+} from './sort';
 import {matSortAnimations} from './sort-animations';
 import {SortDirection} from './sort-direction';
 import {getSortHeaderNotContainedWithinSortError} from './sort-errors';
@@ -134,7 +140,7 @@ export class MatSortHeader
   @Input('mat-sort-header') id: string;
 
   /** Sets the position of the arrow that displays when sorted. */
-  @Input() arrowPosition: 'before' | 'after' = 'after';
+  @Input() arrowPosition: SortHeaderArrowPosition = 'after';
 
   /** Overrides the sort start value of the containing MatSort for this MatSortable. */
   @Input() start: 'asc' | 'desc';
@@ -182,6 +188,9 @@ export class MatSortHeader
     private _elementRef: ElementRef<HTMLElement>,
     /** @breaking-change 14.0.0 _ariaDescriber will be required. */
     @Optional() private _ariaDescriber?: AriaDescriber | null,
+    @Optional()
+    @Inject(MAT_SORT_DEFAULT_OPTIONS)
+    defaultOptions?: MatSortDefaultOptions,
   ) {
     // Note that we use a string token for the `_columnDef`, because the value is provided both by
     // `material/table` and `cdk/table` and we can't have the CDK depending on Material,
@@ -191,6 +200,10 @@ export class MatSortHeader
 
     if (!_sort && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throw getSortHeaderNotContainedWithinSortError();
+    }
+
+    if (defaultOptions?.arrowPosition) {
+      this.arrowPosition = defaultOptions?.arrowPosition;
     }
 
     this._handleStateChanges();

@@ -28,6 +28,9 @@ import {
   getSortInvalidDirectionError,
 } from './sort-errors';
 
+/** Position of the arrow that displays when sorted. */
+export type SortHeaderArrowPosition = 'before' | 'after';
+
 /** Interface for a directive that holds sorting state consumed by `MatSortHeader`. */
 export interface MatSortable {
   /** The id of the column being sorted. */
@@ -53,6 +56,8 @@ export interface Sort {
 export interface MatSortDefaultOptions {
   /** Whether to disable clearing the sorting state. */
   disableClear?: boolean;
+  /** Position of the arrow that displays when sorted. */
+  arrowPosition?: SortHeaderArrowPosition;
 }
 
 /** Injection token to be used to override the default options for `mat-sort`. */
