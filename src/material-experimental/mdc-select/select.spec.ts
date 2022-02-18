@@ -2142,17 +2142,16 @@ describe('MDC-based MatSelect', () => {
       it('should set an asterisk after the label if control is required', fakeAsync(() => {
         const label = fixture.nativeElement.querySelector('.mat-mdc-form-field label');
 
-        expect(label.classList).not.toContain(
-          'mdc-floating-label--required',
-          `Expected label not to have an asterisk, as control was not required.`,
-        );
+        expect(label.querySelector('.mat-mdc-form-field-required-marker'))
+          .withContext(`Expected label not to have an asterisk, as control was not required.`)
+          .toBeFalsy();
 
         fixture.componentInstance.isRequired = true;
         fixture.detectChanges();
 
-        expect(label.classList)
+        expect(label.querySelector('.mat-mdc-form-field-required-marker'))
           .withContext(`Expected label to have an asterisk, as control was required.`)
-          .toContain('mdc-floating-label--required');
+          .toBeTruthy();
       }));
     });
 
@@ -2975,7 +2974,7 @@ describe('MDC-based MatSelect', () => {
 
     it('should set an asterisk after the label if the FormControl is required', fakeAsync(() => {
       const label = fixture.nativeElement.querySelector('.mat-mdc-form-field label');
-      expect(label.classList).toContain('mdc-floating-label--required');
+      expect(label.querySelector('.mat-mdc-form-field-required-marker')).toBeTruthy();
     }));
   });
 

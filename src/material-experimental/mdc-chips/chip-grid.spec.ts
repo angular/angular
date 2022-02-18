@@ -694,7 +694,9 @@ describe('MDC-based MatChipGrid', () => {
     });
 
     it('should set an asterisk after the placeholder if the control is required', () => {
-      let requiredMarker = fixture.debugElement.query(By.css('.mdc-floating-label--required'))!;
+      let requiredMarker = fixture.debugElement.query(
+        By.css('.mat-mdc-form-field-required-marker'),
+      )!;
       expect(requiredMarker)
         .withContext(`Expected placeholder not to have an asterisk, as control was not required.`)
         .toBeNull();
@@ -702,7 +704,7 @@ describe('MDC-based MatChipGrid', () => {
       fixture.componentInstance.chipGrid.required = true;
       fixture.detectChanges();
 
-      requiredMarker = fixture.debugElement.query(By.css('.mdc-floating-label--required'))!;
+      requiredMarker = fixture.debugElement.query(By.css('.mat-mdc-form-field-required-marker'))!;
       expect(requiredMarker)
         .not.withContext(`Expected placeholder to have an asterisk, as control was required.`)
         .toBeNull();
@@ -714,7 +716,9 @@ describe('MDC-based MatChipGrid', () => {
       fixture.componentInstance.control = new FormControl(undefined, [Validators.required]);
       fixture.detectChanges();
 
-      expect(fixture.nativeElement.querySelector('.mdc-floating-label--required')).toBeTruthy();
+      expect(
+        fixture.nativeElement.querySelector('.mat-mdc-form-field-required-marker'),
+      ).toBeTruthy();
     });
 
     it('should blur the form field when the active chip is blurred', fakeAsync(() => {

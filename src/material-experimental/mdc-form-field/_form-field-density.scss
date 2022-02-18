@@ -77,7 +77,7 @@
   // on whether a textarea is used. This is not possible in our implementation of the
   // form-field because we do not know what type of form-field control is set up. Hence
   // we always use a fixed position for the label. This does not have any implications.
-  .mat-mdc-form-field .mat-mdc-text-field-wrapper .mdc-floating-label {
+  .mat-mdc-form-field .mat-mdc-text-field-wrapper .mat-mdc-floating-label {
     top: math.div($height, 2);
   }
 
@@ -107,7 +107,7 @@
     // Update the spacing for filled form fields to account for the hidden floating label.
     @include _infix-vertical-spacing-filled(
           $no-label-padding, $no-label-padding);
-    .mat-mdc-text-field-wrapper:not(.mdc-text-field--outlined) .mdc-floating-label {
+    .mat-mdc-text-field-wrapper:not(.mdc-text-field--outlined) .mat-mdc-floating-label {
         display: none;
     }
   }

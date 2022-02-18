@@ -16,7 +16,6 @@
   -->
   <label matFormFieldFloatingLabel
          [floating]="_shouldLabelFloat()"
-         [required]="!hideRequiredMarker && _control.required"
          *ngIf="_hasFloatingLabel()"
          (cdkObserveContent)="_refreshOutlineNotchWidth()"
          [cdkObserveContentDisabled]="!_hasOutline()"
@@ -24,6 +23,15 @@
          [attr.for]="_control.id"
          [attr.aria-owns]="_control.id">
     <ng-content select="mat-label"></ng-content>
+    <!--
+      We set the required marker as a separate element, in order to make it easier to target if
+      apps want to override it and to be able to set `aria-hidden` so that screen readers don't
+      pick it up.
+     -->
+    <span
+      *ngIf="!hideRequiredMarker && _control.required"
+      aria-hidden="true"
+      class="mat-mdc-form-field-required-marker mdc-floating-label--required"></span>
   </label>
 </ng-template>
 

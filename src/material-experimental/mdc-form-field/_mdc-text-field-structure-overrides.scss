@@ -20,7 +20,7 @@
   // In order to ensure proper alignment of the floating label, we reset its line-height.
   // The line-height is not important as the element is absolutely positioned and only has one line
   // of text.
-  .mat-mdc-form-field .mdc-floating-label.mdc-floating-label {
+  .mat-mdc-form-field .mat-mdc-floating-label.mdc-floating-label {
     line-height: normal;
   }
 
@@ -95,7 +95,7 @@
   // the notched outline container, and already applies a specific horizontal spacing which
   // we do not want to overwrite. *Note*: We need to have increased specificity for this
   // override because the `right` property will be set with higher specificity in RTL mode.
-  .mat-mdc-text-field-wrapper .mat-mdc-form-field-infix .mdc-floating-label {
+  .mat-mdc-text-field-wrapper .mat-mdc-form-field-infix .mat-mdc-floating-label {
     left: auto;
     right: auto;
   }

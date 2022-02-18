@@ -142,7 +142,7 @@ $scale: 0.75 !default;
 // container. Below are the styles to account for the select arrow icon at the end.
 .mat-mdc-form-field-type-mat-select {
   &.mat-form-field-appearance-fill {
-    .mdc-floating-label {
+    .mat-mdc-floating-label {
       max-width: calc(100% - #{$mat-select-placeholder-arrow-space});
     }
 

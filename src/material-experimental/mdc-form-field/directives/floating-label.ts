@@ -25,16 +25,13 @@ import {ponyfill} from '@material/dom';
 @Directive({
   selector: 'label[matFormFieldFloatingLabel]',
   host: {
-    'class': 'mdc-floating-label',
-    '[class.mdc-floating-label--required]': 'required',
+    'class': 'mdc-floating-label mat-mdc-floating-label',
     '[class.mdc-floating-label--float-above]': 'floating',
   },
 })
 export class MatFormFieldFloatingLabel {
   /** Whether the label is floating. */
   @Input() floating: boolean = false;
-  /** Whether the label is required. */
-  @Input() required: boolean = false;
 
   constructor(private _elementRef: ElementRef) {}
 

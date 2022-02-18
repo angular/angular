@@ -76,7 +76,7 @@
     // shows `body1` for text fields though, so we manually override the typography.
     // Note: Form controls inherit the typography from the parent form field.
     .mat-mdc-form-field,
-    .mat-mdc-form-field .mdc-floating-label {
+    .mat-mdc-floating-label {
       @include mdc-typography.typography(body1, $query: mdc-helpers.$mat-typography-styles-query);
     }
 
