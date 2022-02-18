@@ -70,10 +70,10 @@ What do we mean by "high-quality" components?
 
 ## Browser and screen reader support
 The Angular Components team supports the most recent two versions of all major browsers:
-Chrome (including Android), Firefox, Safari (including iOS), and IE11 / Edge.
+Chrome (including Android), Firefox, Safari (including iOS), and  Edge.
 
 We aim for great user experience with the following screen readers:
-* **Windows**: NVDA and JAWS with IE11 / FF / Chrome.
+* **Windows**: NVDA and JAWS with FF / Chrome.
 * **macOS**: VoiceOver with Safari / Chrome.
 * **iOS**: VoiceOver with Safari
 * **Android**: Android Accessibility Suite (formerly TalkBack) with Chrome.
