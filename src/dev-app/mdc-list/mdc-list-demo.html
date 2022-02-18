@@ -91,7 +91,7 @@
   <div>
     <h2>Nav lists</h2>
     <mat-nav-list>
-      <a mat-list-item *ngFor="let link of links" href="http://www.google.com">
+      <a mat-list-item *ngFor="let link of links" [href]="link.href" [activated]="isActivated(link.href)">
         {{ link.name }}
       </a>
     </mat-nav-list>
@@ -99,7 +99,7 @@
       More info!
     </div>
     <mat-nav-list>
-      <a mat-list-item *ngFor="let link of links; last as last" href="http://www.google.com">
+      <a mat-list-item *ngFor="let link of links; last as last" [href]="link.href" [activated]="isActivated(link.href)">
         <mat-icon matListItemIcon>folder</mat-icon>
         <span matListItemTitle>{{ link.name }}</span>
       </a>

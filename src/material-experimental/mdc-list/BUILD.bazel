@@ -25,6 +25,7 @@ ng_module(
     ] + glob(["**/*.html"]),
     deps = [
         "//src:dev_mode_types",
+        "//src/cdk/coercion",
         "//src/cdk/collections",
         "//src/cdk/observers",
         "//src/material-experimental/mdc-core",

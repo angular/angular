@@ -10,6 +10,7 @@ import {Platform} from '@angular/cdk/platform';
 import {
   ChangeDetectionStrategy,
   Component,
+  Input,
   ContentChildren,
   ElementRef,
   Inject,
@@ -26,6 +27,7 @@ import {
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 import {MatListBase, MatListItemBase} from './list-base';
 import {MatListItemLine, MatListItemMeta, MatListItemTitle} from './list-item-sections';
+import {coerceBooleanProperty} from '@angular/cdk/coercion';
 
 @Component({
   selector: 'mat-list',
@@ -46,6 +48,7 @@ export class MatList extends MatListBase {}
   exportAs: 'matListItem',
   host: {
     'class': 'mat-mdc-list-item mdc-list-item',
+    '[class.mdc-list-item--activated]': 'activated',
     '[class.mdc-list-item--with-leading-avatar]': '_avatars.length !== 0',
     '[class.mdc-list-item--with-leading-icon]': '_icons.length !== 0',
     '[class.mdc-list-item--with-trailing-meta]': '_meta.length !== 0',
@@ -61,6 +64,16 @@ export class MatListItem extends MatListItemBase {
   @ContentChildren(MatListItemMeta, {descendants: true}) _meta: QueryList<MatListItemMeta>;
   @ViewChild('unscopedContent') _unscopedContent: ElementRef<HTMLSpanElement>;
   @ViewChild('text') _itemText: ElementRef<HTMLElement>;
+
+  /** Indicates whether an item in a `<mat-nav-list>` is the currently active page. */
+  @Input()
+  get activated() {
+    return this._activated;
+  }
+  set activated(activated) {
+    this._activated = coerceBooleanProperty(activated);
+  }
+  _activated = false;
 
   constructor(
     element: ElementRef,
