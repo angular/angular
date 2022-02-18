@@ -73,7 +73,7 @@ export function getConstructorDependencies(
           attributeNameType = new LiteralExpr(attributeName.text);
         } else {
           attributeNameType =
-              new WrappedNodeExpr(ts.createKeywordTypeNode(ts.SyntaxKind.UnknownKeyword));
+              new WrappedNodeExpr(ts.factory.createKeywordTypeNode(ts.SyntaxKind.UnknownKeyword));
         }
       } else {
         throw new FatalDiagnosticError(

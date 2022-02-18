@@ -140,7 +140,7 @@ class DtsTransformer {
     // If some elements have been transformed but the class itself has not been transformed, create
     // an updated class declaration with the updated elements.
     if (elementsChanged && clazz === newClazz) {
-      newClazz = ts.updateClassDeclaration(
+      newClazz = ts.factory.updateClassDeclaration(
           /* node */ clazz,
           /* decorators */ clazz.decorators,
           /* modifiers */ clazz.modifiers,
@@ -191,10 +191,10 @@ export class IvyDeclarationDtsTransform implements DtsTransform {
     const fields = this.declarationFields.get(original)!;
 
     const newMembers = fields.map(decl => {
-      const modifiers = [ts.createModifier(ts.SyntaxKind.StaticKeyword)];
+      const modifiers = [ts.factory.createModifier(ts.SyntaxKind.StaticKeyword)];
       const typeRef = translateType(decl.type, imports);
       markForEmitAsSingleLine(typeRef);
-      return ts.createProperty(
+      return ts.factory.createPropertyDeclaration(
           /* decorators */ undefined,
           /* modifiers */ modifiers,
           /* name */ decl.name,
@@ -203,7 +203,7 @@ export class IvyDeclarationDtsTransform implements DtsTransform {
           /* initializer */ undefined);
     });
 
-    return ts.updateClassDeclaration(
+    return ts.factory.updateClassDeclaration(
         /* node */ clazz,
         /* decorators */ clazz.decorators,
         /* modifiers */ clazz.modifiers,

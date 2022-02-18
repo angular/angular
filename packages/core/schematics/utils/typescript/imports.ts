@@ -101,17 +101,18 @@ export function replaceImport(
   }
 
   const importPropertyName =
-      existingImportNode.propertyName ? ts.createIdentifier(newImportName) : undefined;
+      existingImportNode.propertyName ? ts.factory.createIdentifier(newImportName) : undefined;
   const importName = existingImportNode.propertyName ? existingImportNode.name :
-                                                       ts.createIdentifier(newImportName);
+                                                       ts.factory.createIdentifier(newImportName);
 
-  return ts.updateNamedImports(node, [
+  return ts.factory.updateNamedImports(node, [
     ...node.elements.filter(current => current !== existingImportNode),
     // Create a new import while trying to preserve the alias of the old one.
-    PARSED_TS_VERSION > 4.4 ? ts.createImportSpecifier(false, importPropertyName, importName) :
-                              // TODO(crisbeto): backwards-compatibility layer for TS 4.4.
-                              // Should be cleaned up when we drop support for it.
-                              (ts.createImportSpecifier as any)(importPropertyName, importName)
+    PARSED_TS_VERSION > 4.4 ?
+        ts.factory.createImportSpecifier(false, importPropertyName, importName) :
+        // TODO(crisbeto): backwards-compatibility layer for TS 4.4.
+        // Should be cleaned up when we drop support for it.
+        (ts.createImportSpecifier as any)(importPropertyName, importName)
   ]);
 }
 

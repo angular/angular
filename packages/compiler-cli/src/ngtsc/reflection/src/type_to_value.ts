@@ -265,7 +265,7 @@ function resolveTypeSymbols(typeRef: ts.TypeReferenceNode, checker: ts.TypeCheck
 function entityNameToValue(node: ts.EntityName): ts.Expression|null {
   if (ts.isQualifiedName(node)) {
     const left = entityNameToValue(node.left);
-    return left !== null ? ts.createPropertyAccess(left, node.right) : null;
+    return left !== null ? ts.factory.createPropertyAccessExpression(left, node.right) : null;
   } else if (ts.isIdentifier(node)) {
     return ts.getMutableClone(node);
   } else {

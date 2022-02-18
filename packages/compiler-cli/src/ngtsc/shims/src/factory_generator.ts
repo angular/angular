@@ -159,9 +159,9 @@ function transformFactorySourceFile(
       const rewrittenModuleSpecifier =
           importRewriter.rewriteSpecifier('@angular/core', sourceFilePath);
       if (rewrittenModuleSpecifier !== stmt.moduleSpecifier.text) {
-        transformedStatements.push(ts.updateImportDeclaration(
+        transformedStatements.push(ts.factory.updateImportDeclaration(
             stmt, stmt.decorators, stmt.modifiers, stmt.importClause,
-            ts.createStringLiteral(rewrittenModuleSpecifier), undefined));
+            ts.factory.createStringLiteral(rewrittenModuleSpecifier), undefined));
 
         // Record the identifier by which this imported module goes, so references to its symbols
         // can be discovered later.
@@ -220,7 +220,7 @@ function transformFactorySourceFile(
     transformedStatements.push(nonEmptyExport);
   }
 
-  file = ts.updateSourceFileNode(file, transformedStatements);
+  file = ts.factory.updateSourceFile(file, transformedStatements);
 
   // If any imports to @angular/core were detected and rewritten (which happens when compiling
   // @angular/core), go through the SourceFile and rewrite references to symbols imported from core.
@@ -235,8 +235,8 @@ function transformFactorySourceFile(
         // This is an import of a symbol from @angular/core. Transform it with the importRewriter.
         const rewrittenSymbol = importRewriter.rewriteSymbol(node.name.text, '@angular/core');
         if (rewrittenSymbol !== node.name.text) {
-          const updated =
-              ts.updatePropertyAccess(node, node.expression, ts.createIdentifier(rewrittenSymbol));
+          const updated = ts.factory.updatePropertyAccessExpression(
+              node, node.expression, ts.factory.createIdentifier(rewrittenSymbol));
           node = updated as T & ts.PropertyAccessExpression;
         }
       }
@@ -291,25 +291,25 @@ function getFileoverviewComment(sourceFile: ts.SourceFile): string|null {
  * Example: Takes `1 + 2` and returns `i0.ɵnoSideEffects(() => 1 + 2)`.
  */
 function wrapInNoSideEffects(expr: ts.Expression): ts.Expression {
-  const noSideEffects = ts.createPropertyAccess(
-      ts.createIdentifier('i0'),
+  const noSideEffects = ts.factory.createPropertyAccessExpression(
+      ts.factory.createIdentifier('i0'),
       'ɵnoSideEffects',
   );
 
-  return ts.createCall(
+  return ts.factory.createCallExpression(
       noSideEffects,
       /* typeArguments */[],
       /* arguments */
       [
-        ts.createFunctionExpression(
+        ts.factory.createFunctionExpression(
             /* modifiers */[],
             /* asteriskToken */ undefined,
             /* name */ undefined,
             /* typeParameters */[],
             /* parameters */[],
             /* type */ undefined,
-            /* body */ ts.createBlock([
-              ts.createReturn(expr),
+            /* body */ ts.factory.createBlock([
+              ts.factory.createReturnStatement(expr),
             ]),
             ),
       ],
@@ -324,10 +324,10 @@ function updateInitializers(
     stmt: ts.VariableStatement,
     update: (initializer?: ts.Expression) => ts.Expression | undefined,
     ): ts.VariableStatement {
-  return ts.updateVariableStatement(
+  return ts.factory.updateVariableStatement(
       stmt,
       stmt.modifiers,
-      ts.updateVariableDeclarationList(
+      ts.factory.updateVariableDeclarationList(
           stmt.declarationList,
           stmt.declarationList.declarations.map(
               (decl) => ts.updateVariableDeclaration(

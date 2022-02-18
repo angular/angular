@@ -45,7 +45,7 @@ export class TypeCheckFile extends Environment {
       ref: Reference<ClassDeclaration<ts.ClassDeclaration>>, meta: TypeCheckBlockMetadata,
       domSchemaChecker: DomSchemaChecker, oobRecorder: OutOfBandDiagnosticRecorder,
       genericContextBehavior: TcbGenericContextBehavior): void {
-    const fnId = ts.createIdentifier(`_tcb${this.nextTcbId++}`);
+    const fnId = ts.factory.createIdentifier(`_tcb${this.nextTcbId++}`);
     const fn = generateTypeCheckBlock(
         this, ref, fnId, meta, domSchemaChecker, oobRecorder, genericContextBehavior);
     this.tcbStatements.push(fn);

@@ -435,23 +435,26 @@ export function transformDecoratorToInlineResources(
   // Set the `template` property if the `templateUrl` property is set.
   if (metadata.has('templateUrl')) {
     metadata.delete('templateUrl');
-    metadata.set('template', ts.createStringLiteral(template.content));
+    metadata.set('template', ts.factory.createStringLiteral(template.content));
   }
 
   // Set the `styles` property if the `styleUrls` property is set.
   if (metadata.has('styleUrls')) {
     metadata.delete('styleUrls');
-    metadata.set('styles', ts.createArrayLiteral(styles.map(s => ts.createStringLiteral(s))));
+    metadata.set(
+        'styles',
+        ts.factory.createArrayLiteralExpression(
+            styles.map(s => ts.factory.createStringLiteral(s))));
   }
 
   // Convert the metadata to TypeScript AST object literal element nodes.
   const newMetadataFields: ts.ObjectLiteralElementLike[] = [];
   for (const [name, value] of metadata.entries()) {
-    newMetadataFields.push(ts.createPropertyAssignment(name, value));
+    newMetadataFields.push(ts.factory.createPropertyAssignment(name, value));
   }
 
   // Return the original decorator with the overridden metadata argument.
-  return {...dec, args: [ts.createObjectLiteral(newMetadataFields)]};
+  return {...dec, args: [ts.factory.createObjectLiteralExpression(newMetadataFields)]};
 }
 
 export function extractComponentStyleUrls(

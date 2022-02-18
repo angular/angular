@@ -48,7 +48,7 @@ runInEachFileSystem(os => {
       });
 
       it('should describe references', () => {
-        const namedFn = ts.createFunctionDeclaration(
+        const namedFn = ts.factory.createFunctionDeclaration(
             /* decorators */ undefined,
             /* modifiers */ undefined,
             /* asteriskToken */ undefined,
@@ -60,7 +60,7 @@ runInEachFileSystem(os => {
         );
         expect(describeResolvedType(new Reference(namedFn))).toBe('test');
 
-        const anonymousFn = ts.createFunctionDeclaration(
+        const anonymousFn = ts.factory.createFunctionDeclaration(
             /* decorators */ undefined,
             /* modifiers */ undefined,
             /* asteriskToken */ undefined,
@@ -74,18 +74,19 @@ runInEachFileSystem(os => {
       });
 
       it('should describe enum values', () => {
-        const decl = ts.createEnumDeclaration(
+        const decl = ts.factory.createEnumDeclaration(
             /* decorators */ undefined,
             /* modifiers */ undefined,
             /* name */ 'MyEnum',
-            /* members */[ts.createEnumMember('member', ts.createNumericLiteral('1'))],
+            /* members */[ts.factory.createEnumMember(
+                'member', ts.factory.createNumericLiteral(1))],
         );
         const ref = new Reference(decl);
         expect(describeResolvedType(new EnumValue(ref, 'member', 1))).toBe('MyEnum');
       });
 
       it('should describe dynamic values', () => {
-        const node = ts.createObjectLiteral();
+        const node = ts.factory.createObjectLiteralExpression();
         expect(describeResolvedType(DynamicValue.fromUnsupportedSyntax(node)))
             .toBe('(not statically analyzable)');
       });

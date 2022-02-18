@@ -20,16 +20,17 @@ export function aliasTransformFactory(exportStatements: Map<string, Map<string, 
 
       const statements = [...file.statements];
       exportStatements.get(file.fileName)!.forEach(([moduleName, symbolName], aliasName) => {
-        const stmt = ts.createExportDeclaration(
+        const stmt = ts.factory.createExportDeclaration(
             /* decorators */ undefined,
             /* modifiers */ undefined,
+            /* isTypeOnly */ false,
             /* exportClause */ ts.createNamedExports([createExportSpecifier(
                 symbolName, aliasName)]),
-            /* moduleSpecifier */ ts.createStringLiteral(moduleName));
+            /* moduleSpecifier */ ts.factory.createStringLiteral(moduleName));
         statements.push(stmt);
       });
 
-      return ts.updateSourceFileNode(file, statements);
+      return ts.factory.updateSourceFile(file, statements);
     };
   };
 }
