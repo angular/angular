@@ -30,8 +30,8 @@ ng_module(
         "//devtools/projects/ng-devtools-backend/src/lib:component_tree",
         "//devtools/projects/ng-devtools-backend/src/lib:highlighter",
         "//devtools/projects/protocol",
-        "//devtools/projects/shell-chrome/src/app:backend",
-        "//devtools/projects/shell-chrome/src/app:background",
+        "//devtools/projects/shell-browser/src/app:backend",
+        "//devtools/projects/shell-browser/src/app:background",
         "//packages/core",
         "//packages/platform-browser",
         "//packages/platform-browser/animations",
@@ -67,7 +67,7 @@ ts_library(
     ],
     deps = [
         "//devtools/projects/ng-devtools",
-        "//devtools/projects/shell-chrome/src/environments:environment",
+        "//devtools/projects/shell-browser/src/environments:environment",
         "@npm//@types",
     ],
 )
@@ -126,7 +126,7 @@ ts_library(
     srcs = [
         "background.ts",
     ],
-    deps = ["//devtools/projects/shell-chrome/src/app:ng_validate"],
+    deps = ["//devtools/projects/shell-browser/src/app:ng_validate"],
 )
 
 ts_library(
@@ -138,7 +138,7 @@ ts_library(
         ":same_page_message_bus",
         "//devtools/projects/ng-devtools-backend",
         "//devtools/projects/ng-devtools-backend/src/lib:highlighter",
-        "//devtools/projects/shell-chrome/src/app:chrome_window_extensions",
+        "//devtools/projects/shell-browser/src/app:chrome_window_extensions",
         "@npm//@types",
     ],
 )
