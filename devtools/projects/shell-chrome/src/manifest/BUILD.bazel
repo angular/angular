@@ -1,6 +1,6 @@
 package(default_visibility = ["//visibility:public"])
 
-filegroup(
-    name = "manifest",
-    srcs = glob(["*.json"]),
-)
+exports_files([
+    "manifest.chrome.json",
+    "manifest.firefox.json",
+])
