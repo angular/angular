@@ -1684,6 +1684,16 @@ export const FormControl: ɵFormControlCtor =
  */
 export class FormGroup extends AbstractControl {
   /**
+   * @see AbstractControl#value
+   */
+  public override value!: {[key: string]: any};
+
+  /**
+   * @see AbstractControl#valueChanges
+   */
+  public override readonly valueChanges!: Observable<{[key: string]: any}>;
+
+  /**
    * Creates a new `FormGroup` instance.
    *
    * @param controls A collection of child controls. The key for each child is the name
@@ -1954,7 +1964,10 @@ export class FormGroup extends AbstractControl {
    * console.log(form.get('first').status);  // 'DISABLED'
    * ```
    */
-  override reset(value: any = {}, options: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
+  override reset(value: {[key: string]: any} = {}, options: {
+    onlySelf?: boolean,
+    emitEvent?: boolean
+  } = {}): void {
     this._forEachChild((control: AbstractControl, name: string) => {
       control.reset(value[name], {onlySelf: true, emitEvent: options.emitEvent});
     });
@@ -2118,6 +2131,16 @@ export class FormGroup extends AbstractControl {
  * @publicApi
  */
 export class FormArray extends AbstractControl {
+  /**
+   * @see AbstractControl#value
+   */
+  public override value!: any[];
+
+  /**
+   * @see AbstractControl#valueChanges
+   */
+  public override valueChanges!: Observable<any[]>;
+
   /**
    * Creates a new `FormArray` instance.
    *
@@ -2395,7 +2418,7 @@ export class FormArray extends AbstractControl {
    * The configuration options are passed to the {@link AbstractControl#updateValueAndValidity
    * updateValueAndValidity} method.
    */
-  override reset(value: any = [], options: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
+  override reset(value: any[] = [], options: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
     this._forEachChild((control: AbstractControl, index: number) => {
       control.reset(value[index], {onlySelf: true, emitEvent: options.emitEvent});
     });

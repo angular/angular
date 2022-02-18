@@ -248,7 +248,7 @@ export class FormArray extends AbstractControl {
     removeAt(index: number, options?: {
         emitEvent?: boolean;
     }): void;
-    reset(value?: any, options?: {
+    reset(value?: any[], options?: {
         onlySelf?: boolean;
         emitEvent?: boolean;
     }): void;
@@ -259,6 +259,10 @@ export class FormArray extends AbstractControl {
         onlySelf?: boolean;
         emitEvent?: boolean;
     }): void;
+    // (undocumented)
+    value: any[];
+    // (undocumented)
+    valueChanges: Observable<any[]>;
 }
 
 // @public
@@ -399,7 +403,9 @@ export class FormGroup extends AbstractControl {
     removeControl(name: string, options?: {
         emitEvent?: boolean;
     }): void;
-    reset(value?: any, options?: {
+    reset(value?: {
+        [key: string]: any;
+    }, options?: {
         onlySelf?: boolean;
         emitEvent?: boolean;
     }): void;
@@ -412,6 +418,14 @@ export class FormGroup extends AbstractControl {
         onlySelf?: boolean;
         emitEvent?: boolean;
     }): void;
+    // (undocumented)
+    value: {
+        [key: string]: any;
+    };
+    // (undocumented)
+    readonly valueChanges: Observable<{
+        [key: string]: any;
+    }>;
 }
 
 // @public
