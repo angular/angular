@@ -59,7 +59,7 @@ In addition to `path` and `component`, the `data` property of each route defines
 
 After configuring the routes, add a `<router-outlet>` inside the root `AppComponent` template. The `<router-outlet>` directive tells the Angular router where to render the views when matched with a route.
 
-The `<router-outlet>` directive holds the custom data set for the currently active route which can be accessed via the route's `activatedRouteData` property, we can use such data to animate our routing transitions.
+The `ChildrenOutletContexts` holds information about outlets and activated routes. We can use the `data` property of each `Route` to animate our routing transitions.
 
 <code-example path="animations/src/app/app.component.html" header="src/app/app.component.html" region="route-animations-outlet"></code-example>
 
@@ -67,7 +67,7 @@ The `<router-outlet>` directive holds the custom data set for the currently acti
 
 <code-example path="animations/src/app/app.component.ts" header="src/app/app.component.ts" region="prepare-router-outlet" language="typescript"></code-example>
 
-Here, the `prepareRoute()` method takes the value of the outlet) and returns a string value representing the state of the animation based on the custom data of the current active route. Use this data to control which transition to execute for each route.
+Here, the `prepareRoute()` method takes the value of the outlet and returns a string which represents the state of the animation based on the custom data of the current active route. Use this data to control which transition to execute for each route.
 
 <div class="alert is-helpful">
 
