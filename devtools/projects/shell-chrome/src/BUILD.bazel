@@ -283,25 +283,42 @@ esbuild(
 
 exports_files(["index.html"])
 
-[filegroup(
-    name = "prod_app_static_files_" + build_target,
+filegroup(
+    name = "prod_app_static_files",
     srcs = [
         ":index.html",
-        "//devtools/projects/shell-chrome/src/manifest/manifest.%s.json" % build_target,
         ":shell_chrome_styles",
         "//packages/zone.js/bundles:zone.umd.js",
     ],
-) for build_target in [
-    "chrome",
-    "firefox",
-]]
+)
 
-[pkg_web(
-    name = "prodapp_" + build_target,
+config_setting(
+    name = "browser_chrome",
+    values = {"define": "browser=chrome"},
+)
+
+config_setting(
+    name = "browser_firefox",
+    values = {"define": "browser=firefox"},
+)
+
+genrule(
+    name = "copy_manifest",
+    srcs = select({
+        ":browser_chrome": ["//devtools/projects/shell-chrome/src/manifest:manifest.chrome.json"],
+        ":browser_firefox": ["//devtools/projects/shell-chrome/src/manifest:manifest.firefox.json"],
+    }),
+    outs = ["manifest.json"],
+    cmd = "cp $< $@",
+)
+
+pkg_web(
+    name = "prodapp",
     srcs = [
         ":bundle",
+        ":copy_manifest",
         ":devtools_bundle",
-        ":prod_app_static_files_%s" % build_target,
+        ":prod_app_static_files",
         "//devtools/projects/ng-devtools/src/lib/images",
         "//devtools/projects/shell-chrome/src:devtools.html",
         "//devtools/projects/shell-chrome/src/app:backend_bundle",
@@ -309,14 +326,10 @@ exports_files(["index.html"])
         "//devtools/projects/shell-chrome/src/app:content_script_bundle",
         "//devtools/projects/shell-chrome/src/app:ng_validate_bundle",
         "//devtools/projects/shell-chrome/src/assets",
-        "//devtools/projects/shell-chrome/src/manifest",
         "//devtools/projects/shell-chrome/src/popups",
     ],
     additional_root_paths = [
         "projects/ng-devtools/src/lib",
     ],
     substitutions = {"BUILD_SCM_COMMIT_SHA": "{BUILD_SCM_COMMIT_SHA}"},
-) for build_target in [
-    "chrome",
-    "firefox",
-]]
+)
