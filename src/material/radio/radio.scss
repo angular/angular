@@ -195,10 +195,14 @@ $ripple-radius: 20px;
 }
 
 .mat-radio-input {
-  // Move the input in the middle and towards the bottom so
-  // the native validation messages are aligned correctly.
-  bottom: 0;
-  left: 50%;
+  opacity: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  cursor: inherit;
 }
 
 @include a11y.high-contrast(active, off) {
