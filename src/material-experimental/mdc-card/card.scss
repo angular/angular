@@ -10,8 +10,10 @@ $mat-card-header-size: 40px !default;
 // Default padding for text content within a card.
 $mat-card-default-padding: 16px !default;
 
-// Include all MDC card styles except for color and typography.
-@include mdc-card.without-ripple($query: mdc-helpers.$mat-base-styles-query);
+@include mdc-helpers.disable-fallback-declarations {
+  // Include all MDC card styles except for color and typography.
+  @include mdc-card.without-ripple($query: mdc-helpers.$mat-base-styles-query);
+}
 
 // Title text and subtitles text within a card. MDC doesn't have pre-made title sections for cards.
 // Maintained here for backwards compatibility with the previous generation MatCard.

@@ -1,7 +1,9 @@
 @use '@material/slider/slider' as mdc-slider;
 @use '../mdc-helpers/mdc-helpers';
 
-@include mdc-slider.without-ripple($query: mdc-helpers.$mat-base-styles-query);
+@include mdc-helpers.disable-fallback-declarations {
+  @include mdc-slider.without-ripple($query: mdc-helpers.$mat-base-styles-query);
+}
 
 $mat-slider-min-size: 128px !default;
 $mat-slider-horizontal-margin: 8px !default;

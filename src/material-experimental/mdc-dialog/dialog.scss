@@ -9,7 +9,10 @@ $mat-dialog-content-max-height: 65vh !default;
 // don't expose this value as variable.
 $mat-dialog-button-horizontal-margin: 8px !default;
 
-@include mdc-dialog.core-styles($query: mdc-helpers.$mat-base-styles-query);
+@include mdc-helpers.disable-fallback-declarations {
+  @include mdc-dialog.core-styles($query: mdc-helpers.$mat-base-styles-query);
+}
+
 @include mdc-dialog-structure-overrides.private-dialog-structure-overrides(
   $mat-dialog-content-max-height);
 

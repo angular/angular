@@ -12,13 +12,16 @@
 @use '../mdc-helpers/mdc-helpers';
 
 // Base styles for MDC text-field, notched-outline, floating label and line-ripple.
-@include mdc-textfield.without-ripple(
-  $query: mdc-helpers.$mat-base-styles-without-animation-query);
-@include mdc-floating-label.core-styles(
-  $query: mdc-helpers.$mat-base-styles-without-animation-query);
-@include mdc-notched-outline.core-styles(
-  $query: mdc-helpers.$mat-base-styles-without-animation-query);
-@include mdc-line-ripple.core-styles($query: mdc-helpers.$mat-base-styles-without-animation-query);
+@include mdc-helpers.disable-fallback-declarations {
+  @include mdc-textfield.without-ripple(
+    $query: mdc-helpers.$mat-base-styles-without-animation-query);
+  @include mdc-floating-label.core-styles(
+    $query: mdc-helpers.$mat-base-styles-without-animation-query);
+  @include mdc-notched-outline.core-styles(
+    $query: mdc-helpers.$mat-base-styles-without-animation-query);
+  @include mdc-line-ripple.core-styles(
+    $query: mdc-helpers.$mat-base-styles-without-animation-query);
+}
 
 // MDC text-field overwrites.
 @include mdc-text-field-textarea-overrides.private-text-field-textarea-overrides();
@@ -119,8 +122,10 @@
 // In order to make it possible for developers to disable animations for form-fields,
 // we only activate the animation styles if animations are not explicitly disabled.
 .mat-mdc-form-field:not(.mat-form-field-no-animations) {
-  @include mdc-textfield.without-ripple($query: animation);
-  @include mdc-floating-label.core-styles($query: animation);
-  @include mdc-notched-outline.core-styles($query: animation);
-  @include mdc-line-ripple.core-styles($query: animation);
+  @include mdc-helpers.disable-fallback-declarations {
+    @include mdc-textfield.without-ripple($query: animation);
+    @include mdc-floating-label.core-styles($query: animation);
+    @include mdc-notched-outline.core-styles($query: animation);
+    @include mdc-line-ripple.core-styles($query: animation);
+  }
 }

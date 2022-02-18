@@ -2,7 +2,9 @@
 @use '../mdc-helpers/mdc-helpers';
 @use '../../cdk/a11y';
 
-@include mdc-circular-progress.core-styles($query: mdc-helpers.$mat-base-styles-query);
+@include mdc-helpers.disable-fallback-declarations {
+  @include mdc-circular-progress.core-styles($query: mdc-helpers.$mat-base-styles-query);
+}
 
 .mat-mdc-progress-spinner {
   // Explicitly set to `block` since the browser defaults custom elements to `inline`.

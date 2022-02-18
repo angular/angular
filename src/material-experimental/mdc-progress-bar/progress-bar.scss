@@ -1,7 +1,9 @@
 @use '@material/linear-progress' as mdc-linear-progress;
 @use '../mdc-helpers/mdc-helpers';
 
-@include mdc-linear-progress.core-styles($query: mdc-helpers.$mat-base-styles-query);
+@include mdc-helpers.disable-fallback-declarations {
+  @include mdc-linear-progress.core-styles($query: mdc-helpers.$mat-base-styles-query);
+}
 
 .mat-mdc-progress-bar {
   // Explicitly set to `block` since the browser defaults custom elements to `inline`.

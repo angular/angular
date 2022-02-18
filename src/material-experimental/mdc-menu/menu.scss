@@ -7,7 +7,9 @@
 @use '../../cdk/a11y';
 @use '../mdc-helpers/mdc-helpers';
 
-@include mdc-menu-surface.core-styles($query: structure);
+@include mdc-helpers.disable-fallback-declarations {
+  @include mdc-menu-surface.core-styles($query: structure);
+}
 
 // Prevent rendering mat-menu as it can affect the flex layout.
 mat-menu {
@@ -37,9 +39,11 @@ mat-menu {
 }
 
 .mat-mdc-menu-item {
-  @include mdc-list-mixins.item-base;
-  @include mdc-list-mixins.item-spacing(
-    mdc-list-variables.$side-padding, $query: mdc-helpers.$mat-base-styles-query);
+  @include mdc-helpers.disable-fallback-declarations {
+    @include mdc-list-mixins.item-base;
+    @include mdc-list-mixins.item-spacing(
+      mdc-list-variables.$side-padding, $query: mdc-helpers.$mat-base-styles-query);
+  }
 
   // MDC's menu items are `<li>` nodes which don't need resets, however ours
   // can be anything, including buttons, so we need to do the reset ourselves.
