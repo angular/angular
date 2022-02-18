@@ -49,6 +49,9 @@ export class AsyncPipe implements OnDestroy, PipeTransform {
 }
 
 // @public
+export const AVOID_PUSH_STATE: InjectionToken<boolean>;
+
+// @public
 export class CommonModule {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<CommonModule, never>;

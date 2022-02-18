@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, Injectable, InjectionToken, ɵɵinject} from '@angular/core';
+import {Inject, Injectable, InjectFlags, InjectionToken, Optional, ɵɵinject} from '@angular/core';
+
 import {getDOM} from '../dom_adapter';
 import {DOCUMENT} from '../dom_tokens';
 
@@ -100,7 +101,29 @@ export interface LocationChangeListener {
   (event: LocationChangeEvent): any;
 }
 
-
+/**
+ * This injection token allows to configure whether Angular should avoid using `history.pushState`
+ * and `history.replaceState` even if it is supported by the browser. It would instead set
+ * `location.hash`.
+ *
+ * @usageNotes
+ *
+ * The following example shows how to use this token to configure the root app injector
+ * so that the DI framework can supply the value anywhere in the app.
+ *
+ * ```typescript
+ * import {Component, NgModule} from '@angular/core';
+ * import {AVOID_PUSH_STATE} from '@angular/common';
+ *
+ * @NgModule({
+ *   providers: [{provide: AVOID_PUSH_STATE, useValue: true}]
+ * })
+ * class AppModule {}
+ * ```
+ *
+ * @publicApi
+ */
+export const AVOID_PUSH_STATE = new InjectionToken<boolean>('avoidPushStateConfig');
 
 /**
  * `PlatformLocation` encapsulates all of the direct calls to platform APIs.
@@ -116,7 +139,9 @@ export class BrowserPlatformLocation extends PlatformLocation {
   public readonly location!: Location;
   private _history!: History;
 
-  constructor(@Inject(DOCUMENT) private _doc: any) {
+  constructor(
+      @Inject(DOCUMENT) private _doc: any,
+      @Optional() @Inject(AVOID_PUSH_STATE) private _avoidPushState: boolean|null) {
     super();
     this._init();
   }
@@ -170,7 +195,7 @@ export class BrowserPlatformLocation extends PlatformLocation {
   }
 
   override pushState(state: any, title: string, url: string): void {
-    if (supportsState()) {
+    if (!this._avoidPushState && supportsState()) {
       this._history.pushState(state, title, url);
     } else {
       this.location.hash = url;
@@ -178,7 +203,7 @@ export class BrowserPlatformLocation extends PlatformLocation {
   }
 
   override replaceState(state: any, title: string, url: string): void {
-    if (supportsState()) {
+    if (!this._avoidPushState && supportsState()) {
       this._history.replaceState(state, title, url);
     } else {
       this.location.hash = url;
@@ -206,5 +231,6 @@ export function supportsState(): boolean {
   return !!window.history.pushState;
 }
 export function createBrowserPlatformLocation() {
-  return new BrowserPlatformLocation(ɵɵinject(DOCUMENT));
+  return new BrowserPlatformLocation(
+      ɵɵinject(DOCUMENT), ɵɵinject(AVOID_PUSH_STATE, InjectFlags.Optional));
 }

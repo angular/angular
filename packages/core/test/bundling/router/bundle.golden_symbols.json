@@ -18,6 +18,9 @@
     "name": "APP_INITIALIZER"
   },
   {
+    "name": "AVOID_PUSH_STATE"
+  },
+  {
     "name": "AbsoluteRedirect"
   },
   {
