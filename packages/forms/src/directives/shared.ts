@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AbstractControl, FormArray, FormControl, FormGroup} from '../model';
+import {AbstractControl, FormArray, FormControl, FormGroup} from '../model/api';
 import {getControlAsyncValidators, getControlValidators, mergeValidators} from '../validators';
 
 import {AbstractControlDirective} from './abstract_control_directive';

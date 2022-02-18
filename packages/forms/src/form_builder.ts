@@ -10,7 +10,11 @@ import {Injectable} from '@angular/core';
 
 import {AsyncValidatorFn, ValidatorFn} from './directives/validators';
 import {ReactiveFormsModule} from './form_providers';
-import {AbstractControl, AbstractControlOptions, FormArray, FormControl, FormControlOptions, FormGroup, FormHooks, isFormArray, isFormControl, isFormGroup} from './model';
+import {AbstractControl} from './model/abstract_control';
+import {AbstractControlOptions, FormControlOptions, FormHooks} from './model/api';
+import {FormArray} from './model/form_array';
+import {FormControl,} from './model/form_control';
+import {FormGroup} from './model/form_group';
 
 function isAbstractControlOptions(options: AbstractControlOptions|
                                   {[key: string]: any}): options is AbstractControlOptions {
@@ -165,7 +169,8 @@ export class FormBuilder {
 
   /** @internal */
   _createControl(controlConfig: any): AbstractControl {
-    if (isFormControl(controlConfig) || isFormGroup(controlConfig) || isFormArray(controlConfig)) {
+    if (controlConfig instanceof FormControl || controlConfig instanceof FormGroup ||
+        controlConfig instanceof FormArray) {
       return controlConfig;
 
     } else if (Array.isArray(controlConfig)) {

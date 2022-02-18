@@ -20,86 +20,16 @@ import { Renderer2 } from '@angular/core';
 import { SimpleChanges } from '@angular/core';
 import { Version } from '@angular/core';
 
-// @public
-export abstract class AbstractControl {
-    constructor(validators: ValidatorFn | ValidatorFn[] | null, asyncValidators: AsyncValidatorFn | AsyncValidatorFn[] | null);
-    addAsyncValidators(validators: AsyncValidatorFn | AsyncValidatorFn[]): void;
-    addValidators(validators: ValidatorFn | ValidatorFn[]): void;
-    get asyncValidator(): AsyncValidatorFn | null;
-    set asyncValidator(asyncValidatorFn: AsyncValidatorFn | null);
-    clearAsyncValidators(): void;
-    clearValidators(): void;
-    get dirty(): boolean;
-    disable(opts?: {
-        onlySelf?: boolean;
-        emitEvent?: boolean;
-    }): void;
-    get disabled(): boolean;
-    enable(opts?: {
-        onlySelf?: boolean;
-        emitEvent?: boolean;
-    }): void;
-    get enabled(): boolean;
-    readonly errors: ValidationErrors | null;
-    get(path: Array<string | number> | string): AbstractControl | null;
-    getError(errorCode: string, path?: Array<string | number> | string): any;
-    hasAsyncValidator(validator: AsyncValidatorFn): boolean;
-    hasError(errorCode: string, path?: Array<string | number> | string): boolean;
-    hasValidator(validator: ValidatorFn): boolean;
-    get invalid(): boolean;
-    markAllAsTouched(): void;
-    markAsDirty(opts?: {
-        onlySelf?: boolean;
-    }): void;
-    markAsPending(opts?: {
-        onlySelf?: boolean;
-        emitEvent?: boolean;
-    }): void;
-    markAsPristine(opts?: {
-        onlySelf?: boolean;
-    }): void;
-    markAsTouched(opts?: {
-        onlySelf?: boolean;
-    }): void;
-    markAsUntouched(opts?: {
-        onlySelf?: boolean;
-    }): void;
-    get parent(): FormGroup | FormArray | null;
-    abstract patchValue(value: any, options?: Object): void;
-    get pending(): boolean;
-    readonly pristine: boolean;
-    removeAsyncValidators(validators: AsyncValidatorFn | AsyncValidatorFn[]): void;
-    removeValidators(validators: ValidatorFn | ValidatorFn[]): void;
-    abstract reset(value?: any, options?: Object): void;
-    get root(): AbstractControl;
-    setAsyncValidators(validators: AsyncValidatorFn | AsyncValidatorFn[] | null): void;
-    setErrors(errors: ValidationErrors | null, opts?: {
-        emitEvent?: boolean;
-    }): void;
-    // (undocumented)
-    setParent(parent: FormGroup | FormArray): void;
-    setValidators(validators: ValidatorFn | ValidatorFn[] | null): void;
-    abstract setValue(value: any, options?: Object): void;
-    readonly status: FormControlStatus;
-    readonly statusChanges: Observable<FormControlStatus>;
-    readonly touched: boolean;
-    get untouched(): boolean;
-    get updateOn(): FormHooks;
-    updateValueAndValidity(opts?: {
-        onlySelf?: boolean;
-        emitEvent?: boolean;
-    }): void;
-    get valid(): boolean;
-    get validator(): ValidatorFn | null;
-    set validator(validatorFn: ValidatorFn | null);
-    readonly value: any;
-    readonly valueChanges: Observable<any>;
-}
+// @public (undocumented)
+export const AbstractControl: AbstractControlCtor;
+
+// @public (undocumented)
+export type AbstractControl = AbstractControl_2;
 
 // @public
 export abstract class AbstractControlDirective {
     get asyncValidator(): AsyncValidatorFn | null;
-    abstract get control(): AbstractControl | null;
+    abstract get control(): AbstractControl_2 | null;
     get dirty(): boolean | null;
     get disabled(): boolean | null;
     get enabled(): boolean | null;
@@ -130,7 +60,7 @@ export interface AbstractControlOptions {
 
 // @public
 export class AbstractFormGroupDirective extends ControlContainer implements OnInit, OnDestroy {
-    get control(): FormGroup;
+    get control(): FormGroup_2;
     get formDirective(): Form | null;
     // (undocumented)
     ngOnDestroy(): void;
@@ -148,13 +78,13 @@ export type AnyForUntypedForms = any;
 
 // @public
 export interface AsyncValidator extends Validator {
-    validate(control: AbstractControl): Promise<ValidationErrors | null> | Observable<ValidationErrors | null>;
+    validate(control: AbstractControl_2): Promise<ValidationErrors | null> | Observable<ValidationErrors | null>;
 }
 
 // @public
 export interface AsyncValidatorFn {
     // (undocumented)
-    (control: AbstractControl): Promise<ValidationErrors | null> | Observable<ValidationErrors | null>;
+    (control: AbstractControl_2): Promise<ValidationErrors | null> | Observable<ValidationErrors | null>;
 }
 
 // @public
@@ -217,54 +147,23 @@ export class EmailValidator extends AbstractValidatorDirective {
 export interface Form {
     addControl(dir: NgControl): void;
     addFormGroup(dir: AbstractFormGroupDirective): void;
-    getControl(dir: NgControl): FormControl;
-    getFormGroup(dir: AbstractFormGroupDirective): FormGroup;
+    getControl(dir: NgControl): FormControl_2;
+    getFormGroup(dir: AbstractFormGroupDirective): FormGroup_2;
     removeControl(dir: NgControl): void;
     removeFormGroup(dir: AbstractFormGroupDirective): void;
     updateModel(dir: NgControl, value: any): void;
 }
 
-// @public
-export class FormArray extends AbstractControl {
-    constructor(controls: AbstractControl[], validatorOrOpts?: ValidatorFn | ValidatorFn[] | AbstractControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null);
-    at(index: number): AbstractControl;
-    clear(options?: {
-        emitEvent?: boolean;
-    }): void;
-    // (undocumented)
-    controls: AbstractControl[];
-    getRawValue(): any[];
-    insert(index: number, control: AbstractControl, options?: {
-        emitEvent?: boolean;
-    }): void;
-    get length(): number;
-    patchValue(value: any[], options?: {
-        onlySelf?: boolean;
-        emitEvent?: boolean;
-    }): void;
-    push(control: AbstractControl, options?: {
-        emitEvent?: boolean;
-    }): void;
-    removeAt(index: number, options?: {
-        emitEvent?: boolean;
-    }): void;
-    reset(value?: any, options?: {
-        onlySelf?: boolean;
-        emitEvent?: boolean;
-    }): void;
-    setControl(index: number, control: AbstractControl, options?: {
-        emitEvent?: boolean;
-    }): void;
-    setValue(value: any[], options?: {
-        onlySelf?: boolean;
-        emitEvent?: boolean;
-    }): void;
-}
+// @public (undocumented)
+export const FormArray: ɵFormArrayCtor;
+
+// @public (undocumented)
+export type FormArray = FormArray_2;
 
 // @public
 export class FormArrayName extends ControlContainer implements OnInit, OnDestroy {
     constructor(parent: ControlContainer, validators: (Validator | ValidatorFn)[], asyncValidators: (AsyncValidator | AsyncValidatorFn)[]);
-    get control(): FormArray;
+    get control(): FormArray_2;
     get formDirective(): FormGroupDirective | null;
     name: string | number | null;
     ngOnDestroy(): void;
@@ -295,37 +194,17 @@ export class FormBuilder {
     static ɵprov: i0.ɵɵInjectableDeclaration<FormBuilder>;
 }
 
-// @public
-export interface FormControl extends AbstractControl {
-    readonly defaultValue: any;
-    patchValue(value: any, options?: {
-        onlySelf?: boolean;
-        emitEvent?: boolean;
-        emitModelToViewChange?: boolean;
-        emitViewToModelChange?: boolean;
-    }): void;
-    registerOnChange(fn: Function): void;
-    registerOnDisabledChange(fn: (isDisabled: boolean) => void): void;
-    reset(formState?: any, options?: {
-        onlySelf?: boolean;
-        emitEvent?: boolean;
-    }): void;
-    setValue(value: any, options?: {
-        onlySelf?: boolean;
-        emitEvent?: boolean;
-        emitModelToViewChange?: boolean;
-        emitViewToModelChange?: boolean;
-    }): void;
-}
-
 // @public (undocumented)
 export const FormControl: ɵFormControlCtor;
+
+// @public (undocumented)
+export type FormControl = FormControl_2;
 
 // @public
 export class FormControlDirective extends NgControl implements OnChanges, OnDestroy {
     constructor(validators: (Validator | ValidatorFn)[], asyncValidators: (AsyncValidator | AsyncValidatorFn)[], valueAccessors: ControlValueAccessor[], _ngModelWarningConfig: string | null);
-    get control(): FormControl;
-    form: FormControl;
+    get control(): FormControl_2;
+    form: FormControl_2;
     set isDisabled(isDisabled: boolean);
     // @deprecated (undocumented)
     model: any;
@@ -347,7 +226,7 @@ export class FormControlDirective extends NgControl implements OnChanges, OnDest
 // @public
 export class FormControlName extends NgControl implements OnChanges, OnDestroy {
     constructor(parent: ControlContainer, validators: (Validator | ValidatorFn)[], asyncValidators: (AsyncValidator | AsyncValidatorFn)[], valueAccessors: ControlValueAccessor[], _ngModelWarningConfig: string | null);
-    readonly control: FormControl;
+    readonly control: FormControl_2;
     get formDirective(): any;
     set isDisabled(isDisabled: boolean);
     // @deprecated (undocumented)
@@ -375,44 +254,11 @@ export interface FormControlOptions extends AbstractControlOptions {
 // @public
 export type FormControlStatus = 'VALID' | 'INVALID' | 'PENDING' | 'DISABLED';
 
-// @public
-export class FormGroup extends AbstractControl {
-    constructor(controls: {
-        [key: string]: AbstractControl;
-    }, validatorOrOpts?: ValidatorFn | ValidatorFn[] | AbstractControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null);
-    addControl(name: string, control: AbstractControl, options?: {
-        emitEvent?: boolean;
-    }): void;
-    contains(controlName: string): boolean;
-    // (undocumented)
-    controls: {
-        [key: string]: AbstractControl;
-    };
-    getRawValue(): any;
-    patchValue(value: {
-        [key: string]: any;
-    }, options?: {
-        onlySelf?: boolean;
-        emitEvent?: boolean;
-    }): void;
-    registerControl(name: string, control: AbstractControl): AbstractControl;
-    removeControl(name: string, options?: {
-        emitEvent?: boolean;
-    }): void;
-    reset(value?: any, options?: {
-        onlySelf?: boolean;
-        emitEvent?: boolean;
-    }): void;
-    setControl(name: string, control: AbstractControl, options?: {
-        emitEvent?: boolean;
-    }): void;
-    setValue(value: {
-        [key: string]: any;
-    }, options?: {
-        onlySelf?: boolean;
-        emitEvent?: boolean;
-    }): void;
-}
+// @public (undocumented)
+export const FormGroup: ɵFormGroupCtor;
+
+// @public (undocumented)
+export type FormGroup = FormGroup_2;
 
 // @public
 export class FormGroupDirective extends ControlContainer implements Form, OnChanges, OnDestroy {
@@ -420,13 +266,13 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
     addControl(dir: FormControlName): FormControl;
     addFormArray(dir: FormArrayName): void;
     addFormGroup(dir: FormGroupName): void;
-    get control(): FormGroup;
+    get control(): FormGroup_2;
     directives: FormControlName[];
-    form: FormGroup;
+    form: FormGroup_2;
     get formDirective(): Form;
     getControl(dir: FormControlName): FormControl;
-    getFormArray(dir: FormArrayName): FormArray;
-    getFormGroup(dir: FormGroupName): FormGroup;
+    getFormArray(dir: FormArrayName): FormArray_2;
+    getFormGroup(dir: FormGroupName): FormGroup_2;
     // (undocumented)
     ngOnChanges(changes: SimpleChanges): void;
     // (undocumented)
@@ -544,11 +390,11 @@ export class NgForm extends ControlContainer implements Form, AfterViewInit {
     addFormGroup(dir: NgModelGroup): void;
     get control(): FormGroup;
     get controls(): {
-        [key: string]: AbstractControl;
+        [key: string]: AbstractControl_2;
     };
     form: FormGroup;
     get formDirective(): Form;
-    getControl(dir: NgModel): FormControl;
+    getControl(dir: NgModel): FormControl_2;
     getFormGroup(dir: NgModelGroup): FormGroup;
     // (undocumented)
     ngAfterViewInit(): void;
@@ -733,13 +579,13 @@ export type ValidationErrors = {
 // @public
 export interface Validator {
     registerOnValidatorChange?(fn: () => void): void;
-    validate(control: AbstractControl): ValidationErrors | null;
+    validate(control: AbstractControl_2): ValidationErrors | null;
 }
 
 // @public
 export interface ValidatorFn {
     // (undocumented)
-    (control: AbstractControl): ValidationErrors | null;
+    (control: AbstractControl_2): ValidationErrors | null;
 }
 
 // @public
@@ -748,15 +594,15 @@ export class Validators {
     // (undocumented)
     static compose(validators: (ValidatorFn | null | undefined)[]): ValidatorFn | null;
     static composeAsync(validators: (AsyncValidatorFn | null)[]): AsyncValidatorFn | null;
-    static email(control: AbstractControl): ValidationErrors | null;
+    static email(control: AbstractControl_2): ValidationErrors | null;
     static max(max: number): ValidatorFn;
     static maxLength(maxLength: number): ValidatorFn;
     static min(min: number): ValidatorFn;
     static minLength(minLength: number): ValidatorFn;
-    static nullValidator(control: AbstractControl): ValidationErrors | null;
+    static nullValidator(control: AbstractControl_2): ValidationErrors | null;
     static pattern(pattern: string | RegExp): ValidatorFn;
-    static required(control: AbstractControl): ValidationErrors | null;
-    static requiredTrue(control: AbstractControl): ValidationErrors | null;
+    static required(control: AbstractControl_2): ValidationErrors | null;
+    static requiredTrue(control: AbstractControl_2): ValidationErrors | null;
 }
 
 // @public (undocumented)

@@ -171,7 +171,7 @@
     "name": "EventManagerPlugin"
   },
   {
-    "name": "FormArray"
+    "name": "FormArray2"
   },
   {
     "name": "FormArrayName"
@@ -180,16 +180,22 @@
     "name": "FormBuilder"
   },
   {
-    "name": "FormControl"
+    "name": "FormControl2"
+  },
+  {
+    "name": "FormControlImpl"
   },
   {
     "name": "FormControlName"
   },
   {
-    "name": "FormGroup"
+    "name": "FormGroup2"
   },
   {
     "name": "FormGroupDirective"
+  },
+  {
+    "name": "FormGroupImpl"
   },
   {
     "name": "FormGroupName"
@@ -1114,15 +1120,6 @@
   },
   {
     "name": "isEmptyInputValue"
-  },
-  {
-    "name": "isFormArray"
-  },
-  {
-    "name": "isFormControl"
-  },
-  {
-    "name": "isFormGroup"
   },
   {
     "name": "isForwardRef"

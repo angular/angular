@@ -174,13 +174,16 @@
     "name": "EventManagerPlugin"
   },
   {
-    "name": "FormArray"
+    "name": "FormControl2"
   },
   {
-    "name": "FormControl"
+    "name": "FormControlImpl"
   },
   {
-    "name": "FormGroup"
+    "name": "FormGroup2"
+  },
+  {
+    "name": "FormGroupImpl"
   },
   {
     "name": "FormsExampleModule"
@@ -600,12 +603,6 @@
     "name": "applyViewChange"
   },
   {
-    "name": "assertAllValuesPresent"
-  },
-  {
-    "name": "assertControlPresent"
-  },
-  {
     "name": "attachInjectFlag"
   },
   {
@@ -948,9 +945,6 @@
     "name": "getPromiseCtor"
   },
   {
-    "name": "getRawValue"
-  },
-  {
     "name": "getSelectedIndex"
   },
   {
@@ -1087,9 +1081,6 @@
   },
   {
     "name": "isDirectiveHost"
-  },
-  {
-    "name": "isFormGroup"
   },
   {
     "name": "isForwardRef"

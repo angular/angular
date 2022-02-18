@@ -248,7 +248,7 @@ The validator code is as follows.
 
 The `identity` validator implements the `ValidatorFn` interface. It takes an Angular control object as an argument and returns either null if the form is valid, or `ValidationErrors` otherwise.
 
-The validator retrieves the child controls by calling the `FormGroup`'s [get](api/forms/AbstractControl#get) method, then compares the values of the `name` and `alterEgo` controls.
+The validator retrieves the child controls by calling the `FormGroup`'s [get](api/forms/AbstractControl) `get` method, then compares the values of the `name` and `alterEgo` controls.
 
 If the values do not match, the hero's identity remains secret, both are valid, and the validator returns null.
 If they do match, the hero's identity is revealed and the validator must mark the form as invalid by returning an error object.
