@@ -389,6 +389,112 @@ The `fakeAsync()` function enables a linear coding style by running the test bod
 The test body appears to be synchronous.
 There is no nested syntax (like a `Promise.then()`) to disrupt the flow of control.
 
+The `fakeAsync()` function also provides the `hooks` with `wrap()` function to allow the user to add `initial`/`cleanup` common logic easily.
+
+<code-example
+  path="testing/src/app/auth/auth.component.spec.ts"
+  region="wrap">
+</code-example>
+<code-tabs>
+  <code-pane header="src/app/auth/auth.component.ts" path="testing/src/app/auth/auth.component.ts">
+  </code-pane>
+
+  <code-pane header="src/app/model/auth.service.ts" path="testing/src/app/model/auth.service.ts">
+  </code-pane>
+</code-tabs>
+
+We can test the `auth.component.ts` with `fakeAsync()` in this way,
+
+<code-example format='.'>
+  &lt;&gt;
+  &lt;beforeEach(() => {&gt;
+    &lt;fixture = TestBed.createComponent(AuthComponent);&gt;
+  &lt;});&gt;
+  &lt;&gt;
+  &lt;it('shouldWork1 should work correctly', fakeAsync(() => {&gt;
+    &lt;fixture.detectChanges();&gt;
+    &lt;fixture.componentInstance.doSomeWork1();&gt;
+    &lt;tick();&gt;
+    &lt;expect(fixture.componentInstance.result).toEqual('work1 done after auth with token user1 token0');&gt;
+    &lt;fixture.destroy();&gt;
+  &lt;}));&gt;
+  &lt;&gt;
+  &lt;it('shouldWork2 should work correctly', fakeAsync(() => {&gt;
+    &lt;fixture.detectChanges();&gt;
+    &lt;fixture.componentInstance.doSomeWork2();&gt;
+    &lt;tick();&gt;
+    &lt;expect(fixture.componentInstance.result).toEqual('work2 done after auth with token user1 token0');&gt;
+    &lt;fixture.destroy();&gt;
+  &lt;}));&gt;
+</code-example>
+
+We need to call `fixture.destroy()` inside of each test case, otherwise `fakeAsync()` can not clear the async tasks (such as `setTimeout`, `setInterval`) scheduled in this `fakeAsync()` function scope.
+
+There is a better way to write the same test code.
+
+<code-example format='.'>
+  &lt;beforeEach(() => {&gt;
+    &lt;fixture = TestBed.createComponent(AuthComponent);&gt;
+  &lt;});&gt;
+  &lt;&gt;
+  &lt;const fakeAsyncWithFixture = fakeAsync.wrap(&gt;
+    &lt;beforeEach: () => fixture.detectChanges(),&gt;
+    &lt;afterEach: () => fixture.destroy()&gt;
+  &lt;&gt;
+  &lt;);&gt;
+  &lt;&gt;
+  &lt;it('shouldWork1 should work correctly', withFeatureFakeAsync(() => {&gt;
+    &lt;fixture.componentInstance.doSomeWork1();&gt;
+    &lt;tick();&gt;
+    &lt;expect(fixture.componentInstance.result).toEqual('work1 done after auth with token user1 token');&gt;
+  &lt;}));&gt;
+  &lt;&gt;
+  &lt;it('shouldWork2 should work correctly', withFeatureFakeAsync(() => {&gt;
+    &lt;fixture.componentInstance.doSomeWork2();&gt;
+    &lt;tick();&gt;
+    &lt;expect(fixture.componentInstance.result).toEqual('work2 done after auth with token user1 token');&gt;
+  &lt;}));&gt;
+</code-example>
+
+`fakeAsync.wrap()` also supports nesting.
+
+<code-example format='.'>
+  &lt;beforeEach(() => {&gt;
+    &lt;fixture = TestBed.createComponent(AuthComponent);&gt;
+  &lt;});&gt;
+  &lt;&gt;
+  &lt;const fakeAsyncWithFixture = fakeAsync.wrap(&gt;
+    &lt;beforeEach: () => fixture.detectChanges(),&gt;
+    &lt;afterEach: () => fixture.destroy()&gt;
+  &lt;&gt;
+  &lt;);&gt;
+  &lt;&gt;
+  &lt;it('shouldWork1 should work correctly', fakeAsyncWithFixture(() => {&gt;
+    &lt;fixture.componentInstance.doSomeWork1();&gt;
+    &lt;tick();&gt;
+    &lt;expect(fixture.componentInstance.result).toEqual('work1 done');&gt;
+  &lt;}));&gt;
+  &lt;&gt;
+  &lt;it('shouldWork2 should work correctly', fakeAsyncWithFixture(() => {&gt;
+    &lt;fixture.componentInstance.doSomeWork2();&gt;
+    &lt;tick();&gt;
+    &lt;expect(fixture.componentInstance.result).toEqual('work2 done');&gt;
+  &lt;}));&gt;
+  &lt;&gt;
+  &lt;describe('should work with auth token', () => {&gt;
+    &lt;const fakeAsyncWithToken = fakeAsyncWithFixture.wrap({&gt;
+      &lt;beforeEach: () => fixture.componentInstance.login(),&gt;
+      &lt;afterEach: () => fixture.componentInstance.logout(),&gt;
+    &lt;});&gt;
+    &lt;it('shouldWork3 should work correctly', fakeAsyncWithToken(() => {&gt;
+      &lt;fixture.componentInstance.doSomeWork3();&gt;
+      &lt;tick();&gt;
+      &lt;expect(fixture.componentInstance.result).toEqual('work3 done after auth with token user1 token');&gt;
+    &lt;}));&gt;
+  &lt;});&gt;
+  &lt;&gt;
+</code-example>
+
 <div class="alert is-helpful">
 
 Limitation: The `fakeAsync()` function won't work if the test body makes an `XMLHttpRequest` (XHR) call.

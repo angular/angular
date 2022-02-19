@@ -11,6 +11,7 @@ import { HeroService } from './model/hero.service';
 import { UserService } from './model/user.service';
 import { TwainComponent } from './twain/twain.component';
 import { TwainService } from './twain/twain.service';
+import { MockTokenService, AuthService } from './model/auth.service';
 import { WelcomeComponent } from './welcome/welcome.component';
 
 import { DashboardModule } from './dashboard/dashboard.module';
@@ -18,6 +19,7 @@ import { SharedModule } from './shared/shared.module';
 
 import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
 import { InMemoryDataService } from './in-memory-data.service';
+import { AuthComponent } from './auth/auth.component';
 
 @NgModule({
   imports: [
@@ -37,7 +39,9 @@ import { InMemoryDataService } from './in-memory-data.service';
   providers: [
     HeroService,
     TwainService,
-    UserService
+    UserService,
+    MockTokenService,
+    AuthService
   ],
   declarations: [
     AppComponent,
@@ -45,6 +49,7 @@ import { InMemoryDataService } from './in-memory-data.service';
     BannerComponent,
     TwainComponent,
     WelcomeComponent,
+    AuthComponent
   ],
   bootstrap: [ AppComponent ]
 })

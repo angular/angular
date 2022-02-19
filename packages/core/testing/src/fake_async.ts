@@ -25,6 +25,166 @@ export function resetFakeAsyncZone(): void {
   throw new Error(fakeAsyncTestModuleNotLoadedErrorMessage);
 }
 
+interface FakeAsync {
+  /**
+   * Wraps a function to be executed in the fakeAsync zone:
+   * - microtasks are manually executed by calling `flushMicrotasks()`,
+   * - timers are synchronous, `tick()` simulates the asynchronous passage of time.
+   *
+   * If there are any pending timers at the end of the function, an exception will be thrown.
+   *
+   * Can be used to wrap inject() calls.
+   *
+   * @usageNotes
+   * ### Example
+   *
+   * {@example core/testing/ts/fake_async.ts region='basic'}
+   *
+   * @param fn
+   * @returns The function wrapped to be executed in the fakeAsync zone
+   *
+   * @publicApi
+   */
+  (fn: Function): (...args: any[]) => any;
+
+  /**
+   * Wrap the `fakeAsync()` function with the `beforeEach()/afterEach()` hooks.
+   *
+   * Given `AppComponent`:
+   *
+   * @Component({...})
+   * export class AppComponent {
+   *   timerId: number;
+   *   ngOnInit() {
+   *     this.timerId = setTimeout(() => {});
+   *   }
+   *
+   *   ngOnDestroy() {
+   *     clearTimeout(this.timerId);
+   *   }
+   * }
+   *
+   * We can write test cases with `fakeAsync()` in this way.
+   *
+   * describe('AppComponent test', () => {
+   *   let fixture: ComponentFixture<AppComponent>;
+   *   beforeEach(() => {
+   *     ...
+   *     fixture = TestBed.createComponent(AppComponent);
+   *   });
+   *
+   *   it('test case1', fakeAsync(() => {
+   *     fixture.detectChanges();
+   *     // do some test with fixture
+   *     fixture.destroy();
+   *   }));
+   *
+   *   it('test case2', fakeAsync(() => {
+   *     fixture.detectChanges();
+   *     // do some test with fixture
+   *     fixture.destroy();
+   *   }));
+   * });
+   *
+   * Here we need to call `fixture.destroy()` inside each test, since each `it()` is in its own
+   * `fakeAsync()` scope and we can only clean up the async tasks (such as `setTimeout`,
+   * `setInterval`) created in that `fakeAsync()`. With the hooks, we can write the case in this
+   * way.
+   *
+   * describe('AppComponent test', () => {
+   *   let fixture: ComponentFixture<AppComponent>;
+   *   const fakeAsyncWithFixture = fakeAsync.wrap({
+   *     beforeEach: () => fixture = TestBed.createComponent(AppComponent);
+   *     afterEach: () => fixture.destroy();
+   *   });
+   *
+   *   it('test case1', fakeAsyncWithFixture(() => {
+   *     fixture.detectChanges();
+   *     // do some test with fixture
+   *   }));
+   *
+   *   it('test case2', fakeAsyncWithFixture(() => {
+   *     fixture.detectChanges();
+   *     // do some test with fixture
+   *   }));
+   * });
+   *
+   * Also the `wrap()` function support nesting.
+   *
+   * describe('AppComponent test', () => {
+   *   let fixture: ComponentFixture<AppComponent>;
+   *
+   *   const fakeAsyncWithFixture = fakeAsync.wrap({
+   *     beforeEach: () => {
+   *       fixture = TestBed.createComponent(AppComponent);
+   *       fixture.detectChanges();
+   *     }
+   *     afterEach: () => fixture.destroy();
+   *   });
+   *
+   *   it('test case1', fakeAsyncWithFixture(() => {
+   *     // do some test with fixture
+   *   }));
+   *
+   *   it('test case2', fakeAsyncWithFixture(() => {
+   *     // do some test with fixture
+   *   }));
+   *
+   *   describe('AppComponent sub test: auth test', () => {
+   *     const fakeAsyncNested = fakeAsyncWithFixture.wrap({
+   *       beforeEach: () => fixture.componentInstance.login(),
+   *       afterEach: () => fixture.componentInstance.logout();
+   *     });
+   *
+   *     it('should show user info', () => {
+   *       // do some test with fixture with authenticated user.
+   *     });
+   *   });
+   * });
+   *
+   * @param hooks, the object with the `beforeEach()` and the `afterEach()` hook function.
+   * @returns The fakeAsync function wrapped with the specified hooks.
+   */
+  wrap(hooks: {beforeEach?: () => void, afterEach?: () => void}): FakeAsync;
+}
+
+/**
+ * The type definition of fakeAsync function.
+ *
+ */
+export interface FakeAsync {
+  /**
+   * Wraps a function to be executed in the fakeAsync zone:
+   * - microtasks are manually executed by calling `flushMicrotasks()`,
+   * - timers are synchronous, `tick()` simulates the asynchronous passage of time.
+   *
+   * If there are any pending timers at the end of the function, an exception will be thrown.
+   *
+   * Can be used to wrap inject() calls.
+   *
+   * @usageNotes
+   * ### Example
+   *
+   * {@example core/testing/ts/fake_async.ts region='basic'}
+   *
+   * @param fn
+   * @returns The function wrapped to be executed in the fakeAsync zone
+   *
+   * @publicApi
+   */
+  (fn: Function): (...args: any[]) => any;
+
+  /**
+   * Wrap the `fakeAsync()` function with the `beforeEach()/afterEach()` hooks.
+   *
+   * TODO: add code samples
+   *
+   * @param hooks, the object with the `beforeEach()` and the `afterEach()` hook function.
+   * @returns The fakeAsync function wrapped with the specified hooks.
+   */
+  wrap(hooks: {beforeEach?: () => void, afterEach?: () => void}): FakeAsync;
+}
+
 /**
  * Wraps a function to be executed in the `fakeAsync` zone:
  * - Microtasks are manually executed by calling `flushMicrotasks()`.
@@ -48,15 +208,19 @@ export function resetFakeAsyncZone(): void {
  *
  * @publicApi
  */
-export function fakeAsync(fn: Function): {
-  (fn: Function): (...args: any[]) => any;
-  wrap: (hooks: {beforeEach?: (() => void); afterEach?: (() => void)}) => typeof fakeAsync
-} {
+export const fakeAsync = function(fn: Function): (...args: any[]) => any {
   if (fakeAsyncTestModule) {
     return fakeAsyncTestModule.fakeAsync(fn);
   }
   throw new Error(fakeAsyncTestModuleNotLoadedErrorMessage);
-}
+} as FakeAsync;
+
+fakeAsync.wrap = function(hooks: {beforeEach?: () => void, afterEach?: () => void}): FakeAsync {
+  if (fakeAsyncTestModule) {
+    return fakeAsyncTestModule.fakeAsync.wrap(hooks);
+  }
+  throw new Error(fakeAsyncTestModuleNotLoadedErrorMessage);
+};
 
 /**
  * Simulates the asynchronous passage of time for the timers in the `fakeAsync` zone.
