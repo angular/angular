@@ -21,7 +21,7 @@ const releaseTargetTag = 'release-package';
 const projectDir = join(__dirname, '../');
 
 /** Command that runs Bazel. */
-const bazelCmd = process.env.BAZEL_COMMAND || `bazel`;
+const bazelCmd = process.env.BAZEL || `yarn -s bazel`;
 
 /** Command that queries Bazel for all release package targets. */
 const queryPackagesCmd =
@@ -69,7 +69,8 @@ function buildReleasePackages(distPath: string, isSnapshotBuild: boolean): Built
   const targets = exec(queryPackagesCmd, true).split(/\r?\n/);
   const packageNames = getPackageNamesOfTargets(targets);
   const bazelBinPath = exec(`${bazelCmd} info bazel-bin`, true);
-  const getOutputPath = (pkgName: string) => join(bazelBinPath, 'src', pkgName, 'npm_package');
+  const getBazelOutputPath = (pkgName: string) => join(bazelBinPath, 'src', pkgName, 'npm_package');
+  const getDistPath = (pkgName: string) => join(distPath, pkgName);
 
   // Build with "--config=release" or `--config=snapshot-build` so that Bazel
   // runs the workspace stamping script. The stamping script ensures that the
@@ -80,7 +81,7 @@ function buildReleasePackages(distPath: string, isSnapshotBuild: boolean): Built
   // a workaround for: https://github.com/bazelbuild/rules_nodejs/issues/1219. We need to
   // do this to ensure that the version placeholders are properly populated.
   packageNames.forEach(pkgName => {
-    const outputPath = getOutputPath(pkgName);
+    const outputPath = getBazelOutputPath(pkgName);
     if (test('-d', outputPath)) {
       chmod('-R', 'u+w', outputPath);
       rm('-rf', outputPath);
@@ -96,18 +97,17 @@ function buildReleasePackages(distPath: string, isSnapshotBuild: boolean): Built
 
   // Copy the package output into the specified distribution folder.
   packageNames.forEach(pkgName => {
-    const outputPath = getOutputPath(pkgName);
-    const targetFolder = join(distPath, pkgName);
+    const outputPath = getBazelOutputPath(pkgName);
+    const targetFolder = getDistPath(pkgName);
     console.log(`> Copying package output to "${targetFolder}"`);
     cp('-R', outputPath, targetFolder);
     chmod('-R', 'u+w', targetFolder);
   });
 
   return packageNames.map(pkg => {
-    const outputPath = getOutputPath(pkg);
     return {
       name: `@angular/${pkg}`,
-      outputPath,
+      outputPath: getDistPath(pkg),
     };
   });
 }

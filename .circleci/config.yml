@@ -86,8 +86,6 @@ var_14: &publish_branches_filter
       - master
       # 6.0.x, 7.1.x, etc.
       - /\d+\.\d+\.x/
-      # 6.x, 7.x, 8.x etc
-      - /\d+\.x/
 
 # Branch filter that is usually applied to all jobs. Since there is no way within CircleCI to
 # exclude a branch for all defined jobs, we need to manually specify the filters for each job.
@@ -396,6 +394,42 @@ jobs:
           path: dist/release-archives
 
   # ----------------------------------------
+  # Job that publishes the docs site
+  # ----------------------------------------
+  deploy_docs_site:
+    docker:
+      - image: *docker-browser-image
+    resource_class: xlarge
+    environment:
+      GCP_DECRYPT_TOKEN: *gcp_decrypt_token
+    steps:
+      - checkout_and_rebase
+      - *restore_cache
+      - *setup_bazel_ci_config
+      - *setup_bazel_remote_execution
+      - *yarn_install
+      - *setup_bazel_binary
+
+      - run: yarn ci-push-deploy-docs-app
+      - *slack_notify_on_failure
+
+  # ----------------------------------------
+  # Job that monitors the docs site, ensuring
+  # the docs site is online and works as expected. 
+  # ----------------------------------------
+  monitor_docs_site:
+    docker:
+      - image: *docker-browser-image
+    resource_class: xlarge
+    steps:
+      - checkout_and_rebase
+      - *restore_cache
+      - *yarn_install
+
+      - run: yarn ci-docs-monitor-test
+      - *slack_notify_on_failure
+
+  # ----------------------------------------
   # Job that publishes the build snapshots
   # ----------------------------------------
   publish_snapshots:
@@ -609,6 +643,12 @@ workflows:
           filters: *publish_branches_filter
           requires:
             - build_release_packages
+      - deploy_docs_site:
+          filters: *publish_branches_filter
+          requires:
+            - lint
+            - build_release_packages
+            - tests_local_browsers
 
   # Snapshot tests workflow that is scheduled to run all specified jobs every hour.
   # This workflow runs various jobs against the Angular snapshot builds from Github.
@@ -622,6 +662,8 @@ workflows:
       - mdc_snapshot_test_cronjob:
           filters: *only_main_branch_filter
       - snapshot_linker_tests:
+          filters: *only_main_branch_filter
+      - monitor_docs_site:
           filters: *only_main_branch_filter
 
     triggers:

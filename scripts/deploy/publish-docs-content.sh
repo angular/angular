@@ -24,7 +24,7 @@ docsDistPath="${projectPath}/dist/docs"
 docsContentPath="${projectPath}/tmp/material2-docs-content"
 
 # Path to the build output of the Bazel "@angular/components-examples" NPM package.
-# Note: When changing this, also change the path in `scripts/build-docs-content.js`.
+# Note: When changing this, also change the path in `scripts/build-docs-content.ts`.
 examplesPackagePath="${projectPath}/dist/docs-content-pkg/"
 
 # Git clone URL for the material2-docs-content repository.
