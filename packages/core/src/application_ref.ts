@@ -732,8 +732,10 @@ export class ApplicationRef {
 
   /** @internal */
   constructor(
-      private _zone: NgZone, private _injector: Injector, private _exceptionHandler: ErrorHandler,
-      private _initStatus: ApplicationInitStatus) {
+      private _zone: NgZone,
+      private _injector: Injector,
+      private _exceptionHandler: ErrorHandler,
+  ) {
     this._onMicrotaskEmptySubscription = this._zone.onMicrotaskEmpty.subscribe({
       next: () => {
         this._zone.run(() => {
@@ -914,8 +916,9 @@ export class ApplicationRef {
       ComponentRef<C> {
     NG_DEV_MODE && this.warnIfDestroyed();
     const isComponentFactory = componentOrFactory instanceof ComponentFactory;
+    const initStatus = this._injector.get(ApplicationInitStatus);
 
-    if (!this._initStatus.done) {
+    if (!initStatus.done) {
       const standalone = !isComponentFactory && isStandalone(componentOrFactory);
       const errorMessage =
           'Cannot bootstrap as there are still asynchronous initializers running.' +
