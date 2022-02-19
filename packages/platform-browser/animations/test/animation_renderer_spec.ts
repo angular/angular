@@ -7,8 +7,9 @@
  */
 import {animate, AnimationPlayer, AnimationTriggerMetadata, state, style, transition, trigger} from '@angular/animations';
 import {ɵAnimationEngine as AnimationEngine} from '@angular/animations/browser';
-import {Component, destroyPlatform, Injectable, NgModule, NgZone, RendererFactory2, RendererType2, ViewChild} from '@angular/core';
+import {APP_INITIALIZER, Component, destroyPlatform, importProvidersFrom, Injectable, NgModule, NgZone, RendererFactory2, RendererType2, ViewChild} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
+import {bootstrapApplication} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {BrowserAnimationsModule, ɵAnimationRendererFactory as AnimationRendererFactory, ɵInjectableAnimationEngine as InjectableAnimationEngine} from '@angular/platform-browser/animations';
 import {DomRendererFactory2} from '@angular/platform-browser/src/dom/dom_renderer';
@@ -330,7 +331,8 @@ describe('destroy', () => {
   beforeEach(destroyPlatform);
   afterEach(destroyPlatform);
 
-  it('should clear bootstrapped component contents',
+  // See https://github.com/angular/angular/issues/39955
+  it('should clear bootstrapped component contents when the `BrowserAnimationsModule` is imported',
      withBody('<div>before</div><app-root></app-root><div>after</div>', async () => {
        @Component({selector: 'app-root', template: 'app-root content'})
        class AppComponent {
@@ -354,6 +356,99 @@ describe('destroy', () => {
 
        expect(document.body.querySelector('app-root')).toBeFalsy();  // host element is removed
        expect(document.body.childNodes.length).toEqual(2);           // other elements are preserved
+     }));
+
+  // See https://github.com/angular/angular/issues/45108
+  it('should clear bootstrapped component contents when the animation engine is requested during initialization',
+     withBody('<div>before</div><app-root></app-root><div>after</div>', async () => {
+       @Injectable({providedIn: 'root'})
+       class AppService {
+         // The `RendererFactory2` is injected here explicitly because we import the
+         // `BrowserAnimationsModule`. The `RendererFactory2` will be provided with
+         // `AnimationRendererFactory` which relies on the `AnimationEngine`. We want to ensure that
+         // `ApplicationRef` is created earlier before the `AnimationEngine`, because previously the
+         // `AnimationEngine` was created before the `ApplicationRef` (see the link above to the
+         // original issue). The `ApplicationRef` was created after `APP_INITIALIZER` has been run
+         // but before the root module is bootstrapped.
+         constructor(rendererFactory: RendererFactory2) {}
+       }
+
+       @Component({selector: 'app-root', template: 'app-root content'})
+       class AppComponent {
+       }
+
+       @NgModule({
+         imports: [BrowserAnimationsModule],
+         declarations: [AppComponent],
+         bootstrap: [AppComponent],
+         providers: [
+           // The `APP_INITIALIZER` token is requested before the root module is bootstrapped, the
+           // `useFactory` just injects the `AppService` that injects the `RendererFactory2`.
+           {
+             provide: APP_INITIALIZER,
+             useFactory: () => (appService: AppService) => appService,
+             deps: [AppService],
+             multi: true
+           }
+         ]
+       })
+       class AppModule {
+       }
+
+       const ngModuleRef = await platformBrowserDynamic().bootstrapModule(AppModule);
+
+       const root = document.body.querySelector('app-root')!;
+       expect(root.textContent).toEqual('app-root content');
+       expect(document.body.childNodes.length).toEqual(3);
+
+       ngModuleRef.destroy();
+
+       expect(document.body.querySelector('app-root')).toBeFalsy();  // host element is removed
+       expect(document.body.childNodes.length).toEqual(2);           // other elements are preserved
+     }));
+
+  // See https://github.com/angular/angular/issues/45108
+  it('should clear standalone bootstrapped component contents when the animation engine is requested during initialization',
+     withBody('<div>before</div><app-root></app-root><div>after</div>', async () => {
+       @Injectable({providedIn: 'root'})
+       class AppService {
+         // The `RendererFactory2` is injected here explicitly because we import the
+         // `BrowserAnimationsModule`. The `RendererFactory2` will be provided with
+         // `AnimationRendererFactory` which relies on the `AnimationEngine`. We want to ensure
+         // that `ApplicationRef` is created earlier before the `AnimationEngine`, because
+         // previously the `AnimationEngine` was created before the `ApplicationRef` (see the link
+         // above to the original issue). The `ApplicationRef` was created after `APP_INITIALIZER`
+         // has been run but before the root module is bootstrapped.
+         constructor(rendererFactory: RendererFactory2) {}
+       }
+
+       @Component({selector: 'app-root', template: 'app-root content', standalone: true})
+       class AppComponent {
+       }
+
+       const appRef = await bootstrapApplication(AppComponent, {
+         providers: [
+           importProvidersFrom(BrowserAnimationsModule),
+           // The `APP_INITIALIZER` token is requested before the standalone component is
+           // bootstrapped, the `useFactory` just injects the `AppService` that injects the
+           // `RendererFactory2`.
+           {
+             provide: APP_INITIALIZER,
+             useFactory: () => (appService: AppService) => appService,
+             deps: [AppService],
+             multi: true
+           }
+         ]
+       });
+
+       const root = document.body.querySelector('app-root')!;
+       expect(root.textContent).toEqual('app-root content');
+       expect(document.body.childNodes.length).toEqual(3);
+
+       appRef.destroy();
+
+       expect(document.body.querySelector('app-root')).toBeFalsy();  // host element is removed
+       expect(document.body.childNodes.length).toEqual(2);           // other elements are
      }));
 });
 })();
