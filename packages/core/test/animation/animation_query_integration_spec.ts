@@ -1077,18 +1077,24 @@ describe('animation query tests', function() {
       engine.flush();
 
       let players = getLog();
-      expect(players.length).toEqual(5);
+      // there are 10 players because there are 10 entering elements,
+      // 5 are the item divs and 5 are the sections wrapping them
+      expect(players.length).toEqual(10);
 
-      for (let i = 0; i < 5; i++) {
-        let player = players[i]!;
-        expect(player.keyframes).toEqual([
-          new Map<string, string|number>([['opacity', '0'], ['offset', 0]]),
-          new Map<string, string|number>([['opacity', '1'], ['offset', 1]]),
-        ]);
+      for (let i = 0; i < 10; i += 2) {
+        let sectionPlayer = players[i];
+        let itemPlayer = players[i + 1]!;
+        [sectionPlayer, itemPlayer].forEach(player => {
+          expect(player.keyframes).toEqual([
+            new Map<string, string|number>([['opacity', '0'], ['offset', 0]]),
+            new Map<string, string|number>([['opacity', '1'], ['offset', 1]]),
+          ]);
 
-        let elm = player.element;
-        let text = i % 2 == 0 ? `even ${i}` : `odd ${i}`;
-        expect(elm.innerText.trim()).toEqual(text);
+          let elm = player.element;
+          let item = i / 2;
+          let text = item % 2 == 0 ? `even ${item}` : `odd ${item}`;
+          expect(elm.innerText.trim()).toEqual(text);
+        });
       }
 
       resetLog();
@@ -2589,80 +2595,6 @@ describe('animation query tests', function() {
          expect(element.innerText.trim()).toMatch(/this\s+child/mg);
        }));
 
-    it('should only mark outermost *directive nodes :enter and :leave when inserts and removals occur',
-       () => {
-         @Component({
-           selector: 'ani-cmp',
-           animations: [
-             trigger(
-                 'anim',
-                 [
-                   transition(
-                       '* => enter',
-                       [
-                         query(':enter', [animate(1000, style({color: 'red'}))]),
-                       ]),
-                   transition(
-                       '* => leave',
-                       [
-                         query(':leave', [animate(1000, style({color: 'blue'}))]),
-                       ]),
-                 ]),
-           ],
-           template: `
-            <section class="container" [@anim]="exp ? 'enter' : 'leave'">
-              <div class="a" *ngIf="exp">
-                <div class="b" *ngIf="exp">
-                  <div class="c" *ngIf="exp">
-                    text
-                  </div>
-                </div>
-              </div>
-              <div>
-                <div class="d" *ngIf="exp">
-                  text2
-                </div>
-              </div>
-            </section>
-          `
-         })
-         class Cmp {
-           // TODO(issue/24571): remove '!'.
-           public exp!: boolean;
-         }
-
-         TestBed.configureTestingModule({declarations: [Cmp]});
-
-         const engine = TestBed.inject(ɵAnimationEngine);
-         const fixture = TestBed.createComponent(Cmp);
-         const cmp = fixture.componentInstance;
-         const container = fixture.elementRef.nativeElement;
-
-         cmp.exp = true;
-         fixture.detectChanges();
-         engine.flush();
-
-         let players = getLog();
-         resetLog();
-         expect(players.length).toEqual(2);
-         const [p1, p2] = players;
-
-         expect(p1.element.classList.contains('a')).toBeTrue();
-         expect(p2.element.classList.contains('d')).toBeTrue();
-
-         cmp.exp = false;
-         fixture.detectChanges();
-         engine.flush();
-
-         players = getLog();
-         resetLog();
-         expect(players.length).toEqual(2);
-         const [p3, p4] = players;
-
-         expect(p3.element.classList.contains('a')).toBeTrue();
-         expect(p4.element.classList.contains('d')).toBeTrue();
-       });
-
     it('should collect multiple root levels of :enter and :leave nodes', () => {
       @Component({
         selector: 'ani-cmp',
@@ -2686,10 +2618,10 @@ describe('animation query tests', function() {
               <section>
                 <div class="page">
                   <div *ngIf="page1" class="page1">
-                    <div *ngIf="true">page 1</div>
+                    <div *ngIf="true" class="page11">page 1</div>
                   </div>
                   <div *ngIf="page2" class="page2">
-                    <div *ngIf="true">page 2</div>
+                    <div *ngIf="true" class="page22">page 2</div>
                   </div>
                 </div>
               </section>
@@ -2737,14 +2669,16 @@ describe('animation query tests', function() {
       let p1: MockAnimationPlayer;
       let p2: MockAnimationPlayer;
       let p3: MockAnimationPlayer;
+      let p4: MockAnimationPlayer;
 
       players = getLog();
-      expect(players.length).toEqual(3);
-      [p1, p2, p3] = players;
+      expect(players.length).toEqual(4);
+      [p1, p2, p3, p4] = players;
 
       expect(p1.element.classList.contains('loading')).toBe(true);
       expect(p2.element.classList.contains('title')).toBe(true);
       expect(p3.element.classList.contains('page1')).toBe(true);
+      expect(p4.element.classList.contains('page11')).toBe(true);
 
       resetLog();
       cancelAllPlayers(players);
@@ -2772,12 +2706,13 @@ describe('animation query tests', function() {
       engine.flush();
 
       players = getLog();
-      expect(players.length).toEqual(3);
-      [p1, p2, p3] = players;
+      expect(players.length).toEqual(4);
+      [p1, p2, p3, p4] = players;
 
       expect(p1.element.classList.contains('loading')).toBe(true);
       expect(p2.element.classList.contains('title')).toBe(true);
       expect(p3.element.classList.contains('page2')).toBe(true);
+      expect(p4.element.classList.contains('page22')).toBe(true);
     });
 
     it('should emulate leave animation callbacks for all sub elements that have leave triggers within the component',

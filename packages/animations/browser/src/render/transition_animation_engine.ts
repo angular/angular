@@ -1690,33 +1690,43 @@ Since the Angular renderer code will return a collection of inserted
 nodes in all areas of a DOM tree, it's up to this algorithm to figure
 out which nodes are roots for each animation @trigger.
 
-By placing each inserted node into a Set and traversing upwards, it
-is possible to find the @trigger elements and well any direct *star
-insertion nodes, if a @trigger root is found then the enter element
-is placed into the Map[@trigger] spot.
- */
-function buildRootMap(roots: any[], nodes: any[]): Map<any, any[]> {
-  const rootMap = new Map<any, any[]>();
+By traversing the nodes upwards it is possible to find the @trigger
+elements root of the target nodes, and thus  build a map in which
+each root node is associated with all the nodes it contains.
+
+For example:
+  A[@triggerA]                 X[@triggerX]
+  ├─ B[*ngIf]                  ├─ Y[@triggerY]
+  |  ├─ C[*ngIf]                  ├─ Z[*ngIf]
+  |
+  ├─ D[*ngIf]
+Will produce:
+  Map(3) {
+    A => [B, C, D],
+    X => [],
+    Y => [Z]
+  }
+*/
+export function buildRootMap(roots: Element[], nodes: Element[]): Map<Element, Element[]> {
+  const rootMap = new Map<Element, Element[]>();
   roots.forEach(root => rootMap.set(root, []));
 
   if (nodes.length == 0) return rootMap;
 
-  const NULL_NODE = 1;
-  const nodeSet = new Set(nodes);
-  const localRootMap = new Map<any, any>();
+  // build a local rootMap used to memoize results
+  // so not to process nodes more than once
+  const localRootMap = new Map<Element, Element|undefined>();
 
-  function getRoot(node: any): any {
-    if (!node) return NULL_NODE;
-
+  function getRoot(node: Element): Element|undefined {
     let root = localRootMap.get(node);
     if (root) return root;
 
-    const parent = node.parentNode;
-    if (rootMap.has(parent)) {  // ngIf inside @trigger
+    const parent = node.parentElement;
+    if (!parent) {
+      root = undefined;
+    } else if (rootMap.has(parent)) {
       root = parent;
-    } else if (nodeSet.has(parent)) {  // ngIf inside ngIf
-      root = NULL_NODE;
-    } else {  // recurse upwards
+    } else {
       root = getRoot(parent);
     }
 
@@ -1726,7 +1736,7 @@ function buildRootMap(roots: any[], nodes: any[]): Map<any, any[]> {
 
   nodes.forEach(node => {
     const root = getRoot(node);
-    if (root !== NULL_NODE) {
+    if (root) {
       rootMap.get(root)!.push(node);
     }
   });
