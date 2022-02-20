@@ -188,6 +188,8 @@ commands:
     steps:
       - run:
           name: Save month to file
+          # Note: Make sure this file is excluded in the `.gitignore` as otherwise the
+          # snapshot stamping would have the `-with-local-changes` suffix.
           command: date +%Y-%m > month.txt
 
   # Normally this would be an individual job instead of a command.
