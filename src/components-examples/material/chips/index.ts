@@ -13,6 +13,7 @@ import {ChipsOverviewExample} from './chips-overview/chips-overview-example';
 import {ChipsStackedExample} from './chips-stacked/chips-stacked-example';
 import {ChipsHarnessExample} from './chips-harness/chips-harness-example';
 import {ChipsFormControlExample} from './chips-form-control/chips-form-control-example';
+import {ChipsAvatarExample} from './chips-avatar/chips-avatar-example';
 import {MatButtonModule} from '@angular/material/button';
 
 export {
@@ -23,6 +24,7 @@ export {
   ChipsStackedExample,
   ChipsHarnessExample,
   ChipsFormControlExample,
+  ChipsAvatarExample,
 };
 
 const EXAMPLES = [
@@ -33,6 +35,7 @@ const EXAMPLES = [
   ChipsStackedExample,
   ChipsHarnessExample,
   ChipsFormControlExample,
+  ChipsAvatarExample,
 ];
 
 @NgModule({
