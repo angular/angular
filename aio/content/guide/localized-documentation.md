@@ -7,5 +7,6 @@ This topic lists localized versions of the Angular documentation.
 * [正體中文版](https://angular.tw/)
 * [日本語版](https://angular.jp/)
 * [한국어](https://angular.kr/)
+* [Ελληνικά](https://angular-gr.web.app/)
 
 For information on localizing Angular documentation, see [Angular localization guidelines](guide/localizing-angular).
