@@ -121,11 +121,11 @@ export class SecondaryEntryPointsMigration extends Migration<null> {
     const newImportStatements = Array.from(importMap.entries())
       .sort()
       .map(([name, elements]) => {
-        const newImport = ts.createImportDeclaration(
+        const newImport = ts.factory.createImportDeclaration(
           undefined,
           undefined,
-          ts.createImportClause(undefined, ts.createNamedImports(elements)),
-          createStringLiteral(`${materialModuleSpecifier}/${name}`, singleQuoteImport),
+          ts.factory.createImportClause(false, undefined, ts.factory.createNamedImports(elements)),
+          ts.factory.createStringLiteral(`${materialModuleSpecifier}/${name}`, singleQuoteImport),
         );
         return this.printer.printNode(
           ts.EmitHint.Unspecified,
@@ -151,18 +151,6 @@ export class SecondaryEntryPointsMigration extends Migration<null> {
     recorder.remove(declaration.getStart(), declaration.getWidth());
     recorder.insertRight(declaration.getStart(), newImportStatements);
   }
-}
-
-/**
- * Creates a string literal from the specified text.
- * @param text Text of the string literal.
- * @param singleQuotes Whether single quotes should be used when printing the literal node.
- */
-function createStringLiteral(text: string, singleQuotes: boolean): ts.StringLiteral {
-  const literal = ts.createStringLiteral(text);
-  // See: https://github.com/microsoft/TypeScript/blob/master/src/compiler/utilities.ts#L584-L590
-  (literal as any).singleQuote = singleQuotes;
-  return literal;
 }
 
 /** Gets the symbol that contains the value declaration of the given node. */

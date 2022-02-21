@@ -762,9 +762,9 @@ export class HammerGesturesMigration extends DevkitMigration<null> {
       HAMMER_CONFIG_TOKEN_NAME,
       HAMMER_CONFIG_TOKEN_MODULE,
     );
-    const newProviderNode = ts.createObjectLiteral([
-      ts.createPropertyAssignment('provide', hammerConfigTokenExpr),
-      ts.createPropertyAssignment('useClass', gestureConfigExpr),
+    const newProviderNode = ts.factory.createObjectLiteralExpression([
+      ts.factory.createPropertyAssignment('provide', hammerConfigTokenExpr),
+      ts.factory.createPropertyAssignment('useClass', gestureConfigExpr),
     ]);
 
     // If the providers field exists and already contains references to the hammer gesture
