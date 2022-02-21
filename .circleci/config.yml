@@ -67,8 +67,9 @@ var_11: &yarn_install_loose_lockfile
 var_12: &setup_bazel_ci_config
   run:
     name: "Setting up Bazel configuration for CI"
-    command: |
-      echo "import %workspace%/.circleci/bazel.rc" >> ./.bazelrc
+    # Note: We add the remote config flag to the user bazelrc file that is not tracked
+    # by Git. This is necessary to avoid stamping builds with `.with-local-changes`.
+    command: echo "import %workspace%/.circleci/bazel.rc" >> ./.bazelrc.user
 
 # Attaches the release output which has been stored in the workspace to the current job.
 # https://circleci.com/docs/2.0/workflows/#using-workspaces-to-share-data-among-jobs

@@ -26,4 +26,6 @@ elif [[ ! -z "${GITHUB_ENV}" ]]; then
 fi
 
 # Update the project Bazel configuration to always use remote execution.
-echo "build --config=remote" >> .bazelrc
+# Note: We add the remote config flag to the user bazelrc file that is not tracked
+# by Git. This is necessary to avoid stamping builds with `.with-local-changes`.
+echo "build --config=remote" >> .bazelrc.user
