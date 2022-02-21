@@ -203,6 +203,10 @@ $ripple-radius: 20px;
   width: 100%;
   height: 100%;
   cursor: inherit;
+
+  // Puts the input behind the circle while keeping it visible so that
+  // it allows `click` events to propagate up to the `label` wrapper.
+  z-index: -1;
 }
 
 @include a11y.high-contrast(active, off) {
