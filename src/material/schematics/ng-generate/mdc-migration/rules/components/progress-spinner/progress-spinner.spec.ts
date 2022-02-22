@@ -1,6 +1,6 @@
 import {createTestApp, patchDevkitTreeToExposeTypeScript} from '@angular/cdk/schematics/testing';
 import {SchematicTestRunner, UnitTestTree} from '@angular-devkit/schematics/testing';
-import {createNewTestRunner, migrateComponent, THEME_FILE} from '../test-setup-helper';
+import {createNewTestRunner, migrateComponents, THEME_FILE} from '../test-setup-helper';
 
 describe('progress-spinner styles', () => {
   let runner: SchematicTestRunner;
@@ -8,7 +8,7 @@ describe('progress-spinner styles', () => {
 
   async function runMigrationTest(oldFileContent: string, newFileContent: string) {
     cliAppTree.create(THEME_FILE, oldFileContent);
-    const tree = await migrateComponent('progress-spinner', runner, cliAppTree);
+    const tree = await migrateComponents(['progress-spinner'], runner, cliAppTree);
     expect(tree.readContent(THEME_FILE)).toBe(newFileContent);
   }
 
@@ -65,6 +65,46 @@ describe('progress-spinner styles', () => {
         $dark-theme: ();
         @include mat.mdc-progress-spinner-theme($light-theme);
         @include mat.mdc-progress-spinner-typography($light-theme);
+        @include mat.mdc-progress-spinner-theme($dark-theme);
+        @include mat.mdc-progress-spinner-typography($dark-theme);
+      `,
+      );
+    });
+
+    it('should add correct theme if all-component-themes mixin included', async () => {
+      await runMigrationTest(
+        `
+        @use '@angular/material' as mat;
+        $theme: ();
+        @include mat.all-component-themes($theme);
+      `,
+        `
+        @use '@angular/material' as mat;
+        $theme: ();
+        @include mat.all-component-themes($theme);
+        @include mat.mdc-progress-spinner-theme($theme);
+        @include mat.mdc-progress-spinner-typography($theme);
+      `,
+      );
+    });
+
+    it('should add multiple themes for multiple all-component-themes mixins', async () => {
+      await runMigrationTest(
+        `
+        @use '@angular/material' as mat;
+        $light-theme: ();
+        $dark-theme: ();
+        @include mat.all-component-themes($light-theme);
+        @include mat.all-component-themes($dark-theme);
+      `,
+        `
+        @use '@angular/material' as mat;
+        $light-theme: ();
+        $dark-theme: ();
+        @include mat.all-component-themes($light-theme);
+        @include mat.mdc-progress-spinner-theme($light-theme);
+        @include mat.mdc-progress-spinner-typography($light-theme);
+        @include mat.all-component-themes($dark-theme);
         @include mat.mdc-progress-spinner-theme($dark-theme);
         @include mat.mdc-progress-spinner-typography($dark-theme);
       `,

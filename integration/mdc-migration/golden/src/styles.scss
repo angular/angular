@@ -32,6 +32,24 @@ $sample-project-theme: mat.define-light-theme((
 // Alternatively, you can import and @include the theme mixins for each component
 // that you are using.
 @include mat.all-component-themes($sample-project-theme);
+@include mat.mdc-slider-theme($sample-project-theme);
+@include mat.mdc-slider-typography($sample-project-theme);
+@include mat.mdc-slide-toggle-theme($sample-project-theme);
+@include mat.mdc-slide-toggle-typography($sample-project-theme);
+@include mat.mdc-radio-theme($sample-project-theme);
+@include mat.mdc-radio-typography($sample-project-theme);
+@include mat.mdc-progress-spinner-theme($sample-project-theme);
+@include mat.mdc-progress-spinner-typography($sample-project-theme);
+@include mat.mdc-progress-bar-theme($sample-project-theme);
+@include mat.mdc-progress-bar-typography($sample-project-theme);
+@include mat.mdc-checkbox-theme($sample-project-theme);
+@include mat.mdc-checkbox-typography($sample-project-theme);
+@include mat.mdc-button-theme($sample-project-theme);
+@include mat.mdc-button-typography($sample-project-theme);
+@include mat.mdc-fab-theme($sample-project-theme);
+@include mat.mdc-fab-typography($sample-project-theme);
+@include mat.mdc-icon-button-theme($sample-project-theme);
+@include mat.mdc-icon-button-typography($sample-project-theme);
 
 /* You can add global styles to this file, and also import other style files */
 

@@ -9,6 +9,7 @@
 import * as postcss from 'postcss';
 
 const END_OF_SELECTOR_REGEX = '(?!-)';
+const THEME_NAME_REGEX = '\\(((\\s|.)*)\\)';
 
 /** The changes to a class names. */
 export interface ClassNameChange {
@@ -87,6 +88,26 @@ export abstract class StyleMigrator {
       });
     }
     atRule.remove();
+  }
+
+  /**
+   * Create the new mixin nodes and add them after the provided
+   * all-components-theme mixin node
+   *
+   * @param namespace the namespace being used for angular/material.
+   * @param allComponentThemesNode a all-components-theme mixin node
+   */
+  addNewMixinsAfterNode(namespace: string, allComponentThemesNode: postcss.AtRule) {
+    // We know there will be a theme name since it is an at-include rule
+    const themeName = allComponentThemesNode.params.match(THEME_NAME_REGEX)![0];
+    this.mixinChanges.forEach(mixinChange => {
+      let oldMixinNode = new postcss.AtRule({
+        params: `${namespace}.${mixinChange.old}${themeName}`,
+        name: 'include',
+      });
+      allComponentThemesNode.parent!.insertAfter(allComponentThemesNode, oldMixinNode);
+      this.replaceMixin(namespace, oldMixinNode);
+    });
   }
 
   /**

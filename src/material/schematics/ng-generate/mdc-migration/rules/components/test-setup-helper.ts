@@ -21,12 +21,12 @@ export function createNewTestRunner(): SchematicTestRunner {
   );
 }
 
-export async function migrateComponent(
-  component: string,
+export async function migrateComponents(
+  components: string[],
   runner: SchematicTestRunner,
   tree: UnitTestTree,
 ): Promise<UnitTestTree> {
   return await runner
-    .runSchematicAsync('mdcMigration', {tsconfig: TS_CONFIG, components: [component]}, tree)
+    .runSchematicAsync('mdcMigration', {tsconfig: TS_CONFIG, components: components}, tree)
     .toPromise();
 }

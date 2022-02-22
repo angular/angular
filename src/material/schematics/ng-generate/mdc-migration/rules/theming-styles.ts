@@ -42,7 +42,13 @@ export class ThemingStylesMigration extends Migration<StyleMigrator[], Schematic
     const migrator = this.upgradeData.find(m => {
       return m.isLegacyMixin(this.namespace, atRule);
     });
-    migrator?.replaceMixin(this.namespace, atRule);
+    if (migrator) {
+      migrator.replaceMixin(this.namespace, atRule);
+    } else if (atRule.params.includes('all-component-themes') && atRule.parent) {
+      this.upgradeData.forEach(m => {
+        m?.addNewMixinsAfterNode(this.namespace, atRule);
+      });
+    }
   }
 
   ruleHandler(rule: postcss.Rule) {
