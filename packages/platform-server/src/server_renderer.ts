@@ -88,12 +88,14 @@ class DefaultServerRenderer2 implements Renderer2 {
   }
 
   appendChild(parent: any, newChild: any): void {
-    parent.appendChild(newChild);
+    const targetParent = isTemplateNode(parent) ? parent.content : parent;
+    targetParent.appendChild(newChild);
   }
 
   insertBefore(parent: any, newChild: any, refChild: any): void {
     if (parent) {
-      parent.insertBefore(newChild, refChild);
+      const targetParent = isTemplateNode(parent) ? parent.content : parent;
+      targetParent.insertBefore(newChild, refChild);
     }
   }
 
@@ -240,6 +242,10 @@ function checkNoSyntheticProp(name: string, nameKind: string) {
   - There is corresponding configuration for the animation named \`${
         name}\` defined in the \`animations\` field of the \`@Component\` decorator (see https://angular.io/api/core/Component#animations).`);
   }
+}
+
+function isTemplateNode(node: any): node is HTMLTemplateElement {
+  return node.tagName === 'TEMPLATE' && node.content !== undefined;
 }
 
 class EmulatedEncapsulationServerRenderer2 extends DefaultServerRenderer2 {

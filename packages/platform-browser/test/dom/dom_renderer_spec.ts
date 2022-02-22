@@ -114,6 +114,28 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
            expect(window.getComputedStyle(none).color).toEqual('rgb(0, 255, 0)');
          });
     }
+
+    if (browserDetection.supportsTemplateElement) {
+      it('should be able to append children to a <template> element', () => {
+        const template = document.createElement('template');
+        const child = document.createElement('div');
+
+        renderer.appendChild(template, child);
+
+        expect(child.parentNode).toBe(template.content);
+      });
+
+      it('should be able to insert children before others in a <template> element', () => {
+        const template = document.createElement('template');
+        const child = document.createElement('div');
+        const otherChild = document.createElement('div');
+        template.content.appendChild(child);
+
+        renderer.insertBefore(template, otherChild, child);
+
+        expect(otherChild.parentNode).toBe(template.content);
+      });
+    }
   });
 }
 

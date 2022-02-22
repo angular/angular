@@ -88,6 +88,11 @@ export class BrowserDetection {
     const testEl = document.createElement('div') as any;
     return (typeof testEl.createShadowRoot !== 'undefined');
   }
+
+  get supportsTemplateElement() {
+    const testEl = document.createElement('template') as any;
+    return (typeof testEl.content !== 'undefined');
+  }
 }
 
 export const browserDetection: BrowserDetection = BrowserDetection.setup();
