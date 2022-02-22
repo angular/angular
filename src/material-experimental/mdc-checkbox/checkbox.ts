@@ -77,6 +77,8 @@ const _MatCheckboxBase = mixinColor(
   host: {
     'class': 'mat-mdc-checkbox',
     '[attr.tabindex]': 'null',
+    '[attr.aria-label]': 'null',
+    '[attr.aria-labelledby]': 'null',
     '[class._mat-animation-noopable]': `_animationMode === 'NoopAnimations'`,
     '[class.mdc-checkbox--disabled]': 'disabled',
     '[id]': 'id',
