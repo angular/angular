@@ -354,6 +354,11 @@ export abstract class _MatAutocompleteTriggerBase
         return (
           this._overlayAttached &&
           clickTarget !== this._element.nativeElement &&
+          // Normally focus moves inside `mousedown` so this condition will almost always be
+          // true. Its main purpose is to handle the case where the input is focused from an
+          // outside click which propagates up to the `body` listener within the same sequence
+          // and causes the panel to close immediately (see #3106).
+          this._document.activeElement !== this._element.nativeElement &&
           (!formField || !formField.contains(clickTarget)) &&
           (!customOrigin || !customOrigin.contains(clickTarget)) &&
           !!this._overlayRef &&
