@@ -270,6 +270,9 @@
     "name": "isProceduralRenderer"
   },
   {
+    "name": "isTemplateNode"
+  },
+  {
     "name": "leaveDI"
   },
   {

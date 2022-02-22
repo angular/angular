@@ -1125,6 +1125,12 @@
     "name": "isStylingValuePresent"
   },
   {
+    "name": "isTemplateNode"
+  },
+  {
+    "name": "isTemplateNode2"
+  },
+  {
     "name": "isTypeProvider"
   },
   {

@@ -594,6 +594,9 @@
     "name": "isStylingValuePresent"
   },
   {
+    "name": "isTemplateNode"
+  },
+  {
     "name": "keyValueArrayGet"
   },
   {
