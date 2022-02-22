@@ -2236,6 +2236,74 @@ describe('acceptance integration tests', () => {
     expect(lViewIds.map(getLViewById)).toEqual([null, null, null]);
   });
 
+  it('should handle content inside <template> elements', () => {
+    @Component({template: '<template><strong>Hello</strong><em>World</em></template>'})
+    class App {
+    }
+
+    TestBed.configureTestingModule({declarations: [App]});
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    const template: HTMLTemplateElement = fixture.nativeElement.querySelector('template');
+    // `content` won't exist in browsers that don't support `template`.
+    const root = template.content || template;
+
+    expect(root.childNodes.length).toBe(2);
+    expect(root.childNodes[0].textContent).toBe('Hello');
+    expect((root.childNodes[0] as HTMLElement).tagName).toBe('STRONG');
+    expect(root.childNodes[1].textContent).toBe('World');
+    expect((root.childNodes[1] as HTMLElement).tagName).toBe('EM');
+  });
+
+  it('should be able to insert and remove elements inside <template>', () => {
+    @Component({template: '<template><strong *ngIf="render">Hello</strong></template>'})
+    class App {
+      render = true;
+    }
+
+    TestBed.configureTestingModule({declarations: [App], imports: [CommonModule]});
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    const template: HTMLTemplateElement = fixture.nativeElement.querySelector('template');
+    // `content` won't exist in browsers that don't support `template`.
+    const root = template.content || template;
+
+    expect(root.querySelector('strong')).toBeTruthy();
+
+    fixture.componentInstance.render = false;
+    fixture.detectChanges();
+    expect(root.querySelector('strong')).toBeFalsy();
+
+    fixture.componentInstance.render = true;
+    fixture.detectChanges();
+    expect(root.querySelector('strong')).toBeTruthy();
+  });
+
+  it('should handle data binding inside <template> elements', () => {
+    @Component({template: '<template><strong>Hello {{name}}</strong></template>'})
+    class App {
+      name = 'Bilbo';
+    }
+
+    TestBed.configureTestingModule({declarations: [App]});
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    const template: HTMLTemplateElement = fixture.nativeElement.querySelector('template');
+    // `content` won't exist in browsers that don't support `template`.
+    const root = template.content || template;
+    const strong = root.querySelector('strong')!;
+
+    expect(strong.textContent).toBe('Hello Bilbo');
+
+    fixture.componentInstance.name = 'Frodo';
+    fixture.detectChanges();
+
+    expect(strong.textContent).toBe('Hello Frodo');
+  });
+
   describe('tView.firstUpdatePass', () => {
     function isFirstUpdatePass() {
       const lView = getLView();

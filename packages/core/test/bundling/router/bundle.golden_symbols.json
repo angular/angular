@@ -1488,6 +1488,12 @@
     "name": "isScheduler"
   },
   {
+    "name": "isTemplateNode"
+  },
+  {
+    "name": "isTemplateNode2"
+  },
+  {
     "name": "isTypeProvider"
   },
   {

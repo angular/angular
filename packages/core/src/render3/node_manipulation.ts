@@ -23,7 +23,7 @@ import {unregisterLView} from './interfaces/lview_tracking';
 import {TElementNode, TIcuContainerNode, TNode, TNodeFlags, TNodeType, TProjectionNode, unusedValueExportToPlacateAjd as unused2} from './interfaces/node';
 import {unusedValueExportToPlacateAjd as unused3} from './interfaces/projection';
 import {isProceduralRenderer, ProceduralRenderer3, Renderer3, unusedValueExportToPlacateAjd as unused4} from './interfaces/renderer';
-import {RComment, RElement, RNode, RText} from './interfaces/renderer_dom';
+import {RComment, RElement, RNode, RTemplate, RText} from './interfaces/renderer_dom';
 import {isLContainer, isLView} from './interfaces/type_checks';
 import {CHILD_HEAD, CLEANUP, DECLARATION_COMPONENT_VIEW, DECLARATION_LCONTAINER, DestroyHookData, FLAGS, HookData, HookFn, HOST, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, T_HOST, TVIEW, TView, TViewType, unusedValueExportToPlacateAjd as unused5} from './interfaces/view';
 import {getNamespaceUri} from './namespaces';
@@ -620,7 +620,8 @@ export function nativeInsertBefore(
   if (isProceduralRenderer(renderer)) {
     renderer.insertBefore(parent, child, beforeNode, isMove);
   } else {
-    parent.insertBefore(child, beforeNode, isMove);
+    const targetParent = isTemplateNode(parent) ? parent.content : parent;
+    targetParent.insertBefore(child, beforeNode, isMove);
   }
 }
 
@@ -630,7 +631,8 @@ function nativeAppendChild(renderer: Renderer3, parent: RElement, child: RNode):
   if (isProceduralRenderer(renderer)) {
     renderer.appendChild(parent, child);
   } else {
-    parent.appendChild(child);
+    const targetParent = isTemplateNode(parent) ? parent.content : parent;
+    targetParent.appendChild(child);
   }
 }
 
@@ -651,6 +653,11 @@ function nativeRemoveChild(
   } else {
     parent.removeChild(child);
   }
+}
+
+/** Checks if an element is a `<template>` node. */
+function isTemplateNode(node: RElement): node is RTemplate {
+  return node.tagName === 'TEMPLATE' && (node as RTemplate).content !== undefined;
 }
 
 /**

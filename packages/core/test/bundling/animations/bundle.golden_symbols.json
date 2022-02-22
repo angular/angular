@@ -1056,6 +1056,12 @@
     "name": "isPromise2"
   },
   {
+    "name": "isTemplateNode"
+  },
+  {
+    "name": "isTemplateNode2"
+  },
+  {
     "name": "isTypeProvider"
   },
   {
