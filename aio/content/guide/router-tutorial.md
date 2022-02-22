@@ -205,6 +205,7 @@ As you click one of the buttons, the style for that button updates automatically
 By adding the `routerLinkActive` directive, you inform your application to apply a specific CSS class to the active route.
 In this tutorial, that CSS class is `activebutton`, but you could use any class that you want.
 
+Note that we are also specifying a value for the `routerLinkActive`'s `ariaCurrentWhenActive`. This makes sure that visually impaired users (which may not perceive the different styling being applied) can also identify the active button. For more information see the Accessibility Best Practices [Active links identification section](/guide/accessibility#active-links-identification).
 ## Adding a redirect
 
 In this step of the tutorial, you add a route that redirects the user to display the `/heroes-list` component.

@@ -5026,6 +5026,37 @@ describe('Integration', () => {
          expect(nativeLink.className).toEqual('');
          expect(nativeButton.className).toEqual('');
        })));
+
+    it('should set a provided aria-current attribute when the link is active (a tag)',
+       fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+         const fixture = createRoot(router, RootCmp);
+
+         router.resetConfig([{
+           path: 'team/:id',
+           component: TeamCmp,
+           children: [{
+             path: 'link',
+             component: DummyLinkCmp,
+             children: [{path: 'simple', component: SimpleCmp}, {path: '', component: BlankCmp}]
+           }]
+         }]);
+
+         router.navigateByUrl('/team/22/link;exact=true');
+         advance(fixture);
+         advance(fixture);
+         expect(location.path()).toEqual('/team/22/link;exact=true');
+
+         const nativeLink = fixture.nativeElement.querySelector('a');
+         const nativeButton = fixture.nativeElement.querySelector('button');
+         expect(nativeLink.getAttribute('aria-current')).toEqual('page');
+         expect(nativeButton.hasAttribute('aria-current')).toEqual(false);
+
+         router.navigateByUrl('/team/22/link/simple');
+         advance(fixture);
+         expect(location.path()).toEqual('/team/22/link/simple');
+         expect(nativeLink.hasAttribute('aria-current')).toEqual(false);
+         expect(nativeButton.hasAttribute('aria-current')).toEqual(false);
+       })));
   });
 
   describe('lazy loading', () => {
@@ -6459,7 +6490,7 @@ class AbsoluteLinkCmp {
 @Component({
   selector: 'link-cmp',
   template:
-      `<router-outlet></router-outlet><a routerLinkActive="active" (isActiveChange)="this.onRouterLinkActivated($event)" [routerLinkActiveOptions]="{exact: exact}" [routerLink]="['./']">link</a>
+      `<router-outlet></router-outlet><a routerLinkActive="active" (isActiveChange)="this.onRouterLinkActivated($event)" [routerLinkActiveOptions]="{exact: exact}" ariaCurrentWhenActive="page" [routerLink]="['./']">link</a>
  <button routerLinkActive="active" [routerLinkActiveOptions]="{exact: exact}" [routerLink]="['./']">button</button>
  `
 })

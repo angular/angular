@@ -576,6 +576,7 @@ export class RouterLink implements OnChanges {
 // @public
 export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit {
     constructor(router: Router, element: ElementRef, renderer: Renderer2, cdr: ChangeDetectorRef, link?: RouterLink | undefined, linkWithHref?: RouterLinkWithHref | undefined);
+    ariaCurrentWhenActive?: 'page' | 'step' | 'location' | 'date' | 'time' | true | false;
     // (undocumented)
     readonly isActive: boolean;
     readonly isActiveChange: EventEmitter<boolean>;
@@ -595,7 +596,7 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
         exact: boolean;
     } | IsActiveMatchOptions;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<RouterLinkActive, "[routerLinkActive]", ["routerLinkActive"], { "routerLinkActiveOptions": "routerLinkActiveOptions"; "routerLinkActive": "routerLinkActive"; }, { "isActiveChange": "isActiveChange"; }, ["links", "linksWithHrefs"], never, false>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<RouterLinkActive, "[routerLinkActive]", ["routerLinkActive"], { "routerLinkActiveOptions": "routerLinkActiveOptions"; "ariaCurrentWhenActive": "ariaCurrentWhenActive"; "routerLinkActive": "routerLinkActive"; }, { "isActiveChange": "isActiveChange"; }, ["links", "linksWithHrefs"], never, false>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<RouterLinkActive, [null, null, null, null, { optional: true; }, { optional: true; }]>;
 }

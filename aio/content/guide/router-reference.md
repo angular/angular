@@ -118,6 +118,8 @@ Active route links cascade down through each level of the route tree, so parent 
 To override this behavior, bind to the `[routerLinkActiveOptions]` input binding with the `{ exact: true }` expression.
 By using `{ exact: true }`, a given `RouterLink` is only active if its URL is an exact match to the current URL.
 
+`RouterLinkActive` also allows you to easily apply the `aria-current` attribute to the active element, thus providing a more accessible experience for all users. For more information see the Accessibility Best Practices [Active links identification section](/guide/accessibility#active-links-identification).
+
 <a id="basics-router-state"></a>
 
 ## Router state
@@ -188,7 +190,7 @@ Here are the key `Router` terms and their meanings:
 | `Route`               | Defines how the router should navigate to a component based on a URL pattern. Most routes consist of a path and a component type.                                                                |
 | `RouterOutlet`        | The directive \(`<router-outlet>`\) that marks where the router displays a view.                                                                                                                 |
 | `RouterLink`          | The directive for binding a clickable HTML element to a route. Clicking an element with a `routerLink` directive that is bound to a *string* or a *link parameters array* triggers a navigation. |
-| `RouterLinkActive`    | The directive for adding/removing classes from an HTML element when an associated `routerLink` contained on or inside the element becomes active/inactive.                                       |
+| `RouterLinkActive`    | The directive for adding/removing classes from an HTML element when an associated `routerLink` contained on or inside the element becomes active/inactive. It can also set the `aria-current` of an active link for better accessibility.                                       |
 | `ActivatedRoute`      | A service that is provided to each route component that contains route specific information such as route parameters, static data, resolve data, global query params, and the global fragment.   |
 | `RouterState`         | The current state of the router including a tree of the currently activated routes together with convenience methods for traversing the route tree.                                              |
 | Link parameters array | An array that the router interprets as a routing instruction. You can bind that array to a `RouterLink` or pass the array as an argument to the `Router.navigate` method.                        |
