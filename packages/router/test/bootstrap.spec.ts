@@ -419,8 +419,7 @@ describe('bootstrap', () => {
          imports: [
            BrowserModule,
            RouterModule.forRoot(
-               [{path: 'a', component: SimpleCmp}, {path: 'b', component: SecondSimpleCmp}],
-               {initialNavigation: 'enabled'})
+               [{path: 'a', component: SimpleCmp}, {path: 'b', component: SecondSimpleCmp}])
          ],
          declarations: [RootCmp, SimpleCmp, SecondSimpleCmp],
          bootstrap: [RootCmp],
