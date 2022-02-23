@@ -5,6 +5,10 @@ on:
     # Run at 16:00 every day
     - cron: '0 16 * * *'
 
+# Declare default permissions as read only.
+permissions:
+  contents: read
+
 jobs:
   lock_closed:
     if: github.repository == 'angular/angular'

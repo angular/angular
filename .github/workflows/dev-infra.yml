@@ -4,6 +4,10 @@ on:
   pull_request_target:
     types: [opened, synchronize, reopened]
 
+# Declare default permissions as read only.
+permissions:
+  contents: read
+
 jobs:
   labels:
     runs-on: ubuntu-latest
