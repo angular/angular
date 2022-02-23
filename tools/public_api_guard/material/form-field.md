@@ -26,6 +26,7 @@ import { Observable } from 'rxjs';
 import { OnDestroy } from '@angular/core';
 import { Platform } from '@angular/cdk/platform';
 import { QueryList } from '@angular/core';
+import { ThemePalette } from '@angular/material/core';
 
 // @public
 export type FloatLabelType = 'always' | 'never' | 'auto';
@@ -179,10 +180,9 @@ export abstract class MatFormFieldControl<T> {
 
 // @public
 export interface MatFormFieldDefaultOptions {
-    // (undocumented)
     appearance?: MatFormFieldAppearance;
+    color?: ThemePalette;
     floatLabel?: FloatLabelType;
-    // (undocumented)
     hideRequiredMarker?: boolean;
 }
 

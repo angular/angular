@@ -1845,6 +1845,18 @@ describe('MatFormField default options', () => {
     expect(fixture.componentInstance.formField.hideRequiredMarker).toBe(true);
     expect(fixture.componentInstance.formField.appearance).toBe('outline');
   });
+
+  it('should be able to change the default color', () => {
+    const fixture = createComponent(MatInputWithColor, [
+      {
+        provide: MAT_FORM_FIELD_DEFAULT_OPTIONS,
+        useValue: {color: 'accent'},
+      },
+    ]);
+    fixture.detectChanges();
+    const formField = fixture.nativeElement.querySelector('.mat-form-field');
+    expect(formField.classList).toContain('mat-accent');
+  });
 });
 
 function createComponent<T>(

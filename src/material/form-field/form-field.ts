@@ -28,7 +28,7 @@ import {
   ViewEncapsulation,
   OnDestroy,
 } from '@angular/core';
-import {CanColor, mixinColor} from '@angular/material/core';
+import {CanColor, mixinColor, ThemePalette} from '@angular/material/core';
 import {fromEvent, merge, Subject} from 'rxjs';
 import {startWith, take, takeUntil} from 'rxjs/operators';
 import {MAT_ERROR, MatError} from './error';
@@ -66,7 +66,7 @@ const _MatFormFieldBase = mixinColor(
 /** Possible appearance styles for the form field. */
 export type MatFormFieldAppearance = 'legacy' | 'standard' | 'fill' | 'outline';
 
-/** Possible values for the "floatLabel" form-field input. */
+/** Possible values for the "floatLabel" form field input. */
 export type FloatLabelType = 'always' | 'never' | 'auto';
 
 /**
@@ -74,10 +74,14 @@ export type FloatLabelType = 'always' | 'never' | 'auto';
  * using the `MAT_FORM_FIELD_DEFAULT_OPTIONS` injection token.
  */
 export interface MatFormFieldDefaultOptions {
+  /** Default form field appearance style. */
   appearance?: MatFormFieldAppearance;
+  /** Default color of the form field. */
+  color?: ThemePalette;
+  /** Whether the required marker should be hidden by default. */
   hideRequiredMarker?: boolean;
   /**
-   * Whether the label for form-fields should by default float `always`,
+   * Whether the label for form fields should by default float `always`,
    * `never`, or `auto` (only when necessary).
    */
   floatLabel?: FloatLabelType;
@@ -158,7 +162,7 @@ export class MatFormField
 
   private readonly _destroyed = new Subject<void>();
 
-  /** The form-field appearance style. */
+  /** The form field appearance style. */
   @Input()
   get appearance(): MatFormFieldAppearance {
     return this._appearance;
@@ -166,7 +170,7 @@ export class MatFormField
   set appearance(value: MatFormFieldAppearance) {
     const oldValue = this._appearance;
 
-    this._appearance = value || (this._defaults && this._defaults.appearance) || 'legacy';
+    this._appearance = value || this._defaults?.appearance || 'legacy';
 
     if (this._appearance === 'outline' && oldValue !== value) {
       this._outlineGapCalculationNeededOnStable = true;
@@ -182,7 +186,7 @@ export class MatFormField
   set hideRequiredMarker(value: BooleanInput) {
     this._hideRequiredMarker = coerceBooleanProperty(value);
   }
-  private _hideRequiredMarker: boolean;
+  private _hideRequiredMarker = false;
 
   /** Override for the logic that disables the label animation in certain cases. */
   private _showAlwaysAnimate = false;
@@ -282,9 +286,13 @@ export class MatFormField
     this._animationsEnabled = _animationMode !== 'NoopAnimations';
 
     // Set the default through here so we invoke the setter on the first run.
-    this.appearance = _defaults && _defaults.appearance ? _defaults.appearance : 'legacy';
-    this._hideRequiredMarker =
-      _defaults && _defaults.hideRequiredMarker != null ? _defaults.hideRequiredMarker : false;
+    this.appearance = _defaults?.appearance || 'legacy';
+    if (_defaults) {
+      this._hideRequiredMarker = Boolean(_defaults.hideRequiredMarker);
+      if (_defaults.color) {
+        this.color = this.defaultColor = _defaults.color;
+      }
+    }
   }
 
   /**
@@ -295,7 +303,7 @@ export class MatFormField
   }
 
   /**
-   * Gets an ElementRef for the element that a overlay attached to the form-field should be
+   * Gets an ElementRef for the element that a overlay attached to the form field should be
    * positioned relative to.
    */
   getConnectedOverlayOrigin(): ElementRef {

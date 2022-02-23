@@ -1405,6 +1405,18 @@ describe('MatFormField default options', () => {
     expect(fixture.componentInstance.formField.appearance).toBe('outline');
   });
 
+  it('should be able to change the default color', () => {
+    const fixture = createComponent(MatInputSimple, [
+      {
+        provide: MAT_FORM_FIELD_DEFAULT_OPTIONS,
+        useValue: {color: 'accent'},
+      },
+    ]);
+    fixture.detectChanges();
+    const formField = fixture.nativeElement.querySelector('.mat-mdc-form-field');
+    expect(formField.classList).toContain('mat-accent');
+  });
+
   it('defaults subscriptSizing to false', () => {
     const fixture = createComponent(MatInputWithSubscriptSizing);
     fixture.detectChanges();
@@ -2019,3 +2031,12 @@ class MatInputInsideOutsideFormField {}
 class MatInputWithRequiredFormControl {
   formControl = new FormControl('', [Validators.required]);
 }
+
+@Component({
+  template: `
+    <mat-form-field>
+      <input matInput>
+    </mat-form-field>
+  `,
+})
+class MatInputSimple {}

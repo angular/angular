@@ -50,7 +50,7 @@ const _MatInputBase = mixinErrorState(
   class {
     /**
      * Emits whenever the component state changes and should cause the parent
-     * form-field to update. Implemented as part of `MatFormFieldControl`.
+     * form field to update. Implemented as part of `MatFormFieldControl`.
      * @docs-private
      */
     readonly stateChanges = new Subject<void>();
@@ -286,7 +286,7 @@ export class MatInput
     private _autofillMonitor: AutofillMonitor,
     ngZone: NgZone,
     // TODO: Remove this once the legacy appearance has been removed. We only need
-    // to inject the form-field for determining whether the placeholder has been promoted.
+    // to inject the form field for determining whether the placeholder has been promoted.
     @Optional() @Inject(MAT_FORM_FIELD) private _formField?: MatFormField,
   ) {
     super(_defaultErrorStateMatcher, _parentForm, _parentFormGroup, ngControl);
