@@ -16,11 +16,15 @@ const TRACKED_LVIEWS = new Map<number, LView>();
 // Used for generating unique IDs for LViews.
 let uniqueIdCounter = 0;
 
-/** Starts tracking an LView and returns a unique ID that can be used for future lookups. */
-export function registerLView(lView: LView): number {
-  const id = uniqueIdCounter++;
-  TRACKED_LVIEWS.set(id, lView);
-  return id;
+/** Gets a unique ID that can be assigned to an LView. */
+export function getUniqueLViewId(): number {
+  return uniqueIdCounter++;
+}
+
+/** Starts tracking an LView. */
+export function registerLView(lView: LView): void {
+  ngDevMode && assertNumber(lView[ID], 'LView must have an ID in order to be registered');
+  TRACKED_LVIEWS.set(lView[ID], lView);
 }
 
 /** Gets an LView by its unique ID. */
