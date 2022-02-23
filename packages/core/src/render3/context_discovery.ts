@@ -12,7 +12,7 @@ import {EMPTY_ARRAY} from '../util/empty';
 
 import {assertLView} from './assert';
 import {LContext} from './interfaces/context';
-import {getLViewById} from './interfaces/lview_tracking';
+import {getLViewById, registerLView} from './interfaces/lview_tracking';
 import {TNode, TNodeFlags} from './interfaces/node';
 import {RElement, RNode} from './interfaces/renderer_dom';
 import {isLView} from './interfaces/type_checks';
@@ -178,7 +178,12 @@ export function attachPatchData(target: any, data: LView|LContext) {
   // Only attach the ID of the view in order to avoid memory leaks (see #41047). We only do this
   // for `LView`, because we have control over when an `LView` is created and destroyed, whereas
   // we can't know when to remove an `LContext`.
-  target[MONKEY_PATCH_KEY_NAME] = isLView(data) ? data[ID] : data;
+  if (isLView(data)) {
+    target[MONKEY_PATCH_KEY_NAME] = data[ID];
+    registerLView(data);
+  } else {
+    target[MONKEY_PATCH_KEY_NAME] = data;
+  }
 }
 
 /**
