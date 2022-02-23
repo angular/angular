@@ -559,12 +559,12 @@ describe('MatAutocomplete', () => {
     });
 
     it('should set aria-haspopup depending on whether the autocomplete is disabled', () => {
-      expect(input.getAttribute('aria-haspopup')).toBe('true');
+      expect(input.getAttribute('aria-haspopup')).toBe('listbox');
 
       fixture.componentInstance.autocompleteDisabled = true;
       fixture.detectChanges();
 
-      expect(input.getAttribute('aria-haspopup')).toBe('false');
+      expect(input.hasAttribute('aria-haspopup')).toBe(false);
     });
   });
 
