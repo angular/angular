@@ -71,7 +71,7 @@
       @include mdc-list.list-base(mdc-helpers.$mat-typography-styles-query);
     }
 
-    .mat-mdc-select-value {
+    .mat-mdc-select {
       @include mdc-typography.typography(body1, $query: mdc-helpers.$mat-typography-styles-query);
     }
   }
