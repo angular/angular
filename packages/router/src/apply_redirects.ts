@@ -259,7 +259,7 @@ class ApplyRedirects {
   private expandRegularSegmentAgainstRouteUsingRedirect(
       ngModule: NgModuleRef<any>, segmentGroup: UrlSegmentGroup, routes: Route[], route: Route,
       segments: UrlSegment[], outlet: string): Observable<UrlSegmentGroup> {
-    const {matched, consumedSegments, lastChild, positionalParamSegments} =
+    const {matched, consumedSegments, remainingSegments, positionalParamSegments} =
         match(segmentGroup, route, segments);
     if (!matched) return noMatch(segmentGroup);
 
@@ -271,8 +271,7 @@ class ApplyRedirects {
 
     return this.lineralizeSegments(route, newTree).pipe(mergeMap((newSegments: UrlSegment[]) => {
       return this.expandSegment(
-          ngModule, segmentGroup, routes, newSegments.concat(segments.slice(lastChild)), outlet,
-          false);
+          ngModule, segmentGroup, routes, newSegments.concat(remainingSegments), outlet, false);
     }));
   }
 
@@ -292,10 +291,9 @@ class ApplyRedirects {
       return of(new UrlSegmentGroup(segments, {}));
     }
 
-    const {matched, consumedSegments, lastChild} = match(rawSegmentGroup, route, segments);
+    const {matched, consumedSegments, remainingSegments} = match(rawSegmentGroup, route, segments);
     if (!matched) return noMatch(rawSegmentGroup);
 
-    const rawSlicedSegments = segments.slice(lastChild);
     const childConfig$ = this.getChildConfig(ngModule, route, segments);
 
     return childConfig$.pipe(mergeMap((routerConfig: LoadedRouterConfig) => {
@@ -303,7 +301,7 @@ class ApplyRedirects {
       const childConfig = routerConfig.routes;
 
       const {segmentGroup: splitSegmentGroup, slicedSegments} =
-          split(rawSegmentGroup, consumedSegments, rawSlicedSegments, childConfig);
+          split(rawSegmentGroup, consumedSegments, remainingSegments, childConfig);
       // See comment on the other call to `split` about why this is necessary.
       const segmentGroup =
           new UrlSegmentGroup(splitSegmentGroup.segments, splitSegmentGroup.children);

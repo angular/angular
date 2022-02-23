@@ -16,7 +16,7 @@ import {getOutlet} from './config';
 export interface MatchResult {
   matched: boolean;
   consumedSegments: UrlSegment[];
-  lastChild: number;
+  remainingSegments: UrlSegment[];
   parameters: {[k: string]: string};
   positionalParamSegments: {[k: string]: UrlSegment};
 }
@@ -24,7 +24,7 @@ export interface MatchResult {
 const noMatch: MatchResult = {
   matched: false,
   consumedSegments: [],
-  lastChild: 0,
+  remainingSegments: [],
   parameters: {},
   positionalParamSegments: {}
 };
@@ -39,7 +39,7 @@ export function match(
     return {
       matched: true,
       consumedSegments: [],
-      lastChild: 0,
+      remainingSegments: segments,
       parameters: {},
       positionalParamSegments: {}
     };
@@ -60,7 +60,7 @@ export function match(
   return {
     matched: true,
     consumedSegments: res.consumed,
-    lastChild: res.consumed.length,
+    remainingSegments: segments.slice(res.consumed.length),
     // TODO(atscott): investigate combining parameters and positionalParamSegments
     parameters,
     positionalParamSegments: res.posParams ?? {}

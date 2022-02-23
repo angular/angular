@@ -155,7 +155,7 @@ export class Recognizer {
 
     let snapshot: ActivatedRouteSnapshot;
     let consumedSegments: UrlSegment[] = [];
-    let rawSlicedSegments: UrlSegment[] = [];
+    let remainingSegments: UrlSegment[] = [];
 
     if (route.path === '**') {
       const params = segments.length > 0 ? last(segments)!.parameters : {};
@@ -170,7 +170,7 @@ export class Recognizer {
         return null;
       }
       consumedSegments = result.consumedSegments;
-      rawSlicedSegments = segments.slice(result.lastChild);
+      remainingSegments = result.remainingSegments;
 
       snapshot = new ActivatedRouteSnapshot(
           consumedSegments, result.parameters, Object.freeze({...this.urlTree.queryParams}),
@@ -182,7 +182,7 @@ export class Recognizer {
     const childConfig: Route[] = getChildConfig(route);
 
     const {segmentGroup, slicedSegments} = split(
-        rawSegment, consumedSegments, rawSlicedSegments,
+        rawSegment, consumedSegments, remainingSegments,
         // Filter out routes with redirectTo because we are trying to create activated route
         // snapshots and don't handle redirects here. That should have been done in
         // `applyRedirects`.
