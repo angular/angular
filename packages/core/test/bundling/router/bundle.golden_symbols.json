@@ -1032,6 +1032,9 @@
     "name": "diPublicInInjector"
   },
   {
+    "name": "dispatch"
+  },
+  {
     "name": "domRendererFactory3"
   },
   {
@@ -1578,9 +1581,6 @@
     "name": "modules"
   },
   {
-    "name": "namedOutletsRedirect"
-  },
-  {
     "name": "nativeAppendChild"
   },
   {
@@ -1879,6 +1879,9 @@
   },
   {
     "name": "tap"
+  },
+  {
+    "name": "throwError5"
   },
   {
     "name": "throwIfEmpty"
