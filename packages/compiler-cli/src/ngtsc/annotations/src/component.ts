@@ -33,7 +33,7 @@ import {DirectiveSymbol, extractDirectiveMetadata, parseFieldArrayValue} from '.
 import {compileDeclareFactory, compileNgFactoryDefField} from './factory';
 import {extractClassMetadata} from './metadata';
 import {NgModuleSymbol} from './ng_module';
-import {compileResults, findAngularDecorator, isAngularCoreReference, isExpressionForwardReference, readBaseClass, resolveProvidersRequiringFactory, toFactoryMetadata, unwrapExpression, wrapFunctionExpressionsInParens} from './util';
+import {animationTriggerResolver, compileResults, findAngularDecorator, isAngularCoreReference, isExpressionForwardReference, readBaseClass, resolveProvidersRequiringFactory, toFactoryMetadata, unwrapExpression, wrapFunctionExpressionsInParens} from './util';
 
 const EMPTY_MAP = new Map<string, Expression>();
 const EMPTY_ARRAY: any[] = [];
@@ -352,7 +352,8 @@ export class ComponentDecoratorHandler implements
     let animationTriggerNames: AnimationTriggerNames|null = null;
     if (component.has('animations')) {
       animations = new WrappedNodeExpr(component.get('animations')!);
-      const animationsValue = this.evaluator.evaluate(component.get('animations')!);
+      const animationsValue =
+          this.evaluator.evaluate(component.get('animations')!, animationTriggerResolver);
       animationTriggerNames = {includesDynamicAnimations: false, staticTriggerNames: []};
       collectAnimationNames(animationsValue, animationTriggerNames);
     }

@@ -596,3 +596,25 @@ export function toFactoryMetadata(
     target
   };
 }
+
+export function isAngularAnimationsReference(reference: Reference, symbolName: string): boolean {
+  return reference.ownedByModuleGuess === '@angular/animations' &&
+      reference.debugName === symbolName;
+}
+
+export const animationTriggerResolver: ForeignFunctionResolver = (ref, args) => {
+  const animationTriggerMethodName = 'trigger';
+  if (!isAngularAnimationsReference(ref, animationTriggerMethodName)) {
+    return null;
+  }
+  const triggerNameExpression = args[0];
+  if (!triggerNameExpression) {
+    return null;
+  }
+  const factory = ts.factory;
+  return factory.createObjectLiteralExpression(
+      [
+        factory.createPropertyAssignment(factory.createIdentifier('name'), triggerNameExpression),
+      ],
+      true);
+};
