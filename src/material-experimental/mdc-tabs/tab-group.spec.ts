@@ -199,7 +199,6 @@ describe('MDC-based MatTabGroup', () => {
         .toBe(0);
 
       dispatchFakeEvent(tabLabel.nativeElement, 'mousedown');
-      dispatchFakeEvent(tabLabel.nativeElement, 'mouseup');
 
       expect(testElement.querySelectorAll('.mat-ripple-element').length)
         .withContext('Expected one ripple to show up on label mousedown.')

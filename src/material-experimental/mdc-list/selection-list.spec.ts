@@ -22,7 +22,7 @@ import {
   waitForAsync,
 } from '@angular/core/testing';
 import {FormControl, FormsModule, NgModel, ReactiveFormsModule} from '@angular/forms';
-import {defaultRippleAnimationConfig, ThemePalette} from '@angular/material-experimental/mdc-core';
+import {ThemePalette} from '@angular/material-experimental/mdc-core';
 import {By} from '@angular/platform-browser';
 import {numbers} from '@material/list';
 import {
@@ -612,17 +612,19 @@ describe('MDC-based MatSelectionList without forms', () => {
       const rippleTarget = fixture.nativeElement.querySelector(
         '.mat-mdc-list-option:not(.mdc-list-item--disabled)',
       );
-      const {enterDuration, exitDuration} = defaultRippleAnimationConfig;
-
       dispatchMouseEvent(rippleTarget, 'mousedown');
       dispatchMouseEvent(rippleTarget, 'mouseup');
+
+      // Flush the ripple enter animation.
+      dispatchFakeEvent(rippleTarget.querySelector('.mat-ripple-element')!, 'transitionend');
 
       expect(rippleTarget.querySelectorAll('.mat-ripple-element').length)
         .withContext('Expected ripples to be enabled by default.')
         .toBe(1);
 
-      // Wait for the ripples to go away.
-      tick(enterDuration + exitDuration);
+      // Flush the ripple exit animation.
+      dispatchFakeEvent(rippleTarget.querySelector('.mat-ripple-element')!, 'transitionend');
+
       expect(rippleTarget.querySelectorAll('.mat-ripple-element').length)
         .withContext('Expected ripples to go away.')
         .toBe(0);

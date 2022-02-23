@@ -47,6 +47,8 @@ export class RippleRef {
     public element: HTMLElement,
     /** Ripple configuration used for the ripple. */
     public config: RippleConfig,
+    /* Whether animations are forcibly disabled for ripples through CSS. */
+    public _animationForciblyDisabledThroughCss = false,
   ) {}
 
   /** Fades out the ripple element. */

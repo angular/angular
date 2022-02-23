@@ -1,32 +1,32 @@
-import {DOWN_ARROW, SPACE, ENTER, UP_ARROW, HOME, END, A, D, TAB} from '@angular/cdk/keycodes';
+import {FocusMonitor} from '@angular/cdk/a11y';
+import {A, D, DOWN_ARROW, END, ENTER, HOME, SPACE, TAB, UP_ARROW} from '@angular/cdk/keycodes';
 import {
   createKeyboardEvent,
-  dispatchFakeEvent,
   dispatchEvent,
+  dispatchFakeEvent,
   dispatchKeyboardEvent,
   dispatchMouseEvent,
 } from '../../cdk/testing/private';
 import {
+  ChangeDetectionStrategy,
   Component,
   DebugElement,
-  ChangeDetectionStrategy,
   QueryList,
   ViewChildren,
 } from '@angular/core';
 import {
-  waitForAsync,
   ComponentFixture,
   fakeAsync,
-  TestBed,
-  tick,
   flush,
   inject,
+  TestBed,
+  tick,
+  waitForAsync,
 } from '@angular/core/testing';
-import {MatRipple, defaultRippleAnimationConfig, ThemePalette} from '@angular/material/core';
+import {FormControl, FormsModule, NgModel, ReactiveFormsModule} from '@angular/forms';
+import {MatRipple, ThemePalette} from '@angular/material/core';
 import {By} from '@angular/platform-browser';
 import {MatListModule, MatListOption, MatSelectionList, MatSelectionListChange} from './index';
-import {FormControl, FormsModule, NgModel, ReactiveFormsModule} from '@angular/forms';
-import {FocusMonitor} from '@angular/cdk/a11y';
 
 describe('MatSelectionList without forms', () => {
   describe('with list option', () => {
@@ -770,17 +770,20 @@ describe('MatSelectionList without forms', () => {
       const rippleTarget = fixture.nativeElement.querySelector(
         '.mat-list-option:not(.mat-list-item-disabled) .mat-list-item-content',
       );
-      const {enterDuration, exitDuration} = defaultRippleAnimationConfig;
 
       dispatchMouseEvent(rippleTarget, 'mousedown');
       dispatchMouseEvent(rippleTarget, 'mouseup');
+
+      // Flush the ripple enter animation.
+      dispatchFakeEvent(rippleTarget.querySelector('.mat-ripple-element')!, 'transitionend');
 
       expect(rippleTarget.querySelectorAll('.mat-ripple-element').length)
         .withContext('Expected ripples to be enabled by default.')
         .toBe(1);
 
-      // Wait for the ripples to go away.
-      tick(enterDuration + exitDuration);
+      // Flush the ripple exit animation.
+      dispatchFakeEvent(rippleTarget.querySelector('.mat-ripple-element')!, 'transitionend');
+
       expect(rippleTarget.querySelectorAll('.mat-ripple-element').length)
         .withContext('Expected ripples to go away.')
         .toBe(0);

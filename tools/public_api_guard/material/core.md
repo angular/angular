@@ -516,7 +516,9 @@ export class RippleRef {
         fadeOutRipple(ref: RippleRef): void;
     },
     element: HTMLElement,
-    config: RippleConfig);
+    config: RippleConfig, _animationForciblyDisabledThroughCss?: boolean);
+    // (undocumented)
+    _animationForciblyDisabledThroughCss: boolean;
     config: RippleConfig;
     element: HTMLElement;
     fadeOut(): void;
