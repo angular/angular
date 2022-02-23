@@ -83,6 +83,9 @@ import {_sanitizeUrl, sanitizeSrcset} from '../../src/sanitization/url_sanitizer
         'http://angular.io/images/test.png',
         'http://angular.io/images/test.png, http://angular.io/images/test.png',
         'http://angular.io/images/test.png, http://angular.io/images/test.png, http://angular.io/images/test.png',
+        'http://angular.io/images/200,200/test.png',
+        'http://angular.io/images/200,200/test.png, http://angular.io/images/300,300/test.png',
+        'http://angular.io/images/200,200/test.png  ,  http://angular.io/images/300,300/test.png',
         'http://angular.io/images/test.png 2x',
         'http://angular.io/images/test.png 2x, http://angular.io/images/test.png 3x',
         'http://angular.io/images/test.png 1.5x',
@@ -108,6 +111,7 @@ import {_sanitizeUrl, sanitizeSrcset} from '../../src/sanitization/url_sanitizer
       const invalidSrcsets = [
         'ht:tp://angular.io/images/test.png',
         'http://angular.io/images/test.png, ht:tp://angular.io/images/test.png',
+        'http://angular.io/images/test.png,ht:tp://angular.io/images/test.png',
       ];
       for (const srcset of invalidSrcsets) {
         it(`valid ${srcset}`, () => expect(sanitizeSrcset(srcset)).toMatch(/unsafe:/));

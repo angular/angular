@@ -35,12 +35,12 @@
  */
 const SAFE_URL_PATTERN = /^(?:(?:https?|mailto|ftp|tel|file|sms):|[^&:/?#]*(?:[/?#]|$))/gi;
 
-/* A pattern that matches safe srcset values */
-const SAFE_SRCSET_PATTERN = /^(?:(?:https?|file):|[^&:/?#]*(?:[/?#]|$))/gi;
-
 /** A pattern that matches safe data URLs. Only matches image, video and audio types. */
 const DATA_URL_PATTERN =
     /^data:(?:image\/(?:bmp|gif|jpeg|jpg|png|tiff|webp)|video\/(?:mpeg|mp4|ogg|webm)|audio\/(?:mp3|oga|ogg|opus));base64,[a-z0-9+\/]+=*$/i;
+
+/** A pattern that extract a trimmed string while capturing leading and trailing whitespace. */
+const TRIM_PATTERN = /^(\s*)(.*?)(\s*)$/;
 
 export function _sanitizeUrl(url: string): string {
   url = String(url);
@@ -55,5 +55,12 @@ export function _sanitizeUrl(url: string): string {
 
 export function sanitizeSrcset(srcset: string): string {
   srcset = String(srcset);
-  return srcset.split(',').map((srcset) => _sanitizeUrl(srcset.trim())).join(', ');
+  return srcset.split(',')
+      .map((part) => {
+        // Trim the srcset part and capture the leading and trailing whitespace, such the whitespace
+        // is retained as is in the original srcset.
+        const [, leadingWs, trimmed, trailingWs] = part.match(TRIM_PATTERN)!;
+        return leadingWs + _sanitizeUrl(trimmed) + trailingWs;
+      })
+      .join(',');
 }
