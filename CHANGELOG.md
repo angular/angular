@@ -1,3 +1,18 @@
+<a name="13.2.4"></a>
+# 13.2.4 (2022-02-23)
+### animations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [1a4b489692](https://github.com/angular/angular/commit/1a4b489692aebd185a96af78996d13c47caf4478) | perf | improve algorithm to balance animation namespaces ([#45113](https://github.com/angular/angular/pull/45113)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [cbd23ee0de](https://github.com/angular/angular/commit/cbd23ee0def8e79b185d59d0713e5eeb97b20e1f) | perf | make `IterableDiffers` and `KeyValueDiffers` tree-shakable ([#45094](https://github.com/angular/angular/pull/45094)) ([#45115](https://github.com/angular/angular/pull/45115)) |
+## Special Thanks
+Alan Cohen, AlirezaEbrahimkhani, Andrew Kushnir, Daniele Maltese, David Wolf, JoostK, Paul Gschwendtner, dario-piotrowicz and manuelkroiss
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.0.0-next.3"></a>
 # 14.0.0-next.3 (2022-02-17)
 ### animations
