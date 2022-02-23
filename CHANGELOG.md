@@ -1,3 +1,36 @@
+<a name="13.2.4"></a>
+# 13.2.4 "plastic-mug" (2022-02-23)
+### cdk
+| Commit | Type | Description |
+| -- | -- | -- |
+| [74bae85bc5](https://github.com/angular/components/commit/74bae85bc50acbabff38b1eb00f7288fbef9d806) | fix | **drag-drop:** incorrectly sorting element inside dialog with blocked scrolling ([#14806](https://github.com/angular/components/pull/14806)) |
+| [81898ca5f6](https://github.com/angular/components/commit/81898ca5f6966640273d3bafc828bd29ed400208) | fix | **drag-drop:** stop pointer events on placeholder ([#24404](https://github.com/angular/components/pull/24404)) |
+### material
+| Commit | Type | Description |
+| -- | -- | -- |
+| [6b76469b4a](https://github.com/angular/components/commit/6b76469b4a4bf63ee5d70bc8146dcaceddc3380f) | fix | **autocomplete:** closing immediately when input is focused programmatically ([#21081](https://github.com/angular/components/pull/21081)) |
+| [3ea76419c8](https://github.com/angular/components/commit/3ea76419c85e896ac26d05486ed6b792e282c8c1) | fix | **autocomplete:** use narrow value for aria-haspopup ([#15361](https://github.com/angular/components/pull/15361)) |
+| [9a12eabf6b](https://github.com/angular/components/commit/9a12eabf6b4c44af7d39566d1b541c0c42449714) | fix | **button-toggle:** unable to override elevation and high contrast styling applied incorrectly ([#14722](https://github.com/angular/components/pull/14722)) |
+| [cbd4b0ce4f](https://github.com/angular/components/commit/cbd4b0ce4f5c8ebee1b5d03dfd93a21c8fb2a351) | fix | **checkbox:** clear static aria attributes from host nodes ([#17092](https://github.com/angular/components/pull/17092)) |
+| [f6eaa7c1cf](https://github.com/angular/components/commit/f6eaa7c1cf81155b5fb720a7b46d55dc7d48f95d) | fix | **form-field:** use correct color for form fields in high contrast mode ([#24422](https://github.com/angular/components/pull/24422)) |
+| [39d7834797](https://github.com/angular/components/commit/39d7834797020e29c73181893c2473d85ec028a0) | fix | **radio:** clicks not propagating to wrapper elements ([#24459](https://github.com/angular/components/pull/24459)) |
+| [5988b8f77b](https://github.com/angular/components/commit/5988b8f77b2bddf08a839c80e72381ed748549fd) | fix | **radio:** not checked on first click if partially visible ([#19505](https://github.com/angular/components/pull/19505)) |
+| [33716f124b](https://github.com/angular/components/commit/33716f124bd554ed947adc6ccfa2fa89e84ebdb2) | fix | **select:** arrow highlighted state not updating in Safari ([#15281](https://github.com/angular/components/pull/15281)) |
+| [fc204e4f4d](https://github.com/angular/components/commit/fc204e4f4dd601e0623f6a90c72bca7fec48daec) | fix | **sidenav:** prevent focus from entering hidden sidenav if child element has a visibility |
+| [5e41a0ad09](https://github.com/angular/components/commit/5e41a0ad0903a9e4360cdf2f7c26c86e394bd215) | fix | **tabs:** use buttons for paginator also tab-header and mdc ([#24338](https://github.com/angular/components/pull/24338)) |
+### material-experimental
+| Commit | Type | Description |
+| -- | -- | -- |
+| [4198f5b5dc](https://github.com/angular/components/commit/4198f5b5dc2d06941e38b294923d8213c347c319) | fix | **mdc-dialog:** align change detection with non-MDC version ([#24451](https://github.com/angular/components/pull/24451)) |
+| [45836f924d](https://github.com/angular/components/commit/45836f924dc1a410baa02903b80dc147c14dc269) | fix | **mdc-list:** fix typo in action-list css class ([#24448](https://github.com/angular/components/pull/24448)) |
+| [7ca02495cd](https://github.com/angular/components/commit/7ca02495cdfa1635f1fe5496cf1c01ff330126b9) | fix | **mdc-list:** use body-1 rather than subtitle-1 typography for list items ([#24417](https://github.com/angular/components/pull/24417)) |
+| [c9a15476e8](https://github.com/angular/components/commit/c9a15476e8aa4995b2129e5d97cd631746adaaf5) | fix | **mdc-select:** target correct element with typography ([#24258](https://github.com/angular/components/pull/24258)) |
+| [bd3f39fb15](https://github.com/angular/components/commit/bd3f39fb154d75f922501524051810bccd4c4756) | perf | **mdc-table:** reduce bundle size ([#24309](https://github.com/angular/components/pull/24309)) |
+## Special Thanks
+Alireza Ebrahimkhani, Arthur Ming, Jeri Peier, Kristiyan Kostadinov, Miles Malerba, Paul Gschwendtner and renovate[bot]
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.0.0-next.3"></a>
 # 14.0.0-next.3 "sapphire-sneakers" (2022-02-16)
 ### material
