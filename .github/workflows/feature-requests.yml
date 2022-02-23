@@ -5,6 +5,10 @@ on:
     # Run at 14:00 every day
     - cron: '0 14 * * *'
 
+# Declare default permissions as read only.
+permissions:
+  contents: read
+
 jobs:
   feature_triage:
     if: github.repository == 'angular/angular'
