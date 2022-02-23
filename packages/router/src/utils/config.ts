@@ -86,10 +86,6 @@ function validateNode(route: Route, fullPath: string): void {
       throw new Error(`Invalid configuration of route '{path: "${fullPath}", redirectTo: "${
           route.redirectTo}"}': please provide 'pathMatch'. ${exp}`);
     }
-    if (route.pathMatch !== void 0 && route.pathMatch !== 'full' && route.pathMatch !== 'prefix') {
-      throw new Error(`Invalid configuration of route '${
-          fullPath}': pathMatch can only be set to 'prefix' or 'full'`);
-    }
   }
   if (route.children) {
     validateConfig(route.children, fullPath);

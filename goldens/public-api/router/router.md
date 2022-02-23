@@ -449,7 +449,7 @@ export interface Route {
     matcher?: UrlMatcher;
     outlet?: string;
     path?: string;
-    pathMatch?: string;
+    pathMatch?: 'prefix' | 'full';
     redirectTo?: string;
     resolve?: ResolveData;
     runGuardsAndResolvers?: RunGuardsAndResolvers;
