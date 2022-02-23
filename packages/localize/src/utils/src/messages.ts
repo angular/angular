@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {computeMsgId} from '@angular/compiler';
-import {AbsoluteFsPath} from '@angular/compiler-cli/private/localize';
 
 import {BLOCK_MARKER, ID_SEPARATOR, LEGACY_ID_INDICATOR, MEANING_SEPARATOR} from './constants';
 
@@ -40,6 +39,18 @@ export type TargetMessage = string;
 export type MessageId = string;
 
 /**
+ * Declares a copy of the `AbsoluteFsPath` branded type in `@angular/compiler-cli` to avoid an
+ * import into `@angular/compiler-cli`. The compiler-cli's declaration files are not necessarily
+ * compatible with web environments that use `@angular/localize`, and would inadvertently include
+ * `typescript` declaration files in any compilation unit that uses `@angular/localize` (which
+ * increases parsing time and memory usage during builds) using a default import that only
+ * type-checks when `allowSyntheticDefaultImports` is enabled.
+ *
+ * @see https://github.com/angular/angular/issues/45179
+ */
+type AbsoluteFsPathLocalizeCopy = string&{_brand: 'AbsoluteFsPath'};
+
+/**
  * The location of the message in the source file.
  *
  * The `line` and `column` values for the `start` and `end` properties are zero-based.
@@ -47,7 +58,7 @@ export type MessageId = string;
 export interface SourceLocation {
   start: {line: number, column: number};
   end: {line: number, column: number};
-  file: AbsoluteFsPath;
+  file: AbsoluteFsPathLocalizeCopy;
   text?: string;
 }
 
