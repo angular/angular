@@ -1,3 +1,31 @@
+<a name="14.0.0-next.4"></a>
+# 14.0.0-next.4 (2022-02-23)
+## Breaking Changes
+### animations
+- The `AnimationDriver.getParentElement` method has become required, so any
+implementors of this interface are now required to provide an implementation
+for this method. This breakage is unlikely to affect application developers,
+as `AnimationDriver` is not expected to be implemented in user code.
+### animations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [f8dc660605](https://github.com/angular/angular/commit/f8dc66060591e1ce42265a7862c3df16e40b05e1) | fix | allow animations with unsupported CSS properties ([#44729](https://github.com/angular/angular/pull/44729)) |
+| [59559fdbac](https://github.com/angular/angular/commit/59559fdbacc00bee380b1e88c79d08b6e856ebbe) | refactor | make `AnimationDriver.getParentElement` required ([#45114](https://github.com/angular/angular/pull/45114)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c0778b4dfc](https://github.com/angular/angular/commit/c0778b4dfc1c107543b3db6f1958814a0812c7df) | fix | Support resolve animation name from the DTS ([#45107](https://github.com/angular/angular/pull/45107)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [071c8af8ba](https://github.com/angular/angular/commit/071c8af8ba89163270f17657c0c7f1c944f186f7) | perf | avoid storing LView in __ngContext__ ([#45051](https://github.com/angular/angular/pull/45051)) |
+| [a96c4827c4](https://github.com/angular/angular/commit/a96c4827c4f62e1d665d8544a3e66c51d2644c88) | perf | make `Compiler`, `ApplicationRef` and `ApplicationInitStatus` tree-shakable ([#45102](https://github.com/angular/angular/pull/45102)) |
+| [1e60fe0a3e](https://github.com/angular/angular/commit/1e60fe0a3eeb6bd46997f7eeb4825351cfbe3c44) | perf | make `LOCALE_ID` and other tokens from `ApplicationModule` tree-shakable ([#45102](https://github.com/angular/angular/pull/45102)) |
+## Special Thanks
+Alan Cohen, AlirezaEbrahimkhani, Andrew Kushnir, Andrew Scott, Daniele Maltese, David Wolf, JiaLiPassion, JoostK, Kristiyan Kostadinov, Paul Gschwendtner, arturovt, dario-piotrowicz, ivanwonder and manuelkroiss
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="13.2.4"></a>
 # 13.2.4 (2022-02-23)
 ### animations
