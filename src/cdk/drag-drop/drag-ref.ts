@@ -363,7 +363,7 @@ export class DragRef<T = any> {
     private _dragDropRegistry: DragDropRegistry<DragRef, DropListRef>,
   ) {
     this.withRootElement(element).withParent(_config.parentDragRef || null);
-    this._parentPositions = new ParentPositionTracker(_document, _viewportRuler);
+    this._parentPositions = new ParentPositionTracker(_document);
     _dragDropRegistry.registerDragItem(this);
   }
 
@@ -1461,10 +1461,10 @@ export class DragRef<T = any> {
 
   /** Gets the scroll position of the viewport. */
   private _getViewportScrollPosition() {
-    const cachedPosition = this._parentPositions.positions.get(this._document);
-    return cachedPosition
-      ? cachedPosition.scrollPosition
-      : this._viewportRuler.getViewportScrollPosition();
+    return (
+      this._parentPositions.positions.get(this._document)?.scrollPosition ||
+      this._parentPositions.getViewportScrollPosition()
+    );
   }
 
   /**

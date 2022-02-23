@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ViewportRuler} from '@angular/cdk/scrolling';
 import {_getEventTarget} from '@angular/cdk/platform';
 import {getMutableClientRect, adjustClientRect} from './client-rect';
 
@@ -27,7 +26,7 @@ export class ParentPositionTracker {
     }
   >();
 
-  constructor(private _document: Document, private _viewportRuler: ViewportRuler) {}
+  constructor(private _document: Document) {}
 
   /** Clears the cached positions. */
   clear() {
@@ -38,7 +37,7 @@ export class ParentPositionTracker {
   cache(elements: readonly HTMLElement[]) {
     this.clear();
     this.positions.set(this._document, {
-      scrollPosition: this._viewportRuler.getViewportScrollPosition(),
+      scrollPosition: this.getViewportScrollPosition(),
     });
 
     elements.forEach(element => {
@@ -63,7 +62,7 @@ export class ParentPositionTracker {
     let newLeft: number;
 
     if (target === this._document) {
-      const viewportScrollPosition = this._viewportRuler!.getViewportScrollPosition();
+      const viewportScrollPosition = this.getViewportScrollPosition();
       newTop = viewportScrollPosition.top;
       newLeft = viewportScrollPosition.left;
     } else {
@@ -86,5 +85,15 @@ export class ParentPositionTracker {
     scrollPosition.left = newLeft;
 
     return {top: topDifference, left: leftDifference};
+  }
+
+  /**
+   * Gets the scroll position of the viewport. Note that we use the scrollX and scrollY directly,
+   * instead of going through the `ViewportRuler`, because the first value the ruler looks at is
+   * the top/left offset of the `document.documentElement` which works for most cases, but breaks
+   * if the element is offset by something like the `BlockScrollStrategy`.
+   */
+  getViewportScrollPosition() {
+    return {top: window.scrollY, left: window.scrollX};
   }
 }

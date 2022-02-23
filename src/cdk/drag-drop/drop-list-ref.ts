@@ -230,7 +230,7 @@ export class DropListRef<T = any> {
     this._document = _document;
     this.withScrollableParents([this.element]);
     _dragDropRegistry.registerDropContainer(this);
-    this._parentPositions = new ParentPositionTracker(_document, _viewportRuler);
+    this._parentPositions = new ParentPositionTracker(_document);
   }
 
   /** Removes the drop list functionality from the DOM element. */
