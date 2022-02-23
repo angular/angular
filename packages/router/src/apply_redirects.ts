@@ -7,7 +7,7 @@
  */
 
 import {Injector, NgModuleRef} from '@angular/core';
-import {EmptyError, from, Observable, Observer, of} from 'rxjs';
+import {EmptyError, from, Observable, Observer, of, throwError} from 'rxjs';
 import {catchError, concatMap, first, last, map, mergeMap, scan, tap} from 'rxjs/operators';
 
 import {CanLoadFn, LoadedRouterConfig, Route, Routes} from './models';
@@ -33,26 +33,22 @@ class AbsoluteRedirect {
 }
 
 function noMatch(segmentGroup: UrlSegmentGroup): Observable<UrlSegmentGroup> {
-  return new Observable<UrlSegmentGroup>(
-      (obs: Observer<UrlSegmentGroup>) => obs.error(new NoMatch(segmentGroup)));
+  return throwError(new NoMatch(segmentGroup));
 }
 
 function absoluteRedirect(newTree: UrlTree): Observable<any> {
-  return new Observable<UrlSegmentGroup>(
-      (obs: Observer<UrlSegmentGroup>) => obs.error(new AbsoluteRedirect(newTree)));
+  return throwError(new AbsoluteRedirect(newTree));
 }
 
 function namedOutletsRedirect(redirectTo: string): Observable<any> {
-  return new Observable<UrlSegmentGroup>(
-      (obs: Observer<UrlSegmentGroup>) => obs.error(new Error(
-          `Only absolute redirects can have named outlets. redirectTo: '${redirectTo}'`)));
+  return throwError(
+      new Error(`Only absolute redirects can have named outlets. redirectTo: '${redirectTo}'`));
 }
 
 function canLoadFails(route: Route): Observable<LoadedRouterConfig> {
-  return new Observable<LoadedRouterConfig>(
-      (obs: Observer<LoadedRouterConfig>) => obs.error(
-          navigationCancelingError(`Cannot load children because the guard of the route "path: '${
-              route.path}'" returned false`)));
+  return throwError(
+      navigationCancelingError(`Cannot load children because the guard of the route "path: '${
+          route.path}'" returned false`));
 }
 
 /**
