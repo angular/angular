@@ -8,7 +8,7 @@
 
 
 import {Component, Injectable} from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
+import {ActivatedRoute, Router, Routes} from '@angular/router';
 
 import * as db from './data';
 
@@ -122,7 +122,7 @@ export class DraftsCmp {
   }
 }
 
-export const ROUTER_CONFIG = [
+export const ROUTER_CONFIG: Routes = [
   {path: '', pathMatch: 'full', redirectTo: 'inbox'}, {path: 'inbox', component: InboxCmp},
   {path: 'drafts', component: DraftsCmp},
   {path: 'detail', loadChildren: () => import('./inbox-detail.js').then(mod => mod.default)}
