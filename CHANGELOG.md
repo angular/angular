@@ -1,3 +1,57 @@
+<a name="14.0.0-next.4"></a>
+# 14.0.0-next.4 "metal-harness" (2022-02-23)
+## Breaking Changes
+### material
+- Previously the `mixinErrorState` mixin function defined
+a class member for `stateChanges`. This is no longer the case, and consumers
+need to provide the `stateChanges` class member themselves.
+
+- * `CdkStepper._orientation` has been removed. Use `CdkStepper.orientation` instead.
+* The `_document` parameter from the `CdkStepper` constructor has been removed.
+* The `_document` parameter from the `MatStepper` constructor has been removed.
+* `MatVerticalStepper` has been removed. Use `MatStepper` instead.
+* `MatHorizontalStepper` has been removed. Use `MatStepper` instead.
+### material-experimental
+| Commit | Type | Description |
+| -- | -- | -- |
+| [3e1080931e](https://github.com/angular/components/commit/3e1080931e62226874e1253528f35878b3228af9) | feat | **mdc-list:** add support for marking the act… ([#24433](https://github.com/angular/components/pull/24433)) |
+| [4c0a4603d9](https://github.com/angular/components/commit/4c0a4603d93d77646c135b979cce76a1f80b2246) | fix | **mdc-dialog:** align change detection with non-MDC version ([#24451](https://github.com/angular/components/pull/24451)) |
+| [f6cdc96994](https://github.com/angular/components/commit/f6cdc96994b093305dd98c696ddf369fe5a92f19) | fix | **mdc-list:** fix typo in action-list css class ([#24448](https://github.com/angular/components/pull/24448)) |
+| [dbcd1404bb](https://github.com/angular/components/commit/dbcd1404bb1484b49cf5bfd094650a8e7e27c439) | fix | **mdc-list:** use body-1 rather than subtitle-1 typography for list items ([#24417](https://github.com/angular/components/pull/24417)) |
+| [f5d74daf1d](https://github.com/angular/components/commit/f5d74daf1d9adf833f223253835244529af664cc) | fix | **mdc-select:** target correct element with typography ([#24258](https://github.com/angular/components/pull/24258)) |
+| [ea6fdb91c1](https://github.com/angular/components/commit/ea6fdb91c1283630898c132f79a14326f5a2ff21) | perf | **mdc-table:** reduce bundle size ([#24309](https://github.com/angular/components/pull/24309)) |
+### material
+| Commit | Type | Description |
+| -- | -- | -- |
+| [9946bb34bb](https://github.com/angular/components/commit/9946bb34bb76328ad104c520aa8021784a1c48bb) | feat | **form-field:** add color to default options ([#24438](https://github.com/angular/components/pull/24438)) ([#24440](https://github.com/angular/components/pull/24440)) |
+| [0d162a4132](https://github.com/angular/components/commit/0d162a413202fc7ed309aca748bf138845a1ba68) | feat | **sort:** default arrow position in MatSortDefaultOptions ([#23609](https://github.com/angular/components/pull/23609)) |
+| [c0ed5ce5de](https://github.com/angular/components/commit/c0ed5ce5de2fcd36ba249a869a8a8e57d33d9b8d) | fix | **autocomplete:** closing immediately when input is focused programmatically ([#21081](https://github.com/angular/components/pull/21081)) |
+| [7e9916bc9e](https://github.com/angular/components/commit/7e9916bc9ea4b4360f099b395891a50ab297e026) | fix | **autocomplete:** use narrow value for aria-haspopup ([#15361](https://github.com/angular/components/pull/15361)) |
+| [b703cb36a8](https://github.com/angular/components/commit/b703cb36a875d124a526f1b4404ecc153ae36b14) | fix | **button-toggle:** unable to override elevation and high contrast styling applied incorrectly ([#14722](https://github.com/angular/components/pull/14722)) |
+| [ab39847567](https://github.com/angular/components/commit/ab398475678d7bab1d9fba84536efd8165966564) | fix | **checkbox:** clear static aria attributes from host nodes ([#17092](https://github.com/angular/components/pull/17092)) |
+| [19b89342a3](https://github.com/angular/components/commit/19b89342a3eda66add24da32fe074c7320b8d991) | fix | **form-field:** use correct color for form fields in high contrast mode ([#24422](https://github.com/angular/components/pull/24422)) |
+| [e0b76ed029](https://github.com/angular/components/commit/e0b76ed029939a7bb8246410b0170cfdbf35da25) | fix | **radio:** clicks not propagating to wrapper elements ([#24459](https://github.com/angular/components/pull/24459)) |
+| [f80403c97d](https://github.com/angular/components/commit/f80403c97d9a6e21eba8557268e39a7dbe8e7f98) | fix | **radio:** not checked on first click if partially visible ([#19505](https://github.com/angular/components/pull/19505)) |
+| [1d5175b313](https://github.com/angular/components/commit/1d5175b3135a0c6864d6bbb69ad2d20864a2722f) | fix | **select:** arrow highlighted state not updating in Safari ([#15281](https://github.com/angular/components/pull/15281)) |
+| [dddfbd1ea6](https://github.com/angular/components/commit/dddfbd1ea69349ec5ac4d1021825e3137ea54525) | fix | **sidenav:** prevent focus from entering hidden sidenav if child element has a visibility |
+| [d9ad68acda](https://github.com/angular/components/commit/d9ad68acdab665446e1c4e2c7c66b522c004d026) | fix | **tabs:** use buttons for paginator also tab-header and mdc ([#24338](https://github.com/angular/components/pull/24338)) |
+| [bab3b989f9](https://github.com/angular/components/commit/bab3b989f9265c0798bdacee4d931828497ee3bc) | refactor | **core:** no longer define `stateChanges` in `mixinErrorState` ([#22875](https://github.com/angular/components/pull/22875)) |
+| [db126b5797](https://github.com/angular/components/commit/db126b579760263ea8de30689c54c4d32fa2137a) | refactor | **stepper:** remove deprecated APIs for version 13 ([#23328](https://github.com/angular/components/pull/23328)) |
+### cdk
+| Commit | Type | Description |
+| -- | -- | -- |
+| [feaf50b43a](https://github.com/angular/components/commit/feaf50b43a9debfbd6dfe8949ff69cce7853b455) | feat | **a11y:** HighContrastModeDetector need not support `IE11` ([#24462](https://github.com/angular/components/pull/24462)) |
+| [3e1de9dd29](https://github.com/angular/components/commit/3e1de9dd298ec2379776a6debb0e49a45f350a4a) | fix | **drag-drop:** incorrectly sorting element inside dialog with blocked scrolling ([#14806](https://github.com/angular/components/pull/14806)) |
+| [761f5fde28](https://github.com/angular/components/commit/761f5fde28ffc547e1d700906f3f82f5187ed526) | fix | **drag-drop:** stop pointer events on placeholder ([#24404](https://github.com/angular/components/pull/24404)) |
+### ripple
+| Commit | Type | Description |
+| -- | -- | -- |
+| [65fb5f4491](https://github.com/angular/components/commit/65fb5f44911b3839c1f40ab87cf380381e030434) | fix | not fading out on touch devices ([#12488](https://github.com/angular/components/pull/12488)) |
+## Special Thanks
+Alireza Ebrahimkhani, Andrew Seguin, Arthur Ming, Jeri Peier, Kristiyan Kostadinov, Miles Malerba, Paul Gschwendtner, Ruslan Lekhman and renovate[bot]
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="13.2.4"></a>
 # 13.2.4 "plastic-mug" (2022-02-23)
 ### cdk
