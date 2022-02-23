@@ -11,6 +11,7 @@
     "@angular/core": "file:../../dist/packages-dist/core",
     "@angular/elements": "file:../../dist/packages-dist/elements",
     "@angular/forms": "file:../../dist/packages-dist/forms",
+    "@angular/localize": "file:../../dist/packages-dist/localize",
     "@angular/platform-browser": "file:../../dist/packages-dist/platform-browser",
     "@angular/platform-browser-dynamic": "file:../../dist/packages-dist/platform-browser-dynamic",
     "@angular/platform-server": "file:../../dist/packages-dist/platform-server",
