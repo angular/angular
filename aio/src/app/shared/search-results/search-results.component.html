@@ -6,19 +6,27 @@
 
   <ng-container *ngSwitchCase="'results-found'">
     <h2 class="visually-hidden">Search Results</h2>
-    <div class="search-area" *ngFor="let area of searchAreas">
+    <div class="search-area" *ngFor="let area of searchAreas; let lastArea = last">
       <h3 class="search-section-header">{{area.name}} ({{area.pages.length + area.priorityPages.length}})</h3>
       <ul class="priority-pages" >
-        <li class="search-page" *ngFor="let page of area.priorityPages">
-          <a class="search-result-item" href="{{ page.path }}" (click)="onResultSelected(page, $event)">
+        <li class="search-page" *ngFor="let page of area.priorityPages; let lastPage = last">
+          <a class="search-result-item"
+             [attr.cdkFocusRegionEnd]="(lastArea && lastPage && !area.pages.length) || null"
+             href="{{ page.path }}"
+             (click)="onResultSelected(page, $event)">
             <span class="symbol {{page.type}}" *ngIf="area.name === 'api'"></span>
             <span [class.deprecated-api-item]="page.deprecated">{{ page.title }}</span>
           </a>
         </li>
       </ul>
       <ul>
-        <li class="search-page" *ngFor="let page of area.pages">
-          <a class="search-result-item" href="{{ page.path }}" (click)="onResultSelected(page, $event)">
+        <li class="search-page" *ngFor="let page of area.pages; let lastPage = last">
+          <a
+            class="search-result-item -${{lastPage}}=${{lastArea}}"
+            href="{{ page.path }}"
+            (click)="onResultSelected(page, $event)"
+            [attr.cdkFocusRegionEnd]="(lastArea && lastPage) || null"
+          >
             <span class="symbol {{page.type}}" *ngIf="area.name === 'api'"></span>
             <span [class.deprecated-api-item]="page.deprecated">{{ page.title }}</span>
           </a>

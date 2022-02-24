@@ -17,6 +17,7 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
   selector: 'aio-search-box',
   template: `
   <input #searchBox
+    cdkFocusRegionStart
     type="search"
     aria-label="search"
     placeholder="Search"
