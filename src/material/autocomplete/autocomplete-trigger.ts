@@ -390,16 +390,17 @@ export abstract class _MatAutocompleteTriggerBase
 
   _handleKeydown(event: KeyboardEvent): void {
     const keyCode = event.keyCode;
+    const hasModifier = hasModifierKey(event);
 
     // Prevent the default action on all escape key presses. This is here primarily to bring IE
     // in line with other browsers. By default, pressing escape on IE will cause it to revert
     // the input value to the one that it had on focus, however it won't dispatch any events
     // which means that the model value will be out of sync with the view.
-    if (keyCode === ESCAPE && !hasModifierKey(event)) {
+    if (keyCode === ESCAPE && !hasModifier) {
       event.preventDefault();
     }
 
-    if (this.activeOption && keyCode === ENTER && this.panelOpen && !hasModifierKey(event)) {
+    if (this.activeOption && keyCode === ENTER && this.panelOpen && !hasModifier) {
       this.activeOption._selectViaInteraction();
       this._resetActiveItem();
       event.preventDefault();
@@ -407,7 +408,7 @@ export abstract class _MatAutocompleteTriggerBase
       const prevActiveItem = this.autocomplete._keyManager.activeItem;
       const isArrowKey = keyCode === UP_ARROW || keyCode === DOWN_ARROW;
 
-      if (this.panelOpen || keyCode === TAB) {
+      if (keyCode === TAB || (isArrowKey && !hasModifier && this.panelOpen)) {
         this.autocomplete._keyManager.onKeydown(event);
       } else if (isArrowKey && this._canOpen()) {
         this.openPanel();

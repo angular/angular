@@ -1453,6 +1453,20 @@ describe('MatAutocomplete', () => {
 
       expect(!!trigger.activeOption).withContext('Expected no active options.').toBe(false);
     }));
+
+    it('should not prevent the default action when a modifier key is pressed', () => {
+      ['metaKey', 'ctrlKey', 'altKey', 'shiftKey'].forEach(name => {
+        const event = createKeyboardEvent('keydown', DOWN_ARROW);
+        Object.defineProperty(event, name, {get: () => true});
+
+        fixture.componentInstance.trigger._handleKeydown(event);
+        fixture.detectChanges();
+
+        expect(event.defaultPrevented)
+          .withContext(`Expected autocompete not to block ${name} key`)
+          .toBe(false);
+      });
+    });
   });
 
   describe('option groups', () => {
