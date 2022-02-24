@@ -32,7 +32,7 @@ describe('Animation Tests', () => {
 
     beforeAll(async () => {
       await openCloseHref.click();
-      await newPageSleepFor();
+      await newPageSleepFor(300);
     });
 
     it('should be open', async () => {
