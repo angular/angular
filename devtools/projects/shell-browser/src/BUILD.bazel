@@ -4,6 +4,7 @@ load("//devtools/tools:ng_module.bzl", "ng_module")
 load("//devtools/tools:typescript.bzl", "ts_library")
 load("//tools:defaults.bzl", "esbuild")
 load("//devtools/tools/esbuild:index.bzl", "LINKER_PROCESSED_FW_PACKAGES")
+load("@bazel_skylib//rules:common_settings.bzl", "string_flag")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -292,14 +293,23 @@ filegroup(
     ],
 )
 
+string_flag(
+    name = "flag_browser",
+    build_setting_default = "chrome",
+    values = [
+        "chrome",
+        "firefox",
+    ],
+)
+
 config_setting(
     name = "browser_chrome",
-    values = {"define": "browser=chrome"},
+    flag_values = {":flag_browser": "chrome"},
 )
 
 config_setting(
     name = "browser_firefox",
-    values = {"define": "browser=firefox"},
+    flag_values = {":flag_browser": "firefox"},
 )
 
 genrule(
