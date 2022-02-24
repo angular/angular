@@ -21,9 +21,10 @@ import {
   Input,
   OnDestroy,
   OnInit,
+  Optional,
   ViewEncapsulation,
 } from '@angular/core';
-import {CanColor, mixinColor} from '@angular/material/core';
+import {CanColor, ThemePalette, mixinColor} from '@angular/material/core';
 import {Subscription} from 'rxjs';
 import {take} from 'rxjs/operators';
 
@@ -35,6 +36,19 @@ const _MatIconBase = mixinColor(
   class {
     constructor(public _elementRef: ElementRef) {}
   },
+);
+
+/** Default options for `mat-icon`.  */
+export interface MatIconDefaultOptions {
+  /** Default color of the icon. */
+  color?: ThemePalette;
+  /** Font set that the icon is a part of. */
+  fontSet?: string;
+}
+
+/** Injection token to be used to override the default options for `mat-icon`. */
+export const MAT_ICON_DEFAULT_OPTIONS = new InjectionToken<MatIconDefaultOptions>(
+  'MAT_ICON_DEFAULT_OPTIONS',
 );
 
 /**
@@ -216,8 +230,21 @@ export class MatIcon extends _MatIconBase implements OnInit, AfterViewChecked, C
     @Attribute('aria-hidden') ariaHidden: string,
     @Inject(MAT_ICON_LOCATION) private _location: MatIconLocation,
     private readonly _errorHandler: ErrorHandler,
+    @Optional()
+    @Inject(MAT_ICON_DEFAULT_OPTIONS)
+    defaults?: MatIconDefaultOptions,
   ) {
     super(elementRef);
+
+    if (defaults) {
+      if (defaults.color) {
+        this.color = this.defaultColor = defaults.color;
+      }
+
+      if (defaults.fontSet) {
+        this.fontSet = defaults.fontSet;
+      }
+    }
 
     // If the user has not explicitly set aria-hidden, mark the icon as hidden, as this is
     // the right thing to do for the majority of icon use-cases.

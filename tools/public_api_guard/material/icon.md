@@ -22,6 +22,7 @@ import { OnInit } from '@angular/core';
 import { Optional } from '@angular/core';
 import { SafeHtml } from '@angular/platform-browser';
 import { SafeResourceUrl } from '@angular/platform-browser';
+import { ThemePalette } from '@angular/material/core';
 
 // @public
 export function getMatIconFailedToSanitizeLiteralError(literal: SafeHtml): Error;
@@ -55,6 +56,9 @@ export interface IconOptions {
 export type IconResolver = (name: string, namespace: string) => SafeResourceUrl | SafeResourceUrlWithIconOptions | null;
 
 // @public
+export const MAT_ICON_DEFAULT_OPTIONS: InjectionToken<MatIconDefaultOptions>;
+
+// @public
 export const MAT_ICON_LOCATION: InjectionToken<MatIconLocation>;
 
 // @public
@@ -62,7 +66,7 @@ export function MAT_ICON_LOCATION_FACTORY(): MatIconLocation;
 
 // @public
 export class MatIcon extends _MatIconBase implements OnInit, AfterViewChecked, CanColor, OnDestroy {
-    constructor(elementRef: ElementRef<HTMLElement>, _iconRegistry: MatIconRegistry, ariaHidden: string, _location: MatIconLocation, _errorHandler: ErrorHandler);
+    constructor(elementRef: ElementRef<HTMLElement>, _iconRegistry: MatIconRegistry, ariaHidden: string, _location: MatIconLocation, _errorHandler: ErrorHandler, defaults?: MatIconDefaultOptions);
     get fontIcon(): string;
     set fontIcon(value: string);
     get fontSet(): string;
@@ -86,7 +90,13 @@ export class MatIcon extends _MatIconBase implements OnInit, AfterViewChecked, C
     // (undocumented)
     static ɵcmp: i0.ɵɵComponentDeclaration<MatIcon, "mat-icon", ["matIcon"], { "color": "color"; "inline": "inline"; "svgIcon": "svgIcon"; "fontSet": "fontSet"; "fontIcon": "fontIcon"; }, {}, never, ["*"]>;
     // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<MatIcon, [null, null, { attribute: "aria-hidden"; }, null, null]>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatIcon, [null, null, { attribute: "aria-hidden"; }, null, null, { optional: true; }]>;
+}
+
+// @public
+export interface MatIconDefaultOptions {
+    color?: ThemePalette;
+    fontSet?: string;
 }
 
 // @public

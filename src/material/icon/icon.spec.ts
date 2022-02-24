@@ -5,8 +5,8 @@ import {
   HttpTestingController,
   TestRequest,
 } from '@angular/common/http/testing';
-import {Component, ErrorHandler, ViewChild} from '@angular/core';
-import {MatIconModule, MAT_ICON_LOCATION} from './index';
+import {Component, ErrorHandler, Provider, Type, ViewChild} from '@angular/core';
+import {MAT_ICON_DEFAULT_OPTIONS, MAT_ICON_LOCATION, MatIconModule} from './index';
 import {MatIconRegistry, getMatIconNoHttpProviderError} from './icon-registry';
 import {FAKE_SVGS} from './fake-svgs';
 import {wrappedErrorMessage} from '../../cdk/testing/private';
@@ -39,6 +39,19 @@ function verifyPathChildElement(element: Element, attributeValue: string): void 
 
   // The testing data SVGs have the name attribute set for verification.
   expect(pathElement.getAttribute('name')).toBe(attributeValue);
+}
+
+/** Creates a test component fixture. */
+function createComponent<T>(component: Type<T>, providers: Provider[] = []) {
+  TestBed.configureTestingModule({
+    imports: [MatIconModule],
+    declarations: [component],
+    providers: [...providers],
+  });
+
+  TestBed.compileComponents();
+
+  return TestBed.createComponent<T>(component);
 }
 
 describe('MatIcon', () => {
@@ -1235,6 +1248,71 @@ describe('MatIcon without HttpClientModule', () => {
       fixture.detectChanges();
     }).toThrowError(expectedError);
   });
+});
+
+describe('MatIcon with default options', () => {
+  it('should be able to configure color globally', fakeAsync(() => {
+    const fixture = createComponent(IconWithLigature, [
+      {provide: MAT_ICON_DEFAULT_OPTIONS, useValue: {color: 'accent'}},
+    ]);
+    const iconElement = fixture.debugElement.nativeElement.querySelector('mat-icon');
+    fixture.detectChanges();
+    expect(iconElement.classList).not.toContain('mat-icon-no-color');
+    expect(iconElement.classList).toContain('mat-accent');
+  }));
+
+  it('should use passed color rather then color provided', fakeAsync(() => {
+    const fixture = createComponent(IconWithColor, [
+      {provide: MAT_ICON_DEFAULT_OPTIONS, useValue: {color: 'warn'}},
+    ]);
+    const iconElement = fixture.debugElement.nativeElement.querySelector('mat-icon');
+    fixture.detectChanges();
+    expect(iconElement.classList).not.toContain('mat-warn');
+    expect(iconElement.classList).toContain('mat-primary');
+  }));
+
+  it('should use default color if no color passed', fakeAsync(() => {
+    const fixture = createComponent(IconWithColor, [
+      {provide: MAT_ICON_DEFAULT_OPTIONS, useValue: {color: 'accent'}},
+    ]);
+    const component = fixture.componentInstance;
+    const iconElement = fixture.debugElement.nativeElement.querySelector('mat-icon');
+    component.iconColor = '';
+    fixture.detectChanges();
+    expect(iconElement.classList).not.toContain('mat-icon-no-color');
+    expect(iconElement.classList).not.toContain('mat-primary');
+    expect(iconElement.classList).toContain('mat-accent');
+  }));
+
+  it('should be able to configure font set globally', fakeAsync(() => {
+    const fixture = createComponent(IconWithLigature, [
+      {provide: MAT_ICON_DEFAULT_OPTIONS, useValue: {fontSet: 'custom-font-set'}},
+    ]);
+    const iconElement = fixture.debugElement.nativeElement.querySelector('mat-icon');
+    fixture.detectChanges();
+    expect(iconElement.classList).toContain('custom-font-set');
+  }));
+
+  it('should use passed fontSet rather then default one', fakeAsync(() => {
+    const fixture = createComponent(IconWithCustomFontCss, [
+      {provide: MAT_ICON_DEFAULT_OPTIONS, useValue: {fontSet: 'default-font-set'}},
+    ]);
+    const component = fixture.componentInstance;
+    const iconElement = fixture.debugElement.nativeElement.querySelector('mat-icon');
+    component.fontSet = 'custom-font-set';
+    fixture.detectChanges();
+    expect(iconElement.classList).not.toContain('default-font-set');
+    expect(iconElement.classList).toContain('custom-font-set');
+  }));
+
+  it('should use passed empty fontSet rather then default one', fakeAsync(() => {
+    const fixture = createComponent(IconWithCustomFontCss, [
+      {provide: MAT_ICON_DEFAULT_OPTIONS, useValue: {fontSet: 'default-font-set'}},
+    ]);
+    const iconElement = fixture.debugElement.nativeElement.querySelector('mat-icon');
+    fixture.detectChanges();
+    expect(iconElement.classList).not.toContain('default-font-set');
+  }));
 });
 
 @Component({template: `<mat-icon>{{iconName}}</mat-icon>`})
