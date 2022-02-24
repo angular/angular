@@ -4,17 +4,22 @@
 
 .example-section {
   display: flex;
+  flex-wrap: wrap;
   align-content: center;
   align-items: center;
-  height: 60px;
 }
 
 .example-margin {
   margin: 8px;
 }
+.example-width {
+  max-width: 180px;
+  width: 100%;
+}
 
 .mat-slider-horizontal {
-  width: 300px;
+  max-width: 300px;
+  width: 100%;
 }
 
 .mat-slider-vertical {
