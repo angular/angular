@@ -5,8 +5,8 @@
  *   - `saucelabs`: Launches the browser within Saucelabs
  */
 const browserConfig = {
-  'iOS14': {unitTest: {target: 'saucelabs'}},
-  'Safari13': {unitTest: {target: 'browserstack'}},
+  'iOS15': {unitTest: {target: 'saucelabs'}},
+  'Safari15': {unitTest: {target: 'browserstack'}},
 };
 
 /** Exports all available custom Karma browsers. */

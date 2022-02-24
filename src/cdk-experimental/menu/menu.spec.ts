@@ -214,7 +214,7 @@ describe('Menu', () => {
       dispatchKeyboardEvent(document, 'keydown', TAB);
       nativeMenu.focus();
 
-      expect(document.querySelector(':focus')).toEqual(nativeMenuItems[0]);
+      expect(document.activeElement).toEqual(nativeMenuItems[0]);
     });
   });
 

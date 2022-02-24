@@ -24,7 +24,6 @@ ng_test_library(
     srcs = ["shared.spec.ts"],
     deps = [
         ":testing",
-        "//src/cdk/platform",
         "//src/cdk/testing",
         "//src/cdk/testing/testbed",
         "//src/material/slide-toggle",

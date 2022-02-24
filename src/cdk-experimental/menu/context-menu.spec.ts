@@ -126,7 +126,7 @@ describe('CdkContextMenuTrigger', () => {
 
     it('should focus the first menuitem when the context menu is opened', () => {
       openContextMenu();
-      expect(document.querySelector(':focus')!.id).toEqual('first_menu_item');
+      expect(document.activeElement!.id).toEqual('first_menu_item');
     });
   });
 

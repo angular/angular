@@ -986,8 +986,8 @@ describe('MenuBar', () => {
         dispatchMouseEvent(menuBarNativeItems[0], 'mouseenter');
         detectChanges();
 
-        expect(document.querySelector(':focus')).not.toEqual(menuBarNativeItems[0]);
-        expect(document.querySelector(':focus')).not.toEqual(menuBarNativeItems[1]);
+        expect(document.activeElement).not.toEqual(menuBarNativeItems[0]);
+        expect(document.activeElement).not.toEqual(menuBarNativeItems[1]);
       },
     );
 
@@ -1089,7 +1089,7 @@ describe('MenuBar', () => {
 
         dispatchKeyboardEvent(nativeMenus[0], 'keydown', DOWN_ARROW);
 
-        expect(document.querySelector(':focus')).toEqual(fileMenuNativeItems[1]);
+        expect(document.activeElement).toEqual(fileMenuNativeItems[1]);
       },
     );
 

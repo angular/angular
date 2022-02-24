@@ -2435,6 +2435,9 @@ class StickyPositioningListenerTest implements StickyPositioningListener {
       display: block;
       width: 20px;
     }
+    .cdk-header-row, .cdk-row, .cdk-footer-row {
+      display: flex;
+    }
   `,
   ],
   providers: [{provide: STICKY_POSITIONING_LISTENER, useExisting: StickyFlexLayoutCdkTableApp}],

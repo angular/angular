@@ -53,12 +53,12 @@ describe('MatMenuBar', () => {
   it('should toggle focused items on left/right click', () => {
     nativeMatMenubar.focus();
 
-    expect(document.querySelector(':focus')!.id).toBe('first');
+    expect(document.activeElement!.id).toBe('first');
 
     dispatchKeyboardEvent(nativeMatMenubar, 'keydown', RIGHT_ARROW);
     fixture.detectChanges();
 
-    expect(document.querySelector(':focus')!.id).toBe('second');
+    expect(document.activeElement!.id).toBe('second');
   });
 });
 
