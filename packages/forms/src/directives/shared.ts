@@ -275,16 +275,18 @@ function _noControlError(dir: NgControl) {
   return _throwError(dir, 'There is no FormControl instance attached to form control element with');
 }
 
-function _throwError(dir: AbstractControlDirective, message: string): void {
+function _throwError(dir: AbstractControlDirective, message: string, extraMessage?: string): void {
   let messageEnd: string;
   if (dir.path!.length > 1) {
     messageEnd = `path: '${dir.path!.join(' -> ')}'`;
   } else if (dir.path![0]) {
     messageEnd = `name: '${dir.path}'`;
   } else {
-    messageEnd = 'unspecified name attribute';
+    messageEnd = 'unspecified name attribute.';
   }
-  throw new Error(`${message} ${messageEnd}`);
+
+  extraMessage = extraMessage ? '\n' + extraMessage : '';
+  throw new Error(`${message} ${messageEnd}${extraMessage}`);
 }
 
 export function isPropertyUpdated(changes: {[key: string]: any}, viewModel: any): boolean {
@@ -318,7 +320,9 @@ export function selectValueAccessor(
   if (!valueAccessors) return null;
 
   if (!Array.isArray(valueAccessors) && (typeof ngDevMode === 'undefined' || ngDevMode))
-    _throwError(dir, 'Value accessor was not provided as an array for form control with');
+    _throwError(
+        dir, 'Value accessor was not provided as an array for form control with',
+        'Please make sure that the `NG_VALUE_ACCESSOR` token is configured as a multi provider (with the `multi: true` property).');
 
   let defaultAccessor: ControlValueAccessor|undefined = undefined;
   let builtinAccessor: ControlValueAccessor|undefined = undefined;
