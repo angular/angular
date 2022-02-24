@@ -51,7 +51,7 @@ export class MatProgressSpinner extends _MatProgressSpinnerBase implements OnIni
     get value(): number;
     set value(newValue: NumberInput);
     // (undocumented)
-    static ɵcmp: i0.ɵɵComponentDeclaration<MatProgressSpinner, "mat-progress-spinner", ["matProgressSpinner"], { "color": "color"; "diameter": "diameter"; "strokeWidth": "strokeWidth"; "mode": "mode"; "value": "value"; }, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MatProgressSpinner, "mat-progress-spinner, mat-spinner", ["matProgressSpinner"], { "color": "color"; "diameter": "diameter"; "strokeWidth": "strokeWidth"; "mode": "mode"; "value": "value"; }, {}, never, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatProgressSpinner, [null, null, { optional: true; }, { optional: true; }, null, null, null, null]>;
 }
@@ -71,18 +71,11 @@ export class MatProgressSpinnerModule {
     // (undocumented)
     static ɵinj: i0.ɵɵInjectorDeclaration<MatProgressSpinnerModule>;
     // (undocumented)
-    static ɵmod: i0.ɵɵNgModuleDeclaration<MatProgressSpinnerModule, [typeof i1.MatProgressSpinner, typeof i1.MatSpinner], [typeof i2.MatCommonModule, typeof i3.CommonModule], [typeof i1.MatProgressSpinner, typeof i1.MatSpinner, typeof i2.MatCommonModule]>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<MatProgressSpinnerModule, [typeof i1.MatProgressSpinner], [typeof i2.MatCommonModule, typeof i3.CommonModule], [typeof i1.MatProgressSpinner, typeof i2.MatCommonModule]>;
 }
 
-// @public
-export class MatSpinner extends MatProgressSpinner {
-    constructor(elementRef: ElementRef<HTMLElement>, platform: Platform, document: any, animationMode: string, defaults?: MatProgressSpinnerDefaultOptions,
-    changeDetectorRef?: ChangeDetectorRef, viewportRuler?: ViewportRuler, ngZone?: NgZone);
-    // (undocumented)
-    static ɵcmp: i0.ɵɵComponentDeclaration<MatSpinner, "mat-spinner", never, { "color": "color"; }, {}, never, never>;
-    // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<MatSpinner, [null, null, { optional: true; }, { optional: true; }, null, null, null, null]>;
-}
+// @public @deprecated (undocumented)
+export const MatSpinner: typeof MatProgressSpinner;
 
 // @public
 export type ProgressSpinnerMode = 'determinate' | 'indeterminate';

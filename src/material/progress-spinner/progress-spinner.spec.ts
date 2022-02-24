@@ -26,6 +26,7 @@ describe('MatProgressSpinner', () => {
           ProgressSpinnerWithStringValues,
           IndeterminateSpinnerInShadowDom,
           IndeterminateSpinnerInShadowDomWithNgIf,
+          SpinnerWithMode,
         ],
       }).compileComponents();
     }),
@@ -540,6 +541,14 @@ describe('MatProgressSpinner', () => {
     expect(children.length).toBeGreaterThan(0);
     expect(children.every(child => child.getAttribute('aria-hidden') === 'true')).toBe(true);
   });
+
+  it('should be able to change the mode on a mat-spinner', () => {
+    const fixture = TestBed.createComponent(SpinnerWithMode);
+    fixture.detectChanges();
+
+    const progressElement = fixture.debugElement.query(By.css('mat-spinner')).nativeElement;
+    expect(progressElement.getAttribute('mode')).toBe('determinate');
+  });
 });
 
 @Component({template: '<mat-progress-spinner></mat-progress-spinner>'})
@@ -616,3 +625,6 @@ class IndeterminateSpinnerInShadowDomWithNgIf {
 
   diameter: number;
 }
+
+@Component({template: '<mat-spinner mode="determinate"></mat-spinner>'})
+class SpinnerWithMode {}
