@@ -139,19 +139,28 @@
   ],
   [
     "packages/forms/src/directives/abstract_control_directive.ts",
-    "packages/forms/src/model.ts",
+    "packages/forms/src/model/abstract_control.ts",
+    "packages/forms/src/model/form_array.ts",
+    "packages/forms/src/model/util.ts",
+    "packages/forms/src/model/form_control.ts",
     "packages/forms/src/directives/shared.ts"
   ],
   [
     "packages/forms/src/directives/abstract_control_directive.ts",
-    "packages/forms/src/model.ts",
+    "packages/forms/src/model/abstract_control.ts",
+    "packages/forms/src/model/form_array.ts",
+    "packages/forms/src/model/util.ts",
+    "packages/forms/src/model/form_control.ts",
     "packages/forms/src/directives/shared.ts",
     "packages/forms/src/directives/abstract_form_group_directive.ts",
     "packages/forms/src/directives/control_container.ts"
   ],
   [
     "packages/forms/src/directives/abstract_control_directive.ts",
-    "packages/forms/src/model.ts",
+    "packages/forms/src/model/abstract_control.ts",
+    "packages/forms/src/model/form_array.ts",
+    "packages/forms/src/model/util.ts",
+    "packages/forms/src/model/form_control.ts",
     "packages/forms/src/directives/shared.ts",
     "packages/forms/src/directives/abstract_form_group_directive.ts",
     "packages/forms/src/directives/control_container.ts",
@@ -167,16 +176,11 @@
     "packages/forms/src/directives/abstract_form_group_directive.ts",
     "packages/forms/src/directives/control_container.ts",
     "packages/forms/src/directives/form_interface.ts",
-    "packages/forms/src/model.ts",
+    "packages/forms/src/model/form_control.ts",
     "packages/forms/src/directives/shared.ts"
   ],
   [
     "packages/forms/src/directives/abstract_form_group_directive.ts",
-    "packages/forms/src/directives/shared.ts"
-  ],
-  [
-    "packages/forms/src/directives/abstract_form_group_directive.ts",
-    "packages/forms/src/model.ts",
     "packages/forms/src/directives/shared.ts"
   ],
   [
@@ -202,7 +206,7 @@
   ],
   [
     "packages/forms/src/directives/reactive_directives/form_control_directive.ts",
-    "packages/forms/src/model.ts",
+    "packages/forms/src/model/form_control.ts",
     "packages/forms/src/directives/shared.ts",
     "packages/forms/src/directives/reactive_directives/form_group_name.ts",
     "packages/forms/src/directives/reactive_directives/form_group_directive.ts",
@@ -225,7 +229,7 @@
   ],
   [
     "packages/forms/src/directives/reactive_directives/form_control_name.ts",
-    "packages/forms/src/model.ts",
+    "packages/forms/src/model/form_control.ts",
     "packages/forms/src/directives/shared.ts",
     "packages/forms/src/directives/reactive_directives/form_group_name.ts",
     "packages/forms/src/directives/reactive_directives/form_group_directive.ts"
@@ -241,7 +245,15 @@
   ],
   [
     "packages/forms/src/directives/reactive_directives/form_group_directive.ts",
-    "packages/forms/src/model.ts",
+    "packages/forms/src/model/form_array.ts",
+    "packages/forms/src/model/util.ts",
+    "packages/forms/src/model/form_control.ts",
+    "packages/forms/src/directives/shared.ts",
+    "packages/forms/src/directives/reactive_directives/form_group_name.ts"
+  ],
+  [
+    "packages/forms/src/directives/reactive_directives/form_group_directive.ts",
+    "packages/forms/src/model/form_control.ts",
     "packages/forms/src/directives/shared.ts",
     "packages/forms/src/directives/reactive_directives/form_group_name.ts"
   ],
@@ -251,27 +263,77 @@
   ],
   [
     "packages/forms/src/directives/reactive_directives/form_group_name.ts",
-    "packages/forms/src/model.ts",
+    "packages/forms/src/model/form_array.ts",
+    "packages/forms/src/model/util.ts",
+    "packages/forms/src/model/form_control.ts",
     "packages/forms/src/directives/shared.ts"
   ],
   [
     "packages/forms/src/directives/shared.ts",
-    "packages/forms/src/model.ts"
+    "packages/forms/src/model/abstract_control.ts",
+    "packages/forms/src/model/form_array.ts",
+    "packages/forms/src/model/util.ts",
+    "packages/forms/src/model/form_control.ts"
   ],
   [
     "packages/forms/src/directives/shared.ts",
-    "packages/forms/src/validators.ts",
+    "packages/forms/src/model/form_array.ts",
+    "packages/forms/src/model/util.ts",
+    "packages/forms/src/model/form_control.ts"
+  ],
+  [
+    "packages/forms/src/directives/shared.ts",
+    "packages/forms/src/model/form_control.ts"
+  ],
+  [
+    "packages/forms/src/directives/shared.ts",
+    "packages/forms/src/model/form_group.ts",
+    "packages/forms/src/model/abstract_control.ts",
+    "packages/forms/src/model/form_array.ts",
+    "packages/forms/src/model/util.ts",
+    "packages/forms/src/model/form_control.ts"
+  ],
+  [
+    "packages/forms/src/directives/shared.ts",
+    "packages/forms/src/model/form_group.ts",
+    "packages/forms/src/model/util.ts",
+    "packages/forms/src/model/form_control.ts"
+  ],
+  [
     "packages/forms/src/directives/validators.ts",
-    "packages/forms/src/model.ts"
-  ],
-  [
-    "packages/forms/src/directives/shared.ts",
-    "packages/forms/src/validators.ts",
-    "packages/forms/src/model.ts"
+    "packages/forms/src/model/abstract_control.ts"
   ],
   [
     "packages/forms/src/directives/validators.ts",
     "packages/forms/src/validators.ts"
+  ],
+  [
+    "packages/forms/src/directives/validators.ts",
+    "packages/forms/src/validators.ts",
+    "packages/forms/src/model/abstract_control.ts"
+  ],
+  [
+    "packages/forms/src/model/abstract_control.ts",
+    "packages/forms/src/model/form_array.ts"
+  ],
+  [
+    "packages/forms/src/model/abstract_control.ts",
+    "packages/forms/src/model/form_array.ts",
+    "packages/forms/src/model/util.ts"
+  ],
+  [
+    "packages/forms/src/model/abstract_control.ts",
+    "packages/forms/src/model/form_array.ts",
+    "packages/forms/src/model/util.ts",
+    "packages/forms/src/model/form_control.ts"
+  ],
+  [
+    "packages/forms/src/model/form_array.ts",
+    "packages/forms/src/model/util.ts"
+  ],
+  [
+    "packages/forms/src/model/form_control.ts",
+    "packages/forms/src/model/util.ts"
   ],
   [
     "packages/router/src/directives/router_outlet.ts",
