@@ -237,13 +237,15 @@ describe('MatSort', () => {
       component.sort('defaultA');
       expect(component.matSort.direction).toBe('asc');
       expect(container.getAttribute('tabindex')).toBe('0');
+      expect(container.getAttribute('role')).toBe('button');
 
       component.disabledColumnSort = true;
       fixture.detectChanges();
 
       component.sort('defaultA');
       expect(component.matSort.direction).toBe('asc');
-      expect(container.getAttribute('tabindex')).toBeFalsy();
+      expect(container.hasAttribute('tabindex')).toBe(false);
+      expect(container.hasAttribute('role')).toBe(false);
     });
 
     it('should allow for the cycling the sort direction to be disabled for all columns', () => {
@@ -417,7 +419,7 @@ describe('MatSort', () => {
     });
 
     it('should add a default aria description to sort buttons', () => {
-      const sortButton = fixture.nativeElement.querySelector('[role="button"]');
+      const sortButton = fixture.nativeElement.querySelector('.mat-sort-header-container');
       const descriptionId = sortButton.getAttribute('aria-describedby');
       expect(descriptionId).toBeDefined();
 
@@ -426,7 +428,9 @@ describe('MatSort', () => {
     });
 
     it('should add a custom aria description to sort buttons', () => {
-      const sortButton = fixture.nativeElement.querySelector('#defaultB [role="button"]');
+      const sortButton = fixture.nativeElement.querySelector(
+        '#defaultB .mat-sort-header-container',
+      );
       let descriptionId = sortButton.getAttribute('aria-describedby');
       expect(descriptionId).toBeDefined();
 
