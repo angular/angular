@@ -357,16 +357,17 @@ export class CdkDropList<T = any> implements OnDestroy {
       });
     });
 
-    ref.dropped.subscribe(event => {
+    ref.dropped.subscribe(dropEvent => {
       this.dropped.emit({
-        previousIndex: event.previousIndex,
-        currentIndex: event.currentIndex,
-        previousContainer: event.previousContainer.data,
-        container: event.container.data,
-        item: event.item.data,
-        isPointerOverContainer: event.isPointerOverContainer,
-        distance: event.distance,
-        dropPoint: event.dropPoint,
+        previousIndex: dropEvent.previousIndex,
+        currentIndex: dropEvent.currentIndex,
+        previousContainer: dropEvent.previousContainer.data,
+        container: dropEvent.container.data,
+        item: dropEvent.item.data,
+        isPointerOverContainer: dropEvent.isPointerOverContainer,
+        distance: dropEvent.distance,
+        dropPoint: dropEvent.dropPoint,
+        event: dropEvent.event,
       });
 
       // Mark for check since all of these events run outside of change

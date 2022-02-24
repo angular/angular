@@ -112,6 +112,7 @@ export interface CdkDragDrop<T, O = T, I = any> {
         x: number;
         y: number;
     };
+    event: MouseEvent | TouchEvent;
     isPointerOverContainer: boolean;
     item: CdkDrag<I>;
     previousContainer: CdkDropList<O>;
@@ -128,6 +129,7 @@ export interface CdkDragEnd<T = any> {
         x: number;
         y: number;
     };
+    event: MouseEvent | TouchEvent;
     source: CdkDrag<T>;
 }
 
@@ -207,6 +209,7 @@ export class CdkDragPreview<T = any> {
 
 // @public
 export interface CdkDragRelease<T = any> {
+    event: MouseEvent | TouchEvent;
     source: CdkDrag<T>;
 }
 
@@ -220,6 +223,7 @@ export interface CdkDragSortEvent<T = any, I = T> {
 
 // @public
 export interface CdkDragStart<T = any> {
+    event: MouseEvent | TouchEvent;
     source: CdkDrag<T>;
 }
 
@@ -379,12 +383,14 @@ export class DragRef<T = any> {
         distance: Point;
         dropPoint: Point;
         isPointerOverContainer: boolean;
+        event: MouseEvent | TouchEvent;
     }>;
     enableHandle(handle: HTMLElement): void;
     readonly ended: Subject<{
         source: DragRef;
         distance: Point;
         dropPoint: Point;
+        event: MouseEvent | TouchEvent;
     }>;
     readonly entered: Subject<{
         container: DropListRefInternal;
@@ -417,12 +423,14 @@ export class DragRef<T = any> {
     previewClass: string | string[] | undefined;
     readonly released: Subject<{
         source: DragRef;
+        event: MouseEvent | TouchEvent;
     }>;
     reset(): void;
     setFreeDragPosition(value: Point): this;
     _sortFromLastPointerPosition(): void;
     readonly started: Subject<{
         source: DragRef;
+        event: MouseEvent | TouchEvent;
     }>;
     withBoundaryElement(boundaryElement: ElementRef<HTMLElement> | HTMLElement | null): this;
     withDirection(direction: Direction): this;
@@ -463,7 +471,7 @@ export class DropListRef<T = any> {
     data: T;
     disabled: boolean;
     dispose(): void;
-    drop(item: DragRefInternal, currentIndex: number, previousIndex: number, previousContainer: DropListRef, isPointerOverContainer: boolean, distance: Point, dropPoint: Point): void;
+    drop(item: DragRefInternal, currentIndex: number, previousIndex: number, previousContainer: DropListRef, isPointerOverContainer: boolean, distance: Point, dropPoint: Point, event?: MouseEvent | TouchEvent): void;
     readonly dropped: Subject<{
         item: DragRefInternal;
         currentIndex: number;
@@ -473,6 +481,7 @@ export class DropListRef<T = any> {
         isPointerOverContainer: boolean;
         distance: Point;
         dropPoint: Point;
+        event: MouseEvent | TouchEvent;
     }>;
     element: HTMLElement | ElementRef<HTMLElement>;
     enter(item: DragRefInternal, pointerX: number, pointerY: number, index?: number): void;

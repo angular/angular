@@ -13,12 +13,16 @@ import {CdkDropList} from './directives/drop-list';
 export interface CdkDragStart<T = any> {
   /** Draggable that emitted the event. */
   source: CdkDrag<T>;
+  /** Native event that started the drag sequence. */
+  event: MouseEvent | TouchEvent;
 }
 
 /** Event emitted when the user releases an item, before any animations have started. */
 export interface CdkDragRelease<T = any> {
   /** Draggable that emitted the event. */
   source: CdkDrag<T>;
+  /** Native event that caused the release event. */
+  event: MouseEvent | TouchEvent;
 }
 
 /** Event emitted when the user stops dragging a draggable. */
@@ -29,6 +33,8 @@ export interface CdkDragEnd<T = any> {
   distance: {x: number; y: number};
   /** Position where the pointer was when the item was dropped */
   dropPoint: {x: number; y: number};
+  /** Native event that caused the dragging to stop. */
+  event: MouseEvent | TouchEvent;
 }
 
 /** Event emitted when the user moves an item into a new drop container. */
@@ -70,6 +76,8 @@ export interface CdkDragDrop<T, O = T, I = any> {
   distance: {x: number; y: number};
   /** Position where the pointer was when the item was dropped */
   dropPoint: {x: number; y: number};
+  /** Native event that caused the drop event. */
+  event: MouseEvent | TouchEvent;
 }
 
 /** Event emitted as the user is dragging a draggable item. */
