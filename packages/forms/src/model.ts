@@ -1594,6 +1594,28 @@ export const FormControl: ɵFormControlCtor =
       }
     });
 
+interface UntypedFormControlCtor {
+  new(): UntypedFormControl;
+
+  new(formState?: any, validatorOrOpts?: ValidatorFn|ValidatorFn[]|FormControlOptions|null,
+      asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null): UntypedFormControl;
+
+  /**
+   * The presence of an explicit `prototype` property provides backwards-compatibility for apps that
+   * manually inspect the prototype chain.
+   */
+  prototype: FormControl;
+}
+
+/**
+ * UntypedFormControl is a non-strongly-typed version of @see FormControl.
+ * Note: this is used for migration purposes only. Please avoid using it directly in your code and
+ * prefer `FormControl` instead, unless you have been migrated to it automatically.
+ */
+export type UntypedFormControl = FormControl;
+
+export const UntypedFormControl: UntypedFormControlCtor = FormControl;
+
 /**
  * Tracks the value and validity state of a group of `FormControl` instances.
  *
@@ -2041,6 +2063,27 @@ export class FormGroup extends AbstractControl {
     return this.controls.hasOwnProperty(name as string) ? this.controls[name as string] : null;
   }
 }
+
+interface UntypedFormGroupCtor {
+  new(controls: {[key: string]: AbstractControl},
+      validatorOrOpts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|null,
+      asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null): UntypedFormGroup;
+
+  /**
+   * The presence of an explicit `prototype` property provides backwards-compatibility for apps that
+   * manually inspect the prototype chain.
+   */
+  prototype: FormGroup;
+}
+
+/**
+ * UntypedFormGroup is a non-strongly-typed version of @see FormGroup.
+ * Note: this is used for migration purposes only. Please avoid using it directly in your code and
+ * prefer `FormControl` instead, unless you have been migrated to it automatically.
+ */
+export type UntypedFormGroup = FormGroup;
+
+export const UntypedFormGroup: UntypedFormGroupCtor = FormGroup;
 
 /**
  * Tracks the value and validity state of an array of `FormControl`,
@@ -2506,3 +2549,24 @@ export class FormArray extends AbstractControl {
     return this.at(name as number) ?? null;
   }
 }
+
+interface UntypedFormArrayCtor {
+  new(controls: AbstractControl[],
+      validatorOrOpts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|null,
+      asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null): UntypedFormArray;
+
+  /**
+   * The presence of an explicit `prototype` property provides backwards-compatibility for apps that
+   * manually inspect the prototype chain.
+   */
+  prototype: FormArray;
+}
+
+/**
+ * UntypedFormArray is a non-strongly-typed version of @see FormArray.
+ * Note: this is used for migration purposes only. Please avoid using it directly in your code and
+ * prefer `FormControl` instead, unless you have been migrated to it automatically.
+ */
+export type UntypedFormArray = FormArray;
+
+export const UntypedFormArray: UntypedFormArrayCtor = FormArray;

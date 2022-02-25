@@ -144,9 +144,6 @@ export class AbstractFormGroupDirective extends ControlContainer implements OnIn
 }
 
 // @public
-export type AnyForUntypedForms = any;
-
-// @public
 export interface AsyncValidator extends Validator {
     validate(control: AbstractControl): Promise<ValidationErrors | null> | Observable<ValidationErrors | null>;
 }
@@ -724,6 +721,24 @@ export class SelectMultipleControlValueAccessor extends BuiltInControlValueAcces
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<SelectMultipleControlValueAccessor, never>;
 }
+
+// @public
+export type UntypedFormArray = FormArray;
+
+// @public (undocumented)
+export const UntypedFormArray: UntypedFormArrayCtor;
+
+// @public
+export type UntypedFormControl = FormControl;
+
+// @public (undocumented)
+export const UntypedFormControl: UntypedFormControlCtor;
+
+// @public
+export type UntypedFormGroup = FormGroup;
+
+// @public (undocumented)
+export const UntypedFormGroup: UntypedFormGroupCtor;
 
 // @public
 export type ValidationErrors = {
