@@ -176,6 +176,10 @@ export class RippleRenderer implements EventListenerObject {
     if (!animationForciblyDisabledThroughCss && (enterDuration || animationConfig.exitDuration)) {
       this._ngZone.runOutsideAngular(() => {
         ripple.addEventListener('transitionend', () => this._finishRippleTransition(rippleRef));
+        // If the transition is cancelled (e.g. due to DOM removal), we destroy the ripple
+        // directly as otherwise we would keep it part of the ripple container forever.
+        // https://www.w3.org/TR/css-transitions-1/#:~:text=no%20longer%20in%20the%20document.
+        ripple.addEventListener('transitioncancel', () => this._destroyRipple(rippleRef));
       });
     }
 
@@ -190,19 +194,8 @@ export class RippleRenderer implements EventListenerObject {
 
   /** Fades out a ripple reference. */
   fadeOutRipple(rippleRef: RippleRef) {
-    const wasActive = this._activeRipples.delete(rippleRef);
-
-    if (rippleRef === this._mostRecentTransientRipple) {
-      this._mostRecentTransientRipple = null;
-    }
-
-    // Clear out the cached bounding rect if we have no more ripples.
-    if (!this._activeRipples.size) {
-      this._containerRect = null;
-    }
-
-    // For ripples that are not active anymore, don't re-run the fade-out animation.
-    if (!wasActive) {
+    // For ripples already fading out or hidden, this should be a noop.
+    if (rippleRef.state === RippleState.FADING_OUT || rippleRef.state === RippleState.HIDDEN) {
       return;
     }
 
@@ -303,6 +296,19 @@ export class RippleRenderer implements EventListenerObject {
 
   /** Destroys the given ripple by removing it from the DOM and updating its state. */
   private _destroyRipple(rippleRef: RippleRef) {
+    this._activeRipples.delete(rippleRef);
+
+    // Clear out the cached bounding rect if we have no more ripples.
+    if (!this._activeRipples.size) {
+      this._containerRect = null;
+    }
+
+    // If the current ref is the most recent transient ripple, unset it
+    // avoid memory leaks.
+    if (rippleRef === this._mostRecentTransientRipple) {
+      this._mostRecentTransientRipple = null;
+    }
+
     rippleRef.state = RippleState.HIDDEN;
     rippleRef.element.remove();
   }

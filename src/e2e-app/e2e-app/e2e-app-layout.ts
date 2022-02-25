@@ -27,6 +27,7 @@ export class E2eAppLayout {
     {path: 'progress-bar', title: 'Progress bar'},
     {path: 'progress-spinner', title: 'Progress Spinner'},
     {path: 'radio', title: 'Radios'},
+    {path: 'select', title: 'Select'},
     {path: 'sidenav', title: 'Sidenav'},
     {path: 'slide-toggle', title: 'Slide Toggle'},
     {path: 'stepper', title: 'Stepper'},

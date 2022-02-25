@@ -70,6 +70,7 @@ ng_module(
         "//src/material/progress-bar",
         "//src/material/progress-spinner",
         "//src/material/radio",
+        "//src/material/select",
         "//src/material/sidenav",
         "//src/material/slide-toggle",
         "//src/material/tabs",

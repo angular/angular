@@ -36,6 +36,7 @@ import {BasicTabs} from './tabs/tabs-e2e';
 import {ToolbarE2e} from './toolbar/toolbar-e2e';
 import {VirtualScrollE2E} from './virtual-scroll/virtual-scroll-e2e';
 import {Home} from './e2e-app/e2e-app-layout';
+import {SelectE2e} from './select/select-e2e';
 
 export const E2E_APP_ROUTES: Routes = [
   {path: '', component: Home},
@@ -70,6 +71,7 @@ export const E2E_APP_ROUTES: Routes = [
   {path: 'progress-spinner', component: ProgressSpinnerE2E},
   {path: 'radio', component: SimpleRadioButtons},
   {path: 'sidenav', component: SidenavE2E},
+  {path: 'select', component: SelectE2e},
   {path: 'slide-toggle', component: SlideToggleE2E},
   {path: 'stepper', component: StepperE2e},
   {path: 'tabs', component: BasicTabs},

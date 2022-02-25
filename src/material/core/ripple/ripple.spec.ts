@@ -45,6 +45,7 @@ describe('MatRipple', () => {
         RippleContainerWithNgIf,
         RippleCssTransitionNone,
         RippleCssTransitionDurationZero,
+        RippleWithDomRemovalOnClick,
       ],
     });
   });
@@ -802,6 +803,33 @@ describe('MatRipple', () => {
       dispatchMouseEvent(rippleTarget, 'mouseup');
       expect(rippleTarget.querySelectorAll('.mat-ripple-element').length).toBe(0);
     });
+
+    it('should destroy the ripple if the transition is being canceled due to DOM removal', async () => {
+      fixture = TestBed.createComponent(RippleWithDomRemovalOnClick);
+      fixture.detectChanges();
+
+      rippleTarget = fixture.nativeElement.querySelector('.mat-ripple');
+
+      dispatchMouseEvent(rippleTarget, 'mousedown');
+      dispatchMouseEvent(rippleTarget, 'mouseup');
+      dispatchMouseEvent(rippleTarget, 'click');
+
+      const fadingRipple = rippleTarget.querySelector('.mat-ripple-element');
+      expect(fadingRipple).not.toBe(null);
+
+      // The ripple animation is still on-going but the element is now removed from DOM as
+      // part of the change detecton (given `show` being set to `false` on click)
+      fixture.detectChanges();
+
+      // The `transitioncancel` event is emitted when a CSS transition is canceled due
+      // to e.g. DOM removal. More details in the CSS transitions spec:
+      // https://www.w3.org/TR/css-transitions-1/#:~:text=no%20longer%20in%20the%20document.
+      dispatchFakeEvent(fadingRipple!, 'transitioncancel');
+
+      // There should be no ripple element anymore because the fading-in ripple from
+      // before had its animation canceled due the DOM removal.
+      expect(rippleTarget.querySelector('.mat-ripple-element')).toBeNull();
+    });
   });
 });
 
@@ -866,3 +894,14 @@ class RippleCssTransitionNone {}
   encapsulation: ViewEncapsulation.None,
 })
 class RippleCssTransitionDurationZero {}
+
+@Component({
+  template: `
+    <div *ngIf="show" (click)="show = false" matRipple>
+      Click to remove this element.
+    </div>
+  `,
+})
+class RippleWithDomRemovalOnClick {
+  show = true;
+}

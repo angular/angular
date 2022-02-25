@@ -1,6 +1,6 @@
 import {NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
-import {NoopAnimationsModule} from '@angular/platform-browser/animations';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {RouterModule} from '@angular/router';
 import {BlockScrollStrategyE2eModule} from './block-scroll-strategy/block-scroll-strategy-e2e-module';
 import {ButtonToggleE2eModule} from './button-toggle/button-toggle-e2e-module';
@@ -41,11 +41,14 @@ import {VirtualScrollE2eModule} from './virtual-scroll/virtual-scroll-e2e-module
 import {MdcProgressBarE2eModule} from './mdc-progress-bar/mdc-progress-bar-e2e-module';
 import {MdcProgressSpinnerE2eModule} from './mdc-progress-spinner/mdc-progress-spinner-module';
 
+/** We allow for animations to be explicitly enabled in certain e2e tests. */
+const enableAnimations = window.location.search.includes('animations=true');
+
 @NgModule({
   imports: [
     BrowserModule,
     E2eAppModule,
-    NoopAnimationsModule,
+    BrowserAnimationsModule.withConfig({disableAnimations: !enableAnimations}),
     RouterModule.forRoot(E2E_APP_ROUTES),
 
     // E2E demos

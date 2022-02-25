@@ -265,6 +265,7 @@
 /src/e2e-app/progress-bar/**                       @andrewseguin @crisbeto
 /src/e2e-app/progress-spinner/**                   @andrewseguin @crisbeto
 /src/e2e-app/radio/**                              @andrewseguin @devversion
+/src/e2e-app/select/**                             @crisbeto
 /src/e2e-app/sidenav/**                            @mmalerba
 /src/e2e-app/slide-toggle/**                       @devversion
 /src/e2e-app/stepper/**                            @mmalerba
