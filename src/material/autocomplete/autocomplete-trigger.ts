@@ -454,6 +454,12 @@ export abstract class _MatAutocompleteTriggerBase
     }
   }
 
+  _handleClick(): void {
+    if (this._canOpen() && !this.panelOpen) {
+      this.openPanel();
+    }
+  }
+
   /**
    * In "auto" mode, the label will animate down as soon as focus is lost.
    * This causes the value to jump when selecting an option with the mouse.
@@ -800,6 +806,7 @@ export abstract class _MatAutocompleteTriggerBase
     '(blur)': '_onTouched()',
     '(input)': '_handleInput($event)',
     '(keydown)': '_handleKeydown($event)',
+    '(click)': '_handleClick()',
   },
   exportAs: 'matAutocompleteTrigger',
   providers: [MAT_AUTOCOMPLETE_VALUE_ACCESSOR],

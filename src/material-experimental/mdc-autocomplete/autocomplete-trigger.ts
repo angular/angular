@@ -41,6 +41,7 @@ export const MAT_AUTOCOMPLETE_VALUE_ACCESSOR: any = {
     '(blur)': '_onTouched()',
     '(input)': '_handleInput($event)',
     '(keydown)': '_handleKeydown($event)',
+    '(click)': '_handleClick()',
   },
   exportAs: 'matAutocompleteTrigger',
   providers: [MAT_AUTOCOMPLETE_VALUE_ACCESSOR],
