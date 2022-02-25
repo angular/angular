@@ -3,6 +3,7 @@
   "automerge": false,
   "baseBranches": ["master"],
   "enabledManagers": ["npm", "bazel", "github-actions"],
+  "stopUpdatingLabel": "merge ready",
   "labels": ["target: patch", "merge safe"],
   "lockFileMaintenance": {
     "enabled": true
