@@ -47,6 +47,19 @@ export interface UpdateActivatedEvent {
 }
 
 /**
+ * An event emitted when the service worker has checked the version of the app on the server
+ * and it is the same as the installed version.
+ *
+ * @see {@link guide/service-worker-communications Service worker communication guide}
+ *
+ * @publicApi
+ */
+export interface NoNewVersionDetectedEvent {
+  type: 'NO_NEW_VERSION_DETECTED';
+  version: {hash: string; appData?: Object;};
+}
+
+/**
  * An event emitted when the service worker has detected a new version of the app on the server and
  * is about to start downloading it.
  *
@@ -93,7 +106,8 @@ export interface VersionReadyEvent {
  *
  * @publicApi
  */
-export type VersionEvent = VersionDetectedEvent|VersionInstallationFailedEvent|VersionReadyEvent;
+export type VersionEvent =
+    VersionDetectedEvent|VersionInstallationFailedEvent|VersionReadyEvent|NoNewVersionDetectedEvent;
 
 /**
  * An event emitted when the version of the app used by the service worker to serve this client is

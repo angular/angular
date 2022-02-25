@@ -86,8 +86,12 @@ export class SwUpdate {
       this.unrecoverable = NEVER;
       return;
     }
-    this.versionUpdates = this.sw.eventsOfType<VersionEvent>(
-        ['VERSION_DETECTED', 'VERSION_INSTALLATION_FAILED', 'VERSION_READY']);
+    this.versionUpdates = this.sw.eventsOfType<VersionEvent>([
+      'VERSION_DETECTED',
+      'VERSION_INSTALLATION_FAILED',
+      'VERSION_READY',
+      'NO_NEW_VERSION_DETECTED',
+    ]);
     this.available = this.versionUpdates.pipe(
         filter((evt: VersionEvent): evt is VersionReadyEvent => evt.type === 'VERSION_READY'),
         map(evt => ({
