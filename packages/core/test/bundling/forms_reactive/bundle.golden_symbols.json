@@ -1116,9 +1116,6 @@
     "name": "isEmptyInputValue"
   },
   {
-    "name": "isFormArray"
-  },
-  {
     "name": "isFormControl"
   },
   {

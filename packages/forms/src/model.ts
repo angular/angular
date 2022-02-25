@@ -66,31 +66,6 @@ export const DISABLED = 'DISABLED';
  */
 export type FormControlStatus = 'VALID'|'INVALID'|'PENDING'|'DISABLED';
 
-function _find(control: AbstractControl, path: Array<string|number>|string, delimiter: string) {
-  if (path == null) return null;
-
-  if (!Array.isArray(path)) {
-    path = path.split(delimiter);
-  }
-  if (Array.isArray(path) && path.length === 0) return null;
-
-  // Not using Array.reduce here due to a Chrome 80 bug
-  // https://bugs.chromium.org/p/chromium/issues/detail?id=1049982
-  let controlToFind: AbstractControl|null = control;
-  path.forEach((name: string|number) => {
-    if (isFormGroup(controlToFind)) {
-      controlToFind = controlToFind.controls.hasOwnProperty(name as string) ?
-          controlToFind.controls[name] :
-          null;
-    } else if (isFormArray(controlToFind)) {
-      controlToFind = controlToFind.at(<number>name) || null;
-    } else {
-      controlToFind = null;
-    }
-  });
-  return controlToFind;
-}
-
 /**
  * Gets validators from either an options object or given validators.
  */
@@ -999,7 +974,11 @@ export abstract class AbstractControl {
    * * `this.form.get(['items', 0, 'price']);`
    */
   get(path: Array<string|number>|string): AbstractControl|null {
-    return _find(this, path, '.');
+    if (path == null) return null;
+    if (!Array.isArray(path)) path = path.split('.');
+    if (path.length === 0) return null;
+    return path.reduce(
+        (control: AbstractControl|null, name) => control && control._find(name), this);
   }
 
   /**
@@ -1185,6 +1164,11 @@ export abstract class AbstractControl {
   private _parentMarkedDirty(onlySelf?: boolean): boolean {
     const parentDirty = this._parent && this._parent.dirty;
     return !onlySelf && !!parentDirty && !this._parent!._anyControlsDirty();
+  }
+
+  /** @internal */
+  _find(name: string|number): AbstractControl|null {
+    return null;
   }
 }
 
@@ -2051,6 +2035,11 @@ export class FormGroup extends AbstractControl {
     }
     return Object.keys(this.controls).length > 0 || this.disabled;
   }
+
+  /** @internal */
+  override _find(name: string|number): AbstractControl|null {
+    return this.controls.hasOwnProperty(name as string) ? this.controls[name as string] : null;
+  }
 }
 
 /**
@@ -2510,5 +2499,10 @@ export class FormArray extends AbstractControl {
   private _registerControl(control: AbstractControl) {
     control.setParent(this);
     control._registerOnCollectionChange(this._onCollectionChange);
+  }
+
+  /** @internal */
+  override _find(name: string|number): AbstractControl|null {
+    return this.at(name as number) ?? null;
   }
 }

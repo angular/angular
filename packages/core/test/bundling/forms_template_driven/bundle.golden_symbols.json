@@ -174,9 +174,6 @@
     "name": "EventManagerPlugin"
   },
   {
-    "name": "FormArray"
-  },
-  {
     "name": "FormControl"
   },
   {
@@ -600,12 +597,6 @@
     "name": "applyViewChange"
   },
   {
-    "name": "assertAllValuesPresent"
-  },
-  {
-    "name": "assertControlPresent"
-  },
-  {
     "name": "attachInjectFlag"
   },
   {
@@ -946,9 +937,6 @@
   },
   {
     "name": "getPromiseCtor"
-  },
-  {
-    "name": "getRawValue"
   },
   {
     "name": "getSelectedIndex"
