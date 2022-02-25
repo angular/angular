@@ -948,9 +948,6 @@
     "name": "getPromiseCtor"
   },
   {
-    "name": "getRawValue"
-  },
-  {
     "name": "getSelectedIndex"
   },
   {
