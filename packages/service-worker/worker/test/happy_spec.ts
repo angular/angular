@@ -666,6 +666,25 @@ describe('Driver', () => {
     serverUpdate.assertNoOtherRequests();
   });
 
+  it('sends a notification message after finding the same version on the server and installed',
+     async () => {
+       expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+       await driver.initialized;
+
+       const client = scope.clients.getMock('default')!;
+
+       expect(await driver.checkForUpdate()).toEqual(false);
+       serverUpdate.clearRequests();
+
+       expect(client.messages).toEqual([
+         {
+           type: 'NO_NEW_VERSION_DETECTED',
+           version: {hash: manifestHash, appData: {version: 'original'}},
+         },
+       ]);
+       serverUpdate.assertNoOtherRequests();
+     });
+
   it('cleans up properly when manually requested', async () => {
     expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
     await driver.initialized;

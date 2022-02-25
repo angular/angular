@@ -460,6 +460,19 @@ import {MockPushManager, MockPushSubscription, MockServiceWorkerContainer, MockS
           },
         });
       });
+      it('processes a no new version event when sent', done => {
+        update.versionUpdates.subscribe(event => {
+          expect(event.type).toEqual('NO_NEW_VERSION_DETECTED');
+          expect((event as VersionDetectedEvent).version).toEqual({hash: 'A'});
+          done();
+        });
+        mock.sendMessage({
+          type: 'NO_NEW_VERSION_DETECTED',
+          version: {
+            hash: 'A',
+          },
+        });
+      });
       it('process any version update event when sent', done => {
         update.versionUpdates.subscribe(event => {
           expect(event.type).toEqual('VERSION_DETECTED');
