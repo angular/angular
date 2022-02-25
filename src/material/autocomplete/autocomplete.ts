@@ -74,6 +74,9 @@ export interface MatAutocompleteDefaultOptions {
   /** Whether the first option should be highlighted when an autocomplete panel is opened. */
   autoActiveFirstOption?: boolean;
 
+  /** Whether the active option should be selected as the user is navigating. */
+  autoSelectActiveOption?: boolean;
+
   /** Class or list of classes to be applied to the autocomplete's overlay panel. */
   overlayPanelClass?: string | string[];
 }
@@ -89,7 +92,7 @@ export const MAT_AUTOCOMPLETE_DEFAULT_OPTIONS = new InjectionToken<MatAutocomple
 
 /** @docs-private */
 export function MAT_AUTOCOMPLETE_DEFAULT_OPTIONS_FACTORY(): MatAutocompleteDefaultOptions {
-  return {autoActiveFirstOption: false};
+  return {autoActiveFirstOption: false, autoSelectActiveOption: false};
 }
 
 /** Base class with all of the `MatAutocomplete` functionality. */
@@ -156,6 +159,16 @@ export abstract class _MatAutocompleteBase
   }
   private _autoActiveFirstOption: boolean;
 
+  /** Whether the active option should be selected as the user is navigating. */
+  @Input()
+  get autoSelectActiveOption(): boolean {
+    return this._autoSelectActiveOption;
+  }
+  set autoSelectActiveOption(value: BooleanInput) {
+    this._autoSelectActiveOption = coerceBooleanProperty(value);
+  }
+  private _autoSelectActiveOption: boolean;
+
   /**
    * Specify the width of the autocomplete panel.  Can be any CSS sizing value, otherwise it will
    * match the width of its host.
@@ -219,6 +232,7 @@ export abstract class _MatAutocompleteBase
     // option altogether.
     this.inertGroups = platform?.SAFARI || false;
     this._autoActiveFirstOption = !!defaults.autoActiveFirstOption;
+    this._autoSelectActiveOption = !!defaults.autoSelectActiveOption;
   }
 
   ngAfterContentInit() {
