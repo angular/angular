@@ -4,6 +4,7 @@
   "semanticPrefix": "build",
   "separateMajorMinor": false,
   "prHourlyLimit": 2,
+  "stopUpdatingLabel": "action: merge",
   "labels": ["target: patch", "comp: build & ci", "action: review"],
   "timezone": "America/Tijuana",
   "lockFileMaintenance": {
@@ -46,7 +47,12 @@
   ],
   "packageRules": [
     {
-      "packagePatterns": ["^@angular/.*", "^@angular-devkit/.*", "^@schematics/.*", "angular/dev-infra"],
+      "packagePatterns": [
+        "^@angular/.*",
+        "^@angular-devkit/.*",
+        "^@schematics/.*",
+        "angular/dev-infra"
+      ],
       "groupName": "angular",
       "pinVersions": false
     },
@@ -74,7 +80,12 @@
       "enabled": false
     },
     {
-      "excludePackagePatterns": ["^@angular/.*", "^@angular-devkit/.*", "^@schematics/.*", "angular/dev-infra"],
+      "excludePackagePatterns": [
+        "^@angular/.*",
+        "^@angular-devkit/.*",
+        "^@schematics/.*",
+        "angular/dev-infra"
+      ],
       "matchPackagePatterns": ["*"],
       "matchUpdateTypes": ["minor", "patch"],
       "matchCurrentVersion": ">=1",
