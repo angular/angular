@@ -157,10 +157,6 @@ export const isFormGroup = (control: unknown): control is FormGroup => control i
 
 export const isFormArray = (control: unknown): control is FormArray => control instanceof FormArray;
 
-function getRawValue(control: AbstractControl): any {
-  return isFormControl(control) ? control.value : (control as FormGroup | FormArray).getRawValue();
-}
-
 function assertControlPresent(parent: FormGroup|FormArray, key: string|number): void {
   const isGroup = isFormGroup(parent);
   const controls = parent.controls as {[key: string|number]: unknown};
@@ -842,6 +838,14 @@ export abstract class AbstractControl {
    * Resets the control. Abstract method (implemented in sub-classes).
    */
   abstract reset(value?: any, options?: Object): void;
+
+  /**
+   * The raw value of this control. For most control implementations, the raw value will include
+   * disabled children.
+   */
+  getRawValue(): any {
+    return this.value;
+  }
 
   /**
    * Recalculates the value and validation status of the control.
@@ -1976,10 +1980,10 @@ export class FormGroup extends AbstractControl {
    * The `value` property is the best way to get the value of the group, because
    * it excludes disabled controls in the `FormGroup`.
    */
-  getRawValue(): any {
+  override getRawValue(): any {
     return this._reduceChildren(
         {}, (acc: {[k: string]: AbstractControl}, control: AbstractControl, name: string) => {
-          acc[name] = getRawValue(control);
+          acc[name] = control.getRawValue();
           return acc;
         });
   }
@@ -2442,8 +2446,8 @@ export class FormArray extends AbstractControl {
    * Reports all values regardless of disabled status.
    * For enabled controls only, the `value` property is the best way to get the value of the array.
    */
-  getRawValue(): any[] {
-    return this.controls.map((control: AbstractControl) => getRawValue(control));
+  override getRawValue(): any[] {
+    return this.controls.map((control: AbstractControl) => control.getRawValue());
   }
 
   /**
