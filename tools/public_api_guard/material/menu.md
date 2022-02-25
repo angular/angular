@@ -287,15 +287,15 @@ export abstract class _MatMenuTriggerBase implements AfterContentInit, OnDestroy
     constructor(overlay: Overlay, element: ElementRef<HTMLElement>, viewContainerRef: ViewContainerRef, scrollStrategy: any, parentMenu: MatMenuPanel, menuItemInstance: MatMenuItem, dir: Directionality, focusMonitor: FocusMonitor);
     closeMenu(): void;
     // @deprecated (undocumented)
-    get _deprecatedMatMenuTriggerFor(): MatMenuPanel;
-    set _deprecatedMatMenuTriggerFor(v: MatMenuPanel);
+    get _deprecatedMatMenuTriggerFor(): MatMenuPanel | null;
+    set _deprecatedMatMenuTriggerFor(v: MatMenuPanel | null);
     get dir(): Direction;
     focus(origin?: FocusOrigin, options?: FocusOptions): void;
     _handleClick(event: MouseEvent): void;
     _handleKeydown(event: KeyboardEvent): void;
     _handleMousedown(event: MouseEvent): void;
-    get menu(): MatMenuPanel;
-    set menu(menu: MatMenuPanel);
+    get menu(): MatMenuPanel | null;
+    set menu(menu: MatMenuPanel | null);
     readonly menuClosed: EventEmitter<void>;
     menuData: any;
     get menuOpen(): boolean;

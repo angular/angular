@@ -89,6 +89,19 @@ describe('MDC-based MatMenu', () => {
     );
   }));
 
+  it('should set aria-haspopup based on whether a menu is assigned', fakeAsync(() => {
+    const fixture = createComponent(SimpleMenu, [], [FakeIcon]);
+    fixture.detectChanges();
+    const triggerElement = fixture.componentInstance.triggerEl.nativeElement;
+
+    expect(triggerElement.getAttribute('aria-haspopup')).toBe('true');
+
+    fixture.componentInstance.trigger.menu = null;
+    fixture.detectChanges();
+
+    expect(triggerElement.hasAttribute('aria-haspopup')).toBe(false);
+  }));
+
   it('should open the menu as an idempotent operation', fakeAsync(() => {
     const fixture = createComponent(SimpleMenu, [], [FakeIcon]);
     fixture.detectChanges();
@@ -826,20 +839,6 @@ describe('MDC-based MatMenu', () => {
     tick(500);
 
     expect(triggerEl.hasAttribute('aria-expanded')).toBe(false);
-  }));
-
-  it('should throw the correct error if the menu is not defined after init', fakeAsync(() => {
-    const fixture = createComponent(SimpleMenu, [], [FakeIcon]);
-    fixture.detectChanges();
-
-    fixture.componentInstance.trigger.menu = null!;
-    fixture.detectChanges();
-
-    expect(() => {
-      fixture.componentInstance.trigger.openMenu();
-      fixture.detectChanges();
-      tick(500);
-    }).toThrowError(/must pass in an mat-menu instance/);
   }));
 
   it('should throw if assigning a menu that contains the trigger', fakeAsync(() => {
