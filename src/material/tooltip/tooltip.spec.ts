@@ -7,6 +7,7 @@ import {Platform} from '@angular/cdk/platform';
 import {
   createFakeEvent,
   createKeyboardEvent,
+  createMouseEvent,
   dispatchEvent,
   dispatchFakeEvent,
   dispatchKeyboardEvent,
@@ -233,6 +234,35 @@ describe('MatTooltip', () => {
       expect(tooltipDirective.position).toBe('right');
       expect(tooltipDirective._getOverlayPosition().main.overlayX).toBe('start');
       expect(tooltipDirective._getOverlayPosition().fallback.overlayX).toBe('end');
+    }));
+
+    it('should be able to disable tooltip interactivity', fakeAsync(() => {
+      TestBed.resetTestingModule()
+        .configureTestingModule({
+          imports: [MatTooltipModule, OverlayModule, NoopAnimationsModule],
+          declarations: [TooltipDemoWithoutPositionBinding],
+          providers: [
+            {
+              provide: MAT_TOOLTIP_DEFAULT_OPTIONS,
+              useValue: {disableTooltipInteractivity: true},
+            },
+          ],
+        })
+        .compileComponents();
+
+      const newFixture = TestBed.createComponent(TooltipDemoWithoutPositionBinding);
+      newFixture.detectChanges();
+      tooltipDirective = newFixture.debugElement
+        .query(By.css('button'))!
+        .injector.get<MatTooltip>(MatTooltip);
+
+      tooltipDirective.show();
+      newFixture.detectChanges();
+      tick();
+
+      expect(tooltipDirective._overlayRef?.overlayElement.classList).toContain(
+        'mat-tooltip-panel-non-interactive',
+      );
     }));
 
     it('should set a css class on the overlay panel element', fakeAsync(() => {
@@ -902,6 +932,85 @@ describe('MatTooltip', () => {
       // Note that we aren't asserting anything, but `fakeAsync` will
       // throw if we have any timers by the end of the test.
       fixture.destroy();
+    }));
+
+    it('should hide on mouseleave on the trigger', fakeAsync(() => {
+      // We don't bind mouse events on mobile devices.
+      if (platform.IOS || platform.ANDROID) {
+        return;
+      }
+
+      dispatchMouseEvent(fixture.componentInstance.button.nativeElement, 'mouseenter');
+      fixture.detectChanges();
+      tick(0);
+      expect(tooltipDirective._isTooltipVisible()).toBe(true);
+
+      dispatchMouseEvent(fixture.componentInstance.button.nativeElement, 'mouseleave');
+      fixture.detectChanges();
+      tick(0);
+      expect(tooltipDirective._isTooltipVisible()).toBe(false);
+    }));
+
+    it('should not hide on mouseleave if the pointer goes from the trigger to the tooltip', fakeAsync(() => {
+      // We don't bind mouse events on mobile devices.
+      if (platform.IOS || platform.ANDROID) {
+        return;
+      }
+
+      dispatchMouseEvent(fixture.componentInstance.button.nativeElement, 'mouseenter');
+      fixture.detectChanges();
+      tick(0);
+      expect(tooltipDirective._isTooltipVisible()).toBe(true);
+
+      const tooltipElement = overlayContainerElement.querySelector('.mat-tooltip') as HTMLElement;
+      const event = createMouseEvent('mouseleave');
+      Object.defineProperty(event, 'relatedTarget', {value: tooltipElement});
+
+      dispatchEvent(fixture.componentInstance.button.nativeElement, event);
+      fixture.detectChanges();
+      tick(0);
+      expect(tooltipDirective._isTooltipVisible()).toBe(true);
+    }));
+
+    it('should hide on mouseleave on the tooltip', fakeAsync(() => {
+      // We don't bind mouse events on mobile devices.
+      if (platform.IOS || platform.ANDROID) {
+        return;
+      }
+
+      dispatchMouseEvent(fixture.componentInstance.button.nativeElement, 'mouseenter');
+      fixture.detectChanges();
+      tick(0);
+      expect(tooltipDirective._isTooltipVisible()).toBe(true);
+
+      const tooltipElement = overlayContainerElement.querySelector('.mat-tooltip') as HTMLElement;
+      dispatchMouseEvent(tooltipElement, 'mouseleave');
+      fixture.detectChanges();
+      tick(0);
+      expect(tooltipDirective._isTooltipVisible()).toBe(false);
+    }));
+
+    it('should not hide on mouseleave if the pointer goes from the tooltip to the trigger', fakeAsync(() => {
+      // We don't bind mouse events on mobile devices.
+      if (platform.IOS || platform.ANDROID) {
+        return;
+      }
+
+      dispatchMouseEvent(fixture.componentInstance.button.nativeElement, 'mouseenter');
+      fixture.detectChanges();
+      tick(0);
+      expect(tooltipDirective._isTooltipVisible()).toBe(true);
+
+      const tooltipElement = overlayContainerElement.querySelector('.mat-tooltip') as HTMLElement;
+      const event = createMouseEvent('mouseleave');
+      Object.defineProperty(event, 'relatedTarget', {
+        value: fixture.componentInstance.button.nativeElement,
+      });
+
+      dispatchEvent(tooltipElement, event);
+      fixture.detectChanges();
+      tick(0);
+      expect(tooltipDirective._isTooltipVisible()).toBe(true);
     }));
   });
 

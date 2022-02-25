@@ -121,12 +121,13 @@ export class MatTooltip extends _MatTooltipBase<TooltipComponent> {
     // Forces the element to have a layout in IE and Edge. This fixes issues where the element
     // won't be rendered if the animations are disabled or there is no web animations polyfill.
     '[style.zoom]': '_visibility === "visible" ? 1 : null',
+    '(mouseleave)': '_handleMouseLeave($event)',
     'aria-hidden': 'true',
   },
 })
 export class TooltipComponent extends _TooltipComponentBase {
   /* Whether the tooltip text overflows to multiple lines */
-  _isMultiline: boolean = false;
+  _isMultiline = false;
 
   constructor(changeDetectorRef: ChangeDetectorRef, private _elementRef: ElementRef) {
     super(changeDetectorRef);

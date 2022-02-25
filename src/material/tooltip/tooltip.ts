@@ -17,7 +17,6 @@ import {
 import {ESCAPE, hasModifierKey} from '@angular/cdk/keycodes';
 import {BreakpointObserver, Breakpoints, BreakpointState} from '@angular/cdk/layout';
 import {
-  ConnectedPosition,
   FlexibleConnectedPositionStrategy,
   HorizontalConnectionPos,
   OriginConnectionPosition,
@@ -27,6 +26,7 @@ import {
   ScrollStrategy,
   VerticalConnectionPos,
   ConnectionPositionPair,
+  ConnectedPosition,
 } from '@angular/cdk/overlay';
 import {Platform, normalizePassiveListenerOptions} from '@angular/cdk/platform';
 import {ComponentPortal, ComponentType} from '@angular/cdk/portal';
@@ -113,11 +113,23 @@ export const MAT_TOOLTIP_SCROLL_STRATEGY_FACTORY_PROVIDER = {
 
 /** Default `matTooltip` options that can be overridden. */
 export interface MatTooltipDefaultOptions {
+  /** Default delay when the tooltip is shown. */
   showDelay: number;
+
+  /** Default delay when the tooltip is hidden. */
   hideDelay: number;
+
+  /** Default delay when hiding the tooltip on a touch device. */
   touchendHideDelay: number;
+
+  /** Default touch gesture handling for tooltips. */
   touchGestures?: TooltipTouchGestures;
+
+  /** Default position for tooltips. */
   position?: TooltipPosition;
+
+  /** Disables the ability for the user to interact with the tooltip element. */
+  disableTooltipInteractivity?: boolean;
 }
 
 /** Injection token to be used to override the default options for `matTooltip`. */
@@ -207,6 +219,10 @@ export abstract class _MatTooltipBase<T extends _TooltipComponentBase>
   }
   set hideDelay(value: NumberInput) {
     this._hideDelay = coerceNumberProperty(value);
+
+    if (this._tooltipInstance) {
+      this._tooltipInstance._mouseLeaveHideDelay = this._hideDelay;
+    }
   }
   private _hideDelay = this._defaultOptions.hideDelay;
 
@@ -376,14 +392,16 @@ export abstract class _MatTooltipBase<T extends _TooltipComponentBase>
     this._detach();
     this._portal =
       this._portal || new ComponentPortal(this._tooltipComponent, this._viewContainerRef);
-    this._tooltipInstance = overlayRef.attach(this._portal).instance;
-    this._tooltipInstance
+    const instance = (this._tooltipInstance = overlayRef.attach(this._portal).instance);
+    instance._triggerElement = this._elementRef.nativeElement;
+    instance._mouseLeaveHideDelay = this._hideDelay;
+    instance
       .afterHidden()
       .pipe(takeUntil(this._destroyed))
       .subscribe(() => this._detach());
     this._setTooltipClass(this._tooltipClass);
     this._updateTooltipMessage();
-    this._tooltipInstance!.show(delay);
+    instance.show(delay);
   }
 
   /** Hides the tooltip after the delay in ms, defaults to tooltip-delay-hide or 0ms if no input */
@@ -463,6 +481,10 @@ export abstract class _MatTooltipBase<T extends _TooltipComponentBase>
           this._ngZone.run(() => this.hide(0));
         }
       });
+
+    if (this._defaultOptions?.disableTooltipInteractivity) {
+      this._overlayRef.addPanelClass(`${this._cssClassPrefix}-tooltip-panel-non-interactive`);
+    }
 
     return this._overlayRef;
   }
@@ -687,7 +709,15 @@ export abstract class _MatTooltipBase<T extends _TooltipComponentBase>
     const exitListeners: (readonly [string, EventListenerOrEventListenerObject])[] = [];
     if (this._platformSupportsMouseEvents()) {
       exitListeners.push(
-        ['mouseleave', () => this.hide()],
+        [
+          'mouseleave',
+          event => {
+            const newTarget = (event as MouseEvent).relatedTarget as Node | null;
+            if (!newTarget || !this._overlayRef?.overlayElement.contains(newTarget)) {
+              this.hide();
+            }
+          },
+        ],
         ['wheel', event => this._wheelListener(event as WheelEvent)],
       );
     } else if (this.touchGestures !== 'off') {
@@ -824,6 +854,12 @@ export abstract class _TooltipComponentBase implements OnDestroy {
   /** Property watched by the animation framework to show or hide the tooltip */
   _visibility: TooltipVisibility = 'initial';
 
+  /** Element that caused the tooltip to open. */
+  _triggerElement: HTMLElement;
+
+  /** Amount of milliseconds to delay the closing sequence. */
+  _mouseLeaveHideDelay: number;
+
   /** Whether interactions on the page should close the tooltip */
   private _closeOnInteraction: boolean = false;
 
@@ -885,6 +921,7 @@ export abstract class _TooltipComponentBase implements OnDestroy {
     clearTimeout(this._showTimeoutId);
     clearTimeout(this._hideTimeoutId);
     this._onHide.complete();
+    this._triggerElement = null!;
   }
 
   _animationStart() {
@@ -923,6 +960,12 @@ export abstract class _TooltipComponentBase implements OnDestroy {
     this._changeDetectorRef.markForCheck();
   }
 
+  _handleMouseLeave({relatedTarget}: MouseEvent) {
+    if (!relatedTarget || !this._triggerElement.contains(relatedTarget as Node)) {
+      this.hide(this._mouseLeaveHideDelay);
+    }
+  }
+
   /**
    * Callback for when the timeout in this.show() gets completed.
    * This method is only needed by the mdc-tooltip, and so it is only implemented
@@ -946,6 +989,7 @@ export abstract class _TooltipComponentBase implements OnDestroy {
     // Forces the element to have a layout in IE and Edge. This fixes issues where the element
     // won't be rendered if the animations are disabled or there is no web animations polyfill.
     '[style.zoom]': '_visibility === "visible" ? 1 : null',
+    '(mouseleave)': '_handleMouseLeave($event)',
     'aria-hidden': 'true',
   },
 })

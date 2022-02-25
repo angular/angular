@@ -4,11 +4,22 @@
 @include tooltip.core-styles($query: structure);
 
 .mat-mdc-tooltip {
-  // We don't use MDC's positioning so this has to be static.
-  position: static;
+  // We don't use MDC's positioning so this has to be relative.
+  position: relative;
 
-  // The overlay reference updates the pointer-events style property directly on the HTMLElement
-  // depending on the state of the overlay. For tooltips the overlay panel should never enable
-  // pointer events. To overwrite the inline CSS from the overlay reference `!important` is needed.
-  pointer-events: none !important;
+  // Increases the area of the tooltip so the user's pointer can go from the trigger directly to it.
+  &::before {
+    $offset: -8px;
+    content: '';
+    top: $offset;
+    right: $offset;
+    bottom: $offset;
+    left: $offset;
+    z-index: -1;
+    position: absolute;
+  }
+}
+
+.mat-mdc-tooltip-panel-non-interactive {
+  pointer-events: none;
 }

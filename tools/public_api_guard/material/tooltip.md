@@ -131,15 +131,11 @@ export abstract class _MatTooltipBase<T extends _TooltipComponentBase> implement
 
 // @public
 export interface MatTooltipDefaultOptions {
-    // (undocumented)
+    disableTooltipInteractivity?: boolean;
     hideDelay: number;
-    // (undocumented)
     position?: TooltipPosition;
-    // (undocumented)
     showDelay: number;
-    // (undocumented)
     touchendHideDelay: number;
-    // (undocumented)
     touchGestures?: TooltipTouchGestures;
 }
 
@@ -178,11 +174,14 @@ export abstract class _TooltipComponentBase implements OnDestroy {
     // (undocumented)
     _animationStart(): void;
     _handleBodyInteraction(): void;
+    // (undocumented)
+    _handleMouseLeave({ relatedTarget }: MouseEvent): void;
     hide(delay: number): void;
     _hideTimeoutId: number | undefined;
     isVisible(): boolean;
     _markForCheck(): void;
     message: string;
+    _mouseLeaveHideDelay: number;
     // (undocumented)
     ngOnDestroy(): void;
     protected _onShow(): void;
@@ -191,6 +190,7 @@ export abstract class _TooltipComponentBase implements OnDestroy {
     tooltipClass: string | string[] | Set<string> | {
         [key: string]: any;
     };
+    _triggerElement: HTMLElement;
     _visibility: TooltipVisibility;
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<_TooltipComponentBase, never, never, {}, {}, never>;

@@ -7,13 +7,6 @@ $margin: 14px;
 $handset-horizontal-padding: 16px;
 $handset-margin: 24px;
 
-.mat-tooltip-panel {
-  // The overlay reference updates the pointer-events style property directly on the HTMLElement
-  // depending on the state of the overlay. For tooltips the overlay panel should never enable
-  // pointer events. To overwrite the inline CSS from the overlay reference `!important` is needed.
-  pointer-events: none !important;
-}
-
 .mat-tooltip {
   color: white;
   border-radius: 4px;
@@ -33,4 +26,8 @@ $handset-margin: 24px;
   margin: $handset-margin;
   padding-left: $handset-horizontal-padding;
   padding-right: $handset-horizontal-padding;
+}
+
+.mat-tooltip-panel-non-interactive {
+  pointer-events: none;
 }
