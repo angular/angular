@@ -1,4 +1,4 @@
-import {PullRequestConfig} from '@angular/dev-infra-private/ng-dev/pr/config';
+import {PullRequestConfig} from '@angular/dev-infra-private/ng-dev';
 
 /**
  * Configuration for the merge tool in `ng-dev`. This sets up the labels which
@@ -19,5 +19,5 @@ export const pullRequest: PullRequestConfig = {
   // `dev-infra` and `docs-infra` are not affecting the public NPM packages. Similarly,
   // the `bazel` package is not considered part of the public API so that features
   // can land in patch branches.
-  targetLabelExemptScopes: ['dev-infra', 'docs-infra', 'bazel']
+  targetLabelExemptScopes: ['dev-infra', 'docs-infra', 'bazel'],
 };
