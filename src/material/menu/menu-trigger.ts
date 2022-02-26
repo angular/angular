@@ -75,7 +75,7 @@ const passiveEventListenerOptions = normalizePassiveListenerOptions({passive: tr
 
 @Directive({
   host: {
-    '[attr.aria-haspopup]': 'menu ? true : null',
+    '[attr.aria-haspopup]': 'menu ? "menu" : null',
     '[attr.aria-expanded]': 'menuOpen || null',
     '[attr.aria-controls]': 'menuOpen ? menu.panelId : null',
     '(click)': '_handleClick($event)',

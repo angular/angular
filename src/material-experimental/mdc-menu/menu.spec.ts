@@ -94,7 +94,7 @@ describe('MDC-based MatMenu', () => {
     fixture.detectChanges();
     const triggerElement = fixture.componentInstance.triggerEl.nativeElement;
 
-    expect(triggerElement.getAttribute('aria-haspopup')).toBe('true');
+    expect(triggerElement.getAttribute('aria-haspopup')).toBe('menu');
 
     fixture.componentInstance.trigger.menu = null;
     fixture.detectChanges();
@@ -140,6 +140,14 @@ describe('MDC-based MatMenu', () => {
     tick(500);
 
     expect(overlayContainerElement.querySelector('.cdk-overlay-backdrop')).toBeFalsy();
+  }));
+
+  it('should set the correct aria-haspopup value on the trigger element', fakeAsync(() => {
+    const fixture = createComponent(SimpleMenu, [], [FakeIcon]);
+    fixture.detectChanges();
+    const triggerElement = fixture.componentInstance.triggerEl.nativeElement;
+
+    expect(triggerElement.getAttribute('aria-haspopup')).toBe('menu');
   }));
 
   it('should be able to remove the backdrop on repeat openings', fakeAsync(() => {
