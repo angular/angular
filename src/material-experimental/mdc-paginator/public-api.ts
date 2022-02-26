@@ -13,4 +13,5 @@ export {
   MAT_PAGINATOR_INTL_PROVIDER_FACTORY,
   MAT_PAGINATOR_INTL_PROVIDER,
   PageEvent,
+  MatPaginatorSelectConfig,
 } from '@angular/material/paginator';

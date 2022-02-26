@@ -16,7 +16,11 @@ any associated data view.
 The paginator displays a dropdown of page sizes for the user to choose from. The options for this
 dropdown can be set via `pageSizeOptions`
 
-The current pageSize will always appear in the dropdown, even if it is not included in pageSizeOptions.
+The current pageSize will always appear in the dropdown, even if it is not included in
+pageSizeOptions.
+
+If you want to customize some of the optional of the `mat-select` inside the `mat-paginator`, you
+can use the `selectConfig` input.
 
 ### Internationalization
 The labels for the paginator can be customized by providing your own instance of `MatPaginatorIntl`.
@@ -30,5 +34,5 @@ The paginator uses `role="group"` to semantically group its child controls. You 
 `aria-label` or `aria-labelledby` attribute to `<mat-paginator>` with a label that describes
 the content controlled by the pagination control.
 
-You can set the `aria-label` attributes for the button and select controls within the paginator in 
+You can set the `aria-label` attributes for the button and select controls within the paginator in
 `MatPaginatorIntl`.

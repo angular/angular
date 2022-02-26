@@ -86,10 +86,11 @@ export abstract class _MatPaginatorBase<O extends {
     set pageSizeOptions(value: number[] | readonly number[]);
     _previousButtonsDisabled(): boolean;
     previousPage(): void;
+    selectConfig: MatPaginatorSelectConfig;
     get showFirstLastButtons(): boolean;
     set showFirstLastButtons(value: BooleanInput);
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<_MatPaginatorBase<any>, never, never, { "color": "color"; "pageIndex": "pageIndex"; "length": "length"; "pageSize": "pageSize"; "pageSizeOptions": "pageSizeOptions"; "hidePageSize": "hidePageSize"; "showFirstLastButtons": "showFirstLastButtons"; }, { "page": "page"; }, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<_MatPaginatorBase<any>, never, never, { "color": "color"; "pageIndex": "pageIndex"; "length": "length"; "pageSize": "pageSize"; "pageSizeOptions": "pageSizeOptions"; "hidePageSize": "hidePageSize"; "showFirstLastButtons": "showFirstLastButtons"; "selectConfig": "selectConfig"; }, { "page": "page"; }, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<_MatPaginatorBase<any>, never>;
 }
@@ -126,6 +127,14 @@ export class MatPaginatorModule {
     static ɵinj: i0.ɵɵInjectorDeclaration<MatPaginatorModule>;
     // (undocumented)
     static ɵmod: i0.ɵɵNgModuleDeclaration<MatPaginatorModule, [typeof i1.MatPaginator], [typeof i2.CommonModule, typeof i3.MatButtonModule, typeof i4.MatSelectModule, typeof i5.MatTooltipModule, typeof i6.MatCommonModule], [typeof i1.MatPaginator]>;
+}
+
+// @public
+export interface MatPaginatorSelectConfig {
+    disableOptionCentering?: boolean;
+    panelClass?: string | string[] | Set<string> | {
+        [key: string]: any;
+    };
 }
 
 // @public

@@ -89,6 +89,15 @@ export const MAT_PAGINATOR_DEFAULT_OPTIONS = new InjectionToken<MatPaginatorDefa
 /** @docs-private */
 const _MatPaginatorMixinBase = mixinDisabled(mixinInitialized(class {}));
 
+/** Object that can used to configure the underlying `MatSelect` inside a `MatPaginator`. */
+export interface MatPaginatorSelectConfig {
+  /** Whether to center the active option over the trigger. */
+  disableOptionCentering?: boolean;
+
+  /** Classes to be passed to the select panel. */
+  panelClass?: string | string[] | Set<string> | {[key: string]: any};
+}
+
 /**
  * Base class with all of the `MatPaginator` functionality.
  * @docs-private
@@ -174,6 +183,9 @@ export abstract class _MatPaginatorBase<
     this._showFirstLastButtons = coerceBooleanProperty(value);
   }
   private _showFirstLastButtons = false;
+
+  /** Used to configure the underlying `MatSelect` inside the paginator. */
+  @Input() selectConfig: MatPaginatorSelectConfig = {};
 
   /** Event emitted when the paginator changes the page size or page index. */
   @Output() readonly page: EventEmitter<PageEvent> = new EventEmitter<PageEvent>();

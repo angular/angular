@@ -14,6 +14,8 @@
           [value]="pageSize"
           [disabled]="disabled"
           [aria-labelledby]="_pageSizeLabelId"
+          [panelClass]="selectConfig.panelClass || ''"
+          [disableOptionCentering]="selectConfig.disableOptionCentering"
           (selectionChange)="_changePageSize($event.value)">
           <mat-option *ngFor="let pageSizeOption of _displayedPageSizeOptions" [value]="pageSizeOption">
             {{pageSizeOption}}
