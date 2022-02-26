@@ -1,5 +1,4 @@
-import {FatalReleaseActionError} from '@angular/dev-infra-private/ng-dev/release/publish/actions-error';
-import {error} from '@angular/dev-infra-private/ng-dev/utils/console';
+import {error, FatalReleaseActionError} from '@angular/dev-infra-private/ng-dev';
 import {SemVer} from 'semver';
 import {join} from 'path';
 import {existsSync, readFileSync} from 'fs';

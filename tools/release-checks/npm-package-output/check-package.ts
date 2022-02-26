@@ -1,4 +1,4 @@
-import {error} from '@angular/dev-infra-private/ng-dev/utils/console';
+import {error} from '@angular/dev-infra-private/ng-dev';
 import chalk from 'chalk';
 import {existsSync} from 'fs';
 import {sync as glob} from 'glob';

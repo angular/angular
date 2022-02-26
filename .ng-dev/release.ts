@@ -1,12 +1,17 @@
-import {BuiltPackage, ReleaseConfig} from '@angular/dev-infra-private/ng-dev/release/config';
-import {ReleaseAction} from '@angular/dev-infra-private/ng-dev/release/publish/actions';
+import {
+  BuiltPackage,
+  ReleaseConfig,
+  FatalReleaseActionError,
+} from '@angular/dev-infra-private/ng-dev';
 import {SemVer} from 'semver';
 import {assertValidNpmPackageOutput} from '../tools/release-checks/npm-package-output';
 import {fork} from 'child_process';
 import {join} from 'path';
-import {FatalReleaseActionError} from '@angular/dev-infra-private/ng-dev/release/publish/actions-error';
 
-const actionProto = ReleaseAction.prototype as any;
+// The `ng-dev` release tool exposes the `ReleaseAction` instance through `global`,
+// allowing it to be monkey-patched for our release checks. This can be removed
+// when the release tool has a public API for release checks.
+const actionProto = (global as any).ReleaseAction.prototype;
 const _origStageFn = actionProto.stageVersionForBranchAndCreatePullRequest;
 const _origVerifyFn = actionProto._verifyPackageVersions;
 

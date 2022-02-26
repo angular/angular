@@ -1,4 +1,4 @@
-import {PullRequestConfig} from '@angular/dev-infra-private/ng-dev/pr/config';
+import {PullRequestConfig} from '@angular/dev-infra-private/ng-dev';
 
 /**
  * Configuration for the pull request commands in `ng-dev`. This includes the

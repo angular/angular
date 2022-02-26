@@ -1,4 +1,4 @@
-import {error} from '@angular/dev-infra-private/ng-dev/utils/console';
+import {error} from '@angular/dev-infra-private/ng-dev';
 import {dirname, join} from 'path';
 import chalk from 'chalk';
 import {releasePackages} from '../../.ng-dev/release';

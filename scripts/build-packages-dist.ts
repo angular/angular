@@ -8,7 +8,7 @@
 
 import {execSync} from 'child_process';
 import {join} from 'path';
-import {BuiltPackage} from '@angular/dev-infra-private/ng-dev/release/config';
+import {BuiltPackage} from '@angular/dev-infra-private/ng-dev';
 import {chmod, cp, mkdir, rm, set, test} from 'shelljs';
 
 // ShellJS should exit if a command fails.
