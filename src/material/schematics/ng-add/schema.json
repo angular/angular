@@ -53,9 +53,9 @@
         "message": "Include the Angular animations module?",
         "type": "list",
         "items": [
-          { "value": "enabled", "label": "Include and enable animations" },
-          { "value": "disabled", "label": "Include, but disable animations" },
-          { "value": "excluded", "label": "Do not include" }
+          {"value": "enabled", "label": "Include and enable animations"},
+          {"value": "disabled", "label": "Include, but disable animations"},
+          {"value": "excluded", "label": "Do not include"}
         ]
       }
     }
