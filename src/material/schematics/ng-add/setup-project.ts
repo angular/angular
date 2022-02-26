@@ -68,7 +68,7 @@ function addAnimationsModule(options: Schema) {
     const project = getProjectFromWorkspace(workspace, options.project);
     const appModulePath = getAppModulePath(host, getProjectMainFile(project));
 
-    if (options.animations) {
+    if (options.animations === 'enabled') {
       // In case the project explicitly uses the NoopAnimationsModule, we should print a warning
       // message that makes the user aware of the fact that we won't automatically set up
       // animations. If we would add the BrowserAnimationsModule while the NoopAnimationsModule
@@ -79,16 +79,18 @@ function addAnimationsModule(options: Schema) {
             `because "${noopAnimationsModuleName}" is already imported.`,
         );
         context.logger.info(`Please manually set up browser animations.`);
-        return;
+      } else {
+        addModuleImportToRootModule(
+          host,
+          browserAnimationsModuleName,
+          '@angular/platform-browser/animations',
+          project,
+        );
       }
-
-      addModuleImportToRootModule(
-        host,
-        browserAnimationsModuleName,
-        '@angular/platform-browser/animations',
-        project,
-      );
-    } else if (!hasNgModuleImport(host, appModulePath, browserAnimationsModuleName)) {
+    } else if (
+      options.animations === 'disabled' &&
+      !hasNgModuleImport(host, appModulePath, browserAnimationsModuleName)
+    ) {
       // Do not add the NoopAnimationsModule module if the project already explicitly uses
       // the BrowserAnimationsModule.
       addModuleImportToRootModule(

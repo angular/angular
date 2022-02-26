@@ -223,7 +223,7 @@ describe('ng-add schematic', () => {
   describe('animations disabled', () => {
     it('should add the NoopAnimationsModule to the project module', async () => {
       const tree = await runner
-        .runSchematicAsync('ng-add-setup-project', {animations: false}, appTree)
+        .runSchematicAsync('ng-add-setup-project', {animations: 'disabled'}, appTree)
         .toPromise();
       const fileContent = getFileContent(tree, '/projects/material/src/app/app.module.ts');
 
@@ -250,6 +250,20 @@ describe('ng-add schematic', () => {
         'NoopAnimationsModule',
         'Expected the project app module to not import the "NoopAnimationsModule".',
       );
+    });
+  });
+
+  describe('animations excluded', () => {
+    it('should not add any animations code if animations are excluded', async () => {
+      const tree = await runner
+        .runSchematicAsync('ng-add-setup-project', {animations: 'excluded'}, appTree)
+        .toPromise();
+      const fileContent = getFileContent(tree, '/projects/material/src/app/app.module.ts');
+
+      expect(fileContent).not.toContain('NoopAnimationsModule');
+      expect(fileContent).not.toContain('BrowserAnimationsModule');
+      expect(fileContent).not.toContain('@angular/platform-browser/animations');
+      expect(fileContent).not.toContain('@angular/animations');
     });
   });
 
