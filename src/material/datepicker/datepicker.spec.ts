@@ -8,6 +8,7 @@ import {
   dispatchFakeEvent,
   dispatchKeyboardEvent,
   dispatchMouseEvent,
+  typeInElement,
 } from '../../cdk/testing/private';
 import {Component, Type, ViewChild, Provider, Directive, ViewEncapsulation} from '@angular/core';
 import {ComponentFixture, fakeAsync, flush, inject, TestBed, tick} from '@angular/core/testing';
@@ -1048,6 +1049,17 @@ describe('MatDatepicker', () => {
           subscription.unsubscribe();
         }),
       );
+
+      it('should set the matDatepickerParse error when an invalid value is typed for the first time', () => {
+        const formControl = fixture.componentInstance.formControl;
+
+        expect(formControl.hasError('matDatepickerParse')).toBe(false);
+
+        typeInElement(fixture.nativeElement.querySelector('input'), 'Today');
+        fixture.detectChanges();
+
+        expect(formControl.hasError('matDatepickerParse')).toBe(true);
+      });
     });
 
     describe('datepicker with mat-datepicker-toggle', () => {
