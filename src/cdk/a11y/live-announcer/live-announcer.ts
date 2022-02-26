@@ -198,7 +198,7 @@ export class CdkAriaLive implements OnDestroy {
           // The `MutationObserver` fires also for attribute
           // changes which we don't want to announce.
           if (elementText !== this._previousAnnouncedText) {
-            this._liveAnnouncer.announce(elementText, this._politeness);
+            this._liveAnnouncer.announce(elementText, this._politeness, this.duration);
             this._previousAnnouncedText = elementText;
           }
         });
@@ -206,6 +206,9 @@ export class CdkAriaLive implements OnDestroy {
     }
   }
   private _politeness: AriaLivePoliteness = 'polite';
+
+  /** Time in milliseconds after which to clear out the announcer element. */
+  @Input('cdkAriaLiveDuration') duration: number;
 
   private _previousAnnouncedText?: string;
   private _subscription: Subscription | null;
