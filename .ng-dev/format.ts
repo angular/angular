@@ -1,13 +1,11 @@
-import {FormatConfig} from '@angular/dev-infra-private/ng-dev/format/config';
+import {FormatConfig} from '@angular/dev-infra-private/ng-dev';
 
 /**
  * Configuration for the `ng-dev format` command.
  */
 export const format: FormatConfig = {
   'prettier': {
-    'matchers': [
-      '**/*.{yaml,yml}',
-    ]
+    'matchers': ['**/*.{yaml,yml}'],
   },
   'clang-format': {
     'matchers': [
@@ -31,7 +29,7 @@ export const format: FormatConfig = {
       '!packages/core/src/i18n/locale_en.ts',
       '!packages/common/locales/closure-locale.ts',
       '!packages/common/src/i18n/currencies.ts',
-    ]
+    ],
   },
-  'buildifier': true
+  'buildifier': true,
 };

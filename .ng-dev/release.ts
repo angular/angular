@@ -1,4 +1,4 @@
-import {ReleaseConfig} from '@angular/dev-infra-private/ng-dev/release/config';
+import {ReleaseConfig} from '@angular/dev-infra-private/ng-dev';
 import {join} from 'path';
 
 /** Configuration for the `ng-dev release` command. */
@@ -30,13 +30,7 @@ export const release: ReleaseConfig = {
     return buildTargetPackages('dist/release-output', false, 'Release', /* isRelease */ true);
   },
   releaseNotes: {
-    hiddenScopes: [
-      'aio',
-      'dev-infra',
-      'docs-infra',
-      'zone.js',
-      'devtools',
-    ],
+    hiddenScopes: ['aio', 'dev-infra', 'docs-infra', 'zone.js', 'devtools'],
   },
   releasePrLabels: ['comp: build & ci', 'action: merge', 'PullApprove: disable'],
 };

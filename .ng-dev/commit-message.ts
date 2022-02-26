@@ -1,4 +1,4 @@
-import {CommitMessageConfig} from '@angular/dev-infra-private/ng-dev/commit-message/config';
+import {CommitMessageConfig} from '@angular/dev-infra-private/ng-dev';
 
 /**
  * The configuration for `ng-dev commit-message` commands.
@@ -36,5 +36,5 @@ export const commitMessage: CommitMessageConfig = {
     'upgrade',
     've',
     'zone.js',
-  ]
+  ],
 };
