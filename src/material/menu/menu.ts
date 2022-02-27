@@ -298,6 +298,24 @@ export class _MatMenuBase
         switchMap(items => merge(...items.map((item: MatMenuItem) => item._focused))),
       )
       .subscribe(focusedItem => this._keyManager.updateActiveItem(focusedItem as MatMenuItem));
+
+    this._directDescendantItems.changes.subscribe((itemsList: QueryList<MatMenuItem>) => {
+      // Move focus to another item, if the active item is removed from the list.
+      // We need to debounce the callback, because multiple items might be removed
+      // in quick succession.
+      const manager = this._keyManager;
+
+      if (this._panelAnimationState === 'enter' && manager.activeItem?._hasFocus()) {
+        const items = itemsList.toArray();
+        const index = Math.max(0, Math.min(items.length - 1, manager.activeItemIndex || 0));
+
+        if (items[index] && !items[index].disabled) {
+          manager.setActiveItem(index);
+        } else {
+          manager.setNextItemActive();
+        }
+      }
+    });
   }
 
   ngOnDestroy() {

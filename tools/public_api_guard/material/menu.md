@@ -203,6 +203,8 @@ export class MatMenuItem extends _MatMenuItemBase implements FocusableOption, Ca
     getLabel(): string;
     _getTabIndex(): string;
     _handleMouseEnter(): void;
+    // (undocumented)
+    _hasFocus(): boolean;
     _highlighted: boolean;
     readonly _hovered: Subject<MatMenuItem>;
     // (undocumented)

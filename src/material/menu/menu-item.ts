@@ -76,8 +76,7 @@ export class MatMenuItem
   _triggersSubmenu: boolean = false;
 
   /**
-   * @deprecated `document` parameter to be removed, `changeDetectorRef` and
-   * `focusMonitor` to become required.
+   * @deprecated `_document`, `changeDetectorRef` and `focusMonitor` to become required.
    * @breaking-change 12.0.0
    */
   constructor(
@@ -90,7 +89,7 @@ export class MatMenuItem
 
   constructor(
     private _elementRef: ElementRef<HTMLElement>,
-    @Inject(DOCUMENT) _document?: any,
+    @Inject(DOCUMENT) private _document?: any,
     private _focusMonitor?: FocusMonitor,
     @Inject(MAT_MENU_PANEL) @Optional() public _parentMenu?: MatMenuPanel<MatMenuItem>,
     private _changeDetectorRef?: ChangeDetectorRef,
@@ -175,5 +174,9 @@ export class MatMenuItem
     // @breaking-change 12.0.0 Remove null check for `_changeDetectorRef`.
     this._highlighted = isHighlighted;
     this._changeDetectorRef?.markForCheck();
+  }
+
+  _hasFocus(): boolean {
+    return this._document && this._document.activeElement === this._getHostElement();
   }
 }

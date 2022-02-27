@@ -261,6 +261,26 @@ describe('MatMenu', () => {
     tick(500);
   }));
 
+  it('should move focus to another item if the active item is destroyed', fakeAsync(() => {
+    const fixture = createComponent(MenuWithRepeatedItems, [], [FakeIcon]);
+    fixture.detectChanges();
+    const triggerEl = fixture.componentInstance.triggerEl.nativeElement;
+
+    triggerEl.click();
+    fixture.detectChanges();
+    tick(500);
+
+    const items = overlayContainerElement.querySelectorAll('.mat-menu-panel .mat-menu-item');
+
+    expect(document.activeElement).toBe(items[0]);
+
+    fixture.componentInstance.items.shift();
+    fixture.detectChanges();
+    tick(500);
+
+    expect(document.activeElement).toBe(items[1]);
+  }));
+
   it('should be able to set a custom class on the backdrop', fakeAsync(() => {
     const fixture = createComponent(SimpleMenu, [], [FakeIcon]);
 
@@ -353,6 +373,7 @@ describe('MatMenu', () => {
     // Add 50 items to make the menu scrollable
     fixture.componentInstance.extraItems = new Array(50).fill('Hello there');
     fixture.detectChanges();
+    tick(50);
 
     const triggerEl = fixture.componentInstance.triggerEl.nativeElement;
     dispatchFakeEvent(triggerEl, 'mousedown');
@@ -3075,3 +3096,18 @@ class StaticAriaLabelledByMenu {}
   template: '<mat-menu aria-describedby="some-element"></mat-menu>',
 })
 class StaticAriaDescribedbyMenu {}
+
+@Component({
+  template: `
+    <button [matMenuTriggerFor]="menu" #triggerEl>Toggle menu</button>
+    <mat-menu #menu="matMenu">
+      <button *ngFor="let item of items" mat-menu-item>{{item}}</button>
+    </mat-menu>
+  `,
+})
+class MenuWithRepeatedItems {
+  @ViewChild(MatMenuTrigger, {static: false}) trigger: MatMenuTrigger;
+  @ViewChild('triggerEl', {static: false}) triggerEl: ElementRef<HTMLElement>;
+  @ViewChild(MatMenu, {static: false}) menu: MatMenu;
+  items = ['One', 'Two', 'Three'];
+}
