@@ -275,7 +275,7 @@ export function dashCaseToCamelCase(input: string): string {
   return input.replace(DASH_CASE_REGEXP, (...m: any[]) => m[1].toUpperCase());
 }
 
-function camelCaseToDashCase(input: string): string {
+export function camelCaseToDashCase(input: string): string {
   return input.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
 }
 

@@ -11,6 +11,8 @@ import {AnimationStyleNormalizer} from '../../src/dsl/style_normalization/animat
 import {AnimationDriver} from '../../src/render/animation_driver';
 import {animationFailed} from '../error_helpers';
 
+import {ANIMATABLE_PROP_SET} from './web_animations/animatable_props_set';
+
 // We don't include ambient node types here since @angular/animations/browser
 // is meant to target the browser so technically it should not depend on node
 // types. `process` is just declared locally here as a result.
@@ -207,6 +209,10 @@ export function validateStyleProperty(prop: string): boolean {
   }
 
   return result;
+}
+
+export function validateWebAnimatableStyleProperty(prop: string): boolean {
+  return ANIMATABLE_PROP_SET.has(prop);
 }
 
 export function getBodyNode(): any|null {

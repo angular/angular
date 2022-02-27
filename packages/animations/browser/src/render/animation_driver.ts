@@ -56,6 +56,8 @@ export abstract class AnimationDriver {
 
   abstract validateStyleProperty(prop: string): boolean;
 
+  abstract validateAnimatableStyleProperty?: (prop: string) => boolean;
+
   /**
    * @deprecated No longer in use. Will be removed.
    */
