@@ -20,6 +20,8 @@ export abstract class AnimationDriver {
     // (undocumented)
     abstract query(element: any, selector: string, multi: boolean): any[];
     // (undocumented)
+    abstract validateAnimatableStyleProperty?: (prop: string) => boolean;
+    // (undocumented)
     abstract validateStyleProperty(prop: string): boolean;
 }
 

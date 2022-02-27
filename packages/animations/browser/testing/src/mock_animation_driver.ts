@@ -8,6 +8,9 @@
 import {AnimationPlayer, AUTO_STYLE, NoopAnimationPlayer, ɵStyleDataMap} from '@angular/animations';
 import {AnimationDriver, ɵallowPreviousPlayerStylesMerge as allowPreviousPlayerStylesMerge, ɵcontainsElement as containsElement, ɵgetParentElement as getParentElement, ɵinvokeQuery as invokeQuery, ɵnormalizeKeyframes as normalizeKeyframes, ɵvalidateStyleProperty as validateStyleProperty,} from '@angular/animations/browser';
 
+import {validateWebAnimatableStyleProperty} from '../../src/render/shared';
+import {camelCaseToDashCase} from '../../src/util';
+
 /**
  * @publicApi
  */
@@ -16,6 +19,11 @@ export class MockAnimationDriver implements AnimationDriver {
 
   validateStyleProperty(prop: string): boolean {
     return validateStyleProperty(prop);
+  }
+
+  validateAnimatableStyleProperty(prop: string): boolean {
+    const cssProp = camelCaseToDashCase(prop);
+    return validateWebAnimatableStyleProperty(cssProp);
   }
 
   matchesElement(_element: any, _selector: string): boolean {

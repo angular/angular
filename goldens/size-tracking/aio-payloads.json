@@ -15,7 +15,7 @@
     "master": {
       "uncompressed": {
         "runtime": 4343,
-        "main": 450268,
+        "main": 450342,
         "polyfills": 33869,
         "styles": 70416,
         "light-theme": 77582,
