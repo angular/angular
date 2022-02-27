@@ -11,6 +11,8 @@ import {AnimationStyleNormalizer} from '../../src/dsl/style_normalization/animat
 import {AnimationDriver} from '../../src/render/animation_driver';
 import {animationFailed} from '../error_helpers';
 
+import {ANIMATABLE_PROP_SET} from './web_animations/animatable_props_set';
+
 // We don't include ambient node types here since @angular/animations/browser
 // is meant to target the browser so technically it should not depend on node
 // types. `process` is just declared locally here as a result.
@@ -207,6 +209,17 @@ export function validateStyleProperty(prop: string): boolean {
   }
 
   return result;
+}
+
+export function validateWebAnimatableStyleProperty(prop: string): boolean {
+  if (typeof ngDevMode === 'undefined' || !!ngDevMode) {
+    return ANIMATABLE_PROP_SET.has(prop);
+  } else {
+    // the ANIMATABLE_PROP_SET is quite large and the non-animatable warnings
+    // are presented only in dev mode, for this reason in prod this function
+    // always simply returns true so that the set can be three-shaken away
+    return true;
+  }
 }
 
 export function getBodyNode(): any|null {

@@ -7,9 +7,9 @@
  */
 import {AnimationPlayer, ɵStyleDataMap} from '@angular/animations';
 
-import {allowPreviousPlayerStylesMerge, balancePreviousStylesIntoKeyframes, copyStyles, normalizeKeyframes} from '../../util';
+import {allowPreviousPlayerStylesMerge, balancePreviousStylesIntoKeyframes, camelCaseToDashCase, copyStyles, normalizeKeyframes} from '../../util';
 import {AnimationDriver} from '../animation_driver';
-import {containsElement, getParentElement, invokeQuery, validateStyleProperty} from '../shared';
+import {containsElement, getParentElement, invokeQuery, validateStyleProperty, validateWebAnimatableStyleProperty} from '../shared';
 import {packageNonAnimatableStyles} from '../special_cased_styles';
 
 import {WebAnimationsPlayer} from './web_animations_player';
@@ -17,6 +17,11 @@ import {WebAnimationsPlayer} from './web_animations_player';
 export class WebAnimationsDriver implements AnimationDriver {
   validateStyleProperty(prop: string): boolean {
     return validateStyleProperty(prop);
+  }
+
+  validateAnimatableStyleProperty(prop: string): {prop: string, animatable: boolean} {
+    const cssProp = camelCaseToDashCase(prop);
+    return {prop: cssProp, animatable: validateWebAnimatableStyleProperty(cssProp)};
   }
 
   matchesElement(_element: any, _selector: string): boolean {
