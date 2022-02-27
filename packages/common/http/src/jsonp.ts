@@ -36,6 +36,10 @@ export const JSONP_ERR_NO_CALLBACK = 'JSONP injected script did not invoke callb
 export const JSONP_ERR_WRONG_METHOD = 'JSONP requests must use JSONP request method.';
 export const JSONP_ERR_WRONG_RESPONSE_TYPE = 'JSONP requests must use Json response type.';
 
+// Error text given when a request is passed to the JsonpClientBackend that has
+// headers set
+export const JSONP_ERR_HEADERS_NOT_SUPPORTED = 'JSONP requests do not support headers.';
+
 /**
  * DI token/abstract type representing a map of JSONP callbacks.
  *
@@ -84,6 +88,12 @@ export class JsonpClientBackend implements HttpBackend {
       throw new Error(JSONP_ERR_WRONG_METHOD);
     } else if (req.responseType !== 'json') {
       throw new Error(JSONP_ERR_WRONG_RESPONSE_TYPE);
+    }
+
+    // Check the request headers. JSONP doesn't support headers and
+    // cannot set any that were supplied.
+    if (req.headers.keys().length > 0) {
+      throw new Error(JSONP_ERR_HEADERS_NOT_SUPPORTED);
     }
 
     // Everything else happens inside the Observable boundary.
