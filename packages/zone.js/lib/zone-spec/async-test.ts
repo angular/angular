@@ -138,8 +138,9 @@ class AsyncTestZoneSpec implements ZoneSpec {
     // Let the parent try to handle the error.
     const result = parentZoneDelegate.handleError(targetZone, error);
     if (result) {
-      this.failCallback(error);
-      this._alreadyErrored = true;
+      if (this.failCallback(error) !== false) {
+        this._alreadyErrored = true;
+      }
     }
     return false;
   }
@@ -219,7 +220,7 @@ Zone.__load_patch('asynctest', (global: any, Zone: ZoneType, api: _ZonePrivate) 
       fn: Function, context: any, finishCallback: Function, failCallback: Function) {
     const currentZone = Zone.current;
     const AsyncTestZoneSpec = (Zone as any)['AsyncTestZoneSpec'];
-    if (AsyncTestZoneSpec === undefined) {
+    if (!AsyncTestZoneSpec) {
       throw new Error(
           'AsyncTestZoneSpec is needed for the async() test helper but could not be found. ' +
           'Please make sure that your environment includes zone.js/plugins/async-test');
@@ -250,11 +251,27 @@ Zone.__load_patch('asynctest', (global: any, Zone: ZoneType, api: _ZonePrivate) 
               proxyZoneSpec.setDelegate(previousDelegate);
             }
             (testZoneSpec as any).unPatchPromiseForTest();
+            if (typeof testZoneSpec.properties?.onWaitForAsyncFinished === 'function') {
+              try {
+                testZoneSpec.properties.onWaitForAsyncFinished.call(context);
+              } catch (err) {
+                return currentZone.run(() => {
+                  failCallback(err);
+                });
+              }
+            }
             currentZone.run(() => {
               finishCallback();
             });
           },
           (error: any) => {
+            if (typeof testZoneSpec.properties?.onWaitForAsyncThrowError === 'function') {
+              try {
+                testZoneSpec.properties.onWaitForAsyncThrowError.call(context, error);
+                return false;
+              } catch (err) {
+              }
+            }
             // Need to restore the original zone.
             if (proxyZoneSpec.getDelegate() == testZoneSpec) {
               // Only reset the zone spec if it's sill this one. Otherwise, assume it's OK.
@@ -271,4 +288,38 @@ Zone.__load_patch('asynctest', (global: any, Zone: ZoneType, api: _ZonePrivate) 
     });
     return Zone.current.runGuarded(fn, context);
   }
+
+  function getAsyncTestZoneSpec() {
+    const AsyncTestZoneSpec = (Zone as any)['AsyncTestZoneSpec'];
+    if (!AsyncTestZoneSpec) {
+      throw new Error(
+          'AsyncTestZoneSpec is needed for the async() test helper but could not be found. ' +
+          'Please make sure that your environment includes zone.js/plugins/async-test');
+    }
+    const proxyZone = Zone.current.getZoneWith('ProxyZoneSpec');
+    if (!proxyZone) {
+      throw new Error('onWaitForAsyncFinished need to run inside waitForAsync().');
+    }
+    const proxyZoneSpec = proxyZone.get('ProxyZoneSpec');
+    if (!proxyZoneSpec) {
+      throw new Error('onWaitForAsyncFinished need to run inside waitForAsync().');
+    }
+    const asyncTestZoneSpec = proxyZoneSpec.getDelegate();
+    if (!asyncTestZoneSpec || !(asyncTestZoneSpec instanceof AsyncTestZoneSpec)) {
+      throw new Error('onWaitForAsyncFinished need to run inside waitForAsync().');
+    }
+    return asyncTestZoneSpec;
+  }
+
+  (Zone as
+   any)[api.symbol('onWaitForAsyncFinished')] = function(onWaitForAsyncFinished: () => void) {
+    const asyncTestZoneSpec: ZoneSpec = getAsyncTestZoneSpec();
+    asyncTestZoneSpec.properties!['onWaitForAsyncFinished'] = onWaitForAsyncFinished;
+  };
+
+  (Zone as
+   any)[api.symbol('onWaitForAsyncThrowError')] = function(onWaitForAsyncThrowError: () => void) {
+    const asyncTestZoneSpec: ZoneSpec = getAsyncTestZoneSpec();
+    asyncTestZoneSpec.properties!['onWaitForAsyncThrowError'] = onWaitForAsyncThrowError;
+  };
 });

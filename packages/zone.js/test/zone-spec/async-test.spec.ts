@@ -366,6 +366,8 @@ describe('AsyncTestZoneSpec', function() {
   });
 
   const asyncTest: any = (Zone as any)[Zone.__symbol__('asyncTest')];
+  const onWaitForAsyncFinished: any = (Zone as any)[Zone.__symbol__('onWaitForAsyncFinished')];
+  const onWaitForAsyncThrowError: any = (Zone as any)[Zone.__symbol__('onWaitForAsyncThrowError')];
 
   function wrapAsyncTest(fn: Function, doneFn?: Function) {
     return function(this: unknown, done: Function) {
@@ -575,6 +577,54 @@ describe('AsyncTestZoneSpec', function() {
              () => {
                expect(logs).toEqual(['beforeEach', 'timeout']);
              }));
+    });
+
+    describe('test with onWaitForAsyncFinished/onWaitForAsyncThrowError callback', () => {
+      it('should call onWaitForAsyncFinished callback', asyncTest(() => {
+           const logs: string[] = [];
+           setTimeout(() => {
+             logs.push('1st timeout');
+           }, 100);
+
+           setTimeout(() => {
+             logs.push('2nd timeout');
+           }, 100);
+
+           onWaitForAsyncFinished(() => {
+             expect(logs).toEqual(['1st timeout', '2nd timeout']);
+           });
+         }));
+
+      it('should run onWaitForAsyncThrowError callback when error in async tasks', asyncTest(() => {
+           const error = new Error('test');
+           setTimeout(() => {
+             throw error;
+           }, 100);
+
+           onWaitForAsyncThrowError((err: any) => {
+             expect(err).toBe(error);
+           });
+         }));
+
+      it('should run onWaitForAsyncThrowError callback when multiple errors in async tasks',
+         asyncTest(() => {
+           const error = new Error('test');
+           const error1 = new Error('test1');
+           const errors: any = [];
+           setTimeout(() => {
+             throw error;
+           }, 100);
+           setTimeout(() => {
+             throw error1;
+           }, 100);
+
+           onWaitForAsyncThrowError((err: any) => {
+             errors.push(err);
+           });
+           onWaitForAsyncFinished(() => {
+             expect(errors).toEqual([error, error1]);
+           });
+         }));
     });
   });
 });
