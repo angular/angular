@@ -230,10 +230,12 @@ export class GlobalPositionStrategy implements PositionStrategy {
     centerHorizontally(offset?: string): this;
     centerVertically(offset?: string): this;
     dispose(): void;
+    end(value?: string): this;
     // @deprecated
     height(value?: string): this;
     left(value?: string): this;
     right(value?: string): this;
+    start(value?: string): this;
     top(value?: string): this;
     // @deprecated
     width(value?: string): this;

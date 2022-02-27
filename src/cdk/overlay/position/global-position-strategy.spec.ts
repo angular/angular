@@ -98,6 +98,17 @@ describe('GlobalPositonStrategy', () => {
     expect(parentStyle.alignItems).toBe('flex-end');
   });
 
+  it('should not set any alignment by default', () => {
+    attachOverlay({
+      positionStrategy: overlay.position().global(),
+    });
+
+    const parentStyle = (overlayRef.overlayElement.parentNode as HTMLElement).style;
+
+    expect(parentStyle.justifyContent).toBe('');
+    expect(parentStyle.alignItems).toBe('');
+  });
+
   it('should center the element', () => {
     attachOverlay({
       positionStrategy: overlay.position().global().centerHorizontally().centerVertically(),
@@ -121,7 +132,30 @@ describe('GlobalPositonStrategy', () => {
     const elementStyle = overlayRef.overlayElement.style;
     const parentStyle = (overlayRef.overlayElement.parentNode as HTMLElement).style;
 
+    expect(elementStyle.marginRight).toBe('');
+    expect(elementStyle.marginBottom).toBe('');
     expect(elementStyle.marginLeft).toBe('10px');
+    expect(elementStyle.marginTop).toBe('15px');
+
+    expect(parentStyle.justifyContent).toBe('center');
+    expect(parentStyle.alignItems).toBe('center');
+  });
+
+  it('should center the element with an offset in rtl', () => {
+    attachOverlay({
+      direction: 'rtl',
+      positionStrategy: overlay
+        .position()
+        .global()
+        .centerHorizontally('10px')
+        .centerVertically('15px'),
+    });
+
+    const elementStyle = overlayRef.overlayElement.style;
+    const parentStyle = (overlayRef.overlayElement.parentNode as HTMLElement).style;
+
+    expect(elementStyle.marginLeft).toBe('');
+    expect(elementStyle.marginRight).toBe('10px');
     expect(elementStyle.marginTop).toBe('15px');
 
     expect(parentStyle.justifyContent).toBe('center');
@@ -366,6 +400,62 @@ describe('GlobalPositonStrategy', () => {
 
     expect(parentStyle.justifyContent).toBeFalsy();
     expect(parentStyle.alignItems).toBeFalsy();
+  });
+
+  it('should position the overlay to the start in ltr', () => {
+    attachOverlay({
+      direction: 'ltr',
+      positionStrategy: overlay.position().global().start('40px'),
+    });
+
+    const elementStyle = overlayRef.overlayElement.style;
+    const parentStyle = (overlayRef.overlayElement.parentNode as HTMLElement).style;
+
+    expect(elementStyle.marginLeft).toBe('40px');
+    expect(elementStyle.marginRight).toBe('');
+    expect(parentStyle.justifyContent).toBe('flex-start');
+  });
+
+  it('should position the overlay to the start in rtl', () => {
+    attachOverlay({
+      direction: 'rtl',
+      positionStrategy: overlay.position().global().start('50px'),
+    });
+
+    const elementStyle = overlayRef.overlayElement.style;
+    const parentStyle = (overlayRef.overlayElement.parentNode as HTMLElement).style;
+
+    expect(elementStyle.marginLeft).toBe('');
+    expect(elementStyle.marginRight).toBe('50px');
+    expect(parentStyle.justifyContent).toBe('flex-start');
+  });
+
+  it('should position the overlay to the end in ltr', () => {
+    attachOverlay({
+      direction: 'ltr',
+      positionStrategy: overlay.position().global().end('60px'),
+    });
+
+    const elementStyle = overlayRef.overlayElement.style;
+    const parentStyle = (overlayRef.overlayElement.parentNode as HTMLElement).style;
+
+    expect(elementStyle.marginRight).toBe('60px');
+    expect(elementStyle.marginLeft).toBe('');
+    expect(parentStyle.justifyContent).toBe('flex-end');
+  });
+
+  it('should position the overlay to the end in rtl', () => {
+    attachOverlay({
+      direction: 'rtl',
+      positionStrategy: overlay.position().global().end('70px'),
+    });
+
+    const elementStyle = overlayRef.overlayElement.style;
+    const parentStyle = (overlayRef.overlayElement.parentNode as HTMLElement).style;
+
+    expect(elementStyle.marginLeft).toBe('70px');
+    expect(elementStyle.marginRight).toBe('');
+    expect(parentStyle.justifyContent).toBe('flex-end');
   });
 });
 
