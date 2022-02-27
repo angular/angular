@@ -35,7 +35,9 @@ mat-menu {
   @include menu-common.base;
 
   // The CDK positioning uses flexbox to anchor the element, whereas MDC uses `position: absolute`.
-  position: static;
+  // Furthermore, the relative position ensures that the `offsetParent` is the menu, rather than
+  // the overlay. This comes into play when we measure the `offsetTop` of a menu item.
+  position: relative;
 }
 
 .mat-mdc-menu-item {
@@ -56,6 +58,7 @@ mat-menu {
   font-size: inherit;
   background: none;
   text-decoration: none;
+  margin: 0; // Resolves an issue where buttons have an extra 2px margin on Safari.
 
   // Set the `min-height` here ourselves, instead of going through
   // the `mdc-list-one-line-item-density` mixin, because it sets a `height`

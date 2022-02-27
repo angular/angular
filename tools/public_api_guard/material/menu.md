@@ -321,7 +321,7 @@ export abstract class _MatMenuTriggerBase implements AfterContentInit, OnDestroy
     static ɵfac: i0.ɵɵFactoryDeclaration<_MatMenuTriggerBase, [null, null, null, null, { optional: true; }, { optional: true; self: true; }, { optional: true; }, null, null]>;
 }
 
-// @public
+// @public @deprecated
 const MENU_PANEL_TOP_PADDING = 8;
 
 // @public

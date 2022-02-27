@@ -2137,7 +2137,7 @@ describe('MDC-based MatMenu', () => {
       compileTestComponent();
       instance.rootTriggerEl.nativeElement.style.position = 'fixed';
       instance.rootTriggerEl.nativeElement.style.left = '50px';
-      instance.rootTriggerEl.nativeElement.style.top = '50px';
+      instance.rootTriggerEl.nativeElement.style.top = '200px';
       instance.rootTrigger.openMenu();
       fixture.detectChanges();
       tick(500);
@@ -2147,7 +2147,7 @@ describe('MDC-based MatMenu', () => {
       tick(500);
 
       const triggerRect = overlay.querySelector('#level-one-trigger')!.getBoundingClientRect();
-      const panelRect = overlay.querySelectorAll('.cdk-overlay-pane')[1].getBoundingClientRect();
+      const panelRect = overlay.querySelectorAll('.mat-mdc-menu-panel')[1].getBoundingClientRect();
 
       expect(Math.round(triggerRect.right)).toBe(Math.round(panelRect.left));
       expect(Math.round(triggerRect.top)).toBe(Math.round(panelRect.top) + MENU_PANEL_TOP_PADDING);
@@ -2157,7 +2157,7 @@ describe('MDC-based MatMenu', () => {
       compileTestComponent();
       instance.rootTriggerEl.nativeElement.style.position = 'fixed';
       instance.rootTriggerEl.nativeElement.style.right = '10px';
-      instance.rootTriggerEl.nativeElement.style.top = '50%';
+      instance.rootTriggerEl.nativeElement.style.top = '200px';
       instance.rootTrigger.openMenu();
       fixture.detectChanges();
       tick(500);
@@ -2167,7 +2167,7 @@ describe('MDC-based MatMenu', () => {
       tick(500);
 
       const triggerRect = overlay.querySelector('#level-one-trigger')!.getBoundingClientRect();
-      const panelRect = overlay.querySelectorAll('.cdk-overlay-pane')[1].getBoundingClientRect();
+      const panelRect = overlay.querySelectorAll('.mat-mdc-menu-panel')[1].getBoundingClientRect();
 
       expect(Math.round(triggerRect.left)).toBe(Math.round(panelRect.right));
       expect(Math.round(triggerRect.top)).toBe(Math.round(panelRect.top) + MENU_PANEL_TOP_PADDING);
@@ -2177,7 +2177,7 @@ describe('MDC-based MatMenu', () => {
       compileTestComponent('rtl');
       instance.rootTriggerEl.nativeElement.style.position = 'fixed';
       instance.rootTriggerEl.nativeElement.style.left = '50%';
-      instance.rootTriggerEl.nativeElement.style.top = '50%';
+      instance.rootTriggerEl.nativeElement.style.top = '200px';
       instance.rootTrigger.openMenu();
       fixture.detectChanges();
       tick(500);
@@ -2187,7 +2187,7 @@ describe('MDC-based MatMenu', () => {
       tick(500);
 
       const triggerRect = overlay.querySelector('#level-one-trigger')!.getBoundingClientRect();
-      const panelRect = overlay.querySelectorAll('.cdk-overlay-pane')[1].getBoundingClientRect();
+      const panelRect = overlay.querySelectorAll('.mat-mdc-menu-panel')[1].getBoundingClientRect();
 
       expect(Math.round(triggerRect.left)).toBe(Math.round(panelRect.right));
       expect(Math.round(triggerRect.top)).toBe(Math.round(panelRect.top) + MENU_PANEL_TOP_PADDING);
@@ -2197,7 +2197,7 @@ describe('MDC-based MatMenu', () => {
       compileTestComponent('rtl');
       instance.rootTriggerEl.nativeElement.style.position = 'fixed';
       instance.rootTriggerEl.nativeElement.style.left = '10px';
-      instance.rootTriggerEl.nativeElement.style.top = '50%';
+      instance.rootTriggerEl.nativeElement.style.top = '200px';
       instance.rootTrigger.openMenu();
       fixture.detectChanges();
       tick(500);
@@ -2207,11 +2207,31 @@ describe('MDC-based MatMenu', () => {
       tick(500);
 
       const triggerRect = overlay.querySelector('#level-one-trigger')!.getBoundingClientRect();
-      const panelRect = overlay.querySelectorAll('.cdk-overlay-pane')[1].getBoundingClientRect();
+      const panelRect = overlay.querySelectorAll('.mat-mdc-menu-panel')[1].getBoundingClientRect();
 
       expect(Math.round(triggerRect.right)).toBe(Math.round(panelRect.left));
       expect(Math.round(triggerRect.top)).toBe(Math.round(panelRect.top) + MENU_PANEL_TOP_PADDING);
     }));
+
+    it('should account for custom padding when offsetting the sub-menu', () => {
+      compileTestComponent();
+      instance.rootTriggerEl.nativeElement.style.position = 'fixed';
+      instance.rootTriggerEl.nativeElement.style.left = '10px';
+      instance.rootTriggerEl.nativeElement.style.top = '200px';
+      instance.rootTrigger.openMenu();
+      fixture.detectChanges();
+
+      // Change the padding to something different from the default.
+      (overlay.querySelector('.mat-mdc-menu-content') as HTMLElement).style.padding = '15px 0';
+
+      instance.levelOneTrigger.openMenu();
+      fixture.detectChanges();
+
+      const triggerRect = overlay.querySelector('#level-one-trigger')!.getBoundingClientRect();
+      const panelRect = overlay.querySelectorAll('.mat-mdc-menu-panel')[1].getBoundingClientRect();
+
+      expect(Math.round(triggerRect.top)).toBe(Math.round(panelRect.top) + 15);
+    });
 
     it('should close all of the menus when an item is clicked', fakeAsync(() => {
       compileTestComponent();

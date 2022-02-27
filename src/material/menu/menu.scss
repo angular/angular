@@ -22,6 +22,10 @@ mat-menu {
   // collapse it to zero when they scroll away.
   min-height: menu-common.$item-height + $vertical-padding * 2;
 
+  // Nothing in CSS depends upon this, but we need it so that the `offsetParent` in JS is the
+  // menu rather than the overlay panel. This comes into play when we read the `offsetTop`.
+  position: relative;
+
   // Prevent users from interacting with the panel while it's animating. Note that
   // people won't be able to click through it, because the overlay pane will catch the click.
   // This fixes the following issues:
