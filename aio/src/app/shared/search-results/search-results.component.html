@@ -22,7 +22,7 @@
       <ul>
         <li class="search-page" *ngFor="let page of area.pages; let lastPage = last">
           <a
-            class="search-result-item -${{lastPage}}=${{lastArea}}"
+            class="search-result-item"
             href="{{ page.path }}"
             (click)="onResultSelected(page, $event)"
             [attr.cdkFocusRegionEnd]="(lastArea && lastPage) || null"
