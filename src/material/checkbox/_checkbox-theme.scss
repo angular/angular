@@ -71,7 +71,7 @@
     }
 
     .mat-checkbox-label {
-      color: theming.get-color-from-palette($foreground, secondary-text);
+      color: theming.get-color-from-palette($foreground, disabled);
     }
   }
 
