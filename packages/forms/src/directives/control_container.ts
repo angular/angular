@@ -9,7 +9,6 @@
 import {AbstractControlDirective} from './abstract_control_directive';
 import {Form} from './form_interface';
 
-
 /**
  * @description
  * A base class for directives that contain multiple registered instances of `NgControl`.

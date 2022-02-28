@@ -1083,9 +1083,6 @@
     "name": "isDirectiveHost"
   },
   {
-    "name": "isFormGroup"
-  },
-  {
     "name": "isForwardRef"
   },
   {

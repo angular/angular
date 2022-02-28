@@ -11,7 +11,7 @@ import {forkJoin, from, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 
 import {AsyncValidator, AsyncValidatorFn, ValidationErrors, Validator, ValidatorFn} from './directives/validators';
-import {AbstractControl} from './model';
+import {AbstractControl} from './model/abstract_model';
 
 function isEmptyInputValue(value: any): boolean {
   /**
