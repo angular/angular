@@ -61,7 +61,7 @@ export class FakeMatIconRegistry implements PublicApi<MatIconRegistry>, OnDestro
   }
 
   getDefaultFontSetClass() {
-    return 'material-icons';
+    return ['material-icons'];
   }
 
   getSvgIconFromUrl(): Observable<SVGElement> {

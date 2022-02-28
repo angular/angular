@@ -35,7 +35,7 @@ export class FakeMatIconRegistry implements PublicApi<MatIconRegistry>, OnDestro
     // (undocumented)
     classNameForFontAlias(alias: string): string;
     // (undocumented)
-    getDefaultFontSetClass(): string;
+    getDefaultFontSetClass(): string[];
     // (undocumented)
     getNamedSvgIcon(): Observable<SVGElement>;
     // (undocumented)

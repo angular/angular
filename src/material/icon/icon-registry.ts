@@ -145,11 +145,11 @@ export class MatIconRegistry implements OnDestroy {
   private _resolvers: IconResolver[] = [];
 
   /**
-   * The CSS class to apply when an `<mat-icon>` component has no icon name, url, or font specified.
-   * The default 'material-icons' value assumes that the material icon font has been loaded as
-   * described at http://google.github.io/material-design-icons/#icon-font-for-the-web
+   * The CSS classes to apply when an `<mat-icon>` component has no icon name, url, or font
+   * specified. The default 'material-icons' value assumes that the material icon font has been
+   * loaded as described at http://google.github.io/material-design-icons/#icon-font-for-the-web
    */
-  private _defaultFontSetClass = 'material-icons';
+  private _defaultFontSetClass = ['material-icons'];
 
   constructor(
     @Optional() private _httpClient: HttpClient,
@@ -302,21 +302,19 @@ export class MatIconRegistry implements OnDestroy {
   }
 
   /**
-   * Sets the CSS class name to be used for icon fonts when an `<mat-icon>` component does not
+   * Sets the CSS classes to be used for icon fonts when an `<mat-icon>` component does not
    * have a fontSet input value, and is not loading an icon by name or URL.
-   *
-   * @param className
    */
-  setDefaultFontSetClass(className: string): this {
-    this._defaultFontSetClass = className;
+  setDefaultFontSetClass(...classNames: string[]): this {
+    this._defaultFontSetClass = classNames;
     return this;
   }
 
   /**
-   * Returns the CSS class name to be used for icon fonts when an `<mat-icon>` component does not
+   * Returns the CSS classes to be used for icon fonts when an `<mat-icon>` component does not
    * have a fontSet input value, and is not loading an icon by name or URL.
    */
-  getDefaultFontSetClass(): string {
+  getDefaultFontSetClass(): string[] {
     return this._defaultFontSetClass;
   }
 
