@@ -51,19 +51,7 @@ export function flattenStyles(
 }
 
 function decoratePreventDefault(eventHandler: Function): Function {
-  // `DebugNode.triggerEventHandler` needs to know if the listener was created with
-  // decoratePreventDefault or is a listener added outside the Angular context so it can handle the
-  // two differently. In the first case, the special '__ngUnwrap__' token is passed to the unwrap
-  // the listener (see below).
-  return (event: any) => {
-    // Ivy uses '__ngUnwrap__' as a special token that allows us to unwrap the function
-    // so that it can be invoked programmatically by `DebugNode.triggerEventHandler`. The debug_node
-    // can inspect the listener toString contents for the existence of this special token. Because
-    // the token is a string literal, it is ensured to not be modified by compiled code.
-    if (event === '__ngUnwrap__') {
-      return eventHandler;
-    }
-
+  const listener: Function = (event: any) => {
     const allowDefaultBehavior = eventHandler(event);
     if (allowDefaultBehavior === false) {
       // TODO(tbosch): move preventDefault into event plugins...
@@ -73,6 +61,12 @@ function decoratePreventDefault(eventHandler: Function): Function {
 
     return undefined;
   };
+  // `DebugNode.triggerEventHandler` needs to know if the listener was created with
+  // decoratePreventDefault or is a listener added outside the Angular context so it can handle the
+  // two differently. In the first case, bind the original listener to the special '__ngUnwrap__'
+  // property of the wrapped listener.
+  (listener as any)['__ngUnwrap__'] = eventHandler;
+  return listener;
 }
 
 let hasLoggedNativeEncapsulationWarning = false;
