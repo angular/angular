@@ -96,8 +96,10 @@ describe('insert/remove', () => {
 
        const uniqueValue = {};
        fixture.componentInstance.currentComponent = InjectedComponent;
-       fixture.componentInstance.injector = Injector.create(
-           [{provide: TEST_TOKEN, useValue: uniqueValue}], fixture.componentRef.injector);
+       fixture.componentInstance.injector = Injector.create({
+         providers: [{provide: TEST_TOKEN, useValue: uniqueValue}],
+         parent: fixture.componentRef.injector,
+       });
 
        fixture.detectChanges();
        let cmpRef: ComponentRef<InjectedComponent> = fixture.componentInstance.cmpRef!;
@@ -249,6 +251,21 @@ describe('insert/remove', () => {
        fixture.detectChanges();
 
        expect(fixture.nativeElement).toHaveText('bat');
+     }));
+
+  it('should override providers from parent component using custom injector', waitForAsync(() => {
+       TestBed.overrideComponent(InjectedComponent, {set: {template: 'Value: {{testToken}}'}});
+       TestBed.overrideComponent(
+           TestComponent, {set: {providers: [{provide: TEST_TOKEN, useValue: 'parent'}]}});
+       const fixture = TestBed.createComponent(TestComponent);
+       fixture.componentInstance.currentComponent = InjectedComponent;
+       fixture.componentInstance.injector = Injector.create({
+         providers: [{provide: TEST_TOKEN, useValue: 'child'}],
+         parent: fixture.componentInstance.vcRef.injector
+       });
+       fixture.detectChanges();
+
+       expect(fixture.nativeElement).toHaveText('Value: child');
      }));
 });
 

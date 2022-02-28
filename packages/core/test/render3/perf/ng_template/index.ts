@@ -7,6 +7,7 @@
  */
 import {injectTemplateRef} from '@angular/core/src/linker/template_ref';
 import {injectViewContainerRef} from '@angular/core/src/linker/view_container_ref';
+
 import {TemplateRef, ViewContainerRef} from '../../../../src/linker';
 import {ɵɵdefineDirective, ɵɵdirectiveInject, ɵɵtemplate} from '../../../../src/render3/index';
 import {createLView, createTNode, createTView} from '../../../../src/render3/instructions/shared';
@@ -63,7 +64,7 @@ function testTemplate(rf: RenderFlags, ctx: any) {
 
 const rootLView = createLView(
     null, createTView(TViewType.Root, null, null, 0, 0, null, null, null, null, null), {},
-    LViewFlags.IsRoot, null, null, null, null, null, null);
+    LViewFlags.IsRoot, null, null, null, null, null, null, null);
 
 const viewTNode = createTNode(null!, null, TNodeType.Element, -1, null, null);
 const embeddedTView = createTView(

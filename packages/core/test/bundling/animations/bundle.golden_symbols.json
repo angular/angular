@@ -930,6 +930,9 @@
     "name": "getTNode"
   },
   {
+    "name": "getTNodeFromLView"
+  },
+  {
     "name": "getTView"
   },
   {
@@ -1093,6 +1096,9 @@
   },
   {
     "name": "lookupTokenUsingModuleInjector"
+  },
+  {
+    "name": "lookupTokenUsingNodeInjector"
   },
   {
     "name": "makeAnimationEvent"
