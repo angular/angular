@@ -1,3 +1,4 @@
+import { A11yModule } from '@angular/cdk/a11y';
 import { BrowserModule } from '@angular/platform-browser';
 import { ErrorHandler, NgModule } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
@@ -47,7 +48,6 @@ import { SharedModule } from 'app/shared/shared.module';
 import { ThemeToggleComponent } from 'app/shared/theme-picker/theme-toggle.component';
 
 import { environment } from '../environments/environment';
-import { A11yModule } from '@angular/cdk/a11y';
 
 // These are the hardcoded inline svg sources to be used by the `<mat-icon>` component.
 /* eslint-disable max-len */
