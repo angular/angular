@@ -1,9 +1,9 @@
 import {error} from '@angular/dev-infra-private/ng-dev/utils/console';
 import {dirname, join} from 'path';
-import * as chalk from 'chalk';
+import chalk from 'chalk';
 import {releasePackages} from '../../.ng-dev/release';
 import {readFileSync} from 'fs';
-import * as semver from 'semver';
+import semver from 'semver';
 
 /** Path to the directory containing all package sources. */
 const packagesDir = join(__dirname, '../../src');

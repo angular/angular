@@ -2,7 +2,8 @@ import {existsSync, readFileSync} from 'fs';
 import {sync as glob} from 'glob';
 import {basename, dirname, isAbsolute, join} from 'path';
 import * as semver from 'semver';
-import * as ts from 'typescript';
+
+import ts from 'typescript';
 
 /** RegExp that matches Angular component inline styles that contain a sourcemap reference. */
 const inlineStylesSourcemapRegex = /styles: ?\[["'].*sourceMappingURL=.*["']/;

@@ -3,7 +3,7 @@ import {error} from '@angular/dev-infra-private/ng-dev/utils/console';
 import {SemVer} from 'semver';
 import {join} from 'path';
 import {existsSync, readFileSync} from 'fs';
-import * as chalk from 'chalk';
+import chalk from 'chalk';
 
 /** Path to the Bazel file that configures the release output. */
 const bzlConfigPath = join(__dirname, '../../packages.bzl');

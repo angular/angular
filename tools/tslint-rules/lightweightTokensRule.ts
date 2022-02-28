@@ -1,7 +1,8 @@
+import ts from 'typescript';
 import minimatch from 'minimatch';
+
 import * as path from 'path';
 import * as Lint from 'tslint';
-import * as ts from 'typescript';
 
 /** Arguments this rule supports. */
 type RuleArguments = [

@@ -1,8 +1,9 @@
-import {existsSync} from 'fs';
+import ts from 'typescript';
 import minimatch from 'minimatch';
+
+import {existsSync} from 'fs';
 import {dirname, join, normalize, relative, resolve} from 'path';
 import * as Lint from 'tslint';
-import * as ts from 'typescript';
 
 const BUILD_BAZEL_FILE = 'BUILD.bazel';
 

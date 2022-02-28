@@ -1,8 +1,8 @@
 import {readdirSync, readFileSync} from 'fs';
 import {join, basename} from 'path';
 import {sync as glob} from 'glob';
-import * as chalk from 'chalk';
-import * as ts from 'typescript';
+import chalk from 'chalk';
+import ts from 'typescript';
 import {config} from './check-mdc-tests-config';
 
 const srcDirectory = join(__dirname, '../src');

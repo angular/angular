@@ -1,7 +1,8 @@
+import ts from 'typescript';
+
 import {DocCollection, Processor} from 'dgeni';
 import {ClassLikeExportDoc} from 'dgeni-packages/typescript/api-doc-types/ClassLikeExportDoc';
 import {MemberDoc} from 'dgeni-packages/typescript/api-doc-types/MemberDoc';
-import * as ts from 'typescript';
 import {getInheritedDocsOfClass} from '../common/class-inheritance';
 import {
   decorateDeprecatedDoc,

@@ -1,5 +1,6 @@
-import * as ts from 'typescript';
 import * as fs from 'fs';
+
+import ts from 'typescript';
 
 /** Parses an example module file by returning all module names within the given file. */
 export function parseExampleModuleFile(filePath: string) {

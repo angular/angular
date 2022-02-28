@@ -1,6 +1,6 @@
 import {DocCollection, Document, Processor} from 'dgeni';
 import {ClassLikeExportDoc} from 'dgeni-packages/typescript/api-doc-types/ClassLikeExportDoc';
-import * as ts from 'typescript';
+import ts from 'typescript';
 import {getInheritedDocsOfClass, isInheritanceCreatedDoc} from '../common/class-inheritance';
 import {ClassExportDoc} from 'dgeni-packages/typescript/api-doc-types/ClassExportDoc';
 import {ApiDoc} from 'dgeni-packages/typescript/api-doc-types/ApiDoc';

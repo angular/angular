@@ -1,6 +1,6 @@
 import * as path from 'path';
-import * as ts from 'typescript';
 import * as Lint from 'tslint';
+import ts from 'typescript';
 import minimatch from 'minimatch';
 
 /**

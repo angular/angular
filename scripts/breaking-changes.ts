@@ -1,7 +1,7 @@
 import {join, relative} from 'path';
 import {readFileSync} from 'fs';
-import * as chalk from 'chalk';
-import * as ts from 'typescript';
+import chalk from 'chalk';
+import ts from 'typescript';
 import * as tsutils from 'tsutils';
 
 const projectRoot = process.cwd();

@@ -2,7 +2,8 @@ import {DocCollection, Processor} from 'dgeni';
 import {ApiDoc} from 'dgeni-packages/typescript/api-doc-types/ApiDoc';
 import {FunctionExportDoc} from 'dgeni-packages/typescript/api-doc-types/FunctionExportDoc';
 import {MethodMemberDoc} from 'dgeni-packages/typescript/api-doc-types/MethodMemberDoc';
-import * as ts from 'typescript';
+
+import ts from 'typescript';
 
 /** Type describing a function-like API doc (i.e. a function, or a class method member). */
 type FunctionLikeDoc = (FunctionExportDoc | MethodMemberDoc) & {

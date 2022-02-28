@@ -1,4 +1,4 @@
-import * as chalk from 'chalk';
+import chalk from 'chalk';
 import {readdirSync, readFileSync, statSync} from 'fs';
 import {IMinimatch, Minimatch} from 'minimatch';
 import {join} from 'path';

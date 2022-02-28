@@ -1,4 +1,4 @@
-import * as ts from 'typescript';
+import ts from 'typescript';
 import * as tsutils from 'tsutils';
 import * as Lint from 'tslint';
 

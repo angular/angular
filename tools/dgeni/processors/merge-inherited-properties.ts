@@ -2,7 +2,7 @@ import {DocCollection, Processor} from 'dgeni';
 import {ClassExportDoc} from 'dgeni-packages/typescript/api-doc-types/ClassExportDoc';
 import {ClassLikeExportDoc} from 'dgeni-packages/typescript/api-doc-types/ClassLikeExportDoc';
 import {MemberDoc} from 'dgeni-packages/typescript/api-doc-types/MemberDoc';
-import * as ts from 'typescript';
+import ts from 'typescript';
 import {getInheritedDocsOfClass} from '../common/class-inheritance';
 
 /**
