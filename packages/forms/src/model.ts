@@ -157,8 +157,8 @@ export const isFormGroup = (control: unknown): control is FormGroup => control i
 
 export const isFormArray = (control: unknown): control is FormArray => control instanceof FormArray;
 
-function assertControlPresent(parent: FormGroup|FormArray, key: string|number): void {
-  const isGroup = isFormGroup(parent);
+function assertControlPresent(
+    parent: AbstractControlCollection, isGroup: boolean, key: string|number): void {
   const controls = parent.controls as {[key: string|number]: unknown};
   const collection = isGroup ? Object.keys(controls) : controls;
   if (!collection.length) {
@@ -171,15 +171,15 @@ function assertControlPresent(parent: FormGroup|FormArray, key: string|number): 
   }
 }
 
-function assertAllValuesPresent(control: FormGroup|FormArray, value: any): void {
-  const isGroup = isFormGroup(control);
-  control._forEachChild((_: unknown, key: string|number) => {
-    if (value[key] === undefined) {
-      throw new RuntimeError(
-          RuntimeErrorCode.MISSING_CONTROL_VALUE,
-          NG_DEV_MODE ? missingControlValueError(isGroup, key) : '');
-    }
-  });
+function assertAllValuesPresent(
+    control: AbstractControlCollection, isGroup: boolean, value: any): void {
+  control._forEachChild(((_: unknown, key: string|number) => {
+                          if (value[key] === undefined) {
+                            throw new RuntimeError(
+                                RuntimeErrorCode.MISSING_CONTROL_VALUE,
+                                NG_DEV_MODE ? missingControlValueError(isGroup, key) : '');
+                          }
+                        }) as any);
 }
 
 /**
@@ -216,7 +216,7 @@ export abstract class AbstractControl {
   /** @internal */
   _updateOn?: FormHooks;
 
-  private _parent: FormGroup|FormArray|null = null;
+  private _parent: AbstractControlCollection|null = null;
   private _asyncValidationSubscription: any;
 
   /**
@@ -313,7 +313,7 @@ export abstract class AbstractControl {
   /**
    * The parent control.
    */
-  get parent(): FormGroup|FormArray|null {
+  get parent(): AbstractControlCollection|null {
     return this._parent;
   }
 
@@ -820,7 +820,7 @@ export abstract class AbstractControl {
   /**
    * @param parent Sets the parent of the control
    */
-  setParent(parent: FormGroup|FormArray): void {
+  setParent(parent: AbstractControlCollection): void {
     this._parent = parent;
   }
 
@@ -1174,6 +1174,13 @@ export abstract class AbstractControl {
   _find(name: string|number): AbstractControl|null {
     return null;
   }
+}
+
+/**
+ * AbstractControlCollection is an {@see AbstractControl} which contains other controls inside.
+ */
+export abstract class AbstractControlCollection extends AbstractControl {
+  public readonly controls: any;
 }
 
 /**
@@ -1692,7 +1699,7 @@ export const UntypedFormControl: UntypedFormControlCtor = FormControl;
  *
  * @publicApi
  */
-export class FormGroup extends AbstractControl {
+export class FormGroup extends AbstractControlCollection {
   /**
    * Creates a new `FormGroup` instance.
    *
@@ -1707,7 +1714,7 @@ export class FormGroup extends AbstractControl {
    *
    */
   constructor(
-      public controls: {[key: string]: AbstractControl},
+      public override controls: {[key: string]: AbstractControl},
       validatorOrOpts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|null,
       asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null) {
     super(pickValidators(validatorOrOpts), pickAsyncValidators(asyncValidator, validatorOrOpts));
@@ -1852,9 +1859,9 @@ export class FormGroup extends AbstractControl {
    */
   override setValue(
       value: {[key: string]: any}, options: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
-    assertAllValuesPresent(this, value);
+    assertAllValuesPresent(this, true, value);
     Object.keys(value).forEach(name => {
-      assertControlPresent(this, name);
+      assertControlPresent(this, true, name);
       this.controls[name].setValue(value[name], {onlySelf: true, emitEvent: options.emitEvent});
     });
     this.updateValueAndValidity(options);
@@ -2153,7 +2160,7 @@ export const UntypedFormGroup: UntypedFormGroupCtor = FormGroup;
  *
  * @publicApi
  */
-export class FormArray extends AbstractControl {
+export class FormArray extends AbstractControlCollection {
   /**
    * Creates a new `FormArray` instance.
    *
@@ -2168,7 +2175,7 @@ export class FormArray extends AbstractControl {
    *
    */
   constructor(
-      public controls: AbstractControl[],
+      public override controls: AbstractControl[],
       validatorOrOpts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|null,
       asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null) {
     super(pickValidators(validatorOrOpts), pickAsyncValidators(asyncValidator, validatorOrOpts));
@@ -2330,9 +2337,9 @@ export class FormArray extends AbstractControl {
    * updateValueAndValidity} method.
    */
   override setValue(value: any[], options: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
-    assertAllValuesPresent(this, value);
+    assertAllValuesPresent(this, false, value);
     value.forEach((newValue: any, index: number) => {
-      assertControlPresent(this, index);
+      assertControlPresent(this, false, index);
       this.at(index).setValue(newValue, {onlySelf: true, emitEvent: options.emitEvent});
     });
     this.updateValueAndValidity(options);

@@ -15,6 +15,9 @@
     "name": "AbstractControl"
   },
   {
+    "name": "AbstractControlCollection"
+  },
+  {
     "name": "AbstractControlDirective"
   },
   {
@@ -1114,9 +1117,6 @@
   },
   {
     "name": "isFormControl"
-  },
-  {
-    "name": "isFormGroup"
   },
   {
     "name": "isForwardRef"

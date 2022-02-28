@@ -65,7 +65,7 @@ export abstract class AbstractControl {
     markAsUntouched(opts?: {
         onlySelf?: boolean;
     }): void;
-    get parent(): FormGroup | FormArray | null;
+    get parent(): AbstractControlCollection | null;
     abstract patchValue(value: any, options?: Object): void;
     get pending(): boolean;
     readonly pristine: boolean;
@@ -78,7 +78,7 @@ export abstract class AbstractControl {
         emitEvent?: boolean;
     }): void;
     // (undocumented)
-    setParent(parent: FormGroup | FormArray): void;
+    setParent(parent: AbstractControlCollection): void;
     setValidators(validators: ValidatorFn | ValidatorFn[] | null): void;
     abstract setValue(value: any, options?: Object): void;
     readonly status: FormControlStatus;
@@ -223,7 +223,7 @@ export interface Form {
 }
 
 // @public
-export class FormArray extends AbstractControl {
+export class FormArray extends AbstractControlCollection {
     constructor(controls: AbstractControl[], validatorOrOpts?: ValidatorFn | ValidatorFn[] | AbstractControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null);
     at(index: number): AbstractControl;
     clear(options?: {
@@ -374,7 +374,7 @@ export interface FormControlOptions extends AbstractControlOptions {
 export type FormControlStatus = 'VALID' | 'INVALID' | 'PENDING' | 'DISABLED';
 
 // @public
-export class FormGroup extends AbstractControl {
+export class FormGroup extends AbstractControlCollection {
     constructor(controls: {
         [key: string]: AbstractControl;
     }, validatorOrOpts?: ValidatorFn | ValidatorFn[] | AbstractControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null);
