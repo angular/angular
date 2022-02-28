@@ -612,7 +612,7 @@ class SomeComponent {
       const appRef: ApplicationRef = TestBed.inject(ApplicationRef);
       const zone: NgZone = TestBed.inject(NgZone);
       appRef.attachView(fixture.componentRef.hostView);
-      zone.run(() => appRef.tick());
+      appRef.tick();
 
       let i = 0;
       appRef.isStable.subscribe({
@@ -673,7 +673,7 @@ class SomeComponent {
            const appRef: ApplicationRef = TestBed.inject(ApplicationRef);
            const zone: NgZone = TestBed.inject(NgZone);
            appRef.attachView(fixture.componentRef.hostView);
-           zone.run(() => appRef.tick());
+           appRef.tick();
 
            fixture.whenStable().then(() => {
              expectUnstable(appRef);

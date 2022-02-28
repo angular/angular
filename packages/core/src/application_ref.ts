@@ -599,9 +599,7 @@ export class ApplicationRef {
       private _initStatus: ApplicationInitStatus) {
     this._onMicrotaskEmptySubscription = this._zone.onMicrotaskEmpty.subscribe({
       next: () => {
-        this._zone.run(() => {
-          this.tick();
-        });
+        this.tick();
       }
     });
 
@@ -831,6 +829,15 @@ export class ApplicationRef {
    * detection pass during which all change detection must complete.
    */
   tick(): void {
+    if (NgZone.isInAngularZone()) {
+      this._tick();
+    } else {
+      this._zone.run(() => this._tick());
+    }
+  }
+
+  /** @internal */
+  _tick(): void {
     if (this._runningTick) {
       const errorMessage = (typeof ngDevMode === 'undefined' || ngDevMode) ?
           'ApplicationRef.tick is called recursively' :
