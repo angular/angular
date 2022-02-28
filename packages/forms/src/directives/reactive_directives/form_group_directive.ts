@@ -8,12 +8,15 @@
 
 import {Directive, EventEmitter, forwardRef, Inject, Input, OnChanges, OnDestroy, Optional, Output, Self, SimpleChanges} from '@angular/core';
 
-import {FormArray, FormControl, FormGroup, isFormControl} from '../../model';
+import {FormArray} from '../../model/form_array';
+import {FormControl, isFormControl} from '../../model/form_control';
+import {FormGroup} from '../../model/form_group';
+import {removeListItem} from '../../util';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../../validators';
 import {ControlContainer} from '../control_container';
 import {Form} from '../form_interface';
 import {missingFormException} from '../reactive_errors';
-import {cleanUpControl, cleanUpFormContainer, cleanUpValidators, removeListItem, setUpControl, setUpFormContainer, setUpValidators, syncPendingControls} from '../shared';
+import {cleanUpControl, cleanUpFormContainer, cleanUpValidators, setUpControl, setUpFormContainer, setUpValidators, syncPendingControls} from '../shared';
 import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from '../validators';
 
 import {FormControlName} from './form_control_name';
