@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {RComment, RElement, RNode, RText} from '@angular/core/src/render3/interfaces/renderer_dom';
+
 import {ProceduralRenderer3, Renderer3, RendererFactory3, RendererStyleFlags3} from '../../../src/render3/interfaces/renderer';
 
 export class MicroBenchmarkRenderNode implements RNode, RComment, RText {
@@ -49,7 +50,7 @@ export class MicroBenchmarkRenderer implements ProceduralRenderer3 {
     return null;
   }
   nextSibling(node: RNode): RNode|null {
-    throw new Error('Method not implemented.');
+    return null;
   }
   setAttribute(el: RElement, name: string, value: string, namespace?: string|null|undefined): void {
     if (name === 'class' && isOurNode(el)) {
