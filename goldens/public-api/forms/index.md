@@ -43,7 +43,6 @@ export abstract class AbstractControl {
     readonly errors: ValidationErrors | null;
     get(path: Array<string | number> | string): AbstractControl | null;
     getError(errorCode: string, path?: Array<string | number> | string): any;
-    getRawValue(): any;
     hasAsyncValidator(validator: AsyncValidatorFn): boolean;
     hasError(errorCode: string, path?: Array<string | number> | string): boolean;
     hasValidator(validator: ValidatorFn): boolean;
