@@ -10,6 +10,7 @@ import {ɵgetDOM as getDOM} from '@angular/common';
 import {NgZone} from '@angular/core/src/zone/ng_zone';
 import {DomEventsPlugin} from '@angular/platform-browser/src/dom/events/dom_events';
 import {EventManager, EventManagerPlugin} from '@angular/platform-browser/src/dom/events/event_manager';
+
 import {createMouseEvent, el} from '../../../testing/src/browser_util';
 
 (function() {
@@ -122,8 +123,10 @@ describe('EventManager', () => {
     expect(receivedEvent).toBe(null);
   });
 
-  it('should keep zone when addEventListener multiple times', () => {
+  it('should always run listener in the ngzone when addEventListener multiple times', () => {
     const Zone = (window as any)['Zone'];
+    const fakeAngularZone =
+        Zone.current.fork({name: 'angular', properties: {'isAngularZone': true}});
 
     const element = el('<div><div></div></div>');
     doc.body.appendChild(element);
@@ -138,7 +141,7 @@ describe('EventManager', () => {
       receivedEvents.push(e);
       receivedZones.push(Zone.current.name);
     };
-    const manager = new EventManager([domEventPlugin], new FakeNgZone());
+    const manager = new EventManager([domEventPlugin], new FakeNgZone(fakeAngularZone));
 
     let remover1: any = null;
     let remover2: any = null;
@@ -150,7 +153,7 @@ describe('EventManager', () => {
     });
     getDOM().dispatchEvent(element, dispatchedEvent);
     expect(receivedEvents).toEqual([dispatchedEvent, dispatchedEvent]);
-    expect(receivedZones).toEqual([Zone.root.name, 'test']);
+    expect(receivedZones).toEqual(['angular', 'angular']);
 
     receivedEvents = [];
     remover1 && remover1();
@@ -161,6 +164,8 @@ describe('EventManager', () => {
 
   it('should support event.stopImmediatePropagation', () => {
     const Zone = (window as any)['Zone'];
+    const fakeAngularZone =
+        Zone.current.fork({name: 'angular', properties: {'isAngularZone': true}});
 
     const element = el('<div><div></div></div>');
     doc.body.appendChild(element);
@@ -176,7 +181,7 @@ describe('EventManager', () => {
       receivedEvents.push(e);
       receivedZones.push(Zone.current.name);
     };
-    const manager = new EventManager([domEventPlugin], new FakeNgZone());
+    const manager = new EventManager([domEventPlugin], new FakeNgZone(fakeAngularZone));
 
     let remover1: any = null;
     let remover2: any = null;
@@ -188,7 +193,7 @@ describe('EventManager', () => {
     });
     getDOM().dispatchEvent(element, dispatchedEvent);
     expect(receivedEvents).toEqual([dispatchedEvent]);
-    expect(receivedZones).toEqual([Zone.root.name]);
+    expect(receivedZones).toEqual(['angular']);
 
     receivedEvents = [];
     remover1 && remover1();
@@ -270,6 +275,8 @@ describe('EventManager', () => {
 
   it('should be able to remove event listener which was added inside of ngZone', () => {
     const Zone = (window as any)['Zone'];
+    const fakeAngularZone =
+        Zone.current.fork({name: 'angular', properties: {'isAngularZone': true}});
 
     const element = el('<div><div></div></div>');
     doc.body.appendChild(element);
@@ -284,7 +291,7 @@ describe('EventManager', () => {
       receivedEvents.push(e);
       receivedZones.push(Zone.current.name);
     };
-    const manager = new EventManager([domEventPlugin], new FakeNgZone());
+    const manager = new EventManager([domEventPlugin], new FakeNgZone(fakeAngularZone));
 
     let remover1: any = null;
     let remover2: any = null;
@@ -293,12 +300,12 @@ describe('EventManager', () => {
       remover1 = manager.addEventListener(element, 'click', handler1);
     });
     // handler2 is added in 'angular' zone
-    Zone.root.fork({name: 'fakeAngularZone', properties: {isAngularZone: true}}).run(() => {
+    fakeAngularZone.run(() => {
       remover2 = manager.addEventListener(element, 'click', handler2);
     });
     getDOM().dispatchEvent(element, dispatchedEvent);
     expect(receivedEvents).toEqual([dispatchedEvent, dispatchedEvent]);
-    expect(receivedZones).toEqual([Zone.root.name, 'fakeAngularZone']);
+    expect(receivedZones).toEqual(['angular', 'angular']);
 
     receivedEvents = [];
     remover1 && remover1();
@@ -309,6 +316,32 @@ describe('EventManager', () => {
     // should still be able to remove them correctly
     expect(receivedEvents).toEqual([]);
   });
+
+  it('should always run EventManager.addEventlistener inside NgZone', () => {
+    const fakeAngularZone =
+        Zone.current.fork({name: 'fakeAngular', properties: {'isAngularZone': true}});
+    const element = el('<div><div></div></div>');
+    doc.body.appendChild(element);
+    const dispatchedEvent = createMouseEvent('scroll');
+    let receivedEvent: any = null;
+    let handlerInAngularZone = false;
+    const handler = (e: any) => {
+      receivedEvent = e;
+      handlerInAngularZone = NgZone.isInAngularZone();
+    };
+    const manager = new EventManager([domEventPlugin], new FakeNgZone(fakeAngularZone));
+
+    let remover = manager.addEventListener(element, 'scroll', handler);
+    getDOM().dispatchEvent(element, dispatchedEvent);
+    expect(receivedEvent).toBe(dispatchedEvent);
+    expect(handlerInAngularZone).toBe(true);
+
+    receivedEvent = null;
+    remover && remover();
+    getDOM().dispatchEvent(element, dispatchedEvent);
+    expect(receivedEvent).toBe(null);
+  });
+
 
   it('should run unpatchedEvents handler outside of ngZone', () => {
     const Zone = (window as any)['Zone'];
@@ -523,10 +556,16 @@ class FakeEventManagerPlugin extends EventManagerPlugin {
 }
 
 class FakeNgZone extends NgZone {
-  constructor() {
+  innerZone: Zone|undefined;
+  constructor(innerZone?: Zone) {
     super({enableLongStackTrace: false, shouldCoalesceEventChangeDetection: true});
+    this.innerZone = innerZone;
   }
+
   override run<T>(fn: (...args: any[]) => T, applyThis?: any, applyArgs?: any[]): T {
+    if (this.innerZone) {
+      return this.innerZone.run(fn, applyThis, applyArgs);
+    }
     return fn();
   }
   override runOutsideAngular(fn: Function) {

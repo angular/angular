@@ -108,4 +108,26 @@ export abstract class EventManagerPlugin {
     }
     return this.addEventListener(target, eventName, handler);
   }
+
+  /**
+   * Ensure that the event listener is added inside NgZone so the listener will trigger
+   * change detection automatically. if currently the context is already the NgZone,
+   * we just call addEventListener directly, otherwise run inside NgZone.
+   *
+   * @param element The HTML element to receive event notifications.
+   * @param eventName The name of the event to listen for.
+   * @param handler A function to call when the notification occurs. Receives the
+   * event object as an argument.
+   * @returns  A callback function that can be used to remove the handler.
+   */
+  ensureAddListenerInZone(element: HTMLElement, eventName: string, handler: Function): Function {
+    const zone = this.manager.getZone();
+    if (!NgZone.isInAngularZone()) {
+      return zone.run(() => {
+        return getDOM().onAndCancel(element, eventName, handler);
+      });
+    } else {
+      return getDOM().onAndCancel(element, eventName, handler);
+    }
+  }
 }

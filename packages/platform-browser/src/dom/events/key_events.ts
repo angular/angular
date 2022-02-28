@@ -8,6 +8,7 @@
 
 import {DOCUMENT, ɵgetDOM as getDOM} from '@angular/common';
 import {Inject, Injectable, NgZone} from '@angular/core';
+
 import {EventManagerPlugin} from './event_manager';
 
 /**
@@ -103,12 +104,9 @@ export class KeyEventsPlugin extends EventManagerPlugin {
   override addEventListener(element: HTMLElement, eventName: string, handler: Function): Function {
     const parsedEvent = KeyEventsPlugin.parseEventName(eventName)!;
 
-    const outsideHandler =
-        KeyEventsPlugin.eventCallback(parsedEvent['fullKey'], handler, this.manager.getZone());
+    const outsideHandler = KeyEventsPlugin.eventCallback(parsedEvent['fullKey'], handler);
 
-    return this.manager.getZone().runOutsideAngular(() => {
-      return getDOM().onAndCancel(element, parsedEvent['domEventName'], outsideHandler);
-    });
+    return this.ensureAddListenerInZone(element, parsedEvent['domEventName'], outsideHandler);
   }
 
   static parseEventName(eventName: string): {fullKey: string, domEventName: string}|null {
@@ -173,10 +171,10 @@ export class KeyEventsPlugin extends EventManagerPlugin {
    * @param zone The zone in which the event occurred.
    * @returns A callback function.
    */
-  static eventCallback(fullKey: any, handler: Function, zone: NgZone): Function {
+  static eventCallback(fullKey: any, handler: Function): Function {
     return (event: any /** TODO #9100 */) => {
       if (KeyEventsPlugin.getEventFullKey(event) === fullKey) {
-        zone.runGuarded(() => handler(event));
+        return handler(event);
       }
     };
   }

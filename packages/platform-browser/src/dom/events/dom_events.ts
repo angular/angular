@@ -24,11 +24,6 @@ export class DomEventsPlugin extends EventManagerPlugin {
   }
 
   override addEventListener(element: HTMLElement, eventName: string, handler: Function): Function {
-    element.addEventListener(eventName, handler as EventListener, false);
-    return () => this.removeEventListener(element, eventName, handler as EventListener);
-  }
-
-  removeEventListener(target: any, eventName: string, callback: Function): void {
-    return target.removeEventListener(eventName, callback as EventListener);
+    return this.ensureAddListenerInZone(element, eventName, handler);
   }
 }
