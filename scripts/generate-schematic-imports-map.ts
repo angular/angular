@@ -1,7 +1,7 @@
 import {sync as glob} from 'glob';
 import {readFileSync, writeFileSync} from 'fs';
 import {join, basename} from 'path';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 // Script that generates mappings from our publicly-exported symbols to their entry points. The
 // mappings are intended to be used by the secondary entry points schematic and should be committed

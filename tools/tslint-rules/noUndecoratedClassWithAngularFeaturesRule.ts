@@ -1,5 +1,5 @@
 import * as Lint from 'tslint';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 const RULE_FAILURE =
   `Undecorated class uses Angular features. Undecorated ` +

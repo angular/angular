@@ -1,5 +1,5 @@
 import * as Lint from 'tslint';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 /** Rule that enforces that ternary expressions aren't being nested. */
 export class Rule extends Lint.Rules.AbstractRule {

@@ -1,4 +1,4 @@
-import * as ts from 'typescript';
+import ts from 'typescript';
 import * as Lint from 'tslint';
 
 /** Lint rule that checks the names of classes and interfaces against a pattern. */

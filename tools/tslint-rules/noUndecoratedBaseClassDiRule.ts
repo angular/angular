@@ -1,5 +1,5 @@
 import * as Lint from 'tslint';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 const RULE_FAILURE =
   `Class inherits constructor using dependency injection from ` +
