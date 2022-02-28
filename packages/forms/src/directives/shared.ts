@@ -6,7 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AbstractControl, FormArray, FormControl, FormGroup} from '../model';
+import {AbstractControl} from '../model/abstract_model';
+import {FormArray} from '../model/form_array';
+import {FormControl} from '../model/form_control';
+import {FormGroup} from '../model/form_group';
 import {getControlAsyncValidators, getControlValidators, mergeValidators} from '../validators';
 
 import {AbstractControlDirective} from './abstract_control_directive';
@@ -345,11 +348,6 @@ export function selectValueAccessor(
     _throwError(dir, 'No valid value accessor for form control with');
   }
   return null;
-}
-
-export function removeListItem<T>(list: T[], el: T): void {
-  const index = list.indexOf(el);
-  if (index > -1) list.splice(index, 1);
 }
 
 // TODO(kara): remove after deprecation period
