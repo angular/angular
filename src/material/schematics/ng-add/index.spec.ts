@@ -239,12 +239,14 @@ describe('ng-add schematic', () => {
       // Simulate the case where a developer uses `ng-add` on an Angular CLI project which already
       // explicitly uses the `BrowserAnimationsModule`. It would be wrong to forcibly change
       // to noop animations.
-      const fileContent = addModuleImportToRootModule(
+      addModuleImportToRootModule(
         appTree,
         'BrowserAnimationsModule',
         '@angular/platform-browser/animations',
         project,
       );
+
+      const fileContent = getFileContent(appTree, '/projects/material/src/app/app.module.ts');
 
       expect(fileContent).not.toContain(
         'NoopAnimationsModule',
