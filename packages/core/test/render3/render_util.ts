@@ -292,7 +292,7 @@ export function renderTemplate<T>(
     const tView = createTView(TViewType.Root, null, null, 1, 0, null, null, null, null, null);
     const hostLView = createLView(
         null, tView, {}, LViewFlags.CheckAlways | LViewFlags.IsRoot, null, null,
-        providedRendererFactory, renderer, null, null, null);
+        providedRendererFactory, renderer, null, null);
     enterView(hostLView);
 
     const def = ɵɵdefineComponent({
@@ -310,7 +310,7 @@ export function renderTemplate<T>(
     hostLView[hostTNode.index] = hostNode;
     componentView = createLView(
         hostLView, componentTView, context, LViewFlags.CheckAlways, hostNode, hostTNode,
-        providedRendererFactory, renderer, sanitizer || null, null, null);
+        providedRendererFactory, renderer, sanitizer || null, null);
   }
   renderComponentOrTemplate(componentView[TVIEW], componentView, templateFn, context);
   return componentView;

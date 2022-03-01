@@ -134,7 +134,7 @@ export function renderComponent<T>(
   const rootTView = createTView(TViewType.Root, null, null, 1, 0, null, null, null, null, null);
   const rootView: LView = createLView(
       null, rootTView, rootContext, rootFlags, null, null, rendererFactory, renderer, null,
-      opts.injector || null, null);
+      opts.injector || null);
 
   enterView(rootView);
   let component: T;
@@ -200,7 +200,7 @@ export function createRootComponentView(
   const componentView = createLView(
       rootView, getOrCreateTComponentView(def), null,
       def.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways, rootView[index], tNode,
-      rendererFactory, viewRenderer, sanitizer || null, null, null);
+      rendererFactory, viewRenderer, sanitizer || null, null);
 
   if (tView.firstCreatePass) {
     diPublicInInjector(getOrCreateNodeInjectorForNode(tNode, rootView), tView, def.type);
