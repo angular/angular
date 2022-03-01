@@ -437,3 +437,12 @@ $_emitted-density: () !default;
     color: $theme-or-color-config
   ));
 }
+
+
+// Approximates an rgba color into a solid hex color, given a background color.
+@function private-rgba-to-hex($color, $background-color) {
+  // We convert the rgba color into a solid one by taking the opacity from the rgba
+  // value and using it to determine the percentage of the background to put
+  // into foreground when mixing the colors together.
+  @return mix($background-color, rgba($color, 1), (1 - opacity($color)) * 100%);
+}

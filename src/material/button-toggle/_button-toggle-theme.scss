@@ -11,6 +11,16 @@
   $foreground: map.get($config, foreground);
   $background: map.get($config, background);
   $divider-color: theming.get-color-from-palette($foreground, divider);
+  $theme-divider-color: map.get($foreground, divider);
+
+  // By default the theme usually has an rgba color for the dividers, which can
+  // stack up with the background of a button toggle. This can cause the border
+  // of a selected toggle to look different from an deselected one. We use a solid
+  // color to ensure that the border always stays the same.
+  $divider-color: if(type-of($theme-divider-color) == color,
+    theming.private-rgba-to-hex($theme-divider-color, map.get($background, card)),
+    $theme-divider-color
+  );
 
   .mat-button-toggle-standalone,
   .mat-button-toggle-group {
