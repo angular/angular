@@ -13,3 +13,4 @@ export * from './expansion-panel';
 export * from './expansion-panel-header';
 export * from './expansion-panel-content';
 export * from './expansion-animations';
+export {MAT_EXPANSION_PANEL} from './expansion-panel-base';

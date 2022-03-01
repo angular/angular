@@ -43,6 +43,9 @@ export const EXPANSION_PANEL_ANIMATION_TIMING = "225ms cubic-bezier(0.4,0.0,0.2,
 export const MAT_ACCORDION: InjectionToken<MatAccordionBase>;
 
 // @public
+export const MAT_EXPANSION_PANEL: InjectionToken<MatExpansionPanelBase>;
+
+// @public
 export const MAT_EXPANSION_PANEL_DEFAULT_OPTIONS: InjectionToken<MatExpansionPanelDefaultOptions>;
 
 // @public
@@ -142,13 +145,15 @@ export class MatExpansionPanelActionRow {
 
 // @public
 export class MatExpansionPanelContent {
-    constructor(_template: TemplateRef<any>);
+    constructor(_template: TemplateRef<any>, _expansionPanel?: MatExpansionPanelBase | undefined);
+    // (undocumented)
+    _expansionPanel?: MatExpansionPanelBase | undefined;
     // (undocumented)
     _template: TemplateRef<any>;
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<MatExpansionPanelContent, "ng-template[matExpansionPanelContent]", never, {}, {}, never>;
     // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<MatExpansionPanelContent, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatExpansionPanelContent, [null, { optional: true; }]>;
 }
 
 // @public

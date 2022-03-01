@@ -31,6 +31,7 @@ describe('MatExpansionPanel', () => {
           LazyPanelOpenOnLoad,
           PanelWithTwoWayBinding,
           PanelWithHeaderTabindex,
+          NestedLazyPanelWithContent,
         ],
       });
       TestBed.compileComponents();
@@ -89,6 +90,36 @@ describe('MatExpansionPanel', () => {
     expect(content.textContent.trim())
       .withContext('Expected content to be rendered.')
       .toContain('Some content');
+  }));
+
+  it('should not render lazy content from a child panel inside the parent', fakeAsync(() => {
+    const fixture = TestBed.createComponent(NestedLazyPanelWithContent);
+    fixture.componentInstance.parentExpanded = true;
+    fixture.detectChanges();
+
+    const parentContent: HTMLElement = fixture.nativeElement.querySelector(
+      '.parent-panel .mat-expansion-panel-content',
+    );
+    const childContent: HTMLElement = fixture.nativeElement.querySelector(
+      '.child-panel .mat-expansion-panel-content',
+    );
+
+    expect(parentContent.textContent!.trim()).toBe(
+      'Parent content',
+      'Expected only parent content to be rendered.',
+    );
+    expect(childContent.textContent!.trim()).toBe(
+      '',
+      'Expected child content element to be empty.',
+    );
+
+    fixture.componentInstance.childExpanded = true;
+    fixture.detectChanges();
+
+    expect(childContent.textContent!.trim()).toBe(
+      'Child content',
+      'Expected child content element to be rendered.',
+    );
   }));
 
   it('emit correct events for change in panel expanded state', () => {
@@ -621,3 +652,19 @@ class PanelWithTwoWayBinding {
   </mat-expansion-panel>`,
 })
 class PanelWithHeaderTabindex {}
+
+@Component({
+  template: `
+    <mat-expansion-panel class="parent-panel" [expanded]="parentExpanded">
+      Parent content
+
+      <mat-expansion-panel class="child-panel" [expanded]="childExpanded">
+        <ng-template matExpansionPanelContent>Child content</ng-template>
+      </mat-expansion-panel>
+    </mat-expansion-panel>
+  `,
+})
+class NestedLazyPanelWithContent {
+  parentExpanded = false;
+  childExpanded = false;
+}
