@@ -49,7 +49,6 @@ export const DECLARATION_LCONTAINER = 17;
 export const PREORDER_HOOK_FLAGS = 18;
 export const QUERIES = 19;
 export const ID = 20;
-export const EMBEDDED_VIEW_INJECTOR = 21;
 /**
  * Size of LView's header. Necessary to adjust for it when setting slots.
  *
@@ -57,7 +56,7 @@ export const EMBEDDED_VIEW_INJECTOR = 21;
  * instruction index into `LView` index. All other indexes should be in the `LView` index space and
  * there should be no need to refer to `HEADER_OFFSET` anywhere else.
  */
-export const HEADER_OFFSET = 22;
+export const HEADER_OFFSET = 21;
 
 
 // This interface replaces the real LView interface if it is an arg or a
@@ -332,12 +331,6 @@ export interface LView extends Array<any> {
 
   /** Unique ID of the view. Used for `__ngContext__` lookups in the `LView` registry. */
   [ID]: number;
-
-  /**
-   * Optional injector assigned to embedded views that takes
-   * precedence over the element and module injectors.
-   */
-  readonly[EMBEDDED_VIEW_INJECTOR]: Injector|null;
 }
 
 /** Flags associated with an LView (saved in LView[FLAGS]) */
@@ -403,15 +396,12 @@ export const enum LViewFlags {
    */
   RefreshTransplantedView = 0b0010000000000,
 
-  /** Indicates that the view **or any of its ancestors** have an embedded view injector. */
-  HasEmbeddedViewInjector = 0b0100000000000,
-
   /**
    * Index of the current init phase on last 21 bits
    */
-  IndexWithinInitPhaseIncrementer = 0b1000000000000,
-  IndexWithinInitPhaseShift = 12,
-  IndexWithinInitPhaseReset = 0b001111111111111,
+  IndexWithinInitPhaseIncrementer = 0b0100000000000,
+  IndexWithinInitPhaseShift = 11,
+  IndexWithinInitPhaseReset = 0b0011111111111,
 }
 
 /**

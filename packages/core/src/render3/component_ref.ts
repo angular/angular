@@ -69,28 +69,24 @@ function getNamespace(elementName: string): string|null {
   return name === 'svg' ? SVG_NAMESPACE : (name === 'math' ? MATH_ML_NAMESPACE : null);
 }
 
-/**
- * Injector that looks up a value using a specific injector, before falling back to the module
- * injector. Used primarily when creating components or embedded views dynamically.
- */
-class ChainedInjector implements Injector {
-  constructor(private injector: Injector, private parentInjector: Injector) {}
+function createChainedInjector(rootViewInjector: Injector, moduleInjector: Injector): Injector {
+  return {
+    get: <T>(token: ProviderToken<T>, notFoundValue?: T, flags?: InjectFlags): T => {
+      const value = rootViewInjector.get(token, NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR as T, flags);
 
-  get<T>(token: ProviderToken<T>, notFoundValue?: T, flags?: InjectFlags): T {
-    const value = this.injector.get(token, NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR as T, flags);
+      if (value !== NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR ||
+          notFoundValue === NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR) {
+        // Return the value from the root element injector when
+        // - it provides it
+        //   (value !== NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR)
+        // - the module injector should not be checked
+        //   (notFoundValue === NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR)
+        return value;
+      }
 
-    if (value !== NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR ||
-        notFoundValue === NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR) {
-      // Return the value from the root element injector when
-      // - it provides it
-      //   (value !== NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR)
-      // - the module injector should not be checked
-      //   (notFoundValue === NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR)
-      return value;
+      return moduleInjector.get(token, notFoundValue, flags);
     }
-
-    return this.parentInjector.get(token, notFoundValue, flags);
-  }
+  };
 }
 
 /**
@@ -129,11 +125,11 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
       ngModule?: viewEngine_NgModuleRef<any>|undefined): viewEngine_ComponentRef<T> {
     ngModule = ngModule || this.ngModule;
 
-    const rootViewInjector = ngModule ? new ChainedInjector(injector, ngModule.injector) : injector;
+    const rootViewInjector =
+        ngModule ? createChainedInjector(injector, ngModule.injector) : injector;
 
     const rendererFactory =
-        rootViewInjector.get(RendererFactory2, domRendererFactory3 as RendererFactory2) as
-        RendererFactory3;
+        rootViewInjector.get(RendererFactory2, domRendererFactory3) as RendererFactory3;
     const sanitizer = rootViewInjector.get(Sanitizer, null);
 
     const hostRenderer = rendererFactory.createRenderer(null, this.componentDef);
@@ -154,7 +150,7 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
     const rootTView = createTView(TViewType.Root, null, null, 1, 0, null, null, null, null, null);
     const rootLView = createLView(
         null, rootTView, rootContext, rootFlags, null, null, rendererFactory, hostRenderer,
-        sanitizer, rootViewInjector, null);
+        sanitizer, rootViewInjector);
 
     // rootView is the parent when bootstrapping
     // TODO(misko): it looks like we are entering view here but we don't really need to as

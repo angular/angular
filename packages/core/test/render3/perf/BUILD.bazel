@@ -287,17 +287,3 @@ ng_benchmark(
     name = "render_stringify",
     bundle = ":render_stringify_lib",
 )
-
-app_bundle(
-    name = "embedded_view_injector_lib",
-    entry_point = ":embedded_view_injector/index.ts",
-    external = ["perf_hooks"],
-    deps = [
-        ":perf_lib",
-    ],
-)
-
-ng_benchmark(
-    name = "embedded_view_injector",
-    bundle = ":embedded_view_injector_lib",
-)

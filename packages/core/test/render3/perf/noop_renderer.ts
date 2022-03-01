@@ -50,7 +50,7 @@ export class MicroBenchmarkRenderer implements ProceduralRenderer3 {
     return null;
   }
   nextSibling(node: RNode): RNode|null {
-    return null;
+    throw new Error('Method not implemented.');
   }
   setAttribute(el: RElement, name: string, value: string, namespace?: string|null|undefined): void {
     if (name === 'class' && isOurNode(el)) {
