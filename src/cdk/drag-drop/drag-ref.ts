@@ -240,7 +240,7 @@ export class DragRef<T = any> {
   /** Whether the native dragging interactions have been enabled on the root element. */
   private _nativeInteractionsEnabled = true;
 
-  /** Cached dimensions of the preview element. */
+  /** Cached dimensions of the preview element. Should be read via `_getPreviewRect`. */
   private _previewRect?: ClientRect;
 
   /** Cached dimensions of the boundary element. */
@@ -684,15 +684,6 @@ export class DragRef<T = any> {
       }
 
       return;
-    }
-
-    // We only need the preview dimensions if we have a boundary element.
-    if (this._boundaryElement) {
-      // Cache the preview element rect if we haven't cached it already or if
-      // we cached it too early before the element dimensions were computed.
-      if (!this._previewRect || (!this._previewRect.width && !this._previewRect.height)) {
-        this._previewRect = (this._preview || this._rootElement).getBoundingClientRect();
-      }
     }
 
     // We prevent the default action down here so that we know that dragging has started. This is
@@ -1246,11 +1237,11 @@ export class DragRef<T = any> {
     if (this._boundaryRect) {
       const {x: pickupX, y: pickupY} = this._pickupPositionInElement;
       const boundaryRect = this._boundaryRect;
-      const previewRect = this._previewRect!;
+      const {width: previewWidth, height: previewHeight} = this._getPreviewRect();
       const minY = boundaryRect.top + pickupY;
-      const maxY = boundaryRect.bottom - (previewRect.height - pickupY);
+      const maxY = boundaryRect.bottom - (previewHeight - pickupY);
       const minX = boundaryRect.left + pickupX;
-      const maxX = boundaryRect.right - (previewRect.width - pickupX);
+      const maxX = boundaryRect.right - (previewWidth - pickupX);
 
       x = clamp(x, minX, maxX);
       y = clamp(y, minY, maxY);
@@ -1517,6 +1508,17 @@ export class DragRef<T = any> {
     }
 
     return coerceElement(previewContainer);
+  }
+
+  /** Lazily resolves and returns the dimensions of the preview. */
+  private _getPreviewRect(): ClientRect {
+    // Cache the preview element rect if we haven't cached it already or if
+    // we cached it too early before the element dimensions were computed.
+    if (!this._previewRect || (!this._previewRect.width && !this._previewRect.height)) {
+      this._previewRect = (this._preview || this._rootElement).getBoundingClientRect();
+    }
+
+    return this._previewRect;
   }
 }
 
