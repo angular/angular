@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector} from '../di/injector';
 import {assertLContainer} from '../render3/assert';
 import {createLView, renderView} from '../render3/instructions/shared';
 import {TContainerNode, TNode, TNodeType} from '../render3/interfaces/node';
@@ -56,10 +55,9 @@ export abstract class TemplateRef<C> {
    * and attaches it to the view container.
    * @param context The data-binding context of the embedded view, as declared
    * in the `<ng-template>` usage.
-   * @param injector Injector to be used within the embedded view.
    * @returns The new embedded view object.
    */
-  abstract createEmbeddedView(context: C, injector?: Injector): EmbeddedViewRef<C>;
+  abstract createEmbeddedView(context: C): EmbeddedViewRef<C>;
 
   /**
    * @internal
@@ -79,11 +77,11 @@ const R3TemplateRef = class TemplateRef<T> extends ViewEngineTemplateRef<T> {
     super();
   }
 
-  override createEmbeddedView(context: T, injector?: Injector): EmbeddedViewRef<T> {
+  override createEmbeddedView(context: T): EmbeddedViewRef<T> {
     const embeddedTView = this._declarationTContainer.tViews as TView;
     const embeddedLView = createLView(
         this._declarationLView, embeddedTView, context, LViewFlags.CheckAlways, null,
-        embeddedTView.declTNode, null, null, null, null, injector || null);
+        embeddedTView.declTNode, null, null, null, null);
 
     const declarationLContainer = this._declarationLView[this._declarationTContainer.index];
     ngDevMode && assertLContainer(declarationLContainer);

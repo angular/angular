@@ -48,7 +48,7 @@ export class ViewFixture {
     const hostTView = createTView(TViewType.Root, null, null, 1, 0, null, null, null, null, null);
     const hostLView = createLView(
         null, hostTView, {}, LViewFlags.CheckAlways | LViewFlags.IsRoot, null, null,
-        domRendererFactory3, hostRenderer, null, null, null);
+        domRendererFactory3, hostRenderer, null, null);
 
 
     this.tView = createTView(
@@ -58,7 +58,7 @@ export class ViewFixture {
         createTNode(hostTView, null, TNodeType.Element, 0, 'host-element', null) as TElementNode;
     this.lView = createLView(
         hostLView, this.tView, context || {}, LViewFlags.CheckAlways, this.host, hostTNode,
-        domRendererFactory3, hostRenderer, null, null, null);
+        domRendererFactory3, hostRenderer, null, null);
   }
 
   /**
