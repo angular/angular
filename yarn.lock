@@ -318,7 +318,6 @@
 
 "@angular/dev-infra-private@https://github.com/angular/dev-infra-private-builds.git#cf1639a1714f9767471721d0d58d84b6cc173600":
   version "0.0.0-ff24a8ca7be9066fc9a7ece62c1b62d064c3dfff"
-  uid cf1639a1714f9767471721d0d58d84b6cc173600
   resolved "https://github.com/angular/dev-infra-private-builds.git#cf1639a1714f9767471721d0d58d84b6cc173600"
   dependencies:
     "@angular-devkit/build-angular" "14.0.0-next.3"
@@ -15208,6 +15207,11 @@ typescript@^3.9.10, typescript@^3.9.5, typescript@^3.9.7:
   version "3.9.10"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.9.10.tgz#70f3910ac7a51ed6bef79da7800690b19bf778b8"
   integrity sha512-w6fIxVE/H1PkLKcCPsFqKE7Kv7QUwhU8qQY2MueZXWx5cPZdwFupLgKK3vntcK98BtNHZtAF4LA/yl2a7k8R6Q==
+
+typescript@~4.6.2:
+  version "4.6.2"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.6.2.tgz#fe12d2727b708f4eef40f51598b3398baa9611d4"
+  integrity sha512-HM/hFigTBHZhLXshn9sN37H085+hQGeJHJ/X7LpBWLID/fbc2acUMfU+lGD98X81sKP+pFa9f0DZmCwB9GnbAg==
 
 ua-parser-js@1.0.2:
   version "1.0.2"

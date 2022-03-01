@@ -26,7 +26,8 @@ export class MockClient implements Client {
 
 export class MockWindowClient extends MockClient implements WindowClient {
   readonly focused: boolean = false;
-  readonly visibilityState: VisibilityState = 'visible';
+  // TODO(crisbeto): change the type here to DocumentVisibilityState when we drop support for TS 4.5
+  readonly visibilityState: 'visible'|'hidden' = 'visible';
 
   constructor(id: string, url: string, frameType: FrameType = 'top-level') {
     super(id, url, 'window', frameType);
