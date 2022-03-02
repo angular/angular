@@ -1,3 +1,52 @@
+<a name="14.0.0-next.5"></a>
+# 14.0.0-next.5 "jersey-jughandle" (2022-03-02)
+### cdk
+| Commit | Type | Description |
+| -- | -- | -- |
+| [7d0bca7bd3](https://github.com/angular/components/commit/7d0bca7bd39e97ff6b033f97d05a811dfdac25db) | feat | **a11y:** add input to control the duration of the aria live directive ([#15275](https://github.com/angular/components/pull/15275)) |
+| [ca6b9fa209](https://github.com/angular/components/commit/ca6b9fa209ee3233c506a23943d0c5dacd2ac2dc) | feat | **drag-drop:** expose native event objects in custom events ([#17077](https://github.com/angular/components/pull/17077)) |
+| [c296084073](https://github.com/angular/components/commit/c296084073bfbb35aac21063afa85ae69527b0b6) | feat | **overlay:** add start and end positions to GlobalPositionStrategy ([#12007](https://github.com/angular/components/pull/12007)) |
+| [37be099b47](https://github.com/angular/components/commit/37be099b4716d2fe23a0095ec9f6c89eecf25513) | fix | **drag-drop:** error if preview dimensions are accessed too early ([#24498](https://github.com/angular/components/pull/24498)) |
+| [caf88cc4d9](https://github.com/angular/components/commit/caf88cc4d91233dbc38f89544c1c072d689b99f1) | fix | **testing:** TestElement sendKeys method should throw if no keys have been specified ([#18271](https://github.com/angular/components/pull/18271)) |
+| [3d2aefb3b1](https://github.com/angular/components/commit/3d2aefb3b1b37d11fdaafdd87f1a4337cb73bc29) | perf | **overlay:** add event listeners for overlay dispatchers outside of zone ([#24408](https://github.com/angular/components/pull/24408)) |
+### material
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b90d9420fa](https://github.com/angular/components/commit/b90d9420fa65671f1cebe6feb094099b85547bbd) | feat | **autocomplete:** add the ability to auto-select the active option while navigating ([#20699](https://github.com/angular/components/pull/20699)) |
+| [426afa07e1](https://github.com/angular/components/commit/426afa07e1112e7dbf7b62f063d56a43b92ace28) | feat | **icon:** add default options ([#23638](https://github.com/angular/components/pull/23638)) |
+| [6c7cc8ae87](https://github.com/angular/components/commit/6c7cc8ae87ce4a4ae4ba3447fdca5f34c2e5b503) | feat | **icon:** allow multiple classes in setDefaultFontSetClass ([#10484](https://github.com/angular/components/pull/10484)) |
+| [856c01639f](https://github.com/angular/components/commit/856c01639fbf968cb33885807ffaf6d3f3bf5423) | feat | **menu:** allow for menu to be conditionally removed from trigger ([#24437](https://github.com/angular/components/pull/24437)) |
+| [5fc655b4a0](https://github.com/angular/components/commit/5fc655b4a0e7fbb5ead46ab2d7453dd24779bd1e) | feat | **paginator:** add input for configuring the underlying select ([#13705](https://github.com/angular/components/pull/13705)) |
+| [38334d6bc8](https://github.com/angular/components/commit/38334d6bc85bdc7935af04c24d9e085c7bcab780) | feat | **schematics:** add option not to include animations module in ng-add ([#22559](https://github.com/angular/components/pull/22559)) |
+| [b7ee958d8b](https://github.com/angular/components/commit/b7ee958d8ba21c8f4479ec3cfcafdb0287727f1e) | fix | **autocomplete:** auto-highlighted first option not display correctly if the floating label is disabled ([#14507](https://github.com/angular/components/pull/14507)) |
+| [5825faf67f](https://github.com/angular/components/commit/5825faf67fa838495bd9d59023aa433e99101ac3) | fix | **autocomplete:** don't block default arrow keys when using modifiers ([#11987](https://github.com/angular/components/pull/11987)) |
+| [16dea18b53](https://github.com/angular/components/commit/16dea18b53e4cc5433b40bf37fb3318869b201c1) | fix | **autocomplete:** reopen panel on input click ([#16020](https://github.com/angular/components/pull/16020)) |
+| [175937ef57](https://github.com/angular/components/commit/175937ef57e20c209eab9c749676d2fc82f66c2c) | fix | **button-toggle:** use solid border color ([#14253](https://github.com/angular/components/pull/14253)) |
+| [02e9ab0224](https://github.com/angular/components/commit/02e9ab02243825b4ee8898cae38fd18390327e0c) | fix | **checkbox:** inconsistent disabled color ([#23083](https://github.com/angular/components/pull/23083)) |
+| [f20122a499](https://github.com/angular/components/commit/f20122a4998f65c46452dc680adaec49cea7c0f5) | fix | **checkbox:** incorrect text color when placed inside an overlay with a dark theme ([#19054](https://github.com/angular/components/pull/19054)) |
+| [f05e65a02b](https://github.com/angular/components/commit/f05e65a02b636d7c3d4e181f65ac0d7e94e091fd) | fix | **chips:** allow for role to be overwritten on chip list and chip ([#15794](https://github.com/angular/components/pull/15794)) |
+| [e86be88125](https://github.com/angular/components/commit/e86be8812551551d0711a7621d7b5bb840c58845) | fix | **core:** ripples persisting when container is removed from DOM while fading-in ([#24482](https://github.com/angular/components/pull/24482)) |
+| [09a906ad85](https://github.com/angular/components/commit/09a906ad8500f980660b2d9a606934727ea05d30) | fix | **datepicker:** matDatepickerParse error not being added on first invalid value ([#11524](https://github.com/angular/components/pull/11524)) |
+| [a8ec63c54d](https://github.com/angular/components/commit/a8ec63c54d52767be86cb42abe1ee980354ef5ae) | fix | **datepicker:** use aria-live over cdkAriaLive on period button ([#24398](https://github.com/angular/components/pull/24398)) |
+| [e1f4ba98dd](https://github.com/angular/components/commit/e1f4ba98dd389bb08a2b2c721c70d6436b48e486) | fix | **dialog:** use passed in ComponentFactoryResolver to resolve dialog content ([#17710](https://github.com/angular/components/pull/17710)) |
+| [64c2d311b4](https://github.com/angular/components/commit/64c2d311b43a29dc1495ff294c65dfe8ef0e0ffb) | fix | **expansion:** picking up lazy content from child component ([#14477](https://github.com/angular/components/pull/14477)) |
+| [44293522e9](https://github.com/angular/components/commit/44293522e98bbd975e5fba2551421af32631f2de) | fix | **menu:** account for menu padding different from the default ([#16169](https://github.com/angular/components/pull/16169)) |
+| [dc4fbcf66f](https://github.com/angular/components/commit/dc4fbcf66fe1a9d598029bfc1b308650fa353f21) | fix | **menu:** focus lost if active item is removed ([#14039](https://github.com/angular/components/pull/14039)) |
+| [0a465281f6](https://github.com/angular/components/commit/0a465281f62a4cf740f788fdd864b946c3a13be1) | fix | **menu:** use narrower value for aria-haspopup on trigger element ([#15219](https://github.com/angular/components/pull/15219)) |
+| [7480e3b78d](https://github.com/angular/components/commit/7480e3b78dc6a25d844db31f23e711da7d00fcdd) | fix | **progress-spinner:** unable to change mode on spinner directive ([#14514](https://github.com/angular/components/pull/14514)) |
+| [229dd6e174](https://github.com/angular/components/commit/229dd6e1748991b014d4e41005be2a74dda7167e) | fix | **sort:** remove role from header when disabled ([#24477](https://github.com/angular/components/pull/24477)) |
+| [0dfc490988](https://github.com/angular/components/commit/0dfc4909883af35d89c11d8bfcd73263578cd1cd) | fix | **tooltip:** don't hide when pointer moves to tooltip ([#24475](https://github.com/angular/components/pull/24475)) |
+### material-experimental
+| Commit | Type | Description |
+| -- | -- | -- |
+| [353a5482e3](https://github.com/angular/components/commit/353a5482e3811b8d684669973bfa02b4ac2ca0f6) | feat | **mdc-dialog:** switch to new theming api ([#23620](https://github.com/angular/components/pull/23620)) |
+| [3021cf5fb6](https://github.com/angular/components/commit/3021cf5fb69cba4a502e7bacd8e0dca2eb99e2a6) | fix | **mdc-button:** density styles being overwritten by structural styles ([#22736](https://github.com/angular/components/pull/22736)) |
+| [50efb926d0](https://github.com/angular/components/commit/50efb926d0d41484c7b6e8f591bb8dd2cff9da2d) | fix | **mdc-chips:** expose avatar harness ([#24499](https://github.com/angular/components/pull/24499)) |
+## Special Thanks
+Amy Sorto, Andrew Seguin, Artur Androsovych, Jeri Peier, Kristiyan Kostadinov, Paul Gschwendtner, Ruslan Lekhman, Yousaf Nawaz and Zach Arend
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="13.2.5"></a>
 # 13.2.5 "satin-sash" (2022-03-02)
 ### cdk
