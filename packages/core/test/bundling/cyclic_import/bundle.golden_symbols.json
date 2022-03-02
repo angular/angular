@@ -207,6 +207,9 @@
     "name": "getSimpleChangesStore"
   },
   {
+    "name": "getTNodeFromLView"
+  },
+  {
     "name": "getTView"
   },
   {
