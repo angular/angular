@@ -1,3 +1,37 @@
+<a name="13.2.5"></a>
+# 13.2.5 "satin-sash" (2022-03-02)
+### cdk
+| Commit | Type | Description |
+| -- | -- | -- |
+| [9e34a0f69f](https://github.com/angular/components/commit/9e34a0f69fc29d9bae22e7777860af228ac5549c) | fix | **drag-drop:** error if preview dimensions are accessed too early ([#24498](https://github.com/angular/components/pull/24498)) |
+| [9be3c46b01](https://github.com/angular/components/commit/9be3c46b014a8805febf267bbb26b66940d17ebe) | fix | **testing:** TestElement sendKeys method should throw if no keys have been specified ([#18271](https://github.com/angular/components/pull/18271)) |
+| [8e57a89cba](https://github.com/angular/components/commit/8e57a89cba1e456dbfc88279b68f67fbf71eb85f) | perf | **overlay:** add event listeners for overlay dispatchers outside of zone ([#24408](https://github.com/angular/components/pull/24408)) |
+### material
+| Commit | Type | Description |
+| -- | -- | -- |
+| [ed2f516401](https://github.com/angular/components/commit/ed2f51640113ee138ec97cc6b9c5ea9f829600f9) | fix | **autocomplete:** auto-highlighted first option not display correctly if the floating label is disabled ([#14507](https://github.com/angular/components/pull/14507)) |
+| [502102116e](https://github.com/angular/components/commit/502102116e32feb46c7492e4b92e82f4c991a94a) | fix | **autocomplete:** don't block default arrow keys when using modifiers ([#11987](https://github.com/angular/components/pull/11987)) |
+| [f31fd3f066](https://github.com/angular/components/commit/f31fd3f0661eba5efb311ded3d1088486495278a) | fix | **autocomplete:** reopen panel on input click ([#16020](https://github.com/angular/components/pull/16020)) |
+| [5a79042d7d](https://github.com/angular/components/commit/5a79042d7daaaf46aa302e3bd6844577ee6beb71) | fix | **button-toggle:** use solid border color ([#14253](https://github.com/angular/components/pull/14253)) |
+| [e2d4eecfcb](https://github.com/angular/components/commit/e2d4eecfcb27d7b27fd585111a2440adcca37d51) | fix | **checkbox:** inconsistent disabled color ([#23083](https://github.com/angular/components/pull/23083)) |
+| [005ec323de](https://github.com/angular/components/commit/005ec323de2a75a82e2c49eadcdfd2ac25275d3d) | fix | **checkbox:** incorrect text color when placed inside an overlay with a dark theme ([#19054](https://github.com/angular/components/pull/19054)) |
+| [d7cbd1315f](https://github.com/angular/components/commit/d7cbd1315f72a75877737a21d8333c152cb2d799) | fix | **datepicker:** matDatepickerParse error not being added on first invalid value ([#11524](https://github.com/angular/components/pull/11524)) |
+| [046022f31d](https://github.com/angular/components/commit/046022f31d90ac0d465f602bab6c8fdc8c32a59b) | fix | **datepicker:** use aria-live over cdkAriaLive on period button ([#24398](https://github.com/angular/components/pull/24398)) |
+| [37f69dbf7e](https://github.com/angular/components/commit/37f69dbf7e3e8f174db7cc0070356a1e11cb9467) | fix | **dialog:** use passed in ComponentFactoryResolver to resolve dialog content ([#17710](https://github.com/angular/components/pull/17710)) |
+| [2e15f54a9f](https://github.com/angular/components/commit/2e15f54a9f9458223116bd4a93b2ffa0276a671e) | fix | **menu:** focus lost if active item is removed ([#14039](https://github.com/angular/components/pull/14039)) |
+| [ea07fa8e64](https://github.com/angular/components/commit/ea07fa8e640db87c6be1c12980c1295f0ffa013d) | fix | **progress-spinner:** unable to change mode on spinner directive ([#14514](https://github.com/angular/components/pull/14514)) |
+| [1a498a6a81](https://github.com/angular/components/commit/1a498a6a811dfd081becbc330c984b23a23de5e6) | fix | **sort:** remove role from header when disabled ([#24477](https://github.com/angular/components/pull/24477)) |
+| [72019531db](https://github.com/angular/components/commit/72019531dba7b68c7eee91f74144c0e405e811cb) | fix | **tooltip:** don't hide when pointer moves to tooltip ([#24475](https://github.com/angular/components/pull/24475)) |
+### material-experimental
+| Commit | Type | Description |
+| -- | -- | -- |
+| [7b85cc077c](https://github.com/angular/components/commit/7b85cc077c721fd3f14a34233691783ab488d2ac) | fix | **mdc-button:** density styles being overwritten by structural styles ([#22736](https://github.com/angular/components/pull/22736)) |
+| [aeb1426e4c](https://github.com/angular/components/commit/aeb1426e4c7cb420e855878251e6d6cfbd15b611) | fix | **mdc-chips:** expose avatar harness ([#24499](https://github.com/angular/components/pull/24499)) |
+## Special Thanks
+Andrew Seguin, Artur Androsovych, Jeri Peier, Kristiyan Kostadinov, Paul Gschwendtner, Yousaf Nawaz and Zach Arend
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.0.0-next.4"></a>
 # 14.0.0-next.4 "metal-harness" (2022-02-23)
 ## Breaking Changes
