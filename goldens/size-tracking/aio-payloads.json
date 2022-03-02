@@ -2,12 +2,12 @@
   "aio": {
     "master": {
       "uncompressed": {
-        "runtime": 4330,
-        "main": 451922,
-        "polyfills": 37123,
-        "styles": 70394,
-        "light-theme": 77232,
-        "dark-theme": 77356
+        "runtime": 4343,
+        "main": 450986,
+        "polyfills": 37149,
+        "styles": 70416,
+        "light-theme": 77702,
+        "dark-theme": 77831
       }
     }
   },
