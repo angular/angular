@@ -23,7 +23,7 @@ export function createAndRenderLView(
     parentLView: LView, tView: TView, hostTNode: TElementNode): LView {
   const embeddedLView = createLView(
       parentLView, tView, {}, LViewFlags.CheckAlways, null, hostTNode, rendererFactory, renderer,
-      null, null);
+      null, null, null);
   renderView(tView, embeddedLView, null);
   return embeddedLView;
 }
@@ -55,7 +55,7 @@ export function setupTestHarness(
   const hostNode = renderer.createElement('div');
   const hostLView = createLView(
       null, hostTView, {}, LViewFlags.CheckAlways | LViewFlags.IsRoot, hostNode, null,
-      rendererFactory, renderer, null, null);
+      rendererFactory, renderer, null, null, null);
   const mockRCommentNode = renderer.createComment('');
   const lContainer =
       createLContainer(mockRCommentNode, hostLView, mockRCommentNode, tContainerNode);
@@ -71,7 +71,7 @@ export function setupTestHarness(
   function createEmbeddedLView(): LView {
     const embeddedLView = createLView(
         hostLView, embeddedTView, embeddedViewContext, LViewFlags.CheckAlways, null, viewTNode,
-        rendererFactory, renderer, null, null);
+        rendererFactory, renderer, null, null, null);
     renderView(embeddedTView, embeddedLView, embeddedViewContext);
     return embeddedLView;
   }

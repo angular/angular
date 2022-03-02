@@ -3,7 +3,7 @@
     "master": {
       "uncompressed": {
         "runtime": 1083,
-        "main": 124515,
+        "main": 125129,
         "polyfills": 33824
       }
     }
@@ -15,7 +15,7 @@
         "main": "TODO(i): temporarily increase the payload size limit from 17597 - this needs to be investigate further what caused the increase.",
         "main": "Likely there is a missing PURE annotation https://github.com/angular/angular/pull/43344",
         "main": "Tracking issue: https://github.com/angular/angular/issues/43568",
-        "main": 20378,
+        "main": 20601,
         "polyfills": 33848
       }
     }
@@ -42,7 +42,7 @@
     "master": {
       "uncompressed": {
         "runtime": 2835,
-        "main": 232814,
+        "main": 233375,
         "polyfills": 33842,
         "src_app_lazy_lazy_module_ts": 795
       }
@@ -52,7 +52,7 @@
     "master": {
       "uncompressed": {
         "runtime": 1063,
-        "main": 156042,
+        "main": 156654,
         "polyfills": 33804
       }
     }
@@ -61,7 +61,7 @@
     "master": {
       "uncompressed": {
         "runtime": 1070,
-        "main": 155753,
+        "main": 156290,
         "polyfills": 33814
       }
     }
