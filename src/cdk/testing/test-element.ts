@@ -119,12 +119,14 @@ export interface TestElement {
    * Sends the given string to the input as a series of key presses. Also fires input events
    * and attempts to add the string to the Element's value. Note that some environments cannot
    * reproduce native browser behavior for keyboard shortcuts such as Tab, Ctrl + A, etc.
+   * @throws An error if no keys have been specified.
    */
   sendKeys(...keys: (string | TestKey)[]): Promise<void>;
 
   /**
-   * Sends the given string to the input as a series of key presses. Also fires input events
-   * and attempts to add the string to the Element's value.
+   * Sends the given string to the input as a series of key presses. Also fires input
+   * events and attempts to add the string to the Element's value.
+   * @throws An error if no keys have been specified.
    */
   sendKeys(modifiers: ModifierKeys, ...keys: (string | TestKey)[]): Promise<void>;
 

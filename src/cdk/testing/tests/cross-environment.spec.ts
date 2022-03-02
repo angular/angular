@@ -9,6 +9,7 @@
 import {
   ComponentHarness,
   ComponentHarnessConstructor,
+  getNoKeysSpecifiedError,
   HarnessLoader,
   HarnessPredicate,
   parallel,
@@ -363,6 +364,18 @@ export function crossEnvironmentSpecs(
       harness = await getMainComponentHarnessFromEnvironment();
     });
 
+    async function expectAsyncError(fn: () => Promise<void>, expected: Error) {
+      let error: unknown | null = null;
+      try {
+        await fn();
+      } catch (e: unknown) {
+        error = e;
+      }
+      expect(error).not.toBe(null);
+      expect(error instanceof Error).toBe(true);
+      expect((error as Error).message).toBe(expected.message);
+    }
+
     it('should be able to clear', async () => {
       const input = await harness.input();
       await input.sendKeys('Yi');
@@ -370,6 +383,13 @@ export function crossEnvironmentSpecs(
 
       await input.clear();
       expect(await input.getProperty<string>('value')).toBe('');
+    });
+
+    it('sendKeys method should throw if no keys have been specified', async () => {
+      const input = await harness.input();
+      await expectAsyncError(() => input.sendKeys(), getNoKeysSpecifiedError());
+      await expectAsyncError(() => input.sendKeys(''), getNoKeysSpecifiedError());
+      await expectAsyncError(() => input.sendKeys('', ''), getNoKeysSpecifiedError());
     });
 
     it('should be able to click', async () => {

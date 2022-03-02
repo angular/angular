@@ -9,6 +9,7 @@
 import {
   _getTextWithExcludedElements,
   ElementDimensions,
+  getNoKeysSpecifiedError,
   ModifierKeys,
   TestElement,
   TestKey,
@@ -161,7 +162,7 @@ export class ProtractorElement implements TestElement {
     const first = modifiersAndKeys[0];
     let modifiers: ModifierKeys;
     let rest: (string | TestKey)[];
-    if (typeof first !== 'string' && typeof first !== 'number') {
+    if (first !== undefined && typeof first !== 'string' && typeof first !== 'number') {
       modifiers = first;
       rest = modifiersAndKeys.slice(1);
     } else {
@@ -176,6 +177,12 @@ export class ProtractorElement implements TestElement {
       // Key.chord doesn't work well with geckodriver (mozilla/geckodriver#1502),
       // so avoid it if no modifier keys are required.
       .map(k => (modifierKeys.length > 0 ? Key.chord(...modifierKeys, k) : k));
+
+    // Throw an error if no keys have been specified. Calling this function with no
+    // keys should not result in a focus event being dispatched unexpectedly.
+    if (keys.length === 0) {
+      throw getNoKeysSpecifiedError();
+    }
 
     return this.element.sendKeys(...keys);
   }
