@@ -15,7 +15,6 @@ module.exports = function cliCommandFileReader() {
     name: 'cliCommandFileReader',
     defaultPattern: /\.json$/,
     getDocs(fileInfo) {
-      fileInfo.realProjectRelativePath = 'packages/angular/cli/commands/' + fileInfo.relativePath;
       try {
         const doc = json5.parse(fileInfo.content);
         const name = fileInfo.baseName;
@@ -26,16 +25,16 @@ module.exports = function cliCommandFileReader() {
           docType: 'cli-command',
           id: `cli-${doc.name}`,
           commandAliases: doc.aliases || [],
-          aliases: computeAliases(doc), path,
+          aliases: computeAliases(doc),
+          path,
           outputPath: `${path}.json`,
+          longDescriptionDoc: createLongDescriptionDoc(doc),
           breadCrumbs: [
             {text: 'CLI', path: 'cli'},
             {text: name, path},
           ]
         });
-        if (doc.longDescription) {
-          doc.longDescriptionDoc = createLongDescriptionDoc(fileInfo);
-        }
+
         return [result];
       } catch (e) {
         throw new Error(
@@ -43,6 +42,7 @@ module.exports = function cliCommandFileReader() {
       }
     }
   };
+
   function computeAliases(doc) {
     return [doc.name].concat(doc.aliases || []).map(alias => `cli-${alias}`);
   }
@@ -58,29 +58,15 @@ module.exports = function cliCommandFileReader() {
    * This function tries to retrieve that original schema based on the file path of the help JSON
    * file, which was passed to the `cliCommandFileReader.getDocs()` method.
    */
-  function createLongDescriptionDoc(fileInfo) {
-    const path = require('canonical-path');
-    const fs = require('fs');
-    const json5 = require('json5');
-
-    const schemaJsonPath = path.resolve(fileInfo.basePath, '../commands', fileInfo.relativePath);
-
-    try {
-      const schemaJson = fs.readFileSync(schemaJsonPath);
-      const schema = json5.parse(schemaJson);
-      if (schema.$longDescription) {
-        return {
-          docType: 'content',
-          startingLine: 0,
-          fileInfo: {
-            realProjectRelativePath:
-                path.join(path.dirname(fileInfo.realProjectRelativePath), schema.$longDescription)
-          }
-        };
-      }
-    } catch (e) {
-      throw new Error(
-          `Unable to read CLI "$longDescription" info from the schema: "${schemaJsonPath}" - ${e.message}`);
+  function createLongDescriptionDoc(doc) {
+    if (doc.longDescriptionRelativePath) {
+      return {
+        docType: 'content',
+        startingLine: 0,
+        fileInfo: {
+          realProjectRelativePath: doc.longDescriptionRelativePath.replace(/^@/, 'packages/'),
+        },
+      };
     }
   }
 };
