@@ -1,8 +1,7 @@
 {% macro renderSyntax(container, prefix) -%}
-{% for name in container.names %}
-<code-example hideCopy="true" class="api-heading no-auto-link{% if container.deprecated %} deprecated-api-item{% endif %}">ng {%if prefix %}{$ prefix $} {% endif %}<span class="cli-name">{$ name $}</span>
-  {%- for arg in container.positionalOptions %} &lt;<var>{$ arg.name $}</var>&gt;{% endfor %}
-  {%- if container.namedOptions.length %} [<var>options</var>]{% endif -%}
+{% for usage in container.usages %}
+<code-example hideCopy="true" class="api-heading no-auto-link{% if container.deprecated %} deprecated-api-item{% endif %}">
+  {$ usage $}
 </code-example>
 {% endfor %}
 {% endmacro %}
@@ -21,17 +20,9 @@
   <tbody>
   {% for option in arguments %}
   <tr class="cli-option">
-    <td><code class="cli-option-syntax no-auto-link">&lt;<var>{$ option.name $}</var>&gt;</code></td>
+    <td><code class="cli-option-syntax no-auto-link">{$ option.name $}</code></td>
     <td>
       {$ option.description | marked $}
-      {% if option.subcommands.length -%}
-      <p>This option can take one of the following <a href="#{$ option.name $}-commands">sub-commands</a>:<p>
-      <ul>
-        {% for subcommand in option.subcommands %}
-        <li><code class="no-auto-link"><a class="code-anchor" href="#{$ subcommand.name $}-command">{$ subcommand.name $}</a></code></li>
-        {% endfor %}
-      </ul>
-      {%- endif %}
     </td>
     <td><code class="cli-option-syntax no-auto-link">{% if option.enum.length > 0 %}{$ renderValues(option.enum) $}{% else %}string{% endif %}</code></td>
   </tr>
@@ -71,7 +62,7 @@
         {% if option.aliases.length %}<p><span class="cli-aliases">Aliases:</span> {% for alias in option.aliases %}{$ renderOptionName(alias) $}{% if not loop.last %}, {% endif %}{% endfor %}</p>{% endif %}
       </td>
       <td><code class="no-auto-link">{$ renderOptionValues(option.type, option.enum) $}</td>
-      <td>{% if option.default !== undefined %}<code class="no-auto-link">{$ option.default $}</code>{% endif %}</td>
+      <td>{% if option.default !== undefined and option.default !== '' %}<code class="no-auto-link">{$ option.default $}</code>{% endif %}</td>
     </tr>
   {% endfor %}
   </tbody>
@@ -96,17 +87,15 @@
 {%- endmacro -%}
 
 {%- macro renderSubcommands(container) -%}
-{% for command in container.positionalOptions %}{% if command.subcommands.length %}
-<h2><a id="{$ command.name $}-commands"></a>{$ command.name | title $} commands</h2>
-{% for subcommand in command.subcommands %}
+{% if container.subcommands.length %}
+<h2><a id="{$ container.name $}-commands"></a>{$ container.name | title $} commands</h2>
+{% for subcommand in container.subcommands %}
 <h3><code class="no-auto-link"><a id="{$ subcommand.name $}-command"></a>{$ subcommand.name $}</code></h3>
-{% for name in container.names %}
 {$ renderSyntax(subcommand, name) $}
-{% endfor %}
-{$ subcommand.description | marked $}
+{$ subcommand.shortDescription | marked $}
 {# for now we assume that commands do not have further sub-commands #}
 {$ renderArguments(subcommand.positionalOptions, 4) $}
 {$ renderNamedOptions(subcommand.namedOptions, 4) $}
 {% endfor %}
-{% endif %}{% endfor %}
+{% endif %}
 {%- endmacro -%}

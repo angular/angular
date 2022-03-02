@@ -29,6 +29,7 @@ describe('processCliCommands processor', () => {
     const doc = {
       docType: 'cli-command',
       name: 'name',
+      command: 'ng name',
       commandAliases: ['alias1', 'alias2'],
       options: [],
     };
@@ -41,6 +42,7 @@ describe('processCliCommands processor', () => {
       const doc = {
         docType: 'cli-command',
         name: 'name',
+        command: 'ng name',
         commandAliases: [],
         options: [
           {name: 'option1'},
@@ -60,6 +62,7 @@ describe('processCliCommands processor', () => {
       const doc = {
         docType: 'cli-command',
         name: 'name',
+        command: 'ng name',
         commandAliases: [],
         options: [
           {name: 'named1'},
@@ -81,6 +84,7 @@ describe('processCliCommands processor', () => {
       const doc = {
         docType: 'cli-command',
         name: 'name',
+        command: 'ng name',
         commandAliases: [],
         options: [
           {name: 'c'},
@@ -100,6 +104,7 @@ describe('processCliCommands processor', () => {
       const doc = {
         docType: 'cli-command',
         name: 'name',
+        command: 'ng name',
         commandAliases: [],
         options: [
           {name: 'named1'},
@@ -118,29 +123,32 @@ describe('processCliCommands processor', () => {
       const doc = {
         docType: 'cli-command',
         name: 'name',
+        command: 'ng name',
         commandAliases: [],
+        subcommands: {
+          subcommand1: {
+            name: 'subcommand1',
+            command: 'subcommand1',
+            options: [
+              {name: 'subcommand1-option1'},
+              {name: 'subcommand1-option2'},
+            ],
+          },
+          subcommand2: {
+            name: 'subcommand2',
+            command: 'subcommand2',
+            options: [
+              {name: 'subcommand2-option1'},
+              {name: 'subcommand2-option2'},
+            ],
+          }
+        },
         options: [{
           name: 'supercommand',
-          subcommands: {
-            subcommand1: {
-              name: 'subcommand1',
-              options: [
-                {name: 'subcommand1-option1'},
-                {name: 'subcommand1-option2'},
-              ],
-            },
-            subcommand2: {
-              name: 'subcommand2',
-              options: [
-                {name: 'subcommand2-option1'},
-                {name: 'subcommand2-option2'},
-              ],
-            }
-          },
         }],
       };
       processor.$process([doc, navigationStub]);
-      expect(doc.options[0].subcommands).toEqual([
+      expect(doc.subcommands).toEqual([
         jasmine.objectContaining({name: 'subcommand1'}),
         jasmine.objectContaining({name: 'subcommand2'}),
       ]);
@@ -150,32 +158,35 @@ describe('processCliCommands processor', () => {
       const doc = {
         docType: 'cli-command',
         name: 'name',
+        command: 'ng name',
         commandAliases: [],
+        subcommands: {
+          subcommand1: {
+            name: 'subcommand1',
+            command: 'subcommand1',
+            options: [
+              {name: 'subcommand1-option1'},
+              {name: 'subcommand1-option2', hidden: true},
+            ],
+          },
+          subcommand2: {
+            name: 'subcommand2',
+            command: 'subcommand2',
+            options: [
+              {name: 'subcommand2-option1', hidden: true},
+              {name: 'subcommand2-option2'},
+            ],
+          }
+        },
         options: [{
           name: 'supercommand',
-          subcommands: {
-            subcommand1: {
-              name: 'subcommand1',
-              options: [
-                {name: 'subcommand1-option1'},
-                {name: 'subcommand1-option2', hidden: true},
-              ],
-            },
-            subcommand2: {
-              name: 'subcommand2',
-              options: [
-                {name: 'subcommand2-option1', hidden: true},
-                {name: 'subcommand2-option2'},
-              ],
-            }
-          },
         }],
       };
       processor.$process([doc, navigationStub]);
-      expect(doc.options[0].subcommands[0].namedOptions).toEqual([
+      expect(doc.subcommands[0].namedOptions).toEqual([
         jasmine.objectContaining({name: 'subcommand1-option1'}),
       ]);
-      expect(doc.options[0].subcommands[1].namedOptions).toEqual([
+      expect(doc.subcommands[1].namedOptions).toEqual([
         jasmine.objectContaining({name: 'subcommand2-option2'}),
       ]);
     });
@@ -184,60 +195,65 @@ describe('processCliCommands processor', () => {
       const doc = {
         docType: 'cli-command',
         name: 'name',
+        command: 'ng name',
         commandAliases: [],
+        subcommands: {
+          subcommand1: {
+            name: 'subcommand1',
+            command: 'subcommand1',
+            options: [
+              {name: 'subcommand1-option1'},
+              {name: 'subcommand1-option2', positional: 0},
+            ],
+          },
+          subcommand2: {
+            name: 'subcommand2',
+            command: 'subcommand2',
+            options: [
+              {name: 'subcommand2-option1', hidden: true},
+              {name: 'subcommand2-option2', hidden: true, positional: 1},
+            ],
+          }
+        },
         options: [{
           name: 'supercommand',
-          subcommands: {
-            subcommand1: {
-              name: 'subcommand1',
-              options: [
-                {name: 'subcommand1-option1'},
-                {name: 'subcommand1-option2', positional: 0},
-              ],
-            },
-            subcommand2: {
-              name: 'subcommand2',
-              options: [
-                {name: 'subcommand2-option1', hidden: true},
-                {name: 'subcommand2-option2', hidden: true, positional: 1},
-              ],
-            }
-          },
         }],
       };
       processor.$process([doc, navigationStub]);
-      expect(doc.options[0].subcommands[0].positionalOptions).toEqual([
+      expect(doc.subcommands[0].positionalOptions).toEqual([
         jasmine.objectContaining({name: 'subcommand1-option2', positional: 0}),
       ]);
-      expect(doc.options[0].subcommands[0].namedOptions).toEqual([
+      expect(doc.subcommands[0].namedOptions).toEqual([
         jasmine.objectContaining({name: 'subcommand1-option1'}),
       ]);
 
-      expect(doc.options[0].subcommands[1].positionalOptions).toEqual([]);
-      expect(doc.options[0].subcommands[1].namedOptions).toEqual([]);
+      expect(doc.subcommands[1].positionalOptions).toEqual([]);
+      expect(doc.subcommands[1].namedOptions).toEqual([]);
     });
 
     it('should sort the named subcommand options into order by name', () => {
       const doc = {
         docType: 'cli-command',
         name: 'name',
+        command: 'ng name',
         commandAliases: [],
+        subcommands: {
+          subcommand1: {
+            name: 'subcommand1',
+            command: 'subcommand1',
+            options: [
+              {name: 'c'},
+              {name: 'a'},
+              {name: 'b'},
+            ]
+          }
+        },
         options: [{
           name: 'supercommand',
-          subcommands: {
-            subcommand1: {
-              name: 'subcommand1',
-              options: [
-                {name: 'c'},
-                {name: 'a'},
-                {name: 'b'},
-              ]
-            }
-          }
         }],
       };
       processor.$process([doc, navigationStub]);
-      expect(doc.options[0].subcommands[0].namedOptions).toEqual([
+      expect(doc.subcommands[0].namedOptions).toEqual([
         jasmine.objectContaining({name: 'a'}),
         jasmine.objectContaining({name: 'b'}),
         jasmine.objectContaining({name: 'c'}),
@@ -250,6 +266,7 @@ describe('processCliCommands processor', () => {
        const command = {
          docType: 'cli-command',
          name: 'command1',
+         command: 'ng command1',
          commandAliases: ['alias1', 'alias2'],
          options: [],
          path: 'cli/command1',
@@ -281,6 +298,7 @@ describe('processCliCommands processor', () => {
        const command = {
          docType: 'cli-command',
          name: 'command1',
+         command: 'ng command1',
          commandAliases: ['alias1', 'alias2'],
          options: [],
          path: 'cli/command1',
@@ -328,6 +346,7 @@ describe('processCliCommands processor', () => {
     const command = {
       docType: 'cli-command',
       name: 'command1',
+      command: 'ng command1',
       commandAliases: ['alias1', 'alias2'],
       options: [],
       path: 'cli/command1',
@@ -355,25 +374,28 @@ describe('processCliCommands processor', () => {
     const doc = {
       docType: 'cli-command',
       name: 'name',
+      command: 'ng command1',
       commandAliases: [],
+      subcommands: {
+        subcommand1: {
+          name: 'subcommand1',
+          command: 'subcommand1',
+          options: [
+            {name: 'subcommand1-option1'},
+            {name: 'subcommand1-option2'},
+          ],
+        },
+        subcommand2: {
+          name: 'subcommand2',
+          command: 'subcommand2',
+          options: [
+            {name: 'subcommand2-option1'},
+            {name: 'subcommand2-option2'},
+          ],
+        }
+      },
       options: [{
         name: 'supercommand',
-        subcommands: {
-          subcommand1: {
-            name: 'subcommand1',
-            options: [
-              {name: 'subcommand1-option1'},
-              {name: 'subcommand1-option2'},
-            ],
-          },
-          subcommand2: {
-            name: 'subcommand2',
-            options: [
-              {name: 'subcommand2-option1'},
-              {name: 'subcommand2-option2'},
-            ],
-          }
-        },
       }],
     };
     processor.$process([doc, navigationStub]);
@@ -382,4 +404,33 @@ describe('processCliCommands processor', () => {
             'supercommand subcommand1 subcommand1-option1 subcommand1-option2 subcommand2 subcommand2-option1 subcommand2-option2');
   });
 
+  it('should create usages strings from command field', () => {
+    const doc = {
+      docType: 'cli-command',
+      name: 'name',
+      command: 'ng name <arg0> [arg1]',
+      commandAliases: ['c'],
+      subcommands: {
+        subcommand1: {
+          name: 'subcommand1',
+          aliases: ['sc'],
+          command: 'subcommand1 [args..]',
+          options: []
+        }
+      },
+      options: [{
+        name: 'supercommand',
+      }],
+    };
+    processor.$process([doc, navigationStub]);
+    expect(doc.usages).toEqual([
+      'ng <span class="cli-name">name</span> &lt;<var>arg0</var>&gt; [<var>arg1</var>]',
+      'ng <span class="cli-name">c</span> &lt;<var>arg0</var>&gt; [<var>arg1</var>]'
+    ]);
+
+    expect(doc.subcommands[0].usages).toEqual([
+      'ng name <span class="cli-name">subcommand1</span> [<var>args..</var>]',
+      'ng name <span class="cli-name">sc</span> [<var>args..</var>]',
+    ]);
+  });
 });
