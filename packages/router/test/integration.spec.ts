@@ -1985,6 +1985,14 @@ describe('Integration', () => {
       }
     }
 
+    @Component({selector: 'nested-cmp', template: 'nested-cmp'})
+    class NestedComponentWithData {
+      data: any = [];
+      constructor(private route: ActivatedRoute) {
+        route.data.forEach(d => this.data.push(d));
+      }
+    }
+
     beforeEach(() => {
       TestBed.configureTestingModule({
         providers: [
@@ -1995,6 +2003,13 @@ describe('Integration', () => {
           {provide: 'resolveNullError', useValue: (a: any, b: any) => Promise.reject(null)},
           {provide: 'resolveEmpty', useValue: (a: any, b: any) => EMPTY},
           {provide: 'numberOfUrlSegments', useValue: (a: any, b: any) => a.url.length},
+          {
+            provide: 'overridingGuard',
+            useValue: (route: ActivatedRouteSnapshot) => {
+              (route as any).data = {prop: 10};
+              return true;
+            }
+          },
         ]
       });
     });
@@ -2238,6 +2253,206 @@ describe('Integration', () => {
 
          const cmp = fixture.debugElement.children[1].componentInstance;
          expect(cmp.route.snapshot.data).toEqual({two: 2});
+       })));
+
+    it('should override route static data with resolved data',
+       fakeAsync(inject([Router], (router: Router) => {
+         const fixture = createRoot(router, RootCmp);
+
+         router.resetConfig([{
+           path: '',
+           component: NestedComponentWithData,
+           resolve: {prop: 'resolveTwo'},
+           data: {prop: 'static'},
+         }]);
+
+         router.navigateByUrl('/');
+         advance(fixture);
+         const cmp = fixture.debugElement.children[1].componentInstance;
+
+         expect(cmp.data).toEqual([{prop: 2}]);
+       })));
+
+    it('should correctly override inherited route static data with resolved data',
+       fakeAsync(inject([Router], (router: Router) => {
+         const fixture = createRoot(router, RootCmp);
+
+         router.resetConfig([{
+           path: 'a',
+           component: WrapperCmp,
+           resolve: {prop2: 'resolveTwo'},
+           data: {prop: 'wrapper-a'},
+           children: [
+             // will inherit data from this child route because it has `path` and its parent has
+             // component
+             {
+               path: 'b',
+               data: {prop: 'nested-b'},
+               resolve: {prop3: 'resolveFour'},
+               children: [
+                 {
+                   path: 'c',
+                   children:
+                       [{path: '', component: NestedComponentWithData, data: {prop3: 'nested'}}]
+                 },
+               ]
+             },
+           ],
+         }]);
+
+         router.navigateByUrl('/a/b/c');
+         advance(fixture);
+
+         const pInj =
+             fixture.debugElement.queryAll(By.directive(NestedComponentWithData))[0].injector!;
+         const cmp = pInj.get(NestedComponentWithData);
+         expect(cmp.data).toEqual([{prop: 'nested-b', prop3: 'nested'}]);
+       })));
+
+    it('should not override inherited resolved data with inherited static data',
+       fakeAsync(inject([Router], (router: Router) => {
+         const fixture = createRoot(router, RootCmp);
+
+         router.resetConfig([{
+           path: 'a',
+           component: WrapperCmp,
+           resolve: {prop2: 'resolveTwo'},
+           data: {prop: 'wrapper-a'},
+           children: [
+             // will inherit data from this child route because it has `path` and its parent has
+             // component
+             {
+               path: 'b',
+               data: {prop2: 'parent-b', prop: 'parent-b'},
+               children: [
+                 {
+                   path: 'c',
+                   resolve: {prop2: 'resolveFour'},
+                   children: [
+                     {
+                       path: '',
+                       component: NestedComponentWithData,
+                       data: {prop: 'nested-d'},
+                     },
+                   ]
+                 },
+               ]
+             },
+           ],
+         }]);
+
+         router.navigateByUrl('/a/b/c');
+         advance(fixture);
+
+         const pInj =
+             fixture.debugElement.queryAll(By.directive(NestedComponentWithData))[0].injector!;
+         const cmp = pInj.get(NestedComponentWithData);
+         expect(cmp.data).toEqual([{prop: 'nested-d', prop2: 4}]);
+       })));
+
+    it('should not override nested route static data when both are using resolvers',
+       fakeAsync(inject([Router], (router: Router) => {
+         const fixture = createRoot(router, RootCmp);
+
+         router.resetConfig([
+           {
+             path: 'child',
+             component: WrapperCmp,
+             resolve: {prop: 'resolveTwo'},
+             children: [{
+               path: '',
+               pathMatch: 'full',
+               component: NestedComponentWithData,
+               resolve: {prop: 'resolveFour'}
+             }]
+           },
+         ]);
+
+         router.navigateByUrl('/child');
+         advance(fixture);
+
+         const pInj = fixture.debugElement.query(By.directive(NestedComponentWithData)).injector!;
+         const cmp = pInj.get(NestedComponentWithData);
+         expect(cmp.data).toEqual([{prop: 4}]);
+       })));
+
+    it('should not override child route\'s static data when both are using static data',
+       fakeAsync(inject([Router], (router: Router) => {
+         const fixture = createRoot(router, RootCmp);
+
+         router.resetConfig([
+           {
+             path: 'child',
+             component: WrapperCmp,
+             data: {prop: 'wrapper'},
+             children: [{
+               path: '',
+               pathMatch: 'full',
+               component: NestedComponentWithData,
+               data: {prop: 'inner'}
+             }]
+           },
+         ]);
+
+         router.navigateByUrl('/child');
+         advance(fixture);
+
+         const pInj = fixture.debugElement.query(By.directive(NestedComponentWithData)).injector!;
+         const cmp = pInj.get(NestedComponentWithData);
+         expect(cmp.data).toEqual([{prop: 'inner'}]);
+       })));
+
+    it('should not override child route\'s static data when wrapper is using resolved data and the child route static data',
+       fakeAsync(inject([Router], (router: Router) => {
+         const fixture = createRoot(router, RootCmp);
+
+         router.resetConfig([
+           {
+             path: 'nested',
+             component: WrapperCmp,
+             resolve: {prop: 'resolveTwo', prop2: 'resolveSix'},
+             data: {prop3: 'wrapper-static', prop4: 'another-static'},
+             children: [{
+               path: '',
+               pathMatch: 'full',
+               component: NestedComponentWithData,
+               data: {prop: 'nested', prop4: 'nested-static'}
+             }]
+           },
+         ]);
+
+         router.navigateByUrl('/nested');
+         advance(fixture);
+
+         const pInj = fixture.debugElement.query(By.directive(NestedComponentWithData)).injector!;
+         const cmp = pInj.get(NestedComponentWithData);
+         // Issue 34361 - `prop` should contain value defined in `data` object from the nested
+         // route.
+         expect(cmp.data).toEqual(
+             [{prop: 'nested', prop2: 6, prop3: 'wrapper-static', prop4: 'nested-static'}]);
+       })));
+
+    it('should allow guards alter data resolved by routes',
+       fakeAsync(inject([Router], (router: Router) => {
+         // This is not documented or recommended behavior but is here to prevent unexpected
+         // regressions. This behavior isn't necessary 'by design' but it was discovered during a
+         // refactor that some teams depend on it.
+         const fixture = createRoot(router, RootCmp);
+
+         router.resetConfig([
+           {
+             path: 'route',
+             component: NestedComponentWithData,
+             canActivate: ['overridingGuard'],
+           },
+         ]);
+
+         router.navigateByUrl('/route');
+         advance(fixture);
+
+         const pInj = fixture.debugElement.query(By.directive(NestedComponentWithData)).injector!;
+         const cmp = pInj.get(NestedComponentWithData);
+         expect(cmp.data).toEqual([{prop: 10}]);
        })));
 
     it('should rerun resolvers when the urls segments of a wildcard route change',

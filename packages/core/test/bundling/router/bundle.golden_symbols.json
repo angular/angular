@@ -1323,6 +1323,9 @@
     "name": "hasParentInjector"
   },
   {
+    "name": "hasStaticTitle"
+  },
+  {
     "name": "hasTagAndTypeMatch"
   },
   {
