@@ -1,12 +1,31 @@
+@use 'sass:map';
 @use '@material/dialog' as mdc-dialog;
+@use '@material/dialog/dialog-theme' as mdc-dialog-theme;
+@use '@material/theme/theme-color' as mdc-theme-color;
+@use '@material/typography' as mdc-typography;
 @use '../mdc-helpers/mdc-helpers';
 @use '../../material/core/typography/typography';
 @use '../../material/core/theming/theming';
 
 @mixin color($config-or-theme) {
   $config: theming.get-color-config($config-or-theme);
+
   @include mdc-helpers.mat-using-mdc-theme($config) {
-    @include mdc-dialog.core-styles($query: mdc-helpers.$mat-theme-styles-query);
+    .mat-mdc-dialog-container {
+      $surface: mdc-theme-color.$surface;
+      $on-surface: mdc-theme-color.$on-surface;
+      $text-emphasis-high: mdc-theme-color.text-emphasis(high);
+      $text-emphasis-medium: mdc-theme-color.text-emphasis(medium);
+
+      @include mdc-dialog-theme.theme((
+        container-color: $surface,
+        container-elevation: 24,
+        container-shadow-color: $on-surface,
+        with-divider-divider-color: rgba($on-surface, mdc-dialog.$scroll-divider-opacity),
+        subhead-color: rgba($on-surface, $text-emphasis-high),
+        supporting-text-color: rgba($on-surface, $text-emphasis-medium),
+      ));
+    }
   }
 }
 
@@ -14,7 +33,24 @@
   $config: typography.private-typography-to-2018-config(
       theming.get-typography-config($config-or-theme));
   @include mdc-helpers.mat-using-mdc-typography($config) {
-    @include mdc-dialog.core-styles($query: mdc-helpers.$mat-typography-styles-query);
+    .mat-mdc-dialog-container {
+      $styles: mdc-typography.$styles;
+      $headline6: map.get($styles, headline6);
+
+      @include mdc-dialog-theme.theme((
+        subhead-font: map.get($headline6, font-family),
+        subhead-line-height: map.get($styles, headline6, line-height),
+        subhead-size: map.get($styles, headline6, font-size),
+        subhead-weight: map.get($styles, headline6, font-weight),
+        subhead-tracking: map.get($styles, headline6, letter-spacing),
+
+        supporting-text-font: map.get($styles, body1, font-family),
+        supporting-text-line-height: map.get($styles, body1, line-height),
+        supporting-text-size: map.get($styles, body1, font-size),
+        supporting-text-weight: map.get($styles, body1, font-weight),
+        supporting-text-tracking: map.get($styles, body1, letter-spacing),
+      ));
+    }
   }
 }
 
