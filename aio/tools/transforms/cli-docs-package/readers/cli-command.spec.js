@@ -1,50 +1,39 @@
 const cliCommandReaderFactory = require('./cli-command');
 const reader = cliCommandReaderFactory();
 
-const content = `
-{
-  "name": "add",
-  "description": "Add support for a library to your project.",
-  "longDescription": "Add support for a library in your project, for example adding \`@angular/pwa\` which would configure\\nyour project for PWA support.\\n",
-  "hidden": false,
-  "type": "custom",
-  "options": [
+const content =  {
+  'name': 'add',
+  'command': 'ng add <collection>',
+  'description': 'Add support for a library to your project.',
+  'aliases': ['a'],
+  'deprecated': false,
+  'longDescriptionRelativePath': '@angular/cli/src/commands/add/long-description.md',
+  'longDescription': 'Adds the npm package for a published library to your workspace.',
+  'options': [
     {
-      "name": "collection",
-      "description": "The package to be added.",
-      "type": "string",
-      "required": false,
-      "aliases": [],
-      "hidden": false,
-      "positional": 0
+      'name': 'collection',
+      'type': 'string',
+      'description': 'The package to be added.',
+      'positional': 0
     },
     {
-      "name": "help",
-      "description": "Shows a help message.",
-      "type": "boolean",
-      "required": false,
-      "aliases": [],
-      "hidden": false
+      'name': 'defaults',
+      'type': 'boolean',
+      'default': false,
+      'description': 'Disable interactive input prompts for options with a default.'
     },
     {
-      "name": "helpJson",
-      "description": "Shows the metadata associated with each flags, in JSON format.",
-      "type": "boolean",
-      "required": false,
-      "aliases": [],
-      "hidden": false
+      'name': 'help',
+      'type': 'boolean',
+      'description': 'Shows a help message for this command in the console.'
     }
-  ],
-  "aliases": ['a'],
-  "scope": "in"
-}
-`;
+  ]
+};
 
 const fileInfo = {
-  content,
+  content: JSON.stringify(content),
   baseName: 'add',
   relativePath: 'add.json',
-  basePath: __dirname + '/mocks/help',
 };
 
 describe('cli-command reader', () => {
@@ -95,18 +84,7 @@ describe('cli-command reader', () => {
     it('should extract the long description', () => {
       const docs = reader.getDocs(fileInfo);
       expect(docs[0].longDescription)
-          .toEqual(
-              'Add support for a library in your project, for example adding `@angular/pwa` which would configure\nyour project for PWA support.\n');
-    });
-
-    it('should extract the command type', () => {
-      const docs = reader.getDocs(fileInfo);
-      expect(docs[0].type).toEqual('custom');
-    });
-
-    it('should extract the command scope', () => {
-      const docs = reader.getDocs(fileInfo);
-      expect(docs[0].scope).toEqual('in');
+          .toEqual('Adds the npm package for a published library to your workspace.');
     });
 
     it('should extract the command aliases', () => {
@@ -118,8 +96,8 @@ describe('cli-command reader', () => {
       const docs = reader.getDocs(fileInfo);
       expect(docs[0].options).toEqual([
         jasmine.objectContaining({name: 'collection'}),
+        jasmine.objectContaining({name: 'defaults'}),
         jasmine.objectContaining({name: 'help'}),
-        jasmine.objectContaining({name: 'helpJson'}),
       ]);
     });
 
@@ -128,7 +106,7 @@ describe('cli-command reader', () => {
       expect(doc.longDescriptionDoc).toEqual({
         docType: 'content',
         startingLine: 0,
-        fileInfo: {realProjectRelativePath: 'packages/angular/cli/commands/add-long.md'}
+        fileInfo: {realProjectRelativePath: 'packages/angular/cli/src/commands/add/long-description.md'}
       });
     });
   });
