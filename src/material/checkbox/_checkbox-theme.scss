@@ -32,6 +32,12 @@
     fill: $checkbox-mark-color;
   }
 
+  .mat-checkbox-label {
+    // Explicitly set the text color since the checkbox may be
+    // inside an overlay that doesn't have the proper theme text color.
+    color: theming.get-color-from-palette($foreground, 'text');
+  }
+
   .mat-checkbox-checkmark-path {
     // !important is needed here because a stroke must be set as an
     // attribute on the SVG in order for line animation to work properly.
