@@ -1204,26 +1204,6 @@ describe('Integration', () => {
       });
     });
 
-    it('should ignore the duplicate resulting from a location sync', fakeAsync(() => {
-         const router = TestBed.inject(Router);
-         const fixture = createRoot(router, RootCmp);
-         const location = TestBed.inject(Location) as SpyLocation;
-         router.resetConfig([{path: 'simple', component: SimpleCmp, canActivate: ['in1Second']}]);
-
-         const recordedEvents: any[] = [];
-         router.events.forEach(e => onlyNavigationStartAndEnd(e) && recordedEvents.push(e));
-
-         // setTimeout used so this navigation resolves at the same time as the one that results
-         // from the location PopStateEvent (see Router#setUpLocationChangeListener).
-         setTimeout(() => {
-           router.navigateByUrl('/simple');
-         }, 0);
-         location.simulateUrlPop('/simple');
-         tick(1000);
-         advance(fixture);
-         expectEvents(recordedEvents, [[NavigationStart, '/simple'], [NavigationEnd, '/simple']]);
-       }));
-
     it('should reset location if a navigation by location is successful', fakeAsync(() => {
          const router = TestBed.inject(Router);
          const location = TestBed.inject(Location) as SpyLocation;
