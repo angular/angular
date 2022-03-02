@@ -143,6 +143,8 @@ export class MatChipGrid
   /** The chip input to add more chips */
   protected _chipInput: MatChipTextControl;
 
+  protected override _defaultRole = 'grid';
+
   /**
    * Function when touched. Set as part of ControlValueAccessor implementation.
    * @docs-private
@@ -184,11 +186,6 @@ export class MatChipGrid
     return (
       (!this._chipInput || this._chipInput.empty) && (!this._chips || this._chips.length === 0)
     );
-  }
-
-  /** The ARIA role applied to the chip grid. */
-  override get role(): string | null {
-    return this.empty ? null : 'grid';
   }
 
   /**

@@ -103,6 +103,13 @@ describe('MDC-based MatChipGrid', () => {
 
         expect(chipGridNativeElement.hasAttribute('role')).toBe(false);
       });
+
+      it('should be able to set a custom role', () => {
+        testComponent.role = 'listbox';
+        fixture.detectChanges();
+
+        expect(chipGridNativeElement.getAttribute('role')).toBe('listbox');
+      });
     });
 
     describe('focus behaviors', () => {
@@ -1028,7 +1035,7 @@ describe('MDC-based MatChipGrid', () => {
 
 @Component({
   template: `
-    <mat-chip-grid [tabIndex]="tabIndex" #chipGrid>
+    <mat-chip-grid [tabIndex]="tabIndex" [role]="role" #chipGrid>
       <mat-chip-row *ngFor="let i of chips"
                     [editable]="editable">
         {{name}} {{i + 1}}
@@ -1041,6 +1048,7 @@ class StandardChipGrid {
   tabIndex: number = 0;
   chips = [0, 1, 2, 3, 4];
   editable = false;
+  role: string | null = null;
 }
 
 @Component({

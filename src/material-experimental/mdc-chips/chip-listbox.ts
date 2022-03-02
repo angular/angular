@@ -99,11 +99,8 @@ export class MatChipListbox
    */
   _onChange: (value: any) => void = () => {};
 
-  /** The ARIA role applied to the chip listbox. */
   // TODO: MDC uses `grid` here
-  override get role(): string | null {
-    return this.empty ? null : 'listbox';
-  }
+  protected override _defaultRole = 'listbox';
 
   /** Whether the user should be allowed to select multiple chips. */
   @Input()

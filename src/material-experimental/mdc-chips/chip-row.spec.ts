@@ -104,6 +104,17 @@ describe('MDC-based Row Chips', () => {
 
         expect(event.defaultPrevented).toBe(true);
       });
+
+      it('should have the correct role', () => {
+        expect(chipNativeElement.getAttribute('role')).toBe('row');
+      });
+
+      it('should be able to set a custom role', () => {
+        chipInstance.role = 'button';
+        fixture.detectChanges();
+
+        expect(chipNativeElement.getAttribute('role')).toBe('button');
+      });
     });
 
     describe('keyboard behavior', () => {

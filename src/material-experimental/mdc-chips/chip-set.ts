@@ -88,6 +88,9 @@ export class MatChipSet
   /** Subject that emits when the component has been destroyed. */
   protected _destroyed = new Subject<void>();
 
+  /** Role to use if it hasn't been overwritten by the user. */
+  protected _defaultRole = 'presentation';
+
   /** Combined stream of all of the child chips' remove events. */
   get chipDestroyedChanges(): Observable<MatChipEvent> {
     return this._getChipStream(chip => chip.destroyed);
@@ -163,17 +166,17 @@ export class MatChipSet
   /** The ARIA role applied to the chip set. */
   @Input()
   get role(): string | null {
-    if (this._role) {
-      return this._role;
-    } else {
-      return this.empty ? null : 'presentation';
+    if (this._explicitRole) {
+      return this._explicitRole;
     }
+
+    return this.empty ? null : this._defaultRole;
   }
 
   set role(value: string | null) {
-    this._role = value;
+    this._explicitRole = value;
   }
-  private _role: string | null = null;
+  private _explicitRole: string | null = null;
 
   /** Whether any of the chips inside of this chip-set has focus. */
   get focused(): boolean {

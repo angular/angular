@@ -89,6 +89,13 @@ describe('MDC-based MatChipListbox', () => {
         expect(chipListboxNativeElement.hasAttribute('role')).toBe(false);
       });
 
+      it('should be able to set a custom role', () => {
+        testComponent.role = 'grid';
+        fixture.detectChanges();
+
+        expect(chipListboxNativeElement.getAttribute('role')).toBe('grid');
+      });
+
       it('should not set aria-required when it does not have a role', () => {
         testComponent.chips = [];
         fixture.detectChanges();
@@ -745,7 +752,7 @@ describe('MDC-based MatChipListbox', () => {
 
 @Component({
   template: `
-    <mat-chip-listbox [tabIndex]="tabIndex" [selectable]="selectable">
+    <mat-chip-listbox [tabIndex]="tabIndex" [selectable]="selectable" [role]="role">
       <mat-chip-option *ngFor="let i of chips" (select)="chipSelect(i)"
         (deselect)="chipDeselect(i)">
         {{name}} {{i + 1}}
@@ -759,6 +766,7 @@ class StandardChipListbox {
   chipDeselect: (index?: number) => void = () => {};
   tabIndex: number = 0;
   chips = [0, 1, 2, 3, 4];
+  role: string | null = null;
 }
 
 @Component({

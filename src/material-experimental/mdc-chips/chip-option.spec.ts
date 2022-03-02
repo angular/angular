@@ -185,6 +185,17 @@ describe('MDC-based Option Chips', () => {
           .withContext('Expected chip ripples to be disabled.')
           .toBe(true);
       });
+
+      it('should have the correct role', () => {
+        expect(chipNativeElement.getAttribute('role')).toBe('presentation');
+      });
+
+      it('should be able to set a custom role', () => {
+        chipInstance.role = 'button';
+        fixture.detectChanges();
+
+        expect(chipNativeElement.getAttribute('role')).toBe('button');
+      });
     });
 
     describe('keyboard behavior', () => {
