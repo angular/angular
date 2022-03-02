@@ -1361,21 +1361,6 @@ export class Router {
       return Promise.resolve(false);
     }
 
-    // Duplicate navigations may be triggered by attempts to sync AngularJS and
-    // Angular router states. We have the setTimeout in the location listener to
-    // ensure the imperative nav is scheduled before the browser nav.
-    const lastNavigation = this.transitions.value;
-    const browserNavPrecededByRouterNav = isBrowserTriggeredNavigation(source) && lastNavigation &&
-        !isBrowserTriggeredNavigation(lastNavigation.source);
-    const navToSameUrl = lastNavigation.rawUrl.toString() === rawUrl.toString();
-    const lastNavigationInProgress = lastNavigation.id === this.currentNavigation?.id;
-    // We consider duplicates as ones that goes to the same URL while the first
-    // is still processing.
-    const isDuplicateNav = navToSameUrl && lastNavigationInProgress;
-    if (browserNavPrecededByRouterNav && isDuplicateNav) {
-      return Promise.resolve(true);  // return value is not used
-    }
-
     let resolve: any;
     let reject: any;
     let promise: Promise<boolean>;
