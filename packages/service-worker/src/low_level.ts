@@ -56,7 +56,7 @@ export interface UpdateActivatedEvent {
  */
 export interface NoNewVersionDetectedEvent {
   type: 'NO_NEW_VERSION_DETECTED';
-  version: {hash: string; appData?: object;};
+  version: {hash: string; appData?: Object;};
 }
 
 /**
