@@ -196,8 +196,11 @@
   .mat-mdc-raised-button,
   .mat-mdc-unelevated-button,
   .mat-mdc-outlined-button {
-    @include mdc-button-theme.density($density-scale, $query: mdc-helpers.$mat-base-styles-query);
-    @include button-theme-private.touch-target-density($density-scale);
+    // Use `mat-mdc-button-base` to increase the specificity over the button's structural styles.
+    &.mat-mdc-button-base {
+      @include mdc-button-theme.density($density-scale, $query: mdc-helpers.$mat-base-styles-query);
+      @include button-theme-private.touch-target-density($density-scale);
+    }
   }
 }
 

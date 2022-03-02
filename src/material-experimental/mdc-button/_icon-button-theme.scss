@@ -49,7 +49,8 @@
 
 @mixin density($config-or-theme) {
   $density-scale: theming.get-density-config($config-or-theme);
-  .mat-mdc-icon-button {
+    // Use `mat-mdc-button-base` to increase the specificity over the button's structural styles.
+  .mat-mdc-icon-button.mat-mdc-button-base {
     @include mdc-icon-button.density($density-scale, $query: mdc-helpers.$mat-base-styles-query);
     @include button-theme-private.touch-target-density($density-scale);
   }
