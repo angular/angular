@@ -1,3 +1,33 @@
+<a name="13.2.5"></a>
+# 13.2.5 (2022-03-02)
+### animations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [6c61d20476](https://github.com/angular/angular/commit/6c61d20476bf214176994dff4e46d6452bd821cf) | fix | allow animations with unsupported CSS properties ([#45185](https://github.com/angular/angular/pull/45185)) |
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [64da1daa78](https://github.com/angular/angular/commit/64da1daa7827ca99c6d0b3992ac10b1ea0ec5b4a) | fix | canceled JSONP requests won't throw console error with missing callback function ([#36807](https://github.com/angular/angular/pull/36807)) |
+| [56ca7d385b](https://github.com/angular/angular/commit/56ca7d385b263411cf231808fd54ec67ff643b58) | perf | make `NgLocalization` token tree-shakable ([#45118](https://github.com/angular/angular/pull/45118)) ([#45226](https://github.com/angular/angular/pull/45226)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [6c906a5bb9](https://github.com/angular/angular/commit/6c906a5bb9f7d7c86122bfc36275d6e6b81a0631) | fix | Support resolve animation name from the DTS ([#45169](https://github.com/angular/angular/pull/45169)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e8fd452bd2](https://github.com/angular/angular/commit/e8fd452bd24985f23ab6316690bb9431bbbe8ed8) | fix | remove individual commands for updating gold files ([#45198](https://github.com/angular/angular/pull/45198)) |
+| [82d772857c](https://github.com/angular/angular/commit/82d772857ce2d6f07af4c99380676b6bf2cf7912) | perf | make `Compiler`, `ApplicationRef` and `ApplicationInitStatus` tree-shakable ([#45102](https://github.com/angular/angular/pull/45102)) ([#45222](https://github.com/angular/angular/pull/45222)) |
+| [71ff12c1cc](https://github.com/angular/angular/commit/71ff12c1cc009e50977b77f1cba1fe03c2f81946) | perf | make `LOCALE_ID` and other tokens from `ApplicationModule` tree-shakable ([#45102](https://github.com/angular/angular/pull/45102)) ([#45222](https://github.com/angular/angular/pull/45222)) |
+### localize
+| Commit | Type | Description |
+| -- | -- | -- |
+| [d388522745](https://github.com/angular/angular/commit/d388522745835b8e30b66597560254f0e821c040) | fix | avoid imports into `compiler-cli` package ([#45180](https://github.com/angular/angular/pull/45180)) |
+## Special Thanks
+Andrew Kushnir, Andrew Scott, Charles Lyding, Guillaume Bonnet, Jessica Janiuk, JoostK, Martin Sikora, Paul Gschwendtner, Theodore Brown, dario-piotrowicz and ivanwonder
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.0.0-next.4"></a>
 # 14.0.0-next.4 (2022-02-23)
 ## Breaking Changes
