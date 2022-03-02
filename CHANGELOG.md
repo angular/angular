@@ -1,3 +1,47 @@
+<a name="14.0.0-next.5"></a>
+# 14.0.0-next.5 (2022-03-02)
+## Breaking Changes
+### router
+- The type of `Route.pathMatch` is now more strict. Places that use
+`pathMatch` will likely need to be updated to have an explicit
+`Route`/`Routes` type so that TypeScript does not infer the type as
+`string`.
+
+- Previously, resolvers were waiting to be completed
+before proceeding with the navigation and the Router would take the last
+value emitted from the resolver.
+The router now takes only the first emitted value by the resolvers
+and then proceeds with navigation. This is now consistent with `Observables`
+returned by other guards: only the first value is used.
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [7671a1e40d](https://github.com/angular/angular/commit/7671a1e40d0f2abe1cb7e9d84d5ac47a5adb546a) | fix | canceled JSONP requests won't throw console error with missing callback function ([#36807](https://github.com/angular/angular/pull/36807)) |
+| [05d50b849b](https://github.com/angular/angular/commit/05d50b849bb891c37c3eefab81a45099057dfd78) | perf | make `NgLocalization` token tree-shakable ([#45118](https://github.com/angular/angular/pull/45118)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [69018c9f42](https://github.com/angular/angular/commit/69018c9f42d14c1c7aa8271b406d6d247de1c564) | feat | allow for injector to be specified when creating an embedded view ([#45156](https://github.com/angular/angular/pull/45156)) |
+| [c5df474c7c](https://github.com/angular/angular/commit/c5df474c7c744305c9412090b5e19bb6d4f7128d) | fix | remove individual commands for updating gold files ([#45198](https://github.com/angular/angular/pull/45198)) |
+| [88f1168506](https://github.com/angular/angular/commit/88f1168506befd0665125da1fca2a719cb27dbb5) | perf | only track LViews that are referenced in __ngContext__ ([#45172](https://github.com/angular/angular/pull/45172)) |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [7ee121f595](https://github.com/angular/angular/commit/7ee121f595a47338b31098ae51a6f91d80c8fdce) | feat | Add untyped versions of the model classes for use in migration. ([#45205](https://github.com/angular/angular/pull/45205)) |
+### localize
+| Commit | Type | Description |
+| -- | -- | -- |
+| [ca5603b09b](https://github.com/angular/angular/commit/ca5603b09b06481529dce78ff995d674383e274f) | fix | avoid imports into `compiler-cli` package ([#45180](https://github.com/angular/angular/pull/45180)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [7fd416d060](https://github.com/angular/angular/commit/7fd416d060bd873bc88dffed41946c51aa649ec1) | fix | Fix type of Route.pathMatch to be more accurate ([#45176](https://github.com/angular/angular/pull/45176)) |
+| [c9679760b2](https://github.com/angular/angular/commit/c9679760b2bf5c607c957c20482b9cea7a21702b) | refactor | take only the first emitted value of every resolver to make it consistent with guards ([#44573](https://github.com/angular/angular/pull/44573)) |
+## Special Thanks
+Andrew Kushnir, Andrew Scott, Charles Lyding, Dmitrij Kuba, Dylan Hunn, Guillaume Bonnet, Jessica Janiuk, JiaLiPassion, JoostK, Kristiyan Kostadinov, Martin Sikora, Paul Gschwendtner, Theodore Brown and dario-piotrowicz
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="13.2.5"></a>
 # 13.2.5 (2022-03-02)
 ### animations
