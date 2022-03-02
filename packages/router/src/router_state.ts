@@ -248,9 +248,10 @@ function flattenInherited(pathFromRoot: ActivatedRouteSnapshot[]): Inherited {
   return pathFromRoot.reduce((res, curr) => {
     const params = {...res.params, ...curr.params};
     const data = {...res.data, ...curr.data};
-    const resolve = {...res.resolve, ...curr._resolvedData};
+    const resolve =
+        {...curr.data, ...res.resolve, ...curr.routeConfig?.data, ...curr._resolvedData};
     return {params, data, resolve};
-  }, <any>{params: {}, data: {}, resolve: {}});
+  }, {params: {}, data: {}, resolve: {}});
 }
 
 /**

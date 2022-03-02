@@ -10,7 +10,7 @@ import {Injector} from '@angular/core';
 import {EMPTY, from, MonoTypeOperatorFunction, Observable, of} from 'rxjs';
 import {concatMap, map, mergeMap, take, takeLast, tap} from 'rxjs/operators';
 
-import {ResolveData} from '../models';
+import {ResolveData, Route} from '../models';
 import {NavigationTransition} from '../router';
 import {ActivatedRouteSnapshot, inheritedParamsDataResolve, RouterStateSnapshot} from '../router_state';
 import {wrapIntoObservable} from '../utils/collection';
@@ -50,21 +50,16 @@ function runResolve(
     paramsInheritanceStrategy: 'emptyOnly'|'always', moduleInjector: Injector) {
   const config = futureARS.routeConfig;
   const resolve = futureARS._resolve;
-  const data = {...futureARS.data};
-  if (config?.title !== undefined) {
-    if (typeof config.title === 'string' || config.title === null) {
-      data[RouteTitle] = config.title;
-    } else {
-      resolve[RouteTitle] = config.title;
-    }
+  if (config?.title !== undefined && !hasStaticTitle(config)) {
+    resolve[RouteTitle] = config.title;
   }
   return resolveNode(resolve, futureARS, futureRSS, moduleInjector)
       .pipe(map((resolvedData: any) => {
         futureARS._resolvedData = resolvedData;
-        futureARS.data = {
-          ...data,
-          ...inheritedParamsDataResolve(futureARS, paramsInheritanceStrategy).resolve
-        };
+        futureARS.data = inheritedParamsDataResolve(futureARS, paramsInheritanceStrategy).resolve;
+        if (config && hasStaticTitle(config)) {
+          futureARS.data[RouteTitle] = config.title;
+        }
         return null;
       }));
 }
@@ -105,4 +100,8 @@ function getResolver(
   const resolver = getToken(injectionToken, futureARS, moduleInjector);
   return resolver.resolve ? wrapIntoObservable(resolver.resolve(futureARS, futureRSS)) :
                             wrapIntoObservable(resolver(futureARS, futureRSS));
+}
+
+function hasStaticTitle(config: Route) {
+  return typeof config.title === 'string' || config.title === null;
 }
