@@ -212,14 +212,7 @@ export function validateStyleProperty(prop: string): boolean {
 }
 
 export function validateWebAnimatableStyleProperty(prop: string): boolean {
-  if (typeof ngDevMode === 'undefined' || !!ngDevMode) {
-    return ANIMATABLE_PROP_SET.has(prop);
-  } else {
-    // the ANIMATABLE_PROP_SET is quite large and the non-animatable warnings
-    // are presented only in dev mode, for this reason in prod this function
-    // always simply returns true so that the set can be three-shaken away
-    return true;
-  }
+  return ANIMATABLE_PROP_SET.has(prop);
 }
 
 export function getBodyNode(): any|null {

@@ -41,7 +41,7 @@ export function pushUnrecognizedPropertiesWarning(warnings: string[], props: str
 }
 
 export function pushNonAnimatablePropertiesWarning(warnings: string[], props: string[]): void {
-  if (ngDevMode && props.length) {
+  if (props.length) {
     warnings.push(`The following provided CSS properties are not animatable: ${props.join(', ')}`);
   }
 }
