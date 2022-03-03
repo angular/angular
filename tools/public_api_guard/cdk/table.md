@@ -385,7 +385,7 @@ export class CdkTextColumn<T> implements OnDestroy, OnInit {
     dataAccessor: (data: T, name: string) => string;
     headerCell: CdkHeaderCellDef;
     headerText: string;
-    justify: 'start' | 'end';
+    justify: 'start' | 'end' | 'center';
     get name(): string;
     set name(name: string);
     // (undocumented)

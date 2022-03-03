@@ -85,7 +85,7 @@ export class CdkTextColumn<T> implements OnDestroy, OnInit {
   @Input() dataAccessor: (data: T, name: string) => string;
 
   /** Alignment of the cell values. */
-  @Input() justify: 'start' | 'end' = 'start';
+  @Input() justify: 'start' | 'end' | 'center' = 'start';
 
   /** @docs-private */
   @ViewChild(CdkColumnDef, {static: true}) columnDef: CdkColumnDef;
