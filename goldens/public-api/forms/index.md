@@ -730,6 +730,29 @@ export type UntypedFormArray = FormArray;
 export const UntypedFormArray: UntypedFormArrayCtor;
 
 // @public
+export class UntypedFormBuilder {
+    constructor();
+    // (undocumented)
+    array(controlsConfig: any[], validatorOrOpts?: ValidatorFn | ValidatorFn[] | AbstractControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null): UntypedFormArray;
+    // (undocumented)
+    control(formState: any, validatorOrOpts?: ValidatorFn | ValidatorFn[] | FormControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null): UntypedFormControl;
+    // (undocumented)
+    group(controlsConfig: {
+        [key: string]: any;
+    }, options?: AbstractControlOptions | null): UntypedFormGroup;
+    // @deprecated (undocumented)
+    group(controlsConfig: {
+        [key: string]: any;
+    }, options: {
+        [key: string]: any;
+    }): UntypedFormGroup;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<UntypedFormBuilder, never>;
+    // (undocumented)
+    static ɵprov: i0.ɵɵInjectableDeclaration<UntypedFormBuilder>;
+}
+
+// @public
 export type UntypedFormControl = FormControl;
 
 // @public (undocumented)
