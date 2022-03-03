@@ -200,7 +200,7 @@ class ApplyRedirects {
             if (noLeftoversInUrl(segmentGroup, segments, outlet)) {
               return of(new UrlSegmentGroup([], {}));
             }
-            throw new NoMatch(segmentGroup);
+            return noMatch(segmentGroup);
           }
           throw e;
         }));
