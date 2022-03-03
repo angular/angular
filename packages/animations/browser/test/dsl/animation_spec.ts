@@ -249,6 +249,13 @@ function createDiv() {
            ]);
          });
 
+      it('should not provide a non-animatable warning if an animatable CSS property is used in the animation',
+         () => {
+           const steps = [animate('1.5s', style({borderRadius: '1rem'}))];
+
+           expect(getValidationWarningsForAnimationSequence(steps)).toEqual([]);
+         });
+
       it('should provide a warning if multiple non-animatable CSS properties are used in the animation',
          () => {
            const steps = [
