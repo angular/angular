@@ -19,9 +19,9 @@ export class WebAnimationsDriver implements AnimationDriver {
     return validateStyleProperty(prop);
   }
 
-  validateAnimatableStyleProperty(prop: string): {prop: string, animatable: boolean} {
+  validateAnimatableStyleProperty(prop: string): boolean {
     const cssProp = camelCaseToDashCase(prop);
-    return {prop: cssProp, animatable: validateWebAnimatableStyleProperty(cssProp)};
+    return validateWebAnimatableStyleProperty(cssProp);
   }
 
   matchesElement(_element: any, _selector: string): boolean {

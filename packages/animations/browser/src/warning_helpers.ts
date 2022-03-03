@@ -36,12 +36,12 @@ export function triggerParsingWarnings(name: string, warnings: string[]): void {
 
 export function pushUnrecognizedPropertiesWarning(warnings: string[], props: string[]): void {
   if (ngDevMode && props.length) {
-    warnings.push(`The following provided CSS properties are not recognized: ${props.join(', ')}`);
+    warnings.push(`The following provided properties are not recognized: ${props.join(', ')}`);
   }
 }
 
 export function pushNonAnimatablePropertiesWarning(warnings: string[], props: string[]): void {
   if (props.length) {
-    warnings.push(`The following provided CSS properties are not animatable: ${props.join(', ')}`);
+    warnings.push(`The following provided properties are not animatable: ${props.join(', ')}`);
   }
 }

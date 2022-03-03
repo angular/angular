@@ -320,9 +320,8 @@ export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
         }
 
         if (ngDevMode && this._driver.validateAnimatableStyleProperty) {
-          const {prop: cssProp, animatable} = this._driver.validateAnimatableStyleProperty(prop);
-          if (!animatable) {
-            context.nonAnimatableCSSPropertiesFound.add(cssProp);
+          if (!this._driver.validateAnimatableStyleProperty(prop)) {
+            context.nonAnimatableCSSPropertiesFound.add(prop);
             // note: non animatable properties are not removed for the tuple just in case they are
             //       categorized as non animatable but can actually be animated
             return;

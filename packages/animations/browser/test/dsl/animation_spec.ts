@@ -222,7 +222,7 @@ function createDiv() {
         const steps = [animate(1000, style({abc: '500px'}))];
 
         expect(getValidationWarningsForAnimationSequence(steps)).toEqual([
-          'The following provided CSS properties are not recognized: abc'
+          'The following provided properties are not recognized: abc'
         ]);
       });
 
@@ -236,7 +236,7 @@ function createDiv() {
            ];
 
            expect(getValidationWarningsForAnimationSequence(steps)).toEqual([
-             'The following provided CSS properties are not recognized: 123, abc, xyz'
+             'The following provided properties are not recognized: 123, abc, xyz'
            ]);
          });
 
@@ -245,7 +245,7 @@ function createDiv() {
            const steps = [animate(1000, style({display: 'block'}))];
 
            expect(getValidationWarningsForAnimationSequence(steps)).toEqual([
-             'The following provided CSS properties are not animatable: display'
+             'The following provided properties are not animatable: display'
            ]);
          });
 
@@ -259,7 +259,7 @@ function createDiv() {
            ];
 
            expect(getValidationWarningsForAnimationSequence(steps)).toEqual([
-             'The following provided CSS properties are not animatable: display, text-align, font-family'
+             'The following provided properties are not animatable: display, textAlign, font-family'
            ]);
          });
 
@@ -275,8 +275,8 @@ function createDiv() {
            ];
 
            expect(getValidationWarningsForAnimationSequence(steps)).toEqual([
-             'The following provided CSS properties are not recognized: abc, xyz',
-             'The following provided CSS properties are not animatable: display, text-align, font-family'
+             'The following provided properties are not recognized: abc, xyz',
+             'The following provided properties are not animatable: display, textAlign, font-family'
            ]);
          });
 
