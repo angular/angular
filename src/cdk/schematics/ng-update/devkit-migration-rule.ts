@@ -91,7 +91,9 @@ export function createMigrationSchematicRule(
       const testTsconfigPath = getTargetTsconfigPath(project, 'test');
 
       if (!buildTsconfigPath && !testTsconfigPath) {
-        logger.warn(`Could not find TypeScript project for project: ${projectName}`);
+        logger.warn(
+          `Skipping migration for project ${projectName}. Unable to determine 'tsconfig.json' file in workspace config.`,
+        );
         continue;
       }
 
