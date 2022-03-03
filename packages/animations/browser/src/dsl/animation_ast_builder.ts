@@ -81,7 +81,7 @@ export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
       );
     }
 
-    if (context.nonAnimatableCSSPropertiesFound.size) {
+    if (ngDevMode && context.nonAnimatableCSSPropertiesFound.size) {
       pushNonAnimatablePropertiesWarning(
           warnings,
           [...context.nonAnimatableCSSPropertiesFound.keys()],
@@ -319,7 +319,7 @@ export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
           return;
         }
 
-        if (this._driver.validateAnimatableStyleProperty) {
+        if (ngDevMode && this._driver.validateAnimatableStyleProperty) {
           const {prop: cssProp, animatable} = this._driver.validateAnimatableStyleProperty(prop);
           if (!animatable) {
             context.nonAnimatableCSSPropertiesFound.add(cssProp);
