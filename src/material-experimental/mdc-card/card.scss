@@ -22,13 +22,15 @@ $mat-card-default-padding: 16px !default;
   // Custom elements default to `display: inline`. Reset to 'block'.
   display: block;
 
-  // Apply default padding for a text content region. Omit any bottom padding because we assume
-  // this region will be followed by another region that includes top padding.
-  padding: $mat-card-default-padding $mat-card-default-padding 0;
-
   // Titles and subtitles can be set on native header elements which come with
   // their own margin. Clear it since the spacing is done using `padding`.
   margin: 0;
+
+  .mat-mdc-card-avatar ~ .mat-mdc-card-header-text & {
+    // Apply default padding for a text content region. Omit any bottom padding because we assume
+    // this region will be followed by another region that includes top padding.
+    padding: $mat-card-default-padding $mat-card-default-padding 0;
+  }
 }
 
 // Header section at the top of a card. MDC does not have a pre-made header section for cards.
@@ -131,8 +133,11 @@ $mat-card-default-padding: 16px !default;
 // `mat-card-title-group` since the padding is captured by parent container already.
 .mat-mdc-card-subtitle ~ .mat-mdc-card-title,
 .mat-mdc-card-title ~ .mat-mdc-card-subtitle,
-.mat-mdc-card-header .mat-mdc-card-title,
-.mat-mdc-card-header .mat-mdc-card-subtitle,
+
+// The `.mat-mdc-card-header-text` here is redundant since the header text
+// wrapper is always there in the header, but we need the extra specificity.
+.mat-mdc-card-header .mat-mdc-card-header-text .mat-mdc-card-title,
+.mat-mdc-card-header .mat-mdc-card-header-text .mat-mdc-card-subtitle,
 .mat-mdc-card-title-group .mat-mdc-card-title,
 .mat-mdc-card-title-group .mat-mdc-card-subtitle {
   padding-top: 0;
