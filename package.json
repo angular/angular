@@ -131,7 +131,7 @@
     "karma-jasmine": "^4.0.1",
     "karma-requirejs": "^1.1.0",
     "karma-sourcemap-loader": "^0.3.7",
-    "magic-string": "0.25.7",
+    "magic-string": "0.26.1",
     "materialize-css": "1.0.0",
     "nodejs-websocket": "^1.7.2",
     "protractor": "^7.0.0",
