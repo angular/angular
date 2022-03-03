@@ -11,9 +11,9 @@ import {Injectable} from '@angular/core';
 import {AsyncValidatorFn, ValidatorFn} from './directives/validators';
 import {ReactiveFormsModule} from './form_providers';
 import {AbstractControl, AbstractControlOptions, FormHooks} from './model/abstract_model';
-import {FormArray, isFormArray} from './model/form_array';
-import {FormControl, FormControlOptions, isFormControl} from './model/form_control';
-import {FormGroup, isFormGroup} from './model/form_group';
+import {FormArray, isFormArray, UntypedFormArray} from './model/form_array';
+import {FormControl, FormControlOptions, isFormControl, UntypedFormControl} from './model/form_control';
+import {FormGroup, isFormGroup, UntypedFormGroup} from './model/form_group';
 
 function isAbstractControlOptions(options: AbstractControlOptions|
                                   {[key: string]: any}): options is AbstractControlOptions {
@@ -180,5 +180,56 @@ export class FormBuilder {
     } else {
       return this.control(controlConfig);
     }
+  }
+}
+
+/**
+ * UntypedFormBuilder is the same as @see FormBuilder, but it provides untyped controls.
+ */
+@Injectable({providedIn: ReactiveFormsModule})
+export class UntypedFormBuilder {
+  private _typedBuilder: FormBuilder;
+
+  constructor() {
+    this._typedBuilder = new FormBuilder();
+  }
+
+  /**
+   * @see FormBuilder#group
+   */
+  group(
+      controlsConfig: {[key: string]: any},
+      options?: AbstractControlOptions|null,
+      ): UntypedFormGroup;
+  /**
+   * @deprecated
+   */
+  group(
+      controlsConfig: {[key: string]: any},
+      options: {[key: string]: any},
+      ): UntypedFormGroup;
+  group(
+      controlsConfig: {[key: string]: any},
+      options: AbstractControlOptions|{[key: string]: any}|null = null): UntypedFormGroup {
+    return this._typedBuilder.group(controlsConfig, options);
+  }
+
+  /**
+   * @see FormBuilder#control
+   */
+  control(
+      formState: any, validatorOrOpts?: ValidatorFn|ValidatorFn[]|FormControlOptions|null,
+      asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null): UntypedFormControl {
+    return this._typedBuilder.control(formState, validatorOrOpts, asyncValidator);
+  }
+
+  /**
+   * @see FormBuilder#array
+   */
+  array(
+      controlsConfig: any[],
+      validatorOrOpts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|null,
+      asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null): UntypedFormArray {
+    return this._typedBuilder.array(controlsConfig, validatorOrOpts, asyncValidator);
   }
 }
