@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+
 /**
  * @license
  * Copyright Google LLC All Rights Reserved.
@@ -13,6 +14,7 @@ const puppeteerPkgPath = require.resolve('puppeteer/package.json', {paths: [proc
 const puppeteerVersion = require(puppeteerPkgPath).version;
 const chromedriverVersionMap = require('./puppeteer-chromedriver-versions');
 const spawnSync = require('child_process').spawnSync;
+const maxAttempts = 3;
 
 const version = chromedriverVersionMap[puppeteerVersion];
 if (!version) {
@@ -32,14 +34,20 @@ const args = [
   ...process.argv.slice(2),
 ];
 
-const result = spawnSync('yarn', args, {shell: true, stdio: 'inherit'});
-if (result.error) {
+(function attemptUpdate(currentAttempt) {
+  const result = spawnSync('yarn', args, {shell: true, stdio: 'inherit'});
+
+  if (result.status === 0) {
+    process.exit(0);
+  }
+
   console.error(`[webdriver-manager-update.js] Call to 'yarn ${
-      args.join(' ')}' failed with error code ${result.error.code}`);
-  process.exit(result.status);
-}
-if (result.status) {
-  console.error(`[webdriver-manager-update.js] Call to 'yarn ${
-      args.join(' ')}' failed with error code ${result.status}`);
-  process.exit(result.status);
-}
+      args.join(' ')}' failed with error code ${result.error ? result.error.code : result.status}`);
+
+  if (currentAttempt < maxAttempts) {
+    console.info(`\nTrying again (attempt ${currentAttempt + 1} of ${maxAttempts})...\n`);
+    attemptUpdate(currentAttempt + 1);
+  } else {
+    process.exit(result.status);
+  }
+})(0);
