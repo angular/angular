@@ -18,7 +18,6 @@ module.exports =
         // Register the processors
         .processor(require('./processors/processCliContainerDoc'))
         .processor(require('./processors/processCliCommands'))
-        .processor(require('./processors/filterHiddenCommands'))
 
         // Configure file reading
         .config(function(readFilesProcessor, cliCommandFileReader) {
