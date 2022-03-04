@@ -62,13 +62,13 @@ In the following example, you bind the `colspan` attribute to the expression `1 
 
 <code-example path="attribute-binding/src/app/app.component.html" region="colspan" header="src/app/app.component.html"></code-example>
 
-This binding causes the `<tr>` to span two columns.
+This binding causes the `<td>` to span two columns.
 
 <div class="alert is-helpful">
 
 Sometimes there are differences between the name of property and an attribute.
 
-`colspan` is an attribute of `<tr>`, while `colSpan`  with a capital "S" is a property.
+`colspan` is an attribute of `<td>`, while `colSpan`  with a capital "S" is a property.
 When using attribute binding, use `colspan` with a lowercase "s".
 For more information on how to bind to the `colSpan` property, see the [`colspan` and `colSpan`](guide/property-binding#colspan) section of [Property Binding](guide/property-binding).
 
