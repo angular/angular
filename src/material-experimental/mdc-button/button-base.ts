@@ -141,7 +141,7 @@ export const MAT_ANCHOR_HOST = {
   // Note that we ignore the user-specified tabindex when it's disabled for
   // consistency with the `mat-button` applied on native buttons where even
   // though they have an index, they're not tabbable.
-  '[attr.tabindex]': 'disabled ? -1 : (tabIndex || 0)',
+  '[attr.tabindex]': 'disabled ? -1 : tabIndex',
   '[attr.aria-disabled]': 'disabled.toString()',
   // MDC automatically applies the primary theme color to the button, but we want to support
   // an unthemed version. If color is undefined, apply a CSS class that makes it easy to
