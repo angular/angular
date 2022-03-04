@@ -29,7 +29,7 @@ export class LowerCasePipe implements PipeTransform {
   /**
    * @param value The string to transform to lower case.
    */
-  transform(value: string): string;
+  transform<T extends string>(value: T): Lowercase<T>;
   transform(value: null|undefined): null;
   transform(value: string|null|undefined): string|null;
   transform(value: string|null|undefined): string|null {
@@ -102,7 +102,7 @@ export class UpperCasePipe implements PipeTransform {
   /**
    * @param value The string to transform to upper case.
    */
-  transform(value: string): string;
+  transform<T extends string>(value: T): Uppercase<T>;
   transform(value: null|undefined): null;
   transform(value: string|null|undefined): string|null;
   transform(value: string|null|undefined): string|null {
