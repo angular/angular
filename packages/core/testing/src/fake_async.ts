@@ -130,7 +130,8 @@ export function tick(
 }
 
 /**
- * Simulates the asynchronous passage of time for the timers in the `fakeAsync` zone by
+ * Flushes any pending microtasks and simulates the asynchronous passage of time for the timers in
+ * the `fakeAsync` zone by
  * draining the macrotask queue until it is empty.
  *
  * @param maxTurns The maximum number of times the scheduler attempts to clear its queue before
