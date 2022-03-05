@@ -70,26 +70,12 @@ describe('element', function() {
     done();
   });
 
-  it('should call microtasks early when an event is invoked', function(done) {
+  it('should not call microtasks early when an event is invoked', function(done) {
     /*
      * In this test we escape the Zone using unpatched setTimeout.
      * This way the eventTask invoked from click will think it is the top most
-     * task and eagerly drain the microtask queue.
+     * task.
      *
-     * THIS IS THE WRONG BEHAVIOR!
-     *
-     * But there is no easy way for the task to know if it is the top most task.
-     *
-     * Given that this can only arise when someone is emulating clicks on DOM in a synchronous
-     * fashion we have few choices:
-     * 1. Ignore as this is unlikely to be a problem outside of tests.
-     * 2. Monkey patch the event methods to increment the _numberOfNestedTaskFrames and prevent
-     *    eager drainage.
-     * 3. Pay the cost of throwing an exception in event tasks and verifying that we are the
-     *    top most frame.
-     *
-     * For now we are choosing to ignore it and assume that this arises in tests only.
-     * As an added measure we make sure that all jasmine tests always run in a task. See: jasmine.ts
      */
     (window as any)[(Zone as any).__symbol__('setTimeout')](() => {
       let log = '';
@@ -99,7 +85,7 @@ describe('element', function() {
       });
       button.click();
 
-      expect(log).toEqual('click;microtask;');
+      expect(log).toEqual('click;');
       done();
     });
   });

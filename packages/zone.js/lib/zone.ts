@@ -1273,8 +1273,8 @@ const Zone: ZoneType = (function(global: any) {
         task.runCount++;
         return task.zone.runTask(task, target, args);
       } finally {
-        if (_numberOfNestedTaskFrames == 1) {
-          drainMicroTaskQueue();
+        if (_numberOfNestedTaskFrames === 1) {
+          scheduleDrainMicroTaskQueue();
         }
         _numberOfNestedTaskFrames--;
       }
@@ -1360,13 +1360,21 @@ const Zone: ZoneType = (function(global: any) {
   }
 
   function scheduleMicroTask(task?: MicroTask) {
-    // if we are not running in any task, and there has not been anything scheduled
+    // if we are not draining microtask queue with the native Promise.then,
     // we must bootstrap the initial task creation by manually scheduling the drain
-    if (_numberOfNestedTaskFrames === 0 && _microTaskQueue.length === 0) {
+    if (!_isDrainingMicrotaskQueue) {
       // We are not running in Task, so we need to kickstart the microtask queue.
       nativeScheduleMicroTask(drainMicroTaskQueue);
     }
     task && _microTaskQueue.push(task);
+  }
+
+  function scheduleDrainMicroTaskQueue() {
+    // if we are not draining microtask queue with the native Promise.then,
+    // and also there is pending microtask, we need to manually schedule the drain process.
+    if (!_isDrainingMicrotaskQueue && _microTaskQueue.length) {
+      nativeScheduleMicroTask(drainMicroTaskQueue);
+    }
   }
 
   function drainMicroTaskQueue() {
@@ -1384,8 +1392,10 @@ const Zone: ZoneType = (function(global: any) {
           }
         }
       }
-      _api.microtaskDrainDone();
+      // reset the draining flag before the microtaskDrainDone
+      // callback, since the callback may schedule new microtask.
       _isDrainingMicrotaskQueue = false;
+      _api.microtaskDrainDone();
     }
   }
 
