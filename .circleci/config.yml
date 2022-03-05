@@ -678,6 +678,10 @@ jobs:
             # not supported.
             - '/tmp/angular-components-repo'
       - run:
+          # Copy zone.js package to dist/packages-dist, so `angular/components` can also use the local zone.js build.
+          name: Setting up zone.js release packages.
+          command: cp -r dist/zone.js-dist/zone.js dist/packages-dist/
+      - run:
           # Updates the `angular/components` `package.json` file to refer to the release output
           # inside the `packages-dist` directory.
           name: Setting up framework release packages.
