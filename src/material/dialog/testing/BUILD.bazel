@@ -10,8 +10,12 @@ ts_library(
     ),
     deps = [
         "//src/cdk/coercion",
+        "//src/cdk/overlay",
         "//src/cdk/testing",
         "//src/material/dialog",
+        "@npm//@angular/core",
+        "@npm//@angular/platform-browser",
+        "@npm//rxjs",
     ],
 )
 
@@ -43,6 +47,7 @@ ng_test_library(
         ":harness_tests_lib",
         ":testing",
         "//src/material/dialog",
+        "@npm//@angular/platform-browser",
     ],
 )
 

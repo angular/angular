@@ -9,8 +9,12 @@ ts_library(
         exclude = ["**/*.spec.ts"],
     ),
     deps = [
+        "//src/cdk/overlay",
         "//src/cdk/testing",
+        "//src/material-experimental/mdc-dialog",
         "//src/material/dialog/testing",
+        "@npm//@angular/core",
+        "@npm//@angular/platform-browser",
     ],
 )
 
@@ -29,6 +33,7 @@ ng_test_library(
         ":testing",
         "//src/material-experimental/mdc-dialog",
         "//src/material/dialog/testing:harness_tests_lib",
+        "@npm//@angular/platform-browser",
     ],
 )
 
