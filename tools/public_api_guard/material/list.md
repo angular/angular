@@ -179,7 +179,7 @@ export class MatNavList extends _MatListBase implements CanDisable, CanDisableRi
 
 // @public
 export class MatSelectionList extends _MatSelectionListBase implements CanDisableRipple, AfterContentInit, ControlValueAccessor, OnDestroy, OnChanges {
-    constructor(_element: ElementRef<HTMLElement>, tabIndex: string, _changeDetector: ChangeDetectorRef, _focusMonitor?: FocusMonitor | undefined);
+    constructor(_element: ElementRef<HTMLElement>, _changeDetector: ChangeDetectorRef, _focusMonitor: FocusMonitor);
     color: ThemePalette;
     compareWith: (o1: any, o2: any) => boolean;
     deselectAll(): MatListOption[];
@@ -208,24 +208,20 @@ export class MatSelectionList extends _MatSelectionListBase implements CanDisabl
     readonly selectionChange: EventEmitter<MatSelectionListChange>;
     setDisabledState(isDisabled: boolean): void;
     _setFocusedOption(option: MatListOption): void;
-    tabIndex: number;
     _tabIndex: number;
     _value: string[] | null;
     writeValue(values: string[]): void;
     // (undocumented)
-    static ɵcmp: i0.ɵɵComponentDeclaration<MatSelectionList, "mat-selection-list", ["matSelectionList"], { "disableRipple": "disableRipple"; "tabIndex": "tabIndex"; "color": "color"; "compareWith": "compareWith"; "disabled": "disabled"; "multiple": "multiple"; }, { "selectionChange": "selectionChange"; }, ["options"], ["*"]>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MatSelectionList, "mat-selection-list", ["matSelectionList"], { "disableRipple": "disableRipple"; "color": "color"; "compareWith": "compareWith"; "disabled": "disabled"; "multiple": "multiple"; }, { "selectionChange": "selectionChange"; }, ["options"], ["*"]>;
     // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<MatSelectionList, [null, { attribute: "tabindex"; }, null, null]>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatSelectionList, never>;
 }
 
 // @public
 export class MatSelectionListChange {
     constructor(
     source: MatSelectionList,
-    option: MatListOption,
     options: MatListOption[]);
-    // @deprecated
-    option: MatListOption;
     options: MatListOption[];
     source: MatSelectionList;
 }

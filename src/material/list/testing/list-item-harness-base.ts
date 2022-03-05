@@ -9,7 +9,6 @@
 import {
   ComponentHarness,
   ComponentHarnessConstructor,
-  HarnessLoader,
   HarnessPredicate,
   ContentContainerComponentHarness,
   parallel,
@@ -95,14 +94,5 @@ export abstract class MatListItemHarnessBase extends ContentContainerComponentHa
   /** Whether this list option is disabled. */
   async isDisabled(): Promise<boolean> {
     return (await this.host()).hasClass('mat-list-item-disabled');
-  }
-
-  /**
-   * Gets a `HarnessLoader` used to get harnesses within the list item's content.
-   * @deprecated Use `getChildLoader(MatListItemSection.CONTENT)` or `getHarness` instead.
-   * @breaking-change 12.0.0
-   */
-  async getHarnessLoaderForContent(): Promise<HarnessLoader> {
-    return this.getChildLoader(MatListItemSection.CONTENT);
   }
 }

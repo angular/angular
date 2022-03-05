@@ -176,8 +176,6 @@ export class MatListSubheaderCssMatStyler {}
   host: {
     'class': 'mat-list-item mat-focus-indicator',
     '[class.mat-list-item-disabled]': 'disabled',
-    // @breaking-change 8.0.0 Remove `mat-list-item-avatar` in favor of `mat-list-item-with-avatar`.
-    '[class.mat-list-item-avatar]': '_avatar || _icon',
     '[class.mat-list-item-with-avatar]': '_avatar || _icon',
   },
   inputs: ['disableRipple'],
