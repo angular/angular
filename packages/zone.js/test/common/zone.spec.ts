@@ -364,7 +364,24 @@ describe('Zone', function() {
       log = [];
     });
 
-    it('should not drain the microtask queue too early', () => {
+    it('should not drain the microtask queue too early without task', (done) => {
+      const z = Zone.current;
+      const event = z.scheduleEventTask('test', () => {
+        log.push('eventTask');
+        z.scheduleMicroTask('test', () => log.push('microTask'));
+      }, undefined, noop, noop);
+      log.push('after schedule eventTask');
+      expect(log).toEqual(['after schedule eventTask']);
+      event.invoke();
+      // At this point, we should not have invoked the microtask.
+      expect(log).toEqual(['after schedule eventTask', 'eventTask']);
+      (global as any)[Zone.__symbol__('setTimeout')](() => {
+        expect(log).toEqual(['after schedule eventTask', 'eventTask', 'microTask']);
+        done();
+      });
+    });
+
+    it('should not drain the microtask queue too early inside macroTask', () => {
       const z = Zone.current;
       const event = z.scheduleEventTask('test', () => log.push('eventTask'), undefined, noop, noop);
 

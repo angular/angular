@@ -6,7 +6,26 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {__symbol__, EventTask as _EventTask, HasTaskState as _HasTaskState, initZone, MacroTask as _MacroTask, MicroTask as _MicroTask, PatchFn, Task as _Task, TaskData as _TaskData, TaskState as _TaskState, TaskType as _TaskType, UncaughtPromiseError as _UncaughtPromiseError, Zone as _Zone, ZoneDelegate as _ZoneDelegate, ZoneFrame, ZonePrivate, ZoneSpec as _ZoneSpec, ZoneType as _ZoneType} from './zone-impl';
+import {
+  __symbol__,
+  EventTask as _EventTask,
+  HasTaskState as _HasTaskState,
+  initZone,
+  MacroTask as _MacroTask,
+  MicroTask as _MicroTask,
+  PatchFn,
+  Task as _Task,
+  TaskData as _TaskData,
+  TaskState as _TaskState,
+  TaskType as _TaskType,
+  UncaughtPromiseError as _UncaughtPromiseError,
+  Zone as _Zone,
+  ZoneDelegate as _ZoneDelegate,
+  ZoneFrame,
+  ZonePrivate,
+  ZoneSpec as _ZoneSpec,
+  ZoneType as _ZoneType,
+} from './zone-impl';
 
 declare global {
   const Zone: ZoneType;
