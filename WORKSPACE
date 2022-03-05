@@ -66,7 +66,7 @@ load("@build_bazel_rules_nodejs//nodejs:repositories.bzl", "nodejs_register_tool
 # version is not fetched unless explicitly requested by the tests.
 nodejs_register_toolchains(
     name = "node12",
-    node_version = "12.20.0",
+    node_version = "12.22.0",
 )
 
 load("//tools:integration.bzl", "create_npm_package_archive_build_file")
