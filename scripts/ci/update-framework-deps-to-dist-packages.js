@@ -8,7 +8,7 @@
 
 /*
  * This script updates a package.json file by replacing all dependencies and devDependencies
- * such that all packages from the @angular scope point to the packages-dist directory.
+ * such that all packages from the @angular scope and zone.js point to the packages-dist directory.
  *
  * Please be aware that updating of versions might introduce compatibility issues. For instance,
  * if a peer dependency of Angular, e.g. "typescript" changes, the package.json that is updated
@@ -29,9 +29,11 @@ const updated = [];
 const skipped = [];
 function updateDeps(dependencies) {
   for (const packageName of Object.keys(dependencies)) {
-    // We're only interested to update packages in the `@angular` scope. The shared dev-infra
-    // package is not updated as it's not a package that is part of the Angular framework.
-    if (!packageName.startsWith('@angular/') || packageName === '@angular/dev-infra-private') {
+    // We're only interested to update packages in the `@angular` scope and `zone.js`.
+    // The shared dev-infra package is not updated as it's not a package that is part of
+    // the Angular framework.
+    if ((!packageName.startsWith('@angular/') && packageName !== 'zone.js') ||
+        packageName === '@angular/dev-infra-private') {
       continue;
     }
 
@@ -50,7 +52,6 @@ function updateDeps(dependencies) {
     }
   }
 }
-
 
 // Update dependencies from @angular scope to those in the packages-dist folder
 updateDeps(packageJson.dependencies);
