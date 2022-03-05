@@ -8,7 +8,7 @@
 
 import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
 
-import {_sanitizeHtml} from '../../src/sanitization/html_sanitizer';
+import {_sanitizeHtml, UNSAFE_SPEC_ATTRS_VALUES} from '../../src/sanitization/html_sanitizer';
 import {isDOMParserAvailable} from '../../src/sanitization/inert_body';
 
 function sanitizeHtml(defaultDoc: any, unsafeHtmlInput: string): string {
@@ -153,11 +153,24 @@ function sanitizeHtml(defaultDoc: any, unsafeHtmlInput: string): string {
     });
 
     describe('should strip dangerous attributes', () => {
-      const dangerousAttrs = ['id', 'name', 'style'];
+      const dangerousAttrs = ['id', 'name'];
 
       for (const attr of dangerousAttrs) {
         it(`${attr}`, () => {
           expect(sanitizeHtml(defaultDoc, `<a ${attr}="x">evil!</a>`)).toEqual('<a>evil!</a>');
+        });
+      }
+    });
+
+    describe('should sanitize content in dangerous attributes', () => {
+      const dangerousAttrs = ['style'];
+
+      for (const attr of dangerousAttrs) {
+        it(`${attr}`, () => {
+          for (const unsafeAttrVal of UNSAFE_SPEC_ATTRS_VALUES) {
+            expect(sanitizeHtml(defaultDoc, `<a ${attr}="${unsafeAttrVal}">evil!</a>`))
+                .toEqual(`<a ${attr}="unsafe:${unsafeAttrVal}">evil!</a>`);
+          }
         });
       }
     });

@@ -8,6 +8,7 @@
 
 import {TrustedHTML} from '../util/security/trusted_type_defs';
 import {trustedHTMLFromString} from '../util/security/trusted_types';
+
 import {getInertBodyHelper, InertBodyHelper} from './inert_body';
 import {_sanitizeUrl, sanitizeSrcset} from './url_sanitizer';
 
@@ -67,6 +68,8 @@ export const URI_ATTRS = tagSet('background,cite,href,itemtype,longdesc,poster,s
 // Attributes that have special href set hence need to be sanitized
 export const SRCSET_ATTRS = tagSet('srcset');
 
+export const SPEC_CARE_ATTRS = tagSet('style');
+
 const HTML_ATTRS = tagSet(
     'abbr,accesskey,align,alt,autoplay,axis,bgcolor,border,cellpadding,cellspacing,class,clear,color,cols,colspan,' +
     'compact,controls,coords,datetime,default,dir,download,face,headers,height,hidden,hreflang,hspace,' +
@@ -84,6 +87,9 @@ const ARIA_ATTRS = tagSet(
     'aria-relevant,aria-required,aria-roledescription,aria-rowcount,aria-rowindex,aria-rowspan,aria-selected,' +
     'aria-setsize,aria-sort,aria-valuemax,aria-valuemin,aria-valuenow,aria-valuetext');
 
+// Unsafe spec attrs values
+export const UNSAFE_SPEC_ATTRS_VALUES: string[] = ['expression', 'javascript', 'script'];
+
 // NB: This currently consciously doesn't support SVG. SVG sanitization has had several security
 // issues in the past, so it seems safer to leave it out if possible. If support for binding SVG via
 // innerHTML is required, SVG attributes should be added here.
@@ -92,7 +98,7 @@ const ARIA_ATTRS = tagSet(
 // can be sanitized, but they increase security surface area without a legitimate use case, so they
 // are left out here.
 
-export const VALID_ATTRS = merge(URI_ATTRS, SRCSET_ATTRS, HTML_ATTRS, ARIA_ATTRS);
+export const VALID_ATTRS = merge(URI_ATTRS, SRCSET_ATTRS, HTML_ATTRS, ARIA_ATTRS, SPEC_CARE_ATTRS);
 
 // Elements whose content should not be traversed/preserved, if the elements themselves are invalid.
 //
@@ -178,6 +184,7 @@ class SanitizingHtmlSerializer {
       // TODO(martinprobst): Special case image URIs for data:image/...
       if (URI_ATTRS[lower]) value = _sanitizeUrl(value);
       if (SRCSET_ATTRS[lower]) value = sanitizeSrcset(value);
+      if (SPEC_CARE_ATTRS[lower]) value = this.sanitizeSpecCareAttrs(value);
       this.buf.push(' ', attrName, '="', encodeEntities(value), '"');
     }
     this.buf.push('>');
@@ -197,10 +204,22 @@ class SanitizingHtmlSerializer {
     this.buf.push(encodeEntities(chars));
   }
 
+
+  private sanitizeSpecCareAttrs(specattrvalue: string): string {
+    specattrvalue = String(specattrvalue);
+
+    for (const unsafe of UNSAFE_SPEC_ATTRS_VALUES) {
+      if (specattrvalue.toLowerCase().indexOf(unsafe) != -1)
+        specattrvalue =
+            specattrvalue.replace(new RegExp('\\b' + unsafe + '\\b', 'g'), 'unsafe:' + unsafe);
+    }
+    return specattrvalue;
+  }
+
   checkClobberedElement(node: Node, nextNode: Node): Node {
     if (nextNode &&
-        (node.compareDocumentPosition(nextNode) &
-         Node.DOCUMENT_POSITION_CONTAINED_BY) === Node.DOCUMENT_POSITION_CONTAINED_BY) {
+        (node.compareDocumentPosition(nextNode) & Node.DOCUMENT_POSITION_CONTAINED_BY) ===
+            Node.DOCUMENT_POSITION_CONTAINED_BY) {
       throw new Error(`Failed to sanitize html because the element is clobbered: ${
           (node as Element).outerHTML}`);
     }
