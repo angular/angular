@@ -35,6 +35,7 @@ export class TestMainComponent implements OnDestroy {
   testTools: string[];
   testMethods: string[];
   isHovering = false;
+  isPointerOver = false;
   specialKey = '';
   modifiers: string;
   singleSelect: string;

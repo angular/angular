@@ -488,25 +488,29 @@ export function crossEnvironmentSpecs(
       expect(dimensions).toEqual(jasmine.objectContaining({height: 100, width: 200}));
     });
 
-    it('should be able to hover', async () => {
+    it('should dispatch `mouseenter` and `mouseover` on hover', async () => {
       const box = await harness.hoverTest();
       let classAttr = await box.getAttribute('class');
       expect(classAttr).not.toContain('hovering');
+      expect(classAttr).not.toContain('pointer-over');
       await box.hover();
       classAttr = await box.getAttribute('class');
       expect(classAttr).toContain('hovering');
+      expect(classAttr).toContain('pointer-over');
     });
 
-    it('should be able to stop hovering', async () => {
+    it('should dispatch `mouseleave` and `mouseout` on mouseAway', async () => {
       const box = await harness.hoverTest();
       let classAttr = await box.getAttribute('class');
       expect(classAttr).not.toContain('hovering');
       await box.hover();
       classAttr = await box.getAttribute('class');
       expect(classAttr).toContain('hovering');
+      expect(classAttr).toContain('pointer-over');
       await box.mouseAway();
       classAttr = await box.getAttribute('class');
       expect(classAttr).not.toContain('hovering');
+      expect(classAttr).not.toContain('pointer-over');
     });
 
     it('should be able to getAttribute', async () => {

@@ -143,6 +143,7 @@ export class UnitTestElement implements TestElement {
   /** Hovers the mouse over the element. */
   async hover(): Promise<void> {
     this._dispatchPointerEventIfSupported('pointerenter');
+    dispatchMouseEvent(this.element, 'mouseover');
     dispatchMouseEvent(this.element, 'mouseenter');
     await this._stabilize();
   }
@@ -150,6 +151,7 @@ export class UnitTestElement implements TestElement {
   /** Moves the mouse away from the element. */
   async mouseAway(): Promise<void> {
     this._dispatchPointerEventIfSupported('pointerleave');
+    dispatchMouseEvent(this.element, 'mouseout');
     dispatchMouseEvent(this.element, 'mouseleave');
     await this._stabilize();
   }
