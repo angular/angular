@@ -137,7 +137,7 @@ function tests() {
       .withContext('should not have navigated yet')
       .toBeNull();
 
-    heroesLinkDe.triggerEventHandler('click', null);
+    heroesLinkDe.triggerEventHandler('click');
     fixture.detectChanges();
 
     expect(heroesLink.navigatedTo).toBe('/heroes');
