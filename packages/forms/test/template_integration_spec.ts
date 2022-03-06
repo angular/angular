@@ -2511,7 +2511,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
            tick();
            expect(inputNativeEl.value).toEqual('oldValue');
 
-           inputEl.triggerEventHandler('compositionstart', null);
+           inputEl.triggerEventHandler('compositionstart');
 
            inputNativeEl.value = 'updatedValue';
            dispatchEvent(inputNativeEl, 'input');
@@ -2546,7 +2546,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
            tick();
            expect(inputNativeEl.value).toEqual('oldValue');
 
-           inputEl.triggerEventHandler('compositionstart', null);
+           inputEl.triggerEventHandler('compositionstart');
 
            inputNativeEl.value = 'updatedValue';
            dispatchEvent(inputNativeEl, 'input');
@@ -2578,7 +2578,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
            tick();
            expect(inputNativeEl.value).toEqual('oldValue');
 
-           inputEl.triggerEventHandler('compositionstart', null);
+           inputEl.triggerEventHandler('compositionstart');
 
            inputNativeEl.value = 'updatedValue';
            dispatchEvent(inputNativeEl, 'input');

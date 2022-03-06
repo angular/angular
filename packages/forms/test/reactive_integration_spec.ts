@@ -3458,7 +3458,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
         const inputNativeEl = inputEl.nativeElement;
         expect(inputNativeEl.value).toEqual('oldValue');
 
-        inputEl.triggerEventHandler('compositionstart', null);
+        inputEl.triggerEventHandler('compositionstart');
 
         inputNativeEl.value = 'updatedValue';
         dispatchEvent(inputNativeEl, 'input');
@@ -3489,7 +3489,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
         const inputNativeEl = inputEl.nativeElement;
         expect(inputNativeEl.value).toEqual('oldValue');
 
-        inputEl.triggerEventHandler('compositionstart', null);
+        inputEl.triggerEventHandler('compositionstart');
 
         inputNativeEl.value = 'updatedValue';
         dispatchEvent(inputNativeEl, 'input');
@@ -3517,7 +3517,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
         const inputNativeEl = inputEl.nativeElement;
         expect(inputNativeEl.value).toEqual('oldValue');
 
-        inputEl.triggerEventHandler('compositionstart', null);
+        inputEl.triggerEventHandler('compositionstart');
 
         inputNativeEl.value = 'updatedValue';
         dispatchEvent(inputNativeEl, 'input');
