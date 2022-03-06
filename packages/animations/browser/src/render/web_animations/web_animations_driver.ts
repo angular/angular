@@ -20,8 +20,12 @@ export class WebAnimationsDriver implements AnimationDriver {
   }
 
   validateAnimatableStyleProperty(prop: string): boolean {
-    const cssProp = camelCaseToDashCase(prop);
-    return validateWebAnimatableStyleProperty(cssProp);
+    // Perform actual validation in dev mode only, in prod mode this check is a noop.
+    if (ngDevMode) {
+      const cssProp = camelCaseToDashCase(prop);
+      return validateWebAnimatableStyleProperty(cssProp);
+    }
+    return true;
   }
 
   matchesElement(_element: any, _selector: string): boolean {
