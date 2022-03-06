@@ -882,7 +882,7 @@ The "click" event binding responds by calling `DashboardHeroComponent.click()`.
 The Angular `DebugElement.triggerEventHandler` can raise _any data-bound event_ by its _event name_.
 The second parameter is the event object passed to the handler.
 
-The test triggered a "click" event with a `null` event object.
+The test triggered a "click" event.
 
 <code-example
   path="testing/src/app/dashboard/dashboard-hero.component.spec.ts" region="trigger-event-handler">

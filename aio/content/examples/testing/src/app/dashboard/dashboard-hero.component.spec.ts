@@ -73,7 +73,7 @@ describe('DashboardHeroComponent when tested directly', () => {
     comp.selected.pipe(first()).subscribe((hero: Hero) => selectedHero = hero);
 
     // #docregion trigger-event-handler
-    heroDe.triggerEventHandler('click', null);
+    heroDe.triggerEventHandler('click');
     // #enddocregion trigger-event-handler
     expect(selectedHero).toBe(expectedHero);
   });
