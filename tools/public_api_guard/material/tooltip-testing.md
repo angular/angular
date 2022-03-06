@@ -13,20 +13,32 @@ import { TestElement } from '@angular/cdk/testing';
 // @public
 export class MatTooltipHarness extends _MatTooltipHarnessBase {
     // (undocumented)
+    protected _hiddenClass: string;
+    // (undocumented)
+    protected _hideAnimationName: string;
+    // (undocumented)
     static hostSelector: string;
     // (undocumented)
     protected _optionalPanel: AsyncFactoryFn<TestElement | null>;
+    // (undocumented)
+    protected _showAnimationName: string;
     static with(options?: TooltipHarnessFilters): HarnessPredicate<MatTooltipHarness>;
 }
 
 // @public (undocumented)
 export abstract class _MatTooltipHarnessBase extends ComponentHarness {
     getTooltipText(): Promise<string>;
+    // (undocumented)
+    protected abstract _hiddenClass: string;
     hide(): Promise<void>;
+    // (undocumented)
+    protected abstract _hideAnimationName: string;
     isOpen(): Promise<boolean>;
     // (undocumented)
     protected abstract _optionalPanel: AsyncFactoryFn<TestElement | null>;
     show(): Promise<void>;
+    // (undocumented)
+    protected abstract _showAnimationName: string;
 }
 
 // @public

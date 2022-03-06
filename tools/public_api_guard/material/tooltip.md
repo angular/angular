@@ -5,7 +5,6 @@
 ```ts
 
 import { AfterViewInit } from '@angular/core';
-import { AnimationEvent as AnimationEvent_2 } from '@angular/animations';
 import { AnimationTriggerMetadata } from '@angular/animations';
 import { AriaDescriber } from '@angular/cdk/a11y';
 import { BooleanInput } from '@angular/cdk/coercion';
@@ -157,26 +156,30 @@ export const TOOLTIP_PANEL_CLASS = "mat-tooltip-panel";
 
 // @public
 export class TooltipComponent extends _TooltipComponentBase {
-    constructor(changeDetectorRef: ChangeDetectorRef, _breakpointObserver: BreakpointObserver);
+    constructor(changeDetectorRef: ChangeDetectorRef, _breakpointObserver: BreakpointObserver, animationMode?: string);
+    // (undocumented)
+    _hideAnimation: string;
     _isHandset: Observable<BreakpointState>;
+    // (undocumented)
+    _showAnimation: string;
+    // (undocumented)
+    _tooltip: ElementRef<HTMLElement>;
     // (undocumented)
     static ɵcmp: i0.ɵɵComponentDeclaration<TooltipComponent, "mat-tooltip-component", never, {}, {}, never, never>;
     // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<TooltipComponent, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<TooltipComponent, [null, null, { optional: true; }]>;
 }
 
 // @public (undocumented)
 export abstract class _TooltipComponentBase implements OnDestroy {
-    constructor(_changeDetectorRef: ChangeDetectorRef);
+    constructor(_changeDetectorRef: ChangeDetectorRef, animationMode?: string);
     afterHidden(): Observable<void>;
-    // (undocumented)
-    _animationDone(event: AnimationEvent_2): void;
-    // (undocumented)
-    _animationStart(): void;
+    _handleAnimationEnd({ animationName }: AnimationEvent): void;
     _handleBodyInteraction(): void;
     // (undocumented)
     _handleMouseLeave({ relatedTarget }: MouseEvent): void;
     hide(delay: number): void;
+    protected abstract readonly _hideAnimation: string;
     _hideTimeoutId: number | undefined;
     isVisible(): boolean;
     _markForCheck(): void;
@@ -186,7 +189,9 @@ export abstract class _TooltipComponentBase implements OnDestroy {
     ngOnDestroy(): void;
     protected _onShow(): void;
     show(delay: number): void;
+    protected abstract readonly _showAnimation: string;
     _showTimeoutId: number | undefined;
+    abstract _tooltip: ElementRef<HTMLElement>;
     tooltipClass: string | string[] | Set<string> | {
         [key: string]: any;
     };
@@ -195,7 +200,7 @@ export abstract class _TooltipComponentBase implements OnDestroy {
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<_TooltipComponentBase, never, never, {}, {}, never>;
     // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<_TooltipComponentBase, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<_TooltipComponentBase, [null, { optional: true; }]>;
 }
 
 // @public

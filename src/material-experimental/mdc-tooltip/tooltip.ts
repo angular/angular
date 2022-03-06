@@ -15,11 +15,13 @@ import {
   Inject,
   NgZone,
   Optional,
+  ViewChild,
   ViewContainerRef,
   ViewEncapsulation,
 } from '@angular/core';
 import {DOCUMENT} from '@angular/common';
 import {Platform} from '@angular/cdk/platform';
+import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 import {AriaDescriber, FocusMonitor} from '@angular/cdk/a11y';
 import {Directionality} from '@angular/cdk/bidi';
 import {ConnectedPosition, Overlay, ScrollDispatcher} from '@angular/cdk/overlay';
@@ -31,7 +33,6 @@ import {
   _TooltipComponentBase,
 } from '@angular/material/tooltip';
 import {numbers} from '@material/tooltip';
-import {matTooltipAnimations} from './tooltip-animations';
 
 /**
  * CSS class that will be attached to the overlay panel.
@@ -116,11 +117,10 @@ export class MatTooltip extends _MatTooltipBase<TooltipComponent> {
   styleUrls: ['tooltip.css'],
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  animations: [matTooltipAnimations.tooltipState],
   host: {
     // Forces the element to have a layout in IE and Edge. This fixes issues where the element
     // won't be rendered if the animations are disabled or there is no web animations polyfill.
-    '[style.zoom]': '_visibility === "visible" ? 1 : null',
+    '[style.zoom]': 'isVisible() ? 1 : null',
     '(mouseleave)': '_handleMouseLeave($event)',
     'aria-hidden': 'true',
   },
@@ -129,12 +129,27 @@ export class TooltipComponent extends _TooltipComponentBase {
   /* Whether the tooltip text overflows to multiple lines */
   _isMultiline = false;
 
-  constructor(changeDetectorRef: ChangeDetectorRef, private _elementRef: ElementRef) {
-    super(changeDetectorRef);
+  /** Reference to the internal tooltip element. */
+  @ViewChild('tooltip', {
+    // Use a static query here since we interact directly with
+    // the DOM which can happen before `ngAfterViewInit`.
+    static: true,
+  })
+  _tooltip: ElementRef<HTMLElement>;
+  _showAnimation = 'mat-mdc-tooltip-show';
+  _hideAnimation = 'mat-mdc-tooltip-hide';
+
+  constructor(
+    changeDetectorRef: ChangeDetectorRef,
+    private _elementRef: ElementRef<HTMLElement>,
+    @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string,
+  ) {
+    super(changeDetectorRef, animationMode);
   }
 
   protected override _onShow(): void {
     this._isMultiline = this._isTooltipMultiline();
+    this._markForCheck();
   }
 
   /** Whether the tooltip text has overflown to the next line */
