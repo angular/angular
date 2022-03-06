@@ -230,7 +230,14 @@ selected range.
 
 Note that comparison and overlap colors aren't derived from the current theme, due
 to limitations in the Material Design theming system. They can be customized using the
-`mat-date-range-colors` mixin.
+`datepicker-date-range-colors` mixin.
+
+```scss
+@use '@angular/material' as mat;
+
+@include mat.datepicker-date-range-colors(
+  hotpink, teal, yellow, purple);
+```
 
 ### Customizing the date selection logic
 

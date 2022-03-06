@@ -49,7 +49,7 @@
   checkbox-typography;
 @forward './chips/chips-theme' as chips-* show chips-theme, chips-color, chips-typography;
 @forward './datepicker/datepicker-theme' as datepicker-* show datepicker-theme, datepicker-color,
-  datepicker-typography;
+  datepicker-typography, datepicker-date-range-colors;
 @forward './dialog/dialog-theme' as dialog-* show dialog-theme, dialog-color, dialog-typography;
 @forward './divider/divider-theme' as divider-* show divider-theme, divider-color,
   divider-typography;
