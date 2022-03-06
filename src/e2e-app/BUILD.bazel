@@ -8,7 +8,6 @@ package(default_visibility = ["//visibility:public"])
 devserverIndexHtmlDependencies = [
     "@npm//zone.js",
     "@npm//kagekiri",
-    "@npm//material-components-web",
     "//src/material/prebuilt-themes:indigo-pink",
     ":index.html",
     ":theme",

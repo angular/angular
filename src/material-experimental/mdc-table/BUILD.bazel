@@ -25,7 +25,6 @@ ng_module(
         "//src/material/sort",
         "//src/material/table",
         "@npm//@angular/core",
-        "@npm//material-components-web",
     ],
 )
 

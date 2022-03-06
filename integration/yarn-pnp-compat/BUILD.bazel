@@ -1,4 +1,15 @@
+load("@bazel_skylib//lib:dicts.bzl", "dicts")
 load("//tools:defaults.bzl", "node_integration_test")
+load("//tools:integration.bzl", "CLI_PROJECT_MAPPINGS")
+
+npmPackageMappings = dicts.add(
+    CLI_PROJECT_MAPPINGS,
+    {
+        "//src/cdk:npm_package_archive": "@angular/cdk",
+        "//src/material:npm_package_archive": "@angular/material",
+        "//src/material-experimental:npm_package_archive": "@angular/material-experimental",
+    },
+)
 
 node_integration_test(
     name = "test",
@@ -14,10 +25,7 @@ node_integration_test(
         # Set `CI` to silence `yarn berry` and make the output readable.
         "CI": "true",
     },
-    npm_packages = {
-        "//src/cdk:npm_package_archive": "@angular/cdk",
-        "//src/material:npm_package_archive": "@angular/material",
-    },
+    npm_packages = npmPackageMappings,
     tags = [
         # This test relies on `yarn` so there needs to be internet access.
         "requires-network",

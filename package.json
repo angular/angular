@@ -62,7 +62,6 @@
     "@angular/platform-browser": "14.0.0-next.9",
     "@types/google.maps": "^3.47.3",
     "@types/youtube": "^0.0.46",
-    "material-components-web": "14.0.0-canary.9736ddce9.0",
     "rxjs": "^6.6.7",
     "rxjs-tslint-rules": "^4.34.8",
     "tslib": "^2.3.1",
