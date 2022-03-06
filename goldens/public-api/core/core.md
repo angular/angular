@@ -320,7 +320,7 @@ export class DebugElement extends DebugNode {
     get styles(): {
         [key: string]: string | null;
     };
-    triggerEventHandler(eventName: string, eventObj: any): void;
+    triggerEventHandler(eventName: string, eventObj?: any): void;
 }
 
 // @public (undocumented)
