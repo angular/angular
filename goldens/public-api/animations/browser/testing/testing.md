@@ -26,6 +26,8 @@ export class MockAnimationDriver implements AnimationDriver {
     // (undocumented)
     query(element: any, selector: string, multi: boolean): any[];
     // (undocumented)
+    validateAnimatableStyleProperty(prop: string): boolean;
+    // (undocumented)
     validateStyleProperty(prop: string): boolean;
 }
 
