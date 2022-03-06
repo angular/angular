@@ -978,11 +978,11 @@ class TestCmptWithPropInterpolation {
       const button = fixture.debugElement.query(By.css('button'));
 
       expect(() => {
-        button.triggerEventHandler('click', null);
+        button.triggerEventHandler('click');
         fixture.detectChanges();
       }).not.toThrow();
 
-      expect(value).toBeNull();
+      expect(value).toBeUndefined();
     });
 
     describe('componentInstance on DebugNode', () => {

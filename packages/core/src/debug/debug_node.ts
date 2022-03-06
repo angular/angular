@@ -343,7 +343,7 @@ export class DebugElement extends DebugNode {
    *
    * @see [Testing components scenarios](guide/testing-components-scenarios#trigger-event-handler)
    */
-  triggerEventHandler(eventName: string, eventObj: any): void {
+  triggerEventHandler(eventName: string, eventObj?: any): void {
     const node = this.nativeNode as any;
     const invokedListeners: Function[] = [];
 
