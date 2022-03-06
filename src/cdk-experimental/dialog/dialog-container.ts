@@ -6,7 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {animate, AnimationEvent, state, style, transition, trigger} from '@angular/animations';
+import {
+  animate,
+  animateChild,
+  AnimationEvent,
+  group,
+  query,
+  state,
+  style,
+  transition,
+  trigger,
+} from '@angular/animations';
 import {FocusTrapFactory, InteractivityChecker} from '@angular/cdk/a11y';
 import {_getFocusedElementPierceShadowDom} from '@angular/cdk/platform';
 import {
@@ -55,8 +65,20 @@ export function throwDialogContentAlreadyAttachedError() {
     trigger('dialog', [
       state('enter', style({opacity: 1})),
       state('exit, void', style({opacity: 0})),
-      transition('* => enter', animate('{{enterAnimationDuration}}')),
-      transition('* => exit, * => void', animate('{{exitAnimationDuration}}')),
+      transition(
+        '* => enter',
+        group([
+          animate('{{enterAnimationDuration}}'),
+          query('@*', animateChild(), {optional: true}),
+        ]),
+      ),
+      transition(
+        '* => exit, * => void',
+        group([
+          animate('{{exitAnimationDuration}}'),
+          query('@*', animateChild(), {optional: true}),
+        ]),
+      ),
     ]),
   ],
   host: {

@@ -12,6 +12,9 @@ import {
   transition,
   trigger,
   AnimationTriggerMetadata,
+  group,
+  query,
+  animateChild,
 } from '@angular/animations';
 import {AnimationCurves, AnimationDurations} from '@angular/material/core';
 
@@ -25,11 +28,17 @@ export const matBottomSheetAnimations: {
     state('visible', style({transform: 'translateY(0%)'})),
     transition(
       'visible => void, visible => hidden',
-      animate(`${AnimationDurations.COMPLEX} ${AnimationCurves.ACCELERATION_CURVE}`),
+      group([
+        animate(`${AnimationDurations.COMPLEX} ${AnimationCurves.ACCELERATION_CURVE}`),
+        query('@*', animateChild(), {optional: true}),
+      ]),
     ),
     transition(
       'void => visible',
-      animate(`${AnimationDurations.EXITING} ${AnimationCurves.DECELERATION_CURVE}`),
+      group([
+        animate(`${AnimationDurations.EXITING} ${AnimationCurves.DECELERATION_CURVE}`),
+        query('@*', animateChild(), {optional: true}),
+      ]),
     ),
   ]),
 };
