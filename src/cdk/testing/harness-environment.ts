@@ -181,6 +181,10 @@ export abstract class HarnessEnvironment<E> implements HarnessLoader, LocatorFac
   private async _getAllHarnessesAndTestElements<T extends (HarnessQuery<any> | string)[]>(
     queries: T,
   ): Promise<LocatorFnResult<T>[]> {
+    if (!queries.length) {
+      throw Error('CDK Component harness query must contain at least one element.');
+    }
+
     const {allQueries, harnessQueries, elementQueries, harnessTypes} = _parseQueries(queries);
 
     // Combine all of the queries into one large comma-delimited selector and use it to get all raw
