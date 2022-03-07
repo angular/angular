@@ -1,6 +1,5 @@
-@use '../material' as mat;
-@use '../material-experimental/mdc-theming/all-theme' as mdc-all-theme;
-@use '../material-experimental/mdc-typography/all-typography' as mdc-all-typography;
+@use '@angular/material' as mat;
+@use '@angular/material-experimental' as experimental;
 
 // Plus imports for other components in your app.
 
@@ -8,7 +7,7 @@
 // have to load a single css file for Angular Material in your app.
 // **Be sure that you only ever include this mixin once!**
 @include mat.core();
-@include mdc-all-typography.all-mdc-component-typographies();
+@include experimental.all-mdc-component-typographies();
 
 // Define the default theme (same as the example above).
 $candy-app-primary: mat.define-palette(mat.$indigo-palette);
@@ -17,4 +16,4 @@ $candy-app-theme: mat.define-light-theme($candy-app-primary, $candy-app-accent);
 
 // Include the default theme styles.
 @include mat.all-component-themes($candy-app-theme);
-@include mdc-all-theme.all-mdc-component-themes($candy-app-theme);
+@include experimental.all-mdc-component-themes($candy-app-theme);
