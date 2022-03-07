@@ -1,4 +1,4 @@
-@use '../../material/datepicker/datepicker-theme';
+@use '@angular/material' as mat;
 
 mat-calendar {
   width: 300px;
@@ -9,5 +9,6 @@ mat-calendar {
 }
 
 .demo-custom-range {
-  @include datepicker-theme.date-range-colors(hotpink, teal, yellow, purple);
+  @include mat.datepicker-date-range-colors(
+    hotpink, teal, yellow, purple);
 }

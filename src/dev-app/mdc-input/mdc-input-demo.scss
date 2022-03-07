@@ -1,4 +1,4 @@
-@use '../../cdk/text-field';
+@use '@angular/cdk';
 
 .demo-basic {
   padding: 0;
@@ -41,7 +41,7 @@
 }
 
 .demo-custom-autofill-style {
-  @include text-field.text-field-autofill-color(transparent, red);
+  @include cdk.text-field-autofill-color(transparent, red);
 }
 
 .demo-rows {

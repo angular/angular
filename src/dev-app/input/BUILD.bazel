@@ -28,7 +28,5 @@ ng_module(
 sass_binary(
     name = "input_demo_scss",
     src = "input-demo.scss",
-    deps = [
-        "//src/cdk/text-field:text_field_scss_lib",
-    ],
+    deps = ["//src/cdk:sass_lib"],
 )

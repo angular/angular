@@ -40,17 +40,17 @@ prebuiltStyleTargets = ["%s_prebuilt" % file for [
     _,
 ] in prebuiltStyles]
 
-# Makes the public Sass API bundle available in the release output as `angular/cdk`.
 sass_library(
-    name = "sass_index",
+    name = "sass_lib",
     srcs = ["_index.scss"],
+    deps = CDK_SCSS_LIBS,
 )
 
 # Creates the @angular/cdk package published to npm.
 ng_package(
     name = "npm_package",
     srcs = ["package.json"],
-    data = [":sass_index"] + prebuiltStyleTargets + CDK_SCSS_LIBS,
+    data = [":sass_lib"] + prebuiltStyleTargets + CDK_SCSS_LIBS,
     nested_packages = [
         "//src/cdk/schematics:npm_package",
     ],

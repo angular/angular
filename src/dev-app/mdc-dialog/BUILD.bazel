@@ -25,5 +25,5 @@ sass_binary(
     name = "mdc_dialog_demo_scss",
     src = "mdc-dialog-demo.scss",
     include_paths = ["external/npm/node_modules"],
-    deps = ["//src/material-experimental/mdc-dialog:mdc_dialog_scss_lib"],
+    deps = ["//src/material-experimental:sass_lib"],
 )
