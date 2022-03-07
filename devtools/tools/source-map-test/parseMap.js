@@ -57,7 +57,7 @@ module.exports = function getMappings(bundlePath) {
 };
 
 function getFile(filePath) {
-  return fs.readFileSync(path.resolve(process.cwd(), filePath), 'UTF-8');
+  return fs.readFileSync(path.resolve(process.cwd(), filePath), 'utf-8');
 }
 
 function decodeLines(sourceMap) {
