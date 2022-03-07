@@ -836,5 +836,73 @@ describe(
             expect(Subclass.thenArgs.length).toBe(1);
           });
         });
+
+        describe('resolve/reject multiple times', () => {
+          it('should ignore second resolve', (done) => {
+            const nested = new Promise(res => setTimeout(() => res('nested')));
+            const p = new Promise(res => {
+              res(nested);
+              res(1);
+            });
+            p.then(v => {
+              expect(v).toBe('nested');
+              done();
+            });
+          });
+          it('should ignore second resolve', (done) => {
+            const nested = new Promise(res => setTimeout(() => res('nested')));
+            const p = new Promise(res => {
+              res(1);
+              res(nested);
+            });
+            p.then(v => {
+              expect(v).toBe(1);
+              done();
+            });
+          });
+          it('should ignore second reject', (done) => {
+            const p = new Promise((res, rej) => {
+              rej(1);
+              rej(2);
+            });
+            p.then(
+                v => {
+                  fail('should not get here');
+                },
+                err => {
+                  expect(err).toBe(1);
+                  done();
+                });
+          });
+          it('should ignore resolve after reject', (done) => {
+            const p = new Promise((res, rej) => {
+              rej(1);
+              res(2);
+            });
+            p.then(
+                v => {
+                  fail('should not get here');
+                },
+                err => {
+                  expect(err).toBe(1);
+                  done();
+                });
+          });
+          it('should ignore reject after resolve', (done) => {
+            const nested = new Promise(res => setTimeout(() => res('nested')));
+            const p = new Promise((res, rej) => {
+              res(nested);
+              rej(1);
+            });
+            p.then(
+                v => {
+                  expect(v).toBe('nested');
+                  done();
+                },
+                err => {
+                  fail('should not be here');
+                });
+          });
+        });
       });
     }));
