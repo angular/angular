@@ -16,6 +16,7 @@ ts_library(
     deps = [
         "//src/cdk/schematics",
         "@npm//@angular-devkit/schematics",
+        "@npm//@angular/compiler",
         "@npm//@types/node",
         "@npm//postcss",
         "@npm//postcss-scss",

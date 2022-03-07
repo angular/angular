@@ -10,6 +10,7 @@ import {Rule, SchematicContext, Tree} from '@angular-devkit/schematics';
 import {Schema} from './schema';
 import {DevkitFileSystem, UpdateProject, findStylesheetFiles} from '@angular/cdk/schematics';
 import {ThemingStylesMigration} from './rules/theming-styles';
+import {TemplateMigration} from './rules/template-migration';
 import {MIGRATORS} from './rules';
 import {dirname} from 'path';
 import {StyleMigrator} from './rules/style-migrator';
@@ -78,7 +79,7 @@ export default function (options: Schema): Rule {
     const additionalStylesheetPaths = findStylesheetFiles(tree, migrationDir);
     const project = new UpdateProject(context, program, fileSystem, new Set(), context.logger);
     const {hasFailures} = project.migrate(
-      [ThemingStylesMigration],
+      [ThemingStylesMigration, TemplateMigration],
       null,
       migrators,
       additionalStylesheetPaths,

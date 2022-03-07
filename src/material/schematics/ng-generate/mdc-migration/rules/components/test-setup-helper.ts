@@ -12,6 +12,7 @@ import {runfiles} from '@bazel/runfiles';
 const TS_CONFIG = '/projects/material/tsconfig.app.json';
 
 export const THEME_FILE = '/projects/material/src/theme.scss';
+export const TEMPLATE_FILE = '/projects/material/src/app/app.component.html';
 
 export function createNewTestRunner(): SchematicTestRunner {
   return new SchematicTestRunner(
