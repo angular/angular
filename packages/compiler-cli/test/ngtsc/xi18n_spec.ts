@@ -20,7 +20,9 @@ runInEachFileSystem(os => {
   if (os === 'Windows' || platform() === 'win32') {
     // xi18n tests are skipped on Windows as the paths in the expected message files are platform-
     // sensitive. These tests will be deleted when xi18n is removed, so it's not a major priority
-    // to make them work with Windows.
+    // to make them work with Windows. We have a blank test here, because Jasmine logs a warning
+    // when there's a `describe` with no tests.
+    it('should pass', () => expect(1).toBe(1));
     return;
   }
 
