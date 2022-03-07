@@ -1,7 +1,17 @@
 import {parse, Root, Rule} from 'postcss';
-import {renderSync} from 'sass';
+import {compileString} from 'sass';
+import {runfiles} from '@bazel/runfiles';
+import * as path from 'path';
 
 import {compareNodes} from '../../../../../tools/postcss/compare-nodes';
+import {createLocalAngularPackageImporter} from '../../../../../tools/sass/local-sass-importer';
+
+// Note: For Windows compatibility, we need to resolve the directory paths through runfiles
+// which are guaranteed to reside in the source tree.
+const testDir = path.join(runfiles.resolvePackageRelative('../_all-theme.scss'), '../tests');
+const packagesDir = path.join(runfiles.resolveWorkspaceRelative('src/cdk/_index.scss'), '../..');
+
+const localPackageSassImporter = createLocalAngularPackageImporter(packagesDir);
 
 describe('theming api', () => {
   /** Map of known selectors for density styles and their corresponding AST rule. */
@@ -298,19 +308,20 @@ describe('theming api', () => {
 
   /** Transpiles given Sass content into CSS. */
   function transpile(content: string) {
-    return renderSync({
-      data: `
+    return compileString(
+      `
         @import '../_all-theme.scss';
         @import '../../color/_all-color.scss';
         @import '../../density/private/_all-density.scss';
         @import '../../typography/_all-typography.scss';
+
         ${content}
       `,
-      // Ensures that files can be resolved through Bazel runfile resolution. This
-      // is necessary because the imported Sass files are not necessarily in the
-      // bazel output directory. e.g. `_all-theme.scss` is a source file.
-      importer: url => ({file: require.resolve(url)}),
-    }).css.toString();
+      {
+        loadPaths: [testDir],
+        importers: [localPackageSassImporter],
+      },
+    ).css.toString();
   }
 
   /**

@@ -5,19 +5,32 @@ import child_process from 'child_process';
 import esbuild from 'esbuild';
 import fs from 'fs';
 import glob from 'glob';
+import module from 'module';
 import {dirname, join, relative} from 'path';
 import sass from 'sass';
 import url from 'url';
+import tsNode from 'ts-node';
 
 const containingDir = dirname(url.fileURLToPath(import.meta.url));
 const projectDir = join(containingDir, '../');
+const packagesDir = join(projectDir, 'src/');
 const legacyTsconfigPath = join(projectDir, 'src/tsconfig-legacy.json');
+
+// Some tooling utilities might be written in TS and we do not want to rewrite them
+// in JavaScript just for this legacy script. We can use ts-node for such scripts.
+tsNode.register({project: join(containingDir, 'tsconfig.json')});
+
+const require = module.createRequire(import.meta.url);
+const sassImporterUtil = require('../tools/sass/local-sass-importer.ts');
 
 const distDir = join(projectDir, 'dist/');
 const nodeModulesDir = join(projectDir, 'node_modules/');
 const outFile = join(distDir, 'legacy-test-bundle.spec.js');
 const ngcBinFile = join(nodeModulesDir, '@angular/compiler-cli/bundles/src/bin/ngc.js');
 const legacyOutputDir = join(distDir, 'legacy-test-out');
+
+/** Sass importer used for resolving `@angular/<..>` imports. */
+const localPackageSassImporter = sassImporterUtil.createLocalAngularPackageImporter(packagesDir);
 
 /**
  * This script builds the whole library in `angular/components` together with its
@@ -136,11 +149,12 @@ async function createEntryPointSpecFile() {
 
 /** Helper function to render a Sass file asynchronously using promises. */
 async function renderSassFileAsync(inputFile) {
-  return new Promise((resolve, reject) => {
-    sass.render({file: inputFile, includePaths: [nodeModulesDir]}, (err, result) =>
-      err ? reject(err) : resolve(result.css),
-    );
-  });
+  return sass
+    .compileAsync(inputFile, {
+      loadPaths: [nodeModulesDir, projectDir],
+      importers: [localPackageSassImporter],
+    })
+    .then(result => result.css);
 }
 
 /**

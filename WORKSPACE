@@ -100,11 +100,6 @@ load("@io_bazel_rules_webtesting//web:repositories.bzl", "web_test_repositories"
 
 web_test_repositories()
 
-# Fetch transitive dependencies which are needed to use the Sass rules.
-load("@io_bazel_rules_sass//:package.bzl", "rules_sass_dependencies")
-
-rules_sass_dependencies()
-
 # Setup the Sass rule repositories.
 load("@io_bazel_rules_sass//:defs.bzl", "sass_repositories")
 

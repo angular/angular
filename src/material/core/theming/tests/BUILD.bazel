@@ -48,6 +48,8 @@ ts_library(
     devmode_module = "commonjs",
     deps = [
         "//tools/postcss",
+        "//tools/sass:sass_lib",
+        "@npm//@bazel/runfiles",
         "@npm//@types/jasmine",
         "@npm//@types/node",
         "@npm//@types/sass",
