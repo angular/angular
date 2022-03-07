@@ -1,21 +1,19 @@
 @use 'sass:map';
+@use '@angular/material' as mat;
 @use '@material/list/evolution-mixins' as mdc-list;
+
 @use './interactive-list-theme';
 @use './list-option-theme';
 @use '../mdc-helpers/mdc-helpers';
-@use '../../material/core/typography/typography';
-@use '../../material/core/typography/typography-utils';
-@use '../../material/core/theming/theming';
-
 
 // TODO: implement mat-list[dense] once density system is in master
 
 
 @mixin color($config-or-theme) {
-  $config: theming.get-color-config($config-or-theme);
-  $primary: theming.get-color-from-palette(map.get($config, primary));
-  $accent: theming.get-color-from-palette(map.get($config, accent));
-  $warn: theming.get-color-from-palette(map.get($config, warn));
+  $config: mat.get-color-config($config-or-theme);
+  $primary: mat.get-color-from-palette(map.get($config, primary));
+  $accent: mat.get-color-from-palette(map.get($config, accent));
+  $warn: mat.get-color-from-palette(map.get($config, warn));
 
   @include mdc-helpers.mat-using-mdc-theme($config) {
     // MDC's state styles are tied in with their ripple. Since we don't use the MDC
@@ -36,7 +34,7 @@
 }
 
 @mixin density($config-or-theme) {
-  $density-scale: theming.get-density-config($config-or-theme);
+  $density-scale: mat.get-density-config($config-or-theme);
 
   @include mdc-helpers.disable-fallback-declarations {
     .mat-mdc-list-item {
@@ -50,8 +48,8 @@
 }
 
 @mixin typography($config-or-theme) {
-  $config: typography.private-typography-to-2018-config(
-      theming.get-typography-config($config-or-theme));
+  $config: mat.private-typography-to-2018-config(
+      mat.get-typography-config($config-or-theme));
   @include mdc-helpers.mat-using-mdc-typography($config) {
     @include mdc-list.without-ripple($query: mdc-helpers.$mat-typography-styles-query);
     @include list-option-theme.private-list-option-typography-styles();
@@ -62,16 +60,16 @@
   // and the Google-specific spec states that it should be body-1.
   // For consistency, we use body-1 for both public and Google internal.
   .mat-mdc-list-item .mdc-list-item__primary-text {
-    @include typography-utils.typography-level($config, body-1);
+    @include mat.typography-level($config, body-1);
   }
 }
 
 @mixin theme($theme-or-color-config) {
-  $theme: theming.private-legacy-get-theme($theme-or-color-config);
-  @include theming.private-check-duplicate-theme-styles($theme, 'mat-mdc-list') {
-    $color: theming.get-color-config($theme);
-    $density: theming.get-density-config($theme);
-    $typography: theming.get-typography-config($theme);
+  $theme: mat.private-legacy-get-theme($theme-or-color-config);
+  @include mat.private-check-duplicate-theme-styles($theme, 'mat-mdc-list') {
+    $color: mat.get-color-config($theme);
+    $density: mat.get-density-config($theme);
+    $typography: mat.get-typography-config($theme);
 
     @if $color != null {
       @include color($color);

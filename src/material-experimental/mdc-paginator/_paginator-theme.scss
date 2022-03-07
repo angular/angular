@@ -1,22 +1,21 @@
+@use '@angular/material' as mat;
+@use '@material/density' as mdc-density;
 @use '@material/typography' as mdc-typography;
 @use 'sass:map';
-@use '../../material/core/theming/theming';
-@use '../../material/core/density/private/compatibility';
-@use '../../material/core/typography/typography';
+
 @use '../mdc-helpers/mdc-helpers';
 @use './paginator-variables';
-@use '../../material/core/typography/typography-utils';
 
 @mixin color($config-or-theme) {
-  $config: theming.get-color-config($config-or-theme);
+  $config: mat.get-color-config($config-or-theme);
   $background: map.get($config, background);
   $foreground: map.get($config, foreground);
-  $icon-color: rgba(theming.get-color-from-palette($foreground, base), 0.54);
-  $disabled-color: rgba(theming.get-color-from-palette($foreground, base), 0.12);
+  $icon-color: rgba(mat.get-color-from-palette($foreground, base), 0.54);
+  $disabled-color: rgba(mat.get-color-from-palette($foreground, base), 0.12);
 
   .mat-mdc-paginator {
-    background: theming.get-color-from-palette($background, card);
-    color: rgba(theming.get-color-from-palette($foreground, base), 0.87);
+    background: mat.get-color-from-palette($background, card);
+    color: rgba(mat.get-color-from-palette($foreground, base), 0.87);
   }
 
   .mat-mdc-paginator-icon {
@@ -49,8 +48,8 @@
 }
 
 @mixin typography($config-or-theme) {
-  $config: typography.private-typography-to-2018-config(
-      theming.get-typography-config($config-or-theme));
+  $config: mat.private-typography-to-2018-config(
+      mat.get-typography-config($config-or-theme));
 
   @include mdc-helpers.mat-using-mdc-typography($config) {
     .mat-mdc-paginator {
@@ -58,29 +57,27 @@
     }
 
     .mat-mdc-paginator .mat-mdc-select-value {
-      font-size: typography-utils.font-size($config, caption);
+      font-size: mat.font-size($config, caption);
     }
   }
 }
 
 @mixin density($config-or-theme) {
-  $density-scale: theming.get-density-config($config-or-theme);
-  $height: compatibility.private-density-prop-value(
+  $density-scale: mat.get-density-config($config-or-theme);
+  $height: mdc-density.prop-value(
       paginator-variables.$density-config, $density-scale, height);
 
-  @include compatibility.private-density-legacy-compatibility() {
-    .mat-mdc-paginator-container {
-      min-height: $height;
-    }
+  .mat-mdc-paginator-container {
+    min-height: $height;
   }
 }
 
 @mixin theme($theme-or-color-config) {
-  $theme: theming.private-legacy-get-theme($theme-or-color-config);
-  @include theming.private-check-duplicate-theme-styles($theme, 'mat-mdc-paginator') {
-    $color: theming.get-color-config($theme);
-    $density: theming.get-density-config($theme);
-    $typography: theming.get-typography-config($theme);
+  $theme: mat.private-legacy-get-theme($theme-or-color-config);
+  @include mat.private-check-duplicate-theme-styles($theme, 'mat-mdc-paginator') {
+    $color: mat.get-color-config($theme);
+    $density: mat.get-density-config($theme);
+    $typography: mat.get-typography-config($theme);
 
     @if $color != null {
       @include color($color);

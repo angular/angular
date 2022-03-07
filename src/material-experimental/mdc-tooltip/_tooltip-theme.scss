@@ -1,41 +1,40 @@
 @use 'sass:map';
+@use '@angular/material' as mat;
 @use '@material/tooltip/tooltip';
 @use '@material/tooltip' as tooltip-theme;
+
 @use '../mdc-helpers/mdc-helpers';
-@use '../../material/core/theming/theming';
-@use '../../material/core/theming/palette';
-@use '../../material/core/typography/typography';
 
 @mixin color($config-or-theme) {
-  $config: theming.get-color-config($config-or-theme);
+  $config: mat.get-color-config($config-or-theme);
   @include mdc-helpers.mat-using-mdc-theme($config) {
     @include tooltip.core-styles($query: mdc-helpers.$mat-theme-styles-query);
     // We are defining our own tooltip background color because of concerns
     // surrounding the 0.6 background color opacity of the MDC tooltip styles.
     @include tooltip-theme.fill-color(
-      map.get(palette.$light-theme-background-palette, tooltip)
+      map.get(mat.$light-theme-background-palette, tooltip)
     );
   }
 }
 
 @mixin typography($config-or-theme) {
-  $config: typography.private-typography-to-2018-config(
-      theming.get-typography-config($config-or-theme));
+  $config: mat.private-typography-to-2018-config(
+      mat.get-typography-config($config-or-theme));
   @include mdc-helpers.mat-using-mdc-typography($config) {
     @include tooltip.core-styles($query: mdc-helpers.$mat-typography-styles-query);
   }
 }
 
 @mixin density($config-or-theme) {
-  $density-scale: theming.get-density-config($config-or-theme);
+  $density-scale: mat.get-density-config($config-or-theme);
 }
 
 @mixin theme($theme-or-color-config) {
-  $theme: theming.private-legacy-get-theme($theme-or-color-config);
-  @include theming.private-check-duplicate-theme-styles($theme, 'mat-mdc-tooltip') {
-    $color: theming.get-color-config($theme);
-    $density: theming.get-density-config($theme);
-    $typography: theming.get-typography-config($theme);
+  $theme: mat.private-legacy-get-theme($theme-or-color-config);
+  @include mat.private-check-duplicate-theme-styles($theme, 'mat-mdc-tooltip') {
+    $color: mat.get-color-config($theme);
+    $density: mat.get-density-config($theme);
+    $typography: mat.get-typography-config($theme);
 
     @if $color != null {
       @include color($color);

@@ -10,5 +10,8 @@ filegroup(
 sass_library(
     name = "all_color",
     srcs = ["_all-color.scss"],
-    deps = ["//src/material-experimental/mdc-theming:all_themes"],
+    deps = [
+        "//src/material:sass_lib",
+        "//src/material-experimental/mdc-theming:all_themes",
+    ],
 )

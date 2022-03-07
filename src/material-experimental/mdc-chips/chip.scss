@@ -1,7 +1,8 @@
+@use '@angular/cdk';
+@use '@angular/material' as mat;
 @use '@material/chips/chip' as mdc-chip;
 @use '@material/chips/chip-theme' as mdc-chip-theme;
-@use '../../material/core/style/layout-common';
-@use '../../cdk/a11y';
+
 @use '../mdc-helpers/mdc-helpers';
 
 @include mdc-chip.without-ripple-styles($query: mdc-helpers.$mat-base-styles-query);
@@ -36,7 +37,7 @@
     ),
   ));
 
-  @include a11y.high-contrast(active, off) {
+  @include cdk.high-contrast(active, off) {
     outline: solid 1px;
 
     &.cdk-focused {
@@ -107,7 +108,7 @@
 // MDC's focus and hover indication is handled through their ripple which we currently
 // don't use due to size concerns so we have to re-implement it ourselves.
 .mat-mdc-chip-focus-overlay {
-  @include layout-common.fill;
+  @include mat.private-fill;
   pointer-events: none;
   opacity: 0;
   border-radius: inherit;
@@ -132,7 +133,7 @@
 
 // The ripple container should match the bounds of the entire chip.
 .mat-mdc-chip-ripple {
-  @include layout-common.fill;
+  @include mat.private-fill;
 
   // Disable pointer events for the ripple container and state overlay because the container
   // will overlay the user content and we don't want to disable mouse events on the user content.
@@ -210,7 +211,7 @@
 // Single-selection chips show their selected state using a background color which won't be visible
 // in high contrast mode. This isn't necessary in multi-selection since there's a checkmark.
 .mat-mdc-chip-selected:not(.mat-mdc-chip-multiple) {
-  @include a11y.high-contrast(active, off) {
+  @include cdk.high-contrast(active, off) {
     outline-width: 3px;
   }
 }

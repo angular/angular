@@ -29,7 +29,7 @@ sass_library(
 )
 
 sass_library(
-    name = "theming_bundle",
+    name = "sass_lib",
     srcs = ["_index.scss"],
     deps = [":theming_scss_lib"],
 )
@@ -38,7 +38,7 @@ ng_package(
     name = "npm_package",
     srcs = ["package.json"],
     data = [
-        ":theming_bundle",
+        ":sass_lib",
         ":theming_scss_lib",
     ],
     tags = ["release-package"],

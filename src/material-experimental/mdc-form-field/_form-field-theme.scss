@@ -1,17 +1,17 @@
+@use '@angular/material' as mat;
 @use '@material/textfield' as mdc-textfield;
 @use '@material/floating-label' as mdc-floating-label;
 @use '@material/notched-outline' as mdc-notched-outline;
 @use '@material/line-ripple' as mdc-line-ripple;
 @use '@material/theme/theme-color' as mdc-theme-color;
 @use '@material/typography/typography' as mdc-typography;
+
 @use '../mdc-helpers/mdc-helpers';
-@use '../../material/core/typography/typography';
-@use 'form-field-density';
-@use 'form-field-subscript';
-@use 'form-field-focus-overlay';
-@use 'form-field-native-select';
-@use 'mdc-text-field-theme-variable-refresh';
-@use '../../material/core/theming/theming';
+@use './form-field-density';
+@use './form-field-subscript';
+@use './form-field-focus-overlay';
+@use './form-field-native-select';
+@use './mdc-text-field-theme-variable-refresh';
 
 
 // Mixin that overwrites the default MDC text-field color styles to be based on
@@ -40,7 +40,7 @@
 }
 
 @mixin color($config-or-theme) {
-  $config: theming.get-color-config($config-or-theme);
+  $config: mat.get-color-config($config-or-theme);
   @include mdc-helpers.mat-using-mdc-theme($config) {
     @include mdc-text-field-theme-variable-refresh.private-text-field-refresh-theme-variables() {
       @include mdc-textfield.without-ripple($query: mdc-helpers.$mat-theme-styles-query);
@@ -63,8 +63,8 @@
 }
 
 @mixin typography($config-or-theme) {
-  $config: typography.private-typography-to-2018-config(
-      theming.get-typography-config($config-or-theme));
+  $config: mat.private-typography-to-2018-config(
+      mat.get-typography-config($config-or-theme));
   @include mdc-helpers.mat-using-mdc-typography($config) {
     @include mdc-textfield.without-ripple($query: mdc-helpers.$mat-typography-styles-query);
     @include mdc-floating-label.core-styles($query: mdc-helpers.$mat-typography-styles-query);
@@ -100,16 +100,16 @@
 }
 
 @mixin density($config-or-theme) {
-  $density-scale: theming.get-density-config($config-or-theme);
+  $density-scale: mat.get-density-config($config-or-theme);
   @include form-field-density.private-form-field-density($density-scale);
 }
 
 @mixin theme($theme-or-color-config) {
-  $theme: theming.private-legacy-get-theme($theme-or-color-config);
-  @include theming.private-check-duplicate-theme-styles($theme, 'mat-mdc-form-field') {
-    $color: theming.get-color-config($theme);
-    $density: theming.get-density-config($theme);
-    $typography: theming.get-typography-config($theme);
+  $theme: mat.private-legacy-get-theme($theme-or-color-config);
+  @include mat.private-check-duplicate-theme-styles($theme, 'mat-mdc-form-field') {
+    $color: mat.get-color-config($theme);
+    $density: mat.get-density-config($theme);
+    $typography: mat.get-typography-config($theme);
 
     @if $color != null {
       @include color($color);

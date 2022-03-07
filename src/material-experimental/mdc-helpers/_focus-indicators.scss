@@ -1,5 +1,5 @@
+@use '@angular/material' as mat;
 @use 'sass:map';
-@use '../../material/core/style/layout-common';
 
 /// Mixin that turns on strong focus indicators.
 ///
@@ -23,7 +23,7 @@
 
   // Base styles for focus indicators.
   .mat-mdc-focus-indicator::before {
-    @include layout-common.fill();
+    @include mat.private-fill();
     box-sizing: border-box;
     pointer-events: none;
     border: $border-width $border-style transparent;

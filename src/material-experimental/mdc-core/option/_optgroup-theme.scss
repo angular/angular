@@ -1,10 +1,10 @@
 @use '@material/theme/theme' as mdc-theme;
+@use '@angular/material' as mat;
+
 @use '../../mdc-helpers/mdc-helpers';
-@use '../../../material/core/theming/theming';
-@use '../../../material/core/typography/typography';
 
 @mixin color($config-or-theme) {
-  $config: theming.get-color-config($config-or-theme);
+  $config: mat.get-color-config($config-or-theme);
 
   @include mdc-helpers.mat-using-mdc-theme($config) {
     .mat-mdc-optgroup-label {
@@ -16,20 +16,20 @@
 }
 
 @mixin typography($config-or-theme) {
-  $config: typography.private-typography-to-2018-config(
-      theming.get-typography-config($config-or-theme));
+  $config: mat.private-typography-to-2018-config(
+      mat.get-typography-config($config-or-theme));
 }
 
 @mixin density($config-or-theme) {
-  $density-scale: theming.get-density-config($config-or-theme);
+  $density-scale: mat.get-density-config($config-or-theme);
 }
 
 @mixin theme($theme-or-color-config) {
-  $theme: theming.private-legacy-get-theme($theme-or-color-config);
-  @include theming.private-check-duplicate-theme-styles($theme, 'mat-mdc-optgroup') {
-    $color: theming.get-color-config($theme);
-    $density: theming.get-density-config($theme);
-    $typography: theming.get-typography-config($theme);
+  $theme: mat.private-legacy-get-theme($theme-or-color-config);
+  @include mat.private-check-duplicate-theme-styles($theme, 'mat-mdc-optgroup') {
+    $color: mat.get-color-config($theme);
+    $density: mat.get-density-config($theme);
+    $typography: mat.get-typography-config($theme);
 
     @if $color != null {
       @include color($color);

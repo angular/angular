@@ -1,12 +1,13 @@
 @use 'sass:map';
 @use 'sass:math';
+@use '@angular/cdk';
+@use '@angular/material' as mat;
 @use '@material/switch/switch' as mdc-switch;
 @use '@material/switch/switch-theme' as mdc-switch-theme;
 @use '@material/form-field' as mdc-form-field;
 @use '@material/ripple' as mdc-ripple;
+
 @use '../mdc-helpers/mdc-helpers';
-@use '../../material/core/style/layout-common';
-@use '../../cdk/a11y';
 
 @include mdc-helpers.disable-fallback-declarations {
   @include mdc-form-field.core-styles($query: mdc-helpers.$mat-base-styles-query);
@@ -29,7 +30,7 @@
 
   // The ripple needs extra specificity so the base ripple styling doesn't override its `position`.
   .mat-mdc-slide-toggle-ripple, #{mdc-switch.$ripple-target}::after {
-    @include layout-common.fill;
+    @include mat.private-fill;
     border-radius: 50%;
     // Disable pointer events for the ripple container so that it doesn't eat the mouse events meant
     // for the input. Pointer events can be safely disabled because the ripple trigger element is
@@ -65,7 +66,7 @@
 }
 
 
-@include a11y.high-contrast(active, off) {
+@include cdk.high-contrast(active, off) {
   .mat-mdc-slide-toggle-focused .mdc-switch__track {
     // Usually 1px would be enough, but MDC reduces the opacity on the
     // element so we need to make this a bit more prominent.

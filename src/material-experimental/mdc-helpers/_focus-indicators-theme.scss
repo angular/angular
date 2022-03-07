@@ -1,6 +1,6 @@
+@use '@angular/material' as mat;
 @use 'sass:map';
 @use 'sass:meta';
-@use '../../material/core/theming/theming';
 
 @mixin _border-color($color) {
   .mat-mdc-focus-indicator::before {
@@ -14,8 +14,8 @@
     @include _border-color($config-or-theme-or-color);
   }
   @else {
-    $config: theming.get-color-config($config-or-theme-or-color);
-    $border-color: theming.get-color-from-palette(map.get($config, primary));
+    $config: mat.get-color-config($config-or-theme-or-color);
+    $border-color: mat.get-color-from-palette(map.get($config, primary));
     @include _border-color($border-color);
   }
 }
@@ -26,9 +26,9 @@
     @include _border-color($theme-or-color-config-or-color);
   }
   @else {
-    $theme: theming.private-legacy-get-theme($theme-or-color-config-or-color);
-    @include theming.private-check-duplicate-theme-styles($theme, 'mat-mdc-focus-indicators') {
-      $color: theming.get-color-config($theme);
+    $theme: mat.private-legacy-get-theme($theme-or-color-config-or-color);
+    @include mat.private-check-duplicate-theme-styles($theme, 'mat-mdc-focus-indicators') {
+      $color: mat.get-color-config($theme);
       @if $color != null {
         @include color($color);
       }

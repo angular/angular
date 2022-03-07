@@ -1,5 +1,5 @@
-@use '../../material/core/style/variables';
-@use '../../material/core/style/private';
+@use '@angular/material' as mat;
+
 @use './tabs-common';
 
 @include tabs-common.structural-styles;
@@ -37,9 +37,10 @@
 
 // The bottom section of the view; contains the tab bodies
 .mat-mdc-tab-body-wrapper {
-  @include private.private-animation-noop();
+  @include mat.private-animation-noop();
   position: relative;
   overflow: hidden;
   display: flex;
-  transition: height tabs-common.$mat-tab-animation-duration variables.$ease-in-out-curve-function;
+  transition: height tabs-common.$mat-tab-animation-duration
+    mat.$private-ease-in-out-curve-function;
 }

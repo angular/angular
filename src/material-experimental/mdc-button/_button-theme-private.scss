@@ -1,7 +1,6 @@
 @use 'sass:map';
 @use '@material/ripple/ripple-theme' as mdc-ripple-theme;
 @use '@material/theme/theme-color' as mdc-theme-color;
-@use '../../material/core/ripple/ripple-theme';
 
 @mixin _ripple-color($color) {
   --mat-mdc-button-persistent-ripple-color: #{$color};

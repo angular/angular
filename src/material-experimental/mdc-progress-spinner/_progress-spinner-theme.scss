@@ -1,13 +1,14 @@
+@use '@angular/material' as mat;
 @use '@material/circular-progress' as mdc-circular-progress;
+
 @use '../mdc-helpers/mdc-helpers';
-@use '../../material/core/theming/theming';
 
 @mixin _palette-styles($color) {
   @include mdc-circular-progress.color($color, $query: mdc-helpers.$mat-theme-styles-query);
 }
 
 @mixin color($config-or-theme) {
-  $config: theming.get-color-config($config-or-theme);
+  $config: mat.get-color-config($config-or-theme);
   @include mdc-helpers.mat-using-mdc-theme($config) {
     .mat-mdc-progress-spinner {
       @include _palette-styles(primary);
@@ -28,11 +29,11 @@
 @mixin density($config-or-theme) {}
 
 @mixin theme($theme-or-color-config) {
-  $theme: theming.private-legacy-get-theme($theme-or-color-config);
-  @include theming.private-check-duplicate-theme-styles($theme, 'mat-mdc-progress-spinner') {
-    $color: theming.get-color-config($theme);
-    $density: theming.get-density-config($theme);
-    $typography: theming.get-typography-config($theme);
+  $theme: mat.private-legacy-get-theme($theme-or-color-config);
+  @include mat.private-check-duplicate-theme-styles($theme, 'mat-mdc-progress-spinner') {
+    $color: mat.get-color-config($theme);
+    $density: mat.get-density-config($theme);
+    $typography: mat.get-typography-config($theme);
 
     @if $color != null {
       @include color($color);

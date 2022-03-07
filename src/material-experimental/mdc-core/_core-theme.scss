@@ -1,13 +1,13 @@
 @use 'sass:map';
-@use '../../material/core/theming/theming';
-@use '../../material/core/typography/typography';
+@use '@angular/material' as mat;
+
 @use './option/option-theme';
 @use './option/optgroup-theme';
 @use './elevation';
 
 
 @mixin color($config-or-theme) {
-  $config: theming.get-color-config($config-or-theme);
+  $config: mat.get-color-config($config-or-theme);
 
   @include option-theme.color($config);
   @include optgroup-theme.color($config);
@@ -32,22 +32,22 @@
       $background: map.get($config, background);
       $foreground: map.get($config, foreground);
 
-      background-color: theming.get-color-from-palette($background, background);
-      color: theming.get-color-from-palette($foreground, text);
+      background-color: mat.get-color-from-palette($background, background);
+      color: mat.get-color-from-palette($foreground, text);
     }
   }
 }
 
 @mixin typography($config-or-theme) {
-  $config: typography.private-typography-to-2018-config(
-          theming.get-typography-config($config-or-theme));
+  $config: mat.private-typography-to-2018-config(
+    mat.get-typography-config($config-or-theme));
 
   @include option-theme.typography($config-or-theme);
   @include optgroup-theme.typography($config-or-theme);
 }
 
 @mixin density($config-or-theme) {
-  $density-scale: theming.get-density-config($config-or-theme);
+  $density-scale: mat.get-density-config($config-or-theme);
 
   @include option-theme.density($density-scale);
   @include optgroup-theme.density($density-scale);
@@ -55,15 +55,15 @@
 
 // Mixin that renders all of the core styles that depend on the theme.
 @mixin theme($theme-or-color-config) {
-  $theme: theming.private-legacy-get-theme($theme-or-color-config);
+  $theme: mat.private-legacy-get-theme($theme-or-color-config);
 
   // Wrap the sub-theme includes in the duplicate theme styles mixin. This ensures that
   // there won't be multiple warnings. e.g. if `mat-mdc-core-theme` reports a warning, then
   // the imported themes (such as `mat-ripple-theme`) should not report again.
-  @include theming.private-check-duplicate-theme-styles($theme, 'mat-mdc-core') {
-    $color: theming.get-color-config($theme);
-    $density: theming.get-density-config($theme);
-    $typography: theming.get-typography-config($theme);
+  @include mat.private-check-duplicate-theme-styles($theme, 'mat-mdc-core') {
+    $color: mat.get-color-config($theme);
+    $density: mat.get-density-config($theme);
+    $typography: mat.get-typography-config($theme);
 
     @if $color != null {
       @include color($color);

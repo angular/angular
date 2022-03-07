@@ -1,15 +1,14 @@
 @use 'sass:map';
 
+@use '@angular/material' as mat;
 @use '@material/slider/slider' as mdc-slider;
 @use '@material/slider/slider-theme';
 @use '@material/theme/variables' as theme-variables;
+
 @use '../mdc-helpers/mdc-helpers';
-@use '../../material/core/typography/typography';
-@use '../../material/core/ripple/ripple-theme';
-@use '../../material/core/theming/theming';
 
 @mixin color($config-or-theme) {
-  $config: theming.get-color-config($config-or-theme);
+  $config: mat.get-color-config($config-or-theme);
   @include mdc-helpers.mat-using-mdc-theme($config) {
     @include mdc-slider.without-ripple($query: mdc-helpers.$mat-theme-styles-query);
 
@@ -47,8 +46,8 @@
 }
 
 @mixin typography($config-or-theme) {
-  $config: typography.private-typography-to-2018-config(
-      theming.get-typography-config($config-or-theme));
+  $config: mat.private-typography-to-2018-config(
+      mat.get-typography-config($config-or-theme));
   @include mdc-helpers.mat-using-mdc-typography($config) {
     @include mdc-slider.without-ripple($query: mdc-helpers.$mat-typography-styles-query);
   }
@@ -57,11 +56,11 @@
 @mixin density($config-or-theme) {}
 
 @mixin theme($theme-or-color-config) {
-  $theme: theming.private-legacy-get-theme($theme-or-color-config);
-  @include theming.private-check-duplicate-theme-styles($theme, 'mat-mdc-slider') {
-    $color: theming.get-color-config($theme);
-    $density: theming.get-density-config($theme);
-    $typography: theming.get-typography-config($theme);
+  $theme: mat.private-legacy-get-theme($theme-or-color-config);
+  @include mat.private-check-duplicate-theme-styles($theme, 'mat-mdc-slider') {
+    $color: mat.get-color-config($theme);
+    $density: mat.get-density-config($theme);
+    $typography: mat.get-typography-config($theme);
 
     @if $color != null {
       @include color($color);
@@ -112,7 +111,7 @@
     $query: mdc-helpers.$mat-theme-styles-query
   );
   $ripple-color: map.get(theme-variables.$property-values, $color);
-  @include ripple-theme.color((
+  @include mat.ripple-color((
     foreground: (
       base: $ripple-color
     ),

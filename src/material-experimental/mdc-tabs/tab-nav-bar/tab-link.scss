@@ -1,4 +1,4 @@
-@use '../../../material/core/style/variables';
+@use '@angular/material' as mat;
 @use '../tabs-common';
 
 // Wraps each link in the header
@@ -22,7 +22,7 @@
   }
 }
 
-@media (variables.$xsmall) {
+@media (mat.$private-xsmall) {
   .mat-mdc-tab-link {
     min-width: 72px;
   }

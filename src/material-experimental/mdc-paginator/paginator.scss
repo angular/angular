@@ -1,5 +1,5 @@
+@use '@angular/cdk';
 @use '../mdc-form-field/form-field-theme';
-@use '../../cdk/a11y';
 
 $padding: 0 8px;
 $page-size-margin-right: 8px;
@@ -83,7 +83,7 @@ $button-icon-size: 28px;
   }
 }
 
-@include a11y.high-contrast(active, off) {
+@include cdk.high-contrast(active, off) {
   // The disabled button icon has to be set explicitly since the selector is too specific.
   .mat-mdc-icon-button[disabled] .mat-mdc-paginator-icon,
   .mat-mdc-paginator-icon {

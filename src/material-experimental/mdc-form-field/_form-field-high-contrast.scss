@@ -1,4 +1,4 @@
-@use '../../cdk/a11y';
+@use '@angular/cdk';
 
 @mixin private-form-field-high-contrast() {
   $focus-indicator-width: 3px;
@@ -8,14 +8,14 @@
     // The outline of the `fill` appearance is achieved through a background color
     // which won't be visible in high contrast mode. Add an outline to replace it.
     .mat-mdc-text-field-wrapper {
-      @include a11y.high-contrast(active, off) {
+      @include cdk.high-contrast(active, off) {
         outline: solid 1px;
       }
     }
 
     // Use GreyText for the disabled outline color which will account for the user's configuration.
     &.mat-form-field-disabled .mat-mdc-text-field-wrapper {
-      @include a11y.high-contrast(active, off) {
+      @include cdk.high-contrast(active, off) {
         outline-color: GrayText;
       }
     }
@@ -24,7 +24,7 @@
   // If a form field with fill appearance is focused, update the outline to be
   // dashed and thicker to indicate focus.
   .mat-form-field-appearance-fill.mat-focused .mat-mdc-text-field-wrapper {
-    @include a11y.high-contrast(active, off) {
+    @include cdk.high-contrast(active, off) {
       outline: $focus-indicator-style $focus-indicator-width;
     }
   }
@@ -32,7 +32,7 @@
   // For form fields with outline appearance, we show a dashed thick border on top
   // of the solid notched-outline border to indicate focus.
   .mat-mdc-form-field.mat-focused .mdc-notched-outline {
-    @include a11y.high-contrast(active, off) {
+    @include cdk.high-contrast(active, off) {
       border: $focus-indicator-style $focus-indicator-width;
     }
   }

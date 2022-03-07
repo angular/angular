@@ -21,7 +21,7 @@ sass_library(
     name = "column_resize_scss_lib",
     srcs = glob(["**/_*.scss"]),
     deps = [
-        "//src/material/core:core_scss_lib",
+        "//src/material:sass_lib",
     ],
 )
 

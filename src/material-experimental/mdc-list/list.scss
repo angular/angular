@@ -1,6 +1,7 @@
+@use '@angular/material' as mat;
 @use '@material/list/evolution-mixins' as mdc-list;
+
 @use '../mdc-helpers/mdc-helpers';
-@use '../../material/core/style/layout-common';
 
 @include mdc-helpers.disable-fallback-declarations {
   @include mdc-list.without-ripple($query: mdc-helpers.$mat-base-styles-query);
@@ -43,7 +44,7 @@
 // MDC's hover and focus state styles are included with their ripple which we don't use.
 // Instead we add the focus, hover and selected styles ourselves using this pseudo-element
 .mat-mdc-list-item-interactive::before {
-  @include layout-common.fill();
+  @include mat.private-fill();
   content: '';
   opacity: 0;
 }
@@ -58,7 +59,7 @@
 // focus/selected/hover state. Hence, we need to have a separate list-item spanning
 // element that can be used for strong focus indicators.
 .mat-mdc-list-item > .mat-mdc-focus-indicator {
-  @include layout-common.fill();
+  @include mat.private-fill();
   pointer-events: none;
 }
 

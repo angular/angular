@@ -1,4 +1,4 @@
-@use '../../cdk/a11y';
+@use '@angular/cdk';
 
 // Add an outline to make buttons more visible in high contrast mode. Stroked buttons and FABs
 // don't need a special look in high-contrast mode, because those already have an outline.
@@ -7,12 +7,12 @@
 .mat-mdc-raised-button:not(.mdc-button--outlined),
 .mat-mdc-outlined-button:not(.mdc-button--outlined),
 .mat-mdc-icon-button {
-  @include a11y.high-contrast(active, off) {
+  @include cdk.high-contrast(active, off) {
     outline: solid 1px;
   }
 }
 
-@include a11y.high-contrast(active, off) {
+@include cdk.high-contrast(active, off) {
   .mat-mdc-button-base:focus {
     outline: solid 3px;
   }

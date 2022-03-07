@@ -1,11 +1,10 @@
 @use 'sass:map';
+@use '@angular/material' as mat;
 @use '@material/theme/theme-color' as mdc-theme-color;
 @use '@material/radio/radio-theme' as mdc-radio-theme;
 @use '@material/radio/radio' as mdc-radio;
 @use '@material/form-field' as mdc-form-field;
 @use '../mdc-helpers/mdc-helpers';
-@use '../../material/core/typography/typography';
-@use '../../material/core/theming/theming';
 
 @mixin _color-palette($color-palette) {
   @include mdc-radio-theme.theme((
@@ -19,10 +18,10 @@
 }
 
 @mixin color($config-or-theme) {
-  $config: theming.get-color-config($config-or-theme);
-  $primary: theming.get-color-from-palette(map.get($config, primary));
-  $accent: theming.get-color-from-palette(map.get($config, accent));
-  $warn: theming.get-color-from-palette(map.get($config, warn));
+  $config: mat.get-color-config($config-or-theme);
+  $primary: mat.get-color-from-palette(map.get($config, primary));
+  $accent: mat.get-color-from-palette(map.get($config, accent));
+  $warn: mat.get-color-from-palette(map.get($config, warn));
 
   @include mdc-helpers.mat-using-mdc-theme($config) {
     $on-surface: rgba(mdc-theme-color.$on-surface, 0.54);
@@ -58,8 +57,8 @@
 }
 
 @mixin typography($config-or-theme) {
-  $config: typography.private-typography-to-2018-config(
-      theming.get-typography-config($config-or-theme));
+  $config: mat.private-typography-to-2018-config(
+      mat.get-typography-config($config-or-theme));
   @include mdc-helpers.mat-using-mdc-typography($config) {
     @include mdc-radio.without-ripple($query: mdc-helpers.$mat-typography-styles-query);
     @include mdc-form-field.core-styles($query: mdc-helpers.$mat-typography-styles-query);
@@ -67,7 +66,7 @@
 }
 
 @mixin density($config-or-theme) {
-  $density-scale: theming.get-density-config($config-or-theme);
+  $density-scale: mat.get-density-config($config-or-theme);
   .mat-mdc-radio-button .mdc-radio {
     @include mdc-radio-theme.density($density-scale, $query: mdc-helpers.$mat-base-styles-query);
   }
@@ -80,11 +79,11 @@
 }
 
 @mixin theme($theme-or-color-config) {
-  $theme: theming.private-legacy-get-theme($theme-or-color-config);
-  @include theming.private-check-duplicate-theme-styles($theme, 'mat-mdc-radio') {
-    $color: theming.get-color-config($theme);
-    $density: theming.get-density-config($theme);
-    $typography: theming.get-typography-config($theme);
+  $theme: mat.private-legacy-get-theme($theme-or-color-config);
+  @include mat.private-check-duplicate-theme-styles($theme, 'mat-mdc-radio') {
+    $color: mat.get-color-config($theme);
+    $density: mat.get-density-config($theme);
+    $typography: mat.get-typography-config($theme);
 
     @if $color != null {
       @include color($color);

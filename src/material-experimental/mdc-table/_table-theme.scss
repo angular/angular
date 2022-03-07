@@ -1,13 +1,13 @@
 @use 'sass:map';
+@use '@angular/material' as mat;
 @use '@material/theme/theme-color' as mdc-theme-color;
 @use '@material/data-table/data-table' as mdc-data-table;
 @use '@material/data-table' as mdc-data-table-theme;
+
 @use '../mdc-helpers/mdc-helpers';
-@use '../../material/core/typography/typography';
-@use '../../material/core/theming/theming';
 
 @mixin color($config-or-theme) {
-  $config: theming.get-color-config($config-or-theme);
+  $config: mat.get-color-config($config-or-theme);
   // Save original values of MDC global variables. We need to save these so we can restore the
   // variables to their original values and prevent unintended side effects from using this mixin.
   $orig-selected-row-fill-color: mdc-data-table-theme.$selected-row-fill-color;
@@ -38,20 +38,20 @@
 
   .mat-mdc-table {
     $background: map.get($config, background);
-    background: theming.get-color-from-palette($background, 'card');
+    background: mat.get-color-from-palette($background, 'card');
   }
 }
 
 @mixin typography($config-or-theme) {
-  $config: typography.private-typography-to-2018-config(
-      theming.get-typography-config($config-or-theme));
+  $config: mat.private-typography-to-2018-config(
+      mat.get-typography-config($config-or-theme));
   @include mdc-helpers.mat-using-mdc-typography($config) {
     @include mdc-data-table.table-styles($query: mdc-helpers.$mat-typography-styles-query);
   }
 }
 
 @mixin density($config-or-theme) {
-  $density-scale: theming.get-density-config($config-or-theme);
+  $density-scale: mat.get-density-config($config-or-theme);
   .mat-mdc-table {
     @include mdc-data-table-theme.density($density-scale,
       $query: mdc-helpers.$mat-base-styles-query);
@@ -59,11 +59,11 @@
 }
 
 @mixin theme($theme-or-color-config) {
-  $theme: theming.private-legacy-get-theme($theme-or-color-config);
-  @include theming.private-check-duplicate-theme-styles($theme, 'mat-mdc-table') {
-    $color: theming.get-color-config($theme);
-    $density: theming.get-density-config($theme);
-    $typography: theming.get-typography-config($theme);
+  $theme: mat.private-legacy-get-theme($theme-or-color-config);
+  @include mat.private-check-duplicate-theme-styles($theme, 'mat-mdc-table') {
+    $color: mat.get-color-config($theme);
+    $density: mat.get-density-config($theme);
+    $typography: mat.get-typography-config($theme);
 
     @if $color != null {
       @include color($color);

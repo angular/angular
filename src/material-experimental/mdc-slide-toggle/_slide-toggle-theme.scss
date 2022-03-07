@@ -1,12 +1,11 @@
 @use 'sass:map';
 @use 'sass:color';
+@use '@angular/material' as mat;
 @use '@material/switch/switch-theme' as mdc-switch-theme;
 @use '@material/theme/color-palette' as mdc-color-palette;
 @use '@material/form-field' as mdc-form-field;
+
 @use '../mdc-helpers/mdc-helpers';
-@use '../../material/core/typography/typography';
-@use '../../material/core/theming/theming';
-@use '../../material/core/theming/palette';
 
 // Generates all color mapping for the properties that only change based on the theme.
 @function _get-theme-base-map($is-dark) {
@@ -70,10 +69,10 @@
 }
 
 @mixin color($config-or-theme) {
-  $config: theming.get-color-config($config-or-theme);
-  $primary: theming.get-color-from-palette(map.get($config, primary));
-  $accent: theming.get-color-from-palette(map.get($config, accent));
-  $warn: theming.get-color-from-palette(map.get($config, warn));
+  $config: mat.get-color-config($config-or-theme);
+  $primary: mat.get-color-from-palette(map.get($config, primary));
+  $accent: mat.get-color-from-palette(map.get($config, accent));
+  $warn: mat.get-color-from-palette(map.get($config, warn));
   $is-dark: map.get($config, is-dark);
 
   @include mdc-helpers.mat-using-mdc-theme($config) {
@@ -99,27 +98,27 @@
 }
 
 @mixin typography($config-or-theme) {
-  $config: typography.private-typography-to-2018-config(
-      theming.get-typography-config($config-or-theme));
+  $config: mat.private-typography-to-2018-config(
+      mat.get-typography-config($config-or-theme));
   @include mdc-helpers.mat-using-mdc-typography($config) {
     @include mdc-form-field.core-styles($query: mdc-helpers.$mat-typography-styles-query);
   }
 }
 
 @mixin density($config-or-theme) {
-  $density-scale: theming.get-density-config($config-or-theme);
+  $density-scale: mat.get-density-config($config-or-theme);
   .mat-mdc-slide-toggle {
     @include mdc-switch-theme.theme(mdc-switch-theme.density($density-scale));
   }
 }
 
 @mixin theme($theme-or-color-config) {
-  $theme: theming.private-legacy-get-theme($theme-or-color-config);
+  $theme: mat.private-legacy-get-theme($theme-or-color-config);
 
-  @include theming.private-check-duplicate-theme-styles($theme, 'mat-mdc-slide-toggle') {
-    $color: theming.get-color-config($theme);
-    $density: theming.get-density-config($theme);
-    $typography: theming.get-typography-config($theme);
+  @include mat.private-check-duplicate-theme-styles($theme, 'mat-mdc-slide-toggle') {
+    $color: mat.get-color-config($theme);
+    $density: mat.get-density-config($theme);
+    $typography: mat.get-typography-config($theme);
 
     @if $color != null {
       @include color($color);

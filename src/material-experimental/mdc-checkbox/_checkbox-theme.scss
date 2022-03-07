@@ -1,3 +1,4 @@
+@use '@angular/material' as mat;
 @use '@material/checkbox/checkbox' as mdc-checkbox;
 @use '@material/checkbox/checkbox-theme' as mdc-checkbox-theme;
 @use '@material/form-field' as mdc-form-field;
@@ -5,10 +6,8 @@
 @use '@material/theme/theme';
 @use 'sass:map';
 @use 'sass:color';
+
 @use '../mdc-helpers/mdc-helpers';
-@use '../../material/core/typography/typography';
-@use '../../material/core/theming/theming';
-@use '../../material/core/ripple/ripple-theme';
 @use './checkbox-private';
 
 // Apply ripple colors to the MatRipple element and the MDC ripple element when the
@@ -16,7 +15,7 @@
 @mixin _selected-ripple-colors($theme, $mdc-color) {
   .mdc-checkbox--selected ~ {
     .mat-mdc-checkbox-ripple {
-      @include ripple-theme.color((
+      @include mat.ripple-color((
           foreground: (
               base: mdc-theme-color.prop-value($mdc-color)
           ),
@@ -30,15 +29,15 @@
 }
 
 @mixin color($config-or-theme) {
-  $config: theming.get-color-config($config-or-theme);
-  $primary: theming.get-color-from-palette(map.get($config, primary));
-  $accent: theming.get-color-from-palette(map.get($config, accent));
-  $warn: theming.get-color-from-palette(map.get($config, warn));
+  $config: mat.get-color-config($config-or-theme);
+  $primary: mat.get-color-from-palette(map.get($config, primary));
+  $accent: mat.get-color-from-palette(map.get($config, accent));
+  $warn: mat.get-color-from-palette(map.get($config, warn));
 
   @include mdc-helpers.mat-using-mdc-theme($config) {
     .mat-mdc-checkbox {
       @include mdc-form-field.core-styles($query: mdc-helpers.$mat-theme-styles-query);
-      @include ripple-theme.color((
+      @include mat.ripple-color((
         foreground: (
           base: mdc-theme-color.prop-value(on-surface)
         ),
@@ -70,8 +69,8 @@
 }
 
 @mixin typography($config-or-theme) {
-  $config: typography.private-typography-to-2018-config(
-      theming.get-typography-config($config-or-theme));
+  $config: mat.private-typography-to-2018-config(
+      mat.get-typography-config($config-or-theme));
   @include mdc-helpers.mat-using-mdc-typography($config) {
     @include mdc-checkbox.without-ripple($query: mdc-helpers.$mat-typography-styles-query);
     @include mdc-form-field.core-styles($query: mdc-helpers.$mat-typography-styles-query);
@@ -79,7 +78,7 @@
 }
 
 @mixin density($config-or-theme) {
-  $density-scale: theming.get-density-config($config-or-theme);
+  $density-scale: mat.get-density-config($config-or-theme);
 
   @include mdc-helpers.disable-fallback-declarations {
     .mat-mdc-checkbox .mdc-checkbox {
@@ -98,11 +97,11 @@
 }
 
 @mixin theme($theme-or-color-config) {
-  $theme: theming.private-legacy-get-theme($theme-or-color-config);
-  @include theming.private-check-duplicate-theme-styles($theme, 'mat-mdc-checkbox') {
-    $color: theming.get-color-config($theme);
-    $density: theming.get-density-config($theme);
-    $typography: theming.get-typography-config($theme);
+  $theme: mat.private-legacy-get-theme($theme-or-color-config);
+  @include mat.private-check-duplicate-theme-styles($theme, 'mat-mdc-checkbox') {
+    $color: mat.get-color-config($theme);
+    $density: mat.get-density-config($theme);
+    $typography: mat.get-typography-config($theme);
 
     @if $color != null {
       @include color($color);

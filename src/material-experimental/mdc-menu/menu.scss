@@ -1,10 +1,10 @@
 @use 'sass:map';
+@use '@angular/cdk';
+@use '@angular/material' as mat;
 @use '@material/menu-surface' as mdc-menu-surface;
 @use '@material/list/evolution-mixins' as mdc-list-mixins;
 @use '@material/list/evolution-variables' as mdc-list-variables;
-@use '../../material/core/style/menu-common';
-@use '../../material/core/style/button-common';
-@use '../../cdk/a11y';
+
 @use '../mdc-helpers/mdc-helpers';
 
 @include mdc-helpers.disable-fallback-declarations {
@@ -21,18 +21,18 @@ mat-menu {
 }
 
 .mat-mdc-menu-panel {
-  @include a11y.high-contrast(active, off) {
+  @include cdk.high-contrast(active, off) {
     outline: solid 1px;
   }
 }
 
-// We need to increase the specificity for these styles to ensure we are not overriden by MDC's
+// We need to increase the specificity for these styles to ensure we are not overridden by MDC's
 // .mdc-menu-surface styles. This can happen if the MDC styles are loaded in after our styles.
 .mat-mdc-menu-panel.mat-mdc-menu-panel {
   // Include Material's base menu panel styling which contain the `min-width`, `max-width` and some
   // styling to make scrolling smoother. MDC doesn't include the `min-width` and `max-width`, even
   // though they're explicitly defined in spec.
-  @include menu-common.base;
+  @include mat.private-menu-common-base;
 
   // The CDK positioning uses flexbox to anchor the element, whereas MDC uses `position: absolute`.
   // Furthermore, the relative position ensures that the `offsetParent` is the menu, rather than
@@ -49,7 +49,7 @@ mat-menu {
 
   // MDC's menu items are `<li>` nodes which don't need resets, however ours
   // can be anything, including buttons, so we need to do the reset ourselves.
-  @include button-common.reset;
+  @include mat.private-button-common-reset;
   cursor: pointer;
   width: 100%;
   text-align: left;
@@ -107,7 +107,7 @@ mat-menu {
     white-space: normal;
   }
 
-  @include a11y.high-contrast(active, off) {
+  @include cdk.high-contrast(active, off) {
     $outline-width: 1px;
 
     // We need to move the item 1px down, because Firefox seems to have
@@ -123,15 +123,15 @@ mat-menu {
 }
 
 .mat-mdc-menu-item-submenu-trigger {
-  @include menu-common.item-submenu-trigger(mdc-list-variables.$side-padding);
+  @include mat.private-menu-common-item-submenu-trigger(mdc-list-variables.$side-padding);
 }
 
 .mat-mdc-menu-submenu-icon {
-  @include menu-common.item-submenu-icon(mdc-list-variables.$side-padding);
+  @include mat.private-menu-common-item-submenu-icon(mdc-list-variables.$side-padding);
 }
 
 // Increase specificity because ripple styles are part of the `mat-core` mixin and can
 // potentially overwrite the absolute position of the container.
 .mat-mdc-menu-item .mat-mdc-menu-ripple {
-  @include menu-common.item-ripple;
+  @include mat.private-menu-common-item-ripple;
 }

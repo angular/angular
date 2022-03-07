@@ -1,6 +1,7 @@
+@use '@angular/cdk';
 @use '@material/snackbar' as mdc-snackbar;
+
 @use '../mdc-helpers/mdc-helpers';
-@use '../../cdk/a11y';
 
 @include mdc-helpers.disable-fallback-declarations {
   @include mdc-snackbar.core-styles($query: mdc-helpers.$mat-base-styles-query);
@@ -12,7 +13,7 @@
 .mat-mdc-snack-bar-container {
   position: static;
 
-  @include a11y.high-contrast(active, off) {
+  @include cdk.high-contrast(active, off) {
     border: solid 1px;
   }
 

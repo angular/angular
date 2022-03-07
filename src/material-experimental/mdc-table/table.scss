@@ -1,11 +1,11 @@
+@use '@angular/material' as mat;
 @use '@material/data-table/data-table' as mdc-data-table;
 @use '../mdc-helpers/mdc-helpers';
-@use '../../material/table/table-flex-styles';
 
 @include mdc-helpers.disable-fallback-declarations {
   @include mdc-data-table.table-styles(
     $query: mdc-helpers.$mat-base-styles-without-animation-query);
-  @include table-flex-styles.private-table-flex-styles();
+  @include mat.private-table-flex-styles();
 }
 
 .mat-mdc-table-sticky {

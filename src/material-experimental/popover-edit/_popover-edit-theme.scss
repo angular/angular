@@ -1,21 +1,17 @@
 @use 'sass:map';
-@use '../../cdk/a11y';
-@use '../../material/core/style/variables';
-@use '../../material/core/style/private';
-@use '../../material/core/theming/theming';
-@use '../../material/core/typography/typography';
-@use '../../material/core/typography/typography-utils';
+@use '@angular/cdk';
+@use '@angular/material' as mat;
 
 @function _hover-content-background($direction, $background-color) {
   @return linear-gradient($direction, rgba($background-color, 0), $background-color 8px);
 }
 
 @mixin color($config-or-theme) {
-  $config: theming.get-color-config($config-or-theme);
+  $config: mat.get-color-config($config-or-theme);
   $background: map.get($config, background);
   $foreground: map.get($config, foreground);
   $primary: map.get($config, primary);
-  $background-color: theming.get-color-from-palette($background, 'card');
+  $background-color: mat.get-color-from-palette($background, 'card');
 
   // TODO: these structural styles don't belong in the `color` part of a theme.
   // We should figure out a better place for them.
@@ -33,7 +29,8 @@
     position: absolute;
     right: 0;
     top: 0;
-    transition: opacity variables.$swift-ease-in-duration variables.$swift-ease-in-timing-function;
+    transition: opacity mat.$private-swift-ease-in-duration
+      mat.$private-swift-ease-in-timing-function;
   }
 
   .mat-row-hover-content-rtl {
@@ -50,7 +47,7 @@
     position: relative;
 
     &::after {
-      background-color: theming.get-color-from-palette($primary);
+      background-color: mat.get-color-from-palette($primary);
       bottom: 0;
       content: '';
       height: 2px;
@@ -60,8 +57,8 @@
       right: 0;
       transform-origin: 50%;
       transform: scaleX(0.5);
-      transition: background-color variables.$swift-ease-in-duration
-        variables.$swift-ease-in-timing-function;
+      transition: background-color mat.$private-swift-ease-in-duration
+        mat.$private-swift-ease-in-timing-function;
       visibility: hidden;
     }
 
@@ -71,22 +68,22 @@
       &::after {
         opacity: 1;
         transform: scaleX(1);
-        transition: transform 300ms variables.$swift-ease-out-timing-function,
-                    opacity 100ms variables.$swift-ease-out-timing-function,
-                    background-color 300ms variables.$swift-ease-out-timing-function;
+        transition: transform 300ms mat.$private-swift-ease-out-timing-function,
+                    opacity 100ms mat.$private-swift-ease-out-timing-function,
+                    background-color 300ms mat.$private-swift-ease-out-timing-function;
         visibility: visible;
       }
     }
   }
 
   .mat-edit-pane {
-    @include private.private-theme-elevation(2, $config);
+    @include mat.private-theme-elevation(2, $config);
     background: $background-color;
-    color: theming.get-color-from-palette($foreground, text);
+    color: mat.get-color-from-palette($foreground, text);
     display: block;
     padding: 16px 24px;
 
-    @include a11y.high-contrast(active, off) {
+    @include cdk.high-contrast(active, off) {
       // Note that normally we use 1px for high contrast outline, however here we use 3,
       // because the popover is rendered on top of a table which already has some borders
       // and doesn't have a backdrop. The thicker outline makes it easier to differentiate.
@@ -147,10 +144,10 @@
 }
 
 @mixin typography($config-or-theme) {
-  $config: typography.private-typography-to-2014-config(
-      theming.get-typography-config($config-or-theme));
+  $config: mat.private-typography-to-2014-config(
+      mat.get-typography-config($config-or-theme));
   [mat-edit-title] {
-    @include typography-utils.typography-level($config, title);
+    @include mat.typography-level($config, title);
   }
 }
 
@@ -158,11 +155,11 @@
 @mixin density($config-or-theme) {}
 
 @mixin theme($theme-or-color-config) {
-  $theme: theming.private-legacy-get-theme($theme-or-color-config);
-  @include theming.private-check-duplicate-theme-styles($theme, 'mat-popover-edit') {
-    $color: theming.get-color-config($theme);
-    $density: theming.get-density-config($theme);
-    $typography: theming.get-typography-config($theme);
+  $theme: mat.private-legacy-get-theme($theme-or-color-config);
+  @include mat.private-check-duplicate-theme-styles($theme, 'mat-popover-edit') {
+    $color: mat.get-color-config($theme);
+    $density: mat.get-density-config($theme);
+    $typography: mat.get-typography-config($theme);
 
     @if $color != null {
       @include color($color);

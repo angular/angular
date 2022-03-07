@@ -19,6 +19,7 @@ sass_library(
         "_all-theme.scss",
     ],
     deps = [
+        "//src/material:sass_lib",
         "//src/material-experimental/mdc-autocomplete:mdc_autocomplete_scss_lib",
         "//src/material-experimental/mdc-button:mdc_button_scss_lib",
         "//src/material-experimental/mdc-card:mdc_card_scss_lib",
@@ -41,8 +42,6 @@ sass_library(
         "//src/material-experimental/mdc-table:mdc_table_scss_lib",
         "//src/material-experimental/mdc-tabs:mdc_tabs_scss_lib",
         "//src/material-experimental/mdc-tooltip:mdc_tooltip_scss_lib",
-        "//src/material/core:core_scss_lib",
-        "//src/material/core:theming_scss_lib",
     ],
 )
 
@@ -54,7 +53,7 @@ sass_binary(
     ],
     deps = [
         ":all_themes",
-        "//src/material-experimental/mdc-typography:all_typography",
+        "//src/material:sass_lib",
     ],
 )
 
@@ -66,7 +65,7 @@ sass_binary(
     ],
     deps = [
         ":all_themes",
-        "//src/material-experimental/mdc-typography:all_typography",
+        "//src/material:sass_lib",
     ],
 )
 
@@ -78,7 +77,7 @@ sass_binary(
     ],
     deps = [
         ":all_themes",
-        "//src/material-experimental/mdc-typography:all_typography",
+        "//src/material:sass_lib",
     ],
 )
 
@@ -90,6 +89,6 @@ sass_binary(
     ],
     deps = [
         ":all_themes",
-        "//src/material-experimental/mdc-typography:all_typography",
+        "//src/material:sass_lib",
     ],
 )

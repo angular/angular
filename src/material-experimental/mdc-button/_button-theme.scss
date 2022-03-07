@@ -1,4 +1,5 @@
 @use 'sass:map';
+@use '@angular/material' as mat;
 @use '@material/button/button' as mdc-button;
 @use '@material/button/button-theme' as mdc-button-theme;
 @use '@material/button/button-text-theme' as mdc-button-text-theme;
@@ -6,9 +7,8 @@
 @use '@material/button/button-protected-theme' as mdc-button-protected-theme;
 @use '@material/button/button-outlined-theme' as mdc-button-outlined-theme;
 @use '@material/theme/theme-color' as mdc-theme-color;
-@use '../../material/core/typography/typography';
+
 @use '../mdc-helpers/mdc-helpers';
-@use '../../material/core/theming/theming';
 @use './button-theme-private';
 
 @mixin _button-variant($color) {
@@ -38,7 +38,7 @@
 }
 
 @mixin color($config-or-theme) {
-  $config: theming.get-color-config($config-or-theme);
+  $config: mat.get-color-config($config-or-theme);
   @include mdc-helpers.mat-using-mdc-theme($config) {
     $is-dark: map.get($config, is-dark);
     $on-surface: mdc-theme-color.prop-value(on-surface);
@@ -183,15 +183,15 @@
 }
 
 @mixin typography($config-or-theme) {
-  $config: typography.private-typography-to-2018-config(
-      theming.get-typography-config($config-or-theme));
+  $config: mat.private-typography-to-2018-config(
+      mat.get-typography-config($config-or-theme));
   @include mdc-helpers.mat-using-mdc-typography($config) {
     @include mdc-button.without-ripple($query: mdc-helpers.$mat-typography-styles-query);
   }
 }
 
 @mixin density($config-or-theme) {
-  $density-scale: theming.get-density-config($config-or-theme);
+  $density-scale: mat.get-density-config($config-or-theme);
   .mat-mdc-button,
   .mat-mdc-raised-button,
   .mat-mdc-unelevated-button,
@@ -205,11 +205,11 @@
 }
 
 @mixin theme($theme-or-color-config) {
-  $theme: theming.private-legacy-get-theme($theme-or-color-config);
-  @include theming.private-check-duplicate-theme-styles($theme, 'mat-mdc-button') {
-    $color: theming.get-color-config($theme);
-    $density: theming.get-density-config($theme);
-    $typography: theming.get-typography-config($theme);
+  $theme: mat.private-legacy-get-theme($theme-or-color-config);
+  @include mat.private-check-duplicate-theme-styles($theme, 'mat-mdc-button') {
+    $color: mat.get-color-config($theme);
+    $density: mat.get-density-config($theme);
+    $typography: mat.get-typography-config($theme);
 
     @if $color != null {
       @include color($color);

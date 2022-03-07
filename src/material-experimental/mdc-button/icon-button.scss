@@ -1,9 +1,10 @@
 @use 'sass:map';
+@use '@angular/material' as mat;
 @use '@material/icon-button/icon-button' as mdc-icon-button;
 @use '@material/icon-button/icon-button-theme' as mdc-icon-button-theme;
-@use '../../material/core/style/private';
+
 @use '../mdc-helpers/mdc-helpers';
-@use 'button-base';
+@use './button-base';
 
 @include mdc-helpers.disable-fallback-declarations {
   @include mdc-icon-button.without-ripple($query: mdc-helpers.$mat-base-styles-query);
@@ -38,7 +39,7 @@
 
   @include button-base.mat-private-button-interactive();
   @include button-base.mat-private-button-touch-target(true);
-  @include private.private-animation-noop();
+  @include mat.private-animation-noop();
 
   .mat-mdc-button-persistent-ripple {
     border-radius: 50%;

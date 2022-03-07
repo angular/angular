@@ -1,9 +1,10 @@
+@use '@angular/cdk';
+@use '@angular/material' as mat;
 @use '@material/ripple' as mdc-ripple;
 @use '@material/tab' as mdc-tab;
 @use '@material/tab-indicator' as mdc-tab-indicator;
 @use 'sass:map';
-@use '../../material/core/style/vendor-prefixes';
-@use '../../cdk/a11y';
+
 @use '../mdc-helpers/mdc-helpers';
 
 $mat-tab-animation-duration: 500ms !default;
@@ -71,7 +72,7 @@ $mat-tab-animation-duration: 500ms !default;
 
     // The usual focus indication is color-based so it won't show up in
     // high contrast mode. Add an outline which is a bit more visible.
-    @include a11y.high-contrast {
+    @include cdk.high-contrast {
       $outline-width: 2px;
       outline: dotted $outline-width;
       outline-offset: -$outline-width; // Not supported on IE, but looks better everywhere else.
@@ -94,7 +95,7 @@ $mat-tab-animation-duration: 500ms !default;
   }
 
   .mat-mdc-tab-header-pagination {
-    @include vendor-prefixes.user-select(none);
+    @include mat.private-user-select(none);
     position: relative;
     display: none;
     justify-content: center;

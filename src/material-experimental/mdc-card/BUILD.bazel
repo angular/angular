@@ -27,9 +27,9 @@ sass_library(
     name = "mdc_card_scss_lib",
     srcs = glob(["**/_*.scss"]),
     deps = [
+        "//src/material:sass_lib",
         "//src/material-experimental/mdc-helpers:mdc_helpers_scss_lib",
         "//src/material-experimental/mdc-helpers:mdc_scss_deps_lib",
-        "//src/material/core:core_scss_lib",
     ],
 )
 

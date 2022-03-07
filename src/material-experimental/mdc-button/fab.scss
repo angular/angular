@@ -1,6 +1,7 @@
+@use '@angular/material' as mat;
 @use '@material/fab' as mdc-fab;
 @use '@material/elevation/elevation-theme' as mdc-elevation-theme;
-@use '../../material/core/style/private';
+
 @use '../mdc-helpers/mdc-helpers';
 @use './button-base';
 
@@ -11,7 +12,7 @@
 .mat-mdc-fab, .mat-mdc-mini-fab {
   @include button-base.mat-private-button-interactive();
   @include button-base.mat-private-button-touch-target(true);
-  @include private.private-animation-noop();
+  @include mat.private-animation-noop();
 
   @include mdc-helpers.disable-fallback-declarations {
     // Theme configuration is copied over from MDC, because it isn't exported

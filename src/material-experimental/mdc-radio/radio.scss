@@ -1,12 +1,13 @@
 @use 'sass:map';
+@use '@angular/cdk';
+@use '@angular/material' as mat;
 @use '@material/radio/radio' as mdc-radio;
 @use '@material/radio/radio-theme' as mdc-radio-theme;
 @use '@material/form-field' as mdc-form-field;
 @use '@material/touch-target' as mdc-touch-target;
 @use '@material/ripple' as mdc-ripple;
+
 @use '../mdc-helpers/mdc-helpers';
-@use '../../cdk/a11y';
-@use '../../material/core/style/layout-common';
 
 @include mdc-helpers.disable-fallback-declarations {
   @include mdc-radio.static-styles($query: mdc-helpers.$mat-base-styles-query);
@@ -58,7 +59,7 @@
   // This is necessary because we do not depend on MDC's ripple, but have our own that should be
   // positioned correctly. This can be removed once we start using MDC's ripple implementation.
   .mat-radio-ripple {
-    @include layout-common.fill;
+    @include mat.private-fill;
     pointer-events: none;
     border-radius: 50%;
 
@@ -95,7 +96,7 @@
 // Note that this creates a square box around the circle, however it's consistent with
 // how IE/Edge treat native radio buttons in high contrast mode. We can't turn the border
 // into a dotted one, because it's too thick which causes the circles to look off.
-@include a11y.high-contrast(active, 'off') {
+@include cdk.high-contrast(active, 'off') {
   .mat-mdc-radio-button:not(.mat-radio-disabled) {
     &.cdk-keyboard-focused,
     &.cdk-program-focused {

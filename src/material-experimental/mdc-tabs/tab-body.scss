@@ -1,9 +1,9 @@
-@use '../../material/core/style/layout-common';
+@use '@angular/material' as mat;
 
 // Wraps each tab body. We need to add these styles ourselves,
 // because MDC only provides styling for the tab header.
 .mat-mdc-tab-body {
-  @include layout-common.fill;
+  @include mat.private-fill;
   display: block;
   overflow: hidden;
   outline: 0;

@@ -20,7 +20,7 @@ ng_module(
 sass_library(
     name = "selection_scss_lib",
     srcs = glob(["**/_*.scss"]),
-    deps = [],
+    deps = ["//src/material:sass_lib"],
 )
 
 sass_binary(

@@ -1,8 +1,8 @@
+@use '@angular/material' as mat;
 @use '@material/typography' as mdc-typography;
 @use 'sass:map';
+
 @use '../mdc-theming/all-theme';
-@use '../../material/core/theming/theming';
-@use '../../material/core/typography/typography';
 @use '../mdc-helpers/mdc-helpers';
 
 /// Generates an Angular Material typography config based on values from the official Material
@@ -73,12 +73,12 @@
 }
 
 @mixin all-mdc-component-typographies($config-or-theme: null) {
-  $config: if(theming.private-is-theme-object($config-or-theme),
-      theming.get-typography-config($config-or-theme), $config-or-theme);
+  $config: if(mat.private-is-theme-object($config-or-theme),
+      mat.get-typography-config($config-or-theme), $config-or-theme);
 
   // If no actual color configuration has been specified, create a default one.
   @if $config == null {
-    $config: typography.define-typography-config();
+    $config: mat.define-typography-config();
   }
 
   @include all-theme.all-mdc-component-themes((

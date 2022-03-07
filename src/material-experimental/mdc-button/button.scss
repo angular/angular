@@ -1,4 +1,5 @@
 @use 'sass:map';
+@use '@angular/material' as mat;
 @use '@material/button/button' as mdc-button;
 @use '@material/button/button-base' as mdc-button-base;
 @use '@material/button/variables' as mdc-button-variables;
@@ -6,9 +7,9 @@
 @use '@material/button/button-filled-theme' as mdc-button-filled-theme;
 @use '@material/button/button-protected-theme' as mdc-button-protected-theme;
 @use '@material/button/button-outlined-theme' as mdc-button-outlined-theme;
-@use '../../material/core/style/private';
+
 @use '../mdc-helpers/mdc-helpers';
-@use 'button-base';
+@use './button-base';
 
 @include mdc-helpers.disable-fallback-declarations {
   @include mdc-button.static-styles-without-ripple($query: mdc-helpers.$mat-base-styles-query);
@@ -58,7 +59,7 @@
   @include button-base.mat-private-button-interactive();
   @include button-base.mat-private-button-disabled();
   @include button-base.mat-private-button-touch-target(false);
-  @include private.private-animation-noop();
+  @include mat.private-animation-noop();
 }
 
 // MDC expects button icons to contain this HTML content:

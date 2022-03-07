@@ -1,14 +1,12 @@
 // TODO(mmalerba): this file should be split into separate cohesive partials for things like
 //  "theming", "typography", "core".
 
+@use '@angular/material' as mat;
 @use '@material/feature-targeting' as mdc-feature-targeting;
 @use '@material/typography' as mdc-typography;
 @use '@material/theme/theme-color' as mdc-theme-color;
 @use '@material/theme/css' as mdc-theme-css;
 @use 'sass:map';
-@use '../../material/core/theming/theming';
-@use '../../material/core/typography/typography';
-@use '../../material/core/typography/typography-utils';
 
 // A set of standard queries to use with MDC's queryable mixins.
 $mat-base-styles-query: mdc-feature-targeting.without(mdc-feature-targeting.any(color, typography));
@@ -48,11 +46,11 @@ $mat-typography-mdc-level-mappings: (
           )),
       if($mat-level,
           (
-            font-size: typography-utils.font-size($mat-config, $mat-level),
-            line-height: typography-utils.line-height($mat-config, $mat-level),
-            font-weight: typography-utils.font-weight($mat-config, $mat-level),
-            letter-spacing: typography-utils.letter-spacing($mat-config, $mat-level),
-            font-family: typography-utils.font-family($mat-config, $mat-level),
+            font-size: mat.font-size($mat-config, $mat-level),
+            line-height: mat.line-height($mat-config, $mat-level),
+            font-weight: mat.font-weight($mat-config, $mat-level),
+            letter-spacing: mat.letter-spacing($mat-config, $mat-level),
+            font-family: mat.font-family($mat-config, $mat-level),
             // Angular Material doesn't use text-transform, so disable it.
             text-transform: none,
           ),
@@ -86,7 +84,7 @@ $mat-typography-mdc-level-mappings: (
 @function mat-typography-config-level-from-mdc($mdc-level) {
   $mdc-level-config: map.get(mdc-typography.$styles, $mdc-level);
 
-  @return typography.define-typography-level(
+  @return mat.define-typography-level(
       map.get($mdc-level-config, font-size),
       map.get($mdc-level-config, line-height),
       map.get($mdc-level-config, font-weight),
@@ -97,9 +95,9 @@ $mat-typography-mdc-level-mappings: (
 // Configures MDC's global variables to reflect the given theme, applies the given styles,
 // then resets the global variables to prevent unintended side effects.
 @mixin mat-using-mdc-theme($config) {
-  $primary: theming.get-color-from-palette(map.get($config, primary));
-  $accent: theming.get-color-from-palette(map.get($config, accent));
-  $warn: theming.get-color-from-palette(map.get($config, warn));
+  $primary: mat.get-color-from-palette(map.get($config, primary));
+  $accent: mat.get-color-from-palette(map.get($config, accent));
+  $warn: mat.get-color-from-palette(map.get($config, warn));
   $background-palette: map.get($config, background);
 
   // Save the original values.
@@ -121,8 +119,8 @@ $mat-typography-mdc-level-mappings: (
   mdc-theme-color.$secondary: $accent;
   mdc-theme-color.$on-secondary:
       if(mdc-theme-color.contrast-tone(mdc-theme-color.$secondary) == 'dark', #000, #fff);
-  mdc-theme-color.$background: theming.get-color-from-palette($background-palette, background);
-  mdc-theme-color.$surface: theming.get-color-from-palette($background-palette, card);
+  mdc-theme-color.$background: mat.get-color-from-palette($background-palette, background);
+  mdc-theme-color.$surface: mat.get-color-from-palette($background-palette, card);
   mdc-theme-color.$on-surface:
       if(mdc-theme-color.contrast-tone(mdc-theme-color.$surface) == 'dark', #000, #fff);
   mdc-theme-color.$error: $warn;

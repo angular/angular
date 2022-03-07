@@ -1,16 +1,16 @@
+@use '@angular/cdk';
+@use '@angular/material' as mat;
 @use '@material/list/evolution-mixins' as mdc-list-mixins;
 @use '@material/list/evolution-variables' as mdc-list-variables;
 @use 'sass:map';
+
 @use '../../mdc-helpers/mdc-helpers';
-@use '../../../material/core/style/vendor-prefixes';
-@use '../../../cdk/a11y';
-@use '../../../material/core/style/layout-common';
 
 .mat-mdc-option {
   @include mdc-list-mixins.item-base;
   @include mdc-list-mixins.item-spacing(
     mdc-list-variables.$side-padding, $query: mdc-helpers.$mat-base-styles-query);
-  @include vendor-prefixes.user-select(none);
+  @include mat.private-user-select(none);
   cursor: pointer;
 
   // Set the `min-height` here ourselves, instead of going through
@@ -58,7 +58,7 @@
   // Increase specificity because ripple styles are part of the `mat-core` mixin and can
   // potentially overwrite the absolute position of the container.
   .mat-mdc-option-ripple {
-    @include layout-common.fill;
+    @include mat.private-fill;
 
     // Disable pointer events for the ripple container because the container will overlay the
     // user content and we don't want to disable mouse events on the user content.
@@ -85,7 +85,7 @@
 }
 
 .mat-mdc-option-active {
-  @include a11y.high-contrast(active, off) {
+  @include cdk.high-contrast(active, off) {
     // A pseudo element is used here, because the active indication gets moved between options
     // and we don't want the border from below to shift the layout around as it's added and removed.
     &::before {

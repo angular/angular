@@ -1,10 +1,12 @@
+
+@use '@angular/material' as mat;
 @use '@material/textfield' as mdc-textfield;
 @use '@material/theme/theme' as mdc-theme;
 @use '@material/typography' as mdc-typography;
 @use '@material/textfield/variables' as mdc-textfield-variables;
-@use 'form-field-sizing';
+
+@use './form-field-sizing';
 @use '../mdc-helpers/mdc-helpers';
-@use '../../material/core/theming/theming';
 
 @mixin private-form-field-subscript() {
   // Wrapper for the hints and error messages.
@@ -70,7 +72,7 @@
 // We need to define our own typography for the subscript because we don't include MDC's
 // helper text in our MDC based form field
 @mixin private-form-field-subscript-typography($config-or-theme) {
-  $config: theming.get-typography-config($config-or-theme);
+  $config: mat.get-typography-config($config-or-theme);
 
   // The subscript wrapper has a minimum height to avoid that the form-field
   // jumps when hints or errors are displayed.

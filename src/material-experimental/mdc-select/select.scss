@@ -1,9 +1,8 @@
 @use 'sass:math';
+@use '@angular/cdk';
+@use '@angular/material' as mat;
 @use '@material/menu-surface' as mdc-menu-surface;
 @use '@material/list/evolution-mixins' as mdc-list;
-@use '../../material/core/style/variables';
-@use '../../material/core/style/vendor-prefixes';
-@use '../../cdk/a11y';
 
 $mat-select-arrow-size: 5px !default;
 $mat-select-arrow-margin: 4px !default;
@@ -33,7 +32,7 @@ $scale: 0.75 !default;
   width: 100%;
 
   .mat-mdc-select-disabled & {
-    @include vendor-prefixes.user-select(none);
+    @include mat.private-user-select(none);
     cursor: default;
   }
 }
@@ -75,7 +74,7 @@ $scale: 0.75 !default;
     left: 50%;
     transform: translate(-50%, -50%);
 
-    @include a11y.high-contrast(active, off) {
+    @include cdk.high-contrast(active, off) {
       // On Chromium browsers the `currentColor` blends in with the
       // background for SVGs so we have to fall back to `CanvasText`.
       fill: CanvasText;
@@ -96,7 +95,7 @@ $scale: 0.75 !default;
   outline: 0;
 
   @include mdc-list.list-base($query: structure);
-  @include a11y.high-contrast(active, off) {
+  @include cdk.high-contrast(active, off) {
     outline: solid 1px;
   }
 
@@ -116,9 +115,9 @@ $scale: 0.75 !default;
 .mat-mdc-select-placeholder {
   // Delay the transition until the label has animated about a third of the way through, in
   // order to prevent the placeholder from overlapping for a split second.
-  transition: color variables.$swift-ease-out-duration
-      math.div(variables.$swift-ease-out-duration, 3)
-      variables.$swift-ease-out-timing-function;
+  transition: color mat.$private-swift-ease-out-duration
+      math.div(mat.$private-swift-ease-out-duration, 3)
+      mat.$private-swift-ease-out-timing-function;
 
   ._mat-animation-noopable & {
     transition: none;

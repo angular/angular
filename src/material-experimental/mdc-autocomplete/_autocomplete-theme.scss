@@ -1,11 +1,11 @@
+@use '@angular/material' as mat;
 @use '@material/menu-surface/mixins' as mdc-menu-surface;
 @use '@material/list/evolution-mixins' as mdc-list;
+
 @use '../mdc-helpers/mdc-helpers';
-@use '../../material/core/typography/typography';
-@use '../../material/core/theming/theming';
 
 @mixin color($config-or-theme) {
-  $config: theming.get-color-config($config-or-theme);
+  $config: mat.get-color-config($config-or-theme);
   @include mdc-helpers.mat-using-mdc-theme($config) {
     @include mdc-menu-surface.core-styles(mdc-helpers.$mat-theme-styles-query);
     @include mdc-list.without-ripple(mdc-helpers.$mat-theme-styles-query);
@@ -13,8 +13,8 @@
 }
 
 @mixin typography($config-or-theme) {
-  $config: typography.private-typography-to-2018-config(
-      theming.get-typography-config($config-or-theme));
+  $config: mat.private-typography-to-2018-config(
+      mat.get-typography-config($config-or-theme));
   @include mdc-helpers.mat-using-mdc-typography($config) {
     @include mdc-menu-surface.core-styles(mdc-helpers.$mat-typography-styles-query);
 
@@ -29,11 +29,11 @@
 @mixin density($config-or-theme) {}
 
 @mixin theme($theme-or-color-config) {
-  $theme: theming.private-legacy-get-theme($theme-or-color-config);
-  @include theming.private-check-duplicate-theme-styles($theme, 'mat-mdc-autocomplete') {
-    $color: theming.get-color-config($theme);
-    $density: theming.get-density-config($theme);
-    $typography: theming.get-typography-config($theme);
+  $theme: mat.private-legacy-get-theme($theme-or-color-config);
+  @include mat.private-check-duplicate-theme-styles($theme, 'mat-mdc-autocomplete') {
+    $color: mat.get-color-config($theme);
+    $density: mat.get-density-config($theme);
+    $typography: mat.get-typography-config($theme);
 
     @if $color != null {
       @include color($color);

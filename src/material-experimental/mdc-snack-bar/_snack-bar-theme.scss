@@ -1,13 +1,13 @@
+@use '@angular/material' as mat;
 @use '@material/theme/theme-color' as mdc-theme-color;
 @use '@material/snackbar' as mdc-snackbar;
 @use 'sass:color';
 @use 'sass:map';
+
 @use '../mdc-helpers/mdc-helpers';
-@use '../../material/core/typography/typography';
-@use '../../material/core/theming/theming';
 
 @mixin color($config-or-theme) {
-  $config: theming.get-color-config($config-or-theme);
+  $config: mat.get-color-config($config-or-theme);
 
   $orig-fill-color: mdc-snackbar.$fill-color;
   $orig-label-ink-color: mdc-snackbar.$label-ink-color;
@@ -41,7 +41,7 @@
   .mat-mdc-simple-snack-bar .mat-mdc-snack-bar-actions .mdc-snackbar__action.mdc-snackbar__action {
     $is-dark-theme: map.get($config, is-dark);
     $accent: map.get($config, accent);
-    color: if($is-dark-theme, inherit, theming.get-color-from-palette($accent, text));
+    color: if($is-dark-theme, inherit, mat.get-color-from-palette($accent, text));
 
     .mat-ripple-element {
       background-color: currentColor;
@@ -51,8 +51,8 @@
 }
 
 @mixin typography($config-or-theme) {
-  $config: typography.private-typography-to-2018-config(
-      theming.get-typography-config($config-or-theme));
+  $config: mat.private-typography-to-2018-config(
+      mat.get-typography-config($config-or-theme));
   @include mdc-helpers.mat-using-mdc-typography($config) {
     @include mdc-snackbar.core-styles($query: mdc-helpers.$mat-typography-styles-query);
   }
@@ -61,11 +61,11 @@
 @mixin density($config-or-theme) {}
 
 @mixin theme($theme-or-color-config) {
-  $theme: theming.private-legacy-get-theme($theme-or-color-config);
-  @include theming.private-check-duplicate-theme-styles($theme, 'mat-mdc-snack-bar') {
-    $color: theming.get-color-config($theme);
-    $density: theming.get-density-config($theme);
-    $typography: theming.get-typography-config($theme);
+  $theme: mat.private-legacy-get-theme($theme-or-color-config);
+  @include mat.private-check-duplicate-theme-styles($theme, 'mat-mdc-snack-bar') {
+    $color: mat.get-color-config($theme);
+    $density: mat.get-density-config($theme);
+    $typography: mat.get-typography-config($theme);
 
     @if $color != null {
       @include color($color);

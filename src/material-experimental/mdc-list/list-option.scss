@@ -1,11 +1,12 @@
 @use 'sass:map';
+@use '@angular/cdk';
 @use '@material/checkbox/checkbox' as mdc-checkbox;
 @use '@material/list/evolution-variables' as mdc-list-variables;
 @use '@material/checkbox/checkbox-theme' as mdc-checkbox-theme;
+
 @use '../mdc-helpers/mdc-helpers';
-@use '../../cdk/a11y';
-@use './list-option-trailing-avatar-compat';
 @use '../mdc-checkbox/checkbox-private';
+@use './list-option-trailing-avatar-compat';
 
 // For compatibility with the non-MDC list, we support avatars that are shown at the end
 // of the list option. We create a class similar to MDC's `--trailing-icon` one.
@@ -52,7 +53,7 @@
   }
 }
 
-@include a11y.high-contrast(active, off) {
+@include cdk.high-contrast(active, off) {
   // In single selection mode, the selected option is indicated by changing its
   // background color, but that doesn't work in high contrast mode. We add an
   // alternate indication by rendering out a circle.

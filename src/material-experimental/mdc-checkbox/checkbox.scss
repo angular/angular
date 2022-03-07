@@ -1,13 +1,13 @@
+@use '@angular/cdk';
+@use '@angular/material' as mat;
 @use '@material/checkbox/checkbox' as mdc-checkbox;
 @use '@material/checkbox/checkbox-theme' as mdc-checkbox-theme;
 @use '@material/form-field' as mdc-form-field;
 @use '@material/ripple' as mdc-ripple;
 @use '@material/touch-target' as mdc-touch-target;
 @use 'sass:map';
-@use '../../cdk/a11y';
+
 @use '../mdc-helpers/mdc-helpers';
-@use '../../material/core/style/layout-common';
-@use '../../material/core/style/vendor-prefixes';
 @use './checkbox-private';
 
 @include mdc-helpers.disable-fallback-declarations {
@@ -50,7 +50,7 @@
       opacity: map.get(mdc-ripple.$dark-ink-opacities, hover) +
         map.get(mdc-ripple.$dark-ink-opacities, focus);
 
-      @include a11y.high-contrast(active, off) {
+      @include cdk.high-contrast(active, off) {
         outline: solid 3px;
         opacity: 1;
       }
@@ -60,7 +60,7 @@
 
   .mdc-checkbox__background {
     // force browser to show background-color when using the print function
-    @include vendor-prefixes.private-color-adjust(exact);
+    @include mat.private-color-adjust(exact);
   }
 
   // Angular Material supports disabling all animations when NoopAnimationsModule is imported.
@@ -84,7 +84,7 @@
 }
 
 .mat-mdc-checkbox-ripple, .mdc-checkbox__ripple {
-  @include layout-common.fill();
+  @include mat.private-fill();
 
   // Usually the ripple radius would be specified through the MatRipple input, but
   // since we dynamically adjust the size of the ripple container, we cannot use a

@@ -1,13 +1,13 @@
+@use '@angular/material' as mat;
 @use '@material/ripple' as mdc-ripple;
 @use 'sass:map';
-@use '../../material/core/theming/theming';
 
 // Mixin that provides colors for the various states of an interactive list-item. MDC
 // has integrated styles for these states but relies on their complex ripples for it.
 @mixin private-interactive-list-item-state-colors($config) {
   $is-dark-theme: map.get($config, is-dark);
   $active-base-color: if($is-dark-theme, white, black);
-  $selected-color: theming.get-color-from-palette(map.get($config, primary));
+  $selected-color: mat.get-color-from-palette(map.get($config, primary));
 
   .mat-mdc-list-item-interactive {
     &::before {

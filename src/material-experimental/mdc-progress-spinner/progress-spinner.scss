@@ -1,6 +1,7 @@
+@use '@angular/cdk';
 @use '@material/circular-progress' as mdc-circular-progress;
+
 @use '../mdc-helpers/mdc-helpers';
-@use '../../cdk/a11y';
 
 @include mdc-helpers.disable-fallback-declarations {
   @include mdc-circular-progress.core-styles($query: mdc-helpers.$mat-base-styles-query);
@@ -37,7 +38,7 @@
     }
   }
 
-  @include a11y.high-contrast(active, off) {
+  @include cdk.high-contrast(active, off) {
     .mdc-circular-progress__indeterminate-circle-graphic,
     .mdc-circular-progress__determinate-circle {
       // SVG colors aren't inverted automatically in high contrast mode. Set the

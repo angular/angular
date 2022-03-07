@@ -36,8 +36,9 @@ sass_library(
     ],
     deps = [
         ":form_field_partials",
-        "//src/cdk/a11y:a11y_scss_lib",
+        "//src/material:sass_lib",
         "//src/material-experimental/mdc-helpers:mdc_helpers_scss_lib",
+        "//src/material-experimental/mdc-helpers:mdc_scss_deps_lib",
     ],
 )
 
@@ -67,7 +68,8 @@ sass_library(
         "_mdc-text-field-textarea-overrides.scss",
     ],
     deps = [
+        "//src/cdk:sass_lib",
+        "//src/material:sass_lib",
         "//src/material-experimental/mdc-helpers:mdc_scss_deps_lib",
-        "//src/material/core:core_scss_lib",
     ],
 )

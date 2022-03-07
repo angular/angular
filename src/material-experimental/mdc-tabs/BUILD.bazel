@@ -47,6 +47,8 @@ sass_library(
     name = "mdc_tabs_scss_lib",
     srcs = glob(["**/_*.scss"]),
     deps = [
+        "//src/cdk:sass_lib",
+        "//src/material:sass_lib",
         "//src/material-experimental/mdc-helpers:mdc_helpers_scss_lib",
         "//src/material-experimental/mdc-helpers:mdc_scss_deps_lib",
     ],
@@ -56,7 +58,9 @@ sass_binary(
     name = "mdc_tab_body_scss",
     src = "tab-body.scss",
     include_paths = ["external/npm/node_modules"],
-    deps = ["//src/material/core:core_scss_lib"],
+    deps = [
+        "//src/material:sass_lib",
+    ],
 )
 
 sass_binary(
@@ -70,7 +74,10 @@ sass_binary(
     name = "mdc_tab_group_scss",
     src = "tab-group.scss",
     include_paths = ["external/npm/node_modules"],
-    deps = [":mdc_tabs_scss_lib"],
+    deps = [
+        ":mdc_tabs_scss_lib",
+        "//src/material:sass_lib",
+    ],
 )
 
 sass_binary(
