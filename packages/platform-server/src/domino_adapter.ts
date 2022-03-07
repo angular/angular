@@ -44,7 +44,7 @@ export class DominoAdapter extends BrowserDomAdapter {
   override readonly supportsDOMEvents = false;
   private static defaultDoc: Document;
 
-  override createHtmlDocument(): HTMLDocument {
+  override createHtmlDocument(): Document {
     return parseDocument('<html><head><title>fakeTitle</title></head><body></body></html>');
   }
 
