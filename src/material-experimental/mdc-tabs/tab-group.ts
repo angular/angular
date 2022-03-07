@@ -54,6 +54,7 @@ import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
     'class': 'mat-mdc-tab-group',
     '[class.mat-mdc-tab-group-dynamic-height]': 'dynamicHeight',
     '[class.mat-mdc-tab-group-inverted-header]': 'headerPosition === "below"',
+    '[class.mat-mdc-tab-group-stretch-tabs]': 'stretchTabs',
   },
 })
 export class MatTabGroup extends _MatTabGroupBase {
@@ -71,6 +72,16 @@ export class MatTabGroup extends _MatTabGroupBase {
     this._changeDetectorRef.markForCheck();
   }
   private _fitInkBarToContent = false;
+
+  /** Whether tabs should be stretched to fill the header. */
+  @Input('mat-stretch-tabs')
+  get stretchTabs(): boolean {
+    return this._stretchTabs;
+  }
+  set stretchTabs(v: BooleanInput) {
+    this._stretchTabs = coerceBooleanProperty(v);
+  }
+  private _stretchTabs = true;
 
   constructor(
     elementRef: ElementRef,

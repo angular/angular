@@ -60,6 +60,7 @@ import {takeUntil} from 'rxjs/operators';
     'class': 'mat-mdc-tab-nav-bar mat-mdc-tab-header',
     '[class.mat-mdc-tab-header-pagination-controls-enabled]': '_showPaginationControls',
     '[class.mat-mdc-tab-header-rtl]': "_getLayoutDirection() == 'rtl'",
+    '[class.mat-mdc-tab-nav-bar-stretch-tabs]': 'stretchTabs',
     '[class.mat-primary]': 'color !== "warn" && color !== "accent"',
     '[class.mat-accent]': 'color === "accent"',
     '[class.mat-warn]': 'color === "warn"',
@@ -80,6 +81,16 @@ export class MatTabNav extends _MatTabNavBase implements AfterContentInit {
     this._changeDetectorRef.markForCheck();
   }
   _fitInkBarToContent = new BehaviorSubject(false);
+
+  /** Whether tabs should be stretched to fill the header. */
+  @Input('mat-stretch-tabs')
+  get stretchTabs(): boolean {
+    return this._stretchTabs;
+  }
+  set stretchTabs(v: BooleanInput) {
+    this._stretchTabs = coerceBooleanProperty(v);
+  }
+  private _stretchTabs = true;
 
   @ContentChildren(forwardRef(() => MatTabLink), {descendants: true}) _items: QueryList<MatTabLink>;
   @ViewChild('tabListContainer', {static: true}) _tabListContainer: ElementRef;
