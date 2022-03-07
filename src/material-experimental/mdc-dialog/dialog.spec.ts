@@ -2016,13 +2016,6 @@ describe('MDC-based MatDialog with animations enabled', () => {
     flush();
     expect(dialogRef.getState()).toBe(MatDialogState.CLOSED);
   }));
-
-  it("should return the previous dialogRef if the previous dialog hasn't finished animating open", () => {
-    let dialogRef1: MatDialogRef<PizzaMsg>, dialogRef2: MatDialogRef<PizzaMsg>;
-    dialogRef1 = dialog.open(PizzaMsg);
-    dialogRef2 = dialog.open(PizzaMsg);
-    expect(dialogRef1).toEqual(dialogRef2);
-  });
 });
 
 @Directive({selector: 'dir-with-view-container'})

@@ -110,6 +110,9 @@ export class MatDialogConfig<D = any> {
    */
   restoreFocus?: boolean = true;
 
+  /** Whether to wait for the opening animation to finish before trapping focus. */
+  delayFocusTrap?: boolean = true;
+
   /** Scroll strategy to be used for the dialog. */
   scrollStrategy?: ScrollStrategy;
 

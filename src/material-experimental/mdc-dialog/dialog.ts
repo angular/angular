@@ -58,6 +58,10 @@ export class MatDialog extends _MatDialogBase<MatDialogContainer> {
     @Inject(MAT_DIALOG_SCROLL_STRATEGY) scrollStrategy: any,
     @Optional() @SkipSelf() parentDialog: MatDialog,
     overlayContainer: OverlayContainer,
+    /**
+     * @deprecated No longer used. To be removed.
+     * @breaking-change 14.0.0
+     */
     @Optional()
     @Inject(ANIMATION_MODULE_TYPE)
     animationMode?: 'NoopAnimations' | 'BrowserAnimations',
