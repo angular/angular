@@ -12,16 +12,13 @@ import {withBody} from '@angular/private/testing';
 import * as fs from 'fs';
 import * as path from 'path';
 
-const UTF8 = {
-  encoding: 'utf-8'
-};
 const PACKAGE = 'angular/packages/core/test/bundling/cyclic_import';
 
 describe('treeshaking with uglify', () => {
   let content: string;
   const contentPath = require.resolve(path.join(PACKAGE, 'bundle.debug.min.js'));
   beforeAll(() => {
-    content = fs.readFileSync(contentPath, UTF8);
+    content = fs.readFileSync(contentPath, {encoding: 'utf-8'});
   });
 
   describe('functional test in domino', () => {
