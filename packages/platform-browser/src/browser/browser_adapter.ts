@@ -42,7 +42,7 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
     doc = doc || this.getDefaultDocument();
     return doc.createElement(tagName);
   }
-  createHtmlDocument(): HTMLDocument {
+  createHtmlDocument(): Document {
     return document.implementation.createHTMLDocument('fakeTitle');
   }
   getDefaultDocument(): Document {
