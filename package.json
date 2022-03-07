@@ -8,7 +8,7 @@
   "license": "MIT",
   "//engines-comment": "Keep this in sync with /aio/package.json and /aio/tools/examples/shared/package.json",
   "engines": {
-    "node": "^12.20.0 || ^14.15.0 || >=16.10.0",
+    "node": "^14.15.0 || >=16.10.0",
     "yarn": ">=1.22.4 <2",
     "npm": "Please use yarn instead of NPM to install dependencies"
   },
@@ -96,7 +96,7 @@
     "@types/jasmine-ajax": "^3.3.1",
     "@types/jasminewd2": "^2.0.8",
     "@types/multimatch": "^4.0.0",
-    "@types/node": "^12.11.1",
+    "@types/node": "^14.15.0",
     "@types/resize-observer-browser": "^0.1.5",
     "@types/selenium-webdriver": "3.0.7",
     "@types/semver": "^7.3.4",

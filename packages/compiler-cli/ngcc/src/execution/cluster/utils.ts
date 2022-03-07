@@ -82,6 +82,6 @@ export const sendMessageToWorker = (workerId: number, msg: MessageToWorker): Pro
   }
 
   return new Promise((resolve, reject) => {
-    worker.send(msg, (err: Error|null) => (err === null) ? resolve() : reject(err));
+    worker.send(msg, undefined, (err: Error|null) => (err === null) ? resolve() : reject(err));
   });
 };

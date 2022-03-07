@@ -44,7 +44,7 @@ describe('sourcemaps', function() {
       const decoder = new SourceMapConsumer(JSON.parse(sourceMapData) as RawSourceMap);
       const originalPosition = decoder.originalPositionFor({line: errorLine, column: errorColumn});
       const sourceCodeLines = readFileSync(require.resolve('../../src/sourcemap/index.ts'), {
-                                encoding: 'UTF-8'
+                                encoding: 'utf-8'
                               }).split('\n');
       expect(sourceCodeLines[originalPosition.line - 1])
           .toMatch(/throw new Error\(\'Sourcemap test\'\)/);
