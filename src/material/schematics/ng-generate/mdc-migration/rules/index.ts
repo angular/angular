@@ -9,6 +9,7 @@
 import {ButtonStylesMigrator} from './components/button/button-styles';
 import {CardStylesMigrator} from './components/card/card-styles';
 import {CheckboxStylesMigrator} from './components/checkbox/checkbox-styles';
+import {DialogStylesMigrator} from './components/dialog/dialog-styles';
 import {PaginatorStylesMigrator} from './components/paginator/paginator-styles';
 import {ProgressBarStylesMigrator} from './components/progress-bar/progress-bar-styles';
 import {ProgressSpinnerStylesMigrator} from './components/progress-spinner/progress-spinner-styles';
@@ -21,6 +22,7 @@ export const MIGRATORS: StyleMigrator[] = [
   new ButtonStylesMigrator(),
   new CardStylesMigrator(),
   new CheckboxStylesMigrator(),
+  new DialogStylesMigrator(),
   new PaginatorStylesMigrator(),
   new ProgressBarStylesMigrator(),
   new ProgressSpinnerStylesMigrator(),
