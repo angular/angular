@@ -53,7 +53,7 @@ function generateUsages(command, parentCommand) {
   // Handle required and optional command line args.
   // Wrap them in a <var> element.
   const commandUsageHtmlString = usage
-    .replace(/>/g, '&gt;&gt;/var>')
+    .replace(/>/g, '&gt;/var>&gt;')
     .replace(/</g, '&lt;<var>')
     .replace(/&gt;\//g, '</')
     .replace(/\[/g, '[<var>')

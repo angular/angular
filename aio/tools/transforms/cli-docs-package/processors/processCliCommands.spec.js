@@ -424,8 +424,8 @@ describe('processCliCommands processor', () => {
     };
     processor.$process([doc, navigationStub]);
     expect(doc.usages).toEqual([
-      'ng <span class="cli-name">name</span> &lt;<var>arg0&gt;</var> [<var>arg1</var>]',
-      'ng <span class="cli-name">c</span> &lt;<var>arg0&gt;</var> [<var>arg1</var>]'
+      'ng <span class="cli-name">name</span> &lt;<var>arg0</var>&gt; [<var>arg1</var>]',
+      'ng <span class="cli-name">c</span> &lt;<var>arg0</var>&gt; [<var>arg1</var>]'
     ]);
 
     expect(doc.subcommands[0].usages).toEqual([
