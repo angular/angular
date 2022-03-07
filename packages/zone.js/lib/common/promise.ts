@@ -96,7 +96,7 @@ Zone.__load_patch('ZoneAwarePromise', (global: any, Zone: ZoneType, api: _ZonePr
   const REJECTED_NO_CATCH = 0;
 
   function makeResolver(promise: ZoneAwarePromise<any>, state: boolean): (value: any) => void {
-    return (v) => {
+    return (v: any) => {
       try {
         resolvePromise(promise, state, v);
       } catch (err) {
@@ -445,7 +445,11 @@ Zone.__load_patch('ZoneAwarePromise', (global: any, Zone: ZoneType, api: _ZonePr
       (promise as any)[symbolState] = UNRESOLVED;
       (promise as any)[symbolValue] = [];  // queue;
       try {
-        executor && executor(makeResolver(promise, RESOLVED), makeResolver(promise, REJECTED));
+        const onceWrapper = once();
+        executor &&
+            executor(
+                onceWrapper(makeResolver(promise, RESOLVED)),
+                onceWrapper(makeResolver(promise, REJECTED)));
       } catch (error) {
         resolvePromise(promise, false, error);
       }
