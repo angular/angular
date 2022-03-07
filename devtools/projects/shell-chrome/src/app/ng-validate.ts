@@ -71,6 +71,6 @@ function installScript(fn: string): void {
   }
 }
 
-if (document instanceof HTMLDocument) {
+if (document instanceof Document) {
   installScript(detectAngular.toString());
 }
