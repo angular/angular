@@ -32,6 +32,8 @@ $sample-project-theme: mat.define-light-theme((
 // Alternatively, you can import and @include the theme mixins for each component
 // that you are using.
 @include mat.all-component-themes($sample-project-theme);
+@include mat.mdc-table-theme($sample-project-theme);
+@include mat.mdc-table-typography($sample-project-theme);
 @include mat.mdc-slider-theme($sample-project-theme);
 @include mat.mdc-slider-typography($sample-project-theme);
 @include mat.mdc-slide-toggle-theme($sample-project-theme);

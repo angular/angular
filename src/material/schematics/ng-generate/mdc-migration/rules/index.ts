@@ -16,6 +16,7 @@ import {ProgressSpinnerStylesMigrator} from './components/progress-spinner/progr
 import {RadioStylesMigrator} from './components/radio/radio-styles';
 import {SlideToggleStylesMigrator} from './components/slide-toggle/slide-toggle-styles';
 import {SliderStylesMigrator} from './components/slider/slider-styles';
+import {TableStylesMigrator} from './components/table/table-styles';
 import {StyleMigrator} from './style-migrator';
 
 export const MIGRATORS: StyleMigrator[] = [
@@ -29,4 +30,5 @@ export const MIGRATORS: StyleMigrator[] = [
   new RadioStylesMigrator(),
   new SlideToggleStylesMigrator(),
   new SliderStylesMigrator(),
+  new TableStylesMigrator(),
 ];
