@@ -12,6 +12,7 @@ import {
   ComponentHarness,
   ComponentHarnessConstructor,
   HarnessPredicate,
+  TestElement,
 } from '@angular/cdk/testing';
 import {
   MatOptgroupHarness,
@@ -71,6 +72,10 @@ export abstract class _MatAutocompleteHarnessBase<
 
   /** Gets the options inside the autocomplete panel. */
   async getOptions(filters?: Omit<OptionFilters, 'ancestor'>): Promise<Option[]> {
+    if (!(await this.isOpen())) {
+      throw new Error('Unable to retrieve options for autocomplete. Autocomplete panel is closed.');
+    }
+
     return this._documentRootLocator.locatorForAll(
       this._optionClass.with({
         ...(filters || {}),
@@ -81,6 +86,12 @@ export abstract class _MatAutocompleteHarnessBase<
 
   /** Gets the option groups inside the autocomplete panel. */
   async getOptionGroups(filters?: Omit<OptionGroupFilters, 'ancestor'>): Promise<OptionGroup[]> {
+    if (!(await this.isOpen())) {
+      throw new Error(
+        'Unable to retrieve option groups for autocomplete. Autocomplete panel is closed.',
+      );
+    }
+
     return this._documentRootLocator.locatorForAll(
       this._optionGroupClass.with({
         ...(filters || {}),
@@ -106,7 +117,7 @@ export abstract class _MatAutocompleteHarnessBase<
   }
 
   /** Gets the panel associated with this autocomplete trigger. */
-  private async _getPanel() {
+  private async _getPanel(): Promise<TestElement | null> {
     // Technically this is static, but it needs to be in a
     // function, because the autocomplete's panel ID can changed.
     return this._documentRootLocator.locatorForOptional(await this._getPanelSelector())();
