@@ -122,12 +122,12 @@ export abstract class EventManagerPlugin {
    */
   ensureAddListenerInZone(element: HTMLElement, eventName: string, handler: Function): Function {
     const zone = this.manager.getZone();
-    if (!NgZone.isInAngularZone()) {
-      return zone.run(() => {
-        return getDOM().onAndCancel(element, eventName, handler);
-      });
-    } else {
-      return getDOM().onAndCancel(element, eventName, handler);
-    }
+    return zone.runOutsideAngular(() => {
+      const handlerInZone = () => {
+        return zone.run(handler as any, element, [eventName]);
+      };
+      handlerInZone['__ngUnwrap__'] = (handler as any)['__ngUnwrap__'] || handler;
+      return getDOM().onAndCancel(element, eventName, handlerInZone);
+    });
   }
 }
