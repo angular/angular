@@ -1,6 +1,7 @@
 @use 'sass:math';
+@use '@angular/cdk';
+
 @use '../core/style/variables';
-@use '../../cdk/a11y';
 
 // Styles that only apply to the outline appearance of the form-field.
 
@@ -118,7 +119,7 @@ $outline-subscript-padding: math.div($outline-side-padding, $outline-subscript-f
   }
 
   &.mat-focused .mat-form-field-outline-thick {
-    @include a11y.high-contrast(active, off) {
+    @include cdk.high-contrast(active, off) {
       border: 3px dashed;
     }
   }
@@ -139,7 +140,7 @@ $outline-subscript-padding: math.div($outline-side-padding, $outline-subscript-f
   }
 
   &.mat-form-field-disabled .mat-form-field-outline {
-    @include a11y.high-contrast(active, off) {
+    @include cdk.high-contrast(active, off) {
       color: GrayText;
     }
   }

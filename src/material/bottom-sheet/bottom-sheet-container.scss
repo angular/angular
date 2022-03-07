@@ -1,4 +1,4 @@
-@use '../../cdk/a11y';
+@use '@angular/cdk';
 
 // The bottom sheet minimum width on larger screen sizes is based
 // on increments of the toolbar, according to the spec. See:
@@ -17,7 +17,7 @@ $container-horizontal-padding: 16px !default;
   max-height: 80vh;
   overflow: auto;
 
-  @include a11y.high-contrast(active, off) {
+  @include cdk.high-contrast(active, off) {
     outline: 1px solid;
   }
 }

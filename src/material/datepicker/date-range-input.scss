@@ -1,7 +1,8 @@
 @use 'sass:math';
+@use '@angular/cdk';
+
 @use '../core/style/variables';
 @use '../core/style/vendor-prefixes';
-@use '../../cdk/a11y';
 
 $date-range-input-separator-spacing: 4px;
 $date-range-input-part-max-width: calc(50% - #{$date-range-input-separator-spacing});
@@ -82,7 +83,7 @@ $date-range-input-part-max-width: calc(50% - #{$date-range-input-separator-spaci
       -webkit-text-fill-color: transparent;
       transition: none;
 
-      @include a11y.high-contrast(active, off) {
+      @include cdk.high-contrast(active, off) {
         // In high contrast mode the browser will render the
         // placeholder despite the `color: transparent` above.
         opacity: 0;

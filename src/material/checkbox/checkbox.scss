@@ -1,10 +1,11 @@
 @use 'sass:math';
+@use '@angular/cdk';
+
 @use '../core/style/elevation';
 @use '../core/style/checkbox-common';
 @use '../core/style/layout-common';
 @use '../core/style/vendor-prefixes';
 @use '../core/style/private';
-@use '../../cdk/a11y';
 @use '../core/style/variables';
 
 // Manual calculation done on SVG
@@ -205,7 +206,7 @@ $_mark-stroke-size: math.div(2, 15) * checkbox-common.$size !default;
   }
 
   &.cdk-keyboard-focused .mat-checkbox-ripple {
-    @include a11y.high-contrast(active, off) {
+    @include cdk.high-contrast(active, off) {
       outline: solid 3px;
     }
   }
@@ -287,7 +288,7 @@ $_mark-stroke-size: math.div(2, 15) * checkbox-common.$size !default;
     variables.$linear-out-slow-in-timing-function;
 
   // force browser to show background-color when using the print function
-  @include vendor-prefixes.private-color-adjust(exact);
+  @include vendor-prefixes.color-adjust(exact);
 
   ._mat-animation-noopable & {
     transition: none;
@@ -296,7 +297,7 @@ $_mark-stroke-size: math.div(2, 15) * checkbox-common.$size !default;
   // `.mat-checkbox` here is redundant, but we need it to increase the specificity so that
   // these styles don't get overwritten by the `background-color` from the theme.
   .mat-checkbox & {
-    @include a11y.high-contrast(active, off) {
+    @include cdk.high-contrast(active, off) {
       // Needs to be removed because it hides the checkbox outline.
       background: none;
     }
@@ -347,7 +348,7 @@ $_mark-stroke-size: math.div(2, 15) * checkbox-common.$size !default;
     width: $_mark-stroke-size;
   }
 
-  @include a11y.high-contrast(black-on-white, off) {
+  @include cdk.high-contrast(black-on-white, off) {
     // In the checkbox theme this `stroke` has !important which ends up overriding the browser's
     // automatic color inversion so we need to re-invert it ourselves for black-on-white.
     stroke: #000 !important;
@@ -363,7 +364,7 @@ $_mark-stroke-size: math.div(2, 15) * checkbox-common.$size !default;
   transform: scaleX(0) rotate(0deg);
   border-radius: 2px;
 
-  @include a11y.high-contrast(active, off) {
+  @include cdk.high-contrast(active, off) {
     height: 0;
     border-top: solid $height;
     margin-top: $height;
@@ -427,7 +428,7 @@ $_mark-stroke-size: math.div(2, 15) * checkbox-common.$size !default;
 .mat-checkbox-disabled {
   cursor: default;
 
-  @include a11y.high-contrast(active, off) {
+  @include cdk.high-contrast(active, off) {
     opacity: 0.5;
   }
 }

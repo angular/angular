@@ -1,9 +1,10 @@
 @use 'sass:math';
+@use '@angular/cdk';
+
 @use '../core/style/menu-common';
 @use '../core/style/list-common';
 @use '../core/style/variables';
 @use '../core/style/vendor-prefixes';
-@use '../../cdk/a11y';
 
 $arrow-size: 5px !default;
 $arrow-margin: 4px !default;
@@ -109,7 +110,7 @@ $placeholder-arrow-space: 2 * ($arrow-size + $arrow-margin);
   border-radius: 4px;
   outline: 0;
 
-  @include a11y.high-contrast(active, off) {
+  @include cdk.high-contrast(active, off) {
     outline: solid 1px;
   }
 }

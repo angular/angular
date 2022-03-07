@@ -1,8 +1,8 @@
+@use '@angular/cdk';
 @use 'sass:math';
+
 @use '../core/style/variables';
 @use '../core/style/vendor-prefixes';
-@use '../../cdk/a11y';
-
 
 // This refers to the thickness of the slider. On a horizontal slider this is the height, on a
 // vertical slider this is the width.
@@ -45,7 +45,7 @@ $focus-ring-size: 30px !default;
 
 .mat-slider-wrapper {
   // force browser to show background-color when using the print function
-  @include vendor-prefixes.private-color-adjust(exact);
+  @include vendor-prefixes.color-adjust(exact);
   position: absolute;
 }
 
@@ -153,7 +153,7 @@ $focus-ring-size: 30px !default;
     border-radius  variables.$swift-ease-out-duration variables.$swift-ease-out-timing-function,
     background-color  variables.$swift-ease-out-duration variables.$swift-ease-out-timing-function;
 
-  @include a11y.high-contrast(active, off) {
+  @include cdk.high-contrast(active, off) {
     outline: solid 1px;
   }
 }
@@ -314,7 +314,7 @@ $focus-ring-size: 30px !default;
     height: $track-thickness;
     width: 100%;
 
-    @include a11y.high-contrast(active, off) {
+    @include cdk.high-contrast(active, off) {
       height: 0;
       outline: solid $track-thickness;
       top: math.div($track-thickness, 2);
@@ -354,7 +354,7 @@ $focus-ring-size: 30px !default;
       transform: rotate(45deg);
     }
 
-    @include a11y.high-contrast(active, off) {
+    @include cdk.high-contrast(active, off) {
       .mat-slider-thumb-label,
       .mat-slider-thumb-label-text {
         transform: none;
@@ -404,7 +404,7 @@ $focus-ring-size: 30px !default;
     width: $track-thickness;
     height: 100%;
 
-    @include a11y.high-contrast(active, off) {
+    @include cdk.high-contrast(active, off) {
       width: 0;
       outline: solid $track-thickness;
       left: math.div($track-thickness, 2);

@@ -1,7 +1,8 @@
 @use 'sass:math';
+@use '@angular/cdk';
+
 @use '../core/style/variables';
 @use '../core/style/vendor-prefixes';
-@use '../../cdk/a11y';
 
 // The Input element proper.
 .mat-input-element {
@@ -119,7 +120,7 @@
       // from overlapping when the label comes back down.
       transition: none;
 
-      @include a11y.high-contrast(active, off) {
+      @include cdk.high-contrast(active, off) {
         // In high contrast mode the browser will render the
         // placeholder despite the `color: transparent` above.
         opacity: 0;

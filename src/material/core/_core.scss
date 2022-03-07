@@ -1,6 +1,4 @@
-@use '../../cdk/overlay';
-@use '../../cdk/a11y';
-@use '../../cdk/text-field';
+@use '@angular/cdk';
 
 // Core styles that can be used to apply material design treatments to any element.
 @use './ripple/ripple';
@@ -11,10 +9,10 @@
 @mixin core($typography-config: null) {
   @include all-typography.all-component-typographies($typography-config);
   @include ripple.ripple();
-  @include a11y.a11y-visually-hidden();
-  @include overlay.overlay();
-  @include text-field.text-field-autosize();
-  @include text-field.text-field-autofill();
+  @include cdk.a11y-visually-hidden();
+  @include cdk.overlay();
+  @include cdk.text-field-autosize();
+  @include cdk.text-field-autofill();
 
   @include focus-indicators.private-strong-focus-indicators-positioning();
   @include _mdc-core();

@@ -52,6 +52,7 @@ sass_binary(
     src = "stepper.scss",
     deps = [
         ":stepper_scss_lib",
+        "//src/cdk:sass_lib",
         "//src/material/core:core_scss_lib",
     ],
 )
@@ -61,6 +62,7 @@ sass_binary(
     src = "step-header.scss",
     deps = [
         ":stepper_scss_lib",
+        "//src/cdk:sass_lib",
         "//src/material/core:core_scss_lib",
     ],
 )

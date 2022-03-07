@@ -1,8 +1,10 @@
+@use '@angular/cdk';
+
+@use './button-base';
+@use '../core/style/layout-common';
+
 // TODO(jelbourn): Measure perf benefits for translate3d and will-change.
 // TODO(jelbourn): Figure out if anchor hover underline actually happens in any browser.
-@use 'button-base';
-@use '../core/style/layout-common';
-@use '../../cdk/a11y';
 
 .mat-button, .mat-icon-button {
   .mat-button-focus-overlay {
@@ -155,7 +157,7 @@
 
 // Add an outline to make buttons more visible in high contrast mode. Stroked buttons
 // don't need a special look in high-contrast mode, because those already have an outline.
-@include a11y.high-contrast(active, off) {
+@include cdk.high-contrast(active, off) {
   .mat-button, .mat-flat-button, .mat-raised-button, .mat-icon-button, .mat-fab, .mat-mini-fab {
     outline: solid 1px;
   }

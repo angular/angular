@@ -62,16 +62,16 @@ sass_library(
         exclude = ALL_THEMING_FILES,
     ),
     deps = [
-        "//src/cdk/a11y:a11y_scss_lib",
-        "//src/cdk/overlay:overlay_scss_lib",
-        "//src/cdk/text-field:text_field_scss_lib",
+        "//src/cdk:sass_lib",
     ],
 )
 
 sass_library(
     name = "theming_scss_lib",
     srcs = ALL_THEMING_FILES,
-    deps = MATERIAL_SCSS_LIBS,
+    deps = MATERIAL_SCSS_LIBS + [
+        "//src/cdk:sass_lib",
+    ],
 )
 
 sass_binary(

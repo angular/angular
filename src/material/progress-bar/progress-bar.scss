@@ -1,6 +1,7 @@
+@use '@angular/cdk';
+
 @use '../core/style/vendor-prefixes';
 @use '../core/style/private';
-@use '../../cdk/a11y';
 
 $height: 4px !default;
 $full-animation-duration: 2000ms !default;
@@ -31,7 +32,7 @@ $piece-animation-duration: 250ms !default;
     // during the background scroll animation.
     width: calc(100% + 10px);
 
-    @include a11y.high-contrast(active, off) {
+    @include cdk.high-contrast(active, off) {
       display: none;
     }
   }
@@ -42,7 +43,7 @@ $piece-animation-duration: 250ms !default;
     transform-origin: top left;
     transition: transform $piece-animation-duration ease;
 
-    @include a11y.high-contrast(active, off) {
+    @include cdk.high-contrast(active, off) {
       border-top: solid 5px;
       opacity: 0.5;
     }
@@ -60,7 +61,7 @@ $piece-animation-duration: 250ms !default;
     transform-origin: top left;
     transition: transform $piece-animation-duration ease;
 
-    @include a11y.high-contrast(active, off) {
+    @include cdk.high-contrast(active, off) {
       border-top: solid $height;
     }
   }

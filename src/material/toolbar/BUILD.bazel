@@ -40,7 +40,7 @@ sass_binary(
     name = "toolbar_scss",
     src = "toolbar.scss",
     deps = [
-        "//src/cdk/a11y:a11y_scss_lib",
+        "//src/cdk:sass_lib",
     ],
 )
 

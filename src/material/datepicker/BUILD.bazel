@@ -59,20 +59,23 @@ sass_binary(
 sass_binary(
     name = "datepicker_toggle_scss",
     src = "datepicker-toggle.scss",
-    deps = ["//src/cdk/a11y:a11y_scss_lib"],
+    deps = ["//src/cdk:sass_lib"],
 )
 
 sass_binary(
     name = "calendar_scss",
     src = "calendar.scss",
-    deps = ["//src/material/core:core_scss_lib"],
+    deps = [
+        "//src/cdk:sass_lib",
+        "//src/material/core:core_scss_lib",
+    ],
 )
 
 sass_binary(
     name = "calendar_body_scss",
     src = "calendar-body.scss",
     deps = [
-        "//src/cdk/a11y:a11y_scss_lib",
+        "//src/cdk:sass_lib",
         "//src/material/core:core_scss_lib",
     ],
 )
@@ -80,7 +83,10 @@ sass_binary(
 sass_binary(
     name = "date_range_input_scss",
     src = "date-range-input.scss",
-    deps = ["//src/material/core:core_scss_lib"],
+    deps = [
+        "//src/cdk:sass_lib",
+        "//src/material/core:core_scss_lib",
+    ],
 )
 
 sass_binary(

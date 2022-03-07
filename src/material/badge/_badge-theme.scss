@@ -5,10 +5,11 @@
 @use 'sass:map';
 @use 'sass:meta';
 @use 'sass:math';
+@use '@angular/cdk';
+
 @use '../core/theming/theming';
 @use '../core/typography/typography';
 @use '../core/typography/typography-utils';
-@use '../../cdk/a11y';
 
 $font-size: 12px;
 $font-weight: 600;
@@ -166,7 +167,7 @@ $_badge-structure-emitted: false !default;
     color: theming.get-color-from-palette($primary, default-contrast);
     background: theming.get-color-from-palette($primary);
 
-    @include a11y.high-contrast(active, off) {
+    @include cdk.high-contrast(active, off) {
       outline: solid 1px;
       border-radius: 0;
     }

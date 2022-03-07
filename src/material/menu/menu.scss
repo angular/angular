@@ -1,7 +1,8 @@
-// TODO(kara): update vars for desktop when MD team responds
+
+@use '@angular/cdk';
+
 @use '../core/style/button-common';
 @use '../core/style/menu-common';
-@use '../../cdk/a11y';
 
 $vertical-padding: 8px !default;
 $border-radius: 4px !default;
@@ -37,7 +38,7 @@ mat-menu {
     pointer-events: none;
   }
 
-  @include a11y.high-contrast(active, off) {
+  @include cdk.high-contrast(active, off) {
     outline: solid 1px;
   }
 }
@@ -67,7 +68,7 @@ mat-menu {
     right: 0;
   }
 
-  @include a11y.high-contrast(active, off) {
+  @include cdk.high-contrast(active, off) {
     $outline-width: 1px;
 
     // We need to move the item 1px down, because Firefox seems to have

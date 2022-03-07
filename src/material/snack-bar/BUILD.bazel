@@ -45,7 +45,9 @@ sass_library(
 sass_binary(
     name = "snack_bar_container_scss",
     src = "snack-bar-container.scss",
-    deps = ["//src/cdk/a11y:a11y_scss_lib"],
+    deps = [
+        "//src/cdk:sass_lib",
+    ],
 )
 
 sass_binary(

@@ -1,7 +1,8 @@
+@use '@angular/cdk';
+
 @use '../core/style/variables';
 @use '../core/style/private';
 @use '../core/style/vendor-prefixes';
-@use '../../cdk/a11y';
 
 $tab-bar-height: 48px !default;
 $tab-animation-duration: 500ms !default;
@@ -27,7 +28,7 @@ $tab-animation-duration: 500ms !default;
       opacity: 1;
     }
 
-    @include a11y.high-contrast(active, off) {
+    @include cdk.high-contrast(active, off) {
       $outline-width: 2px;
       outline: dotted $outline-width;
       outline-offset: -$outline-width; // Not supported on IE, but looks better everywhere else.
@@ -37,7 +38,7 @@ $tab-animation-duration: 500ms !default;
   &.mat-tab-disabled {
     cursor: default;
 
-    @include a11y.high-contrast(active, off) {
+    @include cdk.high-contrast(active, off) {
       opacity: 0.5;
     }
   }
@@ -49,7 +50,7 @@ $tab-animation-duration: 500ms !default;
     white-space: nowrap;
   }
 
-  @include a11y.high-contrast(active, off) {
+  @include cdk.high-contrast(active, off) {
     opacity: 1;
   }
 }
@@ -69,7 +70,7 @@ $tab-animation-duration: 500ms !default;
     top: 0;
   }
 
-  @include a11y.high-contrast(active, off) {
+  @include cdk.high-contrast(active, off) {
     outline: solid $height;
     height: 0;
   }

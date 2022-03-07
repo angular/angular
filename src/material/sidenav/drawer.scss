@@ -1,6 +1,7 @@
+@use '@angular/cdk';
+
 @use '../core/style/variables';
 @use '../core/style/layout-common';
-@use '../../cdk/a11y';
 
 $drawer-content-z-index: 1;
 $drawer-side-drawer-z-index: 2;
@@ -83,7 +84,7 @@ $drawer-over-drawer-z-index: 4;
     }
   }
 
-  @include a11y.high-contrast(active, off) {
+  @include cdk.high-contrast(active, off) {
     opacity: 0.5;
   }
 }
@@ -120,13 +121,13 @@ $drawer-over-drawer-z-index: 4;
   transform: translate3d(-100%, 0, 0);
 
   &, [dir='rtl'] &.mat-drawer-end {
-    @include a11y.high-contrast(active, off) {
+    @include cdk.high-contrast(active, off) {
       border-right: $high-contrast-border;
     }
   }
 
   [dir='rtl'] &, &.mat-drawer-end {
-    @include a11y.high-contrast(active, off) {
+    @include cdk.high-contrast(active, off) {
       border-left: $high-contrast-border;
       border-right: none;
     }

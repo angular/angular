@@ -29,7 +29,7 @@
   backface-visibility: $value;
 }
 
-@mixin private-color-adjust($value) {
+@mixin color-adjust($value) {
   -webkit-print-color-adjust: $value;
   color-adjust: $value;
 }

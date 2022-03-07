@@ -1,8 +1,9 @@
+@use '@angular/cdk';
 @use 'sass:math';
+
 @use '../style/menu-common';
 @use '../style/vendor-prefixes';
 @use '../style/layout-common';
-@use '../../../cdk/a11y';
 
 .mat-option {
   @include menu-common.item-base();
@@ -30,7 +31,7 @@
     }
   }
 
-  @include a11y.high-contrast(active, off) {
+  @include cdk.high-contrast(active, off) {
     $high-contrast-border-width: 1px;
 
     // Add a margin to offset the border that we're adding to active option, in order

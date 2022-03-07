@@ -1,7 +1,7 @@
+@use '@angular/cdk';
+
 @use '../core/style/variables';
 @use '../core/style/private';
-@use '../../cdk/a11y';
-
 
 $_default-radius: 45px;
 $_default-circumference: variables.$pi * $_default-radius * 2;
@@ -28,7 +28,7 @@ $_default-circumference: variables.$pi * $_default-radius * 2;
     fill: transparent;
     transition: stroke-dashoffset 225ms linear;
 
-    @include a11y.high-contrast(active, off) {
+    @include cdk.high-contrast(active, off) {
       // SVG colors aren't inverted automatically in high contrast mode. Set the
       // stroke to `CanvasText` in order to respect the user's color settings.
       // Note that we use `CanvasText` instead of `currentColor`, because

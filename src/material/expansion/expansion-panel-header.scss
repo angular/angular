@@ -1,5 +1,6 @@
+@use '@angular/cdk';
+
 @use '../core/style/layout-common';
-@use '../../cdk/a11y';
 @use './expansion-variables';
 @use './expansion-mixins';
 
@@ -79,7 +80,7 @@
   vertical-align: middle;
 }
 
-@include a11y.high-contrast(active, off) {
+@include cdk.high-contrast(active, off) {
   @include expansion-mixins.private-expansion-focus {
     &::before {
       // These styles are identical to the ones generated for all

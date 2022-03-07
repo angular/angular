@@ -19,9 +19,8 @@ filegroup(
     srcs = ["//src/material/%s:overview" % name for name in MATERIAL_ENTRYPOINTS],
 )
 
-# Makes the theming bundle available in the release output as `angular/material/theming`.
 sass_library(
-    name = "theming_bundle",
+    name = "sass_lib",
     srcs = [
         "_index.scss",
         "_theming.scss",
@@ -36,7 +35,7 @@ ng_package(
         "package.json",
     ],
     data = [
-        ":theming_bundle",
+        ":sass_lib",
         "//src/material/core:theming_scss_lib",
         "//src/material/prebuilt-themes:deeppurple-amber",
         "//src/material/prebuilt-themes:indigo-pink",

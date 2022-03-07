@@ -1,5 +1,6 @@
+@use '@angular/cdk';
+
 @use '../core/style/variables';
-@use '../../cdk/a11y';
 
 
 // Styles that only apply to the standard appearance of the form-field.
@@ -21,7 +22,7 @@ $standard-padding-top: 0.75em !default;
   .mat-form-field-underline {
     height: $standard-underline-height;
 
-    @include a11y.high-contrast(active, off) {
+    @include cdk.high-contrast(active, off) {
       height: 0;
       border-top: solid $standard-underline-height;
     }
@@ -32,7 +33,7 @@ $standard-padding-top: 0.75em !default;
     bottom: 0;
     height: $height;
 
-    @include a11y.high-contrast(active, off) {
+    @include cdk.high-contrast(active, off) {
       height: 0;
       border-top: solid $height;
     }
@@ -42,7 +43,7 @@ $standard-padding-top: 0.75em !default;
     background-position: 0;
     background-color: transparent;
 
-    @include a11y.high-contrast(active, off) {
+    @include cdk.high-contrast(active, off) {
       border-top-style: dotted;
       border-top-width: 2px;
     }

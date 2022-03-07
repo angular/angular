@@ -1,6 +1,7 @@
 @use 'sass:math';
+@use '@angular/cdk';
+
 @use '../core/style/button-common';
-@use '../../cdk/a11y';
 
 $calendar-body-label-padding-start: 5% !default;
 // We don't want the label to jump around when we switch between month and year views, so we use
@@ -167,7 +168,7 @@ $calendar-range-end-body-cell-size:
   // Fade out the disabled cells so that they can be distinguished from the enabled ones. Note that
   // ideally we'd use `color: GreyText` here which is what the browser uses for disabled buttons,
   // but we can't because Firefox doesn't recognize it.
-  @include a11y.high-contrast(active, off) {
+  @include cdk.high-contrast(active, off) {
     opacity: 0.5;
   }
 }
@@ -200,12 +201,12 @@ $calendar-range-end-body-cell-size:
     position: absolute;
   }
 
-  @include a11y.high-contrast(active, off) {
+  @include cdk.high-contrast(active, off) {
     border: none;
   }
 }
 
-@include a11y.high-contrast(active, off) {
+@include cdk.high-contrast(active, off) {
   $main-range-border: solid 1px;
   $comparison-range-border: dashed 1px;
 

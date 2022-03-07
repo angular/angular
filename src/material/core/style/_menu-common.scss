@@ -1,4 +1,5 @@
-@use '../../../cdk/a11y';
+@use '@angular/cdk';
+
 @use './list-common';
 @use './layout-common';
 
@@ -84,7 +85,7 @@ $icon-margin: 16px !default;
   }
 
   // Fix for Chromium-based browsers blending in the `currentColor` with the background.
-  @include a11y.high-contrast(active, off) {
+  @include cdk.high-contrast(active, off) {
     fill: CanvasText;
   }
 }

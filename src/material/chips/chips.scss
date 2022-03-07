@@ -1,8 +1,9 @@
+@use '@angular/cdk';
+
 @use '../core/style/variables';
 @use '../core/style/elevation';
 @use '../core/style/layout-common';
 @use '../core/style/private';
-@use '../../cdk/a11y';
 
 $chip-min-height: 32px;
 $chip-vertical-padding: 7px;
@@ -88,7 +89,7 @@ $chip-remove-size: 18px;
     }
   }
 
-  @include a11y.high-contrast(active, off) {
+  @include cdk.high-contrast(active, off) {
     outline: solid 1px;
 
     &:focus {

@@ -1,5 +1,4 @@
-@use '../../cdk/a11y';
-
+@use '@angular/cdk';
 
 $padding: 24px !default;
 $border-radius: 4px !default;
@@ -23,7 +22,7 @@ $button-margin: 8px !default;
   min-height: inherit;
   max-height: inherit;
 
-  @include a11y.high-contrast(active, off) {
+  @include cdk.high-contrast(active, off) {
     outline: solid 1px;
   }
 }

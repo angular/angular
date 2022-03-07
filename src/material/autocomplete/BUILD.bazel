@@ -46,7 +46,7 @@ sass_binary(
     name = "autocomplete_scss",
     src = "autocomplete.scss",
     deps = [
-        "//src/cdk/a11y:a11y_scss_lib",
+        "//src/cdk:sass_lib",
         "//src/material/core:core_scss_lib",
     ],
 )

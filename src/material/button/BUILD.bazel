@@ -39,7 +39,7 @@ sass_binary(
     src = "button.scss",
     deps = [
         ":button_scss_lib",
-        "//src/cdk/a11y:a11y_scss_lib",
+        "//src/cdk:sass_lib",
         "//src/material/core:core_scss_lib",
     ],
 )

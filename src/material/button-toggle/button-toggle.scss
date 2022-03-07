@@ -1,6 +1,7 @@
+@use '@angular/cdk';
+
 @use '../core/style/vendor-prefixes';
 @use '../core/style/layout-common';
-@use '../../cdk/a11y';
 
 $standard-padding: 0 12px !default;
 $standard-border-radius: 4px !default;
@@ -22,7 +23,7 @@ $legacy-border-radius: 2px !default;
   // Fixes the ripples not being clipped to the border radius on Safari.
   transform: translateZ(0);
 
-  @include a11y.high-contrast(active, off) {
+  @include cdk.high-contrast(active, off) {
     outline: solid 1px;
   }
 }
@@ -31,7 +32,7 @@ $legacy-border-radius: 2px !default;
 .mat-button-toggle-group-appearance-standard {
   border-radius: $standard-border-radius;
 
-  @include a11y.high-contrast(active, off) {
+  @include cdk.high-contrast(active, off) {
     outline: 0;
   }
 }
@@ -60,7 +61,7 @@ $legacy-border-radius: 2px !default;
       opacity: 1;
 
       // In high contrast mode `opacity: 1` will show the overlay as solid so we fall back 0.5.
-      @include a11y.high-contrast(active, off) {
+      @include cdk.high-contrast(active, off) {
         opacity: 0.5;
       }
     }
@@ -80,7 +81,7 @@ $legacy-border-radius: 2px !default;
   &.cdk-keyboard-focused:not(.mat-button-toggle-disabled) .mat-button-toggle-focus-overlay {
     opacity: 0.12;
 
-    @include a11y.high-contrast(active, off) {
+    @include cdk.high-contrast(active, off) {
       opacity: 0.5;
     }
   }
@@ -126,7 +127,7 @@ $legacy-border-radius: 2px !default;
   // Changing the background color for the selected item won't be visible in high contrast mode.
   // We fall back to using the overlay to draw a brighter, semi-transparent tint on top instead.
   // It uses a border, because the browser will render it using a brighter color.
-  @include a11y.high-contrast(active, off) {
+  @include cdk.high-contrast(active, off) {
     .mat-button-toggle-checked & {
       border-bottom: solid $legacy-height;
       opacity: 0.5;
@@ -135,7 +136,7 @@ $legacy-border-radius: 2px !default;
   }
 }
 
-@include a11y.high-contrast(active, off) {
+@include cdk.high-contrast(active, off) {
   .mat-button-toggle-checked.mat-button-toggle-appearance-standard
   .mat-button-toggle-focus-overlay {
     // In high contrast mode, we use a border for the checked state because backgrounds

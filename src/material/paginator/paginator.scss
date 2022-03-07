@@ -1,4 +1,4 @@
-@use '../../cdk/a11y';
+@use '@angular/cdk';
 
 $padding: 0 8px;
 $page-size-margin-right: 8px;
@@ -76,7 +76,7 @@ $button-icon-size: 28px;
     transform: rotate(180deg);
   }
 
-  @include a11y.high-contrast(active, off) {
+  @include cdk.high-contrast(active, off) {
     // On Chromium browsers the `currentColor` blends in with the
     // background for SVGs so we have to fall back to `CanvasText`.
     fill: CanvasText;

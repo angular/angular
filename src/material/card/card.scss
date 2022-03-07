@@ -1,8 +1,9 @@
 @use 'sass:math';
+@use '@angular/cdk';
+
 @use '../core/style/variables';
 @use '../core/style/elevation';
 @use '../core/style/private';
-@use '../../cdk/a11y';
 
 
 $padding: 16px !default;
@@ -38,7 +39,7 @@ $header-size: 40px !default;
     }
   }
 
-  @include a11y.high-contrast(active, off) {
+  @include cdk.high-contrast(active, off) {
     outline: solid 1px;
   }
 }

@@ -26,7 +26,7 @@ sass_binary(
     name = "test-theming-bundle",
     testonly = True,
     src = "test-theming-bundle.scss",
-    deps = ["//src/material:theming_bundle"],
+    deps = ["//src/material:sass_lib"],
 )
 
 # Sass binary which is used to ensure that the legacy theming bundle exposes the necessary
@@ -35,7 +35,7 @@ sass_binary(
     name = "test-legacy-theming-bundle",
     testonly = True,
     src = "test-legacy-theming-bundle.scss",
-    deps = ["//src/material:theming_bundle"],
+    deps = ["//src/material:sass_lib"],
 )
 
 ts_library(

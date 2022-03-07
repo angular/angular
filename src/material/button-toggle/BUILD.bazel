@@ -43,7 +43,7 @@ sass_binary(
     name = "button_toggle_scss",
     src = "button-toggle.scss",
     deps = [
-        "//src/cdk/a11y:a11y_scss_lib",
+        "//src/cdk:sass_lib",
         "//src/material/core:core_scss_lib",
     ],
 )

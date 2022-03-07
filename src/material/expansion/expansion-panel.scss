@@ -1,6 +1,8 @@
+
+@use '@angular/cdk';
+
 @use '../core/style/variables';
 @use '../core/style/elevation';
-@use '../../cdk/a11y';
 
 .mat-expansion-panel {
   $border-radius: 4px;
@@ -33,7 +35,7 @@
     }
   }
 
-  @include a11y.high-contrast(active, off) {
+  @include cdk.high-contrast(active, off) {
     outline: solid 1px;
   }
 

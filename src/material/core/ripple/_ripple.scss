@@ -1,4 +1,4 @@
-@use '../../../cdk/a11y';
+@use '@angular/cdk';
 
 @mixin ripple() {
   // The host element of an mat-ripple directive should always have a position of "absolute" or
@@ -36,7 +36,7 @@
     transform: scale3d(0, 0, 0);
 
     // In high contrast mode the ripple is opaque, causing it to obstruct the content.
-    @include a11y.high-contrast(active, off) {
+    @include cdk.high-contrast(active, off) {
       display: none;
     }
   }

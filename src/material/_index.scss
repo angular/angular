@@ -14,6 +14,25 @@
 @forward './core/typography/typography-utils' show typography-level,
   font-size, line-height, font-weight, letter-spacing, font-family, font-shorthand;
 
+// Private/Internal
+@forward './core/density/private/all-density' as private-* show private-all-component-densities;
+@forward './core/theming/theming' show private-check-duplicate-theme-styles,
+  private-legacy-get-theme, private-is-theme-object;
+  @forward './core/style/layout-common' as private-* show private-fill;
+@forward './core/style/private' show private-theme-elevation, private-animation-noop;
+@forward './core/style/vendor-prefixes' as private-* show private-user-select,
+  private-position-sticky, private-color-adjust;
+@forward './core/theming/palette' as private-* show $private-dark-primary-text,
+  $private-dark-disabled-text;
+@forward './core/style/variables' as private-* show $private-swift-ease-in-duration,
+  $private-swift-ease-in-timing-function, $private-swift-ease-out-timing-function,
+  $private-ease-in-out-curve-function, $private-swift-ease-out-duration, $private-xsmall;
+@forward './core/typography/typography' show private-typography-to-2014-config,
+  private-typography-to-2018-config;
+@forward './table/table-flex-styles' show private-table-flex-styles;
+@forward './core/style/menu-common' as private-menu-common-*;
+@forward './core/style/button-common' as private-button-common-*;
+
 // Structural
 @forward './core/core' show core;
 @forward './core/ripple/ripple' show ripple;

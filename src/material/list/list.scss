@@ -1,8 +1,8 @@
+@use '@angular/cdk';
+
 @use '../core/style/list-common';
 @use '../core/style/layout-common';
 @use '../divider/divider-offset';
-@use '../../cdk/a11y';
-
 
 $side-padding: 16px;
 $icon-padding: 4px;
@@ -305,12 +305,12 @@ mat-action-list {
 
   // Since we can't use a color to indicate that the list
   // item is disabled, we have to use opacity instead.
-  @include a11y.high-contrast {
+  @include cdk.high-contrast {
     opacity: 0.5;
   }
 }
 
-@include a11y.high-contrast(active, off) {
+@include cdk.high-contrast(active, off) {
   .mat-selection-list:focus {
     outline-style: dotted;
   }

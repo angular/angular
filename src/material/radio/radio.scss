@@ -1,8 +1,9 @@
 @use 'sass:math';
+@use '@angular/cdk';
+
 @use '../core/style/variables';
 @use '../core/ripple/ripple';
 @use '../core/style/vendor-prefixes';
-@use '../../cdk/a11y';
 
 
 $size: variables.$toggle-size !default;
@@ -88,14 +89,14 @@ $ripple-radius: 20px;
   transform: scale(0.001);
 
   // force browser to show background-color when using the print function
-  @include vendor-prefixes.private-color-adjust(exact);
+  @include vendor-prefixes.color-adjust(exact);
 
   .mat-radio-checked & {
     transform: scale(0.5);
     opacity: 1;
     transition: $base-transition;
 
-    @include a11y.high-contrast(active, off) {
+    @include cdk.high-contrast(active, off) {
       // Since we use a background color to render the circle, it won't be
       // displayed in high contrast mode. Use a border as a fallback.
       border: solid math.div($size, 2);
@@ -209,7 +210,7 @@ $ripple-radius: 20px;
   z-index: -1;
 }
 
-@include a11y.high-contrast(active, off) {
+@include cdk.high-contrast(active, off) {
   .mat-radio-button:not(.mat-radio-disabled) {
     &.cdk-keyboard-focused,
     &.cdk-program-focused {

@@ -1,7 +1,8 @@
+@use '@angular/cdk';
 @use 'sass:math';
+
 @use '../core/style/variables';
 @use './stepper-variables';
-@use '../../cdk/a11y';
 
 .mat-stepper-vertical,
 .mat-stepper-horizontal {
@@ -135,7 +136,7 @@
 }
 
 .mat-horizontal-content-container {
-  @include a11y.high-contrast(active, off) {
+  @include cdk.high-contrast(active, off) {
     outline: solid 1px;
   }
 
@@ -148,7 +149,7 @@
 }
 
 .mat-vertical-content-container {
-  @include a11y.high-contrast(active, off) {
+  @include cdk.high-contrast(active, off) {
     outline: solid 1px;
   }
 
