@@ -18,6 +18,8 @@ import {getOutlet, sortByMatchingOutlets} from './utils/config';
 import {isImmediateMatch, match, noLeftoversInUrl, split} from './utils/config_matching';
 import {TreeNode} from './utils/tree';
 
+const NG_DEV_MODE = typeof ngDevMode === 'undefined' || !!ngDevMode;
+
 class NoMatch {}
 
 function newObservableError(e: unknown): Observable<RouterStateSnapshot> {
@@ -163,7 +165,9 @@ export class Recognizer {
           segments, params, Object.freeze({...this.urlTree.queryParams}), this.urlTree.fragment,
           getData(route), getOutlet(route), route.component!, route,
           getSourceSegmentGroup(rawSegment), getPathIndexShift(rawSegment) + segments.length,
-          getResolve(route));
+          getResolve(route),
+          (NG_DEV_MODE ? getCorrectedPathIndexShift(rawSegment) : getPathIndexShift(rawSegment)) +
+              segments.length);
     } else {
       const result = match(rawSegment, route, segments);
       if (!result.matched) {
@@ -176,7 +180,9 @@ export class Recognizer {
           consumedSegments, result.parameters, Object.freeze({...this.urlTree.queryParams}),
           this.urlTree.fragment, getData(route), getOutlet(route), route.component!, route,
           getSourceSegmentGroup(rawSegment),
-          getPathIndexShift(rawSegment) + consumedSegments.length, getResolve(route));
+          getPathIndexShift(rawSegment) + consumedSegments.length, getResolve(route),
+          (NG_DEV_MODE ? getCorrectedPathIndexShift(rawSegment) : getPathIndexShift(rawSegment)) +
+              consumedSegments.length);
     }
 
     const childConfig: Route[] = getChildConfig(route);
@@ -303,10 +309,20 @@ function getSourceSegmentGroup(segmentGroup: UrlSegmentGroup): UrlSegmentGroup {
 
 function getPathIndexShift(segmentGroup: UrlSegmentGroup): number {
   let s = segmentGroup;
-  let res = (s._segmentIndexShift ? s._segmentIndexShift : 0);
+  let res = s._segmentIndexShift ?? 0;
   while (s._sourceSegment) {
     s = s._sourceSegment;
-    res += (s._segmentIndexShift ? s._segmentIndexShift : 0);
+    res += s._segmentIndexShift ?? 0;
+  }
+  return res - 1;
+}
+
+function getCorrectedPathIndexShift(segmentGroup: UrlSegmentGroup): number {
+  let s = segmentGroup;
+  let res = s._segmentIndexShiftCorrected ?? s._segmentIndexShift ?? 0;
+  while (s._sourceSegment) {
+    s = s._sourceSegment;
+    res += s._segmentIndexShiftCorrected ?? s._segmentIndexShift ?? 0;
   }
   return res - 1;
 }
