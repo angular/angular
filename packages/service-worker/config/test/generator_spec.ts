@@ -8,7 +8,7 @@
 
 import {Generator, processNavigationUrls} from '../src/generator';
 import {AssetGroup} from '../src/in';
-import {MockFilesystem} from '../testing/mock';
+import {HashTrackingMockFilesystem, MockFilesystem} from '../testing/mock';
 
 describe('Generator', () => {
   beforeEach(() => spyOn(Date, 'now').and.returnValue(1234567890123));
@@ -521,6 +521,26 @@ describe('Generator', () => {
         '/main.js': '41347a66676cdc0516934c76d9d13010df420f2c',
       },
     });
+  });
+
+  it('doesn\'t exceed concurrency limit', async () => {
+    const fileCount = 600;
+    const files = [...Array(fileCount).keys()].reduce((acc: Record<string, string>, _, i) => {
+      acc[`/test${i}.js`] = `This is a test ${i}`;
+      return acc;
+    }, {'/index.html': 'This is a test'});
+    const fs = new HashTrackingMockFilesystem(files);
+    const gen = new Generator(fs, '/');
+    const config = await gen.process({
+      index: '/index.html',
+      assetGroups: [{
+        name: 'test',
+        resources: {files: ['/*.js']},
+      }],
+    });
+    expect(fs.maxConcurrentHashings).toBeLessThanOrEqual(500);
+    expect(fs.maxConcurrentHashings).toBeGreaterThan(1);
+    expect(Object.keys((config as any).hashTable).length).toBe(fileCount);
   });
 
   describe('processNavigationUrls()', () => {
