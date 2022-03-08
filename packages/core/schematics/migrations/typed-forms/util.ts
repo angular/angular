@@ -29,6 +29,27 @@ export function migrateFile(
   // If no relevant classes are imported, we can exit early.
   if (imports.length === 0) return;
 
+  // For each control class, migrate all of its uses.
+  for (let i = imports.length; i >= 0; i--) {
+    const imp = imports[i];
+    const usages = getUsages(sourceFile, typeChecker, imp);
+    if (usages.length === 0) {
+      // Since there are no usages of this class we need to migrate it, we should completely
+      // skip it for the subsequent migration steps.
+      imports.splice(i, 1);
+    }
+    for (const usage of usages) {
+      const newName = getUntypedVersionOfImportOrName(usage.importName);
+      if (newName === null) {
+        // This should never happen.
+        console.error(
+            `Typed forms migration error: unknown replacement for usage ${usage.node.getText()}`);
+        continue;
+      }
+      rewrite(usage.node.getStart(), usage.node.getWidth(), newName);
+    }
+  }
+
   // For each imported control class, insert the corresponding uptyped import.
   for (const imp of imports) {
     const untypedClass = getUntypedVersionOfImportOrName(imp.getText());
@@ -44,21 +65,6 @@ export function migrateFile(
       continue;
     }
     rewrite(imp.getEnd(), 0, `, ${untypedClass}`);
-  }
-
-  // For each control class, migrate all of its uses.
-  for (const imp of imports) {
-    const usages = getUsages(sourceFile, typeChecker, imp);
-    for (const usage of usages) {
-      const newName = getUntypedVersionOfImportOrName(usage.importName);
-      if (newName === null) {
-        // This should never happen.
-        console.error(
-            `Typed forms migration error: unknown replacement for usage ${usage.node.getText()}`);
-        continue;
-      }
-      rewrite(usage.node.getStart(), usage.node.getWidth(), newName);
-    }
   }
 }
 
