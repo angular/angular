@@ -375,6 +375,19 @@ function buildSnippet(insertSnippet: true|undefined, text: string): string|undef
 }
 
 /**
+ * Used to ensure Angular completions appear before DOM completions. Inputs and Outputs are
+ * prioritized first while attributes which would match an additional directive are prioritized
+ * second.
+ *
+ * This sort priority is based on the ASCII table. Other than `space`, the `!` is the first
+ * printable character in the ASCII ordering.
+ */
+enum AsciiSortPriority {
+  First = '!',
+  Second = '"',
+}
+
+/**
  * Given an `AttributeCompletion`, add any available completions to a `ts.CompletionEntry` array of
  * results.
  *
@@ -399,7 +412,7 @@ export function addAttributeCompletionEntries(
       entries.push({
         kind: unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.DIRECTIVE),
         name: completion.attribute,
-        sortText: completion.attribute,
+        sortText: AsciiSortPriority.Second + completion.attribute,
         replacementSpan,
       });
       break;
@@ -414,7 +427,7 @@ export function addAttributeCompletionEntries(
         name: prefix + completion.attribute,
         insertText: buildSnippet(insertSnippet, prefix + completion.attribute),
         isSnippet: insertSnippet,
-        sortText: prefix + completion.attribute,
+        sortText: AsciiSortPriority.Second + prefix + completion.attribute,
         replacementSpan,
       });
       break;
@@ -427,7 +440,7 @@ export function addAttributeCompletionEntries(
           name: `[${completion.propertyName}]`,
           insertText: buildSnippet(insertSnippet, `[${completion.propertyName}]`),
           isSnippet: insertSnippet,
-          sortText: completion.propertyName,
+          sortText: AsciiSortPriority.First + completion.propertyName,
           replacementSpan,
         });
         // If the directive supports banana-in-a-box for this input, offer that as well.
@@ -438,7 +451,7 @@ export function addAttributeCompletionEntries(
             insertText: buildSnippet(insertSnippet, `[(${completion.propertyName})]`),
             isSnippet: insertSnippet,
             // This completion should sort after the property binding.
-            sortText: completion.propertyName + '_1',
+            sortText: AsciiSortPriority.First + completion.propertyName + '_1',
             replacementSpan,
           });
         }
@@ -449,7 +462,7 @@ export function addAttributeCompletionEntries(
           insertText: buildSnippet(insertSnippet, completion.propertyName),
           isSnippet: insertSnippet,
           // This completion should sort after both property binding options (one-way and two-way).
-          sortText: completion.propertyName + '_2',
+          sortText: AsciiSortPriority.First + completion.propertyName + '_2',
           replacementSpan,
         });
       } else {
@@ -458,7 +471,7 @@ export function addAttributeCompletionEntries(
           name: completion.propertyName,
           insertText: buildSnippet(insertSnippet, completion.propertyName),
           isSnippet: insertSnippet,
-          sortText: completion.propertyName,
+          sortText: AsciiSortPriority.First + completion.propertyName,
           replacementSpan,
         });
       }
@@ -471,7 +484,7 @@ export function addAttributeCompletionEntries(
           name: `(${completion.eventName})`,
           insertText: buildSnippet(insertSnippet, `(${completion.eventName})`),
           isSnippet: insertSnippet,
-          sortText: completion.eventName,
+          sortText: AsciiSortPriority.First + completion.eventName,
           replacementSpan,
         });
       } else {
@@ -480,7 +493,7 @@ export function addAttributeCompletionEntries(
           name: completion.eventName,
           insertText: buildSnippet(insertSnippet, completion.eventName),
           isSnippet: insertSnippet,
-          sortText: completion.eventName,
+          sortText: AsciiSortPriority.First + completion.eventName,
           replacementSpan,
         });
       }
