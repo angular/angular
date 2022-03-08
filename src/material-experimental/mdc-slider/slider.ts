@@ -852,32 +852,32 @@ export class MatSlider
 
   /** Sets the disabled state based on the disabled state of the inputs (ControlValueAccessor). */
   _updateDisabled(): void {
-    const disabled = this._inputs.some(input => input._disabled);
+    const disabled = this._inputs?.some(input => input._disabled) || false;
     this._setDisabled(disabled);
   }
 
   /** Gets the slider thumb input of the given thumb position. */
   _getInput(thumbPosition: Thumb): MatSliderThumb {
-    return thumbPosition === Thumb.END ? this._inputs.last! : this._inputs.first!;
+    return thumbPosition === Thumb.END ? this._inputs?.last! : this._inputs?.first!;
   }
 
   /** Gets the slider thumb HTML input element of the given thumb position. */
   _getInputElement(thumbPosition: Thumb): HTMLInputElement {
-    return this._getInput(thumbPosition)._hostElement;
+    return this._getInput(thumbPosition)?._hostElement;
   }
 
   _getThumb(thumbPosition: Thumb): MatSliderVisualThumb {
-    return thumbPosition === Thumb.END ? this._thumbs.last! : this._thumbs.first!;
+    return thumbPosition === Thumb.END ? this._thumbs?.last! : this._thumbs?.first!;
   }
 
   /** Gets the slider thumb HTML element of the given thumb position. */
   _getThumbElement(thumbPosition: Thumb): HTMLElement {
-    return this._getThumb(thumbPosition)._getHostElement();
+    return this._getThumb(thumbPosition)?._getHostElement();
   }
 
   /** Gets the slider knob HTML element of the given thumb position. */
   _getKnobElement(thumbPosition: Thumb): HTMLElement {
-    return this._getThumb(thumbPosition)._getKnob();
+    return this._getThumb(thumbPosition)?._getKnob();
   }
 
   /**
@@ -1167,7 +1167,7 @@ class SliderAdapter implements MDCSliderAdapter {
     evtType: K,
     handler: SpecificEventListener<K>,
   ): void => {
-    this._delegate._getThumbElement(thumbPosition).removeEventListener(evtType, handler);
+    this._delegate._getThumbElement(thumbPosition)?.removeEventListener(evtType, handler);
   };
   registerInputEventHandler = <K extends EventType>(
     thumbPosition: Thumb,
@@ -1177,7 +1177,7 @@ class SliderAdapter implements MDCSliderAdapter {
     if (evtType === 'change') {
       this._saveChangeEventHandler(thumbPosition, handler as SpecificEventListener<EventType>);
     } else {
-      this._delegate._getInputElement(thumbPosition).addEventListener(evtType, handler);
+      this._delegate._getInputElement(thumbPosition)?.addEventListener(evtType, handler);
     }
   };
   deregisterInputEventHandler = <K extends EventType>(
@@ -1188,7 +1188,7 @@ class SliderAdapter implements MDCSliderAdapter {
     if (evtType === 'change') {
       this._globalEventSubscriptions.unsubscribe();
     } else {
-      this._delegate._getInputElement(thumbPosition).removeEventListener(evtType, handler);
+      this._delegate._getInputElement(thumbPosition)?.removeEventListener(evtType, handler);
     }
   };
   registerBodyEventHandler = <K extends EventType>(

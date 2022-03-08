@@ -46,12 +46,13 @@ describe('MDC-based MatSlider', () => {
   }
 
   describe('standard slider', () => {
+    let fixture: ComponentFixture<StandardSlider>;
     let sliderInstance: MatSlider;
     let inputInstance: MatSliderThumb;
 
     beforeEach(
       waitForAsync(() => {
-        const fixture = createComponent(StandardSlider);
+        fixture = createComponent(StandardSlider);
         fixture.detectChanges();
         const sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider));
         sliderInstance = sliderDebugElement.componentInstance;
@@ -97,6 +98,12 @@ describe('MDC-based MatSlider', () => {
       setValueByClick(sliderInstance, 10, platform.IOS);
       expect(inputInstance.value).toBe(10);
       sliderInstance._elementRef.nativeElement.style.marginLeft = 'initial';
+    });
+
+    it('should not throw if destroyed before initialization is complete', () => {
+      fixture.destroy();
+      fixture = TestBed.createComponent(StandardSlider);
+      expect(() => fixture.destroy()).not.toThrow();
     });
   });
 
