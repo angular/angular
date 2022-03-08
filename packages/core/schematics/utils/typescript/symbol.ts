@@ -24,8 +24,8 @@ export function isReferenceToImport(
     typeChecker: ts.TypeChecker, node: ts.Node, importSpecifier: ts.ImportSpecifier): boolean {
   const nodeSymbol = typeChecker.getTypeAtLocation(node).getSymbol();
   const importSymbol = typeChecker.getTypeAtLocation(importSpecifier).getSymbol();
-  return !!(nodeSymbol && importSymbol) &&
-      nodeSymbol.valueDeclaration === importSymbol.valueDeclaration;
+  return !!(nodeSymbol?.declarations?.[0] && importSymbol?.declarations?.[0]) &&
+      nodeSymbol.declarations[0] === importSymbol.declarations[0];
 }
 
 /** Checks whether a node's type is nullable (`null`, `undefined` or `void`). */
