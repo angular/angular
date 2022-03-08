@@ -61,8 +61,8 @@ describe('Typed Forms migration', () => {
     shx.rm('-r', tmpDirPath);
   });
 
-  describe('should rename', () => {
-    it('imports and constructor calls', async () => {
+  describe('should', () => {
+    it('rename imports and constructor calls', async () => {
       writeFile('/index.ts', `
            import { Component } from '@angular/core';
            import { AbstractControl, FormArray, FormBuilder, FormControl as FC, FormGroup, UntypedFormGroup } from '@angular/forms';
@@ -75,6 +75,8 @@ describe('Typed Forms migration', () => {
              private _ungroup = new FormGroup({});
 
              private fb = new FormBuilder();
+
+             private someSet = new Set([1]);
 
              build() {
                const c = this.fb.control(42);
@@ -98,7 +100,27 @@ describe('Typed Forms migration', () => {
         `const fc2 = new UntypedFormControl(0);`,
         // Except UntypedFormGroup, which is already migrated.
         `private _ungroup = new UntypedFormGroup({});`,
+        // Unrelated constructors should not be changed.
+        `private someSet = new Set([1]);`,
+      ];
+      cases.forEach(t => expect(tree.readContent('/index.ts')).toContain(t));
+    });
 
+    it('skip adding imports that would be unused', async () => {
+      writeFile('/index.ts', `
+           import { Component } from '@angular/core';
+           import { FormControl, FormGroup } from '@angular/forms';
+
+           @Component({template: ''})
+           export class MyComponent {
+             private _group!: FormGroup;
+             private _control = new FormControl(42);
+           }
+         `);
+      await runMigration();
+      const cases = [
+        // Because FormGroup is never directly constructed, the import should not be added.
+        `import { FormControl, UntypedFormControl, FormGroup } from '@angular/forms';`,
       ];
       cases.forEach(t => expect(tree.readContent('/index.ts')).toContain(t));
     });
