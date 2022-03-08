@@ -48,6 +48,16 @@
   display: flex;
   flex-direction: column;
   overflow: visible;
+
+  // Usually the `visibility: hidden` added by the animation is enough to prevent focus from
+  // entering the collapsed content, but children with their own `visibility` can override it.
+  // In other components we set a `display: none` at the root to stop focus from reaching the
+  // elements, however we can't do that here, because the content can determine the width
+  // of an expansion panel. The most practical fallback is to use `!important` to override
+  // any custom visibility.
+  &[style*='visibility: hidden'] * {
+    visibility: hidden !important;
+  }
 }
 
 .mat-expansion-panel-body {
