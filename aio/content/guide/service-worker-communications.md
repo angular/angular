@@ -21,7 +21,7 @@ The `SwUpdate` service supports three separate operations:
 
 The `versionUpdates` is an `Observable` property of `SwUpdate` and emits four event types:
 * `VersionDetectedEvent` is emitted when the service worker has detected a new version of the app on the server and is about to start downloading it.
-* `NoNewVersionDetectedEvent` is emitted when the service worker has checked the version of the app on the server and it is the same as the installed version.
+* `NoNewVersionDetectedEvent` is emitted when the service worker has checked the version of the app on the server and did not find a new version.
 * `VersionReadyEvent` is emitted when a new version of the app is available to be activated by clients.
   It may be used to notify the user of an available update or prompt them to refresh the page.
 * `VersionInstallationFailedEvent` is emitted when the installation of a new version failed.
