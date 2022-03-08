@@ -317,6 +317,8 @@ The `relativeLinkResolution` option is deprecated and being removed.
 In version 11, the default behavior was changed to the correct one.
 After `relativeLinkResolution` is removed, the correct behavior is always used without an option to use the broken behavior.
 
+A dev mode warning was added in v14 to warn if a created `UrlTree` relies on the `relativeLinkResolution: 'legacy'` option.
+
 <a id="loadChildren"></a>
 
 ### loadChildren string syntax

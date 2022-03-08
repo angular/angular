@@ -227,6 +227,13 @@ export class UrlSegmentGroup {
   _sourceSegment?: UrlSegmentGroup;
   /** @internal */
   _segmentIndexShift?: number;
+  /**
+   * @internal
+   *
+   * Used only in dev mode to detect if application relies on `relativeLinkResolution: 'legacy'`
+   * Should be removed in when `relativeLinkResolution` is removed.
+   */
+  _segmentIndexShiftCorrected?: number;
   /** The parent node in the url tree */
   parent: UrlSegmentGroup|null = null;
 
