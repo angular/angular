@@ -32,3 +32,23 @@ export class MockFilesystem implements Filesystem {
     this.files.set(path, contents);
   }
 }
+
+export class HashTrackingMockFilesystem extends MockFilesystem {
+  public maxConcurrentHashings = 0;
+  private concurrentHashings = 0;
+
+  /** @override */
+  override async hash(path: string): Promise<string> {
+    // Increase the concurrent hashings count.
+    this.concurrentHashings += 1;
+    this.maxConcurrentHashings = Math.max(this.maxConcurrentHashings, this.concurrentHashings);
+
+    // Artificial delay to check hashing concurrency.
+    await new Promise(resolve => setTimeout(resolve, 250));
+
+    // Decrease the concurrent hashings count.
+    this.concurrentHashings -= 1;
+
+    return super.hash(path);
+  }
+}

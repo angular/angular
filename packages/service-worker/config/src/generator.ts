@@ -67,7 +67,8 @@ export class Generator {
 
     // Compute hashes for all matched files and add them to the hash-table.
     const allMatchedFiles = ([] as string[]).concat(...Array.from(filesPerGroup.values())).sort();
-    const allMatchedHashes = await Promise.all(allMatchedFiles.map(file => this.fs.hash(file)));
+    const allMatchedHashes =
+        await processInBatches(allMatchedFiles, 500, file => this.fs.hash(file));
     allMatchedFiles.forEach((file, idx) => {
       hashTable[joinUrls(this.baseHref, file)] = allMatchedHashes[idx];
     });
@@ -109,6 +110,20 @@ export function processNavigationUrls(
     url = positive ? url : url.substr(1);
     return {positive, regex: `^${urlToRegex(url, baseHref)}$`};
   });
+}
+
+async function processInBatches<I, O>(
+    items: I[], batchSize: number, processFn: (item: I) => O | Promise<O>): Promise<O[]> {
+  const batches = [];
+
+  for (let i = 0; i < items.length; i += batchSize) {
+    batches.push(items.slice(i, i + batchSize));
+  }
+
+  return batches.reduce(
+      async (prev, batch) =>
+          (await prev).concat(await Promise.all(batch.map(item => processFn(item)))),
+      Promise.resolve<O[]>([]));
 }
 
 function globListToMatcher(globs: string[]): (file: string) => boolean {
