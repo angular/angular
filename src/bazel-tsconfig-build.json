@@ -1,8 +1,6 @@
 // TypeScript configuration that will be used to build entry-points of the CDK. To avoid
 // duplicate logic, we decided to just have one package-wide tsconfig file that will be
-// used by Bazel to build the sources for an entry-point. This means that we no longer
-// need multiple tsconfig files (build & test) for each entry-point once Bazel replaces
-// our gulp build system.
+// used by Bazel to build the sources for an entry-point.
 {
   "compilerOptions": {
     "baseUrl": ".",
@@ -35,8 +33,6 @@
     "types": ["tslib"]
   },
   "bazelOptions": {
-    // Note: We can remove this once we fully switched away from Gulp. Currently we still set
-    // some options here just in favor of the standard tsconfig's which extending this one.
     "suppressTsconfigOverrideWarnings": true
   }
 }

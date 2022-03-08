@@ -1,6 +1,5 @@
 // TODO(mmalerba): this file should be split into separate cohesive partials for things like
-//  "theming", "typography", "core". Currently splitting it is difficult because of our brittle
-//  gulp-based release build process. We can update this when we switch to bazel.
+//  "theming", "typography", "core".
 
 @use '@material/feature-targeting' as mdc-feature-targeting;
 @use '@material/typography' as mdc-typography;

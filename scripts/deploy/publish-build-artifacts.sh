@@ -56,11 +56,6 @@ publishPackage() {
 
   echo "Starting publish process of ${packageName} for ${buildVersionName} into ${branchName}.."
 
-  if [[ ! ${COMMAND_ARGS} == *--no-build* ]]; then
-    # Create a release of the current repository.
-    $(npm bin)/gulp ${packageName}:build-release:clean
-  fi
-
   # Prepare cloning the builds repository
   rm -rf ${repoDir}
   mkdir -p ${repoDir}
