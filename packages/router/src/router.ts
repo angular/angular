@@ -33,6 +33,7 @@ import {standardizeConfig, validateConfig} from './utils/config';
 import {Checks, getAllRouteGuards} from './utils/preactivation';
 import {isUrlTree} from './utils/type_guards';
 
+const NG_DEV_MODE = (typeof ngDevMode === 'undefined' || !!ngDevMode);
 
 const NG_DEV_MODE = typeof ngDevMode === 'undefined' || !!ngDevMode;
 
@@ -1220,12 +1221,16 @@ export class Router {
       q = this.removeEmptyProps(q);
     }
 
-    let targetGroup: UrlSegmentGroup|undefined;
+    let relativeToUrlSegmentGroup: UrlSegmentGroup|undefined;
     try {
-      targetGroup = createSegmentGroupFromRoute(a.root.snapshot, a.snapshot).targetGroup;
+      relativeToUrlSegmentGroup = createSegmentGroupFromRoute(a.snapshot);
     } catch (e: unknown) {
+      NG_DEV_MODE &&
+          console.warn(`${
+              a.snapshot} has an invalid structure. This is likely due to an incomplete mock in tests.`);
     }
-    return createUrlTree(targetGroup ?? this.currentUrlTree.root, commands, q, f ?? null);
+    return createUrlTree(
+        relativeToUrlSegmentGroup ?? this.currentUrlTree.root, commands, q, f ?? null);
   }
 
   /**
@@ -1551,20 +1556,22 @@ function isBrowserTriggeredNavigation(source: 'imperative'|'popstate'|'hashchang
   return source !== 'imperative';
 }
 
-function createSegmentGroupFromRoute(
-    route: ActivatedRouteSnapshot, targetRoute: ActivatedRouteSnapshot):
-    {targetGroup: UrlSegmentGroup|undefined, root: UrlSegmentGroup} {
-  const childOutlets: {[outlet: string]: UrlSegmentGroup} = {};
+function createSegmentGroupFromRoute(route: ActivatedRouteSnapshot): UrlSegmentGroup {
   let targetGroup: UrlSegmentGroup|undefined;
-  for (const childSnapshot of route.children) {
-    const {root, targetGroup: targetGroupInChild} =
-        createSegmentGroupFromRoute(childSnapshot, targetRoute);
-    targetGroup = targetGroup ?? targetGroupInChild;
-    childOutlets[childSnapshot.outlet] = root;
+
+  function createSegmentGroupFromRouteRecursive(currentRoute: ActivatedRouteSnapshot) {
+    const childOutlets: {[outlet: string]: UrlSegmentGroup} = {};
+    for (const childSnapshot of currentRoute.children) {
+      const root = createSegmentGroupFromRouteRecursive(childSnapshot);
+      childOutlets[childSnapshot.outlet] = root;
+    }
+    const segmentGroup = new UrlSegmentGroup(currentRoute.url, childOutlets);
+    if (currentRoute === route) {
+      targetGroup = segmentGroup;
+    }
+    return segmentGroup;
   }
-  const root = new UrlSegmentGroup(route.url, childOutlets);
-  if (route === targetRoute) {
-    targetGroup = root;
-  }
-  return {root, targetGroup};
+  const rootSegmentGroup = createSegmentGroupFromRouteRecursive(route.root);
+
+  return targetGroup ?? rootSegmentGroup;
 }

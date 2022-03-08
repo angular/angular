@@ -51,11 +51,6 @@ function findNewStartingPosition(
   if (target.parent === null) {
     return new Position(target, true, 0);
   }
-  // if (indexOfLastConsumedSegmentInOutlet === -1) {
-  //   // Pathless ActivatedRoute can be _lastPathIndex === -1 but should not process children
-  //   // see issue #26224, #13011, #35687
-  //   return new Position(segmentGroup, false, 0);
-  // }
 
   const modifier = isMatrixParams(nav.commands[0]) ? 0 : 1;
   const index = target.segments.length - 1 + modifier;
