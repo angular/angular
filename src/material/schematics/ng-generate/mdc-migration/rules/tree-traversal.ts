@@ -81,6 +81,27 @@ export function replaceEndTag(html: string, node: compiler.TmplAstElement, tag: 
 }
 
 /**
+ * Appends an attribute to the given node of the template html.
+ *
+ * @param html The template html to be updated.
+ * @param node The node to be updated.
+ * @param name The name of the attribute.
+ * @param value The value of the attribute.
+ * @returns The updated template html.
+ */
+export function addAttribute(
+  html: string,
+  node: compiler.TmplAstElement,
+  name: string,
+  value: string,
+): string {
+  const index = node.startSourceSpan.start.offset + node.name.length + 1;
+  const prefix = html.slice(0, index);
+  const suffix = html.slice(index);
+  return prefix + ` ${name}="${value}"` + suffix;
+}
+
+/**
  * Replaces a substring of a given string starting at some offset index.
  *
  * @param str A string to be updated.
