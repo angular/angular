@@ -1,3 +1,38 @@
+<a name="14.0.0-next.6"></a>
+# 14.0.0-next.6 (2022-03-09)
+## Breaking Changes
+### core
+- Support for Node.js v12 has been removed as it will become EOL on 2022-04-30. Please use Node.js v14.15 or later.
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2b7553db6f](https://github.com/angular/angular/commit/2b7553db6f59e64b73fc2e5601db278f815a67a2) | fix | compute correct offsets when interpolations have HTML entities ([#44811](https://github.com/angular/angular/pull/44811)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [6eaaefd22e](https://github.com/angular/angular/commit/6eaaefd22ebb95ee896a62237832ff2f2defdee0) | feat | drop support for Node.js 12 ([#45286](https://github.com/angular/angular/pull/45286)) |
+| [94bba76a4a](https://github.com/angular/angular/commit/94bba76a4a9594a5eb90e581f407f1b70697e715) | feat | support TypeScript 4.6 ([#45190](https://github.com/angular/angular/pull/45190)) |
+| [9fa6f5a552](https://github.com/angular/angular/commit/9fa6f5a552b7780ce32aa5a60273d4008a7b6afb) | fix | incorrectly inserting elements inside <template> element ([#43429](https://github.com/angular/angular/pull/43429)) |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [4332897baa](https://github.com/angular/angular/commit/4332897baa2226ef246ee054fdd5254e3c129109) | fix | Add UntypedFormBuilder ([#45268](https://github.com/angular/angular/pull/45268)) |
+| [aa7b857be8](https://github.com/angular/angular/commit/aa7b857be89a62e6dcfe62c418acf0823525d265) | fix | Property renaming safe code ([#45271](https://github.com/angular/angular/pull/45271)) |
+| [d336ba96d9](https://github.com/angular/angular/commit/d336ba96d922363235688f54d8af108ef7ab01f0) | fix | Update the typed forms migration. ([#45281](https://github.com/angular/angular/pull/45281)) |
+### language-service
+| Commit | Type | Description |
+| -- | -- | -- |
+| [be220fa683](https://github.com/angular/angular/commit/be220fa683e636e5ec3e49f56859015ec66a71fb) | fix | Prioritize Angular-specific completions over DOM completions ([#45293](https://github.com/angular/angular/pull/45293)) |
+### service-worker
+| Commit | Type | Description |
+| -- | -- | -- |
+| [bd04fbc05b](https://github.com/angular/angular/commit/bd04fbc05b0397de966a493a863e1054203c86d9) | feat | emit a notification when the service worker is already up to date after check ([#45216](https://github.com/angular/angular/pull/45216)) |
+| [3ecf93020c](https://github.com/angular/angular/commit/3ecf93020ce06b9b8621f0c83126cb3d584d4181) | fix | file system hash in batch of 500 elements ([#45262](https://github.com/angular/angular/pull/45262)) |
+## Special Thanks
+Alan Agius, Andrew Kushnir, Andrew Scott, Anner Visser, Aristeidis Bampakos, Dylan Hunn, George Kalpakas, JiaLiPassion, Joey Perrott, JoostK, Kristiyan Kostadinov, Luca, Mladen Jakovljević, Paul Gschwendtner, Srikanth Kolli, ananyahs96 and nanda18
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="13.2.6"></a>
 # 13.2.6 (2022-03-09)
 ### compiler
