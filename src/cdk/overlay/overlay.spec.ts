@@ -348,6 +348,16 @@ describe('Overlay', () => {
     // `fakeAsync` will throw if we have an unflushed timer.
   }));
 
+  it('should clear the backdrop timeout if the overlay is disposed', fakeAsync(() => {
+    const overlayRef = overlay.create({hasBackdrop: true});
+    overlayRef.attach(componentPortal);
+    overlayRef.detach();
+    overlayRef.dispose();
+
+    // Note: we don't `tick` or `flush` here. The assertion is that
+    // `fakeAsync` will throw if we have an unflushed timer.
+  }));
+
   it('should be able to use the `Overlay` provider during app initialization', () => {
     /** Dummy provider that depends on `Overlay`. */
     @Injectable()
