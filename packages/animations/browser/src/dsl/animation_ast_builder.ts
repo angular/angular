@@ -81,7 +81,8 @@ export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
       );
     }
 
-    if (ngDevMode && context.nonAnimatableCSSPropertiesFound.size) {
+    if ((typeof ngDevMode === 'undefined' || ngDevMode) &&
+        context.nonAnimatableCSSPropertiesFound.size) {
       pushNonAnimatablePropertiesWarning(
           warnings,
           [...context.nonAnimatableCSSPropertiesFound.keys()],
@@ -319,7 +320,8 @@ export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
           return;
         }
 
-        if (ngDevMode && this._driver.validateAnimatableStyleProperty) {
+        if ((typeof ngDevMode === 'undefined' || ngDevMode) &&
+            this._driver.validateAnimatableStyleProperty) {
           if (!this._driver.validateAnimatableStyleProperty(prop)) {
             context.nonAnimatableCSSPropertiesFound.add(prop);
             // note: non animatable properties are not removed for the tuple just in case they are
@@ -531,7 +533,7 @@ export class AnimationAstBuilderContext {
   public collectedStyles = new Map<string, Map<string, StyleTimeTuple>>();
   public options: AnimationOptions|null = null;
   public unsupportedCSSPropertiesFound: Set<string> = new Set<string>();
-  public nonAnimatableCSSPropertiesFound: Set<string> = new Set<string>();
+  public readonly nonAnimatableCSSPropertiesFound: Set<string> = new Set<string>();
   constructor(public errors: Error[]) {}
 }
 
