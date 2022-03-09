@@ -20,41 +20,20 @@ export function createUrlTree(
   }
   const targetGroup = relativeTo;
   if (commands.length === 0) {
-    return tree(root, queryParams, fragment);
+    return tree(root, root, root, queryParams, fragment);
   }
 
   const nav = computeNavigation(commands);
 
   if (nav.toRoot()) {
-    return tree(new UrlSegmentGroup([], {}), queryParams, fragment);
+    return tree(root, root, new UrlSegmentGroup([], {}), queryParams, fragment);
   }
 
-  const position = findNewStartingPosition(nav, root, targetGroup)
+  const position = findStartingPosition(nav, root, targetGroup)
   const newSegmentGroup = position.processChildren ?
       updateSegmentGroupChildren(position.segmentGroup, position.index, nav.commands) :
       updateSegmentGroup(position.segmentGroup, position.index, nav.commands);
-  position.segmentGroup.children = newSegmentGroup.children;
-  position.segmentGroup.segments = newSegmentGroup.segments
-
-  return tree(root, queryParams, fragment);
-}
-
-function findNewStartingPosition(
-    nav: Navigation, root: UrlSegmentGroup, target: UrlSegmentGroup): Position {
-  if (nav.isAbsolute) {
-    return new Position(root, true, 0);
-  }
-
-  if (!target) {
-    return new Position(root, false, NaN);
-  }
-  if (target.parent === null) {
-    return new Position(target, true, 0);
-  }
-
-  const modifier = isMatrixParams(nav.commands[0]) ? 0 : 1;
-  const index = target.segments.length - 1 + modifier;
-  return createPositionApplyingDoubleDots(target, index, nav.numberOfDoubleDots);
+  return tree(root, position.segmentGroup, newSegmentGroup, queryParams, fragment);
 }
 
 function isMatrixParams(command: any): boolean {
@@ -70,7 +49,8 @@ function isCommandWithOutlets(command: any): command is {outlets: {[key: string]
 }
 
 function tree(
-    segmentGroup: UrlSegmentGroup, queryParams: Params|null, fragment: string|null): UrlTree {
+    oldRoot: UrlSegmentGroup, oldSegmentGroup: UrlSegmentGroup, newSegmentGroup: UrlSegmentGroup,
+    queryParams: Params|null, fragment: string|null): UrlTree {
   let qp: any = {};
   if (queryParams) {
     forEach(queryParams, (value: any, name: any) => {
@@ -78,8 +58,35 @@ function tree(
     });
   }
 
-  return createUrlTreeRedirects(
-      new UrlTree(squashSegmentGroup(segmentGroup), qp, fragment).root, qp, fragment);
+  // Needed because `replaceSegment` cannot replace the root segment. It expects the
+  // `oldSegmentGroup` to be some child of the root.
+  if (oldRoot === oldSegmentGroup) {
+    return new UrlTree(squashSegmentGroup(newSegmentGroup), qp, fragment);
+  }
+
+  const newRoot = squashSegmentGroup(replaceSegment(oldRoot, oldSegmentGroup, newSegmentGroup));
+  return createUrlTreeRedirects(new UrlTree(newRoot, qp, fragment).root, qp, fragment);
+}
+
+/**
+ * Replaces the `oldSegment` which is located in some child of the `current` with the `newSegment`.
+ * This also has the effect of creating new `UrlSegmentGroup` copies to update references. This
+ * shouldn't be necessary but the fallback logic for an invalid ActivatedRoute in the creation uses
+ * the Router's current url tree. If we don't create new segment groups, we end up modifying that
+ * value.
+ */
+function replaceSegment(
+    current: UrlSegmentGroup, oldSegment: UrlSegmentGroup,
+    newSegment: UrlSegmentGroup): UrlSegmentGroup {
+  const children: {[key: string]: UrlSegmentGroup} = {};
+  forEach(current.children, (c: UrlSegmentGroup, outletName: string) => {
+    if (c === oldSegment) {
+      children[outletName] = newSegment;
+    } else {
+      children[outletName] = replaceSegment(c, oldSegment, newSegment);
+    }
+  });
+  return new UrlSegmentGroup(current.segments, children);
 }
 
 class Navigation {
@@ -156,6 +163,23 @@ class Position {
   }
 }
 
+function findStartingPosition(
+    nav: Navigation, root: UrlSegmentGroup, target: UrlSegmentGroup): Position {
+  if (nav.isAbsolute) {
+    return new Position(root, true, 0);
+  }
+
+  if (!target) {
+    return new Position(root, false, NaN);
+  }
+  if (target.parent === null) {
+    return new Position(target, true, 0);
+  }
+
+  const modifier = isMatrixParams(nav.commands[0]) ? 0 : 1;
+  const index = target.segments.length - 1 + modifier;
+  return createPositionApplyingDoubleDots(target, index, nav.numberOfDoubleDots);
+}
 
 function createPositionApplyingDoubleDots(
     group: UrlSegmentGroup, index: number, numberOfDoubleDots: number): Position {

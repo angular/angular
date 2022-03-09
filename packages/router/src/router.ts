@@ -1225,9 +1225,20 @@ export class Router {
     try {
       relativeToUrlSegmentGroup = createSegmentGroupFromRoute(a.snapshot);
     } catch (e: unknown) {
-      NG_DEV_MODE &&
-          console.warn(`${
-              a.snapshot} has an invalid structure. This is likely due to an incomplete mock in tests.`);
+      if (NG_DEV_MODE) {
+        console.warn(`${
+            a.snapshot} has an invalid structure. This is likely due to an incomplete mock in tests.`);
+        if (typeof commands[0] !== 'string' || !commands[0].startsWith('/')) {
+          // This is strictly for backwards compatibility with tests that create
+          // invalid `ActivatedRoute` mocks. Navigations that were absolute
+          // would still work because they wouldn't attempt to match the
+          // segments in the `ActivatedRoute` to the `currentUrlTree` but
+          // instead just replace the root segment with the navigation result.
+          // Non-absolute navigations would fail to apply the commands because
+          // the logic could not find the segment to replace.
+          commands = [];
+        }
+      }
     }
     return createUrlTree(
         relativeToUrlSegmentGroup ?? this.currentUrlTree.root, commands, q, f ?? null);
