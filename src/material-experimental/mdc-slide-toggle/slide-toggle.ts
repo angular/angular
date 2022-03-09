@@ -69,6 +69,7 @@ export class MatSlideToggleChange {
     // Needs to be removed since it causes some a11y issues (see #21266).
     '[attr.tabindex]': 'null',
     '[attr.aria-label]': 'null',
+    '[attr.name]': 'null',
     '[attr.aria-labelledby]': 'null',
     '[class.mat-primary]': 'color === "primary"',
     '[class.mat-accent]': 'color !== "primary" && color !== "warn"',

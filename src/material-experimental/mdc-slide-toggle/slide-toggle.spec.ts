@@ -755,6 +755,12 @@ describe('MDC-based MatSlideToggle with forms', () => {
       expect(slideToggleEl.classList).toContain('ng-invalid');
       expect(slideToggleEl.classList).not.toContain('ng-valid');
     }));
+
+    it('should clear static name attribute from the slide toggle host node', () => {
+      const hostNode = fixture.nativeElement.querySelector('.mat-mdc-slide-toggle');
+      expect(buttonElement.getAttribute('name')).toBeTruthy();
+      expect(hostNode.hasAttribute('name')).toBe(false);
+    });
   });
 
   describe('with model and change event', () => {
