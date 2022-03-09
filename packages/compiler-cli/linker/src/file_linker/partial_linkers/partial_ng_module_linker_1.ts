@@ -5,11 +5,11 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {compileNgModule, ConstantPool, outputAst as o, R3DeclareNgModuleMetadata, R3NgModuleMetadata, R3PartialDeclaration, R3Reference} from '@angular/compiler';
+import {compileNgModule, ConstantPool, outputAst as o, R3DeclareNgModuleMetadata, R3NgModuleMetadata, R3PartialDeclaration, R3Reference, R3SelectorScopeMode} from '@angular/compiler';
 
 import {AstObject, AstValue} from '../../ast/ast_value';
 
-import {PartialLinker} from './partial_linker';
+import {LinkedDefinition, PartialLinker} from './partial_linker';
 import {wrapReference} from './util';
 
 /**
@@ -25,10 +25,9 @@ export class PartialNgModuleLinkerVersion1<TExpression> implements PartialLinker
 
   linkPartialDeclaration(
       constantPool: ConstantPool,
-      metaObj: AstObject<R3PartialDeclaration, TExpression>): o.Expression {
+      metaObj: AstObject<R3PartialDeclaration, TExpression>): LinkedDefinition {
     const meta = toR3NgModuleMeta(metaObj, this.emitInline);
-    const def = compileNgModule(meta);
-    return def.expression;
+    return compileNgModule(meta);
   }
 }
 
@@ -37,7 +36,7 @@ export class PartialNgModuleLinkerVersion1<TExpression> implements PartialLinker
  */
 export function toR3NgModuleMeta<TExpression>(
     metaObj: AstObject<R3DeclareNgModuleMetadata, TExpression>,
-    emitInline: boolean): R3NgModuleMetadata {
+    supportJit: boolean): R3NgModuleMetadata {
   const wrappedType = metaObj.getOpaque('type');
 
   const meta: R3NgModuleMetadata = {
@@ -48,7 +47,7 @@ export function toR3NgModuleMeta<TExpression>(
     declarations: [],
     imports: [],
     exports: [],
-    emitInline,
+    selectorScopeMode: supportJit ? R3SelectorScopeMode.Inline : R3SelectorScopeMode.Omit,
     containsForwardDecls: false,
     schemas: [],
     id: metaObj.has('id') ? metaObj.getOpaque('id') : null,

@@ -10,7 +10,7 @@ import {compileInjector, ConstantPool, outputAst as o, R3DeclareInjectorMetadata
 import {AstObject} from '../../ast/ast_value';
 import {FatalLinkerError} from '../../fatal_linker_error';
 
-import {PartialLinker} from './partial_linker';
+import {LinkedDefinition, PartialLinker} from './partial_linker';
 import {wrapReference} from './util';
 
 /**
@@ -19,10 +19,9 @@ import {wrapReference} from './util';
 export class PartialInjectorLinkerVersion1<TExpression> implements PartialLinker<TExpression> {
   linkPartialDeclaration(
       constantPool: ConstantPool,
-      metaObj: AstObject<R3PartialDeclaration, TExpression>): o.Expression {
+      metaObj: AstObject<R3PartialDeclaration, TExpression>): LinkedDefinition {
     const meta = toR3InjectorMeta(metaObj);
-    const def = compileInjector(meta);
-    return def.expression;
+    return compileInjector(meta);
   }
 }
 

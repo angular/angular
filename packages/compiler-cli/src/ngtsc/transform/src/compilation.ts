@@ -586,8 +586,8 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
     let res: CompileResult[] = [];
 
     for (const trait of record.traits) {
-      if (trait.state !== TraitState.Resolved || trait.analysisDiagnostics !== null ||
-          trait.resolveDiagnostics !== null) {
+      if (trait.state !== TraitState.Resolved || containsErrors(trait.analysisDiagnostics) ||
+          containsErrors(trait.resolveDiagnostics)) {
         // Cannot compile a trait that is not resolved, or had any errors in its declaration.
         continue;
       }
@@ -671,4 +671,9 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
   get exportStatements(): Map<string, Map<string, [string, string]>> {
     return this.reexportMap;
   }
+}
+
+function containsErrors(diagnostics: ts.Diagnostic[]|null): boolean {
+  return diagnostics !== null &&
+      diagnostics.some(diag => diag.category === ts.DiagnosticCategory.Error);
 }

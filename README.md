@@ -53,6 +53,15 @@ Get started with Angular, learn the fundamentals and explore advanced topics on 
 - [Server Side Rendering][ssr]
 - [Schematics][schematics]
 - [Lazy Loading][lazyloading]
+<<<<<<< HEAD
+<<<<<<< HEAD
+- [Animations][animations]
+=======
+- [Animation][animation]
+>>>>>>> a1ef06ab78... readme file updated
+=======
+- [Animations][animations]
+>>>>>>> 296d770653... suggested changes done
 
 ## Development Setup
 
@@ -157,3 +166,4 @@ Join the conversation and help the community.
 [stackoverflow]: https://stackoverflow.com/questions/tagged/angular
 [youtube]: https://youtube.com/angular
 [meetup]: https://www.meetup.com/find/?keywords=angular
+[animations]:https://angular.io/guide/animations

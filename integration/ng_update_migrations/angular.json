@@ -22,13 +22,8 @@
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.app.json",
-            "assets": [
-              "src/favicon.ico",
-              "src/assets"
-            ],
-            "styles": [
-              "src/styles.less"
-            ],
+            "assets": ["src/favicon.ico", "src/assets"],
+            "styles": ["src/styles.less"],
             "scripts": [],
             "es5BrowserSupport": true
           },
@@ -77,6 +72,5 @@
         }
       }
     }
-  },
-  "defaultProject": "ng-update-migrations"
+  }
 }

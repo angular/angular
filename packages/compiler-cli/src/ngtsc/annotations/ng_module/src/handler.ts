@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {compileClassMetadata, compileDeclareClassMetadata, compileDeclareInjectorFromMetadata, compileDeclareNgModuleFromMetadata, compileInjector, compileNgModule, CUSTOM_ELEMENTS_SCHEMA, Expression, ExternalExpr, FactoryTarget, InvokeFunctionExpr, LiteralArrayExpr, NO_ERRORS_SCHEMA, R3ClassMetadata, R3CompiledExpression, R3FactoryMetadata, R3Identifiers, R3InjectorMetadata, R3NgModuleMetadata, R3Reference, SchemaMetadata, Statement, WrappedNodeExpr} from '@angular/compiler';
+import {compileClassMetadata, compileDeclareClassMetadata, compileDeclareInjectorFromMetadata, compileDeclareNgModuleFromMetadata, compileInjector, compileNgModule, CUSTOM_ELEMENTS_SCHEMA, Expression, ExternalExpr, FactoryTarget, InvokeFunctionExpr, LiteralArrayExpr, NO_ERRORS_SCHEMA, R3ClassMetadata, R3CompiledExpression, R3FactoryMetadata, R3Identifiers, R3InjectorMetadata, R3NgModuleMetadata, R3Reference, R3SelectorScopeMode, SchemaMetadata, Statement, WrappedNodeExpr} from '@angular/compiler';
 import ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError, makeDiagnostic, makeRelatedInformation} from '../../../diagnostics';
@@ -265,8 +265,20 @@ export class NgModuleDecoratorHandler implements
       }
     }
 
-    const id: Expression|null =
-        ngModule.has('id') ? new WrappedNodeExpr(ngModule.get('id')!) : null;
+    let id: Expression|null = null;
+    if (ngModule.has('id')) {
+      const idExpr = ngModule.get('id')!;
+      if (!isModuleIdExpression(idExpr)) {
+        id = new WrappedNodeExpr(idExpr);
+      } else {
+        const diag = makeDiagnostic(
+            ErrorCode.WARN_NGMODULE_ID_UNNECESSARY, idExpr,
+            `Using 'module.id' for NgModule.id is a common anti-pattern that is ignored by the Angular compiler.`);
+        diag.category = ts.DiagnosticCategory.Warning;
+        diagnostics.push(diag);
+      }
+    }
+
     const valueContext = node.getSourceFile();
 
     let typeContext = valueContext;
@@ -309,7 +321,9 @@ export class NgModuleDecoratorHandler implements
       imports,
       containsForwardDecls,
       id,
-      emitInline: false,
+      // Use `ɵɵsetNgModuleScope` to patch selector scopes onto the generated definition in a
+      // tree-shakeable way.
+      selectorScopeMode: R3SelectorScopeMode.SideEffect,
       // TODO: to be implemented as a part of FW-1004.
       schemas: [],
     };
@@ -347,6 +361,7 @@ export class NgModuleDecoratorHandler implements
     };
 
     return {
+      diagnostics: diagnostics.length > 0 ? diagnostics : undefined,
       analysis: {
         id,
         schemas,
@@ -388,7 +403,6 @@ export class NgModuleDecoratorHandler implements
     if (this.factoryTracker !== null) {
       this.factoryTracker.track(node.getSourceFile(), {
         name: analysis.factorySymbolName,
-        hasId: analysis.id !== null,
       });
     }
 
@@ -737,4 +751,12 @@ export class NgModuleDecoratorHandler implements
 function isNgModule(node: ClassDeclaration, compilation: ScopeData): boolean {
   return !compilation.directives.some(directive => directive.ref.node === node) &&
       !compilation.pipes.some(pipe => pipe.ref.node === node);
+}
+
+/**
+ * Checks whether the given `ts.Expression` is the expression `module.id`.
+ */
+function isModuleIdExpression(expr: ts.Expression): boolean {
+  return ts.isPropertyAccessExpression(expr) && ts.isIdentifier(expr.expression) &&
+      expr.expression.text === 'module' && expr.name.text === 'id';
 }

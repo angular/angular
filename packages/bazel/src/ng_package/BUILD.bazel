@@ -1,7 +1,7 @@
 load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary")
 
 # BEGIN-DEV-ONLY
-load("@npm//@bazel/typescript:index.bzl", "ts_library")
+load("@npm//@bazel/concatjs:index.bzl", "ts_library")
 # END-DEV-ONLY
 
 package(default_visibility = ["//visibility:public"])

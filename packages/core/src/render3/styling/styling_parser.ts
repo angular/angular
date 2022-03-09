@@ -309,6 +309,6 @@ function malformedStyleError(text: string, expecting: string, index: number): ne
   ngDevMode && assertEqual(typeof text === 'string', true, 'String expected here');
   throw throwError(
       `Malformed style at location ${index} in string '` + text.substring(0, index) + '[>>' +
-      text.substring(index, index + 1) + '<<]' + text.substr(index + 1) +
+      text.substring(index, index + 1) + '<<]' + text.slice(index + 1) +
       `'. Expecting '${expecting}'.`);
 }

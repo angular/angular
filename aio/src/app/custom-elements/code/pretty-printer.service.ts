@@ -54,7 +54,7 @@ export class PrettyPrinter {
           return htmlFromStringKnownToSatisfyTypeContract(
               ppo(code, language, linenums), 'prettify.js modifies already trusted HTML inline');
         } catch (err) {
-          const msg = `Could not format code that begins '${code.toString().substr(0, 50)}...'.`;
+          const msg = `Could not format code that begins '${code.toString().slice(0, 50)}...'.`;
           console.error(msg, err);
           throw new Error(msg);
         }

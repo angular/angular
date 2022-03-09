@@ -7,13 +7,18 @@ const {parse: parseJson} = require('json5');
 // Constants
 const FIREBASE_CONFIG_PATH = resolvePath(__dirname, '../firebase.json');
 const NGSW_CONFIG_TEMPLATE_PATH = resolvePath(__dirname, '../ngsw-config.template.json');
-const NGSW_CONFIG_OUTPUT_PATH = resolvePath(__dirname, '../src/generated/ngsw-config.json');
+const NGSW_CONFIG_OUTPUT_PATH = resolvePath(__dirname, '../ngsw-config.json');
 
 // Run
 _main();
 
 // Helpers
 function _main() {
+  // Allow an alternative output path (used by bazel to output to output dir)
+  const ngswConfigOutputPath = process.argv.length > 2
+    ? process.argv[2]
+    : NGSW_CONFIG_OUTPUT_PATH;
+
   const firebaseConfig = readJson(FIREBASE_CONFIG_PATH);
   const ngswConfig = readJson(NGSW_CONFIG_TEMPLATE_PATH);
 
@@ -56,8 +61,8 @@ function _main() {
   // Add the additional `navigationUrls` globs and save the config.
   ngswConfig.navigationUrls.push(...additionalNavigationUrls);
 
-  mkdirSync(dirname(NGSW_CONFIG_OUTPUT_PATH), {recursive: true});
-  writeJson(NGSW_CONFIG_OUTPUT_PATH, ngswConfig);
+  mkdirSync(dirname(ngswConfigOutputPath), {recursive: true});
+  writeJson(ngswConfigOutputPath, ngswConfig);
 }
 
 function isGlobRedundant(glob, globs) {

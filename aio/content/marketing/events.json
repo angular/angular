@@ -1,5 +1,49 @@
 [
   {
+    "name": "NG-DE",
+    "location": "Berlin, Germany",
+    "linkUrl": "https://ng-de.org/",
+    "date": {
+      "start": "2022-09-23",
+      "end": "2022-09-24"
+    },
+    "workshopsDate": {
+      "start": "2022-09-23",
+      "end": "2022-09-23"
+    }
+  },
+  {
+    "name": "ng-conf",
+    "location": " Salt Lake City, Utah or Online",
+    "linkUrl": "https://2022.ng-conf.org/",
+    "date": {
+      "start": "2022-08-31",
+      "end": "2022-09-02"
+    },
+    "workshopsDate": {
+      "start": "2022-08-29",
+      "end": "2022-08-30"
+    }
+  },
+  {
+    "name": "ngIndia",
+    "location": "Delhi, India",
+    "linkUrl": "https://www.ng-ind.com/",
+    "date": {
+      "start": "2022-05-21",
+      "end": "2022-05-21"
+    }
+  },
+  {
+    "name": "Angular Global Summit",
+    "location": "Online",
+    "linkUrl": "https://link.geekle.us/angular/offsite",
+    "date": {
+      "start": "2022-03-29",
+      "end": "2022-03-30"
+    }
+  },
+  {
     "name": "Angular Global Summit",
     "location": "Online",
     "linkUrl": "https://link.geekle.us/angular/offsite",

@@ -93,7 +93,7 @@ type Stringy<T> = {
 };
 
 export function getText(contents: string, textSpan: ts.TextSpan) {
-  return contents.substr(textSpan.start, textSpan.length);
+  return contents.slice(textSpan.start, textSpan.start + textSpan.length);
 }
 
 function last<T>(array: T[]): T {

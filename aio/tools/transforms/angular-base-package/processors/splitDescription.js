@@ -17,8 +17,8 @@ module.exports = function splitDescription() {
             doc.shortDescription = description;
             doc.description = '';
           } else {
-            doc.shortDescription = description.substr(0, endOfParagraph).trim();
-            doc.description = description.substr(endOfParagraph).trim();
+            doc.shortDescription = description.slice(0, endOfParagraph).trim();
+            doc.description = description.slice(endOfParagraph).trim();
           }
         }
       });

@@ -370,7 +370,7 @@ export class ShadowCss {
             this._scopeSelector(rule.selector, scopeSelector, hostSelector, this.strictStyling);
       } else if (
           rule.selector.startsWith('@media') || rule.selector.startsWith('@supports') ||
-          rule.selector.startsWith('@document')) {
+          rule.selector.startsWith('@document') || rule.selector.startsWith('@layer')) {
         content = this._scopeSelectors(rule.content, scopeSelector, hostSelector);
       } else if (rule.selector.startsWith('@font-face') || rule.selector.startsWith('@page')) {
         content = this._stripScopingSelectors(rule.content);

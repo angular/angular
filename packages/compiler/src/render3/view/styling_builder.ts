@@ -201,8 +201,8 @@ export class StylingBuilder {
     const isStyle = name === 'style' || prefix === 'style.' || prefix === 'style!';
     const isClass = !isStyle && (name === 'class' || prefix === 'class.' || prefix === 'class!');
     if (isStyle || isClass) {
-      const isMapBased = name.charAt(5) !== '.';         // style.prop or class.prop makes this a no
-      const property = name.substr(isMapBased ? 5 : 6);  // the dot explains why there's a +1
+      const isMapBased = name.charAt(5) !== '.';        // style.prop or class.prop makes this a no
+      const property = name.slice(isMapBased ? 5 : 6);  // the dot explains why there's a +1
       if (isStyle) {
         binding = this.registerStyleInput(property, isMapBased, expression, sourceSpan);
       } else {
@@ -516,7 +516,7 @@ export function parseProperty(name: string):
   let property = name;
   const unitIndex = name.lastIndexOf('.');
   if (unitIndex > 0) {
-    suffix = name.substr(unitIndex + 1);
+    suffix = name.slice(unitIndex + 1);
     property = name.substring(0, unitIndex);
   }
 

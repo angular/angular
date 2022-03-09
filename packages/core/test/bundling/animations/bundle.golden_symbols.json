@@ -576,6 +576,9 @@
     "name": "applyNodes"
   },
   {
+    "name": "applyParamDefaults"
+  },
+  {
     "name": "applyProjectionRecursive"
   },
   {
@@ -631,9 +634,6 @@
   },
   {
     "name": "collectNativeNodes"
-  },
-  {
-    "name": "compileNgModuleFactory"
   },
   {
     "name": "computeStaticStyling"
@@ -844,9 +844,6 @@
   },
   {
     "name": "getNextLContainer"
-  },
-  {
-    "name": "getNgModuleDef"
   },
   {
     "name": "getNodeInjectable"
@@ -1095,9 +1092,6 @@
     "name": "markAsComponentHost"
   },
   {
-    "name": "maybeUnwrapFn"
-  },
-  {
     "name": "maybeWrapInNotSelector"
   },
   {
@@ -1108,9 +1102,6 @@
   },
   {
     "name": "mergeMap"
-  },
-  {
-    "name": "modules"
   },
   {
     "name": "nativeAppendChild"

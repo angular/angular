@@ -19,20 +19,41 @@ describe('EmitScope', () => {
       const factory = new TypeScriptAstFactory(/* annotateForClosureCompiler */ false);
       const translator = new Translator<ts.Statement, ts.Expression>(factory);
       const ngImport = factory.createIdentifier('core');
-      const emitScope = new EmitScope<ts.Statement, ts.Expression>(ngImport, translator);
+      const emitScope = new EmitScope<ts.Statement, ts.Expression>(ngImport, translator, factory);
 
-      const def = emitScope.translateDefinition(o.fn([], [], null, null, 'foo'));
+      const def = emitScope.translateDefinition({
+        expression: o.fn([], [], null, null, 'foo'),
+        statements: [],
+      });
       expect(generate(def)).toEqual('function foo() { }');
+    });
+
+    it('should use an IIFE if the definition being emitted includes associated statements', () => {
+      const factory = new TypeScriptAstFactory(/* annotateForClosureCompiler */ false);
+      const translator = new Translator<ts.Statement, ts.Expression>(factory);
+      const ngImport = factory.createIdentifier('core');
+      const emitScope = new EmitScope<ts.Statement, ts.Expression>(ngImport, translator, factory);
+
+      const def = emitScope.translateDefinition({
+        expression: o.fn([], [], null, null, 'foo'),
+        statements: [
+          o.variable('testFn').callFn([]).toStmt(),
+        ],
+      });
+      expect(generate(def)).toEqual('function () { testFn(); return function foo() { }; }()');
     });
 
     it('should use the `ngImport` idenfifier for imports when translating', () => {
       const factory = new TypeScriptAstFactory(/* annotateForClosureCompiler */ false);
       const translator = new Translator<ts.Statement, ts.Expression>(factory);
       const ngImport = factory.createIdentifier('core');
-      const emitScope = new EmitScope<ts.Statement, ts.Expression>(ngImport, translator);
+      const emitScope = new EmitScope<ts.Statement, ts.Expression>(ngImport, translator, factory);
 
       const coreImportRef = new o.ExternalReference('@angular/core', 'foo');
-      const def = emitScope.translateDefinition(o.importExpr(coreImportRef).prop('bar').callFn([]));
+      const def = emitScope.translateDefinition({
+        expression: o.importExpr(coreImportRef).prop('bar').callFn([]),
+        statements: [],
+      });
       expect(generate(def)).toEqual('core.foo.bar()');
     });
 
@@ -40,14 +61,17 @@ describe('EmitScope', () => {
       const factory = new TypeScriptAstFactory(/* annotateForClosureCompiler */ false);
       const translator = new Translator<ts.Statement, ts.Expression>(factory);
       const ngImport = factory.createIdentifier('core');
-      const emitScope = new EmitScope<ts.Statement, ts.Expression>(ngImport, translator);
+      const emitScope = new EmitScope<ts.Statement, ts.Expression>(ngImport, translator, factory);
 
       const constArray = o.literalArr([o.literal('CONST')]);
       // We have to add the constant twice or it will not create a shared statement
       emitScope.constantPool.getConstLiteral(constArray);
       emitScope.constantPool.getConstLiteral(constArray);
 
-      const def = emitScope.translateDefinition(o.fn([], [], null, null, 'foo'));
+      const def = emitScope.translateDefinition({
+        expression: o.fn([], [], null, null, 'foo'),
+        statements: [],
+      });
       expect(generate(def)).toEqual('function foo() { }');
     });
   });
@@ -57,7 +81,7 @@ describe('EmitScope', () => {
       const factory = new TypeScriptAstFactory(/* annotateForClosureCompiler */ false);
       const translator = new Translator<ts.Statement, ts.Expression>(factory);
       const ngImport = factory.createIdentifier('core');
-      const emitScope = new EmitScope<ts.Statement, ts.Expression>(ngImport, translator);
+      const emitScope = new EmitScope<ts.Statement, ts.Expression>(ngImport, translator, factory);
 
       const constArray = o.literalArr([o.literal('CONST')]);
       // We have to add the constant twice or it will not create a shared statement

@@ -133,9 +133,8 @@
             "tsConfig": "projects/my-lib/tsconfig.spec.json",
             "karmaConfig": "projects/my-lib/karma.conf.js"
           }
-        },
+        }
       }
     }
-  },
-  "defaultProject": "angular.io-example"
+  }
 }

@@ -168,6 +168,7 @@ export {
   ɵɵdisableBindings,
 
   ɵɵenableBindings,
+  ɵɵresetView,
   ɵɵrestoreView,
 } from './state';
 export {NO_CHANGE} from './tokens';

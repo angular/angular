@@ -228,12 +228,6 @@ The `Tree` methods give you access to the complete file tree in your workspace, 
 
     Be sure to check that the context exists and throw the appropriate error.
 
-1. The `workspace.extensions` property includes a `defaultProject` value for determining which project to use if not provided.
-   You will use that value as a fallback, if no project is explicitly specified in the `ng generate` command.
-
-    <code-example header="projects/my-lib/schematics/my-service/index.ts (Default Project)" path="schematics-for-libraries/projects/my-lib/schematics/my-service/index.ts" region="project-fallback">
-    </code-example>
-
 1. Now that you have the project name, use it to retrieve the project-specific configuration information.
 
     <code-example header="projects/my-lib/schematics/my-service/index.ts (Project)" path="schematics-for-libraries/projects/my-lib/schematics/my-service/index.ts" region="project-info">

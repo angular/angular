@@ -1,5 +1,5 @@
 /****************************************************************************************************
- * PARTIAL FILE: basic.js
+ * PARTIAL FILE: basic_linked.js
  ****************************************************************************************************/
 import { NgModule, NO_ERRORS_SCHEMA } from '@angular/core';
 import * as i0 from "@angular/core";
@@ -14,7 +14,32 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
         }] });
 
 /****************************************************************************************************
- * PARTIAL FILE: basic.d.ts
+ * PARTIAL FILE: basic_linked.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class BasicModule {
+    static ɵfac: i0.ɵɵFactoryDeclaration<BasicModule, never>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<BasicModule, never, never, never>;
+    static ɵinj: i0.ɵɵInjectorDeclaration<BasicModule>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: basic_full.js
+ ****************************************************************************************************/
+import { NgModule, NO_ERRORS_SCHEMA } from '@angular/core';
+import * as i0 from "@angular/core";
+export class BasicModule {
+}
+BasicModule.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: BasicModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule });
+BasicModule.ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: BasicModule, id: 'BasicModuleId' });
+BasicModule.ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: BasicModule });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: BasicModule, decorators: [{
+            type: NgModule,
+            args: [{ id: 'BasicModuleId', schemas: [NO_ERRORS_SCHEMA] }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: basic_full.d.ts
  ****************************************************************************************************/
 import * as i0 from "@angular/core";
 export declare class BasicModule {

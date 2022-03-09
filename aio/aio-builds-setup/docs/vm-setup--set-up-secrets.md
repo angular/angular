@@ -25,8 +25,8 @@ Necessary secrets:
    - Generate new token with the `public_repo` scope.
 
 2. `CIRCLE_CI_TOKEN`
-   - Visit https://circleci.com/gh/angular/angular/edit#api.
-   - Create an API token with `Build Artifacts` scope.
+   - Visit https://app.circleci.com/settings/user/tokens.
+   - Create a user API token.
 
 
 ## Save secrets on the VM

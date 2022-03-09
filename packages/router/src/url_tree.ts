@@ -50,7 +50,7 @@ export interface IsActiveMatchOptions {
    * - `'exact'`: all segments in each `UrlTree` must match.
    * - `'subset'`: a `UrlTree` will be determined to be active if it
    * is a subtree of the active route. That is, the active route may contain extra
-   * segments, but must at least have all the segements of the `UrlTree` in question.
+   * segments, but must at least have all the segments of the `UrlTree` in question.
    */
   paths: 'exact'|'subset';
   /**
@@ -686,7 +686,7 @@ class UrlParser {
 
       let outletName: string = undefined!;
       if (path.indexOf(':') > -1) {
-        outletName = path.substr(0, path.indexOf(':'));
+        outletName = path.slice(0, path.indexOf(':'));
         this.capture(outletName);
         this.capture(':');
       } else if (allowPrimary) {

@@ -288,8 +288,8 @@ function _readStyleAttribute(element: any): {[name: string]: string} {
         if (colonIndex === -1) {
           throw new Error(`Invalid CSS style: ${style}`);
         }
-        const name = style.substr(0, colonIndex).trim();
-        styleMap[name] = style.substr(colonIndex + 1).trim();
+        const name = style.slice(0, colonIndex).trim();
+        styleMap[name] = style.slice(colonIndex + 1).trim();
       }
     }
   }

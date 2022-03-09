@@ -94,7 +94,7 @@
           col = col || '?';
           stack = url + ':' + line + ':' + col;
         }
-        return (msg + '\n' + stack).substr(0, 150);
+        return (msg + '\n' + stack).slice(0, 150);
       }
     };
   </script>

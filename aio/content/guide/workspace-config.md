@@ -11,7 +11,6 @@ The following properties, at the top-level of the file, configure the workspace.
 
 *   `version`: The configuration-file version.
 *   `newProjectRoot`: Path where new projects are created. Absolute or relative to the workspace folder.
-*   `defaultProject`: Default project name to use in commands, where not provided as an argument. When you use `ng new` to create a new application in a new workspace, that application is the default project for the workspace until you change it here.
 *   `cli` : A set of options that customize the [Angular CLI](cli). See the [CLI configuration options](#cli-configuration-options) section.
 *   `schematics` : A set of [schematics](guide/glossary#schematic) that customize the `ng generate` sub-command option defaults for this workspace. See the [Generation schematics](#schematics) section.
 *   `projects` : Contains a subsection for each project (library or application) in the workspace, with the per-project configuration options.
@@ -48,14 +47,14 @@ For more information, see [Workspace and project file structure](guide/file-stru
 
 The following configuration properties are a set of options that customize the Angular CLI.
 
-| Property            | Description                                                                                      | Value Type                                               |
-| :------------------ | :----------------------------------------------------------------------------------------------- | :------------------------------------------------------- |
-| `analytics`         | Share anonymous [usage data](cli/usage-analytics-gathering) with the Angular Team.               | `boolean` \| `ci`                                        |
-| `analyticsSharing`  | A set of analytics sharing options.                                                              | [Analytics sharing options](#analytics-sharing-options)  |
-| `cache`             | Control [persistent disk cache](cli/cache) used by [Angular CLI Builders](guide/cli-builder).    | [Cache options](#cache-options)                          |
-| `defaultCollection` | The default schematics collection to use.                                                        | `string`                                                 |
-| `packageManager`    | The preferred package manager tool to use.                                                        | `npm` \| `cnpm` \| `pnpm` \| `yarn`                      |
-| `warnings`          | Control CLI specific console warnings.                                                           | [Warnings options](#warnings-options)                    |
+| Property               | Description                                                                                      | Value Type                                               |
+| :--------------------- | :----------------------------------------------------------------------------------------------- | :------------------------------------------------------- |
+| `analytics`            | Share anonymous [usage data](cli/usage-analytics-gathering) with the Angular Team.               | `boolean` \| `ci`                                        |
+| `analyticsSharing`     | A set of analytics sharing options.                                                              | [Analytics sharing options](#analytics-sharing-options)  |
+| `cache`                | Control [persistent disk cache](cli/cache) used by [Angular CLI Builders](guide/cli-builder).    | [Cache options](#cache-options)                          |
+| `schematicCollections` | A list of schematics collections to use.                                                         | `string[]`                                               |
+| `packageManager`       | The preferred package manager tool to use.                                                       | `npm` \| `cnpm` \| `pnpm` \| `yarn`                      |
+| `warnings`             | Control CLI specific console warnings.                                                           | [Warnings options](#warnings-options)                    |
 
 ### Analytics sharing options
 

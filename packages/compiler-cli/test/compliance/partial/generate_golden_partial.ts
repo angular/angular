@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {FileSystem} from '../../../src/ngtsc/file_system';
+import {AbsoluteFsPath, FileSystem} from '../../../src/ngtsc/file_system';
 import {compileTest, getBuildOutputDirectory, initMockTestFileSystem} from '../test_helpers/compile_test';
 import {ComplianceTest, getComplianceTests} from '../test_helpers/get_compliance_tests';
 import {PartiallyCompiledFile, renderGoldenPartial} from '../test_helpers/golden_partials';
@@ -13,12 +13,11 @@ import {PartiallyCompiledFile, renderGoldenPartial} from '../test_helpers/golden
 /**
  * Generate the golden partial output for the tests described in the `testConfigPath` config file.
  *
- * @param testConfigPath Path (relative to the `test_cases` directory) of the `TEST_CASES.json` file
- *     that describes the tests.
+ * @param testConfigPath Absolute disk path of the `TEST_CASES.json` file that describes the tests.
  */
-export function generateGoldenPartial(testConfigPath: string): void {
+export function generateGoldenPartial(absTestConfigPath: AbsoluteFsPath): void {
   const files: PartiallyCompiledFile[] = [];
-  const tests = getComplianceTests(testConfigPath);
+  const tests = getComplianceTests(absTestConfigPath);
   for (const test of tests) {
     const fs = initMockTestFileSystem(test.realTestPath);
     for (const file of compilePartials(fs, test)) {

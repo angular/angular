@@ -249,7 +249,7 @@ export function interpolateParams(
   const str = original.replace(PARAM_REGEX, (_, varName) => {
     let localVal = params[varName];
     // this means that the value was never overridden by the data passed in by the user
-    if (!params.hasOwnProperty(varName)) {
+    if (localVal == null) {
       errors.push(invalidParamValue(varName));
       localVal = '';
     }
@@ -275,7 +275,7 @@ export function dashCaseToCamelCase(input: string): string {
   return input.replace(DASH_CASE_REGEXP, (...m: any[]) => m[1].toUpperCase());
 }
 
-function camelCaseToDashCase(input: string): string {
+export function camelCaseToDashCase(input: string): string {
   return input.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
 }
 

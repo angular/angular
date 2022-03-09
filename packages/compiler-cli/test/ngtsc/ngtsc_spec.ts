@@ -37,7 +37,7 @@ const setClassMetadataRegExp = (expectedType: string): RegExp =>
 const testFiles = loadStandardTestFiles();
 
 function getDiagnosticSourceCode(diag: ts.Diagnostic): string {
-  return diag.file!.text.substr(diag.start!, diag.length!);
+  return diag.file!.text.slice(diag.start!, diag.start! + diag.length!);
 }
 
 runInEachFileSystem(allTests);
@@ -1233,7 +1233,7 @@ function allTests(os: string) {
       expect(jsContents).toContain(`i0.ɵɵdefineNgModule({ type: TestModule, id: 'test' })`);
     });
 
-    it('should emit the id when the module\'s id is defined as `module.id`', () => {
+    it('should warn when an NgModule id is defined as module.id, and not emit it', () => {
       env.write('index.d.ts', `
          declare const module = {id: string};
        `);
@@ -1244,10 +1244,30 @@ function allTests(os: string) {
          export class TestModule {}
        `);
 
+      const diags = env.driveDiagnostics();
+
+      const jsContents = env.getContents('test.js');
+      expect(jsContents).toContain('i0.ɵɵdefineNgModule({ type: TestModule })');
+      expect(jsContents).not.toContain('i0.ɵɵregisterNgModuleType');
+
+      expect(diags.length).toEqual(1);
+      expect(diags[0].category).toEqual(ts.DiagnosticCategory.Warning);
+      expect(diags[0].code).toEqual(ngErrorCode(ErrorCode.WARN_NGMODULE_ID_UNNECESSARY));
+      expect(getDiagnosticSourceCode(diags[0])).toEqual('module.id');
+    });
+
+    it('should emit a side-effectful registration call when an @NgModule has an id', () => {
+      env.write('test.ts', `
+        import {NgModule} from '@angular/core';
+
+        @NgModule({id: 'test'})
+        export class TestModule {}
+    `);
+
       env.driveMain();
 
       const jsContents = env.getContents('test.js');
-      expect(jsContents).toContain('i0.ɵɵdefineNgModule({ type: TestModule, id: module.id })');
+      expect(jsContents).toContain(`i0.ɵɵregisterNgModuleType(TestModule, 'test')`);
     });
 
     it('should filter out directives and pipes from module exports in the injector def', () => {
@@ -4176,26 +4196,6 @@ function allTests(os: string) {
                 'import { TestModule } from \'./test\';\n' +
                 'export const TestModuleNgFactory = i0.\u0275noSideEffects(function () {' +
                 ' return new i0.NgModuleFactory(TestModule); });\n');
-      });
-
-      it('should generate side effectful NgModuleFactory constructor when lazy loaded', () => {
-        env.tsconfig({'allowEmptyCodegenFiles': true});
-
-        env.write('test.ts', `
-          import {NgModule} from '@angular/core';
-
-          @NgModule({
-            id: 'test', // ID to use for lazy loading.
-          })
-          export class TestModule {}
-        `);
-
-        env.driveMain();
-
-        // Should **not** contain noSideEffects(), because the module is lazy loaded.
-        const factoryContents = env.getContents('test.ngfactory.js');
-        expect(factoryContents)
-            .toContain('export const TestModuleNgFactory = new i0.ɵNgModuleFactory(TestModule);');
       });
 
       describe('file-level comments', () => {
@@ -7518,7 +7518,7 @@ function allTests(os: string) {
                   'Cannot mark an element as translatable inside of a translatable section.' +
                   ' Please remove the nested i18n marker.');
           expect(diags[0].file?.fileName).toEqual(absoluteFrom('/test.ts'));
-          expect(diags[0].file?.text.substr(diags[0].start!, diags[0].length))
+          expect(diags[0].file?.text.slice(diags[0].start!, diags[0].start! + diags[0].length!))
               .toEqual('<div i18n>Content</div>');
         });
 
@@ -7540,7 +7540,7 @@ function allTests(os: string) {
                   'Cannot mark an element as translatable inside of a translatable section.' +
                   ' Please remove the nested i18n marker.');
           expect(diags[0].file?.fileName).toEqual(absoluteFrom('/test.ts'));
-          expect(diags[0].file?.text.substr(diags[0].start!, diags[0].length))
+          expect(diags[0].file?.text.slice(diags[0].start!, diags[0].start! + diags[0].length!))
               .toEqual('<div i18n>Content</div>');
         });
 
@@ -7562,7 +7562,7 @@ function allTests(os: string) {
                   'Cannot mark an element as translatable inside of a translatable section.' +
                   ' Please remove the nested i18n marker.');
           expect(diags[0].file?.fileName).toEqual(absoluteFrom('/test.ts'));
-          expect(diags[0].file?.text.substr(diags[0].start!, diags[0].length))
+          expect(diags[0].file?.text.slice(diags[0].start!, diags[0].start! + diags[0].length!))
               .toEqual('<ng-container i18n>Content</ng-container>');
         });
       });

@@ -1,6 +1,6 @@
 "Shows how to enable both worker mode and use_angular_plugin to make a drop-in replacement for ng_module"
 
-load("@npm//@bazel/typescript:index.bzl", "ts_library")
+load("@npm//@bazel/concatjs:index.bzl", "ts_library")
 
 def ng_ts_library(**kwargs):
     angular_assets = kwargs.pop("assets", []) + kwargs.pop("angular_assets", [])

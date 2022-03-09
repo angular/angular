@@ -1,0 +1,117 @@
+load("@aio_npm//@angular-devkit/architect-cli:index.bzl", "architect", "architect_test")
+load("@build_bazel_rules_nodejs//:index.bzl", "npm_package_bin")
+
+# The write_source_files macro is used to write bazel outputs to the source tree and test that they are up to date.
+# See: https://docs.aspect.build/aspect-build/bazel-lib/v0.5.0/docs/docs/write_source_files-docgen.html
+load("@aspect_bazel_lib//lib:write_source_files.bzl", generated_files_test = "write_source_files")
+
+exports_files([
+    "firebase.json",
+    "ngsw-config.template.json",
+])
+
+# Generate ngsw-config
+npm_package_bin(
+    name = "ngsw-config",
+    outs = ["ngsw-config_generated.json"],
+    args = ["$@"],
+    tool = "//aio/scripts:build-ngsw-config",
+)
+
+# Write ngsw-config to the source directory and test that it's up to date
+generated_files_test(
+    name = "write-ngsw-config",
+    files = {
+        "ngsw-config.json": ":ngsw-config",
+    },
+)
+
+# All source and configuration files required to build the docs app
+APPLICATION_FILES = [
+    "angular.json",
+    "ngsw-config.json",
+    "package.json",
+    "tsconfig.app.json",
+    "tsconfig.json",
+    "tsconfig.worker.json",
+] + glob(
+    ["src/**/*"],
+    exclude = [
+        "src/**/*.spec.ts",
+        # Temporarily exclude generated sources produced by the non-bazel
+        # build until the whole project is built by bazel and this directory
+        # isn't needed.
+        "src/generated/**/*",
+    ],
+)
+
+# External dependencies from aio/package.json required to build the docs app.
+APPLICATION_DEPS = [
+    "@aio_npm//@angular-devkit/build-angular",
+    "@aio_npm//@angular/animations",
+    "@aio_npm//@angular/cdk",
+    "@aio_npm//@angular/cli",
+    "@aio_npm//@angular/common",
+    "@aio_npm//@angular/compiler",
+    "@aio_npm//@angular/core",
+    "@aio_npm//@angular/elements",
+    "@aio_npm//@angular/forms",
+    "@aio_npm//@angular/material",
+    "@aio_npm//@angular/platform-browser",
+    "@aio_npm//@angular/platform-browser-dynamic",
+    "@aio_npm//@angular/router",
+    "@aio_npm//@angular/service-worker",
+    "@aio_npm//@types/lunr",
+    "@aio_npm//@types/trusted-types",
+    "@aio_npm//lunr",
+    "@aio_npm//rxjs",
+    "@aio_npm//safevalues",
+    "@aio_npm//tslib",
+    "@aio_npm//zone.js",
+]
+
+# All sources, specs, and config files required to test the docs app
+TEST_FILES = APPLICATION_FILES + [
+    "karma.conf.js",
+    "tsconfig.spec.json",
+] + glob(
+    ["src/**/*.spec.ts"],
+)
+
+# External dependencies from aio/package.json required to test the docs app
+TEST_DEPS = APPLICATION_DEPS + [
+    "@aio_npm//@types/jasmine",
+    "@aio_npm//@types/node",
+    "@aio_npm//assert",
+    "@aio_npm//jasmine",
+    "@aio_npm//jasmine-core",
+    "@aio_npm//karma-chrome-launcher",
+    "@aio_npm//karma-coverage",
+    "@aio_npm//karma-jasmine",
+    "@aio_npm//karma-jasmine-html-reporter",
+    "@aio_npm//puppeteer",
+    "@aio_npm//timezone-mock",
+]
+
+architect(
+    name = "build",
+    args = [
+        "site:build:stable",
+        "--outputPath=../$(@D)",
+    ],
+    chdir = package_name(),
+    configuration_env_vars = ["NG_BUILD_CACHE"],
+    data = APPLICATION_FILES + APPLICATION_DEPS,
+    output_dir = True,
+)
+
+architect_test(
+    name = "test",
+    args = [
+        "site:test",
+        "--no-watch",
+    ],
+    chdir = package_name(),
+    configuration_env_vars = ["NG_BUILD_CACHE"],
+    data = TEST_FILES + TEST_DEPS,
+)

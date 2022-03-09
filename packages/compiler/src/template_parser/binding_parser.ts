@@ -408,7 +408,7 @@ export class BindingParser {
     }
 
     if (isAnimationLabel(name)) {
-      name = name.substr(1);
+      name = name.slice(1);
       if (keySpan !== undefined) {
         keySpan = moveParseSourceSpan(
             keySpan, new AbsoluteSourceSpan(keySpan.start.offset + 1, keySpan.end.offset));

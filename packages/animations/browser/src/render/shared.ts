@@ -11,6 +11,8 @@ import {AnimationStyleNormalizer} from '../../src/dsl/style_normalization/animat
 import {AnimationDriver} from '../../src/render/animation_driver';
 import {animationFailed} from '../error_helpers';
 
+import {ANIMATABLE_PROP_SET} from './web_animations/animatable_props_set';
+
 // We don't include ambient node types here since @angular/animations/browser
 // is meant to target the browser so technically it should not depend on node
 // types. `process` is just declared locally here as a result.
@@ -134,7 +136,7 @@ export function getOrSetDefaultValue<T, V>(map: Map<T, V>, key: T, defaultValue:
 export function parseTimelineCommand(command: string): [string, string] {
   const separatorPos = command.indexOf(':');
   const id = command.substring(1, separatorPos);
-  const action = command.substr(separatorPos + 1);
+  const action = command.slice(separatorPos + 1);
   return [id, action];
 }
 
@@ -201,12 +203,16 @@ export function validateStyleProperty(prop: string): boolean {
   if (_CACHED_BODY!.style && !containsVendorPrefix(prop)) {
     result = prop in _CACHED_BODY!.style;
     if (!result && _IS_WEBKIT) {
-      const camelProp = 'Webkit' + prop.charAt(0).toUpperCase() + prop.substr(1);
+      const camelProp = 'Webkit' + prop.charAt(0).toUpperCase() + prop.slice(1);
       result = camelProp in _CACHED_BODY!.style;
     }
   }
 
   return result;
+}
+
+export function validateWebAnimatableStyleProperty(prop: string): boolean {
+  return ANIMATABLE_PROP_SET.has(prop);
 }
 
 export function getBodyNode(): any|null {

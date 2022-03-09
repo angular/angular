@@ -13,7 +13,6 @@ import {absoluteFrom, getSourceFileOrError} from '../../file_system';
 import {runInEachFileSystem} from '../../file_system/testing';
 import {getTokenAtPosition} from '../../util/src/typescript';
 import {CompletionKind, GlobalCompletion, TemplateTypeChecker, TypeCheckingConfig} from '../api';
-
 import {getClass, setup, TypeCheckingTarget} from '../testing';
 
 runInEachFileSystem(() => {
@@ -29,7 +28,7 @@ runInEachFileSystem(() => {
       }
       expect(node.expression.getText()).toEqual('ctx.');
       // The position should be between the '.' and a following space.
-      expect(tcbSf.text.substr(positionInShimFile - 1, 2)).toEqual('. ');
+      expect(tcbSf.text.slice(positionInShimFile - 1, positionInShimFile + 1)).toEqual('. ');
     });
 
     it('should return additional completions for references and variables when available', () => {

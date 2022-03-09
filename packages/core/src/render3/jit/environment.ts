@@ -9,6 +9,7 @@
 import {forwardRef, resolveForwardRef} from '../../di/forward_ref';
 import {ɵɵinject, ɵɵinvalidFactoryDep} from '../../di/injector_compatibility';
 import {ɵɵdefineInjectable, ɵɵdefineInjector} from '../../di/interface/defs';
+import {registerNgModuleType} from '../../linker/ng_module_registration';
 import * as sanitization from '../../sanitization/sanitization';
 import * as r3 from '../index';
 
@@ -43,6 +44,7 @@ export const angularCoreEnv: {[name: string]: Function} =
        'ɵɵinvalidFactory': r3.ɵɵinvalidFactory,
        'ɵɵinvalidFactoryDep': ɵɵinvalidFactoryDep,
        'ɵɵtemplateRefExtractor': r3.ɵɵtemplateRefExtractor,
+       'ɵɵresetView': r3.ɵɵresetView,
        'ɵɵNgOnChangesFeature': r3.ɵɵNgOnChangesFeature,
        'ɵɵProvidersFeature': r3.ɵɵProvidersFeature,
        'ɵɵCopyDefinitionFeature': r3.ɵɵCopyDefinitionFeature,
@@ -155,6 +157,7 @@ export const angularCoreEnv: {[name: string]: Function} =
        'ɵɵresolveBody': r3.ɵɵresolveBody,
        'ɵɵsetComponentScope': r3.ɵɵsetComponentScope,
        'ɵɵsetNgModuleScope': r3.ɵɵsetNgModuleScope,
+       'ɵɵregisterNgModuleType': registerNgModuleType,
 
        'ɵɵsanitizeHtml': sanitization.ɵɵsanitizeHtml,
        'ɵɵsanitizeStyle': sanitization.ɵɵsanitizeStyle,

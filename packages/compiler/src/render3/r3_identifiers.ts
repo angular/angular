@@ -135,6 +135,8 @@ export class Identifiers {
 
   static nextContext: o.ExternalReference = {name: 'ɵɵnextContext', moduleName: CORE};
 
+  static resetView: o.ExternalReference = {name: 'ɵɵresetView', moduleName: CORE};
+
   static templateCreate: o.ExternalReference = {name: 'ɵɵtemplate', moduleName: CORE};
 
   static text: o.ExternalReference = {name: 'ɵɵtext', moduleName: CORE};
@@ -292,6 +294,9 @@ export class Identifiers {
   static defineNgModule: o.ExternalReference = {name: 'ɵɵdefineNgModule', moduleName: CORE};
   static declareNgModule: o.ExternalReference = {name: 'ɵɵngDeclareNgModule', moduleName: CORE};
   static setNgModuleScope: o.ExternalReference = {name: 'ɵɵsetNgModuleScope', moduleName: CORE};
+  static registerNgModuleType:
+      o.ExternalReference = {name: 'ɵɵregisterNgModuleType', moduleName: CORE};
+
 
   static PipeDeclaration: o.ExternalReference = {name: 'ɵɵPipeDeclaration', moduleName: CORE};
 

@@ -109,7 +109,7 @@ export class LogicalFileSystem {
 
   private createLogicalProjectPath(file: AbsoluteFsPath, rootDir: AbsoluteFsPath):
       LogicalProjectPath {
-    const logicalPath = stripExtension(file.substr(rootDir.length));
+    const logicalPath = stripExtension(file.slice(rootDir.length));
     return (logicalPath.startsWith('/') ? logicalPath : '/' + logicalPath) as LogicalProjectPath;
   }
 }

@@ -205,6 +205,7 @@ export interface ExtraOptions {
     onSameUrlNavigation?: 'reload' | 'ignore';
     paramsInheritanceStrategy?: 'emptyOnly' | 'always';
     preloadingStrategy?: any;
+    // @deprecated
     relativeLinkResolution?: 'legacy' | 'corrected';
     scrollOffset?: [number, number] | (() => [number, number]);
     scrollPositionRestoration?: 'disabled' | 'enabled' | 'top';
@@ -500,6 +501,7 @@ export class Router {
     onSameUrlNavigation: 'reload' | 'ignore';
     paramsInheritanceStrategy: 'emptyOnly' | 'always';
     parseUrl(url: string): UrlTree;
+    // @deprecated
     relativeLinkResolution: 'legacy' | 'corrected';
     resetConfig(config: Routes): void;
     routeReuseStrategy: RouteReuseStrategy;

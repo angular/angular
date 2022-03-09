@@ -11,6 +11,7 @@ import {fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
 import {AbstractControl, CheckboxControlValueAccessor, ControlValueAccessor, DefaultValueAccessor, FormArray, FormArrayName, FormControl, FormControlDirective, FormControlName, FormGroup, FormGroupDirective, FormGroupName, NgControl, NgForm, NgModel, NgModelGroup, SelectControlValueAccessor, SelectMultipleControlValueAccessor, ValidationErrors, Validator, Validators} from '@angular/forms';
 import {selectValueAccessor} from '@angular/forms/src/directives/shared';
 import {composeValidators} from '@angular/forms/src/validators';
+
 import {asyncValidator} from './util';
 
 class DummyControlValueAccessor implements ControlValueAccessor {
@@ -53,7 +54,7 @@ class CustomValidatorDirective implements Validator {
         it('should throw when accessor is not provided as array', () => {
           expect(() => selectValueAccessor(dir, {} as any[]))
               .toThrowError(
-                  `Value accessor was not provided as an array for form control with unspecified name attribute`);
+                  'Value accessor was not provided as an array for form control with unspecified name attribute. Check that the \`NG_VALUE_ACCESSOR\` token is configured as a \`multi: true\` provider.');
         });
 
         it('should return the default value accessor when no other provided', () => {

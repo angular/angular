@@ -6,8 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+// `tsc-wrapped` helpers are not exposed in the primary `@bazel/concatjs` entry-point.
+// TODO: Update when https://github.com/bazelbuild/rules_nodejs/pull/3286 is available.
+import {BazelOptions, CachedFileLoader, CompilerHost, constructManifest, debug, FileCache, FileLoader, parseTsconfig, resolveNormalizedPath, runAsWorker, runWorkerLoop, UncachedFileLoader} from '@bazel/concatjs/internal/tsc_wrapped';
+
 import type {AngularCompilerOptions, CompilerHost as NgCompilerHost, TsEmitCallback, Program, CompilerOptions} from '@angular/compiler-cli';
-import {BazelOptions, CachedFileLoader, CompilerHost, constructManifest, debug, FileCache, FileLoader, parseTsconfig, resolveNormalizedPath, runAsWorker, runWorkerLoop, UncachedFileLoader} from '@bazel/typescript';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as tsickle from 'tsickle';
@@ -527,7 +530,7 @@ export function patchNgHostWithFileNameToModuleName(
     }
 
     // Unless manifest paths are explicitly enforced, we initially check if a module name is
-    // set for the given source file. The compiler host from `@bazel/typescript` sets source
+    // set for the given source file. The compiler host from `@bazel/concatjs` sets source
     // file module names if the compilation targets either UMD or AMD. To ensure that the AMD
     // module names match, we first consider those.
     try {
@@ -570,7 +573,7 @@ export function patchNgHostWithFileNameToModuleName(
       return ngHost.amdModuleName({fileName: importedFilePath} as ts.SourceFile);
     }
 
-    // If no AMD module name has been set for the source file by the `@bazel/typescript` compiler
+    // If no AMD module name has been set for the source file by the `@bazel/concatjs` compiler
     // host, and the target file is not part of a flat module node module package, we use the
     // following rules (in order):
     //    1. If target file is part of `node_modules/`, we use the package module name.
@@ -585,7 +588,7 @@ export function patchNgHostWithFileNameToModuleName(
     // break `esm2015` or `esm5` output for Angular package release output
     // Omit the `node_modules` prefix if the module name of an NPM package is requested.
     if (relativeTargetPath.startsWith(NODE_MODULES)) {
-      return relativeTargetPath.substr(NODE_MODULES.length);
+      return relativeTargetPath.slice(NODE_MODULES.length);
     } else if (
         containingFilePath == null || !bazelOpts.compilationTargetSrc.includes(importedFilePath)) {
       return manifestTargetPath;

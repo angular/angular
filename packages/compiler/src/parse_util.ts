@@ -29,7 +29,8 @@ export class ParseLocation {
       const ch = source.charCodeAt(offset);
       if (ch == chars.$LF) {
         line--;
-        const priorLine = source.substr(0, offset - 1).lastIndexOf(String.fromCharCode(chars.$LF));
+        const priorLine =
+            source.substring(0, offset - 1).lastIndexOf(String.fromCharCode(chars.$LF));
         col = priorLine > 0 ? offset - priorLine : offset;
       } else {
         col--;

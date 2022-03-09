@@ -1,3 +1,108 @@
+<a name="14.0.0-next.9"></a>
+# 14.0.0-next.9 (2022-03-25)
+## Special Thanks
+Paul Gschwendtner
+
+<!-- CHANGELOG SPLIT MARKER -->
+
+<a name="14.0.0-next.8"></a>
+# 14.0.0-next.8 (2022-03-25)
+## Breaking Changes
+### core
+- TypeScript versions older than 4.6 are no longer supported.
+### zone.js
+- in TaskTrackingZoneSpec track a periodic task until it is cancelled
+
+The breaking change is scoped only to the plugin
+`zone.js/plugins/task-tracking`. If you used `TaskTrackingZoneSpec` and
+checked the pending macroTasks e.g. using `(this.ngZone as any)._inner
+._parent._properties.TaskTrackingZone.getTasksFor('macroTask')`, then
+its behavior slightly changed for periodic macrotasks. For example,
+previously the `setInterval` macrotask was no longer tracked after its
+callback was executed for the first time. Now it's tracked until
+the task is explicitly cancelled, e.g  with `clearInterval(id)`.
+
+fixes 45350
+### animations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [79d334b138](https://github.com/angular/angular/commit/79d334b1385685d0fd1451534df2ed3cbaefa0b6) | feat | provide warnings for non-animatable CSS properties ([#45212](https://github.com/angular/angular/pull/45212)) |
+| [2a75754ee8](https://github.com/angular/angular/commit/2a75754ee823032e651bc596887a2186dc6846ae) | fix | apply default params when resolved value is null or undefined ([#45339](https://github.com/angular/angular/pull/45339)) |
+### bazel
+| Commit | Type | Description |
+| -- | -- | -- |
+| [dc72f3007a](https://github.com/angular/angular/commit/dc72f3007ac74389ec02ea021a27f35770aa5a5d) | fix | ng module compilation workers are subject to linker race-conditions ([#45393](https://github.com/angular/angular/pull/45393)) |
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [fffa023803](https://github.com/angular/angular/commit/fffa023803e5b04a58f0bd0b8667ee8b686aa530) | fix | scope css rules within `@layer` blocks ([#45396](https://github.com/angular/angular/pull/45396)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [27b4af7240](https://github.com/angular/angular/commit/27b4af7240ea964d1e4d51b83118f10321163627) | fix | full side-effectful registration of NgModules with ids ([#45024](https://github.com/angular/angular/pull/45024)) |
+| [8155428ba6](https://github.com/angular/angular/commit/8155428ba65c38c0c15f2666727202a7b360c1bd) | perf | ignore the module.id anti-pattern for NgModule ids ([#45024](https://github.com/angular/angular/pull/45024)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c9d566ce4b](https://github.com/angular/angular/commit/c9d566ce4b6e9097d9eceb7ac3964a0b25c404ad) | feat | drop support for TypeScript 4.4 and 4.5 ([#45394](https://github.com/angular/angular/pull/45394)) |
+| [be161bef79](https://github.com/angular/angular/commit/be161bef798ac5309df8390e3c2bba2cf84cb530) | fix | memory leak in event listeners inside embedded views ([#43075](https://github.com/angular/angular/pull/43075)) |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [fe0e42a996](https://github.com/angular/angular/commit/fe0e42a996d5b70f4c0923cb6570c9a8032b1298) | fix | Make UntypedFormBuilder assignable to FormBuilder, and vice versa. ([#45421](https://github.com/angular/angular/pull/45421)) |
+## Special Thanks
+Alan Agius, Alex Rickabaugh, AlirezaEbrahimkhani, Ben Brook, Dylan Hunn, George Kalpakas, Joey Perrott, JoostK, Kristiyan Kostadinov, Krzysztof Platis, Mike, Paul Gschwendtner, Tobias Speicher, alirezaghey, arturovt, dario-piotrowicz, khai and mgechev
+
+<!-- CHANGELOG SPLIT MARKER -->
+
+<a name="14.0.0-next.7"></a>
+# 14.0.0-next.7 (2022-03-16)
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [225e4f2dbe](https://github.com/angular/angular/commit/225e4f2dbeac5982982fb94eac65ea931c44247a) | feat | triggerEventHandler accept optional eventObj ([#45279](https://github.com/angular/angular/pull/45279)) |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [9db9091349](https://github.com/angular/angular/commit/9db9091349e0e9761855d3c55729004674eec3c5) | fix | improve error message for invalid value accessors ([#45192](https://github.com/angular/angular/pull/45192)) |
+## Special Thanks
+Alan Agius, Alistair Kane, Amer Yousuf, Andrew Kushnir, Andrew Scott, Derek Cormier, Jessica Janiuk, JiaLiPassion, Lee Cooper, Paul Gschwendtner, alirezaghey and why520crazy
+
+<!-- CHANGELOG SPLIT MARKER -->
+
+<a name="13.3.0"></a>
+# 13.3.0-rc.0 (2022-03-16)
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b5bb614c74](https://github.com/angular/angular/commit/61a316c68fd27bc2375b1b3043afd8b5bb614c74) | feat | support TypeScript 4.6 ([#45190](https://github.com/angular/angular/pull/45190)) |
+## Special Thanks
+Alistair Kane, Andrew Scott and Kristiyan Kostadinov
+
+<!-- CHANGELOG SPLIT MARKER -->
+
+<a name="13.2.7"></a>
+# 13.2.7 (2022-03-16)
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [eac94f0945](https://github.com/angular/angular/commit/eac94f094500b8b2d73b2f1fd621adb6f2d990a0) | fix | improve error message for invalid value accessors ([#45192](https://github.com/angular/angular/pull/45192)) |
+## Special Thanks
+Alistair Kane, Amer Yousuf, Andrew Scott, Jessica Janiuk, Lee Cooper, alirezaghey and why520crazy
+
+<!-- CHANGELOG SPLIT MARKER -->
+
+<a name="13.3.0-rc.0"></a>
+# 13.3.0-rc.0 (2022-03-10)
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b5bb614c74](https://github.com/angular/angular/commit/61a316c68fd27bc2375b1b3043afd8b5bb614c74) | feat | support TypeScript 4.6 ([#45190](https://github.com/angular/angular/pull/45190)) |
+## Special Thanks
+Alistair Kane, Andrew Scott and Kristiyan Kostadinov
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.0.0-next.6"></a>
 # 14.0.0-next.6 (2022-03-09)
 ## Breaking Changes

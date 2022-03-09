@@ -77,6 +77,7 @@ export enum ErrorCode {
     VALUE_HAS_WRONG_TYPE = 1010,
     // (undocumented)
     VALUE_NOT_LITERAL = 1011,
+    WARN_NGMODULE_ID_UNNECESSARY = 6100,
     WRITE_TO_READ_ONLY_VARIABLE = 8005
 }
 

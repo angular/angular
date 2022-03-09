@@ -6,6 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export type SetterFn = (obj: any, value: any) => void;
-export type GetterFn = (obj: any) => any;
-export type MethodFn = (obj: any, args: any[]) => any;
+export function patchModuleCompilation(): void {
+  // Does nothing, but exists as a target for patching.
+}

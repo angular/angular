@@ -19,6 +19,20 @@ module.exports = function processCliCommands(createDocMessage) {
           // Recursively process the options
           const optionKeywords = new Set();
           processOptions(doc, doc.options, optionKeywords);
+
+          doc.usages = generateUsages(doc);
+
+          // Recurse if there are subcommands
+          if (doc.subcommands) {
+            doc.subcommands = Object.values(doc.subcommands);
+            doc.subcommands.forEach((subcommand) => {
+              subcommand.names = collectNames(subcommand.name, subcommand.aliases);
+              subcommand.names.forEach((name) => optionKeywords.add(name));
+              subcommand.usages = generateUsages(subcommand, doc);
+              processOptions(subcommand, subcommand.options, optionKeywords);
+            });
+          }
+
           doc.optionKeywords = Array.from(optionKeywords).join(' ');
 
           // Add to navigation doc
@@ -28,6 +42,31 @@ module.exports = function processCliCommands(createDocMessage) {
     }
   };
 };
+
+function generateUsages(command, parentCommand) {
+  const usage = parentCommand
+    ? // `ng generate <schematic>` -> `ng generate app-shell`
+      parentCommand.command.split(/ [<|[]/, 1)[0] + ' ' + command.command
+    : // `ng build [project]`
+      command.command;
+
+  // Handle required and optional command line args.
+  // Wrap them in a <var> element.
+  const commandUsageHtmlString = usage
+    .replace(/>/g, '&gt;/var>&gt;')
+    .replace(/</g, '&lt;<var>')
+    .replace(/&gt;\//g, '</')
+    .replace(/\[/g, '[<var>')
+    .replace(/\]/g, '</var>]');
+
+  // `ng build` -> `ng <span class="cli-name">build</span>`
+  return command.names.map((name) =>
+    commandUsageHtmlString.replace(
+      ' ' + command.name,
+      ` <span class="cli-name">${name}</span>`
+    )
+  );
+}
 
 // Look for the `CLI Commands` navigation node. It is the node whose first child has `url: 'cli'`.
 // (NOTE: Using the URL instead of the title, because it is more robust.)
@@ -77,16 +116,6 @@ function processOptions(container, options, optionKeywords) {
     } else {
       container.namedOptions.push(option);
     }
-
-    // Recurse if there are subcommands
-    if (option.subcommands) {
-      option.subcommands = getValues(option.subcommands);
-      option.subcommands.forEach(subcommand => {
-        subcommand.names = collectNames(subcommand.name, subcommand.aliases);
-        subcommand.names.forEach(name => optionKeywords.add(name));
-        processOptions(subcommand, subcommand.options, optionKeywords);
-      });
-    }
   });
 
   container.namedOptions.sort((a, b) => a.name > b.name ? 1 : -1);
@@ -94,8 +123,4 @@ function processOptions(container, options, optionKeywords) {
 
 function collectNames(name, aliases) {
   return [name].concat(aliases || []);
-}
-
-function getValues(obj) {
-  return Object.keys(obj).map(key => obj[key]);
 }

@@ -3,10 +3,9 @@
 load("@rules_pkg//:pkg.bzl", "pkg_tar")
 load("@build_bazel_rules_nodejs//:index.bzl", _nodejs_binary = "nodejs_binary", _pkg_npm = "pkg_npm")
 load("@npm//@bazel/jasmine:index.bzl", _jasmine_node_test = "jasmine_node_test")
-load("@npm//@bazel/concatjs:index.bzl", _concatjs_devserver = "concatjs_devserver")
+load("@npm//@bazel/concatjs:index.bzl", _concatjs_devserver = "concatjs_devserver", _ts_config = "ts_config", _ts_library = "ts_library")
 load("@npm//@bazel/rollup:index.bzl", _rollup_bundle = "rollup_bundle")
 load("@npm//@bazel/terser:index.bzl", "terser_minified")
-load("@npm//@bazel/typescript:index.bzl", _ts_config = "ts_config", _ts_library = "ts_library")
 load("@npm//@bazel/protractor:index.bzl", _protractor_web_test_suite = "protractor_web_test_suite")
 load("@npm//typescript:index.bzl", "tsc")
 load("//packages/bazel:index.bzl", _ng_module = "ng_module", _ng_package = "ng_package")
@@ -148,7 +147,7 @@ def ts_library(name, tsconfig = None, testonly = False, deps = [], module_name =
         srcs = [":%s" % name],
         testonly = testonly,
         # Note: Ironically this is named `es5_sources` but it refers to the devmode output.
-        # This is just an artifact of many iterations in `@bazel/typescript`. This is being
+        # This is just an artifact of many iterations in `@bazel/concatjs`. This is being
         # solved together with us combining devmode & prodmode.
         output_group = "es5_sources",
     )

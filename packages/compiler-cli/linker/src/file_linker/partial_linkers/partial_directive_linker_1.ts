@@ -12,7 +12,7 @@ import {Range} from '../../ast/ast_host';
 import {AstObject, AstValue} from '../../ast/ast_value';
 import {FatalLinkerError} from '../../fatal_linker_error';
 
-import {PartialLinker} from './partial_linker';
+import {LinkedDefinition, PartialLinker} from './partial_linker';
 import {extractForwardRef, wrapReference} from './util';
 
 /**
@@ -23,10 +23,9 @@ export class PartialDirectiveLinkerVersion1<TExpression> implements PartialLinke
 
   linkPartialDeclaration(
       constantPool: ConstantPool,
-      metaObj: AstObject<R3PartialDeclaration, TExpression>): o.Expression {
+      metaObj: AstObject<R3PartialDeclaration, TExpression>): LinkedDefinition {
     const meta = toR3DirectiveMeta(metaObj, this.code, this.sourceUrl);
-    const def = compileDirectiveFromMetadata(meta, constantPool, makeBindingParser());
-    return def.expression;
+    return compileDirectiveFromMetadata(meta, constantPool, makeBindingParser());
   }
 }
 

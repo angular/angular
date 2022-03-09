@@ -187,49 +187,43 @@ export class FormBuilder {
  * UntypedFormBuilder is the same as @see FormBuilder, but it provides untyped controls.
  */
 @Injectable({providedIn: ReactiveFormsModule})
-export class UntypedFormBuilder {
-  private _typedBuilder: FormBuilder;
-
-  constructor() {
-    this._typedBuilder = new FormBuilder();
-  }
-
+export class UntypedFormBuilder extends FormBuilder {
   /**
    * @see FormBuilder#group
    */
-  group(
+  override group(
       controlsConfig: {[key: string]: any},
       options?: AbstractControlOptions|null,
       ): UntypedFormGroup;
   /**
    * @deprecated
    */
-  group(
+  override group(
       controlsConfig: {[key: string]: any},
       options: {[key: string]: any},
       ): UntypedFormGroup;
-  group(
+  override group(
       controlsConfig: {[key: string]: any},
       options: AbstractControlOptions|{[key: string]: any}|null = null): UntypedFormGroup {
-    return this._typedBuilder.group(controlsConfig, options);
+    return super.group(controlsConfig, options);
   }
 
   /**
    * @see FormBuilder#control
    */
-  control(
+  override control(
       formState: any, validatorOrOpts?: ValidatorFn|ValidatorFn[]|FormControlOptions|null,
       asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null): UntypedFormControl {
-    return this._typedBuilder.control(formState, validatorOrOpts, asyncValidator);
+    return super.control(formState, validatorOrOpts, asyncValidator);
   }
 
   /**
    * @see FormBuilder#array
    */
-  array(
+  override array(
       controlsConfig: any[],
       validatorOrOpts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|null,
       asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null): UntypedFormArray {
-    return this._typedBuilder.array(controlsConfig, validatorOrOpts, asyncValidator);
+    return super.array(controlsConfig, validatorOrOpts, asyncValidator);
   }
 }
