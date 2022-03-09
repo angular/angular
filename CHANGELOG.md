@@ -1,3 +1,34 @@
+<a name="13.2.6"></a>
+# 13.2.6 "suede-spaghetti" (2022-03-09)
+### cdk
+| Commit | Type | Description |
+| -- | -- | -- |
+| [39929a815d](https://github.com/angular/components/commit/39929a815d05722996512c6e9a9e4c7f3d928388) | fix | **overlay:** backdrop timeouts not being cleared in some cases ([#23972](https://github.com/angular/components/pull/23972)) |
+| [2f2b0c7cf4](https://github.com/angular/components/commit/2f2b0c7cf4bcef4d962c75693f07461c26c4c74c) | fix | **testing:** dispatch mouseover and mouseout events in UnitTestElement ([#24490](https://github.com/angular/components/pull/24490)) |
+| [edca54f2d0](https://github.com/angular/components/commit/edca54f2d03771b048591b5516a469c1967ef612) | fix | **testing:** require at least one argument for locator functions ([#23619](https://github.com/angular/components/pull/23619)) |
+### material
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c4993ac171](https://github.com/angular/components/commit/c4993ac17160de6bcfcef8129a548078029442cf) | fix | **button:** avoid setting a tabindex on all link buttons ([#22901](https://github.com/angular/components/pull/22901)) |
+| [c47d30e0e5](https://github.com/angular/components/commit/c47d30e0e5955769ec833b1f2711a3767bc9385b) | fix | **dialog:** don't wait for animation before moving focus ([#24121](https://github.com/angular/components/pull/24121)) |
+| [70b8248568](https://github.com/angular/components/commit/70b8248568b890491283b813a0746315ad6813e2) | fix | **expansion:** able to tab into descendants with visibility while closed ([#24045](https://github.com/angular/components/pull/24045)) |
+| [d22d73ab8d](https://github.com/angular/components/commit/d22d73ab8dedd2673dfd27e961e0e55dd769a6aa) | fix | **select:** disabled state out of sync when swapping form group with a disabled one ([#17872](https://github.com/angular/components/pull/17872)) |
+| [911d6b71d4](https://github.com/angular/components/commit/911d6b71d490a21e5974491eadec18b58bd1a5e6) | fix | **slide-toggle:** clear name from host node ([#15505](https://github.com/angular/components/pull/15505)) |
+| [4b5363d160](https://github.com/angular/components/commit/4b5363d160ec639443ad83d3424c9e7b19c36f54) | fix | **tooltip:** decouple removal logic from change detection ([#19432](https://github.com/angular/components/pull/19432)) |
+### material-experimental
+| Commit | Type | Description |
+| -- | -- | -- |
+| [8414646d79](https://github.com/angular/components/commit/8414646d795fafadd17d076533e15641d4c2e151) | fix | **mdc-card:** remove extra margin if header doesn't have an avatar ([#19072](https://github.com/angular/components/pull/19072)) |
+| [f66486dc5b](https://github.com/angular/components/commit/f66486dc5b721cbdc480da1d102f31f72e4a5b54) | fix | **mdc-slider:** fix a few null pointer exceptions ([#23659](https://github.com/angular/components/pull/23659)) |
+### multiple
+| Commit | Type | Description |
+| -- | -- | -- |
+| [6ee0089ce6](https://github.com/angular/components/commit/6ee0089ce609152a482c9ea5cbb2375ba9a84f22) | fix | don't block child component animations on open ([#24529](https://github.com/angular/components/pull/24529)) |
+## Special Thanks
+Andrew Seguin, Jeri Peier, Kristiyan Kostadinov and Paul Gschwendtner
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.0.0-next.5"></a>
 # 14.0.0-next.5 "jersey-jughandle" (2022-03-02)
 ### cdk
