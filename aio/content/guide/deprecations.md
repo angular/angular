@@ -79,6 +79,7 @@ v14 -> v17
 | `@angular/service-worker`           | [`SwUpdate#available`](api/service-worker/SwUpdate#available)                                              | <!--v13--> v16        |
 | template syntax                     | [`/deep/`, `>>>`, and `::ng-deep`](#deep-component-style-selector)                                         | <!--v7--> unspecified |
 | template syntax                     | [`bind-`, `on-`, `bindon-`, and `ref-`](#bind-syntax)                                                      | <!--v13--> v15        |
+| `@angular/router`                     | [`relativeLinkResolution`](#relativeLinkResolution)                                                      | <!--v14--> v16        |
 
 For information about Angular CDK and Angular Material deprecations, see the [changelog](https://github.com/angular/components/blob/master/CHANGELOG.md).
 
@@ -296,6 +297,10 @@ In v5, Angular replaced the `ReflectiveInjector` with the `StaticInjector`. The 
 **After**:
 
 <code-example path="deprecation-guide/src/app/app.component.ts" language="typescript" region="static-injector-example"></code-example>
+
+{@a relativeLinkResolution}
+
+The `relativeLinkResolution` option is being removed. The default was changed to the corrected behavior in version 11. Once this option is removed, the corrected behavior will always be used without the option to opt-in to the old, broken behavior.
 
 {@a loadChildren}
 

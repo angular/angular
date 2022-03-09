@@ -425,6 +425,8 @@ export interface ExtraOptions {
    * resolution is set to `'legacy'`.
    *
    * The default in v11 is `corrected`.
+   *
+   * @deprecated
    */
   relativeLinkResolution?: 'legacy'|'corrected';
 
