@@ -160,11 +160,16 @@ export interface PortalOutlet {
 
 // @public
 export class TemplatePortal<C = any> extends Portal<EmbeddedViewRef<C>> {
-    constructor(template: TemplateRef<C>, viewContainerRef: ViewContainerRef, context?: C);
+    constructor(
+    templateRef: TemplateRef<C>,
+    viewContainerRef: ViewContainerRef,
+    context?: C | undefined,
+    injector?: Injector | undefined);
     attach(host: PortalOutlet, context?: C | undefined): EmbeddedViewRef<C>;
-    context: C | undefined;
+    context?: C | undefined;
     // (undocumented)
     detach(): void;
+    injector?: Injector | undefined;
     // (undocumented)
     get origin(): ElementRef;
     templateRef: TemplateRef<C>;

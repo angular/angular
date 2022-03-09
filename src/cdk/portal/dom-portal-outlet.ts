@@ -7,13 +7,13 @@
  */
 
 import {
+  ApplicationRef,
   ComponentFactoryResolver,
   ComponentRef,
   EmbeddedViewRef,
-  ApplicationRef,
   Injector,
 } from '@angular/core';
-import {BasePortalOutlet, ComponentPortal, TemplatePortal, DomPortal} from './portal';
+import {BasePortalOutlet, ComponentPortal, DomPortal, TemplatePortal} from './portal';
 
 /**
  * A PortalOutlet for attaching portals to an arbitrary DOM element outside of the Angular
@@ -84,7 +84,9 @@ export class DomPortalOutlet extends BasePortalOutlet {
    */
   attachTemplatePortal<C>(portal: TemplatePortal<C>): EmbeddedViewRef<C> {
     let viewContainer = portal.viewContainerRef;
-    let viewRef = viewContainer.createEmbeddedView(portal.templateRef, portal.context);
+    let viewRef = viewContainer.createEmbeddedView(portal.templateRef, portal.context, {
+      injector: portal.injector,
+    });
 
     // The method `createEmbeddedView` will add the view as a child of the viewContainer.
     // But for the DomPortalOutlet the view can be added everywhere in the DOM

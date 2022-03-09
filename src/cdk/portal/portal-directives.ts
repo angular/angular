@@ -181,7 +181,9 @@ export class CdkPortalOutlet extends BasePortalOutlet implements OnInit, OnDestr
    */
   attachTemplatePortal<C>(portal: TemplatePortal<C>): EmbeddedViewRef<C> {
     portal.setAttachedHost(this);
-    const viewRef = this._viewContainerRef.createEmbeddedView(portal.templateRef, portal.context);
+    const viewRef = this._viewContainerRef.createEmbeddedView(portal.templateRef, portal.context, {
+      injector: portal.injector,
+    });
     super.setDisposeFn(() => this._viewContainerRef.clear());
 
     this._attachedPortal = portal;

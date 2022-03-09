@@ -119,20 +119,17 @@ export class ComponentPortal<T> extends Portal<ComponentRef<T>> {
  * A `TemplatePortal` is a portal that represents some embedded template (TemplateRef).
  */
 export class TemplatePortal<C = any> extends Portal<EmbeddedViewRef<C>> {
-  /** The embedded template that will be used to instantiate an embedded View in the host. */
-  templateRef: TemplateRef<C>;
-
-  /** Reference to the ViewContainer into which the template will be stamped out. */
-  viewContainerRef: ViewContainerRef;
-
-  /** Contextual data to be passed in to the embedded view. */
-  context: C | undefined;
-
-  constructor(template: TemplateRef<C>, viewContainerRef: ViewContainerRef, context?: C) {
+  constructor(
+    /** The embedded template that will be used to instantiate an embedded View in the host. */
+    public templateRef: TemplateRef<C>,
+    /** Reference to the ViewContainer into which the template will be stamped out. */
+    public viewContainerRef: ViewContainerRef,
+    /** Contextual data to be passed in to the embedded view. */
+    public context?: C,
+    /** The injector to use for the embedded view. */
+    public injector?: Injector,
+  ) {
     super();
-    this.templateRef = template;
-    this.viewContainerRef = viewContainerRef;
-    this.context = context;
   }
 
   get origin(): ElementRef {
