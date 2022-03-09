@@ -1,3 +1,22 @@
+<a name="13.2.6"></a>
+# 13.2.6 (2022-03-09)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [6efa366e2c](https://github.com/angular/angular/commit/6efa366e2c8a6f8d0ee9d20b8ebd2351254b6455) | fix | compute correct offsets when interpolations have HTML entities ([#44811](https://github.com/angular/angular/pull/44811)) |
+### language-service
+| Commit | Type | Description |
+| -- | -- | -- |
+| [9bce9ce89e](https://github.com/angular/angular/commit/9bce9ce89ea9a12fa9d9b880c5a2d60436e46f99) | fix | Prioritize Angular-specific completions over DOM completions ([#45293](https://github.com/angular/angular/pull/45293)) |
+### service-worker
+| Commit | Type | Description |
+| -- | -- | -- |
+| [cff1c5622f](https://github.com/angular/angular/commit/cff1c5622f6630fd8050d5ce993265c884963a17) | fix | file system hash in batch of 500 elements ([#45262](https://github.com/angular/angular/pull/45262)) |
+## Special Thanks
+Andrew Scott, Anner Visser, Aristeidis Bampakos, JiaLiPassion, Joey Perrott, Kristiyan Kostadinov, Luca, Mladen Jakovljević, Paul Gschwendtner, Srikanth Kolli and nanda18
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.0.0-next.5"></a>
 # 14.0.0-next.5 (2022-03-02)
 ## Breaking Changes
