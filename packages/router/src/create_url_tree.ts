@@ -15,13 +15,13 @@ export function createUrlTree(
     route: ActivatedRoute, urlTree: UrlTree, commands: any[], queryParams: Params|null,
     fragment: string|null): UrlTree {
   if (commands.length === 0) {
-    return tree(urlTree.root, urlTree.root, urlTree, queryParams, fragment);
+    return tree(urlTree.root, urlTree.root, urlTree.root, queryParams, fragment);
   }
 
   const nav = computeNavigation(commands);
 
   if (nav.toRoot()) {
-    return tree(urlTree.root, new UrlSegmentGroup([], {}), urlTree, queryParams, fragment);
+    return tree(urlTree.root, urlTree.root, new UrlSegmentGroup([], {}), queryParams, fragment);
   }
 
   const startingPosition = findStartingPosition(nav, urlTree, route);
@@ -30,7 +30,7 @@ export function createUrlTree(
       updateSegmentGroupChildren(
           startingPosition.segmentGroup, startingPosition.index, nav.commands) :
       updateSegmentGroup(startingPosition.segmentGroup, startingPosition.index, nav.commands);
-  return tree(startingPosition.segmentGroup, segmentGroup, urlTree, queryParams, fragment);
+  return tree(urlTree.root, startingPosition.segmentGroup, segmentGroup, queryParams, fragment);
 }
 
 function isMatrixParams(command: any): boolean {
@@ -46,7 +46,7 @@ function isCommandWithOutlets(command: any): command is {outlets: {[key: string]
 }
 
 function tree(
-    oldSegmentGroup: UrlSegmentGroup, newSegmentGroup: UrlSegmentGroup, urlTree: UrlTree,
+    oldRoot: UrlSegmentGroup, oldSegmentGroup: UrlSegmentGroup, newSegmentGroup: UrlSegmentGroup,
     queryParams: Params|null, fragment: string|null): UrlTree {
   let qp: any = {};
   if (queryParams) {
@@ -55,11 +55,12 @@ function tree(
     });
   }
 
-  if (urlTree.root === oldSegmentGroup) {
+  if (oldRoot === oldSegmentGroup) {
     return new UrlTree(newSegmentGroup, qp, fragment);
   }
 
-  return new UrlTree(replaceSegment(urlTree.root, oldSegmentGroup, newSegmentGroup), qp, fragment);
+  const newRoot = replaceSegment(oldRoot, oldSegmentGroup, newSegmentGroup);
+  return new UrlTree(newRoot, qp, fragment);
 }
 
 function replaceSegment(
