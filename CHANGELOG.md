@@ -1,3 +1,47 @@
+<a name="14.0.0-next.6"></a>
+# 14.0.0-next.6 "clay-cup" (2022-03-09)
+## Breaking Changes
+### material
+* `mat-list-item-avatar` CSS class has been renamed to `mat-list-item-with-avatar`.
+* `MatSelectionListChange.option` has been removed. Use `MatSelectionListChange.options` instead.
+* `MatSelectionList.tabIndex` input has been removed.
+* `tabIndex` parameter of the `MatSelectionList` constructor has been removed.
+* `_focusMonitor` parameter of the `MatSelectionList` constructor is now required.
+* `getHarnessLoaderForContent` has been removed from the various test item harnesses. Use `getChildLoader(MatListItemSection.CONTENT)` instead.
+### material-experimental
+| Commit | Type | Description |
+| -- | -- | -- |
+| [1b7d47cfed](https://github.com/angular/components/commit/1b7d47cfedb4b00570bcd1f7069f4f6d4f1b3afd) | feat | **mdc-tabs:** default to stretched tabs ([#23406](https://github.com/angular/components/pull/23406)) |
+| [557f8bc7ce](https://github.com/angular/components/commit/557f8bc7ce935c776f11fc87c26b14b7289a2102) | fix | **mdc-card:** remove extra margin if header doesn't have an avatar ([#19072](https://github.com/angular/components/pull/19072)) |
+| [1a03257394](https://github.com/angular/components/commit/1a032573944f8df808f0f1744086b5baeb7b8143) | fix | **mdc-slider:** fix a few null pointer exceptions ([#23659](https://github.com/angular/components/pull/23659)) |
+### material
+| Commit | Type | Description |
+| -- | -- | -- |
+| [60bbd194b3](https://github.com/angular/components/commit/60bbd194b3fdd957f73994d7c44d509cb68c6ea5) | feat | **autocomplete:** test harness should throw when options are requested but panel is closed ([#24494](https://github.com/angular/components/pull/24494)) |
+| [899d0e1a0b](https://github.com/angular/components/commit/899d0e1a0b7a2ee10def8ecc3d212399b717fac4) | fix | **button:** avoid setting a tabindex on all link buttons ([#22901](https://github.com/angular/components/pull/22901)) |
+| [92863cca96](https://github.com/angular/components/commit/92863cca9676478a1b9ace37794e51ab7aa919fa) | fix | **dialog:** don't wait for animation before moving focus ([#24121](https://github.com/angular/components/pull/24121)) |
+| [c12347cafb](https://github.com/angular/components/commit/c12347cafb18e900d19f613ce91afcca970d66d1) | fix | **expansion:** able to tab into descendants with visibility while closed ([#24045](https://github.com/angular/components/pull/24045)) |
+| [723a821e67](https://github.com/angular/components/commit/723a821e67ea1867f0bc9f0d718f1ab0640ab00b) | fix | **select:** disabled state out of sync when swapping form group with a disabled one ([#17872](https://github.com/angular/components/pull/17872)) |
+| [5db1df0fe8](https://github.com/angular/components/commit/5db1df0fe8ed27f985c1fb0ad92e142b2a5ee54f) | fix | **slide-toggle:** clear name from host node ([#15505](https://github.com/angular/components/pull/15505)) |
+| [a5ab8e9adf](https://github.com/angular/components/commit/a5ab8e9adf728b908e581720cb7b8ddf8d7c6f01) | fix | **tooltip:** decouple removal logic from change detection ([#19432](https://github.com/angular/components/pull/19432)) |
+| [2fc6b9281d](https://github.com/angular/components/commit/2fc6b9281dfaebe78b76b46831830d723b7d2c97) | refactor | **list:** remove deprecated APIs for version 13 ([#23327](https://github.com/angular/components/pull/23327)) |
+### cdk
+| Commit | Type | Description |
+| -- | -- | -- |
+| [f91b98fff3](https://github.com/angular/components/commit/f91b98fff3beff70b2537f8b3da635518ef403ef) | feat | **portal:** allow specifying injector for template portal ([#24554](https://github.com/angular/components/pull/24554)) |
+| [508b7ac460](https://github.com/angular/components/commit/508b7ac460be647a0479421864bcb00e74d60094) | feat | **table:** allow text column to be centered ([#24133](https://github.com/angular/components/pull/24133)) |
+| [bbe6355556](https://github.com/angular/components/commit/bbe63555560df252b8f98cfa87adf443201e4cb5) | fix | **overlay:** backdrop timeouts not being cleared in some cases ([#23972](https://github.com/angular/components/pull/23972)) |
+| [552103b69e](https://github.com/angular/components/commit/552103b69ed55b7e4d13a36862aa44073f968647) | fix | **testing:** dispatch mouseover and mouseout events in UnitTestElement ([#24490](https://github.com/angular/components/pull/24490)) |
+| [f592a43e62](https://github.com/angular/components/commit/f592a43e62e0ae3fa08daf0acb86e5c5351764e9) | fix | **testing:** require at least one argument for locator functions ([#23619](https://github.com/angular/components/pull/23619)) |
+### multiple
+| Commit | Type | Description |
+| -- | -- | -- |
+| [5edcc6860e](https://github.com/angular/components/commit/5edcc6860e539f1ee883efae6df2bad044e53428) | fix | don't block child component animations on open ([#24529](https://github.com/angular/components/pull/24529)) |
+## Special Thanks
+Amy Sorto, Andrew Seguin, Jeri Peier, Kristiyan Kostadinov, Miles Malerba, Paul Gschwendtner and renovate[bot]
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="13.2.6"></a>
 # 13.2.6 "suede-spaghetti" (2022-03-09)
 ### cdk
