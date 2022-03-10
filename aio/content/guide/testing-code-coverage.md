@@ -1,4 +1,4 @@
-{@a code-coverage}
+<a id="code-coverage"></a>
 
 # Find out how much code you're testing
 
@@ -7,28 +7,32 @@ Code coverage reports show you any parts of your code base that might not be pro
 
 <div class="alert is-helpful">
 
-  If you'd like to experiment with the application that this guide describes, <live-example name="testing" noDownload>run it in your browser</live-example> or <live-example name="testing" downloadOnly>download and run it locally</live-example>.
+If you'd like to experiment with the application that this guide describes, <live-example name="testing" noDownload>run it in your browser</live-example> or <live-example name="testing" downloadOnly>download and run it locally</live-example>.
 
 </div>
 
-
 To generate a coverage report run the following command in the root of your project.
 
-<code-example language="sh">
-  ng test --no-watch --code-coverage
+<code-example format="shell" language="shell">
+
+ng test --no-watch --code-coverage
+
 </code-example>
 
-When the tests are complete, the command creates a new `/coverage` folder in the project. Open the `index.html` file to see a report with your source code and code coverage values.
+When the tests are complete, the command creates a new `/coverage` folder in the project.
+Open the `index.html` file to see a report with your source code and code coverage values.
 
 If you want to create code-coverage reports every time you test, set the following option in the CLI configuration file, `angular.json`:
 
-```
-  "test": {
-    "options": {
-      "codeCoverage": true
-    }
+<code-example format="json" language="json">
+
+"test": {
+  "options": {
+    "codeCoverage": true
   }
-```
+}
+
+</code-example>
 
 ## Code coverage enforcement
 
@@ -38,9 +42,10 @@ If your team decides on a set minimum amount to be unit tested, enforce this min
 For example, suppose you want the code base to have a minimum of 80% code coverage.
 To enable this, open the [Karma](https://karma-runner.github.io) test platform configuration file, `karma.conf.js`, and add the `check` property in the `coverageReporter:` key.
 
-```js
+<code-example format="javascript" language="javascript">
+
 coverageReporter: {
-  dir: require('path').join(__dirname, './coverage/<project-name>'),
+  dir: require('path').join(__dirname, './coverage/&lt;project-name&gt;'),
   subdir: '.',
   reporters: [
     { type: 'html' },
@@ -55,8 +60,17 @@ coverageReporter: {
     }
   }
 }
-```
+
+</code-example>
 
 The `check` property causes the tool to enforce a minimum of 80% code coverage when the unit tests are run in the project.
 
 Find more information about the different coverage configuration options [here](https://github.com/karma-runner/karma-coverage/blob/master/docs/configuration.md).
+
+<!-- links -->
+
+<!-- external links -->
+
+<!-- end links -->
+
+@reviewed 2022-02-28

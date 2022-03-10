@@ -4,7 +4,7 @@ The [Angular CLI][AioCliMain] automatically includes locale data if you run the 
 
 <!--todo: replace with code-example -->
 
-<code-example language="sh">
+<code-example format="shell" language="shell">
 
 ng build --localize
 
@@ -15,9 +15,9 @@ Global variants of the locale data are available in [`@angular/common/locales/gl
 
 ## `import` example for French
 
-The following example imports the global variants for French (`fr`).
+The following example imports the global variants for French \(`fr`\).
 
-<code-example path="i18n/doc-files/app.module.ts" header="src/app/app.module.ts" region="global-locale"></code-example>
+<code-example header="src/app/app.module.ts" path="i18n/doc-files/app.module.ts" region="global-locale"></code-example>
 
 <!-- links -->
 
@@ -31,4 +31,4 @@ The following example imports the global variants for French (`fr`).
 
 <!-- end links -->
 
-@reviewed 2021-10-13
+@reviewed 2022-02-28
