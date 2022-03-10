@@ -1,3 +1,10 @@
+<a name="13.3.0-rc.0"></a>
+# 13.3.0-rc.0 (2022-03-10)
+## Special Thanks
+Alistair Kane, Andrew Scott and Kristiyan Kostadinov
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.0.0-next.6"></a>
 # 14.0.0-next.6 (2022-03-09)
 ## Breaking Changes
