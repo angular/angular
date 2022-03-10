@@ -16,10 +16,21 @@ export class TemplateMigration extends Migration<ComponentMigrator[], SchematicC
 
   override visitTemplate(template: ResolvedResource) {
     const ast = parseTemplate(template.content, template.filePath);
+    const migrators = this.upgradeData.filter(m => m.template).map(m => m.template!);
 
-    visitElements(ast.nodes, node => {
-      // TODO(wagnermaciel): implement the migration updates.
-    });
+    visitElements(
+      ast.nodes,
+      node => {
+        migrators.forEach(m => {
+          template.content = m.updateEndTag(template.content, node);
+        });
+      },
+      node => {
+        migrators.forEach(m => {
+          template.content = m.updateStartTag(template.content, node);
+        });
+      },
+    );
 
     this.fileSystem.overwrite(template.filePath, template.content);
   }

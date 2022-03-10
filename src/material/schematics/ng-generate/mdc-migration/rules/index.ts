@@ -8,6 +8,7 @@
 
 import {ButtonStylesMigrator} from './components/button/button-styles';
 import {CardStylesMigrator} from './components/card/card-styles';
+import {CardTemplateMigrator} from './components/card/card-template';
 import {CheckboxStylesMigrator} from './components/checkbox/checkbox-styles';
 import {ChipsStylesMigrator} from './components/chips/chips-styles';
 import {DialogStylesMigrator} from './components/dialog/dialog-styles';
@@ -36,6 +37,7 @@ export const MIGRATORS: ComponentMigrator[] = [
   {
     component: 'card',
     styles: new CardStylesMigrator(),
+    template: new CardTemplateMigrator(),
   },
   {
     component: 'checkbox',
