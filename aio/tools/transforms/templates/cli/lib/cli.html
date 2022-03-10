@@ -62,7 +62,7 @@
         {% if option.aliases.length %}<p><span class="cli-aliases">Aliases:</span> {% for alias in option.aliases %}{$ renderOptionName(alias) $}{% if not loop.last %}, {% endif %}{% endfor %}</p>{% endif %}
       </td>
       <td><code class="no-auto-link">{$ renderOptionValues(option.type, option.enum) $}</td>
-      <td>{% if option.default !== undefined %}{% if option.default !== '' %}<code class="no-auto-link">{$ option.default $}</code>{% endif %}{% endif %}</td>
+      <td>{% if option.default !== undefined and option.default !== '' %}<code class="no-auto-link">{$ option.default $}</code>{% endif %}</td>
     </tr>
   {% endfor %}
   </tbody>
