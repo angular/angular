@@ -66,43 +66,26 @@ describe('Google3 typedForms TSLint rule', () => {
     return readFileSync(join(tmpDir, fileName), 'utf8');
   }
 
-  it('should migrate a complete example', () => {
+  // This is just a sanity check for the TSLint configuration; see test/typed_forms_spec.ts for the
+  // full test suite.
+  it('should migrate a simple example', () => {
     writeFile('/index.ts', `
       import { Component } from '@angular/core';
       import { AbstractControl, FormArray, FormBuilder, FormControl as FC, FormGroup, UntypedFormGroup } from '@angular/forms';
 
       @Component({template: ''})
       export class MyComponent {
-        private _control = new FC(42);
-        private _group = new FormGroup({});
+        private _control: FC = new FC(42);
+        private _group: FormGroup = new FormGroup({});
         private _array = new FormArray([]);
-        private _ungroup = new FormGroup({});
-
-        private fb = new FormBuilder();
-
-        build() {
-          const c = this.fb.control(42);
-          const g = this.fb.group({one: this.fb.control('')});
-          const a = this.fb.array([42]);
-          const fc2 = new FC(0);
-        }
       }
     `);
 
     const linter = runTSLint(true);
     const cases = [
-      // All the imports should be paired with an new untyped version,
-      // except UntypedFormGroup (which is already present).
-      `import { AbstractControl, FormArray, UntypedFormArray, FormBuilder, UntypedFormBuilder, FormControl as FC, UntypedFormControl, FormGroup, UntypedFormGroup } from '@angular/forms';`,
-      // Existing constructor calls should be rewritten, in various positions, including qualified
-      // imports.
-      `private _control = new UntypedFormControl(42);`,
-      `private _group = new UntypedFormGroup({});`,
+      `private _control: UntypedFormControl = new UntypedFormControl(42);`,
+      `private _group: UntypedFormGroup = new UntypedFormGroup({});`,
       `private _array = new UntypedFormArray([]);`,
-      `private fb = new UntypedFormBuilder();`,
-      `const fc2 = new UntypedFormControl(0);`,
-      // Except UntypedFormGroup, which is already migrated.
-      `private _ungroup = new UntypedFormGroup({});`,
     ];
     cases.forEach(t => expect(getFile(`/index.ts`)).toContain(t));
   });
