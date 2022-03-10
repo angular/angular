@@ -9,7 +9,6 @@
 
   <div class="cli-body">
     {$ doc.shortDescription | marked $}
-    {$ doc.description | marked $}
     {$ cli.renderSyntax(doc) $}
 
     {% if doc.longDescription.length %}
