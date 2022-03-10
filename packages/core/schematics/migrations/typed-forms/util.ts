@@ -9,14 +9,14 @@
 import ts from 'typescript';
 
 import {getImportSpecifier} from '../../utils/typescript/imports';
-import {isReferenceToImport} from '../../utils/typescript/symbol';
 
 export const classes = new Set(['FormArray', 'FormBuilder', 'FormControl', 'FormGroup']);
+export const formControl = 'FormControl';
 export const untypedPrefix = 'Untyped';
 export const forms = '@angular/forms';
 
 export interface MigratableNode {
-  node: ts.Expression;
+  node: ts.Node;
   importName: string;
 }
 
@@ -50,7 +50,7 @@ export function migrateFile(
     }
   }
 
-  // For each imported control class, insert the corresponding uptyped import.
+  // For each imported control class, migrate to the corresponding uptyped import.
   for (const imp of imports) {
     const untypedClass = getUntypedVersionOfImportOrName(imp.getText());
     if (untypedClass === null) {
@@ -64,7 +64,7 @@ export function migrateFile(
       // class is already present. If present, immediately continue.
       continue;
     }
-    rewrite(imp.getEnd(), 0, `, ${untypedClass}`);
+    rewrite(imp.getStart(), imp.getWidth(), untypedClass);
   }
 }
 
@@ -89,18 +89,52 @@ function getUntypedVersionOfImportOrName(name: string): string|null {
 
 function getUsages(
     sourceFile: ts.SourceFile, typeChecker: ts.TypeChecker,
-    importSpecifier: ts.ImportSpecifier|null): MigratableNode[] {
-  if (importSpecifier === null) return [];
+    importSpecifier: ts.ImportSpecifier): MigratableNode[] {
   const usages: MigratableNode[] = [];
   const visitNode = (node: ts.Node) => {
-    // Look for a `new` expression with no type arguments which references an import we care about:
-    // `new FormControl()`
-    if (ts.isNewExpression(node) && !node.typeArguments &&
-        isReferenceToImport(typeChecker, node.expression, importSpecifier)) {
-      usages.push({node: node.expression, importName: importSpecifier.getText()});
+    if (ts.isImportSpecifier(node)) {
+      // Skip this node and all of its children; imports are a special case.
+      return;
+    }
+    if (ts.isIdentifier(node) && isUsageOfFormsImport(typeChecker, node, importSpecifier)) {
+      usages.push({node, importName: importSpecifier.getText()});
     }
     ts.forEachChild(node, visitNode);
   };
   ts.forEachChild(sourceFile, visitNode);
   return usages;
+}
+
+function isUsageOfFormsImport(
+    typeChecker: ts.TypeChecker, node: ts.Identifier,
+    importSpecifier: ts.ImportSpecifier): boolean {
+  const symbol = typeChecker.getSymbolAtLocation(node);
+
+  // We check symbol.declarations because we actually care about the name at the declaration site,
+  // not the usage site. These could be different in the case of overriden constructors.
+  if (!symbol || symbol.declarations === undefined || !symbol.declarations.length) return false;
+
+  const decl = symbol.declarations[0];
+  if (!ts.isImportSpecifier(decl)) return false;
+
+  // As per `typescript/imports.ts`, we must walk up the tree to find the enclosing import
+  // declaration. For reasons specific to the TS AST, this is always 3 levels up from an import
+  // specifier node.
+  const importDecl = decl.parent.parent.parent;
+  if (!ts.isStringLiteral(importDecl.moduleSpecifier)) return false;
+
+  const importName = typeChecker.getTypeAtLocation(importSpecifier)?.getSymbol()?.getName();
+  if (!importName) return false;
+
+  // Handles aliased imports: e.g. "import {Component as myComp} from ...";
+  const declName = decl.propertyName ? decl.propertyName.text : decl.name.text;
+
+  if (importName === declName) return true;
+
+  // In the case of FormControl's overridden exported constructor, the value name and declaration
+  // name are not exactly the same. For our purposes, it's enough to check whether the latter is a
+  // substring of the former.
+  if (declName === formControl && importName.includes(declName)) return true;
+
+  return false;
 }
