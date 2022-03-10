@@ -188,7 +188,7 @@ export abstract class AbstractControl {
   /** @internal */
   _updateOn?: FormHooks;
 
-  private _parent: FormGroup|FormArray|null = null;
+  private _parent: ControlCollection|null = null;
   private _asyncValidationSubscription: any;
 
   /**
@@ -285,7 +285,7 @@ export abstract class AbstractControl {
   /**
    * The parent control.
    */
-  get parent(): FormGroup|FormArray|null {
+  get parent(): ControlCollection|null {
     return this._parent;
   }
 
@@ -792,7 +792,7 @@ export abstract class AbstractControl {
   /**
    * @param parent Sets the parent of the control
    */
-  setParent(parent: FormGroup|FormArray): void {
+  setParent(parent: ControlCollection): void {
     this._parent = parent;
   }
 
@@ -1147,3 +1147,8 @@ export abstract class AbstractControl {
     return null;
   }
 }
+
+/**
+ * A `ControlCollection` is a control that has other controls as children.
+ */
+export type ControlCollection = FormGroup|FormArray;

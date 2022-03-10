@@ -65,7 +65,7 @@ export abstract class AbstractControl {
     markAsUntouched(opts?: {
         onlySelf?: boolean;
     }): void;
-    get parent(): FormGroup | FormArray | null;
+    get parent(): ControlCollection | null;
     abstract patchValue(value: any, options?: Object): void;
     get pending(): boolean;
     readonly pristine: boolean;
@@ -78,7 +78,7 @@ export abstract class AbstractControl {
         emitEvent?: boolean;
     }): void;
     // (undocumented)
-    setParent(parent: FormGroup | FormArray): void;
+    setParent(parent: ControlCollection): void;
     setValidators(validators: ValidatorFn | ValidatorFn[] | null): void;
     abstract setValue(value: any, options?: Object): void;
     readonly status: FormControlStatus;
@@ -174,6 +174,9 @@ export class CheckboxRequiredValidator extends RequiredValidator {
 
 // @public
 export const COMPOSITION_BUFFER_MODE: InjectionToken<boolean>;
+
+// @public
+export type ControlCollection = FormGroup | FormArray;
 
 // @public
 export abstract class ControlContainer extends AbstractControlDirective {
