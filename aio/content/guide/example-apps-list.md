@@ -13,7 +13,6 @@ These examples demonstrate minimal, fundamental concepts.
 Introductory application demonstrating Angular features.
 For more information, see [Getting started](start).
 
-
 ### Launching your app
 
 <live-example name="bootstrapping"></live-example>
@@ -34,7 +33,6 @@ For more information, see [Introduction to Angular concepts](guide/architecture)
 
 Demonstrates customizing the document title in the browser.
 For more information, see [Set the document title](guide/set-document-title).
-
 
 ## Tour of Heroes tutorial application
 
@@ -95,10 +93,6 @@ For more information, see [Add in-app navigation with routing](tutorial/toh-pt5)
 
 Sixth and final step of the Tour of Heroes example application.
 For more information, see [Get data from a server](tutorial/toh-pt6).
-
-
-
-
 
 
 ## Working with templates
@@ -209,7 +203,6 @@ For more information, see [Property binding](guide/property-binding).
 Demonstrates Angular structural directives.
 For more information, see [Structural directives](guide/structural-directives).
 
-
 ### Two-way binding
 
 <live-example name="two-way-binding"></live-example>
@@ -230,11 +223,6 @@ For more information, see [Template reference variables](guide/template-syntax).
 
 Demonstrates responding to user actions.
 For more information, see [User input](guide/user-input).
-
-
-
-
-
 
 
 ## Working with components
@@ -283,21 +271,12 @@ For more information, see [Event binding](guide/event-binding).
 Demonstrates `@Input()` and `@Output()` in components and directives.
 For more information, see [`@Input()` and `@Output()` properties](guide/inputs-outputs).
 
-
 ### Lifecycle hooks
 
 <live-example name="lifecycle-hooks"></live-example>
 
 Demonstrates Angular lifecycle hooks such as `ngOnInit()` and `ngOnChanges()`.
 For more information, see [Hooking into the component lifecycle](guide/lifecycle-hooks).
-
-
-
-
-
-
-
-
 
 ## Dependency injection
 
@@ -322,7 +301,6 @@ For more information, see [Dependency injection in action](guide/dependency-inje
 Demonstrates providing services in NgModules.
 For more information, see [Providing dependencies in modules](guide/providers).
 
-
 ### Hierarchical dependency injection
 
 <live-example name="hierarchical-dependency-injection"></live-example>
@@ -337,15 +315,12 @@ For more information, see [Hierarchical injectors](guide/hierarchical-dependency
 Demonstrates how `providers` and `viewproviders` affect dependency injection.
 For more information, see the [Providing services in `@Component()`](guide/hierarchical-dependency-injection#providing-services-in-component) section of [Hierarchical injectors](guide/hierarchical-dependency-injection).
 
-
 ### Resolution modifiers and dependency injection
 
 <live-example name="resolution-modifiers"></live-example>
 
 Demonstrates Angular's resolution modifiers, such as `@Self()`.
 For more information, see the [Modifying service visibility](guide/hierarchical-dependency-injection#modifying-service-visibility) section of [Hierarchical injectors](guide/hierarchical-dependency-injection).
-
-
 
 ## Forms
 
@@ -385,10 +360,6 @@ Demonstrates creating dynamic forms.
 For more information, see [Building dynamic forms](guide/dynamic-form).
 
 
-
-
-
-
 ## NgModules
 
 ### NgModules
@@ -412,7 +383,6 @@ For more information, see [Feature modules](guide/feature-modules).
 Demonstrates lazy loading NgModules.
 For more information, see [Lazy-loading feature modules](guide/lazy-loading-ngmodules).
 
-
 ## Routing
 
 ### Router
@@ -429,7 +399,6 @@ For more information, see [Router](guide/router).
 Demonstrates Angular's fundamental routing techniques.
 For more information, see [Using Angular routes in a single-page application](guide/router-tutorial).
 
-
 ## Documentation
 
 ### Style guide for Documentation contributions
@@ -438,7 +407,6 @@ For more information, see [Using Angular routes in a single-page application](gu
 
 Demonstrates Angular documentation style guidelines.
 For more information, see [Angular documentation style guide](guide/docs-style-guide).
-
 
 ## Server communication
 
@@ -449,7 +417,6 @@ For more information, see [Angular documentation style guide](guide/docs-style-g
 Demonstrates server interaction using HTTP.
 For more information, see [Communicating with backend services using HTTP](guide/http).
 
-
 ## Workflow
 
 ### Security
@@ -459,16 +426,12 @@ For more information, see [Communicating with backend services using HTTP](guide
 Demonstrates security concepts in Angular applications.
 For more information, see [Security](guide/security).
 
-
 ### Testing
 
 For the sample application that the testing guides describe, see the <live-example noDownload name="testing">sample app</live-example>.
 
 Demonstrates techniques for testing Angular.
 For more information, see [Testing](guide/testing).
-
-
-
 
 ## Hybrid Angular applications
 
@@ -479,3 +442,10 @@ For more information, see [Testing](guide/testing).
 Demonstrates Angular for those with an AngularJS background.
 For more information, see [AngularJS to Angular concepts: Quick reference](guide/ajs-quick-reference).
 
+<!-- links -->
+
+<!-- external links -->
+
+<!-- end links -->
+
+@reviewed 2022-02-28

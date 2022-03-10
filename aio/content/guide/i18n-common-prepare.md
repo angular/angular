@@ -29,11 +29,11 @@ The `i18n` attribute is a custom attribute that the Angular tools and compilers 
 
 The following `<h1>` tag displays a simple English language greeting, "Hello i18n!".
 
-<code-example path="i18n/doc-files/app.component.html" region="greeting" header="src/app/app.component.html"></code-example>
+<code-example header="src/app/app.component.html" path="i18n/doc-files/app.component.html" region="greeting"></code-example>
 
 To mark the greeting for translation, add the `i18n` attribute to the `<h1>` tag.
 
-<code-example path="i18n/doc-files/app.component.html" region="i18n-attribute" header="src/app/app.component.html"></code-example>
+<code-example header="src/app/app.component.html" path="i18n/doc-files/app.component.html" region="i18n-attribute"></code-example>
 
 ### Translate inline text without HTML element
 
@@ -68,7 +68,7 @@ Use the following syntax to assign a meaning, description, and custom ID.
 
 <code-example format="html" language="html">
 
-i18n-{attribute_name}="{meaning}|{description}@@{id}"
+i18n-{attribute_name}="{meaning}|{description}&commat;&commat;{id}"
 
 </code-example>
 
@@ -77,19 +77,19 @@ i18n-{attribute_name}="{meaning}|{description}@@{id}"
 To translate the title of an image, review this example.
 The following example displays an image with a `title` attribute.
 
-<code-example path="i18n/doc-files/app.component.html" region="i18n-title" header="src/app/app.component.html"></code-example>
+<code-example header="src/app/app.component.html" path="i18n/doc-files/app.component.html" region="i18n-title"></code-example>
 
 To mark the title attribute for translation, complete the following action.
 
 1.  Add the `i18n-title` attribute
 
-The following example displays how to mark the `title` attribute on the `img` tag by adding `i18n-title`.
+    The following example displays how to mark the `title` attribute on the `img` tag by adding `i18n-title`.
 
-<code-example path="i18n/src/app/app.component.html" region="i18n-title-translate" header="src/app/app.component.html"></code-example>
+    <code-example header="src/app/app.component.html" path="i18n/src/app/app.component.html" region="i18n-title-translate"></code-example>
 
 ## Mark text in component code
 
-In component code, the translation source text and the metadata are surrounded by backtick (<code>&#96;</code>) characters.
+In component code, the translation source text and the metadata are surrounded by backtick \(<code>&#96;</code>\) characters.
 
 Use the [`$localize`][AioApiLocalizeInitLocalize] tagged message string to mark a string in your code for translation.
 
@@ -97,17 +97,17 @@ Use the [`$localize`][AioApiLocalizeInitLocalize] tagged message string to mark 
 
 <code-example format="typescript" language="typescript">
 
-$localize `string_to_translate`;
+&dollar;localize `string_to_translate`;
 
 </code-example>
 
-The i18n metadata is surrounded by colon (`:`) characters and prepends the translation source text.
+The i18n metadata is surrounded by colon \(`:`\) characters and prepends the translation source text.
 
 <!--todo: replace with code-example -->
 
 <code-example format="typescript" language="typescript">
 
-$localize `:{i18n_metadata}:string_to_translate`
+&dollar;localize `:{i18n_metadata}:string_to_translate`
 
 </code-example>
 
@@ -119,7 +119,7 @@ Include [interpolations][AioGuideGlossaryInterpolation] in a [`$localize`][AioAp
 
 <code-example format="typescript" language="typescript">
 
-$localize `string_to_translate ${variable_name}`;
+&dollar;localize `string_to_translate &dollar;{variable_name}`;
 
 </code-example>
 
@@ -127,7 +127,7 @@ $localize `string_to_translate ${variable_name}`;
 
 <code-example format="typescript" language="typescript">
 
-$localize `string_to_translate ${variable_name}:placeholder_name:`;
+&dollar;localize `string_to_translate &dollar;{variable_name}:placeholder_name:`;
 
 </code-example>
 
@@ -137,7 +137,7 @@ $localize `string_to_translate ${variable_name}:placeholder_name:`;
 
 <code-example>
 
-{meaning}|{description}@@{custom_id}
+{meaning}|{description}&commat;&commat;{custom_id}
 
 </code-example>
 
@@ -159,7 +159,7 @@ Add a *description* of the text message as the value of the `i18n` attribute or 
 
 The following example shows the value of the `i18n` attribute.
 
-<code-example path="i18n/doc-files/app.component.html" region="i18n-attribute-desc" header="src/app/app.component.html"></code-example>
+<code-example header="src/app/app.component.html" path="i18n/doc-files/app.component.html" region="i18n-attribute-desc"></code-example>
 
 The following example shows the value of the [`$localize`][AioApiLocalizeInitLocalize] tagged message string with a description.
 
@@ -167,7 +167,7 @@ The following example shows the value of the [`$localize`][AioApiLocalizeInitLoc
 
 <code-example format="typescript" language="typescript">
 
-$localize `:An introduction header for this sample:Hello i18n!`;
+&dollar;localize `:An introduction header for this sample:Hello i18n!`;
 
 </code-example>
 
@@ -180,7 +180,7 @@ For example, you may want to specify that the `<h1>` tag is a site header that y
 
 The following example shows how to specify that the `<h1>` tag must be translated as a header or referenced elsewhere.
 
-<code-example path="i18n/doc-files/app.component.html" region="i18n-attribute-meaning" header="src/app/app.component.html"></code-example>
+<code-example header="src/app/app.component.html" path="i18n/doc-files/app.component.html" region="i18n-attribute-meaning"></code-example>
 
 The result is any text marked with `site header`, as the *meaning* is translated exactly the same way.
 
@@ -190,7 +190,7 @@ The following code example shows the value of the [`$localize`][AioApiLocalizeIn
 
 <code-example format="typescript" language="typescript">
 
-$localize `:site header|An introduction header for this sample:Hello i18n!`;
+&dollar;localize `:site header|An introduction header for this sample:Hello i18n!`;
 
 </code-example>
 
@@ -227,7 +227,7 @@ That one translation entry is merged back into the application wherever the same
 ## ICU expressions
 
 ICU expressions help you mark alternate text in component templates to meet conditions.
-An ICU expression includes a component property, an ICU clause, and the case statements surrounded by open curly brace (`{`) and close curly brace (`}`) characters.
+An ICU expression includes a component property, an ICU clause, and the case statements surrounded by open curly brace \(`{`\) and close curly brace \(`}`\) characters.
 
 <!--todo: replace with code-example -->
 
@@ -245,7 +245,7 @@ An ICU clause defines the type of conditional text.
 | [`plural`][AioGuideI18nCommonPrepareMarkPlurals]                        | Mark the use of plural numbers                                      |
 | [`select`][AioGuideI18nCommonPrepareMarkAlternatesAndNestedExpressions] | Mark choices for alternate text based on your defined string values |
 
-To simplify translation, use International Components for Unicode clauses (ICU clauses) with regular expressions.
+To simplify translation, use International Components for Unicode clauses \(ICU clauses\) with regular expressions.
 
 <div class="alert is-helpful">
 
@@ -267,7 +267,7 @@ Use the `plural` clause to mark expressions that may not be meaningful if transl
 
 </code-example>
 
-After the pluralization category, enter the default text (English) surrounded by open curly brace (`{`) and close curly brace (`}`) characters.
+After the pluralization category, enter the default text \(English\) surrounded by open curly brace \(`{`\) and close curly brace \(`}`\) characters.
 
 <!--todo: replace with code-example -->
 
@@ -306,17 +306,18 @@ For more information about pluralization categories, see [Choosing plural catego
 
 <div class="callout is-important">
 
-<header>
-<a name="background-locales-may-not-support-some-pluralization-categories"></a> Background: Locales may not support some pluralization categories
-</header>
+<a name="background-locales-may-not-support-some-pluralization-categories"></a>
+
+<header>Background: Locales may not support some pluralization categories</header>
 
 Many locales don't support some of the pluralization categories.
-The default locale (`en-US`) uses a very simple `plural()` function that doesn't support the `few` pluralization category.  Another locale with a simple `plural()` function is `es`.
+The default locale \(`en-US`\) uses a very simple `plural()` function that doesn't support the `few` pluralization category.
+Another locale with a simple `plural()` function is `es`.
 The following code example shows the [en-US `plural()`][GithubAngularAngularBlobEcffc3557fe1bff9718c01277498e877ca44588dPackagesCoreSrcI18nLocaleEnTsL14L18] function.
 
 <code-example path="i18n/doc-files/locale_plural_function.ts" class="no-box" hideCopy></code-example>
 
-The `plural()` function only returns 1 (`one`) or 5 (`other`).
+The `plural()` function only returns 1 \(`one`\) or 5 \(`other`\).
 The `few` category never matches.
 
 </div>
@@ -354,16 +355,16 @@ updated one minute ago
 Use HTML markup and [interpolations][AioGuideGlossaryInterpolation].
 The following code example shows how to use the `plural` clause to express the previous three situations in a `<span>` element.
 
-<code-example path="i18n/src/app/app.component.html" region="i18n-plural" header="src/app/app.component.html"></code-example>
+<code-example header="src/app/app.component.html" path="i18n/src/app/app.component.html" region="i18n-plural"></code-example>
 
 Review the following details in the previous code example.
 
-| Parameter | Details|
-|:--- |:--- |
-| `minutes` | The first parameter specifies the component property is `minutes` and determines the number of minutes. |
-| `plural` | The second parameter specifies the ICU clause is `plural`. |
-| `=0 {just now}` | For zero minutes, the pluralization category is `=0`. The value is `just now`. |
-| `=1 {one minute}` | For one minute, the pluralization category is `=1`. The value is `one minute`. |
+| Parameters                        | Details|
+|:---                               |:---    |
+| `minutes`                         | The first parameter specifies the component property is `minutes` and determines the number of minutes.               |
+| `plural`                          | The second parameter specifies the ICU clause is `plural`.                                                            |
+| `=0 {just now}`                   | For zero minutes, the pluralization category is `=0`. The value is `just now`.                                        |
+| `=1 {one minute}`                 | For one minute, the pluralization category is `=1`. The value is `one minute`.                                        |
 | `other {{{minutes}} minutes ago}` | For any unmatched cardinality, the default pluralization category is `other`. The value is `{{minutes}} minutes ago`. |
 
 `{{minutes}}` is an [interpolation][AioGuideGlossaryInterpolation].
@@ -382,7 +383,7 @@ The `select` clause marks choices for alternate text based on your defined strin
 
 Translate all of the alternates to display alternate text based on the value of a variable.
 
-After the selection category, enter the text (English) surrounded by open curly brace (`{`) and close curly brace (`}`) characters.
+After the selection category, enter the text \(English\) surrounded by open curly brace \(`{`\) and close curly brace \(`}`\) characters.
 
 <!--todo: replace with code-example -->
 
@@ -447,14 +448,14 @@ The `gender` property binds the outputs to each of following string values.
 The `select` clause maps the values to the appropriate translations.
 The following code example shows `gender` property used with the select clause.
 
-<code-example path="i18n/src/app/app.component.html" region="i18n-select" header="src/app/app.component.html"></code-example>
+<code-example header="src/app/app.component.html" path="i18n/src/app/app.component.html" region="i18n-select"></code-example>
 
 #### `gender` and `minutes` example
 
 Combine different clauses together, such as the `plural` and `select` clauses.
 The following code example shows nested clauses based on the `gender` and `minutes` examples.
 
-<code-example path="i18n/src/app/app.component.html" region="i18n-nested" header="src/app/app.component.html"></code-example>
+<code-example header="src/app/app.component.html" path="i18n/src/app/app.component.html" region="i18n-nested"></code-example>
 
 ## What's next
 
@@ -489,4 +490,4 @@ The following code example shows nested clauses based on the `gender` and `minut
 
 <!-- end links -->
 
-@reviewed 2021-12-13
+@reviewed 2022-02-28

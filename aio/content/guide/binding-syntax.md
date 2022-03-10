@@ -10,26 +10,27 @@ See the <live-example></live-example> for a working example containing the code 
 
 </div>
 
-
 ## Data binding and HTML
 
 Developers can customize HTML by specifying attributes with string values.
 In the following example, `class`, `src`, and `disabled` modify the `<div>`, `<img>`, and `<button>` elements respectively.
 
-```html
-<div class="special">Plain old HTML</div>
-<img src="images/item.png">
-<button disabled>Save</button>
-```
+<code-example format="html" language="html">
+
+&lt;div class="special"&gt;Plain old HTML&lt;/div&gt;
+&lt;img src="images/item.png"&gt;
+&lt;button disabled&gt;Save&lt;/button&gt;
+
+</code-example>
 
 Use data binding to control things like the state of a button:
 
-<code-example path="binding-syntax/src/app/app.component.html" region="disabled-button" header="src/app/app.component.html"></code-example>
+<code-example header="src/app/app.component.html" path="binding-syntax/src/app/app.component.html" region="disabled-button"></code-example>
 
 Notice that the binding is to the `disabled` property of the button's DOM element, not the attribute.
 Data binding works with properties of DOM elements, components, and directives, not HTML attributes.
 
-{@a html-attribute-vs-dom-property}
+<a id="html-attribute-vs-dom-property"></a>
 
 ### HTML attributes and DOM properties
 
@@ -38,11 +39,29 @@ Angular binding distinguishes between HTML attributes and DOM properties.
 Attributes initialize DOM properties and you can configure them to modify an element's behavior.
 Properties are features of DOM nodes.
 
-* A few HTML attributes have 1:1 mapping to properties; for example, `id`.
+*   A few HTML attributes have 1:1 mapping to properties; for example,
 
-* Some HTML attributes don't have corresponding properties; for example, `aria-*`.
+    <code-example format="html" hideCopy language="html">
 
-* Some DOM properties don't have corresponding attributes; for example, `textContent`.
+    id
+
+    </code-example>
+
+*   Some HTML attributes don't have corresponding properties; for example,
+
+    <code-example format="html" hideCopy language="html">
+
+    aria-&ast;
+
+    </code-example>
+
+*   Some DOM properties don't have corresponding attributes; for example,
+
+    <code-example format="html" hideCopy language="html">
+
+    textContent
+
+    </code-example>
 
 <div class="alert is-important">
 
@@ -56,15 +75,16 @@ When you write a data binding, you're dealing exclusively with the DOM propertie
 
 #### Example 1: an `<input>`
 
-When the browser renders `<input type="text" value="Sarah">`, it creates a
-corresponding DOM node with a `value` property and initializes that `value` to "Sarah".
+When the browser renders `<input type="text" value="Sarah">`, it creates a corresponding DOM node with a `value` property and initializes that `value` to "Sarah".
 
-```html
-<input type="text" value="Sarah">
-```
+<code-example format="html" language="html">
+
+&lt;input type="text" value="Sarah"&gt;
+
+</code-example>
 
 When the user enters `Sally` into the `<input>`, the DOM element `value` property becomes `Sally`.
-However, if you look at the HTML attribute `value` using `input.getAttribute('value')`, you can see that the attribute remains unchanged&mdash;it returns "Sarah".
+However, if you look at the HTML attribute `value` using `input.getAttribute('value')`, you can see that the attribute remains unchanged &mdash;it returns "Sarah".
 
 The HTML attribute `value` specifies the initial value; the DOM `value` property is the current value.
 
@@ -76,9 +96,11 @@ A button's `disabled` property is `false` by default so the button is enabled.
 
 When you add the `disabled` attribute, you are initializing the button's `disabled` property to `true` which disables the button.
 
-```html
-<button disabled>Test Button</button>
-```
+<code-example format="html" language="html">
+
+&lt;button disabled&gt;Test Button&lt;/button&gt;
+
+</code-example>
 
 Adding and removing the `disabled` attribute disables and enables the button.
 However, the value of the attribute is irrelevant, which is why you cannot enable a button by writing `<button disabled="false">Still Disabled</button>`.
@@ -90,10 +112,12 @@ To control the state of the button, set the `disabled` property instead.
 Though you could technically set the `[attr.disabled]` attribute binding, the values are different in that the property binding must be a boolean value, while its corresponding attribute binding relies on whether the value is `null` or not.
 Consider the following:
 
-```html
-<input [disabled]="condition ? true : false">
-<input [attr.disabled]="condition ? 'disabled' : null">
-```
+<code-example format="html" language="html">
+
+&lt;input [disabled]="condition ? true : false"&gt;
+&lt;input [attr.disabled]="condition ? 'disabled' : null"&gt;
+
+</code-example>
 
 The first line, which uses the `disabled` property, uses a boolean value.
 The second line, which uses the disabled attribute checks for `null`.
@@ -103,100 +127,30 @@ Generally, use property binding over attribute binding as a boolean value is eas
 To see the `disabled` button example in a functioning application, see the <live-example></live-example>.
 This example shows you how to toggle the disabled property from the component.
 
-
 ## Types of data binding
 
 Angular provides three categories of data binding according to the direction of data flow:
 
-* From the source to view
-* From view to source
-* In a two way sequence of view to source to view
+*   From the source to view
+*   From view to source
+*   In a two way sequence of view to source to view
 
-<style>
-  td, th {vertical-align: top}
-</style>
-
-<table width="100%">
-  <col width="30%">
-  </col>
-  <col width="50%">
-  </col>
-  <col width="20%">
-  </col>
-  <tr>
-    <th>
-      Type
-    </th>
-    <th>
-      Syntax
-    </th>
-    <th>
-      Category
-    </th>
-
-  </tr>
-  <tr>
-     <td>
-      Interpolation<br>
-      Property<br>
-      Attribute<br>
-      Class<br>
-      Style
-    </td>
-    <td>
-
-      <code-example>
-        {{expression}}
-        [target]="expression"
-      </code-example>
-
-    </td>
-
-    <td>
-      One-way<br>from data source<br>to view target
-    </td>
-    <tr>
-      <td>
-        Event
-      </td>
-      <td>
-        <code-example>
-          (target)="statement"
-        </code-example>
-      </td>
-
-      <td>
-        One-way<br>from view target<br>to data source
-      </td>
-    </tr>
-    <tr>
-      <td>
-        Two-way
-      </td>
-      <td>
-        <code-example>
-          [(target)]="expression"
-        </code-example>
-      </td>
-      <td>
-        Two-way
-      </td>
-    </tr>
-  </tr>
-</table>
-
+| Type                                                                     | Syntax                                                                       | Category |
+|:---                                                                      |:---                                                                          |:---      |
+| Interpolation <br /> Property <br /> Attribute <br /> Class <br /> Style | <code-example> {{expression}} &NewLine;[target]="expression" </code-example> | One-way from data source to view target |
+| Event                                                                    | <code-example> (target)="statement" </code-example>                          | One-way from view target to data source |
+| Two-way                                                                  | <code-example> [(target)]="expression" </code-example>                       | Two-way                                 |
 
 Binding types other than interpolation have a target name to the left of the equal sign.
-The target of a binding is a property or event, which you surround with square brackets, `[]`, parentheses, `()`, or both, `[()]`.
+The target of a binding is a property or event, which you surround with square bracket \(`[ ]`\) characters, parenthesis \(`( )`\) characters, or both \(`[( )]`\) characters.
 
 The binding punctuation of `[]`, `()`, `[()]`, and the prefix specify the direction of data flow.
 
-* Use `[]` to bind from source to view.
-* Use `()` to bind from view to source.
-* Use `[()]` to bind in a two way sequence of view to source to view.
+*   Use `[]` to bind from source to view
+*   Use `()` to bind from view to source
+*   Use `[()]` to bind in a two way sequence of view to source to view
 
-
-Place the expression or statement to the right of the equal sign within double quotes, `""`.
+Place the expression or statement to the right of the equal sign within double quote \(`""`\) characters.
 For more information see [Interpolation](guide/interpolation) and [Template statements](guide/template-statements).
 
 ## Binding types and targets
@@ -205,100 +159,19 @@ The target of a data binding can be a property, an event, or an attribute name.
 Every public member of a source directive is automatically available for binding in a template expression or statement.
 The following table summarizes the targets for the different binding types.
 
-<style>
-  td, th {vertical-align: top}
-</style>
+| Type      | Target                                                               | Examples |
+|:---       |:---                                                                  |:---      |
+| Property  | Element property <br /> Component property <br /> Directive property | `alt`, `src`, `hero`, and `ngClass` in the following: <code-example path="template-syntax/src/app/app.component.html" region="property-binding-syntax-1"></code-example> <!-- For more information, see [Property Binding](guide/property-binding). --> |
+| Event     | Elementevent <br /> Component event <br /> Directive event           | `click`, `deleteRequest`, and `myClick` in the following: <code-example path="template-syntax/src/app/app.component.html" region="event-binding-syntax-1"></code-example>                                                                               |
+| Two-way   | Event and property                                                   | <code-example path="template-syntax/src/app/app.component.html" region="2-way-binding-syntax-1"></code-example>                                                                                                                                         |
+| Attribute | Attribute \(the exception\)                                          | <code-example path="template-syntax/src/app/app.component.html" region="attribute-binding-syntax-1"></code-example>                                                                                                                                     |
+| Class     | `class` property                                                     | <code-example path="template-syntax/src/app/app.component.html" region="class-binding-syntax-1"></code-example>                                                                                                                                         |
+| Style     | `style` property                                                     | <code-example path="template-syntax/src/app/app.component.html" region="style-binding-syntax-1"></code-example>                                                                                                                                         |
 
-<table width="100%">
-  <col width="10%">
-  </col>
-  <col width="15%">
-  </col>
-  <col width="75%">
-  </col>
-  <tr>
-    <th>
-      Type
-    </th>
-    <th>
-      Target
-    </th>
-    <th>
-      Examples
-    </th>
-  </tr>
-  <tr>
-    <td>
-      Property
-    </td>
-    <td>
-      Element&nbsp;property<br>
-      Component&nbsp;property<br>
-      Directive&nbsp;property
-    </td>
-    <td>
-      <code>alt</code>, <code>src</code>, <code>hero</code>, and <code>ngClass</code> in the following:
-      <code-example path="template-syntax/src/app/app.component.html" region="property-binding-syntax-1"></code-example>
-      <!-- For more information, see [Property Binding](guide/property-binding). -->
-    </td>
-  </tr>
-  <tr>
-    <td>
-      Event
-    </td>
-    <td>
-      Element&nbsp;event<br>
-      Component&nbsp;event<br>
-      Directive&nbsp;event
-    </td>
-    <td>
-      <code>click</code>, <code>deleteRequest</code>, and <code>myClick</code> in the following:
-      <code-example path="template-syntax/src/app/app.component.html" region="event-binding-syntax-1"></code-example>
-    </td>
-  </tr>
-  <tr>
-    <td>
-      Two-way
-    </td>
-    <td>
-      Event and property
-    </td>
-    <td>
-      <code-example path="template-syntax/src/app/app.component.html" region="2-way-binding-syntax-1"></code-example>
-    </td>
-  </tr>
-  <tr>
-    <td>
-      Attribute
-    </td>
-    <td>
-      Attribute
-      (the&nbsp;exception)
-    </td>
-    <td>
-      <code-example path="template-syntax/src/app/app.component.html" region="attribute-binding-syntax-1"></code-example>
-    </td>
-  </tr>
-  <tr>
-    <td>
-      Class
-    </td>
-    <td>
-      <code>class</code> property
-    </td>
-    <td>
-      <code-example path="template-syntax/src/app/app.component.html" region="class-binding-syntax-1"></code-example>
-    </td>
-  </tr>
-  <tr>
-    <td>
-      Style
-    </td>
-    <td>
-      <code>style</code> property
-    </td>
-    <td>
-      <code-example path="template-syntax/src/app/app.component.html" region="style-binding-syntax-1"></code-example>
-    </td>
-  </tr>
-</table>
+<!-- links -->
+
+<!-- external links -->
+
+<!-- end links -->
+
+@reviewed 2022-02-28
