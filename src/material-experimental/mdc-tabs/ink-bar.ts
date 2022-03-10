@@ -80,7 +80,9 @@ export class MatInkBarFoundation {
       }
     },
     setContentStyleProperty: (propName, value) => {
-      this._inkBarContentElement.style.setProperty(propName, value);
+      if (!this._destroyed) {
+        this._inkBarContentElement.style.setProperty(propName, value);
+      }
     },
     computeContentClientRect: () => {
       // `getBoundingClientRect` isn't available on the server.

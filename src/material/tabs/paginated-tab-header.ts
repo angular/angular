@@ -32,7 +32,7 @@ import {ViewportRuler} from '@angular/cdk/scrolling';
 import {FocusKeyManager, FocusableOption} from '@angular/cdk/a11y';
 import {ENTER, SPACE, hasModifierKey} from '@angular/cdk/keycodes';
 import {merge, of as observableOf, Subject, timer, fromEvent} from 'rxjs';
-import {takeUntil} from 'rxjs/operators';
+import {take, takeUntil} from 'rxjs/operators';
 import {Platform, normalizePassiveListenerOptions} from '@angular/cdk/platform';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 
@@ -212,7 +212,9 @@ export abstract class MatPaginatedTabHeader
 
     // Defer the first call in order to allow for slower browsers to lay out the elements.
     // This helps in cases where the user lands directly on a page with paginated tabs.
-    typeof requestAnimationFrame !== 'undefined' ? requestAnimationFrame(realign) : realign();
+    // Note that we use `onStable` instead of `requestAnimationFrame`, because the latter
+    // can hold up tests that are in a background tab.
+    this._ngZone.onStable.pipe(take(1)).subscribe(realign);
 
     // On dir change or window resize, realign the ink bar and update the orientation of
     // the key manager if the direction has changed.

@@ -1,4 +1,4 @@
-import {Direction, Directionality} from '@angular/cdk/bidi';
+import {Direction} from '@angular/cdk/bidi';
 import {END, ENTER, HOME, LEFT_ARROW, RIGHT_ARROW, SPACE} from '@angular/cdk/keycodes';
 import {PortalModule} from '@angular/cdk/portal';
 import {ScrollingModule, ViewportRuler} from '@angular/cdk/scrolling';
@@ -23,25 +23,18 @@ import {MatRippleModule} from '@angular/material-experimental/mdc-core';
 import {By} from '@angular/platform-browser';
 import {MatTabHeader} from './tab-header';
 import {MatTabLabelWrapper} from './tab-label-wrapper';
-import {Subject} from 'rxjs';
 import {ObserversModule, MutationObserverFactory} from '@angular/cdk/observers';
 
 describe('MDC-based MatTabHeader', () => {
-  let dir: Direction = 'ltr';
-  let change = new Subject();
   let fixture: ComponentFixture<SimpleTabHeaderApp>;
   let appComponent: SimpleTabHeaderApp;
 
   beforeEach(
     waitForAsync(() => {
-      dir = 'ltr';
       TestBed.configureTestingModule({
         imports: [CommonModule, PortalModule, MatRippleModule, ScrollingModule, ObserversModule],
         declarations: [MatTabHeader, MatTabLabelWrapper, SimpleTabHeaderApp],
-        providers: [
-          ViewportRuler,
-          {provide: Directionality, useFactory: () => ({value: dir, change: change})},
-        ],
+        providers: [ViewportRuler],
       });
 
       TestBed.compileComponents();
@@ -238,11 +231,10 @@ describe('MDC-based MatTabHeader', () => {
   describe('pagination', () => {
     describe('ltr', () => {
       beforeEach(() => {
-        dir = 'ltr';
         fixture = TestBed.createComponent(SimpleTabHeaderApp);
-        fixture.detectChanges();
-
         appComponent = fixture.componentInstance;
+        appComponent.dir = 'ltr';
+        fixture.detectChanges();
       });
 
       it('should show width when tab list width exceeds container', () => {
@@ -322,11 +314,9 @@ describe('MDC-based MatTabHeader', () => {
 
     describe('rtl', () => {
       beforeEach(() => {
-        dir = 'rtl';
         fixture = TestBed.createComponent(SimpleTabHeaderApp);
         appComponent = fixture.componentInstance;
         appComponent.dir = 'rtl';
-
         fixture.detectChanges();
       });
 
@@ -607,9 +597,9 @@ describe('MDC-based MatTabHeader', () => {
 
       fixture.detectChanges();
 
-      change.next();
+      fixture.componentInstance.dir = 'rtl';
       fixture.detectChanges();
-      tick(20); // Angular turns rAF calls into 16.6ms timeouts in tests.
+      tick();
 
       expect(inkBar.alignToElement).toHaveBeenCalled();
     }));
