@@ -8,10 +8,10 @@
 
 import {Migration, ResolvedResource} from '@angular/cdk/schematics';
 import {SchematicContext} from '@angular-devkit/schematics';
-import {StyleMigrator} from './style-migrator';
 import {visitElements, parseTemplate} from './tree-traversal';
+import {ComponentMigrator} from '.';
 
-export class TemplateMigration extends Migration<StyleMigrator[], SchematicContext> {
+export class TemplateMigration extends Migration<ComponentMigrator[], SchematicContext> {
   enabled = true;
 
   override visitTemplate(template: ResolvedResource) {

@@ -19,18 +19,62 @@ import {SlideToggleStylesMigrator} from './components/slide-toggle/slide-toggle-
 import {SliderStylesMigrator} from './components/slider/slider-styles';
 import {TableStylesMigrator} from './components/table/table-styles';
 import {StyleMigrator} from './style-migrator';
+import {TemplateMigrator} from './template-migrator';
 
-export const MIGRATORS: StyleMigrator[] = [
-  new ButtonStylesMigrator(),
-  new CardStylesMigrator(),
-  new CheckboxStylesMigrator(),
-  new ChipsStylesMigrator(),
-  new DialogStylesMigrator(),
-  new PaginatorStylesMigrator(),
-  new ProgressBarStylesMigrator(),
-  new ProgressSpinnerStylesMigrator(),
-  new RadioStylesMigrator(),
-  new SlideToggleStylesMigrator(),
-  new SliderStylesMigrator(),
-  new TableStylesMigrator(),
+/** Contains the migrators to migrate a single component. */
+export interface ComponentMigrator {
+  component: string;
+  styles: StyleMigrator;
+  template?: TemplateMigrator;
+}
+
+export const MIGRATORS: ComponentMigrator[] = [
+  {
+    component: 'button',
+    styles: new ButtonStylesMigrator(),
+  },
+  {
+    component: 'card',
+    styles: new CardStylesMigrator(),
+  },
+  {
+    component: 'checkbox',
+    styles: new CheckboxStylesMigrator(),
+  },
+  {
+    component: 'chips',
+    styles: new ChipsStylesMigrator(),
+  },
+  {
+    component: 'dialog',
+    styles: new DialogStylesMigrator(),
+  },
+  {
+    component: 'paginator',
+    styles: new PaginatorStylesMigrator(),
+  },
+  {
+    component: 'progress-bar',
+    styles: new ProgressBarStylesMigrator(),
+  },
+  {
+    component: 'progress-spinner',
+    styles: new ProgressSpinnerStylesMigrator(),
+  },
+  {
+    component: 'radio',
+    styles: new RadioStylesMigrator(),
+  },
+  {
+    component: 'slide-toggle',
+    styles: new SlideToggleStylesMigrator(),
+  },
+  {
+    component: 'slider',
+    styles: new SliderStylesMigrator(),
+  },
+  {
+    component: 'table',
+    styles: new TableStylesMigrator(),
+  },
 ];

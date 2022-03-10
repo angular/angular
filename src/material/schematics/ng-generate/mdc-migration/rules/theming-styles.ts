@@ -8,11 +8,11 @@
 
 import {Migration, ResolvedResource} from '@angular/cdk/schematics';
 import {SchematicContext} from '@angular-devkit/schematics';
-import {StyleMigrator} from './style-migrator';
 import * as postcss from 'postcss';
 import * as scss from 'postcss-scss';
+import {ComponentMigrator} from '.';
 
-export class ThemingStylesMigration extends Migration<StyleMigrator[], SchematicContext> {
+export class ThemingStylesMigration extends Migration<ComponentMigrator[], SchematicContext> {
   enabled = true;
   namespace: string;
 
@@ -40,13 +40,13 @@ export class ThemingStylesMigration extends Migration<StyleMigrator[], Schematic
 
   atIncludeHandler(atRule: postcss.AtRule) {
     const migrator = this.upgradeData.find(m => {
-      return m.isLegacyMixin(this.namespace, atRule);
+      return m.styles.isLegacyMixin(this.namespace, atRule);
     });
     if (migrator) {
-      migrator.replaceMixin(this.namespace, atRule);
+      migrator.styles.replaceMixin(this.namespace, atRule);
     } else if (atRule.params.includes('all-component-themes') && atRule.parent) {
       this.upgradeData.forEach(m => {
-        m?.addNewMixinsAfterNode(this.namespace, atRule);
+        m?.styles.addNewMixinsAfterNode(this.namespace, atRule);
       });
     }
   }
@@ -56,15 +56,15 @@ export class ThemingStylesMigration extends Migration<StyleMigrator[], Schematic
     let isDeprecatedSelector;
 
     const migrator = this.upgradeData.find(m => {
-      isLegacySelector = m.isLegacySelector(rule);
-      isDeprecatedSelector = m.isDeprecatedSelector(rule);
+      isLegacySelector = m.styles.isLegacySelector(rule);
+      isDeprecatedSelector = m.styles.isDeprecatedSelector(rule);
       return isLegacySelector || isDeprecatedSelector;
     });
 
     if (isLegacySelector) {
-      migrator?.replaceLegacySelector(rule);
+      migrator?.styles.replaceLegacySelector(rule);
     } else if (isDeprecatedSelector) {
-      migrator?.addDeprecatedSelectorComment(rule);
+      migrator?.styles.addDeprecatedSelectorComment(rule);
     }
   }
 }

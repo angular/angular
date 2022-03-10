@@ -109,5 +109,14 @@ describe('#visitElements', () => {
         '<a attr="val"><b attr="val"></b><c attr="val"></c></a>',
       );
     });
+
+    it('should handle adding multiple attrs to a single element', async () => {
+      let html = '<a></a>';
+      visitElements(parseTemplate(html).nodes, undefined, node => {
+        html = addAttribute(html, node, 'attr1', 'val1');
+        html = addAttribute(html, node, 'attr2', 'val2');
+      });
+      expect(html).toBe('<a attr2="val2" attr1="val1"></a>');
+    });
   });
 });
