@@ -185,5 +185,15 @@ export const config = {
       'should set the old snack bar animation state to complete and the new snack bar ' +
         'animation state to visible on entry of new snack bar',
     ],
+    'mdc-tabs': [
+      // These tests are excluded because they are verifying behavior that is not supported in MDC.
+      'should have no explicit roles',
+      'should not setup aria-controls',
+      'should not manage aria-selected',
+      'should not activate a link when space is pressed',
+      'should manage aria-current',
+      'should support the native tabindex attribute',
+      'should support binding to the tabIndex',
+    ],
   } as {[key: string]: string[]},
 };

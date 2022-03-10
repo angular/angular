@@ -80,6 +80,7 @@ The experimental tabs API closely matches the
 as all of the symbols found under `@angular/material/tabs`, except for the following
 differences:
 
+* `MatTabNav` will throw an error in dev mode if a `[tabPanel]` is not provided.
 * `MatTabLink` is defined as a `Component` in the experimental package,
   whereas in the current one it's a `Directive`.
 

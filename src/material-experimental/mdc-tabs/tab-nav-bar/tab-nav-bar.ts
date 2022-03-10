@@ -19,6 +19,7 @@ import {
   Attribute,
   OnDestroy,
   AfterContentInit,
+  AfterViewInit,
   NgZone,
   ChangeDetectorRef,
   OnInit,
@@ -70,7 +71,7 @@ import {takeUntil} from 'rxjs/operators';
   // tslint:disable-next-line:validate-decorators
   changeDetection: ChangeDetectionStrategy.Default,
 })
-export class MatTabNav extends _MatTabNavBase implements AfterContentInit {
+export class MatTabNav extends _MatTabNavBase implements AfterContentInit, AfterViewInit {
   /** Whether the ink bar should fit its width to the size of the tab label content. */
   @Input()
   get fitInkBarToContent(): boolean {
@@ -124,6 +125,12 @@ export class MatTabNav extends _MatTabNavBase implements AfterContentInit {
   override ngAfterContentInit() {
     this._inkBar = new MatInkBar(this._items);
     super.ngAfterContentInit();
+  }
+
+  override ngAfterViewInit() {
+    if (!this.tabPanel && (typeof ngDevMode === 'undefined' || ngDevMode)) {
+      throw new Error('A mat-tab-nav-panel must be specified via [tabPanel].');
+    }
   }
 }
 

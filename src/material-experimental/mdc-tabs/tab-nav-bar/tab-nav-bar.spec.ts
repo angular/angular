@@ -29,14 +29,7 @@ describe('MDC-based MatTabNavBar', () => {
 
       TestBed.configureTestingModule({
         imports: [MatTabsModule],
-        declarations: [
-          SimpleTabNavBarTestApp,
-          TabLinkWithNgIf,
-          TabLinkWithTabIndexBinding,
-          TabLinkWithNativeTabindexAttr,
-          TabBarWithInactiveTabsOnInit,
-          TabBarWithPanel,
-        ],
+        declarations: [SimpleTabNavBarTestApp, TabLinkWithNgIf, TabBarWithInactiveTabsOnInit],
         providers: [
           {provide: MAT_RIPPLE_GLOBAL_OPTIONS, useFactory: () => globalRippleOptions},
           {provide: Directionality, useFactory: () => ({value: dir, change: dirChange})},
@@ -83,24 +76,6 @@ describe('MDC-based MatTabNavBar', () => {
       fixture.detectChanges();
       expect(tabLinkElements[0].classList.contains('mdc-tab--active')).toBeFalsy();
       expect(tabLinkElements[1].classList.contains('mdc-tab--active')).toBeTruthy();
-    });
-
-    it('should toggle aria-current based on active state', () => {
-      let tabLink1 = fixture.debugElement.queryAll(By.css('a'))[0];
-      let tabLink2 = fixture.debugElement.queryAll(By.css('a'))[1];
-      const tabLinkElements = fixture.debugElement
-        .queryAll(By.css('a'))
-        .map(tabLinkDebugEl => tabLinkDebugEl.nativeElement);
-
-      tabLink1.nativeElement.click();
-      fixture.detectChanges();
-      expect(tabLinkElements[0].getAttribute('aria-current')).toEqual('page');
-      expect(tabLinkElements[1].hasAttribute('aria-current')).toEqual(false);
-
-      tabLink2.nativeElement.click();
-      fixture.detectChanges();
-      expect(tabLinkElements[0].hasAttribute('aria-current')).toEqual(false);
-      expect(tabLinkElements[1].getAttribute('aria-current')).toEqual('page');
     });
 
     it('should add the disabled class if disabled', () => {
@@ -150,9 +125,9 @@ describe('MDC-based MatTabNavBar', () => {
         .queryAll(By.css('a'))
         .map(tabLinkDebugEl => tabLinkDebugEl.nativeElement);
 
-      expect(tabLinkElements.every(tabLink => tabLink.tabIndex === 0))
-        .withContext('Expected element to be keyboard focusable by default')
-        .toBe(true);
+      expect(tabLinkElements.map(tabLink => tabLink.tabIndex))
+        .withContext('Expected first element to be keyboard focusable by default')
+        .toEqual([0, -1, -1]);
 
       fixture.componentInstance.disabled = true;
       fixture.detectChanges();
@@ -268,37 +243,6 @@ describe('MDC-based MatTabNavBar', () => {
       .toBeFalsy();
   });
 
-  it('should support the native tabindex attribute', () => {
-    const fixture = TestBed.createComponent(TabLinkWithNativeTabindexAttr);
-    fixture.detectChanges();
-
-    const tabLink = fixture.debugElement
-      .query(By.directive(MatTabLink))
-      .injector.get<MatTabLink>(MatTabLink);
-
-    expect(tabLink.tabIndex)
-      .withContext('Expected the tabIndex to be set from the native tabindex attribute.')
-      .toBe(5);
-  });
-
-  it('should support binding to the tabIndex', () => {
-    const fixture = TestBed.createComponent(TabLinkWithTabIndexBinding);
-    fixture.detectChanges();
-
-    const tabLink = fixture.debugElement
-      .query(By.directive(MatTabLink))
-      .injector.get<MatTabLink>(MatTabLink);
-
-    expect(tabLink.tabIndex)
-      .withContext('Expected the tabIndex to be set to 0 by default.')
-      .toBe(0);
-
-    fixture.componentInstance.tabIndex = 3;
-    fixture.detectChanges();
-
-    expect(tabLink.tabIndex).withContext('Expected the tabIndex to be have been set to 3.').toBe(3);
-  });
-
   it('should select the proper tab, if the tabs come in after init', () => {
     const fixture = TestBed.createComponent(SimpleTabNavBarTestApp);
     const instance = fixture.componentInstance;
@@ -315,121 +259,88 @@ describe('MDC-based MatTabNavBar', () => {
     expect(instance.tabNavBar.selectedIndex).toBe(1);
   });
 
-  describe('without panel', () => {
-    let fixture: ComponentFixture<SimpleTabNavBarTestApp>;
+  it('should have the proper roles', () => {
+    const fixture = TestBed.createComponent(SimpleTabNavBarTestApp);
+    fixture.detectChanges();
 
-    beforeEach(() => {
-      fixture = TestBed.createComponent(SimpleTabNavBarTestApp);
-      fixture.detectChanges();
-    });
+    const tabBar = fixture.nativeElement.querySelector('.mat-mdc-tab-nav-bar')!;
+    expect(tabBar.getAttribute('role')).toBe('tablist');
 
-    it('should have no explicit roles', () => {
-      const tabBar = fixture.nativeElement.querySelector('.mat-mdc-tab-nav-bar')!;
-      expect(tabBar.getAttribute('role')).toBe(null);
+    const tabLinks = fixture.nativeElement.querySelectorAll('.mat-mdc-tab-link');
 
-      const tabLinks = fixture.nativeElement.querySelectorAll('.mat-mdc-tab-link');
-      expect(tabLinks[0].getAttribute('role')).toBe(null);
-      expect(tabLinks[1].getAttribute('role')).toBe(null);
-      expect(tabLinks[2].getAttribute('role')).toBe(null);
-    });
+    expect(tabLinks[0].getAttribute('role')).toBe('tab');
+    expect(tabLinks[1].getAttribute('role')).toBe('tab');
+    expect(tabLinks[2].getAttribute('role')).toBe('tab');
 
-    it('should not setup aria-controls', () => {
-      const tabLinks = fixture.nativeElement.querySelectorAll('.mat-mdc-tab-link');
-      expect(tabLinks[0].getAttribute('aria-controls')).toBe(null);
-      expect(tabLinks[1].getAttribute('aria-controls')).toBe(null);
-      expect(tabLinks[2].getAttribute('aria-controls')).toBe(null);
-    });
-
-    it('should not manage aria-selected', () => {
-      const tabLinks = fixture.nativeElement.querySelectorAll('.mat-mdc-tab-link');
-      expect(tabLinks[0].getAttribute('aria-selected')).toBe(null);
-      expect(tabLinks[1].getAttribute('aria-selected')).toBe(null);
-      expect(tabLinks[2].getAttribute('aria-selected')).toBe(null);
-    });
-
-    it('should not activate a link when space is pressed', () => {
-      const tabLinks = fixture.nativeElement.querySelectorAll('.mat-mdc-tab-link');
-      expect(tabLinks[1].classList.contains('mdc-tab--active')).toBe(false);
-
-      dispatchKeyboardEvent(tabLinks[1], 'keydown', SPACE);
-      fixture.detectChanges();
-
-      expect(tabLinks[1].classList.contains('mdc-tab--active')).toBe(false);
-    });
+    const tabPanel = fixture.nativeElement.querySelector('.mat-mdc-tab-nav-panel')!;
+    expect(tabPanel.getAttribute('role')).toBe('tabpanel');
   });
 
-  describe('with panel', () => {
-    let fixture: ComponentFixture<TabBarWithPanel>;
+  it('should manage tabindex properly', () => {
+    const fixture = TestBed.createComponent(SimpleTabNavBarTestApp);
+    fixture.detectChanges();
 
-    beforeEach(() => {
-      fixture = TestBed.createComponent(TabBarWithPanel);
-      fixture.detectChanges();
-    });
+    const tabLinks = fixture.nativeElement.querySelectorAll('.mat-mdc-tab-link');
+    expect(tabLinks[0].tabIndex).toBe(0);
+    expect(tabLinks[1].tabIndex).toBe(-1);
+    expect(tabLinks[2].tabIndex).toBe(-1);
 
-    it('should have the proper roles', () => {
-      const tabBar = fixture.nativeElement.querySelector('.mat-mdc-tab-nav-bar')!;
-      expect(tabBar.getAttribute('role')).toBe('tablist');
+    tabLinks[1].click();
+    fixture.detectChanges();
 
-      const tabLinks = fixture.nativeElement.querySelectorAll('.mat-mdc-tab-link');
-      expect(tabLinks[0].getAttribute('role')).toBe('tab');
-      expect(tabLinks[1].getAttribute('role')).toBe('tab');
-      expect(tabLinks[2].getAttribute('role')).toBe('tab');
+    expect(tabLinks[0].tabIndex).toBe(-1);
+    expect(tabLinks[1].tabIndex).toBe(0);
+    expect(tabLinks[2].tabIndex).toBe(-1);
+  });
 
-      const tabPanel = fixture.nativeElement.querySelector('.mat-mdc-tab-nav-panel')!;
-      expect(tabPanel.getAttribute('role')).toBe('tabpanel');
-    });
+  it('should setup aria-controls properly', () => {
+    const fixture = TestBed.createComponent(SimpleTabNavBarTestApp);
+    fixture.detectChanges();
 
-    it('should manage tabindex properly', () => {
-      const tabLinks = fixture.nativeElement.querySelectorAll('.mat-mdc-tab-link');
-      expect(tabLinks[0].tabIndex).toBe(0);
-      expect(tabLinks[1].tabIndex).toBe(-1);
-      expect(tabLinks[2].tabIndex).toBe(-1);
+    const tabLinks = fixture.nativeElement.querySelectorAll('.mat-mdc-tab-link');
+    expect(tabLinks[0].getAttribute('aria-controls')).toBe('tab-panel');
+    expect(tabLinks[1].getAttribute('aria-controls')).toBe('tab-panel');
+    expect(tabLinks[2].getAttribute('aria-controls')).toBe('tab-panel');
+  });
 
-      tabLinks[1].click();
-      fixture.detectChanges();
+  it('should not manage aria-current', () => {
+    const fixture = TestBed.createComponent(SimpleTabNavBarTestApp);
+    fixture.detectChanges();
 
-      expect(tabLinks[0].tabIndex).toBe(-1);
-      expect(tabLinks[1].tabIndex).toBe(0);
-      expect(tabLinks[2].tabIndex).toBe(-1);
-    });
+    const tabLinks = fixture.nativeElement.querySelectorAll('.mat-mdc-tab-link');
+    expect(tabLinks[0].getAttribute('aria-current')).toBe(null);
+    expect(tabLinks[1].getAttribute('aria-current')).toBe(null);
+    expect(tabLinks[2].getAttribute('aria-current')).toBe(null);
+  });
 
-    it('should setup aria-controls properly', () => {
-      const tabLinks = fixture.nativeElement.querySelectorAll('.mat-mdc-tab-link');
-      expect(tabLinks[0].getAttribute('aria-controls')).toBe('tab-panel');
-      expect(tabLinks[1].getAttribute('aria-controls')).toBe('tab-panel');
-      expect(tabLinks[2].getAttribute('aria-controls')).toBe('tab-panel');
-    });
+  it('should manage aria-selected properly', () => {
+    const fixture = TestBed.createComponent(SimpleTabNavBarTestApp);
+    fixture.detectChanges();
 
-    it('should not manage aria-current', () => {
-      const tabLinks = fixture.nativeElement.querySelectorAll('.mat-mdc-tab-link');
-      expect(tabLinks[0].getAttribute('aria-current')).toBe(null);
-      expect(tabLinks[1].getAttribute('aria-current')).toBe(null);
-      expect(tabLinks[2].getAttribute('aria-current')).toBe(null);
-    });
+    const tabLinks = fixture.nativeElement.querySelectorAll('.mat-mdc-tab-link');
+    expect(tabLinks[0].getAttribute('aria-selected')).toBe('true');
+    expect(tabLinks[1].getAttribute('aria-selected')).toBe('false');
+    expect(tabLinks[2].getAttribute('aria-selected')).toBe('false');
 
-    it('should manage aria-selected properly', () => {
-      const tabLinks = fixture.nativeElement.querySelectorAll('.mat-mdc-tab-link');
-      expect(tabLinks[0].getAttribute('aria-selected')).toBe('true');
-      expect(tabLinks[1].getAttribute('aria-selected')).toBe('false');
-      expect(tabLinks[2].getAttribute('aria-selected')).toBe('false');
+    tabLinks[1].click();
+    fixture.detectChanges();
 
-      tabLinks[1].click();
-      fixture.detectChanges();
+    expect(tabLinks[0].getAttribute('aria-selected')).toBe('false');
+    expect(tabLinks[1].getAttribute('aria-selected')).toBe('true');
+    expect(tabLinks[2].getAttribute('aria-selected')).toBe('false');
+  });
 
-      expect(tabLinks[0].getAttribute('aria-selected')).toBe('false');
-      expect(tabLinks[1].getAttribute('aria-selected')).toBe('true');
-      expect(tabLinks[2].getAttribute('aria-selected')).toBe('false');
-    });
+  it('should activate a link when space is pressed', () => {
+    const fixture = TestBed.createComponent(SimpleTabNavBarTestApp);
+    fixture.detectChanges();
 
-    it('should activate a link when space is pressed', () => {
-      const tabLinks = fixture.nativeElement.querySelectorAll('.mat-mdc-tab-link');
-      expect(tabLinks[1].classList.contains('mdc-tab--active')).toBe(false);
+    const tabLinks = fixture.nativeElement.querySelectorAll('.mat-mdc-tab-link');
+    expect(tabLinks[1].classList.contains('mdc-tab--active')).toBe(false);
 
-      dispatchKeyboardEvent(tabLinks[1], 'keydown', SPACE);
-      fixture.detectChanges();
+    dispatchKeyboardEvent(tabLinks[1], 'keydown', SPACE);
+    fixture.detectChanges();
 
-      expect(tabLinks[1].classList.contains('mdc-tab--active')).toBe(true);
-    });
+    expect(tabLinks[1].classList.contains('mdc-tab--active')).toBe(true);
   });
 
   describe('ripples', () => {
@@ -557,12 +468,12 @@ describe('MDC-based MatTabNavBar', () => {
 });
 
 describe('MatTabNavBar with a default config', () => {
-  let fixture: ComponentFixture<TabLinkWithTabIndexBinding>;
+  let fixture: ComponentFixture<TabLinkWithNgIf>;
 
   beforeEach(fakeAsync(() => {
     TestBed.configureTestingModule({
       imports: [MatTabsModule, BrowserAnimationsModule],
-      declarations: [TabLinkWithTabIndexBinding],
+      declarations: [TabLinkWithNgIf],
       providers: [{provide: MAT_TABS_CONFIG, useValue: {fitInkBarToContent: true}}],
     });
 
@@ -570,7 +481,7 @@ describe('MatTabNavBar with a default config', () => {
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(TabLinkWithTabIndexBinding);
+    fixture = TestBed.createComponent(TabLinkWithNgIf);
     fixture.detectChanges();
   });
 
@@ -588,7 +499,8 @@ describe('MatTabNavBar with a default config', () => {
   template: `
     <nav mat-tab-nav-bar
          [disableRipple]="disableRippleOnBar"
-         [fitInkBarToContent]="fitInkBarToContent">
+         [fitInkBarToContent]="fitInkBarToContent"
+         [tabPanel]="tabPanel">
       <a mat-tab-link
          *ngFor="let tab of tabs; let index = index"
          [active]="activeIndex === index"
@@ -598,6 +510,7 @@ describe('MatTabNavBar with a default config', () => {
         Tab link {{label}}
       </a>
     </nav>
+    <mat-tab-nav-panel #tabPanel id="tab-panel">Tab panel</mat-tab-nav-panel>
   `,
 })
 class SimpleTabNavBarTestApp {
@@ -616,9 +529,10 @@ class SimpleTabNavBarTestApp {
 
 @Component({
   template: `
-    <nav mat-tab-nav-bar>
+    <nav mat-tab-nav-bar [tabPanel]="tabPanel">
       <a mat-tab-link *ngIf="!isDestroyed">Link</a>
     </nav>
+    <mat-tab-nav-panel #tabPanel>Tab panel</mat-tab-nav-panel>
   `,
 })
 class TabLinkWithNgIf {
@@ -627,49 +541,12 @@ class TabLinkWithNgIf {
 
 @Component({
   template: `
-    <nav mat-tab-nav-bar>
-      <a mat-tab-link [tabIndex]="tabIndex">TabIndex Link</a>
-    </nav>
-  `,
-})
-class TabLinkWithTabIndexBinding {
-  tabIndex = 0;
-}
-
-@Component({
-  template: `
-    <nav mat-tab-nav-bar>
-      <a mat-tab-link tabindex="5">Link</a>
-    </nav>
-  `,
-})
-class TabLinkWithNativeTabindexAttr {}
-
-@Component({
-  template: `
-    <nav mat-tab-nav-bar>
+    <nav mat-tab-nav-bar [tabPanel]="tabPanel">
       <a mat-tab-link *ngFor="let tab of tabs" [active]="false">Tab link {{label}}</a>
     </nav>
+    <mat-tab-nav-panel #tabPanel>Tab panel</mat-tab-nav-panel>
   `,
 })
 class TabBarWithInactiveTabsOnInit {
   tabs = [0, 1, 2];
-}
-
-@Component({
-  template: `
-    <nav mat-tab-nav-bar [tabPanel]="tabPanel">
-      <a mat-tab-link
-         *ngFor="let tab of tabs; let index = index"
-         [active]="index === activeIndex"
-         (click)="activeIndex = index">
-         Tab link
-      </a>
-    </nav>
-    <mat-tab-nav-panel #tabPanel id="tab-panel">Tab panel</mat-tab-nav-panel>
-  `,
-})
-class TabBarWithPanel {
-  tabs = [0, 1, 2];
-  activeIndex = 0;
 }
