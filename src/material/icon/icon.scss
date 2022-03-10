@@ -11,6 +11,10 @@ $size: 24px !default;
   height: $size;
   width: $size;
 
+  // In some cases the icon elements may extend beyond the container. Clip these cases
+  // in order to avoid weird overflows and click areas. See #11826.
+  overflow: hidden;
+
   &.mat-icon-inline {
     font-size: inherit;
     height: inherit;
