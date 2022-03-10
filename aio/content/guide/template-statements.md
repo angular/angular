@@ -5,14 +5,13 @@ With template statements, your application can engage users through actions such
 
 <div class="alert is-helpful">
 
-See the <live-example name="template-syntax">Template syntax</live-example> for
-the syntax and code snippets in this guide.
+See the <live-example name="template-syntax">Template syntax</live-example> for the syntax and code snippets in this guide.
 
 </div>
 
-In the following example, the template statement `deleteHero()` appears in quotes to the right of the `=`&nbsp;symbol as in `(event)="statement"`.
+In the following example, the template statement `deleteHero()` appears in quotes to the right of the equals sign `=` character as in `(event)="statement"`.
 
-<code-example path="template-syntax/src/app/app.component.html" region="context-component-statement" header="src/app/app.component.html"></code-example>
+<code-example header="src/app/app.component.html" path="template-syntax/src/app/app.component.html" region="context-component-statement"></code-example>
 
 When the user clicks the **Delete hero** button, Angular calls the `deleteHero()` method in the component class.
 
@@ -29,30 +28,30 @@ You can change anything in your application during a single event loop.
 
 Like [template expressions](guide/interpolation), template statements use a language that looks like JavaScript.
 However, the parser for template statements differs from the parser for template expressions.
-In addition, the template statements parser specifically supports both basic assignment, `=`, and chaining expressions with semicolons, `;`.
+In addition, the template statements parser specifically supports both basic assignment \(`=`\) and chaining expressions with semicolons \(`;`\).
 
 The following JavaScript and template expression syntax is not allowed:
 
-* `new`
-* increment and decrement operators, `++` and `--`
-* operator assignment, such as `+=` and `-=`
-* the bitwise operators, such as `|` and `&`
-* the [pipe operator](guide/pipes)
+*   `new`
+*   Increment and decrement operators, `++` and `--`
+*   Operator assignment, such as `+=` and `-=`
+*   The bitwise operators, such as `|` and `&`
+*   The [pipe operator](guide/pipes)
 
 ## Statement context
 
-Statements have a context&mdash;a particular part of the application to which the statement belongs.
+Statements have a context &mdash;a particular part of the application to which the statement belongs.
 
 Statements can refer only to what's in the statement context, which is typically the component instance.
 For example, `deleteHero()` of `(click)="deleteHero()"` is a method of the component in the following snippet.
 
-<code-example path="template-syntax/src/app/app.component.html" region="context-component-statement" header="src/app/app.component.html"></code-example>
+<code-example header="src/app/app.component.html" path="template-syntax/src/app/app.component.html" region="context-component-statement"></code-example>
 
 The statement context may also refer to properties of the template's own context.
 In the following example, the component's event handling method, `onSave()` takes the template's own `$event` object as an argument.
 On the next two lines, the `deleteHero()` method takes a [template input variable](guide/structural-directives#shorthand), `hero`, and `onSubmit()` takes a [template reference variable](guide/template-reference-variables), `#heroForm`.
 
-<code-example path="template-syntax/src/app/app.component.html" region="context-var-statement" header="src/app/app.component.html"></code-example>
+<code-example header="src/app/app.component.html" path="template-syntax/src/app/app.component.html" region="context-var-statement"></code-example>
 
 In this example, the context of the `$event` object, `hero`, and `#heroForm` is the template.
 
@@ -61,12 +60,15 @@ In the preceding `deleteHero(hero)`, the `hero` is the template input variable, 
 
 ## Statement best practices
 
-* **Conciseness**
+| Practices               | Details |
+|:---                     |:---     |
+| Conciseness             | Use method calls or basic property assignments to keep template statements minimal.                                                                                                                                                                                                         |
+| Work within the context | The context of a template statement can be the component class instance or the template. Because of this, template statements cannot refer to anything in the global namespace such as `window` or `document`. For example, template statements can't call `console.log()` or `Math.max()`. |
 
-  Use method calls or basic property assignments to keep template statements minimal.
+<!-- links -->
 
-* **Work within the context**
+<!-- external links -->
 
-  The context of a template statement can be the component class instance or the template.
-  Because of this, template statements cannot refer to anything in the global namespace such as `window` or `document`.
-  For example, template statements can't call `console.log()` or `Math.max()`.
+<!-- end links -->
+
+@reviewed 2022-02-28

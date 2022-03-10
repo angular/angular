@@ -9,11 +9,12 @@ Typescript must be "transpiled" into JavaScript using the *tsc* compiler, which 
 This page covers some aspects of TypeScript configuration and the TypeScript environment
 that are important to Angular developers, including details about the following files:
 
-* [tsconfig.json](guide/typescript-configuration#tsconfig)&mdash;TypeScript compiler configuration.
-* [typings](guide/typescript-configuration#typings)&mdash;TypesScript declaration files.
+| Files                                                    | Details |
+|:---                                                      |:---     |
+| [tsconfig.json](guide/typescript-configuration#tsconfig) | TypeScript compiler configuration. |
+| [typings](guide/typescript-configuration#typings)        | TypesScript declaration files.     |
 
-
-{@a tsconfig}
+<a id="tsconfig"></a>
 
 ## Configuration files
 
@@ -31,7 +32,7 @@ For more information, see the [Configuration inheritance with extends](https://w
 
 <div class="alert is-helpful">
 
-For more information TypeScript configuration files, see the official [TypeScript wiki](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html)
+For more information TypeScript configuration files, see the official [TypeScript wiki](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html).
 For details about configuration inheritance, see the [Configuration inheritance with extends](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html#configuration-inheritance-with-extends) section.
 
 </div>
@@ -60,23 +61,19 @@ The initial `tsconfig.json` for an Angular workspace typically looks like the fo
 }
 </code-example>
 
+<a id="noImplicitAny"></a>
 
-{@a noImplicitAny}
-
-### *noImplicitAny* and *suppressImplicitAnyIndexErrors*
+### `noImplicitAny` and `suppressImplicitAnyIndexErrors`
 
 TypeScript developers disagree about whether the `noImplicitAny` flag should be `true` or `false`.
 There is no correct answer and you can change the flag later.
 But your choice now can make a difference in larger projects, so it merits discussion.
 
-When the `noImplicitAny` flag is `false` (the default), and if
-the compiler cannot infer the variable type based on how it's used,
-the compiler silently defaults the type to `any`. That's what is meant by *implicit `any`*.
+When the `noImplicitAny` flag is `false` \(the default\), and if the compiler cannot infer the variable type based on how it's used, the compiler silently defaults the type to `any`.
+That's what is meant by *implicit `any`*.
 
-When the `noImplicitAny` flag is `true` and the TypeScript compiler cannot infer
-the type, it still generates the JavaScript files, but it also **reports an error**.
-Many seasoned developers prefer this stricter setting because type checking catches more
-unintentional errors at compile time.
+When the `noImplicitAny` flag is `true` and the TypeScript compiler cannot infer the type, it still generates the JavaScript files, but it also **reports an error**.
+Many seasoned developers prefer this stricter setting because type checking catches more unintentional errors at compile time.
 
 You can set a variable's type to `any` even when the `noImplicitAny` flag is `true`.
 
@@ -86,7 +83,7 @@ You can suppress them with the following additional flag:
 
 <code-example>
 
-  "suppressImplicitAnyIndexErrors": true
+"suppressImplicitAnyIndexErrors": true
 
 </code-example>
 
@@ -96,22 +93,20 @@ For more information about how the TypeScript configuration affects compilation,
 
 </div>
 
-
-{@a typings}
+<a id="typings"></a>
 
 ## TypeScript typings
 
-Many JavaScript libraries, such as jQuery, the Jasmine testing library, and Angular,
-extend the JavaScript environment with features and syntax
-that the TypeScript compiler doesn't recognize natively.
+Many JavaScript libraries, such as jQuery, the Jasmine testing library, and Angular, extend the JavaScript environment with features and syntax that the TypeScript compiler doesn't recognize natively.
 When the compiler doesn't recognize something, it reports an error.
 
-Use [TypeScript type definition files](https://www.typescriptlang.org/docs/handbook/writing-declaration-files.html)&mdash;`d.ts files`&mdash;to tell the compiler about the libraries you load.
+Use [TypeScript type definition files](https://www.typescriptlang.org/docs/handbook/writing-declaration-files.html) &mdash;`d.ts files`&mdash; to tell the compiler about the libraries you load.
 
 TypeScript-aware editors leverage these same definition files to display type information about library features.
 
 Many libraries include definition files in their npm packages where both the TypeScript compiler and editors
-can find them. Angular is one such library.
+can find them.
+Angular is one such library.
 The `node_modules/@angular/core/` folder of any Angular application contains several `d.ts` files that describe parts of Angular.
 
 <div class="alert is-helpful">
@@ -121,43 +116,44 @@ Angular packages include them already.
 
 </div>
 
-### lib.d.ts
+### `lib.d.ts`
 
-TypeScript includes a special declaration file called `lib.d.ts`. This file contains the ambient declarations for various common JavaScript constructs present in JavaScript runtimes and the DOM.
+TypeScript includes a special declaration file called `lib.d.ts`.
+This file contains the ambient declarations for various common JavaScript constructs present in JavaScript runtimes and the DOM.
 
-Based on the `--target`, TypeScript adds _additional_ ambient declarations
-like `Promise` if the target is `es6`.
+Based on the `--target`, TypeScript adds *additional* ambient declarations like `Promise` if the target is `es6`.
 
-By default, the target is `es2015`. If you are targeting `es5`, you still have newer type declarations due to the list of declaration files included:
+By default, the target is `es2015`.
+If you are targeting `es5`, you still have newer type declarations due to the list of declaration files included:
 
-<code-example path="getting-started/tsconfig.0.json" header="tsconfig.json (lib excerpt)" region="lib"></code-example>
+<code-example header="tsconfig.json (lib excerpt)" path="getting-started/tsconfig.0.json" region="lib"></code-example>
 
 ### Installable typings files
 
-Many libraries&mdash;jQuery, Jasmine, and Lodash among them&mdash;do *not* include `d.ts` files in their npm packages.
-Fortunately, either their authors or community contributors have created separate `d.ts` files for these libraries and
-published them in well-known locations.
+Many libraries &mdash;jQuery, Jasmine, and Lodash among them&mdash; do *not* include `d.ts` files in their npm packages.
+Fortunately, either their authors or community contributors have created separate `d.ts` files for these libraries and published them in well-known locations.
 
-You can install these typings with `npm` using the
-[`@types/*` scoped package](https://www.typescriptlang.org/docs/handbook/declaration-files/consumption.html).
+You can install these typings with `npm` using the [`@types/*` scoped package](https://www.typescriptlang.org/docs/handbook/declaration-files/consumption.html).
 
-Which ambient declaration files in `@types/*` are automatically included is determined by
-the [`types` TypeScript compiler option](https://www.typescriptlang.org/tsconfig#types). The Angular
-CLI generates a `tsconfig.app.json` file which is used to build an application, in which the
-`types` compiler option is set to `[]` to disable automatic inclusion of declarations
-from `@types/*`. Similarly, the `tsconfig.spec.json` file is used for testing and sets
-`"types": ["jasmine"]` to allow using Jasmine's ambient declarations in tests.
+Which ambient declaration files in `@types/*` are automatically included is determined by the [`types` TypeScript compiler option](https://www.typescriptlang.org/tsconfig#types).
+The Angular CLI generates a `tsconfig.app.json` file which is used to build an application, in which the `types` compiler option is set to `[]` to disable automatic inclusion of declarations from `@types/*`.
+Similarly, the `tsconfig.spec.json` file is used for testing and sets `"types": ["jasmine"]` to allow using Jasmine's ambient declarations in tests.
 
-After installing `@types/*` declarations, you have to update the `tsconfig.app.json` and
-`tsconfig.spec.json` files to add the newly installed declarations to the list of `types`. If the
-declarations are only meant for testing, then only the `tsconfig.spec.json` file should be updated.
+After installing `@types/*` declarations, you have to update the `tsconfig.app.json` and `tsconfig.spec.json` files to add the newly installed declarations to the list of `types`.
+If the declarations are only meant for testing, then only the `tsconfig.spec.json` file should be updated.
 
-For instance, to install typings for `chai` you run `npm install @types/chai --save-dev` and then
-update `tsconfig.spec.json` to add `"chai"` to the list of `types`.
+For instance, to install typings for `chai` you run `npm install @types/chai --save-dev` and then update `tsconfig.spec.json` to add `"chai"` to the list of `types`.
 
+<a id="target"></a>
 
-{@a target}
-
-### *target*
+### `target`
 
 By default, the target is `es2017`, which is supported in modern browsers.
+
+<!-- links -->
+
+<!-- external links -->
+
+<!-- end links -->
+
+@reviewed 2022-02-28

@@ -1,17 +1,18 @@
 # Create a new project
 
-You begin by creating an initial application using the Angular CLI. Throughout this tutorial, you’ll modify and extend that starter application to create the Tour of Heroes application.
+You begin by creating an initial application using the Angular CLI.
+Throughout this tutorial, you'll modify and extend that starter application to create the Tour of Heroes application.
 
 In this part of the tutorial, you'll do the following:
 
-1. Set up your environment.
-2. Create a new workspace and initial application project.
-3. Serve the application.
-4. Make changes to the application.
+1.  Set up your environment.
+1.  Create a new workspace and initial application project.
+1.  Serve the application.
+1.  Make changes to the application.
 
 <div class="alert is-helpful">
 
-  For the sample application that this page describes, see the <live-example></live-example>.
+For the sample application that this page describes, see the <live-example></live-example>.
 
 </div>
 
@@ -19,29 +20,37 @@ In this part of the tutorial, you'll do the following:
 
 To set up your development environment, follow the instructions in [Local Environment Setup](guide/setup-local "Setting up for Local Development").
 
-
 ## Create a new workspace and an initial application
 
-You develop applications in the context of an Angular [workspace](guide/glossary#workspace). A workspace contains the files for one or more [projects](guide/glossary#project). A project is the set of files that comprise an application or a library. For this tutorial, you will create a new workspace.
+You develop applications in the context of an Angular [workspace](guide/glossary#workspace).
+A workspace contains the files for one or more [projects](guide/glossary#project).
+A project is the set of files that comprise an application or a library.
+For this tutorial, you will create a new workspace.
 
 To create a new workspace and an initial application project:
 
-  1. Ensure that you are not already in an Angular workspace folder. For example, if you have previously created the Getting Started workspace, change to the parent of that folder.
-  2. Run the CLI command `ng new` and provide the name `angular-tour-of-heroes`, as shown here:
+1.  Ensure that you are not already in an Angular workspace folder.
+    For example, if you have previously created the Getting Started workspace, change to the parent of that folder.
 
-  <code-example language="sh">
-     ng new angular-tour-of-heroes
-  </code-example>
+1.  Run the CLI command `ng new` and provide the name `angular-tour-of-heroes`, as shown here:
 
-  3. The `ng new` command prompts you for information about features to include in the initial application project. Accept the defaults by pressing the Enter or Return key.
+    <code-example format="shell" language="shell">
 
-The Angular CLI installs the necessary Angular `npm` packages and other dependencies. This can take a few minutes.
+    ng new angular-tour-of-heroes
+
+    </code-example>
+
+1.  The `ng new` command prompts you for information about features to include in the initial application project.
+    Accept the defaults by pressing the Enter or Return key.
+
+The Angular CLI installs the necessary Angular `npm` packages and other dependencies.
+This can take a few minutes.
 
 It also creates the following workspace and starter project files:
 
-  * A new workspace, with a root folder named `angular-tour-of-heroes`.
-  * An initial skeleton app project in the `src/app` subfolder.
-  * Related configuration files.
+*   A new workspace, with a root folder named `angular-tour-of-heroes`
+*   An initial skeleton app project in the `src/app` subfolder
+*   Related configuration files
 
 The initial app project contains a simple Welcome application, ready to run.
 
@@ -49,9 +58,11 @@ The initial app project contains a simple Welcome application, ready to run.
 
 Go to the workspace directory and launch the application.
 
-<code-example language="sh">
-  cd angular-tour-of-heroes
-  ng serve --open
+<code-example format="shell" language="shell">
+
+cd angular-tour-of-heroes
+ng serve --open
+
 </code-example>
 
 <div class="alert is-helpful">
@@ -59,7 +70,7 @@ Go to the workspace directory and launch the application.
 The `ng serve` command builds the app, starts the development server,
 watches the source files, and rebuilds the application as you make changes to those files.
 
-The `--open` flag opens a browser to `http://localhost:4200/`.
+The `--open` flag opens a browser to `http://localhost:4200`.
 
 </div>
 
@@ -67,10 +78,10 @@ You should see the application running in your browser.
 
 ## Angular components
 
-The page you see is the _application shell_.
+The page you see is the *application shell*.
 The shell is controlled by an Angular **component** named `AppComponent`.
 
-_Components_ are the fundamental building blocks of Angular applications.
+*Components* are the fundamental building blocks of Angular applications.
 They display data on the screen, listen for user input, and take action based on that input.
 
 ## Make changes to the application
@@ -79,30 +90,29 @@ Open the project in your favorite editor or IDE and navigate to the `src/app` fo
 
 You'll find the implementation of the shell `AppComponent` distributed over three files:
 
-1. `app.component.ts`&mdash; the component class code, written in TypeScript.
-1. `app.component.html`&mdash; the component template, written in HTML.
-1. `app.component.css`&mdash; the component's private CSS styles.
+| Files                | Details |
+|:---                  |:---     |
+| `app.component.ts`   | The component class code, written in TypeScript. |
+| `app.component.html` | The component template, written in HTML.         |
+| `app.component.css`  | The component's private CSS styles.              |
 
 ### Change the application title
 
-Open the component class file (`app.component.ts`) and change the value of the `title` property to 'Tour of Heroes'.
+Open the component class file \(`app.component.ts`\) and change the value of the `title` property to 'Tour of Heroes'.
 
-<code-example path="toh-pt0/src/app/app.component.ts" region="set-title" header="app.component.ts (class title property)"></code-example>
+<code-example header="app.component.ts (class title property)" path="toh-pt0/src/app/app.component.ts" region="set-title"></code-example>
 
-Open the component template file (`app.component.html`) and
-delete the default template generated by the Angular CLI.
+Open the component template file \(`app.component.html`\) and delete the default template generated by the Angular CLI.
 Replace it with the following line of HTML.
 
-<code-example path="toh-pt0/src/app/app.component.html"
-  header="app.component.html (template)"></code-example>
+<code-example header="app.component.html (template)" path="toh-pt0/src/app/app.component.html"></code-example>
 
 The double curly braces are Angular's *interpolation binding* syntax.
-This interpolation binding presents the component's `title` property value
-inside the HTML header tag.
+This interpolation binding presents the component's `title` property value inside the HTML header tag.
 
 The browser refreshes and displays the new application title.
 
-{@a app-wide-styles}
+<a id="app-wide-styles"></a>
 
 ### Add application styles
 
@@ -112,29 +122,22 @@ Put your application-wide styles there.
 
 Open `src/styles.css` and add the code below to the file.
 
-<code-example path="toh-pt0/src/styles.1.css" header="src/styles.css (excerpt)">
-</code-example>
+<code-example header="src/styles.css (excerpt)" path="toh-pt0/src/styles.1.css"></code-example>
 
 ## Final code review
 
 Here are the code files discussed on this page.
 
 <code-tabs>
-
-  <code-pane header="src/app/app.component.ts" path="toh-pt0/src/app/app.component.ts">
-  </code-pane>
-
-  <code-pane header="src/app/app.component.html" path="toh-pt0/src/app/app.component.html">
-  </code-pane>
-
-  <code-pane
-    header="src/styles.css (excerpt)"
-    path="toh-pt0/src/styles.1.css">
-  </code-pane>
+    <code-pane header="src/app/app.component.ts" path="toh-pt0/src/app/app.component.ts"></code-pane>
+    <code-pane header="src/app/app.component.html" path="toh-pt0/src/app/app.component.html"></code-pane>
+    <code-pane header="src/styles.css (excerpt)" path="toh-pt0/src/styles.1.css"></code-pane>
 </code-tabs>
 
 ## Summary
 
-* You created the initial application structure using the Angular CLI.
-* You learned that Angular components display data.
-* You used the double curly braces of interpolation to display the application title.
+*   You created the initial application structure using the Angular CLI
+*   You learned that Angular components display data
+*   You used the double curly braces of interpolation to display the application title
+
+@reviewed 2022-02-28
