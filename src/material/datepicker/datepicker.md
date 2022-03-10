@@ -566,6 +566,9 @@ The `MatDatepicker` pop-up uses the `role="dialog"` interaction pattern. This di
 multiple controls, the most prominent being the calendar itself. This calendar implements the
 `role="grid"` interaction pattern.
 
+Always enable [_confirmation action buttons_](#confirmation-action-buttons). This allows assistive
+technology users to explicitly confirm their selection before committing a value.
+
 The `MatDatepickerInput` and `MatDatepickerToggle` directives both apply the `aria-haspopup`
 attribute to the native input and button elements, respectively.
 
