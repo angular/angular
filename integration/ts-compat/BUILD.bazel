@@ -14,6 +14,7 @@ write_file(
 # The list contains NPM module names that resolve to the desired TypeScript version.
 typescript_version_packages = [
     "typescript-4.4",
+    "typescript-4.5",
     "typescript",
 ]
 

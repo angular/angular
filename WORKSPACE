@@ -59,16 +59,6 @@ node_repositories(
     package_json = ["//:package.json"],
 )
 
-load("@build_bazel_rules_nodejs//nodejs:repositories.bzl", "nodejs_register_toolchains")
-
-# This call sets up another repository for Node 12.x used in integration tests. This
-# allows us to ensure our schematic code works with NodeJS v12 LTS. The Node v12.x
-# version is not fetched unless explicitly requested by the tests.
-nodejs_register_toolchains(
-    name = "node12",
-    node_version = "12.22.0",
-)
-
 load("//tools:integration.bzl", "create_npm_package_archive_build_file")
 
 yarn_install(

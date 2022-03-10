@@ -27,22 +27,3 @@ node_integration_test(
         "requires-network",
     ],
 )
-
-node_integration_test(
-    name = "test_node12",
-    srcs = glob(["**/*"]),
-    commands = [
-        # Note: We use a cache folder within the integration test as otherwise
-        # the NPM package mapped archive would be cached in the system.
-        # See: https://github.com/yarnpkg/yarn/issues/2165.
-        # TODO(devversion): determine if a solution/workaround could live in the test runner.
-        "yarn install --cache-folder .yarn_cache_folder/",
-        "yarn test",
-    ],
-    node_repository = "node12_host",
-    npm_packages = npmPackageMappings,
-    tags = [
-        # This test relies on `yarn` so there needs to be internet access.
-        "requires-network",
-    ],
-)
