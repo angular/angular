@@ -437,7 +437,6 @@ export class OverlayRef implements PortalOutlet, OverlayReference {
     // either async or fakeAsync.
     this._backdropTimeout = this._ngZone.runOutsideAngular(() =>
       setTimeout(() => {
-        console.log('fallback');
         this._disposeBackdrop(backdropToDetach);
       }, 500),
     );
