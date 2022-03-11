@@ -131,9 +131,9 @@ This example shows you how to toggle the disabled property from the component.
 
 Angular provides three categories of data binding according to the direction of data flow:
 
-*   From the source to view
+*   From source to view
 *   From view to source
-*   In a two way sequence of view to source to view
+*   In a two-way sequence of view to source to view
 
 | Type                                                                     | Syntax                                                                       | Category |
 |:---                                                                      |:---                                                                          |:---      |

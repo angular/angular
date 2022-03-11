@@ -2,7 +2,7 @@
 
 There are many coding patterns that are technically valid to the compiler or runtime, but which may have complex nuances or caveats.
 These patterns may not have the intended effect expected by a developer, which often leads to bugs.
-The Angular compiler includes "extended diagnostics" which identify many of these patterns to warn developers about the potential issues and enforce common best practices within a codebase.
+The Angular compiler includes "extended diagnostics" which identify many of these patterns, in order to warn developers about the potential issues and enforce common best practices within a codebase.
 
 ## Diagnostics
 

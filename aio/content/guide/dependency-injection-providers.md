@@ -51,7 +51,7 @@ Angular expands the `providers` value into a full provider object as follows.
 
 The expanded provider configuration is an object literal with two properties:
 
-*   The `provide` property holds the [token](#token) that serves as the key for both locating a dependency value and configuring the injector
+*   The `provide` property holds the [token](#token) that serves as the key for both locating a dependency value and configuring the injector.
 
 *   The second property is a provider definition object, which tells the injector how to create the dependency value.
     The provider-definition key can be `useClass`, as in the example.

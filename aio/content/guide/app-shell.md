@@ -29,7 +29,7 @@ ng generate app-shell
 
 </code-example>
 
-For more information about this command see [App shell command](cli/generate#app-shell-command).
+For more information about this command, see [App shell command](cli/generate#app-shell-command).
 
 After running this command you can see that the `angular.json` configuration file has been updated to add two new targets, with a few other changes.
 
