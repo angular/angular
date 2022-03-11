@@ -61,7 +61,7 @@ For example:
     See the W3C documentation for more information on [aria-live regions](https://www.w3.org/WAI/PF/aria-1.1/states_and_properties#aria-live).
 
 *   The `cdkTrapFocus` directive traps Tab-key focus within an element.
-    Use it to create accessible experience for components like modal dialogs, where focus must be constrained.
+    Use it to create accessible experience for components such as modal dialogs, where focus must be constrained.
 
 For full details of these and other tools, see the [Angular CDK accessibility overview](https://material.angular.io/cdk/a11y/overview).
 

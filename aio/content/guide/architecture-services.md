@@ -47,7 +47,7 @@ Similarly, use the `@Injectable()` decorator to indicate that a component or oth
     Angular creates an application-wide injector for you during the bootstrap process, and additional injectors as needed.
     You don't have to create injectors.
 
-*   An injector creates dependencies, and maintains a *container* of dependency instances that it reuses if possible
+*   An injector creates dependencies and maintains a *container* of dependency instances that it reuses, if possible.
 *   A *provider* is an object that tells an injector how to obtain or create a dependency
 
 For any dependency that you need in your app, you must register a provider with the application's injector, so that the injector can use the provider to create new instances.
@@ -65,7 +65,7 @@ For example, the constructor of `HeroListComponent` needs `HeroService`.
 <code-example header="src/app/hero-list.component.ts (constructor)" path="architecture/src/app/hero-list.component.ts" region="ctor"></code-example>
 
 When Angular discovers that a component depends on a service, it first checks if the injector has any existing instances of that service.
-If a requested service instance doesn't yet exist, the injector makes one using the registered provider, and adds it to the injector before returning the service to Angular.
+If a requested service instance doesn't yet exist, the injector makes one using the registered provider and adds it to the injector before returning the service to Angular.
 
 When all requested services have been resolved and returned, Angular can call the component's constructor with those services as arguments.
 
