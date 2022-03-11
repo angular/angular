@@ -16,6 +16,28 @@ body, input[type="text"], button {
   color: #333;
   font-family: Cambria, Georgia, serif;
 }
+button {
+  background-color: #eee;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  color: black;
+  font-size: 1.2rem;
+  padding: 1rem;
+  margin-right: 1rem;
+  margin-bottom: 1rem;
+  margin-top: 1rem;
+}
+button:hover {
+  background-color: black;
+  color: white;
+}
+button:disabled {
+  background-color: #eee;
+  color: #aaa;
+  cursor: auto;
+}
+
 /* everywhere else */
 * {
   font-family: Arial, Helvetica, sans-serif;
