@@ -43,7 +43,7 @@ The `@NgModule` decorator identifies `AppModule` as an `NgModule` class.
 | metadata object | Details |
 |:---             |:---     |
 | declarations    | This application's lone component.                                                                          |
-| imports         | Import `BrowserModule` to have browser specific services such as DOM rendering, sanitization, and location. |
+| imports         | Import `BrowserModule` to have browser-specific services such as DOM rendering, sanitization, and location. |
 | providers       | The service providers.                                                                                      |
 | bootstrap       | The *root* component that Angular creates and inserts into the `index.html` host web page.                  |
 
@@ -63,7 +63,7 @@ The `declarations` array only takes declarables. Declarables are components, [di
 All of a module's declarables must be in the `declarations` array.
 Declarables must belong to exactly one module. The compiler emits an error if you try to declare the same class in more than one module.
 
-These declared classes are visible within the module but invisible to components in a different module unless they are exported from this module and the other module imports this one.
+These declared classes are visible within the module but invisible to components in a different module, unless they are exported from this module and the other module imports this one.
 
 An example of what goes into a declarations array follows:
 
@@ -78,7 +78,7 @@ declarations: [
 </code-example>
 
 A declarable can only belong to one module, so only declare it in one `@NgModule`.
-When you need it elsewhere, import the module that has the declarable you need in it.
+When you need it elsewhere, import the module that contains the declarable you need.
 
 ### Using directives with `@NgModule`
 
@@ -94,7 +94,7 @@ The following example, named `ItemDirective` is the default directive structure 
 
 <code-example header="src/app/item.directive.ts" path="bootstrapping/src/app/item.directive.ts" region="directive"></code-example>
 
-The key point here is that you have to export it so you can import it elsewhere.
+The key point here is that you have to export it, so that you can import it elsewhere.
 Next, import it into the `NgModule`, in this example `app.module.ts`, with a JavaScript import statement:
 
 <code-example header="src/app/app.module.ts" path="bootstrapping/src/app/app.module.ts" region="directive-import"></code-example>
@@ -123,7 +123,7 @@ It tells Angular about other NgModules that this particular module needs to func
 
 This list of modules are those that export components, directives, or pipes that component templates in this module reference.
 In this case, the component is `AppComponent`, which references components, directives, or pipes in `BrowserModule`, `FormsModule`, or  `HttpClientModule`.
-A component template can reference another component, directive, or pipe when the referenced class is declared in this module or the class was imported from another module.
+A component template can reference another component, directive, or pipe when the referenced class is declared in this module, or the class was imported from another module.
 
 <a id="bootstrap-array"></a>
 

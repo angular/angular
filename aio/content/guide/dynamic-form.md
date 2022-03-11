@@ -1,11 +1,11 @@
 # Building dynamic forms
 
-Many forms, such as questionaires, can be very similar to one another in format and intent.
+Many forms, such as questionnaires, can be very similar to one another in format and intent.
 To make it faster and easier to generate different versions of such a form, you can create a *dynamic form template* based on metadata that describes the business object model.
 Then, use the template to generate new forms automatically, according to changes in the data model.
 
 The technique is particularly useful when you have a type of form whose content must change frequently to meet rapidly changing business and regulatory requirements.
-A typical use case is a questionaire.
+A typical use-case is a questionnaire.
 You might need to get input from users in different contexts.
 The format and style of the forms a user sees should remain constant, while the actual questions you need to ask vary with the context.
 
@@ -140,7 +140,7 @@ To display an instance of the dynamic form, the `AppComponent` shell template pa
 <code-example header="app.component.ts" path="dynamic-form/src/app/app.component.ts"></code-example>
 
 The example provides a model for a job application for heroes, but there are no references to any specific hero question other than the objects returned by `QuestionService`.
-This separation of model and data lets you repurpose the components for any type of survey as long as it's compatible with the *question* object model.
+This separation of model and data lets you repurpose the components for any type of survey, as long as it's compatible with the *question* object model.
 
 ### Ensuring valid data
 

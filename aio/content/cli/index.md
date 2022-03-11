@@ -47,7 +47,7 @@ When you use the [ng serve](cli/serve) command to build an application and serve
 When you run `ng new my-first-project` a new folder, named `my-first-project`, will be created in the current working directory.
 Since you want to be able to create files inside that folder, make sure you have sufficient rights in the current working directory before running the command.
 
-If the current working directory is not the right place for your project, you can change to a more appropriate directory by running `cd <path-to-other-directory>` first.
+If the current working directory is not the right place for your project, you can change to a more appropriate directory by running `cd <path-to-other-directory>`.
 
 </div>
 
@@ -119,7 +119,7 @@ Options that specify files can be given as absolute paths, or as paths relative 
 
 ### Schematics
 
-The [ng generate](cli/generate) and [ng add](cli/add) commands take as an argument the artifact or library to be generated or added to the current project.
+The [ng generate](cli/generate) and [ng add](cli/add) commands take, as an argument, the artifact or library to be generated or added to the current project.
 In addition to any general options, each artifact or library defines its own options in a *schematic*.
 Schematic options are supplied to the command in the same format as immediate command options.
 

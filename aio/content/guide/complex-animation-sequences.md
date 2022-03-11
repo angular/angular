@@ -29,22 +29,22 @@ Most complex animations rely on the `query()` function to find child elements an
 | Examples                               | Details |
 |:---                                    |:---     |
 | `query()` followed by `animate()`      | Used to query simple HTML elements and directly apply animations to them.                                                                                                                            |
-| `query()` followed by `animateChild()` | Used to query child elements which themselves have animations metadata applied to them and trigger such animation \(which would be otherwise be blocked by the current/parent element's animation\). |
+| `query()` followed by `animateChild()` | Used to query child elements, which themselves have animations metadata applied to them and trigger such animation \(which would be otherwise be blocked by the current/parent element's animation\). |
 
-The first argument of `query()` is a [css selector](https://developer.mozilla.org/docs/Web/CSS/CSS_Selectors) string which can also contain the following angular-specific tokens:
+The first argument of `query()` is a [css selector](https://developer.mozilla.org/docs/Web/CSS/CSS_Selectors) string which can also contain the following Angular-specific tokens:
 
 | Tokens                     | Details |
 |:---                        |:---     |
 | `:enter` <br /> `:leave`   | For entering/leaving elements.               |
 | `:animating`               | For elements currently animating.            |
-| `@*` <br /> `@triggerName` | For elements with any or a specific trigger. |
+| `@*` <br /> `@triggerName` | For elements with any —or a specific—trigger. |
 | `:self`                    | The animating element itself.                |
 
 <div class="callout is-helpful">
 
 <header>Entering and Leaving Elements</header>
 
-Not all child elements are actually considered as entering/leaving, this can at times be counterintuitive and confusing, please see the [query api docs](api/animations/query#entering-and-leaving-elements) for more information.
+Not all child elements are actually considered as entering/leaving; this can, at times, be counterintuitive and confusing. Please see the [query api docs](api/animations/query#entering-and-leaving-elements) for more information.
 
 You can also see an illustration of this in the animations live example \(introduced in the animations [introduction section](guide/animations#about-this-guide)\) under the Querying tab.
 
@@ -79,7 +79,7 @@ The [`group()`](api/animations/group) function is used to group animation *steps
 
 </div>
 
-The following example, uses [`group()`](api/animations/group)s on both `:enter` and `:leave` for two different timing configurations, thus applying two independent animations to the same element in parallel.
+The following example uses [`group()`](api/animations/group)s on both `:enter` and `:leave` for two different timing configurations, thus applying two independent animations to the same element in parallel.
 
 <code-example header="src/app/hero-list-groups.component.ts (excerpt)" path="animations/src/app/hero-list-groups.component.ts" region="animationdef"></code-example>
 
@@ -141,7 +141,7 @@ If you need to animate the items of an `*ngFor` list and there is a possibility 
 ## Animation sequence summary
 
 Angular functions for animating multiple elements start with `query()` to find inner elements; for example, gathering all images within a `<div>`.
-The remaining functions, `stagger()`, [`group()`](api/animations/group), and `sequence()`, apply cascades or lets you control how multiple animation steps are applied.
+The remaining functions, `stagger()`, [`group()`](api/animations/group), and `sequence()`, apply cascades or let you control how multiple animation steps are applied.
 
 ## More on Angular animations
 

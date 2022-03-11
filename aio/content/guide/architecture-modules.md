@@ -39,7 +39,7 @@ A root NgModule has no reason to *export* anything because other modules don't n
 ## NgModules and components
 
 NgModules provide a *compilation context* for their components.
-A root NgModule always has a root component that is created during bootstrap, but any NgModule can include any number of additional components, which can be loaded through the router or created through the template.
+A root NgModule always has a root component that is created during bootstrap but any NgModule can include any number of additional components, which can be loaded through the router or created through the template.
 The components that belong to an NgModule share a compilation context.
 
 <div class="lightbox">
@@ -77,7 +77,7 @@ The hierarchical structure of views is a key factor in the way Angular detects a
 
 ## NgModules and JavaScript modules
 
-The NgModule system is different from and unrelated to the JavaScript \(ES2015\) module system for managing collections of JavaScript objects.
+The NgModule system is different from, and unrelated to, the JavaScript \(ES2015\) module system for managing collections of JavaScript objects.
 These are *complementary* module systems that you can use together to write your applications.
 
 In JavaScript each *file* is a module and all objects defined in the file belong to that module.
@@ -124,7 +124,7 @@ To access that material, add it to the `@NgModule` metadata `imports` like this.
 
 <code-example path="architecture/src/app/mini-app.ts" region="ngmodule-imports"></code-example>
 
-In this way you're using the Angular and JavaScript module systems *together*.
+In this way, you're using the Angular and JavaScript module systems *together*.
 Although it's easy to confuse the two systems, which share the common vocabulary of "imports" and "exports", you will become familiar with the different contexts in which they are used.
 
 <div class="alert is-helpful">
