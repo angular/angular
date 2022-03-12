@@ -7,11 +7,11 @@
  */
 
 import {Type} from '../interface/type';
-import {reflector} from '../reflection/reflection';
 
 import {resolveForwardRef} from './forward_ref';
 import {InjectionToken} from './injection_token';
 import {ClassProvider, ExistingProvider, FactoryProvider, Provider, TypeProvider, ValueProvider} from './interface/provider';
+import {getReflect} from './jit/util';
 import {Inject, Optional, Self, SkipSelf} from './metadata';
 import {invalidProviderError, mixingMultiProvidersWithRegularProvidersError, noAnnotationError} from './reflective_errors';
 import {ReflectiveKey} from './reflective_key';
@@ -107,7 +107,7 @@ function resolveReflectiveFactory(provider: NormalizedProvider): ResolvedReflect
   let resolvedDeps: ReflectiveDependency[];
   if (provider.useClass) {
     const useClass = resolveForwardRef(provider.useClass);
-    factoryFn = reflector.factory(useClass);
+    factoryFn = getReflect().factory(useClass);
     resolvedDeps = _dependenciesFor(useClass);
   } else if (provider.useExisting) {
     factoryFn = (aliasInstance: any) => aliasInstance;
@@ -211,7 +211,7 @@ export function constructDependencies(
 }
 
 function _dependenciesFor(typeOrFunc: any): ReflectiveDependency[] {
-  const params = reflector.parameters(typeOrFunc);
+  const params = getReflect().parameters(typeOrFunc);
 
   if (!params) return [];
   if (params.some(p => p == null)) {
