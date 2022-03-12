@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {reflector} from '../../src/reflection/reflection';
+import {getReflect} from '../../src/di/jit/util';
 import {ANNOTATIONS, makeDecorator, makePropDecorator} from '../../src/util/decorators';
 
 class DecoratedParent {}
@@ -27,7 +27,7 @@ class DecoratedChild extends DecoratedParent {}
         @Prop('firefox!') watch: any;
       }
 
-      const p = reflector.propMetadata(TestClass);
+      const p = getReflect().propMetadata(TestClass);
       expect(p['watch']).toEqual([new Prop('firefox!')]);
     });
 

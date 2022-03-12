@@ -10,10 +10,8 @@ import {isType, Type} from '../interface/type';
 import {newArray} from '../util/array_utils';
 import {ANNOTATIONS, PARAMETERS, PROP_METADATA} from '../util/decorators';
 import {global} from '../util/global';
-import {stringify} from '../util/stringify';
 
 import {PlatformReflectionCapabilities} from './platform_reflection_capabilities';
-import {GetterFn, MethodFn, SetterFn} from './types';
 
 
 
@@ -84,10 +82,6 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
 
   constructor(reflect?: any) {
     this._reflect = reflect || global['Reflect'];
-  }
-
-  isReflectionEnabled(): boolean {
-    return true;
   }
 
   factory<T>(t: Type<T>): (args: any[]) => T {
@@ -279,45 +273,6 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
 
   hasLifecycleHook(type: any, lcProperty: string): boolean {
     return type instanceof Type && lcProperty in type.prototype;
-  }
-
-  guards(type: any): {[key: string]: any} {
-    return {};
-  }
-
-  getter(name: string): GetterFn {
-    return <GetterFn>new Function('o', 'return o.' + name + ';');
-  }
-
-  setter(name: string): SetterFn {
-    return <SetterFn>new Function('o', 'v', 'return o.' + name + ' = v;');
-  }
-
-  method(name: string): MethodFn {
-    const functionBody = `if (!o.${name}) throw new Error('"${name}" is undefined');
-        return o.${name}.apply(o, args);`;
-    return <MethodFn>new Function('o', 'args', functionBody);
-  }
-
-  // There is not a concept of import uri in Js, but this is useful in developing Dart applications.
-  importUri(type: any): string {
-    // StaticSymbol
-    if (typeof type === 'object' && type['filePath']) {
-      return type['filePath'];
-    }
-    // Runtime type
-    return `./${stringify(type)}`;
-  }
-
-  resourceUri(type: any): string {
-    return `./${stringify(type)}`;
-  }
-
-  resolveIdentifier(name: string, moduleUrl: string, members: string[], runtime: any): any {
-    return runtime;
-  }
-  resolveEnum(enumIdentifier: any, name: string): any {
-    return enumIdentifier[name];
   }
 }
 
