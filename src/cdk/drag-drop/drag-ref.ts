@@ -448,9 +448,7 @@ export class DragRef<T = any> {
       this._ngZone.runOutsideAngular(() => {
         element.addEventListener('mousedown', this._pointerDown, activeEventListenerOptions);
         element.addEventListener('touchstart', this._pointerDown, passiveEventListenerOptions);
-        // Usually this isn't necessary since the we prevent the default action in `pointerDown`,
-        // but some cases like dragging of links can slip through (see #24403).
-        element.addEventListener('dragstart', preventDefault, activeEventListenerOptions);
+        element.addEventListener('dragstart', this._nativeDragStart, activeEventListenerOptions);
       });
       this._initialTransform = undefined;
       this._rootElement = element;
@@ -637,9 +635,7 @@ export class DragRef<T = any> {
 
     // Delegate the event based on whether it started from a handle or the element itself.
     if (this._handles.length) {
-      const targetHandle = this._handles.find(handle => {
-        return event.target && (event.target === handle || handle.contains(event.target as Node));
-      });
+      const targetHandle = this._getTargetHandle(event);
 
       if (targetHandle && !this._disabledHandles.has(targetHandle) && !this.disabled) {
         this._initializeDragSequence(targetHandle, event);
@@ -1295,7 +1291,7 @@ export class DragRef<T = any> {
   private _removeRootElementListeners(element: HTMLElement) {
     element.removeEventListener('mousedown', this._pointerDown, activeEventListenerOptions);
     element.removeEventListener('touchstart', this._pointerDown, passiveEventListenerOptions);
-    element.removeEventListener('dragstart', preventDefault, activeEventListenerOptions);
+    element.removeEventListener('dragstart', this._nativeDragStart, activeEventListenerOptions);
   }
 
   /**
@@ -1520,6 +1516,28 @@ export class DragRef<T = any> {
 
     return this._previewRect;
   }
+
+  /** Handles a native `dragstart` event. */
+  private _nativeDragStart = (event: DragEvent) => {
+    if (this._handles.length) {
+      const targetHandle = this._getTargetHandle(event);
+
+      if (targetHandle && !this._disabledHandles.has(targetHandle) && !this.disabled) {
+        event.preventDefault();
+      }
+    } else if (!this.disabled) {
+      // Usually this isn't necessary since the we prevent the default action in `pointerDown`,
+      // but some cases like dragging of links can slip through (see #24403).
+      event.preventDefault();
+    }
+  };
+
+  /** Gets a handle that is the target of an event. */
+  private _getTargetHandle(event: Event): HTMLElement | undefined {
+    return this._handles.find(handle => {
+      return event.target && (event.target === handle || handle.contains(event.target as Node));
+    });
+  }
 }
 
 /**
@@ -1571,9 +1589,4 @@ function matchElementSize(target: HTMLElement, sourceRect: ClientRect): void {
   target.style.width = `${sourceRect.width}px`;
   target.style.height = `${sourceRect.height}px`;
   target.style.transform = getTransform(sourceRect.left, sourceRect.top);
-}
-
-/** Utility to prevent the default action of an event. */
-function preventDefault(event: Event): void {
-  event.preventDefault();
 }

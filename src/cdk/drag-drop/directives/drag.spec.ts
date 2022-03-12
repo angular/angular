@@ -271,6 +271,19 @@ describe('CdkDrag', () => {
 
         expect(event.defaultPrevented).toBe(true);
       }));
+
+      it('should not prevent the default dragstart action when dragging is disabled', fakeAsync(() => {
+        const fixture = createComponent(StandaloneDraggable);
+        fixture.detectChanges();
+        fixture.componentInstance.dragInstance.disabled = true;
+        const event = dispatchFakeEvent(
+          fixture.componentInstance.dragElement.nativeElement,
+          'dragstart',
+        );
+        fixture.detectChanges();
+
+        expect(event.defaultPrevented).toBe(false);
+      }));
     });
 
     describe('touch dragging', () => {
@@ -1618,6 +1631,27 @@ describe('CdkDrag', () => {
       expect(dragElement.style.transform).toBeFalsy();
       dragElementViaMouse(fixture, handleChild, 50, 100);
       expect(dragElement.style.transform).toBe('translate3d(50px, 100px, 0px)');
+    }));
+
+    it('should prevent default dragStart on handle, not on entire draggable', fakeAsync(() => {
+      const fixture = createComponent(StandaloneDraggableWithHandle);
+      fixture.detectChanges();
+
+      const draggableEvent = dispatchFakeEvent(
+        fixture.componentInstance.dragElement.nativeElement,
+        'dragstart',
+      );
+      fixture.detectChanges();
+
+      const handleEvent = dispatchFakeEvent(
+        fixture.componentInstance.handleElement.nativeElement,
+        'dragstart',
+        true,
+      );
+      fixture.detectChanges();
+
+      expect(draggableEvent.defaultPrevented).toBe(false);
+      expect(handleEvent.defaultPrevented).toBe(true);
     }));
   });
 
