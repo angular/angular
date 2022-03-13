@@ -570,6 +570,16 @@ function createDiv() {
                      ],
                      buildParams({start: 'blue', end: 'red'})))
                  .toThrowError(/Please provide a value for the animation param time/);
+
+             expect(
+                 () => invokeAnimationSequence(
+                     rootElement, [style({color: '{{ color }}'})], buildParams({color: undefined})))
+                 .toThrowError(/Please provide a value for the animation param color/);
+
+             expect(
+                 () => invokeAnimationSequence(
+                     rootElement, [style({color: '{{ color }}'})], buildParams({color: null})))
+                 .toThrowError(/Please provide a value for the animation param color/);
            });
       });
 
