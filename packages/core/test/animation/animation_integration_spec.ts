@@ -2394,6 +2394,42 @@ describe('animation tests', function() {
          expect(hasStyle(element, 'height', '100px')).toBeTruthy();
        }));
 
+    it('should apply default params when resolved animation value is null or undefined', () => {
+      @Component({
+        selector: 'ani-cmp',
+        template: `<div [@myAnimation]="exp"></div>`,
+        animations: [trigger(
+            'myAnimation',
+            [transition(
+                'a => b',
+                [style({opacity: '{{ start }}'}), animate(1000, style({opacity: '{{ end }}'}))],
+                buildParams({start: '0.4', end: '0.7'}))])]
+      })
+      class Cmp {
+        public exp: any;
+      }
+
+      TestBed.configureTestingModule({declarations: [Cmp]});
+
+      const engine = TestBed.inject(ɵAnimationEngine);
+      const fixture = TestBed.createComponent(Cmp);
+      const cmp = fixture.componentInstance;
+
+      cmp.exp = {value: 'a'};
+      fixture.detectChanges();
+      engine.flush();
+      resetLog();
+
+      cmp.exp = {value: 'b', params: {start: undefined, end: null}};
+      fixture.detectChanges();
+      engine.flush();
+      const player = getLog().pop()!;
+      expect(player.keyframes).toEqual([
+        new Map<string, string|number>([['opacity', '0.4'], ['offset', 0]]),
+        new Map<string, string|number>([['opacity', '0.7'], ['offset', 1]])
+      ]);
+    });
+
     it('should not flush animations twice when an inner component runs change detection', () => {
       @Component({
         selector: 'outer-cmp',
