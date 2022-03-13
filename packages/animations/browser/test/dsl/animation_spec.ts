@@ -245,7 +245,8 @@ function createDiv() {
            const steps = [animate(1000, style({display: 'block'}))];
 
            expect(getValidationWarningsForAnimationSequence(steps)).toEqual([
-             'The following provided properties are not animatable: display'
+             'The following provided properties are not animatable: display' +
+             '\n   (see: https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_animated_properties)'
            ]);
          });
 
@@ -266,7 +267,8 @@ function createDiv() {
            ];
 
            expect(getValidationWarningsForAnimationSequence(steps)).toEqual([
-             'The following provided properties are not animatable: display, textAlign, font-family'
+             'The following provided properties are not animatable: display, textAlign, font-family' +
+             '\n   (see: https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_animated_properties)'
            ]);
          });
 
@@ -283,7 +285,8 @@ function createDiv() {
 
            expect(getValidationWarningsForAnimationSequence(steps)).toEqual([
              'The following provided properties are not recognized: abc, xyz',
-             'The following provided properties are not animatable: display, textAlign, font-family'
+             'The following provided properties are not animatable: display, textAlign, font-family' +
+                 '\n   (see: https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_animated_properties)'
            ]);
          });
 

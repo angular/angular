@@ -42,6 +42,8 @@ export function pushUnrecognizedPropertiesWarning(warnings: string[], props: str
 
 export function pushNonAnimatablePropertiesWarning(warnings: string[], props: string[]): void {
   if (props.length) {
-    warnings.push(`The following provided properties are not animatable: ${props.join(', ')}`);
+    warnings.push(`The following provided properties are not animatable: ${
+        props.join(
+            ', ')}\n   (see: https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_animated_properties)`);
   }
 }
