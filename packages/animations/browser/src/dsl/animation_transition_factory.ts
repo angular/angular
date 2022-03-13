@@ -9,7 +9,7 @@ import {AnimationOptions, ɵStyleDataMap} from '@angular/animations';
 
 import {AnimationDriver} from '../render/animation_driver';
 import {getOrSetDefaultValue} from '../render/shared';
-import {copyObj, interpolateParams, iteratorToArray, resolveTimingValue} from '../util';
+import {copyObj, interpolateParams, iteratorToArray} from '../util';
 
 import {StyleAst, TransitionAst} from './animation_ast';
 import {buildAnimationTimelines} from './animation_timeline_builder';
@@ -57,7 +57,7 @@ export class AnimationTransitionFactory {
     const isRemoval = nextState === 'void';
 
     const animationOptions: AnimationOptions = {
-      params: {...transitionAnimationParams, ...nextAnimationParams},
+      params: applyParamDefaults(nextAnimationParams, transitionAnimationParams),
       delay: this.ast.options?.delay,
     };
 
@@ -102,6 +102,18 @@ function oneOrMoreTransitionsMatch(
     matchFns: TransitionMatcherFn[], currentState: any, nextState: any, element: any,
     params: {[key: string]: any}): boolean {
   return matchFns.some(fn => fn(currentState, nextState, element, params));
+}
+
+function applyParamDefaults(userParams: Record<string, any>, defaults: Record<string, any>) {
+  const result: Record<string, any> = copyObj(defaults);
+
+  for (const key in userParams) {
+    if (userParams.hasOwnProperty(key) && userParams[key] != null) {
+      result[key] = userParams[key];
+    }
+  }
+
+  return result;
 }
 
 export class AnimationStateStyles {

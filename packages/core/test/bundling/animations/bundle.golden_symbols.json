@@ -576,6 +576,9 @@
     "name": "applyNodes"
   },
   {
+    "name": "applyParamDefaults"
+  },
+  {
     "name": "applyProjectionRecursive"
   },
   {
