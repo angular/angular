@@ -9,6 +9,7 @@
 import {ViewContainerRef, ComponentFactoryResolver} from '@angular/core';
 import {Direction} from '@angular/cdk/bidi';
 import {ScrollStrategy} from '@angular/cdk/overlay';
+import {defaultParams} from './dialog-animations';
 
 /** Options for where to set focus to automatically on dialog open */
 export type AutoFocusTarget = 'dialog' | 'first-tabbable' | 'first-heading';
@@ -127,10 +128,10 @@ export class MatDialogConfig<D = any> {
   componentFactoryResolver?: ComponentFactoryResolver;
 
   /** Duration of the enter animation. Has to be a valid CSS value (e.g. 100ms). */
-  enterAnimationDuration?: string = '150ms';
+  enterAnimationDuration?: string = defaultParams.params.enterAnimationDuration;
 
   /** Duration of the exit animation. Has to be a valid CSS value (e.g. 50ms). */
-  exitAnimationDuration?: string = '75ms';
+  exitAnimationDuration?: string = defaultParams.params.exitAnimationDuration;
 
   // TODO(jelbourn): add configuration for lifecycle hooks, ARIA labelling.
 }
