@@ -27,14 +27,10 @@ jobs:
         env:
           GCP_DECRYPT_TOKEN: angular
 
-      # Build the web package. Note that we also need to make the Github environment
-      # variables available so that the RBE is configured. Note: We run Bazel from a
-      # low-resource Github action container, so we manually need to instruct Bazel to run
-      # more actions concurrently as by default this is computed based on the host resources.
-      - name: Building dev-app
-        run: |
-          source ${GITHUB_ENV}
-          bazel build //src/dev-app:web_package --symlink_prefix=dist/ --jobs=32
+      # Build the web package. Note: We run Bazel from a low-resource Github action container,
+      # so we manually need to instruct Bazel to run more actions concurrently as by default
+      # the number of concurrent actions is determined based on the host resources.
+      - run: bazel build //src/dev-app:web_package --symlink_prefix=dist/ --jobs=32
 
       # Prepare the workflow artifact that is available for the deploy workflow. We store the pull
       # request number and SHA in a file that can be read by the deploy workflow. This is necessary
