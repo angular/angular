@@ -1,5 +1,4 @@
 import * as fs from 'fs';
-import fetch from 'node-fetch';
 import {dirname} from 'path';
 import {mkdir} from 'shelljs';
 import {promisify} from 'util';
@@ -63,11 +62,7 @@ export class BuildRetriever {
           await new Promise(resolve => fs.exists(outPath, exists => resolve(exists)));
       if (!downloadExists) {
         const url = await this.api.getBuildArtifactUrl(buildNum, artifactPath);
-        const response = await fetch(url, {size: this.downloadSizeLimit});
-        if (response.status !== 200) {
-          throw new PreviewServerError(
-              response.status, `Error ${response.status} - ${response.statusText}`);
-        }
+        const response = await this.api.fetchFromCircleCi(url, {size: this.downloadSizeLimit});
         const buffer = await response.buffer();
         mkdir('-p', dirname(outPath));
         await promisify(fs.writeFile)(outPath, buffer);
