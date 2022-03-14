@@ -675,6 +675,7 @@ describe('MatDateRangeInput', () => {
 
     rangePicker.open();
     fixture.detectChanges();
+    tick();
     flush();
 
     expect(startModel.dirty).toBe(false);

@@ -216,21 +216,44 @@ export class MatCalendarBody implements OnChanges, OnDestroy, AfterViewChecked {
     return cellNumber == this.activeCell;
   }
 
-  /** Focuses the active cell after the microtask queue is empty. */
+  /**
+   * Focuses the active cell after the microtask queue is empty.
+   *
+   * Adding a 0ms setTimeout seems to fix Voiceover losing focus when pressing PageUp/PageDown
+   * (issue #24330).
+   *
+   * Determined a 0ms by gradually increasing duration from 0 and testing two use cases with screen
+   * reader enabled:
+   *
+   * 1. Pressing PageUp/PageDown repeatedly with pausing between each key press.
+   * 2. Pressing and holding the PageDown key with repeated keys enabled.
+   *
+   * Test 1 worked roughly 95-99% of the time with 0ms and got a little bit better as the duration
+   * increased. Test 2 got slightly better until the duration was long enough to interfere with
+   * repeated keys. If the repeated key speed was faster than the timeout duration, then pressing
+   * and holding pagedown caused the entire page to scroll.
+   *
+   * Since repeated key speed can verify across machines, determined that any duration could
+   * potentially interfere with repeated keys. 0ms would be best because it almost entirely
+   * eliminates the focus being lost in Voiceover (#24330) without causing unintended side effects.
+   * Adding delay also complicates writing tests.
+   */
   _focusActiveCell(movePreview = true) {
     this._ngZone.runOutsideAngular(() => {
       this._ngZone.onStable.pipe(take(1)).subscribe(() => {
-        const activeCell: HTMLElement | null = this._elementRef.nativeElement.querySelector(
-          '.mat-calendar-body-active',
-        );
+        setTimeout(() => {
+          const activeCell: HTMLElement | null = this._elementRef.nativeElement.querySelector(
+            '.mat-calendar-body-active',
+          );
 
-        if (activeCell) {
-          if (!movePreview) {
-            this._skipNextFocus = true;
+          if (activeCell) {
+            if (!movePreview) {
+              this._skipNextFocus = true;
+            }
+
+            activeCell.focus();
           }
-
-          activeCell.focus();
-        }
+        });
       });
     });
   }
