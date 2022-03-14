@@ -46,7 +46,6 @@
         ]
       },
       "description": "The components to migrate.",
-      "alias": "c",
       "x-prompt": {
         "message": "What components do you want to migrate?",
         "type": "list",
