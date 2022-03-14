@@ -840,6 +840,26 @@ export type CanDeactivateFn<T> =
  * export class AppModule {}
  * ```
  *
+ * And you can access to your resolved data from `HeroComponent`:
+ *
+ * ```
+ * @Component({
+ *  selector: "app-hero",
+ *  templateUrl: "hero.component.html",
+ * })
+ * export class HeroComponent {
+ *
+ *  constructor(private activatedRoute: ActivatedRoute) {}
+ *
+ *  ngOnInit() {
+ *    this.activatedRoute.data.subscribe(({ hero }) => {
+ *      // do something with your resolved data ...
+ *    })
+ *  }
+ *
+ * }
+ * ```
+ *
  * @usageNotes
  *
  * When both guard and resolvers are specified, the resolvers are not executed until
