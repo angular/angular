@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ButtonRuntimeMigrator} from './components/button/button-runtime';
 import {ButtonStylesMigrator} from './components/button/button-styles';
 import {CardStylesMigrator} from './components/card/card-styles';
 import {CardTemplateMigrator} from './components/card/card-template';
@@ -17,10 +18,11 @@ import {PaginatorStylesMigrator} from './components/paginator/paginator-styles';
 import {ProgressBarStylesMigrator} from './components/progress-bar/progress-bar-styles';
 import {ProgressSpinnerStylesMigrator} from './components/progress-spinner/progress-spinner-styles';
 import {RadioStylesMigrator} from './components/radio/radio-styles';
+import {RuntimeMigrator} from './runtime-migrator';
 import {SlideToggleStylesMigrator} from './components/slide-toggle/slide-toggle-styles';
 import {SliderStylesMigrator} from './components/slider/slider-styles';
-import {TableStylesMigrator} from './components/table/table-styles';
 import {StyleMigrator} from './style-migrator';
+import {TableStylesMigrator} from './components/table/table-styles';
 import {TemplateMigrator} from './template-migrator';
 
 /** Contains the migrators to migrate a single component. */
@@ -28,12 +30,14 @@ export interface ComponentMigrator {
   component: string;
   styles: StyleMigrator;
   template?: TemplateMigrator;
+  runtime?: RuntimeMigrator;
 }
 
 export const MIGRATORS: ComponentMigrator[] = [
   {
     component: 'button',
     styles: new ButtonStylesMigrator(),
+    runtime: new ButtonRuntimeMigrator(),
   },
   {
     component: 'card',

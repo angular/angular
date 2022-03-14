@@ -6,12 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Rule, SchematicContext, Tree} from '@angular-devkit/schematics';
-import {Schema} from './schema';
-import {DevkitFileSystem, UpdateProject, findStylesheetFiles} from '@angular/cdk/schematics';
-import {ThemingStylesMigration} from './rules/theming-styles';
-import {TemplateMigration} from './rules/template-migration';
 import {ComponentMigrator, MIGRATORS} from './rules';
+import {DevkitFileSystem, UpdateProject, findStylesheetFiles} from '@angular/cdk/schematics';
+import {Rule, SchematicContext, Tree} from '@angular-devkit/schematics';
+
+import {RuntimeCodeMigration} from './rules/runtime-migration';
+import {Schema} from './schema';
+import {TemplateMigration} from './rules/template-migration';
+import {ThemingStylesMigration} from './rules/theming-styles';
 import {dirname} from 'path';
 
 /** Groups of components that must be migrated together. */
@@ -78,7 +80,7 @@ export default function (options: Schema): Rule {
     const additionalStylesheetPaths = findStylesheetFiles(tree, migrationDir);
     const project = new UpdateProject(context, program, fileSystem, new Set(), context.logger);
     const {hasFailures} = project.migrate(
-      [ThemingStylesMigration, TemplateMigration],
+      [ThemingStylesMigration, TemplateMigration, RuntimeCodeMigration],
       null,
       migrators,
       additionalStylesheetPaths,

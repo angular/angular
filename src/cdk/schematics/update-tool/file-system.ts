@@ -18,8 +18,8 @@ import {UpdateRecorder} from './update-recorder';
  * like `/package.json` could actually refer to the `package.json` file in `my-project`.
  * Note that in the real file system this would not match though.
  *
- * One wonder why another type has been declared for such paths, when there already
- * is the `Path` type provided by the devkit. We do this for a couple of reasons:
+ * One might wonder why another type has been declared for such paths, when there
+ * already is the `Path` type provided by the devkit. We do this for a couple of reasons:
  *
  *   1. The update-tool cannot have a dependency on the Angular devkit as that one
  *      is not synced into g3. We want to be able to run migrations in g3 if needed.

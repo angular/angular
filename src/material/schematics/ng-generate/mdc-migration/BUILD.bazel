@@ -20,6 +20,7 @@ ts_library(
         "@npm//@types/node",
         "@npm//postcss",
         "@npm//postcss-scss",
+        "@npm//typescript",
     ],
 )
 
@@ -30,6 +31,7 @@ esbuild(
         "@angular/cdk/schematics",
         "@angular-devkit/schematics",
         "@angular-devkit/core",
+        "typescript",
     ],
     format = "cjs",
     output = "index_bundled.js",
