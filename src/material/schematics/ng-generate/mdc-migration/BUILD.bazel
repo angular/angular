@@ -66,6 +66,9 @@ ts_library(
 
 spec_bundle(
     name = "unit_tests_bundle",
+    # Exclude the `node` devkit entry-point to avoid bundling native modules like
+    # `chokidar` and `fsevents`. These rely on native bindings and break with ESBuild.
+    external = ["@angular-devkit/core/node"],
     platform = "node",
     deps = [":unit_tests_lib"],
 )
