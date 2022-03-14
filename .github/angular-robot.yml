@@ -56,7 +56,7 @@ merge:
     requiredStatuses:
       - "ci/circleci: lint"
       - "ci/circleci: bazel_build"
-      - "ci/circleci: tests_local_browsers"
+      - "ci/circleci: tests_browsers"
       - "ci/circleci: tests_browserstack"
       - "ci/circleci: tests_saucelabs"
       - "ci/circleci: build_release_packages"

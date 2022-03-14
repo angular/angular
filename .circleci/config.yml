@@ -7,8 +7,8 @@
 # To validate changes, use an online parser, eg.
 # http://yaml-online-parser.appspot.com/
 
-var_1: &docker_image circleci/node:16.10.0
-var_2: &docker-browser-image circleci/node:16.10.0-browsers
+var_1: &docker_image cimg/node:16.14.0
+var_2: &docker-browser-image cimg/node:16.14.0-browsers
 
 # **Note**: When updating the beginning of the cache key, also update the cache key to match
 # the new cache key prefix. This allows us to take advantage of CircleCI's fallback caching.
@@ -239,10 +239,9 @@ jobs:
       - *slack_notify_on_failure
 
   # ------------------------------------------------------------------------------------------
-  # Job that runs the unit tests on locally installed browsers (Chrome and Firefox headless).
-  # The available browsers are chromium and firefox
+  # Job that runs the unit tests on Bazel-provided browsers (Chrome and Firefox headless).
   # ------------------------------------------------------------------------------------------
-  tests_local_browsers:
+  tests_browsers:
     <<: *job_defaults
     resource_class: xlarge
     environment:
@@ -470,11 +469,10 @@ jobs:
       - *slack_notify_on_failure
 
   # ----------------------------------------------------------------------------
-  # Job that runs the local browser tests against the Angular Github snapshots
+  # Job that runs the browser tests against the Angular Github snapshots
   # ----------------------------------------------------------------------------
-  snapshot_tests_local_browsers:
-    docker:
-      - image: *docker-browser-image
+  snapshot_tests_browsers:
+    <<: *job_defaults
     resource_class: xlarge
     environment:
       GCP_DECRYPT_TOKEN: *gcp_decrypt_token
@@ -494,8 +492,7 @@ jobs:
   # Job that runs all Bazel integration tests.
   # ----------------------------------------------------------------------------
   integration_tests:
-    docker:
-      - image: *docker-browser-image
+    <<: *job_defaults
     resource_class: xlarge
     environment:
       GCP_DECRYPT_TOKEN: *gcp_decrypt_token
@@ -621,7 +618,7 @@ workflows:
           filters: *ignore_presubmit_branch_filter
       - linker_jit_test:
           filters: *ignore_presubmit_branch_filter
-      - tests_local_browsers:
+      - tests_browsers:
           filters: *ignore_presubmit_branch_filter
       - tests_browserstack:
           filters: *ignore_presubmit_branch_filter
@@ -648,7 +645,7 @@ workflows:
           requires:
             - lint
             - build_release_packages
-            - tests_local_browsers
+            - tests_browsers
 
   # Snapshot tests workflow that is scheduled to run all specified jobs every hour.
   # This workflow runs various jobs against the Angular snapshot builds from Github.
@@ -657,7 +654,7 @@ workflows:
       # Note that we need additional jobs for the cronjob snapshot tests because there
       # is no easy way to detect whether a job runs inside of a cronjob or specific
       # workflow. See: https://circleci.com/ideas/?idea=CCI-I-295
-      - snapshot_tests_local_browsers:
+      - snapshot_tests_browsers:
           filters: *only_main_branch_filter
       - mdc_snapshot_test_cronjob:
           filters: *only_main_branch_filter
