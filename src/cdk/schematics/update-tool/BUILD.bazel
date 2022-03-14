@@ -8,9 +8,7 @@ ts_library(
     # Schematics can not yet run in ESM module. For now we continue to use CommonJS.
     # TODO(ESM): remove this once the Angular CLI supports ESM schematics.
     devmode_module = "commonjs",
-    devmode_target = "es2015",
     prodmode_module = "commonjs",
-    prodmode_target = "es2015",
     tsconfig = ":tsconfig.json",
     deps = [
         "@npm//@types/node",

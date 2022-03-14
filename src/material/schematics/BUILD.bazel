@@ -26,9 +26,7 @@ ts_library(
     # Schematics do not need to run in browsers and can use `commonjs`
     # as format instead the default `umd` format.
     devmode_module = "commonjs",
-    devmode_target = "es2015",
     prodmode_module = "commonjs",
-    prodmode_target = "es2015",
     tsconfig = ":tsconfig.json",
     deps = [
         "//src/cdk/schematics",
