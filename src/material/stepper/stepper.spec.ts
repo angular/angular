@@ -1238,6 +1238,19 @@ describe('MatStepper', () => {
       expect(interactedSteps).toEqual([0, 1, 2]);
       subscription.unsubscribe();
     });
+
+    it('should set a class on the host if the header is positioned at the bottom', () => {
+      const fixture = createComponent(SimpleMatHorizontalStepperApp);
+      fixture.detectChanges();
+      const stepperHost = fixture.nativeElement.querySelector('.mat-stepper-horizontal');
+
+      expect(stepperHost.classList).not.toContain('mat-stepper-header-position-bottom');
+
+      fixture.componentInstance.headerPosition = 'bottom';
+      fixture.detectChanges();
+
+      expect(stepperHost.classList).toContain('mat-stepper-header-position-bottom');
+    });
   });
 
   describe('linear stepper with valid step', () => {
@@ -1815,7 +1828,10 @@ class MatHorizontalStepperWithErrorsApp implements OnInit {
 
 @Component({
   template: `
-    <mat-stepper [disableRipple]="disableRipple" [color]="stepperTheme">
+    <mat-stepper
+      [disableRipple]="disableRipple"
+      [color]="stepperTheme"
+      [headerPosition]="headerPosition">
       <mat-step>
         <ng-template matStepLabel>Step 1</ng-template>
         Content 1
@@ -1847,6 +1863,7 @@ class SimpleMatHorizontalStepperApp {
   disableRipple = false;
   stepperTheme: ThemePalette;
   secondStepTheme: ThemePalette;
+  headerPosition: string;
 }
 
 @Component({

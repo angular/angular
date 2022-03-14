@@ -16,6 +16,10 @@
   .mat-stepper-label-position-bottom & {
     align-items: flex-start;
   }
+
+  .mat-stepper-header-position-bottom & {
+    order: 1;
+  }
 }
 
 .mat-stepper-horizontal-line {
@@ -116,6 +120,11 @@
   }
 }
 
+.mat-horizontal-stepper-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
 .mat-horizontal-stepper-content {
   outline: 0;
 
@@ -132,6 +141,10 @@
 
   overflow: hidden;
   padding: 0 stepper-variables.$side-gap stepper-variables.$side-gap stepper-variables.$side-gap;
+
+  .mat-stepper-header-position-bottom & {
+    padding: stepper-variables.$side-gap stepper-variables.$side-gap 0 stepper-variables.$side-gap;
+  }
 }
 
 .mat-vertical-content-container {

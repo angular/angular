@@ -131,6 +131,7 @@ export class MatStep extends CdkStep implements ErrorStateMatcher, AfterContentI
       'orientation === "horizontal" && labelPosition == "end"',
     '[class.mat-stepper-label-position-bottom]':
       'orientation === "horizontal" && labelPosition == "bottom"',
+    '[class.mat-stepper-header-position-bottom]': 'headerPosition === "bottom"',
     '[attr.aria-orientation]': 'orientation',
     'role': 'tablist',
   },
@@ -170,6 +171,13 @@ export class MatStepper extends CdkStepper implements AfterContentInit {
    */
   @Input()
   labelPosition: 'bottom' | 'end' = 'end';
+
+  /**
+   * Position of the stepper's header.
+   * Only applies in the `horizontal` orientation.
+   */
+  @Input()
+  headerPosition: 'top' | 'bottom' = 'top';
 
   /** Consumer-specified template-refs to be used to override the header icons. */
   _iconOverrides: Record<string, TemplateRef<MatStepperIconContext>> = {};

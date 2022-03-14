@@ -33,6 +33,13 @@ This behaviour is controlled by `labelPosition` property.
               "file": "stepper-label-position-bottom-example.html",
               "region": "label-position"}) -->
 
+#### Header position
+If you're using a horizontal stepper, you can control where the stepper's content is positioned
+using the `headerPosition` input. By default it's on top of the content, but it can also be placed
+under it.
+
+<!-- example(stepper-header-position) -->
+
 ### Stepper buttons
 There are two button directives to support navigation between different steps:
 `matStepperPrevious` and `matStepperNext`.

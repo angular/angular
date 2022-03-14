@@ -1,6 +1,6 @@
 <ng-container [ngSwitch]="orientation">
   <!-- Horizontal stepper -->
-  <ng-container *ngSwitchCase="'horizontal'">
+  <div class="mat-horizontal-stepper-wrapper" *ngSwitchCase="'horizontal'">
     <div class="mat-horizontal-stepper-header-container">
       <ng-container *ngFor="let step of steps; let i = index; let isLast = last">
         <ng-container
@@ -21,7 +21,7 @@
         <ng-container [ngTemplateOutlet]="step.content"></ng-container>
       </div>
     </div>
-  </ng-container>
+  </div>
 
   <!-- Vertical stepper -->
   <ng-container *ngSwitchCase="'vertical'">
