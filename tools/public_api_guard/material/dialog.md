@@ -168,6 +168,8 @@ export class MatDialogConfig<D = any> {
     delayFocusTrap?: boolean;
     direction?: Direction;
     disableClose?: boolean;
+    enterAnimationDuration?: string;
+    exitAnimationDuration?: string;
     hasBackdrop?: boolean;
     height?: string;
     id?: string;
@@ -186,6 +188,14 @@ export class MatDialogConfig<D = any> {
 
 // @public
 export class MatDialogContainer extends _MatDialogContainerBase {
+    // (undocumented)
+    _getAnimationState(): {
+        value: "enter" | "void" | "exit";
+        params: {
+            enterAnimationDuration: string;
+            exitAnimationDuration: string;
+        };
+    };
     // (undocumented)
     _initializeWithAttachedContent(): void;
     _onAnimationDone({ toState, totalTime }: AnimationEvent_2): void;

@@ -103,6 +103,17 @@
     </p>
 
     <p>
+      <mat-form-field>
+        <mat-label>Enter duration</mat-label>
+        <input matInput [(ngModel)]="config.enterAnimationDuration">
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Exit duration</mat-label>
+        <input matInput [(ngModel)]="config.exitAnimationDuration">
+      </mat-form-field>
+    </p>
+
+    <p>
       <mat-checkbox [(ngModel)]="config.disableClose">Disable close</mat-checkbox>
     </p>
   </mat-card-content>

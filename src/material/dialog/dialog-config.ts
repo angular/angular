@@ -126,5 +126,11 @@ export class MatDialogConfig<D = any> {
   /** Alternate `ComponentFactoryResolver` to use when resolving the associated component. */
   componentFactoryResolver?: ComponentFactoryResolver;
 
+  /** Duration of the enter animation. Has to be a valid CSS value (e.g. 100ms). */
+  enterAnimationDuration?: string = '150ms';
+
+  /** Duration of the exit animation. Has to be a valid CSS value (e.g. 50ms). */
+  exitAnimationDuration?: string = '75ms';
+
   // TODO(jelbourn): add configuration for lifecycle hooks, ARIA labelling.
 }

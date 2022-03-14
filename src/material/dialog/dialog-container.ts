@@ -312,7 +312,7 @@ export abstract class _MatDialogContainerBase extends BasePortalOutlet {
     '[attr.aria-labelledby]': '_config.ariaLabel ? null : _ariaLabelledBy',
     '[attr.aria-label]': '_config.ariaLabel',
     '[attr.aria-describedby]': '_config.ariaDescribedBy || null',
-    '[@dialogContainer]': '_state',
+    '[@dialogContainer]': `_getAnimationState()`,
     '(@dialogContainer.start)': '_onAnimationStart($event)',
     '(@dialogContainer.done)': '_onAnimationDone($event)',
   },
@@ -359,5 +359,15 @@ export class MatDialogContainer extends _MatDialogContainerBase {
     if (!this._config.delayFocusTrap) {
       this._trapFocus();
     }
+  }
+
+  _getAnimationState() {
+    return {
+      value: this._state,
+      params: {
+        enterAnimationDuration: this._config.enterAnimationDuration || '150ms',
+        exitAnimationDuration: this._config.exitAnimationDuration || '75ms',
+      },
+    };
   }
 }
