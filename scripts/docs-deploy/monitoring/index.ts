@@ -8,13 +8,12 @@ import {installDepsForDocsSite} from '../docs-deps-install';
 import {sites} from '../utils';
 
 /**
- * Runs all audit tests from the given docs repository, ensuring that the
+ * Runs monitoring tests for the given docs repository, ensuring that the
  * specified remote URL is properly functioning.
  */
 export async function runMonitorTests(docsRepoDir: string, remoteUrl: string) {
   cd(docsRepoDir);
 
-  await $`node ./tools/audit-docs-a11y.js ${remoteUrl}`;
   await $`node ./tools/audit-docs.js ${remoteUrl}`;
 }
 
