@@ -292,6 +292,11 @@ export class MyApp {}
 
 It's also possible to set the locale at runtime using the `setLocale` method of the `DateAdapter`.
 
+**Note:** if you're using the `MatDateFnsModule`, you have to provide the data object for your
+locale to `MAT_DATE_LOCALE` instead of the locale code, in addition to providing a configuration
+compatible with `date-fns` to `MAT_DATE_FORMATS`. Locale data for `date-fns` can be imported
+from `date-fns/locale`.
+
 <!-- example(datepicker-locale) -->
 
 #### Choosing a date implementation and date format settings
