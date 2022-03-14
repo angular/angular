@@ -160,7 +160,7 @@ describe('BuildRetriever', () => {
       const artifactRequest = nock(BASE_URL).get(ARTIFACT_PATH).reply(404, 'No such artifact');
 
       await expectAsync(retriever.downloadBuildArtifact(12345, 777, 'COMMIT', ARTIFACT_PATH)).
-        toBeRejectedWithError('CircleCI artifact download failed (Error 404 - Not Found)');
+        toBeRejectedWithError(`CircleCI artifact download failed (${BASE_URL}/some/path/build.zip: 404 - Not Found)`);
 
       artifactRequest.done();
     });
