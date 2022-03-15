@@ -1,6 +1,6 @@
-package(default_visibility = ["//visibility:public"])
-
 load("//tools:defaults.bzl", "ng_module", "ts_devserver")
+
+package(default_visibility = ["//visibility:public"])
 
 ng_module(
     name = "router_activated_route_examples",
@@ -30,4 +30,11 @@ ts_devserver(
         "//packages/zone.js/bundles:zone.umd.js",
     ],
     deps = [":router_activated_route_examples"],
+)
+
+filegroup(
+    name = "files_for_docgen",
+    srcs = glob([
+        "**/*.ts",
+    ]),
 )

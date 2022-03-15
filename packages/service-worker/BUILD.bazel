@@ -63,3 +63,12 @@ api_golden_test_npm_package(
     golden_dir = "angular/goldens/public-api/service-worker",
     npm_package = "angular/packages/service-worker/npm_package",
 )
+
+filegroup(
+    name = "files_for_docgen",
+    srcs = glob([
+        "*.ts",
+        "src/**/*.ts",
+        "PACKAGE.md",
+    ]),
+)
