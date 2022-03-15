@@ -45,7 +45,11 @@ import {takeUntil, distinctUntilChanged, map, startWith, switchMap} from 'rxjs/o
 
 import {MatStepHeader} from './step-header';
 import {MatStepLabel} from './step-label';
-import {matStepperAnimations} from './stepper-animations';
+import {
+  DEFAULT_HORIZONTAL_ANIMATION_DURATION,
+  DEFAULT_VERTICAL_ANIMATION_DURATION,
+  matStepperAnimations,
+} from './stepper-animations';
 import {MatStepperIcon, MatStepperIconContext} from './stepper-icon';
 import {MatStepContent} from './step-content';
 
@@ -185,6 +189,16 @@ export class MatStepper extends CdkStepper implements AfterContentInit {
   /** Stream of animation `done` events when the body expands/collapses. */
   readonly _animationDone = new Subject<AnimationEvent>();
 
+  /** Duration for the animation. Will be normalized to milliseconds if no units are set. */
+  @Input()
+  get animationDuration(): string {
+    return this._animationDuration;
+  }
+  set animationDuration(value: string) {
+    this._animationDuration = /^\d+$/.test(value) ? value + 'ms' : value;
+  }
+  private _animationDuration = '';
+
   constructor(
     @Optional() dir: Directionality,
     changeDetectorRef: ChangeDetectorRef,
@@ -221,5 +235,15 @@ export class MatStepper extends CdkStepper implements AfterContentInit {
 
   _stepIsNavigable(index: number, step: MatStep): boolean {
     return step.completed || this.selectedIndex === index || !this.linear;
+  }
+
+  _getAnimationDuration() {
+    if (this.animationDuration) {
+      return this.animationDuration;
+    }
+
+    return this.orientation === 'horizontal'
+      ? DEFAULT_HORIZONTAL_ANIMATION_DURATION
+      : DEFAULT_VERTICAL_ANIMATION_DURATION;
   }
 }

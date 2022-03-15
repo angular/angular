@@ -18,6 +18,7 @@ import {StepperIntlExample} from './stepper-intl/stepper-intl-example';
 import {StepperLazyContentExample} from './stepper-lazy-content/stepper-lazy-content-example';
 import {StepperResponsiveExample} from './stepper-responsive/stepper-responsive-example';
 import {StepperHeaderPositionExample} from './stepper-header-position/stepper-header-position-example';
+import {StepperAnimationsExample} from './stepper-animations/stepper-animations-example';
 
 export {
   StepperEditableExample,
@@ -32,6 +33,7 @@ export {
   StepperLazyContentExample,
   StepperResponsiveExample,
   StepperHeaderPositionExample,
+  StepperAnimationsExample,
 };
 
 const EXAMPLES = [
@@ -47,6 +49,7 @@ const EXAMPLES = [
   StepperLazyContentExample,
   StepperResponsiveExample,
   StepperHeaderPositionExample,
+  StepperAnimationsExample,
 ];
 
 @NgModule({

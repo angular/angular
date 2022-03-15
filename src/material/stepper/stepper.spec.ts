@@ -449,6 +449,15 @@ describe('MatStepper', () => {
       const icon = fixture.nativeElement.querySelector('.mat-step-icon span');
       expect(icon.getAttribute('aria-hidden')).toBe('true');
     });
+
+    it('should add units to unit-less values passed in to animationDuration', () => {
+      const stepperComponent: MatStepper = fixture.debugElement.query(
+        By.directive(MatStepper),
+      )!.componentInstance;
+
+      stepperComponent.animationDuration = '1337';
+      expect(stepperComponent.animationDuration).toBe('1337ms');
+    });
   });
 
   describe('basic stepper when attempting to set the selected step too early', () => {

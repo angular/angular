@@ -130,8 +130,12 @@ export class MatStepper extends CdkStepper implements AfterContentInit {
     constructor(dir: Directionality, changeDetectorRef: ChangeDetectorRef, elementRef: ElementRef<HTMLElement>);
     readonly animationDone: EventEmitter<void>;
     readonly _animationDone: Subject<AnimationEvent_2>;
+    get animationDuration(): string;
+    set animationDuration(value: string);
     color: ThemePalette;
     disableRipple: boolean;
+    // (undocumented)
+    _getAnimationDuration(): string;
     headerPosition: 'top' | 'bottom';
     _iconOverrides: Record<string, TemplateRef<MatStepperIconContext>>;
     _icons: QueryList<MatStepperIcon>;
@@ -144,7 +148,7 @@ export class MatStepper extends CdkStepper implements AfterContentInit {
     readonly steps: QueryList<MatStep>;
     _steps: QueryList<MatStep>;
     // (undocumented)
-    static ɵcmp: i0.ɵɵComponentDeclaration<MatStepper, "mat-stepper, mat-vertical-stepper, mat-horizontal-stepper, [matStepper]", ["matStepper", "matVerticalStepper", "matHorizontalStepper"], { "selectedIndex": "selectedIndex"; "disableRipple": "disableRipple"; "color": "color"; "labelPosition": "labelPosition"; "headerPosition": "headerPosition"; }, { "animationDone": "animationDone"; }, ["_steps", "_icons"], never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MatStepper, "mat-stepper, mat-vertical-stepper, mat-horizontal-stepper, [matStepper]", ["matStepper", "matVerticalStepper", "matHorizontalStepper"], { "selectedIndex": "selectedIndex"; "disableRipple": "disableRipple"; "color": "color"; "labelPosition": "labelPosition"; "headerPosition": "headerPosition"; "animationDuration": "animationDuration"; }, { "animationDone": "animationDone"; }, ["_steps", "_icons"], never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatStepper, [{ optional: true; }, null, null]>;
 }

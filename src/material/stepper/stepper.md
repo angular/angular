@@ -137,6 +137,12 @@ by placing a `matStepperIcon` for each of the icons that you want to override. T
 
 Note that you aren't limited to using the `mat-icon` component when providing custom icons.
 
+### Controlling the stepper animation
+You can control the duration of the stepper's animation using the `animationDuration` input. If you
+want to disable the animation completely, you can do so by setting the properties to `0ms`.
+
+<!-- example(stepper-animations) -->
+
 #### Step States
 You can set the state of a step to whatever you want. The given state by default maps to an icon.
 However, it can be overridden the same way as mentioned above.

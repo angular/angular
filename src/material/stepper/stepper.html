@@ -13,7 +13,10 @@
     <div class="mat-horizontal-content-container">
       <div *ngFor="let step of steps; let i = index"
            class="mat-horizontal-stepper-content" role="tabpanel"
-           [@horizontalStepTransition]="_getAnimationDirection(i)"
+           [@horizontalStepTransition]="{
+              'value': _getAnimationDirection(i),
+              'params': {'animationDuration': _getAnimationDuration()}
+            }"
            (@horizontalStepTransition.done)="_animationDone.next($event)"
            [id]="_getStepContentId(i)"
            [attr.aria-labelledby]="_getStepLabelId(i)"
@@ -31,7 +34,10 @@
         [ngTemplateOutletContext]="{step: step, i: i}"></ng-container>
       <div class="mat-vertical-content-container" [class.mat-stepper-vertical-line]="!isLast">
         <div class="mat-vertical-stepper-content" role="tabpanel"
-             [@verticalStepTransition]="_getAnimationDirection(i)"
+             [@verticalStepTransition]="{
+                'value': _getAnimationDirection(i),
+                'params': {'animationDuration': _getAnimationDuration()}
+              }"
              (@verticalStepTransition.done)="_animationDone.next($event)"
              [id]="_getStepContentId(i)"
              [attr.aria-labelledby]="_getStepLabelId(i)"
