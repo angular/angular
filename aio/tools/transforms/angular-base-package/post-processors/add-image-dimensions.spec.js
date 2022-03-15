@@ -11,7 +11,7 @@ describe('addImageDimensions post-processor', () => {
     const injector = dgeni.configureInjector();
     log = injector.get('log');
     addImageDimensions = injector.get('addImageDimensions');
-    addImageDimensions.basePath = 'base/path';
+    addImageDimensions.basePaths = ['base/path'];
     getImageDimensionsSpy = injector.get('getImageDimensions');
     processor = injector.get('postProcessHtml');
     processor.docTypes = ['a'];
@@ -30,8 +30,8 @@ describe('addImageDimensions post-processor', () => {
       `
     }];
     processor.$process(docs);
-    expect(getImageDimensionsSpy).toHaveBeenCalledWith('base/path', 'a/b.jpg');
-    expect(getImageDimensionsSpy).toHaveBeenCalledWith('base/path', 'c/d.png');
+    expect(getImageDimensionsSpy).toHaveBeenCalledWith(['base/path'], 'a/b.jpg');
+    expect(getImageDimensionsSpy).toHaveBeenCalledWith(['base/path'], 'c/d.png');
     expect(docs).toEqual([jasmine.objectContaining({
       docType: 'a',
       renderedContent: `
@@ -69,7 +69,7 @@ describe('addImageDimensions post-processor', () => {
       renderedContent: '<img src="missing">'
     }];
     expect(() => processor.$process(docs)).toThrowError('Unable to load src in image tag `<img src="missing">` - doc (a) ');
-    expect(getImageDimensionsSpy).toHaveBeenCalledWith('base/path', 'missing');
+    expect(getImageDimensionsSpy).toHaveBeenCalledWith(['base/path'], 'missing');
   });
 
   it('should ignore images with width or height attributes', () => {
@@ -99,6 +99,6 @@ describe('addImageDimensions post-processor', () => {
     };
     // eslint-disable-next-line jasmine/no-unsafe-spy
     return jasmine.createSpy('getImageDimensions')
-      .and.callFake((base, url) => imageInfo[url]);
+      .and.callFake((basePaths, url) => imageInfo[url]);
   }
 });
