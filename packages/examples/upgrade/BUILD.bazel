@@ -1,3 +1,5 @@
+package(default_visibility = ["//visibility:public"])
+
 exports_files([
     "tsconfig-build.json",
     "start-server.js",
