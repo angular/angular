@@ -1,8 +1,9 @@
 <table class="mat-calendar-table" role="grid">
   <thead class="mat-calendar-table-header">
     <tr>
-      <th scope="col" *ngFor="let day of _weekdays" [attr.aria-label]="day.long">
-        {{day.narrow}}
+      <th scope="col" *ngFor="let day of _weekdays">
+        <span class="cdk-visually-hidden">{{day.long}}</span>
+        <span aria-hidden="true">{{day.narrow}}</span>
       </th>
     </tr>
     <tr><th aria-hidden="true" class="mat-calendar-table-header-divider" colspan="7"></th></tr>
