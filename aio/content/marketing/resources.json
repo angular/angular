@@ -536,6 +536,11 @@
             "rev": true,
             "title": "PO UI",
             "url": "https://po-ui.io"
+          },
+          "ngx-gantt": {
+            "desc": "A modern and powerful gantt chart component for Angular",
+            "title": "Angular Gantt Chart Component",
+            "url": "https://github.com/worktile/ngx-gantt"
           }
         }
       }
