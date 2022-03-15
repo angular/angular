@@ -84,3 +84,10 @@ jasmine_node_test(
         "//packages/examples/core/di/ts/forward_ref:forward_ref_tests_lib",
     ],
 )
+
+filegroup(
+    name = "files_for_docgen",
+    srcs = glob([
+        "**/*.ts",
+    ]),
+)
