@@ -27,7 +27,7 @@ module.exports = function addImageDimensions(getImageDimensions) {
         }
 
         try {
-          const dimensions = getImageDimensions(addImageDimensionsImpl.basePath, src);
+          const dimensions = getImageDimensions(addImageDimensionsImpl.basePaths, src);
           if (props.width === undefined && props.height === undefined) {
             props.width = '' + dimensions.width;
             props.height = '' + dimensions.height;

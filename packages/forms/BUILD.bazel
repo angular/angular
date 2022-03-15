@@ -55,3 +55,12 @@ api_golden_test(
     entry_point = "angular/packages/forms/src/errors.d.ts",
     golden = "angular/goldens/public-api/forms/errors.md",
 )
+
+filegroup(
+    name = "files_for_docgen",
+    srcs = glob([
+        "*.ts",
+        "src/**/*.ts",
+        "PACKAGE.md",
+    ]),
+)
