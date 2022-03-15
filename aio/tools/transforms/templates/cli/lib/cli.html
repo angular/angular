@@ -90,7 +90,7 @@
 {% if container.subcommands.length %}
 <h2><a id="{$ container.name $}-commands"></a>{$ container.name | title $} commands</h2>
 {% for subcommand in container.subcommands %}
-<h3><code class="no-auto-link"><a id="{$ subcommand.name $}-command"></a>{$ subcommand.name $}</code></h3>
+<h3><a id="{$ subcommand.name $}-command"></a>{$ subcommand.name $}</h3>
 {$ renderSyntax(subcommand, name) $}
 {$ subcommand.shortDescription | marked $}
 {# for now we assume that commands do not have further sub-commands #}
