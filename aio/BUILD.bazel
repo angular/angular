@@ -114,3 +114,48 @@ architect_test(
     configuration_env_vars = ["NG_BUILD_CACHE"],
     data = TEST_FILES + TEST_DEPS,
 )
+
+# External deps required by dgeni transforms
+DGENI_DEPS = [
+    "@aio_npm//css-selector-parser",
+    "@aio_npm//dgeni-packages",
+    "@aio_npm//entities",
+    "@aio_npm//fs-extra",
+    "@aio_npm//hast-util-is-element",
+    "@aio_npm//hast-util-to-string",
+    "@aio_npm//ignore",
+    "@aio_npm//image-size",
+    "@aio_npm//json5",
+    "@aio_npm//rehype-slug",
+    "@aio_npm//remark",
+    "@aio_npm//remark-html",
+    "@aio_npm//rxjs",
+    "@aio_npm//semver",
+    "@aio_npm//stemmer",
+    "@aio_npm//unist-util-filter",
+    "@aio_npm//unist-util-source",
+]
+
+# All transforms and sources needed by dgeni to produce docs
+DGENI_FILES = glob([
+    "content/**",
+    "src/assets/**",
+    "tools/transforms/**",
+]) + [
+    "@angular_cli_src//:files_for_docgen",  # Downloaded cli snapshot (see WORKSPACE)
+    "//:package.json",
+    "//packages:files_for_docgen",
+]
+
+# Run dgeni generation
+npm_package_bin(
+    name = "dgeni",
+    args = ["./aio/tools/transforms/angular.io-package"],
+    configuration_env_vars = ["PATH"],  # Need PATH for dgeni package that invokes git
+    data = DGENI_FILES + DGENI_DEPS,
+    env = {
+        "BAZEL_DGENI_OUTPUT_PATH": "$(@D)",
+    },
+    output_dir = True,
+    tool = "@aio_npm//dgeni/bin:dgeni",
+)

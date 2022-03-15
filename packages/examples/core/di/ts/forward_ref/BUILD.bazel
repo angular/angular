@@ -1,5 +1,7 @@
 load("//tools:defaults.bzl", "ng_module")
 
+package(default_visibility = ["//visibility:public"])
+
 # Note: The `forward_ref` example tests are built through this `ng_module` sub-target.
 # This is done so that DI decorator/type metadata is processed manually by the compiler
 # ahead of time. We cannot rely on the official TypeScript decorator downlevel emit (for JIT),
@@ -12,4 +14,9 @@ ng_module(
     srcs = ["forward_ref_spec.ts"],
     visibility = ["//packages/examples/core:__pkg__"],
     deps = ["//packages/core"],
+)
+
+filegroup(
+    name = "files_for_docgen",
+    srcs = glob(["*.ts"]),
 )

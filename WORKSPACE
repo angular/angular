@@ -46,9 +46,35 @@ http_archive(
 # Fetch Aspect lib for utilities like write_source_files
 http_archive(
     name = "aspect_bazel_lib",
-    sha256 = "5f5f1237601d41d61608ad0b9541614935839232940010f9e62163c3e53dc1b7",
-    strip_prefix = "bazel-lib-0.5.0",
-    url = "https://github.com/aspect-build/bazel-lib/archive/refs/tags/v0.5.0.tar.gz",
+    sha256 = "4f018d3c685174115188ffb778fca10a3f43f82bbbf0aa63361c1cd02f708dbb",
+    strip_prefix = "bazel-lib-0.5.3",
+    url = "https://github.com/aspect-build/bazel-lib/archive/refs/tags/v0.5.3.tar.gz",
+)
+
+# Download cli source from angular/cli-builds for doc generation at a specific tag or commit.
+# If the ref is a commit sha, use the full sha instead of the abbreviated form. Tags, which
+# hold an abbreviated sha by convention in cli-builds, can continue to use the short form.
+CLI_SRC_REF = "c0a0bfb65df2cb2302131775517aa77c5c3161b9"
+
+http_archive(
+    name = "angular_cli_src",
+    build_file_content = """
+# Include files used in doc generation
+filegroup(
+    name = "files_for_docgen",
+    srcs = glob([
+        "help/**/*.json",
+        "package.json",
+    ]),
+    visibility = ["//visibility:public"],
+)
+""",
+    # Run the following command to calculate the sha256, substituting the CLI_SRC_REF
+    # wget -O- -q https://github.com/angular/cli-builds/archive/{CLI_SRC_REF}.tar.gz | sha256sum
+    # Alternatively, just remove the parameter and bazel debug will output the sha as a suggestion.
+    sha256 = "2b18180cc26e76c94a6087027364b85fdede7e542985e0b77e895baabb33ae8c",
+    strip_prefix = "cli-builds-%s" % CLI_SRC_REF,
+    url = "https://github.com/angular/cli-builds/archive/%s.tar.gz" % CLI_SRC_REF,
 )
 
 # Setup the Node.js toolchain.
