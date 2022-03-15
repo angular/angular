@@ -4,8 +4,8 @@ const Package = require('dgeni').Package;
 const basePackage = require('../angular-base-package');
 const contentPackage = require('../content-package');
 const {CONTENTS_PATH, TEMPLATES_PATH, requireFolder} = require('../config');
-const CLI_SOURCE_ROOT = resolve(CONTENTS_PATH, 'cli-src');
-const CLI_SOURCE_PATH = resolve(CLI_SOURCE_ROOT, 'node_modules/@angular/cli');
+
+const CLI_SOURCE_PATH = resolve('external/angular_cli_src');
 const CLI_SOURCE_HELP_PATH = resolve(CLI_SOURCE_PATH, 'help');
 
 // Define the dgeni package for generating the docs
