@@ -84,20 +84,20 @@ describe('MenuStack', () => {
         <button cdkMenuItem [cdkMenuTriggerFor]="file">File</button>
       </div>
 
-      <ng-template cdkMenuPanel #file="cdkMenuPanel">
-        <div cdkMenu id="file_menu" [cdkMenuPanel]="file">
+      <ng-template #file>
+        <div cdkMenu id="file_menu">
           <button cdkMenuItem [cdkMenuTriggerFor]="share">Share</button>
         </div>
       </ng-template>
 
-      <ng-template cdkMenuPanel #share="cdkMenuPanel">
-        <div cdkMenu id="share_menu" [cdkMenuPanel]="share">
+      <ng-template #share>
+        <div cdkMenu id="share_menu">
           <button cdkMenuItem [cdkMenuTriggerFor]="chat">Chat</button>
         </div>
       </ng-template>
 
-      <ng-template cdkMenuPanel #chat="cdkMenuPanel">
-        <div cdkMenu id="chat_menu" [cdkMenuPanel]="chat">
+      <ng-template #chat>
+        <div cdkMenu id="chat_menu">
           <button cdkMenuItem>GVC</button>
         </div>
       </ng-template>

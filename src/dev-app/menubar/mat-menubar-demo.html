@@ -4,23 +4,23 @@
   <mat-menubar-item [cdkMenuTriggerFor]="view">View</mat-menubar-item>
 </mat-menubar>
 
-<ng-template cdkMenuPanel #file="cdkMenuPanel">
-  <demo-menu [cdkMenuPanel]="file">
+<ng-template #file>
+  <demo-menu>
     <demo-menu-item>Share</demo-menu-item>
     <demo-menu-item>Open</demo-menu-item>
     <demo-menu-item>Make a Copy</demo-menu-item>
   </demo-menu>
 </ng-template>
 
-<ng-template cdkMenuPanel #edit="cdkMenuPanel">
-  <demo-menu [cdkMenuPanel]="edit">
+<ng-template #edit>
+  <demo-menu>
     <demo-menu-item>Undo</demo-menu-item>
     <demo-menu-item>Redo</demo-menu-item>
   </demo-menu>
 </ng-template>
 
-<ng-template cdkMenuPanel #view="cdkMenuPanel">
-  <demo-menu [cdkMenuPanel]="view">
+<ng-template #view>
+  <demo-menu>
     <demo-menu-item>Show Ruler</demo-menu-item>
     <demo-menu-item>Show Document Outline</demo-menu-item>
   </demo-menu>

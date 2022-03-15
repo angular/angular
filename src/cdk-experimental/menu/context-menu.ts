@@ -12,10 +12,12 @@ import {
   Inject,
   Injectable,
   InjectionToken,
+  Injector,
   Input,
   OnDestroy,
   Optional,
   Output,
+  TemplateRef,
   ViewContainerRef,
 } from '@angular/core';
 import {Directionality} from '@angular/cdk/bidi';
@@ -30,10 +32,9 @@ import {Portal, TemplatePortal} from '@angular/cdk/portal';
 import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
 import {merge, partition, Subject} from 'rxjs';
 import {skip, takeUntil} from 'rxjs/operators';
-import {CdkMenuPanel} from './menu-panel';
-import {MenuStack} from './menu-stack';
-import {throwExistingMenuStackError} from './menu-errors';
+import {MENU_STACK, MenuStack} from './menu-stack';
 import {isClickInsideMenuOverlay} from './menu-item-trigger';
+import {MENU_TRIGGER, MenuTrigger} from './menu-trigger';
 
 /** Tracks the last open context menu trigger across the entire application. */
 @Injectable({providedIn: 'root'})
@@ -85,26 +86,14 @@ export type ContextMenuCoordinates = {x: number; y: number};
     // In cases where the first menu item in the context menu is a trigger the submenu opens on a
     // hover event. Offsetting the opened context menu by 2px prevents this from occurring.
     {provide: CDK_CONTEXT_MENU_DEFAULT_OPTIONS, useValue: {offsetX: 2, offsetY: 2}},
+    {provide: MENU_TRIGGER, useExisting: CdkContextMenuTrigger},
+    {provide: MENU_STACK, useClass: MenuStack},
   ],
 })
-export class CdkContextMenuTrigger implements OnDestroy {
+export class CdkContextMenuTrigger extends MenuTrigger implements OnDestroy {
   /** Template reference variable to the menu to open on right click. */
   @Input('cdkContextMenuTriggerFor')
-  get menuPanel(): CdkMenuPanel {
-    return this._menuPanel;
-  }
-  set menuPanel(panel: CdkMenuPanel) {
-    if ((typeof ngDevMode === 'undefined' || ngDevMode) && panel._menuStack) {
-      throwExistingMenuStackError();
-    }
-    this._menuPanel = panel;
-
-    if (this._menuPanel) {
-      this._menuPanel._menuStack = this._menuStack;
-    }
-  }
-  /** Reference to the MenuPanel this trigger toggles. */
-  private _menuPanel: CdkMenuPanel;
+  private _menuTemplateRef: TemplateRef<unknown>;
 
   /** Emits when the attached menu is requested to open. */
   @Output('cdkContextMenuOpened') readonly opened: EventEmitter<void> = new EventEmitter();
@@ -126,24 +115,24 @@ export class CdkContextMenuTrigger implements OnDestroy {
   private _overlayRef: OverlayRef | null = null;
 
   /** The content of the menu panel opened by this trigger. */
-  private _panelContent: TemplatePortal;
+  private _menuPortal: TemplatePortal;
 
   /** Emits when the element is destroyed. */
   private readonly _destroyed = new Subject<void>();
-
-  /** The menu stack for this trigger and its associated menus. */
-  private readonly _menuStack = new MenuStack();
 
   /** Emits when the outside pointer events listener on the overlay should be stopped. */
   private readonly _stopOutsideClicksListener = merge(this.closed, this._destroyed);
 
   constructor(
+    injector: Injector,
     protected readonly _viewContainerRef: ViewContainerRef,
     private readonly _overlay: Overlay,
     private readonly _contextMenuTracker: ContextMenuTracker,
+    @Inject(MENU_STACK) menuStack: MenuStack,
     @Inject(CDK_CONTEXT_MENU_DEFAULT_OPTIONS) private readonly _options: ContextMenuOptions,
     @Optional() private readonly _directionality?: Directionality,
   ) {
+    super(injector, menuStack);
     this._setMenuStackListener();
   }
 
@@ -161,7 +150,7 @@ export class CdkContextMenuTrigger implements OnDestroy {
     } else if (this.isOpen()) {
       // since we're moving this menu we need to close any submenus first otherwise they end up
       // disconnected from this one.
-      this._menuStack.closeSubMenuOf(this._menuPanel._menu!);
+      this.menuStack.closeSubMenuOf(this.childMenu!);
 
       (
         this._overlayRef!.getConfig().positionStrategy as FlexibleConnectedPositionStrategy
@@ -186,7 +175,7 @@ export class CdkContextMenuTrigger implements OnDestroy {
 
   /** Close the opened menu. */
   close() {
-    this._menuStack.closeAll();
+    this.menuStack.closeAll();
   }
 
   /**
@@ -208,11 +197,11 @@ export class CdkContextMenuTrigger implements OnDestroy {
 
       // A context menu can be triggered via a mouse right click or a keyboard shortcut.
       if (event.button === 2) {
-        this._menuPanel._menu?.focusFirstItem('mouse');
+        this.childMenu?.focusFirstItem('mouse');
       } else if (event.button === 0) {
-        this._menuPanel._menu?.focusFirstItem('keyboard');
+        this.childMenu?.focusFirstItem('keyboard');
       } else {
-        this._menuPanel._menu?.focusFirstItem('program');
+        this.childMenu?.focusFirstItem('program');
       }
     }
   }
@@ -267,18 +256,23 @@ export class CdkContextMenuTrigger implements OnDestroy {
    * content to change dynamically and be reflected in the application.
    */
   private _getMenuContent(): Portal<unknown> {
-    const hasMenuContentChanged = this.menuPanel._templateRef !== this._panelContent?.templateRef;
-    if (this.menuPanel && (!this._panelContent || hasMenuContentChanged)) {
-      this._panelContent = new TemplatePortal(this.menuPanel._templateRef, this._viewContainerRef);
+    const hasMenuContentChanged = this._menuTemplateRef !== this._menuPortal?.templateRef;
+    if (this._menuTemplateRef && (!this._menuPortal || hasMenuContentChanged)) {
+      this._menuPortal = new TemplatePortal(
+        this._menuTemplateRef,
+        this._viewContainerRef,
+        undefined,
+        this.getChildMenuInjector(),
+      );
     }
 
-    return this._panelContent;
+    return this._menuPortal;
   }
 
   /** Subscribe to the menu stack close events and close this menu when requested. */
   private _setMenuStackListener() {
-    this._menuStack.closed.pipe(takeUntil(this._destroyed)).subscribe(item => {
-      if (item === this._menuPanel._menu && this.isOpen()) {
+    this.menuStack.closed.pipe(takeUntil(this._destroyed)).subscribe(item => {
+      if (item === this.childMenu && this.isOpen()) {
         this.closed.next();
         this._overlayRef!.detach();
       }
@@ -300,7 +294,7 @@ export class CdkContextMenuTrigger implements OnDestroy {
       }
       outsideClicks.pipe(takeUntil(this._stopOutsideClicksListener)).subscribe(event => {
         if (!isClickInsideMenuOverlay(event.target as Element)) {
-          this._menuStack.closeAll();
+          this.menuStack.closeAll();
         }
       });
     }
@@ -308,7 +302,6 @@ export class CdkContextMenuTrigger implements OnDestroy {
 
   ngOnDestroy() {
     this._destroyOverlay();
-    this._resetPanelMenuStack();
 
     this._destroyed.next();
     this._destroyed.complete();
@@ -319,19 +312,6 @@ export class CdkContextMenuTrigger implements OnDestroy {
     if (this._overlayRef) {
       this._overlayRef.dispose();
       this._overlayRef = null;
-    }
-  }
-
-  /** Set the menu panels menu stack back to null. */
-  private _resetPanelMenuStack() {
-    // If a ContextMenuTrigger is placed in a conditionally rendered view, each time the trigger is
-    // rendered the panel setter for ContextMenuTrigger is called. From the first render onward,
-    // the attached CdkMenuPanel has the MenuStack set. Since we throw an error if a panel already
-    // has a stack set, we want to reset the attached stack here to prevent the error from being
-    // thrown if the trigger re-configures its attached panel (in the case where there is a 1:1
-    // relationship between the panel and trigger).
-    if (this._menuPanel) {
-      this._menuPanel._menuStack = null;
     }
   }
 }

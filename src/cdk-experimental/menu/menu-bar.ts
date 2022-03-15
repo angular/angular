@@ -27,7 +27,7 @@ import {Subject, merge} from 'rxjs';
 import {CdkMenuGroup} from './menu-group';
 import {CDK_MENU, Menu} from './menu-interface';
 import {CdkMenuItem} from './menu-item';
-import {MenuStack, MenuStackItem, FocusNext} from './menu-stack';
+import {MenuStack, MenuStackItem, FocusNext, MENU_STACK} from './menu-stack';
 import {PointerFocusTracker} from './pointer-focus-tracker';
 import {MenuAim, MENU_AIM} from './menu-aim';
 
@@ -51,7 +51,7 @@ import {MenuAim, MENU_AIM} from './menu-aim';
   providers: [
     {provide: CdkMenuGroup, useExisting: CdkMenuBar},
     {provide: CDK_MENU, useExisting: CdkMenuBar},
-    {provide: MenuStack, useClass: MenuStack},
+    {provide: MENU_STACK, useClass: MenuStack},
   ],
 })
 export class CdkMenuBar extends CdkMenuGroup implements Menu, AfterContentInit, OnDestroy {
@@ -78,9 +78,9 @@ export class CdkMenuBar extends CdkMenuGroup implements Menu, AfterContentInit, 
   private _openItem?: CdkMenuItem;
 
   constructor(
-    readonly _menuStack: MenuStack,
     private readonly _ngZone: NgZone,
     readonly _elementRef: ElementRef<HTMLElement>,
+    @Inject(MENU_STACK) readonly _menuStack: MenuStack,
     @Self() @Optional() @Inject(MENU_AIM) private readonly _menuAim?: MenuAim,
     @Optional() private readonly _dir?: Directionality,
   ) {

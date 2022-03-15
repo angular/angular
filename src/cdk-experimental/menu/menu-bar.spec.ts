@@ -1191,23 +1191,23 @@ class MenuBarRadioGroup {}
         <button cdkMenuItem [cdkMenuTriggerFor]="edit">Edit</button>
       </div>
 
-      <ng-template cdkMenuPanel #file="cdkMenuPanel">
-        <div cdkMenu id="file_menu" [cdkMenuPanel]="file">
+      <ng-template #file>
+        <div cdkMenu id="file_menu">
           <button cdkMenuItem>Save</button>
           <button cdkMenuItem [cdkMenuTriggerFor]="share">Share</button>
           <button cdkMenuItem>Open</button>
         </div>
       </ng-template>
 
-      <ng-template cdkMenuPanel #share="cdkMenuPanel">
-        <div cdkMenu id="share_menu" [cdkMenuPanel]="share">
+      <ng-template #share>
+        <div cdkMenu id="share_menu">
           <button (cdkMenuItemTriggered)="clickEmitter.next()" cdkMenuItem>Email</button>
           <button cdkMenuItem>Chat</button>
         </div>
       </ng-template>
 
-      <ng-template cdkMenuPanel #edit="cdkMenuPanel">
-        <div cdkMenu id="edit_menu" [cdkMenuPanel]="edit">
+      <ng-template #edit>
+        <div cdkMenu id="edit_menu">
           <button cdkMenuItem>Undo</button>
           <button cdkMenuItem>Redo</button>
         </div>
@@ -1231,8 +1231,8 @@ class MultiMenuWithSubmenu {
         <button cdkMenuItem [cdkMenuTriggerFor]="font">Font size</button>
       </div>
 
-      <ng-template cdkMenuPanel #font="cdkMenuPanel">
-        <div cdkMenu id="font_menu" [cdkMenuPanel]="font">
+      <ng-template #font>
+        <div cdkMenu id="font_menu">
           <button cdkMenuItemCheckbox>Small</button>
           <button cdkMenuItemCheckbox>Large</button>
         </div>
@@ -1257,8 +1257,8 @@ class MenuWithCheckboxes {
         <button cdkMenuItem [cdkMenuTriggerFor]="text">Text</button>
       </div>
 
-      <ng-template cdkMenuPanel #text="cdkMenuPanel">
-        <div cdkMenu id="text_menu" [cdkMenuPanel]="text">
+      <ng-template #text>
+        <div cdkMenu id="text_menu">
           <button cdkMenuItemRadio>Bold</button>
           <button cdkMenuItemRadio>Italic</button>
         </div>
@@ -1283,8 +1283,8 @@ class MenuWithRadioButtons {
         <button cdkMenuItem [cdkMenuTriggerFor]="sub1">Trigger</button>
       </div>
 
-      <ng-template cdkMenuPanel #sub1="cdkMenuPanel">
-        <div cdkMenu [cdkMenuPanel]="sub1">
+      <ng-template #sub1>
+        <div cdkMenu>
           <div cdkMenuGroup>
             <button cdkMenuItemCheckbox>Trigger</button>
             <span id="inner-element">A nested non-menuitem element</span>

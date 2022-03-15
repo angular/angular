@@ -7,17 +7,6 @@
  */
 
 /**
- * Throws an exception when a menu panel already has a menu stack.
- * @docs-private
- */
-export function throwExistingMenuStackError() {
-  throw Error(
-    'CdkMenuPanel is already referenced by different CdkMenuTrigger. Ensure that a menu is' +
-      ' opened by a single trigger only.',
-  );
-}
-
-/**
  * Throws an exception when an instance of the PointerFocusTracker is not provided.
  * @docs-private
  */

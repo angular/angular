@@ -10,7 +10,6 @@ import {NgModule} from '@angular/core';
 import {OverlayModule} from '@angular/cdk/overlay';
 import {CdkMenu} from './menu';
 import {CdkMenuBar} from './menu-bar';
-import {CdkMenuPanel} from './menu-panel';
 import {CdkMenuItem} from './menu-item';
 import {CdkMenuGroup} from './menu-group';
 import {CdkMenuItemRadio} from './menu-item-radio';
@@ -22,7 +21,6 @@ import {CdkTargetMenuAim} from './menu-aim';
 const EXPORTED_DECLARATIONS = [
   CdkMenuBar,
   CdkMenu,
-  CdkMenuPanel,
   CdkMenuItem,
   CdkMenuItemRadio,
   CdkMenuItemCheckbox,

@@ -4,8 +4,8 @@
   <button class="example-menu-bar-item" cdkMenuItem [cdkMenuTriggerFor]="format">Format</button>
 </div>
 
-<ng-template cdkMenuPanel #file="cdkMenuPanel">
-  <div class="example-menu" cdkMenu [cdkMenuPanel]="file">
+<ng-template #file>
+  <div class="example-menu" cdkMenu>
     <button class="example-menu-item" cdkMenuItem>Share</button>
     <hr />
     <button class="example-menu-item" cdkMenuItem [cdkMenuTriggerFor]="new">
@@ -20,8 +20,8 @@
   </div>
 </ng-template>
 
-<ng-template #edit="cdkMenuPanel" cdkMenuPanel>
-  <div class="example-menu" cdkMenu [cdkMenuPanel]="edit">
+<ng-template #edit>
+  <div class="example-menu" cdkMenu>
     <button class="example-menu-item" cdkMenuItem>Undo</button>
     <button class="example-menu-item" cdkMenuItem>Redo</button>
     <hr />
@@ -31,8 +31,8 @@
   </div>
 </ng-template>
 
-<ng-template #format="cdkMenuPanel" cdkMenuPanel>
-  <div class="example-menu" cdkMenu [cdkMenuPanel]="format">
+<ng-template #format >
+  <div class="example-menu" cdkMenu>
     <div class="example-menu-group" cdkMenuGroup>
       <button class="example-menu-item" checked id="bf" cdkMenuItemCheckbox>Bold</button>
       <button class="example-menu-item" id="if" cdkMenuItemCheckbox>Italic</button>
@@ -46,8 +46,8 @@
   </div>
 </ng-template>
 
-<ng-template #new="cdkMenuPanel" cdkMenuPanel>
-  <div class="example-menu" cdkMenu [cdkMenuPanel]="new">
+<ng-template #new>
+  <div class="example-menu" cdkMenu>
     <button class="example-menu-item" cdkMenuItem>Document</button>
     <button class="example-menu-item" cdkMenuItem>From template</button>
     <hr />
@@ -57,8 +57,8 @@
   </div>
 </ng-template>
 
-<ng-template #download="cdkMenuPanel" cdkMenuPanel>
-  <div class="example-menu" cdkMenu [cdkMenuPanel]="download">
+<ng-template #download>
+  <div class="example-menu" cdkMenu>
     <button class="example-menu-item" cdkMenuItem>Microsoft Word</button>
     <button class="example-menu-item" cdkMenuItem>PDF</button>
     <button class="example-menu-item" cdkMenuItem>Plain text</button>

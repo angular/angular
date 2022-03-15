@@ -35,8 +35,8 @@
     <button id="edit_button" cdkMenuItem [cdkMenuTriggerFor]="edit">Edit</button>
   </div>
 
-  <ng-template cdkMenuPanel #file="cdkMenuPanel">
-    <div cdkMenu cdkTargetMenuAim class="example-menu" [cdkMenuPanel]="file" id="file_menu">
+  <ng-template #file>
+    <div cdkMenu cdkTargetMenuAim class="example-menu" id="file_menu">
       <button id="share_button" cdkMenuItem [cdkMenuTriggerFor]="share">Share</button>
       <button id="open_button" cdkMenuItem>Open</button>
       <button id="rename_button" cdkMenuItem>Rename</button>
@@ -44,8 +44,8 @@
     </div>
   </ng-template>
 
-  <ng-template cdkMenuPanel #edit="cdkMenuPanel">
-    <div cdkMenu class="example-menu" [cdkMenuPanel]="edit" id="edit_menu">
+  <ng-template #edit>
+    <div cdkMenu class="example-menu" id="edit_menu">
       <button id="undo_button" cdkMenuItem>Undo</button>
       <button id="redo_button" cdkMenuItem>Redo</button>
       <button id="cut_button" cdkMenuItem>Cut</button>
@@ -53,8 +53,8 @@
       <button id="paste_button" cdkMenuItem>Paste</button>
     </div>
   </ng-template>
-  <ng-template cdkMenuPanel #share="cdkMenuPanel">
-    <div cdkMenu class="example-menu" [cdkMenuPanel]="share" id="share_menu">
+  <ng-template #share>
+    <div cdkMenu class="example-menu" id="share_menu">
       <button id="undo_button" cdkMenuItem>GVC</button>
       <button id="redo_button" cdkMenuItem>Gmail</button>
       <button id="redo_button" cdkMenuItem>Twitter</button>
@@ -100,15 +100,15 @@
     </div>
   </div>
 
-  <ng-template cdkMenuPanel #outer="cdkMenuPanel">
-    <div cdkMenu class="example-menu" [cdkMenuPanel]="outer" id="outer_menu">
+  <ng-template #outer>
+    <div cdkMenu class="example-menu" id="outer_menu">
       <button id="undo_button" cdkMenuItem>Undo</button>
       <button id="redo_button" cdkMenuItem>Redo</button>
     </div>
   </ng-template>
 
-  <ng-template cdkMenuPanel #inner="cdkMenuPanel">
-    <div cdkMenu class="example-menu" [cdkMenuPanel]="inner" id="inner_menu">
+  <ng-template #inner>
+    <div cdkMenu class="example-menu" id="inner_menu">
       <button id="cut_button" cdkMenuItem>Cut</button>
       <button id="copy_button" cdkMenuItem>Copy</button>
       <button id="paste_button" cdkMenuItem>Paste</button>

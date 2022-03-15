@@ -6,8 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ViewEncapsulation, ChangeDetectionStrategy} from '@angular/core';
-import {CdkMenuBar, CdkMenuGroup, CDK_MENU, MenuStack} from '@angular/cdk-experimental/menu';
+import {ChangeDetectionStrategy, Component, ViewEncapsulation} from '@angular/core';
+import {
+  CDK_MENU,
+  CdkMenuBar,
+  CdkMenuGroup,
+  MenuStack,
+  MENU_STACK,
+} from '@angular/cdk-experimental/menu';
 
 /**
  * A material design Menubar adhering to the functionality of CdkMenuBar. MatMenubar
@@ -30,7 +36,7 @@ import {CdkMenuBar, CdkMenuGroup, CDK_MENU, MenuStack} from '@angular/cdk-experi
     {provide: CdkMenuGroup, useExisting: MatMenuBar},
     {provide: CdkMenuBar, useExisting: MatMenuBar},
     {provide: CDK_MENU, useExisting: MatMenuBar},
-    {provide: MenuStack, useClass: MenuStack},
+    {provide: MENU_STACK, useClass: MenuStack},
   ],
 })
 export class MatMenuBar extends CdkMenuBar {}

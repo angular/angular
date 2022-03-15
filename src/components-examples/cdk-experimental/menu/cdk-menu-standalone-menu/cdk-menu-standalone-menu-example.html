@@ -1,7 +1,7 @@
 <button cdkMenuItem [cdkMenuTriggerFor]="menu" class="example-standalone-item">Click me!</button>
 
-<ng-template cdkMenuPanel #menu="cdkMenuPanel">
-  <div class="example-menu" cdkMenu [cdkMenuPanel]="menu">
+<ng-template #menu>
+  <div class="example-menu" cdkMenu>
     <button class="example-menu-item" cdkMenuItem>Refresh</button>
     <button class="example-menu-item" cdkMenuItem>Settings</button>
     <button class="example-menu-item" cdkMenuItem>Help</button>
