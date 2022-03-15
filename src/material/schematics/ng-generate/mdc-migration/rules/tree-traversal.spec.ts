@@ -119,4 +119,47 @@ describe('#visitElements', () => {
       expect(html).toBe('<a attr2="val2" attr1="val1"></a>');
     });
   });
+
+  it('should match indentation', async () => {
+    runAddAttributeTest(
+      `
+        <a
+          class="a"
+          aria-label="a"
+          aria-describedby="a"
+        ></a>
+      `,
+      `
+        <a
+          attr="val"
+          class="a"
+          aria-label="a"
+          aria-describedby="a"
+        ></a>
+      `,
+    );
+  });
+
+  it('should match indentation w/ multiple attrs', async () => {
+    let html = `
+      <a
+        class="a"
+        aria-label="a"
+        aria-describedby="a"
+      ></a>
+    `;
+    visitElements(parseTemplate(html).nodes, undefined, node => {
+      html = addAttribute(html, node, 'attr1', 'val1');
+      html = addAttribute(html, node, 'attr2', 'val2');
+    });
+    expect(html).toBe(`
+      <a
+        attr2="val2"
+        attr1="val1"
+        class="a"
+        aria-label="a"
+        aria-describedby="a"
+      ></a>
+    `);
+  });
 });

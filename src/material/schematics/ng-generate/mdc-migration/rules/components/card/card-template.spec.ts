@@ -90,4 +90,24 @@ describe('card template migrator', () => {
       `,
     );
   });
+
+  it('should match indentation', async () => {
+    await runMigrationTest(
+      `
+        <mat-card
+          class="some card"
+          aria-label="some card"
+          aria-describedby="some card"
+        ></mat-card>
+      `,
+      `
+        <mat-card
+          appearance="outlined"
+          class="some card"
+          aria-label="some card"
+          aria-describedby="some card"
+        ></mat-card>
+      `,
+    );
+  });
 });

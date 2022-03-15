@@ -98,7 +98,16 @@ export function addAttribute(
   const index = node.startSourceSpan.start.offset + node.name.length + 1;
   const prefix = html.slice(0, index);
   const suffix = html.slice(index);
-  return prefix + ` ${name}="${value}"` + suffix;
+
+  if (node.startSourceSpan.start.line === node.startSourceSpan.end.line) {
+    return prefix + ` ${name}="${value}"` + suffix;
+  }
+
+  const attr = node.attributes[0];
+  const ctx = attr.sourceSpan.start.getContext(attr.sourceSpan.start.col + 1, 1)!;
+  const indentation = ctx.before;
+
+  return prefix + indentation + `${name}="${value}"` + suffix;
 }
 
 /**
