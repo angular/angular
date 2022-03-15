@@ -7,17 +7,23 @@
  */
 
 import {TmplAstElement} from '@angular/compiler';
-import {TemplateMigrator} from '../../template-migrator';
+import {TemplateMigrator, Update} from '../../template-migrator';
 import {addAttribute} from '../../tree-traversal';
 
 export class CardTemplateMigrator extends TemplateMigrator {
   component = 'card';
   tagName = 'mat-card';
 
-  override updateStartTag(template: string, node: TmplAstElement): string {
+  getUpdates(node: TmplAstElement): Update[] {
     if (node.name !== this.tagName) {
-      return template;
+      return [];
     }
-    return addAttribute(template, node, 'appearance', 'outlined');
+
+    return [
+      {
+        location: node.startSourceSpan.end,
+        updateFn: html => addAttribute(html, node, 'appearance', 'outlined'),
+      },
+    ];
   }
 }

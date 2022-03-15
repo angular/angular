@@ -8,6 +8,15 @@
 
 import * as compiler from '@angular/compiler';
 
+/** Stores the data needed to make a template update. */
+export interface Update {
+  /** The location of the update. */
+  location: compiler.ParseLocation;
+
+  /** A function to be used to update the template. */
+  updateFn: (html: string) => string;
+}
+
 export abstract class TemplateMigrator {
   /** The name of the component that this migration handles. */
   abstract component: string;
@@ -16,24 +25,10 @@ export abstract class TemplateMigrator {
   abstract tagName: string;
 
   /**
-   * Updates the start tag of the given node in the html template.
+   * Returns the data needed to update the given node.
    *
-   * @param template The html content to be updated.
-   * @param node The Element node to be updated.
-   * @returns The updated template.
+   * @param node A template ast element.
+   * @returns The data needed to update this node.
    */
-  updateEndTag(template: string, node: compiler.TmplAstElement): string {
-    return template;
-  }
-
-  /**
-   * Updates the end tag of the given node in the html template.
-   *
-   * @param template The html content to be updated.
-   * @param node The Element node to be updated.
-   * @returns The updated template.
-   */
-  updateStartTag(template: string, node: compiler.TmplAstElement): string {
-    return template;
-  }
+  abstract getUpdates(node: compiler.TmplAstElement): Update[];
 }
