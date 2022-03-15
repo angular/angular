@@ -14,3 +14,11 @@ ts_library(
         "@npm//@types/node",
     ],
 )
+
+filegroup(
+    name = "files_for_docgen",
+    srcs = glob([
+        "*.ts",
+        "src/**/*.ts",
+    ]),
+)
