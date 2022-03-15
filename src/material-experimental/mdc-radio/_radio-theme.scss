@@ -15,8 +15,7 @@
     selected-pressed-icon-color: $color-palette,
   ));
 
-  // TODO(crisbeto): this should be included by MDC's `theme-styles`, but it isn't currently.
-  @include mdc-radio-theme.focus-indicator-color($color-palette);
+  --mat-mdc-radio-checked-ripple-color: #{$color-palette};
 }
 
 @mixin color($config-or-theme) {
@@ -40,6 +39,8 @@
         unselected-icon-color: $on-surface,
         unselected-pressed-icon-color: $on-surface,
       ));
+
+      --mat-mdc-radio-ripple-color: #{mdc-theme-color.prop-value(on-surface)};
 
       &.mat-primary {
         @include _color-palette($primary);
