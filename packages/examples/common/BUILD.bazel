@@ -1,6 +1,6 @@
-package(default_visibility = ["//visibility:public"])
-
 load("//tools:defaults.bzl", "ng_module", "protractor_web_test_suite", "ts_devserver", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
 
 ng_module(
     name = "common_examples",
@@ -54,4 +54,11 @@ protractor_web_test_suite(
         ":common_tests_lib",
         "@npm//selenium-webdriver",
     ],
+)
+
+filegroup(
+    name = "files_for_docgen",
+    srcs = glob([
+        "**/*.ts",
+    ]),
 )
