@@ -365,9 +365,9 @@ export class MatDialogContainer extends _MatDialogContainerBase {
     return {
       value: this._state,
       params: {
-        enterAnimationDuration:
+        'enterAnimationDuration':
           this._config.enterAnimationDuration || defaultParams.params.enterAnimationDuration,
-        exitAnimationDuration:
+        'exitAnimationDuration':
           this._config.exitAnimationDuration || defaultParams.params.exitAnimationDuration,
       },
     };
