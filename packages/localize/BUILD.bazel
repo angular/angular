@@ -62,3 +62,12 @@ api_golden_test_npm_package(
     # able to resolve `@babel/core` to fully understand the `types` re-export/alias.
     types = ["@npm//@types/babel__core"],
 )
+
+filegroup(
+    name = "files_for_docgen",
+    srcs = glob([
+        "*.ts",
+        "src/**/*.ts",
+        "PACKAGE.md",
+    ]),
+)

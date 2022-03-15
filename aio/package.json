@@ -115,6 +115,7 @@
     "@angular/compiler-cli": "15.0.0-rc.0",
     "@bazel/bazelisk": "^1.7.5",
     "@types/jasmine": "~4.3.0",
+    "@bazel/typescript": "4.6.2",
     "@types/lunr": "^2.3.3",
     "@types/node": "^12.7.9",
     "@types/trusted-types": "^2.0.2",

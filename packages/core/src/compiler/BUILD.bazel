@@ -1,6 +1,7 @@
 load("//tools:defaults.bzl", "ts_library", "tsec_test")
 
 package(default_visibility = [
+    "//packages:__pkg__",
     "//packages/compiler/test:__pkg__",
     "//packages/core:__subpackages__",
     "//tools/public_api_guard:__pkg__",
@@ -22,4 +23,11 @@ tsec_test(
     name = "tsec_test",
     target = "compiler",
     tsconfig = "//packages:tsec_config",
+)
+
+filegroup(
+    name = "files_for_docgen",
+    srcs = glob([
+        "*.ts",
+    ]),
 )
