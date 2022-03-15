@@ -14,3 +14,11 @@ ts_library(
         "//packages/compiler",
     ],
 )
+
+filegroup(
+    name = "files_for_docgen",
+    srcs = glob([
+        "*.ts",
+        "src/**/*.ts",
+    ]),
+)
