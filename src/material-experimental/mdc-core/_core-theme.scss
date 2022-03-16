@@ -1,3 +1,4 @@
+@use 'sass:map';
 @use '../../material/core/theming/theming';
 @use '../../material/core/typography/typography';
 @use './option/option-theme';
@@ -22,6 +23,17 @@
       .#{$selector}, .mat-mdc-elevation-specific.#{$selector} {
         @include elevation.private-theme-elevation($zValue, $config);
       }
+    }
+
+    // Wrapper element that provides the theme background when the user's content isn't
+    // inside of a `mat-sidenav-container`. Note that we need to exclude the ampersand
+    // selector in case the mixin is included at the top level.
+    .mat-mdc-app-background#{if(&, ', &.mat-mdc-app-background', '')} {
+      $background: map.get($config, background);
+      $foreground: map.get($config, foreground);
+
+      background-color: theming.get-color-from-palette($background, background);
+      color: theming.get-color-from-palette($foreground, text);
     }
   }
 }
