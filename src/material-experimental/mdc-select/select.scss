@@ -25,10 +25,12 @@ $scale: 0.75 !default;
 }
 
 .mat-mdc-select-trigger {
-  display: inline-table;
+  display: inline-flex;
+  align-items: center;
   cursor: pointer;
   position: relative;
   box-sizing: border-box;
+  width: 100%;
 
   .mat-mdc-select-disabled & {
     @include vendor-prefixes.user-select(none);
@@ -37,8 +39,6 @@ $scale: 0.75 !default;
 }
 
 .mat-mdc-select-value {
-  display: table-cell;
-  max-width: 0;
   width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -52,8 +52,10 @@ $scale: 0.75 !default;
 }
 
 .mat-mdc-select-arrow-wrapper {
-  display: table-cell;
-  vertical-align: middle;
+  height: 24px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
 
   // When used in a box appearance form-field the arrow should be shifted up 40%.
   .mat-form-field-appearance-fill & {

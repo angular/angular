@@ -19,10 +19,12 @@ $placeholder-arrow-space: 2 * ($arrow-size + $arrow-margin);
 }
 
 .mat-select-trigger {
-  display: inline-table;
+  display: inline-flex;
+  align-items: center;
   cursor: pointer;
   position: relative;
   box-sizing: border-box;
+  width: 100%;
 
   .mat-select-disabled & {
     @include vendor-prefixes.user-select(none);
@@ -31,8 +33,6 @@ $placeholder-arrow-space: 2 * ($arrow-size + $arrow-margin);
 }
 
 .mat-select-value {
-  display: table-cell;
-  max-width: 0;
   width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -44,8 +44,10 @@ $placeholder-arrow-space: 2 * ($arrow-size + $arrow-margin);
 }
 
 .mat-select-arrow-wrapper {
-  display: table-cell;
-  vertical-align: middle;
+  height: 16px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
 
   // When used in a box appearance form-field the arrow should be shifted up 50%.
   .mat-form-field-appearance-fill & {
