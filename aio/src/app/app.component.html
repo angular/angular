@@ -47,7 +47,7 @@
 
 <aio-search-results #searchResultsView *ngIf="showSearchResults" [searchResults]="searchResults | async" (resultSelected)="hideSearchResults()"></aio-search-results>
 
-<mat-sidenav-container class="sidenav-container" [class.no-animations]="disableAnimations" [class.has-floating-toc]="hasFloatingToc" role="main">
+<mat-sidenav-container class="sidenav-container" [class.no-animations]="disableAnimations" [class.has-floating-toc]="hasFloatingToc">
 
   <mat-sidenav [ngClass]="{'collapsed': !dockSideNav}" #sidenav class="sidenav" [mode]="mode" [opened]="isOpened" (openedChange)="updateHostClasses()">
     <aio-nav-menu *ngIf="!showTopMenu" [nodes]="topMenuNarrowNodes" [currentNode]="currentNodes?.TopBarNarrow" [isWide]="dockSideNav"></aio-nav-menu>
@@ -60,7 +60,7 @@
 
   <section class="sidenav-content-container">
 
-    <main class="sidenav-content" [id]="pageId" role="main">
+    <main class="sidenav-content" [id]="pageId">
       <div id="main-content" tabindex="-1"></div>
       <aio-mode-banner [mode]="deployment.mode" [version]="versionInfo"></aio-mode-banner>
       <aio-doc-viewer [class.no-animations]="disableAnimations" [doc]="currentDocument" (docReady)="onDocReady()" (docRemoved)="onDocRemoved()" (docInserted)="onDocInserted()" (docRendered)="onDocRendered()">
