@@ -1,3 +1,26 @@
+<a name="13.3.0"></a>
+# 13.3.0 "aluminum-armadillo" (2022-03-16)
+### cdk
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e4c64dd56](https://github.com/angular/components/commit/e4c64dd566c2dbc3d0121e8398fd37461a8182db) | fix | **drag-drop:** only block dragstart event on event targets ([#24581](https://github.com/angular/components/pull/24581)) |
+### material
+| Commit | Type | Description |
+| -- | -- | -- |
+| [33d07df95](https://github.com/angular/components/commit/33d07df953b37a5fd96cc1a13aff002279681ec3) | fix | **badge:** ensure overflow visible ([#24602](https://github.com/angular/components/pull/24602)) |
+| [dfef17351](https://github.com/angular/components/commit/dfef17351308e86f10708274e58c905d3b6dfb60) | fix | **datepicker:** fix Voiceover losing focus on PageDown ([#24399](https://github.com/angular/components/pull/24399)) |
+| [1703b83ae](https://github.com/angular/components/commit/1703b83aec5f6a2f92b4cd8cd9dedccb980dd9e3) | fix | **datepicker:** use cdk-visually-hidden on calendar header ([#24523](https://github.com/angular/components/pull/24523)) |
+| [41320d07e](https://github.com/angular/components/commit/41320d07e14b405e20b2b8fdca84488547cb4845) | fix | **tabs:** avoid timeouts in background tabs ([#24000](https://github.com/angular/components/pull/24000)) |
+### material-experimental
+| Commit | Type | Description |
+| -- | -- | -- |
+| [097ec0d11](https://github.com/angular/components/commit/097ec0d11c42b833964cb4f9cb886445d6ecd7b1) | fix | **mdc-core:** add app background color ([#22992](https://github.com/angular/components/pull/22992)) |
+| [15a0676d5](https://github.com/angular/components/commit/15a0676d535a354875e1262cbaa5d23d19ee19e4) | fix | **mdc-radio:** add hover indication ([#24595](https://github.com/angular/components/pull/24595)) |
+## Special Thanks
+Andrew Seguin, Kristiyan Kostadinov, Paul Gschwendtner and Zach Arend
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.0.0-next.6"></a>
 # 14.0.0-next.6 "clay-cup" (2022-03-09)
 ## Breaking Changes
