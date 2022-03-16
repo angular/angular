@@ -1,3 +1,39 @@
+<a name="14.0.0-next.7"></a>
+# 14.0.0-next.7 "baize-bison" (2022-03-16)
+### cdk
+| Commit | Type | Description |
+| -- | -- | -- |
+| [45fae71ea](https://github.com/angular/components/commit/45fae71ea083b37f2e18f0e60dfadfce27472ed4) | fix | **drag-drop:** only block dragstart event on event targets ([#24581](https://github.com/angular/components/pull/24581)) |
+### material
+| Commit | Type | Description |
+| -- | -- | -- |
+| [8ef312528](https://github.com/angular/components/commit/8ef3125285b3e5a4eb0b0f2974acaf3873e5eead) | feat | **dialog:** add the ability to control the animation duration ([#13466](https://github.com/angular/components/pull/13466)) |
+| [cc6112298](https://github.com/angular/components/commit/cc6112298d85ae40164717a5ec267a3128a0c10e) | feat | **stepper:** add input for controlling the animation duration ([#17133](https://github.com/angular/components/pull/17133)) |
+| [fc5f8b026](https://github.com/angular/components/commit/fc5f8b0266c299af981fe8198981ef1cac87df49) | feat | **stepper:** add the ability to control the position of the header in a horizontal stepper ([#15509](https://github.com/angular/components/pull/15509)) |
+| [f42fee0de](https://github.com/angular/components/commit/f42fee0de7b7f97fd17cb2bdc1eb99b1e4ad4756) | feat | **tabs:** Throw error in MDC tabs if [tabPanel] input is not provided ([#24517](https://github.com/angular/components/pull/24517)) |
+| [0f15d1983](https://github.com/angular/components/commit/0f15d19831c17133bf2ebaf99bf7c4483c27a17f) | fix | **badge:** ensure overflow visible ([#24602](https://github.com/angular/components/pull/24602)) |
+| [0b5256184](https://github.com/angular/components/commit/0b52561840325929c81a59d78bbd01d0f26cdb24) | fix | **card:** use more specific selector for divider override ([#23531](https://github.com/angular/components/pull/23531)) |
+| [47517b65e](https://github.com/angular/components/commit/47517b65e0501fd85fcb1bf97c92ebb1185cc304) | fix | **card:** use more specific selector for divider override ([#23531](https://github.com/angular/components/pull/23531)) |
+| [6b4f2bfa9](https://github.com/angular/components/commit/6b4f2bfa91cabff1adfb3910593ee714c406884c) | fix | **datepicker:** fix Voiceover losing focus on PageDown ([#24399](https://github.com/angular/components/pull/24399)) |
+| [14f5b6e06](https://github.com/angular/components/commit/14f5b6e067cedb24fd55d502a37d641e86730d74) | fix | **datepicker:** use cdk-visually-hidden on calendar header ([#24523](https://github.com/angular/components/pull/24523)) |
+| [f16548462](https://github.com/angular/components/commit/f16548462eb2949d10df4370277513dcf8519eba) | fix | **dialog:** provide defaults for dialog animation ([#24591](https://github.com/angular/components/pull/24591)) |
+| [575332c92](https://github.com/angular/components/commit/575332c9296c28776376f4b4f7fb39c9743761aa) | fix | **dialog:** use quoted keys in the animation state object ([#24594](https://github.com/angular/components/pull/24594)) |
+| [025a53448](https://github.com/angular/components/commit/025a53448342fbda9c2e57819026bafc5ca6f8c9) | fix | **icon:** clip overflowing icon elements ([#12429](https://github.com/angular/components/pull/12429)) |
+| [9e06e4ab0](https://github.com/angular/components/commit/9e06e4ab0fb4e2dad3e59bc1c6638c5c0d815ea0) | fix | **tabs:** avoid timeouts in background tabs ([#24000](https://github.com/angular/components/pull/24000)) |
+### cdk-experimental
+| Commit | Type | Description |
+| -- | -- | -- |
+| [dc020c7ac](https://github.com/angular/components/commit/dc020c7ac238307b45e586bebbbd765f3b652b97) | feat | **menu:** Use DI instead of CdkMenuPanel to connect menus ([#24558](https://github.com/angular/components/pull/24558)) |
+### material-experimental
+| Commit | Type | Description |
+| -- | -- | -- |
+| [6982ca7ec](https://github.com/angular/components/commit/6982ca7ec42d4ef0b35b150d87e7d402c1131536) | fix | **mdc-core:** add app background color ([#22992](https://github.com/angular/components/pull/22992)) |
+| [356618d0c](https://github.com/angular/components/commit/356618d0c962cb2aec8f21bca949542b3a563df9) | fix | **mdc-radio:** add hover indication ([#24595](https://github.com/angular/components/pull/24595)) |
+## Special Thanks
+Andrew Seguin, Kristiyan Kostadinov, Miles Malerba, Paul Gschwendtner, Zach Arend, Zack Elliott and renovate[bot]
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="13.3.0"></a>
 # 13.3.0 "aluminum-armadillo" (2022-03-16)
 ### cdk
