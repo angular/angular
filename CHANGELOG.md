@@ -1,3 +1,14 @@
+<a name="13.2.7"></a>
+# 13.2.7 (2022-03-16)
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [eac94f0945](https://github.com/angular/angular/commit/eac94f094500b8b2d73b2f1fd621adb6f2d990a0) | fix | improve error message for invalid value accessors ([#45192](https://github.com/angular/angular/pull/45192)) |
+## Special Thanks
+Alistair Kane, Amer Yousuf, Andrew Scott, Jessica Janiuk, Lee Cooper, alirezaghey and why520crazy
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="13.3.0-rc.0"></a>
 # 13.3.0-rc.0 (2022-03-10)
 ### core
