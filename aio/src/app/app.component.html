@@ -50,8 +50,8 @@
 <mat-sidenav-container class="sidenav-container" [class.no-animations]="disableAnimations" [class.has-floating-toc]="hasFloatingToc">
 
   <mat-sidenav [ngClass]="{'collapsed': !dockSideNav}" #sidenav class="sidenav" [mode]="mode" [opened]="isOpened" (openedChange)="updateHostClasses()">
-    <aio-nav-menu *ngIf="!showTopMenu" [nodes]="topMenuNarrowNodes" [currentNode]="currentNodes?.TopBarNarrow" [isWide]="dockSideNav"></aio-nav-menu>
-    <aio-nav-menu [nodes]="sideNavNodes" [currentNode]="currentNodes?.SideNav" [isWide]="dockSideNav"></aio-nav-menu>
+    <aio-nav-menu *ngIf="!showTopMenu" [nodes]="topMenuNarrowNodes" [currentNode]="currentNodes?.TopBarNarrow" [isWide]="dockSideNav" navLabel="primary"></aio-nav-menu>
+    <aio-nav-menu [nodes]="sideNavNodes" [currentNode]="currentNodes?.SideNav" [isWide]="dockSideNav" navLabel="guides and docs"></aio-nav-menu>
 
     <div class="doc-version">
       <aio-select (change)="onDocVersionChange($event.index)" [options]="docVersions" [selected]="currentDocVersion"></aio-select>
