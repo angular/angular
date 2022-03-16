@@ -102,6 +102,14 @@ $_badge-structure-emitted: false !default;
     position: relative;
   }
 
+  // The badge should make sure its host is overflow visible so that the badge content
+  // can be rendered outside of the element. Some components such as <mat-icon> explicitly
+  // style `overflow: hidden` so this requires extra specificity so that it does not
+  // depend on style load order.
+  .mat-badge.mat-badge {
+    overflow: visible;
+  }
+
   .mat-badge-hidden {
     .mat-badge-content {
       display: none;
