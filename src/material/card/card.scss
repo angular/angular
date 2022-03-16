@@ -17,7 +17,7 @@ $header-size: 40px !default;
   padding: $padding;
   border-radius: $border-radius;
 
-  .mat-divider-horizontal {
+  > .mat-divider-horizontal {
     position: absolute;
     left: 0;
     width: 100%;
