@@ -4,13 +4,15 @@ import { CurrentNode, NavigationNode } from 'app/navigation/navigation.service';
 @Component({
   selector: 'aio-top-menu',
   template: `
-    <ul role="navigation">
-      <li *ngFor="let node of nodes" [ngClass]="{selected: node.url === currentUrl}">
-        <a class="nav-link" [href]="node.url" [title]="node.tooltip">
-          <span class="nav-link-inner">{{ node.title }}</span>
-        </a>
-      </li>
-    </ul>`
+    <nav aria-label="primary">
+      <ul>
+        <li *ngFor="let node of nodes" [ngClass]="{selected: node.url === currentUrl}">
+          <a class="nav-link" [href]="node.url" [title]="node.tooltip">
+            <span class="nav-link-inner">{{ node.title }}</span>
+          </a>
+        </li>
+      </ul>
+    </nav>`
 })
 export class TopMenuComponent {
   @Input() nodes: NavigationNode[];
