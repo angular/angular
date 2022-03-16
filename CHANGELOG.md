@@ -1,3 +1,13 @@
+<a name="13.3.0"></a>
+# 13.3.0-rc.0 (2022-03-16)
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b5bb614c74](https://github.com/angular/angular/commit/61a316c68fd27bc2375b1b3043afd8b5bb614c74) | feat | support TypeScript 4.6 ([#45190](https://github.com/angular/angular/pull/45190)) |
+## Special Thanks
+Alistair Kane, Andrew Scott and Kristiyan Kostadinov
+
+<!-- CHANGELOG SPLIT MARKER -->
 <a name="13.2.7"></a>
 # 13.2.7 (2022-03-16)
 ### forms
