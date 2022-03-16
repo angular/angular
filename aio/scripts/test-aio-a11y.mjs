@@ -29,8 +29,8 @@ const MIN_SCORES_PER_PAGE = {
   'cli/add': 100,
   'docs': 100,
   'guide/docs-style-guide': 96,
-  'start/start-routing': 98,
-  'tutorial': 98,
+  'start/start-routing': 97,
+  'tutorial': 97,
 };
 
 // Run
