@@ -526,22 +526,27 @@ export abstract class _MatAutocompleteTriggerBase
           // create a new stream of panelClosingActions, replacing any previous streams
           // that were created, and flatten it so our stream only emits closing events...
           switchMap(() => {
-            const wasOpen = this.panelOpen;
-            this._resetActiveItem();
-            this.autocomplete._setVisibility();
-            this._changeDetectorRef.detectChanges();
+            // The `NgZone.onStable` always emits outside of the Angular zone, thus we have to re-enter
+            // the Angular zone. This will lead to change detection being called outside of the Angular
+            // zone and the `autocomplete.opened` will also emit outside of the Angular.
+            this._zone.run(() => {
+              const wasOpen = this.panelOpen;
+              this._resetActiveItem();
+              this.autocomplete._setVisibility();
+              this._changeDetectorRef.detectChanges();
 
-            if (this.panelOpen) {
-              this._overlayRef!.updatePosition();
+              if (this.panelOpen) {
+                this._overlayRef!.updatePosition();
 
-              // If the `panelOpen` state changed, we need to make sure to emit the `opened`
-              // event, because we may not have emitted it when the panel was attached. This
-              // can happen if the users opens the panel and there are no options, but the
-              // options come in slightly later or as a result of the value changing.
-              if (wasOpen !== this.panelOpen) {
-                this.autocomplete.opened.emit();
+                // If the `panelOpen` state changed, we need to make sure to emit the `opened`
+                // event, because we may not have emitted it when the panel was attached. This
+                // can happen if the users opens the panel and there are no options, but the
+                // options come in slightly later or as a result of the value changing.
+                if (wasOpen !== this.panelOpen) {
+                  this.autocomplete.opened.emit();
+                }
               }
-            }
+            });
 
             return this.panelClosingActions;
           }),
