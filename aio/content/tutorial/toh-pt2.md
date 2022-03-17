@@ -59,7 +59,7 @@ It repeats the host element for each element in a list.
 The syntax in this example is as follows:
 
 * `<li>` is the host element.
-* `heroes` holds the mock heroes list from the `HeroesComponent` class, the mock heroes list.
+* `heroes` holds the mock heroes list from the `HeroesComponent` class.
 * `hero` holds the current hero object for each iteration through the list.
 
 <div class="alert is-important">
