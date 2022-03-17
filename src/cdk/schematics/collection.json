@@ -5,7 +5,8 @@
       "description": "Installs the Angular CDK",
       "factory": "./ng-add/index",
       "schema": "./ng-add/schema.json",
-      "aliases": ["install"]
+      "aliases": ["install"],
+      "hidden": true
     },
     "drag-drop": {
       "description": "Generates a component using the Drag and Drop module",
