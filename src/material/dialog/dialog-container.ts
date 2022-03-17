@@ -174,8 +174,14 @@ export abstract class _MatDialogContainerBase extends BasePortalOutlet {
       element.tabIndex = -1;
       // The tabindex attribute should be removed to avoid navigating to that element again
       this._ngZone.runOutsideAngular(() => {
-        element.addEventListener('blur', () => element.removeAttribute('tabindex'));
-        element.addEventListener('mousedown', () => element.removeAttribute('tabindex'));
+        const callback = () => {
+          element.removeEventListener('blur', callback);
+          element.removeEventListener('mousedown', callback);
+          element.removeAttribute('tabindex');
+        };
+
+        element.addEventListener('blur', callback);
+        element.addEventListener('mousedown', callback);
       });
     }
     element.focus(options);
