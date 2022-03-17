@@ -199,7 +199,9 @@ export class CdkVirtualForOf<T>
     });
     this._viewport.renderedRangeStream.pipe(takeUntil(this._destroyed)).subscribe(range => {
       this._renderedRange = range;
-      ngZone.run(() => this.viewChange.next(this._renderedRange));
+      if (this.viewChange.observers.length) {
+        ngZone.run(() => this.viewChange.next(this._renderedRange));
+      }
       this._onRenderedDataChange();
     });
     this._viewport.attach(this);
