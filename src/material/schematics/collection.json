@@ -5,13 +5,15 @@
       "description": "Adds Angular Material to the application without affecting any templates",
       "factory": "./ng-add/index",
       "schema": "./ng-add/schema.json",
-      "aliases": ["material-shell", "install"]
+      "aliases": ["material-shell", "install"],
+      "hidden": true
     },
     "ng-add-setup-project": {
       "description": "Sets up the specified project after the ng-add dependencies have been installed.",
       "private": true,
       "factory": "./ng-add/setup-project",
-      "schema": "./ng-add/schema.json"
+      "schema": "./ng-add/schema.json",
+      "hidden": true
     },
     "dashboard": {
       "description": "Create a card-based dashboard component",
