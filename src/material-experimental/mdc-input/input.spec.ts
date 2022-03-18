@@ -882,6 +882,17 @@ describe('MatMdcInput without forms', () => {
     expect(formField.classList).not.toContain('mat-mdc-form-field-type-mat-native-select');
   });
 
+  it('should preserve the native placeholder on a non-legacy appearance', fakeAsync(() => {
+    const fixture = createComponent(MatInputWithLabelAndPlaceholder);
+    fixture.componentInstance.floatLabel = 'auto';
+    fixture.componentInstance.appearance = 'outline';
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('input').getAttribute('placeholder')).toBe(
+      'Placeholder',
+    );
+  }));
+
   it(
     'should use the native input value when determining whether ' +
       'the element is empty with a custom accessor',
@@ -1861,7 +1872,7 @@ class MatInputWithLabel {}
 
 @Component({
   template: `
-    <mat-form-field [floatLabel]="floatLabel">
+    <mat-form-field [floatLabel]="floatLabel" [appearance]="appearance">
       <mat-label>Label</mat-label>
       <input matInput placeholder="Placeholder">
     </mat-form-field>
@@ -1869,6 +1880,7 @@ class MatInputWithLabel {}
 })
 class MatInputWithLabelAndPlaceholder {
   floatLabel: FloatLabelType;
+  appearance: MatFormFieldAppearance;
 }
 
 @Component({

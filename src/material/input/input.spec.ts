@@ -973,7 +973,6 @@ describe('MatInput without forms', () => {
     expect(container.classList).toContain('mat-form-field-hide-placeholder');
     expect(container.classList).not.toContain('mat-form-field-should-float');
     expect(label.textContent.trim()).toBe('Label');
-    expect(input.hasAttribute('placeholder')).toBe(false);
 
     input.value = 'Value';
     fixture.detectChanges();
@@ -1019,6 +1018,17 @@ describe('MatInput without forms', () => {
     expect(container.classList).toContain('mat-form-field-hide-placeholder');
     expect(container.classList).not.toContain('mat-form-field-should-float');
   });
+
+  it('should preserve the native placeholder on a non-legacy appearance', fakeAsync(() => {
+    const fixture = createComponent(MatInputWithLabelAndPlaceholder);
+    fixture.componentInstance.floatLabel = 'auto';
+    fixture.componentInstance.appearance = 'standard';
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('input').getAttribute('placeholder')).toBe(
+      'Placeholder',
+    );
+  }));
 
   it('should not add the native select class if the control is not a native select', () => {
     const fixture = createComponent(MatInputWithId);
@@ -2232,7 +2242,7 @@ class MatInputWithLabel {}
 
 @Component({
   template: `
-    <mat-form-field [floatLabel]="floatLabel">
+    <mat-form-field [floatLabel]="floatLabel" [appearance]="appearance">
       <mat-label>Label</mat-label>
       <input matInput placeholder="Placeholder">
     </mat-form-field>
@@ -2240,6 +2250,7 @@ class MatInputWithLabel {}
 })
 class MatInputWithLabelAndPlaceholder {
   floatLabel: FloatLabelType;
+  appearance: MatFormFieldAppearance = 'legacy';
 }
 
 @Component({

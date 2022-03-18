@@ -396,7 +396,11 @@ export class MatInput
     // screen readers will read it out twice: once from the label and once from the attribute.
     // TODO: can be removed once we get rid of the `legacy` style for the form field, because it's
     // the only one that supports promoting the placeholder to a label.
-    const placeholder = this._formField?._hideControlPlaceholder?.() ? null : this.placeholder;
+    const formField = this._formField;
+    const placeholder =
+      formField && formField.appearance === 'legacy' && !formField._hasLabel?.()
+        ? null
+        : this.placeholder;
     if (placeholder !== this._previousPlaceholder) {
       const element = this._elementRef.nativeElement;
       this._previousPlaceholder = placeholder;

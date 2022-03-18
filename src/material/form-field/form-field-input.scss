@@ -126,6 +126,12 @@
       }
     }
   }
+
+  ._mat-animation-noopable & {
+    @include vendor-prefixes.input-placeholder {
+      transition: none;
+    }
+  }
 }
 
 // Prevents IE from always adding a scrollbar by default.

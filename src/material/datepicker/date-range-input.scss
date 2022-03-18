@@ -28,6 +28,10 @@ $date-range-input-part-max-width: calc(50% - #{$date-range-input-separator-spaci
 .mat-date-range-input-separator {
   @include _placeholder-transition(opacity);
   margin: 0 $date-range-input-separator-spacing;
+
+  ._mat-animation-noopable & {
+    transition: none;
+  }
 }
 
 .mat-date-range-input-separator-hidden {
@@ -83,6 +87,12 @@ $date-range-input-part-max-width: calc(50% - #{$date-range-input-separator-spaci
         // placeholder despite the `color: transparent` above.
         opacity: 0;
       }
+    }
+  }
+
+  ._mat-animation-noopable & {
+    @include vendor-prefixes.input-placeholder {
+      transition: none;
     }
   }
 }
