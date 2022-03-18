@@ -6,6 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {StyleMigrator} from './style-migrator';
+import {TemplateMigrator} from './template-migrator';
+
 import {ButtonRuntimeMigrator} from './components/button/button-runtime';
 import {ButtonStylesMigrator} from './components/button/button-styles';
 import {CardStylesMigrator} from './components/card/card-styles';
@@ -22,9 +25,8 @@ import {RadioStylesMigrator} from './components/radio/radio-styles';
 import {RuntimeMigrator} from './runtime-migrator';
 import {SlideToggleStylesMigrator} from './components/slide-toggle/slide-toggle-styles';
 import {SliderStylesMigrator} from './components/slider/slider-styles';
-import {StyleMigrator} from './style-migrator';
 import {TableStylesMigrator} from './components/table/table-styles';
-import {TemplateMigrator} from './template-migrator';
+import {TabsStylesMigrator} from './components/tabs/tabs-styles';
 
 /** Contains the migrators to migrate a single component. */
 export interface ComponentMigrator {
@@ -92,5 +94,9 @@ export const MIGRATORS: ComponentMigrator[] = [
   {
     component: 'table',
     styles: new TableStylesMigrator(),
+  },
+  {
+    component: 'tabs',
+    styles: new TabsStylesMigrator(),
   },
 ];
