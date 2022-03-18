@@ -13,7 +13,7 @@ export class TableStylesMigrator extends StyleMigrator {
 
   // There are no other table selectors available aside from the specified
   // changes below
-  deprecatedPrefix = null;
+  deprecatedPrefixes = [];
 
   mixinChanges = [
     {

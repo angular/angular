@@ -11,7 +11,7 @@ import {ClassNameChange, StyleMigrator} from '../../style-migrator';
 export class DialogStylesMigrator extends StyleMigrator {
   component = 'dialog';
 
-  deprecatedPrefix = 'mat-dialog';
+  deprecatedPrefixes = ['mat-dialog'];
 
   mixinChanges = [
     {

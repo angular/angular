@@ -11,7 +11,7 @@ import {ClassNameChange, StyleMigrator} from '../../style-migrator';
 export class SliderStylesMigrator extends StyleMigrator {
   component = 'slider';
 
-  deprecatedPrefix = 'mat-slider';
+  deprecatedPrefixes = ['mat-slider'];
 
   mixinChanges = [
     {

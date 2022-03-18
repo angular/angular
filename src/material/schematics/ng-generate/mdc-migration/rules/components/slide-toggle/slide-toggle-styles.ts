@@ -11,7 +11,7 @@ import {ClassNameChange, StyleMigrator} from '../../style-migrator';
 export class SlideToggleStylesMigrator extends StyleMigrator {
   component = 'slide-toggle';
 
-  deprecatedPrefix = 'mat-slide-toggle';
+  deprecatedPrefixes = ['mat-slide-toggle'];
 
   mixinChanges = [
     {

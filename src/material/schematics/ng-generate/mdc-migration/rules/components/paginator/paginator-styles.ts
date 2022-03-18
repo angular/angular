@@ -11,7 +11,7 @@ import {ClassNameChange, StyleMigrator} from '../../style-migrator';
 export class PaginatorStylesMigrator extends StyleMigrator {
   component = 'paginator';
 
-  deprecatedPrefix = 'mat-paginator';
+  deprecatedPrefixes = ['mat-paginator'];
 
   mixinChanges = [
     {

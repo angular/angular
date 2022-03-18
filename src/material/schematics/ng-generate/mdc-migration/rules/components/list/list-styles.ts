@@ -11,7 +11,7 @@ import {ClassNameChange, StyleMigrator} from '../../style-migrator';
 export class ListStylesMigrator extends StyleMigrator {
   component = 'list';
 
-  deprecatedPrefix = 'mat-list';
+  deprecatedPrefixes = ['mat-list'];
 
   mixinChanges = [
     {

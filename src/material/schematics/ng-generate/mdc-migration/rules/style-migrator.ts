@@ -41,7 +41,7 @@ export abstract class StyleMigrator {
   abstract mixinChanges: MixinChange[];
 
   /** The prefix of classes that are specific to the old components */
-  abstract deprecatedPrefix: string | null;
+  abstract deprecatedPrefixes: string[];
 
   /**
    * Returns whether the given at-include at-rule is a use of a legacy mixin for this component.
@@ -146,7 +146,9 @@ export abstract class StyleMigrator {
    * @returns `true` if the given Rule uses a selector with the deprecated prefix.
    */
   isDeprecatedSelector(rule: postcss.Rule): boolean {
-    return this.deprecatedPrefix ? rule.selector.includes(this.deprecatedPrefix) : false;
+    return this.deprecatedPrefixes.some(deprecatedPrefix =>
+      rule.selector.includes(deprecatedPrefix),
+    );
   }
 
   /**

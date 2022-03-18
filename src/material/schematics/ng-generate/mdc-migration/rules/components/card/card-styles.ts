@@ -11,7 +11,7 @@ import {ClassNameChange, StyleMigrator} from '../../style-migrator';
 export class CardStylesMigrator extends StyleMigrator {
   component = 'card';
 
-  deprecatedPrefix = 'mat-card';
+  deprecatedPrefixes = ['mat-card'];
 
   mixinChanges = [
     {

@@ -11,7 +11,7 @@ import {ClassNameChange, StyleMigrator} from '../../style-migrator';
 export class CheckboxStylesMigrator extends StyleMigrator {
   component = 'checkbox';
 
-  deprecatedPrefix = 'mat-checkbox';
+  deprecatedPrefixes = ['mat-checkbox'];
 
   mixinChanges = [
     {

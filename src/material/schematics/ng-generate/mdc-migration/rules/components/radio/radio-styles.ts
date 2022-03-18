@@ -11,7 +11,7 @@ import {ClassNameChange, StyleMigrator} from '../../style-migrator';
 export class RadioStylesMigrator extends StyleMigrator {
   component = 'radio';
 
-  deprecatedPrefix = 'mat-radio';
+  deprecatedPrefixes = ['mat-radio'];
 
   mixinChanges = [
     {

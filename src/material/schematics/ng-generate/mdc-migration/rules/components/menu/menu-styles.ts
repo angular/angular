@@ -11,7 +11,7 @@ import {ClassNameChange, StyleMigrator} from '../../style-migrator';
 export class MenuStylesMigrator extends StyleMigrator {
   component = 'menu';
 
-  deprecatedPrefix = 'mat-menu';
+  deprecatedPrefixes = ['mat-menu'];
 
   mixinChanges = [
     {

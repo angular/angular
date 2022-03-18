@@ -11,7 +11,7 @@ import {ClassNameChange, StyleMigrator} from '../../style-migrator';
 export class ProgressBarStylesMigrator extends StyleMigrator {
   component = 'progress-bar';
 
-  deprecatedPrefix = 'mat-progress-bar';
+  deprecatedPrefixes = ['mat-progress-bar'];
 
   mixinChanges = [
     {

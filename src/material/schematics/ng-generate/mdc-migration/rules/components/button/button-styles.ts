@@ -11,7 +11,7 @@ import {ClassNameChange, StyleMigrator} from '../../style-migrator';
 export class ButtonStylesMigrator extends StyleMigrator {
   component = 'button';
 
-  deprecatedPrefix = 'mat-button';
+  deprecatedPrefixes = ['mat-button'];
 
   mixinChanges = [
     {

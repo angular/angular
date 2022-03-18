@@ -13,7 +13,7 @@ export class ProgressSpinnerStylesMigrator extends StyleMigrator {
 
   // There are no other progress spinner selectors available aside from the
   // specified changes below
-  deprecatedPrefix = null;
+  deprecatedPrefixes = [];
 
   mixinChanges = [
     {

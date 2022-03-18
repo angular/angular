@@ -11,7 +11,7 @@ import {ClassNameChange, StyleMigrator} from '../../style-migrator';
 export class ChipsStylesMigrator extends StyleMigrator {
   component = 'chips';
 
-  deprecatedPrefix = 'mat-chip';
+  deprecatedPrefixes = ['mat-chip'];
 
   mixinChanges = [
     {
