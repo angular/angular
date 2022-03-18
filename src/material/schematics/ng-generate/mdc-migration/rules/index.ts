@@ -27,6 +27,7 @@ import {SlideToggleStylesMigrator} from './components/slide-toggle/slide-toggle-
 import {SliderStylesMigrator} from './components/slider/slider-styles';
 import {TableStylesMigrator} from './components/table/table-styles';
 import {TabsStylesMigrator} from './components/tabs/tabs-styles';
+import {TooltipStylesMigrator} from './components/tooltip/tooltip-styles';
 
 /** Contains the migrators to migrate a single component. */
 export interface ComponentMigrator {
@@ -98,5 +99,9 @@ export const MIGRATORS: ComponentMigrator[] = [
   {
     component: 'tabs',
     styles: new TabsStylesMigrator(),
+  },
+  {
+    component: 'tooltip',
+    styles: new TooltipStylesMigrator(),
   },
 ];
