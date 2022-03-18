@@ -1,7 +1,6 @@
 // stylelint-disable material/no-prefixes
 @mixin user-select($value) {
   -webkit-user-select: $value;
-  -moz-user-select: $value;
   user-select: $value;
 }
 
@@ -25,24 +24,9 @@
   }
 }
 
-@mixin cursor-grab {
-  cursor: -webkit-grab;
-  cursor: grab;
-}
-
-@mixin cursor-grabbing {
-  cursor: -webkit-grabbing;
-  cursor: grabbing;
-}
-
 @mixin backface-visibility($value) {
   -webkit-backface-visibility: $value;
   backface-visibility: $value;
-}
-
-@mixin position-sticky($important: false) {
-  position: -webkit-sticky #{if($important, '!important', '')};
-  position: sticky #{if($important, '!important', '')};
 }
 
 @mixin private-color-adjust($value) {
