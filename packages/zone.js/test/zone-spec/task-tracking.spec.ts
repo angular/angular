@@ -75,4 +75,25 @@ describe('TaskTrackingZone', function() {
       expect((taskTrackingZoneSpec!.macroTasks[0] as any)['creationLocation']).toBeTruthy();
     });
   });
+
+  it('should track periodic task until it is canceled', (done) => {
+    taskTrackingZone.run(() => {
+      const intervalCallback = jasmine.createSpy('intervalCallback');
+      const interval = setInterval(intervalCallback, 1);
+
+      expect(intervalCallback).not.toHaveBeenCalled();
+      expect(taskTrackingZoneSpec!.macroTasks.length).toBe(1);
+      expect(taskTrackingZoneSpec!.macroTasks[0].source).toBe('setInterval');
+
+      setTimeout(() => {
+        expect(intervalCallback).toHaveBeenCalled();
+        expect(taskTrackingZoneSpec!.macroTasks.length).toBe(1);
+        expect(taskTrackingZoneSpec!.macroTasks[0].source).toBe('setInterval');
+
+        clearInterval(interval);
+        expect(taskTrackingZoneSpec!.macroTasks.length).toBe(0);
+        done();
+      }, 2);
+    });
+  });
 });

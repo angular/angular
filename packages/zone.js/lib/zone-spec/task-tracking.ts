@@ -58,7 +58,7 @@ class TaskTrackingZoneSpec implements ZoneSpec {
   onInvokeTask(
       parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone, task: Task,
       applyThis: any, applyArgs: any): any {
-    if (task.type === 'eventTask')
+    if (task.type === 'eventTask' || task.data?.isPeriodic)
       return parentZoneDelegate.invokeTask(targetZone, task, applyThis, applyArgs);
     const tasks = this.getTasksFor(task.type);
     for (let i = 0; i < tasks.length; i++) {
