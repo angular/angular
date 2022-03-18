@@ -1,5 +1,5 @@
 # Image metadata and config
-FROM debian:buster
+FROM debian:bullseye
 
 LABEL name="angular.io PR preview" \
       description="This image implements the PR preview functionality for angular.io." \
@@ -72,29 +72,29 @@ RUN mkdir /var/log/aio
 
 
 # Add extra package sources
-RUN apt-get update -y && apt-get install -y curl=7.64.0-4+deb10u1
-RUN curl --silent --show-error --location https://deb.nodesource.com/setup_12.x | bash -
+RUN apt-get update -y && apt-get install -y curl
+RUN curl --silent --show-error --location https://deb.nodesource.com/setup_14.x | bash -
 RUN curl --silent --show-error https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
 RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
 
 
 # Install packages
-# NOTE: Some packages (such as `nginx`, `nodejs`, `openssl`) make older versions unavailable on the
-#       repositories, so we cannot pin to specific versions for these packages :(
-#       See for example:
+# NOTE: Many packages make older versions unavailable on the repositories, so we cannot pin to
+#       specific versions :(
+#       See, for example:
 #       - https://github.com/nodesource/distributions/issues/33
 #       - https://askubuntu.com/questions/715104/how-can-i-downgrade-openssl-via-apt-get
 RUN apt-get update -y && apt-get install -y \
-    cron=3.0pl1-134+deb10u1 \
-    dnsmasq=2.80-1 \
-    nano=3.2-3 \
+    cron \
+    dnsmasq \
+    nano \
     nginx \
     nodejs \
     openssl \
-    rsyslog=8.1901.0-1 \
-    vim=2:8.1.0875-5 \
-    yarn=1.22.4-1
-RUN yarn global add pm2@4.4.0
+    rsyslog \
+    vim \
+    yarn=1.22.18-1
+RUN yarn global add pm2@5.2.0
 
 
 # Set up log rotation
