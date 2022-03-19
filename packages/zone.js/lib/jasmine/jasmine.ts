@@ -66,13 +66,28 @@ Zone.__load_patch('jasmine', (global: any, Zone: ZoneType, api: _ZonePrivate) =>
         if (originalInstall && !instance[symbol('install')]) {
           instance[symbol('install')] = originalInstall;
           instance.install = function() {
-            const originalHandlers = process.listeners('unhandledRejection');
-            const r = originalInstall.apply(this, arguments);
-            process.removeAllListeners('unhandledRejection');
+            const isNode = typeof process !== 'undefined' && !!process.on;
+            // Note: Jasmine checks internally if `process` and `process.on` is defined. Otherwise,
+            // it installs the browser rejection handler through the `global.addEventListener`.
+            // This code may be run in the browser environment where `process` is not defined, and
+            // this will lead to a runtime exception since Webpack 5 removed automatic Node.js
+            // polyfills. Note, that events are named differently, it's `unhandledRejection` in
+            // Node.js and `unhandledrejection` in the browser.
+            const originalHandlers: any[] = isNode ? process.listeners('unhandledRejection') :
+                                                     global.eventListeners('unhandledrejection');
+            const result = originalInstall.apply(this, arguments);
+            isNode ? process.removeAllListeners('unhandledRejection') :
+                     global.removeAllListeners('unhandledrejection');
             if (originalHandlers) {
-              originalHandlers.forEach(h => process.on('unhandledRejection', h));
+              originalHandlers.forEach(handler => {
+                if (isNode) {
+                  process.on('unhandledRejection', handler);
+                } else {
+                  global.addEventListener('unhandledrejection', handler);
+                }
+              });
             }
-            return r;
+            return result;
           };
         }
         return instance;
