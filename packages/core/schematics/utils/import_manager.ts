@@ -9,8 +9,6 @@
 import {dirname, resolve} from 'path';
 import ts from 'typescript';
 
-const PARSED_TS_VERSION = parseFloat(ts.versionMajorMinor);
-
 /** Update recorder for managing imports. */
 export interface ImportManagerUpdateRecorder {
   addNewImport(start: number, importText: string): void;
@@ -153,8 +151,8 @@ export class ImportManager {
           undefined, undefined,
           ts.factory.createImportClause(
               false, undefined,
-              ts.factory.createNamedImports([createImportSpecifier(
-                  needsGeneratedUniqueName ? propertyIdentifier : undefined, identifier)])),
+              ts.factory.createNamedImports([ts.factory.createImportSpecifier(
+                  false, needsGeneratedUniqueName ? propertyIdentifier : undefined, identifier)])),
           ts.factory.createStringLiteral(moduleName));
     } else {
       identifier = this._getUniqueIdentifier(sourceFile, 'defaultExport');
@@ -192,7 +190,8 @@ export class ImportManager {
       const newNamedBindings = ts.factory.updateNamedImports(
           namedBindings,
           namedBindings.elements.concat(expressions.map(
-              ({propertyName, importName}) => createImportSpecifier(propertyName, importName))));
+              ({propertyName, importName}) =>
+                  ts.factory.createImportSpecifier(false, propertyName, importName))));
 
       const newNamedBindingsText =
           this.printer.printNode(ts.EmitHint.Unspecified, newNamedBindings, sourceFile);
@@ -258,19 +257,4 @@ export class ImportManager {
     }
     return commentRanges[commentRanges.length - 1]!.end;
   }
-}
-
-
-/**
- * Backwards-compatible version of `ts.createImportSpecifier`
- * to handle a breaking change between 4.4 and 4.5.
- */
-function createImportSpecifier(
-    propertyName: ts.Identifier|undefined, name: ts.Identifier,
-    isTypeOnly = false): ts.ImportSpecifier {
-  return PARSED_TS_VERSION > 4.4 ?
-      ts.factory.createImportSpecifier(isTypeOnly, propertyName, name) :
-      // TODO(crisbeto): backwards-compatibility layer for TS 4.4.
-      // Should be cleaned up when we drop support for it.
-      (ts.createImportSpecifier as any)(propertyName, name);
 }

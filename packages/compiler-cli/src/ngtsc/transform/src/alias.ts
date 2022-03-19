@@ -8,8 +8,6 @@
 
 import ts from 'typescript';
 
-import {createExportSpecifier} from '../../util/src/typescript';
-
 export function aliasTransformFactory(exportStatements: Map<string, Map<string, [string, string]>>):
     ts.TransformerFactory<ts.SourceFile> {
   return (context: ts.TransformationContext) => {
@@ -24,8 +22,8 @@ export function aliasTransformFactory(exportStatements: Map<string, Map<string, 
             /* decorators */ undefined,
             /* modifiers */ undefined,
             /* isTypeOnly */ false,
-            /* exportClause */ ts.createNamedExports([createExportSpecifier(
-                symbolName, aliasName)]),
+            /* exportClause */ ts.createNamedExports([ts.factory.createExportSpecifier(
+                false, symbolName, aliasName)]),
             /* moduleSpecifier */ ts.factory.createStringLiteral(moduleName));
         statements.push(stmt);
       });
