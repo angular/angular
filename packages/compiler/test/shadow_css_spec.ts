@@ -120,6 +120,12 @@ import {normalizeCSS} from '@angular/platform-browser/testing/src/browser_util';
       expect(s(css, 'contenta')).toEqual(expected);
     });
 
+    it('should handle layer rules', () => {
+      const css = '@layer utilities {section {display: flex;}}';
+      const expected = '@layer utilities {section[contenta] {display:flex;}}';
+      expect(s(css, 'contenta')).toEqual(expected);
+    });
+
     // Check that the browser supports unprefixed CSS animation
     it('should handle keyframes rules', () => {
       const css = '@keyframes foo {0% {transform:translate(-50%) scaleX(0);}}';
