@@ -36,7 +36,7 @@ var_4_win: &cache_key_win_fallback v6-angular-win-node-14-{{ checksum "month.txt
 
 # Cache key for the `components-repo-unit-tests` job. **Note** when updating the SHA in the
 # cache keys also update the SHA for the "COMPONENTS_REPO_COMMIT" environment variable.
-var_5: &components_repo_unit_tests_cache_key v1-angular-components-{{ checksum "month.txt" }}-a931de54a786597b34259e461c2cf3ab6edc590a
+var_5: &components_repo_unit_tests_cache_key v1-angular-components-{{ checksum "month.txt" }}-6b2b51844a9c86add1bd6628d5ec8a621e606073
 var_6: &components_repo_unit_tests_cache_key_fallback v1-angular-components-{{ checksum "month.txt" }}
 
 # Workspace initially persisted by the `setup` job, and then enhanced by `build-npm-packages`.
@@ -188,6 +188,8 @@ commands:
     steps:
       - run:
           name: Save month to file
+          # Note: Make sure this file is excluded in the `.gitignore` as otherwise the
+          # snapshot stamping would have the `-with-local-changes` suffix.
           command: date +%Y-%m > month.txt
 
   # Normally this would be an individual job instead of a command.
@@ -676,6 +678,10 @@ jobs:
             # not supported.
             - '/tmp/angular-components-repo'
       - run:
+          # Copy zone.js package to dist/packages-dist, so `angular/components` can also use the local zone.js build.
+          name: Setting up zone.js release packages.
+          command: cp -r dist/zone.js-dist/zone.js dist/packages-dist/
+      - run:
           # Updates the `angular/components` `package.json` file to refer to the release output
           # inside the `packages-dist` directory.
           name: Setting up framework release packages.
@@ -797,10 +803,9 @@ workflows:
             # since the publishing script expects the legacy outputs layout.
             - build-npm-packages
             - legacy-unit-tests-saucelabs
-      # TODO(devversion): re-enable once the components repo has accounted for the `ng_module` devmode target changes.
-      #- components-repo-unit-tests:
-      #    requires:
-      #      - build-npm-packages
+      - components-repo-unit-tests:
+          requires:
+            - build-npm-packages
       - test_zonejs:
           requires:
             - setup
