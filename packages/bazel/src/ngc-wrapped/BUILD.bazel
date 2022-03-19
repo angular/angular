@@ -34,9 +34,11 @@ nodejs_binary(
         "@npm//tslib",
     ],
     entry_point = ":index.ts",
-    # TODO(josephperrott): update dependency usages to no longer need bazel patch module resolver
-    # See: https://github.com/bazelbuild/rules_nodejs/wiki#--bazel_patch_module_resolver-now-defaults-to-false-2324
-    templated_args = ["--bazel_patch_module_resolver"],
+    # Disables the Bazel node modules linker. The node module linker is unreliable for the
+    # persistent worker executable, as it would rely on the `node_modules/` folder in the
+    # execroot that can be shared in non-sandbox environments or for persistent workers.
+    # https://docs.bazel.build/versions/main/command-line-reference.html#flag--worker_sandboxing.
+    templated_args = ["--nobazel_run_linker"],
     visibility = ["//visibility:public"],
 )
 
