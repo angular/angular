@@ -215,7 +215,7 @@ export function catchInjectorError(
 
 export function formatError(
     text: string, obj: any, injectorErrorName: string, source: string|null = null): string {
-  text = text && text.charAt(0) === '\n' && text.charAt(1) == NO_NEW_LINE ? text.substr(2) : text;
+  text = text && text.charAt(0) === '\n' && text.charAt(1) == NO_NEW_LINE ? text.slice(2) : text;
   let context = stringify(obj);
   if (Array.isArray(obj)) {
     context = obj.map(stringify).join(' -> ');

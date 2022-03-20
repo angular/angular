@@ -24,7 +24,7 @@ module.exports = {
  */
 function resolveModule(specifier) {
   if (specifier.startsWith('@angular/')) {
-    return path.join(__dirname, specifier.substr('@angular/'.length));
+    return path.join(__dirname, specifier.slice('@angular/'.length));
   }
   return null;
 }

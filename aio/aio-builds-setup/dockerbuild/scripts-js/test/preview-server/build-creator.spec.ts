@@ -16,7 +16,7 @@ import {customAsyncMatchers} from './jasmine-custom-async-matchers';
 describe('BuildCreator', () => {
   const pr = 9;
   const sha = '9'.repeat(40);
-  const shortSha = sha.substr(0, SHORT_SHA_LEN);
+  const shortSha = sha.slice(0, SHORT_SHA_LEN);
   const archive = 'snapshot.tar.gz';
   const buildsDir = 'builds/dir';
   const hiddenPrDir = path.join(buildsDir, `hidden--${pr}`);

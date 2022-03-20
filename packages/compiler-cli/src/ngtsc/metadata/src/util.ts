@@ -221,7 +221,7 @@ function afterUnderscore(str: string): string {
   if (pos === -1) {
     throw new Error(`Expected '${str}' to contain '_'`);
   }
-  return str.substr(pos + 1);
+  return str.slice(pos + 1);
 }
 
 /** Returns whether a class declaration has the necessary class fields to make it injectable. */

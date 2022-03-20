@@ -37,7 +37,7 @@ const setClassMetadataRegExp = (expectedType: string): RegExp =>
 const testFiles = loadStandardTestFiles();
 
 function getDiagnosticSourceCode(diag: ts.Diagnostic): string {
-  return diag.file!.text.substr(diag.start!, diag.length!);
+  return diag.file!.text.slice(diag.start!, diag.start! + diag.length!);
 }
 
 runInEachFileSystem(allTests);
@@ -7518,7 +7518,7 @@ function allTests(os: string) {
                   'Cannot mark an element as translatable inside of a translatable section.' +
                   ' Please remove the nested i18n marker.');
           expect(diags[0].file?.fileName).toEqual(absoluteFrom('/test.ts'));
-          expect(diags[0].file?.text.substr(diags[0].start!, diags[0].length))
+          expect(diags[0].file?.text.slice(diags[0].start!, diags[0].start! + diags[0].length!))
               .toEqual('<div i18n>Content</div>');
         });
 
@@ -7540,7 +7540,7 @@ function allTests(os: string) {
                   'Cannot mark an element as translatable inside of a translatable section.' +
                   ' Please remove the nested i18n marker.');
           expect(diags[0].file?.fileName).toEqual(absoluteFrom('/test.ts'));
-          expect(diags[0].file?.text.substr(diags[0].start!, diags[0].length))
+          expect(diags[0].file?.text.slice(diags[0].start!, diags[0].start! + diags[0].length!))
               .toEqual('<div i18n>Content</div>');
         });
 
@@ -7562,7 +7562,7 @@ function allTests(os: string) {
                   'Cannot mark an element as translatable inside of a translatable section.' +
                   ' Please remove the nested i18n marker.');
           expect(diags[0].file?.fileName).toEqual(absoluteFrom('/test.ts'));
-          expect(diags[0].file?.text.substr(diags[0].start!, diags[0].length))
+          expect(diags[0].file?.text.slice(diags[0].start!, diags[0].start! + diags[0].length!))
               .toEqual('<ng-container i18n>Content</ng-container>');
         });
       });

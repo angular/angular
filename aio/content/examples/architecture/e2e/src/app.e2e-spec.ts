@@ -90,7 +90,7 @@ async function heroFromDetail(detail: ElementFinder): Promise<Hero> {
   // Get name from the h2
   const name = await detail.element(by.css('app-hero-detail h2')).getText();
   return {
-    id: +id.substr(id.indexOf(' ') + 1),
-    name: name.substr(0, name.lastIndexOf(' ')),
+    id: +id.slice(id.indexOf(' ') + 1),
+    name: name.substring(0, name.lastIndexOf(' ')),
   };
 }

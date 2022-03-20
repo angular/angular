@@ -56,7 +56,8 @@ describe('definitions', () => {
     template.moveCursorToText('da¦te');
 
     const {textSpan, definitions} = getDefinitionsAndAssertBoundSpan(env, template);
-    expect(template.contents.substr(textSpan.start, textSpan.length)).toEqual('date');
+    expect(template.contents.slice(textSpan.start, textSpan.start + textSpan.length))
+        .toEqual('date');
     expect(definitions.length).toEqual(3);
     assertTextSpans(definitions, ['transform']);
     assertFileNames(definitions, ['index.d.ts']);
@@ -95,7 +96,8 @@ describe('definitions', () => {
     template.moveCursorToText('inpu¦tA="abc"');
 
     const {textSpan, definitions} = getDefinitionsAndAssertBoundSpan(env, template);
-    expect(template.contents.substr(textSpan.start, textSpan.length)).toEqual('inputA');
+    expect(template.contents.slice(textSpan.start, textSpan.start + textSpan.length))
+        .toEqual('inputA');
 
     expect(definitions!.length).toEqual(2);
     const [def, def2] = definitions!;
@@ -140,7 +142,8 @@ describe('definitions', () => {
     template.moveCursorToText('(someEv¦ent)');
 
     const {textSpan, definitions} = getDefinitionsAndAssertBoundSpan(env, template);
-    expect(template.contents.substr(textSpan.start, textSpan.length)).toEqual('someEvent');
+    expect(template.contents.slice(textSpan.start, textSpan.start + textSpan.length))
+        .toEqual('someEvent');
 
     expect(definitions.length).toEqual(2);
     const [def, def2] = definitions;
@@ -170,7 +173,8 @@ describe('definitions', () => {
     const appFile = project.openFile('app.ts');
     appFile.moveCursorToText(`['./styl¦e.css']`);
     const {textSpan, definitions} = getDefinitionsAndAssertBoundSpan(env, appFile);
-    expect(appFile.contents.substr(textSpan.start, textSpan.length)).toEqual('./style.css');
+    expect(appFile.contents.slice(textSpan.start, textSpan.start + textSpan.length))
+        .toEqual('./style.css');
 
     expect(definitions.length).toEqual(1);
     assertFileNames(definitions, ['style.scss']);

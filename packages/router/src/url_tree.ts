@@ -686,7 +686,7 @@ class UrlParser {
 
       let outletName: string = undefined!;
       if (path.indexOf(':') > -1) {
-        outletName = path.substr(0, path.indexOf(':'));
+        outletName = path.slice(0, path.indexOf(':'));
         this.capture(outletName);
         this.capture(':');
       } else if (allowPrimary) {

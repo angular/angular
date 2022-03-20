@@ -122,6 +122,6 @@ function extractCursorInfo(textWithCursor: string): {cursor: number, text: strin
 
   return {
     cursor,
-    text: textWithCursor.substr(0, cursor) + textWithCursor.substr(cursor + 1),
+    text: textWithCursor.slice(0, cursor) + textWithCursor.slice(cursor + 1),
   };
 }

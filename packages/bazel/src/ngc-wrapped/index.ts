@@ -585,7 +585,7 @@ export function patchNgHostWithFileNameToModuleName(
     // break `esm2015` or `esm5` output for Angular package release output
     // Omit the `node_modules` prefix if the module name of an NPM package is requested.
     if (relativeTargetPath.startsWith(NODE_MODULES)) {
-      return relativeTargetPath.substr(NODE_MODULES.length);
+      return relativeTargetPath.slice(NODE_MODULES.length);
     } else if (
         containingFilePath == null || !bazelOpts.compilationTargetSrc.includes(importedFilePath)) {
       return manifestTargetPath;
