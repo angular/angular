@@ -84,10 +84,10 @@ export class CssSelector {
         const prefix = match[SelectorRegexp.PREFIX];
         if (prefix === '#') {
           // #hash
-          current.addAttribute('id', tag.substr(1));
+          current.addAttribute('id', tag.slice(1));
         } else if (prefix === '.') {
           // Class
-          current.addClassName(tag.substr(1));
+          current.addClassName(tag.slice(1));
         } else {
           // Element
           current.setElement(tag);

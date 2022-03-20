@@ -384,7 +384,7 @@ function removeInnerTemplateTranslation(message: string): string {
           `Tag mismatch: unable to find the end of the sub-template in the translation "${
               message}"`);
 
-  res += message.substr(index);
+  res += message.slice(index);
   return res;
 }
 
@@ -483,7 +483,7 @@ export function parseICUBlock(pattern: string): IcuExpression {
     } else {
       icuType = IcuType.plural;
     }
-    mainBinding = parseInt(binding.substr(1), 10);
+    mainBinding = parseInt(binding.slice(1), 10);
     return '';
   });
 

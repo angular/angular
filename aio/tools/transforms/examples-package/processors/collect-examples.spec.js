@@ -204,7 +204,7 @@ describe('collectExampleRegions processor', () => {
 
 function createDoc(content, relativePath, docType) {
   return {
-    fileInfo: {relativePath: relativePath, baseName: path.basename(relativePath), extension: path.extname(relativePath).substr(1)},
+    fileInfo: {relativePath: relativePath, baseName: path.basename(relativePath), extension: path.extname(relativePath).slice(1)},
     content: content,
     docType: docType || 'example-file',
     startingLine: 1

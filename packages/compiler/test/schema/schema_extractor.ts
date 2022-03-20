@@ -191,7 +191,7 @@ function extractProperties(
   keys.sort();
   keys.forEach((name) => {
     if (name.startsWith('on')) {
-      props.push('*' + name.substr(2));
+      props.push('*' + name.slice(2));
     } else {
       const typeCh = _TYPE_MNEMONICS[typeof instance[name]];
       const descriptor = Object.getOwnPropertyDescriptor(prototype, name);

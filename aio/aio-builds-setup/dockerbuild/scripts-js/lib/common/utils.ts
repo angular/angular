@@ -7,7 +7,7 @@ import {SHORT_SHA_LEN} from './constants';
  * @param sha The SHA to shorten.
  */
 export function computeShortSha(sha: string) {
-  return sha.substr(0, SHORT_SHA_LEN);
+  return sha.slice(0, SHORT_SHA_LEN);
 }
 
 /**

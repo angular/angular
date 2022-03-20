@@ -228,7 +228,7 @@ export class StackblitzBuilder {
         }
       }
 
-      content = regionExtractor()(content, extn.substr(1)).contents;
+      content = regionExtractor()(content, extn.slice(1)).contents;
 
       postData[`project[files][${relativeFileName}]`] = content;
     });
@@ -287,7 +287,7 @@ export class StackblitzBuilder {
     const gpaths = config.files.map((fileName) => {
       fileName = fileName.trim();
       if (fileName[0] === '!') {
-        return '!' + path.join(config.basePath, fileName.substr(1));
+        return '!' + path.join(config.basePath, fileName.slice(1));
       } else {
         includeSpec = includeSpec || /\.spec\.(ts|js)$/.test(fileName);
         return path.join(config.basePath, fileName);

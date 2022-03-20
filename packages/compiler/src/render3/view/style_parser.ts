@@ -88,7 +88,7 @@ export function parse(value: string): string[] {
   }
 
   if (currentProp && valueStart) {
-    const styleVal = value.substr(valueStart).trim();
+    const styleVal = value.slice(valueStart).trim();
     styles.push(currentProp, valueHasQuotes ? stripUnnecessaryQuotes(styleVal) : styleVal);
   }
 

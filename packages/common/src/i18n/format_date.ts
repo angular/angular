@@ -223,14 +223,14 @@ function padNumber(
     strNum = '0' + strNum;
   }
   if (trim) {
-    strNum = strNum.substr(strNum.length - digits);
+    strNum = strNum.slice(strNum.length - digits);
   }
   return neg + strNum;
 }
 
 function formatFractionalSeconds(milliseconds: number, digits: number): string {
   const strMs = padNumber(milliseconds, 3);
-  return strMs.substr(0, digits);
+  return strMs.substring(0, digits);
 }
 
 /**

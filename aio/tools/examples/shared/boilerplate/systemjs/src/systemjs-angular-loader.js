@@ -26,7 +26,7 @@ module.exports.translate = function(load){
       var resolvedUrl = url;
 
       if (url.startsWith('.')) {
-        resolvedUrl = basePath + url.substr(1);
+        resolvedUrl = basePath + url.slice(1);
       }
 
       return 'templateUrl: "' + resolvedUrl + '"';
@@ -36,7 +36,7 @@ module.exports.translate = function(load){
 
       while ((match = stringRegex.exec(relativeUrls)) !== null) {
         if (match[2].startsWith('.')) {
-          urls.push('"' + basePath + match[2].substr(1) + '"');
+          urls.push('"' + basePath + match[2].slice(1) + '"');
         } else {
           urls.push('"' + match[2] + '"');
         }

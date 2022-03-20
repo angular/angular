@@ -102,7 +102,7 @@ describe('Router', () => {
     const text = await heroEle.getText();
     expect(text.length).toBeGreaterThan(0, 'hero item text length');
     // remove leading id from text
-    const heroText = text.substr(text.indexOf(' ')).trim();
+    const heroText = text.slice(text.indexOf(' ')).trim();
 
     await heroEle.click();
     await browser.sleep(600);
@@ -168,7 +168,7 @@ describe('Router', () => {
     const text = await crisisEle.getText();
     expect(text.length).toBeGreaterThan(0, 'crisis item text length');
     // remove leading id from text
-    const crisisText = text.substr(text.indexOf(' ')).trim();
+    const crisisText = text.slice(text.indexOf(' ')).trim();
 
     await crisisEle.click();
     expect(await page.crisisDetail.isPresent()).toBe(true, 'crisis detail present');
