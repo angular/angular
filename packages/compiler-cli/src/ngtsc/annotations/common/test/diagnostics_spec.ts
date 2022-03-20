@@ -97,7 +97,7 @@ runInEachFileSystem(() => {
 
 function getSourceCode(diag: ts.DiagnosticRelatedInformation): string {
   const text = diag.file!.text;
-  return text.substr(diag.start!, diag.length!);
+  return text.slice(diag.start!, diag.start! + diag.length!);
 }
 
 function createError(

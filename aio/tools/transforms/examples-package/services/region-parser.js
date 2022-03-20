@@ -138,7 +138,7 @@ function leftAlign(lines) {
       indent = Math.min(lineIndent, indent);
     }
   });
-  return lines.map(line => line.substr(indent));
+  return lines.map(line => line.slice(indent));
 }
 
 function RegionParserError(message, index) {

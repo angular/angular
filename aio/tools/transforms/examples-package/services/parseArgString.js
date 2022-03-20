@@ -37,14 +37,14 @@ module.exports = function parseArgString() {
           args[key] = arg;
           key = null;
         } else {
-          if (arg.substr(arg.length - 1) === '=') {
-            key = arg.substr(0, arg.length - 1);
+          if (arg.slice(-1) === '=') {
+            key = arg.slice(0, -1);
             // remove leading '-' (or '--') if it exists.
-            if (key.substr(0, 1) == '-') {
-              key = key.substr(1);
+            if (key.slice(0, 1) == '-') {
+              key = key.slice(1);
             }
-            if (key.substr(0, 1) == '-') {
-              key = key.substr(1);
+            if (key.slice(0, 1) == '-') {
+              key = key.slice(1);
             }
           } else {
             unnammedArgs.push(arg);

@@ -45,7 +45,7 @@ function extractPaths(obj, paths) {
             if (index == 0) {
               objs[i] = o = o[name];
             } else if (name.charAt(0) == '^') {
-              if (o.indexOf(name.substr(1)) !== 0) {
+              if (o.indexOf(name.slice(1)) !== 0) {
                 objs.splice(i, 1);
                 i--;
               }

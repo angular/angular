@@ -14,8 +14,8 @@ class Hero {
     // Get name from the h2
     const name = await detail.element(by.css('h2')).getText();
     return new Hero(
-      +id.substr(id.indexOf(' ') + 1),
-      name.substr(0, name.lastIndexOf(' '))
+      +id.slice(id.indexOf(' ') + 1),
+      name.substring(0, name.lastIndexOf(' '))
     );
   }
 }

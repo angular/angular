@@ -215,7 +215,7 @@ export class AppVersion implements UpdateSource {
     }
 
     const urlPrefix = this.scope.registration.scope.replace(/\/$/, '');
-    const url = req.url.startsWith(urlPrefix) ? req.url.substr(urlPrefix.length) : req.url;
+    const url = req.url.startsWith(urlPrefix) ? req.url.slice(urlPrefix.length) : req.url;
     const urlWithoutQueryOrHash = url.replace(/[?#].*$/, '');
 
     return this.navigationUrls.include.some(regex => regex.test(urlWithoutQueryOrHash)) &&

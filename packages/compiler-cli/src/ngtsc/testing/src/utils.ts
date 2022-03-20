@@ -145,5 +145,5 @@ export function getSourceCodeForDiagnostic(diag: ts.Diagnostic): string {
         `Unable to get source code for diagnostic. Provided diagnostic instance doesn't contain "file", "start" and/or "length" properties.`);
   }
   const text = diag.file.text;
-  return text.substr(diag.start, diag.length);
+  return text.slice(diag.start, diag.start + diag.length);
 }

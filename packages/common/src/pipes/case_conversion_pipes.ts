@@ -7,6 +7,7 @@
  */
 
 import {Pipe, PipeTransform} from '@angular/core';
+
 import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
 
 /**
@@ -85,7 +86,7 @@ export class TitleCasePipe implements PipeTransform {
     }
 
     return value.replace(
-        unicodeWordMatch, (txt => txt[0].toUpperCase() + txt.substr(1).toLowerCase()));
+        unicodeWordMatch, (txt => txt[0].toUpperCase() + txt.slice(1).toLowerCase()));
   }
 }
 

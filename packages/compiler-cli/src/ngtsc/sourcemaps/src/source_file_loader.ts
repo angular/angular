@@ -252,7 +252,7 @@ export class SourceFileLoader {
     if (lastRealLineIndex === -1) {
       lastRealLineIndex = 0;
     }
-    return contents.substr(lastRealLineIndex + 1);
+    return contents.slice(lastRealLineIndex + 1);
   }
 
   /**

@@ -36,7 +36,7 @@ module.exports = function collectExamples(exampleMap, regionParser, log, createD
             exampleFolders.some((folder) => {
               if (doc.fileInfo.relativePath.indexOf(folder) === 0) {
                 const relativePath =
-                    doc.fileInfo.relativePath.substr(folder.length).replace(/^\//, '');
+                    doc.fileInfo.relativePath.slice(folder.length).replace(/^\//, '');
                 exampleMap[folder][relativePath] = doc;
 
                 // We treat files that end in `.annotated` specially
@@ -45,7 +45,7 @@ module.exports = function collectExamples(exampleMap, regionParser, log, createD
                 // of the original but contains inline doc region comments
                 let fileType = doc.fileInfo.extension;
                 if (fileType === 'annotated') {
-                  fileType = extname(doc.fileInfo.baseName).substr(1) + '.' + fileType;
+                  fileType = extname(doc.fileInfo.baseName).slice(1) + '.' + fileType;
                 }
 
                 const parsedRegions = regionParser(doc.content, fileType);

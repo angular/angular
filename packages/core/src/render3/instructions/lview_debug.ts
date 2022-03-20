@@ -118,7 +118,7 @@ function getLViewToClone(type: TViewType, name: string|null): Array<any> {
 function nameSuffix(text: string|null|undefined): string {
   if (text == null) return '';
   const index = text.lastIndexOf('_Template');
-  return '_' + (index === -1 ? text : text.substr(0, index));
+  return '_' + (index === -1 ? text : text.slice(0, index));
 }
 
 /**

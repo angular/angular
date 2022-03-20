@@ -199,6 +199,6 @@ function leftAlign(text: TrustedHTML): TrustedHTML {
   });
 
   return htmlFromStringKnownToSatisfyTypeContract(
-      lines.map(line => line.substr(indent)).join('\n').trim(),
+      lines.map(line => line.slice(indent)).join('\n').trim(),
       'safe manipulation of existing trusted HTML');
 }

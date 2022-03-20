@@ -162,7 +162,7 @@ export class NgtscTestEnvironment {
     const writtenFiles = new Set<string>();
     this.multiCompileHostExt.getFilesWrittenSinceLastFlush().forEach(rawFile => {
       if (rawFile.startsWith(this.outDir)) {
-        writtenFiles.add(rawFile.substr(this.outDir.length));
+        writtenFiles.add(rawFile.slice(this.outDir.length));
       }
     });
     return writtenFiles;
@@ -315,7 +315,7 @@ class FileNameToModuleNameHost extends AugmentedCompilerHost {
     return moduleNames.map(moduleName => {
       if (moduleName.startsWith(ROOT_PREFIX)) {
         // Strip the artificially added root prefix.
-        moduleName = '/' + moduleName.substr(ROOT_PREFIX.length);
+        moduleName = '/' + moduleName.slice(ROOT_PREFIX.length);
       }
 
       return ts

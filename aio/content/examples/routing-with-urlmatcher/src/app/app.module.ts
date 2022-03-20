@@ -22,7 +22,7 @@ import { ProfileComponent } from './profile/profile.component';
             return {
               consumed: url,
               posParams: {
-                username: new UrlSegment(url[0].path.substr(1), {})
+                username: new UrlSegment(url[0].path.slice(1), {})
               }
             };
           }
