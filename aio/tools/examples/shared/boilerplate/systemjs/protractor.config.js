@@ -133,10 +133,10 @@ function Reporter(outputFile) {
           spec.failedExpectations.forEach(function (fe) {
             results.push(pad + 'message: ' + fe.message);
           });
-          pad=pad.substr(2);
+          pad=pad.slice(2);
         }
       });
-      pad = pad.substr(2);
+      pad = pad.slice(2);
       results.push('');
     });
     results.push('');
@@ -148,7 +148,7 @@ function Reporter(outputFile) {
   function log(str, indent) {
     _pad = _pad || '';
     if (indent == -1) {
-      _pad = _pad.substr(2);
+      _pad = _pad.slice(2);
     }
     console.log(_pad + str);
     if (indent == 1) {

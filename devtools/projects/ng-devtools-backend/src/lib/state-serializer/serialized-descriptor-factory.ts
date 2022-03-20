@@ -266,7 +266,7 @@ const getLevelDescriptorValue =
 
 const truncate = (str: string, max = 20): string => {
   if (str.length > max) {
-    return str.substr(0, max) + '...';
+    return str.substring(0, max) + '...';
   }
   return str;
 };

@@ -226,7 +226,7 @@ function main(args: string[]): void {
    * is `@angular/cdk`, then for `@angular/cdk/a11y` just `a11y` would be returned.
    */
   function getEntryPointSubpath(moduleName: string): string {
-    return moduleName.substr(`${metadata.npmPackageName}/`.length);
+    return moduleName.slice(`${metadata.npmPackageName}/`.length);
   }
 
   /**

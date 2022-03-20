@@ -18,7 +18,7 @@ function toHaveText(): jasmine.CustomMatcher {
       return { pass, message };
 
       function composeMessage() {
-        const a = (actualText.length < 100 ? actualText : actualText.substr(0, 100) + '...');
+        const a = (actualText.length < 100 ? actualText : actualText.slice(0, 100) + '...');
         const efo = expectationFailOutput ? ` '${expectationFailOutput}'` : '';
         return `Expected element to have text content '${expectedText}' instead of '${a}'${efo}`;
       }

@@ -69,7 +69,7 @@ function tokenize(text: string): Piece[] {
     const to = from + ERROR_CONTEXT_WIDTH;
     throw Error(
         `Invalid test, no token found for "${text[tokenizedTextEnd]}" ` +
-        `(context = '${text.substr(from, to)}...'`);
+        `(context = '${text.slice(from, to)}...'`);
   }
   // Reset the lastIndex in case we are in a recursive `tokenize()` call.
   TOKEN.lastIndex = lastIndex;
@@ -136,15 +136,15 @@ export function expectEmit(
         const contextLength = 50;
         const fullContext = source.substring(source.lastIndexOf('\n', last) + 1, last);
         const context = fullContext.length > contextLength ?
-            `...${fullContext.substr(-contextLength)}` :
+            `...${fullContext.slice(-contextLength)}` :
             fullContext;
         throw new Error(
             `${RED}${description}:\n${RESET}${BLUE}Failed to find${RESET} "${expectedPiece}"\n` +
             `${BLUE}After ${RESET}"${context}"\n` +
             `${BLUE}In generated file:${RESET}\n\n` +
-            `${source.substr(0, last)}` +
+            `${source.slice(0, last)}` +
             `${RED}[[[ <<<<---HERE expected "${GREEN}${expectedPiece}${RED}" ]]]${RESET}` +
-            `${source.substr(last)}`);
+            `${source.slice(last)}`);
       } else {
         last = (m.index || 0) + m[0].length;
       }

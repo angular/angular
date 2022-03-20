@@ -1250,8 +1250,8 @@ function expectReplacementText(
 
   for (const entry of completions.entries) {
     expect(entry.replacementSpan).toBeDefined();
-    const completionReplaces =
-        text.substr(entry.replacementSpan!.start, entry.replacementSpan!.length);
+    const completionReplaces = text.slice(
+        entry.replacementSpan!.start, entry.replacementSpan!.start + entry.replacementSpan!.length);
     expect(completionReplaces).toBe(replacementText);
   }
 }

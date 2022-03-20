@@ -8,8 +8,8 @@
 
 import * as chars from '../chars';
 import {ParseError, ParseLocation, ParseSourceFile, ParseSourceSpan} from '../parse_util';
-import {NAMED_ENTITIES} from './entities';
 
+import {NAMED_ENTITIES} from './entities';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from './interpolation_config';
 import {TagContentType, TagDefinition} from './tags';
 import {IncompleteTagOpenToken, TagOpenStartToken, Token, TokenType} from './tokens';
@@ -1202,7 +1202,7 @@ class EscapedCharacterCursor extends PlainCharacterCursor {
   }
 
   protected decodeHexDigits(start: EscapedCharacterCursor, length: number): number {
-    const hex = this.input.substr(start.internalState.offset, length);
+    const hex = this.input.slice(start.internalState.offset, start.internalState.offset + length);
     const charCode = parseInt(hex, 16);
     if (!isNaN(charCode)) {
       return charCode;

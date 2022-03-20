@@ -82,7 +82,7 @@ export class LocationService {
     const q = path.indexOf('?');
     if (q > -1) {
       try {
-          const params = path.substr(q + 1).split('&');
+          const params = path.slice(q + 1).split('&');
           params.forEach(p => {
             const pair = p.split('=');
             if (pair[0]) {

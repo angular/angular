@@ -67,7 +67,7 @@ export class CacheTable implements Table {
   }
 
   keys(): Promise<string[]> {
-    return this.cache.keys().then(requests => requests.map(req => req.url.substr(1)));
+    return this.cache.keys().then(requests => requests.map(req => req.url.slice(1)));
   }
 
   read(key: string): Promise<any> {

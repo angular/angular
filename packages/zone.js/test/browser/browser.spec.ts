@@ -380,7 +380,7 @@ describe('Zone', function() {
                   ignoredProperties.filter(ignoreProp => ignoreProp === prop).length > 0) {
                 continue;
               }
-              if (prop.substr(0, 2) === 'on' && prop.length > 2) {
+              if (prop.slice(0, 2) === 'on' && prop.length > 2) {
                 let propExistsOnTarget = false;
                 let checkTarget = target;
                 while (checkTarget && checkTarget !== Object) {
@@ -396,12 +396,12 @@ describe('Zone', function() {
                   continue;
                 }
                 target[prop] = noop;
-                if (!target[Zone.__symbol__('ON_PROPERTY' + prop.substr(2))]) {
+                if (!target[Zone.__symbol__('ON_PROPERTY' + prop.slice(2))]) {
                   fail(`${prop} of ${target} is not patched`);
                 } else {
                   expect(target[prop]).toBe(noop);
                   target[prop] = null;
-                  expect(target[Zone.__symbol__('ON_PROPERTY' + prop.substr(2))]).toBeNull();
+                  expect(target[Zone.__symbol__('ON_PROPERTY' + prop.slice(2))]).toBeNull();
                 }
               }
             }

@@ -188,8 +188,8 @@ export function patchProperty(obj: any, prop: string, prototype?: any) {
   const originalDescGet = desc.get;
   const originalDescSet = desc.set;
 
-  // substr(2) cuz 'onclick' -> 'click', etc
-  const eventName = prop.substr(2);
+  // slice(2) cuz 'onclick' -> 'click', etc
+  const eventName = prop.slice(2);
 
   let eventNameSymbol = zoneSymbolEventNames[eventName];
   if (!eventNameSymbol) {
@@ -268,7 +268,7 @@ export function patchOnProperties(obj: any, properties: string[]|null, prototype
   } else {
     const onProperties = [];
     for (const prop in obj) {
-      if (prop.substr(0, 2) == 'on') {
+      if (prop.slice(0, 2) == 'on') {
         onProperties.push(prop);
       }
     }

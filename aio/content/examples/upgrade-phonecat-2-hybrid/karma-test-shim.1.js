@@ -20,7 +20,7 @@ function isSpecFile(path) {
 }
 
 function isBuiltFile(path) {
-  return isJsFile(path) && (path.substr(0, builtPath.length) == builtPath);
+  return isJsFile(path) && (path.slice(0, builtPath.length) == builtPath);
 }
 
 var allSpecFiles = Object.keys(window.__karma__.files)
