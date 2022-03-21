@@ -104,6 +104,22 @@ describe('CdkVirtualScrollViewport', () => {
         .toEqual({start: 0, end: 4});
     }));
 
+    it('should contract the rendered range when changing to less data', fakeAsync(() => {
+      finishInit(fixture);
+
+      expect(viewport.getRenderedRange()).toEqual({start: 0, end: 4});
+
+      fixture.componentInstance.items = [0, 1];
+      fixture.detectChanges();
+
+      expect(viewport.getRenderedRange()).toEqual({start: 0, end: 2});
+
+      fixture.componentInstance.items = [];
+      fixture.detectChanges();
+
+      expect(viewport.getRenderedRange()).toEqual({start: 0, end: 0});
+    }));
+
     it('should get the rendered content offset', fakeAsync(() => {
       finishInit(fixture);
       triggerScroll(viewport, testComponent.itemSize + 5);
