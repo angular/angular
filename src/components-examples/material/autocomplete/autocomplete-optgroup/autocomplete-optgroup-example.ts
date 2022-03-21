@@ -19,7 +19,7 @@ export const _filter = (opt: string[], value: string): string[] => {
  */
 @Component({
   selector: 'autocomplete-optgroup-example',
-  templateUrl: './autocomplete-optgroup-example.html',
+  templateUrl: 'autocomplete-optgroup-example.html',
 })
 export class AutocompleteOptgroupExample implements OnInit {
   stateForm: FormGroup = this._formBuilder.group({
