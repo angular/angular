@@ -26,6 +26,7 @@ import {ProgressBarStylesMigrator} from './components/progress-bar/progress-bar-
 import {ProgressSpinnerStylesMigrator} from './components/progress-spinner/progress-spinner-styles';
 import {RadioStylesMigrator} from './components/radio/radio-styles';
 import {RuntimeMigrator} from './runtime-migrator';
+import {SelectStylesMigrator} from './components/select/select-styles';
 import {SlideToggleStylesMigrator} from './components/slide-toggle/slide-toggle-styles';
 import {SliderStylesMigrator} from './components/slider/slider-styles';
 import {TableStylesMigrator} from './components/table/table-styles';
@@ -98,6 +99,10 @@ export const MIGRATORS: ComponentMigrator[] = [
   {
     component: 'radio',
     styles: new RadioStylesMigrator(),
+  },
+  {
+    component: 'select',
+    styles: new SelectStylesMigrator(),
   },
   {
     component: 'slide-toggle',
