@@ -5,11 +5,13 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {ɵMessageId, ɵparseTranslation, ɵSourceLocation, ɵSourceMessage} from '@angular/localize';
+import {MessageId, ɵparseTranslation, ɵSourceMessage} from '@angular/localize';
+
 import {Diagnostics} from '../../../diagnostics';
+
 import {ParseAnalysis, ParsedTranslationBundle, TranslationParser} from './translation_parser';
 
-export interface ArbJsonObject extends Record<ɵMessageId, ɵSourceMessage|ArbMetadata> {
+export interface ArbJsonObject extends Record<MessageId, ɵSourceMessage|ArbMetadata> {
   '@@locale': string;
 }
 
@@ -20,8 +22,8 @@ export interface ArbMetadata {
 }
 
 export interface ArbLocation {
-  start: {line: number, column: number};
-  end: {line: number, column: number};
+  start: {line: number; column: number};
+  end: {line: number; column: number};
   file: string;
 }
 
@@ -78,7 +80,7 @@ export class ArbTranslationParser implements TranslationParser<ArbJsonObject> {
     const bundle: ParsedTranslationBundle = {
       locale: arb['@@locale'],
       translations: {},
-      diagnostics: new Diagnostics()
+      diagnostics: new Diagnostics(),
     };
 
     for (const messageId of Object.keys(arb)) {

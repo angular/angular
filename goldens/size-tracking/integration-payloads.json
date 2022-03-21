@@ -25,9 +25,9 @@
   },
   "cli-hello-world-ivy-i18n": {
     "uncompressed": {
-      "runtime": 929,
+      "runtime": 926,
       "main": 125862,
-      "polyfills": 34530
+      "polyfills": 35252
     }
   },
   "cli-hello-world-lazy": {
