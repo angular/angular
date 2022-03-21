@@ -152,7 +152,7 @@ async function createResolveEsbuildPlugin() {
     name: 'ng-resolve-esbuild',
     setup: build => {
       build.onResolve({filter: /@angular\//}, async args => {
-        const pkgName = args.path.substr('@angular/'.length);
+        const pkgName = args.path.slice('@angular/'.length);
         let resolvedPath = join(legacyOutputDir, pkgName);
         let stats = await statGraceful(resolvedPath);
 

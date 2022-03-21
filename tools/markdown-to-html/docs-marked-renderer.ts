@@ -48,7 +48,7 @@ export class DocsMarkdownRenderer extends Renderer {
 
     // Keep track of all fragments discovered in a file.
     if (href.startsWith('#')) {
-      this._referencedFragments.add(href.substr(1));
+      this._referencedFragments.add(href.slice(1));
     }
 
     return super.link(href, title, text);
