@@ -55,7 +55,8 @@ bazel_skylib_workspace()
 load("@build_bazel_rules_nodejs//:index.bzl", "node_repositories", "yarn_install")
 
 node_repositories(
-    node_version = "16.14.0",
+    # TOOD: Bring this in sync with CircleCI and nvmrc once we are on `rules_nodejs`#v5.
+    node_version = "16.10.0",
     package_json = ["//:package.json"],
 )
 
