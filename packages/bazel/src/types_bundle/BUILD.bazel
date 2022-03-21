@@ -11,14 +11,13 @@ ts_library(
         "index.ts",
     ],
     deps = [
-        "@npm//@bazel/concatjs",
         "@npm//@microsoft/api-extractor",
         "@npm//@types/node",
     ],
 )
 
 nodejs_binary(
-    name = "api_extractor",
+    name = "types_bundler",
     data = [
         ":lib",
         "@npm//@bazel/concatjs",
@@ -33,6 +32,9 @@ nodejs_binary(
 
 filegroup(
     name = "package_assets",
-    srcs = ["BUILD.bazel"],
+    srcs = [
+        "BUILD.bazel",
+        "index.bzl",
+    ],
 )
 # END-DEV-ONLY

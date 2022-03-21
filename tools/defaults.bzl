@@ -18,7 +18,6 @@ load("@npm//@angular/dev-infra-private/bazel:extract_js_module_output.bzl", "ext
 load("@npm//@angular/dev-infra-private/bazel/esbuild:index.bzl", _esbuild = "esbuild", _esbuild_config = "esbuild_config")
 
 _DEFAULT_TSCONFIG_TEST = "//packages:tsconfig-test"
-_INTERNAL_NG_MODULE_API_EXTRACTOR = "//packages/bazel/src/api-extractor:api_extractor"
 _INTERNAL_NG_MODULE_COMPILER = "//packages/bazel/src/ngc-wrapped"
 _INTERNAL_NG_MODULE_XI18N = "//packages/bazel/src/ngc-wrapped:xi18n"
 _INTERNAL_NG_PACKAGE_PACKAGER = "//packages/bazel/src/ng_package:packager"
@@ -154,7 +153,7 @@ def ts_library(name, tsconfig = None, testonly = False, deps = [], module_name =
         output_group = "es5_sources",
     )
 
-def ng_module(name, tsconfig = None, entry_point = None, testonly = False, deps = [], module_name = None, package_name = None, bundle_dts = True, **kwargs):
+def ng_module(name, tsconfig = None, entry_point = None, testonly = False, deps = [], module_name = None, package_name = None, **kwargs):
     """Default values for ng_module"""
     deps = deps + ["@npm//tslib"]
     if testonly:
@@ -182,10 +181,8 @@ def ng_module(name, tsconfig = None, entry_point = None, testonly = False, deps 
         tsconfig = tsconfig,
         entry_point = entry_point,
         testonly = testonly,
-        bundle_dts = bundle_dts,
         deps = deps,
         compiler = _INTERNAL_NG_MODULE_COMPILER,
-        api_extractor = _INTERNAL_NG_MODULE_API_EXTRACTOR,
         ng_xi18n = _INTERNAL_NG_MODULE_XI18N,
         # `module_name` is used for AMD module names within emitted JavaScript files.
         module_name = module_name,

@@ -1,8 +1,7 @@
 README.md
 _index.scss
 a11y
-  a11y/a11y.d.ts
-  a11y/package.json
+  a11y/index.d.ts
 arbitrary-npm-package-main.js
 arbitrary_bin.txt
 arbitrary_genfiles.txt
@@ -23,7 +22,6 @@ esm2020
     esm2020/secondary/index.mjs
     esm2020/secondary/secondary.mjs
     esm2020/secondary/secondarymodule.mjs
-example.d.ts
 extra-styles.css
 fesm2015
   fesm2015/a11y.mjs
@@ -44,13 +42,12 @@ fesm2020
   fesm2020/waffels.mjs
   fesm2020/waffels.mjs.map
 imports
-  imports/imports.d.ts
-  imports/package.json
+  imports/index.d.ts
+index.d.ts
 logo.png
 package.json
 secondary
-  secondary/package.json
-  secondary/secondary.d.ts
+  secondary/index.d.ts
 some-file.txt
 --- README.md ---
 
@@ -69,13 +66,14 @@ License: MIT
 /// test file which should ship as part of the NPM package.
 
 
---- a11y/a11y.d.ts ---
+--- a11y/index.d.ts ---
 
 /**
  * @license Angular v0.0.0
  * (c) 2010-2022 Google LLC. https://angular.io/
  * License: MIT
  */
+
 
 import * as i0 from '@angular/core';
 
@@ -87,18 +85,6 @@ export declare class A11yModule {
 
 export { }
 
-
---- a11y/package.json ---
-
-{
-  "name": "example/a11y",
-  "fesm2020": "../fesm2020/a11y.mjs",
-  "fesm2015": "../fesm2015/a11y.mjs",
-  "esm2020": "../esm2020/a11y/a11y.mjs",
-  "typings": "./a11y.d.ts",
-  "module": "../fesm2015/a11y.mjs",
-  "es2020": "../fesm2020/a11y.mjs"
-}
 
 --- arbitrary-npm-package-main.js ---
 
@@ -316,25 +302,6 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0", ngImport
         }] });
 export const a = 1;
 //# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoic2Vjb25kYXJ5bW9kdWxlLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vcGFja2FnZXMvYmF6ZWwvdGVzdC9uZ19wYWNrYWdlL2V4YW1wbGUvc2Vjb25kYXJ5L3NlY29uZGFyeW1vZHVsZS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTs7Ozs7O0dBTUc7QUFFSCxPQUFPLEVBQUMsUUFBUSxFQUFDLE1BQU0sZUFBZSxDQUFDOztBQUd2QyxNQUFNLE9BQU8sZUFBZTs7dUhBQWYsZUFBZTt3SEFBZixlQUFlO3dIQUFmLGVBQWU7c0dBQWYsZUFBZTtrQkFEM0IsUUFBUTttQkFBQyxFQUFFOztBQUlaLE1BQU0sQ0FBQyxNQUFNLENBQUMsR0FBRyxDQUFDLENBQUMiLCJzb3VyY2VzQ29udGVudCI6WyIvKipcbiAqIEBsaWNlbnNlXG4gKiBDb3B5cmlnaHQgR29vZ2xlIExMQyBBbGwgUmlnaHRzIFJlc2VydmVkLlxuICpcbiAqIFVzZSBvZiB0aGlzIHNvdXJjZSBjb2RlIGlzIGdvdmVybmVkIGJ5IGFuIE1JVC1zdHlsZSBsaWNlbnNlIHRoYXQgY2FuIGJlXG4gKiBmb3VuZCBpbiB0aGUgTElDRU5TRSBmaWxlIGF0IGh0dHBzOi8vYW5ndWxhci5pby9saWNlbnNlXG4gKi9cblxuaW1wb3J0IHtOZ01vZHVsZX0gZnJvbSAnQGFuZ3VsYXIvY29yZSc7XG5cbkBOZ01vZHVsZSh7fSlcbmV4cG9ydCBjbGFzcyBTZWNvbmRhcnlNb2R1bGUge1xufVxuXG5leHBvcnQgY29uc3QgYSA9IDE7XG4iXX0=
-
---- example.d.ts ---
-
-/**
- * @license Angular v0.0.0
- * (c) 2010-2022 Google LLC. https://angular.io/
- * License: MIT
- */
-
-import * as i0 from '@angular/core';
-
-export declare class MyModule {
-    static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
-    static ɵmod: i0.ɵɵNgModuleDeclaration<MyModule, never, never, never>;
-    static ɵinj: i0.ɵɵInjectorDeclaration<MyModule>;
-}
-
-export { }
-
 
 --- extra-styles.css ---
 
@@ -733,13 +700,14 @@ export { MyModule };
 //# sourceMappingURL=waffels.mjs.map
 
 
---- imports/imports.d.ts ---
+--- imports/index.d.ts ---
 
 /**
  * @license Angular v0.0.0
  * (c) 2010-2022 Google LLC. https://angular.io/
  * License: MIT
  */
+
 
 import * as i0 from '@angular/core';
 
@@ -758,17 +726,25 @@ export declare class MyService {
 export { }
 
 
---- imports/package.json ---
+--- index.d.ts ---
 
-{
-  "name": "example/imports",
-  "fesm2020": "../fesm2020/imports.mjs",
-  "fesm2015": "../fesm2015/imports.mjs",
-  "esm2020": "../esm2020/imports/imports.mjs",
-  "typings": "./imports.d.ts",
-  "module": "../fesm2015/imports.mjs",
-  "es2020": "../fesm2020/imports.mjs"
+/**
+ * @license Angular v0.0.0
+ * (c) 2010-2022 Google LLC. https://angular.io/
+ * License: MIT
+ */
+
+
+import * as i0 from '@angular/core';
+
+export declare class MyModule {
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<MyModule, never, never, never>;
+    static ɵinj: i0.ɵɵInjectorDeclaration<MyModule>;
 }
+
+export { }
+
 
 --- logo.png ---
 
@@ -782,7 +758,7 @@ export { }
   "exports": {
     ".": {
       "sass": "./_index.scss",
-      "types": "./example.d.ts",
+      "types": "./index.d.ts",
       "esm2020": "./esm2020/example.mjs",
       "es2020": "./fesm2020/waffels.mjs",
       "es2015": "./fesm2015/waffels.mjs",
@@ -793,7 +769,7 @@ export { }
       "default": "./package.json"
     },
     "./a11y": {
-      "types": "./a11y/a11y.d.ts",
+      "types": "./a11y/index.d.ts",
       "esm2020": "./esm2020/a11y/a11y.mjs",
       "es2020": "./fesm2020/a11y.mjs",
       "es2015": "./fesm2015/a11y.mjs",
@@ -801,7 +777,7 @@ export { }
       "default": "./fesm2020/a11y.mjs"
     },
     "./imports": {
-      "types": "./imports/imports.d.ts",
+      "types": "./imports/index.d.ts",
       "esm2020": "./esm2020/imports/imports.mjs",
       "es2020": "./fesm2020/imports.mjs",
       "es2015": "./fesm2015/imports.mjs",
@@ -809,7 +785,7 @@ export { }
       "default": "./fesm2020/imports.mjs"
     },
     "./secondary": {
-      "types": "./secondary/secondary.d.ts",
+      "types": "./secondary/index.d.ts",
       "esm2020": "./esm2020/secondary/secondary.mjs",
       "es2020": "./fesm2020/secondary.mjs",
       "es2015": "./fesm2015/secondary.mjs",
@@ -820,31 +796,20 @@ export { }
   "fesm2020": "./fesm2020/waffels.mjs",
   "fesm2015": "./fesm2015/waffels.mjs",
   "esm2020": "./esm2020/example.mjs",
-  "typings": "./example.d.ts",
+  "typings": "./index.d.ts",
   "module": "./fesm2015/waffels.mjs",
   "es2020": "./fesm2020/waffels.mjs",
   "type": "module"
 }
 
---- secondary/package.json ---
-
-{
-  "name": "example/secondary",
-  "fesm2020": "../fesm2020/secondary.mjs",
-  "fesm2015": "../fesm2015/secondary.mjs",
-  "esm2020": "../esm2020/secondary/secondary.mjs",
-  "typings": "./secondary.d.ts",
-  "module": "../fesm2015/secondary.mjs",
-  "es2020": "../fesm2020/secondary.mjs"
-}
-
---- secondary/secondary.d.ts ---
+--- secondary/index.d.ts ---
 
 /**
  * @license Angular v0.0.0
  * (c) 2010-2022 Google LLC. https://angular.io/
  * License: MIT
  */
+
 
 import * as i0 from '@angular/core';
 

@@ -30,8 +30,9 @@
     "save": "devDependencies"
   },
   "sideEffects": [
-    "**/init/index.mjs",
-    "**/init.mjs"
+    "./esm2020/init/**",
+    "./fesm2015/init.mjs",
+    "./fesm2020/init.mjs"
   ],
   "dependencies": {
     "@babel/core": "7.17.9",

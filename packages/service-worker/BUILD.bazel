@@ -40,7 +40,6 @@ ng_package(
         "safety-worker.js",
         ":ngsw_config_binary",
         ":ngsw_worker_renamed",
-        "//packages/service-worker/config:package.json",
         "//packages/service-worker/config:schema.json",
     ],
     tags = [

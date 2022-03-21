@@ -1,4 +1,0 @@
-{
-  "description": "This directory contains UMD files which by its nature are not side-effect free. The parent package.json marks the whole @angular/common package as side-effect free, so if this directory is not excluded from that, build-optimizer will mark the contents as side-effect free and uglify will incorrectly remove all needed localization code.",
-  "sideEffects": true
-}

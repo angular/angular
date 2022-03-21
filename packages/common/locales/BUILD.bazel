@@ -41,7 +41,6 @@ ts_library(
 
 pkg_npm(
     name = "package",
-    srcs = ["package.json"],
     # We also ship the locales in ESM format so that the output matches with other code of
     # the `@angular/common` package. Note: This does not affect the output for the global
     # locale scripts (that can be loaded using basic `<script>` tags). The global locale

@@ -8,9 +8,9 @@
     "node": "^14.15.0 || >=16.10.0"
   },
   "bin": {
-    "api-extractor": "./src/api-extractor/index.js",
     "ngc-wrapped": "./src/ngc-wrapped/index.js",
     "packager": "./src/ng_package/packager.js",
+    "types_bundler": "./src/types_bundle/index.js",
     "xi18n": "./src/ngc-wrapped/extract_i18n.js"
   },
   "typings": "./src/ngc-wrapped/index.d.ts",

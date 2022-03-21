@@ -10,7 +10,6 @@ ng_module(
             "src/**/*.ts",
         ],
     ),
-    bundle_dts = True,
     deps = [
         "//packages/core",
         "//packages/platform-browser",

@@ -23,7 +23,6 @@ ng_package(
     name = "npm_package",
     srcs = [
         "package.json",
-        "//packages/compiler/testing:package.json",
     ],
     tags = [
         "release-with-framework",
