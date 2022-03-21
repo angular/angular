@@ -8,12 +8,16 @@ workspace(
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
-# Fetch rules_nodejs so we can install our npm dependencies
+# Fetch rules_nodejs and install its dependencies so we can install our npm dependencies.
 http_archive(
     name = "build_bazel_rules_nodejs",
-    sha256 = "2644a66772938db8d8c760334a252f1687455daa7e188073f2d46283f2f6fbb7",
-    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/4.6.2/rules_nodejs-4.6.2.tar.gz"],
+    sha256 = "965ee2492a2b087cf9e0f2ca472aeaf1be2eb650e0cfbddf514b9a7d3ea4b02a",
+    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/5.2.0/rules_nodejs-5.2.0.tar.gz"],
 )
+
+load("@build_bazel_rules_nodejs//:repositories.bzl", "build_bazel_rules_nodejs_dependencies")
+
+build_bazel_rules_nodejs_dependencies()
 
 # The PKG rules are needed to build tar packages for integration tests. The builtin
 # rule in `@bazel_tools` is not Windows compatible and outdated.
@@ -34,35 +38,61 @@ http_archive(
     url = "https://github.com/aspect-build/bazel-lib/archive/refs/tags/v0.5.0.tar.gz",
 )
 
-# Check the rules_nodejs version and download npm dependencies
-# Note: bazel (version 2 and after) will check the .bazelversion file so we don't need to
-# assert on that.
-load("@build_bazel_rules_nodejs//:index.bzl", "check_rules_nodejs_version", "node_repositories", "yarn_install")
+# Setup the Node.js toolchain.
+load("@rules_nodejs//nodejs:repositories.bzl", "nodejs_register_toolchains")
 
-check_rules_nodejs_version(minimum_version_string = "2.2.0")
-
-# Setup the Node.js toolchain
-node_repositories(
+nodejs_register_toolchains(
+    name = "nodejs",
     node_version = "16.10.0",
-    package_json = ["//:package.json"],
 )
 
+# Download npm dependencies.
+load("@build_bazel_rules_nodejs//:index.bzl", "yarn_install")
 load("//integration:npm_package_archives.bzl", "npm_package_archives")
 
 yarn_install(
     name = "npm",
-    # Note that we add the postinstall script here so that the dependencies are re-installed
+    # Note that we add the postinstall scripts here so that the dependencies are re-installed
     # when the postinstall patches are modified.
-    data = ["//tools:postinstall-patches.js"],
+    data = [
+        "//:.yarn/releases/yarn-1.22.17.cjs",
+        "//:.yarnrc",
+        "//:scripts/puppeteer-chromedriver-versions.js",
+        "//:scripts/webdriver-manager-update.js",
+        "//tools:postinstall-patches.js",
+    ],
+    # Currently disabled due to:
+    #  1. Missing Windows support currently.
+    #  2. Incompatibilites with the `ts_library` rule.
+    exports_directories_only = False,
     manual_build_file_contents = npm_package_archives(),
     package_json = "//:package.json",
+    # We prefer to symlink the `node_modules` to only maintain a single install.
+    # See https://github.com/angular/dev-infra/pull/446#issuecomment-1059820287 for details.
+    symlink_node_modules = True,
+    yarn = "//:.yarn/releases/yarn-1.22.17.cjs",
     yarn_lock = "//:yarn.lock",
 )
 
 yarn_install(
     name = "aio_npm",
+    # Note that we add the postinstall scripts here so that the dependencies are re-installed
+    # when the postinstall patches are modified.
+    data = [
+        "//:.yarn/releases/yarn-1.22.17.cjs",
+        "//:.yarnrc",
+        "//aio:tools/cli-patches/patch.js",
+    ],
+    # Currently disabled due to:
+    #  1. Missing Windows support currently.
+    #  2. Incompatibilites with the `ts_library` rule.
+    exports_directories_only = False,
     manual_build_file_contents = npm_package_archives(),
     package_json = "//aio:package.json",
+    # We prefer to symlink the `node_modules` to only maintain a single install.
+    # See https://github.com/angular/dev-infra/pull/446#issuecomment-1059820287 for details.
+    symlink_node_modules = True,
+    yarn = "//:.yarn/releases/yarn-1.22.17.cjs",
     yarn_lock = "//aio:yarn.lock",
 )
 
@@ -86,7 +116,9 @@ browser_repositories()
 
 load("@build_bazel_rules_nodejs//toolchains/esbuild:esbuild_repositories.bzl", "esbuild_repositories")
 
-esbuild_repositories()
+esbuild_repositories(
+    npm_repository = "npm",
+)
 
 load("@rules_pkg//:deps.bzl", "rules_pkg_dependencies")
 

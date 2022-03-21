@@ -13,7 +13,7 @@ It packages your library following the Angular Package Format, see the
 specification of this format at https://goo.gl/jB3GVv
 """
 
-load("@build_bazel_rules_nodejs//:providers.bzl", "DeclarationInfo", "JSEcmaScriptModuleInfo", "NodeContextInfo", "NpmPackageInfo", "node_modules_aspect")
+load("@build_bazel_rules_nodejs//:providers.bzl", "DeclarationInfo", "JSEcmaScriptModuleInfo", "NpmPackageInfo", "node_modules_aspect")
 load("@build_bazel_rules_nodejs//internal/linker:link_node_modules.bzl", "LinkerPackageMappingInfo")
 load(
     "@build_bazel_rules_nodejs//internal/pkg_npm:pkg_npm.bzl",
@@ -21,6 +21,7 @@ load(
     "PKG_NPM_OUTPUTS",
     "create_package",
 )
+load("@rules_nodejs//nodejs:providers.bzl", "StampSettingInfo")
 load("//packages/bazel/src:external.bzl", "FLAT_DTS_FILE_SUFFIX")
 load("//packages/bazel/src/ng_module:partial_compilation.bzl", "partial_compilation_transition")
 
@@ -159,7 +160,7 @@ def _write_rollup_config(
     externals = WELL_KNOWN_EXTERNALS + ctx.attr.externals
 
     # Whether the --stamp flag is applied in the context of the action's execution.
-    stamp = ctx.attr.node_context_data[NodeContextInfo].stamp
+    stamp = ctx.attr.stamp[StampSettingInfo].value
 
     # Pass external & globals through a templated config file because on Windows there is
     # an argument limit and we there might be a lot of globals which need to be passed to
@@ -212,7 +213,7 @@ def _run_rollup(ctx, bundle_name, rollup_config, entry_point, inputs, js_output,
     args.add("--silent")
 
     # Whether the --stamp flag is applied in the context of the action's execution.
-    stamp = ctx.attr.node_context_data[NodeContextInfo].stamp
+    stamp = ctx.attr.stamp[StampSettingInfo].value
 
     other_inputs = [rollup_config]
     if ctx.file.license_banner:
@@ -531,6 +532,10 @@ def _ng_package_impl(ctx):
         [],
         [npm_package_directory] + ctx.files.nested_packages,
     )
+
+    # Empty depset. Since these are immutable we don't need to multiple new instances.
+    empty_depset = depset([])
+
     return [
         DefaultInfo(files = depset([package_dir])),
         # We disable propagation of the `link_node_modules` aspect. We do not want
@@ -540,7 +545,7 @@ def _ng_package_impl(ctx):
         # conflicts if tests rely on both a `ng_package` and a transitive dep target of it.
         # More details: https://github.com/bazelbuild/rules_nodejs/issues/2941.
         # TODO(devversion): Consider supporting the `package_name` attribute.
-        LinkerPackageMappingInfo(mappings = {}),
+        LinkerPackageMappingInfo(mappings = empty_depset, node_modules_roots = empty_depset),
     ]
 
 _NG_PACKAGE_DEPS_ASPECTS = [ng_package_module_mappings_aspect, node_modules_aspect]
@@ -612,6 +617,7 @@ ng_package = rule(
     implementation = _ng_package_impl,
     attrs = _NG_PACKAGE_ATTRS,
     outputs = _ng_package_outputs,
+    toolchains = ["@rules_nodejs//nodejs:toolchain_type"],
 )
 """
 ng_package produces an npm-ready package from an Angular library.

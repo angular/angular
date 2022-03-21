@@ -1,3 +1,5 @@
+load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary")
+
 package(default_visibility = ["//visibility:public"])
 
 exports_files([
@@ -55,4 +57,11 @@ filegroup(
 config_setting(
     name = "stamp",
     values = {"stamp": "true"},
+)
+
+nodejs_binary(
+    name = "yarn_vendored",
+    data = [".yarn/releases/yarn-1.22.17.cjs"],
+    entry_point = ".yarn/releases/yarn-1.22.17.cjs",
+    visibility = ["//integration:__subpackages__"],
 )

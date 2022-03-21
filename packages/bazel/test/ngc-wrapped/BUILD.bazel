@@ -32,7 +32,7 @@ jasmine_node_test(
         "//packages/bazel/test/ngc-wrapped/empty:empty_tsconfig.json",
         "//packages/bazel/test/ngc-wrapped/empty:tsconfig.json",
         "//packages/private/testing",
-        "@npm//@bazel/typescript/third_party/github.com/bazelbuild/bazel/src/main/protobuf:worker_protocol.proto",
+        "@npm//@bazel/concatjs/third_party/github.com/bazelbuild/bazel/src/main/protobuf:worker_protocol.proto",
     ],
 )
 
