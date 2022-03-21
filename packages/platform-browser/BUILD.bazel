@@ -30,8 +30,6 @@ ng_package(
     name = "npm_package",
     srcs = [
         "package.json",
-        "//packages/platform-browser/animations:package.json",
-        "//packages/platform-browser/testing:package.json",
     ],
     tags = [
         "release-with-framework",

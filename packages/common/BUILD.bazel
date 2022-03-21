@@ -37,10 +37,6 @@ ng_package(
     name = "npm_package",
     srcs = [
         "package.json",
-        "//packages/common/http:package.json",
-        "//packages/common/http/testing:package.json",
-        "//packages/common/testing:package.json",
-        "//packages/common/upgrade:package.json",
     ],
     nested_packages = ["//packages/common/locales:package"],
     tags = [

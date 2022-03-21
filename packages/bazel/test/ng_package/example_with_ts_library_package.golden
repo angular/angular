@@ -26,13 +26,8 @@ index.d.ts
 package.json
 portal
   portal/index.d.ts
-  portal/package.json
-  portal/portal-module.d.ts
-  portal/portal.d.ts
 utils
   utils/index.d.ts
-  utils/package.json
-  utils/testing.d.ts
 --- README.md ---
 
 Angular
@@ -323,13 +318,16 @@ export { dispatchFakeEvent };
 --- index.d.ts ---
 
 /**
- * @license
- * Copyright Google LLC All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * @license Angular v0.0.0
+ * (c) 2010-2022 Google LLC. https://angular.io/
+ * License: MIT
  */
+
+
+
 export declare const VERSION = "0.0.0";
+
+export { }
 
 
 --- package.json ---
@@ -358,7 +356,7 @@ export declare const VERSION = "0.0.0";
       "default": "./fesm2020/example-with-ts-library.mjs"
     },
     "./portal": {
-      "types": "./portal/portal.d.ts",
+      "types": "./portal/index.d.ts",
       "esm2020": "./esm2020/portal/portal.mjs",
       "es2020": "./fesm2020/portal.mjs",
       "es2015": "./fesm2015/portal.mjs",
@@ -379,78 +377,36 @@ export declare const VERSION = "0.0.0";
 --- portal/index.d.ts ---
 
 /**
- * @license
- * Copyright Google LLC All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * @license Angular v0.0.0
+ * (c) 2010-2022 Google LLC. https://angular.io/
+ * License: MIT
  */
-export * from './portal-module';
 
 
---- portal/package.json ---
+import * as i0 from '@angular/core';
 
-{
-  "name": "example-with-ts-library/portal",
-  "fesm2020": "../fesm2020/portal.mjs",
-  "fesm2015": "../fesm2015/portal.mjs",
-  "esm2020": "../esm2020/portal/portal.mjs",
-  "typings": "./portal.d.ts",
-  "module": "../fesm2015/portal.mjs",
-  "es2020": "../fesm2020/portal.mjs"
-}
+export declare const a = 1;
 
---- portal/portal-module.d.ts ---
-
-import * as i0 from "@angular/core";
 export declare class PortalModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<PortalModule, never>;
     static ɵmod: i0.ɵɵNgModuleDeclaration<PortalModule, never, never, never>;
     static ɵinj: i0.ɵɵInjectorDeclaration<PortalModule>;
 }
-export declare const a = 1;
 
-
---- portal/portal.d.ts ---
-
-/**
- * Generated bundle index. Do not edit.
- */
-export * from './index';
+export { }
 
 
 --- utils/index.d.ts ---
 
 /**
- * @license
- * Copyright Google LLC All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * @license Angular v0.0.0
+ * (c) 2010-2022 Google LLC. https://angular.io/
+ * License: MIT
  */
-export * from './testing';
 
 
---- utils/package.json ---
 
-{
-  "name": "example-with-ts-library/utils",
-  "fesm2020": "../fesm2020/utils.mjs",
-  "fesm2015": "../fesm2015/utils.mjs",
-  "esm2020": "../esm2020/utils/index.mjs",
-  "typings": "./index.d.ts",
-  "module": "../fesm2015/utils.mjs",
-  "es2020": "../fesm2020/utils.mjs"
-}
-
---- utils/testing.d.ts ---
-
-/**
- * @license
- * Copyright Google LLC All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */
 export declare function dispatchFakeEvent(el: HTMLElement, ev: Event): void;
+
+export { }
 

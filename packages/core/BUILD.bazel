@@ -50,7 +50,6 @@ ng_package(
     name = "npm_package",
     srcs = [
         "package.json",
-        "//packages/core/testing:package.json",
     ],
     nested_packages = [
         "//packages/core/schematics:npm_package",

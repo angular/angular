@@ -37,8 +37,6 @@ ng_package(
     name = "npm_package",
     srcs = [
         "package.json",
-        "//packages/platform-server/init:package.json",
-        "//packages/platform-server/testing:package.json",
     ],
     externals = [
         "domino",
