@@ -9,6 +9,7 @@
 import {StyleMigrator} from './style-migrator';
 import {TemplateMigrator} from './template-migrator';
 
+import {AutocompleteStylesMigrator} from './components/autocomplete/autocomplete-styles';
 import {ButtonRuntimeMigrator} from './components/button/button-runtime';
 import {ButtonStylesMigrator} from './components/button/button-styles';
 import {CardStylesMigrator} from './components/card/card-styles';
@@ -38,6 +39,10 @@ export interface ComponentMigrator {
 }
 
 export const MIGRATORS: ComponentMigrator[] = [
+  {
+    component: 'autocomplete',
+    styles: new AutocompleteStylesMigrator(),
+  },
   {
     component: 'button',
     styles: new ButtonStylesMigrator(),
