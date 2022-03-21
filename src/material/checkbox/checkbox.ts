@@ -406,6 +406,7 @@ export class MatCheckbox
   /** Toggles the `checked` state of the checkbox. */
   toggle(): void {
     this.checked = !this.checked;
+    this._controlValueAccessorChangeFn(this.checked);
   }
 
   /**
@@ -437,7 +438,7 @@ export class MatCheckbox
         });
       }
 
-      this.toggle();
+      this._checked = !this._checked;
       this._transitionCheckState(
         this._checked ? TransitionCheckState.Checked : TransitionCheckState.Unchecked,
       );
