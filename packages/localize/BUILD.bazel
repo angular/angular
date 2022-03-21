@@ -26,6 +26,12 @@ ng_package(
         "//packages/localize/schematics:npm_package",
         "//packages/localize/tools:npm_package",
     ],
+    skip_type_bundling = [
+        # For the "init" entry-point we disable type bundling because API extractor
+        # does not properly handle module augumentation.
+        # TODO: Remove once https://github.com/microsoft/rushstack/issues/2090 is solved.
+        "init",
+    ],
     tags = [
         "release-with-framework",
     ],
@@ -43,6 +49,9 @@ api_golden_test_npm_package(
     ],
     golden_dir = "angular/goldens/public-api/localize",
     npm_package = "angular/packages/localize/npm_package",
+    # The logic for the localize function is exported in the primary entry-point, but users
+    # are not supposed to import it from there. We still want to guard these exports though.
+    strip_export_pattern = "^ɵ(?!.localize|LocalizeFn|TranslateFn)",
     # The tool entry-point uses namespace aliases and API extractor needs to be
     # able to resolve `@babel/core` to fully understand the `types` re-export/alias.
     types = ["@npm//@types/babel__core"],

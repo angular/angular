@@ -10,6 +10,29 @@ export function clearTranslations(): void;
 // @public
 export function loadTranslations(translations: Record<MessageId, TargetMessage>): void;
 
+// @public
+export type MessageId = string;
+
+// @public
+export type TargetMessage = string;
+
+// @public
+export const ɵ$localize: ɵLocalizeFn;
+
+// @public (undocumented)
+export interface ɵLocalizeFn {
+    // (undocumented)
+    (messageParts: TemplateStringsArray, ...expressions: readonly any[]): string;
+    locale?: string;
+    translate?: ɵTranslateFn;
+}
+
+// @public (undocumented)
+export interface ɵTranslateFn {
+    // (undocumented)
+    (messageParts: TemplateStringsArray, expressions: readonly any[]): [TemplateStringsArray, readonly any[]];
+}
+
 // (No @packageDocumentation comment for this package)
 
 ```
