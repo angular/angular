@@ -18,6 +18,7 @@ import {CheckboxStylesMigrator} from './components/checkbox/checkbox-styles';
 import {ChipsStylesMigrator} from './components/chips/chips-styles';
 import {DialogStylesMigrator} from './components/dialog/dialog-styles';
 import {FormFieldStylesMigrator} from './components/form-field/form-field-styles';
+import {InputStylesMigrator} from './components/input/input-styles';
 import {ListStylesMigrator} from './components/list/list-styles';
 import {MenuStylesMigrator} from './components/menu/menu-styles';
 import {PaginatorStylesMigrator} from './components/paginator/paginator-styles';
@@ -69,6 +70,10 @@ export const MIGRATORS: ComponentMigrator[] = [
   {
     component: 'form-field',
     styles: new FormFieldStylesMigrator(),
+  },
+  {
+    component: 'input',
+    styles: new InputStylesMigrator(),
   },
   {
     component: 'list',
