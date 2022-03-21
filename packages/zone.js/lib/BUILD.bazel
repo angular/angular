@@ -1,4 +1,4 @@
-load("@npm//@bazel/typescript:index.bzl", "ts_library")
+load("@npm//@bazel/concatjs:index.bzl", "ts_library")
 
 package(default_visibility = ["//visibility:public"])
 

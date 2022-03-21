@@ -2,13 +2,13 @@
 """
 
 load(
-    # Replaced with "//@bazel/typescript/internal:..." in published package
-    "@npm//@bazel/typescript/internal:build_defs.bzl",
+    # Replaced with "//@bazel/concatjs/internal:..." in published package
+    "@npm//@bazel/concatjs/internal:build_defs.bzl",
     _tsc_wrapped_tsconfig = "tsc_wrapped_tsconfig",
 )
 load(
-    # Replaced with "//@bazel/typescript/internal:..." in published package
-    "@npm//@bazel/typescript/internal:common/compilation.bzl",
+    # Replaced with "//@bazel/concatjs/internal:..." in published package
+    "@npm//@bazel/concatjs/internal:common/compilation.bzl",
     _COMMON_ATTRIBUTES = "COMMON_ATTRIBUTES",
     _COMMON_OUTPUTS = "COMMON_OUTPUTS",
     _DEPS_ASPECTS = "DEPS_ASPECTS",
@@ -25,9 +25,12 @@ load(
     _LinkablePackageInfo = "LinkablePackageInfo",
     _NpmPackageInfo = "NpmPackageInfo",
     _js_ecma_script_module_info = "js_ecma_script_module_info",
-    _js_module_info = "js_module_info",
     _js_named_module_info = "js_named_module_info",
     _node_modules_aspect = "node_modules_aspect",
+)
+load(
+    "@rules_nodejs//nodejs:providers.bzl",
+    _js_module_info = "js_module_info",
 )
 
 LinkablePackageInfo = _LinkablePackageInfo
