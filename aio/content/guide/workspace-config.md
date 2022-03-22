@@ -11,7 +11,6 @@ The following properties, at the top-level of the file, configure the workspace.
 
 *   `version`: The configuration-file version.
 *   `newProjectRoot`: Path where new projects are created. Absolute or relative to the workspace folder.
-*   `defaultProject`: Default project name to use in commands, where not provided as an argument. When you use `ng new` to create a new application in a new workspace, that application is the default project for the workspace until you change it here.
 *   `cli` : A set of options that customize the [Angular CLI](cli). See the [CLI configuration options](#cli-configuration-options) section.
 *   `schematics` : A set of [schematics](guide/glossary#schematic) that customize the `ng generate` sub-command option defaults for this workspace. See the [Generation schematics](#schematics) section.
 *   `projects` : Contains a subsection for each project (library or application) in the workspace, with the per-project configuration options.

@@ -149,9 +149,8 @@
       }
       // #enddocregion build-single-locale, build-production-french
     }
-  },
+  }
   // #enddocregion i18n-baseHref
-  "defaultProject": "angular.io-example"
   // #docregion i18n-baseHref
 }
 // #enddocregion locale-config, i18n-baseHref
