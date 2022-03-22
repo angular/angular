@@ -16,8 +16,8 @@ load(
     _ts_providers_dict_to_struct = "ts_providers_dict_to_struct",
 )
 load(
-    # Replaced with "//@bazel/typescript/internal:..." in published package
-    "@npm//@bazel/typescript/internal:ts_config.bzl",
+    # Replaced with "//@bazel/concatjs/internal:..." in published package
+    "@npm//@bazel/concatjs/internal:ts_config.bzl",
     _TsConfigInfo = "TsConfigInfo",
 )
 load(

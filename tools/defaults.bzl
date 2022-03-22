@@ -147,7 +147,7 @@ def ts_library(name, tsconfig = None, testonly = False, deps = [], module_name =
         srcs = [":%s" % name],
         testonly = testonly,
         # Note: Ironically this is named `es5_sources` but it refers to the devmode output.
-        # This is just an artifact of many iterations in `@bazel/typescript`. This is being
+        # This is just an artifact of many iterations in `@bazel/concatjs`. This is being
         # solved together with us combining devmode & prodmode.
         output_group = "es5_sources",
     )
