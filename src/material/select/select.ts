@@ -423,13 +423,10 @@ export abstract class _MatSelectBase<C>
     return this._value;
   }
   set value(newValue: any) {
-    // Always re-assign an array, because it might have been mutated.
-    if (newValue !== this._value || (this._multiple && Array.isArray(newValue))) {
-      if (this.options) {
-        this._setSelectionByValue(newValue);
-      }
+    const hasAssigned = this._assignValue(newValue);
 
-      this._value = newValue;
+    if (hasAssigned) {
+      this._onChange(newValue);
     }
   }
   private _value: any;
@@ -661,7 +658,7 @@ export abstract class _MatSelectBase<C>
    * @param value New value to be written to the model.
    */
   writeValue(value: any): void {
-    this.value = value;
+    this._assignValue(value);
   }
 
   /**
@@ -886,10 +883,10 @@ export abstract class _MatSelectBase<C>
         throw getMatSelectNonArrayValueError();
       }
 
-      value.forEach((currentValue: any) => this._selectValue(currentValue));
+      value.forEach((currentValue: any) => this._selectOptionByValue(currentValue));
       this._sortValues();
     } else {
-      const correspondingOption = this._selectValue(value);
+      const correspondingOption = this._selectOptionByValue(value);
 
       // Shift focus to the active item. Note that we shouldn't do this in multiple
       // mode, because we don't know what option the user interacted with last.
@@ -909,7 +906,7 @@ export abstract class _MatSelectBase<C>
    * Finds and selects and option based on its value.
    * @returns Option that has the corresponding value.
    */
-  private _selectValue(value: any): MatOption | undefined {
+  private _selectOptionByValue(value: any): MatOption | undefined {
     const correspondingOption = this.options.find((option: MatOption) => {
       // Skip options that are already in the model. This allows us to handle cases
       // where the same primitive value is selected multiple times.
@@ -934,6 +931,20 @@ export abstract class _MatSelectBase<C>
     }
 
     return correspondingOption;
+  }
+
+  /** Assigns a specific value to the select. Returns whether the value has changed. */
+  private _assignValue(newValue: any | any[]): boolean {
+    // Always re-assign an array, because it might have been mutated.
+    if (newValue !== this._value || (this._multiple && Array.isArray(newValue))) {
+      if (this.options) {
+        this._setSelectionByValue(newValue);
+      }
+
+      this._value = newValue;
+      return true;
+    }
+    return false;
   }
 
   /** Sets up a key manager to listen to keyboard events on the overlay panel. */

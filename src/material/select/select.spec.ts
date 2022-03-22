@@ -2170,6 +2170,17 @@ describe('MatSelect', () => {
           .not.withContext(`Expected label to have an asterisk, as control was required.`)
           .toBeNull();
       }));
+
+      it('should propagate the value set through the `value` property to the form field', fakeAsync(() => {
+        const control = fixture.componentInstance.control;
+
+        expect(control.value).toBeFalsy();
+
+        fixture.componentInstance.select.value = 'pizza-1';
+        fixture.detectChanges();
+
+        expect(control.value).toBe('pizza-1');
+      }));
     });
 
     describe('disabled behavior', () => {
