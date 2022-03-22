@@ -10,7 +10,7 @@ ts_library(
         "index.ts",
     ],
     deps = [
-        "@npm//@bazel/typescript",
+        "@npm//@bazel/concatjs",
         "@npm//@microsoft/api-extractor",
         "@npm//@types/node",
     ],
@@ -20,7 +20,7 @@ nodejs_binary(
     name = "api_extractor",
     data = [
         ":lib",
-        "@npm//@bazel/typescript",
+        "@npm//@bazel/concatjs",
         "@npm//@microsoft/api-extractor",
     ],
     entry_point = ":index.ts",
