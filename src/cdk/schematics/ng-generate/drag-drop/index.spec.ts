@@ -60,7 +60,6 @@ describe('CDK drag-drop schematic', () => {
         'angular.json',
         JSON.stringify({
           version: 1,
-          defaultProject: 'material',
           projects: {
             material: {
               projectType: 'application',
@@ -173,7 +172,6 @@ describe('CDK drag-drop schematic', () => {
         'angular.json',
         JSON.stringify({
           version: 1,
-          defaultProject: 'material',
           projects: {
             material: {
               projectType: 'application',

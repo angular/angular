@@ -96,6 +96,5 @@
         }
       }
     }
-  },
-  "defaultProject": "harness-e2e-cli"
+  }
 }
