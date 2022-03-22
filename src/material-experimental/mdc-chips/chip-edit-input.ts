@@ -38,7 +38,7 @@ export class MatChipEditInput {
   }
 
   setValue(value: string) {
-    this.getNativeElement().innerText = value;
+    this.getNativeElement().textContent = value;
     this._moveCursorToEndOfInput();
   }
 
