@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {createUrlTree as createUrlTreeRedirects, squashSegmentGroup} from './apply_redirects';
+import {squashSegmentGroup} from './apply_redirects';
 import {Params, PRIMARY_OUTLET} from './shared';
-import {UrlSegment, UrlSegmentGroup, UrlTree} from './url_tree';
+import {createRoot, UrlSegment, UrlSegmentGroup, UrlTree} from './url_tree';
 import {forEach, last, shallowEqual} from './utils/collection';
 
 export function createUrlTree(
@@ -58,14 +58,15 @@ function tree(
     });
   }
 
-  // Needed because `replaceSegment` cannot replace the root segment. It expects the
-  // `oldSegmentGroup` to be some child of the root.
+  let rootCandidate: UrlSegmentGroup;
   if (oldRoot === oldSegmentGroup) {
-    return new UrlTree(squashSegmentGroup(newSegmentGroup), qp, fragment);
+    rootCandidate = newSegmentGroup;
+  } else {
+    rootCandidate = replaceSegment(oldRoot, oldSegmentGroup, newSegmentGroup);
   }
 
-  const newRoot = squashSegmentGroup(replaceSegment(oldRoot, oldSegmentGroup, newSegmentGroup));
-  return createUrlTreeRedirects(new UrlTree(newRoot, qp, fragment).root, qp, fragment);
+  const newRoot = createRoot(squashSegmentGroup(rootCandidate));
+  return new UrlTree(newRoot, qp, fragment);
 }
 
 /**

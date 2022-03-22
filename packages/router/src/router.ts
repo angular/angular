@@ -26,14 +26,12 @@ import {DefaultRouteReuseStrategy, RouteReuseStrategy} from './route_reuse_strat
 import {RouterConfigLoader} from './router_config_loader';
 import {ChildrenOutletContexts} from './router_outlet_context';
 import {ActivatedRoute, ActivatedRouteSnapshot, createEmptyState, RouterState, RouterStateSnapshot} from './router_state';
-import {isNavigationCancelingError, navigationCancelingError, Params} from './shared';
+import {isNavigationCancelingError, navigationCancelingError, Params, PRIMARY_OUTLET} from './shared';
 import {DefaultUrlHandlingStrategy, UrlHandlingStrategy} from './url_handling_strategy';
-import {containsTree, createEmptyUrlTree, IsActiveMatchOptions, UrlSegmentGroup, UrlSerializer, UrlTree} from './url_tree';
+import {containsTree, createEmptyUrlTree, createRoot, IsActiveMatchOptions, UrlSegmentGroup, UrlSerializer, UrlTree} from './url_tree';
 import {standardizeConfig, validateConfig} from './utils/config';
 import {Checks, getAllRouteGuards} from './utils/preactivation';
 import {isUrlTree} from './utils/type_guards';
-
-const NG_DEV_MODE = (typeof ngDevMode === 'undefined' || !!ngDevMode);
 
 const NG_DEV_MODE = typeof ngDevMode === 'undefined' || !!ngDevMode;
 
@@ -1237,17 +1235,17 @@ export class Router {
     } catch (e: unknown) {
       if (NG_DEV_MODE) {
         console.warn(
-            `${a} has an invalid structure. This is likely due to an incomplete mock in tests.`);
-        if (typeof commands[0] !== 'string' || !commands[0].startsWith('/')) {
-          // This is strictly for backwards compatibility with tests that create
-          // invalid `ActivatedRoute` mocks. Navigations that were absolute
-          // would still work because they wouldn't attempt to match the
-          // segments in the `ActivatedRoute` to the `currentUrlTree` but
-          // instead just replace the root segment with the navigation result.
-          // Non-absolute navigations would fail to apply the commands because
-          // the logic could not find the segment to replace.
-          commands = [];
-        }
+            `The ActivatedRoute has an invalid structure. This is likely due to an incomplete mock in tests.`);
+      }
+      if (typeof commands[0] !== 'string' || !commands[0].startsWith('/')) {
+        // This is strictly for backwards compatibility with tests that create
+        // invalid `ActivatedRoute` mocks. Navigations that were absolute
+        // would still work because they wouldn't attempt to match the
+        // segments in the `ActivatedRoute` to the `currentUrlTree` but
+        // instead just replace the root segment with the navigation result.
+        // Non-absolute navigations would fail to apply the commands because
+        // the logic could not find the segment to replace.
+        commands = [];
       }
     }
     return createUrlTree(
@@ -1592,7 +1590,8 @@ function createSegmentGroupFromRoute(route: ActivatedRouteSnapshot): UrlSegmentG
     }
     return segmentGroup;
   }
-  const rootSegmentGroup = createSegmentGroupFromRouteRecursive(route.root);
+  const rootCandidate = createSegmentGroupFromRouteRecursive(route.root);
+  const rootSegmentGroup = createRoot(rootCandidate);
 
   return targetGroup ?? rootSegmentGroup;
 }

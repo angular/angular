@@ -14,7 +14,7 @@ import {CanLoadFn, LoadedRouterConfig, Route, Routes} from './models';
 import {prioritizedGuardValue} from './operators/prioritized_guard_value';
 import {RouterConfigLoader} from './router_config_loader';
 import {navigationCancelingError, Params, PRIMARY_OUTLET} from './shared';
-import {UrlSegment, UrlSegmentGroup, UrlSerializer, UrlTree} from './url_tree';
+import {createRoot, UrlSegment, UrlSegmentGroup, UrlSerializer, UrlTree} from './url_tree';
 import {forEach, wrapIntoObservable} from './utils/collection';
 import {getOutlet, sortByMatchingOutlets} from './utils/config';
 import {isImmediateMatch, match, noLeftoversInUrl, split} from './utils/config_matching';
@@ -76,7 +76,7 @@ class ApplyRedirects {
     const expanded$ =
         this.expandSegmentGroup(this.injector, this.config, rootSegmentGroup, PRIMARY_OUTLET);
     const urlTrees$ = expanded$.pipe(map((rootSegmentGroup: UrlSegmentGroup) => {
-      return createUrlTree(
+      return this.createUrlTree(
           squashSegmentGroup(rootSegmentGroup), this.urlTree.queryParams, this.urlTree.fragment);
     }));
     return urlTrees$.pipe(catchError((e: any) => {
@@ -100,7 +100,8 @@ class ApplyRedirects {
     const expanded$ =
         this.expandSegmentGroup(this.injector, this.config, tree.root, PRIMARY_OUTLET);
     const mapped$ = expanded$.pipe(map((rootSegmentGroup: UrlSegmentGroup) => {
-      return createUrlTree(squashSegmentGroup(rootSegmentGroup), tree.queryParams, tree.fragment);
+      return this.createUrlTree(
+          squashSegmentGroup(rootSegmentGroup), tree.queryParams, tree.fragment);
     }));
     return mapped$.pipe(catchError((e: any): Observable<UrlTree> => {
       if (e instanceof NoMatch) {
@@ -115,6 +116,12 @@ class ApplyRedirects {
     return new Error(`Cannot match any routes. URL Segment: '${e.segmentGroup}'`);
   }
 
+
+  private createUrlTree(rootCandidate: UrlSegmentGroup, queryParams: Params, fragment: string|null):
+      UrlTree {
+    const root = createRoot(rootCandidate);
+    return new UrlTree(root, queryParams, fragment);
+  }
 
   private expandSegmentGroup(
       injector: EnvironmentInjector, routes: Route[], segmentGroup: UrlSegmentGroup,
@@ -501,12 +508,4 @@ export function squashSegmentGroup(segmentGroup: UrlSegmentGroup): UrlSegmentGro
   }
   const s = new UrlSegmentGroup(segmentGroup.segments, newChildren);
   return mergeTrivialChildren(s);
-}
-
-export function createUrlTree(
-    rootCandidate: UrlSegmentGroup, queryParams: Params, fragment: string|null): UrlTree {
-  const root = rootCandidate.segments.length > 0 ?
-      new UrlSegmentGroup([], {[PRIMARY_OUTLET]: rootCandidate}) :
-      rootCandidate;
-  return new UrlTree(root, queryParams, fragment);
 }

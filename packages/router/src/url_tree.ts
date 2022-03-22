@@ -717,3 +717,9 @@ class UrlParser {
     }
   }
 }
+
+export function createRoot(rootCandidate: UrlSegmentGroup) {
+  return rootCandidate.segments.length > 0 ?
+      new UrlSegmentGroup([], {[PRIMARY_OUTLET]: rootCandidate}) :
+      rootCandidate;
+}
