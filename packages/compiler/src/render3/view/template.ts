@@ -81,13 +81,31 @@ export function prepareEventListenerParameters(
       scope, implicitReceiverExpr, handler, 'b', eventAst.handlerSpan, implicitReceiverAccesses,
       EVENT_BINDING_SCOPE_GLOBALS);
   const statements = [];
-  if (scope) {
+  const variableDeclarations = scope?.variableDeclarations();
+  const restoreViewStatement = scope?.restoreViewStatement();
+
+  if (variableDeclarations) {
     // `variableDeclarations` needs to run first, because
     // `restoreViewStatement` depends on the result.
-    statements.push(...scope.variableDeclarations());
-    statements.unshift(...scope.restoreViewStatement());
+    statements.push(...variableDeclarations);
   }
+
   statements.push(...bindingStatements);
+
+  if (restoreViewStatement) {
+    statements.unshift(restoreViewStatement);
+
+    // If there's a `restoreView` call, we need to reset the view at the end of the listener
+    // in order to avoid a leak. If there's a `return` statement already, we wrap it in the
+    // call, e.g. `return resetView(ctx.foo())`. Otherwise we add the call as the last statement.
+    const lastStatement = statements[statements.length - 1];
+    if (lastStatement instanceof o.ReturnStatement) {
+      statements[statements.length - 1] = new o.ReturnStatement(
+          invokeInstruction(lastStatement.value.sourceSpan, R3.resetView, [lastStatement.value]));
+    } else {
+      statements.push(new o.ExpressionStatement(invokeInstruction(null, R3.resetView, [])));
+    }
+  }
 
   const eventName: string =
       type === ParsedEventType.Animation ? prepareSyntheticListenerName(name, phase!) : name;
@@ -1760,18 +1778,16 @@ export class BindingScope implements LocalResolver {
     }
   }
 
-  restoreViewStatement(): o.Statement[] {
-    const statements: o.Statement[] = [];
+  restoreViewStatement(): o.Statement|null {
     if (this.restoreViewVariable) {
       const restoreCall = invokeInstruction(null, R3.restoreView, [this.restoreViewVariable]);
       // Either `const restoredCtx = restoreView($state$);` or `restoreView($state$);`
       // depending on whether it is being used.
-      statements.push(
-          this.usesRestoredViewContext ?
-              o.variable(RESTORED_VIEW_CONTEXT_NAME).set(restoreCall).toConstDecl() :
-              restoreCall.toStmt());
+      return this.usesRestoredViewContext ?
+          o.variable(RESTORED_VIEW_CONTEXT_NAME).set(restoreCall).toConstDecl() :
+          restoreCall.toStmt();
     }
-    return statements;
+    return null;
   }
 
   viewSnapshotStatements(): o.Statement[] {

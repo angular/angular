@@ -164,6 +164,7 @@ export {
   ɵɵpureFunctionV,
   ɵɵqueryRefresh,
   ɵɵreference,
+  ɵɵresetView,
   ɵɵresolveBody,
   ɵɵresolveDocument,
   ɵɵresolveWindow,

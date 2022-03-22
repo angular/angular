@@ -44,6 +44,7 @@ export const angularCoreEnv: {[name: string]: Function} =
        'ɵɵinvalidFactory': r3.ɵɵinvalidFactory,
        'ɵɵinvalidFactoryDep': ɵɵinvalidFactoryDep,
        'ɵɵtemplateRefExtractor': r3.ɵɵtemplateRefExtractor,
+       'ɵɵresetView': r3.ɵɵresetView,
        'ɵɵNgOnChangesFeature': r3.ɵɵNgOnChangesFeature,
        'ɵɵProvidersFeature': r3.ɵɵProvidersFeature,
        'ɵɵCopyDefinitionFeature': r3.ɵɵCopyDefinitionFeature,

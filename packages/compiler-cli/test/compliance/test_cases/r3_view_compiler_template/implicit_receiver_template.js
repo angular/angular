@@ -5,7 +5,7 @@ function MyComponent_div_0_Template(rf, ctx) {
     $r3$.ɵɵlistener("click", function MyComponent_div_0_Template_div_click_0_listener() {
       i0.ɵɵrestoreView($_r2$);
       const $ctx_r1$ = i0.ɵɵnextContext();
-      return $ctx_r1$.greet($ctx_r1$);
+      return $i0$.ɵɵresetView($ctx_r1$.greet($ctx_r1$));
     });
     $r3$.ɵɵelementEnd();
   }
