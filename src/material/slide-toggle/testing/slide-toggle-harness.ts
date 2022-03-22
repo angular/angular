@@ -127,6 +127,11 @@ export class MatSlideToggleHarness extends _MatSlideToggleHarnessBase {
           options.name,
           async (harness, name) => (await harness.getName()) === name,
         )
+        .addOption(
+          'checked',
+          options.checked,
+          async (harness, checked) => (await harness.isChecked()) == checked,
+        )
     );
   }
 

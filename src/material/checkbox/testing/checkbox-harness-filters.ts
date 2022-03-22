@@ -14,4 +14,6 @@ export interface CheckboxHarnessFilters extends BaseHarnessFilters {
   label?: string | RegExp;
   /** Only find instances whose name attribute is the given value. */
   name?: string;
+  /** Only find instances with the given checked value. */
+  checked?: boolean;
 }

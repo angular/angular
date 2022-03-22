@@ -35,6 +35,11 @@ export class MatCheckboxHarness extends _MatCheckboxHarnessBase {
           options.name,
           async (harness, name) => (await harness.getName()) === name,
         )
+        .addOption(
+          'checked',
+          options.checked,
+          async (harness, checked) => (await harness.isChecked()) == checked,
+        )
     );
   }
 

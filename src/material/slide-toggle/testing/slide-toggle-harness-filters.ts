@@ -14,4 +14,6 @@ export interface SlideToggleHarnessFilters extends BaseHarnessFilters {
   label?: string | RegExp;
   /** Only find instances whose name is the given value. */
   name?: string;
+  /** Only find instances with the given checked value. */
+  checked?: boolean;
 }

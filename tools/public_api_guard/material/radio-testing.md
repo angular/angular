@@ -70,6 +70,7 @@ export abstract class _MatRadioGroupHarnessBase<ButtonType extends ComponentHarn
 
 // @public
 export interface RadioButtonHarnessFilters extends BaseHarnessFilters {
+    checked?: boolean;
     label?: string | RegExp;
     name?: string;
 }

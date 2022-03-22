@@ -55,7 +55,12 @@ export class MatRadioButtonHarness extends _MatRadioButtonHarnessBase {
       .addOption('label', options.label, (harness, label) =>
         HarnessPredicate.stringMatches(harness.getLabelText(), label),
       )
-      .addOption('name', options.name, async (harness, name) => (await harness.getName()) === name);
+      .addOption('name', options.name, async (harness, name) => (await harness.getName()) === name)
+      .addOption(
+        'checked',
+        options.checked,
+        async (harness, checked) => (await harness.isChecked()) == checked,
+      );
   }
 
   protected _textLabel = this.locatorFor('label');
