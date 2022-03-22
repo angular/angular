@@ -7,7 +7,7 @@ function MyComponent_div_0_Template(rf, ctx) {
       const $d$ = $sr$.$implicit;
       const $i$ = $sr$.index;
       const $comp$ = $r3$.ɵɵnextContext();
-      return $comp$._handleClick($d$, $i$);
+      return $i0$.ɵɵresetView($comp$._handleClick($d$, $i$));
     });
     $r3$.ɵɵelementEnd();
   }

@@ -135,6 +135,8 @@ export class Identifiers {
 
   static nextContext: o.ExternalReference = {name: 'ɵɵnextContext', moduleName: CORE};
 
+  static resetView: o.ExternalReference = {name: 'ɵɵresetView', moduleName: CORE};
+
   static templateCreate: o.ExternalReference = {name: 'ɵɵtemplate', moduleName: CORE};
 
   static text: o.ExternalReference = {name: 'ɵɵtext', moduleName: CORE};
