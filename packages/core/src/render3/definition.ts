@@ -284,6 +284,11 @@ export function ɵɵdefineComponent<T>(componentDefinition: {
    * The set of schemas that declare elements to be allowed in the component's template.
    */
   schemas?: SchemaMetadata[] | null;
+
+  /**
+   * Whether this directive/component is standalone.
+   */
+  standalone?: boolean;
 }): unknown {
   return noSideEffects(() => {
     // Initialize ngDevMode. This must be the first statement in ɵɵdefineComponent.
@@ -312,6 +317,7 @@ export function ɵɵdefineComponent<T>(componentDefinition: {
       onPush: componentDefinition.changeDetection === ChangeDetectionStrategy.OnPush,
       directiveDefs: null!,  // assigned in noSideEffects
       pipeDefs: null!,       // assigned in noSideEffects
+      standalone: componentDefinition.standalone === true,
       selectors: componentDefinition.selectors || EMPTY_ARRAY,
       viewQuery: componentDefinition.viewQuery || null,
       features: componentDefinition.features as DirectiveDefFeature[] || null,
@@ -709,13 +715,19 @@ export function ɵɵdefinePipe<T>(pipeDef: {
   type: Type<T>,
 
   /** Whether the pipe is pure. */
-  pure?: boolean
+  pure?: boolean,
+
+  /**
+   * Whether the pipe is standalone.
+   */
+  standalone?: boolean,
 }): unknown {
   return (<PipeDef<T>>{
     type: pipeDef.type,
     name: pipeDef.name,
     factory: null,
     pure: pipeDef.pure !== false,
+    standalone: pipeDef.standalone === true,
     onDestroy: pipeDef.type.prototype.ngOnDestroy || null
   });
 }
