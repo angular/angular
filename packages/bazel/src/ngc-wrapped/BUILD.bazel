@@ -17,7 +17,7 @@ ts_library(
     deps = [
         "//packages/compiler-cli",
         "//packages/compiler-cli/private",
-        "@npm//@bazel/typescript",
+        "@npm//@bazel/concatjs",
         "@npm//@types/node",
         "@npm//tsickle",
         "@npm//typescript",
