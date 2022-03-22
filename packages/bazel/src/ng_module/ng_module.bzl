@@ -597,7 +597,7 @@ NG_MODULE_ATTRIBUTES = {
     ),
     "_supports_workers": attr.bool(default = True),
 
-    # Matches the API of the `ts_library` rule from `@bazel/typescript`.
+    # Matches the API of the `ts_library` rule from `@bazel/concatjs`.
     # https://github.com/bazelbuild/rules_nodejs/blob/398d351a3f2a9b2ebf6fc31fb5882cce7eedfd7b/packages/typescript/internal/build_defs.bzl#L435-L446.
     "package_name": attr.string(
         doc = """The package name that the linker will link this `ng_module` output as.
@@ -605,7 +605,7 @@ NG_MODULE_ATTRIBUTES = {
     If `package_path` is not set, the package will be linked in the top-level workspace node_modules folder.""",
     ),
 
-    # Matches the API of the `ts_library` rule from `@bazel/typescript`.
+    # Matches the API of the `ts_library` rule from `@bazel/concatjs`.
     # https://github.com/bazelbuild/rules_nodejs/blob/398d351a3f2a9b2ebf6fc31fb5882cce7eedfd7b/packages/typescript/internal/build_defs.bzl#L435-L446.
     "package_path": attr.string(
         doc = """The package path in the workspace that the linker will link this `ng_module` output to.
