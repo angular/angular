@@ -1,6 +1,6 @@
 # Angular Roadmap
 
-<p class="roadmap-last-updated">Last updated: 2021-11-03</p>
+<p class="roadmap-last-updated">Last updated: 2022-03-22</p>
 
 Angular receives a large number of feature requests, both from inside Google and from the broader open-source community. At the same time, our list of projects contains plenty of maintenance tasks, code refactorings, and potential performance improvements. We bring together representatives from developer relations, product management, and engineering to prioritize this list. As new projects come into the queue, we regularly position them based on relative priority to other projects. As work gets done, projects move up in the queue.
 
@@ -8,16 +8,25 @@ The following projects are not associated with a particular Angular version. We'
 
 ## In progress
 
-### Better developer ergonomics with strict typing for `@angular/forms`
+### Rollout strict typings for `@angular/forms`
 
-We will work on finding a way to implement stricter type checking for reactive forms with minimal backward incompatible implications. This way, we let developers catch more issues during development time, enable better text editor and IDE support, and improve the type checking for reactive forms.
-### Simplified Angular mental model with optional NgModules
+In Q4 2021 we designed a solution for introducing strict typings for forms and in Q1 2022 we concluded the corresponding [request for comments](https://github.com/angular/angular/discussions/44513). Currently, we're implementing a rollout strategy with an automated migration step that will enable the improvements for existing projects. We're first testing the solution with 2,500+ projects at Google to ensure a smooth migration path for the external community.
 
-To simplify the Angular mental model and learning journey, we’ll be working on making NgModules optional. This work lets developers develop standalone components and implement an alternative API for declaring the component’s compilation scope. We kicked this project off with high-level design discussions that we captured in an [RFC](https://github.com/angular/angular/discussions/43784).
+### Implement APIs for optional NgModules
+
+In the process of making Angular simpler, we're working on introducing APIs that allow developers to bootstrap applications, instantiate components, and use the router without NgModules. We'll share an RFC to start a design discussion with the community, followed by a series of pull request with the implementation. In the first part of this project we finalized the design of standalone components, directives, and pipes ([RFC](https://github.com/angular/angular/discussions/43784)).
 
 ### Investigate micro frontend architecture for scalable development processes
 
-Look into independent deployability and development of large-scale applications to improve efficiency and productivity. The Angular community has an established story for micro frontend support. As part of this effort, we’d investigate what would be the correct abstractions to provide better support.
+We conducted a series of 40 interviews to understand the requirements for micro-frontend architecture of the community. We'll follow up with a broader community survey and share analysis of the results publicly.
+
+### Investigate modern bundles
+
+To improve development experience by speeding up build times research modern bundles. As part of the project experiment with [esbuild](https://esbuild.github.io/) and other open source solutions, compare them with the state of the art tooling in Angular CLI, and report the findings.
+
+### New CDK primitives
+
+We're working on new CDK primitives to facilitate creating custom components based on the WAI-ARIA design patterns for [Menu & Menubar](https://www.w3.org/TR/wai-aria-practices-1.1/#menu), [Listbox](https://www.w3.org/TR/wai-aria-practices-1.1/#Listbox), [Combobox](https://www.w3.org/TR/wai-aria-practices-1.1/#combobox), and [Dialog](https://www.w3.org/TR/wai-aria-practices-1.1/#dialog_modal).
 
 ### Enhanced Angular Material components by integrating [MDC Web](https://material.io/develop/web/)
 
@@ -27,17 +36,9 @@ MDC Web is a library created by Google's Material Design team that provides reus
 
 We're evaluating components in Angular Material against accessibility standards such as WCAG and working to fix any issues that arise from this process.
 
-### Remove legacy [View Engine](guide/glossary#ve)
+### Documentation refactoring
 
-After the transition of all our internal tooling to Ivy is completed, we will remove the legacy View Engine for reduced Angular conceptual overhead, smaller package size, lower maintenance cost, and lower codebase complexity.
-
-### Launch advanced compiler diagnostics
-
-Extend the diagnostics of the Angular compiler outside type checking. Introduce other correctness and conformance checks to further guarantee correctness and best practices.
-
-### Improve Angular DevTools' integration with framework
-
-To improve the integration of Angular DevTools with the framework, we are working on moving the codebase to the [angular/angular](https://github.com/angular/angular) monorepository. This includes transitioning Angular DevTools to Bazel and integrating it into the existing processes and CI pipeline.
+Ensure all existing documentation fits into a consistent set of content types. Update excessive use of tutorial-style documentation into independent topics. We want to ensure the content outside the main tutorials is self-sufficient without being tightly coupled to a series of guides.
 
 ## Future
 
@@ -79,6 +80,36 @@ We want to ensure Angular developers are taking advantage of the latest capabili
   </span>
 </summary>
 <div class="details-content">
+
+### Remove legacy [View Engine](guide/glossary#ve)
+
+_Completed Q1 2022_
+
+After the transition of all our internal tooling to Ivy is completed, we will remove the legacy View Engine for reduced Angular conceptual overhead, smaller package size, lower maintenance cost, and lower codebase complexity.
+
+### Simplified Angular mental model with optional NgModules
+
+_Completed Q1 2022_
+
+To simplify the Angular mental model and learning journey, we’ll be working on making NgModules optional. This work lets developers develop standalone components and implement an alternative API for declaring the component’s compilation scope. We kicked this project off with high-level design discussions that we captured in an [RFC](https://github.com/angular/angular/discussions/43784).
+
+### Design strict typing for `@angular/forms`
+
+_Completed Q1 2022_
+
+We will work on finding a way to implement stricter type checking for reactive forms with minimal backward incompatible implications. This way, we let developers catch more issues during development time, enable better text editor and IDE support, and improve the type checking for reactive forms.
+
+### Improve Angular DevTools' integration with framework
+
+_Completed Q1 2022_
+
+To improve the integration of Angular DevTools with the framework, we are working on moving the codebase to the [angular/angular](https://github.com/angular/angular) monorepository. This includes transitioning Angular DevTools to Bazel and integrating it into the existing processes and CI pipeline.
+
+### Launch advanced compiler diagnostics
+
+_Completed Q1 2022_
+
+Extend the diagnostics of the Angular compiler outside type checking. Introduce other correctness and conformance checks to further guarantee correctness and best practices.
 
 ### Update our e2e testing strategy
 
