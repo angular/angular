@@ -5,8 +5,8 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 # Fetch rules_nodejs so we can install our npm dependencies
 http_archive(
     name = "build_bazel_rules_nodejs",
-    sha256 = "4913ea835810c195df24d3a929315c29a64566cc48e409d8b0f35008b4e02e59",
-    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/4.4.4/rules_nodejs-4.4.4.tar.gz"],
+    sha256 = "3ceb1e5b5dcad5fa2ad8870a20201cfbb9c9c63cac4055c9ab370034c765297f",
+    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/5.3.0/rules_nodejs-5.3.0.tar.gz"],
 )
 
 # Fetch sass rules for compiling sass files
@@ -20,26 +20,29 @@ http_archive(
     ],
 )
 
-# Check the bazel version and download npm dependencies
-load("@build_bazel_rules_nodejs//:index.bzl", "node_repositories", "yarn_install")
+load("@build_bazel_rules_nodejs//:repositories.bzl", "build_bazel_rules_nodejs_dependencies")
 
-# Setup the Node.js toolchain
-node_repositories(
-    # Use same node version as root angular WORKSPACE since
+build_bazel_rules_nodejs_dependencies()
+
+# Setup the Node.js toolchain.
+load("@rules_nodejs//nodejs:repositories.bzl", "nodejs_register_toolchains")
+
+nodejs_register_toolchains(
+    name = "nodejs",
     node_version = "16.10.0",
-    yarn_version = "1.22.11",
 )
 
-# Install our npm dependencies into @npm
+# Install our NPM dependencies
+load("@build_bazel_rules_nodejs//:index.bzl", "yarn_install")
+
 yarn_install(
     name = "npm",
+    # Currently disabled due to:
+    #  1. Missing Windows support currently.
+    #  2. Incompatibilites with the `ts_library` rule.
+    exports_directories_only = False,
     frozen_lockfile = False,
     package_json = "//:package.json",
-    # Turn off symlink_node_modules here as it causes flakiness with missing
-    # files in node_modules.
-    # TODO: track down the root cause of the flakiness; current suspect is that
-    # it is an issue with managed_directories when resources are limited
-    symlink_node_modules = False,
     yarn_lock = "//:yarn.lock",
 )
 
@@ -67,4 +70,6 @@ sass_repositories()
 
 load("@build_bazel_rules_nodejs//toolchains/esbuild:esbuild_repositories.bzl", "esbuild_repositories")
 
-esbuild_repositories()
+esbuild_repositories(
+    npm_repository = "npm",
+)

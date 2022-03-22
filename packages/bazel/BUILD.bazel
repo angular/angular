@@ -21,7 +21,7 @@ pkg_npm(
         # we expect `@angular/bazel` being located. Note: This expects the `@npm//` workspace to be used.
         "//packages/bazel/src:partial_compilation": "@npm//@angular/bazel/src:partial_compilation",
         "//packages/bazel/": "//@angular/bazel/",
-        "@npm//@bazel/typescript/internal:": "//@bazel/typescript/internal:",
+        "@npm//@bazel/concatjs/internal:": "//@bazel/concatjs/internal:",
     },
     tags = ["release-with-framework"],
     # Do not add more to this list.
