@@ -12,7 +12,7 @@ MyComponent.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
         $r3$.ɵɵlistener("click", function MyComponent_Template_button_click_0_listener() {
            $r3$.ɵɵrestoreView($s$);
            const $user$ = $r3$.ɵɵreference(3);
-           return ctx.onClick($user$.value);
+           return $r3$.ɵɵresetView(ctx.onClick($user$.value));
         });
         $r3$.ɵɵtext(1, "Save");
       $r3$.ɵɵelementEnd();
