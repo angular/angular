@@ -873,6 +873,9 @@
     "name": "ɵɵreference"
   },
   {
+    "name": "ɵɵresetView"
+  },
+  {
     "name": "ɵɵrestoreView"
   },
   {
