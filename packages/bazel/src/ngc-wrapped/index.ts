@@ -530,7 +530,7 @@ export function patchNgHostWithFileNameToModuleName(
     }
 
     // Unless manifest paths are explicitly enforced, we initially check if a module name is
-    // set for the given source file. The compiler host from `@bazel/typescript` sets source
+    // set for the given source file. The compiler host from `@bazel/concatjs` sets source
     // file module names if the compilation targets either UMD or AMD. To ensure that the AMD
     // module names match, we first consider those.
     try {
@@ -573,7 +573,7 @@ export function patchNgHostWithFileNameToModuleName(
       return ngHost.amdModuleName({fileName: importedFilePath} as ts.SourceFile);
     }
 
-    // If no AMD module name has been set for the source file by the `@bazel/typescript` compiler
+    // If no AMD module name has been set for the source file by the `@bazel/concatjs` compiler
     // host, and the target file is not part of a flat module node module package, we use the
     // following rules (in order):
     //    1. If target file is part of `node_modules/`, we use the package module name.
