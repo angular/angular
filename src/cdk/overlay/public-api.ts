@@ -27,4 +27,6 @@ export {
   ConnectedPosition,
   FlexibleConnectedPositionStrategy,
   FlexibleConnectedPositionStrategyOrigin,
+  STANDARD_DROPDOWN_ADJACENT_POSITIONS,
+  STANDARD_DROPDOWN_BELOW_POSITIONS,
 } from './position/flexible-connected-position-strategy';

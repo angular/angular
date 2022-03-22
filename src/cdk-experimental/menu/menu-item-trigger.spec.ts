@@ -539,7 +539,6 @@ class TriggersWithSameMenuSameMenuBar {
   @ViewChildren(CdkMenu) menus: QueryList<CdkMenu>;
 }
 
-// TODO uncomment once we figure out why this is failing in Ivy
 @Component({
   template: `
     <div cdkMenuBar>

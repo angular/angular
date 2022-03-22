@@ -30,14 +30,6 @@ import {FocusNext, MENU_STACK, MenuStack} from './menu-stack';
 import {FocusableElement} from './pointer-focus-tracker';
 import {MENU_AIM, MenuAim, Toggler} from './menu-aim';
 
-// TODO refactor this to be configurable allowing for custom elements to be removed
-/** Removes all icons from within the given element. */
-function removeIcons(element: Element) {
-  for (const icon of Array.from(element.querySelectorAll('mat-icon, .material-icons'))) {
-    icon.remove();
-  }
-}
-
 /**
  * Directive which provides the ability for an element to be focused and navigated to using the
  * keyboard when residing in a CdkMenu, CdkMenuBar, or CdkMenuGroup. It performs user defined
@@ -70,6 +62,12 @@ export class CdkMenuItem implements FocusableOption, FocusableElement, Toggler, 
     this._disabled = coerceBooleanProperty(value);
   }
   private _disabled = false;
+
+  /**
+   * The text used to locate this item during menu typeahead. If not specified,
+   * the `textContent` of the item will be used.
+   */
+  @Input() typeahead: string;
 
   /**
    * If this MenuItem is a regular MenuItem, outputs when it is triggered by a keyboard or mouse
@@ -173,12 +171,7 @@ export class CdkMenuItem implements FocusableOption, FocusableElement, Toggler, 
 
   /** Get the label for this element which is required by the FocusableOption interface. */
   getLabel(): string {
-    // TODO cloning the tree may be expensive; implement a better method
-    // we know that the current node is an element type
-    const clone = this._elementRef.nativeElement.cloneNode(true) as Element;
-    removeIcons(clone);
-
-    return clone.textContent?.trim() || '';
+    return this.typeahead || this._elementRef.nativeElement.textContent?.trim() || '';
   }
 
   /**

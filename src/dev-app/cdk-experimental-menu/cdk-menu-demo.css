@@ -17,3 +17,8 @@
   border: solid 2px black;
   padding: 6px;
 }
+
+demo-custom-position {
+  display: block;
+  margin-top: 20px;
+}

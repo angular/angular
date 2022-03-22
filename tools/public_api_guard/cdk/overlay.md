@@ -471,6 +471,12 @@ export class ScrollStrategyOptions {
     static ɵprov: i0.ɵɵInjectableDeclaration<ScrollStrategyOptions>;
 }
 
+// @public (undocumented)
+export const STANDARD_DROPDOWN_ADJACENT_POSITIONS: ConnectedPosition[];
+
+// @public (undocumented)
+export const STANDARD_DROPDOWN_BELOW_POSITIONS: ConnectedPosition[];
+
 // @public
 export function validateHorizontalPosition(property: string, value: HorizontalConnectionPos): void;
 

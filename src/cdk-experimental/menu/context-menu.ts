@@ -11,7 +11,6 @@ import {
   EventEmitter,
   Inject,
   Injectable,
-  InjectionToken,
   Injector,
   Input,
   OnDestroy,
@@ -27,6 +26,7 @@ import {
   Overlay,
   OverlayConfig,
   OverlayRef,
+  STANDARD_DROPDOWN_BELOW_POSITIONS,
 } from '@angular/cdk/overlay';
 import {Portal, TemplatePortal} from '@angular/cdk/portal';
 import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
@@ -35,6 +35,14 @@ import {skip, takeUntil} from 'rxjs/operators';
 import {MENU_STACK, MenuStack} from './menu-stack';
 import {isClickInsideMenuOverlay} from './menu-item-trigger';
 import {MENU_TRIGGER, MenuTrigger} from './menu-trigger';
+
+// In cases where the first menu item in the context menu is a trigger the submenu opens on a
+// hover event. We offset the context menu 2px by default to prevent this from occurring.
+const CONTEXT_MENU_POSITIONS = STANDARD_DROPDOWN_BELOW_POSITIONS.map(position => {
+  const offsetX = position.overlayX === 'start' ? 2 : -2;
+  const offsetY = position.overlayY === 'top' ? 2 : -2;
+  return {...position, offsetX, offsetY};
+});
 
 /** Tracks the last open context menu trigger across the entire application. */
 @Injectable({providedIn: 'root'})
@@ -54,20 +62,6 @@ export class ContextMenuTracker {
   }
 }
 
-/** Configuration options passed to the context menu. */
-export type ContextMenuOptions = {
-  /** The opened menus X coordinate offset from the triggering position. */
-  offsetX: number;
-
-  /** The opened menus Y coordinate offset from the triggering position. */
-  offsetY: number;
-};
-
-/** Injection token for the ContextMenu options object. */
-export const CDK_CONTEXT_MENU_DEFAULT_OPTIONS = new InjectionToken<ContextMenuOptions>(
-  'cdk-context-menu-default-options',
-);
-
 /** The coordinates of where the context menu should open. */
 export type ContextMenuCoordinates = {x: number; y: number};
 
@@ -83,9 +77,6 @@ export type ContextMenuCoordinates = {x: number; y: number};
     '(contextmenu)': '_openOnContextMenu($event)',
   },
   providers: [
-    // In cases where the first menu item in the context menu is a trigger the submenu opens on a
-    // hover event. Offsetting the opened context menu by 2px prevents this from occurring.
-    {provide: CDK_CONTEXT_MENU_DEFAULT_OPTIONS, useValue: {offsetX: 2, offsetY: 2}},
     {provide: MENU_TRIGGER, useExisting: CdkContextMenuTrigger},
     {provide: MENU_STACK, useClass: MenuStack},
   ],
@@ -94,6 +85,9 @@ export class CdkContextMenuTrigger extends MenuTrigger implements OnDestroy {
   /** Template reference variable to the menu to open on right click. */
   @Input('cdkContextMenuTriggerFor')
   private _menuTemplateRef: TemplateRef<unknown>;
+
+  /** A list of preferred menu positions to be used when constructing the `FlexibleConnectedPositionStrategy` for this trigger's menu. */
+  @Input('cdkMenuPosition') menuPosition: ConnectedPosition[];
 
   /** Emits when the attached menu is requested to open. */
   @Output('cdkContextMenuOpened') readonly opened: EventEmitter<void> = new EventEmitter();
@@ -129,7 +123,6 @@ export class CdkContextMenuTrigger extends MenuTrigger implements OnDestroy {
     private readonly _overlay: Overlay,
     private readonly _contextMenuTracker: ContextMenuTracker,
     @Inject(MENU_STACK) menuStack: MenuStack,
-    @Inject(CDK_CONTEXT_MENU_DEFAULT_OPTIONS) private readonly _options: ContextMenuOptions,
     @Optional() private readonly _directionality?: Directionality,
   ) {
     super(injector, menuStack);
@@ -233,22 +226,7 @@ export class CdkContextMenuTrigger extends MenuTrigger implements OnDestroy {
     return this._overlay
       .position()
       .flexibleConnectedTo(coordinates)
-      .withDefaultOffsetX(this._options.offsetX)
-      .withDefaultOffsetY(this._options.offsetY)
-      .withPositions(this._getOverlayPositions());
-  }
-
-  /**
-   * Determine and return where to position the opened menu relative to the mouse location.
-   */
-  private _getOverlayPositions(): ConnectedPosition[] {
-    // TODO: this should be configurable through the injected context menu options
-    return [
-      {originX: 'end', originY: 'top', overlayX: 'start', overlayY: 'top'},
-      {originX: 'start', originY: 'top', overlayX: 'end', overlayY: 'top'},
-      {originX: 'end', originY: 'bottom', overlayX: 'start', overlayY: 'bottom'},
-      {originX: 'start', originY: 'bottom', overlayX: 'end', overlayY: 'bottom'},
-    ];
+      .withPositions(this.menuPosition ?? CONTEXT_MENU_POSITIONS);
   }
 
   /**

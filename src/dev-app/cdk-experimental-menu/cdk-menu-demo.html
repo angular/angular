@@ -99,19 +99,55 @@
       wampa darth mara. Lando kessel wampa sidious.
     </div>
   </div>
+</div>
+
+<div class="example-menu-container">
+  <h3>Custom Menu Position Example</h3>
+  <p>The menu and context menu below should open centered on the trigger</p>
+
+  <p><button [cdkMenuTriggerFor]="someMenu" [cdkMenuPosition]="customPosition">Some Menu</button></p>
+
+  <div class="example-context" [cdkContextMenuTriggerFor]="outer" [cdkMenuPosition]="customPosition">
+    <h4>Custom Context Menu Position (Centered on Cursor)</h4>
+
+    Lucas ipsum dolor sit amet maul jade jawa ben wookiee binks lando jinn baba tatooine. Jade biggs
+    padmé sebulba cade dagobah. Baba lars mothma yoda. Bothan calrissian c-3p0 maul fisto lando
+    obi-wan. Skywalker solo darth bothan droid obi-wan ahsoka. Maul solo obi-wan calrissian antilles
+    yavin chewbacca lando. Mustafar ponda kit jango. C-3p0 skywalker baba grievous moff. Hutt ben
+    darth solo skywalker bothan skywalker maul organa. Grievous cade antilles utapau skywalker
+    grievous antilles chewbacca.
+  </div>
+
+  <ng-template #someMenu>
+    <div cdkMenu class="example-menu">
+      <button cdkMenuItem>Some Option 1</button>
+      <button cdkMenuItem [cdkMenuTriggerFor]="someSubMenu">Some Option 2 ></button>
+      <button cdkMenuItem>Some Option 3</button>
+      <button cdkMenuItem>Some Option 4</button>
+    </div>
+  </ng-template>
+
+  <ng-template #someSubMenu>
+    <div cdkMenu class="example-menu">
+      <button cdkMenuItem>Some Option 1</button>
+      <button cdkMenuItem>Some Option 2</button>
+      <button cdkMenuItem>Some Option 3</button>
+      <button cdkMenuItem>Some Option 4</button>
+    </div>
+  </ng-template>
 
   <ng-template #outer>
     <div cdkMenu class="example-menu" id="outer_menu">
-      <button id="undo_button" cdkMenuItem>Undo</button>
-      <button id="redo_button" cdkMenuItem>Redo</button>
+      <button cdkMenuItem>Undo</button>
+      <button cdkMenuItem>Redo</button>
     </div>
   </ng-template>
 
   <ng-template #inner>
     <div cdkMenu class="example-menu" id="inner_menu">
-      <button id="cut_button" cdkMenuItem>Cut</button>
-      <button id="copy_button" cdkMenuItem>Copy</button>
-      <button id="paste_button" cdkMenuItem>Paste</button>
+      <button cdkMenuItem>Cut</button>
+      <button cdkMenuItem>Copy</button>
+      <button cdkMenuItem>Paste</button>
     </div>
   </ng-template>
 </div>

@@ -1288,3 +1288,17 @@ function getRoundedBoundingClientRect(clientRect: Dimensions): Dimensions {
     height: Math.floor(clientRect.height),
   };
 }
+
+export const STANDARD_DROPDOWN_BELOW_POSITIONS: ConnectedPosition[] = [
+  {originX: 'start', originY: 'bottom', overlayX: 'start', overlayY: 'top'},
+  {originX: 'start', originY: 'top', overlayX: 'start', overlayY: 'bottom'},
+  {originX: 'end', originY: 'bottom', overlayX: 'end', overlayY: 'top'},
+  {originX: 'end', originY: 'top', overlayX: 'end', overlayY: 'bottom'},
+];
+
+export const STANDARD_DROPDOWN_ADJACENT_POSITIONS: ConnectedPosition[] = [
+  {originX: 'end', originY: 'top', overlayX: 'start', overlayY: 'top'},
+  {originX: 'end', originY: 'bottom', overlayX: 'start', overlayY: 'bottom'},
+  {originX: 'start', originY: 'top', overlayX: 'end', overlayY: 'top'},
+  {originX: 'start', originY: 'bottom', overlayX: 'end', overlayY: 'bottom'},
+];

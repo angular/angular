@@ -7,9 +7,14 @@
  */
 
 import {Component} from '@angular/core';
+import {ConnectedPosition} from '@angular/cdk/overlay';
 
 @Component({
   templateUrl: 'cdk-menu-demo.html',
   styleUrls: ['cdk-menu-demo.css'],
 })
-export class CdkMenuDemo {}
+export class CdkMenuDemo {
+  customPosition = [
+    {originX: 'center', originY: 'center', overlayX: 'center', overlayY: 'center'},
+  ] as ConnectedPosition[];
+}
