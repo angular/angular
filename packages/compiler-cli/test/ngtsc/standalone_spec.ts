@@ -45,7 +45,9 @@ runInEachFileSystem(() => {
               export class TestCmp {}
             `);
         env.driveMain();
-        expect(env.getContents('test.js')).toContain('directives: [TestDir]');
+        const jsCode = env.getContents('test.js');
+        expect(jsCode).toContain('directives: [TestDir]');
+        expect(jsCode).toContain('standalone: true');
       });
 
       it('should error when a non-standalone component tries to use imports', () => {
@@ -395,6 +397,36 @@ runInEachFileSystem(() => {
         expect(diags[0].messageText).toContain('is not standalone');
         expect(diagnosticToNode(diags[0], ts.isIdentifier).parent.parent.getText())
             .toEqual('imports: [TestDir]');
+      });
+    });
+
+    describe('other types', () => {
+      it('should compile a basic standalone directive', () => {
+        env.write('test.ts', `
+              import {Directive} from '@angular/core';
+        
+              @Directive({
+                selector: '[dir]',
+                standalone: true,
+              })
+              export class TestDir {}
+            `);
+        env.driveMain();
+        expect(env.getContents('test.js')).toContain('standalone: true');
+      });
+
+      it('should compile a basic standalone pipe', () => {
+        env.write('test.ts', `
+              import {Pipe} from '@angular/core';
+        
+              @Pipe({
+                name: 'testpipe',
+                standalone: true,
+              })
+              export class TestPipe {}
+            `);
+        env.driveMain();
+        expect(env.getContents('test.js')).toContain('standalone: true');
       });
     });
   });

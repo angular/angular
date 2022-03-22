@@ -77,6 +77,10 @@ function baseDirectiveFields(
     definitionMap.set('exportAs', o.literalArr(meta.exportAs.map(e => o.literal(e))));
   }
 
+  if (meta.isStandalone) {
+    definitionMap.set('standalone', o.literal(true));
+  }
+
   return definitionMap;
 }
 
