@@ -190,6 +190,11 @@ export interface DirectiveDef<T> {
   readonly exportAs: string[]|null;
 
   /**
+   * Whether this directive (or component) is standalone.
+   */
+  readonly standalone: boolean;
+
+  /**
    * Factory function used to create a new directive instance. Will be null initially.
    * Populated when the factory is first requested by directive instantiation logic.
    */
@@ -354,6 +359,11 @@ export interface PipeDef<T> {
    * state of the pipe.
    */
   readonly pure: boolean;
+
+  /**
+   * Whether this pipe is standalone.
+   */
+  readonly standalone: boolean;
 
   /* The following are lifecycle hooks for this pipe */
   onDestroy: (() => void)|null;
