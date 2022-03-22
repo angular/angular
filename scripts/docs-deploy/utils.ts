@@ -15,18 +15,18 @@ export class SiteTarget {
 
 /** Object capturing all site targets for the docs-app. */
 export const sites = {
-  stable: new SiteTarget('ng-comp-test', 'https://ng-comp-test.firebaseapp.com'),
-  next: new SiteTarget('next-ng-comp-test', 'https://next-ng-comp-test.firebaseapp.com'),
-  rc: new SiteTarget('rc-ng-comp-test', 'https://rc-ng-comp-test.firebaseapp.com'),
+  stable: new SiteTarget('latest-material-angular-io', 'https://material.angular.io'),
+  next: new SiteTarget('next-material-angular-io', 'https://next.material.angular.io'),
+  rc: new SiteTarget('rc-material-angular-io', 'https://rc.material.angular.io'),
 
   forMajor: (major: number) =>
-    new SiteTarget(`v${major}-ng-comp-test`, `https://v${major}-ng-comp-test.firebaseapp.com`),
+    new SiteTarget(`v${major}-material-angular-io`, `https://v${major}.material.angular.io`),
 };
 
 /** Configuration describing the Firebase project that we deploy to. */
 export const firebaseConfig = {
-  projectId: 'angular-components-test',
-  serviceKey: process.env.DOCS_SITE_FIREBASE_SERVICE_KEY!,
+  projectId: 'material-angular-io',
+  serviceKey: process.env.DOCS_SITE_GCP_SERVICE_KEY!,
 };
 
 /** Finds and parsed the `package.json` of the specified project directory. */
