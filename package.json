@@ -216,8 +216,6 @@
     "tslint": "^6.1.3",
     "tsutils": "^3.21.0",
     "typescript": "~4.6.2",
-    "typescript-4.4": "npm:typescript@4.4.2",
-    "typescript-4.5": "npm:typescript@4.5.5",
     "vrsource-tslint-rules": "6.0.0",
     "yaml": "^1.10.2",
     "yargs": "^17.3.1",

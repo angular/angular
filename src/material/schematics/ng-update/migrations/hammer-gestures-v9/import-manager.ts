@@ -39,9 +39,6 @@ interface AnalyzedImport {
 /** Checks whether an analyzed import has the given import flag set. */
 const hasFlag = (data: AnalyzedImport, flag: ImportState) => (data.state & flag) !== 0;
 
-/** Parsed version of TypeScript that can be used for comparisons. */
-const PARSED_TS_VERSION = parseFloat(ts.versionMajorMinor);
-
 /**
  * Import manager that can be used to add or remove TypeScript imports within source
  * files. The manager ensures that multiple transformations are applied properly
@@ -349,7 +346,7 @@ export class ImportManager {
         if (importData.specifiers) {
           const namedBindings = importData.node.importClause!.namedBindings as ts.NamedImports;
           const importSpecifiers = importData.specifiers.map(s =>
-            createImportSpecifier(s.propertyName, s.name),
+            ts.factory.createImportSpecifier(false, s.propertyName, s.name),
           );
           const updatedBindings = ts.factory.updateNamedImports(namedBindings, importSpecifiers);
 
@@ -526,15 +523,4 @@ export class ImportManager {
     }
     return commentRanges[commentRanges.length - 1]!.end;
   }
-}
-
-// TODO(crisbeto): backwards-compatibility layer that allows us to support both TS 4.4 and 4.5.
-// Should be removed once we don't have to support 4.4 anymore.
-function createImportSpecifier(
-  propertyName: ts.Identifier | undefined,
-  name: ts.Identifier,
-): ts.ImportSpecifier {
-  return PARSED_TS_VERSION > 4.4
-    ? ts.factory.createImportSpecifier(false, propertyName, name)
-    : (ts.createImportSpecifier as any)(propertyName, name);
 }
