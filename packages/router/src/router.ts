@@ -1204,7 +1204,17 @@ export class Router {
   createUrlTree(commands: any[], navigationExtras: UrlCreationOptions = {}): UrlTree {
     const {relativeTo, queryParams, fragment, queryParamsHandling, preserveFragment} =
         navigationExtras;
-    const a = relativeTo || this.routerState.root;
+    // It's actually important to use `this.routerState.snapshot.root` rather than
+    // `this.routerState.root.snapshot`. If you look at the `createRouterState`
+    // function, you'll see that `snapshot` is simply the "current" `RouterStateSnapshot` (the
+    // target snapshot of the navigation) while `root` is the snapshot that gets created from
+    // applying the `routeReuseStrategy` to the current and previous snapshots.  This means that
+    // `root.snapshot` is a router state which is potentially still pending. The `_futureSnapshot`
+    // is only applied after the router activates (`advanceActivatedRoute`) so if there's another
+    // navigation that happens before then, we need to ensure that we are using the correct snapshot
+    // from the `routerState`.
+    // TODO(atscott): write a test for this
+    const a = relativeTo?.snapshot || this.routerState.snapshot.root;
     const f = preserveFragment ? this.currentUrlTree.fragment : fragment;
     let q: Params|null = null;
     switch (queryParamsHandling) {
@@ -1223,11 +1233,11 @@ export class Router {
 
     let relativeToUrlSegmentGroup: UrlSegmentGroup|undefined;
     try {
-      relativeToUrlSegmentGroup = createSegmentGroupFromRoute(a.snapshot);
+      relativeToUrlSegmentGroup = createSegmentGroupFromRoute(a);
     } catch (e: unknown) {
       if (NG_DEV_MODE) {
-        console.warn(`${
-            a.snapshot} has an invalid structure. This is likely due to an incomplete mock in tests.`);
+        console.warn(
+            `${a} has an invalid structure. This is likely due to an incomplete mock in tests.`);
         if (typeof commands[0] !== 'string' || !commands[0].startsWith('/')) {
           // This is strictly for backwards compatibility with tests that create
           // invalid `ActivatedRoute` mocks. Navigations that were absolute
