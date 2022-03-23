@@ -730,8 +730,7 @@ export type UntypedFormArray = FormArray;
 export const UntypedFormArray: UntypedFormArrayCtor;
 
 // @public
-export class UntypedFormBuilder {
-    constructor();
+export class UntypedFormBuilder extends FormBuilder {
     // (undocumented)
     array(controlsConfig: any[], validatorOrOpts?: ValidatorFn | ValidatorFn[] | AbstractControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null): UntypedFormArray;
     // (undocumented)

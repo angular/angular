@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {fakeAsync, tick} from '@angular/core/testing';
-import {FormBuilder, Validators} from '@angular/forms';
+import {FormBuilder, UntypedFormBuilder, Validators} from '@angular/forms';
 import {of} from 'rxjs';
 
 (function() {
@@ -274,6 +274,19 @@ describe('Form Builder', () => {
         expect(g.get('three')!.updateOn).toEqual('change');
       });
     });
+  });
+});
+
+describe('UntypedFormBuilder', () => {
+  let fb: FormBuilder = new FormBuilder();
+  let ufb: UntypedFormBuilder = new UntypedFormBuilder();
+
+  function typedFn(fb: FormBuilder): void {}
+  function untypedFn(fb: UntypedFormBuilder): void {}
+
+  it('can be provided where a FormBuilder is expected and vice versa', () => {
+    typedFn(ufb);
+    untypedFn(fb);
   });
 });
 })();
