@@ -100,8 +100,8 @@ export function prepareEventListenerParameters(
     // call, e.g. `return resetView(ctx.foo())`. Otherwise we add the call as the last statement.
     const lastStatement = statements[statements.length - 1];
     if (lastStatement instanceof o.ReturnStatement) {
-      statements[statements.length - 1] =
-          new o.ReturnStatement(invokeInstruction(null, R3.resetView, [lastStatement.value]));
+      statements[statements.length - 1] = new o.ReturnStatement(
+          invokeInstruction(lastStatement.value.sourceSpan, R3.resetView, [lastStatement.value]));
     } else {
       statements.push(new o.ExpressionStatement(invokeInstruction(null, R3.resetView, [])));
     }
