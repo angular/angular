@@ -75,18 +75,6 @@ setPublicVar COMPONENTS_REPO_BRANCH "master"
 # **NOTE**: When updating the commit SHA, also update the cache key in the CircleCI `config.yml`.
 setPublicVar COMPONENTS_REPO_COMMIT "6b2b51844a9c86add1bd6628d5ec8a621e606073"
 
-
-####################################################################################################
-# Decrypt GCP Credentials and store them as the Google default credentials.
-####################################################################################################
-mkdir -p "$HOME/.config/gcloud";
-openssl aes-256-cbc -d -in "${projectDir}/.circleci/gcp_token" \
-        -md md5 -k "$CIRCLE_PROJECT_REPONAME" -out "$HOME/.config/gcloud/application_default_credentials.json"
-####################################################################################################
-# Set bazel configuration for CircleCI runs.
-####################################################################################################
-cp "${projectDir}/.circleci/bazel.linux.rc" "$HOME/.bazelrc";
-
 ####################################################################################################
 # Create shell script in /tmp for Bazel actions to access CI envs without
 # busting the cache. Used by payload-size.sh script in integration tests.
@@ -106,7 +94,19 @@ echo "export CI_SECRET_PAYLOAD_FIREBASE_TOKEN=\"${CI_SECRET_PAYLOAD_FIREBASE_TOK
 ####################################################################################################
 ####################################################################################################
 ##                  Source `$BASH_ENV` to make the variables available immediately.               ##
-##                  ***NOTE: This must remain the last action in this script***               ##
+##                  ***NOTE: This must remain the last variable definition in this script***      ##
 ####################################################################################################
 ####################################################################################################
 source $BASH_ENV;
+
+####################################################################################################
+# Platform-specific environment setup (which can leverage the base variables from here)
+####################################################################################################
+
+# Conditionally, load additional environment settings based on the current VM
+# operating system running. We detect Windows by checking for `%AppData%`.
+if [[ -n "${APPDATA}" ]]; then
+  source ${projectDir}/.circleci/env.windows.sh
+else
+  source ${projectDir}/.circleci/env.linux.sh
+fi
