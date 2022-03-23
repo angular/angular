@@ -73,6 +73,11 @@ var_11: &only_release_branches
         - master
         - /\d+\.\d+\.x/
 
+# CircleCI orbs
+# https://circleci.com/developer/orbs.
+orbs:
+  node: circleci/node@5.0.1
+
 # Executor Definitions
 # https://circleci.com/docs/2.0/reusing-config/#authoring-reusable-executors
 # **NOTE 1**: Pin to exact images using an ID (SHA). See https://circleci.com/docs/2.0/circleci-images/#using-a-docker-image-id-to-pin-an-image-to-a-fixed-version.
@@ -103,20 +108,8 @@ executors:
   windows-executor:
     working_directory: ~/ng
     resource_class: windows.2xlarge
-    # CircleCI windows VMs do have the GitBash shell available:
-    # https://github.com/CircleCI-Public/windows-preview-docs#shells
-    # But in this specific case we really should not use it because Bazel must not be ran from
-    # GitBash. These issues discuss why:
-    # https://github.com/bazelbuild/bazel/issues/5751
-    # https://github.com/bazelbuild/bazel/issues/5724#issuecomment-410194038
-    # https://github.com/bazelbuild/bazel/issues/6339#issuecomment-441600879
-    shell: powershell.exe -ExecutionPolicy Bypass
+    shell: bash
     machine:
-      # Windows preview image that includes the following:
-      # - Visual Studio 2019 build tools
-      # - Node 14
-      # - yarn 1.17
-      # - Python 3 3.7.4
       image: windows-server-2019-vs2019:201908-02
 
 # Command Definitions
@@ -191,29 +184,6 @@ commands:
           # Note: Make sure this file is excluded in the `.gitignore` as otherwise the
           # snapshot stamping would have the `-with-local-changes` suffix.
           command: date +%Y-%m > month.txt
-
-  # Normally this would be an individual job instead of a command.
-  # But startup and setup time for each individual windows job are high enough to discourage
-  # many small jobs, so instead we use a command for setup unless the gain becomes significant.
-  setup_win:
-    description: Setup windows node environment
-    steps:
-      - checkout
-      - save_month_to_file
-      # Install Bazel pre-requisites that aren't in the preconfigured CircleCI Windows VM.
-      - run: ./.circleci/windows-env.ps1
-      - run: node --version
-      - run: yarn --version
-      - restore_cache:
-          keys:
-            - *cache_key_win
-            - *cache_key_win_fallback
-      # Install @bazel/bazelisk globally and use that for the first run.
-      # Workaround for https://github.com/bazelbuild/rules_nodejs/issues/894
-      # NB: the issue was for @bazel/bazel but the same problem applies to @bazel/bazelisk
-      - run: yarn global add @bazel/bazelisk@$env:BAZELISK_VERSION
-      # On Windows `~/` is not resolved when using as a CLI value. `../` results in the same path.
-      - run: yarn install --frozen-lockfile --non-interactive --cache-folder ../.cache/yarn
 
   notify_webhook_on_fail:
     description: Notify a webhook about failure
@@ -724,14 +694,35 @@ jobs:
   test_win:
     executor: windows-executor
     steps:
-      - setup_win
+      - checkout
+      - save_month_to_file
+      - init_environment
+
+      # Setup the proper NodeJS version. The image comes pre-installed with `nvm-windows`.
+      - run:
+          name: Install NodeJS version from `.nvmrc`.
+          command: |
+            nvm install $(cat .nvmrc)
+            nvm use $(cat .nvmrc)
+
+      - restore_cache:
+          keys:
+            - *cache_key_win
+            - *cache_key_win_fallback
+      - run: yarn install --frozen-lockfile --non-interactive --cache-folder ~/.cache/yarn
+      - save_cache:
+          key: *cache_key_win
+          paths:
+            - ~/.cache/yarn
+            - ~/bazel_repository_cache
+            - ~/.cache/bazelisk
       - run:
           name: Build all windows CI targets
-          command: bazel build //packages/compiler-cli/...
+          command: yarn bazel build //packages/compiler-cli/...
           no_output_timeout: 15m
       - run:
           name: Test all windows CI targets
-          command: bazel test --test_tag_filters="-browser:chromium-local" //packages/compiler-cli/...
+          command: yarn bazel test --test_tag_filters="-browser:chromium-local" //packages/compiler-cli/...
           no_output_timeout: 15m
   test_angular_devtools:
     executor: test-browser-executor
