@@ -142,6 +142,15 @@
     ],
     "headers": [
       {
+        "source": "**",
+        "headers": [
+          {
+            "key": "X-Frame-Options",
+            "value": "DENY"
+          }
+        ]
+      },
+      {
         // All paths (URLs without a file extension).
         "source": "**/!(*.*)",
         "headers": [
