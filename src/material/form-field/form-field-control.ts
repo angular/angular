@@ -7,7 +7,7 @@
  */
 
 import {Observable} from 'rxjs';
-import {NgControl} from '@angular/forms';
+import {AbstractControlDirective, NgControl} from '@angular/forms';
 import {Directive} from '@angular/core';
 
 /** An interface which allows a control to work inside of a `MatFormField`. */
@@ -28,8 +28,8 @@ export abstract class MatFormFieldControl<T> {
   /** The placeholder for this control. */
   readonly placeholder: string;
 
-  /** Gets the NgControl for this control. */
-  readonly ngControl: NgControl | null;
+  /** Gets the AbstractControlDirective for this control. */
+  readonly ngControl: NgControl | AbstractControlDirective | null;
 
   /** Whether the control is focused. */
   readonly focused: boolean;

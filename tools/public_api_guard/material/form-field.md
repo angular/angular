@@ -5,6 +5,7 @@
 ```ts
 
 import { _AbstractConstructor } from '@angular/material/core';
+import { AbstractControlDirective } from '@angular/forms';
 import { AfterContentChecked } from '@angular/core';
 import { AfterContentInit } from '@angular/core';
 import { AfterViewInit } from '@angular/core';
@@ -132,7 +133,7 @@ export class MatFormField extends _MatFormFieldBase implements AfterContentInit,
     // (undocumented)
     _prefixChildren: QueryList<MatPrefix>;
     _shouldAlwaysFloat(): boolean;
-    _shouldForward(prop: keyof NgControl): boolean;
+    _shouldForward(prop: keyof AbstractControlDirective): boolean;
     // (undocumented)
     _shouldLabelFloat(): boolean;
     _subscriptAnimationState: string;
@@ -163,7 +164,7 @@ export abstract class MatFormFieldControl<T> {
     readonly errorState: boolean;
     readonly focused: boolean;
     readonly id: string;
-    readonly ngControl: NgControl | null;
+    readonly ngControl: NgControl | AbstractControlDirective | null;
     abstract onContainerClick(event: MouseEvent): void;
     readonly placeholder: string;
     readonly required: boolean;
