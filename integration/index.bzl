@@ -33,7 +33,6 @@ FRAMEWORK_PACKAGES = [
 
 def _ng_integration_test(name, setup_chromium = False, **kwargs):
     "Set defaults for the npm_integration_test common to the angular repo"
-    payload_size_tracking = kwargs.pop("payload_size_tracking", [])
     pinned_npm_packages = kwargs.pop("pinned_npm_packages", [])
     use_view_engine_packages = kwargs.pop("use_view_engine_packages", [])
     toolchains = kwargs.pop("toolchains", [])
