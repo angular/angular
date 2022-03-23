@@ -1,12 +1,12 @@
 Toggle Combobox!
 <br>
-<button cdkCombobox class="example-combobox" [cdkComboboxTriggerFor]="panel" [openActions]="'toggle'">
+<button cdkCombobox #trigger="cdkCombobox" class="example-combobox" [cdkComboboxTriggerFor]="panel" [openActions]="'toggle'">
     No Value
 </button>
 
-<ng-template cdkComboboxPanel #panel="cdkComboboxPanel">
-    <div cdkComboboxPopup [parentPanel]="panel" [firstFocus]="input">
+<ng-template #panel>
+    <div cdkComboboxPopup [firstFocus]="input">
         <input #input>
-        <button (click)="panel.closePanel(input.value)">Apply</button>
+        <button (click)="trigger.updateAndClose(input.value)">Apply</button>
     </div>
 </ng-template>

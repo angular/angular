@@ -11,7 +11,6 @@ import {CommonModule} from '@angular/common';
 import {RouterModule} from '@angular/router';
 import {CdkComboboxModule} from '@angular/cdk-experimental/combobox';
 import {CdkComboboxDemo} from './cdk-combobox-demo';
-import {PanelContent} from './panel-content';
 
 @NgModule({
   imports: [
@@ -19,6 +18,6 @@ import {PanelContent} from './panel-content';
     CommonModule,
     RouterModule.forChild([{path: '', component: CdkComboboxDemo}]),
   ],
-  declarations: [CdkComboboxDemo, PanelContent],
+  declarations: [CdkComboboxDemo],
 })
 export class CdkComboboxDemoModule {}

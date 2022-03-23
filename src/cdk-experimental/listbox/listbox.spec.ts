@@ -1,7 +1,7 @@
-import {ComponentFixture, waitForAsync, TestBed, tick, fakeAsync} from '@angular/core/testing';
+import {ComponentFixture, fakeAsync, TestBed, tick, waitForAsync} from '@angular/core/testing';
 import {Component, DebugElement, ViewChild} from '@angular/core';
 import {By} from '@angular/platform-browser';
-import {CdkOption, CdkListboxModule, ListboxSelectionChangeEvent, CdkListbox} from './index';
+import {CdkListbox, CdkListboxModule, CdkOption, ListboxSelectionChangeEvent} from './index';
 import {
   createKeyboardEvent,
   dispatchKeyboardEvent,
@@ -9,7 +9,7 @@ import {
 } from '../../cdk/testing/private';
 import {A, DOWN_ARROW, END, HOME, SPACE} from '@angular/cdk/keycodes';
 import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {CdkCombobox, CdkComboboxModule, CdkComboboxPanel} from '@angular/cdk-experimental/combobox';
+import {CdkCombobox, CdkComboboxModule} from '@angular/cdk-experimental/combobox';
 
 describe('CdkOption and CdkListbox', () => {
   describe('selection state change', () => {
@@ -887,7 +887,7 @@ describe('CdkOption and CdkListbox', () => {
 
       listboxInstance.setActiveOption(optionInstances[1]);
       dispatchKeyboardEvent(listboxElement, 'keydown', SPACE);
-      testComponent.panel.closePanel(testComponent.listbox.getSelectedValues());
+      testComponent.combobox.updateAndClose(testComponent.listbox.getSelectedValues());
       fixture.detectChanges();
 
       expect(comboboxInstance.isOpen()).toBeFalse();
@@ -1003,9 +1003,8 @@ class ListboxControlValueAccessor {
       No Value
     </button>
 
-    <ng-template cdkComboboxPanel #panel="cdkComboboxPanel">
+    <ng-template #panel>
       <select cdkListbox
-              [parentPanel]="panel"
               [disabled]="isDisabled"
               [multiple]="isMultiselectable"
               (selectionChange)="onSelectionChange($event)">
@@ -1022,7 +1021,7 @@ class ListboxInsideCombobox {
   isDisabled: boolean = false;
   isMultiselectable: boolean = false;
   @ViewChild(CdkListbox) listbox: CdkListbox<string>;
-  @ViewChild('panel') panel: CdkComboboxPanel<string>;
+  @ViewChild(CdkCombobox) combobox: CdkCombobox;
 
   onSelectionChange(event: ListboxSelectionChangeEvent<string>) {
     this.changedOption = event.option;

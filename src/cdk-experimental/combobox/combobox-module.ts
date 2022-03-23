@@ -9,10 +9,9 @@
 import {NgModule} from '@angular/core';
 import {OverlayModule} from '@angular/cdk/overlay';
 import {CdkCombobox} from './combobox';
-import {CdkComboboxPanel} from './combobox-panel';
 import {CdkComboboxPopup} from './combobox-popup';
 
-const EXPORTED_DECLARATIONS = [CdkCombobox, CdkComboboxPanel, CdkComboboxPopup];
+const EXPORTED_DECLARATIONS = [CdkCombobox, CdkComboboxPopup];
 @NgModule({
   imports: [OverlayModule],
   exports: EXPORTED_DECLARATIONS,

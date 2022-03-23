@@ -6,18 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {
-  Directive,
-  ElementRef,
-  Inject,
-  InjectionToken,
-  Input,
-  OnInit,
-  Optional,
-} from '@angular/core';
-import {AriaHasPopupValue, CdkComboboxPanel} from './combobox-panel';
-
-export const PANEL = new InjectionToken<CdkComboboxPanel>('CdkComboboxPanel');
+import {Directive, ElementRef, Inject, Input, OnInit} from '@angular/core';
+import {AriaHasPopupValue, CDK_COMBOBOX, CdkCombobox} from './combobox';
 
 let nextId = 0;
 
@@ -53,11 +43,9 @@ export class CdkComboboxPopup<T = unknown> implements OnInit {
 
   @Input() id = `cdk-combobox-popup-${nextId++}`;
 
-  @Input('parentPanel') private readonly _explicitPanel: CdkComboboxPanel;
-
   constructor(
     private readonly _elementRef: ElementRef<HTMLElement>,
-    @Optional() @Inject(PANEL) readonly _parentPanel?: CdkComboboxPanel<T>,
+    @Inject(CDK_COMBOBOX) private readonly _combobox: CdkCombobox,
   ) {}
 
   ngOnInit() {
@@ -65,11 +53,7 @@ export class CdkComboboxPopup<T = unknown> implements OnInit {
   }
 
   registerWithPanel(): void {
-    if (this._parentPanel === null || this._parentPanel === undefined) {
-      this._explicitPanel._registerContent(this.id, this._role);
-    } else {
-      this._parentPanel._registerContent(this.id, this._role);
-    }
+    this._combobox._registerContent(this.id, this._role);
   }
 
   focusFirstElement() {
