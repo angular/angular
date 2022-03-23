@@ -803,9 +803,10 @@ workflows:
             # since the publishing script expects the legacy outputs layout.
             - build-npm-packages
             - legacy-unit-tests-saucelabs
-      - components-repo-unit-tests:
-          requires:
-            - build-npm-packages
+      # TODO(devversion): re-enable once `angular/components` is using `rules_nodejs` v5.
+      #- components-repo-unit-tests:
+      #    requires:
+      #      - build-npm-packages
       - test_zonejs:
           requires:
             - setup
