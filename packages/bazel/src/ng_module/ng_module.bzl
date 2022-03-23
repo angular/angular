@@ -411,7 +411,6 @@ def _compile_action(
         inputs,
         outputs,
         dts_bundle_out,
-        perf_out,
         tsconfig_file,
         node_opts,
         target_flavor):
@@ -449,17 +448,17 @@ def _compile_action(
 
 def _prodmode_compile_action(ctx, inputs, outputs, tsconfig_file, node_opts):
     outs = _expected_outs(ctx)
-    return _compile_action(ctx, inputs, outputs + outs.closure_js + outs.prod_perf_files, None, outs.prod_perf_files, tsconfig_file, node_opts, "prodmode")
+    return _compile_action(ctx, inputs, outputs + outs.closure_js + outs.prod_perf_files, None, tsconfig_file, node_opts, "prodmode")
 
 def _devmode_compile_action(ctx, inputs, outputs, tsconfig_file, node_opts):
     outs = _expected_outs(ctx)
     compile_action_outputs = outputs + outs.devmode_js + outs.declarations + outs.dev_perf_files
-    _compile_action(ctx, inputs, compile_action_outputs, outs.dts_bundle, outs.dev_perf_files, tsconfig_file, node_opts, "devmode")
+    _compile_action(ctx, inputs, compile_action_outputs, outs.dts_bundle, tsconfig_file, node_opts, "devmode")
 
+# Note: We need to define `label` and `srcs_files` as `tsc_wrapped` passes
+# them and Starlark would otherwise error at runtime.
+# buildifier: disable=unused-variable
 def _ts_expected_outs(ctx, label, srcs_files = []):
-    # rules_typescript expects a function with two or more arguments, but our
-    # implementation doesn't use the label(and **kwargs).
-    _ignored = [label, srcs_files]
     return _expected_outs(ctx)
 
 def ng_module_impl(ctx, ts_compile_actions):
