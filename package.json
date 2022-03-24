@@ -52,7 +52,7 @@
     "ci-docs-monitor-test": "ts-node --project scripts/tsconfig.json scripts/docs-deploy/monitoring/ci-test.ts",
     "prepare": "husky install"
   },
-  "version": "14.0.0-next.7",
+  "version": "14.0.0-next.8",
   "dependencies": {
     "@angular/animations": "14.0.0-next.6",
     "@angular/common": "14.0.0-next.6",

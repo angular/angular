@@ -1,3 +1,42 @@
+<a name="14.0.0-next.8"></a>
+# 14.0.0-next.8 "aerogel-airplane" (2022-03-24)
+### cdk
+| Commit | Type | Description |
+| -- | -- | -- |
+| [fb03164b3](https://github.com/angular/components/commit/fb03164b3fad76c3873074d0bfea9ae335605c38) | fix | **schematics:** mark `ng-add` schematics as hidden |
+| [ee452de49](https://github.com/angular/components/commit/ee452de497098a3aa2ce10041d5249abe1fcecff) | perf | **a11y:** avoid triggering change detection if there are no subscribers to stream ([#15077](https://github.com/angular/components/pull/15077)) |
+| [ad33d7a1b](https://github.com/angular/components/commit/ad33d7a1b8cbd8b81e3bcf2916218bdb63c92011) | perf | **scrolling:** do not run change detection if there are no `viewChange` listeners ([#23987](https://github.com/angular/components/pull/23987)) |
+### material
+| Commit | Type | Description |
+| -- | -- | -- |
+| [ff0119648](https://github.com/angular/components/commit/ff0119648b4a65c501df2277414ff2be7aff8028) | fix | **autocomplete:** re-enter the Angular zone when the `NgZone.onStable` emits ([#24569](https://github.com/angular/components/pull/24569)) |
+| [937160675](https://github.com/angular/components/commit/93716067541daf3a0a47c137f6b287f47a347e2e) | fix | **checkbox:** model value not updated when using toggle method ([#11902](https://github.com/angular/components/pull/11902)) |
+| [6b2b51844](https://github.com/angular/components/commit/6b2b51844a9c86add1bd6628d5ec8a621e606073) | fix | **input:** preserve native placeholder on non-legacy appearances ([#20936](https://github.com/angular/components/pull/20936)) |
+| [063841933](https://github.com/angular/components/commit/0638419339f2438e99d368d4fb657c71952651a4) | fix | **input:** resolve memory leak on iOS ([#24599](https://github.com/angular/components/pull/24599)) |
+| [35018812c](https://github.com/angular/components/commit/35018812c9b8acade3deb4c0d41943092d8a9f62) | fix | **schematics:** mark `ng-add` schematics as hidden |
+| [ff12d09c1](https://github.com/angular/components/commit/ff12d09c1d7049bb18acdb515204bc0efc9ed7f2) | fix | **schematics:** remove usages of deprecated defaultProject option ([#24641](https://github.com/angular/components/pull/24641)) |
+| [0276784b4](https://github.com/angular/components/commit/0276784b4d58fd80365fb8ffb6b23b2f92bec1f1) | fix | **select:** NVDA reading out table when opening select on Chrome ([#23446](https://github.com/angular/components/pull/23446)) |
+| [5f4148f35](https://github.com/angular/components/commit/5f4148f3516e5284669fce02bdfc136c7ef91b29) | fix | **select:** value set through property not being propagated to value accessor ([#10246](https://github.com/angular/components/pull/10246)) |
+| [d250b1775](https://github.com/angular/components/commit/d250b17755f2198d4336a78b783e5e2976cf1581) | perf | **icon:** remove IE workaround ([#24514](https://github.com/angular/components/pull/24514)) |
+### cdk-experimental
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c176670ce](https://github.com/angular/components/commit/c176670ce39a158dc394709157a7e203d7dfdb5e) | feat | **combobox:** glue together combobox and listbox with DI instead of a panel directive ([#24637](https://github.com/angular/components/pull/24637)) |
+| [4cc6b04a2](https://github.com/angular/components/commit/4cc6b04a25901a99c3c86abdad7c834c7fd2ad21) | feat | **menu:** allow configuration of typeahead and menu position ([#24600](https://github.com/angular/components/pull/24600)) |
+### material-experimental
+| Commit | Type | Description |
+| -- | -- | -- |
+| [12b5387ea](https://github.com/angular/components/commit/12b5387ea19cc3cd953f3517693dd4d223c3811f) | fix | **mdc-chips:** replace innerText w/ textContent ([#24635](https://github.com/angular/components/pull/24635)) |
+### multiple
+| Commit | Type | Description |
+| -- | -- | -- |
+| [ea081feab](https://github.com/angular/components/commit/ea081feabfc30e8be9c520099ab58a5f04c7859a) | feat | Add a harness filter option for checked checkboxes, radios, and slide-toggles ([#24625](https://github.com/angular/components/pull/24625)) |
+| [764030d04](https://github.com/angular/components/commit/764030d04f0097fe8215ce96cc32610778bf3ace) | fix | memory leak when forcing focus ([#24520](https://github.com/angular/components/pull/24520)) |
+## Special Thanks
+Alan Agius, Artur Androsovych, CommanderRoot, Jeremy Elbourn, Joey Perrott, Kristiyan Kostadinov, Miles Malerba, Paul Gschwendtner, Wagner Maciel and tomicarsk6
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="13.3.1"></a>
 # 13.3.1 "pearl-necklace" (2022-03-23)
 ### cdk
