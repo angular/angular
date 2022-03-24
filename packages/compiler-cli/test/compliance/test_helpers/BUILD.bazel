@@ -18,6 +18,7 @@ ts_library(
         "//packages/compiler-cli/src/ngtsc/logging",
         "//packages/compiler-cli/src/ngtsc/sourcemaps",
         "//packages/compiler-cli/src/ngtsc/testing",
+        "@npm//@bazel/runfiles",
         "@npm//typescript",
     ],
 )
