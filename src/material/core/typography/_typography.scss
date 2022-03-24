@@ -183,22 +183,41 @@
 @mixin typography-hierarchy($config-or-theme, $selector: '.mat-typography') {
   $config: private-typography-to-2014-config(theming.get-typography-config($config-or-theme));
 
-  .mat-h1, .mat-headline, #{$selector} h1 {
+  // Note that it seems redundant to prefix the class rules with the `$selector`, however it's
+  // necessary if we want to allow people to overwrite the tag selectors. This is due to
+  // selectors like `#{$selector} h1` being more specific than ones like `.mat-title`.
+  .mat-h1,
+  .mat-headline,
+  #{$selector} .mat-h1,
+  #{$selector} .mat-headline,
+  #{$selector} h1 {
     @include typography-utils.typography-level($config, headline);
     margin: 0 0 16px;
   }
 
-  .mat-h2, .mat-title, #{$selector} h2 {
+  .mat-h2,
+  .mat-title,
+  #{$selector} .mat-h2,
+  #{$selector} .mat-title,
+  #{$selector} h2 {
     @include typography-utils.typography-level($config, title);
     margin: 0 0 16px;
   }
 
-  .mat-h3, .mat-subheading-2, #{$selector} h3 {
+  .mat-h3,
+  .mat-subheading-2,
+  #{$selector} .mat-h3,
+  #{$selector} .mat-subheading-2,
+  #{$selector} h3 {
     @include typography-utils.typography-level($config, subheading-2);
     margin: 0 0 16px;
   }
 
-  .mat-h4, .mat-subheading-1, #{$selector} h4 {
+  .mat-h4,
+  .mat-subheading-1,
+  #{$selector} .mat-h4,
+  #{$selector} .mat-subheading-1,
+  #{$selector} h4 {
     @include typography-utils.typography-level($config, subheading-1);
     margin: 0 0 16px;
   }
@@ -206,7 +225,9 @@
   // Note: the spec doesn't have anything that would correspond to h5 and h6, but we add these for
   // consistency. The font sizes come from the Chrome user agent styles which have h5 at 0.83em
   // and h6 at 0.67em.
-  .mat-h5, #{$selector} h5 {
+  .mat-h5,
+  #{$selector} .mat-h5,
+  #{$selector} h5 {
     @include typography-utils.font-shorthand(
        // calc is used here to support css variables
       calc(#{typography-utils.font-size($config, body-1)} * 0.83),
@@ -218,7 +239,9 @@
     margin: 0 0 12px;
   }
 
-  .mat-h6, #{$selector} h6 {
+  .mat-h6,
+  #{$selector} .mat-h6,
+  #{$selector} h6 {
     @include typography-utils.font-shorthand(
        // calc is used here to support css variables
       calc(#{typography-utils.font-size($config, body-1)} * 0.67),
@@ -230,11 +253,18 @@
     margin: 0 0 12px;
   }
 
-  .mat-body-strong, .mat-body-2 {
+  .mat-body-strong,
+  .mat-body-2,
+  #{$selector} .mat-body-strong,
+  #{$selector} .mat-body-2 {
     @include typography-utils.typography-level($config, body-2);
   }
 
-  .mat-body, .mat-body-1, #{$selector} {
+  .mat-body,
+  .mat-body-1,
+  #{$selector} .mat-body,
+  #{$selector} .mat-body-1,
+  #{$selector} {
     @include typography-utils.typography-level($config, body-1);
 
     p {
@@ -242,26 +272,33 @@
     }
   }
 
-  .mat-small, .mat-caption {
+  .mat-small,
+  .mat-caption,
+  #{$selector} .mat-small,
+  #{$selector} .mat-caption {
     @include typography-utils.typography-level($config, caption);
   }
 
-  .mat-display-4, #{$selector} .mat-display-4 {
+  .mat-display-4,
+  #{$selector} .mat-display-4 {
     @include typography-utils.typography-level($config, display-4);
     margin: 0 0 56px;
   }
 
-  .mat-display-3, #{$selector} .mat-display-3 {
+  .mat-display-3,
+  #{$selector} .mat-display-3 {
     @include typography-utils.typography-level($config, display-3);
     margin: 0 0 64px;
   }
 
-  .mat-display-2, #{$selector} .mat-display-2 {
+  .mat-display-2,
+  #{$selector} .mat-display-2 {
     @include typography-utils.typography-level($config, display-2);
     margin: 0 0 64px;
   }
 
-  .mat-display-1, #{$selector} .mat-display-1 {
+  .mat-display-1,
+  #{$selector} .mat-display-1 {
     @include typography-utils.typography-level($config, display-1);
     margin: 0 0 64px;
   }
