@@ -1,3 +1,33 @@
+<a name="13.3.1"></a>
+# 13.3.1 "pearl-necklace" (2022-03-23)
+### cdk
+| Commit | Type | Description |
+| -- | -- | -- |
+| [cf24b704d](https://github.com/angular/components/commit/cf24b704d46d2122d543331a405b6337b5765252) | fix | **schematics:** mark `ng-add` schematics as hidden |
+| [4a4ebe7df](https://github.com/angular/components/commit/4a4ebe7dff23ab989d283e22f813d6cb3bcd20ed) | perf | **scrolling:** do not run change detection if there are no `viewChange` listeners ([#23987](https://github.com/angular/components/pull/23987)) |
+### material
+| Commit | Type | Description |
+| -- | -- | -- |
+| [0897f49d7](https://github.com/angular/components/commit/0897f49d7538ea1c0b3a59a25b60a59cd0208b2d) | fix | **autocomplete:** re-enter the Angular zone when the `NgZone.onStable` emits ([#24569](https://github.com/angular/components/pull/24569)) |
+| [51ddecbbb](https://github.com/angular/components/commit/51ddecbbbd669c29fbe2cd99f55ad3a3ba716b4b) | fix | **checkbox:** model value not updated when using toggle method ([#11902](https://github.com/angular/components/pull/11902)) |
+| [174871713](https://github.com/angular/components/commit/174871713663f3c03b05140bc0108ecaecaef9a8) | fix | **input:** resolve memory leak on iOS ([#24599](https://github.com/angular/components/pull/24599)) |
+| [eed36b3ba](https://github.com/angular/components/commit/eed36b3baf6c476bd91d3af35cdaad640ab2fc9c) | fix | **schematics:** mark `ng-add` schematics as hidden |
+| [240b238f9](https://github.com/angular/components/commit/240b238f92700bd36f87999c82faef00e9fd65a9) | fix | **select:** NVDA reading out table when opening select on Chrome ([#23446](https://github.com/angular/components/pull/23446)) |
+| [e04b7aeee](https://github.com/angular/components/commit/e04b7aeee97a15d9c1527aa0ba3d53688a15c6f8) | fix | **select:** value set through property not being propagated to value accessor ([#10246](https://github.com/angular/components/pull/10246)) |
+| [5e5b296bf](https://github.com/angular/components/commit/5e5b296bf9afcbd097c11839e0042ac8c4c0f225) | perf | **icon:** remove IE workaround ([#24514](https://github.com/angular/components/pull/24514)) |
+### material-experimental
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b09c7427c](https://github.com/angular/components/commit/b09c7427c47aebad31a1dfd4661b62eb7bc46d9d) | fix | **mdc-chips:** replace innerText w/ textContent ([#24635](https://github.com/angular/components/pull/24635)) |
+### multiple
+| Commit | Type | Description |
+| -- | -- | -- |
+| [0a3c7d7c4](https://github.com/angular/components/commit/0a3c7d7c4216c1a862c48d1fa379e053e2d7e316) | fix | memory leak when forcing focus ([#24520](https://github.com/angular/components/pull/24520)) |
+## Special Thanks
+Alan Agius, Artur Androsovych, CommanderRoot, Jeremy Elbourn, Joey Perrott, Kristiyan Kostadinov, Paul Gschwendtner, Wagner Maciel and tomicarsk6
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.0.0-next.7"></a>
 # 14.0.0-next.7 "baize-bison" (2022-03-16)
 ### cdk
