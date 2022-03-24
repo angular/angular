@@ -6,7 +6,7 @@ def partial_compliance_golden(filePath):
 
     # Remove the "TEST_CASES.json" substring from the end of the provided path.
     path = filePath[:-len("/TEST_CASES.json")]
-    generate_partial_name = "generate_partial_for_%s" % path
+    generate_partial_name = "partial_%s" % path
     data = [
         "//packages/compiler-cli/test/compliance/partial:generate_golden_partial_lib",
         "//packages/compiler-cli/test/compliance/test_cases",
@@ -44,7 +44,7 @@ def partial_compliance_golden(filePath):
         name = "_generated_%s" % path,
         tool = generate_partial_name,
         testonly = True,
-        stdout = "%s/this_file_should_not_be_committed" % path,
+        stdout = "%s/_generated.js" % path,
         link_workspace_root = True,
         visibility = [":__pkg__"],
         data = [],
