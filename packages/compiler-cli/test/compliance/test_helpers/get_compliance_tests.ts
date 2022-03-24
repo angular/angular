@@ -7,7 +7,8 @@
  */
 import {AbsoluteFsPath, NodeJSFileSystem, PathSegment, ReadonlyFileSystem} from '../../../src/ngtsc/file_system';
 
-const fs = new NodeJSFileSystem();
+export const fs = new NodeJSFileSystem();
+
 const basePath = fs.resolve(__dirname, '../test_cases');
 
 /**
@@ -25,11 +26,10 @@ export function* getAllComplianceTests(): Generator<ComplianceTest> {
 /**
  * Extract all the compliance tests from the TEST_CASES.json file at the `testConfigPath`.
  *
- * @param testConfigPath The path, relative to the `test_cases` basePath, of the `TEST_CASES.json`
- *     config file.
+ * @param testConfigPath Absolute disk path of the `TEST_CASES.json` file that describes the tests.
+
  */
-export function* getComplianceTests(testConfigPath: string): Generator<ComplianceTest> {
-  const absTestConfigPath = fs.resolve(basePath, testConfigPath);
+export function* getComplianceTests(absTestConfigPath: AbsoluteFsPath): Generator<ComplianceTest> {
   const realTestPath = fs.dirname(absTestConfigPath);
   const testConfigJSON = loadTestCasesFile(fs, absTestConfigPath, basePath).cases;
   const testConfig = Array.isArray(testConfigJSON) ? testConfigJSON : [testConfigJSON];
@@ -89,20 +89,6 @@ function getStringOrFail(container: any, property: string, testPath: AbsoluteFsP
   const value = container[property];
   if (typeof value !== 'string') {
     throw new Error(`Test is missing "${property}" property in TEST_CASES.json: ` + testPath);
-  }
-  return value;
-}
-
-function getBooleanOrDefault(
-    container: any, property: string, testPath: AbsoluteFsPath, defaultValue: boolean): boolean {
-  const value = container[property];
-  if (typeof value === 'undefined') {
-    return defaultValue;
-  }
-  if (typeof value !== 'boolean') {
-    throw new Error(
-        `Test has invalid "${property}" property in TEST_CASES.json - expected boolean: ` +
-        testPath);
   }
   return value;
 }
