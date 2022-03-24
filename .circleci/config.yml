@@ -715,15 +715,21 @@ jobs:
             - *cache_key_win
             - *cache_key_win_fallback
 
+      # Install project dependencies, and install Bazelisk globally. This is necessary as
+      # Windows might error when `bazel` is invoked from the project node modules. The Bazel
+      # invocation might modify the symlinked project `node_modules` again, causing failures.
       - yarn_install
+      - run: yarn global add @bazel/bazelisk@${BAZELISK_VERSION}
 
       - run:
           name: Build all windows CI targets
-          command: yarn bazel build //packages/compiler-cli/...
+          command: |
+            $(yarn global bin)/bazelisk build //packages/compiler-cli/...
           no_output_timeout: 15m
       - run:
           name: Test all windows CI targets
-          command: yarn bazel test --test_tag_filters="-browser:chromium-local" //packages/compiler-cli/...
+          command: |
+            $(yarn global bin)/bazelisk test --test_tag_filters="-browser:chromium-local" //packages/compiler-cli/...
           no_output_timeout: 15m
 
       - save_cache:
