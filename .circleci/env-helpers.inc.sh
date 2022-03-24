@@ -31,7 +31,10 @@ function setSecretVar() {
   local -r originalShellOptions=$(set +o);
   set +x -eu -o pipefail;
 
-  echo "export $1=\"${2:-}\";" >> $BASH_ENV;
+  local assignmentStatement="export $1=\"${2:-}\";"
+
+  echo "${assignmentStatement}" >> $BASH_ENV;
+  eval "${assignmentStatement}"
 
   # Restore original shell options.
   eval "$originalShellOptions";
