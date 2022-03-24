@@ -185,6 +185,15 @@ commands:
           # snapshot stamping would have the `-with-local-changes` suffix.
           command: date +%Y-%m > month.txt
 
+  yarn_install:
+    description: Install dependencies
+    steps:
+      - run:
+          name: Running Yarn install
+          command: yarn install --frozen-lockfile --non-interactive --cache-folder ~/.cache/yarn
+          # Yarn's requests sometimes take more than 10mins to complete (especially on Windows).
+          no_output_timeout: 45m
+
   notify_webhook_on_fail:
     description: Notify a webhook about failure
     parameters:
@@ -227,11 +236,7 @@ jobs:
           keys:
             - *cache_key
             - *cache_key_fallback
-      - run:
-          name: Running Yarn install
-          command: yarn install --frozen-lockfile --non-interactive --cache-folder ~/.cache/yarn
-          # Yarn's requests sometimes take more than 10mins to complete.
-          no_output_timeout: 45m
+      - yarn_install
       - run: yarn --cwd aio install --frozen-lockfile --non-interactive --cache-folder ~/.cache/yarn
       # Make the bazel directories and add a file to them if they don't exist already so that
       # persist_to_workspace does not fail.
@@ -710,7 +715,7 @@ jobs:
             - *cache_key_win
             - *cache_key_win_fallback
 
-      - run: yarn install --frozen-lockfile --non-interactive --cache-folder ~/.cache/yarn
+      - yarn_install
 
       - run:
           name: Build all windows CI targets
