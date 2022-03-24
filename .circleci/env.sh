@@ -92,14 +92,6 @@ echo "export CI_REPO_OWNER=\"${CI_REPO_OWNER}\";" >> $bazelVarEnv
 echo "export CI_SECRET_PAYLOAD_FIREBASE_TOKEN=\"${CI_SECRET_PAYLOAD_FIREBASE_TOKEN}\";" >> $bazelVarEnv
 
 ####################################################################################################
-####################################################################################################
-##                  Source `$BASH_ENV` to make the variables available immediately.               ##
-##                  ***NOTE: This must remain the last variable definition in this script***      ##
-####################################################################################################
-####################################################################################################
-source $BASH_ENV;
-
-####################################################################################################
 # Platform-specific environment setup (which can leverage the base variables from here)
 ####################################################################################################
 
