@@ -1,4 +1,5 @@
 @use '../../mixins';
+@use '../../constants';
 
 $notificationHeight: 56px;
 
@@ -39,8 +40,17 @@ aio-notification {
       width: 100%;
     }
 
+    .title {
+      margin-right: 10px;
+    }
+
+    .link {
+      text-transform: none;
+    }
+
     .icon {
       margin-right: 10px;
+
       @media (max-width: 464px) {
         display: none;
       }
@@ -49,6 +59,7 @@ aio-notification {
     .message {
       overflow: auto;
       margin-right: 10px;
+      color: constants.$powderblue;
     }
 
     .action-button {
