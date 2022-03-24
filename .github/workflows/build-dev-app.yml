@@ -20,7 +20,7 @@ jobs:
       (github.event.action == 'labeled' && github.event.label.name == 'dev-app preview') ||
       (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'dev-app preview'))
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # renovate: tag=v2.0.0
       - uses: ./.github/actions/yarn-install
 
       - run: ./scripts/bazel/setup-remote-execution.sh
@@ -42,7 +42,7 @@ jobs:
           echo ${{github.event.pull_request.head.sha}} > dist/devapp/pr_sha
 
       # Upload the generated dev-app archive.
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@82c141cc518b40d92cc801eee768e7aafc9c2fa2 # renovate: tag=v2.0.0
         with:
           name: devapp
           path: dist/devapp

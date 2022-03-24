@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # renovate: tag=v2.0.0
       - uses: ./.github/actions/yarn-install
 
       - name: 'Download artifact from build job'
@@ -36,7 +36,7 @@ jobs:
           echo "::set-output name=number::$(cat ./dist/dev-app-web-pkg/pr_number)"
           echo "::set-output name=sha::$(cat ./dist/dev-app-web-pkg/pr_sha)"
 
-      - uses: FirebaseExtended/action-hosting-deploy@v0
+      - uses: FirebaseExtended/action-hosting-deploy@276388dd6c2cde23455b30293105cc866c22282d # renovate: tag=v0.0.0
         id: deploy
         with:
           repoToken: '${{secrets.GITHUB_TOKEN}}'
@@ -45,7 +45,7 @@ jobs:
           projectId: ng-comp-dev
           channelId: pr-${{steps.pr_info.outputs.number}}-${{steps.pr_info.outputs.sha}}
 
-      - uses: marocchino/sticky-pull-request-comment@v2
+      - uses: marocchino/sticky-pull-request-comment@39c5b5dc7717447d0cba270cd115037d32d28443 # renovate: tag=v2.0.0
         with:
           message: |
             Deployed dev-app to: ${{ steps.deploy.outputs.details_url }}
