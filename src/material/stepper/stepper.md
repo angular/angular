@@ -236,7 +236,7 @@ step content is automatically set based on step selection change.
 
 The stepper and each step should be given a meaningful label via `aria-label` or `aria-labelledby`.
 
-Prefer verticl steppers when building for small screen sizes, as horizontal
+Prefer vertical steppers when building for small screen sizes, as horizontal
 steppers typically take up significantly more horizontal space thus introduce
 horizontal scrolling. Applications with multiple scrolling dimensions make
 content harder to consume for some users. See the [Responsive Stepper section](#responsive-stepper)
