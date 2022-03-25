@@ -588,6 +588,26 @@ describe('MDC-based MatTabGroup', () => {
 
       expect(fixture.componentInstance.handleSelection).not.toHaveBeenCalled();
     }));
+
+    it('should update the newly-selected tab if the previously-selected tab is replaced', fakeAsync(() => {
+      const component: MatTabGroup = fixture.debugElement.query(
+        By.css('mat-tab-group'),
+      )!.componentInstance;
+
+      spyOn(fixture.componentInstance, 'handleSelection');
+
+      fixture.componentInstance.tabs[fixture.componentInstance.selectedIndex] = {
+        label: 'New',
+        content: 'New',
+      };
+      fixture.detectChanges();
+      tick();
+
+      expect(component._tabs.get(1)?.isActive).toBe(true);
+      expect(fixture.componentInstance.handleSelection).toHaveBeenCalledWith(
+        jasmine.objectContaining({index: 1}),
+      );
+    }));
   });
 
   describe('async tabs', () => {
