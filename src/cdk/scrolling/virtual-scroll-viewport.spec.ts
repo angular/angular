@@ -15,6 +15,7 @@ import {
   ViewEncapsulation,
   Directive,
   ViewContainerRef,
+  ApplicationRef,
 } from '@angular/core';
 import {
   waitForAsync,
@@ -802,6 +803,43 @@ describe('CdkVirtualScrollViewport', () => {
         }
       }).not.toThrow();
     }));
+
+    describe('viewChange change detection behavior', () => {
+      let appRef: ApplicationRef;
+
+      beforeEach(inject([ApplicationRef], (ar: ApplicationRef) => {
+        appRef = ar;
+      }));
+
+      it('should not run change detection if there are no viewChange listeners', fakeAsync(() => {
+        finishInit(fixture);
+        testComponent.items = Array(10).fill(0);
+        fixture.detectChanges();
+        flush();
+
+        spyOn(appRef, 'tick');
+
+        viewport.scrollToIndex(5);
+        triggerScroll(viewport);
+
+        expect(appRef.tick).not.toHaveBeenCalled();
+      }));
+
+      it('should run change detection if there are any viewChange listeners', fakeAsync(() => {
+        testComponent.virtualForOf.viewChange.subscribe();
+        finishInit(fixture);
+        testComponent.items = Array(10).fill(0);
+        fixture.detectChanges();
+        flush();
+
+        spyOn(appRef, 'tick');
+
+        viewport.scrollToIndex(5);
+        triggerScroll(viewport);
+
+        expect(appRef.tick).toHaveBeenCalledTimes(1);
+      }));
+    });
   });
 
   describe('with RTL direction', () => {
