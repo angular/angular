@@ -30,9 +30,6 @@ $chip-remove-size: 18px;
   box-sizing: border-box;
   -webkit-tap-highlight-color: transparent;
 
-  // Required for the ripple to clip properly in Safari.
-  transform: translateZ(0);
-
   // Chips could be set on buttons so we need to reset the user agent styles.
   border: none;
   -webkit-appearance: none;
@@ -200,6 +197,9 @@ $chip-remove-size: 18px;
 
   // Ensures that the ripple effect doesn't overflow the ripple target.
   overflow: hidden;
+
+  // Required for the ripple to clip in Safari.
+  transform: translateZ(0);
 }
 
 .mat-chip-list-wrapper {
