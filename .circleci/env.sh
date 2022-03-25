@@ -85,7 +85,6 @@ echo "export PROJECT_ROOT=\"${PROJECT_ROOT}\";" >> $bazelVarEnv
 echo "export CI_BRANCH=\"${CI_BRANCH}\";" >> $bazelVarEnv
 echo "export CI_BUILD_URL=\"${CI_BUILD_URL}\";" >> $bazelVarEnv
 echo "export CI_COMMIT=\"${CI_COMMIT}\";" >> $bazelVarEnv
-echo "export CI_COMMIT_RANGE=\"${CI_COMMIT_RANGE}\";" >> $bazelVarEnv
 echo "export CI_PULL_REQUEST=\"${CI_PULL_REQUEST}\";" >> $bazelVarEnv
 echo "export CI_REPO_NAME=\"${CI_REPO_NAME}\";" >> $bazelVarEnv
 echo "export CI_REPO_OWNER=\"${CI_REPO_OWNER}\";" >> $bazelVarEnv
