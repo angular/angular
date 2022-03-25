@@ -791,6 +791,11 @@
             "title": "Decoded Frontend",
             "url": "https://www.youtube.com/DecodedFrontend"
           },
+          "angular-university": {
+            "desc": "A website to learn and keep up with the Angular ecosystem",
+            "title": "Angular University",
+            "url": "https://angular-university.io/"
+          },
           "-acceleb": {
             "desc": "Customized, Instructor-Led Angular Training",
             "title": "Accelebrate",
