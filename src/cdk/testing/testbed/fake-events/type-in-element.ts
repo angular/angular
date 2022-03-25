@@ -97,7 +97,7 @@ export function typeInElement(element: HTMLElement, ...modifiersAndKeys: any[]) 
   const enterValueIncrementally =
     inputType === 'number'
       ? // The value can be set character by character in number inputs if it doesn't have any decimals.
-        keys.every(key => key.key !== '.' && key.keyCode !== PERIOD)
+        keys.every(key => key.key !== '.' && key.key !== '-' && key.keyCode !== PERIOD)
       : incrementalInputTypes.has(inputType);
 
   triggerFocus(element);

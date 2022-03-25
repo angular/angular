@@ -483,6 +483,15 @@ export function crossEnvironmentSpecs(
       expect(await value.text()).toBe('Number value: 123.456');
     });
 
+    it('should be able to set a negative input value on a reactive form control', async () => {
+      const input = await harness.numberInput();
+      const value = await harness.numberInputValue();
+      await input.sendKeys('-123');
+
+      expect(await input.getProperty<string>('value')).toBe('-123');
+      expect(await value.text()).toBe('Number value: -123');
+    });
+
     it('should be able to retrieve dimensions', async () => {
       const dimensions = await (await harness.title()).getDimensions();
       expect(dimensions).toEqual(jasmine.objectContaining({height: 100, width: 200}));
