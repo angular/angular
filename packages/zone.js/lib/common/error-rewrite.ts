@@ -119,20 +119,27 @@ Zone.__load_patch('Error', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
   function ZoneAwareError(this: unknown|typeof NativeError): Error {
     // We always have to return native error otherwise the browser console will not work.
     let error: Error = NativeError.apply(this, arguments);
-    // Save original stack trace
-    const originalStack = (error as any)['originalStack'] = error.stack;
 
-    // Process the stack trace and rewrite the frames.
-    if ((ZoneAwareError as any)[stackRewrite] && originalStack) {
+    if ((ZoneAwareError as any)[stackRewrite]) {
       let zoneFrame = api.currentZoneFrame();
       if (zoneJsInternalStackFramesPolicy === 'lazy') {
-        // don't handle stack trace now
+        // Don't handle stack trace now, and also, don't read the `stack` property. The V8 triggers
+        // the stack trace serialization only when the `stack` property is read for the first time
+        // within the `Accessors::ErrorStackGetter`. We want to avoid formatting the stack trace
+        // when the lazy policy is used, and we don't need the stack until the `zoneAwareStack`
+        // property is read.
         (error as any)[api.symbol('zoneFrameNames')] = buildZoneFrameNames(zoneFrame);
       } else if (zoneJsInternalStackFramesPolicy === 'default') {
-        try {
-          error.stack = error.zoneAwareStack = buildZoneAwareStackFrames(originalStack, zoneFrame);
-        } catch (e) {
-          // ignore as some browsers don't allow overriding of stack
+        // Note: we access the `error.stack` property immediately and save it as original stack
+        // trace only when the default policy is used.
+        const originalStack = error.originalStack = error.stack;
+        if (originalStack) {
+          try {
+            error.stack = error.zoneAwareStack =
+                buildZoneAwareStackFrames(originalStack, zoneFrame);
+          } catch (e) {
+            // ignore as some browsers don't allow overriding of stack
+          }
         }
       }
     }
@@ -162,7 +169,7 @@ Zone.__load_patch('Error', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
 
   const zoneAwareStackSymbol = api.symbol('zoneAwareStack');
 
-  // try to define zoneAwareStack property when zoneJsInternal frames policy is delay
+  // try to define zoneAwareStack property when zoneJsInternal frames policy is lazy
   if (zoneJsInternalStackFramesPolicy === 'lazy') {
     Object.defineProperty(ZoneAwareError.prototype, 'zoneAwareStack', {
       configurable: true,
@@ -170,14 +177,18 @@ Zone.__load_patch('Error', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
       get: function() {
         if (!this[zoneAwareStackSymbol]) {
           this[zoneAwareStackSymbol] = buildZoneAwareStackFrames(
-              this.originalStack, this[api.symbol('zoneFrameNames')], false);
+              // Note: the `zoneAwareStack` may be overwritten since it has a setter and it'll
+              // contain the latest value, otherwise we just fallback to the `stack` property.
+              // Reading `this.stack` will trigger stack trace serialization.
+              this.originalStack ?? this.stack, this[api.symbol('zoneFrameNames')], false);
         }
         return this[zoneAwareStackSymbol];
       },
       set: function(newStack: string) {
+        // Note: do not set the `stack` property as some browsers don't support overriding it.
         this.originalStack = newStack;
-        this[zoneAwareStackSymbol] = buildZoneAwareStackFrames(
-            this.originalStack, this[api.symbol('zoneFrameNames')], false);
+        this[zoneAwareStackSymbol] =
+            buildZoneAwareStackFrames(newStack, this[api.symbol('zoneFrameNames')], false);
       }
     });
   }
