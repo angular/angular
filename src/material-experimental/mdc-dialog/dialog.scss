@@ -42,15 +42,22 @@ $mat-dialog-button-horizontal-margin: 8px !default;
 @include mdc-dialog-structure-overrides.private-dialog-structure-overrides(
   $mat-dialog-content-max-height);
 
-// Apply the theming slots to the container using an initial set of
-// values that will be overridden in the theme styles.
 .mat-mdc-dialog-container {
-  @include mdc-dialog-theme.theme-styles($_dialog-initial-theme);
-}
+  // Apply the theming slots to the container using an initial set of
+  // values that will be overridden in the theme styles.
+  @include mdc-helpers.disable-fallback-declarations {
+    @include mdc-dialog-theme.theme-styles($_dialog-initial-theme);
+  }
 
-// The dialog container is focusable. We remove the default outline shown in browsers.
-.mat-mdc-dialog-container {
+  // The dialog container is focusable. We remove the default outline shown in browsers.
   outline: 0;
+
+  // Angular Material supports disabling all animations when NoopAnimationsModule is imported.
+  // TODO(devversion): Look into using MDC's Sass queries to separate the animation styles and
+  // conditionally add them. Consider the size cost and churn when deciding whether to switch.
+  &._mat-animation-noopable .mdc-dialog__container {
+    transition: none;
+  }
 }
 
 // MDC sets the display behavior for title and actions, but not for content. Since we support
@@ -86,11 +93,4 @@ $mat-dialog-button-horizontal-margin: 8px !default;
       margin-right: $mat-dialog-button-horizontal-margin;
     }
   }
-}
-
-// Angular Material supports disabling all animations when NoopAnimationsModule is imported.
-// TODO(devversion): Look into using MDC's Sass queries to separate the animation styles and
-// conditionally add them. Consider the size cost and churn when deciding whether to switch.
-.mat-mdc-dialog-container._mat-animation-noopable .mdc-dialog__container {
-  transition: none;
 }
