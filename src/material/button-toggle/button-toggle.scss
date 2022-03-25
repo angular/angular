@@ -19,6 +19,9 @@ $legacy-border-radius: 2px !default;
   border-radius: $legacy-border-radius;
   -webkit-tap-highlight-color: transparent;
 
+  // Fixes the ripples not being clipped to the border radius on Safari.
+  transform: translateZ(0);
+
   @include a11y.high-contrast(active, off) {
     outline: solid 1px;
   }
