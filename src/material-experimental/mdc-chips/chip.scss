@@ -73,6 +73,14 @@
     width: 100%;
   }
 
+  // This element can be placed on a `button` node which usually has some user agent styles.
+  // Reset the font so that the typography from the root element can propagate down.
+  .mdc-evolution-chip__action--primary {
+    font: inherit;
+    letter-spacing: inherit;
+    white-space: inherit;
+  }
+
   // MDC sizes and positions this element using `width`, `height` and `padding`.
   // This usually works, but it's common for apps to add `box-sizing: border-box`
   // to all elements on the page which can cause the graphic to be clipped.

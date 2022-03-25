@@ -1,8 +1,8 @@
-@use '@material/chips/chip' as mdc-chip;
 @use '@material/chips/chip-theme' as mdc-chip-theme;
 @use '@material/chips/chip-set' as mdc-chip-set;
 @use '@material/theme/theme-color' as mdc-theme-color;
 @use '@material/theme/color-palette' as mdc-color-palette;
+@use '@material/typography' as mdc-typography;
 @use 'sass:color';
 @use 'sass:map';
 @use '../mdc-helpers/mdc-helpers';
@@ -80,7 +80,12 @@
       theming.get-typography-config($config-or-theme));
   @include mdc-chip-set.core-styles($query: mdc-helpers.$mat-typography-styles-query);
   @include mdc-helpers.mat-using-mdc-typography($config) {
-    @include mdc-chip.without-ripple-styles($query: mdc-helpers.$mat-typography-styles-query);
+    // Note that we don't go through MDC's typography mixin, because it assigns the styles to
+    // an inner element which makes it difficult for clients to customize. Instead we apply the
+    // same styles ourselves to the root.
+    .mat-mdc-standard-chip {
+      @include mdc-typography.typography(body2, $query: mdc-helpers.$mat-typography-styles-query);
+    }
   }
 }
 
