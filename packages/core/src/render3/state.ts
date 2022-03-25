@@ -277,6 +277,8 @@ export function getTView(): TView {
   return instructionState.lFrame.tView;
 }
 
+// TODO(crisbeto): revert the @noinline once Closure issue is resolved.
+
 /**
  * Restores `contextViewData` to the given OpaqueViewState instance.
  *
@@ -288,6 +290,7 @@ export function getTView(): TView {
  * @returns Context of the restored OpaqueViewState instance.
  *
  * @codeGenApi
+ * @noinline Disable inlining due to issue with Closure in listeners inside embedded views.
  */
 export function ɵɵrestoreView<T = any>(viewToRestore: OpaqueViewState): T {
   instructionState.lFrame.contextLView = viewToRestore as any as LView;
