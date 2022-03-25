@@ -59,11 +59,11 @@ def _ng_integration_test(name, setup_chromium = False, **kwargs):
         commands += [
             "yarn build",
             # TODO: Replace the track payload-size script with a RBE and Windows-compatible script.
-            "$(rootpath //:scripts/ci/track-payload-size.sh) %s 'dist/*.js' true $${RUNFILES}/angular/$(rootpath //goldens:size-tracking/integration-payloads.json)" % track_payload_size,
+            "$(rootpath //:scripts/ci/bazel-payload-size.sh) %s 'dist/*.js' true $${RUNFILES}/angular/$(rootpath //goldens:size-tracking/integration-payloads.json)" % track_payload_size,
         ]
         data += [
             "//goldens:size-tracking/integration-payloads.json",
-            "//:scripts/ci/track-payload-size.sh",
+            "//:scripts/ci/bazel-payload-size.sh",
             "//:scripts/ci/payload-size.sh",
             "//:scripts/ci/payload-size.js",
         ]
