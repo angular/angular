@@ -13,12 +13,15 @@ const fs = require('fs');
 const path = require('path');
 
 // Get branch and project name from command line arguments.
-const [, , limitFile, project, branch, commit] = process.argv;
+const [, , limitFile, project, commit] = process.argv;
 
 // Load sizes.
 const currentSizes = JSON.parse(fs.readFileSync('/tmp/current.log', 'utf8'));
 const allLimitSizes = JSON.parse(fs.readFileSync(limitFile, 'utf8'));
-const limitSizes = allLimitSizes[project][branch] || allLimitSizes[project]['master'];
+
+// TODO: Change the `master` golden key to something more obvious, or remove it. The branch
+// name is unreasonable since the limits are always taken from the currently checked-out revision.
+const limitSizes = allLimitSizes[project]['master'];
 
 // Check current sizes against limits.
 let failed = false;
