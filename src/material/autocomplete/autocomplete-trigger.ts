@@ -537,13 +537,20 @@ export abstract class _MatAutocompleteTriggerBase
 
               if (this.panelOpen) {
                 this._overlayRef!.updatePosition();
+              }
 
-                // If the `panelOpen` state changed, we need to make sure to emit the `opened`
-                // event, because we may not have emitted it when the panel was attached. This
-                // can happen if the users opens the panel and there are no options, but the
-                // options come in slightly later or as a result of the value changing.
-                if (wasOpen !== this.panelOpen) {
+              if (wasOpen !== this.panelOpen) {
+                // If the `panelOpen` state changed, we need to make sure to emit the `opened` or
+                // `closed` event, because we may not have emitted it. This can happen
+                // - if the users opens the panel and there are no options, but the
+                //   options come in slightly later or as a result of the value changing,
+                // - if the panel is closed after the user entered a string that did not match any
+                //   of the available options,
+                // - if a valid string is entered after an invalid one.
+                if (this.panelOpen) {
                   this.autocomplete.opened.emit();
+                } else {
+                  this.autocomplete.closed.emit();
                 }
               }
             });

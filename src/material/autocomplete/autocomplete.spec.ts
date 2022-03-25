@@ -2827,6 +2827,25 @@ describe('MatAutocomplete', () => {
       expect(closedSpy).toHaveBeenCalledTimes(1);
     }));
 
+    it('should emit a closed event if no option is displayed', fakeAsync(() => {
+      const {openedSpy, closedSpy} = fixture.componentInstance;
+      const input: HTMLInputElement = fixture.nativeElement.querySelector('input');
+
+      typeInElement(input, 'Alabama'); // Valid option
+      fixture.detectChanges();
+      tick();
+
+      expect(openedSpy).toHaveBeenCalledTimes(1);
+      expect(closedSpy).toHaveBeenCalledTimes(0);
+
+      typeInElement(input, '_x'); // Invalidate option to 'Alabama_x'
+      fixture.detectChanges();
+      tick();
+
+      expect(openedSpy).toHaveBeenCalledTimes(1);
+      expect(closedSpy).toHaveBeenCalledTimes(1);
+    }));
+
     it(
       'should clear the input if the user presses escape while there was a pending ' +
         'auto selection and there is no previous value',
