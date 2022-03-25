@@ -173,6 +173,7 @@ export class MatDialogConfig<D = any> {
     hasBackdrop?: boolean;
     height?: string;
     id?: string;
+    injector?: Injector;
     maxHeight?: number | string;
     maxWidth?: number | string;
     minHeight?: number | string;

@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {ViewContainerRef} from '@angular/core';
+import {Injector, ViewContainerRef} from '@angular/core';
 import {Direction} from '@angular/cdk/bidi';
 import {ComponentType} from '@angular/cdk/overlay';
 import {CdkDialogContainer} from './dialog-container';
@@ -35,6 +35,12 @@ export class DialogConfig<D = any> {
    * content will be rendered.
    */
   viewContainerRef?: ViewContainerRef;
+
+  /**
+   * Injector used for the instantiation of the component to be attached. If provided,
+   * takes precedence over the injector indirectly provided by `ViewContainerRef`.
+   */
+  injector?: Injector;
 
   /** The id of the dialog. */
   id?: string;

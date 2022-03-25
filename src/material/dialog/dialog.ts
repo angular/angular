@@ -257,7 +257,7 @@ export abstract class _MatDialogBase<C extends _MatDialogContainerBase> implemen
    * @returns A promise resolving to a ComponentRef for the attached container.
    */
   private _attachDialogContainer(overlay: OverlayRef, config: MatDialogConfig): C {
-    const userInjector = config && config.viewContainerRef && config.viewContainerRef.injector;
+    const userInjector = config.injector ?? config.viewContainerRef?.injector;
     const injector = Injector.create({
       parent: userInjector || this._injector,
       providers: [{provide: MatDialogConfig, useValue: config}],

@@ -20,6 +20,9 @@ import {
   ComponentFactoryResolver,
   NgZone,
   ViewEncapsulation,
+  Injectable,
+  NgModule,
+  createNgModuleRef,
 } from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-browser/animations';
@@ -2072,6 +2075,37 @@ describe('MatDialog with animations enabled', () => {
   }));
 });
 
+describe('MatDialog with explicit injector provided', () => {
+  let overlayContainerElement: HTMLElement;
+  let fixture: ComponentFixture<ModuleBoundDialogParentComponent>;
+
+  beforeEach(fakeAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [MatDialogModule, BrowserAnimationsModule],
+      declarations: [ModuleBoundDialogParentComponent],
+    });
+
+    TestBed.compileComponents();
+  }));
+
+  beforeEach(inject([OverlayContainer], (oc: OverlayContainer) => {
+    overlayContainerElement = oc.getContainerElement();
+  }));
+
+  beforeEach(() => {
+    fixture = TestBed.createComponent(ModuleBoundDialogParentComponent);
+  });
+
+  it('should use the standalone injector and render the dialog successfully', fakeAsync(() => {
+    fixture.componentInstance.openDialog();
+    fixture.detectChanges();
+
+    expect(
+      overlayContainerElement.querySelector('module-bound-dialog-child-component')!.innerHTML,
+    ).toEqual('<p>Pasta</p>');
+  }));
+});
+
 @Directive({selector: 'dir-with-view-container'})
 class DirectiveWithViewContainer {
   constructor(public viewContainerRef: ViewContainerRef) {}
@@ -2188,3 +2222,38 @@ class DialogWithoutFocusableElements {}
   encapsulation: ViewEncapsulation.ShadowDom,
 })
 class ShadowDomComponent {}
+
+@Component({template: ''})
+class ModuleBoundDialogParentComponent {
+  constructor(private _injector: Injector, private _dialog: MatDialog) {}
+
+  openDialog(): void {
+    const ngModuleRef = createNgModuleRef(
+      ModuleBoundDialogModule,
+      /* parentInjector */ this._injector,
+    );
+
+    this._dialog.open(ModuleBoundDialogComponent, {injector: ngModuleRef.injector});
+  }
+}
+
+@Injectable()
+class ModuleBoundDialogService {
+  name = 'Pasta';
+}
+
+@Component({
+  template: '<module-bound-dialog-child-component></module-bound-dialog-child-component>',
+})
+class ModuleBoundDialogComponent {}
+
+@Component({selector: 'module-bound-dialog-child-component', template: '<p>{{service.name}}</p>'})
+class ModuleBoundDialogChildComponent {
+  constructor(public service: ModuleBoundDialogService) {}
+}
+
+@NgModule({
+  declarations: [ModuleBoundDialogComponent, ModuleBoundDialogChildComponent],
+  providers: [ModuleBoundDialogService],
+})
+class ModuleBoundDialogModule {}
