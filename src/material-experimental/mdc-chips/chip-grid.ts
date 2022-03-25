@@ -108,8 +108,6 @@ const _MatChipGridMixinBase = mixinErrorState(MatChipGridBase);
     'class': 'mat-mdc-chip-set mat-mdc-chip-grid mdc-evolution-chip-set',
     '[attr.role]': 'role',
     '[tabIndex]': '_chips && _chips.length === 0 ? -1 : tabIndex',
-    // TODO: replace this binding with use of AriaDescriber
-    '[attr.aria-describedby]': '_ariaDescribedby || null',
     '[attr.aria-disabled]': 'disabled.toString()',
     '[attr.aria-invalid]': 'errorState',
     '[class.mat-mdc-chip-list-disabled]': 'disabled',
@@ -144,6 +142,11 @@ export class MatChipGrid
   protected _chipInput: MatChipTextControl;
 
   protected override _defaultRole = 'grid';
+
+  /**
+   * List of element ids to propagate to the chipInput's aria-describedby attribute.
+   */
+  private _ariaDescribedbyIds: string[] = [];
 
   /**
    * Function when touched. Set as part of ControlValueAccessor implementation.
@@ -337,6 +340,7 @@ export class MatChipGrid
   /** Associates an HTML input element with this chip grid. */
   registerInput(inputElement: MatChipTextControl): void {
     this._chipInput = inputElement;
+    this._chipInput.setDescribedByIds(this._ariaDescribedbyIds);
   }
 
   /**
@@ -378,7 +382,18 @@ export class MatChipGrid
    * @docs-private
    */
   setDescribedByIds(ids: string[]) {
-    this._ariaDescribedby = ids.join(' ');
+    // We must keep this up to date to handle the case where ids are set
+    // before the chip input is registered.
+    this._ariaDescribedbyIds = ids;
+
+    if (this._chipInput) {
+      // Use a setTimeout in case this is being run during change detection
+      // and the chip input has already determined its host binding for
+      // aria-describedBy.
+      setTimeout(() => {
+        this._chipInput.setDescribedByIds(ids);
+      }, 0);
+    }
   }
 
   /**

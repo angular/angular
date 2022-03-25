@@ -65,6 +65,7 @@ let nextUniqueId = 0;
     '[attr.disabled]': 'disabled || null',
     '[attr.placeholder]': 'placeholder || null',
     '[attr.aria-invalid]': '_chipGrid && _chipGrid.ngControl ? _chipGrid.ngControl.invalid : null',
+    '[attr.aria-describedby]': '_ariaDescribedby || null',
     '[attr.aria-required]': '_chipGrid && _chipGrid.required || null',
     '[attr.required]': '_chipGrid && _chipGrid.required || null',
   },
@@ -72,6 +73,9 @@ let nextUniqueId = 0;
 export class MatChipInput implements MatChipTextControl, AfterContentInit, OnChanges, OnDestroy {
   /** Used to prevent focus moving to chips while user is holding backspace */
   private _focusLastChipOnBackspace: boolean;
+
+  /** Value for ariaDescribedby property */
+  _ariaDescribedby?: string;
 
   /** Whether the control is focused. */
   focused: boolean = false;
@@ -238,6 +242,10 @@ export class MatChipInput implements MatChipTextControl, AfterContentInit, OnCha
   clear(): void {
     this.inputElement.value = '';
     this._focusLastChipOnBackspace = true;
+  }
+
+  setDescribedByIds(ids: string[]): void {
+    this._ariaDescribedby = ids.join(' ');
   }
 
   /** Checks whether a keycode is one of the configured separators. */

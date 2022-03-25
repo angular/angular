@@ -853,13 +853,18 @@ describe('MDC-based MatChipGrid', () => {
     let errorTestComponent: ChipGridWithFormErrorMessages;
     let containerEl: HTMLElement;
     let chipGridEl: HTMLElement;
+    let inputEl: HTMLElement;
 
-    beforeEach(() => {
+    beforeEach(fakeAsync(() => {
       fixture = createComponent(ChipGridWithFormErrorMessages);
+      flush();
+      fixture.detectChanges();
+
       errorTestComponent = fixture.componentInstance;
       containerEl = fixture.debugElement.query(By.css('mat-form-field'))!.nativeElement;
       chipGridEl = fixture.debugElement.query(By.css('mat-chip-grid'))!.nativeElement;
-    });
+      inputEl = fixture.debugElement.query(By.css('input'))!.nativeElement;
+    }));
 
     it('should not show any errors if the user has not interacted', () => {
       expect(errorTestComponent.formControl.untouched)
@@ -908,6 +913,7 @@ describe('MDC-based MatChipGrid', () => {
         .toBe(0);
 
       dispatchFakeEvent(fixture.debugElement.query(By.css('form'))!.nativeElement, 'submit');
+      flush();
       fixture.detectChanges();
 
       fixture.whenStable().then(() => {
@@ -924,10 +930,12 @@ describe('MDC-based MatChipGrid', () => {
           .withContext('Expected aria-invalid to be set to "true".')
           .toBe('true');
       });
+      flush();
     }));
 
     it('should hide the errors and show the hints once the chip grid becomes valid', fakeAsync(() => {
       errorTestComponent.formControl.markAsTouched();
+      flush();
       fixture.detectChanges();
 
       fixture.whenStable().then(() => {
@@ -942,6 +950,7 @@ describe('MDC-based MatChipGrid', () => {
           .toBe(0);
 
         errorTestComponent.formControl.setValue('something');
+        flush();
         fixture.detectChanges();
 
         fixture.whenStable().then(() => {
@@ -956,6 +965,8 @@ describe('MDC-based MatChipGrid', () => {
             .withContext('Expected one hint to be shown once the input is valid.')
             .toBe(1);
         });
+
+        flush();
       });
     }));
 
@@ -966,11 +977,11 @@ describe('MDC-based MatChipGrid', () => {
       expect(containerEl.querySelector('mat-error')!.getAttribute('aria-live')).toBe('polite');
     });
 
-    it('sets the aria-describedby to reference errors when in error state', () => {
+    it('sets the aria-describedby on the input to reference errors when in error state', fakeAsync(() => {
       let hintId = fixture.debugElement
         .query(By.css('.mat-mdc-form-field-hint'))!
         .nativeElement.getAttribute('id');
-      let describedBy = chipGridEl.getAttribute('aria-describedby');
+      let describedBy = inputEl.getAttribute('aria-describedby');
 
       expect(hintId).withContext('hint should be shown').toBeTruthy();
       expect(describedBy).toBe(hintId);
@@ -978,15 +989,19 @@ describe('MDC-based MatChipGrid', () => {
       fixture.componentInstance.formControl.markAsTouched();
       fixture.detectChanges();
 
+      // Flush the describedby timer and detect changes caused by it.
+      flush();
+      fixture.detectChanges();
+
       let errorIds = fixture.debugElement
         .queryAll(By.css('.mat-mdc-form-field-error'))
         .map(el => el.nativeElement.getAttribute('id'))
         .join(' ');
-      describedBy = chipGridEl.getAttribute('aria-describedby');
+      let errorDescribedBy = inputEl.getAttribute('aria-describedby');
 
       expect(errorIds).withContext('errors should be shown').toBeTruthy();
-      expect(describedBy).toBe(errorIds);
-    });
+      expect(errorDescribedBy).toBe(errorIds);
+    }));
   });
 
   function createComponent<T>(

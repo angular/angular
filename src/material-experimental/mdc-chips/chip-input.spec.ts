@@ -25,39 +25,35 @@ describe('MDC-based MatChipInput', () => {
   let chipInputDirective: MatChipInput;
   let dir = 'ltr';
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [PlatformModule, MatChipsModule, MatFormFieldModule, NoopAnimationsModule],
-        declarations: [TestChipInput],
-        providers: [
-          {
-            provide: Directionality,
-            useFactory: () => {
-              return {
-                value: dir.toLowerCase(),
-                change: new Subject(),
-              };
-            },
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [PlatformModule, MatChipsModule, MatFormFieldModule, NoopAnimationsModule],
+      declarations: [TestChipInput],
+      providers: [
+        {
+          provide: Directionality,
+          useFactory: () => {
+            return {
+              value: dir.toLowerCase(),
+              change: new Subject(),
+            };
           },
-        ],
-      });
+        },
+      ],
+    });
 
-      TestBed.compileComponents();
-    }),
-  );
+    TestBed.compileComponents();
+  }));
 
-  beforeEach(
-    waitForAsync(() => {
-      fixture = TestBed.createComponent(TestChipInput);
-      testChipInput = fixture.debugElement.componentInstance;
-      fixture.detectChanges();
+  beforeEach(waitForAsync(() => {
+    fixture = TestBed.createComponent(TestChipInput);
+    testChipInput = fixture.debugElement.componentInstance;
+    fixture.detectChanges();
 
-      inputDebugElement = fixture.debugElement.query(By.directive(MatChipInput))!;
-      chipInputDirective = inputDebugElement.injector.get<MatChipInput>(MatChipInput);
-      inputNativeElement = inputDebugElement.nativeElement;
-    }),
-  );
+    inputDebugElement = fixture.debugElement.query(By.directive(MatChipInput))!;
+    chipInputDirective = inputDebugElement.injector.get<MatChipInput>(MatChipInput);
+    inputNativeElement = inputDebugElement.nativeElement;
+  }));
 
   describe('basic behavior', () => {
     it('emits the (chipEnd) on enter keyup', () => {
@@ -230,6 +226,26 @@ describe('MDC-based MatChipInput', () => {
       dispatchKeyboardEvent(inputNativeElement, 'keydown', ENTER, undefined, {shift: true});
       expect(testChipInput.add).not.toHaveBeenCalled();
     });
+
+    it('should set aria-describedby correctly when a non-empty list of ids is passed to setDescribedByIds', fakeAsync(() => {
+      const ids = ['a', 'b', 'c'];
+
+      testChipInput.chipGridInstance.setDescribedByIds(ids);
+      flush();
+      fixture.detectChanges();
+
+      expect(inputNativeElement.getAttribute('aria-describedby')).toEqual('a b c');
+    }));
+
+    it('should set aria-describedby correctly when an empty list of ids is passed to setDescribedByIds', fakeAsync(() => {
+      const ids: string[] = [];
+
+      testChipInput.chipGridInstance.setDescribedByIds(ids);
+      flush();
+      fixture.detectChanges();
+
+      expect(inputNativeElement.getAttribute('aria-describedby')).toBeNull();
+    }));
   });
 });
 

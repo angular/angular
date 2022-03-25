@@ -65,8 +65,6 @@ const _MatChipSetMixinBase = mixinTabIndex(MatChipSetBase);
   host: {
     'class': 'mat-mdc-chip-set mdc-evolution-chip-set',
     '[attr.role]': 'role',
-    // TODO: replace this binding with use of AriaDescriber
-    '[attr.aria-describedby]': '_ariaDescribedby || null',
   },
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -137,9 +135,6 @@ export class MatChipSet
       this._chipFoundation(index)?.startAnimation(animation);
     },
   };
-
-  /** The aria-describedby attribute on the chip list for improved a11y. */
-  _ariaDescribedby: string;
 
   /**
    * Map from class to whether the class is enabled.
