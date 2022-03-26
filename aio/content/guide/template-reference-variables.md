@@ -47,20 +47,28 @@ In most cases, Angular sets the template variable's value to the element on whic
 In the previous example, `phone` refers to the phone number `<input>`.
 The button's click handler passes the `<input>` value to the component's `callPhone()` method.
 
-The `NgForm` directive demonstrates getting a reference to a different value by referencing a directive's `exportAs` name.
-In the following example, the template variable, `itemForm`, appears three times separated by HTML.
+The `NgForm` directive demonstrates getting a reference to a different value by referencing a directive's `exportAs` name.  
+(Worth noting that `NgForm` directive gets silently applied by Angular on every `<form>` element unless one among `NoNgForm` and `FormGroup` is already set).
 
 <code-example header="src/app/hero-form.component.html" path="template-reference-variables/src/app/app.component.html" region="ngForm"></code-example>
 
 Without the `ngForm` attribute value, the reference value of `itemForm` would be
-the [HTMLFormElement](https://developer.mozilla.org/docs/Web/API/HTMLFormElement), `<form>`.
-There is, however, a difference between a `Component` and a `Directive` in that Angular references a `Component` without specifying the attribute value, and a `Directive` does not change the implicit reference, or the element.
-<!--todo: What is the train of thought from talking about a form element to the difference between a component and a directive? Why is the component directive conversation relevant here?  -kw -->
+the [HTMLFormElement](https://developer.mozilla.org/en-US/docs/Web/API/HTMLFormElement), `<form>`.
 
 With `NgForm`, `itemForm` is a reference to the [NgForm](api/forms/NgForm "API: NgForm") directive with the ability to track the value and validity of every control in the form.
 
 Unlike the native `<form>` element, the `NgForm` directive has a `form` property.
 The `NgForm` `form` property lets you disable the submit button if the `itemForm.form.valid` is invalid.
+
+## Default reference type without assigned value
+
+When declaring a template reference variable on an element without defining a value for it, its returned type will reflect the type of element it's applied to:
+
+- **Native element**: specific subclass of [HTMLElement](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement)
+- **Component**: instance of the specific Component class
+- **NgTemplate**: TemplateRef
+
+Keep in mind that just the presence of a directive applied to the element will **not** make the undefined variable default to an instance of that directive, it will still reference the native object.
 
 ## Template variable scope
 
@@ -133,12 +141,27 @@ Consider the following example that uses `*ngFor`.
 </code-example>
 
 Here, `ref.value` doesn't work.
-The structural directive, `*ngFor` instantiates the template twice because `*ngFor` iterates over the two items in the array.
-It is impossible to define what the `ref.value` reference signifies.
+Verbose syntax of the same loop shows why:
 
-With structural directives, such as `*ngFor` or `*ngIf`, there is no way for Angular to know if a template is ever instantiated.
+```
+<ng-template ngFor let-i [ngForOf]="[1,2]">
+  <input #ref type="text" [value]="i" />
+</ng-template>
+{{ ref.value }}
+```
 
-As a result, Angular isn't able to access the value and returns an error.
+It's easy to notice how interpolation trying to access property `value` of `ref` occurs outside of referenced element's parent template, making it unreachable.
+
+Moving the interpolation inside the template, will make the variable available referencing the right distinct value for every element the loop will render.
+
+```
+<ng-template ngFor let-i [ngForOf]="[1,2]">
+  <input #ref type="text" [value]="i" />
+  {{ ref.value }}
+</ng-template>
+```
+
+This last snippet will show 2 `<input>` element with their respective value printed just after them
 
 ### Accessing a template variable within `<ng-template>`
 
@@ -167,11 +190,12 @@ name: "TemplateRef"
 A *template input variable* is a variable to reference within a single instance of the template.
 You declare a template input variable using the `let` keyword as in `let hero`.
 
-There are several such variables in this example: `hero`, `i`, and `odd`.
+If its value is omitted, it gets the `$implicit` template context's property value.
 
-<code-example format="html" language="html">
+There are several such variables in this example: `hero`, `i`, and `odd`.  
+The first one takes the value of the iterated item, because `NgForOf` assigns that to `$implicit`
 
-&lt;ng-template #hero let-hero let-i="index" let-odd="isOdd"&gt;
+&lt;ng-template ngFor #hero let-hero [ngForOf]="heroes" let-i="index" let-odd="odd"&gt;
   &lt;div [class]="{'odd-row': odd}"&gt;{{i}}:{{hero.name}}&lt;/div&gt;
 &lt;/ng-template&gt;
 
@@ -180,16 +204,4 @@ There are several such variables in this example: `hero`, `i`, and `odd`.
 The variable's scope is limited to a single instance of the repeated template.
 Use the same variable name again in the definition of other structural directives.
 
-In contrast, you declare a template variable by prefixing the variable name with `#`, as in `#var`.
-A template variable refers to its attached element, component, or directive.
-
-Template input variables and template variables names have their own namespaces.
-The template input variable `hero` in `let hero` is distinct from the template variable `hero` in `#hero`.
-
-<!-- links -->
-
-<!-- external links -->
-
-<!-- end links -->
-
-@reviewed 2022-02-28
+When in the same template a _template reference variable_ and a _template input variable_ with the same name get declared, the latter takes precedence.
