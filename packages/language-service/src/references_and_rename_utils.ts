@@ -222,7 +222,7 @@ export function convertToTemplateDocumentSpan<T extends ts.DocumentSpan>(
   // serverHost or LSParseConfigHost in the adapter. We should have a better defined way to
   // normalize paths.
   const mapping = getTemplateLocationFromTcbLocation(
-      templateTypeChecker, absoluteFrom(shimDocumentSpan.fileName),
+      templateTypeChecker, absoluteFrom(shimDocumentSpan.fileName), /* tcbIsShim */ true,
       shimDocumentSpan.textSpan.start);
   if (mapping === null) {
     return null;
