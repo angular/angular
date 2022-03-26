@@ -110,7 +110,7 @@ export class DefinitionBuilder {
           const tcbLocation = symbol.kind === SymbolKind.Variable ? symbol.localVarLocation :
                                                                     symbol.referenceVarLocation;
           const mapping = getTemplateLocationFromTcbLocation(
-              this.compiler.getTemplateTypeChecker(), tcbLocation.tcbPath,
+              this.compiler.getTemplateTypeChecker(), tcbLocation.tcbPath, tcbLocation.isShimFile,
               tcbLocation.positionInFile);
           if (mapping !== null) {
             definitions.push({

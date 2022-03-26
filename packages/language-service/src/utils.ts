@@ -363,10 +363,10 @@ export function isWithin(position: number, span: AbsoluteSourceSpan|ParseSourceS
  * the span in the template.
  */
 export function getTemplateLocationFromTcbLocation(
-    templateTypeChecker: TemplateTypeChecker, shimPath: AbsoluteFsPath,
-    positionInShimFile: number): {templateUrl: AbsoluteFsPath, span: ParseSourceSpan}|null {
+    templateTypeChecker: TemplateTypeChecker, tcbPath: AbsoluteFsPath, tcbIsShim: boolean,
+    positionInFile: number): {templateUrl: AbsoluteFsPath, span: ParseSourceSpan}|null {
   const mapping = templateTypeChecker.getTemplateMappingAtTcbLocation(
-      {tcbPath: shimPath, positionInFile: positionInShimFile});
+      {tcbPath, isShimFile: tcbIsShim, positionInFile});
   if (mapping === null) {
     return null;
   }
