@@ -50,41 +50,39 @@ describe('MDC-based MatTooltip', () => {
   let platform: Platform;
   let focusMonitor: FocusMonitor;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [MatTooltipModule, OverlayModule],
-        declarations: [
-          BasicTooltipDemo,
-          ScrollableTooltipDemo,
-          OnPushTooltipDemo,
-          DynamicTooltipsDemo,
-          TooltipOnTextFields,
-          TooltipOnDraggableElement,
-          DataBoundAriaLabelTooltip,
-        ],
-        providers: [
-          {
-            provide: Directionality,
-            useFactory: () => {
-              return (dir = {value: 'ltr', change: new Subject()});
-            },
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [MatTooltipModule, OverlayModule],
+      declarations: [
+        BasicTooltipDemo,
+        ScrollableTooltipDemo,
+        OnPushTooltipDemo,
+        DynamicTooltipsDemo,
+        TooltipOnTextFields,
+        TooltipOnDraggableElement,
+        DataBoundAriaLabelTooltip,
+      ],
+      providers: [
+        {
+          provide: Directionality,
+          useFactory: () => {
+            return (dir = {value: 'ltr', change: new Subject()});
           },
-        ],
-      });
-
-      TestBed.compileComponents();
-
-      inject(
-        [OverlayContainer, FocusMonitor, Platform],
-        (oc: OverlayContainer, fm: FocusMonitor, pl: Platform) => {
-          overlayContainerElement = oc.getContainerElement();
-          focusMonitor = fm;
-          platform = pl;
         },
-      )();
-    }),
-  );
+      ],
+    });
+
+    TestBed.compileComponents();
+
+    inject(
+      [OverlayContainer, FocusMonitor, Platform],
+      (oc: OverlayContainer, fm: FocusMonitor, pl: Platform) => {
+        overlayContainerElement = oc.getContainerElement();
+        focusMonitor = fm;
+        platform = pl;
+      },
+    )();
+  }));
 
   describe('basic usage', () => {
     let fixture: ComponentFixture<BasicTooltipDemo>;
@@ -321,25 +319,22 @@ describe('MDC-based MatTooltip', () => {
       expect(tooltipDirective._isTooltipVisible()).toBe(false);
     }));
 
-    it(
-      'should not show if hide is called before delay finishes',
-      waitForAsync(() => {
-        assertTooltipInstance(tooltipDirective, false);
+    it('should not show if hide is called before delay finishes', waitForAsync(() => {
+      assertTooltipInstance(tooltipDirective, false);
 
-        const tooltipDelay = 1000;
+      const tooltipDelay = 1000;
 
-        tooltipDirective.show(tooltipDelay);
+      tooltipDirective.show(tooltipDelay);
+      expect(tooltipDirective._isTooltipVisible()).toBe(false);
+
+      fixture.detectChanges();
+      expect(overlayContainerElement.textContent).toContain('');
+      tooltipDirective.hide();
+
+      fixture.whenStable().then(() => {
         expect(tooltipDirective._isTooltipVisible()).toBe(false);
-
-        fixture.detectChanges();
-        expect(overlayContainerElement.textContent).toContain('');
-        tooltipDirective.hide();
-
-        fixture.whenStable().then(() => {
-          expect(tooltipDirective._isTooltipVisible()).toBe(false);
-        });
-      }),
-    );
+      });
+    }));
 
     it('should not show tooltip if message is not present or empty', () => {
       assertTooltipInstance(tooltipDirective, false);

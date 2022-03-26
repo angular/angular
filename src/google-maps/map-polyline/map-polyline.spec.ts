@@ -18,24 +18,22 @@ describe('MapPolyline', () => {
   let polylinePath: google.maps.LatLngLiteral[];
   let polylineOptions: google.maps.PolylineOptions;
 
-  beforeEach(
-    waitForAsync(() => {
-      polylinePath = [
-        {lat: 25, lng: 26},
-        {lat: 26, lng: 27},
-        {lat: 30, lng: 34},
-      ];
-      polylineOptions = {
-        path: polylinePath,
-        strokeColor: 'grey',
-        strokeOpacity: 0.8,
-      };
-      TestBed.configureTestingModule({
-        imports: [GoogleMapsModule],
-        declarations: [TestApp],
-      });
-    }),
-  );
+  beforeEach(waitForAsync(() => {
+    polylinePath = [
+      {lat: 25, lng: 26},
+      {lat: 26, lng: 27},
+      {lat: 30, lng: 34},
+    ];
+    polylineOptions = {
+      path: polylinePath,
+      strokeColor: 'grey',
+      strokeOpacity: 0.8,
+    };
+    TestBed.configureTestingModule({
+      imports: [GoogleMapsModule],
+      declarations: [TestApp],
+    });
+  }));
 
   beforeEach(() => {
     TestBed.compileComponents();

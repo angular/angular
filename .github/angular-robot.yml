@@ -7,7 +7,7 @@ size:
   disabled: true
   # Name of the status that will be responsible for providing
   # artifacts that will be measured by the robot.
-  circleCiStatusName: "ci/circleci: build_release_packages"
+  circleCiStatusName: 'ci/circleci: build_release_packages'
   # Byte value of maximum allowed change in size
   maxSizeIncrease: 10000
 
@@ -18,11 +18,11 @@ merge:
     # set to true to disable
     disabled: false
     # the name of the status
-    context: "ci/angular: merge status"
+    context: 'ci/angular: merge status'
     # text to show when all checks pass
-    successText: "All checks passed!"
+    successText: 'All checks passed!'
     # text to show when some checks are failing
-    failureText: "The following checks are failing:"
+    failureText: 'The following checks are failing:'
 
   # the g3 status will be added to your pull requests if they include files that match the patterns
   g3Status:
@@ -33,7 +33,7 @@ merge:
   mergeConflictComment: "Hi @{{PRAuthor}}! This PR has merge conflicts due to recent upstream merges.\nPlease help to unblock it by resolving these conflicts. Thanks!"
 
   # label to monitor
-  mergeLabel: "pr: merge ready"
+  mergeLabel: 'pr: merge ready'
 
   # list of checks that will determine if the merge label can be added
   checks:
@@ -43,23 +43,23 @@ merge:
     requireReviews: false
     # list of labels that a PR needs to have, checked with a regexp (e.g. "PR target:" will work for the label "PR target: master")
     requiredLabels:
-      - "target: *"
+      - 'target: *'
 
     # list of labels that a PR shouldn't have, checked after the required labels with a regexp
     forbiddenLabels:
-      - "blocked"
-      - "pr: blocked"
-      - "pr: needs*"
-      - "presubmit failures"
+      - 'blocked'
+      - 'pr: blocked'
+      - 'pr: needs*'
+      - 'presubmit failures'
 
     # list of PR statuses that need to be successful
     requiredStatuses:
-      - "ci/circleci: lint"
-      - "ci/circleci: bazel_build"
-      - "ci/circleci: tests_browsers"
-      - "ci/circleci: tests_browserstack"
-      - "ci/circleci: tests_saucelabs"
-      - "ci/circleci: build_release_packages"
+      - 'ci/circleci: lint'
+      - 'ci/circleci: bazel_build'
+      - 'ci/circleci: tests_browsers'
+      - 'ci/circleci: tests_browserstack'
+      - 'ci/circleci: tests_saucelabs'
+      - 'ci/circleci: build_release_packages'
 
   # the comment that will be added when the merge label is added despite failing checks, leave empty or set to false to disable
   # {{MERGE_LABEL}} will be replaced by the value of the mergeLabel option

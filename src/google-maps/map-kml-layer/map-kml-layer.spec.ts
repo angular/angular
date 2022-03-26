@@ -23,14 +23,12 @@ const DEFAULT_KML_OPTIONS: google.maps.KmlLayerOptions = {
 describe('MapKmlLayer', () => {
   let mapSpy: jasmine.SpyObj<google.maps.Map>;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [GoogleMapsModule],
-        declarations: [TestApp],
-      });
-    }),
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [GoogleMapsModule],
+      declarations: [TestApp],
+    });
+  }));
 
   beforeEach(() => {
     TestBed.compileComponents();

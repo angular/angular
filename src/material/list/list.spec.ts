@@ -5,30 +5,28 @@ import {By} from '@angular/platform-browser';
 import {MatListItem, MatListModule} from './index';
 
 describe('MatList', () => {
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [MatListModule],
-        declarations: [
-          ListWithOneAnchorItem,
-          ListWithOneItem,
-          ListWithTwoLineItem,
-          ListWithThreeLineItem,
-          ListWithAvatar,
-          ListWithItemWithCssClass,
-          ListWithDynamicNumberOfLines,
-          ListWithMultipleItems,
-          ListWithManyLines,
-          NavListWithOneAnchorItem,
-          ActionListWithoutType,
-          ActionListWithType,
-          ListWithDisabledItems,
-        ],
-      });
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [MatListModule],
+      declarations: [
+        ListWithOneAnchorItem,
+        ListWithOneItem,
+        ListWithTwoLineItem,
+        ListWithThreeLineItem,
+        ListWithAvatar,
+        ListWithItemWithCssClass,
+        ListWithDynamicNumberOfLines,
+        ListWithMultipleItems,
+        ListWithManyLines,
+        NavListWithOneAnchorItem,
+        ActionListWithoutType,
+        ActionListWithType,
+        ListWithDisabledItems,
+      ],
+    });
 
-      TestBed.compileComponents();
-    }),
-  );
+    TestBed.compileComponents();
+  }));
 
   it('should not apply any additional class to a list without lines', () => {
     const fixture = TestBed.createComponent(ListWithOneItem);

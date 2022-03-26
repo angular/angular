@@ -15,22 +15,20 @@ describe('YoutubePlayer', () => {
   let testComponent: TestApp;
   let events: Required<YT.Events>;
 
-  beforeEach(
-    waitForAsync(() => {
-      const fake = createFakeYtNamespace();
-      playerCtorSpy = fake.playerCtorSpy;
-      playerSpy = fake.playerSpy;
-      window.YT = fake.namespace;
-      events = fake.events;
+  beforeEach(waitForAsync(() => {
+    const fake = createFakeYtNamespace();
+    playerCtorSpy = fake.playerCtorSpy;
+    playerSpy = fake.playerSpy;
+    window.YT = fake.namespace;
+    events = fake.events;
 
-      TestBed.configureTestingModule({
-        imports: [YouTubePlayerModule],
-        declarations: [TestApp, StaticStartEndSecondsApp, NoEventsApp],
-      });
+    TestBed.configureTestingModule({
+      imports: [YouTubePlayerModule],
+      declarations: [TestApp, StaticStartEndSecondsApp, NoEventsApp],
+    });
 
-      TestBed.compileComponents();
-    }),
-  );
+    TestBed.compileComponents();
+  }));
 
   describe('API ready', () => {
     beforeEach(() => {

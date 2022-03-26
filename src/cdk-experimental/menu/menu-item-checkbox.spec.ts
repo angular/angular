@@ -11,19 +11,17 @@ describe('MenuItemCheckbox', () => {
   let checkbox: CdkMenuItemCheckbox;
   let checkboxElement: HTMLButtonElement;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [CdkMenuModule],
-        declarations: [SingleCheckboxButton],
-        providers: [
-          {provide: CDK_MENU, useClass: CdkMenu},
-          // View engine can't figure out the ElementRef to inject so we need to provide a fake
-          {provide: ElementRef, useValue: new ElementRef<null>(null)},
-        ],
-      }).compileComponents();
-    }),
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [CdkMenuModule],
+      declarations: [SingleCheckboxButton],
+      providers: [
+        {provide: CDK_MENU, useClass: CdkMenu},
+        // View engine can't figure out the ElementRef to inject so we need to provide a fake
+        {provide: ElementRef, useValue: new ElementRef<null>(null)},
+      ],
+    }).compileComponents();
+  }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(SingleCheckboxButton);

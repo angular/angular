@@ -14,18 +14,16 @@ describe('MatTabBody', () => {
   let dir: Direction = 'ltr';
   let dirChange: Subject<Direction> = new Subject<Direction>();
 
-  beforeEach(
-    waitForAsync(() => {
-      dir = 'ltr';
-      TestBed.configureTestingModule({
-        imports: [CommonModule, PortalModule, MatRippleModule, NoopAnimationsModule],
-        declarations: [MatTabBody, MatTabBodyPortal, SimpleTabBodyApp],
-        providers: [{provide: Directionality, useFactory: () => ({value: dir, change: dirChange})}],
-      });
+  beforeEach(waitForAsync(() => {
+    dir = 'ltr';
+    TestBed.configureTestingModule({
+      imports: [CommonModule, PortalModule, MatRippleModule, NoopAnimationsModule],
+      declarations: [MatTabBody, MatTabBodyPortal, SimpleTabBodyApp],
+      providers: [{provide: Directionality, useFactory: () => ({value: dir, change: dirChange})}],
+    });
 
-      TestBed.compileComponents();
-    }),
-  );
+    TestBed.compileComponents();
+  }));
 
   describe('when initialized as center', () => {
     let fixture: ComponentFixture<SimpleTabBodyApp>;

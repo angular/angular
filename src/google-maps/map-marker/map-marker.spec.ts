@@ -15,14 +15,12 @@ import {DEFAULT_MARKER_OPTIONS, MapMarker} from './map-marker';
 describe('MapMarker', () => {
   let mapSpy: jasmine.SpyObj<google.maps.Map>;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [GoogleMapsModule],
-        declarations: [TestApp],
-      });
-    }),
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [GoogleMapsModule],
+      declarations: [TestApp],
+    });
+  }));
 
   beforeEach(() => {
     TestBed.compileComponents();

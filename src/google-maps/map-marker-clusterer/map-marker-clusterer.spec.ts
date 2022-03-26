@@ -21,14 +21,12 @@ describe('MapMarkerClusterer', () => {
 
   const anyMarkerMatcher = jasmine.any(Object) as unknown as google.maps.Marker;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [GoogleMapsModule],
-        declarations: [TestApp],
-      });
-    }),
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [GoogleMapsModule],
+      declarations: [TestApp],
+    });
+  }));
 
   beforeEach(() => {
     TestBed.compileComponents();

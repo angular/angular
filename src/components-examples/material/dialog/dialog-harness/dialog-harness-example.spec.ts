@@ -10,17 +10,15 @@ describe('DialogHarnessExample', () => {
   let fixture: ComponentFixture<DialogHarnessExample>;
   let loader: HarnessLoader;
 
-  beforeEach(
-    waitForAsync(async () => {
-      await TestBed.configureTestingModule({
-        imports: [MatDialogModule, NoopAnimationsModule],
-        declarations: [DialogHarnessExample],
-      }).compileComponents();
-      fixture = TestBed.createComponent(DialogHarnessExample);
-      fixture.detectChanges();
-      loader = TestbedHarnessEnvironment.documentRootLoader(fixture);
-    }),
-  );
+  beforeEach(waitForAsync(async () => {
+    await TestBed.configureTestingModule({
+      imports: [MatDialogModule, NoopAnimationsModule],
+      declarations: [DialogHarnessExample],
+    }).compileComponents();
+    fixture = TestBed.createComponent(DialogHarnessExample);
+    fixture.detectChanges();
+    loader = TestbedHarnessEnvironment.documentRootLoader(fixture);
+  }));
 
   it('should load harness for dialog', async () => {
     fixture.componentInstance.open();

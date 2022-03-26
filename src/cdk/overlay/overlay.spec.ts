@@ -42,33 +42,31 @@ describe('Overlay', () => {
   let zone: MockNgZone;
   let mockLocation: SpyLocation;
 
-  beforeEach(
-    waitForAsync(() => {
-      dir = 'ltr';
-      TestBed.configureTestingModule({
-        imports: [OverlayModule, PortalModule],
-        declarations: [PizzaMsg, TestComponentWithTemplatePortals],
-        providers: [
-          {
-            provide: Directionality,
-            useFactory: () => {
-              const fakeDirectionality = {};
-              Object.defineProperty(fakeDirectionality, 'value', {get: () => dir});
-              return fakeDirectionality;
-            },
+  beforeEach(waitForAsync(() => {
+    dir = 'ltr';
+    TestBed.configureTestingModule({
+      imports: [OverlayModule, PortalModule],
+      declarations: [PizzaMsg, TestComponentWithTemplatePortals],
+      providers: [
+        {
+          provide: Directionality,
+          useFactory: () => {
+            const fakeDirectionality = {};
+            Object.defineProperty(fakeDirectionality, 'value', {get: () => dir});
+            return fakeDirectionality;
           },
-          {
-            provide: NgZone,
-            useFactory: () => (zone = new MockNgZone()),
-          },
-          {
-            provide: Location,
-            useClass: SpyLocation,
-          },
-        ],
-      }).compileComponents();
-    }),
-  );
+        },
+        {
+          provide: NgZone,
+          useFactory: () => (zone = new MockNgZone()),
+        },
+        {
+          provide: Location,
+          useClass: SpyLocation,
+        },
+      ],
+    }).compileComponents();
+  }));
 
   beforeEach(inject(
     [Overlay, OverlayContainer, Location],

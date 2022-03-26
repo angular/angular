@@ -19,27 +19,25 @@ import {CdkScrollable} from '@angular/cdk/scrolling';
 import {CommonModule} from '@angular/common';
 
 describe('MatDrawer', () => {
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [MatSidenavModule, A11yModule, NoopAnimationsModule, CommonModule],
-        declarations: [
-          BasicTestApp,
-          DrawerContainerNoDrawerTestApp,
-          DrawerSetToOpenedFalse,
-          DrawerSetToOpenedTrue,
-          DrawerDynamicPosition,
-          DrawerWithFocusableElements,
-          DrawerOpenBinding,
-          DrawerWithoutFocusableElements,
-          IndirectDescendantDrawer,
-          NestedDrawerContainers,
-        ],
-      });
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [MatSidenavModule, A11yModule, NoopAnimationsModule, CommonModule],
+      declarations: [
+        BasicTestApp,
+        DrawerContainerNoDrawerTestApp,
+        DrawerSetToOpenedFalse,
+        DrawerSetToOpenedTrue,
+        DrawerDynamicPosition,
+        DrawerWithFocusableElements,
+        DrawerOpenBinding,
+        DrawerWithoutFocusableElements,
+        IndirectDescendantDrawer,
+        NestedDrawerContainers,
+      ],
+    });
 
-      TestBed.compileComponents();
-    }),
-  );
+    TestBed.compileComponents();
+  }));
 
   describe('methods', () => {
     it('should be able to open', fakeAsync(() => {
@@ -800,24 +798,22 @@ describe('MatDrawer', () => {
 });
 
 describe('MatDrawerContainer', () => {
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [MatSidenavModule, A11yModule, NoopAnimationsModule],
-        declarations: [
-          DrawerContainerTwoDrawerTestApp,
-          DrawerDelayed,
-          DrawerSetToOpenedTrue,
-          DrawerContainerStateChangesTestApp,
-          AutosizeDrawer,
-          BasicTestApp,
-          DrawerContainerWithContent,
-        ],
-      });
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [MatSidenavModule, A11yModule, NoopAnimationsModule],
+      declarations: [
+        DrawerContainerTwoDrawerTestApp,
+        DrawerDelayed,
+        DrawerSetToOpenedTrue,
+        DrawerContainerStateChangesTestApp,
+        AutosizeDrawer,
+        BasicTestApp,
+        DrawerContainerWithContent,
+      ],
+    });
 
-      TestBed.compileComponents();
-    }),
-  );
+    TestBed.compileComponents();
+  }));
 
   it('should be able to open and close all drawers', fakeAsync(() => {
     const fixture = TestBed.createComponent(DrawerContainerTwoDrawerTestApp);

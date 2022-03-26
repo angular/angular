@@ -5,15 +5,13 @@ import {By} from '@angular/platform-browser';
 import {dispatchMouseEvent, dispatchFakeEvent} from '../../cdk/testing/private';
 
 describe('MatCalendarBody', () => {
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        declarations: [MatCalendarBody, StandardCalendarBody, RangeCalendarBody],
-      });
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      declarations: [MatCalendarBody, StandardCalendarBody, RangeCalendarBody],
+    });
 
-      TestBed.compileComponents();
-    }),
-  );
+    TestBed.compileComponents();
+  }));
 
   describe('standard calendar body', () => {
     let fixture: ComponentFixture<StandardCalendarBody>;

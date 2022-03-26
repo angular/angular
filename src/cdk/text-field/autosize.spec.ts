@@ -19,21 +19,19 @@ describe('CdkTextareaAutosize', () => {
   let textarea: HTMLTextAreaElement;
   let autosize: CdkTextareaAutosize;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [FormsModule, TextFieldModule, NoopAnimationsModule],
-        declarations: [
-          AutosizeTextAreaWithContent,
-          AutosizeTextAreaWithValue,
-          AutosizeTextareaWithNgModel,
-          AutosizeTextareaWithoutAutosize,
-        ],
-      });
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [FormsModule, TextFieldModule, NoopAnimationsModule],
+      declarations: [
+        AutosizeTextAreaWithContent,
+        AutosizeTextAreaWithValue,
+        AutosizeTextareaWithNgModel,
+        AutosizeTextareaWithoutAutosize,
+      ],
+    });
 
-      TestBed.compileComponents();
-    }),
-  );
+    TestBed.compileComponents();
+  }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(AutosizeTextAreaWithContent);

@@ -1,7 +1,7 @@
 name: Bug Report
 description: Report a bug in Angular Material or the CDK
-title: "bug(COMPONENT): TITLE"
-labels: ["needs triage"]
+title: 'bug(COMPONENT): TITLE'
+labels: ['needs triage']
 body:
   - type: checkboxes
     id: is-regression
@@ -34,7 +34,7 @@ body:
       value: |
         Steps to reproduce:
         1. 
-        2. 
+        2.
     validations:
       required: true
   - type: textarea

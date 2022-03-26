@@ -43,21 +43,19 @@ describe('MenuBar', () => {
     let fixture: ComponentFixture<MenuBarRadioGroup>;
     let menuItems: CdkMenuItemRadio[];
 
-    beforeEach(
-      waitForAsync(() => {
-        TestBed.configureTestingModule({
-          imports: [CdkMenuModule],
-          declarations: [MenuBarRadioGroup],
-        }).compileComponents();
+    beforeEach(waitForAsync(() => {
+      TestBed.configureTestingModule({
+        imports: [CdkMenuModule],
+        declarations: [MenuBarRadioGroup],
+      }).compileComponents();
 
-        fixture = TestBed.createComponent(MenuBarRadioGroup);
-        fixture.detectChanges();
+      fixture = TestBed.createComponent(MenuBarRadioGroup);
+      fixture.detectChanges();
 
-        menuItems = fixture.debugElement
-          .queryAll(By.directive(CdkMenuItemRadio))
-          .map(element => element.injector.get(CdkMenuItemRadio));
-      }),
-    );
+      menuItems = fixture.debugElement
+        .queryAll(By.directive(CdkMenuItemRadio))
+        .map(element => element.injector.get(CdkMenuItemRadio));
+    }));
 
     it('should toggle menuitemradio items', () => {
       expect(menuItems[0].checked).toBeTrue();
@@ -74,22 +72,20 @@ describe('MenuBar', () => {
     let fixture: ComponentFixture<MenuBarRadioGroup>;
     let menuItems: CdkMenuItemRadio[];
 
-    beforeEach(
-      waitForAsync(() => {
-        TestBed.configureTestingModule({
-          imports: [CdkMenuModule],
-          declarations: [MenuBarRadioGroup],
-        }).compileComponents();
+    beforeEach(waitForAsync(() => {
+      TestBed.configureTestingModule({
+        imports: [CdkMenuModule],
+        declarations: [MenuBarRadioGroup],
+      }).compileComponents();
 
-        fixture = TestBed.createComponent(MenuBarRadioGroup);
+      fixture = TestBed.createComponent(MenuBarRadioGroup);
 
-        fixture.detectChanges();
+      fixture.detectChanges();
 
-        menuItems = fixture.debugElement
-          .queryAll(By.directive(CdkMenuItemRadio))
-          .map(element => element.injector.get(CdkMenuItemRadio));
-      }),
-    );
+      menuItems = fixture.debugElement
+        .queryAll(By.directive(CdkMenuItemRadio))
+        .map(element => element.injector.get(CdkMenuItemRadio));
+    }));
 
     it('should emit on click', () => {
       const spy = jasmine.createSpy('cdkMenu change spy');
@@ -141,14 +137,12 @@ describe('MenuBar', () => {
         detectChanges();
       }
 
-      beforeEach(
-        waitForAsync(() => {
-          TestBed.configureTestingModule({
-            imports: [CdkMenuModule],
-            declarations: [MultiMenuWithSubmenu],
-          }).compileComponents();
-        }),
-      );
+      beforeEach(waitForAsync(() => {
+        TestBed.configureTestingModule({
+          imports: [CdkMenuModule],
+          declarations: [MultiMenuWithSubmenu],
+        }).compileComponents();
+      }));
 
       beforeEach(() => {
         fixture = TestBed.createComponent(MultiMenuWithSubmenu);
@@ -568,14 +562,12 @@ describe('MenuBar', () => {
         detectChanges();
       }
 
-      beforeEach(
-        waitForAsync(() => {
-          TestBed.configureTestingModule({
-            imports: [CdkMenuModule],
-            declarations: [MultiMenuWithSubmenu],
-          }).compileComponents();
-        }),
-      );
+      beforeEach(waitForAsync(() => {
+        TestBed.configureTestingModule({
+          imports: [CdkMenuModule],
+          declarations: [MultiMenuWithSubmenu],
+        }).compileComponents();
+      }));
 
       beforeEach(() => {
         fixture = TestBed.createComponent(MultiMenuWithSubmenu);
@@ -698,14 +690,12 @@ describe('MenuBar', () => {
         detectChanges();
       }
 
-      beforeEach(
-        waitForAsync(() => {
-          TestBed.configureTestingModule({
-            imports: [CdkMenuModule],
-            declarations: [MenuWithCheckboxes],
-          }).compileComponents();
-        }),
-      );
+      beforeEach(waitForAsync(() => {
+        TestBed.configureTestingModule({
+          imports: [CdkMenuModule],
+          declarations: [MenuWithCheckboxes],
+        }).compileComponents();
+      }));
 
       beforeEach(() => {
         fixture = TestBed.createComponent(MenuWithCheckboxes);
@@ -767,14 +757,12 @@ describe('MenuBar', () => {
         detectChanges();
       }
 
-      beforeEach(
-        waitForAsync(() => {
-          TestBed.configureTestingModule({
-            imports: [CdkMenuModule],
-            declarations: [MenuWithRadioButtons],
-          }).compileComponents();
-        }),
-      );
+      beforeEach(waitForAsync(() => {
+        TestBed.configureTestingModule({
+          imports: [CdkMenuModule],
+          declarations: [MenuWithRadioButtons],
+        }).compileComponents();
+      }));
 
       beforeEach(() => {
         fixture = TestBed.createComponent(MenuWithRadioButtons);
@@ -825,14 +813,12 @@ describe('MenuBar', () => {
       grabElementsForTesting();
     }
 
-    beforeEach(
-      waitForAsync(() => {
-        TestBed.configureTestingModule({
-          imports: [CdkMenuModule],
-          declarations: [MenuBarWithMenusAndInlineMenu],
-        }).compileComponents();
-      }),
-    );
+    beforeEach(waitForAsync(() => {
+      TestBed.configureTestingModule({
+        imports: [CdkMenuModule],
+        declarations: [MenuBarWithMenusAndInlineMenu],
+      }).compileComponents();
+    }));
 
     beforeEach(() => {
       fixture = TestBed.createComponent(MenuBarWithMenusAndInlineMenu);
@@ -946,14 +932,12 @@ describe('MenuBar', () => {
       detectChanges();
     }
 
-    beforeEach(
-      waitForAsync(() => {
-        TestBed.configureTestingModule({
-          imports: [CdkMenuModule],
-          declarations: [MultiMenuWithSubmenu],
-        }).compileComponents();
-      }),
-    );
+    beforeEach(waitForAsync(() => {
+      TestBed.configureTestingModule({
+        imports: [CdkMenuModule],
+        declarations: [MultiMenuWithSubmenu],
+      }).compileComponents();
+    }));
 
     beforeEach(() => {
       fixture = TestBed.createComponent(MultiMenuWithSubmenu);

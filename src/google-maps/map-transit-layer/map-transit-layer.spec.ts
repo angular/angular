@@ -13,14 +13,12 @@ import {
 describe('MapTransitLayer', () => {
   let mapSpy: jasmine.SpyObj<google.maps.Map>;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [GoogleMapsModule],
-        declarations: [TestApp],
-      });
-    }),
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [GoogleMapsModule],
+      declarations: [TestApp],
+    });
+  }));
 
   beforeEach(() => {
     TestBed.compileComponents();

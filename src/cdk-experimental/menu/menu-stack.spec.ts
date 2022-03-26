@@ -20,14 +20,12 @@ describe('MenuStack', () => {
     menuStack = fixture.componentInstance.menuBar._menuStack;
   }
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [CdkMenuModule],
-        declarations: [MultiMenuWithSubmenu],
-      }).compileComponents();
-    }),
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [CdkMenuModule],
+      declarations: [MultiMenuWithSubmenu],
+    }).compileComponents();
+  }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(MultiMenuWithSubmenu);

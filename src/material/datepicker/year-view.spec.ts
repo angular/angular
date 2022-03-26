@@ -21,25 +21,23 @@ import {MatYearView} from './year-view';
 describe('MatYearView', () => {
   let dir: {value: Direction};
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [MatNativeDateModule],
-        declarations: [
-          MatCalendarBody,
-          MatYearView,
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [MatNativeDateModule],
+      declarations: [
+        MatCalendarBody,
+        MatYearView,
 
-          // Test components.
-          StandardYearView,
-          YearViewWithDateFilter,
-          YearViewWithDateClass,
-        ],
-        providers: [{provide: Directionality, useFactory: () => (dir = {value: 'ltr'})}],
-      });
+        // Test components.
+        StandardYearView,
+        YearViewWithDateFilter,
+        YearViewWithDateClass,
+      ],
+      providers: [{provide: Directionality, useFactory: () => (dir = {value: 'ltr'})}],
+    });
 
-      TestBed.compileComponents();
-    }),
-  );
+    TestBed.compileComponents();
+  }));
 
   describe('standard year view', () => {
     let fixture: ComponentFixture<StandardYearView>;

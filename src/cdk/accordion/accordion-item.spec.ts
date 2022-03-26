@@ -5,15 +5,13 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {CdkAccordionModule, CdkAccordionItem} from './public-api';
 
 describe('CdkAccordionItem', () => {
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [BrowserAnimationsModule, CdkAccordionModule],
-        declarations: [SingleItem, ItemGroupWithoutAccordion, ItemGroupWithAccordion],
-      });
-      TestBed.compileComponents();
-    }),
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [BrowserAnimationsModule, CdkAccordionModule],
+      declarations: [SingleItem, ItemGroupWithoutAccordion, ItemGroupWithAccordion],
+    });
+    TestBed.compileComponents();
+  }));
 
   describe('single item', () => {
     let fixture: ComponentFixture<SingleItem>;

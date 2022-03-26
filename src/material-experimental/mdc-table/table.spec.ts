@@ -15,25 +15,23 @@ import {MatPaginator, MatPaginatorModule} from '@angular/material-experimental/m
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 
 describe('MDC-based MatTable', () => {
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [MatTableModule, MatPaginatorModule, MatSortModule, NoopAnimationsModule],
-        declarations: [
-          MatTableApp,
-          MatTableWithWhenRowApp,
-          ArrayDataSourceMatTableApp,
-          NativeHtmlTableApp,
-          MatTableWithSortApp,
-          MatTableWithPaginatorApp,
-          StickyTableApp,
-          TableWithNgContainerRow,
-          NestedTableApp,
-          MatFlexTableApp,
-        ],
-      }).compileComponents();
-    }),
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [MatTableModule, MatPaginatorModule, MatSortModule, NoopAnimationsModule],
+      declarations: [
+        MatTableApp,
+        MatTableWithWhenRowApp,
+        ArrayDataSourceMatTableApp,
+        NativeHtmlTableApp,
+        MatTableWithSortApp,
+        MatTableWithPaginatorApp,
+        StickyTableApp,
+        TableWithNgContainerRow,
+        NestedTableApp,
+        MatFlexTableApp,
+      ],
+    }).compileComponents();
+  }));
 
   describe('with basic data source', () => {
     it('should be able to create a table with the right content and without when row', () => {

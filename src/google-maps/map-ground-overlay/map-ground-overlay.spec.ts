@@ -21,14 +21,12 @@ describe('MapGroundOverlay', () => {
   const opacity = 0.5;
   const groundOverlayOptions: google.maps.GroundOverlayOptions = {clickable, opacity};
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [GoogleMapsModule],
-        declarations: [TestApp],
-      });
-    }),
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [GoogleMapsModule],
+      declarations: [TestApp],
+    });
+  }));
 
   beforeEach(() => {
     TestBed.compileComponents();

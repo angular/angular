@@ -12,28 +12,24 @@ describe('MDC-based Chip Remove', () => {
   let chipInstance: MatChip;
   let chipNativeElement: HTMLElement;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [MatChipsModule],
-        declarations: [TestChip],
-      });
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [MatChipsModule],
+      declarations: [TestChip],
+    });
 
-      TestBed.compileComponents();
-    }),
-  );
+    TestBed.compileComponents();
+  }));
 
-  beforeEach(
-    waitForAsync(() => {
-      fixture = TestBed.createComponent(TestChip);
-      testChip = fixture.debugElement.componentInstance;
-      fixture.detectChanges();
+  beforeEach(waitForAsync(() => {
+    fixture = TestBed.createComponent(TestChip);
+    testChip = fixture.debugElement.componentInstance;
+    fixture.detectChanges();
 
-      const chipDebugElement = fixture.debugElement.query(By.directive(MatChip))!;
-      chipNativeElement = chipDebugElement.nativeElement;
-      chipInstance = chipDebugElement.componentInstance;
-    }),
-  );
+    const chipDebugElement = fixture.debugElement.query(By.directive(MatChip))!;
+    chipNativeElement = chipDebugElement.nativeElement;
+    chipInstance = chipDebugElement.componentInstance;
+  }));
 
   function triggerRemoveSequence() {
     // At the time of writing, MDC's removal sequence requires the following to happen:

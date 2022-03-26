@@ -17,24 +17,22 @@ describe('RepositionScrollStrategy', () => {
   let componentPortal: ComponentPortal<PastaMsg>;
   let scrolledSubject = new Subject();
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [OverlayModule, PortalModule],
-        declarations: [PastaMsg],
-        providers: [
-          {
-            provide: ScrollDispatcher,
-            useFactory: () => ({
-              scrolled: () => scrolledSubject,
-            }),
-          },
-        ],
-      });
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [OverlayModule, PortalModule],
+      declarations: [PastaMsg],
+      providers: [
+        {
+          provide: ScrollDispatcher,
+          useFactory: () => ({
+            scrolled: () => scrolledSubject,
+          }),
+        },
+      ],
+    });
 
-      TestBed.compileComponents();
-    }),
-  );
+    TestBed.compileComponents();
+  }));
 
   beforeEach(inject([Overlay], (o: Overlay) => {
     overlay = o;

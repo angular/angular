@@ -14,14 +14,12 @@ describe('CdkTextColumn', () => {
   let component: BasicTextColumnApp;
   let tableElement: HTMLElement;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [CdkTableModule],
-        declarations: [BasicTextColumnApp, MissingTableApp, TextColumnWithoutNameApp],
-      }).compileComponents();
-    }),
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [CdkTableModule],
+      declarations: [BasicTextColumnApp, MissingTableApp, TextColumnWithoutNameApp],
+    }).compileComponents();
+  }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(BasicTextColumnApp);

@@ -23,14 +23,12 @@ describe('Combobox', () => {
     let applyButton: DebugElement;
     let applyButtonElement: HTMLElement;
 
-    beforeEach(
-      waitForAsync(() => {
-        TestBed.configureTestingModule({
-          imports: [CdkComboboxModule],
-          declarations: [ComboboxToggle],
-        }).compileComponents();
-      }),
-    );
+    beforeEach(waitForAsync(() => {
+      TestBed.configureTestingModule({
+        imports: [CdkComboboxModule],
+        declarations: [ComboboxToggle],
+      }).compileComponents();
+    }));
 
     beforeEach(() => {
       fixture = TestBed.createComponent(ComboboxToggle);
@@ -189,14 +187,12 @@ describe('Combobox', () => {
     let combobox: DebugElement;
     let comboboxInstance: CdkCombobox;
 
-    beforeEach(
-      waitForAsync(() => {
-        TestBed.configureTestingModule({
-          imports: [CdkComboboxModule],
-          declarations: [ComboboxToggle],
-        }).compileComponents();
-      }),
-    );
+    beforeEach(waitForAsync(() => {
+      TestBed.configureTestingModule({
+        imports: [CdkComboboxModule],
+        declarations: [ComboboxToggle],
+      }).compileComponents();
+    }));
 
     beforeEach(() => {
       fixture = TestBed.createComponent(ComboboxToggle);
@@ -262,14 +258,12 @@ describe('Combobox', () => {
     let comboboxInstance: CdkCombobox;
     let comboboxElement: HTMLElement;
 
-    beforeEach(
-      waitForAsync(() => {
-        TestBed.configureTestingModule({
-          imports: [CdkComboboxModule],
-          declarations: [ComboboxToggle],
-        }).compileComponents();
-      }),
-    );
+    beforeEach(waitForAsync(() => {
+      TestBed.configureTestingModule({
+        imports: [CdkComboboxModule],
+        declarations: [ComboboxToggle],
+      }).compileComponents();
+    }));
 
     beforeEach(() => {
       fixture = TestBed.createComponent(ComboboxToggle);

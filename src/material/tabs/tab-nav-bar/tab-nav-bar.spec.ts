@@ -17,29 +17,27 @@ describe('MatTabNavBar', () => {
   let dirChange = new Subject();
   let globalRippleOptions: RippleGlobalOptions;
 
-  beforeEach(
-    waitForAsync(() => {
-      globalRippleOptions = {};
+  beforeEach(waitForAsync(() => {
+    globalRippleOptions = {};
 
-      TestBed.configureTestingModule({
-        imports: [MatTabsModule],
-        declarations: [
-          SimpleTabNavBarTestApp,
-          TabLinkWithNgIf,
-          TabBarWithoutPanelWithTabIndexBinding,
-          TabBarWithoutPanelWithNativeTabindexAttr,
-          TabBarWithInactiveTabsOnInit,
-          TabBarWithoutPanel,
-        ],
-        providers: [
-          {provide: MAT_RIPPLE_GLOBAL_OPTIONS, useFactory: () => globalRippleOptions},
-          {provide: Directionality, useFactory: () => ({value: dir, change: dirChange})},
-        ],
-      });
+    TestBed.configureTestingModule({
+      imports: [MatTabsModule],
+      declarations: [
+        SimpleTabNavBarTestApp,
+        TabLinkWithNgIf,
+        TabBarWithoutPanelWithTabIndexBinding,
+        TabBarWithoutPanelWithNativeTabindexAttr,
+        TabBarWithInactiveTabsOnInit,
+        TabBarWithoutPanel,
+      ],
+      providers: [
+        {provide: MAT_RIPPLE_GLOBAL_OPTIONS, useFactory: () => globalRippleOptions},
+        {provide: Directionality, useFactory: () => ({value: dir, change: dirChange})},
+      ],
+    });
 
-      TestBed.compileComponents();
-    }),
-  );
+    TestBed.compileComponents();
+  }));
 
   describe('basic behavior', () => {
     let fixture: ComponentFixture<SimpleTabNavBarTestApp>;

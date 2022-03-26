@@ -17,24 +17,22 @@ import {MatTable} from './table';
 import {MatTableDataSource} from './table-data-source';
 
 describe('MatTable', () => {
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [MatTableModule, MatPaginatorModule, MatSortModule, NoopAnimationsModule],
-        declarations: [
-          MatTableApp,
-          MatTableWithWhenRowApp,
-          ArrayDataSourceMatTableApp,
-          NativeHtmlTableApp,
-          MatTableWithSortApp,
-          MatTableWithPaginatorApp,
-          StickyTableApp,
-          TableWithNgContainerRow,
-          NestedHtmlTableApp,
-        ],
-      }).compileComponents();
-    }),
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [MatTableModule, MatPaginatorModule, MatSortModule, NoopAnimationsModule],
+      declarations: [
+        MatTableApp,
+        MatTableWithWhenRowApp,
+        ArrayDataSourceMatTableApp,
+        NativeHtmlTableApp,
+        MatTableWithSortApp,
+        MatTableWithPaginatorApp,
+        StickyTableApp,
+        TableWithNgContainerRow,
+        NestedHtmlTableApp,
+      ],
+    }).compileComponents();
+  }));
 
   describe('with basic data source', () => {
     it('should be able to create a table with the right content and without when row', () => {

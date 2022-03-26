@@ -1,7 +1,7 @@
 name: Troubleshooting
 description: Request for help on an issue you are facing with Angular Material or the CDK
-title: "help(COMPONENT): TITLE"
-labels: ["troubleshooting", "needs triage"]
+title: 'help(COMPONENT): TITLE'
+labels: ['troubleshooting', 'needs triage']
 body:
   - type: markdown
     attributes:
@@ -38,7 +38,7 @@ body:
       value: |
         Steps to reproduce:
         1. 
-        2. 
+        2.
     validations:
       required: true
   - type: textarea

@@ -13,19 +13,17 @@ describe('BlockScrollStrategy', () => {
   let componentPortal: ComponentPortal<FocacciaMsg>;
   let forceScrollElement: HTMLElement;
 
-  beforeEach(
-    waitForAsync(() => {
-      documentElement = document.documentElement!;
+  beforeEach(waitForAsync(() => {
+    documentElement = document.documentElement!;
 
-      // Ensure a clean state for every test.
-      documentElement.classList.remove('cdk-global-scrollblock');
+    // Ensure a clean state for every test.
+    documentElement.classList.remove('cdk-global-scrollblock');
 
-      TestBed.configureTestingModule({
-        imports: [OverlayModule, PortalModule],
-        declarations: [FocacciaMsg],
-      }).compileComponents();
-    }),
-  );
+    TestBed.configureTestingModule({
+      imports: [OverlayModule, PortalModule],
+      declarations: [FocacciaMsg],
+    }).compileComponents();
+  }));
 
   beforeEach(inject(
     [Overlay, ViewportRuler, Platform],

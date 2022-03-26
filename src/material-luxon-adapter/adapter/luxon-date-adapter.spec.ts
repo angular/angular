@@ -21,16 +21,14 @@ const JAN = 1,
 describe('LuxonDateAdapter', () => {
   let adapter: DateAdapter<DateTime>;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [LuxonDateModule],
-      }).compileComponents();
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [LuxonDateModule],
+    }).compileComponents();
 
-      adapter = TestBed.inject(DateAdapter);
-      adapter.setLocale('en-US');
-    }),
-  );
+    adapter = TestBed.inject(DateAdapter);
+    adapter.setLocale('en-US');
+  }));
 
   it('should get year', () => {
     expect(adapter.getYear(DateTime.local(2017, JAN, 1))).toBe(2017);
@@ -547,16 +545,14 @@ describe('LuxonDateAdapter', () => {
 describe('LuxonDateAdapter with MAT_DATE_LOCALE override', () => {
   let adapter: DateAdapter<DateTime>;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [LuxonDateModule],
-        providers: [{provide: MAT_DATE_LOCALE, useValue: 'da-DK'}],
-      }).compileComponents();
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [LuxonDateModule],
+      providers: [{provide: MAT_DATE_LOCALE, useValue: 'da-DK'}],
+    }).compileComponents();
 
-      adapter = TestBed.inject(DateAdapter);
-    }),
-  );
+    adapter = TestBed.inject(DateAdapter);
+  }));
 
   it('should take the default locale id from the MAT_DATE_LOCALE injection token', () => {
     const date = adapter.format(DateTime.local(2017, JAN, 2), 'DD');
@@ -567,16 +563,14 @@ describe('LuxonDateAdapter with MAT_DATE_LOCALE override', () => {
 describe('LuxonDateAdapter with LOCALE_ID override', () => {
   let adapter: DateAdapter<DateTime>;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [LuxonDateModule],
-        providers: [{provide: LOCALE_ID, useValue: 'fr-FR'}],
-      }).compileComponents();
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [LuxonDateModule],
+      providers: [{provide: LOCALE_ID, useValue: 'fr-FR'}],
+    }).compileComponents();
 
-      adapter = TestBed.inject(DateAdapter);
-    }),
-  );
+    adapter = TestBed.inject(DateAdapter);
+  }));
 
   it('should take the default locale id from the LOCALE_ID injection token', () => {
     const date = adapter.format(DateTime.local(2017, JAN, 2), 'DD');
@@ -587,21 +581,19 @@ describe('LuxonDateAdapter with LOCALE_ID override', () => {
 describe('LuxonDateAdapter with MAT_LUXON_DATE_ADAPTER_OPTIONS override', () => {
   let adapter: DateAdapter<DateTime>;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [LuxonDateModule],
-        providers: [
-          {
-            provide: MAT_LUXON_DATE_ADAPTER_OPTIONS,
-            useValue: {useUtc: true, firstDayOfWeek: 1},
-          },
-        ],
-      }).compileComponents();
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [LuxonDateModule],
+      providers: [
+        {
+          provide: MAT_LUXON_DATE_ADAPTER_OPTIONS,
+          useValue: {useUtc: true, firstDayOfWeek: 1},
+        },
+      ],
+    }).compileComponents();
 
-      adapter = TestBed.inject(DateAdapter);
-    }),
-  );
+    adapter = TestBed.inject(DateAdapter);
+  }));
 
   describe('use UTC', () => {
     it('should create Luxon date in UTC', () => {

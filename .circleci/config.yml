@@ -40,12 +40,12 @@ var_8: &save_cache
   save_cache:
     key: *cache_key
     paths:
-      - "node_modules"
-      - "~/.cache/bazelisk"
-      - "~/bazel_repository_cache"
+      - 'node_modules'
+      - '~/.cache/bazelisk'
+      - '~/bazel_repository_cache'
 
 # Decryption token that is used to decode the GCP credentials file in ".circleci/gcp_token".
-var_9: &gcp_decrypt_token "angular"
+var_9: &gcp_decrypt_token 'angular'
 
 # Job step that ensures that the node module dependencies are installed and up-to-date. We use
 # Yarn with the frozen lockfile option in order to make sure that lock file and package.json are
@@ -53,20 +53,20 @@ var_9: &gcp_decrypt_token "angular"
 # CircleCI automatically discards the cache if the checksum of the lock file has changed.
 var_10: &yarn_install
   run:
-    name: "Installing project dependencies"
+    name: 'Installing project dependencies'
     command: yarn install --frozen-lockfile --non-interactive
 
 # Installs all dependencies but does not enforce a frozen lockfile. Helpful when
 # the "package.json" is updated as part of a CI job. e.g. when setting up snapshots.
 var_11: &yarn_install_loose_lockfile
   run:
-    name: "Installing project dependencies"
+    name: 'Installing project dependencies'
     command: yarn install --non-interactive
 
 # Sets up the Bazel config which is specific for CircleCI builds.
 var_12: &setup_bazel_ci_config
   run:
-    name: "Setting up Bazel configuration for CI"
+    name: 'Setting up Bazel configuration for CI'
     # Note: We add the remote config flag to the user bazelrc file that is not tracked
     # by Git. This is necessary to avoid stamping builds with `.with-local-changes`.
     command: echo "import %workspace%/.circleci/bazel.rc" >> ./.bazelrc.user
@@ -95,46 +95,46 @@ var_14: &publish_branches_filter
 var_15: &ignore_presubmit_branch_filter
   branches:
     ignore:
-      - "_presubmit"
+      - '_presubmit'
 
 # Runs a script that sets up the Bazel remote execution. This will be used by jobs that run
 # Bazel primarily and should benefit from remote caching and execution.
 var_16: &setup_bazel_remote_execution
   run:
-    name: "Setup bazel RBE remote execution"
+    name: 'Setup bazel RBE remote execution'
     command: ./scripts/bazel/setup-remote-execution.sh
 
 # Sets up the bazel binary globally. We don't want to access bazel through Yarn and NodeJS
 # because it could mean that the Bazel child process only has access to limited memory.
 var_17: &setup_bazel_binary
   run:
-    name: "Setting up global Bazel binary"
+    name: 'Setting up global Bazel binary'
     command: ./scripts/circleci/setup_bazel_binary.sh
 
 # Sets up the Angular snapshot builds.
 var_18: &setup_snapshot_builds
   run:
-    name: "Setting up Angular snapshot builds"
+    name: 'Setting up Angular snapshot builds'
     command: node ./scripts/circleci/setup-angular-snapshots.js master
 
 # Filter which ensures that jobs only run for pull requests.
 var_19: &only_on_pull_requests_filter
   branches:
-      only:
-        - /pull\/\d+/
+    only:
+      - /pull\/\d+/
 
 # Anchor for a step that notifies Slack when preceding steps failed.
 var_20: &slack_notify_on_failure
   run:
-    name: "Notifying team about job failure"
+    name: 'Notifying team about job failure'
     when: on_fail
     command: node ./scripts/circleci/notify-slack-job-failure.js
 
 # Branch filter that only matches the main branch.
 var_21: &only_main_branch_filter
   branches:
-      only:
-        - master
+    only:
+      - master
 
 # -----------------------------
 # Container version of CircleCI
@@ -149,7 +149,6 @@ orbs:
   # to make sure that snapshot builds are not deployed out of order, resulting in Git
   # push conflicts.
   queue: eddiewebb/queue@1.5.0
-
 
 commands:
   checkout_and_rebase:
@@ -206,15 +205,15 @@ jobs:
     environment:
       GCP_DECRYPT_TOKEN: *gcp_decrypt_token
     steps:
-    - checkout_and_rebase
-    - *restore_cache
-    - *setup_bazel_ci_config
-    - *setup_bazel_remote_execution
-    - *yarn_install
-    - *setup_bazel_binary
+      - checkout_and_rebase
+      - *restore_cache
+      - *setup_bazel_ci_config
+      - *setup_bazel_remote_execution
+      - *yarn_install
+      - *setup_bazel_binary
 
-    - run: bazel test tools/public_api_guard/...
-    - *slack_notify_on_failure
+      - run: bazel test tools/public_api_guard/...
+      - *slack_notify_on_failure
 
   # -----------------------------------------------------------------
   # Job that runs the e2e tests with Protractor and Chromium headless
@@ -265,8 +264,8 @@ jobs:
     <<: *job_defaults
     resource_class: xlarge
     environment:
-      BROWSER_STACK_USERNAME: "angularteam1"
-      BROWSER_STACK_ACCESS_KEY: "CaXMeMHD9pr5PHg8N7Jq"
+      BROWSER_STACK_USERNAME: 'angularteam1'
+      BROWSER_STACK_ACCESS_KEY: 'CaXMeMHD9pr5PHg8N7Jq'
     steps:
       - checkout_and_rebase
       - *restore_cache
@@ -284,19 +283,19 @@ jobs:
     <<: *job_defaults
     resource_class: xlarge
     environment:
-      SAUCE_USERNAME: "angular-components"
-      SAUCE_ACCESS_KEY: "63348201a846-eeb9-3ee4-300f-ea990b8a"
+      SAUCE_USERNAME: 'angular-components'
+      SAUCE_ACCESS_KEY: '63348201a846-eeb9-3ee4-300f-ea990b8a'
       # Note: This number should not be too high because otherwise we might run into
       # a rate limit exception.
       KARMA_PARALLEL_BROWSERS: 2
     steps:
-    - checkout_and_rebase
-    - *restore_cache
-    - *setup_bazel_ci_config
-    - *yarn_install
+      - checkout_and_rebase
+      - *restore_cache
+      - *setup_bazel_ci_config
+      - *yarn_install
 
-    - run: ./scripts/circleci/run-saucelabs-tests.sh
-    - *slack_notify_on_failure
+      - run: ./scripts/circleci/run-saucelabs-tests.sh
+      - *slack_notify_on_failure
 
   # ----------------------------------
   # Lint job.
@@ -374,7 +373,7 @@ jobs:
       - persist_to_workspace:
           root: dist
           paths:
-            - "releases/**/*"
+            - 'releases/**/*'
       - *slack_notify_on_failure
 
   upload_release_packages:
@@ -414,7 +413,7 @@ jobs:
 
   # ----------------------------------------
   # Job that monitors the docs site, ensuring
-  # the docs site is online and works as expected. 
+  # the docs site is online and works as expected.
   # ----------------------------------------
   monitor_docs_site:
     docker:
@@ -463,7 +462,7 @@ jobs:
       # completes/starts, and this will improve stability of the queue step. See source:
       # https://github.com/eddiewebb/circleci-queue/commit/5d42add5bbcff5e8ac7fe189448a61fea98b0839.
       - queue/until_front_of_line:
-          confidence: "2"
+          confidence: '2'
 
       - run: ./scripts/circleci/publish-snapshots.sh
       - *slack_notify_on_failure
@@ -477,16 +476,16 @@ jobs:
     environment:
       GCP_DECRYPT_TOKEN: *gcp_decrypt_token
     steps:
-    - checkout_and_rebase
-    - *restore_cache
-    - *setup_bazel_ci_config
-    - *setup_bazel_remote_execution
-    - *setup_snapshot_builds
-    - *yarn_install_loose_lockfile
-    - *setup_bazel_binary
+      - checkout_and_rebase
+      - *restore_cache
+      - *setup_bazel_ci_config
+      - *setup_bazel_remote_execution
+      - *setup_snapshot_builds
+      - *yarn_install_loose_lockfile
+      - *setup_bazel_binary
 
-    - run: bazel test --build_tag_filters=-e2e --test_tag_filters=-e2e --build_tests_only -- src/...
-    - *slack_notify_on_failure
+      - run: bazel test --build_tag_filters=-e2e --test_tag_filters=-e2e --build_tests_only -- src/...
+      - *slack_notify_on_failure
 
   # ----------------------------------------------------------------------------
   # Job that runs all Bazel integration tests.
@@ -665,7 +664,7 @@ workflows:
 
     triggers:
       - schedule:
-          cron: "0 * * * *"
+          cron: '0 * * * *'
           filters:
             branches:
               only:

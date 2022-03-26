@@ -196,23 +196,20 @@ describe('Overlay directives', () => {
     expect(event.defaultPrevented).toBe(false);
   });
 
-  it(
-    'should not depend on the order in which the `origin` and `open` are set',
-    waitForAsync(() => {
-      fixture.destroy();
+  it('should not depend on the order in which the `origin` and `open` are set', waitForAsync(() => {
+    fixture.destroy();
 
-      const propOrderFixture = TestBed.createComponent(ConnectedOverlayPropertyInitOrder);
+    const propOrderFixture = TestBed.createComponent(ConnectedOverlayPropertyInitOrder);
+    propOrderFixture.detectChanges();
+
+    const overlayDirective = propOrderFixture.componentInstance.connectedOverlayDirective;
+
+    expect(() => {
+      overlayDirective.open = true;
+      overlayDirective.origin = propOrderFixture.componentInstance.trigger;
       propOrderFixture.detectChanges();
-
-      const overlayDirective = propOrderFixture.componentInstance.connectedOverlayDirective;
-
-      expect(() => {
-        overlayDirective.open = true;
-        overlayDirective.origin = propOrderFixture.componentInstance.trigger;
-        propOrderFixture.detectChanges();
-      }).not.toThrow();
-    }),
-  );
+    }).not.toThrow();
+  }));
 
   describe('inputs', () => {
     it('should set the width', () => {

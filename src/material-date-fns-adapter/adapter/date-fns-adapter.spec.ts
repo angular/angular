@@ -20,16 +20,14 @@ const JAN = 0,
 describe('DateFnsAdapter', () => {
   let adapter: DateAdapter<Date, Locale>;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [DateFnsModule],
-      }).compileComponents();
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [DateFnsModule],
+    }).compileComponents();
 
-      adapter = TestBed.inject(DateAdapter);
-      adapter.setLocale(enUS);
-    }),
-  );
+    adapter = TestBed.inject(DateAdapter);
+    adapter.setLocale(enUS);
+  }));
 
   it('should get year', () => {
     expect(adapter.getYear(new Date(2017, JAN, 1))).toBe(2017);
@@ -459,16 +457,14 @@ describe('DateFnsAdapter', () => {
 describe('DateFnsAdapter with MAT_DATE_LOCALE override', () => {
   let adapter: DateAdapter<Date, Locale>;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [DateFnsModule],
-        providers: [{provide: MAT_DATE_LOCALE, useValue: da}],
-      }).compileComponents();
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [DateFnsModule],
+      providers: [{provide: MAT_DATE_LOCALE, useValue: da}],
+    }).compileComponents();
 
-      adapter = TestBed.inject(DateAdapter);
-    }),
-  );
+    adapter = TestBed.inject(DateAdapter);
+  }));
 
   it('should take the default locale id from the MAT_DATE_LOCALE injection token', () => {
     const date = adapter.format(new Date(2017, JAN, 2), 'PP');

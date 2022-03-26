@@ -10,24 +10,19 @@ import {MatDatepickerModule} from './datepicker-module';
 import {yearsPerPage} from './multi-year-view';
 
 describe('MatCalendarHeader', () => {
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [MatNativeDateModule, MatDatepickerModule],
-        declarations: [
-          // Test components.
-          StandardCalendar,
-          CalendarWithMinMaxDate,
-        ],
-        providers: [
-          MatDatepickerIntl,
-          {provide: Directionality, useFactory: () => ({value: 'ltr'})},
-        ],
-      });
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [MatNativeDateModule, MatDatepickerModule],
+      declarations: [
+        // Test components.
+        StandardCalendar,
+        CalendarWithMinMaxDate,
+      ],
+      providers: [MatDatepickerIntl, {provide: Directionality, useFactory: () => ({value: 'ltr'})}],
+    });
 
-      TestBed.compileComponents();
-    }),
-  );
+    TestBed.compileComponents();
+  }));
 
   describe('standard calendar', () => {
     let fixture: ComponentFixture<StandardCalendar>;

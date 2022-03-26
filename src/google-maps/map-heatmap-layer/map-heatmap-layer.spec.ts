@@ -18,14 +18,12 @@ describe('MapHeatmapLayer', () => {
   let mapSpy: jasmine.SpyObj<google.maps.Map>;
   let latLngSpy: jasmine.SpyObj<google.maps.LatLng>;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [GoogleMapsModule],
-        declarations: [TestApp],
-      });
-    }),
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [GoogleMapsModule],
+      declarations: [TestApp],
+    });
+  }));
 
   beforeEach(() => {
     TestBed.compileComponents();

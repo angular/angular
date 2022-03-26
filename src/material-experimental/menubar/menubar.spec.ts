@@ -11,14 +11,12 @@ describe('MatMenuBar', () => {
   let matMenubar: MatMenuBar;
   let nativeMatMenubar: HTMLElement;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [MatMenuBarModule],
-        declarations: [SimpleMatMenuBar],
-      }).compileComponents();
-    }),
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [MatMenuBarModule],
+      declarations: [SimpleMatMenuBar],
+    }).compileComponents();
+  }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(SimpleMatMenuBar);

@@ -6,16 +6,14 @@ import {MatRipple, ThemePalette} from '@angular/material/core';
 import {createMouseEvent, dispatchEvent} from '@angular/cdk/testing/private';
 
 describe('MatButton', () => {
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [MatButtonModule],
-        declarations: [TestApp],
-      });
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [MatButtonModule],
+      declarations: [TestApp],
+    });
 
-      TestBed.compileComponents();
-    }),
-  );
+    TestBed.compileComponents();
+  }));
 
   // General button tests
   it('should apply class based on color attribute', () => {

@@ -9,57 +9,55 @@ describe('FullscreenOverlayContainer', () => {
   let fullscreenListeners: Set<Function>;
   let fakeDocument: any;
 
-  beforeEach(
-    waitForAsync(() => {
-      fullscreenListeners = new Set();
+  beforeEach(waitForAsync(() => {
+    fullscreenListeners = new Set();
 
-      TestBed.configureTestingModule({
-        imports: [OverlayTestModule],
-        providers: [
-          {
-            provide: DOCUMENT,
-            useFactory: () => {
-              // Provide a (very limited) stub for the document. This is the most practical solution for
-              // now since we only hit a handful of Document APIs. If we end up having to add more
-              // stubs here, we should reconsider whether to use a Proxy instead. Avoiding a proxy for
-              // now since it isn't supported on IE. See:
-              // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy
-              fakeDocument = {
-                body: document.body,
-                fullscreenElement: document.createElement('div'),
-                fullscreenEnabled: true,
-                addEventListener: function (eventName: string, listener: EventListener) {
-                  if (eventName === 'fullscreenchange') {
-                    fullscreenListeners.add(listener);
-                  } else {
-                    document.addEventListener(eventName, listener);
-                  }
-                },
-                removeEventListener: function (eventName: string, listener: EventListener) {
-                  if (eventName === 'fullscreenchange') {
-                    fullscreenListeners.delete(listener);
-                  } else {
-                    document.addEventListener(eventName, listener);
-                  }
-                },
-                querySelectorAll: function (...args: [string]) {
-                  return document.querySelectorAll(...args);
-                },
-                createElement: function (...args: [string, (ElementCreationOptions | undefined)?]) {
-                  return document.createElement(...args);
-                },
-                getElementsByClassName: function (...args: [string]) {
-                  return document.getElementsByClassName(...args);
-                },
-              };
+    TestBed.configureTestingModule({
+      imports: [OverlayTestModule],
+      providers: [
+        {
+          provide: DOCUMENT,
+          useFactory: () => {
+            // Provide a (very limited) stub for the document. This is the most practical solution for
+            // now since we only hit a handful of Document APIs. If we end up having to add more
+            // stubs here, we should reconsider whether to use a Proxy instead. Avoiding a proxy for
+            // now since it isn't supported on IE. See:
+            // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy
+            fakeDocument = {
+              body: document.body,
+              fullscreenElement: document.createElement('div'),
+              fullscreenEnabled: true,
+              addEventListener: function (eventName: string, listener: EventListener) {
+                if (eventName === 'fullscreenchange') {
+                  fullscreenListeners.add(listener);
+                } else {
+                  document.addEventListener(eventName, listener);
+                }
+              },
+              removeEventListener: function (eventName: string, listener: EventListener) {
+                if (eventName === 'fullscreenchange') {
+                  fullscreenListeners.delete(listener);
+                } else {
+                  document.addEventListener(eventName, listener);
+                }
+              },
+              querySelectorAll: function (...args: [string]) {
+                return document.querySelectorAll(...args);
+              },
+              createElement: function (...args: [string, (ElementCreationOptions | undefined)?]) {
+                return document.createElement(...args);
+              },
+              getElementsByClassName: function (...args: [string]) {
+                return document.getElementsByClassName(...args);
+              },
+            };
 
-              return fakeDocument;
-            },
+            return fakeDocument;
           },
-        ],
-      }).compileComponents();
-    }),
-  );
+        },
+      ],
+    }).compileComponents();
+  }));
 
   beforeEach(inject([Overlay], (o: Overlay) => {
     overlay = o;

@@ -5,14 +5,12 @@ import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {Component, ViewChild} from '@angular/core';
 
 describe('MatTableDataSource', () => {
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [MatSortModule, NoopAnimationsModule],
-        declarations: [MatSortApp],
-      }).compileComponents();
-    }),
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [MatSortModule, NoopAnimationsModule],
+      declarations: [MatSortApp],
+    }).compileComponents();
+  }));
 
   describe('sort', () => {
     let dataSource: MatTableDataSource<any>;

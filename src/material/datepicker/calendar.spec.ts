@@ -25,27 +25,25 @@ import {MatDatepickerModule} from './datepicker-module';
 describe('MatCalendar', () => {
   let zone: MockNgZone;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [MatNativeDateModule, MatDatepickerModule],
-        declarations: [
-          // Test components.
-          StandardCalendar,
-          CalendarWithMinMax,
-          CalendarWithDateFilter,
-          CalendarWithSelectableMinDate,
-        ],
-        providers: [
-          MatDatepickerIntl,
-          {provide: NgZone, useFactory: () => (zone = new MockNgZone())},
-          {provide: Directionality, useFactory: () => ({value: 'ltr'})},
-        ],
-      });
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [MatNativeDateModule, MatDatepickerModule],
+      declarations: [
+        // Test components.
+        StandardCalendar,
+        CalendarWithMinMax,
+        CalendarWithDateFilter,
+        CalendarWithSelectableMinDate,
+      ],
+      providers: [
+        MatDatepickerIntl,
+        {provide: NgZone, useFactory: () => (zone = new MockNgZone())},
+        {provide: Directionality, useFactory: () => ({value: 'ltr'})},
+      ],
+    });
 
-      TestBed.compileComponents();
-    }),
-  );
+    TestBed.compileComponents();
+  }));
 
   describe('standard calendar', () => {
     let fixture: ComponentFixture<StandardCalendar>;

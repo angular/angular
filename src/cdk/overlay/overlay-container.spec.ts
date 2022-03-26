@@ -7,13 +7,11 @@ describe('OverlayContainer', () => {
   let overlay: Overlay;
   let overlayContainer: OverlayContainer;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [OverlayTestModule],
-      }).compileComponents();
-    }),
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [OverlayTestModule],
+    }).compileComponents();
+  }));
 
   beforeEach(inject([Overlay, OverlayContainer], (o: Overlay, oc: OverlayContainer) => {
     overlay = o;

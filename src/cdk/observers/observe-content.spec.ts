@@ -11,16 +11,14 @@ import {ContentObserver, MutationObserverFactory, ObserversModule} from './obser
 
 describe('Observe content directive', () => {
   describe('basic usage', () => {
-    beforeEach(
-      waitForAsync(() => {
-        TestBed.configureTestingModule({
-          imports: [ObserversModule],
-          declarations: [ComponentWithTextContent, ComponentWithChildTextContent],
-        });
+    beforeEach(waitForAsync(() => {
+      TestBed.configureTestingModule({
+        imports: [ObserversModule],
+        declarations: [ComponentWithTextContent, ComponentWithChildTextContent],
+      });
 
-        TestBed.compileComponents();
-      }),
-    );
+      TestBed.compileComponents();
+    }));
 
     it('should trigger the callback when the content of the element changes', done => {
       let fixture = TestBed.createComponent(ComponentWithTextContent);
@@ -87,36 +85,34 @@ describe('Observe content directive', () => {
     let callbacks: Function[];
     let invokeCallbacks = (args?: any) => callbacks.forEach(callback => callback(args));
 
-    beforeEach(
-      waitForAsync(() => {
-        callbacks = [];
+    beforeEach(waitForAsync(() => {
+      callbacks = [];
 
-        TestBed.configureTestingModule({
-          imports: [ObserversModule],
-          declarations: [ComponentWithDebouncedListener],
-          providers: [
-            {
-              provide: MutationObserverFactory,
-              useValue: {
-                create: function (callback: Function) {
-                  callbacks.push(callback);
+      TestBed.configureTestingModule({
+        imports: [ObserversModule],
+        declarations: [ComponentWithDebouncedListener],
+        providers: [
+          {
+            provide: MutationObserverFactory,
+            useValue: {
+              create: function (callback: Function) {
+                callbacks.push(callback);
 
-                  return {
-                    observe: () => {},
-                    disconnect: () => {},
-                  };
-                },
+                return {
+                  observe: () => {},
+                  disconnect: () => {},
+                };
               },
             },
-          ],
-        });
+          },
+        ],
+      });
 
-        TestBed.compileComponents();
+      TestBed.compileComponents();
 
-        fixture = TestBed.createComponent(ComponentWithDebouncedListener);
-        fixture.detectChanges();
-      }),
-    );
+      fixture = TestBed.createComponent(ComponentWithDebouncedListener);
+      fixture.detectChanges();
+    }));
 
     it('should debounce the content changes', fakeAsync(() => {
       invokeCallbacks();

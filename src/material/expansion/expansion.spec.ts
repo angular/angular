@@ -19,24 +19,22 @@ import {SPACE, ENTER} from '@angular/cdk/keycodes';
 import {dispatchKeyboardEvent, createKeyboardEvent, dispatchEvent} from '../../cdk/testing/private';
 
 describe('MatExpansionPanel', () => {
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [MatExpansionModule, NoopAnimationsModule],
-        declarations: [
-          PanelWithContent,
-          PanelWithContentInNgIf,
-          PanelWithCustomMargin,
-          LazyPanelWithContent,
-          LazyPanelOpenOnLoad,
-          PanelWithTwoWayBinding,
-          PanelWithHeaderTabindex,
-          NestedLazyPanelWithContent,
-        ],
-      });
-      TestBed.compileComponents();
-    }),
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [MatExpansionModule, NoopAnimationsModule],
+      declarations: [
+        PanelWithContent,
+        PanelWithContentInNgIf,
+        PanelWithCustomMargin,
+        LazyPanelWithContent,
+        LazyPanelOpenOnLoad,
+        PanelWithTwoWayBinding,
+        PanelWithHeaderTabindex,
+        NestedLazyPanelWithContent,
+      ],
+    });
+    TestBed.compileComponents();
+  }));
 
   it('should expand and collapse the panel', fakeAsync(() => {
     const fixture = TestBed.createComponent(PanelWithContent);

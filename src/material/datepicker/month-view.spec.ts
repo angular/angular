@@ -36,28 +36,26 @@ describe('MatMonthView', () => {
   describe('standard providers', () => {
     let dir: {value: Direction};
 
-    beforeEach(
-      waitForAsync(() => {
-        TestBed.configureTestingModule({
-          imports: [MatNativeDateModule],
-          declarations: [
-            MatCalendarBody,
-            MatMonthView,
+    beforeEach(waitForAsync(() => {
+      TestBed.configureTestingModule({
+        imports: [MatNativeDateModule],
+        declarations: [
+          MatCalendarBody,
+          MatMonthView,
 
-            // Test components.
-            StandardMonthView,
-            MonthViewWithDateFilter,
-            MonthViewWithDateClass,
-          ],
-          providers: [
-            {provide: Directionality, useFactory: () => (dir = {value: 'ltr'})},
-            {provide: MAT_DATE_RANGE_SELECTION_STRATEGY, useClass: DefaultMatCalendarRangeStrategy},
-          ],
-        });
+          // Test components.
+          StandardMonthView,
+          MonthViewWithDateFilter,
+          MonthViewWithDateClass,
+        ],
+        providers: [
+          {provide: Directionality, useFactory: () => (dir = {value: 'ltr'})},
+          {provide: MAT_DATE_RANGE_SELECTION_STRATEGY, useClass: DefaultMatCalendarRangeStrategy},
+        ],
+      });
 
-        TestBed.compileComponents();
-      }),
-    );
+      TestBed.compileComponents();
+    }));
 
     describe('standard month view', () => {
       let fixture: ComponentFixture<StandardMonthView>;
@@ -617,49 +615,47 @@ describe('MatMonthView', () => {
     let fixture: ComponentFixture<StandardMonthView>;
     let monthViewNativeElement: Element;
 
-    beforeEach(
-      waitForAsync(() => {
-        TestBed.configureTestingModule({
-          imports: [MatNativeDateModule],
-          declarations: [
-            MatCalendarBody,
-            MatMonthView,
+    beforeEach(waitForAsync(() => {
+      TestBed.configureTestingModule({
+        imports: [MatNativeDateModule],
+        declarations: [
+          MatCalendarBody,
+          MatMonthView,
 
-            // Test components.
-            StandardMonthView,
-            MonthViewWithDateFilter,
-            MonthViewWithDateClass,
-          ],
-          providers: [
-            {provide: Directionality, useFactory: () => ({value: 'ltr'})},
-            {provide: MAT_DATE_RANGE_SELECTION_STRATEGY, useClass: DefaultMatCalendarRangeStrategy},
-            {
-              provide: MAT_DATE_FORMATS,
-              useValue: {
-                parse: {
-                  dateInput: null,
-                },
-                display: {
-                  dateInput: {year: 'numeric', month: 'numeric', day: 'numeric'},
-                  monthLabel: {year: 'numeric', month: 'short'},
-                  monthYearLabel: {year: 'numeric', month: 'short'},
-                  dateA11yLabel: {year: 'numeric', month: 'long', day: 'numeric'},
-                  monthYearA11yLabel: {year: 'numeric', month: 'long'},
-                },
+          // Test components.
+          StandardMonthView,
+          MonthViewWithDateFilter,
+          MonthViewWithDateClass,
+        ],
+        providers: [
+          {provide: Directionality, useFactory: () => ({value: 'ltr'})},
+          {provide: MAT_DATE_RANGE_SELECTION_STRATEGY, useClass: DefaultMatCalendarRangeStrategy},
+          {
+            provide: MAT_DATE_FORMATS,
+            useValue: {
+              parse: {
+                dateInput: null,
+              },
+              display: {
+                dateInput: {year: 'numeric', month: 'numeric', day: 'numeric'},
+                monthLabel: {year: 'numeric', month: 'short'},
+                monthYearLabel: {year: 'numeric', month: 'short'},
+                dateA11yLabel: {year: 'numeric', month: 'long', day: 'numeric'},
+                monthYearA11yLabel: {year: 'numeric', month: 'long'},
               },
             },
-          ],
-        });
+          },
+        ],
+      });
 
-        TestBed.compileComponents();
+      TestBed.compileComponents();
 
-        fixture = TestBed.createComponent(StandardMonthView);
-        fixture.detectChanges();
+      fixture = TestBed.createComponent(StandardMonthView);
+      fixture.detectChanges();
 
-        let monthViewDebugElement = fixture.debugElement.query(By.directive(MatMonthView))!;
-        monthViewNativeElement = monthViewDebugElement.nativeElement;
-      }),
-    );
+      let monthViewDebugElement = fixture.debugElement.query(By.directive(MatMonthView))!;
+      monthViewNativeElement = monthViewDebugElement.nativeElement;
+    }));
 
     it('has correct month label', () => {
       let labelEl = monthViewNativeElement.querySelector('.mat-calendar-body-label')!;

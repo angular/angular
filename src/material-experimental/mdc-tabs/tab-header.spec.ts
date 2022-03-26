@@ -29,17 +29,15 @@ describe('MDC-based MatTabHeader', () => {
   let fixture: ComponentFixture<SimpleTabHeaderApp>;
   let appComponent: SimpleTabHeaderApp;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [CommonModule, PortalModule, MatRippleModule, ScrollingModule, ObserversModule],
-        declarations: [MatTabHeader, MatTabLabelWrapper, SimpleTabHeaderApp],
-        providers: [ViewportRuler],
-      });
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [CommonModule, PortalModule, MatRippleModule, ScrollingModule, ObserversModule],
+      declarations: [MatTabHeader, MatTabLabelWrapper, SimpleTabHeaderApp],
+      providers: [ViewportRuler],
+    });
 
-      TestBed.compileComponents();
-    }),
-  );
+    TestBed.compileComponents();
+  }));
 
   describe('focusing', () => {
     let tabListContainer: HTMLElement;

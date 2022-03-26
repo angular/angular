@@ -7,13 +7,11 @@ describe('NativeDateAdapter', () => {
   let adapter: NativeDateAdapter;
   let assertValidDate: (d: Date | null, valid: boolean) => void;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [NativeDateModule],
-      }).compileComponents();
-    }),
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [NativeDateModule],
+    }).compileComponents();
+  }));
 
   beforeEach(inject([DateAdapter], (dateAdapter: NativeDateAdapter) => {
     adapter = dateAdapter;
@@ -471,14 +469,12 @@ describe('NativeDateAdapter', () => {
 describe('NativeDateAdapter with MAT_DATE_LOCALE override', () => {
   let adapter: NativeDateAdapter;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [NativeDateModule],
-        providers: [{provide: MAT_DATE_LOCALE, useValue: 'da-DK'}],
-      }).compileComponents();
-    }),
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [NativeDateModule],
+      providers: [{provide: MAT_DATE_LOCALE, useValue: 'da-DK'}],
+    }).compileComponents();
+  }));
 
   beforeEach(inject([DateAdapter], (d: NativeDateAdapter) => {
     adapter = d;
@@ -493,14 +489,12 @@ describe('NativeDateAdapter with MAT_DATE_LOCALE override', () => {
 describe('NativeDateAdapter with LOCALE_ID override', () => {
   let adapter: NativeDateAdapter;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [NativeDateModule],
-        providers: [{provide: LOCALE_ID, useValue: 'da-DK'}],
-      }).compileComponents();
-    }),
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [NativeDateModule],
+      providers: [{provide: LOCALE_ID, useValue: 'da-DK'}],
+    }).compileComponents();
+  }));
 
   beforeEach(inject([DateAdapter], (d: NativeDateAdapter) => {
     adapter = d;

@@ -10,27 +10,25 @@ import {
 } from './index';
 
 describe('MatProgressSpinner', () => {
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [MatProgressSpinnerModule, CommonModule],
-        declarations: [
-          BasicProgressSpinner,
-          IndeterminateProgressSpinner,
-          IndeterminateSpinnerCustomDiameter,
-          ProgressSpinnerWithValueAndBoundMode,
-          ProgressSpinnerWithColor,
-          ProgressSpinnerCustomStrokeWidth,
-          ProgressSpinnerCustomDiameter,
-          SpinnerWithColor,
-          ProgressSpinnerWithStringValues,
-          IndeterminateSpinnerInShadowDom,
-          IndeterminateSpinnerInShadowDomWithNgIf,
-          SpinnerWithMode,
-        ],
-      }).compileComponents();
-    }),
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [MatProgressSpinnerModule, CommonModule],
+      declarations: [
+        BasicProgressSpinner,
+        IndeterminateProgressSpinner,
+        IndeterminateSpinnerCustomDiameter,
+        ProgressSpinnerWithValueAndBoundMode,
+        ProgressSpinnerWithColor,
+        ProgressSpinnerCustomStrokeWidth,
+        ProgressSpinnerCustomDiameter,
+        SpinnerWithColor,
+        ProgressSpinnerWithStringValues,
+        IndeterminateSpinnerInShadowDom,
+        IndeterminateSpinnerInShadowDomWithNgIf,
+        SpinnerWithMode,
+      ],
+    }).compileComponents();
+  }));
 
   it('should apply a mode of "determinate" if no mode is provided.', () => {
     const fixture = TestBed.createComponent(BasicProgressSpinner);

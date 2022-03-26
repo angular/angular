@@ -13,14 +13,12 @@ describe('CdkContextMenuTrigger', () => {
   describe('with simple context menu trigger', () => {
     let fixture: ComponentFixture<SimpleContextMenu>;
 
-    beforeEach(
-      waitForAsync(() => {
-        TestBed.configureTestingModule({
-          imports: [CdkMenuModule],
-          declarations: [SimpleContextMenu],
-        }).compileComponents();
-      }),
-    );
+    beforeEach(waitForAsync(() => {
+      TestBed.configureTestingModule({
+        imports: [CdkMenuModule],
+        declarations: [SimpleContextMenu],
+      }).compileComponents();
+    }));
 
     beforeEach(() => {
       fixture = TestBed.createComponent(SimpleContextMenu);
@@ -133,14 +131,12 @@ describe('CdkContextMenuTrigger', () => {
   describe('nested context menu triggers', () => {
     let fixture: ComponentFixture<NestedContextMenu>;
 
-    beforeEach(
-      waitForAsync(() => {
-        TestBed.configureTestingModule({
-          imports: [CdkMenuModule],
-          declarations: [NestedContextMenu],
-        }).compileComponents();
-      }),
-    );
+    beforeEach(waitForAsync(() => {
+      TestBed.configureTestingModule({
+        imports: [CdkMenuModule],
+        declarations: [NestedContextMenu],
+      }).compileComponents();
+    }));
 
     beforeEach(() => {
       fixture = TestBed.createComponent(NestedContextMenu);
@@ -249,14 +245,12 @@ describe('CdkContextMenuTrigger', () => {
     let fixture: ComponentFixture<ContextMenuWithSubmenu>;
     let instance: ContextMenuWithSubmenu;
 
-    beforeEach(
-      waitForAsync(() => {
-        TestBed.configureTestingModule({
-          imports: [CdkMenuModule],
-          declarations: [ContextMenuWithSubmenu],
-        }).compileComponents();
-      }),
-    );
+    beforeEach(waitForAsync(() => {
+      TestBed.configureTestingModule({
+        imports: [CdkMenuModule],
+        declarations: [ContextMenuWithSubmenu],
+      }).compileComponents();
+    }));
 
     beforeEach(() => {
       fixture = TestBed.createComponent(ContextMenuWithSubmenu);
@@ -282,14 +276,12 @@ describe('CdkContextMenuTrigger', () => {
     let nativeMenuBar: HTMLElement;
     let nativeMenuBarTrigger: HTMLElement;
 
-    beforeEach(
-      waitForAsync(() => {
-        TestBed.configureTestingModule({
-          imports: [CdkMenuModule],
-          declarations: [ContextMenuWithMenuBarAndInlineMenu],
-        }).compileComponents();
-      }),
-    );
+    beforeEach(waitForAsync(() => {
+      TestBed.configureTestingModule({
+        imports: [CdkMenuModule],
+        declarations: [ContextMenuWithMenuBarAndInlineMenu],
+      }).compileComponents();
+    }));
 
     beforeEach(() => {
       fixture = TestBed.createComponent(ContextMenuWithMenuBarAndInlineMenu);

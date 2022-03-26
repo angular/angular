@@ -19,22 +19,20 @@ describe('MapCircle', () => {
   let circleRadius: number;
   let circleOptions: google.maps.CircleOptions;
 
-  beforeEach(
-    waitForAsync(() => {
-      circleCenter = {lat: 30, lng: 15};
-      circleRadius = 15;
-      circleOptions = {
-        center: circleCenter,
-        radius: circleRadius,
-        strokeColor: 'grey',
-        strokeOpacity: 0.8,
-      };
-      TestBed.configureTestingModule({
-        imports: [GoogleMapsModule],
-        declarations: [TestApp],
-      });
-    }),
-  );
+  beforeEach(waitForAsync(() => {
+    circleCenter = {lat: 30, lng: 15};
+    circleRadius = 15;
+    circleOptions = {
+      center: circleCenter,
+      radius: circleRadius,
+      strokeColor: 'grey',
+      strokeOpacity: 0.8,
+    };
+    TestBed.configureTestingModule({
+      imports: [GoogleMapsModule],
+      declarations: [TestApp],
+    });
+  }));
 
   beforeEach(() => {
     TestBed.compileComponents();

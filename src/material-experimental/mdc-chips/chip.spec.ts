@@ -16,30 +16,28 @@ describe('MDC-based MatChip', () => {
 
   let dir = 'ltr';
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [MatChipsModule],
-        declarations: [
-          BasicChip,
-          SingleChip,
-          BasicChipWithStaticTabindex,
-          BasicChipWithBoundTabindex,
-        ],
-        providers: [
-          {
-            provide: Directionality,
-            useFactory: () => ({
-              value: dir,
-              change: new Subject(),
-            }),
-          },
-        ],
-      });
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [MatChipsModule],
+      declarations: [
+        BasicChip,
+        SingleChip,
+        BasicChipWithStaticTabindex,
+        BasicChipWithBoundTabindex,
+      ],
+      providers: [
+        {
+          provide: Directionality,
+          useFactory: () => ({
+            value: dir,
+            change: new Subject(),
+          }),
+        },
+      ],
+    });
 
-      TestBed.compileComponents();
-    }),
-  );
+    TestBed.compileComponents();
+  }));
 
   describe('MatBasicChip', () => {
     it('adds a class to indicate that it is a basic chip', () => {

@@ -1,7 +1,7 @@
 name: Feature
 description: Propose a new feature for Angular Material or the CDK
-title: "feat(COMPONENT): TITLE"
-labels: ["feature", "needs triage"]
+title: 'feat(COMPONENT): TITLE'
+labels: ['feature', 'needs triage']
 body:
   - type: textarea
     id: description

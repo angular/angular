@@ -16,32 +16,30 @@ describe('MatChip', () => {
   let globalRippleOptions: RippleGlobalOptions;
   let dir = 'ltr';
 
-  beforeEach(
-    waitForAsync(() => {
-      globalRippleOptions = {};
-      TestBed.configureTestingModule({
-        imports: [MatChipsModule],
-        declarations: [
-          BasicChip,
-          SingleChip,
-          BasicChipWithStaticTabindex,
-          BasicChipWithBoundTabindex,
-        ],
-        providers: [
-          {provide: MAT_RIPPLE_GLOBAL_OPTIONS, useFactory: () => globalRippleOptions},
-          {
-            provide: Directionality,
-            useFactory: () => ({
-              value: dir,
-              change: new Subject(),
-            }),
-          },
-        ],
-      });
+  beforeEach(waitForAsync(() => {
+    globalRippleOptions = {};
+    TestBed.configureTestingModule({
+      imports: [MatChipsModule],
+      declarations: [
+        BasicChip,
+        SingleChip,
+        BasicChipWithStaticTabindex,
+        BasicChipWithBoundTabindex,
+      ],
+      providers: [
+        {provide: MAT_RIPPLE_GLOBAL_OPTIONS, useFactory: () => globalRippleOptions},
+        {
+          provide: Directionality,
+          useFactory: () => ({
+            value: dir,
+            change: new Subject(),
+          }),
+        },
+      ],
+    });
 
-      TestBed.compileComponents();
-    }),
-  );
+    TestBed.compileComponents();
+  }));
 
   describe('MatBasicChip', () => {
     it('adds a class to indicate that it is a basic chip', () => {

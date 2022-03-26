@@ -164,23 +164,20 @@ describe('MatAutocomplete', () => {
         .toContain('California');
     });
 
-    it(
-      'should show the panel when the first open is after the initial zone stabilization',
-      waitForAsync(() => {
-        // Note that we're running outside the Angular zone, in order to be able
-        // to test properly without the subscription from `_subscribeToClosingActions`
-        // giving us a false positive.
-        fixture.ngZone!.runOutsideAngular(() => {
-          fixture.componentInstance.trigger.openPanel();
+    it('should show the panel when the first open is after the initial zone stabilization', waitForAsync(() => {
+      // Note that we're running outside the Angular zone, in order to be able
+      // to test properly without the subscription from `_subscribeToClosingActions`
+      // giving us a false positive.
+      fixture.ngZone!.runOutsideAngular(() => {
+        fixture.componentInstance.trigger.openPanel();
 
-          Promise.resolve().then(() => {
-            expect(fixture.componentInstance.panel.showPanel)
-              .withContext(`Expected panel to be visible.`)
-              .toBe(true);
-          });
+        Promise.resolve().then(() => {
+          expect(fixture.componentInstance.panel.showPanel)
+            .withContext(`Expected panel to be visible.`)
+            .toBe(true);
         });
-      }),
-    );
+      });
+    }));
 
     it('should close the panel when the user clicks away', fakeAsync(() => {
       dispatchFakeEvent(input, 'focusin');

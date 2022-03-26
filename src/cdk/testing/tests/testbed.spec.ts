@@ -67,12 +67,9 @@ describe('TestbedHarnessEnvironment', () => {
         expect(await harness.getTaskStateResult()).toBe('result');
       });
 
-      it(
-        'should be able to wait for tasks outside of Angular within async test zone',
-        waitForAsync(() => {
-          harness.getTaskStateResult().then(res => expect(res).toBe('result'));
-        }),
-      );
+      it('should be able to wait for tasks outside of Angular within async test zone', waitForAsync(() => {
+        harness.getTaskStateResult().then(res => expect(res).toBe('result'));
+      }));
 
       it('should be able to wait for tasks outside of Angular within fakeAsync test zone', fakeAsync(async () => {
         expect(await harness.getTaskStateResult()).toBe('result');

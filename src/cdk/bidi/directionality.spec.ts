@@ -6,22 +6,20 @@ import {BidiModule, Directionality, Dir, Direction, DIR_DOCUMENT} from './index'
 describe('Directionality', () => {
   let fakeDocument: FakeDocument;
 
-  beforeEach(
-    waitForAsync(() => {
-      fakeDocument = {body: {}, documentElement: {}};
+  beforeEach(waitForAsync(() => {
+    fakeDocument = {body: {}, documentElement: {}};
 
-      TestBed.configureTestingModule({
-        imports: [BidiModule],
-        declarations: [
-          ElementWithDir,
-          ElementWithPredefinedAutoDir,
-          InjectsDirectionality,
-          ElementWithPredefinedUppercaseDir,
-        ],
-        providers: [{provide: DIR_DOCUMENT, useFactory: () => fakeDocument}],
-      }).compileComponents();
-    }),
-  );
+    TestBed.configureTestingModule({
+      imports: [BidiModule],
+      declarations: [
+        ElementWithDir,
+        ElementWithPredefinedAutoDir,
+        InjectsDirectionality,
+        ElementWithPredefinedUppercaseDir,
+      ],
+      providers: [{provide: DIR_DOCUMENT, useFactory: () => fakeDocument}],
+    }).compileComponents();
+  }));
 
   describe('Service', () => {
     it('should read dir from the html element if not specified on the body', () => {

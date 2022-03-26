@@ -6,20 +6,14 @@ import {By} from '@angular/platform-browser';
 import {CommonModule} from '@angular/common';
 
 describe('MatSidenav', () => {
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [MatSidenavModule, NoopAnimationsModule, CommonModule],
-        declarations: [
-          SidenavWithFixedPosition,
-          IndirectDescendantSidenav,
-          NestedSidenavContainers,
-        ],
-      });
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [MatSidenavModule, NoopAnimationsModule, CommonModule],
+      declarations: [SidenavWithFixedPosition, IndirectDescendantSidenav, NestedSidenavContainers],
+    });
 
-      TestBed.compileComponents();
-    }),
-  );
+    TestBed.compileComponents();
+  }));
 
   it('should be fixed position when in fixed mode', () => {
     const fixture = TestBed.createComponent(SidenavWithFixedPosition);

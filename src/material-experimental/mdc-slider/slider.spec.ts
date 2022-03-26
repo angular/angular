@@ -50,15 +50,13 @@ describe('MDC-based MatSlider', () => {
     let sliderInstance: MatSlider;
     let inputInstance: MatSliderThumb;
 
-    beforeEach(
-      waitForAsync(() => {
-        fixture = createComponent(StandardSlider);
-        fixture.detectChanges();
-        const sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider));
-        sliderInstance = sliderDebugElement.componentInstance;
-        inputInstance = sliderInstance._getInput(Thumb.END);
-      }),
-    );
+    beforeEach(waitForAsync(() => {
+      fixture = createComponent(StandardSlider);
+      fixture.detectChanges();
+      const sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider));
+      sliderInstance = sliderDebugElement.componentInstance;
+      inputInstance = sliderInstance._getInput(Thumb.END);
+    }));
 
     it('should set the default values', () => {
       expect(inputInstance.value).toBe(0);
@@ -113,17 +111,15 @@ describe('MDC-based MatSlider', () => {
     let sliderElement: HTMLElement;
     let endInputInstance: MatSliderThumb;
 
-    beforeEach(
-      waitForAsync(() => {
-        const fixture = createComponent(StandardRangeSlider);
-        fixture.detectChanges();
-        const sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider));
-        sliderInstance = sliderDebugElement.componentInstance;
-        startInputInstance = sliderInstance._getInput(Thumb.START);
-        sliderElement = sliderDebugElement.nativeElement;
-        endInputInstance = sliderInstance._getInput(Thumb.END);
-      }),
-    );
+    beforeEach(waitForAsync(() => {
+      const fixture = createComponent(StandardRangeSlider);
+      fixture.detectChanges();
+      const sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider));
+      sliderInstance = sliderDebugElement.componentInstance;
+      startInputInstance = sliderInstance._getInput(Thumb.START);
+      sliderElement = sliderDebugElement.nativeElement;
+      endInputInstance = sliderInstance._getInput(Thumb.END);
+    }));
 
     it('should set the default values', () => {
       expect(startInputInstance.value).toBe(0);
@@ -190,15 +186,13 @@ describe('MDC-based MatSlider', () => {
     let sliderInstance: MatSlider;
     let inputInstance: MatSliderThumb;
 
-    beforeEach(
-      waitForAsync(() => {
-        const fixture = createComponent(DisabledSlider);
-        fixture.detectChanges();
-        const sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider));
-        sliderInstance = sliderDebugElement.componentInstance;
-        inputInstance = sliderInstance._getInput(Thumb.END);
-      }),
-    );
+    beforeEach(waitForAsync(() => {
+      const fixture = createComponent(DisabledSlider);
+      fixture.detectChanges();
+      const sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider));
+      sliderInstance = sliderDebugElement.componentInstance;
+      inputInstance = sliderInstance._getInput(Thumb.END);
+    }));
 
     it('should be disabled', () => {
       expect(sliderInstance.disabled).toBeTrue();
@@ -228,16 +222,14 @@ describe('MDC-based MatSlider', () => {
     let startInputInstance: MatSliderThumb;
     let endInputInstance: MatSliderThumb;
 
-    beforeEach(
-      waitForAsync(() => {
-        const fixture = createComponent(DisabledRangeSlider);
-        fixture.detectChanges();
-        const sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider));
-        sliderInstance = sliderDebugElement.componentInstance;
-        startInputInstance = sliderInstance._getInput(Thumb.START);
-        endInputInstance = sliderInstance._getInput(Thumb.END);
-      }),
-    );
+    beforeEach(waitForAsync(() => {
+      const fixture = createComponent(DisabledRangeSlider);
+      fixture.detectChanges();
+      const sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider));
+      sliderInstance = sliderDebugElement.componentInstance;
+      startInputInstance = sliderInstance._getInput(Thumb.START);
+      endInputInstance = sliderInstance._getInput(Thumb.END);
+    }));
 
     it('should be disabled', () => {
       expect(sliderInstance.disabled).toBeTrue();
@@ -282,20 +274,18 @@ describe('MDC-based MatSlider', () => {
     let thumbX: number;
     let thumbY: number;
 
-    beforeEach(
-      waitForAsync(() => {
-        const fixture = createComponent(StandardSlider);
-        fixture.detectChanges();
-        const sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider));
-        const sliderInstance = sliderDebugElement.componentInstance;
-        inputInstance = sliderInstance._getInput(Thumb.END);
-        thumbInstance = sliderInstance._getThumb(Thumb.END);
-        thumbElement = thumbInstance._getHostElement();
-        const thumbDimensions = thumbElement.getBoundingClientRect();
-        thumbX = thumbDimensions.left - thumbDimensions.width / 2;
-        thumbY = thumbDimensions.top - thumbDimensions.height / 2;
-      }),
-    );
+    beforeEach(waitForAsync(() => {
+      const fixture = createComponent(StandardSlider);
+      fixture.detectChanges();
+      const sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider));
+      const sliderInstance = sliderDebugElement.componentInstance;
+      inputInstance = sliderInstance._getInput(Thumb.END);
+      thumbInstance = sliderInstance._getThumb(Thumb.END);
+      thumbElement = thumbInstance._getHostElement();
+      const thumbDimensions = thumbElement.getBoundingClientRect();
+      thumbX = thumbDimensions.left - thumbDimensions.width / 2;
+      thumbY = thumbDimensions.top - thumbDimensions.height / 2;
+    }));
 
     function isRippleVisible(selector: string) {
       flushRippleTransitions();
@@ -424,15 +414,13 @@ describe('MDC-based MatSlider', () => {
     let sliderInstance: MatSlider;
     let inputInstance: MatSliderThumb;
 
-    beforeEach(
-      waitForAsync(() => {
-        fixture = createComponent(SliderWithMinAndMax);
-        fixture.detectChanges();
-        const sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider));
-        sliderInstance = sliderDebugElement.componentInstance;
-        inputInstance = sliderInstance._getInput(Thumb.END);
-      }),
-    );
+    beforeEach(waitForAsync(() => {
+      fixture = createComponent(SliderWithMinAndMax);
+      fixture.detectChanges();
+      const sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider));
+      sliderInstance = sliderDebugElement.componentInstance;
+      inputInstance = sliderInstance._getInput(Thumb.END);
+    }));
 
     it('should set the default values from the attributes', () => {
       expect(inputInstance.value).toBe(25);
@@ -468,16 +456,14 @@ describe('MDC-based MatSlider', () => {
     let startInputInstance: MatSliderThumb;
     let endInputInstance: MatSliderThumb;
 
-    beforeEach(
-      waitForAsync(() => {
-        fixture = createComponent(RangeSliderWithMinAndMax);
-        fixture.detectChanges();
-        const sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider));
-        sliderInstance = sliderDebugElement.componentInstance;
-        startInputInstance = sliderInstance._getInput(Thumb.START);
-        endInputInstance = sliderInstance._getInput(Thumb.END);
-      }),
-    );
+    beforeEach(waitForAsync(() => {
+      fixture = createComponent(RangeSliderWithMinAndMax);
+      fixture.detectChanges();
+      const sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider));
+      sliderInstance = sliderDebugElement.componentInstance;
+      startInputInstance = sliderInstance._getInput(Thumb.START);
+      endInputInstance = sliderInstance._getInput(Thumb.END);
+    }));
 
     it('should set the default values from the attributes', () => {
       expect(startInputInstance.value).toBe(25);
@@ -525,15 +511,13 @@ describe('MDC-based MatSlider', () => {
     let sliderInstance: MatSlider;
     let inputInstance: MatSliderThumb;
 
-    beforeEach(
-      waitForAsync(() => {
-        const fixture = createComponent(SliderWithValue);
-        fixture.detectChanges();
-        const sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider));
-        sliderInstance = sliderDebugElement.componentInstance;
-        inputInstance = sliderInstance._getInput(Thumb.END);
-      }),
-    );
+    beforeEach(waitForAsync(() => {
+      const fixture = createComponent(SliderWithValue);
+      fixture.detectChanges();
+      const sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider));
+      sliderInstance = sliderDebugElement.componentInstance;
+      inputInstance = sliderInstance._getInput(Thumb.END);
+    }));
 
     it('should set the default value from the attribute', () => {
       expect(inputInstance.value).toBe(50);
@@ -555,16 +539,14 @@ describe('MDC-based MatSlider', () => {
     let startInputInstance: MatSliderThumb;
     let endInputInstance: MatSliderThumb;
 
-    beforeEach(
-      waitForAsync(() => {
-        const fixture = createComponent(RangeSliderWithValue);
-        fixture.detectChanges();
-        const sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider));
-        sliderInstance = sliderDebugElement.componentInstance;
-        startInputInstance = sliderInstance._getInput(Thumb.START);
-        endInputInstance = sliderInstance._getInput(Thumb.END);
-      }),
-    );
+    beforeEach(waitForAsync(() => {
+      const fixture = createComponent(RangeSliderWithValue);
+      fixture.detectChanges();
+      const sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider));
+      sliderInstance = sliderDebugElement.componentInstance;
+      startInputInstance = sliderInstance._getInput(Thumb.START);
+      endInputInstance = sliderInstance._getInput(Thumb.END);
+    }));
 
     it('should set the default value from the attribute', () => {
       expect(startInputInstance.value).toBe(25);
@@ -597,15 +579,13 @@ describe('MDC-based MatSlider', () => {
     let sliderInstance: MatSlider;
     let inputInstance: MatSliderThumb;
 
-    beforeEach(
-      waitForAsync(() => {
-        fixture = createComponent(SliderWithStep);
-        fixture.detectChanges();
-        const sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider));
-        sliderInstance = sliderDebugElement.componentInstance;
-        inputInstance = sliderInstance._getInput(Thumb.END);
-      }),
-    );
+    beforeEach(waitForAsync(() => {
+      fixture = createComponent(SliderWithStep);
+      fixture.detectChanges();
+      const sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider));
+      sliderInstance = sliderDebugElement.componentInstance;
+      inputInstance = sliderInstance._getInput(Thumb.END);
+    }));
 
     it('should set the correct step value on mousedown', () => {
       expect(inputInstance.value).toBe(0);
@@ -637,16 +617,14 @@ describe('MDC-based MatSlider', () => {
     let startInputInstance: MatSliderThumb;
     let endInputInstance: MatSliderThumb;
 
-    beforeEach(
-      waitForAsync(() => {
-        fixture = createComponent(RangeSliderWithStep);
-        fixture.detectChanges();
-        const sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider));
-        sliderInstance = sliderDebugElement.componentInstance;
-        startInputInstance = sliderInstance._getInput(Thumb.START);
-        endInputInstance = sliderInstance._getInput(Thumb.END);
-      }),
-    );
+    beforeEach(waitForAsync(() => {
+      fixture = createComponent(RangeSliderWithStep);
+      fixture.detectChanges();
+      const sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider));
+      sliderInstance = sliderDebugElement.componentInstance;
+      startInputInstance = sliderInstance._getInput(Thumb.START);
+      endInputInstance = sliderInstance._getInput(Thumb.END);
+    }));
 
     it('should set the correct step value on mousedown behind the start thumb', () => {
       sliderInstance._setValue(50, Thumb.START);
@@ -805,16 +783,14 @@ describe('MDC-based MatSlider', () => {
     let testComponent: SliderWithOneWayBinding;
     let inputInstance: MatSliderThumb;
 
-    beforeEach(
-      waitForAsync(() => {
-        fixture = createComponent(SliderWithOneWayBinding);
-        fixture.detectChanges();
-        testComponent = fixture.debugElement.componentInstance;
-        const sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider));
-        const sliderInstance = sliderDebugElement.componentInstance;
-        inputInstance = sliderInstance._getInput(Thumb.END);
-      }),
-    );
+    beforeEach(waitForAsync(() => {
+      fixture = createComponent(SliderWithOneWayBinding);
+      fixture.detectChanges();
+      testComponent = fixture.debugElement.componentInstance;
+      const sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider));
+      const sliderInstance = sliderDebugElement.componentInstance;
+      inputInstance = sliderInstance._getInput(Thumb.END);
+    }));
 
     it('should update when bound value changes', () => {
       testComponent.value = 75;
@@ -829,17 +805,15 @@ describe('MDC-based MatSlider', () => {
     let startInputInstance: MatSliderThumb;
     let endInputInstance: MatSliderThumb;
 
-    beforeEach(
-      waitForAsync(() => {
-        fixture = createComponent(RangeSliderWithOneWayBinding);
-        fixture.detectChanges();
-        testComponent = fixture.debugElement.componentInstance;
-        const sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider));
-        const sliderInstance = sliderDebugElement.componentInstance;
-        startInputInstance = sliderInstance._getInput(Thumb.START);
-        endInputInstance = sliderInstance._getInput(Thumb.END);
-      }),
-    );
+    beforeEach(waitForAsync(() => {
+      fixture = createComponent(RangeSliderWithOneWayBinding);
+      fixture.detectChanges();
+      testComponent = fixture.debugElement.componentInstance;
+      const sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider));
+      const sliderInstance = sliderDebugElement.componentInstance;
+      startInputInstance = sliderInstance._getInput(Thumb.START);
+      endInputInstance = sliderInstance._getInput(Thumb.END);
+    }));
 
     it('should update when bound start value changes', () => {
       testComponent.startValue = 30;
@@ -861,17 +835,15 @@ describe('MDC-based MatSlider', () => {
     let fixture: ComponentFixture<SliderWithChangeHandler>;
     let testComponent: SliderWithChangeHandler;
 
-    beforeEach(
-      waitForAsync(() => {
-        fixture = createComponent(SliderWithChangeHandler);
-        fixture.detectChanges();
-        testComponent = fixture.debugElement.componentInstance;
-        const sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider));
-        sliderElement = sliderDebugElement.nativeElement;
-        sliderInstance = sliderDebugElement.componentInstance;
-        inputInstance = sliderInstance._getInput(Thumb.END);
-      }),
-    );
+    beforeEach(waitForAsync(() => {
+      fixture = createComponent(SliderWithChangeHandler);
+      fixture.detectChanges();
+      testComponent = fixture.debugElement.componentInstance;
+      const sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider));
+      sliderElement = sliderDebugElement.nativeElement;
+      sliderInstance = sliderDebugElement.componentInstance;
+      inputInstance = sliderInstance._getInput(Thumb.END);
+    }));
 
     it('should emit change on mouseup', () => {
       expect(testComponent.onChange).not.toHaveBeenCalled();
@@ -944,18 +916,16 @@ describe('MDC-based MatSlider', () => {
     let fixture: ComponentFixture<RangeSliderWithChangeHandler>;
     let testComponent: RangeSliderWithChangeHandler;
 
-    beforeEach(
-      waitForAsync(() => {
-        fixture = createComponent(RangeSliderWithChangeHandler);
-        fixture.detectChanges();
-        testComponent = fixture.debugElement.componentInstance;
-        const sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider));
-        sliderElement = sliderDebugElement.nativeElement;
-        sliderInstance = sliderDebugElement.componentInstance;
-        startInputInstance = sliderInstance._getInput(Thumb.START);
-        endInputInstance = sliderInstance._getInput(Thumb.END);
-      }),
-    );
+    beforeEach(waitForAsync(() => {
+      fixture = createComponent(RangeSliderWithChangeHandler);
+      fixture.detectChanges();
+      testComponent = fixture.debugElement.componentInstance;
+      const sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider));
+      sliderElement = sliderDebugElement.nativeElement;
+      sliderInstance = sliderDebugElement.componentInstance;
+      startInputInstance = sliderInstance._getInput(Thumb.START);
+      endInputInstance = sliderInstance._getInput(Thumb.END);
+    }));
 
     it('should emit change on mouseup on the start thumb', () => {
       expect(testComponent.onStartThumbChange).not.toHaveBeenCalled();
@@ -1119,18 +1089,16 @@ describe('MDC-based MatSlider', () => {
     let sliderElement: HTMLElement;
     let testComponent: SliderWithChangeHandler;
 
-    beforeEach(
-      waitForAsync(() => {
-        const fixture = createComponent(SliderWithChangeHandler);
-        fixture.detectChanges();
+    beforeEach(waitForAsync(() => {
+      const fixture = createComponent(SliderWithChangeHandler);
+      fixture.detectChanges();
 
-        testComponent = fixture.debugElement.componentInstance;
+      testComponent = fixture.debugElement.componentInstance;
 
-        const sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider));
-        sliderInstance = sliderDebugElement.componentInstance;
-        sliderElement = sliderInstance._elementRef.nativeElement;
-      }),
-    );
+      const sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider));
+      sliderInstance = sliderDebugElement.componentInstance;
+      sliderElement = sliderInstance._elementRef.nativeElement;
+    }));
 
     it('should emit an input event while sliding', () => {
       const dispatchSliderEvent = (type: PointerEventType, value: number) => {
@@ -1169,18 +1137,16 @@ describe('MDC-based MatSlider', () => {
     let sliderElement: HTMLElement;
     let testComponent: RangeSliderWithChangeHandler;
 
-    beforeEach(
-      waitForAsync(() => {
-        const fixture = createComponent(RangeSliderWithChangeHandler);
-        fixture.detectChanges();
+    beforeEach(waitForAsync(() => {
+      const fixture = createComponent(RangeSliderWithChangeHandler);
+      fixture.detectChanges();
 
-        testComponent = fixture.debugElement.componentInstance;
+      testComponent = fixture.debugElement.componentInstance;
 
-        const sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider));
-        sliderInstance = sliderDebugElement.componentInstance;
-        sliderElement = sliderInstance._elementRef.nativeElement;
-      }),
-    );
+      const sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider));
+      sliderInstance = sliderDebugElement.componentInstance;
+      sliderElement = sliderInstance._elementRef.nativeElement;
+    }));
 
     it('should emit an input event while sliding the start thumb', () => {
       const dispatchSliderEvent = (type: PointerEventType, value: number) => {
@@ -1269,20 +1235,18 @@ describe('MDC-based MatSlider', () => {
     let sliderInstance: MatSlider;
     let inputInstance: MatSliderThumb;
 
-    beforeEach(
-      waitForAsync(() => {
-        const fixture = createComponent(StandardSlider, [
-          {
-            provide: Directionality,
-            useValue: {value: 'rtl', change: of()},
-          },
-        ]);
-        fixture.detectChanges();
-        const sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider));
-        sliderInstance = sliderDebugElement.componentInstance;
-        inputInstance = sliderInstance._getInput(Thumb.END);
-      }),
-    );
+    beforeEach(waitForAsync(() => {
+      const fixture = createComponent(StandardSlider, [
+        {
+          provide: Directionality,
+          useValue: {value: 'rtl', change: of()},
+        },
+      ]);
+      fixture.detectChanges();
+      const sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider));
+      sliderInstance = sliderDebugElement.componentInstance;
+      inputInstance = sliderInstance._getInput(Thumb.END);
+    }));
 
     it('works in RTL languages', () => {
       setValueByClick(sliderInstance, 30, platform.IOS);
@@ -1295,21 +1259,19 @@ describe('MDC-based MatSlider', () => {
     let startInputInstance: MatSliderThumb;
     let endInputInstance: MatSliderThumb;
 
-    beforeEach(
-      waitForAsync(() => {
-        const fixture = createComponent(StandardRangeSlider, [
-          {
-            provide: Directionality,
-            useValue: {value: 'rtl', change: of()},
-          },
-        ]);
-        fixture.detectChanges();
-        const sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider));
-        sliderInstance = sliderDebugElement.componentInstance;
-        startInputInstance = sliderInstance._getInput(Thumb.START);
-        endInputInstance = sliderInstance._getInput(Thumb.END);
-      }),
-    );
+    beforeEach(waitForAsync(() => {
+      const fixture = createComponent(StandardRangeSlider, [
+        {
+          provide: Directionality,
+          useValue: {value: 'rtl', change: of()},
+        },
+      ]);
+      fixture.detectChanges();
+      const sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider));
+      sliderInstance = sliderDebugElement.componentInstance;
+      startInputInstance = sliderInstance._getInput(Thumb.START);
+      endInputInstance = sliderInstance._getInput(Thumb.END);
+    }));
 
     it('works in RTL languages', () => {
       setValueByClick(sliderInstance, 90, platform.IOS);
@@ -1325,16 +1287,14 @@ describe('MDC-based MatSlider', () => {
     let testComponent: SliderWithNgModel;
     let inputInstance: MatSliderThumb;
 
-    beforeEach(
-      waitForAsync(() => {
-        fixture = createComponent(SliderWithNgModel);
-        fixture.detectChanges();
-        testComponent = fixture.debugElement.componentInstance;
-        const sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider));
-        const sliderInstance = sliderDebugElement.componentInstance;
-        inputInstance = sliderInstance._getInput(Thumb.END);
-      }),
-    );
+    beforeEach(waitForAsync(() => {
+      fixture = createComponent(SliderWithNgModel);
+      fixture.detectChanges();
+      testComponent = fixture.debugElement.componentInstance;
+      const sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider));
+      const sliderInstance = sliderDebugElement.componentInstance;
+      inputInstance = sliderInstance._getInput(Thumb.END);
+    }));
 
     it('should update the model on mouseup', () => {
       expect(testComponent.val).toBe(0);
@@ -1371,17 +1331,15 @@ describe('MDC-based MatSlider', () => {
     let startInputInstance: MatSliderThumb;
     let endInputInstance: MatSliderThumb;
 
-    beforeEach(
-      waitForAsync(() => {
-        fixture = createComponent(RangeSliderWithNgModel);
-        fixture.detectChanges();
-        testComponent = fixture.debugElement.componentInstance;
-        const sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider));
-        const sliderInstance = sliderDebugElement.componentInstance;
-        startInputInstance = sliderInstance._getInput(Thumb.START);
-        endInputInstance = sliderInstance._getInput(Thumb.END);
-      }),
-    );
+    beforeEach(waitForAsync(() => {
+      fixture = createComponent(RangeSliderWithNgModel);
+      fixture.detectChanges();
+      testComponent = fixture.debugElement.componentInstance;
+      const sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider));
+      const sliderInstance = sliderDebugElement.componentInstance;
+      startInputInstance = sliderInstance._getInput(Thumb.START);
+      endInputInstance = sliderInstance._getInput(Thumb.END);
+    }));
 
     it('should update the start thumb model on mouseup', () => {
       expect(testComponent.startVal).toBe(0);
@@ -1444,16 +1402,14 @@ describe('MDC-based MatSlider', () => {
     let sliderInstance: MatSlider;
     let inputInstance: MatSliderThumb;
 
-    beforeEach(
-      waitForAsync(() => {
-        fixture = createComponent(SliderWithFormControl);
-        fixture.detectChanges();
-        testComponent = fixture.debugElement.componentInstance;
-        const sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider));
-        sliderInstance = sliderDebugElement.componentInstance;
-        inputInstance = sliderInstance._getInput(Thumb.END);
-      }),
-    );
+    beforeEach(waitForAsync(() => {
+      fixture = createComponent(SliderWithFormControl);
+      fixture.detectChanges();
+      testComponent = fixture.debugElement.componentInstance;
+      const sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider));
+      sliderInstance = sliderDebugElement.componentInstance;
+      inputInstance = sliderInstance._getInput(Thumb.END);
+    }));
 
     it('should not update the control when the value is updated', () => {
       expect(testComponent.control.value).toBe(0);
@@ -1526,17 +1482,15 @@ describe('MDC-based MatSlider', () => {
     let startInputInstance: MatSliderThumb;
     let endInputInstance: MatSliderThumb;
 
-    beforeEach(
-      waitForAsync(() => {
-        fixture = createComponent(RangeSliderWithFormControl);
-        fixture.detectChanges();
-        testComponent = fixture.debugElement.componentInstance;
-        const sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider));
-        sliderInstance = sliderDebugElement.componentInstance;
-        startInputInstance = sliderInstance._getInput(Thumb.START);
-        endInputInstance = sliderInstance._getInput(Thumb.END);
-      }),
-    );
+    beforeEach(waitForAsync(() => {
+      fixture = createComponent(RangeSliderWithFormControl);
+      fixture.detectChanges();
+      testComponent = fixture.debugElement.componentInstance;
+      const sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider));
+      sliderInstance = sliderDebugElement.componentInstance;
+      startInputInstance = sliderInstance._getInput(Thumb.START);
+      endInputInstance = sliderInstance._getInput(Thumb.END);
+    }));
 
     it('should not update the start input control when the value is updated', () => {
       expect(testComponent.startInputControl.value).toBe(0);
@@ -1690,13 +1644,11 @@ describe('MDC-based MatSlider', () => {
     let fixture: ComponentFixture<RangeSliderWithTwoWayBinding>;
     let testComponent: RangeSliderWithTwoWayBinding;
 
-    beforeEach(
-      waitForAsync(() => {
-        fixture = createComponent(RangeSliderWithTwoWayBinding);
-        fixture.detectChanges();
-        testComponent = fixture.componentInstance;
-      }),
-    );
+    beforeEach(waitForAsync(() => {
+      fixture = createComponent(RangeSliderWithTwoWayBinding);
+      fixture.detectChanges();
+      testComponent = fixture.componentInstance;
+    }));
 
     it('should sync the start value binding in both directions', () => {
       expect(testComponent.startValue).toBe(0);

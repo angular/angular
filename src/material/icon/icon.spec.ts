@@ -58,42 +58,40 @@ describe('MatIcon', () => {
   let fakePath: string;
   let errorHandler: jasmine.SpyObj<ErrorHandler>;
 
-  beforeEach(
-    waitForAsync(() => {
-      // The $ prefix tells Karma not to try to process the
-      // request so that we don't get warnings in our logs.
-      fakePath = '/$fake-path';
-      errorHandler = jasmine.createSpyObj('errorHandler', ['handleError']);
+  beforeEach(waitForAsync(() => {
+    // The $ prefix tells Karma not to try to process the
+    // request so that we don't get warnings in our logs.
+    fakePath = '/$fake-path';
+    errorHandler = jasmine.createSpyObj('errorHandler', ['handleError']);
 
-      TestBed.configureTestingModule({
-        imports: [HttpClientTestingModule, MatIconModule],
-        declarations: [
-          IconWithColor,
-          IconWithLigature,
-          IconWithCustomFontCss,
-          IconFromSvgName,
-          IconWithAriaHiddenFalse,
-          IconWithBindingAndNgIf,
-          InlineIcon,
-          SvgIconWithUserContent,
-          IconWithLigatureAndSvgBinding,
-          BlankIcon,
-        ],
-        providers: [
-          {
-            provide: MAT_ICON_LOCATION,
-            useValue: {getPathname: () => fakePath},
-          },
-          {
-            provide: ErrorHandler,
-            useValue: errorHandler,
-          },
-        ],
-      });
+    TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule, MatIconModule],
+      declarations: [
+        IconWithColor,
+        IconWithLigature,
+        IconWithCustomFontCss,
+        IconFromSvgName,
+        IconWithAriaHiddenFalse,
+        IconWithBindingAndNgIf,
+        InlineIcon,
+        SvgIconWithUserContent,
+        IconWithLigatureAndSvgBinding,
+        BlankIcon,
+      ],
+      providers: [
+        {
+          provide: MAT_ICON_LOCATION,
+          useValue: {getPathname: () => fakePath},
+        },
+        {
+          provide: ErrorHandler,
+          useValue: errorHandler,
+        },
+      ],
+    });
 
-      TestBed.compileComponents();
-    }),
-  );
+    TestBed.compileComponents();
+  }));
 
   let iconRegistry: MatIconRegistry;
   let http: HttpTestingController;
@@ -1215,16 +1213,14 @@ describe('MatIcon without HttpClientModule', () => {
   let iconRegistry: MatIconRegistry;
   let sanitizer: DomSanitizer;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [MatIconModule],
-        declarations: [IconFromSvgName],
-      });
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [MatIconModule],
+      declarations: [IconFromSvgName],
+    });
 
-      TestBed.compileComponents();
-    }),
-  );
+    TestBed.compileComponents();
+  }));
 
   beforeEach(inject([MatIconRegistry, DomSanitizer], (mir: MatIconRegistry, ds: DomSanitizer) => {
     iconRegistry = mir;

@@ -26,27 +26,25 @@ describe('MDC-based Option Chips', () => {
   let globalRippleOptions: RippleGlobalOptions;
   let dir = 'ltr';
 
-  beforeEach(
-    waitForAsync(() => {
-      globalRippleOptions = {};
-      TestBed.configureTestingModule({
-        imports: [MatChipsModule],
-        declarations: [SingleChip],
-        providers: [
-          {provide: MAT_RIPPLE_GLOBAL_OPTIONS, useFactory: () => globalRippleOptions},
-          {
-            provide: Directionality,
-            useFactory: () => ({
-              value: dir,
-              change: new Subject(),
-            }),
-          },
-        ],
-      });
+  beforeEach(waitForAsync(() => {
+    globalRippleOptions = {};
+    TestBed.configureTestingModule({
+      imports: [MatChipsModule],
+      declarations: [SingleChip],
+      providers: [
+        {provide: MAT_RIPPLE_GLOBAL_OPTIONS, useFactory: () => globalRippleOptions},
+        {
+          provide: Directionality,
+          useFactory: () => ({
+            value: dir,
+            change: new Subject(),
+          }),
+        },
+      ],
+    });
 
-      TestBed.compileComponents();
-    }),
-  );
+    TestBed.compileComponents();
+  }));
 
   describe('MatChipOption', () => {
     let testComponent: SingleChip;

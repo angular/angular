@@ -7,14 +7,12 @@ describe('MatTextColumn', () => {
   let fixture: ComponentFixture<BasicTextColumnApp>;
   let tableElement: HTMLElement;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [MatTableModule],
-        declarations: [BasicTextColumnApp],
-      }).compileComponents();
-    }),
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [MatTableModule],
+      declarations: [BasicTextColumnApp],
+    }).compileComponents();
+  }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(BasicTextColumnApp);

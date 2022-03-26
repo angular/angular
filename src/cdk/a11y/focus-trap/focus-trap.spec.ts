@@ -12,26 +12,24 @@ import {A11yModule, FocusTrap, CdkTrapFocus} from '../index';
 import {By} from '@angular/platform-browser';
 
 describe('FocusTrap', () => {
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [A11yModule, PortalModule],
-        declarations: [
-          FocusTrapWithBindings,
-          SimpleFocusTrap,
-          FocusTrapTargets,
-          FocusTrapWithSvg,
-          FocusTrapWithoutFocusableElements,
-          FocusTrapWithAutoCapture,
-          FocusTrapUnfocusableTarget,
-          FocusTrapInsidePortal,
-          FocusTrapWithAutoCaptureInShadowDom,
-        ],
-      });
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [A11yModule, PortalModule],
+      declarations: [
+        FocusTrapWithBindings,
+        SimpleFocusTrap,
+        FocusTrapTargets,
+        FocusTrapWithSvg,
+        FocusTrapWithoutFocusableElements,
+        FocusTrapWithAutoCapture,
+        FocusTrapUnfocusableTarget,
+        FocusTrapInsidePortal,
+        FocusTrapWithAutoCaptureInShadowDom,
+      ],
+    });
 
-      TestBed.compileComponents();
-    }),
-  );
+    TestBed.compileComponents();
+  }));
 
   describe('with default element', () => {
     let fixture: ComponentFixture<SimpleFocusTrap>;
@@ -206,109 +204,93 @@ describe('FocusTrap', () => {
   });
 
   describe('with autoCapture', () => {
-    it(
-      'should automatically capture and return focus on init / destroy',
-      waitForAsync(() => {
-        const fixture = TestBed.createComponent(FocusTrapWithAutoCapture);
-        fixture.detectChanges();
+    it('should automatically capture and return focus on init / destroy', waitForAsync(() => {
+      const fixture = TestBed.createComponent(FocusTrapWithAutoCapture);
+      fixture.detectChanges();
 
-        const buttonOutsideTrappedRegion = fixture.nativeElement.querySelector('button');
-        buttonOutsideTrappedRegion.focus();
+      const buttonOutsideTrappedRegion = fixture.nativeElement.querySelector('button');
+      buttonOutsideTrappedRegion.focus();
+      expect(getActiveElement()).toBe(buttonOutsideTrappedRegion);
+
+      fixture.componentInstance.showTrappedRegion = true;
+      fixture.detectChanges();
+
+      fixture.whenStable().then(() => {
+        expect(getActiveElement().id).toBe('auto-capture-target');
+
+        fixture.destroy();
         expect(getActiveElement()).toBe(buttonOutsideTrappedRegion);
+      });
+    }));
 
-        fixture.componentInstance.showTrappedRegion = true;
-        fixture.detectChanges();
+    it('should capture focus if auto capture is enabled later on', waitForAsync(() => {
+      const fixture = TestBed.createComponent(FocusTrapWithAutoCapture);
+      fixture.componentInstance.autoCaptureEnabled = false;
+      fixture.componentInstance.showTrappedRegion = true;
+      fixture.detectChanges();
 
-        fixture.whenStable().then(() => {
-          expect(getActiveElement().id).toBe('auto-capture-target');
+      const buttonOutsideTrappedRegion = fixture.nativeElement.querySelector('button');
+      buttonOutsideTrappedRegion.focus();
+      expect(getActiveElement()).toBe(buttonOutsideTrappedRegion);
 
-          fixture.destroy();
-          expect(getActiveElement()).toBe(buttonOutsideTrappedRegion);
-        });
-      }),
-    );
+      fixture.componentInstance.autoCaptureEnabled = true;
+      fixture.detectChanges();
 
-    it(
-      'should capture focus if auto capture is enabled later on',
-      waitForAsync(() => {
-        const fixture = TestBed.createComponent(FocusTrapWithAutoCapture);
-        fixture.componentInstance.autoCaptureEnabled = false;
-        fixture.componentInstance.showTrappedRegion = true;
-        fixture.detectChanges();
+      fixture.whenStable().then(() => {
+        expect(getActiveElement().id).toBe('auto-capture-target');
 
-        const buttonOutsideTrappedRegion = fixture.nativeElement.querySelector('button');
-        buttonOutsideTrappedRegion.focus();
+        fixture.destroy();
         expect(getActiveElement()).toBe(buttonOutsideTrappedRegion);
+      });
+    }));
 
-        fixture.componentInstance.autoCaptureEnabled = true;
-        fixture.detectChanges();
+    it('should automatically capture and return focus on init / destroy inside the shadow DOM', waitForAsync(() => {
+      if (!_supportsShadowDom()) {
+        return;
+      }
 
-        fixture.whenStable().then(() => {
-          expect(getActiveElement().id).toBe('auto-capture-target');
+      const fixture = TestBed.createComponent(FocusTrapWithAutoCaptureInShadowDom);
+      fixture.detectChanges();
 
-          fixture.destroy();
-          expect(getActiveElement()).toBe(buttonOutsideTrappedRegion);
-        });
-      }),
-    );
+      const buttonOutsideTrappedRegion = fixture.debugElement.query(By.css('button')).nativeElement;
+      buttonOutsideTrappedRegion.focus();
+      expect(getActiveElement()).toBe(buttonOutsideTrappedRegion);
 
-    it(
-      'should automatically capture and return focus on init / destroy inside the shadow DOM',
-      waitForAsync(() => {
-        if (!_supportsShadowDom()) {
-          return;
-        }
+      fixture.componentInstance.showTrappedRegion = true;
+      fixture.detectChanges();
 
-        const fixture = TestBed.createComponent(FocusTrapWithAutoCaptureInShadowDom);
-        fixture.detectChanges();
+      fixture.whenStable().then(() => {
+        expect(getActiveElement().id).toBe('auto-capture-target');
 
-        const buttonOutsideTrappedRegion = fixture.debugElement.query(
-          By.css('button'),
-        ).nativeElement;
-        buttonOutsideTrappedRegion.focus();
+        fixture.destroy();
         expect(getActiveElement()).toBe(buttonOutsideTrappedRegion);
+      });
+    }));
 
-        fixture.componentInstance.showTrappedRegion = true;
-        fixture.detectChanges();
+    it('should capture focus if auto capture is enabled later on inside the shadow DOM', waitForAsync(() => {
+      if (!_supportsShadowDom()) {
+        return;
+      }
 
-        fixture.whenStable().then(() => {
-          expect(getActiveElement().id).toBe('auto-capture-target');
+      const fixture = TestBed.createComponent(FocusTrapWithAutoCaptureInShadowDom);
+      fixture.componentInstance.autoCaptureEnabled = false;
+      fixture.componentInstance.showTrappedRegion = true;
+      fixture.detectChanges();
 
-          fixture.destroy();
-          expect(getActiveElement()).toBe(buttonOutsideTrappedRegion);
-        });
-      }),
-    );
+      const buttonOutsideTrappedRegion = fixture.debugElement.query(By.css('button')).nativeElement;
+      buttonOutsideTrappedRegion.focus();
+      expect(getActiveElement()).toBe(buttonOutsideTrappedRegion);
 
-    it(
-      'should capture focus if auto capture is enabled later on inside the shadow DOM',
-      waitForAsync(() => {
-        if (!_supportsShadowDom()) {
-          return;
-        }
+      fixture.componentInstance.autoCaptureEnabled = true;
+      fixture.detectChanges();
 
-        const fixture = TestBed.createComponent(FocusTrapWithAutoCaptureInShadowDom);
-        fixture.componentInstance.autoCaptureEnabled = false;
-        fixture.componentInstance.showTrappedRegion = true;
-        fixture.detectChanges();
+      fixture.whenStable().then(() => {
+        expect(getActiveElement().id).toBe('auto-capture-target');
 
-        const buttonOutsideTrappedRegion = fixture.debugElement.query(
-          By.css('button'),
-        ).nativeElement;
-        buttonOutsideTrappedRegion.focus();
+        fixture.destroy();
         expect(getActiveElement()).toBe(buttonOutsideTrappedRegion);
-
-        fixture.componentInstance.autoCaptureEnabled = true;
-        fixture.detectChanges();
-
-        fixture.whenStable().then(() => {
-          expect(getActiveElement().id).toBe('auto-capture-target');
-
-          fixture.destroy();
-          expect(getActiveElement()).toBe(buttonOutsideTrappedRegion);
-        });
-      }),
-    );
+      });
+    }));
   });
 
   it('should put anchors inside the outlet when set at the root of a template portal', () => {

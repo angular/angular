@@ -11,14 +11,12 @@ import {SPACE, ENTER} from '@angular/cdk/keycodes';
 import {MatOption, MatOptionModule, MAT_OPTION_PARENT_COMPONENT} from './index';
 
 describe('MatOption component', () => {
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [MatOptionModule],
-        declarations: [BasicOption],
-      }).compileComponents();
-    }),
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [MatOptionModule],
+      declarations: [BasicOption],
+    }).compileComponents();
+  }));
 
   it('should complete the `stateChanges` stream on destroy', () => {
     const fixture = TestBed.createComponent(BasicOption);
@@ -208,24 +206,22 @@ describe('MatOption component', () => {
   describe('inside inert group', () => {
     let fixture: ComponentFixture<InsideGroup>;
 
-    beforeEach(
-      waitForAsync(() => {
-        TestBed.resetTestingModule();
-        TestBed.configureTestingModule({
-          imports: [MatOptionModule],
-          declarations: [InsideGroup],
-          providers: [
-            {
-              provide: MAT_OPTION_PARENT_COMPONENT,
-              useValue: {inertGroups: true},
-            },
-          ],
-        }).compileComponents();
+    beforeEach(waitForAsync(() => {
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        imports: [MatOptionModule],
+        declarations: [InsideGroup],
+        providers: [
+          {
+            provide: MAT_OPTION_PARENT_COMPONENT,
+            useValue: {inertGroups: true},
+          },
+        ],
+      }).compileComponents();
 
-        fixture = TestBed.createComponent(InsideGroup);
-        fixture.detectChanges();
-      }),
-    );
+      fixture = TestBed.createComponent(InsideGroup);
+      fixture.detectChanges();
+    }));
 
     it('should remove all accessibility-related attributes from the group', () => {
       const group: HTMLElement = fixture.nativeElement.querySelector('mat-optgroup');

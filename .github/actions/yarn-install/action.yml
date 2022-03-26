@@ -1,8 +1,8 @@
-name: "Installing Yarn dependencies"
-description: "Installs the dependencies using Yarn"
+name: 'Installing Yarn dependencies'
+description: 'Installs the dependencies using Yarn'
 
 runs:
-  using: "composite"
+  using: 'composite'
   steps:
     - uses: actions/cache@v2
       with:

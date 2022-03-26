@@ -21,39 +21,35 @@ describe('MatChipInput', () => {
   let chipInputDirective: MatChipInput;
   const dir = 'ltr';
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [PlatformModule, MatChipsModule, MatFormFieldModule, NoopAnimationsModule],
-        declarations: [TestChipInput],
-        providers: [
-          {
-            provide: Directionality,
-            useFactory: () => {
-              return {
-                value: dir.toLowerCase(),
-                change: new Subject(),
-              };
-            },
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [PlatformModule, MatChipsModule, MatFormFieldModule, NoopAnimationsModule],
+      declarations: [TestChipInput],
+      providers: [
+        {
+          provide: Directionality,
+          useFactory: () => {
+            return {
+              value: dir.toLowerCase(),
+              change: new Subject(),
+            };
           },
-        ],
-      });
+        },
+      ],
+    });
 
-      TestBed.compileComponents();
-    }),
-  );
+    TestBed.compileComponents();
+  }));
 
-  beforeEach(
-    waitForAsync(() => {
-      fixture = TestBed.createComponent(TestChipInput);
-      testChipInput = fixture.debugElement.componentInstance;
-      fixture.detectChanges();
+  beforeEach(waitForAsync(() => {
+    fixture = TestBed.createComponent(TestChipInput);
+    testChipInput = fixture.debugElement.componentInstance;
+    fixture.detectChanges();
 
-      inputDebugElement = fixture.debugElement.query(By.directive(MatChipInput))!;
-      chipInputDirective = inputDebugElement.injector.get<MatChipInput>(MatChipInput);
-      inputNativeElement = inputDebugElement.nativeElement;
-    }),
-  );
+    inputDebugElement = fixture.debugElement.query(By.directive(MatChipInput))!;
+    chipInputDirective = inputDebugElement.injector.get<MatChipInput>(MatChipInput);
+    inputNativeElement = inputDebugElement.nativeElement;
+  }));
 
   describe('basic behavior', () => {
     it('emits the (chipEnd) on enter keyup', () => {

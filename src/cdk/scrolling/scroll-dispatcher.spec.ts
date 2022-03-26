@@ -11,16 +11,14 @@ import {CdkScrollable, ScrollDispatcher, ScrollingModule} from './public-api';
 import {dispatchFakeEvent} from '../testing/private';
 
 describe('ScrollDispatcher', () => {
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [ScrollingModule],
-        declarations: [ScrollingComponent, NestedScrollingComponent],
-      });
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [ScrollingModule],
+      declarations: [ScrollingComponent, NestedScrollingComponent],
+    });
 
-      TestBed.compileComponents();
-    }),
-  );
+    TestBed.compileComponents();
+  }));
 
   describe('Basic usage', () => {
     let scroll: ScrollDispatcher;

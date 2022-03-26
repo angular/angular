@@ -21,26 +21,24 @@ import {MatMultiYearView, yearsPerPage, yearsPerRow} from './multi-year-view';
 describe('MatMultiYearView', () => {
   let dir: {value: Direction};
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [MatNativeDateModule],
-        declarations: [
-          MatCalendarBody,
-          MatMultiYearView,
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [MatNativeDateModule],
+      declarations: [
+        MatCalendarBody,
+        MatMultiYearView,
 
-          // Test components.
-          StandardMultiYearView,
-          MultiYearViewWithDateFilter,
-          MultiYearViewWithMinMaxDate,
-          MultiYearViewWithDateClass,
-        ],
-        providers: [{provide: Directionality, useFactory: () => (dir = {value: 'ltr'})}],
-      });
+        // Test components.
+        StandardMultiYearView,
+        MultiYearViewWithDateFilter,
+        MultiYearViewWithMinMaxDate,
+        MultiYearViewWithDateClass,
+      ],
+      providers: [{provide: Directionality, useFactory: () => (dir = {value: 'ltr'})}],
+    });
 
-      TestBed.compileComponents();
-    }),
-  );
+    TestBed.compileComponents();
+  }));
 
   describe('standard multi-year view', () => {
     let fixture: ComponentFixture<StandardMultiYearView>;

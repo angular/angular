@@ -5,21 +5,19 @@ import {CommonModule} from '@angular/common';
 import {MatToolbarModule} from './index';
 
 describe('MatToolbar', () => {
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [MatToolbarModule, CommonModule],
-        declarations: [
-          ToolbarSingleRow,
-          ToolbarMultipleRows,
-          ToolbarMixedRowModes,
-          ToolbarMultipleIndirectRows,
-        ],
-      });
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [MatToolbarModule, CommonModule],
+      declarations: [
+        ToolbarSingleRow,
+        ToolbarMultipleRows,
+        ToolbarMixedRowModes,
+        ToolbarMultipleIndirectRows,
+      ],
+    });
 
-      TestBed.compileComponents();
-    }),
-  );
+    TestBed.compileComponents();
+  }));
 
   describe('with single row', () => {
     let fixture: ComponentFixture<ToolbarSingleRow>;

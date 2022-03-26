@@ -24,14 +24,12 @@ describe('CdkScrollable', () => {
   let testComponent: ScrollableViewport;
   let maxOffset = 0;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [ScrollingModule],
-        declarations: [ScrollableViewport],
-      }).compileComponents();
-    }),
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [ScrollingModule],
+      declarations: [ScrollableViewport],
+    }).compileComponents();
+  }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(ScrollableViewport);

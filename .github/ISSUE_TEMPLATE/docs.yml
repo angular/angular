@@ -1,7 +1,7 @@
 name: Documentation
 description: Suggest an improvement to our documentation at material.angular.io
-title: "docs-bug(COMPONENT): TITLE"
-labels: ["docs", "needs triage"]
+title: 'docs-bug(COMPONENT): TITLE'
+labels: ['docs', 'needs triage']
 body:
   - type: textarea
     id: description

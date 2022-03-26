@@ -9,26 +9,24 @@ import {MAT_PROGRESS_SPINNER_DEFAULT_OPTIONS} from '@angular/material/progress-s
 import {Component, ElementRef, ViewChild, ViewEncapsulation} from '@angular/core';
 
 describe('MDC-based MatProgressSpinner', () => {
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [MatProgressSpinnerModule, CommonModule],
-        declarations: [
-          BasicProgressSpinner,
-          IndeterminateProgressSpinner,
-          ProgressSpinnerWithValueAndBoundMode,
-          ProgressSpinnerWithColor,
-          ProgressSpinnerCustomStrokeWidth,
-          ProgressSpinnerCustomDiameter,
-          SpinnerWithColor,
-          ProgressSpinnerWithStringValues,
-          IndeterminateSpinnerInShadowDom,
-          IndeterminateSpinnerInShadowDomWithNgIf,
-          SpinnerWithMode,
-        ],
-      }).compileComponents();
-    }),
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [MatProgressSpinnerModule, CommonModule],
+      declarations: [
+        BasicProgressSpinner,
+        IndeterminateProgressSpinner,
+        ProgressSpinnerWithValueAndBoundMode,
+        ProgressSpinnerWithColor,
+        ProgressSpinnerCustomStrokeWidth,
+        ProgressSpinnerCustomDiameter,
+        SpinnerWithColor,
+        ProgressSpinnerWithStringValues,
+        IndeterminateSpinnerInShadowDom,
+        IndeterminateSpinnerInShadowDomWithNgIf,
+        SpinnerWithMode,
+      ],
+    }).compileComponents();
+  }));
 
   it('should apply a mode of "determinate" if no mode is provided.', () => {
     let fixture = TestBed.createComponent(BasicProgressSpinner);

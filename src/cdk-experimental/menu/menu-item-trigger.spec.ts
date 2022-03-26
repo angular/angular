@@ -15,14 +15,12 @@ describe('MenuItemTrigger', () => {
     let menuItem: CdkMenuItem;
     let menuItemElement: HTMLButtonElement;
 
-    beforeEach(
-      waitForAsync(() => {
-        TestBed.configureTestingModule({
-          imports: [CdkMenuModule],
-          declarations: [TriggerForEmptyMenu],
-        }).compileComponents();
-      }),
-    );
+    beforeEach(waitForAsync(() => {
+      TestBed.configureTestingModule({
+        imports: [CdkMenuModule],
+        declarations: [TriggerForEmptyMenu],
+      }).compileComponents();
+    }));
 
     beforeEach(() => {
       fixture = TestBed.createComponent(TriggerForEmptyMenu);
@@ -84,14 +82,12 @@ describe('MenuItemTrigger', () => {
 
     const setDocumentDirection = (dir: 'ltr' | 'rtl') => (document.dir = dir);
 
-    beforeEach(
-      waitForAsync(() => {
-        TestBed.configureTestingModule({
-          imports: [CdkMenuModule],
-          declarations: [MenuBarWithNestedSubMenus],
-        }).compileComponents();
-      }),
-    );
+    beforeEach(waitForAsync(() => {
+      TestBed.configureTestingModule({
+        imports: [CdkMenuModule],
+        declarations: [MenuBarWithNestedSubMenus],
+      }).compileComponents();
+    }));
 
     beforeEach(() => {
       fixture = TestBed.createComponent(MenuBarWithNestedSubMenus);
@@ -378,14 +374,12 @@ describe('MenuItemTrigger', () => {
       grabElementsForTesting();
     };
 
-    beforeEach(
-      waitForAsync(() => {
-        TestBed.configureTestingModule({
-          imports: [CdkMenuModule],
-          declarations: [StandaloneTriggerWithInlineMenu],
-        }).compileComponents();
-      }),
-    );
+    beforeEach(waitForAsync(() => {
+      TestBed.configureTestingModule({
+        imports: [CdkMenuModule],
+        declarations: [StandaloneTriggerWithInlineMenu],
+      }).compileComponents();
+    }));
 
     beforeEach(() => {
       fixture = TestBed.createComponent(StandaloneTriggerWithInlineMenu);

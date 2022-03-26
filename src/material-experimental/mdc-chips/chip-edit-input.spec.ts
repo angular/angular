@@ -10,20 +10,18 @@ describe('MDC-based MatChipEditInput', () => {
   let inputDebugElement: DebugElement;
   let inputInstance: MatChipEditInput;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [MatChipsModule],
-        declarations: [ChipEditInputContainer],
-      });
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [MatChipsModule],
+      declarations: [ChipEditInputContainer],
+    });
 
-      TestBed.compileComponents();
+    TestBed.compileComponents();
 
-      fixture = TestBed.createComponent(ChipEditInputContainer);
-      inputDebugElement = fixture.debugElement.query(By.directive(MatChipEditInput))!;
-      inputInstance = inputDebugElement.injector.get<MatChipEditInput>(MatChipEditInput);
-    }),
-  );
+    fixture = TestBed.createComponent(ChipEditInputContainer);
+    inputDebugElement = fixture.debugElement.query(By.directive(MatChipEditInput))!;
+    inputInstance = inputDebugElement.injector.get<MatChipEditInput>(MatChipEditInput);
+  }));
 
   describe('on initialization', () => {
     it('should set the initial input text', () => {

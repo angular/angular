@@ -33,24 +33,22 @@ describe('MatSort', () => {
     let fixture: ComponentFixture<SimpleMatSortApp>;
     let component: SimpleMatSortApp;
 
-    beforeEach(
-      waitForAsync(() => {
-        TestBed.configureTestingModule({
-          imports: [MatSortModule, MatTableModule, CdkTableModule, NoopAnimationsModule],
-          declarations: [
-            SimpleMatSortApp,
-            CdkTableMatSortApp,
-            MatTableMatSortApp,
-            MatSortHeaderMissingMatSortApp,
-            MatSortDuplicateMatSortableIdsApp,
-            MatSortableMissingIdApp,
-            MatSortableInvalidDirection,
-            MatSortableInvalidDirection,
-            MatSortWithArrowPosition,
-          ],
-        }).compileComponents();
-      }),
-    );
+    beforeEach(waitForAsync(() => {
+      TestBed.configureTestingModule({
+        imports: [MatSortModule, MatTableModule, CdkTableModule, NoopAnimationsModule],
+        declarations: [
+          SimpleMatSortApp,
+          CdkTableMatSortApp,
+          MatTableMatSortApp,
+          MatSortHeaderMissingMatSortApp,
+          MatSortDuplicateMatSortableIdsApp,
+          MatSortableMissingIdApp,
+          MatSortableInvalidDirection,
+          MatSortableInvalidDirection,
+          MatSortWithArrowPosition,
+        ],
+      }).compileComponents();
+    }));
 
     beforeEach(() => {
       fixture = TestBed.createComponent(SimpleMatSortApp);
@@ -507,22 +505,20 @@ describe('MatSort', () => {
     let fixture: ComponentFixture<MatSortWithoutExplicitInputs>;
     let component: MatSortWithoutExplicitInputs;
 
-    beforeEach(
-      waitForAsync(() => {
-        TestBed.configureTestingModule({
-          imports: [MatSortModule, MatTableModule, CdkTableModule, NoopAnimationsModule],
-          declarations: [MatSortWithoutExplicitInputs],
-          providers: [
-            {
-              provide: MAT_SORT_DEFAULT_OPTIONS,
-              useValue: {
-                disableClear: true,
-              },
+    beforeEach(waitForAsync(() => {
+      TestBed.configureTestingModule({
+        imports: [MatSortModule, MatTableModule, CdkTableModule, NoopAnimationsModule],
+        declarations: [MatSortWithoutExplicitInputs],
+        providers: [
+          {
+            provide: MAT_SORT_DEFAULT_OPTIONS,
+            useValue: {
+              disableClear: true,
             },
-          ],
-        }).compileComponents();
-      }),
-    );
+          },
+        ],
+      }).compileComponents();
+    }));
 
     beforeEach(() => {
       fixture = TestBed.createComponent(MatSortWithoutExplicitInputs);
@@ -543,23 +539,21 @@ describe('MatSort', () => {
   describe('with default arrowPosition', () => {
     let fixture: ComponentFixture<MatSortWithoutInputs>;
 
-    beforeEach(
-      waitForAsync(() => {
-        TestBed.configureTestingModule({
-          imports: [MatSortModule, MatTableModule, CdkTableModule, NoopAnimationsModule],
-          declarations: [MatSortWithoutInputs],
-          providers: [
-            {
-              provide: MAT_SORT_DEFAULT_OPTIONS,
-              useValue: {
-                disableClear: true,
-                arrowPosition: 'before',
-              },
+    beforeEach(waitForAsync(() => {
+      TestBed.configureTestingModule({
+        imports: [MatSortModule, MatTableModule, CdkTableModule, NoopAnimationsModule],
+        declarations: [MatSortWithoutInputs],
+        providers: [
+          {
+            provide: MAT_SORT_DEFAULT_OPTIONS,
+            useValue: {
+              disableClear: true,
+              arrowPosition: 'before',
             },
-          ],
-        }).compileComponents();
-      }),
-    );
+          },
+        ],
+      }).compileComponents();
+    }));
 
     beforeEach(() => {
       fixture = TestBed.createComponent(MatSortWithoutInputs);

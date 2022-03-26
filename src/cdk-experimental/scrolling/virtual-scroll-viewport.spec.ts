@@ -9,14 +9,12 @@ describe('CdkVirtualScrollViewport', () => {
     let testComponent: AutoSizeVirtualScroll;
     let viewport: CdkVirtualScrollViewport;
 
-    beforeEach(
-      waitForAsync(() => {
-        TestBed.configureTestingModule({
-          imports: [ScrollingModule, ExperimentalScrollingModule],
-          declarations: [AutoSizeVirtualScroll],
-        }).compileComponents();
-      }),
-    );
+    beforeEach(waitForAsync(() => {
+      TestBed.configureTestingModule({
+        imports: [ScrollingModule, ExperimentalScrollingModule],
+        declarations: [AutoSizeVirtualScroll],
+      }).compileComponents();
+    }));
 
     beforeEach(() => {
       fixture = TestBed.createComponent(AutoSizeVirtualScroll);

@@ -9,27 +9,23 @@ describe('Chip Remove', () => {
   let chipDebugElement: DebugElement;
   let chipNativeElement: HTMLElement;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [MatChipsModule],
-        declarations: [TestChip],
-      });
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [MatChipsModule],
+      declarations: [TestChip],
+    });
 
-      TestBed.compileComponents();
-    }),
-  );
+    TestBed.compileComponents();
+  }));
 
-  beforeEach(
-    waitForAsync(() => {
-      fixture = TestBed.createComponent(TestChip);
-      testChip = fixture.debugElement.componentInstance;
-      fixture.detectChanges();
+  beforeEach(waitForAsync(() => {
+    fixture = TestBed.createComponent(TestChip);
+    testChip = fixture.debugElement.componentInstance;
+    fixture.detectChanges();
 
-      chipDebugElement = fixture.debugElement.query(By.directive(MatChip))!;
-      chipNativeElement = chipDebugElement.nativeElement;
-    }),
-  );
+    chipDebugElement = fixture.debugElement.query(By.directive(MatChip))!;
+    chipNativeElement = chipDebugElement.nativeElement;
+  }));
 
   describe('basic behavior', () => {
     it('should apply a CSS class to the remove icon', () => {

@@ -7,15 +7,13 @@ import {CdkAccordionItem} from './accordion-item';
 import {CdkAccordionModule} from './accordion-module';
 
 describe('CdkAccordion', () => {
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [BrowserAnimationsModule, CdkAccordionModule],
-        declarations: [SetOfItems, NestedItems],
-      });
-      TestBed.compileComponents();
-    }),
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [BrowserAnimationsModule, CdkAccordionModule],
+      declarations: [SetOfItems, NestedItems],
+    });
+    TestBed.compileComponents();
+  }));
 
   it('should ensure only one item is expanded at a time', () => {
     const fixture = TestBed.createComponent(SetOfItems);

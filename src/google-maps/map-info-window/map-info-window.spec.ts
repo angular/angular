@@ -17,14 +17,12 @@ import {MapInfoWindow} from './map-info-window';
 describe('MapInfoWindow', () => {
   let mapSpy: jasmine.SpyObj<google.maps.Map>;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [GoogleMapsModule],
-        declarations: [TestApp],
-      });
-    }),
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [GoogleMapsModule],
+      declarations: [TestApp],
+    });
+  }));
 
   beforeEach(() => {
     TestBed.compileComponents();

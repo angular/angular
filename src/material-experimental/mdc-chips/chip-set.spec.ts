@@ -5,16 +5,14 @@ import {By} from '@angular/platform-browser';
 import {MatChip, MatChipSet, MatChipsModule} from './index';
 
 describe('MDC-based MatChipSet', () => {
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [MatChipsModule, CommonModule],
-        declarations: [BasicChipSet, IndirectDescendantsChipSet],
-      });
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [MatChipsModule, CommonModule],
+      declarations: [BasicChipSet, IndirectDescendantsChipSet],
+    });
 
-      TestBed.compileComponents();
-    }),
-  );
+    TestBed.compileComponents();
+  }));
 
   describe('BasicChipSet', () => {
     let fixture: ComponentFixture<any>;

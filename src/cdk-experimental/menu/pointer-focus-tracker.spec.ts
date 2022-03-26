@@ -17,13 +17,11 @@ describe('FocusMouseManger', () => {
     mockElements = fixture.componentInstance._allItems.toArray();
   }
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        declarations: [MultiElementWithConditionalComponent, MockWrapper],
-      }).compileComponents();
-    }),
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      declarations: [MultiElementWithConditionalComponent, MockWrapper],
+    }).compileComponents();
+  }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(MultiElementWithConditionalComponent);

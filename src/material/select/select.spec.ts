@@ -114,19 +114,17 @@ describe('MatSelect', () => {
   }
 
   describe('core', () => {
-    beforeEach(
-      waitForAsync(() => {
-        configureMatSelectTestingModule([
-          BasicSelect,
-          MultiSelect,
-          SelectWithGroups,
-          SelectWithGroupsAndNgContainer,
-          SelectWithFormFieldLabel,
-          SelectWithChangeEvent,
-          SelectInsideDynamicFormGroup,
-        ]);
-      }),
-    );
+    beforeEach(waitForAsync(() => {
+      configureMatSelectTestingModule([
+        BasicSelect,
+        MultiSelect,
+        SelectWithGroups,
+        SelectWithGroupsAndNgContainer,
+        SelectWithFormFieldLabel,
+        SelectWithChangeEvent,
+        SelectInsideDynamicFormGroup,
+      ]);
+    }));
 
     describe('accessibility', () => {
       describe('for select', () => {
@@ -2712,11 +2710,8 @@ describe('MatSelect', () => {
   });
 
   describe('with a sibling component that throws an error', () => {
-    beforeEach(
-      waitForAsync(() =>
-        configureMatSelectTestingModule([SelectWithErrorSibling, ThrowsErrorOnInit]),
-      ),
-    );
+    beforeEach(waitForAsync(() =>
+      configureMatSelectTestingModule([SelectWithErrorSibling, ThrowsErrorOnInit])));
 
     it('should not crash the browser when a sibling throws an error on init', fakeAsync(() => {
       // Note that this test can be considered successful if the error being thrown didn't
@@ -3110,9 +3105,8 @@ describe('MatSelect', () => {
   });
 
   describe('with preselected array values', () => {
-    beforeEach(
-      waitForAsync(() => configureMatSelectTestingModule([SingleSelectWithPreselectedArrayValues])),
-    );
+    beforeEach(waitForAsync(() =>
+      configureMatSelectTestingModule([SingleSelectWithPreselectedArrayValues])));
 
     it('should be able to preselect an array value in single-selection mode', fakeAsync(() => {
       const fixture = TestBed.createComponent(SingleSelectWithPreselectedArrayValues);
@@ -3128,11 +3122,8 @@ describe('MatSelect', () => {
   });
 
   describe('with custom value accessor', () => {
-    beforeEach(
-      waitForAsync(() =>
-        configureMatSelectTestingModule([CompWithCustomSelect, CustomSelectAccessor]),
-      ),
-    );
+    beforeEach(waitForAsync(() =>
+      configureMatSelectTestingModule([CompWithCustomSelect, CustomSelectAccessor])));
 
     it('should support use inside a custom value accessor', fakeAsync(() => {
       const fixture = TestBed.createComponent(CompWithCustomSelect);
@@ -3168,11 +3159,8 @@ describe('MatSelect', () => {
   });
 
   describe('with OnPush', () => {
-    beforeEach(
-      waitForAsync(() =>
-        configureMatSelectTestingModule([BasicSelectOnPush, BasicSelectOnPushPreselected]),
-      ),
-    );
+    beforeEach(waitForAsync(() =>
+      configureMatSelectTestingModule([BasicSelectOnPush, BasicSelectOnPushPreselected])));
 
     it('should set the trigger text based on the value when initialized', fakeAsync(() => {
       const fixture = TestBed.createComponent(BasicSelectOnPushPreselected);
@@ -3364,15 +3352,12 @@ describe('MatSelect', () => {
   });
 
   describe('without Angular forms', () => {
-    beforeEach(
-      waitForAsync(() =>
-        configureMatSelectTestingModule([
-          BasicSelectWithoutForms,
-          BasicSelectWithoutFormsPreselected,
-          BasicSelectWithoutFormsMultiple,
-        ]),
-      ),
-    );
+    beforeEach(waitForAsync(() =>
+      configureMatSelectTestingModule([
+        BasicSelectWithoutForms,
+        BasicSelectWithoutFormsPreselected,
+        BasicSelectWithoutFormsMultiple,
+      ])));
 
     it('should set the value when options are clicked', fakeAsync(() => {
       const fixture = TestBed.createComponent(BasicSelectWithoutForms);
@@ -3743,16 +3728,13 @@ describe('MatSelect', () => {
   });
 
   describe('positioning', () => {
-    beforeEach(
-      waitForAsync(() =>
-        configureMatSelectTestingModule([
-          BasicSelect,
-          MultiSelect,
-          SelectWithGroups,
-          SelectWithIndirectDescendantGroups,
-        ]),
-      ),
-    );
+    beforeEach(waitForAsync(() =>
+      configureMatSelectTestingModule([
+        BasicSelect,
+        MultiSelect,
+        SelectWithGroups,
+        SelectWithIndirectDescendantGroups,
+      ])));
 
     beforeEach(inject([ViewportRuler], (vr: ViewportRuler) => {
       viewportRuler = vr;
@@ -4682,11 +4664,8 @@ describe('MatSelect', () => {
   });
 
   describe('with multiple selection', () => {
-    beforeEach(
-      waitForAsync(() =>
-        configureMatSelectTestingModule([MultiSelect, MultiSelectWithLotsOfOptions]),
-      ),
-    );
+    beforeEach(waitForAsync(() =>
+      configureMatSelectTestingModule([MultiSelect, MultiSelectWithLotsOfOptions])));
 
     let fixture: ComponentFixture<MultiSelect>;
     let testInstance: MultiSelect;
