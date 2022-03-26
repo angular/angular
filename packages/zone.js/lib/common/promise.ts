@@ -249,8 +249,17 @@ Zone.__load_patch('ZoneAwarePromise', (global: any, Zone: ZoneType, api: _ZonePr
   function scheduleResolveOrReject<R, U1, U2>(
       promise: ZoneAwarePromise<any>, zone: Zone, chainPromise: ZoneAwarePromise<any>,
       onFulfilled?: ((value: R) => U1)|null|undefined,
-      onRejected?: ((error: any) => U2)|null|undefined): void {
-    clearRejectedNoCatch(promise);
+      onRejected?: ((error: any) => U2)|null|undefined, scheduledByFinally = false): void {
+    // Note: the native promise implementation logs unhandled promise rejections after `onFinally`
+    // has been called. We may rely on the `scheduledByFinally` argument, which is `false` by
+    // default, to avoid creating a breaking change; this will also allow us to reduce the number of
+    // changes. The `finally` function should not silence unhandled promise rejections, because
+    // they're not silenced in any implementation. If the `scheduleResolveOrReject` is called within
+    // the `finally` we won't clear unhandled rejections. We'll keep the same behaviour if the
+    // `scheduleResolveOrReject` is called within the `then`.
+    if (!scheduledByFinally) {
+      clearRejectedNoCatch(promise);
+    }
     const promiseState = (promise as any)[symbolState];
     const delegate = promiseState ?
         (typeof onFulfilled === 'function') ? onFulfilled : forwardResolution :
@@ -506,7 +515,8 @@ Zone.__load_patch('ZoneAwarePromise', (global: any, Zone: ZoneType, api: _ZonePr
       if ((this as any)[symbolState] == UNRESOLVED) {
         (<any[]>(this as any)[symbolValue]).push(zone, chainPromise, onFinally, onFinally);
       } else {
-        scheduleResolveOrReject(this, zone, chainPromise as any, onFinally, onFinally);
+        scheduleResolveOrReject(
+            this, zone, chainPromise as any, onFinally, onFinally, /* scheduledByFinally */ true);
       }
       return chainPromise;
     }
