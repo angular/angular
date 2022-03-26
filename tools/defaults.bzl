@@ -11,6 +11,7 @@ load("@npm//typescript:index.bzl", "tsc")
 load("//packages/bazel:index.bzl", _ng_module = "ng_module", _ng_package = "ng_package")
 load("@npm//@angular/dev-infra-private/bazel/benchmark/app_bundling:index.bzl", _app_bundle = "app_bundle")
 load("//tools:ng_benchmark.bzl", _ng_benchmark = "ng_benchmark")
+load("@npm//@angular/dev-infra-private/bazel/http-server:index.bzl", _http_server = "http_server")
 load("@npm//@angular/dev-infra-private/bazel/karma:index.bzl", _karma_web_test = "karma_web_test", _karma_web_test_suite = "karma_web_test_suite")
 load("@npm//@angular/dev-infra-private/bazel/api-golden:index.bzl", _api_golden_test = "api_golden_test", _api_golden_test_npm_package = "api_golden_test_npm_package")
 load("@npm//@angular/dev-infra-private/bazel:extract_js_module_output.bzl", "extract_js_module_output")
@@ -26,6 +27,7 @@ _INTERNAL_NG_PACKAGE_DEFAULT_ROLLUP = "//packages/bazel/src/ng_package:rollup_fo
 
 esbuild = _esbuild
 esbuild_config = _esbuild_config
+http_server = _http_server
 
 # Packages which are versioned together on npm
 ANGULAR_SCOPED_PACKAGES = ["@angular/%s" % p for p in [
