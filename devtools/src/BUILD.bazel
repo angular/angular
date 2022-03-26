@@ -1,8 +1,7 @@
 load("//devtools/tools:ng_module.bzl", "ng_module")
 load("@io_bazel_rules_sass//:defs.bzl", "sass_binary", "sass_library")
 load("@build_bazel_rules_nodejs//:index.bzl", "pkg_web")
-load("//tools:defaults.bzl", "esbuild")
-load("//devtools/tools/dev-server:index.bzl", "dev_server")
+load("//tools:defaults.bzl", "esbuild", "http_server")
 load("//devtools/tools/esbuild:index.bzl", "LINKER_PROCESSED_FW_PACKAGES")
 
 package(default_visibility = ["//visibility:public"])
@@ -280,7 +279,7 @@ pkg_web(
     substitutions = {"BUILD_SCM_COMMIT_SHA": ""},
 )
 
-dev_server(
+http_server(
     name = "devserver",
     srcs = [":dev_app_static_files"],
     additional_root_paths = ["angular/devtools/src/devapp"],
