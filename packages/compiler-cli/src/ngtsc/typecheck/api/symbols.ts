@@ -50,6 +50,11 @@ export interface TcbLocation {
    */
   tcbPath: AbsoluteFsPath;
 
+  /**
+   * Whether the type check block exists in a type-checking shim file or is inline.
+   */
+  isShimFile: boolean;
+
   /** The location in the file where node appears. */
   positionInFile: number;
 }
