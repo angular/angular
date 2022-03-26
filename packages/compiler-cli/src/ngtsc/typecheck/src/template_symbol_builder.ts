@@ -13,7 +13,7 @@ import {AbsoluteFsPath} from '../../file_system';
 import {ClassDeclaration} from '../../reflection';
 import {ComponentScopeReader} from '../../scope';
 import {isAssignment, isSymbolWithValueDeclaration} from '../../util/src/typescript';
-import {BindingSymbol, DirectiveSymbol, DomBindingSymbol, ElementSymbol, ExpressionSymbol, InputBindingSymbol, OutputBindingSymbol, PipeSymbol, ReferenceSymbol, ShimLocation, Symbol, SymbolKind, TemplateSymbol, TsNodeSymbolInfo, TypeCheckableDirectiveMeta, VariableSymbol} from '../api';
+import {BindingSymbol, DirectiveSymbol, DomBindingSymbol, ElementSymbol, ExpressionSymbol, InputBindingSymbol, OutputBindingSymbol, PipeSymbol, ReferenceSymbol, Symbol, SymbolKind, TcbLocation, TemplateSymbol, TsNodeSymbolInfo, TypeCheckableDirectiveMeta, VariableSymbol} from '../api';
 
 import {ExpressionIdentifier, findAllMatchingNodes, findFirstMatchingNode, hasExpressionIdentifier} from './comments';
 import {TemplateData} from './context';
@@ -245,7 +245,7 @@ export class SymbolBuilder {
           tsSymbol,
           tsType,
           target,
-          shimLocation: {shimPath: this.shimPath, positionInShimFile},
+          tcbLocation: {tcbPath: this.shimPath, positionInFile: positionInShimFile},
         });
       } else {
         if (!ts.isElementAccessExpression(outputFieldAccess)) {
@@ -270,7 +270,7 @@ export class SymbolBuilder {
           tsSymbol,
           tsType,
           target,
-          shimLocation: {shimPath: this.shimPath, positionInShimFile},
+          tcbLocation: {tcbPath: this.shimPath, positionInFile: positionInShimFile},
         });
       }
     }
@@ -356,7 +356,7 @@ export class SymbolBuilder {
       kind: SymbolKind.Directive,
       tsSymbol: symbol.tsSymbol,
       tsType: symbol.tsType,
-      shimLocation: symbol.shimLocation,
+      tcbLocation: symbol.tcbLocation,
       isComponent,
       isStructural,
       selector,
@@ -379,12 +379,12 @@ export class SymbolBuilder {
     return {
       tsType: expressionSymbol.tsType,
       tsSymbol: expressionSymbol.tsSymbol,
-      initializerLocation: expressionSymbol.shimLocation,
+      initializerLocation: expressionSymbol.tcbLocation,
       kind: SymbolKind.Variable,
       declaration: variable,
       localVarLocation: {
-        shimPath: this.shimPath,
-        positionInShimFile: this.getShimPositionForNode(node.name),
+        tcbPath: this.shimPath,
+        positionInFile: this.getShimPositionForNode(node.name),
       }
     };
   }
@@ -414,9 +414,9 @@ export class SymbolBuilder {
       return null;
     }
 
-    const referenceVarShimLocation: ShimLocation = {
-      shimPath: this.shimPath,
-      positionInShimFile: this.getShimPositionForNode(node),
+    const referenceVarTcbLocation: TcbLocation = {
+      tcbPath: this.shimPath,
+      positionInFile: this.getShimPositionForNode(node),
     };
     if (target instanceof TmplAstTemplate || target instanceof TmplAstElement) {
       return {
@@ -425,8 +425,8 @@ export class SymbolBuilder {
         tsType: symbol.tsType,
         target,
         declaration: ref,
-        targetLocation: symbol.shimLocation,
-        referenceVarLocation: referenceVarShimLocation,
+        targetLocation: symbol.tcbLocation,
+        referenceVarLocation: referenceVarTcbLocation,
       };
     } else {
       if (!ts.isClassDeclaration(target.directive.ref.node)) {
@@ -439,8 +439,8 @@ export class SymbolBuilder {
         tsType: symbol.tsType,
         declaration: ref,
         target: target.directive.ref.node,
-        targetLocation: symbol.shimLocation,
-        referenceVarLocation: referenceVarShimLocation,
+        targetLocation: symbol.tcbLocation,
+        referenceVarLocation: referenceVarTcbLocation,
       };
     }
   }
@@ -569,7 +569,7 @@ export class SymbolBuilder {
       // Examples of this would be literals and `document.createElement('div')`.
       tsSymbol: tsSymbol ?? type.symbol ?? null,
       tsType: type,
-      shimLocation: {shimPath: this.shimPath, positionInShimFile},
+      tcbLocation: {tcbPath: this.shimPath, positionInFile: positionInShimFile},
     };
   }
 

@@ -79,7 +79,7 @@ runInEachFileSystem(() => {
 
         // Ensure we can go back to the original location using the shim location
         const mapping =
-            templateTypeChecker.getTemplateMappingAtShimLocation(symbol.bindings[0].shimLocation)!;
+            templateTypeChecker.getTemplateMappingAtTcbLocation(symbol.bindings[0].tcbLocation)!;
         expect(mapping.span.toString()).toEqual('name');
       });
 
@@ -153,10 +153,10 @@ runInEachFileSystem(() => {
 
           // Ensure we can map the shim locations back to the template
           const initializerMapping =
-              templateTypeChecker.getTemplateMappingAtShimLocation(symbol.initializerLocation)!;
+              templateTypeChecker.getTemplateMappingAtTcbLocation(symbol.initializerLocation)!;
           expect(initializerMapping.span.toString()).toEqual('bar');
           const localVarMapping =
-              templateTypeChecker.getTemplateMappingAtShimLocation(symbol.localVarLocation)!;
+              templateTypeChecker.getTemplateMappingAtTcbLocation(symbol.localVarLocation)!;
           expect(localVarMapping.span.toString()).toEqual('contextFoo');
         });
 
@@ -176,7 +176,7 @@ runInEachFileSystem(() => {
 
           // Ensure we can map the var shim location back to the template
           const localVarMapping =
-              templateTypeChecker.getTemplateMappingAtShimLocation(symbol.referenceVarLocation);
+              templateTypeChecker.getTemplateMappingAtTcbLocation(symbol.referenceVarLocation);
           expect(localVarMapping!.span.toString()).toEqual('ref1');
         });
 

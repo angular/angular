@@ -13,7 +13,6 @@ import {absoluteFrom, getSourceFileOrError} from '../../file_system';
 import {runInEachFileSystem} from '../../file_system/testing';
 import {getTokenAtPosition} from '../../util/src/typescript';
 import {CompletionKind, GlobalCompletion, TemplateTypeChecker, TypeCheckingConfig} from '../api';
-
 import {getClass, setup, TypeCheckingTarget} from '../testing';
 
 runInEachFileSystem(() => {
@@ -21,15 +20,15 @@ runInEachFileSystem(() => {
     it('should return a completion point in the TCB for the component context', () => {
       const {completions, program} = setupCompletions(`No special template needed`);
       expect(completions.templateContext.size).toBe(0);
-      const {shimPath, positionInShimFile} = completions.componentContext;
-      const tcbSf = getSourceFileOrError(program, shimPath);
-      const node = getTokenAtPosition(tcbSf, positionInShimFile).parent;
+      const {tcbPath, positionInFile} = completions.componentContext;
+      const tcbSf = getSourceFileOrError(program, tcbPath);
+      const node = getTokenAtPosition(tcbSf, positionInFile).parent;
       if (!ts.isExpressionStatement(node)) {
         return fail(`Expected a ts.ExpressionStatement`);
       }
       expect(node.expression.getText()).toEqual('ctx.');
       // The position should be between the '.' and a following space.
-      expect(tcbSf.text.substr(positionInShimFile - 1, 2)).toEqual('. ');
+      expect(tcbSf.text.slice(positionInFile - 1, positionInFile + 1)).toEqual('. ');
     });
 
     it('should return additional completions for references and variables when available', () => {

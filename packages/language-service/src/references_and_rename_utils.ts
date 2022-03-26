@@ -9,13 +9,13 @@ import {AST, BindingPipe, LiteralPrimitive, PropertyRead, PropertyWrite, SafePro
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import {absoluteFrom} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {DirectiveMeta, PipeMeta} from '@angular/compiler-cli/src/ngtsc/metadata';
-import {DirectiveSymbol, ShimLocation, Symbol, SymbolKind, TemplateTypeChecker} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
+import {DirectiveSymbol, Symbol, SymbolKind, TcbLocation, TemplateTypeChecker} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import {ExpressionIdentifier, hasExpressionIdentifier} from '@angular/compiler-cli/src/ngtsc/typecheck/src/comments';
 import ts from 'typescript';
 
 import {getTargetAtPosition, TargetNodeKind} from './template_target';
 import {findTightestNode, getParentClassDeclaration} from './ts_utils';
-import {getDirectiveMatchesForAttribute, getDirectiveMatchesForElementTag, getTemplateLocationFromShimLocation, isWithin, TemplateInfo, toTextSpan} from './utils';
+import {getDirectiveMatchesForAttribute, getDirectiveMatchesForElementTag, getTemplateLocationFromTcbLocation, isWithin, TemplateInfo, toTextSpan} from './utils';
 
 /** Represents a location in a file. */
 export interface FilePosition {
@@ -24,10 +24,10 @@ export interface FilePosition {
 }
 
 /**
- * Converts a `ShimLocation` to a more genericly named `FilePosition`.
+ * Converts a `TcbLocation` to a more genericly named `FilePosition`.
  */
-function toFilePosition(shimLocation: ShimLocation): FilePosition {
-  return {fileName: shimLocation.shimPath, position: shimLocation.positionInShimFile};
+function toFilePosition(tcbLocation: TcbLocation): FilePosition {
+  return {fileName: tcbLocation.tcbPath, position: tcbLocation.positionInFile};
 }
 export interface TemplateLocationDetails {
   /**
@@ -147,7 +147,7 @@ export function getTargetDetailsAtTemplatePosition(
       case SymbolKind.Input:
       case SymbolKind.Output: {
         details.push({
-          typescriptLocations: symbol.bindings.map(binding => toFilePosition(binding.shimLocation)),
+          typescriptLocations: symbol.bindings.map(binding => toFilePosition(binding.tcbLocation)),
           templateTarget,
           symbol,
         });
@@ -156,7 +156,7 @@ export function getTargetDetailsAtTemplatePosition(
       case SymbolKind.Pipe:
       case SymbolKind.Expression: {
         details.push({
-          typescriptLocations: [toFilePosition(symbol.shimLocation)],
+          typescriptLocations: [toFilePosition(symbol.tcbLocation)],
           templateTarget,
           symbol,
         });
@@ -221,7 +221,7 @@ export function convertToTemplateDocumentSpan<T extends ts.DocumentSpan>(
   // TODO(atscott): Determine how to consistently resolve paths. i.e. with the project
   // serverHost or LSParseConfigHost in the adapter. We should have a better defined way to
   // normalize paths.
-  const mapping = getTemplateLocationFromShimLocation(
+  const mapping = getTemplateLocationFromTcbLocation(
       templateTypeChecker, absoluteFrom(shimDocumentSpan.fileName),
       shimDocumentSpan.textSpan.start);
   if (mapping === null) {
