@@ -16,6 +16,10 @@ In Q4 2021 we designed a solution for introducing strict typings for forms and i
 
 In the process of making Angular simpler, we're working on introducing APIs that allow developers to bootstrap applications, instantiate components, and use the router without NgModules. We'll share an RFC to start a design discussion with the community, followed by a series of pull request with the implementation. In the first part of this project we finalized the design of standalone components, directives, and pipes ([RFC](https://github.com/angular/angular/discussions/43784)).
 
+### Improve image performance
+
+The [Aurora](https://web.dev/introducing-aurora/) and the Angular teams have started a collaboration to design and implement a new directive that would help Angular users to leverage various image optimization techniques. We are in the process of initial research and design.
+
 ### Investigate micro frontend architecture for scalable development processes
 
 We conducted a series of 40 interviews to understand the requirements for micro-frontend architecture of the community. We'll follow up with a broader community survey and share analysis of the results publicly.
