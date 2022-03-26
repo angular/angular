@@ -34,14 +34,12 @@ describe('CdkVirtualScrollViewport', () => {
     let testComponent: FixedSizeVirtualScroll;
     let viewport: CdkVirtualScrollViewport;
 
-    beforeEach(
-      waitForAsync(() => {
-        TestBed.configureTestingModule({
-          imports: [ScrollingModule],
-          declarations: [FixedSizeVirtualScroll],
-        }).compileComponents();
-      }),
-    );
+    beforeEach(waitForAsync(() => {
+      TestBed.configureTestingModule({
+        imports: [ScrollingModule],
+        declarations: [FixedSizeVirtualScroll],
+      }).compileComponents();
+    }));
 
     beforeEach(() => {
       fixture = TestBed.createComponent(FixedSizeVirtualScroll);
@@ -969,14 +967,12 @@ describe('CdkVirtualScrollViewport', () => {
     let testComponent: VirtualScrollWithItemInjectingViewContainer;
     let viewport: CdkVirtualScrollViewport;
 
-    beforeEach(
-      waitForAsync(() => {
-        TestBed.configureTestingModule({
-          imports: [ScrollingModule],
-          declarations: [VirtualScrollWithItemInjectingViewContainer, InjectsViewContainer],
-        }).compileComponents();
-      }),
-    );
+    beforeEach(waitForAsync(() => {
+      TestBed.configureTestingModule({
+        imports: [ScrollingModule],
+        declarations: [VirtualScrollWithItemInjectingViewContainer, InjectsViewContainer],
+      }).compileComponents();
+    }));
 
     beforeEach(() => {
       fixture = TestBed.createComponent(VirtualScrollWithItemInjectingViewContainer);
@@ -1006,17 +1002,15 @@ describe('CdkVirtualScrollViewport', () => {
     let testComponent: DelayedInitializationVirtualScroll;
     let viewport: CdkVirtualScrollViewport;
 
-    beforeEach(
-      waitForAsync(() => {
-        TestBed.configureTestingModule({
-          imports: [ScrollingModule, CommonModule],
-          declarations: [DelayedInitializationVirtualScroll],
-        }).compileComponents();
-        fixture = TestBed.createComponent(DelayedInitializationVirtualScroll);
-        testComponent = fixture.componentInstance;
-        viewport = testComponent.viewport;
-      }),
-    );
+    beforeEach(waitForAsync(() => {
+      TestBed.configureTestingModule({
+        imports: [ScrollingModule, CommonModule],
+        declarations: [DelayedInitializationVirtualScroll],
+      }).compileComponents();
+      fixture = TestBed.createComponent(DelayedInitializationVirtualScroll);
+      testComponent = fixture.componentInstance;
+      viewport = testComponent.viewport;
+    }));
 
     it('should call custom trackBy when virtual for is added after init', fakeAsync(() => {
       finishInit(fixture);
@@ -1037,17 +1031,15 @@ describe('CdkVirtualScrollViewport', () => {
     let testComponent: VirtualScrollWithAppendOnly;
     let viewport: CdkVirtualScrollViewport;
 
-    beforeEach(
-      waitForAsync(() => {
-        TestBed.configureTestingModule({
-          imports: [ScrollingModule, CommonModule],
-          declarations: [VirtualScrollWithAppendOnly],
-        }).compileComponents();
-        fixture = TestBed.createComponent(VirtualScrollWithAppendOnly);
-        testComponent = fixture.componentInstance;
-        viewport = testComponent.viewport;
-      }),
-    );
+    beforeEach(waitForAsync(() => {
+      TestBed.configureTestingModule({
+        imports: [ScrollingModule, CommonModule],
+        declarations: [VirtualScrollWithAppendOnly],
+      }).compileComponents();
+      fixture = TestBed.createComponent(VirtualScrollWithAppendOnly);
+      testComponent = fixture.componentInstance;
+      viewport = testComponent.viewport;
+    }));
 
     it('should not remove item that have already been rendered', fakeAsync(() => {
       finishInit(fixture);
