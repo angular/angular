@@ -19,7 +19,7 @@ import {ClassDeclaration, isNamedClassDeclaration, ReflectionHost} from '../../r
 import {ComponentScopeReader, TypeCheckScopeRegistry} from '../../scope';
 import {isShim} from '../../shims';
 import {getSourceFileOrNull, isSymbolWithValueDeclaration} from '../../util/src/typescript';
-import {DirectiveInScope, ElementSymbol, FullTemplateMapping, GlobalCompletion, NgTemplateDiagnostic, OptimizeFor, PipeInScope, ProgramTypeCheckAdapter, ShimLocation, Symbol, TemplateDiagnostic, TemplateId, TemplateSymbol, TemplateTypeChecker, TypeCheckableDirectiveMeta, TypeCheckingConfig} from '../api';
+import {DirectiveInScope, ElementSymbol, FullTemplateMapping, GlobalCompletion, NgTemplateDiagnostic, OptimizeFor, PipeInScope, ProgramTypeCheckAdapter, Symbol, TcbLocation, TemplateDiagnostic, TemplateId, TemplateSymbol, TemplateTypeChecker, TypeCheckableDirectiveMeta, TypeCheckingConfig} from '../api';
 import {makeTemplateDiagnostic} from '../diagnostics';
 
 import {CompletionEngine} from './completion';
@@ -151,20 +151,20 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     return null;
   }
 
-  getTemplateMappingAtShimLocation({shimPath, positionInShimFile}: ShimLocation):
-      FullTemplateMapping|null {
-    const records = this.getFileAndShimRecordsForPath(absoluteFrom(shimPath));
+  getTemplateMappingAtTcbLocation({tcbPath, positionInFile}: TcbLocation): FullTemplateMapping
+      |null {
+    const records = this.getFileAndShimRecordsForPath(absoluteFrom(tcbPath));
     if (records === null) {
       return null;
     }
     const {fileRecord} = records;
 
-    const shimSf = this.programDriver.getProgram().getSourceFile(absoluteFrom(shimPath));
+    const shimSf = this.programDriver.getProgram().getSourceFile(absoluteFrom(tcbPath));
     if (shimSf === undefined) {
       return null;
     }
     return getTemplateMapping(
-        shimSf, positionInShimFile, fileRecord.sourceManager, /*isDiagnosticsRequest*/ false);
+        shimSf, positionInFile, fileRecord.sourceManager, /*isDiagnosticsRequest*/ false);
   }
 
   generateAllTypeCheckBlocks() {
@@ -270,7 +270,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
   }
 
   getExpressionCompletionLocation(
-      ast: PropertyRead|SafePropertyRead, component: ts.ClassDeclaration): ShimLocation|null {
+      ast: PropertyRead|SafePropertyRead, component: ts.ClassDeclaration): TcbLocation|null {
     const engine = this.getOrCreateCompletionEngine(component);
     if (engine === null) {
       return null;
@@ -280,7 +280,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
   }
 
   getLiteralCompletionLocation(
-      node: LiteralPrimitive|TmplAstTextAttribute, component: ts.ClassDeclaration): ShimLocation
+      node: LiteralPrimitive|TmplAstTextAttribute, component: ts.ClassDeclaration): TcbLocation
       |null {
     const engine = this.getOrCreateCompletionEngine(component);
     if (engine === null) {
