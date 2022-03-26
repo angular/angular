@@ -50,9 +50,13 @@ class NullishCoalescingNotNullableCheck extends
     if (symbol.kind !== SymbolKind.Expression) {
       return [];
     }
-    const span = ctx.templateTypeChecker.getTemplateMappingAtTcbLocation(symbol.tcbLocation)!.span;
+    const templateMapping =
+        ctx.templateTypeChecker.getTemplateMappingAtTcbLocation(symbol.tcbLocation);
+    if (templateMapping === null) {
+      return [];
+    }
     const diagnostic = ctx.makeTemplateDiagnostic(
-        span,
+        templateMapping.span,
         `The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed.`);
     return [diagnostic];
   }
