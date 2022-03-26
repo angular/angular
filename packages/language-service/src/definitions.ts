@@ -11,13 +11,13 @@ import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import {absoluteFrom} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {isExternalResource} from '@angular/compiler-cli/src/ngtsc/metadata';
 import {ProgramDriver} from '@angular/compiler-cli/src/ngtsc/program_driver';
-import {DirectiveSymbol, DomBindingSymbol, ElementSymbol, ShimLocation, Symbol, SymbolKind, TemplateSymbol} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
+import {DirectiveSymbol, DomBindingSymbol, ElementSymbol, Symbol, SymbolKind, TcbLocation, TemplateSymbol} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import ts from 'typescript';
 
 import {convertToTemplateDocumentSpan} from './references_and_rename_utils';
 import {getTargetAtPosition, TargetNodeKind} from './template_target';
 import {findTightestNode, getParentClassDeclaration} from './ts_utils';
-import {flatMap, getDirectiveMatchesForAttribute, getDirectiveMatchesForElementTag, getTemplateInfoAtPosition, getTemplateLocationFromShimLocation, getTextSpanOfNode, isDollarEvent, isTypeScriptFile, TemplateInfo, toTextSpan} from './utils';
+import {flatMap, getDirectiveMatchesForAttribute, getDirectiveMatchesForElementTag, getTemplateInfoAtPosition, getTemplateLocationFromTcbLocation, getTextSpanOfNode, isDollarEvent, isTypeScriptFile, TemplateInfo, toTextSpan} from './utils';
 
 interface DefinitionMeta {
   node: AST|TmplAstNode;
@@ -25,8 +25,8 @@ interface DefinitionMeta {
   symbol: Symbol;
 }
 
-interface HasShimLocation {
-  shimLocation: ShimLocation;
+interface HasTcbLocation {
+  tcbLocation: TcbLocation;
 }
 
 export class DefinitionBuilder {
@@ -107,11 +107,11 @@ export class DefinitionBuilder {
       case SymbolKind.Reference: {
         const definitions: ts.DefinitionInfo[] = [];
         if (symbol.declaration !== node) {
-          const shimLocation = symbol.kind === SymbolKind.Variable ? symbol.localVarLocation :
-                                                                     symbol.referenceVarLocation;
-          const mapping = getTemplateLocationFromShimLocation(
-              this.compiler.getTemplateTypeChecker(), shimLocation.shimPath,
-              shimLocation.positionInShimFile);
+          const tcbLocation = symbol.kind === SymbolKind.Variable ? symbol.localVarLocation :
+                                                                    symbol.referenceVarLocation;
+          const mapping = getTemplateLocationFromTcbLocation(
+              this.compiler.getTemplateTypeChecker(), tcbLocation.tcbPath,
+              tcbLocation.positionInFile);
           if (mapping !== null) {
             definitions.push({
               name: symbol.declaration.name,
@@ -126,7 +126,7 @@ export class DefinitionBuilder {
         }
         if (symbol.kind === SymbolKind.Variable) {
           definitions.push(
-              ...this.getDefinitionsForSymbols({shimLocation: symbol.initializerLocation}));
+              ...this.getDefinitionsForSymbols({tcbLocation: symbol.initializerLocation}));
         }
         return definitions;
       }
@@ -136,10 +136,10 @@ export class DefinitionBuilder {
     }
   }
 
-  private getDefinitionsForSymbols(...symbols: HasShimLocation[]): ts.DefinitionInfo[] {
-    return flatMap(symbols, ({shimLocation}) => {
-      const {shimPath, positionInShimFile} = shimLocation;
-      const definitionInfos = this.tsLS.getDefinitionAtPosition(shimPath, positionInShimFile);
+  private getDefinitionsForSymbols(...symbols: HasTcbLocation[]): ts.DefinitionInfo[] {
+    return flatMap(symbols, ({tcbLocation}) => {
+      const {tcbPath, positionInFile} = tcbLocation;
+      const definitionInfos = this.tsLS.getDefinitionAtPosition(tcbPath, positionInFile);
       if (definitionInfos === undefined) {
         return [];
       }
@@ -212,14 +212,14 @@ export class DefinitionBuilder {
         }
         case SymbolKind.Reference:
           definitions.push(
-              ...this.getTypeDefinitionsForSymbols({shimLocation: symbol.targetLocation}));
+              ...this.getTypeDefinitionsForSymbols({tcbLocation: symbol.targetLocation}));
           break;
         case SymbolKind.Expression:
           definitions.push(...this.getTypeDefinitionsForSymbols(symbol));
           break;
         case SymbolKind.Variable: {
           definitions.push(
-              ...this.getTypeDefinitionsForSymbols({shimLocation: symbol.initializerLocation}));
+              ...this.getTypeDefinitionsForSymbols({tcbLocation: symbol.initializerLocation}));
           break;
         }
       }
@@ -278,10 +278,10 @@ export class DefinitionBuilder {
     return this.getTypeDefinitionsForSymbols(...dirs);
   }
 
-  private getTypeDefinitionsForSymbols(...symbols: HasShimLocation[]): ts.DefinitionInfo[] {
-    return flatMap(symbols, ({shimLocation}) => {
-      const {shimPath, positionInShimFile} = shimLocation;
-      return this.tsLS.getTypeDefinitionAtPosition(shimPath, positionInShimFile) ?? [];
+  private getTypeDefinitionsForSymbols(...symbols: HasTcbLocation[]): ts.DefinitionInfo[] {
+    return flatMap(symbols, ({tcbLocation}) => {
+      const {tcbPath, positionInFile} = tcbLocation;
+      return this.tsLS.getTypeDefinitionAtPosition(tcbPath, positionInFile) ?? [];
     });
   }
 
