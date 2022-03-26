@@ -52,7 +52,7 @@ export function getSignatureHelp(
   switch (targetInfo.context.kind) {
     case TargetNodeKind.RawExpression:
       // For normal expressions, just use the primary TCB position of the expression.
-      shimPosition = symbol.shimLocation.positionInShimFile;
+      shimPosition = symbol.tcbLocation.positionInFile;
 
       // Walk up the parents of this expression and try to find a
       // `Call` for which signature information is being fetched.
@@ -87,10 +87,9 @@ export function getSignatureHelp(
       // from it directly.
       //
       // First, use `findTightestNode` to locate the `ts.Node` at `symbol`'s location.
-      const shimSf =
-          getSourceFileOrError(compiler.getCurrentProgram(), symbol.shimLocation.shimPath);
+      const shimSf = getSourceFileOrError(compiler.getCurrentProgram(), symbol.tcbLocation.tcbPath);
       let shimNode: ts.Node|null =
-          findTightestNode(shimSf, symbol.shimLocation.positionInShimFile) ?? null;
+          findTightestNode(shimSf, symbol.tcbLocation.positionInFile) ?? null;
 
       // This node should be somewhere inside a `ts.CallExpression`. Walk up the AST to find it.
       while (shimNode !== null) {
@@ -115,7 +114,7 @@ export function getSignatureHelp(
       break;
   }
 
-  const res = tsLS.getSignatureHelpItems(symbol.shimLocation.shimPath, shimPosition, options);
+  const res = tsLS.getSignatureHelpItems(symbol.tcbLocation.tcbPath, shimPosition, options);
   if (res === undefined) {
     return undefined;
   }
