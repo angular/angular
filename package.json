@@ -179,7 +179,7 @@
     "@angular/dev-infra-private": "https://github.com/angular/dev-infra-private-builds.git#5a82e6017227f7017c76c8117bcbf975e19ef894",
     "@bazel/bazelisk": "^1.7.5",
     "@bazel/buildifier": "^5.0.0",
-    "@bazel/ibazel": "^0.15.8",
+    "@bazel/ibazel": "^0.16.0",
     "@octokit/graphql": "^4.6.1",
     "@types/browser-sync": "^2.26.1",
     "@types/cldrjs": "^0.4.22",
