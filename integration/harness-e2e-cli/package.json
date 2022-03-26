@@ -43,7 +43,7 @@
     "karma-jasmine": "~4.0.0",
     "karma-jasmine-html-reporter": "~1.7.0",
     "selenium-webdriver": "3.6.0",
-    "ts-node": "~9.1.1",
+    "ts-node": "~10.7.0",
     "typescript": "file:../../node_modules/typescript",
     "wait-on": "^6.0.0"
   }

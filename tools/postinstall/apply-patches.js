@@ -14,7 +14,7 @@ const chalk = require('chalk');
  * Version of the post install patch. Needs to be incremented when
  * existing patches or edits have been modified.
  */
-const PATCH_VERSION = 14;
+const PATCH_VERSION = 15;
 
 /** Path to the project directory. */
 const projectDir = path.join(__dirname, '../..');
@@ -54,6 +54,9 @@ async function main() {
 function applyPatches() {
   // Switches the devmode output for Angular Bazel to ES2020 target and module.
   applyPatch(path.join(__dirname, './devmode-es2020-bazel.patch'));
+
+  // Workaround until https://github.com/google/tsec/pull/25 is available.
+  searchAndReplace('@bazel/typescript', '@bazel/concatjs', 'node_modules/tsec/index.bzl');
 
   // More info in https://github.com/angular/angular/pull/33786
   shelljs.rm('-rf', [

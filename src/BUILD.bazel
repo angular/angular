@@ -1,4 +1,4 @@
-load("@npm//@bazel/typescript:index.bzl", "ts_config")
+load("@npm//@bazel/concatjs:index.bzl", "ts_config")
 load("//src/cdk:config.bzl", "CDK_ENTRYPOINTS")
 load("//src/material:config.bzl", "MATERIAL_ENTRYPOINTS", "MATERIAL_TESTING_ENTRYPOINTS")
 load("//tools/dgeni:index.bzl", "dgeni_api_docs")

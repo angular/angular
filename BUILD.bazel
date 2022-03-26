@@ -1,3 +1,4 @@
+load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary")
 load("//:pkg-externals.bzl", "PKG_EXTERNALS")
 load("//src/cdk:config.bzl", "CDK_ENTRYPOINTS")
 load("//src/cdk-experimental:config.bzl", "CDK_EXPERIMENTAL_ENTRYPOINTS")
@@ -10,6 +11,13 @@ exports_files([
     "LICENSE",
     "package.json",
 ])
+
+nodejs_binary(
+    name = "yarn_vendored",
+    data = [".yarn/releases/yarn-1.22.17.cjs"],
+    entry_point = ".yarn/releases/yarn-1.22.17.cjs",
+    visibility = ["//integration:__subpackages__"],
+)
 
 # Target which writes the list of package externals into a JSON file so that the
 # Starlark-configured externals (for the NPM package bundling) can be passed to

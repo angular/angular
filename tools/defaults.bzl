@@ -12,7 +12,7 @@ load("@npm//@angular/dev-infra-private/bazel/http-server:index.bzl", _http_serve
 load("@npm//@angular/dev-infra-private/bazel:extract_js_module_output.bzl", "extract_js_module_output")
 load("@npm//@bazel/jasmine:index.bzl", _jasmine_node_test = "jasmine_node_test")
 load("@npm//@bazel/protractor:index.bzl", _protractor_web_test_suite = "protractor_web_test_suite")
-load("@npm//@bazel/typescript:index.bzl", _ts_library = "ts_library")
+load("@npm//@bazel/concatjs:index.bzl", _ts_library = "ts_library")
 load("@npm//tsec:index.bzl", _tsec_test = "tsec_test")
 load("//:packages.bzl", "NO_STAMP_NPM_PACKAGE_SUBSTITUTIONS", "NPM_PACKAGE_SUBSTITUTIONS")
 load("//:pkg-externals.bzl", "PKG_EXTERNALS")
@@ -338,16 +338,10 @@ def node_integration_test(setup_chromium = False, node_repository = "nodejs", **
     environment = kwargs.pop("environment", {})
     tool_mappings = kwargs.pop("tool_mappings", {})
 
-    data += [
-        # The Yarn files also need to be part of the integration test as runfiles
-        # because the `yarn_bin` target is not a self-contained standalone binary.
-        "@%s//:yarn_files" % node_repository,
-    ]
-
     # Setup Yarn and Node as tools in a way that allows for them to be overridden.
     tool_mappings = dict({
-        "@%s//:yarn_bin" % node_repository: "yarn",
-        "@%s//:node_bin" % node_repository: "node",
+        "//:yarn_vendored": "yarn",
+        "@%s_toolchains//:resolved_toolchain" % node_repository: "node",
     }, **tool_mappings)
 
     # If Chromium should be configured, add it to the runfiles and expose its binaries

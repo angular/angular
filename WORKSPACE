@@ -8,9 +8,8 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 # Add NodeJS rules
 http_archive(
     name = "build_bazel_rules_nodejs",
-    patches = ["//tools:multiple-node-versions.patch"],
-    sha256 = "f7037c8e295fdc921f714962aee7c496110052511e2b14076bd8e2d46bc9819c",
-    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/4.4.5/rules_nodejs-4.4.5.tar.gz"],
+    sha256 = "3ceb1e5b5dcad5fa2ad8870a20201cfbb9c9c63cac4055c9ab370034c765297f",
+    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/5.3.0/rules_nodejs-5.3.0.tar.gz"],
 )
 
 # Add sass rules
@@ -28,10 +27,10 @@ http_archive(
 # for declaring Bazel build setting flags.
 http_archive(
     name = "bazel_skylib",
-    sha256 = "191ea53b19b7e49b5b63d0ef81d1a6278227f9ac2c09fed1c2b3a75d573f1eeb",
-    strip_prefix = "bazel-skylib-b2ed61686ebca2a44d44857fef5b3e1d31cc2483",
+    sha256 = "a9c5d3a22461ed7063aa7b088f9c96fa0aaaa8b6984b601f84d705adc47d8a58",
+    strip_prefix = "bazel-skylib-8334f938c1574ef6f1f7a38a03550a31df65274e",
     urls = [
-        "https://github.com/bazelbuild/bazel-skylib/archive/b2ed61686ebca2a44d44857fef5b3e1d31cc2483.tar.gz",
+        "https://github.com/bazelbuild/bazel-skylib/archive/8334f938c1574ef6f1f7a38a03550a31df65274e.tar.gz",
     ],
 )
 
@@ -52,14 +51,18 @@ load("@bazel_skylib//:workspace.bzl", "bazel_skylib_workspace")
 
 bazel_skylib_workspace()
 
-load("@build_bazel_rules_nodejs//:index.bzl", "node_repositories", "yarn_install")
+load("@build_bazel_rules_nodejs//:repositories.bzl", "build_bazel_rules_nodejs_dependencies")
 
-node_repositories(
-    # TOOD: Bring this in sync with CircleCI and nvmrc once we are on `rules_nodejs`#v5.
-    node_version = "16.10.0",
-    package_json = ["//:package.json"],
+build_bazel_rules_nodejs_dependencies()
+
+load("@rules_nodejs//nodejs:repositories.bzl", "nodejs_register_toolchains")
+
+nodejs_register_toolchains(
+    name = "nodejs",
+    node_version = "16.14.0",
 )
 
+load("@build_bazel_rules_nodejs//:index.bzl", "yarn_install")
 load("//tools:integration.bzl", "create_npm_package_archive_build_file")
 
 yarn_install(
@@ -67,12 +70,23 @@ yarn_install(
     # We add the postinstall patches file here so that Yarn will rerun whenever
     # the file is modified.
     data = [
+        "//:.yarn/releases/yarn-1.22.17.cjs",
+        "//:.yarnrc",
         "//:tools/postinstall/apply-patches.js",
+        "//:tools/postinstall/devmode-es2020-bazel.patch",
     ],
+    # Currently disabled due to:
+    #  1. Missing Windows support currently.
+    #  2. Incompatibilites with the `ts_library` rule.
+    exports_directories_only = False,
     # Add archive targets for some NPM packages that are needed in integration tests.
     manual_build_file_contents = create_npm_package_archive_build_file(),
     package_json = "//:package.json",
     quiet = False,
+    # We prefer to symlink the `node_modules` to only maintain a single install.
+    # See https://github.com/angular/dev-infra/pull/446#issuecomment-1059820287 for details.
+    symlink_node_modules = True,
+    yarn = "//:.yarn/releases/yarn-1.22.17.cjs",
     yarn_lock = "//:yarn.lock",
 )
 
@@ -106,4 +120,6 @@ _dev_infra_browser_repositories()
 
 load("@build_bazel_rules_nodejs//toolchains/esbuild:esbuild_repositories.bzl", "esbuild_repositories")
 
-esbuild_repositories()
+esbuild_repositories(
+    npm_repository = "npm",
+)
