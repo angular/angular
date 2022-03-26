@@ -146,6 +146,28 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     return this.getFileAndShimRecordsForPath(filePath) !== null;
   }
 
+  private getFileRecordForTcbLocation({tcbPath, isShimFile}: TcbLocation): FileTypeCheckingData
+      |null {
+    if (!isShimFile) {
+      // The location is not within a shim file but corresponds with an inline TCB in an original
+      // source file; we can obtain the record directly by its path.
+      if (this.state.has(tcbPath)) {
+        return this.state.get(tcbPath)!;
+      } else {
+        return null;
+      }
+    }
+
+    // The location is within a type-checking shim file; find the type-checking data that owns this
+    // shim path.
+    const records = this.getFileAndShimRecordsForPath(tcbPath);
+    if (records !== null) {
+      return records.fileRecord;
+    } else {
+      return null;
+    }
+  }
+
   private getFileAndShimRecordsForPath(shimPath: AbsoluteFsPath):
       {fileRecord: FileTypeCheckingData, shimRecord: ShimTypeCheckingData}|null {
     for (const fileRecord of this.state.values()) {
@@ -156,20 +178,19 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     return null;
   }
 
-  getTemplateMappingAtTcbLocation({tcbPath, positionInFile}: TcbLocation): FullTemplateMapping
-      |null {
-    const records = this.getFileAndShimRecordsForPath(absoluteFrom(tcbPath));
-    if (records === null) {
+  getTemplateMappingAtTcbLocation(tcbLocation: TcbLocation): FullTemplateMapping|null {
+    const fileRecord = this.getFileRecordForTcbLocation(tcbLocation);
+    if (fileRecord === null) {
       return null;
     }
-    const {fileRecord} = records;
 
-    const shimSf = this.programDriver.getProgram().getSourceFile(absoluteFrom(tcbPath));
+    const shimSf = this.programDriver.getProgram().getSourceFile(tcbLocation.tcbPath);
     if (shimSf === undefined) {
       return null;
     }
     return getTemplateMapping(
-        shimSf, positionInFile, fileRecord.sourceManager, /*isDiagnosticsRequest*/ false);
+        shimSf, tcbLocation.positionInFile, fileRecord.sourceManager,
+        /*isDiagnosticsRequest*/ false);
   }
 
   generateAllTypeCheckBlocks() {
