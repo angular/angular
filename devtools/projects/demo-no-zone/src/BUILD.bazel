@@ -1,7 +1,6 @@
 load("//devtools/tools:ng_module.bzl", "ng_module")
 load("@build_bazel_rules_nodejs//:index.bzl", "pkg_web")
-load("//tools:defaults.bzl", "esbuild")
-load("//devtools/tools/dev-server:index.bzl", "dev_server")
+load("//tools:defaults.bzl", "esbuild", "http_server")
 
 package(default_visibility = ["//:__subpackages__"])
 
@@ -51,7 +50,7 @@ pkg_web(
     ],
 )
 
-dev_server(
+http_server(
     name = "devserver",
     srcs = [":dev_app_static_files"],
     additional_root_paths = ["angular/devtools/projects/demo-no-zone/src/devapp"],
