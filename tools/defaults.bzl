@@ -255,7 +255,7 @@ def jasmine_node_test(**kwargs):
     kwargs["templated_args"] = ["--bazel_patch_module_resolver"] + kwargs.get("templated_args", [])
     _jasmine_node_test(**kwargs)
 
-def ng_test_library(deps = [], tsconfig = None, **kwargs):
+def ng_test_library(deps = [], **kwargs):
     local_deps = [
         # We declare "@angular/core" as default dependencies because
         # all Angular component unit tests use the `TestBed` and `Component` exports.
@@ -269,7 +269,7 @@ def ng_test_library(deps = [], tsconfig = None, **kwargs):
         **kwargs
     )
 
-def ng_e2e_test_library(deps = [], tsconfig = None, **kwargs):
+def ng_e2e_test_library(deps = [], **kwargs):
     local_deps = [
         "@npm//@types/jasmine",
         "@npm//@types/selenium-webdriver",
@@ -283,7 +283,6 @@ def ng_e2e_test_library(deps = [], tsconfig = None, **kwargs):
     )
 
 def karma_web_test_suite(name, **kwargs):
-    web_test_args = {}
     test_deps = kwargs.get("deps", [])
 
     kwargs["tags"] = ["partial-compilation-integration"] + kwargs.get("tags", [])
