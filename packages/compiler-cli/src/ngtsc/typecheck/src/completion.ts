@@ -35,9 +35,7 @@ export class CompletionEngine {
       new Map<PropertyRead|SafePropertyRead|LiteralPrimitive|TmplAstTextAttribute, TcbLocation>();
 
 
-  constructor(
-      private tcb: ts.Node, private data: TemplateData, private tcbPath: AbsoluteFsPath,
-      private tcbIsShim: boolean) {
+  constructor(private tcb: ts.Node, private data: TemplateData, private tcbPath: AbsoluteFsPath) {
     // Find the component completion expression within the TCB. This looks like: `ctx. /* ... */;`
     const globalRead = findFirstMatchingNode(this.tcb, {
       filter: ts.isPropertyAccessExpression,
@@ -47,7 +45,6 @@ export class CompletionEngine {
     if (globalRead !== null) {
       this.componentContext = {
         tcbPath: this.tcbPath,
-        isShimFile: this.tcbIsShim,
         // `globalRead.name` is an empty `ts.Identifier`, so its start position immediately follows
         // the `.` in `ctx.`. TS autocompletion APIs can then be used to access completion results
         // for the component context.
@@ -86,7 +83,6 @@ export class CompletionEngine {
       if (nodeLocation !== null) {
         nodeContext = {
           tcbPath: this.tcbPath,
-          isShimFile: this.tcbIsShim,
           positionInFile: nodeLocation.getStart(),
         };
       }
@@ -100,7 +96,6 @@ export class CompletionEngine {
       if (nodeLocation) {
         nodeContext = {
           tcbPath: this.tcbPath,
-          isShimFile: this.tcbIsShim,
           positionInFile: nodeLocation.getStart(),
         };
       }
@@ -153,7 +148,6 @@ export class CompletionEngine {
 
     const res: TcbLocation = {
       tcbPath: this.tcbPath,
-      isShimFile: this.tcbIsShim,
       positionInFile: tsExpr.name.getEnd(),
     };
     this.expressionCompletionCache.set(expr, res);
@@ -194,7 +188,6 @@ export class CompletionEngine {
     }
     const res: TcbLocation = {
       tcbPath: this.tcbPath,
-      isShimFile: this.tcbIsShim,
       positionInFile: positionInShimFile,
     };
     this.expressionCompletionCache.set(expr, res);

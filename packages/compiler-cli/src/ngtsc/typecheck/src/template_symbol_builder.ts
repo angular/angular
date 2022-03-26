@@ -29,8 +29,7 @@ export class SymbolBuilder {
   private symbolCache = new Map<AST|TmplAstNode, Symbol|null>();
 
   constructor(
-      private readonly tcbPath: AbsoluteFsPath,
-      private readonly tcbIsShim: boolean,
+      private readonly shimPath: AbsoluteFsPath,
       private readonly typeCheckBlock: ts.Node,
       private readonly templateData: TemplateData,
       private readonly componentScopeReader: ComponentScopeReader,
@@ -234,7 +233,7 @@ export class SymbolBuilder {
         const addEventListener = outputFieldAccess.name;
         const tsSymbol = this.getTypeChecker().getSymbolAtLocation(addEventListener);
         const tsType = this.getTypeChecker().getTypeAtLocation(addEventListener);
-        const positionInFile = this.getTcbPositionForNode(addEventListener);
+        const positionInShimFile = this.getShimPositionForNode(addEventListener);
         const target = this.getSymbol(consumer);
 
         if (target === null || tsSymbol === undefined) {
@@ -246,11 +245,7 @@ export class SymbolBuilder {
           tsSymbol,
           tsType,
           target,
-          tcbLocation: {
-            tcbPath: this.tcbPath,
-            isShimFile: this.tcbIsShim,
-            positionInFile,
-          },
+          tcbLocation: {tcbPath: this.shimPath, positionInFile: positionInShimFile},
         });
       } else {
         if (!ts.isElementAccessExpression(outputFieldAccess)) {
@@ -268,18 +263,14 @@ export class SymbolBuilder {
           continue;
         }
 
-        const positionInFile = this.getTcbPositionForNode(outputFieldAccess);
+        const positionInShimFile = this.getShimPositionForNode(outputFieldAccess);
         const tsType = this.getTypeChecker().getTypeAtLocation(outputFieldAccess);
         bindings.push({
           kind: SymbolKind.Binding,
           tsSymbol,
           tsType,
           target,
-          tcbLocation: {
-            tcbPath: this.tcbPath,
-            isShimFile: this.tcbIsShim,
-            positionInFile,
-          },
+          tcbLocation: {tcbPath: this.shimPath, positionInFile: positionInShimFile},
         });
       }
     }
@@ -392,9 +383,8 @@ export class SymbolBuilder {
       kind: SymbolKind.Variable,
       declaration: variable,
       localVarLocation: {
-        tcbPath: this.tcbPath,
-        isShimFile: this.tcbIsShim,
-        positionInFile: this.getTcbPositionForNode(node.name),
+        tcbPath: this.shimPath,
+        positionInFile: this.getShimPositionForNode(node.name),
       }
     };
   }
@@ -425,9 +415,8 @@ export class SymbolBuilder {
     }
 
     const referenceVarTcbLocation: TcbLocation = {
-      tcbPath: this.tcbPath,
-      isShimFile: this.tcbIsShim,
-      positionInFile: this.getTcbPositionForNode(node),
+      tcbPath: this.shimPath,
+      positionInFile: this.getShimPositionForNode(node),
     };
     if (target instanceof TmplAstTemplate || target instanceof TmplAstElement) {
       return {
@@ -572,7 +561,7 @@ export class SymbolBuilder {
       tsSymbol = this.getTypeChecker().getSymbolAtLocation(node);
     }
 
-    const positionInFile = this.getTcbPositionForNode(node);
+    const positionInShimFile = this.getShimPositionForNode(node);
     const type = this.getTypeChecker().getTypeAtLocation(node);
     return {
       // If we could not find a symbol, fall back to the symbol on the type for the node.
@@ -580,17 +569,13 @@ export class SymbolBuilder {
       // Examples of this would be literals and `document.createElement('div')`.
       tsSymbol: tsSymbol ?? type.symbol ?? null,
       tsType: type,
-      tcbLocation: {
-        tcbPath: this.tcbPath,
-        isShimFile: this.tcbIsShim,
-        positionInFile,
-      },
+      tcbLocation: {tcbPath: this.shimPath, positionInFile: positionInShimFile},
     };
   }
 
-  private getTcbPositionForNode(node: ts.Node): number {
+  private getShimPositionForNode(node: ts.Node): number {
     if (ts.isTypeReferenceNode(node)) {
-      return this.getTcbPositionForNode(node.typeName);
+      return this.getShimPositionForNode(node.typeName);
     } else if (ts.isQualifiedName(node)) {
       return node.right.getStart();
     } else if (ts.isPropertyAccessExpression(node)) {

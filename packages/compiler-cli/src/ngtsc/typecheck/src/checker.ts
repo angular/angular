@@ -97,7 +97,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
   }
 
   private getLatestComponentState(component: ts.ClassDeclaration):
-      {data: TemplateData|null, tcb: ts.Node|null, tcbPath: AbsoluteFsPath, tcbIsShim: boolean} {
+      {data: TemplateData|null, tcb: ts.Node|null, shimPath: AbsoluteFsPath} {
     this.ensureShimForComponent(component);
 
     const sf = component.getSourceFile();
@@ -107,7 +107,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     const fileRecord = this.getFileData(sfPath);
 
     if (!fileRecord.shimData.has(shimPath)) {
-      return {data: null, tcb: null, tcbPath: shimPath, tcbIsShim: true};
+      return {data: null, tcb: null, shimPath};
     }
 
     const templateId = fileRecord.sourceManager.getTemplateId(component);
@@ -123,15 +123,10 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
 
     let tcb: ts.Node|null = findTypeCheckBlock(shimSf, id, /*isDiagnosticsRequest*/ false);
 
-    let tcbPath = shimPath;
     if (tcb === null) {
       // Try for an inline block.
       const inlineSf = getSourceFileOrError(program, sfPath);
       tcb = findTypeCheckBlock(inlineSf, id, /*isDiagnosticsRequest*/ false);
-
-      if (tcb !== null) {
-        tcbPath = sfPath;
-      }
     }
 
     let data: TemplateData|null = null;
@@ -139,33 +134,11 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       data = shimRecord.templates.get(templateId)!;
     }
 
-    return {data, tcb, tcbPath, tcbIsShim: tcbPath === shimPath};
+    return {data, tcb, shimPath};
   }
 
   isTrackedTypeCheckFile(filePath: AbsoluteFsPath): boolean {
     return this.getFileAndShimRecordsForPath(filePath) !== null;
-  }
-
-  private getFileRecordForTcbLocation({tcbPath, isShimFile}: TcbLocation): FileTypeCheckingData
-      |null {
-    if (!isShimFile) {
-      // The location is not within a shim file but corresponds with an inline TCB in an original
-      // source file; we can obtain the record directly by its path.
-      if (this.state.has(tcbPath)) {
-        return this.state.get(tcbPath)!;
-      } else {
-        return null;
-      }
-    }
-
-    // The location is within a type-checking shim file; find the type-checking data that owns this
-    // shim path.
-    const records = this.getFileAndShimRecordsForPath(tcbPath);
-    if (records !== null) {
-      return records.fileRecord;
-    } else {
-      return null;
-    }
   }
 
   private getFileAndShimRecordsForPath(shimPath: AbsoluteFsPath):
@@ -178,19 +151,20 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     return null;
   }
 
-  getTemplateMappingAtTcbLocation(tcbLocation: TcbLocation): FullTemplateMapping|null {
-    const fileRecord = this.getFileRecordForTcbLocation(tcbLocation);
-    if (fileRecord === null) {
+  getTemplateMappingAtTcbLocation({tcbPath, positionInFile}: TcbLocation): FullTemplateMapping
+      |null {
+    const records = this.getFileAndShimRecordsForPath(absoluteFrom(tcbPath));
+    if (records === null) {
       return null;
     }
+    const {fileRecord} = records;
 
-    const shimSf = this.programDriver.getProgram().getSourceFile(tcbLocation.tcbPath);
+    const shimSf = this.programDriver.getProgram().getSourceFile(absoluteFrom(tcbPath));
     if (shimSf === undefined) {
       return null;
     }
     return getTemplateMapping(
-        shimSf, tcbLocation.positionInFile, fileRecord.sourceManager,
-        /*isDiagnosticsRequest*/ false);
+        shimSf, positionInFile, fileRecord.sourceManager, /*isDiagnosticsRequest*/ false);
   }
 
   generateAllTypeCheckBlocks() {
@@ -360,12 +334,12 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       return this.completionCache.get(component)!;
     }
 
-    const {tcb, data, tcbPath, tcbIsShim} = this.getLatestComponentState(component);
+    const {tcb, data, shimPath} = this.getLatestComponentState(component);
     if (tcb === null || data === null) {
       return null;
     }
 
-    const engine = new CompletionEngine(tcb, data, tcbPath, tcbIsShim);
+    const engine = new CompletionEngine(tcb, data, shimPath);
     this.completionCache.set(component, engine);
     return engine;
   }
@@ -535,13 +509,13 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       return this.symbolBuilderCache.get(component)!;
     }
 
-    const {tcb, data, tcbPath, tcbIsShim} = this.getLatestComponentState(component);
+    const {tcb, data, shimPath} = this.getLatestComponentState(component);
     if (tcb === null || data === null) {
       return null;
     }
 
     const builder = new SymbolBuilder(
-        tcbPath, tcbIsShim, tcb, data, this.componentScopeReader,
+        shimPath, tcb, data, this.componentScopeReader,
         () => this.programDriver.getProgram().getTypeChecker());
     this.symbolBuilderCache.set(component, builder);
     return builder;
