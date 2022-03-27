@@ -75,6 +75,7 @@
     // Custom Rules
     "ts-loader": true,
     "no-exposed-todo": true,
+    "no-type-only-import-export": true,
     "no-private-getters": [true, "^_"],
     "no-undecorated-base-class-di": true,
     "no-undecorated-class-with-angular-features": true,
