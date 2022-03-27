@@ -99,6 +99,9 @@ export abstract class _MatTabGroupBase
   /** The tab index that should be selected after the content has been checked. */
   private _indexToSelect: number | null = 0;
 
+  /** Index of the tab that was focused last. */
+  private _lastFocusedTabIndex: number | null = null;
+
   /** Snapshot of the height of the tab body wrapper before another tab is activated. */
   private _tabBodyWrapperHeight: number = 0;
 
@@ -288,6 +291,7 @@ export abstract class _MatTabGroupBase
 
     if (this._selectedIndex !== indexToSelect) {
       this._selectedIndex = indexToSelect;
+      this._lastFocusedTabIndex = null;
       this._changeDetectorRef.markForCheck();
     }
   }
@@ -313,6 +317,7 @@ export abstract class _MatTabGroupBase
             // event, otherwise the consumer may end up in an infinite loop in some edge cases like
             // adding a tab within the `selectedIndexChange` event.
             this._indexToSelect = this._selectedIndex = i;
+            this._lastFocusedTabIndex = null;
             selectedTab = tabs[i];
             break;
           }
@@ -387,6 +392,7 @@ export abstract class _MatTabGroupBase
   }
 
   _focusChanged(index: number) {
+    this._lastFocusedTabIndex = index;
     this.focusChange.emit(this._createChangeEvent(index));
   }
 
@@ -469,11 +475,12 @@ export abstract class _MatTabGroupBase
   }
 
   /** Retrieves the tabindex for the tab. */
-  _getTabIndex(tab: MatTab, idx: number): number | null {
+  _getTabIndex(tab: MatTab, index: number): number | null {
     if (tab.disabled) {
       return null;
     }
-    return this.selectedIndex === idx ? 0 : -1;
+    const targetIndex = this._lastFocusedTabIndex ?? this.selectedIndex;
+    return index === targetIndex ? 0 : -1;
   }
 
   /** Callback for when the focused state of a tab has changed. */
