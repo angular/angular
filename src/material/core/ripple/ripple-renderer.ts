@@ -23,6 +23,12 @@ export interface RippleTarget {
   rippleDisabled: boolean;
 }
 
+/** Interfaces the defines ripple element transition event listeners. */
+interface RippleEventListeners {
+  onTransitionEnd: EventListener;
+  onTransitionCancel: EventListener;
+}
+
 // TODO: import these values from `@material/ripple` eventually.
 /**
  * Default ripple animation configuration for ripples without an explicit
@@ -65,8 +71,13 @@ export class RippleRenderer implements EventListenerObject {
   /** Whether the pointer is currently down or not. */
   private _isPointerDown = false;
 
-  /** Set of currently active ripple references. */
-  private _activeRipples = new Set<RippleRef>();
+  /**
+   * Map of currently active ripple references.
+   * The ripple reference is mapped to its element event listeners.
+   * The reason why `| null` is used is that event listeners are added only
+   * when the condition is truthy (see the `_startFadeOutTransition` method).
+   */
+  private _activeRipples = new Map<RippleRef, RippleEventListeners | null>();
 
   /** Latest non-persistent ripple that was triggered. */
   private _mostRecentTransientRipple: RippleRef | null;
@@ -164,24 +175,29 @@ export class RippleRenderer implements EventListenerObject {
 
     rippleRef.state = RippleState.FADING_IN;
 
-    // Add the ripple reference to the list of all active ripples.
-    this._activeRipples.add(rippleRef);
-
     if (!config.persistent) {
       this._mostRecentTransientRipple = rippleRef;
     }
+
+    let eventListeners: RippleEventListeners | null = null;
 
     // Do not register the `transition` event listener if fade-in and fade-out duration
     // are set to zero. The events won't fire anyway and we can save resources here.
     if (!animationForciblyDisabledThroughCss && (enterDuration || animationConfig.exitDuration)) {
       this._ngZone.runOutsideAngular(() => {
-        ripple.addEventListener('transitionend', () => this._finishRippleTransition(rippleRef));
+        const onTransitionEnd = () => this._finishRippleTransition(rippleRef);
+        const onTransitionCancel = () => this._destroyRipple(rippleRef);
+        ripple.addEventListener('transitionend', onTransitionEnd);
         // If the transition is cancelled (e.g. due to DOM removal), we destroy the ripple
         // directly as otherwise we would keep it part of the ripple container forever.
         // https://www.w3.org/TR/css-transitions-1/#:~:text=no%20longer%20in%20the%20document.
-        ripple.addEventListener('transitioncancel', () => this._destroyRipple(rippleRef));
+        ripple.addEventListener('transitioncancel', onTransitionCancel);
+        eventListeners = {onTransitionEnd, onTransitionCancel};
       });
     }
+
+    // Add the ripple reference to the list of all active ripples.
+    this._activeRipples.set(rippleRef, eventListeners);
 
     // In case there is no fade-in transition duration, we need to manually call the transition
     // end listener because `transitionend` doesn't fire if there is no transition.
@@ -217,12 +233,12 @@ export class RippleRenderer implements EventListenerObject {
 
   /** Fades out all currently active ripples. */
   fadeOutAll() {
-    this._activeRipples.forEach(ripple => ripple.fadeOut());
+    this._getActiveRipples().forEach(ripple => ripple.fadeOut());
   }
 
   /** Fades out all currently active non-persistent ripples. */
   fadeOutAllNonPersistent() {
-    this._activeRipples.forEach(ripple => {
+    this._getActiveRipples().forEach(ripple => {
       if (!ripple.config.persistent) {
         ripple.fadeOut();
       }
@@ -296,6 +312,7 @@ export class RippleRenderer implements EventListenerObject {
 
   /** Destroys the given ripple by removing it from the DOM and updating its state. */
   private _destroyRipple(rippleRef: RippleRef) {
+    const eventListeners = this._activeRipples.get(rippleRef) ?? null;
     this._activeRipples.delete(rippleRef);
 
     // Clear out the cached bounding rect if we have no more ripples.
@@ -310,6 +327,10 @@ export class RippleRenderer implements EventListenerObject {
     }
 
     rippleRef.state = RippleState.HIDDEN;
+    if (eventListeners !== null) {
+      rippleRef.element.removeEventListener('transitionend', eventListeners.onTransitionEnd);
+      rippleRef.element.removeEventListener('transitioncancel', eventListeners.onTransitionCancel);
+    }
     rippleRef.element.remove();
   }
 
@@ -356,7 +377,7 @@ export class RippleRenderer implements EventListenerObject {
     this._isPointerDown = false;
 
     // Fade-out all ripples that are visible and not persistent.
-    this._activeRipples.forEach(ripple => {
+    this._getActiveRipples().forEach(ripple => {
       // By default, only ripples that are completely visible will fade out on pointer release.
       // If the `terminateOnPointerUp` option is set, ripples that still fade in will also fade out.
       const isVisible =
@@ -376,6 +397,10 @@ export class RippleRenderer implements EventListenerObject {
         this._triggerElement!.addEventListener(type, this, passiveEventOptions);
       });
     });
+  }
+
+  private _getActiveRipples(): RippleRef[] {
+    return Array.from(this._activeRipples.keys());
   }
 
   /** Removes previously registered event listeners from the trigger element. */
