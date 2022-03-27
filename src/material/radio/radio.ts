@@ -18,6 +18,7 @@ import {
   Component,
   ContentChildren,
   Directive,
+  DoCheck,
   ElementRef,
   EventEmitter,
   forwardRef,
@@ -361,7 +362,7 @@ const _MatRadioButtonMixinBase = mixinDisableRipple(mixinTabIndex(MatRadioButton
 @Directive()
 export abstract class _MatRadioButtonBase
   extends _MatRadioButtonMixinBase
-  implements OnInit, AfterViewInit, OnDestroy, CanDisableRipple, HasTabIndex
+  implements OnInit, AfterViewInit, DoCheck, OnDestroy, CanDisableRipple, HasTabIndex
 {
   private _uniqueId: string = `mat-radio-${++nextUniqueId}`;
 
@@ -500,6 +501,9 @@ export abstract class _MatRadioButtonBase
   /** Unregister function for _radioDispatcher */
   private _removeUniqueSelectionListener: () => void = () => {};
 
+  /** Previous value of the input's tabindex. */
+  private _previousTabIndex: number | undefined;
+
   /** The native `<input type=radio>` element */
   @ViewChild('input') _inputElement: ElementRef<HTMLInputElement>;
 
@@ -568,7 +572,12 @@ export abstract class _MatRadioButtonBase
     }
   }
 
+  ngDoCheck(): void {
+    this._updateTabIndex();
+  }
+
   ngAfterViewInit() {
+    this._updateTabIndex();
     this._focusMonitor.monitor(this._elementRef, true).subscribe(focusOrigin => {
       if (!focusOrigin && this.radioGroup) {
         this.radioGroup._touch();
@@ -627,6 +636,33 @@ export abstract class _MatRadioButtonBase
     if (this._disabled !== value) {
       this._disabled = value;
       this._changeDetector.markForCheck();
+    }
+  }
+
+  /** Gets the tabindex for the underlying input element. */
+  private _updateTabIndex() {
+    const group = this.radioGroup;
+    let value: number;
+
+    // Implement a roving tabindex if the button is inside a group. For most cases this isn't
+    // necessary, because the browser handles the tab order for inputs inside a group automatically,
+    // but we need an explicitly higher tabindex for the selected button in order for things like
+    // the focus trap to pick it up correctly.
+    if (!group || !group.selected || this.disabled) {
+      value = this.tabIndex;
+    } else {
+      value = group.selected === this ? this.tabIndex : -1;
+    }
+
+    if (value !== this._previousTabIndex) {
+      // We have to set the tabindex directly on the DOM node, because it depends on
+      // the selected state which is prone to "changed after checked errors".
+      const input: HTMLInputElement | undefined = this._inputElement?.nativeElement;
+
+      if (input) {
+        input.setAttribute('tabindex', value + '');
+        this._previousTabIndex = value;
+      }
     }
   }
 }
