@@ -693,6 +693,12 @@ export class MatSlider
   /** Subscription to changes to the directionality (LTR / RTL) context for the application. */
   private _dirChangeSubscription: Subscription;
 
+  /** Observer used to monitor size changes in the slider. */
+  private _resizeObserver: ResizeObserver | null;
+
+  /** Timeout used to debounce resize listeners. */
+  private _resizeTimer: number;
+
   constructor(
     readonly _ngZone: NgZone,
     readonly _cdr: ChangeDetectorRef,
@@ -727,6 +733,7 @@ export class MatSlider
       this._foundation.init();
       this._foundation.layout();
       this._initialized = true;
+      this._observeHostResize();
     }
     // The MDC foundation requires access to the view and content children of the MatSlider. In
     // order to access the view and content children of MatSlider we need to wait until change
@@ -746,6 +753,9 @@ export class MatSlider
       this._foundation.destroy();
     }
     this._dirChangeSubscription.unsubscribe();
+    this._resizeObserver?.disconnect();
+    this._resizeObserver = null;
+    clearTimeout(this._resizeTimer);
     this._removeUISyncEventListener();
   }
 
@@ -918,6 +928,31 @@ export class MatSlider
   /** Whether the slider thumb ripples should be disabled. */
   _isRippleDisabled(): boolean {
     return this.disabled || this.disableRipple || !!this._globalRippleOptions?.disabled;
+  }
+
+  /** Starts observing and updating the slider if the host changes its size. */
+  private _observeHostResize() {
+    if (typeof ResizeObserver === 'undefined' || !ResizeObserver) {
+      return;
+    }
+
+    // MDC only updates the slider when the window is resized which
+    // doesn't capture changes of the container itself. We use a resize
+    // observer to ensure that the layout is correct (see #24590).
+    this._ngZone.runOutsideAngular(() => {
+      // The callback will fire as soon as an element is observed and
+      // we only want to know after the initial layout.
+      let hasResized = false;
+      this._resizeObserver = new ResizeObserver(() => {
+        if (hasResized) {
+          // Debounce the layouts since they can happen frequently.
+          clearTimeout(this._resizeTimer);
+          this._resizeTimer = setTimeout(this._layout, 50);
+        }
+        hasResized = true;
+      });
+      this._resizeObserver.observe(this._elementRef.nativeElement);
+    });
   }
 }
 
