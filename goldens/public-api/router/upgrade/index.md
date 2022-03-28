@@ -19,7 +19,6 @@ export const RouterUpgradeInitializer: {
 // @public
 export function setUpLocationSync(ngUpgrade: UpgradeModule, urlType?: 'path' | 'hash'): void;
 
-
 // (No @packageDocumentation comment for this package)
 
 ```
