@@ -188,17 +188,7 @@ export interface R3ComponentMetadata extends R3DirectiveMetadata {
     ngContentSelectors: string[];
   };
 
-  /**
-   * A map of pipe names to an expression referencing the pipe type which are in the scope of the
-   * compilation.
-   */
-  pipes: Map<string, o.Expression>;
-
-  /**
-   * A list of directive selectors and an expression referencing the directive type which are in the
-   * scope of the compilation.
-   */
-  directives: R3UsedDirectiveMetadata[];
+  declarations: R3UsedDeclarationMetadata[];
 
   /**
    * Specifies how the 'directives' and/or `pipes` array, if generated, need to be emitted.
@@ -254,11 +244,20 @@ export interface R3ComponentMetadata extends R3DirectiveMetadata {
   changeDetection?: ChangeDetectionStrategy;
 }
 
+export enum R3UsedDeclarationKind {
+  Directive = 0,
+  Pipe = 1,
+}
+
+export type R3UsedDeclarationMetadata = R3UsedDirectiveMetadata|R3UsedPipeMetadata;
+
 /**
  * Information about a directive that is used in a component template. Only the stable, public
  * facing information of the directive is stored here.
  */
 export interface R3UsedDirectiveMetadata {
+  kind: R3UsedDeclarationKind.Directive;
+
   /**
    * The type of the directive as an expression.
    */
@@ -287,7 +286,18 @@ export interface R3UsedDirectiveMetadata {
   /**
    * If true then this directive is actually a component; otherwise it is not.
    */
-  isComponent?: boolean;
+  isComponent: boolean;
+}
+
+export interface R3UsedPipeMetadata {
+  kind: R3UsedDeclarationKind.Pipe;
+
+  /**
+   * The type of the pipe as an expression.
+   */
+  type: o.Expression;
+
+  name: string;
 }
 
 /**

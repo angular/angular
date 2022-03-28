@@ -23,7 +23,7 @@ import {ParsedTemplateWithSource, StyleUrlMeta} from './resources';
  * be included here.
  */
 export type ComponentMetadataResolvedFields =
-    SubsetOfKeys<R3ComponentMetadata, 'directives'|'pipes'|'declarationListEmitMode'>;
+    SubsetOfKeys<R3ComponentMetadata, 'declarations'|'declarationListEmitMode'>;
 
 export interface ComponentAnalysisData {
   /**

@@ -118,7 +118,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 export class MyComponent {
 }
 MyComponent.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, deps: [], target: i0.ɵɵFactoryTarget.Component });
-MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: '<div class="my-app" title="Hello"><math><infinity/></math><p>test</p></div>', isInline: true, components: [{ type: MathCmp, selector: "math" }, { type: InfinityCmp, selector: "infinity" }] });
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: '<div class="my-app" title="Hello"><math><infinity/></math><p>test</p></div>', isInline: true, dependencies: [{ kind: "component", type: MathCmp, selector: "math" }, { kind: "component", type: InfinityCmp, selector: "infinity" }] });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, decorators: [{
             type: Component,
             args: [{
@@ -402,7 +402,7 @@ MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "
     [pipe]="value | pipe:1:2"
     [and]="cond && [b]"
     [or]="cond || [c]"
-  ></div>`, isInline: true, directives: [{ type: DivDir, selector: "div", inputs: ["ternary", "pipe", "and", "or"] }], pipes: { "pipe": PipePipe } });
+  ></div>`, isInline: true, dependencies: [{ kind: "directive", type: DivDir, selector: "div", inputs: ["ternary", "pipe", "and", "or"] }, { kind: "pipe", type: PipePipe, name: "pipe" }] });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, decorators: [{
             type: Component,
             args: [{

@@ -160,6 +160,12 @@ export interface R3DeclareComponentMetadata extends R3DeclareDirectiveMetadata {
   directives?: R3DeclareUsedDirectiveMetadata[];
 
   /**
+   * List of dependencies which matched in the template, including sufficient
+   * metadata for each
+   */
+  dependencies?: R3DeclareUsedDependencyMetadata[];
+
+  /**
    * A map of pipe names to an expression referencing the pipe type (possibly a forward reference
    * wrapped in a `forwardRef` invocation) which are used in the template.
    */
@@ -198,7 +204,12 @@ export interface R3DeclareComponentMetadata extends R3DeclareDirectiveMetadata {
   preserveWhitespaces?: boolean;
 }
 
+export type R3DeclareUsedDependencyMetadata =
+    R3DeclareUsedDirectiveMetadata|R3DeclareUsedPipeMetadata;
+
 export interface R3DeclareUsedDirectiveMetadata {
+  kind: 'directive'|'component';
+
   /**
    * Selector of the directive.
    */
@@ -224,6 +235,18 @@ export interface R3DeclareUsedDirectiveMetadata {
    * Names by which this directive exports itself for references.
    */
   exportAs?: string[];
+}
+
+export interface R3DeclareUsedPipeMetadata {
+  kind: 'pipe';
+
+  name: string;
+
+  /**
+   * Reference to the pipe class (possibly a forward reference wrapped in a `forwardRef`
+   * invocation).
+   */
+  type: o.Expression|(() => o.Expression);
 }
 
 export interface R3DeclareQueryMetadata {

@@ -199,18 +199,11 @@ export function compileComponentFromMetadata(
 
   definitionMap.set('template', templateFunctionExpression);
 
-  // e.g. `directives: [MyDirective]`
-  if (meta.directives.length > 0) {
-    const directivesList = o.literalArr(meta.directives.map(dir => dir.type));
-    const directivesExpr = compileDeclarationList(directivesList, meta.declarationListEmitMode);
-    definitionMap.set('directives', directivesExpr);
-  }
-
-  // e.g. `pipes: [MyPipe]`
-  if (meta.pipes.size > 0) {
-    const pipesList = o.literalArr(Array.from(meta.pipes.values()));
-    const pipesExpr = compileDeclarationList(pipesList, meta.declarationListEmitMode);
-    definitionMap.set('pipes', pipesExpr);
+  if (meta.declarations.length > 0) {
+    definitionMap.set(
+        'dependencies',
+        compileDeclarationList(
+            o.literalArr(meta.declarations.map(decl => decl.type)), meta.declarationListEmitMode));
   }
 
   if (meta.encapsulation === null) {

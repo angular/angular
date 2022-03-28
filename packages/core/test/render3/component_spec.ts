@@ -181,7 +181,7 @@ it('should not invoke renderer destroy method for embedded views', () => {
       selectors: [['comp']],
       decls: 3,
       vars: 1,
-      directives: [NgIf],
+      dependencies: [NgIf],
       consts: [[AttributeMarker.Template, 'ngIf']],
       /**
        *  <div>Root view</div>

@@ -491,7 +491,7 @@ MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "
     i18n-title="m2|d2" title="{{ valueA }} and {{ valueB }} and again {{ valueA + valueB }}"
     i18n-aria-roledescription aria-roledescription="{{ valueC }}"
   ></div>
-  `, isInline: true, directives: [{ type: DivDir, selector: "div", inputs: ["aria-label", "aria-roledescription"] }], pipes: { "uppercase": UppercasePipe } });
+  `, isInline: true, dependencies: [{ kind: "directive", type: DivDir, selector: "div", inputs: ["aria-label", "aria-roledescription"] }, { kind: "pipe", type: UppercasePipe, name: "uppercase" }] });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, decorators: [{
             type: Component,
             args: [{
@@ -569,7 +569,7 @@ export class MyComponent {
 MyComponent.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, deps: [], target: i0.ɵɵFactoryTarget.Component });
 MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: `
   <div i18n-title="m|d" title="intro {% valueA | uppercase %}"></div>
-  `, isInline: true, pipes: { "uppercase": UppercasePipe }, interpolation: ["{%", "%}"] });
+  `, isInline: true, dependencies: [{ kind: "pipe", type: UppercasePipe, name: "uppercase" }], interpolation: ["{%", "%}"] });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, decorators: [{
             type: Component,
             args: [{
@@ -634,7 +634,7 @@ MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "
   <div *ngFor="let outer of items">
     <div i18n-title="m|d" title="different scope {{ outer | uppercase }}"></div>
   </div>
-  `, isInline: true, pipes: { "uppercase": UppercasePipe } });
+  `, isInline: true, dependencies: [{ kind: "pipe", type: UppercasePipe, name: "uppercase" }] });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, decorators: [{
             type: Component,
             args: [{

@@ -1063,7 +1063,7 @@ describe('providers', () => {
             [
               ɵɵProvidersFeature([{provide: String, useValue: 'From app component'}]),
             ],
-        directives: [HostComponent]
+        dependencies: [HostComponent]
       });
     }
 
@@ -1260,7 +1260,7 @@ describe('providers', () => {
                 {provide: Some, useClass: SomeInj}
               ]),
             ],
-        directives: [MyComponent]
+        dependencies: [MyComponent]
       });
     }
 

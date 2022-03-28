@@ -288,7 +288,7 @@ describe('instructions', () => {
                   ɵɵproperty('ngForOf', ctx.rows);
                 }
               },
-          directives: [NgForOf]
+          dependencies: [NgForOf]
         });
       }
       const fixture = new ComponentFixture(NestedLoops);
