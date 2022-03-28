@@ -54,7 +54,7 @@ export class MyComponent {
     onClick(event) { }
 }
 MyComponent.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, deps: [], target: i0.ɵɵFactoryTarget.Component });
-MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: `<my-app (click)="onClick($event);"></my-app>`, isInline: true, components: [{ type: MyApp, selector: "my-app" }] });
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: `<my-app (click)="onClick($event);"></my-app>`, isInline: true, dependencies: [{ kind: "component", type: MyApp, selector: "my-app" }] });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, decorators: [{
             type: Component,
             args: [{ selector: 'my-component', template: `<my-app (click)="onClick($event);"></my-app>` }]
@@ -268,7 +268,7 @@ MyComponent.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.
 MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: `
       <div (click)="click()" (change)="change()"></div>
       <some-comp (update)="update()" (delete)="delete()"></some-comp>
-    `, isInline: true, components: [{ type: SomeComp, selector: "some-comp", outputs: ["update", "delete"] }] });
+    `, isInline: true, dependencies: [{ kind: "component", type: SomeComp, selector: "some-comp", outputs: ["update", "delete"] }] });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, decorators: [{
             type: Component,
             args: [{
@@ -507,7 +507,7 @@ class Comp {
     }
 }
 Comp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Comp, deps: [], target: i0.ɵɵFactoryTarget.Component });
-Comp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", type: Comp, selector: "ng-component", ngImport: i0, template: '<div [event]="$event"></div>', isInline: true, directives: [{ type: DivDir, selector: "div", inputs: ["event"] }] });
+Comp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", type: Comp, selector: "ng-component", ngImport: i0, template: '<div [event]="$event"></div>', isInline: true, dependencies: [{ kind: "directive", type: DivDir, selector: "div", inputs: ["event"] }] });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Comp, decorators: [{
             type: Component,
             args: [{ template: '<div [event]="$event"></div>' }]

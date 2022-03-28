@@ -214,8 +214,8 @@ ngc -p tsconfig-app.json
 assertSucceeded "Expected the app to successfully compile with the ngcc-processed libraries."
 
 # Did it compile the main.ts correctly (including the ngIf and MatButton directives)?
-grep "directives: \[.*\.NgIf.*\]" dist/src/main.js
-assertSucceeded "Expected the compiled app's 'main.ts' to list 'NgIf' in 'directives'."
+grep "dependencies: \[.*\.NgIf.*\]" dist/src/main.js
+assertSucceeded "Expected the compiled app's 'main.ts' to list 'NgIf' in 'dependencies'."
 
-grep "directives: \[.*\.MatButton.*\]" dist/src/main.js
-assertSucceeded "Expected the compiled app's 'main.ts' to list 'MatButton' in 'directives'."
+grep "dependencies: \[.*\.MatButton.*\]" dist/src/main.js
+assertSucceeded "Expected the compiled app's 'main.ts' to list 'MatButton' in 'dependencies'."

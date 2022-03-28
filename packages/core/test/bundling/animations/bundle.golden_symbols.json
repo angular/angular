@@ -771,9 +771,6 @@
     "name": "extractDirectiveDef"
   },
   {
-    "name": "extractPipeDef"
-  },
-  {
     "name": "extractStyleParams"
   },
   {
@@ -892,6 +889,9 @@
   },
   {
     "name": "getParentInjectorView"
+  },
+  {
+    "name": "getPipeDef"
   },
   {
     "name": "getPlatform"
@@ -1141,6 +1141,9 @@
   },
   {
     "name": "noSideEffects"
+  },
+  {
+    "name": "nonNull"
   },
   {
     "name": "noop"

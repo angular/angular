@@ -294,7 +294,7 @@ describe('instructions', () => {
                   ɵɵproperty('ngForOf', ctx.rows);
                 }
               },
-          directives: [NgForOf]
+          dependencies: [NgForOf]
         });
       }
       ngDevModeResetPerfCounters();

@@ -7,12 +7,12 @@
  */
 import 'reflect-metadata';
 
-import {Component, ContentChild, ContentChildren, Directive, ElementRef, getNgModuleById, HostBinding, HostListener, Input, NgModule, Pipe, QueryList, ViewChild, ViewChildren, ɵNgModuleDef as NgModuleDef} from '@angular/core';
+import {Component, ContentChild, ContentChildren, Directive, ElementRef, getNgModuleById, HostBinding, HostListener, Input, NgModule, Pipe, QueryList, ViewChild, ViewChildren, ɵNgModuleDef as NgModuleDef, ɵɵngDeclareComponent as ngDeclareComponent} from '@angular/core';
 import {Injectable} from '@angular/core/src/di/injectable';
 import {setCurrentInjector, ɵɵinject} from '@angular/core/src/di/injector_compatibility';
 import {ɵɵdefineInjectable, ɵɵInjectorDef} from '@angular/core/src/di/interface/defs';
 import {FactoryFn} from '@angular/core/src/render3/definition_factory';
-import {ComponentDef, PipeDef} from '@angular/core/src/render3/interfaces/definition';
+import {ComponentDef, PipeDef,} from '@angular/core/src/render3/interfaces/definition';
 
 
 
@@ -37,6 +37,62 @@ describe('render3 jit', () => {
 
     expect(SomeCmpAny.ɵcmp).toBeDefined();
     expect(SomeCmpAny.ɵfac() instanceof SomeCmp).toBe(true);
+  });
+
+  it('compiles a partially compiled component with split dependencies', () => {
+    @Component({
+      selector: 'inner-cmp',
+      template: 'Inner!',
+    })
+    class InnerCmp {
+    }
+
+    class OuterCmp {
+      static ɵcmp = ngDeclareComponent({
+        template: '<inner-cmp></inner-cmp>',
+        type: OuterCmp,
+        components: [{
+          type: InnerCmp,
+          selector: 'inner-cmp',
+        }],
+      });
+    }
+
+    const rawDirectiveDefs = (OuterCmp.ɵcmp as ComponentDef<OuterCmp>).directiveDefs;
+    expect(rawDirectiveDefs).not.toBeNull();
+    const directiveDefs =
+        rawDirectiveDefs! instanceof Function ? rawDirectiveDefs!() : rawDirectiveDefs!;
+    expect(directiveDefs.length).toBe(1);
+    expect(directiveDefs[0].type).toBe(InnerCmp);
+  });
+
+
+  it('compiles a partially compiled component with unified dependencies', () => {
+    @Component({
+      selector: 'inner-cmp',
+      template: 'Inner!',
+    })
+    class InnerCmp {
+    }
+
+    class OuterCmp {
+      static ɵcmp = ngDeclareComponent({
+        template: '<inner-cmp></inner-cmp>',
+        type: OuterCmp,
+        dependencies: [{
+          kind: 'component',
+          type: InnerCmp,
+          selector: 'inner-cmp',
+        }],
+      });
+    }
+
+    const rawDirectiveDefs = (OuterCmp.ɵcmp as ComponentDef<OuterCmp>).directiveDefs;
+    expect(rawDirectiveDefs).not.toBeNull();
+    const directiveDefs =
+        rawDirectiveDefs! instanceof Function ? rawDirectiveDefs!() : rawDirectiveDefs!;
+    expect(directiveDefs.length).toBe(1);
+    expect(directiveDefs[0].type).toBe(InnerCmp);
   });
 
   it('compiles an injectable with a type provider', () => {

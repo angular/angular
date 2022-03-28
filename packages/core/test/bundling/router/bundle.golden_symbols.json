@@ -1086,9 +1086,6 @@
     "name": "extractDirectiveDef"
   },
   {
-    "name": "extractPipeDef"
-  },
-  {
     "name": "filter"
   },
   {
@@ -1273,6 +1270,9 @@
   },
   {
     "name": "getPathIndexShift"
+  },
+  {
+    "name": "getPipeDef"
   },
   {
     "name": "getPlatform"
@@ -1627,6 +1627,9 @@
   },
   {
     "name": "nodeChildrenAsMap"
+  },
+  {
+    "name": "nonNull"
   },
   {
     "name": "noop"

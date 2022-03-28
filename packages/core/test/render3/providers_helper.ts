@@ -121,7 +121,7 @@ export function expectProvidersScenario(defs: {
           },
       features: defs.parent &&
           [ɵɵProvidersFeature(defs.parent.providers || [], defs.parent.viewProviders || [])],
-      directives: [ViewChildComponent, ViewChildDirective]
+      dependencies: [ViewChildComponent, ViewChildDirective]
     });
   }
 
@@ -161,7 +161,7 @@ export function expectProvidersScenario(defs: {
           },
       features: defs.app &&
           [ɵɵProvidersFeature(defs.app.providers || [], defs.app.viewProviders || [])],
-      directives:
+      dependencies:
           [
             ParentComponent, ParentDirective2, ParentDirective, ContentChildComponent,
             ContentChildDirective

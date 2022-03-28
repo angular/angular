@@ -11,12 +11,12 @@ import * as o from '../../output/output_ast';
 import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../parse_util';
 import {Identifiers as R3} from '../r3_identifiers';
 import {generateForwardRef, R3CompiledExpression} from '../util';
-import {DeclarationListEmitMode, R3ComponentMetadata, R3UsedDirectiveMetadata} from '../view/api';
+import {DeclarationListEmitMode, R3ComponentMetadata, R3TemplateDependencyKind, R3TemplateDependencyMetadata} from '../view/api';
 import {createComponentType} from '../view/compiler';
 import {ParsedTemplate} from '../view/template';
 import {DefinitionMap} from '../view/util';
 
-import {R3DeclareComponentMetadata, R3DeclareUsedDirectiveMetadata} from './api';
+import {R3DeclareComponentMetadata, R3DeclareDirectiveDependencyMetadata, R3DeclarePipeDependencyMetadata} from './api';
 import {createDirectiveDefinitionMap} from './directive';
 import {toOptionalLiteralArray} from './util';
 
@@ -53,7 +53,7 @@ export interface DeclareComponentTemplateInfo {
  * Compile a component declaration defined by the `R3ComponentMetadata`.
  */
 export function compileDeclareComponentFromMetadata(
-    meta: R3ComponentMetadata, template: ParsedTemplate,
+    meta: R3ComponentMetadata<R3TemplateDependencyMetadata>, template: ParsedTemplate,
     additionalTemplateInfo: DeclareComponentTemplateInfo): R3CompiledExpression {
   const definitionMap = createComponentDefinitionMap(meta, template, additionalTemplateInfo);
 
@@ -67,7 +67,7 @@ export function compileDeclareComponentFromMetadata(
  * Gathers the declaration fields for a component into a `DefinitionMap`.
  */
 export function createComponentDefinitionMap(
-    meta: R3ComponentMetadata, template: ParsedTemplate,
+    meta: R3ComponentMetadata<R3TemplateDependencyMetadata>, template: ParsedTemplate,
     templateInfo: DeclareComponentTemplateInfo): DefinitionMap<R3DeclareComponentMetadata> {
   const definitionMap: DefinitionMap<R3DeclareComponentMetadata> =
       createDirectiveDefinitionMap(meta);
@@ -78,13 +78,7 @@ export function createComponentDefinitionMap(
   }
 
   definitionMap.set('styles', toOptionalLiteralArray(meta.styles, o.literal));
-  definitionMap.set(
-      'components',
-      compileUsedDirectiveMetadata(meta, directive => directive.isComponent === true));
-  definitionMap.set(
-      'directives',
-      compileUsedDirectiveMetadata(meta, directive => directive.isComponent !== true));
-  definitionMap.set('pipes', compileUsedPipeMetadata(meta));
+  definitionMap.set('dependencies', compileUsedDependenciesMetadata(meta));
   definitionMap.set('viewProviders', meta.viewProviders);
   definitionMap.set('animations', meta.animations);
 
@@ -156,46 +150,29 @@ function computeEndLocation(file: ParseSourceFile, contents: string): ParseLocat
   return new ParseLocation(file, length, line, length - lastLineStart);
 }
 
-/**
- * Compiles the directives as registered in the component metadata into an array literal of the
- * individual directives. If the component does not use any directives, then null is returned.
- */
-function compileUsedDirectiveMetadata(
-    meta: R3ComponentMetadata,
-    predicate: (directive: R3UsedDirectiveMetadata) => boolean): o.LiteralArrayExpr|null {
+function compileUsedDependenciesMetadata(meta: R3ComponentMetadata<R3TemplateDependencyMetadata>):
+    o.LiteralArrayExpr|null {
   const wrapType = meta.declarationListEmitMode !== DeclarationListEmitMode.Direct ?
       generateForwardRef :
       (expr: o.Expression) => expr;
 
-  const directives = meta.directives.filter(predicate);
-  return toOptionalLiteralArray(directives, directive => {
-    const dirMeta = new DefinitionMap<R3DeclareUsedDirectiveMetadata>();
-    dirMeta.set('type', wrapType(directive.type));
-    dirMeta.set('selector', o.literal(directive.selector));
-    dirMeta.set('inputs', toOptionalLiteralArray(directive.inputs, o.literal));
-    dirMeta.set('outputs', toOptionalLiteralArray(directive.outputs, o.literal));
-    dirMeta.set('exportAs', toOptionalLiteralArray(directive.exportAs, o.literal));
-    return dirMeta.toLiteralMap();
+  return toOptionalLiteralArray(meta.declarations, decl => {
+    switch (decl.kind) {
+      case R3TemplateDependencyKind.Directive:
+        const dirMeta = new DefinitionMap<R3DeclareDirectiveDependencyMetadata>();
+        dirMeta.set('kind', o.literal(decl.isComponent ? 'component' : 'directive'));
+        dirMeta.set('type', wrapType(decl.type));
+        dirMeta.set('selector', o.literal(decl.selector));
+        dirMeta.set('inputs', toOptionalLiteralArray(decl.inputs, o.literal));
+        dirMeta.set('outputs', toOptionalLiteralArray(decl.outputs, o.literal));
+        dirMeta.set('exportAs', toOptionalLiteralArray(decl.exportAs, o.literal));
+        return dirMeta.toLiteralMap();
+      case R3TemplateDependencyKind.Pipe:
+        const pipeMeta = new DefinitionMap<R3DeclarePipeDependencyMetadata>();
+        pipeMeta.set('kind', o.literal('pipe'));
+        pipeMeta.set('type', wrapType(decl.type));
+        pipeMeta.set('name', o.literal(decl.name));
+        return pipeMeta.toLiteralMap();
+    }
   });
-}
-
-/**
- * Compiles the pipes as registered in the component metadata into an object literal, where the
- * pipe's name is used as key and a reference to its type as value. If the component does not use
- * any pipes, then null is returned.
- */
-function compileUsedPipeMetadata(meta: R3ComponentMetadata): o.LiteralMapExpr|null {
-  if (meta.pipes.size === 0) {
-    return null;
-  }
-
-  const wrapType = meta.declarationListEmitMode !== DeclarationListEmitMode.Direct ?
-      generateForwardRef :
-      (expr: o.Expression) => expr;
-
-  const entries = [];
-  for (const [name, pipe] of meta.pipes) {
-    entries.push({key: name, value: wrapType(pipe), quoted: true});
-  }
-  return o.literalMap(entries);
 }

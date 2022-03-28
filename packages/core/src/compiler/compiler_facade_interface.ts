@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-
 /**
  * A set of interfaces which are shared between `@angular/core` and `@angular/compiler` to allow
  * for late binding of `@angular/compiler` for JIT purposes.
@@ -173,8 +172,7 @@ export interface R3ComponentMetadataFacade extends R3DirectiveMetadataFacade {
   template: string;
   preserveWhitespaces: boolean;
   animations: OpaqueValue[]|undefined;
-  pipes: Map<string, any>;
-  directives: R3UsedDirectiveMetadata[];
+  declarations: R3TemplateDependencyFacade[];
   styles: string[];
   encapsulation: ViewEncapsulation;
   viewProviders: Provider[]|null;
@@ -207,9 +205,16 @@ export interface R3DeclareComponentFacade extends R3DeclareDirectiveFacade {
   template: string;
   isInline?: boolean;
   styles?: string[];
-  components?: R3DeclareUsedDirectiveFacade[];
-  directives?: R3DeclareUsedDirectiveFacade[];
+
+  // Post-standalone libraries use a unified dependencies field.
+  dependencies?: R3DeclareTemplateDependencyFacade[];
+
+  // Pre-standalone libraries have separate component/directive/pipe fields:
+  components?: R3DeclareDirectiveDependencyFacade[];
+  directives?: R3DeclareDirectiveDependencyFacade[];
   pipes?: {[pipeName: string]: OpaqueValue|(() => OpaqueValue)};
+
+
   viewProviders?: OpaqueValue;
   animations?: OpaqueValue;
   changeDetection?: ChangeDetectionStrategy;
@@ -218,7 +223,12 @@ export interface R3DeclareComponentFacade extends R3DeclareDirectiveFacade {
   preserveWhitespaces?: boolean;
 }
 
-export interface R3DeclareUsedDirectiveFacade {
+export type R3DeclareTemplateDependencyFacade = {
+  kind: string
+}&(R3DeclareDirectiveDependencyFacade|R3DeclarePipeDependencyFacade);
+
+export interface R3DeclareDirectiveDependencyFacade {
+  kind?: 'directive'|'component';
   selector: string;
   type: OpaqueValue|(() => OpaqueValue);
   inputs?: string[];
@@ -226,14 +236,21 @@ export interface R3DeclareUsedDirectiveFacade {
   exportAs?: string[];
 }
 
-export interface R3UsedDirectiveMetadata {
-  selector: string;
-  inputs: string[];
-  outputs: string[];
-  exportAs: string[]|null;
-  type: any;
+export interface R3DeclarePipeDependencyFacade {
+  kind?: 'pipe';
+  name: string;
+  type: OpaqueValue|(() => OpaqueValue);
 }
 
+export enum R3TemplateDependencyKind {
+  Directive = 0,
+  Pipe = 1,
+}
+
+export interface R3TemplateDependencyFacade {
+  kind: R3TemplateDependencyKind;
+  type: OpaqueValue|(() => OpaqueValue);
+}
 export interface R3FactoryDefMetadataFacade {
   name: string;
   type: Type;
@@ -307,6 +324,7 @@ export interface R3DeclarePipeFacade {
   type: Type;
   name: string;
   pure?: boolean;
+  isStandalone?: boolean;
 }
 
 export interface ParseSourceSpan {

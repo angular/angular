@@ -225,7 +225,7 @@ describe('component animations', () => {
   //             ɵɵelement(0, 'child-comp-with-anim');
   //           }
   //         },
-  //         directives: [ChildCompWithAnim]
+  //         dependencies: [ChildCompWithAnim]
   //       });
   //     }
 
@@ -299,7 +299,7 @@ describe('element discovery', () => {
       static ɵcmp = ɵɵdefineComponent({
         type: ParentComp,
         selectors: [['parent-comp']],
-        directives: [ChildComp],
+        dependencies: [ChildComp],
         decls: 2,
         vars: 0,
         template:
@@ -333,7 +333,7 @@ describe('element discovery', () => {
       static ɵcmp = ɵɵdefineComponent({
         type: StructuredComp,
         selectors: [['structured-comp']],
-        directives: [NgIf],
+        dependencies: [NgIf],
         decls: 2,
         vars: 1,
         consts: [['ngIf', '']],
@@ -384,7 +384,7 @@ describe('element discovery', () => {
       static ɵcmp = ɵɵdefineComponent({
         type: StructuredComp,
         selectors: [['structured-comp']],
-        directives: [NgIf],
+        dependencies: [NgIf],
         decls: 2,
         vars: 0,
         template:
@@ -561,7 +561,7 @@ describe('element discovery', () => {
          static ɵcmp = ɵɵdefineComponent({
            type: ParentComp,
            selectors: [['parent-comp']],
-           directives: [ProjectorComp],
+           dependencies: [ProjectorComp],
            decls: 5,
            vars: 0,
            template:
@@ -718,7 +718,7 @@ describe('element discovery', () => {
          static ɵcmp = ɵɵdefineComponent({
            type: StructuredComp,
            selectors: [['structured-comp']],
-           directives: [MyDir1, MyDir2, MyDir3],
+           dependencies: [MyDir1, MyDir2, MyDir3],
            decls: 2,
            vars: 0,
            consts: [['my-dir-1', '', 'my-dir-2', ''], ['my-dir-3']],
@@ -811,7 +811,7 @@ describe('element discovery', () => {
          static ɵcmp = ɵɵdefineComponent({
            type: ParentComp,
            selectors: [['parent-comp']],
-           directives: [ChildComp, MyDir1, MyDir2],
+           dependencies: [ChildComp, MyDir1, MyDir2],
            decls: 1,
            vars: 0,
            consts: [['my-dir-1', '', 'my-dir-2', '']],
@@ -893,7 +893,7 @@ describe('element discovery', () => {
          static ɵcmp = ɵɵdefineComponent({
            type: ParentComp,
            selectors: [['parent-comp']],
-           directives: [ChildComp],
+           dependencies: [ChildComp],
            decls: 2,
            vars: 0,
            template:
@@ -1009,7 +1009,7 @@ describe('sanitization', () => {
                 ɵɵelement(0, 'blockquote', 0);
               }
             },
-        directives: [UnsafeUrlHostBindingDir]
+        dependencies: [UnsafeUrlHostBindingDir]
       });
     }
 

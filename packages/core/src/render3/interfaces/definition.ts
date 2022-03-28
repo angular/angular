@@ -411,6 +411,10 @@ export type DirectiveTypeList =
     (DirectiveType<any>|ComponentType<any>|
      Type<any>/* Type as workaround for: Microsoft/TypeScript/issues/4881 */)[];
 
+export type DependencyTypeList = (DirectiveType<any>|ComponentType<any>|PipeType<any>|Type<any>)[];
+
+export type TypeOrFactory<T> = T|(() => T);
+
 export type HostBindingsFunction<T> = <U extends T>(rf: RenderFlags, ctx: U) => void;
 
 /**

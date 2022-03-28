@@ -18,6 +18,6 @@ MyApp.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
         $r3$.ɵɵpureFunction2(7, $e0_ff_2$, ctx.name, $r3$.ɵɵpureFunction2(4, $e0_ff_1$, $r3$.ɵɵpureFunction0(1, $c0$), $r3$.ɵɵpureFunction1(2, $e0_ff$, ctx.duration))));
     }
   },
-  directives: [NestedComp],
+  dependencies: [NestedComp],
   encapsulation: 2
 });

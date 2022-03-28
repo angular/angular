@@ -209,7 +209,7 @@ class MyComponent {
 MyComponent.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, deps: [], target: i0.ɵɵFactoryTarget.Component });
 MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-cmp", ngImport: i0, template: `
     <div my-anim-dir></div>
-  `, isInline: true, directives: [{ type: MyAnimDir, selector: "[my-anim-dir]" }] });
+  `, isInline: true, dependencies: [{ kind: "directive", type: MyAnimDir, selector: "[my-anim-dir]" }] });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, decorators: [{
             type: Component,
             args: [{

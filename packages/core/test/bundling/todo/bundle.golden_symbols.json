@@ -348,9 +348,6 @@
     "name": "extractDirectiveDef"
   },
   {
-    "name": "extractPipeDef"
-  },
-  {
     "name": "findAttrIndexInNode"
   },
   {
@@ -463,6 +460,9 @@
   },
   {
     "name": "getParentInjectorView"
+  },
+  {
+    "name": "getPipeDef"
   },
   {
     "name": "getPreviousIndex"
@@ -673,6 +673,9 @@
   },
   {
     "name": "noSideEffects"
+  },
+  {
+    "name": "nonNull"
   },
   {
     "name": "notFoundValueOrThrow"
