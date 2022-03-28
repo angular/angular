@@ -44,4 +44,7 @@ api_golden_test_npm_package(
     ],
     golden_dir = "angular/goldens/public-api/localize",
     npm_package = "angular/packages/localize/npm_package",
+    # The tool entry-point uses namespace aliases and API extractor needs to be
+    # able to resolve `@babel/core` to fully understand the `types` re-export/alias.
+    types = ["@npm//@types/babel__core"],
 )

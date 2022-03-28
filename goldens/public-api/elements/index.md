@@ -69,7 +69,6 @@ export type WithProperties<P> = {
     [property in keyof P]: P[property];
 };
 
-
 // (No @packageDocumentation comment for this package)
 
 ```

@@ -40,7 +40,6 @@ export class UpgradeAdapterRef {
 // @public (undocumented)
 export const VERSION: Version;
 
-
 // (No @packageDocumentation comment for this package)
 
 ```
