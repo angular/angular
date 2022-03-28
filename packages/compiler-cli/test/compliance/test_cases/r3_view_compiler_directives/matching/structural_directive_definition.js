@@ -7,6 +7,6 @@ MyComponent.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
       }
   },
   …
-  directives: [SomeDirective],
+  dependencies: [SomeDirective],
   encapsulation: 2
 });

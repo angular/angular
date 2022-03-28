@@ -22,7 +22,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 export class MyComponent {
 }
 MyComponent.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, deps: [], target: i0.ɵɵFactoryTarget.Component });
-MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: '<child some-directive></child>!', isInline: true, components: [{ type: ChildComponent, selector: "child" }], directives: [{ type: SomeDirective, selector: "[some-directive]" }] });
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: '<child some-directive></child>!', isInline: true, dependencies: [{ kind: "component", type: ChildComponent, selector: "child" }, { kind: "directive", type: SomeDirective, selector: "[some-directive]" }] });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, decorators: [{
             type: Component,
             args: [{ selector: 'my-component', template: '<child some-directive></child>!' }]
@@ -161,7 +161,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 export class EmptyOutletComponent {
 }
 EmptyOutletComponent.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: EmptyOutletComponent, deps: [], target: i0.ɵɵFactoryTarget.Component });
-EmptyOutletComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", type: EmptyOutletComponent, selector: "ng-component", ngImport: i0, template: '<router-outlet></router-outlet>', isInline: true, directives: [{ type: RouterOutlet, selector: "router-outlet" }] });
+EmptyOutletComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", type: EmptyOutletComponent, selector: "ng-component", ngImport: i0, template: '<router-outlet></router-outlet>', isInline: true, dependencies: [{ kind: "directive", type: RouterOutlet, selector: "router-outlet" }] });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: EmptyOutletComponent, decorators: [{
             type: Component,
             args: [{ template: '<router-outlet></router-outlet>' }]
@@ -261,7 +261,7 @@ export class MyComponent {
     }
 }
 MyComponent.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, deps: [], target: i0.ɵɵFactoryTarget.Component });
-MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: '<ul #foo><li *if>{{salutation}} {{foo}}</li></ul>', isInline: true, directives: [{ type: IfDirective, selector: "[if]" }] });
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: '<ul #foo><li *if>{{salutation}} {{foo}}</li></ul>', isInline: true, dependencies: [{ kind: "directive", type: IfDirective, selector: "[if]" }] });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, decorators: [{
             type: Component,
             args: [{ selector: 'my-component', template: '<ul #foo><li *if>{{salutation}} {{foo}}</li></ul>' }]
@@ -329,7 +329,7 @@ export class MyApp {
 MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, deps: [], target: i0.ɵɵFactoryTarget.Component });
 MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "my-app", ngImport: i0, template: `
   <my-comp [names]="['Nancy', customName]"></my-comp>
-`, isInline: true, components: [{ type: MyComp, selector: "my-comp", inputs: ["names"] }] });
+`, isInline: true, dependencies: [{ kind: "component", type: MyComp, selector: "my-comp", inputs: ["names"] }] });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
             type: Component,
             args: [{
@@ -428,7 +428,7 @@ MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PL
 MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "my-app", ngImport: i0, template: `
   <my-comp [names]="['start-', n0, n1, n2, n3, n4, '-middle-', n5, n6, n7, n8, '-end']">
   </my-comp>
-`, isInline: true, components: [{ type: MyComp, selector: "my-comp", inputs: ["names"] }] });
+`, isInline: true, dependencies: [{ kind: "component", type: MyComp, selector: "my-comp", inputs: ["names"] }] });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
             type: Component,
             args: [{
@@ -509,7 +509,7 @@ export class MyApp {
 MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, deps: [], target: i0.ɵɵFactoryTarget.Component });
 MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "my-app", ngImport: i0, template: `
   <object-comp [config]="{'duration': 500, animation: name}"></object-comp>
-`, isInline: true, components: [{ type: ObjectComp, selector: "object-comp", inputs: ["config"] }] });
+`, isInline: true, dependencies: [{ kind: "component", type: ObjectComp, selector: "object-comp", inputs: ["config"] }] });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
             type: Component,
             args: [{
@@ -587,7 +587,7 @@ MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PL
 MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "my-app", ngImport: i0, template: `
   <nested-comp [config]="{animation: name, actions: [{ opacity: 0, duration: 0}, {opacity: 1, duration: duration }]}">
   </nested-comp>
-`, isInline: true, components: [{ type: NestedComp, selector: "nested-comp", inputs: ["config"] }] });
+`, isInline: true, dependencies: [{ kind: "component", type: NestedComp, selector: "nested-comp", inputs: ["config"] }] });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
             type: Component,
             args: [{

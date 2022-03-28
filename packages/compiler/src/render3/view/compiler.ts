@@ -20,7 +20,7 @@ import {BoundEvent} from '../r3_ast';
 import {Identifiers as R3} from '../r3_identifiers';
 import {prepareSyntheticListenerFunctionName, prepareSyntheticPropertyName, R3CompiledExpression, typeWithParameters} from '../util';
 
-import {DeclarationListEmitMode, R3ComponentMetadata, R3DirectiveMetadata, R3HostMetadata, R3QueryMetadata} from './api';
+import {DeclarationListEmitMode, R3ComponentMetadata, R3DirectiveMetadata, R3HostMetadata, R3QueryMetadata, R3TemplateDependency} from './api';
 import {MIN_STYLING_BINDING_SLOTS_REQUIRED, StylingBuilder, StylingInstructionCall} from './styling_builder';
 import {BindingScope, makeBindingParser, prepareEventListenerParameters, renderFlagCheckIfStmt, resolveSanitizationFn, TemplateDefinitionBuilder, ValueConverter} from './template';
 import {asLiteral, conditionallyCreateMapObjectLiteral, CONTEXT_NAME, DefinitionMap, getInstructionStatements, getQueryPredicate, Instruction, RENDER_FLAGS, TEMPORARY_NAME, temporaryAllocator} from './util';
@@ -87,12 +87,14 @@ function baseDirectiveFields(
 /**
  * Add features to the definition map.
  */
-function addFeatures(definitionMap: DefinitionMap, meta: R3DirectiveMetadata|R3ComponentMetadata) {
+function addFeatures(
+    definitionMap: DefinitionMap,
+    meta: R3DirectiveMetadata|R3ComponentMetadata<R3TemplateDependency>) {
   // e.g. `features: [NgOnChangesFeature]`
   const features: o.Expression[] = [];
 
   const providers = meta.providers;
-  const viewProviders = (meta as R3ComponentMetadata).viewProviders;
+  const viewProviders = (meta as R3ComponentMetadata<R3TemplateDependency>).viewProviders;
   if (providers || viewProviders) {
     const args = [providers || new o.LiteralArrayExpr([])];
     if (viewProviders) {
@@ -134,7 +136,7 @@ export function compileDirectiveFromMetadata(
  * Compile a component for the render3 runtime as defined by the `R3ComponentMetadata`.
  */
 export function compileComponentFromMetadata(
-    meta: R3ComponentMetadata, constantPool: ConstantPool,
+    meta: R3ComponentMetadata<R3TemplateDependency>, constantPool: ConstantPool,
     bindingParser: BindingParser): R3CompiledExpression {
   const definitionMap = baseDirectiveFields(meta, constantPool, bindingParser);
   addFeatures(definitionMap, meta);
@@ -199,18 +201,11 @@ export function compileComponentFromMetadata(
 
   definitionMap.set('template', templateFunctionExpression);
 
-  // e.g. `directives: [MyDirective]`
-  if (meta.directives.length > 0) {
-    const directivesList = o.literalArr(meta.directives.map(dir => dir.type));
-    const directivesExpr = compileDeclarationList(directivesList, meta.declarationListEmitMode);
-    definitionMap.set('directives', directivesExpr);
-  }
-
-  // e.g. `pipes: [MyPipe]`
-  if (meta.pipes.size > 0) {
-    const pipesList = o.literalArr(Array.from(meta.pipes.values()));
-    const pipesExpr = compileDeclarationList(pipesList, meta.declarationListEmitMode);
-    definitionMap.set('pipes', pipesExpr);
+  if (meta.declarations.length > 0) {
+    definitionMap.set(
+        'dependencies',
+        compileDeclarationList(
+            o.literalArr(meta.declarations.map(decl => decl.type)), meta.declarationListEmitMode));
   }
 
   if (meta.encapsulation === null) {
@@ -256,7 +251,7 @@ export function compileComponentFromMetadata(
  * Creates the type specification from the component meta. This type is inserted into .d.ts files
  * to be consumed by upstream compilations.
  */
-export function createComponentType(meta: R3ComponentMetadata): o.Type {
+export function createComponentType(meta: R3ComponentMetadata<R3TemplateDependency>): o.Type {
   const typeParams = createDirectiveTypeParams(meta);
   typeParams.push(stringArrayAsType(meta.template.ngContentSelectors));
   return o.expressionType(o.importExpr(R3.ComponentDeclaration, typeParams));

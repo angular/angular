@@ -28,6 +28,6 @@ MyComponent.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
       $r3$.ɵɵproperty("forOf", ctx.items);
     }
   },
-  directives: function() { return [ForOfDirective]; },
+  dependencies: function() { return [ForOfDirective]; },
   encapsulation: 2
 });

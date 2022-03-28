@@ -46,7 +46,7 @@ runInEachFileSystem(() => {
             `);
         env.driveMain();
         const jsCode = env.getContents('test.js');
-        expect(jsCode).toContain('directives: [TestDir]');
+        expect(jsCode).toContain('dependencies: [TestDir]');
         expect(jsCode).toContain('standalone: true');
       });
 
@@ -97,7 +97,7 @@ runInEachFileSystem(() => {
               export class TestCmp {}
             `);
         env.driveMain();
-        expect(env.getContents('test.js')).toContain('directives: [TestDir]');
+        expect(env.getContents('test.js')).toContain('dependencies: [TestDir]');
       });
 
       it('should allow nested arrays in standalone component imports', () => {
@@ -121,7 +121,7 @@ runInEachFileSystem(() => {
               export class TestCmp {}
             `);
         env.driveMain();
-        expect(env.getContents('test.js')).toContain('directives: [TestDir]');
+        expect(env.getContents('test.js')).toContain('dependencies: [TestDir]');
       });
 
       it('should deduplicate standalone component imports', () => {
@@ -145,7 +145,7 @@ runInEachFileSystem(() => {
               export class TestCmp {}
             `);
         env.driveMain();
-        expect(env.getContents('test.js')).toContain('directives: [TestDir]');
+        expect(env.getContents('test.js')).toContain('dependencies: [TestDir]');
       });
 
       it('should error when a standalone component imports a non-standalone entity', () => {
@@ -293,7 +293,7 @@ runInEachFileSystem(() => {
           export class TestModule {}
         `);
         env.driveMain();
-        expect(env.getContents('test.js')).toContain('directives: [StandaloneCmp]');
+        expect(env.getContents('test.js')).toContain('dependencies: [StandaloneCmp]');
       });
 
       it('should allow a standalone directive to be imported by an NgModule', () => {
@@ -319,7 +319,7 @@ runInEachFileSystem(() => {
           export class TestModule {}
         `);
         env.driveMain();
-        expect(env.getContents('test.js')).toContain('directives: [StandaloneDir]');
+        expect(env.getContents('test.js')).toContain('dependencies: [StandaloneDir]');
       });
 
       it('should allow a standalone pipe to be imported by an NgModule', () => {
@@ -351,7 +351,7 @@ runInEachFileSystem(() => {
           export class TestModule {}
         `);
         env.driveMain();
-        expect(env.getContents('test.js')).toContain('pipes: [StandalonePipe]');
+        expect(env.getContents('test.js')).toContain('dependencies: [StandalonePipe]');
       });
 
       it('should error when a standalone entity is exported by an NgModule without importing it first',

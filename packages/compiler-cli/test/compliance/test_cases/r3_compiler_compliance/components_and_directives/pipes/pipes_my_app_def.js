@@ -24,6 +24,6 @@ MyApp.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
       $r3$.ɵɵtextInterpolate2("", $r3$.ɵɵpipeBindV(5, 9, $r3$.ɵɵpureFunction1(18, $c0$, ctx.name)), " ", ctx.name ? 1 : $r3$.ɵɵpipeBind1(6, 16, 2), "");
     }
   },
-  pipes: [MyPurePipe, MyPipe],
+  dependencies: [MyPurePipe, MyPipe],
   encapsulation: 2
 });

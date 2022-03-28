@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {ChangeDetectionStrategy, compileComponentFromMetadata, ConstantPool, DeclarationListEmitMode, DEFAULT_INTERPOLATION_CONFIG, ForwardRefHandling, InterpolationConfig, makeBindingParser, outputAst as o, parseTemplate, R3ComponentMetadata, R3DeclareComponentMetadata, R3DeclareUsedDirectiveMetadata, R3PartialDeclaration, R3UsedDirectiveMetadata, ViewEncapsulation} from '@angular/compiler';
+import {ChangeDetectionStrategy, compileComponentFromMetadata, ConstantPool, DeclarationListEmitMode, DEFAULT_INTERPOLATION_CONFIG, ForwardRefHandling, InterpolationConfig, makeBindingParser, outputAst as o, parseTemplate, R3ComponentMetadata, R3DeclareComponentMetadata, R3DeclareDirectiveDependencyMetadata, R3DeclarePipeDependencyMetadata, R3DirectiveDependencyMetadata, R3PartialDeclaration, R3TemplateDependencyKind, R3TemplateDependencyMetadata, ViewEncapsulation} from '@angular/compiler';
 
 import {AbsoluteFsPath} from '../../../../src/ngtsc/file_system';
 import {Range} from '../../ast/ast_host';
@@ -16,6 +16,28 @@ import {GetSourceFileFn} from '../get_source_file';
 import {toR3DirectiveMeta} from './partial_directive_linker_1';
 import {LinkedDefinition, PartialLinker} from './partial_linker';
 import {extractForwardRef} from './util';
+
+function makeDirectiveMetadata<TExpression>(
+    directiveExpr: AstObject<R3DeclareDirectiveDependencyMetadata, TExpression>,
+    typeExpr: o.WrappedNodeExpr<TExpression>,
+    isComponentByDefault: true|null = null): R3DirectiveDependencyMetadata {
+  return {
+    kind: R3TemplateDependencyKind.Directive,
+    isComponent: isComponentByDefault ||
+        (directiveExpr.has('kind') && directiveExpr.getString('kind') === 'component'),
+    type: typeExpr,
+    selector: directiveExpr.getString('selector'),
+    inputs: directiveExpr.has('inputs') ?
+        directiveExpr.getArray('inputs').map(input => input.getString()) :
+        [],
+    outputs: directiveExpr.has('outputs') ?
+        directiveExpr.getArray('outputs').map(input => input.getString()) :
+        [],
+    exportAs: directiveExpr.has('exportAs') ?
+        directiveExpr.getArray('exportAs').map(exportAs => exportAs.getString()) :
+        null,
+  };
+}
 
 /**
  * A `PartialLinker` that is designed to process `ɵɵngDeclareComponent()` call expressions.
@@ -37,7 +59,7 @@ export class PartialComponentLinkerVersion1<TStatement, TExpression> implements
    * This function derives the `R3ComponentMetadata` from the provided AST object.
    */
   private toR3ComponentMeta(metaObj: AstObject<R3DeclareComponentMetadata, TExpression>):
-      R3ComponentMetadata {
+      R3ComponentMetadata<R3TemplateDependencyMetadata> {
     const interpolation = parseInterpolationConfig(metaObj);
     const templateSource = metaObj.getValue('template');
     const isInline = metaObj.has('isInline') ? metaObj.getBoolean('isInline') : false;
@@ -61,51 +83,74 @@ export class PartialComponentLinkerVersion1<TStatement, TExpression> implements
 
     let declarationListEmitMode = DeclarationListEmitMode.Direct;
 
-    const collectUsedDirectives =
-        (directives: AstValue<R3DeclareUsedDirectiveMetadata, TExpression>[]) => {
-          return directives.map(directive => {
-            const directiveExpr = directive.getObject();
-            const type = directiveExpr.getValue('type');
-            const selector = directiveExpr.getString('selector');
-
-            const {expression: typeExpr, forwardRef} = extractForwardRef(type);
-            if (forwardRef === ForwardRefHandling.Unwrapped) {
-              declarationListEmitMode = DeclarationListEmitMode.Closure;
-            }
-
-            return {
-              type: typeExpr,
-              selector: selector,
-              inputs: directiveExpr.has('inputs') ?
-                  directiveExpr.getArray('inputs').map(input => input.getString()) :
-                  [],
-              outputs: directiveExpr.has('outputs') ?
-                  directiveExpr.getArray('outputs').map(input => input.getString()) :
-                  [],
-              exportAs: directiveExpr.has('exportAs') ?
-                  directiveExpr.getArray('exportAs').map(exportAs => exportAs.getString()) :
-                  null,
-            };
-          });
+    const extractDeclarationTypeExpr =
+        (type: AstValue<o.Expression|(() => o.Expression), TExpression>) => {
+          const {expression, forwardRef} = extractForwardRef(type);
+          if (forwardRef === ForwardRefHandling.Unwrapped) {
+            declarationListEmitMode = DeclarationListEmitMode.Closure;
+          }
+          return expression;
         };
 
-    let directives: R3UsedDirectiveMetadata[] = [];
+    let declarations: R3TemplateDependencyMetadata[] = [];
+
+    // There are two ways that declarations (directives/pipes) can be represented in declare
+    // metadata. The "old style" uses separate fields for each (arrays for components/directives and
+    // an object literal for pipes). The "new style" uses a unified `dependencies` array. For
+    // backwards compatibility, both are processed and unified here:
+
+    // Process the old style fields:
     if (metaObj.has('components')) {
-      directives.push(...collectUsedDirectives(metaObj.getArray('components')));
+      declarations.push(...metaObj.getArray('components').map(dir => {
+        const dirExpr = dir.getObject();
+        const typeExpr = extractDeclarationTypeExpr(dirExpr.getValue('type'));
+        return makeDirectiveMetadata(dirExpr, typeExpr, /* isComponentByDefault */ true);
+      }));
     }
     if (metaObj.has('directives')) {
-      directives.push(...collectUsedDirectives(metaObj.getArray('directives')));
+      declarations.push(...metaObj.getArray('directives').map(dir => {
+        const dirExpr = dir.getObject();
+        const typeExpr = extractDeclarationTypeExpr(dirExpr.getValue('type'));
+        return makeDirectiveMetadata(dirExpr, typeExpr);
+      }));
+    }
+    if (metaObj.has('pipes')) {
+      const pipes = metaObj.getObject('pipes').toMap(pipe => pipe);
+      for (const [name, type] of pipes) {
+        const typeExpr = extractDeclarationTypeExpr(type);
+        declarations.push({
+          kind: R3TemplateDependencyKind.Pipe,
+          name,
+          type: typeExpr,
+        });
+      }
     }
 
-    let pipes = new Map<string, o.Expression>();
-    if (metaObj.has('pipes')) {
-      pipes = metaObj.getObject('pipes').toMap(pipe => {
-        const {expression: pipeType, forwardRef} = extractForwardRef(pipe);
-        if (forwardRef === ForwardRefHandling.Unwrapped) {
-          declarationListEmitMode = DeclarationListEmitMode.Closure;
+    // Process the new style field:
+    if (metaObj.has('dependencies')) {
+      for (const dep of metaObj.getArray('dependencies')) {
+        const depObj = dep.getObject();
+        const typeExpr = extractDeclarationTypeExpr(depObj.getValue('type'));
+
+        switch (depObj.getString('kind')) {
+          case 'directive':
+          case 'component':
+            declarations.push(makeDirectiveMetadata(depObj, typeExpr));
+            break;
+          case 'pipe':
+            const pipeObj =
+                depObj as AstObject<R3DeclarePipeDependencyMetadata&{kind: 'pipe'}, TExpression>;
+            declarations.push({
+              kind: R3TemplateDependencyKind.Pipe,
+              name: pipeObj.getString('name'),
+              type: typeExpr,
+            });
+            break;
+          default:
+            // Skip unknown types of dependencies.
+            continue;
         }
-        return pipeType;
-      });
+      }
     }
 
     return {
@@ -128,8 +173,7 @@ export class PartialComponentLinkerVersion1<TStatement, TExpression> implements
       animations: metaObj.has('animations') ? metaObj.getOpaque('animations') : null,
       relativeContextFilePath: this.sourceUrl,
       i18nUseExternalIds: false,
-      pipes,
-      directives,
+      declarations,
     };
   }
 

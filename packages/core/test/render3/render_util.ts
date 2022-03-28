@@ -31,7 +31,7 @@ import {injectViewContainerRef as R3_VIEW_CONTAINER_REF_FACTORY} from '../../src
 import {injectRenderer2 as R3_RENDERER2_FACTORY} from '../../src/render/api';
 import {CreateComponentOptions} from '../../src/render3/component';
 import {getDirectivesAtNodeIndex, getLContext, isComponentInstance} from '../../src/render3/context_discovery';
-import {extractDirectiveDef, extractPipeDef} from '../../src/render3/definition';
+import {extractDirectiveDef, getPipeDef} from '../../src/render3/definition';
 import {NG_ELEMENT_ID} from '../../src/render3/fields';
 import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveType, renderComponent as _renderComponent, RenderFlags, tick, ɵɵdefineComponent, ɵɵdefineDirective, ɵɵProvidersFeature} from '../../src/render3/index';
 import {DirectiveDefList, DirectiveDefListOrFactory, DirectiveTypesOrFactory, HostBindingsFunction, PipeDef, PipeDefList, PipeDefListOrFactory, PipeTypesOrFactory} from '../../src/render3/interfaces/definition';
@@ -139,8 +139,8 @@ export class TemplateFixture extends BaseFixture {
     this._vars = vars;
     this.createBlock = create;
     this.updateBlock = update;
-    this._directiveDefs = toDefs(directives, extractDirectiveDef);
-    this._pipeDefs = toDefs(pipes, extractPipeDef);
+    this._directiveDefs = toDefs(directives, dir => extractDirectiveDef(dir)!);
+    this._pipeDefs = toDefs(pipes, type => getPipeDef(type)!);
     this._sanitizer = sanitizer;
     this._rendererFactory = rendererFactory;
     this.hostView = renderTemplate(
@@ -326,8 +326,8 @@ export function renderToHtml(
     providedRendererFactory?: RendererFactory3|null, keepNgReflect = false, consts?: TConstants) {
   hostView = renderTemplate(
       containerEl, template, decls, vars, ctx, providedRendererFactory || testRendererFactory,
-      hostView, toDefs(directives, extractDirectiveDef), toDefs(pipes, extractPipeDef), null,
-      consts);
+      hostView, toDefs(directives, def => extractDirectiveDef(def)!),
+      toDefs(pipes, pipe => getPipeDef(pipe)!), null, consts);
   return toHtml(containerEl, keepNgReflect);
 }
 
@@ -399,7 +399,7 @@ export function toHtml<T>(componentOrElement: T|RElement, keepNgReflect = false)
 
 export function createComponent(
     name: string, template: ComponentTemplate<any>, decls: number = 0, vars: number = 0,
-    directives: DirectiveTypesOrFactory = [], pipes: PipeTypesOrFactory = [],
+    directives: Type<any>[] = [], pipes: Type<any>[] = [],
     viewQuery: ComponentTemplate<any>|null = null, providers: Provider[] = [],
     viewProviders: Provider[] = [], hostBindings?: HostBindingsFunction<any>,
     consts: TConstants = []): ComponentType<any> {
@@ -413,9 +413,8 @@ export function createComponent(
       vars: vars,
       template: template,
       viewQuery: viewQuery,
-      directives: directives,
+      dependencies: [...directives, ...pipes],
       hostBindings,
-      pipes: pipes,
       features: (providers.length > 0 || viewProviders.length > 0)?
       [ɵɵProvidersFeature(providers || [], viewProviders || [])]: [],
       consts: consts,

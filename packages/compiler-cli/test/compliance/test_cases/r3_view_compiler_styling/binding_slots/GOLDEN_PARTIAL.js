@@ -153,7 +153,7 @@ export class MyAppComp {
 MyAppComp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyAppComp, deps: [], target: i0.ɵɵFactoryTarget.Component });
 MyAppComp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", type: MyAppComp, selector: "my-app", ngImport: i0, template: `
     <div my-dir></div>
-  `, isInline: true, directives: [{ type: MyDir, selector: "[my-dir]" }] });
+  `, isInline: true, dependencies: [{ kind: "directive", type: MyDir, selector: "[my-dir]" }] });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyAppComp, decorators: [{
             type: Component,
             args: [{

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AnimationTriggerNames, compileClassMetadata, compileComponentFromMetadata, compileDeclareClassMetadata, compileDeclareComponentFromMetadata, ConstantPool, CssSelector, DeclarationListEmitMode, DeclareComponentTemplateInfo, DEFAULT_INTERPOLATION_CONFIG, DomElementSchemaRegistry, Expression, FactoryTarget, makeBindingParser, R3ComponentMetadata, R3TargetBinder, R3UsedDirectiveMetadata, SelectorMatcher, ViewEncapsulation, WrappedNodeExpr} from '@angular/compiler';
+import {AnimationTriggerNames, compileClassMetadata, compileComponentFromMetadata, compileDeclareClassMetadata, compileDeclareComponentFromMetadata, ConstantPool, CssSelector, DeclarationListEmitMode, DeclareComponentTemplateInfo, DEFAULT_INTERPOLATION_CONFIG, DomElementSchemaRegistry, Expression, FactoryTarget, makeBindingParser, R3ComponentMetadata, R3DirectiveDependencyMetadata, R3PipeDependencyMetadata, R3TargetBinder, R3TemplateDependency, R3TemplateDependencyKind, R3TemplateDependencyMetadata, SelectorMatcher, ViewEncapsulation, WrappedNodeExpr} from '@angular/compiler';
 import ts from 'typescript';
 
 import {Cycle, CycleAnalyzer, CycleHandlingStrategy} from '../../../cycles';
@@ -541,11 +541,11 @@ export class ComponentDecoratorHandler implements
     }
 
     const context = getSourceFile(node);
-    const metadata = analysis.meta as Readonly<R3ComponentMetadata>;
+    const metadata = analysis.meta as Readonly<R3ComponentMetadata<R3TemplateDependencyMetadata>>;
+
 
     const data: ComponentResolutionData = {
-      directives: EMPTY_ARRAY,
-      pipes: EMPTY_MAP,
+      declarations: EMPTY_ARRAY,
       declarationListEmitMode: DeclarationListEmitMode.Direct,
     };
     const diagnostics: ts.Diagnostic[] = [];
@@ -600,13 +600,14 @@ export class ComponentDecoratorHandler implements
       const bound = binder.bind({template: metadata.template.nodes});
 
       // The BoundTarget knows which directives and pipes matched the template.
-      type UsedDirective =
-          R3UsedDirectiveMetadata&{ref: Reference<ClassDeclaration>, importedFile: ImportedFile};
+      type UsedDirective = R3DirectiveDependencyMetadata&
+          {ref: Reference<ClassDeclaration>, importedFile: ImportedFile};
       const usedDirectives: UsedDirective[] = bound.getUsedDirectives().map(directive => {
         const type = this.refEmitter.emit(directive.ref, context);
         assertSuccessfulReferenceEmit(
             type, node.name, directive.isComponent ? 'component' : 'directive');
         return {
+          kind: R3TemplateDependencyKind.Directive,
           ref: directive.ref,
           type: type.expression,
           importedFile: type.importedFile,
@@ -618,10 +619,8 @@ export class ComponentDecoratorHandler implements
         };
       });
 
-      type UsedPipe = {
+      type UsedPipe = R3PipeDependencyMetadata&{
         ref: Reference<ClassDeclaration>,
-        pipeName: string,
-        expression: Expression,
         importedFile: ImportedFile,
       };
       const usedPipes: UsedPipe[] = [];
@@ -633,9 +632,10 @@ export class ComponentDecoratorHandler implements
         const type = this.refEmitter.emit(pipe, context);
         assertSuccessfulReferenceEmit(type, node.name, 'pipe');
         usedPipes.push({
+          kind: R3TemplateDependencyKind.Pipe,
+          type: type.expression,
+          name: pipeName,
           ref: pipe,
-          pipeName,
-          expression: type.expression,
           importedFile: type.importedFile,
         });
       }
@@ -643,8 +643,7 @@ export class ComponentDecoratorHandler implements
         symbol.usedDirectives = usedDirectives.map(
             dir => this.semanticDepGraphUpdater!.getSemanticReference(dir.ref.node, dir.type));
         symbol.usedPipes = usedPipes.map(
-            pipe =>
-                this.semanticDepGraphUpdater!.getSemanticReference(pipe.ref.node, pipe.expression));
+            pipe => this.semanticDepGraphUpdater!.getSemanticReference(pipe.ref.node, pipe.type));
       }
 
       // Scan through the directives/pipes actually used in the template and check whether any
@@ -659,8 +658,7 @@ export class ComponentDecoratorHandler implements
       }
       const cyclesFromPipes = new Map<UsedPipe, Cycle>();
       for (const usedPipe of usedPipes) {
-        const cycle =
-            this._checkForCyclicImport(usedPipe.importedFile, usedPipe.expression, context);
+        const cycle = this._checkForCyclicImport(usedPipe.importedFile, usedPipe.type, context);
         if (cycle !== null) {
           cyclesFromPipes.set(usedPipe, cycle);
         }
@@ -673,8 +671,8 @@ export class ComponentDecoratorHandler implements
         for (const {type, importedFile} of usedDirectives) {
           this._recordSyntheticImport(importedFile, type, context);
         }
-        for (const {expression, importedFile} of usedPipes) {
-          this._recordSyntheticImport(importedFile, expression, context);
+        for (const {type, importedFile} of usedPipes) {
+          this._recordSyntheticImport(importedFile, type, context);
         }
 
         // Check whether the directive/pipe arrays in ɵcmp need to be wrapped in closures.
@@ -683,11 +681,12 @@ export class ComponentDecoratorHandler implements
         const wrapDirectivesAndPipesInClosure =
             usedDirectives.some(
                 dir => isExpressionForwardReference(dir.type, node.name, context)) ||
-            usedPipes.some(
-                pipe => isExpressionForwardReference(pipe.expression, node.name, context));
+            usedPipes.some(pipe => isExpressionForwardReference(pipe.type, node.name, context));
 
-        data.directives = usedDirectives;
-        data.pipes = new Map(usedPipes.map(pipe => [pipe.pipeName, pipe.expression]));
+        data.declarations = [
+          ...usedDirectives,
+          ...usedPipes,
+        ];
         data.declarationListEmitMode = wrapDirectivesAndPipesInClosure ?
             DeclarationListEmitMode.Closure :
             DeclarationListEmitMode.Direct;
@@ -813,7 +812,7 @@ export class ComponentDecoratorHandler implements
     if (analysis.template.errors !== null && analysis.template.errors.length > 0) {
       return [];
     }
-    const meta: R3ComponentMetadata = {...analysis.meta, ...resolution};
+    const meta: R3ComponentMetadata<R3TemplateDependency> = {...analysis.meta, ...resolution};
     const fac = compileNgFactoryDefField(toFactoryMetadata(meta, FactoryTarget.Component));
     const def = compileComponentFromMetadata(meta, pool, makeBindingParser());
     const classMetadata = analysis.classMetadata !== null ?
@@ -836,7 +835,8 @@ export class ComponentDecoratorHandler implements
           new WrappedNodeExpr(analysis.template.sourceMapping.node) :
           null,
     };
-    const meta: R3ComponentMetadata = {...analysis.meta, ...resolution};
+    const meta:
+        R3ComponentMetadata<R3TemplateDependencyMetadata> = {...analysis.meta, ...resolution};
     const fac = compileDeclareFactory(toFactoryMetadata(meta, FactoryTarget.Component));
     const def = compileDeclareComponentFromMetadata(meta, analysis.template, templateInfo);
     const classMetadata = analysis.classMetadata !== null ?

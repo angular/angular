@@ -14,6 +14,6 @@ SimpleLayout.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
       $r3$.ɵɵproperty("name", ctx.name2);
     }
   },
-  directives: [LifecycleComp],
+  dependencies: [LifecycleComp],
   encapsulation: 2
 });
