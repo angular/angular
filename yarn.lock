@@ -224,15 +224,15 @@
   dependencies:
     tslib "^2.3.0"
 
-"@angular/dev-infra-private@https://github.com/angular/dev-infra-private-builds.git#04424ec1cd38a1d12786ffdaa8005645e6640687":
-  version "0.0.0-2e2d1a6beeb26b0cc61c70f157f1dc073cdcf235"
-  uid "04424ec1cd38a1d12786ffdaa8005645e6640687"
-  resolved "https://github.com/angular/dev-infra-private-builds.git#04424ec1cd38a1d12786ffdaa8005645e6640687"
+"@angular/dev-infra-private@https://github.com/angular/dev-infra-private-builds.git#03f784a12c48ed92c97b4119c43096b549defc0a":
+  version "0.0.0-9b5b3d453d8beea74bbb7b7d29ed8c0b85a070af"
+  uid "03f784a12c48ed92c97b4119c43096b549defc0a"
+  resolved "https://github.com/angular/dev-infra-private-builds.git#03f784a12c48ed92c97b4119c43096b549defc0a"
   dependencies:
     "@angular-devkit/build-angular" "14.0.0-next.6"
     "@angular/benchpress" "0.3.0"
     "@babel/core" "^7.16.0"
-    "@bazel/buildifier" "^5.0.1"
+    "@bazel/buildifier" "5.0.1"
     "@bazel/concatjs" "5.3.0"
     "@bazel/esbuild" "5.3.0"
     "@bazel/protractor" "5.3.0"
@@ -250,9 +250,9 @@
     "@types/yargs" "^17.0.0"
     browser-sync "^2.27.7"
     chalk "^4.1.0"
-    clang-format "^1.6.0"
+    clang-format "1.6.0"
     node-fetch "^2.6.1"
-    prettier "^2.3.2"
+    prettier "2.6.1"
     protractor "^7.0.0"
     selenium-webdriver "4.1.1"
     send "^0.18.0"
@@ -1291,7 +1291,7 @@
   resolved "https://registry.yarnpkg.com/@bazel/bazelisk/-/bazelisk-1.11.0.tgz#f98d8438b4c14e3328126618b96775d271caa5f8"
   integrity sha512-lxiQzVqSGDG0PIDQGJdVDjp7T+50p5NnM4EnRJa76mkZp6u5ul19GJNKhPKi81TZQALZEZDxAgxVqQKkWTUOxA==
 
-"@bazel/buildifier@^5.0.1", "@bazel/buildifier@~5.0.1":
+"@bazel/buildifier@5.0.1", "@bazel/buildifier@~5.0.1":
   version "5.0.1"
   resolved "https://registry.yarnpkg.com/@bazel/buildifier/-/buildifier-5.0.1.tgz#8946848cf2c28717ec8fb4ff46e424aeba82be74"
   integrity sha512-3eMWxdFtcQf+Jw55PZqD/I9N785wp6QQ2k/SZst7R64KAGrS8Ke1EhPXaZHZBkXao5GXrm6SNLDV287xg2kguA==
@@ -4986,7 +4986,7 @@ cjson@^0.3.1:
   dependencies:
     json-parse-helpfulerror "^1.0.3"
 
-clang-format@^1.6.0:
+clang-format@1.6.0:
   version "1.6.0"
   resolved "https://registry.yarnpkg.com/clang-format/-/clang-format-1.6.0.tgz#48fac4387712aeeae0f47b5d72f639f3fd95f4b6"
   integrity sha512-W3/L7fWkA8DoLkz9UGjrRnNi+J5a5TuS2HDLqk6WsicpOzb66MBu4eY/EcXhicHriVnAXWQVyk5/VeHWY6w4ow==
@@ -12158,7 +12158,7 @@ prepend-http@^2.0.0:
   resolved "https://registry.yarnpkg.com/prepend-http/-/prepend-http-2.0.0.tgz#e92434bfa5ea8c19f41cdfd401d741a3c819d897"
   integrity sha1-6SQ0v6XqjBn0HN/UAddBo8gZ2Jc=
 
-prettier@^2.3.2:
+prettier@2.6.1:
   version "2.6.1"
   resolved "https://registry.yarnpkg.com/prettier/-/prettier-2.6.1.tgz#d472797e0d7461605c1609808e27b80c0f9cfe17"
   integrity sha512-8UVbTBYGwN37Bs9LERmxCPjdvPxlEowx2urIL6urHzdb3SDq4B/Z6xLFCblrSnE4iKWcS6ziJ3aOYrc1kz/E2A==
