@@ -12,7 +12,6 @@ export function createAngularJSTestingModule(angularModules: any[]): string;
 // @public
 export function createAngularTestingModule(angularJSModules: string[], strictDi?: boolean): Type<any>;
 
-
 // (No @packageDocumentation comment for this package)
 
 ```
