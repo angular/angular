@@ -7,6 +7,7 @@
  */
 
 import {AnimationTriggerNames, compileClassMetadata, compileComponentFromMetadata, compileDeclareClassMetadata, compileDeclareComponentFromMetadata, ConstantPool, CssSelector, DeclarationListEmitMode, DeclareComponentTemplateInfo, DEFAULT_INTERPOLATION_CONFIG, DomElementSchemaRegistry, Expression, FactoryTarget, makeBindingParser, R3ComponentMetadata, R3TargetBinder, R3UsedDirectiveMetadata, SelectorMatcher, ViewEncapsulation, WrappedNodeExpr} from '@angular/compiler';
+import {R3UsedDeclarationKind, R3UsedPipeMetadata} from '@angular/compiler/public_api';
 import ts from 'typescript';
 
 import {Cycle, CycleAnalyzer, CycleHandlingStrategy} from '../../../cycles';
@@ -543,9 +544,9 @@ export class ComponentDecoratorHandler implements
     const context = getSourceFile(node);
     const metadata = analysis.meta as Readonly<R3ComponentMetadata>;
 
+
     const data: ComponentResolutionData = {
-      directives: EMPTY_ARRAY,
-      pipes: EMPTY_MAP,
+      declarations: EMPTY_ARRAY,
       declarationListEmitMode: DeclarationListEmitMode.Direct,
     };
     const diagnostics: ts.Diagnostic[] = [];
@@ -607,6 +608,7 @@ export class ComponentDecoratorHandler implements
         assertSuccessfulReferenceEmit(
             type, node.name, directive.isComponent ? 'component' : 'directive');
         return {
+          kind: R3UsedDeclarationKind.Directive,
           ref: directive.ref,
           type: type.expression,
           importedFile: type.importedFile,
@@ -618,10 +620,8 @@ export class ComponentDecoratorHandler implements
         };
       });
 
-      type UsedPipe = {
+      type UsedPipe = R3UsedPipeMetadata&{
         ref: Reference<ClassDeclaration>,
-        pipeName: string,
-        expression: Expression,
         importedFile: ImportedFile,
       };
       const usedPipes: UsedPipe[] = [];
@@ -633,9 +633,10 @@ export class ComponentDecoratorHandler implements
         const type = this.refEmitter.emit(pipe, context);
         assertSuccessfulReferenceEmit(type, node.name, 'pipe');
         usedPipes.push({
+          kind: R3UsedDeclarationKind.Pipe,
+          type: type.expression,
+          name: pipeName,
           ref: pipe,
-          pipeName,
-          expression: type.expression,
           importedFile: type.importedFile,
         });
       }
@@ -643,8 +644,7 @@ export class ComponentDecoratorHandler implements
         symbol.usedDirectives = usedDirectives.map(
             dir => this.semanticDepGraphUpdater!.getSemanticReference(dir.ref.node, dir.type));
         symbol.usedPipes = usedPipes.map(
-            pipe =>
-                this.semanticDepGraphUpdater!.getSemanticReference(pipe.ref.node, pipe.expression));
+            pipe => this.semanticDepGraphUpdater!.getSemanticReference(pipe.ref.node, pipe.type));
       }
 
       // Scan through the directives/pipes actually used in the template and check whether any
@@ -659,8 +659,7 @@ export class ComponentDecoratorHandler implements
       }
       const cyclesFromPipes = new Map<UsedPipe, Cycle>();
       for (const usedPipe of usedPipes) {
-        const cycle =
-            this._checkForCyclicImport(usedPipe.importedFile, usedPipe.expression, context);
+        const cycle = this._checkForCyclicImport(usedPipe.importedFile, usedPipe.type, context);
         if (cycle !== null) {
           cyclesFromPipes.set(usedPipe, cycle);
         }
@@ -673,8 +672,8 @@ export class ComponentDecoratorHandler implements
         for (const {type, importedFile} of usedDirectives) {
           this._recordSyntheticImport(importedFile, type, context);
         }
-        for (const {expression, importedFile} of usedPipes) {
-          this._recordSyntheticImport(importedFile, expression, context);
+        for (const {type, importedFile} of usedPipes) {
+          this._recordSyntheticImport(importedFile, type, context);
         }
 
         // Check whether the directive/pipe arrays in ɵcmp need to be wrapped in closures.
@@ -683,11 +682,12 @@ export class ComponentDecoratorHandler implements
         const wrapDirectivesAndPipesInClosure =
             usedDirectives.some(
                 dir => isExpressionForwardReference(dir.type, node.name, context)) ||
-            usedPipes.some(
-                pipe => isExpressionForwardReference(pipe.expression, node.name, context));
+            usedPipes.some(pipe => isExpressionForwardReference(pipe.type, node.name, context));
 
-        data.directives = usedDirectives;
-        data.pipes = new Map(usedPipes.map(pipe => [pipe.pipeName, pipe.expression]));
+        data.declarations = [
+          ...usedDirectives,
+          ...usedPipes,
+        ];
         data.declarationListEmitMode = wrapDirectivesAndPipesInClosure ?
             DeclarationListEmitMode.Closure :
             DeclarationListEmitMode.Direct;

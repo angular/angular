@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-
 /**
  * A set of interfaces which are shared between `@angular/core` and `@angular/compiler` to allow
  * for late binding of `@angular/compiler` for JIT purposes.
@@ -173,8 +172,7 @@ export interface R3ComponentMetadataFacade extends R3DirectiveMetadataFacade {
   template: string;
   preserveWhitespaces: boolean;
   animations: OpaqueValue[]|undefined;
-  pipes: Map<string, any>;
-  directives: R3UsedDirectiveMetadata[];
+  declarations: R3UsedDeclarationMetadata[];
   styles: string[];
   encapsulation: ViewEncapsulation;
   viewProviders: Provider[]|null;
@@ -207,9 +205,16 @@ export interface R3DeclareComponentFacade extends R3DeclareDirectiveFacade {
   template: string;
   isInline?: boolean;
   styles?: string[];
+
+  // Post-standalone libraries use a unified declarations field.
+  declarations?: R3DeclareUsedDependencyFacade[];
+
+  // Pre-standalone libraries have separate component/directive/pipe fields:
   components?: R3DeclareUsedDirectiveFacade[];
   directives?: R3DeclareUsedDirectiveFacade[];
   pipes?: {[pipeName: string]: OpaqueValue|(() => OpaqueValue)};
+
+
   viewProviders?: OpaqueValue;
   animations?: OpaqueValue;
   changeDetection?: ChangeDetectionStrategy;
@@ -218,7 +223,12 @@ export interface R3DeclareComponentFacade extends R3DeclareDirectiveFacade {
   preserveWhitespaces?: boolean;
 }
 
+export type R3DeclareUsedDependencyFacade = {
+  kind: string
+}&(R3DeclareUsedDirectiveFacade|R3DeclareUsedPipeFacade);
+
 export interface R3DeclareUsedDirectiveFacade {
+  kind?: 'directive'|'component';
   selector: string;
   type: OpaqueValue|(() => OpaqueValue);
   inputs?: string[];
@@ -226,11 +236,27 @@ export interface R3DeclareUsedDirectiveFacade {
   exportAs?: string[];
 }
 
+export interface R3DeclareUsedPipeFacade {
+  kind?: 'pipe';
+  name: string;
+  type: OpaqueValue|(() => OpaqueValue);
+}
+
+export type R3UsedDeclarationMetadata = R3UsedDirectiveMetadata|R3UsedPipeMetadata;
+
 export interface R3UsedDirectiveMetadata {
+  kind: number;
+  isComponent: boolean;
   selector: string;
   inputs: string[];
   outputs: string[];
   exportAs: string[]|null;
+  type: any;
+}
+
+export interface R3UsedPipeMetadata {
+  kind: number;
+  name: string;
   type: any;
 }
 
@@ -307,6 +333,7 @@ export interface R3DeclarePipeFacade {
   type: Type;
   name: string;
   pure?: boolean;
+  isStandalone?: boolean;
 }
 
 export interface ParseSourceSpan {

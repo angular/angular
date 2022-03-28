@@ -13,6 +13,6 @@ MyComponent.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
     }
   },
   …
-  directives: [DirectiveA],
+  dependencies: [DirectiveA],
   …
 });

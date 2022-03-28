@@ -7,7 +7,7 @@
  */
 
 
-import {CompilerFacade, CoreEnvironment, ExportedCompilerFacade, OpaqueValue, R3ComponentMetadataFacade, R3DeclareComponentFacade, R3DeclareDependencyMetadataFacade, R3DeclareDirectiveFacade, R3DeclareFactoryFacade, R3DeclareInjectableFacade, R3DeclareInjectorFacade, R3DeclareNgModuleFacade, R3DeclarePipeFacade, R3DeclareQueryMetadataFacade, R3DeclareUsedDirectiveFacade, R3DependencyMetadataFacade, R3DirectiveMetadataFacade, R3FactoryDefMetadataFacade, R3InjectableMetadataFacade, R3InjectorMetadataFacade, R3NgModuleMetadataFacade, R3PipeMetadataFacade, R3QueryMetadataFacade, StringMap, StringMapWithRename} from './compiler_facade_interface';
+import {CompilerFacade, CoreEnvironment, ExportedCompilerFacade, OpaqueValue, R3ComponentMetadataFacade, R3DeclareComponentFacade, R3DeclareDependencyMetadataFacade, R3DeclareDirectiveFacade, R3DeclareFactoryFacade, R3DeclareInjectableFacade, R3DeclareInjectorFacade, R3DeclareNgModuleFacade, R3DeclarePipeFacade, R3DeclareQueryMetadataFacade, R3DeclareUsedDirectiveFacade, R3DeclareUsedPipeFacade, R3DependencyMetadataFacade, R3DirectiveMetadataFacade, R3FactoryDefMetadataFacade, R3InjectableMetadataFacade, R3InjectorMetadataFacade, R3NgModuleMetadataFacade, R3PipeMetadataFacade, R3QueryMetadataFacade, StringMap, StringMapWithRename} from './compiler_facade_interface';
 import {ConstantPool} from './constant_pool';
 import {ChangeDetectionStrategy, HostBinding, HostListener, Input, Output, ViewEncapsulation} from './core';
 import {compileInjectable} from './injectable_compiler_2';
@@ -21,7 +21,7 @@ import {R3JitReflector} from './render3/r3_jit';
 import {compileNgModule, compileNgModuleDeclarationExpression, R3NgModuleMetadata, R3SelectorScopeMode} from './render3/r3_module_compiler';
 import {compilePipeFromMetadata, R3PipeMetadata} from './render3/r3_pipe_compiler';
 import {createMayBeForwardRefExpression, ForwardRefHandling, getSafePropertyAccessString, MaybeForwardRefExpression, wrapReference} from './render3/util';
-import {DeclarationListEmitMode, R3ComponentMetadata, R3DirectiveMetadata, R3HostMetadata, R3QueryMetadata, R3UsedDirectiveMetadata} from './render3/view/api';
+import {DeclarationListEmitMode, R3ComponentMetadata, R3DirectiveMetadata, R3HostMetadata, R3QueryMetadata, R3UsedDeclarationKind, R3UsedDeclarationMetadata, R3UsedDirectiveMetadata, R3UsedPipeMetadata} from './render3/view/api';
 import {compileComponentFromMetadata, compileDirectiveFromMetadata, ParsedHostBindings, parseHostBindings, verifyHostBindings} from './render3/view/compiler';
 import {makeBindingParser, parseTemplate} from './render3/view/template';
 import {ResourceLoader} from './resource_loader';
@@ -407,27 +407,45 @@ function convertOpaqueValuesToExpressions(obj: {[key: string]: OpaqueValue}):
 }
 
 function convertDeclareComponentFacadeToMetadata(
-    declaration: R3DeclareComponentFacade, typeSourceSpan: ParseSourceSpan,
+    decl: R3DeclareComponentFacade, typeSourceSpan: ParseSourceSpan,
     sourceMapUrl: string): R3ComponentMetadata {
   const {template, interpolation} = parseJitTemplate(
-      declaration.template, declaration.type.name, sourceMapUrl,
-      declaration.preserveWhitespaces ?? false, declaration.interpolation);
+      decl.template, decl.type.name, sourceMapUrl, decl.preserveWhitespaces ?? false,
+      decl.interpolation);
+
+  const declarations: R3UsedDeclarationMetadata[] = [];
+  if (decl.components || decl.directives || decl.pipes) {
+    decl.components &&
+        declarations.push(...decl.components.map(
+            dir => convertUsedDirectiveDeclarationToMetadata(dir, /* isComponent */ true)));
+    decl.directives &&
+        declarations.push(
+            ...decl.directives.map(dir => convertUsedDirectiveDeclarationToMetadata(dir)));
+    decl.pipes && declarations.push(...convertUsedPipesToMetadata(decl.pipes));
+  } else if (decl.declarations) {
+    for (const innerDecl of decl.declarations) {
+      switch (innerDecl.kind) {
+        case 'directive':
+        case 'component':
+          declarations.push(convertUsedDirectiveDeclarationToMetadata(innerDecl));
+          break;
+        case 'pipe':
+          declarations.push(convertUsedPipeDeclarationToMetadata(innerDecl));
+          break;
+      }
+    }
+  }
 
   return {
-    ...convertDeclareDirectiveFacadeToMetadata(declaration, typeSourceSpan),
+    ...convertDeclareDirectiveFacadeToMetadata(decl, typeSourceSpan),
     template,
-    styles: declaration.styles ?? [],
-    directives: (declaration.components ?? [])
-                    .concat(declaration.directives ?? [])
-                    .map(convertUsedDirectiveDeclarationToMetadata),
-    pipes: convertUsedPipesToMetadata(declaration.pipes),
-    viewProviders: declaration.viewProviders !== undefined ?
-        new WrappedNodeExpr(declaration.viewProviders) :
-        null,
-    animations: declaration.animations !== undefined ? new WrappedNodeExpr(declaration.animations) :
-                                                       null,
-    changeDetection: declaration.changeDetection ?? ChangeDetectionStrategy.Default,
-    encapsulation: declaration.encapsulation ?? ViewEncapsulation.Emulated,
+    styles: decl.styles ?? [],
+    declarations,
+    viewProviders: decl.viewProviders !== undefined ? new WrappedNodeExpr(decl.viewProviders) :
+                                                      null,
+    animations: decl.animations !== undefined ? new WrappedNodeExpr(decl.animations) : null,
+    changeDetection: decl.changeDetection ?? ChangeDetectionStrategy.Default,
+    encapsulation: decl.encapsulation ?? ViewEncapsulation.Emulated,
     interpolation,
     declarationListEmitMode: DeclarationListEmitMode.ClosureResolved,
     relativeContextFilePath: '',
@@ -435,9 +453,12 @@ function convertDeclareComponentFacadeToMetadata(
   };
 }
 
-function convertUsedDirectiveDeclarationToMetadata(declaration: R3DeclareUsedDirectiveFacade):
-    R3UsedDirectiveMetadata {
+function convertUsedDirectiveDeclarationToMetadata(
+    declaration: R3DeclareUsedDirectiveFacade,
+    isComponent: true|null = null): R3UsedDirectiveMetadata {
   return {
+    kind: R3UsedDeclarationKind.Directive,
+    isComponent: isComponent || declaration.kind === 'component',
     selector: declaration.selector,
     type: new WrappedNodeExpr(declaration.type),
     inputs: declaration.inputs ?? [],
@@ -446,18 +467,27 @@ function convertUsedDirectiveDeclarationToMetadata(declaration: R3DeclareUsedDir
   };
 }
 
-function convertUsedPipesToMetadata(declaredPipes: R3DeclareComponentFacade['pipes']):
-    Map<string, Expression> {
-  const pipes = new Map<string, Expression>();
-  if (declaredPipes === undefined) {
-    return pipes;
+function convertUsedPipesToMetadata(pipes: R3DeclareComponentFacade['pipes']):
+    R3UsedPipeMetadata[] {
+  if (!pipes) {
+    return [];
   }
 
-  for (const pipeName of Object.keys(declaredPipes)) {
-    const pipeType = declaredPipes[pipeName];
-    pipes.set(pipeName, new WrappedNodeExpr(pipeType));
-  }
-  return pipes;
+  return Object.keys(pipes).map(name => {
+    return {
+      kind: R3UsedDeclarationKind.Pipe,
+      name,
+      type: new WrappedNodeExpr(pipes[name]),
+    };
+  });
+}
+
+function convertUsedPipeDeclarationToMetadata(pipe: R3DeclareUsedPipeFacade): R3UsedPipeMetadata {
+  return {
+    kind: R3UsedDeclarationKind.Pipe,
+    name: pipe.name,
+    type: new WrappedNodeExpr(pipe.type),
+  };
 }
 
 function parseJitTemplate(
