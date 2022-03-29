@@ -286,7 +286,7 @@ $light-theme: mat.define-light-theme((
 
 // Define a dark theme
 $dark-primary: mat.define-palette(mat.$pink-palette);
-$dark-accent: mat.define-palette(mat.$blue-gray-palette);
+$dark-accent: mat.define-palette(mat.$blue-grey-palette);
 $dark-theme: mat.define-dark-theme((
  color: (
    primary: $dark-primary,
