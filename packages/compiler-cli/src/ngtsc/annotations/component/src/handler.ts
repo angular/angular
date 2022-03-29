@@ -7,7 +7,7 @@
  */
 
 import {AnimationTriggerNames, compileClassMetadata, compileComponentFromMetadata, compileDeclareClassMetadata, compileDeclareComponentFromMetadata, ConstantPool, CssSelector, DeclarationListEmitMode, DeclareComponentTemplateInfo, DEFAULT_INTERPOLATION_CONFIG, DomElementSchemaRegistry, Expression, FactoryTarget, makeBindingParser, R3ComponentMetadata, R3TargetBinder, R3UsedDirectiveMetadata, SelectorMatcher, ViewEncapsulation, WrappedNodeExpr} from '@angular/compiler';
-import {R3UsedDeclarationKind, R3UsedPipeMetadata} from '@angular/compiler/public_api';
+import {R3UsedDeclarationKind, R3UsedDeclarationMetadata, R3UsedPipeMetadata} from '@angular/compiler/public_api';
 import ts from 'typescript';
 
 import {Cycle, CycleAnalyzer, CycleHandlingStrategy} from '../../../cycles';
@@ -17,7 +17,7 @@ import {assertSuccessfulReferenceEmit, ImportedFile, ModuleResolver, Reference, 
 import {DependencyTracker} from '../../../incremental/api';
 import {extractSemanticTypeParameters, SemanticDepGraphUpdater} from '../../../incremental/semantic_graph';
 import {IndexingContext} from '../../../indexer';
-import {DirectiveMeta, extractDirectiveTypeCheckMeta, InjectableClassRegistry, MetadataReader, MetadataRegistry, MetaType, ResourceRegistry} from '../../../metadata';
+import {DirectiveMeta, extractDirectiveTypeCheckMeta, InjectableClassRegistry, MetadataReader, MetadataRegistry, MetaType, PipeMeta, ResourceRegistry} from '../../../metadata';
 import {PartialEvaluator} from '../../../partial_evaluator';
 import {PerfEvent, PerfRecorder} from '../../../perf';
 import {ClassDeclaration, DeclarationNode, Decorator, ReflectionHost, reflectObjectLiteral} from '../../../reflection';
@@ -585,14 +585,14 @@ export class ComponentDecoratorHandler implements
       type MatchedDirective = DirectiveMeta&{selector: string};
       const matcher = new SelectorMatcher<MatchedDirective>();
 
-      for (const dir of scope.directives) {
-        if (dir.selector !== null) {
-          matcher.addSelectables(CssSelector.parse(dir.selector), dir as MatchedDirective);
+      const pipes = new Map<string, PipeMeta>();
+
+      for (const dep of scope.dependencies) {
+        if (dep.type === MetaType.Directive && dep.selector !== null) {
+          matcher.addSelectables(CssSelector.parse(dep.selector), dep as MatchedDirective);
+        } else if (dep.type === MetaType.Pipe) {
+          pipes.set(dep.name, dep);
         }
-      }
-      const pipes = new Map<string, Reference<ClassDeclaration>>();
-      for (const pipe of scope.pipes) {
-        pipes.set(pipe.name, pipe.ref);
       }
 
       // Next, the component template AST is bound using the R3TargetBinder. This produces a
@@ -603,65 +603,111 @@ export class ComponentDecoratorHandler implements
       // The BoundTarget knows which directives and pipes matched the template.
       type UsedDirective =
           R3UsedDirectiveMetadata&{ref: Reference<ClassDeclaration>, importedFile: ImportedFile};
-      const usedDirectives: UsedDirective[] = bound.getUsedDirectives().map(directive => {
-        const type = this.refEmitter.emit(directive.ref, context);
-        assertSuccessfulReferenceEmit(
-            type, node.name, directive.isComponent ? 'component' : 'directive');
-        return {
-          kind: R3UsedDeclarationKind.Directive,
-          ref: directive.ref,
-          type: type.expression,
-          importedFile: type.importedFile,
-          selector: directive.selector,
-          inputs: directive.inputs.propertyNames,
-          outputs: directive.outputs.propertyNames,
-          exportAs: directive.exportAs,
-          isComponent: directive.isComponent,
-        };
-      });
+
+      const used = new Set<ClassDeclaration>();
+      for (const dir of bound.getUsedDirectives()) {
+        used.add(dir.ref.node);
+      }
+      for (const name of bound.getUsedPipes()) {
+        if (!pipes.has(name)) {
+          continue;
+        }
+        used.add(pipes.get(name)!.ref.node);
+      }
+
+      //   const type = this.refEmitter.emit(directive.ref, context);
+      //   assertSuccessfulReferenceEmit(
+      //       type, node.name, directive.isComponent ? 'component' : 'directive');
+      //   return {
+      //     kind: R3UsedDeclarationKind.Directive,
+      //     ref: directive.ref,
+      //     type: type.expression,
+      //     importedFile: type.importedFile,
+      //     selector: directive.selector,
+      //     inputs: directive.inputs.propertyNames,
+      //     outputs: directive.outputs.propertyNames,
+      //     exportAs: directive.exportAs,
+      //     isComponent: directive.isComponent,
+      //   };
+      // });
 
       type UsedPipe = R3UsedPipeMetadata&{
         ref: Reference<ClassDeclaration>,
         importedFile: ImportedFile,
       };
-      const usedPipes: UsedPipe[] = [];
-      for (const pipeName of bound.getUsedPipes()) {
-        if (!pipes.has(pipeName)) {
-          continue;
+
+      const declarations: (UsedPipe|UsedDirective)[] = [];
+
+      // Transform the dependencies list, filtering out unused dependencies.
+      for (const dep of scope.dependencies) {
+        switch (dep.type) {
+          case MetaType.Directive:
+            if (!used.has(dep.ref.node)) {
+              continue;
+            }
+            const dirType = this.refEmitter.emit(dep.ref, context);
+            assertSuccessfulReferenceEmit(
+                dirType, node.name, dep.isComponent ? 'component' : 'directive');
+
+            declarations.push({
+              kind: R3UsedDeclarationKind.Directive,
+              ref: dep.ref,
+              type: dirType.expression,
+              importedFile: dirType.importedFile,
+              selector: dep.selector!,
+              inputs: dep.inputs.propertyNames,
+              outputs: dep.outputs.propertyNames,
+              exportAs: dep.exportAs,
+              isComponent: dep.isComponent,
+            });
+            break;
+          case MetaType.Pipe:
+            if (!used.has(dep.ref.node)) {
+              continue;
+            }
+
+            const pipeType = this.refEmitter.emit(dep.ref, context);
+            assertSuccessfulReferenceEmit(pipeType, node.name, 'pipe');
+
+            declarations.push({
+              kind: R3UsedDeclarationKind.Pipe,
+              type: pipeType.expression,
+              name: dep.name,
+              ref: dep.ref,
+              importedFile: pipeType.importedFile,
+            });
+            break;
         }
-        const pipe = pipes.get(pipeName)!;
-        const type = this.refEmitter.emit(pipe, context);
-        assertSuccessfulReferenceEmit(type, node.name, 'pipe');
-        usedPipes.push({
-          kind: R3UsedDeclarationKind.Pipe,
-          type: type.expression,
-          name: pipeName,
-          ref: pipe,
-          importedFile: type.importedFile,
-        });
       }
+
+      const isUsedDirective = (decl: UsedDirective|UsedPipe): decl is UsedDirective =>
+          decl.kind === R3UsedDeclarationKind.Directive;
+      const isUsedPipe = (decl: UsedDirective|UsedPipe): decl is UsedPipe =>
+          decl.kind === R3UsedDeclarationKind.Pipe;
+
+      const getSemanticReference = (decl: UsedDirective|UsedPipe) =>
+          this.semanticDepGraphUpdater!.getSemanticReference(decl.ref.node, decl.type);
+
       if (this.semanticDepGraphUpdater !== null) {
-        symbol.usedDirectives = usedDirectives.map(
-            dir => this.semanticDepGraphUpdater!.getSemanticReference(dir.ref.node, dir.type));
-        symbol.usedPipes = usedPipes.map(
-            pipe => this.semanticDepGraphUpdater!.getSemanticReference(pipe.ref.node, pipe.type));
+        symbol.usedDirectives = declarations.filter(isUsedDirective).map(getSemanticReference);
+        symbol.usedPipes = declarations.filter(isUsedPipe).map(getSemanticReference);
       }
 
       // Scan through the directives/pipes actually used in the template and check whether any
       // import which needs to be generated would create a cycle.
       const cyclesFromDirectives = new Map<UsedDirective, Cycle>();
-      for (const usedDirective of usedDirectives) {
-        const cycle =
-            this._checkForCyclicImport(usedDirective.importedFile, usedDirective.type, context);
-        if (cycle !== null) {
-          cyclesFromDirectives.set(usedDirective, cycle);
-        }
-      }
       const cyclesFromPipes = new Map<UsedPipe, Cycle>();
-      for (const usedPipe of usedPipes) {
-        const cycle = this._checkForCyclicImport(usedPipe.importedFile, usedPipe.type, context);
+      for (const usedDep of declarations) {
+        const cycle = this._checkForCyclicImport(usedDep.importedFile, usedDep.type, context);
         if (cycle !== null) {
-          cyclesFromPipes.set(usedPipe, cycle);
+          switch (usedDep.kind) {
+            case R3UsedDeclarationKind.Directive:
+              cyclesFromDirectives.set(usedDep, cycle);
+              break;
+            case R3UsedDeclarationKind.Pipe:
+              cyclesFromPipes.set(usedDep, cycle);
+              break;
+          }
         }
       }
 
@@ -669,25 +715,17 @@ export class ComponentDecoratorHandler implements
       if (!cycleDetected) {
         // No cycle was detected. Record the imports that need to be created in the cycle detector
         // so that future cyclic import checks consider their production.
-        for (const {type, importedFile} of usedDirectives) {
-          this._recordSyntheticImport(importedFile, type, context);
-        }
-        for (const {type, importedFile} of usedPipes) {
+        for (const {type, importedFile} of declarations) {
           this._recordSyntheticImport(importedFile, type, context);
         }
 
-        // Check whether the directive/pipe arrays in ɵcmp need to be wrapped in closures.
-        // This is required if any directive/pipe reference is to a declaration in the same file
+        // Check whether the dependencies arrays in ɵcmp need to be wrapped in a closure.
+        // This is required if any dependency reference is to a declaration in the same file
         // but declared after this component.
         const wrapDirectivesAndPipesInClosure =
-            usedDirectives.some(
-                dir => isExpressionForwardReference(dir.type, node.name, context)) ||
-            usedPipes.some(pipe => isExpressionForwardReference(pipe.type, node.name, context));
+            declarations.some(decl => isExpressionForwardReference(decl.type, node.name, context));
 
-        data.declarations = [
-          ...usedDirectives,
-          ...usedPipes,
-        ];
+        data.declarations = declarations;
         data.declarationListEmitMode = wrapDirectivesAndPipesInClosure ?
             DeclarationListEmitMode.Closure :
             DeclarationListEmitMode.Direct;
@@ -697,7 +735,8 @@ export class ComponentDecoratorHandler implements
           // create a cycle. Instead, mark this component as requiring remote scoping, so that the
           // NgModule file will take care of setting the directives for the component.
           this.scopeRegistry.setComponentRemoteScope(
-              node, usedDirectives.map(dir => dir.ref), usedPipes.map(pipe => pipe.ref));
+              node, declarations.filter(isUsedDirective).map(dir => dir.ref),
+              declarations.filter(isUsedPipe).map(pipe => pipe.ref));
           symbol.isRemotelyScoped = true;
 
           // If a semantic graph is being tracked, record the fact that this component is remotely
