@@ -12,7 +12,7 @@ import ts from 'typescript';
 import {ErrorCode, FatalDiagnosticError, makeDiagnostic, makeRelatedInformation} from '../../../diagnostics';
 import {assertSuccessfulReferenceEmit, Reference, ReferenceEmitter} from '../../../imports';
 import {isArrayEqual, isReferenceEqual, isSymbolEqual, SemanticReference, SemanticSymbol} from '../../../incremental/semantic_graph';
-import {InjectableClassRegistry, MetadataReader, MetadataRegistry} from '../../../metadata';
+import {InjectableClassRegistry, MetadataReader, MetadataRegistry, MetaKind} from '../../../metadata';
 import {PartialEvaluator, ResolvedValue} from '../../../partial_evaluator';
 import {PerfEvent, PerfRecorder} from '../../../perf';
 import {ClassDeclaration, Decorator, isNamedClassDeclaration, ReflectionHost, reflectObjectLiteral, typeNodeToValueExpr} from '../../../reflection';
@@ -738,8 +738,7 @@ export class NgModuleDecoratorHandler implements
 }
 
 function isNgModule(node: ClassDeclaration, compilation: ScopeData): boolean {
-  return !compilation.directives.some(directive => directive.ref.node === node) &&
-      !compilation.pipes.some(pipe => pipe.ref.node === node);
+  return !compilation.dependencies.some(dep => dep.ref.node === node);
 }
 
 /**

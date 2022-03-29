@@ -931,7 +931,7 @@ function allTests(os: string) {
 
       const jsContents = trim(env.getContents('test.js'));
       expect(jsContents)
-          .toContain('dependencies: [DirectiveA, DirectiveB, ComponentA, ComponentB]');
+          .toContain('dependencies: [DirectiveA, ComponentA, DirectiveB, ComponentB]');
     });
 
     it('should respect imported module order while processing Directives and Components', () => {
@@ -995,7 +995,7 @@ function allTests(os: string) {
 
       const jsContents = trim(env.getContents('test.js'));
       expect(jsContents)
-          .toContain('dependencies: [DirectiveA, DirectiveB, ComponentA, ComponentB]');
+          .toContain('dependencies: [DirectiveA, ComponentA, DirectiveB, ComponentB]');
     });
 
     it('should compile Components with a templateUrl in a different rootDir', () => {

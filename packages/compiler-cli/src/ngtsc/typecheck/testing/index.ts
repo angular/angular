@@ -13,7 +13,7 @@ import {absoluteFrom, AbsoluteFsPath, getSourceFileOrError, LogicalFileSystem} f
 import {TestFile} from '../../file_system/testing';
 import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, Reexport, Reference, ReferenceEmitter, RelativePathStrategy} from '../../imports';
 import {NOOP_INCREMENTAL_BUILD} from '../../incremental';
-import {ClassPropertyMapping, CompoundMetadataReader, MetaType} from '../../metadata';
+import {ClassPropertyMapping, CompoundMetadataReader, MetaKind} from '../../metadata';
 import {NOOP_PERF_RECORDER} from '../../perf';
 import {TsCreateProgramDriver} from '../../program_driver';
 import {ClassDeclaration, isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
@@ -508,8 +508,7 @@ export function setup(targets: TypeCheckingTarget[], overrides: {
               // This class wasn't part of the target set of components with templates, but is
               // probably a declaration used in one of them. Return an empty scope.
               const emptyScope: ScopeData = {
-                directives: [],
-                pipes: [],
+                dependencies: [],
                 isPoisoned: false,
               };
               return {
@@ -610,8 +609,7 @@ export function getClass(sf: ts.SourceFile, name: string): ClassDeclaration<ts.C
  */
 function makeScope(program: ts.Program, sf: ts.SourceFile, decls: TestDeclaration[]): ScopeData {
   const scope: ScopeData = {
-    directives: [],
-    pipes: [],
+    dependencies: [],
     isPoisoned: false,
   };
 
@@ -623,8 +621,8 @@ function makeScope(program: ts.Program, sf: ts.SourceFile, decls: TestDeclaratio
     const declClass = getClass(declSf, decl.name);
 
     if (decl.type === 'directive') {
-      scope.directives.push({
-        type: MetaType.Directive,
+      scope.dependencies.push({
+        kind: MetaKind.Directive,
         ref: new Reference(declClass),
         baseClass: null,
         name: decl.name,
@@ -649,8 +647,8 @@ function makeScope(program: ts.Program, sf: ts.SourceFile, decls: TestDeclaratio
         isStandalone: false,
       });
     } else if (decl.type === 'pipe') {
-      scope.pipes.push({
-        type: MetaType.Pipe,
+      scope.dependencies.push({
+        kind: MetaKind.Pipe,
         ref: new Reference(declClass),
         name: decl.pipeName,
         nameExpr: null,

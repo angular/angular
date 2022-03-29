@@ -451,7 +451,7 @@ MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "0.0.0-
     <content-query-component>
       <div someDir></div>
     </content-query-component>
-  `, isInline: true, dependencies: [{ kind: "component", type: i0.forwardRef(function () { return ContentQueryComponent; }), selector: "content-query-component" }, { kind: "directive", type: i0.forwardRef(function () { return SomeDirective; }), selector: "[someDir]" }] });
+  `, isInline: true, dependencies: [{ kind: "directive", type: i0.forwardRef(function () { return SomeDirective; }), selector: "[someDir]" }, { kind: "component", type: i0.forwardRef(function () { return ContentQueryComponent; }), selector: "content-query-component" }] });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
             type: Component,
             args: [{
@@ -529,7 +529,7 @@ MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "0.0.0-
     <content-query-component>
       <div someDir></div>
     </content-query-component>
-  `, isInline: true, dependencies: [{ kind: "component", type: i0.forwardRef(function () { return ContentQueryComponent; }), selector: "content-query-component" }, { kind: "directive", type: i0.forwardRef(function () { return SomeDirective; }), selector: "[someDir]" }] });
+  `, isInline: true, dependencies: [{ kind: "directive", type: i0.forwardRef(function () { return SomeDirective; }), selector: "[someDir]" }, { kind: "component", type: i0.forwardRef(function () { return ContentQueryComponent; }), selector: "content-query-component" }] });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
             type: Component,
             args: [{
@@ -700,7 +700,7 @@ MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "0.0.0-
     <content-query-component>
       <div someDir></div>
     </content-query-component>
-  `, isInline: true, dependencies: [{ kind: "component", type: i0.forwardRef(function () { return ContentQueryComponent; }), selector: "content-query-component" }, { kind: "directive", type: i0.forwardRef(function () { return SomeDirective; }), selector: "[someDir]" }] });
+  `, isInline: true, dependencies: [{ kind: "directive", type: i0.forwardRef(function () { return SomeDirective; }), selector: "[someDir]" }, { kind: "component", type: i0.forwardRef(function () { return ContentQueryComponent; }), selector: "content-query-component" }] });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
             type: Component,
             args: [{

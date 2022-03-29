@@ -17,15 +17,7 @@ import {ClassDeclaration} from '../../reflection';
  * Data for one of a given NgModule's scopes (either compilation scope or export scopes).
  */
 export interface ScopeData {
-  /**
-   * Directives in the exported scope of the module.
-   */
-  directives: DirectiveMeta[];
-
-  /**
-   * Pipes in the exported scope of the module.
-   */
-  pipes: PipeMeta[];
+  dependencies: Array<DirectiveMeta|PipeMeta>;
 
   /**
    * Whether some module or component in this scope contains errors and is thus semantically

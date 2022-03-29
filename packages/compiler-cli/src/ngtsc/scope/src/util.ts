@@ -36,8 +36,7 @@ export function makeNotStandaloneDiagnostic(
   let relatedInformation: ts.DiagnosticRelatedInformation[]|undefined = undefined;
   if (scope !== null) {
     // The directive/pipe in question is declared in an NgModule. Check if it's also exported.
-    const isExported = scope.exported.directives.some(exp => exp.ref.node === ref.node) ||
-        scope.exported.pipes.some(exp => exp.ref.node === ref.node);
+    const isExported = scope.exported.dependencies.some(dep => dep.ref.node === ref.node);
     if (isExported) {
       relatedInformation = [makeRelatedInformation(
           scope.ngModule.name,
