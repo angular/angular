@@ -176,18 +176,24 @@ export class MatSnackBarContainer
   enter() {
     // MDC uses some browser APIs that will throw during server-side rendering.
     if (this._platform.isBrowser) {
-      this._mdcFoundation.open();
-      this._screenReaderAnnounce();
+      this._ngZone.run(() => {
+        this._mdcFoundation.open();
+        this._screenReaderAnnounce();
+      });
     }
   }
 
   exit(): Observable<void> {
-    this._exiting = true;
-    this._mdcFoundation.close();
+    // It's common for snack bars to be opened by random outside calls like HTTP requests or
+    // errors. Run inside the NgZone to ensure that it functions correctly.
+    this._ngZone.run(() => {
+      this._exiting = true;
+      this._mdcFoundation.close();
 
-    // If the snack bar hasn't been announced by the time it exits it wouldn't have been open
-    // long enough to visually read it either, so clear the timeout for announcing.
-    clearTimeout(this._announceTimeoutId);
+      // If the snack bar hasn't been announced by the time it exits it wouldn't have been open
+      // long enough to visually read it either, so clear the timeout for announcing.
+      clearTimeout(this._announceTimeoutId);
+    });
 
     return this._onExit;
   }

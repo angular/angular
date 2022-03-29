@@ -194,19 +194,23 @@ export class MatSnackBarContainer
 
   /** Begin animation of the snack bar exiting from view. */
   exit(): Observable<void> {
-    // Note: this one transitions to `hidden`, rather than `void`, in order to handle the case
-    // where multiple snack bars are opened in quick succession (e.g. two consecutive calls to
-    // `MatSnackBar.open`).
-    this._animationState = 'hidden';
+    // It's common for snack bars to be opened by random outside calls like HTTP requests or
+    // errors. Run inside the NgZone to ensure that it functions correctly.
+    this._ngZone.run(() => {
+      // Note: this one transitions to `hidden`, rather than `void`, in order to handle the case
+      // where multiple snack bars are opened in quick succession (e.g. two consecutive calls to
+      // `MatSnackBar.open`).
+      this._animationState = 'hidden';
 
-    // Mark this element with an 'exit' attribute to indicate that the snackbar has
-    // been dismissed and will soon be removed from the DOM. This is used by the snackbar
-    // test harness.
-    this._elementRef.nativeElement.setAttribute('mat-exit', '');
+      // Mark this element with an 'exit' attribute to indicate that the snackbar has
+      // been dismissed and will soon be removed from the DOM. This is used by the snackbar
+      // test harness.
+      this._elementRef.nativeElement.setAttribute('mat-exit', '');
 
-    // If the snack bar hasn't been announced by the time it exits it wouldn't have been open
-    // long enough to visually read it either, so clear the timeout for announcing.
-    clearTimeout(this._announceTimeoutId);
+      // If the snack bar hasn't been announced by the time it exits it wouldn't have been open
+      // long enough to visually read it either, so clear the timeout for announcing.
+      clearTimeout(this._announceTimeoutId);
+    });
 
     return this._onExit;
   }
@@ -223,8 +227,10 @@ export class MatSnackBarContainer
    */
   private _completeExit() {
     this._ngZone.onMicrotaskEmpty.pipe(take(1)).subscribe(() => {
-      this._onExit.next();
-      this._onExit.complete();
+      this._ngZone.run(() => {
+        this._onExit.next();
+        this._onExit.complete();
+      });
     });
   }
 
