@@ -13,7 +13,7 @@ import {
   coerceNumberProperty,
   NumberInput,
 } from '@angular/cdk/coercion';
-import {Platform} from '@angular/cdk/platform';
+import {Platform, normalizePassiveListenerOptions} from '@angular/cdk/platform';
 import {DOCUMENT} from '@angular/common';
 import {
   AfterViewInit,
@@ -54,6 +54,9 @@ import {SpecificEventListener, EventType} from '@material/base';
 import {MDCSliderAdapter, MDCSliderFoundation, Thumb, TickMark} from '@material/slider';
 import {Subscription} from 'rxjs';
 import {GlobalChangeAndInputListener} from './global-change-and-input-listener';
+
+/** Options used to bind passive event listeners. */
+const passiveEventListenerOptions = normalizePassiveListenerOptions({passive: true});
 
 /** Represents a drag event emitted by the MatSlider component. */
 export interface MatSliderDragEvent {
@@ -778,20 +781,36 @@ export class MatSlider
     // would prefer to use "mousedown" as the default, for some reason it does not work (the
     // callback is never triggered).
     if (this._SUPPORTS_POINTER_EVENTS) {
-      this._elementRef.nativeElement.addEventListener('pointerdown', this._layout);
+      this._elementRef.nativeElement.addEventListener(
+        'pointerdown',
+        this._layout,
+        passiveEventListenerOptions,
+      );
     } else {
       this._elementRef.nativeElement.addEventListener('mouseenter', this._layout);
-      this._elementRef.nativeElement.addEventListener('touchstart', this._layout);
+      this._elementRef.nativeElement.addEventListener(
+        'touchstart',
+        this._layout,
+        passiveEventListenerOptions,
+      );
     }
   }
 
   /** Removes the event listener that keeps sync the slider UI and the foundation in sync. */
   _removeUISyncEventListener(): void {
     if (this._SUPPORTS_POINTER_EVENTS) {
-      this._elementRef.nativeElement.removeEventListener('pointerdown', this._layout);
+      this._elementRef.nativeElement.removeEventListener(
+        'pointerdown',
+        this._layout,
+        passiveEventListenerOptions,
+      );
     } else {
       this._elementRef.nativeElement.removeEventListener('mouseenter', this._layout);
-      this._elementRef.nativeElement.removeEventListener('touchstart', this._layout);
+      this._elementRef.nativeElement.removeEventListener(
+        'touchstart',
+        this._layout,
+        passiveEventListenerOptions,
+      );
     }
   }
 
