@@ -23,6 +23,9 @@ export const sites = {
     new SiteTarget(`v${major}-material-angular-io`, `https://v${major}.material.angular.io`),
 };
 
+/** Optional Github access token. Can be used for querying the active release trains. */
+export const githubAccessToken: string | undefined = process.env.DOCS_DEPLOY_GITHUB_TOKEN;
+
 /** Configuration describing the Firebase project that we deploy to. */
 export const firebaseConfig = {
   projectId: 'material-angular-io',
