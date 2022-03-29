@@ -244,9 +244,6 @@ def _serialize_files_for_arg(files):
         result.append(_serialize_file(file))
     return json.encode(result)
 
-def _filter_js_inputs(all_inputs):
-    return [f for f in all_inputs if f.path.endswith(".js") or f.path.endswith(".json")]
-
 def _find_matching_file(files, search_short_path):
     for file in files:
         if file.short_path == search_short_path:
@@ -411,19 +408,10 @@ def _ng_package_impl(ctx):
             guessed_paths = guessed_paths,
         ))
 
-        # Also include files from npm fine grained deps as inputs.
-        # These deps are identified by the NpmPackageInfo provider.
-        node_modules_files = []
-        for dep in ctx.attr.deps:
-            if NpmPackageInfo in dep:
-                # Note: `to_list` is expensive but we want to filter out non-JS files
-                # as these would result in a larger set of runfiles.
-                node_modules_files += _filter_js_inputs(dep.files.to_list())
-
         # Note: For creating the bundles, we use all the ESM2020 sources that have been
         # collected from the dependencies. This allows for bundling of code that is not
         # necessarily part of the owning package (using the `externals` attribute)
-        rollup_inputs = depset(node_modules_files + unscoped_esm2020)
+        rollup_inputs = depset(unscoped_esm2020)
         esm2020_config = _write_rollup_config(ctx, ctx.bin_dir.path, filename = "_%s.rollup_esm2020.conf.js")
         esm2015_config = _write_rollup_config(ctx, ctx.bin_dir.path, filename = "_%s.rollup_esm2015.conf.js", downlevel_to_es2015 = True)
 
