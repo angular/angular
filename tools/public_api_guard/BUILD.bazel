@@ -4,14 +4,25 @@ load(":generate-guard-tests.bzl", "generate_test_targets")
 
 package(default_visibility = ["//visibility:public"])
 
-golden_files = [
-                   # Primary entry-points.
-                   "cdk/cdk.md",
-                   "material/material.md",
-                   "youtube-player/youtube-player.md",
-                   "google-maps/google-maps.md",
-               ] + ["cdk/%s.md" % e for e in CDK_ENTRYPOINTS] + \
-               ["material/%s.md" % e for e in MATERIAL_ENTRYPOINTS + MATERIAL_TESTING_ENTRYPOINTS]
+generate_test_targets(
+    targets =
+        [
+            "//src/cdk",
+            "//src/material",
+        ] + ["//src/cdk/%s" % e for e in CDK_ENTRYPOINTS] +
+        ["//src/material/%s" % e for e in MATERIAL_ENTRYPOINTS + MATERIAL_TESTING_ENTRYPOINTS],
+)
 
-# Generate the API guard test targets for each golden file in the current package.
-generate_test_targets(targets = golden_files)
+generate_test_targets(
+    targets = [
+        "//src/youtube-player",
+    ],
+    types = ["@npm//@types/youtube"],
+)
+
+generate_test_targets(
+    targets = [
+        "//src/google-maps",
+    ],
+    types = ["@npm//@types/google.maps"],
+)
