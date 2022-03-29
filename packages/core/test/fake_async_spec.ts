@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {discardPeriodicTasks, fakeAsync, flush, flushMicrotasks, inject, tick} from '@angular/core/testing';
+import {discardPeriodicTasks, fakeAsync, flush, flushMicrotasks, inject, tick, tickRAF} from '@angular/core/testing';
 import {Log} from '@angular/core/testing/src/testing_internal';
 import {EventManager} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -360,13 +360,108 @@ const ProxyZoneSpec: {assertPresent: () => void} = (Zone as any)['ProxyZoneSpec'
 
            let elapsed = flush();
 
-           expect(count).toEqual(3);
+           expect(count).toEqual(4);
            expect(ran).toEqual(true);
-           expect(elapsed).toEqual(35);
+           expect(elapsed).toEqual(40);
 
            discardPeriodicTasks();
          }));
     });
+
+    if (typeof global.cancelAnimationFrame === 'function') {
+      describe('requestAnimationFrame', () => {
+        it('should schedule a requestAnimationFrame with timeout of 16ms', fakeAsync(() => {
+             let ran = false;
+             requestAnimationFrame(() => {
+               ran = true;
+             });
+
+             tick(6);
+             expect(ran).toEqual(false);
+
+             tick(10);
+             expect(ran).toEqual(true);
+           }));
+        it('should schedule a requestAnimationFrame with 16ms tick', fakeAsync(() => {
+             let ran = false;
+             requestAnimationFrame(() => {
+               ran = true;
+             });
+
+             tick(16);
+             expect(ran).toEqual(true);
+           }));
+        it('should schedule a requestAnimationFrame with tickRAF', fakeAsync(() => {
+             let ran = false;
+             requestAnimationFrame(() => {
+               ran = true;
+             });
+
+             tickRAF();
+             expect(ran).toEqual(true);
+           }));
+        it('should cancel a scheduled requestAnimatiomFrame', fakeAsync(() => {
+             let ran = false;
+             const id = requestAnimationFrame(() => {
+               ran = true;
+             });
+
+             tick(6);
+             expect(ran).toEqual(false);
+
+             cancelAnimationFrame(id);
+
+             tick(10);
+             expect(ran).toEqual(false);
+           }));
+        it('is flushed', fakeAsync(() => {
+             let ran = false;
+             requestAnimationFrame(() => {
+               ran = true;
+             });
+             const elapsed = flush();
+             expect(elapsed).toEqual(16);
+             expect(ran).toEqual(true);
+           }));
+        it('is ticked by tickRAF()', fakeAsync(() => {
+             let ran = false;
+             requestAnimationFrame(() => {
+               ran = true;
+             });
+             tickRAF();
+             expect(ran).toEqual(true);
+           }));
+        it('should pass timestamp as parameter', fakeAsync(() => {
+             let timestamp = 0;
+             let timestamp1 = 0;
+             requestAnimationFrame((ts) => {
+               timestamp = ts;
+               requestAnimationFrame(ts1 => {
+                 timestamp1 = ts1;
+               });
+             });
+             const elapsed = flush();
+             expect(elapsed).toEqual(32);
+             expect(timestamp).toEqual(16);
+             expect(timestamp1).toEqual(32);
+           }));
+        it('should pass timestamp as parameter with tickRAF()', fakeAsync(() => {
+             let timestamp = 0;
+             let timestamp1 = 0;
+             requestAnimationFrame((ts) => {
+               timestamp = ts;
+               requestAnimationFrame(ts1 => {
+                 timestamp1 = ts1;
+               });
+             });
+             tickRAF();
+             expect(timestamp).toEqual(16);
+             expect(timestamp1).toEqual(0);
+             tickRAF();
+             expect(timestamp1).toEqual(32);
+           }));
+      });
+    }
 
     describe('outside of the fakeAsync zone', () => {
       it('calling flushMicrotasks should throw', () => {

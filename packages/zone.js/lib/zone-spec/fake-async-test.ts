@@ -249,11 +249,11 @@ class Scheduler {
   }
 
   flush(limit = 20, flushPeriodic = false, doTick?: (elapsed: number) => void): number {
-    if (flushPeriodic) {
-      return this.flushPeriodic(doTick);
-    } else {
-      return this.flushNonPeriodic(limit, doTick);
+    const elapsed = this.flushNonPeriodic(limit, doTick);
+    if (!flushPeriodic || this._schedulerQueue.length === 0) {
+      return elapsed;
     }
+    return elapsed + this.flushPeriodic(doTick);
   }
 
   private flushPeriodic(doTick?: (elapsed: number) => void): number {
@@ -281,9 +281,8 @@ class Scheduler {
       }
 
       // flush only non-periodic timers.
-      // If the only remaining tasks are periodic(or requestAnimationFrame), finish flushing.
-      if (this._schedulerQueue.filter(task => !task.isPeriodic && !task.isRequestAnimationFrame)
-              .length === 0) {
+      // If the only remaining tasks are periodic, finish flushing.
+      if (this._schedulerQueue.filter(task => !task.isPeriodic).length === 0) {
         break;
       }
 
@@ -294,7 +293,8 @@ class Scheduler {
         // Update any secondary schedulers like Jasmine mock Date.
         doTick(this._currentTickTime - lastCurrentTime);
       }
-      const retval = current.func.apply(global, current.args);
+      const retval = current.func.apply(
+          global, current.isRequestAnimationFrame ? [this._currentTickTime] : current.args);
       if (!retval) {
         // Uncaught exception in the current scheduled function. Stop processing the queue.
         break;
@@ -513,6 +513,10 @@ class FakeAsyncTestZoneSpec implements ZoneSpec {
     if (this._lastError !== null) {
       this._resetLastErrorAndThrow();
     }
+  }
+
+  tickRAF(doTick?: (elapsed: number) => void) {
+    this.tick(16, doTick);
   }
 
   flushMicrotasks(): void {
@@ -829,6 +833,14 @@ Zone.__load_patch('fakeasync', (global: any, Zone: ZoneType, api: _ZonePrivate) 
   }
 
   /**
+   * Simulates render tick to trigger requestAnimationFrame callbacks.
+   */
+
+  function tickRAF(): void {
+    _getFakeAsyncZoneSpec().tickRAF();
+  }
+
+  /**
    * Simulates the asynchronous passage of time for the timers in the fakeAsync zone by
    * draining the macrotask queue until it is empty. The returned value is the milliseconds
    * of time that would have been elapsed.
@@ -838,8 +850,8 @@ Zone.__load_patch('fakeasync', (global: any, Zone: ZoneType, api: _ZonePrivate) 
    *
    * @experimental
    */
-  function flush(maxTurns?: number): number {
-    return _getFakeAsyncZoneSpec().flush(maxTurns);
+  function flush(maxTurns?: number, flushPeriodic = false): number {
+    return _getFakeAsyncZoneSpec().flush(maxTurns, flushPeriodic);
   }
 
   /**
@@ -862,5 +874,5 @@ Zone.__load_patch('fakeasync', (global: any, Zone: ZoneType, api: _ZonePrivate) 
     _getFakeAsyncZoneSpec().flushMicrotasks();
   }
   (Zone as any)[api.symbol('fakeAsyncTest')] =
-      {resetFakeAsyncZone, flushMicrotasks, discardPeriodicTasks, tick, flush, fakeAsync};
+      {resetFakeAsyncZone, flushMicrotasks, discardPeriodicTasks, tick, tickRAF, flush, fakeAsync};
 }, true);
