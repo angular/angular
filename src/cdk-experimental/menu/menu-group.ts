@@ -7,13 +7,13 @@
  */
 
 import {
-  Directive,
-  Output,
-  EventEmitter,
-  ContentChildren,
   AfterContentInit,
-  QueryList,
+  ContentChildren,
+  Directive,
+  EventEmitter,
   OnDestroy,
+  Output,
+  QueryList,
 } from '@angular/core';
 import {UniqueSelectionDispatcher} from '@angular/cdk/collections';
 import {takeUntil} from 'rxjs/operators';
@@ -48,6 +48,11 @@ export class CdkMenuGroup implements AfterContentInit, OnDestroy {
     this._registerMenuSelectionListeners();
   }
 
+  ngOnDestroy() {
+    this._selectableChanges.next();
+    this._selectableChanges.complete();
+  }
+
   /**
    * Register the child selectable elements with the change emitter and ensure any new child
    * elements do so as well.
@@ -66,10 +71,5 @@ export class CdkMenuGroup implements AfterContentInit, OnDestroy {
     selectable.toggled
       .pipe(takeUntil(this._selectableChanges))
       .subscribe(() => this.change.next(selectable));
-  }
-
-  ngOnDestroy() {
-    this._selectableChanges.next();
-    this._selectableChanges.complete();
   }
 }

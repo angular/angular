@@ -151,3 +151,42 @@
     </div>
   </ng-template>
 </div>
+
+<div class="example-menu-container">
+  <h3>Radio items</h3>
+  <button cdkMenuItem [cdkMenuTriggerFor]="sizeMenu">Size menu (items directly in menu)</button>
+  <button cdkMenuItem [cdkMenuTriggerFor]="colorMenu">Color menu (items in menu group)</button>
+  <button cdkMenuItem [cdkMenuTriggerFor]="sizeAndColorMenu">Size & Color menu (items in directly in menu & in menu group)</button>
+
+  <ng-template #sizeMenu>
+    <div class="example-menu" cdkMenu (change)="onSizeChange($event)">
+      <button [checked]="size === 'Small'" cdkMenuItemRadio>Small</button>
+      <button [checked]="size === 'Normal'" cdkMenuItemRadio>Normal</button>
+      <button [checked]="size === 'Large'" cdkMenuItemRadio>Large</button>
+    </div>
+  </ng-template>
+
+  <ng-template #colorMenu>
+    <div class="example-menu" cdkMenu>
+      <div cdkMenuGroup (change)="onColorChange($event)">
+        <button [checked]="color === 'Red'" cdkMenuItemRadio>Red</button>
+        <button [checked]="color === 'Green'" cdkMenuItemRadio>Green</button>
+        <button [checked]="color === 'Blue'" cdkMenuItemRadio>Blue</button>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template #sizeAndColorMenu>
+    <div class="example-menu" cdkMenu (change)="onSizeChange($event)">
+      <button [checked]="size === 'Small'" cdkMenuItemRadio>Small</button>
+      <button [checked]="size === 'Normal'" cdkMenuItemRadio>Normal</button>
+      <button [checked]="size === 'Large'" cdkMenuItemRadio>Large</button>
+      <hr />
+      <div cdkMenuGroup (change)="onColorChange($event)">
+        <button [checked]="color === 'Red'" cdkMenuItemRadio>Red</button>
+        <button [checked]="color === 'Green'" cdkMenuItemRadio>Green</button>
+        <button [checked]="color === 'Blue'" cdkMenuItemRadio>Blue</button>
+      </div>
+    </div>
+  </ng-template>
+</div>

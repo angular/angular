@@ -189,20 +189,26 @@ export class CdkMenuItem implements FocusableOption, FocusableElement, Toggler, 
         break;
 
       case RIGHT_ARROW:
-        if (this._parentMenu && this._isParentVertical() && !this.hasMenu()) {
-          event.preventDefault();
-          this._dir?.value === 'rtl'
-            ? this._menuStack?.close(this._parentMenu, FocusNext.previousItem)
-            : this._menuStack?.closeAll(FocusNext.nextItem);
+        if (this._parentMenu && this._isParentVertical()) {
+          if (this._dir?.value === 'rtl') {
+            event.preventDefault();
+            this._menuStack?.close(this._parentMenu, FocusNext.previousItem);
+          } else if (!this.hasMenu()) {
+            event.preventDefault();
+            this._menuStack?.closeAll(FocusNext.nextItem);
+          }
         }
         break;
 
       case LEFT_ARROW:
-        if (this._parentMenu && this._isParentVertical() && !this.hasMenu()) {
-          event.preventDefault();
-          this._dir?.value === 'rtl'
-            ? this._menuStack?.closeAll(FocusNext.nextItem)
-            : this._menuStack?.close(this._parentMenu, FocusNext.previousItem);
+        if (this._parentMenu && this._isParentVertical()) {
+          if (this._dir?.value !== 'rtl') {
+            event.preventDefault();
+            this._menuStack?.close(this._parentMenu, FocusNext.previousItem);
+          } else if (!this.hasMenu()) {
+            event.preventDefault();
+            this._menuStack?.closeAll(FocusNext.nextItem);
+          }
         }
         break;
     }

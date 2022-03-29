@@ -3,6 +3,11 @@
   flex-direction: column;
 }
 
+.example-menu .cdk-menu-group {
+  display: flex;
+  flex-direction: column;
+}
+
 .example-menu-container + .example-menu-container {
   /* add some buffer for the opened menu */
   margin-top: 140px;
@@ -21,4 +26,14 @@
 demo-custom-position {
   display: block;
   margin-top: 20px;
+}
+
+.example-menu-container .cdk-menu-item:focus {
+  position: relative;
+  z-index: 1;
+  outline: 2px solid;
+}
+
+.cdk-menu-item[aria-checked='true'] {
+  box-shadow: inset 0 0 0 100px rgba(0, 0, 255, 0.5);
 }

@@ -21,7 +21,7 @@ export const enum FocusNext {
  */
 export interface MenuStackItem {
   /** A reference to the previous Menus MenuStack instance. */
-  _menuStack?: MenuStack;
+  menuStack?: MenuStack;
 }
 
 /** Injection token used for an implementation of MenuStack. */

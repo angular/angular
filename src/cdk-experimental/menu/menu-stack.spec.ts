@@ -17,7 +17,7 @@ describe('MenuStack', () => {
     fixture.detectChanges();
     triggers = fixture.componentInstance.triggers.toArray();
     menus = fixture.componentInstance.menus.toArray();
-    menuStack = fixture.componentInstance.menuBar._menuStack;
+    menuStack = fixture.componentInstance.menuBar.menuStack;
   }
 
   beforeEach(waitForAsync(() => {

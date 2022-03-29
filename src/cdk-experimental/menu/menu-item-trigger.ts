@@ -36,7 +36,7 @@ import {DOWN_ARROW, ENTER, LEFT_ARROW, RIGHT_ARROW, SPACE, UP_ARROW} from '@angu
 import {fromEvent, merge, Subject} from 'rxjs';
 import {filter, takeUntil} from 'rxjs/operators';
 import {CDK_MENU, Menu} from './menu-interface';
-import {FocusNext, MENU_STACK, MenuStack} from './menu-stack';
+import {MENU_STACK, MenuStack} from './menu-stack';
 import {MENU_AIM, MenuAim} from './menu-aim';
 import {MENU_TRIGGER, MenuTrigger} from './menu-trigger';
 
@@ -219,26 +219,18 @@ export class CdkMenuItemTrigger extends MenuTrigger implements OnDestroy {
         break;
 
       case RIGHT_ARROW:
-        if (this._parentMenu && this._isParentVertical()) {
+        if (this._parentMenu && this._isParentVertical() && this._directionality?.value !== 'rtl') {
           event.preventDefault();
-          if (this._directionality?.value === 'rtl') {
-            this.menuStack.close(this._parentMenu, FocusNext.currentItem);
-          } else {
-            this.openMenu();
-            this.childMenu?.focusFirstItem('keyboard');
-          }
+          this.openMenu();
+          this.childMenu?.focusFirstItem('keyboard');
         }
         break;
 
       case LEFT_ARROW:
-        if (this._parentMenu && this._isParentVertical()) {
+        if (this._parentMenu && this._isParentVertical() && this._directionality?.value === 'rtl') {
           event.preventDefault();
-          if (this._directionality?.value === 'rtl') {
-            this.openMenu();
-            this.childMenu?.focusFirstItem('keyboard');
-          } else {
-            this.menuStack.close(this._parentMenu, FocusNext.currentItem);
-          }
+          this.openMenu();
+          this.childMenu?.focusFirstItem('keyboard');
         }
         break;
 

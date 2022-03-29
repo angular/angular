@@ -7,29 +7,24 @@
  */
 
 import {
-  Directive,
-  Input,
-  ContentChildren,
-  QueryList,
   AfterContentInit,
-  OnDestroy,
-  Optional,
-  NgZone,
+  Directive,
   ElementRef,
   Inject,
+  NgZone,
+  OnDestroy,
+  Optional,
   Self,
 } from '@angular/core';
 import {Directionality} from '@angular/cdk/bidi';
-import {FocusKeyManager, FocusOrigin} from '@angular/cdk/a11y';
-import {LEFT_ARROW, RIGHT_ARROW, UP_ARROW, DOWN_ARROW, ESCAPE, TAB} from '@angular/cdk/keycodes';
-import {takeUntil, mergeAll, mapTo, startWith, mergeMap, switchMap} from 'rxjs/operators';
-import {Subject, merge} from 'rxjs';
+import {DOWN_ARROW, ESCAPE, LEFT_ARROW, RIGHT_ARROW, TAB, UP_ARROW} from '@angular/cdk/keycodes';
+import {takeUntil} from 'rxjs/operators';
 import {CdkMenuGroup} from './menu-group';
-import {CDK_MENU, Menu} from './menu-interface';
-import {CdkMenuItem} from './menu-item';
-import {MenuStack, MenuStackItem, FocusNext, MENU_STACK} from './menu-stack';
+import {CDK_MENU} from './menu-interface';
+import {FocusNext, MENU_STACK, MenuStack} from './menu-stack';
 import {PointerFocusTracker} from './pointer-focus-tracker';
-import {MenuAim, MENU_AIM} from './menu-aim';
+import {MENU_AIM, MenuAim} from './menu-aim';
+import {CdkMenuBase} from './menu-base';
 
 /**
  * Directive applied to an element which configures it as a MenuBar by setting the appropriate
@@ -44,8 +39,6 @@ import {MenuAim, MENU_AIM} from './menu-aim';
     'role': 'menubar',
     'class': 'cdk-menu-bar',
     'tabindex': '0',
-    '[attr.aria-orientation]': 'orientation',
-    '(focus)': 'focusFirstItem()',
     '(keydown)': '_handleKeyEvent($event)',
   },
   providers: [
@@ -54,60 +47,31 @@ import {MenuAim, MENU_AIM} from './menu-aim';
     {provide: MENU_STACK, useClass: MenuStack},
   ],
 })
-export class CdkMenuBar extends CdkMenuGroup implements Menu, AfterContentInit, OnDestroy {
-  /**
-   * Sets the aria-orientation attribute and determines where menus will be opened.
-   * Does not affect styling/layout.
-   */
-  @Input('cdkMenuBarOrientation') orientation: 'horizontal' | 'vertical' = 'horizontal';
+export class CdkMenuBar extends CdkMenuBase implements AfterContentInit, OnDestroy {
+  override readonly orientation: 'horizontal' | 'vertical' = 'horizontal';
 
-  /** Handles keyboard events for the MenuBar. */
-  private _keyManager: FocusKeyManager<CdkMenuItem>;
-
-  /** Manages items under mouse focus */
-  private _pointerTracker?: PointerFocusTracker<CdkMenuItem>;
-
-  /** Emits when the MenuBar is destroyed. */
-  private readonly _destroyed: Subject<void> = new Subject();
-
-  /** All child MenuItem elements nested in this MenuBar. */
-  @ContentChildren(CdkMenuItem, {descendants: true})
-  private readonly _allItems: QueryList<CdkMenuItem>;
-
-  /** The Menu Item which triggered the open submenu. */
-  private _openItem?: CdkMenuItem;
+  override menuStack: MenuStack;
 
   constructor(
     private readonly _ngZone: NgZone,
-    readonly _elementRef: ElementRef<HTMLElement>,
-    @Inject(MENU_STACK) readonly _menuStack: MenuStack,
+    elementRef: ElementRef<HTMLElement>,
+    @Inject(MENU_STACK) menuStack: MenuStack,
     @Self() @Optional() @Inject(MENU_AIM) private readonly _menuAim?: MenuAim,
-    @Optional() private readonly _dir?: Directionality,
+    @Optional() dir?: Directionality,
   ) {
-    super();
+    super(elementRef, menuStack, dir);
   }
 
   override ngAfterContentInit() {
     super.ngAfterContentInit();
-
-    this._setKeyManager();
-    this._subscribeToMenuOpen();
-    this._subscribeToMenuStack();
+    this._subscribeToMenuStackEmptied();
     this._subscribeToMouseManager();
-
-    this._menuAim?.initialize(this, this._pointerTracker!);
+    this._menuAim?.initialize(this, this.pointerTracker!);
   }
 
-  /** Place focus on the first MenuItem in the menu and set the focus origin. */
-  focusFirstItem(focusOrigin: FocusOrigin = 'program') {
-    this._keyManager.setFocusOrigin(focusOrigin);
-    this._keyManager.setFirstItemActive();
-  }
-
-  /** Place focus on the last MenuItem in the menu and set the focus origin. */
-  focusLastItem(focusOrigin: FocusOrigin = 'program') {
-    this._keyManager.setFocusOrigin(focusOrigin);
-    this._keyManager.setLastItemActive();
+  override ngOnDestroy() {
+    super.ngOnDestroy();
+    this.pointerTracker?.destroy();
   }
 
   /**
@@ -116,7 +80,7 @@ export class CdkMenuBar extends CdkMenuGroup implements Menu, AfterContentInit, 
    * @param event the KeyboardEvent to handle.
    */
   _handleKeyEvent(event: KeyboardEvent) {
-    const keyManager = this._keyManager;
+    const keyManager = this.keyManager;
     switch (event.keyCode) {
       case UP_ARROW:
       case DOWN_ARROW:
@@ -127,8 +91,8 @@ export class CdkMenuBar extends CdkMenuGroup implements Menu, AfterContentInit, 
         // up/down keys were clicked: if the current menu is open, close it then focus and open the
         // next  menu.
         if (
-          (this._isHorizontal() && horizontalArrows) ||
-          (!this._isHorizontal() && !horizontalArrows)
+          (this.isHorizontal() && horizontalArrows) ||
+          (!this.isHorizontal() && !horizontalArrows)
         ) {
           event.preventDefault();
 
@@ -157,61 +121,19 @@ export class CdkMenuBar extends CdkMenuGroup implements Menu, AfterContentInit, 
     }
   }
 
-  /** Setup the FocusKeyManager with the correct orientation for the menu bar. */
-  private _setKeyManager() {
-    this._keyManager = new FocusKeyManager(this._allItems)
-      .withWrap()
-      .withTypeAhead()
-      .withHomeAndEnd();
-
-    if (this._isHorizontal()) {
-      this._keyManager.withHorizontalOrientation(this._dir?.value || 'ltr');
-    } else {
-      this._keyManager.withVerticalOrientation();
-    }
-  }
-
   /**
    * Set the PointerFocusTracker and ensure that when mouse focus changes the key manager is updated
    * with the latest menu item under mouse focus.
    */
   private _subscribeToMouseManager() {
     this._ngZone.runOutsideAngular(() => {
-      this._pointerTracker = new PointerFocusTracker(this._allItems);
-      this._pointerTracker.entered.pipe(takeUntil(this._destroyed)).subscribe(item => {
-        if (this._hasOpenSubmenu()) {
-          this._keyManager.setActiveItem(item);
+      this.pointerTracker = new PointerFocusTracker(this.items);
+      this.pointerTracker.entered.pipe(takeUntil(this.destroyed)).subscribe(item => {
+        if (this.hasOpenSubmenu()) {
+          this.keyManager.setActiveItem(item);
         }
       });
     });
-  }
-
-  /** Subscribe to the MenuStack close and empty observables. */
-  private _subscribeToMenuStack() {
-    this._menuStack.closed
-      .pipe(takeUntil(this._destroyed))
-      .subscribe(item => this._closeOpenMenu(item));
-
-    this._menuStack.emptied
-      .pipe(takeUntil(this._destroyed))
-      .subscribe(event => this._toggleOpenMenu(event));
-  }
-
-  /**
-   * Close the open menu if the current active item opened the requested MenuStackItem.
-   * @param item the MenuStackItem requested to be closed.
-   */
-  private _closeOpenMenu(menu: MenuStackItem | undefined) {
-    const trigger = this._openItem;
-    const keyManager = this._keyManager;
-    if (menu === trigger?.getMenuTrigger()?.getMenu()) {
-      trigger?.getMenuTrigger()?.closeMenu();
-      // If the user has moused over a sibling item we want to focus the element under mouse focus
-      // not the trigger which previously opened the now closed menu.
-      if (trigger) {
-        keyManager.setActiveItem(this._pointerTracker?.activeElement || trigger);
-      }
-    }
   }
 
   /**
@@ -219,7 +141,7 @@ export class CdkMenuBar extends CdkMenuGroup implements Menu, AfterContentInit, 
    * open the previous or next item.
    */
   private _toggleOpenMenu(event: FocusNext | undefined) {
-    const keyManager = this._keyManager;
+    const keyManager = this.keyManager;
     switch (event) {
       case FocusNext.nextItem:
         keyManager.setFocusOrigin('keyboard');
@@ -242,48 +164,9 @@ export class CdkMenuBar extends CdkMenuGroup implements Menu, AfterContentInit, 
     }
   }
 
-  /**
-   * @return true if the menu bar is configured to be horizontal.
-   */
-  private _isHorizontal() {
-    return this.orientation === 'horizontal';
-  }
-
-  /**
-   * Subscribe to the menu trigger's open events in order to track the trigger which opened the menu
-   * and stop tracking it when the menu is closed.
-   */
-  private _subscribeToMenuOpen() {
-    const exitCondition = merge(this._allItems.changes, this._destroyed);
-    this._allItems.changes
-      .pipe(
-        startWith(this._allItems),
-        mergeMap((list: QueryList<CdkMenuItem>) =>
-          list
-            .filter(item => item.hasMenu())
-            .map(item => item.getMenuTrigger()!.opened.pipe(mapTo(item), takeUntil(exitCondition))),
-        ),
-        mergeAll(),
-        switchMap((item: CdkMenuItem) => {
-          this._openItem = item;
-          return item.getMenuTrigger()!.closed;
-        }),
-        takeUntil(this._destroyed),
-      )
-      .subscribe(() => (this._openItem = undefined));
-  }
-
-  /** Return true if the MenuBar has an open submenu. */
-  private _hasOpenSubmenu() {
-    return !!this._openItem;
-  }
-
-  override ngOnDestroy() {
-    super.ngOnDestroy();
-
-    this._destroyed.next();
-    this._destroyed.complete();
-
-    this._pointerTracker?.destroy();
+  private _subscribeToMenuStackEmptied() {
+    this.menuStack?.emptied
+      .pipe(takeUntil(this.destroyed))
+      .subscribe(event => this._toggleOpenMenu(event));
   }
 }

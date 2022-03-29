@@ -27,10 +27,7 @@ import {
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    'role': 'menubar',
-    'class': 'cdk-menu-bar mat-menubar',
-    'tabindex': '0',
-    '[attr.aria-orientation]': 'orientation',
+    '[class.mat-menubar]': 'true',
   },
   providers: [
     {provide: CdkMenuGroup, useExisting: MatMenuBar},
