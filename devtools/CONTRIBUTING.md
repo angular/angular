@@ -55,7 +55,7 @@ We want to fix all the issues as soon as possible, but before fixing a bug we ne
 - 3rd-party libraries and their versions
 - and most importantly - a use-case that fails
 
-You can file new issues by filling out our [new issue form](https://github.com/rangle/angular-devtools/issues/new).
+You can file new issues by filling out our [new issue form](https://github.com/angular/angular/issues/new/choose).
 
 ### <a name="submit-pr"></a> Submitting a Pull Request (PR)
 
@@ -65,11 +65,11 @@ Before you submit your Pull Request (PR) consider the following guidelines:
 
 - Search [GitHub](https://github.com/angular/angular) for an open or closed PR
   that relates to your submission. You don't want to duplicate effort.
-- [Fork](https://docs.github.com/en/github/getting-started-with-github/fork-a-repo) the rangle/angular-devtools repo.
+- [Fork](https://docs.github.com/en/github/getting-started-with-github/fork-a-repo) the angular/angular repo.
 - In your forked repository, make your changes in a new git branch:
 
   ```shell
-  git checkout -b my-fix-branch main
+  git checkout -b my-fix-branch master
   ```
 
 - Create your patch, **including appropriate test cases**.
@@ -90,7 +90,7 @@ Before you submit your Pull Request (PR) consider the following guidelines:
   git push origin my-fix-branch
   ```
 
-- In GitHub, send a pull request to `angular-devtools:main`.
+- In GitHub, send a pull request to `angular:master`.
 - If we suggest changes then:
 
   - Make the required updates.
@@ -98,7 +98,7 @@ Before you submit your Pull Request (PR) consider the following guidelines:
   - Rebase your branch and force push to your GitHub repository (this will update your Pull Request):
 
     ```shell
-    git rebase main -i
+    git rebase master -i
     git push -f
     ```
 
@@ -107,7 +107,7 @@ That's it! Thank you for your contribution!
 #### After your pull request is merged
 
 After your pull request is merged, you can safely delete your branch and pull the changes
-from the main (upstream) repository:
+from the master (upstream) repository:
 
 - Delete the remote branch on GitHub either through the GitHub web UI or your local shell as follows:
 
@@ -115,10 +115,10 @@ from the main (upstream) repository:
   git push origin --delete my-fix-branch
   ```
 
-- Check out the main branch:
+- Check out the master branch:
 
   ```shell
-  git checkout main -f
+  git checkout master -f
   ```
 
 - Delete the local branch:
@@ -127,10 +127,10 @@ from the main (upstream) repository:
   git branch -D my-fix-branch
   ```
 
-- Update your main with the latest upstream version:
+- Update your master with the latest upstream version:
 
   ```shell
-  git pull --ff upstream main
+  git pull --ff upstream master
   ```
 
 ## <a name="rules"></a> Coding Rules
@@ -166,7 +166,7 @@ to read on GitHub as well as in various git tools.
 
 Footer should contain a [closing reference to an issue](https://help.github.com/articles/closing-issues-via-commit-messages/) if any.
 
-Samples: (even more [samples](https://github.com/rangle/angular-devtools/commits/main))
+Samples: (even more [samples](https://github.com/angular/angular/commits/master/devtools))
 
 ```
 docs(changelog): update change log to beta.5

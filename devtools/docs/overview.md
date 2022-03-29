@@ -37,7 +37,7 @@ In the top-right corner of Angular DevTools you'll find which version of Angular
 
 ## Bug reports
 
-You can report issues and feature requests on [GitHub](https://github.com/rangle/angular-devtools/issues).
+You can report issues and feature requests on [GitHub](https://github.com/angular/angular/issues).
 
 To report an issue with the Profiler, export the Profiler recording by clicking the **Save Profile** button, and then attaching that export as a file in the issue.
 
