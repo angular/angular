@@ -203,6 +203,26 @@ $item-inset-divider-offset: 72px;
   }
 }
 
+// We need some extra resets when the list items are buttons.
+button.mat-list-item, button.mat-list-option {
+  padding: 0;
+  width: 100%;
+  background: none;
+  color: inherit;
+  border: none;
+  outline: inherit;
+  -webkit-tap-highlight-color: transparent;
+  text-align: left;
+
+  [dir='rtl'] & {
+    text-align: right;
+  }
+
+  &::-moz-focus-inner {
+    border: 0;
+  }
+}
+
 // This mixin adjusts the heights and padding based on whether the list is in dense mode.
 @mixin subheader-spacing($top-padding, $base-height) {
   height: $base-height;
@@ -270,25 +290,6 @@ $item-inset-divider-offset: 72px;
 }
 
 mat-action-list {
-  // Remove the native button look and make it look like a list item
-  button {
-    background: none;
-    color: inherit;
-    border: none;
-    font: inherit;
-    outline: inherit;
-    -webkit-tap-highlight-color: transparent;
-    text-align: left;
-
-    [dir='rtl'] & {
-      text-align: right;
-    }
-
-    &::-moz-focus-inner {
-      border: 0;
-    }
-  }
-
   .mat-list-item {
     cursor: pointer;
     outline: inherit;
