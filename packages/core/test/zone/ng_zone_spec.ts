@@ -7,6 +7,7 @@
  */
 
 import {EventEmitter, NgZone} from '@angular/core';
+import {getDocument, setDocument} from '@angular/core/src/render3/interfaces/document';
 import {fakeAsync, flushMicrotasks, inject, waitForAsync} from '@angular/core/testing';
 import {Log} from '@angular/core/testing/src/testing_internal';
 import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
@@ -1135,6 +1136,18 @@ function commonTests() {
           expect(logs).toEqual(['microTask empty']);
           done();
         });
+      });
+
+      it('should run in setTimeout async when the document is hidden', done => {
+        const document = getDocument();
+        setDocument(<any>{hidden: true});
+        coalesceZone.run(() => {});
+        expect(logs).toEqual([]);
+        nativeSetTimeout(() => {
+          expect(logs).toEqual(['microTask empty']);
+          setDocument(document);
+          done();
+        }, 16);
       });
 
       it('should only emit onMicroTaskEmpty once within the same event loop for multiple ngZone.run',

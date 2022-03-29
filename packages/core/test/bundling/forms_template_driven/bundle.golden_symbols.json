@@ -828,6 +828,9 @@
     "name": "getDeclarationTNode"
   },
   {
+    "name": "getDocument"
+  },
+  {
     "name": "getFactoryDef"
   },
   {

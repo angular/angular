@@ -7,9 +7,11 @@
  */
 
 import {EventEmitter} from '../event_emitter';
+import {getDocument} from '../render3/interfaces/document';
 import {global} from '../util/global';
 import {noop} from '../util/noop';
 import {getNativeRequestAnimationFrame} from '../util/raf';
+import {getNativeSetTimeout} from '../util/timeout';
 
 
 /**
@@ -147,7 +149,8 @@ export class NgZone {
     self.shouldCoalesceEventChangeDetection =
         !shouldCoalesceRunChangeDetection && shouldCoalesceEventChangeDetection;
     self.shouldCoalesceRunChangeDetection = shouldCoalesceRunChangeDetection;
-    self.lastRequestAnimationFrameId = -1;
+    self.lastHandleId = -1;
+    self.nativeSetTimeout = getNativeSetTimeout().nativeSetTimeout;
     self.nativeRequestAnimationFrame = getNativeRequestAnimationFrame().nativeRequestAnimationFrame;
     forkInnerZoneWithAngularBehavior(self);
   }
@@ -243,7 +246,7 @@ interface NgZonePrivate extends NgZone {
 
   hasPendingMacrotasks: boolean;
   hasPendingMicrotasks: boolean;
-  lastRequestAnimationFrameId: number;
+  lastHandleId: number;
   /**
    * A flag to indicate if NgZone is currently inside
    * checkStable and to prevent re-entry. The flag is
@@ -294,6 +297,8 @@ interface NgZonePrivate extends NgZone {
    *
    */
   shouldCoalesceRunChangeDetection: boolean;
+
+  nativeSetTimeout: (callback: TimerHandler, timeout?: number) => number;
 
   nativeRequestAnimationFrame: (callback: FrameRequestCallback) => number;
 
@@ -349,10 +354,10 @@ function delayChangeDetectionForEvents(zone: NgZonePrivate) {
    * so we also need to check the _nesting here to prevent multiple
    * change detections.
    */
-  if (zone.isCheckStableRunning || zone.lastRequestAnimationFrameId !== -1) {
+  if (zone.isCheckStableRunning || zone.lastHandleId !== -1) {
     return;
   }
-  zone.lastRequestAnimationFrameId = zone.nativeRequestAnimationFrame.call(global, () => {
+  const callback = () => {
     // This is a work around for https://github.com/angular/angular/issues/36839.
     // The core issue is that when event coalescing is enabled it is possible for microtasks
     // to get flushed too early (As is the case with `Promise.then`) between the
@@ -364,7 +369,7 @@ function delayChangeDetectionForEvents(zone: NgZonePrivate) {
     // eventTask execution.
     if (!zone.fakeTopEventTask) {
       zone.fakeTopEventTask = Zone.root.scheduleEventTask('fakeTopEventTask', () => {
-        zone.lastRequestAnimationFrameId = -1;
+        zone.lastHandleId = -1;
         updateMicroTaskStatus(zone);
         zone.isCheckStableRunning = true;
         checkStable(zone);
@@ -372,7 +377,17 @@ function delayChangeDetectionForEvents(zone: NgZonePrivate) {
       }, undefined, () => {}, () => {});
     }
     zone.fakeTopEventTask.invoke();
-  });
+  };
+  // `requestAnimationFrame` only queues tasks if the document `hidden` property equals false
+  // (https://www.w3.org/TR/animation-timing/#processingmodel). Otherwise, Angular will not run the
+  // change detection if the tab becomes inactive.
+  zone.lastHandleId = getDocument().hidden ?
+      // Note: we pass 16 to `setTimeout` to simulate `requestAnimationFrame` behavior. We could've
+      // used the `scheduleMicroTask` except `setTimeout`, but microtasks are run too early compared
+      // to DOM timers and animation tasks. There's no other way to run `requestAnimationFrame` if
+      // the document is hidden.
+      zone.nativeSetTimeout.call(global, callback, 16) :
+      zone.nativeRequestAnimationFrame.call(global, callback);
   updateMicroTaskStatus(zone);
 }
 
@@ -439,7 +454,7 @@ function forkInnerZoneWithAngularBehavior(zone: NgZonePrivate) {
 function updateMicroTaskStatus(zone: NgZonePrivate) {
   if (zone._hasPendingMicrotasks ||
       ((zone.shouldCoalesceEventChangeDetection || zone.shouldCoalesceRunChangeDetection) &&
-       zone.lastRequestAnimationFrameId !== -1)) {
+       zone.lastHandleId !== -1)) {
     zone.hasPendingMicrotasks = true;
   } else {
     zone.hasPendingMicrotasks = false;
