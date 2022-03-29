@@ -18,8 +18,6 @@ ng_package(
         "_index.scss",
         "package.json",
         "some-file.txt",
-    ],
-    data = [
         ":arbitrary_bin_file",
         ":arbitrary_genfiles_file",
         ":extra-styles.css",
