@@ -288,62 +288,65 @@
 /tools/**                                          @angular/dev-infra-components
 
 # Public API golden files
-/tools/public_api_guard/cdk/a11y.d.ts              @jelbourn @devversion
-/tools/public_api_guard/cdk/accordion.d.ts         @andrewseguin
-/tools/public_api_guard/cdk/bidi.d.ts              @andrewseguin
-/tools/public_api_guard/cdk/cdk.d.ts               @andrewseguin
-/tools/public_api_guard/cdk/clipboard.d.ts         @andrewseguin @xkxx
-/tools/public_api_guard/cdk/coercion.d.ts          @andrewseguin
-/tools/public_api_guard/cdk/collections.d.ts       @crisbeto @andrewseguin
-/tools/public_api_guard/cdk/drag-drop.d.ts         @crisbeto
-/tools/public_api_guard/cdk/keycodes.d.ts          @andrewseguin
-/tools/public_api_guard/cdk/layout.d.ts            @andrewseguin
-/tools/public_api_guard/cdk/observers.d.ts         @andrewseguin @crisbeto
-/tools/public_api_guard/cdk/overlay.d.ts           @andrewseguin @crisbeto
-/tools/public_api_guard/cdk/platform.d.ts          @andrewseguin @devversion
-/tools/public_api_guard/cdk/scrolling.d.ts         @andrewseguin @crisbeto
-/tools/public_api_guard/cdk/stepper.d.ts           @mmalerba
-/tools/public_api_guard/cdk/table.d.ts             @andrewseguin
-/tools/public_api_guard/cdk/text-field.d.ts        @mmalerba
-/tools/public_api_guard/cdk/tree.d.ts              @jelbourn @andrewseguin
-/tools/public_api_guard/material/autocomplete.d.ts      @crisbeto
-/tools/public_api_guard/material/badge.d.ts             @andrewseguin
-/tools/public_api_guard/material/bottom-sheet.d.ts      @andrewseguin @crisbeto
-/tools/public_api_guard/material/button-toggle.d.ts     @andrewseguin
-/tools/public_api_guard/material/button.d.ts            @andrewseguin
-/tools/public_api_guard/material/card.d.ts              @andrewseguin
-/tools/public_api_guard/material/checkbox.d.ts          @andrewseguin @devversion
-/tools/public_api_guard/material/chips.d.ts             @andrewseguin
-/tools/public_api_guard/material/chips/testing.d.ts     @andrewseguin
-/tools/public_api_guard/material/core.d.ts              @andrewseguin
-/tools/public_api_guard/material/datepicker.d.ts        @mmalerba @crisbeto
-/tools/public_api_guard/material/dialog.d.ts            @andrewseguin @crisbeto
-/tools/public_api_guard/material/divider.d.ts           @andrewseguin @crisbeto
-/tools/public_api_guard/material/expansion.d.ts         @andrewseguin
-/tools/public_api_guard/material/form-field.d.ts        @mmalerba
-/tools/public_api_guard/material/grid-list.d.ts         @andrewseguin
-/tools/public_api_guard/material/icon.d.ts              @andrewseguin
-/tools/public_api_guard/material/input.d.ts             @mmalerba
-/tools/public_api_guard/material/list.d.ts              @andrewseguin @crisbeto @devversion
-/tools/public_api_guard/material/menu.d.ts              @crisbeto
-/tools/public_api_guard/material/paginator.d.ts         @andrewseguin
-/tools/public_api_guard/material/progress-bar.d.ts      @andrewseguin @crisbeto
-/tools/public_api_guard/material/progress-spinner.d.ts  @andrewseguin @crisbeto
-/tools/public_api_guard/material/radio.d.ts             @andrewseguin @devversion
-/tools/public_api_guard/material/select.d.ts            @crisbeto
-/tools/public_api_guard/material/sidenav.d.ts           @mmalerba
-/tools/public_api_guard/material/slide-toggle.d.ts      @devversion
-/tools/public_api_guard/material/slider.d.ts            @mmalerba
-/tools/public_api_guard/material/snack-bar.d.ts         @andrewseguin @crisbeto
-/tools/public_api_guard/material/sort.d.ts              @andrewseguin
-/tools/public_api_guard/material/stepper.d.ts           @mmalerba
-/tools/public_api_guard/material/table.d.ts             @andrewseguin
-/tools/public_api_guard/material/tabs.d.ts              @andrewseguin
-/tools/public_api_guard/material/toolbar.d.ts           @devversion
-/tools/public_api_guard/material/tooltip.d.ts           @andrewseguin
-/tools/public_api_guard/material/tree.d.ts              @jelbourn @andrewseguin
-/tools/public_api_guard/material/material.d.ts          @andrewseguin
-/tools/public_api_guard/youtube-player/youtube-player.d.ts      @andrewseguin @nathantate
+/tools/public_api_guard/cdk/a11y**                 @jelbourn @devversion
+/tools/public_api_guard/cdk/accordion**            @andrewseguin
+/tools/public_api_guard/cdk/bidi**                 @andrewseguin
+/tools/public_api_guard/cdk/cdk**                  @andrewseguin
+/tools/public_api_guard/cdk/clipboard**            @andrewseguin @xkxx
+/tools/public_api_guard/cdk/coercion**             @andrewseguin
+/tools/public_api_guard/cdk/collections**          @crisbeto @andrewseguin
+/tools/public_api_guard/cdk/drag-drop**            @crisbeto
+/tools/public_api_guard/cdk/keycodes**             @andrewseguin
+/tools/public_api_guard/cdk/layout**               @andrewseguin
+/tools/public_api_guard/cdk/observers**            @andrewseguin @crisbeto
+/tools/public_api_guard/cdk/overlay**              @andrewseguin @crisbeto
+/tools/public_api_guard/cdk/platform**             @andrewseguin @devversion
+/tools/public_api_guard/cdk/portal**               @andrewseguin
+/tools/public_api_guard/cdk/scrolling**            @andrewseguin @crisbeto
+/tools/public_api_guard/cdk/stepper**              @mmalerba
+/tools/public_api_guard/cdk/table**                @andrewseguin
+/tools/public_api_guard/cdk/testing**              @mmalerba @devversion
+/tools/public_api_guard/cdk/text-field**           @mmalerba
+/tools/public_api_guard/cdk/tree**                 @jelbourn @andrewseguin
+/tools/public_api_guard/material/autocomplete**    @crisbeto
+/tools/public_api_guard/material/badge**           @andrewseguin
+/tools/public_api_guard/material/bottom-sheet**    @andrewseguin @crisbeto
+/tools/public_api_guard/material/button-toggle**   @andrewseguin
+/tools/public_api_guard/material/button**          @andrewseguin
+/tools/public_api_guard/material/card**            @andrewseguin
+/tools/public_api_guard/material/checkbox**        @andrewseguin @devversion
+/tools/public_api_guard/material/chips**           @andrewseguin
+/tools/public_api_guard/material/chips/testing**   @andrewseguin
+/tools/public_api_guard/material/core**            @andrewseguin
+/tools/public_api_guard/material/datepicker**      @mmalerba @crisbeto
+/tools/public_api_guard/material/dialog**          @andrewseguin @crisbeto
+/tools/public_api_guard/material/divider**         @andrewseguin @crisbeto
+/tools/public_api_guard/material/expansion**       @andrewseguin
+/tools/public_api_guard/material/form-field**      @mmalerba
+/tools/public_api_guard/material/grid-list**       @andrewseguin
+/tools/public_api_guard/material/icon**            @andrewseguin
+/tools/public_api_guard/material/input**           @mmalerba
+/tools/public_api_guard/material/list**            @andrewseguin @crisbeto @devversion
+/tools/public_api_guard/material/menu**            @crisbeto
+/tools/public_api_guard/material/paginator**       @andrewseguin
+/tools/public_api_guard/material/progress-bar**    @andrewseguin @crisbeto
+/tools/public_api_guard/material/progress-spinner**@andrewseguin @crisbeto
+/tools/public_api_guard/material/radio**           @andrewseguin @devversion
+/tools/public_api_guard/material/select**          @crisbeto
+/tools/public_api_guard/material/sidenav**         @mmalerba
+/tools/public_api_guard/material/slide-toggle**    @devversion
+/tools/public_api_guard/material/slider**          @mmalerba
+/tools/public_api_guard/material/snack-bar**       @andrewseguin @crisbeto
+/tools/public_api_guard/material/sort**            @andrewseguin
+/tools/public_api_guard/material/stepper**         @mmalerba
+/tools/public_api_guard/material/table**           @andrewseguin
+/tools/public_api_guard/material/tabs**            @andrewseguin
+/tools/public_api_guard/material/toolbar**         @devversion
+/tools/public_api_guard/material/tooltip**         @andrewseguin
+/tools/public_api_guard/material/tree**            @jelbourn @andrewseguin
+/tools/public_api_guard/material/material**        @andrewseguin
+/tools/public_api_guard/google-maps/**             @crisbeto @mbehrlich
+/tools/public_api_guard/youtube-player/**          @andrewseguin @nathantate
 
 # Misc
 /.github/**                                        @angular/dev-infra-components
