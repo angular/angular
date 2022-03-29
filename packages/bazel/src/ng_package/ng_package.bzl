@@ -572,8 +572,9 @@ _NG_PACKAGE_ATTRS = dict(PKG_NPM_ATTRS, **{
         allow_single_file = [".txt"],
     ),
     "deps": attr.label_list(
-        doc = """Other rules that produce JavaScript outputs, such as `ts_library`.""",
+        doc = """ Targets that produce production JavaScript outputs, such as `ts_library`.""",
         aspects = _NG_PACKAGE_DEPS_ASPECTS,
+        providers = [JSEcmaScriptModuleInfo],
         cfg = partial_compilation_transition,
     ),
     "readme_md": attr.label(allow_single_file = [".md"]),
