@@ -8,7 +8,7 @@
 /// @param {String | Number} $font-weight The font-weight for this level.
 /// @param {String} $font-family The font-family for this level.
 /// @param {String} $letter-spacing The letter-spacing for this level.
-/// @returns {Map} A map representing the definition of this typpographic level.
+/// @returns {Map} A map representing the definition of this typographic level.
 @function define-typography-level(
   $font-size,
   $line-height: $font-size,
