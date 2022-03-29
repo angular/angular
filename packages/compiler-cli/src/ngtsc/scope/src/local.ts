@@ -11,7 +11,7 @@ import ts from 'typescript';
 
 import {ErrorCode, makeDiagnostic, makeRelatedInformation} from '../../diagnostics';
 import {AliasingHost, assertSuccessfulReferenceEmit, Reexport, Reference, ReferenceEmitter} from '../../imports';
-import {DirectiveMeta, MetadataReader, MetadataRegistry, NgModuleMeta, PipeMeta} from '../../metadata';
+import {DirectiveMeta, MetadataReader, MetadataRegistry, MetaKind, NgModuleMeta, PipeMeta} from '../../metadata';
 import {ClassDeclaration, DeclarationNode} from '../../reflection';
 import {identifierOfNode, nodeNameForError} from '../../util/src/typescript';
 
@@ -285,11 +285,12 @@ export class LocalModuleScopeRegistry implements MetadataRegistry, ComponentScop
           }
         }
 
-        for (const directive of importScope.exported.directives) {
-          compilationDirectives.set(directive.ref.node, directive);
-        }
-        for (const pipe of importScope.exported.pipes) {
-          compilationPipes.set(pipe.ref.node, pipe);
+        for (const dep of importScope.exported.dependencies) {
+          if (dep.kind === MetaKind.Directive) {
+            compilationDirectives.set(dep.ref.node, dep);
+          } else if (dep.kind === MetaKind.Pipe) {
+            compilationPipes.set(dep.ref.node, dep);
+          }
         }
 
         // Successfully processed the import as an NgModule (even if it had errors).
@@ -401,11 +402,12 @@ export class LocalModuleScopeRegistry implements MetadataRegistry, ComponentScop
         }
       } else if (exportScope !== null) {
         // decl is an NgModule.
-        for (const directive of exportScope.exported.directives) {
-          exportDirectives.set(directive.ref.node, directive);
-        }
-        for (const pipe of exportScope.exported.pipes) {
-          exportPipes.set(pipe.ref.node, pipe);
+        for (const dep of exportScope.exported.dependencies) {
+          if (dep.kind == MetaKind.Directive) {
+            exportDirectives.set(dep.ref.node, dep);
+          } else if (dep.kind === MetaKind.Pipe) {
+            exportPipes.set(dep.ref.node, dep);
+          }
         }
       } else if (compilationDirectives.has(decl.node)) {
         // decl is a directive or component in the compilation scope of this NgModule.
@@ -431,20 +433,19 @@ export class LocalModuleScopeRegistry implements MetadataRegistry, ComponentScop
     }
 
     const exported: ScopeData = {
-      directives: Array.from(exportDirectives.values()),
-      pipes: Array.from(exportPipes.values()),
+      dependencies: [...exportDirectives.values(), ...exportPipes.values()],
       isPoisoned,
     };
 
-    const reexports = this.getReexports(ngModule, ref, declared, exported, diagnostics);
+    const reexports =
+        this.getReexports(ngModule, ref, declared, exported.dependencies, diagnostics);
 
 
     // Finally, produce the `LocalModuleScope` with both the compilation and export scopes.
     const scope: LocalModuleScope = {
       ngModule: ngModule.ref.node,
       compilation: {
-        directives: Array.from(compilationDirectives.values()),
-        pipes: Array.from(compilationPipes.values()),
+        dependencies: [...compilationDirectives.values(), ...compilationPipes.values()],
         isPoisoned,
       },
       exported,
@@ -518,8 +519,7 @@ export class LocalModuleScopeRegistry implements MetadataRegistry, ComponentScop
 
   private getReexports(
       ngModule: NgModuleMeta, ref: Reference<ClassDeclaration>, declared: Set<DeclarationNode>,
-      exported: {directives: DirectiveMeta[], pipes: PipeMeta[]},
-      diagnostics: ts.Diagnostic[]): Reexport[]|null {
+      exported: Array<DirectiveMeta|PipeMeta>, diagnostics: ts.Diagnostic[]): Reexport[]|null {
     let reexports: Reexport[]|null = null;
     const sourceFile = ref.node.getSourceFile();
     if (this.aliasingHost === null) {
@@ -569,10 +569,7 @@ export class LocalModuleScopeRegistry implements MetadataRegistry, ComponentScop
         diagnostics.push(reexportCollision(ngModuleRef.node, prevRef, exportRef));
       }
     };
-    for (const {ref} of exported.directives) {
-      addReexport(ref);
-    }
-    for (const {ref} of exported.pipes) {
+    for (const {ref} of exported) {
       addReexport(ref);
     }
     return reexports;

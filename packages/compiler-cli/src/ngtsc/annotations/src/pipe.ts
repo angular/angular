@@ -12,7 +12,7 @@ import ts from 'typescript';
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {Reference} from '../../imports';
 import {SemanticSymbol} from '../../incremental/semantic_graph';
-import {InjectableClassRegistry, MetadataRegistry, MetaType} from '../../metadata';
+import {InjectableClassRegistry, MetadataRegistry, MetaKind} from '../../metadata';
 import {PartialEvaluator} from '../../partial_evaluator';
 import {PerfEvent, PerfRecorder} from '../../perf';
 import {ClassDeclaration, Decorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
@@ -154,7 +154,7 @@ export class PipeDecoratorHandler implements
   register(node: ClassDeclaration, analysis: Readonly<PipeHandlerData>): void {
     const ref = new Reference(node);
     this.metaRegistry.registerPipeMetadata({
-      type: MetaType.Pipe,
+      kind: MetaKind.Pipe,
       ref,
       name: analysis.meta.pipeName,
       nameExpr: analysis.pipeNameExpr,

@@ -95,16 +95,19 @@ export interface DirectiveTypeCheckMeta {
   isGeneric: boolean;
 }
 
-export enum MetaType {
-  Pipe,
+/**
+ * Disambiguates different kinds of compiler metadata objects.
+ */
+export enum MetaKind {
   Directive,
+  Pipe,
 }
 
 /**
  * Metadata collected for a directive within an NgModule's scope.
  */
 export interface DirectiveMeta extends T2DirectiveMeta, DirectiveTypeCheckMeta {
-  type: MetaType.Directive;
+  kind: MetaKind.Directive;
 
   ref: Reference<ClassDeclaration>;
   /**
@@ -171,7 +174,7 @@ export interface TemplateGuardMeta {
  * Metadata for a pipe within an NgModule's scope.
  */
 export interface PipeMeta {
-  type: MetaType.Pipe;
+  kind: MetaKind.Pipe;
   ref: Reference<ClassDeclaration>;
   name: string;
   nameExpr: ts.Expression|null;

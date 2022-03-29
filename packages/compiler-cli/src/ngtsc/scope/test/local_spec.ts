@@ -9,7 +9,7 @@
 import ts from 'typescript';
 
 import {Reference, ReferenceEmitter} from '../../imports';
-import {ClassPropertyMapping, CompoundMetadataRegistry, DirectiveMeta, DtsMetadataReader, LocalMetadataRegistry, MetadataRegistry, MetaType, PipeMeta} from '../../metadata';
+import {ClassPropertyMapping, CompoundMetadataRegistry, DirectiveMeta, DtsMetadataReader, LocalMetadataRegistry, MetadataRegistry, MetaKind, PipeMeta} from '../../metadata';
 import {ClassDeclaration} from '../../reflection';
 import {LocalModuleScope, ScopeData} from '../src/api';
 import {DtsModuleScopeResolver} from '../src/dependency';
@@ -192,7 +192,7 @@ describe('LocalModuleScopeRegistry', () => {
     });
 
     const scope = scopeRegistry.getScopeOfModule(Module.node) as LocalModuleScope;
-    expect(scope.compilation.directives[0].ref.getIdentityIn(idSf)).toBe(id);
+    expect(scope.compilation.dependencies[0].ref.getIdentityIn(idSf)).toBe(id);
   });
 
   it('should allow directly exporting a directive that\'s not imported', () => {
@@ -260,7 +260,7 @@ describe('LocalModuleScopeRegistry', () => {
 function fakeDirective(ref: Reference<ClassDeclaration>): DirectiveMeta {
   const name = ref.debugName!;
   return {
-    type: MetaType.Directive,
+    kind: MetaKind.Directive,
     ref,
     name,
     selector: `[${ref.debugName}]`,
@@ -287,7 +287,7 @@ function fakeDirective(ref: Reference<ClassDeclaration>): DirectiveMeta {
 function fakePipe(ref: Reference<ClassDeclaration>): PipeMeta {
   const name = ref.debugName!;
   return {
-    type: MetaType.Pipe,
+    kind: MetaKind.Pipe,
     ref,
     name,
     nameExpr: null,
@@ -302,7 +302,6 @@ class MockDtsModuleScopeResolver implements DtsModuleScopeResolver {
 }
 
 function scopeToRefs(scopeData: ScopeData): Reference<ClassDeclaration>[] {
-  const directives = scopeData.directives.map(dir => dir.ref);
-  const pipes = scopeData.pipes.map(pipe => pipe.ref);
-  return [...directives, ...pipes].sort((a, b) => a.debugName!.localeCompare(b.debugName!));
+  return scopeData.dependencies.map(dep => dep.ref)
+      .sort((a, b) => a.debugName!.localeCompare(b.debugName!));
 }

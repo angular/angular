@@ -10,7 +10,7 @@ import {CssSelector, SchemaMetadata, SelectorMatcher} from '@angular/compiler';
 import ts from 'typescript';
 
 import {Reference} from '../../imports';
-import {DirectiveMeta, flattenInheritedDirectiveMetadata, MetadataReader} from '../../metadata';
+import {DirectiveMeta, flattenInheritedDirectiveMetadata, MetadataReader, MetaKind} from '../../metadata';
 import {ClassDeclaration} from '../../reflection';
 
 import {ComponentScopeReader} from './api';
@@ -89,20 +89,18 @@ export class TypeCheckScopeRegistry {
       return this.scopeCache.get(scope.ngModule)!;
     }
 
-    for (const meta of scope.compilation.directives) {
-      if (meta.selector !== null) {
+    for (const meta of scope.compilation.dependencies) {
+      if (meta.kind === MetaKind.Directive && meta.selector !== null) {
         const extMeta = this.getTypeCheckDirectiveMetadata(meta.ref);
         matcher.addSelectables(CssSelector.parse(meta.selector), extMeta);
         directives.push(extMeta);
+      } else if (meta.kind === MetaKind.Pipe) {
+        if (!ts.isClassDeclaration(meta.ref.node)) {
+          throw new Error(`Unexpected non-class declaration ${
+              ts.SyntaxKind[meta.ref.node.kind]} for pipe ${meta.ref.debugName}`);
+        }
+        pipes.set(meta.name, meta.ref as Reference<ClassDeclaration<ts.ClassDeclaration>>);
       }
-    }
-
-    for (const {name, ref} of scope.compilation.pipes) {
-      if (!ts.isClassDeclaration(ref.node)) {
-        throw new Error(`Unexpected non-class declaration ${
-            ts.SyntaxKind[ref.node.kind]} for pipe ${ref.debugName}`);
-      }
-      pipes.set(name, ref as Reference<ClassDeclaration<ts.ClassDeclaration>>);
     }
 
     const typeCheckScope: TypeCheckScope = {

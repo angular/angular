@@ -15,9 +15,10 @@ import {ComponentScopeReader, DtsModuleScopeResolver, ExportScope, LocalModuleSc
 import {ComponentAnalysisData} from './metadata';
 
 
+export type DependencyMeta = DirectiveMeta|PipeMeta;
+
 export interface ScopeTemplateResult {
-  directives: DirectiveMeta[];
-  pipes: PipeMeta[];
+  dependencies: DependencyMeta[];
   diagnostics: ts.Diagnostic[];
   ngModule: ClassDeclaration|null;
 }
@@ -43,8 +44,7 @@ export function scopeTemplate(
   if (scope !== null) {
     // This is an NgModule-ful component, so use scope information coming from the NgModule.
     return {
-      directives: scope.compilation.directives,
-      pipes: scope.compilation.pipes,
+      dependencies: scope.compilation.dependencies,
       ngModule: scope.ngModule,
       diagnostics: [],
     };
@@ -53,8 +53,7 @@ export function scopeTemplate(
     if (analysis.imports === null) {
       // Early exit for standalone components that don't declare imports (empty scope).
       return {
-        directives: [],
-        pipes: [],
+        dependencies: [],
         ngModule: null,
         diagnostics: [],
       };
@@ -64,10 +63,16 @@ export function scopeTemplate(
 
     // We need to deduplicate directives/pipes in `imports`, as any given directive/pipe may be
     // present in the export scope of more than one NgModule (or just listed more than once).
-    const directives = new Map<ClassDeclaration, DirectiveMeta>();
-    const pipes = new Map<ClassDeclaration, PipeMeta>();
+    const seen = new Set<ClassDeclaration>();
+    const dependencies: DependencyMeta[] = [];
 
     for (const ref of analysis.imports.resolved) {
+      if (seen.has(ref.node)) {
+        // This imported type has already been processed, so don't process it a second time.
+        continue;
+      }
+      seen.add(ref.node);
+
       // Determine if this import is a component/directive/pipe/NgModule.
       const dirMeta = metaReader.getDirectiveMetadata(ref);
       if (dirMeta !== null) {
@@ -79,9 +84,7 @@ export function scopeTemplate(
           continue;
         }
 
-        if (!directives.has(ref.node)) {
-          directives.set(ref.node, dirMeta);
-        }
+        dependencies.push(dirMeta);
         continue;
       }
 
@@ -114,33 +117,21 @@ export function scopeTemplate(
           return null;
         }
 
-        for (const dir of scope.exported.directives) {
-          if (!directives.has(dir.ref.node)) {
-            directives.set(dir.ref.node, dir);
-          }
-        }
-
-        for (const pipe of scope.exported.pipes) {
-          if (!pipes.has(pipe.ref.node)) {
-            pipes.set(pipe.ref.node, pipe);
-          }
-        }
+        dependencies.push(...scope.exported.dependencies);
       }
     }
 
     return {
-      directives: Array.from(directives.values()),
-      pipes: Array.from(pipes.values()),
-      diagnostics,
+      dependencies,
       ngModule: null,
+      diagnostics,
     };
   } else {
     // This is a "free" component, and is neither standalone nor declared in an NgModule.
     // This should probably be an error now that we have standalone components, but that would be a
-    // breaking change. For now, preserve the old behavior (treat is as having an empty scope).
+    // breaking change. For now, preserve the old behavior (treat it as having an empty scope).
     return {
-      directives: [],
-      pipes: [],
+      dependencies: [],
       ngModule: null,
       diagnostics: [],
     };

@@ -13,6 +13,7 @@ import {ErrorCode, ngErrorCode} from '../../diagnostics';
 import {absoluteFrom, absoluteFromSourceFile, AbsoluteFsPath, getSourceFileOrError} from '../../file_system';
 import {Reference, ReferenceEmitter} from '../../imports';
 import {IncrementalBuild} from '../../incremental/api';
+import {MetaKind} from '../../metadata';
 import {PerfCheckpoint, PerfEvent, PerfPhase, PerfRecorder} from '../../perf';
 import {ProgramDriver, UpdateMode} from '../../program_driver';
 import {ClassDeclaration, isNamedClassDeclaration, ReflectionHost} from '../../reflection';
@@ -633,41 +634,42 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     };
 
     const typeChecker = this.programDriver.getProgram().getTypeChecker();
-    for (const dir of scope.compilation.directives) {
-      if (dir.selector === null) {
-        // Skip this directive, it can't be added to a template anyway.
-        continue;
-      }
-      const tsSymbol = typeChecker.getSymbolAtLocation(dir.ref.node.name);
-      if (!isSymbolWithValueDeclaration(tsSymbol)) {
-        continue;
-      }
+    for (const dep of scope.compilation.dependencies) {
+      if (dep.kind === MetaKind.Directive) {
+        if (dep.selector === null) {
+          // Skip this directive, it can't be added to a template anyway.
+          continue;
+        }
+        const tsSymbol = typeChecker.getSymbolAtLocation(dep.ref.node.name);
+        if (!isSymbolWithValueDeclaration(tsSymbol)) {
+          continue;
+        }
 
-      let ngModule: ClassDeclaration|null = null;
-      const moduleScopeOfDir = this.componentScopeReader.getScopeForComponent(dir.ref.node);
-      if (moduleScopeOfDir !== null) {
-        ngModule = moduleScopeOfDir.ngModule;
-      }
+        let ngModule: ClassDeclaration|null = null;
+        const moduleScopeOfDir = this.componentScopeReader.getScopeForComponent(dep.ref.node);
+        if (moduleScopeOfDir !== null) {
+          ngModule = moduleScopeOfDir.ngModule;
+        }
 
-      data.directives.push({
-        isComponent: dir.isComponent,
-        isStructural: dir.isStructural,
-        selector: dir.selector,
-        tsSymbol,
-        ngModule,
-      });
+        data.directives.push({
+          isComponent: dep.isComponent,
+          isStructural: dep.isStructural,
+          selector: dep.selector,
+          tsSymbol,
+          ngModule,
+        });
+      } else if (dep.kind === MetaKind.Pipe) {
+        const tsSymbol = typeChecker.getSymbolAtLocation(dep.ref.node.name);
+        if (tsSymbol === undefined) {
+          continue;
+        }
+        data.pipes.push({
+          name: dep.name,
+          tsSymbol,
+        });
+      }
     }
 
-    for (const pipe of scope.compilation.pipes) {
-      const tsSymbol = typeChecker.getSymbolAtLocation(pipe.ref.node.name);
-      if (tsSymbol === undefined) {
-        continue;
-      }
-      data.pipes.push({
-        name: pipe.name,
-        tsSymbol,
-      });
-    }
 
     this.scopeCache.set(component, data);
     return data;
