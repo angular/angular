@@ -117,14 +117,11 @@ function main(args: string[]): void {
       // List of rolled-up flat ES2015 modules
       fesm2015Arg,
 
-      // List of all files in the ng_package rule's `srcs` attribute.
-      srcsArg,
+      // List of static files that should be copied into the package.
+      staticFilesArg,
 
       // List of all type definitions that need to packaged into the ng_package.
       typeDefinitionsArg,
-
-      // List of all files in the ng_package rule's data.
-      dataArg,
 
       // Path to the package's LICENSE.
       licenseFile,
@@ -140,8 +137,7 @@ function main(args: string[]): void {
   const esm2020 = JSON.parse(esm2020Arg) as BazelFileInfo[];
   const fesm2015 = JSON.parse(fesm2015Arg) as BazelFileInfo[];
   const typeDefinitions = JSON.parse(typeDefinitionsArg) as BazelFileInfo[];
-  const srcs = JSON.parse(srcsArg) as BazelFileInfo[];
-  const dataFiles = JSON.parse(dataArg) as BazelFileInfo[];
+  const staticFiles = JSON.parse(staticFilesArg) as BazelFileInfo[];
   const metadata = JSON.parse(metadataArg) as PackageMetadata;
   const dtsBundles = JSON.parse(dtsBundleArg) as BazelFileInfo[];
 
@@ -250,11 +246,6 @@ function main(args: string[]): void {
   typeDefinitions.forEach(
       f => writeFile(getTypingOutputRelativePath(f), readTypingsAndStripAmdModule(f.path)));
 
-  // Copy all `data` files into the package, preserving the sub-path from the owning
-  // package. These are files that aren't built by the ng_package rule, but instead are
-  // just straight copied into the package, e.g. global CSS assets or migration JSON file.
-  dataFiles.forEach(f => copyFile(f.path, getOwningPackageRelativePath(f)));
-
   const licenseBanner = licenseFile ? fs.readFileSync(licenseFile, 'utf8') : '';
 
   dtsBundles.forEach(bundleDtsFile => {
@@ -276,17 +267,17 @@ function main(args: string[]): void {
 
   const modulesWithExistingPackageJson = new Set<string>();
 
-  for (const srcFile of srcs) {
-    // We copy all source files into the package output while preserving the sub-path from
+  for (const file of staticFiles) {
+    // We copy all files into the package output while preserving the sub-path from
     // the owning package. e.g. `packages/core/package.json` ends up `<pkg-out>/package.json`.
-    const outputRelativePath = getOwningPackageRelativePath(srcFile);
-    let content = fs.readFileSync(srcFile.path, 'utf8');
+    const outputRelativePath = getOwningPackageRelativePath(file);
+    let content = fs.readFileSync(file.path, 'utf8');
 
     // Modify package.json files as necessary for publishing
-    if (path.basename(srcFile.path) === 'package.json') {
+    if (path.basename(file.path) === 'package.json') {
       const isPrimaryPackageJson = outputRelativePath === 'package.json';
-      const sourcePackageJson = JSON.parse(content) as PackageJson;
-      const packageName = sourcePackageJson['name'];
+      const packageJson = JSON.parse(content) as PackageJson;
+      const packageName = packageJson['name'];
 
       // Check if the `name` field of the `package.json` files are matching with
       // name of the NPM package. This is an additional safety check.
@@ -305,7 +296,7 @@ function main(args: string[]): void {
       }
 
       let newPackageJson =
-          insertFormatFieldsIntoPackageJson(outputRelativePath, sourcePackageJson, false);
+          insertFormatFieldsIntoPackageJson(outputRelativePath, packageJson, false);
 
       if (isPrimaryPackageJson) {
         newPackageJson = updatePrimaryPackageJson(newPackageJson);
