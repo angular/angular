@@ -25,6 +25,8 @@ export interface FormFieldHarnessFilters extends BaseHarnessFilters {
     hasErrors?: boolean;
 }
 
+export { MatFormFieldControlHarness }
+
 // @public
 export class MatFormFieldHarness extends _MatFormFieldHarnessBase<FormFieldControlHarness> {
     // (undocumented)
@@ -93,9 +95,6 @@ export abstract class _MatFormFieldHarnessBase<ControlHarness extends MatFormFie
     // (undocumented)
     protected abstract _suffixContainer: AsyncFactoryFn<TestElement | null>;
 }
-
-
-export * from "@angular/material/form-field/testing/control";
 
 // (No @packageDocumentation comment for this package)
 
