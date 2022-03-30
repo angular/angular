@@ -206,8 +206,8 @@ export interface R3DeclareComponentMetadata extends R3DeclareDirectiveMetadata {
   preserveWhitespaces?: boolean;
 }
 
-export type R3DeclareTemplateDependencyMetadata =
-    R3DeclareDirectiveDependencyMetadata|R3DeclarePipeDependencyMetadata;
+export type R3DeclareTemplateDependencyMetadata = R3DeclareDirectiveDependencyMetadata|
+    R3DeclarePipeDependencyMetadata|R3DeclareNgModuleDependencyMetadata;
 
 export interface R3DeclareDirectiveDependencyMetadata {
   kind: 'directive'|'component';
@@ -248,6 +248,12 @@ export interface R3DeclarePipeDependencyMetadata {
    * Reference to the pipe class (possibly a forward reference wrapped in a `forwardRef`
    * invocation).
    */
+  type: o.Expression|(() => o.Expression);
+}
+
+export interface R3DeclareNgModuleDependencyMetadata {
+  kind: 'ngmodule';
+
   type: o.Expression|(() => o.Expression);
 }
 

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AnimationTriggerNames, compileClassMetadata, compileComponentFromMetadata, compileDeclareClassMetadata, compileDeclareComponentFromMetadata, ConstantPool, CssSelector, DeclarationListEmitMode, DeclareComponentTemplateInfo, DEFAULT_INTERPOLATION_CONFIG, DomElementSchemaRegistry, Expression, FactoryTarget, makeBindingParser, R3ComponentMetadata, R3DirectiveDependencyMetadata, R3PipeDependencyMetadata, R3TargetBinder, R3TemplateDependency, R3TemplateDependencyKind, R3TemplateDependencyMetadata, SelectorMatcher, ViewEncapsulation, WrappedNodeExpr} from '@angular/compiler';
+import {AnimationTriggerNames, compileClassMetadata, compileComponentFromMetadata, compileDeclareClassMetadata, compileDeclareComponentFromMetadata, ConstantPool, CssSelector, DeclarationListEmitMode, DeclareComponentTemplateInfo, DEFAULT_INTERPOLATION_CONFIG, DomElementSchemaRegistry, Expression, FactoryTarget, makeBindingParser, R3ComponentMetadata, R3DirectiveDependencyMetadata, R3NgModuleDependencyMetadata, R3PipeDependencyMetadata, R3TargetBinder, R3TemplateDependency, R3TemplateDependencyKind, R3TemplateDependencyMetadata, SelectorMatcher, ViewEncapsulation, WrappedNodeExpr} from '@angular/compiler';
 import ts from 'typescript';
 
 import {Cycle, CycleAnalyzer, CycleHandlingStrategy} from '../../../cycles';
@@ -619,10 +619,21 @@ export class ComponentDecoratorHandler implements
         importedFile: ImportedFile,
       };
 
-      const declarations: (UsedPipe|UsedDirective)[] = [];
+      type UsedNgModule = R3NgModuleDependencyMetadata&{
+        importedFile: ImportedFile,
+      };
+
+      const declarations: (UsedPipe|UsedDirective|UsedNgModule)[] = [];
+      const seen = new Set<ClassDeclaration>();
 
       // Transform the dependencies list, filtering out unused dependencies.
       for (const dep of scope.dependencies) {
+        // Only emit references to each dependency once.
+        if (seen.has(dep.ref.node)) {
+          continue;
+        }
+        seen.add(dep.ref.node);
+
         switch (dep.kind) {
           case MetaKind.Directive:
             if (!used.has(dep.ref.node)) {
@@ -660,12 +671,22 @@ export class ComponentDecoratorHandler implements
               importedFile: pipeType.importedFile,
             });
             break;
+          case MetaKind.NgModule:
+            const ngModuleType = this.refEmitter.emit(dep.ref, context);
+            assertSuccessfulReferenceEmit(ngModuleType, node.name, 'NgModule');
+
+            declarations.push({
+              kind: R3TemplateDependencyKind.NgModule,
+              type: ngModuleType.expression,
+              importedFile: ngModuleType.importedFile,
+            });
+            break;
         }
       }
 
-      const isUsedDirective = (decl: UsedDirective|UsedPipe): decl is UsedDirective =>
+      const isUsedDirective = (decl: UsedDirective|UsedPipe|UsedNgModule): decl is UsedDirective =>
           decl.kind === R3TemplateDependencyKind.Directive;
-      const isUsedPipe = (decl: UsedDirective|UsedPipe): decl is UsedPipe =>
+      const isUsedPipe = (decl: UsedDirective|UsedPipe|UsedNgModule): decl is UsedPipe =>
           decl.kind === R3TemplateDependencyKind.Pipe;
 
       const getSemanticReference = (decl: UsedDirective|UsedPipe) =>

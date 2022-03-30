@@ -48,6 +48,7 @@ export class DtsMetadataReader implements MetadataReader {
     // Read the ModuleData out of the type arguments.
     const [_, declarationMetadata, importMetadata, exportMetadata] = ngModuleDef.type.typeArguments;
     return {
+      kind: MetaKind.NgModule,
       ref,
       declarations:
           extractReferencesFromType(this.checker, declarationMetadata, ref.bestGuessOwningModule),

@@ -8,14 +8,14 @@
 
 import ts from 'typescript';
 
-import {DirectiveMeta, MetadataReader, PipeMeta} from '../../../metadata';
+import {DirectiveMeta, MetadataReader, NgModuleMeta, PipeMeta} from '../../../metadata';
 import {ClassDeclaration} from '../../../reflection';
 import {ComponentScopeReader, DtsModuleScopeResolver, ExportScope, LocalModuleScopeRegistry, makeNotStandaloneDiagnostic} from '../../../scope';
 
 import {ComponentAnalysisData} from './metadata';
 
 
-export type DependencyMeta = DirectiveMeta|PipeMeta;
+export type DependencyMeta = DirectiveMeta|PipeMeta|NgModuleMeta;
 
 export interface ScopeTemplateResult {
   dependencies: DependencyMeta[];
@@ -117,6 +117,7 @@ export function scopeTemplate(
           return null;
         }
 
+        dependencies.push(ngModuleMeta);
         dependencies.push(...scope.exported.dependencies);
       }
     }

@@ -97,7 +97,7 @@ runInEachFileSystem(() => {
               export class TestCmp {}
             `);
         env.driveMain();
-        expect(env.getContents('test.js')).toContain('dependencies: [TestDir]');
+        expect(env.getContents('test.js')).toContain('dependencies: [TestModule, TestDir]');
       });
 
       it('should allow nested arrays in standalone component imports', () => {
