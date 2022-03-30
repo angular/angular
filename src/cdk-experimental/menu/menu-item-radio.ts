@@ -44,7 +44,7 @@ export class CdkMenuItemRadio extends CdkMenuItemSelectable implements OnDestroy
     private readonly _selectionDispatcher: UniqueSelectionDispatcher,
     element: ElementRef<HTMLElement>,
     ngZone: NgZone,
-    @Optional() @Inject(MENU_STACK) menuStack?: MenuStack,
+    @Inject(MENU_STACK) menuStack: MenuStack,
     @Optional() @Inject(CDK_MENU) parentMenu?: Menu,
     @Optional() @Inject(MENU_AIM) menuAim?: MenuAim,
     @Optional() dir?: Directionality,

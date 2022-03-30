@@ -44,7 +44,7 @@ import {CdkMenuBase} from './menu-base';
   providers: [
     {provide: CdkMenuGroup, useExisting: CdkMenuBar},
     {provide: CDK_MENU, useExisting: CdkMenuBar},
-    {provide: MENU_STACK, useClass: MenuStack},
+    {provide: MENU_STACK, useFactory: () => MenuStack.inline()},
   ],
 })
 export class CdkMenuBar extends CdkMenuBase implements AfterContentInit, OnDestroy {
@@ -97,23 +97,23 @@ export class CdkMenuBar extends CdkMenuBase implements AfterContentInit, OnDestr
           event.preventDefault();
 
           const prevIsOpen = keyManager.activeItem?.isMenuOpen();
-          keyManager.activeItem?.getMenuTrigger()?.closeMenu();
+          keyManager.activeItem?.getMenuTrigger()?.close();
 
           keyManager.setFocusOrigin('keyboard');
           keyManager.onKeydown(event);
           if (prevIsOpen) {
-            keyManager.activeItem?.getMenuTrigger()?.openMenu();
+            keyManager.activeItem?.getMenuTrigger()?.open();
           }
         }
         break;
 
       case ESCAPE:
         event.preventDefault();
-        keyManager.activeItem?.getMenuTrigger()?.closeMenu();
+        keyManager.activeItem?.getMenuTrigger()?.close();
         break;
 
       case TAB:
-        keyManager.activeItem?.getMenuTrigger()?.closeMenu();
+        keyManager.activeItem?.getMenuTrigger()?.close();
         break;
 
       default:
@@ -146,13 +146,13 @@ export class CdkMenuBar extends CdkMenuBase implements AfterContentInit, OnDestr
       case FocusNext.nextItem:
         keyManager.setFocusOrigin('keyboard');
         keyManager.setNextItemActive();
-        keyManager.activeItem?.getMenuTrigger()?.openMenu();
+        keyManager.activeItem?.getMenuTrigger()?.open();
         break;
 
       case FocusNext.previousItem:
         keyManager.setFocusOrigin('keyboard');
         keyManager.setPreviousItemActive();
-        keyManager.activeItem?.getMenuTrigger()?.openMenu();
+        keyManager.activeItem?.getMenuTrigger()?.open();
         break;
 
       case FocusNext.currentItem:

@@ -36,11 +36,11 @@ describe('MenuStack', () => {
 
   /** Open up all of the menus in the test component. */
   function openAllMenus() {
-    triggers[0].openMenu();
+    triggers[0].open();
     getElementsForTesting();
-    triggers[1].openMenu();
+    triggers[1].open();
     getElementsForTesting();
-    triggers[2].openMenu();
+    triggers[2].open();
     getElementsForTesting();
   }
 

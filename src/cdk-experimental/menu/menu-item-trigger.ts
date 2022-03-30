@@ -9,16 +9,11 @@
 import {
   Directive,
   ElementRef,
-  EventEmitter,
   Inject,
   Injector,
-  Input,
   NgZone,
   OnDestroy,
   Optional,
-  Output,
-  SkipSelf,
-  TemplateRef,
   ViewContainerRef,
 } from '@angular/core';
 import {Directionality} from '@angular/cdk/bidi';
@@ -28,15 +23,14 @@ import {
   FlexibleConnectedPositionStrategy,
   Overlay,
   OverlayConfig,
-  OverlayRef,
   STANDARD_DROPDOWN_ADJACENT_POSITIONS,
   STANDARD_DROPDOWN_BELOW_POSITIONS,
 } from '@angular/cdk/overlay';
 import {DOWN_ARROW, ENTER, LEFT_ARROW, RIGHT_ARROW, SPACE, UP_ARROW} from '@angular/cdk/keycodes';
-import {fromEvent, merge, Subject} from 'rxjs';
+import {fromEvent} from 'rxjs';
 import {filter, takeUntil} from 'rxjs/operators';
 import {CDK_MENU, Menu} from './menu-interface';
-import {MENU_STACK, MenuStack} from './menu-stack';
+import {MENU_STACK, MenuStack, PARENT_OR_NEW_MENU_STACK_PROVIDER} from './menu-stack';
 import {MENU_AIM, MenuAim} from './menu-aim';
 import {MENU_TRIGGER, MenuTrigger} from './menu-trigger';
 
@@ -72,47 +66,20 @@ export function isClickInsideMenuOverlay(target: Element): boolean {
   selector: '[cdkMenuTriggerFor]',
   exportAs: 'cdkMenuTriggerFor',
   host: {
-    '(keydown)': '_toggleOnKeydown($event)',
-    '(click)': 'toggle()',
     'class': 'cdk-menu-trigger',
     'aria-haspopup': 'menu',
-    '[attr.aria-expanded]': 'isMenuOpen()',
+    '(keydown)': '_toggleOnKeydown($event)',
+    '(click)': 'toggle()',
+    '[attr.aria-expanded]': 'isOpen()',
   },
+  inputs: ['_menuTemplateRef: cdkMenuTriggerFor', 'menuPosition: cdkMenuPosition'],
+  outputs: ['opened: cdkMenuOpened', 'closed: cdkMenuClosed'],
   providers: [
     {provide: MENU_TRIGGER, useExisting: CdkMenuItemTrigger},
-    {
-      provide: MENU_STACK,
-      deps: [[new Optional(), new SkipSelf(), new Inject(MENU_STACK)]],
-      useFactory: (parentMenuStack?: MenuStack) => parentMenuStack || new MenuStack(),
-    },
+    PARENT_OR_NEW_MENU_STACK_PROVIDER,
   ],
 })
 export class CdkMenuItemTrigger extends MenuTrigger implements OnDestroy {
-  /** Template reference variable to the menu this trigger opens */
-  @Input('cdkMenuTriggerFor')
-  _menuTemplateRef?: TemplateRef<unknown>;
-
-  /** A list of preferred menu positions to be used when constructing the `FlexibleConnectedPositionStrategy` for this trigger's menu. */
-  @Input('cdkMenuPosition') menuPosition: ConnectedPosition[];
-
-  /** Emits when the attached menu is requested to open */
-  @Output('cdkMenuOpened') readonly opened: EventEmitter<void> = new EventEmitter();
-
-  /** Emits when the attached menu is requested to close */
-  @Output('cdkMenuClosed') readonly closed: EventEmitter<void> = new EventEmitter();
-
-  /** A reference to the overlay which manages the triggered menu */
-  private _overlayRef: OverlayRef | null = null;
-
-  /** The content of the menu panel opened by this trigger. */
-  private _menuPortal: TemplatePortal;
-
-  /** Emits when this trigger is destroyed. */
-  private readonly _destroyed: Subject<void> = new Subject();
-
-  /** Emits when the outside pointer events listener on the overlay should be stopped. */
-  private readonly _stopOutsideClicksListener = merge(this.closed, this._destroyed);
-
   constructor(
     injector: Injector,
     private readonly _elementRef: ElementRef<HTMLElement>,
@@ -131,14 +98,12 @@ export class CdkMenuItemTrigger extends MenuTrigger implements OnDestroy {
 
   /** Open/close the attached menu if the trigger has been configured with one */
   toggle() {
-    if (this.hasMenu()) {
-      this.isMenuOpen() ? this.closeMenu() : this.openMenu();
-    }
+    this.isOpen() ? this.close() : this.open();
   }
 
   /** Open the attached menu. */
-  openMenu() {
-    if (!this.isMenuOpen()) {
+  open() {
+    if (!this.isOpen()) {
       this.opened.next();
 
       this._overlayRef = this._overlayRef || this._overlay.create(this._getOverlayConfig());
@@ -148,23 +113,13 @@ export class CdkMenuItemTrigger extends MenuTrigger implements OnDestroy {
   }
 
   /** Close the opened menu. */
-  closeMenu() {
-    if (this.isMenuOpen()) {
+  close() {
+    if (this.isOpen()) {
       this.closed.next();
 
       this._overlayRef!.detach();
     }
     this._closeSiblingTriggers();
-  }
-
-  /** Return true if the trigger has an attached menu */
-  hasMenu() {
-    return !!this._menuTemplateRef;
-  }
-
-  /** Whether the menu this button is a trigger for is open */
-  isMenuOpen() {
-    return this._overlayRef ? this._overlayRef.hasAttached() : false;
   }
 
   /**
@@ -184,13 +139,13 @@ export class CdkMenuItemTrigger extends MenuTrigger implements OnDestroy {
     const toggleMenus = () =>
       this._ngZone.run(() => {
         this._closeSiblingTriggers();
-        this.openMenu();
+        this.open();
       });
 
     this._ngZone.runOutsideAngular(() => {
       fromEvent(this._elementRef.nativeElement, 'mouseenter')
         .pipe(
-          filter(() => !this.menuStack.isEmpty() && !this.isMenuOpen()),
+          filter(() => !this.menuStack.isEmpty() && !this.isOpen()),
           takeUntil(this._destroyed),
         )
         .subscribe(() => {
@@ -221,7 +176,7 @@ export class CdkMenuItemTrigger extends MenuTrigger implements OnDestroy {
       case RIGHT_ARROW:
         if (this._parentMenu && this._isParentVertical() && this._directionality?.value !== 'rtl') {
           event.preventDefault();
-          this.openMenu();
+          this.open();
           this.childMenu?.focusFirstItem('keyboard');
         }
         break;
@@ -229,7 +184,7 @@ export class CdkMenuItemTrigger extends MenuTrigger implements OnDestroy {
       case LEFT_ARROW:
         if (this._parentMenu && this._isParentVertical() && this._directionality?.value === 'rtl') {
           event.preventDefault();
-          this.openMenu();
+          this.open();
           this.childMenu?.focusFirstItem('keyboard');
         }
         break;
@@ -238,7 +193,7 @@ export class CdkMenuItemTrigger extends MenuTrigger implements OnDestroy {
       case UP_ARROW:
         if (!this._isParentVertical()) {
           event.preventDefault();
-          this.openMenu();
+          this.open();
           keyCode === DOWN_ARROW
             ? this.childMenu?.focusFirstItem('keyboard')
             : this.childMenu?.focusLastItem('keyboard');
@@ -325,17 +280,10 @@ export class CdkMenuItemTrigger extends MenuTrigger implements OnDestroy {
     if (!this._parentMenu) {
       this.menuStack.closed.pipe(takeUntil(this._destroyed)).subscribe(item => {
         if (item === this.childMenu) {
-          this.closeMenu();
+          this.close();
         }
       });
     }
-  }
-
-  ngOnDestroy() {
-    this._destroyOverlay();
-
-    this._destroyed.next();
-    this._destroyed.complete();
   }
 
   /**
@@ -352,14 +300,6 @@ export class CdkMenuItemTrigger extends MenuTrigger implements OnDestroy {
             this.menuStack.closeAll();
           }
         });
-    }
-  }
-
-  /** Destroy and unset the overlay reference it if exists */
-  private _destroyOverlay() {
-    if (this._overlayRef) {
-      this._overlayRef.dispose();
-      this._overlayRef = null;
     }
   }
 }

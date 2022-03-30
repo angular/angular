@@ -509,13 +509,13 @@ describe('MenuBar', () => {
             .queryAll(By.directive(CdkMenuItem))[0]
             .injector.get(CdkMenuItem)
             .getMenuTrigger()!
-            .openMenu();
+            .open();
           detectChanges();
           fixture.debugElement
             .queryAll(By.directive(CdkMenuItem))[2]
             .injector.get(CdkMenuItem)
             .getMenuTrigger()!
-            .openMenu();
+            .open();
           detectChanges();
 
           fileMenuNativeItems[0].focus();

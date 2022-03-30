@@ -5,6 +5,7 @@ import {CdkMenuModule} from './menu-module';
 import {CdkMenuItemCheckbox} from './menu-item-checkbox';
 import {CDK_MENU} from './menu-interface';
 import {CdkMenu} from './menu';
+import {MENU_STACK, MenuStack} from '@angular/cdk-experimental/menu/menu-stack';
 
 describe('MenuItemCheckbox', () => {
   let fixture: ComponentFixture<SingleCheckboxButton>;
@@ -17,6 +18,7 @@ describe('MenuItemCheckbox', () => {
       declarations: [SingleCheckboxButton],
       providers: [
         {provide: CDK_MENU, useClass: CdkMenu},
+        {provide: MENU_STACK, useClass: MenuStack},
         // View engine can't figure out the ElementRef to inject so we need to provide a fake
         {provide: ElementRef, useValue: new ElementRef<null>(null)},
       ],

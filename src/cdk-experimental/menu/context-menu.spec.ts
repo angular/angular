@@ -3,11 +3,12 @@ import {CdkMenuModule} from './menu-module';
 import {TestBed, waitForAsync, ComponentFixture} from '@angular/core/testing';
 import {CdkMenu} from './menu';
 import {CdkContextMenuTrigger} from './context-menu';
-import {dispatchMouseEvent} from '../../cdk/testing/private';
+import {dispatchKeyboardEvent, dispatchMouseEvent} from '../../cdk/testing/private';
 import {By} from '@angular/platform-browser';
 import {CdkMenuItem} from './menu-item';
 import {CdkMenuItemTrigger} from './menu-item-trigger';
 import {CdkMenuBar} from './menu-bar';
+import {LEFT_ARROW, RIGHT_ARROW} from '@angular/cdk/keycodes';
 
 describe('CdkContextMenuTrigger', () => {
   describe('with simple context menu trigger', () => {
@@ -125,6 +126,22 @@ describe('CdkContextMenuTrigger', () => {
     it('should focus the first menuitem when the context menu is opened', () => {
       openContextMenu();
       expect(document.activeElement!.id).toEqual('first_menu_item');
+    });
+
+    it('should not close context menu when pressing left arrow', () => {
+      openContextMenu();
+      expect(document.activeElement!.id).toEqual('first_menu_item');
+      dispatchKeyboardEvent(document.activeElement!, 'keydown', LEFT_ARROW, 'ArrowLeft');
+      fixture.detectChanges();
+      expect(getContextMenu()).toBeDefined();
+    });
+
+    it('should not close context menu when pressing right arrow', () => {
+      openContextMenu();
+      expect(document.activeElement!.id).toEqual('first_menu_item');
+      dispatchKeyboardEvent(document.activeElement!, 'keydown', RIGHT_ARROW, 'ArrowRight');
+      fixture.detectChanges();
+      expect(getContextMenu()).toBeDefined();
     });
   });
 
