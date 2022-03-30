@@ -56,7 +56,7 @@ describe('MenuStack', () => {
       menuStack.closeAll();
 
       expect(spy).toHaveBeenCalledTimes(3);
-      const callArgs = spy.calls.all().map((v: jasmine.CallInfo<jasmine.Func>) => v.args[0]);
+      const callArgs = spy.calls.all().map((v: jasmine.CallInfo<jasmine.Func>) => v.args[0].item);
       expect(callArgs).toEqual(menus.reverse());
       expect(menuStack.isEmpty()).toBeTrue();
     },

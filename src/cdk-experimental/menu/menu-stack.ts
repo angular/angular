@@ -41,6 +41,11 @@ export const PARENT_OR_NEW_INLINE_MENU_STACK_PROVIDER = {
   useFactory: (parentMenuStack?: MenuStack) => parentMenuStack || MenuStack.inline(),
 };
 
+export interface MenuStackCloseEvent {
+  item: MenuStackItem | undefined;
+  focusParentMenu?: boolean;
+}
+
 /**
  * MenuStack allows subscribers to listen for close events (when a MenuStackItem is popped off
  * of the stack) in order to perform closing actions. Upon the MenuStack being empty it emits
@@ -53,13 +58,13 @@ export class MenuStack {
   private readonly _elements: MenuStackItem[] = [];
 
   /** Emits the element which was popped off of the stack when requested by a closer. */
-  private readonly _close: Subject<MenuStackItem | undefined> = new Subject();
+  private readonly _close: Subject<MenuStackCloseEvent> = new Subject();
 
   /** Emits once the MenuStack has become empty after popping off elements. */
   private readonly _empty: Subject<FocusNext | undefined> = new Subject();
 
   /** Observable which emits the MenuStackItem which has been requested to close. */
-  readonly closed: Observable<MenuStackItem | undefined> = this._close;
+  readonly closed: Observable<MenuStackCloseEvent> = this._close;
 
   /**
    * Observable which emits when the MenuStack is empty after popping off the last element. It
@@ -87,14 +92,15 @@ export class MenuStack {
    * @param lastItem the last item to pop off the stack.
    * @param focusNext the event to emit on the `empty` observable if the method call resulted in an
    * empty stack. Does not emit if the stack was initially empty or if `lastItem` was not on the
+   * @param focusParentMenu Whether to focus the parent menu after closing current one.
    * stack.
    */
-  close(lastItem: MenuStackItem, focusNext?: FocusNext) {
+  close(lastItem: MenuStackItem, focusNext?: FocusNext, focusParentMenu = false) {
     if (this._elements.indexOf(lastItem) >= 0) {
       let poppedElement: MenuStackItem | undefined;
       do {
         poppedElement = this._elements.pop();
-        this._close.next(poppedElement);
+        this._close.next({item: poppedElement, focusParentMenu});
       } while (poppedElement !== lastItem);
 
       if (this.isEmpty()) {
@@ -114,7 +120,7 @@ export class MenuStack {
     if (this._elements.indexOf(lastItem) >= 0) {
       removed = this.peek() !== lastItem;
       while (this.peek() !== lastItem) {
-        this._close.next(this._elements.pop());
+        this._close.next({item: this._elements.pop()});
       }
     }
     return removed;
@@ -125,12 +131,12 @@ export class MenuStack {
    * @param focusNext the event to emit on the `empty` observable once the stack is emptied. Does
    * not emit if the stack was initially empty.
    */
-  closeAll(focusNext?: FocusNext) {
+  closeAll(focusNext?: FocusNext, focusParentMenu = false) {
     if (!this.isEmpty()) {
       while (!this.isEmpty()) {
         const menuStackItem = this._elements.pop();
         if (menuStackItem) {
-          this._close.next(menuStackItem);
+          this._close.next({item: menuStackItem, focusParentMenu});
         }
       }
 

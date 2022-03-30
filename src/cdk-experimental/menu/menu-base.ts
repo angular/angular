@@ -105,15 +105,19 @@ export abstract class CdkMenuBase
    * Close the open menu if the current active item opened the requested MenuStackItem.
    * @param item the MenuStackItem requested to be closed.
    */
-  protected closeOpenMenu(menu: MenuStackItem | undefined) {
+  protected closeOpenMenu(menu: MenuStackItem | undefined, focusTrigger?: boolean) {
     const keyManager = this.keyManager;
     const trigger = this.openItem;
     if (menu === trigger?.getMenuTrigger()?.getMenu()) {
       trigger?.getMenuTrigger()?.close();
       // If the user has moused over a sibling item we want to focus the element under mouse focus
       // not the trigger which previously opened the now closed menu.
-      if (trigger) {
-        keyManager.setActiveItem(this.pointerTracker?.activeElement || trigger);
+      if (focusTrigger) {
+        if (trigger) {
+          keyManager.setActiveItem(trigger);
+        } else {
+          keyManager.setFirstItemActive();
+        }
       }
     }
   }
@@ -157,6 +161,6 @@ export abstract class CdkMenuBase
   private _subscribeToMenuStackClosed() {
     this.menuStack.closed
       .pipe(takeUntil(this.destroyed))
-      .subscribe(item => this.closeOpenMenu(item));
+      .subscribe(({item, focusParentMenu}) => this.closeOpenMenu(item, focusParentMenu));
   }
 }

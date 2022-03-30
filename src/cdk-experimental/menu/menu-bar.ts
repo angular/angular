@@ -128,11 +128,6 @@ export class CdkMenuBar extends CdkMenuBase implements AfterContentInit, OnDestr
   private _subscribeToMouseManager() {
     this._ngZone.runOutsideAngular(() => {
       this.pointerTracker = new PointerFocusTracker(this.items);
-      this.pointerTracker.entered.pipe(takeUntil(this.destroyed)).subscribe(item => {
-        if (this.hasOpenSubmenu()) {
-          this.keyManager.setActiveItem(item);
-        }
-      });
     });
   }
 

@@ -216,7 +216,7 @@ export class CdkContextMenuTrigger extends MenuTrigger implements OnDestroy {
 
   /** Subscribe to the menu stack close events and close this menu when requested. */
   private _setMenuStackListener() {
-    this.menuStack.closed.pipe(takeUntil(this._destroyed)).subscribe(item => {
+    this.menuStack.closed.pipe(takeUntil(this._destroyed)).subscribe(({item}) => {
       if (item === this.childMenu && this.isOpen()) {
         this.closed.next();
         this._overlayRef!.detach();

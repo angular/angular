@@ -278,7 +278,7 @@ export class CdkMenuItemTrigger extends MenuTrigger implements OnDestroy {
    */
   private _registerCloseHandler() {
     if (!this._parentMenu) {
-      this.menuStack.closed.pipe(takeUntil(this._destroyed)).subscribe(item => {
+      this.menuStack.closed.pipe(takeUntil(this._destroyed)).subscribe(({item}) => {
         if (item === this.childMenu) {
           this.close();
         }

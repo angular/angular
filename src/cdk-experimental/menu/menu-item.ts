@@ -45,9 +45,7 @@ import {MENU_AIM, MenuAim, Toggler} from './menu-aim';
     'class': 'cdk-menu-item',
     '[attr.aria-disabled]': 'disabled || null',
     '(blur)': '_resetTabIndex()',
-    '(mouseout)': '_resetTabIndex()',
     '(focus)': '_setTabIndex()',
-    '(mouseenter)': '_setTabIndex($event)',
     '(click)': 'trigger()',
     '(keydown)': '_onKeydown($event)',
   },
@@ -190,16 +188,10 @@ export class CdkMenuItem implements FocusableOption, FocusableElement, Toggler, 
 
       case RIGHT_ARROW:
         if (this._parentMenu && this._isParentVertical()) {
-          if (this._dir?.value === 'rtl') {
-            if (this._menuStack.hasInlineMenu() || this._menuStack.length() > 1) {
-              event.preventDefault();
-              this._menuStack.close(this._parentMenu, FocusNext.previousItem);
-            }
-          } else if (!this.hasMenu()) {
-            if (this._menuStack.hasInlineMenu()) {
-              event.preventDefault();
-              this._menuStack.closeAll(FocusNext.nextItem);
-            }
+          if (this._dir?.value !== 'rtl') {
+            this._forwardArrowPressed(event);
+          } else {
+            this._backArrowPressed(event);
           }
         }
         break;
@@ -207,18 +199,27 @@ export class CdkMenuItem implements FocusableOption, FocusableElement, Toggler, 
       case LEFT_ARROW:
         if (this._parentMenu && this._isParentVertical()) {
           if (this._dir?.value !== 'rtl') {
-            if (this._menuStack.hasInlineMenu() || this._menuStack.length() > 1) {
-              event.preventDefault();
-              this._menuStack.close(this._parentMenu, FocusNext.previousItem);
-            }
-          } else if (!this.hasMenu()) {
-            if (this._menuStack.hasInlineMenu()) {
-              event.preventDefault();
-              this._menuStack.closeAll(FocusNext.nextItem);
-            }
+            this._backArrowPressed(event);
+          } else {
+            this._forwardArrowPressed(event);
           }
         }
         break;
+    }
+  }
+
+  private _backArrowPressed(event: KeyboardEvent) {
+    const parentMenu = this._parentMenu!;
+    if (this._menuStack.hasInlineMenu() || this._menuStack.length() > 1) {
+      event.preventDefault();
+      this._menuStack.close(parentMenu, FocusNext.previousItem, true);
+    }
+  }
+
+  private _forwardArrowPressed(event: KeyboardEvent) {
+    if (!this.hasMenu() && this._menuStack.hasInlineMenu()) {
+      event.preventDefault();
+      this._menuStack.closeAll(FocusNext.nextItem);
     }
   }
 

@@ -130,12 +130,12 @@ export class CdkMenu extends CdkMenuBase implements AfterContentInit, OnDestroy 
       case ESCAPE:
         if (!hasModifierKey(event)) {
           event.preventDefault();
-          this.menuStack.close(this, FocusNext.currentItem);
+          this.menuStack.close(this, FocusNext.currentItem, true);
         }
         break;
 
       case TAB:
-        this.menuStack.closeAll();
+        this.menuStack.closeAll(undefined, true);
         break;
 
       default:
@@ -174,9 +174,6 @@ export class CdkMenu extends CdkMenuBase implements AfterContentInit, OnDestroy 
   private _subscribeToMouseManager() {
     this._ngZone.runOutsideAngular(() => {
       this.pointerTracker = new PointerFocusTracker(this.items);
-      this.pointerTracker.entered
-        .pipe(takeUntil(this.closed))
-        .subscribe(item => this.keyManager.setActiveItem(item));
     });
   }
 
