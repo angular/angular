@@ -68,9 +68,11 @@ export function isClickInsideMenuOverlay(target: Element): boolean {
   host: {
     'class': 'cdk-menu-trigger',
     'aria-haspopup': 'menu',
+    '[attr.aria-expanded]': 'isOpen()',
+    '(focusin)': '_setHasFocus(true)',
+    '(focusout)': '_setHasFocus(false)',
     '(keydown)': '_toggleOnKeydown($event)',
     '(click)': 'toggle()',
-    '[attr.aria-expanded]': 'isOpen()',
   },
   inputs: ['_menuTemplateRef: cdkMenuTriggerFor', 'menuPosition: cdkMenuPosition'],
   outputs: ['opened: cdkMenuOpened', 'closed: cdkMenuClosed'],
@@ -94,6 +96,7 @@ export class CdkMenuItemTrigger extends MenuTrigger implements OnDestroy {
     super(injector, menuStack);
     this._registerCloseHandler();
     this._subscribeToMouseEnter();
+    this._subscribeToHasFocus();
   }
 
   /** Open/close the attached menu if the trigger has been configured with one */
@@ -300,6 +303,22 @@ export class CdkMenuItemTrigger extends MenuTrigger implements OnDestroy {
             this.menuStack.closeAll();
           }
         });
+    }
+  }
+
+  private _subscribeToHasFocus() {
+    if (!this._parentMenu) {
+      this.menuStack.hasFocus.pipe(takeUntil(this._destroyed)).subscribe(hasFocus => {
+        if (!hasFocus) {
+          this.menuStack.closeAll();
+        }
+      });
+    }
+  }
+
+  _setHasFocus(hasFocus: boolean) {
+    if (!this._parentMenu) {
+      this.menuStack.setHasFocus(hasFocus);
     }
   }
 }
