@@ -110,6 +110,10 @@ function addFeatures(definitionMap: DefinitionMap, meta: R3DirectiveMetadata|R3C
   if (meta.lifecycle.usesOnChanges) {
     features.push(o.importExpr(R3.NgOnChangesFeature));
   }
+  // TODO: better way of differentiating component vs directive metadata.
+  if (meta.hasOwnProperty('template') && meta.isStandalone) {
+    features.push(o.importExpr(R3.StandaloneFeature));
+  }
   if (features.length) {
     definitionMap.set('features', o.literalArr(features));
   }
