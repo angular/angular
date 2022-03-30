@@ -148,7 +148,7 @@ export class PipeDecoratorHandler implements
   }
 
   symbol(node: ClassDeclaration, analysis: Readonly<PipeHandlerData>): PipeSymbol {
-    return new PipeSymbol(node, analysis.meta.name);
+    return new PipeSymbol(node, analysis.meta.pipeName);
   }
 
   register(node: ClassDeclaration, analysis: Readonly<PipeHandlerData>): void {
