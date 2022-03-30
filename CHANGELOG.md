@@ -1,3 +1,46 @@
+<a name="14.0.0-next.9"></a>
+# 14.0.0-next.9 "plastic-headphones" (2022-03-30)
+### cdk
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b372f68302](https://github.com/angular/components/commit/b372f683020cd00692b592fdfc4baf89cab4cabe) | fix | **a11y:** live announcer promise never resolved if new announcement comes in ([#24700](https://github.com/angular/components/pull/24700)) |
+| [5b4bcf5cae](https://github.com/angular/components/commit/5b4bcf5caebb57e986b6b60b2c06345c89bbd51d) | fix | **testing:** entering negative number values not working with reactive forms ([#24656](https://github.com/angular/components/pull/24656)) |
+### material
+| Commit | Type | Description |
+| -- | -- | -- |
+| [5a8ebb1da1](https://github.com/angular/components/commit/5a8ebb1da12343d4dcb7c37160356fec744c2ba3) | feat | **dialog:** add support for explicit injector ([#24580](https://github.com/angular/components/pull/24580)) |
+| [cb206be37d](https://github.com/angular/components/commit/cb206be37dc989cb79ca716ae514768b823ee45c) | fix | **autocomplete:** always emit closed event ([#24642](https://github.com/angular/components/pull/24642)) |
+| [938d7870a7](https://github.com/angular/components/commit/938d7870a78391f6db491091b07359ea1b39124c) | fix | **button-toggle:** ripples not clipping correctly in safari ([#12311](https://github.com/angular/components/pull/12311)) |
+| [73dde84325](https://github.com/angular/components/commit/73dde8432573dcc99d2c3ac83b55d26aa9559735) | fix | **chips:** ripple not clipped on safari ([#21495](https://github.com/angular/components/pull/21495)) |
+| [dbb6dc09b4](https://github.com/angular/components/commit/dbb6dc09b452c126ddf612c1731595615e505e27) | fix | **core:** resolve memory leak by removing event listeners from the ripple element ([#24663](https://github.com/angular/components/pull/24663)) |
+| [5770eba622](https://github.com/angular/components/commit/5770eba622853c9d03d5341ebab4b1fa6f00ffa8) | fix | **core:** unable to override tag selectors inside .mat-typography ([#14617](https://github.com/angular/components/pull/14617)) |
+| [7e67602799](https://github.com/angular/components/commit/7e67602799d97a3a0159d5c0e84d69a66eaf31af) | fix | **datepicker:** expose `datepicker-date-range-colors` mixin |
+| [460b25cad9](https://github.com/angular/components/commit/460b25cad996447e6a48175265159d27bb33a133) | fix | **list:** not working correctly when list item is used as a button ([#13617](https://github.com/angular/components/pull/13617)) |
+| [a76f30107e](https://github.com/angular/components/commit/a76f30107ec70fcbee1c8ec87026307a55cd0494) | fix | **menu:** clicks on disabled item closing the menu ([#19183](https://github.com/angular/components/pull/19183)) |
+| [81ff8c8daa](https://github.com/angular/components/commit/81ff8c8daa9a8f4d127936f930ff590bce1cab3f) | fix | **radio:** set tabindex based on selected state ([#18081](https://github.com/angular/components/pull/18081)) |
+| [99f1f38caa](https://github.com/angular/components/commit/99f1f38caa6e1c7f34ebf4de494a190942efc329) | fix | **snack-bar:** ensure that the snack bar always runs inside the NgZone ([#24611](https://github.com/angular/components/pull/24611)) |
+| [b9bfaeecb6](https://github.com/angular/components/commit/b9bfaeecb68aea4f42ee074ff80ace03c6d20a79) | fix | **tabs:** focus wrapping back to selected label when using shift + tab ([#14194](https://github.com/angular/components/pull/14194)) |
+| [7c2545c240](https://github.com/angular/components/commit/7c2545c2403510d1167d6bd9ddf89da70bd8abf3) | fix | **tabs:** update tab state when active tab is swapped out ([#24164](https://github.com/angular/components/pull/24164)) |
+### cdk-experimental
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b4b8b202c0](https://github.com/angular/components/commit/b4b8b202c0f7dca2e6efb409235b18e5a2205d47) | fix | **menu:** fix issue where left/right on standalone menu closes it ([#24696](https://github.com/angular/components/pull/24696)) |
+| [79b2337949](https://github.com/angular/components/commit/79b2337949a8c0893858fba3740b3adfbb49c158) | fix | **menu:** move shared menu logic to base class ([#24645](https://github.com/angular/components/pull/24645)) |
+### material-experimental
+| Commit | Type | Description |
+| -- | -- | -- |
+| [0163ad2697](https://github.com/angular/components/commit/0163ad2697567652cbaa5d004767527ab803f20c) | feat | **mdc-dialog:** switch to new theming api ([#23620](https://github.com/angular/components/pull/23620)) ([#24521](https://github.com/angular/components/pull/24521)) |
+| [c49f83bad2](https://github.com/angular/components/commit/c49f83bad2b5f47a2a7691e393ff02b3da927a94) | fix | **mdc-button:** extended fab touch target not covering entire button ([#24322](https://github.com/angular/components/pull/24322)) |
+| [e4863652c7](https://github.com/angular/components/commit/e4863652c711359893e3863468d08c77600264b9) | fix | **mdc-chips:** make it easier to customize chip typography ([#24632](https://github.com/angular/components/pull/24632)) |
+| [1bc98ec31e](https://github.com/angular/components/commit/1bc98ec31eab37debe94bb1cee2618805b82c832) | fix | **mdc-chips:** Mirror aria-describedby to matChipInput ([#24551](https://github.com/angular/components/pull/24551)) |
+| [f6310fbcf6](https://github.com/angular/components/commit/f6310fbcf66c0f88c5f47c61f264c76f93301ca9) | fix | **mdc-dialog:** expose `dialog-legacy-padding` mixin |
+| [87ab4f49db](https://github.com/angular/components/commit/87ab4f49dba39e16dc0e5dc005351d487cc169d3) | fix | **mdc-slider:** update layout when container resizes ([#24648](https://github.com/angular/components/pull/24648)) |
+| [75f30fd497](https://github.com/angular/components/commit/75f30fd4975c4b8fbbc439402503563ee99ff594) | fix | **mdc-slider:** use passive event listeners ([#24675](https://github.com/angular/components/pull/24675)) |
+## Special Thanks
+Andrew Seguin, Artur Androsovych, ByzantineFailure, David Gonzalez, Dilyorbek, Kristiyan Kostadinov, Mario Härtwig, Miles Malerba, Naveen, Paul Gschwendtner, Raí Siqueira, Shivam Sethi, Wagner Maciel, Zach Arend, peinearydevelopment and renovate[bot]
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="13.3.2"></a>
 # 13.3.2 "flannel-flamingo" (2022-03-30)
 ### cdk
