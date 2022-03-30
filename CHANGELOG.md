@@ -1,3 +1,35 @@
+<a name="13.3.2"></a>
+# 13.3.2 "flannel-flamingo" (2022-03-30)
+### cdk
+| Commit | Type | Description |
+| -- | -- | -- |
+| [48968719fc](https://github.com/angular/components/commit/48968719fc0e77df0d160f5bf0818244ff2f6bab) | fix | **a11y:** live announcer promise never resolved if new announcement comes in ([#24700](https://github.com/angular/components/pull/24700)) |
+| [e9734a9c66](https://github.com/angular/components/commit/e9734a9c663b0e462e5c3d8ba2126a87aeeb3191) | fix | **testing:** entering negative number values not working with reactive forms ([#24656](https://github.com/angular/components/pull/24656)) |
+### material
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c677f11ed8](https://github.com/angular/components/commit/c677f11ed8b9a268a307488dca26589dfd9412da) | fix | **button-toggle:** ripples not clipping correctly in safari ([#12311](https://github.com/angular/components/pull/12311)) |
+| [20af3e7c9d](https://github.com/angular/components/commit/20af3e7c9dc7be162828cdb368a0a7cc2ca0014a) | fix | **chips:** ripple not clipped on safari ([#21495](https://github.com/angular/components/pull/21495)) |
+| [d04e7c9b69](https://github.com/angular/components/commit/d04e7c9b69233dbff7891381c66226ba4ac3a9bd) | fix | **core:** unable to override tag selectors inside .mat-typography ([#14617](https://github.com/angular/components/pull/14617)) |
+| [9490a31641](https://github.com/angular/components/commit/9490a3164168e5999dd40daffcfaf4c0776e8353) | fix | **list:** not working correctly when list item is used as a button ([#13617](https://github.com/angular/components/pull/13617)) |
+| [b07ae4ccc4](https://github.com/angular/components/commit/b07ae4ccc451f98c2907d6394cdf2a6f8631d2cd) | fix | **menu:** clicks on disabled item closing the menu ([#19183](https://github.com/angular/components/pull/19183)) |
+| [e85777712a](https://github.com/angular/components/commit/e85777712a13c9c6d18524a4d2e731b044479f5d) | fix | **radio:** set tabindex based on selected state ([#18081](https://github.com/angular/components/pull/18081)) |
+| [7f274dc96f](https://github.com/angular/components/commit/7f274dc96f7fb2d1d39237d1acbcbbb3fd76cf9a) | fix | **snack-bar:** ensure that the snack bar always runs inside the NgZone ([#24611](https://github.com/angular/components/pull/24611)) |
+| [a5aa87502b](https://github.com/angular/components/commit/a5aa87502b0f48ca2317835e80ef68bb9af7287f) | fix | **tabs:** focus wrapping back to selected label when using shift + tab ([#14194](https://github.com/angular/components/pull/14194)) |
+| [04f4937b75](https://github.com/angular/components/commit/04f4937b759418ae29c483b716cf2ccef5d25dfa) | fix | **tabs:** update tab state when active tab is swapped out ([#24164](https://github.com/angular/components/pull/24164)) |
+### material-experimental
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a704913d2b](https://github.com/angular/components/commit/a704913d2bf255936629b7ca16514c5b7e00f9a4) | fix | **mdc-button:** extended fab touch target not covering entire button ([#24322](https://github.com/angular/components/pull/24322)) |
+| [23e7b8e6c1](https://github.com/angular/components/commit/23e7b8e6c1a2e0f4f02413f0e7a45dd710bba83d) | fix | **mdc-chips:** make it easier to customize chip typography ([#24632](https://github.com/angular/components/pull/24632)) |
+| [518022288b](https://github.com/angular/components/commit/518022288b268dff2125017f1f187ef1683527a2) | fix | **mdc-chips:** Mirror aria-describedby to matChipInput ([#24551](https://github.com/angular/components/pull/24551)) |
+| [9497b02f8b](https://github.com/angular/components/commit/9497b02f8befb7cc5c81018b0136315758cc2853) | fix | **mdc-slider:** update layout when container resizes ([#24648](https://github.com/angular/components/pull/24648)) |
+| [e5c025dff4](https://github.com/angular/components/commit/e5c025dff42ca2637845417c5bb0a482bee31547) | fix | **mdc-slider:** use passive event listeners ([#24675](https://github.com/angular/components/pull/24675)) |
+## Special Thanks
+Artur Androsovych, ByzantineFailure, David Gonzalez, Dilyorbek, Kristiyan Kostadinov, Naveen, Paul Gschwendtner, Raí Siqueira, Shivam Sethi, Wagner Maciel and Zach Arend
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.0.0-next.8"></a>
 # 14.0.0-next.8 "aerogel-airplane" (2022-03-24)
 ### cdk
