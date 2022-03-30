@@ -53,7 +53,6 @@ export interface RemoteScope {
   pipes: Reference[];
 }
 
-
 export interface LocalModuleScope extends ExportScope {
   ngModule: ClassDeclaration;
   compilation: ScopeData;

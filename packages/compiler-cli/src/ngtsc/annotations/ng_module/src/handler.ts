@@ -398,6 +398,7 @@ export class NgModuleDecoratorHandler implements
     // during the compile() phase, the module's metadata is available for selector scope
     // computation.
     this.metaRegistry.registerNgModuleMetadata({
+      kind: MetaKind.NgModule,
       ref: new Reference(node),
       schemas: analysis.schemas,
       declarations: analysis.declarations,

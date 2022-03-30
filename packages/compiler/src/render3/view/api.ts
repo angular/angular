@@ -249,6 +249,7 @@ export interface R3ComponentMetadata<DeclarationT extends R3TemplateDependency> 
 export enum R3TemplateDependencyKind {
   Directive = 0,
   Pipe = 1,
+  NgModule = 2,
 }
 
 /**
@@ -266,7 +267,8 @@ export interface R3TemplateDependency {
 /**
  * A dependency that's used within a component template
  */
-export type R3TemplateDependencyMetadata = R3DirectiveDependencyMetadata|R3PipeDependencyMetadata;
+export type R3TemplateDependencyMetadata =
+    R3DirectiveDependencyMetadata|R3PipeDependencyMetadata|R3NgModuleDependencyMetadata;
 
 /**
  * Information about a directive that is used in a component template. Only the stable, public
@@ -305,6 +307,10 @@ export interface R3PipeDependencyMetadata extends R3TemplateDependency {
   kind: R3TemplateDependencyKind.Pipe;
 
   name: string;
+}
+
+export interface R3NgModuleDependencyMetadata extends R3TemplateDependency {
+  kind: R3TemplateDependencyKind.NgModule;
 }
 
 /**

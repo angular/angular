@@ -48,6 +48,7 @@ describe('LocalModuleScopeRegistry', () => {
     const {Dir1, Dir2, Pipe1, Module} = registerFakeRefs(metaRegistry);
 
     metaRegistry.registerNgModuleMetadata({
+      kind: MetaKind.NgModule,
       ref: new Reference(Module.node),
       imports: [],
       declarations: [Dir1, Dir2, Pipe1],
@@ -67,6 +68,7 @@ describe('LocalModuleScopeRegistry', () => {
     const {DirA, DirB, DirCI, DirCE, ModuleA, ModuleB, ModuleC} = registerFakeRefs(metaRegistry);
 
     metaRegistry.registerNgModuleMetadata({
+      kind: MetaKind.NgModule,
       ref: new Reference(ModuleA.node),
       imports: [ModuleB],
       declarations: [DirA],
@@ -77,6 +79,7 @@ describe('LocalModuleScopeRegistry', () => {
       rawExports: null,
     });
     metaRegistry.registerNgModuleMetadata({
+      kind: MetaKind.NgModule,
       ref: new Reference(ModuleB.node),
       exports: [ModuleC, DirB],
       declarations: [DirB],
@@ -87,6 +90,7 @@ describe('LocalModuleScopeRegistry', () => {
       rawExports: null,
     });
     metaRegistry.registerNgModuleMetadata({
+      kind: MetaKind.NgModule,
       ref: new Reference(ModuleC.node),
       declarations: [DirCI, DirCE],
       exports: [DirCE],
@@ -106,6 +110,7 @@ describe('LocalModuleScopeRegistry', () => {
     const {Dir, ModuleA, ModuleB} = registerFakeRefs(metaRegistry);
 
     metaRegistry.registerNgModuleMetadata({
+      kind: MetaKind.NgModule,
       ref: new Reference(ModuleA.node),
       exports: [ModuleB],
       imports: [],
@@ -116,6 +121,7 @@ describe('LocalModuleScopeRegistry', () => {
       rawExports: null,
     });
     metaRegistry.registerNgModuleMetadata({
+      kind: MetaKind.NgModule,
       ref: new Reference(ModuleB.node),
       declarations: [Dir],
       exports: [Dir],
@@ -135,6 +141,7 @@ describe('LocalModuleScopeRegistry', () => {
     const {DirA, ModuleA, DirB, ModuleB, ModuleC} = registerFakeRefs(metaRegistry);
 
     metaRegistry.registerNgModuleMetadata({
+      kind: MetaKind.NgModule,
       ref: new Reference(ModuleA.node),
       declarations: [DirA, DirA],
       imports: [ModuleB, ModuleC],
@@ -145,6 +152,7 @@ describe('LocalModuleScopeRegistry', () => {
       rawExports: null,
     });
     metaRegistry.registerNgModuleMetadata({
+      kind: MetaKind.NgModule,
       ref: new Reference(ModuleB.node),
       declarations: [DirB],
       imports: [],
@@ -155,6 +163,7 @@ describe('LocalModuleScopeRegistry', () => {
       rawExports: null,
     });
     metaRegistry.registerNgModuleMetadata({
+      kind: MetaKind.NgModule,
       ref: new Reference(ModuleC.node),
       declarations: [],
       imports: [],
@@ -181,6 +190,7 @@ describe('LocalModuleScopeRegistry', () => {
     const DirInModule = new Reference(Dir.node);
     DirInModule.addIdentifier(id);
     metaRegistry.registerNgModuleMetadata({
+      kind: MetaKind.NgModule,
       ref: new Reference(Module.node),
       exports: [],
       imports: [],
@@ -199,6 +209,7 @@ describe('LocalModuleScopeRegistry', () => {
     const {Dir, ModuleA, ModuleB} = registerFakeRefs(metaRegistry);
 
     metaRegistry.registerNgModuleMetadata({
+      kind: MetaKind.NgModule,
       ref: new Reference(ModuleA.node),
       exports: [Dir],
       imports: [ModuleB],
@@ -209,6 +220,7 @@ describe('LocalModuleScopeRegistry', () => {
       rawExports: null,
     });
     metaRegistry.registerNgModuleMetadata({
+      kind: MetaKind.NgModule,
       ref: new Reference(ModuleB.node),
       declarations: [Dir],
       exports: [Dir],
@@ -227,6 +239,7 @@ describe('LocalModuleScopeRegistry', () => {
     const {Dir, ModuleA, ModuleB} = registerFakeRefs(metaRegistry);
 
     metaRegistry.registerNgModuleMetadata({
+      kind: MetaKind.NgModule,
       ref: new Reference(ModuleA.node),
       exports: [Dir],
       imports: [],
@@ -237,6 +250,7 @@ describe('LocalModuleScopeRegistry', () => {
       rawExports: null,
     });
     metaRegistry.registerNgModuleMetadata({
+      kind: MetaKind.NgModule,
       ref: new Reference(ModuleB.node),
       declarations: [Dir],
       exports: [Dir],

@@ -146,6 +146,12 @@ export class PartialComponentLinkerVersion1<TStatement, TExpression> implements
               type: typeExpr,
             });
             break;
+          case 'ngmodule':
+            declarations.push({
+              kind: R3TemplateDependencyKind.NgModule,
+              type: typeExpr,
+            });
+            break;
           default:
             // Skip unknown types of dependencies.
             continue;
