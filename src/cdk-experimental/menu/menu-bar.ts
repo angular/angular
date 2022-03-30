@@ -38,7 +38,6 @@ import {CdkMenuBase} from './menu-base';
   host: {
     'role': 'menubar',
     'class': 'cdk-menu-bar',
-    'tabindex': '0',
     '(keydown)': '_handleKeyEvent($event)',
   },
   providers: [
@@ -51,6 +50,8 @@ export class CdkMenuBar extends CdkMenuBase implements AfterContentInit, OnDestr
   override readonly orientation: 'horizontal' | 'vertical' = 'horizontal';
 
   override menuStack: MenuStack;
+
+  override _isInline = true;
 
   constructor(
     private readonly _ngZone: NgZone,

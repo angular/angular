@@ -28,8 +28,11 @@ import {PointerFocusTracker} from './pointer-focus-tracker';
 
 @Directive({
   host: {
+    '[tabindex]': '_isInline ? (_hasFocus ? -1 : 0) : null',
     '[attr.aria-orientation]': 'orientation',
     '(focus)': 'focusFirstItem()',
+    '(focusin)': 'menuStack.setHasFocus(true)',
+    '(focusout)': 'menuStack.setHasFocus(false)',
   },
 })
 export abstract class CdkMenuBase
@@ -41,6 +44,10 @@ export abstract class CdkMenuBase
    * Does not affect styling/layout.
    */
   orientation: 'horizontal' | 'vertical' = 'vertical';
+
+  _isInline = false;
+
+  _hasFocus = false;
 
   /** All child MenuItem elements nested in this Menu. */
   @ContentChildren(CdkMenuItem, {descendants: true})
@@ -69,6 +76,7 @@ export abstract class CdkMenuBase
   override ngAfterContentInit() {
     super.ngAfterContentInit();
     this._setKeyManager();
+    this._subscribeToHasFocus();
     this._subscribeToMenuOpen();
     this._subscribeToMenuStackClosed();
   }
@@ -162,5 +170,13 @@ export abstract class CdkMenuBase
     this.menuStack.closed
       .pipe(takeUntil(this.destroyed))
       .subscribe(({item, focusParentMenu}) => this.closeOpenMenu(item, focusParentMenu));
+  }
+
+  private _subscribeToHasFocus() {
+    if (this._isInline) {
+      this.menuStack.hasFocus.pipe(takeUntil(this.destroyed)).subscribe(hasFocus => {
+        this._hasFocus = hasFocus;
+      });
+    }
   }
 }

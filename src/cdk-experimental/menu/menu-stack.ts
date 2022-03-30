@@ -8,6 +8,7 @@
 
 import {Inject, Injectable, InjectionToken, Optional, SkipSelf} from '@angular/core';
 import {Observable, Subject} from 'rxjs';
+import {debounceTime, distinctUntilChanged, startWith} from 'rxjs/operators';
 
 /** Events to emit as specified by the caller once the MenuStack is empty. */
 export const enum FocusNext {
@@ -58,13 +59,21 @@ export class MenuStack {
   private readonly _elements: MenuStackItem[] = [];
 
   /** Emits the element which was popped off of the stack when requested by a closer. */
-  private readonly _close: Subject<MenuStackCloseEvent> = new Subject();
+  private readonly _close = new Subject<MenuStackCloseEvent>();
 
   /** Emits once the MenuStack has become empty after popping off elements. */
-  private readonly _empty: Subject<FocusNext | undefined> = new Subject();
+  private readonly _empty = new Subject<FocusNext | undefined>();
+
+  private readonly _hasFocus = new Subject<boolean>();
 
   /** Observable which emits the MenuStackItem which has been requested to close. */
   readonly closed: Observable<MenuStackCloseEvent> = this._close;
+
+  readonly hasFocus: Observable<boolean> = this._hasFocus.pipe(
+    startWith(false),
+    debounceTime(0),
+    distinctUntilChanged(),
+  );
 
   /**
    * Observable which emits when the MenuStack is empty after popping off the last element. It
@@ -161,5 +170,9 @@ export class MenuStack {
 
   hasInlineMenu() {
     return this._hasInlineMenu;
+  }
+
+  setHasFocus(hasFocus: boolean) {
+    this._hasFocus.next(hasFocus);
   }
 }

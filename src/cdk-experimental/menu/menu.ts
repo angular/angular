@@ -57,8 +57,7 @@ import {CdkMenuBase} from './menu-base';
   host: {
     'role': 'menu',
     'class': 'cdk-menu',
-    '[tabindex]': '_isInline() ? 0 : null',
-    '[class.cdk-menu-inline]': '_isInline()',
+    '[class.cdk-menu-inline]': '_isInline',
     '(keydown)': '_handleKeyEvent($event)',
   },
   providers: [
@@ -75,6 +74,8 @@ export class CdkMenu extends CdkMenuBase implements AfterContentInit, OnDestroy 
   @ContentChildren(CdkMenuGroup, {descendants: true})
   private readonly _nestedGroups: QueryList<CdkMenuGroup>;
 
+  override _isInline = !this._parentTrigger;
+
   constructor(
     private readonly _ngZone: NgZone,
     elementRef: ElementRef<HTMLElement>,
@@ -85,7 +86,7 @@ export class CdkMenu extends CdkMenuBase implements AfterContentInit, OnDestroy 
   ) {
     super(elementRef, menuStack, dir);
     this.destroyed.subscribe(this.closed);
-    if (!this._isInline()) {
+    if (!this._isInline) {
       this.menuStack.push(this);
     }
     this._parentTrigger?.registerChildMenu(this);
@@ -198,14 +199,6 @@ export class CdkMenu extends CdkMenuBase implements AfterContentInit, OnDestroy 
         }
         break;
     }
-  }
-
-  /**
-   * Return true if this menu is an inline menu. That is, it does not exist in a pop-up and is
-   * always visible in the dom.
-   */
-  _isInline() {
-    return !this._parentTrigger;
   }
 
   private _subscribeToMenuStackEmptied() {
