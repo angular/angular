@@ -331,6 +331,19 @@ describe('NgModule', () => {
          expect(spy).not.toHaveBeenCalled();
        });
 
+    it('should throw an error about unknown element without CUSTOM_ELEMENTS_SCHEMA for element with dash in tag name',
+       () => {
+         @Component({template: `<custom-el></custom-el>`})
+         class MyComp {
+         }
+
+         TestBed.configureTestingModule({declarations: [MyComp], errorOnUnknownElements: true});
+         expect(() => {
+           const fixture = TestBed.createComponent(MyComp);
+           fixture.detectChanges();
+         }).toThrowError(/NG0304: 'custom-el' is not a known element/g);
+       });
+
     it('should log an error about unknown element without CUSTOM_ELEMENTS_SCHEMA for element without dash in tag name',
        () => {
          @Component({template: `<custom></custom>`})
@@ -342,6 +355,19 @@ describe('NgModule', () => {
          const fixture = TestBed.createComponent(MyComp);
          fixture.detectChanges();
          expect(spy.calls.mostRecent().args[0]).toMatch(/'custom' is not a known element/);
+       });
+
+    it('should throw an error about unknown element without CUSTOM_ELEMENTS_SCHEMA for element without dash in tag name',
+       () => {
+         @Component({template: `<custom></custom>`})
+         class MyComp {
+         }
+
+         TestBed.configureTestingModule({declarations: [MyComp], errorOnUnknownElements: true});
+         expect(() => {
+           const fixture = TestBed.createComponent(MyComp);
+           fixture.detectChanges();
+         }).toThrowError(/NG0304: 'custom' is not a known element/g);
        });
 
     it('should report unknown property bindings on ng-content', () => {
@@ -505,6 +531,25 @@ describe('NgModule', () => {
       expect(spy).not.toHaveBeenCalled();
     });
 
+    it('should not throw an error about unknown elements with CUSTOM_ELEMENTS_SCHEMA', () => {
+      @Component({template: `<custom-el></custom-el>`})
+      class MyComp {
+      }
+
+      const spy = spyOn(console, 'error');
+      TestBed.configureTestingModule({
+        declarations: [MyComp],
+        schemas: [CUSTOM_ELEMENTS_SCHEMA],
+        errorOnUnknownElements: true
+      });
+
+      const fixture = TestBed.createComponent(MyComp);
+      fixture.detectChanges();
+      // We do not expect any errors being thrown or logged in a console,
+      // since the `CUSTOM_ELEMENTS_SCHEMA` is applied.
+      expect(spy).not.toHaveBeenCalled();
+    });
+
     it('should not log an error about unknown elements with NO_ERRORS_SCHEMA', () => {
       @Component({template: `<custom-el></custom-el>`})
       class MyComp {
@@ -518,6 +563,22 @@ describe('NgModule', () => {
 
       const fixture = TestBed.createComponent(MyComp);
       fixture.detectChanges();
+      expect(spy).not.toHaveBeenCalled();
+    });
+
+    it('should not throw an error about unknown elements with NO_ERRORS_SCHEMA', () => {
+      @Component({template: `<custom-el></custom-el>`})
+      class MyComp {
+      }
+
+      const spy = spyOn(console, 'error');
+      TestBed.configureTestingModule(
+          {declarations: [MyComp], schemas: [NO_ERRORS_SCHEMA], errorOnUnknownElements: true});
+
+      const fixture = TestBed.createComponent(MyComp);
+      fixture.detectChanges();
+      // We do not expect any errors being thrown or logged in a console,
+      // since the `NO_ERRORS_SCHEMA` is applied.
       expect(spy).not.toHaveBeenCalled();
     });
 
@@ -538,6 +599,29 @@ describe('NgModule', () => {
 
       const fixture = TestBed.createComponent(MyComp);
       fixture.detectChanges();
+      expect(spy).not.toHaveBeenCalled();
+    });
+
+    it('should not throw an error about unknown elements if element matches a directive', () => {
+      @Component({
+        selector: 'custom-el',
+        template: '',
+      })
+      class CustomEl {
+      }
+
+      @Component({template: `<custom-el></custom-el>`})
+      class MyComp {
+      }
+
+      const spy = spyOn(console, 'error');
+      TestBed.configureTestingModule(
+          {declarations: [MyComp, CustomEl], errorOnUnknownElements: true});
+
+      const fixture = TestBed.createComponent(MyComp);
+      fixture.detectChanges();
+      // We do not expect any errors being thrown or logged in a console,
+      // since the element matches a directive.
       expect(spy).not.toHaveBeenCalled();
     });
 
@@ -563,6 +647,33 @@ describe('NgModule', () => {
 
       const fixture = TestBed.createComponent(MyComp);
       fixture.detectChanges();
+      expect(spy).not.toHaveBeenCalled();
+    });
+
+    it('should not throw an error for HTML elements inside an SVG foreignObject', () => {
+      @Component({
+        template: `
+          <svg>
+            <svg:foreignObject>
+              <xhtml:div>Hello</xhtml:div>
+            </svg:foreignObject>
+          </svg>
+        `,
+      })
+      class MyComp {
+      }
+
+      @NgModule({declarations: [MyComp]})
+      class MyModule {
+      }
+
+      const spy = spyOn(console, 'error');
+      TestBed.configureTestingModule({imports: [MyModule], errorOnUnknownElements: true});
+
+      const fixture = TestBed.createComponent(MyComp);
+      fixture.detectChanges();
+      // We do not expect any errors being thrown or logged in a console,
+      // since the element is inside an SVG foreignObject.
       expect(spy).not.toHaveBeenCalled();
     });
   });
