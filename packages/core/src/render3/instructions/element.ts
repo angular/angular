@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {formatRuntimeError, RuntimeErrorCode} from '../../errors';
+import {formatRuntimeError, RuntimeError, RuntimeErrorCode} from '../../errors';
 import {SchemaMetadata} from '../../metadata/schema';
 import {assertDefined, assertEqual, assertIndexInRange} from '../../util/assert';
 import {assertFirstCreatePass, assertHasParent} from '../assert';
@@ -26,7 +26,23 @@ import {getConstant} from '../util/view_utils';
 import {setDirectiveInputsWhichShadowsStyling} from './property';
 import {createDirectivesInstances, executeContentQueries, getOrCreateTNode, matchingSchemas, resolveDirectives, saveResolvedLocalsInData} from './shared';
 
+let shouldThrowErrorOnUnknownElement = false;
 
+/**
+ * Sets a strict mode for JIT-compiled components to throw an error on unknown elements,
+ * instead of just logging the error.
+ * (for AOT-compiled ones this check happens at build time).
+ */
+export function ɵsetUnknownElementStrictMode(shouldThrow: boolean) {
+  shouldThrowErrorOnUnknownElement = shouldThrow;
+}
+
+/**
+ * Gets the current value of the strict mode.
+ */
+export function ɵgetUnknownElementStrictMode() {
+  return shouldThrowErrorOnUnknownElement;
+}
 
 function elementStartFirstCreatePass(
     index: number, tView: TView, lView: LView, native: RElement, name: string,
@@ -241,7 +257,11 @@ function validateElementIsKnown(
         message +=
             `2. To allow any element add 'NO_ERRORS_SCHEMA' to the '@NgModule.schemas' of this component.`;
       }
-      console.error(formatRuntimeError(RuntimeErrorCode.UNKNOWN_ELEMENT, message));
+      if (shouldThrowErrorOnUnknownElement) {
+        throw new RuntimeError(RuntimeErrorCode.UNKNOWN_ELEMENT, message);
+      } else {
+        console.error(formatRuntimeError(RuntimeErrorCode.UNKNOWN_ELEMENT, message));
+      }
     }
   }
 }
