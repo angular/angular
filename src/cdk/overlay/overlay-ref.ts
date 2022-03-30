@@ -65,6 +65,7 @@ export class OverlayRef implements PortalOutlet, OverlayReference {
     private _document: Document,
     private _location: Location,
     private _outsideClickDispatcher: OverlayOutsideClickDispatcher,
+    private _animationsDisabled = false,
   ) {
     if (_config.scrollStrategy) {
       this._scrollStrategy = _config.scrollStrategy;
@@ -375,6 +376,10 @@ export class OverlayRef implements PortalOutlet, OverlayReference {
     this._backdropElement = this._document.createElement('div');
     this._backdropElement.classList.add('cdk-overlay-backdrop');
 
+    if (this._animationsDisabled) {
+      this._backdropElement.classList.add('cdk-overlay-backdrop-noop-animation');
+    }
+
     if (this._config.backdropClass) {
       this._toggleClasses(this._backdropElement, this._config.backdropClass, true);
     }
@@ -388,7 +393,7 @@ export class OverlayRef implements PortalOutlet, OverlayReference {
     this._backdropElement.addEventListener('click', this._backdropClickHandler);
 
     // Add class to fade-in the backdrop after one frame.
-    if (typeof requestAnimationFrame !== 'undefined') {
+    if (!this._animationsDisabled && typeof requestAnimationFrame !== 'undefined') {
       this._ngZone.runOutsideAngular(() => {
         requestAnimationFrame(() => {
           if (this._backdropElement) {
@@ -419,6 +424,11 @@ export class OverlayRef implements PortalOutlet, OverlayReference {
     const backdropToDetach = this._backdropElement;
 
     if (!backdropToDetach) {
+      return;
+    }
+
+    if (this._animationsDisabled) {
+      this._disposeBackdrop(backdropToDetach);
       return;
     }
 

@@ -111,6 +111,10 @@ $backdrop-animation-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1) !default;
     }
   }
 
+  .cdk-overlay-backdrop-noop-animation {
+    transition: none;
+  }
+
   // Overlay parent element used with the connected position strategy. Used to constrain the
   // overlay element's size to fit within the viewport.
   .cdk-overlay-connected-position-bounding-box {

@@ -262,12 +262,12 @@ export interface OriginConnectionPosition {
 // @public
 export class Overlay {
     constructor(
-    scrollStrategies: ScrollStrategyOptions, _overlayContainer: OverlayContainer, _componentFactoryResolver: ComponentFactoryResolver, _positionBuilder: OverlayPositionBuilder, _keyboardDispatcher: OverlayKeyboardDispatcher, _injector: Injector, _ngZone: NgZone, _document: any, _directionality: Directionality, _location: Location_2, _outsideClickDispatcher: OverlayOutsideClickDispatcher);
+    scrollStrategies: ScrollStrategyOptions, _overlayContainer: OverlayContainer, _componentFactoryResolver: ComponentFactoryResolver, _positionBuilder: OverlayPositionBuilder, _keyboardDispatcher: OverlayKeyboardDispatcher, _injector: Injector, _ngZone: NgZone, _document: any, _directionality: Directionality, _location: Location_2, _outsideClickDispatcher: OverlayOutsideClickDispatcher, _animationsModuleType?: string | undefined);
     create(config?: OverlayConfig): OverlayRef;
     position(): OverlayPositionBuilder;
     scrollStrategies: ScrollStrategyOptions;
     // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<Overlay, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<Overlay, [null, null, null, null, null, null, null, null, null, null, null, { optional: true; }]>;
     // (undocumented)
     static ɵprov: i0.ɵɵInjectableDeclaration<Overlay>;
 }
@@ -364,7 +364,7 @@ export class OverlayPositionBuilder {
 
 // @public
 export class OverlayRef implements PortalOutlet, OverlayReference {
-    constructor(_portalOutlet: PortalOutlet, _host: HTMLElement, _pane: HTMLElement, _config: ImmutableObject<OverlayConfig>, _ngZone: NgZone, _keyboardDispatcher: OverlayKeyboardDispatcher, _document: Document, _location: Location_2, _outsideClickDispatcher: OverlayOutsideClickDispatcher);
+    constructor(_portalOutlet: PortalOutlet, _host: HTMLElement, _pane: HTMLElement, _config: ImmutableObject<OverlayConfig>, _ngZone: NgZone, _keyboardDispatcher: OverlayKeyboardDispatcher, _document: Document, _location: Location_2, _outsideClickDispatcher: OverlayOutsideClickDispatcher, _animationsDisabled?: boolean);
     addPanelClass(classes: string | string[]): void;
     // (undocumented)
     attach<T>(portal: ComponentPortal<T>): ComponentRef<T>;

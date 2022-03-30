@@ -16,6 +16,8 @@ import {
   Injectable,
   Injector,
   NgZone,
+  ANIMATION_MODULE_TYPE,
+  Optional,
 } from '@angular/core';
 import {OverlayKeyboardDispatcher} from './dispatchers/overlay-keyboard-dispatcher';
 import {OverlayOutsideClickDispatcher} from './dispatchers/overlay-outside-click-dispatcher';
@@ -56,6 +58,7 @@ export class Overlay {
     private _directionality: Directionality,
     private _location: Location,
     private _outsideClickDispatcher: OverlayOutsideClickDispatcher,
+    @Inject(ANIMATION_MODULE_TYPE) @Optional() private _animationsModuleType?: string,
   ) {}
 
   /**
@@ -81,6 +84,7 @@ export class Overlay {
       this._document,
       this._location,
       this._outsideClickDispatcher,
+      this._animationsModuleType === 'NoopAnimations',
     );
   }
 
