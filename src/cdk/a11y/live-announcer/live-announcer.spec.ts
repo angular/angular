@@ -112,6 +112,16 @@ describe('LiveAnnouncer', () => {
       expect(spy).toHaveBeenCalled();
     }));
 
+    it('should resolve the returned promise if another announcement is made before the timeout has expired', fakeAsync(() => {
+      const spy = jasmine.createSpy('announce spy');
+      announcer.announce('something').then(spy);
+      tick(10);
+      announcer.announce('something').then(spy);
+      tick(100);
+
+      expect(spy).toHaveBeenCalledTimes(2);
+    }));
+
     it('should ensure that there is only one live element at a time', fakeAsync(() => {
       fixture.destroy();
 

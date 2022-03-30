@@ -31,6 +31,8 @@ export class LiveAnnouncer implements OnDestroy {
   private _liveElement: HTMLElement;
   private _document: Document;
   private _previousTimeout: number;
+  private _currentPromise: Promise<void> | undefined;
+  private _currentResolve: (() => void) | undefined;
 
   constructor(
     @Optional() @Inject(LIVE_ANNOUNCER_ELEMENT_TOKEN) elementToken: any,
@@ -115,17 +117,23 @@ export class LiveAnnouncer implements OnDestroy {
     //   second time without clearing and then using a non-zero delay.
     // (using JAWS 17 at time of this writing).
     return this._ngZone.runOutsideAngular(() => {
-      return new Promise(resolve => {
-        clearTimeout(this._previousTimeout);
-        this._previousTimeout = setTimeout(() => {
-          this._liveElement.textContent = message;
-          resolve();
+      if (!this._currentPromise) {
+        this._currentPromise = new Promise(resolve => (this._currentResolve = resolve));
+      }
 
-          if (typeof duration === 'number') {
-            this._previousTimeout = setTimeout(() => this.clear(), duration);
-          }
-        }, 100);
-      });
+      clearTimeout(this._previousTimeout);
+      this._previousTimeout = setTimeout(() => {
+        this._liveElement.textContent = message;
+
+        if (typeof duration === 'number') {
+          this._previousTimeout = setTimeout(() => this.clear(), duration);
+        }
+
+        this._currentResolve!();
+        this._currentPromise = this._currentResolve = undefined;
+      }, 100);
+
+      return this._currentPromise;
     });
   }
 
@@ -144,6 +152,8 @@ export class LiveAnnouncer implements OnDestroy {
     clearTimeout(this._previousTimeout);
     this._liveElement?.remove();
     this._liveElement = null!;
+    this._currentResolve?.();
+    this._currentPromise = this._currentResolve = undefined;
   }
 
   private _createLiveElement(): HTMLElement {
