@@ -1,3 +1,22 @@
+<a name="13.3.1"></a>
+# 13.3.1 (2022-03-30)
+### bazel
+| Commit | Type | Description |
+| -- | -- | -- |
+| [960e42b2ac](https://github.com/angular/angular/commit/960e42b2ac1ad01b4930f107afbdc731d8daa9ec) | fix | ng module compilation workers are subject to linker race-conditions ([#45393](https://github.com/angular/angular/pull/45393)) |
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [3714305f84](https://github.com/angular/angular/commit/3714305f84da8ec74ef7d8f5090344b47d0f5dbe) | fix | scope css rules within `@layer` blocks ([#45396](https://github.com/angular/angular/pull/45396)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [7f53c0f4ac](https://github.com/angular/angular/commit/7f53c0f4acfac4c50e3a8ba210e7879dd87d4720) | fix | handle inline type-check blocks in nullish coalescing extended check ([#45478](https://github.com/angular/angular/pull/45478)) |
+## Special Thanks
+AlirezaEbrahimkhani, Andrew Kushnir, Andrew Scott, Ben Brook, Dylan Hunn, George Kalpakas, JiaLiPassion, Joey Perrott, JoostK, Mike, Paul Gschwendtner, Willian Corrêa, arturovt, dario-piotrowicz, khai and mgechev
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="13.3.0"></a>
 # 13.3.0 (2022-03-16)
 ### core
@@ -6,7 +25,6 @@
 | [b5bb614c74](https://github.com/angular/angular/commit/61a316c68fd27bc2375b1b3043afd8b5bb614c74) | feat | support TypeScript 4.6 ([#45190](https://github.com/angular/angular/pull/45190)) |
 ## Special Thanks
 Kristiyan Kostadinov
-
 
 <!-- CHANGELOG SPLIT MARKER -->
 
@@ -18,7 +36,6 @@ Kristiyan Kostadinov
 | [b5bb614c74](https://github.com/angular/angular/commit/61a316c68fd27bc2375b1b3043afd8b5bb614c74) | feat | support TypeScript 4.6 ([#45190](https://github.com/angular/angular/pull/45190)) |
 ## Special Thanks
 Kristiyan Kostadinov
-
 
 <!-- CHANGELOG SPLIT MARKER -->
 
