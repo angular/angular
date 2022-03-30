@@ -247,9 +247,11 @@ export interface R3ComponentMetadata extends R3DirectiveMetadata {
 export enum R3UsedDeclarationKind {
   Directive = 0,
   Pipe = 1,
+  NgModule = 2,
 }
 
-export type R3UsedDeclarationMetadata = R3UsedDirectiveMetadata|R3UsedPipeMetadata;
+export type R3UsedDeclarationMetadata =
+    R3UsedDirectiveMetadata|R3UsedPipeMetadata|R3UsedNgModuleMetadata;
 
 /**
  * Information about a directive that is used in a component template. Only the stable, public
@@ -298,6 +300,12 @@ export interface R3UsedPipeMetadata {
   type: o.Expression;
 
   name: string;
+}
+
+export interface R3UsedNgModuleMetadata {
+  kind: R3UsedDeclarationKind.NgModule;
+
+  type: o.Expression;
 }
 
 /**

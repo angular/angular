@@ -172,6 +172,9 @@ function compileUsedDependenciesMetadata(meta: R3ComponentMetadata): o.LiteralAr
         pipeMeta.set('type', wrapType(decl.type));
         pipeMeta.set('name', o.literal(decl.name));
         return pipeMeta.toLiteralMap();
+      case R3UsedDeclarationKind.NgModule:
+        // TODO: implement this.
+        return o.literal(null);
     }
   });
 }

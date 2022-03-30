@@ -18,6 +18,7 @@ import {ClassPropertyMapping, ClassPropertyName} from './property_mapping';
  * Metadata collected for an `NgModule`.
  */
 export interface NgModuleMeta {
+  type: MetaType.NgModule;
   ref: Reference<ClassDeclaration>;
   declarations: Reference<ClassDeclaration>[];
   imports: Reference<ClassDeclaration>[];
@@ -98,6 +99,7 @@ export interface DirectiveTypeCheckMeta {
 export enum MetaType {
   Pipe,
   Directive,
+  NgModule,
 }
 
 /**
