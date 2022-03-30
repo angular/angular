@@ -1,3 +1,61 @@
+<a name="14.0.0-next.10"></a>
+# 14.0.0-next.10 (2022-03-30)
+## Breaking Changes
+### compiler
+- Keyframes names are now prefixed with the component's "scope name".
+  For example, the following keyframes rule in a component definition,
+  whose "scope name" is host-my-cmp:
+  
+     @keyframes foo { ... }
+  
+  will become:
+  
+     @keyframes host-my-cmp_foo { ... }
+  
+  Any TypeScript/JavaScript code which relied on the names of keyframes rules
+  will no longer match.
+  
+  The recommended solutions in this case are to either:
+  - change the component's view encapsulation to the `None` or `ShadowDom`
+  - define keyframes rules in global stylesheets (e.g styles.css)
+  - define keyframes rules programmatically in code.
+### http
+- JSONP will throw an error when headers are set on a reques
+  
+  JSONP does not support headers being set on requests. Before when
+  a request was sent to a JSONP backend that had headers set the headers
+  were ignored. The JSONP backend will now throw an error if it
+  receives a request that has any headers set. Any uses of JSONP
+  on requests with headers set will need to remove the headers
+  to avoid the error.
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [f03e313f24](https://github.com/angular/angular/commit/f03e313f24465cbe9ce99aa5f9f482a6c6b5485f) | fix | scope css keyframes in emulated view encapsulation ([#42608](https://github.com/angular/angular/pull/42608)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2142ffd295](https://github.com/angular/angular/commit/2142ffd295de491eb8582c2eb1712b5b48044f24) | feat | propagate `standalone` flag to runtime ([#44973](https://github.com/angular/angular/pull/44973)) |
+| [6f653e05f9](https://github.com/angular/angular/commit/6f653e05f985141ae4d2d90af78b2bc001595661) | feat | standalone types imported into NgModule scopes ([#44973](https://github.com/angular/angular/pull/44973)) |
+| [3d13343975](https://github.com/angular/angular/commit/3d133439754cbf5d5a20bb3c714c8673c848e465) | fix | better error messages for NgModule structural issues ([#44973](https://github.com/angular/angular/pull/44973)) |
+| [06050ac2b4](https://github.com/angular/angular/commit/06050ac2b4937836096fb331ec71bacb5a1fc231) | fix | handle inline type-check blocks in nullish coalescing extended check ([#45454](https://github.com/angular/angular/pull/45454)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [d36fa111eb](https://github.com/angular/angular/commit/d36fa111eb677d504a9952d8b4ca53560cadd04d) | fix | avoid Closure Compiler error in restoreView ([#45445](https://github.com/angular/angular/pull/45445)) |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b36dec6b5b](https://github.com/angular/angular/commit/b36dec6b5b05de0d40581726c59db9f962a97124) | fix | not picking up disabled state if group is swapped out and disabled ([#43499](https://github.com/angular/angular/pull/43499)) |
+### http
+| Commit | Type | Description |
+| -- | -- | -- |
+| [d43c0e973f](https://github.com/angular/angular/commit/d43c0e973f4389c74eb19a7f6b667bd2e1d380fe) | fix | Throw error when headers are supplied in JSONP request ([#45210](https://github.com/angular/angular/pull/45210)) |
+## Special Thanks
+Alex Rickabaugh, AlirezaEbrahimkhani, Andrew Kushnir, Andrew Scott, Dylan Hunn, JiaLiPassion, JoostK, Kristiyan Kostadinov, Maddie Klein, Michael-Doner, Paul Gschwendtner, Willian Corrêa, arturovt, dario-piotrowicz and zverbeta
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.0.0-next.9"></a>
 # 14.0.0-next.9 (2022-03-25)
 ## Special Thanks
