@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
 
 /**
  * @title Stepper label bottom position
@@ -10,10 +10,10 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
   styleUrls: ['stepper-label-position-bottom-example.css'],
 })
 export class StepperLabelPositionBottomExample implements OnInit {
-  firstFormGroup: FormGroup;
-  secondFormGroup: FormGroup;
+  firstFormGroup: UntypedFormGroup;
+  secondFormGroup: UntypedFormGroup;
 
-  constructor(private _formBuilder: FormBuilder) {}
+  constructor(private _formBuilder: UntypedFormBuilder) {}
 
   ngOnInit() {
     this.firstFormGroup = this._formBuilder.group({

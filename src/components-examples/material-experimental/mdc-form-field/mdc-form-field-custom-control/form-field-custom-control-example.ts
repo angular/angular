@@ -1,7 +1,13 @@
 import {FocusMonitor} from '@angular/cdk/a11y';
 import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
 import {Component, ElementRef, Inject, Input, OnDestroy, Optional, Self} from '@angular/core';
-import {ControlValueAccessor, FormBuilder, FormGroup, NgControl, Validators} from '@angular/forms';
+import {
+  ControlValueAccessor,
+  UntypedFormBuilder,
+  UntypedFormGroup,
+  NgControl,
+  Validators,
+} from '@angular/forms';
 import {MatFormField, MatFormFieldControl} from '@angular/material-experimental/mdc-form-field';
 import {MAT_FORM_FIELD} from '@angular/material/form-field';
 import {Subject} from 'rxjs';
@@ -32,7 +38,7 @@ export class MyTel {
 export class MyTelInput implements ControlValueAccessor, MatFormFieldControl<MyTel>, OnDestroy {
   static nextId = 0;
 
-  parts: FormGroup;
+  parts: UntypedFormGroup;
   stateChanges = new Subject<void>();
   focused = false;
   errorState = false;
@@ -103,7 +109,7 @@ export class MyTelInput implements ControlValueAccessor, MatFormFieldControl<MyT
   }
 
   constructor(
-    formBuilder: FormBuilder,
+    formBuilder: UntypedFormBuilder,
     private _focusMonitor: FocusMonitor,
     private _elementRef: ElementRef<HTMLElement>,
     @Optional() @Inject(MAT_FORM_FIELD) public _formField: MatFormField,

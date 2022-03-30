@@ -21,7 +21,7 @@ import {
   tick,
   waitForAsync,
 } from '@angular/core/testing';
-import {FormControl, FormsModule, NgModel, ReactiveFormsModule} from '@angular/forms';
+import {UntypedFormControl, FormsModule, NgModel, ReactiveFormsModule} from '@angular/forms';
 import {ThemePalette} from '@angular/material-experimental/mdc-core';
 import {By} from '@angular/platform-browser';
 import {numbers} from '@material/list';
@@ -1716,7 +1716,7 @@ class SelectionListWithModel {
   `,
 })
 class SelectionListWithFormControl {
-  formControl = new FormControl();
+  formControl = new UntypedFormControl();
   renderList = true;
   renderExtraOption = false;
 }
@@ -1753,7 +1753,7 @@ class SelectionListWithPreselectedOptionAndModel {
 })
 class SelectionListWithPreselectedFormControlOnPush {
   opts = ['opt1', 'opt2', 'opt3'];
-  formControl = new FormControl(['opt2']);
+  formControl = new UntypedFormControl(['opt2']);
 }
 
 @Component({

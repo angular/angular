@@ -7,7 +7,7 @@
  */
 
 import {Component} from '@angular/core';
-import {FormControl} from '@angular/forms';
+import {UntypedFormControl} from '@angular/forms';
 import {TooltipPosition} from '@angular/material-experimental/mdc-tooltip';
 
 @Component({
@@ -16,9 +16,9 @@ import {TooltipPosition} from '@angular/material-experimental/mdc-tooltip';
   styleUrls: ['mdc-tooltip-demo.css'],
 })
 export class MdcTooltipDemo {
-  message = new FormControl('Info about the action');
-  showDelay = new FormControl(0);
-  hideDelay = new FormControl(0);
+  message = new UntypedFormControl('Info about the action');
+  showDelay = new UntypedFormControl(0);
+  hideDelay = new UntypedFormControl(0);
   positionOptions: TooltipPosition[] = ['below', 'after', 'before', 'above', 'left', 'right'];
-  position = new FormControl(this.positionOptions[0]);
+  position = new UntypedFormControl(this.positionOptions[0]);
 }

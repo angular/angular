@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
 
 /**
  * @title Stepper with editable steps
@@ -10,11 +10,11 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
   styleUrls: ['stepper-editable-example.css'],
 })
 export class StepperEditableExample implements OnInit {
-  firstFormGroup: FormGroup;
-  secondFormGroup: FormGroup;
+  firstFormGroup: UntypedFormGroup;
+  secondFormGroup: UntypedFormGroup;
   isEditable = false;
 
-  constructor(private _formBuilder: FormBuilder) {}
+  constructor(private _formBuilder: UntypedFormBuilder) {}
 
   ngOnInit() {
     this.firstFormGroup = this._formBuilder.group({

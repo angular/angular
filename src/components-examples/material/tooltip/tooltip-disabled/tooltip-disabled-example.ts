@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {FormControl} from '@angular/forms';
+import {UntypedFormControl} from '@angular/forms';
 
 /**
  * @title Tooltip that can be disabled
@@ -10,5 +10,5 @@ import {FormControl} from '@angular/forms';
   styleUrls: ['tooltip-disabled-example.css'],
 })
 export class TooltipDisabledExample {
-  disabled = new FormControl(false);
+  disabled = new UntypedFormControl(false);
 }

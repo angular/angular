@@ -32,12 +32,12 @@ import {ComponentFixture, fakeAsync, flush, inject, TestBed} from '@angular/core
 import {
   AbstractControl,
   AsyncValidatorFn,
-  FormControl,
-  FormGroup,
+  UntypedFormControl,
+  UntypedFormGroup,
   ReactiveFormsModule,
   ValidationErrors,
   Validators,
-  FormBuilder,
+  UntypedFormBuilder,
 } from '@angular/forms';
 import {MatRipple, ThemePalette} from '@angular/material/core';
 import {By} from '@angular/platform-browser';
@@ -1823,9 +1823,9 @@ function createComponent<T>(
   `,
 })
 class MatHorizontalStepperWithErrorsApp implements OnInit {
-  formGroup: FormGroup;
+  formGroup: UntypedFormGroup;
 
-  constructor(private _formBuilder: FormBuilder) {}
+  constructor(private _formBuilder: UntypedFormBuilder) {}
 
   ngOnInit() {
     this.formGroup = this._formBuilder.group({
@@ -1952,21 +1952,25 @@ class SimpleMatVerticalStepperApp {
   `,
 })
 class LinearMatVerticalStepperApp implements OnInit {
-  oneGroup: FormGroup;
-  twoGroup: FormGroup;
-  threeGroup: FormGroup;
+  oneGroup: UntypedFormGroup;
+  twoGroup: UntypedFormGroup;
+  threeGroup: UntypedFormGroup;
 
   validationTrigger = new Subject<void>();
 
   ngOnInit() {
-    this.oneGroup = new FormGroup({
-      oneCtrl: new FormControl('', Validators.required),
+    this.oneGroup = new UntypedFormGroup({
+      oneCtrl: new UntypedFormControl('', Validators.required),
     });
-    this.twoGroup = new FormGroup({
-      twoCtrl: new FormControl('', Validators.required, asyncValidator(3, this.validationTrigger)),
+    this.twoGroup = new UntypedFormGroup({
+      twoCtrl: new UntypedFormControl(
+        '',
+        Validators.required,
+        asyncValidator(3, this.validationTrigger),
+      ),
     });
-    this.threeGroup = new FormGroup({
-      threeCtrl: new FormControl('', Validators.pattern(VALID_REGEX)),
+    this.threeGroup = new UntypedFormGroup({
+      threeCtrl: new UntypedFormControl('', Validators.pattern(VALID_REGEX)),
     });
   }
 }
@@ -2015,9 +2019,9 @@ class SimpleStepperWithoutStepControl {
 })
 class SimpleStepperWithStepControlAndCompletedBinding {
   steps = [
-    {label: 'One', completed: false, control: new FormControl()},
-    {label: 'Two', completed: false, control: new FormControl()},
-    {label: 'Three', completed: false, control: new FormControl()},
+    {label: 'One', completed: false, control: new UntypedFormControl()},
+    {label: 'Two', completed: false, control: new UntypedFormControl()},
+    {label: 'Three', completed: false, control: new UntypedFormControl()},
   ];
 }
 
@@ -2083,7 +2087,7 @@ class IndirectDescendantIconOverridesStepper extends IconOverridesStepper {}
   `,
 })
 class LinearStepperWithValidOptionalStep {
-  controls = [0, 0, 0].map(() => new FormControl());
+  controls = [0, 0, 0].map(() => new UntypedFormControl());
   step2Optional = false;
 }
 

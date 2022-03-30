@@ -2,7 +2,7 @@ import {HarnessLoader} from '@angular/cdk/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {Component} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {FormControl, ReactiveFormsModule} from '@angular/forms';
+import {UntypedFormControl, ReactiveFormsModule} from '@angular/forms';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatCheckboxHarness} from '@angular/material/checkbox/testing/checkbox-harness';
 
@@ -176,6 +176,6 @@ export function runHarnessTests(
   `,
 })
 class CheckboxHarnessTest {
-  ctrl = new FormControl(true);
+  ctrl = new UntypedFormControl(true);
   disabled = true;
 }

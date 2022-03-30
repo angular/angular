@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {FormControl, Validators} from '@angular/forms';
+import {UntypedFormControl, Validators} from '@angular/forms';
 
 /**
  * @title Testing with MatFormFieldHarness
@@ -9,5 +9,5 @@ import {FormControl, Validators} from '@angular/forms';
   templateUrl: 'form-field-harness-example.html',
 })
 export class FormFieldHarnessExample {
-  requiredControl = new FormControl('Initial value', [Validators.required]);
+  requiredControl = new UntypedFormControl('Initial value', [Validators.required]);
 }

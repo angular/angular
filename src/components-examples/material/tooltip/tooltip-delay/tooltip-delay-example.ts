@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {FormControl} from '@angular/forms';
+import {UntypedFormControl} from '@angular/forms';
 
 /**
  * @title Tooltip with a show and hide delay
@@ -10,6 +10,6 @@ import {FormControl} from '@angular/forms';
   styleUrls: ['tooltip-delay-example.css'],
 })
 export class TooltipDelayExample {
-  showDelay = new FormControl(1000);
-  hideDelay = new FormControl(2000);
+  showDelay = new UntypedFormControl(1000);
+  hideDelay = new UntypedFormControl(2000);
 }

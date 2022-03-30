@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {FormControl} from '@angular/forms';
+import {UntypedFormControl} from '@angular/forms';
 
 /** @title Datepicker selected value */
 @Component({
@@ -8,6 +8,6 @@ import {FormControl} from '@angular/forms';
   styleUrls: ['datepicker-value-example.css'],
 })
 export class DatepickerValueExample {
-  date = new FormControl(new Date());
-  serializedDate = new FormControl(new Date().toISOString());
+  date = new UntypedFormControl(new Date());
+  serializedDate = new UntypedFormControl(new Date().toISOString());
 }

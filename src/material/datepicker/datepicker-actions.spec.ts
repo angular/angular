@@ -1,6 +1,6 @@
 import {Component, ElementRef, Type, ViewChild} from '@angular/core';
 import {ComponentFixture, TestBed, flush, fakeAsync, tick} from '@angular/core/testing';
-import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {UntypedFormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {MatNativeDateModule} from '@angular/material/core';
 import {MatFormFieldModule} from '@angular/material/form-field';
@@ -281,7 +281,7 @@ describe('MatDatepickerActions', () => {
 class DatepickerWithActions {
   @ViewChild(MatDatepicker) datepicker: MatDatepicker<Date>;
   @ViewChild('input', {read: ElementRef}) input: ElementRef<HTMLInputElement>;
-  control = new FormControl();
+  control = new UntypedFormControl();
   onDateChange = jasmine.createSpy('dateChange spy');
   touchUi = false;
   startAt = new Date(2021, 0, 15);

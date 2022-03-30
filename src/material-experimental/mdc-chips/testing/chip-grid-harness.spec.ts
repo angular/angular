@@ -1,6 +1,6 @@
 import {HarnessLoader} from '@angular/cdk/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
-import {FormControl, ReactiveFormsModule, Validators} from '@angular/forms';
+import {UntypedFormControl, ReactiveFormsModule, Validators} from '@angular/forms';
 import {Component} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {MatChipsModule} from '../index';
@@ -78,6 +78,6 @@ describe('MatChipGridHarness', () => {
   `,
 })
 class ChipGridHarnessTest {
-  control = new FormControl('value', [Validators.required]);
+  control = new UntypedFormControl('value', [Validators.required]);
   required = false;
 }

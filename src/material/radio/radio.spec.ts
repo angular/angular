@@ -1,5 +1,5 @@
 import {waitForAsync, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
-import {FormControl, FormsModule, NgModel, ReactiveFormsModule} from '@angular/forms';
+import {UntypedFormControl, FormsModule, NgModel, ReactiveFormsModule} from '@angular/forms';
 import {Component, DebugElement, ViewChild} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {dispatchFakeEvent} from '../../cdk/testing/private';
@@ -1061,7 +1061,7 @@ class DisableableRadioButton {
 })
 class RadioGroupWithFormControl {
   @ViewChild(MatRadioGroup) group: MatRadioGroup;
-  formControl = new FormControl();
+  formControl = new UntypedFormControl();
 }
 
 @Component({

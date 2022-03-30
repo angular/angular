@@ -35,7 +35,7 @@ import {
   TestBed,
   tick,
 } from '@angular/core/testing';
-import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {UntypedFormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatOption, MatOptionSelectionChange} from '@angular/material/core';
 import {MatFormField, MatFormFieldModule} from '@angular/material/form-field';
 import {By} from '@angular/platform-browser';
@@ -3399,7 +3399,7 @@ const SIMPLE_AUTOCOMPLETE_TEMPLATE = `
 
 @Component({template: SIMPLE_AUTOCOMPLETE_TEMPLATE})
 class SimpleAutocomplete implements OnDestroy {
-  stateCtrl = new FormControl();
+  stateCtrl = new UntypedFormControl();
   filteredStates: any[];
   valueSub: Subscription;
   floatLabel = 'auto';
@@ -3468,7 +3468,7 @@ class SimpleAutocompleteShadowDom extends SimpleAutocomplete {}
   `,
 })
 class NgIfAutocomplete {
-  optionCtrl = new FormControl();
+  optionCtrl = new UntypedFormControl();
   filteredOptions: Observable<any>;
   isVisible = true;
   options = ['One', 'Two', 'Three'];
@@ -3596,7 +3596,7 @@ class AutocompleteWithOnPushDelay implements OnInit {
   `,
 })
 class AutocompleteWithNativeInput {
-  optionCtrl = new FormControl();
+  optionCtrl = new UntypedFormControl();
   filteredOptions: Observable<any>;
   options = ['En', 'To', 'Tre', 'Fire', 'Fem'];
 
@@ -3620,7 +3620,7 @@ class AutocompleteWithNativeInput {
 })
 class AutocompleteWithoutPanel {
   @ViewChild(MatAutocompleteTrigger) trigger: MatAutocompleteTrigger;
-  control = new FormControl();
+  control = new UntypedFormControl();
 }
 
 @Component({
@@ -3635,7 +3635,7 @@ class AutocompleteWithoutPanel {
   `,
 })
 class AutocompleteWithFormsAndNonfloatingLabel {
-  formControl = new FormControl('California');
+  formControl = new UntypedFormControl('California');
 }
 
 @Component({
@@ -3720,7 +3720,7 @@ class AutocompleteWithSelectEvent {
   `,
 })
 class PlainAutocompleteInputWithFormControl {
-  formControl = new FormControl();
+  formControl = new UntypedFormControl();
 }
 
 @Component({

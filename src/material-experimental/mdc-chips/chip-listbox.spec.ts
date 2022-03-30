@@ -12,7 +12,7 @@ import {
   EventEmitter,
 } from '@angular/core';
 import {ComponentFixture, fakeAsync, flush, TestBed, tick} from '@angular/core/testing';
-import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {UntypedFormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {By} from '@angular/platform-browser';
 import {MatChipListbox, MatChipOption, MatChipsModule} from './index';
 
@@ -470,7 +470,7 @@ describe('MDC-based MatChipListbox', () => {
         });
 
         it('should take an initial view value with reactive forms', fakeAsync(() => {
-          fixture.componentInstance.control = new FormControl('pizza-1');
+          fixture.componentInstance.control = new UntypedFormControl('pizza-1');
           fixture.detectChanges();
           tick();
           const array = chips.toArray();
@@ -638,7 +638,7 @@ describe('MDC-based MatChipListbox', () => {
         });
 
         it('should take an initial view value with reactive forms', () => {
-          fixture.componentInstance.control = new FormControl(['pizza-1']);
+          fixture.componentInstance.control = new UntypedFormControl(['pizza-1']);
           fixture.detectChanges();
 
           const array = chips.toArray();
@@ -790,7 +790,7 @@ class BasicChipListbox {
     {value: 'pasta-6', viewValue: 'Pasta'},
     {value: 'sushi-7', viewValue: 'Sushi'},
   ];
-  control = new FormControl();
+  control = new UntypedFormControl();
   isRequired: boolean;
   tabIndexOverride: number;
   selectable: boolean;
@@ -821,7 +821,7 @@ class MultiSelectionChipListbox {
     {value: 'pasta-6', viewValue: 'Pasta'},
     {value: 'sushi-7', viewValue: 'Sushi'},
   ];
-  control = new FormControl();
+  control = new UntypedFormControl();
   isRequired: boolean;
   tabIndexOverride: number;
   selectable: boolean;
@@ -844,7 +844,7 @@ class FalsyValueChipListbox {
     {value: 0, viewValue: 'Steak'},
     {value: 1, viewValue: 'Pizza'},
   ];
-  control = new FormControl();
+  control = new UntypedFormControl();
   @ViewChildren(MatChipOption) chips: QueryList<MatChipOption>;
 }
 

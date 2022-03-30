@@ -7,7 +7,7 @@
  */
 
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {FormControl, Validators} from '@angular/forms';
+import {UntypedFormControl, Validators} from '@angular/forms';
 import {ErrorStateMatcher} from '@angular/material/core';
 import {FloatLabelType} from '@angular/material/form-field';
 
@@ -29,7 +29,7 @@ export class InputDemo {
   ctrlDisabled = false;
   textareaNgModelValue: string;
   textareaAutosizeEnabled = false;
-  placeholderTestControl = new FormControl('', Validators.required);
+  placeholderTestControl = new UntypedFormControl('', Validators.required);
 
   name: string;
   errorMessageExample1: string;
@@ -41,9 +41,12 @@ export class InputDemo {
   dividerColorExample3: string;
   items: {value: number}[] = [{value: 10}, {value: 20}, {value: 30}, {value: 40}, {value: 50}];
   rows = 8;
-  formControl = new FormControl('hello', Validators.required);
-  emailFormControl = new FormControl('', [Validators.required, Validators.pattern(EMAIL_REGEX)]);
-  delayedFormControl = new FormControl('');
+  formControl = new UntypedFormControl('hello', Validators.required);
+  emailFormControl = new UntypedFormControl('', [
+    Validators.required,
+    Validators.pattern(EMAIL_REGEX),
+  ]);
+  delayedFormControl = new UntypedFormControl('');
   model = 'hello';
   isAutofilled = false;
   customAutofillStyle = true;
@@ -64,7 +67,7 @@ export class InputDemo {
   }
 
   customErrorStateMatcher: ErrorStateMatcher = {
-    isErrorState: (control: FormControl | null) => {
+    isErrorState: (control: UntypedFormControl | null) => {
       if (control) {
         const hasInteraction = control.dirty || control.touched;
         const isInvalid = control.invalid;

@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
+import {UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
 
 /** @title Form field theming */
 @Component({
@@ -8,11 +8,11 @@ import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
   styleUrls: ['form-field-theming-example.css'],
 })
 export class FormFieldThemingExample {
-  options: FormGroup;
-  colorControl = new FormControl('primary');
-  fontSizeControl = new FormControl(16, Validators.min(10));
+  options: UntypedFormGroup;
+  colorControl = new UntypedFormControl('primary');
+  fontSizeControl = new UntypedFormControl(16, Validators.min(10));
 
-  constructor(fb: FormBuilder) {
+  constructor(fb: UntypedFormBuilder) {
     this.options = fb.group({
       color: this.colorControl,
       fontSize: this.fontSizeControl,

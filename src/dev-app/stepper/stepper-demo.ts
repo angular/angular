@@ -8,22 +8,22 @@
 
 import {Component, OnInit} from '@angular/core';
 import {ThemePalette} from '@angular/material/core';
-import {AbstractControl, FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {AbstractControl, UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
 
 @Component({
   selector: 'stepper-demo',
   templateUrl: 'stepper-demo.html',
 })
 export class StepperDemo implements OnInit {
-  formGroup: FormGroup;
+  formGroup: UntypedFormGroup;
   isNonLinear = false;
   isNonEditable = false;
   disableRipple = false;
   showLabelBottom = false;
   isVertical = false;
 
-  nameFormGroup: FormGroup;
-  emailFormGroup: FormGroup;
+  nameFormGroup: UntypedFormGroup;
+  emailFormGroup: UntypedFormGroup;
 
   steps = [
     {label: 'Confirm your name', content: 'Last name, First name.'},
@@ -45,7 +45,7 @@ export class StepperDemo implements OnInit {
     return this.formGroup.get('formArray');
   }
 
-  constructor(private _formBuilder: FormBuilder) {}
+  constructor(private _formBuilder: UntypedFormBuilder) {}
 
   ngOnInit() {
     this.formGroup = this._formBuilder.group({

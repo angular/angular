@@ -7,7 +7,7 @@
  */
 
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {FormControl, Validators} from '@angular/forms';
+import {UntypedFormControl, Validators} from '@angular/forms';
 import {
   FloatLabelType,
   MatFormFieldAppearance,
@@ -35,7 +35,7 @@ export class MdcInputDemo {
   textareaAutosizeEnabled = false;
   appearance: MatFormFieldAppearance = 'fill';
   prefixSuffixAppearance: MatFormFieldAppearance = 'fill';
-  placeholderTestControl = new FormControl('', Validators.required);
+  placeholderTestControl = new UntypedFormControl('', Validators.required);
   options: string[] = ['One', 'Two', 'Three'];
   showSecondPrefix = false;
   showPrefix = true;
@@ -50,9 +50,12 @@ export class MdcInputDemo {
   dividerColorExample3: string;
   items: {value: number}[] = [{value: 10}, {value: 20}, {value: 30}, {value: 40}, {value: 50}];
   rows = 8;
-  formControl = new FormControl('hello', Validators.required);
-  emailFormControl = new FormControl('', [Validators.required, Validators.pattern(EMAIL_REGEX)]);
-  delayedFormControl = new FormControl('');
+  formControl = new UntypedFormControl('hello', Validators.required);
+  emailFormControl = new UntypedFormControl('', [
+    Validators.required,
+    Validators.pattern(EMAIL_REGEX),
+  ]);
+  delayedFormControl = new UntypedFormControl('');
   model = 'hello';
   isAutofilled = false;
   customAutofillStyle = true;
@@ -73,7 +76,7 @@ export class MdcInputDemo {
   }
 
   customErrorStateMatcher: ErrorStateMatcher = {
-    isErrorState: (control: FormControl | null) => {
+    isErrorState: (control: UntypedFormControl | null) => {
       if (control) {
         const hasInteraction = control.dirty || control.touched;
         const isInvalid = control.invalid;

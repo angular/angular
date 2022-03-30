@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {FormControl} from '@angular/forms';
+import {UntypedFormControl} from '@angular/forms';
 
 /** @title Sidenav with configurable mode */
 @Component({
@@ -8,6 +8,6 @@ import {FormControl} from '@angular/forms';
   styleUrls: ['sidenav-mode-example.css'],
 })
 export class SidenavModeExample {
-  mode = new FormControl('over');
+  mode = new UntypedFormControl('over');
   shouldRun = /(^|.)(stackblitz|webcontainer).(io|com)$/.test(window.location.host);
 }

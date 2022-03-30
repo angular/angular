@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {FormControl} from '@angular/forms';
+import {UntypedFormControl} from '@angular/forms';
 import {Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
 
@@ -16,7 +16,7 @@ export interface User {
   styleUrls: ['autocomplete-display-example.css'],
 })
 export class AutocompleteDisplayExample implements OnInit {
-  myControl = new FormControl();
+  myControl = new UntypedFormControl();
   options: User[] = [{name: 'Mary'}, {name: 'Shelley'}, {name: 'Igor'}];
   filteredOptions: Observable<User[]>;
 

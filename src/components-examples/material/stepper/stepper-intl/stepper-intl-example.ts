@@ -1,5 +1,5 @@
 import {Component, Injectable, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
 import {MatStepperIntl} from '@angular/material/stepper';
 
 @Injectable()
@@ -18,12 +18,12 @@ export class StepperIntl extends MatStepperIntl {
   providers: [{provide: MatStepperIntl, useClass: StepperIntl}],
 })
 export class StepperIntlExample implements OnInit {
-  firstFormGroup: FormGroup;
-  secondFormGroup: FormGroup;
+  firstFormGroup: UntypedFormGroup;
+  secondFormGroup: UntypedFormGroup;
   optionalLabelText: string;
   optionalLabelTextChoices: string[] = ['Option 1', 'Option 2', 'Option 3'];
 
-  constructor(private _formBuilder: FormBuilder, private _matStepperIntl: MatStepperIntl) {}
+  constructor(private _formBuilder: UntypedFormBuilder, private _matStepperIntl: MatStepperIntl) {}
 
   updateOptionalLabel() {
     this._matStepperIntl.optionalLabel = this.optionalLabelText;

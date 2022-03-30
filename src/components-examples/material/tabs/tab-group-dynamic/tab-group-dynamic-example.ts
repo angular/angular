@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {FormControl} from '@angular/forms';
+import {UntypedFormControl} from '@angular/forms';
 
 /**
  * @title Tab group with dynamically changing tabs
@@ -11,7 +11,7 @@ import {FormControl} from '@angular/forms';
 })
 export class TabGroupDynamicExample {
   tabs = ['First', 'Second', 'Third'];
-  selected = new FormControl(0);
+  selected = new UntypedFormControl(0);
 
   addTab(selectAfterAdding: boolean) {
     this.tabs.push('New');

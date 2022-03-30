@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
 
 /**
  * @title Slide-toggle with forms
@@ -11,9 +11,9 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 })
 export class SlideToggleFormsExample {
   isChecked = true;
-  formGroup: FormGroup;
+  formGroup: UntypedFormGroup;
 
-  constructor(formBuilder: FormBuilder) {
+  constructor(formBuilder: UntypedFormBuilder) {
     this.formGroup = formBuilder.group({
       enableWifi: '',
       acceptTerms: ['', Validators.requiredTrue],

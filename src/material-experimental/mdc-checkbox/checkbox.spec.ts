@@ -2,7 +2,7 @@ import {dispatchFakeEvent} from '../../cdk/testing/private';
 import {ChangeDetectionStrategy, Component, DebugElement, Type} from '@angular/core';
 import {ComponentFixture, fakeAsync, flush, flushMicrotasks, TestBed} from '@angular/core/testing';
 import {ThemePalette} from '@angular/material-experimental/mdc-core';
-import {FormControl, FormsModule, NgModel, ReactiveFormsModule} from '@angular/forms';
+import {UntypedFormControl, FormsModule, NgModel, ReactiveFormsModule} from '@angular/forms';
 import {By} from '@angular/platform-browser';
 import {MatCheckbox, MatCheckboxChange, MatCheckboxModule} from './index';
 import {MatCheckboxDefaultOptions, MAT_CHECKBOX_DEFAULT_OPTIONS} from '@angular/material/checkbox';
@@ -1134,7 +1134,7 @@ class CheckboxWithChangeEvent {
 /** Test component with reactive forms */
 @Component({template: `<mat-checkbox [formControl]="formControl"></mat-checkbox>`})
 class CheckboxWithFormControl {
-  formControl = new FormControl();
+  formControl = new UntypedFormControl();
 }
 
 /** Test component without label */

@@ -13,9 +13,9 @@ import {
 import {
   AbstractControl,
   ControlValueAccessor,
-  FormBuilder,
-  FormControl,
-  FormGroup,
+  UntypedFormBuilder,
+  UntypedFormControl,
+  UntypedFormGroup,
   NgControl,
   Validators,
 } from '@angular/forms';
@@ -28,8 +28,8 @@ import {Subject} from 'rxjs';
   templateUrl: 'form-field-custom-control-example.html',
 })
 export class FormFieldCustomControlExample {
-  form: FormGroup = new FormGroup({
-    tel: new FormControl(new MyTel('', '', '')),
+  form: UntypedFormGroup = new UntypedFormGroup({
+    tel: new UntypedFormControl(new MyTel('', '', '')),
   });
 }
 
@@ -55,7 +55,7 @@ export class MyTelInput implements ControlValueAccessor, MatFormFieldControl<MyT
   @ViewChild('exchange') exchangeInput: HTMLInputElement;
   @ViewChild('subscriber') subscriberInput: HTMLInputElement;
 
-  parts: FormGroup;
+  parts: UntypedFormGroup;
   stateChanges = new Subject<void>();
   focused = false;
   touched = false;
@@ -130,7 +130,7 @@ export class MyTelInput implements ControlValueAccessor, MatFormFieldControl<MyT
   }
 
   constructor(
-    formBuilder: FormBuilder,
+    formBuilder: UntypedFormBuilder,
     private _focusMonitor: FocusMonitor,
     private _elementRef: ElementRef<HTMLElement>,
     @Optional() @Inject(MAT_FORM_FIELD) public _formField: MatFormField,

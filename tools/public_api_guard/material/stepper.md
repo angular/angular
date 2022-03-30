@@ -23,7 +23,6 @@ import { ErrorStateMatcher } from '@angular/material/core';
 import { EventEmitter } from '@angular/core';
 import { FocusMonitor } from '@angular/cdk/a11y';
 import { FocusOrigin } from '@angular/cdk/a11y';
-import { FormControl } from '@angular/forms';
 import { FormGroupDirective } from '@angular/forms';
 import * as i0 from '@angular/core';
 import * as i10 from '@angular/material/button';
@@ -43,6 +42,7 @@ import { Subject } from 'rxjs';
 import { TemplatePortal } from '@angular/cdk/portal';
 import { TemplateRef } from '@angular/core';
 import { ThemePalette } from '@angular/material/core';
+import { UntypedFormControl } from '@angular/forms';
 import { ViewContainerRef } from '@angular/core';
 
 // @public
@@ -59,7 +59,7 @@ export function MAT_STEPPER_INTL_PROVIDER_FACTORY(parentIntl: MatStepperIntl): M
 export class MatStep extends CdkStep implements ErrorStateMatcher, AfterContentInit, OnDestroy {
     constructor(stepper: MatStepper, _errorStateMatcher: ErrorStateMatcher, _viewContainerRef: ViewContainerRef, stepperOptions?: StepperOptions);
     color: ThemePalette;
-    isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean;
+    isErrorState(control: UntypedFormControl | null, form: FormGroupDirective | NgForm | null): boolean;
     _lazyContent: MatStepContent;
     // (undocumented)
     ngAfterContentInit(): void;
