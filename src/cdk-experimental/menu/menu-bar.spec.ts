@@ -1,33 +1,34 @@
-import {ComponentFixture, TestBed, waitForAsync, fakeAsync, tick} from '@angular/core/testing';
+import {ComponentFixture, fakeAsync, TestBed, tick, waitForAsync} from '@angular/core/testing';
 import {
   Component,
-  ViewChild,
   ElementRef,
-  ViewChildren,
-  QueryList,
   EventEmitter,
+  QueryList,
+  ViewChild,
+  ViewChildren,
 } from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {
-  TAB,
-  RIGHT_ARROW,
-  LEFT_ARROW,
-  DOWN_ARROW,
-  UP_ARROW,
-  SPACE,
-  HOME,
-  END,
-  E,
   D,
+  DOWN_ARROW,
+  E,
+  END,
   ESCAPE,
-  S,
   H,
+  HOME,
+  LEFT_ARROW,
+  RIGHT_ARROW,
+  S,
+  SPACE,
+  TAB,
+  UP_ARROW,
 } from '@angular/cdk/keycodes';
 import {
-  dispatchKeyboardEvent,
   createKeyboardEvent,
   dispatchEvent,
+  dispatchKeyboardEvent,
   dispatchMouseEvent,
+  triggerFocus,
 } from '../../cdk/testing/private';
 import {CdkMenuBar} from './menu-bar';
 import {CdkMenuModule} from './menu-module';
@@ -802,7 +803,7 @@ describe('MenuBar', () => {
 
     /** set the menus and triggers arrays. */
     function grabElementsForTesting() {
-      popoutMenus = fixture.componentInstance.menus.toArray().filter(el => !el._isInline());
+      popoutMenus = fixture.componentInstance.menus.toArray().filter(el => !el._isInline);
       triggers = fixture.componentInstance.triggers.toArray();
       nativeInlineMenuItem = fixture.componentInstance.nativeInlineMenuItem.nativeElement;
     }
@@ -923,6 +924,7 @@ describe('MenuBar', () => {
       dispatchMouseEvent(menuBarNativeItems[0], 'mouseenter');
       dispatchMouseEvent(menuBarNativeItems[0], 'click');
       dispatchMouseEvent(menuBarNativeItems[0], 'mouseenter');
+      triggerFocus(menuBarNativeItems[0]);
       detectChanges();
     }
 
@@ -1063,19 +1065,17 @@ describe('MenuBar', () => {
       expect(nativeMenus.length).toBe(0);
     });
 
-    it(
-      'should allow keyboard down arrow to focus next item after mouse sets focus to' +
-        ' initial item',
-      () => {
-        openFileMenu();
-        dispatchMouseEvent(fileMenuNativeItems[0], 'mouseenter');
-        detectChanges();
+    it('should allow keyboard down arrow to focus next item after focusing initial item', () => {
+      openFileMenu();
 
-        dispatchKeyboardEvent(nativeMenus[0], 'keydown', DOWN_ARROW);
+      dispatchKeyboardEvent(nativeMenus[0], 'keydown', DOWN_ARROW);
+      detectChanges();
+      expect(document.activeElement).toEqual(fileMenuNativeItems[0]);
 
-        expect(document.activeElement).toEqual(fileMenuNativeItems[1]);
-      },
-    );
+      dispatchKeyboardEvent(nativeMenus[0], 'keydown', DOWN_ARROW);
+      detectChanges();
+      expect(document.activeElement).toEqual(fileMenuNativeItems[1]);
+    });
 
     it(
       'should not re-open a menu when hovering over the trigger in the menubar after clicking to ' +
@@ -1103,49 +1103,41 @@ describe('MenuBar', () => {
       },
     );
 
-    it(
-      'should set the tabindex of the opened trigger to 0 and toggle tabindex' +
-        ' when hovering between items',
-      () => {
-        openFileMenu();
+    it('should not change the tabindex when hovering between items', () => {
+      openFileMenu();
 
-        expect(menuBarNativeItems[0].tabIndex).toBe(0);
+      expect(menuBarNativeItems[0].tabIndex).toBe(0);
 
-        dispatchMouseEvent(menuBarNativeItems[1], 'mouseenter');
-        detectChanges();
+      dispatchMouseEvent(menuBarNativeItems[1], 'mouseenter');
+      detectChanges();
 
-        expect(menuBarNativeItems[0].tabIndex).toBe(-1);
-        expect(menuBarNativeItems[1].tabIndex).toBe(0);
+      expect(menuBarNativeItems[0].tabIndex).toBe(0);
+      expect(menuBarNativeItems[1].tabIndex).toBe(-1);
 
-        dispatchMouseEvent(menuBarNativeItems[0], 'mouseenter');
-        detectChanges();
+      dispatchMouseEvent(menuBarNativeItems[0], 'mouseenter');
+      detectChanges();
 
-        expect(menuBarNativeItems[0].tabIndex).toBe(0);
-        expect(menuBarNativeItems[1].tabIndex).toBe(-1);
-      },
-    );
+      expect(menuBarNativeItems[0].tabIndex).toBe(0);
+      expect(menuBarNativeItems[1].tabIndex).toBe(-1);
+    });
 
-    it(
-      'should set the tabindex to 0 on the active item and reset the previous active items ' +
-        'to -1 when navigating down to a submenu and within it using a mouse',
-      () => {
-        openFileMenu();
-        expect(menuBarNativeItems[0].tabIndex).toBe(0);
+    it('should not change the tabindex when navigating down to a submenu and within it using a mouse', () => {
+      openFileMenu();
+      expect(menuBarNativeItems[0].tabIndex).toBe(0);
 
-        dispatchMouseEvent(fileMenuNativeItems[0], 'mouseenter');
-        dispatchMouseEvent(menuBarNativeItems[0], 'mouseout');
-        detectChanges();
+      dispatchMouseEvent(fileMenuNativeItems[0], 'mouseenter');
+      dispatchMouseEvent(menuBarNativeItems[0], 'mouseout');
+      detectChanges();
 
-        expect(menuBarNativeItems[0].tabIndex).toBe(-1);
-        expect(fileMenuNativeItems[0].tabIndex).toBe(0);
+      expect(menuBarNativeItems[0].tabIndex).toBe(0);
+      expect(fileMenuNativeItems[0].tabIndex).toBe(-1);
 
-        dispatchMouseEvent(fileMenuNativeItems[1], 'mouseenter');
-        detectChanges();
+      dispatchMouseEvent(fileMenuNativeItems[1], 'mouseenter');
+      detectChanges();
 
-        expect(fileMenuNativeItems[0].tabIndex).toBe(-1);
-        expect(fileMenuNativeItems[1].tabIndex).toBe(0);
-      },
-    );
+      expect(fileMenuNativeItems[0].tabIndex).toBe(-1);
+      expect(fileMenuNativeItems[1].tabIndex).toBe(-1);
+    });
   });
 });
 
