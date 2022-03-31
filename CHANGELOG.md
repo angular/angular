@@ -39,7 +39,7 @@ AlirezaEbrahimkhani, Andrew Kushnir, Andrew Scott, Ben Brook, Dylan Hunn, George
   - define keyframes rules in global stylesheets (e.g styles.css)
   - define keyframes rules programmatically in code.
 ### http
-- JSONP will throw an error when headers are set on a reques
+- JSONP will throw an error when headers are set on a request
   
   JSONP does not support headers being set on requests. Before when
   a request was sent to a JSONP backend that had headers set the headers
