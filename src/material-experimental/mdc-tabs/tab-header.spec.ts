@@ -308,6 +308,28 @@ describe('MDC-based MatTabHeader', () => {
           .withContext('Expected no ripple to show up after mousedown')
           .toBe(0);
       });
+
+      it('should update the scroll distance if a tab is removed and no tabs are selected', fakeAsync(() => {
+        appComponent.selectedIndex = 0;
+        appComponent.addTabsForScrolling();
+        fixture.detectChanges();
+
+        // Focus the last tab so the header scrolls to the end.
+        appComponent.tabHeader.focusIndex = appComponent.tabs.length - 1;
+        fixture.detectChanges();
+        expect(appComponent.tabHeader.scrollDistance).toBe(
+          appComponent.tabHeader._getMaxScrollDistance(),
+        );
+
+        // Remove the first two tabs which includes the selected tab.
+        appComponent.tabs = appComponent.tabs.slice(2);
+        fixture.detectChanges();
+        tick();
+
+        expect(appComponent.tabHeader.scrollDistance).toBe(
+          appComponent.tabHeader._getMaxScrollDistance(),
+        );
+      }));
     });
 
     describe('rtl', () => {
