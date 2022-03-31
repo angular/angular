@@ -46,6 +46,10 @@ Ensure all existing documentation fits into a consistent set of content types. U
 
 ## Future
 
+### Explore hydration and server-side rendering usability improvements
+
+As part of this effort we'll explore the problem space of hydration with server-side rendering, different approaches, and opportunities for Angular. As outcome of this project we'll have validation of the effort as well as a plan for action.
+
 ### Revamp performance dashboards to detect regressions
 
 We have a set of benchmarks that we run against every code change to ensure Angular aligns with our performance standards. To ensure the framework’s runtime does not regress after a code change, we need to refine some of the existing infrastructure the dashboards step on.
