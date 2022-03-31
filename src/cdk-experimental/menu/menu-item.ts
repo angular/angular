@@ -140,7 +140,7 @@ export class CdkMenuItem implements FocusableOption, FocusableElement, Toggler, 
   trigger() {
     if (!this.disabled && !this.hasMenu()) {
       this.triggered.next();
-      this._menuStack.closeAll();
+      this._menuStack.closeAll(undefined, true);
     }
   }
 
@@ -219,7 +219,7 @@ export class CdkMenuItem implements FocusableOption, FocusableElement, Toggler, 
   private _forwardArrowPressed(event: KeyboardEvent) {
     if (!this.hasMenu() && this._menuStack.hasInlineMenu()) {
       event.preventDefault();
-      this._menuStack.closeAll(FocusNext.nextItem);
+      this._menuStack.closeAll(FocusNext.nextItem, true);
     }
   }
 

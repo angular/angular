@@ -148,7 +148,6 @@ export class MenuStack {
           this._close.next({item: menuStackItem, focusParentMenu});
         }
       }
-
       this._empty.next(focusNext);
     }
   }

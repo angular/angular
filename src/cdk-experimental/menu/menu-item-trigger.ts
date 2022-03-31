@@ -95,6 +95,7 @@ export class CdkMenuItemTrigger extends MenuTrigger implements OnDestroy {
   ) {
     super(injector, menuStack);
     this._registerCloseHandler();
+    this._subscribeToMenuStackClosed();
     this._subscribeToMouseEnter();
     this._subscribeToHasFocus();
   }
@@ -319,6 +320,16 @@ export class CdkMenuItemTrigger extends MenuTrigger implements OnDestroy {
   _setHasFocus(hasFocus: boolean) {
     if (!this._parentMenu) {
       this.menuStack.setHasFocus(hasFocus);
+    }
+  }
+
+  private _subscribeToMenuStackClosed() {
+    if (!this._parentMenu) {
+      this.menuStack.closed.subscribe(({focusParentMenu}) => {
+        if (focusParentMenu && !this.menuStack.length()) {
+          this._elementRef.nativeElement.focus();
+        }
+      });
     }
   }
 }
