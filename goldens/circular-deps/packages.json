@@ -82,10 +82,6 @@
     "packages/core/src/linker/ng_module_factory.ts"
   ],
   [
-    "packages/core/src/linker/component_factory_resolver.ts",
-    "packages/core/src/linker/ng_module_factory.ts"
-  ],
-  [
     "packages/core/src/metadata/directives.ts",
     "packages/core/src/render3/jit/directive.ts"
   ],

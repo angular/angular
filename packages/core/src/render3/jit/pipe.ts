@@ -60,8 +60,6 @@ function getPipeMetadata(type: Type<any>, meta: Pipe): R3PipeMetadataFacade {
     name: type.name,
     pipeName: meta.name,
     pure: meta.pure !== undefined ? meta.pure : true,
-    // TODO(alxhub): pass through the standalone flag from the pipe metadata once standalone
-    // functionality is fully rolled out.
-    isStandalone: false,
+    isStandalone: !!meta.standalone,
   };
 }
