@@ -74,8 +74,6 @@ v14 - v17
 | `@angular/core`                     | [Factory-based signature of `ViewContainerRef.createComponent`](api/core/ViewContainerRef#createComponent) | <!-- v13 --> v15         |
 | `@angular/core/testing`             | [`TestBed.get`](#testing)                                                                                  | <!--  v9 --> v12         |
 | `@angular/core/testing`             | [`async`](#testing)                                                                                        | <!--  v9 --> v12         |
-| `@angular/core/testing`             | [`aotSummaries` argument in `TestBed.initTestEnvironment`](#testing)                                       | <!-- v13 --> v14         |
-| `@angular/core/testing`             | [`aotSummaries` field of the `TestModuleMetadata` type](#testing)                                          | <!-- v13 --> v14         |
 | `@angular/forms`                    | [`FormBuilder.group` legacy options parameter](api/forms/FormBuilder#group)                                | <!-- v11 --> v14         |
 | `@angular/platform-server`          | [`renderModuleFactory`](#platform-server)                                                                  | <!-- v13 --> v15         |
 | `@angular/router`                   | [`relativeLinkResolution`](#relativeLinkResolution)                                                        | <!-- v14 --> v16         |
@@ -148,8 +146,6 @@ In the [API reference section](api) of this site, deprecated APIs are indicated 
 |:---                                                                                                      |:---                                                 |:---                   |:---     |
 | [`TestBed.get`](api/core/testing/TestBed#get)                                                            | [`TestBed.inject`](api/core/testing/TestBed#inject) | v9                    | Same behavior, but type safe.                 |
 | [`async`](api/core/testing/async)                                                                        | [`waitForAsync`](api/core/testing/waitForAsync)     | v10                   | Same behavior, but rename to avoid confusion. |
-| [`aotSummaries` argument in `TestBed.initTestEnvironment`](api/core/testing/TestBed#inittestenvironment) | No replacement needed                               | v13                   | Summary files are unused in Ivy.              |
-| [`aotSummaries` field of the `TestModuleMetadata` type](api/core/testing/TestModuleMetadata)             | No replacement needed                               | v13                   | Summary files are unused in Ivy.              |
 
 <a id="platform-browser-dynamic"></a>
 
