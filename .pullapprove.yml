@@ -320,6 +320,7 @@ groups:
           'aio/content/guide/inputs-outputs.md',
           'aio/content/examples/inputs-outputs/**',
           'aio/content/images/guide/inputs-outputs/**',
+          'aio/content/guide/understanding-template-expr-overview.md',
           'aio/content/guide/template-expression-operators.md',
           'aio/content/examples/template-expression-operators/**',
           'aio/content/guide/pipes.md',
