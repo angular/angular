@@ -21,6 +21,7 @@ import {
   OnDestroy,
   Optional,
   Output,
+  SimpleChange,
   SimpleChanges,
   ViewChild,
   ViewEncapsulation,
@@ -393,7 +394,21 @@ export class MatCalendar<D> implements AfterContentInit, AfterViewChecked, OnDes
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    const change = changes['minDate'] || changes['maxDate'] || changes['dateFilter'];
+    // Ignore date changes that are at a different time on the same day. This fixes issues where
+    // the calendar re-renders when there is no meaningful change to [minDate] or [maxDate]
+    // (#24435).
+    const minDateChange: SimpleChange | undefined =
+      changes['minDate'] &&
+      !this._dateAdapter.sameDate(changes['minDate'].previousValue, changes['minDate'].currentValue)
+        ? changes['minDate']
+        : undefined;
+    const maxDateChange: SimpleChange | undefined =
+      changes['maxDate'] &&
+      !this._dateAdapter.sameDate(changes['maxDate'].previousValue, changes['maxDate'].currentValue)
+        ? changes['maxDate']
+        : undefined;
+
+    const change = minDateChange || maxDateChange || changes['dateFilter'];
 
     if (change && !change.firstChange) {
       const view = this._getCurrentViewComponent();
