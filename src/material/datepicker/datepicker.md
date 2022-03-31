@@ -466,7 +466,7 @@ It is also possible to create your own `DateAdapter` that works with any date fo
 requires. This is accomplished by subclassing `DateAdapter` and providing your subclass as the
 `DateAdapter` implementation. You will also want to make sure that the `MAT_DATE_FORMATS` provided
 in your app are formats that can be understood by your date implementation. See
-[_Customizing the parse and display formats_](#customizing-the-parse-and-display-formats)for more
+[_Customizing the parse and display formats_](#customizing-the-parse-and-display-formats) for more
 information about `MAT_DATE_FORMATS`.
 
 ```ts
