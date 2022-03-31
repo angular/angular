@@ -195,10 +195,19 @@ export function compileNgModuleDefs(
   });
 }
 
+function isStandalone<T>(type: Type<T>) {
+  const def = getComponentDef(type) || getDirectiveDef(type) || getPipeDef(type);
+  return def !== null ? def.standalone : false;
+}
+
 function verifySemanticsOfNgModuleDef(
     moduleType: NgModuleType, allowDuplicateDeclarationsInRoot: boolean,
     importingModule?: NgModuleType): void {
   if (verifiedNgModule.get(moduleType)) return;
+
+  // skip verifications of standalone components, direcrtives and pipes
+  if (isStandalone(moduleType)) return;
+
   verifiedNgModule.set(moduleType, true);
   moduleType = resolveForwardRef(moduleType);
   let ngModuleDef: NgModuleDef<any>;
@@ -214,9 +223,9 @@ function verifySemanticsOfNgModuleDef(
   const errors: string[] = [];
   const declarations = maybeUnwrapFn(ngModuleDef.declarations);
   const imports = maybeUnwrapFn(ngModuleDef.imports);
-  flatten(imports).map(unwrapModuleWithProvidersImports).forEach(mod => {
-    verifySemanticsOfNgModuleImport(mod, moduleType);
-    verifySemanticsOfNgModuleDef(mod, false, moduleType);
+  flatten(imports).map(unwrapModuleWithProvidersImports).forEach(modOrStandaloneCmpt => {
+    verifySemanticsOfNgModuleImport(modOrStandaloneCmpt, moduleType);
+    verifySemanticsOfNgModuleDef(modOrStandaloneCmpt, false, moduleType);
   });
   const exports = maybeUnwrapFn(ngModuleDef.exports);
   declarations.forEach(verifyDeclarationsHaveDefinitions);
@@ -331,12 +340,14 @@ function verifySemanticsOfNgModuleDef(
   function verifySemanticsOfNgModuleImport(type: Type<any>, importingModule: Type<any>) {
     type = resolveForwardRef(type);
 
-    if (getComponentDef(type) || getDirectiveDef(type)) {
+    const directiveDef = getComponentDef(type) || getDirectiveDef(type);
+    if (directiveDef !== null && !directiveDef.standalone) {
       throw new Error(`Unexpected directive '${type.name}' imported by the module '${
           importingModule.name}'. Please add an @NgModule annotation.`);
     }
 
-    if (getPipeDef(type)) {
+    const pipeDef = getPipeDef(type);
+    if (pipeDef !== null && !pipeDef.standalone) {
       throw new Error(`Unexpected pipe '${type.name}' imported by the module '${
           importingModule.name}'. Please add an @NgModule annotation.`);
     }
@@ -399,7 +410,13 @@ export function resetCompiledComponents(): void {
  */
 function computeCombinedExports(type: Type<any>): Type<any>[] {
   type = resolveForwardRef(type);
-  const ngModuleDef = getNgModuleDef(type, true);
+  const ngModuleDef = getNgModuleDef(type);
+
+  // a standalone component, directive or pipe
+  if (ngModuleDef === null) {
+    return [type];
+  }
+
   return [...flatten(maybeUnwrapFn(ngModuleDef.exports).map((type) => {
     const ngModuleDef = getNgModuleDef(type);
     if (ngModuleDef) {
@@ -459,6 +476,49 @@ export function patchComponentDefWithScope<C>(
 }
 
 /**
+ * Compute the pair of transitive scopes (compilation scope and exported scope) for a given type
+ * (eaither a NgModule or a standalone component / directive / pipe).
+ */
+export function transitiveScopesFor<T>(type: Type<T>): NgModuleTransitiveScopes {
+  if (isNgModule(type)) {
+    return transitiveScopesForNgModule(type);
+  } else if (isStandalone(type)) {
+    const directiveDef = getComponentDef(type) || getDirectiveDef(type);
+    if (directiveDef !== null) {
+      return {
+        schemas: null,
+        compilation: {
+          directives: new Set<any>(),
+          pipes: new Set<any>(),
+        },
+        exported: {
+          directives: new Set<any>([type]),
+          pipes: new Set<any>(),
+        },
+      };
+    }
+
+    const pipeDef = getPipeDef(type);
+    if (pipeDef !== null) {
+      return {
+        schemas: null,
+        compilation: {
+          directives: new Set<any>(),
+          pipes: new Set<any>(),
+        },
+        exported: {
+          directives: new Set<any>(),
+          pipes: new Set<any>([type]),
+        },
+      };
+    }
+  }
+
+  // TODO: change the error message to be more user-facing and take standalone into account
+  throw new Error(`${type.name} does not have a module def (ɵmod property)`);
+}
+
+/**
  * Compute the pair of transitive scopes (compilation scope and exported scope) for a given module.
  *
  * This operation is memoized and the result is cached on the module's definition. This function can
@@ -467,11 +527,8 @@ export function patchComponentDefWithScope<C>(
  *
  * @param moduleType module that transitive scope should be calculated for.
  */
-export function transitiveScopesFor<T>(moduleType: Type<T>): NgModuleTransitiveScopes {
-  if (!isNgModule(moduleType)) {
-    throw new Error(`${moduleType.name} does not have a module def (ɵmod property)`);
-  }
-  const def = getNgModuleDef(moduleType)!;
+export function transitiveScopesForNgModule<T>(moduleType: Type<T>): NgModuleTransitiveScopes {
+  const def = getNgModuleDef(moduleType, true);
 
   if (def.transitiveCompileScopes !== null) {
     return def.transitiveCompileScopes;
@@ -490,18 +547,9 @@ export function transitiveScopesFor<T>(moduleType: Type<T>): NgModuleTransitiveS
   };
 
   maybeUnwrapFn(def.imports).forEach(<I>(imported: Type<I>) => {
-    const importedType = imported as Type<I>& {
-      // If imported is an @NgModule:
-      ɵmod?: NgModuleDef<I>;
-    };
-
-    if (!isNgModule<I>(importedType)) {
-      throw new Error(`Importing ${importedType.name} which does not have a ɵmod property`);
-    }
-
     // When this module imports another, the imported module's exported directives and pipes are
     // added to the compilation scope of this module.
-    const importedScope = transitiveScopesFor(importedType);
+    const importedScope = transitiveScopesFor(imported);
     importedScope.exported.directives.forEach(entry => scopes.compilation.directives.add(entry));
     importedScope.exported.pipes.forEach(entry => scopes.compilation.pipes.add(entry));
   });

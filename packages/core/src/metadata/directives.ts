@@ -287,6 +287,8 @@ export interface Directive {
    * To ensure the correct behavior, the app must import `@angular/compiler`.
    */
   jit?: true;
+
+  standalone?: boolean;
 }
 
 /**
@@ -553,6 +555,11 @@ export interface Component extends Directive {
    * overridden in compiler options.
    */
   preserveWhitespaces?: boolean;
+
+  standalone?: boolean;
+
+  // TODO: better type here!
+  imports?: (Type<any>|any[])[];
 }
 
 /**
@@ -624,6 +631,8 @@ export interface Pipe {
    * even if the arguments have not changed.
    */
   pure?: boolean;
+
+  standalone?: boolean;
 }
 
 /**
