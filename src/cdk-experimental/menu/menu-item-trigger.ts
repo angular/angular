@@ -325,8 +325,8 @@ export class CdkMenuItemTrigger extends MenuTrigger implements OnDestroy {
 
   private _subscribeToMenuStackClosed() {
     if (!this._parentMenu) {
-      this.menuStack.closed.subscribe(({focusParentMenu}) => {
-        if (focusParentMenu && !this.menuStack.length()) {
+      this.menuStack.closed.subscribe(({focusParentTrigger}) => {
+        if (focusParentTrigger && !this.menuStack.length()) {
           this._elementRef.nativeElement.focus();
         }
       });

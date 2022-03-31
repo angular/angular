@@ -131,12 +131,15 @@ export class CdkMenu extends CdkMenuBase implements AfterContentInit, OnDestroy 
       case ESCAPE:
         if (!hasModifierKey(event)) {
           event.preventDefault();
-          this.menuStack.close(this, FocusNext.currentItem, true);
+          this.menuStack.close(this, {
+            focusNextOnEmpty: FocusNext.currentItem,
+            focusParentTrigger: true,
+          });
         }
         break;
 
       case TAB:
-        this.menuStack.closeAll(undefined, true);
+        this.menuStack.closeAll({focusParentTrigger: true});
         break;
 
       default:

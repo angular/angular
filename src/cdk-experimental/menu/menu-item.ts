@@ -140,7 +140,7 @@ export class CdkMenuItem implements FocusableOption, FocusableElement, Toggler, 
   trigger() {
     if (!this.disabled && !this.hasMenu()) {
       this.triggered.next();
-      this._menuStack.closeAll(undefined, true);
+      this._menuStack.closeAll({focusParentTrigger: true});
     }
   }
 
@@ -212,14 +212,17 @@ export class CdkMenuItem implements FocusableOption, FocusableElement, Toggler, 
     const parentMenu = this._parentMenu!;
     if (this._menuStack.hasInlineMenu() || this._menuStack.length() > 1) {
       event.preventDefault();
-      this._menuStack.close(parentMenu, FocusNext.previousItem, true);
+      this._menuStack.close(parentMenu, {
+        focusNextOnEmpty: FocusNext.previousItem,
+        focusParentTrigger: true,
+      });
     }
   }
 
   private _forwardArrowPressed(event: KeyboardEvent) {
     if (!this.hasMenu() && this._menuStack.hasInlineMenu()) {
       event.preventDefault();
-      this._menuStack.closeAll(FocusNext.nextItem, true);
+      this._menuStack.closeAll({focusNextOnEmpty: FocusNext.nextItem, focusParentTrigger: true});
     }
   }
 
