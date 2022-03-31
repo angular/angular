@@ -2,7 +2,7 @@
   "cli-hello-world": {
     "uncompressed": {
       "runtime": 1083,
-      "main": 125851,
+      "main": 126738,
       "polyfills": 33824
     }
   },
@@ -12,7 +12,7 @@
       "main": "TODO(i): temporarily increase the payload size limit from 17597 - this needs to be investigate further what caused the increase.",
       "main": "Likely there is a missing PURE annotation https://github.com/angular/angular/pull/43344",
       "main": "Tracking issue: https://github.com/angular/angular/issues/43568",
-      "main": 20601,
+      "main": 20826,
       "polyfills": 33848
     }
   },
@@ -41,14 +41,14 @@
   "forms": {
     "uncompressed": {
       "runtime": 1063,
-      "main": 158537,
+      "main": 158922,
       "polyfills": 33804
     }
   },
   "animations": {
     "uncompressed": {
       "runtime": 1070,
-      "main": 156852,
+      "main": 157739,
       "polyfills": 33814
     }
   },

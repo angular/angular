@@ -135,6 +135,11 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
         environmentInjector :
         environmentInjector?.injector;
 
+    if (realEnvironmentInjector && this.componentDef.getStandaloneInjector !== null) {
+      realEnvironmentInjector = this.componentDef.getStandaloneInjector(realEnvironmentInjector) ||
+          realEnvironmentInjector;
+    }
+
     const rootViewInjector =
         realEnvironmentInjector ? new ChainedInjector(injector, realEnvironmentInjector) : injector;
 

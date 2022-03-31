@@ -7,6 +7,7 @@
  */
 
 import {ProcessProvidersFunction} from '../../di/interface/provider';
+import {EnvironmentInjector} from '../../di/r3_injector';
 import {Type} from '../../interface/type';
 import {SchemaMetadata} from '../../metadata/schema';
 import {ViewEncapsulation} from '../../metadata/view';
@@ -320,6 +321,8 @@ export interface ComponentDef<T> extends DirectiveDef<T> {
    * the first run of component.
    */
   tView: TView|null;
+
+  getStandaloneInjector: ((parentInjector: EnvironmentInjector) => EnvironmentInjector | null)|null;
 
   /**
    * Used to store the result of `noSideEffects` function so that it is not removed by closure
