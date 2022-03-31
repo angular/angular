@@ -150,4 +150,70 @@ describe('standalone components, directives and pipes', () => {
     expect(fixture.nativeElement.querySelector('standalone-cmp').getAttribute('id'))
         .toBe('standalone');
   });
+
+
+  it('should render a standalone component with dependenices and ambient providers', () => {
+    @Component({
+      standalone: true,
+      template: 'Inner',
+      selector: 'inner-cmp',
+    })
+    class InnerCmp {
+    }
+
+    class Service {
+      value = 'Service';
+    }
+
+    @NgModule({providers: [Service]})
+    class ModuleWithAProvider {
+    }
+
+    @Component({
+      standalone: true,
+      template: 'Outer<inner-cmp></inner-cmp>{{service.value}}',
+      imports: [InnerCmp, ModuleWithAProvider],
+    })
+    class OuterCmp {
+      constructor(readonly service: Service) {}
+    }
+
+    const fixture = TestBed.createComponent(OuterCmp);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.innerHTML).toEqual('Outer<inner-cmp>Inner</inner-cmp>Service');
+  });
+
+  it('should discover ambient providers from a standalone component', () => {
+    class Service {
+      value = 'Service';
+    }
+
+    @NgModule({providers: [Service]})
+    class ModuleWithAProvider {
+    }
+
+    @Component({
+      standalone: true,
+      template: 'Inner({{service.value}})',
+      selector: 'inner-cmp',
+      imports: [ModuleWithAProvider],
+    })
+    class InnerCmp {
+      constructor(readonly service: Service) {}
+    }
+
+    @Component({
+      standalone: true,
+      template: 'Outer<inner-cmp></inner-cmp>{{service.value}}',
+      imports: [InnerCmp],
+    })
+    class OuterCmp {
+      constructor(readonly service: Service) {}
+    }
+
+    const fixture = TestBed.createComponent(OuterCmp);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.innerHTML)
+        .toEqual('Outer<inner-cmp>Inner(Service)</inner-cmp>Service');
+  });
 });

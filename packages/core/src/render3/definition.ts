@@ -312,6 +312,7 @@ export function ɵɵdefineComponent<T>(componentDefinition: {
       standalone: componentDefinition.standalone === true,
       dependencies:
           componentDefinition.standalone === true && componentDefinition.dependencies || null,
+      getStandaloneInjector: null,
       selectors: componentDefinition.selectors || EMPTY_ARRAY,
       viewQuery: componentDefinition.viewQuery || null,
       features: componentDefinition.features as DirectiveDefFeature[] || null,
