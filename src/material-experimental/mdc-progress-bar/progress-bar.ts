@@ -227,6 +227,10 @@ export class MatProgressBar
       )
         .pipe(filter((e: TransitionEvent) => e.target === this._primaryBar))
         .subscribe(() => {
+          if (this.animationEnd.observers.length === 0) {
+            return;
+          }
+
           if (this.mode === 'determinate' || this.mode === 'buffer') {
             this._ngZone.run(() => this.animationEnd.next({value: this.value}));
           }
