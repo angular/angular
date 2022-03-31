@@ -1031,7 +1031,7 @@ export function elementPropertyInternal<T>(
   } else if (tNode.type & TNodeType.AnyContainer) {
     // If the node is a container and the property didn't
     // match any of the inputs or schemas we should throw.
-    if (ngDevMode && !matchingSchemas(tView, tNode.value)) {
+    if (ngDevMode && !matchingSchemas(tView.schemas, tNode.value)) {
       logUnknownPropertyError(propName, tNode);
     }
   }
@@ -1099,7 +1099,8 @@ function validateProperty(
 
   // The property is considered valid if the element matches the schema, it exists on the element
   // or it is synthetic, and we are in a browser context (web worker nodes should be skipped).
-  if (matchingSchemas(tView, tNode.value) || propName in element || isAnimationProp(propName)) {
+  if (matchingSchemas(tView.schemas, tNode.value) || propName in element ||
+      isAnimationProp(propName)) {
     return true;
   }
 
@@ -1108,9 +1109,12 @@ function validateProperty(
   return typeof Node === 'undefined' || Node === null || !(element instanceof Node);
 }
 
-export function matchingSchemas(tView: TView, tagName: string|null): boolean {
-  const schemas = tView.schemas;
-
+/**
+ * Returns true if the tag name is allowed by specified schemas.
+ * @param schemas Array of schemas
+ * @param tagName Name of the tag
+ */
+export function matchingSchemas(schemas: SchemaMetadata[]|null, tagName: string|null): boolean {
   if (schemas !== null) {
     for (let i = 0; i < schemas.length; i++) {
       const schema = schemas[i];
