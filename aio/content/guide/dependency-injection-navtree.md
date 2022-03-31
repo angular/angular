@@ -56,8 +56,8 @@ In the following example, the parent `AlexComponent` has several children includ
 
 
 
-*Cathy* reports whether or not she has access to *Alex*
-after injecting an `AlexComponent` into her constructor:
+*Cathy* reports whether or not they has access to *Alex*
+after injecting an `AlexComponent` into them constructor:
 
 <code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="cathy" header="parent-finder.component.ts (CathyComponent)"></code-example>
 
@@ -171,8 +171,8 @@ Here's *Alex* and family in action.
 Imagine one branch of a component hierarchy: *Alice* -> *Barry* -> *Carol*.
 Both *Alice* and *Barry* implement the `Parent` class interface.
 
-*Barry* is the problem. He needs to reach his parent, *Alice*, and also be a parent to *Carol*.
-That means he must both *inject* the `Parent` class interface to get *Alice* and
+*Barry* is the problem. They needs to reach their parent, *Alice*, and also be a parent to *Carol*.
+That means they must both *inject* the `Parent` class interface to get *Alice* and
 *provide* a `Parent` to satisfy *Carol*.
 
 Here's *Barry*.
