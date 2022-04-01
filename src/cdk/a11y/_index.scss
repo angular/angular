@@ -21,6 +21,17 @@
     // Avoid some cases where the browser will still render the native controls (see #9049).
     -webkit-appearance: none;
     -moz-appearance: none;
+
+    // We need at least one of top/bottom/left/right in order to prevent cases where the
+    // absolute-positioned element is pushed down and can affect scrolling (see #24597).
+    // `left` was chosen here, because it's the least likely to break overrides where the
+    // element might have been positioned (e.g. `mat-checkbox`).
+    left: 0;
+
+    [dir='rtl'] & {
+      left: auto;
+      right: 0;
+    }
   }
 }
 
