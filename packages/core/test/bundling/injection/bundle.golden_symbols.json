@@ -9,6 +9,12 @@
     "name": "INJECTOR2"
   },
   {
+    "name": "INJECTOR_DEF_TYPES"
+  },
+  {
+    "name": "INJECTOR_INITIALIZER"
+  },
+  {
     "name": "INJECTOR_SCOPE"
   },
   {
@@ -72,6 +78,9 @@
     "name": "deepForEach"
   },
   {
+    "name": "flatten"
+  },
+  {
     "name": "forwardRef"
   },
   {
@@ -93,6 +102,12 @@
     "name": "getOwnDefinition"
   },
   {
+    "name": "importProvidersFrom"
+  },
+  {
+    "name": "inject"
+  },
+  {
     "name": "injectArgs"
   },
   {
@@ -103,6 +118,12 @@
   },
   {
     "name": "injectableDefOrInjectorDefFactory"
+  },
+  {
+    "name": "isExistingProvider"
+  },
+  {
+    "name": "isFactoryProvider"
   },
   {
     "name": "isTypeProvider"
@@ -124,6 +145,12 @@
   },
   {
     "name": "stringify"
+  },
+  {
+    "name": "validateProvider"
+  },
+  {
+    "name": "walkProviderTree"
   },
   {
     "name": "ɵɵdefineInjectable"

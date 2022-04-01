@@ -228,6 +228,12 @@
     "name": "INJECTOR2"
   },
   {
+    "name": "INJECTOR_DEF_TYPES"
+  },
+  {
+    "name": "INJECTOR_INITIALIZER"
+  },
+  {
     "name": "INJECTOR_SCOPE"
   },
   {
@@ -1341,6 +1347,9 @@
     "name": "identity"
   },
   {
+    "name": "importProvidersFrom"
+  },
+  {
     "name": "includeViewProviders"
   },
   {
@@ -1426,6 +1435,12 @@
   },
   {
     "name": "isDirectiveHost"
+  },
+  {
+    "name": "isExistingProvider"
+  },
+  {
+    "name": "isFactoryProvider"
   },
   {
     "name": "isFunction"
@@ -1914,7 +1929,13 @@
     "name": "urlParsingNode"
   },
   {
+    "name": "validateProvider"
+  },
+  {
     "name": "viewAttachedToChangeDetector"
+  },
+  {
+    "name": "walkProviderTree"
   },
   {
     "name": "wrapIntoObservable"
