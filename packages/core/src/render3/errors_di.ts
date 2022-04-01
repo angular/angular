@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Type} from '../core';
 import {InjectorType} from '../di/interface/defs';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {stringify} from '../util/stringify';
@@ -26,7 +27,7 @@ export function throwMixedMultiProviderError() {
 }
 
 export function throwInvalidProviderError(
-    ngModuleType?: InjectorType<any>, providers?: any[], provider?: any) {
+    ngModuleType?: Type<unknown>, providers?: any[], provider?: any) {
   let ngModuleDetail = '';
   if (ngModuleType && providers) {
     const providerDetail = providers.map(v => v == provider ? '?' + provider + '?' : '...');

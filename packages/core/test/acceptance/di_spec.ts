@@ -8,11 +8,59 @@
 
 import {CommonModule} from '@angular/common';
 import {Attribute, ChangeDetectorRef, Component, ComponentFactoryResolver, ComponentRef, Directive, ElementRef, EventEmitter, forwardRef, Host, HostBinding, Inject, Injectable, InjectFlags, InjectionToken, INJECTOR, Injector, Input, LOCALE_ID, NgModule, NgZone, Optional, Output, Pipe, PipeTransform, Self, SkipSelf, TemplateRef, ViewChild, ViewContainerRef, ViewRef, ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID} from '@angular/core';
-import {ɵINJECTOR_SCOPE} from '@angular/core/src/core';
+import {Provider, ɵINJECTOR_SCOPE} from '@angular/core/src/core';
+import {createInjector, importProvidersFrom, INJECTOR_INITIALIZER} from '@angular/core/src/di/r3_injector';
 import {ViewRef as ViewRefInternal} from '@angular/core/src/render3/view_ref';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {BehaviorSubject} from 'rxjs';
+
+const hasProviderWithToken = (providers: Provider[], token: InjectionToken<unknown>): boolean =>
+    providers.some(provider => (provider as any).provide === token);
+
+const collectInjectorInitializerProviders = (providers: Provider[]) =>
+    providers.filter(provider => (provider as any).provide === INJECTOR_INITIALIZER);
+
+describe('importProvidersFrom', () => {
+  it('should work for NgModules', () => {
+    const A = new InjectionToken('A');
+    const B = new InjectionToken('B');
+    const C = new InjectionToken('C');
+    const D = new InjectionToken('D');
+    @NgModule({
+      providers: [
+        {provide: C, useValue: 'C'},
+        {provide: D, useValue: 'D'},
+      ],
+    })
+    class MyModule2 {
+    }
+    @NgModule({
+      imports: [MyModule2],
+      providers: [
+        {provide: A, useValue: 'A'},
+        {provide: B, useValue: 'B'},
+      ],
+    })
+    class MyModule {
+    }
+    const providers = importProvidersFrom(MyModule);
+
+    // 4 tokens (A, B, C, D) + 2 providers for each NgModule:
+    // - the definition type itself
+    // - `INJECTOR_DEF_TYPES`
+    // - `INJECTOR_INITIALIZER`
+    expect(providers.length).toBe(10);
+
+    expect(hasProviderWithToken(providers, A)).toBe(true);
+    expect(hasProviderWithToken(providers, B)).toBe(true);
+    expect(hasProviderWithToken(providers, C)).toBe(true);
+    expect(hasProviderWithToken(providers, D)).toBe(true);
+
+    // Expect 2 `INJECTOR_INITIALIZER` providers: one for `MyModule`, another was `MyModule2`
+    expect(collectInjectorInitializerProviders(providers).length).toBe(2);
+  });
+});
 
 describe('di', () => {
   describe('no dependencies', () => {
@@ -4364,5 +4412,18 @@ describe('di', () => {
 
       expect(fixture.componentInstance.menu.tokenValue).toBe('hello from parent');
     });
+  });
+
+  it('should prioritize module providers over additional providers', () => {
+    const token = new InjectionToken('token');
+
+    @NgModule({providers: [{provide: token, useValue: 'module'}]})
+    class ModuleWithProvider {
+    }
+
+    const injector =
+        createInjector(ModuleWithProvider, null, [{provide: token, useValue: 'additional'}]);
+
+    expect(injector.get(token)).toBe('module');
   });
 });
