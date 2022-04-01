@@ -260,9 +260,11 @@ export class MatCheckbox
   get checked(): boolean {
     return this._checked;
   }
-  set checked(value: boolean) {
-    if (value != this.checked) {
-      this._checked = value;
+  set checked(value: BooleanInput) {
+    const checked = coerceBooleanProperty(value);
+
+    if (checked != this.checked) {
+      this._checked = checked;
       this._changeDetectorRef.markForCheck();
     }
   }
