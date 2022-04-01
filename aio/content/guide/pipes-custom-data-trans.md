@@ -60,4 +60,4 @@ To examine the behavior of the `exponentialStrength` pipe in the <live-example><
 
 </div>
 
-@reviewed 2022-02-10
+@reviewed 2022-04-01
