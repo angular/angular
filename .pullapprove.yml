@@ -317,6 +317,7 @@ groups:
           'aio/content/guide/template-expression-operators.md',
           'aio/content/examples/template-expression-operators/**',
           'aio/content/guide/pipes.md',
+          'aio/content/guide/pipes-custom-data-trans.md',
           'aio/content/examples/pipes/**',
           'aio/content/images/guide/pipes/**',
           'aio/content/guide/providers.md',
