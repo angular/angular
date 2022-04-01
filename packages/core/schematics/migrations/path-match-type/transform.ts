@@ -18,13 +18,11 @@ export class PathMatchTypeTransform {
   private printer = ts.createPrinter();
   private importManager = new ImportManager(this.getUpdateRecorder, this.printer);
 
-  constructor(
-      private typeChecker: ts.TypeChecker,
-      private getUpdateRecorder: (sf: ts.SourceFile) => UpdateRecorder) {}
+  constructor(private getUpdateRecorder: (sf: ts.SourceFile) => UpdateRecorder) {}
 
   migrate(sourceFiles: ts.SourceFile[]): void {
     for (const sourceFile of sourceFiles) {
-      const toMigrate = findExpressionsToMigrate(sourceFile, this.typeChecker, this.importManager);
+      const toMigrate = findExpressionsToMigrate(sourceFile, this.importManager);
       const recorder = this.getUpdateRecorder(sourceFile);
       for (const [oldNode, newNode] of toMigrate) {
         recorder.updateNode(oldNode, newNode, sourceFile);

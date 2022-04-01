@@ -36,11 +36,6 @@ describe('Google3 path match type', () => {
       compilerOptions: {
         module: 'es2015',
         baseUrl: './',
-        paths: {
-          '@angular/router': ['router.d.ts'],
-          'rxjs': ['rxjs.d.ts'],
-          'rxjs/operators': ['operators.d.ts'],
-        }
       },
     }));
   });

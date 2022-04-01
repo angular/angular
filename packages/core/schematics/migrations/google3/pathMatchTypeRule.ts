@@ -17,12 +17,11 @@ import {PathMatchTypeTransform} from '../path-match-type/transform';
  */
 export class Rule extends Rules.TypedRule {
   override applyWithProgram(sourceFile: ts.SourceFile, program: ts.Program): RuleFailure[] {
-    const typeChecker = program.getTypeChecker();
     const ruleName = this.ruleName;
     const sourceFiles = program.getSourceFiles().filter(
         s => !s.isDeclarationFile && !program.isSourceFileFromExternalLibrary(s));
     const updateRecorders = new Map<ts.SourceFile, TslintUpdateRecorder>();
-    const transform = new PathMatchTypeTransform(typeChecker, getUpdateRecorder);
+    const transform = new PathMatchTypeTransform(getUpdateRecorder);
 
     // Migrate all source files in the project.
     transform.migrate(sourceFiles);

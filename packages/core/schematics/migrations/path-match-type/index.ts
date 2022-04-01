@@ -37,11 +37,10 @@ export default function(): Rule {
 
 function runMigration(tree: Tree, tsconfigPath: string, basePath: string): void {
   const {program} = createMigrationProgram(tree, tsconfigPath, basePath);
-  const typeChecker = program.getTypeChecker();
   const sourceFiles =
       program.getSourceFiles().filter(sourceFile => canMigrateFile(basePath, sourceFile, program));
   const updateRecorders = new Map<ts.SourceFile, UpdateRecorder>();
-  const transform = new PathMatchTypeTransform(typeChecker, getUpdateRecorder);
+  const transform = new PathMatchTypeTransform(getUpdateRecorder);
 
   // Migrate all source files in the project.
   transform.migrate(sourceFiles);
