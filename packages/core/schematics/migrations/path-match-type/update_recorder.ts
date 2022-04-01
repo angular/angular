@@ -15,6 +15,8 @@ import {ImportManagerUpdateRecorder} from '../../utils/import_manager';
  * in a non-colliding way.
  */
 export interface UpdateRecorder extends ImportManagerUpdateRecorder {
-  updateNode(oldNode: ts.Node, newNode: ts.Node, sourceFile: ts.SourceFile): void;
+  updateNode(
+      oldNode: ts.VariableDeclaration, newNode: ts.VariableDeclaration,
+      sourceFile: ts.SourceFile): void;
   commitUpdate(): void;
 }

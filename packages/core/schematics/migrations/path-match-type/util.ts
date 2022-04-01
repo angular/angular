@@ -12,7 +12,7 @@ import {ImportManager} from '../../utils/import_manager';
 
 
 export function findExpressionsToMigrate(sourceFile: ts.SourceFile, importManager: ImportManager) {
-  const migratedNodesMap: Map<ts.Node, ts.Node> = new Map();
+  const migratedNodesMap: Map<ts.VariableDeclaration, ts.VariableDeclaration> = new Map();
   let _currentVariableDecl: ts.VariableDeclaration|null = null;
   (() => {
     sourceFile.forEachChild(function visitNode(node: ts.Node) {

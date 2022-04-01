@@ -72,7 +72,7 @@ describe('Google3 path match type', () => {
 
     const content = getFile('/index.ts');
     expect(content).toContain(`import { Route } from "@angular/router";`);
-    expect(content).toContain(`const route: Route = { path: 'abc', pathMatch: 'full' };`);
+    expect(content).toContain(`const route: Route = {path: 'abc', pathMatch: 'full'};`);
   });
 
   it('should migrate Routes literal', async () => {
@@ -85,7 +85,7 @@ describe('Google3 path match type', () => {
 
     const content = getFile('/index.ts');
     expect(content).toContain(`import { Routes } from "@angular/router";`);
-    expect(content).toContain(`const routes: Routes = [{ path: 'abc', pathMatch: 'full' }];`);
+    expect(content).toContain(`const routes: Routes = [{path: 'abc', pathMatch: 'full'}];`);
   });
 
   it('should migrate Routes with children', async () => {
@@ -98,7 +98,7 @@ describe('Google3 path match type', () => {
 
     const content = getFile('/index.ts');
     expect(content).toContain(
-        `const routes: Routes = [{ path: 'home', children: [{ path: 'abc', pathMatch: 'full' }] }];`);
+        `const routes: Routes = [{path: 'home', children: [{path: 'abc', pathMatch: 'full'}]}];`);
   });
 
   it('should NOT migrate Route if it already has an explicit type', async () => {

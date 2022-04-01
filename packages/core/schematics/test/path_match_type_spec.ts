@@ -64,7 +64,7 @@ describe('PathMatch type migration', () => {
 
     const content = tree.readContent('/index.ts');
     expect(content).toContain(`import { Route } from "@angular/router";`);
-    expect(content).toContain(`const route: Route = { path: 'abc', pathMatch: 'full' };`);
+    expect(content).toContain(`const route: Route = {path: 'abc', pathMatch: 'full'};`);
   });
 
   it('should migrate Routes literal', async () => {
@@ -76,7 +76,7 @@ describe('PathMatch type migration', () => {
 
     const content = tree.readContent('/index.ts');
     expect(content).toContain(`import { Routes } from "@angular/router";`);
-    expect(content).toContain(`const routes: Routes = [{ path: 'abc', pathMatch: 'full' }];`);
+    expect(content).toContain(`const routes: Routes = [{path: 'abc', pathMatch: 'full'}];`);
   });
 
   it('should migrate Routes with children', async () => {
@@ -88,7 +88,7 @@ describe('PathMatch type migration', () => {
 
     const content = tree.readContent('/index.ts');
     expect(content).toContain(
-        `const routes: Routes = [{ path: 'home', children: [{ path: 'abc', pathMatch: 'full' }] }];`);
+        `const routes: Routes = [{path: 'home', children: [{path: 'abc', pathMatch: 'full'}]}];`);
   });
 
   it('should NOT migrate Route if it already has an explicit type', async () => {

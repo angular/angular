@@ -17,11 +17,13 @@ export class TslintUpdateRecorder implements UpdateRecorder {
   constructor(
       private ruleName: string, private sourceFile: ts.SourceFile, private printer: ts.Printer) {}
 
-  updateNode(oldNode: ts.Node, newNode: ts.Node, sourceFile: ts.SourceFile) {
-    const newText = this.printer.printNode(ts.EmitHint.Unspecified, newNode, sourceFile);
+  updateNode(
+      oldNode: ts.VariableDeclaration, newNode: ts.VariableDeclaration, sourceFile: ts.SourceFile) {
+    const newText =
+        ': ' + this.printer.printNode(ts.EmitHint.Unspecified, newNode.type!, sourceFile);
     this.failures.push(new RuleFailure(
-        this.sourceFile, oldNode.getStart(), 0, 'Must use explicit `Route`/`Routes` type.',
-        this.ruleName, new Replacement(oldNode.getStart(), oldNode.getWidth(), newText)));
+        this.sourceFile, oldNode.name.getEnd(), 0, 'Must use explicit `Route`/`Routes` type.',
+        this.ruleName, new Replacement(oldNode.name.getEnd(), 0, newText)));
   }
 
   /** Adds the specified import to the source file at the given position */

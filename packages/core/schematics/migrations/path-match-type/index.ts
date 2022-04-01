@@ -60,10 +60,11 @@ function runMigration(tree: Tree, tsconfigPath: string, basePath: string): void 
     const printer = ts.createPrinter();
     const treeRecorder = tree.beginUpdate(relative(basePath, sourceFile.fileName));
     const recorder: UpdateRecorder = {
-      updateNode(oldExpr: ts.Expression, newExpr: ts.Expression) {
-        treeRecorder.remove(oldExpr.getStart(), oldExpr.getWidth());
+      updateNode(oldExpr: ts.VariableDeclaration, newExpr: ts.VariableDeclaration) {
+        // treeRecorder.remove(oldExpr.getStart(), oldExpr.getWidth());
         treeRecorder.insertRight(
-            oldExpr.getStart(), printer.printNode(ts.EmitHint.Unspecified, newExpr, sourceFile));
+            oldExpr.name.getEnd(),
+            ': ' + printer.printNode(ts.EmitHint.Unspecified, newExpr.type!, sourceFile));
       },
       addNewImport(start: number, importText: string) {
         // New imports should be inserted at the left while decorators should be inserted
