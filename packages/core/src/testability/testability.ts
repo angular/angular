@@ -230,7 +230,7 @@ export class Testability implements PublicTestability {
  * A global registry of {@link Testability} instances for specific elements.
  * @publicApi
  */
-@Injectable()
+@Injectable({providedIn: 'platform'})
 export class TestabilityRegistry {
   /** @internal */
   _applications = new Map<any, Testability>();
