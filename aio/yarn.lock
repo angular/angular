@@ -4859,10 +4859,10 @@ entities@^2.0.0:
   resolved "https://registry.yarnpkg.com/entities/-/entities-2.2.0.tgz#098dc90ebb83d8dffa089d55256b351d34c4da55"
   integrity sha512-p92if5Nz619I0w+akJrLZH0MX0Pb5DX39XOwQTtXSdQQOaYH03S1uIQp4mhOZtAXrxq4ViO67YTiLBo2638o9A==
 
-entities@^3.0.0:
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/entities/-/entities-3.0.1.tgz#2b887ca62585e96db3903482d336c1006c3001d4"
-  integrity sha512-WiyBqoomrwMdFG1e0kqvASYfnlb0lp8M5o5Fw2OFq1hNZxxcNk8Ik0Xm7LxzBhuidnZB/UtBqVCgUz3kBOP51Q==
+entities@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/entities/-/entities-4.0.0.tgz#178200738f774678b4e4621d82959851b0e67ab4"
+  integrity sha512-4v2Nrbg5YsidL0sfsj05GSI86KCn2IJX3TlUq11aDUIq0O5iICDGI/WwVUS7hKPBhfoKr9E4e2Jx8A7rDbpg/w==
 
 env-paths@^2.2.0:
   version "2.2.1"

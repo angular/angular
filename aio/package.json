@@ -133,7 +133,7 @@
     "css-selector-parser": "^1.4.1",
     "dgeni": "^0.4.14",
     "dgeni-packages": "^0.29.3",
-    "entities": "^3.0.0",
+    "entities": "^4.0.0",
     "eslint": "^8.0.0",
     "eslint-plugin-import": "^2.23.4",
     "eslint-plugin-jasmine": "^4.1.2",
