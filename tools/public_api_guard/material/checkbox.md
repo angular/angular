@@ -53,7 +53,7 @@ export class MatCheckbox extends _MatCheckboxBase implements ControlValueAccesso
     ariaLabelledby: string | null;
     readonly change: EventEmitter<MatCheckboxChange>;
     get checked(): boolean;
-    set checked(value: boolean);
+    set checked(value: BooleanInput);
     get disabled(): boolean;
     set disabled(value: BooleanInput);
     focus(origin?: FocusOrigin, options?: FocusOptions): void;
