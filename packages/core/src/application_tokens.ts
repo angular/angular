@@ -54,7 +54,10 @@ export const PLATFORM_INITIALIZER = new InjectionToken<Array<() => void>>('Platf
  * A token that indicates an opaque platform ID.
  * @publicApi
  */
-export const PLATFORM_ID = new InjectionToken<Object>('Platform ID');
+export const PLATFORM_ID = new InjectionToken<Object>('Platform ID', {
+  providedIn: 'platform',
+  factory: () => 'unknown',  // set a default platform name, when none set explicitly
+});
 
 /**
  * A [DI token](guide/glossary#di-token "DI token definition") that provides a set of callbacks to
