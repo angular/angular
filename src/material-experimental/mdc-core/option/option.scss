@@ -13,6 +13,13 @@
   @include mat.private-user-select(none);
   cursor: pointer;
 
+  // If the MDC list is loaded after the option, this gets overwritten which breaks the text
+  // alignment. Ideally we'd wrap all the MDC mixins above with this selector, but the increased
+  // specificity breaks some internal overrides.
+  &.mdc-list-item {
+    align-items: center;
+  }
+
   // Set the `min-height` here ourselves, instead of going through
   // the `mdc-list-one-line-item-density` mixin, because it sets a `height`
   // which doesn't work well with multi-line options.
