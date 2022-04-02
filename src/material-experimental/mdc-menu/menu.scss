@@ -66,6 +66,13 @@ mat-menu {
   $height-config: map.get(mdc-list-variables.$one-line-item-density-config, height);
   min-height: map.get($height-config, default);
 
+  // If the MDC list is loaded after the menu, this gets overwritten which breaks the text
+  // alignment. Ideally we'd wrap all the MDC mixins above with this selector, but the increased
+  // specificity breaks some internal overrides.
+  &.mdc-list-item {
+    align-items: center;
+  }
+
   &[disabled] {
     cursor: default;
 
@@ -107,6 +114,10 @@ mat-menu {
     white-space: normal;
   }
 
+  &.mat-mdc-menu-item-submenu-trigger {
+    @include mat.private-menu-common-item-submenu-trigger(mdc-list-variables.$side-padding);
+  }
+
   @include cdk.high-contrast(active, off) {
     $outline-width: 1px;
 
@@ -120,10 +131,6 @@ mat-menu {
       outline: dotted $outline-width;
     }
   }
-}
-
-.mat-mdc-menu-item-submenu-trigger {
-  @include mat.private-menu-common-item-submenu-trigger(mdc-list-variables.$side-padding);
 }
 
 .mat-mdc-menu-submenu-icon {
