@@ -281,7 +281,7 @@ export interface BootstrapOptions {
  *
  * @publicApi
  */
-@Injectable()
+@Injectable({providedIn: 'platform'})
 export class PlatformRef {
   private _modules: NgModuleRef<any>[] = [];
   private _destroyListeners: Function[] = [];
