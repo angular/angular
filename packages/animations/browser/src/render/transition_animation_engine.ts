@@ -60,13 +60,69 @@ export interface QueueInstruction {
 
 export const REMOVAL_FLAG = '__ng_removed';
 
+
+
 export interface ElementAnimationState {
-  setForRemoval: boolean;
+  setForRemoval: RemovalContext|false;
   setForMove: boolean;
   hasAnimation: boolean;
   namespaceId: string;
   removedBeforeQueried: boolean;
   previousTriggersValues?: Map<string, string>;
+}
+
+/**
+ * A branded type that represents the original context that was provided by the animation renderer,
+ * to be tracked internally to finally pass into `TransitionAnimationEngine.onRemovalComplete`.
+ */
+type RemovalContext = {
+  __brand: 'RemovalContext';
+};
+
+/**
+ * When processing a delete/destroy operation, the animation engine gathers all descendant nodes
+ * to process any leave animations and to clean up their internal animation state. This context
+ * tracks some state that is made available to these operations.
+ */
+interface LeaveContext {
+  /**
+   * The original context that was provided to `TransitionAnimationEngine.removeNode` and
+   * `TransitionAnimationEngine.destroy`.
+   */
+  readonly removalContext: RemovalContext;
+
+  /**
+   * When removing an element, we may just be detaching the element for later re-insertion. This
+   * state has to be populated with the internal states of all descendant elements, such that this
+   * state can be reinstated when the element is eventually reinserted.
+   *
+   * This map is keyed by elements to their recovery state.
+   */
+  readonly recoveryState?: Map<any, ElementRecoveryState>;
+}
+
+interface ElementRecoveryState {
+  /**
+   * The namespace id of the element.
+   */
+  readonly namespaceId: string;
+
+  /**
+   * The remove operation may have transitioned a trigger state to void, but we need to restore
+   * the trigger state to how it was prior to the removal. This map tracks trigger names to
+   * their value before the void transition.
+   */
+  readonly originalTriggerValues: ReadonlyMap<string, string>|undefined;
+
+  /**
+   * The trigger names and their values of this element.
+   */
+  readonly triggers: Map<string, StateValue>|undefined;
+
+  /**
+   * The listeners that were registered for the element.
+   */
+  readonly listeners: TriggerListener[]|undefined;
 }
 
 export class StateValue {
@@ -115,7 +171,7 @@ export class AnimationTransitionNamespace {
   private _triggers = new Map<string, AnimationTrigger>();
   private _queue: QueueInstruction[] = [];
 
-  private _elementListeners = new Map<any, TriggerListener[]>();
+  public elementListeners = new Map<any, TriggerListener[]>();
 
   private _hostClassName: string;
 
@@ -138,8 +194,8 @@ export class AnimationTransitionNamespace {
       throw unsupportedTriggerEvent(phase, name);
     }
 
-    const listeners = getOrSetDefaultValue(this._elementListeners, element, []);
-    const data = {name, phase, callback};
+    const listeners = getOrSetDefaultValue(this.elementListeners, element, []);
+    const data: TriggerListener = {name, phase, callback};
     listeners.push(data);
 
     const triggersWithStates =
@@ -290,21 +346,22 @@ export class AnimationTransitionNamespace {
     return player;
   }
 
-  deregister(name: string) {
-    this._triggers.delete(name);
-
-    this._engine.statesByElement.forEach(stateMap => stateMap.delete(name));
-
-    this._elementListeners.forEach((listeners, element) => {
-      this._elementListeners.set(element, listeners.filter(entry => {
-        return entry.name != name;
-      }));
-    });
-  }
-
-  clearElementCache(element: any) {
+  clearElementCache(element: any, context: LeaveContext|null) {
+    if (context?.recoveryState) {
+      const triggers = this._engine.statesByElement.get(element);
+      const listeners = this.elementListeners.get(element);
+      if (triggers || listeners) {
+        const details = element[REMOVAL_FLAG] as ElementAnimationState | undefined;
+        context.recoveryState.set(element, {
+          namespaceId: this.id,
+          originalTriggerValues: details?.previousTriggersValues,
+          triggers,
+          listeners,
+        });
+      }
+    }
     this._engine.statesByElement.delete(element);
-    this._elementListeners.delete(element);
+    this.elementListeners.delete(element);
     const elementPlayers = this._engine.playersByElement.get(element);
     if (elementPlayers) {
       elementPlayers.forEach(player => player.destroy());
@@ -312,7 +369,7 @@ export class AnimationTransitionNamespace {
     }
   }
 
-  private _signalRemovalForInnerTriggers(rootElement: any, context: any) {
+  private _signalRemovalForInnerTriggers(rootElement: any, context: LeaveContext) {
     const elements = this._engine.driver.query(rootElement, NG_TRIGGER_SELECTOR, true);
 
     // emulate a leave animation for all inner nodes within this node.
@@ -327,18 +384,18 @@ export class AnimationTransitionNamespace {
       if (namespaces.size) {
         namespaces.forEach(ns => ns.triggerLeaveAnimation(elm, context, false, true));
       } else {
-        this.clearElementCache(elm);
+        this.clearElementCache(elm, context);
       }
     });
 
     // If the child elements were removed along with the parent, their animations might not
     // have completed. Clear all the elements from the cache so we don't end up with a memory leak.
     this._engine.afterFlushAnimationsDone(
-        () => elements.forEach(elm => this.clearElementCache(elm)));
+        () => elements.forEach(elm => this.clearElementCache(elm, context)));
   }
 
   triggerLeaveAnimation(
-      element: any, context: any, destroyAfterComplete?: boolean,
+      element: any, context: LeaveContext, destroyAfterComplete?: boolean,
       defaultToFallback?: boolean): boolean {
     const triggerStates = this._engine.statesByElement.get(element);
     const previousTriggersValues = new Map<string, string>();
@@ -368,7 +425,7 @@ export class AnimationTransitionNamespace {
   }
 
   prepareLeaveAnimationListeners(element: any) {
-    const listeners = this._elementListeners.get(element);
+    const listeners = this.elementListeners.get(element);
     const elementStates = this._engine.statesByElement.get(element);
 
     // if this statement fails then it means that the element was picked up
@@ -400,7 +457,7 @@ export class AnimationTransitionNamespace {
     }
   }
 
-  removeNode(element: any, context: any): void {
+  removeNode(element: any, context: LeaveContext): void {
     const engine = this._engine;
     if (element.childElementCount) {
       this._signalRemovalForInnerTriggers(element, context);
@@ -449,9 +506,9 @@ export class AnimationTransitionNamespace {
       if (!removalFlag || removalFlag === NULL_REMOVAL_STATE) {
         // we do this after the flush has occurred such
         // that the callbacks can be fired
-        engine.afterFlush(() => this.clearElementCache(element));
+        engine.afterFlush(() => this.clearElementCache(element, context));
         engine.destroyInnerAnimations(element);
-        engine._onRemovalComplete(element, context);
+        engine._onRemovalComplete(element, context.removalContext);
       }
     }
   }
@@ -467,7 +524,7 @@ export class AnimationTransitionNamespace {
       if (player.destroyed) return;
 
       const element = entry.element;
-      const listeners = this._elementListeners.get(element);
+      const listeners = this.elementListeners.get(element);
       if (listeners) {
         listeners.forEach((listener: TriggerListener) => {
           if (listener.name == entry.triggerName) {
@@ -504,14 +561,14 @@ export class AnimationTransitionNamespace {
     });
   }
 
-  destroy(context: any) {
+  destroy(context: LeaveContext) {
     this.players.forEach(p => p.destroy());
     this._signalRemovalForInnerTriggers(this.hostElement, context);
   }
 
   elementContainsData(element: any): boolean {
     let containsData = false;
-    if (this._elementListeners.has(element)) containsData = true;
+    if (this.elementListeners.has(element)) containsData = true;
     containsData =
         (this._queue.find(entry => entry.element === element) ? true : false) || containsData;
     return containsData;
@@ -544,11 +601,23 @@ export class TransitionAnimationEngine {
   public collectedEnterElements: any[] = [];
   public collectedLeaveElements: any[] = [];
 
+  /**
+   * When an element is being removed, it might just be detached for later reinsertion (for example
+   * when using a route reuse strategy). When the view is reinserted at a later point we won't set
+   * up trigger states and listeners for descendant elements, but their prior states would have been
+   * cleaned up as part of detachment of their host element.
+   *
+   * This is a weak map from detached element to a map of its descendant elements and their
+   * animation state prior to the element being detached. When an element in the weak map is
+   * inserted again, we'll restore the animation states of all descendants.
+   */
+  private readonly recoveryStates = new WeakMap<any, Map<any, ElementRecoveryState>>();
+
   // this method is designed to be overridden by the code that uses this engine
   public onRemovalComplete = (element: any, context: any) => {};
 
   /** @internal */
-  _onRemovalComplete(element: any, context: any) {
+  _onRemovalComplete(element: any, context: RemovalContext) {
     this.onRemovalComplete(element, context);
   }
 
@@ -638,7 +707,7 @@ export class TransitionAnimationEngine {
     }
   }
 
-  destroy(namespaceId: string, context: any) {
+  destroy(namespaceId: string, context: unknown) {
     if (!namespaceId) return;
 
     const ns = this._fetchNamespace(namespaceId);
@@ -652,7 +721,7 @@ export class TransitionAnimationEngine {
       }
     });
 
-    this.afterFlushAnimationsDone(() => ns.destroy(context));
+    this.afterFlushAnimationsDone(() => ns.destroy({removalContext: context as RemovalContext}));
   }
 
   private _fetchNamespace(id: string) {
@@ -694,6 +763,8 @@ export class TransitionAnimationEngine {
   insertNode(namespaceId: string, element: any, parent: any, insertBefore: boolean): void {
     if (!isElementNode(element)) return;
 
+    this.restoreDescendantsStates(element);
+
     // special case for when an element is removed and reinserted (move operation)
     // when this occurs we do not want to use the element for deletion later
     const details = element[REMOVAL_FLAG] as ElementAnimationState;
@@ -728,6 +799,35 @@ export class TransitionAnimationEngine {
     }
   }
 
+  private restoreDescendantsStates(element: any): void {
+    const recoveryState = this.recoveryStates.get(element);
+    if (!recoveryState) {
+      return;
+    }
+    this.recoveryStates.delete(element);
+
+    recoveryState.forEach((state, childEl) => {
+      const ns = this._fetchNamespace(state.namespaceId);
+      if (!ns) {
+        return;
+      }
+      if (state.triggers && !this.statesByElement.has(childEl)) {
+        const originalTriggerValues = state.originalTriggerValues;
+        state.triggers.forEach((value, triggerName) => {
+          const restoreValue = originalTriggerValues?.has(triggerName) ?
+              originalTriggerValues!.get(triggerName)! :
+              value.value;
+          ns.trigger(childEl, triggerName, restoreValue);
+        });
+      }
+      if (state.listeners && !ns.elementListeners.has(childEl)) {
+        // Note: we're not going through `ns.listen()` here because that would set up a new
+        // listener, whereas we need the original unregister callback to stay valid.
+        ns.elementListeners.set(childEl, state.listeners);
+      }
+    });
+  }
+
   collectEnterElement(element: any) {
     this.collectedEnterElements.push(element);
   }
@@ -744,33 +844,38 @@ export class TransitionAnimationEngine {
     }
   }
 
-  removeNode(namespaceId: string, element: any, isHostElement: boolean, context: any): void {
+  removeNode(namespaceId: string, element: any, isHostElement: boolean, context: unknown): void {
+    const leaveContext: LeaveContext = {
+      removalContext: context as RemovalContext,
+      recoveryState: new Map(),
+    };
     if (isElementNode(element)) {
       const ns = namespaceId ? this._fetchNamespace(namespaceId) : null;
       if (ns) {
-        ns.removeNode(element, context);
+        ns.removeNode(element, leaveContext);
       } else {
-        this.markElementAsRemoved(namespaceId, element, false, context);
+        this.markElementAsRemoved(namespaceId, element, false, leaveContext);
       }
 
       if (isHostElement) {
         const hostNS = this.namespacesByHostElement.get(element);
         if (hostNS && hostNS.id !== namespaceId) {
-          hostNS.removeNode(element, context);
+          hostNS.removeNode(element, leaveContext);
         }
       }
     } else {
-      this._onRemovalComplete(element, context);
+      this._onRemovalComplete(element, leaveContext.removalContext);
     }
+    this.recoveryStates.set(element, leaveContext.recoveryState!);
   }
 
   markElementAsRemoved(
-      namespaceId: string, element: any, hasAnimation?: boolean, context?: any,
+      namespaceId: string, element: any, hasAnimation?: boolean, context?: LeaveContext,
       previousTriggersValues?: Map<string, string>) {
     this.collectedLeaveElements.push(element);
     element[REMOVAL_FLAG] = {
       namespaceId,
-      setForRemoval: context,
+      setForRemoval: context?.removalContext ?? false,
       hasAnimation,
       removedBeforeQueried: false,
       previousTriggersValues
@@ -846,7 +951,7 @@ export class TransitionAnimationEngine {
         this.destroyInnerAnimations(element);
         const ns = this._fetchNamespace(details.namespaceId);
         if (ns) {
-          ns.clearElementCache(element);
+          ns.clearElementCache(element, null);
         }
       }
       this._onRemovalComplete(element, details.setForRemoval);
@@ -1010,7 +1115,7 @@ export class TransitionAnimationEngine {
           if (details && details.setForMove) {
             if (details.previousTriggersValues &&
                 details.previousTriggersValues.has(entry.triggerName)) {
-              const previousValue = details.previousTriggersValues.get(entry.triggerName) as string;
+              const previousValue = details.previousTriggersValues.get(entry.triggerName)!;
 
               // we need to restore the previous trigger value since the element has
               // only been moved and hasn't actually left the DOM
@@ -1018,7 +1123,6 @@ export class TransitionAnimationEngine {
               if (triggersWithStates && triggersWithStates.has(entry.triggerName)) {
                 const state = triggersWithStates.get(entry.triggerName)!;
                 state.value = previousValue;
-                triggersWithStates.set(entry.triggerName, state);
               }
             }
 
