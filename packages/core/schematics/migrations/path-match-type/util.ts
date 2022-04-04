@@ -49,6 +49,10 @@ export function findExpressionsToMigrate(sourceFile: ts.SourceFile, importManage
         for (const child of childrenProperty.initializer.elements) {
           if (ts.isObjectLiteralExpression(child)) {
             visitObjectLiteral(child);
+            // If the child caused a migration, we can exit early
+            if (_currentVariableDecl && migratedNodesMap.has(_currentVariableDecl)) {
+              break;
+            }
           }
         }
       }

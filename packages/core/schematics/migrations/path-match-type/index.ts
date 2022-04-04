@@ -61,7 +61,6 @@ function runMigration(tree: Tree, tsconfigPath: string, basePath: string): void 
     const treeRecorder = tree.beginUpdate(relative(basePath, sourceFile.fileName));
     const recorder: UpdateRecorder = {
       updateNode(oldExpr: ts.VariableDeclaration, newExpr: ts.VariableDeclaration) {
-        // treeRecorder.remove(oldExpr.getStart(), oldExpr.getWidth());
         treeRecorder.insertRight(
             oldExpr.name.getEnd(),
             ': ' + printer.printNode(ts.EmitHint.Unspecified, newExpr.type!, sourceFile));
