@@ -39,10 +39,9 @@ import {MENU_AIM, MenuAim, Toggler} from './menu-aim';
   selector: '[cdkMenuItem]',
   exportAs: 'cdkMenuItem',
   host: {
-    '[tabindex]': '_tabindex',
-    'type': 'button',
     'role': 'menuitem',
     'class': 'cdk-menu-item',
+    '[tabindex]': '_tabindex',
     '[attr.aria-disabled]': 'disabled || null',
     '(blur)': '_resetTabIndex()',
     '(focus)': '_setTabIndex()',
@@ -78,6 +77,9 @@ export class CdkMenuItem implements FocusableOption, FocusableElement, Toggler, 
    * tab index.
    */
   _tabindex: 0 | -1 = -1;
+
+  /** Whether the item should close the menu if triggered by the spacebar. */
+  protected closeOnSpacebarTrigger = true;
 
   /** Emits when the menu item is destroyed. */
   private readonly _destroyed = new Subject<void>();
@@ -137,10 +139,13 @@ export class CdkMenuItem implements FocusableOption, FocusableElement, Toggler, 
    * If the menu item is not disabled and the element does not have a menu trigger attached, emit
    * on the cdkMenuItemTriggered emitter and close all open menus.
    */
-  trigger() {
+  trigger(options?: {keepOpen: boolean}) {
+    const {keepOpen} = {...options};
     if (!this.disabled && !this.hasMenu()) {
       this.triggered.next();
-      this._menuStack.closeAll({focusParentTrigger: true});
+      if (!keepOpen) {
+        this._menuStack.closeAll({focusParentTrigger: true});
+      }
     }
   }
 
@@ -183,7 +188,7 @@ export class CdkMenuItem implements FocusableOption, FocusableElement, Toggler, 
       case SPACE:
       case ENTER:
         event.preventDefault();
-        this.trigger();
+        this.trigger({keepOpen: event.keyCode === SPACE && !this.closeOnSpacebarTrigger});
         break;
 
       case RIGHT_ARROW:

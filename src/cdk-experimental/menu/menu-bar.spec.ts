@@ -69,39 +69,6 @@ describe('MenuBar', () => {
     });
   });
 
-  describe('radiogroup change events', () => {
-    let fixture: ComponentFixture<MenuBarRadioGroup>;
-    let menuItems: CdkMenuItemRadio[];
-
-    beforeEach(waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [CdkMenuModule],
-        declarations: [MenuBarRadioGroup],
-      }).compileComponents();
-
-      fixture = TestBed.createComponent(MenuBarRadioGroup);
-
-      fixture.detectChanges();
-
-      menuItems = fixture.debugElement
-        .queryAll(By.directive(CdkMenuItemRadio))
-        .map(element => element.injector.get(CdkMenuItemRadio));
-    }));
-
-    it('should emit on click', () => {
-      const spy = jasmine.createSpy('cdkMenu change spy');
-      fixture.debugElement
-        .query(By.directive(CdkMenuBar))
-        .injector.get(CdkMenuBar)
-        .change.subscribe(spy);
-
-      menuItems[0].trigger();
-
-      expect(spy).toHaveBeenCalledTimes(1);
-      expect(spy).toHaveBeenCalledWith(menuItems[0]);
-    });
-  });
-
   describe('Keyboard handling', () => {
     describe('(with ltr layout)', () => {
       let fixture: ComponentFixture<MultiMenuWithSubmenu>;
@@ -1145,7 +1112,7 @@ describe('MenuBar', () => {
   template: `
     <ul cdkMenuBar>
       <li role="none">
-        <button checked="true" cdkMenuItemRadio>
+        <button cdkMenuItemChecked="true" cdkMenuItemRadio>
           first
         </button>
       </li>

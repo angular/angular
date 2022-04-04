@@ -3,28 +3,29 @@
 <ng-template #menu>
   <div class="example-menu" cdkMenu>
     <button
-      class="example-menu-item"
-      [checked]="bold"
-      (cdkMenuItemToggled)="bold = !bold"
-      cdkMenuItemCheckbox
-    >
+        cdkMenuItemCheckbox
+        class="example-menu-item"
+        [cdkMenuItemChecked]="bold"
+        (cdkMenuItemTriggered)="bold = !bold">
       Bold
     </button>
     <button
-      class="example-menu-item"
-      [checked]="italic"
-      (cdkMenuItemToggled)="italic = !italic"
-      cdkMenuItemCheckbox
-    >
+        cdkMenuItemCheckbox
+        class="example-menu-item"
+        [cdkMenuItemChecked]="italic"
+        (cdkMenuItemTriggered)="italic = !italic">
       Italic
     </button>
     <hr />
-    <div cdkMenuGroup (change)="onSizeChange($event)">
-      <button class="example-menu-item" [checked]="size === 'Small'" cdkMenuItemRadio>Small</button>
-      <button class="example-menu-item" [checked]="size === 'Normal'" cdkMenuItemRadio>
-        Normal
+    <div cdkMenuGroup>
+      <button
+          *ngFor="let size of sizes"
+          cdkMenuItemRadio
+          class="example-menu-item"
+          [cdkMenuItemChecked]="size === selectedSize"
+          (cdkMenuItemTriggered)="selectedSize = size">
+        {{size}}
       </button>
-      <button class="example-menu-item" [checked]="size === 'Large'" cdkMenuItemRadio>Large</button>
     </div>
   </div>
 </ng-template>

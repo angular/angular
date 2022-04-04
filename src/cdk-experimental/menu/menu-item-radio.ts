@@ -16,6 +16,9 @@ import {CDK_MENU, Menu} from './menu-interface';
 import {MENU_AIM, MenuAim} from './menu-aim';
 import {MENU_STACK, MenuStack} from './menu-stack';
 
+/** Counter used to set a unique id and name for a selectable item */
+let nextId = 0;
+
 /**
  * A directive providing behavior for the "menuitemradio" ARIA role, which behaves similarly to
  * a conventional radio-button. Any sibling `CdkMenuItemRadio` instances within the same `CdkMenu`
@@ -25,11 +28,7 @@ import {MENU_STACK, MenuStack} from './menu-stack';
   selector: '[cdkMenuItemRadio]',
   exportAs: 'cdkMenuItemRadio',
   host: {
-    '[tabindex]': '_tabindex',
-    'type': 'button',
     'role': 'menuitemradio',
-    '[attr.aria-checked]': 'checked || null',
-    '[attr.aria-disabled]': 'disabled || null',
   },
   providers: [
     {provide: CdkMenuItemSelectable, useExisting: CdkMenuItemRadio},
@@ -37,6 +36,8 @@ import {MENU_STACK, MenuStack} from './menu-stack';
   ],
 })
 export class CdkMenuItemRadio extends CdkMenuItemSelectable implements OnDestroy {
+  private _id = `${nextId++}`;
+
   /** Function to unregister the selection dispatcher */
   private _removeDispatcherListener: () => void;
 
@@ -60,22 +61,23 @@ export class CdkMenuItemRadio extends CdkMenuItemSelectable implements OnDestroy
 
   /** Configure the unique selection dispatcher listener in order to toggle the checked state  */
   private _registerDispatcherListener() {
-    this._removeDispatcherListener = this._selectionDispatcher.listen(
-      (id: string, name: string) => (this.checked = this.id === id && this.name === name),
-    );
+    this._removeDispatcherListener = this._selectionDispatcher.listen((id: string) => {
+      this.checked = this._id === id;
+    });
   }
 
   /** Toggles the checked state of the radio-button. */
-  override trigger() {
-    super.trigger();
+  override trigger(options?: {keepOpen: boolean}) {
+    super.trigger(options);
 
     if (!this.disabled) {
-      this._selectionDispatcher.notify(this.id, this.name);
+      this._selectionDispatcher.notify(this._id, '');
     }
   }
 
   override ngOnDestroy() {
     super.ngOnDestroy();
+
     this._removeDispatcherListener();
   }
 }

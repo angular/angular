@@ -13,6 +13,7 @@ import {
   Directive,
   ElementRef,
   Inject,
+  Input,
   OnDestroy,
   Optional,
   QueryList,
@@ -26,9 +27,12 @@ import {MENU_STACK, MenuStack, MenuStackItem} from './menu-stack';
 import {Menu} from './menu-interface';
 import {PointerFocusTracker} from './pointer-focus-tracker';
 
+let nextId = 0;
+
 @Directive({
   host: {
     '[tabindex]': '_isInline ? (_hasFocus ? -1 : 0) : null',
+    '[id]': 'id',
     '[attr.aria-orientation]': 'orientation',
     '(focus)': 'focusFirstItem()',
     '(focusin)': 'menuStack.setHasFocus(true)',
@@ -39,6 +43,8 @@ export abstract class CdkMenuBase
   extends CdkMenuGroup
   implements Menu, AfterContentInit, OnDestroy
 {
+  @Input() id = `cdk-menu-${nextId++}`;
+
   /**
    * Sets the aria-orientation attribute and determines where menus will be opened.
    * Does not affect styling/layout.
@@ -73,16 +79,14 @@ export abstract class CdkMenuBase
     super();
   }
 
-  override ngAfterContentInit() {
-    super.ngAfterContentInit();
+  ngAfterContentInit() {
     this._setKeyManager();
     this._subscribeToHasFocus();
     this._subscribeToMenuOpen();
     this._subscribeToMenuStackClosed();
   }
 
-  override ngOnDestroy() {
-    super.ngOnDestroy();
+  ngOnDestroy() {
     this.destroyed.next();
     this.destroyed.complete();
   }

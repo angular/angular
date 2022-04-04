@@ -24,7 +24,11 @@ import {merge, Subject} from 'rxjs';
 /** Injection token used for an implementation of MenuStack. */
 export const MENU_TRIGGER = new InjectionToken<MenuTrigger>('cdk-menu-trigger');
 
-@Directive()
+@Directive({
+  host: {
+    '[attr.aria-controls]': 'childMenu?.id',
+  },
+})
 export abstract class MenuTrigger implements OnDestroy {
   /** A list of preferred menu positions to be used when constructing the `FlexibleConnectedPositionStrategy` for this trigger's menu. */
   menuPosition: ConnectedPosition[];

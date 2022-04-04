@@ -15,6 +15,8 @@ export const CDK_MENU = new InjectionToken<Menu>('cdk-menu');
 
 /** Interface which specifies Menu operations and used to break circular dependency issues */
 export interface Menu extends MenuStackItem {
+  id: string;
+
   /** The element the Menu directive is placed on. */
   _elementRef: ElementRef<HTMLElement>;
 

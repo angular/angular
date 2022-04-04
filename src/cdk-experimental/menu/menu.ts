@@ -8,7 +8,6 @@
 
 import {
   AfterContentInit,
-  ContentChildren,
   Directive,
   ElementRef,
   EventEmitter,
@@ -17,7 +16,6 @@ import {
   OnDestroy,
   Optional,
   Output,
-  QueryList,
   Self,
 } from '@angular/core';
 import {
@@ -30,7 +28,7 @@ import {
   UP_ARROW,
 } from '@angular/cdk/keycodes';
 import {Directionality} from '@angular/cdk/bidi';
-import {take, takeUntil} from 'rxjs/operators';
+import {takeUntil} from 'rxjs/operators';
 import {CdkMenuGroup} from './menu-group';
 import {CDK_MENU} from './menu-interface';
 import {
@@ -70,10 +68,6 @@ export class CdkMenu extends CdkMenuBase implements AfterContentInit, OnDestroy 
   /** Event emitted when the menu is closed. */
   @Output() readonly closed: EventEmitter<void> = new EventEmitter();
 
-  /** List of nested CdkMenuGroup elements */
-  @ContentChildren(CdkMenuGroup, {descendants: true})
-  private readonly _nestedGroups: QueryList<CdkMenuGroup>;
-
   override _isInline = !this._parentTrigger;
 
   constructor(
@@ -94,7 +88,6 @@ export class CdkMenu extends CdkMenuBase implements AfterContentInit, OnDestroy 
 
   override ngAfterContentInit() {
     super.ngAfterContentInit();
-    this._completeChangeEmitter();
     this._subscribeToMenuStackEmptied();
     this._subscribeToMouseManager();
     this._menuAim?.initialize(this, this.pointerTracker!);
@@ -145,30 +138,6 @@ export class CdkMenu extends CdkMenuBase implements AfterContentInit, OnDestroy 
       default:
         keyManager.onKeydown(event);
     }
-  }
-
-  /**
-   * Complete the change emitter if there are any nested MenuGroups or register to complete the
-   * change emitter if a MenuGroup is rendered at some point
-   */
-  // TODO(mmalerba): This doesnt' quite work. It causes change events to stop
-  //  firing for radio items directly in the menu if a second group of options
-  //  is added in a menu-group.
-  private _completeChangeEmitter() {
-    if (this._hasNestedGroups()) {
-      this.change.complete();
-    } else {
-      this._nestedGroups.changes.pipe(take(1)).subscribe(() => this.change.complete());
-    }
-  }
-
-  /** Return true if there are nested CdkMenuGroup elements within the Menu */
-  private _hasNestedGroups() {
-    // view engine has a bug where @ContentChildren will return the current element
-    // along with children if the selectors match - not just the children.
-    // Here, if there is at least one element, we check to see if the first element is a CdkMenu in
-    // order to ensure that we return true iff there are child CdkMenuGroup elements.
-    return this._nestedGroups.length > 0 && !(this._nestedGroups.first instanceof CdkMenu);
   }
 
   /**

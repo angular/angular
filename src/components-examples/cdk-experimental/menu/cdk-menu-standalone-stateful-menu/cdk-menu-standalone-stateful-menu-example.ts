@@ -1,5 +1,4 @@
 import {Component} from '@angular/core';
-import {CdkMenuItem} from '@angular/cdk-experimental/menu';
 
 /** @title Stateful Menu with Standalone Trigger. */
 @Component({
@@ -11,9 +10,6 @@ export class CdkMenuStandaloneStatefulMenuExample {
   bold = true;
   italic = false;
 
-  size: string | undefined = 'Normal';
-
-  onSizeChange(item: CdkMenuItem) {
-    this.size = item._elementRef.nativeElement.textContent?.trim();
-  }
+  sizes = ['Small', 'Normal', 'Large'];
+  selectedSize: string | undefined = 'Normal';
 }

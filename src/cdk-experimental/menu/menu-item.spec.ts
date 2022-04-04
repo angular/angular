@@ -57,10 +57,6 @@ describe('MenuItem', () => {
       expect(nativeButton.hasAttribute('aria-disabled')).toBeFalse();
     });
 
-    it('should be a button type', () => {
-      expect(nativeButton.getAttribute('type')).toBe('button');
-    });
-
     it('should not have a menu', () => {
       expect(menuItem.hasMenu()).toBeFalse();
     });

@@ -48,16 +48,12 @@ describe('MenuItemCheckbox', () => {
     expect(checkboxElement.getAttribute('aria-disabled')).toBe('true');
   });
 
-  it('should be a button type', () => {
-    expect(checkboxElement.getAttribute('type')).toBe('button');
-  });
-
   it('should not have a menu', () => {
     expect(checkbox.hasMenu()).toBeFalse();
   });
 
   it('should toggle the aria checked attribute', () => {
-    expect(checkboxElement.getAttribute('aria-checked')).toBeNull();
+    expect(checkboxElement.getAttribute('aria-checked')).toBe('false');
 
     checkboxElement.click();
     fixture.detectChanges();
@@ -84,7 +80,7 @@ describe('MenuItemCheckbox', () => {
 
   it('should emit on clicked emitter when triggered', () => {
     const spy = jasmine.createSpy('cdkMenuItemCheckbox clicked spy');
-    checkbox.toggled.subscribe(spy);
+    checkbox.triggered.subscribe(spy);
 
     checkbox.trigger();
 
@@ -93,7 +89,7 @@ describe('MenuItemCheckbox', () => {
 
   it('should not emit on clicked emitter when disabled', () => {
     const spy = jasmine.createSpy('cdkMenuItemCheckbox clicked spy');
-    checkbox.toggled.subscribe(spy);
+    checkbox.triggered.subscribe(spy);
     checkbox.disabled = true;
 
     checkbox.trigger();

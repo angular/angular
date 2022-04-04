@@ -53,16 +53,12 @@ describe('MenuItemRadio', () => {
   });
 
   it('should toggle the aria checked attribute', () => {
-    expect(radioElement.getAttribute('aria-checked')).toBeNull();
+    expect(radioElement.getAttribute('aria-checked')).toBe('false');
 
     radioElement.click();
     fixture.detectChanges();
 
     expect(radioElement.getAttribute('aria-checked')).toBe('true');
-  });
-
-  it('should be a button type', () => {
-    expect(radioElement.getAttribute('type')).toBe('button');
   });
 
   it('should not have a menu', () => {
@@ -78,7 +74,7 @@ describe('MenuItemRadio', () => {
 
   it('should emit on clicked emitter when triggered', () => {
     const spy = jasmine.createSpy('cdkMenuItemRadio clicked spy');
-    radioButton.toggled.subscribe(spy);
+    radioButton.triggered.subscribe(spy);
 
     radioButton.trigger();
 
@@ -87,27 +83,12 @@ describe('MenuItemRadio', () => {
 
   it('should not emit on clicked emitter when disabled', () => {
     const spy = jasmine.createSpy('cdkMenuItemRadio clicked spy');
-    radioButton.toggled.subscribe(spy);
+    radioButton.triggered.subscribe(spy);
     radioButton.disabled = true;
 
     radioButton.trigger();
 
     expect(spy).not.toHaveBeenCalled();
-  });
-
-  it('should toggle state when called with own id and not toggle when called with other id', () => {
-    const id = 'id-1';
-    const name = 'name-1';
-    radioButton.id = id;
-    radioButton.name = name;
-
-    expect(radioButton.checked).withContext('Initial state').toBeFalse();
-
-    selectionDispatcher.notify(id, name);
-    expect(radioButton.checked).withContext('Called with own id and name').toBeTrue();
-
-    selectionDispatcher.notify('another-id', 'another-name');
-    expect(radioButton.checked).withContext('Called with differing id and name').toBeFalse();
   });
 });
 

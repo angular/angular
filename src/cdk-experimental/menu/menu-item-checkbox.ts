@@ -18,11 +18,7 @@ import {CdkMenuItem} from './menu-item';
   selector: '[cdkMenuItemCheckbox]',
   exportAs: 'cdkMenuItemCheckbox',
   host: {
-    '[tabindex]': '_tabindex',
-    'type': 'button',
     'role': 'menuitemcheckbox',
-    '[attr.aria-checked]': 'checked || null',
-    '[attr.aria-disabled]': 'disabled || null',
   },
   providers: [
     {provide: CdkMenuItemSelectable, useExisting: CdkMenuItemCheckbox},
@@ -31,8 +27,8 @@ import {CdkMenuItem} from './menu-item';
 })
 export class CdkMenuItemCheckbox extends CdkMenuItemSelectable {
   /** Toggle the checked state of the checkbox. */
-  override trigger() {
-    super.trigger();
+  override trigger(options?: {keepOpen: boolean}) {
+    super.trigger(options);
 
     if (!this.disabled) {
       this.checked = !this.checked;

@@ -47,10 +47,6 @@ describe('MenuItemTrigger', () => {
       expect(menuItemElement.getAttribute('aria-haspopup')).toEqual('menu');
     });
 
-    it('should be a button type', () => {
-      expect(menuItemElement.getAttribute('type')).toBe('button');
-    });
-
     it('should  have a menu', () => {
       expect(menuItem.hasMenu()).toBeTrue();
     });

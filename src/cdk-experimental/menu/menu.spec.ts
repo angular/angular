@@ -56,117 +56,6 @@ describe('Menu', () => {
     });
   });
 
-  describe('checkbox change events', () => {
-    let fixture: ComponentFixture<MenuCheckboxGroup>;
-    let menuItems: CdkMenuItemCheckbox[];
-
-    beforeEach(waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [CdkMenuModule],
-        declarations: [MenuCheckboxGroup],
-      }).compileComponents();
-
-      fixture = TestBed.createComponent(MenuCheckboxGroup);
-      fixture.detectChanges();
-
-      fixture.componentInstance.trigger.getMenuTrigger()?.toggle();
-      fixture.detectChanges();
-
-      menuItems = fixture.debugElement
-        .queryAll(By.directive(CdkMenuItemCheckbox))
-        .map(element => element.injector.get(CdkMenuItemCheckbox));
-    }));
-
-    it('should emit on click', () => {
-      const spy = jasmine.createSpy('cdkMenu change spy');
-      fixture.debugElement.query(By.directive(CdkMenu)).injector.get(CdkMenu).change.subscribe(spy);
-
-      menuItems[0].trigger();
-
-      expect(spy).toHaveBeenCalledTimes(1);
-      expect(spy).toHaveBeenCalledWith(menuItems[0]);
-    });
-  });
-
-  describe('with inner group', () => {
-    let fixture: ComponentFixture<MenuWithNestedGroup>;
-    let menuItems: CdkMenuItemCheckbox[];
-    let menu: CdkMenu;
-
-    beforeEach(waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [CdkMenuModule],
-        declarations: [MenuWithNestedGroup],
-      }).compileComponents();
-
-      fixture = TestBed.createComponent(MenuWithNestedGroup);
-      fixture.detectChanges();
-
-      fixture.componentInstance.trigger.getMenuTrigger()?.toggle();
-      fixture.detectChanges();
-
-      menu = fixture.debugElement.query(By.directive(CdkMenu)).injector.get(CdkMenu);
-
-      menuItems = fixture.debugElement
-        .queryAll(By.directive(CdkMenuItemCheckbox))
-        .map(element => element.injector.get(CdkMenuItemCheckbox));
-    }));
-
-    it('should not emit change from root menu ', () => {
-      const spy = jasmine.createSpy('changeSpy for root menu');
-      menu.change.subscribe(spy);
-
-      for (let menuItem of menuItems) {
-        menuItem.trigger();
-      }
-
-      expect(spy).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('with inner group render delayed', () => {
-    let fixture: ComponentFixture<MenuWithConditionalGroup>;
-    let menuItems: CdkMenuItemCheckbox[];
-    let menu: CdkMenu;
-
-    const getMenuItems = () => {
-      return fixture.debugElement
-        .queryAll(By.directive(CdkMenuItemCheckbox))
-        .map(element => element.injector.get(CdkMenuItemCheckbox));
-    };
-
-    beforeEach(waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [CdkMenuModule],
-        declarations: [MenuWithConditionalGroup],
-      }).compileComponents();
-
-      fixture = TestBed.createComponent(MenuWithConditionalGroup);
-      fixture.detectChanges();
-
-      fixture.componentInstance.trigger.getMenuTrigger()?.toggle();
-      fixture.detectChanges();
-
-      menu = fixture.debugElement.query(By.directive(CdkMenu)).injector.get(CdkMenu);
-      menuItems = getMenuItems();
-    }));
-
-    it('should not emit after the menu group element renders', () => {
-      const spy = jasmine.createSpy('cdkMenu change');
-      menu.change.subscribe(spy);
-
-      menuItems[0].trigger();
-      fixture.componentInstance.renderInnerGroup = true;
-      fixture.detectChanges();
-
-      menuItems = getMenuItems();
-      menuItems[1].trigger();
-      fixture.detectChanges();
-
-      expect(spy).withContext('Expected initial trigger only').toHaveBeenCalledTimes(1);
-    });
-  });
-
   describe('when configured inline', () => {
     let fixture: ComponentFixture<InlineMenu>;
     let nativeMenu: HTMLElement;
@@ -632,7 +521,7 @@ describe('Menu', () => {
     <ng-template #panel>
       <ul cdkMenu>
         <li role="none">
-          <button checked="true" cdkMenuItemCheckbox>first</button>
+          <button cdkMenuItemChecked="true" cdkMenuItemCheckbox>first</button>
         </li>
         <li role="none">
           <button cdkMenuItemCheckbox>second</button>
@@ -642,48 +531,6 @@ describe('Menu', () => {
   `,
 })
 class MenuCheckboxGroup {
-  @ViewChild(CdkMenuItem) readonly trigger: CdkMenuItem;
-}
-
-@Component({
-  template: `
-    <div cdkMenuBar>
-      <button cdkMenuItem [cdkMenuTriggerFor]="panel"></button>
-    </div>
-    <ng-template #panel>
-      <ul cdkMenu>
-        <li>
-          <ul cdkMenuGroup>
-            <li><button cdkMenuCheckbox>first</button></li>
-          </ul>
-        </li>
-      </ul>
-    </ng-template>
-  `,
-})
-class MenuWithNestedGroup {
-  @ViewChild(CdkMenuItem) readonly trigger: CdkMenuItem;
-}
-
-@Component({
-  template: `
-    <div cdkMenuBar>
-      <button cdkMenuItem [cdkMenuTriggerFor]="panel"></button>
-    </div>
-    <ng-template #panel>
-      <ul cdkMenu>
-        <li><button cdkMenuItemCheckbox>first</button></li>
-        <div *ngIf="renderInnerGroup">
-          <ul cdkMenuGroup>
-            <li><button cdkMenuItemCheckbox>second</button></li>
-          </ul>
-        </div>
-      </ul>
-    </ng-template>
-  `,
-})
-class MenuWithConditionalGroup {
-  renderInnerGroup = false;
   @ViewChild(CdkMenuItem) readonly trigger: CdkMenuItem;
 }
 
@@ -754,6 +601,7 @@ class WithComplexNestedMenus {
 
   @ViewChildren(CdkMenu) menus: QueryList<CdkMenu>;
 }
+
 @Component({
   template: `
     <div cdkMenuBar cdkTargetMenuAim style="position: fixed; bottom: 0">

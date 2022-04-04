@@ -5,6 +5,7 @@ import {CdkMenuStandaloneStatefulMenuExample} from './cdk-menu-standalone-statef
 import {CdkMenuMenubarExample} from './cdk-menu-menubar/cdk-menu-menubar-example';
 import {CdkMenuInlineExample} from './cdk-menu-inline/cdk-menu-inline-example';
 import {CdkMenuContextExample} from './cdk-menu-context/cdk-menu-context-example';
+import {CommonModule} from '@angular/common';
 
 export {
   CdkMenuStandaloneMenuExample,
@@ -23,7 +24,7 @@ const EXAMPLES = [
 ];
 
 @NgModule({
-  imports: [CdkMenuModule],
+  imports: [CdkMenuModule, CommonModule],
   declarations: EXAMPLES,
   exports: EXAMPLES,
 })

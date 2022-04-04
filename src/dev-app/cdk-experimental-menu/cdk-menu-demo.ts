@@ -8,7 +8,6 @@
 
 import {Component} from '@angular/core';
 import {ConnectedPosition} from '@angular/cdk/overlay';
-import {CdkMenuItem} from '@angular/cdk-experimental/menu';
 
 @Component({
   templateUrl: 'cdk-menu-demo.html',
@@ -19,14 +18,8 @@ export class CdkMenuDemo {
     {originX: 'center', originY: 'center', overlayX: 'center', overlayY: 'center'},
   ] as ConnectedPosition[];
 
-  size: string | undefined = 'Normal';
-  color: string | undefined = 'Red';
-
-  onSizeChange(item: CdkMenuItem) {
-    this.size = item._elementRef.nativeElement.textContent?.trim();
-  }
-
-  onColorChange(item: CdkMenuItem) {
-    this.color = item._elementRef.nativeElement.textContent?.trim();
-  }
+  sizes = ['Small', 'Normal', 'Large'];
+  colors = ['Red', 'Green', 'Blue'];
+  selectedSize: string | undefined = 'Normal';
+  selectedColor: string | undefined = 'Red';
 }
