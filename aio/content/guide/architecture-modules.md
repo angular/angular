@@ -7,6 +7,7 @@ Every Angular application has at least one NgModule class, [the *root module*](g
 
 While a small application might have only one NgModule, most applications have many more *feature modules*. The *root* NgModule for an application is so named because it can include child NgModules in a hierarchy of any depth.
 
+Module in Angular refers to a place where you can group the components, directives, pipes, and services, which are related to the application. 
 ## NgModule metadata
 
 An NgModule is defined by a class decorated with `@NgModule()`. The `@NgModule()` decorator is a function that takes a single metadata object, whose properties describe the module. The most important properties are as follows.
