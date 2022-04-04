@@ -34,6 +34,9 @@ APPLICATION_FILES = [
     "tsconfig.app.json",
     "tsconfig.json",
     "tsconfig.worker.json",
+    "//aio/src/assets",
+    "//aio/src/assets/js",
+    ":dgeni",
 ] + glob(
     ["src/**/*"],
     exclude = [
@@ -137,12 +140,11 @@ DGENI_DEPS = [
 ]
 
 # All transforms and sources needed by dgeni to produce docs
-DGENI_FILES = glob([
-    "content/**",
-    "src/assets/**",
-    "tools/transforms/**",
-]) + [
+DGENI_FILES = [
     "@angular_cli_src//:files_for_docgen",  # Downloaded cli snapshot (see WORKSPACE)
+    "//aio/content",
+    "//aio/src/assets",
+    "//aio/tools/transforms",
     "//:package.json",
     "//packages:files_for_docgen",
 ]
@@ -158,4 +160,14 @@ npm_package_bin(
     },
     output_dir = True,
     tool = "@aio_npm//dgeni/bin:dgeni",
+)
+
+architect(
+    name = "serve",
+    args = [
+        "site:serve",
+    ],
+    chdir = package_name(),
+    data = APPLICATION_DEPS + APPLICATION_FILES,
+    tags = ["ibazel_notify_changes"],
 )
