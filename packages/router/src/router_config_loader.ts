@@ -10,9 +10,12 @@ import {Compiler, InjectFlags, InjectionToken, Injector, NgModuleFactory} from '
 import {ConnectableObservable, from, Observable, of, Subject} from 'rxjs';
 import {catchError, map, mergeMap, refCount, tap} from 'rxjs/operators';
 
-import {LoadChildren, LoadedRouterConfig, Route} from './models';
+import {LoadChildren, LoadedRouterConfig, Route, Routes} from './models';
 import {flatten, wrapIntoObservable} from './utils/collection';
-import {standardizeConfig} from './utils/config';
+import {standardizeConfig, validateConfig} from './utils/config';
+
+
+const NG_DEV_MODE = typeof ngDevMode === 'undefined' || !!ngDevMode;
 
 /**
  * The [DI token](guide/glossary/#di-token) for a router configuration.
@@ -47,15 +50,15 @@ export class RouterConfigLoader {
             this.onLoadEndListener(route);
           }
           const module = factory.create(parentInjector);
-          // When loading a module that doesn't provide `RouterModule.forChild()` preloader
-          // will get stuck in an infinite loop. The child module's Injector will look to
-          // its parent `Injector` when it doesn't find any ROUTES so it will return routes
-          // for it's parent module instead.
-          return new LoadedRouterConfig(
-              flatten(
-                  module.injector.get(ROUTES, undefined, InjectFlags.Self | InjectFlags.Optional))
-                  .map(standardizeConfig),
-              module);
+          const routes =
+              // When loading a module that doesn't provide `RouterModule.forChild()` preloader
+              // will get stuck in an infinite loop. The child module's Injector will look to
+              // its parent `Injector` when it doesn't find any ROUTES so it will return routes
+              // for it's parent module instead.
+              flatten(module.injector.get(ROUTES, [], InjectFlags.Self | InjectFlags.Optional))
+                  .map(standardizeConfig);
+          NG_DEV_MODE && validateConfig(routes);
+          return new LoadedRouterConfig(routes, module);
         }),
         catchError((err) => {
           route._loader$ = undefined;
