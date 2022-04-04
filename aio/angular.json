@@ -51,7 +51,7 @@
               "src/pwa-manifest.json",
               "src/google385281288605d160.html",
               {
-                "input": "src/generated",
+                "input": "dgeni/generated",
                 "output": "generated",
                 "glob": "**"
               }
