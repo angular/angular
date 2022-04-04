@@ -43,7 +43,21 @@ import {scheduleMicroTask} from './util/microtask';
 import {stringify} from './util/stringify';
 import {NgZone, NoopNgZone} from './zone/ng_zone';
 
-let _platform: PlatformRef;
+let _platformInjector: Injector|null = null;
+
+/**
+ * Internal token to indicate whether having multiple bootstrapped platform should be allowed (only
+ * one bootstrapped platform is allowed by default). This token helps to support SSR scenarios.
+ */
+export const ALLOW_MULTIPLE_PLATFORMS = new InjectionToken<boolean>('AllowMultipleToken');
+
+/**
+ * Internal token that allows to register extra callbacks that should be invoked during the
+ * `PlatformRef.destroy` operation. This token is needed to avoid a direct reference to the
+ * `PlatformRef` class (i.e. register the callback via `PlatformRef.onDestroy`), thus making the
+ * entire class tree-shakeable.
+ */
+const PLATFORM_ON_DESTROY = new InjectionToken<() => void>('PlatformOnDestroy');
 
 export function compileNgModuleFactory<M>(
     injector: Injector, options: CompilerOptions,
@@ -102,10 +116,6 @@ export function isBoundToModule<C>(cf: ComponentFactory<C>): boolean {
   return (cf as R3ComponentFactory<C>).isBoundToModule;
 }
 
-export const ALLOW_MULTIPLE_PLATFORMS = new InjectionToken<boolean>('AllowMultipleToken');
-
-
-
 /**
  * A token for third-party components that can register themselves with NgProbe.
  *
@@ -122,18 +132,18 @@ export class NgProbeToken {
  * @publicApi
  */
 export function createPlatform(injector: Injector): PlatformRef {
-  if (_platform && !_platform.destroyed &&
-      !_platform.injector.get(ALLOW_MULTIPLE_PLATFORMS, false)) {
+  if (_platformInjector && !_platformInjector.get(ALLOW_MULTIPLE_PLATFORMS, false)) {
     const errorMessage = (typeof ngDevMode === 'undefined' || ngDevMode) ?
         'There can be only one platform. Destroy the previous one to create a new one.' :
         '';
     throw new RuntimeError(RuntimeErrorCode.MULTIPLE_PLATFORMS, errorMessage);
   }
   publishDefaultGlobalUtils();
-  _platform = injector.get(PlatformRef);
+  _platformInjector = injector;
+  const platform = injector.get(PlatformRef);
   const inits = injector.get(PLATFORM_INITIALIZER, null);
-  if (inits) inits.forEach((init: any) => init());
-  return _platform;
+  if (inits) inits.forEach(initFn => initFn());
+  return platform;
 }
 
 /**
@@ -155,16 +165,15 @@ export function createPlatformFactory(
   return (extraProviders: StaticProvider[] = []) => {
     let platform = getPlatform();
     if (!platform || platform.injector.get(ALLOW_MULTIPLE_PLATFORMS, false)) {
+      const platformProviders: StaticProvider[] = [
+        ...providers,       //
+        ...extraProviders,  //
+        {provide: marker, useValue: true}
+      ];
       if (parentPlatformFactory) {
-        parentPlatformFactory(
-            providers.concat(extraProviders).concat({provide: marker, useValue: true}));
+        parentPlatformFactory(platformProviders);
       } else {
-        const injectedProviders: StaticProvider[] =
-            providers.concat(extraProviders).concat({provide: marker, useValue: true}, {
-              provide: INJECTOR_SCOPE,
-              useValue: 'platform'
-            });
-        createPlatform(Injector.create({providers: injectedProviders, name: desc}));
+        createPlatform(createPlatformInjector(platformProviders, desc));
       }
     }
     return assertPlatform(marker);
@@ -196,15 +205,28 @@ export function assertPlatform(requiredToken: any): PlatformRef {
 }
 
 /**
+ * Helper function to create an instance of a platform injector (that maintains the 'platform'
+ * scope).
+ */
+export function createPlatformInjector(providers: StaticProvider[] = [], name?: string): Injector {
+  return Injector.create({
+    name,
+    providers: [
+      {provide: INJECTOR_SCOPE, useValue: 'platform'},
+      {provide: PLATFORM_ON_DESTROY, useValue: () => _platformInjector = null},  //
+      ...providers
+    ],
+  });
+}
+
+/**
  * Destroys the current Angular platform and all Angular applications on the page.
  * Destroys all modules and listeners registered with the platform.
  *
  * @publicApi
  */
 export function destroyPlatform(): void {
-  if (_platform && !_platform.destroyed) {
-    _platform.destroy();
-  }
+  getPlatform()?.destroy();
 }
 
 /**
@@ -213,7 +235,7 @@ export function destroyPlatform(): void {
  * @publicApi
  */
 export function getPlatform(): PlatformRef|null {
-  return _platform && !_platform.destroyed ? _platform : null;
+  return _platformInjector?.get(PlatformRef) ?? null;
 }
 
 /**
@@ -417,6 +439,10 @@ export class PlatformRef {
     }
     this._modules.slice().forEach(module => module.destroy());
     this._destroyListeners.forEach(listener => listener());
+
+    const destroyListener = this._injector.get(PLATFORM_ON_DESTROY, null);
+    destroyListener?.();
+
     this._destroyed = true;
   }
 
