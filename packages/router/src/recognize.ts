@@ -161,13 +161,16 @@ export class Recognizer {
 
     if (route.path === '**') {
       const params = segments.length > 0 ? last(segments)!.parameters : {};
+      const pathIndexShift = getPathIndexShift(rawSegment) + segments.length;
       snapshot = new ActivatedRouteSnapshot(
           segments, params, Object.freeze({...this.urlTree.queryParams}), this.urlTree.fragment,
           getData(route), getOutlet(route), route.component!, route,
-          getSourceSegmentGroup(rawSegment), getPathIndexShift(rawSegment) + segments.length,
-          getResolve(route),
-          (NG_DEV_MODE ? getCorrectedPathIndexShift(rawSegment) : getPathIndexShift(rawSegment)) +
-              segments.length);
+          getSourceSegmentGroup(rawSegment), pathIndexShift, getResolve(route),
+          // NG_DEV_MODE is used to prevent the getCorrectedPathIndexShift function from affecting
+          // production bundle size. This value is intended only to surface a warning to users
+          // depending on `relativeLinkResolution: 'legacy'` in dev mode.
+          (NG_DEV_MODE ? getCorrectedPathIndexShift(rawSegment) + segments.length :
+                         pathIndexShift));
     } else {
       const result = match(rawSegment, route, segments);
       if (!result.matched) {
@@ -175,14 +178,14 @@ export class Recognizer {
       }
       consumedSegments = result.consumedSegments;
       remainingSegments = result.remainingSegments;
+      const pathIndexShift = getPathIndexShift(rawSegment) + consumedSegments.length;
 
       snapshot = new ActivatedRouteSnapshot(
           consumedSegments, result.parameters, Object.freeze({...this.urlTree.queryParams}),
           this.urlTree.fragment, getData(route), getOutlet(route), route.component!, route,
-          getSourceSegmentGroup(rawSegment),
-          getPathIndexShift(rawSegment) + consumedSegments.length, getResolve(route),
-          (NG_DEV_MODE ? getCorrectedPathIndexShift(rawSegment) : getPathIndexShift(rawSegment)) +
-              consumedSegments.length);
+          getSourceSegmentGroup(rawSegment), pathIndexShift, getResolve(route),
+          (NG_DEV_MODE ? getCorrectedPathIndexShift(rawSegment) + consumedSegments.length :
+                         pathIndexShift));
     }
 
     const childConfig: Route[] = getChildConfig(route);
