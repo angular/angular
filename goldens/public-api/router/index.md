@@ -261,7 +261,7 @@ export interface IsActiveMatchOptions {
 export type LoadChildren = LoadChildrenCallback;
 
 // @public
-export type LoadChildrenCallback = () => Type<any> | NgModuleFactory<any> | Observable<Type<any>> | Promise<NgModuleFactory<any> | Type<any> | any>;
+export type LoadChildrenCallback = () => Type<any> | NgModuleFactory<any> | Observable<Type<any>> | Promise<NgModuleFactory<any> | Type<any>>;
 
 // @public
 export interface Navigation {
