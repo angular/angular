@@ -2255,13 +2255,6 @@ Finally, it loads the requested route to the destination admin component.
 
 The lazy loading and re-configuration happen just once, when the route is first requested; the module and routes are available immediately for subsequent requests.
 
-<div class="alert is-helpful">
-
-Angular provides a built-in module loader that supports SystemJS to load modules asynchronously.
-If you were using another bundling tool, such as Webpack, you would use the Webpack mechanism for asynchronously loading modules.
-
-</div>
-
 Take the final step and detach the admin feature set from the main application.
 The root `AppModule` must neither load nor reference the `AdminModule` or its files.
 

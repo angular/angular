@@ -251,6 +251,9 @@ export {
 export {
   compilePipe as ɵcompilePipe,
 } from './render3/jit/pipe';
+export {
+  isStandalone as ɵisStandalone,
+} from './render3/jit/module';
 export { Profiler as ɵProfiler, ProfilerEvent as ɵProfilerEvent } from './render3/profiler';
 export {
   publishDefaultGlobalUtils as ɵpublishDefaultGlobalUtils

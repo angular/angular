@@ -93,6 +93,8 @@ export type ResolveData = {
  * A function that is called to resolve a collection of lazy-loaded routes.
  * Must be an arrow function of the following form:
  * `() => import('...').then(mod => mod.MODULE)`
+ * or
+ * `() => import('...').then(mod => mod.ROUTES)`
  *
  * For example:
  *
@@ -102,12 +104,19 @@ export type ResolveData = {
  *   loadChildren: () => import('./lazy-route/lazy.module').then(mod => mod.LazyModule),
  * }];
  * ```
+ * or
+ * ```
+ * [{
+ *   path: 'lazy',
+ *   loadChildren: () => import('./lazy-route/lazy.routes').then(mod => mod.ROUTES),
+ * }];
+ * ```
  *
  * @see [Route.loadChildren](api/router/Route#loadChildren)
  * @publicApi
  */
-export type LoadChildrenCallback = () =>
-    Type<any>|NgModuleFactory<any>|Observable<Type<any>>|Promise<NgModuleFactory<any>|Type<any>>;
+export type LoadChildrenCallback = () => Type<any>|NgModuleFactory<any>|Routes|
+    Observable<Type<any>|Routes>|Promise<NgModuleFactory<any>|Type<any>|Routes>;
 
 /**
  *
