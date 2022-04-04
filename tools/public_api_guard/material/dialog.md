@@ -197,8 +197,6 @@ export class MatDialogContainer extends _MatDialogContainerBase {
             exitAnimationDuration: string;
         };
     };
-    // (undocumented)
-    _initializeWithAttachedContent(): void;
     _onAnimationDone({ toState, totalTime }: AnimationEvent_2): void;
     _onAnimationStart({ toState, totalTime }: AnimationEvent_2): void;
     _startExitAnimation(): void;
@@ -231,6 +229,7 @@ export abstract class _MatDialogContainerBase extends BasePortalOutlet {
     protected _focusTrapFactory: FocusTrapFactory;
     _id: string;
     _initializeWithAttachedContent(): void;
+    protected _openAnimationDone(totalTime: number): void;
     _portalOutlet: CdkPortalOutlet;
     _recaptureFocus(): void;
     protected _restoreFocus(): void;

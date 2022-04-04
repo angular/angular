@@ -168,8 +168,7 @@ export class MatDialogContainer extends _MatDialogContainerBase implements OnDes
    */
   private _finishDialogOpen = () => {
     this._clearAnimationClasses();
-    this._trapFocus();
-    this._animationStateChanged.emit({state: 'opened', totalTime: this._openAnimationDuration});
+    this._openAnimationDone(this._openAnimationDuration);
   };
 
   /**
