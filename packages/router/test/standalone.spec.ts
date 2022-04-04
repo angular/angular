@@ -14,15 +14,63 @@ import {RouterTestingModule} from '@angular/router/testing';
 
 import {RouterModule} from '../src';
 
-@Component({template: '<div>simple standalone</div>'})
+@Component({template: '<div>simple standalone</div>', standalone: true})
 export class SimpleStandaloneComponent {
 }
 
-@Component({template: '<router-outlet></router-outlet>'})
+@Component({template: '<div>not standalone</div>', standalone: false})
+export class NotStandaloneComponent {
+}
+
+@Component({
+  template: '<router-outlet></router-outlet>',
+  standalone: true,
+  imports: [RouterModule],
+})
 export class RootCmp {
 }
 
 describe('standalone in Router API', () => {
+  describe('loadChildren => routes', () => {
+    it('can navigate to and render standalone component', fakeAsync(() => {
+         TestBed.configureTestingModule({
+           imports: [RouterTestingModule.withRoutes([
+             {
+               path: 'lazy',
+               component: RootCmp,
+               loadChildren: () => [{path: '', component: SimpleStandaloneComponent}],
+             },
+           ])]
+         });
+
+         const root = TestBed.createComponent(RootCmp);
+
+         const router = TestBed.inject(Router);
+         router.navigateByUrl('/lazy');
+         advance(root);
+         expect(root.nativeElement.innerHTML).toContain('simple standalone');
+       }));
+
+    it('throws an error when loadChildren=>routes has a component that is not standalone',
+       fakeAsync(() => {
+         TestBed.configureTestingModule({
+           imports: [RouterTestingModule.withRoutes([
+             {
+               path: 'lazy',
+               component: RootCmp,
+               loadChildren: () => [{path: 'notstandalone', component: NotStandaloneComponent}],
+             },
+           ])]
+         });
+
+         const root = TestBed.createComponent(RootCmp);
+
+         const router = TestBed.inject(Router);
+         router.navigateByUrl('/lazy/notstandalone');
+         expect(() => advance(root))
+             .toThrowError(/.*lazy\/notstandalone.*component must be standalone/);
+       }));
+  });
   describe('route providers', () => {
     it('can provide a guard on a route', fakeAsync(() => {
          @Injectable()
@@ -42,7 +90,6 @@ describe('standalone in Router API', () => {
                component: SimpleStandaloneComponent
              }]),
            ],
-           declarations: [RootCmp],
          });
          const root = TestBed.createComponent(RootCmp);
 
@@ -76,7 +123,7 @@ describe('standalone in Router API', () => {
              RouterTestingModule.withRoutes(
                  [{path: 'home', providers: [Service], component: MyComponent}]),
            ],
-           declarations: [RootCmp, MyComponent],
+           declarations: [MyComponent],
          });
          const root = TestBed.createComponent(RootCmp);
 
@@ -108,7 +155,7 @@ describe('standalone in Router API', () => {
              RouterTestingModule.withRoutes(
                  [{path: 'home', loadChildren: () => LazyModule, component: MyComponent}]),
            ],
-           declarations: [RootCmp, MyComponent],
+           declarations: [MyComponent],
          });
          const root = TestBed.createComponent(RootCmp);
 
@@ -140,7 +187,6 @@ describe('standalone in Router API', () => {
            imports: [
              RouterTestingModule.withRoutes([{path: 'home', loadChildren: () => LazyModule}]),
            ],
-           declarations: [RootCmp],
          });
          const root = TestBed.createComponent(RootCmp);
 
@@ -223,7 +269,7 @@ describe('standalone in Router API', () => {
                loadChildren: () => LazyModule
              }]),
            ],
-           declarations: [RootCmp, ParentCmp],
+           declarations: [ParentCmp],
          });
          const root = TestBed.createComponent(RootCmp);
 

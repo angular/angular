@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {EnvironmentInjector} from '@angular/core';
+import {EnvironmentInjector, ɵisStandalone as isStandalone} from '@angular/core';
 
 import {EmptyOutletComponent} from '../components/empty_outlet';
 import {Route, Routes} from '../models';
@@ -25,16 +25,17 @@ export function getProvidersInjector(route: Route): EnvironmentInjector|undefine
   return route._injector;
 }
 
-export function validateConfig(config: Routes, parentPath: string = ''): void {
+export function validateConfig(
+    config: Routes, parentPath: string = '', requireStandaloneComponents = false): void {
   // forEach doesn't iterate undefined values
   for (let i = 0; i < config.length; i++) {
     const route: Route = config[i];
     const fullPath: string = getFullPath(parentPath, route);
-    validateNode(route, fullPath);
+    validateNode(route, fullPath, requireStandaloneComponents);
   }
 }
 
-function validateNode(route: Route, fullPath: string): void {
+function validateNode(route: Route, fullPath: string, requireStandaloneComponents: boolean): void {
   if (typeof ngDevMode === 'undefined' || ngDevMode) {
     if (!route) {
       throw new Error(`
@@ -101,9 +102,13 @@ function validateNode(route: Route, fullPath: string): void {
       throw new Error(`Invalid configuration of route '{path: "${fullPath}", redirectTo: "${
           route.redirectTo}"}': please provide 'pathMatch'. ${exp}`);
     }
+    if (requireStandaloneComponents && route.component && !isStandalone(route.component)) {
+      throw new Error(
+          `Invalid configuration of route '${fullPath}'. The component must be standalone.`);
+    }
   }
   if (route.children) {
-    validateConfig(route.children, fullPath);
+    validateConfig(route.children, fullPath, requireStandaloneComponents);
   }
 }
 

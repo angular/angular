@@ -5567,7 +5567,7 @@ describe('Integration', () => {
 
          expect(recordedError.message)
              .toEqual(
-                 `Invalid configuration of route 'loaded'. One of the following must be provided: component, redirectTo, children or loadChildren`);
+                 `Invalid configuration of route 'lazy/loaded'. One of the following must be provided: component, redirectTo, children or loadChildren`);
        }));
 
     it('should work with complex redirect rules',
