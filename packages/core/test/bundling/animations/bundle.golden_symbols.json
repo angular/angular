@@ -354,6 +354,9 @@
     "name": "PLATFORM_INITIALIZER"
   },
   {
+    "name": "PLATFORM_ON_DESTROY"
+  },
+  {
     "name": "PlatformRef"
   },
   {
@@ -531,7 +534,7 @@
     "name": "_keyMap"
   },
   {
-    "name": "_platform"
+    "name": "_platformInjector"
   },
   {
     "name": "_query"
