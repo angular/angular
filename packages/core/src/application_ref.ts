@@ -21,7 +21,7 @@ import {Injector} from './di/injector';
 import {StaticProvider} from './di/interface/provider';
 import {INJECTOR_SCOPE} from './di/scope';
 import {ErrorHandler} from './error_handler';
-import {RuntimeError, RuntimeErrorCode} from './errors';
+import {formatRuntimeError, RuntimeError, RuntimeErrorCode} from './errors';
 import {DEFAULT_LOCALE_ID} from './i18n/localization';
 import {LOCALE_ID} from './i18n/tokens';
 import {Type} from './interface/type';
@@ -58,6 +58,8 @@ export const ALLOW_MULTIPLE_PLATFORMS = new InjectionToken<boolean>('AllowMultip
  * entire class tree-shakeable.
  */
 const PLATFORM_ON_DESTROY = new InjectionToken<() => void>('PlatformOnDestroy');
+
+const NG_DEV_MODE = typeof ngDevMode === 'undefined' || ngDevMode;
 
 export function compileNgModuleFactory<M>(
     injector: Injector, options: CompilerOptions,
@@ -306,7 +308,7 @@ export interface BootstrapOptions {
 @Injectable({providedIn: 'platform'})
 export class PlatformRef {
   private _modules: NgModuleRef<any>[] = [];
-  private _destroyListeners: Function[] = [];
+  private _destroyListeners: Array<() => void> = [];
   private _destroyed: boolean = false;
 
   /** @internal */
@@ -435,7 +437,7 @@ export class PlatformRef {
       const errorMessage = (typeof ngDevMode === 'undefined' || ngDevMode) ?
           'The platform has already been destroyed!' :
           '';
-      throw new RuntimeError(RuntimeErrorCode.ALREADY_DESTROYED_PLATFORM, errorMessage);
+      throw new RuntimeError(RuntimeErrorCode.PLATFORM_ALREADY_DESTROYED, errorMessage);
     }
     this._modules.slice().forEach(module => module.destroy());
     this._destroyListeners.forEach(listener => listener());
@@ -446,6 +448,9 @@ export class PlatformRef {
     this._destroyed = true;
   }
 
+  /**
+   * Indicates whether this instance was destroyed.
+   */
   get destroyed() {
     return this._destroyed;
   }
@@ -598,6 +603,15 @@ export class ApplicationRef {
   private _runningTick: boolean = false;
   private _stable = true;
   private _onMicrotaskEmptySubscription: Subscription;
+  private _destroyed = false;
+  private _destroyListeners: Array<() => void> = [];
+
+  /**
+   * Indicates whether this instance was destroyed.
+   */
+  get destroyed() {
+    return this._destroyed;
+  }
 
   /**
    * Get a list of component types registered to this application.
@@ -800,6 +814,7 @@ export class ApplicationRef {
    */
   bootstrap<C>(componentOrFactory: ComponentFactory<C>|Type<C>, rootSelectorOrNode?: string|any):
       ComponentRef<C> {
+    NG_DEV_MODE && this.warnIfDestroyed();
     if (!this._initStatus.done) {
       const errorMessage = (typeof ngDevMode === 'undefined' || ngDevMode) ?
           'Cannot bootstrap as there are still asynchronous initializers running. ' +
@@ -856,6 +871,7 @@ export class ApplicationRef {
    * detection pass during which all change detection must complete.
    */
   tick(): void {
+    NG_DEV_MODE && this.warnIfDestroyed();
     if (this._runningTick) {
       const errorMessage = (typeof ngDevMode === 'undefined' || ngDevMode) ?
           'ApplicationRef.tick is called recursively' :
@@ -887,6 +903,7 @@ export class ApplicationRef {
    * This will throw if the view is already attached to a ViewContainer.
    */
   attachView(viewRef: ViewRef): void {
+    NG_DEV_MODE && this.warnIfDestroyed();
     const view = (viewRef as InternalViewRef);
     this._views.push(view);
     view.attachToAppRef(this);
@@ -896,6 +913,7 @@ export class ApplicationRef {
    * Detaches a view from dirty checking again.
    */
   detachView(viewRef: ViewRef): void {
+    NG_DEV_MODE && this.warnIfDestroyed();
     const view = (viewRef as InternalViewRef);
     remove(this._views, view);
     view.detachFromAppRef();
@@ -913,8 +931,59 @@ export class ApplicationRef {
 
   /** @internal */
   ngOnDestroy() {
-    this._views.slice().forEach((view) => view.destroy());
-    this._onMicrotaskEmptySubscription.unsubscribe();
+    if (this._destroyed) return;
+
+    try {
+      // Call all the lifecycle hooks.
+      this._destroyListeners.forEach(listener => listener());
+
+      // Destroy all registered views.
+      this._views.slice().forEach((view) => view.destroy());
+      this._onMicrotaskEmptySubscription.unsubscribe();
+    } finally {
+      // Indicate that this instance is destroyed.
+      this._destroyed = true;
+
+      // Release all references.
+      this._views = [];
+      this._bootstrapListeners = [];
+      this._destroyListeners = [];
+    }
+  }
+
+  /**
+   * Registers a listener to be called when an instance is destroyed.
+   *
+   * @param callback A callback function to add as a listener.
+   * @returns A function which unregisters a listener.
+   *
+   * @internal
+   */
+  onDestroy(callback: () => void): VoidFunction {
+    NG_DEV_MODE && this.warnIfDestroyed();
+    this._destroyListeners.push(callback);
+    return () => remove(this._destroyListeners, callback);
+  }
+
+  destroy(): void {
+    if (this._destroyed) {
+      throw new RuntimeError(
+          RuntimeErrorCode.APPLICATION_REF_ALREADY_DESTROYED,
+          NG_DEV_MODE && 'This instance of the `ApplicationRef` has already been destroyed.');
+    }
+
+    // This is a temporary type to represent an instance of an R3Injector, which can be destroyed.
+    // The type will be replaced with a different one once destroyable injector type is available.
+    type DestroyableInjector = Injector&{destroy?: Function, destroyed?: boolean};
+
+    const injector = this._injector as DestroyableInjector;
+
+    // Check that this injector instance supports destroy operation.
+    if (injector.destroy && !injector.destroyed) {
+      // Destroying an underlying injector will trigger the `ngOnDestroy` lifecycle
+      // hook, which invokes the remaining cleanup actions.
+      injector.destroy();
+    }
   }
 
   /**
@@ -922,6 +991,14 @@ export class ApplicationRef {
    */
   get viewCount() {
     return this._views.length;
+  }
+
+  private warnIfDestroyed() {
+    if (NG_DEV_MODE && this._destroyed) {
+      console.warn(formatRuntimeError(
+          RuntimeErrorCode.APPLICATION_REF_ALREADY_DESTROYED,
+          'This instance of the `ApplicationRef` has already been destroyed.'));
+    }
   }
 }
 

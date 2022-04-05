@@ -81,6 +81,9 @@ export class ApplicationRef {
     bootstrap<C>(componentFactory: ComponentFactory<C>, rootSelectorOrNode?: string | any): ComponentRef<C>;
     readonly components: ComponentRef<any>[];
     readonly componentTypes: Type<any>[];
+    // (undocumented)
+    destroy(): void;
+    get destroyed(): boolean;
     detachView(viewRef: ViewRef): void;
     readonly isStable: Observable<boolean>;
     tick(): void;
@@ -980,7 +983,6 @@ export class PlatformRef {
     // @deprecated
     bootstrapModuleFactory<M>(moduleFactory: NgModuleFactory<M>, options?: BootstrapOptions): Promise<NgModuleRef<M>>;
     destroy(): void;
-    // (undocumented)
     get destroyed(): boolean;
     get injector(): Injector;
     onDestroy(callback: () => void): void;
