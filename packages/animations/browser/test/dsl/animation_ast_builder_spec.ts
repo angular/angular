@@ -46,7 +46,7 @@ import {MockAnimationDriver} from '../../testing';
           timings: {delay: 0, duration: 1000, easing: 'ease-in-out'},
           style: {
             type: 6,
-            styles: [new Map([['backgroundColor', '#000']])],
+            styles: [{backgroundColor: '#000'}],
             easing: null,
             offset: null,
             containsDynamicStyles: false,
