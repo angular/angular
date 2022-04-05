@@ -17,7 +17,7 @@ export class RuntimeError<T extends number = RuntimeErrorCode> extends Error {
 // @public
 export const enum RuntimeErrorCode {
     // (undocumented)
-    ALREADY_DESTROYED_PLATFORM = 404,
+    APPLICATION_REF_ALREADY_DESTROYED = 406,
     // (undocumented)
     ASYNC_INITIALIZERS_STILL_RUNNING = 405,
     // (undocumented)
@@ -54,6 +54,8 @@ export const enum RuntimeErrorCode {
     NO_SUPPORTING_DIFFER_FACTORY = 901,
     // (undocumented)
     PIPE_NOT_FOUND = -302,
+    // (undocumented)
+    PLATFORM_ALREADY_DESTROYED = 404,
     // (undocumented)
     PLATFORM_NOT_FOUND = 401,
     // (undocumented)
