@@ -41,7 +41,9 @@ export const enum CharCode {
   U = 85,             // "U"
   R = 82,             // "R"
   L = 76,             // "L"
-  Z = 90,             // "A"
+  N = 78,             // "N"
+  O = 79,             // "O"
+  Z = 90,             // "Z"
   a = 97,             // "a"
   z = 122,            // "z"
 }

@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {CharCode} from '../../util/char_code';
+import {trustedScriptFromString} from '../../util/security/trusted_types';
 import {AttributeMarker, TAttributes} from '../interfaces/node';
 import {CssSelector} from '../interfaces/projection';
 import {isProceduralRenderer, ProceduralRenderer3, Renderer3} from '../interfaces/renderer';
@@ -75,9 +76,19 @@ export function setUpAttributes(renderer: Renderer3, native: RElement, attrs: TA
           (renderer as ProceduralRenderer3).setProperty(native, attrName, attrVal);
         }
       } else {
-        isProc ?
-            (renderer as ProceduralRenderer3).setAttribute(native, attrName, attrVal as string) :
-            native.setAttribute(attrName, attrVal as string);
+        let value = attrVal as string;
+        if (isScriptSink(attrName)) {
+          // To be compatible with Trusted Types, certain attributes (inline event
+          // handlers in particular) must be specified as a TrustedScript.
+          // Attributes passed to this function are non-bound static attributes
+          // taken directly from Angular templates, and thus completely
+          // application developer controlled. This makes them safe to promote to
+          // a TrustedScript.
+          value = trustedScriptFromString(value) as string;
+        }
+
+        isProc ? (renderer as ProceduralRenderer3).setAttribute(native, attrName, value) :
+                 native.setAttribute(attrName, value);
       }
       i++;
     }
@@ -107,6 +118,26 @@ export function isAnimationProp(name: string): boolean {
   // compared to accessing a character at index 0 (ex. name[0]). The main reason for this is that
   // charCodeAt doesn't allocate memory to return a substring.
   return name.charCodeAt(0) === CharCode.AT_SIGN;
+}
+
+/**
+ * Determine if `name` refers to an attribute that is a script sink, meaning
+ * that it requires a TrustedScript value or else it triggers a Trusted Types
+ * violation. This includes inline event handlers (e.g. 'onload' or 'onerror').
+ * @param name The attribute name to check.
+ * @returns true if the attribute requires a TrustedScript value.
+ */
+export function isScriptSink(name: string): boolean {
+  // NB: We treat all attributes that start with 'on' as requiring a
+  // TrustedScript. This includes all inline event handlers, but also (possibly
+  // custom) attributes that are not security sensitive (e.g. 'online' or
+  // 'one'). This is fine as browsers will stringify TrustedScript when
+  // setAttribute is called. We use this coarse classification both to work
+  // around a Chromium bug (https://crbug.com/993268) and to minimize code size.
+  // Perf note: as in the isAnimationProp function, charCodeAt is used for
+  // faster comparison.
+  return (name.charCodeAt(0) & CharCode.UPPER_CASE) === CharCode.O &&
+      (name.charCodeAt(1) & CharCode.UPPER_CASE) === CharCode.N;
 }
 
 /**
