@@ -126,6 +126,12 @@ When `true` (the default), generates factory files (`.ngfactory.js` and `.ngstyl
 
 When `false`, factory files are generated only for `.ts` files. Do this when using factory summaries.
 
+### `generateDeepReexports`
+
+When `true`, adds TypeScript re-exports of NgModules' exported directives/pipes.
+
+This option should be enabled for libraries that do not not follow the [Angular Package Format](guide/angular-package-format), which requires that NgModules and directives/pipes are exported from a package entrypoint.
+
 ### `preserveWhitespaces`
 
 When `false` (the default), removes blank text nodes from compiled templates, which results in smaller emitted template factory modules. Set to `true` to preserve blank text nodes.
