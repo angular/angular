@@ -19,7 +19,11 @@ export class ExampleZipper {
 
     let gpathStackblitz = path.join(sourceDirName, '**/*stackblitz.json');
     let gpathZipper = path.join(sourceDirName, '**/zipper.json');
-    let configFileNames = globbySync([gpathStackblitz, gpathZipper], { ignore: ['**/node_modules/**'] });
+    let configFileNames = globbySync([gpathStackblitz, gpathZipper], {
+      ignore: ['**/node_modules/**'],
+      dot: true // Include subpaths that begin with '.' when using a wildcard inclusion.
+                // Needed to include the bazel .cache folder on Linux.
+    });
     configFileNames.forEach((configFileName) => {
       this._zipExample(configFileName, sourceDirName, outputDirName);
     });
@@ -152,7 +156,11 @@ export class ExampleZipper {
 
     gpaths.push(...alwaysExcludes);
 
-    let fileNames = globbySync(gpaths, { ignore: ['**/node_modules/**'] });
+    let fileNames = globbySync(gpaths, {
+      ignore: ['**/node_modules/**'],
+      dot: true // Include subpaths that begin with '.' when using a wildcard inclusion.
+                // Needed to include the bazel .cache folder on Linux.
+    });
 
     let zip = this._createZipArchive(outputFileName);
     fileNames.forEach((fileName) => {

@@ -3,17 +3,13 @@ import path from 'canonical-path';
 import fs from 'fs-extra';
 import {globbySync} from 'globby';
 import jsdom from 'jsdom';
-import {fileURLToPath} from 'url';
 
 import regionExtractor from '../transforms/examples-package/services/region-parser.js';
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export class StackblitzBuilder {
   constructor(basePath, destPath) {
     this.basePath = basePath;
     this.destPath = destPath;
-
     this.copyrights = this._buildCopyrightStrings();
     this._boilerplatePackageJsons = {};
   }
@@ -24,7 +20,10 @@ export class StackblitzBuilder {
     // When testing it sometimes helps to look a just one example directory like so:
     // const stackblitzPaths = path.join(this.basePath, '**/testing/*stackblitz.json');
     const stackblitzPaths = path.join(this.basePath, '**/*stackblitz.json');
-    const fileNames = globbySync(stackblitzPaths, { ignore: ['**/node_modules/**'] });
+    const fileNames = globbySync(stackblitzPaths, { ignore: ['**/node_modules/**'],
+      dot: true // Include subpaths that begin with '.' when using a wildcard inclusion.
+                // Needed to include the bazel .cache folder on Linux.
+    });
     let failed = false;
     fileNames.forEach((configFileName) => {
       try {
@@ -79,42 +78,28 @@ export class StackblitzBuilder {
   //   main: string - name of file that will become index.html in the stackblitz - defaults to index.html
   //   file: string - name of file to display within the stackblitz (e.g. `"file": "app/app.module.ts"`)
   _buildStackblitzFrom(configFileName) {
-    // replace ending 'stackblitz.json' with 'stackblitz.no-link.html' to create output file name;
-    const outputFileName = configFileName.replace(/stackblitz\.json$/, 'stackblitz.no-link.html');
-    let altFileName;
-    if (this.destPath && this.destPath.length > 0) {
-      const partPath = path.dirname(path.relative(this.basePath, outputFileName));
-      altFileName = path.join(this.destPath, partPath, path.basename(outputFileName)).replace('.no-link.', '.');
-    }
-    try {
-      const config = this._initConfigAndCollectFileNames(configFileName);
-      const postData = this._createPostData(config, configFileName);
+    // replace ending 'stackblitz.json' with 'stackblitz.html' to create output file name;
+    const outputFileName = configFileName.replace(/stackblitz\.json$/, 'stackblitz.html');
+    const partPath = path.dirname(path.relative(this.basePath, outputFileName));
+    const outputFilePath = path.join(this.destPath, partPath, path.basename(outputFileName));
+    const config = this._initConfigAndCollectFileNames(configFileName);
+    const postData = this._createPostData(config, configFileName);
 
-      this._addStackblitzrc(postData);
+    this._addStackblitzrc(postData);
 
-      const html = this._createStackblitzHtml(config, postData);
-      fs.writeFileSync(outputFileName, html, 'utf-8');
-      if (altFileName) {
-        const altDirName = path.dirname(altFileName);
-        fs.ensureDirSync(altDirName);
-        fs.writeFileSync(altFileName, html, 'utf-8');
-      }
-    } catch (e) {
-      // if we fail delete the outputFile if it exists because it is an old one.
-      if (fs.existsSync(outputFileName)) {
-        fs.unlinkSync(outputFileName);
-      }
-      if (altFileName && fs.existsSync(altFileName)) {
-        fs.unlinkSync(altFileName);
-      }
-      throw e;
-    }
+    const html = this._createStackblitzHtml(config, postData);
+    const outputDirName = path.dirname(outputFilePath);
+    fs.ensureDirSync(outputDirName);
+    fs.writeFileSync(outputFilePath, html, 'utf-8');
   }
 
   _checkForOutdatedConfig() {
     // Ensure that nobody is trying to use the old config filenames (i.e. `plnkr.json`).
     const plunkerPaths = path.join(this.basePath, '**/*plnkr.json');
-    const fileNames = globbySync(plunkerPaths, { ignore: ['**/node_modules/**'] });
+    const fileNames = globbySync(plunkerPaths, { ignore: ['**/node_modules/**'],
+      dot: true // Include subpaths that begin with '.' when using a wildcard inclusion.
+                // Needed to include the bazel .cache folder on Linux.
+    });
 
     if (fileNames.length) {
       const readmePath = path.join(__dirname, 'README.md');
@@ -309,7 +294,11 @@ export class StackblitzBuilder {
 
     gpaths.push(...defaultExcludes);
 
-    config.fileNames = globbySync(gpaths, { ignore: ['**/node_modules/**'] });
+    config.fileNames = globbySync(gpaths, {
+      ignore: ['**/node_modules/**'],
+      dot: true // Include subpaths that begin with '.' when using a wildcard inclusion.
+                // Needed to include the bazel .cache folder on Linux.
+    });
 
     return config;
   }
