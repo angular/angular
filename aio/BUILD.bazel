@@ -1,5 +1,6 @@
 load("@aio_npm//@angular-devkit/architect-cli:index.bzl", "architect", "architect_test")
-load("//tools:defaults.bzl", "npm_package_bin")
+load("@build_bazel_rules_nodejs//:index.bzl", "npm_package_bin")
+load("@aspect_bazel_lib//lib:copy_to_directory.bzl", "copy_to_directory")
 
 # The write_source_files macro is used to write bazel outputs to the source tree and test that they are up to date.
 # See: https://docs.aspect.build/aspect-build/bazel-lib/v0.5.0/docs/docs/write_source_files-docgen.html
@@ -26,6 +27,101 @@ generated_files_test(
     },
 )
 
+# External deps required by dgeni transforms
+DGENI_DEPS = [
+    "@aio_npm//css-selector-parser",
+    "@aio_npm//dgeni-packages",
+    "@aio_npm//entities",
+    "@aio_npm//fs-extra",
+    "@aio_npm//hast-util-is-element",
+    "@aio_npm//hast-util-to-string",
+    "@aio_npm//ignore",
+    "@aio_npm//image-size",
+    "@aio_npm//json5",
+    "@aio_npm//rehype-slug",
+    "@aio_npm//remark",
+    "@aio_npm//remark-html",
+    "@aio_npm//rxjs",
+    "@aio_npm//semver",
+    "@aio_npm//stemmer",
+    "@aio_npm//unist-util-filter",
+    "@aio_npm//unist-util-source",
+]
+
+# All transforms and sources needed by dgeni to produce docs
+DGENI_FILES = [
+    "@angular_cli_src//:files_for_docgen",  # Downloaded cli snapshot (see WORKSPACE)
+    "//aio/content",
+    "//aio/content/examples",
+    "//aio/src/assets",
+    "//aio/tools/transforms",
+    "//:package.json",
+    "//packages:files_for_docgen",
+]
+
+# Run dgeni generation
+npm_package_bin(
+    name = "dgeni",
+    args = ["./aio/tools/transforms/angular.io-package"],
+    configuration_env_vars = ["PATH"],  # Need PATH for dgeni package that invokes git
+    data = DGENI_FILES + DGENI_DEPS,
+    env = {
+        "BAZEL_DGENI_OUTPUT_PATH": "$(@D)",
+    },
+    output_dir = True,
+    tool = "@aio_npm//dgeni/bin:dgeni",
+)
+
+# Generate example boilerplate files
+npm_package_bin(
+    name = "example-boilerplate",
+    args = ["add"],
+    env = {
+        "BAZEL_EXAMPLE_BOILERPLATE_OUTPUT_PATH": "$(@D)",
+    },
+    output_dir = True,
+    tool = "//aio/tools/examples:example-boilerplate",
+)
+
+# Combine example source files with generated boilerplate files
+copy_to_directory(
+    name = "examples",
+    # Prevent sorting so that boilerplate overwrites example sources
+    # buildifier: do not sort
+    srcs = [
+        "//aio/content/examples",
+        ":example-boilerplate",
+    ],
+    replace_prefixes = {
+        "content/examples": "",
+        "example-boilerplate": "",
+    },
+)
+
+# Generate stackblitz live examples
+npm_package_bin(
+    name = "stackblitz",
+    args = [
+        "$(RULEDIR)/examples",
+        "$(@D)",
+    ],
+    data = [":examples"],
+    output_dir = True,
+    tool = "//aio/tools/stackblitz-builder:generate-stackblitz",
+)
+
+# Generate example zips
+npm_package_bin(
+    name = "example-zips",
+    args = [
+        "$(RULEDIR)/examples",
+        "$(@D)",
+    ],
+    data = [":examples"],
+    output_dir = True,
+    tool = "//aio/tools/example-zipper:generate-example-zips",
+)
+
 # All source and configuration files required to build the docs app
 APPLICATION_FILES = [
     "angular.json",
@@ -37,6 +133,8 @@ APPLICATION_FILES = [
     "//aio/src/assets",
     "//aio/src/assets/js",
     ":dgeni",
+    ":stackblitz",
+    ":example-zips",
 ] + glob(
     ["src/**/*"],
     exclude = [
@@ -116,50 +214,6 @@ architect_test(
     chdir = package_name(),
     configuration_env_vars = ["NG_BUILD_CACHE"],
     data = TEST_FILES + TEST_DEPS,
-)
-
-# External deps required by dgeni transforms
-DGENI_DEPS = [
-    "@aio_npm//css-selector-parser",
-    "@aio_npm//dgeni-packages",
-    "@aio_npm//entities",
-    "@aio_npm//fs-extra",
-    "@aio_npm//hast-util-is-element",
-    "@aio_npm//hast-util-to-string",
-    "@aio_npm//ignore",
-    "@aio_npm//image-size",
-    "@aio_npm//json5",
-    "@aio_npm//rehype-slug",
-    "@aio_npm//remark",
-    "@aio_npm//remark-html",
-    "@aio_npm//rxjs",
-    "@aio_npm//semver",
-    "@aio_npm//stemmer",
-    "@aio_npm//unist-util-filter",
-    "@aio_npm//unist-util-source",
-]
-
-# All transforms and sources needed by dgeni to produce docs
-DGENI_FILES = [
-    "@angular_cli_src//:files_for_docgen",  # Downloaded cli snapshot (see WORKSPACE)
-    "//aio/content",
-    "//aio/src/assets",
-    "//aio/tools/transforms",
-    "//:package.json",
-    "//packages:files_for_docgen",
-]
-
-# Run dgeni generation
-npm_package_bin(
-    name = "dgeni",
-    args = ["./aio/tools/transforms/angular.io-package"],
-    configuration_env_vars = ["PATH"],  # Need PATH for dgeni package that invokes git
-    data = DGENI_FILES + DGENI_DEPS,
-    env = {
-        "BAZEL_DGENI_OUTPUT_PATH": "$(@D)",
-    },
-    output_dir = True,
-    tool = "@aio_npm//dgeni/bin:dgeni",
 )
 
 architect(

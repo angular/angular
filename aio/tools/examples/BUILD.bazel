@@ -1,0 +1,17 @@
+load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary")
+
+package(default_visibility = ["//visibility:public"])
+
+nodejs_binary(
+    name = "example-boilerplate",
+    data = [
+        "constants.js",
+        "//aio/content/examples",
+        "@aio_npm//canonical-path",
+        "@aio_npm//fs-extra",
+        "@aio_npm//ignore",
+        "@aio_npm//shelljs",
+        "@aio_npm//yargs",
+    ] + glob(["shared/**"]),
+    entry_point = "example-boilerplate.js",
+)
