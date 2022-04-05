@@ -1,9 +1,14 @@
 import path from 'canonical-path';
-import {fileURLToPath} from 'url';
 import {ExampleZipper} from './exampleZipper.mjs';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const EXAMPLES_PATH = path.join(__dirname, '../../content/examples');
-const ZIPS_PATH = path.join(__dirname, '../../src/generated/zips');
+const argv = process.argv.slice(2);
+if (argv.length !== 2) {
+    console.error("Usage: node generateZips.mjs [examples-path] [output-path]");
+    process.exit(1);
+}
+
+const EXAMPLES_PATH = argv[0];
+const OUTPUT_PATH = argv[1];
+const ZIPS_PATH = path.join(OUTPUT_PATH, 'generated', 'zips');
 
 new ExampleZipper(EXAMPLES_PATH, ZIPS_PATH);
