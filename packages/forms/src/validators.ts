@@ -187,7 +187,7 @@ export class Validators {
    * ### Validate that the field is non-empty
    *
    * ```typescript
-   * const control = new FormControl('some value', Validators.required);
+   * const control = new FormControl('', Validators.required);
    *
    * console.log(control.errors); // {required: true}
    * ```
