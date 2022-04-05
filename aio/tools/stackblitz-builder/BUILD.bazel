@@ -1,0 +1,19 @@
+load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary")
+
+package(default_visibility = ["//visibility:public"])
+
+nodejs_binary(
+    name = "generate-stackblitz",
+    data = [
+        "builder.mjs",
+        "//aio/tools/transforms",
+        "@aio_npm//canonical-path",
+        "@aio_npm//fs-extra",
+        "@aio_npm//globby",
+        "@aio_npm//jsdom",
+    ],
+    entry_point = "generateStackblitz.mjs",
+    # --preserve-symlinks-main is not enabled by default (see https://github.com/bazelbuild/rules_nodejs/pull/2176)
+    # However it seems to be required for mjs entry points to resolve node_modules within the sandbox.
+    templated_args = ["--node_options=--preserve-symlinks-main"],
+)

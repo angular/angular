@@ -54,6 +54,16 @@
                 "input": "dgeni/generated",
                 "output": "generated",
                 "glob": "**"
+              },
+              {
+                "input": "stackblitz/generated",
+                "output": "generated",
+                "glob": "**"
+              },
+              {
+                "input": "example-zips/generated",
+                "output": "generated",
+                "glob": "**"
               }
             ],
             "styles": [
