@@ -14,7 +14,7 @@ import { Product, products } from '../products';
 // #docregion props-methods, product-prop
 export class ProductDetailsComponent implements OnInit {
 
-  product: Product | undefined;
+  product: Product;
   // #enddocregion product-prop
 
   constructor(private route: ActivatedRoute) { }

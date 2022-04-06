@@ -1,7 +1,8 @@
 // #docplaster
 // #docregion imports
-import { Component } from '@angular/core';
+import { Component , OnInit } from '@angular/core';
 import { CartService } from '../cart.service';
+import { Product } from '../products';
 // #enddocregion imports
 
 @Component({
@@ -10,13 +11,18 @@ import { CartService } from '../cart.service';
   styleUrls: ['./cart.component.css']
 })
 // #docregion inject-cart, items
-export class CartComponent {
+export class CartComponent implements OnInit {
 
 // #enddocregion inject-cart
-  items = this.cartService.getItems();
+  items: Product[] = [];
 // #docregion inject-cart
 
   constructor(
     private cartService: CartService
   ) { }
+
+  ngOnInit(): void {
+    // get the items from cartService
+    this.items = this.cartService.getItems();
+  }
 }
