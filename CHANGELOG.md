@@ -1,3 +1,14 @@
+<a name="13.3.2"></a>
+# 13.3.2 (2022-04-06)
+### animations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b46b25c562](https://github.com/angular/angular/commit/b46b25c562d6f9a76a462b23f5b8f44b5adab98b) | fix | handle structured AnimateTimings ([#31107](https://github.com/angular/angular/pull/31107)) |
+## Special Thanks
+Alan Agius, Andrew Kushnir, Christoph Guttandin, Cédric Exbrayat, mgechev and piyush132000
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="13.3.1"></a>
 # 13.3.1 (2022-03-30)
 ### bazel
