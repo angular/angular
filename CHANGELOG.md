@@ -1,3 +1,22 @@
+<a name="14.0.0-next.11"></a>
+# 14.0.0-next.11 (2022-04-06)
+### animations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [29d3891782](https://github.com/angular/angular/commit/29d38917825b9334a049799cdac60f0d39baf65a) | fix | handle structured AnimateTimings ([#31107](https://github.com/angular/angular/pull/31107)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [d56a537196](https://github.com/angular/angular/commit/d56a537196d2ab0f3f48821889020d2f5bc621ba) | feat | Add migration to add explicit `Route`/`Routes` type ([#45084](https://github.com/angular/angular/pull/45084)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [1c11a57155](https://github.com/angular/angular/commit/1c11a5715576632a4fb7170202395cf95dfbce09) | fix | merge interited resolved data and static data ([#45276](https://github.com/angular/angular/pull/45276)) |
+## Special Thanks
+Alan Agius, Andrew Kushnir, Andrew Scott, Chabbey François, Christoph Guttandin, Cédric Exbrayat, Dylan Hunn, George Kalpakas, Martin Sikora, mgechev and piyush132000
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="13.3.2"></a>
 # 13.3.2 (2022-04-06)
 ### animations
