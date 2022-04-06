@@ -20,7 +20,7 @@ This guide assumes that you have a basic understanding of the following.
 
 Reactive forms and template-driven forms process and manage form data differently. Each approach offers different advantages.
 
-* **Reactive forms** provide direct, explicit access to the underlying forms object model. Compared to template-driven forms, they are more robust: they're more scalable, reusable, and testable. If forms are a key part of your application, or you're already using reactive patterns for building your application, use reactive forms.
+* **Reactive forms** provide direct, explicit access to the underlying forms object model. Compared to template-driven forms, they are more robust, they're more scalable, reusable, and testable. If forms are a key part of your application, or you're already using reactive patterns for building your application, use reactive forms.
 
 * **Template-driven forms** rely on directives in the template to create and manipulate the underlying object model. They are useful for adding a simple form to an app, such as an email list signup form. They're straightforward to add to an app, but they don't scale as well as reactive forms. If you have very basic form requirements and logic that can be managed solely in the template, template-driven forms could be a good fit.
 
