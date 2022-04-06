@@ -105,7 +105,9 @@
   }
 
   code-example {
-    &[language=sh], &[language=bash] {
+    &[language=shell],
+    &[language=sh],
+    &[language=bash] {
       background: none;
 
       .pnk,
