@@ -303,6 +303,7 @@ groups:
           'aio/content/examples/interpolation/**',
           'aio/content/examples/template-syntax/**',
           'aio/content/images/guide/template-syntax/**',
+          'aio/content/guide/binding-overview.md',
           'aio/content/guide/binding-syntax.md',
           'aio/content/examples/binding-syntax/**',
           'aio/content/guide/property-binding.md',
