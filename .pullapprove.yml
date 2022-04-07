@@ -327,6 +327,7 @@ groups:
           'aio/content/guide/pipes-custom-data-trans.md',
           'aio/content/guide/pipes-overview.md',
           'aio/content/guide/pipes-transform-data.md',
+          'aio/content/guide/pipe-template.md',
           'aio/content/examples/pipes/**',
           'aio/content/images/guide/pipes/**',
           'aio/content/guide/providers.md',
