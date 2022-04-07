@@ -24,7 +24,12 @@ import {NavigationEnd, Resolve, Router, RouterModule} from '@angular/router';
 declare var window: Window;
 
 describe('bootstrap', () => {
-  if (isNode) return;
+  if (isNode) {
+    // Jasmine will throw if there are no tests.
+    it('should pass', () => {});
+    return;
+  }
+
   let log: any[] = [];
   let testProviders: any[] = null!;
 

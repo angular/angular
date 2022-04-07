@@ -211,4 +211,9 @@ describe(
              });
            }));
       });
-    }));
+    }, emptyRun));
+
+function emptyRun() {
+  // Jasmine will throw if there are no tests.
+  it('should pass', () => {});
+}
