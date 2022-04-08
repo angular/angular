@@ -11,7 +11,6 @@ import {ɵgetDOM as getDOM} from '@angular/common';
 import {Type, ɵglobal as global} from '@angular/core';
 import {ComponentFixture} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
-
 import {childNodesAsList, hasClass, hasStyle, isCommentNode} from './browser_util';
 
 
@@ -131,6 +130,22 @@ export const expect: <T = any>(actual: T) => NgMatchers<T> = _global.expect;
 };
 
 _global.beforeEach(function() {
+  // Custom handler for Map as we use Jasmine 2.4, and support for maps is not
+  // added until Jasmine 2.6.
+  jasmine.addCustomEqualityTester(function compareMap(actual: any, expected: any): boolean {
+    if (actual instanceof Map) {
+      let pass = actual.size === expected.size;
+      if (pass) {
+        actual.forEach((v: any, k: any) => {
+          pass = pass && jasmine.matchersUtil.equals(v, expected.get(k));
+        });
+      }
+      return pass;
+    } else {
+      // TODO(misko): we should change the return, but jasmine.d.ts is not null safe
+      return undefined!;
+    }
+  });
   jasmine.addMatchers({
     toBePromise: function() {
       return {

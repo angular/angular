@@ -9,11 +9,7 @@
 describe('ZoneAwareError', () => {
   // If the environment does not supports stack rewrites, then these tests will fail
   // and there is no point in running them.
-  if (!(Error as any)['stackRewrite']) {
-    // Jasmine will throw if there are no tests.
-    it('should pass', () => {});
-    return;
-  }
+  if (!(Error as any)['stackRewrite']) return;
 
   it('should have all properties from NativeError', () => {
     let obj: any = new Object();

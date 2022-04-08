@@ -30,6 +30,11 @@ class HelloRootCmp {
   }
 }
 
+@Component({selector: 'hello-app', template: 'before: <ng-content></ng-content> after: done'})
+class HelloRootCmpContent {
+  constructor() {}
+}
+
 @Component({selector: 'hello-app-2', template: '{{greeting}} world, again!'})
 class HelloRootCmp2 {
   greeting: string;
@@ -94,6 +99,7 @@ class DummyConsole implements Console {
 }
 
 
+class TestModule {}
 function bootstrap(
     cmpType: any, providers: Provider[] = [], platformProviders: StaticProvider[] = [],
     imports: Type<any>[] = []): Promise<any> {
@@ -114,12 +120,7 @@ function bootstrap(
       lightDom: any /** TODO #9100 */;
 
   describe('bootstrap factory method', () => {
-    if (isNode) {
-      // Jasmine will throw if there are no tests.
-      it('should pass', () => {});
-      return;
-    }
-
+    if (isNode) return;
     let compilerConsole: DummyConsole;
 
     beforeEach(() => {

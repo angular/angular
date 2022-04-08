@@ -12,15 +12,15 @@ import {Component, ViewChild} from '@angular/core';
 import {fakeAsync, flushMicrotasks, TestBed} from '@angular/core/testing';
 import {NoopAnimationsModule, ɵBrowserAnimationBuilder as BrowserAnimationBuilder} from '@angular/platform-browser/animations';
 
+import {el} from '../../testing/src/browser_util';
+
 {
   describe('BrowserAnimationBuilder', () => {
-    if (isNode) {
-      // Jasmine will throw if there are no tests.
-      it('should pass', () => {});
-      return;
-    }
-
+    if (isNode) return;
+    let element: any;
     beforeEach(() => {
+      element = el('<div></div>');
+
       TestBed.configureTestingModule({
         imports: [NoopAnimationsModule],
         providers: [{provide: AnimationDriver, useClass: MockAnimationDriver}]

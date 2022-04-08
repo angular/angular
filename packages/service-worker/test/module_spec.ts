@@ -18,8 +18,6 @@ import {SwUpdate} from '../src/update';
 describe('ServiceWorkerModule', () => {
   // Skip environments that don't support the minimum APIs needed to run these SW tests.
   if ((typeof navigator === 'undefined') || (typeof navigator.serviceWorker === 'undefined')) {
-    // Jasmine will throw if there are no tests.
-    it('should pass', () => {});
     return;
   }
 

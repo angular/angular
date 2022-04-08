@@ -17,11 +17,7 @@ import {makeTrigger} from '../shared';
 {
   describe('AnimationTrigger', () => {
     // these tests are only meant to be run within the DOM (for now)
-    if (isNode) {
-      // Jasmine will throw if there are no tests.
-      it('should pass', () => {});
-      return;
-    }
+    if (isNode) return;
 
     let element: any;
     beforeEach(() => {

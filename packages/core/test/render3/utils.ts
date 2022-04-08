@@ -64,44 +64,40 @@ export function matchDebug<T>(expected: T): any {
   const matcher = function() {};
   let actual: any = matchDebug;
 
-  matcher.asymmetricMatch = function(objectWithDebug: any, matchersUtil: jasmine.MatchersUtil) {
-    return matchersUtil.equals(actual = objectWithDebug.debug, expected);
+  matcher.asymmetricMatch = function(objectWithDebug: any) {
+    return jasmine.matchersUtil.equals(actual = objectWithDebug.debug, expected);
   };
-  matcher.jasmineToString = function(pp: (value: any) => string) {
+  matcher.jasmineToString = function() {
     if (actual === matchDebug) {
       // `asymmetricMatch` never got called hence no error to display
       return '';
     }
-    return buildFailureMessage(actual, expected, pp);
+    return buildFailureMessage(actual, expected);
   };
   return matcher;
 }
 
-export function buildFailureMessage(
-    actual: any, expected: any, pp: (value: any) => string): string {
+export function buildFailureMessage(actual: any, expected: any): string {
   const diffs: string[] = [];
-  listPropertyDifferences(diffs, '', actual, expected, 5, pp);
+  listPropertyDifferences(diffs, '', actual, expected, 5);
   return '\n  ' + diffs.join('\n  ');
 }
 
 function listPropertyDifferences(
-    diffs: string[], path: string, actual: any, expected: any, depth: number,
-    pp: (value: any) => string) {
+    diffs: string[], path: string, actual: any, expected: any, depth: number) {
   if (actual === expected) return;
   if (typeof actual !== typeof expected) {
-    diffs.push(`${path}: Expected ${pp(actual)} to be ${pp(expected)}`);
+    diffs.push(`${path}: Expected ${jasmine.pp(actual)} to be ${jasmine.pp(expected)}`);
   } else if (depth && Array.isArray(expected)) {
     if (!Array.isArray(actual)) {
-      diffs.push(`${path}: Expected ${pp(expected)} but was ${pp(actual)}`);
+      diffs.push(`${path}: Expected ${jasmine.pp(expected)} but was ${jasmine.pp(actual)}`);
     } else {
       const maxLength = Math.max(actual.length, expected.length);
-      listPropertyDifferences(
-          diffs, path + '.length', expected.length, actual.length, depth - 1, pp);
+      listPropertyDifferences(diffs, path + '.length', expected.length, actual.length, depth - 1);
       for (let i = 0; i < maxLength; i++) {
         const actualItem = actual[i];
         const expectedItem = expected[i];
-        listPropertyDifferences(
-            diffs, path + '[' + i + ']', actualItem, expectedItem, depth - 1, pp);
+        listPropertyDifferences(diffs, path + '[' + i + ']', actualItem, expectedItem, depth - 1);
       }
     }
   } else if (
@@ -109,9 +105,9 @@ function listPropertyDifferences(
     new Set(Object.keys(expected).concat(Object.keys(actual))).forEach((key) => {
       const actualItem = actual[key];
       const expectedItem = expected[key];
-      listPropertyDifferences(diffs, path + '.' + key, actualItem, expectedItem, depth - 1, pp);
+      listPropertyDifferences(diffs, path + '.' + key, actualItem, expectedItem, depth - 1);
     });
   } else {
-    diffs.push(`${path}: Expected ${pp(actual)} to be ${pp(expected)}`);
+    diffs.push(`${path}: Expected ${jasmine.pp(actual)} to be ${jasmine.pp(expected)}`);
   }
 }

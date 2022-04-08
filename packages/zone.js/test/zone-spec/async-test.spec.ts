@@ -20,11 +20,6 @@ describe('AsyncTestZoneSpec', function() {
     log.push('fail');
   }
 
-  function emptyRun() {
-    // Jasmine will throw if there are no tests.
-    it('should pass', () => {});
-  }
-
   beforeEach(() => {
     log = [];
   });
@@ -252,7 +247,7 @@ describe('AsyncTestZoneSpec', function() {
                  button.dispatchEvent(clickEvent);
                });
              });
-           }, emptyRun));
+           }));
 
   describe('XHRs', ifEnvSupports('XMLHttpRequest', () => {
              it('should wait for XHRs to complete', function(done) {
@@ -311,7 +306,7 @@ describe('AsyncTestZoneSpec', function() {
                  req.send();
                });
              });
-           }, emptyRun));
+           }));
 
   it('should not fail if setInterval is used and canceled', (done) => {
     const testZoneSpec = new AsyncTestZoneSpec(

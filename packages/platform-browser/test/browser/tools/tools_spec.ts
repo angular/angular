@@ -11,11 +11,7 @@ import {disableDebugTools, enableDebugTools} from '@angular/platform-browser';
 
 {
   describe('profiler', () => {
-    if (isNode) {
-      // Jasmine will throw if there are no tests.
-      it('should pass', () => {});
-      return;
-    }
+    if (isNode) return;
 
     beforeEach(() => {
       enableDebugTools({
