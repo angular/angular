@@ -14,21 +14,24 @@ import {CdkMenuItem} from './menu-item';
 import {CdkMenuGroup} from './menu-group';
 import {CdkMenuItemRadio} from './menu-item-radio';
 import {CdkMenuItemCheckbox} from './menu-item-checkbox';
-import {CdkMenuItemTrigger} from './menu-item-trigger';
-import {CdkContextMenuTrigger} from './context-menu';
+import {CdkMenuTrigger} from './menu-trigger';
+import {CdkContextMenuTrigger} from './context-menu-trigger';
 import {CdkTargetMenuAim} from './menu-aim';
 
+/** The list of components and directives that should be declared and exported from this module. */
 const EXPORTED_DECLARATIONS = [
   CdkMenuBar,
   CdkMenu,
   CdkMenuItem,
   CdkMenuItemRadio,
   CdkMenuItemCheckbox,
-  CdkMenuItemTrigger,
+  CdkMenuTrigger,
   CdkMenuGroup,
   CdkContextMenuTrigger,
   CdkTargetMenuAim,
 ];
+
+/** Module that declares components and directives for the CDK menu. */
 @NgModule({
   imports: [OverlayModule],
   exports: EXPORTED_DECLARATIONS,

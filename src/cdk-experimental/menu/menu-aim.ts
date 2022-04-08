@@ -19,7 +19,11 @@ import {throwMissingPointerFocusTracker, throwMissingMenuReference} from './menu
  * order to determine if it may perform its close actions.
  */
 export interface MenuAim {
-  /** Set the Menu and its PointerFocusTracker. */
+  /**
+   * Set the Menu and its PointerFocusTracker.
+   * @param menu The menu that this menu aim service controls.
+   * @param pointerTracker The `PointerFocusTracker` for the given menu.
+   */
   initialize(menu: Menu, pointerTracker: PointerFocusTracker<FocusableElement & Toggler>): void;
 
   /**
@@ -45,11 +49,9 @@ const NUM_POINTS = 5;
  */
 const CLOSE_DELAY = 300;
 
-/**
- * An element which when hovered over may perform closing actions on the open submenu and
- * potentially open its own menu.
- */
+/** An element which when hovered over may open or close a menu. */
 export interface Toggler {
+  /** Gets the open menu, or undefined if no menu is open. */
   getMenu(): Menu | undefined;
 }
 
@@ -72,7 +74,6 @@ type Point = {x: number; y: number};
  * @param submenuPoints the submenu DOMRect points.
  * @param m the slope of the trajectory line.
  * @param b the y intercept of the trajectory line.
- *
  * @return true if any point on the line falls within the submenu.
  */
 function isWithinSubmenu(submenuPoints: DOMRect, m: number, b: number) {
@@ -88,6 +89,7 @@ function isWithinSubmenu(submenuPoints: DOMRect, m: number, b: number) {
     ((bottom - b) / m >= left && (bottom - b) / m <= right)
   );
 }
+
 /**
  * TargetMenuAim predicts if a user is moving into a submenu. It calculates the
  * trajectory of the user's mouse movement in the current menu to determine if the
@@ -115,9 +117,21 @@ export class TargetMenuAim implements MenuAim, OnDestroy {
   /** Emits when this service is destroyed. */
   private readonly _destroyed: Subject<void> = new Subject();
 
-  constructor(private readonly _ngZone: NgZone) {}
+  constructor(
+    /** The Angular zone. */
+    private readonly _ngZone: NgZone,
+  ) {}
 
-  /** Set the Menu and its PointerFocusTracker. */
+  ngOnDestroy() {
+    this._destroyed.next();
+    this._destroyed.complete();
+  }
+
+  /**
+   * Set the Menu and its PointerFocusTracker.
+   * @param menu The menu that this menu aim service controls.
+   * @param pointerTracker The `PointerFocusTracker` for the given menu.
+   */
   initialize(menu: Menu, pointerTracker: PointerFocusTracker<FocusableElement & Toggler>) {
     this._menu = menu;
     this._pointerTracker = pointerTracker;
@@ -157,6 +171,8 @@ export class TargetMenuAim implements MenuAim, OnDestroy {
    *
    * The delayed toggle handler executes the `doToggle` callback after some period of time iff the
    * users mouse is on an item in the current menu.
+   *
+   * @param doToggle the function called when the user is not moving towards the submenu.
    */
   private _startTimeout(doToggle: () => void) {
     // If the users mouse is moving towards a submenu we don't want to immediately resolve.
@@ -197,9 +213,7 @@ export class TargetMenuAim implements MenuAim, OnDestroy {
 
   /** Get the bounding DOMRect for the open submenu. */
   private _getSubmenuBounds(): DOMRect | undefined {
-    return this._pointerTracker?.previousElement
-      ?.getMenu()
-      ?._elementRef.nativeElement.getBoundingClientRect();
+    return this._pointerTracker?.previousElement?.getMenu()?.nativeElement.getBoundingClientRect();
   }
 
   /**
@@ -220,7 +234,7 @@ export class TargetMenuAim implements MenuAim, OnDestroy {
   /** Subscribe to the root menus mouse move events and update the tracked mouse points. */
   private _subscribeToMouseMoves() {
     this._ngZone.runOutsideAngular(() => {
-      fromEvent<MouseEvent>(this._menu._elementRef.nativeElement, 'mousemove')
+      fromEvent<MouseEvent>(this._menu.nativeElement, 'mousemove')
         .pipe(
           filter((_: MouseEvent, index: number) => index % MOUSE_MOVE_SAMPLE_FREQUENCY === 0),
           takeUntil(this._destroyed),
@@ -233,15 +247,10 @@ export class TargetMenuAim implements MenuAim, OnDestroy {
         });
     });
   }
-
-  ngOnDestroy() {
-    this._destroyed.next();
-    this._destroyed.complete();
-  }
 }
 
 /**
- * CdkTargetMenuAim is a provider for the TargetMenuAim service. It should be added to an
+ * CdkTargetMenuAim is a provider for the TargetMenuAim service. It can be added to an
  * element with either the `cdkMenu` or `cdkMenuBar` directive and child menu items.
  */
 @Directive({

@@ -6,10 +6,10 @@ import {TAB, SPACE} from '@angular/cdk/keycodes';
 import {CdkMenuModule} from './menu-module';
 import {CdkMenuItem} from './menu-item';
 import {CdkMenu} from './menu';
-import {CdkMenuItemTrigger} from './menu-item-trigger';
+import {CdkMenuTrigger} from './menu-trigger';
 import {Menu} from './menu-interface';
 
-describe('MenuItemTrigger', () => {
+describe('MenuTrigger', () => {
   describe('on CdkMenuItem', () => {
     let fixture: ComponentFixture<TriggerForEmptyMenu>;
     let menuItem: CdkMenuItem;
@@ -48,7 +48,7 @@ describe('MenuItemTrigger', () => {
     });
 
     it('should  have a menu', () => {
-      expect(menuItem.hasMenu()).toBeTrue();
+      expect(menuItem.hasMenu).toBeTrue();
     });
   });
 
@@ -58,7 +58,7 @@ describe('MenuItemTrigger', () => {
     let menus: CdkMenu[];
     let nativeMenus: HTMLElement[];
     let menuItems: CdkMenuItem[];
-    let triggers: CdkMenuItemTrigger[];
+    let triggers: CdkMenuTrigger[];
     let nativeTriggers: HTMLButtonElement[];
 
     const grabElementsForTesting = () => {
@@ -483,8 +483,8 @@ class MenuBarWithNestedSubMenus {
   @ViewChildren(CdkMenu) menus: QueryList<CdkMenu>;
   @ViewChildren(CdkMenu, {read: ElementRef}) nativeMenus: QueryList<ElementRef>;
 
-  @ViewChildren(CdkMenuItemTrigger) triggers: QueryList<CdkMenuItemTrigger>;
-  @ViewChildren(CdkMenuItemTrigger, {read: ElementRef}) nativeTriggers: QueryList<ElementRef>;
+  @ViewChildren(CdkMenuTrigger) triggers: QueryList<CdkMenuTrigger>;
+  @ViewChildren(CdkMenuTrigger, {read: ElementRef}) nativeTriggers: QueryList<ElementRef>;
 
   @ViewChildren(CdkMenuItem) menuItems: QueryList<CdkMenuItem>;
 }
@@ -506,7 +506,7 @@ class MenuBarWithNestedSubMenus {
   `,
 })
 class TriggersWithSameMenuDifferentMenuBars {
-  @ViewChildren(CdkMenuItemTrigger) triggers: QueryList<CdkMenuItemTrigger>;
+  @ViewChildren(CdkMenuTrigger) triggers: QueryList<CdkMenuTrigger>;
   @ViewChildren(CdkMenu) menus: QueryList<CdkMenu>;
 }
 
@@ -525,7 +525,7 @@ class TriggersWithSameMenuDifferentMenuBars {
   `,
 })
 class TriggersWithSameMenuSameMenuBar {
-  @ViewChildren(CdkMenuItemTrigger) triggers: QueryList<CdkMenuItemTrigger>;
+  @ViewChildren(CdkMenuTrigger) triggers: QueryList<CdkMenuTrigger>;
   @ViewChildren(CdkMenu) menus: QueryList<CdkMenu>;
 }
 
@@ -543,7 +543,7 @@ class TriggersWithSameMenuSameMenuBar {
   `,
 })
 class TriggerOpensItsMenu {
-  @ViewChildren(CdkMenuItemTrigger) triggers: QueryList<CdkMenuItemTrigger>;
+  @ViewChildren(CdkMenuTrigger) triggers: QueryList<CdkMenuTrigger>;
   @ViewChildren(CdkMenu) menus: QueryList<CdkMenu>;
 }
 

@@ -11,7 +11,7 @@ import {Directive, ElementRef, Inject, NgZone, OnDestroy, Optional, Self} from '
 import {Directionality} from '@angular/cdk/bidi';
 import {CdkMenuItemSelectable} from './menu-item-selectable';
 import {CdkMenuItem} from './menu-item';
-import {CdkMenuItemTrigger} from './menu-item-trigger';
+import {CdkMenuTrigger} from './menu-trigger';
 import {CDK_MENU, Menu} from './menu-interface';
 import {MENU_AIM, MenuAim} from './menu-aim';
 import {MENU_STACK, MenuStack} from './menu-stack';
@@ -36,37 +36,47 @@ let nextId = 0;
   ],
 })
 export class CdkMenuItemRadio extends CdkMenuItemSelectable implements OnDestroy {
+  /** An ID to identify this radio item to the `UniqueSelectionDisptcher`. */
   private _id = `${nextId++}`;
 
   /** Function to unregister the selection dispatcher */
   private _removeDispatcherListener: () => void;
 
   constructor(
-    private readonly _selectionDispatcher: UniqueSelectionDispatcher,
+    /** The host element for this radio item. */
     element: ElementRef<HTMLElement>,
+    /** The Angular zone. */
     ngZone: NgZone,
+    /** The unique selection dispatcher for this radio's `CdkMenuGroup`. */
+    private readonly _selectionDispatcher: UniqueSelectionDispatcher,
+    /** The menu stack this item belongs to. */
     @Inject(MENU_STACK) menuStack: MenuStack,
+    /** The parent menu for this item. */
     @Optional() @Inject(CDK_MENU) parentMenu?: Menu,
+    /** The menu aim used for this item. */
     @Optional() @Inject(MENU_AIM) menuAim?: MenuAim,
+    /** The directionality of the page. */
     @Optional() dir?: Directionality,
     /** Reference to the CdkMenuItemTrigger directive if one is added to the same element */
-    // `CdkMenuItemRadio` is commonly used in combination with a `CdkMenuItemTrigger`.
     // tslint:disable-next-line: lightweight-tokens
-    @Self() @Optional() menuTrigger?: CdkMenuItemTrigger,
+    @Self() @Optional() menuTrigger?: CdkMenuTrigger,
   ) {
     super(element, ngZone, menuStack, parentMenu, menuAim, dir, menuTrigger);
 
     this._registerDispatcherListener();
   }
 
-  /** Configure the unique selection dispatcher listener in order to toggle the checked state  */
-  private _registerDispatcherListener() {
-    this._removeDispatcherListener = this._selectionDispatcher.listen((id: string) => {
-      this.checked = this._id === id;
-    });
+  override ngOnDestroy() {
+    super.ngOnDestroy();
+
+    this._removeDispatcherListener();
   }
 
-  /** Toggles the checked state of the radio-button. */
+  /**
+   * Toggles the checked state of the radio-button.
+   * @param options Options the configure how the item is triggered
+   *   - keepOpen: specifies that the menu should be kept open after triggering the item.
+   */
   override trigger(options?: {keepOpen: boolean}) {
     super.trigger(options);
 
@@ -75,9 +85,10 @@ export class CdkMenuItemRadio extends CdkMenuItemSelectable implements OnDestroy
     }
   }
 
-  override ngOnDestroy() {
-    super.ngOnDestroy();
-
-    this._removeDispatcherListener();
+  /** Configure the unique selection dispatcher listener in order to toggle the checked state  */
+  private _registerDispatcherListener() {
+    this._removeDispatcherListener = this._selectionDispatcher.listen((id: string) => {
+      this.checked = this._id === id;
+    });
   }
 }

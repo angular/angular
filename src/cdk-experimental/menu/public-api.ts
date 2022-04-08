@@ -9,14 +9,16 @@
 export * from './menu-module';
 export * from './menu-bar';
 export * from './menu';
+export * from './menu-base';
 export * from './menu-item';
 export * from './menu-item-checkbox';
 export * from './menu-item-radio';
-export * from './menu-item-trigger';
-export * from './menu-group';
-export * from './context-menu';
 export * from './menu-trigger';
-
-export {MenuStack, MenuStackItem, MENU_STACK} from './menu-stack';
-export {CDK_MENU} from './menu-interface';
-export {TargetMenuAim, MenuAim, MENU_AIM, CdkTargetMenuAim} from './menu-aim';
+export * from './menu-group';
+export * from './menu-item-selectable';
+export * from './context-menu-trigger';
+export * from './menu-trigger-base';
+export * from './pointer-focus-tracker';
+export * from './menu-stack';
+export * from './menu-interface';
+export * from './menu-aim';

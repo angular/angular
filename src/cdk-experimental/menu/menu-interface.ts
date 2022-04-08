@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectionToken, ElementRef} from '@angular/core';
+import {InjectionToken} from '@angular/core';
 import {MenuStackItem} from './menu-stack';
 import {FocusOrigin} from '@angular/cdk/a11y';
 
@@ -15,12 +15,13 @@ export const CDK_MENU = new InjectionToken<Menu>('cdk-menu');
 
 /** Interface which specifies Menu operations and used to break circular dependency issues */
 export interface Menu extends MenuStackItem {
+  /** The id of the menu's host element. */
   id: string;
 
-  /** The element the Menu directive is placed on. */
-  _elementRef: ElementRef<HTMLElement>;
+  /** The menu's native DOM host element. */
+  nativeElement: HTMLElement;
 
-  /** The orientation of the menu */
+  /** The direction items in the menu flow. */
   readonly orientation: 'horizontal' | 'vertical';
 
   /** Place focus on the first MenuItem in the menu. */

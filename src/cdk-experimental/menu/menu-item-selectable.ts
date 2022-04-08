@@ -10,10 +10,7 @@ import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
 import {Directive, Input} from '@angular/core';
 import {CdkMenuItem} from './menu-item';
 
-/**
- * Base class providing checked state for MenuItems along with outputting a clicked event when the
- * element is triggered. It provides functionality for selectable elements.
- */
+/** Base class providing checked state for selectable MenuItems. */
 @Directive({
   host: {
     '[attr.aria-checked]': '!!checked',
@@ -31,5 +28,6 @@ export abstract class CdkMenuItemSelectable extends CdkMenuItem {
   }
   private _checked = false;
 
+  /** Whether the item should close the menu if triggered by the spacebar. */
   protected override closeOnSpacebarTrigger = false;
 }

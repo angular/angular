@@ -49,7 +49,7 @@ describe('MenuItemCheckbox', () => {
   });
 
   it('should not have a menu', () => {
-    expect(checkbox.hasMenu()).toBeFalse();
+    expect(checkbox.hasMenu).toBeFalse();
   });
 
   it('should toggle the aria checked attribute', () => {

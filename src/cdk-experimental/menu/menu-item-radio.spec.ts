@@ -62,7 +62,7 @@ describe('MenuItemRadio', () => {
   });
 
   it('should not have a menu', () => {
-    expect(radioButton.hasMenu()).toBeFalse();
+    expect(radioButton.hasMenu).toBeFalse();
   });
 
   it('should not toggle checked state when disabled', () => {

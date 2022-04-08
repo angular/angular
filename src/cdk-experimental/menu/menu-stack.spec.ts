@@ -2,14 +2,14 @@ import {QueryList, ViewChild, ViewChildren, Component} from '@angular/core';
 import {CdkMenu} from './menu';
 import {CdkMenuBar} from './menu-bar';
 import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
-import {CdkMenuItemTrigger} from './menu-item-trigger';
+import {CdkMenuTrigger} from './menu-trigger';
 import {MenuStack} from './menu-stack';
 import {CdkMenuModule} from './menu-module';
 
 describe('MenuStack', () => {
   let fixture: ComponentFixture<MultiMenuWithSubmenu>;
   let menuStack: MenuStack;
-  let triggers: CdkMenuItemTrigger[];
+  let triggers: CdkMenuTrigger[];
   let menus: CdkMenu[];
 
   /** Fetch triggers, menus and the menu stack from the test component.  */
@@ -105,6 +105,6 @@ describe('MenuStack', () => {
 class MultiMenuWithSubmenu {
   @ViewChild(CdkMenuBar) menuBar: CdkMenuBar;
 
-  @ViewChildren(CdkMenuItemTrigger) triggers: QueryList<CdkMenuItemTrigger>;
+  @ViewChildren(CdkMenuTrigger) triggers: QueryList<CdkMenuTrigger>;
   @ViewChildren(CdkMenu) menus: QueryList<CdkMenu>;
 }

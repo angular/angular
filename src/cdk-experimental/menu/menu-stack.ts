@@ -10,35 +10,37 @@ import {Inject, Injectable, InjectionToken, Optional, SkipSelf} from '@angular/c
 import {Observable, Subject} from 'rxjs';
 import {debounceTime, distinctUntilChanged, startWith} from 'rxjs/operators';
 
-/** Events to emit as specified by the caller once the MenuStack is empty. */
+/** The relative item in the inline menu to focus after closing all popup menus. */
 export const enum FocusNext {
   nextItem,
   previousItem,
   currentItem,
 }
 
-/** Interface for the elements tracked in the MenuStack. */
+/** A single item (menu) in the menu stack. */
 export interface MenuStackItem {
-  /** A reference to the previous Menus MenuStack instance. */
+  /** A reference to the menu stack this menu stack item belongs to. */
   menuStack?: MenuStack;
 }
 
 /** Injection token used for an implementation of MenuStack. */
 export const MENU_STACK = new InjectionToken<MenuStack>('cdk-menu-stack');
 
-/** A provider that provides the parent menu stack, or a new menu stack if there is no parent one. */
+/** Provider that provides the parent menu stack, or a new menu stack if there is no parent one. */
 export const PARENT_OR_NEW_MENU_STACK_PROVIDER = {
   provide: MENU_STACK,
   deps: [[new Optional(), new SkipSelf(), new Inject(MENU_STACK)]],
   useFactory: (parentMenuStack?: MenuStack) => parentMenuStack || new MenuStack(),
 };
 
-/** A provider that provides the parent menu stack, or a new menu stack if there is no parent one. */
-export const PARENT_OR_NEW_INLINE_MENU_STACK_PROVIDER = {
+/** Provider that provides the parent menu stack, or a new inline menu stack if there is no parent one. */
+export const PARENT_OR_NEW_INLINE_MENU_STACK_PROVIDER = (
+  orientation: 'vertical' | 'horizontal',
+) => ({
   provide: MENU_STACK,
   deps: [[new Optional(), new SkipSelf(), new Inject(MENU_STACK)]],
-  useFactory: (parentMenuStack?: MenuStack) => parentMenuStack || MenuStack.inline(),
-};
+  useFactory: (parentMenuStack?: MenuStack) => parentMenuStack || MenuStack.inline(orientation),
+});
 
 /** Options that can be provided to the close or closeAll methods. */
 export interface CloseOptions {
@@ -51,10 +53,13 @@ export interface CloseOptions {
 /** Event dispatched when a menu is closed. */
 export interface MenuStackCloseEvent {
   /** The menu being closed. */
-  item: MenuStackItem | undefined;
+  item: MenuStackItem;
   /** Whether to focus the parent trigger after closing the menu. */
   focusParentTrigger?: boolean;
 }
+
+/** The next available menu stack ID. */
+let nextId = 0;
 
 /**
  * MenuStack allows subscribers to listen for close events (when a MenuStackItem is popped off
@@ -64,6 +69,9 @@ export interface MenuStackCloseEvent {
  */
 @Injectable()
 export class MenuStack {
+  /** The ID of this menu stack. */
+  readonly id = `${nextId++}`;
+
   /** All MenuStackItems tracked by this MenuStack. */
   private readonly _elements: MenuStackItem[] = [];
 
@@ -73,11 +81,13 @@ export class MenuStack {
   /** Emits once the MenuStack has become empty after popping off elements. */
   private readonly _empty = new Subject<FocusNext | undefined>();
 
+  /** Emits whether any menu in the menu stack has focus. */
   private readonly _hasFocus = new Subject<boolean>();
 
   /** Observable which emits the MenuStackItem which has been requested to close. */
   readonly closed: Observable<MenuStackCloseEvent> = this._close;
 
+  /** Observable which emits whether any menu in the menu stack has focus. */
   readonly hasFocus: Observable<boolean> = this._hasFocus.pipe(
     startWith(false),
     debounceTime(0),
@@ -91,15 +101,23 @@ export class MenuStack {
    */
   readonly emptied: Observable<FocusNext | undefined> = this._empty;
 
-  private _hasInlineMenu = false;
+  /**
+   * Whether the inline menu associated with this menu stack is vertical or horizontal.
+   * `null` indicates there is no inline menu associated with this menu stack.
+   */
+  private _inlineMenuOrientation: 'vertical' | 'horizontal' | null = null;
 
-  static inline() {
+  /** Creates a menu stack that originates from an inline menu. */
+  static inline(orientation: 'vertical' | 'horizontal') {
     const stack = new MenuStack();
-    stack._hasInlineMenu = true;
+    stack._inlineMenuOrientation = orientation;
     return stack;
   }
 
-  /** @param menu the MenuStackItem to put on the stack. */
+  /**
+   * Adds an item to the menu stack.
+   * @param menu the MenuStackItem to put on the stack.
+   */
   push(menu: MenuStackItem) {
     this._elements.push(menu);
   }
@@ -113,9 +131,9 @@ export class MenuStack {
   close(lastItem: MenuStackItem, options?: CloseOptions) {
     const {focusNextOnEmpty, focusParentTrigger} = {...options};
     if (this._elements.indexOf(lastItem) >= 0) {
-      let poppedElement: MenuStackItem | undefined;
+      let poppedElement;
       do {
-        poppedElement = this._elements.pop();
+        poppedElement = this._elements.pop()!;
         this._close.next({item: poppedElement, focusParentTrigger});
       } while (poppedElement !== lastItem);
 
@@ -136,7 +154,7 @@ export class MenuStack {
     if (this._elements.indexOf(lastItem) >= 0) {
       removed = this.peek() !== lastItem;
       while (this.peek() !== lastItem) {
-        this._close.next({item: this._elements.pop()});
+        this._close.next({item: this._elements.pop()!});
       }
     }
     return removed;
@@ -176,7 +194,12 @@ export class MenuStack {
 
   /** Whether the menu stack is associated with an inline menu. */
   hasInlineMenu() {
-    return this._hasInlineMenu;
+    return this._inlineMenuOrientation != null;
+  }
+
+  /** The orientation of the associated inline menu. */
+  inlineMenuOrientation() {
+    return this._inlineMenuOrientation;
   }
 
   /** Sets whether the menu stack contains the focused element. */

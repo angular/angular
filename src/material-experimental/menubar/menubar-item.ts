@@ -39,8 +39,8 @@ function removeIcons(element: Element) {
 })
 export class MatMenuBarItem extends CdkMenuItem {
   override getLabel(): string {
-    if (this.typeahead !== undefined) {
-      return this.typeahead;
+    if (this.typeaheadLabel !== undefined) {
+      return this.typeaheadLabel || '';
     }
     const clone = this._elementRef.nativeElement.cloneNode(true) as Element;
     removeIcons(clone);

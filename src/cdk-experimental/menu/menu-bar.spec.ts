@@ -36,7 +36,7 @@ import {CdkMenuItemRadio} from './menu-item-radio';
 import {CdkMenu} from './menu';
 import {CdkMenuItem} from './menu-item';
 import {CdkMenuItemCheckbox} from './menu-item-checkbox';
-import {CdkMenuItemTrigger} from './menu-item-trigger';
+import {CdkMenuTrigger} from './menu-trigger';
 import {CdkMenuGroup} from './menu-group';
 
 describe('MenuBar', () => {
@@ -759,7 +759,7 @@ describe('MenuBar', () => {
     let fixture: ComponentFixture<MenuBarWithMenusAndInlineMenu>;
 
     let popoutMenus: CdkMenu[];
-    let triggers: CdkMenuItemTrigger[];
+    let triggers: CdkMenuTrigger[];
     let nativeInlineMenuItem: HTMLElement;
 
     /** open the attached menu. */
@@ -770,7 +770,7 @@ describe('MenuBar', () => {
 
     /** set the menus and triggers arrays. */
     function grabElementsForTesting() {
-      popoutMenus = fixture.componentInstance.menus.toArray().filter(el => !el._isInline);
+      popoutMenus = fixture.componentInstance.menus.toArray().filter(el => !el.isInline);
       triggers = fixture.componentInstance.triggers.toArray();
       nativeInlineMenuItem = fixture.componentInstance.nativeInlineMenuItem.nativeElement;
     }
@@ -1244,7 +1244,7 @@ class MenuWithRadioButtons {
 class MenuBarWithMenusAndInlineMenu {
   @ViewChildren(CdkMenu) menus: QueryList<CdkMenu>;
 
-  @ViewChildren(CdkMenuItemTrigger) triggers: QueryList<CdkMenuItemTrigger>;
+  @ViewChildren(CdkMenuTrigger) triggers: QueryList<CdkMenuTrigger>;
 
   @ViewChild('inline_menu_item') nativeInlineMenuItem: ElementRef;
 }

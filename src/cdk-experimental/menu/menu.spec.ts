@@ -163,7 +163,7 @@ describe('Menu', () => {
 
         nativeShareTrigger = fixture.componentInstance.nativeShareTrigger?.nativeElement;
 
-        nativeMenus = fixture.componentInstance.menus.map(m => m._elementRef.nativeElement);
+        nativeMenus = fixture.componentInstance.menus.map(m => m.nativeElement);
       }
 
       /** Run change detection and extract the set of rendered elements. */
@@ -367,7 +367,7 @@ describe('Menu', () => {
 
         nativeShareTrigger = fixture.componentInstance.nativeShareTrigger?.nativeElement;
 
-        nativeMenus = fixture.componentInstance.menus.map(m => m._elementRef.nativeElement);
+        nativeMenus = fixture.componentInstance.menus.map(m => m.nativeElement);
       }
 
       /** Run change detection and extract the set the rendered elements. */

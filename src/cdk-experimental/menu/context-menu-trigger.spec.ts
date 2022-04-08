@@ -2,11 +2,11 @@ import {Component, ViewChild, ElementRef, Type, ViewChildren, QueryList} from '@
 import {CdkMenuModule} from './menu-module';
 import {TestBed, waitForAsync, ComponentFixture} from '@angular/core/testing';
 import {CdkMenu} from './menu';
-import {CdkContextMenuTrigger} from './context-menu';
+import {CdkContextMenuTrigger} from './context-menu-trigger';
 import {dispatchKeyboardEvent, dispatchMouseEvent} from '../../cdk/testing/private';
 import {By} from '@angular/platform-browser';
 import {CdkMenuItem} from './menu-item';
-import {CdkMenuItemTrigger} from './menu-item-trigger';
+import {CdkMenuTrigger} from './menu-trigger';
 import {CdkMenuBar} from './menu-bar';
 import {LEFT_ARROW, RIGHT_ARROW} from '@angular/cdk/keycodes';
 
@@ -491,7 +491,7 @@ class NestedContextMenu {
 })
 class ContextMenuWithSubmenu {
   @ViewChild(CdkContextMenuTrigger, {read: ElementRef}) context: ElementRef<HTMLElement>;
-  @ViewChild(CdkMenuItemTrigger, {read: ElementRef}) triggerNativeElement: ElementRef<HTMLElement>;
+  @ViewChild(CdkMenuTrigger, {read: ElementRef}) triggerNativeElement: ElementRef<HTMLElement>;
 
   @ViewChild('cut_menu', {read: CdkMenu}) cutMenu: CdkMenu;
   @ViewChild('copy_menu', {read: CdkMenu}) copyMenu: CdkMenu;
@@ -548,7 +548,7 @@ class ContextMenuWithMenuBarAndInlineMenu {
   `,
 })
 class MenuBarAndContextTriggerShareMenu {
-  @ViewChild(CdkMenuItemTrigger) menuBarTrigger: CdkMenuItemTrigger;
+  @ViewChild(CdkMenuTrigger) menuBarTrigger: CdkMenuTrigger;
   @ViewChild(CdkContextMenuTrigger) contextTrigger: CdkContextMenuTrigger;
   @ViewChildren(CdkMenu) menus: QueryList<CdkMenu>;
 }

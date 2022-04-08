@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {QueryList, ElementRef} from '@angular/core';
-import {fromEvent, Observable, defer, Subject} from 'rxjs';
-import {mapTo, mergeAll, takeUntil, startWith, mergeMap} from 'rxjs/operators';
+import {ElementRef, QueryList} from '@angular/core';
+import {defer, fromEvent, Observable, Subject} from 'rxjs';
+import {mapTo, mergeAll, mergeMap, startWith, takeUntil} from 'rxjs/operators';
 
 /** Item to track for mouse focus events. */
 export interface FocusableElement {
@@ -36,12 +36,21 @@ export class PointerFocusTracker<T extends FocusableElement> {
   /** Emits when this is destroyed. */
   private readonly _destroyed: Subject<void> = new Subject();
 
-  constructor(private readonly _items: QueryList<T>) {
+  constructor(
+    /** The list of items being tracked. */
+    private readonly _items: QueryList<T>,
+  ) {
     this.entered.subscribe(element => (this.activeElement = element));
     this.exited.subscribe(() => {
       this.previousElement = this.activeElement;
       this.activeElement = undefined;
     });
+  }
+
+  /** Stop the managers listeners. */
+  destroy() {
+    this._destroyed.next();
+    this._destroyed.complete();
   }
 
   /**
@@ -84,11 +93,5 @@ export class PointerFocusTracker<T extends FocusableElement> {
         mergeAll(),
       ),
     );
-  }
-
-  /** Stop the managers listeners. */
-  destroy() {
-    this._destroyed.next();
-    this._destroyed.complete();
   }
 }
