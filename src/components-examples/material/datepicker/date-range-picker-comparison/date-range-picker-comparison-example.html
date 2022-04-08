@@ -8,6 +8,7 @@
     <input matStartDate placeholder="Start date" formControlName="start">
     <input matEndDate placeholder="End date" formControlName="end">
   </mat-date-range-input>
+  <mat-hint>MM/DD/YYYY – MM/DD/YYYY</mat-hint>
   <mat-datepicker-toggle matSuffix [for]="campaignOnePicker"></mat-datepicker-toggle>
   <mat-date-range-picker #campaignOnePicker></mat-date-range-picker>
 </mat-form-field>
@@ -23,5 +24,6 @@
     <input matEndDate placeholder="End date" formControlName="end">
   </mat-date-range-input>
   <mat-datepicker-toggle matSuffix [for]="campaignTwoPicker"></mat-datepicker-toggle>
+  <mat-hint>MM/DD/YYYY – MM/DD/YYYY</mat-hint>
   <mat-date-range-picker #campaignTwoPicker></mat-date-range-picker>
 </mat-form-field>

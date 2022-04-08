@@ -588,6 +588,9 @@ attribute to the native input and button elements, respectively.
 the datepicker text input a meaningful label via `<mat-label>`, `aria-label`, `aria-labelledby` or
 `MatDatepickerIntl`.
 
+Always communicate the date format (e.g. 'MM/DD/YYYY'). This can be accomplished using `<mat-hint>`
+or by providing an additional label adjacent to the form field.
+
 `MatDatepickerInput` adds <kbd>>Alt</kbd> + <kbd>Down Arrow</kbd> as a keyboard short to open the
 datepicker pop-up. However, ChromeOS intercepts this key combination at the OS level such that the
 browser only receives a `PageDown` key event. Because of this behavior, you should always include an

@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, Inject} from '@angular/core';
 import {
   MAT_MOMENT_DATE_FORMATS,
   MomentDateAdapter,
@@ -30,9 +30,22 @@ import 'moment/locale/fr';
   ],
 })
 export class DatepickerLocaleExample {
-  constructor(private _adapter: DateAdapter<any>) {}
+  constructor(
+    private _adapter: DateAdapter<any>,
+    @Inject(MAT_DATE_LOCALE) private _locale: string,
+  ) {}
 
   french() {
-    this._adapter.setLocale('fr');
+    this._locale = 'fr';
+    this._adapter.setLocale(this._locale);
+  }
+
+  getDateFormatString(): string {
+    if (this._locale === 'ja-JP') {
+      return 'YYYY/MM/DD';
+    } else if (this._locale === 'fr') {
+      return 'DD/MM/YYYY';
+    }
+    return '';
   }
 }

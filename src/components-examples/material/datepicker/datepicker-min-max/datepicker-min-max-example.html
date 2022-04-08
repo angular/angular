@@ -1,6 +1,7 @@
 <mat-form-field class="example-full-width" appearance="fill">
   <mat-label>Choose a date</mat-label>
   <input matInput [min]="minDate" [max]="maxDate" [matDatepicker]="picker">
+  <mat-hint>MM/DD/YYYY</mat-hint>
   <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
   <mat-datepicker #picker></mat-datepicker>
 </mat-form-field>

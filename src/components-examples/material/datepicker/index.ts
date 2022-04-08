@@ -3,7 +3,7 @@ import {NgModule} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatButtonModule} from '@angular/material/button';
 import {MatCardModule} from '@angular/material/card';
-import {MatNativeDateModule} from '@angular/material/core';
+import {MatNativeDateModule, MAT_DATE_LOCALE} from '@angular/material/core';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatIconModule} from '@angular/material/icon';
 import {MatInputModule} from '@angular/material/input';
@@ -106,5 +106,11 @@ const EXAMPLES = [
   ],
   declarations: EXAMPLES,
   exports: EXAMPLES,
+  providers: [
+    // Except in specific examples, use 'en-US' locale in datepicker examples. This ensures that
+    // the hardcoded date format strings displayed in `<mat-hint>` will match the format used by
+    // `NativeDateModule`.
+    {provide: MAT_DATE_LOCALE, useValue: 'en-US'},
+  ],
 })
 export class DatepickerExamplesModule {}

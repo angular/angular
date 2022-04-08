@@ -1,6 +1,7 @@
 <mat-form-field appearance="fill">
   <mat-label>Moment.js datepicker</mat-label>
   <input matInput [matDatepicker]="dp" [formControl]="date">
+  <mat-hint>MM/DD/YYYY</mat-hint>
   <mat-datepicker-toggle matSuffix [for]="dp"></mat-datepicker-toggle>
   <mat-datepicker #dp></mat-datepicker>
 </mat-form-field>
