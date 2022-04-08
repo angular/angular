@@ -21,7 +21,9 @@ describe('testing', () => {
        }));
 
     it('should support promises', withBody('<span>works!</span>', () => {
-         return Promise.resolve(true).then(() => passed = true);
+         return Promise.resolve(true).then(() => {
+           passed = true;
+         });
        }));
 
     it('should support async and await', withBody('<span>works!</span>', async () => {

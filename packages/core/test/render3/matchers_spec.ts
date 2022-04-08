@@ -14,6 +14,8 @@ import {isShapeOf, ShapeOf} from './is_shape_of';
 import {matchDomElement, matchDomText, matchObjectShape, matchTNode, matchTView} from './matchers';
 
 describe('render3 matchers', () => {
+  const fakeMatcherUtil = {equals: (a: any, b: any) => a === b} as jasmine.MatchersUtil;
+
   describe('matchObjectShape', () => {
     interface MyShape {
       propA: any;
@@ -38,8 +40,8 @@ describe('render3 matchers', () => {
 
     it('should produce human readable errors', () => {
       const matcher = matchMyShape({propA: 'different'});
-      expect(matcher.asymmetricMatch(myShape, [])).toEqual(false);
-      expect(matcher.jasmineToString!(jasmine.pp))
+      expect(matcher.asymmetricMatch(myShape, fakeMatcherUtil)).toEqual(false);
+      expect(matcher.jasmineToString!((value: any) => value + ''))
           .toEqual('\n  property obj.propA to equal different but got value');
     });
   });
@@ -73,8 +75,8 @@ describe('render3 matchers', () => {
 
     it('should produce human readable error', () => {
       const matcher = matchDomElement('div', {name: 'other'});
-      expect(matcher.asymmetricMatch(div, [])).toEqual(false);
-      expect(matcher.jasmineToString!(jasmine.pp))
+      expect(matcher.asymmetricMatch(div, fakeMatcherUtil)).toEqual(false);
+      expect(matcher.jasmineToString!((value: any) => value + ''))
           .toEqual(`[<DIV name="Name"> != <div name="other">]`);
     });
   });
@@ -88,8 +90,8 @@ describe('render3 matchers', () => {
 
     it('should produce human readable error', () => {
       const matcher = matchDomText('other text');
-      expect(matcher.asymmetricMatch(text, [])).toEqual(false);
-      expect(matcher.jasmineToString!(jasmine.pp))
+      expect(matcher.asymmetricMatch(text, fakeMatcherUtil)).toEqual(false);
+      expect(matcher.jasmineToString!((value: any) => value + ''))
           .toEqual(`[#TEXT: "myText" != #TEXT: "other text"]`);
     });
   });
