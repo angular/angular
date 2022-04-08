@@ -18,11 +18,6 @@ function supportNode() {
   return isNode;
 }
 
-function emptyRun() {
-  // Jasmine will throw if there are no tests.
-  it('should pass', () => {});
-}
-
 (supportNode as any).message = 'support node';
 
 function supportClock() {
@@ -829,7 +824,7 @@ describe('FakeAsyncTestZoneSpec', () => {
                      expect(timestamp1).toEqual(32);
                    });
                  });
-               }, emptyRun));
+               }));
     });
   });
 
@@ -852,7 +847,7 @@ describe('FakeAsyncTestZoneSpec', () => {
             });
           }).toThrowError('Cannot make XHRs from within a fake async test. Request URL: /test');
         });
-      }, emptyRun));
+      }));
 
   describe('node process', ifEnvSupports(supportNode, () => {
              it('should be able to schedule microTask with additional arguments', () => {
@@ -882,7 +877,7 @@ describe('FakeAsyncTestZoneSpec', () => {
                  expect(cbArgRun).toEqual(true);
                });
              });
-           }, emptyRun));
+           }));
 
   describe('should allow user define which macroTask fakeAsyncTest', () => {
     let FakeAsyncTestZoneSpec = (Zone as any)['FakeAsyncTestZoneSpec'];
@@ -1155,8 +1150,7 @@ describe('FakeAsyncTestZoneSpec', () => {
               jasmine.clock().tick(100);
               expect(spy).toHaveBeenCalled();
             });
-          },
-          emptyRun));
+          }));
 
   describe('fakeAsyncTest should patch jasmine.clock', ifEnvSupports(supportClock, () => {
              let spy: any;
@@ -1216,7 +1210,7 @@ describe('FakeAsyncTestZoneSpec', () => {
                jasmine.clock().tick(100);
                expect(spy).toHaveBeenCalled();
              });
-           }, emptyRun));
+           }));
 
   describe('fakeAsyncTest should patch rxjs scheduler', ifEnvSupports(supportClock, () => {
              let FakeAsyncTestZoneSpec = (Zone as any)['FakeAsyncTestZoneSpec'];
@@ -1244,7 +1238,7 @@ describe('FakeAsyncTestZoneSpec', () => {
                  done();
                });
              });
-           }, emptyRun));
+           }));
 });
 
 class Log {

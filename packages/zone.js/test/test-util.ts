@@ -27,28 +27,27 @@ import {isNode, zoneSymbol} from '../lib/common/utils';
 export {zoneSymbol};
 
 declare const global: any;
-export function ifEnvSupports(test: any, block: Function, otherwise?: Function): () => void {
-  return _ifEnvSupports(test, block, otherwise);
+export function ifEnvSupports(test: any, block: Function): () => void {
+  return _ifEnvSupports(test, block);
 }
 
-export function ifEnvSupportsWithDone(
-    test: any, block: Function, otherwise?: Function): (done: Function) => void {
-  return _ifEnvSupports(test, block, otherwise, true);
+export function ifEnvSupportsWithDone(test: any, block: Function): (done: Function) => void {
+  return _ifEnvSupports(test, block, true);
 }
 
-function _ifEnvSupports(test: any, block: Function, otherwise?: Function, withDone = false) {
+function _ifEnvSupports(test: any, block: Function, withDone = false) {
   if (withDone) {
     return function(done?: Function) {
-      _runTest(test, block, otherwise, done);
+      _runTest(test, block, done);
     };
   } else {
     return function() {
-      _runTest(test, block, otherwise, undefined);
+      _runTest(test, block, undefined);
     };
   }
 }
 
-function _runTest(test: any, block: Function, otherwise?: Function, done?: Function) {
+function _runTest(test: any, block: Function, done?: Function) {
   const message = (test.message || test.name || test);
   if (typeof test === 'string' ? !!global[test] : test()) {
     if (done) {
@@ -58,8 +57,7 @@ function _runTest(test: any, block: Function, otherwise?: Function, done?: Funct
     }
   } else {
     console.log('WARNING: skipping ' + message + ' tests (missing this API)');
-    otherwise?.();
-    done?.();
+    done && done();
   }
 }
 

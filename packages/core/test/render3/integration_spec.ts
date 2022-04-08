@@ -8,7 +8,6 @@
 
 import {NgIf} from '@angular/common';
 import {RElement} from '@angular/core/src/render3/interfaces/renderer_dom';
-import {ngDevModeResetPerfCounters} from '@angular/core/src/util/ng_dev_mode';
 
 import {RendererType2} from '../../src/render/api_flags';
 import {getLContext, readPatchedData} from '../../src/render3/context_discovery';
@@ -27,7 +26,6 @@ describe('render3 integration test', () => {
   describe('render', () => {
     describe('text bindings', () => {
       it('should support creation-time values in text nodes', () => {
-        ngDevModeResetPerfCounters();
         function Template(rf: RenderFlags, value: string) {
           if (rf & RenderFlags.Create) {
             ɵɵtext(0, value);
@@ -35,12 +33,12 @@ describe('render3 integration test', () => {
         }
         expect(renderToHtml(Template, 'once', 1, 1)).toEqual('once');
         expect(renderToHtml(Template, 'twice', 1, 1)).toEqual('once');
-        expect(ngDevMode).toEqual(jasmine.objectContaining({
+        expect(ngDevMode).toHaveProperties({
           firstCreatePass: 0,
           tNode: 2,
           tView: 2,  // 1 for root view, 1 for template
           rendererSetText: 1,
-        }));
+        });
       });
     });
   });

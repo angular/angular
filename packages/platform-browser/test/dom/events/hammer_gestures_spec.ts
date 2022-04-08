@@ -14,12 +14,7 @@ import {HammerGestureConfig, HammerGesturesPlugin,} from '@angular/platform-brow
   describe('HammerGesturesPlugin', () => {
     let plugin: HammerGesturesPlugin;
     let fakeConsole: any;
-
-    if (isNode) {
-      // Jasmine will throw if there are no tests.
-      it('should pass', () => {});
-      return;
-    }
+    if (isNode) return;
 
     beforeEach(() => {
       fakeConsole = {warn: jasmine.createSpy('console.warn')};

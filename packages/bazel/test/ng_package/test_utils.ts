@@ -18,7 +18,7 @@ export function matchesObjectWithOrder(expected: any): jasmine.AsymmetricMatcher
       // in the object, and its nested objects.
       return JSON.stringify(actual) === JSON.stringify(expected);
     },
-    jasmineToString(prettyPrint: (value: any) => string): string {
+    jasmineToString(prettyPrint: typeof jasmine.pp): string {
       return prettyPrint(expected);
     }
   };

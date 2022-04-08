@@ -473,9 +473,6 @@ describe('regressions using bootstrap', () => {
         expect(logger.errors[errorIndex][1].message).toBe(`Error: ${value}`);
       }
     });
-  } else {
-    // Jasmine will throw if there are no tests.
-    it('should pass', () => {});
   }
 });
 
