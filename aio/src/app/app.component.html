@@ -50,7 +50,12 @@
   </mat-toolbar>
 </header>
 
-<aio-search-results #searchResultsView *ngIf="showSearchResults" [searchResults]="searchResults | async" (resultSelected)="hideSearchResults()"></aio-search-results>
+<aio-search-results *ngIf="showSearchResults"
+  #searchResultsView
+  [searchResults]="searchResults | async"
+  (resultSelected)="hideSearchResults()"
+  (closeButtonClick)="hideSearchResults()">
+</aio-search-results>
 
 <mat-sidenav-container class="sidenav-container" [class.no-animations]="disableAnimations" [class.has-floating-toc]="hasFloatingToc">
 

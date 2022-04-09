@@ -295,13 +295,10 @@ export class AppComponent implements OnInit {
           this.focusSearchBox();
         } else {
           // the user is focusing backward from the search input,
-          // loop it back to the last search result item
-          const anchors: HTMLAnchorElement[] = Array.from(
-            this.searchResultsView.nativeElement.querySelectorAll('a.search-result-item'),
-          );
-          if (anchors.length) {
-            anchors[anchors.length - 1].focus();
-          }
+          // loop it back to the results' close button
+          const closeBtn: HTMLButtonElement =
+            this.searchResultsView.nativeElement.querySelector('button.close-button');
+          closeBtn.focus();
         }
       }
     }
