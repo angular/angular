@@ -1347,9 +1347,6 @@
     "name": "urlParsingNode"
   },
   {
-    "name": "validateStyleProperty"
-  },
-  {
     "name": "viewAttachedToChangeDetector"
   },
   {
