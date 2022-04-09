@@ -18,7 +18,7 @@
   },
   "scripts": {
     "/": "",
-    "// 1": "Many developer of our checks/scripts/tools have moved to our ng-dev tool",
+    "// 1": "Many of our checks/scripts/tools have moved to our ng-dev tool",
     "// 2": "Find the usage you are looking for with:",
     "// 3": "yarn ng-dev --help",
     "/ ": "",
