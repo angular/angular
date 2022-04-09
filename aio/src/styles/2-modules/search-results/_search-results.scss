@@ -1,4 +1,5 @@
 @use '../../mixins';
+@use '../../constants';
 
 aio-search-results {
   z-index: 10;
@@ -70,6 +71,36 @@ aio-search-results {
 
     @media (max-width: 600px) {
       display: block;
+    }
+
+    .close-btn-wrapper {
+      position: absolute;
+      $offset: 1rem;
+      top: $offset;
+      right: $offset;
+      overflow: hidden;
+
+      .close-btn {
+        background-color: constants.$darkgray;
+        border: none;
+        padding: 0;
+        display: flex;
+        transition: 100ms opacity;
+        opacity: 0;
+        transform: translateX(5rem);
+        height: 0;
+        width: 0;
+        color: constants.$white;
+        cursor: pointer;
+
+        &:focus {
+          opacity: 1;
+          transform: translateX(0);
+          height: auto;
+          width: auto;
+          margin: 3px;
+        }
+      }
     }
   }
 
