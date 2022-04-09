@@ -47,6 +47,14 @@ npm install -g &commat;angular/cli&lt;aio-angular-dist-tag class="pln"&gt;&lt;/a
 
 </code-example>
 
+<div class="alert is-helpful">
+  <p>On Windows client computers, the execution of PowerShell scripts is disabled by default. To allow the execution of PowerShell scripts, which is needed for npm global binaries, you must set the following <a href="https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_execution_policies">execution policy</a>:</p>
+  <code-example language="sh">
+  Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
+  </code-example>
+  <p>Carefully read the message displayed after executing the command and follow the instructions. Make sure you understand the implications of setting an execution policy.</p>
+</div>
+
 <a id="create-proj"></a>
 
 ## Create a workspace and initial application
