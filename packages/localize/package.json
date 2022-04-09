@@ -34,7 +34,7 @@
     "**/init.mjs"
   ],
   "dependencies": {
-    "@babel/core": "7.17.8",
+    "@babel/core": "7.17.9",
     "glob": "7.2.0",
     "yargs": "^17.2.1"
   },
