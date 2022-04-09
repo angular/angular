@@ -364,7 +364,7 @@ The result is an AngularJS *directive*, which you can then register in the Angul
 <div class="alert is-helpful">
 
 By default, Angular change detection will also run on the component for everyAngularJS `$digest` cycle.
-If you want to only have change detection run whenthe inputs change, you can set `propagateDigest` to `false` when calling`downgradeComponent()`.
+If you want to only have change detection run when the inputs change, you can set `propagateDigest` to `false` when calling`downgradeComponent()`.
 
 </div>
 

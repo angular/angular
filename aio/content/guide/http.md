@@ -148,7 +148,7 @@ The callback in the updated component method receives a typed data object, which
 To access properties that are defined in an interface, you must explicitly convert the plain object you get from the JSON to the required response type.
 For example, the following `subscribe` callback receives `data` as an Object, and then type-casts it in order to access the properties.
 
-<code-example format="typescript" langauge="typescript">
+<code-example format="typescript" language="typescript">
 
 .subscribe(data =&gt; this.config = {
   heroesUrl: (data as any).heroesUrl,

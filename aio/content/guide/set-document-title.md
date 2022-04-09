@@ -12,7 +12,7 @@ See the <live-example name="set-document-title"></live-example>.
 
 The obvious approach is to bind a property of the component to the HTML `<title>` like this:
 
-<code-example format="html" langauage="html">
+<code-example format="html" language="html">
 
 &lt;title&gt;{{This_Does_Not_Work}}&lt;/title&gt;
 

@@ -218,7 +218,7 @@ See [Browser support][AioGuideBrowserSupport].
 
 The custom element feature extends HTML by allowing you to define a tag whose content is created and controlled by JavaScript code.
 A custom element is recognized by a browser when it is added to the [CustomElementRegistry][MdnDocsWebApiCustomelementregistry].
-A custom element is also refernced as a *web component*.
+A custom element is also referenced as a *web component*.
 
 You can use the API to transform an Angular component so that it can be registered with the browser and used in any HTML that you add directly to the DOM within an Angular application.
 The custom element tag inserts the view of the component, with change-detection and data-binding functionality, into content that would otherwise be displayed without Angular processing.
@@ -324,7 +324,7 @@ See also [custom element][AioGuideGlossaryCustomElement], which provides an easi
 
 ## eager loading
 
-NgModules or components that are loaded on launch are referenced as eager-loaded, to distinguish them from those that are loaded at run time that are refernced as lazy-loaded.
+NgModules or components that are loaded on launch are referenced as eager-loaded, to distinguish them from those that are loaded at run time that are referenced as lazy-loaded.
 See also [lazy loading][AioGuideGlossaryLazyLoading].
 
 ## ECMAScript
@@ -857,7 +857,7 @@ Schematic [rules][AioGuideGlossaryRule] take a tree object as input, operate on 
 
 A programming language based on JavaScript that is notable for its optional typing system.
 TypeScript provides compile-time type checking and strong tooling support
-The type checking and toooling support include code completion, refactoring, inline documentation, and intelligent search.
+The type checking and tooling support include code completion, refactoring, inline documentation, and intelligent search.
 Many code editors and IDEs support TypeScript either natively or with plug-ins.
 
 TypeScript is the preferred language for Angular development.
