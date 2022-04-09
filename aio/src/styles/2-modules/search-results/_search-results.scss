@@ -71,6 +71,27 @@ aio-search-results {
     @media (max-width: 600px) {
       display: block;
     }
+
+    .close-button {
+      position: absolute;
+      $offset: 1rem;
+      top: $offset;
+      right: $offset;
+      border: none;
+      padding: 0;
+      margin: 3px;
+      display: flex;
+      opacity: 0;
+      width: 0;
+      background-color: inherit;
+      cursor: pointer;
+      transition: 100ms opacity;
+
+      &:focus {
+        opacity: 1;
+        width: auto;
+      }
+    }
   }
 
   &.embedded {

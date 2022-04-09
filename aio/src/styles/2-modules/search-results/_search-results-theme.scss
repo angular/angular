@@ -12,6 +12,8 @@
       background-color: constants.$darkgray;
       box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.3);
 
+      $item-color: if($is-dark-theme, constants.$offwhite, constants.$lightgray);
+
       .search-area {
         .search-section-header {
           color: constants.$white;
@@ -19,7 +21,7 @@
 
         ul {
           .search-result-item {
-            color: if($is-dark-theme, constants.$offwhite, constants.$lightgray);
+            color: $item-color;
 
             &:hover {
               color: constants.$white;
@@ -34,6 +36,10 @@
 
       a {
         color: mat.get-color-from-palette($foreground, text);
+      }
+
+      .close-button {
+        color: $item-color;
       }
     }
 
