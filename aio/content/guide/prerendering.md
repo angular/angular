@@ -50,7 +50,7 @@ ng run &lt;app-name&gt;:prerender --routes /product/1 /product/2
 
 </code-example>
 
-#### Providing additonal routes using a file
+#### Providing additional routes using a file
 
 You can provide routes using a file to generate static pages.
 This method is useful if you have a large number of routes to generate, such as product details for an e-commerce application, which might come from an external source \(Database or CMS\).

@@ -348,7 +348,7 @@ Care should be taken that if an `ngAcceptInputType_` override is present for a g
 Disable checking of a binding expression by surrounding the expression in a call to the [`$any()` cast pseudo-function](guide/template-expression-operators).
 The compiler treats it as a cast to the `any` type just like in TypeScript when a `<any>` or `as any` cast is used.
 
-In the following example, casting `person` to the `any` type suppresses the error `Property address does not exist`.
+In the following example, casting `person` to the `any` type suppresses the error `Property addresss does not exist`.
 
 <code-example format="typescript" language="typescript">
 

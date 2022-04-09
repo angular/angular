@@ -86,7 +86,7 @@ Let's create a new `open-close` component to animate with simple transitions.
 
 Run the following command in terminal to generate the component:
 
-<code-example format="shell" langauage="shell">
+<code-example format="shell" language="shell">
 
 ng g component open-close
 

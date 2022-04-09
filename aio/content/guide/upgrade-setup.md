@@ -1,6 +1,6 @@
 # Setup for upgrading from AngularJS
 
-<!--tode: Question: Can we remove this file and instead direct readers to https://github.com/angular/quickstart/blob/master/README.md -->
+<!--todo: Question: Can we remove this file and instead direct readers to https://github.com/angular/quickstart/blob/master/README.md -->
 
 <div class="alert is-critical">
 
