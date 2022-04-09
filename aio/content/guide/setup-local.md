@@ -47,6 +47,14 @@ npm install -g &commat;angular/cli&lt;aio-angular-dist-tag class="pln"&gt;&lt;/a
 
 </code-example>
 
+<div class="alert is-helpful">
+  <p>In order to use the Angular CLI in Powershell, you have to set the PowerShell <a href="https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core  about/about_execution_policies">execution policies</a> for Windows computers:</p>
+  <code-example language="sh">
+  Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
+  </code-example>
+  <p>Carefully read the message displayed after executing the command and follow the instructions.</p>
+</div>
+
 <a id="create-proj"></a>
 
 ## Create a workspace and initial application
