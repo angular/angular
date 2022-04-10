@@ -241,6 +241,14 @@ describe('completions', () => {
       expectContain(completions, ts.ScriptElementKind.memberVariableElement, ['title']);
     });
 
+    it('should not include the trailing quote inside the RHS of a two-way binding', () => {
+      const {templateFile} = setup(`<h1 [(model)]="title."></h1>`, `title!: string;`);
+      templateFile.moveCursorToText('[(model)]="title.¦"');
+      const completions = templateFile.getCompletionsAtPosition();
+      expectContain(completions, ts.ScriptElementKind.memberFunctionElement, ['charAt']);
+      expectReplacementText(completions, templateFile.contents, '');
+    });
+
     it('should return completions inside an empty RHS of a two-way binding', () => {
       const {templateFile} = setup(`<h1 [(model)]=""></h1>`, `title!: string;`);
       templateFile.moveCursorToText('[(model)]="¦"');
