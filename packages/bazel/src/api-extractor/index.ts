@@ -37,25 +37,12 @@ export function runMain(
     }));
   }
 
-  // API extractor doesn't always support the version of TypeScript used in the repo
-  // example: at the moment it is not compatable with 3.2
-  // to use the internal TypeScript we shall not create a program but rather pass a parsed tsConfig.
   const parsedTsConfig = parsedConfig!.config as any;
   const compilerOptions = parsedTsConfig.compilerOptions;
-  for (const [key, values] of Object.entries<string[]>(compilerOptions.paths)) {
-    if (key === '*') {
-      continue;
-    }
 
-    // we shall not pass ts files as this will need to be parsed, and for example rxjs,
-    // cannot be compiled with our tsconfig, as ours is more strict
-    // hence amend the paths to point always to the '.d.ts' files.
-    compilerOptions.paths[key] = values.map(path => {
-      const pathSuffix = /(\*|index)$/.test(path) ? '.d.ts' : '/index.d.ts';
-
-      return path + pathSuffix;
-    });
-  }
+  // We omit all path mappings from the compilation tsconfig. In Angular APF, all module imports
+  // are considered external and should be preserved. i.e. not bundled into the dts rollup.
+  compilerOptions.paths = [];
 
   const extractorOptions: IExtractorInvokeOptions = {
     localBuild: acceptApiUpdates,
