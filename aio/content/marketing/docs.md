@@ -5,7 +5,6 @@ Angular is an application design framework and development platform for creating
 These Angular docs help you learn and use the Angular framework and development platform, from your first application to optimizing complex single-page apps for enterprises.
 Tutorials and guides include downloadable examples to accelerate your projects.
 
-
 <div class="card-container">
   <a href="guide/what-is-angular" class="docs-card" title="Angular Platform Overview">
     <section>What is Angular</section>
@@ -34,15 +33,12 @@ Tutorials and guides include downloadable examples to accelerate your projects.
   </a>
 </div>
 
-
 ## Assumptions
 
-
-These docs assume that you are already familiar with [HTML](https://developer.mozilla.org/docs/Learn/HTML/Introduction_to_HTML "Learn HTML"), [CSS](https://developer.mozilla.org/docs/Learn/CSS/First_steps "Learn CSS"), [JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript/A_re-introduction_to_JavaScript "Learn JavaScript"),
-and some of the tools from the [latest standards](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Language_Resources "Latest JavaScript standards"), such as [classes](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes "ES2015 Classes") and [modules](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import "ES2015 Modules").
+These docs assume that you are already familiar with [HTML](https://developer.mozilla.org/docs/Learn/HTML/Introduction_to_HTML "Learn HTML"), [CSS](https://developer.mozilla.org/docs/Learn/CSS/First_steps "Learn CSS"), [JavaScript](https://developer.mozilla.org/docs/Web/JavaScript/A_re-introduction_to_JavaScript "Learn JavaScript"),
+and some of the tools from the [latest standards](https://developer.mozilla.org/docs/Web/JavaScript/Language_Resources "Latest JavaScript standards"), such as [classes](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Classes "ES2015 Classes") and [modules](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/import "ES2015 Modules").
 The code samples are written using [TypeScript](https://www.typescriptlang.org/ "TypeScript").
 Most Angular code can be written with just the latest JavaScript, using [types](https://www.typescriptlang.org/docs/handbook/classes.html "TypeScript Types") for dependency injection, and using [decorators](https://www.typescriptlang.org/docs/handbook/decorators.html "Decorators") for metadata.
-
 
 ## Feedback
 
