@@ -87,7 +87,6 @@ describe('Integration', () => {
 
       it('should not ignore empty paths in legacy mode',
          fakeAsync(inject([Router], (router: Router) => {
-           const warnSpy = spyOn(console, 'warn');
            router.relativeLinkResolution = 'legacy';
 
            const fixture = createRoot(router, RootCmp);
@@ -97,10 +96,6 @@ describe('Integration', () => {
 
            const link = fixture.nativeElement.querySelector('a');
            expect(link.getAttribute('href')).toEqual('/foo/bar/simple');
-           expect(warnSpy.calls.first().args[0])
-               .toContain('/foo/bar/simple will change to /foo/simple');
-           expect(warnSpy.calls.first().args[0])
-               .toContain('relativeLinkResolution: \'legacy\' is deprecated');
          })));
 
       it('should ignore empty paths in corrected mode',
@@ -5893,7 +5888,6 @@ describe('Integration', () => {
 
       it('should not ignore empty path when in legacy mode',
          fakeAsync(inject([Router], (router: Router) => {
-           const warnSpy = spyOn(console, 'warn');
            router.relativeLinkResolution = 'legacy';
 
            const fixture = createRoot(router, RootCmp);
@@ -5905,10 +5899,6 @@ describe('Integration', () => {
 
            const link = fixture.nativeElement.querySelector('a');
            expect(link.getAttribute('href')).toEqual('/lazy/foo/bar/simple');
-           expect(warnSpy.calls.first().args[0])
-               .toContain('/lazy/foo/bar/simple will change to /lazy/foo/simple');
-           expect(warnSpy.calls.first().args[0])
-               .toContain('relativeLinkResolution: \'legacy\' is deprecated');
          })));
 
       it('should ignore empty path when in corrected mode',

@@ -284,13 +284,6 @@ export class ActivatedRouteSnapshot {
   _urlSegment: UrlSegmentGroup;
   /** @internal */
   _lastPathIndex: number;
-  /**
-   * @internal
-   *
-   * Used only in dev mode to detect if application relies on `relativeLinkResolution: 'legacy'`
-   * Should be removed in v16.
-   */
-  _correctedLastPathIndex: number;
   /** @internal */
   _resolve: ResolveData;
   /** @internal */
@@ -340,11 +333,10 @@ export class ActivatedRouteSnapshot {
       public outlet: string,
       /** The component of the route */
       public component: Type<any>|string|null, routeConfig: Route|null, urlSegment: UrlSegmentGroup,
-      lastPathIndex: number, resolve: ResolveData, correctedLastPathIndex?: number) {
+      lastPathIndex: number, resolve: ResolveData) {
     this.routeConfig = routeConfig;
     this._urlSegment = urlSegment;
     this._lastPathIndex = lastPathIndex;
-    this._correctedLastPathIndex = correctedLastPathIndex ?? lastPathIndex;
     this._resolve = resolve;
   }
 

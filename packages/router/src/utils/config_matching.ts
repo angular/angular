@@ -111,9 +111,6 @@ function addEmptyPathsToChildrenIfNeeded(
       s._sourceSegment = segmentGroup;
       if (relativeLinkResolution === 'legacy') {
         s._segmentIndexShift = segmentGroup.segments.length;
-        if (typeof ngDevMode === 'undefined' || !!ngDevMode) {
-          s._segmentIndexShiftCorrected = consumedSegments.length;
-        }
       } else {
         s._segmentIndexShift = consumedSegments.length;
       }
