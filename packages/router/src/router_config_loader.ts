@@ -58,7 +58,7 @@ export class RouterConfigLoader {
               flatten(injector.get(ROUTES, [], InjectFlags.Self | InjectFlags.Optional))
                   .map(standardizeConfig);
           NG_DEV_MODE && validateConfig(routes);
-          return new LoadedRouterConfig(routes, injector);
+          return {routes, injector};
         }),
         catchError((err) => {
           route._loader$ = undefined;

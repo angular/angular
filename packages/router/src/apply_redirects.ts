@@ -270,10 +270,12 @@ class ApplyRedirects {
       outlet: string): Observable<UrlSegmentGroup> {
     if (route.path === '**') {
       if (route.loadChildren) {
-        const loaded$ =
-            route._loadedConfig ? of(route._loadedConfig) : this.configLoader.load(injector, route);
+        const loaded$ = route._loadedRoutes ?
+            of({routes: route._loadedRoutes, injector: route._loadedInjector}) :
+            this.configLoader.load(injector, route);
         return loaded$.pipe(map((cfg: LoadedRouterConfig) => {
-          route._loadedConfig = cfg;
+          route._loadedRoutes = cfg.routes;
+          route._loadedInjector = cfg.injector;
           return new UrlSegmentGroup(segments, {});
         }));
       }
@@ -287,7 +289,7 @@ class ApplyRedirects {
     const childConfig$ = this.getChildConfig(injector, route, segments);
 
     return childConfig$.pipe(mergeMap((routerConfig: LoadedRouterConfig) => {
-      const childInjector = routerConfig.injector;
+      const childInjector = routerConfig.injector ?? injector;
       const childConfig = routerConfig.routes;
 
       const {segmentGroup: splitSegmentGroup, slicedSegments} =
@@ -320,20 +322,21 @@ class ApplyRedirects {
       Observable<LoadedRouterConfig> {
     if (route.children) {
       // The children belong to the same module
-      return of(new LoadedRouterConfig(route.children, injector));
+      return of({routes: route.children, injector});
     }
 
     if (route.loadChildren) {
       // lazy children belong to the loaded module
-      if (route._loadedConfig !== undefined) {
-        return of(route._loadedConfig);
+      if (route._loadedRoutes !== undefined) {
+        return of({routes: route._loadedRoutes, injector: route._loadedInjector});
       }
 
       return this.runCanLoadGuards(injector, route, segments)
           .pipe(mergeMap((shouldLoadResult: boolean) => {
             if (shouldLoadResult) {
               return this.configLoader.load(injector, route).pipe(map((cfg: LoadedRouterConfig) => {
-                route._loadedConfig = cfg;
+                route._loadedRoutes = cfg.routes;
+                route._loadedInjector = cfg.injector;
                 return cfg;
               }));
             }
@@ -341,7 +344,7 @@ class ApplyRedirects {
           }));
     }
 
-    return of(new LoadedRouterConfig([], injector));
+    return of({routes: [], injector});
   }
 
   private runCanLoadGuards(injector: Injector, route: Route, segments: UrlSegment[]):

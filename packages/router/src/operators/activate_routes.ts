@@ -11,13 +11,12 @@ import {MonoTypeOperatorFunction} from 'rxjs';
 import {map} from 'rxjs/operators';
 
 import {ActivationEnd, ChildActivationEnd, Event} from '../events';
-import {LoadedRouterConfig} from '../models';
 import {DetachedRouteHandleInternal, RouteReuseStrategy} from '../route_reuse_strategy';
 import {NavigationTransition} from '../router';
 import {ChildrenOutletContexts} from '../router_outlet_context';
-import {ActivatedRoute, ActivatedRouteSnapshot, advanceActivatedRoute, RouterState} from '../router_state';
+import {ActivatedRoute, advanceActivatedRoute, RouterState} from '../router_state';
 import {forEach} from '../utils/collection';
-import {getClosestLoadedConfig} from '../utils/config';
+import {getClosestLoadedInjector} from '../utils/config';
 import {nodeChildrenAsMap, TreeNode} from '../utils/tree';
 
 export const activateRoutes =
@@ -194,9 +193,8 @@ export class ActivateRoutes {
           advanceActivatedRoute(stored.route.value);
           this.activateChildRoutes(futureNode, null, context.children);
         } else {
-          const config = getClosestLoadedConfig(future.snapshot);
-          const cmpFactoryResolver = 
-              config?.injector?.get(NgModuleRef)?.componentFactoryResolver ?? null;
+          const injector = getClosestLoadedInjector(future.snapshot);
+          const cmpFactoryResolver = injector?.get(NgModuleRef)?.componentFactoryResolver ?? null;
 
           context.attachRef = null;
           context.route = future;

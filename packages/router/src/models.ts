@@ -478,11 +478,19 @@ export interface Route {
    * parameters of the route change.
    */
   runGuardsAndResolvers?: RunGuardsAndResolvers;
+
   /**
-   * Filled for routes with `loadChildren` once the module has been loaded
+   * Filled for routes with `loadChildren` once the routes are loaded.
    * @internal
    */
-  _loadedConfig?: LoadedRouterConfig;
+  _loadedRoutes?: Route[];
+
+  /**
+   * Filled for routes with `loadChildren` once the routes are loaded
+   * @internal
+   */
+  _loadedInjector?: Injector;
+
   /**
    * Filled for routes with `loadChildren` during load
    * @internal
@@ -490,8 +498,9 @@ export interface Route {
   _loader$?: Observable<LoadedRouterConfig>;
 }
 
-export class LoadedRouterConfig {
-  constructor(public routes: Route[], public injector: Injector) {}
+export interface LoadedRouterConfig {
+  routes: Route[];
+  injector: Injector|undefined;
 }
 
 /**

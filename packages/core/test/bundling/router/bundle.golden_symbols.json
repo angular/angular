@@ -279,9 +279,6 @@
     "name": "ListComponent"
   },
   {
-    "name": "LoadedRouterConfig"
-  },
-  {
     "name": "Location"
   },
   {
@@ -1158,7 +1155,7 @@
     "name": "getChildRouteGuards"
   },
   {
-    "name": "getClosestLoadedConfig"
+    "name": "getClosestLoadedInjector"
   },
   {
     "name": "getClosureSafeProperty"

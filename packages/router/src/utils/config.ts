@@ -6,10 +6,20 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Injector} from '@angular/core';
+
 import {EmptyOutletComponent} from '../components/empty_outlet';
 import {LoadedRouterConfig, Route, Routes} from '../models';
 import {ActivatedRouteSnapshot} from '../router_state';
 import {PRIMARY_OUTLET} from '../shared';
+
+export function getLoadedRoutes(route: Route): Route[]|undefined {
+  return route._loadedRoutes;
+}
+
+export function getLoadedInjector(route: Route): Injector|undefined {
+  return route._loadedInjector;
+}
 
 export function validateConfig(config: Routes, parentPath: string = ''): void {
   // forEach doesn't iterate undefined values
@@ -136,19 +146,19 @@ export function sortByMatchingOutlets(routes: Routes, outletName: string): Route
 }
 
 /**
- * Gets the first loaded config in the snapshot's parent tree.
+ * Gets the first loaded injector in the snapshot's parent tree.
  *
- * Returns `null` if there is no parent lazy loaded config.
+ * Returns `null` if there is no parent lazy loaded injector.
  *
  * Generally used for retrieving the injector to use for getting tokens for guards/resolvers and
  * also used for getting the correct injector to use for creating components.
  */
-export function getClosestLoadedConfig(snapshot: ActivatedRouteSnapshot): LoadedRouterConfig|null {
+export function getClosestLoadedInjector(snapshot: ActivatedRouteSnapshot): Injector|null {
   if (!snapshot) return null;
 
   for (let s = snapshot.parent; s; s = s.parent) {
     const route = s.routeConfig;
-    if (route && route._loadedConfig) return route._loadedConfig;
+    if (route && route._loadedInjector) return route._loadedInjector;
   }
 
   return null;
