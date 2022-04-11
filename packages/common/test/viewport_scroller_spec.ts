@@ -7,6 +7,7 @@
  */
 
 import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
+
 import {BrowserViewportScroller, ViewportScroller} from '../src/viewport_scroller';
 
 describe('BrowserViewportScroller', () => {

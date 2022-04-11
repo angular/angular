@@ -254,7 +254,8 @@ Zone.__load_patch('ZoneAwarePromise', (global: any, Zone: ZoneType, api: _ZonePr
     const promiseState = (promise as any)[symbolState];
     const delegate = promiseState ?
         (typeof onFulfilled === 'function') ? onFulfilled : forwardResolution :
-        (typeof onRejected === 'function') ? onRejected : forwardRejection;
+        (typeof onRejected === 'function') ? onRejected :
+                                             forwardRejection;
     zone.scheduleMicroTask(source, () => {
       try {
         const parentPromiseValue = (promise as any)[symbolValue];

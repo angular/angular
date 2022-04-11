@@ -1,4 +1,4 @@
-// #docplaster ...
+// #docplaster &hellip;
 // #docregion webpack-config
 import linkerPlugin from '@angular/compiler-cli/linker/babel';
 

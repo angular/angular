@@ -7,6 +7,7 @@
  */
 
 import {Attribute, ChangeDetectorRef, ComponentFactoryResolver, ComponentRef, Directive, EventEmitter, Injector, OnDestroy, OnInit, Output, ViewContainerRef,} from '@angular/core';
+
 import {Data} from '../config';
 import {ChildrenOutletContexts} from '../router_outlet_context';
 import {ActivatedRoute} from '../router_state';

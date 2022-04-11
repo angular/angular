@@ -7,6 +7,7 @@
  */
 import {injectTemplateRef} from '@angular/core/src/linker/template_ref';
 import {injectViewContainerRef} from '@angular/core/src/linker/view_container_ref';
+
 import {TemplateRef, ViewContainerRef} from '../../../../src/linker';
 import {ɵɵdefineDirective, ɵɵdirectiveInject, ɵɵtemplate} from '../../../../src/render3/index';
 import {createLView, createTNode, createTView} from '../../../../src/render3/instructions/shared';

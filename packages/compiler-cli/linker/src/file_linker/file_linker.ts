@@ -6,8 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {R3PartialDeclaration} from '@angular/compiler';
+
 import {AbsoluteFsPath} from '../../../src/ngtsc/file_system';
 import {AstObject} from '../ast/ast_value';
+
 import {DeclarationScope} from './declaration_scope';
 import {EmitScope} from './emit_scopes/emit_scope';
 import {IifeEmitScope} from './emit_scopes/iife_emit_scope';

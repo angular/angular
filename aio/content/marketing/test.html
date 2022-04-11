@@ -4,37 +4,37 @@
 
 <p>No linenums at code-tabs level</p>
 <code-tabs>
-  <code-pane header='TS code file' language='ts'>
+  <code-pane header="TypeScript code file" language="typescript">
   class {
     foo(param: string) {}
   }
   </code-pane>
-  <code-pane header='HTML content file' language='html'>&lt;h1&gt;Heading&lt;/h1&gt;</code-pane>
-  <code-pane header='JSON data file' language='json' class='avoid'>{ "key": "value" }</code-pane>
+  <code-pane header="HTML content file" language="html">&lt;h1&gt;Heading&lt;/h1&gt;</code-pane>
+  <code-pane header="JSON data file" language="json" class="avoid">{ "key": "value" }</code-pane>
 </code-tabs>
 <p></p>
 
 <p>linenums=true at code-tabs level</p>
-<code-tabs linenums='true'>
-  <code-pane header='TS code file' language='ts'>
+<code-tabs linenums="true">
+  <code-pane header="TypeScript code file" language="typescript">
   class {
     foo(param: string) {}
   }
   </code-pane>
-  <code-pane header='HTML content file' language='html'>&lt;h1&gt;Heading&lt;/h1&gt;</code-pane>
-  <code-pane header='JSON data file' language='json' class='avoid'>{ "key": "value" }</code-pane>
+  <code-pane header="HTML content file" language="html">&lt;h1&gt;Heading&lt;/h1&gt;</code-pane>
+  <code-pane header="JSON data file" language="json" class="avoid">{ "key": "value" }</code-pane>
 </code-tabs>
 <p></p>
 
 <p>No linenums at code-tabs level; linenums=true for second HTML pane</p>
 <code-tabs >
-  <code-pane header='TS code file' language='ts'>
+  <code-pane header="TypeScript code file" language="typescript">
   class {
     foo(param: string) {}
   }
   </code-pane>
-  <code-pane header='HTML content file' language='html' linenums='true'>&lt;h1&gt;Heading&lt;/h1&gt;</code-pane>
-  <code-pane header='JSON data file' language='json' class='avoid'>{ "key": "value" }</code-pane>
+  <code-pane header="HTML content file" language="html" linenums="true">&lt;h1&gt;Heading&lt;/h1&gt;</code-pane>
+  <code-pane header="JSON data file" language="json" class="avoid">{ "key": "value" }</code-pane>
 </code-tabs>
 <p></p>
 
@@ -44,7 +44,7 @@
 <code-example>const foo = 'bar'</code-example>
 
 <p>Multi-line, linenums=true.</p>
-<code-example linenums='true'>
+<code-example linenums="true">
 &lt;hero-details <em>nghost-pmm-5&gt;
   &lt;h2 </em>ngcontent-pmm-5&gt;Bah Dah Bing&lt;/h2&gt;
   &lt;hero-team <em>ngcontent-pmm-5 </em>nghost-pmm-6&gt;
@@ -83,16 +83,20 @@
   &lt;/hero-details&gt;
 </code-example>
 
-## Backticked code blocks
+<a id="backticked-code-blocks"></a>
 
+<h2>Backticked code blocks</h2>
+
+<pre><code>
 ```html
-  <hero-details>
-    <h2>Mister Fantastic</h2>
-    <hero-team>
-      <h3>Losing Team</h3>
-    </hero-team>
-  </hero-details>
+<hero-details>
+  <h2>Mister Fantastic</h2>
+  <hero-team>
+    <h3>Losing Team</h3>
+  </hero-team>
+</hero-details>
 ```
+</code></pre>
 
 <h2>&lt;live-example&gt;</h2>
 

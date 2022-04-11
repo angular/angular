@@ -8,8 +8,8 @@
 import '../util/ng_dev_mode';
 
 import {assertDefined, assertDomNode} from '../util/assert';
-
 import {EMPTY_ARRAY} from '../util/empty';
+
 import {LContext} from './interfaces/context';
 import {TNode, TNodeFlags} from './interfaces/node';
 import {RElement, RNode} from './interfaces/renderer_dom';

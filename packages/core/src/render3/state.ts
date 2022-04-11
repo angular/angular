@@ -8,6 +8,7 @@
 
 import {InjectFlags} from '../di/interface/injector';
 import {assertDefined, assertEqual, assertGreaterThanOrEqual, assertLessThan, assertNotEqual} from '../util/assert';
+
 import {assertLViewOrUndefined, assertTNodeForLView, assertTNodeForTView} from './assert';
 import {DirectiveDef} from './interfaces/definition';
 import {TNode, TNodeType} from './interfaces/node';

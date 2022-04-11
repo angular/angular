@@ -1,6 +1,7 @@
 # Deploy multiple locales
 
-If `myapp` is the directory that contains the distributable files of your project, you typically make different versions available for different locales in locale directories.  For example, your French version is located in the `myapp/fr` directory and the Spanish version is located in the `myapp/es` directory.
+If `myapp` is the directory that contains the distributable files of your project, you typically make different versions available for different locales in locale directories.
+For example, your French version is located in the `myapp/fr` directory and the Spanish version is located in the `myapp/es` directory.
 
 The HTML `base` tag with the `href` attribute specifies the base URI, or URL, for relative links.
 If you set the `"localize"` option in [`angular.json`][AioGuideWorkspaceConfig] workspace build configuration file to `true` or to an array of locale IDs, the CLI adjusts the base `href` for each version of the application.
@@ -8,7 +9,7 @@ To adjust the base `href` for each version of the application, the CLI adds the 
 Specify the `"baseHref"` for each locale in your [`angular.json`][AioGuideWorkspaceConfig] workspace build configuration file.
 The following example displays `"baseHref"` set to an empty string.
 
-<code-example language="json" header="angular.json" path="i18n/angular.json" region="i18n-baseHref" ></code-example>
+<code-example header="angular.json" path="i18n/angular.json" region="i18n-baseHref"></code-example>
 
 Also, to declare the base `href` at compile time, use the CLI `--baseHref` option with [`ng build`][AioCliBuild].
 
@@ -50,4 +51,4 @@ The following example displays an Apache configuration.
 
 <!-- end links -->
 
-@reviewed 2021-10-07
+@reviewed 2022-02-28

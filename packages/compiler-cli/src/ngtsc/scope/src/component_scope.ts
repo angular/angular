@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {ClassDeclaration} from '../../reflection';
+
 import {RemoteScope} from './api';
 import {LocalModuleScope} from './local';
 
