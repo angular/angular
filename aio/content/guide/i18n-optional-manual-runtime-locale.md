@@ -4,7 +4,7 @@
 
 <!--todo: To override the provider for the locale ID token. -->
 
-The inital installation of Angular already contains locale data for English in the United States (`en-US`).
+The inital installation of Angular already contains locale data for English in the United States \(`en-US`\).
 The [Angular CLI][AioCliMain] automatically includes the locale data and sets the `LOCALE_ID` value when you use the `--localize` option with [`ng build`][AioCliBuild] command.
 
 To manually set the runtime locale of an application to one other than the automatic value, complete the following actions.
@@ -14,7 +14,7 @@ To manually set the runtime locale of an application to one other than the autom
 
 The following example sets the value of `LOCALE_ID` to `fr` for French.
 
-<code-example path="i18n/doc-files/app.module.ts" header="src/app/app.module.ts" region="locale-id"></code-example>
+<code-example header="src/app/app.module.ts" path="i18n/doc-files/app.module.ts" region="locale-id"></code-example>
 
 <!-- links -->
 
@@ -29,4 +29,4 @@ The following example sets the value of `LOCALE_ID` to `fr` for French.
 
 <!-- end links -->
 
-@reviewed 2021-10-07
+@reviewed 2022-02-28

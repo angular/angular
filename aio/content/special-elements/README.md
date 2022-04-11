@@ -3,8 +3,8 @@
 Each sub-directory below this contains documentation that describes "special elements".
 These are elements that can appear in templates that have special meaning and behaviour in the Angular framework.
 
-Each element should have a markdown file with the same file name as the element's tag name, e.g. `ng-container.md`.
-The file should be stored in a directory whose name is that of the Angular package under which this element should appear in the docs (usually `core`).
+Each element should have a markdown file with the same file name as the element's tag name \(for example, `ng-container.md`\).
+The file should be stored in a directory whose name is that of the Angular package under which this element should appear in the docs \(usually `core`\).
 
 ## Short description
 
@@ -21,8 +21,16 @@ These tags should come after the description.
 
 The format of this tag is:
 
-```
+```typescript
 @elementAttribute attr="value"
 
 Description of the attribute and value.
 ```
+
+<!-- links -->
+
+<!-- external links -->
+
+<!-- end links -->
+
+@reviewed 2022-02-28
