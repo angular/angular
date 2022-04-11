@@ -192,7 +192,8 @@ describe('applyRedirects', () => {
 
   describe('lazy loading', () => {
     it('should load config on demand', () => {
-      const loadedConfig = new LoadedRouterConfig([{path: 'b', component: ComponentB}], testModule);
+      const loadedConfig =
+          new LoadedRouterConfig([{path: 'b', component: ComponentB}], testModule.injector);
       const loader = {
         load: (injector: any, p: any) => {
           if (injector !== testModule.injector) throw 'Invalid Injector';
@@ -223,7 +224,8 @@ describe('applyRedirects', () => {
     });
 
     it('should load when all canLoad guards return true', () => {
-      const loadedConfig = new LoadedRouterConfig([{path: 'b', component: ComponentB}], testModule);
+      const loadedConfig =
+          new LoadedRouterConfig([{path: 'b', component: ComponentB}], testModule.injector);
       const loader = {load: (injector: any, p: any) => of(loadedConfig)};
 
       const guard = () => true;
@@ -244,7 +246,8 @@ describe('applyRedirects', () => {
     });
 
     it('should not load when any canLoad guards return false', () => {
-      const loadedConfig = new LoadedRouterConfig([{path: 'b', component: ComponentB}], testModule);
+      const loadedConfig =
+          new LoadedRouterConfig([{path: 'b', component: ComponentB}], testModule.injector);
       const loader = {load: (injector: any, p: any) => of(loadedConfig)};
 
       const trueGuard = () => true;
@@ -281,7 +284,8 @@ describe('applyRedirects', () => {
     });
 
     it('should not load when any canLoad guards is rejected (promises)', () => {
-      const loadedConfig = new LoadedRouterConfig([{path: 'b', component: ComponentB}], testModule);
+      const loadedConfig =
+          new LoadedRouterConfig([{path: 'b', component: ComponentB}], testModule.injector);
       const loader = {load: (injector: any, p: any) => of(loadedConfig)};
 
       const trueGuard = () => Promise.resolve(true);
@@ -317,7 +321,8 @@ describe('applyRedirects', () => {
     });
 
     it('should work with objects implementing the CanLoad interface', () => {
-      const loadedConfig = new LoadedRouterConfig([{path: 'b', component: ComponentB}], testModule);
+      const loadedConfig =
+          new LoadedRouterConfig([{path: 'b', component: ComponentB}], testModule.injector);
       const loader = {load: (injector: any, p: any) => of(loadedConfig)};
 
       const guard = {canLoad: () => Promise.resolve(true)};
@@ -341,7 +346,8 @@ describe('applyRedirects', () => {
     });
 
     it('should pass UrlSegments to functions implementing the canLoad guard interface', () => {
-      const loadedConfig = new LoadedRouterConfig([{path: 'b', component: ComponentB}], testModule);
+      const loadedConfig =
+          new LoadedRouterConfig([{path: 'b', component: ComponentB}], testModule.injector);
       const loader = {load: (injector: any, p: any) => of(loadedConfig)};
 
       let passedUrlSegments: UrlSegment[];
@@ -373,7 +379,8 @@ describe('applyRedirects', () => {
     });
 
     it('should pass UrlSegments to objects implementing the canLoad guard interface', () => {
-      const loadedConfig = new LoadedRouterConfig([{path: 'b', component: ComponentB}], testModule);
+      const loadedConfig =
+          new LoadedRouterConfig([{path: 'b', component: ComponentB}], testModule.injector);
       const loader = {load: (injector: any, p: any) => of(loadedConfig)};
 
       let passedUrlSegments: UrlSegment[];
@@ -407,7 +414,8 @@ describe('applyRedirects', () => {
     });
 
     it('should work with absolute redirects', () => {
-      const loadedConfig = new LoadedRouterConfig([{path: '', component: ComponentB}], testModule);
+      const loadedConfig =
+          new LoadedRouterConfig([{path: '', component: ComponentB}], testModule.injector);
 
       const loader = {load: (injector: any, p: any) => of(loadedConfig)};
 
@@ -423,7 +431,8 @@ describe('applyRedirects', () => {
     });
 
     it('should load the configuration only once', () => {
-      const loadedConfig = new LoadedRouterConfig([{path: '', component: ComponentB}], testModule);
+      const loadedConfig =
+          new LoadedRouterConfig([{path: '', component: ComponentB}], testModule.injector);
 
       let called = false;
       const loader = {
@@ -451,7 +460,8 @@ describe('applyRedirects', () => {
     });
 
     it('should load the configuration of a wildcard route', () => {
-      const loadedConfig = new LoadedRouterConfig([{path: '', component: ComponentB}], testModule);
+      const loadedConfig =
+          new LoadedRouterConfig([{path: '', component: ComponentB}], testModule.injector);
 
       const loader = {load: (injector: any, p: any) => of(loadedConfig)};
 
@@ -464,7 +474,8 @@ describe('applyRedirects', () => {
     });
 
     it('should not load the configuration of a wildcard route if there is a match', () => {
-      const loadedConfig = new LoadedRouterConfig([{path: '', component: ComponentB}], testModule);
+      const loadedConfig =
+          new LoadedRouterConfig([{path: '', component: ComponentB}], testModule.injector);
 
       const loader = jasmine.createSpyObj('loader', ['load']);
       loader.load.and.returnValue(of(loadedConfig).pipe(delay(0)));
@@ -483,7 +494,8 @@ describe('applyRedirects', () => {
     });
 
     it('should load the configuration after a local redirect from a wildcard route', () => {
-      const loadedConfig = new LoadedRouterConfig([{path: '', component: ComponentB}], testModule);
+      const loadedConfig =
+          new LoadedRouterConfig([{path: '', component: ComponentB}], testModule.injector);
 
       const loader = {load: (injector: any, p: any) => of(loadedConfig)};
 
@@ -499,7 +511,8 @@ describe('applyRedirects', () => {
     });
 
     it('should load the configuration after an absolute redirect from a wildcard route', () => {
-      const loadedConfig = new LoadedRouterConfig([{path: '', component: ComponentB}], testModule);
+      const loadedConfig =
+          new LoadedRouterConfig([{path: '', component: ComponentB}], testModule.injector);
 
       const loader = {load: (injector: any, p: any) => of(loadedConfig)};
 
@@ -517,7 +530,7 @@ describe('applyRedirects', () => {
     it('should load all matching configurations of empty path, including an auxiliary outlets',
        fakeAsync(() => {
          const loadedConfig =
-             new LoadedRouterConfig([{path: '', component: ComponentA}], testModule);
+             new LoadedRouterConfig([{path: '', component: ComponentA}], testModule.injector);
          let loadCalls = 0;
          let loaded: string[] = [];
          const loader = {
@@ -548,7 +561,7 @@ describe('applyRedirects', () => {
     it('should not try to load any matching configuration if previous load completed',
        fakeAsync(() => {
          const loadedConfig =
-             new LoadedRouterConfig([{path: 'a', component: ComponentA}], testModule);
+             new LoadedRouterConfig([{path: 'a', component: ComponentA}], testModule.injector);
          let loadCalls = 0;
          let loaded: string[] = [];
          const loader = {
@@ -585,7 +598,8 @@ describe('applyRedirects', () => {
        }));
 
     it('loads only the first match when two Routes with the same outlet have the same path', () => {
-      const loadedConfig = new LoadedRouterConfig([{path: '', component: ComponentA}], testModule);
+      const loadedConfig =
+          new LoadedRouterConfig([{path: '', component: ComponentA}], testModule.injector);
       let loadCalls = 0;
       let loaded: string[] = [];
       const loader = {
@@ -611,7 +625,7 @@ describe('applyRedirects', () => {
     it('should load the configuration of empty root path if the entry is an aux outlet',
        fakeAsync(() => {
          const loadedConfig =
-             new LoadedRouterConfig([{path: '', component: ComponentA}], testModule);
+             new LoadedRouterConfig([{path: '', component: ComponentA}], testModule.injector);
          let loaded: string[] = [];
          const rootDelay = 100;
          const auxDelay = 1;

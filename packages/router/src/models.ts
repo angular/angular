@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgModuleFactory, NgModuleRef, Type} from '@angular/core';
+import {Injector, NgModuleFactory, NgModuleRef, Type} from '@angular/core';
 import {Observable} from 'rxjs';
 
 import {ActivatedRouteSnapshot, RouterStateSnapshot} from './router_state';
@@ -491,7 +491,7 @@ export interface Route {
 }
 
 export class LoadedRouterConfig {
-  constructor(public routes: Route[], public module: NgModuleRef<any>) {}
+  constructor(public routes: Route[], public injector: Injector) {}
 }
 
 /**

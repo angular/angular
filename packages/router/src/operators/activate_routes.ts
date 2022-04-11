@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {NgModuleRef} from '@angular/core';
 import {MonoTypeOperatorFunction} from 'rxjs';
 import {map} from 'rxjs/operators';
 
@@ -194,7 +195,8 @@ export class ActivateRoutes {
           this.activateChildRoutes(futureNode, null, context.children);
         } else {
           const config = getClosestLoadedConfig(future.snapshot);
-          const cmpFactoryResolver = config ? config.module.componentFactoryResolver : null;
+          const cmpFactoryResolver = 
+              config?.injector?.get(NgModuleRef)?.componentFactoryResolver ?? null;
 
           context.attachRef = null;
           context.route = future;

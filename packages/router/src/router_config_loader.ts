@@ -49,16 +49,16 @@ export class RouterConfigLoader {
           if (this.onLoadEndListener) {
             this.onLoadEndListener(route);
           }
-          const module = factory.create(parentInjector);
+          const injector = factory.create(parentInjector).injector;
           const routes =
               // When loading a module that doesn't provide `RouterModule.forChild()` preloader
               // will get stuck in an infinite loop. The child module's Injector will look to
               // its parent `Injector` when it doesn't find any ROUTES so it will return routes
               // for it's parent module instead.
-              flatten(module.injector.get(ROUTES, [], InjectFlags.Self | InjectFlags.Optional))
+              flatten(injector.get(ROUTES, [], InjectFlags.Self | InjectFlags.Optional))
                   .map(standardizeConfig);
           NG_DEV_MODE && validateConfig(routes);
-          return new LoadedRouterConfig(routes, module);
+          return new LoadedRouterConfig(routes, injector);
         }),
         catchError((err) => {
           route._loader$ = undefined;

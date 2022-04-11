@@ -49,9 +49,9 @@ export function getCanActivateChild(p: ActivatedRouteSnapshot):
 }
 
 export function getToken(
-    token: any, snapshot: ActivatedRouteSnapshot, moduleInjector: Injector): any {
+    token: any, snapshot: ActivatedRouteSnapshot, fallbackInjector: Injector): any {
   const config = getClosestLoadedConfig(snapshot);
-  const injector = config ? config.module.injector : moduleInjector;
+  const injector = config?.injector ?? fallbackInjector;
   return injector.get(token);
 }
 

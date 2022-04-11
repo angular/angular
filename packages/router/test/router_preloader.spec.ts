@@ -109,15 +109,15 @@ describe('RouterPreloader', () => {
 
              const c = router.config;
              const loadedConfig: LoadedRouterConfig = (c[0] as any)._loadedConfig!;
-             const module: any = loadedConfig.module;
+             const injector: any = loadedConfig.injector;
              expect(loadedConfig.routes[0].path).toEqual('LoadedModule1');
-             expect(module._parent).toBe(testModule);
+             expect(injector._parent).toBe((testModule as any)._r3Injector);
 
              const loadedConfig2: LoadedRouterConfig =
                  (loadedConfig.routes[0] as any)._loadedConfig!;
-             const module2: any = loadedConfig2.module;
+             const module2: any = loadedConfig2.injector;
              expect(loadedConfig2.routes[0].path).toEqual('LoadedModule2');
-             expect(module2._parent).toBe(module);
+             expect(module2._parent).toBe(injector);
 
              expect(events.map(e => e.toString())).toEqual([
                'RouteConfigLoadStart(path: lazy)',
@@ -156,7 +156,7 @@ describe('RouterPreloader', () => {
                    loadChildren: jasmine.createSpy('no'),
                    _loadedConfig: {
                      routes: [{path: 'LoadedModule3', loadChildren: () => LoadedModule3}],
-                     module: module2,
+                     injector: module2.injector,
                    }
                  },
                ])]
@@ -176,15 +176,15 @@ describe('RouterPreloader', () => {
              const c = router.config;
 
              const loadedConfig: LoadedRouterConfig = (c[0] as any)._loadedConfig!;
-             const module: any = loadedConfig.module;
-             expect(module._parent).toBe(testModule);
+             const injector: any = loadedConfig.injector;
+             expect(injector._parent).toBe((testModule as any)._r3Injector);
 
              const loadedConfig2: LoadedRouterConfig =
                  (loadedConfig.routes[0] as any)._loadedConfig!;
              const loadedConfig3: LoadedRouterConfig =
                  (loadedConfig2.routes[0] as any)._loadedConfig!;
-             const module3: any = loadedConfig3.module;
-             expect(module3._parent).toBe(module2);
+             const injector3: any = loadedConfig3.injector;
+             expect(injector3._parent).toBe(module2.injector);
            })));
   });
 
