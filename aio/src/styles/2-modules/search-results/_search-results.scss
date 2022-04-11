@@ -73,14 +73,14 @@ aio-search-results {
       display: block;
     }
 
-    .close-btn-wrapper {
+    .close-button-wrapper {
       position: absolute;
       $offset: 1rem;
       top: $offset;
       right: $offset;
       overflow: hidden;
 
-      .close-btn {
+      .close-button {
         background-color: constants.$darkgray;
         border: none;
         padding: 0;

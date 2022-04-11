@@ -297,7 +297,7 @@ export class AppComponent implements OnInit {
           // the user is focusing backward from the search input,
           // loop it back to the results' close button
           const closeBtn: HTMLButtonElement =
-            this.searchResultsView.nativeElement.querySelector('button.close-btn');
+            this.searchResultsView.nativeElement.querySelector('button.close-button');
           closeBtn.focus();
         }
       }
