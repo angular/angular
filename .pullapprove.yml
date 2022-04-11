@@ -236,6 +236,7 @@ groups:
           'aio/content/images/guide/attribute-directives/**',
           'aio/content/guide/bootstrapping.md',
           'aio/content/examples/bootstrapping/**',
+          'aio/content/guide/class-binding.md',
           'aio/content/guide/cheatsheet.md',
           'aio/content/guide/component-interaction.md',
           'aio/content/examples/component-interaction/**',
