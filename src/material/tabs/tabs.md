@@ -53,7 +53,7 @@ placed relatively close to the `mat-tab-nav-bar` (see [Accessibility](#accessibi
 
 ### Lazy Loading
 By default, the tab contents are eagerly loaded. Eagerly loaded tabs
-will initalize the child components but not inject them into the DOM
+will initialize the child components but not inject them into the DOM
 until the tab is activated.
 
 

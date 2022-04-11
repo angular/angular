@@ -619,9 +619,9 @@ and
 [`SeleniumWebDriverElement`](https://github.com/angular/components/blob/master/src/cdk/testing/selenium-webdriver/selenium-web-driver-element.ts#L22)
 implementations in Angular CDK serve as good examples of implementations of this interface.
 
-#### Creating a `HarnessEnvironemnt` implementation for the environment
+#### Creating a `HarnessEnvironment` implementation for the environment
 
-Test authors use `HarnessEnvironemnt` to create component harness instances for use in tests.
+Test authors use `HarnessEnvironment` to create component harness instances for use in tests.
 
 `HarnessEnvironment` is an abstract class that must be extended to create a concrete subclass for
 the new environment. When supporting a new test environment, you must create a `HarnessEnvironment`

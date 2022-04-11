@@ -99,7 +99,7 @@ for the `<input>`. However, if there's no label specified in the form field, `ar
 Any `mat-error` and `mat-hint` are automatically added to the input's `aria-describedby` list, and
 `aria-invalid` is automatically updated based on the input's validity state.
 
-When conveying an error, be sure to not rely soley on color. In the message itself, you can use an
+When conveying an error, be sure to not rely solely on color. In the message itself, you can use an
 icon or text such as "Error:" to indicate the message is an error message.
 
 ### Troubleshooting

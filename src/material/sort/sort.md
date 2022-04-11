@@ -50,7 +50,7 @@ description for the button element, such as "Sort by last name".
 
 `MatSortHeader` applies the `aria-sort` attribute to communicate the active sort state to
 assistive technology. However, most screen readers do not announce changes to the value of
-`aria-sort`, meaning that screen reader users do not receive feedback that sorting occured. To
+`aria-sort`, meaning that screen reader users do not receive feedback that sorting occurred. To
 remedy this, use the `matSortChange` event on the `MatSort` directive to announce state
 updates with the `LiveAnnouncer` service from `@angular/cdk/a11y`.
 

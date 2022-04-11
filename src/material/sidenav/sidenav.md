@@ -120,7 +120,7 @@ If no `mode` is specified, `over` is used by default.
 The `over` and `push` sidenav modes show a backdrop by default, while the `side` mode does not. This
 can be customized by setting the `hasBackdrop` property on `mat-sidenav-container`. Explicitly
 setting `hasBackdrop` to `true` or `false` will override the default backdrop visibility setting for
-all sidenavs regadless of mode. Leaving the property unset or setting it to `null` will use the
+all sidenavs regardless of mode. Leaving the property unset or setting it to `null` will use the
 default backdrop visibility for each mode.
 
 <!-- example(sidenav-backdrop) -->
@@ -212,7 +212,7 @@ specific role makes sense, `role="region"` is again a good fallback.
 #### Focus management
 The sidenav has the ability to capture focus. This behavior is turned on for the `push` and `over` modes and it is off for `side` mode. You can change its default behavior by the `autoFocus` input.
 
-By default the first tabbable element will recieve focus upon open. If you want a different element to be focused, you can set the `cdkFocusInitial` attribute on it.
+By default the first tabbable element will receive focus upon open. If you want a different element to be focused, you can set the `cdkFocusInitial` attribute on it.
 
 ### Troubleshooting
 

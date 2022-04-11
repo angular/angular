@@ -11,7 +11,7 @@ To install, run `npm install @angular/youtube-player`.
 Follow the following instructions for setting up the YouTube player component:
 
 - First, follow the [instructions for installing the API script](https://developers.google.com/youtube/iframe_api_reference#Getting_Started).
-- Then make sure the API is available before bootstraping the YouTube Player component.
+- Then make sure the API is available before bootstrapping the YouTube Player component.
 - Provide the video id by extracting it from the video URL.
 
 ## Example

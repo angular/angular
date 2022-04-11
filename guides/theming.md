@@ -348,7 +348,7 @@ The example below shows how to customize the color of all buttons inside element
 
 You can use the `get-color-from-palette` function to get specific hues from a palette by their
 number identifier. You can also access the contrast color for a particular hue by suffixing the
-hue's number idenfier with `-contrast`.
+hue's number identifier with `-contrast`.
 
 ```scss
 @use '@angular/material' as mat;
