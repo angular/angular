@@ -1,5 +1,5 @@
 consts: function() {
-  __i18nMsg__('Hello', [], {})
+  __i18nMsg__('Hello', [], {}, {})
   return [
     [__AttributeMarker.Bindings__, "click"],
     $i18n_0$

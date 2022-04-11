@@ -7,26 +7,32 @@
  */
 import {AttributeMarker, SelectorFlags} from '@angular/compiler/src/core';
 import {QueryFlags} from '@angular/compiler/src/render3/view/compiler';
-import {i18nIcuMsg, i18nMsg, i18nMsgWithPostprocess, Placeholder, resetMessageIndex} from './i18n_helpers';
+
+import {i18nIcuMsg, i18nMsg, i18nMsgWithPostprocess, Options, Placeholder, resetMessageIndex} from './i18n_helpers';
 
 const EXPECTED_FILE_MACROS: [RegExp, (...args: string[]) => string][] = [
   [
-    // E.g. `__i18nMsg__('message string', [ ['placeholder', 'pair'] ], { meta: 'properties'})`
-    macroFn(/__i18nMsg__/, stringParam(), arrayParam(), objectParam()),
-    (_match, message, placeholders, meta) =>
-        i18nMsg(message, parsePlaceholders(placeholders), parseMetaProperties(meta)),
+    // E.g. `__i18nMsg__('message string', [ ['placeholder', 'pair']
+    // ], {original_code: {'placeholder': '{{ foo }}'}}, {meta: 'properties'})`
+    macroFn(/__i18nMsg__/, stringParam(), arrayParam(), objectParam(), objectParam()),
+    (_match, message, placeholders, options, meta) => i18nMsg(
+        message, parsePlaceholders(placeholders), parseOptions(options), parseMetaProperties(meta)),
   ],
   [
     // E.g. `__i18nMsgWithPostprocess__('message', [ ['placeholder', 'pair'] ], { meta: 'props'})`
-    macroFn(/__i18nMsgWithPostprocess__/, stringParam(), arrayParam(), objectParam(), arrayParam()),
-    (_match, message, placeholders, meta, postProcessPlaceholders) => i18nMsgWithPostprocess(
-        message, parsePlaceholders(placeholders), parseMetaProperties(meta),
-        parsePlaceholders(postProcessPlaceholders)),
+    macroFn(
+        /__i18nMsgWithPostprocess__/, stringParam(), arrayParam(), objectParam(), objectParam(),
+        arrayParam()),
+    (_match, message, placeholders, options, meta, postProcessPlaceholders) =>
+        i18nMsgWithPostprocess(
+            message, parsePlaceholders(placeholders), parseOptions(options),
+            parseMetaProperties(meta), parsePlaceholders(postProcessPlaceholders)),
   ],
   [
     // E.g. `__i18nIcuMsg__('message string', [ ['placeholder', 'pair'] ])`
-    macroFn(/__i18nIcuMsg__/, stringParam(), arrayParam()),
-    (_match, message, placeholders) => i18nIcuMsg(message, parsePlaceholders(placeholders)),
+    macroFn(/__i18nIcuMsg__/, stringParam(), arrayParam(), objectParam()),
+    (_match, message, placeholders, options) =>
+        i18nIcuMsg(message, parsePlaceholders(placeholders), parseOptions(options)),
   ],
   [
     // E.g. `__AttributeMarker.Bindings__`
@@ -66,6 +72,38 @@ function parsePlaceholders(str: string): Placeholder[] {
         str);
   }
   return placeholders;
+}
+
+function parseOptions(str: string): Options {
+  const inputObj = eval(`(${str})`) as unknown;
+  if (typeof inputObj !== 'object') {
+    throw new Error(`Expected an object of properties but got:\n\n${str}.`);
+  }
+  const obj = inputObj as Record<string, unknown>;
+
+  // Verify the object does not have any unexpected properties, as this is likely a sign that it was
+  // authored incorrectly.
+  const unexpectedKeys = Object.keys(obj).filter((key) => key !== 'original_code');
+  if (unexpectedKeys.length > 0) {
+    throw new Error(`Expected an i18n options object with \`original_code\`, but got ${
+        unexpectedKeys.join(', ')}`);
+  }
+
+  // Validate `original_code`.
+  const original = obj?.original_code;
+  if (typeof original !== 'undefined' && typeof original !== 'object') {
+    throw new Error(
+        `Expected an i18n options object with \`original_code\`, as a nested object, but got ${
+            JSON.stringify(obj, null, 4)}`);
+  }
+  for (const [key, value] of Object.entries(original ?? {})) {
+    if (typeof value !== 'string') {
+      throw new Error(`Expected an object whose values are strings, but property ${key} has type ${
+          typeof value}, when parsing:\n\n${str}`);
+    }
+  }
+
+  return obj;
 }
 
 function parseMetaProperties(str: string): Record<string, string> {
@@ -137,7 +175,14 @@ function arrayParam() {
   return /(\[.*?\])/;
 }
 function objectParam() {
-  return /(\{[^}]*\})/;
+  // Matches a JavaScript object literal with up to 6 levels of indentation. Regular expressions
+  // cannot use recursion so it is impossible to match an arbitrarily deep object. While it looks
+  // complicated it is really just the same pattern nested inside itself n times:
+  // (?:\{[^{}]*RECURSE_HERE\}[^{}]*)
+  //
+  // Each nested level uses (?:) for a non-matching group so the whole expression is the only match
+  // and avoids generating multiple macro arguments for each nested level.
+  return /(\{[^{}]*(?:\{[^{}]*(?:\{[^{}]*(?:\{[^{}]*(?:\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}[^{}]*)*\}[^{}]*)*\}[^{}]*)*\}[^{}]*)*\})/;
 }
 
 function macroFn(fnName: RegExp, ...args: RegExp[]): RegExp {

@@ -1,5 +1,5 @@
 consts: function() {
-  __i18nMsg__('intro {$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]], {meaning: 'm', desc: 'd'})
+  __i18nMsg__('intro {$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]], {original_code: {'interpolation': '{% valueA | uppercase %}'}}, {meaning: 'm', desc: 'd'})
   return [
     [__AttributeMarker.I18n__, "title"],
     ["title", $i18n_0$]
