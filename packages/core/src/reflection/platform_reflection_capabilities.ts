@@ -7,6 +7,7 @@
  */
 
 import {Type} from '../interface/type';
+
 import {GetterFn, MethodFn, SetterFn} from './types';
 
 export interface PlatformReflectionCapabilities {

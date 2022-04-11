@@ -6,7 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import ts from 'typescript';
+
 import {ImportRewriter, NoopImportRewriter} from '../../imports';
+
 import {ImportGenerator, NamedImport} from './api/import_generator';
 
 /**

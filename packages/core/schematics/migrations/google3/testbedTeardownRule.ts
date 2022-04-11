@@ -8,6 +8,7 @@
 
 import {Replacement, RuleFailure, Rules} from 'tslint';
 import ts from 'typescript';
+
 import {findInitTestEnvironmentCalls, findTestModuleMetadataNodes, getInitTestEnvironmentLiteralReplacement, InitTestEnvironmentAnalysis, migrateTestModuleMetadataLiteral} from '../testbed-teardown/util';
 
 /** TSLint rule that adds the `teardown` flag to `TestBed` calls. */

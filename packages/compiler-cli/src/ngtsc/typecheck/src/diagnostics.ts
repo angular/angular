@@ -7,8 +7,10 @@
  */
 import {AbsoluteSourceSpan, ParseSourceSpan} from '@angular/compiler';
 import ts from 'typescript';
+
 import {TemplateDiagnostic, TemplateId} from '../api';
 import {makeTemplateDiagnostic} from '../diagnostics';
+
 import {getTemplateMapping, TemplateSourceResolver} from './tcb_util';
 
 

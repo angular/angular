@@ -7,7 +7,9 @@
  */
 
 import ts from 'typescript';
+
 import {ClassDeclaration} from '../../reflection';
+
 
 /**
  * A `Set` of `ts.SyntaxKind`s of `ts.Expression` which are safe to wrap in a `ts.AsExpression`

@@ -93,9 +93,9 @@ export function formatDate(
   let text = '';
   parts.forEach(value => {
     const dateFormatter = getDateFormatter(value);
-    text += dateFormatter ?
-        dateFormatter(date, locale, dateTimezoneOffset) :
-        value === '\'\'' ? '\'' : value.replace(/(^'|'$)/g, '').replace(/''/g, '\'');
+    text += dateFormatter ? dateFormatter(date, locale, dateTimezoneOffset) :
+        value === '\'\''  ? '\'' :
+                            value.replace(/(^'|'$)/g, '').replace(/''/g, '\'');
   });
 
   return text;

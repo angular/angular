@@ -8,6 +8,7 @@
 
 import {EventEmitter, Injectable, ɵɵinject} from '@angular/core';
 import {SubscriptionLike} from 'rxjs';
+
 import {LocationStrategy} from './location_strategy';
 import {PlatformLocation} from './platform_location';
 import {joinWithSlash, normalizeQueryParams, stripTrailingSlash} from './util';

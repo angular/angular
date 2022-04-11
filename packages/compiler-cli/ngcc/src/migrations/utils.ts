@@ -6,8 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import ts from 'typescript';
+
 import {Reference} from '../../../src/ngtsc/imports';
 import {ClassDeclaration, Decorator, isNamedClassDeclaration, isNamedFunctionDeclaration, isNamedVariableDeclaration} from '../../../src/ngtsc/reflection';
+
 import {MigrationHost} from './migration';
 
 export function isClassDeclaration(clazz: ts.Node): clazz is ClassDeclaration<ts.Declaration> {

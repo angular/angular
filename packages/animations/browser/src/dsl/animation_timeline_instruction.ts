@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {ɵStyleData} from '@angular/animations';
+
 import {AnimationEngineInstruction, AnimationTransitionInstructionType} from '../render/animation_engine_instruction';
 
 export interface AnimationTimelineInstruction extends AnimationEngineInstruction {
