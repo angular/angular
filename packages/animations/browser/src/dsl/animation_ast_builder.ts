@@ -74,19 +74,20 @@ export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
     const ast =
         <Ast<AnimationMetadataType>>visitDslNode(this, normalizeAnimationEntry(metadata), context);
 
-    if (context.unsupportedCSSPropertiesFound.size) {
-      pushUnrecognizedPropertiesWarning(
-          warnings,
-          [...context.unsupportedCSSPropertiesFound.keys()],
-      );
-    }
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      if (context.unsupportedCSSPropertiesFound.size) {
+        pushUnrecognizedPropertiesWarning(
+            warnings,
+            [...context.unsupportedCSSPropertiesFound.keys()],
+        );
+      }
 
-    if ((typeof ngDevMode === 'undefined' || ngDevMode) &&
-        context.nonAnimatableCSSPropertiesFound.size) {
-      pushNonAnimatablePropertiesWarning(
-          warnings,
-          [...context.nonAnimatableCSSPropertiesFound.keys()],
-      );
+      if (context.nonAnimatableCSSPropertiesFound.size) {
+        pushNonAnimatablePropertiesWarning(
+            warnings,
+            [...context.nonAnimatableCSSPropertiesFound.keys()],
+        );
+      }
     }
 
     return ast;

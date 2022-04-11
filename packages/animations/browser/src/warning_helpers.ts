@@ -35,7 +35,7 @@ export function triggerParsingWarnings(name: string, warnings: string[]): void {
 }
 
 export function pushUnrecognizedPropertiesWarning(warnings: string[], props: string[]): void {
-  if (ngDevMode && props.length) {
+  if (props.length) {
     warnings.push(`The following provided properties are not recognized: ${props.join(', ')}`);
   }
 }
