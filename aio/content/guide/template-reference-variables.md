@@ -47,8 +47,7 @@ In most cases, Angular sets the template variable's value to the element on whic
 In the previous example, `phone` refers to the phone number `<input>`.
 The button's click handler passes the `<input>` value to the component's `callPhone()` method.
 
-The `NgForm` directive demonstrates getting a reference to a different value by referencing a directive's `exportAs` name.  
-(Worth noting that `NgForm` directive gets silently applied by Angular on every `<form>` element unless one among `NoNgForm` and `FormGroup` is already set).
+The `NgForm` directive is applied by Angular on `<form>` elements. This example demonstrates getting a reference to a different value by referencing a directive's `exportAs` name.
 
 <code-example header="src/app/hero-form.component.html" path="template-reference-variables/src/app/app.component.html" region="ngForm"></code-example>
 
@@ -68,7 +67,8 @@ When declaring a template reference variable on an element without defining a va
 - **Component**: instance of the specific Component class
 - **NgTemplate**: TemplateRef
 
-Keep in mind that just the presence of a directive applied to the element will **not** make the undefined variable default to an instance of that directive, it will still reference the native object.
+Referencing an element by its directive needs the directive `exportAs` property set as reference value.
+In case of unspecified variable value, the reference will return an `HTMLElement`, even if the element has one or more directive applied to itself.
 
 ## Template variable scope
 
@@ -150,9 +150,9 @@ Verbose syntax of the same loop shows why:
 {{ ref.value }}
 ```
 
-It's easy to notice how interpolation trying to access property `value` of `ref` occurs outside of referenced element's parent template, making it unreachable.
+The interpolation trying to access property `ref.value` occurs outside of the referenced element's parent template, making it unreachable.
 
-Moving the interpolation inside the template, will make the variable available referencing the right distinct value for every element the loop will render.
+Moving the interpolation inside the template makes the variable available. Now it references the correct distinct value for each element the loop renders.
 
 ```
 <ng-template ngFor let-i [ngForOf]="[1,2]">
@@ -161,7 +161,7 @@ Moving the interpolation inside the template, will make the variable available r
 </ng-template>
 ```
 
-This last snippet will show 2 `<input>` element with their respective value printed just after them
+This snippet shows 2 `<input>` elements, with their respective value printed.
 
 ### Accessing a template variable within `<ng-template>`
 
