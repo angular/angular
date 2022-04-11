@@ -24,30 +24,13 @@ export function createUrlTree(
     return tree(urlTree.root, urlTree.root, new UrlSegmentGroup([], {}), queryParams, fragment);
   }
 
-  function createTreeUsingPathIndex(lastPathIndex: number) {
-    const startingPosition =
-        findStartingPosition(nav, urlTree, route.snapshot._urlSegment, lastPathIndex);
+  const startingPosition = findStartingPosition(nav, urlTree, route);
 
-    const segmentGroup = startingPosition.processChildren ?
-        updateSegmentGroupChildren(
-            startingPosition.segmentGroup, startingPosition.index, nav.commands) :
-        updateSegmentGroup(startingPosition.segmentGroup, startingPosition.index, nav.commands);
-    return tree(urlTree.root, startingPosition.segmentGroup, segmentGroup, queryParams, fragment);
-  }
-  const result = createTreeUsingPathIndex(route.snapshot._lastPathIndex);
-
-  // Check if application is relying on `relativeLinkResolution: 'legacy'`
-  if (typeof ngDevMode === 'undefined' || !!ngDevMode) {
-    const correctedResult = createTreeUsingPathIndex(route.snapshot._correctedLastPathIndex);
-    if (correctedResult.toString() !== result.toString()) {
-      console.warn(
-          `relativeLinkResolution: 'legacy' is deprecated and will be removed in a future version of Angular. The link to ${
-              result.toString()} will change to ${
-              correctedResult.toString()} if the code is not updated before then.`);
-    }
-  }
-
-  return result;
+  const segmentGroup = startingPosition.processChildren ?
+      updateSegmentGroupChildren(
+          startingPosition.segmentGroup, startingPosition.index, nav.commands) :
+      updateSegmentGroup(startingPosition.segmentGroup, startingPosition.index, nav.commands);
+  return tree(urlTree.root, startingPosition.segmentGroup, segmentGroup, queryParams, fragment);
 }
 
 function isMatrixParams(command: any): boolean {
@@ -168,14 +151,13 @@ class Position {
   }
 }
 
-function findStartingPosition(
-    nav: Navigation, tree: UrlTree, segmentGroup: UrlSegmentGroup,
-    lastPathIndex: number): Position {
+function findStartingPosition(nav: Navigation, tree: UrlTree, route: ActivatedRoute): Position {
   if (nav.isAbsolute) {
     return new Position(tree.root, true, 0);
   }
 
-  if (lastPathIndex === -1) {
+  if (route.snapshot._lastPathIndex === -1) {
+    const segmentGroup = route.snapshot._urlSegment;
     // Pathless ActivatedRoute has _lastPathIndex === -1 but should not process children
     // see issue #26224, #13011, #35687
     // However, if the ActivatedRoute is the root we should process children like above.
@@ -184,8 +166,9 @@ function findStartingPosition(
   }
 
   const modifier = isMatrixParams(nav.commands[0]) ? 0 : 1;
-  const index = lastPathIndex + modifier;
-  return createPositionApplyingDoubleDots(segmentGroup, index, nav.numberOfDoubleDots);
+  const index = route.snapshot._lastPathIndex + modifier;
+  return createPositionApplyingDoubleDots(
+      route.snapshot._urlSegment, index, nav.numberOfDoubleDots);
 }
 
 function createPositionApplyingDoubleDots(
