@@ -538,3 +538,53 @@ export class Scroll {
 export type Event = NavigationStart|NavigationEnd|NavigationCancel|NavigationError|RoutesRecognized|
     GuardsCheckStart|GuardsCheckEnd|RouteConfigLoadStart|RouteConfigLoadEnd|ChildActivationStart|
     ChildActivationEnd|ActivationStart|ActivationEnd|Scroll|ResolveStart|ResolveEnd;
+
+
+export function stringifyEvent(routerEvent: Event): string {
+  switch (routerEvent.type) {
+    case EventType.ActivationEnd:
+      return `ActivationEnd(path: '${routerEvent.snapshot.routeConfig?.path || ''}')`;
+    case EventType.ActivationStart:
+      return `ActivationStart(path: '${routerEvent.snapshot.routeConfig?.path || ''}')`;
+    case EventType.ChildActivationEnd:
+      return `ChildActivationEnd(path: '${routerEvent.snapshot.routeConfig?.path || ''}')`;
+    case EventType.ChildActivationStart:
+      return `ChildActivationStart(path: '${routerEvent.snapshot.routeConfig?.path || ''}')`;
+    case EventType.GuardsCheckEnd:
+      return `GuardsCheckEnd(id: ${routerEvent.id}, url: '${
+          routerEvent.url}', urlAfterRedirects: '${routerEvent.urlAfterRedirects}', state: ${
+          routerEvent.state}, shouldActivate: ${routerEvent.shouldActivate})`;
+    case EventType.GuardsCheckStart:
+      return `GuardsCheckStart(id: ${routerEvent.id}, url: '${
+          routerEvent.url}', urlAfterRedirects: '${routerEvent.urlAfterRedirects}', state: ${
+          routerEvent.state})`;
+    case EventType.NavigationCancel:
+      return `NavigationCancel(id: ${routerEvent.id}, url: '${routerEvent.url}')`;
+    case EventType.NavigationEnd:
+      return `NavigationEnd(id: ${routerEvent.id}, url: '${routerEvent.url}', urlAfterRedirects: '${
+          routerEvent.urlAfterRedirects}')`;
+    case EventType.NavigationError:
+      return `NavigationError(id: ${routerEvent.id}, url: '${routerEvent.url}', error: ${
+          routerEvent.error})`;
+    case EventType.NavigationStart:
+      return `NavigationStart(id: ${routerEvent.id}, url: '${routerEvent.url}')`;
+    case EventType.ResolveEnd:
+      return `ResolveEnd(id: ${routerEvent.id}, url: '${routerEvent.url}', urlAfterRedirects: '${
+          routerEvent.urlAfterRedirects}', state: ${routerEvent.state})`;
+    case EventType.ResolveStart:
+      return `ResolveStart(id: ${routerEvent.id}, url: '${routerEvent.url}', urlAfterRedirects: '${
+          routerEvent.urlAfterRedirects}', state: ${routerEvent.state})`;
+    case EventType.RouteConfigLoadEnd:
+      return `RouteConfigLoadEnd(path: ${routerEvent.route.path})`;
+    case EventType.RouteConfigLoadStart:
+      return `RouteConfigLoadStart(path: ${routerEvent.route.path})`;
+    case EventType.RoutesRecognized:
+      return `RoutesRecognized(id: ${routerEvent.id}, url: '${
+          routerEvent.url}', urlAfterRedirects: '${routerEvent.urlAfterRedirects}', state: ${
+          routerEvent.state})`;
+    case EventType.Scroll:
+      const pos =
+          routerEvent.position ? `${routerEvent.position[0]}, ${routerEvent.position[1]}` : null;
+      return `Scroll(anchor: '${routerEvent.anchor}', position: '${pos}')`;
+  }
+}
