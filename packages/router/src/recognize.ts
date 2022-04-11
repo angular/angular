@@ -241,7 +241,7 @@ function getChildConfig(route: Route): Route[] {
   }
 
   if (route.loadChildren) {
-    return route._loadedConfig!.routes;
+    return route._loadedRoutes!;
   }
 
   return [];

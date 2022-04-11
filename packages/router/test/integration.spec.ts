@@ -17,6 +17,7 @@ import {EMPTY, Observable, Observer, of, Subscription, SubscriptionLike} from 'r
 import {delay, filter, first, map, mapTo, tap} from 'rxjs/operators';
 
 import {forEach} from '../src/utils/collection';
+import {getLoadedRoutes} from '../src/utils/config';
 import {isUrlTree} from '../src/utils/type_guards';
 import {RouterTestingModule} from '../testing';
 
@@ -5639,14 +5640,14 @@ describe('Integration', () => {
            advance(fixture);
 
            const config = router.config as any;
-           const firstConfig = config[1]._loadedConfig!;
+           const firstRoutes = getLoadedRoutes(config[1])!;
 
-           expect(firstConfig).toBeDefined();
-           expect(firstConfig.routes[0].path).toEqual('LoadedModule1');
+           expect(firstRoutes).toBeDefined();
+           expect(firstRoutes[0].path).toEqual('LoadedModule1');
 
-           const secondConfig = firstConfig.routes[0]._loadedConfig!;
-           expect(secondConfig).toBeDefined();
-           expect(secondConfig.routes[0].path).toEqual('LoadedModule2');
+           const secondRoutes = getLoadedRoutes(firstRoutes[0])!;
+           expect(secondRoutes).toBeDefined();
+           expect(secondRoutes[0].path).toEqual('LoadedModule2');
          }));
 
       it('should not preload when canLoad is present and does not execute guard', fakeAsync(() => {
@@ -5662,9 +5663,9 @@ describe('Integration', () => {
            advance(fixture);
 
            const config = router.config as any;
-           const firstConfig = config[1]._loadedConfig!;
+           const firstRoutes = getLoadedRoutes(config[1])!;
 
-           expect(firstConfig).toBeUndefined();
+           expect(firstRoutes).toBeUndefined();
            expect(log.length).toBe(0);
          }));
 

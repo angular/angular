@@ -14,6 +14,7 @@ import {catchError, delay, filter, switchMap, take} from 'rxjs/operators';
 
 import {Route, RouteConfigLoadEnd, RouteConfigLoadStart, Router, RouterModule} from '../index';
 import {LoadedRouterConfig} from '../src/models';
+import {getLoadedInjector, getLoadedRoutes} from '../src/utils/config';
 import {RouterTestingModule} from '../testing';
 
 
@@ -108,16 +109,15 @@ describe('RouterPreloader', () => {
              tick();
 
              const c = router.config;
-             const loadedConfig: LoadedRouterConfig = (c[0] as any)._loadedConfig!;
-             const injector: any = loadedConfig.injector;
-             expect(loadedConfig.routes[0].path).toEqual('LoadedModule1');
+             const injector: any = getLoadedInjector(c[0]);
+             const loadedRoutes: Route[] = getLoadedRoutes(c[0])!;
+             expect(loadedRoutes[0].path).toEqual('LoadedModule1');
              expect(injector._parent).toBe((testModule as any)._r3Injector);
 
-             const loadedConfig2: LoadedRouterConfig =
-                 (loadedConfig.routes[0] as any)._loadedConfig!;
-             const module2: any = loadedConfig2.injector;
-             expect(loadedConfig2.routes[0].path).toEqual('LoadedModule2');
-             expect(module2._parent).toBe(injector);
+             const injector2: any = getLoadedInjector(loadedRoutes[0]);
+             const loadedRoutes2: Route[] = getLoadedRoutes(loadedRoutes[0])!;
+             expect(loadedRoutes2[0].path).toEqual('LoadedModule2');
+             expect(injector2._parent).toBe(injector);
 
              expect(events.map(e => e.toString())).toEqual([
                'RouteConfigLoadStart(path: lazy)',
@@ -154,10 +154,8 @@ describe('RouterPreloader', () => {
                  <Route>{
                    path: 'LoadedModule2',
                    loadChildren: jasmine.createSpy('no'),
-                   _loadedConfig: {
-                     routes: [{path: 'LoadedModule3', loadChildren: () => LoadedModule3}],
-                     injector: module2.injector,
-                   }
+                   _loadedRoutes: [{path: 'LoadedModule3', loadChildren: () => LoadedModule3}],
+                   _loadedInjector: module2.injector,
                  },
                ])]
              })
@@ -175,15 +173,12 @@ describe('RouterPreloader', () => {
 
              const c = router.config;
 
-             const loadedConfig: LoadedRouterConfig = (c[0] as any)._loadedConfig!;
-             const injector: any = loadedConfig.injector;
+             const injector = getLoadedInjector(c[0]) as any;
+             const loadedRoutes = getLoadedRoutes(c[0])!;
              expect(injector._parent).toBe((testModule as any)._r3Injector);
 
-             const loadedConfig2: LoadedRouterConfig =
-                 (loadedConfig.routes[0] as any)._loadedConfig!;
-             const loadedConfig3: LoadedRouterConfig =
-                 (loadedConfig2.routes[0] as any)._loadedConfig!;
-             const injector3: any = loadedConfig3.injector;
+             const loadedRoutes2: Route[] = getLoadedRoutes(loadedRoutes[0])!;
+             const injector3: any = getLoadedInjector(loadedRoutes2[0]);
              expect(injector3._parent).toBe(module2.injector);
            })));
   });
@@ -519,8 +514,8 @@ describe('RouterPreloader', () => {
          tick();
 
          const c = router.config;
-         expect((c[0] as any)._loadedConfig).not.toBeDefined();
-         expect((c[1] as any)._loadedConfig).toBeDefined();
+         expect(getLoadedRoutes(c[0] as any)).not.toBeDefined();
+         expect(getLoadedRoutes(c[1])).toBeDefined();
        })));
   });
 
@@ -545,11 +540,11 @@ describe('RouterPreloader', () => {
 
          tick();
 
-         const c = router.config as {_loadedConfig: LoadedRouterConfig}[];
-         expect(c[0]._loadedConfig).toBeDefined();
-         expect(c[0]._loadedConfig!.routes).not.toBe(configs);
-         expect(c[0]._loadedConfig!.routes[0]).not.toBe(configs[0]);
-         expect(c[0]._loadedConfig!.routes[0].component).toBe(configs[0].component);
+         const c = router.config;
+         expect(getLoadedRoutes(c[0])).toBeDefined();
+         expect(getLoadedRoutes(c[0])).not.toBe(configs);
+         expect(getLoadedRoutes(c[0])![0]).not.toBe(configs[0]);
+         expect(getLoadedRoutes(c[0])![0].component).toBe(configs[0].component);
        })));
   });
 
