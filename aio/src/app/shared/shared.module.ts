@@ -11,7 +11,8 @@ import { MatIconModule } from '@angular/material/icon';
   ],
   exports: [
     SearchResultsComponent,
-    SelectComponent
+    SelectComponent,
+    MatIconModule,
   ],
   declarations: [
     SearchResultsComponent,

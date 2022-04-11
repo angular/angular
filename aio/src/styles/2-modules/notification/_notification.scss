@@ -85,7 +85,7 @@ aio-notification {
     padding-top: $notificationHeight;
 
     .close-button-wrapper {
-      top: 6.5rem;
+      top: $notificationHeight;
     }
   }
 
