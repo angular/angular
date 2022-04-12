@@ -68,10 +68,10 @@ export class CompilerFacadeImpl implements CompilerFacade {
           internalType: new WrappedNodeExpr(facade.type),
           typeArgumentCount: facade.typeArgumentCount,
           providedIn: computeProvidedIn(facade.providedIn),
-          useClass: convertToProviderExpression(facade, USE_CLASS),
-          useFactory: wrapExpression(facade, USE_FACTORY),
-          useValue: convertToProviderExpression(facade, USE_VALUE),
-          useExisting: convertToProviderExpression(facade, USE_EXISTING),
+          useClass: convertToProviderExpression(facade, 'useClass'),
+          useFactory: wrapExpression(facade, 'useFactory'),
+          useValue: convertToProviderExpression(facade, 'useValue'),
+          useExisting: convertToProviderExpression(facade, 'useExisting'),
           deps: facade.deps?.map(convertR3DependencyMetadata),
         },
         /* resolveForwardRefs */ true);
@@ -89,10 +89,10 @@ export class CompilerFacadeImpl implements CompilerFacade {
           internalType: new WrappedNodeExpr(facade.type),
           typeArgumentCount: 0,
           providedIn: computeProvidedIn(facade.providedIn),
-          useClass: convertToProviderExpression(facade, USE_CLASS),
-          useFactory: wrapExpression(facade, USE_FACTORY),
-          useValue: convertToProviderExpression(facade, USE_VALUE),
-          useExisting: convertToProviderExpression(facade, USE_EXISTING),
+          useClass: convertToProviderExpression(facade, 'useClass'),
+          useFactory: wrapExpression(facade, 'useFactory'),
+          useValue: convertToProviderExpression(facade, 'useValue'),
+          useExisting: convertToProviderExpression(facade, 'useExisting'),
           deps: facade.deps?.map(convertR3DeclareDependencyMetadata),
         },
         /* resolveForwardRefs */ true);
@@ -287,11 +287,6 @@ export class CompilerFacadeImpl implements CompilerFacade {
 type R3ComponentMetadataFacadeNoPropAndWhitespace = Pick<
     R3ComponentMetadataFacade,
     Exclude<Exclude<keyof R3ComponentMetadataFacade, 'preserveWhitespaces'>, 'propMetadata'>>;
-
-const USE_CLASS = Object.keys({useClass: null})[0];
-const USE_FACTORY = Object.keys({useFactory: null})[0];
-const USE_VALUE = Object.keys({useValue: null})[0];
-const USE_EXISTING = Object.keys({useExisting: null})[0];
 
 function convertToR3QueryMetadata(facade: R3QueryMetadataFacade): R3QueryMetadata {
   return {
