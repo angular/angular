@@ -68,7 +68,7 @@ When declaring a template reference variable on an element without defining a va
 - **NgTemplate**: TemplateRef
 
 Referencing an element by its directive needs the directive `exportAs` property set as reference value.
-In case of unspecified variable value, the reference will return an `HTMLElement`, even if the element has one or more directive applied to itself.
+In case of an unspecified variable value, the reference will return an `HTMLElement`, even if the element has one or more directive applied to itself.
 
 ## Template variable scope
 
