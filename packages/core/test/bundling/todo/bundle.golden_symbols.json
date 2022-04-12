@@ -21,6 +21,9 @@
     "name": "ElementRef"
   },
   {
+    "name": "EnvironmentInjector"
+  },
+  {
     "name": "InjectFlags"
   },
   {

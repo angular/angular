@@ -1,4 +1,4 @@
-import { ApiPage } from './api.po';
+import {ApiPage} from './api.po';
 
 describe('Api pages', () => {
   let page: ApiPage;
@@ -13,16 +13,8 @@ describe('Api pages', () => {
   it('should show direct and indirect subclasses of a class', async () => {
     await page.navigateTo('api/forms/AbstractControlDirective');
     expect(await page.getDescendants('class')).toEqual([
-      'ControlContainer',
-      'AbstractFormGroupDirective',
-      'NgModelGroup',
-      'FormGroupName',
-      'NgForm',
-      'FormGroupDirective',
-      'FormArrayName',
-      'NgControl',
-      'NgModel',
-      'FormControlDirective',
+      'ControlContainer', 'AbstractFormGroupDirective', 'NgModelGroup', 'FormGroupName', 'NgForm',
+      'FormGroupDirective', 'FormArrayName', 'NgControl', 'NgModel', 'FormControlDirective',
       'FormControlName'
     ]);
   });
@@ -34,7 +26,9 @@ describe('Api pages', () => {
 
   it('should show classes that implement an interface', async () => {
     await page.navigateTo('api/animations/AnimationPlayer');
-    expect(await page.getDescendants('class')).toEqual(['NoopAnimationPlayer', 'MockAnimationPlayer']);
+    expect(await page.getDescendants('class')).toEqual([
+      'NoopAnimationPlayer', 'MockAnimationPlayer'
+    ]);
   });
 
   it('should show type params of type-aliases', async () => {
@@ -44,12 +38,13 @@ describe('Api pages', () => {
 
   it('should not show parenthesis for getters', async () => {
     await page.navigateTo('api/core/NgModuleRef');
-    expect(await page.getOverview('class').getText()).toContain('injector: Injector');
+    expect(await page.getOverview('class').getText()).toContain('injector: EnvironmentInjector');
   });
 
   it('should show both type and initializer if set', async () => {
     await page.navigateTo('api/common/HashLocationStrategy');
-    expect(await page.getOverview('class').getText()).toContain('path(includeHash: boolean = false): string');
+    expect(await page.getOverview('class').getText())
+        .toContain('path(includeHash: boolean = false): string');
   });
 
   it('should show a "Properties" section if there are public properties', async () => {
@@ -71,9 +66,11 @@ describe('Api pages', () => {
     await page.navigateTo('api/core/EventEmitter');
     /* eslint-disable max-len */
     expect(await page.ghLinks.get(0).getAttribute('href'))
-      .toMatch(/https:\/\/github\.com\/angular\/angular\/edit\/master\/packages\/core\/src\/event_emitter\.ts\?message=docs\(core\)%3A%20describe%20your%20change\.\.\.#L\d+-L\d+/);
+        .toMatch(
+            /https:\/\/github\.com\/angular\/angular\/edit\/master\/packages\/core\/src\/event_emitter\.ts\?message=docs\(core\)%3A%20describe%20your%20change\.\.\.#L\d+-L\d+/);
     expect(await page.ghLinks.get(1).getAttribute('href'))
-      .toMatch(/https:\/\/github\.com\/angular\/angular\/tree\/[^/]+\/packages\/core\/src\/event_emitter\.ts#L\d+-L\d+/);
+        .toMatch(
+            /https:\/\/github\.com\/angular\/angular\/tree\/[^/]+\/packages\/core\/src\/event_emitter\.ts#L\d+-L\d+/);
     /* eslint-enable max-len */
   });
 

@@ -9,7 +9,8 @@
 import {Injector} from '../di/injector';
 import {INJECTOR} from '../di/injector_token';
 import {InjectFlags} from '../di/interface/injector';
-import {createInjectorWithoutInjectorInstances, R3Injector} from '../di/r3_injector';
+import {Provider} from '../di/interface/provider';
+import {createInjectorWithoutInjectorInstances, EnvironmentInjector, getNullInjector, R3Injector} from '../di/r3_injector';
 import {Type} from '../interface/type';
 import {ComponentFactoryResolver as viewEngine_ComponentFactoryResolver} from '../linker/component_factory_resolver';
 import {InternalNgModuleRef, NgModuleFactory as viewEngine_NgModuleFactory, NgModuleRef as viewEngine_NgModuleRef} from '../linker/ng_module_factory';
@@ -31,12 +32,13 @@ export function createNgModuleRef<T>(
     ngModule: Type<T>, parentInjector?: Injector): viewEngine_NgModuleRef<T> {
   return new NgModuleRef<T>(ngModule, parentInjector ?? null);
 }
-export class NgModuleRef<T> extends viewEngine_NgModuleRef<T> implements InternalNgModuleRef<T> {
+export class NgModuleRef<T> extends viewEngine_NgModuleRef<T> implements InternalNgModuleRef<T>,
+                                                                         EnvironmentInjector {
   // tslint:disable-next-line:require-internal-with-underscore
   _bootstrapComponents: Type<any>[] = [];
   // tslint:disable-next-line:require-internal-with-underscore
   _r3Injector: R3Injector;
-  override injector: Injector = this;
+  override injector: EnvironmentInjector = this;
   override instance: T;
   destroyCbs: (() => void)[]|null = [];
 
@@ -104,4 +106,44 @@ export class NgModuleFactory<T> extends viewEngine_NgModuleFactory<T> {
   override create(parentInjector: Injector|null): viewEngine_NgModuleRef<T> {
     return new NgModuleRef(this.moduleType, parentInjector);
   }
+}
+
+class EnvironmentNgModuleRefAdapter extends viewEngine_NgModuleRef<null> {
+  override readonly injector: EnvironmentInjector;
+  override readonly componentFactoryResolver: ComponentFactoryResolver =
+      new ComponentFactoryResolver(this);
+  override readonly instance = null;
+
+  constructor(providers: Provider[], parent: EnvironmentInjector|null, source: string|null) {
+    super();
+    const injector = new R3Injector(
+        [
+          ...providers,
+          {provide: viewEngine_NgModuleRef, useValue: this},
+          {provide: viewEngine_ComponentFactoryResolver, useValue: this.componentFactoryResolver},
+        ],
+        parent || getNullInjector(), source);
+    this.injector = injector;
+    injector.resolveInjectorInitializers();
+  }
+
+  override destroy(): void {
+    this.injector.destroy();
+  }
+
+  override onDestroy(callback: () => void): void {
+    this.injector.onDestroy(callback);
+  }
+}
+
+/**
+ * Create a new environment injector.
+ *
+ * @publicApi
+ */
+export function createEnvironmentInjector(
+    providers: Provider[], parent: EnvironmentInjector|null = null,
+    debugName: string|null = null): EnvironmentInjector {
+  const adapter = new EnvironmentNgModuleRefAdapter(providers, parent, debugName);
+  return adapter.injector;
 }

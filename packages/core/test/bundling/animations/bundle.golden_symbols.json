@@ -201,6 +201,9 @@
     "name": "EmulatedEncapsulationDomRenderer2"
   },
   {
+    "name": "EnvironmentInjector"
+  },
+  {
     "name": "ErrorHandler"
   },
   {
