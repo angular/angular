@@ -182,6 +182,8 @@ export function defineJasmineTestCases(
   // No test cases for the given version are available. Skip setting up tests for that
   // version.
   if (!inputFiles) {
+    // Jasmine throws an error if there's a `describe` without any tests.
+    it('should pass', () => {});
     return;
   }
 

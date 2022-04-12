@@ -87,7 +87,7 @@ class SimpleFocusTrap implements AfterViewInit {
 
   // Since our custom stubbing in `patchElementFocus` won't update
   // the `document.activeElement`, we need to keep track of it here.
-  activeElement: EventTarget | null;
+  activeElement: Element | null;
 
   constructor(private _focusTrapFactory: ConfigurableFocusTrapFactory) {}
 
@@ -100,7 +100,10 @@ class SimpleFocusTrap implements AfterViewInit {
       this.secondFocusableElement,
     ].forEach(({nativeElement}) => {
       patchElementFocus(nativeElement);
-      nativeElement.addEventListener('focus', event => (this.activeElement = event.target));
+      nativeElement.addEventListener(
+        'focus',
+        event => (this.activeElement = event.target as Element),
+      );
     });
 
     this.focusTrap = this._focusTrapFactory.create(this.focusTrapElement.nativeElement);
