@@ -83,10 +83,6 @@ aio-notification {
 
   .search-results {
     padding-top: $notificationHeight;
-
-    .close-button {
-      top: $notificationHeight;
-    }
   }
 
   mat-sidenav-container.sidenav-container {
