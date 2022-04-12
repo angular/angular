@@ -195,6 +195,9 @@
     "name": "EnvironmentInjector"
   },
   {
+    "name": "EnvironmentNgModuleRefAdapter"
+  },
+  {
     "name": "ErrorHandler"
   },
   {
@@ -924,6 +927,9 @@
     "name": "createEmptyState"
   },
   {
+    "name": "createEnvironmentInjector"
+  },
+  {
     "name": "createInjector"
   },
   {
@@ -1152,7 +1158,7 @@
     "name": "getChildRouteGuards"
   },
   {
-    "name": "getClosestLoadedInjector"
+    "name": "getClosestRouteInjector"
   },
   {
     "name": "getClosureSafeProperty"

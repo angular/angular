@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {EnvironmentInjector, Injector} from '@angular/core';
+import {EnvironmentInjector} from '@angular/core';
 
 import {EmptyOutletComponent} from '../components/empty_outlet';
-import {LoadedRouterConfig, Route, Routes} from '../models';
+import {Route, Routes} from '../models';
 import {ActivatedRouteSnapshot} from '../router_state';
 import {PRIMARY_OUTLET} from '../shared';
 
@@ -17,8 +17,12 @@ export function getLoadedRoutes(route: Route): Route[]|undefined {
   return route._loadedRoutes;
 }
 
-export function getLoadedInjector(route: Route): Injector|undefined {
+export function getLoadedInjector(route: Route): EnvironmentInjector|undefined {
   return route._loadedInjector;
+}
+
+export function getProvidersInjector(route: Route): EnvironmentInjector|undefined {
+  return route._injector;
 }
 
 export function validateConfig(config: Routes, parentPath: string = ''): void {
@@ -146,20 +150,36 @@ export function sortByMatchingOutlets(routes: Routes, outletName: string): Route
 }
 
 /**
- * Gets the first loaded injector in the snapshot's parent tree.
+ * Gets the first injector in the snapshot's parent tree.
  *
- * Returns `null` if there is no parent lazy loaded injector.
+ * If the `Route` has a static list of providers, the returned injector will be the one created from
+ * those. If it does not exist, the returned injector may come from the parents, which may be from a
+ * loaded config or their static providers.
+ *
+ * Returns `null` if there is neither this nor any parents have a stored injector.
  *
  * Generally used for retrieving the injector to use for getting tokens for guards/resolvers and
  * also used for getting the correct injector to use for creating components.
  */
-export function getClosestLoadedInjector(snapshot: ActivatedRouteSnapshot): EnvironmentInjector|
+export function getClosestRouteInjector(snapshot: ActivatedRouteSnapshot): EnvironmentInjector|
     null {
   if (!snapshot) return null;
 
+  // If the current route has its own injector, which is created from the static providers on the
+  // route itself, we should use that. Otherwise, we start at the parent since we do not want to
+  // include the lazy loaded injector from this route.
+  if (snapshot.routeConfig?._injector) {
+    return snapshot.routeConfig._injector;
+  }
+
   for (let s = snapshot.parent; s; s = s.parent) {
     const route = s.routeConfig;
-    if (route && route._loadedInjector) return route._loadedInjector;
+    // Note that the order here is important. `_loadedInjector` stored on the route with
+    // `loadChildren: () => NgModule` so it applies to child routes with priority. The `_injector`
+    // is created from the static providers on that parent route, so it applies to the children as
+    // well, but only if there is no lazy loaded NgModuleRef injector.
+    if (route?._loadedInjector) return route._loadedInjector;
+    if (route?._injector) return route._injector;
   }
 
   return null;

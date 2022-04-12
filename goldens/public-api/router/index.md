@@ -23,6 +23,7 @@ import { Observable } from 'rxjs';
 import { OnChanges } from '@angular/core';
 import { OnDestroy } from '@angular/core';
 import { OnInit } from '@angular/core';
+import { Provider } from '@angular/core';
 import { QueryList } from '@angular/core';
 import { Renderer2 } from '@angular/core';
 import { SimpleChanges } from '@angular/core';
@@ -452,6 +453,7 @@ export interface Route {
     outlet?: string;
     path?: string;
     pathMatch?: 'prefix' | 'full';
+    providers?: Provider[];
     redirectTo?: string;
     resolve?: ResolveData;
     runGuardsAndResolvers?: RunGuardsAndResolvers;
@@ -692,7 +694,7 @@ export interface RouterOutletContract {
 
 // @public
 export class RouterPreloader implements OnDestroy {
-    constructor(router: Router, compiler: Compiler, injector: Injector, preloadingStrategy: PreloadingStrategy, loader: RouterConfigLoader);
+    constructor(router: Router, compiler: Compiler, injector: EnvironmentInjector, preloadingStrategy: PreloadingStrategy, loader: RouterConfigLoader);
     // (undocumented)
     ngOnDestroy(): void;
     // (undocumented)

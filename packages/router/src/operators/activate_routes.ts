@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgModuleRef} from '@angular/core';
+import {ComponentFactoryResolver, EnvironmentInjector, NgModuleRef} from '@angular/core';
 import {MonoTypeOperatorFunction} from 'rxjs';
 import {map} from 'rxjs/operators';
 
@@ -16,7 +16,7 @@ import {NavigationTransition} from '../router';
 import {ChildrenOutletContexts} from '../router_outlet_context';
 import {ActivatedRoute, advanceActivatedRoute, RouterState} from '../router_state';
 import {forEach} from '../utils/collection';
-import {getClosestLoadedInjector} from '../utils/config';
+import {getClosestRouteInjector} from '../utils/config';
 import {nodeChildrenAsMap, TreeNode} from '../utils/tree';
 
 export const activateRoutes =
@@ -193,9 +193,8 @@ export class ActivateRoutes {
           advanceActivatedRoute(stored.route.value);
           this.activateChildRoutes(futureNode, null, context.children);
         } else {
-          const injector = getClosestLoadedInjector(future.snapshot);
-          const cmpFactoryResolver = injector?.get(NgModuleRef)?.componentFactoryResolver ?? null;
-
+          const injector = getClosestRouteInjector(future.snapshot);
+          const cmpFactoryResolver = injector?.get(ComponentFactoryResolver) ?? null;
           context.attachRef = null;
           context.route = future;
           context.resolver = cmpFactoryResolver;

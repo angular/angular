@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Compiler, Component, Injector, NgModule, NgModuleFactory, NgModuleRef, Type} from '@angular/core';
+import {Compiler, Component, Inject, InjectionToken, Injector, NgModule, NgModuleFactory, NgModuleRef, Optional, Type} from '@angular/core';
 import {fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
 import {PreloadAllModules, PreloadingStrategy, RouterPreloader} from '@angular/router';
 import {BehaviorSubject, Observable, of, throwError} from 'rxjs';
@@ -14,7 +14,7 @@ import {catchError, delay, filter, switchMap, take} from 'rxjs/operators';
 
 import {Route, RouteConfigLoadEnd, RouteConfigLoadStart, Router, RouterModule} from '../index';
 import {LoadedRouterConfig} from '../src/models';
-import {getLoadedInjector, getLoadedRoutes} from '../src/utils/config';
+import {getLoadedInjector, getLoadedRoutes, getProvidersInjector} from '../src/utils/config';
 import {RouterTestingModule} from '../testing';
 
 
@@ -127,6 +127,45 @@ describe('RouterPreloader', () => {
              ]);
            })));
   });
+
+  it('should handle providers on a route', fakeAsync(() => {
+       const TOKEN = new InjectionToken<string>('test token');
+       const CHILD_TOKEN = new InjectionToken<string>('test token for child');
+
+       @NgModule({
+         imports: [RouterModule.forChild([{path: 'child', redirectTo: ''}])],
+         providers: [{provide: CHILD_TOKEN, useValue: 'child'}]
+       })
+       class Child {
+       }
+
+       TestBed.configureTestingModule({
+         imports: [RouterTestingModule.withRoutes([{
+           path: 'parent',
+           providers: [{provide: TOKEN, useValue: 'parent'}],
+           loadChildren: () => Child,
+         }])],
+         providers: [
+           {provide: PreloadingStrategy, useExisting: PreloadAllModules},
+         ]
+       });
+
+       TestBed.inject(RouterPreloader).preload().subscribe(() => {});
+
+       tick();
+
+       const parentConfig = TestBed.inject(Router).config[0];
+       // preloading needs to create the injector
+       const providersInjector = getProvidersInjector(parentConfig);
+       expect(providersInjector).toBeDefined();
+       // Throws error because there is no provider for CHILD_TOKEN here
+       expect(() => providersInjector?.get(CHILD_TOKEN)).toThrow();
+
+       const loadedInjector = getLoadedInjector(parentConfig)!;
+       // // The loaded injector should be a child of the one created from providers
+       expect(loadedInjector.get(TOKEN)).toEqual('parent');
+       expect(loadedInjector.get(CHILD_TOKEN)).toEqual('child');
+     }));
 
   describe('should support modules that have already been loaded', () => {
     let lazySpy: jasmine.Spy;

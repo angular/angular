@@ -13,7 +13,7 @@ import {ChildrenOutletContexts, OutletContext} from '../router_outlet_context';
 import {ActivatedRouteSnapshot, equalParamsAndUrlSegments, RouterStateSnapshot} from '../router_state';
 import {equalPath} from '../url_tree';
 import {forEach, shallowEqual} from '../utils/collection';
-import {getClosestLoadedInjector} from '../utils/config';
+import {getClosestRouteInjector} from '../utils/config';
 import {nodeChildrenAsMap, TreeNode} from '../utils/tree';
 
 export class CanActivate {
@@ -50,7 +50,7 @@ export function getCanActivateChild(p: ActivatedRouteSnapshot):
 
 export function getToken(
     token: any, snapshot: ActivatedRouteSnapshot, fallbackInjector: Injector): any {
-  const routeInjector = getClosestLoadedInjector(snapshot);
+  const routeInjector = getClosestRouteInjector(snapshot);
   const injector = routeInjector ?? fallbackInjector;
   return injector.get(token);
 }
