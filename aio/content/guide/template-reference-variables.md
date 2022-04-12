@@ -143,23 +143,27 @@ Consider the following example that uses `*ngFor`.
 Here, `ref.value` doesn't work.
 Verbose syntax of the same loop shows why:
 
-```
-<ng-template ngFor let-i [ngForOf]="[1,2]">
-  <input #ref type="text" [value]="i" />
-</ng-template>
+<code-example format="html" language="html">
+  
+&lt;ng-template ngFor let-i [ngForOf]="[1,2]"&gt;
+  &lt;input #ref type="text" [value]="i" /&gt;
+&lt;/ng-template&gt;
 {{ ref.value }}
-```
+
+</code-example>
 
 The interpolation trying to access property `ref.value` occurs outside of the referenced element's parent template, making it unreachable.
 
 Moving the interpolation inside the template makes the variable available. Now it references the correct distinct value for each element the loop renders.
 
-```
-<ng-template ngFor let-i [ngForOf]="[1,2]">
-  <input #ref type="text" [value]="i" />
+<code-example format="html" language="html">
+  
+&lt;ng-template ngFor let-i [ngForOf]="[1,2]"&gt;
+  &lt;input #ref type="text" [value]="i" /&gt;
   {{ ref.value }}
-</ng-template>
-```
+&lt;/ng-template&gt;
+
+</code-example>
 
 This snippet shows 2 `<input>` elements, with their respective value printed.
 
@@ -195,6 +199,8 @@ If its value is omitted, it gets the `$implicit` template context's property val
 There are several such variables in this example: `hero`, `i`, and `odd`.  
 The first one takes the value of the iterated item, because `NgForOf` assigns that to `$implicit`
 
+<code-example format="html" language="html">
+  
 &lt;ng-template ngFor #hero let-hero [ngForOf]="heroes" let-i="index" let-odd="odd"&gt;
   &lt;div [class]="{'odd-row': odd}"&gt;{{i}}:{{hero.name}}&lt;/div&gt;
 &lt;/ng-template&gt;
