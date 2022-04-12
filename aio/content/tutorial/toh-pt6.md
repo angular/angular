@@ -482,9 +482,9 @@ Here are the code files discussed on this page \(all in the `src/app/` folder\).
 ### `HeroService`, `InMemoryDataService`, `AppModule`
 
 <code-tabs>
-    <code-pane header="hero-search/hero-search.component.html" path="toh-pt6/src/app/hero-search/hero-search.component.html"></code-pane>
+    <code-pane header="hero.service.ts" path="toh-pt6/src/app/hero.service.ts"></code-pane>
     <code-pane header="in-memory-data.service.ts" path="toh-pt6/src/app/in-memory-data.service.ts"></code-pane>
-    <code-pane header="hero-search/hero-search.component.html" path="toh-pt6/src/app/hero-search/hero-search.component.html"></code-pane>
+    <code-pane header="app.module.ts" path="toh-pt6/src/app/app.module.ts"></code-pane>
 </code-tabs>
 
 <a id="heroescomponent"></a>
@@ -492,9 +492,9 @@ Here are the code files discussed on this page \(all in the `src/app/` folder\).
 ### `HeroesComponent`
 
 <code-tabs>
-    <code-pane header="hero-search/hero-search.component.html" path="toh-pt6/src/app/hero-search/hero-search.component.html"></code-pane>
+    <code-pane header="heroes/heroes.component.html" path="toh-pt6/src/app/hero-search/heroes.component.html"></code-pane>
     <code-pane header="heroes/heroes.component.ts" path="toh-pt6/src/app/heroes/heroes.component.ts"></code-pane>
-    <code-pane header="hero-search/hero-search.component.html" path="toh-pt6/src/app/hero-search/hero-search.component.html"></code-pane>
+    <code-pane header="heroes/heroes.component.css" path="toh-pt6/src/app/heroes/heroes.component.css"></code-pane>
 </code-tabs>
 
 <a id="herodetailcomponent"></a>
@@ -502,8 +502,9 @@ Here are the code files discussed on this page \(all in the `src/app/` folder\).
 ### `HeroDetailComponent`
 
 <code-tabs>
-    <code-pane header="hero-search/hero-search.component.html" path="toh-pt6/src/app/hero-search/hero-search.component.html"></code-pane>
+    <code-pane header="hero-detail/hero-detail.component.html" path="toh-pt6/src/app/hero-detail/hero-detail.component.html"></code-pane>
     <code-pane header="hero-detail/hero-detail.component.ts" path="toh-pt6/src/app/hero-detail/hero-detail.component.ts"></code-pane>
+    <code-pane header="hero-detail/hero-detail.component.css" path="toh-pt6/src/app/hero-detail/hero-detail.component.css"></code-pane>
 </code-tabs>
 
 <a id="dashboardcomponent"></a>
@@ -511,7 +512,9 @@ Here are the code files discussed on this page \(all in the `src/app/` folder\).
 ### `DashboardComponent`
 
 <code-tabs>
-    <code-pane header="hero-search/hero-search.component.html" path="toh-pt6/src/app/hero-search/hero-search.component.html"></code-pane>
+    <code-pane header="dashboard/dashboard.component.html" path="toh-pt6/src/app/dashboard/dashboard.component.html"></code-pane>
+    <code-pane header="dashboard/dashboard.component.ts" path="toh-pt6/src/app/dashboard/dashboard.component.ts"></code-pane>
+    <code-pane header="dashboard/dashboard.component.css" path="toh-pt6/src/app/dashboard/dashboard.component.css"></code-pane>
 </code-tabs>
 
 <a id="herosearchcomponent"></a>
@@ -521,7 +524,7 @@ Here are the code files discussed on this page \(all in the `src/app/` folder\).
 <code-tabs>
     <code-pane header="hero-search/hero-search.component.html" path="toh-pt6/src/app/hero-search/hero-search.component.html"></code-pane>
     <code-pane header="hero-search/hero-search.component.ts" path="toh-pt6/src/app/hero-search/hero-search.component.ts"></code-pane>
-    <code-pane header="hero-search/hero-search.component.html" path="toh-pt6/src/app/hero-search/hero-search.component.html"></code-pane>
+    <code-pane header="hero-search/hero-search.component.css" path="toh-pt6/src/app/hero-search/hero-search.component.css"></code-pane>
 </code-tabs>
 
 ## Summary
