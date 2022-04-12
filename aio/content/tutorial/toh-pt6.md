@@ -492,7 +492,7 @@ Here are the code files discussed on this page \(all in the `src/app/` folder\).
 ### `HeroesComponent`
 
 <code-tabs>
-    <code-pane header="heroes/heroes.component.html" path="toh-pt6/src/app/hero-search/heroes.component.html"></code-pane>
+    <code-pane header="heroes/heroes.component.html" path="toh-pt6/src/app/heroes/heroes.component.html"></code-pane>
     <code-pane header="heroes/heroes.component.ts" path="toh-pt6/src/app/heroes/heroes.component.ts"></code-pane>
     <code-pane header="heroes/heroes.component.css" path="toh-pt6/src/app/heroes/heroes.component.css"></code-pane>
 </code-tabs>
