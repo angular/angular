@@ -35,7 +35,7 @@
   ],
   "dependencies": {
     "@babel/core": "7.17.9",
-    "glob": "7.2.0",
+    "glob": "8.0.1",
     "yargs": "^17.2.1"
   },
   "peerDependencies": {
