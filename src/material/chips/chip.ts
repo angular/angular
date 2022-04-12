@@ -500,5 +500,6 @@ export class MatChipRemove {
     // the parent click listener of the `MatChip` would prevent propagation, but it can happen
     // that the chip is being removed before the event bubbles up.
     event.stopPropagation();
+    event.preventDefault();
   }
 }

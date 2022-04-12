@@ -1,6 +1,6 @@
 import {Component} from '@angular/core';
 import {waitForAsync, ComponentFixture, TestBed, fakeAsync, flush} from '@angular/core/testing';
-import {dispatchKeyboardEvent} from '@angular/cdk/testing/private';
+import {dispatchKeyboardEvent, dispatchMouseEvent} from '@angular/cdk/testing/private';
 import {By} from '@angular/platform-browser';
 import {SPACE, ENTER} from '@angular/cdk/keycodes';
 import {MDCChipAnimation, MDCChipCssClasses} from '@material/chips/chip';
@@ -120,6 +120,14 @@ describe('MDC-based Chip Remove', () => {
     it('should have a focus indicator', fakeAsync(() => {
       const buttonElement = chipNativeElement.querySelector('.mdc-evolution-chip__icon--trailing')!;
       expect(buttonElement.classList.contains('mat-mdc-focus-indicator')).toBe(true);
+    }));
+
+    it('should prevent the default click action', fakeAsync(() => {
+      const buttonElement = chipNativeElement.querySelector('button')!;
+      const event = dispatchMouseEvent(buttonElement, 'click');
+      triggerRemoveSequence();
+
+      expect(event.defaultPrevented).toBe(true);
     }));
   });
 });
