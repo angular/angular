@@ -74,7 +74,7 @@
     "@angular/bazel": "14.0.0-next.9",
     "@angular/cli": "14.0.0-next.6",
     "@angular/compiler-cli": "14.0.0-next.9",
-    "@angular/dev-infra-private": "https://github.com/angular/dev-infra-private-builds.git#31b7db764ea2883386d40b7ffda60bd773dc9dd7",
+    "@angular/dev-infra-private": "https://github.com/angular/dev-infra-private-builds.git#4859d1eb3ae2e20646a16f271a39bc02965cbe00",
     "@angular/localize": "14.0.0-next.9",
     "@angular/platform-browser-dynamic": "14.0.0-next.9",
     "@angular/platform-server": "14.0.0-next.9",
