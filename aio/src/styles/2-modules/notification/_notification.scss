@@ -82,7 +82,7 @@ aio-notification {
   }
 
   .search-results {
-    padding-top: $notificationHeight;
+    border-top-width: 68px + $notificationHeight;
   }
 
   mat-sidenav-container.sidenav-container {
