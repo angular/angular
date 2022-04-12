@@ -8,13 +8,11 @@
 
 import {EnvironmentInjector, NgModuleRef} from '@angular/core';
 import {fakeAsync, TestBed, tick} from '@angular/core/testing';
-import {ActivatedRouteSnapshot} from '@angular/router';
-import {TreeNode} from '@angular/router/src/utils/tree';
 import {Observable, of} from 'rxjs';
 import {delay, tap} from 'rxjs/operators';
 
 import {applyRedirects} from '../src/apply_redirects';
-import {LoadedRouterConfig, Route, Routes} from '../src/models';
+import {Route, Routes} from '../src/models';
 import {DefaultUrlSerializer, equalSegments, UrlSegment, UrlSegmentGroup, UrlTree} from '../src/url_tree';
 import {getLoadedRoutes} from '../src/utils/config';
 

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ComponentFactoryResolver, ComponentRef} from '@angular/core';
+import {ComponentFactoryResolver, ComponentRef, EnvironmentInjector} from '@angular/core';
 
 import {RouterOutletContract} from './directives/router_outlet';
 import {ActivatedRoute} from './router_state';
