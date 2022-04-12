@@ -3,14 +3,14 @@
   "semanticCommits": true,
   "semanticPrefix": "build",
   "separateMajorMinor": false,
-  "prHourlyLimit": 2,
+  "prHourlyLimit": 1,
   "stopUpdatingLabel": "action: merge",
   "labels": ["target: patch", "comp: build & ci", "action: review"],
   "timezone": "America/Tijuana",
   "lockFileMaintenance": {
     "enabled": true
   },
-  "schedule": ["after 10pm every weekday", "before 4am every weekday", "every weekend"],
+  "schedule": ["after 10pm every monday", "before 4am every tuesday"],
   "baseBranches": ["master"],
   "ignoreDeps": [
     "@angular/animations-12",
