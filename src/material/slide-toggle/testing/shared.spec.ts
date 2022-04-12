@@ -36,6 +36,18 @@ export function runHarnessTests(
     expect(await slideToggles[0].getLabelText()).toBe('First');
   });
 
+  it('should load slide-toggle with disabled=true predicate', async () => {
+    const slideToggles = await loader.getAllHarnesses(slideToggleHarness.with({disabled: true}));
+    expect(slideToggles.length).toBe(1);
+    expect(await slideToggles[0].isDisabled()).toBe(true);
+  });
+
+  it('should load slide-toggle with disabled=false predicate', async () => {
+    const slideToggles = await loader.getAllHarnesses(slideToggleHarness.with({disabled: false}));
+    expect(slideToggles.length).toBe(1);
+    expect(await slideToggles[0].isDisabled()).toBe(false);
+  });
+
   it('should load slide-toggle with regex label match', async () => {
     const slideToggles = await loader.getAllHarnesses(slideToggleHarness.with({label: /^s/i}));
     expect(slideToggles.length).toBe(1);

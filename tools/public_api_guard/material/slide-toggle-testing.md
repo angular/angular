@@ -43,6 +43,7 @@ export abstract class _MatSlideToggleHarnessBase extends ComponentHarness {
 // @public
 export interface SlideToggleHarnessFilters extends BaseHarnessFilters {
     checked?: boolean;
+    disabled?: boolean;
     label?: string | RegExp;
     name?: string;
 }
