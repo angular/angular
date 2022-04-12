@@ -234,6 +234,16 @@ export class NgCompilerHost extends DelegatingCompilerHost implements
     return isShim(sf);
   }
 
+  /**
+   * Check whether the given `ts.SourceFile` is a resource file.
+   *
+   * This simply returns `false` for the compiler-cli since resource files are not added as root
+   * files to the project.
+   */
+  isResource(sf: ts.SourceFile): boolean {
+    return false;
+  }
+
   getSourceFile(
       fileName: string, languageVersion: ts.ScriptTarget,
       onError?: ((message: string) => void)|undefined,
