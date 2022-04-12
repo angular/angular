@@ -134,14 +134,16 @@ declare var WorkerGlobalScope: any;
 // We don't want to include the whole node.d.ts this this compilation unit so we'll just fake
 // the global "global" var for now.
 declare var global: any;
-const __window = typeof window !== 'undefined' && window;
-const __self = typeof self !== 'undefined' && typeof WorkerGlobalScope !== 'undefined' &&
-    self instanceof WorkerGlobalScope && self;
-const __global = typeof global !== 'undefined' && global;
 
-// Check __global first, because in Node tests both __global and __window may be defined and _global
-// should be __global in that case.
-const _global: {[name: string]: any} = __global || __window || __self;
+// Check `global` first, because in Node tests both `global` and `window` may be defined and our
+// `_global` variable should point to the NodeJS `global` in that case. Note: Typeof/Instanceof
+// checks are considered side-effects in Terser. We explicitly mark this as side-effect free:
+// https://github.com/terser/terser/issues/250.
+const _global: {[name: string]: any} = (/* @__PURE__ */ (
+    () => (typeof global !== 'undefined' && global) || (typeof window !== 'undefined' && window) ||
+        (typeof self !== 'undefined' && typeof WorkerGlobalScope !== 'undefined' &&
+         self instanceof WorkerGlobalScope && self))());
+
 export {_global as global};
 
 export function newArray<T = any>(size: number): T[];
