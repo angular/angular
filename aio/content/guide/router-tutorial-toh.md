@@ -128,13 +128,31 @@ Begin with a basic version of the application that navigates between two empty v
 
 <a id="import"></a>
 
-Generate a sample application with the Angular CLI.
+### Create a sample application
 
-<code-example format="shell" language="shell">
+1. Create a new Angular project, _angular-router-tour-of-heroes_.
 
-ng new angular-router-sample
+   <code-example format="shell" language="shell">
+    ng new angular-router-tour-of-heroes
+   </code-example>
 
-</code-example>
+   When prompted with `Would you like to add Angular routing?`, select `N`.
+
+   When prompted with `Which stylesheet format would you like to use?`, select `CSS`.
+
+   After a few moments, a new project, `angular-router-tour-of-heroes`, is ready.
+   
+1. From your terminal, navigate to the `angular-router-tour-of-heroes` directory.
+
+1. Verify that your new application runs as expected by running the `ng serve` command.
+
+   <code-example language="sh">
+    ng serve
+   </code-example>
+
+1. Open a browser to `http://localhost:4200`.
+
+   You should see the application running in your browser.
 
 ### Define Routes
 
@@ -336,7 +354,7 @@ The starter application's structure looks like this:
 
 <div class="filetree">
   <div class="file">
-    angular-router-sample
+    angular-router-tour-of-heroes
   </div>
   <div class="children">
     <div class="file">
@@ -1082,7 +1100,7 @@ After these changes, the folder structure is as follows:
 
 <div class="filetree">
   <div class="file">
-    angular-router-sample
+    angular-router-tour-of-heroes
   </div>
   <div class="children">
     <div class="file">
