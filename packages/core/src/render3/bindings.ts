@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {devModeEqual} from '../change_detection/change_detection_util';
 import {assertIndexInRange, assertLessThan, assertNotSame} from '../util/assert';
+import {devModeEqual} from '../util/comparison';
 
 import {getExpressionChangedErrorDetails, throwErrorIfNoChangesMode} from './errors';
 import {LView} from './interfaces/view';
