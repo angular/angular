@@ -12,7 +12,7 @@ import {Observable, Observer} from 'rxjs';
 
 import {HttpTestingController, RequestMatch} from './api';
 import {TestRequest} from './request';
-
+import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 /**
  * A testing backend for `HttpClient` which both acts as an `HttpBackend`
