@@ -11,6 +11,7 @@
 
 import {FormBuilder, UntypedFormBuilder} from '../src/form_builder';
 import {AbstractControl, FormArray, FormControl, FormGroup, UntypedFormArray, UntypedFormControl, UntypedFormGroup, Validators} from '../src/forms';
+import {FormRecord} from '../src/model/form_group';
 
 describe('Typed Class', () => {
   describe('FormControl', () => {
@@ -633,6 +634,60 @@ describe('Typed Class', () => {
       const fg = new FormGroup(
           {myCats: new FormArray([new FormGroup<Cat>({name: new FormControl('bob')})])});
       ufg = fg;
+    });
+  });
+
+  describe('FormRecord', () => {
+    it('supports inferred records', () => {
+      let c = new FormRecord({a: new FormControl(42, {initialValueIsDefault: true})});
+      {
+        type ValueType = Partial<{[key: string]: number}>;
+        let t: ValueType = c.value;
+        let t1 = c.value;
+        t1 = null as unknown as ValueType;
+      }
+      {
+        type RawValueType = {[key: string]: number};
+        let t: RawValueType = c.getRawValue();
+        let t1 = c.getRawValue();
+        t1 = null as unknown as RawValueType;
+      }
+      c.registerControl('c', new FormControl(42, {initialValueIsDefault: true}));
+      c.addControl('c', new FormControl(42, {initialValueIsDefault: true}));
+      c.setControl('c', new FormControl(42, {initialValueIsDefault: true}));
+      c.removeControl('c');
+      c.removeControl('missing');
+      c.contains('c');
+      c.contains('foo');
+      c.setValue({a: 42});
+      c.patchValue({c: 42});
+      c.reset({c: 42, d: 0});
+    });
+
+    it('supports explicit records', () => {
+      let c = new FormRecord<FormControl<number>>(
+          {a: new FormControl(42, {initialValueIsDefault: true})});
+      {
+        type ValueType = Partial<{[key: string]: number}>;
+        let t: ValueType = c.value;
+        let t1 = c.value;
+        t1 = null as unknown as ValueType;
+      }
+      {
+        type RawValueType = {[key: string]: number};
+        let t: RawValueType = c.getRawValue();
+        let t1 = c.getRawValue();
+        t1 = null as unknown as RawValueType;
+      }
+      c.registerControl('c', new FormControl(42, {initialValueIsDefault: true}));
+      c.addControl('c', new FormControl(42, {initialValueIsDefault: true}));
+      c.setControl('c', new FormControl(42, {initialValueIsDefault: true}));
+      c.contains('c');
+      c.contains('foo');
+      c.setValue({a: 42, c: 0});
+      c.patchValue({c: 42});
+      c.reset({c: 42, d: 0});
+      c.removeControl('c');
     });
   });
 
