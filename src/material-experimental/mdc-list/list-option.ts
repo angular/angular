@@ -179,7 +179,7 @@ export class MatListOption extends MatListItemBase implements ListOption, OnInit
   ngOnInit() {
     const list = this._selectionList;
 
-    if (list._value && list._value.some(value => list.compareWith(value, this._value))) {
+    if (list._value && list._value.some(value => list.compareWith(this._value, value))) {
       this._setSelected(true);
     }
 
