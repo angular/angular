@@ -1,3 +1,41 @@
+<a name="14.0.0-next.12"></a>
+# 14.0.0-next.12 (2022-04-12)
+## Breaking Changes
+### forms
+- Forms classes accept a generic.
+  
+  Forms model classes now accept a generic type parameter. Untyped versions of these classes are available to opt-out of the new, stricter behavior.
+### router
+- When returning a `Promise` from the
+  `LoadChildrenCallback`, the possible type is now restricted to
+  `Type<any>|NgModuleFactory<any>` rather than `any`.
+### animations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a6fa37bc6e](https://github.com/angular/angular/commit/a6fa37bc6e705fee48f555d4b8022915094e8b16) | feat | make validateStyleProperty check dev-mode only ([#45570](https://github.com/angular/angular/pull/45570)) |
+### bazel
+| Commit | Type | Description |
+| -- | -- | -- |
+| [636909fba7](https://github.com/angular/angular/commit/636909fba73e25b75489c6e050bda1b880e62885) | feat | allow for generated `package.json` files in `ng_package` ([#45470](https://github.com/angular/angular/pull/45470)) |
+| [28e835b4bb](https://github.com/angular/angular/commit/28e835b4bbd9271cbc7abe2a0e42ff273b1e7e84) | feat | report error when dependency does not provide JS sources in `ng_package` ([#45470](https://github.com/angular/angular/pull/45470)) |
+| [4b2e98d55d](https://github.com/angular/angular/commit/4b2e98d55dde4f6040a021a6ebd35d29fb5f8fdf) | fix | remove unnecessary file extractions from `ng_package` ([#45470](https://github.com/angular/angular/pull/45470)) |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [89d299105a](https://github.com/angular/angular/commit/89d299105a4ae11985fb809f42cd0e34511207c9) | feat | Implement strict types for the Angular Forms package. ([#43834](https://github.com/angular/angular/pull/43834)) |
+### platform-browser
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c7bf75dd5e](https://github.com/angular/angular/commit/c7bf75dd5e7f3f80a3c2afb8586ae46f7258f349) | fix | remove obsolete shim for Map comparison in Jasmine ([#45521](https://github.com/angular/angular/pull/45521)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [f8f3ab377b](https://github.com/angular/angular/commit/f8f3ab377b8842c2bae0f215a0e90aaa3a1e070a) | fix | Remove `any` from `LoadChildrenCallback` type ([#45524](https://github.com/angular/angular/pull/45524)) |
+## Special Thanks
+Andrew Scott, Cédric Exbrayat, Dylan Hunn, George Kalpakas, Hossein Mousavi, Jessica Janiuk, Joe Martin (Crowdstaffing), Joey Perrott, Kristiyan Kostadinov, Leosvel Pérez Espinosa, Michael-Doner, Michal Materowski, Paul Gschwendtner, Samuel Littley, Sumit Arora and dario-piotrowicz
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.0.0-next.11"></a>
 # 14.0.0-next.11 (2022-04-06)
 ### animations
