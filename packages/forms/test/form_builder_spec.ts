@@ -149,7 +149,7 @@ describe('Form Builder', () => {
 
   it('should create groups with a custom validator', () => {
     const g = b.group(
-        {'login': 'some value'}, {'validator': syncValidator, 'asyncValidator': asyncValidator});
+        {'login': 'some value'}, {'validators': syncValidator, 'asyncValidators': asyncValidator});
 
     expect(g.validator).toBe(syncValidator);
     expect(g.asyncValidator).toBe(asyncValidator);

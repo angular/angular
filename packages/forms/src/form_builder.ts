@@ -54,36 +54,9 @@ export class FormBuilder {
       controlsConfig: {[key: string]: any},
       options?: AbstractControlOptions|null,
       ): FormGroup;
-  /**
-   * @description
-   * Construct a new `FormGroup` instance.
-   *
-   * @deprecated This API is not typesafe and can result in issues with Closure Compiler renaming.
-   * Use the `FormBuilder#group` overload with `AbstractControlOptions` instead.
-   * Note that `AbstractControlOptions` expects `validators` and `asyncValidators` to be valid
-   * validators. If you have custom validators, make sure their validation function parameter is
-   * `AbstractControl` and not a sub-class, such as `FormGroup`. These functions will be called with
-   * an object of type `AbstractControl` and that cannot be automatically downcast to a subclass, so
-   * TypeScript sees this as an error. For example, change the `(group: FormGroup) =>
-   * ValidationErrors|null` signature to be `(group: AbstractControl) => ValidationErrors|null`.
-   *
-   * @param controlsConfig A collection of child controls. The key for each child is the name
-   * under which it is registered.
-   *
-   * @param options Configuration options object for the `FormGroup`. The legacy configuration
-   * object consists of:
-   * * `validator`: A synchronous validator function, or an array of validator functions
-   * * `asyncValidator`: A single async validator or array of async validator functions
-   * Note: the legacy format is deprecated and might be removed in one of the next major versions
-   * of Angular.
-   */
-  group(
-      controlsConfig: {[key: string]: any},
-      options: {[key: string]: any},
-      ): FormGroup;
-  group(
-      controlsConfig: {[key: string]: any},
-      options: AbstractControlOptions|{[key: string]: any}|null = null): FormGroup {
+
+  group(controlsConfig: {[key: string]: any}, options: AbstractControlOptions|null = null):
+      FormGroup {
     const controls = this._reduceControls(controlsConfig);
 
     let validators: ValidatorFn|ValidatorFn[]|null = null;
@@ -91,16 +64,10 @@ export class FormBuilder {
     let updateOn: FormHooks|undefined = undefined;
 
     if (options != null) {
-      if (isAbstractControlOptions(options)) {
-        // `options` are `AbstractControlOptions`
-        validators = options.validators != null ? options.validators : null;
-        asyncValidators = options.asyncValidators != null ? options.asyncValidators : null;
-        updateOn = options.updateOn != null ? options.updateOn : undefined;
-      } else {
-        // `options` are legacy form group options
-        validators = options['validator'] != null ? options['validator'] : null;
-        asyncValidators = options['asyncValidator'] != null ? options['asyncValidator'] : null;
-      }
+      // `options` are `AbstractControlOptions`
+      validators = options.validators != null ? options.validators : null;
+      asyncValidators = options.asyncValidators != null ? options.asyncValidators : null;
+      updateOn = options.updateOn != null ? options.updateOn : undefined;
     }
 
     return new FormGroup(controls, {asyncValidators, updateOn, validators});
@@ -195,16 +162,9 @@ export class UntypedFormBuilder extends FormBuilder {
       controlsConfig: {[key: string]: any},
       options?: AbstractControlOptions|null,
       ): UntypedFormGroup;
-  /**
-   * @deprecated
-   */
-  override group(
-      controlsConfig: {[key: string]: any},
-      options: {[key: string]: any},
-      ): UntypedFormGroup;
-  override group(
-      controlsConfig: {[key: string]: any},
-      options: AbstractControlOptions|{[key: string]: any}|null = null): UntypedFormGroup {
+
+  override group(controlsConfig: {[key: string]: any}, options: AbstractControlOptions|null = null):
+      UntypedFormGroup {
     return super.group(controlsConfig, options);
   }
 

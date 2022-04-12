@@ -281,12 +281,6 @@ export class FormBuilder {
     group(controlsConfig: {
         [key: string]: any;
     }, options?: AbstractControlOptions | null): FormGroup;
-    // @deprecated
-    group(controlsConfig: {
-        [key: string]: any;
-    }, options: {
-        [key: string]: any;
-    }): FormGroup;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<FormBuilder, never>;
     // (undocumented)
@@ -739,12 +733,6 @@ export class UntypedFormBuilder extends FormBuilder {
     group(controlsConfig: {
         [key: string]: any;
     }, options?: AbstractControlOptions | null): UntypedFormGroup;
-    // @deprecated (undocumented)
-    group(controlsConfig: {
-        [key: string]: any;
-    }, options: {
-        [key: string]: any;
-    }): UntypedFormGroup;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<UntypedFormBuilder, never>;
     // (undocumented)
