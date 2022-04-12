@@ -506,6 +506,48 @@ export class FormGroupName extends AbstractFormGroupDirective implements OnInit,
     static ɵfac: i0.ɵɵFactoryDeclaration<FormGroupName, [{ optional: true; host: true; skipSelf: true; }, { optional: true; self: true; }, { optional: true; self: true; }]>;
 }
 
+// @public (undocumented)
+export class FormRecord<TControl extends AbstractControl<ɵValue<TControl>, ɵRawValue<TControl>> = AbstractControl> extends FormGroup<{
+    [key: string]: TControl;
+}> {
+}
+
+// @public
+export interface FormRecord<TControl> {
+    addControl(name: string, control: TControl, options?: {
+        emitEvent?: boolean;
+    }): void;
+    contains(controlName: string): boolean;
+    getRawValue(): {
+        [key: string]: ɵRawValue<TControl>;
+    };
+    patchValue(value: {
+        [key: string]: ɵValue<TControl>;
+    }, options?: {
+        onlySelf?: boolean;
+        emitEvent?: boolean;
+    }): void;
+    registerControl(name: string, control: TControl): TControl;
+    removeControl(name: string, options?: {
+        emitEvent?: boolean;
+    }): void;
+    reset(value?: {
+        [key: string]: ɵValue<TControl>;
+    }, options?: {
+        onlySelf?: boolean;
+        emitEvent?: boolean;
+    }): void;
+    setControl(name: string, control: TControl, options?: {
+        emitEvent?: boolean;
+    }): void;
+    setValue(value: {
+        [key: string]: ɵValue<TControl>;
+    }, options?: {
+        onlySelf?: boolean;
+        emitEvent?: boolean;
+    }): void;
+}
+
 // @public
 export class FormsModule {
     // (undocumented)

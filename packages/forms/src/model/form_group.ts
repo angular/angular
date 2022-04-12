@@ -584,3 +584,97 @@ export type UntypedFormGroup = FormGroup<any>;
 export const UntypedFormGroup: UntypedFormGroupCtor = FormGroup;
 
 export const isFormGroup = (control: unknown): control is FormGroup => control instanceof FormGroup;
+
+export class FormRecord<TControl extends AbstractControl<ɵValue<TControl>, ɵRawValue<TControl>> =
+                                             AbstractControl> extends
+    FormGroup<{[key: string]: TControl}> {}
+
+/**
+ * Tracks the value and validity state of a collection of `FormControl` instances, each of which has
+ * the same value type.
+ *
+ * `FormRecord` is very similar to {@see FormGroup}, except it enforces that all controls in the group have the same type,
+ * and can be used with an open-ended, dynamically changing set of controls.
+ *
+ * @publicApi
+ */
+export interface FormRecord<TControl> {
+  /**
+   * Registers a control with the records's list of controls.
+   *
+   * {@see FormGroup#registerControl}
+   */
+  registerControl(name: string, control: TControl): TControl;
+
+  /**
+   * Add a control to this group.
+   *
+   * {@see FormGroup#addControl}
+   */
+  addControl(name: string, control: TControl, options?: {emitEvent?: boolean}): void;
+
+  /**
+   * Remove a control from this group.
+   *
+   * {@see FormGroup#removeControl}
+   */
+  removeControl(name: string, options?: {emitEvent?: boolean}): void;
+
+  /**
+   * Replace an existing control.
+   *
+   * {@see FormGroup#setControl}
+   */
+  setControl(name: string, control: TControl, options?: {emitEvent?: boolean}): void;
+
+  /**
+   * Check whether there is an enabled control with the given name in the group.
+   *
+   * {@see FormGroup#contains}
+   */
+  contains(controlName: string): boolean;
+
+  /**
+   * Sets the value of the `FormRecord`. It accepts an object that matches
+   * the structure of the group, with control names as keys.
+   *
+   * {@see FormGroup#setValue}
+   */
+  setValue(value: {[key: string]: ɵValue<TControl>}, options?: {
+    onlySelf?: boolean,
+    emitEvent?: boolean
+  }): void;
+
+  /**
+   * Patches the value of the `FormRecord`. It accepts an object with control
+   * names as keys, and does its best to match the values to the correct controls
+   * in the group.
+   *
+   * {@see FormGroup#patchValue}
+   */
+  patchValue(value: {[key: string]: ɵValue<TControl>}, options?: {
+    onlySelf?: boolean,
+    emitEvent?: boolean
+  }): void;
+
+  /**
+   * Resets the `FormRecord`, marks all descendants `pristine` and `untouched` and sets
+   * the value of all descendants to null.
+   *
+   * {@see FormGroup#reset}
+   */
+  reset(value?: {[key: string]: ɵValue<TControl>}, options?: {
+    onlySelf?: boolean,
+    emitEvent?: boolean
+  }): void;
+
+  /**
+   * The aggregate value of the `FormRecord`, including any disabled controls.
+   *
+   * {@see FormGroup#getRawValue}
+   */
+  getRawValue(): {[key: string]: ɵRawValue<TControl>};
+}
+
+export const isFormRecord = (control: unknown): control is FormRecord =>
+    control instanceof FormRecord;

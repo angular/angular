@@ -45,7 +45,7 @@ export {FormBuilder, UntypedFormBuilder, ɵGroupElement} from './form_builder';
 export {AbstractControl, AbstractControlOptions, FormControlStatus, ɵCoerceStrArrToNumArr, ɵGetProperty, ɵNavigate, ɵRawValue, ɵTokenize, ɵTypedOrUntyped, ɵValue, ɵWriteable} from './model/abstract_model';
 export {FormArray, UntypedFormArray, ɵFormArrayRawValue, ɵFormArrayValue} from './model/form_array';
 export {FormControl, FormControlOptions, FormControlState, UntypedFormControl, ɵFormControlCtor} from './model/form_control';
-export {FormGroup, UntypedFormGroup, ɵFormGroupRawValue, ɵFormGroupValue, ɵOptionalKeys} from './model/form_group';
+export {FormGroup, FormRecord, UntypedFormGroup, ɵFormGroupRawValue, ɵFormGroupValue, ɵOptionalKeys} from './model/form_group';
 export {NG_ASYNC_VALIDATORS, NG_VALIDATORS, Validators} from './validators';
 export {VERSION} from './version';
 
