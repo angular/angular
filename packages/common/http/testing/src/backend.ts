@@ -12,7 +12,6 @@ import {Observable, Observer} from 'rxjs';
 
 import {HttpTestingController, RequestMatch} from './api';
 import {TestRequest} from './request';
-import 'jasmine';
 
 
 /**
