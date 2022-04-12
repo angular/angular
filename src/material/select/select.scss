@@ -168,8 +168,9 @@ $placeholder-arrow-space: 2 * ($arrow-size + $arrow-margin);
   content: ' ';
   white-space: pre;
   width: 1px;
-
-  // Prevents some browsers from rendering the element in high contrast mode.
   display: inline-block;
-  opacity: 0;
+
+  // Prevents some browsers from rendering the element in high contrast mode. Use `visibility`
+  // instead of `opacity` since VoiceOver + Chrome still reads out the space with the latter.
+  visibility: hidden;
 }
