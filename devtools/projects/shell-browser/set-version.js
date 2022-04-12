@@ -12,7 +12,7 @@ const semver = require('semver');
 const {writeFileSync, readFileSync} = require('fs');
 const {join} = require('path');
 
-const MANIFEST_PATH = join(__dirname, 'src/manifest.json');
+const MANIFEST_PATH = join(__dirname, 'src/manifest/manifest.chrome.json');
 
 const manifest = JSON.parse(readFileSync(MANIFEST_PATH).toString());
 

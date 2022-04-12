@@ -20,14 +20,18 @@ This ID is a string that looks like `UA-123456-12`.
 You can choose to use a descriptive string as the key value, or be assigned a random key when you run the CLI command.
 For example, the following command adds a configuration key named "tracking".
 
-<code-example language="sh">
+<code-example format="shell" language="shell">
+
 ng config --global cli.analyticsSharing.tracking UA-123456-12
+
 </code-example>
 
 To turn off this feature, run the following command:
 
-<code-example language="sh">
+<code-example format="shell" language="shell">
+
 ng config --global cli.analyticsSharing undefined
+
 </code-example>
 
 ## Per user tracking
@@ -35,12 +39,24 @@ ng config --global cli.analyticsSharing undefined
 You can add a custom user ID to the global configuration, in order to identify unique usage of commands and flags.
 If that user enables CLI analytics for their own project, your analytics display tracks and labels their individual usage.
 
-<code-example language="sh">
+<code-example format="shell" language="shell">
+
 ng config --global cli.analyticsSharing.uuid SOME_USER_NAME
+
 </code-example>
 
 To generate a new random user ID, run the following command:
 
-<code-example language="sh">
+<code-example format="shell" language="shell">
+
 ng config --global cli.analyticsSharing.uuid ""
+
 </code-example>
+
+<!-- links -->
+
+<!-- external links -->
+
+<!-- end links -->
+
+@reviewed 2022-02-28

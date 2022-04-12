@@ -138,9 +138,6 @@
     "name": "ConnectableSubscriber"
   },
   {
-    "name": "Console"
-  },
-  {
     "name": "DASH_CASE_REGEXP"
   },
   {
@@ -1345,9 +1342,6 @@
   },
   {
     "name": "urlParsingNode"
-  },
-  {
-    "name": "validateStyleProperty"
   },
   {
     "name": "viewAttachedToChangeDetector"

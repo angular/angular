@@ -8,7 +8,26 @@
 
 import {AsyncValidatorFn, ValidatorFn} from '../directives/validators';
 
-import {AbstractControl, AbstractControlOptions, assertAllValuesPresent, assertControlPresent, pickAsyncValidators, pickValidators} from './abstract_model';
+import {AbstractControl, AbstractControlOptions, assertAllValuesPresent, assertControlPresent, pickAsyncValidators, pickValidators, ɵRawValue, ɵTypedOrUntyped, ɵValue} from './abstract_model';
+
+/**
+ * FormArrayValue extracts the type of `.value` from a FormArray's element type, and wraps it in an
+ * array.
+ *
+ * Angular uses this type internally to support Typed Forms; do not use it directly. The untyped
+ * case falls back to any[].
+ */
+export type ɵFormArrayValue<T extends AbstractControl<any>> =
+    ɵTypedOrUntyped<T, Array<ɵValue<T>>, any[]>;
+
+/**
+ * FormArrayRawValue extracts the type of `.getRawValue()` from a FormArray's element type, and
+ * wraps it in an array. The untyped case falls back to any[].
+ *
+ * Angular uses this type internally to support Typed Forms; do not use it directly.
+ */
+export type ɵFormArrayRawValue<T extends AbstractControl<any>> =
+    ɵTypedOrUntyped<T, Array<ɵRawValue<T>>, any[]>;
 
 /**
  * Tracks the value and validity state of an array of `FormControl`,
@@ -74,7 +93,9 @@ import {AbstractControl, AbstractControlOptions, assertAllValuesPresent, assertC
  *
  * @publicApi
  */
-export class FormArray extends AbstractControl {
+export class FormArray<TControl extends AbstractControl<any> = any> extends AbstractControl<
+    ɵTypedOrUntyped<TControl, ɵFormArrayValue<TControl>, any>,
+    ɵTypedOrUntyped<TControl, ɵFormArrayRawValue<TControl>, any>> {
   /**
    * Creates a new `FormArray` instance.
    *
@@ -89,10 +110,11 @@ export class FormArray extends AbstractControl {
    *
    */
   constructor(
-      public controls: AbstractControl[],
+      controls: Array<TControl>,
       validatorOrOpts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|null,
       asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null) {
     super(pickValidators(validatorOrOpts), pickAsyncValidators(asyncValidator, validatorOrOpts));
+    this.controls = controls;
     this._initObservables();
     this._setUpdateStrategy(validatorOrOpts);
     this._setUpControls();
@@ -106,6 +128,8 @@ export class FormArray extends AbstractControl {
     });
   }
 
+  public controls: ɵTypedOrUntyped<TControl, Array<TControl>, Array<AbstractControl<any>>>;
+
   /**
    * Get the `AbstractControl` at the given `index` in the array.
    *
@@ -113,8 +137,8 @@ export class FormArray extends AbstractControl {
    *     around from the back, and if index is greatly negative (less than `-length`), the result is
    * undefined. This behavior is the same as `Array.at(index)`.
    */
-  at(index: number): AbstractControl {
-    return this.controls[this._adjustIndex(index)];
+  at(index: number): ɵTypedOrUntyped<TControl, TControl, AbstractControl<any>> {
+    return (this.controls as any)[this._adjustIndex(index)];
   }
 
   /**
@@ -127,7 +151,7 @@ export class FormArray extends AbstractControl {
    * `valueChanges` observables emit events with the latest status and value when the control is
    * inserted. When false, no events are emitted.
    */
-  push(control: AbstractControl, options: {emitEvent?: boolean} = {}): void {
+  push(control: TControl, options: {emitEvent?: boolean} = {}): void {
     this.controls.push(control);
     this._registerControl(control);
     this.updateValueAndValidity({emitEvent: options.emitEvent});
@@ -147,7 +171,7 @@ export class FormArray extends AbstractControl {
    * `valueChanges` observables emit events with the latest status and value when the control is
    * inserted. When false, no events are emitted.
    */
-  insert(index: number, control: AbstractControl, options: {emitEvent?: boolean} = {}): void {
+  insert(index: number, control: TControl, options: {emitEvent?: boolean} = {}): void {
     this.controls.splice(index, 0, control);
 
     this._registerControl(control);
@@ -190,7 +214,7 @@ export class FormArray extends AbstractControl {
    * `valueChanges` observables emit events with the latest status and value when the control is
    * replaced with a new one. When false, no events are emitted.
    */
-  setControl(index: number, control: AbstractControl, options: {emitEvent?: boolean} = {}): void {
+  setControl(index: number, control: TControl, options: {emitEvent?: boolean} = {}): void {
     // Adjust the index, then clamp it at no less than 0 to prevent undesired underflows.
     let adjustedIndex = this._adjustIndex(index);
     if (adjustedIndex < 0) adjustedIndex = 0;
@@ -250,7 +274,10 @@ export class FormArray extends AbstractControl {
    * The configuration options are passed to the {@link AbstractControl#updateValueAndValidity
    * updateValueAndValidity} method.
    */
-  override setValue(value: any[], options: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
+  override setValue(value: ɵFormArrayRawValue<TControl>, options: {
+    onlySelf?: boolean,
+    emitEvent?: boolean
+  } = {}): void {
     assertAllValuesPresent(this, false, value);
     value.forEach((newValue: any, index: number) => {
       assertControlPresent(this, false, index);
@@ -287,18 +314,21 @@ export class FormArray extends AbstractControl {
    * * `onlySelf`: When true, each change only affects this control, and not its parent. Default
    * is false.
    * * `emitEvent`: When true or not supplied (the default), both the `statusChanges` and
-   * `valueChanges` observables emit events with the latest status and value when the control value
-   * is updated. When false, no events are emitted. The configuration options are passed to
+   * `valueChanges` observables emit events with the latest status and value when the control
+   * value is updated. When false, no events are emitted. The configuration options are passed to
    * the {@link AbstractControl#updateValueAndValidity updateValueAndValidity} method.
    */
-  override patchValue(value: any[], options: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
+  override patchValue(value: ɵFormArrayValue<TControl>, options: {
+    onlySelf?: boolean,
+    emitEvent?: boolean
+  } = {}): void {
     // Even though the `value` argument type doesn't allow `null` and `undefined` values, the
-    // `patchValue` can be called recursively and inner data structures might have these values, so
-    // we just ignore such cases when a field containing FormArray instance receives `null` or
+    // `patchValue` can be called recursively and inner data structures might have these values,
+    // so we just ignore such cases when a field containing FormArray instance receives `null` or
     // `undefined` as a value.
     if (value == null /* both `null` and `undefined` */) return;
 
-    value.forEach((newValue: any, index: number) => {
+    value.forEach((newValue, index) => {
       if (this.at(index)) {
         this.at(index).patchValue(newValue, {onlySelf: true, emitEvent: options.emitEvent});
       }
@@ -352,7 +382,10 @@ export class FormArray extends AbstractControl {
    * The configuration options are passed to the {@link AbstractControl#updateValueAndValidity
    * updateValueAndValidity} method.
    */
-  override reset(value: any = [], options: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
+  override reset(value: ɵTypedOrUntyped<TControl, ɵFormArrayValue<TControl>, any> = [], options: {
+    onlySelf?: boolean,
+    emitEvent?: boolean
+  } = {}): void {
     this._forEachChild((control: AbstractControl, index: number) => {
       control.reset(value[index], {onlySelf: true, emitEvent: options.emitEvent});
     });
@@ -365,9 +398,8 @@ export class FormArray extends AbstractControl {
    * The aggregate value of the array, including any disabled controls.
    *
    * Reports all values regardless of disabled status.
-   * For enabled controls only, the `value` property is the best way to get the value of the array.
    */
-  override getRawValue(): any[] {
+  override getRawValue(): ɵFormArrayRawValue<TControl> {
     return this.controls.map((control: AbstractControl) => control.getRawValue());
   }
 
@@ -409,14 +441,14 @@ export class FormArray extends AbstractControl {
    */
   clear(options: {emitEvent?: boolean} = {}): void {
     if (this.controls.length < 1) return;
-    this._forEachChild((control: AbstractControl) => control._registerOnCollectionChange(() => {}));
+    this._forEachChild((control) => control._registerOnCollectionChange(() => {}));
     this.controls.splice(0);
     this.updateValueAndValidity({emitEvent: options.emitEvent});
   }
 
   /**
-   * Adjusts a negative index by summing it with the length of the array. For very negative indices,
-   * the result may remain negative.
+   * Adjusts a negative index by summing it with the length of the array. For very negative
+   * indices, the result may remain negative.
    * @internal
    */
   private _adjustIndex(index: number): number {
@@ -425,7 +457,7 @@ export class FormArray extends AbstractControl {
 
   /** @internal */
   override _syncPendingControls(): boolean {
-    let subtreeUpdated = this.controls.reduce((updated: boolean, child: AbstractControl) => {
+    let subtreeUpdated = (this.controls as any).reduce((updated: any, child: any) => {
       return child._syncPendingControls() ? true : updated;
     }, false);
     if (subtreeUpdated) this.updateValueAndValidity({onlySelf: true});
@@ -448,12 +480,12 @@ export class FormArray extends AbstractControl {
 
   /** @internal */
   override _anyControls(condition: (c: AbstractControl) => boolean): boolean {
-    return this.controls.some((control: AbstractControl) => control.enabled && condition(control));
+    return this.controls.some((control) => control.enabled && condition(control));
   }
 
   /** @internal */
   _setUpControls(): void {
-    this._forEachChild((control: AbstractControl) => this._registerControl(control));
+    this._forEachChild((control) => this._registerControl(control));
   }
 
   /** @internal */
@@ -484,7 +516,7 @@ interface UntypedFormArrayCtor {
    * The presence of an explicit `prototype` property provides backwards-compatibility for apps that
    * manually inspect the prototype chain.
    */
-  prototype: FormArray;
+  prototype: FormArray<any>;
 }
 
 /**
@@ -492,7 +524,7 @@ interface UntypedFormArrayCtor {
  * Note: this is used for migration purposes only. Please avoid using it directly in your code and
  * prefer `FormControl` instead, unless you have been migrated to it automatically.
  */
-export type UntypedFormArray = FormArray;
+export type UntypedFormArray = FormArray<any>;
 
 export const UntypedFormArray: UntypedFormArrayCtor = FormArray;
 

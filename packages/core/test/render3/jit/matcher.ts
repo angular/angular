@@ -36,10 +36,10 @@ export function functionContaining(expectedFragments: Array<string|RegExp>):
       }
       return true;
     },
-    jasmineToString(): string {
+    jasmineToString(pp: (value: any) => string): string {
       if (typeof _actual !== 'function') {
-        return `Expected function to contain code fragments ${
-            jasmine.pp(expectedFragments)} but got ${jasmine.pp(_actual)}`;
+        return `Expected function to contain code fragments ${pp(expectedFragments)} but got ${
+            pp(_actual)}`;
       }
       const errors: string[] = [];
       const code = _actual.toString();

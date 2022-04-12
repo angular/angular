@@ -281,7 +281,7 @@ export interface BootstrapOptions {
  *
  * @publicApi
  */
-@Injectable()
+@Injectable({providedIn: 'platform'})
 export class PlatformRef {
   private _modules: NgModuleRef<any>[] = [];
   private _destroyListeners: Function[] = [];
@@ -595,7 +595,6 @@ export class ApplicationRef {
   /** @internal */
   constructor(
       private _zone: NgZone, private _injector: Injector, private _exceptionHandler: ErrorHandler,
-      private _componentFactoryResolver: ComponentFactoryResolver,
       private _initStatus: ApplicationInitStatus) {
     this._onMicrotaskEmptySubscription = this._zone.onMicrotaskEmpty.subscribe({
       next: () => {
@@ -786,8 +785,8 @@ export class ApplicationRef {
     if (componentOrFactory instanceof ComponentFactory) {
       componentFactory = componentOrFactory;
     } else {
-      componentFactory =
-          this._componentFactoryResolver.resolveComponentFactory(componentOrFactory)!;
+      const resolver = this._injector.get(ComponentFactoryResolver);
+      componentFactory = resolver.resolveComponentFactory(componentOrFactory)!;
     }
     this.componentTypes.push(componentFactory.componentType);
 

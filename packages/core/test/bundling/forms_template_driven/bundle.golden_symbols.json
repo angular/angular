@@ -108,9 +108,6 @@
     "name": "ConnectableSubscriber"
   },
   {
-    "name": "Console"
-  },
-  {
     "name": "ControlContainer"
   },
   {
@@ -1057,6 +1054,9 @@
   },
   {
     "name": "isDirectiveHost"
+  },
+  {
+    "name": "isFormControlState"
   },
   {
     "name": "isForwardRef"

@@ -16,12 +16,16 @@ import {WebAnimationsPlayer} from './web_animations_player';
 
 export class WebAnimationsDriver implements AnimationDriver {
   validateStyleProperty(prop: string): boolean {
-    return validateStyleProperty(prop);
+    // Perform actual validation in dev mode only, in prod mode this check is a noop.
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      return validateStyleProperty(prop);
+    }
+    return true;
   }
 
   validateAnimatableStyleProperty(prop: string): boolean {
     // Perform actual validation in dev mode only, in prod mode this check is a noop.
-    if (ngDevMode) {
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
       const cssProp = camelCaseToDashCase(prop);
       return validateWebAnimatableStyleProperty(cssProp);
     }

@@ -13,6 +13,7 @@
     }
 
     // TERMINAL / SHELL TEXT STYLES
+    &[language="shell"],
     &[language="sh"],
     &[language="bash"] {
       background-color: constants.$darkgray;
@@ -201,6 +202,7 @@
   /* SHELL / TERMINAL CODE BLOCKS */
 
   code-example {
+    &[language="shell"],
     &[language="sh"],
     &[language="bash"] {
       .pnk,
