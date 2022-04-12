@@ -15,7 +15,6 @@ ng_module(
     deps = [
         "//packages/common/http",
         "//packages/core",
-        "@npm//@types/jasmine",
         "@npm//rxjs",
     ],
 )
