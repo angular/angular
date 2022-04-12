@@ -10,6 +10,7 @@ import {ChangeDetectorRef as ViewEngine_ChangeDetectorRef} from '../change_detec
 import {Injector} from '../di/injector';
 import {InjectFlags} from '../di/interface/injector';
 import {ProviderToken} from '../di/provider_token';
+import {EnvironmentInjector} from '../di/r3_injector';
 import {Type} from '../interface/type';
 import {ComponentFactory as viewEngine_ComponentFactory, ComponentRef as viewEngine_ComponentRef} from '../linker/component_factory';
 import {ComponentFactoryResolver as viewEngine_ComponentFactoryResolver} from '../linker/component_factory_resolver';
@@ -126,10 +127,16 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
 
   override create(
       injector: Injector, projectableNodes?: any[][]|undefined, rootSelectorOrNode?: any,
-      ngModule?: viewEngine_NgModuleRef<any>|undefined): viewEngine_ComponentRef<T> {
-    ngModule = ngModule || this.ngModule;
+      environmentInjector?: viewEngine_NgModuleRef<any>|EnvironmentInjector|
+      undefined): viewEngine_ComponentRef<T> {
+    environmentInjector = environmentInjector || this.ngModule;
 
-    const rootViewInjector = ngModule ? new ChainedInjector(injector, ngModule.injector) : injector;
+    let realEnvironmentInjector = environmentInjector instanceof EnvironmentInjector ?
+        environmentInjector :
+        environmentInjector?.injector;
+
+    const rootViewInjector =
+        realEnvironmentInjector ? new ChainedInjector(injector, realEnvironmentInjector) : injector;
 
     const rendererFactory =
         rootViewInjector.get(RendererFactory2, domRendererFactory3 as RendererFactory2) as

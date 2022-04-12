@@ -190,7 +190,7 @@ class SportsCar extends Car {
     it('should work', () => {
       expect(Injector.create([Engine.PROVIDER, {provide: BrokenEngine, useValue: null}]).toString())
           .toEqual(
-              'R3Injector[Engine, BrokenEngine, InjectionToken INJECTOR, InjectionToken INJECTOR_DEF_TYPES, InjectionToken INJECTOR_INITIALIZER]');
+              'R3Injector[Engine, BrokenEngine, InjectionToken INJECTOR, EnvironmentInjector, InjectionToken INJECTOR_DEF_TYPES, InjectionToken INJECTOR_INITIALIZER]');
     });
   });
 }

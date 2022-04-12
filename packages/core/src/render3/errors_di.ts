@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Type} from '../core';
-import {InjectorType} from '../di/interface/defs';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
+import {Type} from '../interface/type';
 import {stringify} from '../util/stringify';
 
 import {stringifyForError} from './util/stringify_utils';
