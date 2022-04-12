@@ -61,6 +61,11 @@ export class LanguageServiceAdapter implements NgCompilerAdapter {
     return isShim(sf);
   }
 
+  isResource(sf: ts.SourceFile): boolean {
+    const scriptInfo = this.project.getScriptInfo(sf.fileName);
+    return scriptInfo?.scriptKind === ts.ScriptKind.Unknown;
+  }
+
   fileExists(fileName: string): boolean {
     return this.project.fileExists(fileName);
   }
@@ -100,14 +105,21 @@ export class LanguageServiceAdapter implements NgCompilerAdapter {
     // getScriptInfo() will not create one if it does not exist.
     // In this case, we *want* a script info to be created so that we could
     // keep track of its version.
-    const snapshot = this.project.getScriptSnapshot(fileName);
-    if (!snapshot) {
-      // This would fail if the file does not exist, or readFile() fails for
-      // whatever reasons.
-      throw new Error(`Failed to get script snapshot while trying to read ${fileName}`);
-    }
     const version = this.project.getScriptVersion(fileName);
     this.lastReadResourceVersion.set(fileName, version);
+    const scriptInfo = this.project.getScriptInfo(fileName);
+    if (!scriptInfo) {
+      // // This should not happen because it would have failed already at `getScriptVersion`.
+      throw new Error(`Failed to get script info when trying to read ${fileName}`);
+    }
+    // Add external resources as root files to the project since we project language service
+    // features for them (this is currently only the case for HTML files, but we could investigate
+    // css file features in the future). This prevents the project from being closed when navigating
+    // away from a resource file.
+    if (!this.project.isRoot(scriptInfo)) {
+      this.project.addRoot(scriptInfo);
+    }
+    const snapshot = scriptInfo.getSnapshot();
     return snapshot.getText(0, snapshot.getLength());
   }
 
