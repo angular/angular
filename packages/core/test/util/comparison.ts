@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {devModeEqual} from '@angular/core/src/change_detection/change_detection_util';
+import {devModeEqual} from '@angular/core/src/util/comparison';
 
 {
-  describe('ChangeDetectionUtil', () => {
+  describe('Comparison util', () => {
     describe('devModeEqual', () => {
       it('should do the deep comparison of iterables', () => {
         expect(devModeEqual([['one']], [['one']])).toBe(true);

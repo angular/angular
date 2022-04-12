@@ -7,8 +7,8 @@
  */
 
 import {RuntimeError, RuntimeErrorCode} from '../../errors';
+import {isJsObject} from '../../util/iterable';
 import {stringify} from '../../util/stringify';
-import {isJsObject} from '../change_detection_util';
 
 import {KeyValueChangeRecord, KeyValueChanges, KeyValueDiffer, KeyValueDifferFactory} from './keyvalue_differs';
 
