@@ -26,7 +26,7 @@ export function createUrlTree(
 
   function createTreeUsingPathIndex(lastPathIndex: number) {
     const startingPosition =
-        findStartingPosition(nav, urlTree, route.snapshot._urlSegment, lastPathIndex);
+        findStartingPosition(nav, urlTree, route.snapshot?._urlSegment, lastPathIndex);
 
     const segmentGroup = startingPosition.processChildren ?
         updateSegmentGroupChildren(
@@ -34,11 +34,15 @@ export function createUrlTree(
         updateSegmentGroup(startingPosition.segmentGroup, startingPosition.index, nav.commands);
     return tree(urlTree.root, startingPosition.segmentGroup, segmentGroup, queryParams, fragment);
   }
-  const result = createTreeUsingPathIndex(route.snapshot._lastPathIndex);
+  // Note: The types should disallow `snapshot` from being `undefined` but due to test mocks, this
+  // may be the case. Since we try to access it at an earlier point before the refactor to add the
+  // warning for `relativeLinkResolution: 'legacy'`, this may cause failures in tests where it
+  // didn't before.
+  const result = createTreeUsingPathIndex(route.snapshot?._lastPathIndex);
 
   // Check if application is relying on `relativeLinkResolution: 'legacy'`
   if (typeof ngDevMode === 'undefined' || !!ngDevMode) {
-    const correctedResult = createTreeUsingPathIndex(route.snapshot._correctedLastPathIndex);
+    const correctedResult = createTreeUsingPathIndex(route.snapshot?._correctedLastPathIndex);
     if (correctedResult.toString() !== result.toString()) {
       console.warn(
           `relativeLinkResolution: 'legacy' is deprecated and will be removed in a future version of Angular. The link to ${
