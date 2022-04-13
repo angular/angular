@@ -291,6 +291,9 @@
     "name": "MapSubscriber"
   },
   {
+    "name": "MapToSubscriber"
+  },
+  {
     "name": "MergeMapOperator"
   },
   {
@@ -1170,9 +1173,6 @@
     "name": "getData"
   },
   {
-    "name": "getDataKeys"
-  },
-  {
     "name": "getDeclarationTNode"
   },
   {
@@ -1720,6 +1720,9 @@
   },
   {
     "name": "resetPreOrderHookFlags"
+  },
+  {
+    "name": "resolveData"
   },
   {
     "name": "resolveForwardRef"
