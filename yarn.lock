@@ -1792,13 +1792,13 @@
     "@microsoft/tsdoc-config" "~0.15.2"
     "@rushstack/node-core-library" "3.45.1"
 
-"@microsoft/api-extractor-model@7.16.1":
-  version "7.16.1"
-  resolved "https://registry.yarnpkg.com/@microsoft/api-extractor-model/-/api-extractor-model-7.16.1.tgz#f6e53614e90c8a6be47bad5b91d49cc6d8c5c2bf"
-  integrity sha512-+1mlvy/ji+mUuH7WdVZ6fTo/aCKfS6m37aAFVOFWLfkMvmR+I9SjPfiv9qOg83If7GOrk2HPiHHibv6kA80VTg==
+"@microsoft/api-extractor-model@7.16.2":
+  version "7.16.2"
+  resolved "https://registry.yarnpkg.com/@microsoft/api-extractor-model/-/api-extractor-model-7.16.2.tgz#58504311bba3e0f8375b49c5c8b92ffc7e576845"
+  integrity sha512-hnqKsG89iIiQlLDXasxFw8QR0LwakPVXejNVmlGpFL008R+IExgc1f+tBrUAm1in6Oq76t7Ea0TFhER56Qfhaw==
   dependencies:
-    "@microsoft/tsdoc" "0.13.2"
-    "@microsoft/tsdoc-config" "~0.15.2"
+    "@microsoft/tsdoc" "0.14.1"
+    "@microsoft/tsdoc-config" "~0.16.1"
     "@rushstack/node-core-library" "3.45.2"
 
 "@microsoft/api-extractor@7.19.5":
@@ -1819,14 +1819,14 @@
     source-map "~0.6.1"
     typescript "~4.5.2"
 
-"@microsoft/api-extractor@7.21.2":
-  version "7.21.2"
-  resolved "https://registry.yarnpkg.com/@microsoft/api-extractor/-/api-extractor-7.21.2.tgz#0f524e7e1cf7b000924772fb8f6b5f60cf42fba8"
-  integrity sha512-m0+YPaXVou01O/V9swugZG7Gn4mw6HSWY+uisf0j2JPRZcoEDyoYe4hg0ERKXOEf0hByOnMLT28nQ82v8ig9Yw==
+"@microsoft/api-extractor@7.22.0":
+  version "7.22.0"
+  resolved "https://registry.yarnpkg.com/@microsoft/api-extractor/-/api-extractor-7.22.0.tgz#90a4c9eb92487fa70a47e454a7f639ee357759b4"
+  integrity sha512-Yj5KMR6KH+Ytjth09+XgMSTJINF8mWL89/x+IsohFtoOy5xf3Mj3y6EV9C9/6LuJOEpg29yl0dkmyUXtbK11ZA==
   dependencies:
-    "@microsoft/api-extractor-model" "7.16.1"
-    "@microsoft/tsdoc" "0.13.2"
-    "@microsoft/tsdoc-config" "~0.15.2"
+    "@microsoft/api-extractor-model" "7.16.2"
+    "@microsoft/tsdoc" "0.14.1"
+    "@microsoft/tsdoc-config" "~0.16.1"
     "@rushstack/node-core-library" "3.45.2"
     "@rushstack/rig-package" "0.3.9"
     "@rushstack/ts-command-line" "4.10.8"
@@ -1847,10 +1847,25 @@
     jju "~1.4.0"
     resolve "~1.19.0"
 
+"@microsoft/tsdoc-config@~0.16.1":
+  version "0.16.1"
+  resolved "https://registry.yarnpkg.com/@microsoft/tsdoc-config/-/tsdoc-config-0.16.1.tgz#4de11976c1202854c4618f364bf499b4be33e657"
+  integrity sha512-2RqkwiD4uN6MLnHFljqBlZIXlt/SaUT6cuogU1w2ARw4nKuuppSmR0+s+NC+7kXBQykd9zzu0P4HtBpZT5zBpQ==
+  dependencies:
+    "@microsoft/tsdoc" "0.14.1"
+    ajv "~6.12.6"
+    jju "~1.4.0"
+    resolve "~1.19.0"
+
 "@microsoft/tsdoc@0.13.2":
   version "0.13.2"
   resolved "https://registry.yarnpkg.com/@microsoft/tsdoc/-/tsdoc-0.13.2.tgz#3b0efb6d3903bd49edb073696f60e90df08efb26"
   integrity sha512-WrHvO8PDL8wd8T2+zBGKrMwVL5IyzR3ryWUsl0PXgEV0QHup4mTLi0QcATefGI6Gx9Anu7vthPyyyLpY0EpiQg==
+
+"@microsoft/tsdoc@0.14.1":
+  version "0.14.1"
+  resolved "https://registry.yarnpkg.com/@microsoft/tsdoc/-/tsdoc-0.14.1.tgz#155ef21065427901994e765da8a0ba0eaae8b8bd"
+  integrity sha512-6Wci+Tp3CgPt/B9B0a3J4s3yMgLNSku6w5TV6mN+61C71UqsRBv2FUibBf3tPGlNxebgPHMEUzKpb1ggE8KCKw==
 
 "@ngtools/webpack@13.3.0":
   version "13.3.0"

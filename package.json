@@ -73,7 +73,7 @@
     "@bazel/rollup": "5.4.0",
     "@bazel/runfiles": "5.4.0",
     "@bazel/terser": "5.4.0",
-    "@microsoft/api-extractor": "7.21.2",
+    "@microsoft/api-extractor": "7.22.0",
     "@rollup/plugin-babel": "^5.3.0",
     "@rollup/plugin-commonjs": "^21.0.0",
     "@rollup/plugin-node-resolve": "^13.0.4",
