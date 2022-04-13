@@ -7,7 +7,8 @@
  */
 
 import {EmptyOutletComponent} from '../components/empty_outlet';
-import {Route, Routes} from '../models';
+import {LoadedRouterConfig, Route, Routes} from '../models';
+import {ActivatedRouteSnapshot} from '../router_state';
 import {PRIMARY_OUTLET} from '../shared';
 
 export function validateConfig(config: Routes, parentPath: string = ''): void {
@@ -132,4 +133,23 @@ export function sortByMatchingOutlets(routes: Routes, outletName: string): Route
   const sortedConfig = routes.filter(r => getOutlet(r) === outletName);
   sortedConfig.push(...routes.filter(r => getOutlet(r) !== outletName));
   return sortedConfig;
+}
+
+/**
+ * Gets the first loaded config in the snapshot's parent tree.
+ *
+ * Returns `null` if there is no parent lazy loaded config.
+ *
+ * Generally used for retrieving the injector to use for getting tokens for guards/resolvers and
+ * also used for getting the correct injector to use for creating components.
+ */
+export function getClosestLoadedConfig(snapshot: ActivatedRouteSnapshot): LoadedRouterConfig|null {
+  if (!snapshot) return null;
+
+  for (let s = snapshot.parent; s; s = s.parent) {
+    const route = s.routeConfig;
+    if (route && route._loadedConfig) return route._loadedConfig;
+  }
+
+  return null;
 }
