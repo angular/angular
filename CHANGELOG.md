@@ -1,3 +1,43 @@
+<a name="14.0.0-next.10"></a>
+# 14.0.0-next.10 "organza-oatmeal" (2022-04-13)
+### cdk
+| Commit | Type | Description |
+| -- | -- | -- |
+| [38946e6680](https://github.com/angular/components/commit/38946e6680be75816e7dab043ab954df016df0ed) | fix | **a11y:** visually hidden element affecting scrolling ([#24620](https://github.com/angular/components/pull/24620)) |
+| [f8dadb3246](https://github.com/angular/components/commit/f8dadb3246c778a3916db72ead9033ebb32bc814) | fix | **overlay:** disable backdrop animation when noop animations are enabled ([#24687](https://github.com/angular/components/pull/24687)) |
+### material
+| Commit | Type | Description |
+| -- | -- | -- |
+| [5846195007](https://github.com/angular/components/commit/5846195007b44a7ddd61155a225132802848e101) | feat | **slide-toggle:** Add `disabled` predicate to MatSlideToggleHarness ([#24761](https://github.com/angular/components/pull/24761)) |
+| [1e9092a5b7](https://github.com/angular/components/commit/1e9092a5b71f7dc0932dcce8479c3e43cbed24e9) | fix | **checkbox:** add the boolean property coercion for checked input ([#20645](https://github.com/angular/components/pull/20645)) |
+| [366053093e](https://github.com/angular/components/commit/366053093edc35c84429e9c64a35f331fe3607b9) | fix | **chips:** prevent default behavior on remove button ([#24722](https://github.com/angular/components/pull/24722)) |
+| [6f9743c24c](https://github.com/angular/components/commit/6f9743c24c6dbc986f2ebf66f3f25dd46dc88221) | fix | **datepicker:** avoid rerender when min/maxDate changes to different time on the same day ([#24434](https://github.com/angular/components/pull/24434)) |
+| [fa12442042](https://github.com/angular/components/commit/fa12442042795787da21b5cb1bf2bad4d8c5945d) | fix | **list:** wrong order of arguments when calling custom compareWith function ([#24743](https://github.com/angular/components/pull/24743)) |
+| [333f3a4f57](https://github.com/angular/components/commit/333f3a4f57b389350e05bbf12918f18e13dadfb1) | fix | **select:** empty space read out by VoiceOver on Chrome ([#24741](https://github.com/angular/components/pull/24741)) |
+| [9243266128](https://github.com/angular/components/commit/9243266128400b6bd63ae5afda098feebc4a7b7e) | fix | **snack-bar:** update generic types for openFromComponent ([#24634](https://github.com/angular/components/pull/24634)) |
+| [0a4fdb287a](https://github.com/angular/components/commit/0a4fdb287a3881adbe6507581f785cdc24e564fb) | fix | **tabs:** wrong scroll distance if selected tab is removed ([#24118](https://github.com/angular/components/pull/24118)) |
+| [b1d20f99ef](https://github.com/angular/components/commit/b1d20f99efb5d8680400b73fd274c8a2eab8b6b5) | perf | **progress-bar:** do not run change detection if there are no `animationEnd` listeners ([#24673](https://github.com/angular/components/pull/24673)) |
+### cdk-experimental
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b8ccf036cb](https://github.com/angular/components/commit/b8ccf036cb1d97302f84c831a44a2a4c7e98274f) | fix | **menu:** API, code, and docs cleanup pass ([#24745](https://github.com/angular/components/pull/24745)) |
+| [f384cb52cd](https://github.com/angular/components/commit/f384cb52cda9e528c505466062d4671fa3757e4e) | fix | **menu:** close standalone menu when focus leaves |
+| [9531b68a5c](https://github.com/angular/components/commit/9531b68a5cfe2ed9eb58b15c70d7be8d7bf195b1) | fix | **menu:** don't steal focus on hover |
+| [c8eb797711](https://github.com/angular/components/commit/c8eb79771127660648f20e8072a3b062616fe37f) | fix | **menu:** refocus trigger after closeAll |
+| [26e6c1fd2e](https://github.com/angular/components/commit/26e6c1fd2e0af36d11f83c4d95ce3abd991458e3) | fix | **menu:** simplify radio and checkbox item APIs ([#24720](https://github.com/angular/components/pull/24720)) |
+| [5d1d36c453](https://github.com/angular/components/commit/5d1d36c453808dec3cb90a2d638d123df19d4624) | fix | **menu:** stop inline menu triggers capturing focus |
+### material-experimental
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c3bb3a9e5b](https://github.com/angular/components/commit/c3bb3a9e5b16485ad3a6263bed0e9aa7ff45dca1) | fix | **mdc-core:** avoid style conflicts between MDC list and MDC option |
+| [3a94415b28](https://github.com/angular/components/commit/3a94415b286ea220912f301000535cbf102112df) | fix | **mdc-dialog:** implement delayFocusTrap option ([#24727](https://github.com/angular/components/pull/24727)) |
+| [94ec04156c](https://github.com/angular/components/commit/94ec04156c1330f5c063b5e2ecb7fcaff65736ab) | fix | **mdc-dialog:** reduce amount of generated CSS |
+| [766a01e4ef](https://github.com/angular/components/commit/766a01e4efb52e51936d932c43e7a3e0a73660c8) | fix | **mdc-list:** avoid style conflicts with MDC list |
+## Special Thanks
+Amy Sorto, Artur Androsovych, Georgian Stan, Klemen Oslaj, Kristiyan Kostadinov, Michael Doner, Miles Malerba, Pascal Weyrich, Richie Foreman, RobStrader, Zach Arend and renovate[bot]
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="13.3.3"></a>
 # 13.3.3 "tweed-table" (2022-04-13)
 ### cdk
