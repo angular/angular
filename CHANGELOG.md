@@ -1,3 +1,21 @@
+<a name="14.0.0-next.13"></a>
+# 14.0.0-next.13 (2022-04-13)
+## Breaking Changes
+### core
+- Since Ivy, TestBed doesn't use AOT summaries. The `aotSummaries` fields in TestBed APIs were present, but unused. The fields were deprecated in previous major version and in v14 those fields are removed. The `aotSummaries` fields were completely unused, so you can just drop them from the TestBed APIs usage.
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [598b759d33](https://github.com/angular/angular/commit/598b759d33221cc2bbfad4895ca0d2499a0547f8) | fix | avoid errors with extremely long instruction chains ([#45574](https://github.com/angular/angular/pull/45574)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [9add714b13](https://github.com/angular/angular/commit/9add714b13740db621eb2b200d72be74cc7eb630) | refactor | remove deprecated `aotSummaries` fields in TestBed config ([#45487](https://github.com/angular/angular/pull/45487)) |
+## Special Thanks
+4javier, Andrew Kushnir, Andrew Scott, Dylan Hunn, Jason Hendee, Jessica Janiuk, Kristiyan Kostadinov, Michael-Doner, Michal Materowski and Virginia Dooley
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="13.3.3"></a>
 # 13.3.3 (2022-04-13)
 ### compiler
