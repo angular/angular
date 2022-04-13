@@ -80,21 +80,18 @@ aio-search-results {
       right: $offset;
       border: none;
       padding: 0;
-      margin: 0;
+      margin: 3px;
       display: flex;
       opacity: 0;
-      height: 0;
       width: 0;
       color: constants.$white;
-      background-color: constants.$darkgray;
+      background-color: inherit;
       cursor: pointer;
       transition: 100ms opacity;
 
       &:focus {
         opacity: 1;
-        height: auto;
         width: auto;
-        margin: 3px;
       }
     }
   }
