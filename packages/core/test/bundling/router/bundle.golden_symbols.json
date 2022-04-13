@@ -1143,6 +1143,9 @@
     "name": "getChildRouteGuards"
   },
   {
+    "name": "getClosestLoadedConfig"
+  },
+  {
     "name": "getClosureSafeProperty"
   },
   {

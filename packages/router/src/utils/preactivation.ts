@@ -8,11 +8,12 @@
 
 import {Injector} from '@angular/core';
 
-import {LoadedRouterConfig, RunGuardsAndResolvers} from '../models';
+import {RunGuardsAndResolvers} from '../models';
 import {ChildrenOutletContexts, OutletContext} from '../router_outlet_context';
 import {ActivatedRouteSnapshot, equalParamsAndUrlSegments, RouterStateSnapshot} from '../router_state';
 import {equalPath} from '../url_tree';
 import {forEach, shallowEqual} from '../utils/collection';
+import {getClosestLoadedConfig} from '../utils/config';
 import {nodeChildrenAsMap, TreeNode} from '../utils/tree';
 
 export class CanActivate {
@@ -52,17 +53,6 @@ export function getToken(
   const config = getClosestLoadedConfig(snapshot);
   const injector = config ? config.module.injector : moduleInjector;
   return injector.get(token);
-}
-
-function getClosestLoadedConfig(snapshot: ActivatedRouteSnapshot): LoadedRouterConfig|null {
-  if (!snapshot) return null;
-
-  for (let s = snapshot.parent; s; s = s.parent) {
-    const route = s.routeConfig;
-    if (route && route._loadedConfig) return route._loadedConfig;
-  }
-
-  return null;
 }
 
 function getChildRouteGuards(

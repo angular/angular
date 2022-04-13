@@ -16,6 +16,7 @@ import {NavigationTransition} from '../router';
 import {ChildrenOutletContexts} from '../router_outlet_context';
 import {ActivatedRoute, ActivatedRouteSnapshot, advanceActivatedRoute, RouterState} from '../router_state';
 import {forEach} from '../utils/collection';
+import {getClosestLoadedConfig} from '../utils/config';
 import {nodeChildrenAsMap, TreeNode} from '../utils/tree';
 
 export const activateRoutes =
@@ -192,7 +193,7 @@ export class ActivateRoutes {
           advanceActivatedRoute(stored.route.value);
           this.activateChildRoutes(futureNode, null, context.children);
         } else {
-          const config = parentLoadedConfig(future.snapshot);
+          const config = getClosestLoadedConfig(future.snapshot);
           const cmpFactoryResolver = config ? config.module.componentFactoryResolver : null;
 
           context.attachRef = null;
@@ -212,14 +213,4 @@ export class ActivateRoutes {
       }
     }
   }
-}
-
-function parentLoadedConfig(snapshot: ActivatedRouteSnapshot): LoadedRouterConfig|null {
-  for (let s = snapshot.parent; s; s = s.parent) {
-    const route = s.routeConfig;
-    if (route && route._loadedConfig) return route._loadedConfig;
-    if (route && route.component) return null;
-  }
-
-  return null;
 }
