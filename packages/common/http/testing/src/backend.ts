@@ -13,6 +13,7 @@ import {Observable, Observer} from 'rxjs';
 import {HttpTestingController, RequestMatch} from './api';
 import {TestRequest} from './request';
 
+declare let expect: any;
 
 /**
  * A testing backend for `HttpClient` which both acts as an `HttpBackend`
@@ -100,6 +101,7 @@ export class HttpClientTestingBackend implements HttpBackend, HttpTestingControl
       }
       throw new Error(message);
     }
+    expect(matches[0]).toBeTruthy();
     return matches[0];
   }
 
@@ -115,6 +117,7 @@ export class HttpClientTestingBackend implements HttpBackend, HttpTestingControl
       throw new Error(`Expected zero matching requests for criteria "${description}", found ${
           matches.length}.`);
     }
+    expect(matches.length).toEqual(0);
   }
 
   /**
