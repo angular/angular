@@ -1,3 +1,14 @@
+<a name="13.3.3"></a>
+# 13.3.3 (2022-04-13)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e50fd9ee87](https://github.com/angular/angular/commit/e50fd9ee8730aa0946bdc7b3b1975d3f8d893057) | fix | avoid errors with extremely long instruction chains ([#45574](https://github.com/angular/angular/pull/45574)) |
+## Special Thanks
+4javier, Andrew Kushnir, Cédric Exbrayat, Dylan Hunn, George Kalpakas, Hossein Mousavi, Jason Hendee, Joe Martin (Crowdstaffing), Kristiyan Kostadinov, Michael-Doner, Michal Materowski and Virginia Dooley
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.0.0-next.12"></a>
 # 14.0.0-next.12 (2022-04-12)
 ## Breaking Changes
