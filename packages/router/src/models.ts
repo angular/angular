@@ -422,6 +422,17 @@ export interface Route {
    * Can be empty if child routes specify components.
    */
   component?: Type<any>;
+
+  /**
+   * An object specifying a lazy-loaded component.
+   */
+  loadComponent?: () => Type<unknown>| Observable<Type<unknown>>| Promise<Type<unknown>>;
+  /**
+   * Filled for routes `loadComponent` once the component is loaded.
+   * @internal
+   */
+  _loadedComponent?: Type<unknown>;
+
   /**
    * A URL to redirect to when the path matches.
    *
@@ -479,6 +490,7 @@ export interface Route {
    * An object specifying lazy-loaded child routes.
    */
   loadChildren?: LoadChildren;
+
   /**
    * Defines when guards and resolvers will be run. One of
    * - `paramsOrQueryParamsChange` : Run when query parameters change.

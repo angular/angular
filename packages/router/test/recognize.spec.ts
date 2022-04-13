@@ -318,7 +318,7 @@ describe('recognize', () => {
 
            const s = recognize(config, 'parent/b');
            checkActivatedRoute(s.root, '', {}, RootComponent);
-           checkActivatedRoute(s.root.firstChild!, 'parent', {}, undefined!);
+           checkActivatedRoute(s.root.firstChild!, 'parent', {}, null);
 
            const cc = s.root.firstChild!.children;
            checkActivatedRoute(cc[0], '', {}, ComponentA);
@@ -674,7 +674,7 @@ describe('recognize', () => {
           }],
           'p/11;pp=22/(a;pa=33//aux:b;pb=44)');
       const p = s.root.firstChild!;
-      checkActivatedRoute(p, 'p/11', {id: '11', pp: '22'}, undefined!);
+      checkActivatedRoute(p, 'p/11', {id: '11', pp: '22'}, null);
 
       const c = p.children;
       checkActivatedRoute(c[0], 'a', {id: '11', pp: '22', pa: '33'}, ComponentA);
@@ -694,10 +694,10 @@ describe('recognize', () => {
           }],
           'p/11/a/victor/b/c');
       const p = s.root.firstChild!;
-      checkActivatedRoute(p, 'p/11', {id: '11'}, undefined!);
+      checkActivatedRoute(p, 'p/11', {id: '11'}, null);
 
       const a = p.firstChild!;
-      checkActivatedRoute(a, 'a/victor', {id: '11', name: 'victor'}, undefined!);
+      checkActivatedRoute(a, 'a/victor', {id: '11', name: 'victor'}, null);
 
       const b = a.firstChild!;
       checkActivatedRoute(b, 'b', {id: '11', name: 'victor'}, ComponentB);
@@ -831,7 +831,7 @@ function recognize(
 }
 
 function checkActivatedRoute(
-    actual: ActivatedRouteSnapshot, url: string, params: Params, cmp: Function,
+    actual: ActivatedRouteSnapshot, url: string, params: Params, cmp: Function|null,
     outlet: string = PRIMARY_OUTLET): void {
   if (actual === null) {
     expect(actual).not.toBeNull();

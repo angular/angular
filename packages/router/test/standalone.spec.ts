@@ -289,6 +289,57 @@ describe('standalone in Router API', () => {
              .toEqual('service3');
        }));
   });
+
+  describe('loadComponent', () => {
+    it('does not load component when canActivate returns false', fakeAsync(() => {
+         const loadComponentSpy = jasmine.createSpy();
+         @Injectable({providedIn: 'root'})
+         class Guard {
+           canActivate() {
+             return false;
+           }
+         }
+
+         TestBed.configureTestingModule({
+           imports: [RouterTestingModule.withRoutes([{
+             path: 'home',
+             loadComponent: loadComponentSpy,
+             canActivate: [Guard],
+           }])]
+         });
+
+         TestBed.inject(Router).navigateByUrl('/home');
+         tick();
+         expect(loadComponentSpy).not.toHaveBeenCalled();
+       }));
+
+    it('loads and renders lazy component', fakeAsync(() => {
+         TestBed.configureTestingModule({
+           imports: [RouterTestingModule.withRoutes([{
+             path: 'home',
+             loadComponent: () => SimpleStandaloneComponent,
+           }])],
+         });
+
+         const root = TestBed.createComponent(RootCmp);
+         TestBed.inject(Router).navigateByUrl('/home');
+         advance(root);
+         expect(root.nativeElement.innerHTML).toContain('simple standalone');
+       }));
+
+    it('throws error when loadComponent is not standalone', fakeAsync(() => {
+         TestBed.configureTestingModule({
+           imports: [RouterTestingModule.withRoutes([{
+             path: 'home',
+             loadComponent: () => NotStandaloneComponent,
+           }])],
+         });
+
+         const root = TestBed.createComponent(RootCmp);
+         TestBed.inject(Router).navigateByUrl('/home');
+         expect(() => advance(root)).toThrowError(/.*home.*component must be standalone/);
+       }));
+  });
 });
 
 function advance(fixture: ComponentFixture<unknown>) {

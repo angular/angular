@@ -96,6 +96,9 @@
     "name": "ChildrenOutletContexts"
   },
   {
+    "name": "CombineLatestOperator"
+  },
+  {
     "name": "CombineLatestSubscriber"
   },
   {
@@ -865,6 +868,9 @@
   },
   {
     "name": "collectQueryResults"
+  },
+  {
+    "name": "combineLatest"
   },
   {
     "name": "compare"

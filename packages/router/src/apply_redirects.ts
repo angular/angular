@@ -283,7 +283,7 @@ class ApplyRedirects {
       if (route.loadChildren) {
         const loaded$ = route._loadedRoutes ?
             of({routes: route._loadedRoutes, injector: route._loadedInjector}) :
-            this.configLoader.load(injector, route);
+            this.configLoader.loadChildren(injector, route);
         return loaded$.pipe(map((cfg: LoadedRouterConfig) => {
           route._loadedRoutes = cfg.routes;
           route._loadedInjector = cfg.injector;
@@ -345,11 +345,11 @@ class ApplyRedirects {
       return this.runCanLoadGuards(injector, route, segments)
           .pipe(mergeMap((shouldLoadResult: boolean) => {
             if (shouldLoadResult) {
-              return this.configLoader.load(injector, route).pipe(map((cfg: LoadedRouterConfig) => {
-                route._loadedRoutes = cfg.routes;
-                route._loadedInjector = cfg.injector;
-                return cfg;
-              }));
+              return this.configLoader.loadChildren(injector, route)
+                  .pipe(tap((cfg: LoadedRouterConfig) => {
+                    route._loadedRoutes = cfg.routes;
+                    route._loadedInjector = cfg.injector;
+                  }));
             }
             return canLoadFails(route);
           }));

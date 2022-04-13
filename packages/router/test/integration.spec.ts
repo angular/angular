@@ -5429,6 +5429,59 @@ describe('Integration', () => {
          expect(fixture.nativeElement).toHaveText('team 22 [ user john, right: simple ]');
        })));
 
+    it('should render loadComponent named outlet with children', fakeAsync(() => {
+         const router = TestBed.inject(Router);
+         const fixture = createRoot(router, RootCmp);
+
+         @Component({
+           standalone: true,
+           imports: [RouterModule],
+           template: '[right outlet component: <router-outlet></router-outlet>]',
+         })
+         class RightComponent {
+           constructor(readonly route: ActivatedRoute) {}
+         }
+
+         const loadSpy = jasmine.createSpy();
+         loadSpy.and.returnValue(RightComponent);
+
+         router.resetConfig([
+           {
+             path: 'team/:id',
+             component: TeamCmp,
+             children: [
+               {path: 'user/:name', component: UserCmp},
+               {
+                 path: 'simple',
+                 loadComponent: loadSpy,
+                 outlet: 'right',
+                 children: [{path: '', component: SimpleCmp}]
+               },
+             ]
+           },
+           {path: '', component: SimpleCmp}
+         ]);
+
+         router.navigateByUrl('/team/22/(user/john//right:simple)');
+         advance(fixture);
+
+         expect(fixture.nativeElement)
+             .toHaveText('team 22 [ user john, right: [right outlet component: simple] ]');
+         const rightCmp: RightComponent =
+             fixture.debugElement.query(By.directive(RightComponent)).componentInstance;
+         // Ensure we don't accidentally add `EmptyOutletComponent` via `standardizeConfig`
+         expect(rightCmp.route.routeConfig?.component).not.toBeDefined();
+
+         // Ensure we can navigate away and come back
+         router.navigateByUrl('/');
+         advance(fixture);
+         router.navigateByUrl('/team/22/(user/john//right:simple)');
+         advance(fixture);
+         expect(fixture.nativeElement)
+             .toHaveText('team 22 [ user john, right: [right outlet component: simple] ]');
+         expect(loadSpy.calls.count()).toEqual(1);
+       }));
+
     describe('should use the injector of the lazily-loaded configuration', () => {
       class LazyLoadedServiceDefinedInModule {}
 
@@ -5567,7 +5620,7 @@ describe('Integration', () => {
 
          expect(recordedError.message)
              .toEqual(
-                 `Invalid configuration of route 'lazy/loaded'. One of the following must be provided: component, redirectTo, children or loadChildren`);
+                 `Invalid configuration of route 'lazy/loaded'. One of the following must be provided: component, loadComponent, redirectTo, children or loadChildren`);
        }));
 
     it('should work with complex redirect rules',

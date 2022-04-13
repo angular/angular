@@ -13,6 +13,7 @@ import {delay, tap} from 'rxjs/operators';
 
 import {applyRedirects} from '../src/apply_redirects';
 import {Route, Routes} from '../src/models';
+import {RouterConfigLoader} from '../src/router_config_loader';
 import {DefaultUrlSerializer, equalSegments, UrlSegment, UrlSegmentGroup, UrlTree} from '../src/url_tree';
 import {getLoadedRoutes} from '../src/utils/config';
 
@@ -195,8 +196,8 @@ describe('applyRedirects', () => {
         routes: [{path: 'b', component: ComponentB}],
         injector: testModule.injector
       };
-      const loader = {
-        load: (injector: any, p: any) => {
+      const loader: Pick<RouterConfigLoader, 'loadChildren'> = {
+        loadChildren: (injector: any, p: any) => {
           if (injector !== testModule.injector) throw 'Invalid Injector';
           return of(loadedConfig);
         }
@@ -212,8 +213,9 @@ describe('applyRedirects', () => {
     });
 
     it('should handle the case when the loader errors', () => {
-      const loader = {
-        load: (p: any) => new Observable<any>((obs: any) => obs.error(new Error('Loading Error')))
+      const loader: Pick<RouterConfigLoader, 'loadChildren'> = {
+        loadChildren: (p: any) =>
+            new Observable<any>((obs: any) => obs.error(new Error('Loading Error')))
       };
       const config =
           [{path: 'a', component: ComponentA, loadChildren: jasmine.createSpy('children')}];
@@ -229,7 +231,9 @@ describe('applyRedirects', () => {
         routes: [{path: 'b', component: ComponentB}],
         injector: testModule.injector
       };
-      const loader = {load: (injector: any, p: any) => of(loadedConfig)};
+      const loader: Pick<RouterConfigLoader, 'loadChildren'> = {
+        loadChildren: (injector: any, p: any) => of(loadedConfig)
+      };
 
       const guard = () => true;
       const injector = {
@@ -253,7 +257,9 @@ describe('applyRedirects', () => {
         routes: [{path: 'b', component: ComponentB}],
         injector: testModule.injector
       };
-      const loader = {load: (injector: any, p: any) => of(loadedConfig)};
+      const loader: Pick<RouterConfigLoader, 'loadChildren'> = {
+        loadChildren: (injector: any, p: any) => of(loadedConfig)
+      };
 
       const trueGuard = () => true;
       const falseGuard = () => false;
@@ -293,7 +299,9 @@ describe('applyRedirects', () => {
         routes: [{path: 'b', component: ComponentB}],
         injector: testModule.injector
       };
-      const loader = {load: (injector: any, p: any) => of(loadedConfig)};
+      const loader: Pick<RouterConfigLoader, 'loadChildren'> = {
+        loadChildren: (injector: any, p: any) => of(loadedConfig)
+      };
 
       const trueGuard = () => Promise.resolve(true);
       const falseGuard = () => Promise.reject('someError');
@@ -332,7 +340,9 @@ describe('applyRedirects', () => {
         routes: [{path: 'b', component: ComponentB}],
         injector: testModule.injector
       };
-      const loader = {load: (injector: any, p: any) => of(loadedConfig)};
+      const loader: Pick<RouterConfigLoader, 'loadChildren'> = {
+        loadChildren: (injector: any, p: any) => of(loadedConfig)
+      };
 
       const guard = {canLoad: () => Promise.resolve(true)};
       const injector = {get: (token: any) => token === 'guard' ? guard : {injector}};
@@ -359,7 +369,9 @@ describe('applyRedirects', () => {
         routes: [{path: 'b', component: ComponentB}],
         injector: testModule.injector
       };
-      const loader = {load: (injector: any, p: any) => of(loadedConfig)};
+      const loader: Pick<RouterConfigLoader, 'loadChildren'> = {
+        loadChildren: (injector: any, p: any) => of(loadedConfig)
+      };
 
       let passedUrlSegments: UrlSegment[];
 
@@ -394,7 +406,9 @@ describe('applyRedirects', () => {
         routes: [{path: 'b', component: ComponentB}],
         injector: testModule.injector
       };
-      const loader = {load: (injector: any, p: any) => of(loadedConfig)};
+      const loader: Pick<RouterConfigLoader, 'loadChildren'> = {
+        loadChildren: (injector: any, p: any) => of(loadedConfig)
+      };
 
       let passedUrlSegments: UrlSegment[];
 
@@ -432,7 +446,9 @@ describe('applyRedirects', () => {
         injector: testModule.injector
       };
 
-      const loader = {load: (injector: any, p: any) => of(loadedConfig)};
+      const loader: Pick<RouterConfigLoader, 'loadChildren'> = {
+        loadChildren: (injector: any, p: any) => of(loadedConfig)
+      };
 
       const config: Routes = [
         {path: '', pathMatch: 'full', redirectTo: '/a'},
@@ -452,8 +468,8 @@ describe('applyRedirects', () => {
       };
 
       let called = false;
-      const loader = {
-        load: (injector: any, p: any) => {
+      const loader: Pick<RouterConfigLoader, 'loadChildren'> = {
+        loadChildren: (injector: any, p: any) => {
           if (called) throw new Error('Should not be called twice');
           called = true;
           return of(loadedConfig);
@@ -482,7 +498,9 @@ describe('applyRedirects', () => {
         injector: testModule.injector
       };
 
-      const loader = {load: (injector: any, p: any) => of(loadedConfig)};
+      const loader: Pick<RouterConfigLoader, 'loadChildren'> = {
+        loadChildren: (injector: any, p: any) => of(loadedConfig)
+      };
 
       const config: Routes = [{path: '**', loadChildren: jasmine.createSpy('children')}];
 
@@ -498,8 +516,9 @@ describe('applyRedirects', () => {
         injector: testModule.injector
       };
 
-      const loader = jasmine.createSpyObj('loader', ['load']);
-      loader.load.and.returnValue(of(loadedConfig).pipe(delay(0)));
+      const loader: jasmine.SpyObj<Pick<RouterConfigLoader, 'loadChildren'>> =
+          jasmine.createSpyObj('loader', ['loadChildren']);
+      loader.loadChildren.and.returnValue(of(loadedConfig).pipe(delay(0)));
 
       const config: Routes = [
         {path: '', loadChildren: jasmine.createSpy('matchChildren')},
@@ -507,8 +526,8 @@ describe('applyRedirects', () => {
       ];
 
       applyRedirects(testModule.injector, <any>loader, serializer, tree(''), config).forEach(r => {
-        expect(loader.load.calls.count()).toEqual(1);
-        expect(loader.load.calls.first().args).not.toContain(jasmine.objectContaining({
+        expect(loader.loadChildren.calls.count()).toEqual(1);
+        expect(loader.loadChildren.calls.first().args).not.toContain(jasmine.objectContaining({
           loadChildren: jasmine.createSpy('children')
         }));
       });
@@ -520,7 +539,9 @@ describe('applyRedirects', () => {
         injector: testModule.injector
       };
 
-      const loader = {load: (injector: any, p: any) => of(loadedConfig)};
+      const loader: Pick<RouterConfigLoader, 'loadChildren'> = {
+        loadChildren: (injector: any, p: any) => of(loadedConfig)
+      };
 
       const config: Routes = [
         {path: 'not-found', loadChildren: jasmine.createSpy('children')},
@@ -539,7 +560,9 @@ describe('applyRedirects', () => {
         injector: testModule.injector
       };
 
-      const loader = {load: (injector: any, p: any) => of(loadedConfig)};
+      const loader: Pick<RouterConfigLoader, 'loadChildren'> = {
+        loadChildren: (injector: any, p: any) => of(loadedConfig)
+      };
 
       const config: Routes = [
         {path: 'not-found', loadChildren: jasmine.createSpy('children')},
@@ -560,8 +583,8 @@ describe('applyRedirects', () => {
          };
          let loadCalls = 0;
          let loaded: string[] = [];
-         const loader = {
-           load: (injector: any, p: Route) => {
+         const loader: Pick<RouterConfigLoader, 'loadChildren'> = {
+           loadChildren: (injector: any, p: Route) => {
              loadCalls++;
              return of(loadedConfig)
                  .pipe(
@@ -593,8 +616,8 @@ describe('applyRedirects', () => {
          };
          let loadCalls = 0;
          let loaded: string[] = [];
-         const loader = {
-           load: (injector: any, p: Route) => {
+         const loader: Pick<RouterConfigLoader, 'loadChildren'> = {
+           loadChildren: (injector: any, p: Route) => {
              loadCalls++;
              return of(loadedConfig)
                  .pipe(
@@ -633,8 +656,8 @@ describe('applyRedirects', () => {
       };
       let loadCalls = 0;
       let loaded: string[] = [];
-      const loader = {
-        load: (injector: any, p: Route) => {
+      const loader: Pick<RouterConfigLoader, 'loadChildren'> = {
+        loadChildren: (injector: any, p: Route) => {
           loadCalls++;
           return of(loadedConfig)
               .pipe(
@@ -662,8 +685,8 @@ describe('applyRedirects', () => {
          let loaded: string[] = [];
          const rootDelay = 100;
          const auxDelay = 1;
-         const loader = {
-           load: (injector: any, p: Route) => {
+         const loader: Pick<RouterConfigLoader, 'loadChildren'> = {
+           loadChildren: (injector: any, p: Route) => {
              const delayMs =
                  (p.loadChildren! as jasmine.Spy).and.identity === 'aux' ? auxDelay : rootDelay;
              return of(loadedConfig)

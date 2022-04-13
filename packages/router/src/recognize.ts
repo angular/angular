@@ -164,8 +164,8 @@ export class Recognizer {
       const pathIndexShift = getPathIndexShift(rawSegment) + segments.length;
       snapshot = new ActivatedRouteSnapshot(
           segments, params, Object.freeze({...this.urlTree.queryParams}), this.urlTree.fragment,
-          getData(route), getOutlet(route), route.component!, route,
-          getSourceSegmentGroup(rawSegment), pathIndexShift, getResolve(route),
+          getData(route), getOutlet(route), route.component ?? route._loadedComponent ?? null,
+          route, getSourceSegmentGroup(rawSegment), pathIndexShift, getResolve(route),
           // NG_DEV_MODE is used to prevent the getCorrectedPathIndexShift function from affecting
           // production bundle size. This value is intended only to surface a warning to users
           // depending on `relativeLinkResolution: 'legacy'` in dev mode.
@@ -182,7 +182,8 @@ export class Recognizer {
 
       snapshot = new ActivatedRouteSnapshot(
           consumedSegments, result.parameters, Object.freeze({...this.urlTree.queryParams}),
-          this.urlTree.fragment, getData(route), getOutlet(route), route.component!, route,
+          this.urlTree.fragment, getData(route), getOutlet(route),
+          route.component ?? route._loadedComponent ?? null, route,
           getSourceSegmentGroup(rawSegment), pathIndexShift, getResolve(route),
           (NG_DEV_MODE ? getCorrectedPathIndexShift(rawSegment) + consumedSegments.length :
                          pathIndexShift));
