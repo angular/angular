@@ -271,7 +271,7 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
     this._activatedRoute = activatedRoute;
     const location = this.location;
     const snapshot = activatedRoute._futureSnapshot;
-    const component = <any>snapshot.routeConfig!.component;
+    const component = snapshot.component!;
     const childContexts = this.parentContexts.getOrCreateContext(this.name).children;
     const injector = new OutletInjector(activatedRoute, childContexts, location.injector);
 

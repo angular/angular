@@ -8,9 +8,9 @@
 
 import {Compiler, createEnvironmentInjector, EnvironmentInjector, Injectable, OnDestroy} from '@angular/core';
 import {from, Observable, of, Subscription} from 'rxjs';
-import {catchError, concatMap, filter, map, mergeAll, mergeMap} from 'rxjs/operators';
+import {catchError, concatMap, filter, map, mapTo, mergeAll, mergeMap, tap} from 'rxjs/operators';
 
-import {Event, NavigationEnd} from './events';
+import {Event, NavigationEnd, RouteConfigLoadEnd, RouteConfigLoadStart} from './events';
 import {LoadedRouterConfig, Route, Routes} from './models';
 import {Router} from './router';
 import {RouterConfigLoader} from './router_config_loader';
@@ -104,36 +104,46 @@ export class RouterPreloader implements OnDestroy {
         route._injector =
             createEnvironmentInjector(route.providers, injector, `Route: ${route.path}`);
       }
+
       const injectorForCurrentRoute = route._injector ?? injector;
       const injectorForChildren = route._loadedInjector ?? injectorForCurrentRoute;
-      // we already have the config loaded, just recurse
-      if (route.loadChildren && !route.canLoad && route._loadedRoutes) {
-        res.push(this.processRoutes(injectorForChildren, route._loadedRoutes));
 
-        // no config loaded, fetch the config
-      } else if (route.loadChildren && !route.canLoad) {
+      if ((route.loadChildren && !route._loadedRoutes) ||
+          (route.loadComponent && !route._loadedComponent)) {
         res.push(this.preloadConfig(injectorForCurrentRoute, route));
-
-        // recurse into children
-      } else if (route.children) {
-        res.push(this.processRoutes(injectorForChildren, route.children));
+      } else if (route.children || route._loadedRoutes) {
+        res.push(this.processRoutes(injectorForChildren, (route.children ?? route._loadedRoutes)!));
       }
     }
-    return from(res).pipe(mergeAll(), map((_) => void 0));
+    return from(res).pipe(mergeAll());
   }
 
   private preloadConfig(injector: EnvironmentInjector, route: Route): Observable<void> {
     return this.preloadingStrategy.preload(route, () => {
-      const loaded$ = route._loadedRoutes ?
-          of({routes: route._loadedRoutes, injector: route._loadedInjector}) :
-          this.loader.load(injector, route);
-      return loaded$.pipe(mergeMap((config: LoadedRouterConfig) => {
-        route._loadedRoutes = config.routes;
-        route._loadedInjector = config.injector;
-        // If the loaded config was a module, use that as the module/module injector going forward.
-        // Otherwise, continue using the current module/module injector.
-        return this.processRoutes(config.injector ?? injector, config.routes);
-      }));
+      let loadedChildren$: Observable<LoadedRouterConfig|null>;
+      if (route.loadChildren && route.canLoad === undefined) {
+        loadedChildren$ = this.loader.loadChildren(injector, route);
+      } else {
+        loadedChildren$ = of(null);
+      }
+
+      const recursiveLoadChildren$ =
+          loadedChildren$.pipe(mergeMap((config: LoadedRouterConfig|null) => {
+            if (config === null) {
+              return of(void 0);
+            }
+            route._loadedRoutes = config.routes;
+            route._loadedInjector = config.injector;
+            // If the loaded config was a module, use that as the module/module injector going
+            // forward. Otherwise, continue using the current module/module injector.
+            return this.processRoutes(config.injector ?? injector, config.routes);
+          }));
+      if (route.loadComponent && !route._loadedComponent) {
+        const loadComponent$ = this.loader.loadComponent(route);
+        return from([recursiveLoadChildren$, loadComponent$]).pipe(mergeAll());
+      } else {
+        return recursiveLoadChildren$;
+      }
     });
   }
 }

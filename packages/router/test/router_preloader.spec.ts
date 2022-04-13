@@ -6,15 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Compiler, Component, Inject, InjectionToken, Injector, NgModule, NgModuleFactory, NgModuleRef, Optional, Type} from '@angular/core';
+import {Compiler, Component, Inject, Injectable, InjectionToken, Injector, NgModule, NgModuleFactory, NgModuleRef, Optional, Type} from '@angular/core';
 import {fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
 import {PreloadAllModules, PreloadingStrategy, RouterPreloader} from '@angular/router';
 import {BehaviorSubject, Observable, of, throwError} from 'rxjs';
 import {catchError, delay, filter, switchMap, take} from 'rxjs/operators';
 
 import {Route, RouteConfigLoadEnd, RouteConfigLoadStart, Router, RouterModule} from '../index';
-import {LoadedRouterConfig} from '../src/models';
-import {getLoadedInjector, getLoadedRoutes, getProvidersInjector} from '../src/utils/config';
+import {getLoadedComponent, getLoadedInjector, getLoadedRoutes, getProvidersInjector} from '../src/utils/config';
 import {RouterTestingModule} from '../testing';
 
 
@@ -612,4 +611,149 @@ describe('RouterPreloader', () => {
              preloader.preload().subscribe();
            })));
       });
+
+  describe('should preload loadComponent configs', () => {
+    let lazyComponentSpy: jasmine.Spy;
+    beforeEach(() => {
+      lazyComponentSpy = jasmine.createSpy('expected');
+      TestBed.configureTestingModule({
+        imports:
+            [RouterTestingModule.withRoutes([{path: 'lazy', loadComponent: lazyComponentSpy}])],
+        providers: [{provide: PreloadingStrategy, useExisting: PreloadAllModules}]
+      });
+    });
+
+    it('base case', fakeAsync(() => {
+         @Component({template: '', standalone: true})
+         class LoadedComponent {
+         }
+
+         const preloader = TestBed.inject(RouterPreloader);
+         lazyComponentSpy.and.returnValue(LoadedComponent);
+         preloader.preload().subscribe(() => {});
+
+         tick();
+
+         const component = getLoadedComponent(TestBed.inject(Router).config[0]);
+         expect(component).toEqual(LoadedComponent);
+       }));
+
+    it('throws error when loadComponent is not standalone', fakeAsync(() => {
+         @Component({template: '', standalone: false})
+         class LoadedComponent {
+         }
+         @Injectable({providedIn: 'root'})
+         class ErrorTrackingPreloadAllModules implements PreloadingStrategy {
+           errors: Error[] = [];
+           preload(route: Route, fn: () => Observable<any>): Observable<any> {
+             return fn().pipe(catchError((e: Error) => {
+               this.errors.push(e);
+               return of(null);
+             }));
+           }
+         }
+
+         TestBed.overrideProvider(
+             PreloadingStrategy, {useFactory: () => new ErrorTrackingPreloadAllModules()});
+         const preloader = TestBed.inject(RouterPreloader);
+         lazyComponentSpy.and.returnValue(LoadedComponent);
+         preloader.preload().subscribe(() => {});
+
+         tick();
+         const strategy = TestBed.inject(PreloadingStrategy) as ErrorTrackingPreloadAllModules;
+         expect(strategy.errors[0]?.message).toMatch(/.*lazy.*must be standalone/);
+       }));
+
+    it('should recover from errors', fakeAsync(() => {
+         @Component({template: '', standalone: true})
+         class LoadedComponent {
+         }
+
+         const preloader = TestBed.inject(RouterPreloader);
+         lazyComponentSpy.and.returnValue(throwError('error loading chunk'));
+         preloader.preload().subscribe(() => {});
+
+         tick();
+
+         const router = TestBed.inject(Router);
+         const c = router.config;
+         expect(lazyComponentSpy.calls.count()).toBe(1);
+         expect(getLoadedComponent(c[0])).not.toBeDefined();
+
+         lazyComponentSpy.and.returnValue(LoadedComponent);
+         router.navigateByUrl('/lazy');
+         tick();
+         expect(lazyComponentSpy.calls.count()).toBe(2);
+         expect(getLoadedComponent(c[0])).toBeDefined();
+       }));
+
+    it('works when there is both loadComponent and loadChildren', fakeAsync(() => {
+         @Component({template: '', standalone: true})
+         class LoadedComponent {
+         }
+
+         @NgModule(
+             {imports: [RouterModule.forChild([{path: 'child', component: LoadedComponent}])]})
+         class LoadedModule {
+         }
+
+         const router = TestBed.inject(Router);
+         router.config[0].loadChildren = () => LoadedModule;
+
+         const preloader = TestBed.inject(RouterPreloader);
+         lazyComponentSpy.and.returnValue(LoadedComponent);
+         preloader.preload().subscribe(() => {});
+
+         tick();
+
+         const component = getLoadedComponent(router.config[0]);
+         expect(component).toEqual(LoadedComponent);
+
+         const childRoutes = getLoadedRoutes(router.config[0]);
+         expect(childRoutes).toBeDefined();
+         expect(childRoutes![0].path).toEqual('child');
+       }));
+
+    it('loadComponent does not block loadChildren', fakeAsync(() => {
+         @Component({template: '', standalone: true})
+         class LoadedComponent {
+         }
+
+         lazyComponentSpy.and.returnValue(of(LoadedComponent).pipe(delay(5)));
+
+         @NgModule({
+           imports: [RouterModule.forChild([{
+             path: 'child',
+             loadChildren: () => of([
+                                   {path: 'grandchild', children: []},
+                                 ]).pipe(delay(1)),
+           }])]
+         })
+         class LoadedModule {
+         }
+
+         const router = TestBed.inject(Router);
+         const baseRoute = router.config[0];
+         baseRoute.loadChildren = () => of(LoadedModule).pipe(delay(1));
+
+         const preloader = TestBed.inject(RouterPreloader);
+         preloader.preload().subscribe(() => {});
+
+         tick(1);
+         // Loading should have started but not completed yet
+         expect(getLoadedComponent(baseRoute)).not.toBeDefined();
+         const childRoutes = getLoadedRoutes(baseRoute);
+         expect(childRoutes).toBeDefined();
+         // Loading should have started but not completed yet
+         expect(getLoadedRoutes(childRoutes![0])).not.toBeDefined();
+
+         tick(1);
+         // Loading should have started but not completed yet
+         expect(getLoadedComponent(baseRoute)).not.toBeDefined();
+         expect(getLoadedRoutes(childRoutes![0])).toBeDefined();
+
+         tick(3);
+         expect(getLoadedComponent(baseRoute)).toBeDefined();
+       }));
+  });
 });

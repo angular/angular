@@ -451,6 +451,7 @@ export interface Route {
     component?: Type<any>;
     data?: Data;
     loadChildren?: LoadChildren;
+    loadComponent?: () => Type<unknown> | Observable<Type<unknown>> | Promise<Type<unknown>>;
     matcher?: UrlMatcher;
     outlet?: string;
     path?: string;
