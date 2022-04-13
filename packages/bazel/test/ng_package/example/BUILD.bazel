@@ -22,6 +22,8 @@ ng_package(
         ":arbitrary_genfiles_file",
         ":extra-styles.css",
         ":logo.png",
+        # This file should be just ignored, and not copied into the package.
+        "//packages/bazel/test/ng_package:outside_package.txt",
     ],
     nested_packages = [
         ":arbitrary_npm_package",
