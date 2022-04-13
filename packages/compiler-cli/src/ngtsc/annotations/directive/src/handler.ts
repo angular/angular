@@ -79,6 +79,11 @@ export class DirectiveDecoratorHandler implements
     // been processed, but we want to enforce a consistent decorator mental model.
     // See: https://v9.angular.io/guide/migration-undecorated-classes.
     if (this.compileUndecoratedClassesWithAngularFeatures === false && decorator === null) {
+      // If compiling @angular/core, skip the diagnostic as core occasionally hand-writes
+      // definitions.
+      if (this.isCore) {
+        return {};
+      }
       return {diagnostics: [getUndecoratedClassWithAngularFeaturesDiagnostic(node)]};
     }
 

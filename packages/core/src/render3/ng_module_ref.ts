@@ -68,7 +68,7 @@ export class NgModuleRef<T> extends viewEngine_NgModuleRef<T> implements Interna
                                useValue: this.componentFactoryResolver
                              }
                            ],
-                           stringify(ngModuleType)) as R3Injector;
+                           stringify(ngModuleType), new Set(['environment'])) as R3Injector;
 
     // We need to resolve the injector types separately from the injector creation, because
     // the module might be trying to use this ref in its constructor for DI which will cause a
@@ -122,7 +122,7 @@ class EnvironmentNgModuleRefAdapter extends viewEngine_NgModuleRef<null> {
           {provide: viewEngine_NgModuleRef, useValue: this},
           {provide: viewEngine_ComponentFactoryResolver, useValue: this.componentFactoryResolver},
         ],
-        parent || getNullInjector(), source);
+        parent || getNullInjector(), source, new Set(['environment']));
     this.injector = injector;
     injector.resolveInjectorInitializers();
   }

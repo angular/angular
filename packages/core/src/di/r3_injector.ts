@@ -28,7 +28,7 @@ import {InjectFlags} from './interface/injector';
 import {ClassProvider, ConstructorProvider, ExistingProvider, FactoryProvider, Provider, StaticClassProvider, StaticProvider, TypeProvider, ValueProvider} from './interface/provider';
 import {NullInjector} from './null_injector';
 import {ProviderToken} from './provider_token';
-import {INJECTOR_SCOPE} from './scope';
+import {INJECTOR_SCOPE, InjectorScope} from './scope';
 
 /**
  * Internal type for a single provider in a deep provider array.
@@ -103,14 +103,15 @@ export function createInjector(
  */
 export function createInjectorWithoutInjectorInstances(
     defType: /* InjectorType<any> */ any, parent: Injector|null = null,
-    additionalProviders: StaticProvider[]|null = null, name?: string): R3Injector {
+    additionalProviders: StaticProvider[]|null = null, name?: string,
+    scopes = new Set<InjectorScope>()): R3Injector {
   const providers = [
     ...flatten(additionalProviders || EMPTY_ARRAY),
     ...importProvidersFrom(defType),
   ];
   name = name || (typeof defType === 'object' ? undefined : stringify(defType));
 
-  return new R3Injector(providers, parent || getNullInjector(), name);
+  return new R3Injector(providers, parent || getNullInjector(), name || null, scopes);
 }
 
 /**
@@ -304,12 +305,6 @@ export class R3Injector extends EnvironmentInjector {
   private _onDestroyHooks: Array<() => void> = [];
 
   /**
-   * Flag indicating this injector provides the APP_ROOT_SCOPE token, and thus counts as the
-   * root scope.
-   */
-  private readonly scope: 'root'|'platform'|null;
-
-  /**
    * Flag indicating that this injector was previously destroyed.
    */
   get destroyed(): boolean {
@@ -320,7 +315,8 @@ export class R3Injector extends EnvironmentInjector {
   private injectorDefTypes: Set<Type<unknown>>;
 
   constructor(
-      providers: Provider[], readonly parent: Injector, readonly source: string|null = null) {
+      providers: Provider[], readonly parent: Injector, readonly source: string|null,
+      readonly scopes: Set<InjectorScope>) {
     super();
     // Start off by creating Records for every provider.
     for (const provider of providers) {
@@ -330,13 +326,17 @@ export class R3Injector extends EnvironmentInjector {
     // Make sure the INJECTOR token provides this injector.
     this.records.set(INJECTOR, makeRecord(undefined, this));
 
-    // And `EnvironmentInjector`.
-    this.records.set(EnvironmentInjector, makeRecord(undefined, this));
+    // And `EnvironmentInjector` if the current injector is supposed to be env-scoped.
+    if (scopes.has('environment')) {
+      this.records.set(EnvironmentInjector, makeRecord(undefined, this));
+    }
 
     // Detect whether this injector has the APP_ROOT_SCOPE token and thus should provide
     // any injectable scoped to APP_ROOT_SCOPE.
-    const record = this.records.get(INJECTOR_SCOPE);
-    this.scope = record != null ? record.value : null;
+    const record = this.records.get(INJECTOR_SCOPE) as Record<InjectorScope|null>;
+    if (record != null && typeof record.value === 'string') {
+      this.scopes.add(record.value as InjectorScope);
+    }
 
     this.injectorDefTypes =
         new Set(this.get(INJECTOR_DEF_TYPES.multi, EMPTY_ARRAY, InjectFlags.Self));
@@ -524,7 +524,7 @@ export class R3Injector extends EnvironmentInjector {
     }
     const providedIn = resolveForwardRef(def.providedIn);
     if (typeof providedIn === 'string') {
-      return providedIn === 'any' || (providedIn === this.scope);
+      return providedIn === 'any' || (this.scopes.has(providedIn));
     } else {
       return this.injectorDefTypes.has(providedIn);
     }
