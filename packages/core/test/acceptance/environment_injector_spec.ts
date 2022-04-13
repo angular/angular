@@ -97,10 +97,10 @@ describe('environment injector', () => {
     expect(initialized).toBeTrue();
   });
 
-  it('should adopt env-scoped providers', () => {
+  it('should adopt environment-scoped providers', () => {
     const injector = createEnvironmentInjector([]);
     const EnvScopedToken = new InjectionToken('env-scoped token', {
-      providedIn: 'env' as any,
+      providedIn: 'environment' as any,
       factory: () => true,
     });
     expect(injector.get(EnvScopedToken, false)).toBeTrue();
