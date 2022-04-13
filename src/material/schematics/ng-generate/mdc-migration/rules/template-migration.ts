@@ -8,7 +8,7 @@
 
 import {Migration, ResolvedResource} from '@angular/cdk/schematics';
 import {SchematicContext} from '@angular-devkit/schematics';
-import {visitElements, parseTemplate} from './tree-traversal';
+import {parseTemplate} from './tree-traversal';
 import {ComponentMigrator} from '.';
 import {Update} from './template-migrator';
 
@@ -18,16 +18,11 @@ export class TemplateMigration extends Migration<ComponentMigrator[], SchematicC
   override visitTemplate(template: ResolvedResource) {
     const ast = parseTemplate(template.content, template.filePath);
     const migrators = this.upgradeData.filter(m => m.template).map(m => m.template!);
-    const updates: Update[] = [];
 
-    visitElements(ast.nodes, node => {
-      for (let i = 0; i < migrators.length; i++) {
-        updates.push(...migrators[i].getUpdates(node));
-      }
-    });
+    const updates: Update[] = [];
+    migrators.forEach(m => updates.push(...m.getUpdates(ast)));
 
     updates.sort((a, b) => b.location.offset - a.location.offset);
-
     updates.forEach(update => {
       template.content = update.updateFn(template.content);
     });

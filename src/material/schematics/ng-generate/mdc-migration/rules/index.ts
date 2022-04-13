@@ -16,6 +16,7 @@ import {CardStylesMigrator} from './components/card/card-styles';
 import {CardTemplateMigrator} from './components/card/card-template';
 import {CheckboxStylesMigrator} from './components/checkbox/checkbox-styles';
 import {ChipsStylesMigrator} from './components/chips/chips-styles';
+import {ChipsTemplateMigrator} from './components/chips/chips-template';
 import {DialogStylesMigrator} from './components/dialog/dialog-styles';
 import {FormFieldStylesMigrator} from './components/form-field/form-field-styles';
 import {InputStylesMigrator} from './components/input/input-styles';
@@ -63,6 +64,7 @@ export const MIGRATORS: ComponentMigrator[] = [
   {
     component: 'chips',
     styles: new ChipsStylesMigrator(),
+    template: new ChipsTemplateMigrator(),
   },
   {
     component: 'dialog',

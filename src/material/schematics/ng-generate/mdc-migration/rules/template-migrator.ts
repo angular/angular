@@ -18,17 +18,6 @@ export interface Update {
 }
 
 export abstract class TemplateMigrator {
-  /** The name of the component that this migration handles. */
-  abstract component: string;
-
-  /** The tag name to be updated in the template. */
-  abstract tagName: string;
-
-  /**
-   * Returns the data needed to update the given node.
-   *
-   * @param node A template ast element.
-   * @returns The data needed to update this node.
-   */
-  abstract getUpdates(node: compiler.TmplAstElement): Update[];
+  /** Returns the data needed to update the given node. */
+  abstract getUpdates(ast: compiler.ParsedTemplate): Update[];
 }
