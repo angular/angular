@@ -1,3 +1,25 @@
+<a name="13.3.3"></a>
+# 13.3.3 "tweed-table" (2022-04-13)
+### cdk
+| Commit | Type | Description |
+| -- | -- | -- |
+| [949e3c7fbc](https://github.com/angular/components/commit/949e3c7fbc308a9c1a68766258f2a53a1fe1e8e7) | fix | **a11y:** visually hidden element affecting scrolling ([#24620](https://github.com/angular/components/pull/24620)) |
+### material
+| Commit | Type | Description |
+| -- | -- | -- |
+| [1e010a3624](https://github.com/angular/components/commit/1e010a3624f12c3add2f2b02cde63dd99cf435c8) | fix | **checkbox:** add the boolean property coercion for checked input ([#20645](https://github.com/angular/components/pull/20645)) |
+| [6c65b1d703](https://github.com/angular/components/commit/6c65b1d70328df5f9a1d5d7c9f4ae69e76ff2c03) | fix | **chips:** prevent default behavior on remove button ([#24722](https://github.com/angular/components/pull/24722)) |
+| [4501b2518d](https://github.com/angular/components/commit/4501b2518d0a77da20a782fbf6a276ce39dc5b5f) | fix | **datepicker:** avoid rerender when min/maxDate changes to different time on the same day ([#24434](https://github.com/angular/components/pull/24434)) |
+| [aae60833eb](https://github.com/angular/components/commit/aae60833eb7016ce9d90ff2ae487107a85dccfaf) | fix | **list:** wrong order of arguments when calling custom compareWith function ([#24743](https://github.com/angular/components/pull/24743)) |
+| [68c5e870bd](https://github.com/angular/components/commit/68c5e870bd1f4c15824ce264a0e79fe71688ef76) | fix | **select:** empty space read out by VoiceOver on Chrome ([#24741](https://github.com/angular/components/pull/24741)) |
+| [0d1755d566](https://github.com/angular/components/commit/0d1755d566e1971aa6e651cd2b890ba33c7ebe08) | fix | **snack-bar:** update generic types for openFromComponent ([#24634](https://github.com/angular/components/pull/24634)) |
+| [b83d225b33](https://github.com/angular/components/commit/b83d225b33d17e6b1cb689cac5a2c3850df1de8e) | fix | **tabs:** wrong scroll distance if selected tab is removed ([#24118](https://github.com/angular/components/pull/24118)) |
+| [ca30f426a9](https://github.com/angular/components/commit/ca30f426a9729d30ff540ac4630c25ec7801bd4f) | perf | **progress-bar:** do not run change detection if there are no `animationEnd` listeners ([#24673](https://github.com/angular/components/pull/24673)) |
+## Special Thanks
+Artur Androsovych, Georgian Stan, Klemen Oslaj, Kristiyan Kostadinov, Michael Doner, Pascal Weyrich, Paul Gschwendtner, RobStrader and Zach Arend
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.0.0-next.9"></a>
 # 14.0.0-next.9 "plastic-headphones" (2022-03-30)
 ### cdk
