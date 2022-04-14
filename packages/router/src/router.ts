@@ -34,6 +34,8 @@ import {Checks, getAllRouteGuards} from './utils/preactivation';
 import {isUrlTree} from './utils/type_guards';
 
 
+const NG_DEV_MODE = typeof ngDevMode === 'undefined' || !!ngDevMode;
+
 /**
  * @description
  *
@@ -1110,7 +1112,7 @@ export class Router {
    * ```
    */
   resetConfig(config: Routes): void {
-    validateConfig(config);
+    NG_DEV_MODE && validateConfig(config);
     this.config = config.map(standardizeConfig);
     this.navigated = false;
     this.lastSuccessfulId = -1;

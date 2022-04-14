@@ -1185,9 +1185,6 @@
     "name": "getFirstNativeNode"
   },
   {
-    "name": "getFullPath"
-  },
-  {
     "name": "getIdxOfMatchingSelector"
   },
   {
@@ -1903,12 +1900,6 @@
   },
   {
     "name": "urlParsingNode"
-  },
-  {
-    "name": "validateConfig"
-  },
-  {
-    "name": "validateNode"
   },
   {
     "name": "viewAttachedToChangeDetector"

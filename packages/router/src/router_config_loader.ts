@@ -14,6 +14,9 @@ import {LoadChildren, LoadedRouterConfig, Route, Routes} from './models';
 import {flatten, wrapIntoObservable} from './utils/collection';
 import {standardizeConfig, validateConfig} from './utils/config';
 
+
+const NG_DEV_MODE = typeof ngDevMode === 'undefined' || !!ngDevMode;
+
 /**
  * The [DI token](guide/glossary/#di-token) for a router configuration.
  *
@@ -48,13 +51,13 @@ export class RouterConfigLoader {
           }
           const module = factory.create(parentInjector);
           const routes =
+              // When loading a module that doesn't provide `RouterModule.forChild()` preloader
+              // will get stuck in an infinite loop. The child module's Injector will look to
+              // its parent `Injector` when it doesn't find any ROUTES so it will return routes
+              // for it's parent module instead.
               flatten(module.injector.get(ROUTES, [], InjectFlags.Self | InjectFlags.Optional))
                   .map(standardizeConfig);
-          validateConfig(routes);
-          // When loading a module that doesn't provide `RouterModule.forChild()` preloader
-          // will get stuck in an infinite loop. The child module's Injector will look to
-          // its parent `Injector` when it doesn't find any ROUTES so it will return routes
-          // for it's parent module instead.
+          NG_DEV_MODE && validateConfig(routes);
           return new LoadedRouterConfig(routes, module);
         }),
         catchError((err) => {
