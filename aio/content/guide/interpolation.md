@@ -29,8 +29,7 @@ content_copy
 
 ## What's Next
 
-* Property bindings
-* Event bindings
+* [Property binding](guide/property-binding)
+* [Event binding](guide/event-binding)
 
-@reviewed 2022-04-05
-
+@reviewed 2022-04-14
