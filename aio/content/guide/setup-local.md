@@ -43,7 +43,7 @@ To install the Angular CLI, open a terminal window and run the following command
 
 <code-example format="shell" language="shell">
 
-npm install -g &commat;angular/cli&lt;aio-angular-dist-tag class="pln"&gt;&lt;/aio-angular-dist-tag&gt;
+npm install -g &commat;angular/cli
 
 </code-example>
 
