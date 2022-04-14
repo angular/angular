@@ -2,7 +2,7 @@ import {dispatchMouseEvent} from '../../cdk/testing/private';
 import {Component, DebugElement, QueryList, ViewChild, ViewChildren} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {ComponentFixture, fakeAsync, flush, TestBed, tick} from '@angular/core/testing';
-import {UntypedFormControl, FormsModule, NgModel, ReactiveFormsModule} from '@angular/forms';
+import {FormControl, FormsModule, NgModel, ReactiveFormsModule} from '@angular/forms';
 import {By} from '@angular/platform-browser';
 import {
   MatButtonToggle,
@@ -1007,7 +1007,7 @@ class ButtonToggleGroupWithInitialValue {
   `,
 })
 class ButtonToggleGroupWithFormControl {
-  control = new UntypedFormControl();
+  control = new FormControl('');
 }
 
 @Component({
@@ -1023,7 +1023,7 @@ class ButtonToggleGroupWithFormControl {
   `,
 })
 class ButtonToggleGroupWithIndirectDescendantToggles {
-  control = new UntypedFormControl();
+  control = new FormControl('');
 }
 
 /** Simple test component with an aria-label set. */

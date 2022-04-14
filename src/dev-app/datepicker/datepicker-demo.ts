@@ -18,7 +18,7 @@ import {
   Directive,
   Injectable,
 } from '@angular/core';
-import {UntypedFormControl, UntypedFormGroup} from '@angular/forms';
+import {FormControl, FormGroup} from '@angular/forms';
 import {DateAdapter, MAT_DATE_FORMATS, MatDateFormats, ThemePalette} from '@angular/material/core';
 import {
   MatCalendar,
@@ -53,10 +53,19 @@ export class DatepickerDemo {
   color: ThemePalette;
   showActions = false;
 
-  dateCtrl = new UntypedFormControl();
-  range1 = new UntypedFormGroup({start: new UntypedFormControl(), end: new UntypedFormControl()});
-  range2 = new UntypedFormGroup({start: new UntypedFormControl(), end: new UntypedFormControl()});
-  range3 = new UntypedFormGroup({start: new UntypedFormControl(), end: new UntypedFormControl()});
+  dateCtrl = new FormControl<Date | null>(null);
+  range1 = new FormGroup({
+    start: new FormControl<Date | null>(null),
+    end: new FormControl<Date | null>(null),
+  });
+  range2 = new FormGroup({
+    start: new FormControl<Date | null>(null),
+    end: new FormControl<Date | null>(null),
+  });
+  range3 = new FormGroup({
+    start: new FormControl<Date | null>(null),
+    end: new FormControl<Date | null>(null),
+  });
   comparisonStart: Date;
   comparisonEnd: Date;
 

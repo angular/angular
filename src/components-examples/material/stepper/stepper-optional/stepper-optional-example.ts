@@ -1,5 +1,5 @@
-import {Component, OnInit} from '@angular/core';
-import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
+import {Component} from '@angular/core';
+import {FormBuilder, Validators} from '@angular/forms';
 
 /**
  * @title Stepper with optional steps
@@ -9,19 +9,14 @@ import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
   templateUrl: 'stepper-optional-example.html',
   styleUrls: ['stepper-optional-example.css'],
 })
-export class StepperOptionalExample implements OnInit {
-  firstFormGroup: UntypedFormGroup;
-  secondFormGroup: UntypedFormGroup;
+export class StepperOptionalExample {
+  firstFormGroup = this._formBuilder.group({
+    firstCtrl: ['', Validators.required],
+  });
+  secondFormGroup = this._formBuilder.group({
+    secondCtrl: '',
+  });
   isOptional = false;
 
-  constructor(private _formBuilder: UntypedFormBuilder) {}
-
-  ngOnInit() {
-    this.firstFormGroup = this._formBuilder.group({
-      firstCtrl: ['', Validators.required],
-    });
-    this.secondFormGroup = this._formBuilder.group({
-      secondCtrl: '',
-    });
-  }
+  constructor(private _formBuilder: FormBuilder) {}
 }

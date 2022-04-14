@@ -1,5 +1,6 @@
 import {Component} from '@angular/core';
-import {UntypedFormControl} from '@angular/forms';
+import {FormControl} from '@angular/forms';
+import {MatDrawerMode} from '@angular/material/sidenav';
 
 /** @title Sidenav with configurable mode */
 @Component({
@@ -8,6 +9,6 @@ import {UntypedFormControl} from '@angular/forms';
   styleUrls: ['sidenav-mode-example.css'],
 })
 export class SidenavModeExample {
-  mode = new UntypedFormControl('over');
+  mode = new FormControl('over' as MatDrawerMode);
   shouldRun = /(^|.)(stackblitz|webcontainer).(io|com)$/.test(window.location.host);
 }

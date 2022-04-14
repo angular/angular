@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {UntypedFormControl, Validators} from '@angular/forms';
+import {FormControl, Validators} from '@angular/forms';
 
 interface Animal {
   name: string;
@@ -12,8 +12,8 @@ interface Animal {
   templateUrl: 'select-hint-error-example.html',
 })
 export class SelectHintErrorExample {
-  animalControl = new UntypedFormControl('', Validators.required);
-  selectFormControl = new UntypedFormControl('', Validators.required);
+  animalControl = new FormControl<Animal | null>(null, Validators.required);
+  selectFormControl = new FormControl('', Validators.required);
   animals: Animal[] = [
     {name: 'Dog', sound: 'Woof!'},
     {name: 'Cat', sound: 'Meow!'},

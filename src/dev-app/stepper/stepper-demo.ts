@@ -6,24 +6,44 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component} from '@angular/core';
 import {ThemePalette} from '@angular/material/core';
-import {AbstractControl, UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
+import {AbstractControl, FormBuilder, Validators} from '@angular/forms';
 
 @Component({
   selector: 'stepper-demo',
   templateUrl: 'stepper-demo.html',
 })
-export class StepperDemo implements OnInit {
-  formGroup: UntypedFormGroup;
+export class StepperDemo {
   isNonLinear = false;
   isNonEditable = false;
   disableRipple = false;
   showLabelBottom = false;
   isVertical = false;
 
-  nameFormGroup: UntypedFormGroup;
-  emailFormGroup: UntypedFormGroup;
+  nameFormGroup = this._formBuilder.group({
+    firstNameCtrl: ['', Validators.required],
+    lastNameCtrl: ['', Validators.required],
+  });
+
+  emailFormGroup = this._formBuilder.group({
+    emailCtrl: ['', Validators.email],
+  });
+
+  formGroup = this._formBuilder.group({
+    formArray: this._formBuilder.array<
+      | {firstNameFormCtrl?: string | null; lastNameFormCtrl?: string | null}
+      | {emailFormCtrl?: string | null}
+    >([
+      this._formBuilder.group({
+        firstNameFormCtrl: this._formBuilder.control('', [Validators.required]),
+        lastNameFormCtrl: this._formBuilder.control('', [Validators.required]),
+      }),
+      this._formBuilder.group({
+        emailFormCtrl: this._formBuilder.control('', [Validators.email]),
+      }),
+    ]),
+  });
 
   steps = [
     {label: 'Confirm your name', content: 'Last name, First name.'},
@@ -45,28 +65,5 @@ export class StepperDemo implements OnInit {
     return this.formGroup.get('formArray');
   }
 
-  constructor(private _formBuilder: UntypedFormBuilder) {}
-
-  ngOnInit() {
-    this.formGroup = this._formBuilder.group({
-      formArray: this._formBuilder.array([
-        this._formBuilder.group({
-          firstNameFormCtrl: ['', Validators.required],
-          lastNameFormCtrl: ['', Validators.required],
-        }),
-        this._formBuilder.group({
-          emailFormCtrl: ['', Validators.email],
-        }),
-      ]),
-    });
-
-    this.nameFormGroup = this._formBuilder.group({
-      firstNameCtrl: ['', Validators.required],
-      lastNameCtrl: ['', Validators.required],
-    });
-
-    this.emailFormGroup = this._formBuilder.group({
-      emailCtrl: ['', Validators.email],
-    });
-  }
+  constructor(private _formBuilder: FormBuilder) {}
 }

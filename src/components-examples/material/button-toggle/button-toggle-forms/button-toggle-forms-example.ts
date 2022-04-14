@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {UntypedFormControl} from '@angular/forms';
+import {FormControl} from '@angular/forms';
 
 /**
  * @title Button-toggles with forms
@@ -9,6 +9,6 @@ import {UntypedFormControl} from '@angular/forms';
   templateUrl: 'button-toggle-forms-example.html',
 })
 export class ButtonToggleFormsExample {
-  fontStyleControl = new UntypedFormControl();
+  fontStyleControl = new FormControl('');
   fontStyle?: string;
 }

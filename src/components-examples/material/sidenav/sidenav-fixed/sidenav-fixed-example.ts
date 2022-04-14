@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {UntypedFormBuilder, UntypedFormGroup} from '@angular/forms';
+import {FormBuilder} from '@angular/forms';
 
 /** @title Fixed sidenav */
 @Component({
@@ -8,15 +8,13 @@ import {UntypedFormBuilder, UntypedFormGroup} from '@angular/forms';
   styleUrls: ['sidenav-fixed-example.css'],
 })
 export class SidenavFixedExample {
-  options: UntypedFormGroup;
+  options = this._formBuilder.group({
+    bottom: 0,
+    fixed: false,
+    top: 0,
+  });
 
-  constructor(fb: UntypedFormBuilder) {
-    this.options = fb.group({
-      bottom: 0,
-      fixed: false,
-      top: 0,
-    });
-  }
+  constructor(private _formBuilder: FormBuilder) {}
 
   shouldRun = /(^|.)(stackblitz|webcontainer).(io|com)$/.test(window.location.host);
 }

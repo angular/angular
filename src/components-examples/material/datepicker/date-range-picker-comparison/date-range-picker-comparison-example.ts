@@ -1,5 +1,9 @@
 import {Component} from '@angular/core';
-import {UntypedFormGroup, UntypedFormControl} from '@angular/forms';
+import {FormGroup, FormControl} from '@angular/forms';
+
+const today = new Date();
+const month = today.getMonth();
+const year = today.getFullYear();
 
 /** @title Date range picker comparison ranges */
 @Component({
@@ -8,22 +12,12 @@ import {UntypedFormGroup, UntypedFormControl} from '@angular/forms';
   styleUrls: ['date-range-picker-comparison-example.css'],
 })
 export class DateRangePickerComparisonExample {
-  campaignOne: UntypedFormGroup;
-  campaignTwo: UntypedFormGroup;
-
-  constructor() {
-    const today = new Date();
-    const month = today.getMonth();
-    const year = today.getFullYear();
-
-    this.campaignOne = new UntypedFormGroup({
-      start: new UntypedFormControl(new Date(year, month, 13)),
-      end: new UntypedFormControl(new Date(year, month, 16)),
-    });
-
-    this.campaignTwo = new UntypedFormGroup({
-      start: new UntypedFormControl(new Date(year, month, 15)),
-      end: new UntypedFormControl(new Date(year, month, 19)),
-    });
-  }
+  campaignOne = new FormGroup({
+    start: new FormControl(new Date(year, month, 13)),
+    end: new FormControl(new Date(year, month, 16)),
+  });
+  campaignTwo = new FormGroup({
+    start: new FormControl(new Date(year, month, 15)),
+    end: new FormControl(new Date(year, month, 19)),
+  });
 }

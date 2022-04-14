@@ -1,5 +1,6 @@
 import {Component} from '@angular/core';
-import {UntypedFormBuilder, UntypedFormControl, UntypedFormGroup} from '@angular/forms';
+import {FormBuilder, FormControl} from '@angular/forms';
+import {FloatLabelType} from '@angular/material/form-field';
 
 /** @title Form field with label */
 @Component({
@@ -8,14 +9,16 @@ import {UntypedFormBuilder, UntypedFormControl, UntypedFormGroup} from '@angular
   styleUrls: ['form-field-label-example.css'],
 })
 export class FormFieldLabelExample {
-  options: UntypedFormGroup;
-  hideRequiredControl = new UntypedFormControl(false);
-  floatLabelControl = new UntypedFormControl('auto');
+  hideRequiredControl = new FormControl(false);
+  floatLabelControl = new FormControl('auto' as FloatLabelType);
+  options = this._formBuilder.group({
+    hideRequired: this.hideRequiredControl,
+    floatLabel: this.floatLabelControl,
+  });
 
-  constructor(fb: UntypedFormBuilder) {
-    this.options = fb.group({
-      hideRequired: this.hideRequiredControl,
-      floatLabel: this.floatLabelControl,
-    });
+  constructor(private _formBuilder: FormBuilder) {}
+
+  getFloatLabelValue(): FloatLabelType {
+    return this.floatLabelControl.value || 'auto';
   }
 }

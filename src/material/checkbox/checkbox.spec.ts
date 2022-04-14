@@ -1,5 +1,5 @@
 import {ComponentFixture, fakeAsync, TestBed, flush, flushMicrotasks} from '@angular/core/testing';
-import {UntypedFormControl, FormsModule, NgModel, ReactiveFormsModule} from '@angular/forms';
+import {FormControl, FormsModule, NgModel, ReactiveFormsModule} from '@angular/forms';
 import {Component, DebugElement, ViewChild, Type, ChangeDetectionStrategy} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {dispatchFakeEvent} from '../../cdk/testing/private';
@@ -1418,7 +1418,7 @@ class CheckboxWithChangeEvent {
   template: `<mat-checkbox [formControl]="formControl"></mat-checkbox>`,
 })
 class CheckboxWithFormControl {
-  formControl = new UntypedFormControl();
+  formControl = new FormControl(false);
 }
 
 /** Test component without label */

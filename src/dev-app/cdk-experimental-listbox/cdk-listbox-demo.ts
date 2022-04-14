@@ -7,7 +7,7 @@
  */
 
 import {Component} from '@angular/core';
-import {UntypedFormControl} from '@angular/forms';
+import {FormControl} from '@angular/forms';
 
 @Component({
   templateUrl: 'cdk-listbox-demo.html',
@@ -16,7 +16,7 @@ import {UntypedFormControl} from '@angular/forms';
 export class CdkListboxDemo {
   multiSelectable = false;
   activeDescendant = true;
-  formControl = new UntypedFormControl();
+  formControl = new FormControl('');
 
   disableForm() {
     this.formControl.disable();

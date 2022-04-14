@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {UntypedFormGroup, UntypedFormControl} from '@angular/forms';
+import {FormGroup, FormControl} from '@angular/forms';
 
 /** @title Date range picker forms integration */
 @Component({
@@ -7,8 +7,8 @@ import {UntypedFormGroup, UntypedFormControl} from '@angular/forms';
   templateUrl: 'date-range-picker-forms-example.html',
 })
 export class DateRangePickerFormsExample {
-  range = new UntypedFormGroup({
-    start: new UntypedFormControl(),
-    end: new UntypedFormControl(),
+  range = new FormGroup({
+    start: new FormControl<Date | null>(null),
+    end: new FormControl<Date | null>(null),
   });
 }

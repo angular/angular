@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {UntypedFormControl} from '@angular/forms';
+import {FormControl} from '@angular/forms';
 
 /**
  * @title Simple autocomplete
@@ -10,6 +10,6 @@ import {UntypedFormControl} from '@angular/forms';
   styleUrls: ['autocomplete-simple-example.css'],
 })
 export class AutocompleteSimpleExample {
-  myControl = new UntypedFormControl();
+  myControl = new FormControl('');
   options: string[] = ['One', 'Two', 'Three'];
 }

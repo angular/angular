@@ -13,9 +13,9 @@ import {
 import {
   AbstractControl,
   ControlValueAccessor,
-  UntypedFormBuilder,
-  UntypedFormControl,
-  UntypedFormGroup,
+  FormBuilder,
+  FormControl,
+  FormGroup,
   NgControl,
   Validators,
 } from '@angular/forms';
@@ -28,8 +28,8 @@ import {Subject} from 'rxjs';
   templateUrl: 'form-field-custom-control-example.html',
 })
 export class FormFieldCustomControlExample {
-  form: UntypedFormGroup = new UntypedFormGroup({
-    tel: new UntypedFormControl(new MyTel('', '', '')),
+  form: FormGroup = new FormGroup({
+    tel: new FormControl(new MyTel('', '', '')),
   });
 }
 
@@ -55,7 +55,11 @@ export class MyTelInput implements ControlValueAccessor, MatFormFieldControl<MyT
   @ViewChild('exchange') exchangeInput: HTMLInputElement;
   @ViewChild('subscriber') subscriberInput: HTMLInputElement;
 
-  parts: UntypedFormGroup;
+  parts = this._formBuilder.group({
+    area: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(3)]],
+    exchange: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(3)]],
+    subscriber: ['', [Validators.required, Validators.minLength(4), Validators.maxLength(4)]],
+  });
   stateChanges = new Subject<void>();
   focused = false;
   touched = false;
@@ -115,7 +119,7 @@ export class MyTelInput implements ControlValueAccessor, MatFormFieldControl<MyT
       const {
         value: {area, exchange, subscriber},
       } = this.parts;
-      return new MyTel(area, exchange, subscriber);
+      return new MyTel(area!, exchange!, subscriber!);
     }
     return null;
   }
@@ -130,18 +134,12 @@ export class MyTelInput implements ControlValueAccessor, MatFormFieldControl<MyT
   }
 
   constructor(
-    formBuilder: UntypedFormBuilder,
+    private _formBuilder: FormBuilder,
     private _focusMonitor: FocusMonitor,
     private _elementRef: ElementRef<HTMLElement>,
     @Optional() @Inject(MAT_FORM_FIELD) public _formField: MatFormField,
     @Optional() @Self() public ngControl: NgControl,
   ) {
-    this.parts = formBuilder.group({
-      area: [null, [Validators.required, Validators.minLength(3), Validators.maxLength(3)]],
-      exchange: [null, [Validators.required, Validators.minLength(3), Validators.maxLength(3)]],
-      subscriber: [null, [Validators.required, Validators.minLength(4), Validators.maxLength(4)]],
-    });
-
     if (this.ngControl != null) {
       this.ngControl.valueAccessor = this;
     }

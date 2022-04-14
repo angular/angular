@@ -23,7 +23,7 @@ import {
   tick,
   waitForAsync,
 } from '@angular/core/testing';
-import {UntypedFormControl, FormsModule, NgModel, ReactiveFormsModule} from '@angular/forms';
+import {FormControl, FormsModule, NgModel, ReactiveFormsModule} from '@angular/forms';
 import {MatRipple, ThemePalette} from '@angular/material/core';
 import {By} from '@angular/platform-browser';
 import {MatListModule, MatListOption, MatSelectionList, MatSelectionListChange} from './index';
@@ -1796,7 +1796,7 @@ class SelectionListWithModel {
   `,
 })
 class SelectionListWithFormControl {
-  formControl = new UntypedFormControl();
+  formControl = new FormControl([] as string[]);
   renderList = true;
   renderExtraOption = false;
 }
@@ -1833,7 +1833,7 @@ class SelectionListWithPreselectedOptionAndModel {
 })
 class SelectionListWithPreselectedFormControlOnPush {
   opts = ['opt1', 'opt2', 'opt3'];
-  formControl = new UntypedFormControl(['opt2']);
+  formControl = new FormControl(['opt2']);
 }
 
 @Component({

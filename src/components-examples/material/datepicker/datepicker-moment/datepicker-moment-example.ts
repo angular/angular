@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {UntypedFormControl} from '@angular/forms';
+import {FormControl} from '@angular/forms';
 import {MAT_MOMENT_DATE_FORMATS, MomentDateAdapter} from '@angular/material-moment-adapter';
 import {DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE} from '@angular/material/core';
 
@@ -27,5 +27,5 @@ const moment = _rollupMoment || _moment;
 })
 export class DatepickerMomentExample {
   // Datepicker takes `Moment` objects instead of `Date` objects.
-  date = new UntypedFormControl(moment([2017, 0, 1]));
+  date = new FormControl(moment([2017, 0, 1]));
 }

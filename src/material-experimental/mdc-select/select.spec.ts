@@ -42,9 +42,9 @@ import {
 } from '@angular/core/testing';
 import {
   ControlValueAccessor,
-  UntypedFormBuilder,
-  UntypedFormControl,
-  UntypedFormGroup,
+  FormBuilder,
+  FormControl,
+  FormGroup,
   FormGroupDirective,
   FormsModule,
   NG_VALUE_ACCESSOR,
@@ -1923,7 +1923,7 @@ describe('MDC-based MatSelect', () => {
       }));
 
       it('should take an initial view value with reactive forms', fakeAsync(() => {
-        fixture.componentInstance.control = new UntypedFormControl('pizza-1');
+        fixture.componentInstance.control = new FormControl('pizza-1');
         fixture.detectChanges();
 
         const value = fixture.debugElement.query(By.css('.mat-mdc-select-value'))!;
@@ -3261,7 +3261,7 @@ describe('MDC-based MatSelect', () => {
       options[0].click();
       fixture.detectChanges();
       flush();
-      expect(fixture.componentInstance.control.value).toBe(undefined);
+      expect(fixture.componentInstance.control.value).toBeUndefined();
     }));
 
     it('should reflect the value in the form control', fakeAsync(() => {
@@ -3908,7 +3908,7 @@ describe('MDC-based MatSelect', () => {
 
     it('should throw an exception when trying to set a non-array value', fakeAsync(() => {
       expect(() => {
-        testInstance.control.setValue('not-an-array');
+        testInstance.control.setValue('not-an-array' as any);
       }).toThrowError(wrappedErrorMessage(getMatSelectNonArrayValueError()));
     }));
 
@@ -3972,7 +3972,7 @@ describe('MDC-based MatSelect', () => {
       options[2].click();
       fixture.detectChanges();
 
-      expect(testInstance.control.value).toEqual([null, 'pizza-1', null]);
+      expect(testInstance.control.value).toEqual([null!, 'pizza-1', null!]);
     }));
 
     it('should select all options when pressing ctrl + a', () => {
@@ -4227,7 +4227,7 @@ class BasicSelect {
     {value: 'pasta-6', viewValue: 'Pasta'},
     {value: 'sushi-7', viewValue: 'Sushi'},
   ];
-  control = new UntypedFormControl();
+  control = new FormControl<string | null>(null);
   isRequired: boolean;
   heightAbove = 0;
   heightBelow = 0;
@@ -4307,7 +4307,7 @@ class NgIfSelect {
     {value: 'pizza-1', viewValue: 'Pizza'},
     {value: 'tacos-2', viewValue: 'Tacos'},
   ];
-  control = new UntypedFormControl('pizza-1');
+  control = new FormControl('pizza-1');
 
   @ViewChild(MatSelect) select: MatSelect;
 }
@@ -4351,7 +4351,7 @@ class SelectWithChangeEvent {
 })
 class SelectInitWithoutOptions {
   foods: any[];
-  control = new UntypedFormControl('pizza-1');
+  control = new FormControl('pizza-1');
 
   @ViewChild(MatSelect) select: MatSelect;
   @ViewChildren(MatOption) options: QueryList<MatOption>;
@@ -4396,7 +4396,7 @@ class CustomSelectAccessor implements ControlValueAccessor {
   ],
 })
 class CompWithCustomSelect {
-  ctrl = new UntypedFormControl('initial value');
+  ctrl = new FormControl('initial value');
   @ViewChild(CustomSelectAccessor, {static: true}) customAccessor: CustomSelectAccessor;
 }
 
@@ -4442,7 +4442,7 @@ class BasicSelectOnPush {
     {value: 'pizza-1', viewValue: 'Pizza'},
     {value: 'tacos-2', viewValue: 'Tacos'},
   ];
-  control = new UntypedFormControl();
+  control = new FormControl('');
 }
 
 @Component({
@@ -4465,7 +4465,7 @@ class BasicSelectOnPushPreselected {
     {value: 'pizza-1', viewValue: 'Pizza'},
     {value: 'tacos-2', viewValue: 'Tacos'},
   ];
-  control = new UntypedFormControl('pizza-1');
+  control = new FormControl('pizza-1');
 }
 
 @Component({
@@ -4483,7 +4483,7 @@ class BasicSelectOnPushPreselected {
 })
 class FloatLabelSelect {
   floatLabel: FloatLabelType | null = 'auto';
-  control = new UntypedFormControl();
+  control = new FormControl('');
   placeholder = 'Food I want to eat right now';
   foods: any[] = [
     {value: 'steak-0', viewValue: 'Steak'},
@@ -4518,7 +4518,7 @@ class MultiSelect {
     {value: 'pasta-6', viewValue: 'Pasta'},
     {value: 'sushi-7', viewValue: 'Sushi'},
   ];
-  control = new UntypedFormControl();
+  control = new FormControl<string[] | null>(null);
 
   @ViewChild(MatSelect) select: MatSelect;
   @ViewChildren(MatOption) options: QueryList<MatOption>;
@@ -4607,7 +4607,7 @@ class ResetValuesSelect {
     {viewValue: 'Undefined'},
     {value: null, viewValue: 'Null'},
   ];
-  control = new UntypedFormControl();
+  control = new FormControl('' as string | boolean | null);
 
   @ViewChild(MatSelect) select: MatSelect;
 }
@@ -4628,7 +4628,7 @@ class FalsyValueSelect {
     {value: 0, viewValue: 'Steak'},
     {value: 1, viewValue: 'Pizza'},
   ];
-  control = new UntypedFormControl();
+  control = new FormControl<number | null>(null);
   @ViewChildren(MatOption) options: QueryList<MatOption>;
 }
 
@@ -4649,7 +4649,7 @@ class FalsyValueSelect {
   `,
 })
 class SelectWithGroups {
-  control = new UntypedFormControl();
+  control = new FormControl('');
   pokemonTypes = [
     {
       name: 'Grass',
@@ -4704,7 +4704,7 @@ class SelectWithGroups {
   `,
 })
 class SelectWithGroupsAndNgContainer {
-  control = new UntypedFormControl();
+  control = new FormControl('');
   pokemonTypes = [
     {
       name: 'Grass',
@@ -4749,8 +4749,8 @@ class SelectInsideFormGroup {
     {value: 'steak-0', viewValue: 'Steak'},
     {value: 'pizza-1', viewValue: 'Pizza'},
   ];
-  formControl = new UntypedFormControl('', Validators.required);
-  formGroup = new UntypedFormGroup({
+  formControl = new FormControl('', Validators.required);
+  formGroup = new FormGroup({
     food: this.formControl,
   });
 }
@@ -4840,7 +4840,7 @@ class SelectWithCustomTrigger {
     {value: 'steak-0', viewValue: 'Steak'},
     {value: 'pizza-1', viewValue: 'Pizza'},
   ];
-  control = new UntypedFormControl();
+  control = new FormControl('');
 }
 
 @Component({
@@ -4902,7 +4902,7 @@ class NgModelCompareWithSelect {
 })
 class CustomErrorBehaviorSelect {
   @ViewChild(MatSelect) select: MatSelect;
-  control = new UntypedFormControl();
+  control = new FormControl('');
   foods: any[] = [
     {value: 'steak-0', viewValue: 'Steak'},
     {value: 'pizza-1', viewValue: 'Pizza'},
@@ -4957,7 +4957,7 @@ class SelectWithoutOptionCentering {
     {value: 'pasta-6', viewValue: 'Pasta'},
     {value: 'sushi-7', viewValue: 'Sushi'},
   ];
-  control = new UntypedFormControl('pizza-1');
+  control = new FormControl('pizza-1');
 
   @ViewChild(MatSelect) select: MatSelect;
   @ViewChildren(MatOption) options: QueryList<MatOption>;
@@ -5030,7 +5030,7 @@ class MultiSelectWithLotsOfOptions {
 class SelectWithResetOptionAndFormControl {
   @ViewChild(MatSelect) select: MatSelect;
   @ViewChildren(MatOption) options: QueryList<MatOption>;
-  control = new UntypedFormControl();
+  control = new FormControl('');
 }
 
 @Component({
@@ -5062,9 +5062,9 @@ class SelectInNgContainer {}
 })
 class SelectInsideDynamicFormGroup {
   @ViewChild(MatSelect) select: MatSelect;
-  form: UntypedFormGroup;
+  form: FormGroup;
 
-  constructor(private _formBuilder: UntypedFormBuilder) {
+  constructor(private _formBuilder: FormBuilder) {
     this.assignGroup(false);
   }
 

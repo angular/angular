@@ -7,7 +7,7 @@
  */
 
 import {Component} from '@angular/core';
-import {UntypedFormBuilder, UntypedFormGroup} from '@angular/forms';
+import {FormBuilder, FormGroup} from '@angular/forms';
 
 /**
  * @title Stepper animations
@@ -18,7 +18,7 @@ import {UntypedFormBuilder, UntypedFormGroup} from '@angular/forms';
   styleUrls: ['stepper-animations-example.css'],
 })
 export class StepperAnimationsExample {
-  constructor(private _formBuilder: UntypedFormBuilder) {}
-  firstFormGroup: UntypedFormGroup = this._formBuilder.group({firstCtrl: ['']});
-  secondFormGroup: UntypedFormGroup = this._formBuilder.group({secondCtrl: ['']});
+  constructor(private _formBuilder: FormBuilder) {}
+  firstFormGroup: FormGroup = this._formBuilder.group({firstCtrl: ['']});
+  secondFormGroup: FormGroup = this._formBuilder.group({secondCtrl: ['']});
 }

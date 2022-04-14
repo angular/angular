@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {UntypedFormControl, Validators} from '@angular/forms';
+import {FormControl, Validators} from '@angular/forms';
 
 /** @title Form field with error messages */
 @Component({
@@ -8,7 +8,7 @@ import {UntypedFormControl, Validators} from '@angular/forms';
   styleUrls: ['form-field-error-example.css'],
 })
 export class FormFieldErrorExample {
-  email = new UntypedFormControl('', [Validators.required, Validators.email]);
+  email = new FormControl('', [Validators.required, Validators.email]);
 
   getErrorMessage() {
     if (this.email.hasError('required')) {

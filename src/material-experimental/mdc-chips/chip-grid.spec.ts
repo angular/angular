@@ -29,13 +29,7 @@ import {
   EventEmitter,
 } from '@angular/core';
 import {ComponentFixture, fakeAsync, flush, TestBed, tick} from '@angular/core/testing';
-import {
-  UntypedFormControl,
-  FormsModule,
-  NgForm,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+import {FormControl, FormsModule, NgForm, ReactiveFormsModule, Validators} from '@angular/forms';
 import {MatFormFieldModule} from '@angular/material-experimental/mdc-form-field';
 import {MatInputModule} from '@angular/material-experimental/mdc-input';
 import {By} from '@angular/platform-browser';
@@ -600,7 +594,7 @@ describe('MDC-based MatChipGrid', () => {
     });
 
     it('should take an initial view value with reactive forms', () => {
-      fixture.componentInstance.control = new UntypedFormControl('[pizza-1]');
+      fixture.componentInstance.control = new FormControl('[pizza-1]');
       fixture.detectChanges();
 
       expect(fixture.componentInstance.chipGrid.value).toEqual('[pizza-1]');
@@ -699,7 +693,7 @@ describe('MDC-based MatChipGrid', () => {
         .withContext(`Expected control to start out pristine.`)
         .toEqual(false);
 
-      fixture.componentInstance.control.setValue(['pizza-1']);
+      fixture.componentInstance.control.setValue('pizza-1');
 
       expect(fixture.componentInstance.control.dirty)
         .withContext(`Expected control to stay pristine after programmatic change.`)
@@ -726,7 +720,7 @@ describe('MDC-based MatChipGrid', () => {
     it('should mark the component as required if the control has a required validator', () => {
       fixture.destroy();
       fixture = TestBed.createComponent(InputChipGrid);
-      fixture.componentInstance.control = new UntypedFormControl(undefined, [Validators.required]);
+      fixture.componentInstance.control = new FormControl('', [Validators.required]);
       fixture.detectChanges();
 
       expect(
@@ -782,7 +776,7 @@ describe('MDC-based MatChipGrid', () => {
     }));
 
     it('should set aria-invalid if the form field is invalid', fakeAsync(() => {
-      fixture.componentInstance.control = new UntypedFormControl(undefined, [Validators.required]);
+      fixture.componentInstance.control = new FormControl('', [Validators.required]);
       fixture.detectChanges();
 
       const input: HTMLInputElement = fixture.nativeElement.querySelector('input');
@@ -1123,7 +1117,7 @@ class InputChipGrid {
     {value: 'pasta-6', viewValue: 'Pasta'},
     {value: 'sushi-7', viewValue: 'Sushi'},
   ];
-  control = new UntypedFormControl();
+  control = new FormControl<string | null>(null);
 
   separatorKeyCodes = [ENTER, SPACE];
   addOnBlur: boolean = true;
@@ -1180,7 +1174,7 @@ class ChipGridWithFormErrorMessages {
   @ViewChildren(MatChipRow) chips: QueryList<MatChipRow>;
 
   @ViewChild('form') form: NgForm;
-  formControl = new UntypedFormControl('', Validators.required);
+  formControl = new FormControl('', Validators.required);
 }
 
 @Component({

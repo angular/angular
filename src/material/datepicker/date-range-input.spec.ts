@@ -3,8 +3,8 @@ import {ComponentFixture, TestBed, inject, fakeAsync, tick, flush} from '@angula
 import {
   FormsModule,
   ReactiveFormsModule,
-  UntypedFormGroup,
-  UntypedFormControl,
+  FormGroup,
+  FormControl,
   NG_VALIDATORS,
   Validator,
   NgModel,
@@ -999,9 +999,9 @@ class StandardRangePicker {
   startAt: Date | null = null;
   dateFilter = () => true;
 
-  range = new UntypedFormGroup({
-    start: new UntypedFormControl(),
-    end: new UntypedFormControl(),
+  range = new FormGroup({
+    start: new FormControl<Date | null>(null),
+    end: new FormControl<Date | null>(null),
   });
 }
 

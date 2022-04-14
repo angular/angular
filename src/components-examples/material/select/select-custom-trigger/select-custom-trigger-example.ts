@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {UntypedFormControl} from '@angular/forms';
+import {FormControl} from '@angular/forms';
 
 /** @title Select with custom trigger text */
 @Component({
@@ -8,7 +8,7 @@ import {UntypedFormControl} from '@angular/forms';
   styleUrls: ['select-custom-trigger-example.css'],
 })
 export class SelectCustomTriggerExample {
-  toppings = new UntypedFormControl();
+  toppings = new FormControl('');
 
   toppingList: string[] = ['Extra cheese', 'Mushroom', 'Onion', 'Pepperoni', 'Sausage', 'Tomato'];
 }

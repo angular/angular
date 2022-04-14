@@ -13,7 +13,7 @@ import {
 import {Component, Type, ViewChild, Provider, Directive, ViewEncapsulation} from '@angular/core';
 import {ComponentFixture, fakeAsync, flush, inject, TestBed, tick} from '@angular/core/testing';
 import {
-  UntypedFormControl,
+  FormControl,
   FormsModule,
   NgModel,
   ReactiveFormsModule,
@@ -1058,7 +1058,7 @@ describe('MatDatepicker', () => {
         'should not dispatch FormControl change event for invalid values on input when set ' +
           'to update on blur',
         fakeAsync(() => {
-          const formControl = new UntypedFormControl({value: null}, {updateOn: 'blur'});
+          const formControl = new FormControl({value: null} as unknown as Date, {updateOn: 'blur'});
           const spy = jasmine.createSpy('change spy');
           const subscription = formControl.valueChanges.subscribe(spy);
           const inputEl = fixture.debugElement.query(By.css('input'))!.nativeElement;
@@ -2516,7 +2516,7 @@ class DatepickerWithNgModel {
   `,
 })
 class DatepickerWithFormControl {
-  formControl = new UntypedFormControl();
+  formControl = new FormControl<Date | null>(null);
   @ViewChild('d') datepicker: MatDatepicker<Date>;
   @ViewChild(MatDatepickerInput) datepickerInput: MatDatepickerInput<Date>;
   @ViewChild(MatDatepickerToggle) datepickerToggle: MatDatepickerToggle<Date>;

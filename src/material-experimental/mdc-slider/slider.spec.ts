@@ -16,7 +16,7 @@ import {
 } from '../../cdk/testing/private';
 import {Component, Provider, QueryList, Type, ViewChild, ViewChildren} from '@angular/core';
 import {ComponentFixture, fakeAsync, flush, TestBed, waitForAsync} from '@angular/core/testing';
-import {UntypedFormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {By} from '@angular/platform-browser';
 import {Thumb} from '@material/slider';
 import {of} from 'rxjs';
@@ -1922,7 +1922,7 @@ class RangeSliderWithNgModel {
   styles: SLIDER_STYLES,
 })
 class SliderWithFormControl {
-  control = new UntypedFormControl(0);
+  control = new FormControl(0);
 }
 
 @Component({
@@ -1934,8 +1934,8 @@ class SliderWithFormControl {
   styles: SLIDER_STYLES,
 })
 class RangeSliderWithFormControl {
-  startInputControl = new UntypedFormControl(0);
-  endInputControl = new UntypedFormControl(100);
+  startInputControl = new FormControl(0);
+  endInputControl = new FormControl(100);
 }
 
 @Component({

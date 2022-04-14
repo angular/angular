@@ -2,7 +2,7 @@ import {HarnessLoader} from '@angular/cdk/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {Component} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {UntypedFormControl, ReactiveFormsModule} from '@angular/forms';
+import {FormControl, ReactiveFormsModule} from '@angular/forms';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import {MatSlideToggleHarness} from '@angular/material/slide-toggle/testing/slide-toggle-harness';
 
@@ -181,6 +181,6 @@ export function runHarnessTests(
   `,
 })
 class SlideToggleHarnessTest {
-  ctrl = new UntypedFormControl(true);
+  ctrl = new FormControl(true);
   disabled = true;
 }

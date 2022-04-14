@@ -10,7 +10,7 @@ import {
   tick,
   inject,
 } from '@angular/core/testing';
-import {UntypedFormControl, FormsModule, NgModel, ReactiveFormsModule} from '@angular/forms';
+import {FormControl, FormsModule, NgModel, ReactiveFormsModule} from '@angular/forms';
 import {By} from '@angular/platform-browser';
 import {FocusMonitor} from '@angular/cdk/a11y';
 import {MatSlideToggle, MatSlideToggleChange, MatSlideToggleModule} from './index';
@@ -971,7 +971,7 @@ class SlideToggleWithModel {
     </mat-slide-toggle>`,
 })
 class SlideToggleWithFormControl {
-  formControl = new UntypedFormControl();
+  formControl = new FormControl(false);
 }
 
 @Component({template: `<mat-slide-toggle tabindex="5" [disabled]="disabled"></mat-slide-toggle>`})

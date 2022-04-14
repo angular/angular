@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {UntypedFormControl} from '@angular/forms';
+import {FormControl} from '@angular/forms';
 
 /** @title Select with multiple selection */
 @Component({
@@ -7,6 +7,6 @@ import {UntypedFormControl} from '@angular/forms';
   templateUrl: 'select-multiple-example.html',
 })
 export class SelectMultipleExample {
-  toppings = new UntypedFormControl();
+  toppings = new FormControl('');
   toppingList: string[] = ['Extra cheese', 'Mushroom', 'Onion', 'Pepperoni', 'Sausage', 'Tomato'];
 }

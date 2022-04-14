@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {UntypedFormControl} from '@angular/forms';
+import {FormControl} from '@angular/forms';
 
 /** @title Disabled select */
 @Component({
@@ -7,5 +7,5 @@ import {UntypedFormControl} from '@angular/forms';
   templateUrl: 'select-disabled-example.html',
 })
 export class SelectDisabledExample {
-  disableSelect = new UntypedFormControl(false);
+  disableSelect = new FormControl(false);
 }

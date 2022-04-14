@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {UntypedFormControl} from '@angular/forms';
+import {FormControl} from '@angular/forms';
 import {Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
 
@@ -16,14 +16,14 @@ export interface User {
   styleUrls: ['autocomplete-display-example.css'],
 })
 export class AutocompleteDisplayExample implements OnInit {
-  myControl = new UntypedFormControl();
+  myControl = new FormControl<string | User>('');
   options: User[] = [{name: 'Mary'}, {name: 'Shelley'}, {name: 'Igor'}];
   filteredOptions: Observable<User[]>;
 
   ngOnInit() {
     this.filteredOptions = this.myControl.valueChanges.pipe(
       startWith(''),
-      map(value => (typeof value === 'string' ? value : value.name)),
+      map(value => (typeof value === 'string' ? value : value?.name)),
       map(name => (name ? this._filter(name) : this.options.slice())),
     );
   }

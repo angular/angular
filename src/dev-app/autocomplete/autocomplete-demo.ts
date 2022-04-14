@@ -7,7 +7,7 @@
  */
 
 import {Component, ViewChild} from '@angular/core';
-import {UntypedFormControl, NgModel} from '@angular/forms';
+import {FormControl, NgModel} from '@angular/forms';
 import {Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
 
@@ -27,10 +27,10 @@ export interface StateGroup {
   styleUrls: ['autocomplete-demo.css'],
 })
 export class AutocompleteDemo {
-  stateCtrl: UntypedFormControl;
+  stateCtrl = new FormControl({code: 'CA', name: 'California'});
   currentState = '';
   currentGroupedState = '';
-  topHeightCtrl = new UntypedFormControl(0);
+  topHeightCtrl = new FormControl(0);
 
   reactiveStates: Observable<State[]>;
   tdStates: State[];
@@ -96,7 +96,6 @@ export class AutocompleteDemo {
 
   constructor() {
     this.tdStates = this.states;
-    this.stateCtrl = new UntypedFormControl({code: 'CA', name: 'California'});
     this.reactiveStates = this.stateCtrl.valueChanges.pipe(
       startWith(this.stateCtrl.value),
       map(val => this.displayFn(val)),

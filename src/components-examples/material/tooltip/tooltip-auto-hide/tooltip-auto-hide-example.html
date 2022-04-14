@@ -10,7 +10,7 @@
 <div class="example-container" cdkScrollable>
   <button mat-raised-button #tooltip="matTooltip"
           matTooltip="Info about the action"
-          [matTooltipPosition]="position.value"
+          [matTooltipPosition]="position.value!"
           matTooltipHideDelay="100000"
           aria-label="Button that displays a tooltip that hides when scrolled out of the container"
           class="example-button">

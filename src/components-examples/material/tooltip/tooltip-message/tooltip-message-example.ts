@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {UntypedFormControl} from '@angular/forms';
+import {FormControl} from '@angular/forms';
 
 /**
  * @title Tooltip with a changing message
@@ -10,5 +10,5 @@ import {UntypedFormControl} from '@angular/forms';
   styleUrls: ['tooltip-message-example.css'],
 })
 export class TooltipMessageExample {
-  message = new UntypedFormControl('Info about the action');
+  message = new FormControl('Info about the action');
 }

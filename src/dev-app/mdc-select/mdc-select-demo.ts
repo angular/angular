@@ -7,14 +7,14 @@
  */
 
 import {Component} from '@angular/core';
-import {UntypedFormControl, Validators} from '@angular/forms';
+import {FormControl, Validators} from '@angular/forms';
 import {ErrorStateMatcher, ThemePalette} from '@angular/material-experimental/mdc-core';
 import {MatSelectChange} from '@angular/material-experimental/mdc-select';
 import {FloatLabelType} from '@angular/material-experimental/mdc-form-field';
 
 /** Error any time control is invalid */
 export class MyErrorStateMatcher implements ErrorStateMatcher {
-  isErrorState(control: UntypedFormControl | null): boolean {
+  isErrorState(control: FormControl | null): boolean {
     if (control) {
       return control.invalid;
     }
@@ -43,12 +43,12 @@ export class MdcSelectDemo {
   latestChangeEvent: MatSelectChange;
   floatLabel: FloatLabelType = 'auto';
   drinksWidth = 'default';
-  foodControl = new UntypedFormControl('pizza-1');
-  topHeightCtrl = new UntypedFormControl(0);
+  foodControl = new FormControl('pizza-1');
+  topHeightCtrl = new FormControl(0);
   drinksTheme: ThemePalette = 'primary';
   pokemonTheme: ThemePalette = 'primary';
   compareByValue = true;
-  selectFormControl = new UntypedFormControl('', Validators.required);
+  selectFormControl = new FormControl('', Validators.required);
 
   foods = [
     {value: null, viewValue: 'None'},

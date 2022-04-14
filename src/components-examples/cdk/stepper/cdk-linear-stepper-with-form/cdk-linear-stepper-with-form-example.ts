@@ -1,6 +1,6 @@
 import {Component} from '@angular/core';
 import {CdkStepper} from '@angular/cdk/stepper';
-import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
+import {FormBuilder, Validators} from '@angular/forms';
 
 /** @title A custom CDK linear stepper with forms */
 @Component({
@@ -10,17 +10,14 @@ import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
 })
 export class CdkLinearStepperWithFormExample {
   isLinear = true;
-  firstFormGroup: UntypedFormGroup;
-  secondFormGroup: UntypedFormGroup;
+  firstFormGroup = this._formBuilder.group({
+    firstControl: ['', Validators.required],
+  });
+  secondFormGroup = this._formBuilder.group({
+    secondControl: ['', Validators.required],
+  });
 
-  constructor(private readonly _formBuilder: UntypedFormBuilder) {
-    this.firstFormGroup = this._formBuilder.group({
-      firstControl: ['', Validators.required],
-    });
-    this.secondFormGroup = this._formBuilder.group({
-      secondControl: ['', Validators.required],
-    });
-  }
+  constructor(private readonly _formBuilder: FormBuilder) {}
 
   toggleLinearity() {
     this.isLinear = !this.isLinear;

@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {UntypedFormControl} from '@angular/forms';
+import {FormControl} from '@angular/forms';
 
 /**
  * @title Testing with MatSlideToggleHarness
@@ -10,5 +10,5 @@ import {UntypedFormControl} from '@angular/forms';
 })
 export class SlideToggleHarnessExample {
   disabled = true;
-  ctrl = new UntypedFormControl(true);
+  ctrl = new FormControl(true);
 }

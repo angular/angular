@@ -8,7 +8,7 @@ import {
   dispatchMouseEvent,
 } from '../../cdk/testing/private';
 import {A, DOWN_ARROW, END, HOME, SPACE} from '@angular/cdk/keycodes';
-import {UntypedFormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {CdkCombobox, CdkComboboxModule} from '@angular/cdk-experimental/combobox';
 
 describe('CdkOption and CdkListbox', () => {
@@ -967,7 +967,7 @@ class ListboxActiveDescendant {
     </select>`,
 })
 class ListboxControlValueAccessor {
-  form = new UntypedFormControl();
+  form = new FormControl<string[]>([]);
   changedOption: CdkOption<string>;
   isDisabled: boolean = false;
   isMultiselectable: boolean = false;

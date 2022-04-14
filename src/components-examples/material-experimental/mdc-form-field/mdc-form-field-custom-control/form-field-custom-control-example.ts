@@ -1,13 +1,7 @@
 import {FocusMonitor} from '@angular/cdk/a11y';
 import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
 import {Component, ElementRef, Inject, Input, OnDestroy, Optional, Self} from '@angular/core';
-import {
-  ControlValueAccessor,
-  UntypedFormBuilder,
-  UntypedFormGroup,
-  NgControl,
-  Validators,
-} from '@angular/forms';
+import {ControlValueAccessor, FormBuilder, NgControl, Validators} from '@angular/forms';
 import {MatFormField, MatFormFieldControl} from '@angular/material-experimental/mdc-form-field';
 import {MAT_FORM_FIELD} from '@angular/material/form-field';
 import {Subject} from 'rxjs';
@@ -38,7 +32,11 @@ export class MyTel {
 export class MyTelInput implements ControlValueAccessor, MatFormFieldControl<MyTel>, OnDestroy {
   static nextId = 0;
 
-  parts: UntypedFormGroup;
+  parts = this._formBuilder.group({
+    area: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(3)]],
+    exchange: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(3)]],
+    subscriber: ['', [Validators.required, Validators.minLength(4), Validators.maxLength(4)]],
+  });
   stateChanges = new Subject<void>();
   focused = false;
   errorState = false;
@@ -98,7 +96,7 @@ export class MyTelInput implements ControlValueAccessor, MatFormFieldControl<MyT
       const {
         value: {area, exchange, subscriber},
       } = this.parts;
-      return new MyTel(area, exchange, subscriber);
+      return new MyTel(area!, exchange!, subscriber!);
     }
     return null;
   }
@@ -109,18 +107,12 @@ export class MyTelInput implements ControlValueAccessor, MatFormFieldControl<MyT
   }
 
   constructor(
-    formBuilder: UntypedFormBuilder,
+    private _formBuilder: FormBuilder,
     private _focusMonitor: FocusMonitor,
     private _elementRef: ElementRef<HTMLElement>,
     @Optional() @Inject(MAT_FORM_FIELD) public _formField: MatFormField,
     @Optional() @Self() public ngControl: NgControl,
   ) {
-    this.parts = formBuilder.group({
-      area: [null, [Validators.required, Validators.minLength(3), Validators.maxLength(3)]],
-      exchange: [null, [Validators.required, Validators.minLength(3), Validators.maxLength(3)]],
-      subscriber: [null, [Validators.required, Validators.minLength(4), Validators.maxLength(4)]],
-    });
-
     _focusMonitor.monitor(_elementRef, true).subscribe(origin => {
       if (this.focused && !origin) {
         this.onTouched();

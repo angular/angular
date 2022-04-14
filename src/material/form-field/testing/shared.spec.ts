@@ -3,7 +3,7 @@ import {createFakeEvent, dispatchFakeEvent} from '../../../cdk/testing/private';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {Component, Type} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {UntypedFormControl, ReactiveFormsModule, Validators} from '@angular/forms';
+import {FormControl, ReactiveFormsModule, Validators} from '@angular/forms';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {MatFormFieldHarness} from './form-field-harness';
 
@@ -314,7 +314,7 @@ export function runHarnessTests(
   `,
 })
 class FormFieldHarnessTest {
-  requiredControl = new UntypedFormControl('Initial value', [Validators.required]);
+  requiredControl = new FormControl('Initial value', [Validators.required]);
   shouldLabelFloat: 'always' | 'auto' = 'auto';
   hasLabel = false;
   isDisabled = false;

@@ -1,5 +1,5 @@
-import {Component, OnInit} from '@angular/core';
-import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
+import {Component} from '@angular/core';
+import {FormBuilder, Validators} from '@angular/forms';
 import {STEPPER_GLOBAL_OPTIONS} from '@angular/cdk/stepper';
 
 /**
@@ -16,18 +16,13 @@ import {STEPPER_GLOBAL_OPTIONS} from '@angular/cdk/stepper';
     },
   ],
 })
-export class StepperErrorsExample implements OnInit {
-  firstFormGroup: UntypedFormGroup;
-  secondFormGroup: UntypedFormGroup;
+export class StepperErrorsExample {
+  firstFormGroup = this._formBuilder.group({
+    firstCtrl: ['', Validators.required],
+  });
+  secondFormGroup = this._formBuilder.group({
+    secondCtrl: ['', Validators.required],
+  });
 
-  constructor(private _formBuilder: UntypedFormBuilder) {}
-
-  ngOnInit() {
-    this.firstFormGroup = this._formBuilder.group({
-      firstCtrl: ['', Validators.required],
-    });
-    this.secondFormGroup = this._formBuilder.group({
-      secondCtrl: ['', Validators.required],
-    });
-  }
+  constructor(private _formBuilder: FormBuilder) {}
 }

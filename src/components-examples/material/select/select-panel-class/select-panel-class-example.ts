@@ -1,5 +1,5 @@
 import {Component, ViewEncapsulation} from '@angular/core';
-import {UntypedFormControl} from '@angular/forms';
+import {FormControl} from '@angular/forms';
 
 /**
  * @title Select with custom panel styling
@@ -13,5 +13,5 @@ import {UntypedFormControl} from '@angular/forms';
   encapsulation: ViewEncapsulation.None,
 })
 export class SelectPanelClassExample {
-  panelColor = new UntypedFormControl('red');
+  panelColor = new FormControl('red');
 }

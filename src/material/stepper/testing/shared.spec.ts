@@ -1,10 +1,5 @@
 import {Component} from '@angular/core';
-import {
-  ReactiveFormsModule,
-  UntypedFormGroup,
-  UntypedFormControl,
-  Validators,
-} from '@angular/forms';
+import {ReactiveFormsModule, FormGroup, FormControl, Validators} from '@angular/forms';
 import {HarnessLoader, parallel} from '@angular/cdk/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
@@ -315,11 +310,11 @@ export function runHarnessTests(
   `,
 })
 class StepperHarnessTest {
-  oneGroup = new UntypedFormGroup({
-    oneCtrl: new UntypedFormControl('', Validators.required),
+  oneGroup = new FormGroup({
+    oneCtrl: new FormControl('', Validators.required),
   });
 
-  twoGroup = new UntypedFormGroup({
-    twoCtrl: new UntypedFormControl('', Validators.required),
+  twoGroup = new FormGroup({
+    twoCtrl: new FormControl('', Validators.required),
   });
 }

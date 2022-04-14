@@ -22,7 +22,7 @@ import {
 } from '@angular/cdk/testing/private';
 import {Component, DebugElement, Type, ViewChild} from '@angular/core';
 import {ComponentFixture, fakeAsync, flush, TestBed} from '@angular/core/testing';
-import {UntypedFormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {By} from '@angular/platform-browser';
 import {MatSlider, MatSliderModule} from './index';
 
@@ -1682,7 +1682,7 @@ class SliderWithOneWayBinding {
   styles: [styles],
 })
 class SliderWithFormControl {
-  control = new UntypedFormControl(0);
+  control = new FormControl(0);
 }
 
 @Component({

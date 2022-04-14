@@ -1,5 +1,5 @@
-import {Component, OnInit} from '@angular/core';
-import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
+import {Component} from '@angular/core';
+import {FormBuilder, Validators} from '@angular/forms';
 
 /**
  * @title Stepper vertical
@@ -9,19 +9,14 @@ import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
   templateUrl: 'stepper-vertical-example.html',
   styleUrls: ['stepper-vertical-example.css'],
 })
-export class StepperVerticalExample implements OnInit {
+export class StepperVerticalExample {
+  firstFormGroup = this._formBuilder.group({
+    firstCtrl: ['', Validators.required],
+  });
+  secondFormGroup = this._formBuilder.group({
+    secondCtrl: ['', Validators.required],
+  });
   isLinear = false;
-  firstFormGroup: UntypedFormGroup;
-  secondFormGroup: UntypedFormGroup;
 
-  constructor(private _formBuilder: UntypedFormBuilder) {}
-
-  ngOnInit() {
-    this.firstFormGroup = this._formBuilder.group({
-      firstCtrl: ['', Validators.required],
-    });
-    this.secondFormGroup = this._formBuilder.group({
-      secondCtrl: ['', Validators.required],
-    });
-  }
+  constructor(private _formBuilder: FormBuilder) {}
 }

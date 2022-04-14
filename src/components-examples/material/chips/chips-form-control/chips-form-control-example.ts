@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {UntypedFormControl} from '@angular/forms';
+import {FormControl} from '@angular/forms';
 import {MatChipInputEvent} from '@angular/material/chips';
 
 /**
@@ -12,7 +12,7 @@ import {MatChipInputEvent} from '@angular/material/chips';
 })
 export class ChipsFormControlExample {
   keywords = new Set(['angular', 'how-to', 'tutorial']);
-  formControl = new UntypedFormControl(['angular']);
+  formControl = new FormControl(['angular']);
 
   addKeywordFromInput(event: MatChipInputEvent) {
     if (event.value) {

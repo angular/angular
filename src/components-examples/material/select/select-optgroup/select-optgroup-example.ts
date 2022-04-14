@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {UntypedFormControl} from '@angular/forms';
+import {FormControl} from '@angular/forms';
 
 interface Pokemon {
   value: string;
@@ -18,7 +18,7 @@ interface PokemonGroup {
   templateUrl: 'select-optgroup-example.html',
 })
 export class SelectOptgroupExample {
-  pokemonControl = new UntypedFormControl();
+  pokemonControl = new FormControl('');
   pokemonGroups: PokemonGroup[] = [
     {
       name: 'Grass',

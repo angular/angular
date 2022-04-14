@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {UntypedFormControl} from '@angular/forms';
+import {FormControl} from '@angular/forms';
 import {Observable} from 'rxjs';
 import {startWith, map} from 'rxjs/operators';
 
@@ -12,14 +12,14 @@ import {startWith, map} from 'rxjs/operators';
   styleUrls: ['autocomplete-plain-input-example.css'],
 })
 export class AutocompletePlainInputExample implements OnInit {
-  control = new UntypedFormControl();
+  control = new FormControl('');
   streets: string[] = ['Champs-Élysées', 'Lombard Street', 'Abbey Road', 'Fifth Avenue'];
   filteredStreets: Observable<string[]>;
 
   ngOnInit() {
     this.filteredStreets = this.control.valueChanges.pipe(
       startWith(''),
-      map(value => this._filter(value)),
+      map(value => this._filter(value || '')),
     );
   }
 

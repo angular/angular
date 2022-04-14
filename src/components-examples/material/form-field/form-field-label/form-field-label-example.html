@@ -11,18 +11,18 @@
 
     <mat-form-field appearance="fill"
         [hideRequiredMarker]="hideRequiredControl.value"
-        [floatLabel]="floatLabelControl.value">
+        [floatLabel]="getFloatLabelValue()">
       <input matInput placeholder="Simple placeholder" required>
     </mat-form-field>
 
-    <mat-form-field appearance="fill" [floatLabel]="floatLabelControl.value">
+    <mat-form-field appearance="fill" [floatLabel]="getFloatLabelValue()">
       <mat-label>Both a label and a placeholder</mat-label>
       <input matInput placeholder="Simple placeholder">
     </mat-form-field>
 
     <mat-form-field appearance="fill"
         [hideRequiredMarker]="hideRequiredControl.value"
-        [floatLabel]="floatLabelControl.value">
+        [floatLabel]="getFloatLabelValue()">
       <mat-select required>
         <mat-option>-- None --</mat-option>
         <mat-option value="option">Option</mat-option>

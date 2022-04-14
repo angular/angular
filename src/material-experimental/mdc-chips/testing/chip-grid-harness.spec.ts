@@ -1,6 +1,6 @@
 import {HarnessLoader} from '@angular/cdk/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
-import {UntypedFormControl, ReactiveFormsModule, Validators} from '@angular/forms';
+import {FormControl, ReactiveFormsModule, Validators} from '@angular/forms';
 import {Component} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {MatChipsModule} from '../index';
@@ -61,7 +61,7 @@ describe('MatChipGridHarness', () => {
     // Mark the control as touched since the default error
     // state matcher only activates after a control is touched.
     fixture.componentInstance.control.markAsTouched();
-    fixture.componentInstance.control.setValue(undefined);
+    fixture.componentInstance.control.setValue(null);
 
     expect(await harness.isInvalid()).toBe(true);
   });
@@ -78,6 +78,6 @@ describe('MatChipGridHarness', () => {
   `,
 })
 class ChipGridHarnessTest {
-  control = new UntypedFormControl('value', [Validators.required]);
+  control = new FormControl('value', [Validators.required]);
   required = false;
 }

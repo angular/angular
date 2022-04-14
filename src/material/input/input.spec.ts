@@ -18,8 +18,8 @@ import {
 } from '@angular/core';
 import {ComponentFixture, fakeAsync, flush, TestBed, tick} from '@angular/core/testing';
 import {
-  UntypedFormControl,
-  UntypedFormGroup,
+  FormControl,
+  FormGroup,
   FormGroupDirective,
   FormsModule,
   NgForm,
@@ -1948,7 +1948,7 @@ class MatInputPlaceholderElementTestComponent {
     </mat-form-field>`,
 })
 class MatInputWithFormControl {
-  formControl = new UntypedFormControl();
+  formControl = new FormControl('');
 }
 
 @Component({
@@ -1986,7 +1986,7 @@ class MatInputWithSubscriptAndAriaDescribedBy {
   label: string = '';
   userDescribedByValue: string = '';
   showError = false;
-  formControl = new UntypedFormControl();
+  formControl = new FormControl('');
 }
 
 @Component({template: `<mat-form-field><input matInput [type]="t"></mat-form-field>`})
@@ -2146,7 +2146,7 @@ class MatInputMissingMatInputTestController {}
 })
 class MatInputWithFormErrorMessages {
   @ViewChild('form') form: NgForm;
-  formControl = new UntypedFormControl('incorrect', [
+  formControl = new FormControl('incorrect', [
     Validators.required,
     Validators.pattern(/valid value/),
   ]);
@@ -2167,8 +2167,8 @@ class MatInputWithFormErrorMessages {
   `,
 })
 class MatInputWithCustomErrorStateMatcher {
-  formGroup = new UntypedFormGroup({
-    name: new UntypedFormControl('', [Validators.required, Validators.pattern(/valid value/)]),
+  formGroup = new FormGroup({
+    name: new FormControl('', [Validators.required, Validators.pattern(/valid value/)]),
   });
 
   errorState = false;
@@ -2191,11 +2191,8 @@ class MatInputWithCustomErrorStateMatcher {
 })
 class MatInputWithFormGroupErrorMessages {
   @ViewChild(FormGroupDirective) formGroupDirective: FormGroupDirective;
-  formGroup = new UntypedFormGroup({
-    name: new UntypedFormControl('incorrect', [
-      Validators.required,
-      Validators.pattern(/valid value/),
-    ]),
+  formGroup = new FormGroup({
+    name: new FormControl('incorrect', [Validators.required, Validators.pattern(/valid value/)]),
   });
 }
 
@@ -2230,7 +2227,7 @@ class MatInputWithNgIf {
   `,
 })
 class MatInputOnPush {
-  formControl = new UntypedFormControl('');
+  formControl = new FormControl('');
 }
 
 @Component({
@@ -2451,5 +2448,5 @@ class MatInputWithColor {
     </mat-form-field>`,
 })
 class MatInputWithRequiredFormControl {
-  formControl = new UntypedFormControl('', [Validators.required]);
+  formControl = new FormControl('', [Validators.required]);
 }

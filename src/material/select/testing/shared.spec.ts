@@ -3,7 +3,7 @@ import {HarnessLoader, parallel} from '@angular/cdk/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {Component} from '@angular/core';
 import {ComponentFixture, inject, TestBed} from '@angular/core/testing';
-import {UntypedFormControl, ReactiveFormsModule, Validators} from '@angular/forms';
+import {FormControl, ReactiveFormsModule, Validators} from '@angular/forms';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatSelectModule} from '@angular/material/select';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
@@ -277,7 +277,7 @@ export function runHarnessTests(
   `,
 })
 class SelectHarnessTest {
-  formControl = new UntypedFormControl(undefined, [Validators.required]);
+  formControl = new FormControl(undefined as string | undefined, [Validators.required]);
   isDisabled = false;
   isRequired = false;
   states = [

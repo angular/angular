@@ -35,7 +35,7 @@ import {
   TestBed,
   tick,
 } from '@angular/core/testing';
-import {UntypedFormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatOption, MatOptionSelectionChange} from '@angular/material/core';
 import {MatFormField, MatFormFieldModule} from '@angular/material/form-field';
 import {By} from '@angular/platform-browser';
@@ -3399,7 +3399,7 @@ const SIMPLE_AUTOCOMPLETE_TEMPLATE = `
 
 @Component({template: SIMPLE_AUTOCOMPLETE_TEMPLATE})
 class SimpleAutocomplete implements OnDestroy {
-  stateCtrl = new UntypedFormControl();
+  stateCtrl = new FormControl<{name: string; code: string} | string | null>(null);
   filteredStates: any[];
   valueSub: Subscription;
   floatLabel = 'auto';
@@ -3437,7 +3437,7 @@ class SimpleAutocomplete implements OnDestroy {
     this.filteredStates = this.states;
     this.valueSub = this.stateCtrl.valueChanges.subscribe(val => {
       this.filteredStates = val
-        ? this.states.filter(s => s.name.match(new RegExp(val, 'gi')))
+        ? this.states.filter(s => s.name.match(new RegExp(val as string, 'gi')))
         : this.states;
     });
   }
@@ -3468,7 +3468,7 @@ class SimpleAutocompleteShadowDom extends SimpleAutocomplete {}
   `,
 })
 class NgIfAutocomplete {
-  optionCtrl = new UntypedFormControl();
+  optionCtrl = new FormControl('');
   filteredOptions: Observable<any>;
   isVisible = true;
   options = ['One', 'Two', 'Three'];
@@ -3479,7 +3479,7 @@ class NgIfAutocomplete {
   constructor() {
     this.filteredOptions = this.optionCtrl.valueChanges.pipe(
       startWith(null),
-      map((val: string) => {
+      map(val => {
         return val
           ? this.options.filter(option => new RegExp(val, 'gi').test(option))
           : this.options.slice();
@@ -3596,7 +3596,7 @@ class AutocompleteWithOnPushDelay implements OnInit {
   `,
 })
 class AutocompleteWithNativeInput {
-  optionCtrl = new UntypedFormControl();
+  optionCtrl = new FormControl('');
   filteredOptions: Observable<any>;
   options = ['En', 'To', 'Tre', 'Fire', 'Fem'];
 
@@ -3605,8 +3605,8 @@ class AutocompleteWithNativeInput {
 
   constructor() {
     this.filteredOptions = this.optionCtrl.valueChanges.pipe(
-      startWith(null),
-      map((val: string) => {
+      startWith(''),
+      map(val => {
         return val
           ? this.options.filter(option => new RegExp(val, 'gi').test(option))
           : this.options.slice();
@@ -3620,7 +3620,7 @@ class AutocompleteWithNativeInput {
 })
 class AutocompleteWithoutPanel {
   @ViewChild(MatAutocompleteTrigger) trigger: MatAutocompleteTrigger;
-  control = new UntypedFormControl();
+  control = new FormControl('');
 }
 
 @Component({
@@ -3635,7 +3635,7 @@ class AutocompleteWithoutPanel {
   `,
 })
 class AutocompleteWithFormsAndNonfloatingLabel {
-  formControl = new UntypedFormControl('California');
+  formControl = new FormControl('California');
 }
 
 @Component({
@@ -3720,7 +3720,7 @@ class AutocompleteWithSelectEvent {
   `,
 })
 class PlainAutocompleteInputWithFormControl {
-  formControl = new UntypedFormControl();
+  formControl = new FormControl('');
 }
 
 @Component({
