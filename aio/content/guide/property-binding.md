@@ -103,4 +103,4 @@ Because the value of the property 'isUnchanged' is 'true' in the 'AppComponent',
 * [Class & Style Binding](guide/class-binding)
 * [Attribute Binding](guide/attribute-binding)
 
-@reviewed 2021-12-10
+@reviewed 2022-04-14
