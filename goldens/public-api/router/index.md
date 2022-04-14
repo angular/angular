@@ -34,7 +34,7 @@ import { ViewContainerRef } from '@angular/core';
 // @public
 export class ActivatedRoute {
     get children(): ActivatedRoute[];
-    component: Type<any> | string | null;
+    component: Type<any> | null;
     data: Observable<Data>;
     get firstChild(): ActivatedRoute | null;
     fragment: Observable<string | null>;
@@ -56,7 +56,7 @@ export class ActivatedRoute {
 // @public
 export class ActivatedRouteSnapshot {
     get children(): ActivatedRouteSnapshot[];
-    component: Type<any> | string | null;
+    component: Type<any> | null;
     data: Data;
     get firstChild(): ActivatedRouteSnapshot | null;
     fragment: string | null;
