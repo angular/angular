@@ -20,14 +20,14 @@ When using the emulated view encapsulation, Angular pre-processes all the compon
 
 In the DOM of a running Angular application, elements belonging to components using emulated view encapsulation have some extra attributes attached to them:
 
-<code-example format="html" language="html">
+<code-example language="html">
 
 &lt;hero-details _nghost-pmm-5&gt;
   &lt;h2 _ngcontent-pmm-5&gt;Mister Fantastic&lt;/h2&gt;
   &lt;hero-team &lowbar;ngcontent-pmm-5 &lowbar;nghost-pmm-6&gt;
     &lt;h3 _ngcontent-pmm-6&gt;Team&lt;/h3&gt;
   &lt;/hero-team&gt;
-&lt;/hero-detail&gt;
+&lt;/hero-details&gt;
 
 </code-example>
 
