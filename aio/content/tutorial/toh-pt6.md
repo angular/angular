@@ -298,7 +298,7 @@ Add the `delete()` handler to the component class.
 Although the component delegates hero deletion to the `HeroService`, it remains responsible for updating its own list of heroes.
 The component's `delete()` method immediately removes the *hero-to-delete* from that list, anticipating that the `HeroService` will succeed on the server.
 
-There's really nothing for the component to do with the `Observable` returned by `heroService.delete()` **but it must subscribe anyway**.
+There's really nothing for the component to do with the `Observable` returned by `heroService.deleteHero()` **but it must subscribe anyway**.
 
 <div class="alert is-important">
 
