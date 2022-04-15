@@ -66,10 +66,8 @@ export interface ComponentAnalysisData {
   isPoisoned: boolean;
   animationTriggerNames: AnimationTriggerNames|null;
 
-  imports: {
-    resolved: Reference<ClassDeclaration>[],
-    raw: ts.Expression,
-  }|null;
+  rawImports: ts.Expression|null;
+  resolvedImports: Reference<ClassDeclaration>[]|null;
 }
 
 export type ComponentResolutionData =

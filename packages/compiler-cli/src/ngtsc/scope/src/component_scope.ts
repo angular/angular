@@ -7,7 +7,7 @@
  */
 import {ClassDeclaration} from '../../reflection';
 
-import {ComponentScopeReader, LocalModuleScope, RemoteScope} from './api';
+import {ComponentScope, ComponentScopeReader, LocalModuleScope, RemoteScope} from './api';
 
 /**
  * A `ComponentScopeReader` that reads from an ordered set of child readers until it obtains the
@@ -19,7 +19,7 @@ import {ComponentScopeReader, LocalModuleScope, RemoteScope} from './api';
 export class CompoundComponentScopeReader implements ComponentScopeReader {
   constructor(private readers: ComponentScopeReader[]) {}
 
-  getScopeForComponent(clazz: ClassDeclaration): LocalModuleScope|null {
+  getScopeForComponent(clazz: ClassDeclaration): ComponentScope|null {
     for (const reader of this.readers) {
       const meta = reader.getScopeForComponent(clazz);
       if (meta !== null) {

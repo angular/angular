@@ -17,7 +17,7 @@ import {MetaKind} from '../../metadata';
 import {PerfCheckpoint, PerfEvent, PerfPhase, PerfRecorder} from '../../perf';
 import {ProgramDriver, UpdateMode} from '../../program_driver';
 import {ClassDeclaration, isNamedClassDeclaration, ReflectionHost} from '../../reflection';
-import {ComponentScopeReader, TypeCheckScopeRegistry} from '../../scope';
+import {ComponentScopeKind, ComponentScopeReader, TypeCheckScopeRegistry} from '../../scope';
 import {isShim} from '../../shims';
 import {getSourceFileOrNull, isSymbolWithValueDeclaration} from '../../util/src/typescript';
 import {DirectiveInScope, ElementSymbol, FullTemplateMapping, GlobalCompletion, NgTemplateDiagnostic, OptimizeFor, PipeInScope, ProgramTypeCheckAdapter, Symbol, TcbLocation, TemplateDiagnostic, TemplateId, TemplateSymbol, TemplateTypeChecker, TypeCheckableDirectiveMeta, TypeCheckingConfig} from '../api';
@@ -627,14 +627,19 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       return null;
     }
 
+    const dependencies = scope.kind === ComponentScopeKind.NgModule ?
+        scope.compilation.dependencies :
+        scope.dependencies;
+
     const data: ScopeData = {
       directives: [],
       pipes: [],
-      isPoisoned: scope.compilation.isPoisoned,
+      isPoisoned: scope.kind === ComponentScopeKind.NgModule ? scope.compilation.isPoisoned :
+                                                               scope.isPoisoned,
     };
 
     const typeChecker = this.programDriver.getProgram().getTypeChecker();
-    for (const dep of scope.compilation.dependencies) {
+    for (const dep of dependencies) {
       if (dep.kind === MetaKind.Directive) {
         if (dep.selector === null) {
           // Skip this directive, it can't be added to a template anyway.
@@ -647,7 +652,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
 
         let ngModule: ClassDeclaration|null = null;
         const moduleScopeOfDir = this.componentScopeReader.getScopeForComponent(dep.ref.node);
-        if (moduleScopeOfDir !== null) {
+        if (moduleScopeOfDir !== null && moduleScopeOfDir.kind === ComponentScopeKind.NgModule) {
           ngModule = moduleScopeOfDir.ngModule;
         }
 

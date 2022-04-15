@@ -20,7 +20,7 @@ import {DirectiveMeta, extractDirectiveTypeCheckMeta, InjectableClassRegistry, M
 import {PartialEvaluator} from '../../../partial_evaluator';
 import {PerfEvent, PerfRecorder} from '../../../perf';
 import {ClassDeclaration, DeclarationNode, Decorator, ReflectionHost, reflectObjectLiteral} from '../../../reflection';
-import {ComponentScopeReader, DtsModuleScopeResolver, LocalModuleScopeRegistry, TypeCheckScopeRegistry} from '../../../scope';
+import {ComponentScopeKind, ComponentScopeReader, DtsModuleScopeResolver, LocalModuleScopeRegistry, makeNotStandaloneDiagnostic, makeUnknownComponentImportDiagnostic, TypeCheckScopeRegistry} from '../../../scope';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerFlags, HandlerPrecedence, ResolveResult} from '../../../transform';
 import {TypeCheckContext} from '../../../typecheck/api';
 import {ExtendedTemplateChecker} from '../../../typecheck/extended/api';
@@ -33,7 +33,6 @@ import {NgModuleSymbol} from '../../ng_module';
 import {checkCustomElementSelectorForErrors, makeCyclicImportInfo} from './diagnostics';
 import {ComponentAnalysisData, ComponentResolutionData} from './metadata';
 import {_extractTemplateStyleUrls, extractComponentStyleUrls, extractStyleResources, extractTemplate, makeResourceNotFoundError, ParsedTemplateWithSource, parseTemplateDeclaration, preloadAndParseTemplate, ResourceTypeForDiagnostics, StyleUrlMeta, transformDecoratorToInlineResources} from './resources';
-import {scopeTemplate} from './scope';
 import {ComponentSymbol} from './symbol';
 import {animationTriggerResolver, collectAnimationNames, validateAndFlattenComponentImports} from './util';
 
@@ -251,10 +250,8 @@ export class ComponentDecoratorHandler implements
           component.get('providers')!, this.reflector, this.evaluator);
     }
 
-    let imports: {
-      resolved: Reference<ClassDeclaration>[],
-      raw: ts.Expression,
-    }|null = null;
+    let resolvedImports: Reference<ClassDeclaration>[]|null = null;
+    let rawImports: ts.Expression|null = null;
 
     if (component.has('imports') && !metadata.isStandalone) {
       if (diagnostics === undefined) {
@@ -269,10 +266,8 @@ export class ComponentDecoratorHandler implements
       const {imports: flattened, diagnostics: importDiagnostics} =
           validateAndFlattenComponentImports(imported, expr);
 
-      imports = {
-        resolved: flattened,
-        raw: expr,
-      };
+      resolvedImports = flattened;
+      rawImports = expr;
 
       if (importDiagnostics.length > 0) {
         isPoisoned = true;
@@ -280,6 +275,16 @@ export class ComponentDecoratorHandler implements
           diagnostics = [];
         }
         diagnostics.push(...importDiagnostics);
+      }
+
+      const validationDiagnostics =
+          validateStandaloneImports(resolvedImports, rawImports, this.metaReader, this.scopeReader);
+      if (validationDiagnostics.length > 0) {
+        isPoisoned = true;
+        if (diagnostics === undefined) {
+          diagnostics = [];
+        }
+        diagnostics.push(...validationDiagnostics);
       }
     }
 
@@ -423,7 +428,8 @@ export class ComponentDecoratorHandler implements
         },
         isPoisoned,
         animationTriggerNames,
-        imports,
+        rawImports,
+        resolvedImports,
       },
       diagnostics,
     };
@@ -460,6 +466,7 @@ export class ComponentDecoratorHandler implements
       isPoisoned: analysis.isPoisoned,
       isStructural: false,
       isStandalone: analysis.meta.isStandalone,
+      imports: analysis.resolvedImports,
       animationTriggerNames: analysis.animationTriggerNames,
     });
 
@@ -476,13 +483,17 @@ export class ComponentDecoratorHandler implements
     const selector = analysis.meta.selector;
     const matcher = new SelectorMatcher<DirectiveMeta>();
     if (scope !== null) {
-      if ((scope.compilation.isPoisoned || scope.exported.isPoisoned) && !this.usePoisonedData) {
+      let {dependencies, isPoisoned} =
+          scope.kind === ComponentScopeKind.NgModule ? scope.compilation : scope;
+      if ((isPoisoned ||
+           (scope.kind === ComponentScopeKind.NgModule && scope.exported.isPoisoned)) &&
+          !this.usePoisonedData) {
         // Don't bother indexing components which had erroneous scopes, unless specifically
         // requested.
         return null;
       }
 
-      for (const dep of scope.compilation.dependencies) {
+      for (const dep of dependencies) {
         if (dep.kind === MetaKind.Directive && dep.selector !== null) {
           matcher.addSelectables(CssSelector.parse(dep.selector), dep);
         }
@@ -550,14 +561,8 @@ export class ComponentDecoratorHandler implements
     };
     const diagnostics: ts.Diagnostic[] = [];
 
-    const scope = scopeTemplate(
-        this.scopeReader, this.dtsScopeReader, this.scopeRegistry, this.metaReader, node, analysis,
-        this.usePoisonedData);
-
-
+    const scope = this.scopeReader.getScopeForComponent(node);
     if (scope !== null) {
-      diagnostics.push(...scope.diagnostics);
-
       // Replace the empty components and directives from the analyze() step with a fully expanded
       // scope. This is possible now because during resolve() the whole compilation unit has been
       // fully analyzed.
@@ -586,7 +591,11 @@ export class ComponentDecoratorHandler implements
 
       const pipes = new Map<string, PipeMeta>();
 
-      for (const dep of scope.dependencies) {
+      const dependencies = scope.kind === ComponentScopeKind.NgModule ?
+          scope.compilation.dependencies :
+          scope.dependencies;
+
+      for (const dep of dependencies) {
         if (dep.kind === MetaKind.Directive && dep.selector !== null) {
           matcher.addSelectables(CssSelector.parse(dep.selector), dep as MatchedDirective);
         } else if (dep.kind === MetaKind.Pipe) {
@@ -627,7 +636,7 @@ export class ComponentDecoratorHandler implements
       const seen = new Set<ClassDeclaration>();
 
       // Transform the dependencies list, filtering out unused dependencies.
-      for (const dep of scope.dependencies) {
+      for (const dep of dependencies) {
         // Only emit references to each dependency once.
         if (seen.has(dep.ref.node)) {
           continue;
@@ -746,7 +755,8 @@ export class ComponentDecoratorHandler implements
           // If a semantic graph is being tracked, record the fact that this component is remotely
           // scoped with the declaring NgModule symbol as the NgModule's emit becomes dependent on
           // the directive/pipe usages of this component.
-          if (this.semanticDepGraphUpdater !== null && scope.ngModule !== null) {
+          if (this.semanticDepGraphUpdater !== null && scope.kind === ComponentScopeKind.NgModule &&
+              scope.ngModule !== null) {
             const moduleSymbol = this.semanticDepGraphUpdater.getSymbol(scope.ngModule);
             if (!(moduleSymbol instanceof NgModuleSymbol)) {
               throw new Error(
@@ -914,4 +924,40 @@ export class ComponentDecoratorHandler implements
 
     this.cycleAnalyzer.recordSyntheticImport(origin, imported);
   }
+}
+
+function validateStandaloneImports(
+    importRefs: Reference<ClassDeclaration>[], importExpr: ts.Expression,
+    metaReader: MetadataReader, scopeReader: ComponentScopeReader): ts.Diagnostic[] {
+  const diagnostics: ts.Diagnostic[] = [];
+  for (const ref of importRefs) {
+    const dirMeta = metaReader.getDirectiveMetadata(ref);
+    if (dirMeta !== null) {
+      if (!dirMeta.isStandalone) {
+        // Directly importing a directive that's not standalone is an error.
+        diagnostics.push(makeNotStandaloneDiagnostic(
+            scopeReader, ref, importExpr, dirMeta.isComponent ? 'component' : 'directive'));
+      }
+      continue;
+    }
+
+    const pipeMeta = metaReader.getPipeMetadata(ref);
+    if (pipeMeta !== null) {
+      if (!pipeMeta.isStandalone) {
+        diagnostics.push(makeNotStandaloneDiagnostic(scopeReader, ref, importExpr, 'pipe'));
+      }
+      continue;
+    }
+
+    const ngModuleMeta = metaReader.getNgModuleMetadata(ref);
+    if (ngModuleMeta !== null) {
+      // Importing NgModules is always legal.
+      continue;
+    }
+
+    // Make an error?
+    diagnostics.push(makeUnknownComponentImportDiagnostic(ref, importExpr));
+  }
+
+  return diagnostics;
 }

@@ -17,7 +17,7 @@ import {ClassPropertyMapping, CompoundMetadataReader, MetaKind} from '../../meta
 import {NOOP_PERF_RECORDER} from '../../perf';
 import {TsCreateProgramDriver} from '../../program_driver';
 import {ClassDeclaration, isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
-import {ComponentScopeReader, LocalModuleScope, ScopeData, TypeCheckScopeRegistry} from '../../scope';
+import {ComponentScopeKind, ComponentScopeReader, LocalModuleScope, ScopeData, TypeCheckScopeRegistry} from '../../scope';
 import {makeProgram} from '../../testing';
 import {getRootDirs} from '../../util/src/typescript';
 import {ProgramTypeCheckAdapter, TemplateDiagnostic, TemplateTypeChecker, TypeCheckContext} from '../api';
@@ -512,16 +512,19 @@ export function setup(targets: TypeCheckingTarget[], overrides: {
                 isPoisoned: false,
               };
               return {
+                kind: ComponentScopeKind.NgModule,
                 ngModule,
                 compilation: emptyScope,
                 reexports: [],
                 schemas: [],
                 exported: emptyScope,
+
               };
             }
             const scope = scopeMap.get(clazz)!;
 
             return {
+              kind: ComponentScopeKind.NgModule,
               ngModule,
               compilation: scope,
               reexports: [],
@@ -645,6 +648,7 @@ function makeScope(program: ts.Program, sf: ts.SourceFile, decls: TestDeclaratio
         isStructural: false,
         animationTriggerNames: null,
         isStandalone: false,
+        imports: null,
       });
     } else if (decl.type === 'pipe') {
       scope.dependencies.push({

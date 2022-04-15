@@ -111,6 +111,7 @@ export class DtsMetadataReader implements MetadataReader {
       isStructural,
       animationTriggerNames: null,
       isStandalone: false,  // TODO: read this from the compiled metadata.
+      imports: null,
     };
   }
 
