@@ -8,7 +8,7 @@
 /src/material/card/**                              @andrewseguin
 /src/material/checkbox/**                          @andrewseguin @devversion
 /src/material/chips/**                             @andrewseguin
-/src/material/datepicker/**                        @mmalerba @crisbeto
+/src/material/datepicker/**                        @mmalerba @crisbeto @zarend
 /src/material/dialog/**                            @andrewseguin @crisbeto
 /src/material/divider/**                           @andrewseguin @crisbeto
 /src/material/expansion/**                         @andrewseguin
@@ -162,7 +162,7 @@
 /src/dev-app/column-resize/**                      @kseamon @andrewseguin
 /src/dev-app/connected-overlay/**                  @jelbourn @crisbeto
 /src/dev-app/dataset/**                            @andrewseguin
-/src/dev-app/datepicker/**                         @mmalerba @crisbeto
+/src/dev-app/datepicker/**                         @mmalerba @crisbeto @zarend
 /src/dev-app/dev-app/**                            @mmalerba
 /src/dev-app/dialog/**                             @andrewseguin @crisbeto
 /src/dev-app/drag-drop/**                          @crisbeto
@@ -318,7 +318,7 @@
 /tools/public_api_guard/material/chips**           @andrewseguin
 /tools/public_api_guard/material/chips/testing**   @andrewseguin
 /tools/public_api_guard/material/core**            @andrewseguin
-/tools/public_api_guard/material/datepicker**      @mmalerba @crisbeto
+/tools/public_api_guard/material/datepicker**      @mmalerba @crisbeto @zarend
 /tools/public_api_guard/material/dialog**          @andrewseguin @crisbeto
 /tools/public_api_guard/material/divider**         @andrewseguin @crisbeto
 /tools/public_api_guard/material/expansion**       @andrewseguin
