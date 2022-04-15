@@ -73,17 +73,11 @@ export class NoPreloading implements PreloadingStrategy {
  */
 @Injectable()
 export class RouterPreloader implements OnDestroy {
-  private loader: RouterConfigLoader;
   private subscription?: Subscription;
 
   constructor(
       private router: Router, compiler: Compiler, private injector: Injector,
-      private preloadingStrategy: PreloadingStrategy) {
-    const onStartLoad = (r: Route) => router.triggerEvent(new RouteConfigLoadStart(r));
-    const onEndLoad = (r: Route) => router.triggerEvent(new RouteConfigLoadEnd(r));
-
-    this.loader = new RouterConfigLoader(injector, compiler, onStartLoad, onEndLoad);
-  }
+      private preloadingStrategy: PreloadingStrategy, private loader: RouterConfigLoader) {}
 
   setUpPreloading(): void {
     this.subscription =

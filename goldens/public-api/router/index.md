@@ -10,6 +10,7 @@ import { Compiler } from '@angular/core';
 import { ComponentFactoryResolver } from '@angular/core';
 import { ComponentRef } from '@angular/core';
 import { ElementRef } from '@angular/core';
+import { EnvironmentInjector } from '@angular/core';
 import { EventEmitter } from '@angular/core';
 import * as i0 from '@angular/core';
 import { InjectionToken } from '@angular/core';
@@ -691,7 +692,7 @@ export interface RouterOutletContract {
 
 // @public
 export class RouterPreloader implements OnDestroy {
-    constructor(router: Router, compiler: Compiler, injector: Injector, preloadingStrategy: PreloadingStrategy);
+    constructor(router: Router, compiler: Compiler, injector: Injector, preloadingStrategy: PreloadingStrategy, loader: RouterConfigLoader);
     // (undocumented)
     ngOnDestroy(): void;
     // (undocumented)

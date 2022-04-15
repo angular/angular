@@ -490,12 +490,6 @@ export interface Route {
    * @internal
    */
   _loadedInjector?: EnvironmentInjector;
-
-  /**
-   * Filled for routes with `loadChildren` during load
-   * @internal
-   */
-  _loader$?: Observable<LoadedRouterConfig>;
 }
 
 export interface LoadedRouterConfig {
