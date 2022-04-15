@@ -7,9 +7,13 @@
 // @public
 export const enum RuntimeErrorCode {
     // (undocumented)
+    INVALID_INPUT = 2951,
+    // (undocumented)
     INVALID_PIPE_ARGUMENT = 2100,
     // (undocumented)
-    PARENT_NG_SWITCH_NOT_FOUND = 2000
+    PARENT_NG_SWITCH_NOT_FOUND = 2000,
+    // (undocumented)
+    UNEXPECTED_SRC_ATTR = 2950
 }
 
 // (No @packageDocumentation comment for this package)
