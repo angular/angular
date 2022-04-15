@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Location, LocationStrategy, PlatformLocation} from '@angular/common';
+import {Location, LocationStrategy} from '@angular/common';
 import {EventEmitter, Injectable} from '@angular/core';
 import {SubscriptionLike} from 'rxjs';
 
@@ -27,9 +27,7 @@ export class SpyLocation implements Location {
   /** @internal */
   _baseHref: string = '';
   /** @internal */
-  _platformStrategy: LocationStrategy = null!;
-  /** @internal */
-  _platformLocation: PlatformLocation = null!;
+  _locationStrategy: LocationStrategy = null!;
   /** @internal */
   _urlChangeListeners: ((url: string, state: unknown) => void)[] = [];
   /** @internal */
