@@ -210,6 +210,8 @@ export class HashLocationStrategy extends LocationStrategy implements OnDestroy 
     // (undocumented)
     getBaseHref(): string;
     // (undocumented)
+    getState(): unknown;
+    // (undocumented)
     historyGo(relativePosition?: number): void;
     // (undocumented)
     ngOnDestroy(): void;
@@ -309,7 +311,7 @@ export class KeyValuePipe implements PipeTransform {
 
 // @public
 class Location_2 implements OnDestroy {
-    constructor(platformStrategy: LocationStrategy, platformLocation: PlatformLocation);
+    constructor(locationStrategy: LocationStrategy);
     back(): void;
     forward(): void;
     getState(): unknown;
@@ -359,6 +361,8 @@ export abstract class LocationStrategy {
     abstract forward(): void;
     // (undocumented)
     abstract getBaseHref(): string;
+    // (undocumented)
+    abstract getState(): unknown;
     // (undocumented)
     historyGo?(relativePosition: number): void;
     // (undocumented)
@@ -635,6 +639,8 @@ export class PathLocationStrategy extends LocationStrategy implements OnDestroy 
     forward(): void;
     // (undocumented)
     getBaseHref(): string;
+    // (undocumented)
+    getState(): unknown;
     // (undocumented)
     historyGo(relativePosition?: number): void;
     // (undocumented)
