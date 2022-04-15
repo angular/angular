@@ -213,6 +213,9 @@
     "name": "FilterSubscriber"
   },
   {
+    "name": "FinallyOperator"
+  },
+  {
     "name": "FinallySubscriber"
   },
   {
@@ -511,12 +514,6 @@
   },
   {
     "name": "RootViewRef"
-  },
-  {
-    "name": "RouteConfigLoadEnd"
-  },
-  {
-    "name": "RouteConfigLoadStart"
   },
   {
     "name": "RouteExampleModule"
@@ -1093,6 +1090,9 @@
   },
   {
     "name": "filter"
+  },
+  {
+    "name": "finalize"
   },
   {
     "name": "findAttrIndexInNode"

@@ -20,7 +20,7 @@ import {Route, Routes} from './models';
 import {DefaultTitleStrategy, TitleStrategy} from './page_title_strategy';
 import {RouteReuseStrategy} from './route_reuse_strategy';
 import {ErrorHandler, Router} from './router';
-import {ROUTES} from './router_config_loader';
+import {RouterConfigLoader, ROUTES} from './router_config_loader';
 import {ChildrenOutletContexts} from './router_outlet_context';
 import {NoPreloading, PreloadAllModules, PreloadingStrategy, RouterPreloader} from './router_preloader';
 import {RouterScroller} from './router_scroller';
@@ -65,6 +65,7 @@ export const ROUTER_PROVIDERS: Provider[] = [
   NoPreloading,
   PreloadAllModules,
   {provide: ROUTER_CONFIGURATION, useValue: {enableTracing: false}},
+  RouterConfigLoader,
 ];
 
 export function routerNgProbeToken() {
