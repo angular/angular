@@ -914,12 +914,12 @@ groups:
           'aio/content/guide/migration-module-with-providers.md',
           'aio/content/guide/static-query-migration.md',
           'aio/content/guide/update-to-latest-version.md',
-          'aio/content/guide/ivy-compatibility.md',
-          'aio/content/guide/ivy-compatibility-examples.md'
           ])
     reviewers:
       users:
         - alxhub
+        - AndrewKushnir
+        - atscott
         - jelbourn
 
   # =========================================================
