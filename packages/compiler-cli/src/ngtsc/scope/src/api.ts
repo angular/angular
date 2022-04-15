@@ -9,7 +9,7 @@
 import {SchemaMetadata} from '@angular/compiler';
 
 import {Reexport, Reference} from '../../imports';
-import {DirectiveMeta, PipeMeta} from '../../metadata';
+import {DirectiveMeta, NgModuleMeta, PipeMeta} from '../../metadata';
 import {ClassDeclaration} from '../../reflection';
 
 
@@ -53,18 +53,35 @@ export interface RemoteScope {
   pipes: Reference[];
 }
 
+export enum ComponentScopeKind {
+  NgModule,
+  Standalone,
+}
+
+
 export interface LocalModuleScope extends ExportScope {
+  kind: ComponentScopeKind.NgModule;
   ngModule: ClassDeclaration;
   compilation: ScopeData;
   reexports: Reexport[]|null;
   schemas: SchemaMetadata[];
 }
 
+export interface StandaloneScope {
+  kind: ComponentScopeKind.Standalone;
+  dependencies: Array<DirectiveMeta|PipeMeta|NgModuleMeta>;
+  component: ClassDeclaration;
+  schemas: SchemaMetadata[];
+  isPoisoned: boolean;
+}
+
+export type ComponentScope = LocalModuleScope|StandaloneScope;
+
 /**
  * Read information about the compilation scope of components.
  */
 export interface ComponentScopeReader {
-  getScopeForComponent(clazz: ClassDeclaration): LocalModuleScope|null;
+  getScopeForComponent(clazz: ClassDeclaration): ComponentScope|null;
 
   /**
    * Get the `RemoteScope` required for this component, if any.

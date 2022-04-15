@@ -50,6 +50,23 @@ runInEachFileSystem(() => {
         expect(jsCode).toContain('standalone: true');
       });
 
+      it('should compile a recursive standalone component', () => {
+        env.write('test.ts', `
+              import {Component, Directive} from '@angular/core';
+        
+              @Component({
+                selector: 'test-cmp',
+                template: '<test-cmp></test-cmp>',
+                standalone: true,
+              })
+              export class TestCmp {}
+            `);
+        env.driveMain();
+        const jsCode = env.getContents('test.js');
+        expect(jsCode).toContain('dependencies: [TestCmp]');
+        expect(jsCode).toContain('standalone: true');
+      });
+
       it('should error when a non-standalone component tries to use imports', () => {
         env.write('test.ts', `
               import {Component, Directive} from '@angular/core';

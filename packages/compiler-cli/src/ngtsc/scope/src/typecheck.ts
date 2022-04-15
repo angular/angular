@@ -13,7 +13,7 @@ import {Reference} from '../../imports';
 import {DirectiveMeta, flattenInheritedDirectiveMetadata, MetadataReader, MetaKind} from '../../metadata';
 import {ClassDeclaration} from '../../reflection';
 
-import {ComponentScopeReader} from './api';
+import {ComponentScopeKind, ComponentScopeReader} from './api';
 
 /**
  * The scope that is used for type-check code generation of a component template.
@@ -85,11 +85,16 @@ export class TypeCheckScopeRegistry {
       };
     }
 
-    if (this.scopeCache.has(scope.ngModule)) {
-      return this.scopeCache.get(scope.ngModule)!;
+    const cacheKey = scope.kind === ComponentScopeKind.NgModule ? scope.ngModule : scope.component;
+    const dependencies = scope.kind === ComponentScopeKind.NgModule ?
+        scope.compilation.dependencies :
+        scope.dependencies;
+
+    if (this.scopeCache.has(cacheKey)) {
+      return this.scopeCache.get(cacheKey)!;
     }
 
-    for (const meta of scope.compilation.dependencies) {
+    for (const meta of dependencies) {
       if (meta.kind === MetaKind.Directive && meta.selector !== null) {
         const extMeta = this.getTypeCheckDirectiveMetadata(meta.ref);
         matcher.addSelectables(CssSelector.parse(meta.selector), extMeta);
@@ -108,9 +113,11 @@ export class TypeCheckScopeRegistry {
       directives,
       pipes,
       schemas: scope.schemas,
-      isPoisoned: scope.compilation.isPoisoned || scope.exported.isPoisoned,
+      isPoisoned: scope.kind === ComponentScopeKind.NgModule ?
+          scope.compilation.isPoisoned || scope.exported.isPoisoned :
+          scope.isPoisoned,
     };
-    this.scopeCache.set(scope.ngModule, typeCheckScope);
+    this.scopeCache.set(cacheKey, typeCheckScope);
     return typeCheckScope;
   }
 

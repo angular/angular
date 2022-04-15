@@ -15,7 +15,7 @@ import {DirectiveMeta, MetadataReader, MetadataRegistry, MetaKind, NgModuleMeta,
 import {ClassDeclaration, DeclarationNode} from '../../reflection';
 import {identifierOfNode, nodeNameForError} from '../../util/src/typescript';
 
-import {ComponentScopeReader, ExportScope, LocalModuleScope, RemoteScope, ScopeData} from './api';
+import {ComponentScopeKind, ComponentScopeReader, ExportScope, LocalModuleScope, RemoteScope, ScopeData} from './api';
 import {DtsModuleScopeResolver} from './dependency';
 import {getDiagnosticNode, makeNotStandaloneDiagnostic} from './util';
 
@@ -443,6 +443,7 @@ export class LocalModuleScopeRegistry implements MetadataRegistry, ComponentScop
 
     // Finally, produce the `LocalModuleScope` with both the compilation and export scopes.
     const scope: LocalModuleScope = {
+      kind: ComponentScopeKind.NgModule,
       ngModule: ngModule.ref.node,
       compilation: {
         dependencies: [...compilationDirectives.values(), ...compilationPipes.values()],

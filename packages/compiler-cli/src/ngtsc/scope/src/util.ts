@@ -12,7 +12,7 @@ import {ErrorCode, makeDiagnostic, makeRelatedInformation} from '../../diagnosti
 import {Reference} from '../../imports';
 import {ClassDeclaration} from '../../reflection';
 
-import {ComponentScopeReader} from './api';
+import {ComponentScopeKind, ComponentScopeReader} from './api';
 
 export function getDiagnosticNode(
     ref: Reference<ClassDeclaration>, rawExpr: ts.Expression|null): ts.Expression {
@@ -29,12 +29,11 @@ export function makeNotStandaloneDiagnostic(
     rawExpr: ts.Expression|null, kind: 'component'|'directive'|'pipe'): ts.Diagnostic {
   const scope = scopeReader.getScopeForComponent(ref.node);
 
-
   let message = `The ${kind} '${
       ref.node.name
           .text}' appears in 'imports', but is not standalone and cannot be imported directly`;
   let relatedInformation: ts.DiagnosticRelatedInformation[]|undefined = undefined;
-  if (scope !== null) {
+  if (scope !== null && scope.kind === ComponentScopeKind.NgModule) {
     // The directive/pipe in question is declared in an NgModule. Check if it's also exported.
     const isExported = scope.exported.dependencies.some(dep => dep.ref.node === ref.node);
     if (isExported) {
@@ -60,4 +59,11 @@ export function makeNotStandaloneDiagnostic(
   return makeDiagnostic(
       ErrorCode.COMPONENT_IMPORT_NOT_STANDALONE, getDiagnosticNode(ref, rawExpr), message,
       relatedInformation);
+}
+
+export function makeUnknownComponentImportDiagnostic(
+    ref: Reference<ClassDeclaration>, rawExpr: ts.Expression) {
+  return makeDiagnostic(
+      ErrorCode.COMPONENT_UNKNOWN_IMPORT, getDiagnosticNode(ref, rawExpr),
+      `Component imports must be standalone components, directives, pipes, or must be NgModules.`);
 }

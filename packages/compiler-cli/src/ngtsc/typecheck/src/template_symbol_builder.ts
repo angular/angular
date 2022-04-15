@@ -11,7 +11,7 @@ import ts from 'typescript';
 
 import {AbsoluteFsPath} from '../../file_system';
 import {ClassDeclaration} from '../../reflection';
-import {ComponentScopeReader} from '../../scope';
+import {ComponentScopeKind, ComponentScopeReader} from '../../scope';
 import {isAssignment, isSymbolWithValueDeclaration} from '../../util/src/typescript';
 import {BindingSymbol, DirectiveSymbol, DomBindingSymbol, ElementSymbol, ExpressionSymbol, InputBindingSymbol, OutputBindingSymbol, PipeSymbol, ReferenceSymbol, Symbol, SymbolKind, TcbLocation, TemplateSymbol, TsNodeSymbolInfo, TypeCheckableDirectiveMeta, VariableSymbol} from '../api';
 
@@ -178,7 +178,7 @@ export class SymbolBuilder {
 
   private getDirectiveModule(declaration: ts.ClassDeclaration): ClassDeclaration|null {
     const scope = this.componentScopeReader.getScopeForComponent(declaration as ClassDeclaration);
-    if (scope === null) {
+    if (scope === null || scope.kind !== ComponentScopeKind.NgModule) {
       return null;
     }
     return scope.ngModule;
