@@ -1404,7 +1404,11 @@ function findDirectiveDefMatches(
                 `"${tNode.value}" tags cannot be used as component hosts. ` +
                     `Please use a different tag to activate the ${stringify(def.type)} component.`);
 
-            if (tNode.flags & TNodeFlags.isComponentHost) throwMultipleComponentError(tNode);
+            if (tNode.flags & TNodeFlags.isComponentHost) {
+              // If another component has been matched previously, it's the first element in the
+              // `matches` array, see how we store components/directives in `matches` below.
+              throwMultipleComponentError(tNode, matches[0].type, def.type);
+            }
           }
           markAsComponentHost(tView, tNode);
           // The component is always stored first with directives after.

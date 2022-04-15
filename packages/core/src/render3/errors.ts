@@ -8,18 +8,23 @@
  */
 
 import {RuntimeError, RuntimeErrorCode} from '../errors';
+import {Type} from '../interface/type';
 
 import {TNode} from './interfaces/node';
 import {LView, TVIEW} from './interfaces/view';
 import {INTERPOLATION_DELIMITER} from './util/misc_utils';
+import {stringifyForError} from './util/stringify_utils';
 
 
 
 /** Called when there are multiple component selectors that match a given node */
-export function throwMultipleComponentError(tNode: TNode): never {
+export function throwMultipleComponentError(
+    tNode: TNode, first: Type<unknown>, second: Type<unknown>): never {
   throw new RuntimeError(
       RuntimeErrorCode.MULTIPLE_COMPONENTS_MATCH,
-      `Multiple components match node with tagname ${tNode.value}`);
+      `Multiple components match node with tagname ${tNode.value}: ` +
+          `${stringifyForError(first)} and ` +
+          `${stringifyForError(second)}`);
 }
 
 /** Throws an ExpressionChangedAfterChecked error if checkNoChanges mode is on. */
