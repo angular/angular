@@ -1146,7 +1146,7 @@
     "name": "getChildRouteGuards"
   },
   {
-    "name": "getClosestLoadedConfig"
+    "name": "getClosestLoadedInjector"
   },
   {
     "name": "getClosureSafeProperty"
