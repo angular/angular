@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable} from '../di';
+import {Inject, Injectable, InjectionToken} from '../di';
 import {scheduleMicroTask} from '../util/microtask';
 import {NgZone} from '../zone/ng_zone';
 
@@ -49,6 +49,22 @@ interface WaitCallback {
 }
 
 /**
+ * Internal injection token that can used to access an instance of a Testability class.
+ *
+ * This token acts as a bridge between the core bootstrap code and the `Testability` class. This is
+ * needed to ensure that there are no direct references to the `Testability` class, so it can be
+ * tree-shaken away (if not referenced). For the environments/setups when the `Testability` class
+ * should be available, this token is used to add a provider that references the `Testability`
+ * class. Otherwise, only this token is retained in a bundle, but the `Testability` class is not.
+ */
+export const TESTABILITY = new InjectionToken<Testability>('');
+
+/**
+ * Internal injection token to retrieve Testability getter class instance.
+ */
+export const TESTABILITY_GETTER = new InjectionToken<GetTestability>('');
+
+/**
  * The Testability service provides testing hooks that can be accessed from
  * the browser. Each bootstrapped Angular application on the page will have
  * an instance of Testability.
@@ -69,7 +85,15 @@ export class Testability implements PublicTestability {
 
   private taskTrackingZone: {macroTasks: Task[]}|null = null;
 
-  constructor(private _ngZone: NgZone) {
+  constructor(
+      private _ngZone: NgZone, private registry: TestabilityRegistry,
+      @Inject(TESTABILITY_GETTER) testabilityGetter: GetTestability) {
+    // If there was no Testability logic registered in the global scope
+    // before, register the current testability getter as a global one.
+    if (!_testabilityGetter) {
+      setTestabilityGetter(testabilityGetter);
+      testabilityGetter.addToWindow(registry);
+    }
     this._watchAngularEvents();
     _ngZone.run(() => {
       this.taskTrackingZone =
@@ -213,6 +237,25 @@ export class Testability implements PublicTestability {
   getPendingRequestCount(): number {
     return this._pendingCount;
   }
+  /**
+   * Registers an application with a testability hook so that it can be tracked.
+   * @param token token of application, root element
+   *
+   * @internal
+   */
+  registerApplication(token: any) {
+    this.registry.registerApplication(token, this);
+  }
+
+  /**
+   * Unregisters an application.
+   * @param token token of application, root element
+   *
+   * @internal
+   */
+  unregisterApplication(token: any) {
+    this.registry.unregisterApplication(token);
+  }
 
   /**
    * Find providers by name
@@ -234,10 +277,6 @@ export class Testability implements PublicTestability {
 export class TestabilityRegistry {
   /** @internal */
   _applications = new Map<any, Testability>();
-
-  constructor() {
-    _testabilityGetter.addToWindow(this);
-  }
 
   /**
    * Registers an application with a testability hook so that it can be tracked
@@ -292,7 +331,7 @@ export class TestabilityRegistry {
    * current node
    */
   findTestabilityInTree(elem: Node, findInAncestors: boolean = true): Testability|null {
-    return _testabilityGetter.findTestabilityInTree(this, elem, findInAncestors);
+    return _testabilityGetter?.findTestabilityInTree(this, elem, findInAncestors) ?? null;
   }
 }
 
@@ -308,14 +347,6 @@ export interface GetTestability {
       Testability|null;
 }
 
-class _NoopGetTestability implements GetTestability {
-  addToWindow(registry: TestabilityRegistry): void {}
-  findTestabilityInTree(registry: TestabilityRegistry, elem: any, findInAncestors: boolean):
-      Testability|null {
-    return null;
-  }
-}
-
 /**
  * Set the {@link GetTestability} implementation used by the Angular testing framework.
  * @publicApi
@@ -324,4 +355,4 @@ export function setTestabilityGetter(getter: GetTestability): void {
   _testabilityGetter = getter;
 }
 
-let _testabilityGetter: GetTestability = new _NoopGetTestability();
+let _testabilityGetter: GetTestability|undefined;
