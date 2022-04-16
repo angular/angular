@@ -96,9 +96,6 @@
     "name": "BrowserDomAdapter"
   },
   {
-    "name": "BrowserGetTestability"
-  },
-  {
     "name": "BrowserModule"
   },
   {
@@ -445,6 +442,15 @@
   },
   {
     "name": "Subscription"
+  },
+  {
+    "name": "TESTABILITY"
+  },
+  {
+    "name": "TESTABILITY_GETTER"
+  },
+  {
+    "name": "TESTABILITY_PROVIDERS"
   },
   {
     "name": "THROW_IF_NOT_FOUND"

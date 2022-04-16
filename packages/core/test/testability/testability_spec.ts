@@ -8,7 +8,7 @@
 
 import {EventEmitter} from '@angular/core';
 import {Injectable} from '@angular/core/src/di';
-import {PendingMacrotask, Testability, TestabilityRegistry} from '@angular/core/src/testability/testability';
+import {GetTestability, PendingMacrotask, Testability, TestabilityRegistry} from '@angular/core/src/testability/testability';
 import {NgZone} from '@angular/core/src/zone/ng_zone';
 import {fakeAsync, flush, tick, waitForAsync} from '@angular/core/testing';
 
@@ -21,6 +21,14 @@ function microTask(fn: Function): void {
     // NgZone becomes stable.
     scheduleMicroTask(fn);
   });
+}
+
+class NoopGetTestability implements GetTestability {
+  addToWindow(registry: TestabilityRegistry): void {}
+  findTestabilityInTree(registry: TestabilityRegistry, elem: any, findInAncestors: boolean):
+      Testability|null {
+    return null;
+  }
 }
 
 @Injectable()
@@ -56,7 +64,7 @@ class MockNgZone extends NgZone {
 
     beforeEach(waitForAsync(() => {
       ngZone = new MockNgZone();
-      testability = new Testability(ngZone);
+      testability = new Testability(ngZone, new TestabilityRegistry(), new NoopGetTestability());
       execute = jasmine.createSpy('execute');
       execute2 = jasmine.createSpy('execute');
       updateCallback = jasmine.createSpy('execute');
@@ -366,9 +374,9 @@ class MockNgZone extends NgZone {
 
     beforeEach(waitForAsync(() => {
       ngZone = new MockNgZone();
-      testability1 = new Testability(ngZone);
-      testability2 = new Testability(ngZone);
       registry = new TestabilityRegistry();
+      testability1 = new Testability(ngZone, registry, new NoopGetTestability());
+      testability2 = new Testability(ngZone, registry, new NoopGetTestability());
     }));
     describe('unregister testability', () => {
       it('should remove the testability when unregistering an existing testability', () => {

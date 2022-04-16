@@ -7,7 +7,7 @@
  */
 
 import {CommonModule, DOCUMENT, XhrFactory, ɵPLATFORM_BROWSER_ID as PLATFORM_BROWSER_ID} from '@angular/common';
-import {APP_ID, ApplicationModule, ApplicationRef, createPlatformFactory, ErrorHandler, ImportedNgModuleProviders, Inject, InjectionToken, ModuleWithProviders, NgModule, NgZone, Optional, PLATFORM_ID, PLATFORM_INITIALIZER, platformCore, PlatformRef, Provider, RendererFactory2, SkipSelf, StaticProvider, Testability, Type, ɵINJECTOR_SCOPE as INJECTOR_SCOPE, ɵinternalBootstrapApplication as internalBootstrapApplication, ɵsetDocument} from '@angular/core';
+import {APP_ID, ApplicationModule, ApplicationRef, createPlatformFactory, ErrorHandler, ImportedNgModuleProviders, Inject, InjectionToken, ModuleWithProviders, NgModule, NgZone, Optional, PLATFORM_ID, PLATFORM_INITIALIZER, platformCore, PlatformRef, Provider, RendererFactory2, SkipSelf, StaticProvider, Testability, TestabilityRegistry, Type, ɵINJECTOR_SCOPE as INJECTOR_SCOPE, ɵinternalBootstrapApplication as internalBootstrapApplication, ɵsetDocument, ɵTESTABILITY as TESTABILITY, ɵTESTABILITY_GETTER as TESTABILITY_GETTER} from '@angular/core';
 
 import {BrowserDomAdapter} from './browser/browser_adapter';
 import {SERVER_TRANSITION_PROVIDERS, TRANSITION_ID} from './browser/server-transition';
@@ -62,6 +62,7 @@ export function bootstrapApplication(
     rootComponent,
     appProviders: [
       ...BROWSER_MODULE_PROVIDERS,
+      ...TESTABILITY_PROVIDERS,
       ...(options?.providers ?? []),
     ],
     platformProviders: INTERNAL_BROWSER_PLATFORM_PROVIDERS,
@@ -70,7 +71,6 @@ export function bootstrapApplication(
 
 export function initDomAdapter() {
   BrowserDomAdapter.makeCurrent();
-  BrowserGetTestability.init();
 }
 
 export function errorHandler(): ErrorHandler {
@@ -107,6 +107,24 @@ export const platformBrowser: (extraProviders?: StaticProvider[]) => PlatformRef
 const BROWSER_MODULE_PROVIDERS_MARKER =
     new InjectionToken(NG_DEV_MODE ? 'BrowserModule Providers Marker' : '');
 
+export const TESTABILITY_PROVIDERS = [
+  {
+    provide: TESTABILITY_GETTER,
+    useClass: BrowserGetTestability,
+    deps: [],
+  },
+  {
+    provide: TESTABILITY,
+    useClass: Testability,
+    deps: [NgZone, TestabilityRegistry, TESTABILITY_GETTER]
+  },
+  {
+    provide: Testability,  // Also provide as `Testability` for backwards-compatibility.
+    useClass: Testability,
+    deps: [NgZone, TestabilityRegistry, TESTABILITY_GETTER]
+  }
+];
+
 export const BROWSER_MODULE_PROVIDERS: StaticProvider[] = [
   {provide: INJECTOR_SCOPE, useValue: 'root'},
   {provide: ErrorHandler, useFactory: errorHandler, deps: []}, {
@@ -123,7 +141,6 @@ export const BROWSER_MODULE_PROVIDERS: StaticProvider[] = [
   {provide: RendererFactory2, useExisting: DomRendererFactory2},
   {provide: SharedStylesHost, useExisting: DomSharedStylesHost},
   {provide: DomSharedStylesHost, useClass: DomSharedStylesHost, deps: [DOCUMENT]},
-  {provide: Testability, useClass: Testability, deps: [NgZone]},
   {provide: EventManager, useClass: EventManager, deps: [EVENT_MANAGER_PLUGINS, NgZone]},
   {provide: XhrFactory, useClass: BrowserXhr, deps: []},
   NG_DEV_MODE ? {provide: BROWSER_MODULE_PROVIDERS_MARKER, useValue: true} : []
@@ -139,7 +156,10 @@ export const BROWSER_MODULE_PROVIDERS: StaticProvider[] = [
  * @publicApi
  */
 @NgModule({
-  providers: BROWSER_MODULE_PROVIDERS,
+  providers: [
+    ...BROWSER_MODULE_PROVIDERS,  //
+    ...TESTABILITY_PROVIDERS
+  ],
   exports: [CommonModule, ApplicationModule],
 })
 export class BrowserModule {
