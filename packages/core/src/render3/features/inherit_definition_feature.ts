@@ -14,6 +14,7 @@ import {ComponentDef, ContentQueriesFunction, DirectiveDef, DirectiveDefFeature,
 import {TAttributes} from '../interfaces/node';
 import {isComponentDef} from '../interfaces/type_checks';
 import {mergeHostAttrs} from '../util/attrs_utils';
+import {stringifyForError} from '../util/stringify_utils';
 
 export function getSuperType(type: Type<any>): Type<any>&
     {ɵcmp?: ComponentDef<any>, ɵdir?: DirectiveDef<any>} {
@@ -41,7 +42,9 @@ export function ɵɵInheritDefinitionFeature(definition: DirectiveDef<any>|Compo
     } else {
       if (superType.ɵcmp) {
         const errorMessage = (typeof ngDevMode === 'undefined' || ngDevMode) ?
-            'Directives cannot inherit Components' :
+            `Directives cannot inherit Components. Directive ${
+                stringifyForError(definition.type)} is attempting to extend component ${
+                stringifyForError(superType)}` :
             '';
         throw new RuntimeError(RuntimeErrorCode.INVALID_INHERITANCE, errorMessage);
       }

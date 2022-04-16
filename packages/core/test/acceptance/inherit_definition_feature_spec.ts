@@ -40,7 +40,9 @@ describe('inheritance', () => {
 
     expect(() => {
       TestBed.createComponent(App);
-    }).toThrowError('NG0903: Directives cannot inherit Components');
+    })
+        .toThrowError(
+            'NG0903: Directives cannot inherit Components. Directive MyDirective is attempting to extend component MyComponent');
   });
 
   describe('multiple children', () => {
