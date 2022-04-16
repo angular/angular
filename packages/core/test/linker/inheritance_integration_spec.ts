@@ -73,6 +73,7 @@ describe('Inheritance logic', () => {
     const template = '<div directiveExtendsComponent>Some content</div>';
     TestBed.overrideComponent(App, {set: {template}});
     expect(() => TestBed.createComponent(App))
-        .toThrowError('NG0903: Directives cannot inherit Components');
+        .toThrowError(
+            'NG0903: Directives cannot inherit Components. Directive DirectiveExtendsComponent is attempting to extend component ComponentA');
   });
 });
