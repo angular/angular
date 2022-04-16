@@ -1272,7 +1272,7 @@ export abstract class TemplateRef<C> {
 
 // @public
 export class Testability implements PublicTestability {
-    constructor(_ngZone: NgZone);
+    constructor(_ngZone: NgZone, registry: TestabilityRegistry, testabilityGetter: GetTestability);
     // @deprecated
     decreasePendingRequestCount(): number;
     findProviders(using: any, provider: string, exactMatch: boolean): any[];
@@ -1290,7 +1290,6 @@ export class Testability implements PublicTestability {
 
 // @public
 export class TestabilityRegistry {
-    constructor();
     findTestabilityInTree(elem: Node, findInAncestors?: boolean): Testability | null;
     getAllRootElements(): any[];
     getAllTestabilities(): Testability[];
