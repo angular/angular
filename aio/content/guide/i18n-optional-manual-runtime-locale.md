@@ -9,7 +9,7 @@ The [Angular CLI][AioCliMain] automatically includes the locale data and sets th
 
 To manually set the runtime locale of an application to one other than the automatic value, complete the following actions.
 
-1.  Search for the Unicode locale ID in the language-locale combination in [the Angular repository][GithubAngularAngularTreeMasterPackagesCommonLocales].
+1.  Search for the Unicode locale ID in the language-locale combination in the [`@angular/common/locales/`][UnpkgBrowseAngularCommonLocales] directory.
 1.  Set the [`LOCALE_ID`][AioApiCoreLocaleId] token.
 
 The following example sets the value of `LOCALE_ID` to `fr` for French.
@@ -25,7 +25,7 @@ The following example sets the value of `LOCALE_ID` to `fr` for French.
 
 <!-- external links -->
 
-[GithubAngularAngularTreeMasterPackagesCommonLocales]: https://github.com/angular/angular/tree/master/packages/common/locales "angular/packages/common/locales | angular/angular | GitHub"
+[UnpkgBrowseAngularCommonLocales]: https://unpkg.com/browse/@angular/common/locales "@angular/common/locales | Unpkg"
 
 <!-- end links -->
 
