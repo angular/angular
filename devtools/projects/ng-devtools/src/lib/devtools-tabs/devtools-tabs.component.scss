@@ -51,6 +51,12 @@ button.mat-icon-button {
 
 mat-icon {
   font-size: 16px;
+
+  .mat-menu-item & {
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
+  }
 }
 
 .mat-tab-link {
@@ -63,39 +69,22 @@ mat-icon {
   font-weight: 400;
 }
 
-::ng-deep {
-  .options-menu {
-    padding: 1rem 1.25rem;
-  }
+.mat-menu-item {
+  font-size: 0.7em;
+  font-weight: 500;
+  height: 36px;
+  line-height: 36px;
+  overflow: visible; // Avoids clipping of the button toggle ripple.
+  color: #777;
 
-  .info-menu {
-    padding: 0.5rem;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .info-menu mat-icon {
-    height: unset;
-    width: unset;
-  }
-
-  body.dark-theme .menu-toggle-button {
+  ::ng-deep .dark-theme & {
     color: white;
   }
 
-  .menu-toggle-button {
-    mat-icon {
-      position: relative;
-      top: -1px;
-      margin-right: 5px;
-    }
+  mat-slide-toggle {
+    width: 100%;
+    height: 100%;
   }
-}
-
-.menu-toggle-button {
-  font-size: 0.7em;
-  font-weight: 500;
-  color: #777;
 }
 
 :host-context(.dark-theme) {
@@ -105,12 +94,6 @@ mat-icon {
 
   .inspector-active {
     color: #4688f1 !important;
-  }
-}
-
-:host-context(.light-theme) {
-  mat-icon {
-    color: rgba(0, 0, 0, 0.87);
   }
 }
 
