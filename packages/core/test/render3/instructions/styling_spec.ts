@@ -97,6 +97,7 @@ describe('styling', () => {
   });
 
   it('should set class based on priority', () => {
+    ngDevModeResetPerfCounters();
     ɵɵclassProp('foo', false);
     ɵɵclassProp('foo', true);  // Higher priority, should win.
     expectClass(div).toEqual({foo: true});
