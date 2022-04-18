@@ -463,7 +463,7 @@ The link parameters array affords the flexibility to represent any routing depth
 
 When the router navigates to a new component view, it updates the browser's location and history with a URL for that view.
 
-Modern HTML5 browsers support [history.pushState](https://developer.mozilla.org/docs/Web/API/History_API#Adding_and_modifying_history_entries" title="HTML5 browser history push-state), a technique that changes a browser's location and history without triggering a server page request.
+Modern HTML5 browsers support [history.pushState](https://developer.mozilla.org/en-US/docs/Web/API/History_API/Working_with_the_History_API#adding_and_modifying_history_entries title="HTML5 browser history push-state"), a technique that changes a browser's location and history without triggering a server page request.
 The router can compose a "natural" URL that is indistinguishable from one that would otherwise require a page load.
 
 Here's the Crisis Center URL in this "HTML5 pushState" style:
@@ -514,7 +514,7 @@ This option is only available if application URLs look like normal web URLs with
 
 ## `<base href>`
 
-The router uses the browser's [history.pushState](https://developer.mozilla.org/docs/Web/API/History_API#Adding_and_modifying_history_entries" title="HTML5 browser history push-state) for navigation.
+The router uses the browser's [history.pushState](https://developer.mozilla.org/en-US/docs/Web/API/History_API/Working_with_the_History_API#adding_and_modifying_history_entries "HTML5 browser history push-state") for navigation.
 `pushState` lets you customize in-application URL paths; for example, `localhost:4200/crisis-center`.
 The in-application URLs can be indistinguishable from server URLs.
 
@@ -527,7 +527,7 @@ In the [LocationStrategy and browser URL styles](#browser-url-styles) section, l
 
 </div>
 
-You must add a [`<base href>` element](https://developer.mozilla.org/docs/Web/HTML/Element/base base href") to the application's `index.html` for `pushState` routing to work.
+You must add a [`<base href>` element](https://developer.mozilla.org/docs/Web/HTML/Element/base "base href") to the application's `index.html` for `pushState` routing to work.
 The browser uses the `<base href>` value to prefix relative URLs when referencing CSS files, scripts, and images.
 
 Add the `<base>` element just after the `<head>` tag.
