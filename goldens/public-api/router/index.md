@@ -360,7 +360,7 @@ export class OutletContext {
     injector: EnvironmentInjector | null;
     // (undocumented)
     outlet: RouterOutletContract | null;
-    // (undocumented)
+    // @deprecated (undocumented)
     resolver: ComponentFactoryResolver | null;
     // (undocumented)
     route: ActivatedRoute | null;
@@ -684,6 +684,7 @@ export interface RouterOutletContract {
     activatedRouteData: Data;
     activateEvents?: EventEmitter<unknown>;
     activateWith(activatedRoute: ActivatedRoute, environmnetInjector: EnvironmentInjector | null): void;
+    // @deprecated
     activateWith(activatedRoute: ActivatedRoute, resolver: ComponentFactoryResolver | null): void;
     attach(ref: ComponentRef<unknown>, activatedRoute: ActivatedRoute): void;
     attachEvents?: EventEmitter<unknown>;

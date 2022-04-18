@@ -53,6 +53,9 @@ export interface RouterOutletContract {
   activateWith(activatedRoute: ActivatedRoute, environmnetInjector: EnvironmentInjector|null): void;
   /**
    * Called by the `Router` when the outlet should activate (create a component).
+   *
+   * @deprecated Passing a resolver to retrieve a component factory is not required and is
+   *     deprecated since v14.
    */
   activateWith(activatedRoute: ActivatedRoute, resolver: ComponentFactoryResolver|null): void;
 
