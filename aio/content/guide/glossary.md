@@ -261,7 +261,7 @@ Do not declare the following:
 ## decorator | decoration
 
 A function that modifies a class or property definition.
-Decorators are an experimental \(stage 2\) [JavaScript language feature][GithubWycatsJavascriptDecorators].
+Decorators are an experimental \(stage 3\) [JavaScript language feature][GithubTC39ProposalDecorators].
 A decorator is also referenced as an *annotation*.
 TypeScript adds support for decorators.
 
@@ -1168,7 +1168,7 @@ Learn more about zones in this [Brian Ford video][YoutubeWatchV3iqtmusceU].
 
 [GithubPalantirTslint]: https://palantir.github.io/tslint "TSLint | Palantir | GitHub"
 
-[GithubWycatsJavascriptDecorators]: https://github.com/wycats/javascript-decorators "wycats/javascript-decorators | GitHub"
+[GithubTC39ProposalDecorators]: https://github.com/tc39/proposal-decorators "tc39/proposal-decorators | GitHub"
 
 [GitScmMain]: https://git-scm.com "Git"
 
