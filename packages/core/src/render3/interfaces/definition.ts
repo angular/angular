@@ -306,6 +306,11 @@ export interface ComponentDef<T> extends DirectiveDef<T> {
   pipeDefs: PipeDefListOrFactory|null;
 
   /**
+   * Unfiltered list of all dependencies of a component, or `null` if none.
+   */
+  dependencies: TypeOrFactory<DependencyTypeList>|null;
+
+  /**
    * The set of schemas that declare elements to be allowed in the component's template.
    */
   schemas: SchemaMetadata[]|null;
