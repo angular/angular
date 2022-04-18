@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {EnvironmentInjector} from '@angular/core';
-import {createEnvironmentInjector} from '@angular/core/src/render3/ng_module_ref';
+import {createEnvironmentInjector, EnvironmentInjector} from '@angular/core';
 import {EmptyError, from, Observable, Observer, of, throwError} from 'rxjs';
 import {catchError, concatMap, first, last, map, mergeMap, scan, tap} from 'rxjs/operators';
 
@@ -185,7 +184,7 @@ class ApplyRedirects {
     return from(routes).pipe(
         concatMap(r => {
           if (r.providers && !r._injector) {
-            r._injector = createEnvironmentInjector(r.providers, injector);
+            r._injector = createEnvironmentInjector(r.providers, injector, `Route: ${r.path}`);
           }
           // We specifically _do not_ want to include the _loadedInjector here. The loaded injector
           // only applies to the route's children, not the route itself. Note that this distinction
