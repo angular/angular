@@ -63,18 +63,18 @@ export declare class MyPipe implements PipeTransform, OnDestroy {
     transform(value: any, ...args: any[]): any;
     ngOnDestroy(): void;
     static ɵfac: i0.ɵɵFactoryDeclaration<MyPipe, never>;
-    static ɵpipe: i0.ɵɵPipeDeclaration<MyPipe, "myPipe">;
+    static ɵpipe: i0.ɵɵPipeDeclaration<MyPipe, "myPipe", false>;
 }
 export declare class MyPurePipe implements PipeTransform {
     transform(value: any, ...args: any[]): any;
     static ɵfac: i0.ɵɵFactoryDeclaration<MyPurePipe, never>;
-    static ɵpipe: i0.ɵɵPipeDeclaration<MyPurePipe, "myPurePipe">;
+    static ɵpipe: i0.ɵɵPipeDeclaration<MyPurePipe, "myPurePipe", false>;
 }
 export declare class MyApp {
     name: string;
     size: number;
     static ɵfac: i0.ɵɵFactoryDeclaration<MyApp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "my-app", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "my-app", never, {}, {}, never, never, false>;
 }
 export declare class MyModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
@@ -132,12 +132,12 @@ export declare class MyPipe implements PipeTransform, OnDestroy {
     transform(value: any, ...args: any[]): any;
     ngOnDestroy(): void;
     static ɵfac: i0.ɵɵFactoryDeclaration<MyPipe, never>;
-    static ɵpipe: i0.ɵɵPipeDeclaration<MyPipe, "myPipe">;
+    static ɵpipe: i0.ɵɵPipeDeclaration<MyPipe, "myPipe", false>;
 }
 export declare class MyApp {
     name: string;
     static ɵfac: i0.ɵɵFactoryDeclaration<MyApp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "my-app", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "my-app", never, {}, {}, never, never, false>;
 }
 export declare class MyModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
@@ -206,18 +206,18 @@ export declare class MyPipe implements PipeTransform {
     constructor(changeDetectorRef: ChangeDetectorRef);
     transform(value: any, ...args: any[]): any;
     static ɵfac: i0.ɵɵFactoryDeclaration<MyPipe, never>;
-    static ɵpipe: i0.ɵɵPipeDeclaration<MyPipe, "myPipe">;
+    static ɵpipe: i0.ɵɵPipeDeclaration<MyPipe, "myPipe", false>;
 }
 export declare class MyOtherPipe implements PipeTransform {
     constructor(changeDetectorRef: ChangeDetectorRef);
     transform(value: any, ...args: any[]): any;
     static ɵfac: i0.ɵɵFactoryDeclaration<MyOtherPipe, [{ optional: true; }]>;
-    static ɵpipe: i0.ɵɵPipeDeclaration<MyOtherPipe, "myOtherPipe">;
+    static ɵpipe: i0.ɵɵPipeDeclaration<MyOtherPipe, "myOtherPipe", false>;
 }
 export declare class MyApp {
     name: string;
     static ɵfac: i0.ɵɵFactoryDeclaration<MyApp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "my-app", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "my-app", never, {}, {}, never, never, false>;
 }
 export declare class MyModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;

@@ -38,7 +38,7 @@ export declare class ForOfDirective {
     forOf: any[];
     ngOnChanges(simpleChanges: SimpleChanges): void;
     static ɵfac: i0.ɵɵFactoryDeclaration<ForOfDirective, never>;
-    static ɵdir: i0.ɵɵDirectiveDeclaration<ForOfDirective, "[forOf]", never, { "forOf": "forOf"; }, {}, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<ForOfDirective, "[forOf]", never, { "forOf": "forOf"; }, {}, never, never, false>;
 }
 
 /****************************************************************************************************
@@ -81,7 +81,7 @@ export declare class MyComponent {
         data: number;
     }[];
     static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, {}, {}, never, never, false>;
 }
 export declare class MyModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
@@ -129,7 +129,7 @@ export declare class ForOfDirective {
     forOf: any[];
     ngOnChanges(simpleChanges: SimpleChanges): void;
     static ɵfac: i0.ɵɵFactoryDeclaration<ForOfDirective, never>;
-    static ɵdir: i0.ɵɵDirectiveDeclaration<ForOfDirective, "[forOf]", never, { "forOf": "forOf"; }, {}, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<ForOfDirective, "[forOf]", never, { "forOf": "forOf"; }, {}, never, never, false>;
 }
 
 /****************************************************************************************************
@@ -172,7 +172,7 @@ export declare class MyComponent {
         name: string;
     }[];
     static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, {}, {}, never, never, false>;
 }
 export declare class MyModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
@@ -220,7 +220,7 @@ export declare class ForOfDirective {
     forOf: any[];
     ngOnChanges(simpleChanges: SimpleChanges): void;
     static ɵfac: i0.ɵɵFactoryDeclaration<ForOfDirective, never>;
-    static ɵdir: i0.ɵɵDirectiveDeclaration<ForOfDirective, "[forOf]", never, { "forOf": "forOf"; }, {}, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<ForOfDirective, "[forOf]", never, { "forOf": "forOf"; }, {}, never, never, false>;
 }
 
 /****************************************************************************************************
@@ -289,7 +289,7 @@ export declare class MyComponent {
         }[];
     }[];
     static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, {}, {}, never, never, false>;
 }
 export declare class MyModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
@@ -337,6 +337,6 @@ export declare class ForOfDirective {
     forOf: any[];
     ngOnChanges(simpleChanges: SimpleChanges): void;
     static ɵfac: i0.ɵɵFactoryDeclaration<ForOfDirective, never>;
-    static ɵdir: i0.ɵɵDirectiveDeclaration<ForOfDirective, "[forOf]", never, { "forOf": "forOf"; }, {}, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<ForOfDirective, "[forOf]", never, { "forOf": "forOf"; }, {}, never, never, false>;
 }
 
