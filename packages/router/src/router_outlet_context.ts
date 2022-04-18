@@ -21,6 +21,7 @@ export class OutletContext {
   outlet: RouterOutletContract|null = null;
   route: ActivatedRoute|null = null;
   resolver: ComponentFactoryResolver|null = null;
+  injector: EnvironmentInjector|null = null;
   children = new ChildrenOutletContexts();
   attachRef: ComponentRef<any>|null = null;
 }

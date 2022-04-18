@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Attribute, ChangeDetectorRef, ComponentFactoryResolver, ComponentRef, Directive, EventEmitter, Injector, OnDestroy, OnInit, Output, ViewContainerRef} from '@angular/core';
+import {Attribute, ChangeDetectorRef, ComponentFactoryResolver, ComponentRef, Directive, EnvironmentInjector, EventEmitter, Injector, OnDestroy, OnInit, Output, ViewContainerRef,} from '@angular/core';
 
 import {Data} from '../models';
 import {ChildrenOutletContexts} from '../router_outlet_context';
@@ -47,6 +47,10 @@ export interface RouterOutletContract {
    */
   activatedRoute: ActivatedRoute|null;
 
+  /**
+   * Called by the `Router` when the outlet should activate (create a component).
+   */
+  activateWith(activatedRoute: ActivatedRoute, environmnetInjector: EnvironmentInjector|null): void;
   /**
    * Called by the `Router` when the outlet should activate (create a component).
    */
@@ -168,8 +172,8 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
 
   constructor(
       private parentContexts: ChildrenOutletContexts, private location: ViewContainerRef,
-      private resolver: ComponentFactoryResolver, @Attribute('name') name: string,
-      private changeDetector: ChangeDetectorRef) {
+      @Attribute('name') name: string, private changeDetector: ChangeDetectorRef,
+      private environmentInjector: EnvironmentInjector) {
     this.name = name || PRIMARY_OUTLET;
     parentContexts.onChildOutletCreated(this.name, this);
   }
@@ -191,7 +195,7 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
           this.attach(context.attachRef, context.route);
         } else {
           // otherwise the component defined in the configuration is created
-          this.activateWith(context.route, context.resolver || null);
+          this.activateWith(context.route, context.injector);
         }
       }
     }
@@ -255,18 +259,27 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
     }
   }
 
-  activateWith(activatedRoute: ActivatedRoute, resolver: ComponentFactoryResolver|null) {
+  activateWith(
+      activatedRoute: ActivatedRoute,
+      resolverOrInjector?: ComponentFactoryResolver|EnvironmentInjector|null) {
     if (this.isActivated) {
       throw new Error('Cannot activate an already activated outlet');
     }
     this._activatedRoute = activatedRoute;
+    const location = this.location;
     const snapshot = activatedRoute._futureSnapshot;
     const component = <any>snapshot.routeConfig!.component;
-    resolver = resolver || this.resolver;
-    const factory = resolver.resolveComponentFactory(component);
     const childContexts = this.parentContexts.getOrCreateContext(this.name).children;
-    const injector = new OutletInjector(activatedRoute, childContexts, this.location.injector);
-    this.activated = this.location.createComponent(factory, this.location.length, injector);
+    const injector = new OutletInjector(activatedRoute, childContexts, location.injector);
+
+    if (resolverOrInjector && isComponentFactoryResolver(resolverOrInjector)) {
+      const factory = resolverOrInjector.resolveComponentFactory(component);
+      this.activated = location.createComponent(factory, location.length, injector);
+    } else {
+      const environmentInjector = resolverOrInjector ?? this.environmentInjector;
+      this.activated = location.createComponent(
+          component, {index: location.length, injector, environmentInjector});
+    }
     // Calling `markForCheck` to make sure we will run the change detection when the
     // `RouterOutlet` is inside a `ChangeDetectionStrategy.OnPush` component.
     this.changeDetector.markForCheck();
@@ -290,4 +303,8 @@ class OutletInjector implements Injector {
 
     return this.parent.get(token, notFoundValue);
   }
+}
+
+function isComponentFactoryResolver(item: any): item is ComponentFactoryResolver {
+  return !!item.resolveComponentFactory;
 }
