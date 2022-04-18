@@ -53,6 +53,15 @@
   ],
   [
     "packages/core/src/di/create_injector.ts",
+    "packages/core/src/di/provider_collection.ts",
+    "packages/core/src/render3/definition.ts",
+    "packages/core/src/render3/interfaces/definition.ts",
+    "packages/core/src/render3/interfaces/node.ts",
+    "packages/core/src/render3/interfaces/view.ts",
+    "packages/core/src/di/injector.ts"
+  ],
+  [
+    "packages/core/src/di/create_injector.ts",
     "packages/core/src/di/r3_injector.ts",
     "packages/core/src/di/injector_token.ts",
     "packages/core/src/di/injector.ts"

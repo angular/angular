@@ -310,6 +310,8 @@ export function ɵɵdefineComponent<T>(componentDefinition: {
       directiveDefs: null!,  // assigned in noSideEffects
       pipeDefs: null!,       // assigned in noSideEffects
       standalone: componentDefinition.standalone === true,
+      dependencies:
+          componentDefinition.standalone === true && componentDefinition.dependencies || null,
       selectors: componentDefinition.selectors || EMPTY_ARRAY,
       viewQuery: componentDefinition.viewQuery || null,
       features: componentDefinition.features as DirectiveDefFeature[] || null,

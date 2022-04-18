@@ -11,6 +11,7 @@ import '../util/ng_dev_mode';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {OnDestroy} from '../interface/lifecycle_hooks';
 import {Type} from '../interface/type';
+import {getComponentDef} from '../render3/definition';
 import {FactoryFn, getFactoryDef} from '../render3/definition_factory';
 import {throwCyclicDependencyError, throwInvalidProviderError, throwMixedMultiProviderError} from '../render3/errors_di';
 import {flatten, newArray} from '../util/array_utils';
