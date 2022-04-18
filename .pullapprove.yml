@@ -154,7 +154,7 @@ groups:
       users:
         - alxhub
         - crisbeto
-        - jelbourn
+        - ~jelbourn
         - jessicajaniuk
 
   # =========================================================
@@ -1164,7 +1164,7 @@ groups:
         - alxhub
         - atscott
         - dylhunn
-        - jelbourn
+        - ~jelbourn
         - jessicajaniuk
         - pkozlowski-opensource
     reviews:
@@ -1190,7 +1190,7 @@ groups:
         - AndrewKushnir
         - atscott
         - dylhunn
-        - jelbourn
+        - ~jelbourn
         - jessicajaniuk
         - pkozlowski-opensource
     reviews:
@@ -1216,7 +1216,7 @@ groups:
         - AndrewKushnir
         - atscott
         - dylhunn
-        - jelbourn
+        - ~jelbourn
         - jessicajaniuk
         - pkozlowski-opensource
 
@@ -1240,7 +1240,7 @@ groups:
         - AndrewKushnir
         - andrewseguin
         - dgp1130
-        - jelbourn
+        - ~jelbourn
         - josephperrott
 
   ####################################################################################
