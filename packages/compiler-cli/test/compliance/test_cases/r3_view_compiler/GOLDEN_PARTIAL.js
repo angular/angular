@@ -49,13 +49,13 @@ import * as i0 from "@angular/core";
 export declare class MyApp {
     list: any[];
     static ɵfac: i0.ɵɵFactoryDeclaration<MyApp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "my-app", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "my-app", never, {}, {}, never, never, false>;
 }
 export declare class TodoComponent {
     data: any[];
     myTitle: string;
     static ɵfac: i0.ɵɵFactoryDeclaration<TodoComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<TodoComponent, "todo", never, { "data": "data"; }, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TodoComponent, "todo", never, { "data": "data"; }, {}, never, never, false>;
 }
 export declare class TodoModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<TodoModule, never>;

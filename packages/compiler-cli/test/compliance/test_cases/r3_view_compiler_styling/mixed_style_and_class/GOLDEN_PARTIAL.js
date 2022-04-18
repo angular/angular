@@ -39,7 +39,7 @@ export declare class MyComponent {
     })[];
     myClassExp: string;
     static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, {}, {}, never, never, false>;
 }
 export declare class MyModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
@@ -102,12 +102,12 @@ import * as i0 from "@angular/core";
 export declare class StylePipe {
     transform(v: any): void;
     static ɵfac: i0.ɵɵFactoryDeclaration<StylePipe, never>;
-    static ɵpipe: i0.ɵɵPipeDeclaration<StylePipe, "stylePipe">;
+    static ɵpipe: i0.ɵɵPipeDeclaration<StylePipe, "stylePipe", false>;
 }
 export declare class ClassPipe {
     transform(v: any): void;
     static ɵfac: i0.ɵɵFactoryDeclaration<ClassPipe, never>;
-    static ɵpipe: i0.ɵɵPipeDeclaration<ClassPipe, "classPipe">;
+    static ɵpipe: i0.ɵɵPipeDeclaration<ClassPipe, "classPipe", false>;
 }
 export declare class MyComponent {
     myStyleExp: ({
@@ -119,7 +119,7 @@ export declare class MyComponent {
     })[];
     myClassExp: string;
     static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, {}, {}, never, never, false>;
 }
 export declare class MyModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
@@ -189,7 +189,7 @@ import * as i0 from "@angular/core";
 export declare class PipePipe {
     transform(v: any): void;
     static ɵfac: i0.ɵɵFactoryDeclaration<PipePipe, never>;
-    static ɵpipe: i0.ɵɵPipeDeclaration<PipePipe, "pipe">;
+    static ɵpipe: i0.ɵɵPipeDeclaration<PipePipe, "pipe", false>;
 }
 export declare class MyComponent {
     myStyleExp: {};
@@ -199,7 +199,7 @@ export declare class MyComponent {
     items: number[];
     item: number;
     static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, {}, {}, never, never, false>;
 }
 export declare class MyModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
@@ -259,7 +259,7 @@ export declare class MyComponent {
     a1: boolean;
     r1: boolean;
     static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, {}, {}, never, never, false>;
 }
 export declare class MyModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
