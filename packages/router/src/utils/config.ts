@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector} from '@angular/core';
+import {EnvironmentInjector, Injector} from '@angular/core';
 
 import {EmptyOutletComponent} from '../components/empty_outlet';
 import {LoadedRouterConfig, Route, Routes} from '../models';
@@ -153,7 +153,8 @@ export function sortByMatchingOutlets(routes: Routes, outletName: string): Route
  * Generally used for retrieving the injector to use for getting tokens for guards/resolvers and
  * also used for getting the correct injector to use for creating components.
  */
-export function getClosestLoadedInjector(snapshot: ActivatedRouteSnapshot): Injector|null {
+export function getClosestLoadedInjector(snapshot: ActivatedRouteSnapshot): EnvironmentInjector|
+    null {
   if (!snapshot) return null;
 
   for (let s = snapshot.parent; s; s = s.parent) {

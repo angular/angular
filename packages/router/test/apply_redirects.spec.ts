@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgModuleRef} from '@angular/core';
+import {EnvironmentInjector, NgModuleRef} from '@angular/core';
 import {fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {ActivatedRouteSnapshot} from '@angular/router';
 import {TreeNode} from '@angular/router/src/utils/tree';
@@ -1185,7 +1185,8 @@ describe('applyRedirects', () => {
 });
 
 function checkRedirect(config: Routes, url: string, callback: any): void {
-  applyRedirects(TestBed, null!, new DefaultUrlSerializer(), tree(url), config)
+  applyRedirects(
+      TestBed.inject(EnvironmentInjector), null!, new DefaultUrlSerializer(), tree(url), config)
       .subscribe(callback, e => {
         throw e;
       });

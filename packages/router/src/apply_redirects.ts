@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector} from '@angular/core';
+import {EnvironmentInjector} from '@angular/core';
 import {EmptyError, from, Observable, Observer, of, throwError} from 'rxjs';
 import {catchError, concatMap, first, last, map, mergeMap, scan, tap} from 'rxjs/operators';
 
@@ -57,7 +57,7 @@ function canLoadFails(route: Route): Observable<LoadedRouterConfig> {
  * Lazy modules are loaded along the way.
  */
 export function applyRedirects(
-    injector: Injector, configLoader: RouterConfigLoader, urlSerializer: UrlSerializer,
+    injector: EnvironmentInjector, configLoader: RouterConfigLoader, urlSerializer: UrlSerializer,
     urlTree: UrlTree, config: Routes): Observable<UrlTree> {
   return new ApplyRedirects(injector, configLoader, urlSerializer, urlTree, config).apply();
 }
@@ -66,7 +66,7 @@ class ApplyRedirects {
   private allowRedirects: boolean = true;
 
   constructor(
-      private injector: Injector, private configLoader: RouterConfigLoader,
+      private injector: EnvironmentInjector, private configLoader: RouterConfigLoader,
       private urlSerializer: UrlSerializer, private urlTree: UrlTree, private config: Routes) {}
 
   apply(): Observable<UrlTree> {
@@ -131,7 +131,7 @@ class ApplyRedirects {
   }
 
   private expandSegmentGroup(
-      injector: Injector, routes: Route[], segmentGroup: UrlSegmentGroup,
+      injector: EnvironmentInjector, routes: Route[], segmentGroup: UrlSegmentGroup,
       outlet: string): Observable<UrlSegmentGroup> {
     if (segmentGroup.segments.length === 0 && segmentGroup.hasChildren()) {
       return this.expandChildren(injector, routes, segmentGroup)
@@ -142,8 +142,9 @@ class ApplyRedirects {
   }
 
   // Recursively expand segment groups for all the child outlets
-  private expandChildren(injector: Injector, routes: Route[], segmentGroup: UrlSegmentGroup):
-      Observable<{[name: string]: UrlSegmentGroup}> {
+  private expandChildren(
+      injector: EnvironmentInjector, routes: Route[],
+      segmentGroup: UrlSegmentGroup): Observable<{[name: string]: UrlSegmentGroup}> {
     // Expand outlets one at a time, starting with the primary outlet. We need to do it this way
     // because an absolute redirect from the primary outlet takes precedence.
     const childOutlets: string[] = [];
@@ -177,8 +178,9 @@ class ApplyRedirects {
   }
 
   private expandSegment(
-      injector: Injector, segmentGroup: UrlSegmentGroup, routes: Route[], segments: UrlSegment[],
-      outlet: string, allowRedirects: boolean): Observable<UrlSegmentGroup> {
+      injector: EnvironmentInjector, segmentGroup: UrlSegmentGroup, routes: Route[],
+      segments: UrlSegment[], outlet: string,
+      allowRedirects: boolean): Observable<UrlSegmentGroup> {
     return from(routes).pipe(
         concatMap((r: any) => {
           const expanded$ = this.expandSegmentAgainstRoute(
@@ -202,7 +204,7 @@ class ApplyRedirects {
   }
 
   private expandSegmentAgainstRoute(
-      injector: Injector, segmentGroup: UrlSegmentGroup, routes: Route[], route: Route,
+      injector: EnvironmentInjector, segmentGroup: UrlSegmentGroup, routes: Route[], route: Route,
       paths: UrlSegment[], outlet: string, allowRedirects: boolean): Observable<UrlSegmentGroup> {
     if (!isImmediateMatch(route, segmentGroup, paths, outlet)) {
       return noMatch(segmentGroup);
@@ -221,7 +223,7 @@ class ApplyRedirects {
   }
 
   private expandSegmentAgainstRouteUsingRedirect(
-      injector: Injector, segmentGroup: UrlSegmentGroup, routes: Route[], route: Route,
+      injector: EnvironmentInjector, segmentGroup: UrlSegmentGroup, routes: Route[], route: Route,
       segments: UrlSegment[], outlet: string): Observable<UrlSegmentGroup> {
     if (route.path === '**') {
       return this.expandWildCardWithParamsAgainstRouteUsingRedirect(
@@ -233,7 +235,7 @@ class ApplyRedirects {
   }
 
   private expandWildCardWithParamsAgainstRouteUsingRedirect(
-      injector: Injector, routes: Route[], route: Route,
+      injector: EnvironmentInjector, routes: Route[], route: Route,
       outlet: string): Observable<UrlSegmentGroup> {
     const newTree = this.applyRedirectCommands([], route.redirectTo!, {});
     if (route.redirectTo!.startsWith('/')) {
@@ -247,7 +249,7 @@ class ApplyRedirects {
   }
 
   private expandRegularSegmentAgainstRouteUsingRedirect(
-      injector: Injector, segmentGroup: UrlSegmentGroup, routes: Route[], route: Route,
+      injector: EnvironmentInjector, segmentGroup: UrlSegmentGroup, routes: Route[], route: Route,
       segments: UrlSegment[], outlet: string): Observable<UrlSegmentGroup> {
     const {matched, consumedSegments, remainingSegments, positionalParamSegments} =
         match(segmentGroup, route, segments);
@@ -266,8 +268,8 @@ class ApplyRedirects {
   }
 
   private matchSegmentAgainstRoute(
-      injector: Injector, rawSegmentGroup: UrlSegmentGroup, route: Route, segments: UrlSegment[],
-      outlet: string): Observable<UrlSegmentGroup> {
+      injector: EnvironmentInjector, rawSegmentGroup: UrlSegmentGroup, route: Route,
+      segments: UrlSegment[], outlet: string): Observable<UrlSegmentGroup> {
     if (route.path === '**') {
       if (route.loadChildren) {
         const loaded$ = route._loadedRoutes ?
@@ -318,7 +320,7 @@ class ApplyRedirects {
     }));
   }
 
-  private getChildConfig(injector: Injector, route: Route, segments: UrlSegment[]):
+  private getChildConfig(injector: EnvironmentInjector, route: Route, segments: UrlSegment[]):
       Observable<LoadedRouterConfig> {
     if (route.children) {
       // The children belong to the same module
@@ -347,7 +349,7 @@ class ApplyRedirects {
     return of({routes: [], injector});
   }
 
-  private runCanLoadGuards(injector: Injector, route: Route, segments: UrlSegment[]):
+  private runCanLoadGuards(injector: EnvironmentInjector, route: Route, segments: UrlSegment[]):
       Observable<boolean> {
     const canLoad = route.canLoad;
     if (!canLoad || canLoad.length === 0) return of(true);
