@@ -87,7 +87,11 @@ export class DomPortalOutlet extends BasePortalOutlet {
       );
       this._appRef!.attachView(componentRef.hostView);
       this.setDisposeFn(() => {
-        this._appRef!.detachView(componentRef.hostView);
+        // Verify that the ApplicationRef has registered views before trying to detach a host view.
+        // This check also protects the `detachView` from being called on a destroyed ApplicationRef.
+        if (this._appRef!.viewCount > 0) {
+          this._appRef!.detachView(componentRef.hostView);
+        }
         componentRef.destroy();
       });
     }
