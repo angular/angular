@@ -6,7 +6,7 @@
   "stopUpdatingLabel": "merge ready",
   "labels": ["target: patch", "merge safe"],
   "lockFileMaintenance": {
-    "enabled": true
+    "enabled": false
   },
   "pinDigests": true,
   "prHourlyLimit": 2,
