@@ -17,9 +17,10 @@ import {RouterConfigLoader} from '../router_config_loader';
 import {UrlSerializer} from '../url_tree';
 
 export function applyRedirects(
-    moduleInjector: EnvironmentInjector, configLoader: RouterConfigLoader,
+    environmentInjector: EnvironmentInjector, configLoader: RouterConfigLoader,
     urlSerializer: UrlSerializer, config: Routes): MonoTypeOperatorFunction<NavigationTransition> {
   return switchMap(
-      t => applyRedirectsFn(moduleInjector, configLoader, urlSerializer, t.extractedUrl, config)
-               .pipe(map(urlAfterRedirects => ({...t, urlAfterRedirects}))));
+      t =>
+          applyRedirectsFn(environmentInjector, configLoader, urlSerializer, t.extractedUrl, config)
+              .pipe(map(urlAfterRedirects => ({...t, urlAfterRedirects}))));
 }
