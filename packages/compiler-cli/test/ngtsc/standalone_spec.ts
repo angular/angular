@@ -22,7 +22,7 @@ runInEachFileSystem(() => {
 
     beforeEach(() => {
       env = NgtscTestEnvironment.setup(testFiles);
-      env.tsconfig();
+      env.tsconfig({strictTemplates: true});
     });
 
     describe('component-side', () => {
@@ -264,6 +264,48 @@ runInEachFileSystem(() => {
                .toEqual(
                    `It's declared in the NgModule 'TestModule', but is not exported. Consider exporting it.`);
          });
+
+      it('should type-check standalone component templates', () => {
+        env.write('test.ts', `
+          import {Component, Input, NgModule} from '@angular/core';
+
+          @Component({
+            selector: 'not-standalone',
+            template: '',
+          })
+          export class NotStandaloneCmp {
+            @Input() value!: string;
+          }
+
+          @NgModule({
+            declarations: [NotStandaloneCmp],
+            exports: [NotStandaloneCmp],
+          })
+          export class NotStandaloneModule {}
+
+          @Component({
+            standalone: true,
+            selector: 'is-standalone',
+            template: '',
+          })
+          export class IsStandaloneCmp {
+            @Input() value!: string;
+          }
+
+          @Component({
+            standalone: true,
+            selector: 'test-cmp',
+            imports: [NotStandaloneModule, IsStandaloneCmp],
+            template: '<not-standalone [value]="3"></not-standalone><is-standalone [value]="true"></is-standalone>',
+          })
+          export class TestCmp {}
+        `);
+
+        const diags = env.driveDiagnostics().map(diag => diag.messageText);
+        expect(diags.length).toBe(2);
+        expect(diags).toContain(`Type 'number' is not assignable to type 'string'.`);
+        expect(diags).toContain(`Type 'boolean' is not assignable to type 'string'.`);
+      });
     });
 
     describe('NgModule-side', () => {
