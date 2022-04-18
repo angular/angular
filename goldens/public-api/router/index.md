@@ -357,6 +357,8 @@ export class OutletContext {
     // (undocumented)
     children: ChildrenOutletContexts;
     // (undocumented)
+    injector: EnvironmentInjector | null;
+    // (undocumented)
     outlet: RouterOutletContract | null;
     // (undocumented)
     resolver: ComponentFactoryResolver | null;
@@ -645,7 +647,7 @@ export class RouterModule {
 
 // @public
 export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
-    constructor(parentContexts: ChildrenOutletContexts, location: ViewContainerRef, resolver: ComponentFactoryResolver, name: string, changeDetector: ChangeDetectorRef);
+    constructor(parentContexts: ChildrenOutletContexts, location: ViewContainerRef, name: string, changeDetector: ChangeDetectorRef, environmentInjector: EnvironmentInjector);
     // (undocumented)
     get activatedRoute(): ActivatedRoute;
     // (undocumented)
@@ -653,7 +655,7 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
     // (undocumented)
     activateEvents: EventEmitter<any>;
     // (undocumented)
-    activateWith(activatedRoute: ActivatedRoute, resolver: ComponentFactoryResolver | null): void;
+    activateWith(activatedRoute: ActivatedRoute, resolverOrInjector?: ComponentFactoryResolver | EnvironmentInjector | null): void;
     attach(ref: ComponentRef<any>, activatedRoute: ActivatedRoute): void;
     attachEvents: EventEmitter<unknown>;
     // (undocumented)
@@ -673,7 +675,7 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<RouterOutlet, "router-outlet", ["outlet"], {}, { "activateEvents": "activate"; "deactivateEvents": "deactivate"; "attachEvents": "attach"; "detachEvents": "detach"; }, never, never, false>;
     // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<RouterOutlet, [null, null, null, { attribute: "name"; }, null]>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<RouterOutlet, [null, null, { attribute: "name"; }, null, null]>;
 }
 
 // @public
@@ -681,6 +683,7 @@ export interface RouterOutletContract {
     activatedRoute: ActivatedRoute | null;
     activatedRouteData: Data;
     activateEvents?: EventEmitter<unknown>;
+    activateWith(activatedRoute: ActivatedRoute, environmnetInjector: EnvironmentInjector | null): void;
     activateWith(activatedRoute: ActivatedRoute, resolver: ComponentFactoryResolver | null): void;
     attach(ref: ComponentRef<unknown>, activatedRoute: ActivatedRoute): void;
     attachEvents?: EventEmitter<unknown>;

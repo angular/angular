@@ -198,10 +198,11 @@ export class ActivateRoutes {
           context.attachRef = null;
           context.route = future;
           context.resolver = cmpFactoryResolver;
+          context.injector = injector;
           if (context.outlet) {
             // Activate the outlet when it has already been instantiated
             // Otherwise it will get activated from its `ngOnInit` when instantiated
-            context.outlet.activateWith(future, cmpFactoryResolver);
+            context.outlet.activateWith(future, context.injector);
           }
 
           this.activateChildRoutes(futureNode, null, context.children);
