@@ -20,6 +20,10 @@ import {ActivatedRoute} from './router_state';
 export class OutletContext {
   outlet: RouterOutletContract|null = null;
   route: ActivatedRoute|null = null;
+  /**
+   * @deprecated Passing a resolver to retrieve a component factory is not required and is
+   *     deprecated since v14.
+   */
   resolver: ComponentFactoryResolver|null = null;
   injector: EnvironmentInjector|null = null;
   children = new ChildrenOutletContexts();
