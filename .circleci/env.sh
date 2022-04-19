@@ -71,9 +71,10 @@ setPublicVar SAUCE_READY_FILE_TIMEOUT 120
 # the `save_cache` path configuration in `config.yml`
 setPublicVar COMPONENTS_REPO_TMP_DIR "/tmp/angular-components-repo"
 setPublicVar COMPONENTS_REPO_URL "https://github.com/angular/components.git"
-setPublicVar COMPONENTS_REPO_BRANCH "master"
+# TODO(BRANCH_RENAME_CLEANUP): fixup branch name to point to main branch
+setPublicVar COMPONENTS_REPO_BRANCH "main-branch-rename-do-not-delete"
 # **NOTE**: When updating the commit SHA, also update the cache key in the CircleCI `config.yml`.
-setPublicVar COMPONENTS_REPO_COMMIT "e0b76ed029939a7bb8246410b0170cfdbf35da25"
+setPublicVar COMPONENTS_REPO_COMMIT "e65f5f5bafcd00dbb64387878fb866283909a2dd"
 
 ####################################################################################################
 # Create shell script in /tmp for Bazel actions to access CI envs without
