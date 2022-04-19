@@ -69,6 +69,16 @@ export interface ElementAnimationState {
   previousTriggersValues?: Map<string, string>;
 }
 
+interface AnimationNodeMaps {
+  nodeMap: Map<any, any[]>;
+  nodeMapIds: Map<any, string>;
+}
+
+interface EnterLeaveNodeMaps {
+  enter: AnimationNodeMaps;
+  leave: AnimationNodeMaps;
+}
+
 export class StateValue {
   public value: string;
   public options: AnimationOptions;
@@ -919,40 +929,52 @@ export class TransitionAnimationEngine {
     throw triggerTransitionsFailed(errors);
   }
 
-  private _flushAnimations(cleanupFns: Function[], microtaskId: number):
-      TransitionAnimationPlayer[] {
-    const subTimelines = new ElementInstructionMap();
-    const skippedPlayers: TransitionAnimationPlayer[] = [];
-    const skippedPlayersMap = new Map<any, AnimationPlayer[]>();
-    const queuedInstructions: QueuedTransition[] = [];
-    const queriedElements = new Map<any, TransitionAnimationPlayer[]>();
-    const allPreStyleElements = new Map<any, Set<string>>();
-    const allPostStyleElements = new Map<any, Set<string>>();
-
+  /**
+   * _findDisabledElements retrieves the set of disabled nodes.
+   */
+  private _findDisabledElements(): Set<any> {
     const disabledElementsSet = new Set<any>();
     this.disabledNodes.forEach(node => {
       disabledElementsSet.add(node);
       const nodesThatAreDisabled = this.driver.query(node, QUEUED_SELECTOR, true);
+
       for (let i = 0; i < nodesThatAreDisabled.length; i++) {
         disabledElementsSet.add(nodesThatAreDisabled[i]);
       }
     });
+    return disabledElementsSet;
+  }
 
-    const bodyNode = this.bodyNode;
-    const allTriggerElements = Array.from(this.statesByElement.keys());
-    const enterNodeMap = buildRootMap(allTriggerElements, this.collectedEnterElements);
-
-    // this must occur before the instructions are built below such that
-    // the :enter queries match the elements (since the timeline queries
-    // are fired during instruction building).
-    const enterNodeMapIds = new Map<any, string>();
-    let i = 0;
-    enterNodeMap.forEach((nodes, root) => {
-      const className = ENTER_CLASSNAME + i++;
-      enterNodeMapIds.set(root, className);
+  /**
+   * _prepareNodesForInstructionSet sets the node classname and retreives the node ids
+   *
+   * this must occur before the instructions are built below such that
+   * the :enter queries match the elements (since the timeline queries
+   * are fired during instruction building).
+   * @param nodeMap Map<any, any[]>
+   * @returns Map<any, string>
+   */
+  private _prepareNodesForInstructionSet(
+      nodeMap: Map<any, any[]>, nodeClassName: string, i: number = 0): Map<any, string> {
+    const nodeMapIds = new Map<any, string>();
+    nodeMap.forEach((nodes, root) => {
+      const className = nodeClassName + i++;
+      nodeMapIds.set(root, className);
       nodes.forEach(node => addClass(node, className));
     });
+    return nodeMapIds;
+  }
 
+  /**
+   * _buildLeaveNodeLists builds out the set of leaveNodes needed
+   *
+   * @param allLeaveNodes any[]
+   * @param mergedLeaveNodes Set<any>
+   * @param leaveNodesWithoutAnimations Set<any>
+   */
+
+  private _buildLeaveNodeLists():
+      {allLeaveNodes: any[], mergedLeaveNodes: Set<any>, leaveNodesWithoutAnimations: Set<any>} {
     const allLeaveNodes: any[] = [];
     const mergedLeaveNodes = new Set<any>();
     const leaveNodesWithoutAnimations = new Set<any>();
@@ -969,14 +991,23 @@ export class TransitionAnimationEngine {
         }
       }
     }
+    return {allLeaveNodes, mergedLeaveNodes, leaveNodesWithoutAnimations};
+  }
 
-    const leaveNodeMapIds = new Map<any, string>();
+  private _buildEnterAndLeaveNodes(cleanupFns: Function[]):
+      {allLeaveNodes: any[], leaveNodesWithoutAnimations: Set<any>, nodeMaps: EnterLeaveNodeMaps} {
+    const allTriggerElements = Array.from(this.statesByElement.keys());
+    const enterNodeMap = buildRootMap(allTriggerElements, this.collectedEnterElements);
+    const enterNodeMapIds = this._prepareNodesForInstructionSet(enterNodeMap, ENTER_CLASSNAME);
+    const enter: AnimationNodeMaps = {nodeMap: enterNodeMap, nodeMapIds: enterNodeMapIds};
+
+    let {allLeaveNodes, mergedLeaveNodes, leaveNodesWithoutAnimations} =
+        this._buildLeaveNodeLists();
+
     const leaveNodeMap = buildRootMap(allTriggerElements, Array.from(mergedLeaveNodes));
-    leaveNodeMap.forEach((nodes, root) => {
-      const className = LEAVE_CLASSNAME + i++;
-      leaveNodeMapIds.set(root, className);
-      nodes.forEach(node => addClass(node, className));
-    });
+    const leaveNodeMapIds =
+        this._prepareNodesForInstructionSet(enterNodeMap, LEAVE_CLASSNAME, enterNodeMapIds.size);
+    const leave: AnimationNodeMaps = {nodeMap: leaveNodeMap, nodeMapIds: leaveNodeMapIds};
 
     cleanupFns.push(() => {
       enterNodeMap.forEach((nodes, root) => {
@@ -994,8 +1025,31 @@ export class TransitionAnimationEngine {
       });
     });
 
+    return {allLeaveNodes, leaveNodesWithoutAnimations, nodeMaps: {enter, leave}};
+  }
+
+  /**
+   * _flushAnimations is the central method of the animations package
+   *
+   * This method
+   */
+  private _flushAnimations(cleanupFns: Function[], microtaskId: number):
+      TransitionAnimationPlayer[] {
+    const subTimelines = new ElementInstructionMap();
+    const skippedPlayers: TransitionAnimationPlayer[] = [];
+    const skippedPlayersMap = new Map<any, AnimationPlayer[]>();
+    const queuedInstructions: QueuedTransition[] = [];
+    const queriedElements = new Map<any, TransitionAnimationPlayer[]>();
+    const allPreStyleElements = new Map<any, Set<string>>();
+    const allPostStyleElements = new Map<any, Set<string>>();
+
+    const {allLeaveNodes, leaveNodesWithoutAnimations, nodeMaps} =
+        this._buildEnterAndLeaveNodes(cleanupFns);
+
+    const bodyNode = this.bodyNode;
     const allPlayers: TransitionAnimationPlayer[] = [];
     const erroneousTransitions: AnimationTransitionInstruction[] = [];
+
     for (let i = this._namespaceList.length - 1; i >= 0; i--) {
       const ns = this._namespaceList[i];
       ns.drainQueuedTransitions(microtaskId).forEach(entry => {
@@ -1028,8 +1082,8 @@ export class TransitionAnimationEngine {
         }
 
         const nodeIsOrphaned = !bodyNode || !this.driver.containsElement(bodyNode, element);
-        const leaveClassName = leaveNodeMapIds.get(element)!;
-        const enterClassName = enterNodeMapIds.get(element)!;
+        const leaveClassName = nodeMaps.leave.nodeMapIds.get(element)!;
+        const enterClassName = nodeMaps.enter.nodeMapIds.get(element)!;
         const instruction = this._buildInstruction(
             entry, subTimelines, enterClassName, leaveClassName, nodeIsOrphaned)!;
         if (instruction.errors && instruction.errors.length) {
@@ -1160,7 +1214,7 @@ export class TransitionAnimationEngine {
 
     // PRE STAGE: fill the ! styles
     const preStylesMap = new Map<any, ɵStyleDataMap>();
-    enterNodeMap.forEach((nodes, root) => {
+    nodeMaps.enter.nodeMap.forEach((nodes, root) => {
       cloakAndComputeStyles(
           preStylesMap, this.driver, new Set(nodes), allPreStyleElements, PRE_STYLE);
     });
@@ -1176,6 +1230,7 @@ export class TransitionAnimationEngine {
     const rootPlayers: TransitionAnimationPlayer[] = [];
     const subPlayers: TransitionAnimationPlayer[] = [];
     const NO_PARENT_ANIMATION_ELEMENT_DETECTED = {};
+    const disabledElementsSet = this._findDisabledElements();
     queuedInstructions.forEach(entry => {
       const {element, player, instruction} = entry;
       // this means that it was never consumed by a parent animation which
