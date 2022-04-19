@@ -15,11 +15,19 @@ import {FormArray, UntypedFormArray} from './model/form_array';
 import {FormControl, FormControlOptions, FormControlState, UntypedFormControl} from './model/form_control';
 import {FormGroup, UntypedFormGroup} from './model/form_group';
 
-function isAbstractControlOptions(options: AbstractControlOptions|
-                                  {[key: string]: any}): options is AbstractControlOptions {
-  return (<AbstractControlOptions>options).asyncValidators !== undefined ||
-      (<AbstractControlOptions>options).validators !== undefined ||
-      (<AbstractControlOptions>options).updateOn !== undefined;
+function isAbstractControlOptions(options: AbstractControlOptions|{[key: string]: any}|null|
+                                  undefined): options is AbstractControlOptions {
+  return !!options &&
+      ((options as AbstractControlOptions).asyncValidators !== undefined ||
+       (options as AbstractControlOptions).validators !== undefined ||
+       (options as AbstractControlOptions).updateOn !== undefined);
+}
+
+function isFormControlOptions(options: FormControlOptions|{[key: string]: any}|null|
+                              undefined): options is FormControlOptions {
+  return !!options &&
+      (isAbstractControlOptions(options) ||
+       (options as FormControlOptions).initialValueIsDefault !== undefined);
 }
 
 /**
@@ -30,15 +38,25 @@ function isAbstractControlOptions(options: AbstractControlOptions|
  */
 export type ControlConfig<T> = [T|FormControlState<T>, (ValidatorFn|(ValidatorFn[]))?, (AsyncValidatorFn|AsyncValidatorFn[])?];
 
-// Disable clang-format to produce clearer formatting for this multiline type.
+// Disable clang-format to produce clearer formatting for these multiline types.
 // clang-format off
-export type ɵGroupElement<T> =
+
+/**
+ * FormBuilder accepts values in various container shapes, as well as raw values.
+ * Element returns the appropriate corresponding model class.
+ */
+export type ɵElement<T> =
   T extends FormControl<infer U> ? FormControl<U> :
   T extends FormGroup<infer U> ? FormGroup<U> :
   T extends FormArray<infer U> ? FormArray<U> :
   T extends AbstractControl<infer U> ? AbstractControl<U> :
   T extends FormControlState<infer U> ? FormControl<U|null> :
   T extends ControlConfig<infer U> ? FormControl<U|null> :
+  // ControlConfig can be too much for the compiler to infer in the wrapped case. This is
+  // not surprising, since it's practically death-by-polymorphism (e.g. the optional validators
+  // members that might be arrays). Watch for ControlConfigs that might fall through.
+  T extends Array<infer U|ValidatorFn|ValidatorFn[]|AsyncValidatorFn|AsyncValidatorFn[]> ? FormControl<U|null> :
+  // Fallthough case: T is not a container type; use is directly as a value.
   FormControl<T|null>;
 
 // clang-format on
@@ -57,13 +75,10 @@ export type ɵGroupElement<T> =
  */
 @Injectable({providedIn: ReactiveFormsModule})
 export class FormBuilder {
-  group<T extends {
-    [K in keyof T]: FormControlState<any>| ControlConfig<any>| FormControl<any>| FormGroup<any>|
-        FormArray<any>| AbstractControl<any>| T[K]
-  }>(
+  group<T extends {}>(
       controls: T,
       options?: AbstractControlOptions|null,
-      ): FormGroup<{[K in keyof T]: ɵGroupElement<T[K]>}>;
+      ): FormGroup<{[K in keyof T]: ɵElement<T[K]>}>;
 
   /**
    * @description
@@ -124,12 +139,14 @@ export class FormBuilder {
         updateOn = options.updateOn != null ? options.updateOn : undefined;
       } else {
         // `options` are legacy form group options
-        validators = options['validator'] != null ? options['validator'] : null;
-        asyncValidators = options['asyncValidator'] != null ? options['asyncValidator'] : null;
+        validators = (options as any)['validator'] != null ? (options as any)['validator'] : null;
+        asyncValidators =
+            (options as any)['asyncValidator'] != null ? (options as any)['asyncValidator'] : null;
       }
     }
 
-    return new FormGroup(reducedControls, {asyncValidators, updateOn, validators});
+    // Cast to `any` because the inferred types are not as specific as Element.
+    return new FormGroup(reducedControls, {asyncValidators, updateOn, validators}) as any;
   }
 
   control<T>(formState: T|FormControlState<T>, opts: FormControlOptions&{
@@ -169,35 +186,9 @@ export class FormBuilder {
   control<T>(
       formState: T|FormControlState<T>,
       validatorOrOpts?: ValidatorFn|ValidatorFn[]|FormControlOptions|null,
-      asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|
-      null): FormControl<T|null>|FormControl<T> {
+      asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null): FormControl {
     return new FormControl(formState, validatorOrOpts, asyncValidator);
   }
-
-  array<T>(
-      controls: Array<FormControl<T>>,
-      validatorOrOpts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|null,
-      asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null): FormArray<FormControl<T>>;
-
-  array<T extends {[K in keyof T]: AbstractControl<any>}>(
-      controls: Array<FormGroup<T>>,
-      validatorOrOpts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|null,
-      asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null): FormArray<FormGroup<T>>;
-
-  array<T extends AbstractControl<any>>(
-      controls: Array<FormArray<T>>,
-      validatorOrOpts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|null,
-      asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null): FormArray<FormArray<T>>;
-
-  array<T extends AbstractControl<any>>(
-      controls: Array<AbstractControl<T>>,
-      validatorOrOpts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|null,
-      asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null): FormArray<AbstractControl<T>>;
-
-  array<T>(
-      controls: Array<FormControlState<T>|ControlConfig<T>|T>,
-      validatorOrOpts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|null,
-      asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null): FormArray<FormControl<T|null>>;
 
   /**
    * Constructs a new `FormArray` from the given array of configurations,
@@ -212,11 +203,12 @@ export class FormBuilder {
    *
    * @param asyncValidator A single async validator or array of async validator functions.
    */
-  array(
-      controls: any[], validatorOrOpts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|null,
-      asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null): FormArray {
+  array<T>(
+      controls: Array<T>, validatorOrOpts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|null,
+      asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null): FormArray<ɵElement<T>> {
     const createdControls = controls.map(c => this._createControl(c));
-    return new FormArray(createdControls, validatorOrOpts, asyncValidator);
+    // Cast to `any` because the inferred types are not as specific as Element.
+    return new FormArray(createdControls, validatorOrOpts, asyncValidator) as any;
   }
 
   /** @internal */
@@ -261,13 +253,16 @@ export class UntypedFormBuilder extends FormBuilder {
       controlsConfig: {[key: string]: any},
       options?: AbstractControlOptions|null,
       ): UntypedFormGroup;
+
   /**
-   * @deprecated
+   * @deprecated This API is not typesafe and can result in issues with Closure Compiler renaming.
+   * Use the `FormBuilder#group` overload with `AbstractControlOptions` instead.
    */
   override group(
       controlsConfig: {[key: string]: any},
       options: {[key: string]: any},
       ): UntypedFormGroup;
+
   override group(
       controlsConfig: {[key: string]: any},
       options: AbstractControlOptions|{[key: string]: any}|null = null): UntypedFormGroup {

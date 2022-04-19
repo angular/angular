@@ -1052,6 +1052,37 @@ describe('Typed Class', () => {
         }
       });
 
+      it('from objects with ControlConfigs and validators', () => {
+        const c = fb.group({foo: ['bar', Validators.required]});
+        {
+          type ControlsType = {foo: FormControl<string|null>};
+          let t: ControlsType = c.controls;
+          let t1 = c.controls;
+          t1 = null as unknown as ControlsType;
+        }
+      });
+
+      it('from objects with ControlConfigs and validator lists', () => {
+        const c = fb.group({foo: ['bar', [Validators.required, Validators.email]]});
+        {
+          type ControlsType = {foo: FormControl<string|null>};
+          let t: ControlsType = c.controls;
+          let t1 = c.controls;
+          t1 = null as unknown as ControlsType;
+        }
+      });
+
+      it('from objects with ControlConfigs and explicit types', () => {
+        const c: FormGroup<{foo: FormControl<string|null>}> =
+            fb.group({foo: ['bar', [Validators.required, Validators.email]]});
+        {
+          type ControlsType = {foo: FormControl<string|null>};
+          let t: ControlsType = c.controls;
+          let t1 = c.controls;
+          t1 = null as unknown as ControlsType;
+        }
+      });
+
       describe('from objects with FormControls', () => {
         it('nullably', () => {
           const c = fb.group({foo: new FormControl('bar')});
@@ -1233,6 +1264,7 @@ describe('Typed Class', () => {
           }>>,
         };
         let t: ControlType = myParty.controls;
+        let d = myParty.controls.dinnerOptions;
         let t1 = myParty.controls;
         t1 = null as unknown as ControlType;
       }
