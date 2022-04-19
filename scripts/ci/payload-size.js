@@ -18,7 +18,7 @@ const [, , limitFile, project, branch, commit] = process.argv;
 // Load sizes.
 const currentSizes = JSON.parse(fs.readFileSync('/tmp/current.log', 'utf8'));
 const allLimitSizes = JSON.parse(fs.readFileSync(limitFile, 'utf8'));
-const limitSizes = allLimitSizes[project][branch] || allLimitSizes[project]['master'];
+const limitSizes = allLimitSizes[project];
 
 // Check current sizes against limits.
 let failed = false;
