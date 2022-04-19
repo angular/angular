@@ -256,8 +256,9 @@ export function compileComponentFromMetadata(
  * to be consumed by upstream compilations.
  */
 export function createComponentType(meta: R3ComponentMetadata<R3TemplateDependency>): o.Type {
-  const typeParams = createDirectiveTypeParams(meta);
+  const typeParams = createBaseDirectiveTypeParams(meta);
   typeParams.push(stringArrayAsType(meta.template.ngContentSelectors));
+  typeParams.push(o.expressionType(o.literal(meta.isStandalone)));
   return o.expressionType(o.importExpr(R3.ComponentDeclaration, typeParams));
 }
 
@@ -398,7 +399,7 @@ function stringArrayAsType(arr: ReadonlyArray<string|null>): o.Type {
                           o.NONE_TYPE;
 }
 
-export function createDirectiveTypeParams(meta: R3DirectiveMetadata): o.Type[] {
+export function createBaseDirectiveTypeParams(meta: R3DirectiveMetadata): o.Type[] {
   // On the type side, remove newlines from the selector as it will need to fit into a TypeScript
   // string literal, which must be on one line.
   const selectorForType = meta.selector !== null ? meta.selector.replace(/\n/g, '') : null;
@@ -418,7 +419,11 @@ export function createDirectiveTypeParams(meta: R3DirectiveMetadata): o.Type[] {
  * to be consumed by upstream compilations.
  */
 export function createDirectiveType(meta: R3DirectiveMetadata): o.Type {
-  const typeParams = createDirectiveTypeParams(meta);
+  const typeParams = createBaseDirectiveTypeParams(meta);
+  // Directives have no NgContentSelectors slot, but instead express a `never` type
+  // so that future fields align.
+  typeParams.push(o.NONE_TYPE);
+  typeParams.push(o.expressionType(o.literal(meta.isStandalone)));
   return o.expressionType(o.importExpr(R3.DirectiveDeclaration, typeParams));
 }
 

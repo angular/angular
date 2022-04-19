@@ -48,6 +48,12 @@ runInEachFileSystem(() => {
         const jsCode = env.getContents('test.js');
         expect(jsCode).toContain('dependencies: [TestDir]');
         expect(jsCode).toContain('standalone: true');
+
+        const dtsCode = env.getContents('test.d.ts');
+        expect(dtsCode).toContain(
+            'i0.ɵɵDirectiveDeclaration<TestDir, "[dir]", never, {}, {}, never, never, true>;');
+        expect(dtsCode).toContain(
+            'i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never, true>;');
       });
 
       it('should compile a recursive standalone component', () => {
@@ -65,6 +71,26 @@ runInEachFileSystem(() => {
         const jsCode = env.getContents('test.js');
         expect(jsCode).toContain('dependencies: [TestCmp]');
         expect(jsCode).toContain('standalone: true');
+      });
+
+      it('should compile a basic standalone pipe', () => {
+        env.write('test.ts', `
+          import {Pipe} from '@angular/core';
+
+          @Pipe({
+            standalone: true,
+            name: 'test',
+          })
+          export class TestPipe {
+            transform(value: any): any {}
+          }
+        `);
+        env.driveMain();
+        const jsCode = env.getContents('test.js');
+        expect(jsCode).toContain('standalone: true');
+
+        const dtsCode = env.getContents('test.d.ts');
+        expect(dtsCode).toContain('i0.ɵɵPipeDeclaration<TestPipe, "test", true>');
       });
 
       it('should error when a non-standalone component tries to use imports', () => {
@@ -444,6 +470,89 @@ runInEachFileSystem(() => {
             `);
         env.driveMain();
         expect(env.getContents('test.js')).toContain('standalone: true');
+      });
+    });
+
+    describe('from libraries', () => {
+      it('should consume standalone directives from libraries', () => {
+        env.write('lib.d.ts', `
+          import {ɵɵDirectiveDeclaration} from '@angular/core';
+
+          export declare class StandaloneDir {
+            static ɵdir: ɵɵDirectiveDeclaration<StandaloneDir, "[dir]", never, {}, {}, never, never, true>;
+          }
+        `);
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+          import {StandaloneDir} from './lib';
+
+          @Component({
+            standalone: true,
+            selector: 'test-cmp',
+            template: '<div dir></div>',
+            imports: [StandaloneDir],
+          })
+          export class TestCmp {}
+        `);
+        env.driveMain();
+
+        const jsCode = env.getContents('test.js');
+        expect(jsCode).toContain('dependencies: [StandaloneDir]');
+      });
+
+      it('should consume standalone components from libraries', () => {
+        env.write('lib.d.ts', `
+          import {ɵɵComponentDeclaration} from '@angular/core';
+
+          export declare class StandaloneCmp {
+            static ɵcmp: ɵɵComponentDeclaration<StandaloneCmp, "standalone-cmp", never, {}, {}, never, never, true>;
+          }
+        `);
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+          import {StandaloneCmp} from './lib';
+
+          @Component({
+            standalone: true,
+            selector: 'test-cmp',
+            template: '<standalone-cmp></standalone-cmp>',
+            imports: [StandaloneCmp],
+          })
+          export class TestCmp {}
+        `);
+        env.driveMain();
+
+        const jsCode = env.getContents('test.js');
+        expect(jsCode).toContain('dependencies: [StandaloneCmp]');
+      });
+
+      it('should consume standalone pipes from libraries', () => {
+        env.write('lib.d.ts', `
+          import {ɵɵPipeDeclaration} from '@angular/core';
+
+          export declare class StandalonePipe {
+            transform(value: any): any;
+            static ɵpipe: ɵɵPipeDeclaration<StandalonePipe, "standalone", true>;
+          }
+        `);
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+          import {StandalonePipe} from './lib';
+
+          @Component({
+            standalone: true,
+            selector: 'test-cmp',
+            template: '{{value | standalone}}',
+            imports: [StandalonePipe],
+          })
+          export class StandaloneComponent {
+            value!: string;
+          }
+        `);
+        env.driveMain();
+
+        const jsCode = env.getContents('test.js');
+        expect(jsCode).toContain('dependencies: [StandalonePipe]');
       });
     });
   });

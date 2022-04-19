@@ -13,7 +13,7 @@ import {ClassDeclaration, isNamedClassDeclaration, ReflectionHost, TypeValueRefe
 
 import {DirectiveMeta, MetadataReader, MetaKind, NgModuleMeta, PipeMeta} from './api';
 import {ClassPropertyMapping} from './property_mapping';
-import {extractDirectiveTypeCheckMeta, extractReferencesFromType, readStringArrayType, readStringMapType, readStringType} from './util';
+import {extractDirectiveTypeCheckMeta, extractReferencesFromType, readBooleanType, readStringArrayType, readStringMapType, readStringType} from './util';
 
 /**
  * A `MetadataReader` that can read metadata from `.d.ts` files, which have static Ivy properties
@@ -91,6 +91,9 @@ export class DtsMetadataReader implements MetadataReader {
           param.typeValueReference.importedName === 'TemplateRef';
     });
 
+    const isStandalone =
+        def.type.typeArguments.length > 7 && (readBooleanType(def.type.typeArguments[7]) ?? false);
+
     const inputs =
         ClassPropertyMapping.fromMappedObject(readStringMapType(def.type.typeArguments[3]));
     const outputs =
@@ -110,7 +113,9 @@ export class DtsMetadataReader implements MetadataReader {
       isPoisoned: false,
       isStructural,
       animationTriggerNames: null,
-      isStandalone: false,  // TODO: read this from the compiled metadata.
+      isStandalone,
+      // Imports are tracked in metadata only for template type-checking purposes,
+      // so standalone components from .d.ts files don't have any.
       imports: null,
     };
   }
@@ -136,12 +141,16 @@ export class DtsMetadataReader implements MetadataReader {
       return null;
     }
     const name = type.literal.text;
+
+    const isStandalone =
+        def.type.typeArguments.length > 2 && (readBooleanType(def.type.typeArguments[2]) ?? false);
+
     return {
       kind: MetaKind.Pipe,
       ref,
       name,
       nameExpr: null,
-      isStandalone: false,  // TODO
+      isStandalone,
     };
   }
 }
