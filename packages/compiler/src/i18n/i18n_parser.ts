@@ -19,6 +19,8 @@ import {PlaceholderRegistry} from './serializers/placeholder';
 
 const _expParser = new ExpressionParser(new ExpressionLexer());
 
+const CUSTOM_PLACEHOLDER_REGEX = /\/\/\s*i18n\s*\(\s*ph\s*=([\s\S]*)\)/g;
+
 export type VisitNodeFn = (html: html.Node, i18n: i18n.Node) => i18n.Node;
 
 export interface I18nMessageFactory {
@@ -276,9 +278,47 @@ function assertEquivalentNodes(previousNodes: i18n.Node[], nodes: i18n.Node[]): 
   }
 }
 
-const _CUSTOM_PH_EXP =
-    /\/\/[\s\S]*i18n[\s\S]*\([\s\S]*ph[\s\S]*=[\s\S]*("|')([\s\S]*?)\1[\s\S]*\)/g;
+function extractPlaceholderName(input: string): string|null {
+  const rawPlaceholder = (input.split(CUSTOM_PLACEHOLDER_REGEX)[1] || '').trim();
 
-function extractPlaceholderName(input: string): string {
-  return input.split(_CUSTOM_PH_EXP)[2];
+  if (!rawPlaceholder) {
+    return null;
+  }
+
+  let result = '';
+
+  for (let i = 0; i < rawPlaceholder.length; i++) {
+    const char = rawPlaceholder[i];
+    const isQuote = char === '"' || char === '\'';
+
+    // First character should always be a quote.
+    if (i === 0) {
+      if (isQuote) {
+        continue;
+      }
+
+      throw new Error(`Custom placeholder must be wrapped in quotes in expression "{{${input}}}".`);
+    }
+
+    // Last character has to close the string and match the opening quote.
+    if (i === rawPlaceholder.length - 1) {
+      if (char === rawPlaceholder[0]) {
+        continue;
+      }
+
+      throw new Error(`Custom placeholder must be a valid string in expression "{{${input}}}".`);
+    }
+
+    if (char === '\n' || char === '\r') {
+      throw new Error(`Custom placeholder cannot contain new lines in expression "{{${input}}}".`);
+    }
+
+    result += char;
+  }
+
+  if (!result.length) {
+    throw new Error(`Custom placeholder cannot be empty in expression "{{${input}}}".`);
+  }
+
+  return result;
 }

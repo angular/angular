@@ -304,6 +304,51 @@ import {DEFAULT_INTERPOLATION_CONFIG} from '@angular/compiler/src/ml_parser/inte
           '',
         ]);
       });
+
+      it('should validate that custom placeholder is wrapped in quotes', () => {
+        expect(() => _extractMessages(`<div i18n>Hello, {{ name // i18n(ph = user name) }}</div>`))
+            .toThrowError(
+                'Custom placeholder must be wrapped in quotes in expression "{{ name // i18n(ph = user name) }}".');
+      });
+
+      it('should handle equals sign and parentheses in the custom placeholder string', () => {
+        expect(_humanizeMessages(
+                   `<div i18n>Hello, {{ name // i18n(ph = "Name (>= 5 characters)") }}</div>`))
+            .toEqual([[
+              [
+                '[Hello, , <ph name="NAME (>= 5 CHARACTERS)"> name // i18n(ph = "Name (>= 5 characters)") </ph>]'
+              ],
+              '', '', ''
+            ]]);
+      });
+
+      it('should validate that custom placeholder quotes match', () => {
+        expect(
+            () => _extractMessages(`<div i18n>Hello, {{ name // i18n(ph = "user name') }}</div>`))
+            .toThrowError(
+                `Custom placeholder must be a valid string in expression "{{ name // i18n(ph = "user name') }}".`);
+        expect(() => _extractMessages(`<div i18n>Hello, {{ name // i18n(ph = "user name) }}</div>`))
+            .toThrowError(
+                'Custom placeholder must be a valid string in expression "{{ name // i18n(ph = "user name) }}".');
+      });
+
+      it('should validate that custom placeholder does not contain new lines', () => {
+        expect(
+            () => _extractMessages(`<div i18n>Hello, {{ name // i18n(ph = "user\nname") }}</div>`))
+            .toThrowError(
+                'Custom placeholder cannot contain new lines in expression "{{ name // i18n(ph = "user\nname") }}".');
+        expect(
+            () =>
+                _extractMessages(`<div i18n>Hello, {{ name // i18n(ph = "user\r\nname") }}</div>`))
+            .toThrowError(
+                'Custom placeholder cannot contain new lines in expression "{{ name // i18n(ph = "user\nname") }}".');
+      });
+
+      it('should validate that custom placeholder is not empty', () => {
+        expect(() => _extractMessages(`<div i18n>Hello, {{ name // i18n(ph = "") }}</div>`))
+            .toThrowError(
+                'Custom placeholder cannot be empty in expression "{{ name // i18n(ph = "") }}".');
+      });
     });
   });
 }
