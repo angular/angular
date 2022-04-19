@@ -10,14 +10,12 @@ import '../util/ng_dev_mode';
 
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {Type} from '../interface/type';
-import {getClosureSafeProperty} from '../util/property';
 import {stringify} from '../util/stringify';
 
 import {resolveForwardRef} from './forward_ref';
 import {getInjectImplementation, injectRootLimpMode} from './inject_switch';
 import {Injector} from './injector';
 import {DecoratorFlags, InjectFlags, InternalInjectFlags} from './interface/injector';
-import {ValueProvider} from './interface/provider';
 import {ProviderToken} from './provider_token';
 
 
@@ -36,9 +34,6 @@ const NG_TOKEN_PATH = 'ngTokenPath';
 const NEW_LINE = /\n/gm;
 const NO_NEW_LINE = 'ɵ';
 export const SOURCE = '__source';
-
-export const USE_VALUE =
-    getClosureSafeProperty<ValueProvider>({provide: String, useValue: getClosureSafeProperty});
 
 /**
  * Current injector value used by `inject`.

@@ -108,9 +108,6 @@
     "name": "importProvidersFrom"
   },
   {
-    "name": "inject"
-  },
-  {
     "name": "injectArgs"
   },
   {

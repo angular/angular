@@ -25,7 +25,7 @@ export {
   NG_INJ_DEF as ɵNG_INJ_DEF,
   NG_PROV_DEF as ɵNG_PROV_DEF,
 } from './di/interface/defs';
-export {createInjector as ɵcreateInjector} from './di/r3_injector';
+export {createInjector as ɵcreateInjector} from './di/create_injector';
 export {
   registerNgModuleType as ɵɵregisterNgModuleType,
   setAllowDuplicateNgModuleIdsForTest as ɵsetAllowDuplicateNgModuleIdsForTest,

@@ -42,24 +42,35 @@
     "packages/core/src/change_detection/differs/keyvalue_differs.ts"
   ],
   [
-    "packages/core/src/di/injectable.ts",
-    "packages/core/src/di/jit/injectable.ts"
+    "packages/core/src/di/create_injector.ts",
+    "packages/core/src/di/injector.ts"
   ],
   [
+    "packages/core/src/di/create_injector.ts",
+    "packages/core/src/di/provider_collection.ts",
     "packages/core/src/di/injector_compatibility.ts",
     "packages/core/src/di/injector.ts"
   ],
   [
+    "packages/core/src/di/create_injector.ts",
+    "packages/core/src/di/r3_injector.ts",
     "packages/core/src/di/injector_token.ts",
     "packages/core/src/di/injector.ts"
   ],
   [
-    "packages/core/src/di/injector.ts",
-    "packages/core/src/di/null_injector.ts"
+    "packages/core/src/di/create_injector.ts",
+    "packages/core/src/di/r3_injector.ts",
+    "packages/core/src/di/injector.ts"
   ],
   [
-    "packages/core/src/di/injector.ts",
-    "packages/core/src/di/r3_injector.ts"
+    "packages/core/src/di/create_injector.ts",
+    "packages/core/src/di/r3_injector.ts",
+    "packages/core/src/di/null_injector.ts",
+    "packages/core/src/di/injector.ts"
+  ],
+  [
+    "packages/core/src/di/injectable.ts",
+    "packages/core/src/di/jit/injectable.ts"
   ],
   [
     "packages/core/src/di/reflective_errors.ts",
