@@ -4,7 +4,11 @@ on:
   schedule:
     - cron: '0 0 * * 0'
   push:
-    branches: [master]
+    branches: [
+        main,
+        # TODO(BRANCH_RENAME_CLEANUP): remove
+        master,
+      ]
   workflow_dispatch:
 
 # Declare default permissions as read only.

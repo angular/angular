@@ -1,80 +1,64 @@
 {
   "cli-hello-world": {
-    "master": {
-      "uncompressed": {
-        "runtime": 1083,
-        "main": 125851,
-        "polyfills": 33824
-      }
+    "uncompressed": {
+      "runtime": 1083,
+      "main": 125851,
+      "polyfills": 33824
     }
   },
   "cli-hello-world-ivy-minimal": {
-    "master": {
-      "uncompressed": {
-        "runtime": 1107,
-        "main": "TODO(i): temporarily increase the payload size limit from 17597 - this needs to be investigate further what caused the increase.",
-        "main": "Likely there is a missing PURE annotation https://github.com/angular/angular/pull/43344",
-        "main": "Tracking issue: https://github.com/angular/angular/issues/43568",
-        "main": 20601,
-        "polyfills": 33848
-      }
+    "uncompressed": {
+      "runtime": 1107,
+      "main": "TODO(i): temporarily increase the payload size limit from 17597 - this needs to be investigate further what caused the increase.",
+      "main": "Likely there is a missing PURE annotation https://github.com/angular/angular/pull/43344",
+      "main": "Tracking issue: https://github.com/angular/angular/issues/43568",
+      "main": 20601,
+      "polyfills": 33848
     }
   },
   "cli-hello-world-ivy-compat": {
-    "master": {
-      "uncompressed": {
-        "runtime": 1105,
-        "main": 133348,
-        "polyfills": 33846
-      }
+    "uncompressed": {
+      "runtime": 1105,
+      "main": 133348,
+      "polyfills": 33846
     }
   },
   "cli-hello-world-ivy-i18n": {
-    "master": {
-      "uncompressed": {
-        "runtime": 929,
-        "main": 125862,
-        "polyfills": 34530
-      }
+    "uncompressed": {
+      "runtime": 929,
+      "main": 125862,
+      "polyfills": 34530
     }
   },
   "cli-hello-world-lazy": {
-    "master": {
-      "uncompressed": {
-        "runtime": 2835,
-        "main": 234960,
-        "polyfills": 33842,
-        "src_app_lazy_lazy_module_ts": 795
-      }
+    "uncompressed": {
+      "runtime": 2835,
+      "main": 234960,
+      "polyfills": 33842,
+      "src_app_lazy_lazy_module_ts": 795
     }
   },
   "forms": {
-    "master": {
-      "uncompressed": {
-        "runtime": 1063,
-        "main": 158031,
-        "polyfills": 33804
-      }
+    "uncompressed": {
+      "runtime": 1063,
+      "main": 158031,
+      "polyfills": 33804
     }
   },
   "animations": {
-    "master": {
-      "uncompressed": {
-        "runtime": 1070,
-        "main": 156852,
-        "polyfills": 33814
-      }
+    "uncompressed": {
+      "runtime": 1070,
+      "main": 156852,
+      "polyfills": 33814
     }
   },
   "hello_world__closure": {
-    "master": {
-      "uncompressed": {
-        "bundle": "TODO(i): temporarily increase the payload size limit from 105779 - this is due to a closure issue related to ESM reexports that still needs to be investigated",
-        "bundle": "TODO(i): we should define ngDevMode to false in Closure, but --define only works in the global scope.",
-        "bundle": "TODO(i): (FW-2164) TS 3.9 new class shape seems to have broken Closure in big ways. The size went from 169991 to 252338",
-        "bundle": "TODO(i): after removal of tsickle from ngc-wrapped / ng_package, we had to switch to SIMPLE optimizations which increased the size from 252338 to 1198917, see PR#37221 and PR#37317 for more info",
-        "bundle": 1214857
-      }
+    "uncompressed": {
+      "bundle": "TODO(i): temporarily increase the payload size limit from 105779 - this is due to a closure issue related to ESM reexports that still needs to be investigated",
+      "bundle": "TODO(i): we should define ngDevMode to false in Closure, but --define only works in the global scope.",
+      "bundle": "TODO(i): (FW-2164) TS 3.9 new class shape seems to have broken Closure in big ways. The size went from 169991 to 252338",
+      "bundle": "TODO(i): after removal of tsickle from ngc-wrapped / ng_package, we had to switch to SIMPLE optimizations which increased the size from 252338 to 1198917, see PR#37221 and PR#37317 for more info",
+      "bundle": 1214857
     }
   }
 }
