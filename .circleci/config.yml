@@ -59,11 +59,13 @@ var_9: &skip_on_pull_requests
       ignore:
         - /pull\/\d+/
 
-# Filter to run a job on builds for the master branch only.
-var_10: &only_on_master
+# Filter to run a job on builds for the main branch only.
+var_10: &only_on_main_branch
   filters:
     branches:
       only:
+        - main
+        # TODO(BRANCH_RENAME_CLEANUP): remove
         - master
 
 # Filter to run a job on all releasable branches.
@@ -71,6 +73,8 @@ var_11: &only_release_branches
   filters:
     branches:
       only:
+        - main
+        # TODO(BRANCH_RENAME_CLEANUP): remove
         - master
         - /\d+\.\d+\.x/
 
@@ -482,7 +486,7 @@ jobs:
   aio_preview:
     executor: default-executor
     environment:
-      AIO_SNAPSHOT_ARTIFACT_PATH: &aio_preview_artifact_path "aio/tmp/snapshot.tgz"
+      AIO_SNAPSHOT_ARTIFACT_PATH: &aio_preview_artifact_path 'aio/tmp/snapshot.tgz'
     steps:
       - custom_attach_workspace
       - init_environment
@@ -565,12 +569,12 @@ jobs:
   publish_packages_as_artifacts:
     executor: default-executor
     environment:
-      AIMWA_PACKAGES_DIR: &aimwa_packages_dir "dist/angular-in-memory-web-api-dist"
-      AIMWA_PACKAGES_ARCHIVES_DIR: &aimwa_packages_archives_dir "dist/angular-in-memory-web-api-dist-archives"
-      NG_PACKAGES_DIR: &ng_packages_dir "dist/packages-dist"
-      NG_PACKAGES_ARCHIVES_DIR: &ng_packages_archives_dir "dist/packages-dist-archives"
-      ZONEJS_PACKAGES_DIR: &zonejs_packages_dir "dist/zone.js-dist"
-      ZONEJS_PACKAGES_ARCHIVES_DIR: &zonejs_packages_archives_dir "dist/zone.js-dist-archives"
+      AIMWA_PACKAGES_DIR: &aimwa_packages_dir 'dist/angular-in-memory-web-api-dist'
+      AIMWA_PACKAGES_ARCHIVES_DIR: &aimwa_packages_archives_dir 'dist/angular-in-memory-web-api-dist-archives'
+      NG_PACKAGES_DIR: &ng_packages_dir 'dist/packages-dist'
+      NG_PACKAGES_ARCHIVES_DIR: &ng_packages_archives_dir 'dist/packages-dist-archives'
+      ZONEJS_PACKAGES_DIR: &zonejs_packages_dir 'dist/zone.js-dist'
+      ZONEJS_PACKAGES_ARCHIVES_DIR: &zonejs_packages_archives_dir 'dist/zone.js-dist-archives'
     steps:
       - custom_attach_workspace
       - init_environment
@@ -721,7 +725,7 @@ jobs:
             # repository to be able to support arbitrary SHAs.
             - *components_repo_unit_tests_cache_key_fallback
       - run:
-          name: "Fetching angular/components repository"
+          name: 'Fetching angular/components repository'
           command: ./scripts/ci/clone_angular_components_repo.sh
       - run:
           # Run yarn install to fetch the Bazel binaries as used in the components repo.
@@ -737,7 +741,7 @@ jobs:
             # Temporary directory must be kept in sync with the `$COMPONENTS_REPO_TMP_DIR` env
             # variable. It needs to be hardcoded here, because env variables interpolation is
             # not supported.
-            - "/tmp/angular-components-repo"
+            - '/tmp/angular-components-repo'
       - run:
           # TODO(devversion): remove once https://github.com/angular/components/pull/23056 is available.
           name: Replace RBE container instance name
@@ -749,7 +753,7 @@ jobs:
           name: Setting up release packages.
           command: node scripts/ci/update-deps-to-dist-packages.js ${COMPONENTS_REPO_TMP_DIR}/package.json dist/packages-dist/
       - run:
-          name: "Running `angular/components` unit tests"
+          name: 'Running `angular/components` unit tests'
           command: ./scripts/ci/run_angular_components_unit_tests.sh
 
   test_zonejs:
@@ -928,7 +932,7 @@ workflows:
       - saucelabs_view_engine:
           # Testing saucelabs via Bazel currently taking longer than the legacy saucelabs job as it
           # each karma_web_test target is provisioning and tearing down browsers which is adding
-          # a lot of overhead. Running once daily on master only to avoid wasting resources and
+          # a lot of overhead. Running once daily in the main branch to avoid wasting resources and
           # slowing down CI for PRs.
           # TODO: Run this job on all branches (including PRs) once karma_web_test targets can
           # share provisioned browsers and we can remove the legacy saucelabs job.
@@ -936,6 +940,6 @@ workflows:
             - setup
     triggers:
       - schedule:
-          <<: *only_on_master
+          <<: *only_on_main_branch
           # Runs monitoring jobs at 10:00AM every day.
-          cron: "0 10 * * *"
+          cron: '0 10 * * *'

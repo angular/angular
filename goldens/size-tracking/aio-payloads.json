@@ -1,29 +1,23 @@
 {
   "aio": {
-    "master": {
-      "uncompressed": {
-        "runtime-es2015": 3089,
-        "main-es2015": 451098,
-        "polyfills-es2015": 51949
-      }
+    "uncompressed": {
+      "runtime-es2015": 3089,
+      "main-es2015": 451098,
+      "polyfills-es2015": 51949
     }
   },
   "aio-local": {
-    "master": {
-      "uncompressed": {
-        "runtime-es2015": 3089,
-        "main-es2015": 451540,
-        "polyfills-es2015": 52235
-      }
+    "uncompressed": {
+      "runtime-es2015": 3089,
+      "main-es2015": 451540,
+      "polyfills-es2015": 52235
     }
   },
   "aio-local-viewengine": {
-    "master": {
-      "uncompressed": {
-        "runtime-es2015": 3219,
-        "main-es2015": 436984,
-        "polyfills-es2015": 52235
-      }
+    "uncompressed": {
+      "runtime-es2015": 3219,
+      "main-es2015": 436984,
+      "polyfills-es2015": 52235
     }
   }
 }
