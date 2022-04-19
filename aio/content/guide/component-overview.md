@@ -129,7 +129,7 @@ You cannot have both statements in a component.
 
 ## Declaring a component's styles
 
-Declare component styles uses for its template in one of two ways:
+Declare component styles used for its template in one of two ways:
 By referencing an external file, or directly within the component.
 
 To declare the styles for a component in a separate file, add a `styleUrls` property to the `@Component` decorator.
