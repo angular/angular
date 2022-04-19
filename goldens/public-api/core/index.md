@@ -1432,7 +1432,7 @@ export abstract class ViewRef extends ChangeDetectorRef {
 // @public
 export function ɵɵdefineInjectable<T>(opts: {
     token: unknown;
-    providedIn?: Type<any> | 'root' | 'platform' | 'any' | 'env' | null;
+    providedIn?: Type<any> | 'root' | 'platform' | 'any' | 'environment' | null;
     factory: () => T;
 }): unknown;
 
