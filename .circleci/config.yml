@@ -59,11 +59,13 @@ var_9: &skip_on_pull_requests
       ignore:
         - /pull\/\d+/
 
-# Filter to run a job on builds for the master branch only.
-var_10: &only_on_master
+# Filter to run a job on builds for the main branch only.
+var_10: &only_on_main_branch
   filters:
     branches:
       only:
+        - main
+        # TODO(BRANCH_RENAME_CLEANUP): remove
         - master
 
 # Filter to run a job on all releasable branches.
@@ -71,6 +73,8 @@ var_11: &only_release_branches
   filters:
     branches:
       only:
+        - main
+        # TODO(BRANCH_RENAME_CLEANUP): remove
         - master
         - /\d+\.\d+\.x/
 
@@ -931,7 +935,7 @@ workflows:
       - saucelabs_view_engine:
           # Testing saucelabs via Bazel currently taking longer than the legacy saucelabs job as it
           # each karma_web_test target is provisioning and tearing down browsers which is adding
-          # a lot of overhead. Running once daily on master only to avoid wasting resources and
+          # a lot of overhead. Running once daily in the main branch to avoid wasting resources and
           # slowing down CI for PRs.
           # TODO: Run this job on all branches (including PRs) once karma_web_test targets can
           # share provisioned browsers and we can remove the legacy saucelabs job.
@@ -939,6 +943,6 @@ workflows:
             - setup
     triggers:
       - schedule:
-          <<: *only_on_master
+          <<: *only_on_main_branch
           # Runs monitoring jobs at 10:00AM every day.
           cron: '0 10 * * *'
