@@ -276,18 +276,7 @@ export class FormArrayName extends ControlContainer implements OnInit, OnDestroy
 
 // @public
 export class FormBuilder {
-    // (undocumented)
-    array<T>(controls: Array<FormControl<T>>, validatorOrOpts?: ValidatorFn | ValidatorFn[] | AbstractControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null): FormArray<FormControl<T>>;
-    // (undocumented)
-    array<T extends {
-        [K in keyof T]: AbstractControl<any>;
-    }>(controls: Array<FormGroup<T>>, validatorOrOpts?: ValidatorFn | ValidatorFn[] | AbstractControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null): FormArray<FormGroup<T>>;
-    // (undocumented)
-    array<T extends AbstractControl<any>>(controls: Array<FormArray<T>>, validatorOrOpts?: ValidatorFn | ValidatorFn[] | AbstractControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null): FormArray<FormArray<T>>;
-    // (undocumented)
-    array<T extends AbstractControl<any>>(controls: Array<AbstractControl<T>>, validatorOrOpts?: ValidatorFn | ValidatorFn[] | AbstractControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null): FormArray<AbstractControl<T>>;
-    // (undocumented)
-    array<T>(controls: Array<FormControlState<T> | ControlConfig<T> | T>, validatorOrOpts?: ValidatorFn | ValidatorFn[] | AbstractControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null): FormArray<FormControl<T | null>>;
+    array<T>(controls: Array<T>, validatorOrOpts?: ValidatorFn | ValidatorFn[] | AbstractControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null): FormArray<ɵElement<T>>;
     // (undocumented)
     control<T>(formState: T | FormControlState<T>, opts: FormControlOptions & {
         initialValueIsDefault: true;
@@ -295,10 +284,8 @@ export class FormBuilder {
     // (undocumented)
     control<T>(formState: T | FormControlState<T>, validatorOrOpts?: ValidatorFn | ValidatorFn[] | FormControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null): FormControl<T | null>;
     // (undocumented)
-    group<T extends {
-        [K in keyof T]: FormControlState<any> | ControlConfig<any> | FormControl<any> | FormGroup<any> | FormArray<any> | AbstractControl<any> | T[K];
-    }>(controls: T, options?: AbstractControlOptions | null): FormGroup<{
-        [K in keyof T]: ɵGroupElement<T[K]>;
+    group<T extends {}>(controls: T, options?: AbstractControlOptions | null): FormGroup<{
+        [K in keyof T]: ɵElement<T[K]>;
     }>;
     // @deprecated
     group(controls: {
