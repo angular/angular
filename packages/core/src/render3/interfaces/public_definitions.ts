@@ -8,26 +8,40 @@
 
 // This file contains types that will be published to npm in library typings files.
 
+// Formatting does horrible things to these declarations.
+
+// clang-format off
 /**
  * @publicApi
  */
 export type ɵɵDirectiveDeclaration<
-    T, Selector extends string, ExportAs extends
-        string[], InputMap extends {[key: string]: string},
-                                   OutputMap extends {[key: string]: string},
-                                                     QueryFields extends string[]> = unknown;
+  T,
+  Selector extends string,
+  ExportAs extends string[],
+  InputMap extends {[key: string]: string},
+  OutputMap extends {[key: string]: string},
+  QueryFields extends string[],
+  // Optional as this was added to align the `IsStandalone` parameters
+  // between directive and component declarations.
+  NgContentSelectors extends never = never,
+  // Optional as this was added in Angular v14. All pre-existing directives
+  // are not standalone.
+  IsStandalone extends boolean = false> = unknown;
 
 /**
  * @publicApi
  */
-export type ɵɵComponentDeclaration < T, Selector extends String, ExportAs extends string[],
-                                                                                  InputMap extends {
-  [key: string]: string;
-}
-, OutputMap extends {
-  [key: string]: string;
-}
-, QueryFields extends string[], NgContentSelectors extends string[] > = unknown;
+export type ɵɵComponentDeclaration<
+  T,
+  Selector extends String,
+  ExportAs extends string[],
+  InputMap extends {[key: string]: string},
+  OutputMap extends {[key: string]: string},
+  QueryFields extends string[],
+  NgContentSelectors extends string[],
+  // Optional as this was added in Angular v14. All pre-existing components
+  // are not standalone.
+  IsStandalone extends boolean = false> = unknown;
 
 /**
  * @publicApi
@@ -36,8 +50,14 @@ export type ɵɵNgModuleDeclaration<T, Declarations, Imports, Exports> = unknown
 
 /**
  * @publicApi
- */
-export type ɵɵPipeDeclaration<T, Name extends string> = unknown;
+  */
+export type ɵɵPipeDeclaration<
+  T,
+  Name extends string,
+  // Optional as this was added in Angular v14. All pre-existing directives
+  // are not standalone.
+  IsStandalone extends boolean = false> = unknown;
+// clang-format on
 
 /**
  * @publicApi
