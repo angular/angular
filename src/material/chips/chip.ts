@@ -116,9 +116,7 @@ export class MatChipAvatar {}
 })
 export class MatChipTrailingIcon {}
 
-/**
- * Material design styled Chip component. Used inside the MatChipList component.
- */
+/** Material Design styled chip directive. Used inside the MatChipList component. */
 @Directive({
   selector: `mat-basic-chip, [mat-basic-chip], mat-chip, [mat-chip]`,
   inputs: ['color', 'disableRipple', 'tabIndex'],

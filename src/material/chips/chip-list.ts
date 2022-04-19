@@ -372,7 +372,7 @@ export class MatChipList
    */
   @Output() readonly valueChange = new EventEmitter<any>();
 
-  /** The chip components contained within this chip list. */
+  /** The chips contained within this chip list. */
   @ContentChildren(MatChip, {
     // We need to use `descendants: true`, because Ivy will no longer match
     // indirect descendants if it's left as false.
