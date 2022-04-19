@@ -366,6 +366,9 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
     static ɵfac: i0.ɵɵFactoryDeclaration<CdkTable<any>, [null, null, null, { attribute: "role"; }, { optional: true; }, null, null, null, null, null, { optional: true; skipSelf: true; }, { optional: true; }]>;
 }
 
+// @public
+export type CdkTableDataSourceInput<T> = readonly T[] | DataSource<T> | Observable<readonly T[]>;
+
 // @public (undocumented)
 export class CdkTableModule {
     // (undocumented)

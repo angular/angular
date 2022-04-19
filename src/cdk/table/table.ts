@@ -101,11 +101,8 @@ export interface RowOutlet {
   viewContainer: ViewContainerRef;
 }
 
-/**
- * Union of the types that can be set as the data source for a `CdkTable`.
- * @docs-private
- */
-type CdkTableDataSourceInput<T> = readonly T[] | DataSource<T> | Observable<readonly T[]>;
+/** Possible types that can be set as the data source for a `CdkTable`. */
+export type CdkTableDataSourceInput<T> = readonly T[] | DataSource<T> | Observable<readonly T[]>;
 
 /**
  * Provides a handle for the table to grab the view container's ng-container to insert data rows.
