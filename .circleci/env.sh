@@ -72,7 +72,8 @@ setPublicVar SAUCE_READY_FILE_TIMEOUT 120
 # the `save_cache` path configuration in `config.yml`
 setPublicVar COMPONENTS_REPO_TMP_DIR "/tmp/angular-components-repo"
 setPublicVar COMPONENTS_REPO_URL "https://github.com/angular/components.git"
-setPublicVar COMPONENTS_REPO_BRANCH "master"
+# TODO(BRANCH_RENAME_CLEANUP): fixup branch name to point to main branch
+setPublicVar COMPONENTS_REPO_BRANCH "main-branch-rename-do-not-delete"
 # **NOTE**: When updating the commit SHA, also update the cache key in the CircleCI `config.yml`.
 setPublicVar COMPONENTS_REPO_COMMIT "d090617912da8e70aa336aa5b4d804b1b535402e"
 
