@@ -572,6 +572,9 @@ export interface HostListenerDecorator {
 }
 
 // @public
+export function importProvidersFrom(...injectorTypes: Array<Type<unknown>>): Provider[];
+
+// @public
 export interface Inject {
     token: any;
 }
