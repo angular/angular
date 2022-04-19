@@ -36,6 +36,18 @@ export abstract class _MatPaginatorHarnessBase extends ComponentHarness {
     return (await this._nextButton()).click();
   }
 
+  /** Returns whether or not the next page button is disabled. */
+  async isNextPageDisabled(): Promise<boolean> {
+    const disabledValue = await (await this._nextButton()).getAttribute('disabled');
+    return disabledValue == 'true';
+  }
+
+  /* Returns whether or not the previous page button is disabled. */
+  async isPreviousPageDisabled(): Promise<boolean> {
+    const disabledValue = await (await this._previousButton()).getAttribute('disabled');
+    return disabledValue == 'true';
+  }
+
   /** Goes to the previous page in the paginator. */
   async goToPreviousPage(): Promise<void> {
     return (await this._previousButton()).click();

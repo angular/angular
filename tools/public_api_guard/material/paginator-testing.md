@@ -41,6 +41,9 @@ export abstract class _MatPaginatorHarnessBase extends ComponentHarness {
     goToLastPage(): Promise<void>;
     goToNextPage(): Promise<void>;
     goToPreviousPage(): Promise<void>;
+    isNextPageDisabled(): Promise<boolean>;
+    // (undocumented)
+    isPreviousPageDisabled(): Promise<boolean>;
     // (undocumented)
     protected abstract _lastPageButton: AsyncFactoryFn<TestElement | null>;
     // (undocumented)

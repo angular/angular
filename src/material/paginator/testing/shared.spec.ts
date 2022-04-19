@@ -97,6 +97,17 @@ export function runHarnessTests(
     );
   });
 
+  it('should return whether or not the previous page is disabled', async () => {
+    const paginator = await loader.getHarness(paginatorHarness);
+    expect(await paginator.isPreviousPageDisabled()).toBe(true);
+  });
+
+  it('should return whether or not the next page is disabled', async () => {
+    const paginator = await loader.getHarness(paginatorHarness);
+    await paginator.goToLastPage();
+    expect(await paginator.isNextPageDisabled()).toBe(true);
+  });
+
   it('should throw an error if the last page button is not available', async () => {
     const paginator = await loader.getHarness(paginatorHarness);
 
