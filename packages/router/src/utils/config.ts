@@ -164,14 +164,18 @@ export function getClosestRouteInjector(snapshot: ActivatedRouteSnapshot): Envir
   // If the current route has its own injector, which is created from the static providers on the
   // route itself, we should use that. Otherwise, we start at the parent since we do not want to
   // include the lazy loaded injector from this route.
-  if (snapshot.routeConfig && snapshot.routeConfig._injector) {
+  if (snapshot.routeConfig?._injector) {
     return snapshot.routeConfig._injector;
   }
 
   for (let s = snapshot.parent; s; s = s.parent) {
     const route = s.routeConfig;
-    if (route && route._loadedInjector) return route._loadedInjector;
-    if (route && route._injector) return route._injector;
+    // Note that the order here is important. `_loadedInjector` stored on the route with
+    // `loadChildren: () => NgModule` so it applies to child routes with priority. The `_injector`
+    // is created from the static providers on that parent route, so it applies to the children as
+    // well, but only if there is no lazy loaded NgModuleRef injector.
+    if (route?._loadedInjector) return route._loadedInjector;
+    if (route?._injector) return route._injector;
   }
 
   return null;
