@@ -1,3 +1,14 @@
+<a name="13.3.4"></a>
+# 13.3.4 "adamantium-albatross" (2022-04-20)
+### cdk
+| Commit | Type | Description |
+| -- | -- | -- |
+| [eef47579f](https://github.com/angular/components/commit/eef47579fd5a1e2f1f9423a6ba5bc2a4955142cc) | fix | **portal:** prevent calling `ApplicationRef.detachView` on destroyed instance ([#24775](https://github.com/angular/components/pull/24775)) |
+## Special Thanks
+Andrew Kushnir, Kristiyan Kostadinov, Paul Gschwendtner and Zach Arend
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.0.0-next.10"></a>
 # 14.0.0-next.10 "organza-oatmeal" (2022-04-13)
 ### cdk
