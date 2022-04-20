@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, Inject, InjectionToken, Input, SimpleChanges, ɵRuntimeError as RuntimeError} from '@angular/core';
+import {Directive, Inject, InjectionToken, Input, NgModule, SimpleChanges, ɵRuntimeError as RuntimeError} from '@angular/core';
 
 import {RuntimeErrorCode} from '../errors';
 
@@ -130,6 +130,17 @@ export class NgImage {
     };
     return imgLoader(imgConfig);
   }
+}
+
+/**
+ * Temporary NgModule that exports the `NgImage` directive.
+ * The module should not be needed once the `standalone` flag is supported as a public API.
+ */
+@NgModule({
+  declarations: [NgImage],
+  exports: [NgImage],
+})
+export class NgImageModule {
 }
 
 /***** Helpers *****/
