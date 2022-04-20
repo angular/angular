@@ -13,7 +13,7 @@ import {ErrorCode, FatalDiagnosticError, makeDiagnostic, makeRelatedInformation}
 import {assertSuccessfulReferenceEmit, Reference, ReferenceEmitter} from '../../../imports';
 import {isArrayEqual, isReferenceEqual, isSymbolEqual, SemanticReference, SemanticSymbol} from '../../../incremental/semantic_graph';
 import {InjectableClassRegistry, MetadataReader, MetadataRegistry, MetaKind} from '../../../metadata';
-import {DynamicValue, PartialEvaluator, ResolvedValue} from '../../../partial_evaluator';
+import {DynamicValue, PartialEvaluator, ResolvedValue, SyntheticValue} from '../../../partial_evaluator';
 import {PerfEvent, PerfRecorder} from '../../../perf';
 import {ClassDeclaration, Decorator, isNamedClassDeclaration, ReflectionHost, reflectObjectLiteral, typeNodeToValueExpr} from '../../../reflection';
 import {LocalModuleScopeRegistry, ScopeData} from '../../../scope';
@@ -606,7 +606,7 @@ export class NgModuleDecoratorHandler implements
   private _extractModuleFromModuleWithProvidersFn(
       fn: Reference<ts.FunctionDeclaration|ts.MethodDeclaration|ts.FunctionExpression>,
       node: ts.CallExpression, resolve: (expr: ts.Expression) => ResolvedValue,
-      unresolvable: DynamicValue): Reference<ClassDeclaration>|DynamicValue {
+      unresolvable: DynamicValue): SyntheticValue<ResolvedModuleWithProviders>|DynamicValue {
     const rawType = fn.node.type || null;
 
     const type = rawType &&
@@ -620,7 +620,10 @@ export class NgModuleDecoratorHandler implements
       return unresolvable;
     }
 
-    return ngModule as Reference<ClassDeclaration>;
+    return new SyntheticValue({
+      ngModule: ngModule as Reference<ClassDeclaration>,
+      mwpCall: node,
+    });
   }
 
   /**
@@ -720,10 +723,13 @@ export class NgModuleDecoratorHandler implements
           `Expected array when reading the NgModule.${arrayName} of ${className}`);
     }
 
-    resolvedList.forEach((entry, idx) => {
+    for (let idx = 0; idx < resolvedList.length; idx++) {
+      let entry = resolvedList[idx];
       // Unwrap ModuleWithProviders for modules that are locally declared (and thus static
       // resolution was able to descend into the function and return an object literal, a Map).
-      if (entry instanceof Map && entry.has('ngModule')) {
+      if (entry instanceof SyntheticValue && isResolvedModuleWithProviders(entry)) {
+        entry = entry.value.ngModule;
+      } else if (entry instanceof Map && entry.has('ngModule')) {
         entry = entry.get('ngModule')!;
       }
 
@@ -745,7 +751,7 @@ export class NgModuleDecoratorHandler implements
             `Value at position ${idx} in the NgModule.${arrayName} of ${
                 className} is not a reference`);
       }
-    });
+    }
 
     return refList;
   }
@@ -761,4 +767,16 @@ function isNgModule(node: ClassDeclaration, compilation: ScopeData): boolean {
 function isModuleIdExpression(expr: ts.Expression): boolean {
   return ts.isPropertyAccessExpression(expr) && ts.isIdentifier(expr.expression) &&
       expr.expression.text === 'module' && expr.name.text === 'id';
+}
+
+interface ResolvedModuleWithProviders {
+  ngModule: Reference<ClassDeclaration>;
+  mwpCall: ts.CallExpression;
+}
+
+function isResolvedModuleWithProviders(sv: SyntheticValue<unknown>):
+    sv is SyntheticValue<ResolvedModuleWithProviders> {
+  return typeof sv.value === 'object' && sv.value != null &&
+      sv.value.hasOwnProperty('ngModule' as keyof ResolvedModuleWithProviders) &&
+      sv.value.hasOwnProperty('mwpCall' as keyof ResolvedModuleWithProviders);
 }
