@@ -1260,11 +1260,33 @@ export class TransitionAnimationEngine {
       }
     });
 
+    this._processQueuedNodeRemovals(allLeaveNodes, queriedElements);
+
+    // this is required so the cleanup method doesn't remove them
+    allLeaveNodes.length = 0;
+
+    this.players.push(...rootPlayers);
+    this._createPlayerDoneCallback(rootPlayers);
+
+    // Finally play each of the players
+    rootPlayers.forEach(player => player.play());
+    return rootPlayers;
+  }
+
+  /**
+   * _processQueuedNodeRemovals checks all nodes that have :leave animations
+   * to see if they are either ready to be removed or have an in progress
+   * animation, then removes the ones that are ready to be removed.
+   *
+   * @param allLeaveNodes any[]
+   * @param queriedElements Map<any, TransitionAnimationPlayer[]>
+   */
+  private _processQueuedNodeRemovals(
+      allLeaveNodes: any[], queriedElements: Map<any, TransitionAnimationPlayer[]>) {
     // run through all of the queued removals and see if they
     // were picked up by a query. If not then perform the removal
     // operation right away unless a parent animation is ongoing.
-    for (let i = 0; i < allLeaveNodes.length; i++) {
-      const element = allLeaveNodes[i];
+    for (let element of allLeaveNodes) {
       const details = element[REMOVAL_FLAG] as ElementAnimationState;
       removeClass(element, LEAVE_CLASSNAME);
 
@@ -1273,49 +1295,54 @@ export class TransitionAnimationEngine {
       // until that animation is over (or the parent queried animation)
       if (details && details.hasAnimation) continue;
 
-      let players: TransitionAnimationPlayer[] = [];
+      let activePlayers = this._getActivePlayersFromQueriedElements(element, queriedElements);
 
-      // if this element is queried or if it contains queried children
-      // then we want for the element not to be removed from the page
-      // until the queried animations have finished
-      if (queriedElements.size) {
-        let queriedPlayerResults = queriedElements.get(element);
-        if (queriedPlayerResults && queriedPlayerResults.length) {
-          players.push(...queriedPlayerResults);
-        }
-
-        let queriedInnerElements = this.driver.query(element, NG_ANIMATING_SELECTOR, true);
-        for (let j = 0; j < queriedInnerElements.length; j++) {
-          let queriedPlayers = queriedElements.get(queriedInnerElements[j]);
-          if (queriedPlayers && queriedPlayers.length) {
-            players.push(...queriedPlayers);
-          }
-        }
-      }
-
-      const activePlayers = players.filter(p => !p.destroyed);
       if (activePlayers.length) {
         removeNodesAfterAnimationDone(this, element, activePlayers);
       } else {
         this.processLeaveNode(element);
       }
     }
+  }
 
-    // this is required so the cleanup method doesn't remove them
-    allLeaveNodes.length = 0;
+  // if this element is queried or if it contains queried children
+  // then we want for the element not to be removed from the page
+  // until the queried animations have finished
+  private _getActivePlayersFromQueriedElements(
+      element: any,
+      queriedElements: Map<any, TransitionAnimationPlayer[]>): TransitionAnimationPlayer[] {
+    let players: TransitionAnimationPlayer[] = [];
+    if (queriedElements.size) {
+      let queriedPlayerResults = queriedElements.get(element);
+      if (queriedPlayerResults && queriedPlayerResults.length) {
+        players.push(...queriedPlayerResults);
+      }
 
-    rootPlayers.forEach(player => {
-      this.players.push(player);
+      let queriedInnerElements = this.driver.query(element, NG_ANIMATING_SELECTOR, true);
+      for (let j = 0; j < queriedInnerElements.length; j++) {
+        let queriedPlayers = queriedElements.get(queriedInnerElements[j]);
+        if (queriedPlayers && queriedPlayers.length) {
+          players.push(...queriedPlayers);
+        }
+      }
+    }
+    return players.filter(p => !p.destroyed);
+  }
+
+  /**
+   * _createPlayerDoneCallback adds the done callback to all provided players
+   *
+   * @param players TransitionAnimationPlayer[]
+   */
+  private _createPlayerDoneCallback(players: TransitionAnimationPlayer[]) {
+    players.forEach(player => {
       player.onDone(() => {
         player.destroy();
 
         const index = this.players.indexOf(player);
         this.players.splice(index, 1);
       });
-      player.play();
     });
-
-    return rootPlayers;
   }
 
   elementContainsData(namespaceId: string, element: any) {

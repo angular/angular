@@ -48,8 +48,8 @@
   "animations": {
     "uncompressed": {
       "runtime": 1070,
-      "main": 157739,
-      "polyfills": 33814
+      "main": 157555,
+      "polyfills": 33925
     }
   },
   "standalone-bootstrap": {
