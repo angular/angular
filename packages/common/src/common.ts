@@ -27,3 +27,4 @@ export {PLATFORM_BROWSER_ID as ɵPLATFORM_BROWSER_ID, PLATFORM_SERVER_ID as ɵPL
 export {VERSION} from './version';
 export {ViewportScroller, NullViewportScroller as ɵNullViewportScroller} from './viewport_scroller';
 export {XhrFactory} from './xhr';
+export {NgImageModule as ɵNgImageModule, NgImage as ɵNgImage, IMAGE_LOADER as ɵIMAGE_LOADER} from './directives/ng_image';
