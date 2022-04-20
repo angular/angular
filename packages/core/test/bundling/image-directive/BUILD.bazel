@@ -1,0 +1,64 @@
+load("//tools:defaults.bzl", "app_bundle", "ng_module", "ts_devserver")
+load("@npm//http-server:index.bzl", "http_server")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_module(
+    name = "image-directive",
+    srcs = [
+        "index.ts",
+    ],
+    deps = [
+        "//packages/common",
+        "//packages/core",
+        "//packages/platform-browser",
+    ],
+)
+
+app_bundle(
+    name = "bundle",
+    entry_point = ":index.ts",
+    deps = [
+        ":image-directive",
+        "//packages/common",
+        "//packages/core",
+        "//packages/platform-browser",
+        "@npm//rxjs",
+    ],
+)
+
+genrule(
+    name = "tslib",
+    srcs = [
+        "@npm//:node_modules/tslib/tslib.js",
+    ],
+    outs = [
+        "tslib.js",
+    ],
+    cmd = "cp $< $@",
+)
+
+ts_devserver(
+    name = "devserver",
+    entry_module = "@angular/core/test/bundling/image-directive",
+    scripts = [
+        "//tools/rxjs:rxjs_umd_modules",
+    ],
+    serving_path = "/bundle.min.js",
+    static_files = [
+        "index.html",
+        ":tslib",
+        "a.png",
+        "b.png",
+    ],
+    deps = [":image-directive"],
+)
+
+http_server(
+    name = "prodserver",
+    data = [
+        "index.html",
+        ":bundle.debug.min.js",
+        ":bundle.min.js",
+    ],
+)
