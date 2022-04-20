@@ -133,7 +133,7 @@ export class NgImage {
 }
 
 /**
- * Temporary NgModule that exports the `NgImage` directive.
+ * Temporary NgModule that exports the NgImage directive.
  * The module should not be needed once the `standalone` flag is supported as a public API.
  */
 @NgModule({
