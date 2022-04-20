@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "ng_module", "ng_test_library", "ng_web_test_suite", "sass_binary")
+load("//tools:defaults.bzl", "ng_module", "ng_test_library", "ng_web_test_suite")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -8,7 +8,7 @@ ng_module(
         ["**/*.ts"],
         exclude = ["**/*.spec.ts"],
     ),
-    assets = [":dialog-container.css"] + glob(["**/*.html"]),
+    assets = glob(["**/*.html"]),
     deps = [
         "//src:dev_mode_types",
         "//src/cdk/a11y",
@@ -21,11 +21,6 @@ ng_module(
         "@npm//@angular/core",
         "@npm//rxjs",
     ],
-)
-
-sass_binary(
-    name = "dialog_container_scss",
-    src = "dialog-container.scss",
 )
 
 ng_test_library(

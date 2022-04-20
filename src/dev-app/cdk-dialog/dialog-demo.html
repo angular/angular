@@ -1,0 +1,61 @@
+<div class="demo-container">
+  <h2>Dialog config</h2>
+
+  <div class="demo-field">
+    <label for="width">Width</label>
+    <input id="width" [(ngModel)]="config.width">
+  </div>
+  <div class="demo-field">
+    <label for="height">Height</label>
+    <input id="height" [(ngModel)]="config.height">
+  </div>
+  <div class="demo-field">
+    <label for="min-width">Min width</label>
+    <input id="min-width" [(ngModel)]="config.minWidth">
+  </div>
+  <div class="demo-field">
+    <label for="min-height">Min height</label>
+    <input id="min-height" [(ngModel)]="config.minHeight">
+  </div>
+  <div class="demo-field">
+    <label for="max-width">Max width</label>
+    <input id="max-width" [(ngModel)]="config.maxWidth">
+  </div>
+  <div class="demo-field">
+    <label for="max-height">Max height</label>
+    <input id="max-height" [(ngModel)]="config.maxHeight">
+  </div>
+  <div class="demo-field">
+    <label for="backdrop-class">Backdrop class</label>
+    <input id="backdrop-class" [(ngModel)]="config.backdropClass">
+  </div>
+  <div class="demo-field">
+    <label for="has-backdrop">Has backdrop</label>
+    <input id="has-backdrop" [(ngModel)]="config.hasBackdrop" type="checkbox">
+  </div>
+  <div class="demo-field">
+    <label for="message">Dialog message</label>
+    <input id="message" [(ngModel)]="config.data.message">
+  </div>
+  <div class="demo-field">
+    <label for="disable-close">Disable close</label>
+    <input id="disable-close" [(ngModel)]="config.disableClose" type="checkbox">
+  </div>
+  <p>Last result: {{result}}</p>
+
+  <button (click)="openJazz()">Open dialog</button>
+  <button (click)="openTemplate()">Open dialog with template content</button>
+</div>
+
+<ng-template let-data let-dialogRef="dialogRef">
+  I'm a template dialog. I've been opened {{numTemplateOpens}} times!
+
+  <p>It's Jazz!</p>
+
+  <label for="how-much">How much?</label>
+  <input id="how-much" #howMuch>
+
+  <p> {{ data.message }} </p>
+  <button type="button" (click)="dialogRef.close(howMuch.value)">Close dialog</button>
+  <button (click)="dialogRef.updateSize('500px', '500px');">Change dimensions</button>
+</ng-template>

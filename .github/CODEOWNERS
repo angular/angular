@@ -153,6 +153,7 @@
 /src/dev-app/mdc-autocomplete/**                   @crisbeto
 /src/dev-app/button/**                             @andrewseguin
 /src/dev-app/card/**                               @andrewseguin
+/src/dev-app/cdk-dialog/**                         @crisbeto
 /src/dev-app/cdk-experimental-combobox/**          @jelbourn
 /src/dev-app/cdk-experimental-listbox/**           @jelbourn
 /src/dev-app/cdk-experimental-menu/**              @jelbourn

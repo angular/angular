@@ -1,8 +1,4 @@
 [
-  [
-    "src/cdk-experimental/dialog/dialog-config.ts",
-    "src/cdk-experimental/dialog/dialog-container.ts"
-  ],
   ["src/cdk/drag-drop/directives/drag.ts", "src/cdk/drag-drop/directives/drop-list.ts"],
   ["src/cdk/drag-drop/directives/drag.ts", "src/cdk/drag-drop/drag-events.ts"],
   [

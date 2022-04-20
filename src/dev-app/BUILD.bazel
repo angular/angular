@@ -23,6 +23,7 @@ ng_module(
         "//src/dev-app/button",
         "//src/dev-app/button-toggle",
         "//src/dev-app/card",
+        "//src/dev-app/cdk-dialog",
         "//src/dev-app/cdk-experimental-combobox",
         "//src/dev-app/cdk-experimental-listbox",
         "//src/dev-app/cdk-experimental-menu",

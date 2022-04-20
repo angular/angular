@@ -36,6 +36,7 @@ export class DevAppLayout {
     {name: 'Button Toggle', route: '/button-toggle'},
     {name: 'Button', route: '/button'},
     {name: 'Card', route: '/card'},
+    {name: 'Cdk Dialog', route: '/cdk-dialog'},
     {name: 'Cdk Experimental Combobox', route: '/cdk-experimental-combobox'},
     {name: 'Cdk Experimental Listbox', route: '/cdk-experimental-listbox'},
     {name: 'Cdk Experimental Menu', route: '/cdk-experimental-menu'},

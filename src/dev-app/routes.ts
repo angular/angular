@@ -51,6 +51,10 @@ export const DEV_APP_ROUTES: Routes = [
       ),
   },
   {
+    path: 'cdk-dialog',
+    loadChildren: () => import('./cdk-dialog/dialog-demo-module').then(m => m.DialogDemoModule),
+  },
+  {
     path: 'cdk-experimental-listbox',
     loadChildren: () =>
       import('./cdk-experimental-listbox/cdk-listbox-demo-module').then(
