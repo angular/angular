@@ -155,7 +155,7 @@ export class SomeModule {
 }
 SomeModule.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: SomeModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule });
 SomeModule.ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: SomeModule, imports: [IndirectDir, IndirectPipe], exports: [NotStandaloneStuffModule, IndirectDir, IndirectPipe] });
-SomeModule.ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: SomeModule, imports: [IndirectDir, IndirectPipe, NotStandaloneStuffModule] });
+SomeModule.ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: SomeModule, imports: [NotStandaloneStuffModule] });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: SomeModule, decorators: [{
             type: NgModule,
             args: [{
@@ -284,5 +284,60 @@ import * as i0 from "@angular/core";
 export declare class RecursiveComponent {
     static ɵfac: i0.ɵɵFactoryDeclaration<RecursiveComponent, never>;
     static ɵcmp: i0.ɵɵComponentDeclaration<RecursiveComponent, "recursive-cmp", never, {}, {}, never, never, true>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: module_optimization.js
+ ****************************************************************************************************/
+import { Component, Directive, NgModule } from '@angular/core';
+import * as i0 from "@angular/core";
+export class StandaloneCmp {
+}
+StandaloneCmp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: StandaloneCmp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+StandaloneCmp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", type: StandaloneCmp, isStandalone: true, selector: "standalone-cmp", ngImport: i0, template: '', isInline: true });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: StandaloneCmp, decorators: [{
+            type: Component,
+            args: [{
+                    standalone: true,
+                    selector: 'standalone-cmp',
+                    template: '',
+                }]
+        }] });
+export class StandaloneDir {
+}
+StandaloneDir.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: StandaloneDir, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+StandaloneDir.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", type: StandaloneDir, isStandalone: true, ngImport: i0 });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: StandaloneDir, decorators: [{
+            type: Directive,
+            args: [{ standalone: true }]
+        }] });
+export class Module {
+}
+Module.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Module, deps: [], target: i0.ɵɵFactoryTarget.NgModule });
+Module.ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Module, imports: [StandaloneCmp, StandaloneDir] });
+Module.ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Module, imports: [StandaloneCmp] });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Module, decorators: [{
+            type: NgModule,
+            args: [{
+                    imports: [StandaloneCmp, StandaloneDir],
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: module_optimization.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class StandaloneCmp {
+    static ɵfac: i0.ɵɵFactoryDeclaration<StandaloneCmp, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<StandaloneCmp, "standalone-cmp", never, {}, {}, never, never, true>;
+}
+export declare class StandaloneDir {
+    static ɵfac: i0.ɵɵFactoryDeclaration<StandaloneDir, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<StandaloneDir, never, never, {}, {}, never, never, true>;
+}
+export declare class Module {
+    static ɵfac: i0.ɵɵFactoryDeclaration<Module, never>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<Module, never, [typeof StandaloneCmp, typeof StandaloneDir], never>;
+    static ɵinj: i0.ɵɵInjectorDeclaration<Module>;
 }
 
