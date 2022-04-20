@@ -11,6 +11,8 @@ import ts from 'typescript';
 import {Reference} from '../../imports';
 import {FunctionDefinition} from '../../reflection';
 
+import {SyntheticValue} from './synthetic';
+
 /**
  * The reason why a value cannot be determined statically.
  */
@@ -78,6 +80,12 @@ export const enum DynamicValueReason {
   DYNAMIC_TYPE,
 
   /**
+   * A value could not be determined because one of the inputs to its evaluation is a synthetically
+   * produced value.
+   */
+  SYNTHETIC_INPUT,
+
+  /**
    * A value could not be determined statically for any reason other the above.
    */
   UNKNOWN,
@@ -122,6 +130,11 @@ export class DynamicValue<R = unknown> {
 
   static fromDynamicType(node: ts.TypeNode): DynamicValue {
     return new DynamicValue(node, undefined, DynamicValueReason.DYNAMIC_TYPE);
+  }
+
+  static fromSyntheticInput(node: ts.Node, value: SyntheticValue<unknown>):
+      DynamicValue<SyntheticValue<unknown>> {
+    return new DynamicValue(node, value, DynamicValueReason.SYNTHETIC_INPUT);
   }
 
   static fromUnknown(node: ts.Node): DynamicValue {
@@ -184,6 +197,9 @@ export class DynamicValue<R = unknown> {
             this as unknown as DynamicValue<FunctionDefinition>);
       case DynamicValueReason.DYNAMIC_TYPE:
         return visitor.visitDynamicType(this);
+      case DynamicValueReason.SYNTHETIC_INPUT:
+        return visitor.visitSyntheticInput(
+            this as unknown as DynamicValue<SyntheticValue<unknown>>);
       case DynamicValueReason.UNKNOWN:
         return visitor.visitUnknown(this);
     }
@@ -199,5 +215,6 @@ export interface DynamicValueVisitor<R> {
   visitInvalidExpressionType(value: DynamicValue): R;
   visitComplexFunctionCall(value: DynamicValue<FunctionDefinition>): R;
   visitDynamicType(value: DynamicValue): R;
+  visitSyntheticInput(value: DynamicValue<SyntheticValue<unknown>>): R;
   visitUnknown(value: DynamicValue): R;
 }

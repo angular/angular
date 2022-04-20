@@ -43,22 +43,20 @@ export function isAngularAnimationsReference(reference: Reference, symbolName: s
       reference.debugName === symbolName;
 }
 
-export const animationTriggerResolver: ForeignFunctionResolver = (ref, args) => {
-  const animationTriggerMethodName = 'trigger';
-  if (!isAngularAnimationsReference(ref, animationTriggerMethodName)) {
-    return null;
-  }
-  const triggerNameExpression = args[0];
-  if (!triggerNameExpression) {
-    return null;
-  }
-  const factory = ts.factory;
-  return factory.createObjectLiteralExpression(
-      [
-        factory.createPropertyAssignment(factory.createIdentifier('name'), triggerNameExpression),
-      ],
-      true);
-};
+export const animationTriggerResolver: ForeignFunctionResolver =
+    (fn, node, resolve, unresolvable) => {
+      const animationTriggerMethodName = 'trigger';
+      if (!isAngularAnimationsReference(fn, animationTriggerMethodName)) {
+        return unresolvable;
+      }
+      const triggerNameExpression = node.arguments[0];
+      if (!triggerNameExpression) {
+        return unresolvable;
+      }
+      const res = new Map<string, ResolvedValue>();
+      res.set('name', resolve(triggerNameExpression));
+      return res;
+    };
 
 export function validateAndFlattenComponentImports(imports: ResolvedValue, expr: ts.Expression): {
   imports: Reference<ClassDeclaration>[],

@@ -11,7 +11,7 @@ import ts from 'typescript';
 
 import {assertSuccessfulReferenceEmit, ImportedFile, ImportFlags, ModuleResolver, Reference, ReferenceEmitter} from '../../../imports';
 import {attachDefaultImportDeclaration} from '../../../imports/src/default';
-import {ForeignFunctionResolver, PartialEvaluator} from '../../../partial_evaluator';
+import {DynamicValue, ForeignFunctionResolver, PartialEvaluator} from '../../../partial_evaluator';
 import {ClassDeclaration, Decorator, Import, ImportedTypeValueReference, isNamedClassDeclaration, LocalTypeValueReference, ReflectionHost, TypeValueReference, TypeValueReferenceKind} from '../../../reflection';
 import {CompileResult} from '../../../transform';
 
@@ -165,29 +165,32 @@ export function tryUnwrapForwardRef(node: ts.Expression, reflector: ReflectionHo
  * @param args the arguments to the invocation of the forwardRef expression
  * @returns an unwrapped argument if `ref` pointed to forwardRef, or null otherwise
  */
-export function forwardRefResolver(
-    ref: Reference<ts.FunctionDeclaration|ts.MethodDeclaration|ts.FunctionExpression>,
-    args: ReadonlyArray<ts.Expression>): ts.Expression|null {
-  if (!isAngularCoreReference(ref, 'forwardRef') || args.length !== 1) {
-    return null;
-  }
-  return expandForwardRef(args[0]);
-}
+export const forwardRefResolver: ForeignFunctionResolver =
+    (fn, callExpr, resolve, unresolvable) => {
+      if (!isAngularCoreReference(fn, 'forwardRef') || callExpr.arguments.length !== 1) {
+        return unresolvable;
+      }
+      const expanded = expandForwardRef(callExpr.arguments[0]);
+      if (expanded !== null) {
+        return resolve(expanded);
+      } else {
+        return unresolvable;
+      }
+    };
 
 /**
  * Combines an array of resolver functions into a one.
  * @param resolvers Resolvers to be combined.
  */
 export function combineResolvers(resolvers: ForeignFunctionResolver[]): ForeignFunctionResolver {
-  return (ref: Reference<ts.FunctionDeclaration|ts.MethodDeclaration|ts.FunctionExpression>,
-          args: ReadonlyArray<ts.Expression>): ts.Expression|null => {
+  return (fn, callExpr, resolve, unresolvable) => {
     for (const resolver of resolvers) {
-      const resolved = resolver(ref, args);
-      if (resolved !== null) {
+      const resolved = resolver(fn, callExpr, resolve, unresolvable);
+      if (resolved !== unresolvable) {
         return resolved;
       }
     }
-    return null;
+    return unresolvable;
   };
 }
 

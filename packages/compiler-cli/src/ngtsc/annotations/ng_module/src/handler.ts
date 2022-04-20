@@ -13,7 +13,7 @@ import {ErrorCode, FatalDiagnosticError, makeDiagnostic, makeRelatedInformation}
 import {assertSuccessfulReferenceEmit, Reference, ReferenceEmitter} from '../../../imports';
 import {isArrayEqual, isReferenceEqual, isSymbolEqual, SemanticReference, SemanticSymbol} from '../../../incremental/semantic_graph';
 import {InjectableClassRegistry, MetadataReader, MetadataRegistry, MetaKind} from '../../../metadata';
-import {PartialEvaluator, ResolvedValue} from '../../../partial_evaluator';
+import {DynamicValue, PartialEvaluator, ResolvedValue} from '../../../partial_evaluator';
 import {PerfEvent, PerfRecorder} from '../../../perf';
 import {ClassDeclaration, Decorator, isNamedClassDeclaration, ReflectionHost, reflectObjectLiteral, typeNodeToValueExpr} from '../../../reflection';
 import {LocalModuleScopeRegistry, ScopeData} from '../../../scope';
@@ -177,7 +177,8 @@ export class NgModuleDecoratorHandler implements
     }
 
     const moduleResolvers = combineResolvers([
-      ref => this._extractModuleFromModuleWithProvidersFn(ref.node),
+      (fn, call, resolve, unresolvable) =>
+          this._extractModuleFromModuleWithProvidersFn(fn, call, resolve, unresolvable),
       forwardRefResolver,
     ]);
 
@@ -602,12 +603,24 @@ export class NgModuleDecoratorHandler implements
    * Given a `FunctionDeclaration`, `MethodDeclaration` or `FunctionExpression`, check if it is
    * typed as a `ModuleWithProviders` and return an expression referencing the module if available.
    */
-  private _extractModuleFromModuleWithProvidersFn(node: ts.FunctionDeclaration|
-                                                  ts.MethodDeclaration|
-                                                  ts.FunctionExpression): ts.Expression|null {
-    const type = node.type || null;
-    return type &&
-        (this._reflectModuleFromTypeParam(type, node) || this._reflectModuleFromLiteralType(type));
+  private _extractModuleFromModuleWithProvidersFn(
+      fn: Reference<ts.FunctionDeclaration|ts.MethodDeclaration|ts.FunctionExpression>,
+      node: ts.CallExpression, resolve: (expr: ts.Expression) => ResolvedValue,
+      unresolvable: DynamicValue): Reference<ClassDeclaration>|DynamicValue {
+    const rawType = fn.node.type || null;
+
+    const type = rawType &&
+        (this._reflectModuleFromTypeParam(rawType, fn.node) ||
+         this._reflectModuleFromLiteralType(rawType));
+    if (type === null) {
+      return unresolvable;
+    }
+    const ngModule = resolve(type);
+    if (!(ngModule instanceof Reference) || !isNamedClassDeclaration(ngModule.node)) {
+      return unresolvable;
+    }
+
+    return ngModule as Reference<ClassDeclaration>;
   }
 
   /**
