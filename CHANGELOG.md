@@ -1,3 +1,19 @@
+<a name="14.0.0-next.11"></a>
+# 14.0.0-next.11 "madras-macaque" (2022-04-20)
+### cdk
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c04f941fe](https://github.com/angular/components/commit/c04f941fe0cbe18022c97f1481254f3510db5ded) | fix | **portal:** prevent calling `ApplicationRef.detachView` on destroyed instance ([#24775](https://github.com/angular/components/pull/24775)) |
+### material
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a55a8368b](https://github.com/angular/components/commit/a55a8368b30cf8e9ba787ad3530a8c9b66182d7b) | feat | **paginator:** Add `isNextPageEnabled` and `isPreviousPageEnabled` methods to `MatPaginatorHarness` ([#24784](https://github.com/angular/components/pull/24784)) |
+| [1aa5a2064](https://github.com/angular/components/commit/1aa5a206472f523a1ae189acc77a5abe15d71d5e) | feat | **select:** allow user-defined aria-describedby ([#24644](https://github.com/angular/components/pull/24644)) |
+## Special Thanks
+Andrew Kushnir, Kristiyan Kostadinov, Paul Gschwendtner, Richie Foreman, Robin (Robert) Thomas, Zach Arend and renovate[bot]
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="13.3.4"></a>
 # 13.3.4 "adamantium-albatross" (2022-04-20)
 ### cdk
