@@ -220,6 +220,22 @@ describe('MDC-based MatSelect', () => {
           expect(select.getAttribute('tabindex')).toEqual('0');
         }));
 
+        it('should set `aria-describedby` to the id of the mat-hint', fakeAsync(() => {
+          expect(select.getAttribute('aria-describedby')).toBeNull();
+
+          fixture.componentInstance.hint = 'test';
+          fixture.detectChanges();
+          const hint = fixture.debugElement.query(By.css('mat-hint')).nativeElement;
+          expect(select.getAttribute('aria-describedby')).toBe(hint.getAttribute('id'));
+          expect(select.getAttribute('aria-describedby')).toMatch(/^mat-mdc-hint-\d+$/);
+        }));
+
+        it('should support user binding to `aria-describedby`', fakeAsync(() => {
+          fixture.componentInstance.ariaDescribedBy = 'test';
+          fixture.detectChanges();
+          expect(select.getAttribute('aria-describedby')).toBe('test');
+        }));
+
         it('should be able to override the tabindex', fakeAsync(() => {
           fixture.componentInstance.tabIndexOverride = 3;
           fixture.detectChanges();
@@ -4205,13 +4221,15 @@ describe('MDC-based MatSelect', () => {
     <mat-form-field>
       <mat-label *ngIf="hasLabel">Select a food</mat-label>
       <mat-select placeholder="Food" [formControl]="control" [required]="isRequired"
-        [tabIndex]="tabIndexOverride" [aria-label]="ariaLabel" [aria-labelledby]="ariaLabelledby"
+        [tabIndex]="tabIndexOverride" [aria-describedby]="ariaDescribedBy"
+        [aria-label]="ariaLabel" [aria-labelledby]="ariaLabelledby"
         [panelClass]="panelClass" [disableRipple]="disableRipple"
         [typeaheadDebounceInterval]="typeaheadDebounceInterval">
         <mat-option *ngFor="let food of foods" [value]="food.value" [disabled]="food.disabled">
           {{ food.viewValue }}
         </mat-option>
       </mat-select>
+      <mat-hint *ngIf="hint">{{ hint }}</mat-hint>
     </mat-form-field>
     <div [style.height.px]="heightBelow"></div>
   `,
@@ -4232,7 +4250,9 @@ class BasicSelect {
   heightAbove = 0;
   heightBelow = 0;
   hasLabel = true;
+  hint: string;
   tabIndexOverride: number;
+  ariaDescribedBy: string;
   ariaLabel: string;
   ariaLabelledby: string;
   panelClass = ['custom-one', 'custom-two'];

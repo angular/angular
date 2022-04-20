@@ -72,7 +72,6 @@ export class MatSelectTrigger {}
     '[attr.aria-required]': 'required.toString()',
     '[attr.aria-disabled]': 'disabled.toString()',
     '[attr.aria-invalid]': 'errorState',
-    '[attr.aria-describedby]': '_ariaDescribedby || null',
     '[attr.aria-activedescendant]': '_getAriaActiveDescendant()',
     '[class.mat-mdc-select-disabled]': 'disabled',
     '[class.mat-mdc-select-invalid]': 'errorState',

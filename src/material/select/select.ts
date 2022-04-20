@@ -303,8 +303,11 @@ export abstract class _MatSelectBase<C>
   /** Emits whenever the component is destroyed. */
   protected readonly _destroy = new Subject<void>();
 
-  /** The aria-describedby attribute on the select for improved a11y. */
-  _ariaDescribedby: string;
+  /**
+   * Implemented as part of MatFormFieldControl.
+   * @docs-private
+   */
+  @Input('aria-describedby') userAriaDescribedBy: string;
 
   /** Deals with the selection logic. */
   _selectionModel: SelectionModel<MatOption>;
@@ -611,7 +614,7 @@ export abstract class _MatSelectBase<C>
   ngOnChanges(changes: SimpleChanges) {
     // Updating the disabled state is handled by `mixinDisabled`, but we need to additionally let
     // the parent form field know to run change detection when the disabled state changes.
-    if (changes['disabled']) {
+    if (changes['disabled'] || changes['userAriaDescribedBy']) {
       this.stateChanges.next();
     }
 
@@ -1146,7 +1149,11 @@ export abstract class _MatSelectBase<C>
    * @docs-private
    */
   setDescribedByIds(ids: string[]) {
-    this._ariaDescribedby = ids.join(' ');
+    if (ids.length) {
+      this._elementRef.nativeElement.setAttribute('aria-describedby', ids.join(' '));
+    } else {
+      this._elementRef.nativeElement.removeAttribute('aria-describedby');
+    }
   }
 
   /**
@@ -1191,7 +1198,6 @@ export abstract class _MatSelectBase<C>
     '[attr.aria-required]': 'required.toString()',
     '[attr.aria-disabled]': 'disabled.toString()',
     '[attr.aria-invalid]': 'errorState',
-    '[attr.aria-describedby]': '_ariaDescribedby || null',
     '[attr.aria-activedescendant]': '_getAriaActiveDescendant()',
     '[class.mat-select-disabled]': 'disabled',
     '[class.mat-select-invalid]': 'errorState',

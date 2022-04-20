@@ -114,7 +114,6 @@ export const matSelectAnimations: {
 // @public
 export abstract class _MatSelectBase<C> extends _MatSelectMixinBase implements AfterContentInit, OnChanges, OnDestroy, OnInit, DoCheck, ControlValueAccessor, CanDisable, HasTabIndex, MatFormFieldControl<any>, CanUpdateErrorState, CanDisableRipple {
     constructor(_viewportRuler: ViewportRuler, _changeDetectorRef: ChangeDetectorRef, _ngZone: NgZone, _defaultErrorStateMatcher: ErrorStateMatcher, elementRef: ElementRef, _dir: Directionality, _parentForm: NgForm, _parentFormGroup: FormGroupDirective, _parentFormField: MatFormField, ngControl: NgControl, tabIndex: string, scrollStrategyFactory: any, _liveAnnouncer: LiveAnnouncer, _defaultOptions?: MatSelectConfig | undefined);
-    _ariaDescribedby: string;
     ariaLabel: string;
     ariaLabelledby: string;
     protected _canOpen(): boolean;
@@ -203,6 +202,7 @@ export abstract class _MatSelectBase<C> extends _MatSelectMixinBase implements A
     get triggerValue(): string;
     get typeaheadDebounceInterval(): number;
     set typeaheadDebounceInterval(value: NumberInput);
+    userAriaDescribedBy: string;
     get value(): any;
     set value(newValue: any);
     readonly valueChange: EventEmitter<any>;
@@ -211,7 +211,7 @@ export abstract class _MatSelectBase<C> extends _MatSelectMixinBase implements A
     protected _viewportRuler: ViewportRuler;
     writeValue(value: any): void;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<_MatSelectBase<any>, never, never, { "panelClass": "panelClass"; "placeholder": "placeholder"; "required": "required"; "multiple": "multiple"; "disableOptionCentering": "disableOptionCentering"; "compareWith": "compareWith"; "value": "value"; "ariaLabel": "aria-label"; "ariaLabelledby": "aria-labelledby"; "errorStateMatcher": "errorStateMatcher"; "typeaheadDebounceInterval": "typeaheadDebounceInterval"; "sortComparator": "sortComparator"; "id": "id"; }, { "openedChange": "openedChange"; "_openedStream": "opened"; "_closedStream": "closed"; "selectionChange": "selectionChange"; "valueChange": "valueChange"; }, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<_MatSelectBase<any>, never, never, { "userAriaDescribedBy": "aria-describedby"; "panelClass": "panelClass"; "placeholder": "placeholder"; "required": "required"; "multiple": "multiple"; "disableOptionCentering": "disableOptionCentering"; "compareWith": "compareWith"; "value": "value"; "ariaLabel": "aria-label"; "ariaLabelledby": "aria-labelledby"; "errorStateMatcher": "errorStateMatcher"; "typeaheadDebounceInterval": "typeaheadDebounceInterval"; "sortComparator": "sortComparator"; "id": "id"; }, { "openedChange": "openedChange"; "_openedStream": "opened"; "_closedStream": "closed"; "selectionChange": "selectionChange"; "valueChange": "valueChange"; }, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<_MatSelectBase<any>, [null, null, null, null, null, { optional: true; }, { optional: true; }, { optional: true; }, { optional: true; }, { optional: true; self: true; }, { attribute: "tabindex"; }, null, null, { optional: true; }]>;
 }
