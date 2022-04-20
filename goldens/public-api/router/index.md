@@ -694,7 +694,7 @@ export interface RouterOutletContract {
 
 // @public
 export class RouterPreloader implements OnDestroy {
-    constructor(router: Router, compiler: Compiler, injector: Injector, preloadingStrategy: PreloadingStrategy, loader: RouterConfigLoader);
+    constructor(router: Router, compiler: Compiler, injector: EnvironmentInjector, preloadingStrategy: PreloadingStrategy, loader: RouterConfigLoader);
     // (undocumented)
     ngOnDestroy(): void;
     // (undocumented)

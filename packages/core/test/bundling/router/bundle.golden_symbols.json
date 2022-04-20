@@ -927,6 +927,9 @@
     "name": "createEmptyState"
   },
   {
+    "name": "createEnvironmentInjector"
+  },
+  {
     "name": "createInjector"
   },
   {

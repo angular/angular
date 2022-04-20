@@ -21,6 +21,10 @@ export function getLoadedInjector(route: Route): EnvironmentInjector|undefined {
   return route._loadedInjector;
 }
 
+export function getProvidersInjector(route: Route): EnvironmentInjector|undefined {
+  return route._injector;
+}
+
 export function validateConfig(config: Routes, parentPath: string = ''): void {
   // forEach doesn't iterate undefined values
   for (let i = 0; i < config.length; i++) {
