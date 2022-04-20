@@ -471,7 +471,43 @@ export class NgModuleDecoratorHandler implements
 
     // Add all top-level imports from the `imports` field to the injector imports.
     for (const topLevelImport of analysis.imports) {
-      data.injectorImports.push(new WrappedNodeExpr(topLevelImport.expression));
+      if (topLevelImport.hasModuleWithProviders) {
+        // We have no choice but to emit expressions which contain MWPs, as we cannot filter on
+        // individual references.
+        data.injectorImports.push(new WrappedNodeExpr(topLevelImport.expression));
+        continue;
+      }
+
+      const refsToEmit: Reference<ClassDeclaration>[] = [];
+      for (const ref of topLevelImport.resolvedReferences) {
+        const dirMeta = this.metaReader.getDirectiveMetadata(ref);
+        if (dirMeta !== null && !dirMeta.isComponent) {
+          // Skip emit of directives in imports - directives can't carry providers.
+          continue;
+        }
+
+        const pipeMeta = dirMeta === null ? this.metaReader.getPipeMetadata(ref) : null;
+        if (pipeMeta !== null) {
+          // Skip emit of pipes in imports - pipes can't carry providers.
+          continue;
+        }
+
+        refsToEmit.push(ref);
+      }
+
+      if (refsToEmit.length === topLevelImport.resolvedReferences.length) {
+        // All references within this top-level import should be emitted, so just use the user's
+        // expression.
+        data.injectorImports.push(new WrappedNodeExpr(topLevelImport.expression));
+      } else {
+        // Some references have been filtered out. Emit references to individual classes.
+        const context = node.getSourceFile();
+        for (const ref of refsToEmit) {
+          const emittedRef = this.refEmitter.emit(ref, context);
+          assertSuccessfulReferenceEmit(emittedRef, topLevelImport.expression, 'class');
+          data.injectorImports.push(emittedRef.expression);
+        }
+      }
     }
 
     if (scope !== null && !scope.compilation.isPoisoned) {

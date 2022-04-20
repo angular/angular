@@ -70,6 +70,20 @@
           ]
         }
       ]
+    },
+    {
+      "description": "should optimize injector imports",
+      "inputFiles": [
+        "module_optimization.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Injector imports not optimized",
+          "files": [
+            "module_optimization.js"
+          ]
+        }
+      ]
     }
   ]
 }

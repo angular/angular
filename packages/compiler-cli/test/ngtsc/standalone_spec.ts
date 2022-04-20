@@ -597,5 +597,60 @@ runInEachFileSystem(() => {
         expect(jsCode).toContain('dependencies: [StandalonePipe]');
       });
     });
+
+    describe('optimizations', () => {
+      it('does emit standalone components in injector imports', () => {
+        env.write('test.ts', `
+          import {Component, NgModule} from '@angular/core';
+
+          @Component({
+            standalone: true,
+            selector: 'standalone-cmp',
+            template: '',
+          })
+          export class StandaloneCmp {}
+
+          @NgModule({
+            imports: [StandaloneCmp],
+            exports: [StandaloneCmp],
+          })
+          export class Module {}
+        `);
+        env.driveMain();
+
+        const jsCode = env.getContents('test.js');
+        expect(jsCode).toContain('i0.ɵɵdefineInjector({ imports: [StandaloneCmp] });');
+      });
+
+      it('does not emit standalone directives or pipes in injector imports', () => {
+        env.write('test.ts', `
+          import {Directive, NgModule, Pipe} from '@angular/core';
+
+          @Directive({
+            standalone: true,
+            selector: '[dir]',
+          })
+          export class StandaloneDir {}
+
+          @Pipe({
+            standalone: true,
+            name: 'standalone',
+          })
+          export class StandalonePipe {
+            transform(value: any): any {}
+          }
+
+          @NgModule({
+            imports: [StandaloneDir, StandalonePipe],
+            exports: [StandaloneDir, StandalonePipe],
+          })
+          export class Module {}
+        `);
+        env.driveMain();
+
+        const jsCode = env.getContents('test.js');
+        expect(jsCode).toContain('i0.ɵɵdefineInjector({});');
+      });
+    });
   });
 });
