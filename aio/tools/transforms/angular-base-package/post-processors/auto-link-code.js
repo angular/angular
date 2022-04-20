@@ -126,7 +126,8 @@ module.exports = function autoLinkCode(getDocFromAlias) {
 
     var doc = docs[0];
 
-    const isInvalidDoc = doc.docType === 'member' && !keyword.includes('.');
+    const isInvalidDoc =
+        doc.internal || doc.privateExport || (doc.docType === 'member' && !keyword.includes('.'));
     if (isInvalidDoc) {
       return false;
     }
