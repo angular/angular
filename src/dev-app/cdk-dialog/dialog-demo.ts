@@ -7,7 +7,7 @@
  */
 
 import {Component, Inject, TemplateRef, ViewChild, ViewEncapsulation} from '@angular/core';
-import {DIALOG_DATA, Dialog, DialogConfig, DialogRef} from '@angular/cdk-experimental/dialog';
+import {DIALOG_DATA, Dialog, DialogConfig, DialogRef} from '@angular/cdk/dialog';
 
 const defaultDialogConfig = new DialogConfig();
 

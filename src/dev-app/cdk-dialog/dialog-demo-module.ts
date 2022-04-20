@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DialogModule} from '@angular/cdk-experimental/dialog';
+import {DialogModule} from '@angular/cdk/dialog';
 import {NgModule} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {RouterModule} from '@angular/router';

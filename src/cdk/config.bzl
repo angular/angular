@@ -6,6 +6,7 @@ CDK_ENTRYPOINTS = [
     "clipboard",
     "coercion",
     "collections",
+    "dialog",
     "drag-drop",
     "keycodes",
     "layout",

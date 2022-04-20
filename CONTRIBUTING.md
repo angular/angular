@@ -31,7 +31,7 @@ If you would like to chat about the question in real-time, you can reach out via
 
 ## <a name="issue"></a> Found an Issue?
 If you find a bug in the source code or a mistake in the documentation, you can help us by
-[submitting an issue](#submit-issue) to our [GitHub Repository][github]. Including an issue 
+[submitting an issue](#submit-issue) to our [GitHub Repository][github]. Including an issue
 reproduction (via CodePen, JsBin, Plunkr, etc.) is the absolute best way to help the team quickly
 diagnose the problem. Screenshots are also helpful.
 
@@ -40,7 +40,7 @@ You can help the team even more and [submit a Pull Request](#submit-pr) with a f
 ## <a name="feature"></a> Want a Feature?
 You can *request* a new feature by [submitting an issue](#submit-issue) to our [GitHub
 Repository][github]. If you would like to *implement* a new feature, please submit an issue with
-a proposal for your work first, to be sure that we can use it. 
+a proposal for your work first, to be sure that we can use it.
 Please consider what kind of change it is:
 
 * For a **Major Feature**, first open an issue and outline your proposal so that it can be
@@ -194,7 +194,7 @@ Fixes a bug in the Angular Material `button` component where buttons
 cannot be disabled through an binding. This is because the `disabled`
 input did not set the `.mat-button-disabled` class on the host element.
 
-Fixes #1234 
+Fixes #1234
 ```
 
 ### Revert
@@ -221,7 +221,7 @@ The commit message should specify which package is affected by the change. For e
 
 ### Scope
 The scope specifies place of the commit change. For example
-`material/datepicker`, `cdk-experimental/dialog`, etc.
+`material/datepicker`, `cdk/dialog`, etc.
 See full list [here][commit-message-scopes].
 
 ### Subject

@@ -73,6 +73,7 @@
 /src/cdk/clipboard/**                              @andrewseguin @xkxx
 /src/cdk/coercion/**                               @andrewseguin
 /src/cdk/collections/**                            @crisbeto @andrewseguin
+/src/cdk/dialog/**                                 @jelbourn @crisbeto
 /src/cdk/drag-drop/**                              @crisbeto
 /src/cdk/keycodes/**                               @andrewseguin
 /src/cdk/layout/**                                 @andrewseguin
@@ -131,7 +132,6 @@
 /src/cdk-experimental/*                            @andrewseguin
 /src/cdk-experimental/column-resize/**             @kseamon @andrewseguin
 /src/cdk-experimental/combobox/**                  @jelbourn
-/src/cdk-experimental/dialog/**                    @jelbourn @crisbeto
 /src/cdk-experimental/menu/**                      @jelbourn
 /src/cdk-experimental/popover-edit/**              @kseamon @andrewseguin
 /src/cdk-experimental/scrolling/**                 @mmalerba

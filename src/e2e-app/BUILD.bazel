@@ -34,8 +34,8 @@ ng_module(
         exclude = ["index.html"],
     ),
     deps = [
-        "//src/cdk-experimental/dialog",
         "//src/cdk-experimental/scrolling",
+        "//src/cdk/dialog",
         "//src/cdk/drag-drop",
         "//src/cdk/overlay",
         "//src/cdk/scrolling",

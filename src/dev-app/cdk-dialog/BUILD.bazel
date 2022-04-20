@@ -10,7 +10,7 @@ ng_module(
         ":dialog_demo_scss",
     ],
     deps = [
-        "//src/cdk-experimental/dialog",
+        "//src/cdk/dialog",
         "@npm//@angular/forms",
         "@npm//@angular/router",
     ],
