@@ -221,6 +221,20 @@ describe('autoLinkCode post-processor', () => {
     expect(doc.renderedContent).toEqual('<code class="no-auto-link">MyClass</code>');
   });
 
+  it('should ignore symbols marked as internal', () => {
+    aliasMap.addDoc({docType: 'class', id: 'MyClass', aliases: ['MyClass'], internal: true});
+    const doc = {docType: 'test-doc', renderedContent: '<code>MyClass</code>'};
+    processor.$process([doc]);
+    expect(doc.renderedContent).toEqual('<code>MyClass</code>');
+  });
+
+  it('should ignore symbols marked as privately exported (that start with `ɵ`)', () => {
+    aliasMap.addDoc({docType: 'class', id: 'MyClass', aliases: ['MyClass'], privateExport: true});
+    const doc = {docType: 'test-doc', renderedContent: '<code>MyClass</code>'};
+    processor.$process([doc]);
+    expect(doc.renderedContent).toEqual('<code>MyClass</code>');
+  });
+
   it('should ignore code blocks that are marked with an "ignored" language', () => {
     aliasMap.addDoc({docType: 'class', id: 'MyClass', aliases: ['MyClass'], path: 'a/b/myclass'});
     const doc = {docType: 'test-doc', renderedContent: '<code language="bash">MyClass</code>'};
