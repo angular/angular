@@ -1,3 +1,65 @@
+<a name="14.0.0-next.14"></a>
+# 14.0.0-next.14 (2022-04-20)
+## Breaking Changes
+### http
+- Queries including + will now actually query for + instead of space.
+  Most workarounds involving custom codecs will be unaffected.
+  Possible server-side workarounds will need to be undone.
+### router
+- The type of `component` on `ActivatedRoute` and `ActivatedRouteSnapshot`
+  includes `string`. In reality, this is not the case. The component
+  cannot be anything other than a component class.
+
+- Lazy loaded configs are now also validated once loaded like the
+  initial set of routes are. Lazy loaded modules which have invalid Route
+  configs will now error. Note that this is only done in dev mode so
+  there is no production impact of this change.
+## Deprecations
+### router
+- The `resolver` argument of the `RouterOutletContract.activateWith` function and the `resolver` field of the `OutletContext` class are deprecated. Passing component factory resolvers are no longer needed. The `ComponentFactoryResolver`-related symbols were deprecated in `@angular/core` package since v13.
+### bazel
+| Commit | Type | Description |
+| -- | -- | -- |
+| [f8a1ea0c11](https://github.com/angular/angular/commit/f8a1ea0c117aa97f45b7696d2b0c9b5679e09b9f) | fix | do not error if files part of `srcs` are outside of package ([#45622](https://github.com/angular/angular/pull/45622)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [046dad1a8d](https://github.com/angular/angular/commit/046dad1a8d878ea537a6e2ef5f5ef24a85a2cf02) | fix | fix issue with incremental tracking of APIs for pipes ([#45672](https://github.com/angular/angular/pull/45672)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [174ce7dd13](https://github.com/angular/angular/commit/174ce7dd13f6d8f941d3aa0b843559614cb68b0c) | feat | add `ApplicationRef.destroy` method ([#45624](https://github.com/angular/angular/pull/45624)) |
+| [b568a5e708](https://github.com/angular/angular/commit/b568a5e708579f5035f40c7218fbba39ad6b3065) | feat | implement `importProvidersFrom` function ([#45626](https://github.com/angular/angular/pull/45626)) |
+| [d5a6cd1111](https://github.com/angular/angular/commit/d5a6cd11110c78762a8e6115a718f5851508dbf2) | feat | implement EnvironmentInjector with adapter to NgModuleRef ([#45626](https://github.com/angular/angular/pull/45626)) |
+| [57f8ab2ed8](https://github.com/angular/angular/commit/57f8ab2ed81f9fa12ff84fabcd9771ab877809c5) | fix | better error message when directive extends a component ([#45658](https://github.com/angular/angular/pull/45658)) |
+| [c6e0e3f6d3](https://github.com/angular/angular/commit/c6e0e3f6d31a66dc3034da4dfddbffed4bec37d2) | fix | improve multiple components match error ([#45645](https://github.com/angular/angular/pull/45645)) |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e0a2248b32](https://github.com/angular/angular/commit/e0a2248b3233b5d384f33859ef6207613cad909d) | feat | Add a FormRecord type. ([#45607](https://github.com/angular/angular/pull/45607)) |
+| [ff3f5a8d12](https://github.com/angular/angular/commit/ff3f5a8d12e3243620e311b690a050e26493e539) | fix | Fix a typing bug in FormBuilder. ([#45684](https://github.com/angular/angular/pull/45684)) |
+### http
+| Commit | Type | Description |
+| -- | -- | -- |
+| [76a9a24cdc](https://github.com/angular/angular/commit/76a9a24cdcb87e36868e2e29d1831af2dec3a818) | fix | encode + signs in query params as %2B (angular[#11058](https://github.com/angular/angular/pull/11058)) ([#45111](https://github.com/angular/angular/pull/45111)) |
+### language-service
+| Commit | Type | Description |
+| -- | -- | -- |
+| [f57e46c538](https://github.com/angular/angular/commit/f57e46c53881c46e712a64e23bffb1893dfe54fc) | fix | two-way binding completion should not remove the trailing quote ([#45582](https://github.com/angular/angular/pull/45582)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [f4fd1a8262](https://github.com/angular/angular/commit/f4fd1a82620b5b3899c5e8c89fa06b084ee5792e) | feat | Add `EnvironmentInjector` to `RouterOutlet.activateWith` ([#45597](https://github.com/angular/angular/pull/45597)) |
+| [4e0957a4e1](https://github.com/angular/angular/commit/4e0957a4e10d1ae188faa843043a2314c9873c52) | feat | Add ability to specify providers on a Route ([#45673](https://github.com/angular/angular/pull/45673)) |
+| [989e840cce](https://github.com/angular/angular/commit/989e840cce7ebe94311ae898786e09b1b41ce7f6) | fix | Remove unused string type for ActivatedRoute.component ([#45625](https://github.com/angular/angular/pull/45625)) |
+| [96fd29c6d2](https://github.com/angular/angular/commit/96fd29c6d2d2abc5afee4d21a3e964a79aa39844) | fix | validate lazy loaded configs ([#45526](https://github.com/angular/angular/pull/45526)) |
+| [f13295f3a3](https://github.com/angular/angular/commit/f13295f3a3a1d622d15cf8339360d53feba824b5) | perf | cancel the navigation instantly if at least one resolver doesn't emit any value ([#45621](https://github.com/angular/angular/pull/45621)) |
+| [1d2f5c1101](https://github.com/angular/angular/commit/1d2f5c1101ccd182f5b528de52583a1b98dd6789) | refactor | deprecate no longer needed resolver fields ([#45597](https://github.com/angular/angular/pull/45597)) |
+## Special Thanks
+Adrian Kunz, Alex Rickabaugh, Andrew Kushnir, Andrew Scott, Dmitrij Kuba, Doug Parker, Dylan Hunn, George Kalpakas, Ilya Marchik, Jeremy Elbourn, Kristiyan Kostadinov, Louis Gombert, Mangalraj, Marko Kaznovac, Paul Gschwendtner, Saurabh Kamble, dario-piotrowicz and ivanwonder
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="13.3.4"></a>
 # 13.3.4 (2022-04-20)
 ### core
