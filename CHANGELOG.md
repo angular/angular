@@ -1,3 +1,19 @@
+<a name="13.3.4"></a>
+# 13.3.4 (2022-04-20)
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [9317f513d5](https://github.com/angular/angular/commit/9317f513d573916c43e1a43b361d1929765f24c7) | fix | better error message when directive extends a component ([#45658](https://github.com/angular/angular/pull/45658)) |
+| [4766817f02](https://github.com/angular/angular/commit/4766817f0214619e7c3d74448897e0e0469051bb) | fix | improve multiple components match error ([#45645](https://github.com/angular/angular/pull/45645)) |
+### language-service
+| Commit | Type | Description |
+| -- | -- | -- |
+| [d68333e508](https://github.com/angular/angular/commit/d68333e508272e57cc62165e847e068a503c9747) | fix | two-way binding completion should not remove the trailing quote ([#45582](https://github.com/angular/angular/pull/45582)) |
+## Special Thanks
+Andrew Kushnir, Andrew Scott, George Kalpakas, Ilya Marchik, Jeremy Elbourn, Kristiyan Kostadinov, Louis Gombert, Mangalraj, Marko Kaznovac, Paul Gschwendtner, Saurabh Kamble, dario-piotrowicz and ivanwonder
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.0.0-next.13"></a>
 # 14.0.0-next.13 (2022-04-13)
 ## Breaking Changes
