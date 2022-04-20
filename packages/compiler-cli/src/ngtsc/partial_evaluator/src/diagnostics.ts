@@ -11,8 +11,10 @@ import ts from 'typescript';
 import {makeRelatedInformation} from '../../diagnostics';
 import {Reference} from '../../imports';
 import {FunctionDefinition} from '../../reflection';
+
 import {DynamicValue, DynamicValueVisitor} from './dynamic';
 import {EnumValue, KnownFn, ResolvedModule, ResolvedValue} from './result';
+import {SyntheticValue} from './synthetic';
 
 /**
  * Derives a type representation from a resolved value to be reported in a diagnostic.
@@ -88,6 +90,11 @@ class TraceDynamicValueVisitor implements DynamicValueVisitor<ts.DiagnosticRelat
       trace.unshift(info);
     }
     return trace;
+  }
+
+  visitSyntheticInput(value: DynamicValue<SyntheticValue<unknown>>):
+      ts.DiagnosticRelatedInformation[] {
+    return [makeRelatedInformation(value.node, 'Unable to evaluate this expression further.')];
   }
 
   visitDynamicString(value: DynamicValue): ts.DiagnosticRelatedInformation[] {
