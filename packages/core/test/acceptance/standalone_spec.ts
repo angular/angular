@@ -399,4 +399,51 @@ describe('standalone components, directives and pipes', () => {
     fixture.detectChanges();
     expect(fixture.nativeElement.textContent).toBe('((A)B)C');
   });
+
+  it('should collect ambient providers from exported NgModule', () => {
+    class Service {
+      value = 'service';
+    }
+
+    @NgModule({providers: [Service]})
+    class ModuleWithAService {
+    }
+
+    @NgModule({exports: [ModuleWithAService]})
+    class ExportingModule {
+    }
+
+    @Component({
+      selector: 'standalone',
+      standalone: true,
+      imports: [ExportingModule],
+      template: `({{service.value}})`
+    })
+    class TestComponent {
+      constructor(readonly service: Service) {}
+    }
+
+    const fixture = TestBed.createComponent(TestComponent);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toBe('(service)');
+  });
+
+  it('should support forwardRef imports', () => {
+    @Component({
+      selector: 'test',
+      standalone: true,
+      imports: [forwardRef(() => StandaloneComponent)],
+      template: `(<other-standalone></other-standalone>)`
+    })
+    class TestComponent {
+    }
+
+    @Component({selector: 'other-standalone', standalone: true, template: `standalone component`})
+    class StandaloneComponent {
+    }
+
+    const fixture = TestBed.createComponent(TestComponent);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toBe('(standalone component)');
+  });
 });
