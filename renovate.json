@@ -19,7 +19,7 @@
     "every weekend"
   ],
   "baseBranches": [
-    "master"
+    "main"
   ],
   "ignoreDeps": [
     "@babel/core",
