@@ -1,4 +1,4 @@
-<div class="example-container mat-elevation-z8">
+<section class="example-container mat-elevation-z8" tabindex="0">
   <table mat-table [dataSource]="transactions">
     <!-- Item Column -->
     <ng-container matColumnDef="item">
@@ -18,4 +18,4 @@
     <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
     <tr mat-footer-row *matFooterRowDef="displayedColumns; sticky: true"></tr>
   </table>
-</div>
+</section>

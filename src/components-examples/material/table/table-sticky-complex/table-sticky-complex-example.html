@@ -35,7 +35,7 @@
   </mat-button-toggle-group>
 </div>
 
-<div class="example-container mat-elevation-z8">
+<section class="example-container mat-elevation-z8" tabindex="0">
   <table mat-table [dataSource]="dataSource" *ngFor="let table of tables">
     <ng-container matColumnDef="position" [sticky]="isSticky(stickyColumns, 'position')">
       <th mat-header-cell *matHeaderCellDef> Position </th>
@@ -75,4 +75,4 @@
     <tr mat-footer-row *matFooterRowDef="displayedColumns; sticky: isSticky(stickyFooters, 'footer-1')"></tr>
     <tr mat-footer-row *matFooterRowDef="displayedColumns; sticky: isSticky(stickyFooters, 'footer-2')"></tr>
   </table>
-</div>
+</section>
