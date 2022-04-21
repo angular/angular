@@ -34,10 +34,23 @@ sass_library(
     deps = [":theming_scss_lib"],
 )
 
+# Generate the material-experimental `package.json` by adding all MDC dependencies
+# from the project root to the `package-base.json` file. This is done to avoid
+# duplication and make the update process of MDC dependencies more obvious.
+# Note that we need to explicitly reference all individual `@material/` dependencies as
+# our code imports from the individual dependencies (and not from the kitchen-sink package)
+genrule(
+    name = "package_json",
+    srcs = ["package-base.json"],
+    outs = ["package.json"],
+    cmd = "$(execpath //tools/mdc-deps:add-to-package-json) $< > $@",
+    exec_tools = ["//tools/mdc-deps:add-to-package-json"],
+)
+
 ng_package(
     name = "npm_package",
     srcs = [
-        "package.json",
+        ":package_json",
         ":sass_lib",
         ":theming_scss_lib",
     ],

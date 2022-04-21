@@ -1,0 +1,25 @@
+load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary")
+load("//tools:defaults.bzl", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_library(
+    name = "lib",
+    srcs = glob(["**/*.ts"]),
+    # TODO(ESM): remove this once the Bazel NodeJS rules can handle ESM with `nodejs_binary`.
+    devmode_module = "commonjs",
+    deps = [
+        "@npm//@bazel/runfiles",
+        "@npm//@types/node",
+    ],
+)
+
+nodejs_binary(
+    name = "add-to-package-json",
+    data = [
+        ":lib",
+        "//:package.json",
+    ],
+    entry_point = ":add-to-package-json.ts",
+    templated_args = ["--nobazel_run_linker"],
+)

@@ -1,0 +1,47 @@
+{
+  "name": "@angular/material-experimental",
+  "version": "0.0.0-PLACEHOLDER",
+  "description": "Experimental components for Angular Material",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/angular/components.git"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/angular/components/issues"
+  },
+  "homepage": "https://github.com/angular/components#readme",
+  "exports": {
+    ".": {
+      "sass": "./_index.scss"
+    },
+    "./mdc-theming/prebuilt/indigo-pink.css": {
+      "style": "./mdc-theming/prebuilt/indigo-pink.css"
+    },
+    "./mdc-theming/prebuilt/deeppurple-amber.css": {
+      "style": "./mdc-theming/prebuilt/deeppurple-amber.css"
+    },
+    "./mdc-theming/prebuilt/pink-bluegrey.css": {
+      "style": "./mdc-theming/prebuilt/pink-bluegrey.css"
+    },
+    "./mdc-theming/prebuilt/purple-green.css": {
+      "style": "./mdc-theming/prebuilt/purple-green.css"
+    },
+    "./mdc-theming/prebuilt/*": {
+      "style": "./mdc-theming/prebuilt/*.css"
+    }
+  },
+  "peerDependencies": {
+    "@angular/animations": "0.0.0-NG",
+    "@angular/cdk": "0.0.0-PLACEHOLDER",
+    "@angular/core": "0.0.0-NG",
+    "@angular/common": "0.0.0-NG",
+    "@angular/forms": "0.0.0-NG",
+    "@angular/platform-browser": "0.0.0-NG",
+    "@angular/material": "0.0.0-PLACEHOLDER"
+  },
+  "dependencies": {
+    "tslib": "0.0.0-TSLIB"
+  },
+  "sideEffects": false
+}
