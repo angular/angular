@@ -28,6 +28,7 @@
       // other libraries
       'rxjs': 'npm:rxjs/dist/cjs',
       'rxjs/operators': 'npm:rxjs/dist/cjs/operators',
+      'tslib': 'npm:tslib/tslib.js',
       'angular-in-memory-web-api': 'npm:angular-in-memory-web-api/bundles/in-memory-web-api.umd.js',
 
       'plugin-babel': 'npm:systemjs-plugin-babel/plugin-babel.js',
