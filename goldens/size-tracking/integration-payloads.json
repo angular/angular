@@ -52,6 +52,13 @@
       "polyfills": 33814
     }
   },
+  "standalone-bootstrap": {
+    "uncompressed": {
+      "runtime": 1090,
+      "main": 87940,
+      "polyfills": 33945
+    }
+  },
   "hello_world__closure": {
     "uncompressed": {
       "bundle": "TODO(i): temporarily increase the payload size limit from 105779 - this is due to a closure issue related to ESM reexports that still needs to be investigated",
