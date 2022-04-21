@@ -14,7 +14,6 @@ import {
   TemplatePortal,
 } from '@angular/cdk/portal';
 import {
-  AfterViewChecked,
   ChangeDetectionStrategy,
   Component,
   ComponentRef,
@@ -65,7 +64,7 @@ const MDC_SNACKBAR_LABEL_CLASS = 'mdc-snackbar__label';
 })
 export class MatSnackBarContainer
   extends BasePortalOutlet
-  implements _SnackBarContainer, AfterViewChecked, OnDestroy
+  implements _SnackBarContainer, OnDestroy
 {
   /** The number of milliseconds to wait before announcing the snack bar's content. */
   private readonly _announceDelay: number = 150;
@@ -157,17 +156,6 @@ export class MatSnackBarContainer
     this._mdcFoundation.setTimeoutMs(-1);
   }
 
-  ngAfterViewChecked() {
-    // Check to see if the attached component or template uses the MDC template structure,
-    // specifically the MDC label. If not, the container should apply the MDC label class to this
-    // component's label container, which will apply MDC's label styles to the attached view.
-    if (!this._label.nativeElement.querySelector(`.${MDC_SNACKBAR_LABEL_CLASS}`)) {
-      this._label.nativeElement.classList.add(MDC_SNACKBAR_LABEL_CLASS);
-    } else {
-      this._label.nativeElement.classList.remove(MDC_SNACKBAR_LABEL_CLASS);
-    }
-  }
-
   /** Makes sure the exit callbacks have been invoked when the element is destroyed. */
   ngOnDestroy() {
     this._mdcFoundation.close();
@@ -202,14 +190,18 @@ export class MatSnackBarContainer
   attachComponentPortal<T>(portal: ComponentPortal<T>): ComponentRef<T> {
     this._assertNotAttached();
     this._applySnackBarClasses();
-    return this._portalOutlet.attachComponentPortal(portal);
+    const componentRef = this._portalOutlet.attachComponentPortal(portal);
+    this._applyLabelClass();
+    return componentRef;
   }
 
   /** Attach a template portal as content to this snack bar container. */
   attachTemplatePortal<C>(portal: TemplatePortal<C>): EmbeddedViewRef<C> {
     this._assertNotAttached();
     this._applySnackBarClasses();
-    return this._portalOutlet.attachTemplatePortal(portal);
+    const viewRef = this._portalOutlet.attachTemplatePortal(portal);
+    this._applyLabelClass();
+    return viewRef;
   }
 
   private _setClass(cssClass: string, active: boolean) {
@@ -267,6 +259,20 @@ export class MatSnackBarContainer
           }
         }, this._announceDelay);
       });
+    }
+  }
+
+  /** Applies the correct CSS class to the label based on its content. */
+  private _applyLabelClass() {
+    // Check to see if the attached component or template uses the MDC template structure,
+    // specifically the MDC label. If not, the container should apply the MDC label class to this
+    // component's label container, which will apply MDC's label styles to the attached view.
+    const label = this._label.nativeElement;
+
+    if (!label.querySelector(`.${MDC_SNACKBAR_LABEL_CLASS}`)) {
+      label.classList.add(MDC_SNACKBAR_LABEL_CLASS);
+    } else {
+      label.classList.remove(MDC_SNACKBAR_LABEL_CLASS);
     }
   }
 }
