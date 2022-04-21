@@ -15,10 +15,12 @@ import {ApplicationInitStatus} from './application_init';
 import {APP_BOOTSTRAP_LISTENER, PLATFORM_INITIALIZER} from './application_tokens';
 import {getCompilerFacade, JitCompilerUsage} from './compiler/compiler_facade';
 import {Console} from './console';
+import {importProvidersFrom} from './di';
 import {Injectable} from './di/injectable';
 import {InjectionToken} from './di/injection_token';
 import {Injector} from './di/injector';
-import {StaticProvider} from './di/interface/provider';
+import {Provider, StaticProvider} from './di/interface/provider';
+import {EnvironmentInjector} from './di/r3_injector';
 import {INJECTOR_SCOPE} from './di/scope';
 import {ErrorHandler} from './error_handler';
 import {formatRuntimeError, RuntimeError, RuntimeErrorCode} from './errors';
@@ -33,9 +35,13 @@ import {InternalViewRef, ViewRef} from './linker/view_ref';
 import {isComponentResourceResolutionQueueEmpty, resolveComponentResources} from './metadata/resource_loading';
 import {assertNgModuleType} from './render3/assert';
 import {ComponentFactory as R3ComponentFactory} from './render3/component_ref';
+import {getComponentDef} from './render3/definition';
+import {assertStandaloneComponentType} from './render3/errors';
+import {StandaloneService} from './render3/features/standalone_feature';
 import {setLocaleId} from './render3/i18n/i18n_locale_id';
 import {setJitOptions} from './render3/jit/jit_options';
-import {NgModuleFactory as R3NgModuleFactory} from './render3/ng_module_ref';
+import {isStandalone} from './render3/jit/module';
+import {createEnvironmentInjector, NgModuleFactory as R3NgModuleFactory} from './render3/ng_module_ref';
 import {publishDefaultGlobalUtils as _publishDefaultGlobalUtils} from './render3/util/global_utils';
 import {Testability, TestabilityRegistry} from './testability/testability';
 import {isPromise} from './util/lang';
@@ -143,9 +149,105 @@ export function createPlatform(injector: Injector): PlatformRef {
   publishDefaultGlobalUtils();
   _platformInjector = injector;
   const platform = injector.get(PlatformRef);
-  const inits = injector.get(PLATFORM_INITIALIZER, null);
-  if (inits) inits.forEach(initFn => initFn());
+  runPlatformInitializers(injector);
   return platform;
+}
+
+/**
+ * The goal of this function is to bootstrap a platform injector,
+ * but avoid referencing `PlatformRef` class.
+ * This function is needed for bootstrapping a Standalone Component.
+ */
+export function createOrReusePlatformInjector(providers: StaticProvider[] = []): Injector {
+  // If a platform injector already exists, it means that the platform
+  // is already bootstrapped and no additional actions are required.
+  if (_platformInjector) return _platformInjector;
+
+  // Otherwise, setup a new platform injector and run platform initializers.
+  const injector = createPlatformInjector(providers);
+  _platformInjector = injector;
+  publishDefaultGlobalUtils();
+  runPlatformInitializers(injector);
+  return injector;
+}
+
+export function runPlatformInitializers(injector: Injector): void {
+  const inits = injector.get(PLATFORM_INITIALIZER, null);
+  if (inits) {
+    inits.forEach((init: any) => init());
+  }
+}
+
+/**
+ * Internal bootstrap application API that implements the core bootstrap logic.
+ *
+ * Platforms (such as `platform-browser`) may require different set of application and platform
+ * providers for an application to function correctly. As a result, platforms may use this function
+ * internally and supply the necessary providers during the bootstrap, while exposing
+ * platform-specific APIs as a part of their public API.
+ *
+ * @returns A promise that returns an `ApplicationRef` instance once resolved.
+ */
+export function bootstrapApplication(config: {
+  rootComponent: Type<unknown>,
+  appProviders?: Provider[],
+  platformProviders?: Provider[],
+}): Promise<ApplicationRef> {
+  const {rootComponent, appProviders, platformProviders} = config;
+  NG_DEV_MODE && assertStandaloneComponentType(rootComponent);
+
+  const platformInjector = createOrReusePlatformInjector(platformProviders as StaticProvider[]);
+
+  const ngZone = new NgZone(getNgZoneOptions());
+
+  return ngZone.run(() => {
+    // Create root application injector based on a set of providers configured at the platform
+    // bootstrap level as well as providers passed to the bootstrap call by a user.
+    const allAppProviders = [
+      {provide: NgZone, useValue: ngZone},  //
+      ...(appProviders || []),              //
+      // Collect providers from the root standalone component
+      // and all of its dependencies (NgModule, other standalone Components)
+      // and make those providers available in the DI tree.
+      ...importProvidersFrom(rootComponent),
+    ];
+    const appInjector = createEnvironmentInjector(
+        allAppProviders, platformInjector as EnvironmentInjector, 'Environment Injector');
+
+    // Instruct `StandaloneService` to use the `appInjector` as an injector for this
+    // root component, so that there is no extra injector instance created.
+    const componentDef = getComponentDef(rootComponent)!;
+    appInjector.get(StandaloneService).setInjector(componentDef, appInjector);
+
+    const exceptionHandler: ErrorHandler|null = appInjector.get(ErrorHandler, null);
+    if (NG_DEV_MODE && !exceptionHandler) {
+      throw new RuntimeError(
+          RuntimeErrorCode.ERROR_HANDLER_NOT_FOUND,
+          'No `ErrorHandler` found in the Dependency Injection tree.');
+    }
+
+    let onErrorSubscription: Subscription;
+    ngZone.runOutsideAngular(() => {
+      onErrorSubscription = ngZone.onError.subscribe({
+        next: (error: any) => {
+          exceptionHandler!.handleError(error);
+        }
+      });
+    });
+    return _callAndReportToErrorHandler(exceptionHandler!, ngZone, () => {
+      const initStatus = appInjector.get(ApplicationInitStatus);
+      initStatus.runInitializers();
+      return initStatus.donePromise.then(() => {
+        const localeId = appInjector.get(LOCALE_ID, DEFAULT_LOCALE_ID);
+        setLocaleId(localeId || DEFAULT_LOCALE_ID);
+
+        const appRef = appInjector.get(ApplicationRef);
+        appRef.onDestroy(() => onErrorSubscription.unsubscribe());
+        appRef.bootstrap(rootComponent);
+        return appRef;
+      });
+    });
+  });
 }
 
 /**
@@ -242,8 +344,6 @@ export function getPlatform(): PlatformRef|null {
 
 /**
  * Provides additional options to the bootstraping process.
- *
- *
  */
 export interface BootstrapOptions {
   /**
@@ -326,10 +426,7 @@ export class PlatformRef {
     // as instantiating the module creates some providers eagerly.
     // So we create a mini parent injector that just contains the new NgZone and
     // pass that as parent to the NgModuleFactory.
-    const ngZoneOption = options ? options.ngZone : undefined;
-    const ngZoneEventCoalescing = (options && options.ngZoneEventCoalescing) || false;
-    const ngZoneRunCoalescing = (options && options.ngZoneRunCoalescing) || false;
-    const ngZone = getNgZone(ngZoneOption, {ngZoneEventCoalescing, ngZoneRunCoalescing});
+    const ngZone = getNgZone(options?.ngZone, getNgZoneOptions(options));
     const providers: StaticProvider[] = [{provide: NgZone, useValue: ngZone}];
     // Note: Create ngZoneInjector within ngZone.run so that all of the instantiated services are
     // created within the Angular zone
@@ -456,19 +553,31 @@ export class PlatformRef {
   }
 }
 
-function getNgZone(
-    ngZoneOption: NgZone|'zone.js'|'noop'|undefined,
-    extra?: {ngZoneEventCoalescing: boolean, ngZoneRunCoalescing: boolean}): NgZone {
+// Set of options recognized by the NgZone.
+interface NgZoneOptions {
+  enableLongStackTrace: boolean;
+  shouldCoalesceEventChangeDetection: boolean;
+  shouldCoalesceRunChangeDetection: boolean;
+}
+
+// Transforms a set of `BootstrapOptions` (supported by the NgModule-based bootstrap APIs) ->
+// `NgZoneOptions` that are recognized by the NgZone constructor. Passing no options will result in
+// a set of default options returned.
+function getNgZoneOptions(options?: BootstrapOptions): NgZoneOptions {
+  return {
+    enableLongStackTrace: typeof ngDevMode === 'undefined' ? false : !!ngDevMode,
+    shouldCoalesceEventChangeDetection: !!(options && options.ngZoneEventCoalescing) || false,
+    shouldCoalesceRunChangeDetection: !!(options && options.ngZoneRunCoalescing) || false,
+  };
+}
+
+function getNgZone(ngZoneToUse: NgZone|'zone.js'|'noop'|undefined, options: NgZoneOptions): NgZone {
   let ngZone: NgZone;
 
-  if (ngZoneOption === 'noop') {
+  if (ngZoneToUse === 'noop') {
     ngZone = new NoopNgZone();
   } else {
-    ngZone = (ngZoneOption === 'zone.js' ? undefined : ngZoneOption) || new NgZone({
-               enableLongStackTrace: typeof ngDevMode === 'undefined' ? false : !!ngDevMode,
-               shouldCoalesceEventChangeDetection: !!extra?.ngZoneEventCoalescing,
-               shouldCoalesceRunChangeDetection: !!extra?.ngZoneRunCoalescing
-             });
+    ngZone = (ngZoneToUse === 'zone.js' ? undefined : ngZoneToUse) || new NgZone(options);
   }
   return ngZone;
 }
@@ -815,15 +924,20 @@ export class ApplicationRef {
   bootstrap<C>(componentOrFactory: ComponentFactory<C>|Type<C>, rootSelectorOrNode?: string|any):
       ComponentRef<C> {
     NG_DEV_MODE && this.warnIfDestroyed();
+    const isComponentFactory = componentOrFactory instanceof ComponentFactory;
+
     if (!this._initStatus.done) {
-      const errorMessage = (typeof ngDevMode === 'undefined' || ngDevMode) ?
-          'Cannot bootstrap as there are still asynchronous initializers running. ' +
-              'Bootstrap components in the `ngDoBootstrap` method of the root module.' :
-          '';
-      throw new RuntimeError(RuntimeErrorCode.ASYNC_INITIALIZERS_STILL_RUNNING, errorMessage);
+      const standalone = !isComponentFactory && isStandalone(componentOrFactory);
+      const errorMessage =
+          'Cannot bootstrap as there are still asynchronous initializers running.' +
+          (standalone ? '' :
+                        ' Bootstrap components in the `ngDoBootstrap` method of the root module.');
+      throw new RuntimeError(
+          RuntimeErrorCode.ASYNC_INITIALIZERS_STILL_RUNNING, NG_DEV_MODE && errorMessage);
     }
+
     let componentFactory: ComponentFactory<C>;
-    if (componentOrFactory instanceof ComponentFactory) {
+    if (isComponentFactory) {
       componentFactory = componentOrFactory;
     } else {
       const resolver = this._injector.get(ComponentFactoryResolver);

@@ -813,6 +813,9 @@
     "name": "getDeclarationTNode"
   },
   {
+    "name": "getDirectiveDef"
+  },
+  {
     "name": "getFactoryDef"
   },
   {
