@@ -15,7 +15,7 @@ describe('deploy-to-firebase:', () => {
   // Pre-computed values to avoid unnecessary re-computations.
   const mostRecentMinorBranch = getMostRecentMinorBranch();
   const latestCommits = {
-    master: getLatestCommit('master'),
+    main: getLatestCommit('main'),
     '2.1.x': getLatestCommit('2.1.x'),
     '2.4.x': getLatestCommit('2.4.x'),
     '4.3.x': getLatestCommit('4.3.x'),
@@ -32,7 +32,7 @@ describe('deploy-to-firebase:', () => {
     return JSON.parse(JSON.stringify(deploymentsInfo, jsonFunctionReplacer));
   };
 
-  it('master - skip deploy - not angular', () => {
+  it('main - skip deploy - not angular', () => {
     expect(getDeploymentsInfoFor({
       CI_REPO_OWNER: 'angular',
       CI_REPO_NAME: 'notangular',
@@ -44,7 +44,7 @@ describe('deploy-to-firebase:', () => {
     ]);
   });
 
-  it('master - skip deploy - angular fork', () => {
+  it('main - skip deploy - angular fork', () => {
     expect(getDeploymentsInfoFor({
       CI_REPO_OWNER: 'notangular',
       CI_REPO_NAME: 'angular',
@@ -56,7 +56,7 @@ describe('deploy-to-firebase:', () => {
     ]);
   });
 
-  it('master - skip deploy - pull request', () => {
+  it('main - skip deploy - pull request', () => {
     expect(getDeploymentsInfoFor({
       CI_REPO_OWNER: 'angular',
       CI_REPO_NAME: 'angular',
@@ -69,13 +69,13 @@ describe('deploy-to-firebase:', () => {
     ]);
   });
 
-  it('master - deploy success', () => {
+  it('main - deploy success', () => {
     expect(getDeploymentsInfoFor({
       CI_REPO_OWNER: 'angular',
       CI_REPO_NAME: 'angular',
       CI_PULL_REQUEST: 'false',
-      CI_BRANCH: 'master',
-      CI_COMMIT: latestCommits.master,
+      CI_BRANCH: 'main',
+      CI_COMMIT: latestCommits.main,
     })).toEqual([
       {
         deployEnv: 'next',
@@ -88,19 +88,19 @@ describe('deploy-to-firebase:', () => {
     ]);
   });
 
-  it('master - skip deploy - commit not HEAD', () => {
+  it('main - skip deploy - commit not HEAD', () => {
     expect(getDeploymentsInfoFor({
       CI_REPO_OWNER: 'angular',
       CI_REPO_NAME: 'angular',
       CI_PULL_REQUEST: 'false',
-      CI_BRANCH: 'master',
+      CI_BRANCH: 'main',
       CI_COMMIT: 'DUMMY_TEST_COMMIT',
     })).toEqual([
       {
         skipped: true,
         reason:
             'Skipping deploy because DUMMY_TEST_COMMIT is not the latest commit ' +
-            `(${latestCommits.master}).`,
+            `(${latestCommits.main}).`,
       },
     ]);
   });
@@ -391,15 +391,15 @@ describe('deploy-to-firebase:', () => {
     // NOTE:
     // This test executes a new instance of the `deploy-to-firebase.js` script on a separate process
     // and thus does not share the `getRemoteRefs()` cache. To improve stability, we retrieve the
-    // latest commit from master ignoring any cached entries.
-    const latestCommitOnMaster = getLatestCommit('master', {retrieveFromCache: false});
+    // latest commit from main ignoring any cached entries.
+    const latestCommitOnMain = getLatestCommit('main', {retrieveFromCache: false});
     const cmd = `"${process.execPath}" "${__dirname}/deploy-to-firebase" --dry-run`;
     const env = {
       CI_REPO_OWNER: 'angular',
       CI_REPO_NAME: 'angular',
       CI_PULL_REQUEST: 'false',
-      CI_BRANCH: 'master',
-      CI_COMMIT: latestCommitOnMaster,
+      CI_BRANCH: 'main',
+      CI_COMMIT: latestCommitOnMain,
     };
     const result = execSync(cmd, {encoding: 'utf8', env}).trim();
     expect(result).toBe(
@@ -409,8 +409,8 @@ describe('deploy-to-firebase:', () => {
         '\n' +
         'Deployment 1 of 1\n' +
         '-----------------\n' +
-        'Git branch          : master\n' +
-        `Git commit          : ${latestCommitOnMaster}\n` +
+        'Git branch          : main\n' +
+        `Git commit          : ${latestCommitOnMain}\n` +
         'Build/deploy mode   : next\n' +
         'Firebase project    : angular-io\n' +
         'Firebase site       : next-angular-io-site\n' +
