@@ -10,10 +10,10 @@ export const pullRequest: PullRequestConfig = {
   caretakerNoteLabel: /^(action: merge-assistance)|(PullApprove: disable)/,
   commitMessageFixupLabel: 'commit message fixup',
   requiredBaseCommits: {
-    // PRs that target either `master` or the patch branch, need to be rebased
+    // PRs that target either `main` or the patch branch, need to be rebased
     // on top of the latest commit message validation fix.
     // These SHAs are the commits that update the required license text in the header.
-    'master': '5aeb9a4124922d8ac08eb73b8f322905a32b0b3a',
+    'main': '5aeb9a4124922d8ac08eb73b8f322905a32b0b3a',
     '10.0.x': '27b95ba64a5d99757f4042073fd1860e20e3ed24',
   },
   // `dev-infra` and `docs-infra` are not affecting the public NPM packages. Similarly,

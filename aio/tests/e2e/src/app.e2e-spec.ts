@@ -1,4 +1,5 @@
-import { browser, by, element, ElementFinder } from 'protractor';
+import { ElementFinder, browser, by, element } from 'protractor';
+
 import { SitePage } from './app.po';
 
 describe('site App', () => {
@@ -232,12 +233,12 @@ describe('site App', () => {
       expect(await page.ghLinks.count()).toEqual(1);
       /* eslint-disable max-len */
       expect(await page.ghLinks.get(0).getAttribute('href'))
-        .toMatch(/https:\/\/github\.com\/angular\/angular\/edit\/master\/aio\/content\/tutorial\/toh-pt1\.md\?message=docs%3A%20describe%20your%20change\.\.\./);
+        .toMatch(/https:\/\/github\.com\/angular\/angular\/edit\/main\/aio\/content\/tutorial\/toh-pt1\.md\?message=docs%3A%20describe%20your%20change\.\.\./);
 
       await page.navigateTo('guide/router');
       expect(await page.ghLinks.count()).toEqual(1);
       expect(await page.ghLinks.get(0).getAttribute('href'))
-        .toMatch(/https:\/\/github\.com\/angular\/angular\/edit\/master\/aio\/content\/guide\/router\.md\?message=docs%3A%20describe%20your%20change\.\.\./);
+        .toMatch(/https:\/\/github\.com\/angular\/angular\/edit\/main\/aio\/content\/guide\/router\.md\?message=docs%3A%20describe%20your%20change\.\.\./);
       /* eslint-enable max-len */
     });
 
