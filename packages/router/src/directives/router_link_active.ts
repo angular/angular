@@ -89,6 +89,7 @@ import {RouterLink, RouterLinkWithHref} from './router_link';
 @Directive({
   selector: '[routerLinkActive]',
   exportAs: 'routerLinkActive',
+  host: {'[attr.aria-current]': '_ariaCurrent', '[class]': '_class'},
 })
 export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit {
   @ContentChildren(RouterLink, {descendants: true}) links!: QueryList<RouterLink>;
@@ -119,6 +120,21 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
    */
   @Input() ariaCurrentWhenActive?: 'page'|'step'|'location'|'date'|'time'|true|false;
 
+
+  /**
+   * Value for the aria-current attribute for the host element
+   *
+   * @internal
+   */
+  _ariaCurrent: string|null = null;
+
+  /**
+   * Value for the current class for the host element
+   *
+   * @internal
+   */
+  _class: string|null = null;
+
   /**
    *
    * You can use the output `isActiveChange` to get notified each time the link becomes
@@ -138,8 +154,8 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
   @Output() readonly isActiveChange: EventEmitter<boolean> = new EventEmitter();
 
   constructor(
-      private router: Router, private element: ElementRef, private renderer: Renderer2,
-      private readonly cdr: ChangeDetectorRef, @Optional() private link?: RouterLink,
+      private router: Router, private readonly cdr: ChangeDetectorRef,
+      @Optional() private link?: RouterLink,
       @Optional() private linkWithHref?: RouterLinkWithHref) {
     this.routerEventsSubscription = router.events.subscribe((s: Event) => {
       if (s instanceof NavigationEnd) {
@@ -193,18 +209,15 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
       if (this.isActive !== hasActiveLinks) {
         (this as any).isActive = hasActiveLinks;
         this.cdr.markForCheck();
-        this.classes.forEach((c) => {
-          if (hasActiveLinks) {
-            this.renderer.addClass(this.element.nativeElement, c);
-          } else {
-            this.renderer.removeClass(this.element.nativeElement, c);
-          }
-        });
-        if (hasActiveLinks && this.ariaCurrentWhenActive !== undefined) {
-          this.renderer.setAttribute(
-              this.element.nativeElement, 'aria-current', this.ariaCurrentWhenActive.toString());
+        if (hasActiveLinks) {
+          this._class = this.classes.join(' ');
         } else {
-          this.renderer.removeAttribute(this.element.nativeElement, 'aria-current');
+          this._class = null;
+        }
+        if (hasActiveLinks && this.ariaCurrentWhenActive !== undefined) {
+          this._ariaCurrent = this.ariaCurrentWhenActive.toString();
+        } else {
+          this._ariaCurrent = null;
         }
 
         // Emit on isActiveChange after classes are updated
