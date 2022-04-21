@@ -27,6 +27,7 @@ import {stringifyForError} from '../util/stringify_utils';
 
 import {angularCoreEnv} from './environment';
 import {patchModuleCompilation} from './module_patch';
+import {isModuleWithProviders, isNgModule} from './util';
 
 interface ModuleQueueItem {
   moduleType: Type<any>;
@@ -609,12 +610,4 @@ function expandModuleWithProviders(value: Type<any>|ModuleWithProviders<{}>): Ty
     return value.ngModule;
   }
   return value;
-}
-
-function isModuleWithProviders(value: any): value is ModuleWithProviders<{}> {
-  return (value as {ngModule?: any}).ngModule !== undefined;
-}
-
-function isNgModule<T>(value: Type<T>): value is Type<T>&{ɵmod: NgModuleDef<T>} {
-  return !!getNgModuleDef(value);
 }
