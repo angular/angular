@@ -337,3 +337,17 @@ export type Provider = TypeProvider|ValueProvider|ClassProvider|ConstructorProvi
  * overrides).
  */
 export type ProcessProvidersFunction = (providers: Provider[]) => Provider[];
+
+
+/**
+ * A wrapper around an NgModule that associates it with [providers](guide/glossary#provider
+ * "Definition"). Usage without a generic type is deprecated.
+ *
+ * @see [Deprecations](guide/deprecations#modulewithproviders-type-without-a-generic)
+ *
+ * @publicApi
+ */
+export interface ModuleWithProviders<T> {
+  ngModule: Type<T>;
+  providers?: Provider[];
+}

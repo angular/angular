@@ -9,11 +9,12 @@
 import {getCompilerFacade, JitCompilerUsage, R3InjectorMetadataFacade} from '../../compiler/compiler_facade';
 import {resolveForwardRef} from '../../di/forward_ref';
 import {NG_INJ_DEF} from '../../di/interface/defs';
+import {ModuleWithProviders} from '../../di/interface/provider';
 import {reflectDependencies} from '../../di/jit/util';
 import {Type} from '../../interface/type';
 import {registerNgModuleType} from '../../linker/ng_module_registration';
 import {Component} from '../../metadata/directives';
-import {ModuleWithProviders, NgModule} from '../../metadata/ng_module';
+import {NgModule} from '../../metadata/ng_module';
 import {NgModuleDef, NgModuleTransitiveScopes, NgModuleType} from '../../metadata/ng_module_def';
 import {deepForEach, flatten} from '../../util/array_utils';
 import {assertDefined} from '../../util/assert';
