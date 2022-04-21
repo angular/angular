@@ -10,12 +10,30 @@
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {Type} from '../interface/type';
 
+import {getComponentDef} from './definition';
 import {TNode} from './interfaces/node';
 import {LView, TVIEW} from './interfaces/view';
 import {INTERPOLATION_DELIMITER} from './util/misc_utils';
 import {stringifyForError} from './util/stringify_utils';
 
-
+/** Verifies that a given type is a Standalone Component. */
+export function assertStandaloneComponentType(type: Type<unknown>) {
+  const componentDef = getComponentDef(type);
+  if (!componentDef) {
+    throw new RuntimeError(
+        RuntimeErrorCode.MISSING_GENERATED_DEF,
+        `The ${stringifyForError(type)} is not an Angular component, ` +
+            `make sure it has the \`@Component\` decorator.`);
+  }
+  if (!componentDef.standalone) {
+    throw new RuntimeError(
+        RuntimeErrorCode.TYPE_IS_NOT_STANDALONE,
+        `The ${stringifyForError(type)} component is not marked as standalone, ` +
+            `but Angular expects to have a standalone component here. ` +
+            `Please make sure the ${stringifyForError(type)} component has ` +
+            `the \`standalone: true\` flag in the decorator.`);
+  }
+}
 
 /** Called when there are multiple component selectors that match a given node */
 export function throwMultipleComponentError(

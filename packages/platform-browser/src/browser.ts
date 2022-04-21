@@ -7,7 +7,7 @@
  */
 
 import {CommonModule, DOCUMENT, XhrFactory, ɵPLATFORM_BROWSER_ID as PLATFORM_BROWSER_ID} from '@angular/common';
-import {APP_ID, ApplicationModule, createPlatformFactory, ErrorHandler, Inject, ModuleWithProviders, NgModule, NgZone, Optional, PLATFORM_ID, PLATFORM_INITIALIZER, platformCore, PlatformRef, RendererFactory2, Sanitizer, SkipSelf, StaticProvider, Testability, ɵINJECTOR_SCOPE as INJECTOR_SCOPE, ɵsetDocument} from '@angular/core';
+import {APP_ID, ApplicationModule, ApplicationRef, createPlatformFactory, ErrorHandler, Inject, ModuleWithProviders, NgModule, NgZone, Optional, PLATFORM_ID, PLATFORM_INITIALIZER, platformCore, PlatformRef, Provider, RendererFactory2, SkipSelf, StaticProvider, Testability, Type, ɵbootstrapApplication as _bootstrapApplication, ɵINJECTOR_SCOPE as INJECTOR_SCOPE, ɵsetDocument} from '@angular/core';
 
 import {BrowserDomAdapter} from './browser/browser_adapter';
 import {SERVER_TRANSITION_PROVIDERS, TRANSITION_ID} from './browser/server-transition';
@@ -18,7 +18,53 @@ import {DomEventsPlugin} from './dom/events/dom_events';
 import {EVENT_MANAGER_PLUGINS, EventManager} from './dom/events/event_manager';
 import {KeyEventsPlugin} from './dom/events/key_events';
 import {DomSharedStylesHost, SharedStylesHost} from './dom/shared_styles_host';
-import {DomSanitizer, DomSanitizerImpl} from './security/dom_sanitization_service';
+
+/**
+ * Set of config options available during the bootstrap operation via `bootstrapApplication` call.
+ *
+ * @publicApi
+ */
+export interface ApplicationConfig {
+  /**
+   * List of providers that should be available to the root component and all its children.
+   */
+  providers: Provider[];
+}
+
+/**
+ * Bootstraps an instance of an Angular application and renders a root component.
+ *
+ * Note: the root component passed into this function *must* be a standalone one (should have the
+ * `standalone: true` flag in the `@Component` decorator config).
+ *
+ * ```typescript
+ * @Component({
+ *   standalone: true,
+ *   template: 'Hello world!'
+ * })
+ * class RootComponent {}
+ *
+ * const appRef: ApplicationRef = await bootstrapApplication(RootComponent);
+ * ```
+ *
+ * @param rootComponent A reference to a Standalone Component that should be rendered.
+ * @param options Additional configuration for the bootstrap operation, see `ApplicationConfig` for
+ *     additional info.
+ * @returns A promise that returns an `ApplicationRef` instance once resolved.
+ *
+ * @publicApi
+ */
+export function bootstrapApplication(
+    rootComponent: Type<unknown>, options?: ApplicationConfig): Promise<ApplicationRef> {
+  return _bootstrapApplication({
+    rootComponent,
+    appProviders: [
+      ...BROWSER_MODULE_PROVIDERS,
+      ...(options?.providers ?? []),
+    ],
+    platformProviders: INTERNAL_BROWSER_PLATFORM_PROVIDERS,
+  });
+}
 
 export function initDomAdapter() {
   BrowserDomAdapter.makeCurrent();

@@ -45,6 +45,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     INVALID_INJECTION_TOKEN = 204,
     // (undocumented)
+    MISSING_GENERATED_DEF = 906,
+    // (undocumented)
     MISSING_INJECTION_CONTEXT = 203,
     // (undocumented)
     MULTIPLE_COMPONENTS_MATCH = -300,
@@ -64,6 +66,8 @@ export const enum RuntimeErrorCode {
     RECURSIVE_APPLICATION_REF_TICK = 101,
     // (undocumented)
     TEMPLATE_STRUCTURE_ERROR = 305,
+    // (undocumented)
+    TYPE_IS_NOT_STANDALONE = 907,
     // (undocumented)
     UNKNOWN_BINDING = 303,
     // (undocumented)

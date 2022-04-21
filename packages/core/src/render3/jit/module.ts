@@ -195,7 +195,7 @@ export function compileNgModuleDefs(
   });
 }
 
-function isStandalone<T>(type: Type<T>) {
+export function isStandalone<T>(type: Type<T>) {
   const def = getComponentDef(type) || getDirectiveDef(type) || getPipeDef(type);
   return def !== null ? def.standalone : false;
 }
