@@ -33,8 +33,6 @@ ng_package(
     name = "npm_package",
     srcs = [
         "package.json",
-    ],
-    data = [
         ":sass_lib",
         "//src/material/core:theming_scss_lib",
         "//src/material/prebuilt-themes:deeppurple-amber",

@@ -15,7 +15,7 @@ export class MatDivider {
     get vertical(): boolean;
     set vertical(value: BooleanInput);
     // (undocumented)
-    static ɵcmp: i0.ɵɵComponentDeclaration<MatDivider, "mat-divider", never, { "vertical": "vertical"; "inset": "inset"; }, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MatDivider, "mat-divider", never, { "vertical": "vertical"; "inset": "inset"; }, {}, never, never, false>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatDivider, never>;
 }

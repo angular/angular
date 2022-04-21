@@ -36,8 +36,8 @@ sass_library(
 
 ng_package(
     name = "npm_package",
-    srcs = ["package.json"],
-    data = [
+    srcs = [
+        "package.json",
         ":sass_lib",
         ":theming_scss_lib",
     ],

@@ -103,7 +103,7 @@ export class MatBottomSheetContainer extends BasePortalOutlet implements OnDestr
     _onAnimationStart(event: AnimationEvent_2): void;
     _portalOutlet: CdkPortalOutlet;
     // (undocumented)
-    static ɵcmp: i0.ɵɵComponentDeclaration<MatBottomSheetContainer, "mat-bottom-sheet-container", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MatBottomSheetContainer, "mat-bottom-sheet-container", never, {}, {}, never, never, false>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatBottomSheetContainer, [null, null, null, null, null, null, { optional: true; }, null]>;
 }

@@ -49,8 +49,10 @@ sass_library(
 # Creates the @angular/cdk package published to npm.
 ng_package(
     name = "npm_package",
-    srcs = ["package.json"],
-    data = [":sass_lib"] + prebuiltStyleTargets + CDK_SCSS_LIBS,
+    srcs = [
+        "package.json",
+        ":sass_lib",
+    ] + prebuiltStyleTargets + CDK_SCSS_LIBS,
     nested_packages = [
         "//src/cdk/schematics:npm_package",
     ],

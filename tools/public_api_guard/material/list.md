@@ -52,7 +52,7 @@ export class MatList extends _MatListBase implements CanDisable, CanDisableRippl
     ngOnDestroy(): void;
     readonly _stateChanges: Subject<void>;
     // (undocumented)
-    static ɵcmp: i0.ɵɵComponentDeclaration<MatList, "mat-list, mat-action-list", ["matList"], { "disableRipple": "disableRipple"; "disabled": "disabled"; }, {}, never, ["*"]>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MatList, "mat-list, mat-action-list", ["matList"], { "disableRipple": "disableRipple"; "disabled": "disabled"; }, {}, never, ["*"], false>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatList, never>;
 }
@@ -60,7 +60,7 @@ export class MatList extends _MatListBase implements CanDisable, CanDisableRippl
 // @public
 export class MatListAvatarCssMatStyler {
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<MatListAvatarCssMatStyler, "[mat-list-avatar], [matListAvatar]", never, {}, {}, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MatListAvatarCssMatStyler, "[mat-list-avatar], [matListAvatar]", never, {}, {}, never, never, false>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatListAvatarCssMatStyler, never>;
 }
@@ -68,7 +68,7 @@ export class MatListAvatarCssMatStyler {
 // @public
 export class MatListIconCssMatStyler {
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<MatListIconCssMatStyler, "[mat-list-icon], [matListIcon]", never, {}, {}, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MatListIconCssMatStyler, "[mat-list-icon], [matListIcon]", never, {}, {}, never, never, false>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatListIconCssMatStyler, never>;
 }
@@ -91,7 +91,7 @@ export class MatListItem extends _MatListItemMixinBase implements AfterContentIn
     // (undocumented)
     ngOnDestroy(): void;
     // (undocumented)
-    static ɵcmp: i0.ɵɵComponentDeclaration<MatListItem, "mat-list-item, a[mat-list-item], button[mat-list-item]", ["matListItem"], { "disableRipple": "disableRipple"; "disabled": "disabled"; }, {}, ["_avatar", "_icon", "_lines"], ["[mat-list-avatar], [mat-list-icon], [matListAvatar], [matListIcon]", "[mat-line], [matLine]", "*"]>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MatListItem, "mat-list-item, a[mat-list-item], button[mat-list-item]", ["matListItem"], { "disableRipple": "disableRipple"; "disabled": "disabled"; }, {}, ["_avatar", "_icon", "_lines"], ["[mat-list-avatar], [mat-list-icon], [matListAvatar], [matListIcon]", "[mat-line], [matLine]", "*"], false>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatListItem, [null, null, { optional: true; }, { optional: true; }]>;
 }
@@ -148,7 +148,7 @@ export class MatListOption extends _MatListOptionBase implements AfterContentIni
     get value(): any;
     set value(newValue: any);
     // (undocumented)
-    static ɵcmp: i0.ɵɵComponentDeclaration<MatListOption, "mat-list-option", ["matListOption"], { "disableRipple": "disableRipple"; "checkboxPosition": "checkboxPosition"; "color": "color"; "value": "value"; "disabled": "disabled"; "selected": "selected"; }, { "selectedChange": "selectedChange"; }, ["_avatar", "_icon", "_lines"], ["*", "[mat-list-avatar], [mat-list-icon], [matListAvatar], [matListIcon]"]>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MatListOption, "mat-list-option", ["matListOption"], { "disableRipple": "disableRipple"; "checkboxPosition": "checkboxPosition"; "color": "color"; "value": "value"; "disabled": "disabled"; "selected": "selected"; }, { "selectedChange": "selectedChange"; }, ["_avatar", "_icon", "_lines"], ["*", "[mat-list-avatar], [mat-list-icon], [matListAvatar], [matListIcon]"], false>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatListOption, never>;
 }
@@ -159,7 +159,7 @@ export type MatListOptionCheckboxPosition = 'before' | 'after';
 // @public
 export class MatListSubheaderCssMatStyler {
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<MatListSubheaderCssMatStyler, "[mat-subheader], [matSubheader]", never, {}, {}, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MatListSubheaderCssMatStyler, "[mat-subheader], [matSubheader]", never, {}, {}, never, never, false>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatListSubheaderCssMatStyler, never>;
 }
@@ -172,7 +172,7 @@ export class MatNavList extends _MatListBase implements CanDisable, CanDisableRi
     ngOnDestroy(): void;
     readonly _stateChanges: Subject<void>;
     // (undocumented)
-    static ɵcmp: i0.ɵɵComponentDeclaration<MatNavList, "mat-nav-list", ["matNavList"], { "disableRipple": "disableRipple"; "disabled": "disabled"; }, {}, never, ["*"]>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MatNavList, "mat-nav-list", ["matNavList"], { "disableRipple": "disableRipple"; "disabled": "disabled"; }, {}, never, ["*"], false>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatNavList, never>;
 }
@@ -212,7 +212,7 @@ export class MatSelectionList extends _MatSelectionListBase implements CanDisabl
     _value: string[] | null;
     writeValue(values: string[]): void;
     // (undocumented)
-    static ɵcmp: i0.ɵɵComponentDeclaration<MatSelectionList, "mat-selection-list", ["matSelectionList"], { "disableRipple": "disableRipple"; "color": "color"; "compareWith": "compareWith"; "disabled": "disabled"; "multiple": "multiple"; }, { "selectionChange": "selectionChange"; }, ["options"], ["*"]>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MatSelectionList, "mat-selection-list", ["matSelectionList"], { "disableRipple": "disableRipple"; "color": "color"; "compareWith": "compareWith"; "disabled": "disabled"; "multiple": "multiple"; }, { "selectionChange": "selectionChange"; }, ["options"], ["*"], false>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatSelectionList, never>;
 }

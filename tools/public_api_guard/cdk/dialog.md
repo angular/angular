@@ -68,7 +68,7 @@ export class CdkDialogContainer<C extends DialogConfig = DialogConfig> extends B
     _portalOutlet: CdkPortalOutlet;
     protected _trapFocus(): void;
     // (undocumented)
-    static ɵcmp: i0.ɵɵComponentDeclaration<CdkDialogContainer<any>, "cdk-dialog-container", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<CdkDialogContainer<any>, "cdk-dialog-container", never, {}, {}, never, never, false>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<CdkDialogContainer<any>, [null, null, { optional: true; }, null, null, null, null, null]>;
 }

@@ -31,7 +31,7 @@ export class Dir implements Directionality, AfterContentInit, OnDestroy {
     _rawDir: string;
     get value(): Direction;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<Dir, "[dir]", ["dir"], { "dir": "dir"; }, { "change": "dirChange"; }, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<Dir, "[dir]", ["dir"], { "dir": "dir"; }, { "change": "dirChange"; }, never, never, false>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<Dir, never>;
 }

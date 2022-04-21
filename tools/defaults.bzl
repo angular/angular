@@ -168,7 +168,7 @@ def ng_module(
     if module_name and not testonly:
         _make_tsec_test(kwargs["name"])
 
-def ng_package(name, data = [], deps = [], externals = PKG_EXTERNALS, readme_md = None, visibility = None, **kwargs):
+def ng_package(name, srcs = [], deps = [], externals = PKG_EXTERNALS, readme_md = None, visibility = None, **kwargs):
     # If no readme file has been specified explicitly, use the default readme for
     # release packages from "src/README.md".
     if not readme_md:
@@ -186,7 +186,7 @@ def ng_package(name, data = [], deps = [], externals = PKG_EXTERNALS, readme_md 
     _ng_package(
         name = name,
         externals = externals,
-        data = data + [":license_copied"],
+        srcs = srcs + [":license_copied"],
         deps = deps,
         # We never set a `package_name` for NPM packages, neither do we enable validation.
         # This is necessary because the source targets of the NPM packages all have

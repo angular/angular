@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {AbstractControl, FormBuilder, Validators} from '@angular/forms';
+
 import {Component} from '@angular/core';
 import {ThemePalette} from '@angular/material/core';
-import {AbstractControl, FormBuilder, Validators} from '@angular/forms';
 
 @Component({
   selector: 'stepper-demo',
@@ -31,10 +32,7 @@ export class StepperDemo {
   });
 
   formGroup = this._formBuilder.group({
-    formArray: this._formBuilder.array<
-      | {firstNameFormCtrl?: string | null; lastNameFormCtrl?: string | null}
-      | {emailFormCtrl?: string | null}
-    >([
+    formArray: this._formBuilder.array([
       this._formBuilder.group({
         firstNameFormCtrl: this._formBuilder.control('', [Validators.required]),
         lastNameFormCtrl: this._formBuilder.control('', [Validators.required]),

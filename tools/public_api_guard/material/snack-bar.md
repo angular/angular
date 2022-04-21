@@ -122,7 +122,7 @@ export class MatSnackBarContainer extends BasePortalOutlet implements OnDestroy,
     _role?: 'status' | 'alert';
     snackBarConfig: MatSnackBarConfig;
     // (undocumented)
-    static ɵcmp: i0.ɵɵComponentDeclaration<MatSnackBarContainer, "snack-bar-container", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MatSnackBarContainer, "snack-bar-container", never, {}, {}, never, never, false>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatSnackBarContainer, never>;
 }
@@ -176,7 +176,7 @@ export class SimpleSnackBar implements TextOnlySnackBar {
     // (undocumented)
     snackBarRef: MatSnackBarRef<SimpleSnackBar>;
     // (undocumented)
-    static ɵcmp: i0.ɵɵComponentDeclaration<SimpleSnackBar, "simple-snack-bar", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<SimpleSnackBar, "simple-snack-bar", never, {}, {}, never, never, false>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<SimpleSnackBar, never>;
 }
