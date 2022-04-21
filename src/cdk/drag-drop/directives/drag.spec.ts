@@ -1258,6 +1258,19 @@ describe('CdkDrag', () => {
       expect(dragInstance.getFreeDragPosition()).toEqual({x: 150, y: 300});
     }));
 
+    it('should be able to set the current position programmatically', fakeAsync(() => {
+      const fixture = createComponent(StandaloneDraggable);
+      fixture.detectChanges();
+
+      const dragElement = fixture.componentInstance.dragElement.nativeElement;
+      const dragInstance = fixture.componentInstance.dragInstance;
+
+      dragInstance.setFreeDragPosition({x: 50, y: 100});
+
+      expect(dragElement.style.transform).toBe('translate3d(50px, 100px, 0px)');
+      expect(dragInstance.getFreeDragPosition()).toEqual({x: 50, y: 100});
+    }));
+
     it('should be able to set the current position', fakeAsync(() => {
       const fixture = createComponent(StandaloneDraggable);
       fixture.componentInstance.freeDragPosition = {x: 50, y: 100};

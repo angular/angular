@@ -67,14 +67,8 @@ export class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDestroy {
     readonly ended: EventEmitter<CdkDragEnd>;
     readonly entered: EventEmitter<CdkDragEnter<any>>;
     readonly exited: EventEmitter<CdkDragExit<any>>;
-    freeDragPosition: {
-        x: number;
-        y: number;
-    };
-    getFreeDragPosition(): {
-        readonly x: number;
-        readonly y: number;
-    };
+    freeDragPosition: Point;
+    getFreeDragPosition(): Readonly<Point>;
     getPlaceholderElement(): HTMLElement;
     getRootElement(): HTMLElement;
     _handles: QueryList<CdkDragHandle>;
@@ -93,6 +87,7 @@ export class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDestroy {
     readonly released: EventEmitter<CdkDragRelease>;
     reset(): void;
     rootElementSelector: string;
+    setFreeDragPosition(value: Point): void;
     readonly started: EventEmitter<CdkDragStart>;
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<CdkDrag<any>, "[cdkDrag]", ["cdkDrag"], { "data": "cdkDragData"; "lockAxis": "cdkDragLockAxis"; "rootElementSelector": "cdkDragRootElement"; "boundaryElement": "cdkDragBoundary"; "dragStartDelay": "cdkDragStartDelay"; "freeDragPosition": "cdkDragFreeDragPosition"; "disabled": "cdkDragDisabled"; "constrainPosition": "cdkDragConstrainPosition"; "previewClass": "cdkDragPreviewClass"; "previewContainer": "cdkDragPreviewContainer"; }, { "started": "cdkDragStarted"; "released": "cdkDragReleased"; "ended": "cdkDragEnded"; "entered": "cdkDragEntered"; "exited": "cdkDragExited"; "dropped": "cdkDragDropped"; "moved": "cdkDragMoved"; }, ["_previewTemplate", "_placeholderTemplate", "_handles"]>;
