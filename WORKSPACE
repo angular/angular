@@ -15,10 +15,10 @@ http_archive(
 # Add sass rules
 http_archive(
     name = "io_bazel_rules_sass",
-    sha256 = "bfb89ca97a4ad452ca5f623dfde23d2a5f3a848a97478d715881b69b4767d3bb",
-    strip_prefix = "rules_sass-1.49.4",
+    sha256 = "4b6153ae6c454c5bd44f3e47e5430f8a634d4affb983a237d21ca6199e13991c",
+    strip_prefix = "rules_sass-1.50.1",
     urls = [
-        "https://github.com/bazelbuild/rules_sass/archive/1.49.4.zip",
+        "https://github.com/bazelbuild/rules_sass/archive/1.50.1.zip",
     ],
 )
 
@@ -103,7 +103,9 @@ web_test_repositories()
 # Setup the Sass rule repositories.
 load("@io_bazel_rules_sass//:defs.bzl", "sass_repositories")
 
-sass_repositories()
+sass_repositories(
+    yarn_script = "//:.yarn/releases/yarn-1.22.17.cjs",
+)
 
 # Setup repositories for browsers provided by the shared dev-infra package.
 load(
