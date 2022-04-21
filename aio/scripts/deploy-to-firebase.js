@@ -144,8 +144,8 @@ function computeDeploymentsInfo(
     },
   };
 
-  // If the current branch is `master`, deploy as `next`.
-  if (currentBranch === 'master') {
+  // If the current branch is `main`, deploy as `next`.
+  if (currentBranch === 'main') {
     return [deploymentInfoPerTarget.next];
   }
 
@@ -174,7 +174,7 @@ function computeDeploymentsInfo(
       ];
   }
 
-  // If we get here, it means that the current branch is neither `master`, nor the RC or stable
+  // If we get here, it means that the current branch is neither `main`, nor the RC or stable
   // branches. At this point, we may only deploy as `archive` and only if the following criteria are
   // met:
   //   1. The current branch must have the highest minor version among all branches with the same
