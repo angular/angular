@@ -412,7 +412,6 @@ describe('standalone components, directives and pipes', () => {
     @NgModule({exports: [ModuleWithAService]})
     class ExportingModule {
     }
-
     @Component({
       selector: 'standalone',
       standalone: true,
@@ -426,6 +425,136 @@ describe('standalone components, directives and pipes', () => {
     const fixture = TestBed.createComponent(TestComponent);
     fixture.detectChanges();
     expect(fixture.nativeElement.textContent).toBe('(service)');
+  });
+
+  it('should error when forwardRef does not resolve to a truthy value', () => {
+    @Component({
+      selector: 'test',
+      standalone: true,
+      imports: [forwardRef(() => null)],
+      template: '',
+    })
+    class TestComponent {
+    }
+    expect(() => {
+      TestBed.createComponent(TestComponent);
+    })
+        .toThrowError(
+            'Expected forwardRef function, imported from "TestComponent", to return a standalone entity or NgModule but got "null".');
+  });
+
+  it('should error when a non-standalone component is imported', () => {
+    @Component({
+      selector: 'not-a-standalone',
+      template: '',
+    })
+    class NonStandaloneCmp {
+    }
+
+    @Component({
+      selector: 'standalone',
+      standalone: true,
+      template: '',
+      imports: [NonStandaloneCmp],
+    })
+    class StandaloneCmp {
+    }
+
+    expect(() => {
+      TestBed.createComponent(StandaloneCmp);
+    })
+        .toThrowError(
+            'The "NonStandaloneCmp" component, imported from "StandaloneCmp", is not standalone. Did you forget to add the standalone: true flag?');
+  });
+
+  it('should error when a non-standalone directive is imported', () => {
+    @Directive({selector: '[not-a-standalone]'})
+    class NonStandaloneDirective {
+    }
+
+    @Component({
+      selector: 'standalone',
+      standalone: true,
+      template: '',
+      imports: [NonStandaloneDirective],
+    })
+    class StandaloneCmp {
+    }
+
+    expect(() => {
+      TestBed.createComponent(StandaloneCmp);
+    })
+        .toThrowError(
+            'The "NonStandaloneDirective" directive, imported from "StandaloneCmp", is not standalone. Did you forget to add the standalone: true flag?');
+  });
+
+  it('should error when a non-standalone pipe is imported', () => {
+    @Pipe({name: 'not-a-standalone'})
+    class NonStandalonePipe {
+    }
+
+    @Component({
+      selector: 'standalone',
+      standalone: true,
+      template: '',
+      imports: [NonStandalonePipe],
+    })
+    class StandaloneCmp {
+    }
+
+    expect(() => {
+      TestBed.createComponent(StandaloneCmp);
+    })
+        .toThrowError(
+            'The "NonStandalonePipe" pipe, imported from "StandaloneCmp", is not standalone. Did you forget to add the standalone: true flag?');
+  });
+
+  it('should error when an unknown type is imported', () => {
+    class SthElse {}
+
+    @Component({
+      selector: 'standalone',
+      standalone: true,
+      template: '',
+      imports: [SthElse],
+    })
+    class StandaloneCmp {
+    }
+
+    expect(() => {
+      TestBed.createComponent(StandaloneCmp);
+    })
+        .toThrowError(
+            'The "SthElse" type, imported from "StandaloneCmp", must be a standalone component / directive / pipe or an NgModule. Did you forget to add the required @Component / @Directive / @Pipe or @NgModule annotation?');
+  });
+
+  it('should error when a module with providers is imported', () => {
+    @NgModule()
+    class OtherModule {
+    }
+
+    @NgModule()
+    class LibModule {
+      static forComponent() {
+        return {ngModule: OtherModule};
+      }
+    }
+
+    @Component({
+      standalone: true,
+      template: '',
+      // we need to import a module with a provider in a nested array since module with providers
+      // are disallowed on the type level
+      imports: [[LibModule.forComponent()]],
+    })
+    class StandaloneCmp {
+    }
+
+    expect(() => {
+      TestBed.createComponent(StandaloneCmp);
+    })
+        .toThrowError(
+            'A module with providers was imported from "StandaloneCmp". Modules with providers are not supported in standalone components imports.');
   });
 
   it('should support forwardRef imports', () => {
