@@ -58,6 +58,20 @@ describe('importProvidersFrom', () => {
     // Expect 2 `INJECTOR_INITIALIZER` providers: one for `MyModule`, another was `MyModule2`
     expect(collectInjectorInitializerProviders(providers).length).toBe(2);
   });
+
+  it('should work for directly imported ModuleWithProviders', () => {
+    const A = new InjectionToken('A');
+
+    @NgModule({})
+    class Module {
+    }
+
+    const providers = importProvidersFrom({
+      ngModule: Module,
+      providers: [{provide: A, useValue: 'A'}],
+    });
+    expect(hasProviderWithToken(providers, A)).toBe(true);
+  });
 });
 
 describe('di', () => {

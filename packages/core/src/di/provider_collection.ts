@@ -19,8 +19,16 @@ import {resolveForwardRef} from './forward_ref';
 import {INJECTOR_INITIALIZER} from './initializer_token';
 import {ɵɵinject as inject} from './injector_compatibility';
 import {getInjectorDef, InjectorType, InjectorTypeWithProviders} from './interface/defs';
-import {ClassProvider, ConstructorProvider, ExistingProvider, FactoryProvider, Provider, StaticClassProvider, TypeProvider, ValueProvider} from './interface/provider';
+import {ClassProvider, ConstructorProvider, ExistingProvider, FactoryProvider, ModuleWithProviders, Provider, StaticClassProvider, TypeProvider, ValueProvider} from './interface/provider';
 import {INJECTOR_DEF_TYPES} from './internal_tokens';
+
+/**
+ * A source of providers for the `importProvidersFrom` function.
+ *
+ * @publicApi
+ */
+export type ImportProvidersSource =
+    Type<unknown>|ModuleWithProviders<unknown>|Array<ImportProvidersSource>;
 
 /**
  * Collects providers from all NgModules and standalone components, including transitively imported
@@ -29,10 +37,21 @@ import {INJECTOR_DEF_TYPES} from './internal_tokens';
  * @returns The list of collected providers from the specified list of types.
  * @publicApi
  */
-export function importProvidersFrom(...types: Array<Type<unknown>>): Provider[] {
-  const providers: SingleProvider[] = [];
-  deepForEach(types, type => walkProviderTree(type, providers, [], new Set()));
-  return providers;
+export function importProvidersFrom(...sources: ImportProvidersSource[]): Provider[] {
+  const providersOut: SingleProvider[] = [];
+  const injectorTypesWithProviders: InjectorTypeWithProviders<unknown>[] = [];
+  deepForEach(sources, source => {
+    // Narrow `source` to access the internal type analogue for `ModuleWithProviders`.
+    const internalSource = source as Type<unknown>| InjectorTypeWithProviders<unknown>;
+    if (walkProviderTree(internalSource, providersOut, [], new Set())) {
+      injectorTypesWithProviders.push(internalSource);
+    }
+  });
+  for (const {providers} of injectorTypesWithProviders) {
+    providersOut.push(...(providers || EMPTY_ARRAY));
+  }
+
+  return providersOut;
 }
 
 /**
