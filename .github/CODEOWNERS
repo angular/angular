@@ -47,7 +47,7 @@
 /src/material/core/datetime/**                     @mmalerba
 /src/material/core/density/**                      @devversion
 /src/material/core/error/**                        @crisbeto @mmalerba
-/src/material/core/focus-indicators/**             @jelbourn @zelliott
+/src/material/core/focus-indicators/**             @jelbourn
 /src/material/core/gestures/**                     @andrewseguin
 /src/material/core/label/**                        @mmalerba
 /src/material/core/line/**                         @andrewseguin
@@ -62,15 +62,15 @@
 /src/material/core/util/**                         @andrewseguin
 
 # Miscellaneous components
-/src/google-maps/**                                @crisbeto @mbehrlich
-/src/youtube-player/**                             @crisbeto @nathantate
+/src/google-maps/**                                @crisbeto
+/src/youtube-player/**                             @crisbeto
 
 # CDK
 /src/cdk/*                                         @andrewseguin
 /src/cdk/a11y/**                                   @jelbourn @devversion
 /src/cdk/accordion/**                              @andrewseguin
 /src/cdk/bidi/**                                   @andrewseguin
-/src/cdk/clipboard/**                              @andrewseguin @xkxx
+/src/cdk/clipboard/**                              @andrewseguin
 /src/cdk/coercion/**                               @andrewseguin
 /src/cdk/collections/**                            @crisbeto @andrewseguin
 /src/cdk/dialog/**                                 @jelbourn @crisbeto
@@ -96,7 +96,7 @@
 
 # Material experimental package
 /src/material-experimental/*                       @andrewseguin
-/src/material-experimental/column-resize/**        @kseamon @andrewseguin
+/src/material-experimental/column-resize/**        @andrewseguin
 /src/material-experimental/mdc-autocomplete/**     @crisbeto
 /src/material-experimental/mdc-button/**           @andrewseguin
 /src/material-experimental/mdc-card/**             @mmalerba
@@ -125,19 +125,19 @@
 /src/material-experimental/mdc-theming/**          @mmalerba
 /src/material-experimental/mdc-typography/**       @mmalerba
 /src/material-experimental/menubar/**              @jelbourn
-/src/material-experimental/popover-edit/**         @kseamon @andrewseguin
-/src/material-experimental/selection/**            @yifange @andrewseguin
+/src/material-experimental/popover-edit/**         @andrewseguin
+/src/material-experimental/selection/**            @andrewseguin
 
 # CDK experimental package
 /src/cdk-experimental/*                            @andrewseguin
-/src/cdk-experimental/column-resize/**             @kseamon @andrewseguin
+/src/cdk-experimental/column-resize/**             @andrewseguin
 /src/cdk-experimental/combobox/**                  @jelbourn
 /src/cdk-experimental/menu/**                      @jelbourn
-/src/cdk-experimental/popover-edit/**              @kseamon @andrewseguin
+/src/cdk-experimental/popover-edit/**              @andrewseguin
 /src/cdk-experimental/scrolling/**                 @mmalerba
-/src/cdk-experimental/table-scroll-container/**    @kseamon @andrewseguin
+/src/cdk-experimental/table-scroll-container/**    @andrewseguin
 /src/cdk-experimental/listbox/**                   @jelbourn
-/src/cdk-experimental/selection/**                 @yifange @andrewseguin
+/src/cdk-experimental/selection/**                 @andrewseguin
 
 # Docs examples & guides
 /guides/**                                         @jelbourn
@@ -159,8 +159,8 @@
 /src/dev-app/cdk-experimental-menu/**              @jelbourn
 /src/dev-app/checkbox/**                           @jelbourn @devversion
 /src/dev-app/chips/**                              @andrewseguin
-/src/dev-app/clipboard/**                          @andrewseguin @xkxx
-/src/dev-app/column-resize/**                      @kseamon @andrewseguin
+/src/dev-app/clipboard/**                          @andrewseguin
+/src/dev-app/column-resize/**                      @andrewseguin
 /src/dev-app/connected-overlay/**                  @jelbourn @crisbeto
 /src/dev-app/dataset/**                            @andrewseguin
 /src/dev-app/datepicker/**                         @mmalerba @crisbeto @zarend
@@ -173,12 +173,12 @@
 /src/dev-app/expansion/**                          @andrewseguin
 /src/dev-app/focus-origin/**                       @mmalerba
 /src/dev-app/focus-trap/**                         @jelbourn
-/src/dev-app/google-map/**                         @mbehrlich
+/src/dev-app/google-map/**                         @crisbeto
 /src/dev-app/grid-list/**                          @andrewseguin
 /src/dev-app/icon/**                               @andrewseguin
 /src/dev-app/input/**                              @mmalerba
 /src/dev-app/layout/**                             @andrewseguin
-/src/dev-app/input-modality/**                     @jelbourn @zelliott
+/src/dev-app/input-modality/**                     @jelbourn
 /src/dev-app/list/**                               @andrewseguin @crisbeto @devversion
 /src/dev-app/live-announcer/**                     @jelbourn
 /src/dev-app/mdc-button/**                         @andrewseguin
@@ -192,7 +192,7 @@
 /src/dev-app/mdc-menu/**                           @crisbeto
 /src/dev-app/mdc-paginator/**                      @crisbeto
 /src/dev-app/mdc-progress-bar/**                   @crisbeto
-/src/dev-app/mdc-progress-spinner/**               @annieyw @mmalerba
+/src/dev-app/mdc-progress-spinner/**               @mmalerba
 /src/dev-app/mdc-radio/**                          @mmalerba
 /src/dev-app/mdc-select/**                         @crisbeto
 /src/dev-app/mdc-snack-bar/**                      @andrewseguin
@@ -208,7 +208,7 @@
 /src/dev-app/paginator/**                          @andrewseguin
 /src/dev-app/platform/**                           @andrewseguin @devversion
 /src/dev-app/portal/**                             @andrewseguin
-/src/dev-app/popover-edit/**                       @kseamon @andrewseguin
+/src/dev-app/popover-edit/**                       @andrewseguin
 /src/dev-app/progress-bar/**                       @andrewseguin @crisbeto
 /src/dev-app/progress-spinner/**                   @andrewseguin @crisbeto
 /src/dev-app/radio/**                              @andrewseguin @devversion
@@ -221,15 +221,15 @@
 /src/dev-app/snack-bar/**                          @andrewseguin @crisbeto
 /src/dev-app/stepper/**                            @mmalerba
 /src/dev-app/table/**                              @andrewseguin
-/src/dev-app/table-scroll-container/**             @kseamon @andrewseguin
+/src/dev-app/table-scroll-container/**             @andrewseguin
 /src/dev-app/tabs/**                               @andrewseguin
 /src/dev-app/toolbar/**                            @devversion
 /src/dev-app/tooltip/**                            @andrewseguin
 /src/dev-app/tree/**                               @andrewseguin
 /src/dev-app/typography/**                         @crisbeto
 /src/dev-app/virtual-scroll/**                     @mmalerba
-/src/dev-app/youtube-player/**                     @nathantate
-/src/dev-app/selection/**                          @yifange @andrewseguin
+/src/dev-app/youtube-player/**                     @crisbeto
+/src/dev-app/selection/**                          @andrewseguin
 
 # E2E app
 /src/e2e-app/*                                     @andrewseguin
@@ -256,7 +256,7 @@
 /src/e2e-app/mdc-input/**                          @devversion
 /src/e2e-app/mdc-menu/**                           @crisbeto
 /src/e2e-app/mdc-progress-bar/**                   @crisbeto
-/src/e2e-app/mdc-progress-spinner/**               @annieyw @mmalerba
+/src/e2e-app/mdc-progress-spinner/**               @mmalerba
 /src/e2e-app/mdc-radio/**                          @mmalerba
 /src/e2e-app/mdc-slider/**                         @andrewseguin
 /src/e2e-app/mdc-slide-toggle/**                   @crisbeto
@@ -293,7 +293,7 @@
 /tools/public_api_guard/cdk/accordion**            @andrewseguin
 /tools/public_api_guard/cdk/bidi**                 @andrewseguin
 /tools/public_api_guard/cdk/cdk**                  @andrewseguin
-/tools/public_api_guard/cdk/clipboard**            @andrewseguin @xkxx
+/tools/public_api_guard/cdk/clipboard**            @andrewseguin
 /tools/public_api_guard/cdk/coercion**             @andrewseguin
 /tools/public_api_guard/cdk/collections**          @crisbeto @andrewseguin
 /tools/public_api_guard/cdk/drag-drop**            @crisbeto
@@ -346,8 +346,8 @@
 /tools/public_api_guard/material/tooltip**         @andrewseguin
 /tools/public_api_guard/material/tree**            @jelbourn @andrewseguin
 /tools/public_api_guard/material/material**        @andrewseguin
-/tools/public_api_guard/google-maps/**             @crisbeto @mbehrlich
-/tools/public_api_guard/youtube-player/**          @andrewseguin @nathantate
+/tools/public_api_guard/google-maps/**             @crisbeto
+/tools/public_api_guard/youtube-player/**          @andrewseguin
 
 # Misc
 /.github/**                                        @angular/dev-infra-components
