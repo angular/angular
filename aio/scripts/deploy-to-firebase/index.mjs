@@ -27,7 +27,7 @@
  * | deploying | RC     | -                               | rc                              |
  * | from?     |        |                                 | redirectVersionDomainToRc(*)    |
  * |           |--------|---------------------------------|---------------------------------|
- * |           | MASTER | next                            | next                            |
+ * |           | main   | next                            | next                            |
  * |           |        | redirectVersionDomainToNext(**) | redirectVersionDomainToNext(**) |
  * |-----------|--------|---------------------------------|---------------------------------|
  *
@@ -36,7 +36,7 @@
  *
  * NOTES:
  *   - The `v<X>-angular-io-site` Firebase site should be created (and connected to the
- *     `v<X>.angular.io` subdomain) before the version in the `master` branch's `package.json` is
+ *     `v<X>.angular.io` subdomain) before the version in the `main` branch's `package.json` is
  *     updated to a new major.
  *   - When a new major version is released, the deploy CI jobs for the new stable branch (prev. RC
  *     or next) and the old stable branch must be run AFTER the new stable version has been
@@ -250,8 +250,8 @@ function computeDeploymentsInfo(
   const rcBranch = (mostRecentMinorBranch !== stableBranch) ? mostRecentMinorBranch : null;
   const isRcActive = rcBranch !== null;
 
-  // If the current branch is `master`, deploy as `next`.
-  if (currentBranch === 'master') {
+  // If the current branch is `main`, deploy as `next`.
+  if (currentBranch === 'main') {
     // In order to determine whether to also deploy to `v<NEXT>-angular-io-site` we need to compare
     // `v<NEXT>` with either `v<RC>` (if there is an active RC) or `v<STABLE>`.
     const otherVersion = isRcActive ? u.computeMajorVersion(rcBranch) : stableBranchMajorVersion;
@@ -308,7 +308,7 @@ function computeDeploymentsInfo(
       ];
   }
 
-  // If we get here, it means that the current branch is neither `master`, nor the RC or stable
+  // If we get here, it means that the current branch is neither `main`, nor the RC or stable
   // branches. At this point, we may only deploy as `archive` and only if the following criteria are
   // met:
   //   1. The current branch must have the highest minor version among all branches with the same
