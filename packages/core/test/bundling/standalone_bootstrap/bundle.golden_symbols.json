@@ -648,12 +648,6 @@
     "name": "isComponentDef"
   },
   {
-    "name": "isExistingProvider"
-  },
-  {
-    "name": "isFactoryProvider"
-  },
-  {
     "name": "isFunction"
   },
   {
@@ -751,6 +745,9 @@
   },
   {
     "name": "onLeave"
+  },
+  {
+    "name": "processInjectorTypesWithProviders"
   },
   {
     "name": "promise"
@@ -883,9 +880,6 @@
   },
   {
     "name": "urlParsingNode"
-  },
-  {
-    "name": "validateProvider"
   },
   {
     "name": "viewAttachedToChangeDetector"

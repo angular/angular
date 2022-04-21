@@ -123,12 +123,6 @@
     "name": "injectableDefOrInjectorDefFactory"
   },
   {
-    "name": "isExistingProvider"
-  },
-  {
-    "name": "isFactoryProvider"
-  },
-  {
     "name": "isTypeProvider"
   },
   {
@@ -136,6 +130,9 @@
   },
   {
     "name": "makeRecord"
+  },
+  {
+    "name": "processInjectorTypesWithProviders"
   },
   {
     "name": "resolveForwardRef"
@@ -148,9 +145,6 @@
   },
   {
     "name": "stringify"
-  },
-  {
-    "name": "validateProvider"
   },
   {
     "name": "walkProviderTree"

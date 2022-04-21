@@ -578,7 +578,10 @@ export interface HostListenerDecorator {
 }
 
 // @public
-export function importProvidersFrom(...types: Array<Type<unknown>>): Provider[];
+export function importProvidersFrom(...sources: ImportProvidersSource[]): Provider[];
+
+// @public
+export type ImportProvidersSource = Type<unknown> | ModuleWithProviders<unknown> | Array<ImportProvidersSource>;
 
 // @public
 export interface Inject {

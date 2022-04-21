@@ -1101,12 +1101,6 @@
     "name": "isEmptyInputValue"
   },
   {
-    "name": "isExistingProvider"
-  },
-  {
-    "name": "isFactoryProvider"
-  },
-  {
     "name": "isFormControlState"
   },
   {
@@ -1323,6 +1317,9 @@
     "name": "platformCore"
   },
   {
+    "name": "processInjectorTypesWithProviders"
+  },
+  {
     "name": "promise"
   },
   {
@@ -1525,9 +1522,6 @@
   },
   {
     "name": "urlParsingNode"
-  },
-  {
-    "name": "validateProvider"
   },
   {
     "name": "viewAttachedToChangeDetector"

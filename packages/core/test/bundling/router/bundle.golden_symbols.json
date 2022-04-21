@@ -1440,12 +1440,6 @@
     "name": "isDirectiveHost"
   },
   {
-    "name": "isExistingProvider"
-  },
-  {
-    "name": "isFactoryProvider"
-  },
-  {
     "name": "isFunction"
   },
   {
@@ -1675,6 +1669,9 @@
   },
   {
     "name": "prioritizedGuardValue"
+  },
+  {
+    "name": "processInjectorTypesWithProviders"
   },
   {
     "name": "promise"
@@ -1933,9 +1930,6 @@
   },
   {
     "name": "urlParsingNode"
-  },
-  {
-    "name": "validateProvider"
   },
   {
     "name": "viewAttachedToChangeDetector"

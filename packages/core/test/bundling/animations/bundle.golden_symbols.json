@@ -1005,12 +1005,6 @@
     "name": "isElementNode"
   },
   {
-    "name": "isExistingProvider"
-  },
-  {
-    "name": "isFactoryProvider"
-  },
-  {
     "name": "isFunction"
   },
   {
@@ -1177,6 +1171,9 @@
   },
   {
     "name": "platformCore"
+  },
+  {
+    "name": "processInjectorTypesWithProviders"
   },
   {
     "name": "promise"
@@ -1360,9 +1357,6 @@
   },
   {
     "name": "urlParsingNode"
-  },
-  {
-    "name": "validateProvider"
   },
   {
     "name": "viewAttachedToChangeDetector"

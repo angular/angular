@@ -7,24 +7,30 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {Attribute, ChangeDetectorRef, Component, ComponentFactoryResolver, ComponentRef, Directive, ElementRef, EventEmitter, forwardRef, Host, HostBinding, importProvidersFrom, Inject, Injectable, InjectFlags, InjectionToken, INJECTOR, Injector, INJECTOR_INITIALIZER, Input, LOCALE_ID, NgModule, NgZone, Optional, Output, Pipe, PipeTransform, Provider, Self, SkipSelf, TemplateRef, ViewChild, ViewContainerRef, ViewRef, ɵcreateInjector as createInjector, ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID, ɵINJECTOR_SCOPE} from '@angular/core';
+import {Attribute, ChangeDetectorRef, Component, ComponentFactoryResolver, ComponentRef, Directive, ElementRef, EventEmitter, forwardRef, Host, HostBinding, importProvidersFrom, Inject, Injectable, InjectFlags, InjectionToken, INJECTOR, Injector, INJECTOR_INITIALIZER, Input, LOCALE_ID, ModuleWithProviders, NgModule, NgZone, Optional, Output, Pipe, PipeTransform, Provider, Self, SkipSelf, TemplateRef, Type, ViewChild, ViewContainerRef, ViewRef, ɵcreateInjector as createInjector, ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID, ɵINJECTOR_SCOPE} from '@angular/core';
 import {ViewRef as ViewRefInternal} from '@angular/core/src/render3/view_ref';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {BehaviorSubject} from 'rxjs';
 
+const getProvidersByToken =
+    (providers: Provider[], token: Type<unknown>|InjectionToken<unknown>): Provider[] =>
+        providers.filter(provider => (provider as any).provide === token);
+
 const hasProviderWithToken = (providers: Provider[], token: InjectionToken<unknown>): boolean =>
-    providers.some(provider => (provider as any).provide === token);
+    getProvidersByToken(providers, token).length > 0;
 
 const collectInjectorInitializerProviders = (providers: Provider[]) =>
-    providers.filter(provider => (provider as any).provide === INJECTOR_INITIALIZER);
+    getProvidersByToken(providers, INJECTOR_INITIALIZER);
 
 describe('importProvidersFrom', () => {
-  it('should work for NgModules', () => {
-    const A = new InjectionToken('A');
-    const B = new InjectionToken('B');
-    const C = new InjectionToken('C');
-    const D = new InjectionToken('D');
+  // Set of tokens used in various tests.
+  const A = new InjectionToken('A');
+  const B = new InjectionToken('B');
+  const C = new InjectionToken('C');
+  const D = new InjectionToken('D');
+
+  it('should collect providers from NgModules', () => {
     @NgModule({
       providers: [
         {provide: C, useValue: 'C'},
@@ -58,6 +64,117 @@ describe('importProvidersFrom', () => {
     // Expect 2 `INJECTOR_INITIALIZER` providers: one for `MyModule`, another was `MyModule2`
     expect(collectInjectorInitializerProviders(providers).length).toBe(2);
   });
+
+  it('should collect providers from directly imported ModuleWithProviders', () => {
+    @NgModule({})
+    class Module {
+    }
+
+    const providers = importProvidersFrom({
+      ngModule: Module,
+      providers: [{provide: A, useValue: 'A'}],
+    });
+    expect(hasProviderWithToken(providers, A)).toBe(true);
+  });
+
+  it('should collect all providers when a module is used twice with different providers (via ModuleWithProviders)',
+     () => {
+       @NgModule({
+         providers: [
+           {provide: A, useValue: 'A'}  //
+         ]
+       })
+       class ModuleA {
+       }
+
+       @NgModule({imports: [ModuleA]})
+       class ModuleB {
+         static forRoot(): ModuleWithProviders<ModuleB> {
+           return {ngModule: ModuleB, providers: [{provide: B, useValue: 'B'}]};
+         }
+         static forChild(): ModuleWithProviders<ModuleB> {
+           return {ngModule: ModuleB, providers: [{provide: C, useValue: 'C'}]};
+         }
+       }
+
+       const providers = importProvidersFrom(ModuleB.forRoot(), ModuleB.forChild());
+
+       // Expect 2 `INJECTOR_INITIALIZER` providers: one for `ModuleA`, another one for `ModuleB`
+       expect(collectInjectorInitializerProviders(providers).length).toBe(2);
+
+       // Expect exactly 1 provider for each module: `ModuleA` and `ModuleB`
+       expect(getProvidersByToken(providers, ModuleA).length).toBe(1);
+       expect(getProvidersByToken(providers, ModuleB).length).toBe(1);
+
+       // Expect all tokens to be collected.
+       expect(hasProviderWithToken(providers, A)).toBe(true);
+       expect(hasProviderWithToken(providers, B)).toBe(true);
+       expect(hasProviderWithToken(providers, C)).toBe(true);
+     });
+
+  it('should process nested arrays within a provider set of ModuleWithProviders type', () => {
+    @NgModule()
+    class ModuleA {
+      static forRoot(): ModuleWithProviders<ModuleA> {
+        return {
+          ngModule: ModuleA,
+          providers: [
+            {provide: A, useValue: 'A'},
+            // Nested arrays inside the list of providers:
+            [{provide: B, useValue: 'B'}, [{provide: C, useValue: 'C'}]]
+          ]
+        };
+      }
+    }
+
+    const providers = importProvidersFrom(ModuleA.forRoot());
+
+    // Expect 1 `INJECTOR_INITIALIZER` provider (for `ModuleA`)
+    expect(collectInjectorInitializerProviders(providers).length).toBe(1);
+
+    // Expect exactly 1 provider for `ModuleA`
+    expect(getProvidersByToken(providers, ModuleA).length).toBe(1);
+
+    // Expect all tokens to be collected.
+    expect(hasProviderWithToken(providers, A)).toBe(true);
+    expect(hasProviderWithToken(providers, B)).toBe(true);
+    expect(hasProviderWithToken(providers, C)).toBe(true);
+  });
+
+  it('should process nested arrays within provider set of an imported ModuleWithProviders type',
+     () => {
+       @NgModule()
+       class ModuleA {
+         static forRoot(): ModuleWithProviders<ModuleA> {
+           return {
+             ngModule: ModuleA,
+             providers: [
+               {provide: A, useValue: 'A'},
+               // Nested arrays inside the list of providers:
+               [{provide: B, useValue: 'B'}, [{provide: C, useValue: 'C'}]]
+             ]
+           };
+         }
+       }
+
+       @NgModule({imports: [ModuleA.forRoot()]})
+       class ModuleB {
+       }
+
+       const providers = importProvidersFrom(ModuleB);
+
+       // Expect 2 `INJECTOR_INITIALIZER` providers: one for `ModuleA`, another one for `ModuleB`
+       expect(collectInjectorInitializerProviders(providers).length).toBe(2);
+
+       // Expect exactly 1 provider for each module: `ModuleA` and `ModuleB`
+       expect(getProvidersByToken(providers, ModuleA).length).toBe(1);
+       expect(getProvidersByToken(providers, ModuleB).length).toBe(1);
+
+       // Expect all tokens to be collected.
+       expect(hasProviderWithToken(providers, A)).toBe(true);
+       expect(hasProviderWithToken(providers, B)).toBe(true);
+       expect(hasProviderWithToken(providers, C)).toBe(true);
+     });
 });
 
 describe('di', () => {
