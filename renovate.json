@@ -11,7 +11,7 @@
     "enabled": true
   },
   "schedule": ["after 10pm every monday", "before 4am every tuesday"],
-  "baseBranches": ["master"],
+  "baseBranches": ["main"],
   "ignoreDeps": [
     "@angular/animations-12",
     "@angular/common-12",
