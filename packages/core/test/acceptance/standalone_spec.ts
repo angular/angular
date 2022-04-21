@@ -7,7 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {Component, createEnvironmentInjector, Directive, EnvironmentInjector, Injector, Input, NgModule, OnInit, Pipe, PipeTransform, ViewChild, ViewContainerRef} from '@angular/core';
+import {Component, createEnvironmentInjector, Directive, EnvironmentInjector, forwardRef, Injector, Input, NgModule, OnInit, Pipe, PipeTransform, ViewChild, ViewContainerRef} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
 describe('standalone components, directives and pipes', () => {
@@ -366,4 +366,37 @@ describe('standalone components, directives and pipes', () => {
        // of the user-created environement injector.
        expect(fixture.nativeElement.textContent).toBe('Inner(Service)');
      });
+
+  it('should render a recursive cycle of standalone components', () => {
+    @Component({
+      selector: 'cmp-a',
+      standalone: true,
+      template: '<ng-template [ngIf]="false"><cmp-c></cmp-c></ng-template>A',
+      imports: [forwardRef(() => StandaloneCmpC)],
+    })
+    class StandaloneCmpA {
+    }
+
+    @Component({
+      selector: 'cmp-b',
+      standalone: true,
+      template: '(<cmp-a></cmp-a>)B',
+      imports: [StandaloneCmpA],
+    })
+    class StandaloneCmpB {
+    }
+
+    @Component({
+      selector: 'cmp-c',
+      standalone: true,
+      template: '(<cmp-b></cmp-b>)C',
+      imports: [StandaloneCmpB],
+    })
+    class StandaloneCmpC {
+    }
+
+    const fixture = TestBed.createComponent(StandaloneCmpC);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toBe('((A)B)C');
+  });
 });

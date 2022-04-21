@@ -7,7 +7,7 @@
  */
 
 import {getCompilerFacade, JitCompilerUsage, R3DirectiveMetadataFacade} from '../../compiler/compiler_facade';
-import {R3ComponentMetadataFacade, R3QueryMetadataFacade, R3TemplateDependencyFacade, R3TemplateDependencyKind} from '../../compiler/compiler_facade_interface';
+import {R3ComponentMetadataFacade, R3QueryMetadataFacade} from '../../compiler/compiler_facade_interface';
 import {resolveForwardRef} from '../../di/forward_ref';
 import {getReflect, reflectDependencies} from '../../di/jit/util';
 import {Type} from '../../interface/type';
@@ -15,13 +15,12 @@ import {Query} from '../../metadata/di';
 import {Component, Directive, Input} from '../../metadata/directives';
 import {componentNeedsResolution, maybeQueueResolutionOfComponentResources} from '../../metadata/resource_loading';
 import {ViewEncapsulation} from '../../metadata/view';
-import {NgModuleDef} from '../../r3_symbols';
 import {flatten} from '../../util/array_utils';
 import {EMPTY_ARRAY, EMPTY_OBJ} from '../../util/empty';
 import {initNgDevMode} from '../../util/ng_dev_mode';
 import {getComponentDef, getDirectiveDef, getNgModuleDef, getPipeDef} from '../definition';
 import {NG_COMP_DEF, NG_DIR_DEF, NG_FACTORY_DEF} from '../fields';
-import {ComponentType} from '../interfaces/definition';
+import {ComponentDef, ComponentType, DirectiveDefList, PipeDefList} from '../interfaces/definition';
 import {stringifyForError} from '../util/stringify_utils';
 
 import {angularCoreEnv} from './environment';
@@ -57,7 +56,7 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
   // See the `initNgDevMode` docstring for more information.
   (typeof ngDevMode === 'undefined' || ngDevMode) && initNgDevMode();
 
-  let ngComponentDef: any = null;
+  let ngComponentDef: ComponentDef<unknown>|null = null;
 
   // Metadata may have resources which need to be resolved.
   maybeQueueResolutionOfComponentResources(type, metadata);
@@ -107,26 +106,6 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
           }
         }
 
-        let declarations: R3TemplateDependencyFacade[];
-
-        if (metadata.standalone) {
-          // Standalone components always have themselves in scope.
-          declarations = [{
-            kind: R3TemplateDependencyKind.Directive,
-            type,
-          }];
-
-          // And might have other dependencies in scope, depending on `imports`.
-          if (metadata.imports) {
-            declarations.push(...getStandaloneDependencies(flatten(metadata.imports)));
-          }
-        } else {
-          // NgModule-based components are processed first with empty `declarations`, since when the
-          // component is evaluated the NgModule has not yet been executed. The real scope for the
-          // component will be patched on after the NgModule is fully evaluated.
-          declarations = [];
-        }
-
         const templateUrl = metadata.templateUrl || `ng:///${type.name}/template.html`;
         const meta: R3ComponentMetadataFacade = {
           ...directiveMetadata(type, metadata),
@@ -135,7 +114,12 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
           preserveWhitespaces,
           styles: metadata.styles || EMPTY_ARRAY,
           animations: metadata.animations,
-          declarations,
+          // JIT components are always compiled against an empty set of `declarations`. Instead, the
+          // `directiveDefs` and `pipeDefs` are updated at a later point:
+          //  * for NgModule-based components, they're set when the NgModule which declares the
+          //    component resolves in the module scoping queue
+          //  * for standalone components, they're set just below, after `compileComponent`.
+          declarations: [],
           changeDetection: metadata.changeDetection,
           encapsulation,
           interpolation: metadata.interpolation,
@@ -148,7 +132,19 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
           if (meta.usesInheritance) {
             addDirectiveDefToUndecoratedParents(type);
           }
-          ngComponentDef = compiler.compileComponent(angularCoreEnv, templateUrl, meta);
+          ngComponentDef =
+              compiler.compileComponent(angularCoreEnv, templateUrl, meta) as ComponentDef<unknown>;
+
+          if (metadata.standalone) {
+            // Patch the component definition for standalone components with `directiveDefs` and
+            // `pipeDefs` functions which lazily compute the directives/pipes available in the
+            // standalone component. Also set `dependencies` to the lazily resolved list of imports.
+            const imports: Type<any>[] = flatten(metadata.imports || EMPTY_ARRAY);
+            const {directiveDefs, pipeDefs} = getStandaloneDefFunctions(type, imports);
+            ngComponentDef.directiveDefs = directiveDefs;
+            ngComponentDef.pipeDefs = pipeDefs;
+            ngComponentDef.dependencies = () => imports.map(resolveForwardRef);
+          }
         } finally {
           // Ensure that the compilation depth is decremented even when the compilation failed.
           compilationDepth--;
@@ -179,52 +175,70 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
   });
 }
 
-function getStandaloneDependencies(imports: Type<any>[]): R3TemplateDependencyFacade[] {
-  const dependencies: R3TemplateDependencyFacade[] = [];
-  for (const rawDep of imports) {
-    const dep = resolveForwardRef(rawDep);
-    if (!dep) {
-      // TODO: real error
-      throw new Error(`ForwardRef issue?`);
-    }
-    const ngModuleDef: NgModuleDef<any>|null = getNgModuleDef(dep);
-    if (ngModuleDef) {
-      dependencies.push({
-        kind: R3TemplateDependencyKind.NgModule,
-        type: dep as any,
-      } as R3TemplateDependencyFacade);
+/**
+ * Build memoized `directiveDefs` and `pipeDefs` functions for the component definition of a
+ * standalone component, which process `imports` and filter out directives and pipes. The use of
+ * memoized functions here allows for the delayed resolution of any `forwardRef`s present in the
+ * component's `imports`.
+ */
+function getStandaloneDefFunctions(type: Type<any>, imports: Type<any>[]): {
+  directiveDefs: () => DirectiveDefList,
+  pipeDefs: () => PipeDefList,
+} {
+  let cachedDirectiveDefs: DirectiveDefList|null = null;
+  let cachedPipeDefs: PipeDefList|null = null;
+  const directiveDefs = () => {
+    if (cachedDirectiveDefs === null) {
+      // Standalone components are always able to self-reference, so include the component's own
+      // definition in its `directiveDefs`.
+      cachedDirectiveDefs = [getComponentDef(type)!];
 
-      const scopes = transitiveScopesFor(ngModuleDef.type);
-      for (const dir of scopes.exported.directives) {
-        dependencies.push({
-          kind: R3TemplateDependencyKind.Directive,
-          type: dir,
-        } as R3TemplateDependencyFacade);
+      for (const rawDep of imports) {
+        const dep = resolveForwardRef(rawDep);
+
+        if (!!getNgModuleDef(dep)) {
+          const scope = transitiveScopesFor(dep);
+          for (const dir of scope.exported.directives) {
+            const def = getComponentDef(dir) || getDirectiveDef(dir);
+            if (def) {
+              cachedDirectiveDefs.push(def);
+            }
+          }
+        } else {
+          const def = getComponentDef(dep) || getDirectiveDef(dep);
+          if (def) {
+            cachedDirectiveDefs.push(def);
+          }
+        }
       }
+    }
+    return cachedDirectiveDefs;
+  };
 
-      for (const dir of scopes.exported.pipes) {
-        dependencies.push({
-          kind: R3TemplateDependencyKind.Pipe,
-          type: dir,
-        } as R3TemplateDependencyFacade);
+  const pipeDefs = () => {
+    if (cachedPipeDefs === null) {
+      cachedPipeDefs = [];
+      for (const rawDep of imports) {
+        const dep = resolveForwardRef(rawDep);
+
+        if (!!getNgModuleDef(dep)) {
+          const scope = transitiveScopesFor(dep);
+          cachedPipeDefs.push(...Array.from(scope.exported.pipes).map(pipe => getPipeDef(pipe)!));
+        } else {
+          const def = getPipeDef(dep);
+          if (def) {
+            cachedPipeDefs.push(def);
+          }
+        }
       }
     }
+    return cachedPipeDefs;
+  };
 
-    const dirDef = getComponentDef(dep) || getDirectiveDef(dep);
-    const anyDef = dirDef || getPipeDef(dep);
-    if (anyDef) {
-      if (!anyDef.standalone) {
-        // TODO: real error
-        throw new Error(`What are you doing? You imported a non-standalone thing!`);
-      }
-
-      dependencies.push({
-        kind: dirDef ? R3TemplateDependencyKind.Directive : R3TemplateDependencyKind.Pipe,
-        type: dep,
-      } as R3TemplateDependencyFacade);
-    }
-  }
-  return dependencies;
+  return {
+    directiveDefs,
+    pipeDefs,
+  };
 }
 
 function hasSelectorScope<T>(component: Type<T>): component is Type<T>&
