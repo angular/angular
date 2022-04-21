@@ -535,12 +535,16 @@ export class Scroll {
  *
  * @publicApi
  */
-export type Event = NavigationStart|NavigationEnd|NavigationCancel|NavigationError|RoutesRecognized|
+export type Event =
+    RouterEvent|NavigationStart|NavigationEnd|NavigationCancel|NavigationError|RoutesRecognized|
     GuardsCheckStart|GuardsCheckEnd|RouteConfigLoadStart|RouteConfigLoadEnd|ChildActivationStart|
     ChildActivationEnd|ActivationStart|ActivationEnd|Scroll|ResolveStart|ResolveEnd;
 
 
 export function stringifyEvent(routerEvent: Event): string {
+  if (!('type' in routerEvent)) {
+    return `Unknown Router Event: ${routerEvent.constructor.name}`;
+  }
   switch (routerEvent.type) {
     case EventType.ActivationEnd:
       return `ActivationEnd(path: '${routerEvent.snapshot.routeConfig?.path || ''}')`;
