@@ -209,11 +209,7 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
       if (this.isActive !== hasActiveLinks) {
         (this as any).isActive = hasActiveLinks;
         this.cdr.markForCheck();
-        if (hasActiveLinks) {
-          this._class = this.classes.join(' ');
-        } else {
-          this._class = null;
-        }
+        this._class = hasActiveLinks ? this.classes.join(' ') : null;
         if (hasActiveLinks && this.ariaCurrentWhenActive !== undefined) {
           this._ariaCurrent = this.ariaCurrentWhenActive.toString();
         } else {
