@@ -781,11 +781,7 @@ export class MatSlider
     // would prefer to use "mousedown" as the default, for some reason it does not work (the
     // callback is never triggered).
     if (this._SUPPORTS_POINTER_EVENTS) {
-      this._elementRef.nativeElement.addEventListener(
-        'pointerdown',
-        this._layout,
-        passiveEventListenerOptions,
-      );
+      this._elementRef.nativeElement.addEventListener('pointerdown', this._layout);
     } else {
       this._elementRef.nativeElement.addEventListener('mouseenter', this._layout);
       this._elementRef.nativeElement.addEventListener(
@@ -799,11 +795,7 @@ export class MatSlider
   /** Removes the event listener that keeps sync the slider UI and the foundation in sync. */
   _removeUISyncEventListener(): void {
     if (this._SUPPORTS_POINTER_EVENTS) {
-      this._elementRef.nativeElement.removeEventListener(
-        'pointerdown',
-        this._layout,
-        passiveEventListenerOptions,
-      );
+      this._elementRef.nativeElement.removeEventListener('pointerdown', this._layout);
     } else {
       this._elementRef.nativeElement.removeEventListener('mouseenter', this._layout);
       this._elementRef.nativeElement.removeEventListener(
@@ -1134,10 +1126,10 @@ class SliderAdapter implements MDCSliderAdapter {
   getThumbKnobWidth = (thumbPosition: Thumb): number => {
     return this._delegate._getKnobElement(thumbPosition).getBoundingClientRect().width;
   };
-  getThumbBoundingClientRect = (thumbPosition: Thumb): ClientRect => {
+  getThumbBoundingClientRect = (thumbPosition: Thumb): DOMRect => {
     return this._delegate._getThumbElement(thumbPosition).getBoundingClientRect();
   };
-  getBoundingClientRect = (): ClientRect => {
+  getBoundingClientRect = (): DOMRect => {
     return this._delegate._elementRef.nativeElement.getBoundingClientRect();
   };
   getValueIndicatorContainerWidth = (thumbPosition: Thumb): number => {

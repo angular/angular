@@ -11,7 +11,7 @@ import {Component} from '@angular/core';
 @Component({
   selector: 'mdc-slider-e2e',
   template: `
-    <mat-slider id="standard-slider">
+    <mat-slider id="standard-slider" discrete>
       <input aria-label="Standard slider" matSliderThumb>
     </mat-slider>
 

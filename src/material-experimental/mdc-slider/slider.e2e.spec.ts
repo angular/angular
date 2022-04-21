@@ -8,7 +8,8 @@
 
 import {clickElementAtPoint, getElement, Point} from '../../cdk/testing/private/e2e';
 import {Thumb} from '@material/slider';
-import {browser, by, element, ElementFinder} from 'protractor';
+import {$, browser, by, element, ElementFinder} from 'protractor';
+import {logging} from 'selenium-webdriver';
 
 describe('MDC-based MatSlider', () => {
   const getStandardSlider = () => element(by.id('standard-slider'));
@@ -31,6 +32,29 @@ describe('MDC-based MatSlider', () => {
     it('should update the value on slide', async () => {
       await slideToValue(slider, 35, Thumb.END);
       expect(await getSliderValue(slider, Thumb.END)).toBe(35);
+    });
+
+    it('should display the value indicator when focused', async () => {
+      await focusSliderThumb(slider, Thumb.END);
+      const rect: DOMRect = await browser.executeScript(
+        'return arguments[0].getBoundingClientRect();',
+        $('.mdc-slider__value-indicator'),
+      );
+
+      expect(rect.width).not.toBe(0);
+      expect(rect.height).not.toBe(0);
+
+      await browser.actions().mouseUp().perform();
+    });
+
+    it('should not cause passive event listener errors when changing the value', async () => {
+      // retrieving the logs clears the collection
+      await browser.manage().logs().get('browser');
+      await setValueByClick(slider, 15);
+
+      expect(await browser.manage().logs().get('browser')).not.toContain(
+        jasmine.objectContaining({level: logging.Level.SEVERE}),
+      );
     });
   });
 
@@ -94,6 +118,13 @@ async function getSliderValue(slider: ElementFinder, thumbPosition: Thumb): Prom
   return thumbPosition === Thumb.END
     ? Number(await inputs[inputs.length - 1].getAttribute('value'))
     : Number(await inputs[0].getAttribute('value'));
+}
+
+/** Focuses on the MatSlider at the coordinates corresponding to the given thumb. */
+async function focusSliderThumb(slider: ElementFinder, thumbPosition: Thumb): Promise<void> {
+  const webElement = await getElement(slider).getWebElement();
+  const coords = await getCoordsForValue(slider, await getSliderValue(slider, thumbPosition));
+  return await browser.actions().mouseMove(webElement, coords).mouseDown().perform();
 }
 
 /** Clicks on the MatSlider at the coordinates corresponding to the given value. */
