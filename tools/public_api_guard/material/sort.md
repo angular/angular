@@ -70,7 +70,7 @@ export class MatSort extends _MatSortBase implements CanDisable, HasInitialized,
     sort(sortable: MatSortable): void;
     sortables: Map<string, MatSortable>;
     readonly sortChange: EventEmitter<Sort>;
-    start: 'asc' | 'desc';
+    start: SortDirection;
     readonly _stateChanges: Subject<void>;
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<MatSort, "[matSort]", ["matSort"], { "disabled": "matSortDisabled"; "active": "matSortActive"; "start": "matSortStart"; "direction": "matSortDirection"; "disableClear": "matSortDisableClear"; }, { "sortChange": "matSortChange"; }, never, never, false>;
@@ -82,7 +82,7 @@ export class MatSort extends _MatSortBase implements CanDisable, HasInitialized,
 export interface MatSortable {
     disableClear: boolean;
     id: string;
-    start: 'asc' | 'desc';
+    start: SortDirection;
 }
 
 // @public
@@ -140,7 +140,7 @@ export class MatSortHeader extends _MatSortHeaderBase implements CanDisable, Mat
     _sort: MatSort;
     get sortActionDescription(): string;
     set sortActionDescription(value: string);
-    start: 'asc' | 'desc';
+    start: SortDirection;
     _toggleOnInteraction(): void;
     _updateArrowDirection(): void;
     _viewState: ArrowViewStateTransition;

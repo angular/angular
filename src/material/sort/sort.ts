@@ -37,7 +37,7 @@ export interface MatSortable {
   id: string;
 
   /** Starting sort direction. */
-  start: 'asc' | 'desc';
+  start: SortDirection;
 
   /** Whether to disable clearing the sorting state. */
   disableClear: boolean;
@@ -93,7 +93,7 @@ export class MatSort
    * The direction to set when an MatSortable is initially sorted.
    * May be overriden by the MatSortable's sort start.
    */
-  @Input('matSortStart') start: 'asc' | 'desc' = 'asc';
+  @Input('matSortStart') start: SortDirection = 'asc';
 
   /** The sort direction of the currently active MatSortable. */
   @Input('matSortDirection')
@@ -208,7 +208,7 @@ export class MatSort
 }
 
 /** Returns the sort direction cycle to use given the provided parameters of order and clear. */
-function getSortDirectionCycle(start: 'asc' | 'desc', disableClear: boolean): SortDirection[] {
+function getSortDirectionCycle(start: SortDirection, disableClear: boolean): SortDirection[] {
   let sortOrder: SortDirection[] = ['asc', 'desc'];
   if (start == 'desc') {
     sortOrder.reverse();
