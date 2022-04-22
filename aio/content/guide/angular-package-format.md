@@ -40,7 +40,7 @@ The following example shows a simplified version of the `@angular/core` package'
           package.json &nbsp; <!-- // &lt;-- Primary package.json, describing the package itself as well as all available entrypoints and code formats. This file contains the "exports" mapping used by runtimes and tools to perform module resolution. -->
         </div>
         <div class='file'>
-          core.d.ts &nbsp; <!-- // &lt;-- Bundled .d.ts for the primary entrypoint &commat;angular/core. -->
+          index.d.ts &nbsp; <!-- // &lt;-- Bundled .d.ts for the primary entrypoint &commat;angular/core. -->
         </div>
         <div class='file'>
           esm2020 &nbsp; <!-- // &lt;-- Tree of &commat;angular/core sources in unflattened ES2020 format. -->
@@ -98,10 +98,7 @@ The following example shows a simplified version of the `@angular/core` package'
         </div>
         <div class='children'>
             <div class='file'>
-              package.json &nbsp; <!-- // &lt;-- Defines the &commat;angular/core/testing entrypoint with its typings for TypeScript, which does not support the top level "exports" based module resolution. -->
-            </div>
-            <div class='file'>
-              testing.d.ts &nbsp; <!-- // &lt;-- Actual .d.ts for the &commat;angular/core/testing entrypoint. -->
+              index.d.ts &nbsp; <!-- // &lt;-- Bundled .d.ts for the &commat;angular/core/testing entrypoint. -->
             </div>
         </div>
     </div>
@@ -113,14 +110,13 @@ This table describes the file layout under `node_modules/@angular/core` annotate
 |:---                                                                                                                                                       |:---     |
 | `README.md`                                                                                                                                               | Package README, used by npmjs web UI.                                                                                                                                                                          |
 | `package.json`                                                                                                                                            | Primary `package.json`, describing the package itself as well as all available entrypoints and code formats. This file contains the "exports" mapping used by runtimes and tools to perform module resolution. |
-| `core.d.ts`                                                                                                                                               | Bundled `.d.ts` for the primary entrypoint `@angular/core`.                                                                                                                                                    |
+| `index.d.ts`                                                                                                                                               | Bundled `.d.ts` for the primary entrypoint `@angular/core`.                                                                                                                                                    |
 | `esm2020/` <br /> &nbsp;&nbsp;─ `core.mjs` <br /> &nbsp;&nbsp;─ `index.mjs` <br /> &nbsp;&nbsp;─ `public_api.mjs`                                         | Tree of `@angular/core` sources in unflattened ES2020 format.                                                                                                                                                  |
 | `esm2020/testing/`                                                                                                                                        | Tree of the `@angular/core/testing` entrypoint in unflattened ES2020 format.                                                                                                                                   |
 | `fesm2015/` <br /> &nbsp;&nbsp;─ `core.mjs` <br /> &nbsp;&nbsp;─ `core.mjs.map` <br /> &nbsp;&nbsp;─ `testing.mjs` <br /> &nbsp;&nbsp;─ `testing.mjs.map` | Code for all entrypoints in a flattened \(FESM\) ES2015 format, along with sourcemaps.                                                                                                                         |
 | `fesm2020/` <br /> &nbsp;&nbsp;─ `core.mjs` <br /> &nbsp;&nbsp;─ `core.mjs.map` <br /> &nbsp;&nbsp;─ `testing.mjs` <br /> &nbsp;&nbsp;─ `testing.mjs.map` | Code for all entrypoints in flattened \(FESM\) ES2020 format, along with sourcemaps.                                                                                                                           |
 | `testing/`                                                                                                                                                | Directory representing the "testing" entrypoint.                                                                                                                                                               |
-| `testing/package.json`                                                                                                                                    | Defines the `@angular/core/testing` entrypoint with its typings for TypeScript, which does not support the top level "exports" based module resolution.                                                        |
-| `testing/testing.d.ts`                                                                                                                                    | Actual `.d.ts` for the `@angular/core/testing` entrypoint.                                                                                                                                                     |
+| `testing/index.d.ts`                                                                                                                                    | Bundled `.d.ts` for the `@angular/core/testing` entrypoint.                                                                                                                                                     |
 
 ## `package.json`
 
@@ -246,14 +242,6 @@ The last function of `package.json` is to declare whether the package has [side-
 
 Most Angular packages should not depend on top-level side effects, and thus should include this declaration.
 
-### Secondary `package.json`s
-
-In addition to the top-level `package.json`, secondary entrypoints have a corresponding directory with its own `package.json`.
-For example, in `@angular/core` the `@angular/core/testing` entrypoint is represented by `testing/package.json`.
-
-This secondary `package.json` is required for legacy resolvers which do not support `"exports"`.
-We expect these files to be removed in a future version of the Angular Package Format, once support for `"exports"` is consistent across the ecosystem.
-
 ## Entrypoints and Code Splitting
 
 Packages in the Angular Package Format contain one primary entrypoint and zero or more secondary entrypoints \(for example, `@angular/common/http`\).
@@ -281,11 +269,7 @@ Most libraries with a single logical purpose should be published as a single ent
 
 ### Resolution of Secondary Entrypoints
 
-Secondary entrypoints may be resolved by tooling in one of two ways:
-
-*   Via the `"exports"` field of the primary `package.json` for the package
-*   By Node Module Resolution rules, via a `package.json` in a subdirectory corresponding to the entrypoint's module ID.
-    For example, the `testing/package.json` file for the `@angular/core/testing` secondary entrypoint.
+Secondary entrypoints can be resolved via the `"exports"` field of the `package.json` for the package.
 
 ## README.md
 
