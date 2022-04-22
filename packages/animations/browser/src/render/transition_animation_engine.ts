@@ -518,10 +518,52 @@ export class AnimationTransitionNamespace {
   }
 }
 
-export interface QueuedTransition {
-  element: any;
-  instruction: AnimationTransitionInstruction;
-  player: TransitionAnimationPlayer;
+enum QueuedTransitionType {
+  SKIP,
+  ROOT,
+  SUB,
+}
+
+export class QueuedTransition {
+  constructor(
+      public element: any, public instruction: AnimationTransitionInstruction,
+      public player: TransitionAnimationPlayer) {}
+
+  type: QueuedTransitionType = QueuedTransitionType.ROOT;
+
+  setPlayerDisabled() {
+    this.player.onDestroy(() => setStyles(this.element, this.instruction.toStyles));
+    this.player.disabled = true;
+    this.player.overrideTotalTime(this.instruction.totalTime);
+    this.type = QueuedTransitionType.SKIP;
+  }
+
+  process(): QueuedTransition {
+    eraseStyles(this.element, this.instruction.fromStyles);
+    this.player.onDestroy(() => setStyles(this.element, this.instruction.toStyles));
+    return this;
+  }
+
+  processSkippedTransitions() {
+    // the reason why we don't actually play the animation is
+    // because all that a skipped player is designed to do is to
+    // fire the start/done transition callback events
+    if (this.player.parentPlayer) {
+      this.player.syncPlayerEvents(this.player.parentPlayer);
+    } else {
+      this.player.destroy();
+    }
+  }
+
+  processSubTransitions(skippedPlayersMap: Map<any, AnimationPlayer[]>) {
+    // even if no players are found for a sub animation it
+    // will still complete itself after the next tick since it's Noop
+    const playersForElement = skippedPlayersMap.get(this.player.element);
+    if (playersForElement && playersForElement.length) {
+      const innerPlayer = optimizeGroupPlayer(playersForElement);
+      this.player.setRealPlayer(innerPlayer);
+    }
+  }
 }
 
 export class TransitionAnimationEngine {
@@ -837,6 +879,7 @@ export class TransitionAnimationEngine {
     });
   }
 
+  // TODO(jessicajaniuk): Add a method comment to explain what this does
   processLeaveNode(element: any) {
     const details = element[REMOVAL_FLAG] as ElementAnimationState;
     if (details && details.setForRemoval) {
@@ -919,10 +962,64 @@ export class TransitionAnimationEngine {
     throw triggerTransitionsFailed(errors);
   }
 
+  /**
+   * _getParentAnimation returns the proper parent animation or in the case that none exist, null
+   *
+   * @param entry QueuedTransition
+   * @param animationElementMap Map<any, any>
+   * @returns HTMLElement|null
+   */
+  private _getParentAnimation(entry: QueuedTransition, animationElementMap: Map<any, any>):
+      HTMLElement|null {
+    let parentWithAnimation: any = null;
+    if (animationElementMap.size > 1) {
+      let elm = entry.element;
+      const parentsToAdd: any[] = [];
+      // recurse up through the parents until we find the matching parent animation
+      while (elm = elm.parentNode) {
+        if (animationElementMap.has(elm)) {
+          parentWithAnimation = animationElementMap.get(elm);
+          break;
+        }
+        parentsToAdd.push(elm);
+      }
+      // add the parent animation element reference to the elements in the parent tree
+      parentsToAdd.forEach(parent => animationElementMap.set(parent, parentWithAnimation));
+    }
+    return parentWithAnimation;
+  }
+
+  private _processSubTimelines(
+      entry: QueuedTransition, animationElementMap: Map<any, any>,
+      allPreviousPlayersMap: Map<any, TransitionAnimationPlayer[]>,
+      skippedPlayersMap: Map<any, AnimationPlayer[]>, preStylesMap: Map<any, ɵStyleDataMap>,
+      postStylesMap: Map<any, ɵStyleDataMap>): QueuedTransition {
+    // this means that it was never consumed by a parent animation which
+    // means that it is independent and therefore should be set for animation
+
+    const parentWithAnimation = this._getParentAnimation(entry, animationElementMap);
+
+    const innerPlayer = this._buildAnimation(
+        entry.player.namespaceId, entry.instruction, allPreviousPlayersMap, skippedPlayersMap,
+        preStylesMap, postStylesMap);
+
+    entry.player.setRealPlayer(innerPlayer);
+
+    if (parentWithAnimation == null) {
+      entry.type = QueuedTransitionType.ROOT;
+    } else {
+      const parentPlayers = this.playersByElement.get(parentWithAnimation);
+      if (parentPlayers && parentPlayers.length) {
+        entry.player.parentPlayer = optimizeGroupPlayer(parentPlayers);
+      }
+      entry.type = QueuedTransitionType.SKIP;
+    }
+    return entry;
+  }
+
   private _flushAnimations(cleanupFns: Function[], microtaskId: number):
       TransitionAnimationPlayer[] {
     const subTimelines = new ElementInstructionMap();
-    const skippedPlayers: TransitionAnimationPlayer[] = [];
     const skippedPlayersMap = new Map<any, AnimationPlayer[]>();
     const queuedInstructions: QueuedTransition[] = [];
     const queriedElements = new Map<any, TransitionAnimationPlayer[]>();
@@ -1044,7 +1141,9 @@ export class TransitionAnimationEngine {
         if (nodeIsOrphaned) {
           player.onStart(() => eraseStyles(element, instruction.fromStyles));
           player.onDestroy(() => setStyles(element, instruction.toStyles));
-          skippedPlayers.push(player);
+          const queuedInstruction = new QueuedTransition(element, instruction, player);
+          queuedInstruction.type = QueuedTransitionType.SKIP;
+          queuedInstructions.push(queuedInstruction);
           return;
         }
 
@@ -1054,7 +1153,9 @@ export class TransitionAnimationEngine {
         if (entry.isFallbackTransition) {
           player.onStart(() => eraseStyles(element, instruction.fromStyles));
           player.onDestroy(() => setStyles(element, instruction.toStyles));
-          skippedPlayers.push(player);
+          const queuedInstruction = new QueuedTransition(element, instruction, player);
+          queuedInstruction.type = QueuedTransitionType.SKIP;
+          queuedInstructions.push(queuedInstruction);
           return;
         }
 
@@ -1074,9 +1175,7 @@ export class TransitionAnimationEngine {
 
         subTimelines.append(element, instruction.timelines);
 
-        const tuple = {instruction, player, element};
-
-        queuedInstructions.push(tuple);
+        queuedInstructions.push(new QueuedTransition(element, instruction, player));
 
         instruction.queriedElements.forEach(
             element => getOrSetDefaultValue(queriedElements, element, []).push(player));
@@ -1126,7 +1225,8 @@ export class TransitionAnimationEngine {
       }
     });
 
-    skippedPlayers.forEach(player => {
+    queuedInstructions.filter(entry => entry.type === QueuedTransitionType.SKIP).forEach(entry => {
+      const player = entry.player;
       const element = player.element;
       const previousPlayers =
           this._getPreviousPlayers(element, false, player.namespaceId, player.triggerName, null);
@@ -1173,97 +1273,37 @@ export class TransitionAnimationEngine {
           new Map([...Array.from(post?.entries() ?? []), ...Array.from(pre?.entries() ?? [])]));
     });
 
-    const rootPlayers: TransitionAnimationPlayer[] = [];
-    const subPlayers: TransitionAnimationPlayer[] = [];
-    const NO_PARENT_ANIMATION_ELEMENT_DETECTED = {};
-    queuedInstructions.forEach(entry => {
-      const {element, player, instruction} = entry;
-      // this means that it was never consumed by a parent animation which
-      // means that it is independent and therefore should be set for animation
-      if (subTimelines.has(element)) {
-        if (disabledElementsSet.has(element)) {
-          player.onDestroy(() => setStyles(element, instruction.toStyles));
-          player.disabled = true;
-          player.overrideTotalTime(instruction.totalTime);
-          skippedPlayers.push(player);
-          return;
+    const transitionList = queuedInstructions.map(entry => {
+      // TODO(jessicajaniuk): Move this to a method on QueuedTransition
+      if (subTimelines.has(entry.element)) {
+        if (disabledElementsSet.has(entry.element)) {
+          entry.setPlayerDisabled();
+          return entry;
         }
-
-        // this will flow up the DOM and query the map to figure out
-        // if a parent animation has priority over it. In the situation
-        // that a parent is detected then it will cancel the loop. If
-        // nothing is detected, or it takes a few hops to find a parent,
-        // then it will fill in the missing nodes and signal them as having
-        // a detected parent (or a NO_PARENT value via a special constant).
-        let parentWithAnimation: any = NO_PARENT_ANIMATION_ELEMENT_DETECTED;
-        if (animationElementMap.size > 1) {
-          let elm = element;
-          const parentsToAdd: any[] = [];
-          while (elm = elm.parentNode) {
-            const detectedParent = animationElementMap.get(elm);
-            if (detectedParent) {
-              parentWithAnimation = detectedParent;
-              break;
-            }
-            parentsToAdd.push(elm);
-          }
-          parentsToAdd.forEach(parent => animationElementMap.set(parent, parentWithAnimation));
-        }
-
-        const innerPlayer = this._buildAnimation(
-            player.namespaceId, instruction, allPreviousPlayersMap, skippedPlayersMap, preStylesMap,
+        return this._processSubTimelines(
+            entry, animationElementMap, allPreviousPlayersMap, skippedPlayersMap, preStylesMap,
             postStylesMap);
-
-        player.setRealPlayer(innerPlayer);
-
-        if (parentWithAnimation === NO_PARENT_ANIMATION_ELEMENT_DETECTED) {
-          rootPlayers.push(player);
-        } else {
-          const parentPlayers = this.playersByElement.get(parentWithAnimation);
-          if (parentPlayers && parentPlayers.length) {
-            player.parentPlayer = optimizeGroupPlayer(parentPlayers);
-          }
-          skippedPlayers.push(player);
-        }
-      } else {
-        eraseStyles(element, instruction.fromStyles);
-        player.onDestroy(() => setStyles(element, instruction.toStyles));
-        // there still might be a ancestor player animating this
-        // element therefore we will still add it as a sub player
-        // even if its animation may be disabled
-        subPlayers.push(player);
-        if (disabledElementsSet.has(element)) {
-          skippedPlayers.push(player);
-        }
       }
+      return entry.process();
     });
 
-    // find all of the sub players' corresponding inner animation players
-    subPlayers.forEach(player => {
-      // even if no players are found for a sub animation it
-      // will still complete itself after the next tick since it's Noop
-      const playersForElement = skippedPlayersMap.get(player.element);
-      if (playersForElement && playersForElement.length) {
-        const innerPlayer = optimizeGroupPlayer(playersForElement);
-        player.setRealPlayer(innerPlayer);
-      }
-    });
+    // Process all the transitions that are sub animations
+    transitionList.filter(entry => entry.type === QueuedTransitionType.SUB)
+        .forEach(entry => entry.processSubTransitions(skippedPlayersMap));
 
-    // the reason why we don't actually play the animation is
-    // because all that a skipped player is designed to do is to
-    // fire the start/done transition callback events
-    skippedPlayers.forEach(player => {
-      if (player.parentPlayer) {
-        player.syncPlayerEvents(player.parentPlayer);
-      } else {
-        player.destroy();
-      }
-    });
+    // Process the skipped transitions
+    transitionList.filter(entry => entry.type === QueuedTransitionType.SKIP)
+        .forEach(entry => entry.processSkippedTransitions());
 
+    // TODO(jessicajaniuk): Add a method comment to explain what this does
     this._processQueuedNodeRemovals(allLeaveNodes, queriedElements);
 
     // this is required so the cleanup method doesn't remove them
     allLeaveNodes.length = 0;
+
+    // TODO(jessicajaniuk): Move this logic into a QueuedTransition method
+    const rootPlayers = transitionList.filter(entry => entry.type === QueuedTransitionType.ROOT)
+                            .map(entry => entry.player);
 
     this.players.push(...rootPlayers);
     this._createPlayerDoneCallback(rootPlayers);
