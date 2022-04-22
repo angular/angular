@@ -163,30 +163,30 @@ pkg_npm(
 api_golden_test(
     name = "error_code_api",
     data = [
-        ":npm_package",
         "//goldens:public-api",
+        "//packages/compiler-cli/src/ngtsc/diagnostics",
     ],
-    entry_point = "angular/packages/compiler-cli/npm_package/src/ngtsc/diagnostics/src/error_code.d.ts",
+    entry_point = "angular/packages/compiler-cli/src/ngtsc/diagnostics/src/error_code.d.ts",
     golden = "angular/goldens/public-api/compiler-cli/error_code.md",
 )
 
 api_golden_test(
     name = "extended_template_diagnostic_name_api",
     data = [
-        ":npm_package",
         "//goldens:public-api",
+        "//packages/compiler-cli/src/ngtsc/diagnostics",
     ],
-    entry_point = "angular/packages/compiler-cli/npm_package/src/ngtsc/diagnostics/src/extended_template_diagnostic_name.d.ts",
+    entry_point = "angular/packages/compiler-cli/src/ngtsc/diagnostics/src/extended_template_diagnostic_name.d.ts",
     golden = "angular/goldens/public-api/compiler-cli/extended_template_diagnostic_name.md",
 )
 
 api_golden_test(
     name = "compiler_options_api",
     data = [
-        ":npm_package",
         "//goldens:public-api",
+        "//packages/compiler-cli/src/ngtsc/core:api",
     ],
-    entry_point = "angular/packages/compiler-cli/npm_package/src/ngtsc/core/api/src/public_options.d.ts",
+    entry_point = "angular/packages/compiler-cli/src/ngtsc/core/api/src/public_options.d.ts",
     golden = "angular/goldens/public-api/compiler-cli/compiler_options.md",
 )
 
