@@ -106,12 +106,13 @@ export class OverlayRef implements PortalOutlet, OverlayReference {
    * @returns The portal attachment result.
    */
   attach(portal: Portal<any>): any {
-    let attachResult = this._portalOutlet.attach(portal);
-
-    // Update the pane element with the given configuration.
+    // Insert the host into the DOM before attaching the portal, otherwise
+    // the animations module will skip animations on repeat attachments.
     if (!this._host.parentElement && this._previousHostParent) {
       this._previousHostParent.appendChild(this._host);
     }
+
+    const attachResult = this._portalOutlet.attach(portal);
 
     if (this._positionStrategy) {
       this._positionStrategy.attach(this);
