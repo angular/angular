@@ -268,7 +268,12 @@ export abstract class _MatAutocompleteTriggerBase
 
     if (this.panelOpen) {
       // Only emit if the panel was visible.
-      this.autocomplete.closed.emit();
+      // The `NgZone.onStable` always emits outside of the Angular zone,
+      // so all the subscriptions from `_subscribeToClosingActions()` are also outside of the Angular zone.
+      // We should manually run in Angular zone to update UI after panel closing.
+      this._zone.run(() => {
+        this.autocomplete.closed.emit();
+      });
     }
 
     this.autocomplete._isOpen = this._overlayAttached = false;
