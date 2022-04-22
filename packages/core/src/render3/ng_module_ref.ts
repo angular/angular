@@ -43,6 +43,14 @@ export class NgModuleRef<T> extends viewEngine_NgModuleRef<T> implements Interna
   override instance: T;
   destroyCbs: (() => void)[]|null = [];
 
+  /**
+   * Indicates whether this instance was destroyed.
+   * @internal
+   */
+  get destroyed(): boolean {
+    return this._r3Injector.destroyed;
+  }
+
   // When bootstrapping a module we have a dependency graph that looks like this:
   // ApplicationRef -> ComponentFactoryResolver -> NgModuleRef. The problem is that if the
   // module being resolved tries to inject the ComponentFactoryResolver, it'll create a

@@ -287,30 +287,6 @@ class SomeComponent {
                       expect(onDestroyB).toHaveBeenCalledTimes(1);
                     }))));
 
-      it('should allow to unsubscribe a registered `onDestroy` callback (internal API)',
-         withModule({providers}, waitForAsync(inject([Injector], (parentInjector: Injector) => {
-                      createRootEl();
-
-                      const appRef =
-                          createApplicationRef(parentInjector) as unknown as ApplicationRef &
-                          {onDestroy: Function};
-                      appRef.bootstrap(SomeComponent);
-
-                      const onDestroyA = jasmine.createSpy('onDestroyA');
-                      const onDestroyB = jasmine.createSpy('onDestroyB');
-                      const unsubscribeOnDestroyA = appRef.onDestroy(onDestroyA);
-                      const unsubscribeOnDestroyB = appRef.onDestroy(onDestroyB);
-
-                      // Unsubscribe registered listeners.
-                      unsubscribeOnDestroyA();
-                      unsubscribeOnDestroyB();
-
-                      appRef.destroy();
-
-                      expect(onDestroyA).not.toHaveBeenCalled();
-                      expect(onDestroyB).not.toHaveBeenCalled();
-                    }))));
-
       it('should correctly update the `destroyed` flag',
          withModule({providers}, waitForAsync(inject([Injector], (parentInjector: Injector) => {
                       createRootEl();

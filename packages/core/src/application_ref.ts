@@ -712,14 +712,12 @@ export class ApplicationRef {
   private _runningTick: boolean = false;
   private _stable = true;
   private _onMicrotaskEmptySubscription: Subscription;
-  private _destroyed = false;
-  private _destroyListeners: Array<() => void> = [];
 
   /**
    * Indicates whether this instance was destroyed.
    */
-  get destroyed() {
-    return this._destroyed;
+  get destroyed(): boolean {
+    return this._injector.destroyed;
   }
 
   /**
@@ -743,8 +741,8 @@ export class ApplicationRef {
 
   /** @internal */
   constructor(
-      private _zone: NgZone, private _injector: Injector, private _exceptionHandler: ErrorHandler,
-      private _initStatus: ApplicationInitStatus) {
+      private _zone: NgZone, private _injector: EnvironmentInjector,
+      private _exceptionHandler: ErrorHandler, private _initStatus: ApplicationInitStatus) {
     this._onMicrotaskEmptySubscription = this._zone.onMicrotaskEmpty.subscribe({
       next: () => {
         this._zone.run(() => {
@@ -1045,23 +1043,14 @@ export class ApplicationRef {
 
   /** @internal */
   ngOnDestroy() {
-    if (this._destroyed) return;
-
     try {
-      // Call all the lifecycle hooks.
-      this._destroyListeners.forEach(listener => listener());
-
       // Destroy all registered views.
       this._views.slice().forEach((view) => view.destroy());
       this._onMicrotaskEmptySubscription.unsubscribe();
     } finally {
-      // Indicate that this instance is destroyed.
-      this._destroyed = true;
-
       // Release all references.
       this._views = [];
       this._bootstrapListeners = [];
-      this._destroyListeners = [];
     }
   }
 
@@ -1069,35 +1058,26 @@ export class ApplicationRef {
    * Registers a listener to be called when an instance is destroyed.
    *
    * @param callback A callback function to add as a listener.
-   * @returns A function which unregisters a listener.
    *
    * @internal
    */
-  onDestroy(callback: () => void): VoidFunction {
+  onDestroy(callback: () => void): void {
     NG_DEV_MODE && this.warnIfDestroyed();
-    this._destroyListeners.push(callback);
-    return () => remove(this._destroyListeners, callback);
+    // Delegate the onDestroy callback to the Injector, since ApplicationRef's status
+    // depends on the Injector status (ApplicationRef is destroyed when Injector is destroyed).
+    this._injector.onDestroy(callback);
   }
 
   destroy(): void {
-    if (this._destroyed) {
+    if (this.destroyed) {
       throw new RuntimeError(
           RuntimeErrorCode.APPLICATION_REF_ALREADY_DESTROYED,
           NG_DEV_MODE && 'This instance of the `ApplicationRef` has already been destroyed.');
     }
 
-    // This is a temporary type to represent an instance of an R3Injector, which can be destroyed.
-    // The type will be replaced with a different one once destroyable injector type is available.
-    type DestroyableInjector = Injector&{destroy?: Function, destroyed?: boolean};
-
-    const injector = this._injector as DestroyableInjector;
-
-    // Check that this injector instance supports destroy operation.
-    if (injector.destroy && !injector.destroyed) {
-      // Destroying an underlying injector will trigger the `ngOnDestroy` lifecycle
-      // hook, which invokes the remaining cleanup actions.
-      injector.destroy();
-    }
+    // Destroying an underlying injector will trigger the `ngOnDestroy` lifecycle
+    // hook, which invokes the remaining cleanup actions.
+    this._injector.destroy();
   }
 
   /**
@@ -1108,7 +1088,7 @@ export class ApplicationRef {
   }
 
   private warnIfDestroyed() {
-    if (NG_DEV_MODE && this._destroyed) {
+    if (NG_DEV_MODE && this.destroyed) {
       console.warn(formatRuntimeError(
           RuntimeErrorCode.APPLICATION_REF_ALREADY_DESTROYED,
           'This instance of the `ApplicationRef` has already been destroyed.'));

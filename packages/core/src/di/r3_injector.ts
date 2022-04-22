@@ -90,6 +90,12 @@ export abstract class EnvironmentInjector implements Injector {
   abstract destroy(): void;
 
   /**
+   * Flag indicating that this injector was previously destroyed.
+   * @internal
+   */
+  abstract readonly destroyed: boolean;
+
+  /**
    * @internal
    */
   abstract onDestroy(callback: () => void): void;
@@ -113,7 +119,7 @@ export class R3Injector extends EnvironmentInjector {
   /**
    * Flag indicating that this injector was previously destroyed.
    */
-  get destroyed(): boolean {
+  override get destroyed(): boolean {
     return this._destroyed;
   }
   private _destroyed = false;
