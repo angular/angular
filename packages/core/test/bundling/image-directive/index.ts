@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {ɵIMAGE_LOADER as IMAGE_LOADER, ɵNgImageModule as NgImageModule} from '@angular/common';
+import {ɵIMAGE_LOADER as IMAGE_LOADER, ɵNgOptimizedImageModule as NgOptimizedImageModule} from '@angular/common';
 import {Component, NgModule} from '@angular/core';
 import {BrowserModule, platformBrowser} from '@angular/platform-browser';
 
@@ -21,7 +21,7 @@ class RootComponent {
 
 @NgModule({
   declarations: [RootComponent],
-  imports: [BrowserModule, NgImageModule],
+  imports: [BrowserModule, NgOptimizedImageModule],
   bootstrap: [RootComponent],
   providers: [{provide: IMAGE_LOADER, useValue: () => 'b.png'}],
 })
