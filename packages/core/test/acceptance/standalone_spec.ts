@@ -7,7 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {Component, Directive, Input, NgModule, Pipe, PipeTransform} from '@angular/core';
+import {Component, createEnvironmentInjector, Directive, EnvironmentInjector, Injector, Input, NgModule, OnInit, Pipe, PipeTransform, ViewChild, ViewContainerRef} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
 describe('standalone components, directives and pipes', () => {
@@ -216,4 +216,154 @@ describe('standalone components, directives and pipes', () => {
     expect(fixture.nativeElement.innerHTML)
         .toEqual('Outer<inner-cmp>Inner(Service)</inner-cmp>Service');
   });
+
+  it('should dynamically insert a standalone component', () => {
+    class Service {
+      value = 'Service';
+    }
+
+    @NgModule({providers: [Service]})
+    class Module {
+    }
+
+    @Component({
+      standalone: true,
+      template: 'Inner({{service.value}})',
+      selector: 'inner-cmp',
+      imports: [Module],
+    })
+    class InnerCmp {
+      constructor(readonly service: Service) {}
+    }
+
+    @Component({
+      standalone: true,
+      template: '<ng-template #insert></ng-template>',
+      imports: [InnerCmp],
+    })
+    class AppCmp implements OnInit {
+      @ViewChild('insert', {read: ViewContainerRef, static: true}) vcRef!: ViewContainerRef;
+
+      ngOnInit(): void {
+        this.vcRef.createComponent(InnerCmp);
+      }
+    }
+
+    const fixture = TestBed.createComponent(AppCmp);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toBe('Inner(Service)');
+  });
+
+  it('should dynamically insert a standalone component with ambient providers override in the "left / node" injector',
+     () => {
+       class Service {
+         constructor(readonly value = 'Service') {}
+       }
+
+       class NodeOverrideService extends Service {
+         constructor() {
+           super('NodeOverrideService');
+         }
+       }
+
+       class EnvOverrideService extends Service {
+         constructor() {
+           super('EnvOverrideService');
+         }
+       }
+
+       @NgModule({providers: [Service]})
+       class Module {
+       }
+
+       @Component({
+         standalone: true,
+         template: 'Inner({{service.value}})',
+         selector: 'inner-cmp',
+         imports: [Module],
+       })
+       class InnerCmp {
+         constructor(readonly service: Service) {}
+       }
+
+       @Component({
+         standalone: true,
+         template: '<ng-template #insert></ng-template>',
+         imports: [InnerCmp],
+       })
+       class AppCmp implements OnInit {
+         @ViewChild('insert', {read: ViewContainerRef, static: true}) vcRef!: ViewContainerRef;
+
+
+         constructor(readonly inj: Injector, readonly envInj: EnvironmentInjector) {}
+
+         ngOnInit(): void {
+           const lhsInj = Injector.create({
+             providers: [{provide: Service, useClass: NodeOverrideService}],
+             parent: this.inj,
+           });
+
+           const rhsInj =
+               createEnvironmentInjector([{provide: Service, useClass: EnvOverrideService}]);
+
+           this.vcRef.createComponent(InnerCmp, {injector: lhsInj, environmentInjector: rhsInj});
+         }
+       }
+
+       const fixture = TestBed.createComponent(AppCmp);
+       fixture.detectChanges();
+       expect(fixture.nativeElement.textContent).toBe('Inner(NodeOverrideService)');
+     });
+
+  it('should consult ambient providers before environement injector when inserting a component dynamically',
+     () => {
+       class Service {
+         constructor(readonly value = 'Service') {}
+       }
+
+       class EnvOverrideService extends Service {
+         constructor() {
+           super('EnvOverrideService');
+         }
+       }
+
+       @NgModule({providers: [Service]})
+       class Module {
+       }
+
+       @Component({
+         standalone: true,
+         template: 'Inner({{service.value}})',
+         selector: 'inner-cmp',
+         imports: [Module],
+       })
+       class InnerCmp {
+         constructor(readonly service: Service) {}
+       }
+
+       @Component({
+         standalone: true,
+         template: '<ng-template #insert></ng-template>',
+         imports: [InnerCmp],
+       })
+       class AppCmp implements OnInit {
+         @ViewChild('insert', {read: ViewContainerRef, static: true}) vcRef!: ViewContainerRef;
+
+         constructor(readonly envInj: EnvironmentInjector) {}
+
+         ngOnInit(): void {
+           const rhsInj =
+               createEnvironmentInjector([{provide: Service, useClass: EnvOverrideService}]);
+
+           this.vcRef.createComponent(InnerCmp, {environmentInjector: rhsInj});
+         }
+       }
+
+       const fixture = TestBed.createComponent(AppCmp);
+       fixture.detectChanges();
+
+       // The Service (an ambient provider) gets injected here as the standalone injector is a child
+       // of the user-created environement injector.
+       expect(fixture.nativeElement.textContent).toBe('Inner(Service)');
+     });
 });
