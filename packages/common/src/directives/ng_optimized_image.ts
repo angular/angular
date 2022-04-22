@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, Inject, InjectionToken, Input, NgModule, SimpleChanges, ɵRuntimeError as RuntimeError} from '@angular/core';
+import {Directive, Inject, InjectionToken, Input, NgModule, OnInit, ɵRuntimeError as RuntimeError} from '@angular/core';
 
 import {RuntimeErrorCode} from '../errors';
 
@@ -56,7 +56,7 @@ export const IMAGE_LOADER = new InjectionToken<ImageLoader>('ImageLoader', {
     '[src]': 'getRewrittenSrc()',
   },
 })
-export class NgImage {
+export class NgOptimizedImage implements OnInit {
   constructor(@Inject(IMAGE_LOADER) private imageLoader: ImageLoader) {}
 
   // Private fields to keep normalized input values.
@@ -113,10 +113,6 @@ export class NgImage {
     }
   }
 
-  ngOnChanges(changes: SimpleChanges) {
-    // TODO: react to input changes.
-  }
-
   getRewrittenSrc(): string {
     // If a loader is provided as an input - use it, otherwise fall back
     // to the loader configured globally using the `IMAGE_LOADER` token.
@@ -133,14 +129,14 @@ export class NgImage {
 }
 
 /**
- * Temporary NgModule that exports the NgImage directive.
+ * Temporary NgModule that exports the NgOptimizedImage directive.
  * The module should not be needed once the `standalone` flag is supported as a public API.
  */
 @NgModule({
-  declarations: [NgImage],
-  exports: [NgImage],
+  declarations: [NgOptimizedImage],
+  exports: [NgOptimizedImage],
 })
-export class NgImageModule {
+export class NgOptimizedImageModule {
 }
 
 /***** Helpers *****/
@@ -150,20 +146,20 @@ function inputToInteger(value: string|number|undefined): number|undefined {
   return typeof value === 'string' ? parseInt(value, 10) : value;
 }
 
-function imgDirectiveDetails(dir: NgImage) {
-  return `The NgImage directive (activated on an <img> element ` +
+function imgDirectiveDetails(dir: NgOptimizedImage) {
+  return `The NgOptimizedImage directive (activated on an <img> element ` +
       `with the \`raw-src="${dir.rawSrc}"\`)`;
 }
 
 /***** Assert functions *****/
 
 // Verifies that there is no `src` set on a host element.
-function assertExistingSrc(dir: NgImage) {
+function assertExistingSrc(dir: NgOptimizedImage) {
   if (dir.src) {
     throw new RuntimeError(
         RuntimeErrorCode.UNEXPECTED_SRC_ATTR,
         `${imgDirectiveDetails(dir)} detected that the \`src\` is also set (to \`${dir.src}\`). ` +
-            `Please remove the \`src\` attribute from this image. The NgImage directive will use ` +
+            `Please remove the \`src\` attribute from this image. The NgOptimizedImage directive will use ` +
             `the \`raw-src\` to compute the final image URL and set the \`src\` itself.`);
   }
 }
