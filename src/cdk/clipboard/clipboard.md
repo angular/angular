@@ -18,6 +18,8 @@ The `Clipboard` service copies text to the user's clipboard. It has two methods:
 directly to place it on the clipboard.
 
 ```typescript
+import {Clipboard} from '@angular/cdk/clipboard';
+
 class HeroProfile {
   constructor(private clipboard: Clipboard) {}
 
@@ -34,6 +36,8 @@ the text that was buffered. Please note, if you call `beginCopy`, you must clean
 `PendingCopy` object by calling `destroy` on it after you are finished.
 
 ```typescript
+import {Clipboard} from '@angular/cdk/clipboard';
+
 class HeroProfile {
   lifetimeAchievements: string;
 
