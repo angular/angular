@@ -51,7 +51,7 @@ def _basename_of(ctx, file):
 # Return true if run with bazel (the open-sourced version of blaze), false if
 # run with blaze.
 def _is_bazel():
-    return not hasattr(native, "genmpm")
+    return not hasattr(native, "genmpm")  # this_is_bazel
 
 def _flat_module_out_file(ctx):
     """Provide a default for the flat_module_out_file attribute.
