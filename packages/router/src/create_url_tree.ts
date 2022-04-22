@@ -7,9 +7,47 @@
  */
 
 import {squashSegmentGroup} from './apply_redirects';
+import {ActivatedRouteSnapshot} from './router_state';
 import {Params, PRIMARY_OUTLET} from './shared';
 import {createRoot, UrlSegment, UrlSegmentGroup, UrlTree} from './url_tree';
 import {forEach, last, shallowEqual} from './utils/collection';
+
+/**
+ *
+ * @publicApi
+ * @param relativeTo
+ * @param commands
+ * @param queryParams
+ * @param fragment
+ * @returns
+ */
+export function createUrlTreeFromSnapshot(
+    relativeTo: ActivatedRouteSnapshot, commands: any[], queryParams: Params|null,
+    fragment: string|null): UrlTree {
+  const relativeToUrlSegmentGroup = createSegmentGroupFromRoute(relativeTo);
+  return createUrlTree(relativeToUrlSegmentGroup, commands, queryParams, fragment);
+}
+
+export function createSegmentGroupFromRoute(route: ActivatedRouteSnapshot): UrlSegmentGroup {
+  let targetGroup: UrlSegmentGroup|undefined;
+
+  function createSegmentGroupFromRouteRecursive(currentRoute: ActivatedRouteSnapshot) {
+    const childOutlets: {[outlet: string]: UrlSegmentGroup} = {};
+    for (const childSnapshot of currentRoute.children) {
+      const root = createSegmentGroupFromRouteRecursive(childSnapshot);
+      childOutlets[childSnapshot.outlet] = root;
+    }
+    const segmentGroup = new UrlSegmentGroup(currentRoute.url, childOutlets);
+    if (currentRoute === route) {
+      targetGroup = segmentGroup;
+    }
+    return segmentGroup;
+  }
+  const rootCandidate = createSegmentGroupFromRouteRecursive(route.root);
+  const rootSegmentGroup = createRoot(rootCandidate);
+
+  return targetGroup ?? rootSegmentGroup;
+}
 
 export function createUrlTree(
     relativeTo: UrlSegmentGroup, commands: any[], queryParams: Params|null,
