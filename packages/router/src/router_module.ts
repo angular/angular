@@ -237,13 +237,11 @@ export function provideRoutes(routes: Routes): any {
  * The following values have been [deprecated](guide/releases#deprecation-practices) since v11,
  * and should not be used for new applications.
  *
- * * 'enabled' - This option is 1:1 replaceable with `enabledBlocking`.
- *
  * @see `forRoot()`
  *
  * @publicApi
  */
-export type InitialNavigation = 'disabled'|'enabled'|'enabledBlocking'|'enabledNonBlocking';
+export type InitialNavigation = 'disabled'|'enabledBlocking'|'enabledNonBlocking';
 
 /**
  * A set of configuration options for a router module, provided in the
@@ -558,9 +556,7 @@ export class RouterInitializer implements OnDestroy {
       if (opts.initialNavigation === 'disabled') {
         router.setUpLocationChangeListener();
         resolve(true);
-      } else if (
-          // TODO: enabled is deprecated as of v11, can be removed in v13
-          opts.initialNavigation === 'enabled' || opts.initialNavigation === 'enabledBlocking') {
+      } else if (opts.initialNavigation === 'enabledBlocking') {
         router.hooks.afterPreactivation = () => {
           // only the initial navigation should be delayed
           if (!this.initNavigation) {
