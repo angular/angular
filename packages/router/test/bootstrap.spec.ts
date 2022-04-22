@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_BASE_HREF, DOCUMENT, Location, ɵgetDOM as getDOM} from '@angular/common';
-import {ApplicationRef, Component, CUSTOM_ELEMENTS_SCHEMA, destroyPlatform, NgModule} from '@angular/core';
+import {APP_BASE_HREF, DOCUMENT, ɵgetDOM as getDOM} from '@angular/common';
+import {ApplicationRef, Component, CUSTOM_ELEMENTS_SCHEMA, destroyPlatform, Injectable, NgModule} from '@angular/core';
 import {inject} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
@@ -48,6 +48,7 @@ describe('bootstrap', () => {
   class SecondRootCmp {
   }
 
+  @Injectable({providedIn: 'root'})
   class TestResolver implements Resolve<any> {
     resolve() {
       let resolve: any = null;
@@ -75,6 +76,116 @@ describe('bootstrap', () => {
       getDOM().remove(oldRoots[i]);
     }
   }));
+
+  // TODO(#44355): bootstrapping fails when the initial navigation fails
+  xit('should complete resolvers when initial navigation fails and initialNavigation = enabledBlocking',
+      async () => {
+        @NgModule({
+          imports: [
+            BrowserModule,
+            RouterModule.forRoot(
+                [{
+                  matcher: () => {
+                    throw new Error('error in matcher');
+                  },
+                  children: []
+                }],
+                {useHash: true, initialNavigation: 'enabledBlocking'})
+          ],
+          declarations: [RootCmp],
+          bootstrap: [RootCmp],
+          providers: [...testProviders],
+          schemas: [CUSTOM_ELEMENTS_SCHEMA]
+        })
+        class TestModule {
+          constructor() {
+            log.push('TestModule');
+          }
+        }
+
+        await platformBrowserDynamic([]).bootstrapModule(TestModule).then(res => {
+          const router = res.injector.get(Router);
+          expect(router.navigated).toEqual(false);
+          expect(router.getCurrentNavigation()).toBeNull();
+          expect(log).toContain('TestModule');
+          expect(log).toContain('NavigationError');
+        });
+      });
+
+  it('should wait for redirect when initialNavigation = enabledBlocking', async () => {
+    @Injectable({providedIn: 'root'})
+    class Redirect {
+      constructor(private router: Router) {}
+      canActivate() {
+        this.router.navigateByUrl('redirectToMe');
+        return false;
+      }
+    }
+    @NgModule({
+      imports: [
+        BrowserModule,
+        RouterModule.forRoot(
+            [
+              {path: 'redirectToMe', children: [], resolve: {test: TestResolver}},
+              {path: '**', canActivate: [Redirect], children: []}
+            ],
+            {useHash: true, initialNavigation: 'enabledBlocking'})
+      ],
+      declarations: [RootCmp],
+      bootstrap: [RootCmp],
+      providers: [...testProviders],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA]
+    })
+    class TestModule {
+      constructor(router: Router) {
+        log.push('TestModule');
+      }
+    }
+
+    await platformBrowserDynamic([]).bootstrapModule(TestModule).then(res => {
+      const router = res.injector.get(Router);
+      expect(router.navigated).toEqual(true);
+      expect(router.url).toContain('redirectToMe');
+      expect(log).toContain('TestModule');
+    });
+  });
+
+  it('should wait for redirect with UrlTree when initialNavigation = enabledBlocking', async () => {
+    @Injectable({providedIn: 'root'})
+    class Redirect {
+      constructor(private router: Router) {}
+      canActivate() {
+        return this.router.createUrlTree(['/redirectToMe']);
+      }
+    }
+    @NgModule({
+      imports: [
+        BrowserModule,
+        RouterModule.forRoot(
+            [
+              {path: 'redirectToMe', children: [], resolve: {test: TestResolver}},
+              {path: '**', canActivate: [Redirect], children: []}
+            ],
+            {useHash: true, initialNavigation: 'enabledBlocking'})
+      ],
+      declarations: [RootCmp],
+      bootstrap: [RootCmp],
+      providers: [...testProviders],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA]
+    })
+    class TestModule {
+      constructor(router: Router) {
+        log.push('TestModule');
+      }
+    }
+
+    await platformBrowserDynamic([]).bootstrapModule(TestModule).then(res => {
+      const router = res.injector.get(Router);
+      expect(router.navigated).toEqual(true);
+      expect(router.url).toContain('redirectToMe');
+      expect(log).toContain('TestModule');
+    });
+  });
 
   it('should wait for resolvers to complete when initialNavigation = enabledBlocking', (done) => {
     @Component({selector: 'test', template: 'test'})
