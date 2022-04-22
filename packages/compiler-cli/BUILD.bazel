@@ -1,6 +1,6 @@
-load("//tools:defaults.bzl", "api_golden_test", "pkg_npm", "ts_config", "ts_library")
 load("@npm//@bazel/esbuild:index.bzl", "esbuild", "esbuild_config")
-load("//tools:extract_typings_rule.bzl", "extract_typings")
+load("//tools:defaults.bzl", "api_golden_test", "pkg_npm", "ts_config", "ts_library")
+load("//tools:types_bundle_artifact.bzl", "generate_types_bundle_artifact")
 
 # Load ng_perf_flag explicitly from ng_perf.bzl as it's private API, and not exposed to other
 # consumers of @angular/bazel.
@@ -8,12 +8,39 @@ load("//packages/bazel/src:ng_perf.bzl", "ng_perf_flag")
 
 package(default_visibility = ["//visibility:public"])
 
-PUBLIC_TARGETS = [
-    ":compiler-cli",
-    "//packages/compiler-cli/private",
-    "//packages/compiler-cli/ngcc",
-    "//packages/compiler-cli/linker",
-    "//packages/compiler-cli/linker/babel",
+PUBLIC_ENTRY_POINTS = [
+    {
+        "file": "//packages/compiler-cli:index.ts",
+        "target": "//packages/compiler-cli",
+    },
+    {
+        "file": "//packages/compiler-cli/ngcc:index.ts",
+        "target": "//packages/compiler-cli/ngcc",
+    },
+    {
+        "file": "//packages/compiler-cli/linker:index.ts",
+        "target": "//packages/compiler-cli/linker",
+    },
+    {
+        "file": "//packages/compiler-cli/linker/babel:index.ts",
+        "target": "//packages/compiler-cli/linker/babel",
+    },
+    {
+        "file": "//packages/compiler-cli/private:bazel.ts",
+        "target": "//packages/compiler-cli/private",
+    },
+    {
+        "file": "//packages/compiler-cli/private:localize.ts",
+        "target": "//packages/compiler-cli/private",
+    },
+    {
+        "file": "//packages/compiler-cli/private:migrations.ts",
+        "target": "//packages/compiler-cli/private",
+    },
+    {
+        "file": "//packages/compiler-cli/private:tooling.ts",
+        "target": "//packages/compiler-cli/private",
+    },
 ]
 
 esbuild_config(
@@ -24,18 +51,10 @@ esbuild_config(
 esbuild(
     name = "bundles",
     config = ":esbuild_config",
-    entry_points = [
-        ":index.ts",
+    entry_points = [e["file"] for e in PUBLIC_ENTRY_POINTS] + [
         "//packages/compiler-cli:src/bin/ngc.ts",
         "//packages/compiler-cli/ngcc:main-ngcc.ts",
-        "//packages/compiler-cli/ngcc:index.ts",
         "//packages/compiler-cli:src/bin/ng_xi18n.ts",
-        "//packages/compiler-cli/linker:index.ts",
-        "//packages/compiler-cli/linker/babel:index.ts",
-        "//packages/compiler-cli/private:bazel.ts",
-        "//packages/compiler-cli/private:localize.ts",
-        "//packages/compiler-cli/private:migrations.ts",
-        "//packages/compiler-cli/private:tooling.ts",
         "//packages/compiler-cli/ngcc:src/locking/lock_file_with_child_process/ngcc_lock_unlocker.ts",
         "//packages/compiler-cli/ngcc:src/execution/cluster/ngcc_cluster_worker.ts",
     ],
@@ -59,7 +78,7 @@ esbuild(
     platform = "node",
     splitting = True,
     target = "node12",
-    deps = PUBLIC_TARGETS,
+    deps = depset([e["target"] for e in PUBLIC_ENTRY_POINTS]).to_list(),
 )
 
 ts_config(
@@ -116,9 +135,9 @@ ts_library(
     ],
 )
 
-extract_typings(
-    name = "api_type_definitions",
-    deps = PUBLIC_TARGETS,
+generate_types_bundle_artifact(
+    name = "types_tree_artifact",
+    entry_points = PUBLIC_ENTRY_POINTS,
 )
 
 pkg_npm(
@@ -126,6 +145,7 @@ pkg_npm(
     srcs = [
         "package.json",
     ],
+    nested_packages = [":types_tree_artifact"],
     tags = [
         "release-with-framework",
     ],
@@ -136,7 +156,6 @@ pkg_npm(
         "//packages/compiler-cli/integrationtest:__pkg__",
     ],
     deps = [
-        ":api_type_definitions",
         ":bundles",
     ],
 )
