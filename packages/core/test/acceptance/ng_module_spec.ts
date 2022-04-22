@@ -212,6 +212,39 @@ describe('NgModule', () => {
          expect(spy.calls.mostRecent().args[0]).toMatch(/'custom-el' is not a known element/);
        });
 
+    it('should log an error about unknown element for a standalone component without CUSTOM_ELEMENTS_SCHEMA',
+       () => {
+         @Component({
+           template: `<custom-el></custom-el>`,
+           standalone: true,
+         })
+         class MyComp {
+         }
+
+         const spy = spyOn(console, 'error');
+         TestBed.configureTestingModule({imports: [MyComp]});
+         const fixture = TestBed.createComponent(MyComp);
+         fixture.detectChanges();
+         expect(spy.calls.mostRecent().args[0]).toMatch(/'custom-el' is not a known element/);
+       });
+
+    it('should not log an error about unknown element for a standalone component with CUSTOM_ELEMENTS_SCHEMA',
+       () => {
+         @Component({
+           template: `<custom-el></custom-el>`,
+           standalone: true,
+           schemas: [CUSTOM_ELEMENTS_SCHEMA]
+         })
+         class MyComp {
+         }
+
+         const spy = spyOn(console, 'error');
+         TestBed.configureTestingModule({imports: [MyComp]});
+         const fixture = TestBed.createComponent(MyComp);
+         fixture.detectChanges();
+         expect(spy).not.toHaveBeenCalled();
+       });
+
     it('should log an error about unknown element without CUSTOM_ELEMENTS_SCHEMA for element without dash in tag name',
        () => {
          @Component({template: `<custom></custom>`})

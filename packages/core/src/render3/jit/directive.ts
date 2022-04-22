@@ -167,6 +167,17 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
           const scopes = transitiveScopesFor(type.ngSelectorScope);
           patchComponentDefWithScope(ngComponentDef, scopes);
         }
+
+        if (metadata.schemas) {
+          if (metadata.standalone) {
+            ngComponentDef.schemas = metadata.schemas;
+          } else {
+            throw new Error(`The 'schemas' was specified for the ${
+                stringifyForError(type)} but is only valid on a component that is standalone.`);
+          }
+        } else if (metadata.standalone) {
+          ngComponentDef.schemas = [];
+        }
       }
       return ngComponentDef;
     },

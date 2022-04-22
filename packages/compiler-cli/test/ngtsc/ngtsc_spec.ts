@@ -4419,14 +4419,11 @@ function allTests(os: string) {
     it('should not include `schemas` in component and module defs', () => {
       env.write('test.ts', `
         import {Component, NgModule, NO_ERRORS_SCHEMA} from '@angular/core';
-
         @Component({
           selector: 'comp',
           template: '<custom-el></custom-el>',
-          schemas: [NO_ERRORS_SCHEMA],
         })
         class MyComp {}
-
         @NgModule({
           declarations: [MyComp],
           schemas: [NO_ERRORS_SCHEMA],

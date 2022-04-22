@@ -187,6 +187,8 @@ export interface Component extends Directive {
     moduleId?: string;
     preserveWhitespaces?: boolean;
     // (undocumented)
+    schemas?: SchemaMetadata[];
+    // (undocumented)
     standalone?: boolean;
     styles?: string[];
     styleUrls?: string[];

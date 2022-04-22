@@ -116,6 +116,53 @@ runInEachFileSystem(() => {
         expect(getSourceCodeForDiagnostic(diags[0])).toEqual('[TestDir]');
       });
 
+      it('should compile a standalone component with schema support', () => {
+        env.write('test.ts', `
+              import {Component, NO_ERRORS_SCHEMA} from '@angular/core';
+        
+              @Component({
+                selector: 'test-cmp',
+                standalone: true,
+                template: '<is-unknown></is-unknown>',
+                schemas: [NO_ERRORS_SCHEMA],
+              })
+              export class TestCmp {}
+            `);
+        env.driveMain();
+
+        // verify that there are no compilation errors
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+
+        // verify generated code for the unknown element
+        const jsCode = env.getContents('test.js');
+        expect(jsCode).toContain('i0.ɵɵelement(0, "is-unknown");');
+
+        // verify schemas are not included in the generated code
+        const jsCodeAoT = jsCode.slice(
+            0, jsCode.indexOf('(function () { (typeof ngDevMode === "undefined" || ngDevMode)'));
+        expect(jsCodeAoT).not.toContain('schemas: [NO_ERRORS_SCHEMA]');
+      });
+
+      it('should error when a non-standalone component tries to use schemas', () => {
+        env.write('test.ts', `
+              import {Component, NO_ERRORS_SCHEMA} from '@angular/core';
+        
+              @Component({
+                selector: 'test-cmp',
+                template: '<div></div>',
+                schemas: [NO_ERRORS_SCHEMA],
+              })
+              export class TestCmp {}
+            `);
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].code).toBe(ngErrorCode(ErrorCode.COMPONENT_NOT_STANDALONE));
+        expect(diags[0].messageText)
+            .toBe(`'schemas' is only valid on a component that is standalone.`);
+        expect(getSourceCodeForDiagnostic(diags[0])).toEqual('[NO_ERRORS_SCHEMA]');
+      });
+
       it('should compile a standalone component that imports an NgModule', () => {
         env.write('test.ts', `
               import {Component, Directive, NgModule} from '@angular/core';

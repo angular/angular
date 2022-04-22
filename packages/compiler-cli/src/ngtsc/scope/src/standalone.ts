@@ -100,7 +100,7 @@ export class StandaloneComponentScopeReader implements ComponentScopeReader {
         component: clazz,
         dependencies: Array.from(dependencies),
         isPoisoned,
-        schemas: [],
+        schemas: clazzMeta.schemas ?? [],
       });
     }
 
