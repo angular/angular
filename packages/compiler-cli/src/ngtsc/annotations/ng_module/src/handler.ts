@@ -20,7 +20,7 @@ import {LocalModuleScopeRegistry, ScopeData} from '../../../scope';
 import {FactoryTracker} from '../../../shims/api';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence, ResolveResult} from '../../../transform';
 import {getSourceFile} from '../../../util/src/typescript';
-import {combineResolvers, compileDeclareFactory, compileNgFactoryDefField, createValueHasWrongTypeError, extractClassMetadata, findAngularDecorator, forwardRefResolver, getProviderDiagnostics, getValidConstructorDependencies, isExpressionForwardReference, ReferencesRegistry, resolveProvidersRequiringFactory, toR3Reference, unwrapExpression, wrapFunctionExpressionsInParens, wrapTypeReference} from '../../common';
+import {combineResolvers, compileDeclareFactory, compileNgFactoryDefField, createValueHasWrongTypeError, extractClassMetadata, extractSchemas, findAngularDecorator, forwardRefResolver, getProviderDiagnostics, getValidConstructorDependencies, isExpressionForwardReference, ReferencesRegistry, resolveProvidersRequiringFactory, toR3Reference, unwrapExpression, wrapFunctionExpressionsInParens, wrapTypeReference} from '../../common';
 
 export interface NgModuleAnalysis {
   mod: R3NgModuleMetadata;
@@ -237,40 +237,9 @@ export class NgModuleDecoratorHandler implements
       bootstrapRefs = this.resolveTypeList(expr, bootstrapMeta, name, 'bootstrap', 0).references;
     }
 
-    const schemas: SchemaMetadata[] = [];
-    if (ngModule.has('schemas')) {
-      const rawExpr = ngModule.get('schemas')!;
-      const result = this.evaluator.evaluate(rawExpr);
-      if (!Array.isArray(result)) {
-        throw createValueHasWrongTypeError(rawExpr, result, `NgModule.schemas must be an array`);
-      }
-
-      for (const schemaRef of result) {
-        if (!(schemaRef instanceof Reference)) {
-          throw createValueHasWrongTypeError(
-              rawExpr, result, 'NgModule.schemas must be an array of schemas');
-        }
-        const id = schemaRef.getIdentityIn(schemaRef.node.getSourceFile());
-        if (id === null || schemaRef.ownedByModuleGuess !== '@angular/core') {
-          throw createValueHasWrongTypeError(
-              rawExpr, result, 'NgModule.schemas must be an array of schemas');
-        }
-        // Since `id` is the `ts.Identifer` within the schema ref's declaration file, it's safe to
-        // use `id.text` here to figure out which schema is in use. Even if the actual reference was
-        // renamed when the user imported it, these names will match.
-        switch (id.text) {
-          case 'CUSTOM_ELEMENTS_SCHEMA':
-            schemas.push(CUSTOM_ELEMENTS_SCHEMA);
-            break;
-          case 'NO_ERRORS_SCHEMA':
-            schemas.push(NO_ERRORS_SCHEMA);
-            break;
-          default:
-            throw createValueHasWrongTypeError(
-                rawExpr, schemaRef, `'${schemaRef.debugName}' is not a valid NgModule schema`);
-        }
-      }
-    }
+    const schemas = ngModule.has('schemas') ?
+        extractSchemas(ngModule.get('schemas')!, this.evaluator, 'NgModule') :
+        [];
 
     let id: Expression|null = null;
     if (ngModule.has('id')) {

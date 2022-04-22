@@ -167,6 +167,10 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
           const scopes = transitiveScopesFor(type.ngSelectorScope);
           patchComponentDefWithScope(ngComponentDef, scopes);
         }
+
+        if (metadata.standalone && metadata.schemas) {
+          ngComponentDef.schemas = metadata.schemas;
+        }
       }
       return ngComponentDef;
     },

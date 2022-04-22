@@ -148,6 +148,7 @@ export class DirectiveDecoratorHandler implements
       animationTriggerNames: null,
       isStandalone: analysis.meta.isStandalone,
       imports: null,
+      schemas: null,
     });
 
     this.injectableRegistry.registerInjectable(node);

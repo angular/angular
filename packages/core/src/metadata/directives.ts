@@ -13,6 +13,7 @@ import {compileComponent, compileDirective} from '../render3/jit/directive';
 import {compilePipe} from '../render3/jit/pipe';
 import {makeDecorator, makePropDecorator, TypeDecorator} from '../util/decorators';
 
+import {SchemaMetadata} from './schema';
 import {ViewEncapsulation} from './view';
 
 
@@ -560,6 +561,8 @@ export interface Component extends Directive {
 
   // TODO: better type here!
   imports?: (Type<any>|any[])[];
+
+  schemas?: SchemaMetadata[];
 }
 
 /**

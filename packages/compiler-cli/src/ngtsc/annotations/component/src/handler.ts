@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AnimationTriggerNames, compileClassMetadata, compileComponentFromMetadata, compileDeclareClassMetadata, compileDeclareComponentFromMetadata, ConstantPool, CssSelector, DeclarationListEmitMode, DeclareComponentTemplateInfo, DEFAULT_INTERPOLATION_CONFIG, DomElementSchemaRegistry, Expression, FactoryTarget, makeBindingParser, R3ComponentMetadata, R3DirectiveDependencyMetadata, R3NgModuleDependencyMetadata, R3PipeDependencyMetadata, R3TargetBinder, R3TemplateDependency, R3TemplateDependencyKind, R3TemplateDependencyMetadata, SelectorMatcher, ViewEncapsulation, WrappedNodeExpr} from '@angular/compiler';
+import {AnimationTriggerNames, compileClassMetadata, compileComponentFromMetadata, compileDeclareClassMetadata, compileDeclareComponentFromMetadata, ConstantPool, CssSelector, DeclarationListEmitMode, DeclareComponentTemplateInfo, DEFAULT_INTERPOLATION_CONFIG, DomElementSchemaRegistry, Expression, FactoryTarget, makeBindingParser, R3ComponentMetadata, R3DirectiveDependencyMetadata, R3NgModuleDependencyMetadata, R3PipeDependencyMetadata, R3TargetBinder, R3TemplateDependency, R3TemplateDependencyKind, R3TemplateDependencyMetadata, SchemaMetadata, SelectorMatcher, ViewEncapsulation, WrappedNodeExpr} from '@angular/compiler';
 import ts from 'typescript';
 
 import {Cycle, CycleAnalyzer, CycleHandlingStrategy} from '../../../cycles';
@@ -26,7 +26,7 @@ import {TypeCheckContext} from '../../../typecheck/api';
 import {ExtendedTemplateChecker} from '../../../typecheck/extended/api';
 import {getSourceFile} from '../../../util/src/typescript';
 import {Xi18nContext} from '../../../xi18n';
-import {compileDeclareFactory, compileNgFactoryDefField, compileResults, extractClassMetadata, findAngularDecorator, getDirectiveDiagnostics, getProviderDiagnostics, isExpressionForwardReference, readBaseClass, resolveEnumValue, resolveImportedFile, resolveLiteral, resolveProvidersRequiringFactory, ResourceLoader, toFactoryMetadata, wrapFunctionExpressionsInParens} from '../../common';
+import {compileDeclareFactory, compileNgFactoryDefField, compileResults, extractClassMetadata, extractSchemas, findAngularDecorator, getDirectiveDiagnostics, getProviderDiagnostics, isExpressionForwardReference, readBaseClass, resolveEnumValue, resolveImportedFile, resolveLiteral, resolveProvidersRequiringFactory, ResourceLoader, toFactoryMetadata, wrapFunctionExpressionsInParens} from '../../common';
 import {extractDirectiveMetadata, parseFieldArrayValue} from '../../directive';
 import {NgModuleSymbol} from '../../ng_module';
 
@@ -288,6 +288,20 @@ export class ComponentDecoratorHandler implements
       }
     }
 
+    let schemas: SchemaMetadata[]|null = null;
+    if (component.has('schemas') && !metadata.isStandalone) {
+      if (diagnostics === undefined) {
+        diagnostics = [];
+      }
+      diagnostics.push(makeDiagnostic(
+          ErrorCode.COMPONENT_NOT_STANDALONE, component.get('schemas')!,
+          `'schemas' is only valid on a component that is standalone.`));
+    } else if (component.has('schemas')) {
+      schemas = extractSchemas(component.get('schemas')!, this.evaluator, 'Component');
+    } else if (metadata.isStandalone) {
+      schemas = [];
+    }
+
     // Parse the template.
     // If a preanalyze phase was executed, the template may already exist in parsed form, so check
     // the preanalyzeTemplateCache.
@@ -430,6 +444,7 @@ export class ComponentDecoratorHandler implements
         animationTriggerNames,
         rawImports,
         resolvedImports,
+        schemas,
       },
       diagnostics,
     };
@@ -468,6 +483,7 @@ export class ComponentDecoratorHandler implements
       isStandalone: analysis.meta.isStandalone,
       imports: analysis.resolvedImports,
       animationTriggerNames: analysis.animationTriggerNames,
+      schemas: analysis.schemas,
     });
 
     this.resourceRegistry.registerResources(analysis.resources, node);

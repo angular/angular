@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AnimationTriggerNames, R3ClassMetadata, R3ComponentMetadata, R3TemplateDependency, R3TemplateDependencyMetadata} from '@angular/compiler';
+import {AnimationTriggerNames, R3ClassMetadata, R3ComponentMetadata, R3TemplateDependency, R3TemplateDependencyMetadata, SchemaMetadata} from '@angular/compiler';
 import ts from 'typescript';
 
 import {Reference} from '../../../imports';
@@ -68,6 +68,8 @@ export interface ComponentAnalysisData {
 
   rawImports: ts.Expression|null;
   resolvedImports: Reference<ClassDeclaration>[]|null;
+
+  schemas: SchemaMetadata[]|null;
 }
 
 export type ComponentResolutionData =

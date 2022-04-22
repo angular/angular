@@ -156,6 +156,11 @@ export interface DirectiveMeta extends T2DirectiveMeta, DirectiveTypeCheckMeta {
    * For standalone components, the list of imported types.
    */
   imports: Reference<ClassDeclaration>[]|null;
+
+  /**
+   * For standalone components, the list of schemas declared.
+   */
+  schemas: SchemaMetadata[]|null;
 }
 
 /**
