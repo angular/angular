@@ -76,43 +76,6 @@ describe('bootstrap', () => {
     }
   }));
 
-  it('should wait for resolvers to complete when initialNavigation = enabled', (done) => {
-    @Component({selector: 'test', template: 'test'})
-    class TestCmpEnabled {
-    }
-
-    @NgModule({
-      imports: [
-        BrowserModule,
-        RouterModule.forRoot(
-            [{path: '**', component: TestCmpEnabled, resolve: {test: TestResolver}}],
-            {useHash: true, initialNavigation: 'enabled'})
-      ],
-      declarations: [RootCmp, TestCmpEnabled],
-      bootstrap: [RootCmp],
-      providers: [...testProviders, TestResolver],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA]
-    })
-    class TestModule {
-      constructor(router: Router) {
-        log.push('TestModule');
-        router.events.subscribe(e => log.push(e.constructor.name));
-      }
-    }
-
-    platformBrowserDynamic([]).bootstrapModule(TestModule).then(res => {
-      const router = res.injector.get(Router);
-      const data = router.routerState.snapshot.root.firstChild!.data;
-      expect(data['test']).toEqual('test-data');
-      expect(log).toEqual([
-        'TestModule', 'NavigationStart', 'RoutesRecognized', 'GuardsCheckStart',
-        'ChildActivationStart', 'ActivationStart', 'GuardsCheckEnd', 'ResolveStart', 'ResolveEnd',
-        'RootCmp', 'ActivationEnd', 'ChildActivationEnd', 'NavigationEnd', 'Scroll'
-      ]);
-      done();
-    });
-  });
-
   it('should wait for resolvers to complete when initialNavigation = enabledBlocking', (done) => {
     @Component({selector: 'test', template: 'test'})
     class TestCmpEnabled {

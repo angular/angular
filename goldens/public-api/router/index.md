@@ -249,7 +249,7 @@ export class GuardsCheckStart extends RouterEvent {
 }
 
 // @public
-export type InitialNavigation = 'disabled' | 'enabled' | 'enabledBlocking' | 'enabledNonBlocking';
+export type InitialNavigation = 'disabled' | 'enabledBlocking' | 'enabledNonBlocking';
 
 // @public
 export interface IsActiveMatchOptions {
