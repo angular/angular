@@ -7,7 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {IMAGE_LOADER, ImageLoader, ImageLoaderConfig, NgImage} from '@angular/common/src/directives/ng_image';
+import {IMAGE_LOADER, ImageLoader, ImageLoaderConfig, NgOptimizedImage} from '@angular/common/src/directives/ng_optimized_image';
 import {Component} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -64,9 +64,9 @@ describe('Image directive', () => {
         fixture.detectChanges();
       })
           .toThrowError(
-              'NG02950: The NgImage directive (activated on an <img> element with the ' +
+              'NG02950: The NgOptimizedImage directive (activated on an <img> element with the ' +
               '`raw-src="path/img.png"`) detected that the `src` is also set (to `path/img2.png`). ' +
-              'Please remove the `src` attribute from this image. The NgImage directive will use ' +
+              'Please remove the `src` attribute from this image. The NgOptimizedImage directive will use ' +
               'the `raw-src` to compute the final image URL and set the `src` itself.');
     });
   });
@@ -88,9 +88,9 @@ function setupTestingModule(config?: {imageLoader: ImageLoader}) {
   const providers =
       config?.imageLoader ? [{provide: IMAGE_LOADER, useValue: config?.imageLoader}] : [];
   TestBed.configureTestingModule({
-    // Note: the `NgImage` is a part of declarations for now,
+    // Note: the `NgOptimizedImage` is a part of declarations for now,
     // since it's experimental and not yet added to the `CommonModule`.
-    declarations: [TestComponent, NgImage],
+    declarations: [TestComponent, NgOptimizedImage],
     imports: [CommonModule],
     providers,
   });
