@@ -493,7 +493,7 @@ export class Router {
     errorHandler: ErrorHandler;
     readonly events: Observable<Event_2>;
     getCurrentNavigation(): Navigation | null;
-    initialNavigation(): void;
+    initialNavigation(): Promise<boolean | null>;
     // @deprecated
     isActive(url: string | UrlTree, exact: boolean): boolean;
     isActive(url: string | UrlTree, matchOptions: IsActiveMatchOptions): boolean;

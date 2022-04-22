@@ -551,7 +551,7 @@ export class RouterInitializer implements OnDestroy {
       }
 
       let resolve: Function = null!;
-      const res = new Promise(r => resolve = r);
+      const res = new Promise<true>(r => resolve = r);
       const router = this.injector.get(Router);
       const opts = this.injector.get(ROUTER_CONFIGURATION);
 
@@ -573,7 +573,20 @@ export class RouterInitializer implements OnDestroy {
             return of(null) as any;
           }
         };
-        router.initialNavigation();
+        router
+            .initialNavigation()
+            // If the initial navigation failed or did not trigger for some reason, we need to
+            // resolve the app initializer here. Otherwise, it will never be resolved and cause
+            // the application to hang indefinitely.
+            .then(result => {
+              if (result !== true) {
+                resolve(true);
+              }
+            })
+            .catch((e) => {
+              resolve(true);
+              throw e;
+            });
       } else {
         resolve(true);
       }

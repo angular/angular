@@ -1035,12 +1035,19 @@ export class Router {
 
   /**
    * Sets up the location change listener and performs the initial navigation.
+   *
+   * @see Router.navigateByUrl()
+   * @returns If a navigation is triggered, returns a Promise that resolves to 'true' when
+   *     navigation succeeds, to 'false' when navigation fails, or is rejected on error. If no
+   * navigation was triggered as a result of calling this function, a `Promise` that immediately
+   * resolves with `null` is returned.
    */
-  initialNavigation(): void {
+  initialNavigation(): Promise<boolean|null> {
     this.setUpLocationChangeListener();
     if (this.navigationId === 0) {
-      this.navigateByUrl(this.location.path(true), {replaceUrl: true});
+      return this.navigateByUrl(this.location.path(true), {replaceUrl: true});
     }
+    return Promise.resolve(null);
   }
 
   /**

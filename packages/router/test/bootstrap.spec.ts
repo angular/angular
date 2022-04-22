@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_BASE_HREF, DOCUMENT, Location, ɵgetDOM as getDOM} from '@angular/common';
+import {APP_BASE_HREF, DOCUMENT, ɵgetDOM as getDOM} from '@angular/common';
 import {ApplicationRef, Component, CUSTOM_ELEMENTS_SCHEMA, destroyPlatform, NgModule} from '@angular/core';
 import {inject} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
@@ -112,6 +112,42 @@ describe('bootstrap', () => {
       done();
     });
   });
+
+  it('should complete resolvers when initial navigation fails and initialNavigation = enabledBlocking',
+     (done) => {
+       @NgModule({
+         imports: [
+           BrowserModule,
+           RouterModule.forRoot(
+               [{
+                 matcher: () => {
+                   throw new Error('error in matcher');
+                 },
+                 children: []
+               }],
+               {useHash: true, initialNavigation: 'enabledBlocking'})
+         ],
+         declarations: [RootCmp],
+         bootstrap: [RootCmp],
+         providers: [...testProviders],
+         schemas: [CUSTOM_ELEMENTS_SCHEMA]
+       })
+       class TestModule {
+         constructor(router: Router) {
+           log.push('TestModule');
+           router.events.subscribe(e => log.push(e.constructor.name));
+         }
+       }
+
+       platformBrowserDynamic([]).bootstrapModule(TestModule).then(res => {
+         const router = res.injector.get(Router);
+         expect(router.navigated).toEqual(false);
+         expect(router.getCurrentNavigation()).toBeNull();
+         expect(log).toContain('NavigationError');
+         expect(log).toContain('TestModule');
+         done();
+       });
+     });
 
   it('should wait for resolvers to complete when initialNavigation = enabledBlocking', (done) => {
     @Component({selector: 'test', template: 'test'})
