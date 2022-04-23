@@ -13,6 +13,7 @@ const WILD_OPEN = '(?:.+\\/)?';
 const TO_ESCAPE_BASE = [
   {replace: /\./g, with: '\\.'},
   {replace: /\+/g, with: '\\+'},
+  {replace: /\$/g, with: '\\$'},
   {replace: /\*/g, with: WILD_SINGLE},
 ];
 const TO_ESCAPE_WILDCARD_QM = [

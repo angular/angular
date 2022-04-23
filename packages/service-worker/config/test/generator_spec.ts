@@ -51,6 +51,7 @@ describe('Generator', () => {
           '/api/**',
           'relapi/**',
           'https://example.com/**/*?with+escaped+chars',
+          'https://example.com/$value',
         ],
         cacheConfig: {
           maxSize: 100,
@@ -100,6 +101,7 @@ describe('Generator', () => {
           '\\/api\\/.*',
           '\\/test\\/relapi\\/.*',
           'https:\\/\\/example\\.com\\/(?:.+\\/)?[^/]*\\?with\\+escaped\\+chars',
+          'https:\\/\\/example\\.com\\/\\$value',
         ],
         strategy: 'performance',
         maxSize: 100,
