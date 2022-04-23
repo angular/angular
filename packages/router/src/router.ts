@@ -1000,27 +1000,21 @@ export class Router {
                          if (!redirecting) {
                            t.resolve(false);
                          } else {
-                           // setTimeout is required so this navigation finishes with
-                           // the return EMPTY below. If it isn't allowed to finish
-                           // processing, there can be multiple navigations to the same
-                           // URL.
-                           setTimeout(() => {
-                             const mergedTree =
-                                 this.urlHandlingStrategy.merge(e.url, this.rawUrlTree);
-                             const extras = {
-                               skipLocationChange: t.extras.skipLocationChange,
-                               // The URL is already updated at this point if we have 'eager' URL
-                               // updates or if the navigation was triggered by the browser (back
-                               // button, URL bar, etc). We want to replace that item in history if
-                               // the navigation is rejected.
-                               replaceUrl: this.urlUpdateStrategy === 'eager' ||
-                                   isBrowserTriggeredNavigation(t.source)
-                             };
+                           const mergedTree =
+                               this.urlHandlingStrategy.merge(e.url, this.rawUrlTree);
+                           const extras = {
+                             skipLocationChange: t.extras.skipLocationChange,
+                             // The URL is already updated at this point if we have 'eager' URL
+                             // updates or if the navigation was triggered by the browser (back
+                             // button, URL bar, etc). We want to replace that item in history if
+                             // the navigation is rejected.
+                             replaceUrl: this.urlUpdateStrategy === 'eager' ||
+                                 isBrowserTriggeredNavigation(t.source)
+                           };
 
-                             this.scheduleNavigation(
-                                 mergedTree, 'imperative', null, extras,
-                                 {resolve: t.resolve, reject: t.reject, promise: t.promise});
-                           }, 0);
+                           this.scheduleNavigation(
+                               mergedTree, 'imperative', null, extras,
+                               {resolve: t.resolve, reject: t.reject, promise: t.promise});
                          }
 
                          /* All other errors should reset to the router's internal URL reference to
