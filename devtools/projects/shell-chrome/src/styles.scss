@@ -1,6 +1,7 @@
 @use 'sass:map';
 @use 'external/npm/node_modules/@angular/material/index' as mat;
 @include mat.core();
+@import "./third_party/gitub.com/google/material-design-icons/material-design-icons.css";
 
 html,
 body {

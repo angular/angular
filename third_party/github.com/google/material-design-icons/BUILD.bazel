@@ -12,5 +12,8 @@ filegroup(
         # https://github.com/google/material-design-icons/blob/3.0.1/iconfont/MaterialIcons-Regular.ttf
         "MaterialIcons-Regular.ttf",
     ],
-    visibility = ["//modules/playground:__subpackages__"],
+    visibility = [
+        "//devtools/projects/shell-chrome:__subpackages__",
+        "//modules/playground:__subpackages__",
+    ],
 )
