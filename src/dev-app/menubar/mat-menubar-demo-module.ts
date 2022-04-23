@@ -9,7 +9,7 @@
 import {NgModule} from '@angular/core';
 import {RouterModule} from '@angular/router';
 import {MatMenuBarModule} from '@angular/material-experimental/menubar';
-import {CdkMenuModule} from '@angular/cdk-experimental/menu';
+import {CdkMenuModule} from '@angular/cdk/menu';
 import {MatMenuBarDemo, DemoMenu, DemoMenuItem} from './mat-menubar-demo';
 
 @NgModule({

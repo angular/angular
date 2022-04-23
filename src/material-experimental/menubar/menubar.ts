@@ -7,13 +7,7 @@
  */
 
 import {ChangeDetectionStrategy, Component, ViewEncapsulation} from '@angular/core';
-import {
-  CDK_MENU,
-  CdkMenuBar,
-  CdkMenuGroup,
-  MenuStack,
-  MENU_STACK,
-} from '@angular/cdk-experimental/menu';
+import {CDK_MENU, CdkMenuBar, CdkMenuGroup, MenuStack, MENU_STACK} from '@angular/cdk/menu';
 
 /**
  * A material design Menubar adhering to the functionality of CdkMenuBar. MatMenubar

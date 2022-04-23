@@ -5,7 +5,7 @@ import {CdkMenuModule} from './menu-module';
 import {CdkMenuItemCheckbox} from './menu-item-checkbox';
 import {CDK_MENU} from './menu-interface';
 import {CdkMenu} from './menu';
-import {MENU_STACK, MenuStack} from '@angular/cdk-experimental/menu/menu-stack';
+import {MENU_STACK, MenuStack} from './menu-stack';
 
 describe('MenuItemCheckbox', () => {
   let fixture: ComponentFixture<SingleCheckboxButton>;

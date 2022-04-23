@@ -3,7 +3,7 @@ import {CdkMenuModule} from './menu-module';
 import {TestBed, waitForAsync, ComponentFixture} from '@angular/core/testing';
 import {CdkMenu} from './menu';
 import {CdkContextMenuTrigger} from './context-menu-trigger';
-import {dispatchKeyboardEvent, dispatchMouseEvent} from '../../cdk/testing/private';
+import {dispatchKeyboardEvent, dispatchMouseEvent} from '@angular/cdk/testing/private';
 import {By} from '@angular/platform-browser';
 import {CdkMenuItem} from './menu-item';
 import {CdkMenuTrigger} from './menu-trigger';

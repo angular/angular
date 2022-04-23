@@ -1,6 +1,6 @@
 import {Component, ElementRef, ViewChild} from '@angular/core';
 import {ComponentFixture, waitForAsync, TestBed} from '@angular/core/testing';
-import {CdkMenuItem, CdkMenuModule, CdkMenu} from '@angular/cdk-experimental/menu';
+import {CdkMenuItem, CdkMenuModule, CdkMenu} from '@angular/cdk/menu';
 import {MatMenuBarItem} from './menubar-item';
 import {MatMenuBarModule} from './menubar-module';
 

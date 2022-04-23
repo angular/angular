@@ -7,7 +7,7 @@
  */
 
 import {Component, ViewEncapsulation, ChangeDetectionStrategy} from '@angular/core';
-import {CdkMenuItem} from '@angular/cdk-experimental/menu';
+import {CdkMenuItem} from '@angular/cdk/menu';
 
 /** Removes all icons from within the given element. */
 function removeIcons(element: Element) {

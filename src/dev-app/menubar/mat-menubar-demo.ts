@@ -7,7 +7,7 @@
  */
 
 import {Component, ViewEncapsulation} from '@angular/core';
-import {CdkMenu, CdkMenuItem, CdkMenuGroup, CDK_MENU} from '@angular/cdk-experimental/menu';
+import {CdkMenu, CdkMenuItem, CdkMenuGroup, CDK_MENU} from '@angular/cdk/menu';
 
 @Component({
   templateUrl: 'mat-menubar-demo.html',

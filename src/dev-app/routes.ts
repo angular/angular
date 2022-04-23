@@ -62,9 +62,8 @@ export const DEV_APP_ROUTES: Routes = [
       ),
   },
   {
-    path: 'cdk-experimental-menu',
-    loadChildren: () =>
-      import('./cdk-experimental-menu/cdk-menu-demo-module').then(m => m.CdkMenuDemoModule),
+    path: 'cdk-menu',
+    loadChildren: () => import('./cdk-menu/cdk-menu-demo-module').then(m => m.CdkMenuDemoModule),
   },
   {
     path: 'checkbox',

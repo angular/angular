@@ -1,5 +1,5 @@
 import {NgModule} from '@angular/core';
-import {CdkMenuModule} from '@angular/cdk-experimental/menu';
+import {CdkMenuModule} from '@angular/cdk/menu';
 import {CdkMenuStandaloneMenuExample} from './cdk-menu-standalone-menu/cdk-menu-standalone-menu-example';
 import {CdkMenuStandaloneStatefulMenuExample} from './cdk-menu-standalone-stateful-menu/cdk-menu-standalone-stateful-menu-example';
 import {CdkMenuMenubarExample} from './cdk-menu-menubar/cdk-menu-menubar-example';

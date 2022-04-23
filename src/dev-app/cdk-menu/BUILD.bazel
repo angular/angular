@@ -3,15 +3,15 @@ load("//tools:defaults.bzl", "ng_module")
 package(default_visibility = ["//visibility:public"])
 
 ng_module(
-    name = "cdk-experimental-menu",
+    name = "cdk-menu",
     srcs = glob(["**/*.ts"]),
     assets = [
         "cdk-menu-demo.html",
         "cdk-menu-demo.css",
     ],
     deps = [
-        "//src/cdk-experimental/menu",
-        "//src/components-examples/cdk-experimental/menu",
+        "//src/cdk/menu",
+        "//src/components-examples/cdk/menu",
         "@npm//@angular/router",
     ],
 )

@@ -10,6 +10,7 @@ CDK_ENTRYPOINTS = [
     "drag-drop",
     "keycodes",
     "layout",
+    "menu",
     "observers",
     "overlay",
     "platform",

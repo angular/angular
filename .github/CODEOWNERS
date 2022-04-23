@@ -77,6 +77,7 @@
 /src/cdk/drag-drop/**                              @crisbeto
 /src/cdk/keycodes/**                               @andrewseguin
 /src/cdk/layout/**                                 @andrewseguin
+/src/cdk/menu/**                                   @mmalerba @crisbeto
 /src/cdk/observers/**                              @andrewseguin @crisbeto
 /src/cdk/overlay/**                                @jelbourn @crisbeto
 /src/cdk/platform/**                               @andrewseguin @devversion
@@ -132,7 +133,6 @@
 /src/cdk-experimental/*                            @andrewseguin
 /src/cdk-experimental/column-resize/**             @andrewseguin
 /src/cdk-experimental/combobox/**                  @jelbourn
-/src/cdk-experimental/menu/**                      @jelbourn
 /src/cdk-experimental/popover-edit/**              @andrewseguin
 /src/cdk-experimental/scrolling/**                 @mmalerba
 /src/cdk-experimental/table-scroll-container/**    @andrewseguin
@@ -156,7 +156,6 @@
 /src/dev-app/cdk-dialog/**                         @crisbeto
 /src/dev-app/cdk-experimental-combobox/**          @jelbourn
 /src/dev-app/cdk-experimental-listbox/**           @jelbourn
-/src/dev-app/cdk-experimental-menu/**              @jelbourn
 /src/dev-app/checkbox/**                           @jelbourn @devversion
 /src/dev-app/chips/**                              @andrewseguin
 /src/dev-app/clipboard/**                          @andrewseguin
@@ -178,6 +177,7 @@
 /src/dev-app/icon/**                               @andrewseguin
 /src/dev-app/input/**                              @mmalerba
 /src/dev-app/layout/**                             @andrewseguin
+/src/dev-app/cdk-menu/**                           @mmalerba @crisbeto
 /src/dev-app/input-modality/**                     @jelbourn
 /src/dev-app/list/**                               @andrewseguin @crisbeto @devversion
 /src/dev-app/live-announcer/**                     @jelbourn

@@ -10,7 +10,7 @@ ng_module(
         ":mat_menubar_demo_scss",
     ],
     deps = [
-        "//src/cdk-experimental/menu",
+        "//src/cdk/menu",
         "//src/material-experimental/menubar",
         "@npm//@angular/router",
     ],

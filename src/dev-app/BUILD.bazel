@@ -26,7 +26,7 @@ ng_module(
         "//src/dev-app/cdk-dialog",
         "//src/dev-app/cdk-experimental-combobox",
         "//src/dev-app/cdk-experimental-listbox",
-        "//src/dev-app/cdk-experimental-menu",
+        "//src/dev-app/cdk-menu",
         "//src/dev-app/checkbox",
         "//src/dev-app/chips",
         "//src/dev-app/clipboard",

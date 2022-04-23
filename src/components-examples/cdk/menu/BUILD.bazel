@@ -10,7 +10,7 @@ ng_module(
         "**/*.css",
     ]),
     deps = [
-        "//src/cdk-experimental/menu",
+        "//src/cdk/menu",
         "@npm//@angular/forms",
     ],
 )
