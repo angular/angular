@@ -36,7 +36,7 @@ var_4_win: &cache_key_win_fallback v7-angular-win-node-14-{{ checksum "month.txt
 
 # Cache key for the `components-repo-unit-tests` job. **Note** when updating the SHA in the
 # cache keys also update the SHA for the "COMPONENTS_REPO_COMMIT" environment variable.
-var_5: &components_repo_unit_tests_cache_key v1-angular-components-{{ checksum "month.txt" }}-6b2b51844a9c86add1bd6628d5ec8a621e606073
+var_5: &components_repo_unit_tests_cache_key v1-angular-components-{{ checksum "month.txt" }}-e65f5f5bafcd00dbb64387878fb866283909a2dd
 var_6: &components_repo_unit_tests_cache_key_fallback v1-angular-components-{{ checksum "month.txt" }}
 
 # Workspace initially persisted by the `setup` job, and then enhanced by `build-npm-packages`.
@@ -58,11 +58,13 @@ var_9: &skip_on_pull_requests
       ignore:
         - /pull\/\d+/
 
-# Filter to run a job on builds for the master branch only.
-var_10: &only_on_master
+# Filter to run a job on builds for the main branch only.
+var_10: &only_on_main_branch
   filters:
     branches:
       only:
+        - main
+        # TODO(BRANCH_RENAME_CLEANUP): remove
         - master
 
 # Filter to run a job on all releasable branches.
@@ -70,6 +72,8 @@ var_11: &only_release_branches
   filters:
     branches:
       only:
+        - main
+        # TODO(BRANCH_RENAME_CLEANUP): remove
         - master
         - /\d+\.\d+\.x/
 
@@ -837,7 +841,7 @@ workflows:
       - saucelabs:
           # Testing saucelabs via Bazel currently taking longer than the legacy saucelabs job as it
           # each karma_web_test target is provisioning and tearing down browsers which is adding
-          # a lot of overhead. Running once daily on master only to avoid wasting resources and
+          # a lot of overhead. Running once daily in the main branch to avoid wasting resources and
           # slowing down CI for PRs.
           # TODO: Run this job on all branches (including PRs) once karma_web_test targets can
           # share provisioned browsers and we can remove the legacy saucelabs job.
@@ -845,6 +849,6 @@ workflows:
             - setup
     triggers:
       - schedule:
-          <<: *only_on_master
+          <<: *only_on_main_branch
           # Runs monitoring jobs at 10:00AM every day.
           cron: '0 10 * * *'

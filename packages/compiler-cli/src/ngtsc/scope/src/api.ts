@@ -9,7 +9,7 @@
 import {SchemaMetadata} from '@angular/compiler';
 
 import {Reexport, Reference} from '../../imports';
-import {DirectiveMeta, PipeMeta} from '../../metadata';
+import {DirectiveMeta, NgModuleMeta, PipeMeta} from '../../metadata';
 import {ClassDeclaration} from '../../reflection';
 
 
@@ -17,15 +17,7 @@ import {ClassDeclaration} from '../../reflection';
  * Data for one of a given NgModule's scopes (either compilation scope or export scopes).
  */
 export interface ScopeData {
-  /**
-   * Directives in the exported scope of the module.
-   */
-  directives: DirectiveMeta[];
-
-  /**
-   * Pipes in the exported scope of the module.
-   */
-  pipes: PipeMeta[];
+  dependencies: Array<DirectiveMeta|PipeMeta>;
 
   /**
    * Whether some module or component in this scope contains errors and is thus semantically
@@ -61,19 +53,35 @@ export interface RemoteScope {
   pipes: Reference[];
 }
 
+export enum ComponentScopeKind {
+  NgModule,
+  Standalone,
+}
+
 
 export interface LocalModuleScope extends ExportScope {
+  kind: ComponentScopeKind.NgModule;
   ngModule: ClassDeclaration;
   compilation: ScopeData;
   reexports: Reexport[]|null;
   schemas: SchemaMetadata[];
 }
 
+export interface StandaloneScope {
+  kind: ComponentScopeKind.Standalone;
+  dependencies: Array<DirectiveMeta|PipeMeta|NgModuleMeta>;
+  component: ClassDeclaration;
+  schemas: SchemaMetadata[];
+  isPoisoned: boolean;
+}
+
+export type ComponentScope = LocalModuleScope|StandaloneScope;
+
 /**
  * Read information about the compilation scope of components.
  */
 export interface ComponentScopeReader {
-  getScopeForComponent(clazz: ClassDeclaration): LocalModuleScope|null;
+  getScopeForComponent(clazz: ClassDeclaration): ComponentScope|null;
 
   /**
    * Get the `RemoteScope` required for this component, if any.

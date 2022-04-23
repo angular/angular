@@ -5,7 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {ɵMessageId, ɵParsedTranslation} from '@angular/localize';
+import {MessageId, ɵParsedTranslation} from '@angular/localize';
+
 import {Diagnostics} from '../../../diagnostics';
 
 /**
@@ -36,7 +37,7 @@ export type ParseAnalysis<Hint> = CanParseAnalysis<Hint>|CannotParseAnalysis;
  */
 export interface ParsedTranslationBundle {
   locale: string|undefined;
-  translations: Record<ɵMessageId, ɵParsedTranslation>;
+  translations: Record<MessageId, ɵParsedTranslation>;
   diagnostics: Diagnostics;
 }
 

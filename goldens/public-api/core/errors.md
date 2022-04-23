@@ -17,7 +17,7 @@ export class RuntimeError<T extends number = RuntimeErrorCode> extends Error {
 // @public
 export const enum RuntimeErrorCode {
     // (undocumented)
-    ALREADY_DESTROYED_PLATFORM = 404,
+    APPLICATION_REF_ALREADY_DESTROYED = 406,
     // (undocumented)
     ASYNC_INITIALIZERS_STILL_RUNNING = 405,
     // (undocumented)
@@ -45,6 +45,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     INVALID_INJECTION_TOKEN = 204,
     // (undocumented)
+    MISSING_GENERATED_DEF = 906,
+    // (undocumented)
     MISSING_INJECTION_CONTEXT = 203,
     // (undocumented)
     MULTIPLE_COMPONENTS_MATCH = -300,
@@ -55,6 +57,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     PIPE_NOT_FOUND = -302,
     // (undocumented)
+    PLATFORM_ALREADY_DESTROYED = 404,
+    // (undocumented)
     PLATFORM_NOT_FOUND = 401,
     // (undocumented)
     PROVIDER_NOT_FOUND = -201,
@@ -62,6 +66,8 @@ export const enum RuntimeErrorCode {
     RECURSIVE_APPLICATION_REF_TICK = 101,
     // (undocumented)
     TEMPLATE_STRUCTURE_ERROR = 305,
+    // (undocumented)
+    TYPE_IS_NOT_STANDALONE = 907,
     // (undocumented)
     UNKNOWN_BINDING = 303,
     // (undocumented)

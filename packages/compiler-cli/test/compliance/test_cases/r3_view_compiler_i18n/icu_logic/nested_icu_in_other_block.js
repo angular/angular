@@ -1,7 +1,7 @@
 decls: 2,
 vars: 3,
 consts: function() {
-  __i18nIcuMsg__('{VAR_PLURAL, plural, =0 {zero} =2 {{INTERPOLATION} {VAR_SELECT, select, cat {cats} dog {dogs} other {animals}} !} other {other - {INTERPOLATION}}}', [['VAR_SELECT', String.raw`\uFFFD0\uFFFD`], ['VAR_PLURAL', String.raw`\uFFFD1\uFFFD`], ['INTERPOLATION', String.raw`\uFFFD2\uFFFD`]])
+  __i18nIcuMsg__('{VAR_PLURAL, plural, =0 {zero} =2 {{INTERPOLATION} {VAR_SELECT, select, cat {cats} dog {dogs} other {animals}} !} other {other - {INTERPOLATION}}}', [['VAR_SELECT', String.raw`\uFFFD0\uFFFD`], ['VAR_PLURAL', String.raw`\uFFFD1\uFFFD`], ['INTERPOLATION', String.raw`\uFFFD2\uFFFD`]], {})
   return [
     $i18n_0$
   ];

@@ -1,11 +1,11 @@
 consts:
     function() {
-      __i18nMsg__('Content A', [], {id: 'idA', meaning: 'meaningA', desc: 'descA'})
-      __i18nMsg__('Title B', [], {id: 'idB', meaning: 'meaningB', desc: 'descB'})
-      __i18nMsg__('Title C', [], {meaning: 'meaningC'})
-      __i18nMsg__('Title D', [], {meaning: 'meaningD', desc: 'descD'})
-      __i18nMsg__('Title E', [], {id: 'idE', desc: 'meaningE'})
-      __i18nMsg__('Title F', [], {id: 'idF'})
+      __i18nMsg__('Content A', [], {}, {id: 'idA', meaning: 'meaningA', desc: 'descA'})
+      __i18nMsg__('Title B', [], {}, {id: 'idB', meaning: 'meaningB', desc: 'descB'})
+      __i18nMsg__('Title C', [], {}, {meaning: 'meaningC'})
+      __i18nMsg__('Title D', [], {}, {meaning: 'meaningD', desc: 'descD'})
+      __i18nMsg__('Title E', [], {}, {id: 'idE', desc: 'meaningE'})
+      __i18nMsg__('Title F', [], {}, {id: 'idF'})
 
       // NOTE: Keeping this block as a raw string, since it checks escaping of special chars.
       let $i18n_23$;

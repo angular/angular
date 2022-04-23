@@ -56,6 +56,9 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 
              expect(f.nativeElement.children[0].children[0].tagName).toEqual('rect');
            }));
+      } else {
+        // Jasmine will throw if there are no tests.
+        it('should pass', () => {});
       }
     });
   });

@@ -80,9 +80,9 @@ export class TestBedRender3 implements TestBed {
    */
   static initTestEnvironment(
       ngModule: Type<any>|Type<any>[], platform: PlatformRef,
-      summariesOrOptions?: TestEnvironmentOptions|(() => any[])): TestBed {
+      options?: TestEnvironmentOptions): TestBed {
     const testBed = _getTestBedRender3();
-    testBed.initTestEnvironment(ngModule, platform, summariesOrOptions);
+    testBed.initTestEnvironment(ngModule, platform, options);
     return testBed;
   }
 
@@ -230,15 +230,12 @@ export class TestBedRender3 implements TestBed {
    */
   initTestEnvironment(
       ngModule: Type<any>|Type<any>[], platform: PlatformRef,
-      summariesOrOptions?: TestEnvironmentOptions|(() => any[])): void {
+      options?: TestEnvironmentOptions): void {
     if (this.platform || this.ngModule) {
       throw new Error('Cannot set base providers because it has already been called');
     }
 
-    // If `summariesOrOptions` is a function, it means that it's
-    // an AOT summaries factory which Ivy doesn't support.
-    TestBedRender3._environmentTeardownOptions =
-        typeof summariesOrOptions === 'function' ? undefined : summariesOrOptions?.teardown;
+    TestBedRender3._environmentTeardownOptions = options?.teardown;
 
     this.platform = platform;
     this.ngModule = ngModule;

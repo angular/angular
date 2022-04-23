@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgModuleFactory, NgModuleRef, Type} from '@angular/core';
+import {EnvironmentInjector, NgModuleFactory, Provider, Type} from '@angular/core';
 import {Observable} from 'rxjs';
 
 import {ActivatedRouteSnapshot, RouterStateSnapshot} from './router_state';
@@ -93,6 +93,8 @@ export type ResolveData = {
  * A function that is called to resolve a collection of lazy-loaded routes.
  * Must be an arrow function of the following form:
  * `() => import('...').then(mod => mod.MODULE)`
+ * or
+ * `() => import('...').then(mod => mod.ROUTES)`
  *
  * For example:
  *
@@ -102,12 +104,19 @@ export type ResolveData = {
  *   loadChildren: () => import('./lazy-route/lazy.module').then(mod => mod.LazyModule),
  * }];
  * ```
+ * or
+ * ```
+ * [{
+ *   path: 'lazy',
+ *   loadChildren: () => import('./lazy-route/lazy.routes').then(mod => mod.ROUTES),
+ * }];
+ * ```
  *
  * @see [Route.loadChildren](api/router/Route#loadChildren)
  * @publicApi
  */
-export type LoadChildrenCallback = () => Type<any>|NgModuleFactory<any>|Observable<Type<any>>|
-    Promise<NgModuleFactory<any>|Type<any>|any>;
+export type LoadChildrenCallback = () => Type<any>|NgModuleFactory<any>|Routes|
+    Observable<Type<any>|Routes>|Promise<NgModuleFactory<any>|Type<any>|Routes>;
 
 /**
  *
@@ -478,20 +487,39 @@ export interface Route {
    * parameters of the route change.
    */
   runGuardsAndResolvers?: RunGuardsAndResolvers;
+
   /**
-   * Filled for routes with `loadChildren` once the module has been loaded
+   * A `Provider` array to use for this `Route` and its `children`.
+   *
+   * The `Router` will create a new `EnvironmentInjector` for this
+   * `Route` and use it for this `Route` and its `children`. If this
+   * route also has a `loadChildren` function which returns an `NgModuleRef`, this injector will be
+   * used as the parent of the lazy loaded module.
+   */
+  providers?: Provider[];
+
+  /**
+   * Injector created from the static route providers
    * @internal
    */
-  _loadedConfig?: LoadedRouterConfig;
+  _injector?: EnvironmentInjector;
+
   /**
-   * Filled for routes with `loadChildren` during load
+   * Filled for routes with `loadChildren` once the routes are loaded.
    * @internal
    */
-  _loader$?: Observable<LoadedRouterConfig>;
+  _loadedRoutes?: Route[];
+
+  /**
+   * Filled for routes with `loadChildren` once the routes are loaded
+   * @internal
+   */
+  _loadedInjector?: EnvironmentInjector;
 }
 
-export class LoadedRouterConfig {
-  constructor(public routes: Route[], public module: NgModuleRef<any>) {}
+export interface LoadedRouterConfig {
+  routes: Route[];
+  injector: EnvironmentInjector|undefined;
 }
 
 /**

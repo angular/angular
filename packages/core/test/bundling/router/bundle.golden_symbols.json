@@ -192,6 +192,12 @@
     "name": "EmulatedEncapsulationDomRenderer2"
   },
   {
+    "name": "EnvironmentInjector"
+  },
+  {
+    "name": "EnvironmentNgModuleRefAdapter"
+  },
+  {
     "name": "ErrorHandler"
   },
   {
@@ -210,6 +216,9 @@
     "name": "FilterSubscriber"
   },
   {
+    "name": "FinallyOperator"
+  },
+  {
     "name": "FinallySubscriber"
   },
   {
@@ -226,6 +235,12 @@
   },
   {
     "name": "INJECTOR2"
+  },
+  {
+    "name": "INJECTOR_DEF_TYPES"
+  },
+  {
+    "name": "INJECTOR_INITIALIZER"
   },
   {
     "name": "INJECTOR_SCOPE"
@@ -270,9 +285,6 @@
     "name": "ListComponent"
   },
   {
-    "name": "LoadedRouterConfig"
-  },
-  {
     "name": "Location"
   },
   {
@@ -289,6 +301,9 @@
   },
   {
     "name": "MapSubscriber"
+  },
+  {
+    "name": "MapToSubscriber"
   },
   {
     "name": "MergeMapOperator"
@@ -423,6 +438,9 @@
     "name": "PLATFORM_INITIALIZER"
   },
   {
+    "name": "PLATFORM_ON_DESTROY"
+  },
+  {
     "name": "PathLocationStrategy"
   },
   {
@@ -499,12 +517,6 @@
   },
   {
     "name": "RootViewRef"
-  },
-  {
-    "name": "RouteConfigLoadEnd"
-  },
-  {
-    "name": "RouteConfigLoadStart"
   },
   {
     "name": "RouteExampleModule"
@@ -732,18 +744,6 @@
     "name": "__forward_ref__"
   },
   {
-    "name": "__global"
-  },
-  {
-    "name": "__globalThis"
-  },
-  {
-    "name": "__self"
-  },
-  {
-    "name": "__window"
-  },
-  {
     "name": "_chromeNumKeyPadMap"
   },
   {
@@ -762,7 +762,7 @@
     "name": "_keyMap"
   },
   {
-    "name": "_platform"
+    "name": "_platformInjector"
   },
   {
     "name": "_randomChar"
@@ -913,6 +913,9 @@
   },
   {
     "name": "createEmptyState"
+  },
+  {
+    "name": "createEnvironmentInjector"
   },
   {
     "name": "createInjector"
@@ -1077,10 +1080,10 @@
     "name": "extractDirectiveDef"
   },
   {
-    "name": "extractPipeDef"
+    "name": "filter"
   },
   {
-    "name": "filter"
+    "name": "finalize"
   },
   {
     "name": "findAttrIndexInNode"
@@ -1143,6 +1146,9 @@
     "name": "getChildRouteGuards"
   },
   {
+    "name": "getClosestRouteInjector"
+  },
+  {
     "name": "getClosureSafeProperty"
   },
   {
@@ -1170,10 +1176,10 @@
     "name": "getData"
   },
   {
-    "name": "getDataKeys"
+    "name": "getDeclarationTNode"
   },
   {
-    "name": "getDeclarationTNode"
+    "name": "getDirectiveDef"
   },
   {
     "name": "getFactoryDef"
@@ -1183,9 +1189,6 @@
   },
   {
     "name": "getFirstNativeNode"
-  },
-  {
-    "name": "getFullPath"
   },
   {
     "name": "getIdxOfMatchingSelector"
@@ -1266,6 +1269,9 @@
     "name": "getPathIndexShift"
   },
   {
+    "name": "getPipeDef"
+  },
+  {
     "name": "getPlatform"
   },
   {
@@ -1336,6 +1342,9 @@
   },
   {
     "name": "identity"
+  },
+  {
+    "name": "importProvidersFrom"
   },
   {
     "name": "includeViewProviders"
@@ -1423,6 +1432,12 @@
   },
   {
     "name": "isDirectiveHost"
+  },
+  {
+    "name": "isExistingProvider"
+  },
+  {
+    "name": "isFactoryProvider"
   },
   {
     "name": "isFunction"
@@ -1611,6 +1626,9 @@
     "name": "nodeChildrenAsMap"
   },
   {
+    "name": "nonNull"
+  },
+  {
     "name": "noop"
   },
   {
@@ -1722,6 +1740,9 @@
     "name": "resetPreOrderHookFlags"
   },
   {
+    "name": "resolveData"
+  },
+  {
     "name": "resolveForwardRef"
   },
   {
@@ -1824,7 +1845,7 @@
     "name": "stringify"
   },
   {
-    "name": "stringify9"
+    "name": "stringify10"
   },
   {
     "name": "stringifyCSSSelector"
@@ -1908,13 +1929,13 @@
     "name": "urlParsingNode"
   },
   {
-    "name": "validateConfig"
-  },
-  {
-    "name": "validateNode"
+    "name": "validateProvider"
   },
   {
     "name": "viewAttachedToChangeDetector"
+  },
+  {
+    "name": "walkProviderTree"
   },
   {
     "name": "wrapIntoObservable"

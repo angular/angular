@@ -500,7 +500,7 @@ describe('event listeners', () => {
               // testing only
               compInstance = getDirectiveOnNode(HEADER_OFFSET);
             },
-        directives: [Comp]
+        dependencies: [Comp]
       });
     }
 

@@ -14,6 +14,6 @@ MyApp.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
       $r3$.ɵɵproperty("config", $r3$.ɵɵpureFunction1(1, $e0_ff$, ctx.name));
     }
   },
-  directives: [ObjectComp],
+  dependencies: [ObjectComp],
   encapsulation: 2
 });

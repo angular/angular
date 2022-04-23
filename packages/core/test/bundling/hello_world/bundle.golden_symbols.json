@@ -45,18 +45,6 @@
     "name": "ViewEncapsulation"
   },
   {
-    "name": "__global"
-  },
-  {
-    "name": "__globalThis"
-  },
-  {
-    "name": "__self"
-  },
-  {
-    "name": "__window"
-  },
-  {
     "name": "_global"
   },
   {
@@ -120,9 +108,6 @@
     "name": "extractDirectiveDef"
   },
   {
-    "name": "extractPipeDef"
-  },
-  {
     "name": "getClosureSafeProperty"
   },
   {
@@ -157,6 +142,9 @@
   },
   {
     "name": "getOrCreateTNode"
+  },
+  {
+    "name": "getPipeDef"
   },
   {
     "name": "getSimpleChangesStore"
@@ -208,6 +196,9 @@
   },
   {
     "name": "ngOnChangesSetInput"
+  },
+  {
+    "name": "nonNull"
   },
   {
     "name": "refreshComponent"

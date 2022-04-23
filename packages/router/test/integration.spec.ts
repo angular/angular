@@ -17,6 +17,7 @@ import {EMPTY, Observable, Observer, of, Subscription, SubscriptionLike} from 'r
 import {delay, filter, first, map, mapTo, tap} from 'rxjs/operators';
 
 import {forEach} from '../src/utils/collection';
+import {getLoadedRoutes} from '../src/utils/config';
 import {isUrlTree} from '../src/utils/type_guards';
 import {RouterTestingModule} from '../testing';
 
@@ -87,6 +88,7 @@ describe('Integration', () => {
 
       it('should not ignore empty paths in legacy mode',
          fakeAsync(inject([Router], (router: Router) => {
+           const warnSpy = spyOn(console, 'warn');
            router.relativeLinkResolution = 'legacy';
 
            const fixture = createRoot(router, RootCmp);
@@ -96,6 +98,10 @@ describe('Integration', () => {
 
            const link = fixture.nativeElement.querySelector('a');
            expect(link.getAttribute('href')).toEqual('/foo/bar/simple');
+           expect(warnSpy.calls.first().args[0])
+               .toContain('/foo/bar/simple will change to /foo/simple');
+           expect(warnSpy.calls.first().args[0])
+               .toContain('relativeLinkResolution: \'legacy\' is deprecated');
          })));
 
       it('should ignore empty paths in corrected mode',
@@ -5020,6 +5026,37 @@ describe('Integration', () => {
          expect(nativeLink.className).toEqual('');
          expect(nativeButton.className).toEqual('');
        })));
+
+    it('should set a provided aria-current attribute when the link is active (a tag)',
+       fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+         const fixture = createRoot(router, RootCmp);
+
+         router.resetConfig([{
+           path: 'team/:id',
+           component: TeamCmp,
+           children: [{
+             path: 'link',
+             component: DummyLinkCmp,
+             children: [{path: 'simple', component: SimpleCmp}, {path: '', component: BlankCmp}]
+           }]
+         }]);
+
+         router.navigateByUrl('/team/22/link;exact=true');
+         advance(fixture);
+         advance(fixture);
+         expect(location.path()).toEqual('/team/22/link;exact=true');
+
+         const nativeLink = fixture.nativeElement.querySelector('a');
+         const nativeButton = fixture.nativeElement.querySelector('button');
+         expect(nativeLink.getAttribute('aria-current')).toEqual('page');
+         expect(nativeButton.hasAttribute('aria-current')).toEqual(false);
+
+         router.navigateByUrl('/team/22/link/simple');
+         advance(fixture);
+         expect(location.path()).toEqual('/team/22/link/simple');
+         expect(nativeLink.hasAttribute('aria-current')).toEqual(false);
+         expect(nativeButton.hasAttribute('aria-current')).toEqual(false);
+       })));
   });
 
   describe('lazy loading', () => {
@@ -5515,6 +5552,24 @@ describe('Integration', () => {
          ]);
        })));
 
+    it('should emit an error when the lazily-loaded config is not valid', fakeAsync(() => {
+         const router = TestBed.inject(Router);
+         @NgModule({imports: [RouterModule.forChild([{path: 'loaded'}])]})
+         class LoadedModule {
+         }
+
+         const fixture = createRoot(router, RootCmp);
+         router.resetConfig([{path: 'lazy', loadChildren: () => LoadedModule}]);
+
+         let recordedError: any = null;
+         router.navigateByUrl('/lazy/loaded').catch(err => recordedError = err);
+         advance(fixture);
+
+         expect(recordedError.message)
+             .toEqual(
+                 `Invalid configuration of route 'lazy/loaded'. One of the following must be provided: component, redirectTo, children or loadChildren`);
+       }));
+
     it('should work with complex redirect rules',
        fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
          @Component({selector: 'lazy', template: 'lazy-loaded'})
@@ -5616,14 +5671,14 @@ describe('Integration', () => {
            advance(fixture);
 
            const config = router.config as any;
-           const firstConfig = config[1]._loadedConfig!;
+           const firstRoutes = getLoadedRoutes(config[1])!;
 
-           expect(firstConfig).toBeDefined();
-           expect(firstConfig.routes[0].path).toEqual('LoadedModule1');
+           expect(firstRoutes).toBeDefined();
+           expect(firstRoutes[0].path).toEqual('LoadedModule1');
 
-           const secondConfig = firstConfig.routes[0]._loadedConfig!;
-           expect(secondConfig).toBeDefined();
-           expect(secondConfig.routes[0].path).toEqual('LoadedModule2');
+           const secondRoutes = getLoadedRoutes(firstRoutes[0])!;
+           expect(secondRoutes).toBeDefined();
+           expect(secondRoutes[0].path).toEqual('LoadedModule2');
          }));
 
       it('should not preload when canLoad is present and does not execute guard', fakeAsync(() => {
@@ -5639,9 +5694,9 @@ describe('Integration', () => {
            advance(fixture);
 
            const config = router.config as any;
-           const firstConfig = config[1]._loadedConfig!;
+           const firstRoutes = getLoadedRoutes(config[1])!;
 
-           expect(firstConfig).toBeUndefined();
+           expect(firstRoutes).toBeUndefined();
            expect(log.length).toBe(0);
          }));
 
@@ -5888,6 +5943,7 @@ describe('Integration', () => {
 
       it('should not ignore empty path when in legacy mode',
          fakeAsync(inject([Router], (router: Router) => {
+           const warnSpy = spyOn(console, 'warn');
            router.relativeLinkResolution = 'legacy';
 
            const fixture = createRoot(router, RootCmp);
@@ -5899,6 +5955,10 @@ describe('Integration', () => {
 
            const link = fixture.nativeElement.querySelector('a');
            expect(link.getAttribute('href')).toEqual('/lazy/foo/bar/simple');
+           expect(warnSpy.calls.first().args[0])
+               .toContain('/lazy/foo/bar/simple will change to /lazy/foo/simple');
+           expect(warnSpy.calls.first().args[0])
+               .toContain('relativeLinkResolution: \'legacy\' is deprecated');
          })));
 
       it('should ignore empty path when in corrected mode',
@@ -6430,7 +6490,7 @@ class AbsoluteLinkCmp {
 @Component({
   selector: 'link-cmp',
   template:
-      `<router-outlet></router-outlet><a routerLinkActive="active" (isActiveChange)="this.onRouterLinkActivated($event)" [routerLinkActiveOptions]="{exact: exact}" [routerLink]="['./']">link</a>
+      `<router-outlet></router-outlet><a routerLinkActive="active" (isActiveChange)="this.onRouterLinkActivated($event)" [routerLinkActiveOptions]="{exact: exact}" ariaCurrentWhenActive="page" [routerLink]="['./']">link</a>
  <button routerLinkActive="active" [routerLinkActiveOptions]="{exact: exact}" [routerLink]="['./']">button</button>
  `
 })

@@ -1,7 +1,7 @@
 decls: 3,
 vars: 3,
 consts: function() {
-  __i18nMsg__('Some content: {$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]], {})
+  __i18nMsg__('Some content: {$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]], {original_code: {'interpolation': '{{ valueA | uppercase }}'}}, {})
   return [
     $i18n_0$
   ];

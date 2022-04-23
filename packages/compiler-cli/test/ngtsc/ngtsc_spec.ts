@@ -328,7 +328,7 @@ function allTests(os: string) {
       const dtsContents = env.getContents('test.d.ts');
       expect(dtsContents)
           .toContain(
-              'static ɵdir: i0.ɵɵDirectiveDeclaration<TestDir, "[dir]", never, {}, {}, never>');
+              'static ɵdir: i0.ɵɵDirectiveDeclaration<TestDir, "[dir]", never, {}, {}, never, never, false>');
       expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDeclaration<TestDir, never>');
     });
 
@@ -350,7 +350,7 @@ function allTests(os: string) {
       const dtsContents = env.getContents('test.d.ts');
       expect(dtsContents)
           .toContain(
-              'static ɵdir: i0.ɵɵDirectiveDeclaration<TestDir, never, never, {}, {}, never>');
+              'static ɵdir: i0.ɵɵDirectiveDeclaration<TestDir, never, never, {}, {}, never, never, false>');
       expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDeclaration<TestDir, never>');
     });
 
@@ -375,7 +375,7 @@ function allTests(os: string) {
       const dtsContents = env.getContents('test.d.ts');
       expect(dtsContents)
           .toContain(
-              'static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never>');
+              'static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never, false>');
       expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>');
     });
 
@@ -402,7 +402,7 @@ function allTests(os: string) {
       expect(dtsContents)
           .toContain(
               'static ɵcmp: i0.ɵɵComponentDeclaration' +
-              '<TestCmp, "test-cmp", never, {}, {}, never, never>');
+              '<TestCmp, "test-cmp", never, {}, {}, never, never, false>');
       expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>');
     });
 
@@ -430,7 +430,7 @@ function allTests(os: string) {
       const dtsContents = env.getContents('test.d.ts');
       expect(dtsContents)
           .toContain(
-              'static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never>');
+              'static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never, false>');
       expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>');
     });
 
@@ -820,7 +820,7 @@ function allTests(os: string) {
       env.driveMain();
 
       const jsContents = trim(env.getContents('test.js'));
-      expect(jsContents).toContain('pipes: [PipeB]');
+      expect(jsContents).toContain('dependencies: [PipeB]');
     });
 
     it('should respect imported module order when selecting Pipe (last imported Pipe is used)',
@@ -875,7 +875,7 @@ function allTests(os: string) {
          env.driveMain();
 
          const jsContents = trim(env.getContents('test.js'));
-         expect(jsContents).toContain('pipes: [PipeB]');
+         expect(jsContents).toContain('dependencies: [PipeB]');
        });
 
     it('should add Directives and Components from `declarations` at the end of the list', () => {
@@ -930,7 +930,8 @@ function allTests(os: string) {
       env.driveMain();
 
       const jsContents = trim(env.getContents('test.js'));
-      expect(jsContents).toContain('directives: [DirectiveA, DirectiveB, ComponentA, ComponentB]');
+      expect(jsContents)
+          .toContain('dependencies: [DirectiveA, ComponentA, DirectiveB, ComponentB]');
     });
 
     it('should respect imported module order while processing Directives and Components', () => {
@@ -993,7 +994,8 @@ function allTests(os: string) {
       env.driveMain();
 
       const jsContents = trim(env.getContents('test.js'));
-      expect(jsContents).toContain('directives: [DirectiveA, DirectiveB, ComponentA, ComponentB]');
+      expect(jsContents)
+          .toContain('dependencies: [DirectiveA, ComponentA, DirectiveB, ComponentB]');
     });
 
     it('should compile Components with a templateUrl in a different rootDir', () => {
@@ -1091,7 +1093,7 @@ function allTests(os: string) {
       const dtsContents = env.getContents('test.d.ts');
       expect(dtsContents)
           .toContain(
-              `static ɵdir: i0.ɵɵDirectiveDeclaration<TestBase, never, never, { "input": "input"; }, {}, never>;`);
+              `static ɵdir: i0.ɵɵDirectiveDeclaration<TestBase, never, never, { "input": "input"; }, {}, never, never, false>;`);
     });
 
     describe('undecorated classes using Angular features', () => {
@@ -1197,7 +1199,7 @@ function allTests(os: string) {
       const dtsContents = env.getContents('test.d.ts');
       expect(dtsContents)
           .toContain(
-              'static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never>');
+              'static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never, false>');
       expect(dtsContents)
           .toContain(
               'static ɵmod: i0.ɵɵNgModuleDeclaration<TestModule, [typeof TestCmp], never, never>');
@@ -1682,7 +1684,8 @@ function allTests(os: string) {
       expect(jsContents)
           .toContain(
               'TestPipe.ɵfac = function TestPipe_Factory(t) { return new (t || TestPipe)(); }');
-      expect(dtsContents).toContain('static ɵpipe: i0.ɵɵPipeDeclaration<TestPipe, "test-pipe">;');
+      expect(dtsContents)
+          .toContain('static ɵpipe: i0.ɵɵPipeDeclaration<TestPipe, "test-pipe", false>;');
       expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDeclaration<TestPipe, never>;');
     });
 
@@ -1707,7 +1710,8 @@ function allTests(os: string) {
       expect(jsContents)
           .toContain(
               'TestPipe.ɵfac = function TestPipe_Factory(t) { return new (t || TestPipe)(); }');
-      expect(dtsContents).toContain('static ɵpipe: i0.ɵɵPipeDeclaration<TestPipe, "test-pipe">;');
+      expect(dtsContents)
+          .toContain('static ɵpipe: i0.ɵɵPipeDeclaration<TestPipe, "test-pipe", false>;');
       expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDeclaration<TestPipe, never>;');
     });
 
@@ -1748,7 +1752,7 @@ function allTests(os: string) {
       expect(jsContents).toContain('TestPipe.ɵpipe =');
       const dtsContents = env.getContents('test.d.ts');
       expect(dtsContents)
-          .toContain('static ɵpipe: i0.ɵɵPipeDeclaration<TestPipe<any>, "test-pipe">;');
+          .toContain('static ɵpipe: i0.ɵɵPipeDeclaration<TestPipe<any>, "test-pipe", false>;');
       expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDeclaration<TestPipe<any>, never>;');
     });
 
@@ -1773,7 +1777,7 @@ function allTests(os: string) {
       env.driveMain();
 
       const jsContents = env.getContents('test.js');
-      expect(jsContents).toContain('pipes: [TestPipe]');
+      expect(jsContents).toContain('dependencies: [TestPipe]');
 
       const dtsContents = env.getContents('test.d.ts');
       expect(dtsContents)
@@ -3313,7 +3317,7 @@ function allTests(os: string) {
       const dtsContents = env.getContents('test.d.ts');
       expect(dtsContents)
           .toContain(
-              'static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test", never, {}, {}, never, ["*", ".foo"]>');
+              'static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test", never, {}, {}, never, ["*", ".foo"], false>');
     });
 
     it('should generate queries for components', () => {
@@ -4393,7 +4397,7 @@ function allTests(os: string) {
          env.driveMain();
 
          const jsContents = env.getContents('test.js');
-         expect(jsContents).toContain('directives: function () { return [CmpB]; }');
+         expect(jsContents).toContain('dependencies: function () { return [CmpB]; }');
        });
 
     it('should wrap setClassMetadata in an iife with ngDevMode guard', () => {
@@ -4878,7 +4882,7 @@ function allTests(os: string) {
 
       env.driveMain();
       const jsContents = env.getContents('test.js');
-      expect(jsContents).toMatch(/directives: \[DirA,\s+DirB\]/);
+      expect(jsContents).toMatch(/dependencies: \[DirA,\s+DirB\]/);
     });
 
     describe('cycle detection', () => {
@@ -5393,7 +5397,7 @@ function allTests(os: string) {
 
         env.driveMain();
         const jsContents = env.getContents('test.js');
-        expect(jsContents).toMatch(/directives: \[i1\.ExternalDir\]/);
+        expect(jsContents).toMatch(/dependencies: \[i1\.ExternalDir\]/);
       });
 
       it('should import directives by their external name', () => {
@@ -5431,7 +5435,7 @@ function allTests(os: string) {
 
         env.driveMain();
         const jsContents = env.getContents('test.js');
-        expect(jsContents).toMatch(/directives: \[i1\.ExternalDir\]/);
+        expect(jsContents).toMatch(/dependencies: \[i1\.ExternalDir\]/);
       });
     });
 
@@ -5988,7 +5992,7 @@ function allTests(os: string) {
         env.driveMain();
         const jsContents = env.getContents('test.js');
         expect(jsContents).toContain('import * as i1 from "external/module";');
-        expect(jsContents).toContain('directives: [i1.ɵngExportɵExternalModuleɵExternalDir]');
+        expect(jsContents).toContain('dependencies: [i1.ɵngExportɵExternalModuleɵExternalDir]');
       });
 
       it('should not generate re-exports when disabled', () => {
@@ -6384,7 +6388,7 @@ function allTests(os: string) {
 
         // Expect that ExternalDir from alpha is imported via the re-export from beta.
         expect(jsContents).toContain('import * as i1 from "root/beta";');
-        expect(jsContents).toContain('directives: [i1.\u0275ng$root$alpha$$ExternalDir]');
+        expect(jsContents).toContain('dependencies: [i1.\u0275ng$root$alpha$$ExternalDir]');
       });
 
       it('should write alias ES2015 exports for NgModule exported directives', () => {

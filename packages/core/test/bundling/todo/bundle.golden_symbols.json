@@ -21,6 +21,9 @@
     "name": "ElementRef"
   },
   {
+    "name": "EnvironmentInjector"
+  },
+  {
     "name": "InjectFlags"
   },
   {
@@ -154,18 +157,6 @@
   },
   {
     "name": "__forward_ref__"
-  },
-  {
-    "name": "__global"
-  },
-  {
-    "name": "__globalThis"
-  },
-  {
-    "name": "__self"
-  },
-  {
-    "name": "__window"
   },
   {
     "name": "_global"
@@ -345,9 +336,6 @@
     "name": "extractDirectiveDef"
   },
   {
-    "name": "extractPipeDef"
-  },
-  {
     "name": "findAttrIndexInNode"
   },
   {
@@ -460,6 +448,9 @@
   },
   {
     "name": "getParentInjectorView"
+  },
+  {
+    "name": "getPipeDef"
   },
   {
     "name": "getPreviousIndex"
@@ -670,6 +661,9 @@
   },
   {
     "name": "noSideEffects"
+  },
+  {
+    "name": "nonNull"
   },
   {
     "name": "notFoundValueOrThrow"

@@ -37,13 +37,9 @@ ng_package(
     name = "npm_package",
     srcs = [
         "package.json",
-        "//packages/service-worker/config:package.json",
-    ],
-    data = [
         "safety-worker.js",
         ":ngsw_config_binary",
         ":ngsw_worker_renamed",
-        "//packages/service-worker/config",
         "//packages/service-worker/config:schema.json",
     ],
     tags = [

@@ -31,7 +31,7 @@ import * as i0 from "@angular/core";
 export declare class MyComponent {
     title: string;
     static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-app", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-app", never, {}, {}, never, never, false>;
 }
 export declare class MyModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
@@ -77,7 +77,7 @@ import * as i0 from "@angular/core";
 export declare class MyComponent {
     name: string;
     static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, {}, {}, never, never, false>;
 }
 export declare class MyModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
@@ -152,7 +152,7 @@ export declare class MyComponent {
     eight: any;
     nine: any;
     static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-app", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-app", never, {}, {}, never, never, false>;
 }
 export declare class MyModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
@@ -198,7 +198,7 @@ import * as i0 from "@angular/core";
 export declare class MyComponent {
     forValue: string;
     static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, {}, {}, never, never, false>;
 }
 export declare class MyModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
@@ -232,7 +232,7 @@ export class MyComponent {
     }
 }
 MyComponent.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, deps: [], target: i0.ɵɵFactoryTarget.Component });
-MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "ng-component", ngImport: i0, template: '<button [title]="myTitle" [id]="(auth().identity() | async)?.id" [tabindex]="1"></button>', isInline: true, pipes: { "async": AsyncPipe } });
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "ng-component", ngImport: i0, template: '<button [title]="myTitle" [id]="(auth().identity() | async)?.id" [tabindex]="1"></button>', isInline: true, dependencies: [{ kind: "pipe", type: AsyncPipe, name: "async" }] });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, decorators: [{
             type: Component,
             args: [{
@@ -256,7 +256,7 @@ import * as i0 from "@angular/core";
 export declare class AsyncPipe {
     transform(v: any): null | any;
     static ɵfac: i0.ɵɵFactoryDeclaration<AsyncPipe, never>;
-    static ɵpipe: i0.ɵɵPipeDeclaration<AsyncPipe, "async">;
+    static ɵpipe: i0.ɵɵPipeDeclaration<AsyncPipe, "async", false>;
 }
 export declare class MyComponent {
     myTitle: string;
@@ -264,7 +264,7 @@ export declare class MyComponent {
         identity(): any;
     };
     static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "ng-component", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "ng-component", never, {}, {}, never, never, false>;
 }
 export declare class MyMod {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyMod, never>;
@@ -298,7 +298,7 @@ export declare class MyComponent {
     myTitle: string;
     buttonId: string;
     static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "ng-component", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "ng-component", never, {}, {}, never, never, false>;
 }
 
 /****************************************************************************************************
@@ -320,7 +320,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 export class MyComponent {
 }
 MyComponent.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, deps: [], target: i0.ɵɵFactoryTarget.Component });
-MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "ng-component", ngImport: i0, template: '<button [title]="1" [attr.id]="2" [tabindex]="3" aria-label="{{1 + 3}}"></button>', isInline: true, directives: [{ type: ButtonDir, selector: "button", inputs: ["aria-label"] }] });
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "ng-component", ngImport: i0, template: '<button [title]="1" [attr.id]="2" [tabindex]="3" aria-label="{{1 + 3}}"></button>', isInline: true, dependencies: [{ kind: "directive", type: ButtonDir, selector: "button", inputs: ["aria-label"] }] });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, decorators: [{
             type: Component,
             args: [{ template: '<button [title]="1" [attr.id]="2" [tabindex]="3" aria-label="{{1 + 3}}"></button>' }]
@@ -342,11 +342,11 @@ import * as i0 from "@angular/core";
 export declare class ButtonDir {
     al: any;
     static ɵfac: i0.ɵɵFactoryDeclaration<ButtonDir, never>;
-    static ɵdir: i0.ɵɵDirectiveDeclaration<ButtonDir, "button", never, { "al": "aria-label"; }, {}, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<ButtonDir, "button", never, { "al": "aria-label"; }, {}, never, never, false>;
 }
 export declare class MyComponent {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "ng-component", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "ng-component", never, {}, {}, never, never, false>;
 }
 export declare class MyMod {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyMod, never>;
@@ -373,7 +373,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 export class MyComponent {
 }
 MyComponent.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, deps: [], target: i0.ɵɵFactoryTarget.Component });
-MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "ng-component", ngImport: i0, template: '<button [title]="1" [id]="2" tabindex="{{0 + 3}}" aria-label="hello-{{1 + 3}}-{{2 + 3}}"></button>', isInline: true, directives: [{ type: ButtonDir, selector: "button", inputs: ["aria-label"] }] });
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "ng-component", ngImport: i0, template: '<button [title]="1" [id]="2" tabindex="{{0 + 3}}" aria-label="hello-{{1 + 3}}-{{2 + 3}}"></button>', isInline: true, dependencies: [{ kind: "directive", type: ButtonDir, selector: "button", inputs: ["aria-label"] }] });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, decorators: [{
             type: Component,
             args: [{
@@ -397,11 +397,11 @@ import * as i0 from "@angular/core";
 export declare class ButtonDir {
     al: any;
     static ɵfac: i0.ɵɵFactoryDeclaration<ButtonDir, never>;
-    static ɵdir: i0.ɵɵDirectiveDeclaration<ButtonDir, "button", never, { "al": "aria-label"; }, {}, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<ButtonDir, "button", never, { "al": "aria-label"; }, {}, never, never, false>;
 }
 export declare class MyComponent {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "ng-component", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "ng-component", never, {}, {}, never, never, false>;
 }
 export declare class MyMod {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyMod, never>;
@@ -449,7 +449,7 @@ export declare class MyComponent {
     expansionState: string;
     myTitle: string;
     static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "ng-component", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "ng-component", never, {}, {}, never, never, false>;
 }
 
 /****************************************************************************************************
@@ -478,7 +478,7 @@ export declare class MyComponent {
     myTitle: string;
     buttonId: string;
     static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "ng-component", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "ng-component", never, {}, {}, never, never, false>;
 }
 
 /****************************************************************************************************
@@ -519,7 +519,7 @@ MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "
     <button [title]="myTitle" [id]="buttonId" [tabindex]="1"></button>
     <span [id]="1" [title]="'hello'" [someProp]="1 + 2"></span>
     <custom-element [prop]="'one'" [otherProp]="2"></custom-element>
-  `, isInline: true, components: [{ type: CustomEl, selector: "custom-element", inputs: ["prop", "otherProp"] }], directives: [{ type: SpanDir, selector: "span", inputs: ["someProp"] }] });
+  `, isInline: true, dependencies: [{ kind: "component", type: CustomEl, selector: "custom-element", inputs: ["prop", "otherProp"] }, { kind: "directive", type: SpanDir, selector: "span", inputs: ["someProp"] }] });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, decorators: [{
             type: Component,
             args: [{
@@ -547,19 +547,19 @@ import * as i0 from "@angular/core";
 export declare class SpanDir {
     someProp: any;
     static ɵfac: i0.ɵɵFactoryDeclaration<SpanDir, never>;
-    static ɵdir: i0.ɵɵDirectiveDeclaration<SpanDir, "span", never, { "someProp": "someProp"; }, {}, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<SpanDir, "span", never, { "someProp": "someProp"; }, {}, never, never, false>;
 }
 export declare class CustomEl {
     prop: any;
     otherProp: any;
     static ɵfac: i0.ɵɵFactoryDeclaration<CustomEl, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<CustomEl, "custom-element", never, { "prop": "prop"; "otherProp": "otherProp"; }, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<CustomEl, "custom-element", never, { "prop": "prop"; "otherProp": "otherProp"; }, {}, never, never, false>;
 }
 export declare class MyComponent {
     myTitle: string;
     buttonId: string;
     static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "ng-component", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "ng-component", never, {}, {}, never, never, false>;
 }
 export declare class MyMod {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyMod, never>;
@@ -592,7 +592,7 @@ MyComponent.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.
 MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "ng-component", ngImport: i0, template: `
     <button [title]="myTitle" [id]="buttonId" [tabindex]="1">
       <span [id]="1" [title]="'hello'" [someProp]="1 + 2"></span>
-    </button>`, isInline: true, directives: [{ type: SpanDir, selector: "span", inputs: ["someProp"] }] });
+    </button>`, isInline: true, dependencies: [{ kind: "directive", type: SpanDir, selector: "span", inputs: ["someProp"] }] });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, decorators: [{
             type: Component,
             args: [{
@@ -619,13 +619,13 @@ import * as i0 from "@angular/core";
 export declare class SpanDir {
     someProp: any;
     static ɵfac: i0.ɵɵFactoryDeclaration<SpanDir, never>;
-    static ɵdir: i0.ɵɵDirectiveDeclaration<SpanDir, "span", never, { "someProp": "someProp"; }, {}, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<SpanDir, "span", never, { "someProp": "someProp"; }, {}, never, never, false>;
 }
 export declare class MyComponent {
     myTitle: string;
     buttonId: string;
     static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "ng-component", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "ng-component", never, {}, {}, never, never, false>;
 }
 export declare class MyMod {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyMod, never>;

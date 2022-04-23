@@ -138,9 +138,6 @@
     "name": "ConnectableSubscriber"
   },
   {
-    "name": "Console"
-  },
-  {
     "name": "DASH_CASE_REGEXP"
   },
   {
@@ -204,6 +201,9 @@
     "name": "EmulatedEncapsulationDomRenderer2"
   },
   {
+    "name": "EnvironmentInjector"
+  },
+  {
     "name": "ErrorHandler"
   },
   {
@@ -220,6 +220,12 @@
   },
   {
     "name": "INJECTOR2"
+  },
+  {
+    "name": "INJECTOR_DEF_TYPES"
+  },
+  {
+    "name": "INJECTOR_INITIALIZER"
   },
   {
     "name": "INJECTOR_SCOPE"
@@ -357,6 +363,9 @@
     "name": "PLATFORM_INITIALIZER"
   },
   {
+    "name": "PLATFORM_ON_DESTROY"
+  },
+  {
     "name": "PlatformRef"
   },
   {
@@ -492,18 +501,6 @@
     "name": "__forward_ref__"
   },
   {
-    "name": "__global"
-  },
-  {
-    "name": "__globalThis"
-  },
-  {
-    "name": "__self"
-  },
-  {
-    "name": "__window"
-  },
-  {
     "name": "_chromeNumKeyPadMap"
   },
   {
@@ -534,7 +531,7 @@
     "name": "_keyMap"
   },
   {
-    "name": "_platform"
+    "name": "_platformInjector"
   },
   {
     "name": "_query"
@@ -762,9 +759,6 @@
     "name": "extractDirectiveDef"
   },
   {
-    "name": "extractPipeDef"
-  },
-  {
     "name": "extractStyleParams"
   },
   {
@@ -772,6 +766,9 @@
   },
   {
     "name": "findAttrIndexInNode"
+  },
+  {
+    "name": "flatten"
   },
   {
     "name": "flattenStyles"
@@ -814,6 +811,9 @@
   },
   {
     "name": "getDeclarationTNode"
+  },
+  {
+    "name": "getDirectiveDef"
   },
   {
     "name": "getFactoryDef"
@@ -882,6 +882,9 @@
     "name": "getParentInjectorView"
   },
   {
+    "name": "getPipeDef"
+  },
+  {
     "name": "getPlatform"
   },
   {
@@ -919,6 +922,9 @@
   },
   {
     "name": "identity"
+  },
+  {
+    "name": "importProvidersFrom"
   },
   {
     "name": "includeViewProviders"
@@ -997,6 +1003,12 @@
   },
   {
     "name": "isElementNode"
+  },
+  {
+    "name": "isExistingProvider"
+  },
+  {
+    "name": "isFactoryProvider"
   },
   {
     "name": "isFunction"
@@ -1120,6 +1132,9 @@
   },
   {
     "name": "noSideEffects"
+  },
+  {
+    "name": "nonNull"
   },
   {
     "name": "noop"
@@ -1347,13 +1362,16 @@
     "name": "urlParsingNode"
   },
   {
-    "name": "validateStyleProperty"
+    "name": "validateProvider"
   },
   {
     "name": "viewAttachedToChangeDetector"
   },
   {
     "name": "visitDslNode"
+  },
+  {
+    "name": "walkProviderTree"
   },
   {
     "name": "writeDirectClass"

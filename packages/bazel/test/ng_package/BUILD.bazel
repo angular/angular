@@ -1,6 +1,9 @@
 load("//tools:defaults.bzl", "jasmine_node_test", "nodejs_binary", "ts_library")
 
-exports_files(["package.json"])
+exports_files([
+    "package.json",
+    "outside_package.txt",
+])
 
 # The tests in this package must run in separate targets, since they change
 # working directory and therefore have mutable global state that causes test

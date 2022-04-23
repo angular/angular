@@ -8,7 +8,7 @@
 
 /* tslint:disable:no-console  */
 import {Component, Host, NgModule} from '@angular/core';
-import {AbstractControl, FormBuilder, FormGroup, FormGroupDirective, ReactiveFormsModule, Validators} from '@angular/forms';
+import {AbstractControl, FormBuilder, FormGroup, FormGroupDirective, ReactiveFormsModule, UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
@@ -139,10 +139,10 @@ export class ShowError {
   `
 })
 export class ReactiveForms {
-  form: FormGroup;
+  form: UntypedFormGroup;
   countries = ['US', 'Canada'];
 
-  constructor(fb: FormBuilder) {
+  constructor(fb: UntypedFormBuilder) {
     this.form = fb.group({
       'firstName': ['', Validators.required],
       'middleName': [''],

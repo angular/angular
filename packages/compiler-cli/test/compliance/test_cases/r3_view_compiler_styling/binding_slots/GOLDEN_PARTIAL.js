@@ -62,7 +62,7 @@ export declare class MyComponent {
     title: string;
     name: string;
     static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, { "name": "name"; }, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, { "name": "name"; }, {}, never, never, false>;
 }
 export declare class MyModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
@@ -112,7 +112,7 @@ export declare class WidthDirective {
     id: string;
     title: string;
     static ɵfac: i0.ɵɵFactoryDeclaration<WidthDirective, never>;
-    static ɵdir: i0.ɵɵDirectiveDeclaration<WidthDirective, "[myWidthDir]", never, {}, {}, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<WidthDirective, "[myWidthDir]", never, {}, {}, never, never, false>;
 }
 
 /****************************************************************************************************
@@ -153,7 +153,7 @@ export class MyAppComp {
 MyAppComp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyAppComp, deps: [], target: i0.ɵɵFactoryTarget.Component });
 MyAppComp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", type: MyAppComp, selector: "my-app", ngImport: i0, template: `
     <div my-dir></div>
-  `, isInline: true, directives: [{ type: MyDir, selector: "[my-dir]" }] });
+  `, isInline: true, dependencies: [{ kind: "directive", type: MyDir, selector: "[my-dir]" }] });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyAppComp, decorators: [{
             type: Component,
             args: [{
@@ -184,11 +184,11 @@ export declare class MyDir {
     _animParam1: null;
     _animParam2: null;
     static ɵfac: i0.ɵɵFactoryDeclaration<MyDir, never>;
-    static ɵdir: i0.ɵɵDirectiveDeclaration<MyDir, "[my-dir]", never, {}, {}, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MyDir, "[my-dir]", never, {}, {}, never, never, false>;
 }
 export declare class MyAppComp {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyAppComp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<MyAppComp, "my-app", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyAppComp, "my-app", never, {}, {}, never, never, false>;
 }
 export declare class MyModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;

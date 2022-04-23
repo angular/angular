@@ -14,7 +14,12 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 {
   describe('DefaultDomRendererV2', () => {
-    if (isNode) return;
+    if (isNode) {
+      // Jasmine will throw if there are no tests.
+      it('should pass', () => {});
+      return;
+    }
+
     let renderer: Renderer2;
 
     beforeEach(() => {

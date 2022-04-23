@@ -25,7 +25,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 import * as i0 from "@angular/core";
 export declare class TestCmp {
     static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never, false>;
 }
 
 /****************************************************************************************************
@@ -55,7 +55,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 import * as i0 from "@angular/core";
 export declare class TestCmp {
     static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never, false>;
 }
 
 /****************************************************************************************************
@@ -85,7 +85,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 import * as i0 from "@angular/core";
 export declare class TestCmp {
     static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never, false>;
 }
 
 /****************************************************************************************************
@@ -115,7 +115,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 import * as i0 from "@angular/core";
 export declare class TestCmp {
     static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never, false>;
 }
 
 /****************************************************************************************************
@@ -149,7 +149,7 @@ import * as i0 from "@angular/core";
 export declare class TestCmp {
     name: string;
     static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never, false>;
 }
 
 /****************************************************************************************************
@@ -183,7 +183,7 @@ import * as i0 from "@angular/core";
 export declare class TestCmp {
     name: string;
     static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never, false>;
 }
 
 /****************************************************************************************************
@@ -219,7 +219,7 @@ export declare class TestCmp {
     greeting: string;
     name: string;
     static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never, false>;
 }
 
 /****************************************************************************************************
@@ -255,7 +255,7 @@ export declare class TestCmp {
     greeting: string;
     name: string;
     static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never, false>;
 }
 
 /****************************************************************************************************
@@ -289,7 +289,7 @@ import * as i0 from "@angular/core";
 export declare class TestCmp {
     name: string;
     static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never, false>;
 }
 
 /****************************************************************************************************
@@ -323,7 +323,7 @@ import * as i0 from "@angular/core";
 export declare class TestCmp {
     name: string;
     static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never, false>;
 }
 
 /****************************************************************************************************
@@ -334,7 +334,7 @@ import * as i0 from "@angular/core";
 export class TestCmp {
 }
 TestCmp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmp, deps: [], target: i0.ɵɵFactoryTarget.Component });
-TestCmp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", type: TestCmp, selector: "test-cmp", ngImport: i0, template: '<div>{{200.3 | percent : 2 }}</div>', isInline: true, pipes: { "percent": i0.forwardRef(function () { return PercentPipe; }) } });
+TestCmp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", type: TestCmp, selector: "test-cmp", ngImport: i0, template: '<div>{{200.3 | percent : 2 }}</div>', isInline: true, dependencies: [{ kind: "pipe", type: i0.forwardRef(function () { return PercentPipe; }), name: "percent" }] });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmp, decorators: [{
             type: Component,
             args: [{
@@ -364,7 +364,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 /****************************************************************************************************
  * PARTIAL FILE: interpolation_with_pipe.js.map
  ****************************************************************************************************/
-{"version":3,"file":"interpolation_with_pipe.js","sourceRoot":"","sources":["../interpolation_with_pipe.ts"],"names":[],"mappings":"AAAA,OAAO,EAAC,SAAS,EAAE,QAAQ,EAAE,IAAI,EAAgB,MAAM,eAAe,CAAC;;AAMvE,MAAM,OAAO,OAAO;;+GAAP,OAAO;mGAAP,OAAO,gDAFR,qCAAqC,yEAMpC,WAAW;sGAJX,OAAO;kBAJnB,SAAS;mBAAC;oBACT,QAAQ,EAAE,UAAU;oBACpB,QAAQ,EAAE,qCAAqC;iBAChD;;AAKD,MAAM,OAAO,WAAW;IACtB,SAAS,KAAI,CAAC;;mHADH,WAAW;iHAAX,WAAW;sGAAX,WAAW;kBADvB,IAAI;mBAAC,EAAC,IAAI,EAAE,SAAS,EAAC;;AAMvB,MAAM,OAAO,SAAS;;iHAAT,SAAS;kHAAT,SAAS,iBATT,OAAO,EAIP,WAAW;kHAKX,SAAS;sGAAT,SAAS;kBADrB,QAAQ;mBAAC,EAAC,YAAY,EAAE,CAAC,OAAO,EAAE,WAAW,CAAC,EAAC"}
+{"version":3,"file":"interpolation_with_pipe.js","sourceRoot":"","sources":["../interpolation_with_pipe.ts"],"names":[],"mappings":"AAAA,OAAO,EAAC,SAAS,EAAE,QAAQ,EAAE,IAAI,EAAgB,MAAM,eAAe,CAAC;;AAMvE,MAAM,OAAO,OAAO;;+GAAP,OAAO;mGAAP,OAAO,gDAFR,qCAAqC,0FAMpC,WAAW;sGAJX,OAAO;kBAJnB,SAAS;mBAAC;oBACT,QAAQ,EAAE,UAAU;oBACpB,QAAQ,EAAE,qCAAqC;iBAChD;;AAKD,MAAM,OAAO,WAAW;IACtB,SAAS,KAAI,CAAC;;mHADH,WAAW;iHAAX,WAAW;sGAAX,WAAW;kBADvB,IAAI;mBAAC,EAAC,IAAI,EAAE,SAAS,EAAC;;AAMvB,MAAM,OAAO,SAAS;;iHAAT,SAAS;kHAAT,SAAS,iBATT,OAAO,EAIP,WAAW;kHAKX,SAAS;sGAAT,SAAS;kBADrB,QAAQ;mBAAC,EAAC,YAAY,EAAE,CAAC,OAAO,EAAE,WAAW,CAAC,EAAC"}
 /****************************************************************************************************
  * PARTIAL FILE: interpolation_with_pipe.d.ts
  ****************************************************************************************************/
@@ -372,12 +372,12 @@ import { PipeTransform } from '@angular/core';
 import * as i0 from "@angular/core";
 export declare class TestCmp {
     static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never, false>;
 }
 export declare class PercentPipe implements PipeTransform {
     transform(): void;
     static ɵfac: i0.ɵɵFactoryDeclaration<PercentPipe, never>;
-    static ɵpipe: i0.ɵɵPipeDeclaration<PercentPipe, "percent">;
+    static ɵpipe: i0.ɵɵPipeDeclaration<PercentPipe, "percent", false>;
 }
 export declare class AppModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<AppModule, never>;
@@ -393,7 +393,7 @@ import * as i0 from "@angular/core";
 export class TestCmp {
 }
 TestCmp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmp, deps: [], target: i0.ɵɵFactoryTarget.Component });
-TestCmp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", type: TestCmp, selector: "test-cmp", ngImport: i0, template: '<div>{{200.3 | percent : 2 }}</div>', isInline: true, pipes: { "percent": i0.forwardRef(function () { return PercentPipe; }) } });
+TestCmp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", type: TestCmp, selector: "test-cmp", ngImport: i0, template: '<div>{{200.3 | percent : 2 }}</div>', isInline: true, dependencies: [{ kind: "pipe", type: i0.forwardRef(function () { return PercentPipe; }), name: "percent" }] });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmp, decorators: [{
             type: Component,
             args: [{
@@ -423,7 +423,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 /****************************************************************************************************
  * PARTIAL FILE: interpolation_with_pipe.js.map
  ****************************************************************************************************/
-{"version":3,"file":"interpolation_with_pipe.js","sourceRoot":"","sources":["../interpolation_with_pipe.ts"],"names":[],"mappings":"AAAA,OAAO,EAAC,SAAS,EAAE,QAAQ,EAAE,IAAI,EAAgB,MAAM,eAAe,CAAC;;AAMvE,MAAM,OAAO,OAAO;;+GAAP,OAAO;mGAAP,OAAO,gDAFR,qCAAqC,yEAMpC,WAAW;sGAJX,OAAO;kBAJnB,SAAS;mBAAC;oBACT,QAAQ,EAAE,UAAU;oBACpB,QAAQ,EAAE,qCAAqC;iBAChD;;AAKD,MAAM,OAAO,WAAW;IACtB,SAAS,KAAI,CAAC;;mHADH,WAAW;iHAAX,WAAW;sGAAX,WAAW;kBADvB,IAAI;mBAAC,EAAC,IAAI,EAAE,SAAS,EAAC;;AAMvB,MAAM,OAAO,SAAS;;iHAAT,SAAS;kHAAT,SAAS,iBATT,OAAO,EAIP,WAAW;kHAKX,SAAS;sGAAT,SAAS;kBADrB,QAAQ;mBAAC,EAAC,YAAY,EAAE,CAAC,OAAO,EAAE,WAAW,CAAC,EAAC"}
+{"version":3,"file":"interpolation_with_pipe.js","sourceRoot":"","sources":["../interpolation_with_pipe.ts"],"names":[],"mappings":"AAAA,OAAO,EAAC,SAAS,EAAE,QAAQ,EAAE,IAAI,EAAgB,MAAM,eAAe,CAAC;;AAMvE,MAAM,OAAO,OAAO;;+GAAP,OAAO;mGAAP,OAAO,gDAFR,qCAAqC,0FAMpC,WAAW;sGAJX,OAAO;kBAJnB,SAAS;mBAAC;oBACT,QAAQ,EAAE,UAAU;oBACpB,QAAQ,EAAE,qCAAqC;iBAChD;;AAKD,MAAM,OAAO,WAAW;IACtB,SAAS,KAAI,CAAC;;mHADH,WAAW;iHAAX,WAAW;sGAAX,WAAW;kBADvB,IAAI;mBAAC,EAAC,IAAI,EAAE,SAAS,EAAC;;AAMvB,MAAM,OAAO,SAAS;;iHAAT,SAAS;kHAAT,SAAS,iBATT,OAAO,EAIP,WAAW;kHAKX,SAAS;sGAAT,SAAS;kBADrB,QAAQ;mBAAC,EAAC,YAAY,EAAE,CAAC,OAAO,EAAE,WAAW,CAAC,EAAC"}
 /****************************************************************************************************
  * PARTIAL FILE: interpolation_with_pipe.d.ts
  ****************************************************************************************************/
@@ -431,12 +431,12 @@ import { PipeTransform } from '@angular/core';
 import * as i0 from "@angular/core";
 export declare class TestCmp {
     static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never, false>;
 }
 export declare class PercentPipe implements PipeTransform {
     transform(): void;
     static ɵfac: i0.ɵɵFactoryDeclaration<PercentPipe, never>;
-    static ɵpipe: i0.ɵɵPipeDeclaration<PercentPipe, "percent">;
+    static ɵpipe: i0.ɵɵPipeDeclaration<PercentPipe, "percent", false>;
 }
 export declare class AppModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<AppModule, never>;
@@ -475,7 +475,7 @@ import * as i0 from "@angular/core";
 export declare class TestCmp {
     name: string;
     static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never, false>;
 }
 
 /****************************************************************************************************
@@ -509,7 +509,7 @@ import * as i0 from "@angular/core";
 export declare class TestCmp {
     name: string;
     static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never, false>;
 }
 
 /****************************************************************************************************
@@ -545,7 +545,7 @@ export declare class TestCmp {
     greeting: string;
     name: string;
     static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never, false>;
 }
 
 /****************************************************************************************************
@@ -581,7 +581,7 @@ export declare class TestCmp {
     greeting: string;
     name: string;
     static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never, false>;
 }
 
 /****************************************************************************************************
@@ -615,7 +615,7 @@ import * as i0 from "@angular/core";
 export declare class TestCmp {
     name: string;
     static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never, false>;
 }
 
 /****************************************************************************************************
@@ -649,7 +649,7 @@ import * as i0 from "@angular/core";
 export declare class TestCmp {
     name: string;
     static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never, false>;
 }
 
 /****************************************************************************************************
@@ -681,7 +681,7 @@ import * as i0 from "@angular/core";
 export declare class TestCmp {
     doSomething(): void;
     static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never, false>;
 }
 
 /****************************************************************************************************
@@ -713,7 +713,7 @@ import * as i0 from "@angular/core";
 export declare class TestCmp {
     doSomething(): void;
     static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never, false>;
 }
 
 /****************************************************************************************************
@@ -747,7 +747,7 @@ import * as i0 from "@angular/core";
 export declare class TestCmp {
     items: string[];
     static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never, false>;
 }
 
 /****************************************************************************************************
@@ -781,7 +781,7 @@ import * as i0 from "@angular/core";
 export declare class TestCmp {
     items: string[];
     static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never, false>;
 }
 
 /****************************************************************************************************
@@ -813,7 +813,7 @@ import * as i0 from "@angular/core";
 export declare class TestCmp {
     doSomething(): void;
     static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never, false>;
 }
 
 /****************************************************************************************************
@@ -845,7 +845,7 @@ import * as i0 from "@angular/core";
 export declare class TestCmp {
     doSomething(): void;
     static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never, false>;
 }
 
 /****************************************************************************************************
@@ -859,7 +859,7 @@ export class TestCmp {
     }
 }
 TestCmp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmp, deps: [], target: i0.ɵɵFactoryTarget.Component });
-TestCmp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", type: TestCmp, selector: "test-cmp", ngImport: i0, template: 'Name: <input [(ngModel)]="name">', isInline: true, directives: [{ type: i0.forwardRef(function () { return NgModelDirective; }), selector: "[ngModel]", inputs: ["ngModel"], outputs: ["ngModelChanges"] }] });
+TestCmp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", type: TestCmp, selector: "test-cmp", ngImport: i0, template: 'Name: <input [(ngModel)]="name">', isInline: true, dependencies: [{ kind: "directive", type: i0.forwardRef(function () { return NgModelDirective; }), selector: "[ngModel]", inputs: ["ngModel"], outputs: ["ngModelChanges"] }] });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmp, decorators: [{
             type: Component,
             args: [{
@@ -896,7 +896,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 /****************************************************************************************************
  * PARTIAL FILE: two_way_binding_simple.js.map
  ****************************************************************************************************/
-{"version":3,"file":"two_way_binding_simple.js","sourceRoot":"","sources":["../two_way_binding_simple.ts"],"names":[],"mappings":"AAAA,OAAO,EAAC,SAAS,EAAE,SAAS,EAAE,YAAY,EAAE,KAAK,EAAE,QAAQ,EAAE,MAAM,EAAC,MAAM,eAAe,CAAC;;AAM1F,MAAM,OAAO,OAAO;IAJpB;QAKE,SAAI,GAAW,EAAE,CAAC;KACnB;;+GAFY,OAAO;mGAAP,OAAO,gDAFR,kCAAkC,0EAOjC,gBAAgB;sGALhB,OAAO;kBAJnB,SAAS;mBAAC;oBACT,QAAQ,EAAE,UAAU;oBACpB,QAAQ,EAAE,kCAAkC;iBAC7C;;AAMD,MAAM,OAAO,gBAAgB;IAD7B;QAEW,YAAO,GAAW,EAAE,CAAC;QACpB,mBAAc,GAAyB,IAAI,YAAY,EAAE,CAAC;KACrE;;wHAHY,gBAAgB;4GAAhB,gBAAgB;sGAAhB,gBAAgB;kBAD5B,SAAS;mBAAC,EAAC,QAAQ,EAAE,WAAW,EAAC;8BAEvB,OAAO;sBAAf,KAAK;gBACI,cAAc;sBAAvB,MAAM;;AAIT,MAAM,OAAO,SAAS;;iHAAT,SAAS;kHAAT,SAAS,iBAXT,OAAO,EAKP,gBAAgB;kHAMhB,SAAS;sGAAT,SAAS;kBADrB,QAAQ;mBAAC,EAAC,YAAY,EAAE,CAAC,OAAO,EAAE,gBAAgB,CAAC,EAAC"}
+{"version":3,"file":"two_way_binding_simple.js","sourceRoot":"","sources":["../two_way_binding_simple.ts"],"names":[],"mappings":"AAAA,OAAO,EAAC,SAAS,EAAE,SAAS,EAAE,YAAY,EAAE,KAAK,EAAE,QAAQ,EAAE,MAAM,EAAC,MAAM,eAAe,CAAC;;AAM1F,MAAM,OAAO,OAAO;IAJpB;QAKE,SAAI,GAAW,EAAE,CAAC;KACnB;;+GAFY,OAAO;mGAAP,OAAO,gDAFR,kCAAkC,+FAOjC,gBAAgB;sGALhB,OAAO;kBAJnB,SAAS;mBAAC;oBACT,QAAQ,EAAE,UAAU;oBACpB,QAAQ,EAAE,kCAAkC;iBAC7C;;AAMD,MAAM,OAAO,gBAAgB;IAD7B;QAEW,YAAO,GAAW,EAAE,CAAC;QACpB,mBAAc,GAAyB,IAAI,YAAY,EAAE,CAAC;KACrE;;wHAHY,gBAAgB;4GAAhB,gBAAgB;sGAAhB,gBAAgB;kBAD5B,SAAS;mBAAC,EAAC,QAAQ,EAAE,WAAW,EAAC;8BAEvB,OAAO;sBAAf,KAAK;gBACI,cAAc;sBAAvB,MAAM;;AAIT,MAAM,OAAO,SAAS;;iHAAT,SAAS;kHAAT,SAAS,iBAXT,OAAO,EAKP,gBAAgB;kHAMhB,SAAS;sGAAT,SAAS;kBADrB,QAAQ;mBAAC,EAAC,YAAY,EAAE,CAAC,OAAO,EAAE,gBAAgB,CAAC,EAAC"}
 /****************************************************************************************************
  * PARTIAL FILE: two_way_binding_simple.d.ts
  ****************************************************************************************************/
@@ -905,13 +905,13 @@ import * as i0 from "@angular/core";
 export declare class TestCmp {
     name: string;
     static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never, false>;
 }
 export declare class NgModelDirective {
     ngModel: string;
     ngModelChanges: EventEmitter<string>;
     static ɵfac: i0.ɵɵFactoryDeclaration<NgModelDirective, never>;
-    static ɵdir: i0.ɵɵDirectiveDeclaration<NgModelDirective, "[ngModel]", never, { "ngModel": "ngModel"; }, { "ngModelChanges": "ngModelChanges"; }, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<NgModelDirective, "[ngModel]", never, { "ngModel": "ngModel"; }, { "ngModelChanges": "ngModelChanges"; }, never, never, false>;
 }
 export declare class AppModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<AppModule, never>;
@@ -930,7 +930,7 @@ export class TestCmp {
     }
 }
 TestCmp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmp, deps: [], target: i0.ɵɵFactoryTarget.Component });
-TestCmp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", type: TestCmp, selector: "test-cmp", ngImport: i0, template: 'Name: <input [(ngModel)]="name">', isInline: true, directives: [{ type: i0.forwardRef(function () { return NgModelDirective; }), selector: "[ngModel]", inputs: ["ngModel"], outputs: ["ngModelChanges"] }] });
+TestCmp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", type: TestCmp, selector: "test-cmp", ngImport: i0, template: 'Name: <input [(ngModel)]="name">', isInline: true, dependencies: [{ kind: "directive", type: i0.forwardRef(function () { return NgModelDirective; }), selector: "[ngModel]", inputs: ["ngModel"], outputs: ["ngModelChanges"] }] });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmp, decorators: [{
             type: Component,
             args: [{
@@ -967,7 +967,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 /****************************************************************************************************
  * PARTIAL FILE: two_way_binding_simple.js.map
  ****************************************************************************************************/
-{"version":3,"file":"two_way_binding_simple.js","sourceRoot":"","sources":["../two_way_binding_simple.ts"],"names":[],"mappings":"AAAA,OAAO,EAAC,SAAS,EAAE,SAAS,EAAE,YAAY,EAAE,KAAK,EAAE,QAAQ,EAAE,MAAM,EAAC,MAAM,eAAe,CAAC;;AAM1F,MAAM,OAAO,OAAO;IAJpB;QAKE,SAAI,GAAW,EAAE,CAAC;KACnB;;+GAFY,OAAO;mGAAP,OAAO,gDAFR,kCAAkC,0EAOjC,gBAAgB;sGALhB,OAAO;kBAJnB,SAAS;mBAAC;oBACT,QAAQ,EAAE,UAAU;oBACpB,QAAQ,EAAE,kCAAkC;iBAC7C;;AAMD,MAAM,OAAO,gBAAgB;IAD7B;QAEW,YAAO,GAAW,EAAE,CAAC;QACpB,mBAAc,GAAyB,IAAI,YAAY,EAAE,CAAC;KACrE;;wHAHY,gBAAgB;4GAAhB,gBAAgB;sGAAhB,gBAAgB;kBAD5B,SAAS;mBAAC,EAAC,QAAQ,EAAE,WAAW,EAAC;8BAEvB,OAAO;sBAAf,KAAK;gBACI,cAAc;sBAAvB,MAAM;;AAIT,MAAM,OAAO,SAAS;;iHAAT,SAAS;kHAAT,SAAS,iBAXT,OAAO,EAKP,gBAAgB;kHAMhB,SAAS;sGAAT,SAAS;kBADrB,QAAQ;mBAAC,EAAC,YAAY,EAAE,CAAC,OAAO,EAAE,gBAAgB,CAAC,EAAC"}
+{"version":3,"file":"two_way_binding_simple.js","sourceRoot":"","sources":["../two_way_binding_simple.ts"],"names":[],"mappings":"AAAA,OAAO,EAAC,SAAS,EAAE,SAAS,EAAE,YAAY,EAAE,KAAK,EAAE,QAAQ,EAAE,MAAM,EAAC,MAAM,eAAe,CAAC;;AAM1F,MAAM,OAAO,OAAO;IAJpB;QAKE,SAAI,GAAW,EAAE,CAAC;KACnB;;+GAFY,OAAO;mGAAP,OAAO,gDAFR,kCAAkC,+FAOjC,gBAAgB;sGALhB,OAAO;kBAJnB,SAAS;mBAAC;oBACT,QAAQ,EAAE,UAAU;oBACpB,QAAQ,EAAE,kCAAkC;iBAC7C;;AAMD,MAAM,OAAO,gBAAgB;IAD7B;QAEW,YAAO,GAAW,EAAE,CAAC;QACpB,mBAAc,GAAyB,IAAI,YAAY,EAAE,CAAC;KACrE;;wHAHY,gBAAgB;4GAAhB,gBAAgB;sGAAhB,gBAAgB;kBAD5B,SAAS;mBAAC,EAAC,QAAQ,EAAE,WAAW,EAAC;8BAEvB,OAAO;sBAAf,KAAK;gBACI,cAAc;sBAAvB,MAAM;;AAIT,MAAM,OAAO,SAAS;;iHAAT,SAAS;kHAAT,SAAS,iBAXT,OAAO,EAKP,gBAAgB;kHAMhB,SAAS;sGAAT,SAAS;kBADrB,QAAQ;mBAAC,EAAC,YAAY,EAAE,CAAC,OAAO,EAAE,gBAAgB,CAAC,EAAC"}
 /****************************************************************************************************
  * PARTIAL FILE: two_way_binding_simple.d.ts
  ****************************************************************************************************/
@@ -976,13 +976,13 @@ import * as i0 from "@angular/core";
 export declare class TestCmp {
     name: string;
     static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never, false>;
 }
 export declare class NgModelDirective {
     ngModel: string;
     ngModelChanges: EventEmitter<string>;
     static ɵfac: i0.ɵɵFactoryDeclaration<NgModelDirective, never>;
-    static ɵdir: i0.ɵɵDirectiveDeclaration<NgModelDirective, "[ngModel]", never, { "ngModel": "ngModel"; }, { "ngModelChanges": "ngModelChanges"; }, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<NgModelDirective, "[ngModel]", never, { "ngModel": "ngModel"; }, { "ngModelChanges": "ngModelChanges"; }, never, never, false>;
 }
 export declare class AppModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<AppModule, never>;
@@ -1001,7 +1001,7 @@ export class TestCmp {
     }
 }
 TestCmp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmp, deps: [], target: i0.ɵɵFactoryTarget.Component });
-TestCmp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", type: TestCmp, selector: "test-cmp", ngImport: i0, template: 'Name: <input bindon-ngModel="name">', isInline: true, directives: [{ type: i0.forwardRef(function () { return NgModelDirective; }), selector: "[ngModel]", inputs: ["ngModel"], outputs: ["ngModelChanges"] }] });
+TestCmp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", type: TestCmp, selector: "test-cmp", ngImport: i0, template: 'Name: <input bindon-ngModel="name">', isInline: true, dependencies: [{ kind: "directive", type: i0.forwardRef(function () { return NgModelDirective; }), selector: "[ngModel]", inputs: ["ngModel"], outputs: ["ngModelChanges"] }] });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmp, decorators: [{
             type: Component,
             args: [{
@@ -1038,7 +1038,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 /****************************************************************************************************
  * PARTIAL FILE: two_way_binding_longhand.js.map
  ****************************************************************************************************/
-{"version":3,"file":"two_way_binding_longhand.js","sourceRoot":"","sources":["../two_way_binding_longhand.ts"],"names":[],"mappings":"AAAA,OAAO,EAAC,SAAS,EAAE,SAAS,EAAE,YAAY,EAAE,KAAK,EAAE,QAAQ,EAAE,MAAM,EAAC,MAAM,eAAe,CAAC;;AAM1F,MAAM,OAAO,OAAO;IAJpB;QAKE,SAAI,GAAW,EAAE,CAAC;KACnB;;+GAFY,OAAO;mGAAP,OAAO,gDAFR,qCAAqC,0EAOpC,gBAAgB;sGALhB,OAAO;kBAJnB,SAAS;mBAAC;oBACT,QAAQ,EAAE,UAAU;oBACpB,QAAQ,EAAE,qCAAqC;iBAChD;;AAMD,MAAM,OAAO,gBAAgB;IAD7B;QAEW,YAAO,GAAW,EAAE,CAAC;QACpB,mBAAc,GAAyB,IAAI,YAAY,EAAE,CAAC;KACrE;;wHAHY,gBAAgB;4GAAhB,gBAAgB;sGAAhB,gBAAgB;kBAD5B,SAAS;mBAAC,EAAC,QAAQ,EAAE,WAAW,EAAC;8BAEvB,OAAO;sBAAf,KAAK;gBACI,cAAc;sBAAvB,MAAM;;AAIT,MAAM,OAAO,SAAS;;iHAAT,SAAS;kHAAT,SAAS,iBAXT,OAAO,EAKP,gBAAgB;kHAMhB,SAAS;sGAAT,SAAS;kBADrB,QAAQ;mBAAC,EAAC,YAAY,EAAE,CAAC,OAAO,EAAE,gBAAgB,CAAC,EAAC"}
+{"version":3,"file":"two_way_binding_longhand.js","sourceRoot":"","sources":["../two_way_binding_longhand.ts"],"names":[],"mappings":"AAAA,OAAO,EAAC,SAAS,EAAE,SAAS,EAAE,YAAY,EAAE,KAAK,EAAE,QAAQ,EAAE,MAAM,EAAC,MAAM,eAAe,CAAC;;AAM1F,MAAM,OAAO,OAAO;IAJpB;QAKE,SAAI,GAAW,EAAE,CAAC;KACnB;;+GAFY,OAAO;mGAAP,OAAO,gDAFR,qCAAqC,+FAOpC,gBAAgB;sGALhB,OAAO;kBAJnB,SAAS;mBAAC;oBACT,QAAQ,EAAE,UAAU;oBACpB,QAAQ,EAAE,qCAAqC;iBAChD;;AAMD,MAAM,OAAO,gBAAgB;IAD7B;QAEW,YAAO,GAAW,EAAE,CAAC;QACpB,mBAAc,GAAyB,IAAI,YAAY,EAAE,CAAC;KACrE;;wHAHY,gBAAgB;4GAAhB,gBAAgB;sGAAhB,gBAAgB;kBAD5B,SAAS;mBAAC,EAAC,QAAQ,EAAE,WAAW,EAAC;8BAEvB,OAAO;sBAAf,KAAK;gBACI,cAAc;sBAAvB,MAAM;;AAIT,MAAM,OAAO,SAAS;;iHAAT,SAAS;kHAAT,SAAS,iBAXT,OAAO,EAKP,gBAAgB;kHAMhB,SAAS;sGAAT,SAAS;kBADrB,QAAQ;mBAAC,EAAC,YAAY,EAAE,CAAC,OAAO,EAAE,gBAAgB,CAAC,EAAC"}
 /****************************************************************************************************
  * PARTIAL FILE: two_way_binding_longhand.d.ts
  ****************************************************************************************************/
@@ -1047,13 +1047,13 @@ import * as i0 from "@angular/core";
 export declare class TestCmp {
     name: string;
     static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never, false>;
 }
 export declare class NgModelDirective {
     ngModel: string;
     ngModelChanges: EventEmitter<string>;
     static ɵfac: i0.ɵɵFactoryDeclaration<NgModelDirective, never>;
-    static ɵdir: i0.ɵɵDirectiveDeclaration<NgModelDirective, "[ngModel]", never, { "ngModel": "ngModel"; }, { "ngModelChanges": "ngModelChanges"; }, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<NgModelDirective, "[ngModel]", never, { "ngModel": "ngModel"; }, { "ngModelChanges": "ngModelChanges"; }, never, never, false>;
 }
 export declare class AppModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<AppModule, never>;
@@ -1072,7 +1072,7 @@ export class TestCmp {
     }
 }
 TestCmp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmp, deps: [], target: i0.ɵɵFactoryTarget.Component });
-TestCmp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", type: TestCmp, selector: "test-cmp", ngImport: i0, template: 'Name: <input bindon-ngModel="name">', isInline: true, directives: [{ type: i0.forwardRef(function () { return NgModelDirective; }), selector: "[ngModel]", inputs: ["ngModel"], outputs: ["ngModelChanges"] }] });
+TestCmp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", type: TestCmp, selector: "test-cmp", ngImport: i0, template: 'Name: <input bindon-ngModel="name">', isInline: true, dependencies: [{ kind: "directive", type: i0.forwardRef(function () { return NgModelDirective; }), selector: "[ngModel]", inputs: ["ngModel"], outputs: ["ngModelChanges"] }] });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmp, decorators: [{
             type: Component,
             args: [{
@@ -1109,7 +1109,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 /****************************************************************************************************
  * PARTIAL FILE: two_way_binding_longhand.js.map
  ****************************************************************************************************/
-{"version":3,"file":"two_way_binding_longhand.js","sourceRoot":"","sources":["../two_way_binding_longhand.ts"],"names":[],"mappings":"AAAA,OAAO,EAAC,SAAS,EAAE,SAAS,EAAE,YAAY,EAAE,KAAK,EAAE,QAAQ,EAAE,MAAM,EAAC,MAAM,eAAe,CAAC;;AAM1F,MAAM,OAAO,OAAO;IAJpB;QAKE,SAAI,GAAW,EAAE,CAAC;KACnB;;+GAFY,OAAO;mGAAP,OAAO,gDAFR,qCAAqC,0EAOpC,gBAAgB;sGALhB,OAAO;kBAJnB,SAAS;mBAAC;oBACT,QAAQ,EAAE,UAAU;oBACpB,QAAQ,EAAE,qCAAqC;iBAChD;;AAMD,MAAM,OAAO,gBAAgB;IAD7B;QAEW,YAAO,GAAW,EAAE,CAAC;QACpB,mBAAc,GAAyB,IAAI,YAAY,EAAE,CAAC;KACrE;;wHAHY,gBAAgB;4GAAhB,gBAAgB;sGAAhB,gBAAgB;kBAD5B,SAAS;mBAAC,EAAC,QAAQ,EAAE,WAAW,EAAC;8BAEvB,OAAO;sBAAf,KAAK;gBACI,cAAc;sBAAvB,MAAM;;AAIT,MAAM,OAAO,SAAS;;iHAAT,SAAS;kHAAT,SAAS,iBAXT,OAAO,EAKP,gBAAgB;kHAMhB,SAAS;sGAAT,SAAS;kBADrB,QAAQ;mBAAC,EAAC,YAAY,EAAE,CAAC,OAAO,EAAE,gBAAgB,CAAC,EAAC"}
+{"version":3,"file":"two_way_binding_longhand.js","sourceRoot":"","sources":["../two_way_binding_longhand.ts"],"names":[],"mappings":"AAAA,OAAO,EAAC,SAAS,EAAE,SAAS,EAAE,YAAY,EAAE,KAAK,EAAE,QAAQ,EAAE,MAAM,EAAC,MAAM,eAAe,CAAC;;AAM1F,MAAM,OAAO,OAAO;IAJpB;QAKE,SAAI,GAAW,EAAE,CAAC;KACnB;;+GAFY,OAAO;mGAAP,OAAO,gDAFR,qCAAqC,+FAOpC,gBAAgB;sGALhB,OAAO;kBAJnB,SAAS;mBAAC;oBACT,QAAQ,EAAE,UAAU;oBACpB,QAAQ,EAAE,qCAAqC;iBAChD;;AAMD,MAAM,OAAO,gBAAgB;IAD7B;QAEW,YAAO,GAAW,EAAE,CAAC;QACpB,mBAAc,GAAyB,IAAI,YAAY,EAAE,CAAC;KACrE;;wHAHY,gBAAgB;4GAAhB,gBAAgB;sGAAhB,gBAAgB;kBAD5B,SAAS;mBAAC,EAAC,QAAQ,EAAE,WAAW,EAAC;8BAEvB,OAAO;sBAAf,KAAK;gBACI,cAAc;sBAAvB,MAAM;;AAIT,MAAM,OAAO,SAAS;;iHAAT,SAAS;kHAAT,SAAS,iBAXT,OAAO,EAKP,gBAAgB;kHAMhB,SAAS;sGAAT,SAAS;kBADrB,QAAQ;mBAAC,EAAC,YAAY,EAAE,CAAC,OAAO,EAAE,gBAAgB,CAAC,EAAC"}
 /****************************************************************************************************
  * PARTIAL FILE: two_way_binding_longhand.d.ts
  ****************************************************************************************************/
@@ -1118,13 +1118,13 @@ import * as i0 from "@angular/core";
 export declare class TestCmp {
     name: string;
     static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never, false>;
 }
 export declare class NgModelDirective {
     ngModel: string;
     ngModelChanges: EventEmitter<string>;
     static ɵfac: i0.ɵɵFactoryDeclaration<NgModelDirective, never>;
-    static ɵdir: i0.ɵɵDirectiveDeclaration<NgModelDirective, "[ngModel]", never, { "ngModel": "ngModel"; }, { "ngModelChanges": "ngModelChanges"; }, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<NgModelDirective, "[ngModel]", never, { "ngModel": "ngModel"; }, { "ngModelChanges": "ngModelChanges"; }, never, never, false>;
 }
 export declare class AppModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<AppModule, never>;
@@ -1163,7 +1163,7 @@ import * as i0 from "@angular/core";
 export declare class TestCmp {
     isInitial: boolean;
     static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never, false>;
 }
 
 /****************************************************************************************************
@@ -1197,7 +1197,7 @@ import * as i0 from "@angular/core";
 export declare class TestCmp {
     isInitial: boolean;
     static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never, false>;
 }
 
 /****************************************************************************************************
@@ -1227,7 +1227,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 import * as i0 from "@angular/core";
 export declare class TestCmp {
     static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never, false>;
 }
 
 /****************************************************************************************************
@@ -1257,7 +1257,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 import * as i0 from "@angular/core";
 export declare class TestCmp {
     static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never, false>;
 }
 
 /****************************************************************************************************
@@ -1295,7 +1295,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 import * as i0 from "@angular/core";
 export declare class TestCmp {
     static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never, false>;
 }
 
 /****************************************************************************************************
@@ -1333,7 +1333,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 import * as i0 from "@angular/core";
 export declare class TestCmp {
     static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never, false>;
 }
 
 /****************************************************************************************************
@@ -1363,7 +1363,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 import * as i0 from "@angular/core";
 export declare class TestCmp {
     static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never, false>;
 }
 
 /****************************************************************************************************
@@ -1393,7 +1393,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 import * as i0 from "@angular/core";
 export declare class TestCmp {
     static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never, false>;
 }
 
 /****************************************************************************************************
@@ -1423,7 +1423,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 import * as i0 from "@angular/core";
 export declare class TestCmp {
     static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never, false>;
 }
 
 /****************************************************************************************************
@@ -1453,7 +1453,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 import * as i0 from "@angular/core";
 export declare class TestCmp {
     static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never, false>;
 }
 
 /****************************************************************************************************
@@ -1487,7 +1487,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 import * as i0 from "@angular/core";
 export declare class TestCmp {
     static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, ["title", "*"]>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, ["title", "*"], false>;
 }
 
 /****************************************************************************************************
@@ -1521,7 +1521,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 import * as i0 from "@angular/core";
 export declare class TestCmp {
     static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, ["title", "*"]>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, ["title", "*"], false>;
 }
 
 /****************************************************************************************************
@@ -1551,7 +1551,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 import * as i0 from "@angular/core";
 export declare class TestCmp {
     static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never, false>;
 }
 
 /****************************************************************************************************
@@ -1581,7 +1581,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 import * as i0 from "@angular/core";
 export declare class TestCmp {
     static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never, false>;
 }
 
 /****************************************************************************************************
@@ -1615,7 +1615,7 @@ import * as i0 from "@angular/core";
 export declare class TestCmp {
     name: string;
     static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never, false>;
 }
 
 /****************************************************************************************************
@@ -1649,7 +1649,7 @@ import * as i0 from "@angular/core";
 export declare class TestCmp {
     name: string;
     static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never, false>;
 }
 
 /****************************************************************************************************
@@ -1685,7 +1685,7 @@ export declare class TestCmp {
     one: number;
     two: number;
     static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never, false>;
 }
 
 /****************************************************************************************************
@@ -1721,7 +1721,7 @@ export declare class TestCmp {
     one: number;
     two: number;
     static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never, false>;
 }
 
 /****************************************************************************************************
@@ -1757,7 +1757,7 @@ export declare class TestCmp {
     titleValue: string;
     bodyValue: string;
     static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never, false>;
 }
 
 /****************************************************************************************************
@@ -1793,7 +1793,7 @@ export declare class TestCmp {
     titleValue: string;
     bodyValue: string;
     static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never, false>;
 }
 
 /****************************************************************************************************
@@ -1823,7 +1823,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 import * as i0 from "@angular/core";
 export declare class TestCmp {
     static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never, false>;
 }
 
 /****************************************************************************************************
@@ -1853,7 +1853,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 import * as i0 from "@angular/core";
 export declare class TestCmp {
     static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never, false>;
 }
 
 /****************************************************************************************************
@@ -1883,7 +1883,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 import * as i0 from "@angular/core";
 export declare class TestCmp {
     static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never, false>;
 }
 
 /****************************************************************************************************
@@ -1913,7 +1913,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 import * as i0 from "@angular/core";
 export declare class TestCmp {
     static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never, false>;
 }
 
 /****************************************************************************************************
@@ -1943,7 +1943,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 import * as i0 from "@angular/core";
 export declare class TestCmp {
     static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never, false>;
 }
 
 /****************************************************************************************************
@@ -1973,7 +1973,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 import * as i0 from "@angular/core";
 export declare class TestCmp {
     static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never, false>;
 }
 
 /****************************************************************************************************
@@ -2003,7 +2003,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 import * as i0 from "@angular/core";
 export declare class TestCmp {
     static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never, false>;
 }
 
 /****************************************************************************************************
@@ -2033,6 +2033,6 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 import * as i0 from "@angular/core";
 export declare class TestCmp {
     static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never, false>;
 }
 

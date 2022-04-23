@@ -12,7 +12,11 @@ import {WebAnimationsPlayer} from '../../../src/render/web_animations/web_animat
 
 {
   describe('WebAnimationsDriver', () => {
-    if (isNode) return;
+    if (isNode) {
+      // Jasmine will throw if there are no tests.
+      it('should pass', () => {});
+      return;
+    }
 
     describe('when web-animations are supported natively', () => {
       it('should return an instance of a WebAnimationsPlayer if scrubbing is not requested', () => {

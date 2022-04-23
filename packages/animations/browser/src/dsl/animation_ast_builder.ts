@@ -74,19 +74,20 @@ export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
     const ast =
         <Ast<AnimationMetadataType>>visitDslNode(this, normalizeAnimationEntry(metadata), context);
 
-    if (context.unsupportedCSSPropertiesFound.size) {
-      pushUnrecognizedPropertiesWarning(
-          warnings,
-          [...context.unsupportedCSSPropertiesFound.keys()],
-      );
-    }
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      if (context.unsupportedCSSPropertiesFound.size) {
+        pushUnrecognizedPropertiesWarning(
+            warnings,
+            [...context.unsupportedCSSPropertiesFound.keys()],
+        );
+      }
 
-    if ((typeof ngDevMode === 'undefined' || ngDevMode) &&
-        context.nonAnimatableCSSPropertiesFound.size) {
-      pushNonAnimatablePropertiesWarning(
-          warnings,
-          [...context.nonAnimatableCSSPropertiesFound.keys()],
-      );
+      if (context.nonAnimatableCSSPropertiesFound.size) {
+        pushNonAnimatablePropertiesWarning(
+            warnings,
+            [...context.nonAnimatableCSSPropertiesFound.keys()],
+        );
+      }
     }
 
     return ast;
@@ -314,19 +315,20 @@ export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
       if (typeof tuple === 'string') return;
 
       tuple.forEach((value, prop) => {
-        if (!this._driver.validateStyleProperty(prop)) {
-          tuple.delete(prop);
-          context.unsupportedCSSPropertiesFound.add(prop);
-          return;
-        }
-
-        if ((typeof ngDevMode === 'undefined' || ngDevMode) &&
-            this._driver.validateAnimatableStyleProperty) {
-          if (!this._driver.validateAnimatableStyleProperty(prop)) {
-            context.nonAnimatableCSSPropertiesFound.add(prop);
-            // note: non animatable properties are not removed for the tuple just in case they are
-            //       categorized as non animatable but can actually be animated
+        if (typeof ngDevMode === 'undefined' || ngDevMode) {
+          if (!this._driver.validateStyleProperty(prop)) {
+            tuple.delete(prop);
+            context.unsupportedCSSPropertiesFound.add(prop);
             return;
+          }
+
+          if (this._driver.validateAnimatableStyleProperty) {
+            if (!this._driver.validateAnimatableStyleProperty(prop)) {
+              context.nonAnimatableCSSPropertiesFound.add(prop);
+              // note: non animatable properties are not removed for the tuple just in case they are
+              //       categorized as non animatable but can actually be animated
+              return;
+            }
           }
         }
 

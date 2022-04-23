@@ -136,8 +136,7 @@ export class ActivatedRoute {
       /** The outlet name of the route, a constant. */
       public outlet: string,
       /** The component of the route, a constant. */
-      // TODO(vsavkin): remove |string
-      public component: Type<any>|string|null, futureSnapshot: ActivatedRouteSnapshot) {
+      public component: Type<any>|null, futureSnapshot: ActivatedRouteSnapshot) {
     this._futureSnapshot = futureSnapshot;
   }
 
@@ -284,6 +283,13 @@ export class ActivatedRouteSnapshot {
   _urlSegment: UrlSegmentGroup;
   /** @internal */
   _lastPathIndex: number;
+  /**
+   * @internal
+   *
+   * Used only in dev mode to detect if application relies on `relativeLinkResolution: 'legacy'`
+   * Should be removed in v16.
+   */
+  _correctedLastPathIndex: number;
   /** @internal */
   _resolve: ResolveData;
   /** @internal */
@@ -332,11 +338,12 @@ export class ActivatedRouteSnapshot {
       /** The outlet name of the route */
       public outlet: string,
       /** The component of the route */
-      public component: Type<any>|string|null, routeConfig: Route|null, urlSegment: UrlSegmentGroup,
-      lastPathIndex: number, resolve: ResolveData) {
+      public component: Type<any>|null, routeConfig: Route|null, urlSegment: UrlSegmentGroup,
+      lastPathIndex: number, resolve: ResolveData, correctedLastPathIndex?: number) {
     this.routeConfig = routeConfig;
     this._urlSegment = urlSegment;
     this._lastPathIndex = lastPathIndex;
+    this._correctedLastPathIndex = correctedLastPathIndex ?? lastPathIndex;
     this._resolve = resolve;
   }
 

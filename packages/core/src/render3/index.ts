@@ -11,6 +11,7 @@ import {ɵɵCopyDefinitionFeature} from './features/copy_definition_feature';
 import {ɵɵInheritDefinitionFeature} from './features/inherit_definition_feature';
 import {ɵɵNgOnChangesFeature} from './features/ng_onchanges_feature';
 import {ɵɵProvidersFeature} from './features/providers_feature';
+import {ɵɵStandaloneFeature} from './features/standalone_feature';
 import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveType, PipeDef} from './interfaces/definition';
 import {ɵɵComponentDeclaration, ɵɵDirectiveDeclaration, ɵɵFactoryDeclaration, ɵɵInjectorDeclaration, ɵɵNgModuleDeclaration, ɵɵPipeDeclaration} from './interfaces/public_definitions';
 import {ComponentDebugMetadata, DirectiveDebugMetadata, getComponent, getDirectiveMetadata, getDirectives, getHostElement, getRenderedText} from './util/discovery_utils';
@@ -138,7 +139,7 @@ export {CssSelectorList, ProjectionSlots} from './interfaces/projection';
 export {
   setClassMetadata,
 } from './metadata';
-export {NgModuleFactory, NgModuleRef} from './ng_module_ref';
+export {NgModuleFactory, NgModuleRef, createEnvironmentInjector} from './ng_module_ref';
 export {
   ɵɵpipe,
   ɵɵpipeBind1,
@@ -209,4 +210,5 @@ export {
   ɵɵProvidersFeature,
   ɵɵsetComponentScope,
   ɵɵsetNgModuleScope,
+  ɵɵStandaloneFeature,
 };

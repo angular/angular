@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {AbsoluteFsPath, PathManipulation} from '@angular/compiler-cli/private/localize';
-import {ɵMessageId, ɵParsedMessage} from '@angular/localize';
+import {MessageId, ɵParsedMessage} from '@angular/localize';
 
 import {DiagnosticHandlingStrategy, Diagnostics} from '../diagnostics';
 import {serializeLocationPosition} from '../source_file_utils';
@@ -22,7 +22,7 @@ export function checkDuplicateMessages(
   const diagnostics = new Diagnostics();
   if (duplicateMessageHandling === 'ignore') return diagnostics;
 
-  const messageMap = new Map<ɵMessageId, ɵParsedMessage[]>();
+  const messageMap = new Map<MessageId, ɵParsedMessage[]>();
   for (const message of messages) {
     if (messageMap.has(message.id)) {
       messageMap.get(message.id)!.push(message);
@@ -33,10 +33,10 @@ export function checkDuplicateMessages(
 
   for (const duplicates of messageMap.values()) {
     if (duplicates.length <= 1) continue;
-    if (duplicates.every(message => message.text === duplicates[0].text)) continue;
+    if (duplicates.every((message) => message.text === duplicates[0].text)) continue;
 
     const diagnosticMessage = `Duplicate messages with id "${duplicates[0].id}":\n` +
-        duplicates.map(message => serializeMessage(fs, basePath, message)).join('\n');
+        duplicates.map((message) => serializeMessage(fs, basePath, message)).join('\n');
     diagnostics.add(duplicateMessageHandling, diagnosticMessage);
   }
 

@@ -59,10 +59,10 @@
     "karma-jasmine-html-reporter": "~1.7.0",
     "lite-server": "^2.6.1",
     "protractor": "~7.0.0",
-    "rollup": "^1.1.0",
-    "rollup-plugin-commonjs": "^9.2.1",
-    "rollup-plugin-node-resolve": "^4.0.0",
-    "rollup-plugin-terser": "^5.3.0",
+    "rollup": "^2.70.1",
+    "@rollup/plugin-commonjs": "^21.0.3",
+    "@rollup/plugin-node-resolve": "^13.2.0",
+    "@rollup/plugin-terser": "^12.11.1",
     "typescript": "~4.6.2"
   }
 }

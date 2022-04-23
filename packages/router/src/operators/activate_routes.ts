@@ -6,16 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ComponentFactoryResolver, EnvironmentInjector, NgModuleRef} from '@angular/core';
 import {MonoTypeOperatorFunction} from 'rxjs';
 import {map} from 'rxjs/operators';
 
 import {ActivationEnd, ChildActivationEnd, Event} from '../events';
-import {LoadedRouterConfig} from '../models';
 import {DetachedRouteHandleInternal, RouteReuseStrategy} from '../route_reuse_strategy';
 import {NavigationTransition} from '../router';
 import {ChildrenOutletContexts} from '../router_outlet_context';
-import {ActivatedRoute, ActivatedRouteSnapshot, advanceActivatedRoute, RouterState} from '../router_state';
+import {ActivatedRoute, advanceActivatedRoute, RouterState} from '../router_state';
 import {forEach} from '../utils/collection';
+import {getClosestRouteInjector} from '../utils/config';
 import {nodeChildrenAsMap, TreeNode} from '../utils/tree';
 
 export const activateRoutes =
@@ -192,16 +193,16 @@ export class ActivateRoutes {
           advanceActivatedRoute(stored.route.value);
           this.activateChildRoutes(futureNode, null, context.children);
         } else {
-          const config = parentLoadedConfig(future.snapshot);
-          const cmpFactoryResolver = config ? config.module.componentFactoryResolver : null;
-
+          const injector = getClosestRouteInjector(future.snapshot);
+          const cmpFactoryResolver = injector?.get(ComponentFactoryResolver) ?? null;
           context.attachRef = null;
           context.route = future;
           context.resolver = cmpFactoryResolver;
+          context.injector = injector;
           if (context.outlet) {
             // Activate the outlet when it has already been instantiated
             // Otherwise it will get activated from its `ngOnInit` when instantiated
-            context.outlet.activateWith(future, cmpFactoryResolver);
+            context.outlet.activateWith(future, context.injector);
           }
 
           this.activateChildRoutes(futureNode, null, context.children);
@@ -212,14 +213,4 @@ export class ActivateRoutes {
       }
     }
   }
-}
-
-function parentLoadedConfig(snapshot: ActivatedRouteSnapshot): LoadedRouterConfig|null {
-  for (let s = snapshot.parent; s; s = s.parent) {
-    const route = s.routeConfig;
-    if (route && route._loadedConfig) return route._loadedConfig;
-    if (route && route.component) return null;
-  }
-
-  return null;
 }

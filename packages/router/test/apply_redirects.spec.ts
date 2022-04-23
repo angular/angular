@@ -6,16 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgModuleRef} from '@angular/core';
+import {EnvironmentInjector, NgModuleRef} from '@angular/core';
 import {fakeAsync, TestBed, tick} from '@angular/core/testing';
-import {ActivatedRouteSnapshot} from '@angular/router';
-import {TreeNode} from '@angular/router/src/utils/tree';
 import {Observable, of} from 'rxjs';
 import {delay, tap} from 'rxjs/operators';
 
 import {applyRedirects} from '../src/apply_redirects';
-import {LoadedRouterConfig, Route, Routes} from '../src/models';
+import {Route, Routes} from '../src/models';
 import {DefaultUrlSerializer, equalSegments, UrlSegment, UrlSegmentGroup, UrlTree} from '../src/url_tree';
+import {getLoadedRoutes} from '../src/utils/config';
 
 describe('applyRedirects', () => {
   const serializer = new DefaultUrlSerializer();
@@ -192,7 +191,10 @@ describe('applyRedirects', () => {
 
   describe('lazy loading', () => {
     it('should load config on demand', () => {
-      const loadedConfig = new LoadedRouterConfig([{path: 'b', component: ComponentB}], testModule);
+      const loadedConfig = {
+        routes: [{path: 'b', component: ComponentB}],
+        injector: testModule.injector
+      };
       const loader = {
         load: (injector: any, p: any) => {
           if (injector !== testModule.injector) throw 'Invalid Injector';
@@ -205,7 +207,7 @@ describe('applyRedirects', () => {
       applyRedirects(testModule.injector, <any>loader, serializer, tree('a/b'), config)
           .forEach(r => {
             expectTreeToBe(r, '/a/b');
-            expect((config[0] as any)._loadedConfig).toBe(loadedConfig);
+            expect(getLoadedRoutes(config[0])).toBe(loadedConfig.routes);
           });
     });
 
@@ -223,7 +225,10 @@ describe('applyRedirects', () => {
     });
 
     it('should load when all canLoad guards return true', () => {
-      const loadedConfig = new LoadedRouterConfig([{path: 'b', component: ComponentB}], testModule);
+      const loadedConfig = {
+        routes: [{path: 'b', component: ComponentB}],
+        injector: testModule.injector
+      };
       const loader = {load: (injector: any, p: any) => of(loadedConfig)};
 
       const guard = () => true;
@@ -244,7 +249,10 @@ describe('applyRedirects', () => {
     });
 
     it('should not load when any canLoad guards return false', () => {
-      const loadedConfig = new LoadedRouterConfig([{path: 'b', component: ComponentB}], testModule);
+      const loadedConfig = {
+        routes: [{path: 'b', component: ComponentB}],
+        injector: testModule.injector
+      };
       const loader = {load: (injector: any, p: any) => of(loadedConfig)};
 
       const trueGuard = () => true;
@@ -281,7 +289,10 @@ describe('applyRedirects', () => {
     });
 
     it('should not load when any canLoad guards is rejected (promises)', () => {
-      const loadedConfig = new LoadedRouterConfig([{path: 'b', component: ComponentB}], testModule);
+      const loadedConfig = {
+        routes: [{path: 'b', component: ComponentB}],
+        injector: testModule.injector
+      };
       const loader = {load: (injector: any, p: any) => of(loadedConfig)};
 
       const trueGuard = () => Promise.resolve(true);
@@ -317,7 +328,10 @@ describe('applyRedirects', () => {
     });
 
     it('should work with objects implementing the CanLoad interface', () => {
-      const loadedConfig = new LoadedRouterConfig([{path: 'b', component: ComponentB}], testModule);
+      const loadedConfig = {
+        routes: [{path: 'b', component: ComponentB}],
+        injector: testModule.injector
+      };
       const loader = {load: (injector: any, p: any) => of(loadedConfig)};
 
       const guard = {canLoad: () => Promise.resolve(true)};
@@ -341,7 +355,10 @@ describe('applyRedirects', () => {
     });
 
     it('should pass UrlSegments to functions implementing the canLoad guard interface', () => {
-      const loadedConfig = new LoadedRouterConfig([{path: 'b', component: ComponentB}], testModule);
+      const loadedConfig = {
+        routes: [{path: 'b', component: ComponentB}],
+        injector: testModule.injector
+      };
       const loader = {load: (injector: any, p: any) => of(loadedConfig)};
 
       let passedUrlSegments: UrlSegment[];
@@ -373,7 +390,10 @@ describe('applyRedirects', () => {
     });
 
     it('should pass UrlSegments to objects implementing the canLoad guard interface', () => {
-      const loadedConfig = new LoadedRouterConfig([{path: 'b', component: ComponentB}], testModule);
+      const loadedConfig = {
+        routes: [{path: 'b', component: ComponentB}],
+        injector: testModule.injector
+      };
       const loader = {load: (injector: any, p: any) => of(loadedConfig)};
 
       let passedUrlSegments: UrlSegment[];
@@ -407,7 +427,10 @@ describe('applyRedirects', () => {
     });
 
     it('should work with absolute redirects', () => {
-      const loadedConfig = new LoadedRouterConfig([{path: '', component: ComponentB}], testModule);
+      const loadedConfig = {
+        routes: [{path: '', component: ComponentB}],
+        injector: testModule.injector
+      };
 
       const loader = {load: (injector: any, p: any) => of(loadedConfig)};
 
@@ -418,12 +441,15 @@ describe('applyRedirects', () => {
 
       applyRedirects(testModule.injector, <any>loader, serializer, tree(''), config).forEach(r => {
         expectTreeToBe(r, 'a');
-        expect((config[1] as any)._loadedConfig).toBe(loadedConfig);
+        expect(getLoadedRoutes(config[1])).toBe(loadedConfig.routes);
       });
     });
 
     it('should load the configuration only once', () => {
-      const loadedConfig = new LoadedRouterConfig([{path: '', component: ComponentB}], testModule);
+      const loadedConfig = {
+        routes: [{path: '', component: ComponentB}],
+        injector: testModule.injector
+      };
 
       let called = false;
       const loader = {
@@ -443,7 +469,7 @@ describe('applyRedirects', () => {
           .subscribe(
               r => {
                 expectTreeToBe(r, 'a?k2');
-                expect((config[0] as any)._loadedConfig).toBe(loadedConfig);
+                expect(getLoadedRoutes(config[0])).toBe(loadedConfig.routes);
               },
               (e) => {
                 throw 'Should not reach';
@@ -451,7 +477,10 @@ describe('applyRedirects', () => {
     });
 
     it('should load the configuration of a wildcard route', () => {
-      const loadedConfig = new LoadedRouterConfig([{path: '', component: ComponentB}], testModule);
+      const loadedConfig = {
+        routes: [{path: '', component: ComponentB}],
+        injector: testModule.injector
+      };
 
       const loader = {load: (injector: any, p: any) => of(loadedConfig)};
 
@@ -459,12 +488,15 @@ describe('applyRedirects', () => {
 
       applyRedirects(testModule.injector, <any>loader, serializer, tree('xyz'), config)
           .forEach(r => {
-            expect((config[0] as any)._loadedConfig).toBe(loadedConfig);
+            expect(getLoadedRoutes(config[0])).toBe(loadedConfig.routes);
           });
     });
 
     it('should not load the configuration of a wildcard route if there is a match', () => {
-      const loadedConfig = new LoadedRouterConfig([{path: '', component: ComponentB}], testModule);
+      const loadedConfig = {
+        routes: [{path: '', component: ComponentB}],
+        injector: testModule.injector
+      };
 
       const loader = jasmine.createSpyObj('loader', ['load']);
       loader.load.and.returnValue(of(loadedConfig).pipe(delay(0)));
@@ -483,7 +515,10 @@ describe('applyRedirects', () => {
     });
 
     it('should load the configuration after a local redirect from a wildcard route', () => {
-      const loadedConfig = new LoadedRouterConfig([{path: '', component: ComponentB}], testModule);
+      const loadedConfig = {
+        routes: [{path: '', component: ComponentB}],
+        injector: testModule.injector
+      };
 
       const loader = {load: (injector: any, p: any) => of(loadedConfig)};
 
@@ -494,12 +529,15 @@ describe('applyRedirects', () => {
 
       applyRedirects(testModule.injector, <any>loader, serializer, tree('xyz'), config)
           .forEach(r => {
-            expect((config[0] as any)._loadedConfig).toBe(loadedConfig);
+            expect(getLoadedRoutes(config[0])).toBe(loadedConfig.routes);
           });
     });
 
     it('should load the configuration after an absolute redirect from a wildcard route', () => {
-      const loadedConfig = new LoadedRouterConfig([{path: '', component: ComponentB}], testModule);
+      const loadedConfig = {
+        routes: [{path: '', component: ComponentB}],
+        injector: testModule.injector
+      };
 
       const loader = {load: (injector: any, p: any) => of(loadedConfig)};
 
@@ -510,14 +548,16 @@ describe('applyRedirects', () => {
 
       applyRedirects(testModule.injector, <any>loader, serializer, tree('xyz'), config)
           .forEach(r => {
-            expect((config[0] as any)._loadedConfig).toBe(loadedConfig);
+            expect(getLoadedRoutes(config[0])).toBe(loadedConfig.routes);
           });
     });
 
     it('should load all matching configurations of empty path, including an auxiliary outlets',
        fakeAsync(() => {
-         const loadedConfig =
-             new LoadedRouterConfig([{path: '', component: ComponentA}], testModule);
+         const loadedConfig = {
+           routes: [{path: '', component: ComponentA}],
+           injector: testModule.injector
+         };
          let loadCalls = 0;
          let loaded: string[] = [];
          const loader = {
@@ -547,8 +587,10 @@ describe('applyRedirects', () => {
 
     it('should not try to load any matching configuration if previous load completed',
        fakeAsync(() => {
-         const loadedConfig =
-             new LoadedRouterConfig([{path: 'a', component: ComponentA}], testModule);
+         const loadedConfig = {
+           routes: [{path: 'a', component: ComponentA}],
+           injector: testModule.injector
+         };
          let loadCalls = 0;
          let loaded: string[] = [];
          const loader = {
@@ -585,7 +627,10 @@ describe('applyRedirects', () => {
        }));
 
     it('loads only the first match when two Routes with the same outlet have the same path', () => {
-      const loadedConfig = new LoadedRouterConfig([{path: '', component: ComponentA}], testModule);
+      const loadedConfig = {
+        routes: [{path: '', component: ComponentA}],
+        injector: testModule.injector
+      };
       let loadCalls = 0;
       let loaded: string[] = [];
       const loader = {
@@ -610,8 +655,10 @@ describe('applyRedirects', () => {
 
     it('should load the configuration of empty root path if the entry is an aux outlet',
        fakeAsync(() => {
-         const loadedConfig =
-             new LoadedRouterConfig([{path: '', component: ComponentA}], testModule);
+         const loadedConfig = {
+           routes: [{path: '', component: ComponentA}],
+           injector: testModule.injector
+         };
          let loaded: string[] = [];
          const rootDelay = 100;
          const auxDelay = 1;
@@ -1136,7 +1183,8 @@ describe('applyRedirects', () => {
 });
 
 function checkRedirect(config: Routes, url: string, callback: any): void {
-  applyRedirects(TestBed, null!, new DefaultUrlSerializer(), tree(url), config)
+  applyRedirects(
+      TestBed.inject(EnvironmentInjector), null!, new DefaultUrlSerializer(), tree(url), config)
       .subscribe(callback, e => {
         throw e;
       });

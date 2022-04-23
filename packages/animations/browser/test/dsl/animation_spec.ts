@@ -20,7 +20,11 @@ function createDiv() {
 {
   describe('Animation', () => {
     // these tests are only meant to be run within the DOM (for now)
-    if (isNode) return;
+    if (isNode) {
+      // Jasmine will throw if there are no tests.
+      it('should pass', () => {});
+      return;
+    }
 
     let rootElement: any;
     let subElement1: any;

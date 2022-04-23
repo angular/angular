@@ -1,0 +1,40 @@
+# BEGIN-DEV-ONLY
+
+load("//tools:defaults.bzl", "ts_library")
+load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary")
+
+package(default_visibility = ["//packages:__subpackages__"])
+
+ts_library(
+    name = "lib",
+    srcs = [
+        "index.ts",
+    ],
+    deps = [
+        "@npm//@microsoft/api-extractor",
+        "@npm//@types/node",
+    ],
+)
+
+nodejs_binary(
+    name = "types_bundler",
+    data = [
+        ":lib",
+        "@npm//@bazel/concatjs",
+        "@npm//@microsoft/api-extractor",
+    ],
+    entry_point = ":index.ts",
+    # TODO(josephperrott): update dependency usages to no longer need bazel patch module resolver
+    # See: https://github.com/bazelbuild/rules_nodejs/wiki#--bazel_patch_module_resolver-now-defaults-to-false-2324
+    templated_args = ["--bazel_patch_module_resolver"],
+    visibility = ["//visibility:public"],
+)
+
+filegroup(
+    name = "package_assets",
+    srcs = [
+        "BUILD.bazel",
+        "index.bzl",
+    ],
+)
+# END-DEV-ONLY

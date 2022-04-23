@@ -22,7 +22,7 @@ runInEachFileSystem(() => {
 
     beforeEach(() => {
       env = NgtscTestEnvironment.setup(testFiles);
-      env.tsconfig();
+      env.tsconfig({strictTemplates: true});
     });
 
     describe('component-side', () => {
@@ -46,8 +46,51 @@ runInEachFileSystem(() => {
             `);
         env.driveMain();
         const jsCode = env.getContents('test.js');
-        expect(jsCode).toContain('directives: [TestDir]');
+        expect(jsCode).toContain('dependencies: [TestDir]');
         expect(jsCode).toContain('standalone: true');
+
+        const dtsCode = env.getContents('test.d.ts');
+        expect(dtsCode).toContain(
+            'i0.ɵɵDirectiveDeclaration<TestDir, "[dir]", never, {}, {}, never, never, true>;');
+        expect(dtsCode).toContain(
+            'i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never, true>;');
+      });
+
+      it('should compile a recursive standalone component', () => {
+        env.write('test.ts', `
+              import {Component, Directive} from '@angular/core';
+        
+              @Component({
+                selector: 'test-cmp',
+                template: '<test-cmp></test-cmp>',
+                standalone: true,
+              })
+              export class TestCmp {}
+            `);
+        env.driveMain();
+        const jsCode = env.getContents('test.js');
+        expect(jsCode).toContain('dependencies: [TestCmp]');
+        expect(jsCode).toContain('standalone: true');
+      });
+
+      it('should compile a basic standalone pipe', () => {
+        env.write('test.ts', `
+          import {Pipe} from '@angular/core';
+
+          @Pipe({
+            standalone: true,
+            name: 'test',
+          })
+          export class TestPipe {
+            transform(value: any): any {}
+          }
+        `);
+        env.driveMain();
+        const jsCode = env.getContents('test.js');
+        expect(jsCode).toContain('standalone: true');
+
+        const dtsCode = env.getContents('test.d.ts');
+        expect(dtsCode).toContain('i0.ɵɵPipeDeclaration<TestPipe, "test", true>');
       });
 
       it('should error when a non-standalone component tries to use imports', () => {
@@ -97,7 +140,7 @@ runInEachFileSystem(() => {
               export class TestCmp {}
             `);
         env.driveMain();
-        expect(env.getContents('test.js')).toContain('directives: [TestDir]');
+        expect(env.getContents('test.js')).toContain('dependencies: [TestModule, TestDir]');
       });
 
       it('should allow nested arrays in standalone component imports', () => {
@@ -121,7 +164,7 @@ runInEachFileSystem(() => {
               export class TestCmp {}
             `);
         env.driveMain();
-        expect(env.getContents('test.js')).toContain('directives: [TestDir]');
+        expect(env.getContents('test.js')).toContain('dependencies: [TestDir]');
       });
 
       it('should deduplicate standalone component imports', () => {
@@ -145,7 +188,7 @@ runInEachFileSystem(() => {
               export class TestCmp {}
             `);
         env.driveMain();
-        expect(env.getContents('test.js')).toContain('directives: [TestDir]');
+        expect(env.getContents('test.js')).toContain('dependencies: [TestDir]');
       });
 
       it('should error when a standalone component imports a non-standalone entity', () => {
@@ -221,6 +264,48 @@ runInEachFileSystem(() => {
                .toEqual(
                    `It's declared in the NgModule 'TestModule', but is not exported. Consider exporting it.`);
          });
+
+      it('should type-check standalone component templates', () => {
+        env.write('test.ts', `
+          import {Component, Input, NgModule} from '@angular/core';
+
+          @Component({
+            selector: 'not-standalone',
+            template: '',
+          })
+          export class NotStandaloneCmp {
+            @Input() value!: string;
+          }
+
+          @NgModule({
+            declarations: [NotStandaloneCmp],
+            exports: [NotStandaloneCmp],
+          })
+          export class NotStandaloneModule {}
+
+          @Component({
+            standalone: true,
+            selector: 'is-standalone',
+            template: '',
+          })
+          export class IsStandaloneCmp {
+            @Input() value!: string;
+          }
+
+          @Component({
+            standalone: true,
+            selector: 'test-cmp',
+            imports: [NotStandaloneModule, IsStandaloneCmp],
+            template: '<not-standalone [value]="3"></not-standalone><is-standalone [value]="true"></is-standalone>',
+          })
+          export class TestCmp {}
+        `);
+
+        const diags = env.driveDiagnostics().map(diag => diag.messageText);
+        expect(diags.length).toBe(2);
+        expect(diags).toContain(`Type 'number' is not assignable to type 'string'.`);
+        expect(diags).toContain(`Type 'boolean' is not assignable to type 'string'.`);
+      });
     });
 
     describe('NgModule-side', () => {
@@ -293,7 +378,7 @@ runInEachFileSystem(() => {
           export class TestModule {}
         `);
         env.driveMain();
-        expect(env.getContents('test.js')).toContain('directives: [StandaloneCmp]');
+        expect(env.getContents('test.js')).toContain('dependencies: [StandaloneCmp]');
       });
 
       it('should allow a standalone directive to be imported by an NgModule', () => {
@@ -319,7 +404,7 @@ runInEachFileSystem(() => {
           export class TestModule {}
         `);
         env.driveMain();
-        expect(env.getContents('test.js')).toContain('directives: [StandaloneDir]');
+        expect(env.getContents('test.js')).toContain('dependencies: [StandaloneDir]');
       });
 
       it('should allow a standalone pipe to be imported by an NgModule', () => {
@@ -351,7 +436,7 @@ runInEachFileSystem(() => {
           export class TestModule {}
         `);
         env.driveMain();
-        expect(env.getContents('test.js')).toContain('pipes: [StandalonePipe]');
+        expect(env.getContents('test.js')).toContain('dependencies: [StandalonePipe]');
       });
 
       it('should error when a standalone entity is exported by an NgModule without importing it first',
@@ -427,6 +512,89 @@ runInEachFileSystem(() => {
             `);
         env.driveMain();
         expect(env.getContents('test.js')).toContain('standalone: true');
+      });
+    });
+
+    describe('from libraries', () => {
+      it('should consume standalone directives from libraries', () => {
+        env.write('lib.d.ts', `
+          import {ɵɵDirectiveDeclaration} from '@angular/core';
+
+          export declare class StandaloneDir {
+            static ɵdir: ɵɵDirectiveDeclaration<StandaloneDir, "[dir]", never, {}, {}, never, never, true>;
+          }
+        `);
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+          import {StandaloneDir} from './lib';
+
+          @Component({
+            standalone: true,
+            selector: 'test-cmp',
+            template: '<div dir></div>',
+            imports: [StandaloneDir],
+          })
+          export class TestCmp {}
+        `);
+        env.driveMain();
+
+        const jsCode = env.getContents('test.js');
+        expect(jsCode).toContain('dependencies: [StandaloneDir]');
+      });
+
+      it('should consume standalone components from libraries', () => {
+        env.write('lib.d.ts', `
+          import {ɵɵComponentDeclaration} from '@angular/core';
+
+          export declare class StandaloneCmp {
+            static ɵcmp: ɵɵComponentDeclaration<StandaloneCmp, "standalone-cmp", never, {}, {}, never, never, true>;
+          }
+        `);
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+          import {StandaloneCmp} from './lib';
+
+          @Component({
+            standalone: true,
+            selector: 'test-cmp',
+            template: '<standalone-cmp></standalone-cmp>',
+            imports: [StandaloneCmp],
+          })
+          export class TestCmp {}
+        `);
+        env.driveMain();
+
+        const jsCode = env.getContents('test.js');
+        expect(jsCode).toContain('dependencies: [StandaloneCmp]');
+      });
+
+      it('should consume standalone pipes from libraries', () => {
+        env.write('lib.d.ts', `
+          import {ɵɵPipeDeclaration} from '@angular/core';
+
+          export declare class StandalonePipe {
+            transform(value: any): any;
+            static ɵpipe: ɵɵPipeDeclaration<StandalonePipe, "standalone", true>;
+          }
+        `);
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+          import {StandalonePipe} from './lib';
+
+          @Component({
+            standalone: true,
+            selector: 'test-cmp',
+            template: '{{value | standalone}}',
+            imports: [StandalonePipe],
+          })
+          export class StandaloneComponent {
+            value!: string;
+          }
+        `);
+        env.driveMain();
+
+        const jsCode = env.getContents('test.js');
+        expect(jsCode).toContain('dependencies: [StandalonePipe]');
       });
     });
   });

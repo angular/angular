@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Compiler, Component, Injector, NgModule, NgModuleFactory, NgModuleRef, Type} from '@angular/core';
+import {Compiler, Component, Inject, InjectionToken, Injector, NgModule, NgModuleFactory, NgModuleRef, Optional, Type} from '@angular/core';
 import {fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
 import {PreloadAllModules, PreloadingStrategy, RouterPreloader} from '@angular/router';
 import {BehaviorSubject, Observable, of, throwError} from 'rxjs';
@@ -14,6 +14,7 @@ import {catchError, delay, filter, switchMap, take} from 'rxjs/operators';
 
 import {Route, RouteConfigLoadEnd, RouteConfigLoadStart, Router, RouterModule} from '../index';
 import {LoadedRouterConfig} from '../src/models';
+import {getLoadedInjector, getLoadedRoutes, getProvidersInjector} from '../src/utils/config';
 import {RouterTestingModule} from '../testing';
 
 
@@ -108,16 +109,15 @@ describe('RouterPreloader', () => {
              tick();
 
              const c = router.config;
-             const loadedConfig: LoadedRouterConfig = (c[0] as any)._loadedConfig!;
-             const module: any = loadedConfig.module;
-             expect(loadedConfig.routes[0].path).toEqual('LoadedModule1');
-             expect(module._parent).toBe(testModule);
+             const injector: any = getLoadedInjector(c[0]);
+             const loadedRoutes: Route[] = getLoadedRoutes(c[0])!;
+             expect(loadedRoutes[0].path).toEqual('LoadedModule1');
+             expect(injector._parent).toBe((testModule as any)._r3Injector);
 
-             const loadedConfig2: LoadedRouterConfig =
-                 (loadedConfig.routes[0] as any)._loadedConfig!;
-             const module2: any = loadedConfig2.module;
-             expect(loadedConfig2.routes[0].path).toEqual('LoadedModule2');
-             expect(module2._parent).toBe(module);
+             const injector2: any = getLoadedInjector(loadedRoutes[0]);
+             const loadedRoutes2: Route[] = getLoadedRoutes(loadedRoutes[0])!;
+             expect(loadedRoutes2[0].path).toEqual('LoadedModule2');
+             expect(injector2._parent).toBe(injector);
 
              expect(events.map(e => e.toString())).toEqual([
                'RouteConfigLoadStart(path: lazy)',
@@ -127,6 +127,45 @@ describe('RouterPreloader', () => {
              ]);
            })));
   });
+
+  it('should handle providers on a route', fakeAsync(() => {
+       const TOKEN = new InjectionToken<string>('test token');
+       const CHILD_TOKEN = new InjectionToken<string>('test token for child');
+
+       @NgModule({
+         imports: [RouterModule.forChild([{path: 'child', redirectTo: ''}])],
+         providers: [{provide: CHILD_TOKEN, useValue: 'child'}]
+       })
+       class Child {
+       }
+
+       TestBed.configureTestingModule({
+         imports: [RouterTestingModule.withRoutes([{
+           path: 'parent',
+           providers: [{provide: TOKEN, useValue: 'parent'}],
+           loadChildren: () => Child,
+         }])],
+         providers: [
+           {provide: PreloadingStrategy, useExisting: PreloadAllModules},
+         ]
+       });
+
+       TestBed.inject(RouterPreloader).preload().subscribe(() => {});
+
+       tick();
+
+       const parentConfig = TestBed.inject(Router).config[0];
+       // preloading needs to create the injector
+       const providersInjector = getProvidersInjector(parentConfig);
+       expect(providersInjector).toBeDefined();
+       // Throws error because there is no provider for CHILD_TOKEN here
+       expect(() => providersInjector?.get(CHILD_TOKEN)).toThrow();
+
+       const loadedInjector = getLoadedInjector(parentConfig)!;
+       // // The loaded injector should be a child of the one created from providers
+       expect(loadedInjector.get(TOKEN)).toEqual('parent');
+       expect(loadedInjector.get(CHILD_TOKEN)).toEqual('child');
+     }));
 
   describe('should support modules that have already been loaded', () => {
     let lazySpy: jasmine.Spy;
@@ -154,10 +193,8 @@ describe('RouterPreloader', () => {
                  <Route>{
                    path: 'LoadedModule2',
                    loadChildren: jasmine.createSpy('no'),
-                   _loadedConfig: {
-                     routes: [{path: 'LoadedModule3', loadChildren: () => LoadedModule3}],
-                     module: module2,
-                   }
+                   _loadedRoutes: [{path: 'LoadedModule3', loadChildren: () => LoadedModule3}],
+                   _loadedInjector: module2.injector,
                  },
                ])]
              })
@@ -175,16 +212,13 @@ describe('RouterPreloader', () => {
 
              const c = router.config;
 
-             const loadedConfig: LoadedRouterConfig = (c[0] as any)._loadedConfig!;
-             const module: any = loadedConfig.module;
-             expect(module._parent).toBe(testModule);
+             const injector = getLoadedInjector(c[0]) as any;
+             const loadedRoutes = getLoadedRoutes(c[0])!;
+             expect(injector._parent).toBe((testModule as any)._r3Injector);
 
-             const loadedConfig2: LoadedRouterConfig =
-                 (loadedConfig.routes[0] as any)._loadedConfig!;
-             const loadedConfig3: LoadedRouterConfig =
-                 (loadedConfig2.routes[0] as any)._loadedConfig!;
-             const module3: any = loadedConfig3.module;
-             expect(module3._parent).toBe(module2);
+             const loadedRoutes2: Route[] = getLoadedRoutes(loadedRoutes[0])!;
+             const injector3: any = getLoadedInjector(loadedRoutes2[0]);
+             expect(injector3._parent).toBe(module2.injector);
            })));
   });
 
@@ -519,8 +553,8 @@ describe('RouterPreloader', () => {
          tick();
 
          const c = router.config;
-         expect((c[0] as any)._loadedConfig).not.toBeDefined();
-         expect((c[1] as any)._loadedConfig).toBeDefined();
+         expect(getLoadedRoutes(c[0] as any)).not.toBeDefined();
+         expect(getLoadedRoutes(c[1])).toBeDefined();
        })));
   });
 
@@ -545,11 +579,11 @@ describe('RouterPreloader', () => {
 
          tick();
 
-         const c = router.config as {_loadedConfig: LoadedRouterConfig}[];
-         expect(c[0]._loadedConfig).toBeDefined();
-         expect(c[0]._loadedConfig!.routes).not.toBe(configs);
-         expect(c[0]._loadedConfig!.routes[0]).not.toBe(configs[0]);
-         expect(c[0]._loadedConfig!.routes[0].component).toBe(configs[0].component);
+         const c = router.config;
+         expect(getLoadedRoutes(c[0])).toBeDefined();
+         expect(getLoadedRoutes(c[0])).not.toBe(configs);
+         expect(getLoadedRoutes(c[0])![0]).not.toBe(configs[0]);
+         expect(getLoadedRoutes(c[0])![0].component).toBe(configs[0].component);
        })));
   });
 

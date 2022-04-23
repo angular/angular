@@ -7,6 +7,7 @@
  */
 
 import {ProcessProvidersFunction} from '../../di/interface/provider';
+import {EnvironmentInjector} from '../../di/r3_injector';
 import {Type} from '../../interface/type';
 import {SchemaMetadata} from '../../metadata/schema';
 import {ViewEncapsulation} from '../../metadata/view';
@@ -306,6 +307,11 @@ export interface ComponentDef<T> extends DirectiveDef<T> {
   pipeDefs: PipeDefListOrFactory|null;
 
   /**
+   * Unfiltered list of all dependencies of a component, or `null` if none.
+   */
+  dependencies: TypeOrFactory<DependencyTypeList>|null;
+
+  /**
    * The set of schemas that declare elements to be allowed in the component's template.
    */
   schemas: SchemaMetadata[]|null;
@@ -315,6 +321,11 @@ export interface ComponentDef<T> extends DirectiveDef<T> {
    * the first run of component.
    */
   tView: TView|null;
+
+  /**
+   * A function added by the {@see ɵɵStandaloneFeature} and used by the framework to create standalone injectors.
+   */
+  getStandaloneInjector: ((parentInjector: EnvironmentInjector) => EnvironmentInjector | null)|null;
 
   /**
    * Used to store the result of `noSideEffects` function so that it is not removed by closure
@@ -410,6 +421,10 @@ export type DirectiveTypesOrFactory = (() => DirectiveTypeList)|DirectiveTypeLis
 export type DirectiveTypeList =
     (DirectiveType<any>|ComponentType<any>|
      Type<any>/* Type as workaround for: Microsoft/TypeScript/issues/4881 */)[];
+
+export type DependencyTypeList = (DirectiveType<any>|ComponentType<any>|PipeType<any>|Type<any>)[];
+
+export type TypeOrFactory<T> = T|(() => T);
 
 export type HostBindingsFunction<T> = <U extends T>(rf: RenderFlags, ctx: U) => void;
 

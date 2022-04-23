@@ -18,6 +18,7 @@ import {ClassPropertyMapping, ClassPropertyName} from './property_mapping';
  * Metadata collected for an `NgModule`.
  */
 export interface NgModuleMeta {
+  kind: MetaKind.NgModule;
   ref: Reference<ClassDeclaration>;
   declarations: Reference<ClassDeclaration>[];
   imports: Reference<ClassDeclaration>[];
@@ -95,16 +96,20 @@ export interface DirectiveTypeCheckMeta {
   isGeneric: boolean;
 }
 
-export enum MetaType {
-  Pipe,
+/**
+ * Disambiguates different kinds of compiler metadata objects.
+ */
+export enum MetaKind {
   Directive,
+  Pipe,
+  NgModule,
 }
 
 /**
  * Metadata collected for a directive within an NgModule's scope.
  */
 export interface DirectiveMeta extends T2DirectiveMeta, DirectiveTypeCheckMeta {
-  type: MetaType.Directive;
+  kind: MetaKind.Directive;
 
   ref: Reference<ClassDeclaration>;
   /**
@@ -146,6 +151,11 @@ export interface DirectiveMeta extends T2DirectiveMeta, DirectiveTypeCheckMeta {
    * Whether the directive is a standalone entity.
    */
   isStandalone: boolean;
+
+  /**
+   * For standalone components, the list of imported types.
+   */
+  imports: Reference<ClassDeclaration>[]|null;
 }
 
 /**
@@ -171,7 +181,7 @@ export interface TemplateGuardMeta {
  * Metadata for a pipe within an NgModule's scope.
  */
 export interface PipeMeta {
-  type: MetaType.Pipe;
+  kind: MetaKind.Pipe;
   ref: Reference<ClassDeclaration>;
   name: string;
   nameExpr: ts.Expression|null;

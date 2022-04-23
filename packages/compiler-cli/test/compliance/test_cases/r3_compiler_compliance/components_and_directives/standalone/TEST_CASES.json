@@ -1,0 +1,75 @@
+{
+  "$schema": "../../../test_case_schema.json",
+  "cases": [
+    {
+      "description": "should properly compile a standalone component",
+      "inputFiles": [
+        "component.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Invalid component definition",
+          "files": [
+            "component.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should properly compile a standalone directive",
+      "inputFiles": [
+        "directive.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Invalid directive definition",
+          "files": [
+            "directive.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should properly compile a standalone pipe",
+      "inputFiles": [
+        "pipe.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Invalid pipe definition",
+          "files": [
+            "pipe.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should generate dependencies array from imports",
+      "inputFiles": [
+        "imports.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Invalid standalone component dependencies",
+          "files": [
+            "imports.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should support recursivity in templates",
+      "inputFiles": [
+        "recursive.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Recursive usage not accounted for",
+          "files": [
+            "recursive.js"
+          ]
+        }
+      ]
+    }
+  ]
+}

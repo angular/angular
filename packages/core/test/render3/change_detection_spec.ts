@@ -106,7 +106,7 @@ describe('change detection', () => {
         selectors: [['my-parent-comp']],
         decls: 2,
         vars: 1,
-        directives: [NgIf, MyComponentWithOnInit],
+        dependencies: [NgIf, MyComponentWithOnInit],
         consts: [[AttributeMarker.Template, 'ngIf']],
         template:
             (rf: RenderFlags, ctx: MyParentComponent) => {
@@ -302,7 +302,7 @@ describe('change detection', () => {
                   ɵɵproperty('name', ctx.name);
                 }
               },
-          directives: () => [ManualComponent]
+          dependencies: () => [ManualComponent]
         });
       }
 
@@ -360,7 +360,7 @@ describe('change detection', () => {
                        ɵɵtextInterpolate1('', ctx.doCheckCount, ' - ');
                      }
                    },
-               directives: () => [ManualComponent],
+               dependencies: () => [ManualComponent],
                changeDetection: ChangeDetectionStrategy.OnPush
              });
            }

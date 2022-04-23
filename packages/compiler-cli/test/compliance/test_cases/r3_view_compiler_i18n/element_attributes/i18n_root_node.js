@@ -1,6 +1,6 @@
 consts: function() {
-  __i18nMsg__('Element title', [], {meaning: 'm', desc: 'd'})
-  __i18nMsg__('Some content', [], {})
+  __i18nMsg__('Element title', [], {}, {meaning: 'm', desc: 'd'})
+  __i18nMsg__('Some content', [], {}, {})
   return [
     ["title", $i18n_0$],
     $i18n_1$

@@ -108,9 +108,6 @@
     "name": "ConnectableSubscriber"
   },
   {
-    "name": "Console"
-  },
-  {
     "name": "ControlContainer"
   },
   {
@@ -162,6 +159,9 @@
     "name": "EmulatedEncapsulationDomRenderer2"
   },
   {
+    "name": "EnvironmentInjector"
+  },
+  {
     "name": "ErrorHandler"
   },
   {
@@ -187,6 +187,12 @@
   },
   {
     "name": "INJECTOR2"
+  },
+  {
+    "name": "INJECTOR_DEF_TYPES"
+  },
+  {
+    "name": "INJECTOR_INITIALIZER"
   },
   {
     "name": "INJECTOR_SCOPE"
@@ -354,6 +360,9 @@
     "name": "PLATFORM_INITIALIZER"
   },
   {
+    "name": "PLATFORM_ON_DESTROY"
+  },
+  {
     "name": "PlatformRef"
   },
   {
@@ -498,18 +507,6 @@
     "name": "__forward_ref__"
   },
   {
-    "name": "__global"
-  },
-  {
-    "name": "__globalThis"
-  },
-  {
-    "name": "__self"
-  },
-  {
-    "name": "__window"
-  },
-  {
     "name": "_chromeNumKeyPadMap"
   },
   {
@@ -528,7 +525,7 @@
     "name": "_keyMap"
   },
   {
-    "name": "_platform"
+    "name": "_platformInjector"
   },
   {
     "name": "_randomChar"
@@ -759,9 +756,6 @@
     "name": "extractDirectiveDef"
   },
   {
-    "name": "extractPipeDef"
-  },
-  {
     "name": "fillProperties"
   },
   {
@@ -769,6 +763,9 @@
   },
   {
     "name": "findStylingValue"
+  },
+  {
+    "name": "flatten"
   },
   {
     "name": "flattenStyles"
@@ -826,6 +823,9 @@
   },
   {
     "name": "getDeclarationTNode"
+  },
+  {
+    "name": "getDirectiveDef"
   },
   {
     "name": "getFactoryDef"
@@ -906,6 +906,9 @@
     "name": "getParentInjectorView"
   },
   {
+    "name": "getPipeDef"
+  },
+  {
     "name": "getPlatform"
   },
   {
@@ -970,6 +973,9 @@
   },
   {
     "name": "identity"
+  },
+  {
+    "name": "importProvidersFrom"
   },
   {
     "name": "includeViewProviders"
@@ -1057,6 +1063,15 @@
   },
   {
     "name": "isDirectiveHost"
+  },
+  {
+    "name": "isExistingProvider"
+  },
+  {
+    "name": "isFactoryProvider"
+  },
+  {
+    "name": "isFormControlState"
   },
   {
     "name": "isForwardRef"
@@ -1237,6 +1252,9 @@
   },
   {
     "name": "noSideEffects"
+  },
+  {
+    "name": "nonNull"
   },
   {
     "name": "noop"
@@ -1491,7 +1509,13 @@
     "name": "urlParsingNode"
   },
   {
+    "name": "validateProvider"
+  },
+  {
     "name": "viewAttachedToChangeDetector"
+  },
+  {
+    "name": "walkProviderTree"
   },
   {
     "name": "wrapListener"

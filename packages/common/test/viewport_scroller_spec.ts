@@ -7,6 +7,7 @@
  */
 
 import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
+
 import {BrowserViewportScroller, ViewportScroller} from '../src/viewport_scroller';
 
 describe('BrowserViewportScroller', () => {
@@ -42,7 +43,12 @@ describe('BrowserViewportScroller', () => {
 
   describe('scrollToAnchor', () => {
     // Testing scroll behavior does not make sense outside a browser
-    if (isNode) return;
+    if (isNode) {
+      // Jasmine will throw if there are no tests.
+      it('should pass', () => {});
+      return;
+    }
+
     const anchor = 'anchor';
     let scroller: BrowserViewportScroller;
 

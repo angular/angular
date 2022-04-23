@@ -34,6 +34,8 @@ import {Checks, getAllRouteGuards} from './utils/preactivation';
 import {isUrlTree} from './utils/type_guards';
 
 
+const NG_DEV_MODE = typeof ngDevMode === 'undefined' || !!ngDevMode;
+
 /**
  * @description
  *
@@ -592,6 +594,9 @@ export class Router {
       compiler: Compiler, public config: Routes) {
     const onLoadStart = (r: Route) => this.triggerEvent(new RouteConfigLoadStart(r));
     const onLoadEnd = (r: Route) => this.triggerEvent(new RouteConfigLoadEnd(r));
+    this.configLoader = injector.get(RouterConfigLoader);
+    this.configLoader.onLoadEndListener = onLoadEnd;
+    this.configLoader.onLoadStartListener = onLoadStart;
 
     this.ngModule = injector.get(NgModuleRef);
     this.console = injector.get(Console);
@@ -603,7 +608,6 @@ export class Router {
     this.rawUrlTree = this.currentUrlTree;
     this.browserUrlTree = this.currentUrlTree;
 
-    this.configLoader = new RouterConfigLoader(injector, compiler, onLoadStart, onLoadEnd);
     this.routerState = createEmptyState(this.currentUrlTree, this.rootComponentType);
 
     this.transitions = new BehaviorSubject<NavigationTransition>({
@@ -1110,7 +1114,7 @@ export class Router {
    * ```
    */
   resetConfig(config: Routes): void {
-    validateConfig(config);
+    NG_DEV_MODE && validateConfig(config);
     this.config = config.map(standardizeConfig);
     this.navigated = false;
     this.lastSuccessfulId = -1;

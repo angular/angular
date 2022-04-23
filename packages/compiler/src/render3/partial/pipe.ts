@@ -10,6 +10,7 @@ import {Identifiers as R3} from '../r3_identifiers';
 import {createPipeType, R3PipeMetadata} from '../r3_pipe_compiler';
 import {R3CompiledExpression} from '../util';
 import {DefinitionMap} from '../view/util';
+
 import {R3DeclarePipeMetadata} from './api';
 
 /**
@@ -46,6 +47,11 @@ export function createPipeDefinitionMap(meta: R3PipeMetadata):
 
   // e.g. `type: MyPipe`
   definitionMap.set('type', meta.internalType);
+
+  if (meta.isStandalone) {
+    definitionMap.set('isStandalone', o.literal(meta.isStandalone));
+  }
+
   // e.g. `name: "myPipe"`
   definitionMap.set('name', o.literal(meta.pipeName));
 

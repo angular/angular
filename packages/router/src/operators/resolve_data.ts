@@ -7,8 +7,8 @@
  */
 
 import {Injector} from '@angular/core';
-import {EMPTY, from, MonoTypeOperatorFunction, Observable, of} from 'rxjs';
-import {concatMap, map, mergeMap, take, takeLast, tap} from 'rxjs/operators';
+import {EMPTY, EmptyError, from, MonoTypeOperatorFunction, Observable, of, throwError} from 'rxjs';
+import {catchError, concatMap, first, map, mapTo, mergeMap, takeLast, tap} from 'rxjs/operators';
 
 import {ResolveData, Route} from '../models';
 import {NavigationTransition} from '../router';
@@ -75,18 +75,12 @@ function resolveNode(
   return from(keys).pipe(
       mergeMap(
           key => getResolver(resolve[key], futureARS, futureRSS, moduleInjector)
-                     .pipe(take(1), tap((value: any) => {
+                     .pipe(first(), tap((value: any) => {
                              data[key] = value;
                            }))),
       takeLast(1),
-      mergeMap(() => {
-        // Ensure all resolvers returned values, otherwise don't emit any "next" and just complete
-        // the chain which will cancel navigation
-        if (getDataKeys(data).length === keys.length) {
-          return of(data);
-        }
-        return EMPTY;
-      }),
+      mapTo(data),
+      catchError((e: unknown) => e instanceof EmptyError ? EMPTY : throwError(e)),
   );
 }
 
