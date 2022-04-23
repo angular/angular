@@ -85,6 +85,7 @@ section#intro {
     @include mixins.line-height(64);
     font-weight: 500;
     margin: 32px 0;
+    color: inherit;
 
     &:after {
       display: none;
