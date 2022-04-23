@@ -92,6 +92,7 @@ export class DocViewerComponent implements OnDestroy {
    */
   protected prepareTitleAndToc(targetElem: HTMLElement, docId: string): () => void {
     const titleEl = targetElem.querySelector('h1');
+    const needsTitle = !!titleEl && !/no-?title/i.test(titleEl.className);
     const needsToc = !!titleEl && !/no-?toc/i.test(titleEl.className);
     const embeddedToc = targetElem.querySelector('aio-toc.embedded');
 
@@ -112,7 +113,9 @@ export class DocViewerComponent implements OnDestroy {
       // Only create ToC for docs with an `<h1>` heading.
       // If you don't want a ToC, add "no-toc" class to `<h1>`.
       if (titleEl) {
-        title = (typeof titleEl.innerText === 'string') ? titleEl.innerText : titleEl.textContent;
+        if (needsTitle) {
+          title = (typeof titleEl.innerText === 'string') ? titleEl.innerText : titleEl.textContent;
+        }
 
         if (needsToc) {
           this.tocService.genToc(targetElem, docId);
