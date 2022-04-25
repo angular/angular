@@ -20,32 +20,16 @@ function next(error) {
   }
 }
 
-let p = Promise.resolve();
+function watch() {
+    console.log('============================================================================');
+    console.log('Started watching files in:');
+    console.log(' - ', CONTENTS_PATH);
+    console.log(' - ', API_SOURCE_PATH);
+    console.log('Doc gen will automatically run on any change to a file in either directory.');
+    console.log('============================================================================');
 
-if (process.argv.indexOf('--watch-only') === -1) {
-  console.log('================================================================');
-  console.log('Running initial doc generation');
-  console.log('----------------------------------------------------------------');
-  console.log('Skip the full doc-gen by running: `yarn docs-watch --watch-only`');
-  console.log('================================================================');
-  const {Dgeni} = require('dgeni');
-  const dgeni = new Dgeni([
-    // The base-authoring-package will turn off potential failures for this doc-gen one-off run.
-    // This enables authors to run `docs-watch` while the docs are still in an unstable state.
-    require('./base-authoring-package'),
-    require('../angular.io-package')]);
-  p = dgeni.generate();
+    watchr.open(CONTENTS_PATH, listener, next);
+    watchr.open(API_SOURCE_PATH, listener, next);
 }
 
-p.then(() => {
-  console.log('===================================================================');
-  console.log('Started watching files in:');
-  console.log(' - ', CONTENTS_PATH);
-  console.log(' - ', API_SOURCE_PATH);
-  console.log('Doc gen will run when you change a file in either of these folders.');
-  console.log('===================================================================');
-
-  watchr.open(CONTENTS_PATH, listener, next);
-  watchr.open(API_SOURCE_PATH, listener, next);
-
-});
+exports.watch = watch;
