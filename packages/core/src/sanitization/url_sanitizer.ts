@@ -33,18 +33,11 @@
  *
  * This regular expression was taken from the Closure sanitization library.
  */
-const SAFE_URL_PATTERN = /^(?:(?:https?|mailto|ftp|tel|file|sms):|[^&:/?#]*(?:[/?#]|$))/gi;
-
-/* A pattern that matches safe srcset values */
-const SAFE_SRCSET_PATTERN = /^(?:(?:https?|file):|[^&:/?#]*(?:[/?#]|$))/gi;
-
-/** A pattern that matches safe data URLs. Only matches image, video and audio types. */
-const DATA_URL_PATTERN =
-    /^data:(?:image\/(?:bmp|gif|jpeg|jpg|png|tiff|webp)|video\/(?:mpeg|mp4|ogg|webm)|audio\/(?:mp3|oga|ogg|opus));base64,[a-z0-9+\/]+=*$/i;
+const SAFE_URL_PATTERN = /^(?:(?:https?|mailto|data|ftp|tel|file|sms):|[^&:/?#]*(?:[/?#]|$))/gi;
 
 export function _sanitizeUrl(url: string): string {
   url = String(url);
-  if (url.match(SAFE_URL_PATTERN) || url.match(DATA_URL_PATTERN)) return url;
+  if (url.match(SAFE_URL_PATTERN)) return url;
 
   if (typeof ngDevMode === 'undefined' || ngDevMode) {
     console.warn(`WARNING: sanitizing unsafe URL value ${url} (see https://g.co/ng/security#xss)`);
