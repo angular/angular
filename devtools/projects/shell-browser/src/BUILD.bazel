@@ -329,7 +329,6 @@ pkg_web(
         ":copy_manifest",
         ":devtools_bundle",
         ":prod_app_static_files",
-        "//devtools/projects/ng-devtools/src/lib/images",
         "//devtools/projects/shell-browser/src:devtools.html",
         "//devtools/projects/shell-browser/src/app:backend_bundle",
         "//devtools/projects/shell-browser/src/app:background_bundle",
