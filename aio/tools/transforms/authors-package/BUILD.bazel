@@ -1,0 +1,26 @@
+load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
+
+package(default_visibility = ["//visibility:public"])
+
+js_library(
+    name = "watchdocs",
+    srcs = [
+        "api-package.js",
+        "base-authoring-package.js",
+        "errors-package.js",
+        "extended-diagnostics-package.js",
+        "getting-started-package.js",
+        "guide-package.js",
+        "index.js",
+        "marketing-package.js",
+        "tutorial-package.js",
+        "utils.js",
+        "watchr.js",
+    ],
+    deps = [
+        "//aio/tools/transforms",
+        "@aio_npm//canonical-path",
+        "@aio_npm//dgeni",
+        "@aio_npm//watchr",
+    ],
+)
