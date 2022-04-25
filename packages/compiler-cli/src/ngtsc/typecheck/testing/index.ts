@@ -649,6 +649,7 @@ function makeScope(program: ts.Program, sf: ts.SourceFile, decls: TestDeclaratio
         animationTriggerNames: null,
         isStandalone: false,
         imports: null,
+        schemas: null,
       });
     } else if (decl.type === 'pipe') {
       scope.dependencies.push({

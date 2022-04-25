@@ -168,8 +168,15 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
           patchComponentDefWithScope(ngComponentDef, scopes);
         }
 
-        if (metadata.standalone && metadata.schemas) {
-          ngComponentDef.schemas = metadata.schemas;
+        if (metadata.schemas) {
+          if (metadata.standalone) {
+            ngComponentDef.schemas = metadata.schemas;
+          } else {
+            throw new Error(`The 'schemas' was specified for the ${
+                stringifyForError(type)} but is only valid on a component that is standalone.`);
+          }
+        } else if (metadata.standalone) {
+          ngComponentDef.schemas = [];
         }
       }
       return ngComponentDef;

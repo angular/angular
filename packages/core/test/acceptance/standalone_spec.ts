@@ -7,7 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {Component, createEnvironmentInjector, Directive, EnvironmentInjector, forwardRef, Injector, Input, NgModule, OnInit, Pipe, PipeTransform, ViewChild, ViewContainerRef} from '@angular/core';
+import {Component, createEnvironmentInjector, Directive, EnvironmentInjector, forwardRef, Injector, Input, NgModule, NO_ERRORS_SCHEMA, OnInit, Pipe, PipeTransform, ViewChild, ViewContainerRef} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
 describe('standalone components, directives and pipes', () => {
@@ -445,5 +445,33 @@ describe('standalone components, directives and pipes', () => {
     const fixture = TestBed.createComponent(TestComponent);
     fixture.detectChanges();
     expect(fixture.nativeElement.textContent).toBe('(standalone component)');
+  });
+
+  describe('schemas', () => {
+    it('should allow schemas in standalone component', () => {
+      @Component({
+        standalone: true,
+        template: '<maybe-custom-elm></maybe-custom-elm>',
+        schemas: [NO_ERRORS_SCHEMA]
+      })
+      class AppCmp {
+      }
+
+      const fixture = TestBed.createComponent(AppCmp);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.innerHTML).toBe('<maybe-custom-elm></maybe-custom-elm>');
+    });
+
+    it('should error when schemas are specified for a non-standalone component', () => {
+      @Component({template: '', schemas: [NO_ERRORS_SCHEMA]})
+      class AppCmp {
+      }
+
+      expect(() => {
+        TestBed.createComponent(AppCmp);
+      })
+          .toThrowError(
+              `The 'schemas' was specified for the AppCmp but is only valid on a component that is standalone.`);
+    });
   });
 });

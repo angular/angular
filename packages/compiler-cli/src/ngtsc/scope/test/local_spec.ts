@@ -296,6 +296,7 @@ function fakeDirective(ref: Reference<ClassDeclaration>): DirectiveMeta {
     animationTriggerNames: null,
     isStandalone: false,
     imports: null,
+    schemas: null,
   };
 }
 
