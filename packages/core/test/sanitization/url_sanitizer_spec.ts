@@ -66,11 +66,6 @@ import {_sanitizeUrl, sanitizeSrcset} from '../../src/sanitization/url_sanitizer
         '&#x6A&#x61&#x76&#x61&#x73&#x63&#x72&#x69&#x70&#x74&#x3A;',
         'jav&#x09;ascript:alert();',
         'jav\u0000ascript:alert();',
-        'data:;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/',
-        'data:,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/',
-        'data:iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/',
-        'data:text/javascript;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/',
-        'data:application/x-msdownload;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/',
       ];
       for (const url of invalidUrls) {
         it(`valid ${url}`, () => expect(_sanitizeUrl(url)).toMatch(/^unsafe:/));

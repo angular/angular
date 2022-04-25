@@ -111,9 +111,6 @@
     "name": "Console"
   },
   {
-    "name": "DATA_URL_PATTERN"
-  },
-  {
     "name": "DEFAULT_SERIALIZER"
   },
   {
