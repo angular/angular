@@ -1,5 +1,5 @@
 load("@aio_npm//@angular-devkit/architect-cli:index.bzl", "architect", "architect_test")
-load("@build_bazel_rules_nodejs//:index.bzl", "npm_package_bin")
+load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary", "npm_package_bin")
 load("@aspect_bazel_lib//lib:copy_to_directory.bzl", "copy_to_directory")
 
 # The write_source_files macro is used to write bazel outputs to the source tree and test that they are up to date.
@@ -55,6 +55,14 @@ DGENI_FILES = [
     "//aio/content/examples",
     "//aio/src/assets",
     "//aio/tools/transforms",
+    "//:package.json",
+    "//packages:files_for_docgen",
+]
+
+# Sources needed to produce a fast low-fi dgeni build
+DGENI_FASTSERVE_FILES = [
+    "//aio/content",
+    "//aio/content/examples",
     "//:package.json",
     "//packages:files_for_docgen",
 ]
@@ -216,6 +224,7 @@ architect_test(
     data = TEST_FILES + TEST_DEPS,
 )
 
+# Build and serve the app. Run with ibazel to watch for changes and re-serve.
 architect(
     name = "serve",
     args = [
@@ -224,4 +233,26 @@ architect(
     chdir = package_name(),
     data = APPLICATION_DEPS + APPLICATION_FILES,
     tags = ["ibazel_notify_changes"],
+)
+
+# Build and serve the app, watch for changes, and run a fast but low-fidelity
+# rebuild when docs change. Watching and serving is a part of the node script,
+# so there is no need to run with ibazel, which would be slow as it would redo
+# the full dgeni build on each change.
+nodejs_binary(
+    name = "fast-serve",
+    chdir = package_name(),
+    data = APPLICATION_DEPS + APPLICATION_FILES + DGENI_FASTSERVE_FILES + [
+        "//aio/scripts:fast-serve-and-watch",
+    ],
+    entry_point = "//aio/scripts:fast-serve-and-watch.js",
+    env = {
+        # Have the authors package output its low-fi dgeni build
+        # to a different directory in the runfiles tree because bazel
+        # write-protects original dgeni runfiles. Then in angular.json
+        # we list this folder last under assets so that it will
+        # take precedence over the original dgeni assets, effectively
+        # overwriting select sources and then serving them.
+        "BAZEL_DGENI_OUTPUT_PATH": "dgeni-fast",
+    },
 )

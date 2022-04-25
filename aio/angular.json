@@ -51,17 +51,22 @@
               "src/pwa-manifest.json",
               "src/google385281288605d160.html",
               {
-                "input": "dgeni/generated",
-                "output": "generated",
-                "glob": "**"
-              },
-              {
                 "input": "stackblitz/generated",
                 "output": "generated",
                 "glob": "**"
               },
               {
                 "input": "example-zips/generated",
+                "output": "generated",
+                "glob": "**"
+              },
+              {
+                "input": "dgeni/generated",
+                "output": "generated",
+                "glob": "**"
+              },
+              {
+                "input": "dgeni-fast/generated",
                 "output": "generated",
                 "glob": "**"
               }
