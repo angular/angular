@@ -12,8 +12,6 @@ filegroup(
         exclude = [
             "test.js",
             "**/*.spec.js",
-            # Used only for fast dgeni builds, not required for the high-fidelity dgeni build
-            "authors-package",
         ],
     ),
 )
