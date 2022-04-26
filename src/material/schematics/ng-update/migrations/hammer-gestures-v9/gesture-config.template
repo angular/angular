@@ -4,7 +4,7 @@
  * automatically to this application because ng-update detected that this application
  * directly used custom HammerJS gestures defined by Angular Material.
  *
- * Read more in the dedicated guide: https://git.io/ng-material-v9-hammer-migration
+ * Read more in the dedicated guide: https://github.com/angular/components/blob/3a204da37fd1366cae411b5c234517ecad199737/guides/v9-hammerjs-migration.md?
  */
 
 import {Injectable, Inject, Optional, Type} from '@angular/core';
