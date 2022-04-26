@@ -23,7 +23,8 @@ ts_library(
     name = entrypoint,
     data = [
         ":bin",
-        "@cldr_data//:all_json",
+        "@cldr_json_data//:all_json",
+        "@cldr_xml_data//:all_xml",
     ],
     entry_point = ":%s.ts" % entrypoint,
     # We need to patch the NodeJS module resolution as this binary runs as
