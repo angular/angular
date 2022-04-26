@@ -26,7 +26,7 @@ Before creating dependency injection, you should be familiar with the following:
 
 [Tour of Heroes app and tutorial](turotial)
 
-## Learn about Angular routing
+## Learn about Angular Dependency Injection
 
 <div class="card-container">
   <a href="guide/dependency-injection-intro" class="docs-card" title="Understanding Dependency Injection">
@@ -37,7 +37,26 @@ Before creating dependency injection, you should be familiar with the following:
   <a href="guide/creating-injectable-service" class="docs-card" title="Creating an injectable service">
     <section>Creating an injectable service</section>
     <p>Describes how to create an injectable service.</p>
-    <p class="card-footer">Creating Creating an injectable service</p>
+    <p class="card-footer">Creating an injectable service</p>
   </a>
-  
+  <a href="guide/inject-service-in-component" class="docs-card" title="Injecting services">
+    <section>Injecting services</section>
+    <p>Describes how to inject services in components.</p>
+    <p class="card-footer">injecting services</p>
+  </a>
+  <a href="guide/inject-service-in-service" class="docs-card" title="Injecting services in other services">
+    <section>Injecting services in other services</section>
+    <p>Describes how to inject services in other services.</p>
+    <p class="card-footer">Injecting services in other services</p>
+  </a>
+  <a href="guide/inject-object" class="docs-card" title="Injecting an object">
+    <section>Injecting an object</section>
+    <p>Describes how to inject an object.</p>
+    <p class="card-footer">Injecting an object</p>
+  </a>
+  <a href="guide/inject-object" class="docs-card" title="Injecting an object">
+    <section>Injecting an object</section>
+    <p>Describes how to inject an object.</p>
+    <p class="card-footer">Injecting an object</p>
+  </a>
 </div>

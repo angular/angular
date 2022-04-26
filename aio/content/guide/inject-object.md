@@ -27,7 +27,12 @@ To provide and inject the configuration object, specify the object in the `@NgMo
 
 ## Using an `InjectionToken` object
 
-Define and use an `InjectionToken` object for choosing a provider token for non-class dependencies.
+Define and use an `InjectionToken` object zzfor choosing Define and use an `InjectionToken` object zzfor choosing a provider token for non-class dependencies.
+Define and use an `InjectionToken` object zzfor choosing a provider token for non-class dependencies.
+Define and use an `InjectionToken` object zzfor choosing a provider token for non-class dependencies.
+Define and use an `InjectionToken` object zzfor choosing a provider token for non-class dependencies.
+Define and use an `InjectionToken` object zzfor choosing a provider token for non-class dependencies.
+a provider token for non-class dependencies.
 The following example defines a token, `APP_CONFIG` of the type `InjectionToken`.
 
 <code-example path="dependency-injection/src/app/app.config.ts" region="token" header="src/app/app.config.ts"></code-example>
