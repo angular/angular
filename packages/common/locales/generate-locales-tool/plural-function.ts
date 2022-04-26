@@ -13,9 +13,7 @@ import {CldrLocaleData} from './cldr-data';
 const {load: createCldr} = require('cldr');
 
 /**
- * Returns the plural function for a locale
- * TODO(ocombe): replace "cldr" extractPluralRuleFunction with our own extraction using "CldrJS"
- * because the 2 libs can become out of sync if they use different versions of the cldr database
+ * Returns the plural function for a locale.
  */
 export function getPluralFunction(localeData: CldrLocaleData, withTypes = true) {
   // We use the resolved bundle for extracting the plural function. This matches with the

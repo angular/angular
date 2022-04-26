@@ -29,7 +29,6 @@ def _cldr_xml_data_repository_impl(ctx):
         ctx.download_and_extract(
             url = url,
             sha256 = sha256,
-            stripPrefix = "cldr-release-39",  # Temporarily hardcode, since it will go away on the next version.
         )
 
     ctx.file("BUILD.bazel", content = """
