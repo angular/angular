@@ -518,18 +518,15 @@ export class AnimationTransitionNamespace {
   }
 }
 
-enum QueuedTransitionType {
+const enum QueuedTransitionType {
   SKIP,
   ROOT,
-  SUB,
 }
 
 export class QueuedTransition {
   constructor(
       public element: any, public instruction: AnimationTransitionInstruction,
-      public player: TransitionAnimationPlayer) {}
-
-  type: QueuedTransitionType = QueuedTransitionType.ROOT;
+      public player: TransitionAnimationPlayer, public type: QueuedTransitionType) {}
 
   setPlayerDisabled() {
     this.player.onDestroy(() => setStyles(this.element, this.instruction.toStyles));
@@ -552,16 +549,6 @@ export class QueuedTransition {
       this.player.syncPlayerEvents(this.player.parentPlayer);
     } else {
       this.player.destroy();
-    }
-  }
-
-  processSubTransitions(skippedPlayersMap: Map<any, AnimationPlayer[]>) {
-    // even if no players are found for a sub animation it
-    // will still complete itself after the next tick since it's Noop
-    const playersForElement = skippedPlayersMap.get(this.player.element);
-    if (playersForElement && playersForElement.length) {
-      const innerPlayer = optimizeGroupPlayer(playersForElement);
-      this.player.setRealPlayer(innerPlayer);
     }
   }
 }
@@ -1017,6 +1004,112 @@ export class TransitionAnimationEngine {
     return entry;
   }
 
+  private _getDisabledElements(): Set<any> {
+    const disabledElementSet = new Set<any>();
+    this.disabledNodes.forEach(node => {
+      disabledElementSet.add(node);
+      const nodesThatAreDisabled = this.driver.query(node, QUEUED_SELECTOR, true);
+      for (let disabledNode of nodesThatAreDisabled) {
+        disabledElementSet.add(disabledNode);
+      }
+    });
+    return disabledElementSet;
+  }
+
+  /**
+   * _prepareNodes adds an ordered, unique class to every node
+   * and returns a map of each of them for later usage.
+   *
+   * @param nodeMap Map<any, any>: a Map of root elements to nodes
+   * @param nodeClass string: the css class to be added to the node
+   * @param i number: the unique number appended to the nodeClass
+   * @returns Map<any, string>
+   */
+  private _prepareNodes(nodeMap: Map<any, any>, nodeClass: string, i: number = 0):
+      Map<any, string> {
+    const nodeMapIds = new Map<any, string>();
+    nodeMap.forEach((nodes, root) => {
+      const className = nodeClass + i++;
+      nodeMapIds.set(root, className);
+      nodes.forEach((node: any) => addClass(node, className));
+    });
+    return nodeMapIds;
+  }
+
+  /**
+   * _getAllLeaveNodes returns every node that is flagged as leaving
+   * regardless of whether an animation is present
+   *
+   * @returns any[]
+   */
+  private _getAllLeaveNodes(): any[] {
+    const allLeaveNodes: any[] = [];
+    for (let element of this.collectedLeaveElements) {
+      const details = element[REMOVAL_FLAG] as ElementAnimationState;
+      if (details && details.setForRemoval) {
+        allLeaveNodes.push(element);
+      }
+    }
+    return allLeaveNodes;
+  }
+
+  /**
+   * _getMergedLeaveNodesWithAnimations returns the set of leaving nodes as well as
+   * all child nodes underneath this node when an animation is present
+   *
+   * @returns Set<any>
+   */
+  private _getMergedLeaveNodesWithAnimations(): Set<any> {
+    const mergedLeaveNodes = new Set<any>();
+    for (let element of this.collectedLeaveElements) {
+      const details = element[REMOVAL_FLAG] as ElementAnimationState;
+      if (details && details.setForRemoval) {
+        mergedLeaveNodes.add(element);
+        if (details.hasAnimation) {
+          this.driver.query(element, STAR_SELECTOR, true).forEach(elm => mergedLeaveNodes.add(elm));
+        }
+      }
+    }
+    return mergedLeaveNodes;
+  }
+
+  /**
+   * _getLeaveNodesWithoutAnimations returns the set of leaving nodes that do not
+   * have an animation
+   *
+   * @returns Set<any>
+   */
+  private _getLeaveNodesWithoutAnimations(): Set<any> {
+    const leaveNodesWithoutAnimations = new Set<any>();
+    for (let element of this.collectedLeaveElements) {
+      const details = element[REMOVAL_FLAG] as ElementAnimationState;
+      if (details && details.setForRemoval && !details.hasAnimation) {
+        leaveNodesWithoutAnimations.add(element);
+      }
+    }
+    return leaveNodesWithoutAnimations;
+  }
+
+  private _createCleanupFn(
+      enterNodeMap: Map<any, any>, enterNodeMapIds: Map<any, string>, leaveNodeMap: Map<any, any>,
+      leaveNodeMapIds: Map<any, string>, allLeaveNodes: any[]): Function {
+    return () => {
+      enterNodeMap.forEach((nodes, root) => {
+        const className = enterNodeMapIds.get(root)!;
+        nodes.forEach((node: any) => removeClass(node, className));
+      });
+
+      leaveNodeMap.forEach((nodes, root) => {
+        const className = leaveNodeMapIds.get(root)!;
+        nodes.forEach((node: any) => removeClass(node, className));
+      });
+
+      allLeaveNodes.forEach(element => {
+        this.processLeaveNode(element);
+      });
+    };
+  }
+
   private _flushAnimations(cleanupFns: Function[], microtaskId: number):
       TransitionAnimationPlayer[] {
     const subTimelines = new ElementInstructionMap();
@@ -1026,15 +1119,6 @@ export class TransitionAnimationEngine {
     const allPreStyleElements = new Map<any, Set<string>>();
     const allPostStyleElements = new Map<any, Set<string>>();
 
-    const disabledElementsSet = new Set<any>();
-    this.disabledNodes.forEach(node => {
-      disabledElementsSet.add(node);
-      const nodesThatAreDisabled = this.driver.query(node, QUEUED_SELECTOR, true);
-      for (let i = 0; i < nodesThatAreDisabled.length; i++) {
-        disabledElementsSet.add(nodesThatAreDisabled[i]);
-      }
-    });
-
     const bodyNode = this.bodyNode;
     const allTriggerElements = Array.from(this.statesByElement.keys());
     const enterNodeMap = buildRootMap(allTriggerElements, this.collectedEnterElements);
@@ -1042,55 +1126,25 @@ export class TransitionAnimationEngine {
     // this must occur before the instructions are built below such that
     // the :enter queries match the elements (since the timeline queries
     // are fired during instruction building).
-    const enterNodeMapIds = new Map<any, string>();
-    let i = 0;
-    enterNodeMap.forEach((nodes, root) => {
-      const className = ENTER_CLASSNAME + i++;
-      enterNodeMapIds.set(root, className);
-      nodes.forEach(node => addClass(node, className));
-    });
 
-    const allLeaveNodes: any[] = [];
-    const mergedLeaveNodes = new Set<any>();
-    const leaveNodesWithoutAnimations = new Set<any>();
-    for (let i = 0; i < this.collectedLeaveElements.length; i++) {
-      const element = this.collectedLeaveElements[i];
-      const details = element[REMOVAL_FLAG] as ElementAnimationState;
-      if (details && details.setForRemoval) {
-        allLeaveNodes.push(element);
-        mergedLeaveNodes.add(element);
-        if (details.hasAnimation) {
-          this.driver.query(element, STAR_SELECTOR, true).forEach(elm => mergedLeaveNodes.add(elm));
-        } else {
-          leaveNodesWithoutAnimations.add(element);
-        }
-      }
-    }
+    // prepare the enter nodes by adding the ng-enter class to them
+    const enterNodeMapIds = this._prepareNodes(enterNodeMap, ENTER_CLASSNAME);
 
-    const leaveNodeMapIds = new Map<any, string>();
+    // gather all the leaving nodes
+    const allLeaveNodes = this._getAllLeaveNodes();
+    const mergedLeaveNodes = this._getMergedLeaveNodesWithAnimations();
+    const leaveNodesWithoutAnimations = this._getLeaveNodesWithoutAnimations();
+
+    // prepare the leave nodes by adding the ng-leave class to them
     const leaveNodeMap = buildRootMap(allTriggerElements, Array.from(mergedLeaveNodes));
-    leaveNodeMap.forEach((nodes, root) => {
-      const className = LEAVE_CLASSNAME + i++;
-      leaveNodeMapIds.set(root, className);
-      nodes.forEach(node => addClass(node, className));
-    });
+    const leaveNodeMapIds = this._prepareNodes(leaveNodeMap, LEAVE_CLASSNAME, enterNodeMap.size);
 
-    cleanupFns.push(() => {
-      enterNodeMap.forEach((nodes, root) => {
-        const className = enterNodeMapIds.get(root)!;
-        nodes.forEach(node => removeClass(node, className));
-      });
+    // add the proper cleanup function
+    cleanupFns.push(this._createCleanupFn(
+        enterNodeMap, enterNodeMapIds, leaveNodeMap, leaveNodeMapIds, allLeaveNodes));
 
-      leaveNodeMap.forEach((nodes, root) => {
-        const className = leaveNodeMapIds.get(root)!;
-        nodes.forEach(node => removeClass(node, className));
-      });
-
-      allLeaveNodes.forEach(element => {
-        this.processLeaveNode(element);
-      });
-    });
-
+    // do all the work
+    // TODO(jessicajaniuk): Break this up
     const allPlayers: TransitionAnimationPlayer[] = [];
     const erroneousTransitions: AnimationTransitionInstruction[] = [];
     for (let i = this._namespaceList.length - 1; i >= 0; i--) {
@@ -1141,9 +1195,8 @@ export class TransitionAnimationEngine {
         if (nodeIsOrphaned) {
           player.onStart(() => eraseStyles(element, instruction.fromStyles));
           player.onDestroy(() => setStyles(element, instruction.toStyles));
-          const queuedInstruction = new QueuedTransition(element, instruction, player);
-          queuedInstruction.type = QueuedTransitionType.SKIP;
-          queuedInstructions.push(queuedInstruction);
+          queuedInstructions.push(
+              new QueuedTransition(element, instruction, player, QueuedTransitionType.SKIP));
           return;
         }
 
@@ -1153,9 +1206,8 @@ export class TransitionAnimationEngine {
         if (entry.isFallbackTransition) {
           player.onStart(() => eraseStyles(element, instruction.fromStyles));
           player.onDestroy(() => setStyles(element, instruction.toStyles));
-          const queuedInstruction = new QueuedTransition(element, instruction, player);
-          queuedInstruction.type = QueuedTransitionType.SKIP;
-          queuedInstructions.push(queuedInstruction);
+          queuedInstructions.push(
+              new QueuedTransition(element, instruction, player, QueuedTransitionType.SKIP));
           return;
         }
 
@@ -1175,7 +1227,8 @@ export class TransitionAnimationEngine {
 
         subTimelines.append(element, instruction.timelines);
 
-        queuedInstructions.push(new QueuedTransition(element, instruction, player));
+        queuedInstructions.push(
+            new QueuedTransition(element, instruction, player, QueuedTransitionType.ROOT));
 
         instruction.queriedElements.forEach(
             element => getOrSetDefaultValue(queriedElements, element, []).push(player));
@@ -1200,6 +1253,7 @@ export class TransitionAnimationEngine {
       });
     }
 
+    // handle any transitions that errored
     if (erroneousTransitions.length) {
       const errors: Error[] = [];
       erroneousTransitions.forEach(instruction => {
@@ -1273,10 +1327,10 @@ export class TransitionAnimationEngine {
           new Map([...Array.from(post?.entries() ?? []), ...Array.from(pre?.entries() ?? [])]));
     });
 
+    const disabledElementSet = this._getDisabledElements();
     const transitionList = queuedInstructions.map(entry => {
-      // TODO(jessicajaniuk): Move this to a method on QueuedTransition
       if (subTimelines.has(entry.element)) {
-        if (disabledElementsSet.has(entry.element)) {
+        if (disabledElementSet.has(entry.element)) {
           entry.setPlayerDisabled();
           return entry;
         }
@@ -1286,10 +1340,6 @@ export class TransitionAnimationEngine {
       }
       return entry.process();
     });
-
-    // Process all the transitions that are sub animations
-    transitionList.filter(entry => entry.type === QueuedTransitionType.SUB)
-        .forEach(entry => entry.processSubTransitions(skippedPlayersMap));
 
     // Process the skipped transitions
     transitionList.filter(entry => entry.type === QueuedTransitionType.SKIP)
@@ -1301,7 +1351,6 @@ export class TransitionAnimationEngine {
     // this is required so the cleanup method doesn't remove them
     allLeaveNodes.length = 0;
 
-    // TODO(jessicajaniuk): Move this logic into a QueuedTransition method
     const rootPlayers = transitionList.filter(entry => entry.type === QueuedTransitionType.ROOT)
                             .map(entry => entry.player);
 

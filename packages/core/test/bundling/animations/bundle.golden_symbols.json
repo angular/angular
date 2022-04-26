@@ -372,9 +372,6 @@
     "name": "QueuedTransition"
   },
   {
-    "name": "QueuedTransitionType"
-  },
-  {
     "name": "R3Injector"
   },
   {
