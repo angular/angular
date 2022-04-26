@@ -137,7 +137,7 @@ cldr_json_data_repository(
 cldr_xml_data_repository(
     name = "cldr_xml_data",
     urls = {
-        "https://github.com/unicode-org/cldr/releases/download/release-%s/cldr-common-%s.0.zip" % (2 * (cldr_major_version,)): "823c6170c41e2de2c229574e8a436332d25f1c9723409867fe721e00bc92d853",
+        "https://github.com/unicode-org/cldr/releases/download/release-%s/cldr-common-%s.0.zip" % (cldr_major_version, cldr_major_version): "823c6170c41e2de2c229574e8a436332d25f1c9723409867fe721e00bc92d853",
     },
 )
 
