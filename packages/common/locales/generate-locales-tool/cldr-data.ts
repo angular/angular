@@ -56,12 +56,12 @@ export type CldrLocaleAliasReason =
     'deprecated'|'overlong'|'macrolanguage'|'legacy'|'bibliographic';
 
 /**
- * Class that provides access to the CLDR data downloaded as part of
- * the `@cldr_data` Bazel repository.
+ * Class that provides access to the CLDR JSON data downloaded as part of
+ * the `@cldr_json_data` Bazel repository.
  */
 export class CldrData {
-  /** Path to the CLDR data Bazel repository. i.e. `@cldr_data//`. */
-  readonly cldrDataDir = runfiles.resolve('cldr_data');
+  /** Path to the CLDR JSON data Bazel repository. i.e. `@cldr_json_data//`. */
+  readonly cldrDataDir = runfiles.resolve('cldr_json_data');
 
   /** List of all available locales CLDR provides data for. */
   readonly availableLocales: readonly CldrLocaleData[];

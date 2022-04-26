@@ -5,10 +5,12 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {runfiles} from '@bazel/runfiles';
+
 import {CldrLocaleData} from './cldr-data';
 
 // There are no types available for `cldr`.
-const cldr = require('cldr');
+const {load: createCldr} = require('cldr');
 
 /**
  * Returns the plural function for a locale
@@ -21,6 +23,7 @@ export function getPluralFunction(localeData: CldrLocaleData, withTypes = true) 
   // we follow the CLDR-specified bundle lookup algorithm. A language does not necessarily
   // resolve directly to a bundle CLDR provides data for.
   const bundleName = localeData.attributes.bundle;
+  const cldr = createCldr(runfiles.resolve('cldr_xml_data'));
   let fn = cldr.extractPluralRuleFunction(bundleName).toString();
 
   const numberType = withTypes ? ': number' : '';

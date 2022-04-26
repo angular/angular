@@ -123,12 +123,21 @@ load("@rules_pkg//:deps.bzl", "rules_pkg_dependencies")
 
 rules_pkg_dependencies()
 
-load("//packages/common/locales/generate-locales-tool:cldr-data.bzl", "cldr_data_repository")
+load("//packages/common/locales/generate-locales-tool:cldr-data.bzl", "cldr_json_data_repository", "cldr_xml_data_repository")
 
-cldr_data_repository(
-    name = "cldr_data",
+cldr_major_version = "39"
+
+cldr_json_data_repository(
+    name = "cldr_json_data",
     urls = {
-        "https://github.com/unicode-org/cldr-json/releases/download/39.0.0/cldr-39.0.0-json-full.zip": "a631764b6bb7967fab8cc351aff3ffa3f430a23646899976dd9d65801446def6",
+        "https://github.com/unicode-org/cldr-json/releases/download/%s.0.0/cldr-%s.0.0-json-full.zip" % (cldr_major_version, cldr_major_version): "a631764b6bb7967fab8cc351aff3ffa3f430a23646899976dd9d65801446def6",
+    },
+)
+
+cldr_xml_data_repository(
+    name = "cldr_xml_data",
+    urls = {
+        "https://github.com/unicode-org/cldr/archive/refs/tags/release-%s.zip" % cldr_major_version: "ae79845fe670afffd51657669c16362cbf973df6e72acd9562e99e67b1164974",
     },
 )
 

@@ -26,7 +26,7 @@ const baseCurrencies = {
 }
 ```
 
-In the snippet above, you might wonder why values for `NZD` or `USD` are missing. This is intentional as for `USD` there is no narrow symbol (given `$` already being the symbol). The tool does not set an explicit value for byte savings. Same applies for the fraction digits. 
+In the snippet above, you might wonder why values for `NZD` or `USD` are missing. This is intentional as for `USD` there is no narrow symbol (given `$` already being the symbol). The tool does not set an explicit value for byte savings. Same applies for the fraction digits.
 
 ### Locale files
 
@@ -59,6 +59,6 @@ If `labelsForDayPeriodsAbbreviated` for example is equal to `labelsForDayPeriods
 
 ### Where are the CLDR data files stored?
 
-The CLDR data is fetched through a Bazel repository. See the project-level `WORKSPACE` file for more information. The generation tool resolves all locale data through the `@cldr_data` Bazel repository.
+The CLDR data is fetched through Bazel repositories. See the project-level `WORKSPACE` file for more information. The generation tool resolves all locale data through the `@cldr_json_data` and `@cldr_xml_data` Bazel repositories (depending on the data format that it needs).
 
 Locale files, or the default currencies file are not source files that would end up in the Git repository. This is different to the old Gulp setup where such files were added as part of the repository. The benefit of no longer adding such files to the Git repository is that updating CLDR is no longer resulting in large diffs. Another significant benefit is that files cannot be modified manually. Previously, developers could have manually made changes within locale files and no tooling would complain. This could result in locale files which are not in sync with CLDR / or files which are broken.
