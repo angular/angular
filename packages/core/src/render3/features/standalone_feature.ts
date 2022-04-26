@@ -23,10 +23,6 @@ class StandaloneService implements OnDestroy {
 
   constructor(private _injector: EnvironmentInjector) {}
 
-  setInjector(componentDef: ComponentDef<unknown>, injector: EnvironmentInjector) {
-    this.cachedInjectors.set(componentDef, injector);
-  }
-
   getOrCreateStandaloneInjector(componentDef: ComponentDef<unknown>): EnvironmentInjector|null {
     if (!componentDef.standalone) {
       return null;
@@ -47,7 +43,7 @@ class StandaloneService implements OnDestroy {
   ngOnDestroy() {
     try {
       for (const injector of this.cachedInjectors.values()) {
-        if (injector !== null && injector !== this._injector) {
+        if (injector !== null) {
           injector.destroy();
         }
       }
