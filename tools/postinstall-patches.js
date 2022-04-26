@@ -139,10 +139,6 @@ for (const [fileName, patches] of ngDevPatches.entries()) {
   }
 }
 
-// Workaround until tsec is compatible with `rules_nodejs` v5.
-// TODO: Remove when https://github.com/google/tsec/pull/25 is available.
-sed('-i', '@bazel/typescript', '@bazel/concatjs', 'node_modules/tsec/index.bzl');
-
 log('\n# patch: delete d.ts files referring to rxjs-compat');
 // more info in https://github.com/angular/angular/pull/33786
 rm('-rf', [

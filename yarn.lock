@@ -318,7 +318,6 @@
 
 "@angular/dev-infra-private@https://github.com/angular/dev-infra-private-builds.git#3ff6a9e935cf0d1a8694e7f5842e5e538da64030":
   version "0.0.0-129a5ccbcc73d7ca960d8c166d7400bf2e94cd3d"
-  uid "3ff6a9e935cf0d1a8694e7f5842e5e538da64030"
   resolved "https://github.com/angular/dev-infra-private-builds.git#3ff6a9e935cf0d1a8694e7f5842e5e538da64030"
   dependencies:
     "@angular-devkit/build-angular" "14.0.0-next.6"
@@ -13734,7 +13733,6 @@ sass@1.49.9:
 
 "sauce-connect@https://saucelabs.com/downloads/sc-4.7.1-linux.tar.gz":
   version "0.0.0"
-  uid e5d7f82ad98251a653d1b0537f1103e49eda5e11
   resolved "https://saucelabs.com/downloads/sc-4.7.1-linux.tar.gz#e5d7f82ad98251a653d1b0537f1103e49eda5e11"
 
 saucelabs@7.1.3, saucelabs@^1.5.0, saucelabs@^4.6.3:
@@ -15257,10 +15255,10 @@ ts-node@^10.0.0:
     v8-compile-cache-lib "^3.0.0"
     yn "3.1.1"
 
-tsec@0.2.1:
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/tsec/-/tsec-0.2.1.tgz#017423174b2be54f26da5cb7591dc7035996086b"
-  integrity sha512-RP9vhbRbRI9VH4CfOlQvo5W9HdfiPKq0gdiUOWI5oKmLaZKNFN8CsPwBfT5ySmhnKNwmmAS/BtY3WoTfABwwig==
+tsec@0.2.2:
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/tsec/-/tsec-0.2.2.tgz#d86d771215fb09a5e226f2b252a1c038c7fa17ca"
+  integrity sha512-gKm+nnIKcE9xtrJw2cIJFjfuDGK0AvH3r4RayTEIkUvja/s9z9GPFgcSdEaapm6N10KrmWWcLjsHlKmH2tqzMw==
   dependencies:
     glob "^7.1.1"
     minimatch "^3.0.3"
