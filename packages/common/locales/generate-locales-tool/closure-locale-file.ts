@@ -138,22 +138,12 @@ ${locale.closureLocaleNames.map(l => `case '${l}':`).join('\n')}
 }
 
 function computeEquivalentLocaleNames(localeName: ClosureLibraryLocaleName): string[] {
-  const equivalents = new Set<string>([localeName]);
+  const equivalents = new Set<string>([localeName, formatLocale(localeName)]);
 
-  if (localeName.includes('-')) {
-    equivalents.add(localeName.replace(/-/g, '_'));
-  }
-
-  const aliases = closureLibraryAliases[localeName];
-  if (aliases !== undefined) {
-    aliases.forEach(aliasName => {
-      equivalents.add(aliasName);
-
-      if (aliasName.includes('-')) {
-        equivalents.add(aliasName.replace(/-/g, '_'));
-      }
-    });
-  }
+  closureLibraryAliases[localeName]?.forEach(aliasName => {
+    equivalents.add(aliasName);
+    equivalents.add(formatLocale(aliasName));
+  });
 
   return Array.from(equivalents);
 }
