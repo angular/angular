@@ -74,7 +74,7 @@ $_emitted-density: () !default;
 
 /// Gets a color from a theme palette (the output of mat-palette).
 /// The hue can be one of the standard values (500, A400, etc.), one of the three preconfigured
-/// hues (default, lighter, darker), or any of the aforementioned prefixed with "-contrast".
+/// hues (default, lighter, darker), or any of the aforementioned suffixed with "-contrast".
 ///
 /// @param {Map} $palette The palette from which to extract a color.
 /// @param {String | Number} $hue The hue from the palette to use. If this is a value between 0
