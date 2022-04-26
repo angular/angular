@@ -15,7 +15,6 @@ import {ApplicationInitStatus} from './application_init';
 import {APP_BOOTSTRAP_LISTENER, PLATFORM_INITIALIZER} from './application_tokens';
 import {getCompilerFacade, JitCompilerUsage} from './compiler/compiler_facade';
 import {Console} from './console';
-import {importProvidersFrom} from './di';
 import {Injectable} from './di/injectable';
 import {InjectionToken} from './di/injection_token';
 import {Injector} from './di/injector';
@@ -35,9 +34,7 @@ import {InternalViewRef, ViewRef} from './linker/view_ref';
 import {isComponentResourceResolutionQueueEmpty, resolveComponentResources} from './metadata/resource_loading';
 import {assertNgModuleType} from './render3/assert';
 import {ComponentFactory as R3ComponentFactory} from './render3/component_ref';
-import {getComponentDef} from './render3/definition';
 import {assertStandaloneComponentType} from './render3/errors';
-import {StandaloneService} from './render3/features/standalone_feature';
 import {setLocaleId} from './render3/i18n/i18n_locale_id';
 import {setJitOptions} from './render3/jit/jit_options';
 import {isStandalone} from './render3/jit/module';
@@ -206,18 +203,9 @@ export function bootstrapApplication(config: {
     const allAppProviders = [
       {provide: NgZone, useValue: ngZone},  //
       ...(appProviders || []),              //
-      // Collect providers from the root standalone component
-      // and all of its dependencies (NgModule, other standalone Components)
-      // and make those providers available in the DI tree.
-      ...importProvidersFrom(rootComponent),
     ];
     const appInjector = createEnvironmentInjector(
         allAppProviders, platformInjector as EnvironmentInjector, 'Environment Injector');
-
-    // Instruct `StandaloneService` to use the `appInjector` as an injector for this
-    // root component, so that there is no extra injector instance created.
-    const componentDef = getComponentDef(rootComponent)!;
-    appInjector.get(StandaloneService).setInjector(componentDef, appInjector);
 
     const exceptionHandler: ErrorHandler|null = appInjector.get(ErrorHandler, null);
     if (NG_DEV_MODE && !exceptionHandler) {
