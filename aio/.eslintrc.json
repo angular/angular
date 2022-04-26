@@ -48,6 +48,7 @@
         "@typescript-eslint/naming-convention": "off",
         "no-console": ["error", {"allow": ["log", "warn", "error"]}],
         "no-empty-function": "off",
+        "@angular-eslint/no-host-metadata-property": "off",
         "no-restricted-syntax": [
           "error",
           {
