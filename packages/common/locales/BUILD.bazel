@@ -1,5 +1,5 @@
 load("@build_bazel_rules_nodejs//:index.bzl", "generated_file_test")
-load("//packages/common/locales:index.bzl", "LOCALES", "generate_all_locale_files", "generate_closure_locales_file")
+load("//packages/common/locales:index.bzl", "LOCALES", "generate_all_locale_files", "generate_closure_locale_file")
 load("//tools:defaults.bzl", "pkg_npm", "ts_library")
 
 package(default_visibility = ["//visibility:public"])
@@ -8,15 +8,15 @@ package(default_visibility = ["//visibility:public"])
 # the `closure-locale.ts` file is checked-in for Google3, we add a `generated_file_test` to
 # ensure the checked-in file is up-to-date. To disambiguate from the test, we use a more
 # precise target name here.
-generate_closure_locales_file(
-    name = "closure_locales_file_generated",
-    output_file = "closure_locales_generated.ts",
+generate_closure_locale_file(
+    name = "closure_locale_file_generated",
+    output_file = "closure_locale_generated.ts",
 )
 
 generated_file_test(
     name = "closure_locale_file",
     src = "closure-locale.ts",
-    generated = ":closure_locales_file_generated",
+    generated = ":closure_locale_file_generated",
 )
 
 generate_all_locale_files(

@@ -36,7 +36,7 @@ def generate_base_locale_file(name, output_file, **kwargs):
         **kwargs
     )
 
-def generate_closure_locales_file(name, output_file, **kwargs):
+def generate_closure_locale_file(name, output_file, **kwargs):
     _run_tool_with_single_output(
         name = name,
         output_file = output_file,
