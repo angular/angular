@@ -179,11 +179,11 @@ export class TemplateFixture extends BaseFixture {
 /**
  * Fixture for testing Components in a convenient way.
  */
-export class ComponentFixture<T> extends BaseFixture {
+export class ComponentFixture<T extends {}> extends BaseFixture {
   component: T;
   requestAnimationFrame: {(fn: () => void): void; flush(): void; queue: (() => void)[];};
 
-  constructor(private componentType: ComponentType<T>, opts: {
+  constructor(componentType: ComponentType<T>, opts: {
     injector?: Injector,
     sanitizer?: Sanitizer,
     rendererFactory?: RendererFactory3,

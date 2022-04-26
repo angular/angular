@@ -14,7 +14,7 @@ export const initializeExtendedWindowOperations = () => {
   extendWindowOperations(window, {inspectedApplication: chromeWindowExtensions});
 };
 
-const extendWindowOperations = <T>(target, classImpl: T) => {
+const extendWindowOperations = <T extends {}>(target, classImpl: T) => {
   for (const key of Object.keys(classImpl)) {
     if (target[key] != null) {
       console.warn(`A window function or object named ${key} would be overwritten`);

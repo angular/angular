@@ -265,10 +265,10 @@
 "@bazel/bazelisk@file:../../../node_modules/@bazel/bazelisk":
   version "1.11.0"
 
-"@bazel/concatjs@5.4.0":
-  version "5.4.0"
-  resolved "https://registry.yarnpkg.com/@bazel/concatjs/-/concatjs-5.4.0.tgz#04e752a6ea3e684f00879e6683657c4ede72df6e"
-  integrity sha512-jlupaDKxqFS3B1lttOIgkKxirP7v5Qx7KCFtOXO7JxtvYJD/qKtKXEQggTrGKJqLPyiZlNiYimHHGICLSWIZcQ==
+"@bazel/concatjs@5.4.1":
+  version "5.4.1"
+  resolved "https://registry.yarnpkg.com/@bazel/concatjs/-/concatjs-5.4.1.tgz#590b7944d89136863ba4e3e264c555b0efc815de"
+  integrity sha512-E5lVBdJNeTcXgDM4phmY2JbHdwWIJZ61ls22McXpWhsDlfItURhNuzxbg/+8gDDX0AlMsJnBpAtFLNVH5c2xwA==
   dependencies:
     protobufjs "6.8.8"
     source-map-support "0.5.9"

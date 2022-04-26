@@ -266,8 +266,8 @@ export function ɵɵdisableBindings(): void {
 /**
  * Return the current `LView`.
  */
-export function getLView(): LView {
-  return instructionState.lFrame.lView;
+export function getLView<T>(): LView<T> {
+  return instructionState.lFrame.lView as LView<T>;
 }
 
 /**
@@ -294,7 +294,7 @@ export function getTView(): TView {
  */
 export function ɵɵrestoreView<T = any>(viewToRestore: OpaqueViewState): T {
   instructionState.lFrame.contextLView = viewToRestore as any as LView;
-  return (viewToRestore as any as LView)[CONTEXT] as T;
+  return (viewToRestore as any as LView)[CONTEXT] as unknown as T;
 }
 
 
@@ -658,7 +658,7 @@ export function leaveView() {
 export function nextContextImpl<T = any>(level: number): T {
   const contextLView = instructionState.lFrame.contextLView =
       walkUpViews(level, instructionState.lFrame.contextLView!);
-  return contextLView[CONTEXT] as T;
+  return contextLView[CONTEXT] as unknown as T;
 }
 
 function walkUpViews(nestingLevel: number, currentView: LView): LView {

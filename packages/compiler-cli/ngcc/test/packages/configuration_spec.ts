@@ -697,23 +697,26 @@ runInEachFileSystem(() => {
         });
 
         it('should correctly handle pre-release versions and version ranges', () => {
-          Object.assign(DEFAULT_NGCC_CONFIG.packages, {
-            'package-1': {
-              entryPoints: {
-                './entry-point-1': {},
+          DEFAULT_NGCC_CONFIG.packages = {
+            ...DEFAULT_NGCC_CONFIG.packages,
+            ...({
+              'package-1': {
+                entryPoints: {
+                  './entry-point-1': {},
+                },
               },
-            },
-            'package-2@1.0.0-beta.2': {
-              entryPoints: {
-                './entry-point-2': {},
+              'package-2@1.0.0-beta.2': {
+                entryPoints: {
+                  './entry-point-2': {},
+                },
               },
-            },
-            'package-3@>=1.0.0-beta.2': {
-              entryPoints: {
-                './entry-point-3': {},
+              'package-3@>=1.0.0-beta.2': {
+                entryPoints: {
+                  './entry-point-3': {},
+                },
               },
-            },
-          });
+            })
+          };
 
           const NO_CONFIG = jasmine.objectContaining({
             ignorableDeepImportMatchers: [],
