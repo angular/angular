@@ -130,7 +130,7 @@ cldr_major_version = "39"
 cldr_json_data_repository(
     name = "cldr_json_data",
     urls = {
-        "https://github.com/unicode-org/cldr-json/releases/download/%s.0.0/cldr-%s.0.0-json-full.zip" % (2 * (cldr_major_version,)): "a631764b6bb7967fab8cc351aff3ffa3f430a23646899976dd9d65801446def6",
+        "https://github.com/unicode-org/cldr-json/releases/download/%s.0.0/cldr-%s.0.0-json-full.zip" % (cldr_major_version, cldr_major_version): "a631764b6bb7967fab8cc351aff3ffa3f430a23646899976dd9d65801446def6",
     },
 )
 
