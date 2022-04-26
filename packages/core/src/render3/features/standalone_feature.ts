@@ -18,7 +18,7 @@ import {createEnvironmentInjector} from '../ng_module_ref';
  * created on demand in case of dynamic component instantiation and contain ambient providers
  * collected from the imports graph rooted at a given standalone component.
  */
-export class StandaloneService implements OnDestroy {
+class StandaloneService implements OnDestroy {
   cachedInjectors = new Map<ComponentDef<unknown>, EnvironmentInjector|null>();
 
   constructor(private _injector: EnvironmentInjector) {}
