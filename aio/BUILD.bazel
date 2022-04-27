@@ -27,52 +27,13 @@ generated_files_test(
     },
 )
 
-# External deps required by dgeni transforms
-DGENI_DEPS = [
-    "@aio_npm//css-selector-parser",
-    "@aio_npm//dgeni-packages",
-    "@aio_npm//entities",
-    "@aio_npm//fs-extra",
-    "@aio_npm//hast-util-is-element",
-    "@aio_npm//hast-util-to-string",
-    "@aio_npm//ignore",
-    "@aio_npm//image-size",
-    "@aio_npm//json5",
-    "@aio_npm//rehype-slug",
-    "@aio_npm//remark",
-    "@aio_npm//remark-html",
-    "@aio_npm//rxjs",
-    "@aio_npm//semver",
-    "@aio_npm//stemmer",
-    "@aio_npm//unist-util-filter",
-    "@aio_npm//unist-util-source",
-]
-
-# All transforms and sources needed by dgeni to produce docs
-DGENI_FILES = [
-    "@angular_cli_src//:files_for_docgen",  # Downloaded cli snapshot (see WORKSPACE)
-    "//aio/content",
-    "//aio/content/examples",
-    "//aio/src/assets",
-    "//aio/tools/transforms",
-    "//:package.json",
-    "//packages:files_for_docgen",
-]
-
-# Sources needed to produce a fast low-fi dgeni build
-DGENI_FASTSERVE_FILES = [
-    "//aio/content",
-    "//aio/content/examples",
-    "//:package.json",
-    "//packages:files_for_docgen",
-]
-
 # Run dgeni generation
 npm_package_bin(
     name = "dgeni",
-    args = ["./aio/tools/transforms/angular.io-package"],
+    # angular.io-package is a js_library target, which copies sources to $(BINDIR)
+    args = ["./$(BINDIR)/aio/tools/transforms/angular.io-package"],
     configuration_env_vars = ["PATH"],  # Need PATH for dgeni package that invokes git
-    data = DGENI_FILES + DGENI_DEPS,
+    data = ["//aio/tools/transforms/angular.io-package"],
     env = {
         "BAZEL_DGENI_OUTPUT_PATH": "$(@D)",
     },
@@ -242,11 +203,14 @@ architect(
 nodejs_binary(
     name = "fast-serve",
     chdir = package_name(),
-    data = APPLICATION_DEPS + APPLICATION_FILES + DGENI_FASTSERVE_FILES + [
+    data = APPLICATION_DEPS + APPLICATION_FILES + [
         "//aio/scripts:fast-serve-and-watch",
     ],
     entry_point = "//aio/scripts:fast-serve-and-watch.js",
     env = {
+        # Tell dgeni packages where the project root is since we used chdir
+        "PROJECT_ROOT": "../",
+
         # Have the authors package output its low-fi dgeni build
         # to a different directory in the runfiles tree because bazel
         # write-protects original dgeni runfiles. Then in angular.json
