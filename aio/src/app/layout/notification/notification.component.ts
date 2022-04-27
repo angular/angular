@@ -18,6 +18,7 @@ const LOCAL_STORAGE_NAMESPACE = 'aio-notification/';
       transition('show => hide', animate(250))
     ])
   ],
+  host: { role: 'group', 'aria-label': 'Notification' }
 })
 export class NotificationComponent implements OnInit {
   @Input() dismissOnContentClick: boolean;
@@ -27,9 +28,6 @@ export class NotificationComponent implements OnInit {
 
   @HostBinding('@hideAnimation')
   showNotification: 'show'|'hide';
-
-  @HostBinding('attr.role') attrRole = 'group';
-  @HostBinding('attr.aria-label') attrAriaLabel = 'Notification';
 
   constructor(@Inject(LocalStorage) private storage: Storage, @Inject(CurrentDateToken) private currentDate: Date) {}
 
