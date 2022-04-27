@@ -9,7 +9,6 @@
 import {AfterViewInit, Directive, EventEmitter, forwardRef, Inject, Input, Optional, Self} from '@angular/core';
 import {first} from 'rxjs/operators';
 
-import {NG_SUBMIT_AFTER_ASYNC_VALIDATION} from '../directives';
 import {AbstractControl, FormHooks} from '../model/abstract_model';
 import {FormControl} from '../model/form_control';
 import {FormGroup} from '../model/form_group';
@@ -20,6 +19,7 @@ import {Form} from './form_interface';
 import {NgControl} from './ng_control';
 import {NgModel} from './ng_model';
 import {NgModelGroup} from './ng_model_group';
+import {NG_SUBMIT_AFTER_ASYNC_VALIDATION} from './reactive_directives/form_group_directive';
 import {setUpControl, setUpFormContainer, syncPendingControls} from './shared';
 import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from './validators';
 
