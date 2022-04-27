@@ -5,7 +5,7 @@ import fs from 'fs-extra';
 import {globbySync} from 'globby';
 import {fileURLToPath} from 'url';
 
-import regionExtractor from '../transforms/examples-package/services/region-parser.js';
+import regionExtractor from 'aio/tools/examples-package/services/region-parser.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const EXAMPLE_CONFIG_NAME = 'example-config.json';
