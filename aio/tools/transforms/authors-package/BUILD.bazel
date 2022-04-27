@@ -1,26 +1,45 @@
 load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
+load("@aio_npm//@bazel/jasmine:index.bzl", "jasmine_node_test")
 
 package(default_visibility = ["//visibility:public"])
 
 js_library(
+    name = "authors-package",
+    srcs = glob(
+        ["**/*.js"],
+        exclude = [
+            "**/*/spec.js",
+            "watchr.js",
+        ],
+    ),
+    deps = [
+        "//aio/tools/transforms/angular-api-package",
+        "//aio/tools/transforms/angular-base-package",
+        "//aio/tools/transforms/angular-content-package",
+        "//aio/tools/transforms/angular-errors-package",
+        "//aio/tools/transforms/angular-extended-diagnostics-package",
+        "@aio_npm//dgeni",
+    ],
+)
+
+js_library(
     name = "watchdocs",
     srcs = [
-        "api-package.js",
-        "base-authoring-package.js",
-        "errors-package.js",
-        "extended-diagnostics-package.js",
-        "getting-started-package.js",
-        "guide-package.js",
-        "index.js",
-        "marketing-package.js",
-        "tutorial-package.js",
-        "utils.js",
         "watchr.js",
     ],
     deps = [
+        ":authors-package",
+        "@aio_npm//watchr",
+    ],
+)
+
+jasmine_node_test(
+    name = "test",
+    srcs = glob(["**/*.spec.js"]),
+    shard_count = 8,
+    deps = [
+        ":authors-package",
         "//aio/tools/transforms",
         "@aio_npm//canonical-path",
-        "@aio_npm//dgeni",
-        "@aio_npm//watchr",
     ],
 )
