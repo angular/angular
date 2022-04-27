@@ -1,8 +1,15 @@
 const { resolve } = require('path');
 const { readdirSync } = require('fs');
 
-const BAZEL_OUTPUT_PATH = process.env.BAZEL_DGENI_OUTPUT_PATH;
-const PROJECT_ROOT = resolve(__dirname, '../../..');
+// If the output path isn't set, we are in a test so output to some
+// directory that gets output to the sandbox and will be thrown away
+// after the tests run.
+const BAZEL_OUTPUT_PATH = process.env.BAZEL_DGENI_OUTPUT_PATH || "bazel-test-dist";
+
+// During a bazel build this script executes in the execroot, so assume
+// the root is the current directory unless overridden.
+const PROJECT_ROOT = resolve(process.env.PROJECT_ROOT || ".");
+
 const AIO_PATH = resolve(PROJECT_ROOT, 'aio');
 const TEMPLATES_PATH = resolve(AIO_PATH, 'tools/transforms/templates');
 const API_TEMPLATES_PATH = resolve(TEMPLATES_PATH, 'api');
